@@ -130,6 +130,7 @@ def resolved_sources(items):
             "body_sha256": "a" * 64,
             "fetched_at": "2026-11-01T00:00:30.000Z",
             "collection_call_id": f"collector-{index}",
+            "receipt_id": f"{index + 1:032x}",
             # Page text that backs the item, as a page that passed check_item would.
             "text": " ".join(
                 [str(entry.get("title", "")), str(entry.get("body", ""))]
@@ -336,7 +337,7 @@ class ToolSchemaTests(unittest.TestCase):
         self.assertFalse(parameters["additionalProperties"])
         arguments = {"payload", "source_receipts", "report_path"}
         self.assertEqual(set(parameters["properties"]), arguments)
-        self.assertEqual(set(parameters["required"]), arguments)
+        self.assertEqual(set(parameters["required"]), arguments - {"source_receipts"})
         self.assertEqual(tools.SUBMIT_CONTRACT_VERSION, 3)
         description = tools.SUBMIT_RESEARCH_REPORT_SCHEMA["description"]
         self.assertIn("Contract v3", description)
@@ -932,41 +933,31 @@ class P11DirectDeliveryRegressionTests(unittest.TestCase):
         self.assertEqual(second["error"], "delivery_uncertain")
         self.assertEqual(post.call_count, 3)
 
-    def test_missing_receipts_are_rejected_before_network(self):
-        post = mock.Mock(return_value=self.receipt())
-        with (
-            mock.patch.object(tools, "_CTX", self.context),
-            mock.patch.object(tools.webhook_transport, "post", post),
-        ):
-            result = json.loads(
-                tools.handle_submit_report(
-                    {
-                        "payload": {
-                            "schema_version": "1.0",
-                            "items": make_payload()["items"],
-                        },
-                        "report_path": report_file(),
-                    }
-                )
-            )
-        result.pop("report")
-        self.assertEqual(result, {"ok": False, "error": "source_receipts_required"})
-        post.assert_not_called()
-
-    def test_invalid_receipt_id_is_rejected_before_lookup_or_network(self):
-        args = submission_args()
-        args["source_receipts"] = ["not-a-collector-receipt"]
-        post = mock.Mock(return_value=self.receipt())
-        with (
-            mock.patch.object(tools, "_CTX", self.context),
-            mock.patch.object(source_collection, "resolve") as resolve,
-            mock.patch.object(tools.webhook_transport, "post", post),
-        ):
-            result = json.loads(tools.handle_submit_report(args))
-        result.pop("report")
-        self.assertEqual(result, {"ok": False, "error": "invalid_source_receipts"})
-        resolve.assert_not_called()
-        post.assert_not_called()
+    def test_receipts_never_reach_pairing(self):
+        # Plugin 0.4.5: omitted or malformed receipts are ignored; resolve pairs
+        # by item_id and never sees the model's list.
+        for receipts in (None, ["not-a-collector-receipt"]):
+            args = submission_args()
+            if receipts is None:
+                del args["source_receipts"]
+            else:
+                args["source_receipts"] = receipts
+            post = mock.Mock(return_value=self.receipt())
+            with (
+                tempfile.TemporaryDirectory() as outbox,
+                mock.patch.object(tools, "_CTX", self.context),
+                mock.patch.object(tools, "OUTBOX_DIR", Path(outbox)),
+                mock.patch.dict("os.environ", self.environment, clear=False),
+                mock.patch.object(tools.webhook_transport, "post", post),
+                mock.patch.object(
+                    source_collection, "resolve", side_effect=resolve_submitted
+                ) as resolve,
+                self.subTest(receipts=receipts),
+            ):
+                result = json.loads(tools.handle_submit_report(args))
+                self.assertEqual(result["status"], "persisted", result)
+                self.assertIsNone(resolve.call_args.args[5])
+                post.assert_called_once()
 
     def test_item_without_source_quote_is_rejected_before_receipt_lookup(self):
         payload = make_payload()
@@ -1596,6 +1587,175 @@ class P11CollectionToolTests(unittest.TestCase):
         fetch.assert_called_once_with("https://example.org/article")
 
 
+class ReceiptPairingTests(unittest.TestCase):
+    """Plugin 0.4.5: items pair with their collected page by item_id."""
+
+    SENTENCE = "Example released version 2.1 of its build tool on 31 October."
+
+    def setUp(self):
+        source_dir = tempfile.TemporaryDirectory()
+        outbox = tempfile.TemporaryDirectory()
+        self.addCleanup(source_dir.cleanup)
+        self.addCleanup(outbox.cleanup)
+        self.sent = []
+
+        def fetch(url):
+            body = f"<html><body><p>{self.SENTENCE}</p></body></html>".encode()
+            return source_collection.source_fetch.FetchResult(
+                final_url=url,
+                status=200,
+                sha256=hashlib.sha256(body).hexdigest(),
+                fetched_at="2026-11-01T00:00:30.000Z",
+                content_type="text/html; charset=utf-8",
+                body=body,
+            )
+
+        def post(url, body, token, policy, *, timeout):
+            self.sent.append(json.loads(body))
+            report_id = "11111111-1111-1111-1111-111111111111"
+            return tools.webhook_transport.Response(
+                201,
+                json.dumps(
+                    {
+                        "id": report_id,
+                        "persisted": True,
+                        "duplicate": False,
+                        "status": "received",
+                        "candidate_count": len(self.sent[-1]["items"]),
+                        "status_url": f"/v1/ingestions/{report_id}",
+                    }
+                ).encode(),
+                "application/json",
+            )
+
+        for patch in (
+            mock.patch.object(tools, "_CTX", CronRun()),
+            mock.patch.object(tools, "SOURCE_DIR", Path(source_dir.name)),
+            mock.patch.object(tools, "OUTBOX_DIR", Path(outbox.name)),
+            mock.patch.object(tools, "REPORT_DIR", Path(outbox.name) / "reports"),
+            mock.patch.dict(
+                "os.environ",
+                {
+                    "RESEARCH_WEBHOOK_URL": approved_url(),
+                    "RESEARCH_WEBHOOK_SECRET": "synthetic",
+                    "RESEARCH_WEBHOOK_ALLOWED_CIDRS": "10.250.1.128/32",
+                },
+                clear=False,
+            ),
+            mock.patch.object(source_collection.source_fetch, "fetch", fetch),
+            mock.patch.object(tools.webhook_transport, "post", post),
+        ):
+            patch.start()
+            self.addCleanup(patch.stop)
+
+    def item(self, index, **overrides):
+        return {
+            "item_id": f"item-{index}",
+            "kind": "news",
+            "title": "Example ships version 2.1",
+            "body": self.SENTENCE,
+            "source_url": f"https://example.org/article-{index}",
+            "source_quotes": [self.SENTENCE],
+            **overrides,
+        }
+
+    def collect(self, count):
+        receipts = []
+        for index in range(count):
+            collected = json.loads(
+                tools.handle_collect_source(
+                    {
+                        "item_id": f"item-{index}",
+                        "source_url": f"https://example.org/article-{index}",
+                    }
+                )
+            )
+            self.assertTrue(collected["ok"], collected)
+            receipts.append(collected["receipt_id"])
+        return receipts
+
+    def submit(self, items, receipts=None):
+        # One unchanged report for every call of the run, as the prompt requires.
+        report = REPORT + "".join(
+            f"\nhttps://example.org/article-{index}\n" for index in range(8)
+        )
+        args = {
+            "payload": {"schema_version": "1.0", "items": items},
+            "report_path": report_file(report),
+        }
+        if receipts is not None:
+            args["source_receipts"] = receipts
+        return json.loads(tools.handle_submit_report(args))
+
+    def outbox_record(self):
+        (path,) = tools.OUTBOX_DIR.glob("*.json")
+        return json.loads(path.read_bytes())
+
+    def test_one_wrong_receipt_still_delivers_every_item(self):
+        # 2026-11-12 news: one receipt id matched none of the run's receipts.
+        receipts = self.collect(5)
+        receipts[2] = "f" * 32
+        result = self.submit([self.item(index) for index in range(5)], receipts)
+        self.assertEqual(result["status"], "persisted", result)
+        self.assertEqual(len(self.sent), 1)
+        self.assertEqual(
+            [item["item_id"] for item in self.sent[0]["items"]],
+            [f"item-{index}" for index in range(5)],
+        )
+
+    def test_resubmission_may_keep_the_dropped_items_receipt(self):
+        # 2026-11-12 business ideas: the failed item went, its receipt stayed.
+        receipts = self.collect(3)
+        bad = self.item(1, title="Example ships version 9.9")
+        first = self.submit([self.item(0), bad, self.item(2)], receipts)
+        self.assertEqual(first["error"], "source_quality", first)
+        self.assertEqual(
+            first["failed_items"],
+            [{"item_id": "item-1", "codes": ["number_not_found"]}],
+        )
+        again = self.submit([self.item(0), self.item(2)], receipts)
+        self.assertEqual(again["status"], "persisted", again)
+        self.assertEqual(len(self.sent[0]["items"]), 2)
+
+    def test_uncollected_item_is_a_failed_item(self):
+        self.collect(2)
+        result = self.submit([self.item(0), self.item(1), self.item(7)])
+        self.assertEqual(result["error"], "source_quality", result)
+        self.assertEqual(
+            result["failed_items"], [{"item_id": "item-7", "codes": ["source_missing"]}]
+        )
+        self.assertEqual(self.sent, [])
+
+    def test_no_item_day_ignores_stray_receipts(self):
+        result = self.submit([], ["a" * 32])
+        self.assertEqual(result["status"], "stored", result)
+        self.assertEqual(result["gateway"], "skipped_no_items")
+        self.assertEqual(self.sent, [])
+
+    def test_replay_of_the_same_items_is_idempotent_whatever_the_receipts(self):
+        receipts = self.collect(2)
+        items = [self.item(0), self.item(1)]
+        first = self.submit(items, receipts)
+        self.assertEqual(first["status"], "persisted", first)
+        input_sha = self.outbox_record()["input_sha256"]
+        again = self.submit(items, [*reversed(receipts), "e" * 32])
+        self.assertEqual(again.get("status"), "already_persisted", again)
+        self.assertEqual(self.outbox_record()["input_sha256"], input_sha)
+        self.assertEqual(len(self.sent), 1)
+        expected = hashlib.sha256(
+            json.dumps(
+                {
+                    "items": [{**item, "kind": "devops"} for item in items],
+                    "source_receipts": receipts,
+                },
+                ensure_ascii=False,
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode()
+        ).hexdigest()
+        self.assertEqual(input_sha, expected)
+
+
 class ReportSourceContractTests(unittest.TestCase):
     """SPEC-0265: source_text is the stored report; outputs derive from its bytes."""
 
@@ -1671,7 +1831,10 @@ class ReportSourceContractTests(unittest.TestCase):
         record = self.directory / "source-set.json"
         raw = record.read_bytes()
         expected = json.dumps(
-            resolved_sources(make_payload()["items"]),
+            [
+                {k: v for k, v in row.items() if k != "receipt_id"}
+                for row in resolved_sources(make_payload()["items"])
+            ],
             ensure_ascii=False,
             sort_keys=True,
             separators=(",", ":"),
@@ -1817,9 +1980,9 @@ class ReportSourceContractTests(unittest.TestCase):
 
     def test_gateway_side_failure_still_returns_the_stored_files(self):
         args = submission_args()
-        args["source_receipts"] = ["not-a-collector-receipt"]
+        args["payload"]["schema_version"] = "0.9"
         result = self.run_submit(args)
-        self.assertEqual(result["error"], "invalid_source_receipts")
+        self.assertEqual(result["error"], "invalid_schema_version")
         self.assertTrue(Path(result["report"]["email_path"]).is_file())
         self.assertEqual(self.sent, [])
 
@@ -2274,7 +2437,7 @@ class ResearchMetricsTests(unittest.TestCase):
         )
         self.now += 1
         bad = submission_args()
-        bad["source_receipts"] = ["not-a-receipt"]
+        bad["payload"]["schema_version"] = "0.9"
         results["gateway_error"] = self.run_submit(
             bad, context=CronRun(execution_id="gateway-error-run")
         )
@@ -2291,7 +2454,7 @@ class ResearchMetricsTests(unittest.TestCase):
         self.assertEqual(results["conflict"]["error"], "report_conflict")
         self.assertEqual(results["blocked"]["error"], "report_required")
         self.assertEqual(results["stored_no_items"]["status"], "stored")
-        self.assertEqual(results["gateway_error"]["error"], "invalid_source_receipts")
+        self.assertEqual(results["gateway_error"]["error"], "invalid_schema_version")
         self.assertEqual(results["store_failed"]["error"], "report_store_unavailable")
         start = 1_800_000_000.0
         for offset, name in enumerate(

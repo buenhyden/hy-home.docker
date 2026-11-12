@@ -1,6 +1,6 @@
 ---
 title: "Hermes Report Source Capture Task"
-version: "0.11.0"
+version: "0.12.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -451,6 +451,40 @@ Plugin 0.4.4, contract v3 unchanged (no new argument):
 - The outbox record check now accepts up to 5 attempts, so a redriven record
   stays readable by its own run's replay.
 
+### Receipt pairing by item_id (plugin 0.4.5, 2026-11-12)
+
+On 2026-11-12, on plugin 0.4.4, one receipt slip lost each of two daily
+reports. News submitted 25 items; one carried a receipt id that matched none
+of the run's collected receipts (its page had been collected, under a
+different receipt id), and `resolve()` refused the whole submission with
+`source_mismatch`. Business ideas got `source_quality`, dropped the failed
+item but not its receipt, and the resubmission returned
+`source_receipts_required` because the lists no longer had equal length.
+Owner decision (2026-11-12): "Yes, pair by item_id".
+
+Plugin 0.4.5, contract v3 unchanged (`source_receipts` stays an accepted
+argument, now optional in the tool schema):
+
+- `source_collection.resolve()` pairs each item with this run's own
+  collection record by `item_id`. The model's `source_receipts` no longer
+  decide pairing or order; omitted, shorter, longer or misordered lists give
+  the same rows.
+- Item-level problems are `source_quality` failed items: no collected record
+  for that `item_id` in this run is `source_missing`, an item `source_url`
+  other than the record's final URL is `source_url_mismatch`, and the
+  `check_item` codes are unchanged. Duplicate `item_id` (`source_identity`),
+  a record failing its integrity check (`invalid_record`), a record whose
+  index entry does not match (`source_mismatch`), `source_too_large` and
+  `source_time` stay hard errors.
+- The no-item day is decided by `items == []` alone. The outbox record's
+  `input_sha256` is computed from the items and the plugin-derived receipt ids
+  in item order, so replaying the same items is idempotent whatever receipts
+  the model sends; the stored source set keeps its 0.4.4 fields. The 0.4.4
+  redrive gate is unchanged.
+- The cron prompt says the tool pairs by `item_id`, that `source_receipts`
+  may be sent as collected or omitted, and that `source_missing` and
+  `source_url_mismatch` are failed items to drop like any other.
+
 ### Owner acceptance of criteria 12 to 14 (2026-11-11)
 
 The owner accepted criteria 12, 13 and 14 on 2026-11-11 ("Accept SPEC-0265
@@ -475,7 +509,7 @@ carried a receipt id matching none of the run's collected receipts, and
 business ideas dropped a `source_quality` item without its receipt, so its one
 resubmission returned `source_receipts_required`. Both are agent slips that a
 single receipt error turns into a lost report; pairing receipts by `item_id`
-in the plugin is proposed to the owner as a follow-up.
+in the plugin was decided by the owner and is plugin 0.4.5 (see "Receipt pairing by item_id").
 
 ### Design deviations
 
@@ -591,6 +625,7 @@ rendered dashboard view were not observed, so E11 stays NOT_RUN.
 | E9 | 12 | W9 | one observed delivered run per job (stored report, `sha256(report.md)` = outbox = Gateway hash, attestation, report and item export states, item kind) | scheduled runs 2026-11-09 to 2026-11-11 on plugin 0.4.3, read-only on server A | FAIL | news delivered 11-09 and 11-11, business ideas 11-09, 11-10 and 11-11: 5 reports, all hashes equal, `source_kind` `report`, no `KIND_MISMATCH`, all acknowledged by server B; devops delivered none (11-09 n8n `TimeoutExecutionCancelledError` on runner cold start, 11-10 `uncertain` and absent from the Gateway, 11-11 Hermes run failure); news 11-10 stopped by the Hermes loop guard before submitting; email and Telegram not checked from sent messages | required | - |
 | E19 | 1, 6 | W1 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`RetryAndRedriveTests`: current 401/403 kept `uncertain` without redrive, unconfirmed current send skips redrive, redrive eligibility of `pending`, `sending` and an unparseable `generated_at`, timeout then 201, 502 then 201, 200 duplicate, 409 and 422 not resent, exhausted budget, redrive persisted with the receipt, ineligible records untouched, at most 2, current result unchanged, redrive failure, budget, busy lock; adapted `DeliveryBudgetTests` and the restart test); new tests fail on `602656a52`; `e2e-cache-contract.sh`; ruff check and format; `check-document-metadata.py --mode check-changed --base-ref origin/main`; `check-document-links.py --mode alignment` | plugin 0.4.4 working tree on `602656a52` after the independent review fixes | PASS | 497 tests OK under both umasks (15 failures and errors in this file on `602656a52` sources); e2e exit 0; ruff clean; metadata 2 selected, 0 violations; links 914 documents, 0 failures | required | - |
 | E20 | 12 | W9 | one observed delivered run per job (stored report, `sha256(report.md)` = outbox = Gateway hash, attestation, report and item export states, item kind) | scheduled runs 2026-11-09 to 2026-11-12, plugins 0.4.3 and 0.4.4, read-only on server A and the Gateway | PASS | every job has an observed delivered scheduled run: news 2026-11-09 (`a3504a6f…`) and 2026-11-11 (`167e2022…`); business ideas 2026-11-09 (`d8edd7f5…`), 2026-11-10 (`20a105c8…`) and 2026-11-11 (`d7c7bce4…`); devops 2026-11-12 (`b1c520ab…`, 7127 characters, 8 `devops` items `ready`, first send attempt 201). In each, `sha256(report.md)` = outbox = Gateway stored hash, `source_kind` `report`, attested, item kinds correct. Undelivered runs (2026-11-12 news `source_mismatch`, business `source_receipts_required`) are producer-side receipt errors recorded in the Task | required | E9 |
+| E21 | 1, 6 | W1 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`SourceCollectionTests`: receipts omitted, misordered, shorter, longer or with one wrong id give the same rows, uncollected item `source_missing`, moved URL `source_url_mismatch`, duplicate `item_id` `source_identity`, tampered record `invalid_record`, other run `source_missing`; `ReceiptPairingTests` with real collection: one wrong receipt of 5 delivers all 5, resubmission keeping the dropped item's receipt persists, uncollected item is a failed item, no-item day with stray receipts stores and skips the Gateway, replay with different receipts keeps `input_sha256` and returns `already_persisted`; `test_receipts_never_reach_pairing`; prompt tests); new tests fail on `b885f0e54` sources; `e2e-cache-contract.sh`; ruff check and format; `check-document-metadata.py --mode check-changed --base-ref origin/main`; `check-document-links.py --mode alignment` | plugin 0.4.5 committed on `fix/hermes-pair-receipts` above `4fe55a442`, re-run at `f76af3f85` plus the review fixes | PASS | 504 tests OK under both umasks; e2e exit 0; ruff clean; metadata 3 selected, 0 violations; links 905 documents, 0 failures | required | - |
 | E14 | 12, 14 | W9 | `update-hermes-plugin.sh` (digest match, doctor), restart, `update-cron-prompts.sh` and prompt checks, `UMask` and `__pycache__` mode, address allowlist parsed by the plugin loader | plugin 0.4.2 from `82b117685`, 2026-11-07 09:29 KST | PASS | 9/9 MATCH, doctor OK, 3 prompts OK, `UMask=0077`, `__pycache__` 0700, allowlist parses | required | - |
 | E10 | 1, 4, 6 | W1 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022`, `tests/e2e-cache-contract.sh`, ruff; `test_placeholder_check_is_linear_on_long_reports`, the conflict test and `test_prompt_sends_the_stored_report_on_a_conflict` | fix round 2 commits above `b9c016f10` | PASS | 438 tests OK under both umasks; e2e-cache-contract exit 0; ruff clean | required | - |
 | E16 | 12, 14 | W9 | installed files against source by SHA-256, gateway start and `UMask`, `__pycache__` modes, allowlist parsed by the plugin loader, cron prompts reference `report_path` | plugin 0.4.3 from `main` `c0bcfb511`, read-only, 2026-11-08 17:30 KST | PASS | 4/4 files match; started 09:54:07 KST, `UMask=0077`; 0700/0600; 1 valid CIDR; 3 prompts on `report_path`, none on `report_markdown` | required | - |
@@ -601,12 +636,12 @@ rendered dashboard view were not observed, so E11 stays NOT_RUN.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | E1, E10, E19 | owner acceptance | @buenhyden |
+| 1 | pending | E1, E10, E19, E21 | owner acceptance | @buenhyden |
 | 2 | pending | E1 | owner acceptance | @buenhyden |
 | 3 | pending | E2 | owner acceptance | @buenhyden |
 | 4 | pending | E1, E10 | owner acceptance | @buenhyden |
 | 5 | pending | E3 | owner acceptance | @buenhyden |
-| 6 | pending | E1, E10, E19 | owner acceptance | @buenhyden |
+| 6 | pending | E1, E10, E19, E21 | owner acceptance | @buenhyden |
 | 7 | pending | E4 | owner acceptance | @buenhyden |
 | 8 | pending | E4 | owner acceptance | @buenhyden |
 | 9 | pending | E4 | owner acceptance | @buenhyden |

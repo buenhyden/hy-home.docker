@@ -887,8 +887,8 @@ def _submit(args: dict[str, Any], seen: dict[str, int] | None = None) -> dict[st
     except ValueError as error:
         return {"ok": False, "error": str(error)}
     items = payload.get("items") if isinstance(payload, dict) else None
-    receipt_ids = args.get("source_receipts", [] if items == [] else None)
-    no_items = items == [] and receipt_ids == []
+    # source_receipts never decide anything (plugin 0.4.5): pairing is by item_id.
+    no_items = items == []
     _, _, records = _modules()
     try:
         report_files = _store_report(records, run, scheduled, report_raw)
@@ -920,19 +920,10 @@ def _gateway(args, run, scheduled, report: str, report_raw: bytes) -> dict[str, 
     payload = args["payload"]
     if payload.get("schema_version") != SCHEMA_VERSION:
         return {"ok": False, "error": "invalid_schema_version"}
-    if "source_receipts" not in args:
-        return {"ok": False, "error": "source_receipts_required"}
     if set(payload) != {"schema_version", "items"}:
         return {"ok": False, "error": "invalid_submission_fields"}
-    items, receipt_ids = payload.get("items"), args.get("source_receipts")
-    if (
-        not isinstance(items, list)
-        or not 1 <= len(items) <= 100
-        or not isinstance(receipt_ids, list)
-        or len(items) != len(receipt_ids)
-    ):
-        return {"ok": False, "error": "source_receipts_required"}
-    if any(not isinstance(value, str) for value in receipt_ids):
+    items = payload.get("items")
+    if not isinstance(items, list) or not 1 <= len(items) <= 100:
         return {"ok": False, "error": "source_receipts_required"}
     # The model's kind is overwritten, never refused (a devops run sent "news").
     kind = _ITEM_KIND[_ALLOWED_JOBS[run.job_id]]
@@ -940,8 +931,6 @@ def _gateway(args, run, scheduled, report: str, report_raw: bytes) -> dict[str, 
         {**item, "kind": kind} if isinstance(item, dict) else item for item in items
     ]
     payload = {**payload, "items": items}
-    if any(re.fullmatch(r"[a-f0-9]{32}", value) is None for value in receipt_ids):
-        return {"ok": False, "error": "invalid_source_receipts"}
     preflight = {
         "schema_version": SCHEMA_VERSION,
         "producer": PRODUCER,
@@ -964,14 +953,18 @@ def _gateway(args, run, scheduled, report: str, report_raw: bytes) -> dict[str, 
         not item.get("source_url") or not item.get("source_quotes") for item in items
     ):
         return {"ok": False, "error": "source_receipts_required"}
-    try:
-        input_raw = json.dumps(
-            {"items": items, "source_receipts": receipt_ids},
+
+    def input_json(receipts):
+        return json.dumps(
+            {"items": items, "source_receipts": receipts},
             ensure_ascii=False,
             sort_keys=True,
             separators=(",", ":"),
             allow_nan=False,
         ).encode("utf-8")
+
+    try:
+        input_raw = input_json(["0" * 32] * len(items))
     except (TypeError, ValueError, UnicodeError, RecursionError):
         return {"ok": False, "error": "invalid_submission_fields"}
     if len(input_raw) > GATEWAY_MAX_REQUEST_BYTES:
@@ -979,9 +972,12 @@ def _gateway(args, run, scheduled, report: str, report_raw: bytes) -> dict[str, 
     collection, receipt_validator, records = _modules()
     try:
         rows = collection.resolve(
-            SOURCE_DIR, run.job_id, run.execution_id, scheduled, items, receipt_ids
+            SOURCE_DIR, run.job_id, run.execution_id, scheduled, items, None
         )
-        input_sha = hashlib.sha256(input_raw).hexdigest()
+        # The plugin's own receipt ids, in item order, keep a replay of the same
+        # items idempotent; the source set below stays without them.
+        receipts = [row.pop("receipt_id") for row in rows]
+        input_sha = hashlib.sha256(input_json(receipts)).hexdigest()
         # The receipt-set JSON is the audit record behind source_ref, not the report.
         source_set_raw = json.dumps(
             rows, ensure_ascii=False, sort_keys=True, separators=(",", ":")
@@ -1031,7 +1027,6 @@ def _gateway(args, run, scheduled, report: str, report_raw: bytes) -> dict[str, 
         allowed = {
             "source_receipts_required",
             "source_identity",
-            "source_missing",
             "source_mismatch",
             "source_time",
         }
@@ -1523,9 +1518,11 @@ SUBMIT_RESEARCH_REPORT_SCHEMA = {
         "The tool stores it once per run and returns "
         "report.report_path, report.email_path and report.telegram_path derived from "
         "the stored bytes; send the email and Telegram from those files only. With no "
-        "source-backed item, pass empty items and source_receipts: the report is "
+        "source-backed item, pass empty items: the report is "
         "stored and rendered and only the Gateway submission is skipped. "
-        "Submit this scheduled run's research items using one collector receipt per item. "
+        "Submit this scheduled run's research items. The tool pairs each item with "
+        "the page collect_research_source stored for its item_id, so source_receipts "
+        "may be sent as collected or omitted. "
         "The tool sets the run identity, timestamps, source, idempotency key and each "
         "item's kind from the job. "
         "One item per article: title is that article's own headline, never the report "
@@ -1610,6 +1607,6 @@ SUBMIT_RESEARCH_REPORT_SCHEMA = {
             },
             "report_path": {"type": "string", "minLength": 1, "maxLength": 4096},
         },
-        "required": ["payload", "source_receipts", "report_path"],
+        "required": ["payload", "report_path"],
     },
 }
