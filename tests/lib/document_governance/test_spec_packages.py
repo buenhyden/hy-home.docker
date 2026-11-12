@@ -4947,6 +4947,74 @@ class HistoricalSpecSnapshotReuseTests(unittest.TestCase):
                 )
 
 
+_FIXED = "None: nothing was recorded here before this Task moved to the common form."
+_LEGACY_TASK_BODY = """
+# T
+
+## Overview
+
+### Objective
+
+Do the thing.
+
+## Inputs and Authorization
+
+Spec criterion 1.
+
+## Work Log
+
+### Execution Items
+
+Item rows.
+
+### Notes
+
+Worked on it.
+
+## Evidence
+
+| Evidence | Result |
+
+## Criterion Acceptance
+
+| Criterion | accepted |
+
+## Review and Completion
+
+All done.
+
+## Related Documents
+
+- [Spec](../spec.md)
+"""
+_COMMON_TARGETS = (
+    ("Scope", ("Objective and Parent", "Inputs and Authority")),
+    ("Execution Log", ("Work Performed", "Blockers and Decisions")),
+    ("Verification Evidence", ("Results", "Resolution Links")),
+    ("Acceptance Decision", ("Criterion Decisions", "Remaining Conditions")),
+    ("Handoff", ("Promotion Receipt", "Next Owner")),
+)
+_COMMON_TASK_CONTENT = {
+    "Objective and Parent": "#### Objective\n\nDo the thing.\n\n- [Spec](../spec.md)",
+    "Inputs and Authority": "Spec criterion 1.",
+    "Work Performed": "#### Execution Items\n\nItem rows.\n\n#### Notes\n\nWorked on it.",
+    "Results": "| Evidence | Result |",
+    "Criterion Decisions": "| Criterion | accepted |",
+    "Remaining Conditions": "All done.",
+}
+
+
+def _common_task_body(changes: dict[str, str] | None = None) -> str:
+    """Build the COMMON-DOC-FORM-1 form of ``_LEGACY_TASK_BODY``."""
+    content = {**_COMMON_TASK_CONTENT, **(changes or {})}
+    lines = ["", "# T"]
+    for parent, children in _COMMON_TARGETS:
+        lines += ["", f"## {parent}"]
+        for child in children:
+            lines += ["", f"### {child}", "", content.get(child, _FIXED)]
+    return "\n".join(lines) + "\n"
+
+
 class TerminalTaskBodyTests(unittest.TestCase):
     """A terminal Task body admits no change, not even a Resolves correction."""
 
@@ -5006,6 +5074,316 @@ class TerminalTaskBodyTests(unittest.TestCase):
         self.assertFalse(
             _spec_packages_module()._terminal_task_migration_matches(before, after)
         )
+
+    FRONT = (
+        '---\ntitle: "T"\nversion: "0.2.0"\ntype: "sdlc/task"\n'
+        'status: "completed"\nupdated: "2026-10-22"\n---\n'
+    )
+
+    def _document(self, body: str, front: str | None = None):
+        return _spec_packages_module().SpecDocument(
+            self.PATH,
+            "task",
+            "SPEC-0001-TSK-0002",
+            "completed",
+            (),
+            source_text=(front or self.FRONT) + body,
+        )
+
+    def _same(self, before: str, after: str, front: str | None = None) -> bool:
+        return _spec_packages_module()._terminal_task_migration_matches(
+            self._document(before), self._document(after, front)
+        )
+
+    def test_a_legacy_task_moves_to_the_common_form(self) -> None:
+        self.assertTrue(self._same(_LEGACY_TASK_BODY, _common_task_body()))
+        spaced = re.sub(r"\n+", "\n\n\n", _common_task_body())
+        self.assertTrue(self._same(_LEGACY_TASK_BODY, spaced))
+
+    def test_anchor_headings_keep_their_slugs(self) -> None:
+        anchored = _common_task_body(
+            {
+                "Objective and Parent": "#### Overview\n\n#### Objective\n\n"
+                "Do the thing.\n\n#### Related Documents\n\n- [Spec](../spec.md)",
+                "Inputs and Authority": "#### Inputs and Authorization\n\n"
+                "Spec criterion 1.",
+                "Work Performed": "#### Work Log\n\n##### Execution Items\n\n"
+                "Item rows.\n\n##### Notes\n\nWorked on it.",
+                "Results": "#### Evidence\n\n##### Rows\n\n| Evidence | Result |",
+                "Criterion Decisions": "#### Criterion Acceptance\n\n"
+                "| Criterion | accepted |",
+                "Remaining Conditions": "#### Review and Completion\n\nAll done.",
+            }
+        )
+        legacy = _LEGACY_TASK_BODY.replace(
+            "## Evidence\n\n", "## Evidence\n\n### Rows\n\n"
+        )
+        self.assertTrue(self._same(legacy, anchored))
+        misplaced = anchored.replace(
+            "#### Evidence\n", "#### Review and Completion\n", 1
+        )
+        self.assertFalse(self._same(legacy, misplaced))
+
+    def test_repeated_legacy_sections_join_in_order(self) -> None:
+        legacy = _LEGACY_TASK_BODY.replace(
+            "## Criterion Acceptance",
+            "## Review Evidence\n\n| Review | PASS |\n\n## Criterion Acceptance",
+        )
+        joined = {"Results": "| Evidence | Result |\n\n| Review | PASS |"}
+        swapped = {"Results": "| Review | PASS |\n\n| Evidence | Result |"}
+        self.assertTrue(self._same(legacy, _common_task_body(joined)))
+        self.assertFalse(self._same(legacy, _common_task_body(swapped)))
+
+    def test_a_moved_body_admits_no_other_change(self) -> None:
+        common = _common_task_body()
+        for label, after in {
+            "edited": common.replace("Do the thing.", "Do a thing."),
+            "dropped": common.replace("Worked on it.", ""),
+            "moved": _common_task_body(
+                {
+                    "Remaining Conditions": _FIXED,
+                    "Blockers and Decisions": "All done.",
+                }
+            ),
+            "reordered": _common_task_body(
+                {
+                    "Objective and Parent": "#### Objective\n\n"
+                    "- [Spec](../spec.md)\n\nDo the thing.",
+                }
+            ),
+            "sentence beside content": _common_task_body(
+                {"Remaining Conditions": f"All done.\n\n{_FIXED}"}
+            ),
+            "sentence twice": _common_task_body(
+                {"Resolution Links": f"{_FIXED}\n\n{_FIXED}"}
+            ),
+            "added text": common.replace(
+                "Spec criterion 1.", "Spec criterion 1.\n\nMore."
+            ),
+            "added to an empty target": _common_task_body(
+                {"Resolution Links": "A link."}
+            ),
+            "added heading": common.replace("Item rows.", "Item rows.\n\n#### Extra"),
+            "heading as text": common.replace("#### Notes", "Notes"),
+        }.items():
+            with self.subTest(label=label):
+                self.assertFalse(self._same(_LEGACY_TASK_BODY, after))
+
+    def test_fenced_and_commented_lines_are_content(self) -> None:
+        block = "```text\n## Fake\nWorked on it.\n```\n<!-- note -->"
+        legacy = _LEGACY_TASK_BODY.replace("Worked on it.", block)
+        moved = _common_task_body(
+            {
+                "Work Performed": "#### Execution Items\n\nItem rows.\n\n"
+                f"#### Notes\n\n{block}"
+            }
+        )
+        self.assertTrue(self._same(legacy, moved))
+        for old, new in (("## Fake", "## Fakes"), ("<!-- note -->", "<!-- x -->")):
+            with self.subTest(old=old):
+                self.assertFalse(self._same(legacy, moved.replace(old, new)))
+
+    def test_only_a_legacy_to_common_move_is_relaxed(self) -> None:
+        common = _common_task_body()
+        self.assertTrue(self._same(common, common))
+        edited = common.replace("Do the thing.", "Do a thing.")
+        shifted = common.replace("#### Notes", "##### Notes")
+        for label, before, after in (
+            ("common to common edit", common, edited),
+            ("common to common heading move", common, shifted),
+            ("common to legacy", common, _LEGACY_TASK_BODY),
+            (
+                "legacy to legacy edit",
+                _LEGACY_TASK_BODY,
+                _LEGACY_TASK_BODY.replace("Do the thing.", "Do a thing."),
+            ),
+        ):
+            with self.subTest(label=label):
+                self.assertFalse(self._same(before, after))
+        for label, front in (
+            ("version", self.FRONT.replace('"0.2.0"', '"0.2.1"')),
+            ("title", self.FRONT.replace('"T"', '"U"')),
+        ):
+            with self.subTest(label=label):
+                self.assertFalse(self._same(_LEGACY_TASK_BODY, common, front))
+        self.assertTrue(
+            self._same(
+                _LEGACY_TASK_BODY,
+                common,
+                self.FRONT.replace("2026-10-22", "2026-11-13"),
+            )
+        )
+
+    def test_unmappable_legacy_bodies_stay_byte_strict(self) -> None:
+        unknown = _LEGACY_TASK_BODY + "\n## Mystery\n\nKept.\n"
+        moved = _common_task_body({"Remaining Conditions": "All done.\n\nKept."})
+        self.assertFalse(self._same(unknown, moved))
+        crlf = _LEGACY_TASK_BODY.replace("\n", "\r\n")
+        self.assertFalse(self._same(crlf, _common_task_body().replace("\n", "\r\n")))
+
+    def _package(self, *tasks):
+        module = _spec_packages_module()
+        return module.SpecPackage(
+            pathlib.Path("docs/03.specs/0001-example"),
+            "0001",
+            "example",
+            module.SpecDocument(
+                pathlib.PurePosixPath("docs/03.specs/0001-example/spec.md"),
+                "spec",
+                "SPEC-0001",
+                "in-progress",
+                ("REQ-0001",),
+                body="## Acceptance Criteria\n1. First.\n",
+            ),
+            None,
+            tuple(tasks),
+            (),
+        )
+
+    def _twins(self):
+        legacy = self._document(_LEGACY_TASK_BODY)
+        moved = self._document(_common_task_body())
+        edited = self._document(
+            _common_task_body().replace("Do the thing.", "Do a thing.")
+        )
+        return legacy, ((moved, True), (edited, False))
+
+    def test_mainline_admission_keeps_a_heading_moved_task(self) -> None:
+        module = _spec_packages_module()
+        legacy, twins = self._twins()
+        for current, admitted in twins:
+            with self.subTest(admitted=admitted):
+                self.assertEqual(
+                    frozenset({self.PATH}) if admitted else frozenset(),
+                    module._mainline_historical_terminal_tasks(
+                        (),
+                        (self._package(legacy),),
+                        (self._package(legacy),),
+                        (self._package(current),),
+                    ),
+                )
+
+    def test_v6_admission_keeps_a_heading_moved_task_and_reads_its_source(
+        self,
+    ) -> None:
+        module = _spec_packages_module()
+        legacy, twins = self._twins()
+        rows = (("E1", "1", "W1", "check", "input", "PASS", "here", "accepted"),)
+        proof = module._MigrationProof("a" * 40, self.PATH)
+        for current, admitted in twins:
+            with (
+                self.subTest(admitted=admitted),
+                mock.patch.object(module, "_migration_proof", return_value=proof),
+                mock.patch.object(
+                    module,
+                    "_load_base_spec_packages",
+                    return_value=(self._package(legacy),),
+                ),
+                mock.patch.object(module, "load_registry_at_revision"),
+                mock.patch.object(
+                    module, "_v5_evidence_rows", return_value=rows
+                ) as read,
+            ):
+                historical, pairs = module._v6_historical_admission(
+                    pathlib.Path("/repo/docs/03.specs"),
+                    (self._package(current),),
+                    mock.sentinel.registry,
+                    None,
+                    frozenset(),
+                    {},
+                )
+                self.assertEqual(
+                    frozenset({self.PATH}) if admitted else frozenset(), historical
+                )
+                if admitted:
+                    self.assertEqual({self.PATH: frozenset({("1", "W1")})}, pairs)
+                    self.assertIs(legacy, read.call_args.args[0])
+                else:
+                    read.assert_not_called()
+
+    def test_v7_admission_keeps_a_heading_moved_task(self) -> None:
+        module = _spec_packages_module()
+        legacy, twins = self._twins()
+        source = self._package(legacy)
+        for current, admitted in twins:
+            with (
+                self.subTest(admitted=admitted),
+                mock.patch.object(
+                    module, "previous_generation_revision", return_value="b" * 40
+                ),
+                mock.patch.object(module, "load_registry_at_revision"),
+                mock.patch.object(
+                    module, "_v6_historical_admission", return_value=(frozenset(), {})
+                ),
+                mock.patch.object(
+                    module,
+                    "_v6_evidence_contract",
+                    return_value=mock.Mock(acceptance={}),
+                ),
+                mock.patch.object(module, "_v6_evidence_rows", return_value=()),
+            ):
+                historical, _ = module._v7_historical_admission(
+                    pathlib.Path("/repo/docs/03.specs"),
+                    (self._package(current),),
+                    mock.sentinel.registry,
+                    None,
+                    frozenset(),
+                    {},
+                    (source,),
+                )
+                self.assertEqual(
+                    frozenset({self.PATH}) if admitted else frozenset(), historical
+                )
+
+    def test_v5_admission_keeps_a_heading_moved_task(self) -> None:
+        module = _spec_packages_module()
+        legacy, twins = self._twins()
+        registry = mock.Mock(
+            common={
+                "spec_completion_evidence": {
+                    "spec_section": "Acceptance Criteria",
+                    "plan_section": "Work Breakdown",
+                }
+            }
+        )
+        integration = mock.Mock(revision="c" * 40, main_revision="d" * 40)
+        proof = module._MigrationProof("a" * 40, self.PATH)
+
+        def base(root, *, base_ref, context):
+            return (self._package(legacy),) if base_ref == "a" * 40 else ()
+
+        for current, admitted in twins:
+            with (
+                self.subTest(admitted=admitted),
+                mock.patch.object(module, "_migration_proof", return_value=proof),
+                mock.patch.object(
+                    module,
+                    "load_registry_document_at_revision",
+                    return_value={"common": {"lifecycle_generation": 4}},
+                ),
+                mock.patch.object(
+                    module, "validate_registry_at_revision", return_value=[]
+                ),
+                mock.patch.object(
+                    module, "load_registry_at_revision", return_value=registry
+                ),
+                mock.patch.object(module, "_load_base_spec_packages", side_effect=base),
+                mock.patch.object(
+                    module, "_generation_integration", return_value=integration
+                ),
+                mock.patch.object(
+                    module, "_legacy_completed_task_pairs", return_value={}
+                ),
+            ):
+                historical, _, _ = module._v5_historical_admission(
+                    pathlib.Path("/repo/docs/03.specs"),
+                    (self._package(current),),
+                    mock.sentinel.registry,
+                    None,
+                )
+                self.assertEqual(
+                    frozenset({self.PATH}) if admitted else frozenset(), historical
+                )
 
 
 if __name__ == "__main__":

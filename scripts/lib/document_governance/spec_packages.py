@@ -755,21 +755,25 @@ def _validate_execution_states(
         )
 
 
-def _completion_visible_lines(body: str) -> list[str]:
-    """Exclude fenced examples and HTML comments without mixing their states."""
-    visible: list[str] = []
+def _completion_line_states(
+    lines: Sequence[str],
+) -> list[tuple[str, str | None]]:
+    """Pair each line with its visible text; a fenced line has none."""
+    states: list[tuple[str, str | None]] = []
     fence: str | None = None
     comment = False
-    for line in body.splitlines():
+    for line in lines:
         if fence is not None:
             if re.fullmatch(
                 rf" {{0,3}}{re.escape(fence[0])}{{{len(fence)},}}[ \t]*", line
             ):
                 fence = None
+            states.append((line, None))
             continue
         opening = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
         if not comment and opening and not (opening[1][0] == "`" and "`" in opening[2]):
             fence = opening[1]
+            states.append((line, None))
             continue
         parts: list[str] = []
         for token in re.split(r"(<!--|--!?>)", line):
@@ -781,8 +785,17 @@ def _completion_visible_lines(body: str) -> list[str]:
                 parts.append(" ")
             else:
                 parts.append(token)
-        visible.append("".join(parts))
-    return visible
+        states.append((line, "".join(parts)))
+    return states
+
+
+def _completion_visible_lines(body: str) -> list[str]:
+    """Exclude fenced examples and HTML comments without mixing their states."""
+    return [
+        visible
+        for _, visible in _completion_line_states(body.splitlines())
+        if visible is not None
+    ]
 
 
 # A Registry ``common`` heading value names its legacy H2. A document in the
@@ -2663,7 +2676,7 @@ def _v5_historical_admission(
             if task.status in {"completed", "cancelled"}
             and task.path in source_tasks
             and source_tasks[task.path].status in {"completed", "cancelled"}
-            and task.source_text == source_tasks[task.path].source_text
+            and _same_task_source(source_tasks[task.path], task)
         }
         | set(mainline_historical_tasks)
     )
@@ -2796,7 +2809,7 @@ def _v6_historical_admission(
                 task.status not in terminal
                 or source is None
                 or source.status not in terminal
-                or task.source_text != source.source_text
+                or not _same_task_source(source, task)
             ):
                 continue
             historical.add(task.path)
@@ -2804,7 +2817,7 @@ def _v6_historical_admission(
                 pairs[task.path] = v5_pairs.get(task.path, frozenset())
                 continue
             admitted: set[tuple[str, str]] = set()
-            for row in _v5_evidence_rows(task, source_registry):
+            for row in _v5_evidence_rows(source, source_registry):
                 if row[5] == "PASS" and row[7] == "accepted":
                     admitted.update(
                         (criterion, row[2])
@@ -2943,7 +2956,7 @@ def _v7_historical_admission(
             if (
                 current is None
                 or task.status not in {"completed", "cancelled"}
-                or current.source_text != task.source_text
+                or not _same_task_source(task, current)
             ):
                 continue
             admitted.add(task.path)
@@ -4088,6 +4101,131 @@ def _validate_terminal_task_migration(
             raise SpecPackageError(f"terminal Task body or identity changed: {path}")
 
 
+_TASK_FIXED = (
+    "None: nothing was recorded here before this Task moved to the common form."
+)
+# COMMON-DOC-FORM-1 for a Task: each H2 and its H3 subsections, in order.
+_TASK_COMMON_FORM = {
+    "Scope": ("Objective and Parent", "Inputs and Authority"),
+    "Execution Log": ("Work Performed", "Blockers and Decisions"),
+    "Verification Evidence": ("Results", "Resolution Links"),
+    "Acceptance Decision": ("Criterion Decisions", "Remaining Conditions"),
+    "Handoff": ("Promotion Receipt", "Next Owner"),
+}
+# The common-form H3 that carries each legacy H2. A legacy H2 outside this
+# table cannot be placed, so its Task stays byte-strict.
+_TASK_LEGACY_TARGETS = {
+    "Overview": "Objective and Parent",
+    "Objective": "Objective and Parent",
+    "Related Documents": "Objective and Parent",
+    "Inputs and Authorization": "Inputs and Authority",
+    "Inputs": "Inputs and Authority",
+    "Work Log": "Work Performed",
+    "Commit Ledger": "Work Performed",
+    "Blocked and Deferred": "Blockers and Decisions",
+    "Rulings": "Blockers and Decisions",
+    "Evidence": "Results",
+    "Verification Evidence": "Results",
+    "Review Evidence": "Results",
+    "Criterion Acceptance": "Criterion Decisions",
+    "Review and Completion": "Remaining Conditions",
+    "Deferred Items": "Remaining Conditions",
+    "Handoff": "Next Owner",
+}
+
+
+def _task_items(body: str, legacy: bool) -> dict[str, list[tuple[str, str]]] | None:
+    """Read a Task body as its ordered content per common-form H3 target.
+
+    Legacy: every H2 names a target through ``_TASK_LEGACY_TARGETS`` and a
+    repeated target joins in document order. Common: only the exact registered
+    H2 and H3 headings count. A deeper heading is its text alone, so a move may
+    change its level, and one named for a legacy H2 that maps to the same
+    target is an anchor keeper and is dropped. Every other non-blank line,
+    including fenced and commented text, is content verbatim. A target holding
+    only the fixed sentence is empty. None means the body cannot be read, so
+    the caller falls back to byte equality.
+    """
+    if re.search(r"[\r\x0b\x0c\x1c-\x1e\x85\u2028\u2029]", body):
+        return None
+    children = {
+        child: parent for parent, group in _TASK_COMMON_FORM.items() for child in group
+    }
+    items: dict[str, list[tuple[str, str]]] = {"": []}
+    current: str | None = ""
+    parent: str | None = None
+    seen_section = False
+    for raw, visible in _completion_line_states(body.splitlines()):
+        heading = None if visible is None else re.fullmatch(r"(#{1,6}) (.*)", visible)
+        if heading is not None and visible != raw:
+            return None
+        if heading is None or (not seen_section and len(heading[1]) != 2):
+            if raw.strip():
+                if current is None:
+                    return None
+                items[current].append(("line", raw))
+            continue
+        level, text = len(heading[1]), heading[2]
+        if level == 1:
+            return None
+        if level == 2:
+            seen_section = True
+            if legacy:
+                current = _TASK_LEGACY_TARGETS.get(text)
+                if current is None:
+                    return None
+                items.setdefault(current, [])
+            elif text in _TASK_COMMON_FORM:
+                parent, current = text, None
+            else:
+                return None
+        elif level == 3 and not legacy:
+            if children.get(text) != parent:
+                return None
+            current = text
+            items.setdefault(current, [])
+        elif current is None:
+            return None
+        elif _TASK_LEGACY_TARGETS.get(text) != current:
+            items[current].append(("heading", text))
+    return {
+        key: lines
+        for key, lines in items.items()
+        if lines and lines != [("line", _TASK_FIXED)]
+    }
+
+
+def _same_task_body(before: str, after: str) -> bool:
+    """Match a terminal Task body, relaxing only a legacy to common-form move."""
+    if before == after:
+        return True
+    moved = _task_items(before, True)
+    return moved is not None and moved == _task_items(after, False)
+
+
+def _same_task_source(before: SpecDocument, after: SpecDocument) -> bool:
+    """Match a terminal Task file: the same frontmatter text and Task body."""
+    if before.source_text == after.source_text:
+        return True
+    try:
+        records = tuple(
+            frontmatter_record_from_text(
+                pathlib.Path(document.path.as_posix()), document.source_text
+            )
+            for document in (before, after)
+        )
+    except FrontmatterError:
+        return False
+    first, second = records
+    return (
+        first.frontmatter_present
+        and second.frontmatter_present
+        and before.source_text[: len(before.source_text) - len(first.body)]
+        == after.source_text[: len(after.source_text) - len(second.body)]
+        and _same_task_body(first.body, second.body)
+    )
+
+
 def _terminal_task_migration_matches(before: SpecDocument, task: SpecDocument) -> bool:
     """Match a terminal Task while allowing only the approved envelope move."""
 
@@ -4121,9 +4259,8 @@ def _terminal_task_migration_matches(before: SpecDocument, task: SpecDocument) -
         for key, value in current_record.metadata.items()
         if key not in {"parent_ids", "updated"}
     }
-    return (
-        before_metadata == current_metadata
-        and current_record.body == before_record.body
+    return before_metadata == current_metadata and _same_task_body(
+        before_record.body, current_record.body
     )
 
 
@@ -4164,7 +4301,7 @@ def _mainline_historical_terminal_tasks(
             or merged.artifact_id != task.artifact_id
             or merged.status != task.status
             or not merged.source_text
-            or merged.source_text != task.source_text
+            or not _same_task_source(merged, task)
         ):
             continue
         admitted.add(path)
