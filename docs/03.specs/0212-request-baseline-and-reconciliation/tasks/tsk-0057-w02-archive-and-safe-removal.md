@@ -234,7 +234,7 @@ repository, so ARC-09's Vault clause is N/A here.
 | Registry retention and archive vocabulary (prompt section 3 item 1) | GAP, handed off | `archive_source_prefixes` is inert. The archive frontmatter fields (`archived_from`, `archived_at`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `archive_authorizations`) remain in the Registry, the frontmatter schema and `metadata/profile.py`, although Stage 98 holds no bodies. `archive_retention.disposition_entry_statuses` stays in use: `lifecycle/occupancy.py`, `spec_packages.py` and `registry.py` read it. W03 assesses each field's consumers (H-W02-2) |
 | W02-A, R147-08, WP-20 | PARTIAL | SPEC-0267 is removed after promotion, approval and a recovery dry-run (SPEC-0267 removal). The post-merge byte comparison is pending |
 | W02-B, WP-19 | KEEP | The manual precondition 5 record and `archive_readiness_findings` stay separate. The latter is an on-read library function, reached only by `test_generation6.py`, with no CLI or gate. The user's Git-only goal and tool archive defaults are separate decisions: the protocol's Document Retention and Retirement summarizes and deletes, keeps version history as the record and leaves Stage 98 without bodies |
-| OPEN-ARCHIVE | No conflict | The SPEC-0267 block is a safety condition (Q-04), not a question. No retention exception or authority conflict remains open |
+| OPEN-ARCHIVE | No conflict | SPEC-0267 was held under Q-04 until its promotion passed, then removed in `06bf2e201`. No retention exception or authority conflict remains open |
 
 The SPEC-0248, 0249, 0250 and 0260 Tasks are merged and each has four
 criteria pending owner acceptance. They are not reimplemented. Their packages
@@ -290,9 +290,16 @@ only inbound link) and adds 267 to the Spec `reserved_history`. Gates at that
 commit: metadata selected 52 with 0 violations, link alignment 0 failures,
 corpus lifecycle occupancy 0, operations catalog PASS.
 
-Precondition 5 record: each removed body is last carried unchanged by `main`
-`4cd25b95b`; the last commit that changed them is `8330534e3`, reachable from
-`main`. No body is uncommitted, reflog-only, branch-only or shallow-missing,
+Criterion state at `4cd25b95b`, the last commit that carried the bodies:
+
+| Package | Task status | Criteria | Acceptance |
+| --- | --- | --- | --- |
+| SPEC-0267 | completed | 1 to 7 | All accepted by the owner on 2026-11-08; E11 stays NOT_RUN by the owner's decision to accept a dry-run rollback rehearsal |
+
+Precondition 5 record: `main` `4cd25b95b` carries each removed body unchanged
+at `docs/03.specs/0267-secondary-listener-hardening/spec.md`, `plan.md` and
+`tasks/tsk-0001-secondary-listener-hardening.md`. The last commit that changed
+them is `8330534e3`, reachable from `main`. No body is uncommitted, reflog-only, branch-only or shallow-missing,
 and no hold is recorded. After merge, this Task restores the three bodies from
 `4cd25b95b` and compares their bytes.
 
@@ -339,6 +346,7 @@ Both are recorded for the owner.
 | W02 v14.7 review | 110 | W115 | independent-review | Commits `3c8b5932b` and `357590856` | FAIL | code-reviewer CHANGES_REQUIRED: `.gitmodules` claim, narrow H-W02-1, KEEPs without consumer evidence, no check rows, Registry archive vocabulary without a verdict, and seven minor items; fixed in this revision | required | - |
 | W02 SPEC-0267 promotion final | 110 | W115 | promotion-check | SPEC-0267 against its owners at `8659f05a6` | PASS | rules-engineer READY: B1 to B3 and both recommended items fixed; no further listener in FR-0004's kinds | required | W02 SPEC-0267 promotion check, W02 SPEC-0267 promotion re-check |
 | W02 SPEC-0267 removal | 110 | W115 | package-retirement | Commit `06bf2e201` | PASS | Package deleted, index row removed, 267 reserved; metadata 0, links 0, occupancy 0, operations catalog PASS; post-merge byte comparison pending | required | - |
+| W02 consumer tests | 110 | W115 | consumer-unittest | `tests.validation.lifecycle.test_occupancy`, `tests.lib.document_governance.test_spec_packages` and `test_operations_catalog`, plus corpus lifecycle, in a worktree pinned at `8659f05a6` | PASS | 236 tests OK in 1038 s; occupancy 0 violations | required | - |
 
 ## Criterion Acceptance
 
