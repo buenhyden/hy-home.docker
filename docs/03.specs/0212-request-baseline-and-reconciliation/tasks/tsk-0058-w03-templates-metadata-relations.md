@@ -1,6 +1,6 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.5.1"
+version: "0.5.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -266,6 +266,34 @@ Branch `docs/w03-adr-common-form`, on top of the Spec branch.
 - `docs/02.architecture/AGENTS.md` 0.3.1 and the decisions README 1.7.4 point
   the replacement summary to Traceability `Supersession`.
 
+#### Plan role 2026-11-13
+
+Branch `docs/w03-plan-common-form`, on top of the ADR branch.
+
+- Registry `plan`: H2 Overview, Dependencies, Implementation Strategy,
+  Verification Plan, Risks, Promotion Map with their required H3s. The old
+  `Scope`, `Work Breakdown`, `Risks and Recovery` and `Related Documents` H2s
+  are rejected.
+- H-07 design: the Registry `common` heading values, the schema constants
+  and `lifecycle_generation` 7 stay. Historical Registries are validated by
+  the same pin code, so changing the values would invalidate every older
+  generation 7 Registry. `spec_packages.py` instead maps each legacy H2 to its
+  common-form path (`Work Breakdown` to `Implementation Strategy` / `Work
+  Breakdown`) and accepts exactly one of the two; the Stage 99 README 2.5.2
+  says so.
+- The 22 Plans are moved by three `doc-writer` agents. Each `Work Breakdown`
+  subsection was compared mechanically with its old H2: same lines, with
+  inner headings one level deeper. New text is limited to Assumptions,
+  Prerequisites, Dependency Order, Stage Placement, Escalation, Durable
+  Meaning and Owner and Receipt, taken from each package. One agent dropped
+  the closing frontmatter line of the SPEC-0204 Plan; the controller restored
+  it.
+- Review answers: Escalation no longer credits a Spec with a stop rule it
+  lacks (it quotes the Spec's own stop sentence or cites the folder guide);
+  SPEC-0244 no longer calls an ambiguous provider view a stop condition;
+  rollback sentences name what they restore; Task links moved from
+  Prerequisites to Owner and Receipt; SPEC-0263 links its reservations Task.
+
 Held for an owner decision, not changed here, because each would change
 what a requirement says:
 
@@ -304,6 +332,11 @@ what a requirement says:
 | W03 v14.7 ADR review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `36e0dcf4f` | PASS | PASS: all nine fixes present, H2/H3 form intact, no text lost against the old diff | required | W03 v14.7 ADR review |
 | W03 v14.7 ADR GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `36e0dcf4f` | PASS | Ran 781 tests, OK, including the ADR old-form and template-outline tests | required | W03 v14.7 ADR form RED |
 | W03 v14.7 ADR checks | 111 | W116 | metadata-links-governance | The tree committed as `36e0dcf4f`, checked before the commit | PASS | metadata check-changed selected 32 violations 0; links alignment PASS, 905 documents; corpus lifecycle and occupancy 0; staged pre-commit PASS | required | - |
+| W03 v14.7 Plan form RED | 111 | W116 | red-green-proof | The resolver test and the Plan old-form and template-outline tests against the Plan code and `plan` profile at `009ced2c7` | FAIL | The resolver test errored (no `_contract_span`); six heading tests failed: the old Plan H2s and `Risks and Rollback` H3 were accepted and the template outline differed | required | - |
+| W03 v14.7 Plan review | 111 | W116 | independent-review | Fresh-context code-reviewer of the uncommitted Plan move | FAIL | CHANGES_REQUIRED: Escalation credited Specs with stop rules they lack, SPEC-0244 called an ambiguous view a stop condition, two rollback sentences lost their referent; seven minor | required | - |
+| W03 v14.7 Plan review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `3ec0b008f` | PASS | PASS: all fixes hold, quoted Spec sentences match; two minor quote and link gaps answered in `7eb600321` | required | W03 v14.7 Plan review |
+| W03 v14.7 Plan GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `7eb600321` | PASS | Ran 782 tests, OK, including the resolver, Plan old-form and template-outline tests | required | W03 v14.7 Plan form RED |
+| W03 v14.7 Plan checks | 111 | W116 | metadata-links-governance | The 22 Plans before the `3ec0b008f` commit and after the review answers | PASS | Every `Work Breakdown` equals its old H2 with inner headings one level deeper (22 of 22); metadata check-changed selected 22 violations 0; links alignment PASS; corpus lifecycle and occupancy 0 | required | - |
 
 ## Criterion Acceptance
 
