@@ -1,10 +1,10 @@
 ---
 title: "W02 Archive and Safe Removal Task"
-version: "0.8.0"
+version: "0.9.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-12"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0057"
 parent_ids:
@@ -187,6 +187,24 @@ restored from it into a new scratch folder outside the repository, and each
 restored file hashes to its `e4fd7f5f3` blob. None of the paths exists on
 `main`. Retirement precondition 5 is met for the four packages.
 
+### Removal record correction 2026-11-12
+
+The v14.7 W00 intake in [TSK-0059](tsk-0059-w00-v14-7-intake.md) reviewed the
+PR 955 diff. The [SDLC](../../../../.agents/governance/sdlc.md#sequence) rule
+that the deleting Task records each package's criterion state was not met
+above. The state at `e4fd7f5f3`, the last commit that carried each body:
+
+| Package | Task status | Criteria | Acceptance |
+| --- | --- | --- | --- |
+| SPEC-0226 | completed | 1 to 6 | All accepted; 1 and 3 by owner decisions of 2026-10-29 and 2026-10-30, the rest by Generation 5 row acceptance |
+| SPEC-0266 | completed | 1 to 6 | All accepted by the owner on 2026-11-07 |
+| SPEC-0268 | completed | 1 to 6 | All accepted by the owner on 2026-11-08 |
+| SPEC-0269 | completed | 1 to 6 | All accepted by the owner on 2026-11-08 |
+
+Two corrections to the Batch removal record: the SPEC-0269 lineage line lives
+in AD-0026, not AD-0007, whose PR 955 change was only its version and date.
+Package removal is done; the closing text below no longer waits for it.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -203,6 +221,7 @@ restored file hashes to its `e4fd7f5f3` blob. None of the paths exists on
 | W02 runner pin checks | 110 | W115 | workflow-contract | Commit `7a109158f` | PASS | GitHub workflow contract PASS (workflows 5, jobs 7); test_github_workflow_contract 48 OK | required | - |
 | W02 remote candidate on 24.04 | 110 | W115 | remote-candidate-quality | PR 955 run 43049853619 at `fe54ee0f9` on `ubuntu-24.04` | FAIL | Same apt step failed: `azure.archive.ubuntu.com` unresolvable; public DNS SERVFAIL confirmed; pin reverted in `a3b289c5d` | required | - |
 | W02 remote candidate after message fix | 110 | W115 | remote-candidate-quality | PR 955 run 43056362855 at `6980e3bdd` | FAIL | Commit range passed; Playwright apt install failed on the mirror DNS outage | required | - |
+| W02 remote candidate final | 110 | W115 | remote-candidate-quality | PR 955 head `28b4be123`, hosted run 43060150134 | PASS | `candidate-quality` SUCCESS on the merged head; read from the PR check rollup on 2026-11-12, job log not re-read | required | W02 remote candidate, W02 remote candidate on 24.04, W02 remote candidate after message fix |
 | W02 adapter without apt | 110 | W115 | red-green-proof | Commit `0c0168bdb` | PASS | Adapter test failed with the old vector, then test_ci_gate_adapters OK; ruff clean | required | - |
 
 ## Criterion Acceptance
@@ -213,8 +232,10 @@ restored file hashes to its `e4fd7f5f3` blob. None of the paths exists on
 
 ## Review and Completion
 
-In progress. The assessment, the dry-run and the reproduced-gap changes are
-recorded; package removal waits for the owner's batch approval.
+In progress. The assessment, the dry-run, the reproduced-gap changes and the
+removal of 0226, 0266, 0268 and 0269 are recorded, with their criterion state
+and post-merge recovery. 0267 stays held until its accepted risks reach their
+policy owners. Criterion 110 waits for the owner.
 
 ## Related Documents
 
