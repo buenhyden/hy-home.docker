@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.9.0"
+version: "1.10.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-12"
 ---
 
 # Agent Quality and Security Standards
@@ -96,7 +96,10 @@ main-push security remains a post-merge observation.
 - Optimize QA in this order: remove duplicate leaves; separate document
   content checks from validator regression tests; share parsing and Git reads
   within one run; select by change impact; reuse only a provably equivalent
-  narrow result. Compare a reproducible measure before and after (run time,
+  narrow result. A result is equivalent only when its inputs (revision or
+  index tree), tool and configuration versions, environment, trust boundary,
+  guarantee and consumer all match; a difference in any one makes it a new
+  observation. Compare a reproducible measure before and after (run time,
   wait, installs, call count, CPU, or cost); never call a change faster
   without a number, and do not start with a large global cache or a new gate.
 - A non-functional requirement names one ISO/IEC 25010 quality
@@ -246,6 +249,13 @@ main-push security remains a post-merge observation.
 | Release preparation PR | Same candidate owner selects changelog/release checks | Main-targeted CHANGELOG and reviewed source |
 | Approved release dispatch | Sole main-only SemVer producer | Exact commit, create-only tag, complete draft assets, publication receipt |
 | Future deployment | Server lint/format evidence for exact promoted inputs, then deployment-specific checks | Distinct deployment authority/result; no deployment workflow currently |
+
+A Git event (commit, push, pull request or merge, each before, during or
+after), the SDLC stage and the document stage are separate axes; a check
+names the event and revision it binds to. A check that runs after its event,
+such as the main-push observation, observes and reports. It never blocked that
+event and is never described as having blocked it. No merge queue is
+configured; a `merge_group` trigger is added only together with one.
 
 The machine workflow contract owns exact job identities, DAG and path-to-root
 selection. Ordinary documents retain profile, parent and lifecycle/content
