@@ -111,7 +111,7 @@ Out of scope:
 
 ### Failure and Edge Cases
 
-**Observable failures and stop boundaries.**
+Item 6 of the normal behavior also defines the stop and escalation path.
 
 An unavailable effective-state view, an absent event receipt, a rejected
 automatic diagnostic, or an unsupported menu action is not a reason to try an
@@ -147,7 +147,7 @@ separately scoped authorization.
 
 - Each criterion is evidenced by rows in TSK-0001 under `tasks/`, recording the sanitized, value-free observation, the command category, the result and the stopping condition.
 - A criterion whose state is unavailable, unverified or unknown stays pending; no state-changing or unbounded fallback counts as evidence.
-- The frontmatter owner (`@buenhyden`) judges each criterion, together with the independent privacy/security review named in criterion 6.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table, together with the independent privacy/security review named in criterion 6.
 
 ## References
 
@@ -156,10 +156,9 @@ separately scoped authorization.
 - [REQ-0024](../../01.requirements/0024-agent-governance-standardization.md)
 - [AD-0027](../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)
 - [ADR-0049](../../02.architecture/decisions/0049-shared-agent-memory-store.md)
-- SPEC-0236
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-native-memory-controlled-verification.md)
 
 ### Historical and Navigation
 
-No historical or navigation link applies; every link above is current authority or evidence.
+- SPEC-0236 is a retired Spec package; it is non-authoritative history and not current authority.

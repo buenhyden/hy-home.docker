@@ -88,28 +88,6 @@ failures without relabeling them. SPEC-0221 already owns the request
 precedence policy, hooks and validator. Change an enforcer with its regression
 only when a current conflict is found; otherwise record NO_CHANGE.
 
-**Interfaces and Data.**
-
-- Input: reviewed current declarations, official release/security references,
-  named service consumers, approved project metadata and secret **reference
-  names**, and a Task-specific execution target.
-- Output: matched source declarations, restricted integration metadata,
-  contract fixtures, updated Korean READMEs and Stage 05 guide/policy/runbook
-  owners, and Task evidence. Values of secrets and raw operational data are
-  never outputs.
-- P09 preparation input/output: a future Project-Template-derived repository
-  may later supply app Compose, business API/UI, migrations, collectors,
-  workflow definitions, fixtures and E2E. P09 now produces only preparation
-  contracts, synthetic fixtures and acceptance criteria. It creates no app,
-  runtime resource, credential, workspace or blog-data write. Infra retains
-  approved-engine, ingress/identity, telemetry and backup interface ownership;
-  a manifest records planned scopes and owners but cannot provision or deploy.
-  TSK-0008 records received schema, fixture and synthetic-helper source
-  evidence separately from the coordinator-owned registration and final
-  delivery gates. Replacement frozen source QA passed 35 tests with 99-percent
-  coverage after Qdrant role-order parity correction; latest-head CI, review
-  and delivery remain pending gates. It changes no operational resource.
-
 **Open Questions.**
 
 A real external project must identify its project ID, endpoint topology,
@@ -348,9 +326,33 @@ record of two Export 1.0 ACKs; SPEC-0212-TSK-0050 owns the current local
 source/isolated Export 2.0 contract and leaves a new Windows ACK as a separate
 required lane.
 
+**Interfaces and Data.**
+
+- Input: reviewed current declarations, official release/security references,
+  named service consumers, approved project metadata and secret **reference
+  names**, and a Task-specific execution target.
+- Output: matched source declarations, restricted integration metadata,
+  contract fixtures, updated Korean READMEs and Stage 05 guide/policy/runbook
+  owners, and Task evidence. Values of secrets and raw operational data are
+  never outputs.
+- P09 preparation input/output: a future Project-Template-derived repository
+  may later supply app Compose, business API/UI, migrations, collectors,
+  workflow definitions, fixtures and E2E. P09 now produces only preparation
+  contracts, synthetic fixtures and acceptance criteria. It creates no app,
+  runtime resource, credential, workspace or blog-data write. Infra retains
+  approved-engine, ingress/identity, telemetry and backup interface ownership;
+  a manifest records planned scopes and owners but cannot provision or deploy.
+  TSK-0008 records received schema, fixture and synthetic-helper source
+  evidence separately from the coordinator-owned registration and final
+  delivery gates. Replacement frozen source QA passed 35 tests with 99-percent
+  coverage after Qdrant role-order parity correction; latest-head CI, review
+  and delivery remain pending gates. It changes no operational resource.
+
 ### Failure and Edge Cases
 
-**Observable failures and stop boundaries.**
+**Failure Modes and Guardrails.**
+
+The Hermes ingestion transport contract in the normal behavior also defines the fail-closed validator check and the rejection of path/symlink escapes, incomplete artifacts, hash mismatch and private-infrastructure inputs.
 
 Reject version mismatch, unsupported `_FILE` variables, missing selected
 secret, unsafe redirect, public unauthenticated machine API, unknown project
@@ -639,7 +641,7 @@ Missing permission or target defers only the dependent operation.
 
 - Each criterion is evidenced by rows in the Task under `tasks/` that owns its lane (for example the Hermes transport, P08 layout and P10 opsflow acceptance Tasks); a row records the observation, the check run and its actual result.
 - Source, document and regression checks named by a criterion are run by the executing Task owner and recorded with their real result; `NOT_RUN`, `BLOCKED` and unknown runtime facts stay visible and are not counted as passes.
-- The frontmatter owner (`@buenhyden`) judges each criterion and records acceptance; historical receipts are not fresh runtime evidence.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table; historical receipts are not fresh runtime evidence.
 
 ## References
 
@@ -659,10 +661,7 @@ Missing permission or target defers only the dependent operation.
 - [AD-0030](../../02.architecture/descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0037](../../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
 - [CLN01 material retirement Task](tasks/tsk-0007-cln01-material-retirement.md)
-- SPEC-0201
-- SPEC-0202
-- SPEC-0203
 
 ### Historical and Navigation
 
-No historical or navigation link applies; every link above is current authority or evidence.
+SPEC-0201, SPEC-0202 and SPEC-0203 are retired Spec packages; they are non-authoritative history and not current authority.

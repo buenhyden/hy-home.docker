@@ -106,7 +106,7 @@ Out of scope:
 
 ### Failure and Edge Cases
 
-**Observable failures and stop boundaries.**
+Item 6 of the normal behavior also defines the failure and rollback path.
 
 Missing preflight identity, unverified backup consistency, an unproved isolated
 restore, unknown Gatus image/entrypoint provenance, a non-PASS health result,
@@ -142,7 +142,7 @@ replacement claim.
 
 - Each criterion is evidenced by rows in TSK-0001 under `tasks/`, recording value-free identities, checksums, exits, health results and recovery decisions with their actual results.
 - A missing, unproved or non-PASS gate keeps the next service action `NOT_RUN` and is recorded as such rather than as a pass.
-- The frontmatter owner (`@buenhyden`) judges each criterion, with the independent operational, security and recovery reviews named in criterion 7.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table, with the independent operational, security and recovery reviews named in criterion 7.
 
 ## References
 
@@ -151,7 +151,6 @@ replacement claim.
 - [REQ-0003](../../01.requirements/0003-security.md)
 - [AD-0003](../../02.architecture/descriptions/0003-security-architecture.md)
 - [ADR-0042](../../02.architecture/decisions/0042-openbao-unseal-method.md)
-- SPEC-0243
 - [Prometheus Runbook](../../05.operations/runbooks/07-observability/0045-prometheus.md)
 - [Gatus Runbook](../../05.operations/runbooks/07-observability/0087-gatus.md)
 - [Plan](plan.md)
@@ -159,4 +158,4 @@ replacement claim.
 
 ### Historical and Navigation
 
-No historical or navigation link applies; every link above is current authority or evidence.
+- SPEC-0243 is a retired Spec package; it is non-authoritative history and not current authority.

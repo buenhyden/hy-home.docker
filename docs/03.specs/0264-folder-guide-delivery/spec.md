@@ -145,9 +145,11 @@ accepted.
 
 ### Evidence Requirements
 
-- Each criterion needs an observation of the stated result, recorded as an evidence row in the package Task under `tasks/` (`tsk-0001-deliver-folder-guides.md`) with actual results, not intended ones.
-- Verification uses the checks the package [Plan](plan.md) and that Task name; a criterion with no recorded observation is unverified.
-- The frontmatter owner (`@buenhyden`) judges each criterion and accepts the Spec; a failed, blocked or skipped check is reported as such and does not count as met.
+- Criteria 1 to 5 are verified by the folder guide tests and hook suites, the script manifest check and the security review rows (`folder guide tests`, `hook suites`, `security review`, `script manifest`).
+- Criteria 6 and 7 are verified by the provider surfaces check and the agent governance check.
+- Criteria 9 and 10 are verified by the renderer shim tests, provider surfaces, document metadata, links and contract checks, the script manifest and the stage loader suites.
+- Criterion 8 needs owner observation of a new Claude session (`live Claude load`) and a new Codex session (`live Codex delivery`, `Codex hook health`, `exec dispatcher delivery`); a delivery not observed stays `NOT_RUN` or failed and is not counted as met.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table; a failed, blocked or skipped check is reported as such and does not count as met.
 
 ## References
 

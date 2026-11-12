@@ -89,7 +89,7 @@ this Spec.
 - Criterion 1 is observed in the Registry lifecycles, profiles and schemas, and by metadata validation rejecting a legacy status with `invalid-status`.
 - Criteria 2 and 3 are observed in the tree and the Registry reserved numbers, and by reading the governance text.
 - Criterion 4 is verified by running the document-governance, lifecycle, gate and CI routing suites locally; the actual results go in the Task.
-- The frontmatter owner judges each criterion and accepts the Spec.
+- The frontmatter owner judges each criterion and records the decision in the Task's Criterion Acceptance table.
 
 ## References
 
@@ -103,4 +103,4 @@ this Spec.
 
 ### Historical and Navigation
 
-No historical or navigation link applies; every link below is current authority or evidence.
+No historical or navigation link applies; every link above is current authority or evidence.

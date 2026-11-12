@@ -30,6 +30,33 @@ This Spec defines four things:
 - the check that decides whether a LAB may be promoted;
 - the procedure for each kind.
 
+#### Observed state
+
+Observed on 2026-11-05 at `c1db5ef65`:
+
+- **LAB entrypoints are inconsistent.**
+  - Each LAB is a flat `labs/<name>.yml`.
+  - Some LABs also have an asset folder `labs/<name>/`, some a guide
+    `labs/<name>.md`, and some neither.
+  - Loose helpers sit at the `labs/` root: `couchdb-cluster-init.sh` and
+    `opensearch-cluster-dashboards.config`.
+- **Operations documents are uneven.**
+  - Thirteen LABs have a Guide and a Runbook under
+    `docs/05.operations/{guides,runbooks}/15-labs/`, sharing one number.
+  - The Kafka and OpenSearch cluster LABs have only `labs/<name>.md`.
+- **infra services follow one pattern.** A service in `infra/` lives in
+  `infra/<tier>/<service>/` with its `docker-compose.yml`, `README.md` and
+  assets. It is included by the root `docker-compose.yml` and has profiles in
+  the POL-0078 vocabulary.
+- **Four LABs are cluster forms of HOME single-node services.**
+  `valkey-cluster`, `postgresql-ha`, `opensearch-cluster` and `kafka-cluster`.
+  The rest are new services.
+- **supabase uses HOME resources.**
+  - It reads ten secrets from HOME paths under `secrets/data/supabase/` and
+    `secrets/db/mng-pg/`, plus HOME's SMTP password.
+  - It binds the Docker socket.
+  - `scripts/operations/lab.py check` (PR #752) refuses all of these.
+
 ### Owning Requirements
 
 The owner stated the following on 2026-11-05:
@@ -84,33 +111,6 @@ The owner removed the supabase LAB on 2026-11-06 (version 0.4.0, work unit
 W8). This supersedes the 2026-11-05 supabase statements above: `labs/supabase/`,
 its operations documents, catalog rows and Docker socket allowance are gone,
 and no LAB binds the Docker socket.
-
-#### Observed state
-
-Observed on 2026-11-05 at `c1db5ef65`:
-
-- **LAB entrypoints are inconsistent.**
-  - Each LAB is a flat `labs/<name>.yml`.
-  - Some LABs also have an asset folder `labs/<name>/`, some a guide
-    `labs/<name>.md`, and some neither.
-  - Loose helpers sit at the `labs/` root: `couchdb-cluster-init.sh` and
-    `opensearch-cluster-dashboards.config`.
-- **Operations documents are uneven.**
-  - Thirteen LABs have a Guide and a Runbook under
-    `docs/05.operations/{guides,runbooks}/15-labs/`, sharing one number.
-  - The Kafka and OpenSearch cluster LABs have only `labs/<name>.md`.
-- **infra services follow one pattern.** A service in `infra/` lives in
-  `infra/<tier>/<service>/` with its `docker-compose.yml`, `README.md` and
-  assets. It is included by the root `docker-compose.yml` and has profiles in
-  the POL-0078 vocabulary.
-- **Four LABs are cluster forms of HOME single-node services.**
-  `valkey-cluster`, `postgresql-ha`, `opensearch-cluster` and `kafka-cluster`.
-  The rest are new services.
-- **supabase uses HOME resources.**
-  - It reads ten secrets from HOME paths under `secrets/data/supabase/` and
-    `secrets/db/mng-pg/`, plus HOME's SMTP password.
-  - It binds the Docker socket.
-  - `scripts/operations/lab.py check` (PR #752) refuses all of these.
 
 This Spec makes concrete REQ-0004 and AD-0026, its frontmatter `parent_ids`. The body cites no REQ-####-FR or REQ-####-NFR identifier.
 
@@ -299,12 +299,6 @@ The POL-0078 profile vocabulary, the `infra/` tier layout tests and the LAB
 isolation tests stay authoritative. Document moves keep artifact identifiers
 and creation dates. No secret value is read or written.
 
-### Failure and Edge Cases
-
-`lab.py check` refuses a LAB that is not in the standard layout, has no valid
-manifest, or reads a HOME secret path. The readiness check refuses a promotion
-when any criterion fails or cannot be measured.
-
 #### 7. Drafting calls
 
 These were decided while drafting the Spec, not by the owner:
@@ -330,6 +324,12 @@ rows only, and starts nothing.
 The public registry `secrets/SENSITIVE_ENV_VARS.md.example` is outside the
 agent's permitted paths. The agent prepares its placeholder edits and the
 owner applies them.
+
+### Failure and Edge Cases
+
+`lab.py check` refuses a LAB that is not in the standard layout, has no valid
+manifest, or reads a HOME secret path. The readiness check refuses a promotion
+when any criterion fails or cannot be measured.
 
 **Observable failures.**
 
@@ -377,9 +377,12 @@ change to `secrets/SENSITIVE_ENV_VARS.md.example`.
 
 ### Evidence Requirements
 
-- Each criterion needs an observation of the stated result, recorded as an evidence row in the package Tasks under `tasks/` (`tsk-0001-lab-promotion-contract.md`, `tsk-0002-lab-promotion-reservations.md`, `tsk-0003-retire-supabase-lab.md`) with actual results, not intended ones.
-- Verification uses the checks the package [Plan](plan.md) and those Tasks name; a criterion with no recorded observation is unverified.
-- The frontmatter owner (`@buenhyden`) judges each criterion and accepts the Spec; a failed, blocked or skipped check is reported as such and does not count as met.
+- Criteria 1 and 2 are verified by the layout tests and the manifest and `check` tests (`layout tests`, `manifest and check tests` rows in TSK-0001).
+- Criterion 3 is verified by the LAB and secret suites, the catalog and owner registry checks, the root render and `lab.py check` runs (TSK-0001 and TSK-0003); a check needing owner inputs that was not run stays `NOT_RUN`.
+- Criteria 4 and 6 are verified by the LAB suites, the operations catalog check, metadata, links and lifecycle checks and the static and HOME renders of the cluster LABs; criterion 5 by the LAB suites and the `lab.py readiness` runs on HOME.
+- Criterion 8 is verified by the LAB suites, Compose acceptance, `common-optimizations` controls, hardening, HOME readiness and `lab.py check` rows in TSK-0002.
+- Per the package [Plan](plan.md), criterion 7 is verified by the root and LAB `docker compose config` renders, the full unit suite, `check-all-hardening.sh`, the metadata, links, lifecycle, operations catalog and script manifest checks, and the hosted CI row.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table; a failed, blocked or skipped check is reported as such and does not count as met.
 
 ## References
 

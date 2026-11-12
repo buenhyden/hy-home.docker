@@ -66,8 +66,6 @@ Completed Spec packages in `docs/03.specs/` are out of scope and form the next p
 
 ### Failure and Edge Cases
 
-**Observable failures and stop boundaries.**
-
 A current check that still opens a Stage 98 path, a typed reference to a retired
 identity, or a summary that drops a still-current obligation fails this Spec.
 
@@ -89,7 +87,7 @@ identity, or a summary that drops a still-current obligation fails this Spec.
 
 - Each criterion is evidenced by rows in TSK-0001 under `tasks/`, recording the deletion, summary and reference-removal observations and the actual results of the document gates, document-governance and lifecycle suites, Script Manifest and workflow-contract checks.
 - The Task owner runs those checks locally; version history is the record of the removed bodies.
-- The frontmatter owner (`@buenhyden`) judges each criterion and records acceptance.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table.
 
 ## References
 

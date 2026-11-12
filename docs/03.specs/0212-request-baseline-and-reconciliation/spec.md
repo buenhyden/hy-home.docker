@@ -265,7 +265,7 @@ P02–P12 routes are handoff labels, not user/account authority. DATA-0096 is a
 non-normative observation consumed by TSK-0040 and exact downstream handoffs;
 existing service, port, Secret and version sources remain canonical.
 
-**Current request scope (historical items 11-30).**
+**Current request scope (historical items 11–30).**
 
 Each row has one primary execution owner and one disposition. Supporting
 stages do not own the same acceptance criterion. The Task records evidence,
@@ -309,7 +309,7 @@ barrier, mitigation, review date, exit condition, and rollback boundary.
 Latest-stable lookup does not itself prove a deployed, native, HOME, or
 recovery result.
 
-**Current infrastructure-audit routing (requirements 11-32).**
+**Current infrastructure-audit routing (requirements 11–32).**
 
 `INFRA-P0` fixes common source boundaries before any variable source change;
 `INFRA-P1` then protects data, secrets, backups, and recovery prerequisites.
@@ -447,8 +447,6 @@ P04 retires an asset only after its current consumers, retained assurance,
 hold, authorization and recovery requirements have been established.
 
 ### Failure and Edge Cases
-
-**Observable failures and stop boundaries.**
 
 Reconciliation fails when a request item has competing acceptance owners,
 a source or historical receipt is presented as fresh runtime acceptance, or
@@ -891,7 +889,7 @@ target, backup, recovery boundary, and action-specific authorization.
 
 - Each criterion is evidenced by rows in the Task under `tasks/` that owns it; a row records the observation, the check run and its actual result, and unknown execution or approval evidence stays unknown.
 - Local source, document and registry checks are run by the Task owner; a local source PASS never substitutes for remote, runtime or approval evidence.
-- The frontmatter owner (`@buenhyden`) judges each criterion; criterion acceptance remains separate from independent implementation review.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table; that decision remains separate from independent implementation review.
 
 ## References
 

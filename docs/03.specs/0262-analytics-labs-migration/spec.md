@@ -101,9 +101,11 @@ This Task pushes, merges and starts nothing.
 
 ### Evidence Requirements
 
-- Each criterion needs an observation of the stated result, recorded as an evidence row in the package Task under `tasks/` (`tsk-0001-analytics-labs-migration.md`) with actual results, not intended ones.
-- Verification uses the checks the package [Plan](plan.md) and that Task name; a criterion with no recorded observation is unverified.
-- The frontmatter owner (`@buenhyden`) judges each criterion and accepts the Spec; a failed, blocked or skipped check is reported as such and does not count as met.
+- Criterion 1 is observed by `docker compose config` on the root, comparing the `--profile '*' config --services` count before and after (`compose-root` row).
+- Criterion 2 is verified by rendering each LAB file with `docker compose config`, the LAB isolation and infra tier layout unit tests, and the `scripts/operations/lab.py check` controller checks (`compose-lab`, `lab-isolation`, `lab-controller*` and `security-review` rows); a controller check not run stays `NOT_RUN`.
+- Criterion 3 is verified by `check-all-hardening.sh`, the unit suite and `check-script-manifest.py`; criterion 4 by `check-operations-catalog.py`.
+- Criterion 5 is verified by `check-document-metadata.py`, `check-document-links.py`, `check-document-corpus-lifecycle.py` and the hosted CI row.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table; a failed, blocked or skipped check is reported as such and does not count as met.
 
 ## References
 

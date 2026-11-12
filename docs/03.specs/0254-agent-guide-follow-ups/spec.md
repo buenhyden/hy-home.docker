@@ -91,7 +91,7 @@ request under the user's instruction, and the user merges.
 - Criterion 1 is observed by running `check-document-links.py --mode entrypoint`.
 - Criterion 2 is verified by the CI routing test over every profile path; criterion 3 by reading the folder guides, the stage authoring matrix and the documentation protocol.
 - Criterion 4 is verified by running the document gates, the document-governance suite, the agent governance contract and the CI routing suites locally; the actual results go in the Task.
-- The frontmatter owner judges each criterion and accepts the Spec.
+- The frontmatter owner judges each criterion and records the decision in the Task's Criterion Acceptance table.
 
 ## References
 

@@ -84,9 +84,10 @@ This Task pushes and merges nothing.
 
 ### Evidence Requirements
 
-- Each criterion needs an observation of the stated result, recorded as an evidence row in the package Task under `tasks/` (`tsk-0001-implementation-alignment-batch3.md`) with actual results, not intended ones.
-- Verification uses the checks the package [Plan](plan.md) and that Task name; a criterion with no recorded observation is unverified.
-- The frontmatter owner (`@buenhyden`) judges each criterion and accepts the Spec; a failed, blocked or skipped check is reported as such and does not count as met.
+- Criteria 1 and 2 are observed through the `check-document-links.py` `alignment` and `navigation` modes, recorded as `document-links` evidence rows in the Task.
+- Criterion 3 is observed by comparing the promoted documents with the implementation, verified with `check-document-metadata.py` `check-active` (`metadata-active` rows).
+- Criterion 4 is verified by `check-document-metadata.py` `check-changed`, `check-document-corpus-lifecycle.py`, `check-operations-catalog.py` and the `language`, `traceability` and `entrypoint` link modes; hosted CI stays `NOT_RUN` until it runs.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table; a failed, blocked or skipped check is reported as such and does not count as met.
 
 ## References
 

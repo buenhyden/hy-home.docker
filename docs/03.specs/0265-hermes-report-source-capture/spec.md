@@ -29,13 +29,6 @@ the finalized report once, stores it immutably, and derives the email, the
 Telegram text and the Gateway request from the same stored bytes. The decision
 is [ADR-0060](../../02.architecture/decisions/0060-hermes-report-source-contract.md).
 
-### Owning Requirements
-
-The owner answered "초안 작성 (권장)" on 2026-11-06 to drafting this contract,
-and "Backfill 제외 (권장)" for the 16 existing Gateway reports. Predecessor
-context, not edited here: SPEC-0212 TSK-0050 (provenance, trust and export;
-terminal body untouched), the historical SPEC-0204 TSK-0022 and RUN-0053.
-
 Observed state (read-only, 2026-11-06): plugin 0.3.0 builds `source_text` from
 receipt rows; the Gateway is at schema 4 (image `c05e5b88`) with 16 reports
 whose stored `source_text` is model-supplied fragments of 5 to 7069 characters,
@@ -47,6 +40,13 @@ The five trust boundaries of TSK-0050 stay distinct. A collector receipt is a
 same-UID audit binding, not producer authentication or independent Attestation.
 The Attester verifies items by independent fetch and does not read `source_text`.
 The report bytes added here prove sameness of output, not truth of content.
+
+### Owning Requirements
+
+The owner answered "초안 작성 (권장)" on 2026-11-06 to drafting this contract,
+and "Backfill 제외 (권장)" for the 16 existing Gateway reports. Predecessor
+context, not edited here: SPEC-0212 TSK-0050 (provenance, trust and export;
+terminal body untouched), the historical SPEC-0204 TSK-0022 and RUN-0053.
 
 This Spec makes concrete REQ-0004 and REQ-0005 and the Architecture Descriptions AD-0004 and AD-0031, its frontmatter `parent_ids`. The body cites no REQ-####-FR or REQ-####-NFR identifier. It also applies ADR-0060 (the report source contract) and the blog-data ADR-0097 definition of `source_text` named in the Intent.
 
@@ -280,9 +280,11 @@ stays NOT_RUN.
 
 ### Evidence Requirements
 
-- Each criterion needs an observation of the stated result, recorded as an evidence row in the package Task under `tasks/` (`tsk-0001-report-source-capture.md`) with actual results, not intended ones.
-- Verification uses the checks the package [Plan](plan.md) and that Task name; a criterion with no recorded observation is unverified.
-- The frontmatter owner (`@buenhyden`) judges each criterion and accepts the Spec; a failed, blocked or skipped check is reported as such and does not count as met.
+- Criteria 1 to 6 are verified by the plugin test suite run with `python3 -m unittest discover` in the `hermes-blog-ingestion` workload, naming the schema, `source_text` and digest, `source_ref`, report-file binding, shared-digest and rejection tests (TSK-0001 rows for W1 to W3).
+- Criteria 7 to 9 are verified by `test_deploy_scripts.py` prompt, marker-count and `email_body.html` guard tests and the validator tests; criterion 10 by the same suite plus a live node-exporter scrape, alert and dashboard check that stays `NOT_RUN` until observed.
+- Criterion 11 is verified by `check-document-metadata.py` in `check-changed` mode and the other document checks of `docs/03.specs/AGENTS.md`.
+- Criteria 12 to 14 are operations rows (W7 to W9): the online backup and restore test, the `backfill-reports` dry run with the 16 excluded report IDs, the delivered-run observation, the installed-file SHA-256 comparison and the rollback reading; each stays `NOT_RUN` until the owner approves and direct evidence is recorded.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table; a failed, blocked or skipped check is reported as such and does not count as met.
 
 ## References
 

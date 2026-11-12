@@ -95,7 +95,7 @@ request, and the user merges.
 - Criterion 1 is observed by searching QA and CI configuration, hooks and the workflow contract for the removed boundary and deleted Task names.
 - Criterion 2 is observed in the Task, which records each candidate script, test and QA exception with its decision.
 - Criterion 3 is verified by running the gate, CI routing, manifest and hook tests, the document gates, the agent governance contract and renderer parity locally; the actual results go in the Task.
-- The frontmatter owner judges each criterion and accepts the Spec.
+- The frontmatter owner judges each criterion and records the decision in the Task's Criterion Acceptance table.
 
 ## References
 

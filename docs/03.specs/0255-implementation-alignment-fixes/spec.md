@@ -97,7 +97,7 @@ opens the pull request, and the user merges.
 - Criteria 1 and 3 are observed by comparing each corrected statement with the Compose file, script or Registry entry it describes; the Task records the comparison.
 - Criterion 2 is observed by searching current documents for deleted Spec names used as current owners.
 - Criterion 4 is verified by running the document gates locally; the actual results go in the Task.
-- The frontmatter owner judges each criterion and accepts the Spec.
+- The frontmatter owner judges each criterion and records the decision in the Task's Criterion Acceptance table.
 
 ## References
 

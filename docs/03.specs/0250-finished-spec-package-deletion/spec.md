@@ -85,7 +85,7 @@ target fails this Spec.
 - Criterion 1 is observed in the package tree and the Registry Spec `reserved_history`; the Task records each package's criterion state.
 - Criteria 2 and 3 are verified through the link alignment, corpus lifecycle and metadata checks, with results recorded in the Task evidence rows.
 - Criterion 4 is verified by running the document-governance, lifecycle, gate and CI plan suites locally; the actual results go in the Task.
-- The frontmatter owner judges each criterion and accepts the Spec.
+- The frontmatter owner judges each criterion and records the decision in the Task's Criterion Acceptance table.
 
 ## References
 
@@ -93,11 +93,10 @@ target fails this Spec.
 
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-finished-spec-package-deletion.md)
+- [Stage 98 archive deletion](../0249-stage98-archive-deletion/spec.md)
 - [Document retention requirement](../../01.requirements/0026-document-retention-and-retirement.md)
 - [Document lifecycle architecture](../../02.architecture/descriptions/0030-document-lifecycle-governance.md)
 
 ### Historical and Navigation
 
-The Stage 98 archive deletion Spec below is a prior, non-authoritative lineage record of the deletion this Spec extends; the package Plan and Task are the evidence owners.
-
-- [Stage 98 archive deletion](../0249-stage98-archive-deletion/spec.md)
+No historical or navigation link applies.

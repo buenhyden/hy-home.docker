@@ -68,8 +68,6 @@ Stage 98 bodies are not edited or deleted here because their removal is a later,
 
 ### Failure and Edge Cases
 
-**Observable failures and stop boundaries.**
-
 A removal that drops a non-archive check, or a gate that still reports a Stage
 98 finding, fails this Spec. A reader that raises on a malformed archive record
 instead of granting no exemption fails criterion 2.
@@ -92,7 +90,7 @@ instead of granting no exemption fails criterion 2.
 
 - Each criterion is evidenced by rows in TSK-0001 under `tasks/`, including the inventory of remaining Stage 98 readers and legacy allowances with their removal conditions.
 - The changed tests, document gates, Script Manifest and workflow-contract checks are run locally by the Task owner and their actual results recorded.
-- The frontmatter owner (`@buenhyden`) judges each criterion and records acceptance.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table.
 
 ## References
 

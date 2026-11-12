@@ -125,9 +125,11 @@ ownership or unclear backup inventory stops only the dependent operation.
 
 ### Evidence Requirements
 
-- Each criterion needs an observation of the stated result, recorded as an evidence row in the package Task under `tasks/` (`tsk-0001-capacity-search-and-backup.md`) with actual results, not intended ones.
-- Verification uses the checks the package [Plan](plan.md) and that Task name; a criterion with no recorded observation is unverified.
-- The frontmatter owner (`@buenhyden`) judges each criterion and accepts the Spec; a failed, blocked or skipped check is reported as such and does not count as met.
+- Criterion 1 is verified by the `focused-capacity-tests` rows: concurrency, corruption and retention regressions for the ledger, with uncertain reservations and old data preserved.
+- Criteria 2 and 3 are verified by the `focused-writer-tests` (legacy schema, preserved bytes, protected paths, copy interruption) and `focused-search-tests` (deterministic lexical and Unicode results, bounds, no-write) rows.
+- Criterion 4 is verified by the `focused-backup-tests` rows covering producer routing, capacity/CAS, failure metrics and the existing backup contracts.
+- Criterion 5 is verified by the `independent-review-and-registration` row (code and security review, manifest, workflow contract and registration routes) and branch coverage of at least 80 percent; criterion 6 by the `documentation-checks` rows (metadata, lifecycle, occupancy and link alignment). Hosted CI, backup adoption and native-runtime claims stay `NOT_RUN`.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table; a failed, blocked or skipped check is reported as such and does not count as met.
 
 ## References
 

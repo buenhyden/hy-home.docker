@@ -110,8 +110,6 @@ with P08. Consumer retirement remains with CLN01 and the owning executor.
 
 ### Failure and Edge Cases
 
-**Observable failures and stop boundaries.**
-
 Malformed, orphaned, expired or mismatched exceptions and missing enforced
 controls fail effective-model validation. Unmeasured limits cannot be called
 optimal, and least-privilege proof cannot be replaced by blanket secret-group,
@@ -160,7 +158,7 @@ function, backup and recovery evidence.
 
 - Criteria 1-5 and 6-10 are evidenced by rows in TSK-0001 and TSK-0002 under `tasks/`: validator and schema tests, real LAB or exact-image runs, Conftest fixtures, and measured, runtime and rollout results with their actual outcomes.
 - Unknown measurements and unreadable private inputs stay recorded as unknown, and synthetic or static findings are not presented as deployment or recovery evidence.
-- The frontmatter owner (`@buenhyden`) judges each criterion and records acceptance.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table.
 
 ## References
 

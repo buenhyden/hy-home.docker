@@ -24,14 +24,14 @@ because the Spec Package loader read their lifecycle generation 5 and 6
 Contract Migration proofs from the working tree. Under generation 7 the
 loader reads those proofs from the last generation 6 revision instead.
 
-### Owning Requirements
-
 The generation 5 proof (source `8b85e88fe2dfef54f4cc125ee2687982c86c1942`)
 lives in SPEC-0209-TSK-0001 and the generation 6 proof (source
 `2a57d4122dc8dac954afca364b838e4bf97fd44a`) in SPEC-0231-TSK-0001. Both
 Tasks are terminal and unchanged at the last generation 6 revision
 `49f8dd661acf37bf292ee0aa59abfe1af16cde10`, which
 `previous_generation_revision(root, 7)` already resolves from Git history.
+
+### Owning Requirements
 
 This Spec makes concrete REQ-0026 and AD-0030, its frontmatter `parent_ids`. The body cites no REQ-####-FR or REQ-####-NFR identifier; the only ADR it names is ADR-0051, for the lineage-prose constraint.
 
@@ -93,9 +93,10 @@ opens the pull request, and the user merges.
 
 ### Evidence Requirements
 
-- Each criterion needs an observation of the stated result, recorded as an evidence row in the package Task under `tasks/` (`tsk-0001-spec-0209-0231-retirement.md`) with actual results, not intended ones.
-- Verification uses the checks the package [Plan](plan.md) and that Task name; a criterion with no recorded observation is unverified.
-- The frontmatter owner (`@buenhyden`) judges each criterion and accepts the Spec; a failed, blocked or skipped check is reported as such and does not count as met.
+- Criteria 1 and 2 are verified by the `test_spec_packages`, `test_registry` and `test_identity_history` unit tests, including the fail-closed tests for a missing proof package or revision (`unit-tests` rows).
+- Criterion 3 is observed through `check-document-metadata.py` (`check-changed`, `check-active`), `check-document-corpus-lifecycle.py` and `check-document-links.py` in `alignment`, `navigation`, `language`, `traceability`, `entrypoint` and `commands` modes.
+- Criterion 4 is verified by the full `tests/lib/document_governance` discovery and the document gates, plus the hosted CI rollup row; a hosted check not run stays `NOT_RUN`.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table; a failed, blocked or skipped check is reported as such and does not count as met.
 
 ## References
 

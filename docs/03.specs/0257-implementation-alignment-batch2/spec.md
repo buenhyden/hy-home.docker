@@ -84,7 +84,7 @@ opens the pull request.
 
 - Criteria 1 and 2 are observed by checking backticked paths and the Grafana link in the infra READMEs; criterion 3 by checking the Registry paths exist; criterion 4 by checking each Compose secret name against the guides.
 - Criterion 5 is verified by running the document gates locally; the actual results go in the Task.
-- The frontmatter owner judges each criterion and accepts the Spec.
+- The frontmatter owner judges each criterion and records the decision in the Task's Criterion Acceptance table.
 
 ## References
 

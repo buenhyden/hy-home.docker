@@ -110,7 +110,7 @@ approved plan, and the user merges.
 - Criteria 1 to 3 are observed by reading the documentation protocol, bootstrap, provider adapters, the nine folder AGENTS.md files and their READMEs.
 - Criterion 2 is checked by the placement test in the document-governance suite and by confirming each routed owner and named command exists.
 - Criterion 4 is verified by running the document gates, the document-governance suites, the agent governance contract and renderer parity locally; the actual results go in the Task.
-- The frontmatter owner judges each criterion and accepts the Spec.
+- The frontmatter owner judges each criterion and records the decision in the Task's Criterion Acceptance table.
 
 ## References
 

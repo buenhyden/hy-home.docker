@@ -83,9 +83,10 @@ This Task pushes and merges nothing.
 
 ### Evidence Requirements
 
-- Each criterion needs an observation of the stated result, recorded as an evidence row in the package Task under `tasks/` (`tsk-0001-req-0027-approval.md`) with actual results, not intended ones.
-- Verification uses the checks the package [Plan](plan.md) and that Task name; a criterion with no recorded observation is unverified.
-- The frontmatter owner (`@buenhyden`) judges each criterion and accepts the Spec; a failed, blocked or skipped check is reported as such and does not count as met.
+- Criteria 1 to 3 are observed by `source-review` rows that compare REQ-0027, AD-0031, AD-0032 and the Stage 05 documents with Compose, scripts and configuration.
+- Criterion 3 is also verified by the `test_dev_pg_provision`, `test_dev_valkey_acl` and `test_dev_data_boundary` unit tests and `docker compose --profile dev-data config --quiet`.
+- Criterion 4 is verified by `check-document-metadata.py` (`check-changed`, `check-active`), `check-document-corpus-lifecycle.py`, `check-operations-catalog.py` and the `alignment`, `navigation`, `language`, `traceability` and `entrypoint` link modes, plus the hosted CI row.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table; a failed, blocked or skipped check is reported as such and does not count as met.
 
 ## References
 
