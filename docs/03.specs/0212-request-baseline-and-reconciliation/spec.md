@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.50.0"
+version: "1.51.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-12"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -186,6 +186,14 @@ the v14.2 W03 document templates, metadata and relations. The owner adopted
 the meaning of the package's draft 19-role table, not its headings: current
 Registry H2 headings stay, and only missing concepts are added as optional or
 conditional sections. Validator implementation is handed to W05.
+
+The owner direction of 2026-11-12 adds criterion 112 and W117 in TSK-0059 for
+the v14.7 W00 intake, and sets the rule for every conflict the intake finds:
+where an existing decision conflicts with the current requirement, the current
+requirement wins. That supersedes the H2-retention part of the criterion 111
+decision above; W03 migrates the Registry headings to the common H2 and H3
+section contract. The intake records evidence and handoffs and changes only
+current guidance that conflicts with the current requirement.
 
 ## Scope
 
@@ -824,6 +832,13 @@ hold, authorization and recovery requirements have been established.
      Each changed key, section or table has a producer, a consumer and a
      passing and a failing test; only current documents migrate, and
      historical and completed evidence keeps its form.
+112. TSK-0059 assesses the v14.7 W00 obligations against this workspace: the
+     read boundary and denominator, the pull requests merged after the v14.2
+     intake, the historical audit IDs OPEN-01 to OPEN-14, and the differences
+     between the current Registry, policies, glossary, validators and hooks and
+     the common target contracts. Each difference has one named writer and
+     receiving work unit; a conflict with the current requirement is corrected,
+     and an unrun or unverified item stays visible with its owner.
 
 ## Failure Conditions
 
@@ -842,6 +857,7 @@ target, backup, recovery boundary, and action-specific authorization.
 ## Related Documents
 
 - [Master workspace reconciliation](tasks/tsk-0053-master-workspace-reconciliation.md)
+- [v14.7 W00 intake](tasks/tsk-0059-w00-v14-7-intake.md)
 - [Existing supply-chain evidence owner](tasks/tsk-0052-supply-chain-evidence.md)
 - [Memory capacity and search](../0270-shared-memory-capacity-and-search/spec.md)
 
