@@ -790,6 +790,9 @@ def _completion_visible_lines(body: str) -> list[str]:
 # new H2, so the value is a logical anchor resolved to exactly one form.
 _COMMON_FORM_PATHS = {
     "Work Breakdown": ("Implementation Strategy", "Work Breakdown"),
+    "Evidence": ("Verification Evidence", "Results"),
+    "Criterion Acceptance": ("Acceptance Decision", "Criterion Decisions"),
+    "Work Log": ("Execution Log", "Work Performed"),
 }
 
 
@@ -829,6 +832,39 @@ def _contract_span(body: str, heading: str) -> tuple[list[str], int]:
 
 def _contract_section(body: str, heading: str) -> list[str]:
     return _contract_span(body, heading)[0]
+
+
+def _child_blocks(
+    section: list[str], level: int, subsection: str
+) -> tuple[str, list[list[str]]]:
+    """Return the child marker and each block it opens inside a section.
+
+    A subsection is one heading level below its section: H3 under a legacy H2
+    and H4 under a common-form H3.
+    """
+    prefix = "#" * (level + 1) + " "
+    marker = prefix + subsection
+    blocks = []
+    for index, line in enumerate(section):
+        if line == marker:
+            end = next(
+                (
+                    stop
+                    for stop in range(index + 1, len(section))
+                    if section[stop].startswith(prefix)
+                ),
+                len(section),
+            )
+            blocks.append(section[index + 1 : end])
+    return marker, blocks
+
+
+def _has_execution_items(text: str) -> bool:
+    """Say whether a document declares Execution Items at either heading level."""
+    return any(
+        line in {"### Execution Items", "#### Execution Items"}
+        for line in text.splitlines()
+    )
 
 
 def acceptance_criterion_numbers(spec_body: str, heading: str) -> tuple[int, ...]:
@@ -1366,25 +1402,15 @@ def _v5_evidence_contract(
 
 def _subsection_lines(body: str, section: str, subsection: str) -> list[str]:
     try:
-        lines = _contract_section(body, section)
+        lines, level = _contract_span(body, section)
     except SpecPackageError:
         return []
-    marker = "### " + subsection
-    starts = [index for index, line in enumerate(lines) if line == marker]
-    if not starts:
+    marker, blocks = _child_blocks(lines, level, subsection)
+    if not blocks:
         return []
-    if len(starts) != 1:
+    if len(blocks) != 1:
         raise SpecPackageError(f"{marker} must occur only once")
-    start = starts[0] + 1
-    end = next(
-        (
-            index
-            for index in range(start, len(lines))
-            if lines[index].startswith("### ")
-        ),
-        len(lines),
-    )
-    return lines[start:end]
+    return blocks[0]
 
 
 def _execution_item_rows(
@@ -3607,7 +3633,7 @@ def _load_base_spec_packages(
             raise SpecPackageError(
                 f"base Spec Package member is not UTF-8: {source}"
             ) from error
-        if "### Execution Items" in text.splitlines():
+        if _has_execution_items(text):
             snapshot_registry = snapshot_registry or load_registry_at_revision(
                 commit, root=root
             )
@@ -3692,23 +3718,13 @@ def _migration_proof(
     proofs: list[_MigrationProof] = []
     for package in current:
         for task in package.tasks:
-            section = _contract_section(task.body, section_name)
-            marker = "### " + subsection
-            starts = [index for index, line in enumerate(section) if line == marker]
-            if not starts:
+            section, level = _contract_span(task.body, section_name)
+            _, blocks = _child_blocks(section, level, subsection)
+            if not blocks:
                 continue
-            if len(starts) != 1:
+            if len(blocks) != 1:
                 raise SpecPackageError("Contract Migration subsection must occur once")
-            start = starts[0] + 1
-            end = next(
-                (
-                    index
-                    for index in range(start, len(section))
-                    if section[index].startswith("### ")
-                ),
-                len(section),
-            )
-            rows = _registered_table_rows(section[start:end], tuple(raw_headers))
+            rows = _registered_table_rows(blocks[0], tuple(raw_headers))
             if len(rows) != 1:
                 raise SpecPackageError(
                     "Contract Migration requires exactly one proof row"
@@ -4174,23 +4190,13 @@ def _lifecycle_event_rows(
         or not all(isinstance(header, str) and header for header in raw_headers)
     ):
         raise SpecPackageError("Task lifecycle event contract is malformed")
-    section = _contract_section(task.body, section_name)
-    marker = "### " + subsection_name
-    starts = [index for index, line in enumerate(section) if line == marker]
-    if not starts:
+    section, level = _contract_span(task.body, section_name)
+    marker, blocks = _child_blocks(section, level, subsection_name)
+    if not blocks:
         return ()
-    if len(starts) != 1:
+    if len(blocks) != 1:
         raise SpecPackageError(f"Task lifecycle evidence requires one {marker}")
-    start = starts[0] + 1
-    end = next(
-        (
-            index
-            for index in range(start, len(section))
-            if section[index].startswith("### ")
-        ),
-        len(section),
-    )
-    rows = _registered_table_rows(section[start:end], tuple(raw_headers))
+    rows = _registered_table_rows(blocks[0], tuple(raw_headers))
     if not rows:
         return ()
     anchor_counts: dict[str, int] = {}
@@ -4290,23 +4296,13 @@ def _lifecycle_reconciliation_rows(
             raise SpecPackageError("lifecycle reconciliation contract is malformed")
         return ()
     section_name, subsection, headers, disposition = _reconciliation_contract(registry)
-    section = _contract_section(task.body, section_name)
-    marker = "### " + subsection
-    starts = [index for index, line in enumerate(section) if line == marker]
-    if not starts:
+    section, level = _contract_span(task.body, section_name)
+    marker, blocks = _child_blocks(section, level, subsection)
+    if not blocks:
         return ()
-    if len(starts) != 1:
+    if len(blocks) != 1:
         raise SpecPackageError(f"lifecycle reconciliation requires one {marker}")
-    start = starts[0] + 1
-    end = next(
-        (
-            index
-            for index in range(start, len(section))
-            if section[index].startswith("### ")
-        ),
-        len(section),
-    )
-    rows = _registered_table_rows(section[start:end], headers)
+    rows = _registered_table_rows(blocks[0], headers)
     anchor_counts: dict[str, int] = {}
     for line in _completion_visible_lines(task.body):
         match = re.fullmatch(r"#{1,6} +(.+?) *#*", line)
@@ -4454,7 +4450,7 @@ def _git_reconciliation_document(
         path,
         text,
         registry=load_registry_at_revision(commit, root=root)
-        if "### Execution Items" in text.splitlines()
+        if _has_execution_items(text)
         else None,
     )
     if document is None:

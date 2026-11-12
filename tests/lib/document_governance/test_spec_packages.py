@@ -2561,6 +2561,196 @@ Narrative after the registered table.
                 with self.assertRaises(module.SpecPackageError):
                     module._contract_section(broken, "Work Breakdown")
 
+        tasks = {
+            "Evidence": ("Verification Evidence", "Results"),
+            "Criterion Acceptance": ("Acceptance Decision", "Criterion Decisions"),
+            "Work Log": ("Execution Log", "Work Performed"),
+        }
+        for key, (parent, child) in tasks.items():
+            legacy = f"## {key}\nold\n## Next\nx\n"
+            common = (
+                f"## {parent}\n### {child}\nnew\n#### Detail\nkept\n"
+                f"### Other\nz\n## Next\nx\n"
+            )
+            with self.subTest(key=key):
+                self.assertEqual(["old"], module._contract_section(legacy, key))
+                self.assertEqual(
+                    (["new", "#### Detail", "kept"], 3),
+                    module._contract_span(common, key),
+                )
+                for broken in (
+                    legacy + common,
+                    common.replace(f"### {child}", "### Wrong"),
+                    common + f"## {parent}\n### {child}\nagain\n",
+                    common.replace("### Other", f"### {child}\n### Other"),
+                    f"## Overview\n### {child}\nWrong parent.\n",
+                ):
+                    with self.subTest(key=key, broken=broken):
+                        with self.assertRaises(module.SpecPackageError):
+                            module._contract_section(broken, key)
+
+    def test_task_subsection_readers_are_level_aware(self) -> None:
+        module = _spec_packages_module()
+        registry = load_current_registry()
+        revision = "a" * 40
+        events = (
+            "| Artifact | From | To | Evidence |\n| --- | --- | --- | --- |\n"
+            "| SPEC-0001 | draft | in-progress | #w1-start |\n"
+        )
+        migration = (
+            "| Date | Source revision | Evidence |\n| --- | --- | --- |\n"
+            f"| 2026-11-13 | {revision} | #w1-start: Moved. |\n"
+        )
+        reconciliation = (
+            "| Artifact | From | To | Canonical carrier | Canonical source commit "
+            "| Canonical integration commit | Duplicate source commit "
+            "| Duplicate integration commit | Disposition | Evidence |\n"
+            "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+            f"| SPEC-0001 | draft | in-progress | SPEC-0001-TSK-0002 | {revision} "
+            f"| {revision} | {revision} | {revision} "
+            "| concurrent-duplicate-observation | #w1-start |\n"
+        )
+
+        def body(legacy: bool, name: str, rows: str, repeated: bool = False) -> str:
+            hashes = "###" if legacy else "####"
+            part = f"{hashes} {name}\n{rows}\n"
+            tail = f"{hashes} W1 Start\nStarted.\n"
+            if legacy:
+                return f"## Work Log\n{part * (2 if repeated else 1)}{tail}## Evidence\ny\n"
+            return (
+                f"## Execution Log\n### Work Performed\n{part * (2 if repeated else 1)}"
+                f"{tail}### Blockers and Decisions\nz\n"
+            )
+
+        def task(text: str):
+            return module.SpecDocument(
+                pathlib.PurePosixPath("docs/03.specs/0001-x/tasks/tsk-0001-x.md"),
+                "task",
+                "SPEC-0001-TSK-0001",
+                "completed",
+                (),
+                body=text,
+            )
+
+        def package(text: str):
+            document = task(text)
+            return module.SpecPackage(
+                pathlib.Path("docs/03.specs/0001-x"),
+                "0001",
+                "x",
+                document,
+                None,
+                (document,),
+                (),
+            )
+
+        for legacy in (True, False):
+            hashes = "###" if legacy else "####"
+            with self.subTest(legacy=legacy):
+                lines = module._subsection_lines(
+                    body(legacy, "Execution Items", events),
+                    "Work Log",
+                    "Execution Items",
+                )
+                self.assertEqual(events.splitlines(), [line for line in lines if line])
+                self.assertEqual(
+                    [],
+                    module._subsection_lines(
+                        body(legacy, "Other", events), "Work Log", "Execution Items"
+                    ),
+                )
+                with self.assertRaisesRegex(
+                    module.SpecPackageError,
+                    f"{hashes} Execution Items must occur only once",
+                ):
+                    module._subsection_lines(
+                        body(legacy, "Execution Items", events, True),
+                        "Work Log",
+                        "Execution Items",
+                    )
+                found = module._lifecycle_event_rows(
+                    task(body(legacy, "Lifecycle Events", events)), registry
+                )
+                self.assertEqual(
+                    [("SPEC-0001", "draft", "in-progress", "#w1-start")],
+                    [(e.artifact_id, e.source, e.target, e.evidence) for e in found],
+                )
+                self.assertEqual(
+                    (),
+                    module._lifecycle_event_rows(
+                        task(body(legacy, "Other", events)), registry
+                    ),
+                )
+                with self.assertRaisesRegex(
+                    module.SpecPackageError,
+                    f"requires one {hashes} Lifecycle Events",
+                ):
+                    module._lifecycle_event_rows(
+                        task(body(legacy, "Lifecycle Events", events, True)), registry
+                    )
+                receipts = module._lifecycle_reconciliation_rows(
+                    task(
+                        body(legacy, "Lifecycle Event Reconciliation", reconciliation)
+                    ),
+                    registry,
+                )
+                self.assertEqual(
+                    ["#w1-start"], [receipt.evidence for receipt in receipts]
+                )
+                self.assertEqual(
+                    (),
+                    module._lifecycle_reconciliation_rows(
+                        task(body(legacy, "Other", reconciliation)), registry
+                    ),
+                )
+                with self.assertRaisesRegex(
+                    module.SpecPackageError,
+                    f"requires one {hashes} Lifecycle Event Reconciliation",
+                ):
+                    module._lifecycle_reconciliation_rows(
+                        task(
+                            body(
+                                legacy,
+                                "Lifecycle Event Reconciliation",
+                                reconciliation,
+                                True,
+                            )
+                        ),
+                        registry,
+                    )
+                proof = module._migration_proof(
+                    (package(body(legacy, "Contract Migration", migration)),),
+                    registry,
+                )
+                self.assertEqual(revision, proof.source_revision)
+                with self.assertRaisesRegex(module.SpecPackageError, "must occur once"):
+                    module._migration_proof(
+                        (package(body(legacy, "Contract Migration", migration, True)),),
+                        registry,
+                    )
+        # A reader never takes the other form's level, so a level-3 heading in
+        # the common form is a sibling of Work Performed, not its subsection.
+        misplaced = (
+            f"## Execution Log\n### Work Performed\nx\n### Lifecycle Events\n{events}\n"
+            "### W1 Start\nStarted.\n"
+        )
+        self.assertEqual((), module._lifecycle_event_rows(task(misplaced), registry))
+
+    def test_execution_items_probe_accepts_the_legacy_or_common_heading(self) -> None:
+        module = _spec_packages_module()
+        for text in ("### Execution Items", "x\n#### Execution Items\ny"):
+            with self.subTest(text=text):
+                self.assertTrue(module._has_execution_items(text))
+        for text in (
+            "##### Execution Items",
+            "## Execution Items",
+            "#### Execution Items extra",
+            "text #### Execution Items",
+            "",
+        ):
+            with self.subTest(text=text):
+                self.assertFalse(module._has_execution_items(text))
+
     def test_withdrawn_criterion_does_not_exempt_completion(self) -> None:
         module = _spec_packages_module()
         with tempfile.TemporaryDirectory() as directory:
