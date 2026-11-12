@@ -1,6 +1,6 @@
 ---
 title: "W01 v14.7 Governance Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -93,14 +93,14 @@ here; cross-repository adoption stays out of scope (D-04).
 
 | ID | Verdict | Current owner and basis |
 | --- | --- | --- |
-| GOV-01 | KEEP | `sdlc.md` owns Task execution state and approval separate from acceptance. The Repository Vocabulary now defines each term once with its policy owner (TSK-0059, `07f1943c6`) |
-| GOV-02 | KEEP | `bootstrap.md` limits the Provider Registry to translation; adapters own syntax only |
+| GOV-01 | KEEP | `sdlc.md` owns Task execution state and approval separate from acceptance. The Repository Vocabulary now defines each term once with its policy owner (TSK-0059, `07f1943c6`). Consumer check: `test_generation7` rejects acceptance without PASS evidence and the deletion of failed rows (W01 consumer tests) |
+| GOV-02 | KEEP | `bootstrap.md` limits the Provider Registry to translation; adapters own syntax only. Consumer check: agent governance contract PASS and renderer drift 0 (W01 policy checks result) |
 | GOV-03 | CHANGE | Registry frontmatter rules are enforced. The adoption table adds a revision and state per contract; TemplateDefinition and the Release role removal have no contract id in the package, and that is recorded rather than invented |
 | GOV-04 | CHANGE (local) | TSK-0056 recorded "KEEP local, DEFER cross-repo" and deferred the contract fields. Local adoption is now recorded per contract, and partial adoption is labelled partial. Cross-repository adoption stays out of scope (D-04) |
-| GOV-05 | KEEP | `github-governance.md`: one person's review is never two approvals, and an App or signature never stands in for owner acceptance |
-| GOV-06 | KEEP | TSK-0056 gave the five duplicated rules one owner each. Renderer drift was 0 in this run (W01 policy checks result). The glossary is read directly, never projected (TSK-0059 H-11). The review found the new reuse rule duplicating the execution identity, fixed by keeping one key list |
-| GOV-07 | KEEP | The code-rule contradiction rule in `quality-standards.md` stands |
-| GOV-08 | KEEP | `approval-boundaries.md` reuses approval inside an approved scope; runtime enforcement UNVERIFIED |
+| GOV-05 | PARTIAL | Policy KEEP: `github-governance.md` says one person's review is never two approvals, and an App or signature never stands in for owner acceptance. No local test exercises it, and the remote branch protection that enforces it was not read: UNVERIFIED (H-W01-3) |
+| GOV-06 | KEEP | TSK-0056 gave the five duplicated rules one owner each. Renderer drift was 0 in this run (W01 policy checks result), and `test_validator_entrypoints` shows a hand-edited projection is reported as drift and never overwritten (W01 consumer tests). The Markdown-versus-JSON ledger check is N/A: open items live only in the Task, with no second machine ledger to diverge. The glossary is read directly, never projected (TSK-0059 H-11). The review found the new reuse rule duplicating the execution identity, fixed by keeping one key list |
+| GOV-07 | KEEP | The code-rule contradiction rule in `quality-standards.md` stands. It is a review rule with no executable consumer; the agent governance contract check covers its owner links |
+| GOV-08 | KEEP | `approval-boundaries.md` reuses approval inside an approved scope. Consumer check: `test_agent_governance_ci_routing` asserts the tracked deny rules for secret reads and `main` pushes and the PreToolUse deny decision (W01 policy tests). Native runtime denial is UNVERIFIED |
 | SUP-12 | KEEP | This repository records only its own adoption |
 | R45-03, R147-19 | KEEP | Q-08 path, the no-old-form decision and the OPEN-01/02 supersession are reused. The decisions taken in TSK-0059 are not asked again |
 | R45-08, R147-09 | KEEP (done in TSK-0059) | Glossary in the Repository Vocabulary form at v14.5; profile, template and Registry test exist; Release document role removal kept (C-01) |
@@ -108,7 +108,8 @@ here; cross-repository adoption stays out of scope (D-04).
 | W01-A | CHANGE | Local adoption record below |
 | W01-B | KEEP; test handed off | `approval-boundaries.md:25-31`: only the trusted user, operator or native channel authorizes, and a record in a Task, schema, CLI argument or hook cannot authorize itself. A negative test that injects a CI success as deployment approval is W05's (H-W01-1) |
 | QA-C01 | PARTIAL | Revision and adoption recorded here; an automated check of consumer revisions is W05's (H-W01-2) |
-| WP-06, WP-07 | KEEP | Same owners as GOV-06 and GOV-04 |
+| WP-06, WP-07 | KEEP, CHANGE | Same owners and verdicts as GOV-06 (KEEP) and GOV-04 (CHANGE) |
+| Archive contract | KEEP | `docs/98.archive/README.md` (README only) and ADR-0051 summarize-and-delete retirement are kept as the prompt requires; this W01 run did not change them |
 
 ### Policy corrections 2026-11-12
 
@@ -130,35 +131,61 @@ W06's (TSK-0059 H-09).
 
 ### Common contract adoption
 
-Approval of each revision: pending the owner's confirmation. The obligation
-is approved; the specific revisions below are proposed. Authoring source: the
-package contract file.
+A contract moves from draft (proposed) to approved (the owner named the
+revision) to adopted (approved and verified in this repository's consumers).
+The obligation is approved. Q-08 and the Release role removal are named in the
+owner's prompt, so they are approved. The other revisions come from the package
+files and wait for the owner's confirmation, so they stay draft even where the
+change is implemented on this branch. Authoring source: the package contract
+file. Exceptions: none recorded. Effective from: the merge to `main`.
 Project-Template `dev` as the shared authoring source is UNVERIFIED, since it
 is not read here (D-04).
 
-| Contract | Revision (package file, SHA-256 prefix) | Local scope | State here | Migration and rollback |
-| --- | --- | --- | --- | --- |
-| Repository Vocabulary | `repository-vocabulary` v14.5 (`REPOSITORY-VOCABULARY.json`, `b03ae3c00a42`) | `.agents/knowledge/glossary.md`, `governance-vocabulary` profile | Adopted on this branch; not yet on `main` | Done in `07f1943c6`, `8903eeaf2`, `4ec4d7182`; rollback is a revert of those commits |
-| Common section form | `COMMON-DOC-FORM-1` 1.0.0 (`COMMON-SECTION-CONTRACT.json`, `4f79183d59c3`) | 16 common roles | Partial: 3 of 16 roles (Incident, Postmortem, AGENTS) | Per role in one commit, no old form; remaining roles TSK-0059 H-04 |
-| Stage QA | `QA-STAGES-1` 1.0.0 (`STAGE-QA-MATRIX.json`, `12d8962c96c7`) | `quality-standards.md`, workflows and hooks | Partial: policy meanings adopted here; Git-stage cells not implemented | Cells are TSK-0059 H-09 (W06) |
-| TemplateDefinition | v14.5 schema (`TEMPLATE-DEFINITION.schema.json`, `e490cf402419`) | Registry and templates | Not adopted | TSK-0059 H-06 (W03) |
-| Template path | `Q-08` (`TEMPLATE-PATH-DECISION.json`, `7089347e62b1`) | `docs/99.templates/` | Adopted: path unchanged | None |
-| Release document role removal | v14.7 direct requirement; no contract id | documentation protocol, Registry guards | Partial: policy and fixed-name guards adopted; renamed profiles not yet rejected | Wider guard TSK-0059 H-12 (W05) |
+| Contract | Revision (package file, SHA-256 prefix) | Local scope | State here | Consumer version | Migration and rollback |
+| --- | --- | --- | --- | --- | --- |
+| Repository Vocabulary | `repository-vocabulary` v14.5 (`REPOSITORY-VOCABULARY.json`, `b03ae3c00a42`) | `.agents/knowledge/glossary.md`, `governance-vocabulary` profile | Draft; implemented and checked on this branch | Glossary `Contract Version` column reads v14.5 | Done in `07f1943c6`, `8903eeaf2`, `4ec4d7182`; rollback is a revert of those commits |
+| Common section form | `COMMON-DOC-FORM-1` 1.0.0 (`COMMON-SECTION-CONTRACT.json`, `4f79183d59c3`) | 16 common roles | Draft; 3 of 16 roles implemented (Incident, Postmortem, AGENTS) | Not recorded in the Registry (H-W01-2) | Per role in one commit, no old form; remaining roles TSK-0059 H-04 |
+| Stage QA | `QA-STAGES-1` 1.0.0 (`STAGE-QA-MATRIX.json`, `12d8962c96c7`) | `quality-standards.md`, workflows and hooks | Draft; policy meanings implemented, Git-stage cells not | Not recorded in the policy (H-W01-2) | Cells are TSK-0059 H-09 (W06) |
+| TemplateDefinition | v14.5 schema (`TEMPLATE-DEFINITION.schema.json`, `e490cf402419`) | Registry and templates | Draft; not implemented | None | TSK-0059 H-06 (W03) |
+| Template path | `Q-08` (`TEMPLATE-PATH-DECISION.json`, `7089347e62b1`) | `docs/99.templates/` | Adopted: approved in the prompt, path unchanged | N/A, a path decision | None |
+| Release document role removal | v14.7 direct requirement; no contract id | documentation protocol, Registry guards | Approved; partially adopted: policy and fixed-name guards, renamed profiles not yet rejected | N/A, no contract id | Wider guard TSK-0059 H-12 (W05) |
 
-Every adopted or partial state above rests on changes on this branch that are
-not yet on `main`. No row is reported as adopted by another repository.
+Every implemented state above rests on changes on this branch that are not
+yet on `main`. No row is reported as adopted by another repository.
 
 ### Handoffs
 
 | ID | Writer | Difference |
 | --- | --- | --- |
 | H-W01-1 | W05 | A negative test that a CI success, check result or role string is rejected as approval for a deployment or other protected operation |
-| H-W01-2 | W05 | An automated check that each consumer reads the adopted contract revision recorded here (QA-C01) |
+| H-W01-2 | W05 | An automated check that each consumer reads the adopted contract revision recorded here (QA-C01); the Registry and `quality-standards.md` do not yet name the revision they implement |
+| H-W01-3 | W06 | Observe, read only, whether the remote branch protection enforces GOV-05 (one person's review is not two approvals), and record it |
+| H-W01-4 | W05 | Vocabulary violation fixtures: a merged PR read as Acceptance, an OPEN ID read as current state, and an approved Registry read as a KEEP exemption are each rejected |
+
+### W01 re-check 2026-11-12
+
+A second pass compared the whole W01 prompt with this Task and found four
+conflicts with the current requirement, each corrected above:
+
+- KEEP needs a consumer check, not policy text alone. Each KEEP now names the
+  test or check that consumes it. GOV-05 has none and is PARTIAL.
+- The adoption table called implemented work "adopted" while revision approval
+  was pending. States now follow draft, approved and adopted.
+- The contract fields lacked consumer version, exceptions and effective date;
+  they are now recorded, and the missing consumer versions go to H-W01-2.
+- The archive contract KEEP and the vocabulary violation cases were not
+  recorded; they are now (Archive row, H-W01-4).
+
+The role and relation table in prompt section 7.2 is reused from the
+documentation protocol; relation fields are W03's and state meanings W04's
+(TSK-0059 H-06 and H-07).
 
 ### Read denominator
 
 | Surface | Read |
 | --- | --- |
+| W01 prompt | All 501 lines, re-read in the re-check |
+| Consumer tests | `test_validator_entrypoints` renderer cases, `test_generation7`, `test_agent_governance_ci_routing` deny cases |
 | Governance policies | `approval-boundaries.md` lines 14-40 and 73-91, `quality-standards.md` lines 96-104, 227-232 and 239-268 (1.10.0 on this branch), plus the earlier W01 and W00 citations |
 | Prior Tasks | TSK-0056 assessment and closure; TSK-0059 handoffs and vocabulary changes |
 | Package | W01 prompt in full; six contract files for id, version and hash |
@@ -172,6 +199,9 @@ not yet on `main`. No row is reported as adopted by another repository.
 | W01 policy checks | 113 | W118 | metadata-links-governance | Changed policy, Spec, Plan and this Task | NOT_RUN | Runs after authoring | required | - |
 | W01 independent review | 113 | W118 | independent-review | Commits `532902934`, `3d9bdafce` and the review fixes | PASS | code-reviewer: two Important and three Minor findings (revision approval overstated, branch state, GOV-04 history, tense, stale line numbers), all fixed in this Task and `quality-standards.md` | required | - |
 | W01 policy checks result | 113 | W118 | metadata-links-governance | Branch after the review fixes | PASS | metadata check-changed selected 29 violations 0; links alignment PASS; lifecycle occupancy 0; agent governance contract PASS; renderer drift 0; markdownlint 0 | required | W01 policy checks |
+| W01 consumer tests | 113 | W118 | consumer-unittest | `tests.validation.test_validator_entrypoints`, `tests.lib.document_governance.test_generation7` at `7bec8a82f` | PASS | 22 tests OK | required | - |
+| W01 policy tests | 113 | W118 | policy-unittest | Five modules reading `quality-standards.md` (`test_ci_gate_evidence`, `test_github_workflow_contract`, `test_agent_governance_ci_routing`, `test_spec_packages`, `test_registry`), run while the review fixes were uncommitted | FAIL | 369 tests, 1 failure; the output was cut to its last lines, so the failing test was not identified | required | - |
+| W01 policy tests result | 113 | W118 | policy-unittest | Same five modules at `7bec8a82f`, clean tree | PASS | 369 tests OK in 861 s | required | W01 policy tests |
 
 ## Criterion Acceptance
 
@@ -183,7 +213,7 @@ not yet on `main`. No row is reported as adopted by another repository.
 
 In progress. The assessment, the adoption record and the policy corrections
 are recorded. Criterion 113 waits for checks, review and owner acceptance.
-Open: H-W01-1 and H-W01-2 (W05), and the partial or unadopted contracts
+Open: H-W01-1, H-W01-2 and H-W01-4 (W05), H-W01-3 (W06), the owner's confirmation of the draft revisions, and the partial or unadopted contracts
 through TSK-0059 H-04, H-06, H-09 and H-12.
 
 ## Related Documents
