@@ -1,10 +1,10 @@
 ---
 title: "Document Retention and Retirement Requirements"
-version: "3.0.2"
+version: "3.0.3"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 layer: "requirements"
 artifact_id: "REQ-0026"
 created: "2026-09-01"
@@ -14,6 +14,8 @@ created: "2026-09-01"
 
 ## Overview
 
+### Problem and Outcome
+
 Retention rules must outlive the change that introduced them. A document remains
 current while it owns current meaning; when it leaves, readers must still find
 what it held, why it left, and its current owner. Its still-current substance is
@@ -21,9 +23,21 @@ summarized into a current owner, the original is deleted, version history is the
 record of the removed body, and its number stays retired. Age, corpus size, and
 absent incoming links cannot by themselves authorize deletion.
 
+### Stakeholders
+
+- Maintainers need durable retention and review criteria independent of old Tasks.
+- Agents need enforceable lifecycle, approval, retirement, and citation boundaries.
+- Auditors need discoverable lineage and the original context of decisions.
+
+The owner, @buenhyden, writes, reviews and accepts this package.
+
 ## Scope
 
-### Constraints
+### In Scope
+
+This package covers how documents are retained, retired and summarized into a current owner, and the registered checks that enforce it, as stated in the Overview.
+
+### Constraints and Exclusions
 
 - Retirement summarizes before it deletes: the lineage of a removed record lives
   in the Traceability of its Stage 01 or Stage 02 owner, never in a Stage 98
@@ -99,13 +113,7 @@ absent incoming links cannot by themselves authorize deletion.
   `resolved_at` value. Its bundle and corrective-work owner preserve closure
   evidence without claiming all corrective work is complete.
 
-### Stakeholders and User Needs
-
-- Maintainers need durable retention and review criteria independent of old Tasks.
-- Agents need enforceable lifecycle, approval, retirement, and citation boundaries.
-- Auditors need discoverable lineage and the original context of decisions.
-
-### Non-functional Requirements
+### Quality Requirements
 
 - **REQ-0026-NFR-0006 — Determinism**: Checks derive judgments from the selected tree and that
   tree's own Registry. A missing, symlinked, unreadable, or invalid Registry
@@ -114,6 +122,8 @@ absent incoming links cannot by themselves authorize deletion.
   tree and Registry give the same verdict.
 
 ## Acceptance Criteria
+
+### Acceptance Conditions
 
 - A Stage 03 removal or Stage 01 gap passes only when its number is reserved in
   the checked tree's Registry; an archive copy or a branch receipt does not
@@ -130,11 +140,20 @@ absent incoming links cannot by themselves authorize deletion.
 - Current metadata, lifecycle, link, and affected regression checks pass on the
   explicitly selected snapshot; unavailable checks are reported.
 
-## Related Documents
+### Verification Method
 
-### Traceability
+Each condition is judged by running the registered metadata, lifecycle, link and regression checks on the explicitly selected snapshot; unavailable checks are reported, not treated as passing. The Spec Packages that list REQ-0026 as a parent, such as SPEC-0248, SPEC-0249 and SPEC-0250, record the check results in their Task evidence rows. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+
+## Traceability
+
+### Source and Constraints
 
 - [Documentation protocol](../../.agents/governance/documentation-protocol.md)
+- [Stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md)
+- [Stage 99 registry](../99.templates/registry.json)
+
+### Downstream Links
+
 - [Document lifecycle architecture](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0051 Summarize-and-delete retirement](../02.architecture/decisions/0051-summarize-and-delete-retirement.md)
 - [ADR-0037 Package waiting and Task cancellation](../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
@@ -143,5 +162,3 @@ absent incoming links cannot by themselves authorize deletion.
 - SPEC-0249 retired three earlier items, whose numbers stay reserved in the
   Registry: a Tombstone namespace rule, immutable Stage 98 captures, and one
   capture record per unit. Stage 98 no longer holds records.
-- [Stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md)
-- [Stage 99 registry](../99.templates/registry.json)

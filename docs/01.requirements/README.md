@@ -1,10 +1,10 @@
 ---
 title: "Requirement Packages"
-version: "1.1.7"
+version: "1.1.8"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 layer: "requirements"
 ---
 
@@ -19,8 +19,8 @@ Stage 03, 실행 증거는 Stage 03 Spec Package의 현재 Task, 운영 절차�
 ## Scope
 
 이 디렉터리는 현재 Requirement Package를 관리한다. 각 패키지는
-functional, non-functional, solution-independent interface 요구사항을 같은
-경계에서 관리한다. 별도 역할 문서를 병렬로 만들지 않는다. 아래 색인은 현재 패키지를
+functional, quality(non-functional) 요구사항을 같은 경계에서 관리하고,
+solution-independent interface 요구는 functional 요구사항으로 쓴다. 별도 역할 문서를 병렬로 만들지 않는다. 아래 색인은 현재 패키지를
 안내하며, 패키지가 추가·변경·삭제되면 같은 변경에서 갱신한다.
 
 Requirement Package는 문제와 이해관계자, 요구사항, 수용 기준, 제약,
@@ -32,7 +32,9 @@ Requirement Package는 문제와 이해관계자, 요구사항, 수용 기준, �
 
 Requirement Package 하나가 PRD의 문제·사용자 가치·범위, SRS의 functional·
 non-functional 요구사항과 수용 기준, solution-independent interface 요구를
-각 section 관점으로 함께 소유한다. PRD, SRS, interface-requirement를 별도
+각 section 관점으로 함께 소유한다. Interface 요구는 `Functional Requirements`,
+품질 요구는 `Quality Requirements` 절에 쓰며 별도 interface 절이나 `IF` 자식 ID는
+발급하지 않는다. PRD, SRS, interface-requirement를 별도
 profile이나 병렬 문서로 만들지 않는다. 실행 가능한 interface payload는
 Stage 03 Spec의 contract가 소유한다.
 
@@ -77,8 +79,7 @@ docs/01.requirements/
 
 파일명은 `####-<slug>.md`이고 frontmatter의 `type`은
 `sdlc/requirement`, `artifact_id`는 `REQ-####`를 사용한다. 자식 ID는
-반드시 `REQ-####-FR-####`, `REQ-####-NFR-####`, 또는
-`REQ-####-IF-####` 전체 형태를 사용한다. 발급된 번호는 재사용하거나
+반드시 `REQ-####-FR-####` 또는 `REQ-####-NFR-####` 전체 형태를 사용한다. 발급된 번호는 재사용하거나
 high-water를 낮추지 않는다.
 
 ## Usage

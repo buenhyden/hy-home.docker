@@ -113,9 +113,11 @@ _EXECUTABLE_TOKEN_LIMIT = 4096
 _EXECUTABLE_SUFFIXES = frozenset({".graphql", ".proto", ".yaml", ".yml"})
 _SECTION_KINDS = {
     "Functional Requirements": "FR",
-    "Non-functional Requirements": "NFR",
-    "Interface Requirements": "IF",
+    "Quality Requirements": "NFR",
 }
+# IF stays an allocated, append-only identity kind with nothing current issued;
+# no current section may declare it.
+_ALLOCATED_KINDS = ("FR", "NFR", "IF")
 
 
 class RequirementPackageError(ValueError):
@@ -507,11 +509,13 @@ def _required_sections(registry: DocumentRegistry) -> tuple[str, ...]:
 def _parse_items(text: str, package_number: str) -> tuple[RequirementItem, ...]:
     items: list[RequirementItem] = []
     seen: set[str] = set()
-    last_numbers = {kind: 0 for kind in _SECTION_KINDS.values()}
+    last_numbers = {kind: 0 for kind in _ALLOCATED_KINDS}
     for section in _trusted_requirement_sections(text):
         expected_kind = _SECTION_KINDS.get(section.group("name"))
         if expected_kind is None:
-            continue
+            raise RequirementPackageError(
+                f"requirement section is not current: {section.group('name')}"
+            )
         section_line = text.count("\n", 0, section.start("body")) + 1
         for offset, line in enumerate(section.group("body").splitlines(), start=1):
             declaration = _LIST_DECLARATION.fullmatch(line)
@@ -654,7 +658,7 @@ def _validate_complete_allocation(
     package: RequirementPackage, registry: DocumentRegistry
 ) -> None:
     package_number = package.artifact_id.removeprefix("REQ-")
-    for kind in _SECTION_KINDS.values():
+    for kind in _ALLOCATED_KINDS:
         allocation = _allocation_space(registry, package_number, kind)
         _validate_allocation_history(allocation, f"REQ-{package_number}.{kind}")
         actual = tuple(

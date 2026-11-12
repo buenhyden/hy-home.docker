@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Requirements"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 layer: "requirements"
 artifact_id: "REQ-0027"
 created: "2026-09-19"
@@ -14,6 +14,8 @@ created: "2026-09-19"
 
 ## Overview
 
+### Problem and Outcome
+
 Operate real HOME services and development work on a single Linux host.
 Remove inconsistencies in implementation, operations documentation,
 configuration, and version-update rules so one operator can explain each
@@ -22,9 +24,24 @@ requirement records the full audit/redesign scope the user requested.
 Authoring documents and implementation does not imply approval to deploy real
 services or change data.
 
+### Stakeholders
+
+- A HOME user must be able to use the access/authentication foundation and
+  AI/workflow features at all times.
+- A developer must be able to select the development/experiment features
+  they need and know the impact on HOME availability.
+- An operator must align configuration without exposing values and verify
+  state and recoverability before and after a change.
+
+The owner, @buenhyden, writes, reviews and accepts this package.
+
 ## Scope
 
-### Constraints
+### In Scope
+
+This package covers real HOME services and development work on a single Linux host, including the full audit and redesign scope the user requested, as stated in the Overview.
+
+### Constraints and Exclusions
 
 Targets a single physical host with real operational data. Multiple
 containers or profiles on the same host do not provide physical failure
@@ -32,7 +49,7 @@ isolation. Secret rotation, destructive data operations, reboots, and
 running-service changes follow a separate approval scope. Frozen historical
 documents and the meaning of issued identifiers are preserved.
 
-### Risks
+**Risks.**
 
 Failures and resource contention on shared host, storage, and GPU affect
 multiple HOME features. The user's requirement for always-on availability is
@@ -73,16 +90,7 @@ needed.
   administrators, both built from one source commit, and must stay outside
   the default HOME selection.
 
-### Stakeholders and User Needs
-
-- A HOME user must be able to use the access/authentication foundation and
-  AI/workflow features at all times.
-- A developer must be able to select the development/experiment features
-  they need and know the impact on HOME availability.
-- An operator must align configuration without exposing values and verify
-  state and recoverability before and after a change.
-
-### Non-functional Requirements
+### Quality Requirements
 
 - **REQ-0027-NFR-0001 — Confidentiality**: Passwords, tokens, keys, and
   local secret values must not appear in output, reports, model context, or
@@ -99,6 +107,8 @@ needed.
 
 ## Acceptance Criteria
 
+### Acceptance Conditions
+
 1. The classification of every service and HOME's required features and
    dependencies can be confirmed in code and documentation.
 2. Missing entries and conflicts in configuration, secret metadata, profile,
@@ -111,9 +121,17 @@ needed.
 5. A reviewable change history, verification results, residual risk, and
    incomplete execution verification are provided.
 
-## Related Documents
+### Verification Method
 
-### Traceability
+Each condition is judged by running the checks against the latest main, with actual results recorded separately from unverified items and any non-PASS result recorded as such. The Spec Packages that list REQ-0027 as a parent, such as SPEC-0204, SPEC-0212 and SPEC-0218, record the results in their Task evidence rows. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+
+## Traceability
+
+### Source and Constraints
+
+No upstream policy or ADR is cited; the origin is the user's audit and redesign request stated in the Overview.
+
+### Downstream Links
 
 - [Home and Development Host Architecture](../02.architecture/descriptions/0031-home-development-host.md)
 - [SPEC-0261 REQ-0027 Approval](../03.specs/0261-req-0027-approval/spec.md)

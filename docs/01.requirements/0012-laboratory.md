@@ -1,10 +1,10 @@
 ---
 title: "Administration and Experimentation Requirements"
-version: "1.5.0"
+version: "1.5.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 layer: "requirements"
 artifact_id: "REQ-0012"
 created: "2026-03-26"
@@ -13,6 +13,8 @@ created: "2026-03-26"
 # Administration and Experimentation Requirements
 
 ## Overview
+
+### Problem and Outcome
 
 When service access points, container state, data store debugging tools and
 notebook-style experiment tools are scattered, operators waste time on status
@@ -24,20 +26,35 @@ and safely use these tools, and how an isolated LAB is kept apart from HOME
 until the owner promotes it. The retired Laboratory directory does not retire
 these requirements.
 
+### Stakeholders
+
+- **System administrator**: monitors container state and logs (Dozzle).
+- **Backend developer**: inspects and debugs Redis data (RedisInsight).
+- **AI agent**: finds service access points and configuration.
+- **Researcher**: runs notebook-style work and experiments (Open Notebook,
+  JupyterLab) and tracks models (MLflow).
+
+The owner, @buenhyden, writes, reviews and accepts this package.
+
 ## Scope
 
-- **In scope**: RedisInsight, Dozzle, Open Notebook with SurrealDB, MLflow and
+### In Scope
+
+- RedisInsight, Dozzle, Open Notebook with SurrealDB, MLflow and
   JupyterLab; the isolation and promotion readiness of every LAB.
+
+### Constraints and Exclusions
+
 - **Out of scope**: admin UIs of individual business applications.
 - **Non-goals**: hardware-level monitoring, owned by the observability tier;
   one aggregated dashboard, which is not provided.
 
-### Assumptions
+**Assumptions.**
 
 - The shared SSO (Keycloak) is available for SSO-protected routes.
 - No LAB is promoted now; each promotion is a separate, owner-approved change.
 
-### Risks
+**Risks.**
 
 - Dozzle reads the Docker socket. A read-only mount does not restrict Docker
   API reads, so native OIDC and the gateway allowlist are its boundary.
@@ -70,23 +87,9 @@ these requirements.
   owner approves it and a fail-closed readiness report passes, judged on
   declared resource reservations; an unmeasured value is not a pass.
 
-### Stakeholders and User Needs
-
-- **System administrator**: monitors container state and logs (Dozzle).
-- **Backend developer**: inspects and debugs Redis data (RedisInsight).
-- **AI agent**: finds service access points and configuration.
-- **Researcher**: runs notebook-style work and experiments (Open Notebook,
-  JupyterLab) and tracks models (MLflow).
-
-### Non-functional Requirements
-
-No numbered non-functional requirement is issued.
-
-### Interface Requirements
-
-No numbered interface requirement is issued.
-
 ## Acceptance Criteria
+
+### Acceptance Conditions
 
 - **REQ-0012-FR-0001**: Each tool in scope has a guide in the operations catalog
   that names its access point.
@@ -100,7 +103,18 @@ No numbered interface requirement is issued.
 - **REQ-0012-FR-0005**: Every LAB passes the LAB isolation check, and no LAB is
   promoted without an owner-approved readiness report whose criteria all pass.
 
-## Related Documents
+### Verification Method
+
+Each condition is judged by reviewing the operations catalog guides, the root composition validation and the LAB isolation check it names; a rendering result is not evidence of a running service, so live behavior needs a runtime observation. SPEC-0262 cites REQ-0012; its Task evidence rows record each result. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+
+## Traceability
+
+### Source and Constraints
+
+This package records the owner's requirements for the laboratory tier; no upstream
+document governs it.
+
+### Downstream Links
 
 - **Architecture Description**: [Laboratory architecture](../02.architecture/descriptions/0011-laboratory-architecture.md)
 - **Spec**: [SPEC-0262 LAB migration](../03.specs/0262-analytics-labs-migration/spec.md)

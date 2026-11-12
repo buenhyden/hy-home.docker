@@ -220,7 +220,7 @@ if not tool_name or tool_name in edit_tools:
                 f"Path: `{short_path}`\n\n"
                 "Before writing or updating this document, load the matching template from "
                 "`docs/99.templates/` and preserve its required headings, target path guidance, "
-                "target-relative links, and `## Related Documents` section. The PR quality gate enforces the changed-document template contract."
+                "target-relative links, and the section it declares for related links. The PR quality gate enforces the changed-document template contract."
             )
             break
     for path in paths:

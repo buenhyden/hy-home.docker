@@ -1,17 +1,20 @@
 ---
 title: "Agent Governance Standardization Requirements"
-version: "1.7.0"
+version: "1.7.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 layer: "requirements"
 artifact_id: "REQ-0024"
 created: "2026-06-01"
 ---
+
 # Agent Governance Standardization Requirements
 
 ## Overview
+
+### Problem and Outcome
 
 The AI agents in this repository must follow one governance model and one
 SDLC even when their execution format differs by provider. The goal is to
@@ -19,9 +22,27 @@ separate the owners of policy, provider translation, document format, and
 execution evidence, and to keep `.claude/` and `.codex/` from degrading into
 independent policy sources.
 
+### Stakeholders
+
+- The maintainer must be able to immediately tell which document is
+  canonical in case of a conflict.
+- An AI agent must load only the minimum policy, role, skill, Spec, and Task
+  needed for the request.
+- A reviewer must be able to reproduce the difference between provider
+  projection and the canonical source, the approval boundary, and the
+  verification result.
+- An operator needs an explicit approval boundary so agent work does not
+  expand into secrets, runtime, deployment, or remote state.
+
+The owner, @buenhyden, writes, reviews and accepts this package.
+
 ## Scope
 
-### Constraints
+### In Scope
+
+This package covers the governance model, canonical ownership, provider adapters and SDLC flow of the AI agents in this repository, as stated in the Overview.
+
+### Constraints and Exclusions
 
 - Shared agent governance policy changes are made only within the approved
   repository scope.
@@ -97,19 +118,7 @@ independent policy sources.
   them. What a record may hold is owned by the environment constraints policy,
   section 5.
 
-### Stakeholders and User Needs
-
-- The maintainer must be able to immediately tell which document is
-  canonical in case of a conflict.
-- An AI agent must load only the minimum policy, role, skill, Spec, and Task
-  needed for the request.
-- A reviewer must be able to reproduce the difference between provider
-  projection and the canonical source, the approval boundary, and the
-  verification result.
-- An operator needs an explicit approval boundary so agent work does not
-  expand into secrets, runtime, deployment, or remote state.
-
-### Non-functional Requirements
+### Quality Requirements
 
 - **REQ-0024-NFR-0009 — Determinism**: Rule interpretation and provider
   projection verification must be deterministic and fail closed, with no
@@ -138,6 +147,8 @@ independent policy sources.
 
 ## Acceptance Criteria
 
+### Acceptance Conditions
+
 - There is no name/source/scope drift between shared agent governance and
   provider surfaces.
 - Tracked files under `.claude/` and `.codex/` are classified as authored
@@ -156,13 +167,20 @@ independent policy sources.
 - Both providers read and revise the same memory record from different
   worktrees, and a stale revision changes nothing.
 
-## Related Documents
+### Verification Method
 
-### Traceability
+Each condition is judged by running the registered governance and document suites on the current tree, as the determinism and currency measures state, and by reviewing the provider surfaces they classify. The condition that both providers revise the same memory record from different worktrees also needs a runtime observation across both providers, not only a suite run. The Spec Packages that list REQ-0024 as a parent, such as SPEC-0212, SPEC-0244 and SPEC-0251, record the suite results and the observation in their Task evidence rows. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+
+## Traceability
+
+### Source and Constraints
+
+- **Governance entry**: [canonical agent governance](../../.agents/README.md)
+
+### Downstream Links
 
 - **Architecture Description**: [AD-0027 Agent Governance Canonical Adapter](../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)
+- **Historical implementation evidence**: SPEC-0158
 - **Decision**: [ADR-0032 Canonical Agent Governance Home](../02.architecture/decisions/0032-canonical-agent-governance-home.md)
 - **Decision**: [ADR-0034 Canonical Knowledge and Prompt Surfaces](../02.architecture/decisions/0034-canonical-knowledge-and-prompt-surfaces.md)
 - **Decision**: [ADR-0049 Shared Agent Memory Store](../02.architecture/decisions/0049-shared-agent-memory-store.md)
-- **Historical implementation evidence**: SPEC-0158
-- **Governance entry**: [canonical agent governance](../../.agents/README.md)

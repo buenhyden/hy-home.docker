@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.16.0"
+version: "3.16.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -286,7 +286,9 @@ evidence; surrounding instructions remain current and validated normally.
   is an Exception under [quality standards](quality-standards.md), with its
   approved condition, scope, reason, end or review condition and verification.
 - A Requirement Package combines PRD, SRS, and implementation-independent
-  interface perspectives. A Description owns current structure; an ADR owns one
+  interface perspectives. An interface need is written as a functional
+  requirement and a quality need under Quality Requirements; no separate
+  interface section or `IF` child identity is issued. A Description owns current structure; an ADR owns one
   consequential choice. Preserve accepted decisions and use explicit
   supersession when the choice changes.
 - Use the Description core for architecture views: context and scope

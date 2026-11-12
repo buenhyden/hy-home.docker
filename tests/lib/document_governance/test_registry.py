@@ -112,11 +112,11 @@ def _reclassify_fixture_allocation(root: pathlib.Path) -> None:
     package_path = root / "docs/01.requirements/0003-security.md"
     package_path.write_text(
         package_path.read_text(encoding="utf-8").replace(
-            "\n## Non-functional Requirements\n",
+            "\n### Quality Requirements\n",
             (
                 "\n| REQ-0003-FR-0005 | Reintroduced History | A retired "
                 "number must remain unavailable. |\n\n"
-                "## Non-functional Requirements\n"
+                "### Quality Requirements\n"
             ),
             1,
         ),
@@ -3058,9 +3058,16 @@ class DocumentRegistryTests(unittest.TestCase):
     def test_transition_adapter_projects_registry_body_roles(self) -> None:
         registry = load_registry()
         adapted = build_registry_profiles(registry)
-        sections = list(registry.profiles["requirements-package"]["required_sections"])
+        profile = registry.profiles["requirements-package"]
+        sections = list(profile["required_sections"])
+        subsections = profile.get("required_subsections") or {}
         body = "# Example\n\n" + "\n\n".join(
-            f"## {section}\n\nContract content." for section in sections
+            f"## {section}\n\nContract content."
+            + "".join(
+                f"\n\n### {child}\n\nContract content."
+                for child in subsections.get(section, ())
+            )
+            for section in sections
         )
         record = Record(
             pathlib.Path("docs/01.requirements/0001-example.md"),

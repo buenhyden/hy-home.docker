@@ -1,10 +1,10 @@
 ---
 title: "WARNING: template use required"
-version: "1.1.3"
+version: "1.1.4"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -41,7 +41,9 @@ stage-specific contract. The Registry owns the mapped template for each profile.
 1. Read the mapped template under `docs/99.templates/templates/` before editing.
 2. Preserve required heading structure.
 3. Remove all temporary placeholders before saving.
-4. Include a `## Related Documents` section in every Markdown document.
+4. Keep related links in the section the template declares for them, such as
+   `Traceability` or `References` for a role on the common form and
+   `## Related Documents` for a role that has not moved.
 
 After editing, inspect `python3 scripts/validation/run-ci-gate.py --profile changed --explain`.
 This selects checks without executing or accepting template validation.
