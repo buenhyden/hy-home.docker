@@ -1,6 +1,6 @@
 ---
 title: "hy-home.k8s Integration Operations Policy"
-version: "1.5.0"
+version: "1.6.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -102,3 +102,4 @@ contract 표에 대한 검토된 변경이 필요하다.
 - [OpenBao ESO read policy](../../../../infra/03-security/openbao/config/policies/eso-read-platform.hcl)
 - [OpenBao operator policy](../../../../infra/03-security/openbao/config/policies/operator.hcl)
 - [Prometheus policy](../07-observability/0045-prometheus.md)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

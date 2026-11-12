@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Guide"
-version: "0.3.1"
+version: "0.4.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-12"
 layer: "operations"
 artifact_id: "GDE-0081"
 parent_ids:
@@ -21,8 +21,8 @@ created: "2026-09-19"
 
 ComfyUI는 `ai`와 `ai-image`가 선택하는 상시 실행 HOME 이미지 워크플로 UI이다.
 root Compose가 [해당 구현](../../../../infra/08-ai/comfyui/docker-compose.yml)을
-포함하며 이 서비스는 Traefik을 거쳐 도달하고 선언된 loopback 호스트 포트도
-바인딩한다. `gateway-standard-chain@file,sso-errors@file,sso-auth@file`이 공개
+포함하며 이 서비스는 Traefik을 거쳐 도달한다. 기본 Compose는 host port를
+게시하지 않고, loopback 포트는 유지보수 overlay에서만 생긴다. `gateway-standard-chain@file,sso-errors@file,sso-auth@file`이 공개
 라우트를 보호한다.
 
 이 서비스는 Compose에 선언된 현재 업스트림 이미지를 사용한다. mutable tag의 실제 digest/source는 배포 전 확인해야 하며,
@@ -42,7 +42,7 @@ AI 이미지 워크플로를 쓰는 사용자와 이를 운영하는 `@buenhyden
 
 ### 데이터와 설정 경계
 
-아래는 Compose가 `/opt/comfyui` 아래에 의도한 mount 역할이며, 활성 이미지가 실제 사용하는 경로임을 증명하지 않는다.
+아래는 Compose가 `/root/ComfyUI/{models,custom_nodes,input,output,user}`에 mount하는 역할이다(2026-11-08에 다시 mount하고 데이터를 옮김). Hugging Face와 Torch 캐시는 `/home/comfyui/.cache` 아래에 따로 mount된다.
 
 | Mount | 의도한 내용 | 복구 취급 |
 | --- | --- | --- |
@@ -76,8 +76,8 @@ UI에서 큐에 등록한다. `/system_stats` 응답이 성공해도 endpoint가
   캐시는 기록된 소스로부터만 재빌드 가능하다. 환경 값에는 listener/포트와 캐시
   경로가 포함된다. registry/다운로드 토큰이 도입되면 여전히 secret 소유자
   입력이다.
-- Traefik의 standard/error/SSO 체인이 라우트를 보호한다. loopback 포트는 로컬
-  운영용이다. 의존성은 NVIDIA 런타임/드라이버, 모델 스토리지, 게이트웨이/인증,
+- Traefik의 standard/error/SSO 체인이 라우트를 보호한다. loopback 포트는 유지보수
+  overlay에서만 붙으며 로컬 운영용이다. 의존성은 NVIDIA 런타임/드라이버, 모델 스토리지, 게이트웨이/인증,
   root CA, `edge_net`이다.
 - root에서 `docker compose --profile ai-image config --quiet`를
   사용한다. 업그레이드 전에는 큐 유입과 활성 작업을 중지하고, 일관된 정지
@@ -120,3 +120,4 @@ UI에서 큐에 등록한다. `/system_stats` 응답이 성공해도 endpoint가
 
 - [ComfyUI Compose](../../../../infra/08-ai/comfyui/docker-compose.yml)
 - [Policy](../../policies/09-ai-and-search/0081-comfyui.md), [Runbook](../../runbooks/09-ai-and-search/0081-comfyui.md)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

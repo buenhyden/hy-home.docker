@@ -1,6 +1,6 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "1.7.0"
+version: "1.8.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
@@ -62,7 +62,7 @@ networks beside it, then it left the services and the root.
 | `experience_ingress_net` | 10.250.16.0/24, internal | Traefik and Storybook | gateway → Storybook only |
 | `redisinsight_ingress_net` | 10.250.18.0/24, internal, isolated, dynamic from .128/25 | Traefik and RedisInsight (fixed .3) | gateway → RedisInsight only; no host address |
 | `<service>_ingress_net` (16) | 10.250.24.0/24–10.250.40.0/24, internal, isolated, dynamic from .128/25 | Traefik and one SSO-only backend each (SPEC-0266, ADR-0061) | gateway → that backend only |
-| `seaweedfs_s3_metrics_net` | 10.250.41.0/24, internal, isolated | `seaweedfs-s3`, Prometheus, Alloy | metrics/pprof scrape of `seaweedfs-s3:9327`; reaches no master/volume/filer API |
+| `seaweedfs_s3_metrics_net` | 10.250.41.0/24, internal, isolated, dynamic from .128/25 | `seaweedfs-s3` (metrics listener bound to fixed .2), Prometheus, Alloy | metrics/pprof scrape of `seaweedfs-s3:9327`; reaches no master/volume/filer API |
 | `oauth2_proxy_metrics_net` | 10.250.43.0/24, internal, isolated, dynamic from .128/25 | OAuth2 Proxy (metrics listener bound to fixed .2, alias `oauth2-proxy-metrics`) and Prometheus | metrics scrape of 44180 only (SPEC-0267) |
 | `keycloak_management_net` | 10.250.44.0/24, internal, isolated, dynamic from .128/25 | Keycloak (management listener bound to fixed .2, alias `keycloak-management`), Prometheus and Gatus | health and metrics on 9000 only (SPEC-0267) |
 | `grafana_pprof_net` | 10.250.45.0/24, internal, isolated, dynamic from .128/25 | Grafana (pprof bound to fixed .2, alias `grafana-pprof`) and Alloy | profile scrape of 6060 only (SPEC-0267) |
@@ -70,7 +70,7 @@ networks beside it, then it left the services and the root.
 | `seaweedfs_metrics_net` | 10.250.19.0/24, internal, isolated | Prometheus and the SeaweedFS master, volume and filer | metrics scrape only |
 | `n8n_blog_ingest_net` | 10.250.20.0/24, internal, isolated | `n8n-worker` and `blog-ingestion` | worker → Blog-data ingestion Gateway |
 | `blog_export_net` | 10.250.21.0/24, internal, isolated | Traefik and `blog-ingestion` | exact-path Traefik routes → Gateway; no published port |
-| `n8n_worker_runner_net` | 10.250.23.0/24, internal, isolated | `n8n-worker` with `n8n-task-runner-worker` | broker ↔ its external Code runner only; `10.250.22.0/24` (the removed main runner network, SPEC-0269) is not reused |
+| `n8n_worker_runner_net` | 10.250.23.0/24, internal, isolated, dynamic from .128/25 | `n8n-worker` (task broker bound to fixed .2, `10.250.23.2`) with `n8n-task-runner-worker` | broker ↔ its external Code runner only; `10.250.22.0/24` (the removed main runner network, SPEC-0269) is not reused |
 | `n8n_search_net` | leaf-owned, internal | `n8n` and `searxng` | n8n Assistant web search → SearXNG only; no egress |
 | `n8n_search_outbound_net` | leaf-owned | `searxng` | SearXNG → public search engines; no inbound path, no destination or port limit |
 | `n8n_sandbox_net` | 10.250.210.0/24, leaf-owned, internal | `n8n` and `n8n-sandbox-api` | n8n → sandbox API only |
@@ -79,6 +79,7 @@ networks beside it, then it left the services and the root.
 | `crawl4ai_net` | leaf-owned, internal | Crawl4AI and admitted consumers (POL-0091) | consumer → Crawl4AI API; no egress |
 | `crawl4ai_egress_net` | 10.250.200.0/29, leaf-owned, internal (named egress-isolation exception in REQ-0023-FR-0002) | Crawl4AI (fixed .3) and `crawl4ai-egress` (fixed .2) | crawler → egress gateway |
 | `crawl4ai_outbound_net` | leaf-owned | `crawl4ai-egress` | gateway → public addresses on ports 80/443 only; non-global and IPv6 addresses refused |
+| `comfyui_egress_net` | 10.250.42.0/24, non-internal, dynamic from .128/25 | ComfyUI, only while the maintenance overlay `docker-compose.egress.yml` is attached | model and custom-node downloads; no other container joins it (SPEC-0268) |
 | `restic_offsite_net` | leaf-owned | `restic-offsite` | backup egress to Cloudflare R2 only (ADR-0056) |
 
 Services with no container peer (Renovate, OpenTofu) use the project default
@@ -99,11 +100,17 @@ A service joins a segmented network only for a peer it actually uses: Traefik
 routes and Prometheus scrape targets are the fixed flows, and every other flow
 comes from the service's own configuration. Traefik is the only fixed address
 on `edge_net` because OAuth2 Proxy and Airflow trust it as the proxy; the other
-fixed addresses are RedisInsight on `redisinsight_ingress_net` and the
-Crawl4AI pair on `crawl4ai_egress_net`. 10.250.9.0/24 is no longer allocated
-in the root. A multi-homed server listens on `0.0.0.0`, never
-on the address its own name resolves to, because that resolves on only one of
-its networks.
+fixed addresses are RedisInsight on `redisinsight_ingress_net`, the
+Crawl4AI pair on `crawl4ai_egress_net`, and the `.2` address of each
+consumer-only metrics or management network: `seaweedfs_s3_metrics_net`
+(10.250.41.2), `n8n_worker_runner_net` (10.250.23.2, the n8n broker),
+`oauth2_proxy_metrics_net` (10.250.43.2), `keycloak_management_net`
+(10.250.44.2), `grafana_pprof_net` (10.250.45.2) and `traefik_metrics_net`
+(10.250.46.2). 10.250.9.0/24 is no longer allocated in the root. A
+multi-homed server listens on `0.0.0.0`, never on the address its own name
+resolves to, because that resolves on only one of its networks. The exception
+is a listener without its own authentication: it binds only to its fixed `.2`
+address on its consumer-only internal network, so no other network reaches it.
 
 ### Deployment View
 
@@ -144,5 +151,6 @@ Compose configuration.
 - [IP address management guide](../../05.operations/guides/02-gateway-and-networking/0077-ip-address-management.md)
 - [IP address management policy](../../05.operations/policies/02-gateway-and-networking/0077-ip-address-management.md)
 - [IP address management runbook](../../05.operations/runbooks/02-gateway-and-networking/0077-ip-address-management.md)
+- This document carries the SPEC-0267 secondary-listener hardening outcome; that package is retired and its body is in version history.
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

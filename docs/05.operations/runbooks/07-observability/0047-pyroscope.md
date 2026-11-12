@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Readiness and Recovery Runbook"
-version: "1.2.1"
+version: "1.3.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-12"
 layer: "operations"
 artifact_id: "RUN-0047"
 parent_ids:
@@ -48,7 +48,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 시작 전 점검:
 
-- [ ] `pyroscope` service, `pyroscope` container, `pyroscope-data` volume 상태를 확인한다.
+- [ ] `pyroscope` service, `pyroscope` container, `pyroscope-data`와 `pyroscope-metastore` volume 상태를 확인한다.
 - [ ] Profile labels에 high-cardinality 또는 secret-bearing values가 들어갔는지 의심되면 ingestion source를 먼저 식별한다.
 - [ ] 문제 유형을 readiness, ingestion, Grafana datasource, storage/capacity, CPU overhead, config regression 중 하나로 분류한다.
 - [ ] Data deletion, retention change, storage backend change 또는 ingestion limit change가 필요해 보이면 중단하고 repository owner @buenhyden approval을 받는다.
@@ -79,7 +79,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    ```bash
    docker logs --tail=500 pyroscope | grep -Ei 'storage|filesystem|label|cardinality|ingestion|limit|error|warn'
    docker stats --no-stream pyroscope
-   rg -n 'pyroscope-data|/var/lib/pyroscope' infra/06-observability/docker-compose.yml infra/06-observability/pyroscope/config/pyroscope.yaml
+   rg -n 'pyroscope-data|pyroscope-metastore|/var/lib/pyroscope' infra/06-observability/docker-compose.yml infra/06-observability/pyroscope/config/pyroscope.yaml
    ```
 
 5. Readiness 또는 ingestion state가 config와 맞지만 회복되지 않으면 Pyroscope를 재시작한다. Alloy writer state도 함께 의심될 때만 Alloy를 같이 재시작한다.
@@ -113,17 +113,17 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 
 상태: **계획됨, 미실행**. Pyroscope 복구에 성공했다고 주장하지 않는다.
 
-1. image/config digest, storage 시간 범위, producer/label 목록과 backup checksum을 기록한다. profile 쓰기와 Pyroscope를 중지한 뒤, 일관된 상태의 `pyroscope-data` snapshot을 생성한다.
+1. image/config digest, storage 시간 범위, producer/label 목록과 backup checksum을 기록한다. profile 쓰기와 Pyroscope를 중지한 뒤, 일관된 상태의 `pyroscope-data`와 `pyroscope-metastore`(`/data`, v2 metastore·raft state) snapshot을 함께 생성한다.
 2. 운영 route가 없고 통제된 test producer만 있는 별도 project/network의 새 path에 복구한다.
 3. Pyroscope를 시작하고 `profilecli ready`를 실행한다. 과거 기준값을 조회하고 label을 붙인 test profile 1개를 수집·조회한 뒤 Grafana 연동을 검증한다. Alloy가 수집한다고 주장하기 전에 실제 source를 확인한다.
-4. 불일치가 있으면 격리된 project를 중지하고 evidence를 보존한다. 수정하지 않은 backup으로 돌아간다. 운영 state/route 변경은 별도로 승인받는다.
+4. 불일치가 있으면 격리된 project를 중지하고 evidence를 보존한다. 수정하지 않은 backup으로 돌아간다. metastore는 archive를 새 `/data` volume에 복원한다. 운영 state/route 변경은 별도로 승인받는다.
 
 ## Verification
 
 - [ ] 위 `profilecli ready` 명령이 성공 종료한다.
 - [ ] Grafana Pyroscope datasource에서 최근 profile이 조회된다.
 - [ ] `docker stats --no-stream pyroscope`에서 CPU/memory 사용량이 정상 범위로 돌아온다.
-- [ ] Storage symptom이면 `pyroscope-data`, `/var/lib/pyroscope`, filesystem backend boundary가 policy와 일치한다.
+- [ ] Storage symptom이면 `pyroscope-data`, `pyroscope-metastore`(`/data`), `/var/lib/pyroscope`, filesystem backend boundary가 policy와 일치한다.
 - [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
 수집할 evidence는 다음과 같다.
@@ -173,3 +173,4 @@ verification이 실패하거나, secret exposure risk가 보이거나, destructi
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/07-observability/0047-pyroscope.md)
 - [Operations policy](../../policies/07-observability/0047-pyroscope.md)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

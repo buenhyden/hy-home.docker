@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Operations Policy"
-version: "1.7.2"
+version: "1.8.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-12"
 layer: "operations"
 artifact_id: "POL-0024"
 parent_ids:
@@ -61,8 +61,9 @@ profile)는 `storage`와 함께 동작한다.
   network·host port·route에 게시하는 것은 소유자의 별도 승인 대상이다(SPEC-0262 미결정 항목).
 - **Metrics.** `seaweedfs-s3`는 `9327`에서 metrics를 제공하며 Prometheus가
   job `seaweedfs-s3`로 수집한다. Listener는 게시되지 않고 Traefik route도
-  없지만, 어떤 `edge_net` 서비스든 접근할 수 있다. Request counter와
-  latency만 담고 있어 민감도가 낮으므로 이를 허용한다. Master, volume, filer는
+  없으며, `-metricsIp=10.250.41.2`로 internal 네트워크
+  `seaweedfs_s3_metrics_net`의 고정 주소에만 바인딩된다. 이 네트워크의 구성원은
+  S3와 Prometheus뿐이므로 `edge_net` 서비스는 접근할 수 없다. Master, volume, filer는
   각각 `9324`, `9325`, `9326`에서 metrics를 제공하고 Prometheus가
   `seaweedfs_metrics_net`으로 job `seaweedfs-master`·`seaweedfs-volume`·
   `seaweedfs-filer`를 수집한다. `SeaweedFSS3Down`, `SeaweedFSNodeMetricsDown`과 `SeaweedFSDataDiskLow`는
@@ -129,3 +130,4 @@ lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다
 - [Runbook](../../runbooks/05-databases-and-storage/0024-seaweedfs.md)
 - [Data backup](https://github.com/seaweedfs/seaweedfs/wiki/Data-Backup)
 - [Security configuration](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

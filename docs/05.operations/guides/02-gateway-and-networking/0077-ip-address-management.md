@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Membership Usage Guide"
-version: "1.3.5"
+version: "1.4.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-08"
+updated: "2026-11-12"
 layer: "operations"
 artifact_id: "GDE-0077"
 parent_ids:
@@ -53,7 +53,7 @@ networks:
 고정 주소는 다른 곳이 해당 주소를 신뢰하는 경우에만 부여하고 Compose 주석으로
 이유를 남긴다. 현재 예는 Traefik trusted-proxy 주소(`edge_net` `10.250.1.2`),
 RedisInsight의 `RI_APP_HOST`·healthcheck 주소(`redisinsight_ingress_net` `10.250.18.3`),
-Crawl4AI egress gateway·crawler 주소(`crawl4ai_egress_net` `10.250.200.2`/`.3`)다. 대부분의 서비스는 dynamic 주소를 받는다. 고정 주소는 같은 network의
+Crawl4AI egress gateway·crawler 주소(`crawl4ai_egress_net` `10.250.200.2`/`.3`)와, 자체 인증이 없는 보조 listener가 바인딩하는 소비자 전용 internal network의 `.2` 주소(`seaweedfs_s3_metrics_net` `10.250.41.2`, `n8n_worker_runner_net` `10.250.23.2`(n8n broker), `oauth2_proxy_metrics_net` `10.250.43.2`, `keycloak_management_net` `10.250.44.2`, `grafana_pprof_net` `10.250.45.2`, `traefik_metrics_net` `10.250.46.2`)다. 대부분의 서비스는 dynamic 주소를 받는다. 고정 주소는 같은 network의
 subnet 안, dynamic pool 밖이어야 하며 다른 service와 겹치지 않아야 한다.
 
 root include는 파일을 읽고 profile·직접 service target은 실행 대상을 정한다.
@@ -67,6 +67,8 @@ Docker network를 공유하지 않으며 기존 LAN endpoint 연동은
 - 다중 network 서버가 자기 DNS 이름의 한 주소에만 bind하면 다른 network의
   client가 닿지 못할 수 있다. 해당 listener는 승인된 container 내부
   `0.0.0.0` bind와 명시적 membership을 사용하며 host 공개 범위는 별도 통제한다.
+  예외로, 자체 인증이 없는 listener(metrics, pprof, 관리 포트, broker)는
+  소비자 전용 internal network의 고정 `.2` 주소에만 bind하며 `0.0.0.0`을 쓰지 않는다.
 - DNS 실패는 공통 network 누락 외에도 미선택·중단 service나 alias 차이가 원인일
   수 있다. 실제 target과 선언부터 확인하고 network를 무작정 추가하지 않는다.
 - 다른 network에서 같은 주소를 쓰는 것과 같은 network 안의 중복을 구분한다.
@@ -101,3 +103,4 @@ membership·주소 변경, 충돌 진단과 scoped rollback은
 
 - [Operations index](../../README.md)
 - [hy-home.k8s 통합](../10-platform-and-backup/0096-k8s-integration.md)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

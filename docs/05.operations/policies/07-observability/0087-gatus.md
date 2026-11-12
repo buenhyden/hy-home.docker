@@ -1,6 +1,6 @@
 ---
 title: "Gatus Policy"
-version: "0.5.0"
+version: "0.6.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -33,7 +33,7 @@ Gatus는 native OIDC와 지속적인 probe history를 가진 HOME availability m
   `sso-auth@file`, local-password fallback, 넓은 subject allowlist를 추가하지 않는다.
   `/metrics`는 브라우저 route 밖에 두고 승인된 모니터링 설계 없이는 외부에 노출하지
   않는다. 내부에서는 main 포트 `8080`의 `/metrics`가 `edge_net`, `mng_data_net`,
-  `obs_net`의 모든 peer에게 인증 없이 열려 있다. upstream이 OIDC router 밖에서
+  `obs_net`, `keycloak_management_net`의 모든 peer에게 인증 없이 열려 있다. upstream이 OIDC router 밖에서
   제공하고 저장소 patch(`metrics-remains-public-for-internal-scrape`)가 내부 scrape를
   위해 공개로 유지하므로 owner가 2026-11-07 이 노출을 수용했다(SPEC-0267).
   `oidc-hardening.patch`를 건드리는 Gatus 갱신이나 upstream metrics 인증이 생기면
@@ -85,3 +85,4 @@ probe 커버리지, backup, restore는 별도로 승인된 target이 필요한 �
 - [Guide](../../guides/07-observability/0087-gatus.md), [Runbook](../../runbooks/07-observability/0087-gatus.md)
 - 런타임 고정값은 [observability Compose](../../../../infra/06-observability/docker-compose.yml)와 선택된 [Gatus Dockerfile](../../../../infra/06-observability/gatus/Dockerfile)이 소유하며, [derived Compose image projection](../../../../infra/tech-stack.versions.json)이 drift를 검증한다.
 - [Gatus upstream security policy](https://github.com/TwiN/gatus/security/policy)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.
