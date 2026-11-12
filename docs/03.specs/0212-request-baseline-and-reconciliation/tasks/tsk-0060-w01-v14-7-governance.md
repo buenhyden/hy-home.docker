@@ -1,6 +1,6 @@
 ---
 title: "W01 v14.7 Governance Task"
-version: "0.7.0"
+version: "0.8.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -229,17 +229,21 @@ documentation protocol; relation fields are W03's and state meanings W04's
 | W01 policy tests | 113 | W118 | policy-unittest | Five modules reading `quality-standards.md` (`test_ci_gate_evidence`, `test_github_workflow_contract`, `test_agent_governance_ci_routing`, `test_spec_packages`, `test_registry`), run while the review fixes were uncommitted | FAIL | 369 tests, 1 failure; the output was cut to its last lines, so the failing test was not identified | required | - |
 | W01 policy tests result | 113 | W118 | policy-unittest | Same five modules at `7bec8a82f`, clean tree | PASS | 369 tests OK in 861 s | required | W01 policy tests |
 | W01 re-check review | 113 | W118 | independent-review | Commits `c61f518d4` to `b947ec52d` | FAIL | rules-engineer CHANGES_REQUIRED: nine Important and five Minor findings (overclaims in the protocol bullet, README still owning rules, GOV-06, GOV-07 and GOV-08 evidence, adoption fields and labels, stale pending text, no evidence at the new revision) | required | - |
+| W01 re-check review result | 113 | W118 | independent-review | Commits `6885be9cf`, `46fb58b84`, `5bc39297e` and `8628193b9` | PASS | rules-engineer re-review: 13 of 14 findings resolved, then the protocol's Task dependency and four minor items fixed; final verdict PASS | required | W01 re-check review |
+| W01 final checks | 113 | W118 | metadata-links-governance | HEAD `8628193b9` | PASS | metadata check-changed selected 29 violations 0; links alignment PASS; occupancy 0; agent governance contract PASS; renderer drift 0; operations catalog PASS | required | - |
+| W01 final tests | 113 | W118 | policy-unittest | Nine modules (`test_ci_gate_evidence`, `test_github_workflow_contract`, `test_agent_governance_ci_routing`, `test_spec_packages`, `test_registry`, `test_heading`, `test_profile`, `test_validator_entrypoints`, `test_generation7`) started at `8628193b9`. W02 edits to Stage 02 and 05 documents and to the protocol's retention section were made in the working tree during the run | PASS | 497 tests OK in 925 s | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 113 | pending | - | - | SPEC-0212 TSK-0060 |
+| 113 | accepted | W01 v14.7 assessment, W01 policy checks result, W01 independent review, W01 re-check review result, W01 final checks, W01 final tests | Owner accepted on 2026-11-12 in this chat. Handoffs H-W01-1 to H-W01-6 and the partial or unadopted contracts stay with their named owners | SPEC-0212 TSK-0060 |
 
 ## Review and Completion
 
 In progress. The assessment, the adoption record and the policy corrections
-are recorded. Criterion 113 waits for checks, review and owner acceptance.
+are recorded. The owner accepted criterion 113 on 2026-11-12. The Task stays
+in progress only as the record of the contract adoption it started.
 Open: H-W01-1, H-W01-2, H-W01-4, H-W01-5 and H-W01-6 (W05), H-W01-3 (W06), and the partial or unadopted contracts
 through TSK-0059 H-04, H-06, H-09 and H-12.
 
