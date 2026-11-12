@@ -1,10 +1,10 @@
 ---
 title: "Archive and Migration Check Retirement Task"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-12"
 layer: "specs"
 artifact_id: "SPEC-0248-TSK-0001"
 parent_ids:
@@ -175,14 +175,15 @@ templates under `docs/99.templates/templates/archive/`.
 | E23 | 4 | W5 | hosted-ci | CI Quality Gates run 41595209280 on head a879f2b64 | PASS | candidate-quality success; main-security skipped by its trigger | required | - |
 | E24 | 4 | W5 | full-suite-comparison | `tests/lib` and `tests/validation` discovery on a879f2b64 against main ec8555d09, system python3 | FAIL | lib 1053 tests, validation 2179; every failure also fails on main (15 secret metadata sync, 1 SMTP, 3 loader errors, 1 identity history) except 11 that read live `docs/03.specs` while a commit landed mid-run, and one lifecycle public test broken by the E23 row shape, since corrected | required | - |
 | E25 | 4 | W5 | quiet-tree-rerun | `test_spec_packages`, `test_requirements`, lifecycle `test_public` on the corrected tree with no concurrent writes | PASS | 122 tests OK; corpus lifecycle zero; metadata check-changed selected 7, zero violations | required | - |
+| E26 | 1 | W3 | document-commands | `check-document-links.py --mode commands` on branch `docs/tsk-0059-w00-v14-7-intake` at `878c4baab`, clean tree | PASS | 905 documents, 8303 links, 0 failures, 0 warnings | required | E19, E20 |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | - | - | @buenhyden |
-| 2 | pending | - | - | @buenhyden |
-| 3 | pending | - | - | @buenhyden |
+| 1 | accepted | E1, E4, E7, E8, E15, E21, E26 | Accepted by the owner on 2026-11-12 | @buenhyden |
+| 2 | accepted | E4, E7, E15, E21 | Accepted by the owner on 2026-11-12 | @buenhyden |
+| 3 | accepted | E2 | Accepted by the owner on 2026-11-12 | @buenhyden |
 | 4 | pending | - | - | @buenhyden |
 
 ## Review and Completion
@@ -200,6 +201,13 @@ merge `85904818e` at 2026-11-03T13:14:59Z. Hosted checks on the merged PR:
 every completed check SUCCESS, the rest SKIPPED, none failing. Candidate
 quality: the merged change is a candidate that passed hosted CI. This receipt
 is not owner acceptance: no criterion is accepted and the status is unchanged.
+
+### Owner acceptance 2026-11-12
+
+On 2026-11-12 the owner accepted criteria 1, 2, 3 in the
+SPEC-0212 TSK-0057 session. New evidence rows resolve the open required
+results with the same check and work unit; the earlier rows are kept.
+Criterion 4 stays pending: E24 `full-suite-comparison` has no resolving PASS yet; the rerun is recorded when it finishes.
 
 ## Related Documents
 
