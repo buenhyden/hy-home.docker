@@ -1,10 +1,10 @@
 ---
 title: "08-AI Optimization Hardening Architecture Description"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "AD-0023"
 parent_ids:
@@ -16,6 +16,8 @@ created: "2026-03-28"
 
 ## Overview
 
+### Purpose and Readers
+
 This Description records the hardening structure of the two core `08-ai`
 planes: Ollama, the local LLM inference and embedding engine, and Open WebUI,
 the chat interface and RAG orchestrator. It covers their gateway and identity
@@ -23,7 +25,7 @@ boundary, GPU concurrency limits, stateful storage and the hardening gate.
 Requirement owners, implementers and operators share these concerns; the tier
 structure itself is in [AD-0008](0008-ai-architecture.md).
 
-## Scope
+### System Boundary
 
 - **Owns**: the ingress and identity boundary of the Ollama and Open WebUI
   routes, the Ollama concurrency and queue ceiling, the Open WebUI stateful
@@ -37,9 +39,19 @@ structure itself is in [AD-0008](0008-ai-architecture.md).
 - **Non-goals**: a distributed GPU scheduler and parallel external LLM
   providers.
 
-## Structure
+## Context and Constraints
 
-### Architecture
+### Context
+
+Users reach `ollama.${DEFAULT_URL}` and `chat.${DEFAULT_URL}` through Traefik `websecure`. The Description consumes the `01-gateway` standard middleware chain, the `02-auth` ForwardAuth middleware and Keycloak OIDC, and Open WebUI calls Ollama for generation and embedding.
+
+### Constraints
+
+Every public route passes the gateway standard chain, plus ForwardAuth for Ollama or native OIDC for Open WebUI. Ollama defaults to `OLLAMA_NUM_PARALLEL=2`, `OLLAMA_MAX_LOADED_MODELS=1` and `OLLAMA_MAX_QUEUE=16`, which bounds GPU load, and the hardening checks are static, so they prove no running service or login.
+
+## Current Structure
+
+### Building Blocks
 
 - **Ingress**: Traefik `websecure` routes `ollama.${DEFAULT_URL}` through
   `gateway-standard-chain`, `sso-errors` and `sso-auth`
@@ -53,9 +65,9 @@ structure itself is in [AD-0008](0008-ai-architecture.md).
 - **Control**: the gateway and identity middleware, the hardening script and
   CI job, and the Operations guide, policy and runbook.
 
-## Runtime and Deployment
+### Runtime and Deployment
 
-### Runtime View
+#### Runtime View
 
 - **Entities**: model artifacts, conversation and session metadata, and
   embedding vectors.
@@ -67,7 +79,7 @@ structure itself is in [AD-0008](0008-ai-architecture.md).
   `OLLAMA_MAX_LOADED_MODELS=1` and `OLLAMA_MAX_QUEUE=16`
   (`infra/08-ai/ollama/docker-compose.yml:42-44`).
 
-### Deployment View
+#### Deployment View
 
 - **Platform**: Docker Compose packages `infra/08-ai/ollama` (Ollama and
   `ollama-exporter`) and `infra/08-ai/open-webui` (stateful, depends on
@@ -77,9 +89,27 @@ structure itself is in [AD-0008](0008-ai-architecture.md).
   `infrastructure-hardening` job. These are static checks; they prove no
   running service or login.
 
-## Quality and Risks
+## Interfaces
 
-### Quality Attributes
+### Contracts
+
+- Traefik `websecure` routes `ollama.${DEFAULT_URL}` and `chat.${DEFAULT_URL}` per the Ingress item in Building Blocks.
+- Open WebUI calls Ollama for generation and embedding (`RAG_EMBEDDING_ENGINE: ollama`).
+- Ollama concurrency and queue limits are set in `infra/08-ai/ollama/docker-compose.yml:42-44`.
+
+### Failure Boundaries
+
+Health-gated dependencies and healthchecks order startup. The Ollama concurrency and queue ceiling bounds GPU load. The embedded vector store shares the Open WebUI volume, so losing it loses the RAG index along with the application state. The guide, policy and runbook linked under Currentness and Lineage govern change and recovery.
+
+## Decisions
+
+### Decision Links
+
+- **ADR**: [ADR-0059](../decisions/0059-native-oidc-open-webui-and-airflow.md)
+
+### Quality and Risks
+
+#### Quality Attributes
 
 - **Performance**: the Ollama concurrency and queue ceiling bounds GPU load.
 - **Security**: every public route passes the gateway standard chain, plus
@@ -88,28 +118,32 @@ structure itself is in [AD-0008](0008-ai-architecture.md).
 - **Observability**: `ollama-exporter` supplies metrics, and the hardening gate
   detects contract drift.
 
-### Risks
+#### Risks
 
 - Open WebUI relies on its own OIDC configuration rather than gateway
   ForwardAuth, so a change to that configuration changes its access boundary.
 - The embedded vector store shares the Open WebUI volume; losing it loses the
   RAG index along with the application state.
 
-### Evolution
+## Traceability
+
+### Requirement Mapping
+
+- **PRD**: [REQ-0009](../../01.requirements/0009-ai.md)
+
+### Currentness and Lineage
+
+- **Tier Architecture Description**: [AD-0008 AI Infrastructure Architecture Description](0008-ai-architecture.md)
+- **Open WebUI Architecture Description**: [AD-0013](0013-open-webui-architecture.md)
+- **Guide**: [AI optimization hardening guide](../../05.operations/guides/09-ai-and-search/0058-ai-optimization-hardening.md)
+- **Policy**: [AI optimization hardening policy](../../05.operations/policies/09-ai-and-search/0058-ai-optimization-hardening.md)
+- **Runbook**: [AI optimization hardening runbook](../../05.operations/runbooks/09-ai-and-search/0058-ai-optimization-hardening.md)
+
+#### Evolution
 
 - **Ollama**: a model cache and storage policy, a GPU scheduling ceiling and a
   model promotion procedure from experiment to production.
 - **Open WebUI**: role- or environment-based model access and a conversation
   log retention and masking policy.
-
-## Related Documents
-
-- **PRD**: [REQ-0009](../../01.requirements/0009-ai.md)
-- **Tier Architecture Description**: [AD-0008 AI Infrastructure Architecture Description](0008-ai-architecture.md)
-- **Open WebUI Architecture Description**: [AD-0013](0013-open-webui-architecture.md)
-- **ADR**: [ADR-0059](../decisions/0059-native-oidc-open-webui-and-airflow.md)
-- **Guide**: [AI optimization hardening guide](../../05.operations/guides/09-ai-and-search/0058-ai-optimization-hardening.md)
-- **Policy**: [AI optimization hardening policy](../../05.operations/policies/09-ai-and-search/0058-ai-optimization-hardening.md)
-- **Runbook**: [AI optimization hardening runbook](../../05.operations/runbooks/09-ai-and-search/0058-ai-optimization-hardening.md)
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

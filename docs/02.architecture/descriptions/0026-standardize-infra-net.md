@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "1.8.0"
+version: "1.8.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "AD-0026"
 parent_ids:
@@ -16,13 +16,15 @@ created: "2026-04-01"
 
 ## Overview
 
+### Purpose and Readers
+
 The Compose services once shared one bridge network, `infra_net`, so every
 container could reach every other one. SPEC-0180 S05 replaced that mesh with
 networks that each carry one kind of flow. Maintainers and operators need to
 know which network owns a flow, who declares membership, and what still holds a
 fixed address.
 
-## Scope
+### System Boundary
 
 - Root `docker-compose.yml` owns the network definitions and their explicit
   `10.250.x.0/24` subnets, so Docker's automatic pool cannot take one first.
@@ -36,9 +38,19 @@ fixed address.
   architecture's ownership. No service joins `k3d-hyhome`; the owner removed
   the k3d integration on 2026-09-23. This removes shared-bridge membership, not the separately approved Kubernetes LAN endpoints governed by POL-0096.
 
-## Structure
+## Context and Constraints
 
-### Architecture
+### Context
+
+Traefik routes gateway traffic to backends over `edge_net` and the per-backend ingress networks, and Prometheus and Alloy scrape targets over `obs_net` and the consumer-only metrics networks. Restic offsite traffic leaves for Cloudflare R2, and the Crawl4AI and n8n egress networks reach public addresses.
+
+### Constraints
+
+Fixed addresses are the exception and each has a stated reason; a service joins a segmented network only for a peer it uses. Duplicate or out-of-subnet static addresses fail validation, and runtime inspection is allowed only in an approved environment.
+
+## Current Structure
+
+### Building Blocks
 
 `infra_net` was removed in two phases: services first joined their target
 networks beside it, then it left the services and the root.
@@ -87,9 +99,9 @@ network. WireMock also uses it until a named consumer exists;
 that network is then its trust boundary, and the consumer gets a scoped network. `restic`, `backup-sqlite-export` and Conftest keep
 `network_mode: none`, and `node-exporter` uses `network_mode: host`; only `restic-offsite` has egress. Registry joins `obs_net` for its metrics scrape; its loopback host publication remains separately declared. Mailpit uses `mailpit_ingress_net` for its routed UI and `mail_net` for SMTP. LABs, including Stalwart, declare their own networks in their standalone projects.
 
-## Runtime and Deployment
+### Runtime and Deployment
 
-### Runtime View
+#### Runtime View
 
 Services resolve names through Docker DNS and use static addresses only where
 tracked Compose explicitly declares them. New allocation selects an unused
@@ -112,7 +124,7 @@ resolves to, because that resolves on only one of its networks. The exception
 is a listener without its own authentication: it binds only to its fixed `.2`
 address on its consumer-only internal network, so no other network reaches it.
 
-### Deployment View
+#### Deployment View
 
 Docker Compose creates every network from the root definition. Static
 verification uses `scripts/validation/validate-docker-compose.sh`, the
@@ -121,9 +133,27 @@ verification uses `scripts/validation/validate-docker-compose.sh`, the
 environment and compares `docker network inspect` output with the tracked
 Compose configuration.
 
-## Quality and Risks
+## Interfaces
 
-### Quality Attributes
+### Contracts
+
+- Each network in the Networks table names its subnet, members and flow.
+- Services resolve names through Docker DNS and use static addresses only where tracked Compose declares them.
+- A multi-homed server listens on `0.0.0.0`, and a listener without its own authentication binds only to its fixed `.2` address.
+
+### Failure Boundaries
+
+Internal and isolated networks keep a flow from reaching any other member, and a listener without its own authentication binds only to its consumer-only network. A network named here but absent from the root definition, or a member list that drifts from the leaf Compose files, misleads allocation; the leaf files win.
+
+## Decisions
+
+### Decision Links
+
+- [ADR-0055 Segmented per-flow networks](../decisions/0055-segmented-per-flow-networks.md)
+
+### Quality and Risks
+
+#### Quality Attributes
 
 - Reliability: duplicate or out-of-subnet static addresses fail validation.
 - Security: services are exposed through the gateway unless their architecture
@@ -133,24 +163,28 @@ Compose configuration.
 - Operability: one Architecture Description and one Operations subject own the
   structural map and procedure.
 
-### Risks
+#### Risks
 
 - A network named here but absent from the root definition, or a member list
   that drifts from the leaf Compose files, misleads allocation; the leaf files
   win.
 
-### Evolution
+## Traceability
 
-- WireMock moves to a scoped network once a named consumer exists.
-
-## Related Documents
+### Requirement Mapping
 
 - [REQ-0023 Compose network segmentation](../../01.requirements/0023-standardize-infra-net.md)
-- [ADR-0055 Segmented per-flow networks](../decisions/0055-segmented-per-flow-networks.md)
+
+### Currentness and Lineage
+
 - SPEC-0180 HOME development convergence and SPEC-0098 (retired; version history)
 - [IP address management guide](../../05.operations/guides/02-gateway-and-networking/0077-ip-address-management.md)
 - [IP address management policy](../../05.operations/policies/02-gateway-and-networking/0077-ip-address-management.md)
 - [IP address management runbook](../../05.operations/runbooks/02-gateway-and-networking/0077-ip-address-management.md)
 - This document carries the SPEC-0267 secondary-listener hardening outcome; that package is retired and its body is in version history.
+
+#### Evolution
+
+- WireMock moves to a scoped network once a named consumer exists.
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

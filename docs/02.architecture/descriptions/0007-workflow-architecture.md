@@ -1,10 +1,10 @@
 ---
 title: "Workflow Tier (07-workflow) Architecture Description"
-version: "1.3.4"
+version: "1.3.5"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "AD-0007"
 parent_ids:
@@ -16,12 +16,14 @@ created: "2026-03-26"
 
 ## Overview
 
+### Purpose and Readers
+
 `07-workflow` is the owner-confirmed always-on HOME orchestration layer. It
 runs Apache Airflow for code-first DAGs, authenticated natively through the
 Keycloak Auth Manager, and n8n for low-code automation with its own login and no
 gateway SSO.
 
-## Scope
+### System Boundary
 
 - **Owns:** the Airflow services (`airflow-apiserver`, `airflow-scheduler`,
   `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`,
@@ -33,9 +35,19 @@ gateway SSO.
 - **Does not own:** business logic inside DAGs or n8n workflows, external
   CI/CD, or stream processing.
 
-## Structure
+## Context and Constraints
 
-### Architecture
+### Context
+
+Browsers reach Airflow, Flower and n8n through Traefik. The tier consumes `mng-pg` and `mng-valkey` (`04-data`), Keycloak and OAuth2 Proxy (`02-auth`), and Prometheus and Loki (`06-observability`).
+
+### Constraints
+
+The tier is owner-confirmed always-on HOME orchestration. Airflow authenticates natively through the Keycloak Auth Manager, n8n through its own login with no gateway SSO, and both share `mng-valkey` as broker with no per-app broker (ADR-0062 decision 10).
+
+## Current Structure
+
+### Building Blocks
 
 - **Airflow** (`infra/07-workflow/airflow/`) uses `CeleryExecutor`. The image
   is built from `airflow/Dockerfile`, which pins Airflow and the Keycloak
@@ -51,9 +63,9 @@ gateway SSO.
 - **Broker:** both use the shared `mng-valkey`; no per-app broker exists
   (ADR-0062 decision 10).
 
-## Runtime and Deployment
+### Runtime and Deployment
 
-### Runtime View
+#### Runtime View
 
 ```text
 Browser -> Traefik TLS -> airflow-apiserver -> Keycloak OIDC + Authorization Services
@@ -67,16 +79,33 @@ PostgreSQL metadata and the application encryption key are the durable
 recovery authority; the Valkey queue is in-flight coordination, not a recovery
 record.
 
-### Deployment View
+#### Deployment View
 
 `workflow` selects Airflow and n8n; `workflow-airflow` and `workflow-n8n`
 select one each; core services are HOME. The `blog-ingestion`
 capability profile selects the blog ingestion gateway, which shares isolated
 internal networks only with `n8n-worker` and Traefik.
 
-## Quality and Risks
+## Interfaces
 
-### Quality Attributes
+### Contracts
+
+Airflow uses `CeleryExecutor` and a Keycloak `home-airflow` client with Authorization Services; its internal JWT is separate from the Keycloak access token. Flower routes through ForwardAuth, and n8n runs in queue mode with its own login.
+
+### Failure Boundaries
+
+Airflow, n8n and OAuth2 Proxy share `mng-valkey`, so its outage stops queued work in both engines (see Risks below). PostgreSQL metadata and the application encryption key are the durable recovery authority; the Valkey queue is in-flight coordination only.
+
+## Decisions
+
+### Decision Links
+
+- [ADR-0007 Airflow and n8n hybrid](../decisions/0007-airflow-n8n-hybrid-workflow.md)
+- [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md)
+
+### Quality and Risks
+
+#### Quality Attributes
 
 - **Reliability:** scheduler, worker and triggerer health and broker
   availability.
@@ -86,16 +115,21 @@ internal networks only with `n8n-worker` and Traefik.
 - **Operability:** provider, database migration and auth bootstrap procedures
   live in Stage 05.
 
-### Risks
+#### Risks
 
 Airflow, n8n and OAuth2 Proxy share `mng-valkey`;
 its outage stops queued work in both engines.
 
-## Related Documents
+## Traceability
+
+### Requirement Mapping
 
 - [REQ-0008 Workflow](../../01.requirements/0008-workflow.md)
-- [ADR-0007 Airflow and n8n hybrid](../decisions/0007-airflow-n8n-hybrid-workflow.md)
-- [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md)
+
+### Currentness and Lineage
+
+The description reflects the current tree at its `updated` date and history lives in Git.
+
 - [Airflow guide](../../05.operations/guides/08-workflows-and-automation/0050-airflow.md)
 - [Application authentication integration](../../05.operations/guides/03-identity-and-access/0079-application-auth-integration.md)
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)

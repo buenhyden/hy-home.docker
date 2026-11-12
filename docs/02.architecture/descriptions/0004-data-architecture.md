@@ -1,10 +1,10 @@
 ---
 title: "Data Tier (04-data) Architecture Description"
-version: "1.3.0"
+version: "1.3.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "AD-0004"
 parent_ids:
@@ -16,6 +16,8 @@ created: "2026-03-26"
 
 ## Overview
 
+### Purpose and Readers
+
 Data provides storage and data-platform packages for HOME applications and
 explicitly selected development workloads. Operators need to tell shared HOME
 state apart from OPTIONAL packages and LAB topologies. Root packages are
@@ -23,7 +25,7 @@ direct children of `infra/04-data`; LAB topologies are standalone entrypoints
 under `labs/`. Analytics processing follows ADR-0062 and, since SPEC-0262,
 runs as LAB entrypoints.
 
-## Scope
+### System Boundary
 
 Data owns its database and object-store configuration and state contracts. It
 does not own every persistent file: analytics checkpoints, application
@@ -31,9 +33,19 @@ metadata and package-local stores stay with their consumers. Secrets, ingress
 and backup orchestration keep their owners.
 No package is split only to make the folder taxonomy uniform.
 
-## Structure
+## Context and Constraints
 
-### Architecture
+### Context
+
+Auth, Workflow, Tooling, Observability (Grafana), AI consumers, the analytics LABs and development workloads consume Data packages as described under Runtime View. Secrets, ingress and backup orchestration stay with their owners.
+
+### Constraints
+
+Data owns its database and object-store configuration and state contracts only, with no package split merely to make the folder taxonomy uniform. Declared secret, network, port and persistent path boundaries are kept; a folder or a Compose profile adds no isolation, and POL-0078 owns the profile vocabulary.
+
+## Current Structure
+
+### Building Blocks
 
 | Packages | Responsibility | Classification |
 | --- | --- | --- |
@@ -54,9 +66,9 @@ target engine backups stay with the engine's Data package. Restic stays in
 `09-platform-ops` as cross-platform orchestration. InfluxDB is retired
 (ADR-0047); DEV TimescaleDB owns time-series history.
 
-## Runtime and Deployment
+### Runtime and Deployment
 
-### Runtime View
+#### Runtime View
 
 Auth, Workflow, Tooling and Observability (Grafana) use declared `mng-db`
 identities; MLflow and Pact Broker provision their own `mng-pg` databases. AI
@@ -69,7 +81,7 @@ infra provisions only approved explicit databases, roles and Valkey ACLs.
 `perf_db` keeps test results with project-scoped access, not raw business data
 in management databases. No automatic ingestion pipeline exists.
 
-### Deployment View
+#### Deployment View
 
 The root Compose includes every `infra/04-data` package; profiles select them:
 `mng-db` by `mng`, `core`, `dev` and `local` (`mng-pg` also by `mlops`,
@@ -82,9 +94,25 @@ and `admin-data`. LAB entrypoints are separate projects, excluded even from
 root `--profile '*'`, with their own network, state and credential contracts.
 POL-0078 owns the profile vocabulary.
 
-## Quality and Risks
+## Interfaces
 
-### Quality Attributes
+### Contracts
+
+Consumers use declared `mng-db` identities, Qdrant, SeaweedFS storage identities and the SeaweedFS Iceberg catalog. Infra provisions only approved explicit databases, roles and Valkey ACLs.
+
+### Failure Boundaries
+
+`mng-pg` backs most HOME metadata and its loss affects Auth, Workflow, Tooling and Grafana together (see Risks below). Recovery follows each engine's supported backup and restore process and POL-0021; same-host replicas do not give host HA.
+
+## Decisions
+
+### Decision Links
+
+- [ADR-0062 HOME Membership and Planned LABs](../decisions/0062-home-lab-membership.md)
+
+### Quality and Risks
+
+#### Quality Attributes
 
 - HOME `mng-pg` and `mng-valkey` are shared single-instance dependencies,
   separate from the LAB clusters. Same-host replicas do not give host HA.
@@ -95,24 +123,28 @@ POL-0078 owns the profile vocabulary.
 - Recovery follows each engine's supported backup and restore process and
   POL-0021; a volume declaration or a Git rollback is not a verified backup.
 
-### Risks
+#### Risks
 
 `mng-pg` backs most HOME metadata; its loss affects Auth, Workflow, Tooling and
 Grafana together.
 
-### Evolution
+## Traceability
 
-Promoting a LAB topology into `infra/04-data` is an owner decision under the
-LAB promotion contract.
-
-## Related Documents
+### Requirement Mapping
 
 - [REQ-0004 Data requirements](../../01.requirements/0004-data.md)
 - [REQ-0027 HOME development host](../../01.requirements/0027-home-development-host.md)
-- [ADR-0062 HOME Membership and Planned LABs](../decisions/0062-home-lab-membership.md)
+
+### Currentness and Lineage
+
 - [Data packages](../../../infra/04-data/README.md)
 - [LAB entrypoints](../../../labs/README.md)
 - [Analytics architecture](0012-data-analytics-architecture.md)
 - [Backup policy](../../05.operations/policies/10-platform-and-backup/0021-backup-and-restore.md)
 - [Profile vocabulary](../../05.operations/policies/01-common/0078-compose-profile-vocabulary.md)
 - [Development database policy](../../05.operations/policies/05-databases-and-storage/0100-development-database.md)
+
+#### Evolution
+
+Promoting a LAB topology into `infra/04-data` is an owner decision under the
+LAB promotion contract.

@@ -1,10 +1,10 @@
 ---
 title: "Operational Readiness Closure Architecture"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "AD-0028"
 parent_ids:
@@ -16,12 +16,14 @@ created: "2026-07-19"
 
 ## Overview
 
+### Purpose and Readers
+
 This architecture aligns Compose readiness, sample-service supply chain, and local delivery under one isolation
 principle. The maintainer, operator, security reviewer, and release reviewer
 must each independently verify the subject identity, failure boundary,
 cleanup, and evidence of every lane.
 
-## Scope
+### System Boundary
 
 - Execution is limited to repository-local, task-scoped Docker resources and
   synthetic input.
@@ -32,9 +34,19 @@ cleanup, and evidence of every lane.
 - Raw artifacts and logs are transient, and only a redacted summary remains
   in the current Task.
 
-## Structure
+## Context and Constraints
 
-### Architecture
+### Context
+
+The maintainer, operator, security reviewer and release reviewer verify each lane. The lanes act on repository-local, task-scoped Docker resources and synthetic input, with `examples/sample-web-service/` as the shared artifact for supply chain and delivery.
+
+### Constraints
+
+Execution is limited to repository-local, task-scoped Docker resources and synthetic input. Registry publication, production or shared runtime, live data, credentials, remote deployment and GitHub setting mutation are out of bounds, and secrets and private keys stay out of durable evidence.
+
+## Current Structure
+
+### Building Blocks
 
 | Lane | Current implementation | Primary output |
 | --- | --- | --- |
@@ -46,9 +58,9 @@ Focused tests supply deterministic positive and negative fixtures for these
 components. Operations documents provide operator-facing invocation and
 recovery guidance without owning the architectural decision.
 
-## Runtime and Deployment
+### Runtime and Deployment
 
-### Runtime View
+#### Runtime View
 
 Each wrapper follows the `preflight → allocate → execute → verify → summarize → cleanup`
 order. The Compose lane's readiness and the
@@ -56,7 +68,7 @@ supply-chain lane's verified digest become delivery input. A failure does not sk
 required verification and exits non-zero along with the owned cleanup
 result.
 
-### Deployment View
+#### Deployment View
 
 Tracked scripts, policies, schemas, sample artifacts, and fixtures define the
 execution contract. Runtime containers, volumes, networks, generated SBOM,
@@ -64,9 +76,27 @@ signature working files, and database state are task-scoped transient
 resources. Automatic cleanup and promotion act only on an identity the lane
 allocated itself.
 
-## Quality and Risks
+## Interfaces
 
-### Quality Attributes
+### Contracts
+
+- Each wrapper follows the `preflight → allocate → execute → verify → summarize → cleanup` order.
+- The Compose lane's readiness and the supply-chain lane's verified digest become delivery input.
+- Each lane's primary output is listed in the Building Blocks table.
+
+### Failure Boundaries
+
+A failure does not skip required verification and exits non-zero along with the owned cleanup result. A digest mismatch fails closed, and automatic cleanup and promotion act only on an identity the lane allocated itself. Configuration rollback is distinct from data recovery.
+
+## Decisions
+
+### Decision Links
+
+- [ADR-0028 Local-Isolated Readiness Evidence](../decisions/0028-local-isolated-readiness-evidence.md)
+
+### Quality and Risks
+
+#### Quality Attributes
 
 - **Isolation**: protect other workloads with a unique project identity and
   label.
@@ -78,25 +108,29 @@ allocated itself.
 - **Observability**: summarize the subject, transition, result, cleanup, and
   stable failure class without secrets.
 
-### Risks
+#### Risks
 
 - The lanes prove behavior on synthetic input in task-scoped resources only;
   they establish nothing about production data or a shared runtime.
 
-### Evolution
+## Traceability
+
+### Requirement Mapping
+
+- [REQ-0025 Operational Readiness Closure](../../01.requirements/0025-operational-readiness-closure.md)
+
+### Currentness and Lineage
+
+- `examples/sample-web-service/`
+- `tests/validation/test_compose_core_readiness.py`
+- `tests/lib/supply_chain/test_supply_chain_policy.py`
+- `tests/validation/test_sample_service_delivery_rehearsal.py`
+
+#### Evolution
 
 - A new lane follows the same wrapper order and isolation boundary.
 - The PostgreSQL recovery lane, a synthetic 17 to 18 logical upgrade
   rehearsal, was removed on 2026-11-10 because every HOME PostgreSQL service
   already runs major 18; ADR-0028 Follow-up records the retirement.
-
-## Related Documents
-
-- [REQ-0025 Operational Readiness Closure](../../01.requirements/0025-operational-readiness-closure.md)
-- [ADR-0028 Local-Isolated Readiness Evidence](../decisions/0028-local-isolated-readiness-evidence.md)
-- `examples/sample-web-service/`
-- `tests/validation/test_compose_core_readiness.py`
-- `tests/lib/supply_chain/test_supply_chain_policy.py`
-- `tests/validation/test_sample_service_delivery_rehearsal.py`
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

@@ -1,30 +1,29 @@
 ---
 title: "Data Optimization and Hardening Architecture"
-version: "1.2.1"
+version: "1.2.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "AD-0019"
 parent_ids:
 - "REQ-0004"
 created: "2026-03-28"
 ---
+
 # Data Optimization and Hardening Architecture
 
 ## Overview
 
-### Context and Stakeholders
+### Purpose and Readers
 
 This document describes the relational, cache, object storage, search, and
 graph/vector service structure of `infra/04-data/`. The
 maintainer and operator manage the common Compose contract and the per-engine
 lifecycle/recovery procedure separately.
 
-## Scope
-
-### System Boundaries
+### System Boundary
 
 - `infra/04-data/**` owns the data service Compose topology and per-engine
   configuration.
@@ -35,9 +34,21 @@ lifecycle/recovery procedure separately.
 - Product business schema/query and cloud migration are outside this
   architecture.
 
-## Structure
+## Context and Constraints
 
-### Architecture
+### Context
+
+Gateway routing, `03-security` secret supply, and `06-observability` telemetry collection come from their own layers. Related description: [SPEC-0004](0004-data-architecture.md).
+
+### Constraints
+
+Each engine combines the common optimization, secret, healthcheck, and network contract in Compose; credentials are injected through the Compose secret contract. Additional HA, lifecycle automation, and failover drills are not treated as implemented for every engine and need a separately approved current Requirement and ADR.
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
+
+## Current Structure
+
+### Building Blocks
 
 - Development databases: `dev-db` (PostgreSQL and Valkey with provisioners
   and exporters)
@@ -55,16 +66,16 @@ promoted.
 Each component keeps its own configuration and volume, and combines the
 common optimization, secret, healthcheck, and network contract in Compose.
 
-## Runtime and Deployment
+### Runtime and Deployment
 
-### Runtime View
+#### Runtime View
 
 Services connect explicitly through SQL, Redis/Valkey, S3-compatible, search,
 vector, and graph protocols. Persistent state keeps a per-service volume
 boundary under `${DEFAULT_DATA_DIR}`, and credentials are injected through
 the Compose secret contract.
 
-### Deployment View
+#### Deployment View
 
 The current implementation combines `infra/common-optimizations.yml` with
 each engine Compose file. The hardening and Compose validators check secret,
@@ -73,9 +84,25 @@ automation, and failover drills are not treated as implemented for every
 engine today, and are introduced only through a separately approved current
 Requirement and ADR.
 
-## Quality and Risks
+## Interfaces
 
-### Quality Attributes
+### Contracts
+
+Services connect through SQL, Redis/Valkey, S3-compatible, search, vector, and graph protocols, with credentials injected through the Compose secret contract (see Runtime View).
+
+### Failure Boundaries
+
+Each component keeps its own configuration and volume, giving a per-service volume boundary under `${DEFAULT_DATA_DIR}`; reliability rests on healthchecks and a per-engine recovery procedure owned by the linked [Data hardening runbook](../../05.operations/runbooks/05-databases-and-storage/0030-data-optimization-hardening.md).
+
+## Decisions
+
+### Decision Links
+
+- [ADR-0062](../decisions/0062-home-lab-membership.md)
+
+### Quality and Risks
+
+#### Quality Attributes
 
 - **Security**: keeps credential injection consistent and reduces unnecessary
   exposure.
@@ -85,15 +112,18 @@ Requirement and ADR.
 - **Operability**: the static gate, capability Spec, and Operations subject
   must describe the same topology and failure boundary.
 
-## Related Documents
+## Traceability
 
-### Traceability
+### Requirement Mapping
 
 - [REQ-0004](../../01.requirements/0004-data.md)
-- [ADR-0062](../decisions/0062-home-lab-membership.md)
-- [SPEC-0004](0004-data-architecture.md)
+
+### Currentness and Lineage
+
+The description reflects the current tree at its `updated` date and history lives in Git.
+
+Operations documents:
+
 - [Data hardening guide](../../05.operations/guides/05-databases-and-storage/0030-data-optimization-hardening.md)
 - [Data hardening policy](../../05.operations/policies/05-databases-and-storage/0030-data-optimization-hardening.md)
 - [Data hardening runbook](../../05.operations/runbooks/05-databases-and-storage/0030-data-optimization-hardening.md)
-
-Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.

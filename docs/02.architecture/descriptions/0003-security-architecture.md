@@ -1,10 +1,10 @@
 ---
 title: "Security Tier Architecture Description"
-version: "2.2.0"
+version: "2.2.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "AD-0003"
 parent_ids:
@@ -16,6 +16,8 @@ created: "2026-03-26"
 
 ## Overview
 
+### Purpose and Readers
+
 `03-security` owns machine-secret storage and rendering. OpenBao plus
 `openbao-agent` is the HOME implementation; Vault and `vault-agent` were
 removed in SPEC-0180 S08. Security operators own seal and unseal custody,
@@ -23,7 +25,7 @@ policy, authentication methods, snapshots and migration; consumer tiers own the
 least-privilege paths they request. Bootstrap, recovery and backup custody stay
 independent of OpenBao so services can be restored without it.
 
-## Scope
+### System Boundary
 
 - **OpenBao:** single-node integrated Raft storage, AppRole Agent rendering,
   native Keycloak OIDC for humans, and a Traefik UI route on
@@ -40,9 +42,19 @@ independent of OpenBao so services can be restored without it.
 - **Non-goals:** automatic credential generation, a completed Vault-to-OpenBao
   data migration, and multi-node Raft HA.
 
-## Structure
+## Context and Constraints
 
-### Architecture
+### Context
+
+Humans authenticate to OpenBao through native Keycloak OIDC; `openbao-agent` authenticates by AppRole and renders secret files that consumer tiers read. Traefik serves the UI route on `gateway-standard-chain@file`.
+
+### Constraints
+
+Credentials (root tokens, unseal shares, AppRole RoleID and SecretID, Agent tokens, the OIDC client secret and rendered values) stay outside Git and evidence. Access fails closed on auth, seal or CA failure, and TLS validation is never disabled. Multi-node Raft HA and automatic credential generation are non-goals.
+
+## Current Structure
+
+### Building Blocks
 
 ```mermaid
 flowchart LR
@@ -62,9 +74,9 @@ approved templates to the declared output volume. Its own listener serves only
 roots are revoked only after a working non-root administrative path, Agent
 rendering, a protected snapshot and denial tests exist.
 
-## Runtime and Deployment
+### Runtime and Deployment
 
-### Runtime View
+#### Runtime View
 
 An operator or the Agent authenticates, policy limits the KV paths, and the
 Agent writes only declared templates to the consumer volume. Snapshots flow
@@ -76,7 +88,7 @@ fixtures keep denial, no-overwrite, publication-race and uncertain-cleanup
 checks. A token-operation test is not a deployed credential ceremony, and a
 valid Raft snapshot is not an isolated semantic restore.
 
-### Deployment View
+#### Deployment View
 
 `openbao` and `openbao-agent` (`infra/03-security/openbao/docker-compose.yml`)
 are selected by `core`, `dev`, `local`, `security` or `secrets` and join
@@ -87,9 +99,25 @@ stays out of service and never shares storage with OpenBao. Prometheus declares
 an `openbao` scrape job (`infra/06-observability/prometheus/config/prometheus.dev.yml`);
 scrape success is not asserted here.
 
-## Quality and Risks
+## Interfaces
 
-### Quality Attributes
+### Contracts
+
+`openbao-agent` serves only `/agent/v1/metrics` on its own listener. Snapshots use the authenticated Raft API (`sys/storage/raft/snapshot`, policy `backup-snapshot.hcl`); human OIDC group claims map to policies under `config/policies/`; Prometheus declares an `openbao` scrape job.
+
+### Failure Boundaries
+
+Single-node Raft is not HA: an OpenBao outage stops new renders until it is unsealed, and a sealed restart needs independent unseal custody (see Risks below). Recovery uses authenticated Raft snapshots restored on isolated storage; unseal shares never enter a snapshot.
+
+## Decisions
+
+### Decision Links
+
+- [ADR-0050 OpenBao as secrets manager](../decisions/0050-openbao-as-secrets-manager.md)
+
+### Quality and Risks
+
+#### Quality Attributes
 
 - **Security:** fail closed on auth, seal or CA failure; trust the Keycloak CA;
   never disable TLS validation or expose unauthenticated generate-root on the
@@ -104,19 +132,23 @@ scrape success is not asserted here.
   security tests, audit observations and timed recovery; the owning Task
   records the results.
 
-### Risks
+#### Risks
 
 Single-node Raft is not HA: an OpenBao outage stops new renders until it is
 unsealed. A sealed restart needs the independent unseal custody.
 
-### Evolution
+## Traceability
 
-Cluster expansion needs a separate design with failure-domain evidence.
-
-## Related Documents
+### Requirement Mapping
 
 - [REQ-0003 Security requirements](../../01.requirements/0003-security.md)
-- [ADR-0050 OpenBao as secrets manager](../decisions/0050-openbao-as-secrets-manager.md)
+
+### Currentness and Lineage
+
 - [OpenBao custody policy](../../05.operations/policies/04-security-and-secrets/0085-openbao.md)
 - [OpenBao operations](../../05.operations/guides/04-security-and-secrets/0085-openbao.md)
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)
+
+#### Evolution
+
+Cluster expansion needs a separate design with failure-domain evidence.

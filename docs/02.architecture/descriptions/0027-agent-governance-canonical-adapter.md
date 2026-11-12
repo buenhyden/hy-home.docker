@@ -1,10 +1,10 @@
 ---
 title: "Agent Governance Canonical Adapter Architecture"
-version: "1.6.1"
+version: "1.6.2"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "AD-0027"
 parent_ids:
@@ -16,6 +16,8 @@ created: "2026-06-01"
 
 ## Overview
 
+### Purpose and Readers
+
 Policy, provider translation, document shape and execution evidence have
 separate canonical owners. Both providers read the same repository-owned
 instructions through their native adapters and share one memory store through
@@ -26,7 +28,7 @@ reviews the norm in `.agents/`, the agent consumes the same norm through the
 provider adapter in native runtime form, and the reviewer independently
 verifies projection drift.
 
-## Scope
+### System Boundary
 
 - `.agents/` owns policy, workflow, canonical roles/skills, and the provider
   boundary.
@@ -53,9 +55,19 @@ verifies projection drift.
   the current Task owns execution and acceptance. New evidence requires bounded
   Stage 99 classification; representative scores grant no runtime authority.
 
-## Structure
+## Context and Constraints
 
-### Architecture
+### Context
+
+The maintainer reviews the norm in `.agents/`, the agent consumes it through the provider adapter in native runtime form, and the reviewer verifies projection drift. Claude and Codex read the same repository-owned instructions and share one memory store through `scripts/operations/agent_memory.py`.
+
+### Constraints
+
+Policy, roles, skills, SDLC and approval boundaries must stay single even when several AI providers modify the same repository. The canonical `.agents/` sources are never generated output, native Claude memory is off, and user-global configuration, credentials and deployment state are outside this architecture.
+
+## Current Structure
+
+### Building Blocks
 
 | Component | Responsibility |
 | --- | --- |
@@ -75,9 +87,9 @@ Governance, role, skill, knowledge and prompt documents are English and every
 the documentation protocol owns the rule. Native adapters consume the same
 meaning without creating another language or policy authority.
 
-## Runtime and Deployment
+### Runtime and Deployment
 
-### Runtime View
+#### Runtime View
 
 Bootstrap moves from the root shim to the shared agent governance policy and
 the matching provider adapter. It selectively loads only the canonical
@@ -93,16 +105,35 @@ the reviewed Git diff. Handoff is a derived Task view that rechecks repository
 and worktree identity,
 approval, evidence, and bounded shared allocations before resumption.
 
-### Deployment View
+#### Deployment View
 
 The implementation surface is tracked Markdown, YAML, JSON, TOML, and
 validation scripts. Provider sync and governance tests check projection
 freshness. A document or adapter change alone does not require Docker
 runtime, a remote service, or secret mutation.
 
-## Quality and Risks
+## Interfaces
 
-### Quality Attributes
+### Contracts
+
+- Bootstrap moves from the root shim to the shared policy and the matching provider adapter, per the Runtime View.
+- The Provider Registry carries provider identity and translation facts, and the Stage 99 Registry carries document shape and lifecycle.
+- The canonical `SKILL.md` uses `name`, `description` and `metadata`, and native adapters require explicit invocation.
+
+### Failure Boundaries
+
+This description records no failure boundary beyond its Risks: static renderer parity proves tracked configuration only, and a provider runtime change can alter the loading behavior that an authored adapter describes. An adapter cannot relax the shared approval boundary.
+
+## Decisions
+
+### Decision Links
+
+- [ADR-0032 Canonical Agent Governance Home](../decisions/0032-canonical-agent-governance-home.md)
+- [ADR-0034 Canonical Knowledge and Prompt Surfaces](../decisions/0034-canonical-knowledge-and-prompt-surfaces.md)
+
+### Quality and Risks
+
+#### Quality Attributes
 
 - **Determinism**: the same source and registry must produce the same
   projection and verdict.
@@ -115,22 +146,25 @@ runtime, a remote service, or secret mutation.
 - **Recoverability**: use Git diff and history instead of separate snapshots
   or SHA pins.
 
-### Risks
+#### Risks
 
 - Static renderer parity proves tracked configuration only; native invocation, hook
   trust and runtime acceptance need direct evidence.
 - A provider runtime change can alter loading behavior that the authored
   adapter describes.
 
-### Evolution
+## Traceability
+
+### Requirement Mapping
+
+- [REQ-0024 Agent Governance Standardization](../../01.requirements/0024-agent-governance-standardization.md)
+
+### Currentness and Lineage
+
+- [canonical agent governance bootstrap](../../../.agents/governance/bootstrap.md)
+- [Stage 99 Registry](../../99.templates/registry.json)
+
+#### Evolution
 
 - A new provider enters through a Provider Registry entry and an authored
   adapter, never a second policy copy.
-
-## Related Documents
-
-- [REQ-0024 Agent Governance Standardization](../../01.requirements/0024-agent-governance-standardization.md)
-- [ADR-0032 Canonical Agent Governance Home](../decisions/0032-canonical-agent-governance-home.md)
-- [ADR-0034 Canonical Knowledge and Prompt Surfaces](../decisions/0034-canonical-knowledge-and-prompt-surfaces.md)
-- [canonical agent governance bootstrap](../../../.agents/governance/bootstrap.md)
-- [Stage 99 Registry](../../99.templates/registry.json)

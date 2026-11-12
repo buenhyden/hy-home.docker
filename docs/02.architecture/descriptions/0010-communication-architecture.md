@@ -1,10 +1,10 @@
 ---
 title: "Communication Tier Architecture Description"
-version: "1.3.0"
+version: "1.3.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "AD-0010"
 parent_ids:
@@ -16,15 +16,13 @@ created: "2026-03-26"
 
 ## Overview
 
-### Context and Stakeholders
+### Purpose and Readers
 
 The mail requirements separate development message capture in `11-quality/mailpit` from the optional mail server, which since SPEC-0262 is the standalone LAB `labs/stalwart/docker-compose.yml` and joins no HOME network; it is not promoted. Mailpit is a DEV SMTP sink/UI selected by `dev`, `local`, or
 `mail-dev`. Stalwart is selected only by the LAB profile `mail-server` and requires mail-domain,
 DNS, TLS, authentication, relay, abuse, and backup ownership before use.
 
-## Scope
-
-### System Boundaries
+### System Boundary
 
 - **Mailpit owns:** test-message capture in persistent SQLite
   `/data/mailpit.db`, loopback-published SMTP/UI ports, and a Traefik UI route.
@@ -37,22 +35,28 @@ DNS, TLS, authentication, relay, abuse, and backup ownership before use.
 - **Non-goals:** Mailpit does not replace Stalwart, and Stalwart is not an
   automatic HOME service.
 
-### Traceability
+## Context and Constraints
 
-- [Mailpit operations](../../05.operations/guides/11-mail-and-notifications/0084-mailpit.md)
-- [Stalwart operations](../../05.operations/guides/15-labs/0070-mail.md)
+### Context
 
-## Structure
+Development applications and browsers reach Mailpit; mail clients reach Stalwart over authenticated mail protocols; external delivery from Stalwart is a separate promotion decision, as the Runtime View diagram shows.
 
-### Architecture
+### Constraints
+
+Mailpit must not be internet exposed and no captured development message may be relayed externally. Stalwart requires mail-domain, DNS, TLS, authentication, relay, abuse and backup ownership before use, and public delivery requires DNS/SPF/DKIM/DMARC and TLS promotion acceptance. Runtime pins are owned by Compose/Dockerfile declarations; the
+[derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+
+## Current Structure
+
+### Building Blocks
 
 Mailpit is the development SMTP/UI component backed by one SQLite database.
 Stalwart is the optional mail-protocol and administration component backed by
 the operator-selected storage configuration under its persistent mount.
 
-## Runtime and Deployment
+### Runtime and Deployment
 
-### Runtime View
+#### Runtime View
 
 ```mermaid
 flowchart LR
@@ -63,15 +67,32 @@ flowchart LR
   Stalwart --> Store[(configured data/blob/directory backends)]
 ```
 
-### Deployment View
+#### Deployment View
 
 The root project includes only the Mailpit leaf, selected by `mail-dev`, `dev` or `local`. Stalwart is started from its own LAB entrypoint, where `mail-server` selects Stalwart plus `stalwart-config`. A
 currently running optional service may remain running when another profile is
 rendered; profile rendering is not a stop operation.
 
-## Quality and Risks
+## Interfaces
 
-### Quality Attributes
+### Contracts
+
+- Mailpit: SMTP and UI ports published on loopback, plus a Traefik UI route.
+- Stalwart: internal SMTP25/submission587 and implicit-TLS IMAP993 listeners on the LAB network `hy-home-lab-stalwart`; HTTP8080 published on `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_STALWART_HOST_PORT:-18093}`; no gateway route.
+
+### Failure Boundaries
+
+Mailpit recovery preserves SQLite with its WAL or uses the official dump/ingest path; Stalwart recovery is described under Recoverability in Quality and Risks. Relay denial is reconciled from `config/plan.ndjson`, and a running optional service may stay running when another profile is rendered.
+
+## Decisions
+
+### Decision Links
+
+- [ADR-0054 Mailpit in HOME and Stalwart as a LAB](../decisions/0054-mailpit-home-stalwart-lab.md)
+
+### Quality and Risks
+
+#### Quality Attributes
 
 - **Isolation:** applications choose Mailpit explicitly for tests; no captured
   development message may be relayed externally.
@@ -83,10 +104,15 @@ rendered; profile rendering is not a stop operation.
 - **Licensing:** Stalwart upstream offers AGPL-3.0 and enterprise licensing;
   deployment documentation must not assume paid features or entitlement.
 
-## Related Documents
+## Traceability
+
+### Requirement Mapping
 
 - [Communication requirement](../../01.requirements/0011-communication.md)
-- [ADR-0054 Mailpit in HOME and Stalwart as a LAB](../decisions/0054-mailpit-home-stalwart-lab.md)
 
-Runtime pins are owned by Compose/Dockerfile declarations; the
-[derived Compose image projection](../../../infra/tech-stack.versions.json) supplies drift verification.
+### Currentness and Lineage
+
+The description reflects the current tree at its `updated` date and history lives in Git. Operations guides:
+
+- [Mailpit operations](../../05.operations/guides/11-mail-and-notifications/0084-mailpit.md)
+- [Stalwart operations](../../05.operations/guides/15-labs/0070-mail.md)
