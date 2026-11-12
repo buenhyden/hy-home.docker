@@ -42,7 +42,7 @@ class CurrentBodyContractTests(unittest.TestCase):
             "architecture-description": "Overview|Scope|Structure|Runtime and Deployment|Quality and Risks|Related Documents",
             "adr": "Context|Decision|Alternatives|Consequences|Traceability",
             "spec": "Overview|Scope|Behavior Contract|Acceptance Criteria|References",
-            "plan": "Overview|Scope|Work Breakdown|Verification Plan|Risks and Recovery|Related Documents",
+            "plan": "Overview|Dependencies|Implementation Strategy|Verification Plan|Risks|Promotion Map",
             "task": "Overview|Inputs and Authorization|Work Log|Evidence|Criterion Acceptance|Review and Completion|Related Documents",
             "guide": "Overview|Scope|Concepts|Usage|Troubleshooting|Related Documents",
             "policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
@@ -415,6 +415,13 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Failure Conditions", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Out of Scope", "body-subheading-forbidden"),
+            ),
+            "plan": (
+                ("## Scope", "body-heading-forbidden"),
+                ("## Work Breakdown", "body-heading-forbidden"),
+                ("## Risks and Recovery", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+                ("### Risks and Rollback", "body-subheading-forbidden"),
             ),
             "adr": (
                 ("## Decision Drivers", "body-heading-forbidden"),

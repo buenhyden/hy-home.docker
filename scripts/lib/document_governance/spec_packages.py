@@ -785,18 +785,50 @@ def _completion_visible_lines(body: str) -> list[str]:
     return visible
 
 
-def _contract_section(body: str, heading: str) -> list[str]:
-    lines = _completion_visible_lines(body)
-    marker = "## " + heading
-    starts = [index for index, line in enumerate(lines) if line == marker]
-    if len(starts) != 1:
-        raise SpecPackageError(f"completion requires one {marker}")
-    start = starts[0] + 1
-    end = next(
-        (index for index in range(start, len(lines)) if lines[index].startswith("## ")),
+# A Registry ``common`` heading value names its legacy H2. A document in the
+# common form (COMMON-DOC-FORM-1) carries the same section as an H3 under a
+# new H2, so the value is a logical anchor resolved to exactly one form.
+_COMMON_FORM_PATHS = {
+    "Work Breakdown": ("Implementation Strategy", "Work Breakdown"),
+}
+
+
+def _section_end(lines: list[str], start: int, level: int) -> int:
+    return next(
+        (
+            index
+            for index in range(start, len(lines))
+            if re.match(rf"#{{1,{level}}} ", lines[index])
+        ),
         len(lines),
     )
-    return lines[start:end]
+
+
+def _contract_span(body: str, heading: str) -> tuple[list[str], int]:
+    """Return the section a common key names and its heading level."""
+    lines = _completion_visible_lines(body)
+    marker = "## " + heading
+    found = [(index, 2) for index, line in enumerate(lines) if line == marker]
+    path = _COMMON_FORM_PATHS.get(heading)
+    if path is not None:
+        parents = [index for index, line in enumerate(lines) if line == "## " + path[0]]
+        for parent in parents:
+            end = _section_end(lines, parent + 1, 2)
+            found.extend(
+                (index, 3)
+                for index in range(parent + 1, end)
+                if lines[index] == "### " + path[1]
+            )
+        if len(parents) > 1:
+            found.append((-1, 2))
+    if len(found) != 1:
+        raise SpecPackageError(f"completion requires one {marker}")
+    start, level = found[0]
+    return lines[start + 1 : _section_end(lines, start + 1, level)], level
+
+
+def _contract_section(body: str, heading: str) -> list[str]:
+    return _contract_span(body, heading)[0]
 
 
 def acceptance_criterion_numbers(spec_body: str, heading: str) -> tuple[int, ...]:

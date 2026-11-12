@@ -15,34 +15,77 @@ created: "{{CREATED}}"
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
 <!-- Author prompt: Write body prose in English; keep headings, paths, identifiers, and commands unchanged. -->
 <!-- Author prompt: Map each stable W-number to one or more numbered acceptance criteria without creating a second lifecycle or approval record. -->
-<!-- Author prompt: Keep the Work Breakdown header, separator, and every data row in one contiguous pipe-table block. Narrative may appear before or after that block; put other pipe tables outside the Work Breakdown section. -->
+<!-- Author prompt: Keep the Work Breakdown header, separator, and every data row in one contiguous pipe-table block. Narrative may appear before or after that block; put other pipe tables outside the Work Breakdown subsection. -->
+<!-- Author prompt: A Plan holds strategy only. Execution state and check results live in the Task; link to it instead of copying them. -->
 
 # {{TITLE}}
 
 ## Overview
 
-{{OVERVIEW}}
+### Goal and Boundary
 
-## Scope
+{{PARENT_SPEC_AND_PLAN_BOUNDARY}}
 
-{{WORK_BOUNDARY_AND_EXCLUSIONS_FROM_PARENT_SPEC}}
+### Assumptions
 
-## Work Breakdown
+<!-- Author prompt: Separate facts from assumptions, and name the constraints and the authority this Plan works under. -->
+
+{{ASSUMPTIONS_CONSTRAINTS_AND_AUTHORITY}}
+
+## Dependencies
+
+### Prerequisites
+
+{{EXISTING_CONTRACTS_CONSUMERS_PERMISSIONS_AND_ENVIRONMENT}}
+
+### Dependency Order
+
+{{WORK_UNIT_INPUTS_OUTPUTS_AND_ORDER}}
+
+## Implementation Strategy
+
+### Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
 | --- | --- | --- | --- | --- | --- |
 | {{WORK_UNIT}} | {{CRITERIA}} | {{WORK}} | {{DEPENDENCIES}} | {{TASK}} | {{VERIFICATION}} |
 
+### Change and Rollback
+
+{{CHANGE_METHOD_AND_ROLLBACK_ORDER}}
+
 ## Verification Plan
 
-{{VERIFICATION_PLAN}}
+### Verification Matrix
 
-## Risks and Recovery
+<!-- Author prompt: For each criterion, name the normal, violating and regression cases, their inputs and who produces the evidence. -->
 
-### Risks and Rollback
+{{VERIFICATION_MATRIX}}
 
-{{RISKS_AND_ROLLBACK}}
+### Stage Placement
 
-## Related Documents
+<!-- Author prompt: Say which checks run at commit, push, pull request and merge, without running the same check twice. -->
 
-{{RELATED_DOCUMENTS}}
+{{CHECK_STAGE_PLACEMENT}}
+
+## Risks
+
+### Risks and Mitigations
+
+{{RISKS_DETECTION_MITIGATION_AND_OWNERS}}
+
+### Escalation
+
+{{BLOCKING_CONDITIONS_QUESTIONS_AND_RESUME_CONDITIONS}}
+
+## Promotion Map
+
+### Durable Meaning
+
+<!-- Author prompt: Name the contract or operating meaning that outlives this package and the current document that will hold it. -->
+
+{{DURABLE_CONTRACT_AND_OPERATING_MEANING}}
+
+### Owner and Receipt
+
+{{CURRENT_OWNER_VERIFICATION_AND_TASK_RECEIPT}}
