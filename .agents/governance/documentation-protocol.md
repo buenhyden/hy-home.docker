@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "3.12.0"
+version: "3.13.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-12"
 ---
 
 # Documentation Protocol
@@ -324,9 +324,10 @@ CI result when those exist. Record unavailable external evidence explicitly.
 CHANGELOG summarizes user changes; a tag or CI result proves only its observed
 event. Neither local readiness nor a Runbook proves deployment occurred.
 
-There is no separate Release Record profile. Add one only if a distinct audit
-consumer requires it, through an approved ADR and a coordinated Registry change.
-Do not change an existing accepted decision silently. Remote release and
+Release is not a document role. Do not register a Release Record profile,
+template or generator under any name; release facts stay with the owners
+above. This removes no GitHub Release, tag, CHANGELOG entry or release
+workflow. Remote release and
 deployment actions wait for their exact target under
 [Approval boundaries](approval-boundaries.md).
 
