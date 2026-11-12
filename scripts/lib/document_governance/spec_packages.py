@@ -4134,24 +4134,47 @@ _TASK_LEGACY_TARGETS = {
 }
 
 
-def _task_items(body: str, legacy: bool) -> dict[str, list[tuple[str, str]]] | None:
+_BLANK = ("blank",)
+
+
+def _blank_between_lines(items: list[tuple]) -> list[tuple]:
+    """Keep one blank only between two content lines; drop it at every edge."""
+    kept: list[tuple] = []
+    pending = False
+    for item in items:
+        if item == _BLANK:
+            pending = True
+            continue
+        if pending and item[0] == "line" and kept and kept[-1][0] == "line":
+            kept.append(_BLANK)
+        pending = False
+        kept.append(item)
+    return kept
+
+
+def _task_items(body: str, legacy: bool) -> dict[str, list[tuple]] | None:
     """Read a Task body as its ordered content per common-form H3 target.
 
-    Legacy: every H2 names a target through ``_TASK_LEGACY_TARGETS`` and a
-    repeated target joins in document order. Common: only the exact registered
-    H2 and H3 headings count. A deeper heading is its text alone, so a move may
-    change its level, and one named for a legacy H2 that maps to the same
-    target is an anchor keeper and is dropped. Every other non-blank line,
-    including fenced and commented text, is content verbatim. A target holding
-    only the fixed sentence is empty. None means the body cannot be read, so
-    the caller falls back to byte equality.
+    Legacy: every H2 names a target through ``_TASK_LEGACY_TARGETS`` and
+    leaves an ``anchor`` item at its position, and a repeated target joins in
+    document order. Common: every registered H2 and H3 must appear once, in
+    order. A deeper heading is kept with its level, which a move changes by
+    exactly one (a legacy H6 cannot move). Every other line is content
+    verbatim, fenced and commented text included, and one blank counts only
+    between two content lines. A common target holding only the fixed sentence
+    is empty. None means the body cannot be read, so the caller falls back to
+    byte equality.
     """
     if re.search(r"[\r\x0b\x0c\x1c-\x1e\x85\u2028\u2029]", body):
         return None
     children = {
         child: parent for parent, group in _TASK_COMMON_FORM.items() for child in group
     }
-    items: dict[str, list[tuple[str, str]]] = {"": []}
+    expected = [
+        name for parent, group in _TASK_COMMON_FORM.items() for name in (parent, *group)
+    ]
+    structure: list[str] = []
+    items: dict[str, list[tuple]] = {"": []}
     current: str | None = ""
     parent: str | None = None
     seen_section = False
@@ -4160,9 +4183,12 @@ def _task_items(body: str, legacy: bool) -> dict[str, list[tuple[str, str]]] | N
         if heading is not None and visible != raw:
             return None
         if heading is None or (not seen_section and len(heading[1]) != 2):
-            if raw.strip():
-                if current is None:
-                    return None
+            if visible is not None and not raw.strip():
+                if current is not None:
+                    items[current].append(_BLANK)
+            elif current is None:
+                return None
+            else:
                 items[current].append(("line", raw))
             continue
         level, text = len(heading[1]), heading[2]
@@ -4174,33 +4200,75 @@ def _task_items(body: str, legacy: bool) -> dict[str, list[tuple[str, str]]] | N
                 current = _TASK_LEGACY_TARGETS.get(text)
                 if current is None:
                     return None
-                items.setdefault(current, [])
+                items.setdefault(current, []).append(("anchor", text))
             elif text in _TASK_COMMON_FORM:
+                structure.append(text)
                 parent, current = text, None
             else:
                 return None
         elif level == 3 and not legacy:
             if children.get(text) != parent:
                 return None
+            structure.append(text)
             current = text
             items.setdefault(current, [])
-        elif current is None:
+        elif current is None or (legacy and level == 6):
             return None
-        elif _TASK_LEGACY_TARGETS.get(text) != current:
-            items[current].append(("heading", text))
-    return {
-        key: lines
-        for key, lines in items.items()
-        if lines and lines != [("line", _TASK_FIXED)]
-    }
+        else:
+            items[current].append(("heading", level + legacy, text))
+    if not legacy and structure != expected:
+        return None
+    result: dict[str, list[tuple]] = {}
+    for key, bucket in items.items():
+        bucket = _blank_between_lines(bucket)
+        if legacy and all(item[0] == "anchor" for item in bucket):
+            continue
+        if not legacy and key and bucket == [("line", _TASK_FIXED)]:
+            continue
+        if bucket:
+            result[key] = bucket
+    return result
+
+
+def _same_task_bucket(old: list[tuple], new: list[tuple]) -> bool:
+    """Match legacy items to common items; an anchor stands for an optional H4.
+
+    A keeper must sit at its anchor's position with its text. An unkept anchor
+    may leave one blank where the two sections joined. A keeper cannot repeat a
+    common H2 name, whose slug the common H2 already owns.
+    """
+
+    def walk(i: int, j: int) -> bool:
+        while i < len(old) and old[i][0] != "anchor":
+            if j >= len(new) or new[j] != old[i]:
+                return False
+            i, j = i + 1, j + 1
+        if i == len(old):
+            return j == len(new)
+        text = old[i][1]
+        if (
+            text not in _TASK_COMMON_FORM
+            and j < len(new)
+            and new[j] == ("heading", 4, text)
+            and walk(i + 1, j + 1)
+        ):
+            return True
+        return walk(i + 1, j + (j < len(new) and new[j] == _BLANK))
+
+    return walk(0, 0)
 
 
 def _same_task_body(before: str, after: str) -> bool:
     """Match a terminal Task body, relaxing only a legacy to common-form move."""
     if before == after:
         return True
-    moved = _task_items(before, True)
-    return moved is not None and moved == _task_items(after, False)
+    old, new = _task_items(before, True), _task_items(after, False)
+    return (
+        old is not None
+        and new is not None
+        and old.keys() == new.keys()
+        and all(_same_task_bucket(old[key], new[key]) for key in old)
+    )
 
 
 def _same_task_source(before: SpecDocument, after: SpecDocument) -> bool:

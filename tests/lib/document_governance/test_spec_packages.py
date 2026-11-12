@@ -5107,9 +5107,9 @@ class TerminalTaskBodyTests(unittest.TestCase):
                 "Do the thing.\n\n#### Related Documents\n\n- [Spec](../spec.md)",
                 "Inputs and Authority": "#### Inputs and Authorization\n\n"
                 "Spec criterion 1.",
-                "Work Performed": "#### Work Log\n\n##### Execution Items\n\n"
-                "Item rows.\n\n##### Notes\n\nWorked on it.",
-                "Results": "#### Evidence\n\n##### Rows\n\n| Evidence | Result |",
+                "Work Performed": "#### Work Log\n\n#### Execution Items\n\n"
+                "Item rows.\n\n#### Notes\n\nWorked on it.",
+                "Results": "#### Evidence\n\n#### Rows\n\n| Evidence | Result |",
                 "Criterion Decisions": "#### Criterion Acceptance\n\n"
                 "| Criterion | accepted |",
                 "Remaining Conditions": "#### Review and Completion\n\nAll done.",
@@ -5213,6 +5213,187 @@ class TerminalTaskBodyTests(unittest.TestCase):
                 self.FRONT.replace("2026-10-22", "2026-11-13"),
             )
         )
+
+    def test_a_legacy_heading_is_never_dropped(self) -> None:
+        for label, content in {
+            "deleted": "Do the thing.\n\n- [Spec](../spec.md)",
+            "moved": "Do the thing.\n\n#### Objective\n\n- [Spec](../spec.md)",
+        }.items():
+            with self.subTest(label=label):
+                moved = _common_task_body({"Objective and Parent": content})
+                self.assertFalse(self._same(_LEGACY_TASK_BODY, moved))
+
+    def test_a_keeper_matches_only_its_own_legacy_heading(self) -> None:
+        keepers = "#### Overview\n\n#### Objective\n\nDo the thing.\n\n"
+        spec = "- [Spec](../spec.md)"
+        self.assertTrue(
+            self._same(
+                _LEGACY_TASK_BODY,
+                _common_task_body({"Objective and Parent": keepers + spec}),
+            )
+        )
+        for label, content in {
+            "another position": "#### Objective\n\n#### Overview\n\n"
+            f"Do the thing.\n\n{spec}",
+            "another level": keepers.replace("#### Overview", "##### Overview") + spec,
+            "after its content": "#### Objective\n\nDo the thing.\n\n"
+            f"#### Overview\n\n{spec}",
+            "twice": keepers.replace("#### Overview", "#### Overview\n\n#### Overview")
+            + spec,
+            "an absent legacy heading": keepers + "#### Rulings\n\n" + spec,
+        }.items():
+            with self.subTest(label=label):
+                moved = _common_task_body({"Objective and Parent": content})
+                self.assertFalse(self._same(_LEGACY_TASK_BODY, moved))
+
+    def test_a_keeper_never_repeats_a_common_h2_anchor(self) -> None:
+        handoff = _LEGACY_TASK_BODY + "\n## Handoff\n\nNext owner text.\n"
+        evidence = _LEGACY_TASK_BODY.replace(
+            "## Criterion Acceptance",
+            "## Verification Evidence\n\n| Check | PASS |\n\n## Criterion Acceptance",
+        )
+        for legacy, key, content, keeper in (
+            (handoff, "Next Owner", "Next owner text.", "#### Handoff"),
+            (
+                evidence,
+                "Results",
+                "| Evidence | Result |\n\n| Check | PASS |",
+                "#### Verification Evidence",
+            ),
+        ):
+            with self.subTest(keeper=keeper):
+                self.assertTrue(self._same(legacy, _common_task_body({key: content})))
+                kept = {key: f"{keeper}\n\n{content}"}
+                self.assertFalse(self._same(legacy, _common_task_body(kept)))
+
+    def test_a_heading_level_moves_by_exactly_one(self) -> None:
+        for label, notes in {
+            "nested under the previous heading": "##### Notes",
+            "two levels down": "###### Notes",
+        }.items():
+            with self.subTest(label=label):
+                moved = _common_task_body(
+                    {
+                        "Work Performed": "#### Execution Items\n\nItem rows."
+                        f"\n\n{notes}\n\nWorked on it."
+                    }
+                )
+                self.assertFalse(self._same(_LEGACY_TASK_BODY, moved))
+        deep = _LEGACY_TASK_BODY.replace(
+            "Worked on it.", "###### Deep\n\nWorked on it."
+        )
+        for level in ("######", "#######"):
+            moved = _common_task_body(
+                {
+                    "Work Performed": "#### Execution Items\n\nItem rows.\n\n"
+                    f"#### Notes\n\n{level} Deep\n\nWorked on it."
+                }
+            )
+            with self.subTest(level=level):
+                self.assertFalse(self._same(deep, moved))
+
+    def test_blank_lines_between_content_lines_are_content(self) -> None:
+        fenced = "```text\nA\n\nB\n```"
+        legacy = _LEGACY_TASK_BODY.replace("Worked on it.", fenced)
+
+        def moved(block: str) -> str:
+            return _common_task_body(
+                {
+                    "Work Performed": f"#### Execution Items\n\nItem rows.\n\n#### Notes\n\n{block}"
+                }
+            )
+
+        self.assertTrue(self._same(legacy, moved(fenced)))
+        for label, block in {
+            "fence blank removed": "```text\nA\nB\n```",
+            "fence blank doubled": "```text\nA\n\n\nB\n```",
+        }.items():
+            with self.subTest(label=label):
+                self.assertFalse(self._same(legacy, moved(block)))
+        table = "| Evidence | Result |\n| E1 | PASS |\n\nProse after the table."
+        legacy = _LEGACY_TASK_BODY.replace("| Evidence | Result |", table)
+        self.assertTrue(self._same(legacy, _common_task_body({"Results": table})))
+        for label, results in {
+            "blank removed": "| Evidence | Result |\n| E1 | PASS |\nProse after the table.",
+            "blank added": "| Evidence | Result |\n\n| E1 | PASS |\n\nProse after the table.",
+        }.items():
+            with self.subTest(label=label):
+                moved_results = _common_task_body({"Results": results})
+                self.assertFalse(self._same(legacy, moved_results))
+        # A blank beside a heading or at a section edge is layout only.
+        common = _common_task_body()
+        for layout in (
+            common.replace("#### Notes\n\n", "#### Notes\n"),
+            common.replace("\n\n#### Notes", "\n#### Notes"),
+            common.replace("### Results\n\n", "### Results\n"),
+        ):
+            self.assertTrue(self._same(_LEGACY_TASK_BODY, layout))
+
+    def test_the_common_form_lists_each_heading_once_in_order(self) -> None:
+        common = _common_task_body()
+        swapped = (
+            common.replace("### Promotion Receipt", "### TMP")
+            .replace("### Next Owner", "### Promotion Receipt")
+            .replace("### TMP", "### Next Owner")
+        )
+        for label, after in {
+            "repeated": common.replace(
+                "### Resolution Links", "### Results\n\n### Resolution Links", 1
+            ),
+            "reordered": swapped,
+            "missing": common.replace(f"### Resolution Links\n\n{_FIXED}\n", ""),
+            "repeated parent": common.replace("## Handoff", "## Scope\n\n## Handoff"),
+        }.items():
+            with self.subTest(label=label):
+                self.assertFalse(self._same(_LEGACY_TASK_BODY, after))
+
+    def test_nothing_moves_into_the_preamble(self) -> None:
+        common = _common_task_body()
+        with_heading = common.replace("# T\n", "# T\n\n#### Objective\n", 1)
+        self.assertFalse(
+            self._same(
+                _LEGACY_TASK_BODY,
+                with_heading.replace(
+                    "#### Objective\n\nDo the thing.", "Do the thing."
+                ),
+            )
+        )
+        titled = common.replace("# T\n", f"# T\n\n{_FIXED}\n", 1)
+        self.assertFalse(self._same(_LEGACY_TASK_BODY, titled))
+        untitled = _LEGACY_TASK_BODY.replace("# T\n", "", 1)
+        sentence_first = _common_task_body().replace("# T", _FIXED, 1)
+        self.assertTrue(
+            self._same(untitled, _common_task_body().replace("# T\n", "", 1))
+        )
+        self.assertFalse(self._same(untitled, sentence_first))
+
+    def test_the_controller_migration_form_passes(self) -> None:
+        fence = "```text\nA\n\nB\n```"
+        legacy = (
+            "\n# T\n\n## Overview\n\n### Objective\n\nDo the thing.\n\n"
+            f"{fence}\n\n## Inputs and Authorization\n\n### Authorization\n\n"
+            "Spec criterion 1.\n\n| a |\n| b |\n\nTail.\n\n## Work Log\n\n"
+            "### Execution Items\n\nItem rows.\n\n#### Detail\n\nDeep.\n\n"
+            "## Evidence\n\n| Evidence | Result |\n\n## Criterion Acceptance\n\n"
+            "| Criterion | accepted |\n\n## Review and Completion\n\nAll done.\n\n"
+            "## Related Documents\n\n- [Spec](../spec.md)\n"
+        )
+        migrated = _common_task_body(
+            {
+                "Objective and Parent": "#### Overview\n\n#### Objective\n\n"
+                f"Do the thing.\n\n{fence}\n\n- [Spec](../spec.md)",
+                "Inputs and Authority": "#### Inputs and Authorization\n\n"
+                "#### Authorization\n\nSpec criterion 1.\n\n| a |\n| b |\n\nTail.",
+                "Work Performed": "#### Execution Items\n\nItem rows.\n\n"
+                "##### Detail\n\nDeep.",
+                "Results": "#### Evidence\n\n| Evidence | Result |",
+            }
+        )
+        self.assertTrue(self._same(legacy, migrated))
+        keeper = migrated.replace(
+            "- [Spec](../spec.md)", "#### Related Documents\n\n- [Spec](../spec.md)"
+        )
+        self.assertTrue(self._same(legacy, keeper))
 
     def test_unmappable_legacy_bodies_stay_byte_strict(self) -> None:
         unknown = _LEGACY_TASK_BODY + "\n## Mystery\n\nKept.\n"
