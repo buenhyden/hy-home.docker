@@ -1,6 +1,6 @@
 ---
 title: "W02 Archive and Safe Removal Task"
-version: "0.11.0"
+version: "0.12.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -236,9 +236,12 @@ repository, so ARC-09's Vault clause is N/A here.
 | W02-B, WP-19 | KEEP | The manual precondition 5 record and `archive_readiness_findings` stay separate. The latter is an on-read library function, reached only by `test_generation6.py`, with no CLI or gate. The user's Git-only goal and tool archive defaults are separate decisions: the protocol's Document Retention and Retirement summarizes and deletes, keeps version history as the record and leaves Stage 98 without bodies |
 | OPEN-ARCHIVE | No conflict | SPEC-0267 was held under Q-04 until its promotion passed, then removed in `06bf2e201`. No retention exception or authority conflict remains open |
 
-The SPEC-0248, 0249, 0250 and 0260 Tasks are merged and each has four
-criteria pending owner acceptance. They are not reimplemented. Their packages
-stay until their Tasks are terminal.
+The SPEC-0248, 0249, 0250 and 0260 Tasks are merged and are not
+reimplemented. On 2026-11-12 the owner accepted them. Each acceptance is
+recorded in its own Task through its own PR, because a PR carries one Spec:
+PR 961 (SPEC-0248, criterion 4 pending its full-suite rerun), PR 962
+(SPEC-0249), PR 963 (SPEC-0250) and PR 964 (SPEC-0260). Their packages stay until their Tasks
+are terminal and a removal is approved.
 
 ### SPEC-0267 retirement map 2026-11-12
 
@@ -318,6 +321,16 @@ Both are recorded for the owner. On 2026-11-12 the owner chose to record the
 Loki and Tempo gRPC exposure as an accepted risk in POL-0043 and POL-0049,
 outside FR-0004.
 
+### SPEC-0267 post-merge recovery 2026-11-12
+
+PR 960 merged as `3736e3430` at 2026-11-12T06:55:44Z, from head `a4b6c327f`.
+The last carrying commit `4cd25b95b` is reachable from `main`. No path of the
+package exists on `main`, and 267 is in the Spec `reserved_history` there.
+The three files were restored from `4cd25b95b` into a new scratch folder
+outside the repository. Each hashes to its `4cd25b95b` blob (`plan.md`
+`8f6443102`, `spec.md` `3d7856520`, Task `7ade7b050`), with 0 mismatches.
+Retirement precondition 5 is met for SPEC-0267.
+
 ### v14.7 handoffs
 
 | ID | Writer | Difference |
@@ -356,12 +369,14 @@ outside FR-0004.
 | W02 v14.7 review result | 110 | W115 | independent-review | Commits `5a5fa122d`, `82275d313` and `4b7021386` | PASS | code-reviewer re-reviews: I1 to I5, M1 to M7, N1 to N3 and R1 to R3 resolved; final verdict PASS | required | W02 v14.7 review |
 | W02 document checks | 110 | W115 | metadata-links-governance | HEAD `82275d313`, clean tree, covering the protocol, Stage 01, 02, 03 and 05 changes and the removal | PASS | metadata check-changed selected 52 violations 0; links all PASS; occupancy 0; operations catalog PASS; agent governance contract PASS; renderer drift 0 | required | - |
 | W02 blocking-case scenarios result | 110 | W115 | removal-blocking-scenarios | Scratch repository outside this one, run on 2026-11-12 after the owner approved it | PASS | The normal body is reachable with matching bytes. An uncommitted difference, a squash-dropped intermediate commit, a reflog-only commit and a body missing from a shallow clone are each detected as blocking. A missing historical consumer is blocked by link alignment and `package-retirement-unrecorded` (W02 removal dry-run). A hold has no Git signal; precondition 5 checks it from the Task record | required | W02 blocking-case scenarios |
+| W02 v14.7 remote candidate | 110 | W115 | remote-candidate-quality | PR #960 head `a4b6c327f`, hosted run 43169451623, check rollup read on 2026-11-12 | PASS | `candidate-quality` SUCCESS; CodeQL, GitGuardian and triage SUCCESS; `main-security` and the greeting SKIPPED as designed for a PR | optional | - |
+| W02 SPEC-0267 post-merge recovery | 110 | W115 | removal-recovery-proof | `4cd25b95b` reachable from `main` `3736e3430`; the 3 files of SPEC-0267 | PASS | 3 files restored outside the repository, 0 byte mismatches against their blobs; no path present on `main`; 267 reserved | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 110 | accepted | W02 obligation assessment result, W02 batch removal, W02 post-merge recovery, W02 code review, W02 remote candidate final, W02 adapter without apt, W02 v14.7 assessment, W02 SPEC-0267 promotion final, W02 SPEC-0267 removal, W02 consumer tests, W02 v14.7 review result, W02 document checks, W02 blocking-case scenarios result | Owner accepted on 2026-11-12 in this chat. The SPEC-0267 post-merge byte comparison stays an open obligation of this Task; H-W02-1 (W05) and H-W02-2 (W03) stay with their owners | SPEC-0212 TSK-0057 |
+| 110 | accepted | W02 obligation assessment result, W02 batch removal, W02 post-merge recovery, W02 code review, W02 remote candidate final, W02 adapter without apt, W02 v14.7 assessment, W02 SPEC-0267 promotion final, W02 SPEC-0267 removal, W02 consumer tests, W02 v14.7 review result, W02 document checks, W02 blocking-case scenarios result | Owner accepted on 2026-11-12 in this chat. The SPEC-0267 post-merge byte comparison passed after merge (W02 SPEC-0267 post-merge recovery); H-W02-1 (W05) and H-W02-2 (W03) stay with their owners | SPEC-0212 TSK-0057 |
 
 ## Review and Completion
 
@@ -369,10 +384,10 @@ In progress. The assessment, the dry-run, the reproduced-gap changes and the
 removal of 0226, 0266, 0268 and 0269 are recorded, with their criterion state
 and post-merge recovery.
 
-v14.7: SPEC-0267 is removed in `06bf2e201`. The blocking-case scenarios
-passed after the owner approved them. The owner accepted criterion 110 on
-2026-11-12. Open: the SPEC-0267 post-merge byte comparison, which needs the
-branch merged to `main`, and H-W02-1 and H-W02-2.
+v14.7: SPEC-0267 is removed in `06bf2e201`, and its post-merge recovery
+passed after PR 960 merged. The blocking-case scenarios passed after the owner
+approved them. The owner accepted criterion 110 on 2026-11-12. Open:
+H-W02-1 (W05) and H-W02-2 (W03).
 
 ## Related Documents
 

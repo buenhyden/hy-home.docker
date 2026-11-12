@@ -1,10 +1,10 @@
 ---
 title: "Stage 98 Archive Deletion Task"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-12"
 layer: "specs"
 artifact_id: "SPEC-0249-TSK-0001"
 parent_ids:
@@ -51,6 +51,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0249-PLAN-0001 | draft | approved | #current-contract-decision |
 | SPEC-0249-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0249-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
+| SPEC-0249-TSK-0001 | in-progress | completed | #owner-acceptance-2026-11-12 |
 
 ### Summary map
 
@@ -270,15 +271,21 @@ the PR #723 review `test_an_archive_copy_does_not_record_an_unreserved_removal`
 | E50 | 4 | W5 | hosted-ci-prior-head | CI Quality Gates run 41637977928 on d80fddbac | PASS | candidate-quality success; main-security skipped | required | - |
 | E51 | 4 | W5 | follow-up-m4 | `FencedCommandPathTests` with a multi-item Task whose items are all terminal or one in progress | PASS | 9 tests OK; the all-terminal case reported a finding before the change | required | - |
 | E52 | 4 | W5 | follow-up-m5 | `test_ordinary_allocation_transition_reads_each_blob_once`, also run with the blob cache disabled | PASS | OK with the cache; fails with the cache disabled | required | - |
+| E53 | 3 | W3 | document-commands | `check-document-links.py --mode commands` on branch `docs/tsk-0059-w00-v14-7-intake` at `878c4baab`, clean tree | PASS | 905 documents, 8303 links, 0 failures, 0 warnings | required | E2 |
+| E54 | 4 | W5 | hosted-ci | PR #723 merged as `85904818e` from head `076a1970b`; check rollup re-read with `gh pr view` on 2026-11-12 | PASS | 7 checks SUCCESS, 1 SKIPPED, none failing | required | E25, E37, E48 |
+| E55 | 1 | W2 | stage98-contents | `git ls-files docs/98.archive` at `878c4baab` | PASS | Stage 98 holds only `README.md` | required | - |
+| E56 | 1 | W3 | stage98-summary-map | Each Summary map owner at `878c4baab` | PASS | Every mapped record is named in its owner; ADR-0015 and ADR-0019 now trace through ADR-0062, which replaced the later-retired ADR-0039 and ADR-0040 | required | - |
+| E57 | 3 | W4 | document-links | `check-document-links.py --mode all` and `--mode alignment` at `82275d313`, clean tree | PASS | 0 failures, 0 warnings; no current document links into Stage 98 | required | - |
+| E58 | 4 | W5 | governance-unit-tests | `python3 -m unittest discover -s tests/lib/document_governance` in a worktree at `main` `4cd25b95b`, which contains this package's change, quiet tree | PASS | 770 tests OK in 1595 s | required | E3 |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | - | - | @buenhyden |
-| 2 | pending | - | - | @buenhyden |
-| 3 | pending | - | - | @buenhyden |
-| 4 | pending | - | - | @buenhyden |
+| 1 | accepted | E55, E56 | Accepted by the owner on 2026-11-12 | @buenhyden |
+| 2 | accepted | E10, E22, E33, E44 | Accepted by the owner on 2026-11-12 | @buenhyden |
+| 3 | accepted | E1, E14, E15, E23, E34, E45, E53, E57 | Accepted by the owner on 2026-11-12 | @buenhyden |
+| 4 | accepted | E6, E7, E8, E9, E11, E12, E13, E17, E19, E20, E21, E24, E27, E29, E31, E32, E35, E36, E39, E41, E42, E43, E46, E47, E49, E50, E51, E52, E54, E58 | Accepted by the owner on 2026-11-12 | @buenhyden |
 
 ## Review and Completion
 
@@ -299,6 +306,13 @@ failing. #724 is the ADR-0051 acceptance change that shipped beside the
 deletion. Candidate quality: the merged change is a candidate that passed
 hosted CI. This receipt is not owner acceptance: no criterion is accepted and
 the status is unchanged.
+
+### Owner acceptance 2026-11-12
+
+On 2026-11-12 the owner accepted criteria 1 to 4 in the
+SPEC-0212 TSK-0057 session. New evidence rows resolve the open required
+results with the same check and work unit; the earlier rows are kept.
+E58 resolves E3, and the owner's acceptance then covers criterion 4. The Task closes as `completed`.
 
 ## Related Documents
 

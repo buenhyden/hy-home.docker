@@ -1,10 +1,10 @@
 ---
 title: "Completed Spec Package Deletion Task"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-12"
 layer: "specs"
 artifact_id: "SPEC-0250-TSK-0001"
 parent_ids:
@@ -56,6 +56,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0250-PLAN-0001 | draft | approved | #current-contract-decision |
 | SPEC-0250-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0250-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
+| SPEC-0250-TSK-0001 | in-progress | completed | #owner-acceptance-2026-11-12 |
 
 ### Deleted packages
 
@@ -205,15 +206,17 @@ against `d6b535503` reported zero violations.
 | E21 | 2 | W3 | metadata-active | `check-active` on `f715cfdaf` | PASS | 497 selected, zero violations | required | - |
 | E22 | 1 | W2 | corpus-lifecycle | `--base-ref origin/main` on `f715cfdaf` | PASS | corpus lifecycle zero; occupancy zero | required | - |
 | E23 | 3 | W3 | document-links | alignment on `f715cfdaf` | PASS | zero failures and warnings | required | - |
+| E24 | 3 | W3 | document-commands | `check-document-links.py --mode commands` on branch `docs/tsk-0059-w00-v14-7-intake` at `878c4baab`, clean tree | PASS | 905 documents, 8303 links, 0 failures, 0 warnings | required | E15 |
+| E25 | 2 | W4 | deletion-rule-text | `documentation-protocol.md` Retention by status and `docs/03.specs/README.md` scope at `878c4baab` | PASS | The protocol states when a Stage 03 package is deleted, its number reserved and its links made plain text; the README names deleted packages' numbers in `reserved_history` with bodies in Git history | required | - |
 
 ## Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | - | - | @buenhyden |
-| 2 | pending | - | - | @buenhyden |
-| 3 | pending | - | - | @buenhyden |
-| 4 | pending | - | - | @buenhyden |
+| 1 | accepted | E1, E16, E22 | Accepted by the owner on 2026-11-12 | @buenhyden |
+| 2 | accepted | E3, E13, E20, E21, E25 | Accepted by the owner on 2026-11-12 | @buenhyden |
+| 3 | accepted | E2, E4, E14, E18, E23, E24 | Accepted by the owner on 2026-11-12 | @buenhyden |
+| 4 | accepted | E6, E7, E8, E10, E11, E17, E19 | Accepted by the owner on 2026-11-12 | @buenhyden |
 
 ## Review and Completion
 
@@ -227,6 +230,13 @@ Recorded 2026-11-10 from `gh pr view`: #725 merge `c5ec612ff` at
 SUCCESS, the rest SKIPPED, none failing. Candidate quality: the merged change
 is a candidate that passed hosted CI. This receipt is not owner acceptance: no
 criterion is accepted and the status is unchanged.
+
+### Owner acceptance 2026-11-12
+
+On 2026-11-12 the owner accepted criteria 1, 2, 3, 4 in the
+SPEC-0212 TSK-0057 session. New evidence rows resolve the open required
+results with the same check and work unit; the earlier rows are kept.
+The Task closes as `completed`.
 
 ## Related Documents
 
