@@ -1,6 +1,6 @@
 ---
 title: "W01 v14.7 Governance Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -134,19 +134,22 @@ W06's (TSK-0059 H-09).
 A contract moves from draft (proposed) to approved (the owner named the
 revision) to adopted (approved and verified in this repository's consumers).
 The obligation is approved. Q-08 and the Release role removal are named in the
-owner's prompt, so they are approved. The other revisions come from the package
-files and wait for the owner's confirmation, so they stay draft even where the
-change is implemented on this branch. Authoring source: the package contract
+owner's prompt. On 2026-11-12 the owner answered a direct question in this
+session and approved `repository-vocabulary` v14.5, `COMMON-DOC-FORM-1` 1.0.0,
+`QA-STAGES-1` 1.0.0 and the TemplateDefinition v14.5 schema, each pinned to
+the package file below, for this repository (approved by @buenhyden, approved
+at 2026-11-12). A row becomes adopted only once its consumers are migrated and
+the change is on `main`. Authoring source: the package contract
 file. Exceptions: none recorded. Effective from: the merge to `main`.
 Project-Template `dev` as the shared authoring source is UNVERIFIED, since it
 is not read here (D-04).
 
 | Contract | Revision (package file, SHA-256 prefix) | Local scope | State here | Consumer version | Migration and rollback |
 | --- | --- | --- | --- | --- | --- |
-| Repository Vocabulary | `repository-vocabulary` v14.5 (`REPOSITORY-VOCABULARY.json`, `b03ae3c00a42`) | `.agents/knowledge/glossary.md`, `governance-vocabulary` profile | Draft; implemented and checked on this branch | Glossary `Contract Version` column reads v14.5 | Done in `07f1943c6`, `8903eeaf2`, `4ec4d7182`; rollback is a revert of those commits |
-| Common section form | `COMMON-DOC-FORM-1` 1.0.0 (`COMMON-SECTION-CONTRACT.json`, `4f79183d59c3`) | 16 common roles | Draft; 3 of 16 roles implemented (Incident, Postmortem, AGENTS) | Not recorded in the Registry (H-W01-2) | Per role in one commit, no old form; remaining roles TSK-0059 H-04 |
-| Stage QA | `QA-STAGES-1` 1.0.0 (`STAGE-QA-MATRIX.json`, `12d8962c96c7`) | `quality-standards.md`, workflows and hooks | Draft; policy meanings implemented, Git-stage cells not | Not recorded in the policy (H-W01-2) | Cells are TSK-0059 H-09 (W06) |
-| TemplateDefinition | v14.5 schema (`TEMPLATE-DEFINITION.schema.json`, `e490cf402419`) | Registry and templates | Draft; not implemented | None | TSK-0059 H-06 (W03) |
+| Repository Vocabulary | `repository-vocabulary` v14.5 (`REPOSITORY-VOCABULARY.json`, `b03ae3c00a42`) | `.agents/knowledge/glossary.md`, `governance-vocabulary` profile | Approved; implemented and checked on this branch, not yet on `main` | Glossary `Contract Version` column reads v14.5 | Done in `07f1943c6`, `8903eeaf2`, `4ec4d7182`; rollback is a revert of those commits |
+| Common section form | `COMMON-DOC-FORM-1` 1.0.0 (`COMMON-SECTION-CONTRACT.json`, `4f79183d59c3`) | 16 common roles | Approved; 3 of 16 roles implemented (Incident, Postmortem, AGENTS) | Not recorded in the Registry (H-W01-2) | Per role in one commit, no old form; remaining roles TSK-0059 H-04 |
+| Stage QA | `QA-STAGES-1` 1.0.0 (`STAGE-QA-MATRIX.json`, `12d8962c96c7`) | `quality-standards.md`, workflows and hooks | Approved; policy meanings implemented, Git-stage cells not | Not recorded in the policy (H-W01-2) | Cells are TSK-0059 H-09 (W06) |
+| TemplateDefinition | v14.5 schema (`TEMPLATE-DEFINITION.schema.json`, `e490cf402419`) | Registry and templates | Approved; not implemented | None | TSK-0059 H-06 (W03) |
 | Template path | `Q-08` (`TEMPLATE-PATH-DECISION.json`, `7089347e62b1`) | `docs/99.templates/` | Adopted: approved in the prompt, path unchanged | N/A, a path decision | None |
 | Release document role removal | v14.7 direct requirement; no contract id | documentation protocol, Registry guards | Approved; partially adopted: policy and fixed-name guards, renamed profiles not yet rejected | N/A, no contract id | Wider guard TSK-0059 H-12 (W05) |
 
@@ -170,7 +173,8 @@ conflicts with the current requirement, each corrected above:
 - KEEP needs a consumer check, not policy text alone. Each KEEP now names the
   test or check that consumes it. GOV-05 has none and is PARTIAL.
 - The adoption table called implemented work "adopted" while revision approval
-  was pending. States now follow draft, approved and adopted.
+  was pending. States now follow draft, approved and adopted, and the owner
+  then approved the four revisions.
 - The contract fields lacked consumer version, exceptions and effective date;
   they are now recorded, and the missing consumer versions go to H-W01-2.
 - The archive contract KEEP and the vocabulary violation cases were not
@@ -213,7 +217,7 @@ documentation protocol; relation fields are W03's and state meanings W04's
 
 In progress. The assessment, the adoption record and the policy corrections
 are recorded. Criterion 113 waits for checks, review and owner acceptance.
-Open: H-W01-1, H-W01-2 and H-W01-4 (W05), H-W01-3 (W06), the owner's confirmation of the draft revisions, and the partial or unadopted contracts
+Open: H-W01-1, H-W01-2 and H-W01-4 (W05), H-W01-3 (W06), and the partial or unadopted contracts
 through TSK-0059 H-04, H-06, H-09 and H-12.
 
 ## Related Documents
