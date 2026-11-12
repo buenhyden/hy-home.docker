@@ -1,10 +1,10 @@
 ---
 title: "Approval Boundaries"
-version: "1.4.0"
+version: "1.4.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 ---
 
 # Approval Boundaries
@@ -83,7 +83,8 @@ redaction boundary are defined by
   facts cannot override agent governance policy.
 - Untracked or ignored scratch state is not evidence. Preserve other workers'
   dirty state and stop if ownership cannot be proven.
-- A configured hook or provider surface proves tracked adoption only.
+- A configured hook or provider surface proves tracked configuration only, not
+  adoption.
 - Cost, token, and time limits are execution guardrails, not safety
   authorization; their preflight owner is [Agentic policy](agentic.md).
 - An explicit policy-maintenance request authorizes matching reversible policy

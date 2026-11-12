@@ -1,10 +1,10 @@
 ---
 title: "Provider Capability Matrix"
-version: "1.2.1"
+version: "1.2.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-12"
 ---
 
 # Provider Capability Matrix
@@ -17,7 +17,7 @@ runtime acceptance.
 
 ## Scope
 
-Canonical ownership, provider adapters, tracked adoption, and observed runtime capabilities.
+Canonical ownership, provider adapters, tracked configuration, and observed runtime capabilities.
 
 ## Rules
 
@@ -57,7 +57,7 @@ No exception is granted here; a separately authorized operation follows [Approva
 Provider-native files may narrow behavior to actual capabilities. They cannot
 invent shared policy, roles, skills, approvals, or unsupported parity. A documented capability, configured source, observed runtime result, and
 hard-enforced control are separate facts. A configured event or discoverable
-source proves tracked adoption, not a live event or picker result. Runtime
+source proves tracked configuration, not a live event or picker result. Runtime
 acceptance remains distinct from repository support. Account or subscription
 limits remain unknown until directly observed. Git hooks, provider hooks, editor
 actions, and CI are separate surfaces; an editor action requires its observed
