@@ -848,7 +848,8 @@ hold, authorization and recovery requirements have been established.
      with a passing and a failing test where a contract changes, and an unrun
      or unverified item stays visible with its owner.
 113. TSK-0060 assesses the v14.7 W01 obligations GOV-01 to GOV-08, SUP-12,
-     R45-03, R45-08 and R147-03, 09 and 19 against their canonical owners,
+     R45-03, R45-08, R147-03, 09 and 19, W01-A, W01-B, QA-C01 and the
+     legacy WP-06 and WP-07 against their canonical owners,
      records each common contract's revision, approval and local adoption
      state, and corrects conflicting governance policy with passing checks.
      Local adoption is never reported as adoption by another repository.
