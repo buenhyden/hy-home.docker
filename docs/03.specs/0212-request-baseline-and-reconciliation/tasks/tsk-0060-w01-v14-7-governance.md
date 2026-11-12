@@ -204,7 +204,7 @@ documentation protocol; relation fields are W03's and state meanings W04's
 | --- | --- |
 | W01 prompt | All 501 lines, re-read in the re-check |
 | Consumer tests | `test_validator_entrypoints` renderer cases, `test_generation7`, `test_agent_governance_ci_routing` deny cases |
-| Governance policies | `approval-boundaries.md` lines 14-40 and 73-91, `quality-standards.md` lines 96-104, 227-232 and 239-268 (1.10.0 on this branch), plus the earlier W01 and W00 citations |
+| Governance policies | At `b947ec52d`: `approval-boundaries.md` 1.5.0 lines 14-40 and 73-84, `quality-standards.md` 1.11.0 lines 96-104, 227-232 and 239-260, `documentation-protocol.md` 3.15.0 lines 221-281, plus the earlier W01 and W00 citations |
 | Prior Tasks | TSK-0056 assessment and closure; TSK-0059 handoffs and vocabulary changes |
 | Package | W01 prompt in full; six contract files for id, version and hash |
 | Not read | The other three repositories (D-04); Project-Template `dev` |
