@@ -1,6 +1,6 @@
 ---
 title: "W00 v14.7 Intake Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -72,8 +72,8 @@ outside the stated boundary.
 
 ### Pull requests after the v14.2 intake
 
-These rows record metadata, the changed-file list and the hosted check rollup
-only. No diff review was done.
+These rows record metadata, the changed-file list and the hosted check rollup.
+The diff review follows the table.
 
 | PR | Head | Merge | Hosted checks | Current owner state read from source |
 | --- | --- | --- | --- | --- |
@@ -84,6 +84,23 @@ only. No diff review was done.
 | 957 | b726af48a | 4c042dde2 | same | SPEC-0264 E35 PASS (local dispatcher only); E34 live Codex FAIL; criterion 8 pending |
 | 958 | 1fdb3deb9 | 4fe55a442 | same | SPEC-0265 E20 resolves E9; criterion 12 is now accepted. The package still records it as pending |
 | 959 | c398f6b73 | 4cd25b95b | same | SPEC-0265 receipt pairing; criteria 1 to 11 pending |
+
+A read-only reviewer read each `git diff <merge>^1 <merge>` and PR body on
+2026-11-12. No PR regresses the PR 938 backup path, TSK-0052, TSK-0055,
+SPEC-0264 criterion 8, SPEC-0265 criteria 1 to 11 or the README-only Stage 98,
+and none introduces a Release document role or "tracked adoption".
+
+| PR | Finding | Disposition |
+| --- | --- | --- |
+| 953 | Minor: the body's follow-up items landed in PR 957, not here | Recorded; PR 957 carries them |
+| 955 | Important: the deleting Task did not record each removed package's criterion state, as `sdlc.md` requires | Corrected in TSK-0057 "Removal record correction 2026-11-12" |
+| 955 | Minor: the lineage claim named AD-0007 instead of AD-0026; stale closing text; three required remote FAIL rows had no resolving PASS | Corrected in TSK-0057, with a PASS row for the merged head's hosted run |
+| 956 | Q-03 kept the old H2 headings | Corrected as C-02; the 23 ordered profiles move with H-04 and H-07 |
+| 957 | Nit: the denied-word list in the Task omits four names the code also denies | Not changed: the text is in completed TSK-0053 and is narrower than the code, which stays the enforcement owner |
+| 959 | Minor: E21's input names a commit plus later review fixes, not one revision | Left with the SPEC-0265 owner Task; the live run after install stays NOT_RUN |
+
+Owner acceptances made in chat (953, 954, 958) and live observations cannot be
+confirmed from the repository and stay as recorded.
 
 `main-security` was SKIPPED on every row because it is a push-only job. No
 branch-protection state was read, so remote enforcement stays UNVERIFIED.
@@ -110,18 +127,18 @@ The following items were checked and left as they are:
 
 | ID | Verdict | Basis |
 | --- | --- | --- |
-| SCOPE-01, R147-02, R45-02 | PASS (bounded) | Boundary and pull request tables above; read denominator below |
+| SCOPE-01, R147-02, R45-02 | PASS | Boundary table, pull request metadata and diff review above; read denominator below |
 | SCOPE-02, SCOPE-10 | PASS | Prior PASS rows with `Resolves` are reused; nothing that is already resolved is reopened |
 | SCOPE-03, SCOPE-04 | PASS (bounded) | One writer per difference in the handoff table. Semantic pair review stays with OPEN-02 |
 | SCOPE-05, SCOPE-11, SCOPE-12 | PASS | No reset, stash, clean or checkout of user work, and no commit. Only this workspace was read |
-| SCOPE-06, R45-04, R147-11 | PARTIAL | Package research rows are cited as inherited and were not re-queried. The exact H2 lists and the Release removal are a user project contract, not an external standard |
+| SCOPE-06, R45-04, R147-11 | PASS (bounded) | The six sources this prompt cites (RS-09, 18, 22, 39, 49, 50) were re-fetched on 2026-11-12; see External sources re-check. Each supports its narrow claim, and each applied instruction is a project choice, not a source mandate |
 | SCOPE-07 | KEEP | No rule stops work on elapsed time alone. `agentic.md:36-42` and the CI, gate and hook timeouts bound commands only |
 | SCOPE-08, SCOPE-09 | PASS | Local edits only. Checks, review and acceptance are recorded as separate rows |
 | R45-01, R147-01 | PASS | The v14.2 rows in TSK-0053 are reused as recorded. This Task adds only the v14.7 delta |
 | R45-05 | PASS | Only W00 ran, and no other work unit was started |
 | R45-11, R147-18 | PASS | See the OPEN table below. No OPEN ID is treated as a current file, PR or Task |
 | SUP-01 | PASS (bounded) | Same as the v14.2 intake. The source bytes and trace counts are not semantic review |
-| SUP-02 | UNVERIFIED | The 12-source, 6-perspective review was not re-run |
+| SUP-02 | UNVERIFIED | The 12-source, 6-perspective review was not re-run; only the six W00 sources were re-checked |
 
 ### OPEN-01 to OPEN-14
 
@@ -129,12 +146,12 @@ These are historical audit IDs. They are not current files, issues or Tasks.
 
 | ID | Verdict | Current owner and basis |
 | --- | --- | --- |
-| OPEN-01 | RESIDUAL_CONFIRMED | 1,250 lines remain `NOT_REVIEWED`, as recorded in TSK-0053 "Original-line and legacy trace preservation". TSK-0029 judged a different input of 355 appendix-R lines. Waits for an owner scope |
-| OPEN-02 | RESIDUAL_CONFIRMED | 14,028 pairs remain NOT_REVIEWED. TSK-0030 judged a different set, 10,878 pairs of 148 CRs. Waits for an owner scope |
+| OPEN-01 | SUPERSEDED | Owner decision 2026-11-12: superseded by the package's 106-ID requirement set, derived from the same original bytes (SHA `dc348e7f`), and the per-ID assessments in TSK-0053 and TSK-0056 to TSK-0059. The 1,250 lines stay preserved with their recorded `NOT_REVIEWED` status as history; no full line review runs |
+| OPEN-02 | SUPERSEDED | Same owner decision. The 14,028 pair candidates stay preserved as NOT_REVIEWED history; no full pair review runs. TSK-0030 judged a different set (10,878 pairs of 148 CRs) and is not reused for this |
 | OPEN-03 | CLOSED_BY_EVIDENCE (trace only) | The 52 Docker WP rows map to issued CR IDs, per TSK-0053. Each WP's own residual stays with its Task |
 | OPEN-04 | BLOCKED_EVIDENCE | The source bytes for WMC-20261110-03 and the 20261102 v4 input are absent from both the workspace and the package |
-| OPEN-05 | RESIDUAL_CONFIRMED | TSK-0053 records that the LambdaDB article was retrieved on 2026-11-10. Code, license and adoption review were not done; any adoption belongs to SPEC-0270 |
-| OPEN-06 | UNVERIFIED | Upstream code, license and the 72 perspectives were not reviewed. No feature is adopted on that basis |
+| OPEN-05 | NOT_APPLICABLE | No current document, script or Compose file adopts the LambdaDB article (only TSK-0053 and this Task mention it). The OPEN-SOURCES closure accepts an explicit non-adoption basis; SPEC-0270 would reopen it only by adopting the source |
+| OPEN-06 | NOT_APPLICABLE | Nothing in the workspace adopts SillyMemory or other upstream code, so its code, license and 72-perspective review has no consumer here. Adoption would need its own review first |
 | OPEN-07 | CLOSED_BY_EVIDENCE (W00 scope) | The W00-selected surfaces were inventoried; the denominator is below. A full-repository semantic review is not claimed |
 | OPEN-08 | UNVERIFIED | Belongs to W10 and was not selected |
 | OPEN-09 | RESIDUAL_CONFIRMED | Handoffs H-05 and H-08 below. The TSK-0053 QA-C PARTIAL rows still wait for W05 |
@@ -246,6 +263,21 @@ section contract carries only the titles and their order; the per-section
 required and prohibited content stays a review duty, except the bare
 placeholder rule above.
 
+### External sources re-check 2026-11-12
+
+A read-only agent fetched each primary URL on 2026-11-12. All six returned
+content, so the four sources marked INHERITED_FROM_V14_6_NOT_REQUERIED are now
+directly re-checked.
+
+| ID | Source and revision | Claim | Mandate or project choice |
+| --- | --- | --- | --- |
+| RS-09 | NASA SWEHB SWE-052, Ver C, page updated 2022-11-02 | Supported: bi-directional traceability between design, code and verification | Project choice: forward links written once and reverse lookup generated |
+| RS-18 | Microsoft blog "Spec-Driven Development", 2026-06-10 | Supported: a shared artifact preserves intent; earlier clarification cuts rework | Project choice: implement after the audit rather than report only |
+| RS-22 | git-worktree, Git 2.56.0 docs | Supported: worktrees share everything except per-worktree files such as `HEAD` and `index` | Project choice: discovering the Git top level never widens scope |
+| RS-39 | OpenAI blog on skills and prompts, no visible date | Supported: reading a full repository map before every edit is excessive | Project choice: full scoped review per request, reuse of unchanged inputs |
+| RS-49 | git-diff, Git 2.56.0 docs | Supported: `--cached` shows staged changes against a commit | Project choice: partial-stage counterexample and no automatic stage, stash or reset |
+| RS-50 | GitHub Docs, events that trigger workflows, no visible date | Supported: a `pull_request` run uses the merge commit, not the head | Project choice: the 12 Git-stage cells; `merge_group` applies only with a merge queue |
+
 ### Read denominator
 
 | Surface | Discovered | Read | Not read |
@@ -265,7 +297,7 @@ those agents and are re-verified by each receiving work unit before it edits.
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| W00 v14.7 intake assessment | 112 | W117 | requirement-owner-assessment | v14.7 prompt sha256 d52a80ee, main 4cd25b95b, PRs 953-959 metadata, three read-only inventories | PASS | Tables above. OPEN-04 BLOCKED_EVIDENCE; OPEN-06, 08, 10 and 13 UNVERIFIED; SUP-02 UNVERIFIED; no semantic or PR diff review | required | - |
+| W00 v14.7 intake assessment | 112 | W117 | requirement-owner-assessment | v14.7 prompt sha256 d52a80ee, main 4cd25b95b, PRs 953-959 metadata, three read-only inventories | PASS | Tables above. OPEN-04 BLOCKED_EVIDENCE; OPEN-06, 08, 10 and 13 UNVERIFIED at that time; SUP-02 UNVERIFIED; PR diffs reviewed later in this Task | required | - |
 | Daily backup protection | 112 | W117 | regression | `python3 -m unittest tests.validation.test_memory_backup_contract` at 4cd25b95b | PASS | 4 tests OK, exit 0 | optional | - |
 | Intake document checks | 112 | W117 | metadata-links-lifecycle | Changed Spec, Plan, TSK-0058, TSK-0059 and documentation protocol | NOT_RUN | Runs after authoring | required | - |
 | Intake document checks result | 112 | W117 | metadata-links-lifecycle | Working tree on the branch with the five changed files | PASS | Corpus lifecycle and occupancy violations 0; metadata check-changed against main selected 5, violations 0; links alignment and commands 906 documents, 8260 links, failures 0 | required | Intake document checks |
@@ -277,6 +309,9 @@ those agents and are re-verified by each receiving work unit before it edits.
 | Subsection contract GREEN | 112 | W117 | red-green-proof | Commit `8a4714b7d` | PASS | Both test classes OK; test_registry, test_heading, test_profile and test_lifecycle OK; metadata check-active selected 534, violations 0; links alignment PASS | required | Subsection contract RED |
 | Incident and postmortem migration | 112 | W117 | form-migration | Commits `4ec4d7182` and `ffeee0e7f` | PASS | test_heading, test_registry and test_operations_catalog OK after the two form tests were updated; operations catalog PASS, including incident closure on the migrated postmortem; metadata check-active selected 534, violations 0; links all 907 documents, failures 0; P03 and P11 Hermes PASS; agent governance contract PASS. `check-candidate-preflight.sh` NOT_RUN: it is the OPEN-14 timeout leaf and its document checks ran individually | required | - |
 | AGENTS role migration | 112 | W117 | form-migration | Commit `4bb4add1f` | PASS | test_registry and test_heading 215 OK; metadata check-active selected 534 and check-changed selected 26, violations 0; links alignment PASS; renderer drift 0; agent governance contract PASS. Links `--mode all` was still running at commit time and is not counted | required | - |
+| AGENTS full link check | 112 | W117 | metadata-links-lifecycle | `check-document-links.py --mode all` on the `4bb4add1f` working tree | PASS | PASS: document link mode all; renderer drift 0 | optional | - |
+| External sources re-check | 112 | W117 | research-recheck | RS-09, RS-18, RS-22, RS-39, RS-49 and RS-50 primary URLs fetched 2026-11-12 | PASS | All six retrieved; each narrow claim supported with a quoted sentence; applied instructions are project choices | optional | - |
+| PR 953-959 diff review | 112 | W117 | pull-request-diff-review | First-parent diffs and bodies of merges `0a726ee1c` to `4cd25b95b` | PASS | Review completed; no protected-work regression; one Important record gap and minor mismatches dispositioned in the table above | required | - |
 | Intake independent review result | 112 | W117 | independent-document-review | Fresh-context code-reviewer of `7f1c82ab9` and `ce56a7256` contents | PASS | APPROVED. Three minor findings fixed: a `main-protection.md` line citation, the superseded Spec prose for criterion 111, and the overstated guard coverage (H-12 added). 9 of 10 citations spot-checked matched | required | Intake independent review |
 
 ## Criterion Acceptance
@@ -295,9 +330,10 @@ Open, with owners:
 
 - H-04 (13 roles left), H-06, H-07 with the Task role, H-08, H-09, H-10 and H-12.
   H-01, H-02, H-03, H-05 and H-11 are done.
-- OPEN-01, 02, 05, 09, 11, 12 and 14 (RESIDUAL_CONFIRMED).
+- OPEN-09, 11, 12 and 14 (RESIDUAL_CONFIRMED).
 - OPEN-04 (BLOCKED_EVIDENCE).
-- OPEN-06, 08, 10 and 13 (UNVERIFIED).
+- OPEN-08, 10 and 13 (UNVERIFIED). OPEN-01 and 02 are SUPERSEDED; OPEN-05
+  and 06 are NOT_APPLICABLE.
 
 ## Related Documents
 
