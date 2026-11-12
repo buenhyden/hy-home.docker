@@ -18,8 +18,9 @@ created: "2026-11-11"
 
 ### Objective
 
-Own W115/criterion 110. Assess the v14.2 W02 obligations ARC-01 to ARC-09
-against the current retention and retirement owners. Before any removal,
+Own W115/criterion 110. Assess the v14.2 W02 obligations ARC-01 to ARC-09,
+and the v14.7 W02 obligations W02-A, W02-B, R147-08, QA-C04, WP-19, WP-20 and
+OPEN-ARCHIVE, against the current retention and retirement owners. Before any removal,
 prove readiness and byte recovery for each candidate, and block a removal
 whose acceptance, promotion, hold, authority or recovery is unmet.
 
@@ -212,23 +213,27 @@ On 2026-11-12 the owner supplied the v14.7 W02 prompt
 reference data. This Task is still open, so the v14.7 run continues here
 instead of opening a new Task. The run is on branch
 `docs/tsk-0059-w00-v14-7-intake`, which builds on the unmerged W00 and W01
-changes. The repository has no Git LFS attribute, no `.gitmodules` and no
-gitlink entry, so pointer and gitlink recovery do not apply.
+changes. No `.gitattributes` names an LFS filter, the tracked `.gitmodules` is
+empty and declares no submodule, and the index has no gitlink entry, so
+pointer and gitlink recovery do not apply. Vault records do not exist in this
+repository, so ARC-09's Vault clause is N/A here.
 
 | ID | Verdict | Current owner and basis |
 | --- | --- | --- |
-| ARC-01 | KEEP | The retirement rules above are reused. Age never triggers a deletion, and readiness is not removal approval |
-| ARC-02 | KEEP | Corpus lifecycle occupancy reported 0 violations in this run, and the occupancy rejection tests of `535a16243` stand. Historical material is never loaded as an instruction (bootstrap precedence) |
-| ARC-03 | KEEP | No terminal Task body is edited in this run; corrections go to open Tasks |
-| ARC-04 | KEEP | Disposition stays inside this Task; no Spec or ledger is added for it |
-| ARC-05 | CHANGE | Precondition 5 now says that a body under Git LFS or a submodule is recovered as its payload or submodule commit, not its pointer. The blocking-case scenarios were not exercised (W02 blocking-case scenarios) |
-| ARC-06 | KEEP | Stage 98 is README-only, and there is no move path |
-| ARC-07 | KEEP | No archive, retention-catalog or migration gate is reintroduced. Precondition 5 stays a manual record |
-| ARC-08 | CHANGE, handed off | The lifecycle Migration manifest chain has no production caller: `_load_repo_migration_manifest` has no reference. The other manifest names are reached only through the re-export in `check-document-corpus-lifecycle.py` and `tests/validation/lifecycle/test_public.py`. The removal goes to W05 (H-W02-1) |
-| ARC-09 | CHANGE | The protocol now says the retirement rules govern development documents only; operational data, backups and shared agent memory keep their own retention |
-| W02-A, R147-08, WP-20 | PARTIAL | SPEC-0267 removal stays blocked: the promotion check found meanings with no current owner and owners that contradict the build (SPEC-0267 retirement map) |
-| W02-B, WP-19 | KEEP | The manual precondition 5 record and the automated readiness findings stay separate; neither became a standing gate |
-| QA-C04 | KEEP | Terminal bodies are not reformatted, nothing is removed without approval and recovery, and historical files are not loaded as rules |
+| ARC-01 | KEEP | The retirement rules above are reused: age never triggers a deletion, and readiness is not removal approval. Consumer: the SPEC-0267 promotion checks blocked a removal that the owner had already approved (W02 SPEC-0267 promotion check) |
+| ARC-02 | KEEP | Consumers: corpus lifecycle occupancy and `tests/validation/lifecycle/test_occupancy.py`, including its README-only exception (W02 consumer tests). Historical material is never loaded as an instruction (bootstrap precedence) |
+| ARC-03, QA-C04 | KEEP | Consumer: `spec_packages.py` rejects a changed terminal Task body or identity, exercised by `test_spec_packages` (W02 consumer tests). No terminal body is edited in this run, and nothing is removed without approval and recovery |
+| ARC-04 | KEEP (process) | Disposition stays inside this Task; no Spec or ledger is added for it |
+| ARC-05 | CHANGE | Precondition 5 now recovers a Git LFS or submodule body as its payload or submodule commit, and an unrecoverable one blocks the removal. The blocking-case scenarios are NOT_RUN (W02 blocking-case scenarios) |
+| ARC-06 | KEEP | Stage 98 is README-only and there is no move path. Consumer: the occupancy run and tests (W02 consumer tests) |
+| ARC-07 | KEEP (process) | No archive, retention-catalog or migration gate is reintroduced; precondition 5 stays a manual record |
+| ARC-08 | CHANGE, handed off | A dead subgraph of about 1,500 lines in `lifecycle/contract.py` has no production caller; the removal goes to W05 (H-W02-1) |
+| ARC-09 | CHANGE | The protocol now says the retirement rules govern development documents only. Operational data and backups keep their Stage 05 owners, and shared agent memory keeps the environment constraints. Correction: the 2026-11-11 basis cited `approval-boundaries.md` for Vault and memory, but that file has no such text |
+| Self-removing Task (prompt section 3 item 4) | KEEP | Precondition 5 records the post-merge recovery in a Task that survives the removal; no Task stores its own final hash |
+| Delete dry-run (prompt section 7 item 5) | KEEP | Each removal is preceded by a recovery dry-run (W02 removal dry-run, W02 SPEC-0267 recovery dry-run) |
+| Registry retention and archive vocabulary (prompt section 3 item 1) | GAP, handed off | `archive_source_prefixes` is inert. The archive frontmatter fields (`archived_from`, `archived_at`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `archive_authorizations`) remain in the Registry, the frontmatter schema and `metadata/profile.py`, although Stage 98 holds no bodies. `archive_retention.disposition_entry_statuses` stays in use by precondition 1. W03 assesses each field's consumers (H-W02-2) |
+| W02-A, R147-08, WP-20 | PARTIAL | SPEC-0267 removal waits for its promotion check to pass (SPEC-0267 retirement map) |
+| W02-B, WP-19 | KEEP | The manual precondition 5 record and `archive_readiness_findings` stay separate. The latter is an on-read library function, reached only by `test_generation6.py`, with no CLI or gate. The user's Git-only goal and the tool archive defaults are separate decisions (protocol Reference Framework Adoption) |
 | OPEN-ARCHIVE | No conflict | The SPEC-0267 block is a safety condition (Q-04), not a question. No retention exception or authority conflict remains open |
 
 The SPEC-0248, 0249, 0250 and 0260 Tasks are merged and each has four
@@ -238,24 +243,31 @@ stay until their Tasks are terminal.
 ### SPEC-0267 retirement map 2026-11-12
 
 The owner approved removing SPEC-0267 in the 2026-11-11 batch, so only its
-safety conditions remain. Commit `1cd6301b5` closed the two gaps named in
-the Batch removal record: the four networks in AD-0026, and the three
-accepted risks in POL-0053, POL-0087 and POL-0096.
+safety conditions remain.
 
-A fresh-context `rules-engineer` promotion check then returned BLOCKED.
-These still-current meanings had no owner, or their owner contradicted the
-build:
-
-- The Pyroscope metastore volume.
-- The ComfyUI volume remount.
-- The Keycloak management bind and the recreate lesson.
-- The OAuth2 Proxy and SeaweedFS metrics binds.
-- The bound-listener exception in AD-0026 and GDE-0077.
-- The complete n8n network list.
-- Lineage lines.
-
-A `doc-writer` is correcting those Stage 02 and 05 owners. The Stage 01 owner
-of the bound-listener rule waits for the owner's decision (H-W02-3).
+1. Commit `1cd6301b5` closed the two gaps named in the Batch removal record:
+   the four networks in AD-0026, and the three accepted risks in POL-0053,
+   POL-0087 and POL-0096.
+2. A fresh-context `rules-engineer` promotion check returned BLOCKED. Some
+   still-current meanings had no owner, and some owners contradicted the
+   build:
+   - the Pyroscope metastore;
+   - the ComfyUI remount;
+   - the Keycloak, OAuth2 Proxy and SeaweedFS binds;
+   - the Keycloak recreate lesson;
+   - the bound-listener exception;
+   - the full n8n peer list;
+   - the lineage lines.
+3. Commit `b5fda3ffc` corrected those Stage 02 and 05 owners.
+4. Commit `8757f25ca` added REQ-0023-FR-0004 as the Stage 01 owner, approved
+   by the owner on 2026-11-12.
+5. The re-check returned BLOCKED again on three items:
+   - FR-0004 claimed more than Compose delivers;
+   - POL-0024 omitted Alloy;
+   - RUN-0014 had a duplicate line.
+6. Commit `8659f05a6` fixed all three. FR-0004 keeps a general rule with
+   recorded exceptions, as the owner chose on 2026-11-12: the Registry debug
+   listener `:5001` and the SeaweedFS master, volume and filer metrics.
 
 The n8n broker HOME apply follow-up is closed: TSK-0042 recorded "P03 Runner
 HOME apply" (W68) as PASS. The ComfyUI egress follow-up is settled by
@@ -263,20 +275,20 @@ SPEC-0268, under which egress exists only while the maintenance overlay is
 attached, with approval each time. That is neither of the two options SPEC-0267
 named, and egress is unrestricted while the overlay is attached.
 
-Recovery dry-run: no file of the package differs between `main` and this
-branch. The last commit that changed it is `8330534e3`, reachable from
-`main`. Three files restored from `main` into a scratch folder outside the
-repository hash to their blobs, with 0 mismatches. The only inbound link is
-the `docs/03.specs/README.md` index row. The removal also adds 267 to the Spec
-`reserved_history`.
+Recovery dry-run: no file of the package differs between `main` `4cd25b95b`
+and this branch. The last commit that changed it is `8330534e3`, reachable
+from `main`. Three files restored from `4cd25b95b` into a scratch folder
+outside the repository hash to their blobs, with 0 mismatches. The only
+inbound link is the `docs/03.specs/README.md` index row. The removal also
+adds 267 to the Spec `reserved_history`.
 
 ### v14.7 handoffs
 
 | ID | Writer | Difference |
 | --- | --- | --- |
-| H-W02-1 | W05 | Remove the dead lifecycle Migration manifest chain in `lifecycle/contract.py` (`MigrationManifestRow`, `MigrationManifestDocument`, the loaders, `render_migration_manifest`, `_generate_manifest_skeleton`, `_manifest_mapping`), its re-exports, the `ruff.toml` F401 exemption and the `test_public.py` manifest tests. First confirm that the generation 7 proof reader does not use them |
-| H-W02-2 | W03 | Retire the inert Registry key `common.archive_source_prefixes` and its schema entry; `preserved_origin_path` reads the hardcoded roots instead |
-| H-W02-3 | Owner | Decide the Stage 01 owner of the bound-listener rule: a new REQ-0023 requirement, or a statement that REQ-0023-FR-0001 covers it |
+| H-W02-1 | W05 | Remove the uncalled subgraph in `lifecycle/contract.py`. Its roots are `_repo_manifest_matches`, `_canonical_replacement_findings`, `_baseline_merge_owner_findings`, `_held_result_snapshot`, `_surface_replacement_findings`, `_surface_partition_plan_findings`, `_surface_result_state_findings`, `_partition_plan_findings`, `_profile_required_fields`, `_blob_at_commit_path`, `_surface_rollback_valid`, `_changed_record_paths` and `_load_repo_migration_manifest`. Remove with it the Migration manifest types, loaders, renderer and skeleton generator, their re-exports and the `test_public.py` manifest tests. Narrow the corpus-lifecycle F401 entry in `ruff.toml` if any re-export remains; do not drop it. First confirm that the generation 7 proof reader uses none of them |
+| H-W02-2 | W03 | Assess the Registry archive vocabulary: the inert `common.archive_source_prefixes` and the archive frontmatter fields in the Registry, `document-frontmatter.schema.json` and `metadata/profile.py`. Retire each field with no remaining consumer; keep `archive_retention.disposition_entry_statuses` |
+| H-W02-3 | Owner | Done 2026-11-12: REQ-0023-FR-0004 with recorded exceptions |
 
 ## Evidence
 
@@ -296,10 +308,12 @@ the `docs/03.specs/README.md` index row. The removal also adds 267 to the Spec
 | W02 remote candidate after message fix | 110 | W115 | remote-candidate-quality | PR 955 run 43056362855 at `6980e3bdd` | FAIL | Commit range passed; Playwright apt install failed on the mirror DNS outage | required | - |
 | W02 remote candidate final | 110 | W115 | remote-candidate-quality | PR 955 head `28b4be123`, hosted run 43060150134 | PASS | `candidate-quality` SUCCESS on the merged head; read from the PR check rollup on 2026-11-12, job log not re-read | required | W02 remote candidate, W02 remote candidate on 24.04, W02 remote candidate after message fix |
 | W02 adapter without apt | 110 | W115 | red-green-proof | Commit `0c0168bdb` | PASS | Adapter test failed with the old vector, then test_ci_gate_adapters OK; ruff clean | required | - |
-| W02 v14.7 assessment | 110 | W115 | archive-owner-assessment | v14.7 W02 prompt sha256 af6fdbcb, branch at `1cd6301b5` | PASS | v14.7 per-ID table above | required | - |
-| W02 SPEC-0267 recovery dry-run | 110 | W115 | removal-recovery-dry-run | SPEC-0267 at `main`, last change `8330534e3` | PASS | 3 files restored outside the repository, 0 byte mismatches | optional | - |
+| W02 v14.7 assessment | 110 | W115 | archive-owner-assessment | v14.7 W02 prompt sha256 af6fdbcb, assessed at `3c8b5932b` | PASS | v14.7 per-ID table above | required | - |
+| W02 SPEC-0267 recovery dry-run | 110 | W115 | removal-recovery-dry-run | SPEC-0267 at `main` `4cd25b95b`, last change `8330534e3` | PASS | 3 files restored outside the repository, 0 byte mismatches | optional | - |
 | W02 SPEC-0267 promotion check | 110 | W115 | promotion-check | SPEC-0267 against its owners after `1cd6301b5` | FAIL | rules-engineer BLOCKED: unowned or contradicted meanings listed in the retirement map | required | - |
-| W02 blocking-case scenarios | 110 | W115 | removal-blocking-scenarios | Uncommitted, squash-dropped, reflog-only and shallow cases in a scratch repository | NOT_RUN | The scratch command was denied at the permission prompt on 2026-11-12 | required | - |
+| W02 blocking-case scenarios | 110 | W115 | removal-blocking-scenarios | Uncommitted, squash-dropped, reflog-only, shallow, recorded-hold and missing-historical-consumer cases in a scratch repository | NOT_RUN | The scratch command was denied at the permission prompt on 2026-11-12 | required | - |
+| W02 SPEC-0267 promotion re-check | 110 | W115 | promotion-check | SPEC-0267 against its owners at `8757f25ca` | FAIL | rules-engineer BLOCKED: FR-0004 broader than Compose, POL-0024 member list, RUN-0014 duplicate line; fixed in `8659f05a6` | required | - |
+| W02 v14.7 review | 110 | W115 | independent-review | Commits `3c8b5932b` and `357590856` | FAIL | code-reviewer CHANGES_REQUIRED: `.gitmodules` claim, narrow H-W02-1, KEEPs without consumer evidence, no check rows, Registry archive vocabulary without a verdict, and seven minor items; fixed in this revision | required | - |
 
 ## Criterion Acceptance
 
@@ -311,11 +325,10 @@ the `docs/03.specs/README.md` index row. The removal also adds 267 to the Spec
 
 In progress. The assessment, the dry-run, the reproduced-gap changes and the
 removal of 0226, 0266, 0268 and 0269 are recorded, with their criterion state
-and post-merge recovery. 0267 stays held until its accepted risks reach their
-policy owners. Criterion 110 waits for the owner.
+and post-merge recovery. Criterion 110 waits for the owner.
 
-v14.7: SPEC-0267 removal is blocked until its promotion check passes. The
-blocking-case scenarios are NOT_RUN. H-W02-1 to H-W02-3 are open.
+v14.7: SPEC-0267 removal waits for its promotion check to pass. The
+blocking-case scenarios are NOT_RUN. H-W02-1 and H-W02-2 are open.
 
 ## Related Documents
 

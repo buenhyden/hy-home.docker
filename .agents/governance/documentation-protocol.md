@@ -388,7 +388,9 @@ behavior, structure, decision, or procedure. It is retired when its status is
 terminal and its still-current meaning has moved to a canonical owner.
 These rules govern development documents only. Operational data and backups
 keep the retention their Stage 05 owners set, and shared agent memory keeps
-its own retention rules; neither is deleted under this section.
+the retention rules of the
+[environment constraints](environment-constraints.md); neither is deleted
+under this section.
 
 A retired document is summarized and deleted, not preserved. Its still-current
 meaning goes to its canonical agent governance, Stage 01, 02 or 05 owner, as
@@ -467,8 +469,9 @@ Retire a package or a standalone document only when all of these hold.
    shallow clone blocks that removal, as does a recorded hold. After merge, the
    same Task restores each body from that commit and compares its bytes. A
    body stored through Git LFS or a submodule is recovered as its payload or
-   submodule commit, not its pointer or gitlink; this repository uses neither
-   today. This is a manual record, not a gate.
+   submodule commit, not its pointer or gitlink, and an unrecoverable payload
+   or submodule commit blocks that removal. This is a manual record, not a
+   gate.
 
 A package is never retired because it is old, because a count was exceeded, or
 because nothing currently links to it. Missing inbound links are a defect to
