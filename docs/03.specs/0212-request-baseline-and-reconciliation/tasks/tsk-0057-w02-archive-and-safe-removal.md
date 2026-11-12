@@ -229,11 +229,11 @@ repository, so ARC-09's Vault clause is N/A here.
 | ARC-07 | KEEP (process) | No archive, retention-catalog or migration gate is reintroduced; precondition 5 stays a manual record |
 | ARC-08 | CHANGE, handed off | A dead subgraph of about 1,500 lines in `lifecycle/contract.py` has no production caller; the removal goes to W05 (H-W02-1) |
 | ARC-09 | CHANGE | The protocol now says the retirement rules govern development documents only. Operational data and backups keep their Stage 05 owners, and shared agent memory keeps the environment constraints. Correction: the 2026-11-11 basis cited `approval-boundaries.md` for Vault and memory, but that file has no such text |
-| Self-removing Task (prompt section 3 item 4) | KEEP | Precondition 5 records the post-merge recovery in a Task that survives the removal; no Task stores its own final hash |
-| Delete dry-run (prompt section 7 item 5) | KEEP | Each removal is preceded by a recovery dry-run (W02 removal dry-run, W02 SPEC-0267 recovery dry-run) |
-| Registry retention and archive vocabulary (prompt section 3 item 1) | GAP, handed off | `archive_source_prefixes` is inert. The archive frontmatter fields (`archived_from`, `archived_at`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `archive_authorizations`) remain in the Registry, the frontmatter schema and `metadata/profile.py`, although Stage 98 holds no bodies. `archive_retention.disposition_entry_statuses` stays in use by precondition 1. W03 assesses each field's consumers (H-W02-2) |
-| W02-A, R147-08, WP-20 | PARTIAL | SPEC-0267 removal waits for its promotion check to pass (SPEC-0267 retirement map) |
-| W02-B, WP-19 | KEEP | The manual precondition 5 record and `archive_readiness_findings` stay separate. The latter is an on-read library function, reached only by `test_generation6.py`, with no CLI or gate. The user's Git-only goal and the tool archive defaults are separate decisions (protocol Reference Framework Adoption) |
+| Self-removing Task (prompt section 3 item 4) | KEEP | Retention by status requires final evidence while the package is still editable, which freezes decisions, promotion and authorization first. Precondition 5 records the post-merge recovery in a Task that survives the removal, so a removed Task never has to store its own final hash |
+| Delete dry-run (prompt section 7 item 5) | KEEP (process) | The standing impact test is the registered gates: `package-retirement-unrecorded`, `identity-retired-not-reserved` and link alignment, which blocked the 2026-11-11 dry-run until reservation and link cutover. The scratch recovery dry-run is this Task's practice, not a rule (W02 removal dry-run, W02 SPEC-0267 recovery dry-run) |
+| Registry retention and archive vocabulary (prompt section 3 item 1) | GAP, handed off | `archive_source_prefixes` is inert. The archive frontmatter fields (`archived_from`, `archived_at`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `archive_authorizations`) remain in the Registry, the frontmatter schema and `metadata/profile.py`, although Stage 98 holds no bodies. `archive_retention.disposition_entry_statuses` stays in use: `lifecycle/occupancy.py`, `spec_packages.py` and `registry.py` read it. W03 assesses each field's consumers (H-W02-2) |
+| W02-A, R147-08, WP-20 | PARTIAL | SPEC-0267 is removed after promotion, approval and a recovery dry-run (SPEC-0267 removal). The post-merge byte comparison is pending |
+| W02-B, WP-19 | KEEP | The manual precondition 5 record and `archive_readiness_findings` stay separate. The latter is an on-read library function, reached only by `test_generation6.py`, with no CLI or gate. The user's Git-only goal and tool archive defaults are separate decisions: the protocol's Document Retention and Retirement summarizes and deletes, keeps version history as the record and leaves Stage 98 without bodies |
 | OPEN-ARCHIVE | No conflict | The SPEC-0267 block is a safety condition (Q-04), not a question. No retention exception or authority conflict remains open |
 
 The SPEC-0248, 0249, 0250 and 0260 Tasks are merged and each has four
@@ -282,11 +282,34 @@ outside the repository hash to their blobs, with 0 mismatches. The only
 inbound link is the `docs/03.specs/README.md` index row. The removal also
 adds 267 to the Spec `reserved_history`.
 
+### SPEC-0267 removal 2026-11-12
+
+The final promotion re-check returned READY. Commit `06bf2e201` deletes the
+three files of SPEC-0267, removes its `docs/03.specs/README.md` index row (the
+only inbound link) and adds 267 to the Spec `reserved_history`. Gates at that
+commit: metadata selected 52 with 0 violations, link alignment 0 failures,
+corpus lifecycle occupancy 0, operations catalog PASS.
+
+Precondition 5 record: each removed body is last carried unchanged by `main`
+`4cd25b95b`; the last commit that changed them is `8330534e3`, reachable from
+`main`. No body is uncommitted, reflog-only, branch-only or shallow-missing,
+and no hold is recorded. After merge, this Task restores the three bodies from
+`4cd25b95b` and compares their bytes.
+
+The re-check noted, without blocking:
+
+- Loki gRPC `9096` and Tempo gRPC `9095` listen unauthenticated on all
+  interfaces. They are component RPC, outside FR-0004's four kinds.
+- Each consumer-only network also lets the listener's service reach the
+  consumer.
+
+Both are recorded for the owner.
+
 ### v14.7 handoffs
 
 | ID | Writer | Difference |
 | --- | --- | --- |
-| H-W02-1 | W05 | Remove the uncalled subgraph in `lifecycle/contract.py`. Its roots are `_repo_manifest_matches`, `_canonical_replacement_findings`, `_baseline_merge_owner_findings`, `_held_result_snapshot`, `_surface_replacement_findings`, `_surface_partition_plan_findings`, `_surface_result_state_findings`, `_partition_plan_findings`, `_profile_required_fields`, `_blob_at_commit_path`, `_surface_rollback_valid`, `_changed_record_paths` and `_load_repo_migration_manifest`. Remove with it the Migration manifest types, loaders, renderer and skeleton generator, their re-exports and the `test_public.py` manifest tests. Narrow the corpus-lifecycle F401 entry in `ruff.toml` if any re-export remains; do not drop it. First confirm that the generation 7 proof reader uses none of them |
+| H-W02-1 | W05 | Remove the uncalled subgraph in `lifecycle/contract.py`. Its roots are `_repo_manifest_matches`, `_canonical_replacement_findings`, `_baseline_merge_owner_findings`, `_held_result_snapshot`, `_surface_replacement_findings`, `_surface_partition_plan_findings`, `_surface_result_state_findings`, `_partition_plan_findings`, `_profile_required_fields`, `_blob_at_commit_path`, `_surface_rollback_valid`, `_changed_record_paths`, `_load_repo_migration_manifest`, `_safe_archive_value`, `_git_object_type` and `load_migration_contract`. Delete transitively: helpers such as `_baseline_regular_blob`, `_changed_path_sets`, `_verified_commit` and `_safe_path_text` become dead with the subgraph. Remove with it the Migration manifest types, loaders, renderer and skeleton generator, their re-exports and the `test_public.py` manifest tests. Narrow the corpus-lifecycle F401 entry in `ruff.toml` if any re-export remains; do not drop it. First confirm that the generation 7 proof reader uses none of them |
 | H-W02-2 | W03 | Assess the Registry archive vocabulary: the inert `common.archive_source_prefixes` and the archive frontmatter fields in the Registry, `document-frontmatter.schema.json` and `metadata/profile.py`. Retire each field with no remaining consumer; keep `archive_retention.disposition_entry_statuses` |
 | H-W02-3 | Owner | Done 2026-11-12: REQ-0023-FR-0004 with recorded exceptions |
 
@@ -314,6 +337,8 @@ adds 267 to the Spec `reserved_history`.
 | W02 blocking-case scenarios | 110 | W115 | removal-blocking-scenarios | Uncommitted, squash-dropped, reflog-only, shallow, recorded-hold and missing-historical-consumer cases in a scratch repository | NOT_RUN | The scratch command was denied at the permission prompt on 2026-11-12 | required | - |
 | W02 SPEC-0267 promotion re-check | 110 | W115 | promotion-check | SPEC-0267 against its owners at `8757f25ca` | FAIL | rules-engineer BLOCKED: FR-0004 broader than Compose, POL-0024 member list, RUN-0014 duplicate line; fixed in `8659f05a6` | required | - |
 | W02 v14.7 review | 110 | W115 | independent-review | Commits `3c8b5932b` and `357590856` | FAIL | code-reviewer CHANGES_REQUIRED: `.gitmodules` claim, narrow H-W02-1, KEEPs without consumer evidence, no check rows, Registry archive vocabulary without a verdict, and seven minor items; fixed in this revision | required | - |
+| W02 SPEC-0267 promotion final | 110 | W115 | promotion-check | SPEC-0267 against its owners at `8659f05a6` | PASS | rules-engineer READY: B1 to B3 and both recommended items fixed; no further listener in FR-0004's kinds | required | W02 SPEC-0267 promotion check, W02 SPEC-0267 promotion re-check |
+| W02 SPEC-0267 removal | 110 | W115 | package-retirement | Commit `06bf2e201` | PASS | Package deleted, index row removed, 267 reserved; metadata 0, links 0, occupancy 0, operations catalog PASS; post-merge byte comparison pending | required | - |
 
 ## Criterion Acceptance
 
@@ -327,8 +352,8 @@ In progress. The assessment, the dry-run, the reproduced-gap changes and the
 removal of 0226, 0266, 0268 and 0269 are recorded, with their criterion state
 and post-merge recovery. Criterion 110 waits for the owner.
 
-v14.7: SPEC-0267 removal waits for its promotion check to pass. The
-blocking-case scenarios are NOT_RUN. H-W02-1 and H-W02-2 are open.
+v14.7: SPEC-0267 is removed in `06bf2e201`; its post-merge byte comparison is
+pending. The blocking-case scenarios are NOT_RUN. H-W02-1 and H-W02-2 are open.
 
 ## Related Documents
 
