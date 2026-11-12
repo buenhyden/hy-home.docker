@@ -1,10 +1,10 @@
 ---
 title: "LAB Promotion Contract Plan"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0263-PLAN-0001"
 parent_ids:
@@ -15,6 +15,8 @@ created: "2026-11-05"
 # LAB Promotion Contract Plan
 
 ## Overview
+
+### Goal and Boundary
 
 The plan has six steps:
 
@@ -33,8 +35,6 @@ LAB by the owner decision of 2026-11-06.
 checkboxes. Run each test through the Python 3.12 controller venv
 `~/.local/share/hy-home/controller-venv-py312/bin/python -m pytest`, written
 `pytest` below.
-
-## Scope
 
 **In scope:**
 
@@ -55,7 +55,27 @@ checkboxes. Run each test through the Python 3.12 controller venv
 - editing Stage 90 records and the bodies of terminal Tasks. These keep the old
   paths as provenance.
 
-## Work Breakdown
+Parent Spec: [Spec](spec.md)
+
+### Assumptions
+
+The plan works under the approved SPEC-0263; it assumes no authority beyond it. No runtime, data or secret state changes.
+
+## Dependencies
+
+### Prerequisites
+
+The approved Spec and the related plan:
+
+- [Analytics LAB migration Plan](../0262-analytics-labs-migration/plan.md)
+
+### Dependency Order
+
+W1 has no dependencies; W2 starts after W1; W3 starts after W2; W4 starts after W1 and W2; W5 starts after W2 and W4; W6 starts after W1-W5; W7 starts after W1-W6; W8 starts after W1-W7.
+
+## Implementation Strategy
+
+### Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
 | --- | --- | --- | --- | --- | --- |
@@ -68,7 +88,7 @@ checkboxes. Run each test through the Python 3.12 controller venv
 | W7 | 5, 8 | Amend the resource rule to reservations plus an external-workload allowance; declare reservations in the shared templates from measurements; make the section 5 owner check items non-blocking in readiness and `lab.py check` | W1-W6 | TSK-0002 | `test_lab_controller`; readiness and check on HOME; full suite; hardening |
 | W8 | 3 | Retire the supabase LAB: delete `labs/supabase/`, its Guide, Runbook and Policy and its catalog rows; move the SMTP01 retirement sections into RUN-0106; remove the `vector` socket allowance so no LAB binds the Docker socket | W1-W7 | TSK-0003 | LAB suites; secret suites; catalog check; hardening; root render; document checks; full suite |
 
-### Global Constraints
+#### Global Constraints
 
 - **Paths.** A LAB entrypoint is exactly `labs/<name>/docker-compose.yml`.
   The manifest is exactly `labs/<name>/promotion.yaml`. Only `labs/README.md`
@@ -86,7 +106,7 @@ checkboxes. Run each test through the Python 3.12 controller venv
 - **Readiness results.** A value the readiness check cannot measure is
   `NOT_RUN`, and a `NOT_RUN` criterion fails the report.
 
-### Review Focus
+#### Review Focus
 
 1. **Relative paths after the move.** Moving a Compose file one folder deeper
    changes the base that relative paths resolve against. A missed path renders
@@ -114,7 +134,7 @@ checkboxes. Run each test through the Python 3.12 controller venv
 
 ---
 
-### W1: `lab.py` layout, manifest and socket exception
+#### W1: `lab.py` layout, manifest and socket exception
 
 **Files:**
 
@@ -219,7 +239,7 @@ phrase:**
 - [ ] **Step 5: Commit.**
   `feat: Resolve LAB folders and validate promotion manifests`.
 
-### W2: Standard layout for the 15 LABs
+#### W2: Standard layout for the 15 LABs
 
 **Files:**
 
@@ -303,7 +323,7 @@ in the Task:
 - [ ] **Step 5: Commit** after each LAB, then commit the references:
   `refactor: Move the <name> LAB into labs/<name>/`.
 
-### W3: supabase on LAB secret copies
+#### W3: supabase on LAB secret copies
 
 **Files:**
 
@@ -359,7 +379,7 @@ use the password, step 2 becomes a move.
   step 1-3 and is recorded as `NOT_RUN` until it is done.
 - [ ] **Step 5: Commit.** `fix: Move supabase onto LAB secret copies`.
 
-### W4: Promotion readiness check
+#### W4: Promotion readiness check
 
 **Files:**
 
@@ -436,7 +456,7 @@ is `FAIL` when any criterion fails, and `NOT_RUN` in the remaining cases.
     result.
 - [ ] **Step 5: Commit.** `feat: Add the LAB promotion readiness check`.
 
-### W5: Promotion operations documents
+#### W5: Promotion operations documents
 
 **Files:**
 
@@ -477,7 +497,7 @@ is `FAIL` when any criterion fails, and `NOT_RUN` in the remaining cases.
   Expected: PASS.
 - [ ] **Step 4: Commit.** `docs: Add LAB promotion policy, runbook and cluster LAB documents`.
 
-### W6: Evidence
+#### W6: Evidence
 
 - [ ] **Step 1: Run the Verification Plan.** Record each result in the Task
   as an Evidence row with the revision it examined.
@@ -486,7 +506,7 @@ is `FAIL` when any criterion fails, and `NOT_RUN` in the remaining cases.
 - [ ] **Step 3: Leave criteria pending.** Set each Criterion Acceptance row to
   `pending`; the owner accepts them.
 
-### W7: Reservations and owner check items
+#### W7: Reservations and owner check items
 
 Spec 0.3.0 (owner decisions, 2026-11-06) changes the resource rule from summed
 limits to summed reservations plus an external-workload allowance. It also
@@ -561,7 +581,7 @@ turns two section 5 sub-checks into owner check items.
 The HOME services pick up the new reservations only when they are recreated,
 in an owner window. This work unit restarts nothing.
 
-### W8: Retire the supabase LAB
+#### W8: Retire the supabase LAB
 
 Spec 0.4.0 (owner decision, 2026-11-06) removes the supabase LAB. No LAB is
 promoted.
@@ -590,7 +610,13 @@ promoted.
 hardening, a root render, the document checks and the full suite, recorded in
 TSK-0003.
 
+### Change and Rollback
+
+**Rollback.** Revert the branch. No runtime, data or secret state changes.
+
 ## Verification Plan
+
+### Verification Matrix
 
 **Local checks:**
 
@@ -610,9 +636,13 @@ TSK-0003.
 Python 3.14.8 with memfd sealing. The Task records that, and hosted CI is the
 gate.
 
-## Risks and Recovery
+### Stage Placement
 
-### Risks and Rollback
+The Plan places no stage-specific checks beyond the Verification Matrix; the local full CI gate stays `BLOCKED` and hosted CI is the gate, as the Task records.
+
+## Risks
+
+### Risks and Mitigations
 
 | Risk | Handling |
 | --- | --- |
@@ -620,11 +650,20 @@ gate.
 | The large reference rename touches terminal or Stage 90 records | W2 excludes them; the link checker decides any residue |
 | The proposed reserve is too small or too large | It is one policy value plus one constant, changed together |
 
-**Rollback.** Revert the branch. No runtime, data or secret state changes.
+### Escalation
 
-## Related Documents
+The Spec states: "This Spec promotes no LAB and starts no container."
 
-- [Spec](spec.md)
+## Promotion Map
+
+### Durable Meaning
+
+The LAB folder layout, manifest and promotion readiness contract live in `lab.py`, the promotion policy and Runbook, and the Stage 05 operations documents.
+
+### Owner and Receipt
+
+Owner @buenhyden. The receipts are TSK-0001, TSK-0002 and TSK-0003, named in the Work Breakdown Task column.
+
 - [Task](tasks/tsk-0001-lab-promotion-contract.md)
+- [Reservations Task](tasks/tsk-0002-lab-promotion-reservations.md)
 - [supabase LAB retirement Task](tasks/tsk-0003-retire-supabase-lab.md)
-- [Analytics LAB migration Plan](../0262-analytics-labs-migration/plan.md)

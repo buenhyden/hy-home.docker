@@ -2536,6 +2536,31 @@ Narrative after the registered table.
             ),
         )
 
+    def test_common_key_resolves_the_legacy_h2_or_the_common_form_h3(self) -> None:
+        module = _spec_packages_module()
+        legacy = "## Work Breakdown\n1. W1: Old.\n## Verification Plan\nx\n"
+        common = (
+            "## Implementation Strategy\n### Work Breakdown\n1. W1: New.\n"
+            "#### Detail\nkept\n### Change and Rollback\nx\n## Risks\ny\n"
+        )
+        self.assertEqual(
+            ["1. W1: Old."], module._contract_section(legacy, "Work Breakdown")
+        )
+        self.assertEqual(
+            (["1. W1: New.", "#### Detail", "kept"], 3),
+            module._contract_span(common, "Work Breakdown"),
+        )
+        for broken in (
+            legacy + common,
+            common.replace("### Work Breakdown", "### Work Plan"),
+            common + "## Implementation Strategy\n### Work Breakdown\n2. W2.\n",
+            common.replace("### Change", "### Work Breakdown\n### Change"),
+            "## Overview\n### Work Breakdown\n1. W1: Wrong parent.\n",
+        ):
+            with self.subTest(broken=broken):
+                with self.assertRaises(module.SpecPackageError):
+                    module._contract_section(broken, "Work Breakdown")
+
     def test_withdrawn_criterion_does_not_exempt_completion(self) -> None:
         module = _spec_packages_module()
         with tempfile.TemporaryDirectory() as directory:

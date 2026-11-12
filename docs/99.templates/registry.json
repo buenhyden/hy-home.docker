@@ -978,15 +978,13 @@
       ],
       "required_sections": [
         "Overview",
-        "Scope",
-        "Work Breakdown",
+        "Dependencies",
+        "Implementation Strategy",
         "Verification Plan",
-        "Risks and Recovery",
-        "Related Documents"
+        "Risks",
+        "Promotion Map"
       ],
-      "optional_sections": [
-        "Dependencies"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "plan",
       "traceability": {
         "allowed_parent_profiles": [
@@ -1004,7 +1002,33 @@
         ]
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Overview": [
+          "Goal and Boundary",
+          "Assumptions"
+        ],
+        "Dependencies": [
+          "Prerequisites",
+          "Dependency Order"
+        ],
+        "Implementation Strategy": [
+          "Work Breakdown",
+          "Change and Rollback"
+        ],
+        "Verification Plan": [
+          "Verification Matrix",
+          "Stage Placement"
+        ],
+        "Risks": [
+          "Risks and Mitigations",
+          "Escalation"
+        ],
+        "Promotion Map": [
+          "Durable Meaning",
+          "Owner and Receipt"
+        ]
+      }
     },
     {
       "id": "task",
