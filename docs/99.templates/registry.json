@@ -504,6 +504,12 @@
           "superseded",
           "retired"
         ],
+        "governance-vocabulary": [
+          "completed",
+          "cancelled",
+          "superseded",
+          "retired"
+        ],
         "governance-knowledge-index": [
           "completed",
           "cancelled",
@@ -1277,23 +1283,35 @@
         ]
       },
       "required_sections": [
-        "Overview",
+        "Summary",
         "Impact",
         "Timeline",
-        "Response",
         "Resolution",
-        "Follow-up",
-        "Related Documents"
+        "Evidence"
       ],
-      "optional_sections": [
-        "Summary",
-        "Coordination",
-        "Mitigation",
-        "Current Status",
-        "Corrective Actions",
-        "Traceability",
-        "Communications"
-      ],
+      "optional_sections": [],
+      "required_subsections": {
+        "Summary": [
+          "Event",
+          "Current Status"
+        ],
+        "Impact": [
+          "Affected Users",
+          "Severity and Duration"
+        ],
+        "Timeline": [
+          "Events",
+          "Decisions"
+        ],
+        "Resolution": [
+          "Mitigation",
+          "Recovery Verification"
+        ],
+        "Evidence": [
+          "Evidence Sources",
+          "Follow-up Owners"
+        ]
+      },
       "lifecycle_id": "incident",
       "traceability": {
         "allowed_parent_profiles": [
@@ -1309,7 +1327,8 @@
         "layer": "operations"
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "free_form_sections": false
     },
     {
       "id": "postmortem",
@@ -1339,21 +1358,34 @@
       ],
       "required_sections": [
         "Summary",
-        "Impact",
-        "Timeline",
-        "Analysis",
-        "Corrective Actions",
-        "Lessons",
-        "Related Documents"
-      ],
-      "optional_sections": [
         "Root Cause",
-        "Contributing Factors",
-        "Detection and Response",
-        "Learning",
-        "Traceability",
-        "Follow-up Review"
+        "Impact",
+        "Corrective Actions",
+        "Evidence"
       ],
+      "optional_sections": [],
+      "required_subsections": {
+        "Summary": [
+          "Incident Reference",
+          "Review Scope"
+        ],
+        "Root Cause": [
+          "Causal Analysis",
+          "Contributing Factors"
+        ],
+        "Impact": [
+          "Observed Impact",
+          "Detection and Response"
+        ],
+        "Corrective Actions": [
+          "Actions",
+          "Verification"
+        ],
+        "Evidence": [
+          "Source Records",
+          "Review Decision"
+        ]
+      },
       "lifecycle_id": "postmortem",
       "traceability": {
         "allowed_parent_profiles": [
@@ -1369,7 +1401,8 @@
         "layer": "operations"
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "free_form_sections": false
     },
     {
       "id": "reference-category-readme",
@@ -2654,16 +2687,35 @@
         "created"
       ],
       "required_sections": [
-        "Overview",
         "Scope",
-        "Working Rules",
-        "Canonical References",
+        "Required Policies",
+        "Workflow",
         "Verification",
-        "Related Documents"
+        "Safety"
       ],
-      "optional_sections": [
-        "Exceptions"
-      ],
+      "optional_sections": [],
+      "required_subsections": {
+        "Scope": [
+          "Allowed Surface",
+          "Non-goals"
+        ],
+        "Required Policies": [
+          "Canonical Sources",
+          "Local Obligations"
+        ],
+        "Workflow": [
+          "Inspect and Change",
+          "Handoff"
+        ],
+        "Verification": [
+          "Required Checks",
+          "Evidence and Limits"
+        ],
+        "Safety": [
+          "Protected Actions",
+          "Stop and Escalate"
+        ]
+      },
       "lifecycle_id": "agent-guide",
       "traceability": {},
       "exceptions": [],
@@ -2678,7 +2730,8 @@
         "tests/AGENTS.md"
       ],
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "free_form_sections": false
     },
     {
       "id": "governance-provider-index",
@@ -2772,7 +2825,10 @@
       "type": "governance/control",
       "language": "en",
       "frontmatter_policy": "required",
-      "path_pattern": ".agents/knowledge/{slug}.md",
+      "path_pattern": ".agents/knowledge/repository-map.md",
+      "additional_paths": [
+        ".agents/knowledge/verification-surface-map.md"
+      ],
       "artifact_id_pattern": null,
       "identity_relation": "none",
       "template_id": "governance/knowledge",
@@ -2806,6 +2862,55 @@
         "Provenance",
         "Refresh Triggers"
       ],
+      "lifecycle_id": "living",
+      "traceability": {},
+      "exceptions": [],
+      "required_frontmatter_by_status": {
+        "superseded": [
+          "superseded_by"
+        ]
+      },
+      "ordered_sections": true,
+      "nonempty_sections": true
+    },
+    {
+      "id": "governance-vocabulary",
+      "type": "governance/vocabulary",
+      "language": "en",
+      "frontmatter_policy": "required",
+      "path_pattern": ".agents/knowledge/glossary.md",
+      "artifact_id_pattern": null,
+      "identity_relation": "none",
+      "template_id": "governance/vocabulary",
+      "required_frontmatter": [
+        "title",
+        "version",
+        "type",
+        "status",
+        "owner",
+        "updated"
+      ],
+      "optional_frontmatter": [
+        "layer",
+        "created",
+        "supersedes",
+        "superseded_by",
+        "artifact_id",
+        "observed_at",
+        "reviewed_at",
+        "review_cycle"
+      ],
+      "free_form_sections": false,
+      "required_sections": [
+        "Purpose",
+        "Scope",
+        "Normative Language",
+        "Repository Vocabulary",
+        "Local Extensions",
+        "Maintenance",
+        "References"
+      ],
+      "optional_sections": [],
       "lifecycle_id": "living",
       "traceability": {},
       "exceptions": [],
@@ -3173,6 +3278,12 @@
       "source": "docs/99.templates/templates/governance/knowledge.template.md",
       "profiles": [
         "governance-knowledge"
+      ]
+    },
+    "governance/vocabulary": {
+      "source": "docs/99.templates/templates/governance/vocabulary.template.md",
+      "profiles": [
+        "governance-vocabulary"
       ]
     },
     "governance/policy": {
@@ -4602,12 +4713,13 @@
         "REQ-0023.FR": {
           "prefix": "REQ-0023-FR-",
           "width": 4,
-          "high_water": 3,
-          "next_number": 4,
+          "high_water": 4,
+          "next_number": 5,
           "current_issued": [
             1,
             2,
-            3
+            3,
+            4
           ],
           "reserved_history": [],
           "child_spaces": {}
@@ -5169,6 +5281,7 @@
         252,
         258,
         266,
+        267,
         268,
         269
       ],
@@ -5788,6 +5901,7 @@
     "generated": "publication",
     "governance-hook-policy": "operational-policy",
     "governance-knowledge": "living",
+    "governance-vocabulary": "living",
     "governance-knowledge-index": "navigation",
     "governance-policy": "operational-policy",
     "governance-prompt": "living",

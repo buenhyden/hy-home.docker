@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from typing import ClassVar
 from unittest.mock import patch
 
 from jsonschema import Draft202012Validator
@@ -46,8 +47,8 @@ class CurrentBodyContractTests(unittest.TestCase):
             "guide": "Overview|Scope|Concepts|Usage|Troubleshooting|Related Documents",
             "policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
             "runbook": "Overview|Trigger|Prerequisites|Procedure|Verification|Failure and Recovery|Related Documents",
-            "incident": "Overview|Impact|Timeline|Response|Resolution|Follow-up|Related Documents",
-            "postmortem": "Summary|Impact|Timeline|Analysis|Corrective Actions|Lessons|Related Documents",
+            "incident": "Summary|Impact|Timeline|Resolution|Evidence",
+            "postmortem": "Summary|Root Cause|Impact|Corrective Actions|Evidence",
             "governance-policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
             "governance-hook-policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
         }
@@ -65,6 +66,18 @@ class CurrentBodyContractTests(unittest.TestCase):
                     [f"## {name}" for name in headings],
                     heading_module.extract_markdown_headings(source)[1],
                 )
+                for parent, children in (
+                    profile.get("required_subsections") or {}
+                ).items():
+                    block = source.split(f"\n## {parent}\n", 1)[1].split("\n## ", 1)[0]
+                    self.assertEqual(
+                        list(children),
+                        [
+                            line[4:]
+                            for line in block.splitlines()
+                            if line.startswith("### ")
+                        ],
+                    )
 
     def test_current_role_accepts_nested_content_and_rejects_empty_sections(
         self,
@@ -328,7 +341,25 @@ class RegisteredSectionContractTests(unittest.TestCase):
         required = tuple(
             self.registry.profiles[profile_id].get("required_sections", ())
         )
-        body = body_with_headings(*(f"## {name}" for name in required))
+        subsections = (
+            self.registry.profiles[profile_id].get("required_subsections") or {}
+        )
+        body = (
+            "# Fixture\n\n"
+            + "\n\n".join(
+                f"## {name}\n\n"
+                + (
+                    "\n\n".join(
+                        f"### {child}\n\nFixture content."
+                        for child in subsections[name]
+                    )
+                    if name in subsections
+                    else "Fixture content."
+                )
+                for name in required
+            )
+            + "\n"
+        )
         if self.registry.profiles[profile_id].get("language") == "ko":
             # A conforming body also reads in its declared language (SPEC-0184).
             body = body.replace("Fixture content.", "이 절은 예시 본문입니다.")
@@ -1934,3 +1965,63 @@ class DeclaredLanguageBodyTests(unittest.TestCase):
             },
         )
         self.assertFalse(hasattr(contract, "_CHANGED_ONLY_BODY_CODES"))
+
+
+class SubsectionContractTests(unittest.TestCase):
+    """SPEC-0212 TSK-0059: a profile can declare the H3 sections of each H2."""
+
+    PROFILE: ClassVar[dict[str, object]] = {
+        "required_sections": ("Alpha", "Beta"),
+        "ordered_sections": True,
+        "nonempty_sections": True,
+        "required_subsections": {"Alpha": ("First", "Second")},
+        "optional_subsections": {"Alpha": ("Extra",)},
+    }
+    VALID = (
+        "# Title\n\n## Alpha\n\n### First\n\nOne.\n\n### Second\n\nTwo.\n\n"
+        "## Beta\n\nThree.\n"
+    )
+
+    def record(self) -> object:
+        return metadata.Record(
+            pathlib.Path("docs/01.requirements/0001-body-fixture.md"),
+            {"profile_id": "fixture", "status": "active"},
+            "fixture",
+            frontmatter_present=True,
+        )
+
+    def codes(self, text: str) -> list[str]:
+        return [
+            finding.code
+            for finding in heading_module._registered_section_findings(
+                self.record(), text, self.PROFILE
+            )
+        ]
+
+    def test_declared_subsections_pass(self) -> None:
+        self.assertEqual([], self.codes(self.VALID))
+        optional = self.VALID.replace("## Beta", "### Extra\n\nOptional.\n\n## Beta")
+        self.assertEqual([], self.codes(optional))
+
+    def test_subsection_violations_are_reported(self) -> None:
+        cases = {
+            "body-subheading-missing": self.VALID.replace("### Second\n\nTwo.\n\n", ""),
+            "body-subheading-order": self.VALID.replace(
+                "### First\n\nOne.\n\n### Second\n\nTwo.",
+                "### Second\n\nTwo.\n\n### First\n\nOne.",
+            ),
+            "body-subheading-forbidden": self.VALID.replace(
+                "## Beta", "### Stray\n\nNo.\n\n## Beta"
+            ),
+            "body-subheading-duplicate": self.VALID.replace(
+                "## Beta", "### First\n\nAgain.\n\n## Beta"
+            ),
+            "body-section-placeholder": self.VALID.replace("One.", "N/A"),
+        }
+        for code, text in cases.items():
+            with self.subTest(code=code):
+                self.assertIn(code, self.codes(text))
+
+    def test_fenced_subheading_does_not_count(self) -> None:
+        fenced = self.VALID.replace("### Second\n\nTwo.", "```text\n### Second\n```")
+        self.assertIn("body-subheading-missing", self.codes(fenced))

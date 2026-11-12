@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Operations Policy"
-version: "1.3.1"
+version: "1.4.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-12"
 layer: "operations"
 artifact_id: "POL-0047"
 parent_ids:
@@ -26,7 +26,7 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 이 정책은 현재 `infra/06-observability/pyroscope` compose와
 `config/pyroscope.yaml`에 선언된 Pyroscope 운영 기준을 다룬다.
 
-- **Systems**: compose service `pyroscope`, container `pyroscope`, image [grafana/pyroscope image declaration](../../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/pyroscope/config/pyroscope.yaml`, volume `pyroscope-data`
+- **Systems**: compose service `pyroscope`, container `pyroscope`, image [grafana/pyroscope image declaration](../../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/pyroscope/config/pyroscope.yaml`, volume `pyroscope-data`, `pyroscope-metastore`
 - **Environments**: 로컬·개발·홈랩 운영
 
 ## Rules
@@ -35,6 +35,9 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
   - Pyroscope service는 `template-infra-med`, image
     [grafana/pyroscope image declaration](../../../../infra/06-observability/docker-compose.yml), read-only config mount, persistent
     `pyroscope-data` volume을 유지한다.
+  - v2 metastore와 raft state는 named volume `pyroscope-metastore`가 `/data`에
+    보관한다(`${DEFAULT_OBSERVABILITY_DIR}/pyroscope-metastore`). 컨테이너를
+    재생성해도 index가 고아가 되지 않도록 이 mount를 유지한다.
   - Runtime command는 `-config.file=/etc/pyroscope/pyroscope.yaml`와
     `-config.expand-env=true`를 유지한다.
   - HTTP/query/health surface는 `${PYROSCOPE_PORT:-4040}`와 `profilecli ready`
@@ -73,7 +76,7 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 - Pyroscope는 `HOME`이다. SPEC-0182 W6에서 소유자가 `profiling`을 HOME에 추가했다(POL-0078). `profiling`을 빼는 대상으로 전환할 때는 `HOME up`이 이미 실행 중인 컨테이너를 제거하지 않으므로 Pyroscope를 명시적으로 중지한다.
 - Gateway 인증과 로컬 filesystem 경계를 유지한다. Profile source 없이 쓰기 대상만 설정한 것은 수집 증거가 아니다.
 - 쓰기·서비스를 중지하거나 일관성을 검증한 snapshot으로만 백업한다. 격리 스토리지에서 rehearsal을 수행하며 과거·신규 조회와 producer label을 확인한다.
-- 제거 전 producer·Grafana 참조를 정리하고 보존 여부를 결정하며 경로를 닫는다. `pyroscope-data` 삭제에는 명시적 승인이 필요하다.
+- 제거 전 producer·Grafana 참조를 정리하고 보존 여부를 결정하며 경로를 닫는다. `pyroscope-data`와 `pyroscope-metastore` 삭제에는 명시적 승인이 필요하다.
 
 ### Profile storage and source limits
 
@@ -115,3 +118,4 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 - [Usage guide](../../guides/07-observability/0047-pyroscope.md)
 - [Recovery runbook](../../runbooks/07-observability/0047-pyroscope.md)
 - [Retention policy](0048-telemetry-retention.md)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Membership Operations Policy"
-version: "1.3.0"
+version: "1.4.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 layer: "operations"
 artifact_id: "POL-0077"
 parent_ids:
@@ -33,7 +33,7 @@ created: "2026-04-01"
   - 고정 주소는 다른 곳이 그 주소를 신뢰할 때만 부여하고, 사유를 Compose 주석에
     남긴다(현재: Traefik의 `edge_net` 주소 `10.250.1.2`, RedisInsight의
     `redisinsight_ingress_net` 주소 `10.250.18.3`, Crawl4AI egress gateway와 crawler의
-    `crawl4ai_egress_net` 주소 `10.250.200.2`/`10.250.200.3`).
+    `crawl4ai_egress_net` 주소 `10.250.200.2`/`10.250.200.3`, 자체 인증이 없는 보조 listener의 소비자 전용 network `.2` 주소: `seaweedfs_s3_metrics_net` `10.250.41.2`, `n8n_worker_runner_net` `10.250.23.2`(n8n broker), `oauth2_proxy_metrics_net` `10.250.43.2`, `keycloak_management_net` `10.250.44.2`, `grafana_pprof_net` `10.250.45.2`, `traefik_metrics_net` `10.250.46.2`).
   - 고정 주소는 해당 network의 dynamic range 밖에 둔다.
 - **허용**:
   - 새 flow가 생기면 해당 network membership을 추가한다.
@@ -80,3 +80,4 @@ created: "2026-04-01"
 - [Usage guide](../../guides/02-gateway-and-networking/0077-ip-address-management.md)
 - [Recovery runbook](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md)
 - [Compose network segmentation architecture](../../../02.architecture/descriptions/0026-standardize-infra-net.md)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

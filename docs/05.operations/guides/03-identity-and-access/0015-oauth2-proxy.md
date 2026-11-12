@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Usage Guide"
-version: "1.3.2"
+version: "1.4.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-12"
 layer: "operations"
 artifact_id: "GDE-0015"
 parent_ids:
@@ -103,7 +103,7 @@ Proxy의 cfg와 CA는 읽기 전용, 세션은 외부 Valkey가 소유한다. Pr
 | 허용 group | `allowed_groups = ["/admins"]`; Keycloak `groups` claim의 `/admins`만 SSO route 통과 | config 파일 |
 | Trusted proxy | `trusted_proxy_ips = ["10.250.1.2/32"]`(Traefik `edge_net` 주소); `trusted_ips`는 설정하지 않음 | config 파일 |
 | Client secret 파일 | `OAUTH2_PROXY_CLIENT_SECRET_FILE`, 기본 `/run/secrets/oauth2_proxy_client_secret`; OpenBao 소비 시 `/run/openbao/oauth2-proxy` 아래 Agent 출력(미지정 시 원복). `${DEFAULT_SECURITY_DIR}/openbao/out/oauth2-proxy`가 없으면 기동하지 않음 | compose 환경 설정/volume |
-| Metrics | `OAUTH2_PROXY_METRICS_ADDRESS=:44180`, route 없음 | compose 환경 설정 |
+| Metrics | `OAUTH2_PROXY_METRICS_ADDRESS=10.250.43.2:44180`(`oauth2_proxy_metrics_net`의 고정 주소), route 없음 | compose 환경 설정 |
 
 ### Cookie, Token, and Session Distinctions
 
@@ -174,3 +174,4 @@ Valkey credential은 프로세스 인자로 전달하지 않는다(Secret 파일
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md)
 - [Recovery runbook](../../runbooks/03-identity-and-access/0015-oauth2-proxy.md)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

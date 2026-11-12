@@ -1,10 +1,10 @@
 ---
 title: "Claude Provider Adapter"
-version: "1.7.1"
+version: "1.7.2"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 runtime: "claude"
 ---
 
@@ -84,7 +84,7 @@ Hook behavior remains subject to shared policy and workflow-contract-owned publi
 The [shared output contract](../.agents/governance/output-style.md) keeps
 `FAIL`, `BLOCKED`, `SKIPPED`, `NOT_RUN`, partial results, and required
 approval visible; this adapter cannot present any of them as completion.
-Static configuration and renderer parity prove tracked adoption only; native
+Static configuration and renderer parity prove tracked configuration only; native
 invocation, hook trust, entitlement, and runtime acceptance need direct evidence.
 Do not change user-global or ignored local settings under this adapter's authority.
 

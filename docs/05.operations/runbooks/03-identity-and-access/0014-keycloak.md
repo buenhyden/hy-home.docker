@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Runbook"
-version: "1.4.0"
+version: "1.5.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 layer: "operations"
 artifact_id: "RUN-0014"
 parent_ids:
@@ -143,6 +143,8 @@ backup 쌍을 요구한다. 지원되는 격리 DB 복구 입력·custody·검�
 stateful recovery는 BLOCKED다. 여기에는 검증된 자동 realm provisioning이나 DB
 restore 명령이 없으며 @buenhyden과 DB owner가 별도 복구 계약을 준비한다.
 
+`KC_HTTP_MANAGEMENT_HOST`는 build에 영향을 주는 옵션이다. 값을 바꾸면 Keycloak이 기동 시 server image를 다시 build한다(2026-11-08에는 SSO가 약 12분 중단되었고, 그동안 oauth2-proxy와 Gatus가 OIDC discovery에 실패했다). 재생성·upgrade 시 같은 시간을 예상하고, oauth2-proxy와 Gatus는 Keycloak이 healthy가 된 뒤에 시작한다.
+
 ### Application authorization provisioning
 
 Airflow Keycloak Auth Manager bootstrap은 Keycloak client와 realm role
@@ -180,7 +182,7 @@ Compose의 명시적 build args가 Dockerfile 기본값보다 우선하며 현�
 ### Acceptance checks
 
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 통과
-- [ ] `docker compose --profile auth exec keycloak bash -ec 'exec 3<>/dev/tcp/127.0.0.1/9000; printf "GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3; cat <&3'`에서 공백과 무관하게 status가 UP인지 확인(기본9000 기준; listener 변경 시 승인된 관리 포트와 함께 조정)
+- [ ] `docker compose --profile auth exec keycloak bash -ec 'exec 3<>/dev/tcp/10.250.44.2/9000; printf "GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3; cat <&3'`에서 공백과 무관하게 status가 UP인지 확인(관리 listener는 `keycloak_management_net`의 `10.250.44.2:9000`에만 바인딩되며 loopback에는 없다; 기본9000 기준, listener 변경 시 승인된 관리 포트와 함께 조정)
 
 ### Observability and evidence sources
 
@@ -241,3 +243,4 @@ image와 migration 전 database 복원이 함께 필요하다. 위 격리 복구
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/03-identity-and-access/0014-keycloak.md)
 - [Operations policy](../../policies/03-identity-and-access/0014-keycloak.md)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

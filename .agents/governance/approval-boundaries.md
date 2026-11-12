@@ -1,10 +1,10 @@
 ---
 title: "Approval Boundaries"
-version: "1.4.0"
+version: "1.5.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 ---
 
 # Approval Boundaries
@@ -76,14 +76,20 @@ redaction boundary are defined by
   active only by that owner's explicit approval naming the contract, its
   revision, and the repositories it applies to. Each repository records its own
   adoption in its own Task; this repository never decides or records adoption
-  for another.
+  for another. A revision is draft until that approval, approved after it, and
+  adopted only once this repository's producers and consumers implement it on
+  `main` and are verified; partial adoption is called partial. The adoption record names
+  the contract id and version, the single authoring owner, who approved it and
+  when, the scope, exceptions, the effective date, migration, rollback and the
+  revision each consumer reads.
 - Role permissions come from canonical role frontmatter; provider/model and
   permission translations come from `.agents/governance/providers/registry.yaml`; lifecycle,
   retry, and stop behavior comes from [workflows.md](workflows.md). Provider
   facts cannot override agent governance policy.
 - Untracked or ignored scratch state is not evidence. Preserve other workers'
   dirty state and stop if ownership cannot be proven.
-- A configured hook or provider surface proves tracked adoption only.
+- A configured hook or provider surface proves tracked configuration only, not
+  adoption.
 - Cost, token, and time limits are execution guardrails, not safety
   authorization; their preflight owner is [Agentic policy](agentic.md).
 - An explicit policy-maintenance request authorizes matching reversible policy

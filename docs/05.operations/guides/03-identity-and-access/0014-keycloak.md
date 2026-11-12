@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Usage Guide"
-version: "1.3.0"
+version: "1.4.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 layer: "operations"
 artifact_id: "GDE-0014"
 parent_ids:
@@ -82,10 +82,13 @@ realm/client를 자동 생성하는 init job이나 startup import도 현재 선�
 읽기 전용 mount되므로 이 디렉터리가 없으면 Keycloak이 기동하지 않는다.
 `keycloak-{config,providers,themes}`는 각각 host의 conf/providers/themes를 읽기
 전용으로 mount한다. private customization도 PostgreSQL 복구 시점과 맞춰 보존해야 한다.
-컨테이너에 host port는 없으며 `edge_net`/`mng_data_net`/`obs_net`을 쓴다.
+컨테이너에 host port는 없으며 `edge_net`/`mng_data_net`/`obs_net`과
+`keycloak_management_net`을 쓴다. 관리 포트 `9000`(health·metrics)은
+`KC_HTTP_MANAGEMENT_HOST: 10.250.44.2`로 `keycloak_management_net`의 고정
+주소에만 바인딩되며 alias는 `keycloak-management`이다. health check도 이
+바인딩 주소를 쓰고, 소비자는 Prometheus와 Gatus다.
 `KEYCLOAK_PORT`/`KEYCLOAK_MANAGEMENT_PORT`는 expose·route·probe 참조이며
-현재 KC listener 설정 자체를 바꾸지 않는다. 기본 내부 8080/9000을 바꾸려면
-양쪽 계약을 별도 변경해야 한다.
+내부 포트 8080/9000을 바꾸려면 양쪽 계약을 별도 변경해야 한다.
 
 `template-infra-high`의 CPU 2, 메모리 2 GiB를 상속하고 DB pool 최대 연결은 10이다.
 health/metrics가 활성화되고 관리 listener에서 readiness/metrics를 관찰한다.
@@ -163,3 +166,4 @@ realm export는 세션·event 등 전체 상태와 시점 일관성을 보장하
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/03-identity-and-access/0014-keycloak.md)
 - [Recovery runbook](../../runbooks/03-identity-and-access/0014-keycloak.md)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

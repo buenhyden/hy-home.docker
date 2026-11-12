@@ -1,49 +1,34 @@
 ---
 title: "Requirements Agent Guide"
-version: "0.2.0"
+version: "0.3.0"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-12"
 ---
 
 # Requirements Agent Guide
 
-## Overview
+## Scope
+
+### Allowed Surface
 
 Stage 01 holds Requirement Packages: the problem, stakeholder value, scope,
 functional, non-functional and solution-independent interface requirements,
 and acceptance criteria. This guide routes an agent that changes a file here
 to the owners that decide how. The human guide is [README.md](README.md).
 
-## Scope
-
 Every `docs/01.requirements/####-<slug>.md` Requirement Package and this
-folder's README. Architecture, implementation contracts and operating
-procedures are out of scope; they belong to Stage 02, Stage 03 and Stage 05.
+folder's README.
 
-## Working Rules
+### Non-goals
 
-- Edit only with an authorizing request; Stage documents are read-only by
-  default.
-- Create a package from the Requirement template
-  [`requirement-package.template.md`](../99.templates/templates/requirements/requirement-package.template.md)
-  under the Registry `requirements-package` profile: `type:
-  sdlc/requirement`, `artifact_id: REQ-####`; `parent_ids` is optional and,
-  when present, records only Registry-required structural relations.
-- Change an existing package in place. Do not add a parallel PRD, SRS,
-  interface-requirement or compatibility file.
-- Write child IDs in full (`REQ-####-FR-####`, `REQ-####-NFR-####`,
-  `REQ-####-IF-####`). Never reuse a number or lower a high-water mark; a
-  retired package or child number goes into the Registry `reserved_history`.
-- Keep requirements solution-independent. A requirement that names a script,
-  container flag or volume path belongs to the Stage 03 Spec or Stage 05
-  policy that owns the implementation.
-- Add a traceability link only when the linked Description, ADR, Spec or
-  Operations document exists.
-- Write prose in English, per the profile `language`.
+Architecture, implementation contracts and operating procedures are out of
+scope; they belong to Stage 02, Stage 03 and Stage 05.
 
-## Canonical References
+## Required Policies
+
+### Canonical Sources
 
 - Load order and authority: [bootstrap](../../.agents/governance/bootstrap.md).
 - Authoring, identity, language and retirement rules:
@@ -61,7 +46,41 @@ procedures are out of scope; they belong to Stage 02, Stage 03 and Stage 05.
 - Provider loading: [Claude adapter](../../.claude/provider.md),
   [Codex adapter](../../.codex/provider.md).
 
+### Local Obligations
+
+- Write child IDs in full (`REQ-####-FR-####`, `REQ-####-NFR-####`,
+  `REQ-####-IF-####`). Never reuse a number or lower a high-water mark; a
+  retired package or child number goes into the Registry `reserved_history`.
+- Keep requirements solution-independent. A requirement that names a script,
+  container flag or volume path belongs to the Stage 03 Spec or Stage 05
+  policy that owns the implementation.
+- Write prose in English, per the profile `language`.
+
+## Workflow
+
+### Inspect and Change
+
+- Create a package from the Requirement template
+  [`requirement-package.template.md`](../99.templates/templates/requirements/requirement-package.template.md)
+  under the Registry `requirements-package` profile: `type:
+  sdlc/requirement`, `artifact_id: REQ-####`; `parent_ids` is optional and,
+  when present, records only Registry-required structural relations.
+- Change an existing package in place. Do not add a parallel PRD, SRS,
+  interface-requirement or compatibility file.
+- Add a traceability link only when the linked Description, ADR, Spec or
+  Operations document exists.
+
+### Handoff
+
+Record progress, decisions and evidence in the current Task, and leave the
+next owner named there. Human-facing and related documents:
+
+- [Requirement Packages README](README.md)
+- [Requirement template](../99.templates/templates/requirements/requirement-package.template.md)
+
 ## Verification
+
+### Required Checks
 
 - `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main`
 - `python3 scripts/validation/check-document-links.py --mode alignment`
@@ -71,7 +90,22 @@ procedures are out of scope; they belong to Stage 02, Stage 03 and Stage 05.
 - `python3 scripts/validation/run-ci-gate.py --profile changed --explain` shows
   the selected checks without running them.
 
-## Related Documents
+### Evidence and Limits
 
-- [Requirement Packages README](README.md)
-- [Requirement template](../99.templates/templates/requirements/requirement-package.template.md)
+Record each check's command, revision and exit in the current Task. These
+checks are static or local; they do not prove runtime state, native provider
+delivery, remote enforcement or owner acceptance.
+
+## Safety
+
+### Protected Actions
+
+- Edit only with an authorizing request; Stage documents are read-only by
+  default.
+
+### Stop and Escalate
+
+Stop and report when this guide and its canonical owner disagree (the owner
+wins and this guide is corrected), when an action needs an approval that
+[approval boundaries](../../.agents/governance/approval-boundaries.md)
+has not granted, or when a required check fails.

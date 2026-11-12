@@ -3653,3 +3653,67 @@ class RegistryIndexContractTests(unittest.TestCase):
         for index_path, member_profile in registry.indexes.items():
             with self.subTest(index=index_path):
                 self.assertIn(member_profile, registry.profiles)
+
+
+class RepositoryVocabularyProfileTests(unittest.TestCase):
+    """SPEC-0212 TSK-0059: the glossary follows the Repository Vocabulary form."""
+
+    VOCABULARY_SECTIONS = (
+        "Purpose",
+        "Scope",
+        "Normative Language",
+        "Repository Vocabulary",
+        "Local Extensions",
+        "Maintenance",
+        "References",
+    )
+
+    def test_glossary_has_its_own_vocabulary_profile(self) -> None:
+        registry = load_registry()
+        self.assertEqual(
+            "governance-vocabulary",
+            classify_path(".agents/knowledge/glossary.md", registry),
+        )
+        profile = registry.profiles["governance-vocabulary"]
+        self.assertEqual(self.VOCABULARY_SECTIONS, tuple(profile["required_sections"]))
+        self.assertTrue(profile["ordered_sections"])
+        self.assertTrue(profile["nonempty_sections"])
+
+    def test_other_knowledge_members_keep_the_knowledge_profile(self) -> None:
+        registry = load_registry()
+        for name in ("repository-map.md", "verification-surface-map.md"):
+            with self.subTest(member=name):
+                self.assertEqual(
+                    "governance-knowledge",
+                    classify_path(f".agents/knowledge/{name}", registry),
+                )
+
+
+class SubsectionRegistryTests(unittest.TestCase):
+    """SPEC-0212 TSK-0059: declared H3 sections must hang off declared H2s."""
+
+    def candidate(self, required: object, optional: object = None) -> dict:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        profile = next(item for item in raw["profiles"] if item["id"] == "incident")
+        profile["required_subsections"] = required
+        if optional is not None:
+            profile["optional_subsections"] = optional
+        return raw
+
+    def codes(self, raw: dict) -> set[str]:
+        return {finding.code for finding in validate_registry(raw)}
+
+    def test_subsections_of_declared_sections_are_valid(self) -> None:
+        raw = self.candidate({"Impact": ["Scope"]}, {"Impact": ["Notes"]})
+        self.assertEqual(set(), self.codes(raw))
+
+    def test_invalid_subsection_declarations_are_rejected(self) -> None:
+        self.assertIn(
+            "profile-subsection-unknown",
+            self.codes(self.candidate({"Not A Section": ["Scope"]})),
+        )
+        self.assertIn(
+            "profile-contract-overlap",
+            self.codes(self.candidate({"Impact": ["Scope"]}, {"Impact": ["Scope"]})),
+        )
+        self.assertTrue(self.codes(self.candidate({"Impact": "Scope"})))

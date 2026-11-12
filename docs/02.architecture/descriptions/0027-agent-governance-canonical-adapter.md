@@ -1,10 +1,10 @@
 ---
 title: "Agent Governance Canonical Adapter Architecture"
-version: "1.6.0"
+version: "1.6.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 layer: "architecture"
 artifact_id: "AD-0027"
 parent_ids:
@@ -117,7 +117,7 @@ runtime, a remote service, or secret mutation.
 
 ### Risks
 
-- Static renderer parity proves tracked adoption only; native invocation, hook
+- Static renderer parity proves tracked configuration only; native invocation, hook
   trust and runtime acceptance need direct evidence.
 - A provider runtime change can alter loading behavior that the authored
   adapter describes.

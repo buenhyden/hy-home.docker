@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.6.2"
+version: "1.7.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-12"
 layer: "operations"
 artifact_id: "GDE-0024"
 parent_ids:
@@ -58,8 +58,9 @@ state는 data disk에 있다: `${DEFAULT_DATA_DIR}/seaweedfs/master`, `/volume`,
 있다. S3는 `seaweed_internal`에 더해 client용 `object_net`과
 `s3.${DEFAULT_URL}` route용 `edge_net`에도 join한다.
 
-S3는 `-metricsPort=9327`로 metric을 제공하고 Prometheus가 `edge_net`을 통해
-job `seaweedfs-s3`로 scrape한다. master, volume, filer는 각각 9324, 9325,
+S3는 `-metricsPort=9327`로 metric을 제공하고 `-metricsIp=10.250.41.2`로
+`seaweedfs_s3_metrics_net`의 고정 주소에만 바인딩되며, Prometheus가 그
+네트워크를 통해 job `seaweedfs-s3`로 scrape한다. master, volume, filer는 각각 9324, 9325,
 9326에서 metric을 제공하며 Prometheus가 `seaweedfs_metrics_net`을 통해 job
 `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`로 scrape한다. 이
 network의 다른 구성원은 Prometheus뿐이며 Prometheus는 SeaweedFS 신뢰 경계
@@ -181,3 +182,4 @@ ownership, secret reference, exposure, engine별 recovery boundary를
 - [Operations policy](../../policies/05-databases-and-storage/0024-seaweedfs.md)
 - [Health and recovery runbook](../../runbooks/05-databases-and-storage/0024-seaweedfs.md)
 - [Backup policy](../../policies/10-platform-and-backup/0021-backup-and-restore.md)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

@@ -1,10 +1,10 @@
 ---
 title: "AI Infrastructure Architecture Description"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 layer: "architecture"
 artifact_id: "AD-0008"
 parent_ids:
@@ -71,8 +71,10 @@ User prompt -> Open WebUI (RAG context) -> Ollama (inference) -> streamed respon
   `${DEFAULT_AI_MODEL_DIR}/ollama`; no successful model-store recovery is
   asserted.
 - Open WebUI SQLite, uploads and local Chroma live in its data volume.
-- ComfyUI declares `/root`-based mounts, but the image's `/opt` paths may
-  differ; coverage is not claimed until the paths are reconciled.
+- ComfyUI mounts its `models`, `custom_nodes`, `input`, `output` and `user`
+  volumes at `/root/ComfyUI/<dir>`, where the image runs; the data moved there
+  on 2026-11-08. Its Hugging Face and Torch caches mount separately under
+  `/home/comfyui/.cache`.
 - Open Notebook recovery coordinates app data, SurrealDB and its encryption
   key. MLflow coordinates `mng-pg` metadata with SeaweedFS artifacts.
 
@@ -119,3 +121,4 @@ Stage 03 change and egress approval.
 - [REQ-0009 AI requirements](../../01.requirements/0009-ai.md)
 - [ADR-0008 Ollama and Open WebUI local AI](../decisions/0008-ollama-openwebui-local-ai.md)
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)
+- This document carries the SPEC-0267 secondary-listener hardening outcome; that package is retired and its body is in version history.

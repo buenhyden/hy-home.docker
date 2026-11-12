@@ -1,10 +1,10 @@
 ---
 title: "Agent Knowledge"
-version: "0.3.0"
+version: "0.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-12"
 created: "2026-09-06"
 ---
 
@@ -38,7 +38,7 @@ route하고 link를 남깁니다.
 
 | Path | Purpose |
 | --- | --- |
-| [glossary.md](glossary.md) | 저장소 용어와 실제 rule owner |
+| [glossary.md](glossary.md) | Repository Vocabulary: 공통 용어 정의와 정책 owner |
 | [repository-map.md](repository-map.md) | 표면에서 canonical owner로의 경로 |
 | [verification-surface-map.md](verification-surface-map.md) | 검증 진입점과 suite 경로 |
 
@@ -61,7 +61,10 @@ route하고 link를 남깁니다.
 1. 기존 member가 이미 해당 내용을 소유하는지 확인합니다. 두 번째 owner를
    추가하는 대신 기존 member를 확장합니다.
 2. `docs/99.templates/templates/governance/knowledge.template.md`를 복사하고
-   등록된 섹션을 유지합니다.
+   등록된 섹션을 유지합니다. `glossary.md`는
+   `governance/vocabulary.template.md`를 따릅니다. 새 member 경로는
+   Registry `governance-knowledge` profile의 `additional_paths`에 등록해야
+   분류됩니다.
 3. 모든 claim을 tracked source에서 도출하고 그 source를 관찰 commit과
    날짜와 함께 `Provenance` 아래에 이름 붙입니다.
 4. member를 stale하게 만드는 조건을 `Refresh Triggers` 아래에 기술합니다.

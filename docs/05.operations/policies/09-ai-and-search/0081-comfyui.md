@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Policy"
-version: "0.3.0"
+version: "0.4.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-12"
 layer: "operations"
 artifact_id: "POL-0081"
 parent_ids:
@@ -25,7 +25,9 @@ Compose가 서비스 선택, gateway 레이블, GPU 요청, 리소스, 마운트
 
 ## Rules
 
-- gateway 인증과 loopback 전용 직접 게시를 유지한다. 노출이나 gateway를
+- gateway 인증을 유지한다. 기본 Compose는 host port를 게시하지 않으며,
+  loopback 게시는 승인된 유지보수 overlay(`docker-compose.egress.yml`)로만
+  붙인다. 노출이나 gateway를
   바꾸려면 범위, 만료, 롤백을 담은 승인된 예외가 있어야 한다.
 - 커스텀 노드를 서드파티 실행 코드로 취급한다. 설치나 업데이트 전에 출처,
   리비전, 의존성, 라이선스를 검토한다. 알려진 정상 노드 집합을 재현할 수
@@ -43,7 +45,7 @@ Compose가 서비스 선택, gateway 레이블, GPU 요청, 리소스, 마운트
 
 ### Lifecycle and data controls
 
-- ComfyUI는 소유자가 확인한 `HOME`으로 남는다. 라우팅 인증, loopback 바인딩,
+- ComfyUI는 소유자가 확인한 `HOME`으로 남는다. 라우팅 인증, 기본 Compose의 host port 미게시,
   GPU 접근, 소스 리소스 제한은 명시적으로 남아야 한다. 제한은 측정된
   여유분이 아니다.
 - 워크플로/사용자 설정, 복구에 필요한 입력/출력, 커스텀 노드 리비전
@@ -59,9 +61,9 @@ Compose가 서비스 선택, gateway 레이블, GPU 요청, 리소스, 마운트
 
 ### Active-image persistence stop condition
 
-Compose는 mutable `yanwk/comfyui-boot:cu126-slim`을 선택하며 로컬 build는 주석 처리되어 있다. Image 소유자의 현재 소스는 `/root/ComfyUI`에서 시작하고 `/root` volume을 선언하지만 Compose는 `/opt/comfyui`에 상태를 bind한다. 두 경로를 연결하는 command override는 없다. 실제 image bytes와 실행 경로·mount를 관찰하지 않았으므로 영속성 위험을 기록하되 데이터 유실이나 안전을 단정하지 않는다.
+Compose는 mutable `yanwk/comfyui-boot:cu126-slim`을 선택하며 로컬 build는 주석 처리되어 있다. 이 image는 `/root/ComfyUI`에서 실행되며, 2026-11-08에 `models`, `custom_nodes`, `input`, `output`, `user` 다섯 volume을 `/root/ComfyUI/<dir>`로 다시 mount하고 데이터를 옮겼다(디렉터리별 파일 수 일치). 이전의 `/opt/comfyui` 불일치는 해소되었다.
 
-재생성·image upgrade·cache/volume 정리·완전한 backup 판정 전에 중단한다. @buenhyden의 승인 아래 실제 image와 모든 사용 경로(익명 `/root` volume 포함)를 확인하고 전체 상태를 보존한 뒤 별도 구현을 조정한다. Workflow/model/node/input/output/user 정책을 유지한다. 비활성 Dockerfile의 CUDA/Python/Torch/ComfyUI pin, non-root 사용자와 `/opt` 구조는 활성 image 증거가 아니다. 기존 복구 계획은 전제 충족 전까지 미실행 상태다.
+Image tag가 mutable이므로 image upgrade 전에는 새 image가 여전히 `/root/ComfyUI`에서 시작하고 다섯 mount가 그 아래에 대응하는지 확인한 뒤 진행한다. 대응이 어긋나면 @buenhyden의 승인 아래 중단하고 전체 상태를 보존한다. image의 익명 `/root` volume에는 ComfyUI 코드, `/root/.cache`, 이동 전 데이터 사본이 남아 있고 이 사본이 rollback 원본이므로, @buenhyden의 승인 없이 이 volume을 recreate·prune하거나 cache와 함께 정리하지 않는다. 비활성 Dockerfile의 CUDA/Python/Torch/ComfyUI pin, non-root 사용자와 `/opt` 구조는 활성 image 증거가 아니다. 복구 계획은 격리 rehearsal 전까지 미실행 상태다.
 
 ## Exceptions
 
@@ -91,3 +93,4 @@ Compose는 mutable `yanwk/comfyui-boot:cu126-slim`을 선택하며 로컬 build�
 - [가이드](../../guides/09-ai-and-search/0081-comfyui.md), [런북](../../runbooks/09-ai-and-search/0081-comfyui.md)
 - 런타임 고정 버전은 [ComfyUI Compose](../../../../infra/08-ai/comfyui/docker-compose.yml)가 소유한다. 로컬 Dockerfile 대신 선언된 이미지가 선택되며, [파생 Compose 이미지 projection](../../../../infra/tech-stack.versions.json)이 drift를 검증한다.
 - [중앙 백업 정책](../10-platform-and-backup/0021-backup-and-restore.md)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

@@ -794,6 +794,8 @@ def _registered_section_findings(
             )
     if profile.get("nonempty_sections"):
         findings.extend(_empty_section_findings(record, text))
+    if profile.get("required_subsections") or profile.get("optional_subsections"):
+        findings.extend(_registered_subsection_findings(record, text, profile))
     # A profile whose documents share no heading vocabulary declares
     # itself free-form rather than registering a union nothing follows.
     # Without this, an unregistered heading is a violation only when a
@@ -812,6 +814,91 @@ def _registered_section_findings(
 
 
 _HEADING_LINE = re.compile(r"^ {0,3}(#{2,6})[ \t]+(.+?)[ \t]*#*[ \t]*$")
+# A section whose whole body is one of these says nothing; the common form
+# requires a stated reason instead (for example "None: no consumer exists").
+_PLACEHOLDER_BODY = re.compile(r"^(?:todo|tbd|n/?a|-)\.?$", re.IGNORECASE)
+
+
+def _registered_subsection_findings(
+    record: Record,
+    text: str,
+    profile: Mapping[str, object],
+) -> list[Finding]:
+    """Check the H3 sections a profile declares under each of its H2 sections."""
+
+    required = profile.get("required_subsections") or {}
+    optional = profile.get("optional_subsections") or {}
+    children: dict[str, list[str]] = collections.defaultdict(list)
+    bodies: list[tuple[str, list[str]]] = []
+    parent: str | None = None
+    for line in _markdown_unfenced_lines(text):
+        match = _HEADING_LINE.match(line)
+        if match:
+            level, title = len(match.group(1)), match.group(2).rstrip()
+            if level == 2:
+                parent = title
+            elif level == 3 and parent is not None:
+                children[parent].append(title)
+            bodies.append((f"{'#' * level} {title}", []))
+            continue
+        if bodies and line.strip() and not line.strip().startswith("<!--"):
+            bodies[-1][1].append(line.strip())
+    findings: list[Finding] = []
+    for section in sorted(set(required) | set(optional)):
+        declared = [name for name in required.get(section, ()) if isinstance(name, str)]
+        allowed = set(declared) | {
+            name for name in optional.get(section, ()) if isinstance(name, str)
+        }
+        found = children.get(section, [])
+        for name in declared:
+            if name not in found:
+                findings.append(
+                    _finding(
+                        record,
+                        "body-subheading-missing",
+                        f"## {section} is missing required subsection: ### {name}",
+                    )
+                )
+        for name, count in sorted(collections.Counter(found).items()):
+            if count > 1:
+                findings.append(
+                    _finding(
+                        record,
+                        "body-subheading-duplicate",
+                        f"## {section} repeats ### {name} {count} times",
+                    )
+                )
+        for name in sorted(set(found) - allowed):
+            findings.append(
+                _finding(
+                    record,
+                    "body-subheading-forbidden",
+                    f"## {section} contains unregistered subsection: ### {name}",
+                )
+            )
+        if (
+            profile.get("ordered_sections")
+            and set(declared) <= set(found)
+            and [name for name in found if name in declared] != declared
+        ):
+            findings.append(
+                _finding(
+                    record,
+                    "body-subheading-order",
+                    f"## {section} requires subsections in order: "
+                    + ", ".join(declared),
+                )
+            )
+    for heading, lines in bodies:
+        if len(lines) == 1 and _PLACEHOLDER_BODY.match(lines[0]):
+            findings.append(
+                _finding(
+                    record,
+                    "body-section-placeholder",
+                    f"{heading} holds only a placeholder; state the content or why none applies",
+                )
+            )
+    return findings
 
 
 def _empty_section_findings(record: Record, text: str) -> list[Finding]:

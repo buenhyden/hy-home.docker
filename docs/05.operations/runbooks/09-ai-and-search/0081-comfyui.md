@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Runbook"
-version: "0.5.0"
+version: "0.6.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-08"
+updated: "2026-11-12"
 layer: "operations"
 artifact_id: "RUN-0081"
 parent_ids:
@@ -32,7 +32,7 @@ created: "2026-09-19"
 
 ### Service lifecycle prerequisites
 
-최초 기동·재생성·upgrade·삭제 전 활성 image 경로와 실제 데이터 mount 대응을 별도로 입증해야 한다. 현재 `/opt`와 upstream `/root` 불일치가 해결되지 않아 완전한 백업·복구를 인증할 수 없다. 이 조건이 충족되기 전에는 image 교체나 volume 정리를 중단한다.
+image upgrade 전에 새 image가 `/root/ComfyUI`에서 시작하고 `models`, `custom_nodes`, `input`, `output`, `user` mount가 그 아래에 대응하는지 확인한다. 2026-11-08에 이 다섯 volume을 `/root/ComfyUI/<dir>`로 다시 mount했으므로 이전의 `/opt` 불일치는 해소되었다. 대응이 어긋나면 image 교체나 volume 정리를 중단한다.
 
 ## Procedure
 
@@ -116,7 +116,7 @@ docker exec comfyui grep '^security_level' /root/ComfyUI/user/__manager/config.i
 
 ### Active-image persistence stop condition
 
-[정책의 중단 조건](../../policies/09-ai-and-search/0081-comfyui.md#active-image-persistence-stop-condition)을 따른다. 재생성·image upgrade·cache/volume 정리·완전한 backup 판정 전에 활성 image 경로와 mount 대응을 확인하고 @buenhyden의 승인을 받는다.
+[정책의 조건](../../policies/09-ai-and-search/0081-comfyui.md#active-image-persistence-stop-condition)을 따른다. image upgrade 전에 `/root/ComfyUI` 아래 mount 대응을 확인하고, 어긋나면 @buenhyden의 승인 아래 중단한다.
 
 ## Verification
 
@@ -159,3 +159,4 @@ backup 부재, custom-node provenance 공백, 예상치 못한 노출, GPU 실�
 - [Guide](../../guides/09-ai-and-search/0081-comfyui.md), [Policy](../../policies/09-ai-and-search/0081-comfyui.md)
 - 런타임 고정 버전은 [ComfyUI Compose](../../../../infra/08-ai/comfyui/docker-compose.yml)가 소유한다. [derived Compose image projection](../../../../infra/tech-stack.versions.json)이 drift를 검증한다.
 - [중앙 backup 정책](../../policies/10-platform-and-backup/0021-backup-and-restore.md)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

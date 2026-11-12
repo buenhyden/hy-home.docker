@@ -20,29 +20,37 @@ created: "{{CREATED}}"
 
 ## Summary
 
-{{SUMMARY}}
+### Incident Reference
 
-## Impact
+{{INCIDENT_REFERENCE}}
 
-{{IMPACT}}
+### Review Scope
 
-## Timeline
+{{REVIEW_SCOPE}}
 
-<!-- Author prompt: Record factual events with ISO 8601 timestamps and explicit UTC offsets; distinguish hypotheses. -->
+## Root Cause
 
-{{TIMELINE}}
+### Causal Analysis
 
-## Analysis
-
-### Root Cause
-
-{{ROOT_CAUSE}}
+{{CAUSAL_ANALYSIS}}
 
 ### Contributing Factors
 
 {{CONTRIBUTING_FACTORS}}
 
+## Impact
+
+### Observed Impact
+
+{{OBSERVED_IMPACT}}
+
+### Detection and Response
+
+{{DETECTION_AND_RESPONSE}}
+
 ## Corrective Actions
+
+### Actions
 
 <!-- Author prompt: Each action needs an owner, tracking ID and verification; avoid blame. Do not set a completion deadline. -->
 
@@ -50,20 +58,16 @@ created: "{{CREATED}}"
 | --- | --- | --- | --- |
 | {{ACTION}} | {{ACTION_OWNER}} | {{TRACKING_ID}} | {{VERIFICATION}} |
 
-### Follow-up Review
+### Verification
 
 {{FOLLOW_UP_REVIEW}}
 
-## Lessons
+## Evidence
 
-### Learning
+### Source Records
 
-{{LEARNING}}
+{{SOURCE_RECORDS}}
 
-### Detection and Response
+### Review Decision
 
-{{DETECTION_AND_RESPONSE}}
-
-## Related Documents
-
-{{INCIDENT_RUNBOOK_AND_TASK_LINKS}}
+{{REVIEW_DECISION}}
