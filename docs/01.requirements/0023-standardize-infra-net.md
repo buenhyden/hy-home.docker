@@ -53,8 +53,8 @@ each repository-owned network a predictable address block.
 - **REQ-0023-FR-0004**: A secondary listener without its own authentication
   (metrics, management, profiling or broker) accepts connections only from its
   declared consumers, on an internal network that only those consumers share.
-  Exception: a listener whose consumers cannot all be named stays as it is and
-  is recorded here with its owner, until its consumers can be named. The
+  Exception: a listener that is not yet bound to a consumer-only address stays
+  as it is and is recorded here with its owner, until it is bound. The
   recorded exceptions, owned by @buenhyden, are the Registry debug listener
   `:5001`, reachable by every `obs_net` peer, and the SeaweedFS master, volume
   and filer metrics on `9324` to `9326`, reachable by `seaweed_internal` peers.
