@@ -1,10 +1,10 @@
 ---
 title: "Observability Architecture Description"
-version: "1.1.0"
+version: "1.1.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "AD-0006"
 parent_ids:
@@ -16,13 +16,15 @@ created: "2026-03-26"
 
 ## Overview
 
+### Purpose and Readers
+
 `06-observability` collects, stores and shows platform telemetry so incidents
 can be correlated across logs, metrics, traces and profiles. It runs Loki,
 Grafana, Tempo and Prometheus with Grafana Alloy, Alertmanager, Pushgateway,
 cAdvisor, node-exporter, Gatus, Pyroscope and a DCGM GPU exporter,
 fully self-hosted.
 
-## Scope
+### System Boundary
 
 - **Owns:** centralized logs (Loki), metrics and alerting (Prometheus,
   Alertmanager), traces (Tempo), profiles (Pyroscope), dashboards (Grafana),
@@ -35,9 +37,19 @@ fully self-hosted.
   statistics.
 - **Non-goals:** dependence on external cloud monitoring vendors.
 
-## Structure
+## Context and Constraints
 
-### Architecture
+### Context
+
+Alloy collects Docker logs, OTLP traces and pprof targets; Prometheus scrapes exporters and services; Traefik sends traces straight to Tempo; k6 sends OTLP to an authenticated Alloy receiver. Loki and Tempo store objects in SeaweedFS (`04-data`), and Grafana, Gatus and Dozzle use Keycloak OIDC (`02-auth`).
+
+### Constraints
+
+The stack is fully self-hosted with no dependence on external cloud monitoring vendors. Prometheus keeps a local TSDB as the durable authority, and approved Kubernetes LAN ingress and query exceptions stay under POL-0096.
+
+## Current Structure
+
+### Building Blocks
 
 All core services are in `infra/06-observability/docker-compose.yml`; Dozzle
 is in `infra/06-observability/dozzle/docker-compose.yml`. Alloy discovers
@@ -46,9 +58,9 @@ to Tempo, and declares pprof scrape targets for Pyroscope. Prometheus scrapes
 exporters, services and Alloy self-metrics directly. Grafana queries each
 datasource. Traefik sends its own traces straight to Tempo.
 
-## Runtime and Deployment
+### Runtime and Deployment
 
-### Runtime View
+#### Runtime View
 
 - **Metrics:** cAdvisor, exporters and services -> Prometheus; Alloy
   self-metrics -> Prometheus scrape.
@@ -66,7 +78,7 @@ Prometheus keeps a local TSDB. Scrapes and datasource queries use `obs_net`,
 object storage `object_net`, UI routes `edge_net`. Approved Kubernetes LAN
 ingress and query exceptions stay under POL-0096.
 
-### Deployment View
+#### Deployment View
 
 `obs` selects the full set; `obs-core` (Prometheus, Grafana), `obs-host`
 (node-exporter, cAdvisor), `logs`, `tracing`, `profiling`, `alerting`,
@@ -78,9 +90,25 @@ node-exporter, cAdvisor, Gatus, Alertmanager and `dcgm-exporter` are HOME;
 Pushgateway is OPTIONAL. Starting a HOME profile does not stop an already
 running optional container.
 
-## Quality and Risks
+## Interfaces
 
-### Quality Attributes
+### Contracts
+
+Scrapes and datasource queries use `obs_net`, object storage uses `object_net`, and UI routes use `edge_net`. The Alloy receiver is authenticated; the Prometheus API route uses `prometheus-api-auth@file`.
+
+### Failure Boundaries
+
+Recovery covers Loki and Tempo object blocks in SeaweedFS together with each service's local WAL and working state. The open Tempo retention gap is recorded under Risks below; the description records no other failure boundary.
+
+## Decisions
+
+### Decision Links
+
+- [ADR-0053 Observability object storage on SeaweedFS](../decisions/0053-observability-storage-on-seaweedfs.md)
+
+### Quality and Risks
+
+#### Quality Attributes
 
 - **Performance:** Alloy batches traces before export.
 - **Security:** Grafana, Gatus and Dozzle use native Keycloak OIDC; the other
@@ -91,18 +119,22 @@ running optional container.
   enabled remote-write receiver does not imply an external long-term store.
 - **Observability:** the stack includes self-monitoring dashboards.
 
-### Risks
+#### Risks
 
 The Tempo policy targets 24h retention, but `tempo/config/tempo.yaml` sets no
 `block_retention`, so the version default (336h) applies. This gap is open.
 
-### Evolution
+## Traceability
+
+### Requirement Mapping
+
+- [REQ-0007 Observability requirements](../../01.requirements/0007-observability.md)
+
+### Currentness and Lineage
+
+- [Derived Compose image projection](../../../infra/tech-stack.versions.json)
+
+#### Evolution
 
 A long-term metrics store or a Tempo retention setting needs a Stage 03
 change.
-
-## Related Documents
-
-- [REQ-0007 Observability requirements](../../01.requirements/0007-observability.md)
-- [ADR-0053 Observability object storage on SeaweedFS](../decisions/0053-observability-storage-on-seaweedfs.md)
-- [Derived Compose image projection](../../../infra/tech-stack.versions.json)

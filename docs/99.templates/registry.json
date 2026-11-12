@@ -664,24 +664,13 @@
       ],
       "required_sections": [
         "Overview",
-        "Scope",
-        "Structure",
-        "Runtime and Deployment",
-        "Quality and Risks",
-        "Related Documents"
+        "Context and Constraints",
+        "Current Structure",
+        "Interfaces",
+        "Decisions",
+        "Traceability"
       ],
-      "optional_sections": [
-        "Context",
-        "Runtime View",
-        "Deployment View",
-        "Risks",
-        "Context and Stakeholders",
-        "System Boundaries",
-        "Components",
-        "Data Flow",
-        "Traceability",
-        "Evolution"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "architecture-description",
       "traceability": {
         "allowed_parent_profiles": [
@@ -693,7 +682,33 @@
         "layer": "architecture"
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Overview": [
+          "Purpose and Readers",
+          "System Boundary"
+        ],
+        "Context and Constraints": [
+          "Context",
+          "Constraints"
+        ],
+        "Current Structure": [
+          "Building Blocks",
+          "Runtime and Deployment"
+        ],
+        "Interfaces": [
+          "Contracts",
+          "Failure Boundaries"
+        ],
+        "Decisions": [
+          "Decision Links",
+          "Quality and Risks"
+        ],
+        "Traceability": [
+          "Requirement Mapping",
+          "Currentness and Lineage"
+        ]
+      }
     },
     {
       "id": "adr",

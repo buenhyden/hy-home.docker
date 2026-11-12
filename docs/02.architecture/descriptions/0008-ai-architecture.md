@@ -1,10 +1,10 @@
 ---
 title: "AI Infrastructure Architecture Description"
-version: "1.2.0"
+version: "1.2.1"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "AD-0008"
 parent_ids:
@@ -16,13 +16,15 @@ created: "2026-03-26"
 
 ## Overview
 
+### Purpose and Readers
+
 `08-ai` owns privacy-preserving local inference and the interfaces that use
 it: GPU allocation, service boundaries and data flow for local LLM inference,
 RAG chat, image workflows, knowledge notebooks, experiment tracking and web
 extraction. Local inference uses NVIDIA GPUs; provider or API egress needs
 separate authorization.
 
-## Scope
+### System Boundary
 
 - **Owns:** Ollama inference and its model store; Open WebUI chat and RAG;
   ComfyUI and its declared workflow mounts; Open Notebook with its nested
@@ -35,9 +37,19 @@ separate authorization.
   (`06-observability`), or Jupyter notebooks (Analytics LAB).
 - **Non-goals:** multi-node GPU clusters and model training environments.
 
-## Structure
+## Context and Constraints
 
-### Architecture
+### Context
+
+Users reach Open WebUI, ComfyUI, Open Notebook and MLflow through the gateway. The tier consumes GPUs through the NVIDIA Container Toolkit, `mng-pg` and SeaweedFS for MLflow, Keycloak for SSO, and Qdrant only for explicitly configured consumers. Crawl4AI reaches the internet only through `crawl4ai-egress`.
+
+### Constraints
+
+Local inference uses NVIDIA GPUs, and provider or API egress needs separate authorization. Multi-node GPU clusters and model training environments are non-goals; Compose resource declarations are source limits, not measured shared-GPU headroom.
+
+## Current Structure
+
+### Building Blocks
 
 1. **Inference:** `ollama` controls the model store and the GPU (NVIDIA device
    reservation) and serves an OpenAI-compatible API; `ollama-exporter` exports
@@ -59,9 +71,9 @@ weights or the GPU driver. The proposed Notebook registration names
 embeddings; the declaration does not prove either model is downloaded,
 registered or working.
 
-## Runtime and Deployment
+### Runtime and Deployment
 
-### Runtime View
+#### Runtime View
 
 ```text
 User prompt -> Open WebUI (RAG context) -> Ollama (inference) -> streamed response
@@ -78,7 +90,7 @@ User prompt -> Open WebUI (RAG context) -> Ollama (inference) -> streamed respon
 - Open Notebook recovery coordinates app data, SurrealDB and its encryption
   key. MLflow coordinates `mng-pg` metadata with SeaweedFS artifacts.
 
-### Deployment View
+#### Deployment View
 
 `ai` selects Ollama with its exporter, Open WebUI, ComfyUI and Qdrant;
 `ai-llm` selects Ollama, Open WebUI and Qdrant; `ollama` selects Ollama and
@@ -88,9 +100,25 @@ Notebook and SurrealDB, SurrealDB also by `surrealdb`), `mlops` and
 does not select them. Compose resource declarations are source limits, not
 measured shared-GPU headroom.
 
-## Quality and Risks
+## Interfaces
 
-### Quality Attributes
+### Contracts
+
+Ollama serves an OpenAI-compatible API that consumers use instead of touching model weights or the GPU driver. Open WebUI uses native OIDC; Ollama, ComfyUI and the MLflow browser route use ForwardAuth; Open Notebook uses password-file authentication with an admin IP allow list.
+
+### Failure Boundaries
+
+MLflow's SDK path is not authenticated like its browser route (see Risks below). Health checks are process and application signals and do not alone restart a container or prove recovery; Open Notebook and MLflow recovery are coordinated as described under Runtime View.
+
+## Decisions
+
+### Decision Links
+
+- [ADR-0008 Ollama and Open WebUI local AI](../decisions/0008-ollama-openwebui-local-ai.md)
+
+### Quality and Risks
+
+#### Quality Attributes
 
 - **Performance:** CUDA acceleration and quantization are workload choices; no
   measured latency or shared-GPU capacity is established.
@@ -105,20 +133,24 @@ measured shared-GPU headroom.
 - **Observability:** `ollama-exporter` reports model and API metrics; VRAM is
   covered by `dcgm-exporter` under `obs-gpu`.
 
-### Risks
+#### Risks
 
 - MLflow's SDK path on `edge_net`, `ai_net`, `mng_data_net` and `object_net`
   is not authenticated like its browser route.
 - `ai` and `ai-llm` start Qdrant although Open WebUI does not use it.
 
-### Evolution
+## Traceability
+
+### Requirement Mapping
+
+- [REQ-0009 AI requirements](../../01.requirements/0009-ai.md)
+
+### Currentness and Lineage
+
+- [Derived Compose image projection](../../../infra/tech-stack.versions.json)
+- This document carries the SPEC-0267 secondary-listener hardening outcome; that package is retired and its body is in version history.
+
+#### Evolution
 
 Switching Open WebUI to Qdrant or enabling a cloud model path each needs a
 Stage 03 change and egress approval.
-
-## Related Documents
-
-- [REQ-0009 AI requirements](../../01.requirements/0009-ai.md)
-- [ADR-0008 Ollama and Open WebUI local AI](../decisions/0008-ollama-openwebui-local-ai.md)
-- [Derived Compose image projection](../../../infra/tech-stack.versions.json)
-- This document carries the SPEC-0267 secondary-listener hardening outcome; that package is retired and its body is in version history.

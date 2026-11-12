@@ -1,28 +1,29 @@
 ---
 title: "07-Workflow Optimization Hardening Architecture Description"
-version: "1.2.2"
+version: "1.2.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "AD-0022"
 parent_ids:
 - "REQ-0008"
 created: "2026-03-28"
 ---
+
 # 07-Workflow Optimization Hardening Architecture Description
 
 ## Overview
 
-### Context and Stakeholders
+### Purpose and Readers
 
 This document defines the optimization/hardening reference architecture of
 the `07-workflow` layer. It organizes the gateway boundary security,
 health-based dependency, n8n image hardening, and catalog-based expansion
 roadmap from an architecture perspective.
 
-## Scope
+### System Boundary
 
 The workflow tier operates with two execution planes.
 
@@ -31,8 +32,6 @@ The workflow tier operates with two execution planes.
 
 The management plane of both systems sits behind the Traefik TLS boundary and
 the standard middleware; Airflow and n8n authenticate users natively.
-
-### System Boundaries
 
 - **Owns**:
   - Workflow management path security contract
@@ -50,9 +49,21 @@ the standard middleware; Airflow and n8n authenticate users natively.
   - immediate multi-region/cluster workflow operation
   - immediate full activation of a new workflow service deployment
 
-## Structure
+## Context and Constraints
 
-### Architecture
+### Context
+
+The tier consumes the `01-gateway` Traefik middleware chain, `02-auth` SSO middleware and `04-data` management PostgreSQL; clients reach the Airflow and n8n UIs through Traefik.
+
+### Constraints
+
+The gateway-standard-chain is enforced (plus the SSO chain on Flower only; Airflow and n8n use their own login), and n8n runs non-root with a secret guard.
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
+
+## Current Structure
+
+### Building Blocks
 
 - **Ingress path**:
   - Client -> Traefik(websecure) -> workflow routers -> Airflow/n8n UI
@@ -62,9 +73,9 @@ the standard middleware; Airflow and n8n authenticate users natively.
 - **Data/control dependencies**:
   - PostgreSQL (metadata), Valkey (queue/broker), SSO middleware
 
-## Runtime and Deployment
+### Runtime and Deployment
 
-### Runtime View
+#### Runtime View
 
 - **Key Entities / Flows**:
   - DAG metadata, workflow executions, queue tasks
@@ -74,7 +85,7 @@ the standard middleware; Airflow and n8n authenticate users natively.
   - the workflow tier owns orchestration metadata, and each domain owns its
     business payload schema.
 
-### Deployment View
+#### Deployment View
 
 - **Runtime / Platform**: Docker Compose (`infra/07-workflow/*`)
 - **Deployment Model**:
@@ -83,20 +94,26 @@ the standard middleware; Airflow and n8n authenticate users natively.
 - **Verification**: the registered `infrastructure-hardening` gate in
   `.github/workflow-contract.yml` and Compose validation
 
-### Evolution
+## Interfaces
 
-- **Airflow**:
-  - DAG quality gate (parse/schedule/delay) CI
-  - defining worker autoscale criteria and standardizing operation
-- **n8n**:
-  - standardizing workflow versioning/Git backup
-  - strengthening credential store OpenBao integration
-A new workflow service without a tracked infra artifact is excluded from the
-active workflow architecture scope.
+### Contracts
 
-## Quality and Risks
+- Ingress path: Client -> Traefik(websecure) -> workflow routers -> Airflow/n8n UI.
+- Data/control dependencies: PostgreSQL (metadata), Valkey (queue/broker), SSO middleware.
 
-### Quality Attributes
+### Failure Boundaries
+
+Health-based boot order reduces initial failure/restart bursts, and worker/task-runner healthcheck and dependency gating strengthen stability. The description records no failure boundary beyond the linked operations documents under Contracts.
+
+## Decisions
+
+### Decision Links
+
+- **ADR**: [ADR-0059 Native OIDC for Open WebUI and the Airflow UI](../decisions/0059-native-oidc-open-webui-and-airflow.md)
+
+### Quality and Risks
+
+#### Quality Attributes
 
 - **Performance**: reduces initial failure/restart bursts through
   health-based boot order.
@@ -110,13 +127,26 @@ active workflow architecture scope.
 - **Observability**: verifies workflow stack health at the compose/CI level.
 - **Operability**: uses the registered hardening gate as the baseline.
 
-## Related Documents
+## Traceability
+
+### Requirement Mapping
 
 - **Requirement**: [REQ-0008 Workflow](../../01.requirements/0008-workflow.md)
+
+### Currentness and Lineage
+
 - **Tier Architecture Description**: [AD-0007 Workflow Tier (07-workflow) Architecture Description](0007-workflow-architecture.md)
-- **ADR**: [ADR-0059 Native OIDC for Open WebUI and the Airflow UI](../decisions/0059-native-oidc-open-webui-and-airflow.md)
 - **Guide**: [Workflow optimization hardening guide](../../05.operations/guides/08-workflows-and-automation/0054-workflow-optimization-hardening.md)
 - **Policy**: [Workflow optimization hardening policy](../../05.operations/policies/08-workflows-and-automation/0054-workflow-optimization-hardening.md)
 - **Runbook**: [Workflow optimization hardening runbook](../../05.operations/runbooks/08-workflows-and-automation/0054-workflow-optimization-hardening.md)
 
-Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
+#### Evolution
+
+- **Airflow**:
+  - DAG quality gate (parse/schedule/delay) CI
+  - defining worker autoscale criteria and standardizing operation
+- **n8n**:
+  - standardizing workflow versioning/Git backup
+  - strengthening credential store OpenBao integration
+
+A new workflow service without a tracked infra artifact is excluded from the active workflow architecture scope.

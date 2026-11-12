@@ -39,7 +39,7 @@ class CurrentBodyContractTests(unittest.TestCase):
     def test_current_role_templates_use_r10_ordered_sections(self) -> None:
         expected = {
             "requirements-package": "Overview|Scope|Requirements|Acceptance Criteria|Traceability",
-            "architecture-description": "Overview|Scope|Structure|Runtime and Deployment|Quality and Risks|Related Documents",
+            "architecture-description": "Overview|Context and Constraints|Current Structure|Interfaces|Decisions|Traceability",
             "adr": "Context|Decision|Alternatives|Consequences|Traceability",
             "spec": "Overview|Scope|Behavior Contract|Acceptance Criteria|References",
             "plan": "Overview|Dependencies|Implementation Strategy|Verification Plan|Risks|Promotion Map",
@@ -422,6 +422,13 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Risks and Recovery", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Risks and Rollback", "body-subheading-forbidden"),
+            ),
+            "architecture-description": (
+                ("## Scope", "body-heading-forbidden"),
+                ("## Structure", "body-heading-forbidden"),
+                ("## Quality and Risks", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+                ("### Runtime View", "body-subheading-forbidden"),
             ),
             "adr": (
                 ("## Decision Drivers", "body-heading-forbidden"),

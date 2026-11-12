@@ -1,30 +1,29 @@
 ---
 title: "Security Optimization and Hardening Architecture"
-version: "1.1.4"
+version: "1.1.5"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "AD-0018"
 parent_ids:
 - "REQ-0003"
 created: "2026-03-28"
 ---
+
 # Security Optimization and Hardening Architecture
 
 ## Overview
 
-### Context and Stakeholders
+### Purpose and Readers
 
 This document describes the OpenBao and OpenBao Agent boundary implemented in
 `infra/03-security/`. The maintainer, service owner, and operator must clearly
 separate ownership of the source secret, the rendered output, health, and the
 recovery procedure.
 
-## Scope
-
-### System Boundaries
+### System Boundary
 
 - OpenBao owns KV-v2 secret storage and lookup.
 - OpenBao Agent owns AppRole authentication, the token sink, and per-service
@@ -34,9 +33,21 @@ recovery procedure.
 - Per-application configuration parsing and external KMS/HSM operation are
   outside this architecture.
 
-## Structure
+## Context and Constraints
 
-### Architecture
+### Context
+
+Traefik provides the external boundary, and OpenBao Agent provides minimum-scope rendered output to consuming services.
+
+### Constraints
+
+Plaintext secrets and placeholder paths are rejected and least privilege is kept. Raft 3-node, auto-unseal, and a remote audit sink are not the current implementation. The source secret and the rendered output maintain separate access boundaries.
+
+Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
+
+## Current Structure
+
+### Building Blocks
 
 The current HOME implementation consists of `openbao` and `openbao-agent` from
 `infra/03-security/openbao/docker-compose.yml`, the policy, configuration, and
@@ -44,9 +55,9 @@ template files, and a persistent volume. Traefik provides the external
 boundary, and OpenBao Agent provides only minimum-scope output to consuming
 services.
 
-## Runtime and Deployment
+### Runtime and Deployment
 
-### Runtime View
+#### Runtime View
 
 The source secret is stored in OpenBao KV-v2. OpenBao Agent authenticates with
 AppRole, keeps restricted token state at `/openbao/agent/token`, and then
@@ -54,7 +65,7 @@ renders template output under `/openbao/out/<service>/`, bind-mounted from
 `${DEFAULT_SECURITY_DIR}/openbao/out`. The source secret
 and the rendered output maintain separate access boundaries.
 
-### Deployment View
+#### Deployment View
 
 The current HOME deployment is a single Docker Compose-based OpenBao and
 OpenBao Agent structure. The registered hardening and Compose validators check the tracked
@@ -62,9 +73,26 @@ configuration. Raft 3-node, auto-unseal, and a remote audit sink
 are not the current implementation, and are not treated as the current
 topology without a separately approved Requirement and ADR.
 
-## Quality and Risks
+## Interfaces
 
-### Quality Attributes
+### Contracts
+
+- OpenBao Agent authenticates with AppRole and keeps token state at `/openbao/agent/token`.
+- Rendered output is published under `/openbao/out/<service>/`, bind-mounted from `${DEFAULT_SECURITY_DIR}/openbao/out`, for consuming services.
+
+### Failure Boundaries
+
+Healthchecks, persistent data and an explicit recovery procedure keep reliability; health and rendering results must be checkable without exposing the secret value. The recovery procedure is owned by the linked [OpenBao runbook](../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md).
+
+## Decisions
+
+### Decision Links
+
+- [ADR-0050](../decisions/0050-openbao-as-secrets-manager.md), which supersedes ADR-0018
+
+### Quality and Risks
+
+#### Quality Attributes
 
 - **Security**: rejects plaintext secrets and placeholder paths, and keeps
   least privilege.
@@ -75,14 +103,16 @@ topology without a separately approved Requirement and ADR.
 - **Operability**: configuration, the Operations procedure, and validation
   results must describe the same current topology.
 
-## Related Documents
+## Traceability
 
-### Traceability
+### Requirement Mapping
 
 - [REQ-0003](../../01.requirements/0003-security.md)
-- [ADR-0050](../decisions/0050-openbao-as-secrets-manager.md), which supersedes ADR-0018
-- [AD-0003 Security architecture](0003-security-architecture.md)
-- [OpenBao policy](../../05.operations/policies/04-security-and-secrets/0085-openbao.md)
-- [OpenBao runbook](../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
 
-Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
+### Currentness and Lineage
+
+- [AD-0003 Security architecture](0003-security-architecture.md)
+
+The description reflects the current tree at its `updated` date and history lives in Git.
+
+Operations documents: [OpenBao policy](../../05.operations/policies/04-security-and-secrets/0085-openbao.md) and [OpenBao runbook](../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md).

@@ -1,10 +1,10 @@
 ---
 title: "Document Lifecycle Governance Architecture"
-version: "3.0.2"
+version: "3.0.3"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "AD-0030"
 parent_ids:
@@ -16,6 +16,8 @@ created: "2026-09-01"
 
 ## Overview
 
+### Purpose and Readers
+
 The Registry defines document shape and retired numbers; current stage owners
 retain durable meaning, Tasks record actual execution, and version history is the
 record of removed bodies. Approval, criterion acceptance, and retirement are
@@ -26,7 +28,7 @@ reassessed, and may be removed from the working tree. This Description explains
 which components read which authority and what their checks establish.
 Maintainers and agents use the same contracts before claiming completion.
 
-## Scope
+### System Boundary
 
 Inside the boundary are the Stage 99 Registry, current stage trees, and
 registered document validators. Stage 98 holds only its README. Git provides
@@ -34,9 +36,19 @@ removed bodies and historical approval context. CI chooses trusted comparison
 snapshots but does not grant retirement authority. Runtime systems, secret
 access, and remote integration remain separately authorized actions.
 
-## Structure
+## Context and Constraints
 
-### Architecture
+### Context
+
+Maintainers and agents read the Stage 99 Registry, current stage trees and registered validators. CI chooses trusted comparison snapshots, and Git supplies removed bodies and historical approval context.
+
+### Constraints
+
+Runtime systems, secret access and remote integration remain separately authorized actions. Validators are read-only, fail closed on unsafe traversal or an invalid Registry, and keep Git reads, enumeration and file data within resource limits.
+
+## Current Structure
+
+### Building Blocks
 
 - `scripts/lib/document_governance/registry.py` loads profiles, lifecycles, and
   identity spaces, including each space's `reserved_history` of retired
@@ -60,9 +72,9 @@ access, and remote integration remain separately authorized actions.
   these judgments through gate profiles. `metadata/heading.py` enforces the
   Registry's section contracts so authored declarations and checks agree.
 
-## Runtime and Deployment
+### Runtime and Deployment
 
-### Runtime View
+#### Runtime View
 
 Load Registry contracts before classifying documents. Enumerate the selected
 current snapshot and read the comparison base through bounded Git operations.
@@ -92,7 +104,7 @@ change. The Registry `reserved_history` gains its number and never loses one.
 Current documents do not link into Stage 98 or name a retired identity in a
 typed reference.
 
-### Deployment View
+#### Deployment View
 
 Validators are registered in `scripts/manifest.yaml` and selected by
 `scripts/validation/run-ci-gate.py`. Local comparison normally uses `HEAD`; CI
@@ -101,9 +113,30 @@ worktree, index, target commit, or historical source context. These read-only
 checks do not write documents or operate services. Full gate or remote runs
 retain their own authorization and execution evidence requirements.
 
-## Quality and Risks
+## Interfaces
 
-### Quality Attributes
+### Contracts
+
+- The Registry is the machine authority for profile shape, lifecycles, identity spaces and each space's `reserved_history`.
+- Metadata, document-link and corpus-lifecycle entrypoints expose the judgments through gate profiles registered in `scripts/manifest.yaml` and selected by `scripts/validation/run-ci-gate.py`.
+- `metadata/heading.py` enforces the Registry's section contracts.
+
+### Failure Boundaries
+
+Unsafe traversal, missing approval, and a missing, symlinked, unreadable or invalid Registry yield findings instead of exemptions. Exceeding a resource limit is a diagnostic, never an automatic retention action. A missing source object or insufficient history prevents recovering a removed body, and that limit is explicit.
+
+## Decisions
+
+### Decision Links
+
+- [ADR-0037 Package waiting and Task cancellation](../decisions/0037-package-disposition-wait-and-task-cancellation.md)
+- [ADR-0051 Summarize-and-delete retirement](../decisions/0051-summarize-and-delete-retirement.md)
+- [ADR-0032 Canonical agent governance home](../decisions/0032-canonical-agent-governance-home.md)
+- [ADR-0048 Authority parents and criterion acceptance](../decisions/0048-authority-parents-and-criterion-acceptance.md)
+
+### Quality and Risks
+
+#### Quality Attributes
 
 - Fail closed: unsafe traversal, missing approval, and a missing, symlinked,
   unreadable, or invalid Registry yield findings instead of exemptions.
@@ -116,7 +149,7 @@ retain their own authorization and execution evidence requirements.
 - Separable: governance explains the rule without loading a package; this
   Description explains enforcement without relying on a past execution Task.
 
-### Risks
+#### Risks
 
 - Metadata `check-changed` compares current and base bodies with
   `changed_boundary=True` to reject newly introduced template instructions and
@@ -136,17 +169,18 @@ retain their own authorization and execution evidence requirements.
 - Deleting a document does not erase Git history, clones, caches, or forks.
   Security response remains a separate workflow.
 
-### Evolution
+## Traceability
+
+### Requirement Mapping
+
+- [REQ-0026 Document retention and retirement](../../01.requirements/0026-document-retention-and-retirement.md)
+
+### Currentness and Lineage
+
+- ADR-0030, ADR-0031, ADR-0033, ADR-0035 and ADR-0036 were retired; their numbers are reserved and version history holds their bodies.
+- [Documentation protocol](../../../.agents/governance/documentation-protocol.md)
+
+#### Evolution
 
 - A new lifecycle rule enters through the Registry and its validator together,
   so the declaration and the check never diverge.
-
-## Related Documents
-
-- [REQ-0026 Document retention and retirement](../../01.requirements/0026-document-retention-and-retirement.md)
-- ADR-0030, ADR-0031, ADR-0033, ADR-0035 and ADR-0036 were retired; their numbers are reserved and version history holds their bodies.
-- [ADR-0037 Package waiting and Task cancellation](../decisions/0037-package-disposition-wait-and-task-cancellation.md)
-- [ADR-0051 Summarize-and-delete retirement](../decisions/0051-summarize-and-delete-retirement.md)
-- [Documentation protocol](../../../.agents/governance/documentation-protocol.md)
-- [ADR-0032 Canonical agent governance home](../decisions/0032-canonical-agent-governance-home.md)
-- [ADR-0048 Authority parents and criterion acceptance](../decisions/0048-authority-parents-and-criterion-acceptance.md)
