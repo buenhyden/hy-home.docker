@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.15.0"
+version: "3.16.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -386,6 +386,9 @@ pipeline. Retention follows lifecycle and ownership. Age and document count are
 never retention criteria. A document is retained while it owns current
 behavior, structure, decision, or procedure. It is retired when its status is
 terminal and its still-current meaning has moved to a canonical owner.
+These rules govern development documents only. Operational data and backups
+keep the retention their Stage 05 owners set, and shared agent memory keeps
+its own retention rules; neither is deleted under this section.
 
 A retired document is summarized and deleted, not preserved. Its still-current
 meaning goes to its canonical agent governance, Stage 01, 02 or 05 owner, as
@@ -462,8 +465,10 @@ Retire a package or a standalone document only when all of these hold.
    from `main`. A body that exists only as uncommitted work, only in the
    reflog, only on an unmerged or squash-dropped branch, or not at all in a
    shallow clone blocks that removal, as does a recorded hold. After merge, the
-   same Task restores each body from that commit and compares its bytes. This
-   is a manual record, not a gate.
+   same Task restores each body from that commit and compares its bytes. A
+   body stored through Git LFS or a submodule is recovered as its payload or
+   submodule commit, not its pointer or gitlink; this repository uses neither
+   today. This is a manual record, not a gate.
 
 A package is never retired because it is old, because a count was exceeded, or
 because nothing currently links to it. Missing inbound links are a defect to
