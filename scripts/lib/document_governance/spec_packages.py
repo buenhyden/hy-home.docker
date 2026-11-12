@@ -2856,6 +2856,28 @@ def previous_generation_revision(root: pathlib.Path, generation: int) -> str:
     raise SpecPackageError("previous Registry generation is unavailable")
 
 
+def _legacy_table_lines(body: str, name: str, joined: bool | None) -> tuple[str, ...]:
+    """Read a legacy section's table lines; a moved Task joins every legacy H2.
+
+    ``joined`` is None for the Task itself, and says for its source whether the
+    Task moved to the common form, where one H3 holds every legacy H2 that
+    maps to it.
+    """
+    if not joined:
+        lines = _contract_section(body, name)
+    else:
+        target = _COMMON_FORM_PATHS[name][1]
+        visible = _completion_visible_lines(body)
+        lines = [
+            line
+            for index, heading in enumerate(visible)
+            if heading.startswith("## ")
+            and _TASK_LEGACY_TARGETS.get(heading[3:]) == target
+            for line in visible[index + 1 : _section_end(visible, index + 1, 2)]
+        ]
+    return tuple(line for line in lines if line.lstrip().startswith("|"))
+
+
 def _bind_legacy_task_tables(
     task: SpecDocument, source: SpecDocument | None, source_registry: DocumentRegistry
 ) -> SpecDocument:
@@ -2868,31 +2890,22 @@ def _bind_legacy_task_tables(
         if line.lstrip().startswith("|")
     ):
         return task
-    sections = ("task_section", "criterion_acceptance_section")
-    current = tuple(
-        tuple(
-            line
-            for line in _contract_section(task.body, str(source_registry.common[key]))
-            if line.lstrip().startswith("|")
-        )
-        for key in sections
+    sections = tuple(
+        str(source_registry.common[key])
+        for key in ("task_section", "criterion_acceptance_section")
     )
+    current = tuple(_legacy_table_lines(task.body, name, None) for name in sections)
     if (
         not current[0]
         or tuple(cell.strip() for cell in current[0][0].strip().strip("|").split("|"))
         != old_columns
     ):
         return task
+    moved = tuple(_contract_span(task.body, name)[1] == 3 for name in sections)
     original = (
         tuple(
-            tuple(
-                line
-                for line in _contract_section(
-                    source.body, str(source_registry.common[key])
-                )
-                if line.lstrip().startswith("|")
-            )
-            for key in sections
+            _legacy_table_lines(source.body, name, moved[index])
+            for index, name in enumerate(sections)
         )
         if source is not None
         else ()
@@ -4497,7 +4510,11 @@ def _lifecycle_reconciliation_rows(
         events.get("reconciliation") if isinstance(events, Mapping) else None
     )
     if reconciliation is None:
-        if "### Lifecycle Event Reconciliation" in _completion_visible_lines(task.body):
+        visible = _completion_visible_lines(task.body)
+        if {
+            "### Lifecycle Event Reconciliation",
+            "#### Lifecycle Event Reconciliation",
+        } & set(visible):
             raise SpecPackageError("lifecycle reconciliation contract is malformed")
         return ()
     section_name, subsection, headers, disposition = _reconciliation_contract(registry)
@@ -5280,9 +5297,11 @@ def _validate_legacy_multirow_receipts(
     for package in current:
         for task in package.tasks:
             legacy_section = contract.get("task_section")
-            if not isinstance(legacy_section, str) or (
-                f"## {legacy_section}" not in task.body.splitlines()
-            ):
+            if not isinstance(legacy_section, str):
+                continue
+            try:
+                _contract_span(task.body, legacy_section)
+            except SpecPackageError:
                 continue
             legacy_rows = next(
                 (
@@ -5303,7 +5322,7 @@ def _validate_legacy_multirow_receipts(
                 and before.status == task.status == "completed"
                 and bool(before.source_text)
                 and (
-                    before.source_text == task.source_text
+                    _same_task_source(before, task)
                     or (migration_source is not None and before.body == task.body)
                 )
             ):

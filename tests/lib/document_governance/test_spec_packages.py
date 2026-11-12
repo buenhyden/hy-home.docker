@@ -5402,6 +5402,135 @@ class TerminalTaskBodyTests(unittest.TestCase):
         crlf = _LEGACY_TASK_BODY.replace("\n", "\r\n")
         self.assertFalse(self._same(crlf, _common_task_body().replace("\n", "\r\n")))
 
+    def _body_document(self, body: str, status: str = "completed"):
+        module = _spec_packages_module()
+        text = self.FRONT + body
+        record = module.frontmatter_record_from_text(
+            pathlib.Path(self.PATH.as_posix()), text
+        )
+        return module.SpecDocument(
+            self.PATH,
+            "task",
+            "SPEC-0001-TSK-0002",
+            status,
+            (),
+            body=record.body,
+            source_text=text,
+        )
+
+    def test_legacy_receipt_probe_reads_the_moved_task(self) -> None:
+        module = _spec_packages_module()
+        receipt = (
+            "| Acceptance criterion | Plan work unit | Task result | Durable owner |\n"
+            "| --- | --- | --- | --- |\n| 1 | W1 | PASS | N/A: a |\n"
+            "| 2 | W2 | PASS | N/A: b |"
+        )
+        review = (
+            "| Acceptance criterion | Acceptance | Evidence |\n| --- | --- | --- |\n"
+            "| 1 | accepted | ok |\n| 2 | accepted | ok |"
+        )
+        registry = mock.Mock(
+            common={
+                "spec_completion_evidence": {
+                    "task_section": "Evidence",
+                    "table_headers": (
+                        "Acceptance criterion",
+                        "Plan work unit",
+                        "Task result",
+                        "Durable owner",
+                    ),
+                },
+                "review_evidence": {
+                    "section": "Criterion Acceptance",
+                    "table_headers": ("Acceptance criterion", "Acceptance", "Evidence"),
+                    "acceptance_values": ("accepted",),
+                },
+            }
+        )
+        legacy = self._body_document(
+            _LEGACY_TASK_BODY.replace("| Evidence | Result |", receipt).replace(
+                "| Criterion | accepted |", review
+            )
+        )
+        moved_body = _common_task_body(
+            {"Results": receipt, "Criterion Decisions": review}
+        )
+        moved = self._body_document(moved_body)
+        edited = self._body_document(moved_body.replace("N/A: a", "N/A: z"))
+
+        def codes(before, current) -> set[str]:
+            return {
+                finding.code
+                for finding in module._validate_legacy_multirow_receipts(
+                    (self._package(before),) if before else (),
+                    (self._package(current),),
+                    registry,
+                )
+            }
+
+        self.assertEqual({"task-completion-items-invalid"}, codes(None, moved))
+        self.assertEqual(set(), codes(legacy, moved))
+        self.assertEqual({"task-completion-items-invalid"}, codes(legacy, edited))
+
+    def test_reconciliation_probe_accepts_either_heading_level(self) -> None:
+        module = _spec_packages_module()
+        registry = mock.Mock(
+            common={"task_lifecycle_events": {"section": "Work Log", "subsection": "x"}}
+        )
+        for body in (
+            "## Work Log\n### Lifecycle Event Reconciliation\nx\n",
+            "## Execution Log\n### Work Performed\n"
+            "#### Lifecycle Event Reconciliation\nx\n",
+        ):
+            with self.subTest(body=body):
+                with self.assertRaisesRegex(
+                    module.SpecPackageError, "reconciliation contract is malformed"
+                ):
+                    module._lifecycle_reconciliation_rows(
+                        self._body_document(body), registry
+                    )
+        self.assertEqual(
+            (),
+            module._lifecycle_reconciliation_rows(
+                self._body_document("## Work Log\n#### Other\nx\n"), registry
+            ),
+        )
+
+    def test_legacy_table_binding_joins_every_results_section(self) -> None:
+        module = _spec_packages_module()
+        registry = load_registry_at_revision(GENERATION_6_SOURCE, root=ROOT)
+        columns = registry.common["evidence_columns"]
+        evidence = (
+            f"| {' | '.join(columns)} |\n| {' | '.join('---' for _ in columns)} |\n"
+            f"| {' | '.join('x' for _ in columns)} |"
+        )
+        review = "| Review | Acceptance |\n| --- | --- |\n| 1 | accepted |"
+        acceptance = "| Criterion | Acceptance |\n| --- | --- |\n| 1 | accepted |"
+        legacy_body = _LEGACY_TASK_BODY.replace(
+            "| Evidence | Result |",
+            f"{evidence}\n\n## Review Evidence\n\n{review}",
+        ).replace("| Criterion | accepted |", acceptance)
+        legacy = self._body_document(legacy_body)
+        moved_body = _common_task_body(
+            {"Results": f"{evidence}\n\n{review}", "Criterion Decisions": acceptance}
+        )
+        with (
+            mock.patch.object(module, "_v6_evidence_rows"),
+            mock.patch.object(module, "_criterion_acceptance_rows"),
+        ):
+            for label, task in (
+                ("unmoved", legacy),
+                ("moved", self._body_document(moved_body)),
+            ):
+                with self.subTest(label=label):
+                    bound = module._bind_legacy_task_tables(task, legacy, registry)
+                    self.assertIs(registry, bound.evidence_registry)
+            changed = self._body_document(
+                moved_body.replace("| 1 | accepted |\n", "| 2 | accepted |\n", 1)
+            )
+            with self.assertRaisesRegex(module.SpecPackageError, "must match"):
+                module._bind_legacy_task_tables(changed, legacy, registry)
+
     def _package(self, *tasks):
         module = _spec_packages_module()
         return module.SpecPackage(
