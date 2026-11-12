@@ -546,23 +546,30 @@ created: "2026-10-06"
 
 # Fixture Evidence Integrity Task
 
-## Objective
+## Scope
+
+### Objective and Parent
 
 Exercise the public metadata path with an explicit in-progress Task.
 
-## Inputs and Authorization
+- [Specification](../spec.md)
+- [Plan](../plan.md)
 
-### Fixture Authorization
+### Inputs and Authority
+
+#### Fixture Authorization
 
 This synthetic fixture grants no operation or approval.
 
-## Work Log
+## Execution Log
 
-### Fixture Start
+### Work Performed
+
+#### Fixture Start
 
 The controlled fixture is in progress.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -571,26 +578,43 @@ The controlled fixture is in progress.
 | SPEC-0210-TSK-0001 | draft | ready | #fixture-authorization |
 | SPEC-0210-TSK-0001 | ready | in-progress | #fixture-start |
 
-## Evidence
+### Blockers and Decisions
+
+No blocker or decision is recorded.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Baseline | 1 | W1 | Fixture control | synthetic | NOT_RUN | This Task | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+No resolution is recorded.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 1 | pending | - | - | [Spec](../spec.md) |
 
-## Review and Completion
+### Remaining Conditions
 
 The fixture is intentionally in progress.
 
-## Related Documents
+## Handoff
 
-- [Specification](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+No promotion is recorded.
+
+### Next Owner
+
+This synthetic fixture names no next owner.
 """,
                 encoding="utf-8",
             )
@@ -721,7 +745,7 @@ The fixture is intentionally in progress.
                 / package_relative
                 / ("tasks/tsk-0001-task-evidence-table-integrity.md")
             )
-            marker = "\n## Criterion Acceptance\n"
+            marker = "\n### Resolution Links\n"
             source = task.read_text(encoding="utf-8")
             self.assertEqual(1, source.count(marker))
             task.write_text(
