@@ -1,10 +1,10 @@
 ---
 title: "Common Controls and Exceptions"
-version: "1.0.0"
+version: "1.0.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-11-12"
 layer: "specs"
 artifact_id: "SPEC-0218"
 parent_ids:
@@ -17,6 +17,8 @@ created: "2026-10-09"
 # Common Controls and Exceptions
 
 ## Overview
+
+### Intent
 
 `infra/common-optimizations.yml` gives every root and LAB service its security
 defaults, lifecycle and resource tier through `extends`, and
@@ -32,7 +34,13 @@ The W1–W8 execution record remains historical evidence in TSK-0001. P07
 continues this package through TSK-0002 using the existing controls and
 inventory owners; it does not repeat accepted source or LAB work.
 
+### Owning Requirements
+
+This Spec makes concrete the frontmatter parents REQ-0027 (HOME development host), AD-0031 and ADR-0062 (HOME LAB membership). The body cites no REQ-####-FR or REQ-####-NFR identifier.
+
 ## Scope
+
+### In Scope
 
 In scope: the shared templates, the exception registry and its validator, the
 leaves that deviate, the Conftest Compose policy, the tests and the operations
@@ -52,12 +60,16 @@ remain UNKNOWN. Benchmark/load, permission/configuration change and HOME
 rollout require the relevant accepted image, function, workload, endpoint,
 backup and recovery contracts plus an exclusive service window.
 
+### Non-goals
+
 LAB runtime, images, data, secrets and lifecycle changes are excluded from
 P07. Learning apps and actual Wiki implementation, model pulls, new workers
 or workspace creation are excluded. Stage05 LAB document movement remains
 with P08. Consumer retirement remains with CLN01 and the owning executor.
 
-## Contracts
+## Behavior Contract
+
+### Normal Behavior
 
 1. Effective controls. A validator renders the root with every profile and
    each LAB entrypoint with synthetic inputs and reads each service's final
@@ -96,7 +108,17 @@ with P08. Consumer retirement remains with CLN01 and the owning executor.
     and has no root-only scope flag. Do not execute a guessed flag or duplicate
     the renderer; a needed root-only extension is a coordinator proposal.
 
+### Failure and Edge Cases
+
+Malformed, orphaned, expired or mismatched exceptions and missing enforced
+controls fail effective-model validation. Unmeasured limits cannot be called
+optimal, and least-privilege proof cannot be replaced by blanket secret-group,
+read-only or ownership changes; root rollout requires its exact service,
+function, backup and recovery evidence.
+
 ## Acceptance Criteria
+
+### Criteria
 
 1. The validator and schema v2 replace both shell checks, with tests that
    fail on each registry defect and each enforced control.
@@ -132,18 +154,22 @@ with P08. Consumer retirement remains with CLN01 and the owning executor.
     recovery evidence. Rollback preserves data and restores the named service
     boundary; whole-stack recreation or source revert alone is insufficient.
 
-## Failure Conditions
+### Evidence Requirements
 
-Malformed, orphaned, expired or mismatched exceptions and missing enforced
-controls fail effective-model validation. Unmeasured limits cannot be called
-optimal, and least-privilege proof cannot be replaced by blanket secret-group,
-read-only or ownership changes; root rollout requires its exact service,
-function, backup and recovery evidence.
+- Criteria 1-5 and 6-10 are evidenced by rows in TSK-0001 and TSK-0002 under `tasks/`: validator and schema tests, real LAB or exact-image runs, Conftest fixtures, and measured, runtime and rollout results with their actual outcomes.
+- Unknown measurements and unreadable private inputs stay recorded as unknown, and synthetic or static findings are not presented as deployment or recovery evidence.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table.
 
-## Related Documents
+## References
+
+### Normative and Evidence
 
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-common-controls-and-exceptions.md)
 - [P07 root resource optimization](tasks/tsk-0002-p07-root-resource-optimization.md)
 - [HOME development host requirement](../../01.requirements/0027-home-development-host.md)
 - [Exceptions policy](../../05.operations/policies/01-common/0001-common-optimizations-template-exceptions.md)
+
+### Historical and Navigation
+
+No historical or navigation link applies; every link above is current authority or evidence.

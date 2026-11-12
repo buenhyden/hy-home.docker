@@ -1,10 +1,10 @@
 ---
 title: "SPEC-0209 and SPEC-0231 Retirement Specification"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-12"
 layer: "specs"
 artifact_id: "SPEC-0260"
 parent_ids:
@@ -24,14 +24,16 @@ because the Spec Package loader read their lifecycle generation 5 and 6
 Contract Migration proofs from the working tree. Under generation 7 the
 loader reads those proofs from the last generation 6 revision instead.
 
-### Background
-
 The generation 5 proof (source `8b85e88fe2dfef54f4cc125ee2687982c86c1942`)
 lives in SPEC-0209-TSK-0001 and the generation 6 proof (source
 `2a57d4122dc8dac954afca364b838e4bf97fd44a`) in SPEC-0231-TSK-0001. Both
 Tasks are terminal and unchanged at the last generation 6 revision
 `49f8dd661acf37bf292ee0aa59abfe1af16cde10`, which
 `previous_generation_revision(root, 7)` already resolves from Git history.
+
+### Owning Requirements
+
+This Spec makes concrete REQ-0026 and AD-0030, its frontmatter `parent_ids`. The body cites no REQ-####-FR or REQ-####-NFR identifier; the only ADR it names is ADR-0051, for the lineage-prose constraint.
 
 ## Scope
 
@@ -44,12 +46,12 @@ Tasks are terminal and unchanged at the last generation 6 revision
   `spec` space, and removing their index rows.
 - Rewording current documents that said the two packages stay as proof.
 
-### Out of Scope
+### Non-goals
 
 - Changing which Tasks are admitted or how their Evidence is read.
 - Terminal Task bodies and other packages' Task records.
 
-## Contracts
+## Behavior Contract
 
 ### Normal Behavior
 
@@ -58,20 +60,28 @@ packages at `previous_generation_revision(root, 7)`; the current tree still
 supplies the Tasks being admitted. The same historical Tasks are admitted
 after the two packages leave the tree.
 
-### Error Behavior
+Prose may name a retired identity to explain lineage (ADR-0051).
+
+### Failure and Edge Cases
 
 A missing generation 6 revision or a missing proof package in it fails the
 loader with an error; nothing falls back to the working tree.
 
-### Boundary Behavior
-
 Generations 5 and 6 keep reading proofs from the given packages.
 
-### Constraints
+**Observable failures.**
 
-Prose may name a retired identity to explain lineage (ADR-0051).
+The loader fails on the current tree, a historical Task loses admission, or a
+link into a deleted package breaks outside a terminal Task.
+
+**Stop boundaries.**
+
+This Task pushes and merges nothing. The coordinator pushes the branch and
+opens the pull request, and the user merges.
 
 ## Acceptance Criteria
+
+### Criteria
 
 1. With the two packages deleted, `load_spec_packages` loads the current tree
    and reads both migration proofs from the generation 6 revision.
@@ -81,19 +91,20 @@ Prose may name a retired identity to explain lineage (ADR-0051).
 4. The document gates and the document governance tests pass locally, with
    actual results in the Task.
 
-## Failure Conditions
+### Evidence Requirements
 
-### Observable Failures
+- Criteria 1 and 2 are verified by the `test_spec_packages`, `test_registry` and `test_identity_history` unit tests, including the fail-closed tests for a missing proof package or revision (`unit-tests` rows).
+- Criterion 3 is observed through `check-document-metadata.py` (`check-changed`, `check-active`), `check-document-corpus-lifecycle.py` and `check-document-links.py` in `alignment`, `navigation`, `language`, `traceability`, `entrypoint` and `commands` modes.
+- Criterion 4 is verified by the full `tests/lib/document_governance` discovery and the document gates, plus the hosted CI rollup row; a hosted check not run stays `NOT_RUN`.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table; a failed, blocked or skipped check is reported as such and does not count as met.
 
-The loader fails on the current tree, a historical Task loses admission, or a
-link into a deleted package breaks outside a terminal Task.
+## References
 
-### Stop Boundaries
-
-This Task pushes and merges nothing. The coordinator pushes the branch and
-opens the pull request, and the user merges.
-
-## Related Documents
+### Normative and Evidence
 
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-spec-0209-0231-retirement.md)
+
+### Historical and Navigation
+
+No retired, superseded or purely navigational link applies to this Spec.

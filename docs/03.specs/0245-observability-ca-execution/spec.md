@@ -1,10 +1,10 @@
 ---
 title: "Observability CA Execution"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-11-12"
 layer: "specs"
 artifact_id: "SPEC-0245"
 parent_ids:
@@ -17,6 +17,8 @@ created: "2026-10-16"
 # Observability CA Execution
 
 ## Overview
+
+### Intent
 
 The owner authorized backup and isolated-restore validation followed by a
 bounded CA application and recreation for the current host's Prometheus and
@@ -32,7 +34,13 @@ SPEC-0243 remains the broader OpenBao maintenance-window readiness package.
 This package does not open an OpenBao window, render secrets, unseal OpenBao,
 or change any service outside the two named observability services.
 
+### Owning Requirements
+
+This Spec makes concrete the frontmatter parents REQ-0003 (security), AD-0003 (security architecture) and ADR-0042 (OpenBao unseal method). The body cites no REQ-####-FR or REQ-####-NFR identifier.
+
 ## Scope
+
+### In Scope
 
 In scope:
 
@@ -51,6 +59,8 @@ In scope:
   health results, and recovery decisions; and
 - service-specific post-recreate health and CA-consumer checks.
 
+### Non-goals
+
 Out of scope:
 
 - an OpenBao maintenance window, OpenBao unseal, secret reads, renderer-role
@@ -62,7 +72,9 @@ Out of scope:
   production data volume; and
 - accepting or altering SPEC-0243's draft criteria or its Task.
 
-## Contracts
+## Behavior Contract
+
+### Normal Behavior
 
 1. The Task identifies the exact current host target and each service's
    Compose files, source commit, running image identity, declared image,
@@ -92,7 +104,22 @@ Out of scope:
 7. Independent operational, security, and data-recovery review plus selected
    source/document checks pass before each execution gate is accepted.
 
+### Failure and Edge Cases
+
+Item 6 of the normal behavior also defines the failure and rollback path.
+
+Missing preflight identity, unverified backup consistency, an unproved isolated
+restore, unknown Gatus image/entrypoint provenance, a non-PASS health result,
+or unavailable approved isolation keeps the next service action `NOT_RUN`.
+No criterion authorizes manual data manipulation, deletion, migration, or
+replacement; a generic restart, source upgrade, secret read, OpenBao operation,
+or workaround outside the reviewed procedure is also excluded. Ordinary
+application writes during the reviewed service stop/start are not a data
+replacement claim.
+
 ## Acceptance Criteria
+
+### Criteria
 
 1. The Task records the exact two-service target and value-free preflight
    identity for the current host.
@@ -111,24 +138,24 @@ Out of scope:
 7. Independent operational, security, and recovery reviews plus selected
    checks pass without secret or data-payload exposure.
 
-## Failure Conditions
+### Evidence Requirements
 
-Missing preflight identity, unverified backup consistency, an unproved isolated
-restore, unknown Gatus image/entrypoint provenance, a non-PASS health result,
-or unavailable approved isolation keeps the next service action `NOT_RUN`.
-No criterion authorizes manual data manipulation, deletion, migration, or
-replacement; a generic restart, source upgrade, secret read, OpenBao operation,
-or workaround outside the reviewed procedure is also excluded. Ordinary
-application writes during the reviewed service stop/start are not a data
-replacement claim.
+- Each criterion is evidenced by rows in TSK-0001 under `tasks/`, recording value-free identities, checksums, exits, health results and recovery decisions with their actual results.
+- A missing, unproved or non-PASS gate keeps the next service action `NOT_RUN` and is recorded as such rather than as a pass.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table, with the independent operational, security and recovery reviews named in criterion 7.
 
-## Related Documents
+## References
+
+### Normative and Evidence
 
 - [REQ-0003](../../01.requirements/0003-security.md)
 - [AD-0003](../../02.architecture/descriptions/0003-security-architecture.md)
 - [ADR-0042](../../02.architecture/decisions/0042-openbao-unseal-method.md)
-- SPEC-0243
 - [Prometheus Runbook](../../05.operations/runbooks/07-observability/0045-prometheus.md)
 - [Gatus Runbook](../../05.operations/runbooks/07-observability/0087-gatus.md)
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-observability-ca-execution.md)
+
+### Historical and Navigation
+
+- SPEC-0243 is a retired Spec package; it is non-authoritative history and not current authority.

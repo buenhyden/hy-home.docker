@@ -775,16 +775,33 @@
       "required_sections": [
         "Overview",
         "Scope",
-        "Contracts",
+        "Behavior Contract",
         "Acceptance Criteria",
-        "Failure Conditions",
-        "Related Documents"
+        "References"
       ],
-      "optional_sections": [
-        "Interfaces",
-        "Failure Modes",
-        "Quality Requirements"
-      ],
+      "optional_sections": [],
+      "required_subsections": {
+        "Overview": [
+          "Intent",
+          "Owning Requirements"
+        ],
+        "Scope": [
+          "In Scope",
+          "Non-goals"
+        ],
+        "Behavior Contract": [
+          "Normal Behavior",
+          "Failure and Edge Cases"
+        ],
+        "Acceptance Criteria": [
+          "Criteria",
+          "Evidence Requirements"
+        ],
+        "References": [
+          "Normative and Evidence",
+          "Historical and Navigation"
+        ]
+      },
       "lifecycle_id": "spec",
       "traceability": {
         "allowed_parent_profiles": [

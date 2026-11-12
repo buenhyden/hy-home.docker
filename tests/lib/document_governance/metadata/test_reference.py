@@ -436,24 +436,54 @@ created: "2026-10-06"
 
 ## Overview
 
+### Intent
+
 Exercise the current Evidence contract.
+
+### Owning Requirements
+
+The fixture parents are REQ-0024 and REQ-0026.
 
 ## Scope
 
+### In Scope
+
 The fixture is local to this regression.
 
-## Contracts
+### Non-goals
+
+No other contract is exercised.
+
+## Behavior Contract
+
+### Normal Behavior
 
 The Task Evidence table remains contiguous.
 
+### Failure and Edge Cases
+
+A detached Evidence row is rejected.
+
 ## Acceptance Criteria
+
+### Criteria
 
 1. Reject a detached Evidence row.
 
-## Related Documents
+### Evidence Requirements
+
+- The Task records the rejection as an Evidence row.
+
+## References
+
+### Normative and Evidence
 
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-task-evidence-table-integrity.md)
+
+### Historical and Navigation
+
+No historical or navigation link applies.
 """,
                 encoding="utf-8",
             )

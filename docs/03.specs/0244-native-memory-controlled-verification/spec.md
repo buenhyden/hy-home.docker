@@ -1,10 +1,10 @@
 ---
 title: "Native Memory Controlled Verification"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-16"
+updated: "2026-11-12"
 layer: "specs"
 artifact_id: "SPEC-0244"
 parent_ids:
@@ -18,6 +18,8 @@ created: "2026-10-16"
 
 ## Overview
 
+### Intent
+
 The owner authorized a bounded continuation of the Claude native-memory and
 hook investigation. The earlier sanitized normal-session observation confirmed
 that the menus can be opened without an error marker, but did not surface a
@@ -29,7 +31,13 @@ SPEC-0236 remains the broader shared-memory design and implementation package.
 This package neither changes its draft scope nor reads, migrates, or writes a
 native or shared memory store.
 
+### Owning Requirements
+
+This Spec makes concrete the frontmatter parents REQ-0024 (agent governance standardization), AD-0027 (agent governance canonical adapter) and ADR-0049 (shared agent memory store). The body cites no REQ-####-FR or REQ-####-NFR identifier.
+
 ## Scope
+
+### In Scope
 
 In scope:
 
@@ -52,6 +60,8 @@ In scope:
   stopping condition; and
 - independent privacy/security review of the resulting claim boundary.
 
+### Non-goals
+
 Out of scope:
 
 - arbitrary private-file or credential access, memory-body reads or writes,
@@ -64,7 +74,9 @@ Out of scope:
   available; and
 - reopening completed SPEC-0212 TSK-0009 or accepting SPEC-0236 criteria.
 
-## Contracts
+## Behavior Contract
+
+### Normal Behavior
 
 1. Each controlled session has a written action allowlist. A normal state
    query may only initialize, call its approved metadata view, and end its
@@ -97,7 +109,23 @@ Out of scope:
    tool payload, private path, or raw provider diagnostic. The execution owner
    stops and escalates if any is about to enter the evidence.
 
+### Failure and Edge Cases
+
+Item 6 of the normal behavior also defines the stop and escalation path.
+
+An unavailable effective-state view, an absent event receipt, a rejected
+automatic diagnostic, or an unsupported menu action is not a reason to try an
+unbounded or mutating alternative. It leaves the relevant state unverified or
+unknown, and the relevant criterion remains pending. A conditional fixture
+attempt must not run before memory-off proof or without its independently
+reviewed Task plan. Any request to inspect a memory body, change persistent or
+global native settings, expose authentication or private diagnostic content,
+or widen the fixture or tool boundary stops this package and requires
+separately scoped authorization.
+
 ## Acceptance Criteria
+
+### Criteria
 
 1. The Task records the controlled-session allowlist, redaction rules, target,
    and stop conditions before a normal-session attempt.
@@ -115,23 +143,22 @@ Out of scope:
 6. A privacy/security review and the selected document checks pass without
    exposing private native-memory or authentication material.
 
-## Failure Conditions
+### Evidence Requirements
 
-An unavailable effective-state view, an absent event receipt, a rejected
-automatic diagnostic, or an unsupported menu action is not a reason to try an
-unbounded or mutating alternative. It leaves the relevant state unverified or
-unknown, and the relevant criterion remains pending. A conditional fixture
-attempt must not run before memory-off proof or without its independently
-reviewed Task plan. Any request to inspect a memory body, change persistent or
-global native settings, expose authentication or private diagnostic content,
-or widen the fixture or tool boundary stops this package and requires
-separately scoped authorization.
+- Each criterion is evidenced by rows in TSK-0001 under `tasks/`, recording the sanitized, value-free observation, the command category, the result and the stopping condition.
+- A criterion whose state is unavailable, unverified or unknown stays pending; no state-changing or unbounded fallback counts as evidence.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table, together with the independent privacy/security review named in criterion 6.
 
-## Related Documents
+## References
+
+### Normative and Evidence
 
 - [REQ-0024](../../01.requirements/0024-agent-governance-standardization.md)
 - [AD-0027](../../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)
 - [ADR-0049](../../02.architecture/decisions/0049-shared-agent-memory-store.md)
-- SPEC-0236
 - [Plan](plan.md)
 - [Task](tasks/tsk-0001-native-memory-controlled-verification.md)
+
+### Historical and Navigation
+
+- SPEC-0236 is a retired Spec package; it is non-authoritative history and not current authority.

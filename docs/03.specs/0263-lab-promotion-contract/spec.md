@@ -1,10 +1,10 @@
 ---
 title: "LAB Promotion Contract Specification"
-version: "0.4.0"
+version: "0.4.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 layer: "specs"
 artifact_id: "SPEC-0263"
 parent_ids:
@@ -30,7 +30,34 @@ This Spec defines four things:
 - the check that decides whether a LAB may be promoted;
 - the procedure for each kind.
 
-### Background
+#### Observed state
+
+Observed on 2026-11-05 at `c1db5ef65`:
+
+- **LAB entrypoints are inconsistent.**
+  - Each LAB is a flat `labs/<name>.yml`.
+  - Some LABs also have an asset folder `labs/<name>/`, some a guide
+    `labs/<name>.md`, and some neither.
+  - Loose helpers sit at the `labs/` root: `couchdb-cluster-init.sh` and
+    `opensearch-cluster-dashboards.config`.
+- **Operations documents are uneven.**
+  - Thirteen LABs have a Guide and a Runbook under
+    `docs/05.operations/{guides,runbooks}/15-labs/`, sharing one number.
+  - The Kafka and OpenSearch cluster LABs have only `labs/<name>.md`.
+- **infra services follow one pattern.** A service in `infra/` lives in
+  `infra/<tier>/<service>/` with its `docker-compose.yml`, `README.md` and
+  assets. It is included by the root `docker-compose.yml` and has profiles in
+  the POL-0078 vocabulary.
+- **Four LABs are cluster forms of HOME single-node services.**
+  `valkey-cluster`, `postgresql-ha`, `opensearch-cluster` and `kafka-cluster`.
+  The rest are new services.
+- **supabase uses HOME resources.**
+  - It reads ten secrets from HOME paths under `secrets/data/supabase/` and
+    `secrets/db/mng-pg/`, plus HOME's SMTP password.
+  - It binds the Docker socket.
+  - `scripts/operations/lab.py check` (PR #752) refuses all of these.
+
+### Owning Requirements
 
 The owner stated the following on 2026-11-05:
 
@@ -85,32 +112,7 @@ W8). This supersedes the 2026-11-05 supabase statements above: `labs/supabase/`,
 its operations documents, catalog rows and Docker socket allowance are gone,
 and no LAB binds the Docker socket.
 
-#### Observed state
-
-Observed on 2026-11-05 at `c1db5ef65`:
-
-- **LAB entrypoints are inconsistent.**
-  - Each LAB is a flat `labs/<name>.yml`.
-  - Some LABs also have an asset folder `labs/<name>/`, some a guide
-    `labs/<name>.md`, and some neither.
-  - Loose helpers sit at the `labs/` root: `couchdb-cluster-init.sh` and
-    `opensearch-cluster-dashboards.config`.
-- **Operations documents are uneven.**
-  - Thirteen LABs have a Guide and a Runbook under
-    `docs/05.operations/{guides,runbooks}/15-labs/`, sharing one number.
-  - The Kafka and OpenSearch cluster LABs have only `labs/<name>.md`.
-- **infra services follow one pattern.** A service in `infra/` lives in
-  `infra/<tier>/<service>/` with its `docker-compose.yml`, `README.md` and
-  assets. It is included by the root `docker-compose.yml` and has profiles in
-  the POL-0078 vocabulary.
-- **Four LABs are cluster forms of HOME single-node services.**
-  `valkey-cluster`, `postgresql-ha`, `opensearch-cluster` and `kafka-cluster`.
-  The rest are new services.
-- **supabase uses HOME resources.**
-  - It reads ten secrets from HOME paths under `secrets/data/supabase/` and
-    `secrets/db/mng-pg/`, plus HOME's SMTP password.
-  - It binds the Docker socket.
-  - `scripts/operations/lab.py check` (PR #752) refuses all of these.
+This Spec makes concrete REQ-0004 and AD-0026, its frontmatter `parent_ids`. The body cites no REQ-####-FR or REQ-####-NFR identifier.
 
 ## Scope
 
@@ -126,7 +128,7 @@ Observed on 2026-11-05 at `c1db5ef65`:
 - Bringing the 15 LABs present on 2026-11-05 into the standard layout, and
   retiring the supabase LAB on 2026-11-06.
 
-### Out of Scope
+### Non-goals
 
 - Promoting any LAB. Each promotion is a later Task under this Spec with its
   own owner approval and operating window.
@@ -136,9 +138,13 @@ Observed on 2026-11-05 at `c1db5ef65`:
   `volumes_from`, host `pid` or `network_mode`, `cap_add`). These stay a
   recorded residual risk.
 
-## Contracts
+## Behavior Contract
 
 ### Normal Behavior
+
+The POL-0078 profile vocabulary, the `infra/` tier layout tests and the LAB
+isolation tests stay authoritative. Document moves keep artifact identifiers
+and creation dates. No secret value is read or written.
 
 #### 1. Standard LAB layout
 
@@ -293,12 +299,6 @@ data format to the new one, because the products differ.
 Each procedure is a Runbook in the target role folder. The promotion Task
 records the actual results.
 
-### Error Behavior
-
-`lab.py check` refuses a LAB that is not in the standard layout, has no valid
-manifest, or reads a HOME secret path. The readiness check refuses a promotion
-when any criterion fails or cannot be measured.
-
 #### 7. Drafting calls
 
 These were decided while drafting the Spec, not by the owner:
@@ -318,7 +318,7 @@ These were decided while drafting the Spec, not by the owner:
 Moving each Compose file one folder deeper changes the base that relative
 paths resolve against, so every relative path in a moved LAB is adjusted.
 
-### Boundary Behavior
+### Failure and Edge Cases
 
 Bringing LABs into the standard layout moves sources, documents and catalog
 rows only, and starts nothing.
@@ -327,13 +327,29 @@ The public registry `secrets/SENSITIVE_ENV_VARS.md.example` is outside the
 agent's permitted paths. The agent prepares its placeholder edits and the
 owner applies them.
 
-### Constraints
+`lab.py check` refuses a LAB that is not in the standard layout, has no valid
+manifest, or reads a HOME secret path. The readiness check refuses a promotion
+when any criterion fails or cannot be measured.
 
-The POL-0078 profile vocabulary, the `infra/` tier layout tests and the LAB
-isolation tests stay authoritative. Document moves keep artifact identifiers
-and creation dates. No secret value is read or written.
+**Observable failures.**
+
+Any of these is a failure:
+
+- a LAB file outside its folder;
+- a LAB without a manifest, or with a manifest that disagrees with its
+  rendered limits;
+- a LAB reading a HOME secret;
+- a promotion procedure without a rollback;
+- a readiness report that passes a value it did not measure.
+
+**Stop boundaries.**
+
+This Spec promotes no LAB and starts no container. The owner applies every
+change to `secrets/SENSITIVE_ENV_VARS.md.example`.
 
 ## Acceptance Criteria
+
+### Criteria
 
 1. Every LAB lives in `labs/<name>/` with its `docker-compose.yml`, `README.md`
    and assets. Only `labs/README.md` and `labs/.env.example` remain at the
@@ -359,27 +375,23 @@ and creation dates. No secret value is read or written.
    sum reservations plus the external-workload allowance, and report owner
    check items as owner judgment.
 
-## Failure Conditions
+### Evidence Requirements
 
-### Observable Failures
+- Criteria 1 and 2 are verified by the layout tests and the manifest and `check` tests (`layout tests`, `manifest and check tests` rows in TSK-0001).
+- Criterion 3 is verified by the LAB and secret suites, the catalog and owner registry checks, the root render and `lab.py check` runs (TSK-0001 and TSK-0003); a check needing owner inputs that was not run stays `NOT_RUN`.
+- Criteria 4 and 6 are verified by the LAB suites, the operations catalog check, metadata, links and lifecycle checks and the static and HOME renders of the cluster LABs; criterion 5 by the LAB suites and the `lab.py readiness` runs on HOME.
+- Criterion 8 is verified by the LAB suites, Compose acceptance, `common-optimizations` controls, hardening, HOME readiness and `lab.py check` rows in TSK-0002.
+- Per the package [Plan](plan.md), criterion 7 is verified by the root and LAB `docker compose config` renders, the full unit suite, `check-all-hardening.sh`, the metadata, links, lifecycle, operations catalog and script manifest checks, and the hosted CI row.
+- The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table; a failed, blocked or skipped check is reported as such and does not count as met.
 
-Any of these is a failure:
+## References
 
-- a LAB file outside its folder;
-- a LAB without a manifest, or with a manifest that disagrees with its
-  rendered limits;
-- a LAB reading a HOME secret;
-- a promotion procedure without a rollback;
-- a readiness report that passes a value it did not measure.
+### Normative and Evidence
 
-### Stop Boundaries
+- [LAB operations guides](../../05.operations/guides/15-labs/README.md)
+- [Analytics LAB migration](../0262-analytics-labs-migration/spec.md)
 
-This Spec promotes no LAB and starts no container. The owner applies every
-change to `secrets/SENSITIVE_ENV_VARS.md.example`.
-
-## Related Documents
+### Historical and Navigation
 
 - [LAB README](../../../labs/README.md)
 - [infra README](../../../infra/README.md)
-- [LAB operations guides](../../05.operations/guides/15-labs/README.md)
-- [Analytics LAB migration](../0262-analytics-labs-migration/spec.md)
