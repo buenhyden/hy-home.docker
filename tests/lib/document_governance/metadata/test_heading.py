@@ -85,11 +85,20 @@ class CurrentBodyContractTests(unittest.TestCase):
     ) -> None:
         registry = metadata.load_registry(ROOT / "docs/99.templates/registry.json")
         profile = registry.profiles["spec"]
+        subsections = profile.get("required_subsections") or {}
         valid = body_with_headings(
-            *(f"## {name}" for name in profile["required_sections"])
+            *(
+                heading
+                for name in profile["required_sections"]
+                for heading in (
+                    f"## {name}",
+                    *(f"### {child}" for child in subsections.get(name, ())),
+                )
+            )
         ).replace(
-            "## Failure Conditions\n\nFixture content.",
-            "## Failure Conditions\n\n### Observable rejection\n\nReject invalid input.",
+            "### Failure and Edge Cases\n\nFixture content.",
+            "### Failure and Edge Cases\n\n#### Observable rejection\n\n"
+            "Reject invalid input.",
         )
         record = self.requirement_record()
         self.assertEqual(
@@ -97,7 +106,7 @@ class CurrentBodyContractTests(unittest.TestCase):
         )
         for broken in (
             valid.replace("Reject invalid input.", ""),
-            valid.replace("## Scope\n\nFixture content.", "## Scope"),
+            valid.replace("### In Scope\n\nFixture content.", "### In Scope"),
         ):
             with self.subTest(body=broken):
                 self.assertIn(
