@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.52.0"
+version: "1.53.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -830,8 +830,9 @@ hold, authorization and recovery requirements have been established.
      against their canonical owners, corrects only reproduced gaps, and
      records local adoption separately from cross-repository adoption. An
      assessment row is not acceptance of a common contract.
-110. TSK-0057 assesses the v14.2 W02 obligations ARC-01 to ARC-09 against
-     the current retention and retirement owners, proves byte recovery for
+110. TSK-0057 assesses the v14.2 W02 obligations ARC-01 to ARC-09, and the
+     v14.7 W02 obligations W02-A, W02-B, R147-08, QA-C04 and the legacy WP-19
+     and WP-20, against the current retention and retirement owners, proves byte recovery for
      each removal candidate before any removal, and blocks a removal whose
      acceptance, promotion, hold, authority or recovery is unmet.
 111. TSK-0058 assesses the v14.2 W03 obligations DOC-01 to DOC-12 and SUP-11
