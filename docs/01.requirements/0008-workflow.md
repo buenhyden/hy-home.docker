@@ -91,7 +91,7 @@ The core PostgreSQL in `04-data` and the observability tier are available.
 
 ### Verification Method
 
-Rendered-configuration conditions (REQ-0008-FR-0001, REQ-0008-FR-0002 and the storage and metrics parts of REQ-0008-FR-0004) are judged by reviewing the rendered workflow configuration. Reachability through the gateway (REQ-0008-FR-0003) and the authenticated API (REQ-0008-FR-0005) are judged by runtime observations: a request through the gateway route and an unauthenticated and an authenticated API request. No current Spec Package cites REQ-0008; a Spec that implements it records the review result and the runtime observations in its Task evidence rows. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+Rendered-configuration conditions (REQ-0008-FR-0001, REQ-0008-FR-0002, the task-runner rendering in REQ-0008-FR-0003 and the storage and metrics parts of REQ-0008-FR-0004) are judged by reviewing the rendered workflow configuration. Reachability through the gateway (REQ-0008-FR-0003) and the authenticated API (REQ-0008-FR-0005) are judged by runtime observations: a request through the gateway route and an unauthenticated and an authenticated API request. No current Spec Package cites REQ-0008; a Spec that implements it records the review result and the runtime observations in its Task evidence rows. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
 
 ## Traceability
 

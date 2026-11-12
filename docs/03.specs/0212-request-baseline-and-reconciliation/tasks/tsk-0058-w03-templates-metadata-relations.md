@@ -1,6 +1,6 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -179,14 +179,35 @@ template, parsers, tests and current documents together.
   the link section each template declares.
 - The 18 packages are restructured by three `doc-writer` agents. Every REQ
   identity, item line and link target from `0b1b2c6a1` is kept; the only
-  dropped lines are the "none issued" sentences of the empty NFR and
-  interface sections. `Verification Method` is new text in each package;
+  dropped text is the old headings, the "none issued" sentences of the empty
+  NFR and interface sections, and the `**In scope**:` labels that repeated
+  the new `In Scope` heading. `Verification Method` is new text in each package;
   `In Scope` is new for 0024, 0026 and 0027, whose old Scope held only
   constraints.
 - The documentation protocol, the Stage 01 guide and README now say an
   interface need is a functional requirement and no `IF` identity is issued.
 - Tests: the fixtures use the new form; a new test rejects the old
-  `Related Documents` H2 and the old NFR and interface H3s.
+  `Related Documents` H2 and the old NFR and interface H3s; an old NFR or
+  interface section and an issued `IF` identity fail the parser.
+- First review answers (in `3e359935b`): old sections fail closed, ADR and
+  retired Spec links moved to `Downstream Links`, each `Verification Method`
+  names the method, the evidence, its Task and who judges, and `Stakeholders`
+  names who writes, reviews and accepts.
+- Re-review answers (`46890d318` and the next commit): a test for an issued
+  `IF` identity and one pinning an ignored H2 `Quality Requirements`; retired
+  Requirement lineage moved to `Downstream Links`; the 0011 promotion
+  evidence belongs to the Spec that promotes; the 0008, 0010 and 0011
+  methods name the runtime observations and reviews their conditions need.
+
+Held for an owner decision, not changed here, because each would change
+what a requirement says:
+
+- Acceptance conditions in REQ-0024 to REQ-0027 are not split per
+  requirement identity.
+- The REQ-0003 quality requirements have no acceptance condition of their
+  own.
+- `REQUIREMENT_TARGET_BODY` in the heading test support keeps the old
+  headings; it serves tests whose subject is not the body form.
 
 ## Evidence
 
@@ -198,6 +219,11 @@ template, parsers, tests and current documents together.
 | W03 section and date GREEN | 111 | W116 | red-green-proof | Commits `ce18338c8` and `85ed595b3` | PASS | test_registry 123 OK; test_heading, test_profile, test_language 110 OK; test_lifecycle 7 OK; metadata check-active selected534 violations0, check-changed selected16 violations0; links alignment and language PASS; renderer drift 0; script manifest PASS | required | W03 section and date RED |
 | W03 code review | 111 | W116 | independent-source-review | Fresh-context code-reviewer of `ce18338c8` and `85ed595b3` | PASS | APPROVED: no false finding or exception from date objects; README content preserved; tests not vacuous. Four minor findings answered in `aa1bde154`; removing `research-member` ordering now fails the declaration test | required | - |
 | W03 governance suite | 111 | W116 | document-governance-unit-suite | `tests/lib/document_governance` discover at `cab985393`; `aa1bde154` later changed only test_heading and READMEs, rerun alone 85 OK | PASS | Ran 769 tests, OK, exit 0 | optional | - |
+| W03 v14.7 Requirement form RED | 111 | W116 | red-green-proof | The new old-form test against the `requirements-package` profile at `main` `0b1b2c6a1` | FAIL | Three cases failed: an old `Related Documents` H2 was reported only as duplicate and out of order, and the old NFR and interface H3s were not reported | required | - |
+| W03 v14.7 Requirement review | 111 | W116 | independent-review | Fresh-context code-reviewer of the uncommitted Requirement change | FAIL | CHANGES_REQUIRED: old NFR and interface sections skipped, the `IF` reason in this Task wrong, unsupported verification text, consumers listed as sources, hook text demanding `Related Documents`; seven minor | required | - |
+| W03 v14.7 Requirement re-review | 111 | W116 | independent-review | Fresh-context code-reviewer of `3e359935b` | FAIL | CHANGES_REQUIRED: no test for an issued `IF` identity; four minor (H2 `Quality Requirements` untested, promotion evidence owner, runtime observations, retired lineage under sources) | required | - |
+| W03 v14.7 Requirement re-review 2 | 111 | W116 | independent-review | Fresh-context code-reviewer of `46890d318` | FAIL | CHANGES_REQUIRED: the five re-review fixes verified; no suite run recorded yet; three minor (the Task credited the wrong commit, a dead test parameter, three conditions with no named method) | required | - |
+| W03 v14.7 Requirement checks | 111 | W116 | metadata-links-governance | `46890d318`, clean tree | PASS | metadata check-changed selected 25 violations 0, check-active selected 534 violations 0; corpus lifecycle and occupancy 0; links alignment, commands and language PASS; renderer drift 0; governance contract PASS; Script Manifest PASS; staged pre-commit PASS | required | - |
 
 ## Criterion Acceptance
 

@@ -30,7 +30,6 @@ def _package_text(
     number: str = "0001",
     functional: str | None = None,
     non_functional: str | None = None,
-    interface: str | None = None,
 ) -> str:
     functional = functional or (
         f"- **REQ-{number}-FR-0001**: The package provides behavior one.\n"
@@ -43,7 +42,6 @@ def _package_text(
         if not non_functional
         else f"### Quality Requirements\n\n{non_functional}\n\n"
     )
-    interface = "" if interface is None else "\n" + interface
     return f"""---
 title: Fixture Requirement Package
 type: sdlc/requirement
@@ -81,7 +79,7 @@ No constraint or exclusion applies to this fixture.
 
 ### Functional Requirements
 
-{functional}{interface}
+{functional}
 
 {quality}## Acceptance Criteria
 
