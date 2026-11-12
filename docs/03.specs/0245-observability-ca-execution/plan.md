@@ -1,10 +1,10 @@
 ---
 title: "Observability CA Execution Plan"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-10-21"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0245-PLAN-0001"
 parent_ids:
@@ -16,12 +16,12 @@ created: "2026-10-16"
 
 ## Overview
 
+### Goal and Boundary
+
 Run the two services in fixed order: Prometheus, then Gatus. Each service must
 pass its own backup and isolated restore gate before its CA recreation. No
 execution command is inferred from this Plan: the operation owner records the
 reviewed, exact command selection in the Task before running it.
-
-## Scope
 
 W1 establishes a value-free preflight contract. W2 and W3 complete the
 Prometheus and Gatus backup/isolated-restore gates before any CA recreation.
@@ -30,7 +30,27 @@ rollback outcomes. W7 obtains independent review and selected checks. The Plan
 does not execute the OpenBao window, use OpenBao secrets, change a certificate,
 or select services beyond the two named targets.
 
-## Work Breakdown
+Parent Spec:
+
+- [Spec](spec.md)
+
+### Assumptions
+
+The plan works under the approved SPEC-0245; it assumes no authority beyond it. No execution command is inferred from this Plan.
+
+## Dependencies
+
+### Prerequisites
+
+The plan needs only the approved Spec, the two named services (Prometheus, then Gatus), and the reviewed backup, isolated-restore and CA selections named in its Goal and Boundary and its Task; it uses no OpenBao secret.
+
+### Dependency Order
+
+W1 has no dependency. W2 and W3 start after W1. W4 starts after W2 and W3, and W5 after W3 and W4. W6 starts after W1 to W5 and W7 after W1 to W6.
+
+## Implementation Strategy
+
+### Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
 | --- | --- | --- | --- | --- | --- |
@@ -42,7 +62,15 @@ or select services beyond the two named targets.
 | W6 | 6 | Record a stopped service path or reviewed rollback when a gate fails | W1, W2, W3, W4, W5 | TSK-0001 | Sanitized Task evidence |
 | W7 | 7 | Independent operational, security, and recovery reviews; selected source and document checks | W1, W2, W3, W4, W5, W6 | TSK-0001 | QA, IaC, and security evidence |
 
+### Change and Rollback
+
+- **Rollback.** Restoring source or an image does not replace data. A
+  production-data replacement needs a new explicit approval after a successful
+  isolated rehearsal and review.
+
 ## Verification Plan
+
+### Verification Matrix
 
 - Before each service action, compare the preflight identity with current
   Compose, image, mount, and persistent-data boundary; stop on a mismatch.
@@ -58,9 +86,13 @@ or select services beyond the two named targets.
   artifacts in the QA-selected protected custody path; an ignored, mode-0700
   repository-local path is permissible when its custody review approves it.
 
-## Risks and Recovery
+### Stage Placement
 
-### Risks and Rollback
+The Plan places no stage-specific checks beyond the Verification Matrix; the Task records each run.
+
+## Risks
+
+### Risks and Mitigations
 
 - **Prometheus data loss or incompatible restore.** Preserve the installed v3.15.0
   identity and stop before recreation until the service-specific backup and
@@ -74,11 +106,19 @@ or select services beyond the two named targets.
   only into the isolated target.
 - **Service failure.** Stop before the next service. Use only the recorded,
   reviewed rollback path; retain production volume and evidence for escalation.
-- **Rollback.** Restoring source or an image does not replace data. A
-  production-data replacement needs a new explicit approval after a successful
-  isolated rehearsal and review.
 
-## Related Documents
+### Escalation
 
-- [Spec](spec.md)
+Work stops before the next service when a gate fails and returns to the owner, per the Spec; production-data replacement needs a new explicit approval after a successful isolated rehearsal and review.
+
+## Promotion Map
+
+### Durable Meaning
+
+The package changes no source contract of its own; the sanitized durable receipts in TSK-0001 hold the operating outcome for the two services.
+
+### Owner and Receipt
+
+Owner @buenhyden. The receipt is the sanitized evidence recorded in TSK-0001.
+
 - [Task](tasks/tsk-0001-observability-ca-execution.md)

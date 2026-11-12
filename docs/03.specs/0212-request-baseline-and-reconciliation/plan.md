@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.53.0"
+version: "1.53.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -16,6 +16,8 @@ created: "2026-10-07"
 
 ## Overview
 
+### Goal and Boundary
+
 The current 11–30 request preserves completed P00 Tasks. SEC01 delivers first,
 SMTP01 owns the source transition second, and CLN01 deletes the old file third.
 
@@ -23,8 +25,6 @@ R10 adds W16–W23 in TSK-0007 from the 2026-10-15 source baseline. Existing
 W1–W15 and completed bodies retain their earlier scope and evidence. The direct user request authorizes this bounded local contract and Plan;
 that authority is not inferred from historical acceptance and does not approve
 a shared edition or remote action.
-
-## Scope
 
 W9–W15 reconcile the request baseline, owner routes, shared-file leases
 and SEC01 → SMTP01 → CLN01 handoffs; W1–W8 retain their historical receipts.
@@ -186,7 +186,30 @@ It preserves current default and optional configurations. It does not authorize
 service operation, host configuration, storage migration, actual deletion,
 Secret access or remote integration.
 
-## Work Breakdown
+Parent Spec: [Spec](spec.md)
+
+### Assumptions
+
+The plan works under the approved SPEC-0212; the direct user request authorizes this bounded local contract and Plan, and it assumes no authority beyond it.
+
+## Dependencies
+
+### Prerequisites
+
+The approved Spec, and the related current owners this plan coordinates with (Spec 0270, DATA-0096 and the 0204 Plan):
+
+- [Spec](spec.md)
+- [Memory capacity and search](../0270-shared-memory-capacity-and-search/spec.md)
+- [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
+- [Integration plan](../0204-service-integration-security-and-operations/plan.md)
+
+### Dependency Order
+
+Work units order by the Dependencies column of the Work Breakdown table and by the dependency and integration order recorded in its subsections.
+
+## Implementation Strategy
+
+### Work Breakdown
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
 | --- | --- | --- | --- | --- | --- |
@@ -309,7 +332,7 @@ Secret access or remote integration.
 | W117 | 112 | Assess the v14.7 W00 obligations and the common-contract differences, correct conflicting current guidance and hand off each remaining difference | W116 | TSK-0059 | Read denominator, PR and OPEN-01 to OPEN-14 tables, per-file handoff table with one writer each; metadata, links and lifecycle checks |
 | W118 | 113 | Assess the v14.7 W01 governance obligations, record local adoption of each common contract revision and correct conflicting policy | W117 | TSK-0060 | Per-ID verdicts, adoption table with contract revision and approval source, changed policy with metadata, links, governance contract and renderer checks |
 
-### Current v30 continuation and delivery
+#### Current v30 continuation and delivery
 
 The direct 2026-10-26 request extends W24's previous 11–31 routing scope to
 R32 without a new Task, criterion, inventory authority, or duplicate prompt
@@ -342,7 +365,7 @@ alone. Runtime, credential, deletion, host and external-cluster actions retain
 their exact target, approval and recovery gates. Independent review and final
 verification precede local delivery; no future result is recorded as PASS.
 
-### W25 file map and checks
+#### W25 file map and checks
 
 The link slice owns `scripts/lib/document_governance/links.py`,
 `scripts/validation/check-document-links.py`, and
@@ -375,7 +398,7 @@ exceptions clarify the full-commit/current-byte source-pin contract and the
 observed protection state; they do not change a policy schema, runtime
 procedure, or historical record.
 
-### Exact writer map
+#### Exact writer map
 
 The historical P00 doc-writer owned this Spec, this Plan and TSK-0003 for the
 first reviewable current-contract unit. The current COORD writer owns only this
@@ -429,7 +452,7 @@ acceptance fixtures; SPEC01 active-contract documents. The coordinator may
 propose a shared-file change, but the lease holder integrates it after the
 preceding source identity and review are fixed.
 
-### Dependency and P08 integration order
+#### Dependency and P08 integration order
 
 1. P00 fixes baseline, ownership and exclusions first. Applied work stays
    NO_CHANGE and genuine gaps keep their existing acceptance owner.
@@ -459,7 +482,7 @@ preceding source identity and review are fixed.
    documentation owner; requirement 31 is completed in the same unit as its
    actual ROOT-image change.
 
-### R10 ownership and integration
+#### R10 ownership and integration
 
 The coordinator assigns one writer per slice. The documentation writer owns
 this Spec, Plan and TSK-0007. Hook/CI implementation, Stage 99 and governance
@@ -475,7 +498,7 @@ The controller sequences any table/lifecycle/memory amendment after its exact
 consumer impact and compatibility are reviewable; unimplemented targets stay
 pending in TSK-0007 rather than being treated as completed by this Plan.
 
-### Current P01 implementation and ownership
+#### Current P01 implementation and ownership
 
 The qa-engineer writes the inventory CLI/library and its tests; the doc-writer
 writes this package amendment, TSK-0040 and DATA-0096; the ci-cd-engineer
@@ -492,9 +515,21 @@ Review receipts bind reviewer, time, fingerprint and scope. Publication validate
 before atomic replacement and excludes its own payload from recursive hashing.
 No service starts, host edits, credential actions or remote writes occur here.
 
+### Change and Rollback
+
+Revert only the logical W13 documentation commit through a protected PR to
+restore the prior active contract; preserve historical Tasks and issued IDs.
+No service, credential, data, volume or host state changes, so no runtime/data
+rollback is claimed.
+
+Revert W24 as its isolated documentation unit through the protected PR path;
+do not revert an independent owner’s implementation with it.
+
 ## Verification Plan
 
-### Current P06 implementation and ownership
+### Verification Matrix
+
+#### Current P06 implementation and ownership
 
 TSK-0045 issues per-path single-writer leases and public fingerprints before
 each edit. The structural tool, SMTP readers, QA helpers, documentation and CI
@@ -512,7 +547,7 @@ separate evidence. The existing catalog destination state is not independent
 approval for a new OpenBao copy. n8n producer and native-credential updates are
 handed to their owner; no private mutation or runtime service change is implied.
 
-### Current P05 implementation and ownership
+#### Current P05 implementation and ownership
 
 The documentation writer issues TSK-0044 and per-path baseline fingerprints
 before source edits. The SQL writer alone owns new 007/008 SQL plus its tests;
@@ -539,7 +574,7 @@ graphify freshness, source fingerprint comparison and local logical delivery.
 Operating services, real secrets, external mail, remote CI and P12 final
 acceptance remain NOT_RUN unless separately authorized and observed.
 
-### Current P04 implementation and ownership
+#### Current P04 implementation and ownership
 
 The P04 source writer integrates DAG, adapter and SQL changes. One infrastructure
 writer integrates the Airflow Compose/Dockerfile slice; QA, documentation and CI
@@ -626,32 +661,42 @@ operation, credential rotation, independent restore, hosted CI and final operato
 acceptance stay NOT_RUN unless separately observed. Compare the initial and
 final public manifests and review only affected rows after a source change.
 
-## Risks and Recovery
+### Stage Placement
 
-### Risks and Rollback
+The Plan places two stage-specific steps: W13 and W24 reverts go through a protected PR, and independent review and final verification precede local delivery. The Task records each run.
 
-Revert only the logical W13 documentation commit through a protected PR to
-restore the prior active contract; preserve historical Tasks and issued IDs.
-No service, credential, data, volume or host state changes, so no runtime/data
-rollback is claimed. Equal baseline, merged draft and historical runtime PASS
+## Risks
+
+### Risks and Mitigations
+
+Equal baseline, merged draft and historical runtime PASS
 must not be promoted to fresh validation. A concurrent shared-writer/path
 change invalidates affected inputs and requires a fresh scoped check.
 
-Revert W24 as its isolated documentation unit through the protected PR path;
-do not revert an independent owner’s implementation with it. Before a secret
+Before a secret
 rotation, data migration, retirement, or live upgrade, the owner records the
 concrete target, backup identity, restore boundary, compatibility result,
 operator/window, stop condition, and rollback. Missing prerequisites block
 only that dependent operation.
 
-## Related Documents
+### Escalation
+
+The Spec states: "Missing target/tool permission stops only that dependent operation."
+
+## Promotion Map
+
+### Durable Meaning
+
+The durable contract is the current request baseline and reconciliation recorded in SPEC-0212 and in the Tasks named in the Work Breakdown.
+
+### Owner and Receipt
+
+The owner is @buenhyden; the receipts are the Tasks named in the Work Breakdown.
 
 - [Master workspace reconciliation](tasks/tsk-0053-master-workspace-reconciliation.md)
 - [v14.7 W00 intake](tasks/tsk-0059-w00-v14-7-intake.md)
 - [v14.7 W01 governance](tasks/tsk-0060-w01-v14-7-governance.md)
 - [Existing supply-chain evidence owner](tasks/tsk-0052-supply-chain-evidence.md)
-- [Memory capacity and search](../0270-shared-memory-capacity-and-search/spec.md)
-
 - [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
 - [Opsflow data path Task](tasks/tsk-0043-opsflow-data-path.md)
 - [Opsflow notifier recovery Task](tasks/tsk-0044-opsflow-notifier-recovery.md)
@@ -662,9 +707,6 @@ only that dependent operation.
 - [Documentation, governance, QA and CI contract Task](tasks/tsk-0049-document-governance-qa-ci.md)
 - [Hermes provenance, trust and export Task](tasks/tsk-0050-hermes-provenance-trust-export.md)
 - [Opsflow first HOME installation Task](tasks/tsk-0051-opsflow-home-installation.md)
-- [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
-
-- [Spec](spec.md)
 - [R10 reconciliation Task](tasks/tsk-0007-r10-reconciliation.md)
 - [Infrastructure audit execution Task](tasks/tsk-0008-infra-audit-execution.md)
 - [Historical link classification Task](tasks/tsk-0010-historical-link-classification.md)
@@ -673,4 +715,3 @@ only that dependent operation.
 - [Completed P00 Task](tasks/tsk-0003-active-contract-and-exclusions.md)
 - [Historical baseline Task](tasks/tsk-0001-request-baseline-and-inventory.md)
 - [Historical twenty-item Task](tasks/tsk-0002-twenty-item-reconciliation.md)
-- [Integration plan](../0204-service-integration-security-and-operations/plan.md)
