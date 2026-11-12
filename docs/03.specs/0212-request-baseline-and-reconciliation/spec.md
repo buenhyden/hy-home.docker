@@ -183,9 +183,10 @@ the existing archive Tasks keep their own criteria.
 
 The owner decision of 2026-11-11 adds criterion 111 and W116 in TSK-0058 for
 the v14.2 W03 document templates, metadata and relations. The owner adopted
-the meaning of the package's draft 19-role table, not its headings: current
-Registry H2 headings stay, and only missing concepts are added as optional or
-conditional sections. Validator implementation is handed to W05.
+the meaning of the package's draft 19-role table, not its headings: it kept
+the current Registry H2 headings and added missing concepts only as optional
+or conditional sections. That heading choice is superseded by the 2026-11-12
+direction below. Validator implementation is handed to W05.
 
 The owner direction of 2026-11-12 adds criterion 112 and W117 in TSK-0059 for
 the v14.7 W00 intake, and sets the rule for every conflict the intake finds:

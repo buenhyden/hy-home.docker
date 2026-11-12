@@ -141,15 +141,15 @@ These are historical audit IDs. They are not current files, issues or Tasks.
 | OPEN-10 | UNVERIFIED | Belongs to W10. PRs 911, 915, 927 and 929 merged on 2026-11-10; deployment readback was not re-read |
 | OPEN-11 | RESIDUAL_CONFIRMED | TSK-0049 criteria 94 to 97 are accepted. The SPEC-0248 and SPEC-0249 manifest failures are resolved by later PASS rows. SPEC-0204 TSK-0011 L1193 resolves exit-124 rows that ran different leaves, so W05 must re-check it |
 | OPEN-12 | RESIDUAL_CONFIRMED | TSK-0052 criteria 104 and 105 are pending and both gates FAIL. It stays with TSK-0052 |
-| OPEN-13 | UNVERIFIED | The hosted checks above passed. The remote ruleset and the missing, stale and wrong-App cases were never exercised (`main-protection.md:106-108`). Belongs to W06 |
+| OPEN-13 | UNVERIFIED | The hosted checks above passed. The remote ruleset and the missing, stale and wrong-App cases were never exercised (`main-protection.md:107-114`). Belongs to W06 |
 | OPEN-14 | RESIDUAL_CONFIRMED | The runner exit 124 at `tsk-0040-workspace-inventory.md:440-443` has no fix tracked, and L451 calls the fix separate CI work. Belongs to W06; no full-run is approved |
 
 ### Conflicts corrected
 
 | ID | Existing | Current requirement | Change |
 | --- | --- | --- | --- |
-| C-01 | `documentation-protocol.md:327-329` allowed a Release Record profile to be added later through an ADR | The Release document role is removed and must not be re-registered under any name | The clause now forbids any Release document profile, template or generator, and keeps GitHub Release, tags, CHANGELOG and the release workflow. Existing guards already reject one: `registry.py:571-577`, `operations_catalog.py:1759-1780,2373-2379`, and tests `test_registry.py:1780,2347-2350` and `test_operations_catalog.py:392` |
-| C-02 | TSK-0058 Q-03 and the criterion 111 text kept the current Registry H2 headings | Common roles migrate to the common H2 and H3 section contract | TSK-0058 gains a dated "Q-03 superseded" section, and the Spec and Plan W116 text are corrected. Q-03 stays as the record of 2026-11-11 |
+| C-01 | `documentation-protocol.md:327-329` allowed a Release Record profile to be added later through an ADR | The Release document role is removed and must not be re-registered under any name | The clause now forbids any Release document profile, template or generator, and keeps GitHub Release, tags, CHANGELOG and the release workflow. The existing guards catch only a profile id `release`, the roles `operations/release` and `operation/release`, and a `release.template` source (`registry.py:571-577`, `operations_catalog.py:1759-1780`; tests `test_registry.py:1780,2347-2350`, `test_operations_catalog.py:392`). A renamed profile is a policy-only boundary until H-12 |
+| C-02 | TSK-0058 Q-03 and the Spec and Plan prose for W116 kept the current Registry H2 headings | Common roles migrate to the common H2 and H3 section contract | TSK-0058 gains a dated "Q-03 superseded" section. The Spec prose for criterion 111 now says the choice is superseded, the new criterion 112 paragraph states the rule, and the Plan W116 text is edited. Q-03 stays as the record of 2026-11-11 |
 
 ### Handoffs
 
@@ -171,6 +171,7 @@ Registry `common` keys and the validators in the same commit.
 | H-09 | W06 | Stage-QA cells: COMMIT-AFTER and PR-BEFORE are absent. PUSH-BEFORE refuses only `main`. `edited` and `ready_for_review` are not handled. The merge-before negative cases are unexercised. `leaf.commit-message-contract` expects `PR_BASE_SHA` and `PR_HEAD_SHA`, while `ci-quality.yml` sets `TRUSTED_*` (UNVERIFIED). MERGE-DURING is N/A: there is no merge queue |
 | H-10 | W06 | OPEN-14 runner exit 124 cause diagnosis, read-only first |
 | H-11 | W07 | Whether the provider renderer projects `glossary.md` (`canonical_sources`) into `.claude/` or `.codex/` is UNVERIFIED; check after H-01 |
+| H-12 | W05 | The Release guards match fixed names only. A guard that rejects a Release document role under another id, type or template name needs a rule, for example a profile `type` or template path ending in `release`, plus a renamed-profile negative test |
 
 ### Read denominator
 
@@ -197,6 +198,7 @@ those agents and are re-verified by each receiving work unit before it edits.
 | Intake document checks result | 112 | W117 | metadata-links-lifecycle | Working tree on the branch with the five changed files | PASS | Corpus lifecycle and occupancy violations 0; metadata check-changed against main selected 5, violations 0; links alignment and commands 906 documents, 8260 links, failures 0 | required | Intake document checks |
 | Release guard regression | 112 | W117 | regression | `test_operations_catalog`, `test_operations_taxonomy`, `test_registry` and `check-agent-governance-contract.py` after the C-01 protocol change | PASS | 263 tests OK; agent governance contract failures 0, exit 0 | optional | - |
 | Intake independent review | 112 | W117 | independent-document-review | Branch diff against 4cd25b95b | NOT_RUN | Awaiting a read-only reviewer | required | - |
+| Intake independent review result | 112 | W117 | independent-document-review | Fresh-context code-reviewer of `7f1c82ab9` and `ce56a7256` contents | PASS | APPROVED. Three minor findings fixed: a `main-protection.md` line citation, the superseded Spec prose for criterion 111, and the overstated guard coverage (H-12 added). 9 of 10 citations spot-checked matched | required | Intake independent review |
 
 ## Criterion Acceptance
 
@@ -207,12 +209,12 @@ those agents and are re-verified by each receiving work unit before it edits.
 ## Review and Completion
 
 In progress. The assessment and the two conflict corrections are recorded.
-Criterion 112 waits for the document checks, the independent review and owner
-acceptance.
+The document checks and the independent review pass. Criterion 112 waits for
+owner acceptance.
 
 Open, with owners:
 
-- H-01 to H-11.
+- H-01 to H-12.
 - OPEN-01, 02, 05, 09, 11, 12 and 14 (RESIDUAL_CONFIRMED).
 - OPEN-04 (BLOCKED_EVIDENCE).
 - OPEN-06, 08, 10 and 13 (UNVERIFIED).
