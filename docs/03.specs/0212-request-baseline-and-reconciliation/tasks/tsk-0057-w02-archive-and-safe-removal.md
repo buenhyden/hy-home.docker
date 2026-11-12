@@ -1,8 +1,8 @@
 ---
 title: "W02 Archive and Safe Removal Task"
-version: "0.12.0"
+version: "0.13.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-12"
 layer: "specs"
@@ -60,6 +60,7 @@ approval; it grants no removal or remote operation.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0057 | draft | ready | #owner-approved-local-execution |
 | SPEC-0212-TSK-0057 | ready | in-progress | #owner-approved-local-execution |
+| SPEC-0212-TSK-0057 | in-progress | completed | #review-and-completion |
 
 ### W02 obligation assessment 2026-11-11
 
@@ -224,7 +225,7 @@ repository, so ARC-09's Vault clause is N/A here.
 | ARC-02 | KEEP | Consumers: corpus lifecycle occupancy and `tests/validation/lifecycle/test_occupancy.py`, including its README-only exception (W02 consumer tests). Historical material is never loaded as an instruction (bootstrap precedence) |
 | ARC-03, QA-C04 | KEEP | Consumer: `spec_packages.py` rejects a changed terminal Task body or identity, exercised by `test_spec_packages` (W02 consumer tests). No terminal body is edited in this run, and nothing is removed without approval and recovery |
 | ARC-04 | KEEP (process) | Disposition stays inside this Task; no Spec or ledger is added for it |
-| ARC-05 | CHANGE | Precondition 5 now recovers a Git LFS or submodule body as its payload or submodule commit, and an unrecoverable one blocks the removal. The blocking-case scenarios are NOT_RUN (W02 blocking-case scenarios) |
+| ARC-05 | CHANGE | Precondition 5 now recovers a Git LFS or submodule body as its payload or submodule commit, and an unrecoverable one blocks the removal. The blocking-case scenarios passed after the owner approved them (W02 blocking-case scenarios result) |
 | ARC-06 | KEEP | Stage 98 is README-only and there is no move path. Consumer: the occupancy run and tests (W02 consumer tests) |
 | ARC-07 | KEEP (process) | No archive, retention-catalog or migration gate is reintroduced; precondition 5 stays a manual record |
 | ARC-08 | CHANGE, handed off | A dead subgraph of about 1,500 lines in `lifecycle/contract.py` has no production caller; the removal goes to W05 (H-W02-1) |
@@ -232,7 +233,7 @@ repository, so ARC-09's Vault clause is N/A here.
 | Self-removing Task (prompt section 3 item 4) | KEEP | Retention by status requires final evidence while the package is still editable, which freezes decisions, promotion and authorization first. Precondition 5 records the post-merge recovery in a Task that survives the removal, so a removed Task never has to store its own final hash |
 | Delete dry-run (prompt section 7 item 5) | KEEP (process) | The standing impact test is the registered gates: `package-retirement-unrecorded`, `identity-retired-not-reserved` and link alignment, which blocked the 2026-11-11 dry-run until reservation and link cutover. The scratch recovery dry-run is this Task's practice, not a rule (W02 removal dry-run, W02 SPEC-0267 recovery dry-run) |
 | Registry retention and archive vocabulary (prompt section 3 item 1) | GAP, handed off | `archive_source_prefixes` is inert. The archive frontmatter fields (`archived_from`, `archived_at`, `archive_reason`, `archive_disposition`, `archived_commit`, `archived_blob`, `archive_authorizations`) remain in the Registry, the frontmatter schema and `metadata/profile.py`, although Stage 98 holds no bodies. `archive_retention.disposition_entry_statuses` stays in use: `lifecycle/occupancy.py`, `spec_packages.py` and `registry.py` read it. W03 assesses each field's consumers (H-W02-2) |
-| W02-A, R147-08, WP-20 | PARTIAL | SPEC-0267 is removed after promotion, approval and a recovery dry-run (SPEC-0267 removal). The post-merge byte comparison is pending |
+| W02-A, R147-08, WP-20 | CHANGE | SPEC-0267 is removed after promotion, approval and a recovery dry-run (SPEC-0267 removal). The post-merge byte comparison passed (W02 SPEC-0267 post-merge recovery) |
 | W02-B, WP-19 | KEEP | The manual precondition 5 record and `archive_readiness_findings` stay separate. The latter is an on-read library function, reached only by `test_generation6.py`, with no CLI or gate. The user's Git-only goal and tool archive defaults are separate decisions: the protocol's Document Retention and Retirement summarizes and deletes, keeps version history as the record and leaves Stage 98 without bodies |
 | OPEN-ARCHIVE | No conflict | SPEC-0267 was held under Q-04 until its promotion passed, then removed in `06bf2e201`. No retention exception or authority conflict remains open |
 
@@ -380,14 +381,16 @@ Retirement precondition 5 is met for SPEC-0267.
 
 ## Review and Completion
 
-In progress. The assessment, the dry-run, the reproduced-gap changes and the
-removal of 0226, 0266, 0268 and 0269 are recorded, with their criterion state
-and post-merge recovery.
+Completed on 2026-11-12. The assessment, the dry-run, the reproduced-gap
+changes and the removal of 0226, 0266, 0268 and 0269 are recorded, with their
+criterion state and post-merge recovery. Criterion 110 is accepted and every
+required observation is resolved, so the Task closes as `completed`.
 
 v14.7: SPEC-0267 is removed in `06bf2e201`, and its post-merge recovery
 passed after PR 960 merged. The blocking-case scenarios passed after the owner
-approved them. The owner accepted criterion 110 on 2026-11-12. Open:
-H-W02-1 (W05) and H-W02-2 (W03).
+approved them. The owner accepted criterion 110 on 2026-11-12. H-W02-1 (W05)
+and H-W02-2 (W03) are recorded and executed in their writers' own Tasks, not
+here.
 
 ## Related Documents
 
