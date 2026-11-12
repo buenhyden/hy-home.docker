@@ -271,14 +271,20 @@ evidence; surrounding instructions remain current and validated normally.
 
 #### Role-Specific Authoring
 
-- Documents of the same role share one common form: the H2 and H3 sections of
-  `COMMON-DOC-FORM-1` 1.0.0, whose exact names and order the Registry declares
-  per profile (`required_sections`, `ordered_sections`,
-  `required_subsections`, `optional_subsections`). A role moves to it in one
-  change that includes its completed and approved documents, and the old form
-  is then rejected. A product difference stays only as a conditional extension
-  that names its condition, owner, check, review date and removal criterion.
-  Different roles are never forced into one form.
+- Each common role moves to one form, the H2 and H3 sections of
+  `COMMON-DOC-FORM-1` 1.0.0; different roles are never forced into one form.
+  The Registry declares each profile's sections (`required_sections`,
+  `optional_sections`, `required_subsections`, `optional_subsections`), and
+  the validator checks the order of required sections and subsections only.
+  A role moves in one change that covers all of its current documents,
+  completed and approved ones included, and keeps their existing procedures,
+  commands and evidence in the matching section. From then on the old form is
+  rejected for that role, as is a section body that is only TODO, TBD, N/A or
+  `-`; an inapplicable section says why. A role not yet moved keeps its
+  `SDLC-COMMON-r10-local-v1` H2 sections until it moves, and SPEC-0212
+  TSK-0059 records which roles have moved. A product difference from the form
+  is an Exception under [quality standards](quality-standards.md), with its
+  approved condition, scope, reason, end or review condition and verification.
 - A Requirement Package combines PRD, SRS, and implementation-independent
   interface perspectives. A Description owns current structure; an ADR owns one
   consequential choice. Preserve accepted decisions and use explicit

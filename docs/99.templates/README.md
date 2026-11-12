@@ -105,17 +105,12 @@ fallback을 뜻하며 현재 작성 대상이 아닙니다. Stage 01~03 lifecycl
 
 ### Common Role Forms
 
-규범 정본은 [문서 프로토콜](../../.agents/governance/documentation-protocol.md#role-specific-authoring)이며
-이 절은 그 요약이다. 공통 역할 16개는 공통 절 계약 `COMMON-DOC-FORM-1` 1.0.0의 H2·H3로 옮긴다.
-역할별 필수 H2와 순서는 Registry의 `required_sections`와 `ordered_sections`가,
-H2 아래 필수·선택 H3와 순서는 `required_subsections`와
-`optional_subsections`가 소유한다. 복사 양식과 현행 본문은 같은 순서를 따른다.
-절 본문이 TODO·TBD·N/A·`-` 하나뿐이면 거부되며, 해당 없음은 이유와 함께 적는다.
-2026-11-12 owner 결정에 따라 구 양식은 허용하지 않는다. 한 역할을 옮길 때
-완료·승인된 문서를 포함한 그 역할의 모든 현행 문서를 같은 변경에서 옮기고,
-기존 고유 절차·명령·증거는 해당 절에 보존한다. 아직 옮기지 않은 역할은
-이전 지역 개정 `SDLC-COMMON-r10-local-v1`의 H2를 유지한다. 진행 상황은
-SPEC-0212 TSK-0059가 기록하며, 이 표기는 네 저장소 공동 채택을 뜻하지 않는다.
+공통 역할 16개를 공통 절 계약 `COMMON-DOC-FORM-1` 1.0.0으로 옮기는 규칙은
+[문서 프로토콜](../../.agents/governance/documentation-protocol.md#role-specific-authoring)이
+정한다. 옮기는 단위, 구 양식과 빈 절의 거부, 아직 옮기지 않은 역할의 양식,
+예외 조건이 모두 그곳에 있다. 역할별 절 이름은 Registry가 선언하며, 진행
+상황은 SPEC-0212 TSK-0059가 기록한다. 이 표기는 네 저장소 공동 채택을 뜻하지
+않는다.
 
 ### Identity and Lifecycle Rules
 

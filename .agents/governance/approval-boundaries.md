@@ -77,8 +77,8 @@ redaction boundary are defined by
   revision, and the repositories it applies to. Each repository records its own
   adoption in its own Task; this repository never decides or records adoption
   for another. A revision is draft until that approval, approved after it, and
-  adopted only once this repository's producers and consumers implement it and
-  are verified; partial adoption is called partial. The adoption record names
+  adopted only once this repository's producers and consumers implement it on
+  `main` and are verified; partial adoption is called partial. The adoption record names
   the contract id and version, the single authoring owner, who approved it and
   when, the scope, exceptions, the effective date, migration, rollback and the
   revision each consumer reads.
