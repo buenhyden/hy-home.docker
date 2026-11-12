@@ -14,47 +14,70 @@ created: "{{CREATED}}"
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->
 <!-- Author prompt: Write body prose in English; keep headings, paths, identifiers, and commands unchanged. -->
+<!-- Author prompt: Describe the current structure only. Link decisions to their ADRs instead of restating them, and mark historical material as non-authoritative. -->
 
 # {{TITLE}}
 
 ## Overview
 
-{{CONTEXT_AND_STAKEHOLDERS}}
+### Purpose and Readers
 
-## Scope
+{{PURPOSE_AND_READERS}}
 
-{{SYSTEM_BOUNDARIES}}
+### System Boundary
 
-## Structure
+{{SYSTEM_VERSION_AND_ENVIRONMENT_BOUNDARY}}
 
-### Architecture
+## Context and Constraints
 
-{{COMPONENTS}}
+### Context
 
-## Runtime and Deployment
+<!-- Author prompt: Name the external actors, neighbouring systems and data flows across the boundary. -->
 
-### Runtime View
+{{EXTERNAL_ACTORS_SYSTEMS_AND_DATA_FLOWS}}
 
-{{DATA_FLOW}}
+### Constraints
 
-### Deployment View
+{{REQUIREMENT_QUALITY_TECHNICAL_AND_SECURITY_CONSTRAINTS}}
 
-{{DEPLOYMENT_VIEW}}
+## Current Structure
 
-## Quality and Risks
+### Building Blocks
 
-### Quality Attributes
+{{COMPONENTS_RESPONSIBILITIES_AND_OWNERS}}
 
-{{QUALITY_ATTRIBUTES}}
+### Runtime and Deployment
 
-### Risks
+{{RUNTIME_DEPLOYMENT_AND_ENVIRONMENT_DIFFERENCES}}
 
-{{RISKS}}
+## Interfaces
 
-### Evolution
+### Contracts
 
-{{EVOLUTION}}
+{{INPUTS_OUTPUTS_CALLS_SCHEMAS_AND_COMPATIBILITY}}
 
-## Related Documents
+### Failure Boundaries
 
-{{REQUIREMENTS_DECISIONS_AND_SPECS}}
+{{FAILURE_RETRY_ISOLATION_AND_RECOVERY_BOUNDARIES}}
+
+## Decisions
+
+### Decision Links
+
+{{EFFECTIVE_ADRS_AND_REASONS}}
+
+### Quality and Risks
+
+{{QUALITY_SCENARIOS_RISKS_AND_OWNERS}}
+
+## Traceability
+
+### Requirement Mapping
+
+{{REQUIREMENT_AND_DESIGN_CONSTRAINT_LINKS}}
+
+### Currentness and Lineage
+
+<!-- Author prompt: State what is current, what it replaced and where history lives; historical links are non-authoritative. -->
+
+{{CURRENT_VERSION_REPLACEMENTS_AND_HISTORY}}
