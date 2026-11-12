@@ -5395,6 +5395,130 @@ class TerminalTaskBodyTests(unittest.TestCase):
         )
         self.assertTrue(self._same(legacy, keeper))
 
+    def test_a_recorded_pointer_keeps_its_target_heading(self) -> None:
+        row = "| SPEC-0001 | draft | approved | {} |"
+        table = "| Artifact | From | To | Evidence |\n| --- | --- | --- | --- |\n" + row
+        work = "#### Execution Items\n\nItem rows.\n\n#### Notes\n\nWorked on it."
+        for label, pointer in {
+            "table cell": row.format("#evidence"),
+            "migration cell": "| 2026-11-13 | " + "a" * 40 + " | #evidence: Moved. |",
+            "link": "See [the evidence](#evidence).",
+        }.items():
+            legacy = _LEGACY_TASK_BODY.replace(
+                "Worked on it.",
+                f"Worked on it.\n\n{table.split(chr(10))[0]}\n{pointer}",
+            )
+            work_moved = f"{work}\n\n{table.split(chr(10))[0]}\n{pointer}"
+            bare = _common_task_body(
+                {"Work Performed": work_moved, "Results": "| Evidence | Result |"}
+            )
+            kept = _common_task_body(
+                {
+                    "Work Performed": work_moved,
+                    "Results": "#### Evidence\n\n| Evidence | Result |",
+                }
+            )
+            with self.subTest(label=label):
+                self.assertFalse(self._same(legacy, bare))
+                self.assertTrue(self._same(legacy, kept))
+        # A pointer to a heading that moves with its text, or to the slug of a
+        # common H2, still resolves without a keeper.
+        notes = _LEGACY_TASK_BODY.replace(
+            "Item rows.", "Item rows. See [notes](#notes) and [owner](#handoff)."
+        ).replace(
+            "## Related Documents",
+            "## Handoff\n\nNext owner text.\n\n## Related Documents",
+        )
+        moved = _common_task_body(
+            {
+                "Work Performed": "#### Execution Items\n\nItem rows. See "
+                "[notes](#notes) and [owner](#handoff).\n\n#### Notes\n\nWorked on it.",
+                "Next Owner": "Next owner text.",
+            }
+        )
+        self.assertTrue(self._same(notes, moved))
+
+    def test_joined_legacy_sections_stay_apart_in_the_new_body(self) -> None:
+        legacy = _LEGACY_TASK_BODY
+        apart = "#### Objective\n\nDo the thing.\n\n- [Spec](../spec.md)"
+        glued = "#### Objective\n\nDo the thing.\n- [Spec](../spec.md)"
+        kept = "#### Objective\n\nDo the thing.\n\n#### Related Documents\n- [Spec](../spec.md)"
+        self.assertTrue(
+            self._same(legacy, _common_task_body({"Objective and Parent": apart}))
+        )
+        self.assertTrue(
+            self._same(legacy, _common_task_body({"Objective and Parent": kept}))
+        )
+        self.assertFalse(
+            self._same(legacy, _common_task_body({"Objective and Parent": glued}))
+        )
+        # Two empty legacy headings between the sections need one blank, once.
+        chain = _LEGACY_TASK_BODY.replace(
+            "## Related Documents", "## Objective\n\n## Related Documents"
+        )
+        self.assertTrue(
+            self._same(chain, _common_task_body({"Objective and Parent": apart}))
+        )
+        self.assertFalse(
+            self._same(chain, _common_task_body({"Objective and Parent": glued}))
+        )
+
+    def test_a_kept_section_may_demote_its_headings_by_two_levels(self) -> None:
+        legacy = _LEGACY_TASK_BODY.replace(
+            "## Evidence\n\n| Evidence | Result |",
+            "## Evidence\n\n### Run A\n\n| Evidence | Result |\n\n"
+            "#### Detail\n\nDetail text.\n\n### Run B\n\nSecond run.",
+        )
+
+        def moved(results: str) -> str:
+            return _common_task_body({"Results": results})
+
+        run_a = "| Evidence | Result |"
+        for label, results in {
+            "all one level": "#### Evidence\n\n#### Run A\n\n"
+            f"{run_a}\n\n##### Detail\n\nDetail text.\n\n#### Run B\n\nSecond run.",
+            "all two levels": "#### Evidence\n\n##### Run A\n\n"
+            f"{run_a}\n\n###### Detail\n\nDetail text.\n\n##### Run B\n\nSecond run.",
+        }.items():
+            with self.subTest(accept=label):
+                self.assertTrue(self._same(legacy, moved(results)))
+        for label, results in {
+            "two levels without a keeper": "##### Run A\n\n"
+            f"{run_a}\n\n###### Detail\n\nDetail text.\n\n##### Run B\n\nSecond run.",
+            "one and two levels mixed": "#### Evidence\n\n##### Run A\n\n"
+            f"{run_a}\n\n###### Detail\n\nDetail text.\n\n#### Run B\n\nSecond run.",
+            "three levels": "#### Evidence\n\n###### Run A\n\n"
+            f"{run_a}\n\n####### Detail\n\nDetail text.\n\n###### Run B\n\nSecond run.",
+        }.items():
+            with self.subTest(reject=label):
+                self.assertFalse(self._same(legacy, moved(results)))
+        # A legacy H5 cannot move two levels, so that choice is invalid.
+        deep = legacy.replace("Second run.", "Second run.\n\n##### Deep\n\nDeep text.")
+        for label, deep_heading in {
+            "one level": "###### Deep",
+            "two levels": "####### Deep",
+        }.items():
+            results = (
+                "#### Evidence\n\n##### Run A\n\n"
+                f"{run_a}\n\n###### Detail\n\nDetail text.\n\n##### Run B\n\n"
+                f"Second run.\n\n{deep_heading}\n\nDeep text."
+            )
+            with self.subTest(beyond=label):
+                self.assertFalse(self._same(deep, moved(results)))
+        # The shift is per legacy section: Overview may use two levels and
+        # Related Documents one.
+        legacy = _LEGACY_TASK_BODY.replace(
+            "## Related Documents\n\n- [Spec](../spec.md)",
+            "## Related Documents\n\n### Links\n\n- [Spec](../spec.md)",
+        )
+        parent = (
+            "#### Overview\n\n##### Objective\n\nDo the thing.\n\n"
+            "#### Related Documents\n\n#### Links\n\n- [Spec](../spec.md)"
+        )
+        self.assertTrue(
+            self._same(legacy, _common_task_body({"Objective and Parent": parent}))
+        )
+
     def test_unmappable_legacy_bodies_stay_byte_strict(self) -> None:
         unknown = _LEGACY_TASK_BODY + "\n## Mystery\n\nKept.\n"
         moved = _common_task_body({"Remaining Conditions": "All done.\n\nKept."})

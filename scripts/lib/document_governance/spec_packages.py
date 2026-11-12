@@ -4246,14 +4246,20 @@ def _task_items(body: str, legacy: bool) -> dict[str, list[tuple]] | None:
 def _same_task_bucket(old: list[tuple], new: list[tuple]) -> bool:
     """Match legacy items to common items; an anchor stands for an optional H4.
 
-    A keeper must sit at its anchor's position with its text. An unkept anchor
-    may leave one blank where the two sections joined. A keeper cannot repeat a
-    common H2 name, whose slug the common H2 already owns.
+    A keeper must sit at its anchor's position with its text. Where an unkept
+    anchor joins two content lines, the new body must keep one blank between
+    them. A keeper cannot repeat a common H2 name, whose slug the common H2
+    already owns. The headings of a kept section may move one level deeper
+    than the usual one, all together, so a section made only of subsections
+    still has them under its keeper.
     """
 
-    def walk(i: int, j: int) -> bool:
+    def walk(i: int, j: int, shift: int = 0) -> bool:
         while i < len(old) and old[i][0] != "anchor":
-            if j >= len(new) or new[j] != old[i]:
+            item = old[i]
+            if item[0] == "heading":
+                item = ("heading", item[1] + shift, item[2])
+            if j >= len(new) or new[j] != item:
                 return False
             i, j = i + 1, j + 1
         if i == len(old):
@@ -4263,16 +4269,40 @@ def _same_task_bucket(old: list[tuple], new: list[tuple]) -> bool:
             text not in _TASK_COMMON_FORM
             and j < len(new)
             and new[j] == ("heading", 4, text)
-            and walk(i + 1, j + 1)
+            and any(walk(i + 1, j + 1, shift) for shift in (0, 1))
         ):
             return True
-        return walk(i + 1, j + (j < len(new) and new[j] == _BLANK))
+        blank = j < len(new) and new[j] == _BLANK
+        joins_lines = (
+            j > 0
+            and new[j - 1][0] == "line"
+            and i + 1 < len(old)
+            and old[i + 1][0] == "line"
+        )
+        return (blank or not joins_lines) and walk(i + 1, j + blank)
 
     return walk(0, 0)
 
 
+_ANCHOR_POINTER = re.compile(r"(?<![\w&/#])#([a-z0-9][a-z0-9_-]*)", re.IGNORECASE)
+
+
+def _anchor_pointers(body: str) -> frozenset[str]:
+    """Collect the same-file ``#slug`` pointers of a body's visible lines."""
+    return frozenset(
+        "#" + match.group(1).lower()
+        for line in _completion_visible_lines(body)
+        if re.match(r"#{1,6} ", line) is None
+        for match in _ANCHOR_POINTER.finditer(line)
+    )
+
+
 def _same_task_body(before: str, after: str) -> bool:
-    """Match a terminal Task body, relaxing only a legacy to common-form move."""
+    """Match a terminal Task body, relaxing only a legacy to common-form move.
+
+    A pointer that resolved to a heading before the move must still resolve to
+    one afterwards, because a keeper heading is otherwise optional.
+    """
     if before == after:
         return True
     old, new = _task_items(before, True), _task_items(after, False)
@@ -4281,6 +4311,10 @@ def _same_task_body(before: str, after: str) -> bool:
         and new is not None
         and old.keys() == new.keys()
         and all(_same_task_bucket(old[key], new[key]) for key in old)
+        and not (
+            _anchor_pointers(before)
+            & _document_anchor_references(before) - _document_anchor_references(after)
+        )
     )
 
 
