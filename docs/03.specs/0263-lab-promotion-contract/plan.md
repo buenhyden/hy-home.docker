@@ -665,4 +665,5 @@ The LAB folder layout, manifest and promotion readiness contract live in `lab.py
 Owner @buenhyden. The receipts are TSK-0001, TSK-0002 and TSK-0003, named in the Work Breakdown Task column.
 
 - [Task](tasks/tsk-0001-lab-promotion-contract.md)
+- [Reservations Task](tasks/tsk-0002-lab-promotion-reservations.md)
 - [supabase LAB retirement Task](tasks/tsk-0003-retire-supabase-lab.md)

@@ -77,7 +77,7 @@ A hook test that relied on the boundary fails in W1.
 
 ### Escalation
 
-The Spec states: "This Task pushes and merges nothing."
+The Spec states that this Task pushes and merges nothing.
 
 ## Promotion Map
 

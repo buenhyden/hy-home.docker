@@ -1,10 +1,10 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.5.1"
+version: "2.5.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "templates"
 ---
 
@@ -125,7 +125,10 @@ unit, 실제 check와 input, result, location, 그리고 같은 Task에서 crite
 `Criterion Acceptance` 표에 둡니다. Plan의 `Work Breakdown`은 여섯 열이고
 새 Task의 `Evidence`는 필수성을 포함한 아홉 열이고 수용 표에는 현재 owner를
 기록합니다. 이전 판본의 보존 기록은 당시 표로 읽습니다. 정확한 열 순서와 vocabulary는 Registry가
-소유합니다.
+소유합니다. Registry `common`의 절 이름 값(`plan_section` 등)은 이전 H2 이름을
+가리키는 논리 이름입니다. 공통 양식으로 옮긴 문서에서는 같은 절이 새 H2 아래
+H3로 있으며(예: `Implementation Strategy` 아래 `Work Breakdown`), 검사기는 두
+형식 중 정확히 하나만 받아들입니다.
 Lifecycle Events는 실제 직접 전이와 같은 Task의 evidence anchor만 기록하며
 승인 source를 인증하지 않습니다. 승인·검토·실행의 의미는
 [SDLC](../../.agents/governance/sdlc.md)가 소유합니다.

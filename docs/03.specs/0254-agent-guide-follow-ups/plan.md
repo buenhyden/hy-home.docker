@@ -77,7 +77,7 @@ A narrower rule would shrink selection for a path that previously selected every
 
 ### Escalation
 
-The Spec states: "This Task pushes and merges nothing."
+The Spec states that this Task pushes and merges nothing.
 
 ## Promotion Map
 
