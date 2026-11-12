@@ -1,10 +1,10 @@
 ---
 title: "hy-home.k8s Integration Operations Policy"
-version: "1.4.0"
+version: "1.5.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-12"
 layer: "operations"
 artifact_id: "POL-0096"
 parent_ids:
@@ -55,7 +55,10 @@ OpenBao 인증 경로를 사용한다. 이 정책은 그 집합과 인증 방식
 - Loki `3100`, Tempo `3200`, `mng-valkey` `26379`, `alloy` `4317`/`4318`는 gateway 인증 없이 `HOST_LAN_BIND_IP`
   (기본값 `192.168.0.13`) 호스트 LAN 주소에만 게시된 상태를 유지한다
   (Valkey는 비밀번호를 유지한다). 클러스터를 위해 허용한 LAN 노출이며
-  범위를 좁히려면 엔드포인트 추가와 같은 수준의 검토가 필요하다. 같은
+  범위를 좁히려면 엔드포인트 추가와 같은 수준의 검토가 필요하다. 송신자가
+  LAB에 있고 Loki와 Tempo에는 자체 인증이 없으므로 owner가 2026-11-07 Loki,
+  Tempo, Alloy의 이 노출을 수용했다(SPEC-0267). 송신자에게 token이나 인증서를
+  전달할 수 있는 LAB 변경, 또는 이 정책의 변경 때 다시 검토한다. 같은
   주소에 게시되는 gateway 80/443을 빼면, 나머지 host 포트는 `127.0.0.1`에만
   게시된다.
 - 값은 저장소 경계를 파일이나 보호된 채널을 통해서만 넘긴다. chat, issue

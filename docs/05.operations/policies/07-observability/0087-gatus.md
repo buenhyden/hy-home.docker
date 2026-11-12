@@ -1,10 +1,10 @@
 ---
 title: "Gatus Policy"
-version: "0.4.0"
+version: "0.5.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 layer: "operations"
 artifact_id: "POL-0087"
 parent_ids:
@@ -32,7 +32,12 @@ Gatus는 native OIDC와 지속적인 probe history를 가진 HOME availability m
 - UI에는 native `home-gatus` OIDC와 `gateway-standard-chain@file`을 사용한다.
   `sso-auth@file`, local-password fallback, 넓은 subject allowlist를 추가하지 않는다.
   `/metrics`는 브라우저 route 밖에 두고 승인된 모니터링 설계 없이는 외부에 노출하지
-  않는다.
+  않는다. 내부에서는 main 포트 `8080`의 `/metrics`가 `edge_net`, `mng_data_net`,
+  `obs_net`의 모든 peer에게 인증 없이 열려 있다. upstream이 OIDC router 밖에서
+  제공하고 저장소 patch(`metrics-remains-public-for-internal-scrape`)가 내부 scrape를
+  위해 공개로 유지하므로 owner가 2026-11-07 이 노출을 수용했다(SPEC-0267).
+  `oidc-hardening.patch`를 건드리는 Gatus 갱신이나 upstream metrics 인증이 생기면
+  다시 검토한다.
 - probe URL, response body, credential 자료, 원시 SQLite 데이터를 Task 증거에 기록하지
   않는다. probe 성공은 endpoint 증거이지 애플리케이션 수용이 아니다.
 - SQLite를 stateful로 취급한다. 교체 전에 조율된 일관된 backup과 격리된 restore 증명을

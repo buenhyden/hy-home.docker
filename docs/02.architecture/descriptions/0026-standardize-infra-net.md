@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "1.6.7"
+version: "1.7.0"
 type: "sdlc/architecture-description"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-12"
 layer: "architecture"
 artifact_id: "AD-0026"
 parent_ids:
@@ -63,6 +63,10 @@ networks beside it, then it left the services and the root.
 | `redisinsight_ingress_net` | 10.250.18.0/24, internal, isolated, dynamic from .128/25 | Traefik and RedisInsight (fixed .3) | gateway → RedisInsight only; no host address |
 | `<service>_ingress_net` (16) | 10.250.24.0/24–10.250.40.0/24, internal, isolated, dynamic from .128/25 | Traefik and one SSO-only backend each (SPEC-0266, ADR-0061) | gateway → that backend only |
 | `seaweedfs_s3_metrics_net` | 10.250.41.0/24, internal, isolated | `seaweedfs-s3`, Prometheus, Alloy | metrics/pprof scrape of `seaweedfs-s3:9327`; reaches no master/volume/filer API |
+| `oauth2_proxy_metrics_net` | 10.250.43.0/24, internal, isolated, dynamic from .128/25 | OAuth2 Proxy (metrics listener bound to fixed .2, alias `oauth2-proxy-metrics`) and Prometheus | metrics scrape of 44180 only (SPEC-0267) |
+| `keycloak_management_net` | 10.250.44.0/24, internal, isolated, dynamic from .128/25 | Keycloak (management listener bound to fixed .2, alias `keycloak-management`), Prometheus and Gatus | health and metrics on 9000 only (SPEC-0267) |
+| `grafana_pprof_net` | 10.250.45.0/24, internal, isolated, dynamic from .128/25 | Grafana (pprof bound to fixed .2, alias `grafana-pprof`) and Alloy | profile scrape of 6060 only (SPEC-0267) |
+| `traefik_metrics_net` | 10.250.46.0/24, internal, isolated, dynamic from .128/25 | Traefik (metrics and ping entrypoint bound to fixed .2, alias `traefik-metrics`) and Prometheus | metrics scrape of 8082 only (SPEC-0267) |
 | `seaweedfs_metrics_net` | 10.250.19.0/24, internal, isolated | Prometheus and the SeaweedFS master, volume and filer | metrics scrape only |
 | `n8n_blog_ingest_net` | 10.250.20.0/24, internal, isolated | `n8n-worker` and `blog-ingestion` | worker → Blog-data ingestion Gateway |
 | `blog_export_net` | 10.250.21.0/24, internal, isolated | Traefik and `blog-ingestion` | exact-path Traefik routes → Gateway; no published port |
