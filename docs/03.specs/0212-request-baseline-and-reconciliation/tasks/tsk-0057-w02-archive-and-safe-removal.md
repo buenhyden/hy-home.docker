@@ -314,7 +314,9 @@ The re-check noted, without blocking:
 - Each consumer-only network also lets the listener's service reach the
   consumer.
 
-Both are recorded for the owner.
+Both are recorded for the owner. On 2026-11-12 the owner chose to record the
+Loki and Tempo gRPC exposure as an accepted risk in POL-0043 and POL-0049,
+outside FR-0004.
 
 ### v14.7 handoffs
 
