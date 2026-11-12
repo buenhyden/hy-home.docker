@@ -1,50 +1,34 @@
 ---
 title: "Scripts Agent Guide"
-version: "0.2.2"
+version: "0.3.0"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-12"
 ---
 
 # Scripts Agent Guide
 
-## Overview
+## Scope
+
+### Allowed Surface
 
 `scripts/` holds the executable gates: validators, hardening checks, hooks,
 operation commands and their shared libraries. This guide routes an agent that
 changes or runs them. The human guide is [README.md](README.md).
 
-## Scope
-
 `scripts/validation/`, `scripts/hardening/`, `scripts/hooks/`,
 `scripts/knowledge/`, `scripts/operations/`, `scripts/security/`,
 `scripts/lib/<domain>/` and `scripts/manifest.yaml`.
+
+### Non-goals
+
 Policy text is out of scope; a script implements a canonical rule and never
 becomes its owner.
 
-## Working Rules
+## Required Policies
 
-- Register every new, moved or retired script in `scripts/manifest.yaml`; the
-  Script Manifest check rejects an unregistered or orphaned script.
-- Give a change to `scripts/lib/<domain>/` a behavior test in
-  `tests/lib/<domain>/`, and a CLI or entrypoint change a test in
-  `tests/validation/`.
-- Inspect the selected gates with
-  `python3 scripts/validation/run-ci-gate.py --profile changed --explain`
-  before running them.
-- Never run `pre-commit run` directly. Use
-  `scripts/validation/run-ci-precommit.sh --mode local-staged` before a commit.
-  An all-files run follows the
-  [execution boundary](../.agents/governance/quality-standards.md#4-execution-boundary)
-  and its `scripts/validation/run-agent-precommit-all-files.sh` route.
-- Generated provider surfaces under `.claude/` and `.codex/`, and each folder
-  `CLAUDE.md` import shim beside a folder `AGENTS.md`, come from
-  `scripts/operations/provider_surface_renderer.py`; re-render them, never
-  hand-edit them.
-- A script never prints, logs or writes a secret value.
-
-## Canonical References
+### Canonical Sources
 
 - [Bootstrap](../.agents/governance/bootstrap.md),
   [quality standards](../.agents/governance/quality-standards.md),
@@ -63,14 +47,63 @@ becomes its owner.
 - Provider loading: [Claude adapter](../.claude/provider.md),
   [Codex adapter](../.codex/provider.md).
 
+### Local Obligations
+
+- Register every new, moved or retired script in `scripts/manifest.yaml`; the
+  Script Manifest check rejects an unregistered or orphaned script.
+- Give a change to `scripts/lib/<domain>/` a behavior test in
+  `tests/lib/<domain>/`, and a CLI or entrypoint change a test in
+  `tests/validation/`.
+
+## Workflow
+
+### Inspect and Change
+
+- Inspect the selected gates with
+  `python3 scripts/validation/run-ci-gate.py --profile changed --explain`
+  before running them.
+
+### Handoff
+
+Record progress, decisions and evidence in the current Task, and leave the
+next owner named there. Human-facing and related documents:
+
+- [Scripts README](README.md)
+- [Tests agent guide](../tests/AGENTS.md)
+
 ## Verification
+
+### Required Checks
 
 - `python3 scripts/validation/check-script-manifest.py`
 - `python3 scripts/operations/provider_surface_renderer.py --check`
 - `python3 scripts/validation/check-agent-governance-contract.py`
 - `bash scripts/validation/run-ci-precommit.sh --mode local-staged`
 
-## Related Documents
+### Evidence and Limits
 
-- [Scripts README](README.md)
-- [Tests agent guide](../tests/AGENTS.md)
+Record each check's command, revision and exit in the current Task. These
+checks are static or local; they do not prove runtime state, native provider
+delivery, remote enforcement or owner acceptance.
+
+## Safety
+
+### Protected Actions
+
+- Never run `pre-commit run` directly. Use
+  `scripts/validation/run-ci-precommit.sh --mode local-staged` before a commit.
+  An all-files run follows the
+  [execution boundary](../.agents/governance/quality-standards.md#4-execution-boundary)
+  and its `scripts/validation/run-agent-precommit-all-files.sh` route.
+- Generated provider surfaces under `.claude/` and `.codex/`, and each folder
+  `CLAUDE.md` import shim beside a folder `AGENTS.md`, come from
+  `scripts/operations/provider_surface_renderer.py`; re-render them, never
+  hand-edit them.
+- A script never prints, logs or writes a secret value.
+
+### Stop and Escalate
+
+Stop and report when this guide and its canonical owner disagree (the owner
+wins and this guide is corrected), when an action needs an approval that
+[approval boundaries](../.agents/governance/approval-boundaries.md)
+has not granted, or when a required check fails.

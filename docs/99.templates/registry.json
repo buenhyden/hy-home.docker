@@ -2687,16 +2687,35 @@
         "created"
       ],
       "required_sections": [
-        "Overview",
         "Scope",
-        "Working Rules",
-        "Canonical References",
+        "Required Policies",
+        "Workflow",
         "Verification",
-        "Related Documents"
+        "Safety"
       ],
-      "optional_sections": [
-        "Exceptions"
-      ],
+      "optional_sections": [],
+      "required_subsections": {
+        "Scope": [
+          "Allowed Surface",
+          "Non-goals"
+        ],
+        "Required Policies": [
+          "Canonical Sources",
+          "Local Obligations"
+        ],
+        "Workflow": [
+          "Inspect and Change",
+          "Handoff"
+        ],
+        "Verification": [
+          "Required Checks",
+          "Evidence and Limits"
+        ],
+        "Safety": [
+          "Protected Actions",
+          "Stop and Escalate"
+        ]
+      },
       "lifecycle_id": "agent-guide",
       "traceability": {},
       "exceptions": [],
@@ -2711,7 +2730,8 @@
         "tests/AGENTS.md"
       ],
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "free_form_sections": false
     },
     {
       "id": "governance-provider-index",

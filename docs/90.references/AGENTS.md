@@ -1,44 +1,32 @@
 ---
 title: "References Agent Guide"
-version: "0.2.0"
+version: "0.3.0"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-12"
 ---
 
 # References Agent Guide
 
-## Overview
+## Scope
+
+### Allowed Surface
 
 Stage 90 holds non-normative evidence: research, audit and data packages that
 help other stages judge facts but never decide them. This guide routes an
 agent that records evidence here. The human guide is [README.md](README.md).
 
-## Scope
-
 `research/`, `audits/` and `data/` packages (`RES-####`, `AUD-####`,
-`DATA-####`) with their members and category READMEs. A current rule, decision
-or procedure never lives here.
+`DATA-####`) with their members and category READMEs.
 
-## Working Rules
+### Non-goals
 
-- Edit only with an authorizing request; Stage documents are read-only by
-  default.
-- Create a package from its pack template
-  ([research](../99.templates/templates/references/research-pack.template.md),
-  [audit](../99.templates/templates/references/audit-pack.template.md),
-  [data](../99.templates/templates/references/data-pack.template.md)) and each
-  member, `m####-<slug>.md`, from the matching member template.
-- Record provenance and observation dates (`observed_at`, `reviewed_at`). A
-  dated snapshot keeps its original values; record a new observation instead
-  of rewriting one.
-- Move a finding that should bind current behavior to its owner in Stage 01,
-  02, 03 or 05; do not cite Stage 90 as authority.
-- Retired package numbers go into the Registry `reserved_history`.
-- Package READMEs are Korean; member documents are English.
+A current rule, decision or procedure never lives here.
 
-## Canonical References
+## Required Policies
+
+### Canonical Sources
 
 - [Bootstrap](../../.agents/governance/bootstrap.md),
   [documentation protocol](../../.agents/governance/documentation-protocol.md),
@@ -50,13 +38,58 @@ or procedure never lives here.
 - Provider loading: [Claude adapter](../../.claude/provider.md),
   [Codex adapter](../../.codex/provider.md).
 
+### Local Obligations
+
+- Retired package numbers go into the Registry `reserved_history`.
+- Package READMEs are Korean; member documents are English.
+
+## Workflow
+
+### Inspect and Change
+
+- Create a package from its pack template
+  ([research](../99.templates/templates/references/research-pack.template.md),
+  [audit](../99.templates/templates/references/audit-pack.template.md),
+  [data](../99.templates/templates/references/data-pack.template.md)) and each
+  member, `m####-<slug>.md`, from the matching member template.
+- Record provenance and observation dates (`observed_at`, `reviewed_at`). A
+  dated snapshot keeps its original values; record a new observation instead
+  of rewriting one.
+- Move a finding that should bind current behavior to its owner in Stage 01,
+  02, 03 or 05; do not cite Stage 90 as authority.
+
+### Handoff
+
+Record progress, decisions and evidence in the current Task, and leave the
+next owner named there. Human-facing and related documents:
+
+- [References README](README.md)
+- [Research pack template](../99.templates/templates/references/research-pack.template.md)
+
 ## Verification
+
+### Required Checks
 
 - `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main`
 - `python3 scripts/validation/check-document-links.py --mode alignment`
 - `python3 scripts/validation/check-document-links.py --mode language`
 
-## Related Documents
+### Evidence and Limits
 
-- [References README](README.md)
-- [Research pack template](../99.templates/templates/references/research-pack.template.md)
+Record each check's command, revision and exit in the current Task. These
+checks are static or local; they do not prove runtime state, native provider
+delivery, remote enforcement or owner acceptance.
+
+## Safety
+
+### Protected Actions
+
+- Edit only with an authorizing request; Stage documents are read-only by
+  default.
+
+### Stop and Escalate
+
+Stop and report when this guide and its canonical owner disagree (the owner
+wins and this guide is corrected), when an action needs an approval that
+[approval boundaries](../../.agents/governance/approval-boundaries.md)
+has not granted, or when a required check fails.
