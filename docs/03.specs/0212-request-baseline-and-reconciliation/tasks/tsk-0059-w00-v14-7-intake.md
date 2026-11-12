@@ -226,7 +226,7 @@ README describes the common form and the no-old-form rule.
 | --- | --- | --- | --- |
 | Incident | incident | 1 | Migrated in `ffeee0e7f` |
 | Postmortem | postmortem | 1 (published) | Migrated in `ffeee0e7f` |
-| AGENTS | folder-agent-guide | 9 | Not started |
+| AGENTS | folder-agent-guide | 9 | Migrated in `4bb4add1f`, with the documentation protocol's folder-guide sentence |
 | Skill | governance-skill | 24 | Not started |
 | Requirement | requirements-package | 18 | Not started |
 | Architecture | architecture-description | 27 | Not started |
@@ -276,6 +276,7 @@ those agents and are re-verified by each receiving work unit before it edits.
 | Subsection contract RED | 112 | W117 | red-green-proof | New `SubsectionContractTests` and `SubsectionRegistryTests` against `522b781cb` | FAIL | 6 heading cases and 1 Registry case failed: no H3 model existed | required | - |
 | Subsection contract GREEN | 112 | W117 | red-green-proof | Commit `8a4714b7d` | PASS | Both test classes OK; test_registry, test_heading, test_profile and test_lifecycle OK; metadata check-active selected 534, violations 0; links alignment PASS | required | Subsection contract RED |
 | Incident and postmortem migration | 112 | W117 | form-migration | Commits `4ec4d7182` and `ffeee0e7f` | PASS | test_heading, test_registry and test_operations_catalog OK after the two form tests were updated; operations catalog PASS, including incident closure on the migrated postmortem; metadata check-active selected 534, violations 0; links all 907 documents, failures 0; P03 and P11 Hermes PASS; agent governance contract PASS. `check-candidate-preflight.sh` NOT_RUN: it is the OPEN-14 timeout leaf and its document checks ran individually | required | - |
+| AGENTS role migration | 112 | W117 | form-migration | Commit `4bb4add1f` | PASS | test_registry and test_heading 215 OK; metadata check-active selected 534 and check-changed selected 26, violations 0; links alignment PASS; renderer drift 0; agent governance contract PASS. Links `--mode all` was still running at commit time and is not counted | required | - |
 | Intake independent review result | 112 | W117 | independent-document-review | Fresh-context code-reviewer of `7f1c82ab9` and `ce56a7256` contents | PASS | APPROVED. Three minor findings fixed: a `main-protection.md` line citation, the superseded Spec prose for criterion 111, and the overstated guard coverage (H-12 added). 9 of 10 citations spot-checked matched | required | Intake independent review |
 
 ## Criterion Acceptance
@@ -292,7 +293,7 @@ owner acceptance.
 
 Open, with owners:
 
-- H-04 (14 roles left), H-06, H-07 with the Task role, H-08, H-09, H-10 and H-12.
+- H-04 (13 roles left), H-06, H-07 with the Task role, H-08, H-09, H-10 and H-12.
   H-01, H-02, H-03, H-05 and H-11 are done.
 - OPEN-01, 02, 05, 09, 11, 12 and 14 (RESIDUAL_CONFIRMED).
 - OPEN-04 (BLOCKED_EVIDENCE).
