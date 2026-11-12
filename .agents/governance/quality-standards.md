@@ -96,11 +96,10 @@ main-push security remains a post-merge observation.
 - Optimize QA in this order: remove duplicate leaves; separate document
   content checks from validator regression tests; share parsing and Git reads
   within one run; select by change impact; reuse only a provably equivalent
-  narrow result. A result is equivalent only when its inputs (revision or
-  index tree), tool and configuration versions, environment, trust boundary,
-  guarantee and consumer all match; a difference in any one makes it a new
-  observation. Compare a reproducible measure before and after (run time,
-  wait, installs, call count, CPU, or cost); never call a change faster
+  narrow result, matched on the full execution identity under the Execution
+  Boundary; a difference in any part makes it a new observation. Compare a
+  reproducible measure before and after (run time, wait, installs, call count,
+  CPU, or cost); never call a change faster
   without a number, and do not start with a large global cache or a new gate.
 - A non-functional requirement names one ISO/IEC 25010 quality
   characteristic and a measure in the ISO/IEC 25023 sense: what is measured,
@@ -226,7 +225,8 @@ main-push security remains a post-merge observation.
   Direct Agent `pre-commit run` is prohibited; the controlled all-files wrapper
   is an explicitly approved authoring/maintenance lane, never routine PR QA.
 - **Execution identity**: deduplicate an identical leaf within one run using
-  input/index/base/history, configuration, toolchain, mode and trust. Different
+  input/index/base/history, configuration, toolchain, mode, environment, trust,
+  guarantee and consumer. Reuse a result only when all of these match. Different
   staged, PR merge and main/security inputs are not interchangeable. Parsed
   immutable Git input may be shared within one invocation; working-tree bytes
   and acceptance are not cached across changed inputs or runs.
@@ -253,9 +253,10 @@ main-push security remains a post-merge observation.
 A Git event (commit, push, pull request or merge, each before, during or
 after), the SDLC stage and the document stage are separate axes; a check
 names the event and revision it binds to. A check that runs after its event,
-such as the main-push observation, observes and reports. It never blocked that
-event and is never described as having blocked it. No merge queue is
-configured; a `merge_group` trigger is added only together with one.
+such as the main-push observation, observes and reports. It does not block that
+event and is never described as having blocked it. No workflow declares a
+`merge_group` trigger, and the remote merge queue setting is unverified; the
+trigger is added only together with an approved merge queue.
 
 The machine workflow contract owns exact job identities, DAG and path-to-root
 selection. Ordinary documents retain profile, parent and lifecycle/content
