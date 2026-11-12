@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.14.0"
+version: "3.15.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -271,6 +271,14 @@ evidence; surrounding instructions remain current and validated normally.
 
 #### Role-Specific Authoring
 
+- Documents of the same role share one common form: the H2 and H3 sections of
+  `COMMON-DOC-FORM-1` 1.0.0, whose exact names and order the Registry declares
+  per profile (`required_sections`, `ordered_sections`,
+  `required_subsections`, `optional_subsections`). A role moves to it in one
+  change that includes its completed and approved documents, and the old form
+  is then rejected. A product difference stays only as a conditional extension
+  that names its condition, owner, check, review date and removal criterion.
+  Different roles are never forced into one form.
 - A Requirement Package combines PRD, SRS, and implementation-independent
   interface perspectives. A Description owns current structure; an ADR owns one
   consequential choice. Preserve accepted decisions and use explicit

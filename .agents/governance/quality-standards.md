@@ -1,6 +1,6 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.10.0"
+version: "1.11.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -250,8 +250,9 @@ main-push security remains a post-merge observation.
 | Approved release dispatch | Sole main-only SemVer producer | Exact commit, create-only tag, complete draft assets, publication receipt |
 | Future deployment | Server lint/format evidence for exact promoted inputs, then deployment-specific checks | Distinct deployment authority/result; no deployment workflow currently |
 
-A Git event (commit, push, pull request or merge, each before, during or
-after), the SDLC stage and the document stage are separate axes; a check
+This section implements the policy meanings of `QA-STAGES-1` 1.0.0; its
+Git-stage cells are not all implemented yet. A Git event (commit, push, pull
+request or merge, each before, during or after), the SDLC stage and the document stage are separate axes; a check
 names the event and revision it binds to. A check that runs after its event,
 such as the main-push observation, observes and reports. It does not block that
 event and is never described as having blocked it. No workflow declares a

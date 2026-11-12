@@ -1,6 +1,6 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.4.0"
+version: "2.5.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -105,7 +105,8 @@ fallback을 뜻하며 현재 작성 대상이 아닙니다. Stage 01~03 lifecycl
 
 ### Common Role Forms
 
-공통 역할 16개는 공통 절 계약 `COMMON-DOC-FORM-1`의 H2·H3로 옮긴다.
+규범 정본은 [문서 프로토콜](../../.agents/governance/documentation-protocol.md#role-specific-authoring)이며
+이 절은 그 요약이다. 공통 역할 16개는 공통 절 계약 `COMMON-DOC-FORM-1` 1.0.0의 H2·H3로 옮긴다.
 역할별 필수 H2와 순서는 Registry의 `required_sections`와 `ordered_sections`가,
 H2 아래 필수·선택 H3와 순서는 `required_subsections`와
 `optional_subsections`가 소유한다. 복사 양식과 현행 본문은 같은 순서를 따른다.
