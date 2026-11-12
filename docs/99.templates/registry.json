@@ -4713,12 +4713,13 @@
         "REQ-0023.FR": {
           "prefix": "REQ-0023-FR-",
           "width": 4,
-          "high_water": 3,
-          "next_number": 4,
+          "high_water": 4,
+          "next_number": 5,
           "current_issued": [
             1,
             2,
-            3
+            3,
+            4
           ],
           "reserved_history": [],
           "child_spaces": {}
