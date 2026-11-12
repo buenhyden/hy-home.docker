@@ -47,8 +47,8 @@ class CurrentBodyContractTests(unittest.TestCase):
             "guide": "Overview|Scope|Concepts|Usage|Troubleshooting|Related Documents",
             "policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
             "runbook": "Overview|Trigger|Prerequisites|Procedure|Verification|Failure and Recovery|Related Documents",
-            "incident": "Overview|Impact|Timeline|Response|Resolution|Follow-up|Related Documents",
-            "postmortem": "Summary|Impact|Timeline|Analysis|Corrective Actions|Lessons|Related Documents",
+            "incident": "Summary|Impact|Timeline|Resolution|Evidence",
+            "postmortem": "Summary|Root Cause|Impact|Corrective Actions|Evidence",
             "governance-policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
             "governance-hook-policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
         }
@@ -66,6 +66,18 @@ class CurrentBodyContractTests(unittest.TestCase):
                     [f"## {name}" for name in headings],
                     heading_module.extract_markdown_headings(source)[1],
                 )
+                for parent, children in (
+                    profile.get("required_subsections") or {}
+                ).items():
+                    block = source.split(f"\n## {parent}\n", 1)[1].split("\n## ", 1)[0]
+                    self.assertEqual(
+                        list(children),
+                        [
+                            line[4:]
+                            for line in block.splitlines()
+                            if line.startswith("### ")
+                        ],
+                    )
 
     def test_current_role_accepts_nested_content_and_rejects_empty_sections(
         self,
@@ -329,7 +341,25 @@ class RegisteredSectionContractTests(unittest.TestCase):
         required = tuple(
             self.registry.profiles[profile_id].get("required_sections", ())
         )
-        body = body_with_headings(*(f"## {name}" for name in required))
+        subsections = (
+            self.registry.profiles[profile_id].get("required_subsections") or {}
+        )
+        body = (
+            "# Fixture\n\n"
+            + "\n\n".join(
+                f"## {name}\n\n"
+                + (
+                    "\n\n".join(
+                        f"### {child}\n\nFixture content."
+                        for child in subsections[name]
+                    )
+                    if name in subsections
+                    else "Fixture content."
+                )
+                for name in required
+            )
+            + "\n"
+        )
         if self.registry.profiles[profile_id].get("language") == "ko":
             # A conforming body also reads in its declared language (SPEC-0184).
             body = body.replace("Fixture content.", "이 절은 예시 본문입니다.")

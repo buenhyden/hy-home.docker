@@ -1283,23 +1283,35 @@
         ]
       },
       "required_sections": [
-        "Overview",
+        "Summary",
         "Impact",
         "Timeline",
-        "Response",
         "Resolution",
-        "Follow-up",
-        "Related Documents"
+        "Evidence"
       ],
-      "optional_sections": [
-        "Summary",
-        "Coordination",
-        "Mitigation",
-        "Current Status",
-        "Corrective Actions",
-        "Traceability",
-        "Communications"
-      ],
+      "optional_sections": [],
+      "required_subsections": {
+        "Summary": [
+          "Event",
+          "Current Status"
+        ],
+        "Impact": [
+          "Affected Users",
+          "Severity and Duration"
+        ],
+        "Timeline": [
+          "Events",
+          "Decisions"
+        ],
+        "Resolution": [
+          "Mitigation",
+          "Recovery Verification"
+        ],
+        "Evidence": [
+          "Evidence Sources",
+          "Follow-up Owners"
+        ]
+      },
       "lifecycle_id": "incident",
       "traceability": {
         "allowed_parent_profiles": [
@@ -1315,7 +1327,8 @@
         "layer": "operations"
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "free_form_sections": false
     },
     {
       "id": "postmortem",
@@ -1345,21 +1358,34 @@
       ],
       "required_sections": [
         "Summary",
-        "Impact",
-        "Timeline",
-        "Analysis",
-        "Corrective Actions",
-        "Lessons",
-        "Related Documents"
-      ],
-      "optional_sections": [
         "Root Cause",
-        "Contributing Factors",
-        "Detection and Response",
-        "Learning",
-        "Traceability",
-        "Follow-up Review"
+        "Impact",
+        "Corrective Actions",
+        "Evidence"
       ],
+      "optional_sections": [],
+      "required_subsections": {
+        "Summary": [
+          "Incident Reference",
+          "Review Scope"
+        ],
+        "Root Cause": [
+          "Causal Analysis",
+          "Contributing Factors"
+        ],
+        "Impact": [
+          "Observed Impact",
+          "Detection and Response"
+        ],
+        "Corrective Actions": [
+          "Actions",
+          "Verification"
+        ],
+        "Evidence": [
+          "Source Records",
+          "Review Decision"
+        ]
+      },
       "lifecycle_id": "postmortem",
       "traceability": {
         "allowed_parent_profiles": [
@@ -1375,7 +1401,8 @@
         "layer": "operations"
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "free_form_sections": false
     },
     {
       "id": "reference-category-readme",

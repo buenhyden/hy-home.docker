@@ -19,51 +19,58 @@ occurred_at: "{{OCCURRED_AT}}"
 
 # {{TITLE}}
 
-## Overview
+## Summary
 
-{{SUMMARY}}
+### Event
+
+{{EVENT}}
+
+### Current Status
+
+<!-- Author prompt: Derive any current lifecycle label from frontmatter status. Describe observations with their actual timestamp and timezone; do not maintain a second independent current-state value or invent precision. -->
+
+{{CURRENT_STATUS}}
 
 ## Impact
 
-{{IMPACT}}
+### Affected Users
+
+{{AFFECTED_USERS}}
+
+### Severity and Duration
+
+{{SEVERITY_AND_DURATION}}
 
 ## Timeline
 
+### Events
+
 <!-- Author prompt: Record factual events with ISO 8601 timestamps and explicit UTC offsets; distinguish hypotheses. -->
 
-{{TIMELINE}}
+{{EVENTS}}
 
-## Response
+### Decisions
 
-### Coordination
+{{DECISIONS}}
 
-{{ROLES_AND_COORDINATION}}
+## Resolution
 
 ### Mitigation
 
 {{MITIGATION}}
 
-### Communications
+### Recovery Verification
 
-{{COMMUNICATIONS}}
+{{RECOVERY_VERIFICATION}}
 
-## Resolution
+## Evidence
 
-### Current Status
+### Evidence Sources
 
-<!-- Author prompt: Derive any current lifecycle label from frontmatter status. Describe observations with their actual timestamp and timezone; do not maintain a second independent current-state value or invent precision. -->
-{{CURRENT_STATUS}}
+{{EVIDENCE_SOURCES}}
 
-### Corrective Actions
+### Follow-up Owners
 
-<!-- Author prompt: Record observed mitigation and tracked next actions; move causal analysis and durable follow-up to the postmortem after stabilization. -->
+<!-- Author prompt: Record tracked next actions and their owners; move causal analysis and durable follow-up to the postmortem after stabilization. -->
 
-{{CORRECTIVE_ACTIONS}}
-
-## Follow-up
-
-{{TRACKED_FOLLOW_UP_OWNERS_AND_POSTMORTEM_LINK}}
-
-## Related Documents
-
-{{RUNBOOK_AND_SYSTEM_LINKS}}
+{{FOLLOW_UP_OWNERS}}
