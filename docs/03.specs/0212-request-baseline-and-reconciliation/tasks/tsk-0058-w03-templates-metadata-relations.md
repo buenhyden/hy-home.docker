@@ -1,6 +1,6 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.5.2"
+version: "0.5.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -294,6 +294,26 @@ Branch `docs/w03-plan-common-form`, on top of the ADR branch.
   rollback sentences name what they restore; Task links moved from
   Prerequisites to Owner and Receipt; SPEC-0263 links its reservations Task.
 
+#### Architecture role 2026-11-13
+
+Branch `docs/w03-architecture-common-form`, on top of the Plan branch.
+
+- Registry `architecture-description`: H2 Overview, Context and Constraints,
+  Current Structure, Interfaces, Decisions, Traceability with their required
+  H3s. The old `Scope`, `Structure`, `Quality and Risks` and `Related
+  Documents` H2s and the `Runtime View` H3 are rejected. No code reads these
+  headings.
+- The 27 descriptions are moved by three `doc-writer` agents. Runtime View,
+  Deployment View, Quality Attributes, Risks and Evolution keep their text as
+  H4s. Context, Constraints, Contracts and Failure Boundaries had no old
+  counterpart; their text is written only from facts in the same document.
+- Review answers: duplicated sentences removed; rewritten link items
+  restored verbatim; retired ADR and Spec lines moved to Currentness and
+  Lineage; ADR links kept as plain links; one sentence corrected so the MCP,
+  not the static origin, lacks cookie `sso-auth`; operations links gathered
+  under Currentness and Lineage. A second round restored three more
+  rewritten link items and removed two added sentences.
+
 Held for an owner decision, not changed here, because each would change
 what a requirement says:
 
@@ -337,6 +357,12 @@ what a requirement says:
 | W03 v14.7 Plan review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `3ec0b008f` | PASS | PASS: all fixes hold, quoted Spec sentences match; two minor quote and link gaps answered in `7eb600321` | required | W03 v14.7 Plan review |
 | W03 v14.7 Plan GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `7eb600321` | PASS | Ran 782 tests, OK, including the resolver, Plan old-form and template-outline tests | required | W03 v14.7 Plan form RED |
 | W03 v14.7 Plan checks | 111 | W116 | metadata-links-governance | The 22 Plans before the `3ec0b008f` commit and after the review answers | PASS | Every `Work Breakdown` equals its old H2 with inner headings one level deeper (22 of 22); metadata check-changed selected 22 violations 0; links alignment PASS; corpus lifecycle and occupancy 0 | required | - |
+| W03 v14.7 Architecture form RED | 111 | W116 | red-green-proof | The old-form and template-outline tests with Architecture cases against the `architecture-description` profile at `36e0dcf4f` | FAIL | Six failures: the old `Scope`, `Structure`, `Quality and Risks` and `Related Documents` H2s and the `Runtime View` H3 were accepted, and the template outline differed | required | - |
+| W03 v14.7 Architecture review | 111 | W116 | independent-review | Fresh-context code-reviewer of the uncommitted Architecture move | FAIL | CHANGES_REQUIRED: duplicated sentences, rewritten link items, retired ADR and Spec lines under current headings, a changed ADR item and an altered `sso-auth` fact; four minor | required | - |
+| W03 v14.7 Architecture re-review | 111 | W116 | independent-review | Fresh-context code-reviewer of `f74c40413` | FAIL | CHANGES_REQUIRED: three more rewritten link items (0013, 0018, 0019); two minor added sentences | required | - |
+| W03 v14.7 Architecture review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `c9fa9d8aa` | PASS | PASS: every finding fixed, 18 required headings in each of the 27 descriptions | required | W03 v14.7 Architecture review, W03 v14.7 Architecture re-review |
+| W03 v14.7 Architecture GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `c9fa9d8aa` | PASS | Ran 782 tests, OK, including the Architecture old-form and template-outline tests | required | W03 v14.7 Architecture form RED |
+| W03 v14.7 Architecture checks | 111 | W116 | metadata-links-governance | The 27 descriptions after each review round | PASS | metadata check-changed selected 27 violations 0, then 5 violations 0 after the last answer; links alignment PASS | required | - |
 
 ## Criterion Acceptance
 
