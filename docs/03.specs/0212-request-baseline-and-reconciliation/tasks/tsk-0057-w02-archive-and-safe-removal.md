@@ -288,7 +288,11 @@ The final promotion re-check returned READY. Commit `06bf2e201` deletes the
 three files of SPEC-0267, removes its `docs/03.specs/README.md` index row (the
 only inbound link) and adds 267 to the Spec `reserved_history`. Gates at that
 commit: metadata selected 52 with 0 violations, link alignment 0 failures,
-corpus lifecycle occupancy 0, operations catalog PASS.
+corpus lifecycle occupancy 0, operations catalog PASS. The same commit rewords the FR-0004
+exception reason from "consumers cannot all be named" to "not yet bound to a
+consumer-only address". The re-check had found the old reason inaccurate; the
+owner meaning it approved (a general rule with the two recorded exceptions) is
+unchanged.
 
 Criterion state at `4cd25b95b`, the last commit that carried the bodies:
 
@@ -347,6 +351,7 @@ Both are recorded for the owner.
 | W02 SPEC-0267 promotion final | 110 | W115 | promotion-check | SPEC-0267 against its owners at `8659f05a6` | PASS | rules-engineer READY: B1 to B3 and both recommended items fixed; no further listener in FR-0004's kinds | required | W02 SPEC-0267 promotion check, W02 SPEC-0267 promotion re-check |
 | W02 SPEC-0267 removal | 110 | W115 | package-retirement | Commit `06bf2e201` | PASS | Package deleted, index row removed, 267 reserved; metadata 0, links 0, occupancy 0, operations catalog PASS; post-merge byte comparison pending | required | - |
 | W02 consumer tests | 110 | W115 | consumer-unittest | `tests.validation.lifecycle.test_occupancy`, `tests.lib.document_governance.test_spec_packages` and `test_operations_catalog`, plus corpus lifecycle, in a worktree pinned at `8659f05a6` | PASS | 236 tests OK in 1038 s; occupancy 0 violations | required | - |
+| W02 v14.7 review result | 110 | W115 | independent-review | Commits `5a5fa122d`, `82275d313` and `4b7021386` | PASS | code-reviewer re-reviews: I1 to I5, M1 to M7, N1 to N3 and R1 to R3 resolved; final verdict PASS | required | W02 v14.7 review |
 
 ## Criterion Acceptance
 
