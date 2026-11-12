@@ -1,10 +1,10 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.5.0"
+version: "0.5.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0058"
 parent_ids:
@@ -237,6 +237,35 @@ template, parsers, tests and current documents together.
   and the old-form test rejects `Contracts`, `Failure Conditions`, `Related
   Documents` and `Out of Scope`.
 
+#### ADR role 2026-11-13
+
+Branch `docs/w03-adr-common-form`, on top of the Spec branch.
+
+- Registry `adr`: H2 Context, Decision, Alternatives, Consequences,
+  Traceability with their required H3s; `Supersession` is the one optional
+  H3, under Traceability, kept only where a decision supersedes, amends or is
+  superseded by another. The old `Decision Drivers`, `Options` and `Related
+  Documents` H2s and the `Compliance` H3 are rejected. No code reads ADR
+  headings, so no parser changes.
+- Template rewritten; its prompts say to write "not recorded" for an
+  approval fact the record does not hold.
+- The 30 ADRs are moved by three `doc-writer` agents. Every sentence, list
+  item, table row and link is kept. New text is limited to `Decision Scope`,
+  `Authority and Effect` and, where options carried no separable reasons,
+  `Trade-offs`, written only from facts in each ADR. Compliance becomes an H4
+  under Follow-up; ADR-0062's 2026-11-10 amendments are H4s under Follow-up,
+  as `docs/02.architecture/AGENTS.md` requires for in-place amendments;
+  ADR-0002 keeps its `AI Agent Guidance` H4.
+- One agent dropped the frontmatter of six ADRs (0054, 0055, 0056, 0057,
+  0059, 0061); the controller restored each block from the previous commit
+  with only `version` and `updated` changed.
+- Review answers: a lost word in ADR-0051, Supersession sections without a
+  real predecessor in 0034 and 0042, an unrecorded effective date and a
+  composed reason in 0046, and supersession or approval text under the wrong
+  heading in 0032, 0037, 0059 and 0062.
+- `docs/02.architecture/AGENTS.md` 0.3.1 and the decisions README 1.7.4 point
+  the replacement summary to Traceability `Supersession`.
+
 Held for an owner decision, not changed here, because each would change
 what a requirement says:
 
@@ -270,6 +299,11 @@ what a requirement says:
 | W03 v14.7 Spec review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `9a0677a43` | PASS | PASS: the three re-review minors fixed; outline and criterion numbers of the three changed Specs unchanged | required | W03 v14.7 Spec review, W03 v14.7 Spec re-review |
 | W03 v14.7 Spec GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `8f9265822` in a detached worktree; `9a0677a43` later changed only three Spec documents | PASS | Ran 781 tests, OK, including the Spec old-form, template-outline and nested-section tests | required | W03 v14.7 Spec form RED |
 | W03 v14.7 Requirement checks | 111 | W116 | metadata-links-governance | `46890d318`, clean tree | PASS | metadata check-changed selected 25 violations 0, check-active selected 534 violations 0; corpus lifecycle and occupancy 0; links alignment, commands and language PASS; renderer drift 0; governance contract PASS; Script Manifest PASS; staged pre-commit PASS | required | - |
+| W03 v14.7 ADR form RED | 111 | W116 | red-green-proof | The old-form and template-outline tests with ADR cases against the `adr` profile at `29440dc61` | FAIL | Five failures: the old `Decision Drivers`, `Options` and `Related Documents` H2s and the `Compliance` H3 were accepted, and the template outline differed | required | - |
+| W03 v14.7 ADR review | 111 | W116 | independent-review | Fresh-context code-reviewer of the uncommitted ADR move | FAIL | CHANGES_REQUIRED: a lost word in ADR-0051, Supersession without a predecessor in 0034 and 0042, an unrecorded effective date in 0046, amendment, approval and lineage text misplaced in 0032, 0037, 0059 and 0062 | required | - |
+| W03 v14.7 ADR review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `36e0dcf4f` | PASS | PASS: all nine fixes present, H2/H3 form intact, no text lost against the old diff | required | W03 v14.7 ADR review |
+| W03 v14.7 ADR GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `36e0dcf4f` | PASS | Ran 781 tests, OK, including the ADR old-form and template-outline tests | required | W03 v14.7 ADR form RED |
+| W03 v14.7 ADR checks | 111 | W116 | metadata-links-governance | The tree committed as `36e0dcf4f`, checked before the commit | PASS | metadata check-changed selected 32 violations 0; links alignment PASS, 905 documents; corpus lifecycle and occupancy 0; staged pre-commit PASS | required | - |
 
 ## Criterion Acceptance
 
