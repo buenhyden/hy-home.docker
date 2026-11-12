@@ -3653,3 +3653,37 @@ class RegistryIndexContractTests(unittest.TestCase):
         for index_path, member_profile in registry.indexes.items():
             with self.subTest(index=index_path):
                 self.assertIn(member_profile, registry.profiles)
+
+
+class RepositoryVocabularyProfileTests(unittest.TestCase):
+    """SPEC-0212 TSK-0059: the glossary follows the Repository Vocabulary form."""
+
+    VOCABULARY_SECTIONS = (
+        "Purpose",
+        "Scope",
+        "Normative Language",
+        "Repository Vocabulary",
+        "Local Extensions",
+        "Maintenance",
+        "References",
+    )
+
+    def test_glossary_has_its_own_vocabulary_profile(self) -> None:
+        registry = load_registry()
+        self.assertEqual(
+            "governance-vocabulary",
+            classify_path(".agents/knowledge/glossary.md", registry),
+        )
+        profile = registry.profiles["governance-vocabulary"]
+        self.assertEqual(self.VOCABULARY_SECTIONS, tuple(profile["required_sections"]))
+        self.assertTrue(profile["ordered_sections"])
+        self.assertTrue(profile["nonempty_sections"])
+
+    def test_other_knowledge_members_keep_the_knowledge_profile(self) -> None:
+        registry = load_registry()
+        for name in ("repository-map.md", "verification-surface-map.md"):
+            with self.subTest(member=name):
+                self.assertEqual(
+                    "governance-knowledge",
+                    classify_path(f".agents/knowledge/{name}", registry),
+                )
