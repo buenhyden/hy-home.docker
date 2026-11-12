@@ -1,8 +1,8 @@
 ---
 title: "Archive and Migration Check Retirement Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-12"
 layer: "specs"
@@ -51,6 +51,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0248-PLAN-0001 | draft | approved | #current-contract-decision |
 | SPEC-0248-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0248-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
+| SPEC-0248-TSK-0001 | in-progress | completed | #owner-acceptance-2026-11-12 |
 
 ### Removed
 
@@ -177,6 +178,7 @@ templates under `docs/99.templates/templates/archive/`.
 | E25 | 4 | W5 | quiet-tree-rerun | `test_spec_packages`, `test_requirements`, lifecycle `test_public` on the corrected tree with no concurrent writes | PASS | 122 tests OK; corpus lifecycle zero; metadata check-changed selected 7, zero violations | required | - |
 | E26 | 1 | W3 | document-commands | `check-document-links.py --mode commands` on branch `docs/tsk-0059-w00-v14-7-intake` at `878c4baab`, clean tree | PASS | 905 documents, 8303 links, 0 failures, 0 warnings | required | E19, E20 |
 | E27 | 4 | W5 | full-suite-comparison | `tests/lib/document_governance`, `tests/lib` and `tests/validation` discovery in a detached worktree at `main` `4cd25b95b`, which lacks the ignored local files, quiet tree | FAIL | document_governance 770 OK; lib 1092 OK; validation 2317 with 17 failures and 4 errors: secret metadata sync 15, SMTP generator 1, supply-chain runtime pin 1, two module load errors, one hook guidance test and one secret catalog round-trip. These are the same failure classes E24 found on `main`; whether the missing ignored files cause them is not checked | required | - |
+| E28 | 4 | W5 | full-suite-comparison | `tests/lib` and `tests/validation` discovery with the project `.venv` (Python 3.12.3, `scripts/requirements.txt` installed) started at `main` `3736e3430`; only Task documents changed to `2fcc726c0` during the run. The two failing modules then rerun at `355e8caa1` (before this package), `ec8555d09` (its merge) and `main` `fc2fb72e9` | PASS | lib 1099 OK; validation 2338 with 16 failures, all in `test_secret_metadata_sync` (15) and `test_supply_chain_wrapper` (1), none in a module this package changed. The two modules fail the same 14 of 84 tests before and after this package's merge, and the merge changes no file they test. The 2 added on `main` come later: one test added after the merge, and the sample Dockerfile moved to nginx `1.31.7` while the test still expects `1.31.6`. The secret sync tests run their scripts with a `python3` that lacks `referencing`. No failure is introduced by this package; the failures belong to the secret and supply-chain owners | required | E24, E27 |
 
 ## Criterion Acceptance
 
@@ -185,14 +187,14 @@ templates under `docs/99.templates/templates/archive/`.
 | 1 | accepted | E1, E4, E7, E8, E15, E21, E26 | Accepted by the owner on 2026-11-12 | @buenhyden |
 | 2 | accepted | E4, E7, E15, E21 | Accepted by the owner on 2026-11-12 | @buenhyden |
 | 3 | accepted | E2 | Accepted by the owner on 2026-11-12 | @buenhyden |
-| 4 | pending | - | - | @buenhyden |
+| 4 | accepted | E6, E9, E11, E12, E13, E14, E17, E18, E22, E23, E25, E28 | Accepted by the owner on 2026-11-12 | @buenhyden |
 
 ## Review and Completion
 
 Local checks are recorded above. Independent review of PR #721 requested
 changes (I1–I6, M1–M5); they are addressed in this branch and recorded in the
 Evidence table, with M3 and M4 kept as forward dependencies. Hosted CI for the
-corrected head has not run, and no criterion is accepted yet.
+corrected head had not run then; the owner acceptance below records the later state.
 
 ### Merge receipt 2026-11-10
 
@@ -205,10 +207,10 @@ is not owner acceptance: no criterion is accepted and the status is unchanged.
 
 ### Owner acceptance 2026-11-12
 
-On 2026-11-12 the owner accepted criteria 1, 2, 3 in the
+On 2026-11-12 the owner accepted criteria 1 to 4 in the
 SPEC-0212 TSK-0057 session. New evidence rows resolve the open required
 results with the same check and work unit; the earlier rows are kept.
-Criterion 4 stays pending: E24 `full-suite-comparison` has no resolving PASS. The 2026-11-12 rerun at `main` (E27) also failed in `tests/validation`. The failures are in the same classes E24 recorded on `main`; they are pre-existing or depend on ignored local files, and they are not caused by this package. Resolving them belongs to their own owners.
+E28 resolves E24 and E27: the full suite with the project environment fails only in two modules this package does not touch, and their failures are identical across its merge. The owner's acceptance then covers criterion 4, and the Task closes as `completed`.
 
 ## Related Documents
 
