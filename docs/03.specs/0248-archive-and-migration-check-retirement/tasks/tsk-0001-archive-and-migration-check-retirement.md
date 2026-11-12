@@ -176,6 +176,7 @@ templates under `docs/99.templates/templates/archive/`.
 | E24 | 4 | W5 | full-suite-comparison | `tests/lib` and `tests/validation` discovery on a879f2b64 against main ec8555d09, system python3 | FAIL | lib 1053 tests, validation 2179; every failure also fails on main (15 secret metadata sync, 1 SMTP, 3 loader errors, 1 identity history) except 11 that read live `docs/03.specs` while a commit landed mid-run, and one lifecycle public test broken by the E23 row shape, since corrected | required | - |
 | E25 | 4 | W5 | quiet-tree-rerun | `test_spec_packages`, `test_requirements`, lifecycle `test_public` on the corrected tree with no concurrent writes | PASS | 122 tests OK; corpus lifecycle zero; metadata check-changed selected 7, zero violations | required | - |
 | E26 | 1 | W3 | document-commands | `check-document-links.py --mode commands` on branch `docs/tsk-0059-w00-v14-7-intake` at `878c4baab`, clean tree | PASS | 905 documents, 8303 links, 0 failures, 0 warnings | required | E19, E20 |
+| E27 | 4 | W5 | full-suite-comparison | `tests/lib/document_governance`, `tests/lib` and `tests/validation` discovery in a detached worktree at `main` `4cd25b95b`, which lacks the ignored local files, quiet tree | FAIL | document_governance 770 OK; lib 1092 OK; validation 2317 with 17 failures and 4 errors: secret metadata sync 15, SMTP generator 1, supply-chain runtime pin 1, two module load errors, one hook guidance test and one secret catalog round-trip. These are the same failure classes E24 found on `main`; whether the missing ignored files cause them is not checked | required | - |
 
 ## Criterion Acceptance
 
@@ -207,7 +208,7 @@ is not owner acceptance: no criterion is accepted and the status is unchanged.
 On 2026-11-12 the owner accepted criteria 1, 2, 3 in the
 SPEC-0212 TSK-0057 session. New evidence rows resolve the open required
 results with the same check and work unit; the earlier rows are kept.
-Criterion 4 stays pending: E24 `full-suite-comparison` has no resolving PASS yet; the rerun is recorded when it finishes.
+Criterion 4 stays pending: E24 `full-suite-comparison` has no resolving PASS. The 2026-11-12 rerun at `main` (E27) also failed in `tests/validation`. The failures are in the same classes E24 recorded on `main`; they are pre-existing or depend on ignored local files, and they are not caused by this package. Resolving them belongs to their own owners.
 
 ## Related Documents
 
