@@ -352,6 +352,7 @@ Both are recorded for the owner.
 | W02 SPEC-0267 removal | 110 | W115 | package-retirement | Commit `06bf2e201` | PASS | Package deleted, index row removed, 267 reserved; metadata 0, links 0, occupancy 0, operations catalog PASS; post-merge byte comparison pending | required | - |
 | W02 consumer tests | 110 | W115 | consumer-unittest | `tests.validation.lifecycle.test_occupancy`, `tests.lib.document_governance.test_spec_packages` and `test_operations_catalog`, plus corpus lifecycle, in a worktree pinned at `8659f05a6` | PASS | 236 tests OK in 1038 s; occupancy 0 violations | required | - |
 | W02 v14.7 review result | 110 | W115 | independent-review | Commits `5a5fa122d`, `82275d313` and `4b7021386` | PASS | code-reviewer re-reviews: I1 to I5, M1 to M7, N1 to N3 and R1 to R3 resolved; final verdict PASS | required | W02 v14.7 review |
+| W02 document checks | 110 | W115 | metadata-links-governance | HEAD `82275d313`, clean tree, covering the protocol, Stage 01, 02, 03 and 05 changes and the removal | PASS | metadata check-changed selected 52 violations 0; links all PASS; occupancy 0; operations catalog PASS; agent governance contract PASS; renderer drift 0 | required | - |
 
 ## Criterion Acceptance
 
