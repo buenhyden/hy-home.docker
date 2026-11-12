@@ -282,7 +282,7 @@ stays NOT_RUN.
 
 - Criteria 1 to 6 are verified by the plugin test suite run with `python3 -m unittest discover` in the `hermes-blog-ingestion` workload, naming the schema, `source_text` and digest, `source_ref`, report-file binding, shared-digest and rejection tests (TSK-0001 rows for W1 to W3).
 - Criteria 7 to 9 are verified by `test_deploy_scripts.py` prompt, marker-count and `email_body.html` guard tests and the validator tests; criterion 10 by the same suite plus a live node-exporter scrape, alert and dashboard check that stays `NOT_RUN` until observed.
-- Criterion 11 is verified by the document checks TSK-0001 row E6 records: `check-document-metadata.py` in `check-changed` mode, `check-document-links.py` in `alignment` mode and the corpus lifecycle check.
+- Criterion 11 is verified by the document checks that TSK-0001 row E6 records: `check-document-metadata.py` in `check-changed` mode, `check-document-links.py` in `alignment` mode and the corpus lifecycle check.
 - Criteria 12 to 14 are operations rows (W7 to W9): the online backup and restore test, the `backfill-reports` dry run with the 16 excluded report IDs, the delivered-run observation, the installed-file SHA-256 comparison and the rollback reading; each stays `NOT_RUN` until the owner approves and direct evidence is recorded.
 - The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table; a failed, blocked or skipped check is reported as such and does not count as met.
 

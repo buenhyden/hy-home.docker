@@ -205,6 +205,33 @@ template, parsers, tests and current documents together.
   `Quality Requirements` section end to end; the remaining 0001, 0009 and
   0010 conditions are given a method.
 
+#### Spec role 2026-11-12
+
+- Registry `spec`: H2 Overview, Scope, Behavior Contract, Acceptance
+  Criteria, References with their required H3s; the unused optional
+  `Interfaces`, `Failure Modes` and `Quality Requirements` sections are gone,
+  so the old form is rejected. `spec_section` stays `Acceptance Criteria`, so
+  no Registry `common` key and no Spec Package reader changes.
+- Template rewritten. `Evidence Requirements` is a bullet list: every
+  numbered line under `Acceptance Criteria` is read as a criterion.
+- The 22 Spec documents are restructured by three `doc-writer` agents:
+  Background and observed state move to `Intent`, Contracts and Constraints
+  to `Normal Behavior`, Error and Boundary Behavior and the old Failure
+  Conditions to `Failure and Edge Cases`, Related Documents to `References`.
+  Criterion numbers and every sentence, table row and link are kept; a few
+  lines gained or lost a bold label. `Owning Requirements` and
+  `Evidence Requirements` are new text from each package's frontmatter,
+  Plan and Task rows.
+- Review answers (`8f9265822` and `9a0677a43`): retired SPEC-0201 to 0203,
+  SPEC-0236 and SPEC-0243 moved to historical references and SPEC-0249 kept
+  normative; interface and failure content placed under the right behavior
+  heading; evidence requirements name each package's recorded checks;
+  criterion decisions are said to be recorded in the Task's Criterion
+  Acceptance table; labels and en dashes restored.
+- Tests: the template-outline and nested-section fixtures use the Spec form,
+  and the old-form test rejects `Contracts`, `Failure Conditions`, `Related
+  Documents` and `Out of Scope`.
+
 Held for an owner decision, not changed here, because each would change
 what a requirement says:
 
@@ -232,6 +259,11 @@ what a requirement says:
 | W03 v14.7 Requirement final review | 111 | W116 | independent-review | Fresh-context code-reviewer of `baece5f5d` | FAIL | CHANGES_REQUIRED, minor only: an unused fixture parameter, three conditions in 0001, 0009 and 0010 without a method, review rounds merged in this Task | required | - |
 | W03 v14.7 Requirement review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `cf4f6c3fe` | PASS | PASS: the four final-review minors are fixed; one missing comma in 0010 fixed in `ad4bd359d` | required | W03 v14.7 Requirement review, W03 v14.7 Requirement re-review, W03 v14.7 Requirement re-review 2, W03 v14.7 Requirement final review |
 | W03 v14.7 Requirement GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `46890d318` in a detached worktree; `test_requirements` alone at `cf4f6c3fe` | PASS | Ran 780 tests, OK; `test_requirements` 27 OK, including the old-form, retired-section, issued-`IF` and Quality Requirements tests | required | W03 v14.7 Requirement form RED |
+| W03 v14.7 Spec form RED | 111 | W116 | red-green-proof | The old-form test with Spec cases against the `spec` profile at `main` `0b1b2c6a1` | FAIL | All four Spec cases failed: the old `Contracts`, `Failure Conditions` and `Related Documents` H2s and the `Out of Scope` H3 were accepted | required | - |
+| W03 v14.7 Spec review | 111 | W116 | independent-review | Fresh-context code-reviewer of the Spec move | FAIL | CHANGES_REQUIRED: deleted Specs listed as current authority, a current Spec labelled historical, interface content under Intent; nine minor | required | - |
+| W03 v14.7 Spec re-review | 111 | W116 | independent-review | Fresh-context code-reviewer of `8f9265822` | FAIL | CHANGES_REQUIRED, minor only: an SPEC-0265 check not in its Task, SPEC-0263 constraint and boundary paragraphs inside numbered subsections, SPEC-0264 observed state under Owning Requirements; answered in `9a0677a43` | required | - |
+| W03 v14.7 Spec review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `9a0677a43` | PASS | PASS: the three re-review minors fixed; outline and criterion numbers of the three changed Specs unchanged | required | W03 v14.7 Spec review, W03 v14.7 Spec re-review |
+| W03 v14.7 Spec GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `8f9265822` in a detached worktree; `9a0677a43` later changed only three Spec documents | PASS | Ran 781 tests, OK, including the Spec old-form, template-outline and nested-section tests | required | W03 v14.7 Spec form RED |
 | W03 v14.7 Requirement checks | 111 | W116 | metadata-links-governance | `46890d318`, clean tree | PASS | metadata check-changed selected 25 violations 0, check-active selected 534 violations 0; corpus lifecycle and occupancy 0; links alignment, commands and language PASS; renderer drift 0; governance contract PASS; Script Manifest PASS; staged pre-commit PASS | required | - |
 
 ## Criterion Acceptance
