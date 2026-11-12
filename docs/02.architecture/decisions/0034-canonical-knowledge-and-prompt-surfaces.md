@@ -1,10 +1,10 @@
 ---
 title: "Canonical Knowledge and Prompt Surfaces"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "ADR-0034"
 parent_ids:
@@ -15,6 +15,8 @@ created: "2026-09-06"
 # Canonical Knowledge and Prompt Surfaces
 
 ## Context
+
+### Problem and Drivers
 
 `.agents/` owns three registered categories: `governance/` for policy,
 `roles/` for identity and permission, and `skills/` for callable procedure.
@@ -42,40 +44,6 @@ intent twice: `ROOT_ENTRIES` pins the canonical root inventory, and its
 unsupported-token pattern rejects the retired ledger and handoff path names
 in tracked text.
 
-### Compliance
-
-`scripts/validation/check-agent-governance-contract.py` proves the canonical
-root inventory and the registered profile set agree. The document metadata and
-lifecycle suites prove every file under the two new roots matches a registered
-profile and lifecycle. `scripts/operations/provider_surface_renderer.py --check`
-proves the new categories introduce no provider projection drift. No local
-result here proves native runtime discovery, provider entitlement, Hosted CI,
-or remote branch protection.
-
-### Follow-up
-
-- Transition this decision from `proposed` to `accepted` only after SPEC-0175
-  records the contract, registry, and suite evidence for the implemented roots.
-  Discharged. SPEC-0175 recorded that evidence and was completed; its number
-  is reserved in the Registry and its body is in version history, and this
-  decision has read `accepted` since. The instruction above is kept
-  verbatim rather than rewritten, because what it required and the fact that it
-  was met are two different records. Noted by SPEC-0176; the decision body is
-  unchanged.
-- Decide separately whether the Stage 90 curated repository map (DATA-0083)
-  consolidates into `.agents/knowledge/`; that move touches the LLM Wiki
-  generator, `llms.txt`, and a registered data lifecycle, so it is not part of
-  this decision.
-  Discharged without a consolidation. SPEC-0173 retired DATA-0083 and the LLM
-  Wiki generator on 2026-09-10 and recorded each with a tombstone, so no map is
-  left to move. The instruction above is kept verbatim. Noted by SPEC-0176; the
-  decision body is unchanged.
-- Restore a current owner for the external capability-intake decision boundary
-  that [RES-0002-m0003](../../90.references/research/0002-agentic-engineering-research-pack/m0003-ai-agent-catalogs.md)
-  describes but the current Provider Registry no longer carries.
-
-## Decision Drivers
-
 - Short-term execution state must stay in the current Spec Package Task; no
   second progress or handoff authority may return.
 - Verified long-lived knowledge needs a home that is not a policy body and not
@@ -86,36 +54,13 @@ or remote branch protection.
 - A new category must not become a place to duplicate policy, design, or
   runbook bodies.
 
-## Options
+### Decision Scope
 
-### Options Considered
-
-**Option A — Add `knowledge/` and `prompts/` as canonical categories.**
-Both become registered roots under `.agents/` with their own Stage 99
-profiles, templates, lifecycle mapping, and contract inventory entries.
-`knowledge/` holds routing and vocabulary that points at canonical owners.
-`prompts/` holds input/output contracts that point at skills for procedure.
-Cost: four new Stage 99 profiles, two templates, and a contract change.
-
-**Option B — Put both under `.agents/governance/`.**
-Reuses the existing `governance-policy` profile with no contract change.
-Rejected: it makes navigational summaries and prompt envelopes read as
-normative policy, which is exactly the second-authority failure the current
-policy set is built to prevent.
-
-**Option C — Put knowledge in Stage 90 and prompts in `.agents/skills/`.**
-Reuses existing owners with no new category. Rejected: Stage 90 is
-explicitly non-normative dated evidence with a research/audit/data lifecycle,
-so a living routing map does not fit its freshness model; and a skill's
-registered sections are `Preconditions`/`Procedure`/`Gates`, which forces a
-prompt contract to be written as a procedure it is not.
-
-**Option D — Do nothing.**
-Rejected: the routing knowledge and prompt contracts continue to be
-reconstructed per session, and the agency-agents capability-intake decision
-boundary stays without a current owner.
+The decision covers two new canonical categories under `.agents/`, `knowledge/` and `prompts/`. It leaves out execution state, which stays in the current Spec Package Task, and the consolidation of the Stage 90 curated repository map, which is decided separately. Affected consumers are the agent governance contract, the Stage 99 profiles and templates, and the readers of both providers.
 
 ## Decision
+
+### Chosen Option
 
 Adopt Option A.
 
@@ -142,7 +87,46 @@ template, a `living` lifecycle mapping, a `canonical_sources` entry per file,
 and an entry in the canonical root inventory the agent governance contract
 pins.
 
+### Authority and Effect
+
+Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked; the transition from `proposed` to `accepted` is recorded under Follow-up. Effective from 2026-09-06.
+
+## Alternatives
+
+### Considered Options
+
+**Option A — Add `knowledge/` and `prompts/` as canonical categories.**
+Both become registered roots under `.agents/` with their own Stage 99
+profiles, templates, lifecycle mapping, and contract inventory entries.
+`knowledge/` holds routing and vocabulary that points at canonical owners.
+`prompts/` holds input/output contracts that point at skills for procedure.
+Cost: four new Stage 99 profiles, two templates, and a contract change.
+
+**Option B — Put both under `.agents/governance/`.**
+Reuses the existing `governance-policy` profile with no contract change.
+Rejected: it makes navigational summaries and prompt envelopes read as
+normative policy, which is exactly the second-authority failure the current
+policy set is built to prevent.
+
+**Option C — Put knowledge in Stage 90 and prompts in `.agents/skills/`.**
+Reuses existing owners with no new category. Rejected: Stage 90 is
+explicitly non-normative dated evidence with a research/audit/data lifecycle,
+so a living routing map does not fit its freshness model; and a skill's
+registered sections are `Preconditions`/`Procedure`/`Gates`, which forces a
+prompt contract to be written as a procedure it is not.
+
+**Option D — Do nothing.**
+Rejected: the routing knowledge and prompt contracts continue to be
+reconstructed per session, and the agency-agents capability-intake decision
+boundary stays without a current owner.
+
+### Trade-offs
+
+Option A costs four new Stage 99 profiles, two templates, and a contract change. Option B was not chosen because it makes routing summaries and prompt envelopes read as normative policy. Option C was not chosen because a living routing map does not fit the Stage 90 freshness model and a prompt contract does not fit a skill's `Preconditions`/`Procedure`/`Gates` sections. Option D was not chosen because the routing knowledge and prompt contracts would keep being reconstructed per session.
+
 ## Consequences
+
+### Impacts
 
 **Enabling.** An agent resolves surface ownership and repository vocabulary by
 reading one registered file instead of inferring it. Handoff, review, commit
@@ -167,12 +151,44 @@ translations, hook bindings, public suite names, and the two public validation
 profiles are unchanged. No provider gains a permission, tool, or model it did
 not have. Discovery of a new canonical file grants no approval.
 
-## Related Documents
+### Follow-up
 
-### Traceability
+#### Compliance
+
+`scripts/validation/check-agent-governance-contract.py` proves the canonical
+root inventory and the registered profile set agree. The document metadata and
+lifecycle suites prove every file under the two new roots matches a registered
+profile and lifecycle. `scripts/operations/provider_surface_renderer.py --check`
+proves the new categories introduce no provider projection drift. No local
+result here proves native runtime discovery, provider entitlement, Hosted CI,
+or remote branch protection.
+
+- Transition this decision from `proposed` to `accepted` only after SPEC-0175
+  records the contract, registry, and suite evidence for the implemented roots.
+  Discharged. SPEC-0175 recorded that evidence and was completed; its number
+  is reserved in the Registry and its body is in version history, and this
+  decision has read `accepted` since. The instruction above is kept
+  verbatim rather than rewritten, because what it required and the fact that it
+  was met are two different records. Noted by SPEC-0176; the decision body is
+  unchanged.
+- Decide separately whether the Stage 90 curated repository map (DATA-0083)
+  consolidates into `.agents/knowledge/`; that move touches the LLM Wiki
+  generator, `llms.txt`, and a registered data lifecycle, so it is not part of
+  this decision.
+  Discharged without a consolidation. SPEC-0173 retired DATA-0083 and the LLM
+  Wiki generator on 2026-09-10 and recorded each with a tombstone, so no map is
+  left to move. The instruction above is kept verbatim. Noted by SPEC-0176; the
+  decision body is unchanged.
+- Restore a current owner for the external capability-intake decision boundary
+  that [RES-0002-m0003](../../90.references/research/0002-agentic-engineering-research-pack/m0003-ai-agent-catalogs.md)
+  describes but the current Provider Registry no longer carries.
+
+## Traceability
+
+### Sources
 
 - **Requirement**: [REQ-0024 Agent Governance Standardization](../../01.requirements/0024-agent-governance-standardization.md)
 - **Architecture**: [AD-0027 Agent Governance Canonical Adapter](../descriptions/0027-agent-governance-canonical-adapter.md)
-- **Prior decision**: [ADR-0032 Canonical Agent Governance Home](0032-canonical-agent-governance-home.md)
 - **Implementation**: SPEC-0175 Governance Knowledge and Prompt Surface
 - **Governance entry**: [canonical agent governance](../../../.agents/README.md)
+- **Prior decision**: [ADR-0032 Canonical Agent Governance Home](0032-canonical-agent-governance-home.md)

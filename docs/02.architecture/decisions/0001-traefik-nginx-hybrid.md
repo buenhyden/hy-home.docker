@@ -1,10 +1,10 @@
 ---
 title: "Traefik & Nginx Hybrid Gateway Architecture"
-version: "1.2.0"
+version: "1.2.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "ADR-0001"
 parent_ids:
@@ -15,32 +15,25 @@ created: "2026-03-26"
 
 ## Context
 
+### Problem and Drivers
+
 This document is the architecture decision record for the decision to use a hybrid of Traefik and Nginx as the ingress for `hy-home.docker`.
-
-### Traceability
-
-The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked in `Related Documents`, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
-
-## Decision Drivers
 
 - The system has many microservices whose count changes dynamically on a Docker container basis.
 - At the same time, infrastructure services such as Keycloak and MinIO exist that need specific path rewrites and complex header manipulation.
 - Traefik is very strong at Docker Label based automatic service discovery (Dynamic Discovery), but configuring fine-grained, Nginx-level path control can be somewhat cumbersome.
 - Nginx, on the other hand, supports elaborate configuration, but upstream management in a dynamically changing Docker virtual IP environment is manual or needs a separate solution.
 
-## Options
+### Decision Scope
 
-### Alternative 1: Traefik Only
+Explicit non-goals:
 
-- Good: The architecture becomes simpler and there are fewer management points.
-- Bad: Implementing Keycloak's redirect loop issue or MinIO's special header handling with Traefik middleware alone is relatively complex, with few proven cases.
-
-### Alternative 2: Nginx Only (with Nginx Proxy Manager, etc.)
-
-- Good: Configuration is very powerful and familiar.
-- Bad: With plain Nginx, detecting dynamic changes in Docker containers needs an extra tool such as `jwilder/nginx-proxy`, or manual management.
+- Placing Nginx in front of every internal service (avoids unnecessary hop growth).
+- Exposing Nginx directly as the external edge.
 
 ## Decision
+
+### Chosen Option
 
 - **Primary Edge Router**: use Traefik v3.
   - Handles the initial receipt of all external traffic (80, 443) and TLS termination.
@@ -68,7 +61,31 @@ The confirming evidence for this decision is limited to the Architecture Descrip
     decision above is preserved as a record of its time and no longer applies.
 - **Service Flow**: default root flow is `Client -> Traefik (Edge) -> Backend Service`; specialized flow is `Client -> Traefik (Edge) -> Nginx (Specialized) -> Backend Service` only when the Nginx leaf is explicitly deployed.
 
+### Authority and Effect
+
+Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked. Effective from 2026-03-26. The 2026-11-10 amendment above is recorded as an owner decision in the text.
+
+## Alternatives
+
+### Considered Options
+
+#### Alternative 1: Traefik Only
+
+- Good: The architecture becomes simpler and there are fewer management points.
+- Bad: Implementing Keycloak's redirect loop issue or MinIO's special header handling with Traefik middleware alone is relatively complex, with few proven cases.
+
+#### Alternative 2: Nginx Only (with Nginx Proxy Manager, etc.)
+
+- Good: Configuration is very powerful and familiar.
+- Bad: With plain Nginx, detecting dynamic changes in Docker containers needs an extra tool such as `jwilder/nginx-proxy`, or manual management.
+
+### Trade-offs
+
+Traefik only was not chosen because Keycloak and MinIO path and header handling is relatively complex with Traefik middleware alone. Nginx only was not chosen because detecting dynamic Docker container changes needs an extra tool or manual management.
+
 ## Consequences
+
+### Impacts
 
 - **Positive**:
   - Adding a new service can be routed with only Docker Labels, no extra configuration (Traefik's strength).
@@ -78,12 +95,15 @@ The confirming evidence for this decision is limited to the Architecture Descrip
   - One extra network hop is added for certain services (Traefik -> Nginx).
   - Operational burden of managing two different proxy configuration syntaxes.
 
-### Explicit Non-goals
+### Follow-up
 
-- Placing Nginx in front of every internal service (avoids unnecessary hop growth).
-- Exposing Nginx directly as the external edge.
+No follow-up work is recorded in this decision.
 
-## Related Documents
+## Traceability
+
+### Sources
+
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked below, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
 
 - **PRD**: [../../01.requirements/0001-gateway.md](../../01.requirements/0001-gateway.md)
 - **Architecture Description**: [../descriptions/0001-gateway-architecture.md](../descriptions/0001-gateway-architecture.md)

@@ -1,10 +1,10 @@
 ---
 title: "Capability Tiers and Quality Boundary"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "ADR-0046"
 parent_ids:
@@ -16,39 +16,25 @@ created: "2026-10-01"
 
 ## Context
 
+### Problem and Drivers
+
 Tooling mixed platform operations with software verification, Communication mixed
 real mail with test capture, and Laboratory grouped unrelated administration and
 research capabilities by activation style. The user approved SPEC-0197 option C
 and its additional implementation Plan on2026-10-01. Initial registration uses
 proposed status without inventing a prior lifecycle transition.
 
-### Compliance
-
-Require exact before/after public-model comparison, source-content preservation,
-retained hardening controls and negative regressions, current document contracts,
-and independent read-only review. Record actual outcomes in the existing Tasks.
-
-### Follow-up
-
-Future container recreation must account for relocated source mounts. Runtime,
-image builds, deployment and data recovery need separately scoped authorization;
-static source acceptance does not prove their success.
-
-## Decision Drivers
-
 Use capability ownership, retain cohesive packages and helper jobs, preserve
 runtime configuration and persistent data, and keep existing Operations IDs.
 Directory placement must not imply activation order or security isolation.
 
-## Options
+### Decision Scope
 
-### Options Considered
-
-- A: retain the current directories and clarify navigation only.
-- B: move six packages/eight labels into existing capability tiers.
-- C: establish a Quality capability and relocate twelve packages/sixteen labels.
+This decision covers the physical ownership of Tooling, Communication and Laboratory packages across capability tiers. It affects requirements and architecture descriptions, Guides, Policies and Runbooks; a package move grants no new runtime, profile, authentication exception or deployment permission.
 
 ## Decision
+
+### Chosen Option
 
 Adopt C. `11-quality` owns k6, Locust, WireMock, Pact Broker, SonarQube, Conftest
 and Mailpit. `09-platform-ops` retains OpenTofu, Terrakube, Registry, Renovate and
@@ -69,7 +55,25 @@ The retained five platform lifecycle packages use `09-platform-ops` and nine
 The tracked Restic unit source path follows the move; installed-unit refresh
 is a separately controlled operational handoff.
 
+### Authority and Effect
+
+Decided by the owner, @buenhyden; status `accepted`. The Context records that the user approved SPEC-0197 option C and its additional implementation Plan on 2026-10-01. The acceptance date is not recorded; the SPEC-0197 option C approval is dated 2026-10-01.
+
+## Alternatives
+
+### Considered Options
+
+- A: retain the current directories and clarify navigation only.
+- B: move six packages/eight labels into existing capability tiers.
+- C: establish a Quality capability and relocate twelve packages/sixteen labels.
+
+### Trade-offs
+
+Option A leaves the mixed capability ownership in place and only clarifies navigation. Option B moves six packages/eight labels into existing capability tiers. Option C adds a Quality capability for software verification and relocates twelve packages/sixteen labels, retaining cohesive packages while keeping existing Operations IDs. The record gives no comparative reason for choosing option C.
+
 ## Consequences
+
+### Impacts
 
 Requirements and architecture descriptions retain their issued logical obligations
 across the new physical owners. Existing Guide, Policy and Runbook identities
@@ -77,9 +81,21 @@ stay stable; active links, hardening dispatch and derived inventories follow the
 move. Dozzle keeps a leaf Compose file. A package move grants no new runtime,
 profile, authentication exception or deployment permission.
 
-## Related Documents
+### Follow-up
 
-### Traceability
+Future container recreation must account for relocated source mounts. Runtime,
+image builds, deployment and data recovery need separately scoped authorization;
+static source acceptance does not prove their success.
+
+#### Compliance
+
+Require exact before/after public-model comparison, source-content preservation,
+retained hardening controls and negative regressions, current document contracts,
+and independent read-only review. Record actual outcomes in the existing Tasks.
+
+## Traceability
+
+### Sources
 
 - [AD-0009](../descriptions/0009-tooling-architecture.md)
 - [AD-0011](../descriptions/0011-laboratory-architecture.md)

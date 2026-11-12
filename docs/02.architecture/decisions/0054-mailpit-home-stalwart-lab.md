@@ -1,10 +1,10 @@
 ---
 title: "Mailpit in HOME and Stalwart as a LAB"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "architecture"
 artifact_id: "ADR-0054"
 parent_ids:
@@ -16,44 +16,27 @@ created: "2026-11-06"
 
 ## Context
 
+### Problem and Drivers
+
 Development mail must never reach a real recipient. The HOME SMTP trap is
 Mailpit (`infra/11-quality/mailpit/`, root-included). Stalwart is a
 standalone LAB (`labs/stalwart/`, SPEC-0262) and is not root-included.
 `infra/10-communication/` holds only a README. No production mail server is
 deployed.
 
-### Traceability
-
-This record replaces ADR-0010, deleted in the same change (ADR-0051). ADR-0010
-selected MailHog as the development SMTP trap (in-memory, no external relay,
-port 1025) and Stalwart as the production mail server under
-`10-communication` (Rust single binary; JMAP, IMAP and SMTP; ports
-25/465/587/993; persistent mail store; web UIs behind the Traefik SSO chain;
-TLS and DNS deliverability verified before production). It named no rejected
-candidates. The trap is now Mailpit, and Stalwart is an unpromoted LAB. Evidence
-is the current repository configuration and
-`scripts/hardening/check-all-hardening.sh`, which checks
-`labs/stalwart/docker-compose.yml` and its relay refusal; no runtime state is
-claimed.
-
-## Decision Drivers
-
 - Captured development mail must stay local.
 - A real mail server needs DNS, a fixed address and deliverability evidence the
   home host does not provide today.
 - HOME should hold only services that run every day.
 
-## Options
+### Decision Scope
 
-### Alternatives
-
-- Keep MailHog: rejected; the tree runs Mailpit, the maintained successor with
-  the same capture model.
-- Promote Stalwart into HOME now: rejected; no deliverability evidence and no
-  consumer needs outbound mail.
-- Mailpit in HOME, Stalwart as a LAB until promoted: selected.
+This decision covers the development SMTP trap, the Stalwart LAB and the
+`10-communication` tier name. No production mail server is selected.
 
 ## Decision
+
+### Chosen Option
 
 1. Mailpit in `11-quality` is the HOME SMTP trap. It captures mail without
    relaying it, and its UI sits behind
@@ -66,25 +49,63 @@ claimed.
 4. `10-communication` keeps its tier name and README only; it owns no HOME
    service.
 
-## Consequences
+### Authority and Effect
 
-- Positive: development mail cannot leave the host.
-- Positive: HOME carries no mail server to secure or monitor.
+Decided by the owner, @buenhyden; status `accepted`. No separate approval
+record is linked. Effective from 2026-11-06.
+
+## Alternatives
+
+### Considered Options
+
+- Keep MailHog: rejected; the tree runs Mailpit, the maintained successor with
+  the same capture model.
+- Promote Stalwart into HOME now: rejected; no deliverability evidence and no
+  consumer needs outbound mail.
+- Mailpit in HOME, Stalwart as a LAB until promoted: selected.
+
+### Trade-offs
+
 - Trade-off: no real outbound or inbound mail exists until Stalwart is
   promoted.
 
-### Compliance
+## Consequences
 
-`check_11_quality` and the Stalwart checks in
-`scripts/hardening/check-all-hardening.sh` guard both boundaries.
+### Impacts
+
+- Positive: development mail cannot leave the host.
+- Positive: HOME carries no mail server to secure or monitor.
 
 ### Follow-up
 
 Communication requirement and description text that still names MailHog or a
 production Stalwart is reconciled by its owners.
 
-## Related Documents
+#### Compliance
+
+`check_11_quality` and the Stalwart checks in
+`scripts/hardening/check-all-hardening.sh` guard both boundaries.
+
+## Traceability
+
+### Sources
+
+Evidence is the current repository configuration and
+`scripts/hardening/check-all-hardening.sh`, which checks
+`labs/stalwart/docker-compose.yml` and its relay refusal; no runtime state is
+claimed.
 
 - [REQ-0011 Communication](../../01.requirements/0011-communication.md)
 - [AD-0010 Communication architecture](../descriptions/0010-communication-architecture.md)
 - [POL-0107 LAB promotion](../../05.operations/policies/15-labs/0107-lab-promotion.md)
+
+### Supersession
+
+This record replaces ADR-0010, deleted in the same change (ADR-0051); ADR-0010
+is historical and non-authoritative. ADR-0010
+selected MailHog as the development SMTP trap (in-memory, no external relay,
+port 1025) and Stalwart as the production mail server under
+`10-communication` (Rust single binary; JMAP, IMAP and SMTP; ports
+25/465/587/993; persistent mail store; web UIs behind the Traefik SSO chain;
+TLS and DNS deliverability verified before production). It named no rejected
+candidates. The trap is now Mailpit, and Stalwart is an unpromoted LAB.

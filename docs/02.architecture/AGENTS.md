@@ -1,10 +1,10 @@
 ---
 title: "Architecture Agent Guide"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 ---
 
 # Architecture Agent Guide
@@ -72,7 +72,8 @@ Stage 03 and Stage 05.
   in the ADR's Follow-up. Per
   [ADR-0051](decisions/0051-summarize-and-delete-retirement.md) and the
   [documentation protocol](../../.agents/governance/documentation-protocol.md),
-  the new ADR summarizes the replaced decision in its Traceability, the old
+  the new ADR summarizes the replaced decision under Traceability
+  `Supersession`, the old
   ADR is deleted in the same change, and its number goes into the Registry
   `reserved_history`. Stage 02 uses no `supersedes` or `superseded_by`
   metadata and no `deprecated` or `superseded` status.

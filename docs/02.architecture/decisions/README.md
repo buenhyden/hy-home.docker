@@ -1,10 +1,10 @@
 ---
 title: "Architecture Decision Records"
-version: "1.7.3"
+version: "1.7.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-13"
 layer: "architecture"
 ---
 
@@ -151,7 +151,8 @@ docs/02.architecture/decisions/
 2. 기존 ADR이 같은 선택을 이미 소유하는지 확인한다.
 3. 새 ADR은 [`decision.template.md`](../../99.templates/templates/architecture/decision.template.md)를 사용한다.
 4. 선택, alternatives, rationale와 consequences를 보존한다.
-5. 이전 결정을 대체하면 새 ADR의 Traceability에 대체한 내용을 요약하고, 이전
+5. 이전 결정을 대체하면 새 ADR의 Traceability 아래 `Supersession`에 대체한
+   내용을 요약하고, 이전
    ADR은 삭제한 뒤 번호를 Registry `reserved_history`에 둔다. `supersedes`,
    `superseded_by` metadata와 `deprecated`·`superseded` 상태는 쓰지 않는다.
 
