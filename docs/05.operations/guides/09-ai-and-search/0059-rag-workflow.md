@@ -53,7 +53,7 @@ HOME의 RAG는 Qdrant와 n8n이 맡는다. 이 가이드는 독립 LAB Open WebU
 
 ### Permissions
 
-이 LAB은 `python3 scripts/operations/lab.py`의 lease 안에서만 기동한다. 이 가이드는 별도의 secret 이름이나 승인 항목을 기록하지 않는다.
+이 LAB은 `python3 scripts/operations/lab.py`의 lease 안에서만 기동한다. Ollama endpoint는 승인된 `LAB_OPEN_WEBUI_OLLAMA_BASE_URL`만 쓴다. secret 이름은 기록하지 않는다.
 
 ## Procedure
 

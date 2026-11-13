@@ -106,7 +106,7 @@ push 전에 endpoint가 승인된 신뢰 네트워크로 한정되어 있는지 
 
 ### Exceptions
 
-이 가이드는 Troubleshooting 외에 별도의 예외 사례를 기록하지 않는다.
+레지스트리 삭제·garbage collection은 정상 정리 절차가 아니며, health 성공은 용량·내구성·클라이언트 신뢰를 증명하지 않는다(Environment).
 
 ## Verification
 

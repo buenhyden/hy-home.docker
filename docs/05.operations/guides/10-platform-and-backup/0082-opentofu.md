@@ -102,7 +102,7 @@ state 변경 작업과 IaC apply는 정확한 별도 승인이 필요하며, 실
 
 ### Exceptions
 
-이 가이드는 Troubleshooting 외에 별도의 예외 사례를 기록하지 않는다.
+`force-unlock`은 writer 부재를 증명한 자신의 lock에만 쓰며, Terraform 이관은 엔진·provider·state 호환을 대상별로 확인해야 한다(Actions).
 
 ## Verification
 

@@ -92,7 +92,7 @@ profile에서 소비하면 유지하지만, 예정·폐기·미사용 항목은 
 
 ### Exceptions
 
-이 가이드는 Troubleshooting 외에 별도의 예외 사항을 기록하지 않는다.
+이 비교는 CI에서 쓰지 않으며 누락된 파일을 예시 파일로 대체하지 않는다. 기존 `--sync-metadata`는 정확한 집합 일치의 완료 확인이 아니다(Expected Result와 Actions의 해당 문장).
 
 ## Verification
 
