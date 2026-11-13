@@ -39,7 +39,7 @@ runtime
 
 ### Safety Checks
 
-Upgrade/config 변경 전 image·mount 비교와 보존된 recovery point 확인은 Stop Conditions의 `Execution and stop boundary`에 기록되어 있다.
+Upgrade/config 변경 전에 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 확인한다.
 
 ## Steps
 
@@ -86,7 +86,7 @@ failover, restore는 입증하지 않는다.
 
 ### Evidence
 
-증거에 남길 항목(결과·시간·target·source revision·종료 코드)은 Stop Conditions의 `Execution and stop boundary`에 기록되어 있다.
+정적 점검 증거에는 명령, 종료 상태, 미해결 gap을 기록한다. 결과·시간·target·source revision·종료 코드만 요약하고 raw log, rendered Compose, payload, credential URI는 붙이지 않는다.
 
 ## Recovery
 

@@ -38,7 +38,7 @@ MLflow tracking server의 프로비저닝 실패, 크리덴셜 회전, 복원, �
 
 ### Authority and Access
 
-승인과 실행 주체는 작업 선택과 복구 전제(승인자), Credential rotation(시크릿·서비스·재시작 승인), Tracking DB schema upgrade(소유자 실행), 격리 복원 증거(owner 실행)에 적혀 있다.
+변경 전 승인자와 중단 영향을 기록한다. Credential rotation은 시크릿·서비스·재시작을 명시한 승인을, Tracking DB schema upgrade는 소유자의 실행을, 격리 복원 증거는 owner의 실행과 승인을 요구한다.
 
 ### Safety Checks
 
@@ -278,12 +278,12 @@ echo "elapsed_seconds=$(( $(date +%s) - start ))"
 
 ### Service Checks
 
-명령 종료, 작업 종료 코드, 이미지, 소스 커밋, 개수, 체크섬을 기록한다.
-비밀번호, 액세스 키, 아티팩트 내용은 절대 기록하지 않는다.
+두 작업(`mlflow-db-provision`, `seaweedfs-buckets`)이 `0`으로 끝난 뒤에만 서버를 시작하며, `mlflow`가 healthy이고 아티팩트 읽기 한 건이 성공해야 한다.
 
 ### Evidence
 
-기록 항목(명령 종료, 작업 종료 코드, 이미지, 소스 커밋, 개수, 체크섬)과 비밀번호·액세스 키·아티팩트 내용을 기록하지 않는 원칙은 위 Service Checks에 적혀 있다.
+명령 종료, 작업 종료 코드, 이미지, 소스 커밋, 개수, 체크섬을 기록한다.
+비밀번호, 액세스 키, 아티팩트 내용은 절대 기록하지 않는다.
 
 ## Recovery
 

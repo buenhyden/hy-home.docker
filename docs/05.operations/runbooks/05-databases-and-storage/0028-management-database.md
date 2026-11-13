@@ -129,7 +129,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ### Service Checks
 
-`pg_up{db_scope="mng"}`와 `redis_up{db_scope="mng"}`가 1로 돌아오는지, 그리고 복원 검증 항목은 Actions의 각 절차에 있다.
+`pg_up{db_scope="mng"}`와 `redis_up{db_scope="mng"}`가 1로 돌아오는지 확인한다.
 
 ### Evidence
 

@@ -200,6 +200,8 @@ PostgreSQL native 회전의 과거 격리 수용과 두 자격의 OpenBao 전달
 
 #### P02 Public Catalog Checks
 
+P02 공개 catalog 점검은 아래 세 절로 나뉜다.
+
 ##### Metadata Check
 
 이 절차는 검토된 checkout의 공개 metadata와 staging view만 확인한다. OpenBao API,
@@ -264,12 +266,12 @@ trusted 작성자와 입력의 쓰기 중단을 확인한 뒤에만 검사한다
 
 ### Service Checks
 
-catalog 점검 결과 `P02_METADATA_VALID`, staging을 만든 경우 `P02_VIEWS_MATCH`, 두 거절 probe의
-`P02_GENERATION_BLOCKED`(exit 2)를 값 없이 Task에 기록한다. 소비자 전환의 수용은 P06 Task가 따로 가진다.
+catalog 점검 결과는 `P02_METADATA_VALID`, staging을 만든 경우 `P02_VIEWS_MATCH`, 두 거절 probe의
+`P02_GENERATION_BLOCKED`(exit 2)여야 한다. 소비자 전환의 수용은 P06 Task가 따로 가진다.
 
 ### Evidence
 
-catalog 점검 결과 상태 문자열은 값 없이 Task에 기록하며 기록 대상은 Service Checks에 있다.
+catalog 점검의 상태 문자열(Service Checks)을 값 없이 Task에 기록한다.
 
 ## Recovery
 

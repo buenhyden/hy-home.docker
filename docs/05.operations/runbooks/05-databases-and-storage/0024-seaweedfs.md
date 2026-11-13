@@ -140,7 +140,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ### Service Checks
 
-복구 검증 항목은 Actions의 rehearsal 확인 목록과 Restore 절차의 S3 객체 manifest·count/byte 비교에 있다.
+rehearsal은 anonymous 및 wrong-credential 요청의 거부, filer와 volume HTTP의 JWT 요구, gRPC의 client certificate 요구, consumer S3 API, restart 후 persistence, 빈 store로의 backup과 restore를 확인한다. client를 전환하기 전에 S3로 모든 bucket의 객체를 읽어 manifest와 count/byte를 비교한다.
 
 ### Evidence
 

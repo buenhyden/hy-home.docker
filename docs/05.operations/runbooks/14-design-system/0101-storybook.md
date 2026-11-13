@@ -122,20 +122,20 @@ HOME 배포·정지·재시작, DNS/TLS 수정, 검토자 권한 변경과 원�
 
 ### Stop Conditions
 
-중단 조건(잘못된 관리자 허용 범위, 비인증 asset 노출, 로그인 HTML의 asset/MCP 응답 혼입, image/context의 비밀값 유입, port 충돌, read-only runtime 실패, manifest revision 불일치)은 Escalation에 적혀 있다.
+다음이 확인되면 배포를 중단한다: 잘못된 관리자 허용 범위, 비인증 asset 노출, 로그인 HTML의 asset/MCP 응답 혼입, image/context에 비밀값 유입, port 충돌, read-only runtime 실패, manifest revision 불일치.
 
 ## Validation
 
 ### Service Checks
 
+정적 구성 검증 명령 세 개가 성공하고 `storybook_image.py verify`가 통과해야 하며, 격리 rehearsal에서 비인증 요청이 200을 받지 않고 관리자만 각 경로를 받아야 한다.
+
+### Evidence
+
 운영 Task에 기준/작업 SHA, 변경 파일, 명령·exit code, 정적·격리·HOME 결과를 구분해
 기록한다. Trigger는 HOME route 활성화, `/admins` 이외 reviewer 승인, remote MCP
 issuer/audience/client 승인, DNS/TLS 관찰 요청 또는 external design account 승인이다. host secret, 세션 cookie, 인증 HTML 원문, private Compose 전체 출력,
 실사용자 데이터와 원시 로그는 기록하지 않는다.
-
-### Evidence
-
-기록 항목(기준/작업 SHA, 변경 파일, 명령·exit code, 정적·격리·HOME 결과)과 기록하지 않을 대상(host secret, 세션 cookie, 인증 HTML 원문 등)은 위 Service Checks에 적혀 있다.
 
 ## Recovery
 

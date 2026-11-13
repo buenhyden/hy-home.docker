@@ -16,8 +16,6 @@ created: "2026-09-25"
 
 ### Trigger and Outcome
 
-이 런북은 호스트 재부팅 전후에 HOME Docker Compose 스택과 hy-home.k8s(k3d) 컨테이너를 안전한 순서로 다시 세우고, 단계 사이의 health gate를 확인하는 절차를 제공한다.
-
 호스트를 계획된 이유로 재부팅하기 전과 재부팅 직후, HOME Docker Compose 스택과
 같은 호스트의 hy-home.k8s(k3d) 컨테이너를 안전한 순서로 다시 세우고, 각 단계
 사이의 health gate를 확인할 때 사용한다. 정전이나 예정에 없던 재부팅 뒤 같은
@@ -214,7 +212,7 @@ docker compose exec -T openbao bao status
 ```
 
 예상 결과: 두 번째 명령 뒤 `Sealed  false`. 이 단계는 owner가 직접 수행하며
-시간(시작·종료)을 아래 Rehearsal Record에 기록한다.
+시간(시작·종료)을 현재 Task에 기록한다.
 
 #### 5. Owner OIDC 로그인
 
@@ -284,19 +282,19 @@ Prometheus 시리즈 count나 pod Running만으로 클러스터 전체 건강을
 | --- | --- | --- |
 | 1. Docker/Compose 컨테이너 복귀 | 각 서비스 healthcheck `start_period` | 현재 선택·host 상태에 따라 달라짐. 2026-09-30 리허설의 약 16.5분 daemon 복귀/약19분 healthy는 아래 과거 기록에만 적용되며 현재 SLA가 아님 |
 | 3. OpenBao sealed 및 Agent 상태 확인 | `openbao` healthcheck `interval 15s`, `start_period 20s` | health 상태와 실제 unsealed/auth 결과를 각각 관찰; 고정 완료 시간 없음 |
-| 4. Owner unseal | 대화형, 소요 시간은 owner 입력 속도에 좌우 | **owner 확인 필요**; Rehearsal Record에 기록 |
+| 4. Owner unseal | 대화형, 소요 시간은 owner 입력 속도에 좌우 | **owner 확인 필요**; 현재 Task에 기록 |
 | 6. Wrapped SecretID 발급과 전달 | wrapping TTL 60초; 내부 SecretID 10분, 1회용 | wrap 만료 전에 시작 |
 | 7. hy-home.k8s 확인 | k3d 컨테이너 자체 기동 시간 문서화 안 됨 | **owner 확인 필요** |
 
 ### Stop Conditions
 
-중단 조건은 다른 절에 있다. 0단계 백업이나 `restic check`이 실패하면 재부팅을 진행하지 않고(Safety Checks의 0단계, Rollback), 4단계 unseal이 실패하면 중단하며(Rollback), 6단계 SecretID 전달이 실패하거나 시간을 넘기면 RUN-0103의 실패 처리를 따른다(Rollback).
+0단계 백업이나 `restic check`이 실패하면 재부팅을 진행하지 않는다. 4단계 unseal이 실패하면 중단한다. 6단계 SecretID 전달이 실패하거나 시간을 넘기면 RUN-0103의 실패 처리를 따른다. 7단계에서 `k3d-hyhome-*` 컨테이너가 없으면 현재 cluster inventory와 이전 stop 의도를 확인하고 중단한다.
 
 ## Validation
 
 ### Service Checks
 
-단계별 확인은 Steps의 예상 결과를 따르며, 과거 실행 기록은 아래와 같다.
+단계별 기대 결과는 지속 실행 service의 복귀와 job의 의도한 종료 상태, 재부팅 직후 `openbao`와 `openbao-agent` healthy 및 `Sealed true`, unseal 뒤 `Sealed false`, `k3d-hyhome-*` 컨테이너 Up이다. 과거 실행 기록은 아래와 같다.
 
 #### Verification Record
 

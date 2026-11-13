@@ -106,6 +106,8 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 ### Stop Conditions
 
+예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단한다. 검증 실패, secret 노출 위험, 파괴적 변경 필요, 예상 절차와 다른 상태도 중단 사유다.
+
 검증 실패, secret 노출 위험, 파괴적 변경 필요, 예상 절차와 다른 상태는 Escalation에 기록한 중단 조건이다. Authority and Access의 `Execution Boundary`도 예상 밖 출력, backup 누락, dependency 실패, 승인되지 않은 부작용이면 중단하도록 한다.
 
 ## Validation

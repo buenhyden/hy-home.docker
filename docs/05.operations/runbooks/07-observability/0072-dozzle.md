@@ -35,7 +35,7 @@ OIDC/CIDR 거부, 로그 스트림 누락, socket 오류, 설정 손실, 침해 
 
 ### Authority and Access
 
-승인·접근 관련 문장은 `승인된 사용`에서 다룬다.
+책임자는 `@buenhyden`이다. 최소 권한 테스트 identity로 로그인하며, shell/actions는 명시적으로 설정하고 승인하지 않았다면 비활성 상태여야 한다.
 
 ### Safety Checks
 
@@ -86,18 +86,19 @@ client/claim을 확인한 다음 Dozzle만 시작한다. 최소 권한 테스트
 
 ### Stop Conditions
 
-중단·중지 관련 문장은 Actions 본문, `Settings recovery and upgrade`에 있다.
+socket compromise 의심, auth/CIDR bypass, secret exposure, log authority 누락,
+settings 비호환이 있으면 중단한다.
 
 ## Validation
 
 ### Service Checks
 
-종료 코드·source 커밋·OIDC/CIDR 허용/거부 판정·표시 컨테이너 수·설정 checksum과
-최종 socket/service 상태를 기록한다. log 내용은 redact한다.
+OIDC/CIDR 허용/거부 판정이 예상 filtered visibility와 일치하고, 최소 권한 테스트 identity 로그인이 성공하며, shell/actions가 비활성 상태로 유지되어야 한다.
 
 ### Evidence
 
-증거 관련 문장은 Actions 본문, `승인된 사용`에 있다.
+종료 코드·source 커밋·OIDC/CIDR 허용/거부 판정·표시 컨테이너 수·설정 checksum과
+최종 socket/service 상태를 기록한다. log 내용은 redact한다.
 
 ## Recovery
 
@@ -108,7 +109,4 @@ settings restore와 upgrade rehearsal은 **계획되었으나 미실행** 상태
 
 ### Escalation
 
-책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
-
-socket compromise 의심, auth/CIDR bypass, secret exposure, log authority 누락,
-settings 비호환이 있으면 중단한다.
+책임자는 `@buenhyden`이다. Stop Conditions의 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.

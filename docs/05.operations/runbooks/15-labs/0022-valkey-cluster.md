@@ -107,21 +107,21 @@ exposure을 확인한다. rendered 경로가 비어 있거나 예상과 다르�
 
 ### Stop Conditions
 
-Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
+AOF segment 누락, checksum mismatch, 예기치 않은 identity, 커버되지 않은 slot, replica drift가 확인되거나 persistence를 repair/truncate하라는 요청이 있으면 중단한다. rendered 경로가 비어 있거나 예상과 다르면 중단한다.
 
-그 밖의 중단 조건(AOF segment 누락, checksum mismatch, 예기치 않은 identity, 커버되지 않은 slot, replica drift, persistence repair/truncate 요청)은 Escalation에, rendered 경로 불일치는 Actions에 적혀 있다.
+Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
 ## Validation
 
 ### Service Checks
 
-source revision/version, scope, timestamp, manifest/checksum 요약, command와
-exit status, validation 결과, 관찰된 recovery point/time, 모든 미검증
-gap을 기록한다. secret, raw payload, 비공개 resolved 경로는 제외한다.
+격리 target에서 AOF loading이 truncation이나 repair 없이 완료되고, `cluster_state`가 healthy이며, 모든 slot이 커버되고, replica가 의도한 primary에 연결되어야 한다.
 
 ### Evidence
 
-기록 항목과 제외 대상(secret, raw payload, 비공개 resolved 경로)은 위 Service Checks에, evidence에 붙이지 않을 raw log·rendered Compose·credential URI는 Safety Checks에 적혀 있다.
+source revision/version, scope, timestamp, manifest/checksum 요약, command와
+exit status, validation 결과, 관찰된 recovery point/time, 모든 미검증
+gap을 기록한다. secret, raw payload, 비공개 resolved 경로는 제외한다.
 
 ## Recovery
 

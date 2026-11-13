@@ -758,6 +758,8 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ### Service Checks
 
+각 단계의 `Expected:` 결과와 일치해야 한다. 예를 들어 backup 실행 단계는 exit 0, 새 pgBackRest backup, 새 Restic snapshot 두 개를 기대한다.
+
 이 런북은 별도의 점검 목록을 두지 않고, Actions의 각 단계가 확인하는 상태와 종료 코드를 Evidence에 기록해 판정한다.
 
 ### Evidence

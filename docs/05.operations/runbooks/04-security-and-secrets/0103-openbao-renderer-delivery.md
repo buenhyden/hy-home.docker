@@ -47,6 +47,8 @@ OpenBao가 initialized·unsealed이고, 승인된 issuer helper가 operator 전�
 
 #### Renderer SecretID Delivery
 
+Renderer SecretID 전달의 token role, 단계와 journal 계약은 아래와 같다.
+
 ##### Issuer and Cleanup Token Roles
 
 현재 source는 60초 wrapping, issuer/cleanup 분리, 영속 journal을 함께 사용한다.
@@ -188,11 +190,11 @@ response wrapping을 사용한다. raw `-field=secret_id` 전달과 root UID로 
 
 ### Service Checks
 
-`issue rc=0`, Agent `healthy`, 렌더 파일의 mode와 KV version 일치, issuance anchor `complete`를 확인하고 값 없이 Task에 기록한다.
+`issue rc=0`, Agent `healthy`, 렌더 파일의 mode와 KV version 일치, issuance anchor `complete`를 확인한다.
 
 ### Evidence
 
-확인 결과는 값 없이 Task에 기록한다(Service Checks). 전달이 실패하면 journal·completion witness·보호된 snapshot과 관리 인증을 보존한다(Rollback의 Failed Delivery).
+Service Checks의 확인 결과를 값 없이 Task에 기록한다. 전달이 실패하면 journal·completion witness·보호된 snapshot과 관리 인증을 보존한다(Rollback의 Failed Delivery).
 
 ## Recovery
 

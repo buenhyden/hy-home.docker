@@ -124,7 +124,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ### Stop Conditions
 
-중단 조건(destructive resync·data directory 삭제·forced election·keyfile/credential rotation 필요)은 Safety Checks의 확인 목록에, 비어 있지 않은 target과 tool/server 호환 불일치는 Actions의 복원 rehearsal 5단계에, data/backup/ownership/credential 불명확은 Authority and Access에 적혀 있다.
+destructive resync, data directory deletion, forced election, keyfile rotation, credential rotation이 필요한 경우 이 런북을 중단하고 에스컬레이션한다. restore target이 비어 있지 않거나 tool/server compatibility가 맞지 않으면 중단한다. data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다.
 
 ## Validation
 

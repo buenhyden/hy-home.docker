@@ -44,26 +44,25 @@ created: "2026-05-17"
 
 ### Authority and Access
 
-사전 조건은 다음과 같다.
-
-- `alloy` service, `alloy` container, `alloy-data` volume, 읽기 전용 Docker mount 상태를 확인한다.
-- 문제를 readiness, Docker discovery/logs, OTLP ingress, downstream exporter, relabel/label drift, config regression 중 하나로 분류한다.
-- Docker socket/container mount를 read-write로 바꾸거나 exporter endpoint, port를 바꿔야 해 보이면 중단하고 @buenhyden의 승인을 받는다.
-- secret이 담긴 label이나 high-cardinality label을 발견해도 원문 값을 기록하지 않는다.
-- `alloy`의 `required: false` backend는 없어도 기동된다. 선택한 설정과 필요한 Loki, Tempo, Pyroscope endpoint를 확인한 뒤 신호별 수신을 검증한다.
-- 중지나 재생성 전에 position/state와 로그 유실, 중복 허용 범위를 기록한다. 설정 선택 변경에는 재생성이 필요하며 reload 지원 여부를 임의로 가정하지 않는다.
+승인·접근 조건은 아래 항목을 따른다.
 
 #### Execution Boundary
 
 저장소 root에서 아래의 정확한 service/profile과 기존 container를 선택한다. 변경 전에 승인 대상, source/image, 선행 readiness, 필요한 운영 권한과 부작용 범위를 확인한다. `up`은 dependency/provisioning job을 만들 수 있고 profile은 격리가 아니다. 진단은 기존 container의 `exec`를 쓰고 단순 조회를 위해 client/provisioner를 띄우지 않는다. 재시작은 요청 중단, memory/queue 손실, 부작용 반복을 일으킬 수 있으므로 대상 drain/backup 조건을 먼저 충족한다. `restart`는 바뀐 Compose 설정이나 교체된 secret bind를 불러오지 않는다.
 
-log를 보존하기 전에 payload, credential, header/cookie, private path를 제거하고 명령, 시각, 상태, 제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패, 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. 설정 rollback은 data/schema 복구가 아니다. 전체 기동과 중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 절차를 쓴다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 쓰는 자격 증명과 상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
+log를 보존하기 전에 payload, credential, header/cookie, private path를 제거하고 명령, 시각, 상태, 제한된 시험 증거만 남긴다.  설정 rollback은 data/schema 복구가 아니다. 전체 기동과 중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 절차를 쓴다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 쓰는 자격 증명과 상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
 비공개 환경을 출력하지 않고 `ALLOY_CONFIG_FILE`의 선택 이름을 확인한 뒤 해당 tracked 파일과 지원 대안을 읽는다. 아래 예시는 `config.alloy`이며 실제로 `config.home.alloy`를 선택했다면 파일 이름을 바꾼다. reload로 mount/port를 바꿀 수 없고 inode가 바뀐 파일에는 재시작이나 재생성 결정이 필요하다. 상태 경로를 바꾸기 전에 [GDE-0040](../../guides/07-observability/0040-alloy.md)의 positions 손실 이력을 확인한다.
 
 ### Safety Checks
 
-사전 점검·백업 관련 문장은 `Steps`, `Planned isolated recovery rehearsal`에서 다룬다.
+사전 조건은 다음과 같다.
+
+- `alloy` service, `alloy` container, `alloy-data` volume, 읽기 전용 Docker mount 상태를 확인한다.
+- 문제를 readiness, Docker discovery/logs, OTLP ingress, downstream exporter, relabel/label drift, config regression 중 하나로 분류한다.
+- secret이 담긴 label이나 high-cardinality label을 발견해도 원문 값을 기록하지 않는다.
+- `alloy`의 `required: false` backend는 없어도 기동된다. 선택한 설정과 필요한 Loki, Tempo, Pyroscope endpoint를 확인한 뒤 신호별 수신을 검증한다.
+- 중지나 재생성 전에 position/state와 로그 유실, 중복 허용 범위를 기록한다. 설정 선택 변경에는 재생성이 필요하며 reload 지원 여부를 임의로 가정하지 않는다.
 
 ## Steps
 
@@ -71,7 +70,7 @@ log를 보존하기 전에 payload, credential, header/cookie, private path를 �
 
 실행 절차는 아래 항목을 따른다.
 
-#### Steps
+#### Diagnosis and restart
 
 1. 현재 service 상태, 최근 로그, route/health signal을 캡처한다.
 
@@ -175,7 +174,9 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 
 ### Stop Conditions
 
-중단·중지 관련 문장은 Authority and Access의 `Execution Boundary`, `Steps`, `Planned isolated recovery rehearsal`에 있다.
+- Docker socket/container mount를 read-write로 바꾸거나 exporter endpoint, port를 바꿔야 해 보이면 중단하고 @buenhyden의 승인을 받는다.
+
+예상 밖 출력, backup 누락, dependency 실패, 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다.
 
 ## Validation
 
@@ -188,6 +189,8 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 - [ ] Pyroscope writer endpoint는 설정된 상태이며, profile 수집은 source가 명시적으로 연결된 경우에만 주장한다.
 - [ ] 문서나 config만 바꿨다면 관련 repository validation을 실행하고 evidence에 기록한다.
 
+### Evidence
+
 수집할 evidence는 다음과 같다.
 
 - 실행한 명령, timestamp, 운영자나 agent의 조치.
@@ -195,10 +198,6 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 - Alloy `/-/healthy`, Alloy UI graph, `docker logs --tail=200 alloy`.
 - mount나 endpoint 변경이 필요해 보이면 승인 상태.
 - secret이 담긴 label이나 payload가 의심되면 원문 값은 기록하지 않는다.
-
-### Evidence
-
-증거 관련 문장은 Authority and Access의 `Execution Boundary`, `Steps`, `Planned isolated recovery rehearsal`에 있다.
 
 ## Recovery
 

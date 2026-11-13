@@ -36,7 +36,7 @@ Pact Broker의 프로비저닝 실패, 비정상 상태, 401 오류, 데이터�
 
 ### Authority and Access
 
-승인자와 접근 조건은 아래 작업 선택 전제와 Credential rotation 절차에서 확인한다.
+broker 변경 전 정확한 서비스·데이터 경로·승인자·중단 영향을 기록한다. credential 교체는 정확한 secret·서비스·클라이언트·중단 영향을 승인받고 등록된 workflow로 하며, helper 재실행은 별도 승인을 받는다.
 
 ### Safety Checks
 
@@ -105,12 +105,12 @@ basic auth 비활성화, 공개 읽기 허용, loopback 밖으로 포트 노출,
 
 ### Service Checks
 
-종료 코드, heartbeat 상태, pacticipant와 pact 개수, 소스 커밋을 기록한다.
-크리덴셜이나 pact 본문은 절대 기록하지 않는다.
+heartbeat(`/diagnostic/status/heartbeat`)가 응답하고, credential 교체 뒤에는 이전 자격 증명이 거부되고 새 자격 증명의 합성 publish/read-back이 성공해야 한다.
 
 ### Evidence
 
-기록 항목(종료 코드, heartbeat 상태, pacticipant와 pact 개수, 소스 커밋)과 크리덴셜·pact 본문 비기록 원칙은 위 Service Checks에 적혀 있다.
+종료 코드, heartbeat 상태, pacticipant와 pact 개수, 소스 커밋을 기록한다.
+크리덴셜이나 pact 본문은 절대 기록하지 않는다.
 
 ## Recovery
 

@@ -39,13 +39,15 @@ OpenBao image 업그레이드, root가 필요한 정책·role 변경, snapshot·
 
 ### Safety Checks
 
-W0 조건(CI와 독립 검토를 통과한 `P01_APPROVED_COMMIT`, 1인 관리자 custody의 서로 다른 unseal share 두 개, tmpfs 런타임 디렉터리, 깨끗한 HOME checkout)을 모두 확인하고, 하나라도 없으면 window를 열지 않는다.
+W0 조건(CI와 독립 검토를 통과한 `P01_APPROVED_COMMIT`, 1인 관리자 custody의 서로 다른 unseal share 두 개, tmpfs 런타임 디렉터리, 깨끗한 HOME checkout)을 모두 확인하고, 하나라도 없으면 window를 열지 않는다. 이에 더해 BKP-003·R2 자격 증명·BKP-002·Cloudflare 계정 접근이 1인 관리자 custody 절차에 맞는 off-host 보관에 있다는 유효한 owner 기록(유효 조건은 Custody Precondition)이 없으면 window를 열지 않고, W0 Preflight가 `problems: 0`이 아니면 진행하지 않으며, SEC01 Image Gate(잔여 위험 수용 기록과 window 시작 7일 안의 최신 stable 조회)가 하나라도 없거나 실패면 W4/W5를 실행하지 않는다.
 
 ## Steps
 
 ### Actions
 
 #### Native TLS, Audit and Recovery Gate
+
+native TLS, audit, 복구 gate의 세부 항목은 아래와 같다.
 
 ##### TLS Material and Preflight
 
@@ -230,6 +232,8 @@ agent가 5단계를 기록한다. Evidence 결과는 `PASS`이고 Check는 "owne
 없다"고 값 없이 답한 것만 Task에 `owner-attested` 재확인으로 남긴다(2026-11-11 첫 적용).
 
 #### Maintenance Window Plan
+
+window 계획의 상태, 일정과 단계는 아래와 같다.
 
 ##### Current Status
 
@@ -435,7 +439,7 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   generate-root attempt 상태만 값 없이 출력한다. 이후에는 FD나
   `"$(cat …)"`로만 넘긴다. W5의 숨김 prompt 대신 `BAO_TOKEN="$(cat "$XDG_RUNTIME_DIR/p01-op-w5.token")"`를
   써도 된다. token과 share는 화면에 띄우지 않고 clipboard 기록·동기화를 끈 상태에서 붙여 넣으며,
-  붙여 넣은 뒤 clipboard를 비운다. 이 token은 window 끝이나 중단 때 위 정리대로 폐기하고 지운다.
+  붙여 넣은 뒤 clipboard를 비운다. 이 token은 window 끝이나 중단 때 Rollback의 Abort and Cleanup Rules대로 폐기하고 지운다.
 - **기준선.** 실행 중 `openbao` image ID가 restore의 이전 image(`11fd73a2…`)와 같고,
   `openbao-agent`가 `healthy`이며(W1c health 정지의 기준; 이전 window가 W3 뒤 멈춰 Agent가 그때부터
   정지 상태로 기록돼 있으면 정지를 기준으로 하고, W1c는 health 대신 렌더 파일이 그대로인지만
@@ -593,7 +597,7 @@ root를 읽어 채팅에 보내지 말고 W1c·W2·W7의 보호된 관리 입력
 server가 sealed라 window가 root를 폐기하지 못하고 끝나면 만료 없는 root가 OpenBao에 남는다
 (unsealed인데 OIDC가 안 되면 위 `cleanup --keep-root` 규칙을 따른다). W1 custody는 `$XDG_RUNTIME_DIR`
 tmpfs에 있고 Linger나 남은 로그인 세션 때문에 재부팅 전까지 남으며, 저장소 UID로 도는 모든 process가 읽을 수 있다. 값은 영구 저장소로
-옮기지 않는다(backup 대상인 `secrets/` 포함). 위 정리 명령으로 모든 custody·secret 파일을
+옮기지 않는다(backup 대상인 `secrets/` 포함). Rollback의 Abort and Cleanup Rules의 정리 명령으로 모든 custody·secret 파일을
 `shred -u`해 값을 아무도 갖지 않게 하고, 폐기하지 못한 사실만 값 없이 Task에 남긴다. accessor도
 기록하지 않는다. 모든 window는 W1 직후, W1c·W3 전에 아래로 이전 root를 찾아 폐기한다(W1 exit2로
 누구도 갖지 않은 root가 생겼을 수도 있으므로 기록과 상관없이 매번 한다. W1의 10분 안에 들어가며,
@@ -663,7 +667,7 @@ custody를 보존하고 같은 명령을 다시 실행하지 않는다. `state.j
 `RENDERER_ROLES_APPLIED`가 아니면 W2·W3를 시작하지 않는다. 되돌릴지 그대로 둘지는 root를
 폐기하기 전에 정한다. 정책 복원과 새 token role 삭제에는 root가 필요하며, 검토된 rollback
 명령이 없으므로 rollback은 **BLOCKED**이고 root는 window 안에서 그 결정까지 보존한다.
-window가 멈추면 위 정리 규칙대로 server가 unsealed인 한 root를 폐기한다. 이 실행 결과는
+window가 멈추면 Rollback의 Abort and Cleanup Rules대로 server가 unsealed인 한 root를 폐기한다. 이 실행 결과는
 HOME 증거이며 source 검증이 이를 대신하지 않는다.
 
 ##### W1b Rekey Exclusion
@@ -1021,7 +1025,7 @@ hy-home.k8s 로그인 주체를 아래 Finish대로 복구·검증하고, 경보
 ##### W7 Root Revocation
 
 window 안에서 W1c rollback 판단이 열려 있는 동안은 root를 폐기하지 않습니다(W1c 참조). window가
-멈추면 위 정리 규칙이 우선합니다.
+멈추면 Rollback의 Abort and Cleanup Rules가 우선합니다.
 W7의 `revoke-root`는 root FD와 별도의 현재 OIDC operator FD를 요구합니다. 운영자는
 승인된 로그인 절차로 새 OIDC credential을 받아 `owner-window.sh token w7`로
 `$XDG_RUNTIME_DIR/p01-op-w7.token`(0600·single-link)에 둡니다(정리 glob에 들어간다). 이 파일은
@@ -1133,7 +1137,7 @@ P01_K8S_STATE=… P01_EXPECTED_ES=… P01_ES_SET_APPROVAL=… bash "$P01_SCRIPT_
 
 ### Stop Conditions
 
-W0 조건 중 하나라도 없으면 window를 열지 않는다(Safety Checks). 시각 기준 중단과 abort 규칙은 다음과 같다.
+W0 조건 중 하나라도 없으면 window를 열지 않는다. 시각 기준 중단 조건은 다음과 같고, abort 규칙은 Rollback의 Abort and Cleanup Rules에 있다.
 
 #### Time Boxes and Stop Times
 
@@ -1144,6 +1148,22 @@ W3b가 시작되지 않으면 W3b 이후를 다음 window로 넘긴다. T+55까�
 W3a를 시작하지 않는다(단발 attempt를 쓰지 않는다). T+80까지 W4가 시작되지 않으면 HOME
 server를 바꾸지 않고 멈춘다.
 
+## Validation
+
+### Service Checks
+
+각 단계가 출력하는 상태 문자열(`DELIVERED`, `RENDERER_ROLES_APPLIED`, `SNAPSHOT_TOKEN_DELIVERED`, `SAVED`, `RESTORE_ACCEPTED`, `W3B_STORED`, `ROOT_REVOKED_OPERATOR_HEALTHY`, `ESO_GATE_PASS`)이 기대 결과다.
+
+### Evidence
+
+각 단계의 상태 문자열과 `evidence`가 복사한 receipt를 값 없이 Task에 기록한다. 증거 복사와 정리 규칙은 Rollback의 Evidence Copy and Cleanup에 있다.
+
+## Recovery
+
+### Rollback
+
+W4 실패는 fix-forward가 규칙이다. window가 끝나지 않으면 server를 sealed 또는 정지 상태로 두고 남은 단계를 다음 window로 넘긴다. 중단 시 정리는 아래 Abort and Cleanup Rules와 `cleanup` 옵션을 따른다.
+
 #### Abort and Cleanup Rules
 
 어느 지점에서 멈추든 같은 정리를 한다: W0에서 멈춘 `hyhome-backup.timer`를 다시 켠다.
@@ -1153,8 +1173,8 @@ silence는 window 동안 발생한 경보를 기록한 뒤 지운다. W3에서 �
 올린다(2026-10-15 owner 결정). 그동안 나는 Agent 경보는 알려진 상태로 기록한다. W2가 끝난
 뒤 멈췄으면 설치된 snapshot token은 일일 backup이 쓰므로 그대로 두고, 다음 window는 그 token이
 갱신되는지 확인한 뒤 W2를 건너뛴다. 임시 root는 server가 unsealed이고 operator token이
-있으면 아래 W7의 `revoke-root`로 폐기한다. W1c rollback 판단이 열려 있어도 버리며, rollback이
-필요하면 다음 window의 새 root로 한다. server가 sealed라 폐기할 수 없을 때만 아래 이전 root
+있으면 위 W7 Root Revocation의 `revoke-root`로 폐기한다. W1c rollback 판단이 열려 있어도 버리며, rollback이
+필요하면 다음 window의 새 root로 한다. server가 sealed라 폐기할 수 없을 때만 위 Previous Root Sweep의 이전 root
 정리 규칙을 따른다(unsealed인데 OIDC가 안 되면 아래 `cleanup --keep-root` 규칙). W0·W1·W3a·W5·W7의 operator token은 각자 `revoke-self`로 폐기한다. server가
 sealed라 폐기할 수 없는 token은 OIDC 최대 TTL(4시간) 안에 만료되며, 그 사실을 값 없이 기록한다.
 server가 unsealed이면 root와 마지막 operator token을 버리기 전에 UI에서 새 OIDC 로그인을 해
@@ -1221,22 +1241,6 @@ K8s writer state(`p01-k8s.*`의 원래 UID·replica·selector, 변경 목록, Fi
 없으므로 window 뒤 관찰로 기록한다. W1b rekey는 이 window에 없습니다(SPEC-0242). W1 직후
 W1c, 그다음 W2·W3를 엽니다. 새 snapshot의 semantic restore를 끝낸 다음 W4 cutover를
 엽니다. 중단 조건이 생기면 HOME 변경을 시작하지 않고 남은 단계는 다음 window로 넘깁니다.
-
-## Validation
-
-### Service Checks
-
-각 단계의 상태 문자열(`DELIVERED`, `RENDERER_ROLES_APPLIED`, `SNAPSHOT_TOKEN_DELIVERED`, `SAVED`, `RESTORE_ACCEPTED`, `W3B_STORED`, `ROOT_REVOKED_OPERATOR_HEALTHY`, `ESO_GATE_PASS`)과 `evidence`가 복사한 receipt를 값 없이 Task에 기록한다.
-
-### Evidence
-
-단계별 상태 문자열과 `evidence`가 복사한 receipt를 값 없이 Task에 기록한다(Service Checks). 증거 복사와 정리 규칙은 Stop Conditions의 Evidence Copy and Cleanup에 있다.
-
-## Recovery
-
-### Rollback
-
-W4 실패는 fix-forward가 규칙이다. window가 끝나지 않으면 server를 sealed 또는 정지 상태로 두고 남은 단계를 다음 window로 넘긴다. 중단 시 정리는 위 window 정리 규칙과 `cleanup` 옵션을 따른다.
 
 ### Escalation
 

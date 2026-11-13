@@ -115,7 +115,7 @@ post-apply hash 검사를 수행한다. healthy, dashboard BasicAuth 성공·거
 
 ### Service Checks
 
-Traefik healthcheck, dashboard BasicAuth 성공·거부, 대표 ForwardAuth와 native OIDC route, 내부 metrics 수집을 별개로 확인하며 방법은 Actions에 있다.
+Traefik healthcheck, dashboard BasicAuth 성공·거부, 대표 ForwardAuth와 native OIDC route, 내부 metrics 수집을 별개로 확인한다.
 
 ### Evidence
 

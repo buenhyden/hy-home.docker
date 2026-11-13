@@ -43,6 +43,8 @@ created: "2026-09-19"
 
 ### Safety Checks
 
+`sync-tech-stack-versions.sh --dry-run`과 `--check`로 공개 source만 읽는 projection 검사를 먼저 수행한다.
+
 읽기 전용 점검은 Actions의 `Source and updater changes` 2단계(`sync-tech-stack-versions.sh --dry-run`과 `--check`)와 `Static configuration validation`에 있다.
 
 ## Steps
@@ -175,11 +177,15 @@ exit0만으로 완료하지 않으며 기대 coverage와 unreadable0/diff0을 �
 
 ### Stop Conditions
 
+소유권 중복, 미분류 source/manager, registry만의 pin 변경, credential 오류, 지원되지 않는 migration, backup/coverage 부재 또는 예상 밖 결과는 중단한다. parser/미분류 source 오류와 `UNREADABLE` 결과도 중단 사유다. gate를 우회하거나 force push하지 않는다.
+
 소유권 중복, 미분류 source/manager, registry만의 pin 변경, credential 오류, 지원되지 않는 migration, backup/coverage 부재 또는 예상 밖 결과는 Escalation에 기록한 중단 조건이다. parser/미분류 source 오류와 `UNREADABLE` 결과는 Actions의 해당 단계에서 중단 사유로 명시한다.
 
 ## Validation
 
 ### Service Checks
+
+`--check`는 의도한 항목만 추가·변경·삭제되고 성공해야 하며, 선택별 성공과 host-port 충돌 없음을 확인한다. 구문·선택 성공은 credential·network 도달성·health·복구 증거가 아니다.
 
 이 런북은 별도의 점검 목록을 두지 않고, Actions의 각 단계가 확인하는 상태와 종료 코드를 Evidence에 기록해 판정한다.
 

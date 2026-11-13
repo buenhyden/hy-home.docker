@@ -96,6 +96,8 @@ secret 파일이 프로세스 환경변수로 전달될 수 있으므로 값이 
 
 ### Stop Conditions
 
+검증 실패, 비밀 노출 의심, 파괴적 변경 필요, 예상과 다른 결과가 나타나면 중단한다.
+
 검증 실패, 비밀 노출 의심, 파괴적 변경 필요, 예상과 다른 결과는 Escalation에 기록한 중단 조건이다.
 
 ## Validation
@@ -128,7 +130,7 @@ secret 파일이 프로세스 환경변수로 전달될 수 있으므로 값이 
 ### Rollback
 
 - 이 런북에 정의된 복구·rollback 단계만 사용한다.
-- 관측 실패가 절차와 맞지 않으면 변경을 멈추고 근거를 보존한 뒤 `## Escalation`을 따른다.
+- 관측 실패가 절차와 맞지 않으면 변경을 멈추고 근거를 보존한 뒤 `Escalation`을 따른다.
 
 - [ ] 롤백 대상 파일
   - 각 패키지의 `docker-compose.yml`: `infra/04-data/redisinsight/`, `infra/06-observability/dozzle/`, `infra/08-ai/open-notebook/`, `infra/08-ai/mlflow/`; JupyterLab LAB은 `labs/jupyterlab/docker-compose.yml`과 `labs/jupyterlab/`

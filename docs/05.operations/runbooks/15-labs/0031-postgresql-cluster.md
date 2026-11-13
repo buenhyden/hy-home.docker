@@ -125,7 +125,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ### Stop Conditions
 
-중단 조건(DCS data 삭제·forced cluster bootstrap·leadership 변경·backup restore·credential rotation·database 변경 필요)은 Safety Checks의 확인 목록에, 의존성 불명 또는 leader 부재는 Actions의 7단계에, data/backup/ownership/credential 불명확은 Authority and Access에 적혀 있다.
+DCS data deletion, forced cluster bootstrap, leadership mutation, backup restore, credential rotation, database mutation이 필요한 경우 이 런북을 중단하고 에스컬레이션한다. 의존성이 불명확하거나 leader가 없으면 중단한다. data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다.
 
 ## Validation
 

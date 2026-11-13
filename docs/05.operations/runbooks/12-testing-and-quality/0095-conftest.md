@@ -85,12 +85,12 @@ created: "2026-09-23"
 
 ### Service Checks
 
-실제로 실행된 단계의 요약·exit와 소스 커밋을 기록한다. 첫 실패 뒤 실행되지 않은
-단계는 미실행으로 남기며 세 요약을 만들거나 전체 PASS로 해석하지 않는다.
+`scripts/validation/check-conftest-policy.sh`가 0으로 종료하면 통과이고, 0이 아니면 첫 실패 단계·줄을 읽어 원인을 분리한다.
 
 ### Evidence
 
-기록 항목(실행된 단계의 요약·exit와 소스 커밋)은 위 Service Checks에 적혀 있다.
+실제로 실행된 단계의 요약·exit와 소스 커밋을 기록한다. 첫 실패 뒤 실행되지 않은
+단계는 미실행으로 남기며 세 요약을 만들거나 전체 PASS로 해석하지 않는다.
 
 ## Recovery
 

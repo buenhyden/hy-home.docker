@@ -103,18 +103,18 @@ python3 scripts/operations/lab.py down opensearch-cluster
 
 ### Stop Conditions
 
-중단 조건(render된 서비스가 네 개와 다름)은 Safety Checks의 Static check에, HOME secret·인증서 경로 render·disk watermark 초과·데이터 소유 불명확은 Escalation에 적혀 있다.
+render된 서비스가 Static check에 나열한 네 서비스와 다르면 멈춘다. HOME 경로가 render에 나타나거나 데이터 소유가 불명확하면 멈추고 @buenhyden에게 보고한다.
 
 ## Validation
 
 ### Service Checks
 
-source revision, 실행한 명령과 종료 코드, node·Dashboards health, cluster 상태 요약, 미검증 gap을
-기록한다. secret, 인증서 내용, raw log와 rendered private 설정은 기록하지 않는다.
+Static check render에 네 서비스가 나오고 세 node와 Dashboards가 healthy이며, `_cluster/health`와 `_cat/nodes`로 cluster 상태가 확인되어야 한다.
 
 ### Evidence
 
-기록 항목(source revision, 실행한 명령과 종료 코드, node·Dashboards health, cluster 상태 요약, 미검증 gap)과 비기록 대상(secret, 인증서 내용, raw log, rendered private 설정)은 위 Service Checks에 적혀 있다.
+source revision, 실행한 명령과 종료 코드, node·Dashboards health, cluster 상태 요약, 미검증 gap을
+기록한다. secret, 인증서 내용, raw log와 rendered private 설정은 기록하지 않는다.
 
 ## Recovery
 

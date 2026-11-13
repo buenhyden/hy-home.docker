@@ -52,6 +52,8 @@ SemVer 게시나 장부 형식 PASS는 ROOT 운영 변경·HOME 배포 승인이
 
 ### Safety Checks
 
+시작 전에 `git status --short --branch`와 `git branch --show-current`로 branch와 작업 트리 상태를 확인하고, 정확한 base/candidate commit SHA와 `git diff --check` 결과를 확인한다.
+
 시작 상태 확인은 Actions의 1~2단계에 있다. `git status --short --branch`로 branch와 작업 트리 상태를, 정확한 base/candidate commit SHA와 `git diff --check` 결과를 확인한다.
 
 ## Steps
@@ -243,50 +245,6 @@ bash scripts/operations/check-compose-core-readiness.sh
     handoff한다. 이 런북은 실행이나 재실행을 승인하지 않는다. 필요하면 owning Spec에
     co-located Plan과 Task 승인/evidence 계약을 먼저 작성한다.
 
-### Stop Conditions
-
-대상별 중단 경계는 Actions의 `ROOT 인프라 image 후보와 승격` 표의 중단 경계 열에 있다. secret 노출 징후, 값 변경이 필요한 `.env` drift, 추적 문서로 입증할 수 없는 rollback 증거는 Escalation에 기록한 즉시 중단 조건이다.
-
-## Validation
-
-### Service Checks
-
-- ROOT 운영 승격을 실행했다면 위 각 단계의 exact 대상·source/image·artifact SHA,
-  독립 review·실제 승인·rollback·HOME 기능 결과를 owning Task에서 확인한다. 미실행
-  단계와 repository SemVer 게시 결과를 합치지 않는다.
-
-- 현재 branch와 clean/예상된 작업 트리 상태.
-- 정확한 base/candidate SHA, 두 commit 사이 diff 요약과 `git diff --check` 결과.
-- 선택한 저장소 계약·문서 traceability 검사와 승인 범위에 해당하는 Compose 검증 결과. 등록에서 폐기된 surface의 freshness를 현재 gate로 요구하지 않는다.
-- main 준비 PR의 dated CHANGELOG heading, 정확한 SemVer와 commit, draft 자산 hash 및 실제 게시/미실행 구분.
-- release/deploy 주장이 의존하는 backup/N/A, rollback/recovery 링크, incident 경로, remote gate 증거.
-- 별도 승인하여 실제 실행한 runtime 배포·secret 값·`.env` sync·port·permission·remote branch-protection 변경과 실행하지 않은 범위의 구분.
-- Local delivery evidence에는 revision, digest/verdict reference, project,
-  full portable identity tuple의 concise fields, marker presence, decision,
-  `data_impact=none`, cleanup, schema-v4 record hash만 기록한다. HTTP body,
-  runtime log, secret, credential, token은 기록하지 않는다.
-- Local-delivery record의 현재 verdict와 교체 전후 hash/inode는 해당 실행
-  Task의 실제 증거에서 확인한다. 과거 문서 서술은 현재 실행 결과가 아니다.
-
-### Evidence
-
-기록할 증거 목록(branch·작업 트리 상태, base/candidate SHA와 diff 요약, CHANGELOG heading과 SemVer·commit·draft 자산 hash, local delivery record 필드 등)은 Service Checks의 목록에 있다. HTTP body, runtime log, secret, credential, token은 기록하지 않는다(Service Checks 참조).
-
-## Recovery
-
-### Rollback
-
-- 해당 service·workflow·deployment에 문서화된 rollback/recovery 절차만 사용한다.
-- 모든 Compose service에 적용되는 일반 rollback 명령은 N/A다. 서비스별 data migration과 backup 복구 경계를 따른다.
-- release/tag 판단이 차단되거나 rollback 증거가 불완전하면 판단을 중단하고 위 증거로 에스컬레이션한다.
-- Local delivery cleanup의 project/resource ownership query가 누락되거나
-  ambiguous하면 broad cleanup을 시도하지 말고 class `60`으로 중단한다.
-- In-process cleanup은 exact all-versus-owned container/network ID, 단일
-  cardinality, zero volume을 확인한 뒤 그 ID만 직접 제거한다. Standalone
-  cleanup은 pair가 absent/incomplete/additional/nonmatching이면 destructive
-  call 없이 class `60`으로 중단한다.
-- 실패한 문서 변경은 직전 diff 단위로 되돌린다.
-
 #### 검증된 미사용 자료의 정확한 폐기
 
 `python3 scripts/operations/retire-materials.py --root <운영자-체크아웃> --manifest <검토된-manifest>`는 기본적으로 계획만 검사한다. `--apply`는 총괄 통합 순서에 따른 별도 운영 단계이며, 현재 CLN01 source 검증은 실제 삭제 승인이 아니다. 추적 파일은 이 helper가 거부하므로 해당 owning commit에서 정확한 `git rm -- PATH...`를 사용한다. 빈 디렉터리는 별도 확인 후 `rmdir`만 사용한다.
@@ -311,6 +269,52 @@ manifest 필드 계약은 아래와 같다. 이것은 값 없는 입력 계약�
 `maintenance`는 manifest 최상위 또는 개별 entry에 둘 수 있다. `writers_stopped`는 실제 확인 후에만 true이며, 일반 flock 확보가 다른 writer 중단의 증거가 되지 않는다. 일반 helper의 COMM-003 거부는 유지된다. 해당 후보는 SMTP01의 `smtp_contract --retire`를 제안된 단일 실행자로 두고, 총괄 승인·lock/receipt 통합 전까지 실행하지 않는다. generator는 재생성 방지를 소유하며 후보를 중복 unlink하지 않는다.
 
 helper는 전체 preflight 후 각 파일을 즉시 재검증한다. 부분 실패는 exit 2와 처리됨·이미 없음·실패·미시도 상태를 남긴다. unlink 뒤 fsync 실패는 `deleted-durability-unknown`, identity 확인 실패는 `deleted-identity-unconfirmed`로 보고하므로 파일이 그대로 있다고 가정하지 않는다. 먼저 실제 상태를 재관측하고 검토된 근거를 갱신한 뒤 재실행한다. private 원본을 새 retired/backup 평문 폴더에 복제하지 않는다. Git revert는 추적 source만 복구하며 private 파일의 복구는 이미 존재하는 암호화 복구 자료나 검증된 재발급 경로에 한정한다.
+
+### Stop Conditions
+
+secret 노출 징후, 값 변경이 필요한 `.env` drift, 추적 문서로 입증할 수 없는 rollback 증거가 있으면 즉시 중단한다. release/tag 판단이 차단되거나 rollback 증거가 불완전하면 판단을 중단한다. Verdict pair가 하나라도 없거나 legacy, stale, mixed, substituted이면 class `10`에서 중단하며, local delivery cleanup의 ownership query가 누락되거나 ambiguous하면 broad cleanup 없이 class `60`으로 중단한다.
+
+대상별 중단 경계는 Actions의 `ROOT 인프라 image 후보와 승격` 표의 중단 경계 열에 있다. secret 노출 징후, 값 변경이 필요한 `.env` drift, 추적 문서로 입증할 수 없는 rollback 증거는 Escalation에 기록한 즉시 중단 조건이다.
+
+## Validation
+
+### Service Checks
+
+- ROOT 운영 승격을 실행했다면 위 각 단계의 exact 대상·source/image·artifact SHA,
+  독립 review·실제 승인·rollback·HOME 기능 결과를 owning Task에서 확인한다. 미실행
+  단계와 repository SemVer 게시 결과를 합치지 않는다.
+
+### Evidence
+
+- 현재 branch와 clean/예상된 작업 트리 상태.
+- 정확한 base/candidate SHA, 두 commit 사이 diff 요약과 `git diff --check` 결과.
+- 선택한 저장소 계약·문서 traceability 검사와 승인 범위에 해당하는 Compose 검증 결과. 등록에서 폐기된 surface의 freshness를 현재 gate로 요구하지 않는다.
+- main 준비 PR의 dated CHANGELOG heading, 정확한 SemVer와 commit, draft 자산 hash 및 실제 게시/미실행 구분.
+- release/deploy 주장이 의존하는 backup/N/A, rollback/recovery 링크, incident 경로, remote gate 증거.
+- 별도 승인하여 실제 실행한 runtime 배포·secret 값·`.env` sync·port·permission·remote branch-protection 변경과 실행하지 않은 범위의 구분.
+- Local delivery evidence에는 revision, digest/verdict reference, project,
+  full portable identity tuple의 concise fields, marker presence, decision,
+  `data_impact=none`, cleanup, schema-v4 record hash만 기록한다. HTTP body,
+  runtime log, secret, credential, token은 기록하지 않는다.
+- Local-delivery record의 현재 verdict와 교체 전후 hash/inode는 해당 실행
+  Task의 실제 증거에서 확인한다. 과거 문서 서술은 현재 실행 결과가 아니다.
+
+기록할 증거 목록(branch·작업 트리 상태, base/candidate SHA와 diff 요약, CHANGELOG heading과 SemVer·commit·draft 자산 hash, local delivery record 필드 등)은 Service Checks의 목록에 있다. HTTP body, runtime log, secret, credential, token은 기록하지 않는다(Service Checks 참조).
+
+## Recovery
+
+### Rollback
+
+- 해당 service·workflow·deployment에 문서화된 rollback/recovery 절차만 사용한다.
+- 모든 Compose service에 적용되는 일반 rollback 명령은 N/A다. 서비스별 data migration과 backup 복구 경계를 따른다.
+- release/tag 판단이 차단되거나 rollback 증거가 불완전하면 판단을 중단하고 위 증거로 에스컬레이션한다.
+- Local delivery cleanup의 project/resource ownership query가 누락되거나
+  ambiguous하면 broad cleanup을 시도하지 말고 class `60`으로 중단한다.
+- In-process cleanup은 exact all-versus-owned container/network ID, 단일
+  cardinality, zero volume을 확인한 뒤 그 ID만 직접 제거한다. Standalone
+  cleanup은 pair가 absent/incomplete/additional/nonmatching이면 destructive
+  call 없이 class `60`으로 중단한다.
+- 실패한 문서 변경은 직전 diff 단위로 되돌린다.
 
 ### Escalation
 

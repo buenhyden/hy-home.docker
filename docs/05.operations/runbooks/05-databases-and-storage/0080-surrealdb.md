@@ -49,7 +49,7 @@ created: "2026-09-19"
 
 ### Safety Checks
 
-소스 버전·namespace/database·인벤토리·여유 용량 기록은 Actions의 `Planned Isolated Restore Rehearsal` 1번 단계에 있다.
+리허설 전에 소스 버전, namespace/database, auth level, table/schema/permission 인벤토리, record-count invariant, export 옵션과 여유 용량을 기록한다(`Planned Isolated Restore Rehearsal` 1번 단계).
 
 ## Steps
 
@@ -59,7 +59,6 @@ created: "2026-09-19"
 2. 상태 확인: `docker compose --profile surrealdb ps surrealdb`.
 3. 접근성 확인: `docker compose --profile surrealdb exec -T surrealdb /usr/local/bin/surreal is-ready --endpoint http://127.0.0.1:8000`.
 4. 정제된 로그 검토: `docker compose --profile surrealdb logs --tail=120 surrealdb`.
-5. mount, 버전, namespace/database, 또는 인증이 선언된 상태와 다르면 증거 수집 후 중단한다.
 
 #### Planned Isolated Restore Rehearsal
 
@@ -72,13 +71,11 @@ created: "2026-09-19"
 
 ### Stop Conditions
 
-중단·중지 관련 문장은 Actions 본문에 있다.
+mount, 버전, namespace/database, 또는 인증이 선언된 상태와 다르면 증거 수집 후 중단한다.
 
 ## Validation
 
 ### Service Checks
-
-날짜, configuration commit, 서비스/profile, source와 target 버전, namespace/database 식별자, backup checksum, exit status, 정제된 invariant, 그리고 명시적 미실행/실행 상태를 기록한다. secret 값이나 원본 database 콘텐츠는 절대 기록하지 않는다.
 
 - Compose 렌더링과 서비스 상태가 정확한 source/profile과 일치한다.
 - Export checksum과 선언된 scope가 리허설 입력과 일치한다.
@@ -87,7 +84,7 @@ created: "2026-09-19"
 
 ### Evidence
 
-증거 관련 문장은 Actions 본문, `Planned Isolated Restore Rehearsal`에 있다.
+날짜, configuration commit, 서비스/profile, source와 target 버전, namespace/database 식별자, backup checksum, exit status, 정제된 invariant, 그리고 명시적 미실행/실행 상태를 기록한다. secret 값이나 원본 database 콘텐츠는 절대 기록하지 않는다.
 
 ## Recovery
 

@@ -46,7 +46,17 @@ scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 c
 
 ### Safety Checks
 
-별도 backup이나 읽기 전용 사전 점검 목록은 없고, target 상태·worker 수 기록과 bounded status·로그 캡처는 Actions의 1단계와 3단계에서 수행한다.
+읽기 전용 사전 점검은 Actions의 1단계(target·users·scenario digest 기록), 3단계(bounded status와 로그), 4단계(`config --quiet`와 master health failure 점검)이다. 시나리오 backup과 upgrade 전 점검은 다음과 같다.
+
+#### 시나리오 보존과 업그레이드
+
+Locust에는 application database가 없다. Bind-backed scenario/result directory가
+유일한 local persistent scope다. Test가 쓰고 있지 않을 때만 ordinary file로
+backup한다. 시나리오가 Git에 추적되는지 확인하고, 추적되지 않으면 검토본·해시·복구본의 소유자를
+별도로 기록한다. 호스트 bind를 사용한다는 사실만으로 Git 추적을 보장하지 않는다. Locust 또는
+dependency upgrade 전에 isolated run에서 scenario syntax를 validate하고, 작은
+승인된 canary를 실행한 뒤 worker registration과 aggregate metrics를 비교한다.
+이 documentation task에서는 backup, restore, load execution을 수행하지 않았다.
 
 ## Steps
 
@@ -112,19 +122,9 @@ python3 examples/operations/locust-telemetry/lifecycle.py \
   --mock-image '<approved-wiremock@sha256:digest>'
 ```
 
-#### 시나리오 보존과 업그레이드
-
-Locust에는 application database가 없다. Bind-backed scenario/result directory가
-유일한 local persistent scope다. Test가 쓰고 있지 않을 때만 ordinary file로
-backup한다. 시나리오가 Git에 추적되는지 확인하고, 추적되지 않으면 검토본·해시·복구본의 소유자를
-별도로 기록한다. 호스트 bind를 사용한다는 사실만으로 Git 추적을 보장하지 않는다. Locust 또는
-dependency upgrade 전에 isolated run에서 scenario syntax를 validate하고, 작은
-승인된 canary를 실행한 뒤 worker registration과 aggregate metrics를 비교한다.
-이 documentation task에서는 backup, restore, load execution을 수행하지 않았다.
-
 ### Stop Conditions
 
-Locust를 중지 상태로 유지하는 조건(target SLI 미회복, worker 등록 실패 시 image/build 롤백)은 Actions의 4단계와 7단계에 적혀 있다.
+target SLI가 회복되지 않았으면 Locust를 중지 상태로 두고 target owner에게 escalation한다. worker 등록에 실패하거나 통계가 벌어지면 image/build 변경을 롤백하고, 시도 사이에는 Locust master와 worker를 중지 상태로 유지한다.
 
 ## Validation
 

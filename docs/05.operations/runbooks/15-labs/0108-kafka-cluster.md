@@ -115,18 +115,18 @@ owner가 승인한 뒤에만 다음 순서를 따른다.
 
 ### Stop Conditions
 
-중단 조건(render된 서비스가 일곱 개와 다름)은 Safety Checks의 Static check에, cluster ID가 HOME과 같음·HOME 경로 render·데이터 소유 불명확은 Escalation에 적혀 있다.
+render된 서비스가 Static check에 나열한 일곱 서비스와 다르면 멈춘다. HOME 경로가 render에 나타나거나 데이터 소유가 불명확하면 멈추고 @buenhyden에게 보고한다.
 
 ## Validation
 
 ### Service Checks
 
-source revision, 실행한 명령과 종료 코드, broker health, topic·ISR 요약, 미검증 gap을 기록한다.
-secret, raw log와 rendered private 설정은 기록하지 않는다.
+Static check render에 일곱 서비스가 나오고 세 broker가 healthy이며, topic의 partition leader와 ISR이 확인되어야 한다.
 
 ### Evidence
 
-기록 항목(source revision, 실행한 명령과 종료 코드, broker health, topic·ISR 요약, 미검증 gap)과 비기록 대상(secret, raw log, rendered private 설정)은 위 Service Checks에 적혀 있다.
+source revision, 실행한 명령과 종료 코드, broker health, topic·ISR 요약, 미검증 gap을 기록한다.
+secret, raw log와 rendered private 설정은 기록하지 않는다.
 
 ## Recovery
 

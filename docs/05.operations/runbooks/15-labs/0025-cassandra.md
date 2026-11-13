@@ -35,7 +35,7 @@ created: "2026-05-17"
 
 ### Authority and Access
 
-기동·중단·복원·삭제가 별도 승인이라는 조건과 무인증 내부 CQL의 peer 제한은 Safety Checks의 Execution and stop boundary에 적혀 있다.
+기동·중단·복원·삭제는 별도 승인이다. 무인증 내부 CQL이므로 신뢰하지 않는 peer를 연결하지 않는다.
 
 ### Safety Checks
 
@@ -66,17 +66,19 @@ created: "2026-05-17"
 
 ### Stop Conditions
 
-중단 조건(과거 데이터·snapshot 소유권 확인 전 재생성·정리 중단)은 Safety Checks의 사전 확인 목록에, 데이터 소유권·용량·인증 필요성·복구 세트 불명확 시 mutation 보류는 Escalation에 적혀 있다.
+과거 데이터·snapshot 소유권을 확인하기 전에는 재생성·정리를 중단한다. 데이터 소유권, 용량, 인증 필요성, 복구 세트가 불명확하면 mutation을 보류한다.
 
 ## Validation
 
 ### Service Checks
 
-정적 렌더 exit code와 source SHA를 기록한다. 실제 node·CQL·restore는 수행하지 않았다면 `NOT_RUN`으로 남긴다.
+정적 구성 렌더가 성공해야 하며, 승인된 실행에서 `nodetool status`의 `UN`은 프로세스 상태일 뿐 인증·읽기·복원을 증명하지 않는다.
 
 ### Evidence
 
 정적 명령·종료 코드·source SHA만 기록한다. 실제 상태 조회와 복원 증거는 별도 실행 승인 후 기록한다.
+
+정적 렌더 exit code와 source SHA를 기록한다. 실제 node·CQL·restore는 수행하지 않았다면 `NOT_RUN`으로 남긴다.
 
 #### Observability and Evidence Sources
 

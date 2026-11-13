@@ -36,7 +36,7 @@ WireMock의 모드 이상, 스텁 404, 매핑 로드 실패, 메모리 한계 �
 
 ### Authority and Access
 
-변경 전 승인과 영향 범위는 아래 H4의 전제를 따른다.
+mapping reset과 기동·재시작은 영향받는 테스트 소유자 승인을 확인한 뒤에만 실행하며, 메모리 제한 변경은 영향받는 테스트 소유자와 검토하고 승인한다.
 
 #### 변경 전제·복구·업그레이드
 
@@ -113,14 +113,14 @@ admin API를 loopback 밖으로 공개하거나, 실제 업스트림에 대한 �
 
 ### Service Checks
 
+기능 모드는 `__admin/health` 응답과 `__admin/mappings` 개수가 정상이어야 하고, load 모드는 host port 없이 공개 stub health(`GET /hyhome/ping`)가 정상이며 HTTP admin이 403으로 거부되어야 한다.
+
+### Evidence
+
 기능 모드는 health 응답, `__admin/mappings`의 매핑 개수, journal reset 종료 코드와
 소스 커밋을 기록한다. load 모드는 mode, no-journal/HTTP admin 거부 command, host port 없음, 공개 stub health와
 소스 커밋만 기록한다. journal의 요청 본문이나 헤더는 기록하지 않는다. 테스트가
 크리덴셜을 전송했을 수 있다.
-
-### Evidence
-
-기능·load 모드별 기록 항목과 요청 본문·헤더를 기록하지 않는 원칙은 위 Service Checks에 적혀 있다.
 
 ## Recovery
 

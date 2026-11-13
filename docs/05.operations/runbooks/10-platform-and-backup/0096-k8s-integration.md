@@ -30,10 +30,6 @@ hy-home.k8s 클러스터와 이 스택을 연결하는 전체 절차와 자격 �
 | Argo CD notifications Slack 토큰 설정 또는 교체 | 1, [Slack 토큰](#setting-or-replacing-the-slack-notifications-token), 8 |
 | OpenBao auth mount, policy, role 유실 | 1, 5 (모든 단계), 6, 7, 8 |
 
-모든 단계에 적용되는 규칙:
-
-- HOME 호스트의 저장소 루트에서 작업한다.
-
 ### Scope
 
 - [Guide](../../guides/10-platform-and-backup/0096-k8s-integration.md) (`GDE-0096`)
@@ -47,6 +43,14 @@ hy-home.k8s 클러스터와 이 스택을 연결하는 전체 절차와 자격 �
 
 ### Authority and Access
 
+승인된 기존 kubeconfig/context만 사용하며, 별도 승인 없이 문서 점검을 runtime, private 입력 읽기 또는 k8s 변경으로 확장하지 않는다. secret 값은 파일이나 숨겨진 프롬프트로만 전달한다.
+
+### Safety Checks
+
+모든 단계에 적용되는 규칙:
+
+- HOME 호스트의 저장소 루트에서 작업한다.
+
 - 각 명령은 한 줄로 입력한다. 붙여넣은 줄 연속(line continuation)은
   인자를 조용히 빠뜨릴 수 있다.
 - secret 값은 파일이나 숨겨진 프롬프트로만 전달한다. 인자, 채팅, 로그로는
@@ -54,10 +58,6 @@ hy-home.k8s 클러스터와 이 스택을 연결하는 전체 절차와 자격 �
 - 이름, 불리언, 비-secret 필드만 기록한다.
 - 각 단계는 예상 결과로 끝난다. 결과가 일치할 때까지 다음 단계를 시작하지
   않는다.
-
-### Safety Checks
-
-작업 전 점검은 아래 항목에 따른다.
 
 #### Shared prerequisites and result handling
 
@@ -446,26 +446,6 @@ boolean만 기록한다. client 종료 전 임시 응답 파일의 custody를 �
 - Basic Auth credential과 `cluster` external label을 사용하는 Alloy remote write 및 Kiali
 - bearer 토큰을 사용하는 Kiali의 Grafana 연결
 
-#### Phase 7. Verify from both sides
-
-7.1 클러스터 측에서 소유자는 ESO `SecretStore`가 유효하고 Argo CD
-`ExternalSecret`이 동기화되었는지 확인한다. 변경 이후의 새 auth 성공과
-reconcile 시각·Ready 상태만 기록한다. CA 교체 전의 기존 Ready만으로 통과시키지 않는다.
-
-7.2 호스트 측에서 클러스터의 샘플이 도착하는지 확인한다(3.2의 `prom_auth`
-사용):
-
-```bash
-prom_auth | curl -K - -s --resolve prometheus.hy.home.arpa:443:192.168.0.13 --cacert secrets/certs/rootCA.pem --data-urlencode 'query=count by (job) (up{cluster="k3d-hyhome"})' https://prometheus.hy.home.arpa/api/v1/query
-```
-
-예상 결과: 선택한 클러스터 job마다 새 시리즈가 도착한다. `count by(job)(up)`은
-up값0도 세므로 전체 클러스터 건강을 증명하지 않는다. 예상 job inventory와 fresh
-sample, 실제 up값을 별도로 확인한다. Loki 로그·trace 수집/조회·Kiali·선택 DB는
-각 consumer 소유자의 제한된 기능 검증으로 확인한다. synthetic 데이터 쓰기는
-별도 승인 없이는 실행하지 않는다. metrics NodePort 폐지는 이 증거와 별도
-클러스터 변경 승인 이후에만 가능하다.
-
 #### Phase 8. Clean up and record
 
 클러스터 bootstrap 소비 완료 후 token 자신으로 self-revoke하고5.4.3과 같은
@@ -610,11 +590,35 @@ policy는 SPEC-0181부터 이 경로를 허용한다. `hy-home-operator` policy�
 
 ### Stop Conditions
 
+`ROOT STILL VALID`, `secret/platform/*` 밖을 읽는 토큰, OpenBao 앞에 SSO나 허용목록을 두라는 요청, 인증 없이 Prometheus나 Grafana를 게시하라는 요청이 있으면 중단한다. 빈 파일이나 다른 context, `INDETERMINATE` 판정도 중단한다. Prometheus API 비밀번호 교체는 BLOCKED이며 해소 전 consumer/KV 변경을 중단한다.
+
 `ROOT STILL VALID`, `secret/platform/*` 밖을 읽는 토큰, OpenBao 앞에 SSO나 허용목록을 두라는 요청, 인증 없이 Prometheus나 Grafana를 게시하라는 요청은 Escalation에 기록한 중단 조건이다. 단계별 중단 판정(빈 파일이나 다른 context, `INDETERMINATE`, `LEAK` 등)은 Actions의 각 Phase에 있고, Prometheus API 비밀번호 교체의 BLOCKED 조건은 Trigger and Outcome의 표에 있다.
 
 ## Validation
 
 ### Service Checks
+
+서비스 점검은 아래 항목에 따른다.
+
+#### Phase 7. Verify from both sides
+
+7.1 클러스터 측에서 소유자는 ESO `SecretStore`가 유효하고 Argo CD
+`ExternalSecret`이 동기화되었는지 확인한다. 변경 이후의 새 auth 성공과
+reconcile 시각·Ready 상태만 기록한다. CA 교체 전의 기존 Ready만으로 통과시키지 않는다.
+
+7.2 호스트 측에서 클러스터의 샘플이 도착하는지 확인한다(3.2의 `prom_auth`
+사용):
+
+```bash
+prom_auth | curl -K - -s --resolve prometheus.hy.home.arpa:443:192.168.0.13 --cacert secrets/certs/rootCA.pem --data-urlencode 'query=count by (job) (up{cluster="k3d-hyhome"})' https://prometheus.hy.home.arpa/api/v1/query
+```
+
+예상 결과: 선택한 클러스터 job마다 새 시리즈가 도착한다. `count by(job)(up)`은
+up값0도 세므로 전체 클러스터 건강을 증명하지 않는다. 예상 job inventory와 fresh
+sample, 실제 up값을 별도로 확인한다. Loki 로그·trace 수집/조회·Kiali·선택 DB는
+각 consumer 소유자의 제한된 기능 검증으로 확인한다. synthetic 데이터 쓰기는
+별도 승인 없이는 실행하지 않는다. metrics NodePort 폐지는 이 증거와 별도
+클러스터 변경 승인 이후에만 가능하다.
 
 이 런북은 별도의 점검 목록을 두지 않고, Actions의 각 단계가 확인하는 상태와 종료 코드를 Evidence에 기록해 판정한다.
 

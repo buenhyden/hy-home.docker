@@ -115,9 +115,7 @@ OpenBao의 `healthy`는 unseal만, Agent의 `healthy`는 token과 template 출�
 
 #### 4. Verify the handoff boundary
 
-별도 승인된 복구 뒤에는 원래 실패했던 사용자 기능과 영향받은 공통 의존성을
-다시 확인한다. 컨테이너 healthy만으로 종료하지 않으며, 확인하지 않은 기능과
-data integrity·복원 가능성은 미검증으로 남긴다.
+인계 경계의 중단 조건은 Stop Conditions에, 복구 뒤 재확인은 Service Checks에 기록한다.
 
 ### Stop Conditions
 
@@ -130,7 +128,9 @@ data integrity·복원 가능성은 미검증으로 남긴다.
 
 ### Service Checks
 
-공통 장애 진단의 확인은 Actions의 각 단계와 별도 승인된 복구 뒤의 재확인을 따른다.
+별도 승인된 복구 뒤에는 원래 실패했던 사용자 기능과 영향받은 공통 의존성을
+다시 확인한다. 컨테이너 healthy만으로 종료하지 않으며, 확인하지 않은 기능과
+data integrity·복원 가능성은 미검증으로 남긴다.
 
 ### Evidence
 

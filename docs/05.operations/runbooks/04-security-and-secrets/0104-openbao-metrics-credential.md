@@ -181,11 +181,11 @@ credential이 필요하다. 발급에는 승인된 운영자 신원이 필요하
 
 ### Service Checks
 
-`metrics: allowed`, `policy list: denied`, `up{job="openbao"}` 값 1, 이전 token의 `old: revoked` 또는 `old: expired (<날짜>)`와 새 만료일을 값 없이 Task에 기록한다.
+`metrics: allowed`, `policy list: denied`, `up{job="openbao"}` 값 1, 이전 token의 `old: revoked` 또는 `old: expired (<날짜>)`와 새 만료일을 확인한다.
 
 ### Evidence
 
-확인 결과는 값 없이 Task에 기록하며 기록 항목은 Service Checks에 있다. 회전은 custody를 새 accessor·만료일로 교체하고, 확인하지 못한 폐기나 custody 쓰기는 작업 디렉터리의 `new.unrevoked`, `old.unrevoked`, `custody.unwritten` 표시로 남는다(Actions의 Rotation Steps).
+Service Checks의 확인 결과를 값 없이 Task에 기록한다. 회전은 custody를 새 accessor·만료일로 교체하고, 확인하지 못한 폐기나 custody 쓰기는 작업 디렉터리의 `new.unrevoked`, `old.unrevoked`, `custody.unwritten` 표시로 남는다(Actions의 Rotation Steps).
 
 ## Recovery
 

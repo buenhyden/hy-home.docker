@@ -37,7 +37,7 @@ DB 복원 또는 승인된 업그레이드에 사용한다.
 
 ### Authority and Access
 
-승인자 기록은 Safety Checks의 작업 선택과 복구 전제에, HOME mng-pg endpoint(`LAB_SONARQUBE_DB_HOST`) 승인은 Actions 1단계에, rollback 승인은 Upgrade and rollback에 적혀 있다.
+변경 전 정확한 서비스·데이터 경로·승인자·중단 영향을 기록한다. rollback 승인이 있을 때만 active instance를 upgrade하며, HOME mng-pg endpoint(`LAB_SONARQUBE_DB_HOST`)는 승인된 것만 사용한다.
 
 ### Safety Checks
 
@@ -128,13 +128,13 @@ plugin 호환성을 알 수 없거나, queue/index failure가 지속되거나, a
 
 ### Service Checks
 
-command exit, image/source commit, DB backup/checksum/schema, project와 task
-count, health/index status, plugin inventory, 최종 상태를 기록한다. DB 내용,
-source code, personal data, token은 절대 기록하지 않는다.
+system health, loopback port 로그인, SonarQube permission, 대표 background task 하나가 정상이어야 하고, 복원 후에는 project/settings/user count, permission, 대표 검색, analysis 하나가 확인되어야 한다.
 
 ### Evidence
 
-기록 항목(command exit, image/source commit, DB backup/checksum/schema, task count, health/index status, plugin inventory)과 기록하지 않을 대상(DB 내용, source code, personal data, token)은 위 Service Checks에 적혀 있다.
+command exit, image/source commit, DB backup/checksum/schema, project와 task
+count, health/index status, plugin inventory, 최종 상태를 기록한다. DB 내용,
+source code, personal data, token은 절대 기록하지 않는다.
 
 ## Recovery
 

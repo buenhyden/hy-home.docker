@@ -124,6 +124,8 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 ### Stop Conditions
 
+예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단한다. 또한 host `nvidia-smi`·NVIDIA Container Toolkit 검사 실패, daemon 재시작 승인 부재, `08-ai` 밖 영향이 있으면 중단한다.
+
 중단 조건은 Escalation에 기록한다. host `nvidia-smi`·NVIDIA Container Toolkit 검사 실패, daemon 재시작 승인 부재, `08-ai` 밖 영향이 있으면 중단한다.
 
 ## Validation

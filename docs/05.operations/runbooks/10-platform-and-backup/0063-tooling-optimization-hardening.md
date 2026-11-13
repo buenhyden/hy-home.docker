@@ -49,6 +49,8 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 
 ### Authority and Access
 
+runtime 재시작은 이 런북 범위 밖이며 대상 service runbook과 사용자 승인을 따른다. 책임자는 `@buenhyden`이다.
+
 이 런북은 CI·로컬 하드닝 검사를 다루며 runtime 재시작은 범위 밖이므로 대상 service runbook과 사용자 승인을 따른다(Rollback). 책임자는 `@buenhyden`이다(Escalation).
 
 ### Safety Checks
@@ -99,14 +101,13 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 
 ### Stop Conditions
 
+실행 환경·데이터·자격 증명 변경이 필요하면 중단한다. 한정된 복구 후에도 검사가 실패하거나 비밀 노출, 루트 Compose 문맥 복구 실패, 실행 환경 변경 필요성이 있으면 책임자에게 보고한다.
+
 실행 환경·데이터·자격 증명 변경이 필요하면 Rollback에서 중단하고 Escalation을 따른다. 한정된 복구 후에도 검사가 실패하거나 비밀 노출, 루트 Compose 문맥 복구 실패, 실행 환경 변경 필요성이 있으면 책임자에게 보고한다.
 
 ## Validation
 
 ### Service Checks
-
-- 명령 결과, 시각, 실패 검사명, 변경 diff와 최종 검증 상태를 기록한다.
-- Compose 렌더링을 근거로 남길 때 선택한 프로필을 기록한다.
 
 `--explain`은 실행하지 않는 계획 조회다. 후보 aggregate QA는
 [quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix)의
@@ -119,7 +120,8 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 
 ### Evidence
 
-증거 기록은 아래 항목에 따른다.
+- 명령 결과, 시각, 실패 검사명, 변경 diff와 최종 검증 상태를 기록한다.
+- Compose 렌더링을 근거로 남길 때 선택한 프로필을 기록한다.
 
 #### 증거 출처
 

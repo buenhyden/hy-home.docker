@@ -54,19 +54,9 @@ created: "2026-05-17"
 
 저장소 root에서 아래의 정확한 service/profile과 기존 container를 선택한다. 변경 전에 승인 대상, source/image, 선행 readiness, 필요한 운영 권한과 부작용 범위를 확인한다. `up`은 dependency/provisioning job을 만들 수 있고 profile은 격리가 아니다. 진단은 기존 container의 `exec`를 사용하고 단순 조회를 위해 client/provisioner를 띄우지 않는다. 재시작은 요청 중단·memory/queue 손실·부작용 반복을 일으킬 수 있으므로 대상 drain/backup 조건을 먼저 충족한다. `restart`는 바뀐 Compose 설정이나 교체된 secret bind를 불러오지 않는다.
 
-Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
+Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
 ### Safety Checks
-
-사전 점검·백업 관련 문장은 `Steps`, `Planned isolated recovery rehearsal`에서 다룬다.
-
-## Steps
-
-### Actions
-
-실행 절차는 아래 항목을 따른다.
-
-#### Steps
 
 시작 전 점검:
 
@@ -74,7 +64,14 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - [ ] 최근 변경 커밋과 영향 범위를 확인한다.
 - [ ] telemetry collection, query, alerting, profiling, UI route 영향도를 평가한다.
 - [ ] Secret value, token 또는 credential payload는 기록하지 않는다.
-- [ ] Route/middleware, resource cap, secret reference, workflow gate 또는 runtime hardening rule을 변경해야 해 보이면 중단하고 repository owner @buenhyden approval을 받는다.
+
+## Steps
+
+### Actions
+
+실행 절차는 아래 항목을 따른다.
+
+#### Diagnosis and restart
 
 1. 정적 구성과 hardening baseline을 캡처한다.
 
@@ -141,7 +138,9 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 ### Stop Conditions
 
-중단·중지 관련 문장은 Authority and Access의 `Execution Boundary`, `Steps`, `Planned isolated recovery rehearsal`에 있다.
+- [ ] Route/middleware, resource cap, secret reference, workflow gate 또는 runtime hardening rule을 변경해야 해 보이면 중단하고 repository owner @buenhyden approval을 받는다.
+
+예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다.
 
 ## Validation
 
@@ -152,6 +151,8 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - [ ] `python3 scripts/validation/check-document-links.py --mode traceability`가 통과한다.
 - [ ] Observability route middleware, health dependencies, custom image hardening, Pyroscope/cAdvisor availability checks가 현재 policy와 일치한다.
 - [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
+
+### Evidence
 
 수집할 evidence는 다음과 같다.
 
@@ -165,10 +166,6 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - Hardening 장애는 failed check name, affected service/router, before/after command output, relevant redacted diff, recovery/escalation state를 함께 기록한다.
 - Route/resource/secret/workflow/security policy 변경 필요성이 보이면 approval state를 기록한다.
 
-### Evidence
-
-증거 관련 문장은 Authority and Access의 `Execution Boundary`, `Steps`, `Planned isolated recovery rehearsal`에 있다.
-
 ## Recovery
 
 ### Rollback
@@ -177,7 +174,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - Runtime restart는 affected service의 documented runbook을 따른다.
 - Route/middleware policy, resource cap, secret reference, workflow gate 또는 runtime security relaxation은 이 런북의 안전 롤백 범위를 벗어난다.
 
-이 런북에 명시된 validation, evidence capture, Git-managed rollback만 사용한다. Route/middleware policy, resource cap, secret reference, workflow gate, runtime security relaxation 또는 external service 변경은 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
+이 런북에 명시된 validation, evidence capture, Git-managed rollback만 사용한다. Route/middleware policy, resource cap, secret reference, workflow gate, runtime security relaxation 또는 external service 변경은 검증된 안전 복구 절차가 아니므로 Escalation으로 이동한다.
 
 ### Escalation
 

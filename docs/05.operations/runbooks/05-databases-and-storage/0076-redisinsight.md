@@ -35,7 +35,7 @@ gateway 로그인 실패, 설정 손실·손상, 대상 인증 실패, 자격 �
 
 ### Authority and Access
 
-승인·접근 관련 문장은 "기존 `/data`의 암호화 전환", `승인된 사용·설정 보존·업그레이드`에서 다룬다.
+Workbench의 파괴적 명령은 대상 소유자 승인이 필요하고, 사전 등록된 inspector 연결만 쓴다. 비밀 이름은 `inspector_password.txt`와 `redisinsight_encryption_key`이며 값은 출력하지 않는다. 책임자는 `@buenhyden`이다.
 
 ### Safety Checks
 
@@ -138,19 +138,19 @@ listener는 `redisinsight_ingress_net`의 `10.250.18.3`에만 열린다. 데이�
 
 ### Stop Conditions
 
-중단·중지 관련 문장은 Actions 본문, "기존 `/data`의 암호화 전환", `Settings restore and upgrade`, `직접 접근 제한`에 있다.
+다음 경우 중단하고 `@buenhyden`에게 보고한다. 격리 대상, 복구본 식별자·무결성, 여유 공간, 비밀 보관, 작성자 정지, 승격 승인 중 하나라도 불명확할 때. `RI_APP_HOST`가 빠졌거나 바뀌어 데이터 망 peer나 호스트에서 5540 접근이 성공할 때. Escalation에 나열한 조건(credential exposure, encryption key 누락 등)이 있을 때.
 
 ## Validation
 
 ### Service Checks
 
-종료 코드·source 커밋·설정 checksum/개수·gateway/CIDR 판정·자격 증명 회전 근거·
-대상 계정 범위와 최종 상태를 기록한다. password,
-key, query history, data 값은 기록하지 않는다.
+UI health(`/api/health/`)가 응답하고 `/api/databases/1/info`(MNG는 `2`)가 200이며, 데이터 망 peer와 호스트의 직접 접근 확인(`nc -z`, `curl`)이 실패해야 한다.
 
 ### Evidence
 
-증거 관련 문장은 Actions 본문에 있다.
+종료 코드·source 커밋·설정 checksum/개수·gateway/CIDR 판정·자격 증명 회전 근거·
+대상 계정 범위와 최종 상태를 기록한다. password,
+key, query history, data 값은 기록하지 않는다.
 
 ## Recovery
 

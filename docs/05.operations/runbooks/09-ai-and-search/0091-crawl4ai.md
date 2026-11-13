@@ -95,6 +95,8 @@ proxy 경유·SSRF·허용 요청/거부·응답 schema와 정리는 NOT_RUN이�
 
 ### Stop Conditions
 
+예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단한다. 전용 `crawl4ai_net` 밖 연결, 공개 노출, 예상치 못한 protected API 인증 성공, SSRF 의심 또는 복구 실패이면 중단한다.
+
 전용 `crawl4ai_net` 밖 연결, 공개 노출, 예상치 못한 protected API 인증 성공, SSRF 의심 또는 복구 실패는 Escalation에 기록한 중단 조건이다.
 
 ## Validation

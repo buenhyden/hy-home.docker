@@ -44,7 +44,7 @@ created: "2026-05-17"
 
 ### Safety Checks
 
-사전 점검·백업 관련 문장은 `CDC connector lifecycle`에서 다룬다.
+백업·복제 캡처 전에 producer, consumer, schema, connector, retention, 수용 가능한 recovery point를 식별하고 변경을 일시 중지하거나 fence한다(`Planned backup or replication capture` 1단계). 운영 checkout의 repository root와 승인된 Docker context 확인은 Stop Conditions의 `Execution and stop boundary`에 있다.
 
 ## Steps
 
@@ -136,13 +136,15 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ### Service Checks
 
+복제 검증은 partition별 source와 target end offset이 일치하고 지원되는 format의 개수/checksum이 맞아야 하며, `Planned isolated restore`의 key/value/checksum·retention 검증을 통과해야 한다.
+
+### Evidence
+
 source revision/version, 범위, timestamp, manifest/checksum 요약, 명령과 종료
 상태, 검증 결과, 관측된 recovery point/시간, 미검증 gap을 모두 기록한다.
 secret, raw payload, private resolved path는 제외한다.
 
-### Evidence
-
-증거에 남길 항목(결과·시간·target·source revision·종료 코드)은 Stop Conditions의 `Execution and stop boundary`에 기록되어 있다.
+운영 checkout 증거에는 결과·시간·target·source revision·종료 코드만 요약하고 raw log, rendered Compose, payload, credential URI는 붙이지 않는다.
 
 ## Recovery
 

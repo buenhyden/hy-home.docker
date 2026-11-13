@@ -87,7 +87,7 @@ created: "2026-05-17"
 
 ### Stop Conditions
 
-이 런북 자체가 부하 중단 절차이며, 중단 사유는 Trigger and Outcome의 조건이고 Actions 5단계는 증거가 불완전하면 시험 판정을 통과로 확정하지 않도록 정한다.
+부하를 먼저 멈추고 중단 상태를 유지한다. 대상 SLI가 회복되지 않았거나 원본·summary·exit metadata의 checksum 등 증거가 불완전하면 시험 판정을 통과로 확정하지 않으며, 재실행은 target owner 승인과 conservative ramp-up plan이 있을 때만 한다.
 
 ## Validation
 

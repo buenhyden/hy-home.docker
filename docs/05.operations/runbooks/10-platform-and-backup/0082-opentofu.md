@@ -42,6 +42,8 @@ OpenTofu(`opentofu` job)의 plan 검토, lock 실패, state 백업·복구, 업�
 
 ### Safety Checks
 
+configuration commit, 정확한 workspace 디렉터리, OpenTofu workspace, backend, account, 명령 클래스, rollback 담당자를 기록하고 다른 writer가 활성 상태가 아님을 확인한다.
+
 시작 상태 확인은 Actions의 1단계에 있다. configuration commit, 정확한 workspace 디렉터리, OpenTofu workspace, backend, account, 명령 클래스, rollback 담당자를 기록하고 다른 writer가 활성 상태가 아님을 확인한다.
 
 ## Steps
@@ -108,6 +110,8 @@ OpenTofu(`opentofu` job)의 plan 검토, lock 실패, state 백업·복구, 업�
 ## Validation
 
 ### Service Checks
+
+`docker compose --profile iac config --quiet`가 통과해야 하고, 승인된 plan에서는 저장한 plan의 digest와 resource action 개수를 확인한다.
 
 이 런북은 별도의 점검 목록을 두지 않고, Actions의 각 단계가 확인하는 상태와 종료 코드를 Evidence에 기록해 판정한다.
 

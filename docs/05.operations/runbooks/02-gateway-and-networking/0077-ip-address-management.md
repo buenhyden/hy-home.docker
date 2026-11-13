@@ -106,7 +106,7 @@ target·peer·alias가 불명확하면 수정하지 않고 @buenhyden에게 전�
 
 ### Service Checks
 
-해당 peer의 선언된 network membership과 subnet 주소, 검증 명령의 성공 종료를 확인하며 방법은 Actions에 있다.
+해당 peer의 선언된 network membership과 subnet 주소, 검증 명령의 성공 종료를 확인한다.
 
 ### Evidence
 

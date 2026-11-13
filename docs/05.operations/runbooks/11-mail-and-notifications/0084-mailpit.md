@@ -37,6 +37,8 @@ synthetic mail이 캡처되지 않거나, database가 locked/corrupt 상태거�
 
 ### Authority and Access
 
+재시작과 구체적 데이터 교체는 승인이 있어야 한다. 책임자는 `@buenhyden`이다.
+
 재시작(`restart mailpit`)과 구체적 데이터 교체는 Actions에서 승인을 요구한다. 책임자는 `@buenhyden`이다(Escalation).
 
 ### Safety Checks
@@ -104,6 +106,8 @@ sidecar, 외부 노출, 또는 호환되지 않는 upgrade가 있으면 중단�
 ## Validation
 
 ### Service Checks
+
+`config --quiet`와 `ps mailpit`로 상태를 확인하고, 재시작 뒤 synthetic 메시지 1건이 캡처되는지 본문 기록 없이 확인한다.
 
 이 런북은 별도의 점검 목록을 두지 않고, Actions의 각 단계가 확인하는 상태와 종료 코드를 Evidence에 기록해 판정한다.
 

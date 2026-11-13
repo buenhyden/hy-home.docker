@@ -49,6 +49,8 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, SSO 뒤의 
 
 ### Authority and Access
 
+대상 service는 `qdrant`이며 운영 checkout의 repository root와 승인된 Docker context를 확인한다. API key 파일은 `secrets/data/qdrant/qdrant_api_key.txt`와 `secrets/data/qdrant/qdrant_read_only_api_key.txt`이며 값은 읽지 않고 존재만 확인한다. 책임자는 저장소 소유자 @buenhyden이다.
+
 대상 service는 `qdrant`이며 승인된 Docker context 확인과 기동·정지·upgrade 승인은 Stop Conditions의 `Execution and stop boundary`에 있다. API key 파일은 `secrets/data/qdrant/qdrant_api_key.txt`와 `secrets/data/qdrant/qdrant_read_only_api_key.txt`이며 값은 읽지 않고 존재만 확인한다(Safety Checks). 에스컬레이션 대상은 저장소 소유자 @buenhyden이다(Escalation).
 
 ### Safety Checks

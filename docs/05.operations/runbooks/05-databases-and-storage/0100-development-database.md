@@ -43,7 +43,9 @@ HOME 배포·기동·정지·재시작, 외부 프로젝트 계정 발급, 실�
 
 ### Safety Checks
 
-백업·복원 범위와 `NOT_RUN` 상태는 Authority and Access에 있다.
+runtime request가 있으면 실행 전에 승인된 Docker context, project name, ports, networks,
+volumes, bind paths, UID/GID, resource budget, exact cleanup 대상과 rollback target을
+읽기 전용으로 재확인한다.
 
 ## Steps
 
@@ -61,11 +63,6 @@ python3 -m unittest tests.validation.test_dev_pg_provision tests.validation.test
 일관됨을 기록한다. 이미지 빌드·컨테이너 health·확장 로드·격리 복원은 별도
 SPEC-0202-TSK-0002가 남긴 증거(삭제됨, 버전 이력)를 기준으로 한다. 이 정적 명령만으로 HOME 도달성, WAL archive,
 운영 복원 성공을 주장하지 않는다.
-
-runtime request가 있으면 실행 전에 승인된 Docker context, project name, ports, networks,
-volumes, bind paths, UID/GID, resource budget, exact cleanup 대상과 rollback target을
-읽기 전용으로 재확인한다. `down -v`, volume prune, 기존 management state 재연결, retention
-축소, credential rotation은 이 runbook의 source-only 단계에서 금지한다.
 
 `perf_db` source는 `quality-results` profile의 `dev-perf-provision`과
 [`perf` 계약](../../../../infra/04-data/dev-db/pg/perf/README.md)이 소유한다.
@@ -100,19 +97,20 @@ exporter를 재생성한다.
 
 ### Stop Conditions
 
-중단·중지 관련 문장은 `관측 경보와 의도적 중지`에 있다.
+`down -v`, volume prune, 기존 management state 재연결, retention
+축소, credential rotation은 이 runbook의 source-only 단계에서 금지한다.
 
 ## Validation
 
 ### Service Checks
 
-Task에는 source SHA, changed paths, 명령, exit code, 실행 시각, 정적·격리 결과와
-운영 `NOT_RUN` 경계를 각각 기록한다. secret 값, private file 내용, raw log, DB row,
-resolved mount path는 기록하지 않는다.
+`config --quiet`와 unittest 두 명령이 모두 exit 0이어야 한다. source profile, secret reference, static project grant/ACL contract가 일관되어야 한다.
 
 ### Evidence
 
-증거 관련 문장은 Actions 본문에 있다.
+Task에는 source SHA, changed paths, 명령, exit code, 실행 시각, 정적·격리 결과와
+운영 `NOT_RUN` 경계를 각각 기록한다. secret 값, private file 내용, raw log, DB row,
+resolved mount path는 기록하지 않는다.
 
 ## Recovery
 

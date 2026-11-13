@@ -84,18 +84,18 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ### Stop Conditions
 
-중단 조건(승인된 `LAB_SUPERSET_DB_HOST` endpoint 부재 시 렌더링까지만)은 Actions의 1단계에, data/backup/ownership/credential 불명확은 Authority and Access에, 폼 로그인 활성화·등록 시 `Admin` 부여·loopback 밖 host port bind·환경 변수 credential 요청은 Escalation에 적혀 있다.
+승인된 `LAB_SUPERSET_DB_HOST` endpoint가 없으면 렌더링까지만 한다. 폼 로그인 활성화, 등록 시 `Admin` 부여, loopback 밖 host port bind, 환경 변수에 credential을 넣으라는 요청이 있으면 중단한다. data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다.
 
 ## Validation
 
 ### Service Checks
 
-client ID, 역할 이름, Admin이 부여된 사용자 이름, exit code, 소스 커밋을
-기록한다. secret, token, session cookie는 절대 기록하지 않는다.
+`superset` 웹 서버가 healthy 상태가 되고 Keycloak 로그인이 오류 없이 성공하며, 로그인한 사용자에게 데이터가 보여야 한다.
 
 ### Evidence
 
-기록 항목(client ID, 역할 이름, Admin이 부여된 사용자 이름, exit code, 소스 커밋)과 비기록 대상(secret, token, session cookie)은 위 Service Checks에 적혀 있다.
+client ID, 역할 이름, Admin이 부여된 사용자 이름, exit code, 소스 커밋을
+기록한다. secret, token, session cookie는 절대 기록하지 않는다.
 
 ## Recovery
 

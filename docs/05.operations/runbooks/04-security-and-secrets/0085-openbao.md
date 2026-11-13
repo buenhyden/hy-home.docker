@@ -197,6 +197,8 @@ consumer와 보호 자료 disposition이 별도 승인된 뒤에만 수행하며
 
 #### Initial Bootstrap and Credential Recovery
 
+초기 bootstrap과 credential 복구는 아래 세 절로 나뉜다.
+
 ##### Initial Bootstrap
 
 owner가 승인한 initial bootstrap은 threshold 2의 Shamir unseal share 3개를 사용한다.

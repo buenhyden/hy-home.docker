@@ -111,7 +111,7 @@ LAB data root는 HOME Restic 범위 밖이다. 보존할 실험 data가 있으�
 
 ### Stop Conditions
 
-중단 조건(예상 밖 출력, backup 누락, 승인되지 않은 부작용)은 Authority and Access의 Execution Boundary에, 검증 실패·secret 노출 위험·파괴적 변경 필요는 Escalation에 적혀 있다.
+예상 밖 출력, backup 누락, 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. 검증 실패, secret 노출 위험, 파괴적 변경 필요 또는 예상과 다른 상태이면 중단하고 @buenhyden에게 넘긴다.
 
 ## Validation
 

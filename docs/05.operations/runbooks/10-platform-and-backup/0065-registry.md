@@ -37,6 +37,8 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
 
 ### Authority and Access
 
+작업 전에 승인자를 기록한다. 복원된 store 승격(data replacement)과 garbage collection은 명시적 승인이 있어야 하며, 책임자는 `@buenhyden`이다.
+
 승인자는 Safety Checks의 `작업 선택과 복구 전제`에 기록한다. 복원된 store 승격(data replacement)과 garbage collection은 Actions에서 명시적 승인을 요구하며, 책임자는 `@buenhyden`이다(Escalation).
 
 ### Safety Checks
@@ -116,6 +118,8 @@ filesystem corruption, 승인 없는 deletion/GC 요청이 있으면 중단한�
 ## Validation
 
 ### Service Checks
+
+`docker compose --profile registry ps registry`가 정상이고 `/v2/`가 응답해야 한다. non-sensitive canary 하나를 push/pull한 뒤 digest를 비교한다.
 
 이 런북은 별도의 점검 목록을 두지 않고, Actions의 각 단계가 확인하는 상태와 종료 코드를 Evidence에 기록해 판정한다.
 

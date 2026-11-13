@@ -36,6 +36,8 @@ created: "2026-05-17"
 
 ### Authority and Access
 
+책임자는 `@buenhyden`이다. 작업 전에 승인자와 작업 대상을 기록하고 승인된 모델/provider endpoint와 키만 구성한다. secret 값은 어떤 증거에도 기록하지 않는다.
+
 승인자와 작업 대상은 Safety Checks의 `작업 선택과 복구 전제`에서 기록하고, 승인된 모델/provider endpoint와 키 구성은 Actions의 `승인된 사용과 일관된 복구 세트`에 있다. 책임자 `@buenhyden`은 Escalation에 있으며 secret 값은 어떤 증거에도 기록하지 않는다.
 
 ### Safety Checks

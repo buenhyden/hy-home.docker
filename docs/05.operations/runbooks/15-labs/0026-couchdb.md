@@ -126,7 +126,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ### Stop Conditions
 
-중단 조건(수동 재조인·compaction·shard 변경·cookie 교체 필요)은 Safety Checks의 확인 목록에, prompt/권한/CA/endpoint 부재 또는 인증 실패는 Actions의 4·5단계에, data/backup/ownership/credential 불명확은 Authority and Access에 적혀 있다.
+수동 재조인, compaction, shard 변경, cookie 교체가 필요한 경우 이 런북을 중단하고 에스컬레이션한다. prompt/권한/CA/endpoint가 없거나 인증이 실패하면 중단한다. data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다.
 
 ## Validation
 

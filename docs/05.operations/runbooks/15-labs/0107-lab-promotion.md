@@ -108,7 +108,6 @@ reservation은 승인된 LAB lease 실행(`lab.py run`)에서 측정할 때까�
 
 보고서의 `owner_checks`는 `OWNER_JUDGMENT` 값을 가진 항목이며 `PASS`를 막지 않는다. 각 승격
 Task는 readiness 결과와 함께 아래 checklist를 기록하고, 항목마다 owner의 판단과 근거를 남긴다.
-판단이 부정이면 readiness가 `PASS`여도 승격을 멈춘다.
 
 | 항목 | 보고서 값 | 승격 Task에 기록할 내용 |
 | --- | --- | --- |
@@ -153,12 +152,6 @@ Task는 readiness 결과와 함께 아래 checklist를 기록하고, 항목마�
 
 1. inventory 순서대로 소비자 하나씩 새 서비스로 전환하고 각 전환 뒤 기능을 확인한다.
 2. 전환하는 동안 이전 서비스와 데이터는 정지만 하고 삭제하지 않는다.
-
-##### Rollback
-
-1. 소비자를 이전 서비스로 되돌리고 이전 서비스를 보존한 데이터로 다시 시작한다.
-2. cutover 이후 새 서비스에만 쓰인 데이터가 있으면 그 범위를 Task에 기록하고 owner가 처리를
-   결정한다. 실패한 새 서비스의 데이터는 보존한다.
 
 ##### Retirement
 
@@ -210,19 +203,21 @@ secret을 쓴다.
 종료 코드가 0이 아니면 승격을 멈추고 보고서와 종료 코드를 승격 Task에 기록한다. `NOT_RUN`은
 측정하지 못한 값이며 통과가 아니다.
 
-그 밖의 중단 조건은 Actions의 add 1단계(readiness가 0이 아니면 중단)와 Data migration의 Verify(불일치 시 cutover 금지)에, 데이터·secret 소유 불명확은 Escalation에 적혀 있다.
+판단이 부정이면 readiness가 `PASS`여도 승격을 멈춘다.
+
+그 밖에 add 1단계는 readiness가 0이 아니면 절차를 멈추고, Data migration의 Verify는 불일치가 있으면 cutover하지 않으며, 데이터·secret 소유가 불명확하면 멈추고 @buenhyden에게 보고서와 실패 신호를 전달한다.
 
 ## Validation
 
 ### Service Checks
 
-승격 Task에 readiness 보고서, 종료 코드, source revision, export manifest 요약, verify 결과,
-소비자별 전환 결과, rollback window와 은퇴 시점을 기록한다. secret 값, raw payload와 rendered
-private 설정은 기록하지 않는다.
+readiness 종료 코드가 0(다섯 기준 모두 `PASS`)이고, Data migration의 Verify 결과가 export manifest와 일치하며, 소비자마다 전환 뒤 기능이 확인되어야 한다.
 
 ### Evidence
 
-기록 항목(readiness 보고서, 종료 코드, source revision, export manifest 요약, verify 결과, 소비자별 전환 결과)과 비기록 대상(secret 값, raw payload, rendered private 설정)은 위 Service Checks에 적혀 있다.
+승격 Task에 readiness 보고서, 종료 코드, source revision, export manifest 요약, verify 결과,
+소비자별 전환 결과, rollback window와 은퇴 시점을 기록한다. secret 값, raw payload와 rendered
+private 설정은 기록하지 않는다.
 
 ## Recovery
 
@@ -230,6 +225,12 @@ private 설정은 기록하지 않는다.
 
 각 대체 절차의 Rollback을 따른다. 이전 서비스와 데이터는 Retirement 전까지 삭제하지 않으므로
 언제든 되돌릴 수 있어야 한다. `add`는 새 서비스를 정지하고 root include를 되돌린다.
+
+#### Rollback
+
+1. 소비자를 이전 서비스로 되돌리고 이전 서비스를 보존한 데이터로 다시 시작한다.
+2. cutover 이후 새 서비스에만 쓰인 데이터가 있으면 그 범위를 Task에 기록하고 owner가 처리를
+   결정한다. 실패한 새 서비스의 데이터는 보존한다.
 
 ### Escalation
 

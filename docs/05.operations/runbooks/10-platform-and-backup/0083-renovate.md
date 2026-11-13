@@ -41,6 +41,8 @@ Renovate job의 정적 점검, 승인된 live run, 잘못된 변경의 복구, s
 
 ### Safety Checks
 
+remote 저장소에 접근하지 않고 `renovate-config-validator`와 `sync-tech-stack-versions.sh --check`로 먼저 검증한다.
+
 시작 상태 확인은 Actions의 1단계에 있다. remote 저장소에 접근하지 않고 `renovate-config-validator`와 `sync-tech-stack-versions.sh --check`로 검증한다.
 
 ## Steps
@@ -136,6 +138,8 @@ Compose project/service 및 one-off label로 해당 실행을 식별하고
 `--rm`은 컨테이너 종료 후 제거 설정이며 호스트 전역 prune은 금지한다.
 
 ### Stop Conditions
+
+사전 secret 확인 또는 이미지 pull이 실패하면 실행을 중단하고 원인을 확인한다. 알 수 없는 remote write, 과도한 token 권한, token 노출 의심, 인식되지 않는 허용 명령, 안전하게 조정할 수 없는 remote 상태는 에스컬레이션 사유다.
 
 사전 secret 확인 또는 이미지 pull이 실패하면 Actions에서 실행을 중단하고 원인을 확인한다. 알 수 없는 remote write, 과도한 token 권한, token 노출 의심 등은 Escalation에 있다.
 

@@ -111,18 +111,18 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ### Stop Conditions
 
-중단 조건(승인된 `LAB_LAKEHOUSE_S3_ENDPOINT`·`LAB_LAKEHOUSE_CATALOG_URI` 부재, 준비되지 않은 table-bucket provisioning·Trino)은 Actions의 1단계에, data/backup/ownership/credential 불명확은 Authority and Access에, admin identity 사용·카탈로그 외부 노출·사유 없는 스냅샷 만료 요청은 Escalation에 적혀 있다.
+승인된 `LAB_LAKEHOUSE_S3_ENDPOINT`·`LAB_LAKEHOUSE_CATALOG_URI`가 없으면 멈춘다. table-bucket provisioning과 Trino가 준비되지 않았으면 멈추며 provisioning을 암묵 실행하지 않는다. engine에서 admin identity를 사용하거나, 카탈로그를 `object_net` 밖으로 노출하거나, 명시된 사유 없이 스냅샷을 만료시키라는 요청이 있으면 중단한다. data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다.
 
 ## Validation
 
 ### Service Checks
 
-네임스페이스, 테이블 이름, 스냅샷 ID, 행 개수, 종료 코드, 소스 커밋을
-기록한다. 데이터 값이나 시크릿은 절대 기록하지 않는다.
+네임스페이스를 나열하는 Spark 명령이 카탈로그 접근을 처음부터 끝까지 증명하고, Trino `SHOW SCHEMAS`와 Flink `flink list -a`가 응답하며, Great Expectations 스위트가 종료 `0`으로 끝나야 한다(종료 `1`은 실패한 expectation, `2`는 검사 불가).
 
 ### Evidence
 
-기록 항목(네임스페이스, 테이블 이름, 스냅샷 ID, 행 개수, 종료 코드, 소스 커밋)과 비기록 대상(데이터 값, 시크릿)은 위 Service Checks에 적혀 있다.
+네임스페이스, 테이블 이름, 스냅샷 ID, 행 개수, 종료 코드, 소스 커밋을
+기록한다. 데이터 값이나 시크릿은 절대 기록하지 않는다.
 
 ## Recovery
 
