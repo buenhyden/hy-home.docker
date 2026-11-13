@@ -380,6 +380,8 @@ class GateNode:
     timeout_minutes: int | None
     opaque: bool
     children: tuple[str, ...]
+    # Leaf-only: the unique security/deploy guarantee, "none" or "" otherwise.
+    guarantee: str = ""
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -1390,21 +1392,7 @@ def expand_public_gate_ids(
     return _expanded_ids(node_by_id, root_gate_ids)
 
 
-# Leaves that are the only producer of a security or deploy guarantee. A
-# crosswalk never reports one as a duplicate, so dedup cannot drop it.
-UNIQUE_GUARANTEE_LEAVES = {
-    "leaf.zizmor": "security",
-    "leaf.dependency-vulnerability-audit": "security",
-    "leaf.opsflow-smtp-npm-production-audit": "security",
-    "leaf.supply-chain-deterministic-policy": "security",
-    "leaf.supply-chain-fixture-policy": "security",
-    "leaf.conftest-policy": "security",
-    "leaf.conftest-policy-tests": "security",
-    "leaf.template-security-baseline": "security",
-    "leaf.infrastructure-hardening": "deploy",
-    "leaf.compose-validation": "deploy",
-    "leaf.compose-baseline-regressions": "deploy",
-}
+_GUARANTEES = frozenset({"security", "deploy", "none"})
 _SELF_AUTHORITY = ".github/workflow-contract.yml"
 
 
@@ -1443,17 +1431,20 @@ def build_gate_crosswalk(
         for child in node.children:
             parents.setdefault(child, []).append(node.gate_id)
     leaves = [n for n in registry.nodes if n.kind is GateKind.LEAF]
-    command = {n.gate_id: (n.entrypoint, n.argv) for n in leaves}
+    command = {
+        n.gate_id: (n.entrypoint, n.argv, n.cwd, n.allowed_env_keys) for n in leaves
+    }
+    unique_ids = {n.gate_id for n in leaves if n.guarantee in ("security", "deploy")}
     rows = []
     for node in leaves:
         gate_id = node.gate_id
-        unique = UNIQUE_GUARANTEE_LEAVES.get(gate_id, "")
+        unique = "" if node.guarantee == "none" else node.guarantee
         twins = tuple(
             other.gate_id
             for other in leaves
             if other.gate_id != gate_id and command[other.gate_id] == command[gate_id]
         )
-        keepers = tuple(t for t in twins if t in UNIQUE_GUARANTEE_LEAVES)
+        keepers = tuple(t for t in twins if t in unique_ids)
         first = next(
             (m.gate_id for m in leaves if m.gate_id in (gate_id, *twins)), gate_id
         )
@@ -1585,7 +1576,9 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
         "allowed_env_keys",
         "timeout_minutes",
     }
-    required = execution | ({"suite_key"} if kind is GateKind.LEAF else set())
+    required = execution | (
+        {"suite_key", "guarantee"} if kind is GateKind.LEAF else set()
+    )
     _require_fields(record, frozenset(required), required, "ci-gate-kind-fields", path)
     opaque = record["opaque"]
     if opaque is not (kind is GateKind.LEAF):
@@ -1614,6 +1607,11 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
         if kind is GateKind.LEAF
         else None
     )
+    guarantee = record["guarantee"] if kind is GateKind.LEAF else ""
+    if kind is GateKind.LEAF and guarantee not in _GUARANTEES:
+        raise GateContractError(
+            "ci-gate-guarantee", path, "a leaf must declare security, deploy or none"
+        )
     if suite_key is not None and gate_id != f"leaf.{suite_key}":
         raise GateContractError(
             "ci-gate-suite-id", path, "leaf identity must match its suite key"
@@ -1629,6 +1627,7 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
         timeout,
         opaque,
         (),
+        guarantee,
     )
 
 

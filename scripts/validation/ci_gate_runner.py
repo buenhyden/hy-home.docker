@@ -884,6 +884,7 @@ def render_gate_crosswalk(
     lines.append(
         f"# leaves={len(rows)} unowned={unowned} "
         f"local_only={sum(row.local_only for row in rows)} "
+        f"unique={sum(bool(row.unique_guarantee) for row in rows)} "
         f"duplicates={sum(bool(row.duplicate_of) for row in rows)}"
     )
     return tuple(lines)

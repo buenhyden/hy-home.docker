@@ -1546,9 +1546,6 @@ class CiGateRunnerContractTests(unittest.TestCase):
             ),
         ):
             self.assertEqual(0, runner.main(["--profile", "full", "--crosswalk"]))
-            self.assertNotEqual(
-                0, runner.main(["--profile", "full", "--crosswalk", "--explain"])
-            )
         execute.assert_not_called()
         lines = stdout.getvalue().splitlines()
         registry = contract.parse_gate_registry(
@@ -1557,6 +1554,22 @@ class CiGateRunnerContractTests(unittest.TestCase):
         leaves = [n.gate_id for n in registry.nodes if n.kind is contract.GateKind.LEAF]
         self.assertEqual(leaves, [line.split("\t")[0] for line in lines[1:-1]])
         self.assertTrue(lines[-1].startswith(f"# leaves={len(leaves)} "))
+
+    def test_crosswalk_rejects_every_other_report_option(self) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
+        for option in ("--explain", "--requirements", "--local-only"):
+            with self.subTest(option=option):
+                with (
+                    mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+                    mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
+                    mock.patch.dict(
+                        os.environ, {"HYHOME_CI_GATE_ROOT": str(root)}, clear=False
+                    ),
+                ):
+                    status = runner.main(["--profile", "full", "--crosswalk", option])
+                self.assertEqual(2, status)
+                self.assertEqual("", stdout.getvalue())
+                self.assertIn("ci-gate-cli-arguments", stderr.getvalue())
 
     def test_requirements_reports_prerequisites_without_executing(self) -> None:
         environment = {

@@ -729,6 +729,7 @@ class CiGateContractTests(unittest.TestCase):
                         "gate_id": f"leaf.over-{index}",
                         "kind": "leaf",
                         "suite_key": f"over-{index}",
+                        "guarantee": "none",
                         "entrypoint": "scripts/check.py",
                         "argv": [],
                         "cwd": ".",
@@ -755,6 +756,7 @@ class CiGateContractTests(unittest.TestCase):
             "gate_id": "leaf.invalid",
             "kind": "leaf",
             "suite_key": "invalid",
+            "guarantee": "none",
             "entrypoint": "scripts/check.py",
             "argv": [],
             "cwd": ".",
@@ -1277,6 +1279,7 @@ class CiGateContractTests(unittest.TestCase):
             "gate_id": "leaf.safe",
             "kind": "leaf",
             "suite_key": "safe",
+            "guarantee": "none",
             "entrypoint": "scripts/check.py",
             "argv": [],
             "cwd": ".",
@@ -1369,7 +1372,8 @@ class DocumentGovernanceSelectionTests(unittest.TestCase):
 
 
 class GateCrosswalkTests(unittest.TestCase):
-    """QA-C05: one producer per guarantee, and a consumer for every result."""
+    """QA-C05: one producer per guarantee; a leaf with no aggregate parent is
+    consumed by its suite root, so `consumers` may be empty but `suites` is not."""
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -1418,13 +1422,13 @@ class GateCrosswalkTests(unittest.TestCase):
         self.assertEqual("UNOWNED", rows["leaf.workflow-contract"].owner)
 
     def test_security_and_deploy_leaves_are_never_reported_as_duplicates(self) -> None:
-        for gate_id in contract.UNIQUE_GUARANTEE_LEAVES:
-            self.assertIn(gate_id, {row.gate_id for row in self.rows})
         by_id = {node.gate_id: node for node in self.registry.nodes}
         zizmor = by_id["leaf.zizmor"]
         docs = by_id["leaf.docs-traceability"]
         clones = (
-            dataclasses.replace(zizmor, gate_id="leaf.aaa-zizmor-clone"),
+            dataclasses.replace(
+                zizmor, gate_id="leaf.aaa-zizmor-clone", guarantee="none"
+            ),
             dataclasses.replace(docs, gate_id="leaf.docs-clone"),
         )
         registry = dataclasses.replace(
@@ -1445,6 +1449,55 @@ class GateCrosswalkTests(unittest.TestCase):
         for row in self.rows:
             if row.unique_guarantee:
                 self.assertEqual((), row.duplicate_of, row.gate_id)
+
+    def test_twin_requires_same_cwd_and_environment(self) -> None:
+        docs = next(
+            n for n in self.registry.nodes if n.gate_id == "leaf.docs-traceability"
+        )
+        variants = (
+            dataclasses.replace(
+                docs, gate_id="leaf.docs-cwd", cwd=pathlib.PurePosixPath("docs")
+            ),
+            dataclasses.replace(
+                docs, gate_id="leaf.docs-env", allowed_env_keys=("CI",)
+            ),
+        )
+        registry = dataclasses.replace(
+            self.registry, nodes=self.registry.nodes + variants
+        )
+        for row in contract.build_gate_crosswalk(registry, self.public, {}):
+            self.assertEqual((), row.duplicate_of, row.gate_id)
+
+    def test_every_leaf_is_classified_and_changed_style_is_security(self) -> None:
+        document = contract.load_contract_document(ROOT)
+        leaves = [g for g in document["gate_nodes"] if g["kind"] == "leaf"]
+        self.assertEqual(
+            {"security", "deploy", "none"}, {g["guarantee"] for g in leaves}
+        )
+        by_id = {row.gate_id: row for row in self.rows}
+        # The only gitleaks and hadolint producer (.pre-commit-config.yaml).
+        self.assertEqual("security", by_id["leaf.changed-style"].unique_guarantee)
+        self.assertEqual("deploy", by_id["leaf.compose-validation"].unique_guarantee)
+        self.assertEqual("", by_id["leaf.docs-traceability"].unique_guarantee)
+        for row in self.rows:
+            self.assertTrue(row.suites or row.consumers, row.gate_id)
+
+    def test_unclassified_or_unknown_guarantee_fails_closed(self) -> None:
+        baseline = contract.load_contract_document(ROOT)
+        for label, mutate in (
+            ("missing", lambda node: node.pop("guarantee")),
+            ("unknown", lambda node: node.update(guarantee="other")),
+        ):
+            with self.subTest(label=label):
+                candidate = json.loads(json.dumps(baseline))
+                node = next(g for g in candidate["gate_nodes"] if g["kind"] == "leaf")
+                mutate(node)
+                with self.assertRaises(contract.GateContractError) as raised:
+                    contract.parse_gate_registry(candidate, "contract")
+                self.assertIn(
+                    raised.exception.code,
+                    {"ci-gate-kind-fields", "ci-gate-guarantee"},
+                )
 
     def test_current_registry_has_no_duplicate_producers(self) -> None:
         self.assertEqual([], [r.gate_id for r in self.rows if r.duplicate_of])
