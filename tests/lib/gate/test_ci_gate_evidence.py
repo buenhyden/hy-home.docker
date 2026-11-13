@@ -414,6 +414,69 @@ class EvidenceStoreTests(unittest.TestCase):
         with self.assertRaisesRegex(EvidenceError, "STARTED"):
             store.finalize(blocked_reason="blocked_by_prior")
 
+    def test_recorded_pass_is_reused_only_for_identical_inputs(self) -> None:
+        # Characterization: whole-plan equality predates QA-C07. The toolchain
+        # case is the one that proves per-input digests are compared.
+        toolchain = {
+            "status": "CAPTURED",
+            "executables": [{"name": "uv", "version": "0.12.18", "sha256": "b" * 64}],
+            "dependency_inputs": [
+                {"path": "scripts/requirements-controller.lock", "sha256": "c" * 64}
+            ],
+            "installed_packages": [{"name": "zizmor", "version": "1.28.0"}],
+            "runner_image": {
+                "image_os": "ubuntu24",
+                "image_version": "20261015.1",
+                "architecture": "X64",
+                "image_digest": "NOT_AVAILABLE",
+            },
+            "node": {"status": "NOT_SELECTED", "version": None, "sha256": None},
+        }
+        store = EvidenceStore.create(
+            self.output,
+            identity=self.identity,
+            rows=self.rows,
+            retention_days=14,
+            toolchain=toolchain,
+        )
+        store.initialize_result()
+        store.mark_started("leaf.example", started_at_utc="2026-10-16T00:00:00Z")
+        store.mark_terminal(
+            "leaf.example",
+            status="PASS",
+            exit_code=0,
+            ended_at_utc="2026-10-16T00:00:01Z",
+            duration_ms=1,
+        )
+        store.close()
+        recorded = (self.output / "result.json").read_bytes()
+
+        def open_with(identity, rows, tool) -> None:
+            EvidenceStore.open(
+                self.output,
+                identity=identity,
+                rows=rows,
+                retention_days=14,
+                toolchain=tool,
+            ).close()
+
+        # Positive control: identical inputs reopen after the recorded PASS.
+        open_with(self.identity, self.rows, toolchain)
+
+        rows = json.loads(json.dumps(self.rows))
+        rows[0]["source"]["sha256"] = "a" * 64
+        lock = json.loads(json.dumps(toolchain))
+        lock["dependency_inputs"][0]["sha256"] = "d" * 64
+        for label, identity, changed_rows, tool in (
+            ("source", self.identity, rows, toolchain),
+            ("base", {**self.identity, "base_sha": "b" * 40}, self.rows, toolchain),
+            ("lock-digest", self.identity, self.rows, lock),
+        ):
+            with self.subTest(label=label):
+                with self.assertRaisesRegex(EvidenceError, "plan does not match"):
+                    open_with(identity, changed_rows, tool)
+        self.assertEqual(recorded, (self.output / "result.json").read_bytes())
+
     def test_update_detects_stale_result_bytes(self) -> None:
         store = self.create()
         store.initialize_result()
