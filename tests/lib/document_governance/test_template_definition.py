@@ -250,6 +250,35 @@ class TemplateDefinitionTests(unittest.TestCase):
             )
         )
 
+    def test_a_claude_projection_carries_only_the_rendered_keys(self) -> None:
+        from scripts.lib.document_governance.frontmatter import parse_frontmatter_text
+        from scripts.operations import provider_surface_renderer as renderer
+
+        expected = {
+            path.as_posix(): content
+            for path, content in renderer.expected_projection(ROOT, "claude").items()
+            if path.as_posix().startswith(".claude/agents/")
+        }
+        self.assertTrue(expected)
+        written: set[str] = set()
+        for content in expected.values():
+            written |= set(parse_frontmatter_text(content.decode("utf-8")))
+        self.assertTrue({"model_reasoning_effort", "version"}.isdisjoint(written))
+        profile = self.registry.profiles["runtime-projection-claude"]
+        self.assertLessEqual(
+            {*profile["required_frontmatter"], *profile["optional_frontmatter"]},
+            written,
+        )
+        # The renderer --check compares each tracked projection with these
+        # bytes, so a projection carrying a Codex-only key is drift.
+        path = ".claude/agents/doc-writer.md"
+        self.assertEqual(expected[path], (ROOT / path).read_bytes())
+        tampered = expected[path].replace(
+            b"\n---\n", b'\nmodel_reasoning_effort: "high"\n---\n', 1
+        )
+        self.assertIn(b"model_reasoning_effort", tampered)
+        self.assertNotEqual(expected[path], tampered)
+
     def test_authored_references_resolve(self) -> None:
         for role, definition in self.definitions.items():
             with self.subTest(role=role):

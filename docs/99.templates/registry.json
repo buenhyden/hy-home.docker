@@ -3868,11 +3868,9 @@
       "optional_frontmatter": [
         "effort",
         "model",
-        "model_reasoning_effort",
         "permissionMode",
         "skills",
-        "tools",
-        "version"
+        "tools"
       ],
       "required_sections": [],
       "optional_sections": [],
