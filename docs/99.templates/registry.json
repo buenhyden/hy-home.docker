@@ -1315,23 +1315,13 @@
         "next_review_at"
       ],
       "required_sections": [
-        "Overview",
-        "Trigger",
-        "Prerequisites",
-        "Procedure",
-        "Verification",
-        "Failure and Recovery",
-        "Related Documents"
+        "Purpose",
+        "Preconditions",
+        "Steps",
+        "Validation",
+        "Recovery"
       ],
-      "optional_sections": [
-        "When to Use",
-        "Evidence",
-        "Rollback or Recovery",
-        "Escalation",
-        "Traceability",
-        "Automation Handoff",
-        "Verification Record"
-      ],
+      "optional_sections": [],
       "ordered_sections": true,
       "nonempty_sections": true,
       "lifecycle_id": "operational-policy",
@@ -1368,7 +1358,33 @@
         "docs/05.operations/runbooks/13-analytics-and-data-quality/{number:4}-{slug}.md",
         "docs/05.operations/runbooks/14-design-system/{number:4}-{slug}.md",
         "docs/05.operations/runbooks/15-labs/{number:4}-{slug}.md"
-      ]
+      ],
+      "required_subsections": {
+        "Purpose": [
+          "Trigger and Outcome",
+          "Scope"
+        ],
+        "Preconditions": [
+          "Authority and Access",
+          "Safety Checks"
+        ],
+        "Steps": [
+          "Actions",
+          "Stop Conditions"
+        ],
+        "Validation": [
+          "Service Checks",
+          "Evidence"
+        ],
+        "Recovery": [
+          "Escalation"
+        ]
+      },
+      "optional_subsections": {
+        "Recovery": [
+          "Rollback"
+        ]
+      }
     },
     {
       "id": "incident",
