@@ -1,6 +1,6 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.9.1"
+version: "1.9.2"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
@@ -179,9 +179,11 @@ applies the 1.9.0 acceptance rules, including cancelled-item pairs, to each
 Criterion Acceptance row that is new or changed against the lifecycle base;
 an unchanged older row stands as recorded. The readiness derivation also
 requires every repository path a Plan's Promotion Map names in a code span to
-appear in a Task's Promotion Receipt, but no entrypoint runs the readiness
-derivation yet, so readiness and every Promotion Map target named only in
-prose stay with review, and a validator PASS does not show them.
+appear in a Task's Promotion Receipt.
+`check-document-corpus-lifecycle.py --readiness` reports each package's
+readiness without changing the exit code, because readiness is never
+removal approval; a Promotion Map target named only in prose stays with
+review, and a validator PASS does not show it.
 A terminal Task unchanged since the current generation's migration source keeps
 the reader of the generation that closed it, bound by that migration's exact
 Git source proof. That compatibility does not authorize new legacy receipts. A

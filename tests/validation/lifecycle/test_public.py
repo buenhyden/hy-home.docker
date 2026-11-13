@@ -54,3 +54,48 @@ class CurrentPublicContractTests(unittest.TestCase):
         rendered = output.getvalue()
         self.assertIn("document corpus lifecycle:", rendered)
         self.assertIn("active stage occupancy:", rendered)
+
+
+class ReadinessReportTests(unittest.TestCase):
+    """sdlc.md: readiness is derived on read and is never removal approval."""
+
+    def test_readiness_flag_reports_every_package_without_gating(self) -> None:
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            self.assertEqual(0, lifecycle.main(["--readiness"]))
+        lines = [
+            line
+            for line in output.getvalue().splitlines()
+            if line.startswith("readiness: ")
+        ]
+        self.assertTrue(any(" SPEC-0212 " in f"{line} " for line in lines), lines)
+        for line in lines:
+            self.assertRegex(
+                line, r"^readiness: SPEC-[0-9]{4} (ready|not-ready: .+|unknown)$"
+            )
+
+    def test_readiness_is_off_by_default(self) -> None:
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            lifecycle.main([])
+        self.assertNotIn("readiness: ", output.getvalue())
+
+    def test_a_load_failure_reports_unavailable_without_a_traceback(self) -> None:
+        from unittest import mock
+
+        from scripts.lib.document_governance import spec_packages
+
+        output = io.StringIO()
+        with (
+            mock.patch.object(
+                spec_packages,
+                "load_spec_packages",
+                side_effect=spec_packages.SpecPackageError("broken"),
+            ),
+            contextlib.redirect_stdout(output),
+        ):
+            lifecycle._print_readiness(ROOT, None)
+        self.assertEqual(
+            "readiness: unavailable: Stage 03 packages did not load\n",
+            output.getvalue(),
+        )
