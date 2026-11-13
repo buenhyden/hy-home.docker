@@ -396,7 +396,7 @@ Q-07 runs only after W11.
 | 117 | W122 | Disposition GREEN, Vocabulary GREEN, Release GREEN, W05 final review | `docs/99.templates/registry.json`, the profile schema, `registry.py`, `documentation-protocol.md`, the glossary Provenance (commit `62b3e434b`) | `test_registry`; Integrated checks and Spec Package regression rerun rows |
 | 117 | W122 | TemplateDefinition GREEN | `template_definition.py` (commit `97a40d35c`) | `test_template_definition`, `metadata.test_heading` |
 | 117 | W122 | Currency GREEN | `metadata/lifecycle.py` (commit `88d9e465b`) | `metadata.test_lifecycle` |
-| 118 | W123 | Relation lookup GREEN | `.agents/governance/documentation-protocol.md` (Relations derivation, Change Impact row; commit pending) | `test_links`; links alignment |
+| 118 | W123 | Relation lookup GREEN | `.agents/governance/documentation-protocol.md` (Relations derivation, Change Impact row; commit `64769e71a`) | `test_links`; links alignment |
 
 The commits reached `main` through PR #996, merged as `5a1aa4b98` with a
 merge commit, so the promotion condition (merge) is met. Acceptance row:
