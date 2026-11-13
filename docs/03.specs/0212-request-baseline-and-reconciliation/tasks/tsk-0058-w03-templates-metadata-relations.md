@@ -1,8 +1,8 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.5.15"
+version: "0.6.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-13"
 layer: "specs"
@@ -65,6 +65,7 @@ approval; it grants no remote operation.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0058 | draft | ready | #owner-approved-local-execution |
 | SPEC-0212-TSK-0058 | ready | in-progress | #owner-approved-local-execution |
+| SPEC-0212-TSK-0058 | in-progress | completed | #review-and-completion |
 
 #### Owner decision Q-03 2026-11-11
 
@@ -731,24 +732,34 @@ Each FAIL row in Results is resolved by the later PASS row of the same Check and
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 111 | pending | - | - | SPEC-0212 TSK-0058 |
+| 111 | accepted | W03 obligation assessment result, W03 section and date GREEN, W03 code review, W03 v14.7 Requirement review result, W03 v14.7 Requirement GREEN, W03 v14.7 Spec review result, W03 v14.7 Spec GREEN, W03 v14.7 Requirement checks, W03 v14.7 ADR review result, W03 v14.7 ADR GREEN, W03 v14.7 ADR checks, W03 v14.7 Plan review result, W03 v14.7 Plan GREEN, W03 v14.7 Plan checks, W03 v14.7 Architecture review result, W03 v14.7 Architecture GREEN, W03 v14.7 Architecture checks, W03 v14.7 Task review result, W03 v14.7 Task GREEN, W03 v14.7 Task checks, W03 v14.7 Guide review result, W03 v14.7 Guide GREEN, W03 v14.7 Guide checks, W03 v14.7 Runbook review result, W03 v14.7 Runbook GREEN, W03 v14.7 Runbook checks, W03 v14.7 Policy review result, W03 v14.7 governance policy review result, W03 v14.7 Policy GREEN, W03 v14.7 Policy checks, W03 v14.7 Skill review result, W03 v14.7 Skill GREEN, W03 v14.7 Skill checks, W03 v14.7 archive vocabulary review, W03 v14.7 archive vocabulary GREEN, W03 v14.7 archive vocabulary checks, W03 v14.7 Root README review result, W03 v14.7 Root README GREEN, W03 v14.7 Root README checks, W03 v14.7 retirement consistency review, W03 v14.7 retirement consistency checks, W03 v14.7 retirement consistency approval, W03 v14.7 Stage README review result, W03 v14.7 Stage README GREEN, W03 v14.7 Stage README checks, W03 v14.7 Service README review result, W03 v14.7 Service README GREEN, W03 v14.7 Service README checks, W03 v14.7 TemplateDefinition review result, W03 v14.7 TemplateDefinition GREEN, W03 v14.7 TemplateDefinition checks, W03 v14.7 close-out checks | Owner accepted on 2026-11-13 in this chat, after every role and handoff landed (#967 to #987) and the close-out record (#988). The held Requirement acceptance items go to a later Requirement revision, as the owner chose. | SPEC-0212 TSK-0058 |
 
 ### Remaining Conditions
 
-Every planned W03 role and handoff is on `main` (see W03 close-out). Criterion
-111 waits for owner acceptance. Held for an owner decision: the per-requirement
-acceptance split for REQ-0024 to REQ-0027 and acceptance conditions for
-REQ-0003. Handed to W05: validator work beyond the profile flags, and a
+Every planned W03 role and handoff is on `main` (see W03 close-out).
+Criterion 111 is accepted. Handed to a later Requirement revision, by the
+owner's choice on 2026-11-13: the per-requirement acceptance split for
+REQ-0024 to REQ-0027 and acceptance conditions for REQ-0003, whose wording
+the owner supplies. Handed to W05: validator work beyond the profile flags, and a
 Registry check that each disposition status belongs to its profile's
 lifecycle (the incident and postmortem entries cannot be reached).
 Renumbering stays a Q-07 decision.
+
+#### Review and Completion
+
+Completed on 2026-11-13. The DOC-01 to DOC-12 assessment, the reproduced-gap
+changes, the common form for every role, the handoffs H-W02-2, H-13 and H-06,
+and the retirement and incident-numbering fix are recorded with their RED,
+GREEN, review and check evidence. Criterion 111 is accepted and every required
+failing observation is resolved by a later passing one, so the Task closes as
+`completed`.
 
 ## Handoff
 
 ### Promotion Receipt
 
-Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook), #980 (Policy), #981 (Skill), #982 (H-W02-2 and H-13), #983 (Root README), #984 (retirement and incident numbering), #985 (Stage README), #986 (Service README), #987 (H-06 TemplateDefinition).
+Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook), #980 (Policy), #981 (Skill), #982 (H-W02-2 and H-13), #983 (Root README), #984 (retirement and incident numbering), #985 (Stage README), #986 (Service README), #987 (H-06 TemplateDefinition), #988 (close-out record). The criterion 111 acceptance and the `completed` status land after #988 in their own pull request.
 
 ### Next Owner
 
-The current owner is @buenhyden, who decides criterion 111 and the held Requirement items. W05 owns the validator work and the disposition-status check handed over under Remaining Conditions.
+The current owner is @buenhyden. A later Requirement revision owns the held acceptance items; W05 owns the validator work and the disposition-status check handed over under Remaining Conditions.
