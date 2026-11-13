@@ -414,6 +414,57 @@ class EvidenceStoreTests(unittest.TestCase):
         with self.assertRaisesRegex(EvidenceError, "STARTED"):
             store.finalize(blocked_reason="blocked_by_prior")
 
+    def test_recorded_pass_is_not_reused_when_inputs_change(self) -> None:
+        store = self.create()
+        store.initialize_result()
+        store.mark_started("leaf.example", started_at_utc="2026-10-16T00:00:00Z")
+        store.mark_terminal(
+            "leaf.example",
+            status="PASS",
+            exit_code=0,
+            ended_at_utc="2026-10-16T00:00:01Z",
+            duration_ms=1,
+        )
+        store.close()
+        recorded = (self.output / "result.json").read_bytes()
+
+        # Source bytes of the contract/rule entrypoint changed.
+        rows = json.loads(json.dumps(self.rows))
+        rows[0]["source"]["sha256"] = "a" * 64
+        # The base the PASS was recorded against changed.
+        base = {**self.identity, "base_sha": "b" * 40}
+        # A tool input (lock or security database digest) changed.
+        toolchain = {
+            "status": "CAPTURED",
+            "executables": [{"name": "uv", "version": "0.12.18", "sha256": "b" * 64}],
+            "dependency_inputs": [
+                {"path": "scripts/requirements-controller.lock", "sha256": "c" * 64}
+            ],
+            "installed_packages": [{"name": "zizmor", "version": "1.28.0"}],
+            "runner_image": {
+                "image_os": "ubuntu24",
+                "image_version": "20261015.1",
+                "architecture": "X64",
+                "image_digest": "NOT_AVAILABLE",
+            },
+            "node": {"status": "NOT_SELECTED", "version": None, "sha256": None},
+        }
+        for label, identity, changed_rows, changed_toolchain in (
+            ("source", self.identity, rows, None),
+            ("base", base, self.rows, None),
+            ("toolchain", self.identity, self.rows, toolchain),
+        ):
+            with self.subTest(label=label):
+                with self.assertRaisesRegex(EvidenceError, "plan does not match"):
+                    EvidenceStore.open(
+                        self.output,
+                        identity=identity,
+                        rows=changed_rows,
+                        retention_days=14,
+                        toolchain=changed_toolchain,
+                    )
+        self.assertEqual(recorded, (self.output / "result.json").read_bytes())
+
     def test_update_detects_stale_result_bytes(self) -> None:
         store = self.create()
         store.initialize_result()

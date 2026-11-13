@@ -1346,6 +1346,28 @@ class CiGateContractTests(unittest.TestCase):
         )
 
 
+class DocumentGovernanceSelectionTests(unittest.TestCase):
+    """QA-C07: a registry-only or policy-only diff still selects the suites."""
+
+    def test_registry_and_policy_only_diffs_select_document_governance(self) -> None:
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        document_suites = {"document-contract", "document-graph", "document-lifecycle"}
+        for path in (
+            "docs/99.templates/registry.json",
+            ".agents/governance/quality-standards.md",
+        ):
+            with self.subTest(path=path):
+                selected = contract.select_public_suites(public, "changed", (path,))
+                self.assertLessEqual(document_suites, set(selected))
+                roots = contract.public_root_gate_ids(
+                    public, selected, changed_paths=(path,)
+                )
+                self.assertIn("leaf.repo-document-metadata", roots)
+                self.assertIn("ci.docs-traceability", roots)
+
+
 class GateCrosswalkTests(unittest.TestCase):
     """QA-C05: one producer per guarantee, and a consumer for every result."""
 
