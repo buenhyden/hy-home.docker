@@ -132,8 +132,8 @@ class LabSourceContainmentTests(unittest.TestCase):
                 for directory in directories:
                     readme = directory / "README.md"
                     self.assertTrue(readme.is_file(), directory)
-                    self.assertIn("## Overview", readme.read_text())
-                    self.assertIn("## Scope", readme.read_text())
+                    self.assertIn("## Purpose", readme.read_text())
+                    self.assertIn("### Service Role", readme.read_text())
 
 
 class FootprintTests(unittest.TestCase):

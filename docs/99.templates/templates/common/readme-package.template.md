@@ -12,48 +12,46 @@ updated: "{{UPDATED}}"
 
 # {{TITLE}}
 
-## Overview
+## Purpose
 
-{{OVERVIEW}}
+### Service Role
 
-## Scope
+{{SERVICE_ROLE}}
 
-{{SCOPE}}
+### Supported Environment
 
-### Audience
+{{SUPPORTED_ENVIRONMENT}}
 
-{{AUDIENCE}}
+## Interfaces
 
-## Structure
-
-{{STRUCTURE}}
-
-### Tech Stack
-
-{{TECH_STACK}}
-
-### Documents
-
-| Path | Purpose |
-| --- | --- |
-| {{DIRECT_CHILD_PATH}} | {{DIRECT_CHILD_PURPOSE}} |
-
-## Usage
-
-{{WORK_INSTRUCTIONS}}
-
-### Configuration
+### Inputs and Outputs
 
 <!-- Author prompt: Describe actual Compose/Dockerfile/config linkage, profiles, dependencies, networks, published ports, persistence paths, environment key names, secret references and health semantics. Record removal or migration state explicitly. Keep operational procedures with the owning Guide/Policy/Runbook and route numbered-stage links through docs/README.md outside docs/. -->
 
 <!-- Author prompt: Compose/Dockerfile declarations own runtime image tags and dependency pins; the curated machine-readable registry is a derived projection. Link the implementation authority; do not copy exact patch versions into narrative inventories. A necessary compatibility, advisory, workaround, migration or history literal requires a same-line comment `runtime-version-exception: migration — explain the concrete migration boundary` with the applicable category and a concrete reason. Document frontmatter versions are independent. -->
 
-{{CONFIGURATION}}
+{{INPUTS_AND_OUTPUTS}}
 
-### Validation
+### Security Boundary
 
-{{VALIDATION}}
+{{SECURITY_BOUNDARY}}
 
-## Related Documents
+## Development
 
-{{RELATED_DOCUMENTS}}
+### Local Workflow
+
+{{LOCAL_WORKFLOW}}
+
+### Checks
+
+{{CHECKS}}
+
+## Operations
+
+### Runbook Links
+
+{{RUNBOOK_LINKS}}
+
+### Observability and Recovery
+
+{{OBSERVABILITY_AND_RECOVERY}}

@@ -1,29 +1,33 @@
 ---
 title: "OpenBao Implementation"
-version: "0.1.12"
+version: "0.1.13"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-28"
+updated: "2026-11-13"
 ---
 
 # OpenBao
 
-## Overview
+## Purpose
+
+### Service Role
+
+#### Overview
 
 secret 제어 평면은 Raft storage와 AppRole Agent를 사용합니다. bootstrap 의존성이며 sealed 컨테이너의 healthcheck 통과가 secret 전달 준비 완료를 의미하지는 않습니다.
 
 Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 profile이 활성화를 제어합니다.
 
-## Audience
+#### Audience
 
 구현, 설정, 검증을 검토하는 Operator와 Developer.
 
-## Scope
+#### Scope
 
 로컬 서비스 정의와 구현 내비게이션을 다룹니다. 운영 통제와 복구는 `GDE-0085`, `POL-0085`, `RUN-0085`(OpenBao 운영 가이드/정책/런북) 소관이며 [문서 인덱스](../../../docs/README.md)를 통해 접근합니다.
 
-## Structure
+#### Structure
 
 - `config/`: [Agent 설정](config/agent.hcl)과 template 소스를 담은 디렉터리입니다.
 - `config/policies/`: 추적되는 ACL 정책입니다. 운영자가 적용하며 컨테이너에 mount하지 않습니다.
@@ -44,11 +48,17 @@ Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 pr
 - [소비자 이관 계약](consumer-migration/README.md): 값 없는 wave·receipt schema와
   합성 검증 경로입니다. 실제 pilot·복구·삭제·회전은 별도 수용 증거가 필요합니다.
 
-## Tech Stack
+### Supported Environment
+
+#### Tech Stack
 
 런타임 고정 값은 [Compose](docker-compose.yml)와 그것이 참조하는 build 소스에 속합니다. [버전 레지스트리](../../../infra/tech-stack.versions.json)는 파생된 Compose 이미지 투영이며 배포 매니페스트가 아닙니다.
 
-## Configuration
+## Interfaces
+
+### Inputs and Outputs
+
+#### Configuration
 
 | Service | Profiles | Networks | `edge_net`, `obs_net`, `secrets_net` | Secret references |
 | --- | --- | --- | --- | --- |
@@ -64,7 +74,7 @@ Persistence:
 
 환경 키 이름과 기본값은 Compose와 [공개 환경 예시](../../../.env.example)에 선언되어 있습니다. Compose의 마운트 권한과 healthcheck 명령은 구현을 설명할 뿐이며 설정 검사 통과가 runtime 준비 완료를 증명하지는 않습니다. 비공개 환경 값, credential 파일, 원본 렌더링된 설정은 출력하지 마십시오.
 
-### P01 native trust and bootstrap
+##### P01 native trust and bootstrap
 
 내부 endpoint는 `https://openbao:${OPENBAO_PORT:-8200}`이며 Agent·metrics·Gatus·Traefik이
 같은 port와 검증된 CA를 사용합니다. 외부 custody의 `ca.pem`, `server.pem`,
@@ -89,7 +99,7 @@ config-owned HMAC audit는 `openbao-audit`에 기록합니다. 한 backend가 �
 실제 복구는 운영 Runbook `RUN-0085`([운영 문서 인덱스](../../../docs/05.operations/README.md))을 따르며
 P06 확대 전제입니다. 임시 고정 버전 시험은 HOME 완료 증거가 아닙니다.
 
-### P01 protected maintenance clients
+##### P01 protected maintenance clients
 
 [protected-maintenance.py](./scripts/protected-maintenance.py)는 인증된 root ceremony의
 보호 입력·custody·중단 경계를 구현합니다. 고정 HTTPS gateway, 숫자 connect IP와 검토된
@@ -111,7 +121,7 @@ P06 확대 전제입니다. 임시 고정 버전 시험은 HOME 완료 증거가
 share 입력은 보호 client에서만 처리하며, 준비 확인을 발급·upgrade·semantic restore 성공으로
 취급하지 않습니다.
 
-### P01 versioned issuance journal compatibility
+##### P01 versioned issuance journal compatibility
 
 새 발급은 journal 문서에 `schema_version: 2`와 `issuance_id`를 기록합니다.
 `issuance_id`는 기존 `nonce`와 같은 값인 호환 별칭이며, accessor metadata에는
@@ -126,7 +136,7 @@ journal과 활성 anchor는 version·identity가 정확히 일치해야 하며, 
 발급하지 않습니다. 이는 source 계약이며, 실제 HOME 대상·custody·복구 입력은 아직 확정되지
 않았습니다.
 
-### P02 공개 secret catalog
+##### P02 공개 secret catalog
 
 [secret-catalog.json](secret-catalog.json)과 [schema](secret-catalog.schema.json)는 값 없는
 공개 분류·보존·미결정 mapping을 소유합니다. 각 항목의 원본 기록 날짜와 실행 증거를
@@ -144,16 +154,42 @@ canonical `COMM-002`와 source-retired alias `COMM-003`의 재생성을 거부�
 alias는 별도 credential 또는 KV 대상을 만들지 않으며 실제 파일 폐기는 SMTP01 소관입니다.
 공개 catalog와 합성 검사 통과는 HOME 인증·소비·이관·rotation·복구를 증명하지 않습니다.
 
-## Validation
+### Security Boundary
 
-저장소 루트에서 문서화된 profile을 선택해 `scripts/validation/validate-docker-compose.sh`를 사용하십시오. 대상 runtime 확인과 승인 후 복구는 소유 운영 Runbook을 사용하십시오. 누락된 마운트, 예기치 않은 노출, 초기화 실패 시 중단하십시오.
+이 서비스 정의에는 `secrets` 참조가 없다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/03-security/openbao/docker-compose.yml`의 `openbao`, `openbao-agent` 서비스)
 
-## Usage
+## Development
+
+### Local Workflow
+
+#### Usage
 
 Compose, build 소스, 공개 환경 키, secret 참조를 일관되게 유지하십시오. 변경 전에 gateway 인증, 지속성, 리소스 예산, 버전 예외를 검토하십시오. 여기에 명령을 중복 작성하지 말고 기존 운영 subject를 갱신하십시오.
 
-## Related Documents
+### Checks
+
+#### Validation
+
+저장소 루트에서 문서화된 profile을 선택해 `scripts/validation/validate-docker-compose.sh`를 사용하십시오. 대상 runtime 확인과 승인 후 복구는 소유 운영 Runbook을 사용하십시오. 누락된 마운트, 예기치 않은 노출, 초기화 실패 시 중단하십시오.
+
+## Operations
+
+### Runbook Links
+
+이 서비스의 런북은 다음과 같다.
+
+- RUN-0085: `docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md`
+- RUN-0103: `docs/05.operations/runbooks/04-security-and-secrets/0103-openbao-renderer-delivery.md`
+- RUN-0104: `docs/05.operations/runbooks/04-security-and-secrets/0104-openbao-metrics-credential.md`
+- RUN-0105: `docs/05.operations/runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md`
+- RUN-0106: `docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md`
+
+#### Related Documents
 
 - [인프라 인덱스](../../../infra/README.md)
 - [문서 인덱스](../../../docs/README.md)
 - [공개 secret 계약](../../../secrets/README.md)
+
+### Observability and Recovery
+
+헬스체크: `openbao` 서비스는 `bao status >/dev/null 2>&1` (interval 15s); `openbao-agent` 서비스는 `/bin/sh /openbao/scripts/health-agent.sh` (interval 30s).

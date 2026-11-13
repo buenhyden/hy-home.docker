@@ -1,27 +1,29 @@
 ---
 title: "Hermes 수집 전송 합성 시험"
-version: "0.3.2"
+version: "0.3.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 ---
 
 # Hermes 수집 전송 합성 시험
 
-## Overview
+## Purpose
+
+### Service Role
 
 로컬 파일 보존과 전송 상태 처리, 비활성 흐름의 보안 경계를 검증합니다.
 고정된 Gateway 계약·Fixture에 대한 합성 호환성을 확인합니다. 실제 엔진
 가져오기·서버 간 통신과 영속 수신 성공은 별도 증거입니다.
 
-## Scope
+#### Scope
 
 임시 합성 산출물과 가짜 전송 연결을 사용합니다. 실제 비밀값·원본 내용·외부
 엔드포인트는 필요하지 않습니다. 실제 원본을 사용한 검증을 수행하면 합성 결과와
 분리하여 작업 기록에 남깁니다. 기존 조사·이메일·서비스 중단 시험은 실행하지 않습니다.
 
-## Structure
+#### Structure
 
 - [test_workflow.py](test_workflow.py): 비활성 흐름과 입력 선별, 분기, 고정 대상,
   영속 수신 응답을 합성 데이터와 빈 Node VM으로 검증합니다.
@@ -59,7 +61,23 @@ updated: "2026-11-06"
 그 밖의 준비·대기함·전송 시험 파일은 이 디렉터리의 전체 탐색 명령으로 함께
 실행합니다. 실제 검증기의 누락·변경은 의존성 실패로 보고합니다.
 
-## Usage
+### Supported Environment
+
+Python 표준 라이브러리 `unittest`와 빈 Node VM으로 합성 시험을 실행합니다. 보호 설치·직접 제출 경로·업그레이드 시험(`install-check.sh`, `e2e-ingress.sh`, `e2e-upgrade.sh`)만 Docker가 필요하며 추가 요구 사항은 아래 Local Workflow에 적혀 있습니다.
+
+## Interfaces
+
+### Inputs and Outputs
+
+입력은 `fixtures/`의 합성 보고서·계약 파일과 시험이 만드는 임시 산출물이고 출력은 `unittest` 결과뿐입니다. 이 디렉터리는 서비스 API나 포트를 제공하지 않습니다.
+
+### Security Boundary
+
+이 디렉터리는 서비스 포트나 Compose 정의를 두지 않고 경계를 시험으로 검증합니다. `test_ingress_route.py`는 제안 Traefik 경로가 정확한 경로·POST·호스트 출발지·본문·속도 제한만 허용하는지, `test_export_route.py`는 Export 경로의 네 요청 형태·출발지·본문·속도 제한을, `test_attestation.py`는 서명 키 보관과 신뢰 판정을, `test_source_fetch.py`는 원본 가져오기 방어를 확인합니다. 시험은 합성 Token·합성 키와 가짜 전송 연결만 쓰고, 일회용 E2E는 임의 접미사의 네트워크·볼륨·컨테이너를 만든 뒤 종료 시 지우며 운영 스택·비밀·Traefik 디렉터리는 건드리지 않습니다(Local Workflow 참조).
+
+## Development
+
+### Local Workflow
 
 저장소 루트에서 실행합니다.
 
@@ -102,7 +120,18 @@ Gateway 컨테이너는 Compose에서 렌더링한 사용자·읽기 전용 루�
 운영 n8n Queue·외부 Runner·실제 인증이나 운영 Gateway의 영속 수신을 증명하지 않습니다.
 일부 시험은 별도 고정 검증기 또는 로컬 합성 HTTP/TLS 환경이 필요합니다.
 
-## Related Documents
+### Checks
+
+이 디렉터리의 시험 자체가 검사입니다. Local Workflow의 `unittest discover` 명령이 전체 검사이며, 통과는 합성 호환성만 뜻합니다.
+
+## Operations
+
+### Runbook Links
 
 - [수집 전송 소스](../README.md)
 - [로컬 발행기](../publisher/README.md)
+- n8n Runbook: `docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md`(RUN-0053)
+
+### Observability and Recovery
+
+없음: 상주 서비스가 아니므로 헬스체크·지표가 없고 복구할 운영 상태도 없습니다. 실패는 `unittest` 출력과 일회용 시험의 컨테이너 로그로 확인하며, 수집 전송 서비스 자체의 런북은 [수집 전송 소스](../README.md)에서 찾습니다.

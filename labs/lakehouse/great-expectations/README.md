@@ -1,19 +1,22 @@
 ---
 title: "Great Expectations (lakehouse data quality)"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-13"
 created: "2026-09-23"
 ---
 
 <!-- [ID:04-data:lakehouse-great-expectations] -->
+
 # Great Expectations (lakehouse data quality)
 
 > 추적된 suite를 기준으로 Trino를 통해 Iceberg table을 검사하는 lakehouse LAB의 on-demand 데이터 품질 job입니다.
 
-## Overview
+## Purpose
+
+### Service Role
 
 Great Expectations(GX Core)는 독립 Compose project인 [lakehouse LAB](../docker-compose.yml)
 (`lab-lakehouse` profile)의 one-shot 작업입니다. HOME network에 연결되지 않고
@@ -24,26 +27,24 @@ Traefik route도 없습니다. `suites/`의 suite 파일마다 대상 table과 e
 오류)입니다. table이나 디스크에 쓰지 않고 사용 통계를 보내지 않습니다. Trino가
 승인된 catalog endpoint에 의존하므로 owner 승인 전(미결정)까지는 render 검증만 합니다.
 
-## Audience
+#### Audience
 
 이 README의 주요 독자:
 
 - Data engineers
 - Operators
 
-## Scope
-
-### In Scope
+#### In Scope
 
 - Ephemeral context, Trino SQL data source, whole-table batch를 사용하는 GX Core.
 - `suites/` 아래 추적된 JSON으로 정의된 suite.
 
-### Out of Scope
+#### Out of Scope
 
 - Data Docs, 저장된 GX project, action/notification이 있는 checkpoint.
 - Spark나 Flink data source; Trino가 이들이 쓰는 모든 Iceberg table을 읽습니다.
 
-## Structure
+#### Structure
 
 ```text
 great-expectations/
@@ -57,7 +58,7 @@ great-expectations/
 
 서비스 정의는 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유합니다.
 
-## Tech Stack
+### Supported Environment
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
@@ -65,9 +66,13 @@ great-expectations/
 | **Data source** | Trino SQLAlchemy dialect | `trino://great-expectations@trino:8080/lakehouse` |
 | **Runtime** | Python(`Dockerfile`의 base image) | UID 1000, 1 CPU, 512 MiB, read-only root |
 
-## Configuration
+## Interfaces
 
-### Suite File
+### Inputs and Outputs
+
+입력은 `suites/` 아래 추적된 JSON suite와 Trino SQL data source이며, 출력은 expectation 결과(`success`)와 종료 코드이다. suite는 table을 읽기만 한다. 환경 변수는 아래 표와 같다.
+
+#### Suite File
 
 ```json
 {"name": "orders", "table": "dev.orders",
@@ -79,7 +84,7 @@ great-expectations/
 그 인자입니다. 일부 expectation 인자는 raw SQL이므로 suite는 코드처럼
 리뷰합니다.
 
-### Environment Variables
+#### Environment Variables
 
 | Variable | Required | Description |
 | :--- | :---: | :--- |
@@ -88,13 +93,19 @@ great-expectations/
 
 Secret 없음: Trino에 인증이 없습니다.
 
-## Available Scripts
+### Security Boundary
+
+`lab_lakehouse_net`만 사용하고 호스트 포트와 secret 참조가 없으며 HOME network에 연결되지 않는다. 일부 expectation 인자가 raw SQL이므로 suite는 코드처럼 검토한다.
+
+## Development
+
+### Local Workflow
 
 아래 `LAB`은 저장소 루트에서
 `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse`입니다.
 `config`는 render만 합니다. job 실행은
 `python3 scripts/operations/lab.py check|up|down lakehouse`의 lease 규칙
-([LAB 안내](../../README.md#usage))을 따릅니다. `--no-deps`는 table-bucket
+([LAB 안내](../../README.md#local-workflow))을 따릅니다. `--no-deps`는 table-bucket
 provisioning과 Trino가 이미 준비된 경우에만 씁니다.
 
 | Command | Description |
@@ -103,37 +114,7 @@ provisioning과 Trino가 이미 준비된 경우에만 씁니다.
 | `LAB run --rm --no-deps great-expectations validate orders` | 하나의 suite 검사; 실패 시 exit `1`. |
 | `LAB run --rm --no-deps great-expectations validate` | 모든 suite 검사. |
 
-## Validation
-
-- `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse config --quiet`
-- `python3 -m unittest tests.validation.test_lab_isolation`
-
-## Troubleshooting
-
-- `no suite '<name>'`: `suites/<name>.json` 파일이 없습니다.
-- Trino의 `TABLE_NOT_FOUND`: suite의 `table`이 `lakehouse` catalog에 존재하지 않습니다.
-- `"success": false`와 함께 exit `1`: expectation이 실패했으며 앞선 줄에 이름이 있습니다.
-- Exit `2`: 실행이 아무것도 검사하지 못했습니다(suite 없음, suite 형식 오류, Trino 또는 GX 오류). 원인은 stderr에 나옵니다.
-
-## Service Readiness
-
-| Field | Evidence |
-| --- | --- |
-| Purpose | lakehouse LAB의 Great Expectations leaf; services: `great-expectations` |
-| Config files | `Dockerfile`, `requirements.txt`, `hyhome-gx.py`, `suites/*.json` |
-| Config values | profiles: `lab-lakehouse` |
-| Compose linkage | 독립 Compose project `hy-home-lab-lakehouse`([labs/lakehouse/docker-compose.yml](../docker-compose.yml)); root include 없음 |
-| Networks | `lab_lakehouse_net`(`hy-home-lab-lakehouse`); HOME network 없음 |
-| Volumes | `./lakehouse/great-expectations/suites:/opt/hyhome/suites:ro` |
-| Ports | 없음 |
-| Labels | `hy-home.tier: lab`, `traefik.enable: 'false'` |
-| Secret refs | 없음 |
-| Healthcheck | 없음(one-shot job) |
-| Operations | Guide (`docs/05.operations/guides/15-labs/0094-lakehouse.md`), Policy (`docs/05.operations/policies/15-labs/0094-lakehouse.md`), Runbook (`docs/05.operations/runbooks/15-labs/0094-lakehouse.md`) |
-| Validation | `config --quiet` render, `tests.validation.test_lab_isolation` |
-| Troubleshooting | 활성 lease 안에서 `validate <suite>`를 실행한 뒤 runbook을 따름 |
-
-## Usage
+#### Usage
 
 1. `suites/` 아래에 JSON 파일 하나로 suite를 추가하십시오. rehearsal용 `test.gx_rehearsal`은 유지합니다.
 2. Renovate가 `requirements.txt`와 `FROM` 이미지를 갱신합니다. GX 버전이 오르면 `labs/lakehouse/docker-compose.yml`의 `image:` tag와 버전 투영(`scripts/operations/sync-tech-stack-versions.sh`)도 바뀝니다. 어느 쪽이든 변경 후 재빌드하고 rehearsal을 다시 실행하십시오.
@@ -142,7 +123,7 @@ provisioning과 Trino가 이미 준비된 경우에만 씁니다.
 런타임 이미지 권한은 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유하며
 [derived Compose 이미지 투영](../../../infra/tech-stack.versions.json)은 drift 증거입니다.
 
-### SEC01 후보와 검증 경계
+#### SEC01 후보와 검증 경계
 
 GX의 단일 의존성 원본은 [requirements.txt](requirements.txt), 로컬 이미지 태그는
 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유한다. Trino 의존성, Python 빌드 소스,
@@ -160,10 +141,42 @@ suite·SQL asset API가 후보 릴리스 소스에 존재한다.
 격리 rehearsal과 정확한 suite·의존성·결과 기준을 검증한다. 업무 데이터 변경이나
 외부 workspace 생성은 수행하지 않는다.
 
-## Related Documents
+### Checks
+
+- `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse config --quiet`
+- `python3 -m unittest tests.validation.test_lab_isolation`
+
+## Operations
+
+### Runbook Links
 
 - **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/15-labs/0094-lakehouse.md`)
 - **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/15-labs/0094-lakehouse.md`)
 - **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/15-labs/0094-lakehouse.md`)
 - [LAB 탐색](../../README.md)
 - [문서 인덱스](../../../docs/README.md)
+
+### Observability and Recovery
+
+- `no suite '<name>'`: `suites/<name>.json` 파일이 없습니다.
+- Trino의 `TABLE_NOT_FOUND`: suite의 `table`이 `lakehouse` catalog에 존재하지 않습니다.
+- `"success": false`와 함께 exit `1`: expectation이 실패했으며 앞선 줄에 이름이 있습니다.
+- Exit `2`: 실행이 아무것도 검사하지 못했습니다(suite 없음, suite 형식 오류, Trino 또는 GX 오류). 원인은 stderr에 나옵니다.
+
+#### Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Purpose | lakehouse LAB의 Great Expectations leaf; services: `great-expectations` |
+| Config files | `Dockerfile`, `requirements.txt`, `hyhome-gx.py`, `suites/*.json` |
+| Config values | profiles: `lab-lakehouse` |
+| Compose linkage | 독립 Compose project `hy-home-lab-lakehouse`([labs/lakehouse/docker-compose.yml](../docker-compose.yml)); root include 없음 |
+| Networks | `lab_lakehouse_net`(`hy-home-lab-lakehouse`); HOME network 없음 |
+| Volumes | `./lakehouse/great-expectations/suites:/opt/hyhome/suites:ro` |
+| Ports | 없음 |
+| Labels | `hy-home.tier: lab`, `traefik.enable: 'false'` |
+| Secret refs | 없음 |
+| Healthcheck | 없음(one-shot job) |
+| Operations | Guide (`docs/05.operations/guides/15-labs/0094-lakehouse.md`), Policy (`docs/05.operations/policies/15-labs/0094-lakehouse.md`), Runbook (`docs/05.operations/runbooks/15-labs/0094-lakehouse.md`) |
+| Validation | `config --quiet` render, `tests.validation.test_lab_isolation` |
+| Troubleshooting | 활성 lease 안에서 `validate <suite>`를 실행한 뒤 runbook을 따름 |
