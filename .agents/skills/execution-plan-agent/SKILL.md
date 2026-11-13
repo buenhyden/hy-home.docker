@@ -3,11 +3,11 @@ name: "execution-plan-agent"
 description: "Use when an approved specification needs an executable plan mapping acceptance criteria to exact files, ordered work, risks, and checks."
 metadata:
   title: "execution-plan-agent"
-  version: "1.2.0"
+  version: "1.2.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-29"
+  updated: "2026-11-13"
   function_id: "execution-plan-agent"
   scope: "agentic"
   owner_agent: "workflow-supervisor"
@@ -15,46 +15,58 @@ metadata:
 
 # execution-plan-agent
 
-## Purpose
+## Purpose and Trigger
 
-### Preconditions
+### When to Use
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
 
 An approved specification and corroborated repository baseline must exist; unresolved decisions that alter scope remain blocking.
 
-## Inputs
+### When Not to Use
 
-- Approved specification and repository evidence.
-- File ownership, dependencies, risks, verification commands, and rollback boundaries.
+None: this skill states no exclusion.
 
 ## Procedure
+
+### Steps
 
 1. Map every acceptance criterion to exact files, implementation steps, tests, and task evidence without claiming prospective results.
 2. Order work by dependency and reversibility, isolating protected or runtime changes into separately approved tasks.
 3. Define RED/GREEN checks, review gates, commit boundaries, and terminal completion criteria.
 
-### Gates
+#### Gates
 
 - File scope and ownership are explicit.
 - Verification commands prove each acceptance criterion and name skipped/CI-only gates.
 
-## Outputs
+### Failure Handling
+
+Return to specification when interfaces, authority, or completion criteria cannot be made concrete; do not fill gaps with assumptions.
+
+## Inputs and Outputs
+
+### Inputs
+
+- Approved specification and repository evidence.
+- File ownership, dependencies, risks, verification commands, and rollback boundaries.
+
+### Outputs
 
 - An executable Plan co-located at `docs/03.specs/####-<slug>/plan.md` with exact file map, sequence, risks, and verification ladder.
 
 ## Verification
 
+### Checks
+
 - Every acceptance criterion maps to at least one Work Unit with exact files and a verification command.
 - `scripts/validation/check-document-metadata.py --mode check-changed` reports no violation for the Plan.
 - Skipped and CI-only gates are named in the Plan.
 
-## Failure Handling
+### Completion and Handoff
 
-Return to specification when interfaces, authority, or completion criteria cannot be made concrete; do not fill gaps with assumptions.
-
-## References
+Owning role and policies:
 
 - [Workflow supervisor](../../roles/workflow-supervisor.md)
 - [Task breakdown](../task-breakdown-agent/SKILL.md)

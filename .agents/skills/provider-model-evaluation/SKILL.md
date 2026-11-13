@@ -3,11 +3,11 @@ name: "provider-model-evaluation"
 description: "Use when a provider or model decision needs dated official-source comparison, native-schema review, and explicit observation boundaries. Reach for it when someone asks whether to switch the default model, whether a model is actually usable here, whether the provider registry is current, or what a model change would cost in evidence. Do NOT use it to call a provider, to benchmark quality or latency, or to grant an entitlement; it reports a sourced disposition and stops."
 metadata:
   title: "provider-model-evaluation"
-  version: "1.5.0"
+  version: "1.5.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-29"
+  updated: "2026-11-13"
   function_id: "provider-model-evaluation"
   scope: "qa"
   owner_agent: "eval-engineer"
@@ -15,9 +15,9 @@ metadata:
 
 # provider-model-evaluation
 
-## Purpose
+## Purpose and Trigger
 
-### Preconditions
+### When to Use
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
@@ -26,14 +26,13 @@ The provider/model question, official source boundary and repository work profil
 must be explicit before evaluation begins. A manual comparison is not a
 recurring workspace scoring gate.
 
-## Inputs
+### When Not to Use
 
-- Current [provider registry](../../governance/providers/registry.yaml) status axes and work-profile selection.
-- Dated official provider sources and provider-native schema evidence.
-- Scoped source/native-envelope evidence; live response and synthetic scores
-  are not required or implied by ordinary workspace QA.
+The skill description states: "Do NOT use it to call a provider, to benchmark quality or latency, or to grant an entitlement; it reports a sourced disposition and stops."
 
 ## Procedure
+
+### Steps
 
 1. Separate provider lifecycle, repository disposition, runtime acceptance,
    entitlement, repository-default eligibility, and runtime activation.
@@ -44,7 +43,7 @@ recurring workspace scoring gate.
    catalog presence, configured defaults, or synthetic scores into a live-model
    claim.
 
-### Gates
+#### Gates
 
 - Every fast-moving fact retains its official source and retrieval date;
   `references/source-discipline.md` states what counts as one and what may
@@ -53,7 +52,22 @@ recurring workspace scoring gate.
   separately approved runtime boundary supplies direct evidence.
 - Comparisons are deterministic, value-free, and do not call a provider.
 
-## Outputs
+### Failure Handling
+
+Return an unverified disposition and stop when a source, native-schema fact,
+comparison evidence, or approval boundary is missing. Do not infer runtime
+acceptance, entitlement, quality, cost, or latency.
+
+## Inputs and Outputs
+
+### Inputs
+
+- Current [provider registry](../../governance/providers/registry.yaml) status axes and work-profile selection.
+- Dated official provider sources and provider-native schema evidence.
+- Scoped source/native-envelope evidence; live response and synthetic scores
+  are not required or implied by ordinary workspace QA.
+
+### Outputs
 
 - `sourced-model-disposition`, `native-acceptance-verdict`, and
   `regression-comparison`, each in the shape `assets/disposition.md` defines.
@@ -63,17 +77,15 @@ recurring workspace scoring gate.
 
 ## Verification
 
+### Checks
+
 - Every fast-moving fact carries its official source and retrieval date.
 - Provider lifecycle, repository disposition, entitlement, and runtime acceptance sit in separate rows of `assets/disposition.md`.
 - No provider was called, and runtime acceptance stays `needs_revalidation` without direct evidence.
 
-## Failure Handling
+### Completion and Handoff
 
-Return an unverified disposition and stop when a source, native-schema fact,
-comparison evidence, or approval boundary is missing. Do not infer runtime
-acceptance, entitlement, quality, cost, or latency.
-
-## References
+Owning role and policies:
 
 - [Evaluation engineer role](../../roles/eval-engineer.md)
 - [Provider model contract](../../governance/providers/registry.yaml)

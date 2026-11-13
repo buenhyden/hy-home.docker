@@ -3,11 +3,11 @@ name: "stateful-recovery-contract-review"
 description: "Use when an explicitly supplied sanitized stateful recovery contract needs read-only production readiness review or a bounded first isolated restoreability evidence-generation review before any recovery action."
 metadata:
   title: "stateful-recovery-contract-review"
-  version: "1.2.0"
+  version: "1.2.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-29"
+  updated: "2026-11-13"
   function_id: "stateful-recovery-contract-review"
   scope: "infra"
   owner_agent: "iac-reviewer"
@@ -15,17 +15,15 @@ metadata:
 
 # stateful-recovery-contract-review
 
-## Purpose
+## Purpose and Trigger
 
-### Preconditions
+### When to Use
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
 
 An authorized reviewer must receive an explicitly supplied, sanitized recovery
-contract. This procedure is read-only and does not authorize or perform a
-restore, service action, credential access, or secret inspection. It supports
-two review modes:
+contract. The procedure supports two review modes:
 
 - `production_recovery_readiness`, which is the default when `mode` is absent
   and preserves the version 1.0 production-readiness contract; and
@@ -33,30 +31,14 @@ two review modes:
   separately authorized, bounded, isolated attempt that can generate the first
   dated restoreability evidence for an exact private backup artifact.
 
-## Inputs
+### When Not to Use
 
-- `mode`, restricted to the two values above; omission means
-  `production_recovery_readiness`.
-- The sanitized contract facts required by the production
-  [recovery contract matrix](references/recovery-contract.md), plus the first
-  isolated restoreability overlay when that mode is selected.
-- Named implementer, independent reviewer, and human approver as three distinct
-  identities or roles, plus the boundary of the separate operational approval.
-- For a first isolated attempt, the exact system and state scope, backup artifact
-  identity and digest, isolated-target contract, single-use attempt ID, and the
-  trusted explicit human authorization record with its source, time, exact
-  scope or delegated selection constraints, and withdrawal status. The target
-  contract names either an owned empty existing target or an exact absent path
-  under a trusted existing parent for atomic exclusive creation. A matching
-  current authorization or constrained delegation is recorded and reused; it
-  is not requested again.
-- A source recheck contract that binds a filesystem artifact to its exact path,
-  device, and inode, or an immutable object/version to its provider identity.
-  A content-addressed Restic snapshot ID may serve as the immutable
-  cryptographic tree identity when it is also bound to the repository and
-  configuration filesystem identity, without publishing a secret content hash.
+This procedure is read-only and does not authorize or perform a
+restore, service action, credential access, or secret inspection.
 
 ## Procedure
+
+### Steps
 
 1. Resolve `mode` before evaluating evidence. Treat an absent mode as
    `production_recovery_readiness`; reject any other value.
@@ -97,7 +79,7 @@ two review modes:
    `READY_FOR_SEPARATE_RECOVERY_APPROVAL`,
    `READY_FOR_SEPARATELY_AUTHORIZED_FIRST_ISOLATED_REHEARSAL`, or `BLOCKED`.
 
-### Gates
+#### Gates
 
 - Every required matrix row is supplied and mutually consistent before a ready
   verdict is allowed.
@@ -142,7 +124,42 @@ two review modes:
   requires a new review using the preserved redacted receipt and artifacts;
   neither the attempt ID nor its outcome may be relabeled.
 
-## Outputs
+### Failure Handling
+
+Return `BLOCKED` with the exact missing or contradictory fields. In first-attempt
+mode, missing, mismatched, stale, or withdrawn trusted authorization or
+delegation blocks only the dependent attempt; do not request authorization again
+when the supplied current direct record or bounded delegation matches. Stop when
+the input includes credential payloads, secret values, unapproved live
+inspection, or instructions to execute recovery, and route those actions to the
+named human approval boundary.
+
+## Inputs and Outputs
+
+### Inputs
+
+- `mode`, restricted to the two values above; omission means
+  `production_recovery_readiness`.
+- The sanitized contract facts required by the production
+  [recovery contract matrix](references/recovery-contract.md), plus the first
+  isolated restoreability overlay when that mode is selected.
+- Named implementer, independent reviewer, and human approver as three distinct
+  identities or roles, plus the boundary of the separate operational approval.
+- For a first isolated attempt, the exact system and state scope, backup artifact
+  identity and digest, isolated-target contract, single-use attempt ID, and the
+  trusted explicit human authorization record with its source, time, exact
+  scope or delegated selection constraints, and withdrawal status. The target
+  contract names either an owned empty existing target or an exact absent path
+  under a trusted existing parent for atomic exclusive creation. A matching
+  current authorization or constrained delegation is recorded and reused; it
+  is not requested again.
+- A source recheck contract that binds a filesystem artifact to its exact path,
+  device, and inode, or an immutable object/version to its provider identity.
+  A content-addressed Restic snapshot ID may serve as the immutable
+  cryptographic tree identity when it is also bound to the repository and
+  configuration filesystem identity, without publishing a secret content hash.
+
+### Outputs
 
 - A read-only, mode-specific readiness verdict with supplied evidence and its
   source/observation time, missing or contradictory inputs, responsible owners,
@@ -156,21 +173,15 @@ two review modes:
 
 ## Verification
 
+### Checks
+
 - `assets/verdict.md` is complete, with every required matrix row supplied.
 - The verdict is exactly one of `READY_FOR_SEPARATE_RECOVERY_APPROVAL`, `READY_FOR_SEPARATELY_AUTHORIZED_FIRST_ISOLATED_REHEARSAL`, or `BLOCKED`.
 - Execution-time checks stay `NOT_RUN_BY_DESIGN`, and the review never reports a restore as executed.
 
-## Failure Handling
+### Completion and Handoff
 
-Return `BLOCKED` with the exact missing or contradictory fields. In first-attempt
-mode, missing, mismatched, stale, or withdrawn trusted authorization or
-delegation blocks only the dependent attempt; do not request authorization again
-when the supplied current direct record or bounded delegation matches. Stop when
-the input includes credential payloads, secret values, unapproved live
-inspection, or instructions to execute recovery, and route those actions to the
-named human approval boundary.
-
-## References
+Owning role and policies:
 
 - [IaC reviewer](../../roles/iac-reviewer.md)
 - [Infrastructure cross-validation](../infra-cross-validate/SKILL.md)

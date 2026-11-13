@@ -3,11 +3,11 @@ name: "e2e-testing"
 description: "Use when approved acceptance criteria need reproducible end-to-end scenarios through public interfaces within an authorized runtime boundary."
 metadata:
   title: "e2e-testing"
-  version: "1.2.0"
+  version: "1.2.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-29"
+  updated: "2026-11-13"
   function_id: "e2e-testing"
   scope: "qa"
   owner_agent: "qa-engineer"
@@ -15,46 +15,58 @@ metadata:
 
 # e2e-testing
 
-## Purpose
+## Purpose and Trigger
 
-### Preconditions
+### When to Use
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
 
 Acceptance criteria, runnable boundary, deterministic fixture strategy, and runtime authority must be approved.
 
-## Inputs
+### When Not to Use
 
-- Acceptance criteria and runnable system boundary.
-- Test data, environment assumptions, health endpoints, and cleanup requirements.
+None: this skill states no exclusion.
 
 ## Procedure
+
+### Steps
 
 1. Convert each user-visible acceptance criterion into an observable scenario with controlled setup and teardown.
 2. Execute through public interfaces, capture only sanitized evidence, and distinguish product failures from environment failures.
 3. Re-run the failing scenario to prove reproducibility, then run the focused suite after correction.
 
-### Gates
+#### Gates
 
 - Fixtures and timing are deterministic enough for repeat execution.
 - Every reported defect includes a reproducible failure path.
 
-## Outputs
+### Failure Handling
+
+Quarantine no test silently; isolate flaky environment dependencies and escalate with the smallest reproducible scenario.
+
+## Inputs and Outputs
+
+### Inputs
+
+- Acceptance criteria and runnable system boundary.
+- Test data, environment assumptions, health endpoints, and cleanup requirements.
+
+### Outputs
 
 - End-to-end evidence with scenario, expected/actual result, and reproduction details.
 
 ## Verification
 
+### Checks
+
 - Each acceptance criterion maps to a scenario with its expected and actual result.
 - A failing scenario fails again on re-run before it is reported as a defect.
 - After correction, the focused suite passes and the evidence holds no secret or unsanitized output.
 
-## Failure Handling
+### Completion and Handoff
 
-Quarantine no test silently; isolate flaky environment dependencies and escalate with the smallest reproducible scenario.
-
-## References
+Owning role and policies:
 
 - [QA engineer](../../roles/qa-engineer.md)
 - [Test authoring](../test-authoring/SKILL.md)
