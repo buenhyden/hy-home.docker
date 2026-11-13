@@ -144,11 +144,15 @@ Registry `common` binds `link_types`, `link_profiles` and
 - R07: `rel.traceability` (child to parent through `parent_ids`, and
   `supersedes`), `rel.ownership` (frontmatter `owner`), `rel.authority`
   (normative links), `rel.reference` (other links) and
-  `rel.change-propagation` (derived), each with direction, writers and an
-  owning check. Reverse lookups are derived.
+  `rel.change-propagation` (derived), each with direction, writers and the
+  check that validates the writer. The reviewer derives reverse lookups and
+  change propagation at removal or move time; no tool derives them yet.
 
-Existing documents are not retyped and the link checker does not yet read the
-new fields; enforcement on documents goes to W05 with the validators.
+Authors assign link types and reviewers confirm them. The checkers enforce
+only that links resolve, that metadata keys and `parent_ids` are valid and
+that the Registry binding is valid; the schema pins every value of the
+policy tables. Existing documents are not retyped, and tool enforcement of
+types, reverse lookups and change propagation goes to W05.
 `superseded_by` stays as a recorded hand-written reverse until the
 coordinated lineage change the protocol already requires. The Registry
 `template_roles[*].consumer_paths` list is a manual reverse lookup; it is
@@ -181,10 +185,13 @@ None: each decision above was the owner's before the change.
 | TemplateDefinition review | 115 | W120 | independent-review | Fresh-context code-reviewer of `88613bc30` | PASS | No Critical or Important finding; conditional set, order and 15 role texts checked against the contract; three Minor findings, the unchecked map keys fixed by a test | required | - |
 | Relation types RED | 115 | W120 | red-green-proof | Ten new `test_relations` tests before the Registry binding | FAIL | All ten errored with `KeyError: 'link_types'` | required | - |
 | Relation types GREEN | 115 | W120 | red-green-proof | `test_relations` and `test_registry` at `5adac8664` | PASS | 138 tests OK; two historical-Registry cases first failed and were fixed by checking the contract only where the schema declares it | required | Relation types RED |
+| Relation types review | 115 | W120 | independent-review | Fresh-context rules-engineer of `e8b456e00` | FAIL | CHANGES_REQUIRED: the policy claimed checker enforcement and derived lookups that no code provides; the schema accepted any relation, link type or profile value; four minor (`superseded_by` wording, Vault converter, evidence pinning, test gaps) | required | - |
+| Relation fix RED | 115 | W120 | red-green-proof | Three new mutation tests against `e8b456e00` | FAIL | 11 of 14 mutation cases accepted, including a derived writer naming its own relation | required | - |
+| Relation fix GREEN | 115 | W120 | red-green-proof | `test_relations`, `test_registry`, `test_template_definition`, `test_surface_ownership` at `535557ef8` | PASS | All pass; check-contracts 0, agent governance contract 0, links alignment 0 | required | Relation fix RED |
 
 ### Resolution Links
 
-The Glossary contract comparison FAIL is resolved by the Glossary contract re-comparison PASS, TemplateDefinition RED by TemplateDefinition GREEN, and Relation types RED by Relation types GREEN.
+The Glossary contract comparison FAIL is resolved by the Glossary contract re-comparison PASS, TemplateDefinition RED by TemplateDefinition GREEN, Relation types RED by Relation types GREEN, and Relation fix RED by Relation fix GREEN. The Relation types review FAIL is resolved by its re-review once it passes.
 
 ## Acceptance Decision
 
