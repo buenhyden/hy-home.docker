@@ -1324,7 +1324,7 @@ def validate_gate_registry(
             node.kind is GateKind.LEAF
             and node.guarantee == "security"
             and node.security_db != "grype"
-            and _mentions_grype(root, node)
+            and _mentions_grype(root, node, tracked_files.get(node.entrypoint, False))
         ):
             finding(
                 "ci-gate-security-db",
@@ -1334,18 +1334,41 @@ def validate_gate_registry(
     return tuple(sorted(set(findings)))
 
 
-def _mentions_grype(root: pathlib.Path, node: GateNode) -> bool:
-    """True when the leaf's argv or entrypoint source names Grype (QA-C07)."""
+def _mentions_grype(
+    root: pathlib.Path, node: GateNode, entrypoint_tracked: bool
+) -> bool:
+    """True when the leaf names the Grype seed, wrapper or tool image (QA-C07).
+
+    One hop only: its own argv and its own entrypoint source, matched against
+    `_SECURITY_DB_MARKER`. A leaf that reaches Grype through a further call is
+    not detected and must declare `security_db` by review. The entrypoint is
+    read only when it is a tracked regular file, never through a link, and
+    within `_MAX_ENTRYPOINT_BYTES`.
+    """
     if any(_SECURITY_DB_MARKER.search(argument) for argument in node.argv):
         return True
-    if node.entrypoint is None:
+    if node.entrypoint is None or not entrypoint_tracked:
         return False
+    descriptor = -1
     try:
-        text = root.joinpath(*node.entrypoint.parts).read_text(
-            encoding="utf-8", errors="replace"
+        descriptor = os.open(
+            root.joinpath(*node.entrypoint.parts),
+            os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK,
+        )
+        metadata = os.fstat(descriptor)
+        if (
+            not stat.S_ISREG(metadata.st_mode)
+            or metadata.st_size > _MAX_ENTRYPOINT_BYTES
+        ):
+            return False
+        text = os.read(descriptor, _MAX_ENTRYPOINT_BYTES).decode(
+            "utf-8", errors="replace"
         )
     except OSError:
         return False
+    finally:
+        if descriptor >= 0:
+            os.close(descriptor)
     return _SECURITY_DB_MARKER.search(text) is not None
 
 
@@ -1424,7 +1447,13 @@ def expand_public_gate_ids(
 
 _GUARANTEES = frozenset({"security", "deploy", "none"})
 _SECURITY_DBS = ("", "grype")
-_SECURITY_DB_MARKER = re.compile(r"grype", re.IGNORECASE)
+# Names of the Grype seed, its consumers and the pinned tool image; a bare
+# word "grype" in a comment must not force a declaration.
+_SECURITY_DB_MARKER = re.compile(
+    r"grype_db_seed|seed-grype-db-cache|verify-sample-service-supply-chain"
+    r"|anchore/grype"
+)
+_MAX_ENTRYPOINT_BYTES = 1024 * 1024
 _SELF_AUTHORITY = ".github/workflow-contract.yml"
 
 

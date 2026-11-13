@@ -1543,6 +1543,35 @@ class GateCrosswalkTests(unittest.TestCase):
                     [(item.code, item.path) for item in findings],
                 )
 
+    def test_grype_detector_is_narrow_and_never_follows_links(self) -> None:
+        marker = "# uses anchore/grype\n"
+        with tempfile.TemporaryDirectory() as temporary:
+            root = pathlib.Path(temporary)
+            (root / "plain.py").write_text("# grype is only a word here\n")
+            (root / "real.py").write_text(marker)
+            (root / "link.py").symlink_to(root / "real.py")
+            os.mkfifo(root / "pipe.py")
+            (root / "huge.py").write_text(marker + "x" * 2_000_000)
+
+            def node(name: str, *argv: str) -> contract.GateNode:
+                return dataclasses.replace(
+                    leaf("leaf.probe", "probe"),
+                    entrypoint=pathlib.PurePosixPath(name),
+                    argv=argv,
+                )
+
+            detect = contract._mentions_grype
+            self.assertFalse(detect(root, node("plain.py"), True))
+            self.assertTrue(detect(root, node("real.py"), True))
+            self.assertFalse(detect(root, node("real.py"), False))
+            self.assertFalse(detect(root, node("link.py"), True))
+            self.assertFalse(detect(root, node("pipe.py"), True))
+            self.assertFalse(detect(root, node("huge.py"), True))
+            self.assertTrue(
+                detect(root, node("plain.py", "tests.x.test_grype_db_seed"), True)
+            )
+            self.assertFalse(detect(root, node("plain.py", "grype"), True))
+
     def test_security_db_field_is_typed_and_leaf_only(self) -> None:
         baseline = contract.load_contract_document(ROOT)
         for label, kind, value in (
