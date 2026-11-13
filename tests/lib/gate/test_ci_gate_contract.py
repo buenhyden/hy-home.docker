@@ -1350,7 +1350,8 @@ class CiGateContractTests(unittest.TestCase):
 
 
 class DocumentGovernanceSelectionTests(unittest.TestCase):
-    """QA-C07: a registry-only or policy-only diff still selects the suites."""
+    """QA-C07 characterization (behavior pre-existed): a registry-only or
+    policy-only diff still selects the document-governance suites."""
 
     def test_registry_and_policy_only_diffs_select_document_governance(self) -> None:
         public = contract.parse_public_gate_contract(
