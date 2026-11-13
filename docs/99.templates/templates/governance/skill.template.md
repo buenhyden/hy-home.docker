@@ -18,46 +18,46 @@ metadata:
 
 # {{TITLE}}
 
-## Purpose
+## Purpose and Trigger
 
-{{WHEN_THIS_PROCEDURE_IS_VALID}}
+### When to Use
 
-### Preconditions
+{{WHEN_THIS_PROCEDURE_IS_VALID_AND_PRECONDITIONS}}
 
-{{PRECONDITIONS}}
+### When Not to Use
 
-## Inputs
+<!-- Author prompt: Name the requests this skill must not handle and the skill or role that owns them instead. -->
 
-{{REQUIRED_INPUTS}}
+{{WHEN_THIS_PROCEDURE_DOES_NOT_APPLY}}
 
 ## Procedure
 
+### Steps
+
 {{ORDERED_SINGLE_ACTION_STEPS}}
 
-## Outputs
+### Failure Handling
 
-### Artifacts
+{{STOP_CONDITIONS_AND_RECOVERY}}
 
-{{PRODUCED_ARTIFACTS}}
+## Inputs and Outputs
 
-### Evidence
+### Inputs
 
-{{PRODUCED_EVIDENCE}}
+{{REQUIRED_INPUTS}}
+
+### Outputs
+
+{{PRODUCED_ARTIFACTS_AND_EVIDENCE}}
 
 ## Verification
 
+### Checks
+
 {{OBSERVABLE_SUCCESS_CONDITIONS}}
 
-## Failure Handling
+### Completion and Handoff
 
-### Stop Conditions
+<!-- Author prompt: Say when the skill is complete, what is handed to whom, and link the owning role and policies. -->
 
-{{STOP_CONDITIONS}}
-
-### Recovery
-
-{{RECOVERY}}
-
-## References
-
-{{OWNING_ROLE_AND_POLICY_LINKS}}
+{{COMPLETION_HANDOFF_AND_OWNING_LINKS}}

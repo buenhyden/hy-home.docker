@@ -1,6 +1,6 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.5.7"
+version: "0.5.8"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -418,6 +418,32 @@ Branch `docs/w03-policy-common-form`, on top of the Runbook branch.
   and Review and Exclusions sentences corrected; duplicate Guide and Runbook
   peer links removed.
 
+##### Skill role 2026-11-13
+
+Branch `docs/w03-skill-common-form`, on top of the Policy branch.
+
+- Registry `governance-skill`: H2 Purpose and Trigger, Procedure, Inputs and
+  Outputs, Verification with their required H3s (When to Use, When Not to
+  Use; Steps, Failure Handling; Inputs, Outputs; Checks, Completion and
+  Handoff). The old `Purpose`, `Inputs`, `Outputs`, `Failure Handling`,
+  `References` H2s and the `Preconditions` H3 are rejected. The heading test
+  now samples `.agents/` documents too, so the skill and governance profiles
+  are exercised.
+- The 24 skills are moved by two `skill-creator` agents. Every old line is
+  kept; Preconditions text sits directly under When to Use, Gates become an
+  H4 under Steps, and the old References links sit under Completion and
+  Handoff after "Owning role, policies and related documents:". When Not to
+  Use quotes the description's "Do NOT use" clause, states the exclusion the
+  body gives, or says "None: this skill states no exclusion." where none is
+  stated. Renderer drift 0.
+- Review answers: one stale "below" reference, a false lead-in, an
+  exclusion left under When to Use, four false "None" lines and two
+  misplaced paragraphs fixed; adr-writing gains its owning role link.
+
+Held for a later change: Completion and Handoff in all 24 skills holds only
+links, and two Gates bullets (ops-runbook-agent, incident-response) state an
+output location rather than a gate.
+
 Held for an owner decision, not changed here, because each would change
 what a requirement says:
 
@@ -500,6 +526,12 @@ None: nothing was recorded here before this Task moved to the common form.
 | W03 v14.7 governance policy review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `b7d418b31` (rebased as `1e0af3951`) | PASS | PASS: every finding fixed | required | W03 v14.7 governance policy review |
 | W03 v14.7 Policy GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `1e0af3951` | PASS | Ran 810 tests, OK, including the Policy old-form, template-outline, governance-policy profile and operations catalog tests | required | W03 v14.7 Policy form RED |
 | W03 v14.7 Policy checks | 111 | W116 | metadata-links-governance | The 77 operations Policies and 32 governance policies and hook rules at `1e0af3951` | PASS | Heading contract on 109 documents 0 findings; metadata check-changed selected 114 violations 0; links alignment PASS | required | - |
+| W03 v14.7 Skill form RED | 111 | W116 | red-green-proof | The `test_heading` changes of `e132c6607` and `fd4d37dea` against the `governance-skill` profile at `b7d418b31` | FAIL | The template outline failed (234 tests, one failure), and the old-form cases failed five times: `## Purpose`, `## Inputs`, `## Failure Handling`, `## References` and `### Preconditions` were accepted | required | - |
+| W03 v14.7 Skill review | 111 | W116 | independent-review | Fresh-context code-reviewer of `4c335014f` (rebased as `f7f37d495`) | FAIL | CHANGES_REQUIRED, minor: a stale "below", a false lead-in, an exclusion under When to Use, a false "None", misplaced paragraphs | required | - |
+| W03 v14.7 Skill re-review | 111 | W116 | independent-review | Fresh-context code-reviewer of `ae06dfc1f` (rebased as `8a8829190`) | FAIL | CHANGES_REQUIRED: the adr-writing lead-in had no role link; two more "None" lines were false | required | - |
+| W03 v14.7 Skill review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `8412eafea` (rebased as `5f18c6913`) | PASS | PASS: every finding fixed | required | W03 v14.7 Skill review, W03 v14.7 Skill re-review |
+| W03 v14.7 Skill GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `fd4d37dea` | PASS | Ran 810 tests, OK, including the skill old-form and template-outline tests | required | W03 v14.7 Skill form RED |
+| W03 v14.7 Skill checks | 111 | W116 | metadata-links-governance | The 24 moved skills at `fd4d37dea` | PASS | Heading contract 0 findings (384 on the old copies); renderer drift 0; agent governance contract failures 0; links alignment PASS | required | - |
 
 ### Resolution Links
 
@@ -524,7 +556,7 @@ these profile flags is handed to W05; renumbering stays a Q-07 decision.
 
 ### Promotion Receipt
 
-Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook).
+Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook), #980 (Policy).
 
 ### Next Owner
 

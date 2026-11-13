@@ -2775,19 +2775,12 @@
         "owner_agent"
       ],
       "required_sections": [
-        "Purpose",
-        "Inputs",
+        "Purpose and Trigger",
         "Procedure",
-        "Outputs",
-        "Verification",
-        "Failure Handling",
-        "References"
+        "Inputs and Outputs",
+        "Verification"
       ],
-      "optional_sections": [
-        "Preconditions",
-        "Gates",
-        "Related Documents"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "operational-policy",
       "traceability": {},
       "exceptions": [
@@ -2802,7 +2795,25 @@
         ]
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Purpose and Trigger": [
+          "When to Use",
+          "When Not to Use"
+        ],
+        "Procedure": [
+          "Steps",
+          "Failure Handling"
+        ],
+        "Inputs and Outputs": [
+          "Inputs",
+          "Outputs"
+        ],
+        "Verification": [
+          "Checks",
+          "Completion and Handoff"
+        ]
+      }
     },
     {
       "id": "governance-provider",
