@@ -85,7 +85,7 @@ reference는 독자의 필요를 설명할 뿐이며 이것만으로 문서가 S
 
 ### Transition and Exit
 
-package의 lifecycle 이력은 `status`, `supersedes`, `superseded_by`로 기록합니다.
+research·audit·data package는 `publication` 수명주기(draft, in-review, published, superseded, retired)를 따르며, 은퇴한 package는 남아야 할 의미를 현재 owner에 옮긴 뒤 삭제하고 번호를 Registry `reserved_history`에 추가합니다.
 
 ## Related Documents
 
@@ -102,4 +102,4 @@ package의 lifecycle 이력은 `status`, `supersedes`, `superseded_by`로 기록
 - [Research template](../99.templates/templates/references/research-pack.template.md)
 - [Audit template](../99.templates/templates/references/audit-pack.template.md)
 - [Data template](../99.templates/templates/references/data-pack.template.md)
-- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본
+- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

@@ -115,7 +115,7 @@ surface가 도입되지 않습니다.
 
 ### Transition and Exit
 
-삭제된 문서의 본문은 Git 이력이 보관합니다.
+삭제된 문서는 남아야 할 의미를 해당 governance owner에 옮긴 뒤 삭제하며, 삭제된 본문은 Git 이력이 보관합니다.
 
 ## Related Documents
 
@@ -129,5 +129,5 @@ surface가 도입되지 않습니다.
 - `governance/bootstrap.md` (Bootstrap)
 - `governance/providers/registry.yaml` (Provider registry)
 - Canonical-home decision (`docs/02.architecture/decisions/0032-canonical-agent-governance-home.md`)
-- [문서 작성 계약](governance/documentation-protocol.md#readme-and-agentsmd): README 형식과 언어 규칙의 정본
-- [README 템플릿](../docs/99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본
+- `governance/documentation-protocol.md`의 `#readme-and-agentsmd`: README와 AGENTS.md의 역할 구분
+- [README 템플릿](../docs/99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

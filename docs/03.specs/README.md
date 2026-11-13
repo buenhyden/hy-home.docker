@@ -150,5 +150,5 @@ package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance
 - [에이전트 작업 규칙](AGENTS.md)
 - [Stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md)
 - [Document Registry](../99.templates/registry.json)
-- [문서 작성 계약](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README 형식과 언어 규칙의 정본
-- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본
+- [문서 작성 계약](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

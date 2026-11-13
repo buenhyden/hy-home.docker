@@ -32,7 +32,7 @@ layer: "operations"
 
 ### Classification
 
-이 폴더의 분류 단위는 사고별 폴더이며, 각 폴더는 사고 사실 기록 `incident.md`와 작성된 경우 사후 분석 `postmortem.md`로 구성됩니다. 상태와 결론은 각 기록이 소유합니다.
+분류 단위는 사고별 폴더이며, `incident.md`가 사고 사실의 정본이고 `postmortem.md`는 작성된 경우의 사후 분석으로 `parent_ids`로 Incident를 연결합니다.
 
 ## Workflow
 
@@ -43,7 +43,7 @@ layer: "operations"
 
 ### Transition and Exit
 
-이 README는 `navigation` 수명주기의 `active` 상태만 가지며 다른 상태로 전이하지 않습니다. 목록 항목을 추가·이동·삭제할 때 이 문서를 함께 갱신하고, 삭제한 항목의 이력은 Git이 기록합니다.
+이 폴더의 사고는 Incident 수명주기를 따르며(open → investigating → mitigated 또는 resolved → closed), Incident 번호는 연도마다 다시 시작해 `inc-2026-NNNN` 형식으로 이 폴더에서만 발급합니다.
 
 ## Related Documents
 

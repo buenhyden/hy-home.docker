@@ -30,7 +30,7 @@ updated: "{{UPDATED}}"
 
 ### Current Items
 
-<!-- Author prompt: List only documents or open changes that exist now. A table here uses the registered Path and Purpose columns. -->
+<!-- Author prompt: List only documents or open changes that exist now. A table with a Path column must use the registered columns (Path, Purpose, optional Owner); a table without a Path column is free. -->
 
 | Path | Purpose |
 | --- | --- |
@@ -59,6 +59,8 @@ updated: "{{UPDATED}}"
 ## Related Documents
 
 ### Upstream and Downstream
+
+<!-- Author prompt: Link the requirement, design, task and operations documents that feed or consume this folder; write the reason when there are none. -->
 
 {{REQUIREMENT_DESIGN_TASK_AND_OPERATION_LINKS}}
 

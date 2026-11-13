@@ -98,5 +98,5 @@ failure handling을 따릅니다. prompt가 어디에 적용되었는지는 현�
 
 - [Agent governance index](../README.md)
 - [Agentic policy](../governance/agentic.md)
-- [문서 작성 계약](../governance/documentation-protocol.md#readme-and-agentsmd): README 형식과 언어 규칙의 정본
+- [문서 작성 계약](../governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
 - 전용 템플릿 없음: Registry의 `governance-prompt-index` profile(`docs/99.templates/registry.json`)이 형식을 소유합니다.

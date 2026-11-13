@@ -126,7 +126,7 @@ AI와 검색 문서는 `09-ai-and-search/`에 있습니다.
 
 ### Classification
 
-분류는 `01-common/`부터 `15-labs/`까지 15개 번호 폴더이며 이 인덱스는 Runbook 역할만 소유한다. 같은 subject의 다른 역할 문서는 같은 번호와 slug로 다른 역할 인덱스에 있다.
+분류는 `01-common/`부터 `15-labs/`까지 15개 번호 폴더이며 이 인덱스는 Runbook 역할만 소유한다. 같은 subject의 다른 역할 문서는 있는 경우 같은 번호와 slug로 다른 역할 인덱스에 있다.
 
 ## Workflow
 
@@ -141,7 +141,7 @@ AI와 검색 문서는 `09-ai-and-search/`에 있습니다.
 
 ### Transition and Exit
 
-문서를 추가·이동·삭제하면 같은 변경에서 이 인덱스에 한 줄로 반영하며, 검증기가 모든 구성원이 정확히 한 번 연결되었는지 확인한다.
+문서는 `operational-policy` 수명주기(draft, in-review, active, deprecated, superseded, retired)를 따른다. 종료 상태에 이른 문서는 남아야 할 내용을 소유 문서에 요약한 뒤 삭제하고, 번호를 Registry `reserved_history`에 추가하며, 이 목록의 행과 링크를 같은 변경에서 제거한다. 검증기는 모든 구성원이 정확히 한 번 연결되었는지 확인한다.
 
 ## Related Documents
 
@@ -150,10 +150,9 @@ AI와 검색 문서는 `09-ai-and-search/`에 있습니다.
 - [Operations](../README.md)
 - [Guides](../guides/README.md)
 - [Policies](../policies/README.md)
-- [Runbooks](../runbooks/README.md)
 - [Incidents](../incidents/README.md)
 
 ### Policy and Templates
 
 - [Documentation protocol](../../../.agents/governance/documentation-protocol.md#role-specific-authoring)
-- [README 템플릿](../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본
+- [README 템플릿](../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

@@ -563,18 +563,7 @@ class RegisteredSectionContractTests(unittest.TestCase):
                     self._findings("readme", candidate),
                 )
 
-    def test_readme_current_items_table_rejects_wrong_header(self) -> None:
-        body, _ = self._conforming_body("readme")
-        wrong = body.replace(
-            "### Current Items\n\n이 절은 예시 본문입니다.",
-            "### Current Items\n\n| Path | Name |\n| --- | --- |",
-            1,
-        )
-        self.assertIn(
-            "readme-documents-header-invalid", self._findings("readme", wrong)
-        )
-
-    def test_readme_current_items_checks_only_path_led_tables(self) -> None:
+    def test_readme_current_items_checks_only_path_column_tables(self) -> None:
         body, _ = self._conforming_body("readme")
         for header, reported in (
             ("| Path | Status |", True),
@@ -593,6 +582,21 @@ class RegisteredSectionContractTests(unittest.TestCase):
                     f"### Current Items\n\n{header}\n| --- | --- |",
                     1,
                 )
+                self.assertEqual(
+                    reported,
+                    "readme-documents-header-invalid"
+                    in self._findings("readme", candidate),
+                )
+
+    def test_readme_documents_module_checks_every_table(self) -> None:
+        body, _ = self._conforming_body("readme")
+        good = "| Path | Purpose |\n| --- | --- |\n| a | b |\n\n"
+        for second, reported in (
+            ("| Path | Purpose |", False),
+            ("| Name | Purpose |", True),
+        ):
+            with self.subTest(second=second):
+                candidate = body + "\n### Documents\n\n" + good + second + "\n"
                 self.assertEqual(
                     reported,
                     "readme-documents-header-invalid"

@@ -71,5 +71,5 @@ convergence로 보고해서는 안 됩니다.
 ### Policy and Templates
 
 - [Governance hub](../../README.md)
-- [문서 작성 계약](../documentation-protocol.md#readme-and-agentsmd): README 형식과 언어 규칙의 정본
+- [문서 작성 계약](../documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
 - 전용 템플릿 없음: Registry의 `governance-provider-index` profile(`docs/99.templates/registry.json`)이 형식을 소유합니다.

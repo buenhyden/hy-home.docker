@@ -68,10 +68,7 @@ environment variables는 원형을 유지합니다.
 
 ### Classification
 
-#### Templates
-
-- [incident.template.md](../../99.templates/templates/operations/incident.template.md)
-- [postmortem.template.md](../../99.templates/templates/operations/postmortem.template.md)
+Incident Record(`incident.md`)는 사고 사실과 대응 상태의 정본이고, Postmortem(`postmortem.md`)은 사고 안정화 이후의 구조적 원인과 재발 방지 조치를 기록하며 `parent_ids`로 해당 Incident를 연결합니다. 둘 다 사고별 폴더에 두며 서로의 내용을 대체하지 않습니다.
 
 ## Workflow
 
@@ -93,7 +90,7 @@ environment variables는 원형을 유지합니다.
 
 ### Transition and Exit
 
-이 README는 `navigation` 수명주기의 `active` 상태만 가지며 다른 상태로 전이하지 않습니다. 목록 항목을 추가·이동·삭제할 때 이 문서를 함께 갱신하고, 삭제한 항목의 이력은 Git이 기록합니다.
+Incident는 open → investigating → mitigated 또는 resolved → closed 순으로 전이하며(mitigated와 resolved에서는 investigating으로 돌아갈 수 있고 closed가 종료 상태), Postmortem은 draft → in-review → published로 전이하며 published가 종료 상태입니다.
 
 ## Related Documents
 
@@ -106,5 +103,5 @@ environment variables는 원형을 유지합니다.
 
 - [Incident template](../../99.templates/templates/operations/incident.template.md)
 - [Postmortem template](../../99.templates/templates/operations/postmortem.template.md)
-- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README 형식과 언어 규칙의 정본
-- [README 템플릿](../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본
+- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [README 템플릿](../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

@@ -120,7 +120,7 @@ Risks`의 `Quality Attributes`, `Risks`, `Evolution`에 해당 내용을 배치�
 
 ### Transition and Exit
 
-이 README는 `navigation` 수명주기의 `active` 상태만 가지며 다른 상태로 전이하지 않는다. 목록 항목을 추가·이동·삭제할 때 이 문서를 함께 갱신하고, 삭제한 항목의 이력은 Git이 기록한다.
+Architecture Description은 draft → in-review → active로 전이하며 active에서 in-review로 돌아갈 수 있다. 더 이상 현재 구조를 설명하지 않는 문서는 내용을 현재 소유자에 요약하고 삭제하며 번호를 Registry `reserved_history`에 추가한다.
 
 ## Related Documents
 
@@ -136,5 +136,5 @@ Risks`의 `Quality Attributes`, `Risks`, `Evolution`에 해당 내용을 배치�
 
 - [에이전트 작업 규칙](../AGENTS.md)
 - [Architecture Description Template](../../99.templates/templates/architecture/description.template.md)
-- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README 형식과 언어 규칙의 정본
-- [README 템플릿](../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본
+- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [README 템플릿](../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

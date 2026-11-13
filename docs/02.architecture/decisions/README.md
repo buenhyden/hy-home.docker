@@ -69,7 +69,7 @@ docs/02.architecture/decisions/
 #### Current Inventory
 
 - `ADR-0001`부터 `ADR-0028`: 기본 tier와 service selection, hardening, HA, network,
-  readiness evidence decisions. 위 Structure의 파일 목록이 현재 남은 번호이다.
+  readiness evidence decisions. 위 Current Items의 파일 목록이 현재 남은 번호이다.
 - 삭제된 번호 `ADR-0003`, `ADR-0005`, `ADR-0006`, `ADR-0009`~`ADR-0016`,
   `ADR-0018`~`ADR-0020`, `ADR-0022`~`ADR-0027`, `ADR-0029`~`ADR-0031`, `ADR-0033`,
   `ADR-0035`, `ADR-0036`, `ADR-0039`~`ADR-0041`, `ADR-0043`, `ADR-0045`, `ADR-0058`은
@@ -176,7 +176,7 @@ docs/02.architecture/decisions/
 
 ### Transition and Exit
 
-이 README는 `navigation` 수명주기의 `active` 상태만 가지며 다른 상태로 전이하지 않는다. 목록 항목을 추가·이동·삭제할 때 이 문서를 함께 갱신하고, 삭제한 항목의 이력은 Git이 기록한다.
+ADR는 `architecture-decision` 수명주기를 따라 proposed에서 accepted 또는 rejected로 전이하며 둘 다 종료 상태이다. 다른 ADR이 대체한 ADR은 남아야 할 내용을 대체 ADR에 두고 삭제하며 번호를 Registry `reserved_history`에 추가한다.
 
 ## Related Documents
 
@@ -192,5 +192,5 @@ docs/02.architecture/decisions/
 
 - [에이전트 작업 규칙](../AGENTS.md)
 - [ADR Template](../../99.templates/templates/architecture/decision.template.md)
-- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README 형식과 언어 규칙의 정본
-- [README 템플릿](../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본
+- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [README 템플릿](../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

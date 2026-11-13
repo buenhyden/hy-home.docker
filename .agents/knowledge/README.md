@@ -60,7 +60,7 @@ route하고 link를 남깁니다.
 
 ### Classification
 
-knowledge member는 authority가 아니라 canonical owner로 route하는 검증된 지식이며, 규칙 자체는 그 owner에게 남습니다.
+member는 세 종류입니다. `glossary.md`는 저장소 vocabulary, `repository-map.md`는 표면에서 canonical owner로의 routing, `verification-surface-map.md`는 검증 진입점이며, 모두 authority가 아니라 owner로 route하는 지식입니다.
 
 ## Workflow
 

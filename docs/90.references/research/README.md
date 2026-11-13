@@ -208,5 +208,5 @@ owner를 확장합니다.
 ### Policy and Templates
 
 - [Stage 99 Registry](../../99.templates/registry.json)
-- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README 형식과 언어 규칙의 정본
-- [README 템플릿](../../99.templates/templates/common/readme-category.template.md): 이 README의 양식 원본
+- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [README 템플릿](../../99.templates/templates/common/readme-category.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

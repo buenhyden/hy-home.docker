@@ -46,7 +46,7 @@ layer: "operations"
 
 ### Classification
 
-이 폴더의 문서는 모두 가이드 역할이며 `GDE-NNNN` 식별자를 쓴다. 같은 subject의 다른 역할 문서는 같은 번호와 slug로 다른 역할 폴더에 있다.
+이 폴더의 문서는 모두 가이드 역할이며 `GDE-NNNN` 식별자를 쓴다. 같은 subject의 다른 역할 문서는 있는 경우 같은 번호와 slug로 다른 역할 폴더에 있다.
 
 ## Workflow
 
@@ -64,7 +64,7 @@ layer: "operations"
 
 ### Transition and Exit
 
-문서를 이동·삭제하면 이 목록의 행과 링크를 같은 변경에서 갱신하며, 문서의 원래 식별자와 생성일은 바뀌지 않는다.
+문서는 `operational-policy` 수명주기(draft, in-review, active, deprecated, superseded, retired)를 따른다. 종료 상태에 이른 문서는 남아야 할 내용을 소유 문서에 요약한 뒤 삭제하고, 번호를 Registry `reserved_history`에 추가하며, 이 목록의 행과 링크를 같은 변경에서 제거한다.
 
 ## Related Documents
 
@@ -76,4 +76,4 @@ layer: "operations"
 ### Policy and Templates
 
 - [문서 작성 계약](../../../../.agents/governance/documentation-protocol.md)
-- [README 템플릿](../../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본
+- [README 템플릿](../../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

@@ -89,4 +89,4 @@ Stage 98은 현재 보존 기록을 담지 않으며 활성 문서가 아닙니�
 
 - [문서 보존 및 은퇴 정책](../../.agents/governance/documentation-protocol.md)
 - [AD-0030 문서 Lifecycle 거버넌스](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
-- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본
+- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

@@ -49,7 +49,7 @@ layer: "templates"
 
 ### Classification
 
-하위 디렉터리는 문서 역할별 category(`architecture`, `common`, `governance`, `operations`, `references`, `requirements`, `runtime`, `specs`)이며, 각 category 안의 template 원본만 정본입니다. 완성된 문서와 과거 template은 이 디렉터리에 두지 않습니다.
+각 category 안의 template 원본만 정본이며 완성된 문서와 과거 template은 두지 않습니다(과거 template은 Git history로만 복구). template은 복사용 source이므로 복사해 만든 문서가 자기 profile의 수명주기를 시작합니다.
 
 ## Workflow
 
@@ -86,4 +86,4 @@ layer: "templates"
 
 - [Registry](../registry.json)
 - [Documentation protocol](../../../.agents/governance/documentation-protocol.md)
-- [README 템플릿](common/readme-stage.template.md): 이 README의 양식 원본
+- 이 README의 양식 원본은 `common/readme-stage.template.md`이며 형식은 [Stage 99 Registry](../registry.json)의 profile이 소유합니다

@@ -138,7 +138,7 @@ CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성�
 
 ### Transition and Exit
 
-문서를 추가·이동·삭제하면 해당 역할 인덱스와 관련 inbound link를 함께 갱신한다.
+Guide·Policy·Runbook은 `operational-policy` 수명주기(draft, in-review, active, deprecated, superseded, retired)를 따르고, Incident는 open → investigating → mitigated 또는 resolved → closed 순으로 전이하며(mitigated와 resolved에서는 investigating으로 돌아갈 수 있고 closed가 종료 상태), Postmortem은 draft → in-review → published로 전이하며 published가 종료 상태이다. 종료 상태 문서는 남아야 할 내용을 소유 문서에 요약한 뒤 삭제하고 번호를 Registry `reserved_history`에 추가하며 해당 역할 인덱스와 inbound link를 같은 변경에서 갱신한다.
 
 ## Related Documents
 
@@ -155,4 +155,4 @@ CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성�
 - [Template catalog](../99.templates/templates/README.md)
 - [Documentation protocol](../../.agents/governance/documentation-protocol.md)
 - [Stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md)
-- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본
+- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

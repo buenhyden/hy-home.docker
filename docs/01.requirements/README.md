@@ -122,7 +122,7 @@ Stage 03 Spec의 contract가 소유한다.
 
 ### Transition and Exit
 
-패키지를 추가·변경·삭제하면 같은 변경에서 이 README를 갱신한다.
+Requirement Package는 draft → in-review → approved로 전이하며 approved에서 in-review로 돌아갈 수 있다. 삭제된 package의 번호는 Registry `reserved_history`가 보관하며, Stage 01 번호 공백은 그 번호가 예약된 경우에만 정당한다. 패키지를 추가·변경·삭제하면 같은 변경에서 이 README를 갱신한다.
 
 ## Related Documents
 
@@ -137,5 +137,5 @@ Stage 03 Spec의 contract가 소유한다.
 ### Policy and Templates
 
 - [에이전트 작업 규칙](AGENTS.md)
-- [문서 작성 계약](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README 형식과 언어 규칙의 정본
-- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본
+- [문서 작성 계약](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

@@ -82,55 +82,13 @@ docs/
 이전 stage 경로의 이관 매핑은 Git 이력에서 찾습니다. 현재 경로와 작성 계약은
 Stage 99 Registry가 소유합니다.
 
-#### Documentation Standards
-
-- 가능한 경우 승인된 템플릿에서 시작합니다.
-- 기존 SSoT 문서를 중복 생성하지 않습니다.
-- 제목과 구조는 사람과 AI Agent 모두가 해석할 수 있도록 명시적으로 작성합니다.
-- 상위 문서와 하위 산출물 간 추적성을 유지합니다.
-- 문서 언어는 [문서 언어 규칙](../.agents/governance/documentation-protocol.md#document-language)이
-  정하며, 각 Registry profile의 `language`가 그 결과를 소유합니다.
-- Markdown 링크는 상대 경로를 사용하며 절대 경로나 `file://`를 사용하지 않습니다.
+### Classification
 
 #### Documentation Contract
 
 [Stage 99](99.templates/README.md)가 모든 문서 profile, 경로, lifecycle,
 identifier, 등록된 template을 소유합니다. [공통 Agent 거버넌스](../.agents/README.md)는
 작성 행동과 승인 경계를 소유합니다. 이 index는 탐색 전용입니다.
-
-#### Cross-link Rules
-
-- 새 문서와 갱신 문서는 하나의 `## Related Documents` 섹션을 유지합니다.
-- 상대 링크는 현재 파일 위치 기준으로 계산합니다.
-- 템플릿의 예시 링크는 복사된 target 위치에서 다시 계산한 뒤 실제 문서 경로로 바꿉니다.
-- README가 무엇을 목록으로 가질 수 있는지는 [README 탐색 규칙](../.agents/governance/documentation-protocol.md#readme-navigation)을 따릅니다.
-- Archive/delete 후보는 [Stage 99 계약](99.templates/README.md)과 [공통 Agent 거버넌스 승인 경계](../.agents/governance/approval-boundaries.md)에 따라 분류하고, 검증된 Git 복구 근거와 독립 검토를 남깁니다.
-- 문서를 없앨 때는 남아야 할 내용을 01·02 문서의 Traceability에 요약하고, 원본을
-  삭제하며, 폐기 번호를 Registry `reserved_history`에 추가합니다. 현재 문서는
-  `98.archive/`로 링크하지 않습니다.
-
-#### Template Usage
-
-역할은 [99.templates](99.templates/README.md)의 Registry(`registry.json`)에서
-고르고, 그 source는 같은 곳의 template catalog(`templates/README.md`)에서
-복사합니다. Spec, Plan, Task, machine contract는 Stage 03에 함께 있습니다.
-Requirement 자식 identity는 그 package가 소유합니다. Stage 98은 기록을 담지 않고
-처분 체계만 설명합니다.
-
-#### Document Contract Validation
-
-문서 체계의 후보 aggregate QA는 원격 PR 경로가 소유합니다. 로컬에서는
-아래 명령으로 선택 계획을 조회하거나 필요한 link 진단만 수행합니다.
-`--explain`은 검사를 실행하지 않으며 PASS 증거가 아닙니다.
-
-```bash
-python3 scripts/validation/run-ci-gate.py --profile changed --explain
-python3 scripts/validation/check-document-links.py --mode traceability
-```
-
-정확한 검사 선택과 실행 단계는 [quality policy](../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix)와
-[workflow contract](../.github/workflow-contract.yml)가 소유합니다.
-`check-document-links.py --mode alignment`는 현재 문서의 링크와 anchor를 확인합니다.
 
 #### Historical Refresh Evidence
 
@@ -157,25 +115,66 @@ advisory graph는 advisory로 남고 `.agents/governance/environment-constraints
 | Retired indexes | `DATA-0076`, `DATA-0082`, `DATA-0083`, 삭제됨 |
 | Retired operations package | `GDE-0007`, `POL-0007`, `RUN-0007`, 삭제됨 |
 
-### Classification
-
 Stage 98은 현재 보존 기록을 담지 않으며, 삭제된 문서와 은퇴한 historical evidence는 비권위 기록이므로 현재 소유자 문서의 Traceability와 Git 이력에서 확인합니다.
 
 ## Workflow
 
 ### Create and Review
 
-#### Usage
+#### Authoring Steps
 
 1. 새 문서를 만들기 전에 이 README와 대상 stage의 `README.md`를 먼저 읽습니다.
-2. 새 active stage 문서는 반드시 위 Structure에 나열된 canonical 경로 아래에 둡니다.
+2. 새 active stage 문서는 반드시 위 Current Items에 나열된 canonical 경로 아래에 둡니다.
 3. 새 문서는 [99.templates](99.templates/README.md)의 대응 템플릿을 사용하고, README는 그 template catalog의 `templates/common/readme-documentation.template.md`를 따릅니다.
 4. 문서 변경 후 상위 README, 관련 stage 문서, traceability 링크를 함께 갱신합니다.
 5. secret 값, token, 인증서 원문은 문서에 쓰지 않습니다.
 
+#### Documentation Standards
+
+- 가능한 경우 승인된 템플릿에서 시작합니다.
+- 기존 SSoT 문서를 중복 생성하지 않습니다.
+- 제목과 구조는 사람과 AI Agent 모두가 해석할 수 있도록 명시적으로 작성합니다.
+- 상위 문서와 하위 산출물 간 추적성을 유지합니다.
+- 문서 언어는 [문서 언어 규칙](../.agents/governance/documentation-protocol.md#document-language)이
+  정하며, 각 Registry profile의 `language`가 그 결과를 소유합니다.
+- Markdown 링크는 상대 경로를 사용하며 절대 경로나 `file://`를 사용하지 않습니다.
+
+#### Cross-link Rules
+
+- 새 문서와 갱신 문서는 하나의 `## Related Documents` 섹션을 유지합니다.
+- 상대 링크는 현재 파일 위치 기준으로 계산합니다.
+- 템플릿의 예시 링크는 복사된 target 위치에서 다시 계산한 뒤 실제 문서 경로로 바꿉니다.
+- README가 무엇을 목록으로 가질 수 있는지는 [README 탐색 규칙](../.agents/governance/documentation-protocol.md#readme-navigation)을 따릅니다.
+- Archive/delete 후보는 [Stage 99 계약](99.templates/README.md)과 [공통 Agent 거버넌스 승인 경계](../.agents/governance/approval-boundaries.md)에 따라 분류하고, 검증된 Git 복구 근거와 독립 검토를 남깁니다.
+
+#### Template Usage
+
+역할은 [99.templates](99.templates/README.md)의 Registry(`registry.json`)에서
+고르고, 그 source는 같은 곳의 template catalog(`templates/README.md`)에서
+복사합니다. Spec, Plan, Task, machine contract는 Stage 03에 함께 있습니다.
+Requirement 자식 identity는 그 package가 소유합니다. Stage 98은 기록을 담지 않고
+처분 체계만 설명합니다.
+
+#### Document Contract Validation
+
+문서 체계의 후보 aggregate QA는 원격 PR 경로가 소유합니다. 로컬에서는
+아래 명령으로 선택 계획을 조회하거나 필요한 link 진단만 수행합니다.
+`--explain`은 검사를 실행하지 않으며 PASS 증거가 아닙니다.
+
+```bash
+python3 scripts/validation/run-ci-gate.py --profile changed --explain
+python3 scripts/validation/check-document-links.py --mode traceability
+```
+
+정확한 검사 선택과 실행 단계는 [quality policy](../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix)와
+[workflow contract](../.github/workflow-contract.yml)가 소유합니다.
+`check-document-links.py --mode alignment`는 현재 문서의 링크와 anchor를 확인합니다.
+
 ### Transition and Exit
 
-문서를 없앨 때는 남아야 할 내용을 01·02 문서의 Traceability에 요약하고 원본을 삭제하며 폐기 번호를 Registry `reserved_history`에 추가합니다. 현재 문서는 `98.archive/`로 링크하지 않습니다.
+- 문서를 없앨 때는 남아야 할 내용을 01·02 문서의 Traceability에 요약하고, 원본을
+  삭제하며, 폐기 번호를 Registry `reserved_history`에 추가합니다. 현재 문서는
+  `98.archive/`로 링크하지 않습니다.
 
 ## Related Documents
 
@@ -196,5 +195,6 @@ Stage 98은 현재 보존 기록을 담지 않으며, 삭제된 문서와 은퇴
 
 - [Agent governance README](../.agents/README.md)
 - [99.templates/README.md](99.templates/README.md)
-- [문서 작성 계약](../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README 형식과 언어 규칙의 정본
-- [README 템플릿](99.templates/templates/common/readme-documentation.template.md): 이 README의 양식 원본
+- [문서 작성 계약](../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [문서 언어 규칙](../.agents/governance/documentation-protocol.md#document-language): README 본문 언어
+- 양식 원본은 `99.templates/templates/common/readme-documentation.template.md`이며, 형식은 [Stage 99 Registry 계약](99.templates/README.md)의 `documentation-readme` profile이 소유합니다.
