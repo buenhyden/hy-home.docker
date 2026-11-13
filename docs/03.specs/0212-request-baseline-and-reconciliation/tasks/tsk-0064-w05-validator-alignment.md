@@ -49,7 +49,14 @@ repository's own tests, against the adopted contract pinned in the Registry.
 The same day the owner chose tool enforcement of link types with a policy
 change ("도구로 집행(정책 수정)"), with the type carried in the link title and
 an untitled link staying Normative or Navigation, and asked for every
-remaining W05 handoff to proceed.
+remaining W05 handoff to proceed. Later that day the owner asked for the
+W00 to W04 residue to be audited and fixed against the requirements, approved
+commit, push, pull request and merge, and chose three options: the
+repository-vocabulary contract is versioned 1.0.0 from package label `v14.5`
+and 1.1.0 with the eight SemVer terms, while Registry `schema_version` stays
+the integer Registry Schema Version (D1); GOV-07 stays a review rule (D2);
+the workflow contracts `sdlc.md` and `workflows.md` are a role of their own
+with their own form (D3).
 
 The request authorizes the Registry, schema, validator, test and policy text
 changes named here, and this Task with criterion 117 and W122. Push, pull
@@ -86,7 +93,8 @@ currency) on that branch, plus the record commit with this Task.
   case and repeated them on every H3. It now emits the single contract rule
   on an H2 and none on an H3. The validator already treats a comment-only
   section as empty (`test_heading.py` L1112 and L1141): KEEP.
-- Glossary comparison. The Registry `common.vocabulary_contract` pins the
+- Glossary comparison (as first committed; D1 later made the pin 1.1.0 with
+  41 terms and `source_label` `v14.5`). The Registry `common.vocabulary_contract` pinned the
   adopted contract `repository-vocabulary` v14.5: source SHA-256
   `b03ae3c0…2fce`, glossary path and the 33 Term ID to Term pairs, without
   definitions. `vocabulary_contract_findings` compares the glossary's
@@ -126,7 +134,8 @@ currency) on that branch, plus the record commit with this Task.
   accepted a trailing newline, now rejected; the release tag regex was
   already correct; no code compares versions, so no precedence comparator
   was added. H-W01-2 (`99625243f`): the Registry `common.common_form_contract`
-  names `COMMON-DOC-FORM-1 1.0.0` and `template_definition.py` reads it.
+  names the common-form revision (`COMMON-DOC-FORM-1/1.0.0` since
+  `3f485ab34`) and `template_definition.py` reads it.
   H-W01-1 and H-W01-5 (`f13f9daa4`): the real PreToolUse hook denies a
   `main` push whatever approval claim the command carries, and lets an
   in-scope reversible edit through unasked. H-W01-4 (`2ba9bc47b`): an
@@ -147,6 +156,24 @@ currency) on that branch, plus the record commit with this Task.
   supply and integrity leaves, a different guarantee, and the Task itself
   says so at L335. The FAIL stays unresolved; criterion 17 is still
   `pending`, so nothing accepted relied on it. TSK-0011 is not edited here.
+- Review of the integrated branch (FAIL, three Important): I-1, I-2, M-1 and
+  M-9 in the Spec Package reader went back to their writer; I-3, Plan
+  restatements left at SPEC-0204 L325-329, L532 and L722-725 and SPEC-0218
+  L104-110, went back to the Plan writer. Fixed here: the readiness report
+  survives a load failure (`e34801578`); the link-title check reads whole
+  paragraphs, bracketed link text and reference definitions, and the
+  protocol says it runs locally only (`33188136f`); the KEEP-marker test
+  names its schema error; the source hash rejects a trailing newline; the
+  glossary calls `v14.5` a package label. M-6: the eight 1.1.0 terms come
+  from the v14.7 `SEMVER-POLICY.md` section 6 (SHA-256
+  `921d2fba…c06c`), which the Registry `source_sha256` (the `v14.5`
+  vocabulary file) does not cover; 1.1.0 is this workspace's adoption on D1,
+  and the other three workspaces adopt it themselves (W11 checks adoption).
+- Readiness entrypoint (`e34801578`): `check-document-corpus-lifecycle.py
+  --readiness` reports each package without changing the exit code. On the
+  current tree SPEC-0248, 0249, 0250, 0260, 0264 and 0265 report ready,
+  exactly the H-W04-7 removal list for W02. This corrects TSK-0057 L245,
+  which said no CLI or gate derives readiness.
 - Pre-W05 items done now: TSK-0063 H-W04-8 and H-W04-9, the glossary
   entries for Structural Ownership, Constraint, Change Impact, the
   Traceability heading and the older sense of "promote" (`85d6c39db`).
@@ -166,16 +193,17 @@ to W04 blocks W05. Findings and actions:
 | --- | --- | --- |
 | SemVer 0.y.z rule absent from the protocol | CONFLICT | Fixed: the protocol states it (`265a49a3c`); no checker compares version increments, so the rule is held by review |
 | Version-object inventory absent | MISSING | Fixed: protocol `Version objects` (`265a49a3c`) |
-| `v14.5` written as a contract version, integer `schema_version` without a SemVer mapping | CONFLICT | Held for the owner's decision (Blockers and Decisions); not renumbered |
-| Eight SemVer terms (Public Contract to Baseline Namespace) absent from the glossary | MISSING | Held for the same decision: adding common terms makes a new vocabulary contract revision |
+| `v14.5` written as a contract version, integer `schema_version` without a SemVer mapping | CONFLICT | Fixed on D1 (`8875aa404`): contract 1.1.0 with `source_label` `v14.5`, SemVer required by the schema; `schema_version` recorded as the integer Registry Schema Version |
+| Eight SemVer terms (Public Contract to Baseline Namespace) absent from the glossary | MISSING | Fixed on D1 (`8875aa404`): common rows at 1.1.0, pinned in the Registry |
 | Common form revision serialized `COMMON-DOC-FORM-1 1.0.0`, shared contract writes `COMMON-DOC-FORM-1/1.0.0` | CONFLICT (QA-C01) | Fixed (`3f485ab34`) |
 | SPEC-0204 Plan restates Task status (SDLC-04, `sdlc.md` L75-77) | CONFLICT | Fixed in the SPEC-0204 and SPEC-0218 Plans (`9270ffcbd`, cherry-picked); sentences that state a rule, such as "remains NOT_RUN unless separately authorized", were kept as rules |
 | Writers: TSK-0063 wrote the Registry, schema and `registry.py`; this Task wrote the glossary and Registry pins | CONFLICT (process) | Attested here: for those hunks TSK-0063 acted as the W03 writer and this Task as the W01 and W03 writer, one writer per file at a time; no other wave wrote them |
 | DOC-08 DEFER in TSK-0058 has no owner | MISSING (owner) | Closed on its recorded basis (TSK-0058 L114): the facts there hold, no change needed |
 | Skill Gates bullets held in TSK-0058 L444-446 | MISSING (owner) | W07, with the Skill `Completion and Handoff` section |
 | W05-built fixes for W00 to W04 handoffs had no review row | UNREVIEWED | An independent review of the integrated branch is required before criterion 117 is accepted |
-| H-W01-6 (GOV-07) left review-only | UNCONFIRMED | Held for the owner's decision |
-| `sdlc.md` and `workflows.md` keep a workflow form, not the Policy form | UNCONFIRMED | Held for the owner's decision (R147-04: one role, one form) |
+| H-W01-6 (GOV-07) left review-only | UNCONFIRMED | Confirmed on D2: a review rule |
+| `sdlc.md` and `workflows.md` keep a workflow form, not the Policy form | UNCONFIRMED | Confirmed on D3: a separate role; the Registry already keeps it outside the 16 common roles, so TSK-0060 "16 of 16 roles" holds |
+| `sdlc.md` said the reader did not yet check the 1.9.0 rules | Stale after H-W04-1 | Fixed (`e35700381`, 1.9.1): it names what the corpus check applies and that no entrypoint runs readiness |
 | Document `version` allows release values only | UNCONFIRMED | Kept: no document uses a prerelease, and SemVer format rules apply where one is used; recorded here as the decision basis |
 | H-W04-7 removal of 0248, 0249, 0250, 0260, 0264, 0265 | REMAINING | W02, after the H-W04-2 promotion check |
 | SPEC-DISPOSITION per-criterion depth, Stage 02 currency, OPEN-07 | UNVERIFIED | W11 |
@@ -204,10 +232,12 @@ roles" holds only if the workflow-form decision keeps `sdlc.md` and
 | Document-level link types | TSK-0062 | PASS | Owner chose tool enforcement on 2026-11-14; done here (title marker, untitled default); choosing the type stays a review |
 | Reverse lookups and Change Impact derivation | TSK-0062 | GAP | No tool derives them; W05 next unit, CLI wiring to W06 |
 | `template_roles[*].consumer_paths` manual reverse lookup | TSK-0062 | GAP | Same unit as the reverse lookups |
-| H-W04-1 acceptance rules, H-W04-2 promotion check, H-W04-4 untested branches | TSK-0063 | GAP | W05 next unit |
+| H-W04-1 acceptance rules | TSK-0063 | PASS | `fc639081c`: applied by the corpus lifecycle check to Criterion Acceptance rows new or changed against the lifecycle base, so the 8 criteria accepted before 1.9.0 in six Tasks stand as recorded; merged-PR-note fixture included |
+| H-W04-2 promotion check | TSK-0063 | PARTIAL | `ef049ad37`: readiness requires each code-span path in a Promotion Map to appear in a Promotion Receipt, reported by `--readiness` (`e34801578`); full-path matching (review I-2) is with its writer; prose targets stay with review; CI route is W06's |
+| H-W04-4 untested branches | TSK-0063 | PASS | `4bee2c348`; the duplicate-Task message is unreachable because `_load_tasks` rejects the duplicate first |
 | H-W01-4 other fixtures | TSK-0060 | PASS | OPEN ID and KEEP marker done here; merged PR read as Acceptance with H-W04-1 |
 | H-W01-1, H-W01-5 | TSK-0060 | PASS | Done here for the hook layer; no hook gates a deployment command, and a transition-override `approval` string is recorded, not authenticated (both stay review) |
-| H-W01-6 (GOV-07) | TSK-0060 | GAP | No deterministic checker: a tests-only change is often legitimate; stays a review rule in `quality-standards.md` |
+| H-W01-6 (GOV-07) | TSK-0060 | PASS (owner decision D2) | A review rule in `quality-standards.md`; no checker |
 | H-W01-2 consumer revision check | TSK-0060 | PASS | Registry names both adopted revisions and the consumer reads them |
 | H-05 H3 model in `heading.py` | TSK-0059 | UNVERIFIED | W03 added H3 checks after H-05 was written; reassess before changing |
 | H-08 unwired code and tests | TSK-0059 | PASS (measurement and manifest) | Hosted CI wiring of the 57 local-only modules, the link checker and candidate preflight is W06's (H-W05-1) |
@@ -279,14 +309,30 @@ roles" holds only if the workflow-form decision keeps `sdlc.md` and
 | Dead subgraph removal | 117 | W122 | unit-regression | Agent commit `34ac206d5`: lifecycle suite, generation 6 and 7, surface ownership, script manifest, corpus lifecycle | PASS | 18, 39 and 8 tests OK; manifest valid; violations=0 | required | - |
 | Manifest wiring | 117 | W122 | unit-regression | Agent commit `9a56e787b`: script manifest, `test_surface_ownership`, `test_script_manifest`, `test_ci_gate_plan` | PASS | 119 tests OK; manifest valid | required | - |
 | Integration rerun | 117 | W122 | unit-regression | Branch after cherry-picks `fc4a34ca6` to `9a56e787b`'s pick: `test_registry`, `test_template_definition`, `metadata.test_lifecycle`, `test_agent_governance_ci_routing`, `test_release`, surface, generation 6 and 7, script manifest; metadata check-active; corpus lifecycle | PASS | 292, 47 and 59 tests OK; selected=535 violations=0; violations=0 | required | - |
+| Acceptance rule RED | 117 | W122 | red-green-proof | `AcceptanceDecisionTests` against a stub `_acceptance_findings` in an agent worktree at `cf690ff0c` | FAIL | 5 of 7 failed: the expected `acceptance-unsupported` findings were missing | required | - |
+| Acceptance rule GREEN | 117 | W122 | red-green-proof | Agent commits `3ebf50def` to `10bc6b249`: `test_spec_packages`, corpus lifecycle; the unscoped rule was first measured to fail 8 accepted criteria | PASS | 134 tests OK; violations=0 | required | Acceptance rule RED |
+| Promotion readiness RED | 117 | W122 | red-green-proof | `PromotionReadinessTests` before `10bc6b249` | FAIL | `test_a_target_in_no_receipt_keeps_the_package_unready` missed its finding | required | - |
+| Promotion readiness GREEN | 117 | W122 | red-green-proof | `PromotionReadinessTests`, `test_generation6`, `test_generation7` at `10bc6b249` | PASS | 43 tests OK | required | Promotion readiness RED |
+| Form serialization RED | 117 | W122 | red-green-proof | `test_a_malformed_common_form_pin_is_rejected` with the space form added, before `3f485ab34` | FAIL | `COMMON-DOC-FORM-1 1.0.0` accepted | required | - |
+| Form serialization GREEN | 117 | W122 | red-green-proof | `test_template_definition`, `test_registry` at `3f485ab34` | PASS | 176 tests OK | required | Form serialization RED |
+| Vocabulary 1.1.0 RED | 117 | W122 | red-green-proof | Updated `VocabularyContractTests` before `8875aa404` | FAIL | 6 failures: `v14.5` accepted as a version, 33 terms, rows citing `v14.5` | required | - |
+| Vocabulary 1.1.0 GREEN | 117 | W122 | red-green-proof | `test_registry`, `test_template_definition` at `8875aa404`; links alignment; markdownlint | PASS | 177 tests OK; PASS; 0 issues | required | Vocabulary 1.1.0 RED |
+| Readiness RED | 117 | W122 | red-green-proof | `ReadinessReportTests` before `e34801578` | FAIL | `--readiness` was an unrecognized argument | required | - |
+| Readiness GREEN | 117 | W122 | red-green-proof | `tests.validation.lifecycle.test_public` at the `e34801578` change; the load-failure test was added after the review and its RED was not witnessed | PASS | 5 tests OK; then the failure test OK | required | Readiness RED |
+| Integrated review | 117 | W122 | independent-review | Fresh-context code-reviewer of `323891aaf..e35700381` (read only, no tests run) | FAIL | CHANGES_REQUIRED: I-1 a cited row or Plan pair could change under an unchanged decision row; I-2 Promotion targets matched by file name; I-3 Plan restatements left; nine Minor | required | - |
+| Link title RED | 117 | W122 | red-green-proof | `test_wrapped_bracketed_and_reference_links_are_checked` before `33188136f` | FAIL | 5 subtests: wrapped, bracketed and reference titles unchecked | required | - |
+| Link title GREEN | 117 | W122 | red-green-proof | `LinkTypeTitleTests`, `test_registry`, links alignment at `33188136f` | PASS | 6 and 153 tests OK; alignment PASS | required | Link title RED |
 
 ### Resolution Links
 
 Disposition RED is resolved by Disposition GREEN, TemplateDefinition RED by
 TemplateDefinition GREEN, Vocabulary RED by Vocabulary GREEN, and Currency RED
 by Currency GREEN, and Release RED by Release GREEN. Pre-commit is resolved
-by its rerun, and Link type RED by Link type GREEN. SemVer RED, Common form pin RED and
-Approval hook RED are resolved by their GREEN rows. The W05 review and
+by its rerun, and Link type RED by Link type GREEN. SemVer RED, Common form pin RED,
+Approval hook RED, Acceptance rule RED, Promotion readiness RED, Form
+serialization RED, Vocabulary 1.1.0 RED, Readiness RED and Link title RED
+are resolved by their GREEN rows. The Integrated review FAIL stays open until
+its re-review. The W05 review and
 W05 re-review FAILs are resolved by the W05 final review, and the Spec Package
 regression by its rerun.
 
