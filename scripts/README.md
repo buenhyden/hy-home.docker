@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.5.6"
+version: "1.5.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 created: "2026-02-21"
 ---
 
@@ -12,11 +12,13 @@ created: "2026-02-21"
 
 > Repository maintenance, utility scripts, and automation triggers.
 
-## Overview
+## Purpose
+
+### Project Role
 
 `scripts/` 디렉터리에는 빌드, 테스트, 환경 구성 등에 필요한 보조 스크립트와 자동화 도구가 있습니다.
 
-## Audience
+#### Audience
 
 이 README의 주요 독자:
 
@@ -24,23 +26,25 @@ created: "2026-02-21"
 - Developers
 - Documentation Writers
 
-## Scope
+### Boundaries
 
-### In Scope
+#### In Scope
 
 - 저장소 검증, 구현 정합성 점검, 계약 점검, 로컬 QA 게이트 오케스트레이션, agent 이벤트 훅 자동화 스크립트
 - 계층별 하드닝 점검과 공유 헬퍼 라이브러리
 - 로컬 preflight 검증 모드와 안전한 secret 파일 생성 유틸리티
 - canonical purpose-folder 경로에 대한 스크립트 인벤토리와 lifecycle 소유권 규칙
 
-### Out of Scope
+#### Out of Scope
 
 - 평문 secret 값, 자격 증명, 토큰, 개인 키, 생성된 인증서 내용
 - `docs/05.operations/`에 속하는 장문의 운영 절차
 - `graphify-out/` 아래의 생성된 Graphify 산출물
 - `infra/` 아래의 서비스별 Docker Compose 소스 파일
 
-## Structure
+## Repository Map
+
+### Directories
 
 ```text
 scripts/
@@ -58,7 +62,7 @@ scripts/
 └── README.md            # 이 문서
 ```
 
-## Purpose Folder Implementation
+#### Purpose Folder Implementation
 
 canonical script surface는 purpose-folder 경로입니다. docs, CI, hooks, pre-commit
 참조가 purpose-folder 경로로 이동한 뒤 루트 레벨 `scripts/*.sh` 중복 파일은
@@ -78,62 +82,10 @@ wrapper를 다시 만들지 않습니다.
 제거했으므로 대신 tier 인자를 사용합니다.
 
 각 스크립트의 정확한 경로, 소유권, 테스트 evidence는
-[`scripts/manifest.yaml`](manifest.yaml)이 소유합니다. 아래 Navigation /
-Inventory 표는 각 entrypoint의 용도를 설명합니다.
+[`scripts/manifest.yaml`](manifest.yaml)이 소유합니다. Canonical Entry Points의 Direct
+child 표는 각 entrypoint의 용도를 설명합니다.
 
-## Navigation / Inventory
-
-`[scripts/manifest.yaml](manifest.yaml)` is the canonical inventory for every
-script, consumer, lifecycle, and test record. This README indexes only the
-direct purpose folders so it does not duplicate that manifest.
-
-| Direct child | Purpose |
-| --- | --- |
-| [`validation/`](validation/) | Repository, document, compose, and gate entrypoints. |
-| [`hardening/`](hardening/) | Tiered hardening entrypoint. |
-| [`hooks/`](hooks/) | Provider-neutral event and post-tool hooks. |
-| [`knowledge/`](knowledge/) | Knowledge and Graphify reporting utilities. |
-| [`operations/`](operations/) | Local operational, rehearsal, renderer, and secret-generation entrypoints. |
-| [`security/`](security/) | Supply-chain and local security entrypoints. |
-| [`lib/`](lib/) | Import-only domain implementations behind public entrypoints. |
-| [`manifest.yaml`](manifest.yaml) | Complete script inventory and ownership source. |
-
-## Usage
-
-Hermes v1 후보 JSON의 로컬 사전 검사는
-`python3 scripts/validation/check-hermes-candidate.py <candidate.json>`으로
-실행합니다. `--source-root <staged-hermes-home>`을 주면 `cron/output/` 원본
-바이트를, `--item-root <staged-user-home>`을 주면 사업 아이디어 항목 원본
-바이트를 SHA-256과 대조합니다. 루트를 생략한 원본은 해시 형식만 검사하며
-출력에 `not checked`로 표시합니다. 종료 코드 0은 구조 검증(`VALID`),
-1은 입력 오류(`INVALID`), 2는 인프라 비공개 차단(`BLOCKED`)입니다.
-어느 결과도 게시 승인·멱등 쓰기·실제 전달을 증명하지 않으며 네트워크나
-Blog-data에 접근하지 않습니다. Stage 03의 SPEC-0247 문서 탐색은
-[docs/README.md](../docs/README.md)에서 시작합니다.
-
-1. 스크립트를 추가, 이름 변경, 삭제하기 전에 이 README를 먼저 읽습니다.
-2. 새 스크립트는 해당 동작을 소유하는 기존 purpose 폴더 아래에 둡니다.
-3. purpose-folder 스크립트에 대한 루트 레벨 `scripts/*.sh` 중복 파일을 추가하지 않습니다.
-4. docs, CI, hooks, pre-commit 항목에서는 canonical purpose-folder 경로를 참조합니다.
-5. `--profile changed --explain`으로 영향을 확인하고, 후보 aggregate 검사는 원격 PR에서 한 번 실행합니다. `full`은 승인된 전체 감사용입니다.
-6. secret 관련 예시는 절차만 남기고, 생성된 secret 값을 출력하거나 문서화하지 않습니다.
-7. 저장소 검증 스크립트의 Python 모듈 의존성은 `scripts/requirements.txt`에 유지합니다.
-
-GitHub Actions controller는 `requirements.txt`와
-`requirements-pre-commit.txt`에서 uv 0.12.18로 생성한
-`requirements-controller.lock`만 `--require-hashes`로 설치합니다. 이 lock은
-Linux x86-64의 Python 3.12와 3.14 조건을 함께 담습니다. 로컬 pre-commit
-도구 준비는 기존 `requirements-pre-commit.txt`를 계속 직접 소비하며, lock
-재생성은 입력 변경을 동반한 별도 리뷰 대상입니다.
-
-로컬에서 단위 테스트를 돌릴 때도 같은 lock이 필요합니다. 배포판 Python
-패키지는 더 오래될 수 있습니다. 예를 들어 `jsonschema` 4.10에는
-`referencing`이 없어 secret catalog, SMTP 생성기, metadata sync 테스트가
-실패합니다. lock을 별도 venv에 `--require-hashes`로 설치하고, 그 venv의
-`bin`을 `PATH` 맨 앞에 둡니다. `gen-secrets.sh`가 `PATH`의 `python3`를
-호출하기 때문입니다.
-
-## Active Surface Retention Rules
+#### Active Surface Retention Rules
 
 다음 중 하나라도 해당하면 루트 `scripts/` 구현을 유지합니다:
 
@@ -148,7 +100,7 @@ Linux x86-64의 Python 3.12와 3.14 조건을 함께 담습니다. 로컬 pre-co
 아키텍처 결정, 실행 evidence, 거버넌스 메모리, 생성된 참고 산출물 아래의 과거
 참조는 감사 근거로만 쓰며 그것만으로 스크립트를 유지하지는 않습니다.
 
-## Hardening Tier Arguments
+#### Hardening Tier Arguments
 
 선택한 tier 하나만 검사하려면 `bash scripts/hardening/check-all-hardening.sh <tier>`를
 사용합니다. 인자가 없으면 지원되는 모든 tier를 검사합니다.
@@ -169,7 +121,65 @@ Linux x86-64의 Python 3.12와 3.14 조건을 함께 담습니다. 로컬 pre-co
 | Analytics     | `12-analytics`, `analytics`               |
 | Experience    | `13-experience`, `experience`             |
 
-## Validation ownership
+### Canonical Entry Points
+
+`[scripts/manifest.yaml](manifest.yaml)` is the canonical inventory for every
+script, consumer, lifecycle, and test record. This README indexes only the
+direct purpose folders so it does not duplicate that manifest.
+
+| Direct child | Purpose |
+| --- | --- |
+| [`validation/`](validation/) | Repository, document, compose, and gate entrypoints. |
+| [`hardening/`](hardening/) | Tiered hardening entrypoint. |
+| [`hooks/`](hooks/) | Provider-neutral event and post-tool hooks. |
+| [`knowledge/`](knowledge/) | Knowledge and Graphify reporting utilities. |
+| [`operations/`](operations/) | Local operational, rehearsal, renderer, and secret-generation entrypoints. |
+| [`security/`](security/) | Supply-chain and local security entrypoints. |
+| [`lib/`](lib/) | Import-only domain implementations behind public entrypoints. |
+| [`manifest.yaml`](manifest.yaml) | Complete script inventory and ownership source. |
+
+## Getting Started
+
+### Prerequisites
+
+저장소 검증 스크립트는 `scripts/requirements.txt`에 유지되는 Python 모듈에 의존하며, 스크립트는 `python3`와 Bash로 실행합니다.
+
+GitHub Actions controller는 `requirements.txt`와
+`requirements-pre-commit.txt`에서 uv 0.12.18로 생성한
+`requirements-controller.lock`만 `--require-hashes`로 설치합니다. 이 lock은
+Linux x86-64의 Python 3.12와 3.14 조건을 함께 담습니다. 로컬 pre-commit
+도구 준비는 기존 `requirements-pre-commit.txt`를 계속 직접 소비하며, lock
+재생성은 입력 변경을 동반한 별도 리뷰 대상입니다.
+
+로컬에서 단위 테스트를 돌릴 때도 같은 lock이 필요합니다. 배포판 Python
+패키지는 더 오래될 수 있습니다. 예를 들어 `jsonschema` 4.10에는
+`referencing`이 없어 secret catalog, SMTP 생성기, metadata sync 테스트가
+실패합니다. lock을 별도 venv에 `--require-hashes`로 설치하고, 그 venv의
+`bin`을 `PATH` 맨 앞에 둡니다. `gen-secrets.sh`가 `PATH`의 `python3`를
+호출하기 때문입니다.
+
+### First Verified Path
+
+Hermes v1 후보 JSON의 로컬 사전 검사는
+`python3 scripts/validation/check-hermes-candidate.py <candidate.json>`으로
+실행합니다. `--source-root <staged-hermes-home>`을 주면 `cron/output/` 원본
+바이트를, `--item-root <staged-user-home>`을 주면 사업 아이디어 항목 원본
+바이트를 SHA-256과 대조합니다. 루트를 생략한 원본은 해시 형식만 검사하며
+출력에 `not checked`로 표시합니다. 종료 코드 0은 구조 검증(`VALID`),
+1은 입력 오류(`INVALID`), 2는 인프라 비공개 차단(`BLOCKED`)입니다.
+어느 결과도 게시 승인·멱등 쓰기·실제 전달을 증명하지 않으며 네트워크나
+Blog-data에 접근하지 않습니다. Stage 03의 SPEC-0247 문서 탐색은
+[docs/README.md](../docs/README.md)에서 시작합니다.
+
+1. 스크립트를 추가, 이름 변경, 삭제하기 전에 이 README를 먼저 읽습니다.
+2. 새 스크립트는 해당 동작을 소유하는 기존 purpose 폴더 아래에 둡니다.
+3. purpose-folder 스크립트에 대한 루트 레벨 `scripts/*.sh` 중복 파일을 추가하지 않습니다.
+4. docs, CI, hooks, pre-commit 항목에서는 canonical purpose-folder 경로를 참조합니다.
+5. `--profile changed --explain`으로 영향을 확인하고, 후보 aggregate 검사는 원격 PR에서 한 번 실행합니다. `full`은 승인된 전체 감사용입니다.
+6. secret 관련 예시는 절차만 남기고, 생성된 secret 값을 출력하거나 문서화하지 않습니다.
+7. 저장소 검증 스크립트의 Python 모듈 의존성은 `scripts/requirements.txt`에 유지합니다.
+
+#### Validation ownership
 
 `.github/workflow-contract.yml`은 실행 가능한 구성 레지스트리입니다. 이 파일의
 `public_gate.validators` 행마다 공개 suite를 정확히 하나 선언합니다:
@@ -361,15 +371,15 @@ validator 명령을 중복 실행하지 않습니다. 현재 품질 소유권은
 
 ---
 
-## Utilities & Automation
+#### Utilities & Automation
 
-### Standard Rules
+##### Standard Rules
 
 - **Idempotency**: 모든 스크립트는 여러 번 실행해도 상태가 깨지지 않도록 안전해야 합니다.
 - **No Secrets**: 스크립트는 자격 증명을 환경 변수에서 가져와야 하며 절대 하드코딩하지 않습니다.
 - **Deterministic**: 추가하는 모든 자동화는 `../.agents/governance/`의 저장소 거버넌스를 따라야 합니다.
 
-### Usage Examples
+##### Usage Examples
 
 ```bash
 # doc-paths: illustrative
@@ -437,7 +447,7 @@ source scripts/operations/use-qa-ci-tools.sh
 
 ---
 
-## Invocation Safety
+#### Invocation Safety
 
 check-only validator는 `mutation: none`을 사용합니다. Generator와
 synchronizer는 `mutation: check-write`를 사용합니다: 기본 호출은 저장소
@@ -472,7 +482,7 @@ knowledge map과 루트 `llms.txt` entry point가 소유하며,
 `scripts/knowledge/report-graphify-health.sh`는 쓰기 없이 advisory Graphify
 상태만 보고합니다.
 
-## Verification
+#### Verification
 
 manifest와 생성된 output 게이트는 다음으로 실행합니다:
 
@@ -490,7 +500,9 @@ PYTHONPATH=. .venv/bin/python tests/validation/test_script_manifest.py
 절대 호출하지 않습니다. 현재 두 조건을 모두 선언한 행은 없으므로 이 모드는
 기본 점검 이상을 추가하지 않습니다.
 
-## Related Documents
+## References
+
+### Current Documentation
 
 - [에이전트 작업 규칙](AGENTS.md)
 - ⚙️ Operations Baseline (`docs/05.operations/README.md`)
@@ -503,3 +515,7 @@ PYTHONPATH=. .venv/bin/python tests/validation/test_script_manifest.py
 - [Documentation index](../docs/README.md)
 
 Note: QuickWin baseline exceptions are sourced from `infra/common-optimizations.exceptions.json`.
+
+### Support and Ownership
+
+이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.

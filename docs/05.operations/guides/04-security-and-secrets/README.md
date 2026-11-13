@@ -1,33 +1,43 @@
 ---
 title: "보안과 비밀값 가이드"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-12"
+updated: "2026-11-13"
 layer: "operations"
 ---
 
 # 보안과 비밀값 가이드
 
-## Overview
+## Stage Responsibility
+
+### Purpose and Readers
 
 보안과 비밀값의 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다.
 
-## Scope
+### Inputs and Outputs
 
 이 폴더는 아래 문서의 가이드 역할만 소유한다. 구현과 운영 결과는 각 소유 문서와 Task에서 확인한다.
 
 실행 권한, 비밀값 원문, 새로운 서비스와 빈 분류 문서는 포함하지 않는다.
 
-## Structure
+## Contents
+
+### Current Items
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
 | [`SENSITIVE_ENV_VARS.md.example` vs `SENSITIVE_ENV_VARS.md` Comparison](0010-sensitive-env-vars-comparison.md) | `GDE-0010` | 이 가이드는 공개 secret registry 예제와 로컬 registry의 메타데이터를 비교하는 기준과 방법을 설명한다. |
 | [OpenBao Guide](0085-openbao.md) | `GDE-0085` | OpenBao는 HOME secret control plane이다. 레거시 Vault runtime/data는 2026-09-25 폐기된 역사적 대상이며 현재 migration/rollback 입력으로 사용할 수 없다. |
 
-## Usage
+### Classification
+
+이 폴더의 문서는 모두 가이드 역할이며 `GDE-NNNN` 식별자를 쓴다. 같은 subject의 다른 역할 문서는 있는 경우 같은 번호와 slug로 다른 역할 폴더에 있다.
+
+## Workflow
+
+### Create and Review
 
 1. 식별자와 문서 제목으로 대상을 고른다.
 2. 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다.
@@ -36,8 +46,18 @@ layer: "operations"
 
 작성·검토 책임은 `@buenhyden`에게 있다. 같은 통제나 절차의 정본을 복제하지 않는다.
 
+### Transition and Exit
+
+문서는 `operational-policy` 수명주기(draft, in-review, active, deprecated, superseded, retired)를 따른다. superseded 또는 retired에 이른 문서는 [은퇴 전제 조건](../../../../.agents/governance/documentation-protocol.md#retirement-preconditions)을 모두 충족할 때에만 남아야 할 내용을 소유 문서에 요약한 뒤 삭제하고, 번호를 Registry `reserved_history`에 추가하며, 이 목록의 행과 링크를 같은 변경에서 제거한다.
+
 ## Related Documents
+
+### Upstream and Downstream
 
 - [상위 가이드 분류](../README.md)
 - [운영 문서](../../README.md)
+
+### Policy and Templates
+
 - [문서 작성 계약](../../../../.agents/governance/documentation-protocol.md)
+- [README 템플릿](../../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

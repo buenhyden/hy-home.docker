@@ -552,7 +552,7 @@ class DocumentRegistryTests(unittest.TestCase):
                 [],
                 _introduced_body_findings(record, complete, record, complete, profiles),
             )
-            changed = complete.replace("## Overview", "## Missing Overview", 1)
+            changed = complete.replace("## Purpose", "## Missing Purpose", 1)
             self.assertIn(
                 "body-heading-missing",
                 {

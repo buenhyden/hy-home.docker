@@ -1,26 +1,30 @@
 ---
 title: "워크플로와 자동화 가이드"
-version: "0.1.2"
+version: "0.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 ---
 
 # 워크플로와 자동화 가이드
 
-## Overview
+## Stage Responsibility
+
+### Purpose and Readers
 
 워크플로와 자동화의 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다.
 
-## Scope
+### Inputs and Outputs
 
 이 폴더는 아래 문서의 가이드 역할만 소유한다. 구현과 운영 결과는 각 소유 문서와 Task에서 확인한다.
 
 실행 권한, 비밀값 원문, 새로운 서비스와 빈 분류 문서는 포함하지 않는다.
 
-## Structure
+## Contents
+
+### Current Items
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
@@ -29,7 +33,13 @@ layer: "operations"
 | [n8n Usage Guide](0053-n8n.md) | `GDE-0053` | 이 가이드는 `hy-home.docker`의 n8n 로우코드 자동화 환경을 사용하는 방법을 설명한다. 현재 구현은 `n8n`, `n8n-worker`, `n8n-task-runner`, `n8n-task-runner-worker` queue mode와 `blog-ingestion` Gateway 구성이다. |
 | [07-Workflow Optimization Hardening Usage Guide](0054-workflow-optimization-hardening.md) | `GDE-0054` | 이 문서는 `07-workflow` 계층의 최적화/하드닝 변경을 운영자와 개발자가 재현 가능하게 적용하기 위한 가이드다. compose 보안 경계, health 기반 startup 계약, n8n 이미지 하드닝, 검증 절차를 제공한다. |
 
-## Usage
+### Classification
+
+이 폴더의 문서는 모두 가이드 역할이며 `GDE-NNNN` 식별자를 쓴다. 같은 subject의 다른 역할 문서는 있는 경우 같은 번호와 slug로 다른 역할 폴더에 있다.
+
+## Workflow
+
+### Create and Review
 
 1. 식별자와 문서 제목으로 대상을 고른다.
 2. 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다.
@@ -38,8 +48,18 @@ layer: "operations"
 
 작성·검토 책임은 `@buenhyden`에게 있다. 같은 통제나 절차의 정본을 복제하지 않는다.
 
+### Transition and Exit
+
+문서는 `operational-policy` 수명주기(draft, in-review, active, deprecated, superseded, retired)를 따른다. superseded 또는 retired에 이른 문서는 [은퇴 전제 조건](../../../../.agents/governance/documentation-protocol.md#retirement-preconditions)을 모두 충족할 때에만 남아야 할 내용을 소유 문서에 요약한 뒤 삭제하고, 번호를 Registry `reserved_history`에 추가하며, 이 목록의 행과 링크를 같은 변경에서 제거한다.
+
 ## Related Documents
+
+### Upstream and Downstream
 
 - [상위 가이드 분류](../README.md)
 - [운영 문서](../../README.md)
+
+### Policy and Templates
+
 - [문서 작성 계약](../../../../.agents/governance/documentation-protocol.md)
+- [README 템플릿](../../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

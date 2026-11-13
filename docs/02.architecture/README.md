@@ -1,30 +1,40 @@
 ---
 title: "Architecture"
-version: "1.1.5"
+version: "1.1.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-13"
 layer: "architecture"
 ---
 
 # Architecture
 
-## Overview
+## Stage Responsibility
+
+### Purpose and Readers
 
 `docs/02.architecture`는 Stage 01 요구사항을 시스템 경계, 이해관계자 관심사,
 뷰, 데이터·제어 흐름, 품질 시나리오와 중요한 선택으로 연결한다.
 Architecture Description은 현재 구조를 설명하고 ADR은 선택, 대안, 근거,
 결과와 supersession을 기록한다.
 
-## Scope
+#### Audience
+
+- System Architects
+- Developers
+- Reviewers
+
+### Inputs and Outputs
 
 이 stage는 Architecture Description과 ADR을 보유한다. 개수는 유지 기준이
 아니므로 각 하위 디렉터리의 README와 실제 파일 목록이 권위이며 이 index는
 그 경로로 안내한다. 구현 세부와 검증 계약은 Stage 03, 실행 상태는 현재 변경
 패킷, 운영 절차는 Stage 05가 소유한다.
 
-## Structure
+## Contents
+
+### Current Items
 
 ```text
 docs/02.architecture/
@@ -33,22 +43,22 @@ docs/02.architecture/
 └── README.md
 ```
 
-### Current Inventory
+#### Current Inventory
 
 - [`descriptions/`](descriptions/README.md): stakeholder concerns, boundaries,
   views, flows, quality scenarios, requirement disposition와 관련 결정.
 - [`decisions/`](decisions/README.md): 하나의 material choice, alternatives,
   rationale, consequences, confirmation과 supersession.
 
-## Usage
+### Classification
 
-### Audience
+이 stage의 하위 유형은 둘이다. `descriptions/`의 Architecture Description은 현재 구조를 설명하는 정본이고 `decisions/`의 ADR은 선택과 근거를 기록한다. 비권위 기록용 하위 디렉터리는 없다.
 
-- System Architects
-- Developers
-- Reviewers
+## Workflow
 
-### Authoring Flow
+### Create and Review
+
+#### Authoring Flow
 
 1. 상위 [Product Requirements](../01.requirements/README.md)를 확인한다.
 2. 새 설명은
@@ -59,7 +69,7 @@ docs/02.architecture/
 5. 구현과 운영 사실은 해당 Spec과 Operations 문서에서 확인하고 확인되지
    않은 아키텍처 사실을 만들지 않는다.
 
-### Documentation Standards
+#### Documentation Standards
 
 - Description은 `<4-digit-id>-<slug>.md`, `artifact_id: AD-<4-digit-id>`,
   `type: sdlc/architecture-description`을 일치시킨다.
@@ -69,12 +79,23 @@ docs/02.architecture/
 - 날짜는 경로가 아니라 typed metadata에 둔다.
 - View와 diagram은 [공통 Agent 거버넌스 작성 정책](../../.agents/governance/documentation-protocol.md#role-specific-authoring)을 적용하고 실제 이해에 필요한 수준만 사용한다.
 
+### Transition and Exit
+
+Architecture Description은 draft → in-review → active로, ADR은 proposed에서 accepted 또는 rejected로 전이한다. 대체되거나 철회된 문서는 현재 소유자에 요약한 뒤 삭제하고 번호를 Registry `reserved_history`에 추가한다.
+
 ## Related Documents
 
-- [에이전트 작업 규칙](AGENTS.md)
+### Upstream and Downstream
+
 - [Product Requirements](../01.requirements/README.md)
 - [Architecture Descriptions](descriptions/README.md)
 - [Architecture Decisions](decisions/README.md)
 - [Specifications](../03.specs/README.md)
 - [Operations](../05.operations/README.md)
+
+### Policy and Templates
+
+- [에이전트 작업 규칙](AGENTS.md)
 - [Documentation Templates](../99.templates/README.md)
+- [문서 작성 계약](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
