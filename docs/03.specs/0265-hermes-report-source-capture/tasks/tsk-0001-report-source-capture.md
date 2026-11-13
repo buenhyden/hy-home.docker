@@ -1,10 +1,10 @@
 ---
 title: "Hermes Report Source Capture Task"
-version: "0.12.0"
+version: "0.13.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0265-TSK-0001"
 parent_ids:
@@ -46,6 +46,7 @@ failure streak) is an out-of-scope follow-up.
 | SPEC-0265-PLAN-0001 | draft | approved | #owner-approval |
 | SPEC-0265-TSK-0001 | draft | ready | #owner-approval |
 | SPEC-0265-TSK-0001 | ready | in-progress | #implementation-w1-w6 |
+| SPEC-0265-TSK-0001 | in-progress | completed | #review-and-completion |
 
 ### Owner approval
 
@@ -511,6 +512,16 @@ resubmission returned `source_receipts_required`. Both are agent slips that a
 single receipt error turns into a lost report; pairing receipts by `item_id`
 in the plugin was decided by the owner and is plugin 0.4.5 (see "Receipt pairing by item_id").
 
+### All jobs delivered and owner acceptance (2026-11-13)
+
+On plugin 0.4.5 the 2026-11-13 runs delivered all three reports on their first
+send attempt, and the 0.4.4 redrive resent an earlier unconfirmed record that
+the Gateway already held; the Gateway answered `duplicate: true` and created
+no report (E22). The owner accepted criteria 1 to 11 on 2026-11-13 ("Accept
+1–11"); criteria 12 to 14 were accepted on 2026-11-11 and 2026-11-12. Every
+criterion is accepted and no required observation is open, so this Task closes
+as `completed`.
+
 ### Design deviations
 
 - Outcome mapping: `report_store_unavailable` and `record_unavailable` are
@@ -626,6 +637,7 @@ rendered dashboard view were not observed, so E11 stays NOT_RUN.
 | E19 | 1, 6 | W1 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`RetryAndRedriveTests`: current 401/403 kept `uncertain` without redrive, unconfirmed current send skips redrive, redrive eligibility of `pending`, `sending` and an unparseable `generated_at`, timeout then 201, 502 then 201, 200 duplicate, 409 and 422 not resent, exhausted budget, redrive persisted with the receipt, ineligible records untouched, at most 2, current result unchanged, redrive failure, budget, busy lock; adapted `DeliveryBudgetTests` and the restart test); new tests fail on `602656a52`; `e2e-cache-contract.sh`; ruff check and format; `check-document-metadata.py --mode check-changed --base-ref origin/main`; `check-document-links.py --mode alignment` | plugin 0.4.4 working tree on `602656a52` after the independent review fixes | PASS | 497 tests OK under both umasks (15 failures and errors in this file on `602656a52` sources); e2e exit 0; ruff clean; metadata 2 selected, 0 violations; links 914 documents, 0 failures | required | - |
 | E20 | 12 | W9 | one observed delivered run per job (stored report, `sha256(report.md)` = outbox = Gateway hash, attestation, report and item export states, item kind) | scheduled runs 2026-11-09 to 2026-11-12, plugins 0.4.3 and 0.4.4, read-only on server A and the Gateway | PASS | every job has an observed delivered scheduled run: news 2026-11-09 (`a3504a6f…`) and 2026-11-11 (`167e2022…`); business ideas 2026-11-09 (`d8edd7f5…`), 2026-11-10 (`20a105c8…`) and 2026-11-11 (`d7c7bce4…`); devops 2026-11-12 (`b1c520ab…`, 7127 characters, 8 `devops` items `ready`, first send attempt 201). In each, `sha256(report.md)` = outbox = Gateway stored hash, `source_kind` `report`, attested, item kinds correct. Undelivered runs (2026-11-12 news `source_mismatch`, business `source_receipts_required`) are producer-side receipt errors recorded in the Task | required | E9 |
 | E21 | 1, 6 | W1 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022` (`SourceCollectionTests`: receipts omitted, misordered, shorter, longer or with one wrong id give the same rows, uncollected item `source_missing`, moved URL `source_url_mismatch`, duplicate `item_id` `source_identity`, tampered record `invalid_record`, other run `source_missing`; `ReceiptPairingTests` with real collection: one wrong receipt of 5 delivers all 5, resubmission keeping the dropped item's receipt persists, uncollected item is a failed item, no-item day with stray receipts stores and skips the Gateway, replay with different receipts keeps `input_sha256` and returns `already_persisted`; `test_receipts_never_reach_pairing`; prompt tests); new tests fail on `b885f0e54` sources; `e2e-cache-contract.sh`; ruff check and format; `check-document-metadata.py --mode check-changed --base-ref origin/main`; `check-document-links.py --mode alignment` | plugin 0.4.5 committed on `fix/hermes-pair-receipts` above `4fe55a442`, re-run at `f76af3f85` plus the review fixes | PASS | 504 tests OK under both umasks; e2e exit 0; ruff clean; metadata 3 selected, 0 violations; links 905 documents, 0 failures | required | - |
+| E22 | 12 | W9 | one observed delivered run per job (stored report, `sha256(report.md)` = outbox = Gateway hash, attestation, report and item export states, item kind) | scheduled runs 2026-11-13 08:00 KST on plugin 0.4.5 (installed from `4cd25b95b`), read-only on server A (`~/.hermes/cron/jobs.json`, report store, outbox) and the Gateway DB (`node:sqlite` read-only in `blog-ingestion`), checked at main `894e4bc5f` | PASS | all three delivered on the first send attempt (HTTP 201): news `258d53ef…` (25494 characters, 18 `news` items), devops `c20e5b91…` (7098, 4 `devops`), business ideas `113f8743…` (11918, 3 `business_idea`); in each, `sha256(report.md)` = outbox = Gateway stored hash, `source_kind` `report`, attested, report and item exports acknowledged by server B. The 0.4.4 redrive resent the 2026-11-10 business record (`dd537f50…`): HTTP 200 `duplicate: true` with the existing report `20a105c8…`; the Gateway still holds one report for that run (28 in total) | required | - |
 | E14 | 12, 14 | W9 | `update-hermes-plugin.sh` (digest match, doctor), restart, `update-cron-prompts.sh` and prompt checks, `UMask` and `__pycache__` mode, address allowlist parsed by the plugin loader | plugin 0.4.2 from `82b117685`, 2026-11-07 09:29 KST | PASS | 9/9 MATCH, doctor OK, 3 prompts OK, `UMask=0077`, `__pycache__` 0700, allowlist parses | required | - |
 | E10 | 1, 4, 6 | W1 | `/usr/bin/python3 -m unittest discover -s infra/07-workflow/n8n/workloads/hermes-blog-ingestion/tests -p 'test_*.py'` under `umask 0002` and `umask 022`, `tests/e2e-cache-contract.sh`, ruff; `test_placeholder_check_is_linear_on_long_reports`, the conflict test and `test_prompt_sends_the_stored_report_on_a_conflict` | fix round 2 commits above `b9c016f10` | PASS | 438 tests OK under both umasks; e2e-cache-contract exit 0; ruff clean | required | - |
 | E16 | 12, 14 | W9 | installed files against source by SHA-256, gateway start and `UMask`, `__pycache__` modes, allowlist parsed by the plugin loader, cron prompts reference `report_path` | plugin 0.4.3 from `main` `c0bcfb511`, read-only, 2026-11-08 17:30 KST | PASS | 4/4 files match; started 09:54:07 KST, `UMask=0077`; 0700/0600; 1 valid CIDR; 3 prompts on `report_path`, none on `report_markdown` | required | - |
@@ -636,26 +648,28 @@ rendered dashboard view were not observed, so E11 stays NOT_RUN.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | E1, E10, E19, E21 | owner acceptance | @buenhyden |
-| 2 | pending | E1 | owner acceptance | @buenhyden |
-| 3 | pending | E2 | owner acceptance | @buenhyden |
-| 4 | pending | E1, E10 | owner acceptance | @buenhyden |
-| 5 | pending | E3 | owner acceptance | @buenhyden |
-| 6 | pending | E1, E10, E19, E21 | owner acceptance | @buenhyden |
-| 7 | pending | E4 | owner acceptance | @buenhyden |
-| 8 | pending | E4 | owner acceptance | @buenhyden |
-| 9 | pending | E4 | owner acceptance | @buenhyden |
-| 10 | pending | E5, E11, E12 | owner acceptance | @buenhyden |
-| 11 | pending | E6 | owner acceptance | @buenhyden |
+| 1 | accepted | E1, E10, E19, E21 | owner accepted 2026-11-13 | @buenhyden |
+| 2 | accepted | E1 | owner accepted 2026-11-13 | @buenhyden |
+| 3 | accepted | E2 | owner accepted 2026-11-13 | @buenhyden |
+| 4 | accepted | E1, E10 | owner accepted 2026-11-13 | @buenhyden |
+| 5 | accepted | E3 | owner accepted 2026-11-13 | @buenhyden |
+| 6 | accepted | E1, E10, E19, E21 | owner accepted 2026-11-13 | @buenhyden |
+| 7 | accepted | E4 | owner accepted 2026-11-13 | @buenhyden |
+| 8 | accepted | E4 | owner accepted 2026-11-13 | @buenhyden |
+| 9 | accepted | E4 | owner accepted 2026-11-13 | @buenhyden |
+| 10 | accepted | E5, E11, E12 | owner accepted 2026-11-13 | @buenhyden |
+| 11 | accepted | E6 | owner accepted 2026-11-13 | @buenhyden |
 | 12 | accepted | E7, E9, E14, E16, E20 | owner accepted 2026-11-11; E20 (2026-11-12 devops delivered on its scheduled run) resolves E9 | @buenhyden |
 | 13 | accepted | E8 | owner accepted 2026-11-11 | @buenhyden |
 | 14 | accepted | E18 | owner accepted 2026-11-11 | @buenhyden |
 
 ## Review and Completion
 
-Open. W1 to W6 have passing repository evidence; the live metrics observation
-(E11) and W7 to W9 are operations and stay NOT_RUN until the owner's approved
-run and direct evidence.
+Completed on 2026-11-13. W1 to W6 have passing repository evidence, the live
+metrics observation E11 is resolved by E17, and the W7 to W9 operations are
+recorded with direct evidence (E7, E8, E14, E16, E18, E20, E22). Criteria 1 to
+14 are accepted and every required observation is resolved, so the Task closes
+as `completed`. Later plugin changes or runtime findings belong to a new Task.
 
 ## Related Documents
 
