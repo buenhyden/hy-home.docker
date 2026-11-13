@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Operations Policy"
-version: "1.2.5"
+version: "1.2.6"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0034"
 parent_ids:
@@ -14,11 +14,22 @@ created: "2026-05-17"
 
 # Qdrant Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 이 정책은 root-active `HOME` Qdrant 운영 기준을 정의한다. 기준은 [Qdrant Compose 구현](../../../../infra/04-data/qdrant/docker-compose.yml)의 단일 service, exact `ai`/`ai-llm`/`qdrant` profiles, `ai_net`, API key secret, SSO 뒤의 REST route와 `/readyz` healthcheck다.
 
+### Authority
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Guide](../../guides/09-ai-and-search/0034-qdrant.md) (`GDE-0034`), [Runbook](../../runbooks/09-ai-and-search/0034-qdrant.md) (`RUN-0034`)
+
+- [Infra README](../../../../infra/04-data/qdrant/README.md)
+
 ## Scope
+
+### Applies To
 
 - `infra/04-data/qdrant/docker-compose.yml`
 - `qdrant` service와 `qdrant-data` volume
@@ -28,7 +39,13 @@ created: "2026-05-17"
 - `QDRANT__STORAGE__SNAPSHOTS_PATH=/qdrant/storage/snapshots`
 - `docs/05.operations` 아래에 연결된 guide와 runbook
 
+### Exclusions
+
+Applies To에 나열한 대상과 환경 밖에는 이 정책을 적용하지 않는다.
+
 ## Rules
+
+### Requirements
 
 - **Required**: 문서는 Qdrant를 cluster가 아니라 단일 unprivileged service로 설명해야 한다.
 - **Required**: 모든 Qdrant client는 secret file에서 key를 읽어야 하며 key가 Compose environment 값, logs, evidence에 절대 나타나서는 안 된다.
@@ -42,36 +59,37 @@ created: "2026-05-17"
 - **Disallowed**: 별도의 owner 승인과 검증된 runbook evidence 없이 승인된 정책으로 제시되는 collection delete, snapshot restore, volume replacement, cluster repair, data mutation 단계.
 - **Disallowed**: API key를 제거하거나 key 없이 Qdrant를 호출하는 client를 추가하는 행위.
 
-### Accountable lifecycle boundary
+#### Accountable lifecycle boundary
 
 적용 identity: `qdrant`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-## Exceptions
-
-N/A - 현재 승인된 예외 없음.
-
-### Review Cadence
-
-- Qdrant compose image/profile/secret/route/snapshot-path 변경 시 검토한다.
-- Stage 05 운영 문서 audit 주기 동안 검토한다.
-
-### Traceability
-
-- Declared parent: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](../../guides/09-ai-and-search/0034-qdrant.md) (`GDE-0034`), [Runbook](../../runbooks/09-ai-and-search/0034-qdrant.md) (`RUN-0034`)
-
-## Verification
+### Enforcement
 
 - compose 변경 후 이 정책을 [Qdrant guide](../../guides/09-ai-and-search/0034-qdrant.md), [Qdrant runbook](../../runbooks/09-ai-and-search/0034-qdrant.md), [infra README](../../../../infra/04-data/qdrant/README.md)와 비교한다.
 - service-name, image, route, secret, healthcheck, volume 문서 갱신을 승인하기 전에 `docker compose --profile qdrant config --quiet`를 실행한다.
 - 정책이나 연결된 운영 문서 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
 
-## Related Documents
+## Exceptions
+
+### Exception Conditions
+
+N/A - 현재 승인된 예외 없음.
+
+### Approval and Review
+
+- Qdrant compose image/profile/secret/route/snapshot-path 변경 시 검토한다.
+- Stage 05 운영 문서 audit 주기 동안 검토한다.
+
+## Ownership
+
+### Responsibilities
+
+이 정책의 소유자는 frontmatter `owner`에 기록된 @buenhyden이다.
+
+### Change and Adoption
 
 - [Qdrant snapshots](https://qdrant.tech/documentation/operations/snapshots/)
 - [Qdrant migration and recovery](https://qdrant.tech/documentation/migration-recovery-options/)
-
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/09-ai-and-search/0034-qdrant.md)
 - [Recovery runbook](../../runbooks/09-ai-and-search/0034-qdrant.md)
-- [Infra README](../../../../infra/04-data/qdrant/README.md)

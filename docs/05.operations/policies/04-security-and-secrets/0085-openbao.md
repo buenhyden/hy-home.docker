@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Policy"
-version: "0.11.0"
+version: "0.11.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0085"
 parent_ids:
@@ -14,16 +14,36 @@ created: "2026-09-19"
 
 # OpenBao Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 HOME secret control plane이다. 레거시 Vault는 2026-09-25 폐기되었으므로 현재 마이그레이션·복구 소스로 취급하지 않는다.
 
+### Authority
+
+- Governing architecture: [AD-0003](../../../02.architecture/descriptions/0003-security-architecture.md)
+- [Guide](../../guides/04-security-and-secrets/0085-openbao.md), [Policy](0085-openbao.md), [Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)
+- OpenBao 공식 TCP listener 파라미터: <https://openbao.org/docs/configuration/listener/tcp/>
+- OpenBao 공식 authenticated root generation API: <https://openbao.org/docs/api/system/generate-root-token/>
+- OpenBao 공식 deprecated legacy root generation API: <https://openbao.org/docs/api/system/generate-root/>
+- unauthenticated generate-root를 다루는 OpenBao 공식 deprecation note: <https://openbao.org/community/deprecation/unauthed-generate-root/>
+- authenticated root generation을 다루는 OpenBao 공식 release notes: <https://openbao.org/community/release-notes/2-6-0/>
+
 ## Scope
+
+### Applies To
 
 `infra/03-security/openbao`와 `core / dev / local / security / secrets` 프로필 아래의 서비스
 `openbao openbao-agent`.
 
+### Exclusions
+
+이 정책은 `infra/03-security/openbao`와 그 프로필 아래 서비스만 다루며, 폐기된 레거시 Vault는 현재 마이그레이션·복구 소스로 취급하지 않는다.
+
 ## Rules
+
+### Requirements
 
 unseal/recovery 자료는 오프라인으로 유지한다. token, role_id, secret_id 또는 렌더링된
 파일을 절대 로깅하지 않는다. 현재 서버 health는 unsealed 상태만 허용한다. Agent
@@ -37,7 +57,7 @@ operator policy `hy-home-operator`다. 사람 토큰의 policy TTL은 유한해�
 UI 앞의 Gateway SSO는 HTTP 접근 제어일 뿐이며 OpenBao native OIDC 인가를 대체하지
 않는다.
 
-### Prometheus Metrics Credential
+#### Prometheus Metrics Credential
 
 Prometheus는 전용 service token으로 `sys/metrics`에 인증해야 하며, 그 유일한 service
 policy는 추적되는 `infra/03-security/openbao/config/policies/prometheus.hcl`이다. 이
@@ -50,7 +70,7 @@ policy 적용, 토큰 발급/폐기, 파일 작성, Prometheus 재생성은 별�
 기록이 필요한 실제 credential/runtime 변경이다. 추적되는 policy, Compose, scrape 설정은
 소스 계약만 증명한다.
 
-### hy-home.k8s Kubernetes Auth
+#### hy-home.k8s Kubernetes Auth
 
 hy-home.k8s 클러스터는 `kubernetes` auth method로 인증한다. External Secrets service
 account (`external-secrets`, namespace `external-secrets`, audience `vault`)만 role
@@ -79,7 +99,7 @@ OIDC 로그인이 성공한다, 결과로 나온 OpenBao 토큰이 기대한 non
 AppRole renderer 접근이 여전히 [renderer ACL](../../../../infra/03-security/openbao/config/policies/renderer.hcl)에 선언된 9개 소비자 KV data와 해당 metadata 경로만 읽는다, 배포된 OpenBao 버전의 root
 recovery 방법이 문서화되어 있다. 그 뒤 root를 폐기하고 거부 결과를 같은 기록에 남긴다.
 
-Traceability에 문서화된 upstream OpenBao 릴리스 라인은 `operator generate-root`에
+Authority에 문서화된 upstream OpenBao 릴리스 라인은 `operator generate-root`에
 대해 인증된 `/sys/generate-root-token` 엔드포인트를 사용한다. 권한 있는 사람이나 root
 토큰이 남아 있지 않을 때, Agent read-only 토큰을 root-generation 엔드포인트 호출로
 승격해서는 안 된다. deprecated된 인증 없는 `/sys/generate-root/*` 엔드포인트는 2.5.3부터
@@ -92,7 +112,7 @@ listener에서 명시적으로 승인된 break-glass 예외로만 다시 활성�
 [Implementation](../../../../infra/03-security/openbao/docker-compose.yml)과
 [version projection](../../../../infra/tech-stack.versions.json)이 런타임 고정값을 소유한다.
 
-### Persistence, limits and removal
+#### Persistence, limits and removal
 
 두 서비스의 공통 자원 상한·변경 적용은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md),
 버전 변경은 [POL-0086](../10-platform-and-backup/0086-dependency-version-management.md)을 적용한다.
@@ -106,7 +126,7 @@ Raft upgrade 전 backup과 독립 stateful recovery 계약 검토가 필요하�
 unseal/custody 자료를 검증 전에 폐기하지 않는다. 서비스·Agent 제거는 소비자 이관,
 credential 폐기와 보호 자료 보존을 각각 승인받아 수행하며 `down -v`로 대체하지 않는다.
 
-### Maintenance window credential handling
+#### Maintenance window credential handling
 
 HOME 유지보수 window(절차는 RUN-0105; SPEC-0243이 도입했고 삭제됨)는 아래 규칙을 따른다.
 
@@ -125,7 +145,7 @@ HOME 유지보수 window(절차는 RUN-0105; SPEC-0243이 도입했고 삭제됨
   server가 sealed라 폐기할 수 없는 token은 OIDC 최대 TTL(4시간) 안에 만료되며 그 사실을 기록한다.
   위 OIDC 장애로 root를 남길 때는 operator token 파일도 함께 남기고 OIDC 복구 뒤 폐기한다.
 
-### P01 Native Trust and Audit Gate
+#### P01 Native Trust and Audit Gate
 
 정상 경로는 내부 native TLS와 검증된 CA/SAN이다. bootstrap key/CA trust는 해당
 OpenBao에만 의존하지 않는다. wrapping SecretID의 creation path·짧은 TTL·1회 사용과
@@ -146,7 +166,7 @@ RUN-0105 5단계 custody 기록(SPEC-0242)·선정 snapshot 복구 수용 이후
 해결됐다고 간주하지 않는다. 수정 버전 검증과 HOME gate 전에는 배포·P06 확대를 보류하며,
 미사용 발급의 명시적 폐기와 거부를 별도로 확인한다. 상세 근거는 RUN-0105의 [Current candidate and preserved residual](../../runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md#current-candidate-and-preserved-residual)을 따른다.
 
-### Versioned issuance identity control
+#### Versioned issuance identity control
 
 새 renderer issuance는 `schema_version: 2` journal과 `issuance_id`를 사용하며,
 `issuance_id`와 legacy `nonce`는 동일해야 한다. v2 accessor metadata는
@@ -161,7 +181,7 @@ accessor 폐기 전에 차단한다. 이전 발급을 정합화한 같은 실행
 이 통제는 HOME의 credential, custody, snapshot 또는 recovery 수용을 증명하지 않으며 해당 실제
 입력이 확정될 때까지 HOME 적용을 금지한다.
 
-### P02 공개 catalog 통제
+#### P02 공개 catalog 통제
 
 catalog와 schema는 공개 분류·보존 계약의 단일 원천이다. 값·값의 hash·token·실제 KV
 payload를 넣거나 같은 ID를 별도 inventory로 복제하지 않는다. `source_recorded_at`은
@@ -187,7 +207,14 @@ single-link README 및 no-follow 조건을 충족한 `.agent-work/p02-views`의 
 별도로 확인한다. staging 일치·비활성 profile·traffic zero·source search zero를 실제
 consumer zero 또는 운영 수용 증거로 보고하지 않는다.
 
+### Enforcement
+
+Compose/profile 검증과 [runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)이 별도의 정적/런타임 증거를
+제공한다. 예상치 못한 서비스, 마운트, 인증, readiness 상태가 보이면 중단한다.
+
 ## Exceptions
+
+### Exception Conditions
 
 owner @buenhyden은 모든 편차 전에 범위, 위험, 만료, 종료 조건을 기록해야 한다. 정적
 설정은 실제 backup이나 recovery의 증거가 아니다.
@@ -198,7 +225,7 @@ owner @buenhyden은 모든 편차 전에 범위, 위험, 만료, 종료 조건�
 이 설정은 public이나 gateway listener에서는 금지되며 steady-state 설정에 남아 있을 수
 없다.
 
-### Existing custody decision and missing closure
+#### Existing custody decision and missing closure
 
 기존 owner 결정(2026-09-22)은 share3개를 `secrets/security/openbao/openbao_unseal_keys.txt`
 한 파일에 함께 보관한다. 파일은0600, Git-ignored, 컨테이너에 mount하지 않으며
@@ -240,7 +267,7 @@ custody 확인은 window마다 하는 방식으로 돌아간다. 이 예외 전�
 검토 중 이른 때에 다시 판단한다. share 분리(threshold)는 1인 관리자 운영에서 효과가 없으므로
 계속 예외로 둔다.
 
-### SEC01 image acceptance
+#### SEC01 image acceptance
 
 owner는 SEC01(SPEC-0204 TSK-0009)에서 자체 빌드 OpenBao image의 잔여 위험(서명 없음,
 CVE-2025-60876, GO-2026-5932 처분)을 받아들였다. 처음 수용한 manifest `46bf9b5c`(Go 1.27.2)는 <!-- runtime-version-exception: history — 교체 전 수용 image의 builder Go 버전이며 build-inputs.json이 현재 pin을 소유함 -->
@@ -253,7 +280,7 @@ gate가 실패한다. 같은 window가 쓰는 Traefik·Prometheus image의 수�
 ([POL-0013](../02-gateway-and-networking/0013-traefik.md#exceptions),
 [POL-0045](../07-observability/0045-prometheus.md#exceptions))이 소유한다.
 
-### Maintenance window residuals
+#### Maintenance window residuals
 
 2026-10-15 owner는 아래 잔여 위험을 **2026-11-15까지** 받아들였다(마지막 행은 2026-10-21 추가). 2026-10-27 owner는 sealed 정리·남겨 둔 W2 custody·만료 없는 renderer token 세 행을 같은 범위·보완 통제·종료 조건으로 **2026-12-15까지** 다시 받아들였다. token·root·lock은 바꾸지 않았다. 같은 날 owner는 UID 100 공유와 암호화 안 된 swap 두 행도 같은 범위·종료 조건으로 **2026-12-15까지** 다시 받아들였다. 다섯 행 모두 그날 다시 결정한다. UID 100과
 swap은 기록 전부터 있던 조건이며, window 전에 기록해 window의 편차로 다룬다.
@@ -266,26 +293,17 @@ swap은 기록 전부터 있던 조건이며, window 전에 기록해 window의 
 | 남겨 둔 W2 custody | W2가 INDETERMINATE로 끝나면 snapshot 전용 token(최대 720시간)이 tmpfs에 남고, 다음 window의 W2·W3는 BLOCKED다 | 검토된 W2 복구 절차 |
 | 만료 없는 renderer token | SecretID가 1회용이라 renderer AppRole은 24시간 periodic token을 준다(2026-10-21 owner 수용, 지금 HOME과 같은 방식). Agent가 갱신하는 한 만료가 없어, sink token을 복사한 쪽도 계속 갱신할 수 있다. 권한은 renderer ACL의 9개 소비자 KV 읽기다. 수용은 Keycloak·Grafana 2개 경로 범위였고, 9개로 확대된 범위는 owner가 다시 수용하지 않아 결정 대기다. sink는 0600이며 sink는 0600이며, 갱신이 멈추면 24시간 안에 만료된다. W5 재발급은 이전 Agent token을 폐기하지 않는다 | W5에서 이전 Agent token을 폐기하는 검토된 절차, 또는 재인증 없이 유지되는 유한 수명 |
 
-### Review Cadence
+### Approval and Review
 
 매월, 그리고 이미지, persistence, 인증, 노출이 변경되기 전에 검토한다.
 
-### Traceability
+## Ownership
 
-- Governing architecture: [AD-0003](../../../02.architecture/descriptions/0003-security-architecture.md)
-- [Guide](../../guides/04-security-and-secrets/0085-openbao.md), [Policy](0085-openbao.md), [Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)
-- OpenBao 공식 TCP listener 파라미터: <https://openbao.org/docs/configuration/listener/tcp/>
-- OpenBao 공식 authenticated root generation API: <https://openbao.org/docs/api/system/generate-root-token/>
-- OpenBao 공식 deprecated legacy root generation API: <https://openbao.org/docs/api/system/generate-root/>
-- unauthenticated generate-root를 다루는 OpenBao 공식 deprecation note: <https://openbao.org/community/deprecation/unauthed-generate-root/>
-- authenticated root generation을 다루는 OpenBao 공식 release notes: <https://openbao.org/community/release-notes/2-6-0/>
+### Responsibilities
 
-## Verification
+정책 소유자는 @buenhyden이다.
 
-Compose/profile 검증과 [runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)이 별도의 정적/런타임 증거를
-제공한다. 예상치 못한 서비스, 마운트, 인증, readiness 상태가 보이면 중단한다.
-
-## Related Documents
+### Change and Adoption
 
 - [Operations index](../../README.md)
 - [Upstream documentation](https://openbao.org/docs/agent-and-proxy/agent/)

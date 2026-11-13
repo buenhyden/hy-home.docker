@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry Operations Policy"
-version: "1.2.5"
+version: "1.2.6"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0065"
 parent_ids:
@@ -14,17 +14,35 @@ created: "2026-05-17"
 
 # Docker Registry Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 Registry는 `HOME` 아티팩트 저장소다. 현재 추적 중인 엔드포인트는 네이티브
 TLS/인증을 갖추지 않았으므로 명시적으로 격리된 신뢰 네트워크에서만 서비스할 수 있다.
 
+### Authority
+
+- [가이드](../../guides/10-platform-and-backup/0065-registry.md) (`GDE-0065`)
+- [런북](../../runbooks/10-platform-and-backup/0065-registry.md) (`RUN-0065`)
+- [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+
+- [Registry Compose 소스](../../../../infra/09-platform-ops/registry/docker-compose.yml)
+
 ## Scope
+
+### Applies To
 
 활성화, 노출, 이미지 출처/digest, 파일시스템 보존, 백업, 가비지 컬렉션, 업그레이드,
 제거.
 
+### Exclusions
+
+이 정책은 위 Applies To에 나열한 대상 밖의 서비스와 환경에는 적용하지 않는다.
+
 ## Rules
+
+### Requirements
 
 - **Activation:** `registry` 또는 일반 `tooling`을 사용한다. SPEC-0182 W6에서 소유자가 `registry`를 HOME에 추가했다(POL-0078).
 - **Exposure/auth:** 호스트 포트는 `127.0.0.1`에 바인딩되지만, `obs_net`
@@ -48,28 +66,29 @@ TLS/인증을 갖추지 않았으므로 명시적으로 격리된 신뢰 네트�
 - **Removal:** 필요한 모든 아티팩트를 재현 가능 또는 백업 완료로 분류하고,
   저장소를 삭제하기 전에 후속 시스템을 검증한다.
 
-## Exceptions
-
-신뢰할 수 없는 평문 자격 증명 전송, 작성자(writer)가 있는 상태의 GC, 아티팩트의
-유일한 사본 삭제를 허용하는 예외는 없다.
-
-### Review Cadence
-
-노출, 인증, 저장소, 삭제, 이미지, 아티팩트 보존이 변경될 때 검토한다.
-
-### Traceability
-
-- [가이드](../../guides/10-platform-and-backup/0065-registry.md) (`GDE-0065`)
-- [런북](../../runbooks/10-platform-and-backup/0065-registry.md) (`RUN-0065`)
-- [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
-
-## Verification
+### Enforcement
 
 `/v2/` 헬스만으로는 충분하지 않다. 런타임 수용 기준에는 네트워크 경계, 필요 시
 TLS/인증, push, pull, digest 일치가 포함된다.
 
-## Related Documents
+## Exceptions
 
-- [Registry Compose 소스](../../../../infra/09-platform-ops/registry/docker-compose.yml)
+### Exception Conditions
+
+신뢰할 수 없는 평문 자격 증명 전송, 작성자(writer)가 있는 상태의 GC, 아티팩트의
+유일한 사본 삭제를 허용하는 예외는 없다.
+
+### Approval and Review
+
+노출, 인증, 저장소, 삭제, 이미지, 아티팩트 보존이 변경될 때 검토한다.
+
+## Ownership
+
+### Responsibilities
+
+책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
+
+### Change and Adoption
+
 - [CNCF Distribution 배포](https://distribution.github.io/distribution/about/deploying/)
 - [가비지 컬렉션](https://distribution.github.io/distribution/about/garbage-collection/)

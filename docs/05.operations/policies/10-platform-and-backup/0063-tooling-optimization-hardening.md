@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Operations Policy"
-version: "1.4.2"
+version: "1.4.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0063"
 parent_ids:
@@ -14,11 +14,24 @@ created: "2026-05-10"
 
 # Platform Operations and Quality Optimization Hardening Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 이 문서는 `09-platform-ops`·`11-quality`의 최적화/하드닝 운영 정책을 정의한다. 관리 경로 보안, 네트워크 경계, 테스트 도구 안정성, 카탈로그 확장 승인 게이트를 통제한다.
 
+### Authority
+
+- 상위 문서: [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- 동일 주제 문서: [Guide](../../guides/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`GDE-0063`), [Runbook](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`RUN-0063`)
+
+현재 IaC helper는 OpenTofu다. 기존 Terraform workspace는 [Terraform 이관](../../guides/10-platform-and-backup/0082-opentofu.md#terraform-이관)을 따른다. Syncthing runtime은 제거되었으며 현재 하드닝 기동 대상에 포함하지 않는다.
+
+- 실행 버전의 원본은 Compose/Dockerfile 선언이며, [파생 버전 목록](../../../../infra/tech-stack.versions.json)은 변경 누락 검증에 사용한다.
+
 ## Scope
+
+### Applies To
 
 - `infra/09-platform-ops/*/docker-compose.yml` 및 `infra/11-quality/*/docker-compose.yml`
 - `scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
@@ -26,7 +39,13 @@ created: "2026-05-10"
 - **Systems**: opentofu, terrakube, registry, SonarQube LAB, k6, Locust LAB, renovate
 - **Environments**: 단일 HOME/DEV 호스트(별도 stage·production 환경은 없다)
 
+### Exclusions
+
+이 정책은 위 Applies To에 나열한 대상 밖의 서비스와 환경에는 적용하지 않는다.
+
 ## Rules
+
+### Requirements
 
 - **Required**:
   - Terrakube 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
@@ -44,7 +63,7 @@ created: "2026-05-10"
   - 검증 게이트 우회 배포
   - 감사/보존 정책 없이 확장 항목 운영 전환
 
-### Catalog Expansion Approval Gates
+#### Catalog Expansion Approval Gates
 
 - **opentofu 승인 조건**:
   - plan/apply 승인 게이트 문서화
@@ -65,31 +84,14 @@ created: "2026-05-10"
   - `dependency-update` 작업 범위(`hyhome-renovate.timer` 주간 기본 실행과 온디맨드 실행)와 최소 token 권한을 유지한다.
   - self-host `allowedCommands` 허용 목록과 변경 PR 검증을 확인한다.
 
-### 확장 게이트와 현재 제한
+#### 확장 게이트와 현재 제한
 
 위 카탈로그 항목은 추가 운영 전환의 승인 조건이며 구현 완료 목록이 아니다.
 일반 변경·예외 절차는 [공통 운영 정책](../01-common/0006-infrastructure-optimization-governance.md)을
 따른다. Terrakube의 cookie ForwardAuth와 CLI/executor 비호환은 별도 구현 검토
 대상이다. gateway 통제를 유지하면서 실행 활성화를 차단하고 `@buenhyden`에게 보고한다.
 
-## Exceptions
-
-- 장애 대응 시 일시 완화는 승인 기록과 종료 조건이 필수다.
-- 예외 종료 후 동일 릴리스 내 원상복구 및 재검증을 수행한다.
-
-### Review Cadence
-
-- 월 1회 정기 검토
-- tooling 구성/권한/정책 변경 시 수시 검토
-
-### Traceability
-
-- 상위 문서: [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- 동일 주제 문서: [Guide](../../guides/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`GDE-0063`), [Runbook](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`RUN-0063`)
-
-현재 IaC helper는 OpenTofu다. 기존 Terraform workspace는 [Terraform 이관](../../guides/10-platform-and-backup/0082-opentofu.md#terraform-이관)을 따른다. Syncthing runtime은 제거되었으며 현재 하드닝 기동 대상에 포함하지 않는다.
-
-## Verification
+### Enforcement
 
 - `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
 - `bash scripts/validation/check-template-security-baseline.sh`
@@ -97,9 +99,25 @@ created: "2026-05-10"
 - 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 - 프로필로 선택한 서비스는 루트 Compose의 네트워크·secret·의존성 문맥으로 검증한다. 개별 서비스 파일만으로 실행 구성을 판정하지 않는다.
 
-## Related Documents
+## Exceptions
 
-- 실행 버전의 원본은 Compose/Dockerfile 선언이며, [파생 버전 목록](../../../../infra/tech-stack.versions.json)은 변경 누락 검증에 사용한다.
+### Exception Conditions
+
+- 장애 대응 시 일시 완화는 승인 기록과 종료 조건이 필수다.
+- 예외 종료 후 동일 릴리스 내 원상복구 및 재검증을 수행한다.
+
+### Approval and Review
+
+- 월 1회 정기 검토
+- tooling 구성/권한/정책 변경 시 수시 검토
+
+## Ownership
+
+### Responsibilities
+
+책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
+
+### Change and Adoption
 
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/10-platform-and-backup/0063-tooling-optimization-hardening.md)

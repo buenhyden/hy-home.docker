@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Operations Policy"
-version: "1.6.3"
+version: "1.6.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0045"
 parent_ids:
@@ -14,14 +14,25 @@ created: "2026-05-17"
 
 # Prometheus Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 이 정책은 scrape target registration, alerting rule management, TSDB
 persistence, lifecycle reload, secret file reference, protected access에
 대한 Prometheus control을 정의한다. 순서가 있는 recovery나 reload
 procedure는 해당 runbook에 있다.
 
+### Authority
+
+- Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](../../guides/07-observability/0045-prometheus.md) (`GDE-0045`), [Runbook](../../runbooks/07-observability/0045-prometheus.md) (`RUN-0045`)
+
+- [Runtime image declarations](../../../../infra/06-observability/docker-compose.yml)
+
 ## Scope
+
+### Applies To
 
 이 정책은 현재 `infra/06-observability/prometheus` compose, config,
 alert-rule surface에 적용된다.
@@ -29,7 +40,13 @@ alert-rule surface에 적용된다.
 - **Systems**: compose service `prometheus`, container `prometheus`, image [Compose image declaration](../../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/prometheus/config/prometheus.dev.yml`(Compose 기본 `PROMETHEUS_CONFIG_FILE`)와 같은 내용의 `prometheus.yml`, rules directory `infra/06-observability/prometheus/config/alert_rules`, volume `prometheus-data`
 - **Environments**: 로컬·개발·홈랩 운영
 
+### Exclusions
+
+Applies To에 나열한 대상과 환경 밖에는 이 정책을 적용하지 않는다.
+
 ## Rules
+
+### Requirements
 
 - **Required**:
   - Prometheus service는 `template-stateful-high`, image
@@ -112,14 +129,14 @@ alert-rule surface에 적용된다.
   - compose/config와 retention policy가 뒷받침하지 않는 retention
     동작을 선언하는 행위
 
-### Lifecycle and data controls
+#### Lifecycle and data controls
 
 - Prometheus는 `HOME`으로 유지한다; gateway auth, least-privilege scrape secret, 검증된 rule, 선언된 local TSDB boundary를 유지한다.
 - `prometheus-data`는 현재 source 아래에서 승인된 consistent stopped copy/snapshot으로만 백업한다. 별도 검토를 거쳐 `--web.enable-admin-api`를 활성화하지 않는 한 `/api/v1/admin/tsdb/snapshot`을 호출하지 않는다.
 - isolated TSDB storage에서 rehearse하며 production remote-write/alert는 사용하지 않는다. WAL replay, historical/current query, target label, rule evaluation, Alertmanager delivery, remote-write receiver client를 검증한다.
 - Resource/retention 변경에는 측정된 disk 증가, query/scrape pressure, rollback threshold가 필요하다. Removal에는 scraper/client migration과 명시적인 TSDB-retention/deletion 승인이 필요하다.
 
-### Host and GPU exporter boundary
+#### Host and GPU exporter boundary
 
 `node-exporter`는 `obs`/`obs-host`/`dev`로 선택하는 HOME host 관측기다.
 
@@ -132,7 +149,18 @@ alert-rule surface에 적용된다.
 
 보존 기간은 [GDE-0045](../../guides/07-observability/0045-prometheus.md#host-and-gpu-exporter-boundary)가 설명하는 기본값을 따르며 무기한 보존을 약속하지 않는다. 일관된 정지 TSDB 백업은 [RUN-0045](../../runbooks/07-observability/0045-prometheus.md)와 백업 소유자 절차를 따른다.
 
+### Enforcement
+
+- Compose service boundary:
+  `rg -n 'service: template-stateful-high|image: prom/prometheus:|--web.enable-lifecycle|--web.enable-remote-write-receiver|prometheus-data|opensearch_exporter_password|openbao_token|prometheus.middlewares' infra/06-observability/docker-compose.yml`
+- Prometheus config:
+  `rg -n 'scrape_interval: 30s|evaluation_interval: 30s|rule_files:|alert_rules.local|recording_rules|password_file: "/run/secrets/opensearch_exporter_password"|bearer_token_file: /run/secrets/openbao_token' infra/06-observability/prometheus/config/prometheus.yml`
+- Repository contracts:
+  원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
+
 ## Exceptions
+
+### Exception Conditions
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
@@ -141,7 +169,7 @@ alert-rule surface에 적용된다.
 - 긴급 reload나 target suppression은 rollback evidence와 함께 Prometheus
   runbook을 통해 기록해야 한다.
 
-### SEC01 image acceptance — 2026-10-15
+#### SEC01 image acceptance — 2026-10-15
 
 owner는 SEC01(SPEC-0204 TSK-0009 "Traefik and Prometheus upstream candidates")에서 Compose가 고정한
 Prometheus image(index `efd719c9`)의 잔여 위험을 받아들였다. 적용 가능한 것은 서비스 거부뿐이다.
@@ -157,29 +185,20 @@ GO-2026-6608과 GO-2026-6609는 Traefik 인증 뒤에, 그리고 Docker network 
 offline scan, 독립 applicability 검토, `promtool` 검사, HOME 재생성과 rollback은 아직 `NOT_RUN`이고
 SPEC-0204-TSK-0021이 owner 단계로 기록한다.
 
-### Review Cadence
+### Approval and Review
 
 - Prometheus image, runtime flags, scrape jobs, alert rules, recording rules,
   secret references, route, retention, mounted paths가 변경될 때 검토한다.
 - 정기 검토는 quarterly cadence로 수행한다.
 
-### Traceability
+## Ownership
 
-- Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](../../guides/07-observability/0045-prometheus.md) (`GDE-0045`), [Runbook](../../runbooks/07-observability/0045-prometheus.md) (`RUN-0045`)
+### Responsibilities
 
-## Verification
+이 정책의 소유자는 frontmatter `owner`에 기록된 @buenhyden이다.
 
-- Compose service boundary:
-  `rg -n 'service: template-stateful-high|image: prom/prometheus:|--web.enable-lifecycle|--web.enable-remote-write-receiver|prometheus-data|opensearch_exporter_password|openbao_token|prometheus.middlewares' infra/06-observability/docker-compose.yml`
-- Prometheus config:
-  `rg -n 'scrape_interval: 30s|evaluation_interval: 30s|rule_files:|alert_rules.local|recording_rules|password_file: "/run/secrets/opensearch_exporter_password"|bearer_token_file: /run/secrets/openbao_token' infra/06-observability/prometheus/config/prometheus.yml`
-- Repository contracts:
-  원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
+### Change and Adoption
 
-## Related Documents
-
-- [Runtime image declarations](../../../../infra/06-observability/docker-compose.yml)
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/07-observability/0045-prometheus.md)
 - [Recovery runbook](../../runbooks/07-observability/0045-prometheus.md)

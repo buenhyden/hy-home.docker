@@ -1,10 +1,10 @@
 ---
 title: "Kafka Operations Policy"
-version: "2.1.0"
+version: "2.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0036"
 parent_ids:
@@ -14,18 +14,37 @@ created: "2026-05-17"
 
 # Kafka Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 이 정책은 현재 소스 구성을 data protection, security, resource, lifecycle 측면에서 독립적으로 검증 가능한 operator control에 결합한다.
 
+### Authority
+
+- Runtime source: [Kafka Compose](../../../../infra/05-messaging/kafka/docker-compose.yml),
+  [LAB Compose](../../../../labs/kafka-cluster/docker-compose.yml), [LAB 설명](../../../../labs/kafka-cluster/README.md),
+  [Connect image Dockerfile](../../../../labs/kafka-cluster/connect/Dockerfile).
+- Artifact: `POL-0036`; parent: `AD-0005`.
+- Runtime authority는 연결된 Compose/source file에 남는다; exact pin은
+  그곳에 유지된다.
+
 ## Scope
+
+### Applies To
 
 Kafka-family 서비스는 OPTIONAL로 유지된다. 활성화 전에 이름이 지정된
 producer/consumer와 승인된 capacity, retention, security, recovery 계획이
-필요하다. 제거된 broker family에 대한 control은 현재 구현에 적용되지
+필요하다.
+
+### Exclusions
+
+제거된 broker family에 대한 control은 현재 구현에 적용되지
 않는다.
 
 ## Rules
+
+### Requirements
 
 - 정상 Kafka는 root의 `messaging` 계열 profile로만 선택한다. 세 broker
   topology는 root에 include하지 않는 `labs/kafka-cluster/docker-compose.yml`의 독립 LAB이며,
@@ -47,7 +66,7 @@ producer/consumer와 승인된 capacity, retention, security, recovery 계획이
   LAB broker 3개가 필요하다. 두 초기화를 서로의 cluster ID·offset·data
   directory에 적용해서는 안 된다.
 
-### Change data capture
+#### Change data capture
 
 - Schema Registry와 Debezium Connect(CDC)는 2026-11-10 owner 결정(ADR-0062 개정)으로
   HOME을 떠나 `labs/kafka-cluster`의 `lab-schema-registry`, `lab-kafka-connect`가 되었다.
@@ -62,7 +81,7 @@ producer/consumer와 승인된 capacity, retention, security, recovery 계획이
   승인, downstream duplicate/gap 계획, 새 snapshot이 필요하다. 원천 DB를 연결하면
   `max_slot_wal_keep_size` 대비 slot lag를 모니터링한다.
 
-### Data protection
+#### Data protection
 
 Recovery scope는 topic records/configuration, consumer offset, KRaft
 metadata를 포함한다. LAB에서 Schema Registry나 Connect를 쓰면 schema history와 ID,
@@ -80,7 +99,7 @@ topic, schema, offset, connector inventory와 replay/restore 증거가
 compatibility, end offset, record count 또는 checksum, consumer position을 증명해야 하며,
 LAB connector가 있으면 paused-then-resumed 동작도 증명해야 한다.
 
-### Upgrade and license policy
+#### Upgrade and license policy
 
 pin 변경 전에 Apache Kafka protocol/storage compatibility, Confluent
 component compatibility와 license/edition terms, Kafbat release/security
@@ -88,37 +107,36 @@ notes, client support를 검토한다. rollback과 현재 recovery artifact를
 보존한다. Cluster Linking이나 다른 commercial/edition-specific 기능이
 사용 가능하다고 가정하지 않는다.
 
-### Accountable lifecycle boundary
+#### Accountable lifecycle boundary
 
 적용 identity: 정상 `kafbat-ui`, `kafka-1`, `kafka-exporter`, `kafka-init`; LAB `lab-kafka-1..3`, `lab-kafka-exporter`, `lab-kafka-init`, `lab-schema-registry`, `lab-kafka-connect`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-## Exceptions
-
-optional stack은 없을 수 있다; listener-security exception이 암시되지
-않는다. exception은 runtime mutation, plaintext secret, raw active storage
-copy, same-host availability 주장을 승인하지 않는다.
-
-### Review Cadence
-
-profile, image, volume, credential, consumer, retention, upstream
-lifecycle 변경 후 검토하며, 보관 중에는 최소 연 1회 검토한다.
-
-### Traceability
-
-- Runtime source: [Kafka Compose](../../../../infra/05-messaging/kafka/docker-compose.yml),
-  [LAB Compose](../../../../labs/kafka-cluster/docker-compose.yml), [LAB 설명](../../../../labs/kafka-cluster/README.md),
-  [Connect image Dockerfile](../../../../labs/kafka-cluster/connect/Dockerfile).
-- Artifact: `POL-0036`; parent: `AD-0005`.
-- Runtime authority는 연결된 Compose/source file에 남는다; exact pin은
-  그곳에 유지된다.
-
-## Verification
+### Enforcement
 
 [RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md#actions)의 root `messaging` render와 LAB render로 static 구성을 검증한 다음, promotion이나
 cutover 전에 application-level acceptance를 갖춘 isolated compatible
 restore를 요구한다. 검증되지 않은 runtime property는 명시적으로 기록한다.
 
-## Related Documents
+## Exceptions
+
+### Exception Conditions
+
+optional stack은 없을 수 있다; listener-security exception이 암시되지
+않는다. exception은 runtime mutation, plaintext secret, raw active storage
+copy, same-host availability 주장을 승인하지 않는다.
+
+### Approval and Review
+
+profile, image, volume, credential, consumer, retention, upstream
+lifecycle 변경 후 검토하며, 보관 중에는 최소 연 1회 검토한다.
+
+## Ownership
+
+### Responsibilities
+
+이 정책의 소유자는 frontmatter `owner`에 기록된 @buenhyden이다.
+
+### Change and Adoption
 
 - [Domain catalog](../../README.md)
 - [Kafka operations](https://kafka.apache.org/documentation/#operations)

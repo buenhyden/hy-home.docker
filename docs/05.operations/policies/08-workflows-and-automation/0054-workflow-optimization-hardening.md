@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Operations Policy"
-version: "1.1.8"
+version: "1.1.9"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0054"
 parent_ids:
@@ -14,11 +14,22 @@ created: "2026-05-10"
 
 # 07-Workflow Optimization Hardening Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 이 문서는 `07-workflow` 계층의 최적화/하드닝 운영 정책을 정의한다. gateway 경계 보안, health 기반 의존성, n8n 컨테이너 하드닝, 카탈로그 기반 확장 승인 기준을 통제한다.
 
+### Authority
+
+- Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Guide](../../guides/08-workflows-and-automation/0054-workflow-optimization-hardening.md) (`GDE-0054`), [Runbook](../../runbooks/08-workflows-and-automation/0054-workflow-optimization-hardening.md) (`RUN-0054`)
+
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+
 ## Scope
+
+### Applies To
 
 - `infra/07-workflow/airflow/docker-compose.yml`
 - `infra/07-workflow/n8n/{docker-compose.yml,Dockerfile,dev.Dockerfile,docker-entrypoint.sh,docker-entrypoint.dev.sh}`
@@ -27,7 +38,13 @@ created: "2026-05-10"
 - **Systems**: Airflow, Flower, n8n, n8n-worker, n8n-task-runner-worker, workflow Valkey
 - **Environments**: 로컬·개발·검증 및 운영 환경에 준하는 환경
 
+### Exclusions
+
+Applies To에 나열한 대상과 환경 밖에는 이 정책을 적용하지 않는다.
+
 ## Rules
+
+### Requirements
 
 - **Required**:
   - Airflow 공개 라우터는 `gateway-standard-chain@file`과 native Keycloak SSO를 유지한다. Flower는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 유지하고 n8n은 자체 로그인만 쓰므로 `gateway-standard-chain@file`만 유지한다(owner 결정 2026-11-09). Airflow double-auth 추가는 표준 복구가 아니다.
@@ -47,7 +64,7 @@ created: "2026-05-10"
   - root runtime 복귀
   - 검증 게이트 우회 배포
 
-### Catalog Expansion Approval Gates
+#### Catalog Expansion Approval Gates
 
 - **Airflow 승인 조건**:
   - DAG parse/schedule/delay 기준 품질 게이트 문서화 및 CI 반영
@@ -57,34 +74,35 @@ created: "2026-05-10"
   - workflow Git backup 표준 운영 절차 수립
   - credential store OpenBao 연계 모델 및 롤백 절차 문서화
 
-### Static gate boundary
+#### Static gate boundary
 
 `check_07_workflow`는 파일과 일부 인증 문자열을 확인하고 Airflow double proxy-auth를 거부한다. Runner 호환성, 선택 Dockerfile/guard, 모든 probe, DB/broker readiness와 로그인 성공까지 증명하지 않는다. 필수 통제에는 추가 소스 검토와 승인된 런타임 근거가 필요하다. 문자열 검사 통과로 n8n 버전·timeout·guard 결함을 닫지 않는다.
 
-## Exceptions
-
-- 장애 대응 시 일시적 접근제어 완화는 허용될 수 있다.
-- 단, 변경 승인 기록과 동일 릴리스 내 원상 복구/재검증이 필수다.
-
-### Review Cadence
-
-- 월 1회 정기 검토
-- Airflow/n8n 버전 변경 또는 인증/보안 이슈 발생 시 수시 검토
-
-### Traceability
-
-- Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
-- Subject peers: [Guide](../../guides/08-workflows-and-automation/0054-workflow-optimization-hardening.md) (`GDE-0054`), [Runbook](../../runbooks/08-workflows-and-automation/0054-workflow-optimization-hardening.md) (`RUN-0054`)
-
-## Verification
+### Enforcement
 
 점검 명령은 [가이드의 Common Checks](../../guides/08-workflows-and-automation/0054-workflow-optimization-hardening.md#common-checks)를 따른다. 정적 검사와 hardening 검사 결과를 변경 증거로 남긴다.
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-## Related Documents
+## Exceptions
 
-- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+### Exception Conditions
+
+- 장애 대응 시 일시적 접근제어 완화는 허용될 수 있다.
+- 단, 변경 승인 기록과 동일 릴리스 내 원상 복구/재검증이 필수다.
+
+### Approval and Review
+
+- 월 1회 정기 검토
+- Airflow/n8n 버전 변경 또는 인증/보안 이슈 발생 시 수시 검토
+
+## Ownership
+
+### Responsibilities
+
+이 정책의 소유자는 frontmatter `owner`에 기록된 @buenhyden이다.
+
+### Change and Adoption
 
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/08-workflows-and-automation/0054-workflow-optimization-hardening.md)

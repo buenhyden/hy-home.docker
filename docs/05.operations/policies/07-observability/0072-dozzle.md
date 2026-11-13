@@ -1,10 +1,10 @@
 ---
 title: "Dozzle Operations Policy"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0072"
 parent_ids:
@@ -14,16 +14,34 @@ created: "2026-05-17"
 
 # Dozzle Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 Dozzle은 OPTIONAL 특권 관리자 뷰어다. 네이티브 OIDC와 CIDR 제한은 직접적인 Docker API 접근을 보완하는 필수 통제다.
 
+### Authority
+
+- [가이드](../../guides/07-observability/0072-dozzle.md) (`GDE-0072`)
+- [런북](../../runbooks/07-observability/0072-dozzle.md) (`RUN-0072`)
+- [Laboratory 아키텍처](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
+
+- [Dozzle Compose 소스](../../../../infra/06-observability/dozzle/docker-compose.yml)
+
 ## Scope
+
+### Applies To
 
 활성화, OIDC/CIDR, Docker 소켓 권한, 로그 프라이버시, 설정 데이터, 업그레이드,
 백업, 제거.
 
+### Exclusions
+
+Applies To에 나열한 대상과 환경 밖에는 이 정책을 적용하지 않는다.
+
 ## Rules
+
+### Requirements
 
 - `admin`/`admin-logs`만 사용한다. Dozzle을 HOME 밖에 유지한다.
 - 네이티브 OIDC, 시크릿 파일 전달, TLS issuer 신뢰, 관리자 CIDR allowlist를
@@ -38,7 +56,14 @@ Dozzle은 OPTIONAL 특권 관리자 뷰어다. 네이티브 OIDC와 CIDR 제한�
 - 업그레이드 전에 upstream 권고와 OIDC 동작을 검토한다. 폐기 시 설정을
   삭제하기 전에 소켓을 제거하고 OIDC 클라이언트/시크릿을 폐기한다.
 
+### Enforcement
+
+헬스, OIDC claim/역할, CIDR 거부, 예상 컨테이너 가시성, 승인되지 않은
+shell/actions의 부재를 검증한다. 런타임 증거는 별도로 남는다.
+
 ## Exceptions
+
+### Exception Conditions
 
 책임자는 `@buenhyden`이다. Dozzle의 네이티브 OIDC는 승인된 인증 방식이며
 ForwardAuth를 중복 추가하는 일반 절차를 적용하지 않는다. 이 예외가 CIDR·issuer
@@ -48,22 +73,16 @@ ForwardAuth를 중복 추가하는 일반 절차를 적용하지 않는다. 이 
 인증/CIDR 통제 없이 Dozzle을 노출하거나 읽기 전용 소켓 마운트를 Docker API
 권한 부여로 취급하는 예외는 없다.
 
-### Review Cadence
+### Approval and Review
 
 이미지/보안 권고 OIDC/CIDR, 소켓, 설정 변경 시 검토한다.
 
-### Traceability
+## Ownership
 
-- [가이드](../../guides/07-observability/0072-dozzle.md) (`GDE-0072`)
-- [런북](../../runbooks/07-observability/0072-dozzle.md) (`RUN-0072`)
-- [Laboratory 아키텍처](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
+### Responsibilities
 
-## Verification
+이 정책의 소유자는 frontmatter `owner`에 기록된 @buenhyden이다.
 
-헬스, OIDC claim/역할, CIDR 거부, 예상 컨테이너 가시성, 승인되지 않은
-shell/actions의 부재를 검증한다. 런타임 증거는 별도로 남는다.
+### Change and Adoption
 
-## Related Documents
-
-- [Dozzle Compose 소스](../../../../infra/06-observability/dozzle/docker-compose.yml)
 - [Dozzle 보안 고려사항](https://dozzle.dev/guide/authentication#security-considerations)

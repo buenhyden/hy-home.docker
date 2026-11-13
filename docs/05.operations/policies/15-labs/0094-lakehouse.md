@@ -1,10 +1,10 @@
 ---
 title: "Lakehouse Operations Policy"
-version: "1.5.1"
+version: "1.5.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0094"
 parent_ids:
@@ -14,16 +14,34 @@ created: "2026-09-23"
 
 # Lakehouse Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 Iceberg 테이블은 내장 REST 카탈로그 뒤의 SeaweedFS 테이블 버킷 하나에 있다.
 접근 범위, 파괴적 유지보수, 테스트 데이터의 분리가 통제 대상이다.
 
+### Authority
+
+- [가이드](../../guides/15-labs/0094-lakehouse.md) (`GDE-0094`)
+- [런북](../../runbooks/15-labs/0094-lakehouse.md) (`RUN-0094`)
+- [SeaweedFS policy](../05-databases-and-storage/0024-seaweedfs.md)
+- SPEC-0262 Analytics labs migration
+- [Lakehouse LAB Compose source](../../../../labs/lakehouse/docker-compose.yml)
+
 ## Scope
+
+### Applies To
 
 카탈로그 노출, 엔진 identity, namespace, 테이블 유지보수, 이미지 및 제거.
 
+### Exclusions
+
+root `lakehouse` profile은 HOME SeaweedFS만 선택하므로 이 정책의 LAB 엔진 범위에 포함되지 않는다.
+
 ## Rules
+
+### Requirements
 
 - 엔진은 독립 LAB `labs/lakehouse/docker-compose.yml`의 `lab-lakehouse` profile로만 선택한다(SPEC-0262). root
   include, HOME network 합류, HOME 이름 선택 추가를 금지한다. root `lakehouse` profile은 HOME
@@ -55,35 +73,35 @@ Iceberg 테이블은 내장 REST 카탈로그 뒤의 SeaweedFS 테이블 버킷 
   `remove_orphan_files` 테이블 프로시저도 동일하다.
 - 불변 build input과 호환성 검토를 요구한다. 현재 checksum은 Flink 5개/Spark 2개 JAR ADD만 고정하며 base image tag·OS/Python 의존성은 불변 lock이 아니다. Flink/Spark Iceberg를 함께 검토하고 Trino는 자체 내장 connector version과 상호 읽기/쓰기를 검증한다. 현 Flink Hadoop 3.5.0은 Iceberg 1.11 baseline 3.4.3과 달라 통합 검증이 필요하다.
 
-### Accountable lifecycle boundary
+#### Accountable lifecycle boundary
 
 적용 identity: `seaweedfs-table-bucket`, `flink-jobmanager`, `flink-taskmanager`, `great-expectations`, `spark`, `trino`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-## Exceptions
-
-없음. 카탈로그 credential vending이나 라우트를 활성화하려면 검토된 변경이
-필요하다.
-
-### Review Cadence
-
-SeaweedFS, Iceberg, 엔진 업그레이드 시, 새 엔진 추가 시, 새 namespace가
-생길 때마다 검토한다.
-
-### Traceability
-
-- [가이드](../../guides/15-labs/0094-lakehouse.md) (`GDE-0094`)
-- [런북](../../runbooks/15-labs/0094-lakehouse.md) (`RUN-0094`)
-- [SeaweedFS policy](../05-databases-and-storage/0024-seaweedfs.md)
-- SPEC-0262 Analytics labs migration
-
-## Verification
+### Enforcement
 
 Compose 렌더링, 카탈로그 확인, 그리고 범위가 한정된 identity가 테이블을
 생성·쓰기·compact·삭제할 수 있고 다른 버킷은 읽을 수 없음을 증명하는
 격리된 실행.
 
-## Related Documents
+## Exceptions
 
-- [Lakehouse LAB Compose source](../../../../labs/lakehouse/docker-compose.yml)
+### Exception Conditions
+
+없음. 카탈로그 credential vending이나 라우트를 활성화하려면 검토된 변경이
+필요하다.
+
+### Approval and Review
+
+SeaweedFS, Iceberg, 엔진 업그레이드 시, 새 엔진 추가 시, 새 namespace가
+생길 때마다 검토한다.
+
+## Ownership
+
+### Responsibilities
+
+이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
+
+### Change and Adoption
+
 - [LAB 공개 입력 예시](../../../../labs/.env.example)
 - [Compose profile vocabulary](../01-common/0078-compose-profile-vocabulary.md)

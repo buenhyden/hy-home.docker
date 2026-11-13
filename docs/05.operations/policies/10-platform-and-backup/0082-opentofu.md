@@ -1,10 +1,10 @@
 ---
 title: "OpenTofu Policy"
-version: "1.0.0"
+version: "1.0.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0082"
 parent_ids:
@@ -14,17 +14,36 @@ created: "2026-09-19"
 
 # OpenTofu Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 OpenTofu는 명시적인 `iac` job이다. 정적 선택과 검증은 provider 계정을 읽거나
 원격 인프라를 변경할 권한을 결코 뜻하지 않는다.
 
+### Authority
+
+- [가이드](../../guides/10-platform-and-backup/0082-opentofu.md) (`GDE-0082`)
+- [런북](../../runbooks/10-platform-and-backup/0082-opentofu.md) (`RUN-0082`)
+- [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+
+- [OpenTofu Compose 소스](../../../../infra/09-platform-ops/opentofu/docker-compose.yml)
+- [파생 Compose 이미지 projection](../../../../infra/tech-stack.versions.json)
+
 ## Scope
+
+### Applies To
 
 로컬 이미지 빌드, `/workspace`, 마운트된 클라우드 자격 증명, 백엔드 상태,
 lock, plan, provider 작업, 업그레이드, 서비스 폐기.
 
+### Exclusions
+
+이 정책은 위 Applies To에 나열한 대상 밖의 서비스와 환경에는 적용하지 않는다.
+
 ## Rules
+
+### Requirements
 
 - **Activation:** `iac` 아래에서 루트 프로젝트의 명명된 `opentofu` job을
   호출한다. HOME이나 일반 tooling 시작에는 절대 포함하지 않는다.
@@ -47,45 +66,45 @@ lock, plan, provider 작업, 업그레이드, 서비스 폐기.
   백엔드 상태, 자격 증명, 소유권 기록을 보존한다. 컨테이너 제거가 의도적으로
   인프라를 파괴하는 일은 결코 없다.
 
-### 책임과 도구 범위
+#### 책임과 도구 범위
 
 책임자는 `@buenhyden`이다. 버전 조회·format/validate라도 선언된 마운트와
 실행 영향을 확인한다. 정확한 바이너리 태그 외의 distro 패키지와 provider 선택은
 완전히 고정된 빌드가 아니므로 복구 시 사용한 이미지·provider lock 식별자를 보존한다.
 
-### Terraform 이관
+#### Terraform 이관
 
 - 기존 state와 lock 정보를 보존하고 암호화된 복구본을 먼저 준비한다.
 - 복제 workspace에서 provider 및 backend 호환성을 검증하고, 이관 대상별 Terrakube 실제 엔진을 확인한다.
 - CLI 교체와 실제 remote resource 변경을 별도 검토한다. `apply`, `destroy`, state rewrite와 force-unlock은 정확한 대상 승인을 요구한다.
 - 새로운 Terraform 서비스나 병렬 updater를 만들지 않는다. 호환성 때문에 기존 CLI가 필요하면 담당자, 대상 workspace, 지원 종료 조건과 검증 계획을 기록하며 private state 공개는 허용하지 않는다.
 
-## Exceptions
-
-별도의 변경 승인, 상태 보호, 또는 lock 소유권을 우회하는 예외는 없다. 범위,
-만료, 복구 아티팩트, 종료 조건을 기록한다.
-
-### Review Cadence
-
-모든 provider/백엔드/런타임 업그레이드 전, 그리고 자격 증명 마운트, 네트워크
-접근, 또는 workspace 소유권이 변경될 때마다 검토한다.
-
-### Traceability
-
-- [가이드](../../guides/10-platform-and-backup/0082-opentofu.md) (`GDE-0082`)
-- [런북](../../runbooks/10-platform-and-backup/0082-opentofu.md) (`RUN-0082`)
-- [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
-
-## Verification
+### Enforcement
 
 정적 Compose 점검은 선택만 증명한다. 런타임 증거는 버전, init/validate,
 plan, apply, apply 이후 결과를 구분한다. 실행되지 않은 상태 복구와 업그레이드
 리허설은 공백으로 남는다.
 
-## Related Documents
+## Exceptions
 
-- [OpenTofu Compose 소스](../../../../infra/09-platform-ops/opentofu/docker-compose.yml)
-- [파생 Compose 이미지 projection](../../../../infra/tech-stack.versions.json)
+### Exception Conditions
+
+별도의 변경 승인, 상태 보호, 또는 lock 소유권을 우회하는 예외는 없다. 범위,
+만료, 복구 아티팩트, 종료 조건을 기록한다.
+
+### Approval and Review
+
+모든 provider/백엔드/런타임 업그레이드 전, 그리고 자격 증명 마운트, 네트워크
+접근, 또는 workspace 소유권이 변경될 때마다 검토한다.
+
+## Ownership
+
+### Responsibilities
+
+책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
+
+### Change and Adoption
+
 - [OpenTofu 상태 저장소](https://opentofu.org/docs/language/state/backends/)
 - [OpenTofu state 명령 안전성](https://opentofu.org/docs/cli/commands/state/)
 - [운영 인덱스](../../README.md)

@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Policy"
-version: "0.9.2"
+version: "0.9.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0079"
 parent_ids:
@@ -14,12 +14,22 @@ created: "2026-09-18"
 
 # Application Authentication Integration Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 이 정책은 Keycloak을 중앙 IdP로 사용하면서 OAuth2 Proxy ForwardAuth와
 application-native OIDC를 선택·운영하는 기준을 정의한다.
 
+### Authority
+
+- Parent: [ADR-0038](../../../02.architecture/decisions/0038-selective-native-oidc-for-native-auth-apps.md)
+- Child: [GDE-0079](../../guides/03-identity-and-access/0079-application-auth-integration.md)
+- Architecture: [AD-0002](../../../02.architecture/descriptions/0002-auth-architecture.md)
+
 ## Scope
+
+### Applies To
 
 - Keycloak
 - OAuth2 Proxy
@@ -30,9 +40,17 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - 신규 OIDC-capable internal applications
 - Open WebUI/Gatus native 연동과 Task 0004에서 보류한 Terrakube 후보
 
+### Exclusions
+
+Keycloak과 OAuth2 Proxy 서비스 자체의 운영 통제는 [POL-0014](0014-keycloak.md)와 [POL-0015](0015-oauth2-proxy.md)가 다루며, 이 정책은 애플리케이션 인증 연동만 다룬다.
+
 ## Rules
 
-### Required
+### Requirements
+
+인증 연동 통제는 필수 사항(Required), 금지 사항(Disallowed), 소스 미준수와 소유권으로 나뉜다.
+
+#### Required
 
 - 모든 사용자 authentication identity source는 Keycloak을 기준으로 한다.
 - 서비스 onboarding 시 `Gateway ForwardAuth` 또는 `Application-native OIDC` 중
@@ -64,7 +82,7 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
   검증된 단일 기존 관리자 연결에 한정했으며 수용 검증 후 비활성화 상태를 유지한다.
 - 미기동 Terrakube는 명시적 API audience 검증과 실행 검증 전까지 완료로 보지 않는다.
 
-### Disallowed
+#### Disallowed
 
 - Native OIDC 서비스에 OAuth2 Proxy ForwardAuth를 동시에 기본 인증으로 적용
 - `rootCA-key.pem` 배포/공유
@@ -72,7 +90,7 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - 과거 OAuth callback URL 또는 authorization code 재사용
 - Keycloak access token을 Airflow internal JWT로 취급
 
-### Source nonconformance and ownership
+#### Source nonconformance and ownership
 
 운영 책임자는 @buenhyden이다. 2026-11-02 사용자 승인에 따라
 `grafana-static`은 Grafana host의 `/favicon.ico`와 `/robots.txt` GET/HEAD만
@@ -92,28 +110,7 @@ RBAC, 다른 경로, 다른 host 또는 다른 method로 넓어지지 않는다.
 공통 Secret 보존·runtime 변경 승인은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md)과
 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)을 적용한다.
 
-## Exceptions
-
-긴급한 auth 우회는 적용 범위, 시작/종료 조건, rollback, evidence를 incident/task에
-기록한 경우에만 허용한다. Native OIDC 앱에 임시 ForwardAuth를 적용하려면
-`Authorization` header 충돌이 없음을 먼저 검증해야 한다.
-
-### Review Cadence
-
-- Keycloak update
-- OAuth2 Proxy update
-- Airflow Keycloak provider 업데이트
-- Kafbat UI 업데이트
-- 신규 Native OIDC 서비스 승인
-- 분기별 인증 연동 검토
-
-### Traceability
-
-- Parent: [ADR-0038](../../../02.architecture/decisions/0038-selective-native-oidc-for-native-auth-apps.md)
-- Child: [GDE-0079](../../guides/03-identity-and-access/0079-application-auth-integration.md)
-- Architecture: [AD-0002](../../../02.architecture/descriptions/0002-auth-architecture.md)
-
-## Verification
+### Enforcement
 
 정적 검증: [GDE-0079](../../guides/03-identity-and-access/0079-application-auth-integration.md#서비스별-정적-검증)의
 profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
@@ -127,7 +124,30 @@ profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
 - OpenBao auth-backend OIDC client/role/policy 설정은 [OpenBao runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)의 비밀값 없는 점검 절차로 확인
 - Airflow provider/Authorization Services bootstrap 상태
 
-## Related Documents
+## Exceptions
+
+### Exception Conditions
+
+긴급한 auth 우회는 적용 범위, 시작/종료 조건, rollback, evidence를 incident/task에
+기록한 경우에만 허용한다. Native OIDC 앱에 임시 ForwardAuth를 적용하려면
+`Authorization` header 충돌이 없음을 먼저 검증해야 한다.
+
+### Approval and Review
+
+- Keycloak update
+- OAuth2 Proxy update
+- Airflow Keycloak provider 업데이트
+- Kafbat UI 업데이트
+- 신규 Native OIDC 서비스 승인
+- 분기별 인증 연동 검토
+
+## Ownership
+
+### Responsibilities
+
+정책 소유자는 @buenhyden이다.
+
+### Change and Adoption
 
 - 런타임 버전은 Compose/Dockerfile 선언이 소유하며, [파생 Compose 이미지 목록](../../../../infra/tech-stack.versions.json)은 drift 검증에 사용한다.
 

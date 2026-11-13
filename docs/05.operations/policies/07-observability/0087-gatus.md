@@ -1,10 +1,10 @@
 ---
 title: "Gatus Policy"
-version: "0.6.0"
+version: "0.6.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0087"
 parent_ids:
@@ -14,16 +14,33 @@ created: "2026-09-19"
 
 # Gatus Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 Gatus는 native OIDC와 지속적인 probe history를 가진 HOME availability monitor다.
 
+### Authority
+
+- Governing architecture: [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md)
+- Subject peers: [Guide](../../guides/07-observability/0087-gatus.md) and [Runbook](../../runbooks/07-observability/0087-gatus.md)
+
+- 런타임 고정값은 [observability Compose](../../../../infra/06-observability/docker-compose.yml)와 선택된 [Gatus Dockerfile](../../../../infra/06-observability/gatus/Dockerfile)이 소유하며, [derived Compose image projection](../../../../infra/tech-stack.versions.json)이 drift를 검증한다.
+
 ## Scope
+
+### Applies To
 
 로컬 Gatus 이미지, native OIDC 설정, read-only config mount, `gatus-data` SQLite
 상태, status UI, metrics 경계, probe를 HOME availability 역량 안에서 유지한다.
 
+### Exclusions
+
+Applies To에 나열한 대상과 환경 밖에는 이 정책을 적용하지 않는다.
+
 ## Rules
+
+### Requirements
 
 - 직접 host 포트는 게시하지 않고(`expose: ${GATUS_PORT}`만), 설정된 non-root identity(`${GATUS_UID:-1000}:${GATUS_GID:-1000}`),
   read-only root filesystem, read-only config bind, 쓰기 가능한 `gatus-data` mount를 유지한다.
@@ -46,7 +63,7 @@ Gatus는 native OIDC와 지속적인 probe history를 가진 HOME availability m
   후에만 업그레이드한다. 승인된 로그인, health, probe 검사가 완료될 때까지 이전
   이미지/설정을 유지한다.
 
-### Lifecycle and data controls
+#### Lifecycle and data controls
 
 - Gatus는 `HOME`으로 유지한다. native Keycloak OIDC, root-CA 검증, 세션 제어, 최소
   권한 endpoint credential이 필요하다.
@@ -60,29 +77,31 @@ Gatus는 native OIDC와 지속적인 probe history를 가진 HOME availability m
 
 Build 수용에는 source commit·checksum·local patch·생성 image digest가 필요하며 local tag만으로 패치를 증명하지 않는다. Zero-fuzz, 대소문자를 구분하는 정확한 subject, S256 PKCE, Secure/HttpOnly 임시 cookie, state/nonce 검사와 CA 검증을 유지한다. Public health/bootstrap/metrics와 보호 status API를 구분한다. Source/auth/storage 예외와 종료 시점은 @buenhyden이 승인하며 소스 문서 검사는 runtime 예외를 부여하지 않는다.
 
+### Enforcement
+
+정적 소스와 catalog 검사는 선언만 검증한다. 컨테이너 health, native 로그인, 세션 만료,
+probe 커버리지, backup, restore는 별도로 승인된 target이 필요한 런타임 증거로 남는다.
+
 ## Exceptions
+
+### Exception Conditions
 
 예외는 owner, scope, risk, expiry, recovery condition이 필요하다.
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Review Cadence
+### Approval and Review
 
 매월, 그리고 인증, probe inventory, 소스, storage가 변경될 때 검토한다.
 
-### Traceability
+## Ownership
 
-- Governing architecture: [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md)
-- Subject peers: [Guide](../../guides/07-observability/0087-gatus.md) and [Runbook](../../runbooks/07-observability/0087-gatus.md)
+### Responsibilities
 
-## Verification
+이 정책의 소유자는 frontmatter `owner`에 기록된 @buenhyden이다.
 
-정적 소스와 catalog 검사는 선언만 검증한다. 컨테이너 health, native 로그인, 세션 만료,
-probe 커버리지, backup, restore는 별도로 승인된 target이 필요한 런타임 증거로 남는다.
-
-## Related Documents
+### Change and Adoption
 
 - [Guide](../../guides/07-observability/0087-gatus.md), [Runbook](../../runbooks/07-observability/0087-gatus.md)
-- 런타임 고정값은 [observability Compose](../../../../infra/06-observability/docker-compose.yml)와 선택된 [Gatus Dockerfile](../../../../infra/06-observability/gatus/Dockerfile)이 소유하며, [derived Compose image projection](../../../../infra/tech-stack.versions.json)이 drift를 검증한다.
 - [Gatus upstream security policy](https://github.com/TwiN/gatus/security/policy)
 - 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

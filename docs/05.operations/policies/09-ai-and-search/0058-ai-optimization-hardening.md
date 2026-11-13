@@ -1,10 +1,10 @@
 ---
 title: "08-AI Optimization Hardening Operations Policy"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0058"
 parent_ids:
@@ -14,11 +14,22 @@ created: "2026-05-10"
 
 # 08-AI Optimization Hardening Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 이 문서는 `08-ai` 계층의 최적화/하드닝 운영 정책을 정의한다. gateway 경계 보안, Ollama GPU 보호, Open WebUI LAB 경계, 모델 승격/접근 통제/로그 보존 정책을 통제한다.
 
+### Authority
+
+- Declared parent: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Guide](../../guides/09-ai-and-search/0058-ai-optimization-hardening.md) (`GDE-0058`), [Runbook](../../runbooks/09-ai-and-search/0058-ai-optimization-hardening.md) (`RUN-0058`)
+
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+
 ## Scope
+
+### Applies To
 
 - `infra/08-ai/ollama/docker-compose.yml`
 - `labs/open-webui/docker-compose.yml`(독립 LAB, 같은 `08-ai` 검사)
@@ -27,7 +38,13 @@ created: "2026-05-10"
 - **Systems**: Ollama, Ollama Exporter, Open WebUI
 - **Environments**: 로컬·개발·검증 및 운영 환경에 준하는 환경
 
+### Exclusions
+
+이 정책은 위 Applies To에 나열한 대상 밖의 서비스와 환경에는 적용하지 않는다.
+
 ## Rules
+
+### Requirements
 
 - **Required**:
   - Ollama public route는
@@ -51,7 +68,7 @@ created: "2026-05-10"
   - 모델 승격 절차 생략 배포
   - 민감 대화 로그 무마스킹 저장
 
-### Catalog Expansion Approval Gates
+#### Catalog Expansion Approval Gates
 
 - **Ollama 승인 조건**:
   - 모델 캐시/스토리지 정책 문서화 및 운영 증적 확보
@@ -62,34 +79,37 @@ created: "2026-05-10"
   - 모델 접근 권한 분리 정책(역할/환경) 문서화
   - 대화 로그 보존 기간/마스킹 규칙/파기 절차 문서화
 
-### Control evidence boundary
+#### Control evidence boundary
 
 AI hardening은 일부 소스 문자열만 검사하며 GPU 여유, 사용자별 모델 권한, chat 보존·삭제, password 거부와 추론 성공을 증명하지 않는다. 모델 승격, 역할·환경별 접근 분리, 대화 masking/retention 요구는 유지한다. 소스에는 자동 chat retention과 완성된 모델 접근 분리를 입증할 설정이 부족하다. @buenhyden의 별도 통제·구현 변경과 검증 전에는 준수를 주장하지 않는다. 근거를 채우려고 비공개 대화를 로그에 남기지 않는다. ComfyUI 영속성과 Crawl4AI 격리는 각 Runbook의 통제를 따른다.
 
+### Enforcement
+
+점검 명령은 [가이드의 Common Checks](../../guides/09-ai-and-search/0058-ai-optimization-hardening.md#common-checks)를 따른다. 정적 검사와 hardening 검사 결과를 변경 증거로 남긴다.
+
+통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
+
 ## Exceptions
+
+### Exception Conditions
 
 - 장애 대응으로 일시 완화가 필요할 경우 승인 기록과 종료 시점이 필수다.
 - 예외 종료 후 동일 릴리스 내 원상복구 및 재검증을 수행한다.
 
-### Review Cadence
+### Approval and Review
 
 - 월 1회 정기 검토
 - AI 이미지/모델 정책/인증 정책 변경 시 수시 검토
 
-### Traceability
+예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다.
 
-- Declared parent: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: [Guide](../../guides/09-ai-and-search/0058-ai-optimization-hardening.md) (`GDE-0058`), [Runbook](../../runbooks/09-ai-and-search/0058-ai-optimization-hardening.md) (`RUN-0058`)
+## Ownership
 
-## Verification
+### Responsibilities
 
-점검 명령은 [가이드의 Common Checks](../../guides/09-ai-and-search/0058-ai-optimization-hardening.md#common-checks)를 따른다. 정적 검사와 hardening 검사 결과를 변경 증거로 남긴다.
+책임 소유자는 **@buenhyden**이다.
 
-책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
-## Related Documents
-
-- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+### Change and Adoption
 
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/09-ai-and-search/0058-ai-optimization-hardening.md)

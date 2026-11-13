@@ -1,10 +1,10 @@
 ---
 title: "Cassandra Operations Policy"
-version: "2.1.4"
+version: "2.1.5"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0025"
 parent_ids:
@@ -14,15 +14,31 @@ created: "2026-05-17"
 
 # Cassandra Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 독립 Cassandra LAB의 단일 노드·데이터 보존·인증 경계를 정의한다. HOME 소비자와 공유하지 않는다.
 
+### Authority
+
+- Declared parent: [AD-0004](../../../02.architecture/descriptions/0004-data-architecture.md)
+- Subject peers: [GDE-0025](../../guides/15-labs/0025-cassandra.md), [RUN-0025](../../runbooks/15-labs/0025-cassandra.md)
+- [LAB Compose](../../../../labs/cassandra/docker-compose.yml)
+
 ## Scope
 
-`labs/cassandra/docker-compose.yml`의 `cassandra-node1`, `cassandra-node1-data`, `lab_cassandra_core_net`와 연결 문서에 적용한다. exporter와 Cassandra password secret은 현재 구현에 없다.
+### Applies To
+
+`labs/cassandra/docker-compose.yml`의 `cassandra-node1`, `cassandra-node1-data`, `lab_cassandra_core_net`와 연결 문서에 적용한다.
+
+### Exclusions
+
+exporter와 Cassandra password secret은 현재 구현에 없다.
 
 ## Rules
+
+### Requirements
 
 - **Required:** 공식 Compose에 선언된 공식 Cassandra 이미지의 실제 `/var/lib/cassandra`를 named volume `cassandra-node1-data`(bind 대상 `${LAB_DATA_DIR}/cassandra/node1`)에 영속한다. 기존 HOME/과거 anonymous volume은 자동 재사용·삭제하지 않는다.
 - **Required:** `AllowAllAuthenticator`/`AllowAllAuthorizer` 기본 상태를 무인증으로 취급한다. 내부 네트워크만 사용하며 host port·gateway route와 실제 업무 소비자를 추가하지 않는다.
@@ -32,29 +48,31 @@ created: "2026-05-17"
 - **Allowed:** 정적 Compose 렌더와 승인된 read-only 건강 확인.
 - **Disallowed:** 단일 노드를 HA로 주장하거나 `nodetool` 건강을 복구 증거로 사용하지 않는다.
 
-### Accountable lifecycle boundary
+#### Accountable lifecycle boundary
 
 @buenhyden이 LAB 기동·중단·복구·정리 승인과 기존 상태 소유권을 확인한다. [POL-0006](../01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)과 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)을 따른다.
 
-## Exceptions
-
-승인된 예외 없음.
-
-### Review Cadence
-
-이미지·profile·mount·접속·인증 계약 변경 시 검토한다.
-
-### Traceability
-
-- Declared parent: [AD-0004](../../../02.architecture/descriptions/0004-data-architecture.md)
-- Subject peers: [GDE-0025](../../guides/15-labs/0025-cassandra.md), [RUN-0025](../../runbooks/15-labs/0025-cassandra.md)
-
-## Verification
+### Enforcement
 
 `LAB_DATA_DIR=/tmp/hy-home-lab-cassandra-static docker compose --env-file labs/.env.example -f labs/cassandra/docker-compose.yml --profile cassandra config --quiet`와 문서 링크 검사를 수행한다. 실제 CQL·복원은 `NOT_RUN`으로 기록한다.
 
-## Related Documents
+## Exceptions
 
-- [LAB Compose](../../../../labs/cassandra/docker-compose.yml)
+### Exception Conditions
+
+승인된 예외 없음.
+
+### Approval and Review
+
+이미지·profile·mount·접속·인증 계약 변경 시 검토한다.
+
+## Ownership
+
+### Responsibilities
+
+이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
+
+### Change and Adoption
+
 - [LAB 설명](../../../../labs/cassandra/README.md)
 - [Cassandra backup](https://cassandra.apache.org/doc/stable/cassandra/managing/operating/backups.html)

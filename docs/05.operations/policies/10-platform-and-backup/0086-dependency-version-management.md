@@ -1,10 +1,10 @@
 ---
 title: "Dependency Version Management Policy"
-version: "0.5.0"
+version: "0.5.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0086"
 parent_ids:
@@ -14,17 +14,35 @@ created: "2026-09-19"
 
 # Dependency Version Management Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 인프라 버전 변경은 하나의 HOME/DEV 호스트에서 검토 가능하고 재현 가능해야 한다. 버전
 업데이트가 배포나 데이터 마이그레이션을 승인하지는 않는다.
 
+### Authority
+
+- [Home/Dev architecture](../../../02.architecture/descriptions/0031-home-development-host.md) (`AD-0031`)
+- [Guide](../../guides/10-platform-and-backup/0086-dependency-version-management.md), [Policy](0086-dependency-version-management.md), [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)
+
+- [Runtime version projection](../../../../infra/tech-stack.versions.json)
+- [Repository Renovate policy](../../../../renovate.json5)
+
 ## Scope
+
+### Applies To
 
 Compose, Dockerfile 및 인라인 빌드 소스, derived registry, Renovate, 현재
 구현/운영 문서의 런타임 버전 참조.
 
+### Exclusions
+
+이 정책은 위 Applies To에 나열한 대상 밖의 서비스와 환경에는 적용하지 않는다.
+
 ## Rules
+
+### Requirements
 
 | Surface | Update owner | Authority and review |
 | --- | --- | --- |
@@ -59,7 +77,7 @@ updater나 manager 범위가 같은 파일을 겹쳐 소유하게 만들지 않�
 (automatic security fixes)는 Renovate의 첫 정상 실행을 확인한 뒤 owner가 별도 단계로 끈다.
 이 문서는 그 원격 설정을 바꾸지 않으며 승인도 주지 않는다.
 
-### Renovate 운영 규칙
+#### Renovate 운영 규칙
 
 이 절이 Renovate의 업데이트 규칙을 소유한다. 값은 `renovate.json5`가 소유하며 이 절은
 의도와 한계만 적는다. 다른 문서는 이 절을 링크하고 규칙을 복제하지 않는다.
@@ -96,24 +114,7 @@ updater나 manager 범위가 같은 파일을 겹쳐 소유하게 만들지 않�
 PR 처리 규칙(rebase 방법, 한 번에 하나씩 머지, 수동 close 금지)은 영문 거버넌스인
 `github-governance.md` 3절이 소유하고, 실행 순서는 [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)이 소유한다.
 
-## Exceptions
-
-변경 가능한 이미지 예외는 owner, reason, risk, review cadence, exit condition과 함께
-`infra/image-tag-policy.exceptions.json`에 둔다. 서술식 예외로는 source-image
-검증을 면제할 수 없다. 예외를 제거하기 전에 이미지 호환성을 검토한다. 태그 변경이
-GPU나 데이터 형식 호환성의 증거가 되지는 않는다.
-
-### Review Cadence
-
-매월, 그리고 manager 범위, 소스 parser, 이미지 예외, major 업데이트가 변경될 때
-검토한다.
-
-### Traceability
-
-- [Home/Dev architecture](../../../02.architecture/descriptions/0031-home-development-host.md) (`AD-0031`)
-- [Guide](../../guides/10-platform-and-backup/0086-dependency-version-management.md), [Policy](0086-dependency-version-management.md), [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)
-
-## Verification
+### Enforcement
 
 기존 synchronization `--check`가 registry drift gate다. 추가, 제거, 중복 저장소와
 소스/분류 drift를 거부한다. write 모드는 derived 항목을 원자적으로 재조정한다. Compose,
@@ -127,8 +128,26 @@ GPU나 데이터 형식 호환성의 증거가 되지는 않는다.
 cadence·exit condition이 빠진 항목은 실패한다. local build 서비스의 Compose `image` 이름은 제외하고
 그 Dockerfile의 `FROM`을 본다.
 
-## Related Documents
+## Exceptions
+
+### Exception Conditions
+
+변경 가능한 이미지 예외는 owner, reason, risk, review cadence, exit condition과 함께
+`infra/image-tag-policy.exceptions.json`에 둔다. 서술식 예외로는 source-image
+검증을 면제할 수 없다. 예외를 제거하기 전에 이미지 호환성을 검토한다. 태그 변경이
+GPU나 데이터 형식 호환성의 증거가 되지는 않는다.
+
+### Approval and Review
+
+매월, 그리고 manager 범위, 소스 parser, 이미지 예외, major 업데이트가 변경될 때
+검토한다.
+
+## Ownership
+
+### Responsibilities
+
+책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
+
+### Change and Adoption
 
 - [Operations index](../../README.md)
-- [Runtime version projection](../../../../infra/tech-stack.versions.json)
-- [Repository Renovate policy](../../../../renovate.json5)

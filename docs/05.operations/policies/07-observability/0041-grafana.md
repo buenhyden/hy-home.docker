@@ -1,10 +1,10 @@
 ---
 title: "Grafana Operations Policy"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0041"
 parent_ids:
@@ -14,14 +14,25 @@ created: "2026-05-17"
 
 # Grafana Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 이 정책은 Grafana visualization hub의 dashboard provisioning, datasource
 provisioning, Keycloak role mapping, secret boundary, protected route를
 정의한다. 사용 흐름은 Grafana guide가, 장애 대응 절차는 Grafana runbook이
 담당한다.
 
+### Authority
+
+- Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](../../guides/07-observability/0041-grafana.md) (`GDE-0041`), [Runbook](../../runbooks/07-observability/0041-grafana.md) (`RUN-0041`)
+
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+
 ## Scope
+
+### Applies To
 
 이 정책은 현재 `infra/06-observability/grafana` compose, provisioning,
 dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
@@ -29,7 +40,13 @@ dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
 - **Systems**: compose service `grafana`, container `grafana`, image [grafana/grafana image declaration](../../../../infra/06-observability/docker-compose.yml), volume `grafana-data`, provisioning path `infra/06-observability/grafana/provisioning`, dashboard path `infra/06-observability/grafana/dashboards`
 - **Environments**: 로컬·개발·홈랩 운영
 
+### Exclusions
+
+Applies To에 나열한 대상과 환경 밖에는 이 정책을 적용하지 않는다.
+
 ## Rules
+
+### Requirements
 
 - **Required**:
   - Dashboards는 `infra/06-observability/grafana/dashboards/`의 JSON
@@ -81,40 +98,20 @@ dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
   - 승인 없이 route, role mapping, secret reference, provisioning mount,
     dashboard provider lock, image version을 runtime에서 변경하는 행위
 
-### Lifecycle and data controls
+#### Lifecycle and data controls
 
 - Grafana를 HOME으로 유지하고 native Keycloak OAuth, gateway, 익명 거부, 그룹별 역할, TLS 검증과 secret-file을 보존한다. 다른 서비스로 Grafana 외부 DB를 추정하지 않는다.
 - `grafana-data` SQLite/runtime, provisioning, plugin과 대응 OAuth/admin secret을 한 복구 집합으로 취급한다. 쓰기 중단 또는 SQLite 일관 backup이 필요하다.
 - Production route 없는 격리 환경에서 schema·identity/team·dashboard/alert·datasource·OAuth·익명 거부를 검증한다.
 - Plugin/image 변경에는 호환성·rollback 근거가 필요하다. 제거에는 dashboard/alert export, client 폐기, route 폐쇄, audit 보존과 데이터 삭제 승인이 필요하다.
 
-### Authentication and provisioning limits
+#### Authentication and provisioning limits
 
 Native OAuth 요구를 유지한다. `GF_AUTH_DISABLE_LOGIN_FORM`은 로그인 폼만 숨기며 Basic API 인증을 끄지 않는다. 선언된 upstream은 Basic auth를 기본 활성화하고 Compose는 비활성화하지 않으므로 SSO-only 요구가 완전히 시행되지 않는다. 유효한 자격 증명은 여전히 필요하다. 임의 break-glass 예외를 만들지 않고 @buenhyden의 별도 수정 결정과 거부 검증을 요구한다. Strict group mapping은 지정 그룹에 organization Admin/Editor/Viewer만 부여한다. `GF_AUTH_GENERIC_OAUTH_GRAFANA_ADMIN_ATTRIBUTE_PATH`는 선언 버전이 지원하지 않는 필드여서 server-admin 부여 증거가 아니다.
 
 `grafana-db-provision`은 DB 서버가 아닌 HOME 일회성 PostgreSQL 클라이언트다. 마운트된 script/SQL은 `mng-pg`를 기다린 뒤 제한된 읽기 전용 `grafana_reader`와 기존 Airflow/n8n 테이블 권한을 생성·갱신한다. HTTP health, 자체 상태 볼륨, 이 job에 대한 Grafana depends_on은 없다. 없는 테이블을 건너뛰어도 성공 종료하므로 애플리케이션 schema 준비 뒤 읽기 전용 query와 각 dashboard를 확인한다. 재실행은 role/grant를 변경하므로 단순 조회 진단이 아니다. DB·자격 증명 복구는 관리 DB·시크릿 소유자가 맡고 helper의 복구 자산은 추적 SQL/script다.
 
-## Exceptions
-
-- Dashboard provider lock, datasource UID, role mapping, secret reference,
-  route 예외는 사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
-- 장애 대응 중 임시 조치가 필요하면 Grafana runbook에서 최소 조치와
-  rollback evidence를 기록한다.
-
-책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
-### Review Cadence
-
-- Grafana image, provisioning YAML, dashboard tree, datasource UID, role
-  mapping, route, secret reference가 변경될 때 검토한다.
-- 정기 검토는 분기마다 수행한다.
-
-### Traceability
-
-- Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](../../guides/07-observability/0041-grafana.md) (`GDE-0041`), [Runbook](../../runbooks/07-observability/0041-grafana.md) (`RUN-0041`)
-
-## Verification
+### Enforcement
 
 - Compose service boundary:
   `rg -n 'service: template-stateful-med|image: grafana/grafana:|GF_AUTH_GENERIC_OAUTH_ENABLED|GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH|grafana_admin_password|grafana_client_secret|traefik.http.routers.grafana.middlewares: gateway-standard-chain@file' infra/06-observability/docker-compose.yml`
@@ -125,9 +122,31 @@ Native OAuth 요구를 유지한다. `GF_AUTH_DISABLE_LOGIN_FORM`은 로그인 �
 - Repository contracts:
   원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
-## Related Documents
+## Exceptions
 
-- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+### Exception Conditions
+
+- Dashboard provider lock, datasource UID, role mapping, secret reference,
+  route 예외는 사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
+- 장애 대응 중 임시 조치가 필요하면 Grafana runbook에서 최소 조치와
+  rollback evidence를 기록한다.
+
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
+
+### Approval and Review
+
+- Grafana image, provisioning YAML, dashboard tree, datasource UID, role
+  mapping, route, secret reference가 변경될 때 검토한다.
+- 정기 검토는 분기마다 수행한다.
+
+## Ownership
+
+### Responsibilities
+
+이 정책의 소유자는 frontmatter `owner`에 기록된 @buenhyden이다.
+
+### Change and Adoption
+
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/07-observability/0041-grafana.md)
 - [Recovery runbook](../../runbooks/07-observability/0041-grafana.md)
