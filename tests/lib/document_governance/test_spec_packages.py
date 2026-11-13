@@ -6178,5 +6178,95 @@ class AcceptanceDecisionTests(unittest.TestCase):
         )
 
 
+class ParentAuthorityBranchTests(unittest.TestCase):
+    """H-W04-4: the Plan, cancelled-Spec and orphan-Task branches."""
+
+    def authority(self, spec: str, plan: str, *tasks: str) -> None:
+        spec_packages = _spec_packages_module()
+        spec_packages._validate_execution_states(
+            spec_packages.SpecDocument(
+                _HANDOFF_ROOT / "spec.md", "spec", "SPEC-0001", spec, ()
+            ),
+            spec_packages.SpecDocument(
+                _HANDOFF_ROOT / "plan.md", "plan", "SPEC-0001-PLAN-0001", plan, ()
+            ),
+            tuple(
+                spec_packages.SpecDocument(
+                    _HANDOFF_ROOT / f"tasks/tsk-000{number}-work.md",
+                    "task",
+                    f"SPEC-0001-TSK-000{number}",
+                    status,
+                    (),
+                )
+                for number, status in enumerate(tasks, 1)
+            ),
+            load_current_registry(),
+        )
+
+    def test_a_plan_cannot_end_before_its_spec(self) -> None:
+        spec_packages = _spec_packages_module()
+        for spec in ("draft", "in-review", "approved"):
+            with self.subTest(spec=spec):
+                with self.assertRaisesRegex(
+                    spec_packages.SpecPackageError, "Plan cannot end before its Spec"
+                ):
+                    self.authority(spec, "cancelled")
+        self.authority("cancelled", "cancelled")
+
+    def test_a_cancelled_spec_needs_a_cancelled_plan_and_terminal_tasks(self) -> None:
+        spec_packages = _spec_packages_module()
+        self.authority("cancelled", "cancelled", "completed", "cancelled")
+        for plan, tasks in (
+            ("approved", ()),
+            ("draft", ("cancelled",)),
+            ("cancelled", ("in-progress",)),
+            ("cancelled", ("completed", "blocked")),
+            ("cancelled", ("draft",)),
+        ):
+            with self.subTest(plan=plan, tasks=tasks):
+                with self.assertRaisesRegex(
+                    spec_packages.SpecPackageError,
+                    "terminal package contains an active Plan or Task",
+                ):
+                    self.authority("cancelled", plan, *tasks)
+
+    def test_an_orphan_task_is_rejected_where_it_meets_evidence(self) -> None:
+        spec_packages = _spec_packages_module()
+        registry = load_current_registry()
+        task = _handoff_task(_evidence_row("One", "1", "W1"), _decision_row("1", "One"))
+        legacy = dataclasses.replace(
+            registry, common={**registry.common, "lifecycle_generation": 5}
+        )
+        for call, registry_in_use, message in (
+            (spec_packages._v6_evidence_contract, registry, "generation 6 Task"),
+            (spec_packages._v5_evidence_contract, legacy, "generation 5 Task"),
+        ):
+            with self.subTest(message=message):
+                with self.assertRaisesRegex(
+                    spec_packages.SpecPackageError,
+                    f"{message} evidence requires a Plan",
+                ):
+                    call(_generation6.SPEC, None, (task,), registry_in_use)
+        # A package with no Task and no Plan has nothing to prove.
+        self.assertEqual(
+            frozenset(),
+            spec_packages._v6_evidence_contract(
+                _generation6.SPEC, None, (), registry
+            ).pass_pairs,
+        )
+
+    def test_an_orphan_task_file_is_rejected_by_the_loader(self) -> None:
+        spec_packages = _spec_packages_module()
+        for contracts, message in (
+            ({}, "task parent must match its owning Plan contract"),
+            ({"_current_contracts": False}, "item evidence requires a Plan"),
+        ):
+            with self.subTest(message=message), tempfile.TemporaryDirectory() as root:
+                stage = pathlib.Path(root) / "docs/03.specs"
+                _write_package(stage, plan=False, task=True)
+                with self.assertRaisesRegex(spec_packages.SpecPackageError, message):
+                    spec_packages.load_spec_packages(stage, **contracts)
+
+
 if __name__ == "__main__":
     unittest.main()
