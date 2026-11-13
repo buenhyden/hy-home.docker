@@ -14,7 +14,9 @@ created: "2026-10-03"
 
 # Secret Layout and Environment Parity Task
 
-## Objective
+## Scope
+
+### Objective and Parent
 
 Reconcile the entire secret tree and its source consumers under the user's
 2026-10-03 explicit request. Consolidate common/communication and
@@ -23,7 +25,7 @@ and preserve actual values and issued IDs. This is a source and value-preserving
 path operation; HOME recreation, credential rotation and deletion remain
 separate.
 
-## Inputs
+### Inputs and Authority
 
 Main baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`, integrated
 secret-layout commit `8df1e89fce0b3bea1f5f3241b95af5c8fefb8fd3`, public
@@ -31,7 +33,9 @@ registry, literal Compose/entrypoint consumers and key-only env comparison.
 Private values are consumed only by approved local execution tools, never
 printed, searched, included in fixtures or copied to this receipt.
 
-## Work Log
+## Execution Log
+
+### Work Performed
 
 The user authorized the entire auth, automation, backup, certs, common,
 communication, data, db, labs, observability, security, storage and tools tree.
@@ -66,7 +70,22 @@ propagation. The user subsequently approved resuming value-preserving path
 moves and metadata sync while reserving rotation for a separate plan. No
 exposed values or original output are stored in this package.
 
+Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; predecessor
+secret-layout integration `8df1e89fce0b3bea1f5f3241b95af5c8fefb8fd3`;
+closure `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7`; PR359 delivery `467bd644b071f9dfa02ca1af2d622502c3445d28`; CI `required CI run37180461557 PASS`. Remote publication and merge are recorded only by the protected delivery receipt.
+
+### Blockers and Decisions
+
+No key/token/password regeneration, HOME start/restart, private-log inspection,
+secret rotation or irreversible alias/backup deletion. Synthetic tests only.
+The failed registered selector regression was corrected by adding the same seven
+mandatory module names to the existing expectation; independent review reran
+reachability/skip-boundary tests, 2/2 exit 0, and approved the minimal workflow
+registration change.
+
 ## Verification Evidence
+
+### Results
 
 Root key comparison: 212 actual/example keys, no missing/extra/duplicate keys.
 LAB comparison: 48 keys, no missing/extra/duplicate keys. Empty LAB data,
@@ -74,7 +93,7 @@ cluster-ID, certificate and Locust paths retain their unapproved-runtime status;
 no fabricated value is supplied. `_PIP_ADDITIONAL_REQUIREMENTS` is intentionally
 empty.
 
-### Closure source evidence imported during 2026-10-04 integration
+#### Closure source evidence imported during 2026-10-04 integration
 
 Closure commit `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7` preserved the
 following historical source evidence. PR359 carries the source side, current
@@ -104,8 +123,6 @@ not attest repository identity or defend concurrent same-user mutation.
 | --- | --- | --- | --- |
 | 1, 4, 8 | W1/W5 | PASS: approved source, value-preserving path/metadata and protected parity evidence recorded; HOME recreation and rotation excluded | [Secret ownership and consumer contract](../../../../secrets/README.md) |
 
-## Review Evidence
-
 Independent incident review is recorded above. Closure-side independent
 public-source security review approved owner direct sync; it reran 43 secret
 regressions, shell syntax and diff hygiene, all exit 0. No private value was
@@ -116,22 +133,17 @@ rejecting ambient AWS CLI resolution, weak credential permissions and partial
 restore publication. The two Medium findings were resolved; actual SeaweedFS
 execution remains NOT_RUN. Independent current integration review returned PASS.
 
-## Commit Ledger
+### Resolution Links
 
-Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; predecessor
-secret-layout integration `8df1e89fce0b3bea1f5f3241b95af5c8fefb8fd3`;
-closure `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7`; PR359 delivery `467bd644b071f9dfa02ca1af2d622502c3445d28`; CI `required CI run37180461557 PASS`. Remote publication and merge are recorded only by the protected delivery receipt.
+None: nothing was recorded here before this Task moved to the common form.
 
-## Rulings
+## Acceptance Decision
 
-No key/token/password regeneration, HOME start/restart, private-log inspection,
-secret rotation or irreversible alias/backup deletion. Synthetic tests only.
-The failed registered selector regression was corrected by adding the same seven
-mandatory module names to the existing expectation; independent review reran
-reachability/skip-boundary tests, 2/2 exit 0, and approved the minimal workflow
-registration change.
+### Criterion Decisions
 
-## Deferred Items
+None: nothing was recorded here before this Task moved to the common form.
+
+### Remaining Conditions
 
 Rotate/reissue SurrealDB administrator, SMTP app password, Supabase SMTP
 password, Slack webhook and Stalwart administrator credentials through a
@@ -140,7 +152,7 @@ its replacement depends on the selected provider procedure. Each rotation needs
 selected consumers, rollback window and verification before revoking the old
 credential. No current rotation or HOME execution is authorized.
 
-### Owner-checkout candidate parity preflight
+#### Owner-checkout candidate parity preflight
 
 The existing owner approval for value-preserving metadata synchronization is
 retained. A read-only `gen-secrets.sh --sync-metadata-prune-check` invocation
@@ -157,7 +169,7 @@ exited0, `files_changed=0`, values preserved and secret files untouched. This
 proved candidate public/private metadata and env exact-set parity only; no
 new credential validity, file move or service recreation was claimed from it.
 
-### Protected completion receipt — 2026-10-04
+#### Protected completion receipt — 2026-10-04
 
 After PR359 reached protected main as `467bd644b071f9dfa02ca1af2d622502c3445d28`, the owner-checkout
 `bash scripts/operations/gen-secrets.sh --sync-metadata-prune-check
@@ -168,3 +180,13 @@ approved private parity contract without printing or reading secret values
 outside the approved tool. HOME recreation, service restart, credential
 rotation/reissue, irreversible alias deletion, private-log inspection and
 credential validity remain `NOT_RUN`.
+
+## Handoff
+
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

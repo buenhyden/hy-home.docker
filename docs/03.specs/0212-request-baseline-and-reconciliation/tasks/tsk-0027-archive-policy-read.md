@@ -14,15 +14,22 @@ created: "2026-10-29"
 
 # Archive Policy Read Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W43: read the Stage 98 policy text against the code and checks that
 enforce it, and correct each statement that no longer matches. This Task owns
 criterion 38 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-29 the owner chose the archive policy as the first area for a
 manual policy-against-behavior read, matching the request's first priority.
@@ -31,9 +38,11 @@ four-repository adoption, and the Codex loader stay as TSK-0026 records them.
 The input is `main` at merged PR #624. The authorization covers corrections
 in the read surfaces, this branch, its pull request, and merge.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -41,7 +50,7 @@ in the read surfaces, this branch, its pull request, and merge.
 | SPEC-0212-TSK-0027 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0027 | in-progress | completed | #evidence |
 
-### Statements checked
+#### Statements checked
 
 | Statement | Source | Checked against | Result |
 | --- | --- | --- | --- |
@@ -53,7 +62,7 @@ in the read surfaces, this branch, its pull request, and merge.
 | Frozen subtrees and three migrations are ignored by markdownlint | README Usage 2 | `.markdownlint-cli2.yaml` ignore list | Matches |
 | `.markdownlint-cli2.yaml` runs with `fix: true` | README Usage 2; docstring of `test_every_text_mutator_excludes_the_same_frozen_payloads` | `.markdownlint-cli2.yaml` | Stale. `fix: false` since `3745b3db2` (2026-10-15) |
 
-### Correction
+#### Correction
 
 The README and the test docstring now say that commit checks run with
 `fix: false` and that an explicit `markdownlint-cli2 --fix` rewrites files,
@@ -61,7 +70,15 @@ which is why the frozen subtrees stay in the ignore list. The rule itself is
 unchanged. The comment in `.markdownlint-cli2.yaml` that says the linter once
 rewrote five frozen bodies is accurate history and is kept.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -70,18 +87,29 @@ rewrote five frozen bodies is accurate history and is kept.
 | Link alignment | 38 | W43 | `check-document-links.py --mode alignment` | This branch | PASS | 0 failures | required | - |
 | Routing tests | 38 | W43 | `python3 -m unittest tests.validation.test_agent_governance_ci_routing` | This branch | PASS | OK | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 38 | accepted | Archive corpus, Metadata contracts, Link alignment, Routing tests | The archive policy text matches its code and checks; one stale reason is corrected. | SPEC-0212 TSK-0027 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

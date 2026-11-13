@@ -1,10 +1,10 @@
 ---
 title: "Legacy Document Status Ban Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0256-TSK-0001"
 parent_ids:
@@ -14,14 +14,19 @@ created: "2026-11-04"
 
 # Legacy Document Status Ban Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Implement W1–W4: disallow legacy statuses and lineage keys in Stage 01 to 03,
 retire ADR-0011, and remove the archive scaffolding and receipt field.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
 
 The user directed that `docs/01.requirements`, `docs/02.architecture`, and
 `docs/03.specs` allow no legacy or deprecated document status or format, that
@@ -30,18 +35,20 @@ user decided that ADR-0011, the only `deprecated` document, be summarized and
 deleted; that decision is the removal approval. No push, pull request, or merge
 from this Task.
 
-## Work Log
+## Execution Log
 
-### Current contract decision
+### Work Performed
+
+#### Current contract decision
 
 The user's direction authorizes this Spec and Plan as written.
 
-### Current readiness and execution
+#### Current readiness and execution
 
 Inputs, work units, and checks are recorded here. The Task is ready and in
 progress under the approved parents. Hosted CI has not run.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -50,7 +57,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0256-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0256-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
 
-### Removed states and keys
+#### Removed states and keys
 
 - Lifecycles: `requirement` keeps `draft`, `in-review`, `approved`;
   `architecture-description` keeps `draft`, `in-review`, `active`;
@@ -91,7 +98,7 @@ progress under the approved parents. Hosted CI has not run.
   SPEC-0212-TSK-0012 carries it; removing the key made `check-changed` reject
   that immutable Task body, so the key is kept until the package is deleted.
 
-### ADR-0011 retirement
+#### ADR-0011 retirement
 
 ADR-0011 selected Homer, Portainer, RedisInsight, Dozzle, and Open Notebook
 with SurrealDB for the former `11-laboratory` tier, was deprecated on
@@ -102,14 +109,14 @@ decision README no longer link to it; 11 is in the Registry ADR
 `reserved_history`. SPEC-0212-TSK-0036 (terminal) and the dated DATA-0096
 snapshot keep their mentions.
 
-### Other cleanup
+#### Other cleanup
 
 SPEC-0204-TSK-0010 (in progress) had a body line that began with `status:`
 and read `status: PARTIAL, draft recorded.`. It now reads "S10b result:"
 followed on the next line by "`PARTIAL`, draft recorded.", so no line of the
 body begins with `status:`.
 
-### Test changes
+#### Test changes
 
 | Test | Change |
 | --- | --- |
@@ -130,7 +137,7 @@ body begins with `status:`.
 | `test_a_stage_98_anchor_is_no_longer_admitted` | Was `test_registered_archive_anchor_remains_admitted`; a Stage 98 anchor is now unadmitted |
 | UNJUDGED language entries `migration`, `tombstone`, and the `archive-record-` prefix | Dropped with the profiles |
 
-### Open issues
+#### Open issues
 
 - The archive-record frontmatter vocabulary in `metadata/profile.py`
   (disposition and snapshot fields, `EXPECTED_ARCHIVE_SOURCE_PREFIXES`) and
@@ -148,7 +155,13 @@ body begins with `status:`.
 - Operational, reference, and governance lifecycles still offer `deprecated`,
   `superseded`, and `retired`; the user's rule names Stage 01 to 03 only.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -171,7 +184,13 @@ body begins with `status:`.
 | E17 | 4 | W4 | review-fix-suites | CI routing and surface ownership, validation lifecycle, `test_ci_gate_evidence` (system python3), `tests/lib/gate`, commit b8893cc28 | PASS | 89, 20, 21, and 139 tests OK | required | - |
 | E18 | 4 | W4 | review-fix-checks | metadata check-changed against `origin/main` 46a7811dd and check-active, corpus lifecycle, links alignment and commands, Script Manifest, renderer `--check`, agent governance contract, commit b8893cc28 | PASS | 20 and 497 selected, zero violations; lifecycle and occupancy zero; both link modes PASS; manifest valid; drift 0; contract failures 0 | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -180,7 +199,7 @@ body begins with `status:`.
 | 3 | pending | - | - | @buenhyden |
 | 4 | pending | - | - | @buenhyden |
 
-## Review and Completion
+### Remaining Conditions
 
 Local checks are recorded above. E8, E10, E11, and E12 predate the rebases
 onto 4adeb3d37 and 46a7811dd; the rows from E16 on are the review-fix runs.
@@ -188,7 +207,7 @@ Independent review requested changes I1 to I4 and M1 to M8, which commits
 bf3ea869e and b8893cc28 and the follow-up test fix address. Hosted CI has not
 run, and no criterion is accepted yet.
 
-### Merge receipt 2026-11-10
+#### Merge receipt 2026-11-10
 
 Recorded 2026-11-10 from `gh pr view`: #735 merge `0ab42bc30` at
 2026-11-04T03:57:25Z. Hosted checks on the merged PR: every completed check
@@ -196,7 +215,12 @@ SUCCESS, the rest SKIPPED, none failing. Candidate quality: the merged change
 is a candidate that passed hosted CI. This receipt is not owner acceptance: no
 criterion is accepted and the status is unchanged.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

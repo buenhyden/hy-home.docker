@@ -14,22 +14,32 @@ created: "2026-10-29"
 
 # Governance Gap Rules Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W47: add the five missing rules that TSK-0029 found for request lines
 L047, L171, L175, L292, and L369. This Task owns criterion 42 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Request line meaning audit](tsk-0029-request-line-meaning-audit.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-29 the owner asked for every gap offered after TSK-0029 to be
 done. The input is `main` at merged PR #627. The authorization covers these
 policy edits, this branch, its pull request, and merge.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -37,7 +47,7 @@ policy edits, this branch, its pull request, and merge.
 | SPEC-0212-TSK-0031 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0031 | in-progress | completed | #evidence |
 
-### Rules added
+#### Rules added
 
 | Line | CR | Rule | Owner |
 | --- | --- | --- | --- |
@@ -47,7 +57,7 @@ policy edits, this branch, its pull request, and merge.
 | L292 | CR-21.02 | The single-developer review path is the required check, a fresh-context review of the final diff, and the owner's merge; it calls no AI-agent API | `.agents/governance/github-governance.md` 1.5.0 |
 | L369 | CR-15.10 | Claude skills are generated adapters, not symlinks, so canonical skills stay explicitly invoked and provider-neutral; Codex reads `.agents/skills/` directly | `.claude/provider.md` 1.4.0 |
 
-### Facts checked
+#### Facts checked
 
 - `git grep` finds no model-provider endpoint, API key name, or agent review
   action in `.github/`, `scripts/`, `.claude/hooks/`, `.codex/`, or
@@ -59,7 +69,15 @@ policy edits, this branch, its pull request, and merge.
 - Whether Claude Code would follow a skill symlink was not tested; the
   decision rests on invocation, not on support.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -68,19 +86,29 @@ policy edits, this branch, its pull request, and merge.
 | Routing tests | 42 | W47 | `python3 -m unittest tests.validation.test_agent_governance_ci_routing` | This branch | PASS | 82 tests OK | required | - |
 | Metadata contracts | 42 | W47 | `check-document-metadata.py --mode check-contracts` | This branch | PASS | 0 violations | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 42 | accepted | Agent governance, Provider projections, Routing tests, Metadata contracts | The five rules TSK-0029 found missing now exist, each in its canonical owner. | SPEC-0212 TSK-0031 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Request line meaning audit](tsk-0029-request-line-meaning-audit.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

@@ -14,15 +14,20 @@ created: "2026-11-03"
 
 # Stage 98 Archive Deletion Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Implement W1–W5: delete the Stage 98 files except the README, summarize their
 still-current substance into Stage 01 and Stage 02, remove every reader and
 reference, and keep retired numbers in the Registry.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
 
 The user directed that the files under `docs/98.archive/` be deleted, keeping
 only the folder scheme and README; that the deleted content be summarized into
@@ -32,18 +37,20 @@ full Registry migration. The coordinator added the PR #722 re-review items N2,
 N3, N4, N6 and N7 to this phase. Exclusions: completed Spec packages in
 `docs/03.specs/` (next phase); no push, pull request, or merge from this Task.
 
-## Work Log
+## Execution Log
 
-### Current contract decision
+### Work Performed
+
+#### Current contract decision
 
 The user's direction authorizes this Spec and Plan as written.
 
-### Current readiness and execution
+#### Current readiness and execution
 
 Inputs, work units and checks are recorded here. The Task is ready and in
 progress under the approved parents. Hosted CI has not run.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -53,7 +60,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0249-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
 | SPEC-0249-TSK-0001 | in-progress | completed | #owner-acceptance-2026-11-12 |
 
-### Summary map
+#### Summary map
 
 | Deleted record | Summary location |
 | --- | --- |
@@ -68,7 +75,7 @@ progress under the approved parents. Hosted CI has not run.
 | AD-0014 | Traceability of AD-0002 |
 | Completed and superseded Spec packages, operations and reference Tombstones, migrations 0001–0005, Retention Catalog, DATA-0067 | Process history only; nothing carried forward |
 
-### Removed
+#### Removed
 
 - 263 files under `docs/98.archive/`; only `README.md` remains, rewritten as the
   disposition scheme.
@@ -87,7 +94,7 @@ progress under the approved parents. Hosted CI has not run.
   validation (N7).
 - Markdownlint ignores for Stage 98 paths.
 
-### Kept and changed
+#### Kept and changed
 
 - Registry: `reserved_history` added to the requirement (9 numbers), ADR (14),
   architecture-description (5) and Spec (207) spaces. Requirement gaps and
@@ -129,7 +136,7 @@ progress under the approved parents. Hosted CI has not run.
 - The archive scheme definitions stay: `PRESERVED_*` path constants,
   `common.archive_retention`, the archive profiles and templates.
 
-### Reference cleanup
+#### Reference cleanup
 
 - 119 markdown links into Stage 98 in 69 current documents were turned into
   plain text.
@@ -141,7 +148,7 @@ progress under the approved parents. Hosted CI has not run.
   map, incident-response skill, and the docs, Stage 99, Stage 98 and root
   READMEs.
 
-### Test changes
+#### Test changes
 
 Deleted only where the behavior they checked was removed by this change.
 Repointed tests keep their fixture and assert the new fail-closed result.
@@ -180,7 +187,7 @@ the PR #723 review `test_an_archive_copy_does_not_record_an_unreserved_removal`
 `test_gaps_are_explained_only_by_the_checked_roots_registry` (M2), and
 `test_reserved_history_cannot_drop_a_number` (M1).
 
-### Open issues
+#### Open issues
 
 - SPEC-0204-TSK-0001 still carries `branch_integration_receipts`; the field is
   parsed but inert, and its schema entry can go with the completed Spec package
@@ -215,7 +222,13 @@ the PR #723 review `test_an_archive_copy_does_not_record_an_unreserved_removal`
 - The commands check reports two `_workspace` paths in the frozen DATA-0096
   README; they come from PR #720 and depend on ignored local files.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -278,7 +291,13 @@ the PR #723 review `test_an_archive_copy_does_not_record_an_unreserved_removal`
 | E57 | 3 | W4 | document-links | `check-document-links.py --mode all` and `--mode alignment` at `82275d313`, clean tree | PASS | 0 failures, 0 warnings; no current document links into Stage 98 | required | - |
 | E58 | 4 | W5 | governance-unit-tests | `python3 -m unittest discover -s tests/lib/document_governance` in a worktree at `main` `4cd25b95b`, which contains this package's change, quiet tree | PASS | 770 tests OK in 1595 s | required | E3 |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -287,7 +306,7 @@ the PR #723 review `test_an_archive_copy_does_not_record_an_unreserved_removal`
 | 3 | accepted | E1, E14, E15, E23, E34, E45, E53, E57 | Accepted by the owner on 2026-11-12 | @buenhyden |
 | 4 | accepted | E6, E7, E8, E9, E11, E12, E13, E17, E19, E20, E21, E24, E27, E29, E31, E32, E35, E36, E39, E41, E42, E43, E46, E47, E49, E50, E51, E52, E54, E58 | Accepted by the owner on 2026-11-12 | @buenhyden |
 
-## Review and Completion
+### Remaining Conditions
 
 Local checks are recorded above. The coordinator approved the test deletions
 and repointing listed in Test changes. Independent review of PR #723 requested
@@ -297,7 +316,7 @@ with ADR-0051 acceptance, M4 and M5 resolved in the follow-up change after
 merge. Hosted CI for the new head has
 not been observed, and no criterion is accepted yet.
 
-### Merge receipt 2026-11-10
+#### Merge receipt 2026-11-10
 
 Recorded 2026-11-10 from `gh pr view`: #723 merge `85904818e` at
 2026-11-03T13:14:59Z; #724 merge `d6b535503` at 2026-11-03T13:46:50Z. Hosted
@@ -307,14 +326,19 @@ deletion. Candidate quality: the merged change is a candidate that passed
 hosted CI. This receipt is not owner acceptance: no criterion is accepted and
 the status is unchanged.
 
-### Owner acceptance 2026-11-12
+#### Owner acceptance 2026-11-12
 
 On 2026-11-12 the owner accepted criteria 1 to 4 in the
 SPEC-0212 TSK-0057 session. New evidence rows resolve the open required
 results with the same check and work unit; the earlier rows are kept.
 E58 resolves E3, and the owner's acceptance then covers criterion 4. The Task closes as `completed`.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

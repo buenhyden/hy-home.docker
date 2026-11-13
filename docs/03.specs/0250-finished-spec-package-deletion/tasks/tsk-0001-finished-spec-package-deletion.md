@@ -14,15 +14,20 @@ created: "2026-11-03"
 
 # Completed Spec Package Deletion Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Implement W1–W5: delete the fully terminal Spec packages, reserve their
 numbers, unlink current documents, and keep the checks passing without editing
 a terminal Task body.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
 
 The user directed that completed Spec, Plan, and Task documents in
 `docs/03.specs/` be deleted, and chose to keep every package with a
@@ -37,18 +42,20 @@ the removal approval for this batch. On 2026-11-03 the owner also decided,
 through the coordinator, that SPEC-0207 and SPEC-0210 are removal-ready on
 their older-format acceptance records.
 
-## Work Log
+## Execution Log
 
-### Current contract decision
+### Work Performed
+
+#### Current contract decision
 
 The user's direction authorizes this Spec and Plan as written.
 
-### Current readiness and execution
+#### Current readiness and execution
 
 Inputs, work units, and checks are recorded here. The Task is ready and in
 progress under the approved parents. Hosted CI has not run.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -58,14 +65,14 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0250-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
 | SPEC-0250-TSK-0001 | in-progress | completed | #owner-acceptance-2026-11-12 |
 
-### Deleted packages
+#### Deleted packages
 
 SPEC-0182, 0207, 0208, 0210, 0211, 0213–0217, 0219–0225, 0227–0230, 0232,
 0233, 0235–0237, 0239, 0241–0243, 0246 and 0247: 32 packages whose Spec, Plan,
 and every Task were terminal and ready for removal review. Their numbers
 joined the Spec `reserved_history`.
 
-### Removal readiness
+#### Removal readiness
 
 Read at `2227ea300`, before the first deletion; SPEC-0208 at `2571c5760`.
 
@@ -77,7 +84,7 @@ Read at `2227ea300`, before the first deletion; SPEC-0208 at `2571c5760`.
 | SPEC-0210 | no typed table; the independent reviewer explicitly accepted AC1–AC3 and Spec, Plan, and Task completed through `#final-acceptance` | none; its FAIL rows (initial fixture, strict reader, corpus compatibility, public changed gate, first frozen-diff review) and its NOT_RUN resumed public changed gate are each followed by a PASS or accepted row of the same check (repaired coverage, resumed compatibility, approved-mode public changed gate, resumed review and final acceptance); ready by the owner's decision on 2026-11-03 |
 | SPEC-0208 | no typed table; the older Review Evidence table records criteria 1–5 `accepted` | none; ready under the same older-format rule |
 
-### Kept packages
+#### Kept packages
 
 | Package | Reason |
 | --- | --- |
@@ -91,7 +98,7 @@ only targets 5 and 6, and SPEC-0208's proof starts at generation 3, so
 SPEC-0208 was then deleted alone: the load succeeded and corpus lifecycle
 against `d6b535503` reported zero violations.
 
-### Summary map
+#### Summary map
 
 | Deleted package | Current owner of its still-current meaning |
 | --- | --- |
@@ -115,7 +122,7 @@ against `d6b535503` reported zero violations.
 | SPEC-0247 | `scripts/README.md` and the Hermes tests |
 | SPEC-0207, 0208, 0210, 0216, 0217, 0222, 0227, 0230, 0232, 0235, 0237 | no current dependency |
 
-### Check changes
+#### Check changes
 
 - `spec_packages.py`: the SPEC-0211-TSK-0002 Resolves correction and its
   helper are removed, so a terminal Task body admits no change at all.
@@ -131,7 +138,7 @@ against `d6b535503` reported zero violations.
   root's Registry, so a missing or invalid one excuses nothing. This covers 13
   links in the completed SPEC-0212 Tasks 0003, 0007, and 0009.
 
-### Reference cleanup
+#### Reference cleanup
 
 - 21 Markdown links in 11 current Stage 02 and Stage 05 documents and 7 links
   in editable Stage 03 documents became plain text.
@@ -156,7 +163,7 @@ against `d6b535503` reported zero violations.
   stays. The CI gate evidence `owner` label `SPEC-0211-TSK-0003` stays; changing
   it is a gate-contract change.
 
-### Test changes
+#### Test changes
 
 | Test | Change | Reason |
 | --- | --- | --- |
@@ -167,7 +174,7 @@ against `d6b535503` reported zero violations.
 | `test_ci_gate_plan` | four 0211 path strings repointed to `0001-example` | selector-only paths |
 | `RetiredPackageLinkTests` | added row-derived multi-item cases (terminal and not), a target outside `docs/03.specs`, and a malformed Registry that exempts nothing | review M2 |
 
-### Open issues
+#### Open issues
 
 - The link exemption covers any Task that is terminal in the checked tree and
   any slug under a reserved number. That is the design ceiling the Spec
@@ -179,7 +186,13 @@ against `d6b535503` reported zero violations.
 - Version and `updated` bumps: metadata `check-changed` passes body edits
   without them, so only POL-0021 and POL-0102 were bumped, as the review asked.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -209,7 +222,13 @@ against `d6b535503` reported zero violations.
 | E24 | 3 | W3 | document-commands | `check-document-links.py --mode commands` on branch `docs/tsk-0059-w00-v14-7-intake` at `878c4baab`, clean tree | PASS | 905 documents, 8303 links, 0 failures, 0 warnings | required | E15 |
 | E25 | 2 | W4 | deletion-rule-text | `documentation-protocol.md` Retention by status and `docs/03.specs/README.md` scope at `878c4baab` | PASS | The protocol states when a Stage 03 package is deleted, its number reserved and its links made plain text; the README names deleted packages' numbers in `reserved_history` with bodies in Git history | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -218,12 +237,12 @@ against `d6b535503` reported zero violations.
 | 3 | accepted | E2, E4, E14, E18, E23, E24 | Accepted by the owner on 2026-11-12 | @buenhyden |
 | 4 | accepted | E6, E7, E8, E10, E11, E17, E19 | Accepted by the owner on 2026-11-12 | @buenhyden |
 
-## Review and Completion
+### Remaining Conditions
 
 Local checks are recorded above. Independent review and hosted CI have not run,
 and no criterion is accepted yet.
 
-### Merge receipt 2026-11-10
+#### Merge receipt 2026-11-10
 
 Recorded 2026-11-10 from `gh pr view`: #725 merge `c5ec612ff` at
 2026-11-03T15:32:19Z. Hosted checks on the merged PR: every completed check
@@ -231,14 +250,19 @@ SUCCESS, the rest SKIPPED, none failing. Candidate quality: the merged change
 is a candidate that passed hosted CI. This receipt is not owner acceptance: no
 criterion is accepted and the status is unchanged.
 
-### Owner acceptance 2026-11-12
+#### Owner acceptance 2026-11-12
 
 On 2026-11-12 the owner accepted criteria 1, 2, 3, 4 in the
 SPEC-0212 TSK-0057 session. New evidence rows resolve the open required
 results with the same check and work unit; the earlier rows are kept.
 The Task closes as `completed`.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

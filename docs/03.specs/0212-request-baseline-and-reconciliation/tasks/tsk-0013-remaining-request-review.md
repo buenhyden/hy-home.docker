@@ -14,16 +14,24 @@ created: "2026-10-29"
 
 # Remaining Request Review Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W29: review the request areas after Archive (Stage 99 lifecycle, Task
 contract, templates, document language and links, timeboxes, CI/QA, and the
 agent harness), apply the verified small corrections, and route the rest. This
 Task owns criterion 24 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Archive removal Task](tsk-0012-archive-history-only-removal.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-29 the owner asked to review the rest of the request and proceed.
 The input is branch `docs/archive-disposition-dryrun` after TSK-0012. Two
@@ -32,9 +40,11 @@ re-checked against the cited lines before any edit. The authorization covers
 this branch, its pull request, and merge through the protected path. It does
 not cover another active Task's writer scope or any runtime action.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -42,7 +52,7 @@ not cover another active Task's writer scope or any runtime action.
 | SPEC-0212-TSK-0013 | ready | in-progress | #applied |
 | SPEC-0212-TSK-0013 | in-progress | completed | #evidence |
 
-### Applied
+#### Applied
 
 | Area | Change | Location |
 | --- | --- | --- |
@@ -53,7 +63,7 @@ not cover another active Task's writer scope or any runtime action.
 | Timeboxes | Postmortem corrective actions no longer require a due date. The published INC-0002 postmortem keeps the columns it was written with. | `docs/99.templates/templates/operations/postmortem.template.md`, `.agents/governance/documentation-protocol.md` |
 | Workspace | The seven `_workspace` contract READMEs exist and are tracked through one ignore ladder each; only sanitized results may sit under `diagnostics/`. | `_workspace/`, `.gitignore`, `tests/lib/test_surface_ownership.py` |
 
-### Kept
+#### Kept
 
 The Registry owns lifecycle names and transitions once, and all 39
 template/profile pairs use a status from their lifecycle. Task-only execution
@@ -62,7 +72,7 @@ formatting, the commit message contract, the single release producer, the
 single shared memory store with no automatic deletion, native memory off, and
 the local-settings ignore rules already match the request.
 
-### Deferred and blocked
+#### Deferred and blocked
 
 | Item | Decision | Owner | Reason |
 | --- | --- | --- | --- |
@@ -72,7 +82,15 @@ the local-settings ignore rules already match the request.
 | `_workspace` producers | DEFER | Script owners | No script writes to the new directories yet; existing writers keep their paths until changed by their own Task. |
 | Four-repository adoption, remote protection, runtime and native-loader acceptance | NOT_RUN | Owner | Outside this repository's local write scope. |
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -82,19 +100,29 @@ the local-settings ignore rules already match the request.
 | Affected tests | 24 | W29 | `python3 -m unittest` over `test_registry`, `test_ci_gate_contract`, `test_surface_ownership`, `test_agent_governance_ci_routing`, `test_spec_packages` | This branch; Python 3.12.3 | PASS | 327 tests | required | - |
 | Workspace tracking | 24 | W29 | `git ls-files _workspace/` | This branch | PASS | Exactly the seven contract READMEs | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 24 | accepted | Provider render, Metadata contracts, Changed documents, Affected tests, Workspace tracking | Six corrections applied; two items blocked and three deferred or not run with named owners. | SPEC-0212 TSK-0013 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Archive removal Task](tsk-0012-archive-history-only-removal.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

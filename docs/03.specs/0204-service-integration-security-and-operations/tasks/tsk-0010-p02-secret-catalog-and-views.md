@@ -1,10 +1,10 @@
 ---
 title: "P02 Secret Catalog and Value-Free Views Task"
-version: "0.1.14"
+version: "0.1.15"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0010"
 parent_ids:
@@ -14,16 +14,121 @@ created: "2026-10-11"
 
 # P02 Secret Catalog and Value-Free Views Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Own criterion 16 and W32: one value-free catalog, per-ID classification,
 generated views and regeneration guards, reusing existing parsers and issued
 identities. This Task authorizes a parallel source preparation slice; it does
 not implement P06's real credential migration or claim production consumption.
 
-## Inputs and Authorization
+- [SPEC-0204](../spec.md)
+- [SPEC-0204 Plan](../plan.md)
+- [SMTP01 contract](tsk-0005-cross-tier-contracts-second-round.md)
+- [OpenBao trust and recovery](tsk-0006-openbao-trust-bootstrap-and-recovery.md)
+- [CLN01 retirement](tsk-0007-cln01-material-retirement.md)
+- [P09 preparation](tsk-0008-llm-wiki-preparation.md)
+- [SEC01 continuation](tsk-0009-sec01-stable-security-integration.md)
+- [OpenBao guide](../../../05.operations/guides/04-security-and-secrets/0085-openbao.md)
+- [OpenBao policy](../../../05.operations/policies/04-security-and-secrets/0085-openbao.md)
+- [OpenBao runbook](../../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
+
+#### v30 F23 bounded source authorization — 2026-10-26
+
+The current v30 request and root source GO admit optional dedicated Valkey
+observer accounts under C16/W32 catalog and generated public views. The existing
+C16/C17 owners remain unchanged and acceptance remains pending. The reviewed
+plan is `/tmp/hyhome-v30-f23-source-plan.md`, SHA256
+`813cfc4e152d943e31271e3c2b9a9df57c07ec7aa639879b81bcb44c8412c4e3`.
+
+The source writer exclusively owns the new typed root-base monitor overlay and
+fixed ACL renderer, root optional declarations, CACHE-028 through CACHE-030,
+canonical public example, the three dedicated-service READMEs, POL-0078, existing
+wiring/catalog tests and final SEC01 local source bindings. Existing Spec C17 and
+W33 are clarified before production edits. No new criterion, inventory or registry
+is introduced. The base application/default account, profiles, networks, AOF and
+secret requirements are preserved; exporters replace admin mounts only when the
+explicit overlay is selected. Each broker validates its own default/monitor pair.
+
+RED/GREEN synthetic input, ACL, merge and catalog checks precede independent exact
+diff review. Source rollback is a local logical revert. The base legacy exporter
+credential risk persists until opt-in adoption; actual collector, application
+queue/session, rotation, AOF, HOME and recovery evidence remain separate. No
+private file, image pull, runtime or operational rollback is authorized by this
+source receipt. Existing histories and completed Tasks are preserved.
+
+The root-approved leaf supplement replaces the proposed single ROOT overlay with
+three adjacent `docker-compose.monitor-acl.yml` overlays, each naming its tracked
+leaf base (Airflow, n8n, OAuth2 Proxy). This preserves the existing ROOT network-only
+restriction and uses established leaf replacement semantics. Catalog consumers and
+tests follow each exact leaf. The supplement is
+`/tmp/hyhome-v30-f23-source-plan-leaf-v2.md`, SHA256
+`19dbae7a969f63435b678b85091eeb2042accf00bffa40bd85a25c5baeec91d4`. Only the author's new untracked ROOT overlay is removed. No existing
+validator, schema, registry or gate changes. This scope is recorded before editing
+the overlays; the explicit render command uses root followed by all three leaves.
+
+#### v30 F23 current source results — 2026-10-26
+
+Current input before this source slice is clean local
+`8fc4620da970c5a8382edc9ebed72ed82d29891d`. The initial four-test RED run
+failed with one failure and five errors because the new renderer, overlays and
+catalog IDs were absent. After the bounded implementation and ordinary author
+corrections, the two existing wiring/catalog modules ran together: 30 tests,
+zero failures/errors/skips, 21.044 seconds, exit 0. This includes actual shell
+renderer success and thirteen malformed/unsafe input subcases, matching-group
+readability, canonical leaf membership and public root-first four-file merge.
+The merge preserves all six service controls and resolves the readonly renderer
+bind to the real repository path; exporter mounts contain only their own monitor
+secret. The fixed default/app authority and AOF command remain unchanged.
+
+The canonical current catalog check passes with 149 entries and one alias. All
+146 previous records and their ordering/serialization are preserved. The first preservation check removed the three added public rows and reproduced
+the prior public template byte-for-byte. A subsequent root review also corrected
+one pre-existing stale hardcoded coverage sentence to reference the canonical
+table/catalog instead of treating every unique path as a Docker Secret. All
+thirteen sections, previous rows and backup/rotation/LAB history remain intact. A temporary
+minimal Git fixture copied only the four actual fixed public metadata inputs;
+canonical write_views/check_views produced four safe 0600 outputs and passed,
+then the context manager removed the fixture. No repository operator staging
+family was fabricated and no private view, .env or credential value was read.
+
+ShellCheck, Ruff lint/format and diff checks pass. The existing tech-stack check
+passes with no projection change; its known required OPSFLOW image remains
+unresolved. The canonical m0021 renderer is byte-identical and needs no change.
+Entrypoint and traceability checks on the three changed READMEs plus the three
+mandatory canonical nodes report zero findings. The first eight-document metadata
+check failed on three new level-two README headings; only those headings were
+moved under the existing Troubleshooting section, and the narrower three-README
+retry passed: selected three, zero violations, exit 0. No validator rule was weakened.
+
+Independent infrastructure/security review of the actual source, preserved
+public template and four JSON local bindings is READY with no blocking findings.
+The old eight-unit checkpoint remains historical. The current ROOT source
+manifest is `e6163b9f3eb3db8601043209556ddf6c5a6edd07fe216d28e89003073c3b5a94`: 111
+services, 44 inputs and eleven explicitly bound F23 public production files. All
+111 prior service/runtime ledger rows, 33 build inputs and 399 total official
+observations (including the 202 current additions) are unchanged. No new remote
+lookup, image build, pull, runtime, signature, scan or Native result is asserted.
+
+The base dedicated exporters still share application/admin authority. The three
+leaf overlays prepare an opt-in monitor identity only; actual host-file delivery
+and adoption are not proved. Real isolated collector proof uses a separately
+reviewed fixed-image fixture after code commit. Application queue/session,
+credential rotation, AOF, HOME and stateful recovery remain separate NOT_RUN
+lanes here. Source rollback is a logical revert only. C16/C17 acceptance stays
+pending and no completed Task or existing historical evidence is reopened.
+
+The first current-Task metadata check passed: three selected Tasks, zero
+violations. The final count-sentence correction updates only this preservation
+receipt and the public example/source binding hashes; the final affected two
+Tasks are checked separately. The canonical current registration is 149 rows,
+116 unique nonnull source paths and 33 environment IDs; these are different
+metadata dimensions and not a count of delivered Docker Secret files.
+
+### Inputs and Authority
 
 The current user requests a P02 prerequisite/conflict assessment and a concrete
 worker handoff. The supplied P02 prompt is compared with clean local main
@@ -44,7 +149,7 @@ Reconcile the complete reference code and tests with existing tools before
 selecting canonical paths; never create a duplicate authority. Reference
 heuristics are draft hints, not evidence of actual consumers or deletion safety.
 
-### Worker Branch and Ownership
+#### Worker Branch and Ownership
 
 Create `codex/p02-secret-catalog` and
 `/home/hyunyoun/data/hy-home.docker/.worktrees/p02-secret-catalog` from the
@@ -83,7 +188,7 @@ Root Compose, real/public environment, gateway, Alloy, backup, Registry,
 Spec/Plan and other Tasks are read-only to the worker. A new shared need must be
 added to the proposal before implementation and reviewed against current head.
 
-### Parallel and Waiting Boundaries
+#### Parallel and Waiting Boundaries
 
 Proceed now with public-source inventory, value-free catalog/schema, aliases,
 classification, provisional destination plans, generated staging views,
@@ -118,9 +223,11 @@ workspace creation occurs. Later private metadata inspection must first name
 the exact host/path, output filter and recovery boundary in this Task and pass
 independent review; only names, paths, modes and consumer metadata may leave it.
 
-## Work Log
+## Execution Log
 
-### v30 named n8n account source continuation — 2026-10-26
+### Work Performed
+
+#### v30 named n8n account source continuation — 2026-10-26
 
 The direct v30 request and the coordinator lease in SPEC-0212-TSK-0008 authorize
 this criterion 16 public-source continuation on `codex/v30-infra-source-completion`,
@@ -163,7 +270,7 @@ Ruff and `git diff --check` passed. The infra-validate helper returned exit 2:
 its Compose checks. Separate public `.env.example` renders passed. P03 records
 the existing host-bind boundary and canonical inventory refresh.
 
-#### Isolated synthetic ACL execution packet and results
+##### Isolated synthetic ACL execution packet and results
 
 Independent IaC review admitted only
 `test_mng_valkey_acl.MngValkeyAclNativeTests` with
@@ -222,21 +329,21 @@ and refreshed inventory metadata check returned selected=3, violations=0, exit 0
 An earlier positive run overlapped the normal commit hook temporarily parking
 unstaged changes; its input was unverified and that PASS is not reused.
 
-### Authorized Source Continuation
+#### Authorized Source Continuation
 
 The user confirmed the existing source handoff and authorized correction of the
 generator proposal's lock-lifetime defect. The issued draft is now ready for
 this authorized continuation. This transition does not accept runtime lanes,
 shared integration, hosted CI or delivery; the Task is not completed.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0010 | draft | ready | #authorized-source-continuation |
 | SPEC-0204-TSK-0010 | ready | in-progress | #lock-lifetime-follow-up |
 
-### Lock-Lifetime Follow-up
+#### Lock-Lifetime Follow-up
 
 P09/TSK-0008 is an independently owned preparation-only Task. It consumes
 value-free readiness plans and unresolved facts; it does not own OpenBao
@@ -301,7 +408,7 @@ now explicitly distinguish four tracked public inputs from four ignored
 staging outputs; P01 remains their sole tracked writer. Actual Script Manifest
 registration, combined-head review/CI and remote delivery remain pending.
 
-### Worker Execution Plan
+#### Worker Execution Plan
 
 The user assigned this session as the single P02 implementation owner and then
 required local `main` as the baseline for implementation and shared drafts.
@@ -344,7 +451,7 @@ a second `reference/` tool tree. The closed production schema is extended with
 per-ID owner, action, public evidence and blocked mount/field/UID/GID/mode/rotation
 plans; these fields are contracts, not observations or deployment evidence.
 
-### Issuance and Worker Receipts
+#### Issuance and Worker Receipts
 
 Task issuance has a measured RED probe on input `2b9f5ec82`: no Task 0010,
 criterion 16 or W32 existed. This documentation-only unit supplies those
@@ -429,7 +536,7 @@ final body update. SOURCE/UNIT/STATIC results are scoped public-source evidence;
 ISOLATED denotes synthetic tests. HOME/MIGRATION/ROTATION/RECOVERY/DELIVERY remain
 NOT_RUN pending their owning operational and coordinator integration gates.
 
-### Final Source Receipts and Integration Handoff
+#### Final Source Receipts and Integration Handoff
 
 All material independent code/security findings were closed against library
 SHA256 `89602c6da2c48b341d913c7582780c29ca9bcd3b44f5d8946105551c62eeb52d`.
@@ -501,7 +608,7 @@ The current four commits and latest-base receipts are in the ignored integration
 handoff. Shared proposal base blob IDs are unchanged and are rechecked against
 this local main. No force push, reset, stash or clean occurred.
 
-### Coordinator Source Integration
+#### Coordinator Source Integration
 
 On 2026-10-11 the coordinator reconciled worker head
 `d32ef6354190181753816bf09215f397ed0122f1` with clean local main
@@ -636,7 +743,7 @@ actual pilot still needs issued consumer IDs/destinations/ACL/delivery from the
 catalog and P01/P03/P04 operational acceptance. The closed catalog is not
 permission to invent opsflow entries or issue credentials.
 
-### Current Public-Source Reconciliation — 2026-10-13
+#### Current Public-Source Reconciliation — 2026-10-13
 
 The current user authorizes P02 reconciliation, scoped logical commit and its
 owning-Spec PR/merge after current checks and independent review. This receipt
@@ -674,7 +781,7 @@ not new inventory invariants. UNKNOWN_BLOCKED/BLOCKED_FACTS remains a fail-close
 contract, not proof of consumer absence. `source_recorded_at` remains the first
 public source date, not a current observation or rotation date.
 
-#### Value-Free P06 Handoff
+##### Value-Free P06 Handoff
 
 The existing catalog and P01 renderer name the following source identities.
 The renderer paths below are already declared source, not new approved catalog
@@ -698,7 +805,7 @@ The next actual approval must name the selected ID, HOME target/consumer,
 KV mount/path/key, actor/ACL, delivery target and UID/mode, restart/rotation,
 independent recovery materials and rollback before the dependent lane runs.
 
-#### Fresh Verification Inputs and Outcomes
+##### Fresh Verification Inputs and Outcomes
 
 The initial checks below bind to clean source `62556dc63` in the worker worktree.
 The first system-Python run of the three requested modules ran 90 tests and
@@ -784,7 +891,7 @@ receipt. The code revert restores the known 0600 validation gap; neither action
 rolls back a data format, credential rotation or deployed service. The Task stays in progress while
 its separately owned operational dependencies remain unresolved.
 
-### Single-owner draft for the public contract — 2026-10-21
+#### Single-owner draft for the public contract — 2026-10-21
 
 v22 §10 asks for one owner of generation, reference and validation. Today three
 statements name different owners:
@@ -837,7 +944,7 @@ as the owner; `secrets/README.md` was not read. The retention classes stay a
 draft, and no file under `secrets/` was moved or deleted. S10b status: PARTIAL,
 ownership decided; retention classes and P06 consumption remain.
 
-### v30 isolated client and monitor evidence reuse — 2026-10-27
+#### v30 isolated client and monitor evidence reuse — 2026-10-27
 
 P02 owns the C16/W32 value-free catalog and secret-reference boundary. CACHE-027
 and CACHE-028 through CACHE-030 remain declared optional identities. These
@@ -962,7 +1069,7 @@ contracts. The default/base dedicated exporter admin-credential risk is still
 present until explicit overlay adoption; an isolated monitor test does not prove
 adoption. C16/C17 remain pending and no completed Task is reopened.
 
-### `DEPLOYED` destination plans — 2026-10-28
+#### `DEPLOYED` destination plans — 2026-10-28
 
 The owner chose to let the catalog record delivered destinations. The change
 was made under SPEC-0204 TSK-0014 on the owner's choice. The schema and
@@ -990,7 +1097,7 @@ entry is never a copy candidate. Tests cover the accepted plan, a second field
 on one path, a duplicate binding and eight refusals, and a schema test refuses
 a partial `DEPLOYED` plan and a bound `BLOCKED_P01` plan.
 
-### Handoff from SPEC-0204 TSK-0013 2026-10-30
+#### Handoff from SPEC-0204 TSK-0013 2026-10-30
 
 TSK-0013 is final at `main` `c585c5244` (PR #666). Criteria 19 and 22 are accepted. Native attempt five proved, as
 execution copies:
@@ -1007,7 +1114,7 @@ for n8n execution copies and their reference and rotation class. Next input:
 classify the n8n credential execution copy in this catalog. The source is
 TSK-0013 "Owner native attempt five 2026-10-30".
 
-### Supersession note 2026-11-10
+#### Supersession note 2026-11-10
 
 On 2026-11-10 the dedicated airflow/n8n Valkey sets and observer accounts
 recorded at lines 1069-1076 are superseded by ADR-0062 decision 10
@@ -1017,7 +1124,13 @@ the mng-valkey ACL user `n8n`, which gained `+lpop` in PR #894 (merge
 `0f99b6c20`, applied to HOME 2026-11-10;
 `infra/04-data/mng-db/valkey/scripts/render-acl.sh:68`). Earlier entries are unchanged.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -1026,13 +1139,19 @@ the mng-valkey ACL user `n8n`, which gained `+lpop` in PR #894 (merge
 | P02 source implementation | 16 | W32 | Catalog, closed schema, four staging views and source consumer regression | 74feff942 plus owned changes | PASS | Tooling d82f6fc82 and catalog 1148592d8; 40 scoped tests and coverage 91%, exit 0; shared integration pending | - |
 | Private migration and consumption | 16 | W32 | Selected P06 runtime contract and actual receipt | Final P01/SEC01 contract pending | NOT_RUN | P06 owner | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
 | 16 | pending | - | - |
 
-## Review and Completion
+### Remaining Conditions
 
 Before each unit, record actual input SHA and a meaningful RED/GREEN test.
 Cover malformed IDs/fields/paths, sensitive-field rejection, canonical and
@@ -1061,107 +1180,12 @@ planned path/ACL/delivery/reload/recovery graph, blocked consumers, exact test
 receipts and final local main SHA. Report SOURCE/UNIT/STATIC/ISOLATED/HOME/
 MIGRATION/ROTATION/RECOVERY/DELIVERY separately, with real commands and exits.
 
-## Related Documents
+## Handoff
 
-- [SPEC-0204](../spec.md)
-- [SPEC-0204 Plan](../plan.md)
-- [SMTP01 contract](tsk-0005-cross-tier-contracts-second-round.md)
-- [OpenBao trust and recovery](tsk-0006-openbao-trust-bootstrap-and-recovery.md)
-- [CLN01 retirement](tsk-0007-cln01-material-retirement.md)
-- [P09 preparation](tsk-0008-llm-wiki-preparation.md)
-- [SEC01 continuation](tsk-0009-sec01-stable-security-integration.md)
-- [OpenBao guide](../../../05.operations/guides/04-security-and-secrets/0085-openbao.md)
-- [OpenBao policy](../../../05.operations/policies/04-security-and-secrets/0085-openbao.md)
-- [OpenBao runbook](../../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
+### Promotion Receipt
 
-### v30 F23 bounded source authorization — 2026-10-26
+None: nothing was recorded here before this Task moved to the common form.
 
-The current v30 request and root source GO admit optional dedicated Valkey
-observer accounts under C16/W32 catalog and generated public views. The existing
-C16/C17 owners remain unchanged and acceptance remains pending. The reviewed
-plan is `/tmp/hyhome-v30-f23-source-plan.md`, SHA256
-`813cfc4e152d943e31271e3c2b9a9df57c07ec7aa639879b81bcb44c8412c4e3`.
+### Next Owner
 
-The source writer exclusively owns the new typed root-base monitor overlay and
-fixed ACL renderer, root optional declarations, CACHE-028 through CACHE-030,
-canonical public example, the three dedicated-service READMEs, POL-0078, existing
-wiring/catalog tests and final SEC01 local source bindings. Existing Spec C17 and
-W33 are clarified before production edits. No new criterion, inventory or registry
-is introduced. The base application/default account, profiles, networks, AOF and
-secret requirements are preserved; exporters replace admin mounts only when the
-explicit overlay is selected. Each broker validates its own default/monitor pair.
-
-RED/GREEN synthetic input, ACL, merge and catalog checks precede independent exact
-diff review. Source rollback is a local logical revert. The base legacy exporter
-credential risk persists until opt-in adoption; actual collector, application
-queue/session, rotation, AOF, HOME and recovery evidence remain separate. No
-private file, image pull, runtime or operational rollback is authorized by this
-source receipt. Existing histories and completed Tasks are preserved.
-
-The root-approved leaf supplement replaces the proposed single ROOT overlay with
-three adjacent `docker-compose.monitor-acl.yml` overlays, each naming its tracked
-leaf base (Airflow, n8n, OAuth2 Proxy). This preserves the existing ROOT network-only
-restriction and uses established leaf replacement semantics. Catalog consumers and
-tests follow each exact leaf. The supplement is
-`/tmp/hyhome-v30-f23-source-plan-leaf-v2.md`, SHA256
-`19dbae7a969f63435b678b85091eeb2042accf00bffa40bd85a25c5baeec91d4`. Only the author's new untracked ROOT overlay is removed. No existing
-validator, schema, registry or gate changes. This scope is recorded before editing
-the overlays; the explicit render command uses root followed by all three leaves.
-
-### v30 F23 current source results — 2026-10-26
-
-Current input before this source slice is clean local
-`8fc4620da970c5a8382edc9ebed72ed82d29891d`. The initial four-test RED run
-failed with one failure and five errors because the new renderer, overlays and
-catalog IDs were absent. After the bounded implementation and ordinary author
-corrections, the two existing wiring/catalog modules ran together: 30 tests,
-zero failures/errors/skips, 21.044 seconds, exit 0. This includes actual shell
-renderer success and thirteen malformed/unsafe input subcases, matching-group
-readability, canonical leaf membership and public root-first four-file merge.
-The merge preserves all six service controls and resolves the readonly renderer
-bind to the real repository path; exporter mounts contain only their own monitor
-secret. The fixed default/app authority and AOF command remain unchanged.
-
-The canonical current catalog check passes with 149 entries and one alias. All
-146 previous records and their ordering/serialization are preserved. The first preservation check removed the three added public rows and reproduced
-the prior public template byte-for-byte. A subsequent root review also corrected
-one pre-existing stale hardcoded coverage sentence to reference the canonical
-table/catalog instead of treating every unique path as a Docker Secret. All
-thirteen sections, previous rows and backup/rotation/LAB history remain intact. A temporary
-minimal Git fixture copied only the four actual fixed public metadata inputs;
-canonical write_views/check_views produced four safe 0600 outputs and passed,
-then the context manager removed the fixture. No repository operator staging
-family was fabricated and no private view, .env or credential value was read.
-
-ShellCheck, Ruff lint/format and diff checks pass. The existing tech-stack check
-passes with no projection change; its known required OPSFLOW image remains
-unresolved. The canonical m0021 renderer is byte-identical and needs no change.
-Entrypoint and traceability checks on the three changed READMEs plus the three
-mandatory canonical nodes report zero findings. The first eight-document metadata
-check failed on three new level-two README headings; only those headings were
-moved under the existing Troubleshooting section, and the narrower three-README
-retry passed: selected three, zero violations, exit 0. No validator rule was weakened.
-
-Independent infrastructure/security review of the actual source, preserved
-public template and four JSON local bindings is READY with no blocking findings.
-The old eight-unit checkpoint remains historical. The current ROOT source
-manifest is `e6163b9f3eb3db8601043209556ddf6c5a6edd07fe216d28e89003073c3b5a94`: 111
-services, 44 inputs and eleven explicitly bound F23 public production files. All
-111 prior service/runtime ledger rows, 33 build inputs and 399 total official
-observations (including the 202 current additions) are unchanged. No new remote
-lookup, image build, pull, runtime, signature, scan or Native result is asserted.
-
-The base dedicated exporters still share application/admin authority. The three
-leaf overlays prepare an opt-in monitor identity only; actual host-file delivery
-and adoption are not proved. Real isolated collector proof uses a separately
-reviewed fixed-image fixture after code commit. Application queue/session,
-credential rotation, AOF, HOME and stateful recovery remain separate NOT_RUN
-lanes here. Source rollback is a logical revert only. C16/C17 acceptance stays
-pending and no completed Task or existing historical evidence is reopened.
-
-The first current-Task metadata check passed: three selected Tasks, zero
-violations. The final count-sentence correction updates only this preservation
-receipt and the public example/source binding hashes; the final affected two
-Tasks are checked separately. The canonical current registration is 149 rows,
-116 unique nonnull source paths and 33 environment IDs; these are different
-metadata dimensions and not a count of delivered Docker Secret files.
+None: nothing was recorded here before this Task moved to the common form.

@@ -14,15 +14,24 @@ created: "2026-10-16"
 
 # R13 Reconciliation Follow-up Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Revalidate r13 P01-P08 current-source findings and complete the bounded source
 corrections assigned by W25. This Task owns criterion 20 only. It does not
 reopen TSK-0007's completed P01-P08 execution or its accepted criteria 11-18.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Completed r10 Task](tsk-0007-r10-reconciliation.md)
+- [Shared memory Task](../../0236-shared-agent-memory/tasks/tsk-0001-shared-agent-memory.md)
+- [Hook Task](../../0241-hook-outputs-and-main-push-guard/tasks/tsk-0001-hook-outputs-and-main-push-guard.md)
+- [OpenBao window Task](../../0243-openbao-window-readiness/tasks/tsk-0001-openbao-window-readiness.md)
+
+### Inputs and Authority
 
 The direct r13 request is the attached text with SHA-256
 `3a3205dd8787e2a65f1f9eb735be46f2530581af2b8333a79925f800f3775745`.
@@ -48,9 +57,11 @@ current host's Docker services are authorized read-only verification targets,
 and a non-secret diagnostic may observe native-off effects; those observations
 remain with their leaf owners and cannot be inferred from a hosted result.
 
-## Work Log
+## Execution Log
 
-### Current routing
+### Work Performed
+
+#### Current routing
 
 P02 document-contract, link, lifecycle, and retained-asset findings use the
 Stage 99 and document-governance owners. P03 evidence-state findings retain
@@ -74,7 +85,7 @@ After an actual required-check readback and scoped review, the doc-writer
 exception also owns only `.github/rulesets/main-protection.md` for the
 canonical observed protection state. It does not authorize a ruleset mutation.
 
-### Hosted validation authorization and plan
+#### Hosted validation authorization and plan
 
 The approved Spec and Plan, completed local source receipts, and the observed
 user authorization make this single Task ready for its delivery phase. The
@@ -87,7 +98,7 @@ operation. The current host's Docker services may be read-only verified, and
 native-off effects may be non-secret diagnostically observed; neither result
 changes a leaf-owner acceptance decision.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -95,7 +106,7 @@ changes a leaf-owner acceptance decision.
 | SPEC-0212-TSK-0009 | ready | in-progress | #draft-pull-request-and-observational-boundaries |
 | SPEC-0212-TSK-0009 | in-progress | completed | #source-only-criterion-acceptance |
 
-### Draft pull request and observational boundaries
+#### Draft pull request and observational boundaries
 
 Draft PR [#506](https://github.com/buenhyden/hy-home.docker/pull/506) was
 observed with head `0c598de264c0302f5032738b14ffbefe36b53cc7`, base
@@ -145,7 +156,7 @@ the separate worktree and main checkout the same store target path without
 opening the database. A proposed `claude doctor` diagnostic was automatically
 rejected because it could report authentication state; it was not run.
 
-### Source-only criterion acceptance
+#### Source-only criterion acceptance
 
 The approved normal Claude session completed `/status`, `/memory`, `/hooks`,
 and `/exit` without a hook-failure marker, setting change, model prompt, or
@@ -172,7 +183,7 @@ CA recreates, live provider behavior, native-memory effective state, event
 delivery, data, secret, restart, deployment, restore, and merge acceptance
 remain outside criterion 20 and with their named leaf owners.
 
-### Local delivery ledger
+#### Local delivery ledger
 
 | Commit | Logical unit | Actual delivery |
 | --- | --- | --- |
@@ -183,7 +194,7 @@ remain outside criterion 20 and with their named leaf owners.
 This Task record and its separate document-only receipt are not a remote
 delivery, merge, release, or deployment claim.
 
-### Initial findings
+#### Initial findings
 
 The current source still shows draft authority in SPEC-0236, SPEC-0237,
 SPEC-0241, and SPEC-0243 while their Task bodies distinguish stored accepted,
@@ -237,7 +248,7 @@ the 145 archived records or introduce a new immutable-binding rule.
 | R13-009 | P07 | `scripts/operations/agent_memory.py@e6807a7` | static | CLI common-directory lookup uses ambient Git resolution and can select a foreign repository's store. | changed with regression | W25 memory writer | 20 | shared-store identity regression after sanitized-runner implementation |
 | R13-010 | P02/P05 | `scripts/lib/document_governance/metadata/reference.py@e6807a7` | reproduced | Changed-record validation lost an already-computed immutable legacy-archive binding and reported 145 false type mismatches. | changed with regression | W25 metadata QA writer | 20 | focused bound/unbound reference regression; Scoped-metadata-GREEN |
 
-### Local and PR producer map
+#### Local and PR producer map
 
 The link CLI and `test_links.py` are local W25 producers. The memory helper,
 `agent_memory.py`, and `test_agent_memory.py` are local producers; the
@@ -251,7 +262,13 @@ changed-document metadata result. The final merged metadata receipt is
 recorded below; the final PR selector explanation selected three leaves but did
 not execute a PR leaf.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -310,13 +327,19 @@ not execute a PR leaf.
 | Tool-version observation | 20 | W25 | Local tool version inspection | Python 3.12.3; Ruff 0.16.10; pre-commit 4.6.2; Git 2.43.0 | PASS | r13 isolated worktree | optional | - |
 | Remote main observation | 20 | W25 | Read-only `origin/main` diff inspection | `origin/main` advanced to `5a88c7937bf427021f2fd0441e04b1011ecd28a9` by PR #504; only SPEC-0212 Spec, Plan, and TSK-0008 changed, with no source/checker change | PASS | remote observation; separate from e680 baseline | optional | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 20 | accepted | Memory revision GREEN, Memory helper regression final, Changed-path route GREEN, Link selection GREEN, Link full regression, Metadata full regression, Scoped-metadata-GREEN, Final merged scoped metadata, Final document corpus lifecycle, W25 source security review GREEN, Final document integration review | W25 source behavior is accepted; final PR-head hosted validation, merge, runtime, and native/provider claims remain outside this source-only decision. | SPEC-0212 TSK-0009 |
 
-## Review and Completion
+### Remaining Conditions
 
 This completed Task does not convert static inspection, stored Task evidence,
 a merged change, or an unavailable runtime target into source-only acceptance.
@@ -343,11 +366,12 @@ available procedure reads were `superpowers` 6.4.2 and `ponytail` 5.2.0;
 skill-stocktake, skill-improver, Harness:Evolve, and Harness:Harness were not
 available and are not claimed.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Completed r10 Task](tsk-0007-r10-reconciliation.md)
-- [Shared memory Task](../../0236-shared-agent-memory/tasks/tsk-0001-shared-agent-memory.md)
-- [Hook Task](../../0241-hook-outputs-and-main-push-guard/tasks/tsk-0001-hook-outputs-and-main-push-guard.md)
-- [OpenBao window Task](../../0243-openbao-window-readiness/tasks/tsk-0001-openbao-window-readiness.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

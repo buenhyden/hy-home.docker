@@ -14,15 +14,24 @@ created: "2026-10-29"
 
 # Request Line Meaning Audit Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W45: audit the meaning of each of the 355 non-blank lines of the
 request's appendix R against the current repository, and correct a stale
 statement the audit found. This Task owns criterion 40 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Request re-run baseline](tsk-0026-request-rerun-baseline.md)
+- [Requirement pair conflict check](tsk-0030-requirement-pair-conflict-check.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-29 the owner asked for the request-line meaning audit that
 TSK-0026 recorded as not performed (CR-01.02), followed by commit, pull
@@ -31,9 +40,11 @@ pasted request, whose appendix R holds 383 line positions (355 non-blank). The
 authorization covers this audit, the stale-text correction below, this
 branch, its pull request, and merge.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -41,7 +52,7 @@ branch, its pull request, and merge.
 | SPEC-0212-TSK-0029 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0029 | in-progress | completed | #evidence |
 
-### Method
+#### Method
 
 Appendix R is a normalized execution copy, not the raw request; the raw text
 is not available, so wording and byte preservation stay unverified. Three
@@ -53,7 +64,7 @@ checked that every position appears once, that every primary CR exists among
 the 148, and spot-read the weakest `MET` rows. It downgraded four of them to
 `PARTIAL` (L147, L179, L265, L272) and confirmed the stale text behind L157.
 
-### Result
+#### Result
 
 | Result | Non-blank lines | Meaning |
 | --- | --- | --- |
@@ -65,7 +76,7 @@ the 148, and spot-read the weakest `MET` rows. It downgraded four of them to
 
 The 28 blank positions and the 82 no-duty lines are L002–L011, L013–L029, L032, L087, L114, L143, L183–L185, L190–L200, L287, L303–L314, L321–L337, L343–L344, L346–L367, L370, L372–L381. Every other position is listed below.
 
-### Correction made
+#### Correction made
 
 `.agents/governance/environment-constraints.md` said that only two
 `_workspace` READMEs are tracked and that runtime files stay under
@@ -73,7 +84,7 @@ The 28 blank positions and the 82 no-duty lines are L002–L011, L013–L029, L0
 runtime tree, as `_workspace/README.md` and `.gitignore` state. The policy
 now matches (version 1.6.1). That closes L157.
 
-### Rewritten lines
+#### Rewritten lines
 
 The request names 17 lines rewritten for execution. Judged only against the
 lines around them:
@@ -92,7 +103,7 @@ lines around them:
 | L277 | Omits moving a continuing guarantee before deletion (CR-11.02) |
 | L278 | Drops "global", which L279 restates |
 
-### Line results
+#### Line results
 
 | Line | Primary CR | Result | Evidence | Note |
 | --- | --- | --- | --- | --- |
@@ -370,7 +381,15 @@ lines around them:
 | L382 | CR-15.10 | PARTIAL | .codex/provider.md; AGENTS.md | Static route present; Codex native loader check NOT_RUN (owner-held) |
 | L383 | CR-15.10 | PARTIAL | .codex/provider.md (reads .agents/skills directly) | Codex reads .agents/skills natively without symlink; Claude uses adapters; no decision record |
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -380,22 +399,31 @@ lines around them:
 | Agent governance | 40 | W45 | `check-agent-governance-contract.py` | This branch | PASS | Contract holds after the policy fix | required | - |
 | Raw wording preservation | 40 | W45 | Compare raw request with appendix R | - | NOT_RUN | Raw original not available | optional | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 40 | accepted | Line coverage, Lead spot review, Metadata contracts, Agent governance | Every non-blank request line has a recorded meaning judgement against this repository; gaps stay open as listed, and wording preservation stays unverified. | SPEC-0212 TSK-0029 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. It closes the audit, not the gaps:
 `PARTIAL`, `NOT_MET`, and `NOT_RUN` lines stay open until a later Task the
 owner authorizes changes them. Hosted checks and the merge are observed on
 the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Request re-run baseline](tsk-0026-request-rerun-baseline.md)
-- [Requirement pair conflict check](tsk-0030-requirement-pair-conflict-check.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

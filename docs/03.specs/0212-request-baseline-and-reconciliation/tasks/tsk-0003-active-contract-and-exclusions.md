@@ -14,13 +14,26 @@ created: "2026-10-10"
 
 # Active Contract and Exclusions Task
 
-## Objective
+## Scope
+
+### Objective and Parent
 
 Execute P00: bind requirements 11–26 to one primary owner, reconcile the
 actual source baseline and open packages, exclude applied work and LAB/learning
 apps, and replace stale active contracts without rewriting historical Tasks.
 
-## Inputs and Authorization
+- [P00 delivery PR](https://github.com/buenhyden/hy-home.docker/pull/407)
+- [P00 candidate run](https://github.com/buenhyden/hy-home.docker/actions/runs/38030139469)
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Integration spec](../../0204-service-integration-security-and-operations/spec.md)
+- [Crawler plan exclusion](../../0220-crawl4ai-collection-and-egress/plan.md)
+- [Inventory source](../../../90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md)
+- [OpenBao snapshot runbook](../../../05.operations/runbooks/0021-backup-and-restore.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The user's 2026-10-10 P00 request authorizes this baseline/contract unit,
 matching source/enforcer fixes if necessary, logical commits and the branch,
@@ -45,9 +58,11 @@ AD-0031 and the active packages. A read-only explorer independently inspected
 the listed feature Tasks; it made no changes. P00 uses existing SPEC-0212;
 Registry spec high-water remains 229 and next_number 230. No number is reserved.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -65,7 +80,7 @@ Registry spec high-water remains 229 and next_number 230. No number is reserved.
 | SPEC-0212-PLAN-0001 | in-progress | completed | #delivery-receipt |
 | SPEC-0212 | in-progress | completed | #delivery-receipt |
 
-### W9 Baseline and source inventory
+#### W9 Baseline and source inventory
 
 | Observation | Result |
 | --- | --- |
@@ -87,7 +102,7 @@ equality alone cannot answer them. LAB source, standalone renders and private
 instance configuration were excluded. A YAML safe-load attempt failed on the
 Compose !override tag; the corrected syntax-node reader extracts names only.
 
-### W10 Requirement residual targets
+#### W10 Requirement residual targets
 
 Every row in the Spec owns exactly one primary disposition. The table below
 records its evidence and actual downstream target at input revision
@@ -112,7 +127,7 @@ records its evidence and actual downstream target at input revision
 | 25 | Stage 99 profiles, current Stage 05 paths, P08 supplied scope | P08 serializes common/domain moves after functional writers; LAB separate_target and prospective path only, no actual LAB move |
 | 26 | Current user exclusions; 0220 active Plan formerly offered a study-app candidate | Remove current planning route; preserve history in Git/old Tasks. No learning-app plan, source or resource created |
 
-### Open-Spec reconciliation
+#### Open-Spec reconciliation
 
 Discovery used a YAML frontmatter parser on every docs/03.specs/*/spec.md;
 status labels below are source facts. Relevant Plan/Task evidence and remote
@@ -152,7 +167,7 @@ Remote PR #406 currently reports candidate-quality and CodeQL SUCCESS at head
 `d537df0e13aa650f291c6c9027b0090731b266b7`; this historical readback corrects
 its stale pending merge text only and is not P00 hosted validation.
 
-### W11 Active-contract amendment and input identity
+#### W11 Active-contract amendment and input identity
 
 The first contract probe failed before edits with
 `latest requirement disposition contract is absent` (exit 1). The corrected
@@ -182,7 +197,7 @@ no current execution or learning-app planning authority. SPEC-0221 already
 implements current request precedence; its existing authority check is used
 rather than adding a duplicate enforcer. P00 owns no native source generation.
 
-### W12 Verification, authority, recovery and delivery
+#### W12 Verification, authority, recovery and delivery
 
 Basic sandbox shell calls failed with `bwrap: loopback: Failed RTM_NEWADDR:
 Operation not permitted`; scoped tool escalation permitted public reads and
@@ -230,7 +245,7 @@ sources), not a P00 link failure. Changed Task link destinations were also
 checked after the final source edits. No dependency/executable changes were
 made, so package audit/coverage/native test suites are not new P00 evidence.
 
-### Historical Receipt Closure
+#### Historical Receipt Closure
 
 TSK-0001's original accepted PASS rows cover its Plan W1–W5 criterion pairs,
 including the later recorded candidate rerun; TSK-0002's original accepted
@@ -247,7 +262,7 @@ Both hash the exact bytes after the closing frontmatter delimiter line
 including its LF (split on the second --- followed by LF); those bytes equal
 receipt baseline 95e27ef. No trimming or newline normalization is applied. Current P00 checks separately cover W9–W12. No other Spec is completed by this unit.
 
-### Delivery Receipt
+#### Delivery Receipt
 
 First delivery unit: local authoring/staged checks and independent reviews
 passed, logical commit `1b2347f60ba0bbb4194212633ab03ab83ca41c2c` was pushed
@@ -287,7 +302,13 @@ installation. The registered local-staged controller passed Markdown and
 secret detection. These are explicit local invocations; no automatic native
 pre-commit hook delivery is asserted.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -300,7 +321,17 @@ pre-commit hook delivery is asserted.
 | Independent review | 5 | W12 | p00_review exact contract/diff; p00_security original and attachment delta | Final contract manifest SHA256 a2705b8f2a10a9902e2296aa0b4081449433ee025707148c1f0e62d1d262b4cc | PASS | W12 Verification, authority, recovery and delivery | accepted |
 | Delivery | 5 | W12 | Commitizen/staged controller, PR #407 candidate-quality run 38030139469, eight passing checks and merge readback | Head 1b2347f60ba0bbb4194212633ab03ab83ca41c2c; base d19fbfde605e257299aa2b39e25f2d7413a78221 | PASS | Delivery receipt | accepted |
 
-## Review and Completion
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Remaining Conditions
 
 P00 is complete: baseline, ownership, exclusions, active-contract edits,
 scoped checks, independent reviews and actual PR delivery are recorded.
@@ -311,13 +342,12 @@ and merge evidence above belong to the original P00 delivery unit. Downstream
 feature/native/secret/recovery work remains with its existing owner and is not
 claimed complete.
 
-## Related Documents
+## Handoff
 
-- [P00 delivery PR](https://github.com/buenhyden/hy-home.docker/pull/407)
-- [P00 candidate run](https://github.com/buenhyden/hy-home.docker/actions/runs/38030139469)
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Integration spec](../../0204-service-integration-security-and-operations/spec.md)
-- [Crawler plan exclusion](../../0220-crawl4ai-collection-and-egress/plan.md)
-- [Inventory source](../../../90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md)
-- [OpenBao snapshot runbook](../../../05.operations/runbooks/0021-backup-and-restore.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

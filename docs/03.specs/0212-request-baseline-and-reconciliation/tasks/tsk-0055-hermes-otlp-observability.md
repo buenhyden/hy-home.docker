@@ -1,10 +1,10 @@
 ---
 title: "Hermes OTLP Observability Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0055"
 parent_ids:
@@ -14,9 +14,11 @@ created: "2026-11-11"
 
 # Hermes OTLP Observability Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Collect the host-run Hermes agent's traces, logs and gateway metrics in the
 HOME observability stack. Today only the research textfile metrics reach
@@ -24,7 +26,12 @@ Prometheus through node-exporter. Hermes runs as the `hermes-gateway.service`
 user unit and writes its logs to files under `~/.hermes/logs/`, which Alloy
 does not read, and its built-in OTLP exporter is not configured.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Hermes DevOps brief Task](tsk-0054-hermes-devops-brief.md)
+- [Exporter observability Task](tsk-0046-exporter-observability.md)
+
+### Inputs and Authority
 
 On 2026-11-11 the owner (@buenhyden) approved the OTLP route over file tailing:
 Hermes exports OTLP/HTTP with its own log redaction, and Alloy accepts it on a
@@ -35,9 +42,11 @@ Alloy recreate are owner actions or need their own approval, under the
 [approval boundaries](../../../../.agents/governance/approval-boundaries.md).
 The runtime apply waits until after the 2026-11-11 maintenance windows.
 
-## Work Log
+## Execution Log
 
-### Starting state (2026-11-11)
+### Work Performed
+
+#### Starting state (2026-11-11)
 
 | Signal | State |
 | --- | --- |
@@ -47,7 +56,7 @@ The runtime apply waits until after the 2026-11-11 maintenance windows.
 | Gateway health metrics | Not sent. `gateway_health_export` is off. |
 | Alloy OTLP | `4317`/`4318` on the LAN address accept traces only; metrics enter only through the authenticated `quality` receiver on `4319`; no log route. |
 
-### Design
+#### Design
 
 | Signal | Route |
 | --- | --- |
@@ -58,14 +67,14 @@ The runtime apply waits until after the 2026-11-11 maintenance windows.
 The receiver listens on host loopback only and requires the
 `hermes_otlp_token` bearer token.
 
-### Owner actions
+#### Owner actions
 
 | Item | Action |
 | --- | --- |
 | O1 | Create the token file and add its secret metadata row. |
 | O2 | After the merge and an approved Alloy recreate, set `monitoring.export.otlp` and `monitoring.gateway_health_export` in `~/.hermes/config.yaml` and install the `otlp` extra. |
 
-### Live apply 2026-11-11
+#### Live apply 2026-11-11
 
 The owner approved the Alloy recreate on 2026-11-11 after #939 and #941 merged.
 The first recreate left Alloy restarting for about six minutes (10:41 to 10:47
@@ -94,7 +103,13 @@ returned `text_response(finish_reason=stop)`. Exit reasons carry a
 parenthesized detail, so the panel query now strips it with `label_format`
 and groups by cause; the live query returned `text_response` = 6 over six hours.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -103,20 +118,29 @@ and groups by cause; the live query returned `text_response` = 6 over six hours.
 | Hermes ingest source and tests rerun | 108 | W113 | Receiver, route, port and dashboard contract tests | #939, #941 and the live-fit dashboard change | PASS | `HermesObservabilityContractTest` and `ObservabilityDashboardContractTests` OK; `alloy validate` rc 0 on v1.21.3. | required | Hermes ingest source and tests |
 | Hermes live telemetry readback 2026-11-11 | 108 | W113 | One Hermes trace in Tempo, one log line in Loki and one gateway metric in Prometheus | HOME after the approved Alloy recreate and gateway restart | PASS | Tempo `hermes.gateway_health` traces; Loki 565 `hermes-agent` lines in 30 minutes; Prometheus `hermes_gateway_*` (56 series) and plugin series by `token_type` and `gen_ai_tool_name`; 401 without the token. Exit-reason events and cost stay empty as described. | required | Hermes live telemetry readback |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 108 | pending | Hermes ingest source and tests, Hermes live telemetry readback | Implementation in progress. | SPEC-0212 TSK-0055 |
 
-## Review and Completion
+### Remaining Conditions
 
 Completion needs the source and test row PASS and one live trace, log line and
 gateway metric read back after the owner-approved apply.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Hermes DevOps brief Task](tsk-0054-hermes-devops-brief.md)
-- [Exporter observability Task](tsk-0046-exporter-observability.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

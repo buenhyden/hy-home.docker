@@ -1,10 +1,10 @@
 ---
 title: "Implementation Alignment Batch 2 Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0257-TSK-0001"
 parent_ids:
@@ -14,13 +14,18 @@ created: "2026-11-04"
 
 # Implementation Alignment Batch 2 Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Apply the batch 2 findings SPEC-0255 deferred.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
 
 The user directed that README, AGENTS.md and the Stage 01, 02, 05 and 99
 documents be checked against the implementation and corrected ("현재에 맞게
@@ -29,18 +34,20 @@ started 중 지금 실행할 수 있는 요구사항을 검토하여 진행한�
 these findings under its batch 2 open issue. This Task pushes and merges
 nothing; the coordinator pushes the branch and opens the pull request.
 
-## Work Log
+## Execution Log
 
-### Current contract decision
+### Work Performed
+
+#### Current contract decision
 
 The user's direction authorizes this Spec and Plan as written.
 
-### Current readiness and execution
+#### Current readiness and execution
 
 Inputs, work units and checks are recorded here. The Task is ready and in
 progress under the approved parents. Hosted CI has not run.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -49,7 +56,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0257-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0257-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
 
-### Decisions
+#### Decisions
 
 - **Numbering:** PR #730 holds SPEC-0256, so this package takes SPEC-0257 and
   the Registry Spec high-water is 257.
@@ -64,7 +71,7 @@ progress under the approved parents. Hosted CI has not run.
   SeaweedFS JWT and S3 admin keys, the Grafana reader password and the three
   `hyhome-platform` dev-db role passwords.
 
-### Changed
+#### Changed
 
 - 47 infra READMEs: 250 backticked operations paths.
 - `infra/06-observability/grafana/README.md`: Compose link to the tier file.
@@ -73,12 +80,18 @@ progress under the approved parents. Hosted CI has not run.
   counter.
 - GDE-0015, GDE-0024, GDE-0041, GDE-0050 and GDE-0100: secret names.
 
-### Open issues
+#### Open issues
 
 - PR #730 also edits the Registry; whichever branch merges second resolves
   the Spec counter.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -92,7 +105,13 @@ progress under the approved parents. Hosted CI has not run.
 | E8 | 5 | W5 | operations-catalog | `check-operations-catalog.py`, revision 1d1aac4ba | PASS | PASS | required | - |
 | E9 | 2 | W2 | links-modes | alignment, navigation, language, traceability, entrypoint and commands, revision 1d1aac4ba | PASS | every mode PASS | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -102,12 +121,12 @@ progress under the approved parents. Hosted CI has not run.
 | 4 | pending | - | - | @buenhyden |
 | 5 | pending | - | - | @buenhyden |
 
-## Review and Completion
+### Remaining Conditions
 
 Local checks E2 and E4 to E9 pass. No independent review has run and hosted
 CI is not observed; no criterion is accepted yet.
 
-### Merge receipt 2026-11-10
+#### Merge receipt 2026-11-10
 
 Recorded 2026-11-10 from `gh pr view`: #736 merge `52d08bf94` at
 2026-11-04T04:36:55Z. Hosted checks on the merged PR: every completed check
@@ -117,7 +136,12 @@ Candidate quality: the merged change is a candidate that passed hosted CI.
 This receipt is not owner acceptance: no criterion is accepted and the status
 is unchanged.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

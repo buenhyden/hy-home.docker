@@ -14,15 +14,23 @@ created: "2026-10-29"
 
 # Investigation Records and Currency Fixes Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W52: record the read-only investigations behind the partly met
 request lines, the owner decisions taken on them, and the fixes they led to.
 This Task owns criterion 47 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Partial gap rules](tsk-0035-partial-gap-rules.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-29 the owner chose the investigation and owner-decision groups of
 the remaining partly met lines. The owner decided the GitHub Projects,
@@ -31,9 +39,11 @@ and 05 fix. The input is `main` at merged PR #632. The authorization covers
 these documents, the archive moves below, this branch, its pull request, and
 merge.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -41,7 +51,7 @@ merge.
 | SPEC-0212-TSK-0036 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0036 | in-progress | completed | #evidence |
 
-### Investigations
+#### Investigations
 
 Three read-only investigations ran on 2026-10-29 at a clean tree. They ran
 no gate, test or container.
@@ -54,7 +64,7 @@ no gate, test or container.
 | Stage 05 | L071, L076, L301 | The Terraform triplet covers no service; the 0074 triplet is named after the removed `11-laboratory` tier; seven hardening triplets may be split too finely | First two fixed below; the split stays as is because each triplet mirrors its own AD and ADR |
 | Agent surfaces | L166, L264, L273, L288, L293, L127, L079 | Every role and skill is projected and used; memory has no session-start load, no search and no expiry for its short-term tier; Task files grow large; local document validation is the slowest local cost | No change; these are recorded limits, not defects |
 
-### Owner decisions
+#### Owner decisions
 
 | Question | Decision |
 | --- | --- |
@@ -63,7 +73,7 @@ no gate, test or container.
 | SPEC-0211 | Rerun the open checks; TSK-0003 completed and criteria 1, 4 and 5 accepted in PR #633; criteria 2 and 3 wait for TSK-0037 |
 | ADR-0009 | Amended in place, not superseded: ADR-0047 does not cover its OpenTofu, Terrakube, SonarQube and registry choices |
 
-### Fixes
+#### Fixes
 
 | Fix | Location |
 | --- | --- |
@@ -85,7 +95,15 @@ new ADR must start at `proposed`, and only an accepted ADR can supersede. An
 archive capture that reaches `main` history cannot be withdrawn, so that PR was
 closed and this branch was rebuilt from `main` without the Vault move.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -97,19 +115,29 @@ closed and this branch was rebuilt from `main` without the Vault move.
 | Workflow contract | 47 | W52 | `check-github-workflow-contract.py` and the contract tests | This branch | PASS | 0 findings | required | - |
 | Shell and fixture tests | 47 | W52 | `test_shell_regressions`, `test_links`, `test_postgres_logical_upgrade_rehearsal` | This branch | PASS | OK | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 47 | accepted | Metadata contracts, Link check, Hosted changed metadata rerun, Corpus and archive, Workflow contract, Shell and fixture tests | Each investigated line has a recorded finding, and each approved fix is in its canonical owner. | SPEC-0212 TSK-0036 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Partial gap rules](tsk-0035-partial-gap-rules.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

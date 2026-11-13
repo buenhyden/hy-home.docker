@@ -13,15 +13,24 @@ created: "2026-10-15"
 
 # R10 Reconciliation Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute the user's r10 P01–P08 reconciliation using existing canonical owners,
 with one classified finding and evidence trail. Criteria 11–18 belong here;
 criteria 1–10 retain their original owners and historical acceptance.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Earlier coordination audit](tsk-0006-current-coordination-audit.md)
+- [Memory Task](../../0236-shared-agent-memory/tasks/tsk-0001-shared-agent-memory.md)
+- [Restic Task](../../0237-agent-memory-restic-coverage/tasks/tsk-0001-agent-memory-restic-coverage.md)
+- [Push-guard Task](../../0241-hook-outputs-and-main-push-guard/tasks/tsk-0001-hook-outputs-and-main-push-guard.md)
+
+### Inputs and Authority
 
 The direct user request is to read and follow the attached independent r10
 prompt. Attachment:
@@ -58,9 +67,11 @@ original paths/blobs and original approval have not been independently
 recovered here. No digest is reconstructed from guessed
 paths, and no new common or four-repository adoption is claimed.
 
-## Work Log
+## Execution Log
 
-### Current local authority and start
+### Work Performed
+
+#### Current local authority and start
 
 The direct user instruction, "첨부한 문서의 내용을 읽고, 이에 따라 진행한다.",
 and r10's explicit reversible source/contract implementation scope authorize
@@ -73,7 +84,7 @@ Each P01–P08 item has started source inspection or its assigned implementation
 The lifecycle rows record actual readiness from the request and the start of
 this audit. They do not authenticate a separate historical approval.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -81,7 +92,7 @@ this audit. They do not authenticate a separate historical approval.
 | SPEC-0212-TSK-0007 | ready | in-progress | #current-local-authority-and-start |
 | SPEC-0212-TSK-0007 | in-progress | completed | #review-and-completion |
 
-### Execution Items
+#### Execution Items
 
 | Item | Work Unit | Scope | Owner | Status | Blocker |
 | --- | --- | --- | --- | --- | --- |
@@ -98,7 +109,7 @@ These execution records run under the bounded local authority above.
 Read-only audit observations below do not claim implementation acceptance.
 Independent item blockers must not block unrelated source corrections.
 
-### Findings and disposition
+#### Findings and disposition
 
 All paths below are repository-relative, read at the initial HEAD unless a
 historical record is explicitly named. Static source, stored execution or
@@ -120,7 +131,7 @@ separate classifications. A planned disposition is not an applied result.
 | R10-011 | P07; memory CLI/spec versus r10 | Static target gaps to assess: five-way reuse meaning, caller-source freshness, idempotency/conflict retention and tier/domain limits | Preserve physical store; design lossless scoped amendment and synthetic checks before implementation | SPEC-0236 / environment constraints | 17 |
 | R10-012 | P08; OpenBao source and SPEC-0243 | Inspector reports optional-skip contract and CA-overlay wording candidates; reproduction pending in this Task | Owning writer fixes reproduced source defects; preserve actual TLS/token/snapshot/restore assurances | OpenBao / SPEC-0243 | 18 |
 
-### Leaf producer inventory
+#### Leaf producer inventory
 
 This is the current coverage boundary, not a completed whole-repository graph.
 The hook/CI writer records actual caller, input, trust, assurance, producer and
@@ -136,7 +147,7 @@ runtimes remain unknown.
 | Hosted candidate/main | `.github/workflows/ci-quality.yml` and workflow contract | PR candidate changed aggregate versus merged-main security/SARIF; distinct trust/inputs, no hosted run here |
 | Memory backup | `hyhome-backup.sh` to `agent_memory.py backup` to Restic staging | SPEC-0237 W4 snapshot-path observation reused; no new HOME run |
 
-### Available skills and procedure use
+#### Available skills and procedure use
 
 The controller applied the available `superpowers:using-superpowers` and
 `superpowers:brainstorming` package 6.4.2 scope/planning procedures and
@@ -149,7 +160,7 @@ those named procedures is claimed. Procedure use does not override the
 request's direct local authorization or impose an artificial completion
 window.
 
-### Current writer assignment
+#### Current writer assignment
 
 The controller integrates this package and owns the language policy,
 REQ-0024, AD-0027 and Stage 99 README source corrections. The
@@ -167,7 +178,7 @@ The OpenBao writer owns the two optional-test-class allowlist, isolated
 cached promtool test and corresponding selectors. These assignments confer
 no remote, real DB or HOME mutation authority.
 
-### Lifecycle and existing-memory reconciliation
+#### Lifecycle and existing-memory reconciliation
 
 SPEC-0241's Spec/Plan/current draft Task now explain the six historical
 accepted criteria, merged candidate, later installed hooks/protection and
@@ -179,7 +190,7 @@ Restic source/snapshot observation instead of calling coverage deferred.
 Its seven criteria remain pending and Codex memory-setting effectiveness
 remains unverified. Neither old Task is a completed immutable body.
 
-### P06 source producer graph
+#### P06 source producer graph
 
 `.gitmessage` points to `.cz.toml` for message grammar; pre-commit's
 `commit-msg` stage invokes the pinned Commitizen check on the actual message.
@@ -206,7 +217,7 @@ current API observation confirms the server check-name gap; no protection
 mutation occurred. The controller is preparing a concrete local proposal for
 the actual candidate context after inspecting its job identity.
 
-### Supported Git hook dispatcher probe
+#### Supported Git hook dispatcher probe
 
 The controller's first `git hook run` probe supplied refs through the parent
 subprocess stdin and asserted denial. It returned 0 because Git's dispatcher
@@ -220,7 +231,7 @@ No remote Git push occurred. The initial diagnostic FAIL remains visible,
 classified optional because it used an unsupported input mechanism rather
 than the selected installed-dispatch assurance.
 
-### Durable security and quality promotion
+#### Durable security and quality promotion
 
 The controller corrected REQ-0003's claim that every secret belongs in
 OpenBao: eligible consumer secrets use the central store/rendering path,
@@ -236,7 +247,7 @@ owner edits are outside the first 33-path metadata selection; the controller
 will run only their additional selected document checks, plus later memory
 owner paths, rather than replaying the same 33-path selection.
 
-### P04 direct-consumer trace
+#### P04 direct-consumer trace
 
 A bounded `rg` trace over current Specs, Operations, governance, workflow
 contract, manifest and validation tests finds SPEC-0240 historical explanation
@@ -252,7 +263,7 @@ current protected modules with distinct negative cases. This review therefore
 keeps those current guards and the recorded superseded source, without a
 new archive project or new digest ledger.
 
-### Integration manifest failure
+#### Integration manifest failure
 
 The controller's initial script-manifest check returned six findings. The new
 installer had been classified as a generator, which wrongly required a
@@ -262,7 +273,7 @@ operations/runtime classification and sorting the manifest. Untracked-file
 findings require the exact owned staging set; no staging or final successful
 manifest check is inferred here.
 
-### Initial document validation and correction
+#### Initial document validation and correction
 
 The first changed-document metadata invocation selected these three package
 files against `49f8dd661acf37bf292ee0aa59abfe1af16cde10` while the drafted
@@ -294,7 +305,7 @@ Official references verified by the controller for the active audit include
 These explain tool behavior; they do not establish repository adoption,
 approval or a live execution result.
 
-### OpenBao source implementation and actual checks
+#### OpenBao source implementation and actual checks
 
 The OpenBao writer added only the renderer-role/restore-input optional native
 class allowlist and separated the optional cached-only promtool rehearsal into
@@ -338,7 +349,7 @@ no history-only deletion is justified by the package name or completion age.
 The inspected Operations documents already match their current role/template
 and Korean language owner, so no service-body rewrite was added.
 
-### P05 before and after graph
+#### P05 before and after graph
 
 The QA writer established the original route: installed pre-commit pre-push
 calls `pre_commit`'s `_pre_push_ns`, which chooses its eligible new-commit ref
@@ -397,7 +408,7 @@ installed-hook observation on synthetic stdin, not an actual main `git push`
 or a remote write. The synthetic repositories above supply genuine push
 observations separately.
 
-### Promotion and acceptance boundaries
+#### Promotion and acceptance boundaries
 
 Durable language and lifecycle meaning goes to its canonical governance and
 Stage 99 owner; service behavior goes to Operations/implementation owners.
@@ -407,7 +418,7 @@ provider native-off effectiveness, deployed OpenBao or empty restore. ISO
 reviewed here and no certification is asserted. General fixed coverage or a
 full-corpus QA rerun is not substituted for scoped assurance.
 
-### Final integration observations
+#### Final integration observations
 
 The registered memory/hook adapter was run in an explicitly clean child
 process environment with PATH and LANG, without copying ambient secret-shaped
@@ -462,7 +473,7 @@ across contracts, validators, hooks, libraries, operations, generators,
 dependency manifests and runners. This is structural inventory coverage, not
 an assertion that every source body or runtime path was executed.
 
-### Commit check correction and final review
+#### Commit check correction and final review
 
 Final source inspection found automatic EOF/trailing, Ruff-format and Markdown
 fixes still enabled at commit time. EOF/trailing fixers now run only at the
@@ -497,7 +508,7 @@ three-path check on the two final policies and this Task also passed against
 explicit committed generation-7 base `3745b3db2`: selected 3, violations 0.
 Final result-only closure is checked separately on this Task alone.
 
-### Effective hook and hosted-source inventory
+#### Effective hook and hosted-source inventory
 
 A final read-only projection opened explicit configuration files and printed
 events, command hashes and plugin counts; no command body, credential or memory
@@ -537,7 +548,13 @@ The final link corpus passed with one warning: 2,870 historical links have no
 capture source and remain unverified; zero current checker failures does not
 prove those historical destinations.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -625,7 +642,13 @@ prove those historical destinations.
 | Scoped verification 18 final | 18 | W23 | Changed-document and directly affected implementation checks | Final r10 source; actual individual check inputs and identities above | PASS | OpenBao optional static/workflow/isolated security checks; source-only security render; retained live-operation limits | required | Scoped verification 18 |
 | Final Task closure metadata | 11 | W16 | Final Task check-changed against actual source commit | Explicit base 05235344690fdc1f7efbe7db8ce824d1387b63f8; completed items and accepted local criteria | PASS | Controller final receipt check: selected 1, violations 0, legacy exceptions 0, transition overrides 0 | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -638,7 +661,9 @@ prove those historical destinations.
 | 17 | accepted | Scoped verification 17 final | Controller accepts the bounded local source assurance under the direct r10 request; remote/runtime/shared adoption claims excluded | workflow-supervisor |
 | 18 | accepted | Scoped verification 18 final | Controller accepts the bounded local source assurance under the direct r10 request; remote/runtime/shared adoption claims excluded | workflow-supervisor |
 
-## Review and Completion
+### Remaining Conditions
+
+#### Review and Completion
 
 P01–P08 local execution items are complete. The controller's criterion decisions
 accept this request's bounded source correction, preservation, synthetic
@@ -669,7 +694,7 @@ Task selected, zero violations, no legacy exceptions or transition overrides.
 The final remote read still returned initial main `49f8dd661`; no remote writes
 were made. This result-only addition preserves the checked state and links.
 
-### Local delivery ledger
+#### Local delivery ledger
 
 | Commit | Logical unit | Actual delivery |
 | --- | --- | --- |
@@ -680,11 +705,12 @@ were made. This result-only addition preserves the checked state and links.
 The final receipt is a separate document-only commit after its scoped validation.
 No remote PR, merge, release, issue/project update or deployment ID is invented.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Earlier coordination audit](tsk-0006-current-coordination-audit.md)
-- [Memory Task](../../0236-shared-agent-memory/tasks/tsk-0001-shared-agent-memory.md)
-- [Restic Task](../../0237-agent-memory-restic-coverage/tasks/tsk-0001-agent-memory-restic-coverage.md)
-- [Push-guard Task](../../0241-hook-outputs-and-main-push-guard/tasks/tsk-0001-hook-outputs-and-main-push-guard.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

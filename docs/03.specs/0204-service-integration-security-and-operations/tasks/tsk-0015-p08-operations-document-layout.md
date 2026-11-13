@@ -1,10 +1,10 @@
 ---
 title: "P08 Operations Document Layout Task"
-version: "0.2.5"
+version: "0.2.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0015"
 parent_ids:
@@ -14,9 +14,11 @@ created: "2026-10-11"
 
 # P08 Operations Document Layout Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Deliver SPEC-0212 requirement 25 through Plan W56–W62, W70 and Spec criterion 8: one
 meaningful location for each current Stage05 Guide, Policy and Runbook, populated
@@ -27,9 +29,21 @@ resources, secret values and data until separately reviewed operational executio
 Reuse completed SPEC-0227 body
 refresh and preserve completed P00 Tasks, issued identities and created dates.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [P10 Task 0016 final QA receipt](tsk-0016-p10-opsflow-acceptance.md)
+- [Completed P00 Task](../../0212-request-baseline-and-reconciliation/tasks/tsk-0003-active-contract-and-exclusions.md)
+- [Operations documentation navigation](../../../05.operations/README.md)
+- Stage05 refresh owner
+- [Request routing](../../0212-request-baseline-and-reconciliation/spec.md)
 
-### Current numbering amendment — 2026-10-12
+### Inputs and Authority
+
+#### Inputs and Authorization
+
+The inputs and authority for this Task are recorded in the subsections below.
+
+#### Current numbering amendment — 2026-10-12
 
 The current user instruction narrows this continuation to Stage05 document
 navigation: keep every existing P08 classification, filename, ID, created value
@@ -95,7 +109,7 @@ Keep logical owning-Spec commits, exact-head checks and independent review.
 Do not push or create a PR during issuance. If a later remote route is adopted,
 report its actual PR/check/merge evidence separately from local results.
 
-### 2026-10-12 service-source relocation authorization
+#### 2026-10-12 service-source relocation authorization
 
 The direct user now requests the complete Supabase service source, including
 GoTrue, in repository-root `labs/`, and LAB-only service assets remaining in
@@ -135,9 +149,11 @@ public synthetic Compose render precede integration; real service actions retain
 their exact-host backup/restore boundary. Stage05 LAB documents continue to use
 only `docs/05.operations/{guides,policies,runbooks}/labs/`.
 
-## Work Log
+## Execution Log
 
-### W70 Supabase companion integration — 2026-10-12
+### Work Performed
+
+#### W70 Supabase companion integration — 2026-10-12
 
 Local main accepted the preceding PostgreSQL HA/Valkey/Locust source unit at
 `511b390db054f32fbed1eb7ef79fe71d78c40ebe`. The coordinator preserved 18 public JSON
@@ -317,14 +333,14 @@ rotation, private-file deletion or data move occurred. W62 and Task closure rema
 open. Rollback is a reviewed source revert; running HOME data retains its original
 location and cannot be adopted or removed by this source rename.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0015 | draft | ready | #inputs-and-authorization |
 | SPEC-0204-TSK-0015 | ready | in-progress | #continuation-baseline-and-w56-reuse-result |
 
-### W70 Supabase final source-gate receipt — 2026-10-12
+#### W70 Supabase final source-gate receipt — 2026-10-12
 
 The coordinator froze the 31 owned staged paths at source tree
 `b2e5b5cacc8b99b34d46727d810c5d57a8bc2119`, based on
@@ -361,7 +377,7 @@ remain open. No runtime, credential, persisted-data or backup changes occur in
 this source unit. Permanent regression tests remain; disposable invocation
 scripts are removed only after accepted public receipts are preserved.
 
-### W70 first source relocation unit — 2026-10-12
+#### W70 first source relocation unit — 2026-10-12
 
 The user additionally required LAB-only content, including README detail, to live
 under repository-root `labs/`. Source commit
@@ -411,7 +427,7 @@ credential value or persisted data was changed. Keep this Task in-progress.
 Temporary proposal/test scripts are removed after canonical evidence and final
 main acceptance; permanent registered regressions and operational assets remain.
 
-### W70 admission validation correction
+#### W70 admission validation correction
 
 The first three-document metadata check on the 2026-10-12 amendment exited 1:
 selected 3, reported violations 146. Its initiating package diagnostic was
@@ -427,7 +443,7 @@ remain explicit in the work, verification and authorization contracts.
 The initial staged check exited 0. Corrected metadata and final staged checks
 are rerun on the revised bytes before committing; no earlier PASS is substituted.
 
-### Admission correction history
+#### Admission correction history
 
 The uncommitted SPEC-0212 Task6 proposal failed actual metadata validation,
 exit 1: 3 documents selected, 146 violations. Adding work to that completed
@@ -438,7 +454,7 @@ the uncommitted draft. Task6 was never formally issued or committed. This
 replacement uses active SPEC-0204 criterion 8; no completed-parent lifecycle
 transition, archive rewrite or validator exemption is introduced.
 
-### W56 Admission and reuse audit
+#### W56 Admission and reuse audit
 
 Record actual main/origin/remote/HEAD/dirty state and owner leases. Reuse current
 Registry/profile/catalog/link discovery APIs where suitable. The initial tree
@@ -448,7 +464,7 @@ This observation is not a completed semantic reuse audit or source test.
 The observed flat corpus of 230 documents (79 Guides, 76 Policies, 75 Runbooks)
 is a dated planning observation, not a new validator constant or final move map.
 
-### Continuation baseline and W56 reuse result
+#### Continuation baseline and W56 reuse result
 
 Fresh coordinator observations place this dedicated P08 worktree, local `main`
 and `refs/remotes/origin/main` at
@@ -496,7 +512,7 @@ closed for that draft only. The historical draft-review FAIL remains recorded;
 it is not a move, runtime or consumer-validation result. The latest final map
 is NOT_RUN and pending its exact approval.
 
-### Source preparation receipt — 2026-10-11
+#### Source preparation receipt — 2026-10-11
 
 The 15-file source-preparation commit is
 `2c95418c7e586b47f63151551d104a61abb35122`. The worktree was clean immediately
@@ -585,7 +601,7 @@ performed. Actual document moves and LAB runtime changes remain zero. Local-main
 fast-forward delivery awaits final receipt document checks; push, pull request
 and remote CI are NOT_RUN.
 
-### W57 Exact semantic mapping
+#### W57 Exact semantic mapping
 
 Enumerate `git ls-files docs/05.operations` and parse each actual frontmatter
 type, artifact ID, title, implementation_services, body and links. Review one
@@ -596,7 +612,7 @@ across different document families do not establish equal subject or LAB status.
 Unclassified or conflicting subjects remain review-required, with a named next
 decision; do not hide them in common. Create only populated meaningful domains.
 
-### W58 Path contract and regression unit
+#### W58 Path contract and regression unit
 
 Current blockers include flat Registry paths, direct catalog/Guide-parent
 assumptions, immediate-parent profile matching and flat Runbook authority tests.
@@ -608,7 +624,7 @@ classification where possible; do not exempt filenames or sealed history.
 Required boundary coverage is at least 80% for a new meaningful helper, with
 independent code/security review. Reference examples are not full-corpus proof.
 
-### W59 Preservation and move lease
+#### W59 Preservation and move lease
 
 Freeze input SHA and SHA256 for each leased document and shared consumer. Bind
 artifact ID, created date, command/warning/recovery/evidence content and anchors
@@ -618,7 +634,7 @@ archive-aware historical path map only if needed; it cannot duplicate active
 documents or rewrite sealed records. Prepare an inverse exact mapping and
 expected restored consumer/link checks before mutation of document paths.
 
-### W60 Exact rename and coupled references
+#### W60 Exact rename and coupled references
 
 Only after feature writers finish their leased source, one writer performs
 `git mv -- old new` with reviewed exact paths and coupled links/indexes/generated
@@ -628,7 +644,7 @@ Each artifact remains in one active location, including actual typed LAB moves;
 root LAB runtime/source/secret/data diff must be zero. A separate_target-only
 plan is insufficient completion. No Docker or native operator command is run.
 
-### W61 Populated READMEs
+#### W61 Populated READMEs
 
 Write Korean metadata-valid READMEs for the Stage05 root, all three parent
 families and each populated destination. Include purpose, included/excluded
@@ -639,7 +655,7 @@ routers link direct children; no empty advertised domain or placeholder summary
 counts as complete. LAB READMEs explicitly distinguish document relocation from
 unchanged LAB operations. Verify new READMEs are actually selected by metadata.
 
-### W62 Final validation, delivery and handoff
+#### W62 Final validation, delivery and handoff
 
 Bind every final check to actual command, input revision, exit code and result.
 Run path/ID/profile/language/body/lifecycle, active-link/anchor, command-directory,
@@ -651,7 +667,7 @@ old-to-new paths, IDs, source/target hashes, anchors, generated owner, rollback
 map and final main SHA to SEC/SMTP/CLN/P01–P07/P09/P10 owners as relevant. A path
 handoff does not complete any feature's runtime acceptance.
 
-### Initial issuance verification — 2026-10-11
+#### Initial issuance verification — 2026-10-11
 
 On the dedicated branch based on `4c83f14b11a77e13e582eb85d0bf256685472a95`,
 the coordinator checked only the two active parent documents and this Task.
@@ -672,7 +688,7 @@ study, full-corpus move map, helper tests, path-contract changes or relocation.
 Functional source-gate input remains separate at `c7d56a383`; its original
 aggregate exit 124 is preserved. No remote or operational command was executed.
 
-### W58 reused-owner source acceptance — 2026-10-12
+#### W58 reused-owner source acceptance — 2026-10-12
 
 The independently reviewed logical source commit is
 `77a7dfca296fa6fd28223e6294a1bdc35d4a57ca`, based on
@@ -732,7 +748,7 @@ remote delivery and W62 completion remain NOT_RUN. Final combined candidate
 metadata/staged/catalog and independent receipt review precede local main
 commit; earlier authored-source receipts are not coordinator native evidence.
 
-### Numbered-domain continuation — 2026-10-12
+#### Numbered-domain continuation — 2026-10-12
 
 The existing P08 moved corpus keeps its approved classifications, document
 filenames, IDs, created metadata and revised bodies. The user-authorized
@@ -755,7 +771,7 @@ separate actual-head evidence requirements. Rollback removes the prefixes and
 reapplies the same internal navigation map; it has no runtime, data, secret,
 HOME, migration, rotation or recovery effect.
 
-### W59–W61 current source acceptance receipt — 2026-10-12
+#### W59–W61 current source acceptance receipt — 2026-10-12
 
 The accepted temporary candidate is
 `a90cecd400c70e20d3f19c37a44e0f4ec0ace145`, prepared from HEAD
@@ -793,7 +809,7 @@ W59–W61 source/path/README acceptance above supersedes only that source lane;
 W62 commit, PR, CI and merge delivery remains pending. The detailed final QA
 result receipt is owned by [P10 Task 0016](tsk-0016-p10-opsflow-acceptance.md).
 
-### Consolidation receipt — 2026-10-12
+#### Consolidation receipt — 2026-10-12
 
 The canonical numbered-document source commit is
 `6056788a51e59726202f40377d407c1408aaddce`; the normal consolidation commit
@@ -817,7 +833,7 @@ outside this Task; their handoff is recorded for the root owner and this Task
 cannot commit them. `AGENT_ALLOW_UNCOMMITTED_STOP=1` is a scoped stop exception
 for root check-only work and does not change hook policy.
 
-### Current README correction — 2026-10-14
+#### Current README correction — 2026-10-14
 
 The current ALL_PROMPTS P08 request authorizes document correction, not another
 relocation. Current numbered folders and 45 domain READMEs were inspected;
@@ -853,7 +869,7 @@ current subject Overviews, with no semantic finding. Final changed-document
 checks and staged hooks still bind the final receipt before its logical commit.
 Owning-Spec push/PR/CI/merge is separate and not yet claimed.
 
-### Handoff from SPEC-0204 TSK-0013 2026-10-30
+#### Handoff from SPEC-0204 TSK-0013 2026-10-30
 
 TSK-0013 is final at `main` `c585c5244` (PR #666). Criteria 19 and 22 are accepted. The P05 operations documents now
 live under the nested layout:
@@ -864,7 +880,13 @@ proposal base was the old flat paths, for example `guides/0053-n8n.md` blob
 `2e76cfce…` (TSK-0013 W41 sections). No P05 lane is NOT_RUN for this handoff.
 Next input: confirm the subject 0053 paths in this Task's layout map.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -879,11 +901,17 @@ Next input: confirm the subject 0053 paths in this Task's layout map.
 | Current README source audit | 8 | W61 | Inspect three parent/45 domain indexes: duplicate scaffold/stale paths/14 unmatched inline descriptions witnessed; 3 parent and 8 domain READMEs corrected, zero path/runtime change | Branch after P04 source commit 667dcd9328ca6aa2923ad14a012967931877931b | PASS | Current README correction | - |
 | Current README frozen QA | 8 | W61 | Explicit changed-path metadata selected 14/0; operations catalog PASS; navigation 1295 documents/11536 links, zero failures/warnings; independent semantic review clean | Original P08 twelve-doc freeze plus P01 two-doc freeze at HEAD 667dcd9, before final blank-line/result-only additions | PASS | Current README correction | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 This Task owns no criterion decision; another Task of the package records it.
 
-## Review and Completion
+### Remaining Conditions
 
 This continuation delivers bounded operations-document source and preparation.
 The dated numbered-path source and local-commit receipts supersede only the
@@ -904,12 +932,12 @@ Final receipt must name actual changes, excluded paths, acceptance mapping,
 commands/input SHA/exit codes, failures/corrections, review and local delivery.
 Remote push/PR/hosted CI is NOT_RUN unless actually executed in an adopted lane.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [P10 Task 0016 final QA receipt](tsk-0016-p10-opsflow-acceptance.md)
-- [Completed P00 Task](../../0212-request-baseline-and-reconciliation/tasks/tsk-0003-active-contract-and-exclusions.md)
-- [Operations documentation navigation](../../../05.operations/README.md)
-- Stage05 refresh owner
-- [Request routing](../../0212-request-baseline-and-reconciliation/spec.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

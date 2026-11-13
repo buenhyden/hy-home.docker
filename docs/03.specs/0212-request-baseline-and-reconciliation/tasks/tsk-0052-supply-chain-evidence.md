@@ -1,10 +1,10 @@
 ---
 title: "Supply-Chain Review and Artifact Evidence Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0052"
 parent_ids:
@@ -14,9 +14,11 @@ created: "2026-11-10"
 
 # Supply-Chain Review and Artifact Evidence Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Finish the supply-chain evidence that TSK-0047 handed off for criteria 86 and
 89. Criterion 104 gives every current update-ledger entry a fresh review and a
@@ -25,7 +27,11 @@ entry is an explicit residual. Criterion 105 binds each selected image artifact
 to its own signature, provenance and SBOM evidence. At initial issuance no
 check had run; current partial source observations are recorded below.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Image supply-chain Task](tsk-0047-image-supply-chain-storybook.md)
+
+### Inputs and Authority
 
 On 2026-11-10 the owner (@buenhyden) set TSK-0047 criteria 86 and 89 to
 not-required and approved this dedicated Task for the unfinished work. That
@@ -40,9 +46,11 @@ on 2026-11-10 `security_update_gate` exits 2, with all 89 ledger entries
 `blocked-evidence` (`fresh_review` and `reviewed_decision` missing for 89,
 `primary_advisory` for 79).
 
-## Work Log
+## Execution Log
 
-### Order
+### Work Performed
+
+#### Order
 
 1. W109: review each ledger entry against its official release and advisory
    source, record the reviewed decision, and rerun the gate.
@@ -52,7 +60,7 @@ on 2026-11-10 `security_update_gate` exits 2, with all 89 ledger entries
 
 Services that HOME runs go first; the rest follow in the same Task.
 
-### Open owner items
+#### Open owner items
 
 The following table preserves the initial questions. The current request and
 public-origin section below records the later N1/N2 resolution.
@@ -62,7 +70,7 @@ public-origin section below records the later N1/N2 resolution.
 | N1 | Which hosts may lookups reach? Already approved for earlier work: `github.com`, `api.github.com`, Sigstore, `cgr.dev`, the Alpine mirrors, `proxy.golang.org` and `sum.golang.org`. Registry reads also need Docker Hub, `ghcr.io` and `quay.io` metadata endpoints. | W109, W110 |
 | N2 | All 89 entries now, or the services HOME runs first and the rest later? | W109 |
 
-### Current request and public-origin scope 2026-11-10
+#### Current request and public-origin scope 2026-11-10
 
 The current trusted user explicitly requested implementation of the complete
 master change plan on2026-11-10. That request authorizes bounded anonymous
@@ -84,14 +92,14 @@ The one direct Docker Hub retry used5-second connect and10-second total limits.
 Actual URLs, times, query counts and limits remain in the existing
 `release-lookups.json#/master_20261110_public_refresh` source owner.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0052 | draft | ready | #current-request-and-public-origin-scope-2026-11-10 |
 | SPEC-0212-TSK-0052 | ready | in-progress | #current-request-and-public-origin-scope-2026-11-10 |
 
-### Public source refresh result 2026-11-10
+#### Public source refresh result 2026-11-10
 
 The source writer recorded49 GitHub GET attempts over48 repositories:
 47 distinct published-final observations and one Searx latest-release404.
@@ -118,7 +126,7 @@ executions remain NOT_RUN; release asset names/digests show availability only.
 n8n full-image signature/scan remains TSK-0041 criterion60, while this Task
 owns the other exact artifact residuals under criterion105.
 
-### Public source refresh continuation 2026-11-11
+#### Public source refresh continuation 2026-11-11
 
 The 76 rows that previously lacked a fresh lookup were reviewed together with
 the 13 rows that already had current lookup fields. The source writer renewed
@@ -163,7 +171,7 @@ compatibility, recovery, runtime, deployment, or rollback checks. Historical
 receipts remain bound to their recorded subjects; criterion105 artifact
 verification remains NOT_RUN.
 
-### Official-advisory applicability continuation 2026-11-11
+#### Official-advisory applicability continuation 2026-11-11
 
 The durable review receipt is
 `release-lookups.json#/master_20261111_advisory_review`; its gate receipt is
@@ -230,7 +238,7 @@ Twelve numeric current/candidate pairs are component proposals only, not
 selected-image changes. No operational upgrade, image pull, build, scan,
 deployment, credential use, recovery action or risk-acceptance renewal ran.
 
-### Exact artifact and official-source continuation (2026-11-11)
+#### Exact artifact and official-source continuation (2026-11-11)
 
 The owner's follow-up authorizes public registry reads and temporary isolated
 scans for this review. The [version and artifact receipts](../../../../infra/09-platform-ops/security-updates/release-lookups.json)
@@ -271,7 +279,13 @@ found in its image. Service applicability remains pending. Blog ingestion
 still needs evidence from its external producer. GitHub API pagination and
 registry access failures are recorded alongside their bounded fallbacks.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 The first two NOT_RUN rows preserve initial issuance. Their N1/N2 wait text
 is historical. Later rows record the source observations, partial exact
@@ -300,14 +314,20 @@ artifact verification and the current gate results.
 | Artifact gate regression | 104 | W109 | Focused supply-chain and CI routing tests | Ledger and lookup references | PASS | RED reproduced the absent artifact evidence. The final focused run passed 97 tests; static policy passed five contracts and 13 cases. | required | - |
 | Controller dependency audit | 104 | W109 | `pip-audit` and `npm audit` | Controller lock and Storybook production lock | FAIL | Python audit reported 25 findings across 36 checked requirements. Storybook npm audit reported zero. Both locks match the source baseline; controller findings need separate dependency triage. | optional | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 104 | pending | Ledger fresh review | All89 entries now have an official-advisory applicability classification and reviewed decision, but both gates FAIL:56 latest residuals remain and security rows still require independent artifact/compatibility/recovery evidence or retain an explicit block/defer. | SPEC-0212 TSK-0052 |
 | 105 | pending | Artifact verification | Three public final candidates scanned. Qdrant index signature verified; other publisher proofs, final custom artifacts and residual decisions remain pending. | SPEC-0212 TSK-0052 |
 
-## Review and Completion
+### Remaining Conditions
 
 Current source research and isolated artifact checks have run as recorded
 above. Both ledger gates still fail. Criteria 104 and 105 remain pending.
@@ -319,8 +339,12 @@ as a residual, independently verified security dispositions for affected or
 blocked components, and a verification row for each selected artifact. A
 receipt for one component or artifact never proves another.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Image supply-chain Task](tsk-0047-image-supply-chain-storybook.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

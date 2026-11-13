@@ -1,10 +1,10 @@
 ---
 title: "LAB Promotion Contract Task"
-version: "0.2.3"
+version: "0.2.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0263-TSK-0001"
 parent_ids:
@@ -14,9 +14,11 @@ created: "2026-11-05"
 
 # LAB Promotion Contract Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Carry out the six work units of the Plan:
 
@@ -26,7 +28,10 @@ Carry out the six work units of the Plan:
 - **Readiness.** Add the promotion readiness check.
 - **Documents.** Write the promotion operations documents.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
 
 On 2026-11-05 the owner asked that supabase move into the LAB structure and
 that LABs get a structure and rules for promotion into `infra/`. The owner
@@ -44,14 +49,16 @@ registry file for this work. The agent's permission settings still deny
 - promote any LAB;
 - read or write any secret value.
 
-## Work Log
+## Execution Log
 
-### Current contract decision
+### Work Performed
+
+#### Current contract decision
 
 The owner approved SPEC-0263 on 2026-11-05. The Plan waits for the owner's
 review.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -60,7 +67,7 @@ review.
 | SPEC-0263-TSK-0001 | draft | ready | #owner-acceptance-and-status |
 | SPEC-0263-TSK-0001 | ready | in-progress | #owner-acceptance-and-status |
 
-### Owner acceptance and status
+#### Owner acceptance and status
 
 On 2026-11-05 the owner asked to accept criteria 1 to 7 and to move the Plan
 and both Tasks forward. The Plan is `approved` and this Task is
@@ -87,7 +94,7 @@ Owner decisions on 2026-11-06, following the recommendations:
   `lab.py check` sums running HOME reservations; the owner sets it in
   `labs/.env`.
 
-### Criterion 3 moved to TSK-0003
+#### Criterion 3 moved to TSK-0003
 
 On 2026-11-06 the owner removed the supabase LAB (SPEC-0263 0.4.0, W8).
 Criterion 3's acceptance row moved from this Task to
@@ -95,7 +102,7 @@ Criterion 3's acceptance row moved from this Task to
 supabase seed-file rows E6, E12, E58 and E68 no longer have a subject; this
 Task keeps them as history and no longer gates on them.
 
-### Decisions
+#### Decisions
 
 These are agent calls, made in the Plan for the owner to check:
 
@@ -151,7 +158,7 @@ The owner decided these on 2026-11-05:
 - **C.** The reserve is approved as
   `PROMOTION_RESERVE = {"cpus": 2.0, "memory_mib": 4096, "disk_percent": 10}`.
 
-### W3: supabase on LAB secret copies
+#### W3: supabase on LAB secret copies
 
 **Owner checklist.**
 
@@ -264,7 +271,7 @@ that names the HOME SMTP path. Its fixed `extends` file is now
 handle the COMM-003 duplicate and needed no change. `gen-secrets.sh` now
 accepts any well-formed retired-row alias, not only COMM-003.
 
-### W4: Promotion readiness check
+#### W4: Promotion readiness check
 
 `lab.py readiness <name> [--report PATH]` reads HOME state only: the LAB and
 root renders, `docker info`, `docker inspect` and disk usage. It prints the
@@ -335,7 +342,7 @@ The check makes these calls:
 | docker | PASS | Docker `29.9.2` (`docker info .ServerVersion`), Compose `5.6.1` (`docker compose version --short`); drivers `bridge`, `local`; data root `/home/hyunyoun/storage/docker-root/docker` (`docker info .DockerRootDir`) |
 | resources | FAIL | NCPU 12 and MemTotal 33575419904 B (`docker info`). The budget is 10 CPUs and 27924 MiB. Running limits are 64 CPUs and 59904 MiB (`docker inspect`). Retired `dev-valkey` frees 1 CPU and 512 MiB. The candidate adds 7 CPUs and 3584 MiB, so it needs 70 CPUs and 62976 MiB. Five running `k3d-hyhome-*` containers declare no limit. Usable disk is 2105.3 GiB on the data root and on the Docker root (`shutil.disk_usage`) |
 
-### W5: Promotion operations documents
+#### W5: Promotion operations documents
 
 The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
 `operations-subject` space now has `high_water` 109 and `next_number` 110.
@@ -392,7 +399,13 @@ The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
   reservations instead of limits, which needs a Spec change and is
   recommended; (c) judge measured usage. The rule is unchanged.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -466,7 +479,13 @@ The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
 | E68 | 3 | W3 | `lab.py check supabase` render-only | the E6 inputs (`labs/.env.example`, `.env.example`, empty scratch `LAB_DATA_DIR`, synthetic budgets) at `961b5d475` | FAIL | exit 3; the only problems are the ten untracked seed files (`db/*.sql`, `api/kong.yml`, `pooler/pooler.exs`, `logs/vector.yml`) | required | - |
 | E69 | 6 | W5 | HOME render of the cluster LABs | `docker compose --env-file labs/.env -f labs/<name>/docker-compose.yml config -q` for kafka-cluster and opensearch-cluster, after the owner set `LAB_KAFKA_CLUSTER_ID` and the host budget, at `339a6d7be` | PASS | both exit 0; `lab.py check` reports no cluster ID or certificate problem, only the budget and the one-LAB limit for this pair | required | E35 |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -477,7 +496,7 @@ The subject numbers OPS-0107, OPS-0108 and OPS-0109 were free; the
 | 6 | accepted | E29, E30, E31, E32, E33, E34, E37, E69 | owner request 2026-11-05; PASS, E35 resolved by E69 | @buenhyden |
 | 7 | pending | E1, E38, E40, E42, E43, E44, E45, E46, E55, E56, E57, E59 | open: E39 (example inputs empty by owner decision), E47 (local CI gate, Python 3.14.8) | @buenhyden |
 
-## Review and Completion
+### Remaining Conditions
 
 The final review fix wave (E49 to E58) re-ran the checks at `4bec12fa2`.
 Readiness now shows the unmeasured section 5 sub-checks as `NOT_RUN`, a
@@ -514,7 +533,12 @@ Open owner items:
 - SMTP01 removing COMM-003;
 - retiring the unused `secrets/db/mng-pg/supabase_password.txt`.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

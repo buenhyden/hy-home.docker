@@ -1,10 +1,10 @@
 ---
 title: "Models, Runners and Wiki Preparation Task"
-version: "0.1.16"
+version: "0.1.17"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0042"
 parent_ids:
@@ -14,11 +14,13 @@ created: "2026-11-02"
 
 # Models, Runners and Wiki Preparation Task
 
-## Overview
+## Scope
+
+### Objective and Parent
 
 This draft Task is the bounded P03 evidence and handoff record for SPEC-0212.
 
-### Objective
+#### Objective
 
 Implement P03.01–P03.05 as a bounded local source and isolated-test unit.
 This Task records model-path, Open Notebook registration, external-runner,
@@ -26,7 +28,17 @@ tool-policy and Wiki-preparation evidence. It is distinct from the completed
 historical P03 integration task in SPEC-0204 and from the completed offline
 Wiki preparation package in SPEC-0204-TSK-0008.
 
-## Inputs and Authorization
+These links identify the canonical parent, historical scope and operating
+documents; they do not transfer acceptance or operating authority.
+
+- [SPEC-0212 plan](../plan.md)
+- [P02 service connection contracts](tsk-0041-service-connection-contracts.md)
+- [Historical P03 integration](../../0204-service-integration-security-and-operations/tasks/tsk-0011-p03-service-integration-contracts.md)
+- [Completed Wiki preparation](../../0204-service-integration-security-and-operations/tasks/tsk-0008-llm-wiki-preparation.md)
+- [Open Notebook guide](../../../05.operations/guides/09-ai-and-search/0073-open-notebook.md)
+- [Open Notebook policy](../../../05.operations/policies/09-ai-and-search/0073-open-notebook.md)
+
+### Inputs and Authority
 
 The direct user approval of the P03 plan on 2026-11-02 authorizes local source,
 documentation, isolated synthetic tests and a normal local logical commit. The
@@ -43,9 +55,11 @@ Notebook source planning targets `gemma4:e2b` for chat and
 evidence that either model is locally present, registered, invoked, stored or
 available to an operator.
 
-## Work Log
+## Execution Log
 
-### Issued writer leases
+### Work Performed
+
+#### Issued writer leases
 
 Each writer must re-read the current file fingerprint before editing. A changed
 shared path pauses only its dependent slice; it does not authorize a second
@@ -65,7 +79,7 @@ separate. P05 owns general queue/notification behavior, P06 secret issuance,
 P08 images/locks, P09 common resource originals, P11 Hermes installation and
 P12 end-to-end acceptance. A handoff is not an operating authorization.
 
-### Official applicability
+#### Official applicability
 
 The P03 source investigation must recheck the recorded official sources for
 n8n task runners and runner hardening, Ollama authentication and local cloud
@@ -82,7 +96,7 @@ is not a tenant ACL; conflicting duplicate credentials/models are rejected;
 and null defaults cannot be assumed reversible through the API. A recovery
 attempt needs matching SurrealDB data, app SQLite state and encryption key.
 
-### Evidence axes and residual boundaries
+#### Evidence axes and residual boundaries
 
 Every evidence row distinguishes source, static validation, isolated test,
 historical operator acceptance, this execution's operation, credential
@@ -98,12 +112,12 @@ registration, live model functionality, installation or recovery evidence.
 | 64 | W69 | IMPLEMENT_GAP | Tool destination/redirect/DNS/budget and authority-negative tests | P11 owns installed Hermes policy and live delivery. |
 | 65 | W70 | REUSE_ACCEPTED | Current Wiki preparation mapping and synthetic rights/ACL/citation/revoke/no-evidence/failure evaluation | SPEC-0204-TSK-0008 remains the completed preparation authority; Wiki runtime is OUT_OF_SCOPE. |
 
-### Implementation Contract
+#### Implementation Contract
 
 The following bounded contracts define the source work and do not create an
 operating acceptance result.
 
-#### P03.01–P03.02: model paths and Notebook registration
+##### P03.01–P03.02: model paths and Notebook registration
 
 Keep local-only Ollama use as the default. Separate local, Ollama-mediated
 cloud and direct-cloud URL, credential, model and network contracts. Cloud
@@ -123,7 +137,7 @@ Existing Open WebUI authentication, Chroma/RAG, embeddings and persistence are
 preserved. `/health`, a database healthcheck or a mounted directory remains
 liveness evidence only.
 
-#### P03.03–P03.04: Runner and tool authority
+##### P03.03–P03.04: Runner and tool authority
 
 Retain the external n8n runners, their declared volumes, fixed image UID/GID
 `1000:1000` and aligned image/version declaration. Remove only an unneeded RW
@@ -140,7 +154,7 @@ model/retrieved instruction that tries to expand authority. It retains the
 existing 3 retries, 15-second request limit, 60-second total limit, 4MiB
 request and 1MiB response limits. Actual Hermes installation stays P11-owned.
 
-#### P03.05: Wiki preparation
+##### P03.05: Wiki preparation
 
 Reuse SPEC-0204-TSK-0008 and its offline contracts. Record the current source
 mapping and a small synthetic evaluation set for rights, ACL, citation,
@@ -150,7 +164,7 @@ LAB runtime. The old architecture's cloud fallback, obsolete embedding tag and
 bind-mount claims must be corrected only where current tracked source proves a
 different contract.
 
-### Fixture parity and wrong-token refusal (2026-11-08)
+#### Fixture parity and wrong-token refusal (2026-11-08)
 
 The `wrong_token_registration` residual is a wait bound, not a missing refusal.
 In the pinned `n8nio/runners` image, `task-runner-launcher` exchanges its auth
@@ -176,7 +190,7 @@ tmpfs mounts and the resource caps. None of them crosses the runner boundary
 under test. A native rerun is needed to turn the wrong-token row into PASS
 evidence; it is NOT_RUN until approved.
 
-### Native rerun after fixture parity (2026-11-08)
+#### Native rerun after fixture parity (2026-11-08)
 
 With approval, the rehearsal ran at merged `b62de97d7` (attempt
 `opsflow-native-a2ed7b00be6e8fd3a2c1587b`) and FAILED after 539 seconds: the
@@ -198,7 +212,7 @@ registration. `fixture_differences` lists only the three by-design entries.
 Candidate Compose, paired network, manual worker and private workflows stay
 NOT_RUN. Cleanup PASS with no re-sweep removal and zero residue.
 
-### D06 model consumers and Open WebUI drift (2026-11-08)
+#### D06 model consumers and Open WebUI drift (2026-11-08)
 
 A direct user request on 2026-11-08 re-ran the model, runner and Wiki scope as
 D06 on `main` `2f86dd9e3`, Docker context `default`. Ollama runs with
@@ -263,7 +277,7 @@ T05: the Wiki preparation stays REUSE_ACCEPTED (criterion 65). T06: no
 evaluation data set, owner or baseline exists, so the comparison is BLOCKED
 until those are named.
 
-### D06 T06 evaluation resume conditions (2026-11-09)
+#### D06 T06 evaluation resume conditions (2026-11-09)
 
 The T06 contract covers search, vector and graph stores, the crawler, image
 generation and MLflow, and says that without real data the outcome names the
@@ -286,7 +300,7 @@ decide, (2) a versioned data set with its rights and personal-data review, (3) a
 data owner, and (4) a baseline with a time-ordered split, and when an MLflow
 experiment is designated for the results. No comparison was run.
 
-### D06 T06 owner direction and Open WebUI Qdrant (2026-11-09)
+#### D06 T06 owner direction and Open WebUI Qdrant (2026-11-09)
 
 The owner set the T06 direction on 2026-11-09: use Qdrant as the Open WebUI
 vector store, run an MLflow evaluation of the Ollama models, add Crawl4AI as a
@@ -300,7 +314,7 @@ environment. Open WebUI held 0 knowledge bases and 0 files, so nothing migrates.
 It receives the Qdrant read-write key (AI-008); Qdrant offers only that key and
 the read-only one. The HOME apply is a separate approved step.
 
-### Open WebUI Qdrant HOME apply (2026-11-09)
+#### Open WebUI Qdrant HOME apply (2026-11-09)
 
 With owner approval, `open-webui` was recreated on `main` `294ad4df8`. It reported
 unhealthy until application startup finished after about three minutes, then
@@ -311,7 +325,7 @@ The shared `open-webui_knowledge` collection now exists and holds no probe data
 from the failed earlier attempt. File upload and answer generation in the UI were
 not exercised. ComfyUI is stopped and, per the owner, leaves the `ai` profile.
 
-### Owner decisions 2026-11-10
+#### Owner decisions 2026-11-10
 
 The owner (@buenhyden) decided two items on 2026-11-10. For criterion 62 the
 Notebook native census, which needs the absent SurrealDB 2.7.0 digest, is an
@@ -320,7 +334,13 @@ criterion 65 the D06 T06 data census is not required, since there is no
 evaluable dataset, owner or baseline; a real dataset reopens it through a new
 Task. The #840 CI rows are resolved by the merged run.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -388,7 +408,13 @@ product-support decisions, P09 for common resources, P11 for actual Hermes
 installation and P12 for user-level acceptance. P03 does not reopen P02's
 remaining supply-chain residuals or its pre-existing audit findings.
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -398,7 +424,7 @@ remaining supply-chain residuals or its pre-existing audit findings.
 | 64 | pending | Hermes cancellation safety review, Current Hermes corrective packet, Hermes corrective re-review | SOURCE_READY: the corrective local source packet and independent re-review pass. Installation, live policy/DNS/certificate, rotation, restore and final acceptance remain P11/P12 NOT_RUN. | SPEC-0212 TSK-0042 |
 | 65 | accepted | Wiki preparation mapping/evaluation, Open WebUI Qdrant CI final | REUSE_ACCEPTED for completed offline preparation plus current source mapping; the Qdrant change merged with CI PASS. The owner set the T06 data census to not required on 2026-11-10 because no dataset or owner exists. No required observation is unresolved; owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0042 |
 
-## Review and Completion
+### Remaining Conditions
 
 Independent code, security, IaC, CI and document review must cover the exact
 changed fingerprints. The final model exact-integer-dimension and extractor
@@ -417,14 +443,12 @@ restore, hosted CI and P12 final acceptance as `NOT_RUN`. P03 may hand off
 exact fingerprints, intent, tests, recovery boundary and resume condition; it
 does not create the operating authority for P04/P05/P06/P07/P08/P09/P11/P12.
 
-## Related Documents
+## Handoff
 
-These links identify the canonical parent, historical scope and operating
-documents; they do not transfer acceptance or operating authority.
+### Promotion Receipt
 
-- [SPEC-0212 plan](../plan.md)
-- [P02 service connection contracts](tsk-0041-service-connection-contracts.md)
-- [Historical P03 integration](../../0204-service-integration-security-and-operations/tasks/tsk-0011-p03-service-integration-contracts.md)
-- [Completed Wiki preparation](../../0204-service-integration-security-and-operations/tasks/tsk-0008-llm-wiki-preparation.md)
-- [Open Notebook guide](../../../05.operations/guides/09-ai-and-search/0073-open-notebook.md)
-- [Open Notebook policy](../../../05.operations/policies/09-ai-and-search/0073-open-notebook.md)
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

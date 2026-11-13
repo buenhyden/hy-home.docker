@@ -1,6 +1,6 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.5.3"
+version: "0.5.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -14,9 +14,11 @@ created: "2026-11-11"
 
 # W03 Templates, Metadata and Relations Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Own W116/criterion 111. Assess the v14.2 W03 obligations DOC-01 to DOC-12 and
 SUP-11 against the Registry, templates, generators, parsers, validators and
@@ -24,7 +26,11 @@ tests. Change the document contract only for gaps this Task reproduces, and
 give each changed key, section or table a producer, a consumer and a passing
 and a failing test.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [W02 Task](tsk-0057-w02-archive-and-safe-removal.md)
+
+### Inputs and Authority
 
 On 2026-11-11 the owner approved this Task to own W03. The v14.2 package
 prompt `tasks/TASK-hy-home-docker-W03.md` under
@@ -44,21 +50,23 @@ keeps its form. Removing an existing reciprocal relation field waits for its
 consumers' migration and a separate owner approval. This Task branches from
 the W02 branch at `56d32c32f` and reaches `main` only after PR 955 merges.
 
-## Work Log
+## Execution Log
 
-### Owner-approved local execution
+### Work Performed
+
+#### Owner-approved local execution
 
 The owner's approval of 2026-11-11 issues this Task. The lifecycle records that
 approval; it grants no remote operation.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0058 | draft | ready | #owner-approved-local-execution |
 | SPEC-0212-TSK-0058 | ready | in-progress | #owner-approved-local-execution |
 
-### Owner decision Q-03 2026-11-11
+#### Owner decision Q-03 2026-11-11
 
 The draft 19-role table conflicts with the 44 Registry profiles, whose ordered
 required H2 headings differ from it. The owner chose option A: adopt the
@@ -67,7 +75,7 @@ concept the table names that no current profile carries, such as a Plan
 promotion map, Spec non-goals or Requirement traceability, is added only as an
 optional or conditional section, after a consumer for it is shown.
 
-### Q-03 superseded 2026-11-12
+#### Q-03 superseded 2026-11-12
 
 On 2026-11-12 the owner directed that where an existing decision conflicts with
 the current requirement, the current requirement wins. The v14.7 W00 intake in
@@ -79,7 +87,7 @@ to the common contract, together with the Registry `common` keys that name
 them and the current documents. The intake's handoff table lists the exact
 differences. Historical and completed evidence still keeps its form.
 
-### Prior observations to re-check
+#### Prior observations to re-check
 
 The W02 readiness analysis recorded these before this Task existed. Each is
 re-checked against the current tree before reuse:
@@ -87,7 +95,7 @@ re-checked against the current tree before reuse:
 - DOC-07: only the Markdown-link half applies; this workspace has no Vault.
 - DOC-08: DEFER until a reproduced execution-document gap exists.
 
-### W03 obligation assessment 2026-11-11
+#### W03 obligation assessment 2026-11-11
 
 Two fresh-context `qa-engineer` agents read the Registry, schema, templates,
 parsers, validators and tests at `95a65be6d` without editing, and probed
@@ -109,7 +117,7 @@ negative cases in memory. The controller re-ran each deciding probe.
 | DOC-12 | KEEP; renumbering held | `reserved_history` and `high_water` block reuse. Path number equals the `artifact_id` number, so any renumbering is a Q-07 decision and is not made here |
 | SUP-11 | KEEP | Terminal Task bodies are exempt from rewriting; corrections are added as new sections |
 
-### W03 changes 2026-11-11
+#### W03 changes 2026-11-11
 
 - DOC-04: `registry.py` no longer converts YAML dates before the schema
   check, so an unquoted date fails the string type. No tracked document
@@ -129,7 +137,7 @@ negative cases in memory. The controller re-ran each deciding probe.
   profile declares order and content, a swapped and an emptied section per
   representative profile, and a parent cycle and a two-parent Plan.
 
-### v14.7 W03 run 2026-11-12
+#### v14.7 W03 run 2026-11-12
 
 Input: the v14.7 W03 prompt the owner pasted on 2026-11-12, read as data.
 Start point: `main` `0b1b2c6a1`, clean tree; work on branch
@@ -158,7 +166,7 @@ Role order: Requirement, Spec, Plan, ADR, Architecture, Task, Guide,
 Runbook, Policy, Skill, READMEs. Each role changes its Registry profile,
 template, parsers, tests and current documents together.
 
-#### Requirement role 2026-11-12
+##### Requirement role 2026-11-12
 
 - Registry `requirements-package`: H2 Overview, Scope, Requirements,
   Acceptance Criteria, Traceability with their required H3s, and the
@@ -205,7 +213,7 @@ template, parsers, tests and current documents together.
   `Quality Requirements` section end to end; the remaining 0001, 0009 and
   0010 conditions are given a method.
 
-#### Spec role 2026-11-12
+##### Spec role 2026-11-12
 
 - Registry `spec`: H2 Overview, Scope, Behavior Contract, Acceptance
   Criteria, References with their required H3s; the unused optional
@@ -237,7 +245,7 @@ template, parsers, tests and current documents together.
   and the old-form test rejects `Contracts`, `Failure Conditions`, `Related
   Documents` and `Out of Scope`.
 
-#### ADR role 2026-11-13
+##### ADR role 2026-11-13
 
 Branch `docs/w03-adr-common-form`, on top of the Spec branch.
 
@@ -266,7 +274,7 @@ Branch `docs/w03-adr-common-form`, on top of the Spec branch.
 - `docs/02.architecture/AGENTS.md` 0.3.1 and the decisions README 1.7.4 point
   the replacement summary to Traceability `Supersession`.
 
-#### Plan role 2026-11-13
+##### Plan role 2026-11-13
 
 Branch `docs/w03-plan-common-form`, on top of the ADR branch.
 
@@ -294,7 +302,7 @@ Branch `docs/w03-plan-common-form`, on top of the ADR branch.
   rollback sentences name what they restore; Task links moved from
   Prerequisites to Owner and Receipt; SPEC-0263 links its reservations Task.
 
-#### Architecture role 2026-11-13
+##### Architecture role 2026-11-13
 
 Branch `docs/w03-architecture-common-form`, on top of the Plan branch.
 
@@ -314,6 +322,37 @@ Branch `docs/w03-architecture-common-form`, on top of the Plan branch.
   under Currentness and Lineage. A second round restored three more
   rewritten link items and removed two added sentences.
 
+##### Task role 2026-11-13
+
+Branch `docs/w03-task-common-form`, on top of `main` after #971.
+
+- Registry `task`: H2 Scope, Execution Log, Verification Evidence,
+  Acceptance Decision, Handoff with their required H3s. The legacy H2s are
+  rejected. As for the Plan, the Registry `common` heading values stay;
+  `spec_packages.py` maps `Evidence`, `Criterion Acceptance` and `Work Log` to
+  `Results`, `Criterion Decisions` and `Work Performed`, and the readers of
+  Execution Items, Lifecycle Events, Lifecycle Event Reconciliation and
+  Contract Migration read them as H4 under `Work Performed`.
+- Terminal Tasks (owner decision of 2026-11-12, one-time heading move):
+  `_same_task_body` accepts a legacy-to-common move only when every content
+  line keeps its text, order and mapped target, inner headings move exactly
+  one level (two under an anchor heading that keeps a linked slug), blank
+  lines between content stay, every anchor the old body referenced still
+  resolves, and the only added text is the fixed "None: nothing was recorded
+  here before this Task moved to the common form." in an empty target. Every
+  other change stays byte-strict. The historical admissions and the terminal
+  migration check use it.
+- The 104 Tasks (56 completed, plus tsk-0007 and tsk-0049 whose status comes
+  from Execution Items) are moved by a deterministic script, not by agents.
+  Each moved body passes `_same_task_body` against its old body; frontmatter
+  of completed and status-less Tasks is unchanged, the others bump the patch
+  version. A heading another document or the Task itself links to stays as an
+  H4 anchor. Two in-progress Tasks (0204 tsk-0015, 0212 tsk-0049) gained a
+  one-line lead under an anchor that would otherwise be empty.
+- A first run lost 86 Lifecycle Events anchors written as bare `#slug`
+  cells and changed tsk-0007's frontmatter; the lifecycle validator and the
+  review caught both, and the script was fixed and re-run from the old files.
+
 Held for an owner decision, not changed here, because each would change
 what a requirement says:
 
@@ -324,7 +363,13 @@ what a requirement says:
 - `REQUIREMENT_TARGET_BODY` in the heading test support keeps the old
   headings; it serves tests whose subject is not the body form.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -364,21 +409,31 @@ what a requirement says:
 | W03 v14.7 Architecture GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `c9fa9d8aa` | PASS | Ran 782 tests, OK, including the Architecture old-form and template-outline tests | required | W03 v14.7 Architecture form RED |
 | W03 v14.7 Architecture checks | 111 | W116 | metadata-links-governance | The 27 descriptions after each review round | PASS | metadata check-changed selected 27 violations 0, then 5 violations 0 after the last answer; links alignment PASS | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+Each FAIL row in Results is resolved by the later PASS row of the same Check and Work Unit that names it in its Resolves column.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 111 | pending | - | - | SPEC-0212 TSK-0058 |
 
-## Review and Completion
+### Remaining Conditions
 
 In progress. The assessment and the reproduced-gap changes are recorded.
 Criterion 111 waits for the owner. Open: a fixed service-README section set
 (DOC-01) needs an owner decision on a new contract; validator work beyond
 these profile flags is handed to W05; renumbering stays a Q-07 decision.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [W02 Task](tsk-0057-w02-archive-and-safe-removal.md)
+### Promotion Receipt
+
+Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture).
+
+### Next Owner
+
+The current owner is @buenhyden. After each role pull request merges, the next W03 role starts here in the planned order; W04 owns the validator work handed over under Remaining Conditions.

@@ -14,15 +14,22 @@ created: "2026-10-29"
 
 # Approved Blocked Items Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W31: apply the owner's approval of the two items TSK-0013 blocked, and
 repair the regression the TSK-0012 removal caused on `main`. This Task owns
 criterion 26 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-29 the owner approved the template subtopic work and the removal of
 `cliff.toml`, which TSK-0013 had blocked. That approval resolves the overlap
@@ -31,9 +38,11 @@ edit that Task. The input is branch `perf/archive-history-scan` (PR #610) on
 top of merged PR #609. The authorization covers this branch, its pull request,
 and merge through the protected path.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -41,7 +50,7 @@ and merge through the protected path.
 | SPEC-0212-TSK-0015 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0015 | in-progress | completed | #evidence |
 
-### git-cliff removal
+#### git-cliff removal
 
 No workflow or script ran git-cliff; the release producer validates a
 hand-written `CHANGELOG.md`. `cliff.toml`, its test block in
@@ -49,7 +58,7 @@ hand-written `CHANGELOG.md`. `cliff.toml`, its test block in
 entries, and its two routing-list entries are removed. Commitizen parsing and
 SemVer bump tests remain.
 
-### Template subtopics
+#### Template subtopics
 
 | Template | `###` subtopics added |
 | --- | --- |
@@ -69,7 +78,7 @@ none: its loader reads each section body to the next `##` as one value, so a
 `###` line would corrupt the Retired Path or Successor value. Existing
 documents are not rewritten; the subtopics apply to new documents.
 
-### Removal regression
+#### Removal regression
 
 `test_every_registered_index_governs_at_least_one_package` failed on `main`
 after PR #609 for `docs/90.references/audits/README.md` and
@@ -79,7 +88,15 @@ test now also counts members named by a history-only unit's catalog `Source`.
 The path-selected PR checks did not run this module, which is how it reached
 `main`.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -93,18 +110,29 @@ The path-selected PR checks did not run this module, which is how it reached
 The full-suite FAIL predates this session; its owners are the secret-sync,
 SMTP, and resource-contract surfaces, and this Task does not claim it.
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 26 | accepted | Metadata contracts, Template lint, Gate tests, Template tests, Regression reproduction | git-cliff configuration removed, 11 templates gained subtopics, and the index-membership regression is fixed; the pre-existing full-suite failures stay with their owners. | SPEC-0212 TSK-0015 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

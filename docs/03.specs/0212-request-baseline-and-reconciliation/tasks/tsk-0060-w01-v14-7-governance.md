@@ -1,10 +1,10 @@
 ---
 title: "W01 v14.7 Governance Task"
-version: "0.8.0"
+version: "0.8.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0060"
 parent_ids:
@@ -14,9 +14,11 @@ created: "2026-11-12"
 
 # W01 v14.7 Governance Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Own W118/criterion 113. Run the v14.7 W01 governance work against this
 workspace:
@@ -28,7 +30,14 @@ workspace:
 
 Registry and template changes stay with W03.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [v14.2 W01 governance standardization](tsk-0056-w01-governance-standardization.md)
+- [v14.7 W00 intake](tsk-0059-w00-v14-7-intake.md)
+- [Approval boundaries](../../../../.agents/governance/approval-boundaries.md)
+- [Quality standards](../../../../.agents/governance/quality-standards.md)
+
+### Inputs and Authority
 
 On 2026-11-12 the owner supplied the v14.7 W01 prompt
 `tasks/TASK-hy-home-docker-W01.md` from the package under
@@ -54,21 +63,23 @@ checks. It does not cover:
 - remote settings or protected-branch rules;
 - Registry and template changes, which belong to W03 and TSK-0059 H-04.
 
-## Work Log
+## Execution Log
 
-### Owner-directed local execution
+### Work Performed
+
+#### Owner-directed local execution
 
 The owner's W01 prompt of 2026-11-12 issues this Task. It grants no operation
 outside the stated boundary.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0060 | draft | ready | #owner-directed-local-execution |
 | SPEC-0212-TSK-0060 | ready | in-progress | #owner-directed-local-execution |
 
-### Boundary 2026-11-12
+#### Boundary 2026-11-12
 
 | Item | Observation |
 | --- | --- |
@@ -76,7 +87,7 @@ outside the stated boundary.
 | Baseline | Branch `docs/tsk-0059-w00-v14-7-intake` at `fbaba7875`, clean, 18 commits ahead of `main` `4cd25b95b` (equal to `origin/main`). W01 builds on the unmerged W00 changes |
 | Package | Read only; its tools were not run |
 
-### Prior W01 reuse
+#### Prior W01 reuse
 
 TSK-0056 (v14.2 W01, completed, criterion 109 accepted) assessed GOV-01 to
 GOV-08 and SUP-12 at `0a726ee1c`. Each verdict below was re-checked against
@@ -88,7 +99,7 @@ requirement. Under `approval-boundaries.md:73-79`, each repository records
 its own adoption in its own Task. So the local adoption record is in scope
 here; cross-repository adoption stays out of scope (D-04).
 
-### W01 obligation assessment
+#### W01 obligation assessment
 
 | ID | Verdict | Current owner and basis |
 | --- | --- | --- |
@@ -110,7 +121,7 @@ here; cross-repository adoption stays out of scope (D-04).
 | WP-06, WP-07 | KEEP, CHANGE | Same owners and verdicts as GOV-06 (KEEP) and GOV-04 (CHANGE) |
 | Archive contract | KEEP | ADR-0051 summarize-and-delete retirement is consumed by `test_spec_packages` (an archive copy cannot record an unreserved removal) and `test_registry` (archive authorization needs scoped explicit approval) (W01 final tests). `docs/98.archive/` holds only `README.md` by listing; no check enforces README-only |
 
-### Policy corrections 2026-11-12
+#### Policy corrections 2026-11-12
 
 `quality-standards.md` (1.9.0 to 1.10.0) gains two rules:
 
@@ -144,7 +155,7 @@ README, which the prompt forbids (one owner per rule):
 The delivery phase matrix itself is KEEP. Implementing the Git-stage cells is
 W06's (TSK-0059 H-09).
 
-### Common contract adoption
+#### Common contract adoption
 
 States follow `approval-boundaries.md:79-84`: draft, then approved, then
 adopted once implemented on `main` and verified; partial is called partial.
@@ -173,7 +184,7 @@ merges to `main`; nothing here is effective yet.
 Every implemented state above rests on changes on this branch that are not
 yet on `main`. No row is reported as adopted by another repository.
 
-### Handoffs
+#### Handoffs
 
 | ID | Writer | Difference |
 | --- | --- | --- |
@@ -184,7 +195,7 @@ yet on `main`. No row is reported as adopted by another repository.
 | H-W01-5 | W05 | GOV-08: a test that an approved reversible edit inside the request's scope proceeds without a second approval, next to the existing refusals |
 | H-W01-6 | W05 | GOV-07: a test that rejects an implementation made to pass by changing only its tests or by adopting an unapproved test constant as policy |
 
-### W01 re-check 2026-11-12
+#### W01 re-check 2026-11-12
 
 A second pass compared the whole W01 prompt with this Task and found four
 conflicts with the current requirement, each corrected above:
@@ -206,7 +217,7 @@ The role and relation table in prompt section 7.2 is reused from the
 documentation protocol; relation fields are W03's and state meanings W04's
 (TSK-0059 H-06 and H-07).
 
-### Read denominator
+#### Read denominator
 
 | Surface | Read |
 | --- | --- |
@@ -217,7 +228,13 @@ documentation protocol; relation fields are W03's and state meanings W04's
 | Package | W01 prompt in full; six contract files for id, version and hash |
 | Not read | The other three repositories (D-04); Project-Template `dev` |
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -234,13 +251,19 @@ documentation protocol; relation fields are W03's and state meanings W04's
 | W01 final tests | 113 | W118 | policy-unittest | Nine modules (`test_ci_gate_evidence`, `test_github_workflow_contract`, `test_agent_governance_ci_routing`, `test_spec_packages`, `test_registry`, `test_heading`, `test_profile`, `test_validator_entrypoints`, `test_generation7`) started at `8628193b9`. W02 edits to Stage 02 and 05 documents and to the protocol's retention section were made in the working tree during the run | PASS | 497 tests OK in 925 s | required | - |
 | W01 remote candidate | 113 | W118 | remote-candidate-quality | PR #960 head `a4b6c327f`, hosted run 43169451623, check rollup read on 2026-11-12 | PASS | `candidate-quality` SUCCESS; CodeQL, GitGuardian and triage SUCCESS; `main-security` and the greeting SKIPPED as designed for a PR | optional | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 113 | accepted | W01 v14.7 assessment, W01 policy checks result, W01 independent review, W01 re-check review result, W01 final checks, W01 final tests | Owner accepted on 2026-11-12 in this chat. Handoffs H-W01-1 to H-W01-6 and the partial or unadopted contracts stay with their named owners | SPEC-0212 TSK-0060 |
 
-## Review and Completion
+### Remaining Conditions
 
 In progress. The assessment, the adoption record and the policy corrections
 are recorded. The owner accepted criterion 113 on 2026-11-12. The Task stays
@@ -248,11 +271,12 @@ in progress only as the record of the contract adoption it started.
 Open: H-W01-1, H-W01-2, H-W01-4, H-W01-5 and H-W01-6 (W05), H-W01-3 (W06), and the partial or unadopted contracts
 through TSK-0059 H-04, H-06, H-09 and H-12.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [v14.2 W01 governance standardization](tsk-0056-w01-governance-standardization.md)
-- [v14.7 W00 intake](tsk-0059-w00-v14-7-intake.md)
-- [Approval boundaries](../../../../.agents/governance/approval-boundaries.md)
-- [Quality standards](../../../../.agents/governance/quality-standards.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

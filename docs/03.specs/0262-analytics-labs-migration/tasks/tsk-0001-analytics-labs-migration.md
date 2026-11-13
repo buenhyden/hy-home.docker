@@ -1,10 +1,10 @@
 ---
 title: "Analytics Labs Migration Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0262-TSK-0001"
 parent_ids:
@@ -14,14 +14,21 @@ created: "2026-11-04"
 
 # Analytics Labs Migration Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Move the OPTIONAL analytics services, SonarQube and Stalwart from the root
 Compose into standalone LAB entrypoints and reconcile every current reference.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [LAB sources](../../../../labs/README.md)
+- [Document Registry](../../../99.templates/registry.json)
+
+### Inputs and Authority
 
 On 2026-11-04 the owner decided to move these OPTIONAL services out of the
 root Compose into `labs/`: the lakehouse bundle (`spark`, `flink-jobmanager`,
@@ -43,19 +50,21 @@ Airflow, n8n, Opsflow and scripts do not call them at runtime, and the Opsflow
 notifier rejects host `stalwart` and sends only to Mailpit. This Task pushes,
 merges and starts nothing.
 
-## Work Log
+## Execution Log
 
-### Current contract decision
+### Work Performed
+
+#### Current contract decision
 
 The owner decisions authorize this Spec and Plan as written.
 
-### Current readiness and execution
+#### Current readiness and execution
 
 Inputs, work units and checks are recorded here. The Task is ready and in
 progress under the approved parents. Hosted CI passed on PR #747, merged as
 `729d16da7`.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -64,7 +73,7 @@ progress under the approved parents. Hosted CI passed on PR #747, merged as
 | SPEC-0262-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0262-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
 
-### Decisions
+#### Decisions
 
 - Grouping: one LAB per Stage 05 document set, `labs/lakehouse/docker-compose.yml`,
   `labs/dbt/docker-compose.yml`, `labs/superset/docker-compose.yml`, `labs/jupyterlab/docker-compose.yml`,
@@ -119,7 +128,7 @@ progress under the approved parents. Hosted CI passed on PR #747, merged as
 - The supply-chain ledger moved the 15 rows to `historical_lab_entries`, as
   for Supabase, with a new `source_refreshes` record.
 
-### Owner confirmations
+#### Owner confirmations
 
 On 2026-11-04 the owner answered the three open choices:
 
@@ -139,7 +148,7 @@ system Python, exactly as on `main` `1425b017b` with the same interpreter
 (jsonschema 4.10.3 lacks `referencing`). The branch adds no failure there;
 Hosted CI with the locked dependencies is the deciding run.
 
-### LAB check follow-up (2026-11-05)
+#### LAB check follow-up (2026-11-05)
 
 The owner's 2026-11-05 request to review the remaining work and continue led
 to a `lab.py check` run. Branch `fix/lab-root-observer-overlap` from
@@ -244,7 +253,7 @@ CPUs on this 12-core host, and the synthetic LAB secret files and Superset CA
 file are absent.
 The real budget is an operator input.
 
-### Changed
+#### Changed
 
 - `42413743a`: this package, the Registry `spec` high-water 262 and next
   263, the specs index row, and the new LAB asset README paths in the
@@ -266,7 +275,7 @@ The real budget is an operator input.
   across a numbered family move, so the completed SPEC-0204 TSK-0009 body
   stays unchanged; feature provisioning, Trino and Grafana inventory tests.
 
-### Open issues
+#### Open issues
 
 - Operator: provide the `LAB_*` endpoints and LAB secret copies before a
   HOME-dependent LAB runs, and approve a Superset LAB redirect URI.
@@ -280,7 +289,13 @@ The real budget is an operator input.
 - supabase: move its 11 secrets to `LAB_SECRET_DIR` copies (owner decision).
   Its Docker socket bind stays BLOCKED until an exception is approved.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -305,7 +320,13 @@ The real budget is an operator input.
 | E20 | 2 | W1 | lab-controller-allowlist | synthetic check of all 16 LABs on `6f4eb08dc` | PASS | 15 LABs: no overlap or allowlist problem; supabase refused as decided (HOME secrets; Docker socket refused by the allowlist) | required | - |
 | E19 | 2 | W1 | security-review | Independent review of the LAB overlap change through `8b231c5e3` | FAIL | CHANGES_REQUESTED: 2 Important (HOME secrets, root env and Docker root uncovered; gitignored .env accepted), 1 Minor (tests) | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -315,15 +336,18 @@ The real budget is an operator input.
 | 4 | accepted | E9 | Owner @buenhyden accepted on 2026-11-06. | @buenhyden |
 | 5 | accepted | E10, E11, E12, E15 | Owner @buenhyden accepted on 2026-11-06. | @buenhyden |
 
-## Review and Completion
+### Remaining Conditions
 
 Local checks and hosted CI for PR #747 are recorded above. The LAB check
 follow-up awaits independent review and its own hosted CI. On 2026-11-06 the owner
 @buenhyden accepted criteria 1, 3, 4 and 5; criterion 2 stays pending.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [LAB sources](../../../../labs/README.md)
-- [Document Registry](../../../99.templates/registry.json)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

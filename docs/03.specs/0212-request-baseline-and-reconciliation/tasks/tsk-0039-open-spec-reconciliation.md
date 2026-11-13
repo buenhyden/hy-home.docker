@@ -14,15 +14,23 @@ created: "2026-10-29"
 
 # Open Spec Reconciliation Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W55: record the reconciliation of the draft, blocked and in-progress
 Spec Packages, and promote the OpenTofu operations documents that replaced
 the retired Terraform triplet. This Task owns criterion 50 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Investigation records](tsk-0036-investigation-records-and-currency-fixes.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-29 the owner chose the open Spec reconciliation group of the
 partly met request lines. A read-only survey compared 47 open documents in
@@ -31,9 +39,11 @@ owner also approved promoting the 0082 OpenTofu guide, policy and runbook.
 The input is `main` at merged PR #650. Each package changed in its own pull
 request, one Spec per pull request.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -41,7 +51,7 @@ request, one Spec per pull request.
 | SPEC-0212-TSK-0039 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0039 | in-progress | completed | #evidence |
 
-### Package decisions
+#### Package decisions
 
 | Package | Decision | Pull request |
 | --- | --- | --- |
@@ -65,13 +75,21 @@ needs runtime or owner action this Task cannot take: SPEC-0204 P02 to P10,
 SEC01, TSK-0007 and criterion 22; SPEC-0218 P07; SPEC-0244; SPEC-0245;
 SPEC-0182 W7 and W10; SPEC-0219 criterion 2; SPEC-0226 criterion 3.
 
-### OpenTofu promotion
+#### OpenTofu promotion
 
 GDE-0082, POL-0082 and RUN-0082 move from `draft` to `active`. TSK-0036
 retired the Terraform triplet after moving its live migration steps into
 these three documents, so they are the current IaC operations owner.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -80,19 +98,29 @@ these three documents, so they are the current IaC operations owner.
 | Changed metadata | 50 | W55 | `check-document-metadata.py --mode check-changed` against `origin/main` | This branch | PASS | 0 violations | required | - |
 | Link check | 50 | W55 | `check-document-links.py --mode all` | This branch | PASS | 0 failures | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 50 | accepted | Package pull requests, Metadata contracts, Changed metadata, Link check | Every open package has an owner decision recorded in its own Task, and the OpenTofu documents are the active IaC owner. | SPEC-0212 TSK-0039 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Investigation records](tsk-0036-investigation-records-and-currency-fixes.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

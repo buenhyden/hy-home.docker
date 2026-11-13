@@ -14,14 +14,19 @@ created: "2026-11-04"
 
 # SPEC-0209 and SPEC-0231 Retirement Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Read the lifecycle generation 5 and 6 migration proofs from the last
 generation 6 revision, then delete SPEC-0209 and SPEC-0231.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
 
 The user asked to delete SPEC-0209 and SPEC-0231 (option L1) and approved
 reading the proofs from the generation 6 revision. On 2026-11-04 the user
@@ -30,18 +35,20 @@ work starts from main `0ab42bc30`. This Task pushes and merges nothing; the
 coordinator pushes the branch and opens the pull request, and the user
 merges.
 
-## Work Log
+## Execution Log
 
-### Current contract decision
+### Work Performed
+
+#### Current contract decision
 
 The user's direction authorizes this Spec and Plan as written.
 
-### Current readiness and execution
+#### Current readiness and execution
 
 Inputs, work units and checks are recorded here. The Task is ready and in
 progress under the approved parents. Hosted CI has not run.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -51,7 +58,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0260-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
 | SPEC-0260-TSK-0001 | in-progress | completed | #owner-acceptance-2026-11-12 |
 
-### Decisions
+#### Decisions
 
 - `previous_generation_revision(root, 7)` resolves to
   `49f8dd661acf37bf292ee0aa59abfe1af16cde10`. At that revision the
@@ -74,7 +81,7 @@ progress under the approved parents. Hosted CI has not run.
   ADR-0048 decision text and the provenance comments in
   `metadata/lifecycle.py` and `test_generation6.py` stay as lineage.
 
-### Changed
+#### Changed
 
 - `scripts/lib/document_governance/spec_packages.py`: proof source.
 - `tests/lib/document_governance/test_spec_packages.py`: three tests.
@@ -91,11 +98,17 @@ progress under the approved parents. Hosted CI has not run.
   high-water to 259, so this package moved from SPEC-0258 to SPEC-0260; 258
   stays unissued. Registry Spec high-water is 260.
 
-### Open issues
+#### Open issues
 
 - None.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -109,7 +122,13 @@ progress under the approved parents. Hosted CI has not run.
 | E8 | 4 | W3 | hosted-ci | GitHub Actions | NOT_RUN | branch not pushed | required | - |
 | E9 | 4 | W3 | hosted-ci | PR #737 merged as `e3bdc5133` from head `99553241c`; check rollup re-read with `gh pr view` on 2026-11-12 | PASS | 7 checks SUCCESS, 1 SKIPPED, none failing | required | E8 |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -118,12 +137,12 @@ progress under the approved parents. Hosted CI has not run.
 | 3 | accepted | E2, E3, E4, E5 | Accepted by the owner on 2026-11-12 | @buenhyden |
 | 4 | accepted | E7, E9 | Accepted by the owner on 2026-11-12 | @buenhyden |
 
-## Review and Completion
+### Remaining Conditions
 
 Local checks are recorded above. Independent review and hosted CI have not
 run, and no criterion is accepted yet.
 
-### Merge receipt 2026-11-10
+#### Merge receipt 2026-11-10
 
 Recorded 2026-11-10 from `gh pr view`: #737 merge `e3bdc5133` at
 2026-11-04T05:17:51Z. Hosted checks on the merged PR: every completed check
@@ -131,14 +150,19 @@ SUCCESS, the rest SKIPPED, none failing. Candidate quality: the merged change
 is a candidate that passed hosted CI. This receipt is not owner acceptance: no
 criterion is accepted and the status is unchanged.
 
-### Owner acceptance 2026-11-12
+#### Owner acceptance 2026-11-12
 
 On 2026-11-12 the owner accepted criteria 1, 2, 3, 4 in the
 SPEC-0212 TSK-0057 session. New evidence rows resolve the open required
 results with the same check and work unit; the earlier rows are kept.
 The Task closes as `completed`.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

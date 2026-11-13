@@ -1,10 +1,10 @@
 ---
 title: "W00 v14.7 Intake Task"
-version: "0.7.0"
+version: "0.7.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0059"
 parent_ids:
@@ -14,9 +14,11 @@ created: "2026-11-12"
 
 # W00 v14.7 Intake Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Own W117/criterion 112. Run the v14.7 W00 intake against this workspace. Record
 the read boundary, the pull requests merged after the v14.2 intake, the
@@ -25,7 +27,15 @@ the current implementation and the common target contracts. Correct current
 guidance that conflicts with the current requirement, and hand each remaining
 difference to one receiving work unit.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [v14.2 intake and master reconciliation](tsk-0053-master-workspace-reconciliation.md)
+- [W01 governance standardization](tsk-0056-w01-governance-standardization.md)
+- [W02 archive and safe removal](tsk-0057-w02-archive-and-safe-removal.md)
+- [W03 templates, metadata and relations](tsk-0058-w03-templates-metadata-relations.md)
+- [Documentation protocol](../../../../.agents/governance/documentation-protocol.md)
+
+### Inputs and Authority
 
 On 2026-11-12 the user supplied the v14.7 W00 prompt
 `tasks/TASK-hy-home-docker-W00.md` from the package under
@@ -46,21 +56,23 @@ native-provider or remote actions, commits, pushes, and other repositories
 (D-04). The completed TSK-0053 body stays unchanged; this Task is the current
 record of the v14.7 delta.
 
-## Work Log
+## Execution Log
 
-### Owner-directed local execution
+### Work Performed
+
+#### Owner-directed local execution
 
 The user's direction of 2026-11-12 issues this Task. It grants no operation
 outside the stated boundary.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0059 | draft | ready | #owner-directed-local-execution |
 | SPEC-0212-TSK-0059 | ready | in-progress | #owner-directed-local-execution |
 
-### Boundary 2026-11-12
+#### Boundary 2026-11-12
 
 | Item | Observation |
 | --- | --- |
@@ -70,7 +82,7 @@ outside the stated boundary.
 | Package | 256 files under `_workspace/workspace_execution_tasks/`, all git-ignored. They were read but not changed, and the package's own tools were not run |
 | Excluded | Personal, secret and ignored runtime files were not read. Product checks of the other three repositories were not run (D-04) |
 
-### Pull requests after the v14.2 intake
+#### Pull requests after the v14.2 intake
 
 These rows record metadata, the changed-file list and the hosted check rollup.
 The diff review follows the table.
@@ -105,7 +117,7 @@ confirmed from the repository and stay as recorded.
 `main-security` was SKIPPED on every row because it is a push-only job. No
 branch-protection state was read, so remote enforcement stays UNVERIFIED.
 
-### Protected prior work
+#### Protected prior work
 
 The following items were checked and left as they are:
 
@@ -123,7 +135,7 @@ The following items were checked and left as they are:
 - **Stage 98.** The README-only state and `reserved_history` are reused.
 - **Terminal Tasks.** No terminal Task body was edited.
 
-### W00 obligation assessment
+#### W00 obligation assessment
 
 | ID | Verdict | Basis |
 | --- | --- | --- |
@@ -140,7 +152,7 @@ The following items were checked and left as they are:
 | SUP-01 | PASS (bounded) | Same as the v14.2 intake. The source bytes and trace counts are not semantic review |
 | SUP-02 | PASS (bounded) | All 72 cells of the 12 designated sources judged on 2026-11-12; see Designated sources review |
 
-### OPEN-01 to OPEN-14
+#### OPEN-01 to OPEN-14
 
 These are historical audit IDs. They are not current files, issues or Tasks.
 
@@ -161,14 +173,14 @@ These are historical audit IDs. They are not current files, issues or Tasks.
 | OPEN-13 | UNVERIFIED | The hosted checks above passed. The remote ruleset and the missing, stale and wrong-App cases were never exercised (`main-protection.md:107-114`). Belongs to W06 |
 | OPEN-14 | RESIDUAL_CONFIRMED | The runner exit 124 at `tsk-0040-workspace-inventory.md:440-443` has no fix tracked, and L451 calls the fix separate CI work. Belongs to W06; no full-run is approved |
 
-### Conflicts corrected
+#### Conflicts corrected
 
 | ID | Existing | Current requirement | Change |
 | --- | --- | --- | --- |
 | C-01 | `documentation-protocol.md:327-329` allowed a Release Record profile to be added later through an ADR | The Release document role is removed and must not be re-registered under any name | The clause now forbids any Release document profile, template or generator, and keeps GitHub Release, tags, CHANGELOG and the release workflow. The existing guards catch only a profile id `release`, the roles `operations/release` and `operation/release`, and a `release.template` source (`registry.py:571-577`, `operations_catalog.py:1759-1780`; tests `test_registry.py:1780,2347-2350`, `test_operations_catalog.py:392`). A renamed profile is a policy-only boundary until H-12 |
 | C-02 | TSK-0058 Q-03 and the Spec and Plan prose for W116 kept the current Registry H2 headings | Common roles migrate to the common H2 and H3 section contract | TSK-0058 gains a dated "Q-03 superseded" section. The Spec prose for criterion 111 now says the choice is superseded, the new criterion 112 paragraph states the rule, and the Plan W116 text is edited. Q-03 stays as the record of 2026-11-11 |
 
-### Handoffs
+#### Handoffs
 
 Each row names one writer. The receiving work unit runs it in its own Task,
 issued when it starts. No receiving work was started here. H-01 to H-04 and
@@ -191,7 +203,7 @@ Registry `common` keys and the validators in the same commit.
 | H-13 | W03 | Optional: cite the C4 diagram review checklist (c4model.com/diagrams/checklist) from the architecture description template; no current rule requires it |
 | H-12 | W05 | The Release guards match fixed names only. A guard that rejects a Release document role under another id, type or template name needs a rule, for example a profile `type` or template path ending in `release`, plus a renamed-profile negative test |
 
-### Vocabulary changes 2026-11-12
+#### Vocabulary changes 2026-11-12
 
 On the owner's repeated direction of 2026-11-12 to continue each open item and
 fix conflicts with the current requirement, this Task also ran H-01, H-02,
@@ -219,7 +231,7 @@ H-03 and H-11:
 - H-11: no provider surface copies the glossary. `.claude/provider.md` reads
   knowledge files directly, and renderer drift is 0: KEEP.
 
-### Owner decision on the common form 2026-11-12
+#### Owner decision on the common form 2026-11-12
 
 Moving the 16 common roles to the `COMMON-DOC-FORM-1` H2 and H3 sections
 touches 728 current documents, 83 of them terminal: 52 completed Tasks, 30
@@ -231,7 +243,7 @@ Registry profile and template. Recorded facts, evidence rows, decisions and
 tables keep their content; only their section placement changes. This is an
 owner-directed amendment of terminal bodies for the form migration alone.
 
-### Common form migration 2026-11-12
+#### Common form migration 2026-11-12
 
 H-05 is done. A profile can now declare `required_subsections` and
 `optional_subsections` (an H2 mapped to its ordered H3 titles). The heading
@@ -264,7 +276,7 @@ section contract carries only the titles and their order; the per-section
 required and prohibited content stays a review duty, except the bare
 placeholder rule above.
 
-### External sources re-check 2026-11-12
+#### External sources re-check 2026-11-12
 
 A read-only agent fetched each primary URL on 2026-11-12. All six returned
 content, so the four sources marked INHERITED_FROM_V14_6_NOT_REQUERIED are now
@@ -279,7 +291,7 @@ directly re-checked.
 | RS-49 | git-diff, Git 2.56.0 docs | Supported: `--cached` shows staged changes against a commit | Project choice: partial-stage counterexample and no automatic stage, stash or reset |
 | RS-50 | GitHub Docs, events that trigger workflows, no visible date | Supported: a `pull_request` run uses the merge commit, not the head | Project choice: the 12 Git-stage cells; `merge_group` applies only with a merge queue |
 
-### Designated sources review 2026-11-12
+#### Designated sources review 2026-11-12
 
 On the owner's request of 2026-11-12, three read-only agents fetched the 12
 designated sources and judged each against the six perspectives: composition,
@@ -316,7 +328,7 @@ the architecture description template could cite the C4 diagram review
 checklist when diagrams are reviewed (H-13). A source informs a choice here and
 never stands in for the owner's authority.
 
-### W00 follow-up correction 2026-11-12
+#### W00 follow-up correction 2026-11-12
 
 The owner sent a W00 follow-up prompt on 2026-11-12. It asks for the
 historical audit IDs to be judged apart from product state, for three
@@ -339,7 +351,7 @@ Wording corrections:
   review. No independent review of the 1,250 lines or 14,028 pairs was done,
   and no per-workspace acceptance of those numbers is needed.
 
-#### Historical audit IDs
+##### Historical audit IDs
 
 | ID | Historical meaning | Checked here | Existing decision | This W00 scope | Current product impact | Current owner | Verdict | Next action | Sole blocking scope |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -358,7 +370,7 @@ Wording corrections:
 | OPEN-13 | Required checks and trust boundary | `candidate-quality` SUCCESS on PRs 953-959; `main-protection.md:107-114` | None | Hosted rollup only | Missing, stale and wrong-App cases unexercised; ruleset not read back | No Task yet; W06 | UNVERIFIED (not inspected here) | W06 | Those enforcement cases |
 | OPEN-14 | Runner timeout cause | `tsk-0040-workspace-inventory.md:440-451` | TSK-0040 closed; fix left to CI work | Read | Full gate leaf times out | No Task yet; W06 | RESIDUAL_CONFIRMED | W06 read-only diagnosis | That leaf |
 
-#### Product residuals and current owners
+##### Product residuals and current owners
 
 | ID | Residual | Current owner | Current state | Assigned to |
 | --- | --- | --- | --- | --- |
@@ -390,7 +402,7 @@ follow-up.
 Branch note: this Task's corrections are on the local branch only and reach
 `main` only through a reviewed pull request.
 
-### Read denominator
+#### Read denominator
 
 | Surface | Discovered | Read | Not read |
 | --- | --- | --- | --- |
@@ -405,7 +417,13 @@ controller re-read the deciding lines for C-01, C-02, the PR table, the
 protected items and OPEN-01 to OPEN-14. The handoff file:line facts come from
 those agents and are re-verified by each receiving work unit before it edits.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -430,13 +448,19 @@ those agents and are re-verified by each receiving work unit before it edits.
 | Intake independent review result | 112 | W117 | independent-document-review | Fresh-context code-reviewer of `7f1c82ab9` and `ce56a7256` contents | PASS | APPROVED. Three minor findings fixed: a `main-protection.md` line citation, the superseded Spec prose for criterion 111, and the overstated guard coverage (H-12 added). 9 of 10 citations spot-checked matched | required | Intake independent review |
 | W00 remote candidate | 112 | W117 | remote-candidate-quality | PR #960 head `a4b6c327f`, hosted run 43169451623, check rollup read on 2026-11-12 | PASS | `candidate-quality` SUCCESS; CodeQL, GitGuardian and triage SUCCESS; `main-security` and the greeting SKIPPED as designed for a PR | optional | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 112 | accepted | W00 v14.7 intake assessment, Intake document checks result, Intake independent review result, PR 953-959 diff review, Designated sources review | Owner accepted on 2026-11-12 in this chat. Handoffs H-04 (13 roles), H-06 to H-10 and H-12, OPEN-04 (BLOCKED_EVIDENCE) and OPEN-08, 10, 13 (UNVERIFIED) stay with their named owners | SPEC-0212 TSK-0059 |
 
-## Review and Completion
+### Remaining Conditions
 
 In progress. The assessment and the two conflict corrections are recorded.
 The owner accepted criterion 112 on 2026-11-12. The Task stays in progress
@@ -455,12 +479,12 @@ Open, with owners:
   W00 follow-up correction 2026-11-12. OPEN-01 and 02 are SUPERSEDED;
   OPEN-05 and 06 are NOT_APPLICABLE.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [v14.2 intake and master reconciliation](tsk-0053-master-workspace-reconciliation.md)
-- [W01 governance standardization](tsk-0056-w01-governance-standardization.md)
-- [W02 archive and safe removal](tsk-0057-w02-archive-and-safe-removal.md)
-- [W03 templates, metadata and relations](tsk-0058-w03-templates-metadata-relations.md)
-- [Documentation protocol](../../../../.agents/governance/documentation-protocol.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

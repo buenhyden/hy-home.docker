@@ -1,10 +1,10 @@
 ---
 title: "CLN01 Material Retirement Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0007"
 parent_ids:
@@ -14,16 +14,24 @@ created: "2026-10-10"
 
 # CLN01 Material Retirement Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Implement the narrow, audited retirement path for material that another owner
 has retired in source. A candidate is deletable only after source, runtime,
 jobs, backup/restore and external consumers are all confirmed absent; a
 candidate list alone is not completion.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Current request reconciliation](../../0212-request-baseline-and-reconciliation/spec.md)
+- [Historical P00 Task](../../0212-request-baseline-and-reconciliation/tasks/tsk-0003-active-contract-and-exclusions.md)
+- [OpenBao trust Task](tsk-0006-openbao-trust-bootstrap-and-recovery.md)
+
+### Inputs and Authority
 
 The user authorizes this implementation, its tests, scoped validation, logical
 commit and owning-Spec delivery after checks and independent review. The target
@@ -43,15 +51,17 @@ Open Notebook optional materials are `UNKNOWN_BLOCKED`, not unused;
 secrets, data and images are excluded. OpenBao/CA/backup keys, current
 cryptographic identities, archives and history are protected from the helper.
 
-## Work Log
+## Execution Log
 
-### Initial issuance
+### Work Performed
+
+#### Initial issuance
 
 This is the initial draft issuance, held for coordinated integration. Public
 implementation results below are source evidence, not authority for private
 apply or package completion. No Task lifecycle transition is claimed.
 
-### W24 execution contract
+#### W24 execution contract
 
 The implementation writer owns only `scripts/operations/retire-materials.py`,
 `scripts/lib/ops/retire_materials.py`, and their focused tests. SMTP01 owns
@@ -83,7 +93,7 @@ use `git rm -- PATH...`; private targets use the helper; an empty directory may
 use `rmdir` only after inspection. No recursive removal, glob, prune, volume
 deletion, credential API or broad environment evaluation is permitted.
 
-### Input, ownership and observation receipt
+#### Input, ownership and observation receipt
 
 Start `main`, `origin/main`, remote `main` and HEAD were all
 `a03c8930a5a15a82f4176bbcfe457bc2ce09db4b`; worktree was clean. Relative to
@@ -122,7 +132,7 @@ canonical and duplicate SMTP paths remain present regular files with nlink 1;
 PG-020 remains present with nlink 2. No file contents or secret hashes were
 read, compared or recorded. Equality of SMTP values is user-supplied input.
 
-### Candidate dispositions and missing facts
+#### Candidate dispositions and missing facts
 
 | Public material | Action / disposition | Five-axis evidence and residual |
 | --- | --- | --- |
@@ -138,7 +148,7 @@ must resolve the named missing consumer/recovery facts by 2026-10-17 or record
 a fresh bounded follow-up. A protected hold does not prevent any independently
 proven UNUSED_DELETE item from being processed in its owning unit.
 
-### Read-only host observations
+#### Read-only host observations
 
 The corrected COMM-003 path is a regular file with nlink 1; no alternate
 duplicate location was observed. The canonical path has nlink 1 and PG-020 has
@@ -155,7 +165,7 @@ an empty host-exclude setting. Encrypted restorability, snapshot retention,
 RPO and RTO remain UNKNOWN; no private snapshot was listed or compared, and no
 runtime state changed.
 
-### Read-only command receipt
+#### Read-only command receipt
 
 Observation input is the original operator checkout
 `/home/hyunyoun/data/hy-home.docker` on 2026-10-10 KST. Git base is
@@ -244,7 +254,7 @@ all succeeded (exit 0). The tracked host-exclude file contains only a comment
 and the entrypoint includes `/src/host`, so source declares whole-secrets
 backup. Actual backup success, snapshots and restore remain UNKNOWN/NOT_RUN.
 
-### Five-axis continuation and P09 handoff
+#### Five-axis continuation and P09 handoff
 
 All candidates below are root-scope and owned by @buenhyden; the public catalog
 remains the identity/path owner. Source at the current main still declares
@@ -312,7 +322,7 @@ security follow-up accepts the unchanged CLN source for logical commit/draft
 PR, but private apply remains BLOCKED. Neither CLI is invoked against private
 material by this Task.
 
-### Execution and correction record
+#### Execution and correction record
 
 The source test-authoring route witnessed missing-helper RED (exit 1), then
 basic actual-delete/idempotence GREEN (one synthetic test, exit 0). Expanded
@@ -395,7 +405,7 @@ No Registry, lifecycle validator or regression assertion was weakened. The
 focused failing test then passed (1 test, 23.469 seconds, exit 0) after the
 entire table removal. The final local prerequisite result is separate.
 
-### Executed source commands
+#### Executed source commands
 
 All commands below use HEAD `a03c8930a5a15a82f4176bbcfe457bc2ce09db4b` plus
 the public working changes. Python source checks use the frozen helper SHA
@@ -411,7 +421,7 @@ git diff --check
 rtk proxy python3 -m unittest tests.lib.document_governance.test_spec_packages.SpecPackageTests.test_current_repository_spec_packages_cover_spec_directories -v
 ```
 
-### Reproducible dependency probes
+#### Reproducible dependency probes
 
 The following public-only probe was run from `/tmp/hy-home-cln01` against
 `/tmp/hy-home-smtp01/scripts/lib/ops/smtp_contract.py` at worktree HEAD
@@ -483,7 +493,7 @@ parent_mount_probe=EXPECTED_REFUSAL:old_runtime_parent_mount
 private_input_or_runtime_mutation=False
 ```
 
-### Preparation-contract review follow-up
+#### Preparation-contract review follow-up
 
 P09 artifacts subsequently appeared in `/tmp/hy-home-p09`; they remain owned
 by that session. Read-only review examined the consumer policy, artifact
@@ -511,7 +521,7 @@ This is bounded source/synthetic review, not the complete P09 acceptance suite.
 P09 schemas/fixtures have an explicit development-acceptance consumer and
 remain ACTIVE_KEEP. No P09 source/doc file is created, moved or modified here.
 
-### Final local verification and logical delivery receipt
+#### Final local verification and logical delivery receipt
 
 Source commit `3048c31fe2e1a53d4b481df3fda5ce587cae80c5` has tree
 `61457438a65d3eb73ed56e10d1a2b2251cb06d85` and unchanged frozen helper SHA.
@@ -612,7 +622,7 @@ still present regular files with nlink 1; PG-020 is present with nlink 2.
 Actual private apply, HOME, migration, rotation and recovery remain NOT_RUN.
 Remote PR candidate and coordinated merge remain pending.
 
-### Latest main reconciliation
+#### Latest main reconciliation
 
 The evidence-only commit is `c015c1ee5ef21d44299e5a7b34f24cd8077f39d0`.
 Read-only remote inspection found main
@@ -653,7 +663,7 @@ A later public-only SMTP dependency recheck found worktree HEAD
 the distinct `secrets/.smtp01-retirement.lock` therefore remains an
 interoperability blocker. CLN01 has not edited that source or generator.
 
-### Final helper lock wording and verification
+#### Final helper lock wording and verification
 
 Final source review found the helper docstring incorrectly described generator
 coordination as implemented. It now says flock covers only cooperating callers
@@ -688,7 +698,7 @@ rtk proxy env COVERAGE_FILE=/tmp/cln01-latest.coverage /tmp/cln01-qa-uv/bin/pyth
 rtk proxy env COVERAGE_FILE=/tmp/cln01-latest.coverage /tmp/cln01-qa-uv/bin/python -m coverage report --show-missing --fail-under=80
 ```
 
-### Current Coordinator Local Dev Reconciliation
+#### Current Coordinator Local Dev Reconciliation
 
 The latest direct instruction authorizes local `dev` integration and branch/
 worktree cleanup without PRs. Prior PR observations above are historical.
@@ -722,7 +732,7 @@ remain unresolved, so there is still no independently proven UNUSED_DELETE
 private target. Unknowns are not converted to consumer absence. LAB runtime
 and learning/Wiki implementation remain excluded.
 
-### Superseding Local Main Delivery
+#### Superseding Local Main Delivery
 
 The latest instruction selects local `main` only and prohibits dev. Preserve the
 recorded earlier delivery instruction as history; it does not authorize a dev
@@ -732,7 +742,7 @@ UNUSED_DELETE candidate has independently closed all current-consumer and recove
 axes, so private apply and recovery remain NOT_RUN. Preserve positive initialization,
 manual and rollback consumers and foreign dirty worktrees during local integration.
 
-### User-accepted scope and LAB exclusion — 2026-10-12
+#### User-accepted scope and LAB exclusion — 2026-10-12
 
 At input main `2773a20c1c24ce1b70f64b36fe8f6f5108f49542`, the user confirmed
 acceptance of the delivered CLN01/SMTP01 changes. Actual LAB GoTrue SMTP
@@ -748,7 +758,7 @@ materials remain unknown and require their own bounded disposition; this
 user acceptance does not fabricate a private deletion or recovery receipt.
 No private file, service, credential or LAB runtime changed in this unit.
 
-### Fresh deletion reassessment — 2026-10-13
+#### Fresh deletion reassessment — 2026-10-13
 
 The current request selects an owning-Spec PR with latest-head checks and
 independent review, superseding the earlier local-main-only delivery instruction
@@ -874,7 +884,7 @@ revert of this documentation commit restores only this receipt's text; it neithe
 recreates private files nor undoes historical deletion. HOME functional acceptance,
 MIGRATION, ROTATION, RECOVERY and new actual deletion remain `NOT_RUN`.
 
-### Current Source and Private-Deletion Assessment — 2026-10-22
+#### Current Source and Private-Deletion Assessment — 2026-10-22
 
 The current documentation audit distinguishes the corrected source validation
 recorded in Fresh deletion reassessment from the initial remote candidate
@@ -892,7 +902,13 @@ is added. COMM-003 remains SMTP01-only, and COMM-002, PG-020 and cryptographic
 recovery materials remain protected. This clarification changes no Evidence
 edge, criterion decision or Task lifecycle status and grants no deletion.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -905,13 +921,19 @@ edge, criterion decision or Task lifecycle status and grants no deletion.
 | Fresh actual deletion disposition | 12 | W24 | BLOCKED_FACTS: current user confirms no approved new ROOT candidate; metadata observation cannot close five axes or independent custody | Original checkout `328871a94b42c13f676e61b40f026c906ebbc13d` stable before/after probe | NOT_RUN | Exact path/material table above; COMM-003 already absent; zero new actual deletions | - |
 | Initial remote candidate validation | 12 | W24 | Candidate-quality metadata: malformed Evidence Result/Acceptance values; exit 1; CodeQL and GitGuardian passed separately | PR #427 head `4434fd8208613f6798164b73c2d458de5ac07bbc`; run `38271931877` | FAIL | Fresh deletion reassessment; authoring error corrected in the next logical commit | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
 | 12 | rejected | Initial remote candidate validation | Generation 5 Evidence row rejected |
 
-## Review and Completion
+### Remaining Conditions
 
 The delivered CLN01/SMTP01 increment is user-accepted under the clarification
 above. LAB GoTrue connection/activation is excluded, not a pending completion
@@ -933,10 +955,12 @@ material. Private recovery is limited to a pre-existing encrypted recovery
 artifact or a reissue path proved before deletion. No service health, actual
 secret migration, native SMTP delivery, runtime consumer absence, actual deletion or recovery is claimed by this draft.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Current request reconciliation](../../0212-request-baseline-and-reconciliation/spec.md)
-- [Historical P00 Task](../../0212-request-baseline-and-reconciliation/tasks/tsk-0003-active-contract-and-exclusions.md)
-- [OpenBao trust Task](tsk-0006-openbao-trust-bootstrap-and-recovery.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

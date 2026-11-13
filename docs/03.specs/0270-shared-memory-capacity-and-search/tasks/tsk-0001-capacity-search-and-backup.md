@@ -1,10 +1,10 @@
 ---
 title: "Capacity Search and Backup Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0270-TSK-0001"
 parent_ids:
@@ -14,13 +14,18 @@ created: "2026-11-10"
 
 # Capacity Search and Backup Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Implement W1-W6 without operating the real shared-memory store or backups.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
 
 On 2026-11-10 the user explicitly requested implementation of the complete
 plan presented in this chat. That request authorizes the bounded local
@@ -47,15 +52,17 @@ Exact writer leases:
 No worker stages, commits or reverts another writer's changes. Unknown provider
 request/token/cost ceilings stay UNKNOWN; no paid model API is introduced.
 
-## Work Log
+## Execution Log
 
-### Owner-approved local execution
+### Work Performed
+
+#### Owner-approved local execution
 
 The trusted user approved the Spec/Plan behaviour and requested implementation
 on 2026-11-10. The lifecycle table records that approval, not an independently
 authenticated permission or operational acceptance.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -64,11 +71,11 @@ authenticated permission or operational acceptance.
 | SPEC-0270-TSK-0001 | draft | ready | #owner-approved-local-execution |
 | SPEC-0270-TSK-0001 | ready | in-progress | #owner-approved-local-execution |
 
-### Verification boundary
+#### Verification boundary
 
 No operational memory inventory, native provider, backup or recovery has run.
 
-### Implementation and witnessed regressions
+#### Implementation and witnessed regressions
 
 The memory writer witnessed failing capacity/search expectations before their
 implementation. The backup writer witnessed three producer contract failures
@@ -88,7 +95,7 @@ wrong ledger schema first produced five uncaught IndexErrors in two tests;
 the final narrow correction produces sanitized CapacityError results and
 preserves the original bytes.
 
-### Final local validation and tools
+#### Final local validation and tools
 
 At main `c463e4ae5807b68fa63d9ff1859ab22cb5b85428` plus the task-owned
 working-tree diff, the parent ran coverage 7.17.2 with CPython 3.12.3 and
@@ -155,7 +162,13 @@ with zero violations and zero overrides. Scoped markdownlint first found one
 extra blank line in the Runbook; removing that line produced six clean files.
 The result-only record changes no status, link target, script or contract.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -173,7 +186,13 @@ The result-only record changes no status, link target, script or contract.
 | Independent source verification | 5 | W6 | independent-review-and-registration | Final source diff | NOT_RUN | Awaiting integration and review | required | - |
 | Final source and registration review | 5 | W6 | independent-review-and-registration | Final hashes in Work Log and registered script/test routes | PASS | Code and exact-hash security APPROVED; manifest, workflow contract, governance, renderer parity and ownership checks PASS | required | Independent source verification |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -184,7 +203,7 @@ The result-only record changes no status, link target, script or contract.
 | 5 | pending | Final source and registration review | Source review approved; owner acceptance and hosted CI remain separate | SPEC-0270 TSK-0001 |
 | 6 | pending | Final document checks | Current guidance verified; owner acceptance pending | SPEC-0270 TSK-0001 |
 
-## Review and Completion
+### Remaining Conditions
 
 Local implementation and independent source review are complete. This Task
 remains in progress pending the owner's criterion acceptance. Real inventory
@@ -194,7 +213,12 @@ Local logical commits are source checkpoints, not criterion acceptance.
 Required supply-chain evidence and the other owners' acceptance remain
 separate outstanding work.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

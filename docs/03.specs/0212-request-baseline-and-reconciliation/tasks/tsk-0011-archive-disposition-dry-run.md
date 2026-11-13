@@ -14,9 +14,11 @@ created: "2026-10-29"
 
 # Archive Disposition Dry-Run Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W27: record, per Stage 98 retention unit, whether a Git-history-only
 disposition could be approved now and, if not, what blocks it. This Task owns
@@ -24,7 +26,13 @@ criterion 22 only. It removes no file, adds no Retention Catalog row or
 `archive_authorizations` entry, and does not reopen TSK-0007 criterion 14 or
 TSK-0010 criterion 21.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Historical link classification Task](tsk-0010-historical-link-classification.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The direct user request on 2026-10-29 selected a dry-run before any archive
 removal and authorized recording it as a SPEC-0212 Task. The input is published
@@ -34,9 +42,11 @@ documentation change, its branch, pull request, and merge through the protected
 path. It does not authorize an archived-body edit, a catalog row, a checker
 change, or any removal.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -44,7 +54,7 @@ change, or any removal.
 | SPEC-0212-TSK-0011 | ready | in-progress | #method |
 | SPEC-0212-TSK-0011 | in-progress | completed | #disposition-summary |
 
-### Method
+#### Method
 
 A read-only scratch script grouped every tracked file under
 `docs/98.archive/{completed,superseded,retired}/` with the checker's own
@@ -57,7 +67,7 @@ Capture state and holds come from `assessment_lookup()`. A unit is a candidate
 only with no current Markdown consumer, no machine consumer, and no hold.
 Route records (`tombstones/`, `migrations/`) hold no body and are out of scope.
 
-### Disposition summary
+#### Disposition summary
 
 237 units hold 356 files. The corpus checker's `preserved=354` counts
 Markdown records only; the two-file difference is non-Markdown payload such as
@@ -75,7 +85,7 @@ Markdown records only; the two-file difference is non-Markdown payload such as
 | superseded | captured candidate | 24 | 47 |
 | superseded | uncaptured candidate | 8 | 10 |
 
-### Capture-row gap
+#### Capture-row gap
 
 `scripts/lib/document_governance/archive_assessments.py` rejects a Current
 Assessments row whose unit has no Retention Catalog capture row. The catalog
@@ -85,7 +95,7 @@ candidates therefore have no valid Git-history-only route under the current
 contract. Opening one is a contract change for the Stage 98 policy owner, not
 a step this Task may take.
 
-### Captured candidates
+#### Captured candidates
 
 These 46 units (102 files) are the only units a unit-scoped approval could
 cover today. An isolated restore with `git archive HEAD` reproduced all 102
@@ -141,7 +151,7 @@ exists.
 | `superseded/05.operations/catalog/04-data/0023-minio/runbook.md` | superseded | 1 |
 | `superseded/90.references/research/0081-roadmap/README.md` | superseded | 1 |
 
-### Blocked units
+#### Blocked units
 
 These 24 units stay `retained`. A unit with current links can move only after
 its consumers cite a current owner. A machine reference needs its code or test
@@ -174,7 +184,7 @@ owner to change first.
 | `retired/90.references/data/0067-foundation/data.yaml` | 1 | 0 | `scripts/lib/document_governance/archive.py` | machine reference |
 | `superseded/03.specs/0172-document-contract-convergence/` | 3 | 0 | `tests/lib/document_governance/test_registry.py` | machine reference |
 
-### Removal prerequisites
+#### Removal prerequisites
 
 A later removal Task must carry, per unit, an `archive_authorizations` entry
 with `unit`, `action`, `approved_by`, `approved_at`, `evidence`, and `status`.
@@ -182,7 +192,13 @@ The evidence heading must contain the line
 `> <owner> approved <action> for <unit> on <date>.`, and the Current Assessments
 row must use the same date. No such approval exists for any unit.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -198,19 +214,29 @@ The script ran from an ignored session scratch directory and is not a durable
 artifact; the method above and the Git objects at the named commit reproduce
 every count.
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 22 | accepted | Unit grouping, Consumer trace, Capture-row rule, Isolated restore, Archive integrity, Current link regression, Changed document metadata | The dry-run names 46 approvable candidates, 167 candidates without a valid route, and 24 blocked units; nothing is removed or authorized. | SPEC-0212 TSK-0011 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the source evidence above. It makes no removal, hosted,
 merge, or runtime claim; those are observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Historical link classification Task](tsk-0010-historical-link-classification.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

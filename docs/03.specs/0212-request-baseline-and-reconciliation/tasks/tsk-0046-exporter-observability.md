@@ -1,10 +1,10 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.1.15"
+version: "0.1.16"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0046"
 parent_ids:
@@ -14,16 +14,25 @@ created: "2026-11-02"
 
 # Exporter and Observability Contracts Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Implement the approved local P07 companion-start, independently expected
 target and observation freshness contracts. Preserve historical datastore and
 quality metrics acceptance, and separate source, owned isolation and operational
 execution evidence.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
+- [Secret structure Task](tsk-0045-secret-structure-openbao.md)
+- [Compose profiles policy](../../../05.operations/policies/01-common/0078-compose-profile-vocabulary.md)
+- [Alloy recovery Runbook](../../../05.operations/runbooks/07-observability/0040-alloy.md)
+
+### Inputs and Authority
 
 The direct P07 plan authorizes local implementation, synthetic and bounded
 owned isolated checks, the exact declared Prometheus 3.15.1 digest image pull,
@@ -43,9 +52,11 @@ SPEC-0224 datastore observation acceptance and SPEC-0214 quality OTLP
 acceptance. Historical P07 resource optimization belongs to SPEC-0218 and is
 distinct from this request.
 
-## Work Log
+## Execution Log
 
-### Single-writer leases
+### Work Performed
+
+#### Single-writer leases
 
 Every writer records public existing-path fingerprints or ABSENT new paths
 before editing and pauses only the affected path if a concurrent change
@@ -113,7 +124,7 @@ Shared observability Compose baseline is
 `555bbb09e3e05f1b9de005c2d7210a9931eceb6552f5855a7d524ac14d6d4aa4`;
 no Compose edit is currently planned.
 
-### Current dispositions
+#### Current dispositions
 
 | Item | Criterion | Work Unit | Initial disposition | Current boundary |
 | --- | --- | --- | --- | --- |
@@ -122,7 +133,7 @@ no Compose edit is currently planned.
 | P07.03 | 84 | W89 | REUSE_ACCEPTED | Authenticated quality OTLP acceptance exists; current pinned delivery/failure checks are distinct |
 | P07.04 | 85 | W90 | IMPLEMENT_GAP | General expected target state is absent; retain DEV on/off and defer unowned workload freshness |
 
-### Safety and evidence boundaries
+#### Safety and evidence boundaries
 
 Use the existing source closure and policy companion authority; do not invent
 a second manual inventory, automatic unrelated profile activation, reverse
@@ -152,7 +163,7 @@ was pulled and read back for linux/amd64; the Alloy 1.20.1 digest
 was cached. This is image availability evidence only, not signature verification,
 an isolated cluster result, or operating acceptance.
 
-### Reuse and official applicability
+#### Reuse and official applicability
 
 SPEC-0224 records HOME acceptance on 2026-10-22 for the named management and
 DEV PostgreSQL and Valkey monitoring jobs, with DEV deliberately stopped in
@@ -178,7 +189,7 @@ pending queue with no sent-counter progress over two minutes and separately
 detects a missing counter. A highest-sent sample timestamp is not treated as
 wall-clock transmission time. Final rule behavior still requires verification.
 
-### D08 Airflow direct-start companions (2026-11-08)
+#### D08 Airflow direct-start companions (2026-11-08)
 
 A direct user request on 2026-11-08 re-ran the exporter scope as D08 on
 `main` `2f86dd9e3`. The Airflow hypothesis was reproduced with the start
@@ -197,7 +208,7 @@ the three producers before the change and passes after; a bare `docker
 compose up` outside the selector still does not add companions, as POL-0078
 states.
 
-### D08 HOME alert census and selection rule (2026-11-08)
+#### D08 HOME alert census and selection rule (2026-11-08)
 
 A read-only census of HOME Prometheus on 2026-11-08 found 38 active targets,
 30 up and 8 down. All eight are DNS failures of services HOME does not run:
@@ -225,7 +236,7 @@ secret ID`, 2,035 failures, the RUN-0103 restart case). Its recovery is the
 owner's RUN-0103 `agent-restart` and is recorded with the secret owner, not
 here.
 
-### D08 selector and COMPOSE_FILE (2026-11-08)
+#### D08 selector and COMPOSE_FILE (2026-11-08)
 
 Planning a HOME selector start to clear `ObservationSelectionMissing` showed
 that `compose_start.execute_plan` always passed `-f docker-compose.yml` (plus
@@ -243,7 +254,7 @@ planning refuses execution. A live plan reads the three HOME files. A target
 plan selects only the targeted jobs, so the HOME apply uses `--selection HOME`
 after a `docker compose --dry-run` of its recreations.
 
-### D08 Alloy 4319 and quality metrics on HOME (2026-11-08)
+#### D08 Alloy 4319 and quality metrics on HOME (2026-11-08)
 
 **T04 source state.** The running `alloy` (`grafana/alloy:v1.20.1`) mounts
 `config.home.alloy`, listens on 4317, 4318 and 4319, sits on
@@ -303,7 +314,7 @@ any label. Two items are still open:
   for the D05 E9 run on 2026-11-09 08:00 KST.
 - **Locust:** the LAB scope check was not run, and no LAB runtime was started.
 
-### D08 HOME selector start after #828 (2026-11-08)
+#### D08 HOME selector start after #828 (2026-11-08)
 
 **Plan and drift.** On `main` `56dca2a34`, the plan with `--selection HOME
 --dev-data-expected off` read all three HOME `COMPOSE_FILE` entries and listed 45
@@ -364,7 +375,7 @@ choose one of two fixes:
 
 `ObservationSelectionMissing` keeps firing until then.
 
-### D08 container throttle alerts (2026-11-09)
+#### D08 container throttle alerts (2026-11-09)
 
 After the selector start, `ContainerHighThrottleRate` fired for
 `airflow-triggerer`, `crawl4ai-egress`, `node-exporter` and `openbao-agent`.
@@ -392,7 +403,7 @@ rule also requires 0.1 CPU-second per second withheld, so a short burst no
 longer fires it while a container starved under load still does. The HOME
 apply of these changes is a separate approved step.
 
-### D08 HOME selection with DEV data (2026-11-09)
+#### D08 HOME selection with DEV data (2026-11-09)
 
 The owner chose the first fix for the selector gap on 2026-11-09: POL-0078
 1.15.0 lets a HOME plan add `dev-data` when it declares
@@ -404,7 +415,7 @@ with `on`, the 45 HOME targets plus `dev-pg`, `dev-pg-exporter`,
 with `off`. Starting Prometheus through the selector, which clears
 `ObservationSelectionMissing`, is a separate approved HOME step after merge.
 
-### D08 HOME apply and Hermes run (2026-11-09)
+#### D08 HOME apply and Hermes run (2026-11-09)
 
 With owner approval, plan `977274558bea` (HOME, DEV data `on`, 50 targets)
 ran on `main` `b329bbe9d`. The first `up` returned `START_FAILED`:
@@ -438,7 +449,7 @@ start is the likely cause, not a proven one; the next execution finished in 3.8
 seconds. `HermesResearchBlocked` fires for `devops`, which observes E11 firing;
 its resolution waits for the next successful `devops` run.
 
-### D08 reboot test (2026-11-09)
+#### D08 reboot test (2026-11-09)
 
 The owner rebooted the host at 12:49 KST after the backup and the MLflow pilot
 finished, then unsealed OpenBao. Four defects showed up during recovery:
@@ -484,7 +495,7 @@ finished, then unsealed OpenBao. Four defects showed up during recovery:
   52 s, above the helper's 20-second command limit. The Agent stays stopped
   until container starts settle.
 
-### HOME scrape jobs that never ran (2026-11-09)
+#### HOME scrape jobs that never ran (2026-11-09)
 
 After the reboot, 8 of 38 active targets were down. All 8 carried
 `expected_state="off"` and none had been up in the three days before; alert
@@ -504,7 +515,7 @@ HOME does not scrape its exporters). It moved to
 `labs/postgresql-ha/config/prometheus-alert-rules.yml`, which HOME Prometheus
 does not load; promtool passes for both files.
 
-### HOME coverage gaps (2026-11-09)
+#### HOME coverage gaps (2026-11-09)
 
 The owner asked to review HOME services that Prometheus or Grafana miss and
 fix them. Most HOME targets are scraped and have dashboards. Five were not:
@@ -524,7 +535,7 @@ fix them. Most HOME targets are scraped and have dashboards. Five were not:
   that network would weaken the isolation, so it stays cAdvisor and Docker
   health only.
 
-### Post-reboot applies (2026-11-09)
+#### Post-reboot applies (2026-11-09)
 
 - **Databases (#844).** Both Postgres servers were stopped with `pg_ctl stop -m
   fast` as `postgres` (the old containers still lacked `KILL`), then recreated
@@ -548,13 +559,19 @@ fix them. Most HOME targets are scraped and have dashboards. Five were not:
   `gatus_results_endpoint_success{key="ai_open-webui"}` reads 1, and the mounted
   Grafana `Security/openbao.json` holds the Agent panels.
 
-### Owner acceptance 2026-11-10
+#### Owner acceptance 2026-11-10
 
 On 2026-11-10 the owner (@buenhyden) accepted criteria 82 and 84 after the
 target-plan reruns, the independent launcher re-review and the isolated OTLP
 fixture run.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -610,7 +627,13 @@ fixture run.
 | Authenticated OTLP delivery rerun | 84 | W89 | Pinned isolated Alloy/Prometheus test | `examples/operations/quality-metrics/acceptance.py` at `main` `5f4160d1a`; cached Alloy v1.20.1 `2aa2099a`, Prometheus v3.15.1 `fa330227`, probe `79e7a9b9` | PASS | Exit 0 on 2026-11-10: 22 PASS lines covering delta and cumulative counters and histograms, the unauthenticated producer rejected with 401, a missing identity dropped, retry and epoch reset; owned containers and network removed with no volume deletion. k6 stage not run; live Grafana datasource and prior-state recovery stay NOT_RUN. | required | Authenticated OTLP delivery |
 | D08 HOME alert census 2026-11-11 | 83 | W88 | Read-only Prometheus targets, alerts and Alertmanager counters | HOME, 2026-11-11 14:26 KST | FAIL | 31 of 32 targets up; `flower` is down because it is not in the HOME selection (no container). Firing: `HermesResearchBlocked` (devops, business_ideas), `HermesResearchNoSuccess` (devops, TSK-0054), `ObservationSelectionMissing` (cleared by the HOME selector run after the OpenBao window); `PostgresHighRollbackRate` pending. Alertmanager notifications 30, failed 0. | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 The first isolated fixture run exercised Alloy self metrics, counter and
 histogram delivery, labels, authentication rejection, identity and replay,
@@ -625,7 +648,7 @@ Actual Grafana, trace and log delivery and durable restore remain NOT_RUN.
 | 84 | accepted | Authenticated OTLP delivery, Authenticated OTLP delivery rerun | Accepted by owner @buenhyden on 2026-11-10 on the pinned isolated fixture: authenticated OTLP delivery passes and an unauthenticated producer is rejected. Live Grafana datasource and prior-state recovery stay NOT_RUN. | SPEC-0212 TSK-0046 |
 | 85 | pending | Selection and recovery handoff | IMPLEMENT_GAP; HOME/reload/remote acceptance remains NOT_RUN. | SPEC-0212 TSK-0046 |
 
-## Review and Completion
+### Remaining Conditions
 
 Some final local gates remain pending. Actual HOME
 operation, alert delivery, operational restore, remote CI and final acceptance
@@ -647,11 +670,12 @@ actual workspace. Temporary cleanup or reboot requires regeneration from a
 verified plan before container restart; Compose source group-writer trust and
 the path-to-daemon race remain separate limitations.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
-- [Secret structure Task](tsk-0045-secret-structure-openbao.md)
-- [Compose profiles policy](../../../05.operations/policies/01-common/0078-compose-profile-vocabulary.md)
-- [Alloy recovery Runbook](../../../05.operations/runbooks/07-observability/0040-alloy.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

@@ -14,14 +14,21 @@ created: "2026-10-29"
 
 # Worktree Rule Scope Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W37: remove the conflict between the worktree location rule TSK-0019
 added and a CI script. This Task owns criterion 32 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 A further re-read of the request, which asks that conflicting rules be found
 and resolved, checked every `git worktree add` call. The owner asked on
@@ -29,9 +36,11 @@ and resolved, checked every `git worktree add` call. The owner asked on
 `main` at merged PR #618. The authorization covers this policy wording, this
 branch, its pull request, and merge.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -39,7 +48,7 @@ branch, its pull request, and merge.
 | SPEC-0212-TSK-0021 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0021 | in-progress | completed | #evidence |
 
-### Conflict and fix
+#### Conflict and fix
 
 `scripts/validation/run-ci-precommit.sh` creates a detached worktree under its
 own scratch directory, runs only under GitHub Actions, and removes it with
@@ -49,14 +58,22 @@ that directory. The TSK-0019 rule said every linked worktree goes under
 and states that a script's detached scratch checkout is not one. The script is
 unchanged.
 
-### Kept
+#### Kept
 
 The SKILL.md links to `references/` and `scripts/` files all resolve, and no
 canonical or provider surface names a dated model identifier. The
 `test_generation6.py` and `test_generation7.py` modules guard current evidence
 rules; only their names are historical.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -65,18 +82,29 @@ rules; only their names are historical.
 | Provider render | 32 | W37 | `provider_surface_renderer.py --check` | This branch | PASS | 0 drift | required | - |
 | Metadata contracts | 32 | W37 | `check-document-metadata.py --mode check-contracts` | This branch | PASS | 0 violations | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 32 | accepted | Worktree call scan, Governance contract, Provider render, Metadata contracts | The worktree rule covers branch worktrees and no longer contradicts the CI scratch checkout. | SPEC-0212 TSK-0021 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

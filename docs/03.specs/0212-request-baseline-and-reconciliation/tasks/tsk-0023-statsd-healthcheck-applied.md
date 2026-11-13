@@ -14,23 +14,32 @@ created: "2026-10-29"
 
 # StatsD Healthcheck Applied Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W39: record the owner's correction of the runtime drift TSK-0022
 found. This Task owns criterion 34 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 TSK-0022 recorded that `airflow-statsd-exporter` ran without the healthcheck
 its Compose file declares. On 2026-10-29 the owner chose to recreate it
 personally. The agent only read container state with `docker inspect` and
 `docker ps`. The input is `main` at merged PR #620.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -38,7 +47,7 @@ personally. The agent only read container state with `docker inspect` and
 | SPEC-0212-TSK-0023 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0023 | in-progress | completed | #evidence |
 
-### Observations
+#### Observations
 
 All times are UTC on 2026-10-29.
 
@@ -54,7 +63,15 @@ start, all 60 running `hy-home-infra` containers report healthy. Airflow's
 StatsD metrics had a gap while the container was not running, about two
 minutes.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -63,18 +80,29 @@ minutes.
 | Project health | 34 | W39 | `docker ps` for project `hy-home-infra` | 2026-10-29 | PASS | 60 of 60 healthy | required | - |
 | Metadata contracts | 34 | W39 | `check-document-metadata.py --mode check-contracts` | This branch | PASS | 0 violations | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 34 | accepted | Exporter health, Declared healthcheck, Project health, Metadata contracts | The exporter runs its declared healthcheck and is healthy; the TSK-0022 drift is closed by the owner's action. | SPEC-0212 TSK-0023 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

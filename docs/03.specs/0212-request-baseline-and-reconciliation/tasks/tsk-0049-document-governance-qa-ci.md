@@ -13,19 +13,33 @@ created: "2026-11-03"
 
 # Documentation, Governance, QA and CI Contract Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Implement the approved local P10 document-contract, CI-route and governance wording corrections. Completed Task bodies and their acceptance scope remain historical records; local checks are not operational or remote acceptance.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The observed starting revision is `43f112eb5452767f5ab56f95335ef59fb4ab743c`. Local source, document and synthetic QA are authorized. Service operation, actual credentials, external transmission and remote CI are not. The dependencies package was unavailable, so a complete historical crosscheck is not claimed.
 
-## Work Log
+## Execution Log
 
-### Execution Items
+### Work Performed
+
+#### Work Log
+
+The execution items and lifecycle events below record this Task's work.
+
+#### Execution Items
 
 | Item | Work Unit | Scope | Owner | Status | Blocker |
 | --- | --- | --- | --- | --- | --- |
@@ -34,14 +48,20 @@ The observed starting revision is `43f112eb5452767f5ab56f95335ef59fb4ab743c`. Lo
 | P10.03 | W101 | Hook and canonical governance wording | hook-developer, rules-engineer | in-progress | Native provider delivery is unrun |
 | P10.04 | W102 | Local result lifecycle and residual handoff | doc-writer | in-progress | Remote CI and operation are unauthorized |
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0049 | draft | ready | #inputs-and-authorization |
 | SPEC-0212-TSK-0049 | ready | in-progress | #work-log |
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -57,7 +77,13 @@ The observed starting revision is `43f112eb5452767f5ab56f95335ef59fb4ab743c`. Lo
 | Metadata active rerun | 94 | W99 | Metadata validator | `check-document-metadata.py --mode check-active` on the active corpus at `a9d994367` | PASS | `metadata check-active: selected=538 violations=0 transition_overrides=0`, exit 0. Archive type-mismatch debt is outside the active selection and stays owned historical debt. | required | Metadata baseline |
 | Local plan and parity rerun | 95 | W100 | Public plan/parity check | Every declared local context at `9429dc14b` plus the 31-class count fix | PASS | All nine local gate test modules (tests/lib/gate and test_ci_gate_*) ran 228 tests with 0 failures after fixing two stale expectations: the required selector list (#925) and the optional class count. `leaf.workflow-contract-regressions` is local-only, so hosted CI never runs it; no local result is presented as remote CI acceptance. | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -66,7 +92,7 @@ The observed starting revision is `43f112eb5452767f5ab56f95335ef59fb4ab743c`. Lo
 | 96 | accepted | Hook and governance local regressions | Local regressions are reported; native provider delivery is separate and unrun. Owner @buenhyden accepted on 2026-11-06. | SPEC-0212 TSK-0049 |
 | 97 | accepted | Evidence lifecycle and remote boundary | Existing lifecycle machinery is reused; remote CI and operational acceptance remain unrun. Owner @buenhyden accepted on 2026-11-06. | SPEC-0212 TSK-0049 |
 
-### Cross-package header handoff
+#### Cross-package header handoff
 
 The following active or blocked Tasks retain the prior eight-column Evidence
 header (without `Required`). They caused the remaining corpus
@@ -91,12 +117,16 @@ Affected Task entries (target, package writer, current state and resume conditio
 - `SPEC-0204-TSK-0016` — `in-progress`; preserve Opsflow acceptance boundaries and normalize the current table.
 - `SPEC-0218-TSK-0002` — `in-progress`; review root-resource criterion ownership, migrate the active table, then validate SPEC-0218.
 
-## Review and Completion
+### Remaining Conditions
 
 Run metadata, corpus lifecycle and link alignment sequentially after final source changes, observing each up to five minutes and recording the actual exit result. Archive type mismatches remain owned historical debt: do not weaken the validator or rewrite preserved archives. Run `graphify update .` after all writers freeze source changes.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

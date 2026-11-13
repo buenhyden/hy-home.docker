@@ -14,14 +14,21 @@ created: "2026-10-29"
 
 # Absence Test and Workspace Writer Audit Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W32: record the owner's choices for the three items TSK-0013 deferred
 or left not run. This Task owns criterion 27 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-29 the owner chose, per item: audit the absence tests without
 deleting any; keep the existing `_workspace` writers and document them; and
@@ -29,9 +36,11 @@ keep external acceptance `NOT_RUN`. The input is `main` at merged PR #612. The
 authorization covers this branch, its pull request, and merge through the
 protected path. It grants no test removal and no script change.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -39,7 +48,7 @@ protected path. It grants no test removal and no script change.
 | SPEC-0212-TSK-0016 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0016 | in-progress | completed | #evidence |
 
-### Absence tests
+#### Absence tests
 
 An AST scan of `tests/**/test_*.py` found every `assertFalse(ROOT / "…"
 .exists())`-style assertion. Assertions on temporary roots (gate-call
@@ -66,7 +75,7 @@ only the leftover guard. The scan sees only literal `ROOT / "…"` paths;
 `tests/validation/test_infra_tier_layout.py:150`, which builds its path from a
 loop variable, is classified with its file's other tier-rename lines.
 
-### Workspace writers
+#### Workspace writers
 
 These scripts write under `_workspace/repo-support/task-*/`, which the
 `repo-support` README already permits. Their paths stay as they are and are
@@ -83,13 +92,21 @@ listed in that README.
 No script writes to `diagnostics/`. `agent_governance_contract.py`,
 `registry.py`, and `metadata/reference.py` only name the tracked READMEs.
 
-### External acceptance
+#### External acceptance
 
 Four-repository adoption, remote protection, runtime, and native-loader
 acceptance stay `NOT_RUN` with the owner. Nothing outside this repository was
 read or changed.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -99,18 +116,29 @@ read or changed.
 | Workspace contract tests | 27 | W32 | `python3 -m unittest tests.lib.document_governance.metadata.test_reference tests.lib.test_surface_ownership` | This branch | PASS | All pass | required | - |
 | External acceptance | 27 | W32 | Four-repository, remote, runtime, and native-loader acceptance | - | NOT_RUN | Owner kept these out of scope | optional | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 27 | accepted | Absence-test scan, Writer scan, Metadata contracts, Workspace contract tests | Absence tests classified with none deleted; workspace writers listed without path changes; external acceptance stays not run. | SPEC-0212 TSK-0016 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

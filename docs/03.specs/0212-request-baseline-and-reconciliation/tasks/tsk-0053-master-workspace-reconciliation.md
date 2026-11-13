@@ -14,16 +14,24 @@ created: "2026-11-10"
 
 # Master Workspace Reconciliation Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Own W111/criterion106: assess the master's 105 common requirements, three
 Docker-specific requirements and twelve supplement clauses against this
 workspace, implement the scoped current-document corrections, and route
 remaining evidence to its existing owner without reopening accepted work.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Memory follow-up](../../0270-shared-memory-capacity-and-search/spec.md)
+- [Supply-chain successor](tsk-0052-supply-chain-evidence.md)
+- [Inventory data](../../../90.references/data/0096-workspace-inventory/README.md)
+
+### Inputs and Authority
 
 On 2026-11-10 the user approved and explicitly requested implementation of
 the change plan in this chat. `dependencies/` means
@@ -44,15 +52,17 @@ The documentation writer owns this Task, the current SPEC-0212 Spec/Plan,
 POL-0053, the repo-support README and scoped current documentation evidence.
 It never edits a terminal Task body or approves criteria for the owner.
 
-## Work Log
+## Execution Log
 
-### Owner-approved local execution
+### Work Performed
+
+#### Owner-approved local execution
 
 The current trusted request on 2026-11-10 authorizes the scoped local
 reconciliation. The lifecycle records that request; it grants no operation
 outside the stated boundary.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -60,7 +70,7 @@ outside the stated boundary.
 | SPEC-0212-TSK-0053 | ready | in-progress | #owner-approved-local-execution |
 | SPEC-0212-TSK-0053 | in-progress | completed | #owner-follow-up-decisions-2026-11-11 |
 
-### Assessment boundary
+#### Assessment boundary
 
 The required denominator is 108 requirements plus twelve supplement clauses.
 A path listing is not a content review; a static check is not runtime or
@@ -69,7 +79,7 @@ observations, disposition and residuals in this Task. Full 1,250-line semantic
 atomization and all 14,028 relation judgments remain separate unfinished
 work; preserving or counting source rows does not complete them.
 
-### Concurrent source reconciliation
+#### Concurrent source reconciliation
 
 During local implementation, main advanced to
 `c463e4ae5807b68fa63d9ff1859ab22cb5b85428` through PR932/933. PR932 issued
@@ -81,7 +91,7 @@ candidate was removed; it had no independent execution or acceptance.
 Only affected document evidence is invalidated and rerun. No existing Task,
 issued criterion or accepted history was renumbered or rewritten.
 
-### Current inventory acquisition 2026-11-10
+#### Current inventory acquisition 2026-11-10
 
 The parent controller reused the existing workspace inventory scanner at
 `c463e4ae5807b68fa63d9ff1859ab22cb5b85428`, explicitly including the nine new
@@ -100,7 +110,7 @@ The task-owned ignored output is scratch, not durable authority. This Task
 retains only these safe aggregate facts; no original DATA-0096 evidence was
 overwritten or promoted to full-body, render, runtime or restore acceptance.
 
-### Current guidance corrections
+#### Current guidance corrections
 
 TSK-0043 criterion70 is not-required and criteria66-69/71 are accepted.
 TSK-0051 is completed with six PASS steps and criterion103 accepted on
@@ -112,7 +122,7 @@ sandbox runners and rollback volumes are preserved. POL-0053 is aligned to
 that source. The seven requested workspace READMEs already exist; only the
 repo-support sole-location wording changes to recognize diagnostics.
 
-### Archive residual owner readback
+#### Archive residual owner readback
 
 The current source readback on2026-11-10 found each of the following existing
 Tasks at version0.1.1, status in-progress, with criteria1-4 pending. This is
@@ -128,7 +138,7 @@ permission to repeat removal.
 
 No file from these packages or removed archive bodies changed in this unit.
 
-### External-source availability correction
+#### External-source availability correction
 
 The parent planning session retrieved the exact previously unavailable
 [Microsoft SDD article](https://developer.microsoft.com/blog/spec-driven-development-ai-native-engineering/)
@@ -139,7 +149,7 @@ research result, an upstream implementation adoption, or completion of the
 The requested ego-browser binary was unavailable; browser observations stay
 unverified. Other sources retain their recorded partial/unretrieved status.
 
-### Result-only document selection diagnostic
+#### Result-only document selection diagnostic
 
 After full changed-document metadata passed with12 selected documents,
 a three-Task-only explicit selection failed because the new SPEC-0270 Plan
@@ -149,7 +159,7 @@ the result Tasks and updated Runbook passed: selected6, violations0,
 transition_overrides0. The full corpus lifecycle and alignment receipts
 remain separately recorded; this diagnostic is not an initial-status waiver.
 
-### Preserved boundaries
+#### Preserved boundaries
 
 CI candidate definitions remain candidate-owned. Existing required checks,
 independent fresh-context review and owner merge remain the chosen model;
@@ -158,7 +168,7 @@ Project-Template's TEMPLATE-02/D-14 release projection has no local producer;
 record an external-owner handoff rather than inspect or modify that repository.
 No full-corpus or operational audit completion is claimed here.
 
-### Requirement-owner assessment
+#### Requirement-owner assessment
 
 Read-only assessment worker receipt at baseline648a78a26 covers the following
 108 IDs. `KEEP` means retain the inspected existing contract, not whole-requirement
@@ -305,7 +315,7 @@ Owner aliases are repository-relative canonical sources:
 | DOCKER-02 | U | DEFER | Criterion20 pending; two native credential deliveries and SMTP rotation unrun |
 | DOCKER-03 | R,G | CHANGE | 0047 formal handoff preserved under0052;87/88 acceptance preserved |
 
-### Original-line and legacy trace preservation
+#### Original-line and legacy trace preservation
 
 The read-only source audit checked the400+409+441 original physical lines,
 all1250 CSV `source_text` rows and all seven applicable checksum entries:
@@ -324,7 +334,7 @@ not semantic equivalence, atomization or pair-review completion. This leaves
 OPEN-01/02 and their existing source owners open without blocking unrelated
 local implementation. No original or dependency package byte was changed.
 
-### Supplement assessment
+#### Supplement assessment
 
 | Clause | Owner aliases | Action | Bounded observation or residual |
 | --- | --- | --- | --- |
@@ -341,7 +351,7 @@ local implementation. No original or dependency package byte was changed.
 | SUP-11 | C,R | CHANGE | Current correction links preserve terminal bodies; README and n8n guidance aligned |
 | SUP-12 | A,B | KEEP | This repository adoption only; no other repository inspected |
 
-### Skill metadata boundary
+#### Skill metadata boundary
 
 The read-only metadata inventory observed509 `SKILL.md` paths under the four
 checked skill roots with0 traversal errors. This is not exhaustive body,
@@ -366,7 +376,7 @@ and the user source under `.agents/skills`; they are not certified equivalent.
 The five superpowers entries were read as source metadata under package7.0.1,
 not invoked. Missing-root metadata does not prove unsupported runtime features.
 
-### Package v14.2 delta intake 2026-11-11
+#### Package v14.2 delta intake 2026-11-11
 
 The user supplied the v14.2 W00 intake prompt on 2026-11-11 with the package
 at `_workspace/workspace_execution_tasks/` (git-ignored, read-only reference
@@ -479,7 +489,7 @@ A third pass on the same day closed the test-only part:
   the dispatch question stays UNVERIFIED with the SPEC-0264 owner; no hook
   setting or trust changed.
 
-### Owner decisions 2026-11-11
+#### Owner decisions 2026-11-11
 
 On 2026-11-11 the owner decided the open items in this chat: accept criterion
 106, approve the E33 follow-up, re-review and then implement C04b, hold C03a,
@@ -510,7 +520,7 @@ Untracked, git-ignored `.pyc` caches of five removed test modules remain under
 `tests/`. No coverage is credited to them, and this review deleted none of
 them.
 
-### Owner follow-up decisions 2026-11-11
+#### Owner follow-up decisions 2026-11-11
 
 The owner then asked for the requirement child-space check, negative tests for
 move, recovery and partial removal, the E33 matcher change, and closure of this
@@ -543,7 +553,13 @@ Task.
   review rounds. Its live Codex delivery and criterion 8 stay with that owner,
   pending the owner's trust of the new hook hash.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -560,13 +576,19 @@ Task.
 | Child-space retirement review | 106 | W111 | independent-source-review | Fresh-context code-reviewer of 725eccbde, then scoped re-review of d80854901 | PASS | Round 1 CHANGES_REQUIRED (archived path, asymmetric scan); round 2 APPROVED with both resolved | optional | - |
 | Source implementation handoff | 106 | W111 | source-handoff | Final SPEC-0270 source at current c463e4ae5 plus task-owned diff | PASS | Memory/capacity/search/backup implementation; parent selected135 PASS and3 native NOT_RUN; branch coverage81.41 percent, combined89.125 percent; code/security approved, criterion acceptance remains with SPEC-0270 | optional | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 106 | accepted | Current master assessment, Document source verification, Final reconciliation review, Package v14.2 delta intake | Owner accepted on 2026-11-11 in this chat; residual semantic, native and operational obligations stay with their named owners | SPEC-0212 TSK-0053 |
 
-## Review and Completion
+### Remaining Conditions
 
 Completed on 2026-11-11. The owner accepted criterion 106 and asked for this
 Task to be closed; see Owner follow-up decisions 2026-11-11. Every required
@@ -581,10 +603,12 @@ named owners and are not closed here:
 
 This Task does not close another owner's criterion.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Memory follow-up](../../0270-shared-memory-capacity-and-search/spec.md)
-- [Supply-chain successor](tsk-0052-supply-chain-evidence.md)
-- [Inventory data](../../../90.references/data/0096-workspace-inventory/README.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

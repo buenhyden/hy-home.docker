@@ -1,10 +1,10 @@
 ---
 title: "QA and CI Legacy Cleanup Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0253-TSK-0001"
 parent_ids:
@@ -14,15 +14,20 @@ created: "2026-11-04"
 
 # QA and CI Legacy Cleanup Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Remove legacy QA and CI boundaries and labels that name records the
 repository no longer has, and delete one-off scripts, tests and QA with no
 current use.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
 
 The user directed: "완료한 후, QA, CI/CD에서 LEGACY, deprecated인 것들은 삭제하고
 정리되어야 한다. 그리고, 일회성 스크립트와 테스트 그리고 QA들은 삭제하고 정리되어야
@@ -32,18 +37,20 @@ label change (W2) is made under that cleanup instruction, as is the PostToolUse
 hook change (W1). This Task pushes and merges nothing: the coordinator pushes
 the branch and opens the pull request, and the user merges.
 
-## Work Log
+## Execution Log
 
-### Current contract decision
+### Work Performed
+
+#### Current contract decision
 
 The user's direction authorizes this Spec and Plan as written.
 
-### Current readiness and execution
+#### Current readiness and execution
 
 Inputs, work units and checks are recorded here. The Task is ready and in
 progress under the approved parents. Hosted CI has not run.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -52,7 +59,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0253-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0253-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
 
-### Decisions
+#### Decisions
 
 - No Stage document owns CI gate evidence. Its owner label now names the
   canonical owner of gate execution,
@@ -88,7 +95,7 @@ progress under the approved parents. Hosted CI has not run.
   their past mentions as evidence. DATA-0096 is a dated snapshot
   (`observed_at` 2026-11-07) and keeps its rows until its next scan.
 
-### Changed
+#### Changed
 
 - `.pre-commit-config.yaml`, `scripts/hooks/post-tool-validate.sh`,
   `.agents/governance/agentic.md`: frozen boundary removed (W1).
@@ -105,7 +112,7 @@ progress under the approved parents. Hosted CI has not run.
   `scripts/lib/gate/ci_gate_contract.py`, and its `scripts/manifest.yaml`
   row (W3).
 
-### Test changes
+#### Test changes
 
 | Test | Change | Reason |
 | --- | --- | --- |
@@ -120,7 +127,7 @@ progress under the approved parents. Hosted CI has not run.
 | `test_ci_gate_model`, `test_validator_entrypoints`, `_script_manifest_support` | updated | drop the removed module and entrypoint from expected sets |
 | `test_script_manifest` runbook-shape case, `test_ci_gate_adapters` module-name case | updated | use an existing runbook and module name; the shape assertions are unchanged |
 
-### Inventory
+#### Inventory
 
 | Item | Category | Evidence | Decision |
 | --- | --- | --- | --- |
@@ -138,14 +145,14 @@ progress under the approved parents. Hosted CI has not run.
 | Skips for retired behavior, legacy CLI aliases, legacy workflow steps | QA and CI | none found | none |
 | agent_memory `legacy` domain id, release `Deprecated` heading, supply-chain `legacy-runtime-artifact` guards, ruleset "deprecated contexts" | domain terms | current behavior | kept |
 
-### Open issues
+#### Open issues
 
 - `quality-standards.md` keeps one sentence recalling that a formatter once
   rewrote a frozen archive body; it is a historical rationale, not a rule.
 - Lifecycle-generation and identity-history legacy code stays with the legacy
   document status work and the SPEC-0209/0231 proof move.
 
-### Review status
+#### Review status
 
 - The `.agents/governance/agentic.md` edit is a policy change; per
   `approval-boundaries.md` it needs `rules-engineer` review, pending in the PR
@@ -157,7 +164,13 @@ progress under the approved parents. Hosted CI has not run.
 - PR #729 merged at 09171c663; these review fixes continue on
   `chore/qa-ci-review-followups` from main 46a7811dd.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -182,7 +195,13 @@ progress under the approved parents. Hosted CI has not run.
 | E19 | 3 | W4 | rehearsal-retirement-document-checks | agent governance contract, metadata `check-active` and `check-changed --base-ref origin/main`, links `all`, corpus lifecycle, operations catalog, Script Manifest, supply-chain policy, renderer `--check`, worktree on main 4528c1ea7 | PASS | zero failures; links 911 documents, 0 failures; manifest valid; drift 0 | required | - |
 | E20 | 3 | W4 | hosted-ci | GitHub Actions for the retirement branch | NOT_RUN | branch not yet pushed | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -190,13 +209,13 @@ progress under the approved parents. Hosted CI has not run.
 | 2 | pending | - | - | @buenhyden |
 | 3 | pending | - | - | @buenhyden |
 
-## Review and Completion
+### Remaining Conditions
 
 Local checks are recorded above, last on head 1914065b1 (E16, E17). The
 independent review of PR #729 approved after fixes; those fixes are on this
 branch. Hosted CI passed on 09171c663 (E15). No criterion is accepted yet.
 
-### Merge receipt 2026-11-10
+#### Merge receipt 2026-11-10
 
 Recorded 2026-11-10 from `gh pr view`: #896 merge `2ba0539cf` at
 2026-11-10T00:22:36Z. Hosted checks on the merged PR: every completed check
@@ -205,7 +224,12 @@ logical upgrade rehearsal). Candidate quality: the merged change is a
 candidate that passed hosted CI. This receipt is not owner acceptance: no
 criterion is accepted and the status is unchanged.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

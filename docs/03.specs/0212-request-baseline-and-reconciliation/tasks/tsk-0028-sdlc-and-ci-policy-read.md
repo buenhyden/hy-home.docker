@@ -14,24 +14,33 @@ created: "2026-10-29"
 
 # SDLC and CI Policy Read Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W44: read the SDLC policy and the CI/QA policy against the code and
 workflows that enforce them, and apply the owner's choice on the one naming
 gap found. This Task owns criterion 39 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-29 the owner asked for the SDLC area and then the CI/QA area to be
 read after the archive read in TSK-0027, and chose to rename the release
 workflow. The input is `main` at merged PR #625. The authorization covers the
 rename and its current references, this branch, its pull request, and merge.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -39,7 +48,7 @@ rename and its current references, this branch, its pull request, and merge.
 | SPEC-0212-TSK-0028 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0028 | in-progress | completed | #evidence |
 
-### SDLC read
+#### SDLC read
 
 | Statement in `.agents/governance/sdlc.md` | Checked against | Result |
 | --- | --- | --- |
@@ -50,7 +59,7 @@ rename and its current references, this branch, its pull request, and merge.
 | A Plan is never ahead of or terminal before its Spec; a Task runs only while both parents are `approved` | `spec_packages.py` parent-order checks | Matches |
 | A multi-item Task has at least two rows, covers its Work Units, and declares no frontmatter `status` | `spec_packages.py` item checks | Matches |
 
-### CI/QA read
+#### CI/QA read
 
 | Statement | Source | Checked against | Result |
 | --- | --- | --- | --- |
@@ -60,7 +69,7 @@ rename and its current references, this branch, its pull request, and merge.
 | Every formatter has a `files` selector; `ruff.toml` pins Python; `.prettierignore` states the Prettier boundary | `quality-standards.md` §10 | Hooks, `ruff.toml`, `.prettierignore` | Matches |
 | Use a merge commit or fast-forward for referenced commits | `github-governance.md` | Repository merge settings (TSK-0018) | Matches |
 
-### Release workflow rename
+#### Release workflow rename
 
 The release producer was named `generate-changelog.yml` while it publishes a
 release and generates no changelog, which suggested the automatic changelog
@@ -72,7 +81,15 @@ Task bodies, the dated research pack, and frozen archive bodies keep the old
 name as history. GitHub tracks run history per workflow file, so earlier runs
 stay under the old name.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -81,18 +98,29 @@ stay under the old name.
 | Script manifest | 39 | W44 | `check-script-manifest.py` | This branch | PASS | Valid | required | - |
 | Metadata contracts | 39 | W44 | `check-document-metadata.py --mode check-contracts` | This branch | PASS | 0 violations | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 39 | accepted | Workflow contract, Gate and release tests, Script manifest, Metadata contracts | The SDLC and CI/QA policy text matches its code; the release workflow name now matches what it does. | SPEC-0212 TSK-0028 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

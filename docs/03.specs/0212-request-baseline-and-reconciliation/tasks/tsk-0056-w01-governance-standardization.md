@@ -14,16 +14,22 @@ created: "2026-11-11"
 
 # W01 Governance Standardization Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Own W114/criterion 109. Assess the v14.2 W01 obligations GOV-01 to GOV-08 and
 SUP-12 against their canonical owners in this workspace. Correct only the gaps
 this Task reproduces, and record local adoption separately from any
 cross-repository adoption.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [W00 intake](tsk-0053-master-workspace-reconciliation.md)
+
+### Inputs and Authority
 
 On 2026-11-11 the owner merged PR 953, which completed the W00 intake in
 TSK-0053. The owner then approved a new SPEC-0212 Task to own W01. The v14.2
@@ -41,14 +47,16 @@ The TSK-0053 assessment at baseline `648a78a26` is the prior observation:
 GOV-01, 02, 03, 05, 06 and 08 KEEP; GOV-04 DEFER; GOV-07 CHANGE (done). This
 Task re-checks those at the current `main` `0a726ee1c` before reusing them.
 
-## Work Log
+## Execution Log
 
-### Owner-approved local execution
+### Work Performed
+
+#### Owner-approved local execution
 
 The owner's approval of 2026-11-11 issues this Task. The lifecycle records that
 approval; it grants no operation outside the stated boundary.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -56,7 +64,7 @@ approval; it grants no operation outside the stated boundary.
 | SPEC-0212-TSK-0056 | ready | in-progress | #owner-approved-local-execution |
 | SPEC-0212-TSK-0056 | in-progress | completed | #owner-closure-2026-11-11 |
 
-### W01 obligation assessment 2026-11-11
+#### W01 obligation assessment 2026-11-11
 
 A fresh-context `rules-engineer` read the canonical owners at `main`
 `0a726ee1c`, and the controller spot-checked the deciding lines. KEEP cites
@@ -97,12 +105,18 @@ rest) and Project-Template as the authoring source are cross-repository
 adoption. They stay DEFER under GOV-04 and D-04, and no schema is added here.
 W01-B is KEEP: no record, check result or role string counts as approval.
 
-### Owner closure 2026-11-11
+#### Owner closure 2026-11-11
 
 On 2026-11-11 the owner accepted criterion 109 and asked for this Task to be
 closed, after PR 954 opened for its commits.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -112,21 +126,31 @@ closed, after PR 954 opened for its commits.
 | W01 governance review | 109 | W114 | independent-document-review | Fresh-context rules-engineer of `c66c792a6` | FAIL | CHANGES_REQUIRED for the Stage 98 README wording; obligations, anchors and the state-list removal otherwise verified | required | - |
 | W01 governance re-review | 109 | W114 | independent-document-review | Scoped rules-engineer re-review of `55ce3e362` | PASS | RESOLVED: Stage 98 wording, rule-owner approval sentence and checklist link verified; anchors resolve; no new finding | required | W01 governance review |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 109 | accepted | W01 obligation assessment result, W01 governance checks, W01 governance re-review | Owner accepted on 2026-11-11 in this chat; GOV-04 cross-repository adoption stays DEFER under D-04 | SPEC-0212 TSK-0056 |
 
-## Review and Completion
+### Remaining Conditions
 
 Completed on 2026-11-11. The owner accepted criterion 109 and closed this
 Task; see Owner closure 2026-11-11. GOV-04 cross-repository adoption stays
 DEFER under D-04, and GOV-08 runtime deny enforcement stays UNVERIFIED. Neither
 is closed here.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [W00 intake](tsk-0053-master-workspace-reconciliation.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

@@ -1,10 +1,10 @@
 ---
 title: "P06 OpenBao Consumer Migration Task"
-version: "0.1.26"
+version: "0.1.27"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0014"
 parent_ids:
@@ -14,9 +14,11 @@ created: "2026-10-11"
 
 # P06 OpenBao Consumer Migration Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Own criterion20/W46-W55: one existing consumer pilot, sequential catalog-bound
 same-byte OpenBao copy, verified rendering/consumption and recovery, followed
@@ -24,7 +26,23 @@ by precisely owned obsolete-copy removal and separately targeted rotation.
 Issuance provides an executable ownership and admission contract. It reads
 no actual secret, creates no KV/AppRole/DB/object, and changes no runtime.
 
-## Inputs and Authorization
+- [Specification](../spec.md)
+- [Plan](../plan.md)
+- [Request reconciliation](../../0212-request-baseline-and-reconciliation/spec.md)
+- [P01 authentication and recovery owner](tsk-0006-openbao-trust-bootstrap-and-recovery.md)
+- [P02 catalog](tsk-0010-p02-secret-catalog-and-views.md)
+- [P03 delivery and endpoint contracts](tsk-0011-p03-service-integration-contracts.md)
+- [P04 actual opsflow consumer](tsk-0012-p04-airflow-manifest-pipeline.md)
+- [P05 native execution copies](tsk-0013-p05-n8n-outbox-notifier.md)
+- [SEC01 image/security](tsk-0009-sec01-stable-security-integration.md)
+- [SMTP01 sole retirement executor](tsk-0005-cross-tier-contracts-second-round.md)
+- [CLN01 eligibility](tsk-0007-cln01-material-retirement.md)
+- [OpenBao source](../../../../infra/03-security/openbao/README.md)
+- [Official KV-v2 CAS and metadata semantics](https://openbao.org/docs/secrets/kv/kv-v2/)
+- [Official AppRole Agent wrapping](https://openbao.org/docs/agent-and-proxy/autoauth/methods/approle/)
+- [Official path-based policies](https://openbao.org/docs/concepts/policies/)
+
+### Inputs and Authority
 
 The user's full P06 prompt and coordination request authorize assessment,
 formal Task issuance and independent worker instructions. Prompt SHA256 is
@@ -56,7 +74,7 @@ facts read-only where authorized; before private actions record exact target,
 consumer, effects, validation, backup, recovery and executor here. Missing
 facts block only their dependent action and cannot become invented PASS.
 
-### Worker and Exact Ownership
+#### Worker and Exact Ownership
 
 One P06 writer uses `codex/p06-openbao-consumer-migration` in
 `/home/hyunyoun/data/hy-home.docker/.worktrees/p06-openbao-consumer-migration`
@@ -108,7 +126,7 @@ lease. Submit base blob IDs, exact hunks, consumer/test/rollback map and hashes
 as ignored proposals. The coordinator/named owner integrates once, preserving
 both sides of conflicts; latest submission never overwrites prior work.
 
-### Current Prerequisites and Parallel Boundary
+#### Current Prerequisites and Parallel Boundary
 
 W46/W47 can start now: public contract/reuse audit, closed value-free wave/
 receipt schemas, RED/GREEN synthetic selection/privacy tests and proposals.
@@ -170,7 +188,7 @@ fresh writer-stop/zero-consumer proof. A cooperative SMTP lock does not stop
 CLN's separate lock or nonparticipating writers. Subsequent consumers have
 their own exact gates; never promote a synthetic or source-only result.
 
-### Required Copy and Delivery Contract
+#### Required Copy and Delivery Contract
 
 Use P02's closed versioned catalog. Wave/receipt schemas are selection and
 evidence contracts, not another catalog: no secret bytes, tokens, raw paths to
@@ -239,7 +257,7 @@ PG/API/S3/mail consumption only for the selected wave's genuine consumer.
 n8n's encrypted native execution copy requires P05's explicit supported
 refresh/rotation owner; it is not an automatically refreshed file mount.
 
-### Authority, Recovery, Removal and Rotation
+#### Authority, Recovery, Removal and Rotation
 
 States are inventoried, classified, copied, rendered, consumed, authoritative,
 recoverable and local-plaintext-removed, with versioned transitions and public
@@ -283,9 +301,11 @@ failure. `_FILE` initialization does not rotate an existing PG role. No broad
 credential rotation or encryption/session/bootstrap-key replacement. Missing
 selected server target keeps ROTATION NOT_RUN without blocking public source.
 
-## Work Log
+## Execution Log
 
-### W48 Synthetic Decision Preparation — 2026-10-11
+### Work Performed
+
+#### W48 Synthetic Decision Preparation — 2026-10-11
 
 Input `4c83f14b11a77e13e582eb85d0bf256685472a95`; clean69be0b5e fast-forwarded,
 exit0. Root owns only existing library/unit-test/dedicated README/Task; common
@@ -307,7 +327,7 @@ Only the QA copy normalized two unchanged entrypoints to0755; live modes retaine
 Frozen input/plan/result receipts: `.agent-work/p06-w48-{review-hashes,local-selection,validation}.json`.
 Suffix PASS does not resolve aggregate FAIL or supply hosted/native acceptance.
 
-### Coordinator Source Integration — 2026-10-11
+#### Coordinator Source Integration — 2026-10-11
 
 The combined input is local main `0207808560214c7ab88c582cfb4a3d76a70551eb`
 with worker `69be0b5e4f816449c19d22e2e03d71c4226c281a`. Seven worker
@@ -333,14 +353,14 @@ Receipts are `p06-combined-acceptance.json` in the coordinator scratch directory
 Local source delivery does not accept criterion20: HOME, native pilot, migration,
 rotation, actual deletion and snapshot/empty recovery remain NOT_RUN.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0014 | draft | ready | #public-work-admission |
 | SPEC-0204-TSK-0014 | ready | in-progress | #public-contract-implementation |
 
-### Public Work Admission
+#### Public Work Admission
 
 The current user directs work from the issued Task, beginning with W46/W47,
 while actual pilot, deletion and rotation wait for unmet prerequisites. On
@@ -369,7 +389,7 @@ catalog reader or private copy command. P04 source progress does not establish
 its native W38 consumer acceptance. W48 production binding and W49-W54 remain
 dependent on their named owners' integrated contracts and actual receipts.
 
-### Public Contract Implementation
+#### Public Contract Implementation
 
 Admission was independently reviewed PASS and committed as
 `c940c2acb73d844f6af13c99c772f6a998c38ae0`. Its readiness input was issuance
@@ -531,7 +551,7 @@ type diagnostics. The corrected row now binds only criterion20/W47; W55 and
 criterion8 remain in the pending Delivery row. No archive was changed. Final
 metadata revalidation must pass before the logical source commit.
 
-### P02 Integrated Public API Binding
+#### P02 Integrated Public API Binding
 
 The user's next handoff delivers P02 functional source
 `962e11be50260a3dce2e2700b22951fce1b3f4f7`, synthesis
@@ -664,7 +684,7 @@ No P06 main integration, push, PR, hosted CI, deployment or operational action
 is claimed by this continuation. SMTP01 remains COMM-003's sole executor;
 cooperative inherited locks do not quiesce CLN or nonparticipating writers.
 
-### Assessment and Next Work Units
+#### Assessment and Next Work Units
 
 All eleven supplied reference files were read and extracted only under ignored
 `.agent-work/p06-reference-audit/reference/`. Ten reference tests passed using
@@ -691,7 +711,7 @@ for the dedicated implementation, not reasons to weaken existing contracts.
 9. W54: one independently identified server rotation unit and denial/rollback.
 10. W55: shared registration/docs, current-head QA/review/PR and downstream SHA.
 
-### Segmented Local Source Validation — 2026-10-11
+#### Segmented Local Source Validation — 2026-10-11
 
 Frozen source input is `5b1a92db48fd508feff4cee0753b3b4468dd41dc`, following
 common/worker integration `c7d56a383ad8b77dd615327d11605b3e15d2146e`.
@@ -738,7 +758,7 @@ lanes remain pending/NOT_RUN. SMTP retains COMM-003's sole retirement executor.
 The final repository leaf passed494 tests/127.874s, exit0; neither it nor local
 source integration authenticates production selection or supplies a real copy.
 
-### W48 Runtime Primitive Preparation — 2026-10-14
+#### W48 Runtime Primitive Preparation — 2026-10-14
 
 The direct user request now authorizes concrete deployment, issuance,
 migration, retirement, recovery and related development cleanup; the latest
@@ -816,7 +836,7 @@ controller authorization, renderer delivery, native pilot, authority change,
 rotation and recovery remain NOT_RUN. Callback input is not a JSON approval.
 Criterion20 remains pending; code or unit approval is not HOME acceptance.
 
-### W49 First-consumer plan and verifier — 2026-10-27
+#### W49 First-consumer plan and verifier — 2026-10-27
 
 The owner chose "Plan + first consumer": inventory the Agent-rendered
 consumers, write a value-free cutover/rollback plan and a consumption verifier
@@ -858,7 +878,7 @@ equals the Agent-rendered KV value and is Grafana's effective admin password,
 so the cutover changes the file's source, not the value. The P01 `0640`
 change, cutover, post-cutover run and rollback remain NOT_RUN.
 
-### W49 Grafana delivery source — 2026-10-27
+#### W49 Grafana delivery source — 2026-10-27
 
 Review before cutover found that the README plan's step 3 conflicted with
 existing contracts. It said to repoint the root Compose `grafana_admin_password`
@@ -903,7 +923,7 @@ Compose baseline and secret metadata suites: 215 tests OK, 30 skipped.
 The Agent and Grafana recreates on HOME, the cutover run, and the rollback run
 follow after merge.
 
-### W49 HOME cutover and rollback — 2026-10-27
+#### W49 HOME cutover and rollback — 2026-10-27
 
 After PR #572 merged and the Agent was re-issued (P01 TSK-0006), the owner set
 `GRAFANA_ADMIN_PASSWORD_FILE` in the local `.env`. Grafana was recreated with
@@ -961,7 +981,7 @@ error; `provisioning.alerting` started and finished cleanly. The one
 `level=error` line, `job cleanup controller failed: context canceled`, came
 from the old process shutting down. Both follow-ups are closed on HOME.
 
-### Keycloak delivery source and Agent perms — 2026-10-27
+#### Keycloak delivery source and Agent perms — 2026-10-27
 
 The owner approved two changes as one PR. The first fixes the gap that blocked
 the Grafana `0640` step. The Agent does not rewrite a destination whose content
@@ -1049,7 +1069,7 @@ fast-forwarded from `68a4b4753` to `94729ada1` in the same command.
 600. The registered changed gate on the final head failed only on the known
 `test_fixture_preflight` port-forward case.
 
-### Keycloak HOME cutover and rollback — 2026-10-27
+#### Keycloak HOME cutover and rollback — 2026-10-27
 
 The owner chose to run the cutover at once. Before it, the running Keycloak
 predated the change, so the verifier reported `FAIL consumed_file`. That is
@@ -1090,7 +1110,7 @@ Owner decision: the Keycloak verifier's default health wait is now 360 s
 (`VERIFY_HEALTH_TRIES` 72), and the README matches. The Grafana verifier keeps
 180 s.
 
-### Third consumer: Grafana OIDC client secret — 2026-10-27
+#### Third consumer: Grafana OIDC client secret — 2026-10-27
 
 The owner chose to inventory the remaining consumers, and then to make
 `grafana_client_secret` the third. The secret catalog lists 65 `IMPLEMENT`
@@ -1180,7 +1200,7 @@ fast-forward loads it. GitHub "Update branch" added a merge commit that
 commitizen rejects, so PR #582 was replaced by a cherry-picked branch on
 `1fb71114a`.
 
-### Grafana client secret: second Agent restart and HOME cutover — 2026-10-27
+#### Grafana client secret: second Agent restart and HOME cutover — 2026-10-27
 
 The owner merged PR #583 (`9335b4dc1`) at 14:48:24Z. The main checkout
 fast-forwarded at 14:49:05Z, and the owner ran RUN-0085 step 3 again: `issue
@@ -1227,7 +1247,7 @@ Remaining NOT_RUN:
 - the catalog lifecycle reconciliation (IAM-002, IAM-007, OBS-002);
 - an interactive browser SSO login.
 
-### Catalog lifecycle for the three consumers — 2026-10-28
+#### Catalog lifecycle for the three consumers — 2026-10-28
 
 The owner chose to reconcile the secret catalog with the three live consumers:
 IAM-002 (Keycloak admin password), OBS-002 (Grafana admin password) and IAM-007
@@ -1251,7 +1271,7 @@ Checks: the catalog, metadata, generation, gen-secrets and SMTP suites, 232
 tests OK. The catalog CLI `check` reports `P02_METADATA_BLOCKED` in the
 worktree, as it does on main, because the private metadata is not present.
 
-### OIDC client secret batch source — 2026-10-28
+#### OIDC client secret batch source — 2026-10-28
 
 The owner chose to move the remaining seven OIDC client secrets as one batch,
 one Agent output directory per consumer, and to prepare source and procedure
@@ -1301,7 +1321,7 @@ earlier three; recording deployed paths is the separate P02 schema change.
 Health now makes 21 `bao` calls each run; the worst case exceeds the 30 s
 healthcheck timeout only when the server is already degraded.
 
-### OIDC batch: policy window, KV import and owner scripts — 2026-10-28
+#### OIDC batch: policy window, KV import and owner scripts — 2026-10-28
 
 Approval: PR #586 head `b986fb716` was the approved commit. CI on it was all
 PASS. The local `changed` gate failed one test only,
@@ -1427,7 +1447,7 @@ healthy. The owner then created the seven directories as the Agent user. All
 nine `out` directories are `drwxr-xr-x openbao`. The readable-file sweep lists
 only the three current `.txt` files. NOT_RUN: Agent restart, every cutover.
 
-### RUN-0085 remaining blocks as scripts — 2026-10-28
+#### RUN-0085 remaining blocks as scripts — 2026-10-28
 
 The owner asked that every scriptable RUN-0085 block run as a script. PR #593
 (`19ccd6bae`) had already moved the W1 to W7 core and the Agent restart.
@@ -1499,7 +1519,7 @@ Review of `3e20d342e`, before the PR:
 - New tests cover the state handoff, the `w4` and `w3` gates, the
   `retire-token` file check, and the restored-Finish requirement.
 
-### OIDC batch: Agent restart and HOME cutover — 2026-10-28
+#### OIDC batch: Agent restart and HOME cutover — 2026-10-28
 
 The owner fast-forwarded the main checkout to `19ccd6bae` (#593).
 
@@ -1542,7 +1562,7 @@ exists now, and both fall back to `/run/secrets` until a later cutover.
 `./secrets` copies, the restore contract (needs a post-import off-host
 snapshot) and the P02 `destination_plan` remain as recorded above.
 
-### RUN-0085 split by role — 2026-10-28
+#### RUN-0085 split by role — 2026-10-28
 
 The owner asked to split RUN-0085 by role and chose five documents. The body
 text moved without edits: 1,688 lines before, the same total after.
@@ -1615,7 +1635,7 @@ now links the three scripts and says it keeps their authority while the split
 runbooks are `draft`. Moving those rows is part of the later change that
 promotes the four runbooks to `active`.
 
-### Split runbook promotion and follow-ups — 2026-10-28
+#### Split runbook promotion and follow-ups — 2026-10-28
 
 After #595 merged, the owner reviewed the remaining split items and asked to
 proceed. RUN-0103 to RUN-0106 moved from `draft` to `active` (0.2.0), which the
@@ -1634,7 +1654,7 @@ renamed "Known Runtime Residual". RUN-0105 "위 10단계" now links RUN-0106. RU
 keeps only the POL-0085 decision. Prometheus has not reloaded the changed rule
 file. Until the owner reloads it, the running alerts still carry the old URLs.
 
-### Catalog destinations for the delivered secrets — 2026-10-28
+#### Catalog destinations for the delivered secrets — 2026-10-28
 
 The owner reviewed the P02 `destination_plan` and chose to record the real
 deployments. Ten entries now carry `DEPLOYED` plans: IAM-002, OBS-002, IAM-007,
@@ -1657,7 +1677,7 @@ A side effect follows the earlier rule: an entry with a confirmed lane is no
 longer generated, so `gen-secrets` keeps these seven `./secrets` files as
 `keep-catalog-protected`. That protects the rollback copies.
 
-### Prometheus reload after the alert retarget — 2026-10-28
+#### Prometheus reload after the alert retarget — 2026-10-28
 
 The owner reloaded Prometheus after #596. `/api/v1/status/runtimeinfo` reports
 `reloadConfigSuccess: true` with `lastConfigTime` 2026-10-28T04:03:03Z, and
@@ -1666,7 +1686,7 @@ report `ok`. The loaded OpenBao rules carry the new runbook URLs: the sealed and
 token alerts RUN-0085, the metrics scrape alert RUN-0104, the audit alert
 RUN-0105, and both Agent alerts RUN-0103.
 
-### Handoff from SPEC-0204 TSK-0013 2026-10-30
+#### Handoff from SPEC-0204 TSK-0013 2026-10-30
 
 TSK-0013 is final at `main` `c585c5244` (PR #666). Criteria 19 and 22 are accepted. The notifier uses two n8n
 credentials, PostgreSQL as `opsflow_notifier` and SMTP. Attempt five proved
@@ -1674,7 +1694,13 @@ rotation and stale denial for the PostgreSQL one as an n8n-native credential.
 NOT_RUN: delivery or refresh of either through OpenBao, and SMTP rotation.
 Next input: a P06 consumer decision for these two credentials.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -1732,13 +1758,19 @@ exact target/input are frozen; this issuance does not invent an executable
 production migration command. For a blocked lane, record the next exact
 command and missing input once the owner has supplied its real interface.
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
 | 20 | pending | - | - |
 
-## Review and Completion
+### Remaining Conditions
 
 Public work is in-progress through the observed lifecycle events above.
 Source-only
@@ -1778,20 +1810,12 @@ results from remaining NOT_RUN commands/inputs. P09 may consume value-free
 readiness facts only. No Wiki implementation/resource/schedule, learning-app
 planning, LAB runtime, external workspace or blog-data write is permitted.
 
-## Related Documents
+## Handoff
 
-- [Specification](../spec.md)
-- [Plan](../plan.md)
-- [Request reconciliation](../../0212-request-baseline-and-reconciliation/spec.md)
-- [P01 authentication and recovery owner](tsk-0006-openbao-trust-bootstrap-and-recovery.md)
-- [P02 catalog](tsk-0010-p02-secret-catalog-and-views.md)
-- [P03 delivery and endpoint contracts](tsk-0011-p03-service-integration-contracts.md)
-- [P04 actual opsflow consumer](tsk-0012-p04-airflow-manifest-pipeline.md)
-- [P05 native execution copies](tsk-0013-p05-n8n-outbox-notifier.md)
-- [SEC01 image/security](tsk-0009-sec01-stable-security-integration.md)
-- [SMTP01 sole retirement executor](tsk-0005-cross-tier-contracts-second-round.md)
-- [CLN01 eligibility](tsk-0007-cln01-material-retirement.md)
-- [OpenBao source](../../../../infra/03-security/openbao/README.md)
-- [Official KV-v2 CAS and metadata semantics](https://openbao.org/docs/secrets/kv/kv-v2/)
-- [Official AppRole Agent wrapping](https://openbao.org/docs/agent-and-proxy/autoauth/methods/approle/)
-- [Official path-based policies](https://openbao.org/docs/concepts/policies/)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.
