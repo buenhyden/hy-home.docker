@@ -41,6 +41,9 @@ _ROW_FIELDS = frozenset(
         "tool_image_digest",
     }
 )
+# `security_db` is optional input: absent means the leaf does not consume the
+# vulnerability DB (QA-C07). The normalized plan always records it.
+_OPTIONAL_ROW_FIELDS = frozenset({"security_db"})
 _SOURCE_FIELDS = frozenset({"path", "sha256", "git_object", "size_bytes"})
 _ARTIFACT_FIELDS = frozenset({"status", "path", "sha256", "size_bytes"})
 _TOOLCHAIN_FIELDS = frozenset(
@@ -558,7 +561,21 @@ def _normalize_rows(rows: Sequence[Mapping[str, object]]) -> list[dict[str, obje
     normalized: list[dict[str, object]] = []
     gate_ids: set[str] = set()
     for index, candidate in enumerate(rows):
-        row = _require_exact_fields(candidate, _ROW_FIELDS, f"row[{index}]")
+        if isinstance(candidate, Mapping) and "security_db" in candidate:
+            row = _require_exact_fields(
+                candidate, _ROW_FIELDS | _OPTIONAL_ROW_FIELDS, f"row[{index}]"
+            )
+        else:
+            row = _require_exact_fields(candidate, _ROW_FIELDS, f"row[{index}]")
+        security_db = row.get("security_db", "NOT_APPLICABLE")
+        if security_db not in ("NOT_APPLICABLE", "ABSENT", "INVALID") and (
+            not isinstance(security_db, str)
+            or not security_db.startswith("sha256:")
+            or _SHA256.fullmatch(security_db.removeprefix("sha256:")) is None
+        ):
+            raise EvidenceError(
+                f"row[{index}].security_db must be a marker or sha256 identity"
+            )
         gate_id = _identifier(row["gate_id"], f"row[{index}].gate_id")
         if gate_id in gate_ids:
             raise EvidenceError(f"duplicate gate id: {gate_id}")
@@ -612,6 +629,7 @@ def _normalize_rows(rows: Sequence[Mapping[str, object]]) -> list[dict[str, obje
                 "environment_keys": sorted(normalized_env),
                 "gate_id": gate_id,
                 "selected": True,
+                "security_db": security_db,
                 "selection_reason": _bounded_text(
                     row["selection_reason"],
                     f"row[{index}].selection_reason",

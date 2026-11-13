@@ -477,6 +477,76 @@ class EvidenceStoreTests(unittest.TestCase):
                     open_with(identity, changed_rows, tool)
         self.assertEqual(recorded, (self.output / "result.json").read_bytes())
 
+    def test_pass_is_refused_when_the_security_db_identity_changes(self) -> None:
+        """QA-C07: never reuse a PASS after the vulnerability DB changed."""
+        digest = "sha256:" + "a" * 64
+        rows = json.loads(json.dumps(self.rows))
+        rows[0]["security_db"] = digest
+        store = EvidenceStore.create(
+            self.output, identity=self.identity, rows=rows, retention_days=14
+        )
+        store.initialize_result()
+        store.mark_started("leaf.example", started_at_utc="2026-10-16T00:00:00Z")
+        store.mark_terminal(
+            "leaf.example",
+            status="PASS",
+            exit_code=0,
+            ended_at_utc="2026-10-16T00:00:01Z",
+            duration_ms=1,
+        )
+        store.close()
+        recorded = (self.output / "result.json").read_bytes()
+
+        def open_with(db: str | None) -> None:
+            candidate = json.loads(json.dumps(rows))
+            if db is None:
+                del candidate[0]["security_db"]
+            else:
+                candidate[0]["security_db"] = db
+            EvidenceStore.open(
+                self.output,
+                identity=self.identity,
+                rows=candidate,
+                retention_days=14,
+            ).close()
+
+        open_with(digest)  # positive control: the identical DB reopens
+        for label, db in (
+            ("changed", "sha256:" + "b" * 64),
+            ("removed", "ABSENT"),
+            ("unrecorded", None),
+        ):
+            with self.subTest(label=label):
+                with self.assertRaisesRegex(EvidenceError, "plan does not match"):
+                    open_with(db)
+        self.assertEqual(recorded, (self.output / "result.json").read_bytes())
+
+    def test_absent_db_marker_then_seeded_db_is_refused(self) -> None:
+        absent = json.loads(json.dumps(self.rows))
+        absent[0]["security_db"] = "ABSENT"
+        EvidenceStore.create(
+            self.output, identity=self.identity, rows=absent, retention_days=14
+        ).close()
+        seeded = json.loads(json.dumps(self.rows))
+        seeded[0]["security_db"] = "sha256:" + "a" * 64
+        with self.assertRaisesRegex(EvidenceError, "plan does not match"):
+            EvidenceStore.open(
+                self.output, identity=self.identity, rows=seeded, retention_days=14
+            ).close()
+
+    def test_security_db_value_is_a_bounded_identity(self) -> None:
+        for bad in ("", "sha256:short", "absent", 7, "sha256:" + "A" * 64):
+            rows = json.loads(json.dumps(self.rows))
+            rows[0]["security_db"] = bad
+            with self.subTest(value=bad):
+                with self.assertRaisesRegex(EvidenceError, "security_db"):
+                    EvidenceStore.create(
+                        pathlib.Path(self.temp.name) / "x",
+                        identity=self.identity,
+                        rows=rows,
+                        retention_days=14,
+                    )
+
     def test_update_detects_stale_result_bytes(self) -> None:
         store = self.create()
         store.initialize_result()
