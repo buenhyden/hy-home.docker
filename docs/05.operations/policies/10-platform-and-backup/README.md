@@ -1,26 +1,30 @@
 ---
 title: "플랫폼과 백업 정책"
-version: "0.1.3"
+version: "0.1.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 ---
 
 # 플랫폼과 백업 정책
 
-## Overview
+## Stage Responsibility
+
+### Purpose and Readers
 
 플랫폼과 백업의 적용 범위의 필수 통제, 승인, 예외와 검토 기준을 확인한다.
 
-## Scope
+### Inputs and Outputs
 
 이 폴더는 아래 문서의 정책 역할만 소유한다. 구현과 운영 결과는 각 소유 문서와 Task에서 확인한다.
 
 실행 권한, 비밀값 원문, 새로운 서비스와 빈 분류 문서는 포함하지 않는다.
 
-## Structure
+## Contents
+
+### Current Items
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
@@ -36,7 +40,13 @@ layer: "operations"
 | [hy-home.k8s Integration Operations Policy](0096-k8s-integration.md) | `POL-0096` | hy-home.k8s 클러스터는 host 주소상의 고정된 엔드포인트 집합과 두 개의 OpenBao 인증 경로를 사용한다. 이 정책은 그 집합과 인증 방식, 두 저장소 사이를 오가는 자격 증명의 처리 방식을 고정한다. |
 | [Host Storage Placement Policy](0102-host-storage-placement.md) | `POL-0102` | 이 정책은 개인 PC 호스트에서 Docker·containerd 저장소와 서비스 데이터를 SSD와 HDD 중 어디에 둘지, 그리고 저장소를 SSD로 옮기는 조건을 정한다. |
 
-## Usage
+### Classification
+
+이 폴더의 문서는 모두 정책 역할이며 `POL-NNNN` 식별자를 쓴다. 같은 subject의 다른 역할 문서는 있는 경우 같은 번호와 slug로 다른 역할 폴더에 있다.
+
+## Workflow
+
+### Create and Review
 
 1. 식별자와 문서 제목으로 대상을 고른다.
 2. 적용 범위의 필수 통제, 승인, 예외와 검토 기준을 확인한다.
@@ -45,8 +55,18 @@ layer: "operations"
 
 작성·검토 책임은 `@buenhyden`에게 있다. 같은 통제나 절차의 정본을 복제하지 않는다.
 
+### Transition and Exit
+
+문서는 `operational-policy` 수명주기(draft, in-review, active, deprecated, superseded, retired)를 따른다. superseded 또는 retired에 이른 문서는 [은퇴 전제 조건](../../../../.agents/governance/documentation-protocol.md#retirement-preconditions)을 모두 충족할 때에만 남아야 할 내용을 소유 문서에 요약한 뒤 삭제하고, 번호를 Registry `reserved_history`에 추가하며, 이 목록의 행과 링크를 같은 변경에서 제거한다.
+
 ## Related Documents
+
+### Upstream and Downstream
 
 - [상위 정책 분류](../README.md)
 - [운영 문서](../../README.md)
+
+### Policy and Templates
+
 - [문서 작성 계약](../../../../.agents/governance/documentation-protocol.md)
+- [README 템플릿](../../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

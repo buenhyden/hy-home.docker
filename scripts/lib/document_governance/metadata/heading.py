@@ -1471,9 +1471,8 @@ def _registered_readme_documents_findings(
     allowed = {tuple(required), (*required, *optional)}
     findings: list[Finding] = []
     in_documents = False
-    strict = True
-    seen = False
-    previous_row = False
+    free_tables = False
+    in_table = False
     for line in _markdown_unfenced_lines(text):
         heading = re.match(r"^ {0,3}(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$", line)
         if heading:
@@ -1481,28 +1480,27 @@ def _registered_readme_documents_findings(
             name = heading.group(2).rstrip()
             if level <= 3:
                 in_documents = level == 3 and name in README_DOCUMENTS_HEADINGS
-                strict = name != "Directories"
-                seen = False
-            previous_row = False
+                # Directories and Current Items may hold the author's own
+                # tables; only a table with a Path column must use the
+                # registered columns. Documents is checked strictly.
+                free_tables = name in {"Directories", "Current Items"}
+            in_table = False
             continue
         is_row = line.strip().startswith("|")
-        header = is_row and not previous_row
-        previous_row = is_row
-        if not in_documents or not header or (strict and seen):
+        header = is_row and not in_table
+        in_table = is_row
+        if not in_documents or not header:
             continue
-        seen = True
         columns = tuple(cell.strip() for cell in line.strip().strip("|").split("|"))
-        # ### Directories is a free map: a table with a Path column (any case,
-        # any position) is the registered path module; a table without one
-        # (for example Directory | Purpose) is the author's own.
-        if columns not in allowed and (strict or _is_path_module(columns)):
-            findings.append(
-                _finding(
-                    record,
-                    "readme-documents-header-invalid",
-                    "README Documents table header must match the registered columns",
-                )
+        if columns in allowed or (free_tables and not _is_path_module(columns)):
+            continue
+        findings.append(
+            _finding(
+                record,
+                "readme-documents-header-invalid",
+                "README Documents table header must match the registered columns",
             )
+        )
     return findings
 
 

@@ -1,6 +1,6 @@
 ---
 title: "Agent Evaluation Evidence"
-version: "1.4.1"
+version: "1.4.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -90,7 +90,7 @@ Provider Registry는 현재 이 README만 canonical entry로 등록합니다. �
 
 수정 전에 위 Local Constraints와 [평가 실행 정책](../governance/agentic.md#evaluation-evidence)
 에서 소유자와 실행 경계를 확인합니다. 현재 구성원은 [Provider Registry](../governance/providers/registry.yaml)의
-등록과 [canonical Skill 소유 규칙](../README.md#scope)에 따라 실제 `skills/<skill_id>/SKILL.md`에서 확인합니다. [Provider model evaluation](../skills/provider-model-evaluation/SKILL.md)은
+등록과 [canonical Skill 소유 규칙](../README.md#inputs-and-outputs)에 따라 실제 `skills/<skill_id>/SKILL.md`에서 확인합니다. [Provider model evaluation](../skills/provider-model-evaluation/SKILL.md)은
 공식 출처와 native schema 비교의 별도 절차이며 Skill 출력 비교 평가를 대신하지 않습니다.
 
 ## Getting Started
@@ -112,7 +112,7 @@ Provider Registry는 현재 이 README만 canonical entry로 등록합니다. �
 
 - [Agent execution and evaluation policy](../governance/agentic.md)
 - [Quality policy](../governance/quality-standards.md)
-- [Canonical Skill ownership](../README.md#scope)
+- [Canonical Skill ownership](../README.md#inputs-and-outputs)
 - [Handoff input/output contract](../prompts/handoff.md)
 - [Provider model evaluation](../skills/provider-model-evaluation/SKILL.md)
 - [Script manifest](../../scripts/manifest.yaml)
