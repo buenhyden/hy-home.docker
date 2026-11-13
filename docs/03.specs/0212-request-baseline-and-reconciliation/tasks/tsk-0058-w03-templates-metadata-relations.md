@@ -1,6 +1,6 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.5.5"
+version: "0.5.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -372,6 +372,29 @@ Branch `docs/w03-guide-common-form`, on top of `main` after #975.
   secret-name and limit facts each file states; stale "Common Checks" and
   "Runbook Handoff" references renamed.
 
+##### Runbook role 2026-11-13
+
+Branch `docs/w03-runbook-common-form`, on top of the Guide branch that
+merged as #977.
+
+- Registry `runbook`: H2 Purpose, Preconditions, Steps, Validation, Recovery
+  with their required H3s (Trigger and Outcome, Scope; Authority and Access,
+  Safety Checks; Actions, Stop Conditions; Service Checks, Evidence;
+  Escalation) and the optional H3 Rollback. The operations catalog matches
+  required section names to headings and needs no code change.
+- The 78 Runbooks (Korean bodies) are moved by `doc-writer` agents. Every old
+  line and code block is kept apart from intended sentence edits; the 40
+  links to the old `#procedure` and `#verification` anchors now point to
+  `#actions` and `#service-checks`, and Guide and Policy link texts that
+  named the old headings are renamed.
+- Review answers: 0105 cleanup and abort rules moved under Rollback with their
+  "위/아래" references renamed; pointer-only sentences replaced by the stop
+  conditions, preflight checks and evidence lists each file states;
+  record-keeping text moved from Service Checks to Evidence; forward actions
+  moved out of Rollback and Escalation; false "별도의 점검 목록을 두지 않고"
+  sentences removed; the 0098 reboot expectation corrected to the sealed
+  `bao status` exit.
+
 Held for an owner decision, not changed here, because each would change
 what a requirement says:
 
@@ -440,6 +463,12 @@ None: nothing was recorded here before this Task moved to the common form.
 | W03 v14.7 Guide review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `a8a55aead` | PASS | PASS: every finding fixed; anchors resolve | required | W03 v14.7 Guide review, W03 v14.7 Guide re-review |
 | W03 v14.7 Guide GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `a8a55aead` | PASS | Ran 810 tests, OK, including the Guide old-form, template-outline and operations catalog tests | required | W03 v14.7 Guide form RED |
 | W03 v14.7 Guide checks | 111 | W116 | metadata-links-governance | The 78 moved Guides at `c7ca7356e` and `a8a55aead` | PASS | Heading contract 0 findings; metadata check-changed selected 78 violations 0; links alignment PASS; operations catalog, taxonomy and moves tests 162 OK; every old line and code block kept apart from 20 intended edits | required | - |
+| W03 v14.7 Runbook form RED | 111 | W116 | red-green-proof | The old-form and template-outline tests with Runbook cases against the `runbook` profile at `089d4246d` (rebased as `662623dc9`) | FAIL | Six failures in the old-form and template-outline Runbook cases | required | - |
+| W03 v14.7 Runbook review | 111 | W116 | independent-review | Fresh-context code-reviewer of the Runbook move at `61354e00e` | FAIL | CHANGES_REQUIRED: 0105 cleanup rules after their references; pointer-only sentences; preflight checks outside Safety Checks; Service Checks and Evidence swapped; forward actions under Rollback | required | - |
+| W03 v14.7 Runbook re-review | 111 | W116 | independent-review | Fresh-context code-reviewer of `bac33e6a4` | FAIL | CHANGES_REQUIRED, minor: leftover false sentences, among them the 0098 reboot expectation and the 0065 "별도의 점검 목록을 두지 않고" sentence | required | - |
+| W03 v14.7 Runbook review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `98c4edd78` (rebased as `436bcc974`) | PASS | PASS: every finding fixed; anchors resolve | required | W03 v14.7 Runbook review, W03 v14.7 Runbook re-review |
+| W03 v14.7 Runbook GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `436bcc974` | PASS | Ran 810 tests, OK, including the Runbook old-form, template-outline and operations catalog tests | required | W03 v14.7 Runbook form RED |
+| W03 v14.7 Runbook checks | 111 | W116 | metadata-links-governance | The 78 moved Runbooks and the Guide and Policy link texts at `436bcc974` | PASS | Heading contract 0 findings; metadata check-changed selected 113 violations 0; links alignment 905 documents 8319 links failures 0; operations catalog tests OK | required | - |
 
 ### Resolution Links
 
@@ -464,7 +493,7 @@ these profile flags is handed to W05; renumbering stays a Q-07 decision.
 
 ### Promotion Receipt
 
-Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture).
+Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide).
 
 ### Next Owner
 
