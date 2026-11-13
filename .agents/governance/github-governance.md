@@ -1,6 +1,6 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.8.1"
+version: "1.8.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -55,8 +55,9 @@ None: this document states no exclusion.
 #### 2. Pull Request and Review Contract
 
 Issues provide intake, coordination, and branch links. The current Task owns
-approval, evidence, and lifecycle state; closing a stale Issue does not
-transition a Task. This repository uses no GitHub Project: with one developer,
+approval, evidence, and lifecycle state; closing an Issue, by hand or through
+a merged pull request's closing keyword, never transitions a Task or records
+acceptance. This repository uses no GitHub Project: with one developer,
 Issues cover intake and priority and Tasks cover execution, so a Project
 would only repeat Task state. Adding one, or an automation permission for it, needs the owner's approval
 naming it, and its fields stay coordination data, never Task execution authority.

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.55.0"
+version: "1.57.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -121,13 +121,13 @@ than re-runs SPEC-0204's historical Gateway/Attester/Export 1.0 receipts;
 Windows B, live scheduling, actual credentials, routes and remote CI remain
 outside the authorized local source and owned-isolation scope.
 
-W108 records D12, the first Opsflow installation in HOME, in TSK-0051.
-The [2026-11-10 owner acceptance](tasks/tsk-0051-opsflow-home-installation.md#owner-acceptance-2026-11-10)
-closes all six PASS steps and criterion103. Earlier unrun/open-item text in
-that terminal Task is historical; it does not reopen installation. Likewise,
-[TSK-0043 final acceptance](tasks/tsk-0043-opsflow-data-path.md#criterion-acceptance)
-sets criterion70 to not-required and accepts66-69/71. Terminal bodies stay
-unchanged; this is the current correction route.
+W108 records D12, the first Opsflow installation in HOME, in TSK-0051; its
+results and acceptance are in the
+[2026-11-10 owner acceptance](tasks/tsk-0051-opsflow-home-installation.md#owner-acceptance-2026-11-10).
+Earlier unrun/open-item text in that terminal Task is historical; it does not
+reopen installation. The decisions for criteria 66 to 71 are in
+[TSK-0043 final acceptance](tasks/tsk-0043-opsflow-data-path.md#criterion-acceptance).
+Terminal bodies stay unchanged; this is the current correction route.
 
 W111 in TSK-0053 assesses the108 master requirements and supplements and
 owns scoped current-guidance corrections. SPEC-0270 separately owns the
@@ -169,6 +169,9 @@ requirements, as handed over from TSK-0058.
 
 W120 in TSK-0062 corrects the W00 to W03 deviations a pre-W04 audit found,
 before W04 starts.
+
+W121 in TSK-0063 runs v14.7 W04: the H-07 heading-form binding and the SDLC
+promotion and state-axis meaning.
 
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
@@ -327,7 +330,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W105 | 100 | Preserve selected Export 2.0 and distinguish synthetic ACK from recorded Export 1.0 Windows ACKs | W104 | TSK-0050 | Isolated Export 2.0 manifest/fixture contract; external Windows acceptance remains NOT_RUN |
 | W106 | 101 | Bind Attester retry and SQLite backup/restore to one report's stored evidence and state | W104 | TSK-0050 | Mixed-record, tamper, interruption, concurrent replay and owned backup/restore regressions |
 | W107 | 102 | Publish current trust-boundary, route and external-receiver handoffs without mutating watched routes | W103–W106 | TSK-0050 | Documentation/readme/runbook checks, offline gate and explicit operational/remote residuals |
-| W108 | 103 | Preserve the completed six-step Opsflow HOME installation | W72 | TSK-0051 | Six PASS steps and owner acceptance on2026-11-10; no repeat installation |
+| W108 | 103 | Preserve the six-step Opsflow HOME installation that TSK-0051 records | W72 | TSK-0051 | The six installation step checks and the owner decision recorded in TSK-0051; no repeat installation |
 | W109 | 104 | Give every current ledger entry a fresh review and reviewed decision from official sources | None | TSK-0052 | `security_update_gate` exit 0, or each unreviewable entry recorded as a residual |
 | W110 | 105 | Bind each selected artifact to its own signature, provenance and SBOM evidence | W109 | TSK-0052 | Per-artifact Cosign or publisher verification receipts; missing material recorded |
 | W111 | 106 | Assess108 master requirements and supplements; align current guidance and preserve residual owners | None | TSK-0053 | Task-owned assessment, unchanged terminal bodies, metadata/links/lifecycle and independent review |
@@ -340,6 +343,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W118 | 113 | Assess the v14.7 W01 governance obligations, record local adoption of each common contract revision and correct conflicting policy | W117 | TSK-0060 | Per-ID verdicts, adoption table with contract revision and approval source, changed policy with metadata, links, governance contract and renderer checks |
 | W119 | 114 | Give each requirement identity in REQ-0024 to REQ-0027 and each REQ-0003 quality requirement its own acceptance condition without adding an obligation | W116 | TSK-0061 | Per-ID coverage check, owner approval of the wording, metadata, links and lifecycle checks |
 | W120 | 115 | Correct the W00 to W03 results that deviate from their requirements: glossary common rows, the never-retire policy rule, TemplateDefinition contract binding, and R07/R08 relation and link types | W119 | TSK-0062 | Contract comparison per row, RED and GREEN tests per contract change, metadata, links, lifecycle and governance checks, independent review |
+| W121 | 116 | Bind the Registry `common` heading values to the profiles' common form and read them in the Spec Package reader (H-07); state the promotion owners, state axes, transition events and acceptance and readiness rules in the SDLC policy; record a verdict per W04 ID | W120 | TSK-0063 | RED and GREEN Registry and reader tests, reader regression suites, per-ID verdicts with handoffs, metadata, links, lifecycle and governance checks, independent review |
 
 #### Current v30 continuation and delivery
 
@@ -702,9 +706,18 @@ The durable contract is the current request baseline and reconciliation recorded
 
 The owner is @buenhyden; the receipts are the Tasks named in the Work Breakdown.
 
+W121 promotes to `.agents/governance/sdlc.md` (promotion owners, state axes,
+transition events, acceptance and readiness rules),
+`.agents/governance/documentation-protocol.md` (operations currency, version
+boundary), `.agents/governance/github-governance.md` (Issue closure),
+`docs/99.templates/registry.json` (`common.section_forms`), the Task and Plan
+templates, and the glossary. The handoff condition is the merge of its pull
+request; TSK-0063's Promotion Receipt records each target.
+
 - [Master workspace reconciliation](tasks/tsk-0053-master-workspace-reconciliation.md)
 - [v14.7 W00 intake](tasks/tsk-0059-w00-v14-7-intake.md)
 - [v14.7 W01 governance](tasks/tsk-0060-w01-v14-7-governance.md)
+- [v14.7 W04 SDLC and promotion](tasks/tsk-0063-w04-sdlc-promotion.md)
 - [Existing supply-chain evidence owner](tasks/tsk-0052-supply-chain-evidence.md)
 - [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
 - [Opsflow data path Task](tasks/tsk-0043-opsflow-data-path.md)

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.55.0"
+version: "1.57.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -218,6 +218,12 @@ postmortem never-retire rule that had no policy owner, TemplateDefinition
 fields that lost the section contract's conditions, order and prohibited
 content, and the missing R07 relation and R08 link types.
 
+The v14.7 W04 run of 2026-11-13 adds criterion 116 and W121 in TSK-0063 for
+the TSK-0059 handoff H-07 and the W04 meaning: the Registry `common` heading
+names are bound to the common form the profiles declare and read from there,
+and the SDLC policy gives promotion its Plan, target-document and Task owners
+and keeps the SDLC phases, document Stages and state axes apart.
+
 ### Owning Requirements
 
 This Spec makes concrete the frontmatter parents REQ-0004, REQ-0005, REQ-0024 and REQ-0027 together with AD-0004 and AD-0031. The body also cites REQ-0003 (the ISO/IEC measurement wording in the acceptance text, and criterion 114), REQ-0025 and REQ-0026 (criterion 114) and ADR-0050, ADR-0003 and ADR-0018 (the Vault ADR acceptance and archival recorded for criterion 49/W54); it cites no REQ-####-FR or REQ-####-NFR identifier.
@@ -330,7 +336,11 @@ recovery result.
 The remaining phases are sequenced by the Plan. The source-evidence ladder is
 `SOURCE_APPLIED`, `STATIC_PASS`, `ISOLATED_PASS`, `NATIVE_PASS`, `HOME_PASS`,
 `RECOVERY_PASS`, `BLOCKED`, `OUT_OF_SCOPE`, `SUPERSEDED`, and `NOT_RUN`.
-Lower-stage PASS never satisfies a higher-stage result.
+Lower-stage PASS never satisfies a higher-stage result. The ladder is a
+source-assurance axis that classifies how far a source change has been shown
+to hold; it is not the Evidence `Result` domain. An Evidence row still records
+its Registry `Result`, and a ladder level never stands in for a Result,
+acceptance or completion.
 
 | Requirement | Current primary owner | Current route and boundary |
 | --- | --- | --- |
@@ -911,6 +921,17 @@ target, backup, recovery boundary, and action-specific authorization.
      order and prohibited content; and the R07 relation and R08 link types
      are defined in the policy and bound in the Registry, each change with a
      passing and a failing test where a contract changes.
+116. TSK-0063 binds each Registry `common` heading value to its place in the
+     common form through `common.section_forms`, which the Registry check
+     compares with the profile's registered sections and the Spec Package
+     reader reads instead of a code table; the SDLC policy states the Plan,
+     target-document and Task owners of promotion, the separate record of
+     each state axis, the actor and evidence of each transition event, and
+     the acceptance, withdrawal and readiness rules the v14.7 W04 IDs
+     require; and TSK-0063 records a verdict and owner for each W04 ID. A
+     wrong or missing binding fails, older
+     Registries without the binding still validate, and the existing reader
+     tests still pass.
 
 ### Evidence Requirements
 

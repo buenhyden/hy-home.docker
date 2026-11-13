@@ -88,4 +88,6 @@ created: "{{CREATED}}"
 
 ### Owner and Receipt
 
+<!-- Author prompt: For each durable meaning, name the target owner document, the intended change and the handoff condition, and the Task whose Promotion Receipt will record it. Do not copy the receipt or any Task result here. -->
+
 {{CURRENT_OWNER_VERIFICATION_AND_TASK_RECEIPT}}

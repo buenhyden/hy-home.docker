@@ -391,6 +391,32 @@
             }
           }
         },
+        "section_forms": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "profile",
+              "section"
+            ],
+            "properties": {
+              "profile": {
+                "type": "string",
+                "minLength": 1
+              },
+              "section": {
+                "type": "string",
+                "minLength": 1
+              },
+              "subsection": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
         "frontmatter_order": {
           "$ref": "#/$defs/stringList"
         },

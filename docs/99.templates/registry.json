@@ -553,6 +553,36 @@
       "postmortem_status": "published",
       "corrective_section": "Corrective Actions"
     },
+    "section_forms": {
+      "Acceptance Criteria": {
+        "profile": "spec",
+        "section": "Acceptance Criteria"
+      },
+      "Work Breakdown": {
+        "profile": "plan",
+        "section": "Implementation Strategy",
+        "subsection": "Work Breakdown"
+      },
+      "Evidence": {
+        "profile": "task",
+        "section": "Verification Evidence",
+        "subsection": "Results"
+      },
+      "Criterion Acceptance": {
+        "profile": "task",
+        "section": "Acceptance Decision",
+        "subsection": "Criterion Decisions"
+      },
+      "Work Log": {
+        "profile": "task",
+        "section": "Execution Log",
+        "subsection": "Work Performed"
+      },
+      "Corrective Actions": {
+        "profile": "postmortem",
+        "section": "Corrective Actions"
+      }
+    },
     "frontmatter_key_definitions": {
       "title": {
         "meaning": "Display title of the document.",
