@@ -168,7 +168,14 @@ recorded for W05.
 - Correction to TSK-0058: its line saying `REQUIREMENT_TARGET_BODY` keeps
   the old headings is stale; the fixture is in the common form, as TSK-0058
   says elsewhere. TSK-0058 is terminal, so the correction is recorded here.
-- Q-07 renumbering stays open by the owner's choice.
+- Q-07 renumbering: on 2026-11-13 the owner was shown the conflict the
+  requirement asks for. Each path number is the `artifact_id`. Live numbers
+  are sparse; the Spec space has 22 live, 248 reserved and high-water 270.
+  Compacting would reissue reserved IDs, which the requirement forbids, or
+  move IDs above the high-water mark. Either way the paths, `parent_ids`,
+  about 8,600 links and `commit:path` evidence change. The owner decided that
+  Q-07 runs after the work under `docs/` is complete. Until then issued
+  numbers stay unchanged.
 
 ### Blockers and Decisions
 
@@ -212,8 +219,8 @@ The Glossary contract comparison FAIL is resolved by the Glossary contract re-co
 None for this Task. W05 owns the document-level link and relation
 enforcement, the unreachable disposition entries with their check, the
 glossary contract comparison and the two recorded TemplateDefinition rule
-gaps; W07 owns the Skill `Completion and Handoff` section; Q-07 stays an
-open owner decision.
+gaps; W07 owns the Skill `Completion and Handoff` section; Q-07 runs after
+the work under `docs/` is complete, by the owner's decision.
 
 #### Review and Completion
 
