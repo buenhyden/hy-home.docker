@@ -1,6 +1,6 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.8.0"
+version: "1.9.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
@@ -52,8 +52,12 @@ meaning names its target owner document, the intended change and the handoff
 condition. The target Stage 01, 02 or 05 document, or the governance owner,
 owns the promoted content itself. The current Task's Handoff records the
 Promotion Receipt: for each acceptance criterion, the Plan work unit, the
-actual Task result, the target document and commit, and the consumer update
-and its verification, or why no durable update is needed. Link existing
+actual Task result, the target document and the commit that changed it, the
+consumer update and its verification, the criterion's Criterion Acceptance
+row, and any residual with its owner, or why no durable update is needed. The
+commit is the one that carries the target change, not a later merge commit. A
+Task that ended without a receipt gets one from the Task that removes its
+package. Link existing
 evidence rather than copying it into a second ledger. Failed acceptance returns
 to the current Task; unresolved requirements or decisions return to their owning
 stage. Retry and approval boundaries remain in agent governance policy.
@@ -68,7 +72,28 @@ integration in the merge, operation in Stage 05, and retirement in the removing
 Task. No axis is inferred from another: a PASS check is not acceptance, an
 accepted ADR or approved Spec is not execution, and a merge is not acceptance
 or deployment. These terms follow the
-[glossary](../knowledge/glossary.md).
+[glossary](../knowledge/glossary.md). Plan, README and Issue text link the
+Task; they do not restate its status, results or acceptance. A pull request
+reports the checks of its own candidate and links the Task for the rest.
+
+| Event | Actor | Precondition | Changed record | Evidence |
+| --- | --- | --- | --- | --- |
+| Create | Author | A request, a parent or a detected event | New document at its initial Registry status | The request, parent or event link |
+| Review | Reviewer | A complete draft | Review record; the family's review status where registered | Review findings with revision |
+| Approve | The approver the [approval boundaries](approval-boundaries.md) name | Any required review passed | Lifecycle status and approval record | The approval source |
+| Start | Task writer | Spec and Plan `approved` | Task or item status | Lifecycle Event with same-Task anchor |
+| Block | Task writer | A blocker, or a parent no longer `approved` | Task or item status, Blocker | Lifecycle Event with same-Task anchor |
+| Verify | Task writer | Executed work | Evidence row | Check, Input, Result, Location |
+| Accept | Owner of the criterion | Required evidence PASS, none unresolved | Criterion Acceptance row | The cited PASS rows |
+| Promote | Target owner, then Task writer | PASS evidence for the target change | Target document; Promotion Receipt | Target commit and consumer check |
+| Complete | Task writer | Every assigned pair PASS or not-required; each criterion it decides accepted or not-required | Task or item status `completed` | Lifecycle Event |
+| Cancel | The document's writer with authorization | An authorization record | Status and, where registered, `cancellation` frontmatter; an item's Blocker | `authorization_ref`, successor or `withdrawal_ref` |
+| Retire | Removing Task with approval, or the owner of a Stage 05 or governance document | Readiness and retirement preconditions, or a successor owner | Package removed and number reserved, or `retired` status | The removing Task's record or the retirement record |
+
+The Registry `transitions` own the legal edges; this table names who moves an
+edge and what proves it. A transition outside the Registry edges, an approval
+without its source, and a second completion of a terminal Task or item are
+invalid.
 
 Stage 99 assigns document-family states and legal transitions in the
 Registry `lifecycles` and `transitions`; this policy does not restate them.
@@ -88,23 +113,38 @@ Execution state has one owner. A single-mode Task keeps one frontmatter
 `status`. A multi-item Task has an `Execution Items` table under Work Performed
 in its Execution Log with at least two rows, owns one status per row, assigns
 each Work Unit to one item, and declares no frontmatter `status`; its summary is
-derived on read.
+derived on read. A cancelled item leaves its criterion/Work Unit pairs open
+until a PASS in a current item or Task or a `not-required` decision closes
+them.
 
 Evidence rows record observations only: criterion, Work Unit, Check, Input,
 Result, Location, Required, and Resolves. Required is either `required` or
 `optional`. A required non-PASS observation remains open until a later PASS
 row in the same Task explicitly resolves it for a shared criterion with the
 same Check and Work Unit. An optional observation does not itself block
-acceptance.
+acceptance. Input names the revision or candidate examined and, where they
+affect the result, the environment and tool version. Check names what was
+proved: a document or contract check and a checker's own regression test are
+different Checks. A PASS on another revision supports acceptance only when that
+PASS row records why the same input and guarantee hold.
 
 Acceptance has one owner per criterion. A criterion the Plan assigns to at
 least one current, non-cancelled Task has exactly one Criterion Acceptance row
 in one such Task. Current Owner records a durable owner or an evidence-backed
 N/A disposition. A criterion whose assigned Tasks are all historical or
-cancelled has no acceptance row. Decisions are `pending`, `accepted`,
-`rejected`, or `not-required`. An accepted criterion requires PASS evidence and
-no unresolved required observation. Rejected and not-required decisions state
-their rationale; only `not-required` closes a criterion without PASS.
+cancelled has no acceptance row. One whose historical Tasks record it as PASS
+or accepted counts as described for older Task formats below. Any other, such
+as one held only by cancelled Tasks, stays open while the Spec holds it, until
+the Plan assigns it to a current Task that decides it or the Spec drops it, as
+the [retirement preconditions](documentation-protocol.md#retirement-preconditions)
+require. Decisions are `pending`, `accepted`, `rejected`, or `not-required`. An
+accepted criterion requires PASS evidence and no unresolved required
+observation. A decision recorded under this policy's 1.9.0 or later also needs
+a PASS for every criterion/Work Unit pair the Plan assigns to a current,
+non-cancelled Task, cites at least one PASS row for that criterion, and cites a
+non-PASS row only when a later row resolves it; earlier decisions stand as
+recorded. Rejected and not-required decisions state their rationale; only
+`not-required` closes a criterion without PASS.
 
 A completed Task or item has PASS evidence for every criterion/Work Unit pair
 assigned to it unless that criterion is not-required. Each criterion the Task
@@ -116,7 +156,9 @@ review, or execution.
 
 A package is ready for removal review when its Spec and Plan are `approved`
 (or validly `cancelled`), every Task or item is terminal, every
-criterion is accepted or `not-required`, and no required non-PASS observation is unresolved;
+criterion is accepted or `not-required`, each target document the Promotion
+Map names appears in a Promotion Receipt or has a stated reason no update is
+needed, and no required non-PASS observation is unresolved;
 an older Task format that predates the typed Criterion Acceptance table counts
 when it records every criterion as PASS or accepted and leaves no required
 non-PASS observation unresolved.
@@ -131,8 +173,10 @@ version history keeps its body.
 The Registry supplies the exact Evidence, Criterion Acceptance, Execution
 Items and Work Breakdown shapes, and its `common.section_forms` places each
 named section in the common form, for example Evidence under Verification
-Evidence as Results. `spec_packages.py` implements their meaning and reads
-those places from the Registry.
+Evidence as Results. `spec_packages.py` checks their structure, reads those
+places from the Registry and derives readiness. It does not yet check the
+1.9.0 acceptance additions, cancelled-item pairs or Promotion Receipts; review
+holds those rules, and a validator PASS does not show conformance to them.
 A terminal Task unchanged since the current generation's migration source keeps
 the reader of the generation that closed it, bound by that migration's exact
 Git source proof. That compatibility does not authorize new legacy receipts. A

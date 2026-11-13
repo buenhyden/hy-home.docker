@@ -1,6 +1,6 @@
 ---
 title: "명세 패키지"
-version: "1.3.13"
+version: "1.3.14"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -115,12 +115,14 @@ package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance
   재사용합니다.
 - Spec·Plan·Task의 정확한 상태와 전이는 Registry가 소유합니다.
 - 완료 전에 acceptance와 실제 검증 결과를 연결하고 오래 유지할 의미를 현재
-  Stage 01·02·05 owner로 승격합니다. 승격 근거는 현재 Task의
-  `Evidence` 한 곳에 기록합니다.
+  Stage 01·02·05 owner로 승격합니다. 승격 계획은 Plan의 `Promotion Map`,
+  승격 영수증은 현재 Task `Handoff`의 `Promotion Receipt`에 기록합니다.
 - Spec·Plan 상태는 승인 권한만 기록합니다. 실행 상태는 Task가, 수용 판정은
   Task의 `Criterion Acceptance` 표가 소유합니다.
 - removal review 준비가 되고 삭제가 승인된 package는 삭제합니다. 준비 상태는
-  모든 criterion이 accepted 또는 `not-required`인 상태이며, typed Criterion
+  모든 criterion이 accepted 또는 `not-required`이고 Promotion Map이 지정한 각
+  대상 문서가 Promotion Receipt에 있거나 갱신 불필요 사유가 있는 상태이며
+  (receipt가 없는 이전 Task는 삭제하는 Task가 receipt를 기록), typed Criterion
   Acceptance 표가 없는 이전 형식은 모든 criterion이 PASS·accepted이고 해결되지
   않은 required non-PASS가 없으면 준비로 봅니다. 완료 package를 지우라는 사용자
   지시가 그 묶음의 승인이며, 삭제하는 Task가 승인과 package별 criterion 상태를

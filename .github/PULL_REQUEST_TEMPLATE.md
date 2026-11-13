@@ -11,7 +11,7 @@
 
 Issues own requests and priority; Specs own contracts; Tasks own execution.
 Link those owners rather than copying Spec criteria or a Task work log here.
-Projects may show a filtered work view without changing Task lifecycle.
+This repository uses no GitHub Project; read Task state from the Task itself.
 
 ## Change Type
 

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.56.0"
+version: "1.57.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -336,7 +336,11 @@ recovery result.
 The remaining phases are sequenced by the Plan. The source-evidence ladder is
 `SOURCE_APPLIED`, `STATIC_PASS`, `ISOLATED_PASS`, `NATIVE_PASS`, `HOME_PASS`,
 `RECOVERY_PASS`, `BLOCKED`, `OUT_OF_SCOPE`, `SUPERSEDED`, and `NOT_RUN`.
-Lower-stage PASS never satisfies a higher-stage result.
+Lower-stage PASS never satisfies a higher-stage result. The ladder is a
+source-assurance axis that classifies how far a source change has been shown
+to hold; it is not the Evidence `Result` domain. An Evidence row still records
+its Registry `Result`, and a ladder level never stands in for a Result,
+acceptance or completion.
 
 | Requirement | Current primary owner | Current route and boundary |
 | --- | --- | --- |
@@ -920,9 +924,12 @@ target, backup, recovery boundary, and action-specific authorization.
 116. TSK-0063 binds each Registry `common` heading value to its place in the
      common form through `common.section_forms`, which the Registry check
      compares with the profile's registered sections and the Spec Package
-     reader reads instead of a code table; and the SDLC policy states the
-     Plan, target-document and Task owners of promotion and the separate
-     record of each state axis. A wrong or missing binding fails, older
+     reader reads instead of a code table; the SDLC policy states the Plan,
+     target-document and Task owners of promotion, the separate record of
+     each state axis, the actor and evidence of each transition event, and
+     the acceptance, withdrawal and readiness rules the v14.7 W04 IDs
+     require; and TSK-0063 records a verdict and owner for each W04 ID. A
+     wrong or missing binding fails, older
      Registries without the binding still validate, and the existing reader
      tests still pass.
 

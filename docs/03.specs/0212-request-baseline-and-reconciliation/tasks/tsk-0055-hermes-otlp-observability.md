@@ -1,8 +1,8 @@
 ---
 title: "Hermes OTLP Observability Task"
-version: "0.2.2"
+version: "0.3.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-11-13"
 layer: "specs"
@@ -103,6 +103,20 @@ returned `text_response(finish_reason=stop)`. Exit reasons carry a
 parenthesized detail, so the panel query now strips it with `label_format`
 and groups by cause; the live query returned `text_response` = 6 over six hours.
 
+#### State currency 2026-11-13
+
+On the owner's decision of 2026-11-13 (SPEC-0212 TSK-0063), this Task's
+status follows the work it records: it left `draft` when work started and is
+`in-progress`. The rows below record those observed transitions; they do not
+change any evidence row or acceptance decision.
+
+#### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0055 | draft | ready | #state-currency-2026-11-13 |
+| SPEC-0212-TSK-0055 | ready | in-progress | #state-currency-2026-11-13 |
+
 ### Blockers and Decisions
 
 None: nothing was recorded here before this Task moved to the common form.
@@ -128,12 +142,12 @@ None: nothing was recorded here before this Task moved to the common form.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 108 | pending | Hermes ingest source and tests, Hermes live telemetry readback | Implementation in progress. | SPEC-0212 TSK-0055 |
+| 108 | pending | Hermes ingest source and tests rerun, Hermes live telemetry readback 2026-11-11 | Source, test and live readback rows PASS and resolve the earlier NOT_RUN rows; acceptance waits for the owner's decision. | SPEC-0212 TSK-0055 |
 
 ### Remaining Conditions
 
-Completion needs the source and test row PASS and one live trace, log line and
-gateway metric read back after the owner-approved apply.
+The owner's decision on criterion 108. The source and live rows have passed;
+completion follows an accepted decision.
 
 ## Handoff
 
@@ -143,4 +157,4 @@ None: nothing was recorded here before this Task moved to the common form.
 
 ### Next Owner
 
-None: nothing was recorded here before this Task moved to the common form.
+@buenhyden decides criterion 108.

@@ -1,8 +1,8 @@
 ---
 title: "Image, Supply-Chain and Storybook Compatibility Task"
-version: "0.1.11"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-11-13"
 layer: "specs"
@@ -327,6 +327,20 @@ RUN-0021 now point to the validity rule, and RUN-0105 no longer says the
 daily OpenBao snapshot fails. The first half-yearly place A restore has not
 run yet.
 
+#### State currency 2026-11-13
+
+On the owner's decision of 2026-11-13 (SPEC-0212 TSK-0063), this Task's
+status follows the work it records: it left `draft` when work started and is
+`in-progress`. The rows below record those observed transitions; they do not
+change any evidence row or acceptance decision.
+
+#### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0047 | draft | ready | #state-currency-2026-11-13 |
+| SPEC-0212-TSK-0047 | ready | in-progress | #state-currency-2026-11-13 |
+
 ### Blockers and Decisions
 
 None: nothing was recorded here before this Task moved to the common form.
@@ -402,4 +416,5 @@ None: nothing was recorded here before this Task moved to the common form.
 
 ### Next Owner
 
-None: nothing was recorded here before this Task moved to the common form.
+@buenhyden, for the Remaining Conditions above; criteria 86 and 89 are with
+TSK-0052.

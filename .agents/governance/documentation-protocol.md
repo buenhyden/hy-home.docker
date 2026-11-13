@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.18.2"
+version: "3.19.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -182,7 +182,10 @@ retyped by this rule.
    `version` at `0.1.0`; approval of its first stable contract promotes it to
    `1.0.0`. Patch, minor, and major increments communicate compatible correction,
    compatible meaning growth, and incompatible contract change respectively.
-   Lifecycle status is independent of this content version. `layer` names the
+   Lifecycle status is independent of this content version. An artifact
+   number, a numbering baseline or its reset, a Task completion and a pull
+   request merge are not version events; none of them sets or resets a
+   `version`. `layer` names the
    owning stage without its numeric prefix and is omitted wherever the canonical
    path already states the authority. A profile
    without an identity declares no `artifact_id` and never invents one. A
@@ -385,6 +388,10 @@ evidence; surrounding instructions remain current and validated normally.
   blast radius, ordered actions, expected signals, verification, recovery,
   escalation, and evidence handoff. Place these in its registered sections;
   do not copy a past execution result into a reusable instruction.
+- A Guide, Operations Policy or Runbook stays current by event, not by a new
+  field: a change to the service, pin, command or procedure it describes
+  updates it in the same change, and a `next_review_at` that has passed, when
+  the document sets one, makes it stale until reviewed.
 - An Incident records observed impact, severity, affected service, coordination,
   timeline, hypotheses, mitigation, and the next responsible action. Put
   severity and service details in the body unless the Registry declares a
