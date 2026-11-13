@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.24.1"
+version: "3.25.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -139,7 +139,7 @@ check for each kind of writer, not for the relation as a whole.
 | Traceability | `rel.traceability` | Record to source | Task `Results` rows and a Task's evidence links; `parent_ids` of research, audit, data, guide, runbook, operations policy, incident and generated documents | `check-document-corpus-lifecycle.py` for Evidence rows; `check-document-links.py` for links; `check-document-metadata.py` for `parent_ids` |
 | Promotion | `rel.promotion` | Plan to target owner | Plan `Durable Meaning` and `Owner and Receipt` | None: the reviewer applies the [SDLC](sdlc.md#sequence) promotion rule |
 | Supersession | `rel.supersession` | Successor to predecessor | Frontmatter `supersedes`; ADR `Traceability` / `Supersession` | `check-document-metadata.py` for the key; the section is checked by review |
-| Change Impact | `rel.change-impact` | Owner to consumer | None: derived from Authority, Constraint and Structural Ownership | None: the reviewer applies this section |
+| Change Impact | `rel.change-impact` | Owner to consumer | None: derived from Authority, Constraint and Structural Ownership | `check-document-links.py --impact` reports it; the reviewer decides which consumers change |
 
 The frontmatter `owner` names an accountable person, not a related document,
 and historical and navigation links carry no relation; their link types above
@@ -149,12 +149,20 @@ section name, not the `rel.traceability` relation.
 
 Only the side the Writer column names records a relation, and no document
 keeps a manual reverse-state table. Reverse lookups, such as the children of a
-parent or the consumers of an owner, and Change Impact are derived by the
-reviewer from those records when a document is removed or moved; no tool
-derives them yet. The one retained reverse
+parent or the consumers of an owner, and Change Impact are derived from those records when a document is removed or
+moved: `check-document-links.py --impact <path>` reports the documents whose
+`parent_ids` or `supersedes` name it, the documents with an untitled or
+`normative` link to it (a folder link reaching its README), and the
+transitive closure over the first and third; it fails on nothing it finds,
+exits 2 when the path is not a current document and 1 on unreadable input. An untitled link may be navigation, so the
+reviewer still decides which consumers the change affects. The one retained reverse
 field is `superseded_by`, the single reciprocal successor of `supersedes`, as
 [Authoring Rules](#authoring-rules) item 9 keeps it. Making it an array
-requires a coordinated graph and lineage contract change.
+requires a coordinated graph and lineage contract change. A Registry
+`template_roles[*].consumer_paths` list is not a document relation: it is the
+TemplateDefinition enumeration of the consumers found for that role, a
+`test_registry` test requires each entry to be a tracked file, and whether
+each still reads the role is checked by review.
 
 The Registry `common` section binds these definitions as `link_types`,
 `link_profiles` and `document_relations`, and each relation's `owner` names

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.58.0"
+version: "1.59.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -227,7 +227,10 @@ and keeps the SDLC phases, document Stages and state axes apart.
 The v14.7 W05 run of 2026-11-14 adds criterion 117 and W122 in TSK-0064 for
 the validator handoffs of TSK-0059, TSK-0060, TSK-0057, TSK-0062 and
 TSK-0063: Registry rules that a checker can now enforce, with a failing and a
-passing test each, and a recorded owner for every handoff left open.
+passing test each, and a recorded owner for every handoff left open. The
+review of 2026-11-14 adds criterion 118 and W123 in the same Task for the
+TSK-0062 handoffs it left as GAP: a tool that derives reverse lookups and
+Change Impact, and a check on the `consumer_paths` enumeration.
 
 ### Owning Requirements
 
@@ -949,6 +952,16 @@ target, backup, recovery boundary, and action-specific authorization.
      passed `next_review_at` marks an operations document stale. Each rule has
      a test that fails without it, historical Registries still validate, and
      TSK-0064 records a verdict and owner for each W05 handoff.
+118. TSK-0064 derives reverse lookups and Change Impact from the forward
+     records: `check-document-links.py --impact <path>` reports the documents
+     whose `parent_ids` or `supersedes` name the target, the documents with an
+     untitled or `normative` link to it, and the transitive closure over the
+     first and third, failing on nothing it finds, exiting 2 for a path
+     that is not a current document and 1 on unreadable input; each Registry
+     `template_roles[*].consumer_paths` entry is a tracked file, as the
+     TemplateDefinition contract's enumeration of consumers found; a test
+     fails without each part, and the protocol no longer says no tool derives
+     them.
 
 ### Evidence Requirements
 

@@ -1,6 +1,6 @@
 ---
 title: "v14.7 W05 Validator Alignment Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -247,8 +247,8 @@ roles" holds only if the workflow-form decision keeps `sdlc.md` and
 | H-12 Release guard | TSK-0059 | PASS | Done here for `release` name tokens; other names and a generator are checked by review |
 | H-W04-3 `stale-active` | TSK-0063 | PASS | Done here |
 | Document-level link types | TSK-0062 | PASS | Owner chose tool enforcement on 2026-11-14; done here (title marker, untitled default); choosing the type stays a review |
-| Reverse lookups and Change Impact derivation | TSK-0062 | GAP | No tool derives them; W05 next unit, CLI wiring to W06 |
-| `template_roles[*].consumer_paths` manual reverse lookup | TSK-0062 | GAP | Same unit as the reverse lookups |
+| Reverse lookups and Change Impact derivation | TSK-0062 | PASS (W123, criterion 118) | `relation_lookup` and the report-only `check-document-links.py --impact`; telling an untitled navigation link from a normative one stays a review |
+| `template_roles[*].consumer_paths` manual reverse lookup | TSK-0062 | PASS (W123, criterion 118) | Owner 2026-11-14: as the W05 prompt's TemplateDefinition contract writes it, an enumeration of consumers found, where a `role:` token is not file evidence; `test_registry` requires each entry to be a tracked file; whether each still reads the role is review (13 entries name neither the role, its source nor its profiles) |
 | H-W04-1 acceptance rules | TSK-0063 | PASS | `fc639081c`: applied by the corpus lifecycle check to Criterion Acceptance rows new or changed against the lifecycle base, so the 8 criteria accepted before 1.9.0 in six Tasks stand as recorded; merged-PR-note fixture included |
 | H-W04-2 promotion check | TSK-0063 | PASS (code-span targets) | `ef049ad37`, `91663f1f9`: full-path match in non-cancelled receipts, reported by `--readiness` (`e34801578`); prose targets stay with review; CI route is W06's |
 | H-W04-4 untested branches | TSK-0063 | PASS | `4bee2c348`; the duplicate-Task message is unreachable because `_load_tasks` rejects the duplicate first |
@@ -344,6 +344,14 @@ roles" holds only if the workflow-form decision keeps `sdlc.md` and
 | Local changed gate | 117 | W122 | ci-gate-local | `run-ci-gate.py --profile changed` at `91663f1f9`, Python 3.12.3 | NOT_RUN | Fails closed by design: the local toolchain differs from hosted Python 3.14.8; the uv 3.14.8 interpreter lacks the dependencies, which were not installed | optional | - |
 | Remote candidate 996 | 117 | W122 | remote-ci | PR #996 head `91663f1f9` | PASS | candidate-quality (11m23s), CodeQL, GitGuardian and triage passed; an earlier head `3e8fc2cd0` had failed candidate-quality on the two protocol lines | required | - |
 | Remote candidate 996 final | 117 | W122 | remote-ci | PR #996 final head `6e57d3dc7`, merged as `5a1aa4b98` | PASS | candidate-quality (13m16s), CodeQL, GitGuardian and triage passed; main-security skipped as on every PR | required | - |
+| Relation lookup RED | 118 | W123 | red-green-proof | New `RelationLookupTests` against `a8526720c` | FAIL | 6 errors (no `relation_lookup`) and 1 failure (`--impact` unrecognized) | required | - |
+| Relation lookup GREEN | 118 | W123 | red-green-proof | `test_links` on the uncommitted tree; ruff format and check | PASS | 117 tests OK; ruff clean; `--impact` on the SPEC-0212 Spec reports 2 children, 72 consumers, 838 in the closure | required | Relation lookup RED |
+| W123 review | 118 | W123 | independent-review | Fresh-context code-reviewer of the uncommitted tree (read only, no tests run) | FAIL | CHANGES_REQUIRED: Important, folder links never counted as consumers; a wrong path printed an empty report with exit 0. Minor: escaped titled links hid untitled ones; `--impact` skipped input-error handling; untested successors, self links and missing IDs; Resolution Links prose | required | - |
+| W123 review fixes | 118 | W123 | red-green-proof | Four new `RelationLookupTests`; with the folder mapping and escape skip removed, 2 failed; restored: 9 tests OK; `--impact docs/no.md` exits 2 | PASS | Folder links reach the README; escaped links skipped; input errors exit 1; a non-document path exits 2 | required | - |
+| Consumer paths RED | 118 | W123 | red-green-proof | New `test_template_role_consumers_are_tracked_files` with one entry replaced by `role:registry-reader` | FAIL | 1 failure | required | - |
+| Consumer paths GREEN | 118 | W123 | red-green-proof | Same test on the real Registry | PASS | OK | required | Consumer paths RED |
+| W123 re-review | 118 | W123 | independent-review | Same reviewer, the fixed tree (read only, no tests run) | PASS | Every earlier finding fixed or recorded as a limit; Minor: help text, exit-1 wording and one more limit, fixed after it | required | W123 review |
+| W123 regression | 118 | W123 | unit-regression | `test_registry`, `test_links`, `test_surface_ownership` on the fixed tree; corpus lifecycle; links alignment and commands; metadata check-changed; governance contract; script manifest | PASS | 283 tests OK; violations=0; PASS; selected=4 violations=0; PASS; valid | required | - |
 
 ### Resolution Links
 
@@ -352,8 +360,9 @@ TemplateDefinition GREEN, Vocabulary RED by Vocabulary GREEN, and Currency RED
 by Currency GREEN, and Release RED by Release GREEN. Pre-commit is resolved
 by its rerun, and Link type RED by Link type GREEN. SemVer RED, Common form pin RED,
 Approval hook RED, Acceptance rule RED, Promotion readiness RED, Form
-serialization RED, Vocabulary 1.1.0 RED, Readiness RED and Link title RED
-are resolved by their GREEN rows. The Integrated review FAIL is resolved by
+serialization RED, Vocabulary 1.1.0 RED, Readiness RED, Link title RED,
+Relation lookup RED and Consumer paths RED are resolved by their GREEN rows,
+and the W123 review FAIL by the W123 re-review. The Integrated review FAIL is resolved by
 the Integrated re-review. The W05 review and
 W05 re-review FAILs are resolved by the W05 final review, and the Spec Package
 regression by its rerun.
@@ -365,12 +374,17 @@ regression by its rerun.
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 117 | accepted | Disposition GREEN, TemplateDefinition GREEN, Vocabulary 1.1.0 GREEN, Release GREEN, Link title GREEN, Currency GREEN, SemVer GREEN, Integrated checks, Integrated re-review, Remote candidate 996 final | Owner @buenhyden accepted on 2026-11-14 in this chat, after #996 merged; hosted CI wiring of the local-only leaves stays with H-W05-1 (W06) | SPEC-0212 TSK-0064 |
+| 118 | pending | - | The derivation passes its tests; the independent review, the remote candidate and the owner's acceptance remain | SPEC-0212 TSK-0064 |
 
 ### Remaining Conditions
 
-Criterion 117 is accepted. The two GAP rows under Handoff Verdicts (reverse
-lookups and Change Impact derivation, `consumer_paths`) lie outside criterion
-117 and keep this Task `in-progress`; the UNVERIFIED rows name their waves.
+Criterion 117 is accepted and criterion 118 is pending: the remote
+candidate and the owner's acceptance remain. The UNVERIFIED rows
+name their waves. Limits: a reference definition used twice, or an
+angle-bracket destination with a space, can count a titled link as a
+consumer, an unused titled reference definition can hide an untitled link to
+the same file, and a duplicate `artifact_id` keeps the last path (the metadata
+check rejects duplicates); a reviewer checks these.
 Q-07 runs only after W11.
 
 ## Handoff
@@ -382,6 +396,7 @@ Q-07 runs only after W11.
 | 117 | W122 | Disposition GREEN, Vocabulary GREEN, Release GREEN, W05 final review | `docs/99.templates/registry.json`, the profile schema, `registry.py`, `documentation-protocol.md`, the glossary Provenance (commit `62b3e434b`) | `test_registry`; Integrated checks and Spec Package regression rerun rows |
 | 117 | W122 | TemplateDefinition GREEN | `template_definition.py` (commit `97a40d35c`) | `test_template_definition`, `metadata.test_heading` |
 | 117 | W122 | Currency GREEN | `metadata/lifecycle.py` (commit `88d9e465b`) | `metadata.test_lifecycle` |
+| 118 | W123 | Relation lookup GREEN | `.agents/governance/documentation-protocol.md` (Relations derivation, Change Impact row; commit pending) | `test_links`; links alignment |
 
 The commits reached `main` through PR #996, merged as `5a1aa4b98` with a
 merge commit, so the promotion condition (merge) is met. Acceptance row:
