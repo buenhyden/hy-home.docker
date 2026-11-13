@@ -122,7 +122,7 @@ Stage 03 Spec의 contract가 소유한다.
 
 ### Transition and Exit
 
-Requirement Package는 draft → in-review → approved로 전이하며 approved에서 in-review로 돌아갈 수 있다. 삭제된 package의 번호는 Registry `reserved_history`가 보관하며, Stage 01 번호 공백은 그 번호가 예약된 경우에만 정당한다. 패키지를 추가·변경·삭제하면 같은 변경에서 이 README를 갱신한다.
+Requirement Package는 draft → in-review → approved로 전이하며 approved에서 in-review로 돌아갈 수 있다. 삭제된 package의 번호는 Registry `reserved_history`가 보관하며, Stage 01 번호 공백은 그 번호가 예약된 경우에만 정당하다. 패키지를 추가·변경·삭제하면 같은 변경에서 이 README를 갱신한다.
 
 ## Related Documents
 

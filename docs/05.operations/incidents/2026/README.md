@@ -43,7 +43,7 @@ layer: "operations"
 
 ### Transition and Exit
 
-이 폴더의 사고는 Incident 수명주기를 따르며(open → investigating → mitigated 또는 resolved → closed), Incident 번호는 연도마다 다시 시작해 `inc-2026-NNNN` 형식으로 이 폴더에서만 발급합니다.
+이 폴더의 사고는 Incident 수명주기를 따르며(open → investigating → mitigated 또는 resolved, resolved에서만 closed), Incident 번호는 연도마다 다시 시작해 `inc-2026-NNNN` 형식으로 이 폴더에서만 발급합니다.
 
 ## Related Documents
 

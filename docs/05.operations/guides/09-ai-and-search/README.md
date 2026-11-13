@@ -53,7 +53,7 @@ AI와 검색의 정상 구성과 사용 전제를 이해하고 필요한 통제�
 
 ### Transition and Exit
 
-문서는 `operational-policy` 수명주기(draft, in-review, active, deprecated, superseded, retired)를 따른다. 종료 상태에 이른 문서는 남아야 할 내용을 소유 문서에 요약한 뒤 삭제하고, 번호를 Registry `reserved_history`에 추가하며, 이 목록의 행과 링크를 같은 변경에서 제거한다.
+문서는 `operational-policy` 수명주기(draft, in-review, active, deprecated, superseded, retired)를 따른다. superseded 또는 retired에 이른 문서는 [은퇴 전제 조건](../../../../.agents/governance/documentation-protocol.md#retirement-preconditions)을 모두 충족할 때에만 남아야 할 내용을 소유 문서에 요약한 뒤 삭제하고, 번호를 Registry `reserved_history`에 추가하며, 이 목록의 행과 링크를 같은 변경에서 제거한다.
 
 ## Related Documents
 

@@ -138,7 +138,7 @@ CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성�
 
 ### Transition and Exit
 
-Guide·Policy·Runbook은 `operational-policy` 수명주기(draft, in-review, active, deprecated, superseded, retired)를 따르고, Incident는 open → investigating → mitigated 또는 resolved → closed 순으로 전이하며(mitigated와 resolved에서는 investigating으로 돌아갈 수 있고 closed가 종료 상태), Postmortem은 draft → in-review → published로 전이하며 published가 종료 상태이다. 종료 상태 문서는 남아야 할 내용을 소유 문서에 요약한 뒤 삭제하고 번호를 Registry `reserved_history`에 추가하며 해당 역할 인덱스와 inbound link를 같은 변경에서 갱신한다.
+Guide·Policy·Runbook은 `operational-policy` 수명주기(draft, in-review, active, deprecated, superseded, retired)를 따르고, Incident는 open → investigating → mitigated 또는 resolved 순으로 전이하고 resolved에서만 closed로 닫히며(mitigated에서는 investigating 또는 resolved로, resolved에서는 investigating으로 돌아갈 수 있고 closed가 종료 상태), Postmortem은 draft → in-review → published로 전이하며 published가 종료 상태이다. superseded 또는 retired에 이른 Guide·Policy·Runbook은 [은퇴 전제 조건](../../.agents/governance/documentation-protocol.md#retirement-preconditions)을 모두 충족할 때에만 남아야 할 내용을 소유 문서에 요약한 뒤 삭제하고 번호를 Registry `reserved_history`에 추가하며 해당 역할 인덱스와 inbound link를 같은 변경에서 갱신한다.
 
 ## Related Documents
 

@@ -90,7 +90,7 @@ Incident Record(`incident.md`)는 사고 사실과 대응 상태의 정본이고
 
 ### Transition and Exit
 
-Incident는 open → investigating → mitigated 또는 resolved → closed 순으로 전이하며(mitigated와 resolved에서는 investigating으로 돌아갈 수 있고 closed가 종료 상태), Postmortem은 draft → in-review → published로 전이하며 published가 종료 상태입니다.
+Incident는 open → investigating → mitigated 또는 resolved 순으로 전이하고 resolved에서만 closed로 닫히며(mitigated에서는 investigating 또는 resolved로, resolved에서는 investigating으로 돌아갈 수 있고 closed가 종료 상태), Postmortem은 draft → in-review → published로 전이하며 published가 종료 상태입니다.
 
 ## Related Documents
 

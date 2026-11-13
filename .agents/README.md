@@ -115,7 +115,7 @@ surface가 도입되지 않습니다.
 
 ### Transition and Exit
 
-삭제된 문서는 남아야 할 의미를 해당 governance owner에 옮긴 뒤 삭제하며, 삭제된 본문은 Git 이력이 보관합니다.
+은퇴하는 문서는 남아야 할 의미를 해당 governance owner에 옮긴 뒤 삭제하며, 삭제된 본문은 Git 이력이 보관합니다.
 
 ## Related Documents
 
