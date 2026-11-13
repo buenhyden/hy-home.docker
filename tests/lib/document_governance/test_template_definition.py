@@ -140,7 +140,8 @@ class TemplateDefinitionTests(unittest.TestCase):
                 )
                 for heading in definition["headings"]:
                     title = heading["title"]
-                    self.assertEqual(
+                    # Order is the template's; see the declared-order test.
+                    self.assertCountEqual(
                         [
                             *profile.get("required_subsections", {}).get(title, ()),
                             *profile.get("optional_subsections", {}).get(title, ()),
@@ -182,6 +183,85 @@ class TemplateDefinitionTests(unittest.TestCase):
                         required_children, [t for t in h3 if t in required_children]
                     )
                     self.assertLessEqual(set(h3), {c["title"] for c in children})
+
+    def test_conditional_subsections_carry_the_contract_condition(self) -> None:
+        # COMMON-DOC-FORM-1 1.0.0 marks exactly these H3s conditional.
+        expected = {
+            ("sdlc/requirement", "Quality Requirements"): "when a quality "
+            "requirement applies",
+            ("sdlc/architecture-decision", "Supersession"): "when an actual "
+            "predecessor or successor decision exists, or the change supersedes one",
+            ("operation/runbook", "Rollback"): "when running the procedure or "
+            "the change alters state or outputs",
+        }
+        found = {}
+        for role, definition in self.definitions.items():
+            for heading in definition["headings"]:
+                for child in heading["children"]:
+                    if child["requiredness"] != "required":
+                        found[(role, child["title"])] = (
+                            child["requiredness"],
+                            child["condition"],
+                            child["empty_policy"],
+                        )
+        self.assertEqual(
+            {
+                key: ("conditional", text, "omit_when_condition_false")
+                for key, text in expected.items()
+            },
+            found,
+        )
+
+    def test_subsections_keep_the_declared_order(self) -> None:
+        recovery = next(
+            h
+            for h in self.definitions["operation/runbook"]["headings"]
+            if h["title"] == "Recovery"
+        )
+        self.assertEqual(
+            [("Rollback", 1), ("Escalation", 2)],
+            [(c["title"], c["order"]) for c in recovery["children"]],
+        )
+        for role, definition in self.definitions.items():
+            if not self._profile(role).get("required_subsections"):
+                continue
+            source = self.registry.template_roles[role]["source"]
+            found = _template_headings((ROOT / source).read_text(encoding="utf-8"))
+            h3 = [title for level, title in found if level == 3]
+            with self.subTest(role=role):
+                children = [
+                    c["title"] for h in definition["headings"] for c in h["children"]
+                ]
+                self.assertEqual([t for t in h3 if t in children], children)
+
+    def test_sections_carry_their_role_prohibited_content(self) -> None:
+        # COMMON-DOC-FORM-1 1.0.0 gives every section of a role one role
+        # rule; every H3 also forbids a stand-in heading.
+        role_rule = {
+            "sdlc/requirement": "Implementation detail or Task status, which "
+            "the Requirement does not own.",
+            "operation/runbook": "Procedure guidance presented as execution "
+            "approval, or a stored secret value.",
+            "governance/policy": "A rule weakened to suit a test.",
+        }
+        stand_in = (
+            "A same-named heading inside a code fence, quote or comment "
+            "standing in for the real section."
+        )
+        for role, definition in self.definitions.items():
+            if not self._profile(role).get("required_subsections"):
+                continue
+            with self.subTest(role=role):
+                for heading in definition["headings"]:
+                    rules = heading["prohibited_content"]
+                    self.assertEqual(3, len(rules), heading["title"])
+                    self.assertIn("A heading with no body below it.", rules)
+                    if role in role_rule:
+                        self.assertEqual(role_rule[role], rules[0])
+                    for child in heading["children"]:
+                        self.assertEqual(
+                            [*rules, stand_in], child["prohibited_content"]
+                        )
 
     def test_headingless_templates_use_their_real_top_level_units(self) -> None:
         expected = {

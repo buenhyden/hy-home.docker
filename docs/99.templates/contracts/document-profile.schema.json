@@ -542,6 +542,13 @@
               }
             }
           }
+        },
+        "section_prohibited_content": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
+          }
         }
       },
       "required": [
