@@ -34,6 +34,25 @@ DEFAULT_FRONTMATTER_SCHEMA = (
 MAX_REGISTRY_BYTES = 1024 * 1024
 MAX_SCHEMA_BYTES = 256 * 1024
 MAX_JSON_DEPTH = 64
+# The authored TemplateDefinition fields (v14.5) a `template_roles` entry
+# carries beside its binding; template_definition() derives the rest.
+TEMPLATE_DEFINITION_FIELDS = (
+    "purpose",
+    "responsibility",
+    "non_goals",
+    "policy_refs",
+    "vocabulary_refs",
+    "applicability",
+    "relationships",
+    "consumer_paths",
+    "validation",
+    "migration",
+)
+# `conditional_units` is optional: it names the top-level units of a
+# heading-less template that are examples or conditional rather than required.
+TEMPLATE_ROLE_KEYS = frozenset(
+    {"source", "profiles", "conditional_units", *TEMPLATE_DEFINITION_FIELDS}
+)
 FALLBACK_PROFILE_IDS = frozenset({"unsupported"})
 # Preserved records live only under this prefix. A record is kept as it was
 # when it was live, so its frontmatter is not managed against the current
@@ -404,6 +423,68 @@ def _identity_space(raw: Mapping[str, object]) -> IdentitySpace:
     )
 
 
+def _template_dictionary_findings(raw: Mapping[str, object]) -> list[RegistryFinding]:
+    """Every key and column a TemplateDefinition reports needs its dictionary entry."""
+
+    common = raw.get("common")
+    roles = raw.get("template_roles")
+    profiles = raw.get("profiles")
+    if not (
+        isinstance(common, Mapping)
+        and isinstance(roles, Mapping)
+        and isinstance(profiles, list)
+    ):
+        return []
+    by_id = {
+        profile.get("id"): profile
+        for profile in profiles
+        if isinstance(profile, Mapping)
+    }
+    keys = common.get("frontmatter_key_definitions", {})
+    columns = common.get("table_column_definitions", {})
+    findings: list[RegistryFinding] = []
+    # A historical Registry predates TemplateDefinition; only a role that
+    # carries the authored fields is held to the dictionaries.
+    defined = [
+        (role, definition)
+        for role, definition in roles.items()
+        if isinstance(definition, Mapping) and "purpose" in definition
+    ]
+    if not defined:
+        return []
+    for role, definition in defined:
+        for profile_id in definition.get("profiles", ()):
+            profile = by_id.get(profile_id, {})
+            for field in (
+                "required_frontmatter",
+                "optional_frontmatter",
+            ):
+                for key in profile.get(field, ()):
+                    if key not in keys:
+                        findings.append(
+                            RegistryFinding(
+                                "template-key-undefined",
+                                f"template_roles.{role}",
+                                str(key),
+                            )
+                        )
+    for contract in (
+        "evidence_columns",
+        "plan_columns",
+        "criterion_acceptance_columns",
+        "readme_documents_columns",
+        "readme_documents_optional_columns",
+    ):
+        for column in common.get(contract, ()):
+            if column not in columns:
+                findings.append(
+                    RegistryFinding(
+                        "template-column-undefined", f"common.{contract}", str(column)
+                    )
+                )
+    return findings
+
+
 def validate_registry(
     raw: Mapping[str, object],
     *,
@@ -732,7 +813,7 @@ def validate_registry(
         for role, definition in roles.items():
             if not isinstance(definition, Mapping):
                 continue
-            extra = set(definition) - {"source", "profiles"}
+            extra = set(definition) - TEMPLATE_ROLE_KEYS
             if extra:
                 findings.append(
                     RegistryFinding(
@@ -769,6 +850,7 @@ def validate_registry(
         findings.append(
             RegistryFinding("template-source-duplicate", "template_roles", source)
         )
+    findings.extend(_template_dictionary_findings(raw))
     for index, profile in profile_entries:
         profile_id = profile.get("id")
         template_id = profile.get("template_id")

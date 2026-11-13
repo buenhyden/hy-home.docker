@@ -1,6 +1,6 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.5.4"
+version: "2.6.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -59,7 +59,8 @@ docs/99.templates/
 ├── registry.json
 ├── contracts/
 │   ├── document-frontmatter.schema.json
-│   └── document-profile.schema.json
+│   ├── document-profile.schema.json
+│   └── template-definition.schema.json
 └── templates/
     ├── governance/
     ├── runtime/
@@ -81,7 +82,13 @@ docs/99.templates/
 | [`registry.json`](./registry.json) | machine | profiles, paths, identities, lifecycle, traceability, template registration |
 | [`contracts/document-profile.schema.json`](./contracts/document-profile.schema.json) | machine | registry shape |
 | [`contracts/document-frontmatter.schema.json`](./contracts/document-frontmatter.schema.json) | machine | typed frontmatter value shape |
+| [`contracts/template-definition.schema.json`](./contracts/template-definition.schema.json) | machine | 승인된 TemplateDefinition v14.5 형식. `scripts/lib/document_governance/template_definition.py`가 각 `template_roles` 항목을 이 형식으로 투영합니다 |
 | [`templates/`](./templates/) | copy source | profile-referenced authoring forms |
+
+TemplateDefinition의 `contract_version`은 profile이 `required_subsections`를
+선언하면 공통 양식 `COMMON-DOC-FORM-1` 판본이고, 그렇지 않으면 Registry
+`common.contract_id`입니다. 판본 값은 `template_definition.py`의
+`COMMON_FORM_VERSION` 한 곳에만 둡니다.
 
 Consumer는 `scripts.lib.document_governance.registry`를 통해 Registry를
 로드해야 합니다. README 본문이나 template 본문을 machine policy로

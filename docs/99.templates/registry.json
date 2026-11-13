@@ -552,6 +552,605 @@
       "incident_status": "resolved",
       "postmortem_status": "published",
       "corrective_section": "Corrective Actions"
+    },
+    "frontmatter_key_definitions": {
+      "title": {
+        "meaning": "Display title of the document.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/document_governance/operations_catalog.py"
+        ]
+      },
+      "version": {
+        "meaning": "Semantic version of the document, raised on each meaningful change.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py"
+        ]
+      },
+      "type": {
+        "meaning": "Registry family/kind pair that selects the document profile.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/document_governance/metadata/profile.py"
+        ]
+      },
+      "status": {
+        "meaning": "Current lifecycle status, drawn from the profile's lifecycle.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/document_governance/lifecycle/contract.py",
+          "scripts/lib/document_governance/operations_catalog.py"
+        ]
+      },
+      "owner": {
+        "meaning": "Accountable owner handle, such as @buenhyden.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py"
+        ]
+      },
+      "updated": {
+        "meaning": "Date of the last meaningful change.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/document_governance/spec_packages.py"
+        ]
+      },
+      "layer": {
+        "meaning": "Stage layer name; the profile's frontmatter_values fixes its value.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/document_governance/operations_catalog.py"
+        ]
+      },
+      "created": {
+        "meaning": "Date the document was first written.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py"
+        ]
+      },
+      "generated_by": {
+        "meaning": "Path of the generator that writes this file; a file with it is not hand-edited.",
+        "writer": "the named generator",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/document_governance/metadata/heading.py",
+          "scripts/lib/document_governance/lifecycle/contract.py"
+        ]
+      },
+      "runtime": {
+        "meaning": "Provider runtime an adapter serves, such as claude or codex.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py"
+        ]
+      },
+      "name": {
+        "meaning": "Native agent name of a provider projection.",
+        "writer": "scripts/operations/provider_surface_renderer.py",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/operations/provider_surface_renderer.py",
+          "scripts/lib/agent_governance/agent_governance_contract.py"
+        ]
+      },
+      "description": {
+        "meaning": "One-line description a provider shows for the agent or skill.",
+        "writer": "scripts/operations/provider_surface_renderer.py",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/operations/provider_surface_renderer.py",
+          "scripts/lib/agent_governance/agent_governance_contract.py"
+        ]
+      },
+      "effort": {
+        "meaning": "Claude reasoning effort translated from the Provider Registry work profile.",
+        "writer": "scripts/operations/provider_surface_renderer.py",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/agent_governance/agent_governance_contract.py"
+        ]
+      },
+      "model": {
+        "meaning": "Provider model translated from the Provider Registry work profile.",
+        "writer": "scripts/operations/provider_surface_renderer.py",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/operations/provider_surface_renderer.py",
+          "scripts/lib/agent_governance/agent_governance_contract.py"
+        ]
+      },
+      "model_reasoning_effort": {
+        "meaning": "Codex reasoning effort translated from the Provider Registry work profile.",
+        "writer": "scripts/operations/provider_surface_renderer.py",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/operations/provider_surface_renderer.py",
+          "scripts/lib/agent_governance/agent_governance_contract.py"
+        ]
+      },
+      "permissionMode": {
+        "meaning": "Claude permission mode translated from the role's permission profile.",
+        "writer": "scripts/operations/provider_surface_renderer.py",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/operations/provider_surface_renderer.py"
+        ]
+      },
+      "skills": {
+        "meaning": "Skill IDs the projected agent may invoke.",
+        "writer": "scripts/operations/provider_surface_renderer.py",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/operations/provider_surface_renderer.py",
+          "scripts/lib/agent_governance/agent_governance_contract.py"
+        ]
+      },
+      "tools": {
+        "meaning": "Native tools the projected agent may use.",
+        "writer": "scripts/operations/provider_surface_renderer.py",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/operations/provider_surface_renderer.py"
+        ]
+      },
+      "supersedes": {
+        "meaning": "Identities of earlier documents whose valid scope this one takes over.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/document_governance/references.py",
+          "scripts/lib/document_governance/architecture.py"
+        ]
+      },
+      "superseded_by": {
+        "meaning": "Identity of the document that took over this one's scope; reciprocal to supersedes.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/document_governance/architecture.py"
+        ]
+      },
+      "artifact_id": {
+        "meaning": "Stable identity issued from the profile's identity space; never reused.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/document_governance/metadata/reference.py",
+          "scripts/lib/document_governance/identity_history.py"
+        ]
+      },
+      "action": {
+        "meaning": "What the hook rule does when it matches.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/hooks/hook_rules.py"
+        ]
+      },
+      "conditions": {
+        "meaning": "Extra match conditions of the hook rule.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/hooks/hook_rules.py"
+        ]
+      },
+      "enabled": {
+        "meaning": "Whether the hook rule is active.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/hooks/hook_rules.py"
+        ]
+      },
+      "event": {
+        "meaning": "Native event the hook rule binds to.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/hooks/hook_rules.py"
+        ]
+      },
+      "pattern": {
+        "meaning": "Match pattern of the hook rule.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/hooks/hook_rules.py"
+        ]
+      },
+      "observed_at": {
+        "meaning": "Date the evidence was observed; it keeps its original value.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/document_governance/metadata/reference.py"
+        ]
+      },
+      "reviewed_at": {
+        "meaning": "Date of the latest review after the observation or publication.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/document_governance/metadata/reference.py"
+        ]
+      },
+      "review_cycle": {
+        "meaning": "Interval at which the document is reviewed.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py"
+        ]
+      },
+      "agent_id": {
+        "meaning": "Canonical role ID of an agent role.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/agent_governance/agent_governance_contract.py"
+        ]
+      },
+      "scope": {
+        "meaning": "Scope the role or skill covers.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/agent_governance/agent_governance_contract.py"
+        ]
+      },
+      "tier": {
+        "meaning": "Role tier.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/agent_governance/agent_governance_contract.py"
+        ]
+      },
+      "work_profile": {
+        "meaning": "Work profile name mapped to a provider model by the Provider Registry.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/agent_governance/agent_governance_contract.py"
+        ]
+      },
+      "permission_profile": {
+        "meaning": "read-only or workspace-write, translated per provider.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/agent_governance/agent_governance_contract.py"
+        ]
+      },
+      "tool_profile": {
+        "meaning": "Named tool set of the role.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/agent_governance/agent_governance_contract.py"
+        ]
+      },
+      "skill_ids": {
+        "meaning": "Skills the role may invoke.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/agent_governance/agent_governance_contract.py"
+        ]
+      },
+      "function_id": {
+        "meaning": "Canonical function ID of a skill.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/agent_governance/agent_governance_contract.py"
+        ]
+      },
+      "owner_agent": {
+        "meaning": "Role that owns the skill.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/agent_governance/agent_governance_contract.py"
+        ]
+      },
+      "parent_ids": {
+        "meaning": "Identities of the direct parents allowed by the profile's traceability.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/document_governance/spec_packages.py",
+          "scripts/lib/document_governance/metadata/reference.py",
+          "scripts/lib/document_governance/lifecycle/contract.py"
+        ]
+      },
+      "implementation_services": {
+        "meaning": "Map from each active Compose path to the service names a service Guide owns.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/document_governance/operations_catalog.py"
+        ]
+      },
+      "next_review_at": {
+        "meaning": "Date the next review is due.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/document_governance/metadata/reference.py"
+        ]
+      },
+      "occurred_at": {
+        "meaning": "ISO 8601 time with UTC offset at which the incident occurred.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/document_governance/operations_catalog.py"
+        ]
+      },
+      "resolved_at": {
+        "meaning": "ISO 8601 time with UTC offset at which the incident was resolved.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/document_governance/operations_catalog.py"
+        ]
+      },
+      "identity_recovery": {
+        "meaning": "Record of how a lost or conflicting identity was recovered.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/document_governance/metadata/identity.py"
+        ]
+      },
+      "identity_recovery_decisions": {
+        "meaning": "Decisions taken while recovering Task identities.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/document_governance/metadata/identity.py"
+        ]
+      },
+      "cancellation": {
+        "meaning": "Reason, authorization_ref and criteria_disposition of a cancelled Task.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py",
+          "scripts/lib/document_governance/spec_packages.py",
+          "scripts/lib/document_governance/lifecycle/occupancy.py"
+        ]
+      },
+      "completed_at": {
+        "meaning": "ISO 8601 time with UTC offset at which the Task completed.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py"
+        ]
+      },
+      "archive_authorizations": {
+        "meaning": "Historical record of approved archive actions; not a current entitlement.",
+        "writer": "document author",
+        "consumers": [
+          "scripts/lib/document_governance/registry.py",
+          "scripts/lib/document_governance/metadata/lifecycle.py"
+        ]
+      },
+      "developer_instructions": {
+        "meaning": "Codex agent instructions: the generated-by marker, the rendered role body and its required procedures.",
+        "writer": "scripts/operations/provider_surface_renderer.py",
+        "consumers": [
+          "scripts/operations/provider_surface_renderer.py"
+        ]
+      },
+      "sandbox_mode": {
+        "meaning": "Codex sandbox mode translated from the role's permission profile.",
+        "writer": "scripts/operations/provider_surface_renderer.py",
+        "consumers": [
+          "scripts/operations/provider_surface_renderer.py"
+        ]
+      }
+    },
+    "table_column_definitions": {
+      "Evidence": {
+        "meaning": "Name of an Evidence row: the row's own unique name in the Results table, or the Evidence rows a criterion decision cites.",
+        "data_type": "string or list of Evidence names"
+      },
+      "Criteria": {
+        "meaning": "Spec criterion numbers the row supports.",
+        "data_type": "list of integers"
+      },
+      "Work Unit": {
+        "meaning": "Plan W-number the row belongs to.",
+        "data_type": "string W<n>"
+      },
+      "Check": {
+        "meaning": "Check or command observed.",
+        "data_type": "string"
+      },
+      "Input": {
+        "meaning": "Revision, file or condition the check ran on.",
+        "data_type": "string"
+      },
+      "Result": {
+        "meaning": "PASS, FAIL, ERROR, NOT_RUN, CANCELLED or NOT_APPLICABLE.",
+        "data_type": "enum"
+      },
+      "Location": {
+        "meaning": "Where the output or record can be found.",
+        "data_type": "string"
+      },
+      "Required": {
+        "meaning": "required or optional.",
+        "data_type": "enum"
+      },
+      "Resolves": {
+        "meaning": "- or earlier non-PASS rows of the same Check and Work Unit this PASS row resolves.",
+        "data_type": "list of Evidence names"
+      },
+      "Work": {
+        "meaning": "Work the unit performs.",
+        "data_type": "string"
+      },
+      "Dependencies": {
+        "meaning": "- or the W-numbers this unit depends on.",
+        "data_type": "list of W-numbers"
+      },
+      "Task": {
+        "meaning": "Task that executes the unit.",
+        "data_type": "Task identity"
+      },
+      "Verification": {
+        "meaning": "How the unit's result is verified.",
+        "data_type": "string"
+      },
+      "Criterion": {
+        "meaning": "One Spec criterion number this Task owns.",
+        "data_type": "integer"
+      },
+      "Acceptance": {
+        "meaning": "pending, accepted, rejected or not-required.",
+        "data_type": "enum"
+      },
+      "Decision": {
+        "meaning": "Reason for a not-required or rejected decision, or -.",
+        "data_type": "string"
+      },
+      "Current Owner": {
+        "meaning": "Durable owner of the criterion, or a reasoned N/A.",
+        "data_type": "string"
+      },
+      "Path": {
+        "meaning": "Relative path of one direct child.",
+        "data_type": "path"
+      },
+      "Purpose": {
+        "meaning": "What the child holds.",
+        "data_type": "string"
+      },
+      "Owner": {
+        "meaning": "Owner of the row's subject: a listed child document, or a corrective action.",
+        "data_type": "string"
+      },
+      "Term ID": {
+        "meaning": "Stable common term identifier such as TERM-TASK.",
+        "data_type": "string TERM-*"
+      },
+      "Term": {
+        "meaning": "The term as written.",
+        "data_type": "string"
+      },
+      "Definition": {
+        "meaning": "What the term means in this repository.",
+        "data_type": "string"
+      },
+      "Not to Confuse": {
+        "meaning": "A nearby meaning the term does not have.",
+        "data_type": "string"
+      },
+      "Policy Owner": {
+        "meaning": "The policy document that owns the term's rule.",
+        "data_type": "link or path"
+      },
+      "Contract Version": {
+        "meaning": "Version of the shared vocabulary contract the term follows.",
+        "data_type": "string"
+      },
+      "Action": {
+        "meaning": "One corrective action.",
+        "data_type": "string"
+      },
+      "Tracking ID": {
+        "meaning": "Issue or document identity that tracks the action.",
+        "data_type": "string"
+      }
+    },
+    "profile_exception_definitions": {
+      "delegate-reference-members": {
+        "owner": "scripts/lib/document_governance/references.py",
+        "delta": "Stage 90 reference package members are validated by references.validate_current_references instead of the ordinary per-document profile pass.",
+        "validation": "scripts/lib/document_governance/metadata/identity.py raises ProfileError when the readme profile lacks this rule; references.validate_current_references validates the members.",
+        "expiry_or_review": "No expiry is recorded; review when the Registry changes this profile's exceptions."
+      },
+      "provider-owned-binding": {
+        "owner": "scripts/operations/provider_surface_renderer.py",
+        "delta": "The file carries the provider's native keys with no type or lifecycle status, and the owner renders it.",
+        "validation": "registry._declares_provider_binding exempts it from the template type check in metadata/reference.py and from heading checks in metadata/heading.py; tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths still requires name and description.",
+        "expiry_or_review": "No expiry is recorded; review when the Registry changes this profile's exceptions."
+      },
+      "native-skill-envelope": {
+        "owner": "scripts/lib/document_governance/registry.py",
+        "delta": "SKILL.md frontmatter is the native envelope name, description and metadata; governance fields nest under metadata and are unwrapped before profile checks.",
+        "validation": "validate_registry reports native-skill-envelope-invalid for any other profile, path or owner (tests.lib.document_governance.test_registry:DocumentRegistryTests.test_native_skill_exception_cannot_exempt_other_profiles).",
+        "expiry_or_review": "No expiry is recorded; review when the Registry changes this profile's exceptions."
+      },
+      "year-directory": {
+        "owner": "docs/99.templates/registry.json",
+        "delta": "The profile's path has a {year:4} directory level under docs/05.operations/incidents/.",
+        "validation": "The profileException schema in document-profile.schema.json accepts the kind; no script reads it, and the profile's {year:4} path pattern enforces the directory.",
+        "expiry_or_review": "No expiry is recorded; review when the Registry changes this profile's exceptions."
+      },
+      "free-form-sections": {
+        "owner": "scripts/lib/document_governance/metadata/heading.py",
+        "delta": "Unregistered H2 sections are allowed beside the registered ones; body-heading-forbidden is not reported.",
+        "validation": "metadata/heading.py checks free_form_sections before reporting body-heading-forbidden; test_heading's representative section tests exclude free-form profiles.",
+        "expiry_or_review": "No expiry is recorded; review when the profile's documents share one heading vocabulary."
+      }
     }
   },
   "profiles": [
@@ -3318,11 +3917,9 @@
       "optional_frontmatter": [
         "effort",
         "model",
-        "model_reasoning_effort",
         "permissionMode",
         "skills",
-        "tools",
-        "version"
+        "tools"
       ],
       "required_sections": [],
       "optional_sections": [],
@@ -3345,17 +3942,11 @@
       "template_id": "governance/codex-agent",
       "required_frontmatter": [
         "name",
-        "description"
-      ],
-      "optional_frontmatter": [
-        "effort",
+        "description",
         "model",
-        "model_reasoning_effort",
-        "permissionMode",
-        "skills",
-        "tools",
-        "version"
+        "model_reasoning_effort"
       ],
+      "optional_frontmatter": [],
       "required_sections": [],
       "optional_sections": [],
       "lifecycle_id": null,
@@ -3474,235 +4065,2444 @@
       "source": "docs/99.templates/templates/common/readme-documentation.template.md",
       "profiles": [
         "documentation-readme"
-      ]
+      ],
+      "purpose": "Korean navigation entry for the docs/ tree.",
+      "responsibility": "Route a reader from docs/README.md to each numbered stage README through the Current Items table under Contents.",
+      "non_goals": [
+        "Copying a Guide, Policy or Runbook procedure into the README.",
+        "Owning a rule; it routes to the canonical owner instead."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#readme-and-agentsmd",
+        ".agents/governance/documentation-protocol.md#readme-navigation",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY"
+      ],
+      "applicability": "Applies to every file the documentation-readme profile owns: docs/README.md.",
+      "relationships": [
+        "Routes to each stage README under docs/; owns no stage content."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "tests/lib/document_governance/test_registry.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit b86a7a942 (profiles, templates and stage READMEs, #985) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-documentation.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-documentation.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "common/package-readme": {
       "source": "docs/99.templates/templates/common/readme-package.template.md",
       "profiles": [
         "package-readme"
-      ]
+      ],
+      "purpose": "Korean README for one service, lab, project or fixture package (infra/, labs/, projects/, examples/, tests/fixtures/).",
+      "responsibility": "Describe the package's Compose, Dockerfile and config linkage, ports, persistence and health semantics, and link the implementation authority.",
+      "non_goals": [
+        "Copying exact image patch versions; Compose and Dockerfile declarations own them.",
+        "Holding operational procedures; a Guide or Runbook owns them."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#readme-and-agentsmd",
+        ".agents/governance/documentation-protocol.md#readme-navigation",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY"
+      ],
+      "applicability": "Applies to every file the package-readme profile owns: infra/{subpath}/README.md, examples/sample-web-service/README.md, labs/cassandra/README.md, labs/couchdb/README.md and 34 more registered paths.",
+      "relationships": [
+        "Describes the infra/ package beside it and links its Guide, Runbook and Policy owners."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "tests/lib/document_governance/test_metadata_validator.py",
+        "tests/lib/document_governance/test_registry.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit 44801eb20 (profile, template and service READMEs, #986) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-package.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-package.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "common/readme": {
       "source": "docs/99.templates/templates/common/readme-stage.template.md",
       "profiles": [
         "readme"
-      ]
+      ],
+      "purpose": "Korean README that navigates one stage or folder.",
+      "responsibility": "State the stage's responsibility, list what exists now in the Current Items table under Contents, and route readers through its workflow and related documents.",
+      "non_goals": [
+        "Copying a Guide, Policy or Runbook procedure into the README.",
+        "Owning a rule; it routes to the canonical owner instead."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#readme-and-agentsmd",
+        ".agents/governance/documentation-protocol.md#readme-navigation",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY"
+      ],
+      "applicability": "Applies to every file the readme profile owns: docs/01.requirements/README.md, docs/02.architecture/README.md, docs/02.architecture/decisions/README.md, docs/02.architecture/descriptions/README.md and 56 more registered paths.",
+      "relationships": [
+        "Lists the folder's current documents in the Current Items table (Path, Purpose, optional Owner)."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/metadata/reference.py",
+        "scripts/lib/document_governance/lifecycle/contract.py",
+        "tests/lib/document_governance/metadata/test_heading.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_readme_documents_module_uses_registered_columns"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_readme_documents_module_rejects_other_header_shapes",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_readme_documents_module_checks_every_table"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit b86a7a942 (profiles, templates and stage READMEs, #985) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-stage.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-stage.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "common/repository-readme": {
       "source": "docs/99.templates/templates/common/readme-repository.template.md",
       "profiles": [
         "repository-readme"
-      ]
+      ],
+      "purpose": "Korean root README.md and the READMEs of top-level folders such as infra/, scripts/ and tests/.",
+      "responsibility": "State the project role and boundaries, map the directories and canonical entry points, and give the first verified path and current documentation.",
+      "non_goals": [
+        "Copying a Guide, Policy or Runbook procedure into the README.",
+        "Owning a rule; it routes to the canonical owner instead."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#readme-and-agentsmd",
+        ".agents/governance/documentation-protocol.md#readme-navigation",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY"
+      ],
+      "applicability": "Applies to every file the repository-readme profile owns: README.md, .github/repository-surface.md, _workspace/README.md, .agents/evaluations/README.md and 9 more registered paths.",
+      "relationships": [
+        "Routes to directories and stage READMEs through the Directories table under Repository Map, and to the root AGENTS.md and CLAUDE.md shims."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "tests/lib/document_governance/test_registry.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_readme_documents_table_under_directories_uses_registered_columns"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_readme_directories_path_column_is_checked_in_any_form"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit d712aee54 (profiles, templates and root READMEs, #983) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-repository.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-repository.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "common/runtime-governance-readme": {
       "source": "docs/99.templates/templates/common/readme-runtime-governance.template.md",
       "profiles": [
         "runtime-governance-readme"
-      ]
+      ],
+      "purpose": "Generated pointer README for .claude/ and .codex/. The profile declares no language; documentation-protocol.md#document-language rule 1 makes every tracked README.md Korean.",
+      "responsibility": "Point a reader of a provider directory to its authored provider.md adapter in the root README form: Purpose, Repository Map, Getting Started, References.",
+      "non_goals": [
+        "Defining provider policy; the adapter and .agents/governance own it.",
+        "Being hand-edited; the renderer writes it."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#readme-and-agentsmd",
+        ".agents/governance/documentation-protocol.md#document-language",
+        ".agents/governance/quality-standards.md#6-generated-artifact-freshness"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY"
+      ],
+      "applicability": "Applies to every file the runtime-governance-readme profile owns: .claude/README.md, .codex/README.md.",
+      "relationships": [
+        "Generated by scripts/operations/provider_surface_renderer.py; points to .claude/provider.md or .codex/provider.md."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/operations/provider_surface_renderer.py",
+        "tests/lib/document_governance/test_registry.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "scripts/operations/provider_surface_renderer.py --check"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit d712aee54 (profiles, templates and root READMEs, #983) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-runtime-governance.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-runtime-governance.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "common/agent-guide": {
       "source": "docs/99.templates/templates/common/agent-guide.template.md",
       "profiles": [
         "folder-agent-guide"
-      ]
+      ],
+      "purpose": "English folder AGENTS.md that routes an agent working below that folder.",
+      "responsibility": "Name the allowed surface, the canonical policies, roles and skills, the local obligations, the required checks and the stop conditions for one folder.",
+      "non_goals": [
+        "Copying a policy, role or skill body.",
+        "Overriding canonical governance or a Stage contract."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#readme-and-agentsmd",
+        ".agents/governance/bootstrap.md#canonical-load-order",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-CANONICAL"
+      ],
+      "applicability": "Applies to every file the folder-agent-guide profile owns: docs/01.requirements/AGENTS.md, docs/02.architecture/AGENTS.md, docs/03.specs/AGENTS.md, docs/05.operations/AGENTS.md and 5 more registered paths.",
+      "relationships": [
+        "Routes to canonical owners under .agents/; a generated CLAUDE.md beside it imports it with @AGENTS.md."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/hooks/folder_guides.py",
+        "scripts/operations/provider_surface_renderer.py",
+        "tests/lib/document_governance/test_registry.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "tests.lib.document_governance.test_registry:FolderAgentGuidePlacementTests"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit 4bb4add1f (folder agent guides) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/agent-guide.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/agent-guide.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "governance/claude-agent": {
       "source": "docs/99.templates/templates/runtime/claude-agent.template.md",
       "profiles": [
         "runtime-projection-claude"
-      ]
+      ],
+      "purpose": "Claude native subagent file projected from one canonical role.",
+      "responsibility": "Carry the Claude frontmatter (name, description, tools, model, effort, permissionMode, skills) and the rendered role body.",
+      "non_goals": [
+        "Defining role intent; .agents/roles/<slug>.md owns it.",
+        "Being hand-edited; it is a generated projection."
+      ],
+      "policy_refs": [
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/quality-standards.md#6-generated-artifact-freshness"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-PROJECTION"
+      ],
+      "applicability": "Applies to the template docs/99.templates/templates/runtime/claude-agent.template.md, the only path the runtime-projection-claude profile registers, and describes the shape of every .claude/agents/<agent_id>.md that scripts/operations/provider_surface_renderer.py writes; no Registry profile classifies those generated files.",
+      "relationships": [
+        "Projected from one .agents/roles/<slug>.md by scripts/operations/provider_surface_renderer.py; model and permission come from the Provider Registry."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/operations/provider_surface_renderer.py",
+        "tests/lib/document_governance/test_registry.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "scripts/operations/provider_surface_renderer.py --check"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headingless_templates_use_their_real_top_level_units",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths"
+        ]
+      },
+      "migration": {
+        "meaning_map": "The template has no Markdown sections; its definition describes the file's own top-level units. Adding this TemplateDefinition changed no key, unit or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/runtime/claude-agent.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/runtime/claude-agent.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "governance/codex-agent": {
       "source": "docs/99.templates/templates/runtime/codex-agent.template.toml",
       "profiles": [
         "runtime-projection-codex"
-      ]
+      ],
+      "purpose": "Codex native agent TOML projected from one canonical role.",
+      "responsibility": "Carry name, description, developer_instructions, model, model_reasoning_effort and sandbox_mode for one role.",
+      "non_goals": [
+        "Defining role intent; .agents/roles/<slug>.md owns it.",
+        "Being hand-edited; it is a generated projection."
+      ],
+      "policy_refs": [
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/quality-standards.md#6-generated-artifact-freshness"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-PROJECTION"
+      ],
+      "applicability": "Applies to the template docs/99.templates/templates/runtime/codex-agent.template.toml, the only path the runtime-projection-codex profile registers, and describes the shape of every .codex/agents/<agent_id>.toml that scripts/operations/provider_surface_renderer.py writes; no Registry profile classifies those generated files.",
+      "relationships": [
+        "Projected from one .agents/roles/<slug>.md by scripts/operations/provider_surface_renderer.py; model and permission come from the Provider Registry."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/operations/provider_surface_renderer.py",
+        "tests/lib/document_governance/test_registry.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "scripts/operations/provider_surface_renderer.py --check"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headingless_templates_use_their_real_top_level_units"
+        ]
+      },
+      "migration": {
+        "meaning_map": "The template has no Markdown sections; its definition describes the file's own top-level units. Adding this TemplateDefinition changed no key, unit or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/runtime/codex-agent.template.toml and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/runtime/codex-agent.template.toml; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "governance/hook-policy": {
       "source": "docs/99.templates/templates/governance/rule.template.md",
       "profiles": [
         "governance-hook-policy"
-      ]
+      ],
+      "purpose": "English hook rule document under .agents/governance/hooks/.",
+      "responsibility": "State one hook rule: its event, pattern, action, conditions and the operator message.",
+      "non_goals": [
+        "Registering the native hook; .claude/settings.json and .codex/hooks.json do.",
+        "Holding the hook script."
+      ],
+      "policy_refs": [
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-GOVERNANCE",
+        "TERM-CANONICAL"
+      ],
+      "applicability": "Applies to every file the governance-hook-policy profile owns: .agents/governance/hooks/{hook_slug}.md.",
+      "relationships": [
+        "Read by scripts/hooks/hook_rules.py; bound to native events through the Provider Registry."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/hooks/hook_rules.py",
+        "scripts/lib/agent_governance/agent_governance_contract.py",
+        "tests/lib/document_governance/test_registry.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "scripts/validation/check-agent-governance-contract.py"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit b939b2994 (profiles) and 7b48b923a (governance rules, #980) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/rule.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/rule.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "governance/knowledge": {
       "source": "docs/99.templates/templates/governance/knowledge.template.md",
       "profiles": [
         "governance-knowledge"
-      ]
+      ],
+      "purpose": "English knowledge member that maps which surface owns something.",
+      "responsibility": "Route a reader to the owner of a surface and record the evidence and refresh triggers of the map.",
+      "non_goals": [
+        "Granting a tool, path, permission or approval.",
+        "Restating the routed owner's rule."
+      ],
+      "policy_refs": [
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-GOVERNANCE",
+        "TERM-CANONICAL"
+      ],
+      "applicability": "Applies to every file the governance-knowledge profile owns: .agents/knowledge/repository-map.md, .agents/knowledge/verification-surface-map.md.",
+      "relationships": [
+        "Routes to canonical owners; the owner stays the authority for what it says."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/agent_governance/agent_governance_contract.py",
+        "tests/lib/document_governance/test_registry.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "scripts/validation/check-agent-governance-contract.py"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/knowledge.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/knowledge.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "governance/vocabulary": {
       "source": "docs/99.templates/templates/governance/vocabulary.template.md",
       "profiles": [
         "governance-vocabulary"
-      ]
+      ],
+      "purpose": "English Repository Vocabulary at .agents/knowledge/glossary.md.",
+      "responsibility": "Define each common term with its Term ID and policy owner, and local terms under Local Extensions.",
+      "non_goals": [
+        "Restating the policy owner's procedure.",
+        "Redefining a common term locally."
+      ],
+      "policy_refs": [
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-GOVERNANCE",
+        "TERM-CANONICAL",
+        "TERM-POLICY"
+      ],
+      "applicability": "Applies to every file the governance-vocabulary profile owns: .agents/knowledge/glossary.md.",
+      "relationships": [
+        "Each term names its policy owner under .agents/governance/; TemplateDefinition vocabulary_refs point here."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/agent_governance/agent_governance_contract.py",
+        "tests/lib/document_governance/test_registry.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "tests.lib.document_governance.test_registry:RepositoryVocabularyProfileTests",
+          "scripts/validation/check-agent-governance-contract.py"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/vocabulary.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/vocabulary.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "governance/policy": {
       "source": "docs/99.templates/templates/governance/control.template.md",
       "profiles": [
         "governance-policy"
-      ]
+      ],
+      "purpose": "English canonical agent governance policy under .agents/governance/.",
+      "responsibility": "State one policy's scope, rules, exceptions and verification routing.",
+      "non_goals": [
+        "Holding a Task's execution record.",
+        "Translating provider syntax; adapters do."
+      ],
+      "policy_refs": [
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-POLICY",
+        "TERM-RULE",
+        "TERM-EXCEPTION"
+      ],
+      "applicability": "Applies to every file the governance-policy profile owns: .agents/governance/bootstrap.md, .agents/governance/agentic.md, .agents/governance/approval-boundaries.md, .agents/governance/documentation-protocol.md and 11 more registered paths.",
+      "relationships": [
+        "Ranked under Authority and Precedence in bootstrap.md; roles, skills and folder guides route to it."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/agent_governance/agent_governance_contract.py",
+        "tests/lib/document_governance/metadata/test_profile.py",
+        "tests/lib/document_governance/test_registry.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_governance_policy_profile_binds_approval_boundary_body",
+          "scripts/validation/check-agent-governance-contract.py"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit b939b2994 (profiles) and 7b48b923a (governance policies, #980) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/control.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/control.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "governance/prompt": {
       "source": "docs/99.templates/templates/governance/prompt.template.md",
       "profiles": [
         "governance-prompt"
-      ]
+      ],
+      "purpose": "English prompt contract under .agents/prompts/.",
+      "responsibility": "Define the inputs, instructions, outputs and failure handling of one reusable prompt such as handoff or diff review.",
+      "non_goals": [
+        "Granting a tool, path, permission or approval.",
+        "Overriding the selected role's permission profile."
+      ],
+      "policy_refs": [
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-GOVERNANCE",
+        "TERM-CANONICAL"
+      ],
+      "applicability": "Applies to every file the governance-prompt profile owns: .agents/prompts/{slug}.md.",
+      "relationships": [
+        "Loaded by the bootstrap sequence when a request produces a handoff, diff review, commit message or test design."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/agent_governance/agent_governance_contract.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "scripts/validation/check-agent-governance-contract.py"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/prompt.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/prompt.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "governance/provider": {
       "source": "docs/99.templates/templates/governance/provider.template.md",
       "profiles": [
         "governance-provider"
-      ]
+      ],
+      "purpose": "English authored provider adapter (.claude/provider.md, .codex/provider.md).",
+      "responsibility": "Translate canonical governance into one provider's loading and native-control syntax and state its limitations.",
+      "non_goals": [
+        "Defining shared policy, role intent or model selection.",
+        "Adding a gate."
+      ],
+      "policy_refs": [
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-PROJECTION",
+        "local:Adapter"
+      ],
+      "applicability": "Applies to every file the governance-provider profile owns: .claude/provider.md, .codex/provider.md.",
+      "relationships": [
+        "Imported by the root CLAUDE.md or AGENTS.md shim; reads model and permission translations from .agents/governance/providers/registry.yaml."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/agent_governance/agent_governance_contract.py",
+        "scripts/operations/provider_surface_renderer.py",
+        "tests/lib/document_governance/test_registry.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "scripts/validation/check-agent-governance-contract.py"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/provider.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/provider.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "governance/role": {
       "source": "docs/99.templates/templates/governance/role.template.md",
       "profiles": [
         "governance-role"
-      ]
+      ],
+      "purpose": "English canonical role under .agents/roles/.",
+      "responsibility": "Define one role's responsibilities, allowed changes, inputs and outputs, and handoff.",
+      "non_goals": [
+        "Overriding policy.",
+        "Holding provider syntax; projections carry it."
+      ],
+      "policy_refs": [
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-GOVERNANCE",
+        "TERM-CANONICAL"
+      ],
+      "applicability": "Applies to every file the governance-role profile owns: .agents/roles/{slug}.md.",
+      "relationships": [
+        "Projected to .claude/agents/ and .codex/agents/ by scripts/operations/provider_surface_renderer.py."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/agent_governance/agent_governance_contract.py",
+        "scripts/operations/provider_surface_renderer.py",
+        "tests/lib/document_governance/test_registry.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "scripts/validation/check-agent-governance-contract.py"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/role.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/role.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "governance/sdlc": {
       "source": "docs/99.templates/templates/governance/contract.template.md",
       "profiles": [
         "governance-sdlc"
-      ]
+      ],
+      "purpose": "English SDLC workflow contract (.agents/governance/sdlc.md).",
+      "responsibility": "State the inputs, sequence, stop conditions and outputs of the delivery workflow.",
+      "non_goals": [
+        "Holding a Spec Package's execution state; the Task holds it."
+      ],
+      "policy_refs": [
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/sdlc.md#sequence",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-EXECUTION",
+        "TERM-ACCEPTANCE",
+        "TERM-PROMOTION"
+      ],
+      "applicability": "Applies to every file the governance-sdlc profile owns: .agents/governance/sdlc.md, .agents/governance/workflows.md.",
+      "relationships": [
+        "Glossary terms for Execution, Verification, Acceptance and Promotion name it as policy owner."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/agent_governance/agent_governance_contract.py",
+        "tests/lib/document_governance/test_registry.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "scripts/validation/check-agent-governance-contract.py"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/contract.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/contract.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "governance/skill": {
       "source": "docs/99.templates/templates/governance/skill.template.md",
       "profiles": [
         "governance-skill"
-      ]
+      ],
+      "purpose": "English canonical skill under .agents/skills/<slug>/SKILL.md.",
+      "responsibility": "Define one reusable procedure's inputs, steps, outputs, verification and failure handling.",
+      "non_goals": [
+        "Granting tools or approval when discovered.",
+        "Overriding policy."
+      ],
+      "policy_refs": [
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/documentation-protocol.md#entry-point-for-documents-outside-docs",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-GOVERNANCE",
+        "TERM-CANONICAL"
+      ],
+      "applicability": "Applies to every file the governance-skill profile owns: .agents/skills/{slug}/SKILL.md.",
+      "relationships": [
+        "Projected as a thin .claude/skills/ adapter; Codex reads it directly."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/agent_governance/agent_governance_contract.py",
+        "scripts/operations/provider_surface_renderer.py",
+        "tests/lib/document_governance/test_registry.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "scripts/validation/check-agent-governance-contract.py"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit b83c5a11e (profile) and f7f37d495 (the 24 skills, #981) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/skill.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/skill.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "operation/guide": {
       "source": "docs/99.templates/templates/operations/guide.template.md",
       "profiles": [
         "guide"
-      ]
+      ],
+      "purpose": "Korean operations Guide (GDE-####) under docs/05.operations/guides/.",
+      "responsibility": "State the reader need, prerequisites, procedure and checks for one task, with troubleshooting.",
+      "non_goals": [
+        "Holding a repeatable operator procedure; it hands off to a Runbook.",
+        "Owning obligations; a Policy owns them."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#role-specific-authoring",
+        ".agents/governance/documentation-protocol.md#document-language",
+        ".agents/governance/documentation-protocol.md#reference-framework-adoption"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "local:Identity space",
+        "local:Lifecycle"
+      ],
+      "applicability": "Applies to every file the guide profile owns: docs/05.operations/guides/{number:4}-{slug}.md, docs/05.operations/guides/01-common/{number:4}-{slug}.md, docs/05.operations/guides/02-gateway-and-networking/{number:4}-{slug}.md, docs/05.operations/guides/03-identity-and-access/{number:4}-{slug}.md and 12 more registered paths.",
+      "relationships": [
+        "parent_ids may name a Spec, Policy or Runbook; implementation_services maps Compose paths to owned services."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/operations_catalog.py",
+        "scripts/lib/document_governance/links.py",
+        "tests/lib/document_governance/test_operations_catalog.py",
+        "scripts/lib/document_governance/operations_moves.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "tests.lib.document_governance.test_operations_catalog:OperationsCatalogTopologyTests.test_registry_owns_the_exact_numbered_role_domains"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit 089d4246d (profile) and c7ca7356e (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/guide.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/guide.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "operation/incident": {
       "source": "docs/99.templates/templates/operations/incident.template.md",
       "profiles": [
         "incident"
-      ]
+      ],
+      "purpose": "Korean Incident record (inc-<year>-<number>) under docs/05.operations/incidents/<year>/.",
+      "responsibility": "Record observed impact, timeline, mitigation, resolution and evidence of one incident.",
+      "non_goals": [
+        "Stating a confirmed root cause; the Postmortem owns it.",
+        "Keeping a second current-state value beside frontmatter status."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#role-specific-authoring",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "local:Identity space",
+        "local:Lifecycle"
+      ],
+      "applicability": "Applies to every file the incident profile owns: docs/05.operations/incidents/{year:4}/inc-{number:4}-{slug}/incident.md.",
+      "relationships": [
+        "parent_ids may name a Runbook; a Postmortem in the same packet names it as parent."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/operations_catalog.py",
+        "scripts/lib/document_governance/links.py",
+        "tests/lib/document_governance/test_operations_catalog.py",
+        "scripts/lib/document_governance/identity_history.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "tests.lib.document_governance.test_operations_catalog:OperationsCatalogTopologyTests.test_registry_route_and_identity_relation_govern_incident_leaves"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.test_operations_catalog:OperationsCatalogTopologyTests.test_incident_body_identity_year_and_date_relations_are_validated"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit ffeee0e7f moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/incident.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/incident.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "operation/policy": {
       "source": "docs/99.templates/templates/operations/policy.template.md",
       "profiles": [
         "policy"
-      ]
+      ],
+      "purpose": "Korean Operations Policy (POL-####) under docs/05.operations/policies/.",
+      "responsibility": "Own obligations, prohibitions, exceptions, accountable owners, enforcement and review cadence for one subject.",
+      "non_goals": [
+        "Holding command sequences.",
+        "Redefining agent governance rules."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#role-specific-authoring",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "local:Identity space",
+        "local:Lifecycle",
+        "TERM-POLICY",
+        "TERM-EXCEPTION"
+      ],
+      "applicability": "Applies to every file the policy profile owns: docs/05.operations/policies/{number:4}-{slug}.md, docs/05.operations/policies/01-common/{number:4}-{slug}.md, docs/05.operations/policies/02-gateway-and-networking/{number:4}-{slug}.md, docs/05.operations/policies/03-identity-and-access/{number:4}-{slug}.md and 12 more registered paths.",
+      "relationships": [
+        "parent_ids may name a Requirement Package, Architecture Description, ADR or Spec; Guides and Runbooks may name it as parent."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/operations_catalog.py",
+        "scripts/lib/document_governance/links.py",
+        "tests/lib/document_governance/test_operations_catalog.py",
+        "scripts/lib/document_governance/operations_moves.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "tests.lib.document_governance.test_operations_catalog:OperationsCatalogTopologyTests.test_registry_owns_the_exact_numbered_role_domains"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit b939b2994 (profiles) and 9cd965911 (documents, #980) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/policy.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/policy.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "operation/postmortem": {
       "source": "docs/99.templates/templates/operations/postmortem.template.md",
       "profiles": [
         "postmortem"
-      ]
+      ],
+      "purpose": "Korean Postmortem in an incident packet.",
+      "responsibility": "Separate confirmed root cause, contributing factors and learning, and track corrective actions with owner, tracking ID and verification.",
+      "non_goals": [
+        "Assigning blame.",
+        "Setting a completion deadline for corrective actions."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#role-specific-authoring",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "local:Identity space",
+        "local:Lifecycle"
+      ],
+      "applicability": "Applies to every file the postmortem profile owns: docs/05.operations/incidents/{year:4}/inc-{number:4}-{slug}/postmortem.md.",
+      "relationships": [
+        "parent_ids may name only an Incident; the Postmortem sits in that Incident's packet folder."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/operations_catalog.py",
+        "scripts/lib/document_governance/links.py",
+        "tests/lib/document_governance/test_operations_catalog.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.test_operations_catalog:OperationsCatalogTopologyTests.test_resolved_bundle_requires_published_postmortem_and_current_owner"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit ffeee0e7f moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/postmortem.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/postmortem.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "operation/runbook": {
       "source": "docs/99.templates/templates/operations/runbook.template.md",
       "profiles": [
         "runbook"
-      ]
+      ],
+      "purpose": "Korean Runbook (RUN-####) under docs/05.operations/runbooks/.",
+      "responsibility": "State trigger, prerequisites, safety boundaries, ordered actions, verification, recovery and escalation for a repeatable operation.",
+      "non_goals": [
+        "Copying a past execution result into the instruction.",
+        "Owning obligations; a Policy owns them."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#role-specific-authoring",
+        ".agents/governance/documentation-protocol.md#document-language",
+        ".agents/governance/approval-boundaries.md#authorization-source-and-records"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "local:Identity space",
+        "local:Lifecycle"
+      ],
+      "applicability": "Applies to every file the runbook profile owns: docs/05.operations/runbooks/{number:4}-{slug}.md, docs/05.operations/runbooks/01-common/{number:4}-{slug}.md, docs/05.operations/runbooks/02-gateway-and-networking/{number:4}-{slug}.md, docs/05.operations/runbooks/03-identity-and-access/{number:4}-{slug}.md and 12 more registered paths.",
+      "relationships": [
+        "parent_ids may name a Spec, Guide, Policy or Task; Incidents may name it as parent."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/operations_catalog.py",
+        "scripts/lib/document_governance/links.py",
+        "tests/lib/document_governance/test_operations_catalog.py",
+        "scripts/lib/document_governance/operations_moves.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "tests.lib.document_governance.test_operations_catalog:OperationsCatalogTopologyTests.test_registry_owns_the_exact_numbered_role_domains"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit 662623dc9 (profile) and 8e430909b..436bcc974 (documents, #979) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/runbook.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/runbook.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "reference/audit": {
       "source": "docs/99.templates/templates/references/audit.template.md",
       "profiles": [
         "audit-member"
-      ]
+      ],
+      "purpose": "English Audit member (m####) inside a Stage 90 audit package.",
+      "responsibility": "Record one audit's criteria, method, dated findings, limitations and sources.",
+      "non_goals": [
+        "Setting current policy; Stage 90 evidence ranks below stage documents.",
+        "Holding the package index; the audit-pack README does."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#role-specific-authoring",
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-EVIDENCE",
+        "local:Identity space"
+      ],
+      "applicability": "Applies to every file the audit-member profile owns: docs/90.references/audits/{number:4}-{slug}/m{member_number:4}-{slug}.md.",
+      "relationships": [
+        "Lives inside one audit package whose README (reference/audit-pack) lists it."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/references.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/audit.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/audit.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "reference/audit-pack": {
       "source": "docs/99.templates/templates/references/audit-pack.template.md",
       "profiles": [
         "audit"
-      ]
+      ],
+      "purpose": "Korean README index of one Stage 90 audit package (AUD-####).",
+      "responsibility": "Describe the audit package's objective, criteria and members and route to them.",
+      "non_goals": [
+        "Setting current policy."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#role-specific-authoring",
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-EVIDENCE",
+        "local:Identity space"
+      ],
+      "applicability": "Applies to every file the audit profile owns: docs/90.references/audits/{number:4}-{slug}/README.md.",
+      "relationships": [
+        "parent_ids may name a Spec, Task, Research or Audit package; its members are reference/audit documents."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/references.py",
+        "scripts/lib/document_governance/identity_history.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/audit-pack.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/audit-pack.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "reference/category-readme": {
       "source": "docs/99.templates/templates/common/readme-category.template.md",
       "profiles": [
         "reference-category-readme"
-      ]
+      ],
+      "purpose": "Korean README of one Stage 90 category (research, audits, data).",
+      "responsibility": "State the Stage 90 category's responsibility and list its current packages in the Current Items table under Contents.",
+      "non_goals": [
+        "Copying a Guide, Policy or Runbook procedure into the README.",
+        "Owning a rule; it routes to the canonical owner instead."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#readme-and-agentsmd",
+        ".agents/governance/documentation-protocol.md#readme-navigation",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY"
+      ],
+      "applicability": "Applies to every file the reference-category-readme profile owns: docs/90.references/{category}/README.md.",
+      "relationships": [
+        "Lists the packages of its docs/90.references/<category>/ folder."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/references.py",
+        "tests/lib/document_governance/test_registry.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit b86a7a942 (profiles, templates and stage READMEs, #985) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-category.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-category.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "reference/data": {
       "source": "docs/99.templates/templates/references/data.template.md",
       "profiles": [
         "generated"
-      ]
+      ],
+      "purpose": "Data member (m####) inside a Stage 90 data package.",
+      "responsibility": "Record one dataset's scope, method, findings, limitations and sources; a registered generator may write it.",
+      "non_goals": [
+        "Being hand-edited when generated_by names its generator.",
+        "Setting current policy."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#role-specific-authoring",
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/quality-standards.md#6-generated-artifact-freshness"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-EVIDENCE",
+        "local:Identity space"
+      ],
+      "applicability": "Applies to every file the generated profile owns: docs/90.references/data/{number:4}-{slug}/m{member_number:4}-{slug}.md.",
+      "relationships": [
+        "Lives inside one data package whose README (reference/data-pack) lists it."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/references.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts"
+        ]
+      },
+      "migration": {
+        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/data.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/data.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "reference/data-pack": {
       "source": "docs/99.templates/templates/references/data-pack.template.md",
       "profiles": [
         "data"
-      ]
+      ],
+      "purpose": "Korean README index of one Stage 90 data package (DATA-####).",
+      "responsibility": "Describe the data package's schema, provenance, consumers and refresh owner and route to its members.",
+      "non_goals": [
+        "Setting current policy."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#role-specific-authoring",
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-EVIDENCE",
+        "local:Identity space"
+      ],
+      "applicability": "Applies to every file the data profile owns: docs/90.references/data/{number:4}-{slug}/README.md.",
+      "relationships": [
+        "parent_ids may name a Research, Audit, Spec or Task; its members are reference/data documents."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/references.py",
+        "scripts/lib/document_governance/identity_history.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "tests.lib.document_governance.test_references:ReferencePackageTests.test_reference_roots_and_package_paths_are_exact"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/data-pack.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/data-pack.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "reference/research": {
       "source": "docs/99.templates/templates/references/research.template.md",
       "profiles": [
         "research-member"
-      ]
+      ],
+      "purpose": "English Research member (m####) inside a Stage 90 research package.",
+      "responsibility": "Record source-backed claims, method, limitations and sources for one research question.",
+      "non_goals": [
+        "Setting current policy.",
+        "Holding the package index."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#role-specific-authoring",
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-EVIDENCE",
+        "local:Identity space"
+      ],
+      "applicability": "Applies to every file the research-member profile owns: docs/90.references/research/{number:4}-{slug}/m{member_number:4}-{slug}.md.",
+      "relationships": [
+        "Lives inside one research package whose README (reference/research-pack) lists it."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/references.py",
+        "scripts/lib/document_governance/links.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.test_references:ReferencePackageTests.test_generic_research_member_uses_registry_metadata_authority"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.test_references:ReferencePackageTests.test_delegation_validates_exact_members_and_their_content"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/research.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/research.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "reference/research-pack": {
       "source": "docs/99.templates/templates/references/research-pack.template.md",
       "profiles": [
         "research"
-      ]
+      ],
+      "purpose": "Korean README index of one Stage 90 research package (RES-####).",
+      "responsibility": "State the research question, method and implications and route to the members.",
+      "non_goals": [
+        "Setting current policy."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#role-specific-authoring",
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/documentation-protocol.md#document-language"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-EVIDENCE",
+        "local:Identity space"
+      ],
+      "applicability": "Applies to every file the research profile owns: docs/90.references/research/{number:4}-{slug}/README.md.",
+      "relationships": [
+        "parent_ids may name a Requirement Package, Architecture Description, ADR, Spec or Research package; its members are reference/research documents."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/references.py",
+        "scripts/lib/document_governance/identity_history.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "tests.lib.document_governance.test_references:ReferencePackageTests.test_reference_roots_and_package_paths_are_exact"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/research-pack.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/research-pack.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "sdlc/architecture-decision": {
       "source": "docs/99.templates/templates/architecture/decision.template.md",
       "profiles": [
         "adr"
-      ]
+      ],
+      "purpose": "English ADR (ADR-####) under docs/02.architecture/decisions/.",
+      "responsibility": "Record one consequential decision with its context, alternatives and consequences.",
+      "non_goals": [
+        "Describing current structure; the Architecture Description does.",
+        "Inferring approval from status alone."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#role-specific-authoring",
+        ".agents/governance/sdlc.md#sequence"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-SUPERSESSION",
+        "TERM-APPROVAL"
+      ],
+      "applicability": "Applies to every file the adr profile owns: docs/02.architecture/decisions/{number:4}-{slug}.md.",
+      "relationships": [
+        "parent_ids may name a Requirement Package or Architecture Description; supersedes and superseded_by keep reciprocal lineage."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/architecture.py",
+        "tests/lib/document_governance/test_architecture.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "tests.lib.document_governance.test_architecture:ArchitectureDocumentTests"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit 009ced2c7 (profile and template) and 36e0dcf4f (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/architecture/decision.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/architecture/decision.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "sdlc/architecture-description": {
       "source": "docs/99.templates/templates/architecture/description.template.md",
       "profiles": [
         "architecture-description"
-      ]
+      ],
+      "purpose": "English Architecture Description (AD-####) under docs/02.architecture/descriptions/.",
+      "responsibility": "Describe current structure, context and constraints, interfaces and the decisions that shape it.",
+      "non_goals": [
+        "Restating an ADR; it links the ADR.",
+        "Holding historical structure as authority."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#role-specific-authoring",
+        ".agents/governance/sdlc.md#sequence"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-CONTRACT"
+      ],
+      "applicability": "Applies to every file the architecture-description profile owns: docs/02.architecture/descriptions/{number:4}-{slug}.md.",
+      "relationships": [
+        "parent_ids may name a Requirement Package; ADRs and Specs may name it as parent."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/architecture.py",
+        "tests/lib/document_governance/test_architecture.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "tests.lib.document_governance.test_architecture:ArchitectureDocumentTests"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit e3beaa9cd (profile) and 5dd0ce150 (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/architecture/description.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/architecture/description.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "sdlc/data-model": {
       "source": "docs/99.templates/templates/specs/contracts/data-model.template.md",
       "profiles": [
         "data-model-contract"
-      ]
+      ],
+      "purpose": "English data-model contract in a Spec Package's contracts/ folder.",
+      "responsibility": "Define entities, attributes, relationships, constraints and lifecycle of the data one Spec contracts.",
+      "non_goals": [
+        "Holding the Spec's behavior contract or acceptance criteria."
+      ],
+      "policy_refs": [
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/sdlc.md#sequence"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-CONTRACT",
+        "local:Spec Package"
+      ],
+      "applicability": "Applies to every file the data-model-contract profile owns: docs/03.specs/{package_number:4}-{slug}/contracts/data-model.md.",
+      "relationships": [
+        "Belongs to the Spec of its package; parent may only be a Spec."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/spec_packages.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/contracts/data-model.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/contracts/data-model.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "sdlc/graphql": {
       "source": "docs/99.templates/templates/specs/contracts/schema.template.graphql",
       "profiles": [
         "graphql-contract"
-      ]
+      ],
+      "purpose": "GraphQL schema contract (schema.graphql) in a Spec Package.",
+      "responsibility": "Carry the machine-readable GraphQL interface one Spec contracts.",
+      "non_goals": [
+        "Holding prose, frontmatter or status; the Spec carries them."
+      ],
+      "policy_refs": [
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/sdlc.md#sequence"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-CONTRACT",
+        "local:Spec Package"
+      ],
+      "applicability": "Applies to every file the graphql-contract profile owns: docs/03.specs/{package_number:4}-{slug}/contracts/schema.graphql.",
+      "relationships": [
+        "Belongs to the Spec of its package; parent may only be a Spec."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/spec_packages.py",
+        "tests/lib/document_governance/test_registry.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headingless_templates_use_their_real_top_level_units"
+        ]
+      },
+      "migration": {
+        "meaning_map": "The template has no Markdown sections; its definition describes the file's own top-level units. Adding this TemplateDefinition changed no key, unit or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/contracts/schema.template.graphql and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/contracts/schema.template.graphql; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "conditional_units": {
+        "type __OBJECT_TYPE__": "example object type returned by the template query; replace it with the contract's own types."
+      }
     },
     "sdlc/openapi": {
       "source": "docs/99.templates/templates/specs/contracts/openapi.template.yaml",
       "profiles": [
         "openapi-contract"
-      ]
+      ],
+      "purpose": "OpenAPI 3.1 contract (openapi.yaml) in a Spec Package.",
+      "responsibility": "Carry the machine-readable HTTP interface one Spec contracts.",
+      "non_goals": [
+        "Holding prose, frontmatter or status; the Spec carries them."
+      ],
+      "policy_refs": [
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/sdlc.md#sequence"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-CONTRACT",
+        "local:Spec Package"
+      ],
+      "applicability": "Applies to every file the openapi-contract profile owns: docs/03.specs/{package_number:4}-{slug}/contracts/openapi.yaml.",
+      "relationships": [
+        "Belongs to the Spec of its package; parent may only be a Spec."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/spec_packages.py",
+        "tests/lib/document_governance/test_registry.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headingless_templates_use_their_real_top_level_units"
+        ]
+      },
+      "migration": {
+        "meaning_map": "The template has no Markdown sections; its definition describes the file's own top-level units. Adding this TemplateDefinition changed no key, unit or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/contracts/openapi.template.yaml and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/contracts/openapi.template.yaml; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "conditional_units": {
+        "paths": "OpenAPI 3.1 needs at least one of paths, components or webhooks; keep paths when the API exposes operations.",
+        "components": "OpenAPI 3.1 needs at least one of paths, components or webhooks; keep components when operations share schemas."
+      }
     },
     "sdlc/plan": {
       "source": "docs/99.templates/templates/specs/plan.template.md",
       "profiles": [
         "plan"
-      ]
+      ],
+      "purpose": "English Plan (plan.md) of a Spec Package.",
+      "responsibility": "Map stable W-numbered work units to acceptance criteria and state strategy, dependencies, verification plan, risks and the promotion map.",
+      "non_goals": [
+        "Holding execution state or check results; the Task holds them.",
+        "Creating a second lifecycle or approval record."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#role-specific-authoring",
+        ".agents/governance/sdlc.md#sequence"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-PROMOTION",
+        "local:Spec Package"
+      ],
+      "applicability": "Applies to every file the plan profile owns: docs/03.specs/{package_number:4}-{slug}/plan.md.",
+      "relationships": [
+        "parent_ids names exactly one Spec; each Task names this Plan as its one parent."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/spec_packages.py",
+        "tests/lib/document_governance/test_spec_packages.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "tests.lib.document_governance.test_spec_packages:SpecPackageTests"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit dd8fe8a5b (profile) and d18403ccc (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/plan.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/plan.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "sdlc/proto": {
       "source": "docs/99.templates/templates/specs/contracts/service.template.proto",
       "profiles": [
         "proto-contract"
-      ]
+      ],
+      "purpose": "Protocol Buffers contract (service.proto) in a Spec Package.",
+      "responsibility": "Carry the machine-readable RPC interface one Spec contracts.",
+      "non_goals": [
+        "Holding prose, frontmatter or status; the Spec carries them."
+      ],
+      "policy_refs": [
+        ".agents/governance/stage-authoring-matrix.md#document-type-families",
+        ".agents/governance/sdlc.md#sequence"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-CONTRACT",
+        "local:Spec Package"
+      ],
+      "applicability": "Applies to every file the proto-contract profile owns: docs/03.specs/{package_number:4}-{slug}/contracts/service.proto.",
+      "relationships": [
+        "Belongs to the Spec of its package; parent may only be a Spec."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/spec_packages.py",
+        "tests/lib/document_governance/test_registry.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headingless_templates_use_their_real_top_level_units"
+        ]
+      },
+      "migration": {
+        "meaning_map": "The template has no Markdown sections; its definition describes the file's own top-level units. Adding this TemplateDefinition changed no key, unit or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/contracts/service.template.proto and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/contracts/service.template.proto; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "conditional_units": {
+        "message HealthRequest": "example request message of the template Health rpc; replace it with the service's own messages.",
+        "message HealthResponse": "example response message of the template Health rpc; replace it with the service's own messages."
+      }
     },
     "sdlc/requirement": {
       "source": "docs/99.templates/templates/requirements/requirement-package.template.md",
       "profiles": [
         "requirements-package"
-      ]
+      ],
+      "purpose": "English Requirement Package (REQ-####) under docs/01.requirements/.",
+      "responsibility": "State functional and quality requirements with rationale, priority and acceptance criteria, issuing FR and NFR child identities.",
+      "non_goals": [
+        "Issuing an IF identity; an interface need is a functional requirement.",
+        "Describing design; Architecture does."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#role-specific-authoring",
+        ".agents/governance/sdlc.md#sequence"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-VALIDATION",
+        "local:Identity space"
+      ],
+      "applicability": "Applies to every file the requirements-package profile owns: docs/01.requirements/{number:4}-{slug}.md.",
+      "relationships": [
+        "Root of traceability: no parent; Architecture Descriptions, ADRs, Specs and Policies may name it as parent."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/requirements.py",
+        "tests/lib/document_governance/test_requirements.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "tests.lib.document_governance.test_requirements:RequirementPackageTests"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit 3e359935b moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/requirements/requirement-package.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/requirements/requirement-package.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "sdlc/spec": {
       "source": "docs/99.templates/templates/specs/spec.template.md",
       "profiles": [
         "spec"
-      ]
+      ],
+      "purpose": "English Spec (spec.md) of a Spec Package under docs/03.specs/.",
+      "responsibility": "Contract observable behavior and numbered acceptance criteria for one bounded change.",
+      "non_goals": [
+        "Recording approval, review or execution; those are separate facts in the Task."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#role-specific-authoring",
+        ".agents/governance/sdlc.md#sequence"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-ACCEPTANCE",
+        "local:Spec Package"
+      ],
+      "applicability": "Applies to every file the spec profile owns: docs/03.specs/{number:4}-{slug}/spec.md.",
+      "relationships": [
+        "parent_ids may name a Requirement Package, Architecture Description or ADR; the package's Plan names it as parent."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/spec_packages.py",
+        "tests/lib/document_governance/test_spec_packages.py",
+        "scripts/lib/document_governance/links.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "tests.lib.document_governance.test_spec_packages:SpecPackageTests"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit 78475f8df moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/spec.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/spec.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     },
     "sdlc/task": {
       "source": "docs/99.templates/templates/specs/task.template.md",
       "profiles": [
         "task"
-      ]
+      ],
+      "purpose": "English Task (tsk-####) of a Spec Package.",
+      "responsibility": "Record one scope's execution log, Evidence rows, criterion acceptance decisions and promotion handoff.",
+      "non_goals": [
+        "Authenticating an approval source.",
+        "Copying the Plan's strategy."
+      ],
+      "policy_refs": [
+        ".agents/governance/documentation-protocol.md#role-specific-authoring",
+        ".agents/governance/sdlc.md#sequence",
+        ".agents/governance/approval-boundaries.md#authorization-source-and-records"
+      ],
+      "vocabulary_refs": [
+        "TERM-TEMPLATE",
+        "TERM-PROFILE",
+        "TERM-REGISTRY",
+        "TERM-TASK",
+        "TERM-EVIDENCE",
+        "TERM-RESOLVES",
+        "TERM-ACCEPTANCE",
+        "local:Promotion receipt"
+      ],
+      "applicability": "Applies to every file the task profile owns: docs/03.specs/{package_number:4}-{slug}/tasks/tsk-{task_number:4}-{slug}.md.",
+      "relationships": [
+        "parent_ids names exactly one Plan; Evidence rows cite Spec criteria and Plan work units."
+      ],
+      "consumer_paths": [
+        "scripts/lib/document_governance/registry.py",
+        "scripts/lib/document_governance/metadata/profile.py",
+        "scripts/lib/document_governance/metadata/heading.py",
+        "scripts/lib/document_governance/template_definition.py",
+        "tests/lib/document_governance/test_template_definition.py",
+        "scripts/lib/document_governance/spec_packages.py",
+        "tests/lib/document_governance/test_spec_packages.py",
+        "scripts/lib/document_governance/lifecycle/occupancy.py"
+      ],
+      "validation": {
+        "positive": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "tests.lib.document_governance.test_spec_packages:SpecPackageTests",
+          "tests.lib.document_governance.test_spec_packages:TerminalTaskBodyTests"
+        ],
+        "negative": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
+        ],
+        "regression": [
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_equal_the_profile_sections",
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_headings_match_the_template_file",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_templates_declare_profile_ids_without_target_paths",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_registered_markdown_templates_cover_profile_section_contracts",
+          "tests.lib.document_governance.test_language:TemplateLanguageProjectionTests"
+        ]
+      },
+      "migration": {
+        "meaning_map": "Commit 6e16c0c4d (profile) and ae4df1873 (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/task.template.md and of this Registry entry; no Stage 98 copy is kept.",
+        "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/task.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      }
     }
   },
   "lifecycles": {

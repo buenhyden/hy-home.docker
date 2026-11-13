@@ -1,6 +1,6 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.5.13"
+version: "0.5.14"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -549,6 +549,35 @@ item: the approved contract fixes the service README section set.
   replaced by the real boundary; incomplete file lists completed; old Scope
   and Usage headings kept; runbook links added for every existing runbook.
 
+##### Handoff H-06 2026-11-13
+
+Branch `docs/w03-template-definition`. The owner answered "follow the
+requirement" twice: the approved TemplateDefinition v14.5 schema is
+implemented rather than deferred, and the five templates without Markdown
+headings are defined by their real top-level units so the schema stays
+unchanged.
+
+- The approved schema is vendored byte for byte as
+  `docs/99.templates/contracts/template-definition.schema.json` (SHA-256
+  prefix `e490cf402419`).
+- Each of the 39 `template_roles` carries only the authored fields the
+  Registry lacked (purpose, responsibility, non_goals, policy_refs,
+  vocabulary_refs, applicability, relationships, consumer_paths, validation,
+  migration). Shared `common` dictionaries hold one meaning per frontmatter
+  key, table column and profile exception.
+- `scripts/lib/document_governance/template_definition.py` derives the rest
+  from the Registry and the template file: headings, metadata, tables,
+  lifecycle, language, extensions and contract_version. All 39 definitions
+  validate against the schema, and the load-time check rejects an undefined
+  key or column.
+- Requirement conflicts fixed on the way: `runtime-projection-codex` no
+  longer lists Claude-only keys, and `runtime-projection-claude` no longer
+  lists Codex-only keys; both now match what the renderer writes.
+
+Later correction of terminal records: TSK-0060 still says TemplateDefinition
+is "Approved; not implemented" and TSK-0059 still lists H-06 as open. Both
+are terminal, so their bodies stay; this branch is the implementation.
+
 Held for an owner decision, not changed here, because each would change
 what a requirement says:
 
@@ -661,6 +690,11 @@ None: nothing was recorded here before this Task moved to the common form.
 | W03 v14.7 Service README review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `3cafe4a22` | PASS | PASS: every finding fixed; health checks match Compose; runbook paths exist | required | W03 v14.7 Service README review, W03 v14.7 Service README re-review |
 | W03 v14.7 Service README GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `f73174b43`; after merging main, test_heading and test_registry | PASS | Ran 810 tests, OK; after the merge 222 tests, OK | required | W03 v14.7 Service README form RED |
 | W03 v14.7 Service README checks | 111 | W116 | metadata-links-governance | The 130 READMEs at `f73174b43` | PASS | Links alignment and navigation PASS; metadata check-changed selected 128 violations 0; pre-commit through `run-ci-precommit.sh --mode local-staged` exit 0 | required | - |
+| W03 v14.7 TemplateDefinition RED | 111 | W116 | red-green-proof | `tests/lib/document_governance/test_template_definition.py` before the implementation at `643629139` | FAIL | ImportError: `template_definition` did not exist (errors=1) | required | - |
+| W03 v14.7 TemplateDefinition review | 111 | W116 | independent-review | Fresh-context code-reviewer of `cf9f3a832` and `5b4502027` | FAIL | CHANGES_REQUIRED: validation cited tests that never reach the role; unverified migration commits; empty extensions; missing tables; filler section content; false requiredness for heading-less units; bare exceptions | required | - |
+| W03 v14.7 TemplateDefinition review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `6e4f5e3b0` | PASS | PASS: every finding fixed; the Codex profile change breaks no projection; the Task record was the one open item | required | W03 v14.7 TemplateDefinition review |
+| W03 v14.7 TemplateDefinition GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `b609385a9`; after merging the README forms, test_template_definition, test_registry, test_heading and test_profile | PASS | Ran 828 tests, OK; after the last merge 257 tests, OK | required | W03 v14.7 TemplateDefinition RED |
+| W03 v14.7 TemplateDefinition checks | 111 | W116 | metadata-links-governance | The vendored schema, Registry and 39 definitions | PASS | All 39 definitions validate against the approved schema; renderer drift 0; agent governance contract PASS; links alignment PASS; `tests/validation` shows only the 16 local-environment failures that `origin/main` shows too, and none new | required | - |
 
 ### Resolution Links
 
@@ -685,7 +719,7 @@ these profile flags is handed to W05; renumbering stays a Q-07 decision.
 
 ### Promotion Receipt
 
-Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook), #980 (Policy), #981 (Skill), #982 (H-W02-2 and H-13), #983 (Root README), #984 (retirement and incident numbering), #985 (Stage README).
+Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook), #980 (Policy), #981 (Skill), #982 (H-W02-2 and H-13), #983 (Root README), #984 (retirement and incident numbering), #985 (Stage README), #986 (Service README).
 
 ### Next Owner
 
