@@ -1,10 +1,10 @@
 ---
 title: "Common Controls and Exceptions Plan"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "specs"
 artifact_id: "SPEC-0218-PLAN-0001"
 parent_ids:
@@ -113,11 +113,11 @@ include/profile acceptance or a P04 native change. W10 requires W9's admission
 substep, not completed classification or inventory GREEN. Public W9/W10 can
 proceed while final inventory and full operations acceptance remain blocked.
 
-The existing ComposeControlsTests passed 11 UNIT tests in 0.042 seconds,
-exit0, at that baseline. This confirms source reuse only, with no Docker or
-native execution. Actual receipts and document validation history belong in
-TSK-0002; neither that UNIT result nor a fixture PASS replaces the operations
-FAIL or proves measured resource or least-privilege acceptance.
+The existing ComposeControlsTests are run at that baseline to confirm source
+reuse only, with no Docker or native execution. Actual receipts and document
+validation history belong in
+[TSK-0002](tasks/tsk-0002-p07-root-resource-optimization.md); neither that UNIT
+result nor a fixture PASS replaces the operations FAIL or proves measured resource or least-privilege acceptance.
 
 Prefer exact root leaf changes. A proposed common-template change requires
 a static comparison proving zero LAB effective-config delta and preservation
