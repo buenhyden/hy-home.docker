@@ -47,6 +47,8 @@ class CurrentBodyContractTests(unittest.TestCase):
             "guide": "Purpose|Prerequisites|Procedure|Verification",
             "policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
             "runbook": "Purpose|Preconditions|Steps|Validation|Recovery",
+            "repository-readme": "Purpose|Repository Map|Getting Started|References",
+            "runtime-governance-readme": "Purpose|Repository Map|Getting Started|References",
             "incident": "Summary|Impact|Timeline|Resolution|Evidence",
             "postmortem": "Summary|Root Cause|Impact|Corrective Actions|Evidence",
             "governance-policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
@@ -322,7 +324,7 @@ class RegisteredSectionContractTests(unittest.TestCase):
         """Map each enforced profile to one tracked document that carries it."""
 
         tracked = subprocess.run(
-            ["git", "ls-files", "docs"],
+            ["git", "ls-files", "docs", "README.md", ".claude/README.md"],
             capture_output=True,
             text=True,
             check=True,
@@ -455,6 +457,20 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Rollback or Recovery", "body-subheading-forbidden"),
             ),
+            "repository-readme": (
+                ("## Overview", "body-heading-forbidden"),
+                ("## Scope", "body-heading-forbidden"),
+                ("## Structure", "body-heading-forbidden"),
+                ("## Usage", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+            ),
+            "runtime-governance-readme": (
+                ("## Overview", "body-heading-forbidden"),
+                ("## Scope", "body-heading-forbidden"),
+                ("## Structure", "body-heading-forbidden"),
+                ("## Usage", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+            ),
             "adr": (
                 ("## Decision Drivers", "body-heading-forbidden"),
                 ("## Options", "body-heading-forbidden"),
@@ -546,6 +562,26 @@ class RegisteredSectionContractTests(unittest.TestCase):
                     "readme-documents-header-invalid",
                     self._findings("readme", candidate),
                 )
+
+    def test_readme_documents_table_under_directories_uses_registered_columns(
+        self,
+    ) -> None:
+        body, _ = self._conforming_body("repository-readme")
+        bad = body.replace(
+            "### Directories\n\n",
+            "### Directories\n\n| Path | Status |\n| --- | --- |\n",
+            1,
+        )
+        self.assertIn(
+            "readme-documents-header-invalid",
+            self._findings("repository-readme", bad),
+        )
+        for header in ("| Path | Purpose |", "| Tier | Category |"):
+            good = bad.replace("| Path | Status |", header)
+            self.assertNotIn(
+                "readme-documents-header-invalid",
+                self._findings("repository-readme", good),
+            )
 
     def test_readme_documents_module_rejects_other_header_shapes(self) -> None:
         body, _ = self._conforming_body("readme")

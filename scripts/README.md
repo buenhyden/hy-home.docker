@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.5.6"
+version: "1.5.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 created: "2026-02-21"
 ---
 
@@ -12,11 +12,13 @@ created: "2026-02-21"
 
 > Repository maintenance, utility scripts, and automation triggers.
 
-## Overview
+## Purpose
+
+### Project Role
 
 `scripts/` 디렉터리에는 빌드, 테스트, 환경 구성 등에 필요한 보조 스크립트와 자동화 도구가 있습니다.
 
-## Audience
+#### Audience
 
 이 README의 주요 독자:
 
@@ -24,23 +26,25 @@ created: "2026-02-21"
 - Developers
 - Documentation Writers
 
-## Scope
+### Boundaries
 
-### In Scope
+#### In Scope
 
 - 저장소 검증, 구현 정합성 점검, 계약 점검, 로컬 QA 게이트 오케스트레이션, agent 이벤트 훅 자동화 스크립트
 - 계층별 하드닝 점검과 공유 헬퍼 라이브러리
 - 로컬 preflight 검증 모드와 안전한 secret 파일 생성 유틸리티
 - canonical purpose-folder 경로에 대한 스크립트 인벤토리와 lifecycle 소유권 규칙
 
-### Out of Scope
+#### Out of Scope
 
 - 평문 secret 값, 자격 증명, 토큰, 개인 키, 생성된 인증서 내용
 - `docs/05.operations/`에 속하는 장문의 운영 절차
 - `graphify-out/` 아래의 생성된 Graphify 산출물
 - `infra/` 아래의 서비스별 Docker Compose 소스 파일
 
-## Structure
+## Repository Map
+
+### Directories
 
 ```text
 scripts/
@@ -58,7 +62,7 @@ scripts/
 └── README.md            # 이 문서
 ```
 
-## Purpose Folder Implementation
+#### Purpose Folder Implementation
 
 canonical script surface는 purpose-folder 경로입니다. docs, CI, hooks, pre-commit
 참조가 purpose-folder 경로로 이동한 뒤 루트 레벨 `scripts/*.sh` 중복 파일은
@@ -81,7 +85,43 @@ wrapper를 다시 만들지 않습니다.
 [`scripts/manifest.yaml`](manifest.yaml)이 소유합니다. 아래 Navigation /
 Inventory 표는 각 entrypoint의 용도를 설명합니다.
 
-## Navigation / Inventory
+#### Active Surface Retention Rules
+
+다음 중 하나라도 해당하면 루트 `scripts/` 구현을 유지합니다:
+
+- GitHub Actions, pre-commit, Claude/Codex 훅, 루트 README 파일, 활성 spec, 활성
+  운영 문서, 또는 `infra/**/README.md`가 해당 스크립트를 참조하는 경우
+- 다른 구현 스크립트가 이를 라이브러리로 source하는 경우
+- 로컬 preflight 점검이나 로컬 secret 파일 생성처럼, 수동 작업의 유일한 canonical
+  entrypoint인 경우
+
+단순 중복 wrapper, 활성 문서에 이미 반영된 일회성 작업, 또는 승인된 호환성 계획
+없이 재도입된 삭제 entrypoint는 제거하거나 반려합니다. 완료된 요구사항,
+아키텍처 결정, 실행 evidence, 거버넌스 메모리, 생성된 참고 산출물 아래의 과거
+참조는 감사 근거로만 쓰며 그것만으로 스크립트를 유지하지는 않습니다.
+
+#### Hardening Tier Arguments
+
+선택한 tier 하나만 검사하려면 `bash scripts/hardening/check-all-hardening.sh <tier>`를
+사용합니다. 인자가 없으면 지원되는 모든 tier를 검사합니다.
+
+| Tier          | Accepted arguments                         |
+| :------------ | :----------------------------------------- |
+| Gateway       | `01-gateway`, `gateway`                    |
+| Auth          | `02-auth`, `auth`                          |
+| Security      | `03-security`, `security`                  |
+| Data          | `04-data`, `data`                          |
+| Messaging     | `05-messaging`, `messaging`                |
+| Observability | `06-observability`, `observability`, `obs` |
+| Workflow      | `07-workflow`, `workflow`                  |
+| AI            | `08-ai`, `ai`                              |
+| Platform Operations | `09-platform-ops`, `platform-ops`                    |
+| Communication | `10-communication`, `communication`, `comm` |
+| Quality       | `11-quality`, `quality`                   |
+| Analytics     | `12-analytics`, `analytics`               |
+| Experience    | `13-experience`, `experience`             |
+
+### Canonical Entry Points
 
 `[scripts/manifest.yaml](manifest.yaml)` is the canonical inventory for every
 script, consumer, lifecycle, and test record. This README indexes only the
@@ -98,7 +138,13 @@ direct purpose folders so it does not duplicate that manifest.
 | [`lib/`](lib/) | Import-only domain implementations behind public entrypoints. |
 | [`manifest.yaml`](manifest.yaml) | Complete script inventory and ownership source. |
 
-## Usage
+## Getting Started
+
+### Prerequisites
+
+저장소 검증 스크립트는 `scripts/requirements.txt`에 유지되는 Python 모듈에 의존합니다.
+
+### First Verified Path
 
 Hermes v1 후보 JSON의 로컬 사전 검사는
 `python3 scripts/validation/check-hermes-candidate.py <candidate.json>`으로
@@ -133,43 +179,7 @@ Linux x86-64의 Python 3.12와 3.14 조건을 함께 담습니다. 로컬 pre-co
 `bin`을 `PATH` 맨 앞에 둡니다. `gen-secrets.sh`가 `PATH`의 `python3`를
 호출하기 때문입니다.
 
-## Active Surface Retention Rules
-
-다음 중 하나라도 해당하면 루트 `scripts/` 구현을 유지합니다:
-
-- GitHub Actions, pre-commit, Claude/Codex 훅, 루트 README 파일, 활성 spec, 활성
-  운영 문서, 또는 `infra/**/README.md`가 해당 스크립트를 참조하는 경우
-- 다른 구현 스크립트가 이를 라이브러리로 source하는 경우
-- 로컬 preflight 점검이나 로컬 secret 파일 생성처럼, 수동 작업의 유일한 canonical
-  entrypoint인 경우
-
-단순 중복 wrapper, 활성 문서에 이미 반영된 일회성 작업, 또는 승인된 호환성 계획
-없이 재도입된 삭제 entrypoint는 제거하거나 반려합니다. 완료된 요구사항,
-아키텍처 결정, 실행 evidence, 거버넌스 메모리, 생성된 참고 산출물 아래의 과거
-참조는 감사 근거로만 쓰며 그것만으로 스크립트를 유지하지는 않습니다.
-
-## Hardening Tier Arguments
-
-선택한 tier 하나만 검사하려면 `bash scripts/hardening/check-all-hardening.sh <tier>`를
-사용합니다. 인자가 없으면 지원되는 모든 tier를 검사합니다.
-
-| Tier          | Accepted arguments                         |
-| :------------ | :----------------------------------------- |
-| Gateway       | `01-gateway`, `gateway`                    |
-| Auth          | `02-auth`, `auth`                          |
-| Security      | `03-security`, `security`                  |
-| Data          | `04-data`, `data`                          |
-| Messaging     | `05-messaging`, `messaging`                |
-| Observability | `06-observability`, `observability`, `obs` |
-| Workflow      | `07-workflow`, `workflow`                  |
-| AI            | `08-ai`, `ai`                              |
-| Platform Operations | `09-platform-ops`, `platform-ops`                    |
-| Communication | `10-communication`, `communication`, `comm` |
-| Quality       | `11-quality`, `quality`                   |
-| Analytics     | `12-analytics`, `analytics`               |
-| Experience    | `13-experience`, `experience`             |
-
-## Validation ownership
+#### Validation ownership
 
 `.github/workflow-contract.yml`은 실행 가능한 구성 레지스트리입니다. 이 파일의
 `public_gate.validators` 행마다 공개 suite를 정확히 하나 선언합니다:
@@ -361,15 +371,15 @@ validator 명령을 중복 실행하지 않습니다. 현재 품질 소유권은
 
 ---
 
-## Utilities & Automation
+#### Utilities & Automation
 
-### Standard Rules
+##### Standard Rules
 
 - **Idempotency**: 모든 스크립트는 여러 번 실행해도 상태가 깨지지 않도록 안전해야 합니다.
 - **No Secrets**: 스크립트는 자격 증명을 환경 변수에서 가져와야 하며 절대 하드코딩하지 않습니다.
 - **Deterministic**: 추가하는 모든 자동화는 `../.agents/governance/`의 저장소 거버넌스를 따라야 합니다.
 
-### Usage Examples
+##### Usage Examples
 
 ```bash
 # doc-paths: illustrative
@@ -437,7 +447,7 @@ source scripts/operations/use-qa-ci-tools.sh
 
 ---
 
-## Invocation Safety
+#### Invocation Safety
 
 check-only validator는 `mutation: none`을 사용합니다. Generator와
 synchronizer는 `mutation: check-write`를 사용합니다: 기본 호출은 저장소
@@ -472,7 +482,7 @@ knowledge map과 루트 `llms.txt` entry point가 소유하며,
 `scripts/knowledge/report-graphify-health.sh`는 쓰기 없이 advisory Graphify
 상태만 보고합니다.
 
-## Verification
+#### Verification
 
 manifest와 생성된 output 게이트는 다음으로 실행합니다:
 
@@ -490,7 +500,9 @@ PYTHONPATH=. .venv/bin/python tests/validation/test_script_manifest.py
 절대 호출하지 않습니다. 현재 두 조건을 모두 선언한 행은 없으므로 이 모드는
 기본 점검 이상을 추가하지 않습니다.
 
-## Related Documents
+## References
+
+### Current Documentation
 
 - [에이전트 작업 규칙](AGENTS.md)
 - ⚙️ Operations Baseline (`docs/05.operations/README.md`)
@@ -503,3 +515,7 @@ PYTHONPATH=. .venv/bin/python tests/validation/test_script_manifest.py
 - [Documentation index](../docs/README.md)
 
 Note: QuickWin baseline exceptions are sourced from `infra/common-optimizations.exceptions.json`.
+
+### Support and Ownership
+
+이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.

@@ -1436,13 +1436,17 @@ def _runtime_version_findings(
     return findings
 
 
+# H3 names that carry a README path table: Root form, Stage form, and the legacy name.
+README_DOCUMENTS_HEADINGS = frozenset({"Directories", "Current Items", "Documents"})
+
+
 def _registered_readme_documents_findings(
     record: Record,
     text: str,
     profile: Mapping[str, object],
     common: Mapping[str, object],
 ) -> list[Finding]:
-    """Validate a present README Documents module against its Registry columns."""
+    """Validate a README path table (### Documents, or ### Directories in the common form) against its Registry columns."""
 
     document_type = profile.get("type")
     if not isinstance(document_type, str) or not (
@@ -1463,18 +1467,22 @@ def _registered_readme_documents_findings(
     allowed = {tuple(required), (*required, *optional)}
     findings: list[Finding] = []
     in_documents = False
+    strict = True
     for line in _markdown_unfenced_lines(text):
         heading = re.match(r"^ {0,3}(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$", line)
         if heading:
             level = len(heading.group(1))
             name = heading.group(2).rstrip()
             if level <= 3:
-                in_documents = level == 3 and name == "Documents"
+                in_documents = level == 3 and name in README_DOCUMENTS_HEADINGS
+                strict = name != "Directories"
             continue
         if not in_documents or not line.strip().startswith("|"):
             continue
         columns = tuple(cell.strip() for cell in line.strip().strip("|").split("|"))
-        if columns not in allowed:
+        # ### Directories is a free map: only a Path-led table is the registered
+        # path module; another table shape there is the author's own.
+        if columns not in allowed and (strict or columns[0] == "Path"):
             findings.append(
                 _finding(
                     record,
