@@ -3,11 +3,11 @@ name: "infra-validate"
 description: "Use when an approved infrastructure change needs scoped static checks and separately authorized runtime observations with exact evidence. Reach for it when someone asks whether a Compose or infrastructure change is valid, wants only the checks that need no running services, or asks what could not be verified without touching runtime. Do NOT use it to start, restart, or deploy services, or to read secret values; runtime action needs its own approval and this reports what it did not do."
 metadata:
   title: "infra-validate"
-  version: "1.5.1"
+  version: "1.5.2"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-06"
+  updated: "2026-11-13"
   function_id: "infra-validate"
   scope: "infra"
   owner_agent: "infra-implementer"
@@ -15,25 +15,22 @@ metadata:
 
 # infra-validate
 
-## Purpose
+## Purpose and Trigger
 
-### Preconditions
+### When to Use
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
 
 The approved infrastructure change and its validation contract must identify which checks are static and which runtime checks are authorized.
 
-## Inputs
+### When Not to Use
 
-- Approved infrastructure change and validation contract.
-- Expected rendered configuration, health behavior, and rollback boundary.
-- The registered validators that implement the checks below, named once in
-  `scripts/manifest.yaml`; which of them this change type requires is owned by
-  the [verification matrix](../../governance/quality-standards.md#5-change-type-verification-matrix).
-  Naming a command here instead would copy both owners into a third place.
+The skill description states: "Do NOT use it to start, restart, or deploy services, or to read secret values; runtime action needs its own approval and this reports what it did not do."
 
 ## Procedure
+
+### Steps
 
 1. Run [`scripts/static-checks.sh`](./scripts/static-checks.sh) with no
    arguments. The only other accepted forms are `--help` and `-h`.
@@ -55,26 +52,41 @@ The approved infrastructure change and its validation contract must identify whi
 3. If explicitly approved, perform the smallest scoped runtime observation and compare it with declared invariants.
 4. Record exact commands, outcomes, skips, and rollback disposition after inspecting the final diff.
 
-### Gates
+#### Gates
 
 - Static validation passes before any runtime action.
 - Runtime checks remain within approved service and mutation scope.
 
-## Outputs
+### Failure Handling
+
+Stop on invalid rendered configuration, missing authority, or unexpected runtime impact; revert or escalate according to the approved task.
+
+## Inputs and Outputs
+
+### Inputs
+
+- Approved infrastructure change and validation contract.
+- Expected rendered configuration, health behavior, and rollback boundary.
+- The registered validators that implement the checks below, named once in
+  `scripts/manifest.yaml`; which of them this change type requires is owned by
+  the [verification matrix](../../governance/quality-standards.md#5-change-type-verification-matrix).
+  Naming a command here instead would copy both owners into a third place.
+
+### Outputs
 
 - Infrastructure validation evidence separated into static, runtime-observed, CI-only, and skipped results.
 
 ## Verification
 
+### Checks
+
 - `.agents/skills/infra-validate/scripts/static-checks.sh` exits 0, and every required record is `PASS` or `NOT_APPLICABLE`.
 - Runtime observation runs only after static validation passes, and only within the approved scope.
 - The evidence separates static, runtime-observed, CI-only, and skipped results.
 
-## Failure Handling
+### Completion and Handoff
 
-Stop on invalid rendered configuration, missing authority, or unexpected runtime impact; revert or escalate according to the approved task.
-
-## References
+Owning role, policies and related documents:
 
 - [Infrastructure implementer](../../roles/infra-implementer.md)
 - [Compose stack function](../compose-stack-agent/SKILL.md)

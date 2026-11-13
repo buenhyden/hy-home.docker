@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: incomplete logical commits"
-version: "1.0.7"
+version: "1.0.8"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 action: "block"
 enabled: true
 event: "stop"
@@ -14,15 +14,29 @@ pattern: ".*"
 
 # BLOCKED: incomplete logical commits
 
-## Overview
+## Purpose
+
+### Objective
 
 Apply the declared `block` action for require-logical-commits-before-stop.
 
+### Authority
+
+Owning policy: [Git workflow](../git-workflow.md#5-agent-completion-commit-discipline).
+
 ## Scope
 
-The `require-logical-commits-before-stop` rule applies on the `stop` event and matches the end of an agent turn ("BLOCKED: incomplete logical commits"); [Verification](#verification) states how it is enforced.
+### Applies To
+
+The `require-logical-commits-before-stop` rule applies on the `stop` event and matches the end of an agent turn ("BLOCKED: incomplete logical commits"); [Enforcement](#enforcement) states how it is enforced.
+
+### Exclusions
+
+None.
 
 ## Rules
+
+### Requirements
 
 **Logical commit completion check**
 
@@ -45,14 +59,26 @@ A repeated Stop payload (`stop_hook_active: true`) returns without another
 block or verification run. The first attempt retains the uncommitted-change
 check; a retry does not certify completion.
 
-## Exceptions
-
-No exception is declared by this rule.
-
-## Verification
+### Enforcement
 
 `scripts/hooks/hook_rules.py` does not evaluate `event: stop` rules; their `pattern: .*` is a placeholder. The enforcing code is `logical_commit_stop_gate` in `scripts/hooks/agent-event-hook.sh`. Native event delivery remains a separate observation.
 
-## Related Documents
+## Exceptions
 
-- `.agents/README.md`
+### Exception Conditions
+
+No exception is declared by this rule.
+
+### Approval and Review
+
+None.
+
+## Ownership
+
+### Responsibilities
+
+`@buenhyden`.
+
+### Change and Adoption
+
+None.

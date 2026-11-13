@@ -103,30 +103,6 @@
       "type": "string",
       "minLength": 1
     },
-    "archive_disposition": {
-      "type": "string",
-      "minLength": 1
-    },
-    "archive_reason": {
-      "type": "string",
-      "minLength": 1
-    },
-    "archived_at": {
-      "type": "string",
-      "format": "date-time"
-    },
-    "archived_blob": {
-      "type": "string",
-      "minLength": 1
-    },
-    "archived_commit": {
-      "type": "string",
-      "minLength": 1
-    },
-    "archived_from": {
-      "type": "string",
-      "minLength": 1
-    },
     "preservation_class": {
       "type": "string",
       "minLength": 1

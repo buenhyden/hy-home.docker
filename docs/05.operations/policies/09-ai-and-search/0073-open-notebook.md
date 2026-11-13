@@ -1,10 +1,10 @@
 ---
 title: "Open Notebook Operations Policy"
-version: "1.1.4"
+version: "1.1.5"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0073"
 parent_ids:
@@ -14,17 +14,33 @@ created: "2026-05-17"
 
 # Open Notebook Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 Open Notebook은 OPTIONAL 지식/모델 워크스페이스다. 콘텐츠, 데이터베이스,
 provider 자격 증명, 암호화 키가 하나의 복구 경계를 이룬다.
 
+### Authority
+
+- [Laboratory 아키텍처](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
+
+- [Open Notebook Compose 소스](../../../../infra/08-ai/open-notebook/docker-compose.yml)
+
 ## Scope
+
+### Applies To
 
 활성화, UI/API 노출, 앱/데이터베이스 인증, provider/모델 접근, 콘텐츠 보존,
 백업/복구, floating 이미지 업그레이드, 제거.
 
+### Exclusions
+
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
+
 ## Rules
+
+### Requirements
 
 - `notebook`만 사용한다. `admin`은 이를 선택해서는 안 된다. HOME 밖에 유지한다.
 - Open Notebook upstream은 SurrealDB v2를 요구한다. upstream Open Notebook이
@@ -51,7 +67,15 @@ provider 자격 증명, 암호화 키가 하나의 복구 경계를 이룬다.
   DB online 또는 디렉터리 존재로 저장된 모델·provider·embedding 기능을 수용하지
   않는다. 다른 credential과 충돌하는 동명 등록은 보존하고 거부한다.
 
+### Enforcement
+
+UI/앱 인증, API 경계, DB 준비 상태, 키 복호화, 하나의 합성 노트북을
+검증하며, provider 접근은 별도로 승인된 경우에만 검증한다. 모델 기능은 저장된
+연결, terminal embedding job, 입력/응답 및 재시작 후 보존을 별도로 검증한다.
+
 ## Exceptions
+
+### Exception Conditions
 
 공유 SSO 제거는 소유자 커밋 `b90b74837`, 포괄 admin 선택 제거는 `d5912ab03`의
 승인된 경계다. 변경 가능한 이미지 예외는 저장소의 image-tag 예외 원본에 따라
@@ -62,25 +86,21 @@ Laboratory Operator가 매월 검토하고 사용할 rollback 이미지 식별�
 API를 광범위하게 노출하거나, 키를 소스에 저장하거나, 대응하는 암호화 키와
 격리된 검증 없이 데이터를 복구하는 예외는 없다.
 
-### Review Cadence
+### Approval and Review
 
 릴리스, provider/모델, API 경로, DB 스키마, 키, 보존 정책 변경 시
 검토한다.
 
-### Traceability
+## Ownership
+
+### Responsibilities
+
+책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
+
+### Change and Adoption
 
 - [가이드](../../guides/09-ai-and-search/0073-open-notebook.md) (`GDE-0073`)
 - [런북](../../runbooks/09-ai-and-search/0073-open-notebook.md) (`RUN-0073`)
-- [Laboratory 아키텍처](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
 
-## Verification
-
-UI/앱 인증, API 경계, DB 준비 상태, 키 복호화, 하나의 합성 노트북을
-검증하며, provider 접근은 별도로 승인된 경우에만 검증한다. 모델 기능은 저장된
-연결, terminal embedding job, 입력/응답 및 재시작 후 보존을 별도로 검증한다.
-
-## Related Documents
-
-- [Open Notebook Compose 소스](../../../../infra/08-ai/open-notebook/docker-compose.yml)
 - [Open Notebook 보안](https://github.com/lfnovo/open-notebook/blob/main/docs/5-CONFIGURATION/security.md)
 - [SurrealDB 백업 및 복구](https://surrealdb.com/docs/manage/self-hosted/backups-and-recovery)

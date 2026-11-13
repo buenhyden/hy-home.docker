@@ -1,31 +1,45 @@
 ---
 title: "Documentation Protocol"
-version: "3.16.1"
+version: "3.17.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 ---
 
 # Documentation Protocol
 
-## Overview
+## Purpose
+
+### Objective
 
 Keep one document authority per role and preserve truthful provenance throughout authoring and retirement.
 
+### Authority
+
+This policy is the canonical owner of document authority, authoring, and retirement under [bootstrap precedence](bootstrap.md#authority-and-precedence).
+
 ## Scope
+
+### Applies To
 
 Current authored documents, registered machine inputs, and retained historical units.
 
+### Exclusions
+
+A provider-owned runtime projection is exempt from the metadata envelope. Operator-created files under `secrets/` and the body of a terminal Task at a registered Task path are outside the fenced-path check of `check-document-links.py`.
+
 ## Rules
 
-### Authority
+### Requirements
+
+#### Authority
 
 The Stage 99 registry is the only machine authority for paths, profiles,
 required sections, lifecycle values, and identifier relations. agent governance owns
 authoring behavior and `scripts/` owns executable validation.
 
-### Document Boundaries
+#### Document Boundaries
 
 - Stage 01 owns long-lived solution-independent requirements.
 - Stage 02 owns current architecture descriptions and durable decisions.
@@ -81,7 +95,7 @@ instruction dependencies. Links inside `docs/` keep their existing rules;
 [Document Retention and Retirement](#document-retention-and-retirement) governs
 retired identities.
 
-### Authoring Rules
+#### Authoring Rules
 
 1. Select the registry profile before creating or moving a document.
 2. Use four-digit numbered slugs where the profile requires an identity.
@@ -380,14 +394,15 @@ of external templates.
 | Shape or lifecycle | `docs/99.templates/` | Change the registry, schema, or copyable template. |
 | Protected or ambiguous change | `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` Task/audit gap first | Stop mutation and bind approval, scope, and recovery first. |
 
-### Document Retention and Retirement
+#### Document Retention and Retirement
 
 Retirement is a disposition inside the current approved Task, never a new Spec
 project of its own, and a closed Spec gets no new standing verification
 pipeline. Retention follows lifecycle and ownership. Age and document count are
 never retention criteria. A document is retained while it owns current
 behavior, structure, decision, or procedure. It is retired when its status is
-terminal and its still-current meaning has moved to a canonical owner.
+terminal, or it is replaced as the retirement preconditions allow, and its
+still-current meaning has moved to a canonical owner.
 These rules govern development documents only. Operational data and backups
 keep the retention their Stage 05 owners set, and shared agent memory keeps
 the retention rules of the
@@ -455,7 +470,9 @@ Stage 03 may be empty when no package remains.
 Retire a package or a standalone document only when all of these hold.
 
 1. Its profile/status pair is eligible in the Registry's
-   `archive_retention.disposition_entry_statuses` map. Lifecycle terminality and
+   `archive_retention.disposition_entry_statuses` map, or it is an ADR or
+   Architecture Description whose replacing ADR or Description, carrying its
+   summary, lands in the same change. Lifecycle terminality and
    disposition eligibility are separate: neither one grants an automatic
    removal.
 2. Every still-current obligation, decision, structure, or procedure it owns is
@@ -481,7 +498,7 @@ investigate, not permission to delete. Record the summary map and consumer
 cutover in the current Task. Age may trigger a disposition review. It never
 triggers a deletion.
 
-### Implementation coverage
+#### Implementation coverage
 
 Every capability implemented in this workspace has one Stage 01 Requirement
 owner for its obligation and one Stage 02 Description or ADR owner for its
@@ -489,11 +506,7 @@ structure and durable decision. Retiring a Stage 03 package never removes that
 coverage: the package's implemented outcome moves to those owners before the
 package is retired.
 
-## Exceptions
-
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-## Verification
+### Enforcement
 
 - `python scripts/validation/check-document-metadata.py --mode check-active`
 - `python scripts/validation/check-document-links.py --mode all` (links, entry
@@ -501,10 +514,28 @@ No exception is granted here; a separately authorized operation follows [Approva
 - Stage checks selected by the
   [change-type verification matrix](quality-standards.md#5-change-type-verification-matrix).
 
-## Related Documents
+## Exceptions
 
-- [Stage authoring matrix](stage-authoring-matrix.md)
-- Stage 99 registry (`docs/99.templates/registry.json`)
+### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+### Approval and Review
+
+None: no exception exists to approve.
+
+## Ownership
+
+### Responsibilities
+
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
+
+### Change and Adoption
+
+Changes land in place with Task evidence; related documents:
+
 - [SDLC](sdlc.md)
 - [Task checklists](task-checklists.md)
 - [Documentation index](../../docs/README.md)
+- [Stage authoring matrix](stage-authoring-matrix.md)
+- Stage 99 registry (`docs/99.templates/registry.json`)

@@ -3,11 +3,11 @@ name: "requirements-to-design-agent"
 description: "Use when approved requirements need traceable architecture inputs, coverage analysis, alternatives, and explicit unresolved decision gaps."
 metadata:
   title: "requirements-to-design-agent"
-  version: "1.2.0"
+  version: "1.2.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-29"
+  updated: "2026-11-13"
   function_id: "requirements-to-design-agent"
   scope: "architecture"
   owner_agent: "rules-engineer"
@@ -15,46 +15,58 @@ metadata:
 
 # requirements-to-design-agent
 
-## Purpose
+## Purpose and Trigger
 
-### Preconditions
+### When to Use
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
 
 Requirements must be approved, testable, and traceable; unresolved product choices stay upstream rather than becoming architecture assumptions.
 
-## Inputs
+### When Not to Use
 
-- Approved requirements and architecture constraints.
-- Quality attributes, current system boundaries, interfaces, and governing decisions.
+Unresolved product choices and ambiguous or conflicting requirements are outside this skill; they return to Stage 01.
 
 ## Procedure
+
+### Steps
 
 1. Map every requirement and acceptance criterion to architecture responsibilities, interfaces, data, and quality attributes.
 2. Identify design alternatives and decision points while preserving product intent and explicit non-goals.
 3. Produce traceable design inputs for ARD/ADR/Spec authors and record uncovered or contradictory requirements.
 
-### Gates
+#### Gates
 
 - Every in-scope requirement has an architecture disposition.
 - Architecture does not cross approved system or authority boundaries silently.
 
-## Outputs
+### Failure Handling
+
+Return ambiguous or conflicting requirements to Stage 01 with concrete questions; do not invent design authority.
+
+## Inputs and Outputs
+
+### Inputs
+
+- Approved requirements and architecture constraints.
+- Quality attributes, current system boundaries, interfaces, and governing decisions.
+
+### Outputs
 
 - Traceable design input with requirement coverage, boundaries, and decision needs.
 
 ## Verification
 
+### Checks
+
 - Every in-scope requirement and acceptance criterion has an architecture disposition.
 - Uncovered or contradictory requirements are listed rather than dropped.
 - No design input crosses an approved system or authority boundary without saying so.
 
-## Failure Handling
+### Completion and Handoff
 
-Return ambiguous or conflicting requirements to Stage 01 with concrete questions; do not invent design authority.
-
-## References
+Owning role, policies and related documents:
 
 - [Rules engineer](../../roles/rules-engineer.md)
 - [ADR writing](../adr-writing/SKILL.md)

@@ -1436,6 +1436,7 @@ def _runtime_version_findings(
     return findings
 
 
+# H3 names that carry a README path table: Root form, Stage form, and the legacy name.
 README_DOCUMENTS_HEADINGS = frozenset({"Directories", "Current Items", "Documents"})
 
 
@@ -1449,7 +1450,7 @@ def _registered_readme_documents_findings(
     profile: Mapping[str, object],
     common: Mapping[str, object],
 ) -> list[Finding]:
-    """Validate a present README Documents module against its Registry columns."""
+    """Validate a README path table (### Documents, or ### Directories in the common form) against its Registry columns."""
 
     document_type = profile.get("type")
     if not isinstance(document_type, str) or not (
@@ -1479,8 +1480,10 @@ def _registered_readme_documents_findings(
             name = heading.group(2).rstrip()
             if level <= 3:
                 in_documents = level == 3 and name in README_DOCUMENTS_HEADINGS
-                # Current Items may hold tables with no Path column.
-                free_tables = name == "Current Items"
+                # Directories and Current Items may hold the author's own
+                # tables; only a table with a Path column must use the
+                # registered columns. Documents is checked strictly.
+                free_tables = name in {"Directories", "Current Items"}
             in_table = False
             continue
         is_row = line.strip().startswith("|")

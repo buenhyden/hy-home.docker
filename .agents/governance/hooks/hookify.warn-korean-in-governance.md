@@ -1,10 +1,10 @@
 ---
 title: "WARNING: Korean text in governance documentation"
-version: "1.1.3"
+version: "1.1.4"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -20,34 +20,57 @@ name: "warn-korean-in-governance"
 
 # WARNING: Korean text in governance documentation
 
-## Overview
+## Purpose
+
+### Objective
 
 Apply the declared `warn` action for warn-korean-in-governance.
 
+### Authority
+
+Owning policy: `.agents/governance/documentation-protocol.md`.
+
 ## Scope
+
+### Applies To
 
 The `warn-korean-in-governance` rule applies on the `file` event and matches file edits whose path and text meet every structured `conditions` entry ("WARNING: Korean text in governance documentation"). The frontmatter owns the exact matcher.
 
+### Exclusions
+
+It skips `README.md` files, whose language the documentation protocol owns; the negative lookahead in the path pattern is what excludes them, so keep it when editing the pattern.
+
 ## Rules
+
+### Requirements
 
 **Korean text detected in governance documentation (project rule)**
 
-This hook is an advisory detector. It skips `README.md` files, whose language
-the documentation protocol owns; the negative lookahead in the path pattern is
-what excludes them, so keep it when editing the pattern. Resolve the file's language through the sole
+This hook is an advisory detector. Resolve the file's language through the sole
 document-role authority at
 `.agents/governance/documentation-protocol.md#document-language`;
 the hook does not publish a second language table or exception rule.
 
-## Exceptions
-
-No exception is declared by this rule.
-
-## Verification
+### Enforcement
 
 Native event delivery is a separate observation from the frontmatter match.
 
-## Related Documents
+## Exceptions
 
-- `.agents/README.md`
-- `.agents/governance/documentation-protocol.md`
+### Exception Conditions
+
+No exception is declared by this rule.
+
+### Approval and Review
+
+None.
+
+## Ownership
+
+### Responsibilities
+
+`@buenhyden`.
+
+### Change and Adoption
+
+`.agents/README.md`.

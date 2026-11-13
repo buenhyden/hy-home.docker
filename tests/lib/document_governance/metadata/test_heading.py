@@ -45,8 +45,10 @@ class CurrentBodyContractTests(unittest.TestCase):
             "plan": "Overview|Dependencies|Implementation Strategy|Verification Plan|Risks|Promotion Map",
             "task": "Scope|Execution Log|Verification Evidence|Acceptance Decision|Handoff",
             "guide": "Purpose|Prerequisites|Procedure|Verification",
-            "policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
+            "policy": "Purpose|Scope|Rules|Exceptions|Ownership",
             "runbook": "Purpose|Preconditions|Steps|Validation|Recovery",
+            "repository-readme": "Purpose|Repository Map|Getting Started|References",
+            "runtime-governance-readme": "Purpose|Repository Map|Getting Started|References",
             "readme": "Stage Responsibility|Contents|Workflow|Related Documents",
             "documentation-readme": "Stage Responsibility|Contents|Workflow|Related Documents",
             "reference-category-readme": "Stage Responsibility|Contents|Workflow|Related Documents",
@@ -56,8 +58,9 @@ class CurrentBodyContractTests(unittest.TestCase):
             "governance-provider-index": "Stage Responsibility|Contents|Workflow|Related Documents",
             "incident": "Summary|Impact|Timeline|Resolution|Evidence",
             "postmortem": "Summary|Root Cause|Impact|Corrective Actions|Evidence",
-            "governance-policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
-            "governance-hook-policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
+            "governance-policy": "Purpose|Scope|Rules|Exceptions|Ownership",
+            "governance-hook-policy": "Purpose|Scope|Rules|Exceptions|Ownership",
+            "governance-skill": "Purpose and Trigger|Procedure|Inputs and Outputs|Verification",
         }
         registry = metadata.load_registry(ROOT / "docs/99.templates/registry.json")
         for profile_id, names in expected.items():
@@ -331,7 +334,7 @@ class RegisteredSectionContractTests(unittest.TestCase):
         """Map each enforced profile to one tracked document that carries it."""
 
         tracked = subprocess.run(
-            ["git", "ls-files", "docs"],
+            ["git", "ls-files", "docs", ".agents", "README.md", ".claude/README.md"],
             capture_output=True,
             text=True,
             check=True,
@@ -464,6 +467,33 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Rollback or Recovery", "body-subheading-forbidden"),
             ),
+            "policy": (
+                ("## Overview", "body-heading-forbidden"),
+                ("## Verification", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+                ("### Traceability", "body-subheading-forbidden"),
+            ),
+            "governance-skill": (
+                ("## Purpose", "body-heading-forbidden"),
+                ("## Inputs", "body-heading-forbidden"),
+                ("## Failure Handling", "body-heading-forbidden"),
+                ("## References", "body-heading-forbidden"),
+                ("### Preconditions", "body-subheading-forbidden"),
+            ),
+            "repository-readme": (
+                ("## Overview", "body-heading-forbidden"),
+                ("## Scope", "body-heading-forbidden"),
+                ("## Structure", "body-heading-forbidden"),
+                ("## Usage", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+            ),
+            "runtime-governance-readme": (
+                ("## Overview", "body-heading-forbidden"),
+                ("## Scope", "body-heading-forbidden"),
+                ("## Structure", "body-heading-forbidden"),
+                ("## Usage", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+            ),
             "readme": (
                 ("## Overview", "body-heading-forbidden"),
                 ("## Scope", "body-heading-forbidden"),
@@ -562,6 +592,58 @@ class RegisteredSectionContractTests(unittest.TestCase):
                     "readme-documents-header-invalid",
                     self._findings("readme", candidate),
                 )
+
+    def test_readme_documents_table_under_directories_uses_registered_columns(
+        self,
+    ) -> None:
+        body, _ = self._conforming_body("repository-readme")
+        bad = body.replace(
+            "### Directories\n\n",
+            "### Directories\n\n| Path | Status |\n| --- | --- |\n",
+            1,
+        )
+        self.assertIn(
+            "readme-documents-header-invalid",
+            self._findings("repository-readme", bad),
+        )
+        for header in ("| Path | Purpose |", "| Tier | Category |"):
+            good = bad.replace("| Path | Status |", header)
+            self.assertNotIn(
+                "readme-documents-header-invalid",
+                self._findings("repository-readme", good),
+            )
+
+    def test_readme_directories_path_column_is_checked_in_any_form(self) -> None:
+        body, _ = self._conforming_body("repository-readme")
+        table = "\n| --- | --- |\n| a | b |\n"
+        for header, invalid in (
+            ("| Purpose | Path |", True),
+            ("| path | Purpose |", True),
+            ("| Directory | Purpose |", False),
+        ):
+            with self.subTest(header=header):
+                candidate = body.replace(
+                    "### Directories\n\n",
+                    "### Directories\n\n" + header + table,
+                    1,
+                )
+                self.assertEqual(
+                    invalid,
+                    "readme-documents-header-invalid"
+                    in self._findings("repository-readme", candidate),
+                )
+
+    def test_readme_directories_checks_every_table_including_h4(self) -> None:
+        body, _ = self._conforming_body("repository-readme")
+        table = "| Path | Purpose |\n| --- | --- |\n| a | b |\n\n"
+        bad = "#### Later\n\n| Purpose | Path |\n| --- | --- |\n| a | b |\n\n"
+        candidate = body.replace(
+            "### Directories\n\n", "### Directories\n\n" + table + bad, 1
+        )
+        self.assertIn(
+            "readme-documents-header-invalid",
+            self._findings("repository-readme", candidate),
+        )
 
     def test_readme_current_items_checks_only_path_column_tables(self) -> None:
         body, _ = self._conforming_body("readme")

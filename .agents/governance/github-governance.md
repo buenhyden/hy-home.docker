@@ -1,26 +1,40 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.8.0"
+version: "1.8.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-13"
 ---
 
 # GitHub Governance Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 Normative policy baseline aligning agent behavior with GitHub repository operations.
 A stricter rule in another canonical governance owner prevails over this document.
 
+### Authority
+
+This policy is the canonical owner of repository protection, pull requests, hosted workflows, and remote actions under [bootstrap precedence](bootstrap.md#authority-and-precedence).
+
 ## Scope
+
+### Applies To
 
 Repository protection, pull requests, hosted workflows, and separately authorized remote actions.
 
+### Exclusions
+
+None: this document states no exclusion.
+
 ## Rules
 
-### 1. Repository Protection Contract
+### Requirements
+
+#### 1. Repository Protection Contract
 
 - Agents must treat `main` as a protected branch: no direct pushes, no force pushes, no bypass of required checks.
 - This is an agent behavior contract, not evidence of applied GitHub settings.
@@ -38,7 +52,7 @@ Repository protection, pull requests, hosted workflows, and separately authorize
   remote verification is unavailable.
 - CODEOWNERS-triggered reviews are mandatory wherever remote protection enforces them. Agents must read the enforced state rather than assume it: when `require_code_owner_reviews` is enabled, an owned path's review must be obtained before merge; when it is disabled, `.github/CODEOWNERS` remains the ownership and review-routing record and no longer gates merges. Report which of the two applies; never record a review that protection did not require and no person gave.
 
-### 2. Pull Request and Review Contract
+#### 2. Pull Request and Review Contract
 
 Issues provide intake, coordination, and branch links. The current Task owns
 approval, evidence, and lifecycle state; closing a stale Issue does not
@@ -65,7 +79,7 @@ target and action.
   recovery commit, but must not turn a branch tip, expected SHA, checksum, or
   commit census into a standing merge Gate.
 
-### 3. Merge and Branch Discipline
+#### 3. Merge and Branch Discipline
 
 This section is the single owner of merge and branch-lifecycle rules. Both the
 Git workflow policy and `.github/rulesets/main-protection.md` defer here; the
@@ -98,7 +112,7 @@ rule of its own.
   remaining work in the PR template.
 - Agents must never modify another agent's in-progress branch without explicit coordination.
 
-### 4. GitHub Actions Security Contract
+#### 4. GitHub Actions Security Contract
 
 - Workflows must use least-privilege `GITHUB_TOKEN` — request only the permissions the job actually needs.
 - Prefer OIDC-based cloud credentials over long-lived secrets stored as repository secrets. When proposing or reviewing workflow changes, flag any use of long-lived cloud secrets as a `medium` finding.
@@ -112,7 +126,7 @@ rule of its own.
 - Untrusted input into `$GITHUB_ENV`, `$GITHUB_OUTPUT`, or `run:` interpolation is a security injection risk — raise a `blocker` finding.
 - Reusable workflows called from external repositories must be pinned and reviewed before use.
 
-### 5. Execution Boundary (Local vs Remote)
+#### 5. Execution Boundary (Local vs Remote)
 
 - **Local**: explicit formatting, focused RED/GREEN, message validation and
   read-only diagnostic checks. The shared
@@ -188,7 +202,7 @@ never checks out or runs candidate code in a privileged
 `pull_request_target` runner, and never creates a new App or credential
 implicitly.
 
-### 6. Local Instruction Authority
+#### 6. Local Instruction Authority
 
 - This repository does not adopt a GitHub-native instruction hierarchy for agent execution.
 - Instruction authority lives in repo-local assets only:
@@ -206,7 +220,7 @@ implicitly.
 - GitHub is used here for repository protection, PR workflow, and Actions execution; it is not the canonical home of agent instruction policy.
 - Any future GitHub-native instruction file must be treated as out-of-scope until the repository governance explicitly adopts it.
 
-### 8. CI/CD Job Taxonomy
+#### 8. CI/CD Job Taxonomy
 
 The [canonical phase matrix](quality-standards.md#canonical-delivery-phase-matrix)
 owns stage responsibility. `.github/workflow-contract.yml` owns exact job
@@ -241,20 +255,16 @@ actual commands, results, acceptance and authorization. The Project rule is in
 just to mirror Task state. See
 [Project automation](https://docs.github.com/en/issues/planning-and-tracking-with-projects/automating-your-project/automating-projects-using-actions).
 
-### References
+#### References
 
 - <https://docs.github.com/en/enterprise-cloud@latest/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets>
 - <https://docs.github.com/en/actions/reference/security/secure-use>
 - <https://docs.github.com/en/actions/how-tos/monitor-workflows>
 - <https://github.com/zizmorcore/zizmor/releases/tag/v1.28.0>
 
-## Exceptions
+### Enforcement
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-## Verification
-
-### 7. Completion Gate (GitHub-Specific)
+#### 7. Completion Gate (GitHub-Specific)
 
 Before an agent declares any PR-related task complete, it must confirm:
 
@@ -266,15 +276,33 @@ Before an agent declares any PR-related task complete, it must confirm:
 
 If any gate is unmet, the task status is "blocked" not "done."
 
-## Related Documents
+## Exceptions
 
-- [Git workflow](git-workflow.md)
-- [Quality standards](quality-standards.md)
-- [AI agent standards](standards.md)
-- [Bootstrap policy](bootstrap.md)
+### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+### Approval and Review
+
+None: no exception exists to approve.
+
+## Ownership
+
+### Responsibilities
+
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
+
+### Change and Adoption
+
+Changes land in place with Task evidence; related documents:
+
 - [Provider index](providers/README.md)
 - [Claude adapter](../../.claude/provider.md)
 - [Codex adapter](../../.codex/provider.md)
 - [Repository surface](../../.github/repository-surface.md)
 - [Main protection](../../.github/rulesets/main-protection.md)
 - [Platform and backup runbooks](../../docs/05.operations/runbooks/10-platform-and-backup/README.md)
+- [Git workflow](git-workflow.md)
+- [Quality standards](quality-standards.md)
+- [AI agent standards](standards.md)
+- [Bootstrap policy](bootstrap.md)

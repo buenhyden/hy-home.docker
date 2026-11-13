@@ -3,11 +3,11 @@ name: "style-validation"
 description: "Use when changed authored files need scoped deterministic formatting, lint, syntax, and metadata checks while preserving generated ownership. Reach for it when someone says the files they just changed need a style or lint pass, asks which checks apply to a change, asks whether an all-files run is allowed, or wants to be sure a formatter has not rewritten a generated file. Do NOT use it to judge whether the code is correct, to review a design, or to decide whether a change should ship; those are review questions, not style ones."
 metadata:
   title: "style-validation"
-  version: "1.4.1"
+  version: "1.4.2"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-06"
+  updated: "2026-11-13"
   function_id: "style-validation"
   scope: "qa"
   owner_agent: "qa-engineer"
@@ -15,26 +15,22 @@ metadata:
 
 # style-validation
 
-## Purpose
+## Purpose and Trigger
 
-### Preconditions
+### When to Use
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
 
 Changed authored files and their language/document style contracts must be identified; generated files remain owned by their generators.
 
-## Inputs
+### When Not to Use
 
-- Changed authored files and style contract.
-- Existing formatters, linters, syntax checks, metadata validators, and exclusion rules.
-- The [execution boundary](../../governance/quality-standards.md#4-execution-boundary),
-  which owns which of these may be run locally and on what scope.
-- [`scripts/classify-changed-files.sh`](./scripts/classify-changed-files.sh),
-  which this skill owns beside this file rather than at the repository root,
-  for the bucket split the procedure below reads.
+The skill description states: "Do NOT use it to judge whether the code is correct, to review a design, or to decide whether a change should ship; those are review questions, not style ones."
 
 ## Procedure
+
+### Steps
 
 1. Run [`scripts/classify-changed-files.sh`](./scripts/classify-changed-files.sh)
    from any directory and read its buckets. Each path uses Bash `printf %q`
@@ -53,25 +49,6 @@ Changed authored files and their language/document style contracts must be ident
 2. Run the smallest deterministic checks, apply approved formatter changes, and inspect all hook-managed fallout.
 3. Record commands, results, skipped/CI-only checks, and any remaining style finding without masking semantic defects.
 
-### Gates
-
-- Formatting is deterministic and generated ownership is preserved.
-- Linting is scoped to relevant authored files and does not rely on blanket suppression.
-
-## Outputs
-
-- Style-validation evidence and approved deterministic formatting changes.
-
-## Verification
-
-- `.agents/skills/style-validation/scripts/classify-changed-files.sh` was run, and no file in its `generated` bucket was rewritten by a formatter.
-- `scripts/validation/run-ci-precommit.sh --mode local-staged` passes on the reviewed index.
-- Skipped and CI-only checks are listed, and no lint finding was silenced by deleting content or by a blanket suppression.
-
-## Failure Handling
-
-Stop on unexpected paths, formatter oscillation, or conflicting style authorities. Do not invoke `pre-commit run` directly, and do not delete content to satisfy lint.
-
 Immediately before local commit, use
 `scripts/validation/run-ci-precommit.sh --mode local-staged` on the reviewed
 index. The controller derives check-only modes from staged shared configuration;
@@ -87,7 +64,42 @@ owns the conditions it carries, and those conditions decide whether an all-files
 pass is available at all. Read them before reaching for it; the normal answer to
 a scoped change is the scoped check, not the whole tree.
 
-## References
+#### Gates
+
+- Formatting is deterministic and generated ownership is preserved.
+- Linting is scoped to relevant authored files and does not rely on blanket suppression.
+
+### Failure Handling
+
+Stop on unexpected paths, formatter oscillation, or conflicting style authorities. Do not invoke `pre-commit run` directly, and do not delete content to satisfy lint.
+
+## Inputs and Outputs
+
+### Inputs
+
+- Changed authored files and style contract.
+- Existing formatters, linters, syntax checks, metadata validators, and exclusion rules.
+- The [execution boundary](../../governance/quality-standards.md#4-execution-boundary),
+  which owns which of these may be run locally and on what scope.
+- [`scripts/classify-changed-files.sh`](./scripts/classify-changed-files.sh),
+  which this skill owns beside this file rather than at the repository root,
+  for the bucket split the procedure above reads.
+
+### Outputs
+
+- Style-validation evidence and approved deterministic formatting changes.
+
+## Verification
+
+### Checks
+
+- `.agents/skills/style-validation/scripts/classify-changed-files.sh` was run, and no file in its `generated` bucket was rewritten by a formatter.
+- `scripts/validation/run-ci-precommit.sh --mode local-staged` passes on the reviewed index.
+- Skipped and CI-only checks are listed, and no lint finding was silenced by deleting content or by a blanket suppression.
+
+### Completion and Handoff
+
+Owning role, policies and related documents:
 
 - [QA engineer](../../roles/qa-engineer.md)
 - [Task checklists](../../governance/task-checklists.md)

@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: git commit --no-verify"
-version: "1.1.2"
+version: "1.1.3"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 action: "block"
 enabled: true
 event: "bash"
@@ -14,13 +14,24 @@ pattern: "git\\s+commit\\s+.*(--no-verify|-n\\s+-m|-n\\s+['\"]|-n$)"
 
 # Git Commit Check Bypass Rule
 
-## Overview
+## Purpose
+
+### Objective
 
 **`git commit --no-verify` blocked (project rule)**
 
+### Authority
+
+Owning policies:
+
+- [Git workflow](../git-workflow.md)
+- [Quality standards execution boundary](../quality-standards.md#4-execution-boundary)
+
 ## Scope
 
-`.agents/governance/git-workflow.md` — Enforcement:
+### Applies To
+
+The `block-git-no-verify` rule applies on the `bash` event. `.agents/governance/git-workflow.md` — Enforcement:
 
 > "Changes that bypass checks or violate secret safety must not be merged."
 
@@ -28,7 +39,13 @@ The [execution boundary](../quality-standards.md#4-execution-boundary) owns the
 direct pre-commit prohibition and the sole approved all-files route. This hook
 retains the separate block on bypassing configured commit checks.
 
+### Exclusions
+
+None.
+
 ## Rules
+
+### Requirements
 
 **Project pre-commit hooks perform:**
 
@@ -56,15 +73,26 @@ git add -p
 git commit -m "fix(scope): Actual fix"
 ```
 
-## Exceptions
-
-No exception is declared by this rule.
-
-## Verification
+### Enforcement
 
 The declared Bash event and unchanged native pattern identify matching commands.
 
-## Related Documents
+## Exceptions
 
-- [Git workflow](../git-workflow.md)
-- [Quality standards execution boundary](../quality-standards.md#4-execution-boundary)
+### Exception Conditions
+
+No exception is declared by this rule.
+
+### Approval and Review
+
+None.
+
+## Ownership
+
+### Responsibilities
+
+`@buenhyden`.
+
+### Change and Adoption
+
+None.

@@ -1,40 +1,54 @@
 ---
 title: "Validation Contract Tests"
-version: "1.0.5"
+version: "1.0.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-13"
 created: "2026-09-27"
 ---
 
 # tests/validation
 
-## Overview
+## Purpose
+
+### Project Role
 
 이 트리는 검증기와 entrypoint의 동작을 소유합니다. CLI 파싱, 렌더링, 실행
 context 라우팅, 여러 검사를 묶는 gate 실행이 여기에 해당합니다. 개별
 library의 단위 테스트는 짝이 되는 `tests/lib/<domain>/`에 둡니다.
 
-## Audience
+#### Audience
 
 - Developers
 - QA Engineers
 
-## Scope
+### Boundaries
 
 - 포함: `scripts/validation/`과 `scripts/operations/` entrypoint의 동작,
   gate 계획과 실행 context, 여러 계약을 함께 확인하는 테스트.
 - 제외: 단일 library 모듈의 내부 동작 테스트.
 
-## Structure
+## Repository Map
+
+### Directories
 
 직접 구성원은 `test_*.py` 테스트 모듈과 테스트 전용 지원 모듈입니다.
 `lifecycle/` 하위 디렉터리는 문서 수명주기 CLI의 테스트를 담습니다. 각
 테스트가 검증하는 스크립트는 [Script Manifest](../../scripts/manifest.yaml)의
 `tests` 항목이 소유합니다.
 
-## Usage
+### Canonical Entry Points
+
+개별 library의 단위 테스트는 [tests/lib](../lib/README.md)가 소유합니다.
+
+## Getting Started
+
+### Prerequisites
+
+Python 3와 [scripts/README.md](../../scripts/README.md)의 hash lock(`requirements-controller.lock`)을 설치한 venv가 필요합니다. `tests/validation/test_mng_pg_init_sql.py` opt-in 통합 테스트에는 Docker daemon과 `tests/requirements-integration.txt`의 의존성이 추가로 필요합니다.
+
+### First Verified Path
 
 1. 새 entrypoint나 gate 동작을 바꾸면 이 트리에 실패하는 테스트를 먼저
    추가합니다.
@@ -56,7 +70,13 @@ P06의 `test_openbao_consumer_migration_contract.py`는 bounded 공개 stdin CLI
 P07의 `test_root_resource_contract.py`는 공개 schema·합성 fixture·평가기 CLI의
 허용·거부 경계를 검증합니다. 실제 측정과 자원·권한 변경의 수용은 별도입니다.
 
-## Related Documents
+## References
+
+### Current Documentation
 
 - [Test Surface](../README.md)
 - [Library tests](../lib/README.md)
+
+### Support and Ownership
+
+이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.

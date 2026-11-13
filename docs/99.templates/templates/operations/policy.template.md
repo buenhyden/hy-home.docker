@@ -15,15 +15,31 @@ created: "{{CREATED}}"
 
 # {{TITLE}}
 
-## Overview
+## Purpose
 
-{{OVERVIEW}}
+### Objective
+
+{{POLICY_OBJECTIVE}}
+
+### Authority
+
+<!-- Author prompt: Link the implementation, requirement and decision that give this policy its authority. -->
+
+{{SUBJECT_AND_AUTHORITY_LINKS}}
 
 ## Scope
 
-{{POLICY_SCOPE}}
+### Applies To
+
+{{SERVICES_SURFACES_AND_ACTORS_COVERED}}
+
+### Exclusions
+
+{{WHAT_THIS_POLICY_DOES_NOT_COVER}}
 
 ## Rules
+
+### Requirements
 
 <!-- Author prompt: For a service subject, cover only applicable fields; omit nonapplicable fields without filler. Specify activation, network exposure and trust boundaries, authentication and authorization, secret handling, least privilege, data retention, backup and restore expectations, resource limits, update ownership, upgrade and migration, and removal or decommission criteria. For a non-service workspace subject, keep only controls its implementation actually has. Distinguish an enforced control from pending runtime evidence; give exceptions an owner, risk and exit condition. -->
 
@@ -31,22 +47,30 @@ created: "{{CREATED}}"
 
 {{CONTROLS}}
 
+### Enforcement
+
+<!-- Author prompt: Name the check, gate or review that enforces each control, and distinguish an enforced control from pending runtime evidence. -->
+
+{{ENFORCEMENT_AND_VERIFICATION}}
+
 ## Exceptions
+
+### Exception Conditions
+
+<!-- Author prompt: Give each exception an owner, a risk and an exit condition; write "none" when there is none. -->
 
 {{EXCEPTIONS}}
 
-### Review Cadence
+### Approval and Review
 
-{{REVIEW_CADENCE}}
+{{APPROVAL_AND_REVIEW_CADENCE}}
 
-### Traceability
+## Ownership
 
-{{SUBJECT_AND_AUTHORITY_LINKS}}
+### Responsibilities
 
-## Verification
+{{OWNERS_AND_RESPONSIBILITIES}}
 
-{{VERIFICATION}}
+### Change and Adoption
 
-## Related Documents
-
-{{RELATED_DOCUMENTS}}
+{{HOW_THIS_POLICY_CHANGES_AND_RELATED_DOCUMENTS}}
