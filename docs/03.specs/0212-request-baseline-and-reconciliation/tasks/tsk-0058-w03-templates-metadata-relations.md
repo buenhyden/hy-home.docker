@@ -1,6 +1,6 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.5.4"
+version: "0.5.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -354,6 +354,24 @@ Branch `docs/w03-task-common-form`, on top of `main` after #971.
   cells and changed tsk-0007's frontmatter; the lifecycle validator and the
   review caught both, and the script was fixed and re-run from the old files.
 
+##### Guide role 2026-11-13
+
+Branch `docs/w03-guide-common-form`, on top of `main` after #975.
+
+- Registry `guide`: H2 Purpose, Prerequisites, Procedure, Verification with
+  their required H3s; the old `Overview`, `Usage`, `Related Documents` H2s and
+  the `Common Checks` H3 are rejected. The operations catalog matches required
+  section names to headings and needs no code change; `Runbook Handoff` is no
+  longer an optional section and lives as an H4 under Troubleshooting.
+- The 78 Guides (Korean bodies) are moved by four `doc-writer` agents. Every
+  old line and code block is kept apart from 20 intended sentence edits;
+  headings other documents link to stay as H4.
+- Review answers: limits moved from Actions to Exceptions, procedures and
+  checks to Actions and Expected Result; the generic Permissions and
+  Exceptions sentences replaced in every Guide by the access, approval,
+  secret-name and limit facts each file states; stale "Common Checks" and
+  "Runbook Handoff" references renamed.
+
 Held for an owner decision, not changed here, because each would change
 what a requirement says:
 
@@ -416,6 +434,12 @@ None: nothing was recorded here before this Task moved to the common form.
 | W03 v14.7 Task review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `13b444534` | PASS | PASS: the three text findings fixed; earlier code and anchor findings stay fixed | required | W03 v14.7 Task code review, W03 v14.7 Task re-review, W03 v14.7 Task final review |
 | W03 v14.7 Task GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `ae4df1873` | PASS | Ran 810 tests, OK, including the terminal-body, admission, resolver and heading tests | required | W03 v14.7 Task form RED |
 | W03 v14.7 Task checks | 111 | W116 | metadata-links-governance | The 104 moved Tasks at `ae4df1873` with this Task's later text edits | PASS | Every completed Task body passes `_same_task_body` and the terminal migration check; Spec Package lifecycle against `origin/main` 0 findings; heading contract 0 findings; 0 lost same-file anchors; metadata check-changed selected 106 violations 0; links alignment PASS | required | - |
+| W03 v14.7 Guide form RED | 111 | W116 | red-green-proof | The old-form and template-outline tests with Guide cases against the `guide` profile at `13b444534` | FAIL | Five failures: the old `Overview`, `Usage`, `Related Documents` H2s and the `Common Checks` H3 were accepted, and the template outline differed | required | - |
+| W03 v14.7 Guide review | 111 | W116 | independent-review | Fresh-context code-reviewer of the uncommitted Guide move | FAIL | CHANGES_REQUIRED: limits and procedures in the wrong sections; generic Permissions and Exceptions sentences false in many Guides; stale heading references | required | - |
+| W03 v14.7 Guide re-review | 111 | W116 | independent-review | Fresh-context code-reviewer of `c7ca7356e` | FAIL | CHANGES_REQUIRED, minor: four false Exceptions or Permissions sentences (0010, 0065, 0082, 0059) | required | - |
+| W03 v14.7 Guide review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `a8a55aead` | PASS | PASS: every finding fixed; anchors resolve | required | W03 v14.7 Guide review, W03 v14.7 Guide re-review |
+| W03 v14.7 Guide GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `a8a55aead` | PASS | Ran 810 tests, OK, including the Guide old-form, template-outline and operations catalog tests | required | W03 v14.7 Guide form RED |
+| W03 v14.7 Guide checks | 111 | W116 | metadata-links-governance | The 78 moved Guides at `c7ca7356e` and `a8a55aead` | PASS | Heading contract 0 findings; metadata check-changed selected 78 violations 0; links alignment PASS; operations catalog, taxonomy and moves tests 162 OK; every old line and code block kept apart from 20 intended edits | required | - |
 
 ### Resolution Links
 
