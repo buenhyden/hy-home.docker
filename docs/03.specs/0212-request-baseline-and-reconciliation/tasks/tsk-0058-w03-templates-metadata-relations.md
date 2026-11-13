@@ -444,6 +444,35 @@ Held for a later change: Completion and Handoff in all 24 skills holds only
 links, and two Gates bullets (ops-runbook-agent, incident-response) state an
 output location rather than a gate.
 
+##### Handoff H-06 2026-11-13
+
+Branch `docs/w03-template-definition`. The owner answered "follow the
+requirement" twice: the approved TemplateDefinition v14.5 schema is
+implemented rather than deferred, and the five templates without Markdown
+headings are defined by their real top-level units so the schema stays
+unchanged.
+
+- The approved schema is vendored byte for byte as
+  `docs/99.templates/contracts/template-definition.schema.json` (SHA-256
+  prefix `e490cf402419`).
+- Each of the 39 `template_roles` carries only the authored fields the
+  Registry lacked (purpose, responsibility, non_goals, policy_refs,
+  vocabulary_refs, applicability, relationships, consumer_paths, validation,
+  migration). Shared `common` dictionaries hold one meaning per frontmatter
+  key, table column and profile exception.
+- `scripts/lib/document_governance/template_definition.py` derives the rest
+  from the Registry and the template file: headings, metadata, tables,
+  lifecycle, language, extensions and contract_version. All 39 definitions
+  validate against the schema, and the load-time check rejects an undefined
+  key or column.
+- Requirement conflicts fixed on the way: `runtime-projection-codex` no
+  longer lists Claude-only keys, and `runtime-projection-claude` no longer
+  lists Codex-only keys; both now match what the renderer writes.
+
+Later correction of terminal records: TSK-0060 still says TemplateDefinition
+is "Approved; not implemented" and TSK-0059 still lists H-06 as open. Both
+are terminal, so their bodies stay; this branch is the implementation.
+
 Held for an owner decision, not changed here, because each would change
 what a requirement says:
 
@@ -532,6 +561,9 @@ None: nothing was recorded here before this Task moved to the common form.
 | W03 v14.7 Skill review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `8412eafea` (rebased as `5f18c6913`) | PASS | PASS: every finding fixed | required | W03 v14.7 Skill review, W03 v14.7 Skill re-review |
 | W03 v14.7 Skill GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `fd4d37dea` | PASS | Ran 810 tests, OK, including the skill old-form and template-outline tests | required | W03 v14.7 Skill form RED |
 | W03 v14.7 Skill checks | 111 | W116 | metadata-links-governance | The 24 moved skills at `fd4d37dea` | PASS | Heading contract 0 findings (384 on the old copies); renderer drift 0; agent governance contract failures 0; links alignment PASS | required | - |
+| W03 v14.7 TemplateDefinition RED | 111 | W116 | red-green-proof | `tests/lib/document_governance/test_template_definition.py` before the implementation at `643629139` | FAIL | ImportError: `template_definition` did not exist (errors=1) | required | - |
+| W03 v14.7 TemplateDefinition review | 111 | W116 | independent-review | Fresh-context code-reviewer of `cf9f3a832` and `5b4502027` | FAIL | CHANGES_REQUIRED: validation cited tests that never reach the role; unverified migration commits; empty extensions; missing tables; filler section content; false requiredness for heading-less units; bare exceptions | required | - |
+| W03 v14.7 TemplateDefinition review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `6e4f5e3b0` | PASS | PASS: every finding fixed; the Codex profile change breaks no projection; the Task record was the one open item | required | W03 v14.7 TemplateDefinition review |
 
 ### Resolution Links
 
