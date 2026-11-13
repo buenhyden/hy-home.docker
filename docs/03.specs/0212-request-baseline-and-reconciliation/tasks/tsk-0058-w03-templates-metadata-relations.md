@@ -758,7 +758,7 @@ failing observation is resolved by a later passing one, so the Task closes as
 
 ### Promotion Receipt
 
-Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook), #980 (Policy), #981 (Skill), #982 (H-W02-2 and H-13), #983 (Root README), #984 (retirement and incident numbering), #985 (Stage README), #986 (Service README), #987 (H-06 TemplateDefinition).
+Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook), #980 (Policy), #981 (Skill), #982 (H-W02-2 and H-13), #983 (Root README), #984 (retirement and incident numbering), #985 (Stage README), #986 (Service README), #987 (H-06 TemplateDefinition), #988 (close-out record). The criterion 111 acceptance and the `completed` status land after #988 in their own pull request.
 
 ### Next Owner
 
