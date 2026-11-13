@@ -12,6 +12,8 @@ import time
 import unittest
 from unittest import mock
 
+from jsonschema import Draft202012Validator
+
 import scripts.lib.document_governance.registry as registry_module
 from scripts.lib.document_governance import metadata_validator
 from scripts.lib.document_governance.metadata_validator import (
@@ -1173,6 +1175,60 @@ class DocumentRegistryTests(unittest.TestCase):
                     {item.code for item in validate_record(record, profiles, {})},
                 )
         self.assertEqual((), validate_frontmatter({"parent_ids": []}))
+
+    def test_document_version_is_core_semver_string_only(self) -> None:
+        valid = ("0.1.0", "1.2.3", "1.10.0", "10.20.30")
+        invalid = (
+            "1.2",
+            "01.2.3",
+            "1.02.3",
+            "1.2.03",
+            "-1.2.3",
+            "v1.2.3",
+            "1.2.3.4",
+            "1.2.3-01",
+            "1.2.3-",
+            "1.2.3+",
+            "1.2.3\n",
+            "1.2.3 ",
+            "",
+            1.2,
+            123,
+        )
+        for version in valid:
+            with self.subTest(valid=version):
+                self.assertEqual((), validate_frontmatter({"version": version}))
+        for version in invalid:
+            with self.subTest(invalid=version):
+                self.assertNotEqual((), validate_frontmatter({"version": version}))
+
+    def test_registered_initial_version_is_core_semver_in_profile_schema(self) -> None:
+        raw = json.loads(
+            (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")
+        )
+        schema = json.loads(
+            (
+                ROOT / "docs/99.templates/contracts/document-profile.schema.json"
+            ).read_text(encoding="utf-8")
+        )
+        validator = Draft202012Validator(schema)
+        for version, accepted in (
+            ("0.1.0", True),
+            ("1.10.0", True),
+            ("0.1", False),
+            ("00.1.0", False),
+            ("v0.1.0", False),
+            ("0.1.0-01", False),
+            ("0.1.0\n", False),
+        ):
+            with self.subTest(version=version):
+                raw["common"]["template_initial_version"] = version
+                errors = [
+                    error
+                    for error in validator.iter_errors(raw)
+                    if list(error.path) == ["common", "template_initial_version"]
+                ]
+                self.assertEqual(accepted, not errors)
 
     def test_template_optional_empty_value_uses_same_profile_guard(self) -> None:
         path = pathlib.Path("docs/99.templates/templates/specs/spec.template.md")

@@ -132,6 +132,10 @@ class ReleaseTests(unittest.TestCase):
             "1.2.3-rc.1",
             "1.2.3+001",
             "1.2.3-alpha-beta+build.7",
+            "1.0.0-rc.1",
+            "1.2.3+build.007",
+            "1.2.3-rc.1+sha.abc",
+            "1.0.0-0",
         ):
             with self.subTest(version=version):
                 self.assertEqual("v" + version, release.release_tag(version))
@@ -147,6 +151,13 @@ class ReleaseTests(unittest.TestCase):
             "1.2.3+",
             "1.2.3\n",
             "1.2.3;echo x",
+            "",
+            "-1.2.3",
+            "1.02.3",
+            "1.2.3.4",
+            "1.2.3-rc.01",
+            "1.2.3-rc..1",
+            "1.2.3+build..1",
         ):
             with self.subTest(version=version), self.assertRaises(release.ReleaseError):
                 release.release_tag(version)
