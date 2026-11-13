@@ -1,10 +1,10 @@
 ---
 title: "`SENSITIVE_ENV_VARS.md.example` vs `SENSITIVE_ENV_VARS.md` Comparison"
-version: "3.5.1"
+version: "3.5.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0010"
 created: "2026-06-04"
@@ -12,19 +12,29 @@ created: "2026-06-04"
 
 # `SENSITIVE_ENV_VARS.md.example` vs `SENSITIVE_ENV_VARS.md` Comparison
 
-## Overview
+## Purpose
+
+### Outcome
 
 이 가이드는 공개 secret registry 예제와 로컬 registry의 메타데이터를 비교하는 기준과 방법을 설명한다.
-
-## Scope
-
-### Audience and Goal
 
 대상 독자는 secret registry를 정리하거나 점검하는 운영자와 agent다.
 
 목표는 값을 노출하지 않고 공개/개인 registry의 값 외 구조를 비교하고 실제 소비자를 확인하는 것이다.
 
-## Concepts
+### Boundaries
+
+- 같은 번호 `0010`의 Policy/Runbook은 없다.
+
+- [Env Key Comparison](../10-platform-and-backup/0003-env-key-comparison.md)
+- [Public metadata source catalog](../../../../infra/03-security/openbao/secret-catalog.json)
+- [Rendered public view](../../../../secrets/SENSITIVE_ENV_VARS.md.example)
+- [Private registry writer](../../../../scripts/operations/gen-secrets.sh)
+- [Secret management](../../../../secrets/README.md)
+
+## Prerequisites
+
+### Environment
 
 공개 ID·env key·파일 경로·용도 계약의 단일 원본은
 `infra/03-security/openbao/secret-catalog.json`이다. `secrets/SENSITIVE_ENV_VARS.md.example`은
@@ -43,22 +53,13 @@ catalog의 `metadata_source` 필드는 처음 이관한 출처를 기록할 뿐 
 grant의 대응 관계를 함께 확인한다. 실제 점검 수치와 결과는 날짜·commit을 붙여
 현재 Task에 기록한다.
 
-## Usage
+### Permissions
 
-### Common Checks
+공개 view 검사는 권한이 필요 없다. private registry와 `.env`를 읽는 `--sync-metadata-prune-check`, `--read-private`는 해당 Task의 사설 읽기 승인이 필요하다. `--sync-metadata-prune`는 0600 보호 백업 뒤 승인된 경우에만 실행한다. credential 변경·재시작은 별도 운영 승인이다.
 
-저장소 루트에서 값이 출력되지 않는 기존 검사 경로를 사용한다.
+## Procedure
 
-```bash
-bash scripts/operations/gen-secrets.sh --dry-run
-# private metadata 읽기가 승인된 경우에만 다음 비교를 실행한다.
-bash scripts/operations/gen-secrets.sh --sync-metadata-prune-check
-```
-
-`--dry-run`은 공개 schema와 파일 존재 메타데이터를 사용한다. 반면 metadata
-check는 private registry와 `.env` 값을 프로세스 내부에서 읽고 출력하지 않는
-검사이므로 해당 접근 승인이 필요하다. 종료 코드 `0`은 drift 없음, `1`은 drift,
-`2`는 unsafe/ambiguous 입력이다. 정리 없이 비교만 하는 `--sync-metadata-check`도 같은 종료 코드를 쓴다. 쓰기 없음과 개인 값 읽기 없음은 다르다.
+### Actions
 
 전체 구조의 읽기 전용 비교는 합성 누출 시험과 독립 보안 검토 후 다음 명시적
 명령으로 수행한다. 현재 작업에서 사설 읽기가 허용됐는지도 확인한다.
@@ -89,11 +90,36 @@ profile에서 소비하면 유지하지만, 예정·폐기·미사용 항목은 
 스키마 밖의 행을 `Private-only rows` 섹션에 남기는 기존 `--sync-metadata`는 이번 정확한 집합 일치의
 완료 검사와 다르다. 중복·모호한 입력·경로 교체는 값을 출력하지 않고 거부한다.
 
+### Exceptions
+
+이 비교는 CI에서 쓰지 않으며 누락된 파일을 예시 파일로 대체하지 않는다. 기존 `--sync-metadata`는 정확한 집합 일치의 완료 확인이 아니다(Expected Result와 Actions의 해당 문장).
+
+## Verification
+
+### Expected Result
+
+저장소 루트에서 값이 출력되지 않는 기존 검사 경로를 사용한다.
+
+```bash
+bash scripts/operations/gen-secrets.sh --dry-run
+# private metadata 읽기가 승인된 경우에만 다음 비교를 실행한다.
+bash scripts/operations/gen-secrets.sh --sync-metadata-prune-check
+```
+
+`--dry-run`은 공개 schema와 파일 존재 메타데이터를 사용한다. 반면 metadata
+check는 private registry와 `.env` 값을 프로세스 내부에서 읽고 출력하지 않는
+검사이므로 해당 접근 승인이 필요하다. 종료 코드 `0`은 drift 없음, `1`은 drift,
+`2`는 unsafe/ambiguous 입력이다. 정리 없이 비교만 하는 `--sync-metadata-check`도 같은 종료 코드를 쓴다. 쓰기 없음과 개인 값 읽기 없음은 다르다.
+
 로컬 registry가 없으면 관찰되지 않음으로 기록한다. 존재하는 경우 Git ignore와
 0600 권한을 확인하고 값, 원문 행, 인증 파일이나 token 내용을 증거에 남기지 않는다.
 `--check`는 생성 도구의 설치 여부까지 검사하며 `htpasswd` 누락 등은 별도로 보고한다.
 
-### Runbook Handoff
+### Troubleshooting
+
+종료 코드 `1`(drift)은 위 정리 절차로, `2`/`BLOCKED`는 입력 경로·권한·형식을 먼저 확인한다. 값이나 원문 행을 출력해 원인을 찾지 않는다.
+
+#### Runbook Handoff
 
 [Secret 관리 안내](../../../../secrets/README.md)와 해당 서비스 Runbook을 따른다.
 승인된 경로 재배치에서는 보호 백업을 만든 뒤 기존 HOME 경로의 호환 참조와 새
@@ -101,19 +127,3 @@ Compose 경로를 함께 검사한다. 호환 참조 제거, 실제 credential �
 데이터 복구는 대상과 영향을 명시한 별도 운영 승인 범위에서 수행한다.
 단순 줄 수가 아니라 소비자 근거와 정확한 키 집합으로 정리하며, 유지 대상의
 개인 값을 덮어쓰지 않는다.
-
-### Traceability
-
-- 같은 번호 `0010`의 Policy/Runbook은 없다.
-
-## Troubleshooting
-
-종료 코드 `1`(drift)은 위 정리 절차로, `2`/`BLOCKED`는 입력 경로·권한·형식을 먼저 확인한다. 값이나 원문 행을 출력해 원인을 찾지 않는다.
-
-## Related Documents
-
-- [Env Key Comparison](../10-platform-and-backup/0003-env-key-comparison.md)
-- [Public metadata source catalog](../../../../infra/03-security/openbao/secret-catalog.json)
-- [Rendered public view](../../../../secrets/SENSITIVE_ENV_VARS.md.example)
-- [Private registry writer](../../../../scripts/operations/gen-secrets.sh)
-- [Secret management](../../../../secrets/README.md)

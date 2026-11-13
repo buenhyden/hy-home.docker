@@ -1150,16 +1150,12 @@
         "next_review_at"
       ],
       "required_sections": [
-        "Overview",
-        "Scope",
-        "Concepts",
-        "Usage",
-        "Troubleshooting",
-        "Related Documents"
+        "Purpose",
+        "Prerequisites",
+        "Procedure",
+        "Verification"
       ],
-      "optional_sections": [
-        "Runbook Handoff"
-      ],
+      "optional_sections": [],
       "ordered_sections": true,
       "nonempty_sections": true,
       "lifecycle_id": "operational-policy",
@@ -1195,7 +1191,25 @@
         "docs/05.operations/guides/13-analytics-and-data-quality/{number:4}-{slug}.md",
         "docs/05.operations/guides/14-design-system/{number:4}-{slug}.md",
         "docs/05.operations/guides/15-labs/{number:4}-{slug}.md"
-      ]
+      ],
+      "required_subsections": {
+        "Purpose": [
+          "Outcome",
+          "Boundaries"
+        ],
+        "Prerequisites": [
+          "Environment",
+          "Permissions"
+        ],
+        "Procedure": [
+          "Actions",
+          "Exceptions"
+        ],
+        "Verification": [
+          "Expected Result",
+          "Troubleshooting"
+        ]
+      }
     },
     {
       "id": "policy",

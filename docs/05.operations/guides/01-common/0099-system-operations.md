@@ -1,10 +1,10 @@
 ---
 title: "System Operations Guide"
-version: "0.3.3"
+version: "0.3.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0099"
 parent_ids:
@@ -14,13 +14,11 @@ created: "2026-10-01"
 
 # System Operations Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 이 가이드는 한 호스트에서 HOME 서비스와 개발 작업을 함께 운영할 때 필요한 요청 경로, 공통 의존성, 장애 영향과 다음 절차를 설명한다.
-
-## Scope
-
-### Audience and Goal
 
 대상 독자는 한 호스트에서 HOME 서비스와 개발 작업을 함께 운영하는 사람이다.
 목표는 필요한 선택과 점검을 찾는 것이며, 서비스 기동이나 복구 성공을 선언하는
@@ -33,9 +31,23 @@ created: "2026-10-01"
 고른 뒤 subject 행의 세 역할을 따라간다. 서비스가 여러 개 묶인 subject의
 초기화·exporter·worker도 같은 소유 문서에서 확인한다.
 
-## Concepts
+### Boundaries
 
-### Selection and readiness
+- [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md): 시스템 구조와 단일 호스트 한계.
+- [REQ-0027](../../../01.requirements/0027-home-development-host.md): 운영 문서·검증·복구 요구.
+- [루트 구현](../../../../docker-compose.yml), [공통 template](../../../../infra/common-optimizations.yml): 선언의 원본.
+- [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md), [POL-0078](../../policies/01-common/0078-compose-profile-vocabulary.md): 공통 통제와 선택의 원본.
+
+- [Operations](../../README.md), [서비스별 Guide](../../../../README.md), [정책](../../policies/README.md), [절차](../../runbooks/README.md)
+- [Incident 탐색](../../incidents/README.md): 실제 영향과 사건 증거 기록.
+
+## Prerequisites
+
+### Environment
+
+이 가이드가 전제하는 구현과 환경 사실은 아래 항목에 정리한다.
+
+#### Selection and readiness
 
 HOME의 이름 있는 profile 조합, 각 selector의 목적과 동반 선택·제외 조건은
 [POL-0078](../../policies/01-common/0078-compose-profile-vocabulary.md#home-activation)이
@@ -67,9 +79,17 @@ workflow의 실제 관리 DB·broker 연결도 각 선언에서 확인한다. �
 재부팅 뒤에는 [RUN-0098](../../runbooks/01-common/0098-cold-start-and-reboot.md)의 단계별 확인을
 사용하며, 이전 날짜의 리허설을 현재 상태의 증거로 대신하지 않는다.
 
-## Usage
+### Permissions
 
-### Request and authentication paths
+이 가이드는 실행 권한을 부여하지 않는다. OpenBao unseal·인증, 파괴적 복구 승인은 각 Runbook이 소유한다.
+
+## Procedure
+
+### Actions
+
+요청·데이터 경로와 티어 책임은 아래에 정리한다.
+
+#### Request and authentication paths
 
 브라우저의 서비스 도메인 요청은 호스트에 게시된 [Traefik](../../../../infra/01-gateway/traefik/docker-compose.yml)
 진입점으로 들어간다. [정적 설정](../../../../infra/01-gateway/traefik/config/traefik.yml)의
@@ -105,7 +125,7 @@ root Docker Secret 파일 소비 경로도 별개다. 자동 전달이나 모든
 자동 회전을 추론하지 않는다. bootstrap·사람 로그인·SecretID 전달은
 [OpenBao Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md), 재기동 연결은 RUN-0098이 소유한다.
 
-### Data paths and shared resources
+#### Data paths and shared resources
 
 [관리 PostgreSQL·Valkey](../../../../infra/04-data/mng-db/docker-compose.yml)는 인증과
 workflow가 공유하는 상태·queue 기반이다. [Airflow](../../../../infra/07-workflow/airflow/docker-compose.yml)는
@@ -135,7 +155,7 @@ object 저장 경로와 [lakehouse LAB](../15-labs/0094-lakehouse.md)의 기반�
 [공통 template](../../../../infra/common-optimizations.yml)과 서비스 override에서 읽는다.
 같은 디스크의 복사본, 여러 컨테이너 또는 별도 profile은 물리적 장애 격리가 아니다.
 
-### Tier responsibilities and impact
+#### Tier responsibilities and impact
 
 아래는 책임과 의존성 탐색표다. 서비스 명단이나 기동 순서를 다시 정의하지 않는다.
 각 링크의 subject에서 구현·Policy·Runbook을 확인한다. 티어 안에서도 HOME과
@@ -157,7 +177,13 @@ object 저장 경로와 [lakehouse LAB](../15-labs/0094-lakehouse.md)의 기반�
 | 12 Analytics | `infra/12-analytics`에는 Compose 서비스가 없다. [Lakehouse](../15-labs/0094-lakehouse.md), [Superset](../15-labs/0097-superset.md), [dbt](../15-labs/0090-dbt.md), [JupyterLab](../15-labs/0089-jupyterlab.md)(모두 `labs/`의 독립 LAB) | 공유 객체·catalog·관리 DB와 명시적 분석 작업; 선택이 전체 파이프라인 기동을 뜻하지 않음 |
 | 13 Experience | [Storybook](../14-design-system/0101-storybook.md): design system 미리보기 | `experience_ingress_net`의 gateway route; 다른 앱 상태와 무관 |
 
-### Common Checks
+### Exceptions
+
+이 가이드는 별도 예외 절을 두지 않으며, 한계와 경계는 Environment와 Actions의 해당 본문과 Troubleshooting에 함께 적혀 있다.
+
+## Verification
+
+### Expected Result
 
 | 운영 필요 | 공통 소유자와 점검 범위 | 확인되지 않았을 때의 경계 |
 | --- | --- | --- |
@@ -173,26 +199,14 @@ object 저장 경로와 [lakehouse LAB](../15-labs/0094-lakehouse.md)의 기반�
 비공개 resolved path를 넣지 않는다. 읽지 않았거나 실행하지 않은 항목은 `NOT_RUN`으로
 남긴다. source와 공식 문서 비교는 정적 근거이며 현재 운영·복구 결과가 아니다.
 
-### Runbook Handoff
+### Troubleshooting
+
+여러 서비스가 함께 실패하면 위 Expected Result 표에서 공통 소유자를 찾고, 관찰과 분기는
+[RUN-0099](../../runbooks/01-common/0099-system-operations.md)로 넘긴다.
+
+#### Runbook Handoff
 
 장애 원인이 여러 티어에 걸치면 [RUN-0099](../../runbooks/01-common/0099-system-operations.md)의
 관찰 → 분기 → 서비스 절차 흐름을 사용한다. 예정된 재부팅은 RUN-0098,
 백업과 복원은 RUN-0021, 업데이트는 RUN-0086에서 시작한다. 인증·data·network
 변경이나 파괴적 복구는 대상, 승인, 중단 조건을 해당 절차에서 다시 확인한다.
-
-### Traceability
-
-- [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md): 시스템 구조와 단일 호스트 한계.
-- [REQ-0027](../../../01.requirements/0027-home-development-host.md): 운영 문서·검증·복구 요구.
-- [루트 구현](../../../../docker-compose.yml), [공통 template](../../../../infra/common-optimizations.yml): 선언의 원본.
-- [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md), [POL-0078](../../policies/01-common/0078-compose-profile-vocabulary.md): 공통 통제와 선택의 원본.
-
-## Troubleshooting
-
-여러 서비스가 함께 실패하면 위 Common Checks 표에서 공통 소유자를 찾고, 관찰과 분기는
-[RUN-0099](../../runbooks/01-common/0099-system-operations.md)로 넘긴다.
-
-## Related Documents
-
-- [Operations](../../README.md), [서비스별 Guide](../../../../README.md), [정책](../../policies/README.md), [절차](../../runbooks/README.md)
-- [Incident 탐색](../../incidents/README.md): 실제 영향과 사건 증거 기록.

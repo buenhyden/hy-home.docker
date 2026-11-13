@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Guide"
-version: "0.4.0"
+version: "0.4.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0081"
 parent_ids:
@@ -17,7 +17,9 @@ created: "2026-09-19"
 
 # ComfyUI Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 ComfyUI는 `ai`와 `ai-image`가 선택하는 상시 실행 HOME 이미지 워크플로 UI이다.
 root Compose가 [해당 구현](../../../../infra/08-ai/comfyui/docker-compose.yml)을
@@ -32,15 +34,22 @@ root Compose가 [해당 구현](../../../../infra/08-ai/comfyui/docker-compose.y
 빌드 권한이다. [파생된 Compose 이미지 프로젝션](../../../../infra/tech-stack.versions.json)은
 drift 확인용 뷰일 뿐이다.
 
-## Scope
-
-### Audience and Goal
-
 AI 이미지 워크플로를 쓰는 사용자와 이를 운영하는 `@buenhyden`이 대상이다. 목표는 승인된 워크플로로 ComfyUI를 쓰고, 모델·custom node·사용자 데이터의 보존 경계를 알고 운영하는 것이다.
 
-## Concepts
+### Boundaries
 
-### 데이터와 설정 경계
+- Governing architecture: [AD-0008](../../../02.architecture/descriptions/0008-ai-architecture.md)
+- [Policy](../../policies/09-ai-and-search/0081-comfyui.md), [Runbook](../../runbooks/09-ai-and-search/0081-comfyui.md)
+- [Official custom-node management guidance](https://docs.comfy.org/manager/overview)
+
+- [ComfyUI Compose](../../../../infra/08-ai/comfyui/docker-compose.yml)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.
+
+## Prerequisites
+
+### Environment
+
+#### 데이터와 설정 경계
 
 아래는 Compose가 `/root/ComfyUI/{models,custom_nodes,input,output,user}`에 mount하는 역할이다(2026-11-08에 다시 mount하고 데이터를 옮김). Hugging Face와 Torch 캐시는 `/home/comfyui/.cache` 아래에 따로 mount된다.
 
@@ -56,9 +65,15 @@ AI 이미지 워크플로를 쓰는 사용자와 이를 운영하는 `@buenhyden
 `gpus: all`과 linked Compose의 CPU/memory 설정은 선언된 소스 한도일 뿐 측정된 여유 자원이
 아니다. Ollama와의 공유 GPU 피크 동시성은 검증되지 않았다.
 
-## Usage
+### Permissions
 
-### 일반적인 운영
+모델 교체는 출처와 checksum/라이선스 증거를 기록한 후에만, custom node 설치·업데이트는 검토 후에만 한다. 승인 게이트된 런타임 점검과 복구는 Runbook이 소유한다. registry/다운로드 토큰이 도입되면 secret 소유자 경계를 따른다.
+
+## Procedure
+
+### Actions
+
+#### 일반적인 운영
 
 승인된 워크플로를 사용하고 필요한 모델과 custom-node 리비전을 기록한 다음
 UI에서 큐에 등록한다. `/system_stats` 응답이 성공해도 endpoint가 응답한다는
@@ -66,7 +81,7 @@ UI에서 큐에 등록한다. `/system_stats` 응답이 성공해도 endpoint가
 않는다. 승인 게이트된 런타임 점검과 복구에는
 [runbook](../../runbooks/09-ai-and-search/0081-comfyui.md)을 사용한다.
 
-### 소스 기반 라이프사이클 계약
+#### 소스 기반 라이프사이클 계약
 
 - 선택된 `yanwk/comfyui-boot:cu126-slim` 이미지가 권위를 갖는다. 로컬
   Dockerfile은 현재 선택되지 않았다. 업그레이드 전에 이미지 digest,
@@ -87,11 +102,15 @@ UI에서 큐에 등록한다. `/system_stats` 응답이 성공해도 endpoint가
   [공식 저장소](https://github.com/Comfy-Org/ComfyUI)와
   [Manager 가이드](https://docs.comfy.org/manager/overview)를 사용한다.
 
-### Active-image persistence stop condition
+### Exceptions
+
+#### Active-image persistence stop condition
 
 활성 이미지의 영속성 중단 조건은 [정책의 Active-image persistence stop condition](../../policies/09-ai-and-search/0081-comfyui.md#active-image-persistence-stop-condition)이 소유한다. 해소되기 전에는 재생성, 이미지 업그레이드, cache/volume 정리, 완전한 백업 판정을 하지 않는다.
 
-### Common Checks
+## Verification
+
+### Expected Result
 
 - [Compose 소스](../../../../infra/08-ai/comfyui/docker-compose.yml)에서 profile,
   라우트, 마운트, 리소스, healthcheck를 점검한다.
@@ -100,24 +119,14 @@ UI에서 큐에 등록한다. `/system_stats` 응답이 성공해도 endpoint가
 - 영속 콘텐츠를 변경하기 전에 중앙 [백업 정책](../../policies/10-platform-and-backup/0021-backup-and-restore.md)을
   사용한다.
 
-### Runbook Handoff
-
-승인 게이트된 진단과 복구에는 [ComfyUI Runbook](../../runbooks/09-ai-and-search/0081-comfyui.md)을
-사용한다.
-
-### Traceability
-
-- Governing architecture: [AD-0008](../../../02.architecture/descriptions/0008-ai-architecture.md)
-- [Policy](../../policies/09-ai-and-search/0081-comfyui.md), [Runbook](../../runbooks/09-ai-and-search/0081-comfyui.md)
-- [Official custom-node management guidance](https://docs.comfy.org/manager/overview)
-
-## Troubleshooting
+### Troubleshooting
 
 - `/system_stats`가 실패하면 [runbook](../../runbooks/09-ai-and-search/0081-comfyui.md)의 진단 단계를 따른다. 응답이 와도 모델 로드나 workflow 안전을 증명하지 않는다.
 - 재생성·upgrade 전 활성 image 경로 불일치는 위 Active-image persistence stop condition을 따른다.
 
-## Related Documents
+#### Runbook Handoff
 
-- [ComfyUI Compose](../../../../infra/08-ai/comfyui/docker-compose.yml)
+승인 게이트된 진단과 복구에는 [ComfyUI Runbook](../../runbooks/09-ai-and-search/0081-comfyui.md)을
+사용한다.
+
 - [Policy](../../policies/09-ai-and-search/0081-comfyui.md), [Runbook](../../runbooks/09-ai-and-search/0081-comfyui.md)
-- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

@@ -1,10 +1,10 @@
 ---
 title: "MongoDB Usage Guide"
-version: "2.2.3"
+version: "2.2.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0027"
 parent_ids:
@@ -14,21 +14,41 @@ created: "2026-05-10"
 
 # MongoDB Usage Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 이 문서는 [MongoDB Compose 구현](../../../../labs/mongodb/docker-compose.yml)의 replica set 사용 기준을 설명한다. 일곱 서비스는 모두 정확히 `mongodb` profile과 선언된 network에서 동작한다. frozen classification은 `LAB`이고 두 data-bearing member와 arbiter가 한 host에 있으므로 host-level HA가 아니다.
-
-## Scope
-
-### Audience and Goal
 
 대상 독자: 운영자, 개발자, AI Agent.
 
 목적: MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express 접속 경계를 현재 compose와 맞춰 사용하도록 한다.
 
-## Concepts
+### Boundaries
 
-### Current implementation
+#### Traceability
+
+- Declared parent: [MongoDB Operations Policy](../../policies/15-labs/0027-mongodb.md) (`POL-0027`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Policy](../../policies/15-labs/0027-mongodb.md) (`POL-0027`), [Runbook](../../runbooks/15-labs/0027-mongodb.md) (`RUN-0027`)
+
+#### Related Documents
+
+- [MongoDB backup and restore tools](https://www.mongodb.com/docs/v8.0/tutorial/backup-and-restore-tools/)
+- [MongoDB security hardening](https://www.mongodb.com/docs/v8.0/core/security-hardening/)
+- [MongoDB Community licensing](https://www.mongodb.com/legal/licensing/community-edition)
+
+- [Operations index](../../README.md)
+- [Operations policy](../../policies/15-labs/0027-mongodb.md)
+- [Recovery runbook](../../runbooks/15-labs/0027-mongodb.md)
+- [LAB 설명](../../../../labs/mongodb/README.md)
+- [Compose implementation: labs/mongodb/docker-compose.yml](../../../../labs/mongodb/docker-compose.yml)
+
+## Prerequisites
+
+### Environment
+
+#### Current implementation
 
 | 항목 | 이 저장소의 구현 결정 |
 | --- | --- |
@@ -43,9 +63,15 @@ created: "2026-05-10"
 | Backup·upgrade | `mongodump --oplog`와 격리된 `--oplogReplay`를 사용한다. upgrade/제거 전에 tool/server 호환성과 restore evidence가 필요하다. |
 | License·edition | MongoDB Community에는 SSPL 조건이 적용된다. 이 topology는 Enterprise backup이나 관리 기능을 제공한다고 주장하지 않는다. |
 
-## Usage
+### Permissions
 
-### Identity-specific behavior
+secret은 `lab_mongodb_root_password`와 `lab_mongo_express_basicauth_password`이며 점검은 client의 native password prompt로 수행한다. 값은 문서에 적지 않는다.
+
+## Procedure
+
+### Actions
+
+#### Identity-specific behavior
 
 rep1/rep2 는 data member, arbiter 는 투표만 담당하며 data backup 이 아니다. mongo-key 는 `${LAB_DATA_DIR}/mongodb/mongo-key` bind volume 이며 key-generator 는 공식 mongo 이미지의 Node crypto로 내부 key를 만들거나 보존한다. mongo-init 는 두 data node와 arbiter health를 기다린 뒤 replica set을 확인한다. ping health 는 credential/replica readiness 가 아니다. express 와 exporter 는 별도 image/client 이고 자체 healthcheck 는 없다.선언 release tag 의 전체 integration 은 미검증이다. source의 credential 전달은 argv를 피하지만 실제 인증은 미검증이다.
 
@@ -60,7 +86,7 @@ rep1/rep2 는 data member, arbiter 는 투표만 담당하며 data backup 이 �
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
-### Preflight and normal use
+#### Preflight and normal use
 
 이 LAB의 입력은 [예시 환경 파일](../../../../labs/.env.example)과 비공개 `labs/.env`가 소유한다. secret 파일은 `LAB_SECRET_DIR`(기본 `../../secrets/labs`) 아래의 [LAB별 경로](../../../../labs/mongodb/docker-compose.yml)에 둔다. source 반영, 실제 실행, 비밀 파일 이동 완료와 복구 검증은 별도로 확인한다.
 
@@ -78,37 +104,25 @@ rep1/rep2 는 data member, arbiter 는 투표만 담당하며 data backup 이 �
 
 2. 관리 UI `mongo-express`는 독립 LAB network에만 있다. HOME Traefik route는 없고 `127.0.0.1:${LAB_MONGO_EXPRESS_HOST_PORT:-38081}`가 유일한 접속 경로다. `ME_CONFIG_BASICAUTH=true`로 basic auth가 켜져 있어야 하며(mongo-express 1.x는 이 값 없이 자격 증명을 무시한다).
 
-### Common Checks
+### Exceptions
+
+이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
+
+## Verification
+
+### Expected Result
 
 - `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/mongodb/docker-compose.yml --profile mongodb config --quiet`
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb/docker-compose.yml logs mongo-init`
 - `rs.status()` 확인은 [MongoDB runbook의 private TTY/native-prompt 절차](../../runbooks/15-labs/0027-mongodb.md#procedure)를 따른다. 승인된 custody/실제 TTY가 없으면 중단하고 password를 URL·argv·환경 변수·history·로그에 넣지 않는다.
 
-### Runbook Handoff
-
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [MongoDB runbook](../../runbooks/15-labs/0027-mongodb.md)을 따른다.
-
-### Traceability
-
-- Declared parent: [MongoDB Operations Policy](../../policies/15-labs/0027-mongodb.md) (`POL-0027`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](../../policies/15-labs/0027-mongodb.md) (`POL-0027`), [Runbook](../../runbooks/15-labs/0027-mongodb.md) (`RUN-0027`)
-
-## Troubleshooting
+### Troubleshooting
 
 - `mongodb-arbiter`는 투표 전용 구성원이다. 데이터 보관 노드로 설명하거나 백업 대상으로 취급하지 않는다.
 - keyfile은 `mongo-key-generator`가 `mongo-key` bind volume에 생성한다. repository 경로의 `configdb/` 디렉터리를 전제로 하지 않는다.
 - `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`에 compose healthcheck가 있다. `mongo-init`, `mongo-express`의 readiness는 logs와 dependency 상태로 확인한다.
 - replica-set backup은 primary에서 authenticated `mongodump --oplog`로 일관성을 잡고 `mongorestore --oplogReplay`로 빈 격리 replica set에 검증한다. arbiter는 data backup 대상이 아니다.
 
-## Related Documents
+#### Runbook Handoff
 
-- [MongoDB backup and restore tools](https://www.mongodb.com/docs/v8.0/tutorial/backup-and-restore-tools/)
-- [MongoDB security hardening](https://www.mongodb.com/docs/v8.0/core/security-hardening/)
-- [MongoDB Community licensing](https://www.mongodb.com/legal/licensing/community-edition)
-
-- [Operations index](../../README.md)
-- [Operations policy](../../policies/15-labs/0027-mongodb.md)
-- [Recovery runbook](../../runbooks/15-labs/0027-mongodb.md)
-- [LAB 설명](../../../../labs/mongodb/README.md)
-- [Compose implementation: labs/mongodb/docker-compose.yml](../../../../labs/mongodb/docker-compose.yml)
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [MongoDB runbook](../../runbooks/15-labs/0027-mongodb.md)을 따른다.

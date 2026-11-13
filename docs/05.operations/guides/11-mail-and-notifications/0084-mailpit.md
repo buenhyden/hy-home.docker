@@ -1,10 +1,10 @@
 ---
 title: "Mailpit Guide"
-version: "0.3.2"
+version: "0.3.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0084"
 parent_ids:
@@ -17,28 +17,37 @@ created: "2026-09-19"
 
 # Mailpit Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 이 가이드는 DEV 메일 캡처 서비스 Mailpit의 구성, 접근 경계, 일반 사용 방법을 설명한다. Mailpit은 전달용 MTA가 아니며 `dev`, `local`, `mail-dev` profile에서만 선택된다.
 
-## Scope
-
-### Audience and Goal
-
 대상 독자는 애플리케이션과 integration test에서 발송 메일을 확인하는 개발자와 운영자다. 목표는 테스트 메일을 안전하게 캡처하고 조회하며, 접근 경계와 데이터 취급 범위를 이해하는 것이다. 복구와 업그레이드 절차는 [RUN-0084](../../runbooks/11-mail-and-notifications/0084-mailpit.md)가 소유한다.
 
-## Concepts
+### Boundaries
 
-### Purpose and classification
+- [Policy](../../policies/11-mail-and-notifications/0084-mailpit.md) (`POL-0084`)
+- [Runbook](../../runbooks/11-mail-and-notifications/0084-mailpit.md) (`RUN-0084`)
+- [Communication architecture](../../../02.architecture/descriptions/0010-communication-architecture.md)
+
+- [Mailpit email storage](https://mailpit.axllent.org/docs/configuration/email-storage/)
+- [Mailpit SMTP security](https://mailpit.axllent.org/docs/configuration/smtp/)
+- [Mailpit import and export](https://mailpit.axllent.org/docs/usage/import-export/)
+- [Operations index](../../README.md)
+
+## Prerequisites
+
+### Environment
+
+#### Purpose and classification
 
 Mailpit은 application과 integration test를 위한 DEV mail-capture
 service이다. delivery MTA가 아니며 독립 LAB `labs/stalwart/docker-compose.yml`의 Stalwart를 대체하지 않는다. Stalwart는 HOME network에 없으므로 HOME 앱 메일 캡처는 Mailpit만 받는다.
 `dev`, `local`, `mail-dev`에 속하며 HOME에서는 제외된다. UI와 SMTP host
 port는 `127.0.0.1`에 바인딩되고, UI는 Traefik을 통해서도 라우팅된다.
 
-## Usage
-
-### Current implementation
+#### Current implementation
 
 - [Mailpit Compose](../../../../infra/11-quality/mailpit/docker-compose.yml)가
   image, profile, port, environment, healthcheck, volume을 관장한다.
@@ -55,7 +64,15 @@ port는 `127.0.0.1`에 바인딩되고, UI는 Traefik을 통해서도 라우팅�
 - `/mailpit readyz` healthcheck는 process readiness만 증명하며, 메시지
   capture, UI 인증, retention, restoration은 증명하지 않는다.
 
-### Normal use
+### Permissions
+
+UI 접근은 gateway SSO 경로를 거치며, 직접 loopback UI와 peer listener에는 네이티브 UI 인증이 없다. 합성 또는 승인된 test mail만 전송하고 책임자 `@buenhyden`이 경계를 확인한다. 상세는 Actions와 Exceptions에 있다.
+
+## Procedure
+
+### Actions
+
+#### Normal use
 
 1. root에서 `docker compose --profile mail-dev config --quiet`로
    validate한다.
@@ -68,35 +85,26 @@ port는 `127.0.0.1`에 바인딩되고, UI는 Traefik을 통해서도 라우팅�
    확인한 뒤, retention policy에
    따라 test data를 삭제/만료시킨다.
 
-### 접근 경계
+### Exceptions
+
+#### 접근 경계
 
 gateway 경로만 SSO를 거치고, 직접 loopback UI와 두 네트워크의 peer listener에는 동등한 네이티브 UI 인증이 없다. 통제는 [POL-0084](../../policies/11-mail-and-notifications/0084-mailpit.md)가 소유한다. 책임자 `@buenhyden`은 이 경계와 테스트 데이터 소유자를 확인한다.
 
-### Common Checks
+## Verification
+
+### Expected Result
 
 - `docker compose --profile mail-dev config --quiet`
 - `docker compose --profile mail-dev config --services`
 - `bash scripts/hardening/check-all-hardening.sh 11-quality`
 
-### Runbook Handoff
-
-capture 실패, 일관된 export/restore, retention incident, 이미지 upgrade에는
-[runbook](../../runbooks/11-mail-and-notifications/0084-mailpit.md)을 사용한다. 백업과 업그레이드 순서는 런북의 `Consistent export and restore`와 `Upgrade` 절차를 따르며, 데이터와 권한 경계는 [정책](../../policies/11-mail-and-notifications/0084-mailpit.md)을 유지한다.
-
-### Traceability
-
-- [Policy](../../policies/11-mail-and-notifications/0084-mailpit.md) (`POL-0084`)
-- [Runbook](../../runbooks/11-mail-and-notifications/0084-mailpit.md) (`RUN-0084`)
-- [Communication architecture](../../../02.architecture/descriptions/0010-communication-architecture.md)
-
-## Troubleshooting
+### Troubleshooting
 
 - `readyz` 실패, SMTP 캡처 누락, UI 접근 실패는 [RUN-0084](../../runbooks/11-mail-and-notifications/0084-mailpit.md)의 `Procedure` 진단 순서로 구분한다.
 - UI만 실패하면 gateway·SSO 경로를 SMTP 캡처와 별도로 점검한다.
 
-## Related Documents
+#### Runbook Handoff
 
-- [Mailpit email storage](https://mailpit.axllent.org/docs/configuration/email-storage/)
-- [Mailpit SMTP security](https://mailpit.axllent.org/docs/configuration/smtp/)
-- [Mailpit import and export](https://mailpit.axllent.org/docs/usage/import-export/)
-- [Operations index](../../README.md)
+capture 실패, 일관된 export/restore, retention incident, 이미지 upgrade에는
+[runbook](../../runbooks/11-mail-and-notifications/0084-mailpit.md)을 사용한다. 백업과 업그레이드 순서는 런북의 `Consistent export and restore`와 `Upgrade` 절차를 따르며, 데이터와 권한 경계는 [정책](../../policies/11-mail-and-notifications/0084-mailpit.md)을 유지한다.

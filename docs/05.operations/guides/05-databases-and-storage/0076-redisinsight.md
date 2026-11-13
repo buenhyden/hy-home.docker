@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Usage Guide"
-version: "1.4.2"
+version: "1.4.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0076"
 parent_ids:
@@ -17,23 +17,34 @@ created: "2026-05-10"
 
 # RedisInsight Usage Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 RedisInsight는 `admin`과 `admin-data` 하위의 OPTIONAL admin UI이다. Redis/Valkey
 서버가 아니며 대상 데이터베이스를 백업하지 않는다. `/data`에 마운트된
 `${DEFAULT_MANAGEMENT_DIR}/redisinsight` 아래에 연결 정의, credential, workbench
 history, 로그를 영속화한다.
 
-## Scope
-
-### Audience and Goal
-
 DEV/MNG Valkey의 키와 상태를 읽기 전용으로 조회하는 관리자를 위한 문서다. 목표는
 사전 등록된 inspector 연결로 안전하게 조회하고, 설정과 암호화 경계를 이해하는 것이다.
 
-## Concepts
+### Boundaries
 
-### 현재 구현과 격차
+- [Policy](../../policies/05-databases-and-storage/0076-redisinsight.md) (`POL-0076`)
+- [Runbook](../../runbooks/05-databases-and-storage/0076-redisinsight.md) (`RUN-0076`)
+- [Laboratory architecture](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
+
+- [RedisInsight configuration and encryption key](https://redis.io/docs/latest/operate/redisinsight/configuration/)
+- [RedisInsight usage, telemetry, logs, and SSPL license](https://redis.io/docs/latest/develop/tools/insight/)
+
+## Prerequisites
+
+### Environment
+
+이 가이드가 전제하는 구현과 환경 사실은 아래 항목에 정리한다.
+
+#### 현재 구현과 격차
 
 - [RedisInsight Compose](../../../../infra/04-data/redisinsight/docker-compose.yml)가
   profile, 볼륨, 라우트, CIDR, middleware, healthcheck, 사전 등록 연결을 정의한다.
@@ -54,33 +65,21 @@ DEV/MNG Valkey의 키와 상태를 읽기 전용으로 조회하는 관리자를
 - 업스트림은 RedisInsight를 SSPL 라이선스로 명시하며 해당 약관 동의를 요구한다.
   이 저장소는 다른 edition/라이선스를 주장하지 않는다.
 
-## Usage
+### Permissions
 
-### 일반적인 사용, 백업, 업그레이드
+저장된 연결 비밀번호는 `RI_ENCRYPTION_KEY`(`secrets/data/redisinsight/encryption_key.txt`)로 암호화하고, 사전 등록 연결의 inspector password는 `secrets/db/*/inspector_password.txt`에서 `start.sh`가 읽는다. gateway 경로에는 admin CIDR(`ADMIN_UI_ALLOWED_CIDRS`)과 OAuth2 Proxy ForwardAuth가 적용된다.
+
+## Procedure
+
+### Actions
+
+정상 사용 절차는 아래 항목에 정리한다.
+
+#### 일반적인 사용, 백업, 업그레이드
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/05-databases-and-storage/0076-redisinsight.md)의 `승인된 사용·설정 보존·업그레이드` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-### Common Checks
-
-- `docker compose --profile admin-data config --quiet`
-- `bash scripts/hardening/check-all-hardening.sh 04-data`
-- `HYHOME_REDISINSIGHT_REHEARSAL=1 python3 -m unittest tests.validation.test_redisinsight_rehearsal`
-  (격리 망에서 접속·거부·중단·회전을 시험한다)
-
-### Runbook Handoff
-
-인증, 설정, credential, 대상, 업그레이드 복구에는
-[runbook](../../runbooks/05-databases-and-storage/0076-redisinsight.md)을 사용한다.
-
-### 정상 사용과 운영 한계
-
-일상 조회는 읽기 전용 inspector 계정의 사전 등록 연결만 쓴다. 쓰기나 삭제가
-필요하면 별도 역할과 시험 prefix를 대상 소유자와 정한 뒤 진행하며, inspector에
-쓰기 권한을 더하지 않는다. 별도 Compose readiness 의존성은 없으므로 대상
-Valkey와 gateway 준비를 각각 확인한다. 기동 직후 첫 DB 요청은 시작 시 외부 조회가
-끝나기 전까지 25초 요청 제한을 넘을 수 있으므로, 한 번 실패하면 다시 시도한다.
-
-### 사전 등록 연결
+#### 사전 등록 연결
 
 RedisInsight는 시작할 때마다 아래 두 연결을 다시 만든다. 목록에서 빠진 사전 등록
 연결은 자동으로 지워지므로 UI에서 고친 값은 다음 시작에 되돌아간다.
@@ -102,20 +101,35 @@ RedisInsight는 시작할 때마다 아래 두 연결을 다시 만든다. 목�
 - 비밀번호는 secret 파일에서 `start.sh`가 읽어 환경으로만 넘기며 문서, 채팅, 로그,
   스크린샷에 남기지 않는다.
 
-### Traceability
+### Exceptions
 
-- [Policy](../../policies/05-databases-and-storage/0076-redisinsight.md) (`POL-0076`)
-- [Runbook](../../runbooks/05-databases-and-storage/0076-redisinsight.md) (`RUN-0076`)
-- [Laboratory architecture](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
+특수 사례와 한계는 아래 항목에 정리한다.
 
-## Troubleshooting
+#### 정상 사용과 운영 한계
+
+일상 조회는 읽기 전용 inspector 계정의 사전 등록 연결만 쓴다. 쓰기나 삭제가
+필요하면 별도 역할과 시험 prefix를 대상 소유자와 정한 뒤 진행하며, inspector에
+쓰기 권한을 더하지 않는다. 별도 Compose readiness 의존성은 없으므로 대상
+Valkey와 gateway 준비를 각각 확인한다. 기동 직후 첫 DB 요청은 시작 시 외부 조회가
+끝나기 전까지 25초 요청 제한을 넘을 수 있으므로, 한 번 실패하면 다시 시도한다.
+
+## Verification
+
+### Expected Result
+
+- `docker compose --profile admin-data config --quiet`
+- `bash scripts/hardening/check-all-hardening.sh 04-data`
+- `HYHOME_REDISINSIGHT_REHEARSAL=1 python3 -m unittest tests.validation.test_redisinsight_rehearsal`
+  (격리 망에서 접속·거부·중단·회전을 시험한다)
+
+### Troubleshooting
 
 - DB 연결 실패: 대상 Valkey 컨테이너 안에서 inspector secret으로 `PING`이 `PONG`을
   돌려주는지 확인하고, `ACL LOG`의 `username`으로 어떤 사용자로 시도했는지 본다.
 - 기동 직후 첫 요청 timeout: 25초 요청 제한 안에 시작 시 외부 조회가 끝나지 않은 경우다. 한 번 재시도한다.
 - gateway 403/로그인 반복: `redisinsight-admin-ip` CIDR(`ADMIN_UI_ALLOWED_CIDRS`)과 `sso-auth@file`을 확인하고 [Runbook](../../runbooks/05-databases-and-storage/0076-redisinsight.md)으로 넘긴다.
 
-## Related Documents
+#### Runbook Handoff
 
-- [RedisInsight configuration and encryption key](https://redis.io/docs/latest/operate/redisinsight/configuration/)
-- [RedisInsight usage, telemetry, logs, and SSPL license](https://redis.io/docs/latest/develop/tools/insight/)
+인증, 설정, credential, 대상, 업그레이드 복구에는
+[runbook](../../runbooks/05-databases-and-storage/0076-redisinsight.md)을 사용한다.

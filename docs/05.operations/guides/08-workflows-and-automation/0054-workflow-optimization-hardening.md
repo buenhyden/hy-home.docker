@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Usage Guide"
-version: "1.1.7"
+version: "1.1.8"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0054"
 parent_ids:
@@ -14,13 +14,11 @@ created: "2026-05-17"
 
 # 07-Workflow Optimization Hardening Usage Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 이 문서는 `07-workflow` 계층의 최적화/하드닝 변경을 운영자와 개발자가 재현 가능하게 적용하기 위한 가이드다. compose 보안 경계, health 기반 startup 계약, n8n 이미지 하드닝, 검증 절차를 제공한다.
-
-## Scope
-
-### Audience and Goal
 
 **대상**
 
@@ -35,20 +33,39 @@ created: "2026-05-17"
 - workflow 하드닝 회귀를 script/CI로 조기 차단한다.
 - 카탈로그 확장 항목의 운영 기준(Airflow/n8n)을 문서화한다.
 
-## Concepts
+### Boundaries
 
-### 사전 조건
+- Declared parent: [07-Workflow Optimization Hardening Operations Policy](../../policies/08-workflows-and-automation/0054-workflow-optimization-hardening.md) (`POL-0054`)
+- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Policy](../../policies/08-workflows-and-automation/0054-workflow-optimization-hardening.md) (`POL-0054`), [Runbook](../../runbooks/08-workflows-and-automation/0054-workflow-optimization-hardening.md) (`RUN-0054`)
+
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+
+## Prerequisites
+
+### Environment
+
+이 가이드가 전제하는 환경과 개념은 아래와 같다.
+
+#### 사전 조건
 
 - Docker / Docker Compose 실행 환경
-- `infra/07-workflow` 수정 권한
 - Traefik middleware(`gateway-standard-chain`, `sso-errors`, `sso-auth`) 준비
 
-## Usage
+### Permissions
 
-### 사용 절차
+- `infra/07-workflow` 수정 권한
+
+## Procedure
+
+### Actions
+
+정상 사용과 확인 절차는 아래 항목을 따른다.
+
+#### 사용 절차
 
 1. 정적 구성 점검
-   - 아래 `Common Checks`의 Compose 검증을 실행한다.
+   - 아래 `Expected Result`의 Compose 검증을 실행한다.
    - service-local compose 파일은 root network/secrets context 없이 단독 `config` 대상으로 쓰지 않는다.
 2. Gateway/SSO 경계 정렬
    - Airflow는 `gateway-standard-chain@file`과 native Keycloak SSO를 사용한다. Flower는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 사용하고 n8n은 자체 로그인만 쓰므로 `gateway-standard-chain@file`만 사용한다(owner 결정 2026-11-09). 변경·복구는 RUN-0054로 넘긴다.
@@ -59,17 +76,27 @@ created: "2026-05-17"
    - compose가 custom image([hyhome/n8n image declaration](../../../../infra/07-workflow/n8n/docker-compose.yml))를 사용하도록 확인한다.
    - Compose가 선택한 dev.Dockerfile(`USER node`) 또는 Dockerfile(`USER 1000`)와 각각의 entrypoint guard를 확인한다. 두 entrypoint는 같은 내용이며 지원 broker 조합(host·username·secret·DB)과 선택된 secret 파일을 검사한다; [n8n Guide](0053-n8n.md#build-readiness-and-runner-boundary)를 따른다.
 5. 기준선 검증 실행
-   - 아래 `Common Checks`의 hardening·template·traceability 검사를 실행한다.
+   - 아래 `Expected Result`의 hardening·template·traceability 검사를 실행한다.
 6. 카탈로그 확장 운영 기준 반영
    - Airflow DAG quality gate와 worker autoscale 기준을 정책 문서에 반영한다.
    - n8n workflow Git backup/OpenBao credential 기준을 정책 문서에 반영한다.
    - 미구현 workflow service 문서는 active operations chain에서 제거한다.
 
-### Static gate boundary
+### Exceptions
+
+예외와 제한 사항은 아래 항목에 정리한다.
+
+#### Static gate boundary
 
 정적 게이트의 한계는 [정책의 Static gate boundary](../../policies/08-workflows-and-automation/0054-workflow-optimization-hardening.md#static-gate-boundary)를 따른다.
 
-### Common Checks
+## Verification
+
+### Expected Result
+
+확인 항목과 기대 결과는 아래와 같다.
+
+#### Common Checks
 
 - `HYHOME_COMPOSE_PROFILES=workflow bash scripts/validation/validate-docker-compose.sh`
 - `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`
@@ -77,26 +104,16 @@ created: "2026-05-17"
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 scripts/validation/check-document-links.py --mode traceability`
 
-### Runbook Handoff
-
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/08-workflows-and-automation/0054-workflow-optimization-hardening.md)을 따른다.
-
-### Traceability
-
-- Declared parent: [07-Workflow Optimization Hardening Operations Policy](../../policies/08-workflows-and-automation/0054-workflow-optimization-hardening.md) (`POL-0054`)
-- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
-- Subject peers: [Policy](../../policies/08-workflows-and-automation/0054-workflow-optimization-hardening.md) (`POL-0054`), [Runbook](../../runbooks/08-workflows-and-automation/0054-workflow-optimization-hardening.md) (`RUN-0054`)
-
-## Troubleshooting
+### Troubleshooting
 
 - 일부 라우터에만 SSO 체인을 적용하는 실수
 - worker/task-runner healthcheck 없이 startup 불안정을 방치하는 실수
 - n8n custom image를 compose에서 사용하지 않아 hardening drift가 생기는 실수
 - 카탈로그 확장 항목을 문서만 기록하고 task로 분해하지 않는 실수
 
-## Related Documents
+#### Runbook Handoff
 
-- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/08-workflows-and-automation/0054-workflow-optimization-hardening.md)을 따른다.
 
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/08-workflows-and-automation/0054-workflow-optimization-hardening.md)

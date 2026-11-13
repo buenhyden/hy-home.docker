@@ -1,10 +1,10 @@
 ---
 title: "Locust Usage Guide"
-version: "1.3.2"
+version: "1.3.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0062"
 parent_ids:
@@ -14,29 +14,50 @@ created: "2026-05-10"
 
 # Locust Usage Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 Locust는 `labs/locust/docker-compose.yml`의 `lab-locust-master`와 `lab-locust-worker`로 구성된 독립 LAB 분산 부하 생성기다.
 HOME root Compose와 `testing` profile에는 포함되지 않는다.
-
-## Scope
-
-### Audience and Goal
 
 대상 독자는 Locust 실습 부하를 승인하고 실행하는 운영자와 target owner다. 이 문서의 목표는
 LAB 선택 방법, 실행 흐름, 종료 결과 해석 기준을 확인하는 것이다. 중지와 복구 절차는
 [Locust Runbook](../../runbooks/15-labs/0062-locust.md)이 맡는다.
 
-## Concepts
+### Boundaries
+
+#### Traceability
+
+- [Policy](../../policies/15-labs/0062-locust.md) (`POL-0062`)
+- [Runbook](../../runbooks/15-labs/0062-locust.md) (`RUN-0062`)
+- [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+
+#### Related Documents
+
+- [Locust distributed load generation](https://docs.locust.io/en/stable/running-distributed.html)
+- [Locust running without the web UI](https://docs.locust.io/en/stable/running-without-web-ui.html)
+- [Locust LAB Compose](../../../../labs/locust/docker-compose.yml)
+- [Operations index](../../README.md)
+
+## Prerequisites
+
+### Environment
 
 Locust는 DEV 전용 distributed load generator LAB다. Coordinating master와 하나 이상의
 worker가 필요한 Python-based scenario 실습을 위해 유지된다. 정상 root Compose와
 `testing` profile에는 포함되지 않으며, 독립 `labs/locust/docker-compose.yml` entrypoint만 사용한다. Test run은 지정된 target에 external effect를 주므로
 target-owner 승인, limit, stop condition이 필요하다.
 
-## Usage
+### Permissions
 
-### Implementation and data flow
+부하 실행에는 target-owner 승인, limit, stop condition과 Runtime 승인이 필요하다. Credential은 승인된 secret channel에 보관하고 scenario file과 evidence에 남기지 않는다.
+
+## Procedure
+
+### Actions
+
+#### Implementation and data flow
 
 - Source: [Locust LAB Compose](../../../../labs/locust/docker-compose.yml)와
   [실행 이미지](../../../../labs/locust/Dockerfile). Dockerfile/build 선언이
@@ -57,7 +78,7 @@ Scenario directory와 result directory에는 target URL, credential, payload, te
 있다. Credential은 승인된 secret channel에 보관하고, scenario file과 evidence에서
 제외하며, retention 전에 request/response data를 sanitize한다.
 
-### Normal use
+#### Normal use
 
 1. 대상·테스트 소유자·최대 사용자 수·생성 속도·지속 시간·중단 SLI·worker 수를
    기록한다.
@@ -72,7 +93,7 @@ Scenario directory와 result directory에는 target URL, credential, payload, te
 5. 설정 커밋·시나리오 digest·정제된 집계 결과·최종 중지 상태를 보존한다. Raw request body, cookie, token, personal data는
    evidence가 아니다.
 
-### 종료 결과 해석
+#### 종료 결과 해석
 
 `lab.py run`은 결과를 ledger의 `outcome`과 자신의 종료 코드로 남긴다. 아래는 SPEC-0214
 TSK-0002의 격리 실행에서 관찰한 동작이다.
@@ -99,38 +120,29 @@ Locust 결과는 LAB result directory의 CSV로 남는다. 현재 장기 비교�
 consumer가 없어 `perf_db`로 가져오는 adapter는 만들지 않았다. 고정 이미지에 OpenTelemetry
 SDK가 없으므로 `--otel`과 OTLP 전달은 지원하지 않는다.
 
-### 보존과 업그레이드
+#### 보존과 업그레이드
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/15-labs/0062-locust.md)의 `시나리오 보존과 업그레이드` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-### Runbook Handoff
+### Exceptions
 
-Load 중지, worker loss 진단, scenario file 복구, 승인된 upgrade canary 수행에는
-[runbook](../../runbooks/15-labs/0062-locust.md)을 사용한다.
-
-### 재시작과 보존 한계
+#### 재시작과 보존 한계
 
 LAB 서비스는 job template을 사용하며 정상 root 재시작 정책을 상속하지 않는다. 테스트 종료 때 master와 worker를 명시적으로
 중지하고 결과 디렉터리와 worker 종료 상태를 확인해야 한다. 자체 데이터베이스·TLS 인증서 복구는 없고, 호스트의
 시나리오·결과와 대상 시스템의 상태는 서로 다른 소유자가 복구한다.
 
-### Traceability
+## Verification
 
-- [Policy](../../policies/15-labs/0062-locust.md) (`POL-0062`)
-- [Runbook](../../runbooks/15-labs/0062-locust.md) (`RUN-0062`)
-- [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-
-## Troubleshooting
-
-### Common Checks
+### Expected Result
 
 - `LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result docker compose -f labs/locust/docker-compose.yml --env-file labs/.env.example --profile lab-locust config --quiet`
 - `LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result docker compose -f labs/locust/docker-compose.yml --env-file labs/.env.example --profile lab-locust config --services`
 - `bash scripts/hardening/check-all-hardening.sh 11-quality`
 
-## Related Documents
+### Troubleshooting
 
-- [Locust distributed load generation](https://docs.locust.io/en/stable/running-distributed.html)
-- [Locust running without the web UI](https://docs.locust.io/en/stable/running-without-web-ui.html)
-- [Locust LAB Compose](../../../../labs/locust/docker-compose.yml)
-- [Operations index](../../README.md)
+#### Runbook Handoff
+
+Load 중지, worker loss 진단, scenario file 복구, 승인된 upgrade canary 수행에는
+[runbook](../../runbooks/15-labs/0062-locust.md)을 사용한다.

@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Guide"
-version: "0.9.0"
+version: "0.9.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0085"
 parent_ids:
@@ -18,17 +18,30 @@ created: "2026-09-19"
 
 # OpenBao Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 OpenBao는 HOME secret control plane이다. 레거시 Vault runtime/data는 2026-09-25 폐기된 역사적 대상이며 현재 migration/rollback 입력으로 사용할 수 없다.
 
-## Scope
-
-### Audience and Goal
-
 대상은 OpenBao를 운영하거나 secret 소비 경로를 연결하는 보안·인프라 운영자다. 구성과 persistent input, 사람 관리자 접근(Keycloak native OIDC), credential 경계를 이해하고, 실행 절차가 필요하면 Runbook으로 넘어가는 것이 목표다.
 
-## Concepts
+### Boundaries
+
+- Governing architecture: [AD-0003](../../../02.architecture/descriptions/0003-security-architecture.md)
+- [Guide](0085-openbao.md), [Policy](../../policies/04-security-and-secrets/0085-openbao.md), [Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)
+- Official OpenBao OIDC auth method: <https://openbao.org/docs/auth/jwt/>
+- Official OpenBao token model: <https://openbao.org/docs/concepts/tokens/>
+- Official OpenBao seal/unseal model: <https://openbao.org/docs/concepts/seal/>
+- Official OpenBao AppRole auth method: <https://openbao.org/docs/auth/approle/>
+- Official Keycloak reverse proxy guidance: <https://www.keycloak.org/server/reverseproxy>
+
+- [Operations index](../../README.md)
+- [Upstream documentation](https://openbao.org/docs/agent-and-proxy/agent/)
+
+## Prerequisites
+
+### Environment
 
 구현 소스는 [infra/03-security/openbao/docker-compose.yml](../../../../infra/03-security/openbao/docker-compose.yml)이다.
 
@@ -44,9 +57,17 @@ Raft data, AppRole bootstrap material, 렌더링된 출력은 별도의 bind vol
 [version projection](../../../../infra/tech-stack.versions.json)이 runtime pin을
 관장한다.
 
-## Usage
+### Permissions
 
-### Service behavior and persistent inputs
+사람 관리자는 Keycloak `/openbao-admins` 구성원으로 OIDC role `home-admin`을 거쳐 `hy-home-operator` policy를 받는다. Agent는 AppRole `role_id`/`secret_id`, `/sys/metrics`는 전용 token을 쓴다. OIDC·AppRole·Kubernetes auth 설치는 승인된 bootstrap 범위다.
+
+## Procedure
+
+### Actions
+
+정상 사용 절차는 아래 항목에 정리한다.
+
+#### Service behavior and persistent inputs
 
 `openbao`와 `openbao-agent`는 모두 HOME이며 `core`/`dev`/`local`/`security`/
 `secrets`에서 선택된다. 두 서비스는 같은 소유 이미지 `hy-home/openbao`(digest 고정)를
@@ -165,16 +186,7 @@ credential, OIDC client secret은 서로 다른 통제 수단이다.
 | AppRole `role_id`와 `secret_id` | Renderer 또는 automation | 선언된 path에 대해서만 machine access. | 별도 TTL/사용 제한 policy; 사람 admin으로 절대 사용 안 함. |
 | Keycloak client secret | OpenBao OIDC backend | OpenBao를 Keycloak OIDC client로 신뢰. | secret material로 저장; 노출 시 회전. |
 
-server의 기존 bootstrap 기록은 threshold2, Shamir share3개다. 현재 custody의
-2026-09-22 단일 host 파일 예외와 단일 confidentiality/availability 위험은
-[Policy Exceptions](../../policies/04-security-and-secrets/0085-openbao.md#exceptions)가 소유한다. 분리 custody와
-만료·종료 조건은 충족된 것으로 보지 않는다. 사람 OIDC 수용, renderer
-확인, 수정된 recovery 절차는
-보존된 follow-up Task에
-기록되어 있다. snapshot 생성과 server 재시작/unseal은 검증되었으며, 격리된
-restore와 share의 오프라인 전달은 별도의 운영자 책임으로 남아 있다.
-
-### Maintenance window
+#### Maintenance window
 
 server와 Agent 업그레이드는 120분 유지보수 window 하나에서 순서대로 진행한다(SPEC-0243).
 W0 사전 점검 뒤 W1 임시 root, W1c renderer 정책, W2 snapshot token, W3 새 snapshot, W3b R2 보관,
@@ -185,31 +197,7 @@ W5 Agent 업그레이드와 재발급, W6 audit 확인, W7 root 폐기 순서다
 credential 규칙과 받아들인 잔여 위험은 [policy](../../policies/04-security-and-secrets/0085-openbao.md)가
 소유한다.
 
-### Common Checks
-
-사용 전에 선택된 service, 선언된 mount, 공개된 interface, container 상태를
-확인한다. readiness와 data recovery는 runbook evidence를 수집하기 전까지
-검증되지 않은 상태다.
-
-### Runbook Handoff
-
-[Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)이 command, 예상 결과, recovery를
-관장한다. Renderer SecretID 전달은 [RUN-0103](../../runbooks/04-security-and-secrets/0103-openbao-renderer-delivery.md),
-metrics credential은 [RUN-0104](../../runbooks/04-security-and-secrets/0104-openbao-metrics-credential.md),
-유지보수 window는 [RUN-0105](../../runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md),
-소비자 이관과 secret catalog는 [RUN-0106](../../runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md)이 관장한다. [Policy](../../policies/04-security-and-secrets/0085-openbao.md)가 control을 관장한다.
-
-### Traceability
-
-- Governing architecture: [AD-0003](../../../02.architecture/descriptions/0003-security-architecture.md)
-- [Guide](0085-openbao.md), [Policy](../../policies/04-security-and-secrets/0085-openbao.md), [Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)
-- Official OpenBao OIDC auth method: <https://openbao.org/docs/auth/jwt/>
-- Official OpenBao token model: <https://openbao.org/docs/concepts/tokens/>
-- Official OpenBao seal/unseal model: <https://openbao.org/docs/concepts/seal/>
-- Official OpenBao AppRole auth method: <https://openbao.org/docs/auth/approle/>
-- Official Keycloak reverse proxy guidance: <https://www.keycloak.org/server/reverseproxy>
-
-### P01 Trust and Bootstrap States
+#### P01 Trust and Bootstrap States
 
 현재 source는 native HTTPS와 외부 CA 검증을 요구한다. Agent의 HCL address hardcoding은
 없으며 `OPENBAO_PORT`의 Compose endpoint를 사용한다. source 등록은 HOME 적용 증거가
@@ -225,7 +213,7 @@ KV version/결과만 전달한다. 정확한 실행·복구는 [RUN-0105](../../
 Native TLS, Audit and Recovery Gate를 따른다. HOME custody·cold boot·실제 복구는
 현재 미검증이며 격리 synthetic PASS를 복사하지 않는다.
 
-### P01 versioned issuance journal
+#### P01 versioned issuance journal
 
 새 renderer 발급은 journal에 `schema_version: 2`와 `issuance_id`를 남긴다.
 `issuance_id`는 기존 `nonce`의 동일한 호환 별칭이다. accessor metadata에는 문자열
@@ -240,7 +228,7 @@ witness는 중단된 정리 복구를 허용하는 별도 기록이다. v1/v2 �
 source와 합성 검증의 범위이고, HOME 대상·custody·복원 입력이 미확정인 현재 상태를 실제 적용
 증거로 바꾸지 않는다.
 
-### P02 공개 catalog와 staging view
+#### P02 공개 catalog와 staging view
 
 공개 분류의 단일 원천은 `infra/03-security/openbao/secret-catalog.json`과 같은 디렉터리의
 `secret-catalog.schema.json`이다. 이 계약은 secret 값·값의 hash·token·실제 KV payload를
@@ -274,11 +262,33 @@ alias이다. 별도 값·KV entry나 재발급 대상이 아니며, 이 표시�
 검사할 수 있지만 실제 pilot은 발급된 대상 ID·KV path·ACL·delivery와 P01 인증·복구,
 P03 소비자 신원, P04 실제 DEV/S3 수용을 기다린다. opsflow ID나 ACL을 임의로 만들지 않는다.
 
-## Troubleshooting
+### Exceptions
+
+server의 기존 bootstrap 기록은 threshold2, Shamir share3개다. 현재 custody의
+2026-09-22 단일 host 파일 예외와 단일 confidentiality/availability 위험은
+[Policy Exceptions](../../policies/04-security-and-secrets/0085-openbao.md#exceptions)가 소유한다. 분리 custody와
+만료·종료 조건은 충족된 것으로 보지 않는다. 사람 OIDC 수용, renderer
+확인, 수정된 recovery 절차는
+보존된 follow-up Task에
+기록되어 있다. snapshot 생성과 server 재시작/unseal은 검증되었으며, 격리된
+restore와 share의 오프라인 전달은 별도의 운영자 책임으로 남아 있다.
+
+## Verification
+
+### Expected Result
+
+사용 전에 선택된 service, 선언된 mount, 공개된 interface, container 상태를
+확인한다. readiness와 data recovery는 runbook evidence를 수집하기 전까지
+검증되지 않은 상태다.
+
+### Troubleshooting
 
 sealed(2) 지속, Agent 재인증 실패(`bao_agent_auth_failure`), unhealthy Agent, audit 쓰기 실패는 [Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)의 진단 절차로 넘긴다.
 
-## Related Documents
+#### Runbook Handoff
 
-- [Operations index](../../README.md)
-- [Upstream documentation](https://openbao.org/docs/agent-and-proxy/agent/)
+[Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)이 command, 예상 결과, recovery를
+관장한다. Renderer SecretID 전달은 [RUN-0103](../../runbooks/04-security-and-secrets/0103-openbao-renderer-delivery.md),
+metrics credential은 [RUN-0104](../../runbooks/04-security-and-secrets/0104-openbao-metrics-credential.md),
+유지보수 window는 [RUN-0105](../../runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md),
+소비자 이관과 secret catalog는 [RUN-0106](../../runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md)이 관장한다. [Policy](../../policies/04-security-and-secrets/0085-openbao.md)가 control을 관장한다.

@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Usage Guide"
-version: "1.2.7"
+version: "1.2.8"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0034"
 parent_ids:
@@ -17,21 +17,34 @@ created: "2026-05-10"
 
 # Qdrant Usage Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 이 문서는 root compose에 active include된 [Qdrant Compose 구현](../../../../infra/04-data/qdrant/docker-compose.yml)을 설명한다. 현재 구현은 frozen `HOME` 단일 `qdrant` 서비스, exact `ai`/`ai-llm`/`qdrant` profiles, `ai_net`·`edge_net`·`obs_net`, SSO 뒤의 REST route와 `/readyz` healthcheck를 사용한다. gRPC는 network 안의 `qdrant:6334`로만 쓴다.
-
-## Scope
-
-### Audience and Goal
 
 대상 독자: 운영자, 개발자, AI Agent.
 
 목적: Qdrant를 vector storage로 사용할 때 현재 repository의 service name, route, protocol, persistence, snapshot path, API key를 compose와 맞춰 이해하도록 한다.
 
-## Concepts
+### Boundaries
 
-### Current implementation
+- Declared parent: [Qdrant Operations Policy](../../policies/09-ai-and-search/0034-qdrant.md) (`POL-0034`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Policy](../../policies/09-ai-and-search/0034-qdrant.md) (`POL-0034`), [Runbook](../../runbooks/09-ai-and-search/0034-qdrant.md) (`RUN-0034`)
+
+- [Qdrant snapshots](https://qdrant.tech/documentation/operations/snapshots/)
+- [Qdrant migration and recovery](https://qdrant.tech/documentation/migration-recovery-options/)
+- [Qdrant source and license](https://github.com/qdrant/qdrant)
+- [Infra README](../../../../infra/04-data/qdrant/README.md)
+
+## Prerequisites
+
+### Environment
+
+이 가이드가 전제하는 환경과 개념은 아래와 같다.
+
+#### Current implementation
 
 | 항목 | 이 저장소의 구현 결정 |
 | --- | --- |
@@ -45,9 +58,17 @@ created: "2026-05-10"
 | Backup·upgrade | 약 2x의 disk 용량으로 같은 minor 또는 다음 minor 대상에 snapshot을 복구한다. 승격 전에 collection/alias/count를 검증한다. |
 | License·edition | Qdrant source에는 Apache-2.0이 적용된다. managed-cloud 기능은 이 self-hosted single-node 계약에 포함되지 않는다. |
 
-## Usage
+### Permissions
 
-### Identity-specific behavior
+API key는 `qdrant_api_key`(읽기 전용은 `qdrant_read_only_api_key`) secret에서 읽으며 값은 환경변수나 로그에 남기지 않는다. collection 생성·삭제 같은 mutation은 승인된 runbook에서 다룬다.
+
+## Procedure
+
+### Actions
+
+정상 사용과 확인 절차는 아래 항목을 따른다.
+
+#### Identity-specific behavior
 
 Qdrant는 API key를 환경 변수로만 읽으므로, Compose 시작 스크립트가 `/run/secrets/qdrant_api_key`와 `/run/secrets/qdrant_read_only_api_key`를 읽어 export한 뒤 `./entrypoint.sh`를 실행한다. `/readyz`는 health-only이며 collection authorization/search correctness가 아니다. snapshot은 `/qdrant/storage`와 같은 data disk에 있으므로 별도 암호화 사본이 필요하다. 같은/다음 minor 복원과 약 2배 여유라는 upstream 범위도 original collection/version/config/alias 검토를 대신하지 않는다. snapshot/force overwrite·key rotation·collection 삭제는 승인된 target에만 수행한다.
 
@@ -57,7 +78,7 @@ Qdrant는 API key를 환경 변수로만 읽으므로, Compose 시작 스크립�
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의 2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복 OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
-### Preflight and normal use
+#### Preflight and normal use
 
 - 루트 [docker-compose.yml](../../../../docker-compose.yml)에 `infra/04-data/qdrant/docker-compose.yml`가 active include인지 확인한다.
 - `DEFAULT_DATA_DIR`, `DEFAULT_URL`, `QDRANT_PORT`, `QDRANT_GRPC_PORT` 값이 로컬 환경과 맞아야 한다. 아래 명령의 `6333`은 기본 `QDRANT_PORT`이며, 바꿨다면 그 값으로 바꿔 쓴다.
@@ -65,37 +86,30 @@ Qdrant는 API key를 환경 변수로만 읽으므로, Compose 시작 스크립�
 
 정상 운영 중 점검은 compose profile 렌더링, 서비스 상태, REST `/readyz` health route, API key 기반 read-only `/collections` inventory 확인으로 구성된다. `qdrant.${DEFAULT_URL}` 경로는 SSO 뒤에 있고 그 뒤에서도 API key가 필요하며, gRPC route는 없다. 컨테이너는 `ai_net`에서 `qdrant:6333`(REST)·`qdrant:6334`(gRPC)를 쓴다. 실행 가능한 명령 순서와 기대 결과는 [Qdrant runbook](../../runbooks/09-ai-and-search/0034-qdrant.md#procedure)을 따른다.
 
-### Common Checks
+### Exceptions
+
+readyz가 API key·collection 질의를 증명하지 않는 한계와 snapshot restore 호환성 제한은 Actions의 표와 Troubleshooting에 기술되어 있다.
+
+## Verification
+
+### Expected Result
 
 - `docker compose --profile qdrant config --quiet`
 - `docker compose ps qdrant`
 - `docker compose exec qdrant bash -c 'exec 3<>/dev/tcp/127.0.0.1/6333; printf "GET /readyz HTTP/1.0\r\n\r\n" >&3; cat <&3'`
 - `docker compose exec qdrant bash -c 'exec 3<>/dev/tcp/127.0.0.1/6333; printf "GET /collections HTTP/1.0\r\napi-key: %s\r\n\r\n" "$(tr -d "\r\n" </run/secrets/qdrant_api_key)" >&3; cat <&3'`
 
-### Runbook Handoff
-
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [Qdrant runbook](../../runbooks/09-ai-and-search/0034-qdrant.md)을 따른다.
-
-### Traceability
-
-- Declared parent: [Qdrant Operations Policy](../../policies/09-ai-and-search/0034-qdrant.md) (`POL-0034`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](../../policies/09-ai-and-search/0034-qdrant.md) (`POL-0034`), [Runbook](../../runbooks/09-ai-and-search/0034-qdrant.md) (`RUN-0034`)
-
-## Troubleshooting
+### Troubleshooting
 
 - 현재 compose는 host port publish가 아니라 SSO 뒤의 Traefik REST route와 internal expose를 사용한다.
 - 새 클라이언트는 key를 secret file로 받아야 한다. 컨테이너 환경변수나 로그에 key 값을 남기지 않는다. Open WebUI는 HOME network 밖의 독립 LAB이라 Qdrant를 쓰지 않는다(`VECTOR_DB` 미설정, 로컬 저장소 사용).
 - create/search/delete collection 예시는 데이터 mutation 또는 application workflow이므로 일반 usage check가 아니라 application guide 또는 승인된 runbook에서 다룬다.
 - snapshot restore compatibility는 same minor 또는 next minor로 제한하고 target collection 부재/force semantics와 약 2배 disk headroom을 사전 확인한다.
 
-## Related Documents
+#### Runbook Handoff
 
-- [Qdrant snapshots](https://qdrant.tech/documentation/operations/snapshots/)
-- [Qdrant migration and recovery](https://qdrant.tech/documentation/migration-recovery-options/)
-- [Qdrant source and license](https://github.com/qdrant/qdrant)
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [Qdrant runbook](../../runbooks/09-ai-and-search/0034-qdrant.md)을 따른다.
 
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/09-ai-and-search/0034-qdrant.md)
 - [Recovery runbook](../../runbooks/09-ai-and-search/0034-qdrant.md)
-- [Infra README](../../../../infra/04-data/qdrant/README.md)

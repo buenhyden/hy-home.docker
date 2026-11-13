@@ -1,10 +1,10 @@
 ---
 title: "Dependency Version Management Guide"
-version: "0.4.0"
+version: "0.4.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0086"
 parent_ids:
@@ -14,19 +14,28 @@ created: "2026-09-19"
 
 # Dependency Version Management Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 이 가이드는 Compose 이미지, Dockerfile, 파생 버전 projection의 버전 선언을 어떻게 찾고 확인하는지 설명한다. 버전 변경은 선언 소유자를 먼저 찾은 뒤에 시작한다.
-
-## Scope
-
-### Audience and Goal
 
 대상 독자는 인프라 운영자, 저장소 유지보수자, 의존성 업데이트를 검토하는 agent다.
 
 목표는 버전을 바꾸기 전에 원본 선언과 updater 소유자를 식별하고, 변경 후 필요한 검사를 빠뜨리지 않는 것이다.
 
-## Concepts
+### Boundaries
+
+- [Home/Dev architecture](../../../02.architecture/descriptions/0031-home-development-host.md) (`AD-0031`)
+- [Guide](0086-dependency-version-management.md), [Policy](../../policies/10-platform-and-backup/0086-dependency-version-management.md), [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)
+
+- [Operations index](../../README.md)
+- [Runtime version projection](../../../../infra/tech-stack.versions.json)
+- [Repository Renovate policy](../../../../renovate.json5)
+
+## Prerequisites
+
+### Environment
 
 운영자는 버전 변경 전에 해당 선언의 소유자를 찾는다. Compose `image`와
 Dockerfile의 선택된 context·target·`FROM`/`ARG`, 설치 package·복사한 requirements/설정과 entrypoint가 빌드 원본이며 `infra/tech-stack.versions.json`은
@@ -43,9 +52,23 @@ Git으로 추적하는 `infra/**/{compose,docker-compose}*.{yml,yaml}` 서비스
 `runtime-version-exception: <category> — <reason>` 주석을 사용한다.
 문서 frontmatter version과 API/프로토콜 버전은 실행 이미지 pin이 아니다.
 
-## Usage
+### Permissions
 
-### Common Checks
+이 가이드는 별도의 권한 요구를 기록하지 않는다.
+
+## Procedure
+
+### Actions
+
+버전 변경 전 선언 소유자를 찾는 기준은 Environment에, 점검 항목은 Verification의 Expected Result에 둔다.
+
+### Exceptions
+
+이 가이드는 Troubleshooting 외에 별도의 예외 사례를 기록하지 않는다.
+
+## Verification
+
+### Expected Result
 
 변경 파일이 어떤 updater의 manager에 속하는지, 빌드 이미지와 로컬 이미지
 태그가 일치하는지, registry check 및 공식 Renovate strict validator가 통과하는지
@@ -53,22 +76,11 @@ Git으로 추적하는 `infra/**/{compose,docker-compose}*.{yml,yaml}` 서비스
 release는 무기한 대기하지 않도록 schedule과 수동 검토를 적용한다. Green
 registry check만으로 Dockerfile pin 검증을 대체하지 않는다.
 
-### Runbook Handoff
+### Troubleshooting
+
+위 Expected Result가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)의 절차로 진단한다.
+
+#### Runbook Handoff
 
 [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)이 검증 순서와 rollback을 소유하며 [Policy](../../policies/10-platform-and-backup/0086-dependency-version-management.md)가
 업데이트 소유권과 예외를 소유한다.
-
-### Traceability
-
-- [Home/Dev architecture](../../../02.architecture/descriptions/0031-home-development-host.md) (`AD-0031`)
-- [Guide](0086-dependency-version-management.md), [Policy](../../policies/10-platform-and-backup/0086-dependency-version-management.md), [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)
-
-## Troubleshooting
-
-위 Common Checks가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)의 절차로 진단한다.
-
-## Related Documents
-
-- [Operations index](../../README.md)
-- [Runtime version projection](../../../../infra/tech-stack.versions.json)
-- [Repository Renovate policy](../../../../renovate.json5)

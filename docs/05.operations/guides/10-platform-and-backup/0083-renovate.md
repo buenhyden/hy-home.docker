@@ -1,10 +1,10 @@
 ---
 title: "Renovate Guide"
-version: "0.5.1"
+version: "0.5.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0083"
 parent_ids:
@@ -17,19 +17,32 @@ created: "2026-09-19"
 
 # Renovate Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 Renovate는 `infra/09-platform-ops/renovate/`의 `renovate` service로 실행하는 의존성 갱신 작업이다.
 `dependency-update` profile에서만 선택된다.
 
-## Scope
-
-### Audience and Goal
-
 대상 독자는 의존성 갱신 PR을 승인하고 운영하는 담당자다. 목표는 job의 경계, 정적 검증 방법,
 systemd timer 동작을 확인하는 것이다. live run과 복구 절차는 [Renovate Runbook](../../runbooks/10-platform-and-backup/0083-renovate.md)이 맡는다.
 
-## Concepts
+### Boundaries
+
+- 설계 근거: [AD-0009](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+- 동일 주제 문서: [Policy](../../policies/10-platform-and-backup/0083-renovate.md), [Runbook](../../runbooks/10-platform-and-backup/0083-renovate.md)
+
+- [hyhome-renovate.service](../../../../infra/09-platform-ops/renovate/systemd/hyhome-renovate.service)
+- [hyhome-renovate.timer](../../../../infra/09-platform-ops/renovate/systemd/hyhome-renovate.timer)
+- [Renovate self-hosted configuration](https://docs.renovatebot.com/self-hosted-configuration/)
+- [Renovate configuration validation](https://docs.renovatebot.com/config-validation/)
+- [systemd.timer(5)](https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html)
+- [systemd.time(7) — OnCalendar](https://www.freedesktop.org/software/systemd/man/latest/systemd.time.html)
+- [Operations index](../../README.md)
+
+## Prerequisites
+
+### Environment
 
 Renovate는 `dependency-update`에서만 선택하는 one-shot repository
 유지보수 작업이며 HOME 호스트에서 self-hosted로 실행한다. HOME 기본 기동과 일반 `tooling` 시작에서는 제외된다.
@@ -38,9 +51,7 @@ project는 `renovate.json5`, self-host 설정, `renovate_token` Docker Secret,
 cache volume을 제공한다. live run은 원격 repository를 읽고 branch와 pull
 request를 생성하거나 갱신할 수 있다.
 
-## Usage
-
-### 구현 원본
+#### 구현 원본
 
 - [Renovate Compose](../../../../infra/09-platform-ops/renovate/docker-compose.yml)
 - [Self-host configuration](../../../../infra/09-platform-ops/renovate/config/config.js)
@@ -58,7 +69,15 @@ overlap을 관장한다. 이 package는 job 경계를 관장한다. `allowScript
 `package-lock.json`만 다시 쓰므로 이 제한과 충돌하지 않는다. cache는 다시 만들 수 있으며 Git
 policy, 원격 repository 상태, token owner가 authoritative하다.
 
-### 일반적인 사용
+### Permissions
+
+`renovate_token` Docker Secret이 필요하며 값은 기록하지 않는다. 호스트 설치·timer 활성화·수동 실행·중지는 Runbook의 승인된 systemd 절차를 따르고, 승인된 live job만 원격 변경을 일으킨다.
+
+## Procedure
+
+### Actions
+
+#### 일반적인 사용
 
 1. token이나 원격 변경 없이 repository와 global 설정을 확인한다.
    명령은 [Renovate Runbook 절차](../../runbooks/10-platform-and-backup/0083-renovate.md#procedure)의 1단계를 따른다.
@@ -69,11 +88,11 @@ policy, 원격 repository 상태, token owner가 authoritative하다.
    [Renovate runbook](../../runbooks/10-platform-and-backup/0083-renovate.md#procedure)에 있는 승인된
    절차로만 실행한다.
 
-### 복구와 업그레이드
+#### 복구와 업그레이드
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0083-renovate.md)의 `캐시·원격 변경 복구와 업그레이드` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-### systemd 예약 실행
+#### systemd 예약 실행
 
 주간 timer는 HOME 호스트에 설치되어 활성화된 기본 실행이다(월요일, 일정 창 00–05시 KST). Compose `run --rm` 명령은 rebase·재시도용 온디맨드 실행이다.
 repository는 `infra/09-platform-ops/renovate/systemd/`에 systemd unit 파일 두 개를
@@ -84,7 +103,7 @@ repository는 `infra/09-platform-ops/renovate/systemd/`에 systemd unit 파일 �
 | [`hyhome-renovate.service`](../../../../infra/09-platform-ops/renovate/systemd/hyhome-renovate.service) | oneshot service — Renovate Compose job을 실행 |
 | [`hyhome-renovate.timer`](../../../../infra/09-platform-ops/renovate/systemd/hyhome-renovate.timer) | weekly timer — service unit을 트리거 |
 
-#### Timer 동작
+##### Timer 동작
 
 - **Schedule**: 월요일 00:00 KST에 최대 60분의 random jitter
   (`RandomizedDelaySec=3600`)를 둔다. 이 값은 `renovate.json5`의 schedule window
@@ -100,7 +119,7 @@ repository는 `infra/09-platform-ops/renovate/systemd/`에 systemd unit 파일 �
 - **Timezone**: `OnCalendar`는 `Asia/Seoul`을 지정한다. 설치된 systemd 버전과
   timer 해석은 승인된 호스트 점검에서 확인하며 과거 관측을 현재 상태로 인용하지 않는다.
 
-#### Service 흐름
+##### Service 흐름
 
 ```text
 Timer fires
@@ -116,39 +135,28 @@ pre-flight check가 하나라도 실패하면 container를 만들기 전에 run�
 중단된다. service는 자동 재시작하지 않으며(`Restart=no`), 실패한 run은 다음
 시도 전에 사람이 log를 검토해야 한다.
 
-#### 설치
+##### 설치
 
 호스트 설치·timer 활성화·수동 실행·중지는 [런북](../../runbooks/10-platform-and-backup/0083-renovate.md)의 승인된 systemd 절차를 따른다.
 
-### 작업 신호와 상태 경계
+### Exceptions
+
+#### 작업 신호와 상태 경계
 
 작업에는 HTTP health가 없다. exit·정제된 실행 요약·생성된 PR을 함께 확인한다.
 시작 shell은 token 파일 누락·빈 값을 거부하며 cache는 다시 만들 수 있는 지속
 영역이다. 선언된 CPU·메모리 상한과 timeout 안에서 끝나는지 관찰하되 timeout을
 원격 변경의 자동 취소로 해석하지 않는다. 캐시 삭제는 repository나 PR을 복구하지 않는다.
 
-### Common Checks
+## Verification
+
+### Expected Result
 
 - repository와 self-host 설정에 대한 strict validation.
 - `bash scripts/operations/sync-tech-stack-versions.sh --check`.
 - 승인된 live job의 경우, sanitized 결과를 생성된 모든 branch/PR과 대조하고
   이 job 승인으로는 merge가 일어나지 않았는지 확인한다.
 
-### Traceability
+### Troubleshooting
 
-- 설계 근거: [AD-0009](../../../02.architecture/descriptions/0009-tooling-architecture.md)
-- 동일 주제 문서: [Policy](../../policies/10-platform-and-backup/0083-renovate.md), [Runbook](../../runbooks/10-platform-and-backup/0083-renovate.md)
-
-## Troubleshooting
-
-위 Common Checks가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0083-renovate.md)의 절차로 진단한다.
-
-## Related Documents
-
-- [hyhome-renovate.service](../../../../infra/09-platform-ops/renovate/systemd/hyhome-renovate.service)
-- [hyhome-renovate.timer](../../../../infra/09-platform-ops/renovate/systemd/hyhome-renovate.timer)
-- [Renovate self-hosted configuration](https://docs.renovatebot.com/self-hosted-configuration/)
-- [Renovate configuration validation](https://docs.renovatebot.com/config-validation/)
-- [systemd.timer(5)](https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html)
-- [systemd.time(7) — OnCalendar](https://www.freedesktop.org/software/systemd/man/latest/systemd.time.html)
-- [Operations index](../../README.md)
+위 Expected Result가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0083-renovate.md)의 절차로 진단한다.

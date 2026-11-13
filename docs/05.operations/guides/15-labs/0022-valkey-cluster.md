@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster Usage Guide"
-version: "2.0.3"
+version: "2.0.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0022"
 parent_ids:
@@ -14,21 +14,34 @@ created: "2026-05-10"
 
 # Valkey Cluster Usage Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 이 가이드는 선택적 six-node Valkey Cluster 실습을 설명한다. 모든 node가 Docker host 하나를 공유하므로 M0021은 모든 service를 **LAB**으로 분류한다. 이 cluster는 HOME workflow broker가 아니며 독립 LAB에서만 실행된다.
-
-## Scope
-
-### Audience and Goal
 
 대상 독자: 운영자, 개발자, AI Agent.
 
 목적: LAB 전용 six-node Valkey Cluster의 구성, 노출, 영속성, 백업·복원 경계를 현재 Compose와 맞춰 이해한다. HOME의 Airflow와 n8n은 이 cluster가 아니라 `mng-valkey`를 사용한다.
 
-## Concepts
+### Boundaries
 
-### Current implementation
+#### Traceability
+
+- Artifact: `GDE-0022`; governing policy: `POL-0022`.
+- Runtime authority: `labs/valkey-cluster/docker-compose.yml`.
+
+#### Related Documents
+
+- [Operations policy](../../policies/15-labs/0022-valkey-cluster.md)
+- [Health and recovery runbook](../../runbooks/15-labs/0022-valkey-cluster.md)
+- [Data backup policy](../../policies/10-platform-and-backup/0021-backup-and-restore.md)
+
+## Prerequisites
+
+### Environment
+
+#### Current implementation
 
 [`labs/valkey-cluster/docker-compose.yml`](../../../../labs/valkey-cluster/docker-compose.yml)은 독립 LAB Compose project이며 root는 이를 include하지 않는다. 정확한 profile `valkey-cluster`는 `valkey-node-0`부터
 `valkey-node-5`까지, one-shot `valkey-cluster-init`, `valkey-cluster-exporter`를
@@ -44,9 +57,15 @@ node-local cluster identity이다. resource limit과 health check는 공유
 Compose template에서 오며 선택하기 전에 렌더링된 LAB configuration에서
 점검해야 한다.
 
-## Usage
+### Permissions
 
-### Identity-specific behavior
+profile 시작·test key 쓰기·membership 변경·node 중지는 별도로 승인된 task가 필요하다. secret은 `lab_valkey_password`와 승인된 `labs/.env`다.
+
+## Procedure
+
+### Actions
+
+#### Identity-specific behavior
 
 노드 0/1/2/3/4/5 는 각 PORT·announce address·bind volume·client/bus port 가 다르고 같은 template/security 를 공유한다. init script 는 내부 6379~6384 를 고정 사용한다. `LAB_VALKEY*_HOST_PORT`는 loopback host port만 바꾸며 실제 cluster slot·client 연결은 격리 실행 전까지 미검증이다. 비정상 또는 이미 비어 있지 않은 nodes 상태는 init이 실패하도록 수정했다. init 성공만으로 slot16384/replica 건강을 보장하지 않는다. exporter 는 node0 하나를 target 한다. engine과 exporter release는 별개이며 정확한 pin은 Compose가 소유한다. AOF/RDB 와 fresh cluster identity 복원 계약은 유지한다.
 
@@ -63,7 +82,7 @@ Compose template에서 오며 선택하기 전에 렌더링된 LAB configuration
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
-### Images, configuration and resource controls
+#### Images, configuration and resource controls
 
 고정된 `valkey/valkey`와 `oliver006/redis_exporter` image의 기준은 Compose
 파일이다. repository Renovate 설정이 update를 제안할 수 있으며
@@ -74,7 +93,7 @@ Compose template에서 오며 선택하기 전에 렌더링된 LAB configuration
 각각 health check를 선언한다. client는 cluster-aware node endpoint에 직접
 접속하고 exporter의 `-redis.addr`는 node0 하나다. 여섯 healthy dependency는 여섯 scrape target을 뜻하지 않는다. 전체 node/slot 상태는 별도 cluster-aware 점검이 필요하다.
 
-### Static preflight and normal use
+#### Static preflight and normal use
 
 이 LAB의 입력은 [예시 환경 파일](../../../../labs/.env.example)과 비공개 `labs/.env`가 소유한다. secret 파일은 `LAB_SECRET_DIR`(기본 `../../secrets/labs`) 아래의 [LAB별 경로](../../../../labs/valkey-cluster/docker-compose.yml)에 둔다. source 반영, 실제 실행, 비밀 파일 이동 완료와 복구 검증은 별도로 확인한다.
 
@@ -90,7 +109,23 @@ profile을 시작하거나, test key를 쓰거나, membership을 변경하거나
 cluster-aware client 호환성, 의도된 dataset, retention, capacity와 함께
 same-host replica가 host 손실을 막지 못한다는 점을 기록한다.
 
-### Backup, restore and upgrade boundary
+#### Security and license
+
+password secret은 transport encryption을 제공하지 않는다. client port는
+`127.0.0.1`에만 게시하며 cluster-bus port는 host에 게시하지 않는다. Valkey
+자체 안내는 Cluster가 trusted network용으로 설계되었다고 경고한다. Valkey는
+BSD 3-Clause license를 사용하며, client와 image는 자체 license를 유지한다.
+
+#### Official references
+
+- [Valkey persistence](https://valkey.io/topics/persistence/)
+- [Valkey Cluster tutorial and security boundary](https://valkey.io/topics/cluster-tutorial/)
+- [Valkey security](https://valkey.io/topics/security/)
+- [Valkey license](https://github.com/valkey-io/valkey/blob/unstable/COPYING)
+
+### Exceptions
+
+#### Backup, restore and upgrade boundary
 
 [RUN-0022](../../runbooks/15-labs/0022-valkey-cluster.md)를 사용한다. 사용 가능한
 backup은 모든 primary(및 의도적으로 유지되는 replica)의 조율된 persistence
@@ -104,35 +139,14 @@ link를 검증하고, cutover 전에 key count/application read를 비교한다.
 upgrade는 release note, client 호환성, rollback을 포함한 별도 계획을
 따른다. 이 가이드는 in-place major jump를 승인하지 않는다.
 
-### Security and license
+## Verification
 
-password secret은 transport encryption을 제공하지 않는다. client port는
-`127.0.0.1`에만 게시하며 cluster-bus port는 host에 게시하지 않는다. Valkey
-자체 안내는 Cluster가 trusted network용으로 설계되었다고 경고한다. Valkey는
-BSD 3-Clause license를 사용하며, client와 image는 자체 license를 유지한다.
-
-### Official references
-
-- [Valkey persistence](https://valkey.io/topics/persistence/)
-- [Valkey Cluster tutorial and security boundary](https://valkey.io/topics/cluster-tutorial/)
-- [Valkey security](https://valkey.io/topics/security/)
-- [Valkey license](https://github.com/valkey-io/valkey/blob/unstable/COPYING)
-
-### Traceability
-
-- Artifact: `GDE-0022`; governing policy: `POL-0022`.
-- Runtime authority: `labs/valkey-cluster/docker-compose.yml`.
-
-## Troubleshooting
-
-### Common Checks
+### Expected Result
 
 정확한 LAB profile, service, health/resource control, writable-state
 ownership, secret reference, exposure, engine별 recovery boundary를 확인한다.
 static pass는 configuration 증거일 뿐이다. runtime과 restore는 별개로 남는다.
 
-## Related Documents
+### Troubleshooting
 
-- [Operations policy](../../policies/15-labs/0022-valkey-cluster.md)
-- [Health and recovery runbook](../../runbooks/15-labs/0022-valkey-cluster.md)
-- [Data backup policy](../../policies/10-platform-and-backup/0021-backup-and-restore.md)
+증상별 진단과 복구 절차는 Boundaries의 Related Documents에 연결된 runbook을 따른다.

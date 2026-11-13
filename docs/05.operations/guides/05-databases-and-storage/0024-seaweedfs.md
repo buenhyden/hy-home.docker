@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.7.0"
+version: "1.7.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0024"
 parent_ids:
@@ -21,24 +21,36 @@ created: "2026-05-10"
 
 # SeaweedFS Usage Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 SeaweedFS는 S3 object store이며 SPEC-0180 S07에서 MinIO를 대체했다.
 consumer profile을 통해 HOME에 속한다. `http://seaweedfs-s3:8333`
 (path-style, region `us-east-1`)의 S3가 유일한 interface이다. privileged
 FUSE mount는 S04에서 제거되었으며 master와 filer에는 route가 없다.
 
-## Scope
-
-### Audience and Goal
-
 SeaweedFS S3를 쓰는 서비스 소유자와 운영자를 위한 문서다. 목표는 consumer별 bucket과
 identity, 네트워크·보안 경계, 지표와 경보, 백업·복구 방향을 이해하고 정적 검사와
 rehearsal로 구성을 확인하는 것이다.
 
-## Concepts
+### Boundaries
 
-### Current implementation
+- Artifact: `GDE-0024`; governing policy: `POL-0024`.
+- Runtime authority: `infra/04-data/seaweedfs/docker-compose.yml`.
+
+- [Operations policy](../../policies/05-databases-and-storage/0024-seaweedfs.md)
+- [Health and recovery runbook](../../runbooks/05-databases-and-storage/0024-seaweedfs.md)
+- [Backup policy](../../policies/10-platform-and-backup/0021-backup-and-restore.md)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.
+
+## Prerequisites
+
+### Environment
+
+이 가이드가 전제하는 구현과 환경 사실은 아래 항목에 정리한다.
+
+#### Current implementation
 
 [`infra/04-data/seaweedfs/docker-compose.yml`](../../../../infra/04-data/seaweedfs/docker-compose.yml)은
 `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`,
@@ -69,9 +81,17 @@ network의 다른 구성원은 Prometheus뿐이며 Prometheus는 SeaweedFS 신�
 target down 5분)과 `SeaweedFSDataDiskLow`(node-exporter 기준 data-disk
 filesystem free 15% 미만 10분).
 
-## Usage
+### Permissions
 
-### Identity-specific behavior
+필요한 secret은 `seaweedfs_jwt_volume_key`, `seaweedfs_jwt_filer_key`, `seaweedfs_s3_admin_secret_key`와 `SEAWEEDFS_S3_ADMIN_ACCESS_KEY`다. 값은 문서에 남기지 않으며, LAB S3 endpoint 게시는 소유자 승인 전에는 실행하지 않는다.
+
+## Procedure
+
+### Actions
+
+정상 사용 절차는 아래 항목에 정리한다.
+
+#### Identity-specific behavior
 
 master는 topology/volume 배정, volume은 객체 bytes, filer는 metadata/leveldb2를 보존한다. s3는 Docker secret과 `config/s3-identities.conf`에서 시작 시 생성한 S3 identity config와 gRPC mTLS를 쓰며 네트워크 3개에 참여한다. Iceberg catalog 포트 `8181`(`SEAWEEDFS_ICEBERG_PORT`)도 같은 s3 process의 `0.0.0.0`에 bind되어 `edge_net`/`seaweed_internal`/`object_net` peer가 접근할 수 있다. host mapping과 catalog router는 없다. `s3.${DEFAULT_URL}` router는 `gateway-standard-chain@file`만 쓰며 요청 인증은 S3 signature identity가 담당한다. `object_net`-only 요구는 미준수이며 별도 구현 수정이 필요하다. buckets job은 admin으로 bucket을 생성하며 table-bucket은 GDE-0094 소유다. 인증서 교체는 모든 peer의 새 CA/leaf 수용을 검증한 승인 작업이다.
 
@@ -85,7 +105,7 @@ master는 topology/volume 배정, volume은 객체 bytes, filer는 metadata/leve
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의 2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복 OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
-### Consumers, buckets and migration
+#### Consumers, buckets and migration
 
 | Consumer | Bucket | Identity (access key ID) | Secret |
 | --- | --- | --- | --- |
@@ -108,7 +128,7 @@ MinIO와 함께 제거되었다. 보존되어 있던 MinIO data, volume, image�
 2026-09-25(SPEC-0182 W5)에 폐기되어 S07 rollback path가
 종료되었다.
 
-### Images, configuration and resource controls
+#### Images, configuration and resource controls
 
 Compose 파일은 고정된 `chrislusf/seaweedfs` image를 소유한다. Renovate가
 update를 제안할 수 있으며 version projection은 파생물이다. root의
@@ -121,12 +141,12 @@ certificate는 `bin/gen-grpc-certs.sh`로 만든다. master와 filer는
 volume server는 free 20 GiB 미만에서 write를 거부한다. flow: master →
 volume, filer → master/volume, 그다음 S3 → filer.
 
-### Static preflight and rehearsal
+#### Static preflight and rehearsal
 
 명령은 [RUN-0024 절차](../../runbooks/05-databases-and-storage/0024-seaweedfs.md#procedure)가 소유한다. repository
 root에서 실행한다. rehearsal은 Docker가 필요하며 disposable data만 사용한다.
 
-### Verified S3 behaviour (2026-09-22 rehearsal)
+#### Verified S3 behaviour (2026-09-22 rehearsal)
 
 | Area | Result |
 | --- | --- |
@@ -144,7 +164,7 @@ root에서 실행한다. rehearsal은 Docker가 필요하며 disposable data만 
 Versioning, Object Lock, SSE, notification, lifecycle rule은 테스트하지
 않았다. S07은 cutover 전에 consumer에게 필요한 것을 테스트한다.
 
-### Recovery and lifecycle
+#### Recovery and lifecycle
 
 backup set은 filer metadata export, volume tree, master tree로 이루어지며
 vacuum을 일시 중지한 채 이 순서대로 수행한다
@@ -153,33 +173,27 @@ vacuum을 일시 중지한 채 이 순서대로 수행한다
 image를 upgrade하려면 공식 release를 검토하고 rehearsal을 통과해야 한다.
 SeaweedFS의 license는 Apache-2.0이다.
 
-### Official references
+#### Official references
 
 - [SeaweedFS data backup](https://github.com/seaweedfs/seaweedfs/wiki/Data-Backup)
 - [SeaweedFS security configuration](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration)
 - [SeaweedFS repository and license](https://github.com/seaweedfs/seaweedfs)
 
-### Common Checks
+### Exceptions
+
+이 가이드는 별도 예외 절을 두지 않으며, 한계와 경계는 Environment와 Actions의 해당 본문과 Troubleshooting에 함께 적혀 있다.
+
+## Verification
+
+### Expected Result
 
 정확한 root profile, service, health/resource control, writable-state
 ownership, secret reference, exposure, engine별 recovery boundary를
 확인한다. static pass는 configuration 증거일 뿐이다. runtime과 restore는
 별개로 남는다.
 
-### Traceability
-
-- Artifact: `GDE-0024`; governing policy: `POL-0024`.
-- Runtime authority: `infra/04-data/seaweedfs/docker-compose.yml`.
-
-## Troubleshooting
+### Troubleshooting
 
 - consumer가 bucket을 찾지 못함: `seaweedfs-buckets` job의 종료 코드를 확인한다. job은 `seaweedfs-s3` healthy 이후에만 실행된다.
 - 서비스가 시작 직후 종료: `hyhome-seaweedfs.sh`는 JWT secret, `${DEFAULT_CERT_DIR}/seaweedfs` 인증서 또는 `SEAWEEDFS_S3_ADMIN_ACCESS_KEY`가 없으면 시작을 거부한다.
 - write 거부: volume의 `-minFreeSpace=20GiB` 한계와 `SeaweedFSDataDiskLow` 경보를 확인하고 [RUN-0035](../../runbooks/05-databases-and-storage/0035-storage-exhaustion.md)로 넘긴다.
-
-## Related Documents
-
-- [Operations policy](../../policies/05-databases-and-storage/0024-seaweedfs.md)
-- [Health and recovery runbook](../../runbooks/05-databases-and-storage/0024-seaweedfs.md)
-- [Backup policy](../../policies/10-platform-and-backup/0021-backup-and-restore.md)
-- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

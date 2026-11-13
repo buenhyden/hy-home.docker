@@ -1,10 +1,10 @@
 ---
 title: "Ollama Usage Guide"
-version: "2.0.9"
+version: "2.0.10"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0056"
 parent_ids:
@@ -18,13 +18,11 @@ created: "2026-05-10"
 
 # Ollama Usage Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 이 문서는 `hy-home.docker` AI 계층의 핵심 추론 엔진인 Ollama 사용 방법을 설명한다. 현재 구현은 `infra/08-ai/ollama/docker-compose.yml`에 있고 root `docker-compose.yml`이 이를 무조건 include하며, `ollama`와 `ollama-exporter`는 `ai`, `ai-llm` 또는 `ollama` profile을 선택할 때 기동된다. 모델 라이프사이클, GPU 가속 확인, HOME 소비자 연동, exporter 관측 흐름은 그 profile이 선택된 런타임을 기준으로 수행한다.
-
-## Scope
-
-### Audience and Goal
 
 **대상**
 
@@ -39,9 +37,24 @@ created: "2026-05-10"
 - API/CLI/관측(Exporter) 경로를 일관된 방식으로 점검한다.
 - Open Notebook 등 HOME 소비자 연동 전에 필요한 추론 계층 준비 상태를 확보한다.
 
-## Concepts
+### Boundaries
 
-### 사전 조건
+- Declared parent: [Ollama Operations Policy](../../policies/09-ai-and-search/0056-ollama.md) (`POL-0056`)
+- Governing authority: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: [Policy](../../policies/09-ai-and-search/0056-ollama.md) (`POL-0056`), [Runbook](../../runbooks/09-ai-and-search/0056-ollama.md) (`RUN-0056`)
+
+- [Ollama Compose](../../../../infra/08-ai/ollama/docker-compose.yml)
+- [Ollama server configuration](https://docs.ollama.com/faq#how-do-i-configure-ollama-server): `OLLAMA_HOST`로 컨테이너 listener 주소와 포트를 함께 지정한다.
+- [Ollama release notes](https://github.com/ollama/ollama/releases), [tev1 model page](https://ollama.com/library/tev1), [nimble model page](https://ollama.com/library/nimble)
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+
+## Prerequisites
+
+### Environment
+
+이 가이드가 전제하는 환경과 개념은 아래와 같다.
+
+#### 사전 조건
 
 - NVIDIA GPU 및 NVIDIA Container Toolkit이 정상 설치되어야 한다.
 - root `docker-compose.yml`은 `infra/08-ai/ollama/docker-compose.yml`을 무조건 include하므로, 실행 시 `ai`, `ai-llm` 또는 `ollama` profile을 선택해야 한다.
@@ -51,11 +64,21 @@ created: "2026-05-10"
   - Host API: `127.0.0.1:${OLLAMA_HOST_PORT:-11434}`; container API: `ollama:${OLLAMA_PORT:-11434}`
   - Exporter: `OLLAMA_EXPORTER_PORT`는 연결한 Compose와 공개 `.env.example`이 소유한다. 내부 지표 listener이며 모델 추론을 중계하지 않는다.
 
-## Usage
+### Permissions
 
-### 사용 절차
+모델 변경(`ollama pull` 등)은 Ollama Operations Policy가 요구하는 승인된 local/dev rehearsal 뒤에만 실행한다.
 
-#### Service & GPU Health Check
+## Procedure
+
+### Actions
+
+정상 사용과 확인 절차는 아래 항목을 따른다.
+
+#### 사용 절차
+
+사용 절차는 아래 항목을 따른다.
+
+##### Service & GPU Health Check
 
 ```bash
 # 호스트 GPU 상태
@@ -68,7 +91,7 @@ curl -f http://localhost:${OLLAMA_HOST_PORT:-11434}/api/tags
 docker compose exec ollama nvidia-smi
 ```
 
-#### Model Lifecycle (CLI)
+##### Model Lifecycle (CLI)
 
 ```bash
 # 모델 목록 확인
@@ -77,7 +100,7 @@ docker compose exec ollama ollama list
 
 모델 변경(`ollama pull` 등)은 [Ollama Operations Policy](../../policies/09-ai-and-search/0056-ollama.md)가 요구하는 승인된 local/dev rehearsal 없이 무조건 실행하지 않는다. 절차는 [Ollama runbook](../../runbooks/09-ai-and-search/0056-ollama.md)을 따른다.
 
-#### Inference API Check
+##### Inference API Check
 
 ```bash
 curl http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate -d '{
@@ -86,7 +109,7 @@ curl http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate -d '{
 }'
 ```
 
-#### Decision API Smoke
+##### Decision API Smoke
 
 [Ollama release notes](https://github.com/ollama/ollama/releases)의 `/v1/systemone`은 선택 또는 점수형 결정을 지원한다. 아래 요청은 실제 업무 데이터 없이 [tev1:0.8b](https://ollama.com/library/tev1)를 확인하며, `keep_alive: 0`으로 요청 뒤 모델을 내린다.
 
@@ -102,7 +125,7 @@ GTX 1060 6 GiB에서는 [tev1:0.8b](https://ollama.com/library/tev1)를 먼저 �
 
 [tev1:0.8b](https://ollama.com/library/tev1)가 없으면 승인된 rehearsal에서만 `docker compose exec ollama ollama pull tev1:0.8b`로 가져온 뒤 위 요청을 실행한다.
 
-#### Consumer Integration Check
+##### Consumer Integration Check
 
 1. HOME 소비자(Open Notebook 등)가 `http://ollama:${OLLAMA_PORT:-11434}`를 가리키는지 확인.
 2. 소비자 화면이나 API에서 모델 목록이 정상 조회되는지 확인.
@@ -111,7 +134,7 @@ GTX 1060 6 GiB에서는 [tev1:0.8b](https://ollama.com/library/tev1)를 먼저 �
 Open WebUI는 2026-11-10부터 독립 LAB이며 HOME network에 합류하지 않는다. LAB은 승인된 endpoint
 (`LAB_OPEN_WEBUI_OLLAMA_BASE_URL`)로만 Ollama에 닿는다([GDE-0057](../15-labs/0057-open-webui.md)).
 
-#### Exporter Observability Check
+##### Exporter Observability Check
 
 ```bash
 # exporter exposes metrics on `ai_net`/`obs_net`; it is not published to host.
@@ -120,7 +143,7 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 
 - 주요 관측 대상: 모델 로드 수, 메모리 사용량, scrape 상태.
 
-### Source-backed operating contract
+#### Source-backed operating contract
 
 - **목적·분류**: `ollama`와 `ollama-exporter`는 소유자가 확인한 `HOME` local inference 및 metric 서비스다.
 - **profile·구현 소유권**: `ai`/`ai-llm`은 Ollama를 선택하고 `ollama`는 해당 서비스만 선택하는 방법을 제공한다. [Compose](../../../../infra/08-ai/ollama/docker-compose.yml)와 선택된 image 선언이 구현을 소유한다.
@@ -130,11 +153,7 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 - **정상 사용·수명 주기**: `docker compose --profile ai config --quiet`로 렌더링하고 명시적으로 승인된 model을 list/pull한다. `/api/tags`와 대표 inference를 검증하며 exporter/GPU 신호를 관찰한다. image나 model migration 전에 digest와 model 출처를 기록하고, model volume 또는 재현 가능한 manifest를 보존한다. 호환성 경계를 한 번에 하나씩 변경한 뒤 inference와 HOME 소비자 연동을 다시 확인한다.
 - **공식 문서·license**: 공식 [Ollama 저장소](https://github.com/ollama/ollama)와 release note를 따른다. Ollama에는 MIT license가 적용된다. 각 model의 별도 조건도 기록하고 검토해야 한다.
 
-### Model and exporter capacity boundary
-
-`ollama`/`ollama-exporter`는 `ai`/`ai-llm`/`ollama`가 선택하는 HOME이다. 모델·추론은 Ollama가 소유하고 병렬·loaded-model·queue 설정은 context 크기와 공유 GPU 메모리와 함께 평가한다. 한도는 실측 여유가 아니며 과부하 요청은 실패할 수 있다. Exporter는 Ollama health 뒤 내부 model 목록·실행 모델·VRAM metric을 제공한다. Model volume, Docker Secret, 사용자 route나 독립 복구 상태는 없고 추론 proxy 또는 token throughput 증거도 아니다. Maintainer tag는 확인했으나 버전 일치 소스는 확보하지 못했으므로 Compose·maintainer 설명을 넘는 동작을 단정하지 않는다. Upgrade에는 metric 호환성과 제한된 추론 검증이 필요하다. 모델 삭제·download·driver 변경은 기존 승인·출처 및 [GPU 복구](../../runbooks/09-ai-and-search/0055-gpu-recovery.md) 경계를 따른다.
-
-### Load, queue and GPU memory
+#### Load, queue and GPU memory
 
 이미지는 [Compose](../../../../infra/08-ai/ollama/docker-compose.yml)의 tag에 registry index digest를 붙여 고정한다. 버전을 올릴 때는 GTX 1060(compute 6.1)을 지원하는 CUDA 빌드가 남아 있는지 Ollama 시작 log의 `inference compute` 줄로 확인한다. 검증 기록은 SPEC-0226 TSK-0001(2026-10-09/29, 은퇴 후 Git 이력)에 있다.
 
@@ -150,7 +169,17 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 
 모델 blob은 백업하지 않는다. 대신 `models/manifests`와 `models/manifests-v2`를 restic state set으로 백업해 모델별 digest 목록을 남긴다. 잃어버린 뒤에는 모델을 이름으로 다시 받고, 받은 digest를 복원한 manifest와 비교한다. upstream tag가 바뀌었으면 여기서 드러난다. 격리 시험에서는 manifest 목록만으로 같은 5개 모델과 digest가 보였다. 다시 받는 과정 자체는 시험하지 않았다. `gemma4:e2b-mlx`는 MLX 형식이라 이 CUDA 호스트에서 쓰이지 않는다.
 
-### Common Checks
+### Exceptions
+
+예외와 제한 사항은 아래 항목에 정리한다.
+
+#### Model and exporter capacity boundary
+
+`ollama`/`ollama-exporter`는 `ai`/`ai-llm`/`ollama`가 선택하는 HOME이다. 모델·추론은 Ollama가 소유하고 병렬·loaded-model·queue 설정은 context 크기와 공유 GPU 메모리와 함께 평가한다. 한도는 실측 여유가 아니며 과부하 요청은 실패할 수 있다. Exporter는 Ollama health 뒤 내부 model 목록·실행 모델·VRAM metric을 제공한다. Model volume, Docker Secret, 사용자 route나 독립 복구 상태는 없고 추론 proxy 또는 token throughput 증거도 아니다. Maintainer tag는 확인했으나 버전 일치 소스는 확보하지 못했으므로 Compose·maintainer 설명을 넘는 동작을 단정하지 않는다. Upgrade에는 metric 호환성과 제한된 추론 검증이 필요하다. 모델 삭제·download·driver 변경은 기존 승인·출처 및 [GPU 복구](../../runbooks/09-ai-and-search/0055-gpu-recovery.md) 경계를 따른다.
+
+## Verification
+
+### Expected Result
 
 - 직접 API는 호스트 loopback에서만 접근한다. HOME 소비자와 exporter는 `ollama` 서비스 DNS로 통신하며, 원격 접근은 인증된 gateway 경로를 사용한다. 기존 LAN 직접 API 소비자는 설정 적용 전에 전환해야 한다.
 
@@ -158,32 +187,16 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
 - Runtime approval 후 `ai` profile을 선택한 상태에서 `docker compose exec ollama ollama list`
 
-### Runbook Handoff
-
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/09-ai-and-search/0056-ollama.md)을 따른다.
-
-### Traceability
-
-- Declared parent: [Ollama Operations Policy](../../policies/09-ai-and-search/0056-ollama.md) (`POL-0056`)
-- Governing authority: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: [Policy](../../policies/09-ai-and-search/0056-ollama.md) (`POL-0056`), [Runbook](../../runbooks/09-ai-and-search/0056-ollama.md) (`RUN-0056`)
-
-## Troubleshooting
+### Troubleshooting
 
 - **GPU 미인식**: 컨테이너는 실행되지만 CPU 추론으로 강등됨.
 - **VRAM OOM**: 대형 모델 동시 로드 시 응답 실패/지연.
 - **모델 태그 불일치**: 소비자 설정 모델명과 Ollama 실제 태그 불일치.
 - **Exporter 미수집**: host-published 포트로 오해해 localhost에서 직접 조회하는 경우. exporter는 compose healthcheck와 `ai_net` 내부 scrape 경로를 기준으로 확인한다.
 
-## Related Documents
+#### Runbook Handoff
 
-- [Ollama Compose](../../../../infra/08-ai/ollama/docker-compose.yml)
-
-- [Ollama server configuration](https://docs.ollama.com/faq#how-do-i-configure-ollama-server): `OLLAMA_HOST`로 컨테이너 listener 주소와 포트를 함께 지정한다.
-
-- [Ollama release notes](https://github.com/ollama/ollama/releases), [tev1 model page](https://ollama.com/library/tev1), [nimble model page](https://ollama.com/library/nimble)
-
-- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/09-ai-and-search/0056-ollama.md)을 따른다.
 
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/09-ai-and-search/0056-ollama.md)
