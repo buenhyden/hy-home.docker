@@ -323,7 +323,7 @@ class RegisteredSectionContractTests(unittest.TestCase):
         """Map each enforced profile to one tracked document that carries it."""
 
         tracked = subprocess.run(
-            ["git", "ls-files", "docs"],
+            ["git", "ls-files", "docs", ".agents"],
             capture_output=True,
             text=True,
             check=True,
@@ -461,6 +461,13 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Verification", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Traceability", "body-subheading-forbidden"),
+            ),
+            "governance-skill": (
+                ("## Purpose", "body-heading-forbidden"),
+                ("## Inputs", "body-heading-forbidden"),
+                ("## Failure Handling", "body-heading-forbidden"),
+                ("## References", "body-heading-forbidden"),
+                ("### Preconditions", "body-subheading-forbidden"),
             ),
             "adr": (
                 ("## Decision Drivers", "body-heading-forbidden"),
