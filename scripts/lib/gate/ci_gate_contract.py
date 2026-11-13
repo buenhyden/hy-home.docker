@@ -382,6 +382,9 @@ class GateNode:
     children: tuple[str, ...]
     # Leaf-only: the unique security/deploy guarantee, "none" or "" otherwise.
     guarantee: str = ""
+    # Leaf-only: "grype" when the result depends on the vulnerability DB, so the
+    # runner keys PASS reuse to the seed identity (QA-C07); "" otherwise.
+    security_db: str = ""
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -1316,7 +1319,34 @@ def validate_gate_registry(
                 f"gate_nodes/{node.gate_id}",
                 "working directories must be canonical repository directories",
             )
+    for node in registry.nodes:
+        if (
+            node.kind is GateKind.LEAF
+            and node.guarantee == "security"
+            and node.security_db != "grype"
+            and _mentions_grype(root, node)
+        ):
+            finding(
+                "ci-gate-security-db",
+                f"gate_nodes/{node.gate_id}",
+                "a security leaf that uses Grype must declare security_db: grype",
+            )
     return tuple(sorted(set(findings)))
+
+
+def _mentions_grype(root: pathlib.Path, node: GateNode) -> bool:
+    """True when the leaf's argv or entrypoint source names Grype (QA-C07)."""
+    if any(_SECURITY_DB_MARKER.search(argument) for argument in node.argv):
+        return True
+    if node.entrypoint is None:
+        return False
+    try:
+        text = root.joinpath(*node.entrypoint.parts).read_text(
+            encoding="utf-8", errors="replace"
+        )
+    except OSError:
+        return False
+    return _SECURITY_DB_MARKER.search(text) is not None
 
 
 def expand_public_gate_ids(
@@ -1393,6 +1423,8 @@ def expand_public_gate_ids(
 
 
 _GUARANTEES = frozenset({"security", "deploy", "none"})
+_SECURITY_DBS = ("", "grype")
+_SECURITY_DB_MARKER = re.compile(r"grype", re.IGNORECASE)
 _SELF_AUTHORITY = ".github/workflow-contract.yml"
 
 
@@ -1579,7 +1611,10 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
     required = execution | (
         {"suite_key", "guarantee"} if kind is GateKind.LEAF else set()
     )
-    _require_fields(record, frozenset(required), required, "ci-gate-kind-fields", path)
+    optional = {"security_db"} if kind is GateKind.LEAF else set()
+    _require_fields(
+        record, frozenset(required | optional), required, "ci-gate-kind-fields", path
+    )
     opaque = record["opaque"]
     if opaque is not (kind is GateKind.LEAF):
         raise GateContractError(
@@ -1616,6 +1651,11 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
         raise GateContractError(
             "ci-gate-guarantee", path, "a leaf must declare security, deploy or none"
         )
+    security_db = record.get("security_db", "")
+    if security_db not in _SECURITY_DBS:
+        raise GateContractError(
+            "ci-gate-security-db", path, "security_db must be omitted or grype"
+        )
     if suite_key is not None and gate_id != f"leaf.{suite_key}":
         raise GateContractError(
             "ci-gate-suite-id", path, "leaf identity must match its suite key"
@@ -1632,6 +1672,7 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
         opaque,
         (),
         guarantee,
+        security_db,
     )
 
 

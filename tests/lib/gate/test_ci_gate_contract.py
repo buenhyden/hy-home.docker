@@ -1506,6 +1506,61 @@ class GateCrosswalkTests(unittest.TestCase):
                     contract.parse_gate_registry(candidate, "contract")
                 self.assertEqual(code, raised.exception.code)
 
+    def test_grype_consuming_security_leaves_declare_the_security_db(self) -> None:
+        """QA-C07: a leaf that uses Grype is keyed to the vulnerability DB."""
+        declared = {
+            node.gate_id for node in self.registry.nodes if node.security_db == "grype"
+        }
+        self.assertEqual(
+            {
+                "leaf.supply-chain-deterministic-policy",
+                "leaf.supply-chain-fixture-policy",
+            },
+            declared,
+        )
+        self.assertEqual((), contract.validate_gate_registry(ROOT, self.registry))
+        for node in self.registry.nodes:
+            if node.gate_id not in declared:
+                self.assertEqual("", node.security_db, node.gate_id)
+
+    def test_undeclared_grype_consumer_fails_contract_validation(self) -> None:
+        for gate_id in (
+            "leaf.supply-chain-deterministic-policy",  # grype in the entrypoint
+            "leaf.supply-chain-fixture-policy",  # grype in a test-module argument
+        ):
+            with self.subTest(gate_id=gate_id):
+                nodes = tuple(
+                    dataclasses.replace(node, security_db="")
+                    if node.gate_id == gate_id
+                    else node
+                    for node in self.registry.nodes
+                )
+                findings = contract.validate_gate_registry(
+                    ROOT, dataclasses.replace(self.registry, nodes=nodes)
+                )
+                self.assertEqual(
+                    [("ci-gate-security-db", f"gate_nodes/{gate_id}")],
+                    [(item.code, item.path) for item in findings],
+                )
+
+    def test_security_db_field_is_typed_and_leaf_only(self) -> None:
+        baseline = contract.load_contract_document(ROOT)
+        for label, kind, value in (
+            ("unknown", "leaf", "trivy"),
+            ("not-a-string", "leaf", ["grype"]),
+            ("aggregate", "aggregate", "grype"),
+        ):
+            with self.subTest(label=label):
+                candidate = json.loads(json.dumps(baseline))
+                node = next(g for g in candidate["gate_nodes"] if g["kind"] == kind)
+                node["security_db"] = value
+                with self.assertRaises(contract.GateContractError) as raised:
+                    contract.parse_gate_registry(candidate, "contract")
+                self.assertIn(
+                    raised.exception.code,
+                    {"ci-gate-security-db", "ci-gate-kind-fields"},
+                )
+
     def test_current_registry_has_no_duplicate_producers(self) -> None:
         self.assertEqual([], [r.gate_id for r in self.rows if r.duplicate_of])
 
