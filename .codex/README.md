@@ -1,10 +1,10 @@
 ---
 title: "Codex Runtime Route"
-version: "1.0.0"
+version: "1.0.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-13"
 generated_by: "scripts/operations/provider_surface_renderer.py"
 ---
 
@@ -12,22 +12,46 @@ generated_by: "scripts/operations/provider_surface_renderer.py"
 
 # Codex Runtime Route
 
-## Overview
+## Purpose
+
+### Project Role
 
 이 생성 어댑터는 `.codex/provider.md`로 안내합니다.
 
-## Scope
+### Boundaries
 
-이 디렉터리는 생성된 provider 어댑터를 담습니다.
+이 디렉터리는 생성된 provider 어댑터를 담으며, 정책 정본은 담지 않습니다.
 
-## Structure
+## Repository Map
+
+### Directories
 
 정본 거버넌스는 연결된 원본에 남습니다.
 
-## Usage
+| Path | Purpose |
+| --- | --- |
+| `.codex/provider.md` | 이 어댑터의 정본 원본 |
+
+### Canonical Entry Points
+
+정본 진입점은 [`.codex/provider.md`](../.codex/provider.md)입니다.
+
+## Getting Started
+
+### Prerequisites
 
 이 어댑터를 사용하기 전에 연결된 원본을 읽습니다.
 
-## Related Documents
+### First Verified Path
+
+`python3 scripts/operations/provider_surface_renderer.py --check`로 이 생성물이 원본과 일치하는지 확인합니다.
+
+## References
+
+### Current Documentation
 
 - [`.codex/provider.md`](../.codex/provider.md)
+
+### Support and Ownership
+
+이 문서는 `scripts/operations/provider_surface_renderer.py`가 생성하며 소유자는 `@buenhyden`입니다.

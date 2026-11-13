@@ -1,10 +1,10 @@
 ---
 title: "Examples Surface"
-version: "1.1.1"
+version: "1.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-13"
 created: "2026-09-03"
 ---
 
@@ -12,7 +12,9 @@ created: "2026-09-03"
 
 > 새 서비스를 시작할 때 복사해서 쓰는 검증된 시드(seed) 모음
 
-## Overview
+## Purpose
+
+### Project Role
 
 `examples/`는 두 개의 직접 하위 디렉터리를 둡니다. [`sample-web-service/`](sample-web-service/README.md)는
 이 저장소의 컨테이너 관례를 그대로 담은 복사 가능한 시드이며, 정적 웹 서비스
@@ -24,25 +26,27 @@ created: "2026-09-03"
 `examples/`는 그 관례를 배우고 복사하기 위한 출발점과 검증용 입력만
 소유합니다.
 
-## Audience
+#### Audience
 
 - 새 컨테이너 서비스를 추가하려는 Developers
 - 저장소의 컨테이너 하드닝 관례를 확인하려는 Reviewers
 
-## Scope
+### Boundaries
 
-### In Scope
+#### In Scope
 
 - 복사 가능한 서비스 시드와 각 시드의 README
 - 시드가 보여주는 컨테이너·Compose·시크릿 주입 관례
 
-### Out of Scope
+#### Out of Scope
 
 - `infra/`의 실제 서비스 정의와 운영 절차
 - 시드를 복사한 뒤의 서비스별 설정값
 - `docs/` stage 산출물 본문
 
-## Structure
+## Repository Map
+
+### Directories
 
 ```text
 examples/
@@ -51,7 +55,17 @@ examples/
 └── README.md             # This file
 ```
 
-## Usage
+### Canonical Entry Points
+
+복사 가능한 시드의 진입점은 [`sample-web-service/`](sample-web-service/README.md)입니다.
+
+## Getting Started
+
+### Prerequisites
+
+시드를 복사한 뒤 `docker compose config`와 `scripts/validation/validate-docker-compose.sh`로 검증하므로 Docker Compose가 필요합니다.
+
+### First Verified Path
 
 1. 시드 폴더 전체를 `infra/`의 대상 tier 아래로 복사합니다 → 원본 시드는 그대로 남습니다.
 2. 복사본에서 서비스 이름, 이미지, 포트, 네트워크를 대상 서비스에 맞게 바꿉니다 → `docker compose config`가 성공합니다.
@@ -62,7 +76,9 @@ examples/
 시드 자체를 고칠 때는 복사본 대신 `examples/` 원본을 고치고 그 변경이 기존
 서비스에 적용되어야 하는지 함께 판단합니다.
 
-## Related Documents
+## References
+
+### Current Documentation
 
 - [Root README](../README.md)
 - [Infrastructure surface](../infra/README.md)
@@ -70,3 +86,7 @@ examples/
 - Operations (`docs/05.operations/README.md`)
 - README template (`docs/99.templates/templates/common/readme-repository.template.md`)
 - [Documentation index](../docs/README.md)
+
+### Support and Ownership
+
+이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.

@@ -2006,27 +2006,33 @@
         "generated_by"
       ],
       "required_sections": [
-        "Overview",
-        "Scope",
-        "Structure",
-        "Usage",
-        "Related Documents"
-      ],
-      "optional_sections": [
-        "Audience",
+        "Purpose",
+        "Repository Map",
         "Getting Started",
-        "Local Constraints",
-        "Documents",
-        "Verification",
-        "Documentation Standards",
-        "Navigation / Inventory",
-        "Script Lifecycle",
-        "Utilities & Automation",
-        "Verification and Quality Gates"
+        "References"
       ],
+      "optional_sections": [],
       "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": [],
+      "required_subsections": {
+        "Purpose": [
+          "Project Role",
+          "Boundaries"
+        ],
+        "Repository Map": [
+          "Directories",
+          "Canonical Entry Points"
+        ],
+        "Getting Started": [
+          "Prerequisites",
+          "First Verified Path"
+        ],
+        "References": [
+          "Current Documentation",
+          "Support and Ownership"
+        ]
+      },
       "ordered_sections": true,
       "nonempty_sections": true
     },
@@ -2167,22 +2173,33 @@
         "generated_by"
       ],
       "required_sections": [
-        "Overview",
-        "Scope",
-        "Structure",
-        "Usage",
-        "Related Documents"
-      ],
-      "optional_sections": [
-        "Audience",
+        "Purpose",
+        "Repository Map",
         "Getting Started",
-        "Local Constraints",
-        "Documents",
-        "Verification"
+        "References"
       ],
+      "optional_sections": [],
       "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": [],
+      "required_subsections": {
+        "Purpose": [
+          "Project Role",
+          "Boundaries"
+        ],
+        "Repository Map": [
+          "Directories",
+          "Canonical Entry Points"
+        ],
+        "Getting Started": [
+          "Prerequisites",
+          "First Verified Path"
+        ],
+        "References": [
+          "Current Documentation",
+          "Support and Ownership"
+        ]
+      },
       "ordered_sections": true,
       "nonempty_sections": true
     },
