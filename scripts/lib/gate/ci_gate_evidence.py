@@ -568,13 +568,14 @@ def _normalize_rows(rows: Sequence[Mapping[str, object]]) -> list[dict[str, obje
         else:
             row = _require_exact_fields(candidate, _ROW_FIELDS, f"row[{index}]")
         security_db = row.get("security_db", "NOT_APPLICABLE")
-        if security_db not in ("NOT_APPLICABLE", "ABSENT", "INVALID") and (
+        if security_db not in ("NOT_APPLICABLE", "ABSENT") and (
             not isinstance(security_db, str)
             or not security_db.startswith("sha256:")
             or _SHA256.fullmatch(security_db.removeprefix("sha256:")) is None
         ):
             raise EvidenceError(
-                f"row[{index}].security_db must be a marker or sha256 identity"
+                f"row[{index}].security_db must be a marker or sha256 identity "
+                "(an INVALID seed pointer is refused)"
             )
         gate_id = _identifier(row["gate_id"], f"row[{index}].gate_id")
         if gate_id in gate_ids:

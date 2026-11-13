@@ -1002,9 +1002,10 @@ def seed_execution_evidence(
     environ: Mapping[str, str],
     request: ExecutionEvidenceRequest,
 ) -> str:
-    root_fd, verified = _verified_plan(root, plan, environ)
+    canonical_root = _canonical_root(root)
+    root_fd, verified = _verified_plan(canonical_root, plan, environ)
     try:
-        rows = _evidence_rows(root, tuple(verified), request)
+        rows = _evidence_rows(canonical_root, tuple(verified), request)
         try:
             with EvidenceStore.create(
                 request.directory,

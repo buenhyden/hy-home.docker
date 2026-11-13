@@ -535,7 +535,7 @@ class EvidenceStoreTests(unittest.TestCase):
             ).close()
 
     def test_security_db_value_is_a_bounded_identity(self) -> None:
-        for bad in ("", "sha256:short", "absent", 7, "sha256:" + "A" * 64):
+        for bad in ("", "sha256:short", "absent", 7, "sha256:" + "A" * 64, "INVALID"):
             rows = json.loads(json.dumps(self.rows))
             rows[0]["security_db"] = bad
             with self.subTest(value=bad):
@@ -546,6 +546,20 @@ class EvidenceStoreTests(unittest.TestCase):
                         rows=rows,
                         retention_days=14,
                     )
+
+    def test_invalid_security_db_refuses_create_and_open(self) -> None:
+        """An unreadable seed pointer must fail closed, never compare equal."""
+        absent = json.loads(json.dumps(self.rows))
+        absent[0]["security_db"] = "ABSENT"
+        EvidenceStore.create(
+            self.output, identity=self.identity, rows=absent, retention_days=14
+        ).close()
+        invalid = json.loads(json.dumps(self.rows))
+        invalid[0]["security_db"] = "INVALID"
+        with self.assertRaisesRegex(EvidenceError, "security_db"):
+            EvidenceStore.open(
+                self.output, identity=self.identity, rows=invalid, retention_days=14
+            )
 
     def test_update_detects_stale_result_bytes(self) -> None:
         store = self.create()

@@ -252,6 +252,10 @@ class LocalExecutionBoundaryTests(unittest.TestCase):
                 )
 
 
+def evidence_seed_relative() -> str:
+    return "_workspace/repo-support/task-2026-07-23-security-supply-chain-runtime-closure/grype-db-seed"
+
+
 class DescriptorExecutionTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory(dir="/tmp")
@@ -459,6 +463,35 @@ class DescriptorExecutionTests(unittest.TestCase):
             runner.execute_execution_plan(
                 self.root, plan, {"PATH": os.defpath}, evidence=request
             )
+
+    def test_seed_identity_is_never_read_through_a_symlinked_root(self) -> None:
+        plan = self.db_plan()
+        self.publish_seed(b"database one\n")
+        link = pathlib.Path(self.temporary.name).parent / (self.root.name + "-link")
+        link.symlink_to(self.root)
+        self.addCleanup(link.unlink)
+        request = self.evidence_request(
+            pathlib.Path(self.temporary.name) / "ci-gate-evidence",
+            tuple(item.gate_id for item in plan),
+        )
+        with self.assertRaises(contract.GateContractError):
+            runner.seed_execution_evidence(link, plan, {"PATH": os.defpath}, request)
+        self.assertFalse(request.directory.exists())
+
+    def test_invalid_seed_pointer_refuses_seed_and_execution(self) -> None:
+        plan = self.db_plan()
+        self.publish_seed(b"database one\n")
+        pointer = self.root / evidence_seed_relative() / "current.json"
+        pointer.write_bytes(b"\xff\xfe")
+        request = self.evidence_request(
+            pathlib.Path(self.temporary.name) / "ci-gate-evidence",
+            tuple(item.gate_id for item in plan),
+        )
+        with self.assertRaises(contract.GateContractError):
+            runner.seed_execution_evidence(
+                self.root, plan, {"PATH": os.defpath}, request
+            )
+        self.assertFalse(request.directory.exists())
 
     def test_a_leaf_without_security_db_ignores_the_seed(self) -> None:
         self.add_entrypoint("scripts/validation/plain.py")
