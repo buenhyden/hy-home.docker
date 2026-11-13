@@ -154,6 +154,44 @@ currency) on that branch, plus the record commit with this Task.
   protocol (3.21.0) for the disposition and Release rules, and the glossary
   Provenance (0.6.1) for the comparison.
 
+#### W00 to W04 conformance audit 2026-11-14
+
+On the owner's request of 2026-11-14 a fresh-context rules-engineer audited
+W00 to W04 against the r1 revision prompts and contracts, reading files
+rather than Task prose. This is the r1 delta assessment for W00 to W03,
+which TSK-0058 to TSK-0060 ran against the earlier package. Nothing in W00
+to W04 blocks W05. Findings and actions:
+
+| Finding | Class | Action |
+| --- | --- | --- |
+| SemVer 0.y.z rule absent from the protocol | CONFLICT | Fixed: the protocol states it (`265a49a3c`); no checker compares version increments, so the rule is held by review |
+| Version-object inventory absent | MISSING | Fixed: protocol `Version objects` (`265a49a3c`) |
+| `v14.5` written as a contract version, integer `schema_version` without a SemVer mapping | CONFLICT | Held for the owner's decision (Blockers and Decisions); not renumbered |
+| Eight SemVer terms (Public Contract to Baseline Namespace) absent from the glossary | MISSING | Held for the same decision: adding common terms makes a new vocabulary contract revision |
+| Common form revision serialized `COMMON-DOC-FORM-1 1.0.0`, shared contract writes `COMMON-DOC-FORM-1/1.0.0` | CONFLICT (QA-C01) | Fixed (`3f485ab34`) |
+| SPEC-0204 Plan restates Task status (SDLC-04, `sdlc.md` L75-77) | CONFLICT | Fixed in the SPEC-0204 and SPEC-0218 Plans (`9270ffcbd`, cherry-picked); sentences that state a rule, such as "remains NOT_RUN unless separately authorized", were kept as rules |
+| Writers: TSK-0063 wrote the Registry, schema and `registry.py`; this Task wrote the glossary and Registry pins | CONFLICT (process) | Attested here: for those hunks TSK-0063 acted as the W03 writer and this Task as the W01 and W03 writer, one writer per file at a time; no other wave wrote them |
+| DOC-08 DEFER in TSK-0058 has no owner | MISSING (owner) | Closed on its recorded basis (TSK-0058 L114): the facts there hold, no change needed |
+| Skill Gates bullets held in TSK-0058 L444-446 | MISSING (owner) | W07, with the Skill `Completion and Handoff` section |
+| W05-built fixes for W00 to W04 handoffs had no review row | UNREVIEWED | An independent review of the integrated branch is required before criterion 117 is accepted |
+| H-W01-6 (GOV-07) left review-only | UNCONFIRMED | Held for the owner's decision |
+| `sdlc.md` and `workflows.md` keep a workflow form, not the Policy form | UNCONFIRMED | Held for the owner's decision (R147-04: one role, one form) |
+| Document `version` allows release values only | UNCONFIRMED | Kept: no document uses a prerelease, and SemVer format rules apply where one is used; recorded here as the decision basis |
+| H-W04-7 removal of 0248, 0249, 0250, 0260, 0264, 0265 | REMAINING | W02, after the H-W04-2 promotion check |
+| SPEC-DISPOSITION per-criterion depth, Stage 02 currency, OPEN-07 | UNVERIFIED | W11 |
+| R147-07 SDLC and document-stage binding rows; Git cells | UNVERIFIED | Rows: W11 check; Git cells: W06 (H-09) |
+| OPEN-08, OPEN-10 live operations | UNVERIFIED | W10 |
+| OPEN-12; OPEN-13, OPEN-14, H-W01-3 | REMAINING | TSK-0052; W06 |
+| DOC-12 Q-07 isolated rehearsal | REMAINING | W03 preparation before Q07, after W11 |
+
+Corrections to terminal Tasks, recorded here because their bodies are
+immutable: TSK-0063 L196-197 and L241 name W01 for H-W04-8 and H-W04-9,
+which this Task completed (`85d6c39db`), and L261 says "H-W04-1 to H-W04-8"
+where L241 says "to H-W04-9"; TSK-0059 L367 calls H-05 done while L197
+lists it open, and H-05 stays UNVERIFIED here; TSK-0060 L195 "16 of 16
+roles" holds only if the workflow-form decision keeps `sdlc.md` and
+`workflows.md` a separate role.
+
 #### Handoff Verdicts
 
 | ID | Source | Verdict | Action and owner |
