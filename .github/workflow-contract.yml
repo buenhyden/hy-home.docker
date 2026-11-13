@@ -324,6 +324,7 @@
         "tests.lib.document_governance.test_operations_taxonomy",
         "tests.lib.document_governance.test_references",
         "tests.lib.document_governance.test_registry",
+        "tests.lib.document_governance.test_relations",
         "tests.lib.document_governance.test_requirements",
         "tests.lib.document_governance.test_spec_packages",
         "tests.lib.document_governance.test_taxonomy",

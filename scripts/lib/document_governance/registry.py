@@ -485,6 +485,54 @@ def _template_dictionary_findings(raw: Mapping[str, object]) -> list[RegistryFin
     return findings
 
 
+def _relation_contract_findings(
+    common: Mapping[str, object],
+) -> list[RegistryFinding]:
+    """Check the DOC-07 link types and DOC-09 relations beyond their schema.
+
+    The schema pins every value the policy tables fix; this resolves every
+    writer against the frontmatter keys, link types and relation IDs the
+    Registry declares and rejects a relation derived from itself.
+    """
+
+    names = ("link_types", "link_profiles", "document_relations")
+    missing = [name for name in names if not isinstance(common.get(name), Mapping)]
+    if missing:
+        return [
+            RegistryFinding(
+                "relation-contract-missing",
+                f"common.{name}",
+                "the link and relation contract is required",
+            )
+            for name in missing
+        ]
+    keys = set(common.get("frontmatter_order", ()))
+    relations = common["document_relations"]
+    ids = [relation["id"] for relation in relations.values()]
+    known = {
+        "frontmatter": keys,
+        "link": set(common["link_types"]),
+        "derived": set(ids),
+    }
+    findings: list[RegistryFinding] = []
+
+    def invalid(location: str, message: str) -> None:
+        findings.append(RegistryFinding("relation-contract-invalid", location, message))
+
+    for name, relation in relations.items():
+        location = f"common.document_relations.{name}"
+        for writer in relation["writers"]:
+            if writer["ref"] not in known[writer["kind"]]:
+                invalid(location, f"unknown {writer['kind']} writer {writer['ref']}")
+            if writer["kind"] == "derived" and writer["ref"] == relation["id"]:
+                invalid(location, "a relation cannot be derived from itself")
+        if not (ROOT / relation["owner"]).is_file():
+            invalid(location, f"owner {relation['owner']} is not a file")
+        if not set(relation.get("retained_reverse_fields", ())) <= keys:
+            invalid(location, "a retained reverse field must be a frontmatter key")
+    return findings
+
+
 def validate_registry(
     raw: Mapping[str, object],
     *,
@@ -618,6 +666,12 @@ def validate_registry(
                         f"generation {generation} requires the canonical {key}",
                     )
                 )
+    # A historical Registry is checked against its own committed schema, which
+    # predates the relation contract; require it only where the schema has it.
+    if "document_relations" in schema.get("properties", {}).get("common", {}).get(
+        "properties", {}
+    ):
+        findings.extend(_relation_contract_findings(raw.get("common", {})))
     contract = raw.get("common", {}).get("archive_retention")
     if isinstance(contract, Mapping):
         expected = {

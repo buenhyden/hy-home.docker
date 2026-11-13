@@ -1,12 +1,12 @@
 ---
 title: "Repository Vocabulary"
-version: "0.4.0"
+version: "0.5.0"
 type: "governance/vocabulary"
-status: "draft"
+status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 created: "2026-09-06"
-observed_at: "2026-11-12"
+observed_at: "2026-11-13"
 review_cycle: "on-contract-change"
 ---
 
@@ -48,31 +48,31 @@ enforced.
 | TERM-POLICY | Policy | A current norm that states what is allowed, required, forbidden and excepted for a goal and scope | A single Task record | [Bootstrap](../governance/bootstrap.md#authority-and-precedence) | v14.5 |
 | TERM-RULE | Rule | A norm under a policy that states a condition, the expected behavior and how a violation is judged | Changing only a check's expected value | [Bootstrap](../governance/bootstrap.md#authority-and-precedence) | v14.5 |
 | TERM-CONTRACT | Contract | A versioned agreement between producer and consumer on meaning, inputs and outputs, invariants and verification | A particular implementation language | [Approval boundaries](../governance/approval-boundaries.md) | v14.5 |
-| TERM-CANONICAL | Canonical Source | The single source with independent authoring authority for one meaning; a derived copy tracks its source and revision. Here, an authored file under `.agents/` | Merely having one copy | [Agent governance index](../README.md) | v14.5 |
-| TERM-APPROVAL | Approval | A decision that grants authority to perform a named change or operation in a named scope | Acceptance, a passing check or a merged PR | [Approval boundaries](../governance/approval-boundaries.md) | v14.5 |
-| TERM-ADOPTION | Adoption | Applying one revision of a shared contract to this workspace's producers and consumers and verifying it, recorded in this repository's own Task | Approval of the shared goal, or a configured surface alone (tracked configuration) | [Approval boundaries](../governance/approval-boundaries.md) | v14.5 |
-| TERM-EXECUTION | Execution | An action performed on a real target, environment and revision | A plan, a proposed command or a declared setting | [SDLC](../governance/sdlc.md#sequence) | v14.5 |
-| TERM-VERIFICATION | Verification | Confirming by observation, test or review that an output meets its stated requirement or contract | Validation or owner acceptance | [SDLC](../governance/sdlc.md#sequence) | v14.5 |
+| TERM-CANONICAL | Canonical Source | The single source with independent authoring authority for one meaning; a derived copy tracks its source and revision | Merely having one copy | [Agent governance index](../README.md) | v14.5 |
+| TERM-APPROVAL | Approval | A decision that grants authority to perform a named change or operation in a named scope; it is distinct from accepting the result | Acceptance, a passing test or a merge | [Approval boundaries](../governance/approval-boundaries.md) | v14.5 |
+| TERM-ADOPTION | Adoption | The state in which one revision of a shared contract has been applied to the real workspace's producers and consumers and verified | Approval of the shared goal | [Approval boundaries](../governance/approval-boundaries.md) | v14.5 |
+| TERM-EXECUTION | Execution | An action performed on a real target, environment and revision; it is distinct from a proposed command or a declared setting | A plan or a setting | [SDLC](../governance/sdlc.md#sequence) | v14.5 |
+| TERM-VERIFICATION | Verification | Confirming by observation, test or review that an output meets its stated requirement or contract | Validation or user acceptance | [SDLC](../governance/sdlc.md#sequence) | v14.5 |
 | TERM-VALIDATION | Validation | Confirming that an output meets its intended use and the actual need under the stated conditions | A tool merely named `validate` | [Quality standards](../governance/quality-standards.md) | v14.5 |
-| TERM-ACCEPTANCE | Acceptance | An authorized owner's decision to accept a criterion and its evidence; required failures and exceptions keep their recorded handling | Approval, a merged PR, a runtime accepting a value, or a risk acceptance | [SDLC](../governance/sdlc.md#sequence) | v14.5 |
+| TERM-ACCEPTANCE | Acceptance | A decision by an authorized party to accept a named criterion and its evidence; the basis for handling required failures and exceptions is preserved | Approval or a merged PR | [SDLC](../governance/sdlc.md#sequence) | v14.5 |
 | TERM-COMPLETION | Completion | The scoped close of one work item once its required execution, checks and acceptance conditions hold. It does not close integration, deployment or another Task | Setting every status to completed | [Task checklists](../governance/task-checklists.md) | v14.5 |
 | TERM-PROMOTION | Promotion | Handing an open change's lasting meaning to the current requirement, design, operations or governance owner through the Plan's mapping | Moving a file or copying a Task status | [SDLC](../governance/sdlc.md#sequence) | v14.5 |
-| TERM-RETIREMENT | Retirement | Ending a document's current effect: its still-current meaning moves to its owner and the file is deleted once the retirement preconditions hold; Git history keeps the body | Unconditional deletion | [Documentation protocol](../governance/documentation-protocol.md#document-retention-and-retirement) | v14.5 |
-| TERM-ARCHIVE | Archive | Preserving past evidence that is no longer normative. Here Git history is the archive and Stage 98 holds only its README | Equating a vault archive with ending development work | [Documentation protocol](../governance/documentation-protocol.md#document-retention-and-retirement) | v14.5 |
-| TERM-REMOVAL | Removal | Deleting a file from the current tree after authority, holds, consumer handoff and recovery are confirmed | Rewriting Git history or destroying a source without a basis | [Documentation protocol](../governance/documentation-protocol.md#retirement-preconditions) | v14.5 |
-| TERM-SUPERSESSION | Supersession | A newer owner taking over the valid scope of an earlier document or decision through a reciprocal lineage | A title change | [Documentation protocol](../governance/documentation-protocol.md) | v14.5 |
-| TERM-HOLD | Preservation Hold | A recorded preservation condition that blocks disposal of a named source or evidence until it is resolved | A blanket stop on all work | [Documentation protocol](../governance/documentation-protocol.md#retirement-preconditions) | v14.5 |
-| TERM-REGISTRY | Registry | The machine-readable contract for document profiles, forms, states, relations and template bindings, `docs/99.templates/registry.json`. Approved content stays open to reform | A frozen baseline | [Documentation protocol](../governance/documentation-protocol.md) | v14.5 |
-| TERM-TEMPLATE | Template | The authoring form that implements one role's fields, headings, tables, relations and lifecycle | A copyable example or a heading list alone | [Documentation protocol](../governance/documentation-protocol.md) | v14.5 |
-| TERM-PROFILE | Document Profile | A Registry entry binding a path pattern to the role's required frontmatter, sections, identity, lifecycle and template | A validation profile (`changed`, `full`) | [Documentation protocol](../governance/documentation-protocol.md) | v14.5 |
-| TERM-TASK | Task | The single authored record of one scope's execution, blockers, observations, evidence and acceptance decision; other documents reference it | A progress table duplicated in a Plan | [SDLC](../governance/sdlc.md#sequence) | v14.5 |
-| TERM-EVIDENCE | Evidence | The actual source, target revision, conditions and result that support a claim, labelled by the observation made: static, configured, native, hosted or operational | A memory summary or a planned command | [Output style](../governance/output-style.md) | v14.5 |
-| TERM-RESOLVES | Resolves | A link stating that a later PASS row with the same Check and Work Unit meets the same obligation, inputs and guarantee as an earlier non-PASS row | A newer PASS erasing every failure | [SDLC](../governance/sdlc.md#sequence) | v14.5 |
+| TERM-RETIREMENT | Retirement | A decision that ends a document's current effect and fixes its successor owner, lineage and any needed historical evidence | Unconditional deletion | [Documentation protocol](../governance/documentation-protocol.md#document-retention-and-retirement) | v14.5 |
+| TERM-ARCHIVE | Archive | The preservation and access state of past evidence that is no longer normative. The common goal is to keep completed development bodies that meet the conditions from accumulating in the tree | Equating vault storage with ending development work | [Documentation protocol](../governance/documentation-protocol.md#document-retention-and-retirement) | v14.5 |
+| TERM-REMOVAL | Removal | Removing a file from the current tree, or from an approved separate copy, after authority, holds, consumer handoff and recovery are confirmed | Rewriting Git history or destroying a source without a basis | [Documentation protocol](../governance/documentation-protocol.md#retirement-preconditions) | v14.5 |
+| TERM-SUPERSESSION | Supersession | A relation in which a newer meaning owner takes over the valid scope of an earlier document or decision and connects their lineage | A title change | [Documentation protocol](../governance/documentation-protocol.md) | v14.5 |
+| TERM-HOLD | Preservation Hold | A preservation condition that blocks disposal of a named source or evidence until there is a basis for resolving it | A blanket stop on all work | [Documentation protocol](../governance/documentation-protocol.md#retirement-preconditions) | v14.5 |
+| TERM-REGISTRY | Registry | The machine-readable contract that states document profiles, forms, states, relations and generator bindings. Approved content stays open to reform | A frozen baseline | [Documentation protocol](../governance/documentation-protocol.md) | v14.5 |
+| TERM-TEMPLATE | Template | The authoring form that implements one role's common rules, policies, fields, headings, tables, relations and lifecycle | A copied example or a heading list alone | [Documentation protocol](../governance/documentation-protocol.md) | v14.5 |
+| TERM-PROFILE | Document Profile | The conditions under which fields, sections, relations, lifecycle and template apply to one document role; it is distinct from an execution profile that selects checks | A validation profile | [Documentation protocol](../governance/documentation-protocol.md) | v14.5 |
+| TERM-TASK | Task | The single authored record of one scope's execution, blockers, observations, evidence and acceptance decision; other documents reference or derive from it | A progress table duplicated in a Plan | [SDLC](../governance/sdlc.md#sequence) | v14.5 |
+| TERM-EVIDENCE | Evidence | The actual source, target revision, conditions and result that support a claim, distinguishing static, local, remote, native and operational scope | A memory summary or a planned command | [Output style](../governance/output-style.md) | v14.5 |
+| TERM-RESOLVES | Resolves | A link stating that later evidence meets the same obligation, input conditions and guarantee and so resolves an earlier failure or non-run | The newest PASS erasing every failure | [SDLC](../governance/sdlc.md#sequence) | v14.5 |
 | TERM-HISTORICAL-AUDIT | Historical Audit ID | A key such as OPEN-01 to OPEN-14 that names an item of an earlier audit. It is not a current state, file name or issue number | A currently open work item | This vocabulary; current verdicts live in the owning Task | v14.5 |
-| TERM-HARNESS | Harness | The execution setup that connects instructions, routing, permissions, state, tools, observation, stop and recovery | An instruction file existing | [Agentic policy](../governance/agentic.md) | v14.5 |
+| TERM-HARNESS | Harness | The execution setup that connects instructions, routing, permissions, state, tools, observation, stop and recovery | Treating an instruction file's existence as actual application | [Agentic policy](../governance/agentic.md) | v14.5 |
 | TERM-NATIVE-EVIDENCE | Native Runtime Evidence | A result observed in the installed provider, at its revision, through the actual tool path | A direct function test or vendor documentation | [Provider capability matrix](../governance/provider-capability-matrix.md) | v14.5 |
-| TERM-PROJECTION | Projection | A consumer file generated from a canonical source and explicit local bindings; it has no policy authoring authority | An independent manual copy | [Providers index](../governance/providers/README.md) | v14.5 |
-| TERM-EXCEPTION | Exception | A limited departure from a standard with an approved condition, scope, reason, end or review condition, and verification | Keeping an existing difference forever | [Quality standards](../governance/quality-standards.md) | v14.5 |
+| TERM-PROJECTION | Projection | A consumer file generated or synchronized from a canonical source and explicit local bindings; it has no policy authoring authority | An independent manual copy | [Providers index](../governance/providers/README.md) | v14.5 |
+| TERM-EXCEPTION | Exception | A limited departure from a standard with an approved condition, scope, reason, period or end condition, and verification | Keeping an existing difference forever | [Quality standards](../governance/quality-standards.md) | v14.5 |
 | TERM-UNVERIFIED | Unverified | The state of a claim whose needed evidence was not obtained. It asserts neither a gap, nor non-applicability, nor completion | A confirmed missing implementation | [Output style](../governance/output-style.md) | v14.5 |
 | TERM-KEEP | Keep | A change action meaning the current target and real consumers were confirmed to fit, so no change is needed; open acceptance stays separate | Exempting an approved artifact from reform | This vocabulary; the verdict lives in the owning Task | v14.5 |
 | TERM-RELEASE-OPERATION | Release Operation | The operational work on tags, artifacts, GitHub Releases and public delivery. Release is not a document role | Bringing back a separate document type for releases | [Documentation protocol](../governance/documentation-protocol.md#release-evidence-boundary) | v14.5 |
@@ -81,6 +81,15 @@ enforced.
 
 | Term | Definition | Not to Confuse | Policy Owner |
 | --- | --- | --- | --- |
+| Canonical location | Here a canonical source is an authored file under `.agents/`, or the Stage owner a policy names | A generated projection | [Agent governance index](../README.md) |
+| Adoption record | This repository records each adoption, with its revision and effective date, in its own Task; a configured surface alone is tracked configuration, not adoption | Adoption by another repository | [Approval boundaries](../governance/approval-boundaries.md) |
+| Acceptance record | Acceptance is recorded only in a Task's Criterion Acceptance table; a runtime accepting a value or a risk acceptance is not Acceptance | Runtime acceptance | [SDLC](../governance/sdlc.md#sequence) |
+| Retirement, here | Still-current meaning moves to its owner and the file is deleted in the same change once the retirement preconditions hold; Git history keeps the body | Removal without retirement | [Documentation protocol](../governance/documentation-protocol.md#document-retention-and-retirement) |
+| Archive, here | Git history is the archive; Stage 98 holds only its README | A tracked archive copy | [Documentation protocol](../governance/documentation-protocol.md#document-retention-and-retirement) |
+| Registry file | The Registry is `docs/99.templates/registry.json` | A template | [Documentation protocol](../governance/documentation-protocol.md) |
+| Document Profile entry | A Registry entry binding a path pattern to a role's required frontmatter, sections, identity, lifecycle and template | Profile, gate sense | [Documentation protocol](../governance/documentation-protocol.md) |
+| Supersession lineage | Outside Stages 01 to 03, the newer document lists predecessors in `supersedes` and the older names its one successor in `superseded_by`; Stage 01 to 03 successors record the replaced substance in Traceability instead | A one-way mention | [Documentation protocol](../governance/documentation-protocol.md) |
+| Resolves row | In a Task Evidence table, a later required PASS row for a shared criterion, with the same Check and Work Unit, names the earlier non-PASS row in its `Resolves` column | Any newer PASS | [SDLC](../governance/sdlc.md#sequence) |
 | Spec Package | A directory holding one bounded change's `spec.md`, optional `plan.md`, and numbered Tasks | A long-lived requirement or design | [Documentation protocol](../governance/documentation-protocol.md) |
 | Lifecycle | The named status set and permitted transitions for a profile; `living` and `spec` differ | The SDLC stage or document stage | [Documentation protocol](../governance/documentation-protocol.md) |
 | Identity space | The monotonic allocator for an artifact prefix; an issued number is never reused | A display order | [Documentation protocol](../governance/documentation-protocol.md) |
@@ -126,7 +135,9 @@ Compiled from tracked sources at repository commit
 Repository Vocabulary form at `main` `4cd25b95b`. The common terms follow
 the four-repository target at contract version v14.5. The policy owners were
 read at the lines cited in that Task. The local terms carry the earlier rows
-unchanged in meaning.
+unchanged in meaning. On 2026-11-13 SPEC-0212 TSK-0062 restored
+twenty common rows to the contract wording and moved their local
+narrowings into Local Extensions.
 
 ### Refresh Triggers
 

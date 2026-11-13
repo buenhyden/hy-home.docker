@@ -37,6 +37,10 @@ _EMPTY_SECTION_RULES = (
     "A heading with no body below it.",
     "A body that is only TODO, TBD, N/A or -.",
 )
+_STAND_IN_RULE = (
+    "A same-named heading inside a code fence, quote or comment "
+    "standing in for the real section."
+)
 # Registry `common` table contracts: (columns key, optional columns key,
 # minimum rows). spec_packages rejects an empty registered table; a README
 # Documents table is checked only when present.
@@ -285,10 +289,20 @@ def _section_headings(
     source: str,
     guidance: Mapping[tuple[str, str | None], str],
     profile: Mapping[str, object],
+    conditional: Mapping[str, object],
+    role_rule: str | None,
 ) -> list[dict[str, object]]:
     required_sub = profile.get("required_subsections") or {}
     optional_sub = profile.get("optional_subsections") or {}
     has_subsections = bool(required_sub or optional_sub)
+    optional_titles = {str(name) for names in optional_sub.values() for name in names}
+    unknown = set(conditional) - optional_titles
+    if unknown:
+        raise RegistryError(
+            f"{template_id} names absent optional subsections: {sorted(unknown)}"
+        )
+    # The template states the declared subsection order.
+    position = {key: index for index, key in enumerate(guidance)}
     ordered = bool(profile.get("ordered_sections"))
     nonempty = bool(profile.get("nonempty_sections"))
 
@@ -320,17 +334,24 @@ def _section_headings(
             ids.append("body-section-empty")
         if has_subsections:
             ids.append("body-section-placeholder")
+        if required:
+            requiredness, condition = "required", "always"
+        elif level == 3 and title in conditional:
+            requiredness, condition = "conditional", str(conditional[title])
+        else:
+            requiredness, condition = (
+                "optional",
+                "optional: the profile registers no narrower condition; "
+                "omit the section when the document has nothing for it",
+            )
         return {
             "section_id": section_id,
             "level": level,
             "parent_id": parent_id,
             "title": title,
             "order": order,
-            "requiredness": "required" if required else "optional",
-            "condition": "always"
-            if required
-            else "optional: the profile registers no narrower condition; "
-            "omit the section when the document has nothing for it",
+            "requiredness": requiredness,
+            "condition": condition,
             "content": content,
             "required_content": [content]
             + (
@@ -338,7 +359,11 @@ def _section_headings(
                 if required
                 else []
             ),
-            "prohibited_content": list(_EMPTY_SECTION_RULES),
+            "prohibited_content": [
+                *([role_rule] if role_rule else []),
+                *_EMPTY_SECTION_RULES,
+                *([_STAND_IN_RULE] if level == 3 else []),
+            ],
             "empty_policy": "explain_none_or_not_applicable"
             if required
             else "omit_when_condition_false",
@@ -357,6 +382,7 @@ def _section_headings(
             *((str(name), True) for name in required_sub.get(title, ())),
             *((str(name), False) for name in optional_sub.get(title, ())),
         ]
+        sub.sort(key=lambda item: position.get((title, item[0]), len(position)))
         children = [
             section(name, title, parent_id, index, flag, [])
             for index, (name, flag) in enumerate(sub, start=1)
@@ -548,7 +574,17 @@ def template_definition(
         raise RegistryError(f"cannot read template {source}: {error}") from error
     guidance, headers = _template_outline(text)
     if profile.get("required_sections") or profile.get("optional_sections"):
-        headings = _section_headings(template_id, source, guidance, profile)
+        role_rule = (common.get("section_prohibited_content") or {}).get(template_id)
+        if profile.get("required_subsections") and not role_rule:
+            raise RegistryError(f"{template_id} has no section_prohibited_content")
+        headings = _section_headings(
+            template_id,
+            source,
+            guidance,
+            profile,
+            role.get("conditional_units", {}),
+            role_rule,
+        )
     else:
         headings = _structural_headings(
             template_id, source, text, profile, role.get("conditional_units", {})

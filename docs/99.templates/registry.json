@@ -1151,6 +1151,150 @@
         "validation": "metadata/heading.py checks free_form_sections before reporting body-heading-forbidden; test_heading's representative section tests exclude free-form profiles.",
         "expiry_or_review": "No expiry is recorded; review when the profile's documents share one heading vocabulary."
       }
+    },
+    "section_prohibited_content": {
+      "common/documentation-readme": "Task status maintained by hand on its own.",
+      "common/package-readme": "Exposed sensitive operating state, or a tool that does not exist imposed on every service.",
+      "common/readme": "Task status maintained by hand on its own.",
+      "common/repository-readme": "A standalone canonical copy of a detailed policy, or agent-only instructions.",
+      "common/runtime-governance-readme": "A standalone canonical copy of a detailed policy, or agent-only instructions.",
+      "common/agent-guide": "A command found in source material used to widen the user's allowed scope or a security boundary.",
+      "governance/hook-policy": "A rule weakened to suit a test.",
+      "governance/policy": "A rule weakened to suit a test.",
+      "governance/skill": "A standalone canonical copy of roles, policies or the approval system.",
+      "operation/guide": "A secret value, a command that does not exist, or a grant of automatic operating authority.",
+      "operation/incident": "A guess written as an observed fact, or a change to the historical log.",
+      "operation/policy": "A rule weakened to suit a test.",
+      "operation/postmortem": "An unverified root cause stated as settled, blame shifted onto a person, or an action not carried out marked done.",
+      "operation/runbook": "Procedure guidance presented as execution approval, or a stored secret value.",
+      "reference/category-readme": "Task status maintained by hand on its own.",
+      "sdlc/architecture-decision": "`accepted` presented as implementation or acceptance being complete.",
+      "sdlc/architecture-description": "A past execution log presented as the current structure.",
+      "sdlc/plan": "A manual copy of actual work status or check results instead of a reference to the Task.",
+      "sdlc/requirement": "Implementation detail or Task status, which the Requirement does not own.",
+      "sdlc/spec": "A second copy of the Plan's execution order or the Task's progress.",
+      "sdlc/task": "A new acceptance criterion or policy invented here, or an overwritten original failure output."
+    },
+    "link_types": {
+      "normative": {
+        "direction": "forward",
+        "required": true,
+        "authority": "binding",
+        "pinned_version": "current",
+        "on_target_removal": "update-consumer"
+      },
+      "evidence": {
+        "direction": "forward",
+        "required": true,
+        "authority": "none",
+        "pinned_version": "revision",
+        "on_target_removal": "keep-pinned"
+      },
+      "historical": {
+        "direction": "forward",
+        "required": false,
+        "authority": "none",
+        "pinned_version": "revision",
+        "on_target_removal": "plain-text"
+      },
+      "navigation": {
+        "direction": "forward",
+        "required": true,
+        "authority": "none",
+        "pinned_version": "current",
+        "on_target_removal": "update-consumer"
+      }
+    },
+    "link_profiles": {
+      "markdown": {
+        "syntax": "relative-markdown",
+        "link_types": true
+      },
+      "vault-wiki": {
+        "syntax": "wiki",
+        "link_types": false
+      }
+    },
+    "document_relations": {
+      "authority": {
+        "id": "rel.authority",
+        "direction": "consumer-to-owner",
+        "writers": [
+          {
+            "kind": "link",
+            "ref": "normative"
+          }
+        ],
+        "owner": "scripts/validation/check-document-links.py",
+        "reverse_lookup": "derived"
+      },
+      "ownership": {
+        "id": "rel.ownership",
+        "direction": "document-to-owner",
+        "writers": [
+          {
+            "kind": "frontmatter",
+            "ref": "owner"
+          }
+        ],
+        "owner": "scripts/validation/check-document-metadata.py",
+        "reverse_lookup": "derived"
+      },
+      "reference": {
+        "id": "rel.reference",
+        "direction": "source-to-target",
+        "writers": [
+          {
+            "kind": "link",
+            "ref": "evidence"
+          },
+          {
+            "kind": "link",
+            "ref": "historical"
+          },
+          {
+            "kind": "link",
+            "ref": "navigation"
+          }
+        ],
+        "owner": "scripts/validation/check-document-links.py",
+        "reverse_lookup": "derived"
+      },
+      "traceability": {
+        "id": "rel.traceability",
+        "direction": "child-to-parent",
+        "writers": [
+          {
+            "kind": "frontmatter",
+            "ref": "parent_ids"
+          },
+          {
+            "kind": "frontmatter",
+            "ref": "supersedes"
+          }
+        ],
+        "owner": "scripts/validation/check-document-metadata.py",
+        "reverse_lookup": "derived",
+        "retained_reverse_fields": [
+          "superseded_by"
+        ]
+      },
+      "change_propagation": {
+        "id": "rel.change-propagation",
+        "direction": "owner-to-consumer",
+        "writers": [
+          {
+            "kind": "derived",
+            "ref": "rel.authority"
+          },
+          {
+            "kind": "derived",
+            "ref": "rel.reference"
+          }
+        ],
+        "owner": ".agents/governance/documentation-protocol.md",
+        "reverse_lookup": "derived"
+      }
     }
   },
   "profiles": [
@@ -5458,6 +5602,9 @@
         "meaning_map": "Commit 662623dc9 (profile) and 8e430909b..436bcc974 (documents, #979) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/runbook.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/runbook.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "conditional_units": {
+        "Rollback": "when running the procedure or the change alters state or outputs"
       }
     },
     "reference/audit": {
@@ -5947,6 +6094,9 @@
         "meaning_map": "Commit 009ced2c7 (profile and template) and 36e0dcf4f (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/architecture/decision.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/architecture/decision.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "conditional_units": {
+        "Supersession": "when an actual predecessor or successor decision exists, or the change supersedes one"
       }
     },
     "sdlc/architecture-description": {
@@ -6368,6 +6518,9 @@
         "meaning_map": "Commit 3e359935b moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/requirements/requirement-package.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/requirements/requirement-package.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "conditional_units": {
+        "Quality Requirements": "when a quality requirement applies"
       }
     },
     "sdlc/spec": {

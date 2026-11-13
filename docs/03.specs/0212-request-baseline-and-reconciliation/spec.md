@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.54.0"
+version: "1.55.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -210,6 +210,13 @@ condition per requirement identity in REQ-0024 to REQ-0027, and acceptance
 conditions for the REQ-0003 quality requirements. The owner approved the
 drafted wording, which reuses existing condition text or the requirement's own
 text and measure and adds no obligation.
+
+The owner decision of 2026-11-13 adds criterion 115 and W120 in TSK-0062 for
+the deviations a pre-W04 audit found in the W00 to W03 results: common
+glossary rows that narrowed the shared contract wording, the incident and
+postmortem never-retire rule that had no policy owner, TemplateDefinition
+fields that lost the section contract's conditions, order and prohibited
+content, and the missing R07 relation and R08 link types.
 
 ### Owning Requirements
 
@@ -896,6 +903,14 @@ target, backup, recovery boundary, and action-specific authorization.
      requirements theirs, using only existing condition text or the
      requirement's own text and measure. Each Requirement keeps its
      verification method, and the metadata, link and lifecycle checks pass.
+115. TSK-0062 corrects the W00 to W03 results that deviate from their
+     requirements: each common glossary row matches the shared vocabulary
+     contract with local meaning only under Local Extensions; the incident
+     and postmortem never-retire rule has its policy owner; each derived
+     TemplateDefinition keeps the section contract's requiredness, condition,
+     order and prohibited content; and the R07 relation and R08 link types
+     are defined in the policy and bound in the Registry, each change with a
+     passing and a failing test where a contract changes.
 
 ### Evidence Requirements
 
