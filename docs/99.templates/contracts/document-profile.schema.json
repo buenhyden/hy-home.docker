@@ -212,12 +212,13 @@
           "pattern": "^COMMON-DOC-FORM-[0-9]+/(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$(?!\\n)"
         },
         "vocabulary_contract": {
-          "$comment": "The adopted shared vocabulary contract: identity, version and Term ID to Term pairs only; the glossary owns meaning.",
+          "$comment": "The adopted shared vocabulary contract: identity, SemVer version, the source package label and hash it was first adopted from, and Term ID to Term pairs only; the glossary owns meaning.",
           "type": "object",
           "additionalProperties": false,
           "required": [
             "contract_id",
             "version",
+            "source_label",
             "source_sha256",
             "glossary_path",
             "terms"
@@ -228,6 +229,10 @@
               "minLength": 1
             },
             "version": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$(?!\\n)"
+            },
+            "source_label": {
               "type": "string",
               "minLength": 1
             },

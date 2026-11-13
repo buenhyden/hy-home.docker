@@ -3981,8 +3981,21 @@ class VocabularyContractTests(unittest.TestCase):
         ]
 
     def test_the_glossary_matches_the_pinned_contract(self) -> None:
-        self.assertEqual(33, len(self.common["vocabulary_contract"]["terms"]))
+        contract = self.common["vocabulary_contract"]
+        self.assertEqual(41, len(contract["terms"]))
+        self.assertEqual("1.1.0", contract["version"])
+        self.assertEqual("v14.5", contract["source_label"])
         self.assertEqual([], self.codes())
+
+    def test_a_package_label_is_not_a_contract_version(self) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        for value in ("v14.5", "14.5", "v1.1.0", "01.1.0"):
+            with self.subTest(value=value):
+                raw["common"]["vocabulary_contract"]["version"] = value
+                self.assertIn(
+                    "schema-invalid",
+                    {finding.code for finding in validate_registry(raw)},
+                )
 
     def test_a_missing_row_is_rejected(self) -> None:
         text = re.sub(r"^\| TERM-HOLD \|.*\n", "", self.text, flags=re.MULTILINE)
@@ -3994,8 +4007,8 @@ class VocabularyContractTests(unittest.TestCase):
 
     def test_a_wrong_contract_version_is_rejected(self) -> None:
         text = re.sub(
-            r"(^\| TERM-TASK \|.*\| )v14\.5( \|)$",
-            r"\g<1>v14.4\2",
+            r"(^\| TERM-TASK \|.*\| )1\.1\.0( \|)$",
+            r"\g<1>1.0.0\2",
             self.text,
             flags=re.MULTILINE,
         )
@@ -4005,7 +4018,7 @@ class VocabularyContractTests(unittest.TestCase):
     def test_an_extra_common_row_is_rejected(self) -> None:
         text = self.text.replace(
             "| TERM-KEEP |",
-            "| TERM-LOCAL | Local | x | y | z | v14.5 |\n| TERM-KEEP |",
+            "| TERM-LOCAL | Local | x | y | z | 1.1.0 |\n| TERM-KEEP |",
             1,
         )
         self.assertIn("vocabulary-term-unregistered", self.codes(text))

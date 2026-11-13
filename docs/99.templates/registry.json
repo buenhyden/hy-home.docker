@@ -1295,7 +1295,8 @@
     },
     "vocabulary_contract": {
       "contract_id": "repository-vocabulary",
-      "version": "v14.5",
+      "version": "1.1.0",
+      "source_label": "v14.5",
       "source_sha256": "b03ae3c00a4228de90d90b48c9a7af4b716492651d83b6deab128d9e3bc92fce",
       "glossary_path": ".agents/knowledge/glossary.md",
       "terms": [
@@ -1430,6 +1431,38 @@
         {
           "term_id": "TERM-RELEASE-OPERATION",
           "term": "Release Operation"
+        },
+        {
+          "term_id": "TERM-PUBLIC-CONTRACT",
+          "term": "Public Contract"
+        },
+        {
+          "term_id": "TERM-COMPATIBILITY",
+          "term": "Compatibility"
+        },
+        {
+          "term_id": "TERM-CONTRACT-VERSION",
+          "term": "Contract Version"
+        },
+        {
+          "term_id": "TERM-REGISTRY-SCHEMA-VERSION",
+          "term": "Registry Schema Version"
+        },
+        {
+          "term_id": "TERM-DOCUMENT-REVISION",
+          "term": "Document Revision"
+        },
+        {
+          "term_id": "TERM-PRERELEASE",
+          "term": "Prerelease"
+        },
+        {
+          "term_id": "TERM-BUILD-METADATA",
+          "term": "Build Metadata"
+        },
+        {
+          "term_id": "TERM-BASELINE-NAMESPACE",
+          "term": "Baseline Namespace"
         }
       ]
     }
