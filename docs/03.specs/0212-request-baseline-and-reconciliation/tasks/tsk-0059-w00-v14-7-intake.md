@@ -1,8 +1,8 @@
 ---
 title: "W00 v14.7 Intake Task"
-version: "0.7.1"
+version: "0.8.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-13"
 layer: "specs"
@@ -71,6 +71,7 @@ outside the stated boundary.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0059 | draft | ready | #owner-directed-local-execution |
 | SPEC-0212-TSK-0059 | ready | in-progress | #owner-directed-local-execution |
+| SPEC-0212-TSK-0059 | in-progress | completed | #review-and-completion |
 
 #### Boundary 2026-11-12
 
@@ -192,15 +193,15 @@ Registry `common` keys and the validators in the same commit.
 | H-01 | W01 | Done 2026-11-12 (see Vocabulary changes). Was: `.agents/knowledge/glossary.md` has H2 Overview, Scope, Rules, Evidence, Related Documents and columns Term \| Meaning here \| Rule owner. The target is H2 Purpose, Scope, Normative Language, Repository Vocabulary, Local Extensions, Maintenance, References, with columns Term ID to Contract Version. Of the 33 target terms, 20 are absent, 8 narrower, 3 different and 2 the same. The 28 current terms with no target become Local Extensions |
 | H-02 | W01 | Done 2026-11-12 (see Vocabulary changes). Was: competing meanings. Acceptance: `sdlc.md:83-90`, `provider-capability-matrix.md:61`, `quality-standards.md:56-65`. Adoption: `approval-boundaries.md:75-78,86`, `agentic.md:100-106`. Unverified is an evidence class in the glossary and a state in `github-governance.md:27,34`. Completion in `git-workflow.md:129-131` is UNVERIFIED against the target. Uppercase MUST without an RFC 2119/8174 declaration: `environment-constraints.md:45` |
 | H-03 | W03 | Done 2026-11-12 (see Vocabulary changes). Was: the `governance-knowledge` profile (`registry.json` L2771, `required_sections` L2798, ordered and nonempty) rejects the H-01 target H2s. It needs a glossary-specific profile or changed sections. Consumers: `providers/registry.yaml:62` and `agent_governance_contract.py:37,1253` |
-| H-04 | W03 | None of the 16 common roles matches its target H2 list. The per-role diffs are in the 2026-11-12 inventory: Requirement differs by one rename, and Guide and the three README roles differ entirely. The Registry declares no H3. Change `registry.json`, the templates and the current documents, and `docs/99.templates/README.md:106-113` |
+| H-04 | W03 | Done 2026-11-13 by W03 in TSK-0058: all 16 common roles carry the common form (#967 to #986). Was: None of the 16 common roles matches its target H2 list. The per-role diffs are in the 2026-11-12 inventory: Requirement differs by one rename, and Guide and the three README roles differ entirely. The Registry declares no H3. Change `registry.json`, the templates and the current documents, and `docs/99.templates/README.md:106-113` |
 | H-05 | W05 | `metadata/heading.py:352` extracts only H1 and H2. Its checks (L728-890) have no H3 parent, condition, prohibited-content or `empty_policy` model; tests are `test_heading.py` and `test_registry.py` |
-| H-06 | W03 | TemplateDefinition: 15 of 19 fields are absent from `registry.json` and `document-profile.schema.json` (`$defs/templateRole` L798-816): role, contract_version, purpose, responsibility, non_goals, policy_refs, vocabulary_refs, applicability, extensions, consumer_paths, validation, migration, and per-profile tables. No document generator exists; templates are only validated (`heading.py:64`) |
+| H-06 | W03 | Done 2026-11-13 by W03 in TSK-0058 (#987). Was: TemplateDefinition: 15 of 19 fields are absent from `registry.json` and `document-profile.schema.json` (`$defs/templateRole` L798-816): role, contract_version, purpose, responsibility, non_goals, policy_refs, vocabulary_refs, applicability, extensions, consumer_paths, validation, migration, and per-profile tables. No document generator exists; templates are only validated (`heading.py:64`) |
 | H-07 | W04 | Registry `common` hard-codes heading names: `spec_section`, `plan_section`, `task_section`, `criterion_acceptance_section`, `execution_items.section`, `task_lifecycle_events.section` and `incident_closure.corrective_section`. Each must move with H-04 |
 | H-08 | W05 | 41 of 362 code files are not wired into the gate graph. Examples: `tests/validation/lifecycle/`, `check-text-style.py` (pre-commit only), `check-project-registration.py`, `check-hermes-candidate.py`. Only 96 of 200 test files appear in a manifest `tests:` field, and two manifest entries have no consumer. Re-check the SPEC-0204 TSK-0011 L1193 `Resolves` (OPEN-11) |
 | H-09 | W06 | Stage-QA cells: COMMIT-AFTER and PR-BEFORE are absent. PUSH-BEFORE refuses only `main`. `edited` and `ready_for_review` are not handled. The merge-before negative cases are unexercised. `leaf.commit-message-contract` expects `PR_BASE_SHA` and `PR_HEAD_SHA`, while `ci-quality.yml` sets `TRUSTED_*` (UNVERIFIED). MERGE-DURING is N/A: there is no merge queue |
 | H-10 | W06 | OPEN-14 runner exit 124 cause diagnosis, read-only first |
 | H-11 | W07 | Done 2026-11-12: KEEP, no projection (see Vocabulary changes) |
-| H-13 | W03 | Optional: cite the C4 diagram review checklist (c4model.com/diagrams/checklist) from the architecture description template; no current rule requires it |
+| H-13 | W03 | Done 2026-11-13 by W03 in TSK-0058 (#982). Was: Optional: cite the C4 diagram review checklist (c4model.com/diagrams/checklist) from the architecture description template; no current rule requires it |
 | H-12 | W05 | The Release guards match fixed names only. A guard that rejects a Release document role under another id, type or template name needs a rule, for example a profile `type` or template path ending in `release`, plus a renamed-profile negative test |
 
 #### Vocabulary changes 2026-11-12
@@ -462,29 +463,35 @@ None: nothing was recorded here before this Task moved to the common form.
 
 ### Remaining Conditions
 
-In progress. The assessment and the two conflict corrections are recorded.
-The owner accepted criterion 112 on 2026-11-12. The Task stays in progress
-only as the record of the common form migration it started; the remaining
-roles belong to W03 and W04.
+None for this Task. The owner accepted criterion 112 on 2026-11-12, and the
+common form migration this Task started finished in W03 (TSK-0058, pull
+requests #967 to #987). Each remaining item has a named receiving owner and runs in that
+owner's own Task:
 
-Open, with owners:
-
-- H-04 (13 roles left), H-06, H-07 with the Task role, H-08, H-09, H-10, H-12
-  and the optional H-13.
-  H-01, H-02, H-03, H-05 and H-11 are done.
-- OPEN-09, 11, 12 and 14 (RESIDUAL_CONFIRMED).
+- H-07 (W04): the Registry `common` heading-name keys.
+- H-05 is done; H-08 and H-12 (W05); H-09 and H-10 (W06).
+- OPEN-09 and OPEN-11 (W05), OPEN-12 (TSK-0052), OPEN-13 and OPEN-14 (W06),
+  OPEN-08 and OPEN-10 (W10, UNVERIFIED, not inspected here).
 - OPEN-04: BLOCKED_EVIDENCE for the two-file byte comparison only; no product
   work depends on it.
-- OPEN-08, 10 and 13: not inspected by this run; linked to their owners in
-  W00 follow-up correction 2026-11-12. OPEN-01 and 02 are SUPERSEDED;
-  OPEN-05 and 06 are NOT_APPLICABLE.
+
+#### Review and Completion
+
+Closed on 2026-11-13, before W04 starts. Criterion 112 is accepted and every
+required non-PASS observation is resolved by a later PASS, so the Task closes
+as `completed`. TSK-0058's W03 close-out called this Task terminal while it
+was still in progress; this update makes that true and records H-04, H-06 and
+H-13 as done.
 
 ## Handoff
 
 ### Promotion Receipt
 
-None: nothing was recorded here before this Task moved to the common form.
+The intake and its corrections landed in #960. Its W03 handoffs landed in
+pull requests #967 to #987, recorded in TSK-0058.
 
 ### Next Owner
 
-None: nothing was recorded here before this Task moved to the common form.
+The current owner is @buenhyden. W04 owns H-07, W05 owns H-08, H-12, OPEN-09
+and OPEN-11, W06 owns H-09, H-10, OPEN-13 and OPEN-14, and W10 owns OPEN-08
+and OPEN-10.
