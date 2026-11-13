@@ -46,6 +46,10 @@ accepted; this run did not repeat them.
 On 2026-11-14 the owner chose, for the glossary comparison, to follow the
 requirement ("요구사항대로"): an automated comparison that runs in the
 repository's own tests, against the adopted contract pinned in the Registry.
+The same day the owner chose tool enforcement of link types with a policy
+change ("도구로 집행(정책 수정)"), with the type carried in the link title and
+an untitled link staying Normative or Navigation, and asked for every
+remaining W05 handoff to proceed.
 
 The request authorizes the Registry, schema, validator, test and policy text
 changes named here, and this Task with criterion 117 and W122. Push, pull
@@ -58,7 +62,7 @@ request, merge and runtime operations are not authorized by it.
 #### W05 run 2026-11-14
 
 Started from `main` `0eaf76cc0` on branch `feat/w05-validator-alignment`.
-The changes below are commits `62b3e434b` (Registry, schema, validator and
+The changes below are commits `cf690ff0c` (link types), `62b3e434b` (Registry, schema, validator and
 policy text), `97a40d35c` (TemplateDefinition) and `88d9e465b` (operations
 currency) on that branch, plus the record commit with this Task.
 
@@ -110,6 +114,13 @@ currency) on that branch, plus the record commit with this Task.
   them. Verified after the review: every status removed from a disposition
   entry was unreachable on `main`, and no Registry revision in history has a
   `release` name token, so no historical load changes.
+- Link types (commit `cf690ff0c`). The documentation protocol (3.22.0) now
+  says an inline link's title carries its type, an untitled link is
+  Normative or Navigation, and an `evidence` link is a commit-pinned
+  `https://` URL. Link alignment reports `link-type-unknown` and
+  `link-evidence-unpinned`; `LINK_TYPES` equals the Registry `link_types`
+  by test. No tracked Markdown used link titles before, so no existing link
+  changed meaning. Choosing the right type stays a review.
 - Policy text now states the enforcement that exists: the documentation
   protocol (3.21.0) for the disposition and Release rules, and the glossary
   Provenance (0.6.1) for the comparison.
@@ -123,7 +134,7 @@ currency) on that branch, plus the record commit with this Task.
 | Glossary comparison | TSK-0062, H-W01-4 | PASS (structure) | Done here; meaning is a review. It runs in `test_registry`, in the local-only `leaf.document-governance-library-regressions`; hosted CI wiring is W06's |
 | H-12 Release guard | TSK-0059 | PASS | Done here for `release` name tokens; other names and a generator are checked by review |
 | H-W04-3 `stale-active` | TSK-0063 | PASS | Done here |
-| Document-level link types | TSK-0062 | CONFLICT | The protocol says no link carries a type marker and existing links are not retyped; tool enforcement needs that rule changed. Held for the owner under Blockers and Decisions |
+| Document-level link types | TSK-0062 | PASS | Owner chose tool enforcement on 2026-11-14; done here (title marker, untitled default); choosing the type stays a review |
 | Reverse lookups and Change Impact derivation | TSK-0062 | GAP | No tool derives them; W05 next unit, CLI wiring to W06 |
 | `template_roles[*].consumer_paths` manual reverse lookup | TSK-0062 | GAP | Same unit as the reverse lookups |
 | H-W04-1 acceptance rules, H-W04-2 promotion check, H-W04-4 untested branches | TSK-0063 | GAP | W05 next unit |
@@ -144,12 +155,9 @@ currency) on that branch, plus the record commit with this Task.
 
 ### Blockers and Decisions
 
-- Link types, held for the owner: the documentation protocol's `Link types
-  and document relations` says the author assigns the type, no link carries
-  a machine-readable marker and existing links are not retyped. A checker
-  can enforce types only after that rule changes (a marker form, and
-  either retyping about 8,600 links or typing new links only). Until the
-  owner chooses, links stay review-typed, and no policy text claims more.
+- Link types: the owner's 2026-11-14 choice replaced the protocol rule that
+  no link carries a marker; the title is the marker and untitled links keep
+  their meaning, so about 8,600 existing links were not retyped.
 - The glossary comparison pin is identity, version, hash and Term pairs only,
   so the glossary stays the single meaning owner.
 
@@ -179,13 +187,15 @@ currency) on that branch, plus the record commit with this Task.
 | gstack verify | 117 | W122 | unit-regression-gstack | `gstack-checks run` on the fixed tree after the owner trusted the repo | NOT_RUN | ENV: the pregate runner needs `pytest`, which is not installed; the repository's `unittest` suites above cover the same 74 selected modules' changed tests | optional | - |
 | Pre-commit | 117 | W122 | precommit-local-staged | `run-ci-precommit.sh --mode local-staged` on the staged Registry unit, then the commit hooks of the currency unit | FAIL | `ruff format` would reformat 4 changed files; later `ruff check` UP017 in `lifecycle.py` (`datetime.UTC`) | required | - |
 | Pre-commit rerun | 117 | W122 | precommit-local-staged | Same route after `ruff format` on the six changed Python files and the UP017 fix; `OperationsCurrencyTests` rerun OK | PASS | exit 0; every hook passed at commits `62b3e434b`, `97a40d35c` and `88d9e465b` | required | Pre-commit |
+| Link type RED | 117 | W122 | red-green-proof | New `LinkTypeTitleTests` against `88d9e465b` | FAIL | 3 failures and 1 error: no title check and no `LINK_TYPES` | required | - |
+| Link type GREEN | 117 | W122 | red-green-proof | `LinkTypeTitleTests` and `check-document-links --mode alignment` at `cf690ff0c`; pre-commit local-staged exit 0 | PASS | 5 tests OK; alignment PASS, 909 documents, 8,629 links | required | Link type RED |
 
 ### Resolution Links
 
 Disposition RED is resolved by Disposition GREEN, TemplateDefinition RED by
 TemplateDefinition GREEN, Vocabulary RED by Vocabulary GREEN, and Currency RED
 by Currency GREEN, and Release RED by Release GREEN. Pre-commit is resolved
-by its rerun. The W05 review and
+by its rerun, and Link type RED by Link type GREEN. The W05 review and
 W05 re-review FAILs are resolved by the W05 final review, and the Spec Package
 regression by its rerun.
 

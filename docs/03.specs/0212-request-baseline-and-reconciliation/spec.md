@@ -943,7 +943,9 @@ target, backup, recovery boundary, and action-specific authorization.
      TemplateDefinition H2 carries the contract's single empty rule and each
      H3 none; the glossary's common rows match the adopted vocabulary contract
      pinned in the Registry; a profile or template role with a `release` or
-     `releases` name token is rejected, other names staying a review; and a
+     `releases` name token is rejected, other names staying a review; a link
+     title is one of the four link types and an `evidence` link is
+     commit-pinned; and a
      passed `next_review_at` marks an operations document stale. Each rule has
      a test that fails without it, historical Registries still validate, and
      TSK-0064 records a verdict and owner for each W05 handoff.
