@@ -1,10 +1,10 @@
 ---
 title: "Development Database Source Preflight Runbook"
-version: "0.3.1"
+version: "0.3.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0100"
 parent_ids:
@@ -14,24 +14,40 @@ created: "2026-10-03"
 
 # Development Database Source Preflight Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 `dev-db` source 변경의 정적 사전 검사와 DEV 지표 경보·중지 절차를 다룬다.
 
-## Trigger
-
 `dev-db` source change를 검토하거나 runtime execution request를 준비할 때 사용한다.
 
-## Prerequisites
+### Scope
 
-### Trigger and Preconditions
+- Artifact: `RUN-0100`; parent guide: `GDE-0100`.
+- Governing source contract: `SPEC-0204`(SPEC-0202는 삭제된 역사적 근거).
+- Static implementation authority: `infra/04-data/dev-db/docker-compose.yml`.
+
+- [Development database guide](../../guides/05-databases-and-storage/0100-development-database.md)
+- [Development database policy](../../policies/05-databases-and-storage/0100-development-database.md)
+- [Backup and restore runbook](../10-platform-and-backup/0021-backup-and-restore.md)
+
+## Preconditions
+
+### Authority and Access
 
 현재 완료 범위는 소스 통합·정적 검증, 신규 dev/LAB 비밀 파일 20개 발급과
 합성 격리 엔진의 기동·권한·오프라인 백업·별도 볼륨 복원이다(SPEC-0202-TSK-0002).
 HOME 배포·기동·정지·재시작, 외부 프로젝트 계정 발급, 실데이터 이관,
 운영 백업 검증·복원은 `NOT_RUN`이며 각각 별도 구체적 승인이 필요하다.
 
-## Procedure
+### Safety Checks
+
+백업·복원 범위와 `NOT_RUN` 상태는 Authority and Access에 있다.
+
+## Steps
+
+### Actions
 
 저장소 root에서 working tree와 intended source를 확인한다. private `.env`, secret value,
 rendered private Compose와 database content는 출력하지 않는다.
@@ -59,7 +75,7 @@ volumes, bind paths, UID/GID, resource budget, exact cleanup 대상과 rollback 
 secret reference, quota와 approval state가 승인된 뒤에만 별도 task에서 실행한다. 앱 migration은
 외부 workspace가 소유한다.
 
-### 관측 경보와 의도적 중지
+#### 관측 경보와 의도적 중지
 
 DEV 장애 경보는 `db_scope="dev"`이고 `expected_state="on"`일 때만 울리며, `DevDatastoreUpWhileDeclaredOff`만 `off` 선언 상태에서 울린다.
 `expected_state`는 Prometheus 시작 시 루트 `.env`의
@@ -82,15 +98,25 @@ DEV를 일부러 내릴 때:
 바꾸고 `dev-pg-monitor-provision`을 다시 실행하거나 `dev-valkey`를 재생성한 뒤
 exporter를 재생성한다.
 
-## Verification
+### Stop Conditions
+
+중단·중지 관련 문장은 `관측 경보와 의도적 중지`에 있다.
+
+## Validation
+
+### Service Checks
 
 Task에는 source SHA, changed paths, 명령, exit code, 실행 시각, 정적·격리 결과와
 운영 `NOT_RUN` 경계를 각각 기록한다. secret 값, private file 내용, raw log, DB row,
 resolved mount path는 기록하지 않는다.
 
-## Failure and Recovery
+### Evidence
 
-### Rollback or Recovery
+증거 관련 문장은 Actions 본문에 있다.
+
+## Recovery
+
+### Rollback
 
 source 문제는 runtime mutation 전에 source patch를 되돌려 static checks를 재실행한다.
 runtime activation 뒤의 rollback은 해당 승인 task의 preserved volume, compatible image,
@@ -103,15 +129,3 @@ Compose render failure, ambiguous project identity, secret/mount ownership drift
 collision, insufficient resource evidence, unsupported image/extension/backup compatibility,
 grant isolation failure, current management dependency 발견 시 중단하고 @buenhyden에게
 target, source SHA, failure signal, proposed approval boundary를 전달한다.
-
-## Related Documents
-
-### Traceability
-
-- Artifact: `RUN-0100`; parent guide: `GDE-0100`.
-- Governing source contract: `SPEC-0204`(SPEC-0202는 삭제된 역사적 근거).
-- Static implementation authority: `infra/04-data/dev-db/docker-compose.yml`.
-
-- [Development database guide](../../guides/05-databases-and-storage/0100-development-database.md)
-- [Development database policy](../../policies/05-databases-and-storage/0100-development-database.md)
-- [Backup and restore runbook](../10-platform-and-backup/0021-backup-and-restore.md)

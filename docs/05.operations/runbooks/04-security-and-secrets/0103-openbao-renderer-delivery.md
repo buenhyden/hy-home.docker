@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Renderer SecretID Delivery"
-version: "0.3.1"
+version: "0.3.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0103"
 parent_ids:
@@ -14,23 +14,40 @@ created: "2026-10-28"
 
 # OpenBao Renderer SecretID Delivery
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 이 런북은 OpenBao Agent의 renderer AppRole SecretID를 wrapping으로 다시 전달하고 Agent를 다시 시작하는 절차를 다룬다. `agent.hcl` 변경 반영, Agent token 유실, W5 재발급에 쓴다. 공통 상태 점검과 기동·중지는 [RUN-0085](0085-openbao.md)가 소유한다.
 
-## Trigger
-
 Agent 설정이 바뀌어 다시 시작해야 하거나, Agent가 재인증하지 못하거나, maintenance window의 W5에서 SecretID를 다시 전달할 때 사용한다.
 
-## Prerequisites
+### Scope
+
+- 공통 OpenBao 운영: [RUN-0085](0085-openbao.md)
+- [Implementation](../../../../infra/03-security/openbao/docker-compose.yml)과 [version projection](../../../../infra/tech-stack.versions.json)이 런타임 고정 버전을 소유한다.
+- [Guide](../../guides/04-security-and-secrets/0085-openbao.md), [Policy](../../policies/04-security-and-secrets/0085-openbao.md)
+- 관장 architecture: [AD-0003](../../../02.architecture/descriptions/0003-security-architecture.md)
+
+- [운영 인덱스](../../README.md)
+
+## Preconditions
+
+### Authority and Access
+
+승인된 issuer helper가 operator 전용 디렉터리에 설치돼 있어야 하고 현재 OIDC operator credential을 받을 수 있어야 한다. 해당 문장은 Safety Checks에 함께 있으며 credential 값은 기록하지 않는다. issuer/cleanup token role의 권한 범위는 Actions의 Issuer and Cleanup Token Roles에 있다.
+
+### Safety Checks
 
 OpenBao가 initialized·unsealed이고, 승인된 issuer helper가 operator 전용 디렉터리에 설치돼 있으며, 현재 OIDC operator credential을 받을 수 있어야 한다. 진행 중인 issuance journal이 있으면 그 실행은 이전 발급을 정합화만 하고 새로 발급하지 않으며, 불명확·복수 결과·sealed·권한 거부는 새 발급을 막는다.
 
-## Procedure
+## Steps
 
-### Renderer SecretID Delivery
+### Actions
 
-#### Issuer and Cleanup Token Roles
+#### Renderer SecretID Delivery
+
+##### Issuer and Cleanup Token Roles
 
 현재 source는 60초 wrapping, issuer/cleanup 분리, 영속 journal을 함께 사용한다.
 `operator`는 renderer SecretID를 직접 만들 수 없다. 두 token role은 각각 정확한 policy만
@@ -43,7 +60,7 @@ OpenBao가 initialized·unsealed이고, 승인된 issuer helper가 operator 전�
 cleanup의 자원 권한은 해당 renderer accessor 목록·조회·폐기뿐이다. 두 token의
 `lookup-self`는 정확한 policy·TTL·비갱신 신원을 검사하며 다른 KV나 AppRole을 열지 않는다.
 
-#### Delivery Steps
+##### Delivery Steps
 
 1. TLS·unseal·renderer ACL의 9개 소비자 KV/version·정확한 Agent named volume과 RoleID를 준비한다.
    기존 Agent 자동 재시작이나 sink 존재를 준비 완료로 판단하지 않는다. 운영자가 지정한
@@ -113,7 +130,7 @@ cleanup의 자원 권한은 해당 renderer accessor 목록·조회·폐기뿐�
    유실은 실패로 유지하고 새 발급을 차단한다. 자동으로 journal을 지우거나 광범위 accessor를
    폐기하지 않는다. 해당 상태는 승인된 관리 신원의 custody/API 대조 복구가 필요하다.
 
-#### Journal v2 Contract
+##### Journal v2 Contract
 
 새 발급 journal은 `schema_version: 2`, `issuance_id`, 기존 `nonce`를 함께 보관하며 두
 identity 값은 같아야 한다. 실제 accessor metadata도 `issuance_schema: "2"`,
@@ -124,7 +141,7 @@ identity 값은 같아야 한다. 실제 accessor metadata도 `issuance_schema: 
 v1/v2 혼합, alias 불일치, 복수 accessor가 있으면 어느 accessor도 폐기하지 말고 중단한다.
 이전 발급을 정합화한 같은 실행에서는 새 SecretID를 발급하지 않는다.
 
-#### Journal v3
+##### Journal v3
 
 journal v3는 commit `4f2e7f9badf2db592de91d20146d68f87a228213`(B4)부터 source에 있다. 실제로
 쓰이는 것은 설치된 issuer commit이며 owning Task가 그 값을 기록한다. 2026-10-28 현재 설치된 것은
@@ -156,20 +173,32 @@ sink가 이미 지워진 뒤(예: Agent 재시작 후)에는 v3도 이전 token�
 이 프로토콜은 아직 HOME에서 수행하지 않았다. 운영 실패 시 journal·completion witness·
 보호된 snapshot과 관리 인증을 보존한다. 재시작을 반복하거나 오래된 sink를 PASS로 처리하지 않는다.
 
-### Renderer delivery from an existing integration session
+#### Renderer delivery from an existing integration session
 
 기존 RUN-0096 세션을 사용할 때도 위 Renderer SecretID Delivery와 같은 제한 발급자와
 response wrapping을 사용한다. raw `-field=secret_id` 전달과 root UID로 volume을 고치는
 옛 대안은 현재 경로가 아니다. wrapping helper 하나만 사용하고 중복 발급하지 않는다.
 기존 세션·root 폐기·integration receipt는 과거 관찰이며 새 P01 결과가 아니다.
 
-## Verification
+### Stop Conditions
+
+진행 중인 issuance journal이 있으면 이전 발급의 정합화만 하고, 불명확·복수 결과·sealed·권한 거부는 새 발급을 막는다(Safety Checks). v1/v2 혼합, alias 불일치, 복수 accessor가 있으면 어느 accessor도 폐기하지 않고 중단한다(Actions의 Journal v2 Contract). 안전한 진행이 불가능하면 중단하고 @buenhyden에게 연락한다(Escalation).
+
+## Validation
+
+### Service Checks
 
 `issue rc=0`, Agent `healthy`, 렌더 파일의 mode와 KV version 일치, issuance anchor `complete`를 확인하고 값 없이 Task에 기록한다.
 
-## Failure and Recovery
+### Evidence
 
-### Rollback or Recovery
+확인 결과는 값 없이 Task에 기록한다(Service Checks). 전달이 실패하면 journal·completion witness·보호된 snapshot과 관리 인증을 보존한다(Rollback의 Failed Delivery).
+
+## Recovery
+
+### Rollback
+
+복구 상황별 절차는 다음과 같다.
 
 #### Failed Delivery
 
@@ -191,14 +220,3 @@ unseal한다. Agent는 restart policy로 다시 시작되지만 시작 스크립
 
 credential, 파괴적 스토리지 변경, remote 변경, 또는 backup 부재로 안전한 진행이 불가능하면
 중단하고 @buenhyden에게 연락한다.
-
-## Related Documents
-
-### Traceability
-
-- 공통 OpenBao 운영: [RUN-0085](0085-openbao.md)
-- [Implementation](../../../../infra/03-security/openbao/docker-compose.yml)과 [version projection](../../../../infra/tech-stack.versions.json)이 런타임 고정 버전을 소유한다.
-- [Guide](../../guides/04-security-and-secrets/0085-openbao.md), [Policy](../../policies/04-security-and-secrets/0085-openbao.md)
-- 관장 architecture: [AD-0003](../../../02.architecture/descriptions/0003-security-architecture.md)
-
-- [운영 인덱스](../../README.md)

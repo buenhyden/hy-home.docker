@@ -1,10 +1,10 @@
 ---
 title: "Kafka Runbook"
-version: "1.4.1"
+version: "1.4.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0036"
 parent_ids:
@@ -14,31 +14,41 @@ created: "2026-05-17"
 
 # Kafka Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 이 런북은 Kafka family의 정적 진단, CDC connector 수명주기, 계획된 백업·복제 캡처, 격리 복원 절차를 다룬다. 정상 대상은 단일 broker이고, 다중 broker LAB은 별도 실행 계약을 따른다.
-
-## Trigger
 
 - Kafka family source나 profile 변경의 정적 진단이 필요할 때
 - `KafkaBrokerDown`, `KafkaConsumersGroupLag`, `KafkaTopicUnderReplicatedPartition` 경보가 발생했을 때
 - CDC connector 등록·재동기화나 승인된 백업·격리 복원을 계획할 때
 
-## Prerequisites
+### Scope
 
-### Trigger and Preconditions
+- Runtime source: [Kafka Compose](../../../../infra/05-messaging/kafka/docker-compose.yml)
+  및 [Connect image Dockerfile](../../../../labs/kafka-cluster/connect/Dockerfile).
+- Artifact: `RUN-0036`; parent guide: `GDE-0036`.
+- 날짜가 기록된 verification record가 실행 사실을 명시하지 않는 한 절차는 계획 상태다.
+
+- [Domain catalog](../../README.md)
+- [Apache Kafka operations](https://kafka.apache.org/documentation/#operations)
+- [Schema Registry migration](https://docs.confluent.io/platform/current/schema-registry/installation/migrate.html)
+- [Policy](../../policies/06-messaging-and-cdc/0036-kafka.md)
+
+## Preconditions
+
+### Authority and Access
 
 실 쓰기, 복원, cutover, 정리, credential 변경은 별도 승인된 task가 필요하다.
 
-### Execution and stop boundary
+### Safety Checks
 
-정상 대상은 replication factor 1의 단일 broker `kafka-1`이며 broker 장애 내성이 없다: `debezium-db-provision`, `kafbat-ui`, `kafka-1`, `kafka-connect`, `kafka-exporter`, `kafka-init`, `schema-registry`. 독립 LAB 대상: `lab-kafka-1/2/3`, `lab-kafka-exporter`, `lab-kafka-init`(실행 계약은 [Kafka LAB 안내](../../../../labs/kafka-cluster/README.md)). 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
+사전 점검·백업 관련 문장은 `CDC connector lifecycle`에서 다룬다.
 
-기동/정지는 [GDE-0099](../../guides/01-common/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
+## Steps
 
-Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
-
-## Procedure
+### Actions
 
 저장소 루트에서 실행한다.
 
@@ -55,7 +65,7 @@ secret/config, PLAINTEXT 경계를 확인한다. 정상 `kafka-init`은 RF1이�
 LAB `lab-kafka-init`은 세 broker에 RF3이다. 정적 render는 실제 준비 상태를
 증명하지 않는다.
 
-### CDC connector lifecycle
+#### CDC connector lifecycle
 
 1. 전제조건: `dev-platform-provision`과 `debezium-db-provision`이 각각 `0`으로 종료되고, `dev-pg/platform_dev`의 `wal_level=logical`, 권한·publication·heartbeat 범위를 별도 검증한다. Connect의 secret provider와 PostgreSQL plugin 준비 상태도 확인한다.
 2. 새 connector JSON은 `dev-pg/platform_dev`, `hyhome_platform_publication`, `hyhome_platform_slot`, topic prefix `hyhome.platform`을 선언한다. 기존 `mng-pg/app_db`의 slot·publication·topic·offset을 재사용하지 않는다. 등록과 snapshot은 승인된 runtime 변경이며 현재 NOT_RUN이다.
@@ -64,7 +74,7 @@ LAB `lab-kafka-init`은 세 broker에 RF3이다. 정적 render는 실제 준비 
 5. maintenance pause 중에도 slot이 WAL을 유지한다. 재동기화에는 downstream 경계, 새 snapshot, 중복 처리와 rollback을 함께 승인받는다. secret rotation도 별도 승인과 소비자 재시작 검증이 필요하다.
 6. 격리 시험은 `HYHOME_CDC_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.CdcStreamRehearsalTests`로 한다. 내부 network에 합성 데이터만 쓰는 dev-pg·Kafka·Schema Registry·Connect를 띄우고 다음을 확인한다. 추적 중인 provisioning SQL과 connector JSON이 그대로 동작하는지, Properties 특수문자와 비ASCII가 든 비밀번호로 인증하는지, snapshot과 stream 행이 Avro로 decode되는지, 열 추가가 schema version 2가 되는지, worker 재시작 뒤 중복 snapshot 없이 offset에서 이어지는지, heartbeat가 행을 쓰고 slot을 전진시키는지. topic은 partition 3개라 순서는 key 단위로만 보장된다. 2026-10-08에 통과했다(약 260초).
 
-### Planned backup or replication capture
+#### Planned backup or replication capture
 
 1. producer, consumer, schema, connector, retention, 수용 가능한 recovery
    point를 식별한다. topic, schema, connector에 대한 변경을 일시 중지하거나
@@ -82,7 +92,7 @@ LAB `lab-kafka-init`은 세 broker에 RF3이다. 정적 render는 실제 준비 
 6. manifest와 export된 데이터를 별도의 암호화된 destination에서 보호한다.
    active broker log 디렉터리나 KRaft metadata를 부분적으로 복사하지 않는다.
 
-### Planned isolated restore
+#### Planned isolated restore
 
 1. 호환 버전에서 새 cluster identity를 가진 network-isolated Kafka target을
    준비한다. 외부 producer, consumer, connector는 차단된 상태로 유지한다.
@@ -110,15 +120,33 @@ key, value, header에 대한 SHA-256 digest가 일치했다. connector config
 4~6단계는 실행하지 않았다. live database를 대상으로 한 Connect worker가 production
 replication slot을 소비하게 되기 때문이다. rehearsal stack은 제거했다.
 
-## Verification
+### Stop Conditions
+
+중단 조건과 실행 경계는 아래 항목을 따른다.
+
+#### Execution and stop boundary
+
+정상 대상은 replication factor 1의 단일 broker `kafka-1`이며 broker 장애 내성이 없다: `debezium-db-provision`, `kafbat-ui`, `kafka-1`, `kafka-connect`, `kafka-exporter`, `kafka-init`, `schema-registry`. 독립 LAB 대상: `lab-kafka-1/2/3`, `lab-kafka-exporter`, `lab-kafka-init`(실행 계약은 [Kafka LAB 안내](../../../../labs/kafka-cluster/README.md)). 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
+
+기동/정지는 [GDE-0099](../../guides/01-common/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
+
+Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
+
+## Validation
+
+### Service Checks
 
 source revision/version, 범위, timestamp, manifest/checksum 요약, 명령과 종료
 상태, 검증 결과, 관측된 recovery point/시간, 미검증 gap을 모두 기록한다.
 secret, raw payload, private resolved path는 제외한다.
 
-## Failure and Recovery
+### Evidence
 
-### Rollback or Recovery
+증거에 남길 항목(결과·시간·target·source revision·종료 코드)은 Stop Conditions의 `Execution and stop boundary`에 기록되어 있다.
+
+## Recovery
+
+### Rollback
 
 cutover가 실패하면 offset/write-boundary 검증 이후 producer와 consumer를
 보존된 source cluster로 되돌리며, replay source와 target은 계속 보존된다.
@@ -130,17 +158,3 @@ rollback window 이후에만 실행한다.
 schema-ID drift, partition 누락, offset gap, checksum mismatch, connector
 부작용, 호환되지 않는 storage/protocol format이 나타나거나 raw broker 디렉터리를
 수리하라는 압박이 있으면 중단한다. 위 2026-09-22 rehearsal 외의 백업이나 restore는 실행된 증거가 없다.
-
-## Related Documents
-
-### Traceability
-
-- Runtime source: [Kafka Compose](../../../../infra/05-messaging/kafka/docker-compose.yml)
-  및 [Connect image Dockerfile](../../../../labs/kafka-cluster/connect/Dockerfile).
-- Artifact: `RUN-0036`; parent guide: `GDE-0036`.
-- 날짜가 기록된 verification record가 실행 사실을 명시하지 않는 한 절차는 계획 상태다.
-
-- [Domain catalog](../../README.md)
-- [Apache Kafka operations](https://kafka.apache.org/documentation/#operations)
-- [Schema Registry migration](https://docs.confluent.io/platform/current/schema-registry/installation/migrate.html)
-- [Policy](../../policies/06-messaging-and-cdc/0036-kafka.md)

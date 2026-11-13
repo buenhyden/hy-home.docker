@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Readiness and Recovery Runbook"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0047"
 parent_ids:
@@ -14,15 +14,13 @@ created: "2026-05-17"
 
 # Pyroscope Readiness and Recovery Runbook
 
-## Overview
+## Purpose
 
-> Scope: Pyroscope 준비 상태, profile 입력 진단, 로컬 저장소 증거, 재시작과 용량 문제 보고.
+### Trigger and Outcome
 
 이 런북은 Pyroscope profile ingestion 누락, Grafana datasource 실패, 로컬 filesystem 저장소 압박, 높은 CPU 부하, 설정 회귀를 다룬다. Guide와 policy의 설명은 반복하지 않고, 실행 가능한 진단, 안전한 restart, evidence 수집, escalation 기준만 둔다.
 
 운영자가 `pyroscope` 상태를 확인하고 Alloy/Grafana 연결, ingestion limit, 로컬 저장소 경계를 검증한다. 데이터 삭제나 retention/capacity 변경 같은 위험 조치는 별도 승인으로 분리한다.
-
-## Trigger
 
 다음 경우에 사용한다.
 
@@ -32,19 +30,43 @@ created: "2026-05-17"
 - Profile ingestion으로 host 또는 container CPU usage가 비정상적으로 높을 때.
 - `pyroscope.yaml` 변경 후 readiness, storage, ingestion limit evidence가 필요할 때.
 
-## Prerequisites
+### Scope
+
+> Scope: Pyroscope 준비 상태, profile 입력 진단, 로컬 저장소 증거, 재시작과 용량 문제 보고.
+
+- Declared parent: [Pyroscope Usage Guide](../../guides/07-observability/0047-pyroscope.md) (`GDE-0047`)
+- Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](../../guides/07-observability/0047-pyroscope.md) (`GDE-0047`), [Policy](../../policies/07-observability/0047-pyroscope.md) (`POL-0047`)
+
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+- [Operations index](../../README.md)
+- [Usage guide](../../guides/07-observability/0047-pyroscope.md)
+- [Operations policy](../../policies/07-observability/0047-pyroscope.md)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.
+
+## Preconditions
+
+### Authority and Access
 
 `pyroscope`의 filesystem volume과 선택 Alloy source를 먼저 확인한다. `profiling`은 승인된 HOME 선택에 포함되며 실제 source 수신은 별도 검증한다. 교체·중지 전 입력을 멈추고 일관된 local data를 보존한다. 7일 retention은 backup이나 archive 계약이 아니다.
 
-## Procedure
-
-### Execution Boundary
+#### Execution Boundary
 
 저장소 root에서 아래의 정확한 service/profile과 기존 container를 선택한다. 변경 전에 승인 대상, source/image, 선행 readiness, 필요한 운영 권한과 부작용 범위를 확인한다. `up`은 dependency/provisioning job을 만들 수 있고 profile은 격리가 아니다. 진단은 기존 container의 `exec`를 사용하고 단순 조회를 위해 client/provisioner를 띄우지 않는다. 재시작은 요청 중단·memory/queue 손실·부작용 반복을 일으킬 수 있으므로 대상 drain/backup 조건을 먼저 충족한다. `restart`는 바뀐 Compose 설정이나 교체된 secret bind를 불러오지 않는다.
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Steps
+### Safety Checks
+
+사전 점검·백업 관련 문장은 `Steps`, `Planned isolated restore rehearsal`에서 다룬다.
+
+## Steps
+
+### Actions
+
+실행 절차는 아래 항목을 따른다.
+
+#### Steps
 
 시작 전 점검:
 
@@ -99,11 +121,11 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
    이 런북은 profile data deletion, filesystem mutation, retention change 또는 ingestion limit change를 검증된 복구 절차로 제공하지 않는다. 데이터 손실 가능성이 있거나 운영 기준을 바꾸는 조치는 별도 incident/task approval과 rollback evidence가 필요하다.
 
-### Profile storage and source limits
+#### Profile storage and source limits
 
 이 항목은 [POL-0047](../../policies/07-observability/0047-pyroscope.md#profile-storage-and-source-limits)이 소유한다. 요약: Alloy의 Go/SeaweedFS pprof source는 writer/receiver readiness만으로 수신을 증명하지 않는다. retention은 `limits.retention_period: 168h`(7일)이며 삭제는 block 단위로 유예(`cleanup_grace_period` 6h) 뒤에 일어난다. Alloy는 60초 간격으로 block/mutex 없이 수집한다. readiness는 `wget` 대신 선언된 `profilecli ready` probe를 쓴다.
 
-### Planned isolated restore rehearsal
+#### Planned isolated restore rehearsal
 
 **project 이름만 바꾸어서는 실행할 수 없다.** rehearsal 전에 고정된 container-name,
 host port, bind-path, external-network와 route의 충돌을 제거하고 운영 환경으로의
@@ -118,7 +140,13 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 3. Pyroscope를 시작하고 `profilecli ready`를 실행한다. 과거 기준값을 조회하고 label을 붙인 test profile 1개를 수집·조회한 뒤 Grafana 연동을 검증한다. Alloy가 수집한다고 주장하기 전에 실제 source를 확인한다.
 4. 불일치가 있으면 격리된 project를 중지하고 evidence를 보존한다. 수정하지 않은 backup으로 돌아간다. `pyroscope-data`와 `pyroscope-metastore` archive는 같은 snapshot 시점의 것을 함께 복원한다. 운영 state/route 변경은 별도로 승인받는다.
 
-## Verification
+### Stop Conditions
+
+중단·중지 관련 문장은 Authority and Access의 `Execution Boundary`, `Steps`, `Planned isolated restore rehearsal`에 있다.
+
+## Validation
+
+### Service Checks
 
 - [ ] 위 `profilecli ready` 명령이 성공 종료한다.
 - [ ] Grafana Pyroscope datasource에서 최근 profile이 조회된다.
@@ -147,9 +175,13 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 - Ingestion 장애는 Alloy writer check, Pyroscope ready state, Grafana datasource result를 함께 기록한다.
 - Storage/capacity symptom은 로그 발췌, `pyroscope-data` volume 경계, approval state를 기록한다.
 
-## Failure and Recovery
+### Evidence
 
-### Rollback or Recovery
+증거 관련 문장은 Authority and Access의 `Execution Boundary`, `Steps`, `Planned isolated restore rehearsal`에 있다.
+
+## Recovery
+
+### Rollback
 
 - Git-managed `pyroscope.yaml`, Alloy writer, Grafana datasource 또는 Compose 변경이 원인이면 직전 Git diff 단위로 되돌리고 readiness를 다시 확인한다.
 - Runtime restart는 `obs` profile compose 명령만 사용한다.
@@ -160,17 +192,3 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 ### Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, destructive data change가 필요하거나, storage/capacity 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
-
-## Related Documents
-
-### Traceability
-
-- Declared parent: [Pyroscope Usage Guide](../../guides/07-observability/0047-pyroscope.md) (`GDE-0047`)
-- Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](../../guides/07-observability/0047-pyroscope.md) (`GDE-0047`), [Policy](../../policies/07-observability/0047-pyroscope.md) (`POL-0047`)
-
-- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
-- [Operations index](../../README.md)
-- [Usage guide](../../guides/07-observability/0047-pyroscope.md)
-- [Operations policy](../../policies/07-observability/0047-pyroscope.md)
-- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

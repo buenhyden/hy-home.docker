@@ -1,10 +1,10 @@
 ---
 title: "Locust Recovery Runbook"
-version: "1.3.2"
+version: "1.3.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0062"
 parent_ids:
@@ -14,26 +14,43 @@ created: "2026-05-17"
 
 # Locust Recovery Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 Locust LAB 실행 중 target 상태가 나빠지거나 worker 연결이 끊길 때 부하를 멈추고 진단하는 절차다.
 시나리오 파일 복구와 승인된 upgrade canary도 다룬다.
-
-## Trigger
 
 test 중 target health가 저하되거나, worker 연결이 끊기거나, master UI가 실패하거나,
 scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 canary가 필요할 때
 사용한다.
 
-## Prerequisites
+### Scope
 
-### Trigger and Preconditions
+- [Guide](../../guides/15-labs/0062-locust.md) (`GDE-0062`)
+- [Policy](../../policies/15-labs/0062-locust.md) (`POL-0062`)
+- [Locust LAB Compose](../../../../labs/locust/docker-compose.yml)
+
+- [Locust LAB Compose source](../../../../labs/locust/docker-compose.yml)
+- [Derived Compose image projection](../../../../infra/tech-stack.versions.json)
+- [Locust distributed mode](https://docs.locust.io/en/stable/running-distributed.html)
+- [Operations index](../../README.md)
+
+## Preconditions
+
+### Authority and Access
 
 모든 command는 저장소 루트에서 독립 LAB Compose file을 지정한다.
 아래 공개 명령은 `labs/.env.example`와 명시한 합성 경로만 사용한다. 실제 승인된
 실행 값은 승인된 실행 도구가 주입하며 문서에 비공개 env 파일 경로를 적지 않는다.
 
-## Procedure
+### Safety Checks
+
+별도 backup이나 읽기 전용 사전 점검 목록은 없고, target 상태·worker 수 기록과 bounded status·로그 캡처는 Actions의 1단계와 3단계에서 수행한다.
+
+## Steps
+
+### Actions
 
 1. target, users, spawn rate, duration, worker count, scenario digest, 그리고 처음
    실패한 target SLI를 기록한다. cookie, token, response body는 수집하지 않는다.
@@ -77,7 +94,7 @@ scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 c
    벌어지면 image/build 변경을 롤백한다. 시도 사이에는 Locust master와 worker를 중지 상태로 유지한다. 대상 애플리케이션을
    임의로 중지하지 않는다.
 
-### 실패 유형별 판단
+#### 실패 유형별 판단
 
 - `deadline_exceeded`(124)·`cancelled`(130): CSV는 멈춘 시점까지의 집계다. 목표 시간을
   채운 결과로 보고하지 않는다.
@@ -95,7 +112,7 @@ python3 examples/operations/locust-telemetry/lifecycle.py \
   --mock-image '<approved-wiremock@sha256:digest>'
 ```
 
-### 시나리오 보존과 업그레이드
+#### 시나리오 보존과 업그레이드
 
 Locust에는 application database가 없다. Bind-backed scenario/result directory가
 유일한 local persistent scope다. Test가 쓰고 있지 않을 때만 ordinary file로
@@ -105,12 +122,13 @@ dependency upgrade 전에 isolated run에서 scenario syntax를 validate하고, 
 승인된 canary를 실행한 뒤 worker registration과 aggregate metrics를 비교한다.
 이 documentation task에서는 backup, restore, load execution을 수행하지 않았다.
 
-## Verification
+### Stop Conditions
 
-명령 종료·시각·설정 커밋·시나리오 digest·worker 수·정제된 집계·대상 SLI와 최종
-중지/실행 상태를 기록한다.
+Locust를 중지 상태로 유지하는 조건(target SLI 미회복, worker 등록 실패 시 image/build 롤백)은 Actions의 4단계와 7단계에 적혀 있다.
 
-### 확인 항목
+## Validation
+
+### Service Checks
 
 - Master UI health가 성공하고 예상 worker count가 등록된다.
 - 별도로 승인된 canary가 지정된 target SLI 범위 내에 머문다.
@@ -118,9 +136,14 @@ dependency upgrade 전에 isolated run에서 scenario syntax를 validate하고, 
 - scenario/result restore와 upgrade rehearsal은 Task가 protected path, command,
   관찰된 결과를 기록할 때까지 **미실행** 상태로 남는다.
 
-## Failure and Recovery
+### Evidence
 
-### Rollback or Recovery
+명령 종료·시각·설정 커밋·시나리오 digest·worker 수·정제된 집계·대상 SLI와 최종
+중지/실행 상태를 기록한다.
+
+## Recovery
+
+### Rollback
 
 Locust를 중지하고, 이전에 검토된 scenario/build를 격리된 상태로 복원한 뒤, static
 validation과 소규모 승인된 canary를 반복한다. 이 런북의 어떤 조치도 target service를
@@ -133,16 +156,3 @@ validation과 소규모 승인된 canary를 반복한다. 이 런북의 어떤 �
 load 중지 후에도 target health가 회복되지 않거나, worker가 healthy master에 등록되지
 않거나, scenario provenance를 알 수 없거나, log/result에 secret이나 personal data가
 나타날 때 escalation한다.
-
-## Related Documents
-
-### Traceability
-
-- [Guide](../../guides/15-labs/0062-locust.md) (`GDE-0062`)
-- [Policy](../../policies/15-labs/0062-locust.md) (`POL-0062`)
-- [Locust LAB Compose](../../../../labs/locust/docker-compose.yml)
-
-- [Locust LAB Compose source](../../../../labs/locust/docker-compose.yml)
-- [Derived Compose image projection](../../../../infra/tech-stack.versions.json)
-- [Locust distributed mode](https://docs.locust.io/en/stable/running-distributed.html)
-- [Operations index](../../README.md)

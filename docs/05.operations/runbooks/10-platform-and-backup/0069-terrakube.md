@@ -1,10 +1,10 @@
 ---
 title: "Terrakube Recovery Runbook"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0069"
 parent_ids:
@@ -14,23 +14,36 @@ created: "2026-05-17"
 
 # Terrakube Recovery Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 Terrakube(`terrakube-api`, `terrakube-ui`, `terrakube-executor`)의 장애 진단, 조정된 백업·격리 복원,
 업그레이드 절차다.
 
-## Trigger
-
 API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
 승인된 backup/restore/upgrade에 사용한다.
 
-## Prerequisites
+### Scope
 
-### Trigger and Preconditions
+- [Guide](../../guides/10-platform-and-backup/0069-terrakube.md) (`GDE-0069`)
+- [Policy](../../policies/10-platform-and-backup/0069-terrakube.md) (`POL-0069`)
+- [Terrakube Compose](../../../../infra/09-platform-ops/terrakube/docker-compose.yml)
+
+- [Terrakube documentation](https://docs.terrakube.io/)
+- [Operations index](../../README.md)
+
+## Preconditions
+
+### Authority and Access
 
 저장소 루트에서 작업한다.
 
-### 작업 선택과 복구 전제
+### Safety Checks
+
+작업 전 점검은 아래 항목에 따른다.
+
+#### 작업 선택과 복구 전제
 
 변경 전에 정확한 서비스·데이터 경로·승인자·중단 영향을 기록하고 [공통 복구 전제](0021-backup-and-restore.md)를
 적용한다. 격리 대상, 복구본 식별자·무결성, 여유 공간, 비밀 보관, 작성자 정지와
@@ -39,7 +52,9 @@ API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
 단일 파일 bind 재생성과 비밀 비노출 확인을 따른다. 재시작은 데이터 복원이나 자격 증명
 폐기 검증을 대신하지 않는다.
 
-## Procedure
+## Steps
+
+### Actions
 
 1. 새 Terrakube run을 동결한다. workspace/run ID, VCS ref, state key, component
    status, apply 진행 여부를 기록한다. remote effect와 recovery owner를 파악하기
@@ -62,7 +77,7 @@ API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
 4. dependency와 active-run check 후 실패한 component만 재시작한다. job이나 apply를
    replay하려면 별도 authorization이 필요하다.
 
-### Coordinated backup and isolated restore
+#### Coordinated backup and isolated restore
 
 1. scheduling을 차단하고, active run을 대기하거나 안전하게 해결한 뒤, Terrakube
    writer가 남지 않도록 API/UI와 executor를 중지한다.
@@ -83,7 +98,7 @@ API/UI/executor failure, stuck run, OIDC failure, missing state/output, 또는
 5. 검토 후에만 승격한다. 그렇지 않으면 원본을 그대로 두고 격리된 사본을 진단용으로
    보존한다. 사본 삭제는 보존 의무와 승인 여부를 확인한 뒤 따로 처리한다.
 
-### Upgrade
+#### Upgrade
 
 coordinated backup을 완료하고 모든 migration/release note를 검토하고 복원된
 store에서 새 API/UI/executor를 테스트한 뒤, 호환되는 set을 upgrade한다. 실패
@@ -91,36 +106,33 @@ store에서 새 API/UI/executor를 테스트한 뒤, 호환되는 set을 upgrade
 DB/state 롤백 없이 image만 되돌리는 것은 안전하지 않다. SeaweedFS 사본 하나나 DB 덤프
 하나만으로 복구 가능성을 추정하지 않는다.
 
-### 현재 실행 경로의 제한
+#### 현재 실행 경로의 제한
 
 인증 오류를 우회하거나 실제 plan/apply를 재시도하지 말고 `@buenhyden`에게 보고한다. 제한의 배경은 [Guide](../../guides/10-platform-and-backup/0069-terrakube.md#현재-실행-경로의-제한)를 따른다.
 
-## Verification
+### Stop Conditions
+
+active/unknown apply, DB-object 불일치, Docker-socket 예기치 않은 access, auth
+모호성, backup 불가, destructive migration이 있으면 중단한다.
+
+## Validation
+
+### Service Checks
+
+이 런북은 별도의 점검 목록을 두지 않고, Actions의 각 단계가 확인하는 상태와 종료 코드를 Evidence에 기록해 판정한다.
+
+### Evidence
 
 정제된 컴포넌트 health·run/workspace 개수·백업 ID/checksum·state-key 개수·
 release/source 커밋·비적용 plan 결과와 최종 상태를 기록한다.
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
 
 이 coordinated backup/restore와 upgrade 단계는 **계획되었으나 미실행** 상태이다.
 component restart나 단일 store snapshot으로 recovery했다고 주장하지 않는다.
 
 ### Escalation
 
-책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
-
-active/unknown apply, DB-object 불일치, Docker-socket 예기치 않은 access, auth
-모호성, backup 불가, destructive migration이 있으면 중단한다.
-
-## Related Documents
-
-### Traceability
-
-- [Guide](../../guides/10-platform-and-backup/0069-terrakube.md) (`GDE-0069`)
-- [Policy](../../policies/10-platform-and-backup/0069-terrakube.md) (`POL-0069`)
-- [Terrakube Compose](../../../../infra/09-platform-ops/terrakube/docker-compose.yml)
-
-- [Terrakube documentation](https://docs.terrakube.io/)
-- [Operations index](../../README.md)
+책임자는 `@buenhyden`이다. 위 Stop Conditions의 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.

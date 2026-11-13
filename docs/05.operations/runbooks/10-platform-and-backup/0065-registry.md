@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry Runbook"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0065"
 parent_ids:
@@ -14,19 +14,36 @@ created: "2026-05-17"
 
 # Docker Registry Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 Registry(`registry` service)의 장애 진단, 일관된 백업·복원, 업그레이드, 별도로 승인된
 garbage collection 절차다.
 
-## Trigger
-
 `/v2/` failure, push/pull 또는 digest mismatch, storage exhaustion, consistent
 backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용한다.
 
-## Prerequisites
+### Scope
 
-### 작업 선택과 복구 전제
+- [Guide](../../guides/10-platform-and-backup/0065-registry.md) (`GDE-0065`)
+- [Policy](../../policies/10-platform-and-backup/0065-registry.md) (`POL-0065`)
+- [Registry Compose](../../../../infra/09-platform-ops/registry/docker-compose.yml)
+
+- [Registry deployment](https://distribution.github.io/distribution/about/deploying/)
+- [Garbage collection](https://distribution.github.io/distribution/about/garbage-collection/)
+
+## Preconditions
+
+### Authority and Access
+
+승인자는 Safety Checks의 `작업 선택과 복구 전제`에 기록한다. 복원된 store 승격(data replacement)과 garbage collection은 Actions에서 명시적 승인을 요구하며, 책임자는 `@buenhyden`이다(Escalation).
+
+### Safety Checks
+
+작업 전 점검은 아래 항목에 따른다.
+
+#### 작업 선택과 복구 전제
 
 변경 전에 정확한 서비스·데이터 경로·승인자·중단 영향을 기록하고 [공통 복구 전제](0021-backup-and-restore.md)를
 적용한다. 격리 대상, 복구본 식별자·무결성, 여유 공간, 비밀 보관, 작성자 정지와
@@ -35,7 +52,9 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
 단일 파일 bind 재생성과 비밀 비노출 확인을 따른다. 재시작은 데이터 복원이나 자격 증명
 폐기 검증을 대신하지 않는다.
 
-## Procedure
+## Steps
+
+### Actions
 
 1. 저장소 루트에서 validate하고 bounded status를 캡처한다.
 
@@ -53,7 +72,7 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
 4. storage와 network 점검 후 `registry`만 재시작한다. `/v2/`를 확인한 뒤 non-sensitive
    canary 하나를 push/pull하고 digest를 비교한다.
 
-### Consistent backup and restore
+#### Consistent backup and restore
 
 1. tracked config에 read-only maintenance mode가 없으므로 push/pull을 차단하고
    `registry`를 중지한다.
@@ -65,7 +84,7 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
    count를 확인하고 대표 집합을 digest로 pull한다.
 4. digest 검증과 명시적 data replacement 승인 후에만 복원된 store를 promote한다.
 
-### Garbage collection and upgrade
+#### Garbage collection and upgrade
 
 - GC는 destructive하다: backup을 확보/검증하고, registry를 중지 상태로 유지하거나
   검토된 read-only mode를 설정하고, 지원되면 dry-run을 실행하고, mark set을 검토한
@@ -74,7 +93,7 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
   push/pull과 digest 동등성을 확인하며, format이나 동작이 호환되지 않으면 image와
   storage snapshot을 함께 되돌린다.
 
-### 로컬 이미지 이관과 제거
+#### 로컬 이미지 이관과 제거
 
 실행 중이 아닌 로컬 빌드 이미지는 Registry에 보관해 두고 `/`의 Docker 이미지 저장소에서는
 빼 둘 수 있다. `${DEFAULT_REGISTRY_DIR}`는 데이터 디스크에
@@ -89,32 +108,29 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
 4. 다시 사용하려면 Registry 참조를 pull하여 Compose 파일이 기대하는 이름으로
    재태깅하거나, 추적되는 Dockerfile에서 재빌드한다.
 
-## Verification
+### Stop Conditions
+
+untrusted exposure, 알 수 없는 artifact provenance, backup 누락, digest mismatch,
+filesystem corruption, 승인 없는 deletion/GC 요청이 있으면 중단한다.
+
+## Validation
+
+### Service Checks
+
+이 런북은 별도의 점검 목록을 두지 않고, Actions의 각 단계가 확인하는 상태와 종료 코드를 Evidence에 기록해 판정한다.
+
+### Evidence
 
 exit, endpoint boundary, source commit, snapshot ID/checksum, count, 선택된
 digest, 최종 service state를 기록한다. credential이나 layer는 캡처하지 않는다.
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
 
 backup/restore, GC, upgrade rehearsal은 이 문서에서 **계획되었으나 미실행** 상태이다.
 Registry storage에 대한 복구 단계로 `rm`을 절대 사용하지 않는다.
 
 ### Escalation
 
-책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
-
-untrusted exposure, 알 수 없는 artifact provenance, backup 누락, digest mismatch,
-filesystem corruption, 승인 없는 deletion/GC 요청이 있으면 중단한다.
-
-## Related Documents
-
-### Traceability
-
-- [Guide](../../guides/10-platform-and-backup/0065-registry.md) (`GDE-0065`)
-- [Policy](../../policies/10-platform-and-backup/0065-registry.md) (`POL-0065`)
-- [Registry Compose](../../../../infra/09-platform-ops/registry/docker-compose.yml)
-
-- [Registry deployment](https://distribution.github.io/distribution/about/deploying/)
-- [Garbage collection](https://distribution.github.io/distribution/about/garbage-collection/)
+책임자는 `@buenhyden`이다. 위 Stop Conditions의 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.

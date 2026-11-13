@@ -120,7 +120,7 @@ lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다
 
 ## Verification
 
-`docker compose --env-file .env.example --profile seaweedfs config --quiet`로 root 구성을 정적 검증하고, 승인된 disposable rehearsal(`tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests`, [RUN-0024](../../runbooks/05-databases-and-storage/0024-seaweedfs.md#procedure))으로 identity·JWT·mTLS 거부를 확인한 뒤, 승격이나 cutover
+`docker compose --env-file .env.example --profile seaweedfs config --quiet`로 root 구성을 정적 검증하고, 승인된 disposable rehearsal(`tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests`, [RUN-0024](../../runbooks/05-databases-and-storage/0024-seaweedfs.md#actions))으로 identity·JWT·mTLS 거부를 확인한 뒤, 승격이나 cutover
 전에 application 수준 acceptance를 갖춘 isolated compatible restore를
 요구한다. 검증되지 않은 runtime 속성은 명시적으로 기록한다.
 

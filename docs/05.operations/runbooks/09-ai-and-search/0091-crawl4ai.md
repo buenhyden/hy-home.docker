@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Recovery Runbook"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-26"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0091"
 parent_ids:
@@ -14,29 +14,49 @@ created: "2026-09-21"
 
 # Crawl4AI Recovery Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 이 런북은 OPTIONAL `crawl4ai`(`crawl4ai`, `crawl4ai-egress`, `crawl4ai-loopback`, profile `crawl4ai`)의 시작 실패, 토큰 노출, 메모리 압박 대응과 consumer 연결·해제, 제거 절차를 다룬다.
 
-## Trigger
-
 시작 실패, 토큰 노출, 메모리 압박, 컨슈머 연결/해제 시 사용한다.
 
-## Prerequisites
+### Scope
 
-### Service lifecycle prerequisites
+- [Guide](../../guides/09-ai-and-search/0091-crawl4ai.md) (`GDE-0091`)
+- [Policy](../../policies/09-ai-and-search/0091-crawl4ai.md) (`POL-0091`)
+- [Crawl4AI Compose](../../../../infra/08-ai/crawl4ai/docker-compose.yml)
 
-`crawl4ai`는 자체 profile만으로 선택하며 token 준비 실패 시 wrapper가 종료한다. 재생성하면 tmpfs cache가 사라지므로 필요한 산출물은 먼저 승인된 위치에 보존한다. 작업을 drain한 뒤 중지하며 token 파일 교체는 기존 컨테이너 restart만으로 새 bind가 반영된다고 가정하지 않는다.
+- [Crawl4AI self-hosting](https://docs.crawl4ai.com/core/self-hosting/)
 
-## Procedure
+## Preconditions
 
-### Execution Boundary
+### Authority and Access
+
+승인과 실행 경계는 아래 항목에 따른다.
+
+#### Execution Boundary
 
 저장소 root에서 아래의 정확한 service/profile과 기존 container를 선택한다. 변경 전에 승인 대상, source/image, 선행 readiness, 필요한 운영 권한과 부작용 범위를 확인한다. `up`은 dependency/provisioning job을 만들 수 있고 profile은 격리가 아니다. 진단은 기존 container의 `exec`를 사용하고 단순 조회를 위해 client/provisioner를 띄우지 않는다. 재시작은 요청 중단·memory/queue 손실·부작용 반복을 일으킬 수 있으므로 대상 drain/backup 조건을 먼저 충족한다. `restart`는 바뀐 Compose 설정이나 교체된 secret bind를 불러오지 않는다.
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### 진단과 복구 단계
+### Safety Checks
+
+작업 전 점검은 아래 항목에 따른다.
+
+#### Service lifecycle prerequisites
+
+`crawl4ai`는 자체 profile만으로 선택하며 token 준비 실패 시 wrapper가 종료한다. 재생성하면 tmpfs cache가 사라지므로 필요한 산출물은 먼저 승인된 위치에 보존한다. 작업을 drain한 뒤 중지하며 token 파일 교체는 기존 컨테이너 restart만으로 새 bind가 반영된다고 가정하지 않는다.
+
+## Steps
+
+### Actions
+
+절차는 아래 항목에 따른다.
+
+#### 진단과 복구 단계
 
 1. 점검한다.
 
@@ -60,7 +80,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 6. 제거 승인을 받으면 호출자와 작업을 중지하고 필요한 산출물을 소비자 소유자에게 넘긴다. 승인 범위에서 include/package와 secret metadata를 정리하되 private secret 폐기는 별도 disposition/revocation 결정에 따른다. Tmpfs cache/output은 재시작으로 사라지며 durable service volume은 없다.
 
-### 보안 패치 뒤 요청 거부와 인수
+#### 보안 패치 뒤 요청 거부와 인수
 
 Untrusted 요청에 model 선택·caller regex·JavaScript `wait_for`가 있으면 새
 후보는 HTTP 400으로 거부한다. 호출자와 요청 필드만 확인하고 본문·토큰을
@@ -73,15 +93,23 @@ proxy 경유·SSRF·허용 요청/거부·응답 schema와 정리는 NOT_RUN이�
 정확한 fixture·대상·자원·정리 경계를 검토한다. 자체 durable volume은 없지만
 재생성 전에 미완료 요청과 필요한 tmpfs 산출물을 consumer와 조정한다.
 
-## Verification
+### Stop Conditions
+
+전용 `crawl4ai_net` 밖 연결, 공개 노출, 예상치 못한 protected API 인증 성공, SSRF 의심 또는 복구 실패는 Escalation에 기록한 중단 조건이다.
+
+## Validation
+
+### Service Checks
 
 격리 network의 기존 승인 client에서 health와 protected API의 무자격 거부·승인 credential 성공을 구분해 확인한다. Token을 CLI 인자에 넣거나 crawl 내용을 캡처하지 않는다. UI/static 예외는 API 우회 증거가 아니다. 누락·짧은 secret으로 종료했다면 guard를 완화하지 않는다. 승인된 시작은 root Compose의 해당 service만 대상으로 하고 health·consumer 인증·허용 URL 시험 뒤 트래픽을 허용한다. 예상 밖 LAN/private 접근이나 자원 압박이면 중단한다. Tmpfs output/cache는 재시작으로 사라질 수 있으므로 미완료 요청을 consumer와 조정한다. 자체 영속 복원은 없고 provider credential은 [시크릿 소유자](../04-security-and-secrets/0085-openbao.md)를 따른다.
 
+### Evidence
+
 종료 코드, 이미지, 소스 커밋을 기록한다. 토큰이나 크롤링된 내용은 기록하지 않는다.
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
 
 자체 영속 서비스 데이터는 없지만 필요한 output과 미완료 요청은 소비자와 조정한다. Compose·image·secret bind를 되돌릴 때는 restart로 적용되지 않는다. 이전 승인 image와 선언을 복원하고 [RUN-0086](../10-platform-and-backup/0086-dependency-version-management.md)·[RUN-0085](../04-security-and-secrets/0085-openbao.md)의 대상·token·중단 영향 검토를 거친 재생성 계획으로 넘긴다. 재생성 뒤 health, protected API 인증 거부·성공, 소비자 연결을 검증하고 실패하면 트래픽을 차단한 채 에스컬레이션한다.
 
@@ -89,13 +117,3 @@ proxy 경유·SSRF·허용 요청/거부·응답 schema와 정리는 NOT_RUN이�
 
 전용 `crawl4ai_net` 밖 연결, 공개 노출, 예상치 못한 protected API 인증 성공,
 SSRF 의심 또는 복구 실패이면 중단하고 @buenhyden에게 정제된 증거로 넘긴다.
-
-## Related Documents
-
-### Traceability
-
-- [Guide](../../guides/09-ai-and-search/0091-crawl4ai.md) (`GDE-0091`)
-- [Policy](../../policies/09-ai-and-search/0091-crawl4ai.md) (`POL-0091`)
-- [Crawl4AI Compose](../../../../infra/08-ai/crawl4ai/docker-compose.yml)
-
-- [Crawl4AI self-hosting](https://docs.crawl4ai.com/core/self-hosting/)

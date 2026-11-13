@@ -1,10 +1,10 @@
 ---
 title: "Management Database Health and Init Runbook"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0028"
 parent_ids:
@@ -14,29 +14,42 @@ created: "2026-05-17"
 
 # Management Database Health and Recovery Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 management database의 정적 진단, 계획된 백업·격리 복구, monitor 계정과 경보 대응 절차를 다룬다.
 
-## Trigger
-
 승인된 정적 진단, 백업 계획 또는 정확히 이 주제에 해당하는 격리 복구에 사용한다.
 
-## Prerequisites
+### Scope
 
-### Trigger and Preconditions
+- Artifact: `RUN-0028`; parent guide: `GDE-0028`.
+- 날짜가 기록된 verification record가 실행 사실을 명시하지 않는 한 절차는 계획 상태다.
+
+- [Domain catalog](../../README.md)
+- [Policy](../../policies/05-databases-and-storage/0028-management-database.md)
+- [PostgreSQL backup and restore](https://www.postgresql.org/docs/current/backup.html)
+- [pg_restore](https://www.postgresql.org/docs/current/app-pgrestore.html)
+- [Valkey persistence](https://valkey.io/topics/persistence/)
+
+## Preconditions
+
+### Authority and Access
 
 실 쓰기, 복원, cutover, 정리, credential 변경은 별도 승인된 task가 필요하다.
-
-### Execution and stop boundary
 
 대상: `mng-pg`, `mng-pg-exporter`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-valkey`, `mng-valkey-exporter`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
 
 기동/정지는 [GDE-0099](../../guides/01-common/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
 
-Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
+### Safety Checks
 
-## Procedure
+Actions의 첫 코드 블록에서 `config --quiet`와 `config --services`는 렌더링과 서비스 목록만 확인하며, 완전히 렌더링된 configuration은 출력하지 않는다.
+
+## Steps
+
+### Actions
 
 저장소 루트에서 실행한다.
 
@@ -49,7 +62,7 @@ docker compose --env-file .env.example --profile mng config --services
 `mng_data_net`을 확인한다. 환경 변수 치환으로 private value가 노출될 수 있는
 완전히 렌더링된 configuration은 출력하지 않는다.
 
-### Planned PostgreSQL backup
+#### Planned PostgreSQL backup
 
 1. consumer를 고려한 시간대를 확보하고 role과 `postgres`, `n8n`,
    `keycloak`, `airflow`, `terrakube`, `sonarqube`, 그리고 설정된 애플리케이션
@@ -60,7 +73,7 @@ docker compose --env-file .env.example --profile mng config --services
    해시를 기록한다. 산출물은 별도의 암호화된 destination에 저장하고 비밀번호는
    인자나 evidence에 남기지 않는다.
 
-### Planned PostgreSQL isolated restore
+#### Planned PostgreSQL isolated restore
 
 1. 애플리케이션 경로가 없는 지원되는 호환 버전의 빈 격리 target을 준비한다.
    최소 권한 restore operator를 사용한다.
@@ -74,7 +87,7 @@ docker compose --env-file .env.example --profile mng config --services
    중지하고 최종 dump를 뜬 뒤 consumer를 전환하며, rollback을 위해 이전
    volume을 보존한다.
 
-### Planned Valkey backup and restore
+#### Planned Valkey backup and restore
 
 1. workflow producer/worker를 일시 중지하거나 drain하고, 대기 중인 job을
    재생할지 폐기할지 문서화한다.
@@ -85,7 +98,7 @@ docker compose --env-file .env.example --profile mng config --services
 4. workflow owner의 승인 없이는 복원된 stale queue 상태를 active worker에
    연결하지 않는다.
 
-### 관측 경보와 monitor 계정
+#### 관측 경보와 monitor 계정
 
 `mng-pg-exporter`와 `mng-valkey-exporter`는 관리자 비밀 대신 `mng_pg_monitor`
 role과 `mngmonitor` ACL 사용자로 접속한다. 경보는 `db_scope="mng"`로 구분한다.
@@ -108,15 +121,25 @@ monitor 비밀번호 회전은 다음 순서다. 비밀 값은 출력하지 않�
    `mng-valkey-exporter`를 재생성한다.
 4. `pg_up{db_scope="mng"}`와 `redis_up{db_scope="mng"}`가 1로 돌아오는지 확인한다.
 
-## Verification
+### Stop Conditions
+
+Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
+
+## Validation
+
+### Service Checks
+
+`pg_up{db_scope="mng"}`와 `redis_up{db_scope="mng"}`가 1로 돌아오는지, 그리고 복원 검증 항목은 Actions의 각 절차에 있다.
+
+### Evidence
 
 source revision/version, 범위, timestamp, manifest/checksum 요약, 명령과 종료
 상태, 검증 결과, 관측된 recovery point/시간, 미검증 gap을 모두 기록한다.
 secret, raw payload, private resolved path는 제외한다.
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
 
 cutover가 실패하면 consumer를 검증된 이전 HOME 엔진과 volume으로 되돌리고
 격리된 restore는 client로부터 계속 차단해 둔다. cutover는 owner
@@ -128,16 +151,3 @@ cutover가 실패하면 consumer를 검증된 이전 HOME 엔진과 volume으로
 database 누락, dump 오류, 지원되지 않는 extension, ownership drift, AOF
 truncation/repair prompt, checksum mismatch, 또는 모호한 queue semantics에서
 중단한다. 이 문서에 설명한 recovery는 이번 문서 수정 task에서 실행하지 않았다.
-
-## Related Documents
-
-### Traceability
-
-- Artifact: `RUN-0028`; parent guide: `GDE-0028`.
-- 날짜가 기록된 verification record가 실행 사실을 명시하지 않는 한 절차는 계획 상태다.
-
-- [Domain catalog](../../README.md)
-- [Policy](../../policies/05-databases-and-storage/0028-management-database.md)
-- [PostgreSQL backup and restore](https://www.postgresql.org/docs/current/backup.html)
-- [pg_restore](https://www.postgresql.org/docs/current/app-pgrestore.html)
-- [Valkey persistence](https://valkey.io/topics/persistence/)

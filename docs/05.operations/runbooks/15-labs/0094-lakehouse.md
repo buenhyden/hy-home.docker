@@ -1,10 +1,10 @@
 ---
 title: "Lakehouse Recovery Runbook"
-version: "1.5.0"
+version: "1.5.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0094"
 parent_ids:
@@ -14,27 +14,45 @@ created: "2026-09-23"
 
 # Lakehouse Recovery Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 레이크하우스의 Spark·Trino·Flink·Great Expectations 실패, 카탈로그 오류, 접근 거부, 테이블 롤백을 다루는 런북이다.
-
-## Trigger
 
 Spark 작업, Trino, Flink 작업 또는 Great Expectations 스위트가 실패하거나,
 카탈로그가 오류를 반환하거나, 접근이 거부되거나, 잘못된 쓰기 이후 테이블
 롤백이 필요할 때 사용한다.
 
-## Prerequisites
+### Scope
 
-### Execution and stop boundary
+- [Guide](../../guides/15-labs/0094-lakehouse.md) (`GDE-0094`)
+- [Policy](../../policies/15-labs/0094-lakehouse.md) (`POL-0094`)
+- [SeaweedFS runbook](../05-databases-and-storage/0024-seaweedfs.md)
+- SPEC-0262 Analytics labs migration
 
-대상: `seaweedfs-table-bucket`, `flink-jobmanager`, `flink-taskmanager`, `great-expectations`, `spark`, `trino`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
+- [Lakehouse LAB Compose](../../../../labs/lakehouse/docker-compose.yml)와 [독립 LAB source](../../../../labs/README.md)
+- [Spark 패키지 README](../../../../labs/lakehouse/spark/README.md)
+- [Trino 패키지 README](../../../../labs/lakehouse/trino/README.md)
+- [Flink 패키지 README](../../../../labs/lakehouse/flink/README.md)
+- [Great Expectations 패키지 README](../../../../labs/lakehouse/great-expectations/README.md)
+- [Iceberg maintenance](https://iceberg.apache.org/docs/latest/maintenance/)
+
+## Preconditions
+
+### Authority and Access
 
 기동/정지는 [GDE-0099](../../guides/01-common/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
 
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
-## Procedure
+### Safety Checks
+
+대상: `seaweedfs-table-bucket`, `flink-jobmanager`, `flink-taskmanager`, `great-expectations`, `spark`, `trino`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
+
+## Steps
+
+### Actions
 
 1. 저장소 루트에서 승인된 대상만 점검한다. 이 엔진들은 독립 LAB `labs/lakehouse/docker-compose.yml`에
    있으며(SPEC-0262) 아래에서 `LAB`은
@@ -91,14 +109,24 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
    상태에 멈춘 작업은 `flink cancel <job_id>`로 취소한다. 이전 체크포인트에서
    커밋된 행은 테이블에 남는다.
 
-## Verification
+### Stop Conditions
+
+중단 조건(승인된 `LAB_LAKEHOUSE_S3_ENDPOINT`·`LAB_LAKEHOUSE_CATALOG_URI` 부재, 준비되지 않은 table-bucket provisioning·Trino)은 Actions의 1단계에, data/backup/ownership/credential 불명확은 Authority and Access에, admin identity 사용·카탈로그 외부 노출·사유 없는 스냅샷 만료 요청은 Escalation에 적혀 있다.
+
+## Validation
+
+### Service Checks
 
 네임스페이스, 테이블 이름, 스냅샷 ID, 행 개수, 종료 코드, 소스 커밋을
 기록한다. 데이터 값이나 시크릿은 절대 기록하지 않는다.
 
-## Failure and Recovery
+### Evidence
 
-### Rollback or Recovery
+기록 항목(네임스페이스, 테이블 이름, 스냅샷 ID, 행 개수, 종료 코드, 소스 커밋)과 비기록 대상(데이터 값, 시크릿)은 위 Service Checks에 적혀 있다.
+
+## Recovery
+
+### Rollback
 
 테이블 메타데이터와 데이터는 SeaweedFS 객체로, SeaweedFS 복구 세트에서
 다룬다(RUN-0024). filer 메타데이터를 잃으면 카탈로그를 잃는다. `dev`와
@@ -109,19 +137,3 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 엔진에서 admin identity를 사용하거나, 카탈로그를 `object_net` 밖으로
 노출하거나, 명시된 사유 없이 테이블의 스냅샷을 만료시키라는 요청이 있으면
 중단하고 @buenhyden에게 target·영향·검증되지 않은 항목을 전달한다.
-
-## Related Documents
-
-### Traceability
-
-- [Guide](../../guides/15-labs/0094-lakehouse.md) (`GDE-0094`)
-- [Policy](../../policies/15-labs/0094-lakehouse.md) (`POL-0094`)
-- [SeaweedFS runbook](../05-databases-and-storage/0024-seaweedfs.md)
-- SPEC-0262 Analytics labs migration
-
-- [Lakehouse LAB Compose](../../../../labs/lakehouse/docker-compose.yml)와 [독립 LAB source](../../../../labs/README.md)
-- [Spark 패키지 README](../../../../labs/lakehouse/spark/README.md)
-- [Trino 패키지 README](../../../../labs/lakehouse/trino/README.md)
-- [Flink 패키지 README](../../../../labs/lakehouse/flink/README.md)
-- [Great Expectations 패키지 README](../../../../labs/lakehouse/great-expectations/README.md)
-- [Iceberg maintenance](https://iceberg.apache.org/docs/latest/maintenance/)

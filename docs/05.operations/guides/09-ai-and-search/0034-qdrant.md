@@ -84,7 +84,7 @@ Qdrant는 API key를 환경 변수로만 읽으므로, Compose 시작 스크립�
 - `DEFAULT_DATA_DIR`, `DEFAULT_URL`, `QDRANT_PORT`, `QDRANT_GRPC_PORT` 값이 로컬 환경과 맞아야 한다. 아래 명령의 `6333`은 기본 `QDRANT_PORT`이며, 바꿨다면 그 값으로 바꿔 쓴다.
 - Qdrant는 `qdrant_api_key` secret(AI-008)을 시작 스크립트가 `QDRANT__SERVICE__API_KEY`로 넘겨 API key를 요구한다. 클라이언트는 `api-key` 또는 `Authorization: Bearer` header로 보낸다. 읽기 전용 key `qdrant_read_only_api_key`(AI-009)는 `QDRANT__SERVICE__READ_ONLY_API_KEY`로 넘어가며, 16자 이상이고 전체 key와 달라야 시작한다. Prometheus는 이 읽기 전용 key만 받아 `bearer_token_file`로 보낸다.
 
-정상 운영 중 점검은 compose profile 렌더링, 서비스 상태, REST `/readyz` health route, API key 기반 read-only `/collections` inventory 확인으로 구성된다. `qdrant.${DEFAULT_URL}` 경로는 SSO 뒤에 있고 그 뒤에서도 API key가 필요하며, gRPC route는 없다. 컨테이너는 `ai_net`에서 `qdrant:6333`(REST)·`qdrant:6334`(gRPC)를 쓴다. 실행 가능한 명령 순서와 기대 결과는 [Qdrant runbook](../../runbooks/09-ai-and-search/0034-qdrant.md#procedure)을 따른다.
+정상 운영 중 점검은 compose profile 렌더링, 서비스 상태, REST `/readyz` health route, API key 기반 read-only `/collections` inventory 확인으로 구성된다. `qdrant.${DEFAULT_URL}` 경로는 SSO 뒤에 있고 그 뒤에서도 API key가 필요하며, gRPC route는 없다. 컨테이너는 `ai_net`에서 `qdrant:6333`(REST)·`qdrant:6334`(gRPC)를 쓴다. 실행 가능한 명령 순서와 기대 결과는 [Qdrant runbook](../../runbooks/09-ai-and-search/0034-qdrant.md#actions)을 따른다.
 
 ### Exceptions
 

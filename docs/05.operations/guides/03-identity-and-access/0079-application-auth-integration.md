@@ -521,7 +521,7 @@ Airflow 연동 장애는 증상별로 아래에 정리한다.
 ##### DB migration
 
 [POL-0050](../../policies/08-workflows-and-automation/0050-airflow.md)에 따라 schema upgrade 전 schedule과 producer를
-pause하고 running/queued task를 정리해야 한다. 절차는 [Airflow runbook](../../runbooks/08-workflows-and-automation/0050-airflow.md#procedure)을 따른다.
+pause하고 running/queued task를 정리해야 한다. 절차는 [Airflow runbook](../../runbooks/08-workflows-and-automation/0050-airflow.md#actions)을 따른다.
 
 ##### JWT algorithm/format error
 

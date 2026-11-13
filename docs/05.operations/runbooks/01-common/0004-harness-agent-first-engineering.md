@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Runbook"
-version: "1.4.0"
+version: "1.4.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0004"
 parent_ids:
@@ -13,11 +13,11 @@ created: "2026-06-04"
 ---
 # Harness / Agent-first Engineering Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 이 런북은 `hy-home.docker`의 하네스 엔지니어링과 Agent-first Engineering 계약이 계속 유효한지 반복 검증하는 절차를 제공한다.
-
-## Trigger
 
 다음 경우에 실행한다.
 
@@ -27,19 +27,40 @@ created: "2026-06-04"
 - 새 stage doc이 추가될 때
 - harness 또는 Agent-first audit이 요청될 때
 
-## Prerequisites
+### Scope
+
+- 과거 구현 출처: Harness and Agent-first Engineering Outcome (`SPEC-0094`, retired)
+- 같은 주제: [Guide](../../guides/01-common/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Policy](../../policies/01-common/0004-harness-agent-first-engineering.md) (`POL-0004`)
+
+- [Operations index](../../README.md)
+- [Agent Governance Hub](../../../../.agents/README.md)
+- [Subagent Protocol](../../../../.agents/governance/agentic.md)
+- 현재 승인된 Spec Package의 Plan과 Task evidence
+
+## Preconditions
+
+### Authority and Access
+
+승인 범위와 접근에 관한 확인:
+
+- [ ] bootstrap/provider와 승인 범위를 읽고 report가 존재하는 경우에만 읽는다.
+
+- [ ] 아래 적용 가능한 verification command의 입력·부작용·필요 도구를 먼저 확인한다. 공개/sanitized checkout이 없거나 private 접근·Docker 실행이 승인되지 않았으면 해당 검사를 BLOCKED/NOT_RUN으로 남긴다.
+
+### Safety Checks
 
 시작 전 확인:
 
 - [ ] `git status --short --branch`를 확인한다.
-- [ ] bootstrap/provider와 승인 범위를 읽고 report가 존재하는 경우에만 읽는다.
+
 - [ ] Graphify를 탐색에 사용할 때만 health를 advisory로 확인한다.
 - [ ] 문서를 편집하기 전에 runtime policy 변경이 필요 없는지 확인한다.
 - [ ] 새 stage doc이 template을 사용하고 parent README 파일이 갱신되었는지 확인한다.
 - [ ] hook quoting/parsing 변경 후에는 hook payload simulation을 실행한다.
-- [ ] 아래 적용 가능한 verification command의 입력·부작용·필요 도구를 먼저 확인한다. 공개/sanitized checkout이 없거나 private 접근·Docker 실행이 승인되지 않았으면 해당 검사를 BLOCKED/NOT_RUN으로 남긴다.
 
-## Procedure
+## Steps
+
+### Actions
 
 1. workspace 상태를 확인한다. Graphify report와 health는 해당 탐색을 사용할 때만 읽는 advisory이며 필수 QA가 아니다.
 
@@ -98,7 +119,7 @@ created: "2026-06-04"
 
 7. 변경 파일, command 결과, Graphify 유효성, 실제 선택 범위와 범위 밖 infra 실패를 현재 Task에 기록한다. 실패를 지우기 위해 범위를 넓히거나 통제를 낮추지 않는다.
 
-### Git push guard installation and recovery
+#### Git push guard installation and recovery
 
 Git `pre-push`의 전체 ref 입력은
 [`pre-push-guard.sh`](../../../../scripts/hooks/pre-push-guard.sh)가 검사한다.
@@ -131,7 +152,7 @@ main push를 시험하지 않으며 합성 결과를 원격 보호나 editor syn
 `pre-commit install --hook-type pre-push`를 다시 실행해 native guard를
 migration chain으로 이동시키지 않는다.
 
-### CI quality-gate version alignment
+#### CI quality-gate version alignment
 
 1. `.github/workflows/ci-quality.yml`, `.github/workflow-contract.yml`,
    `.pre-commit-config.yaml`, 그리고 실패한 job log를 읽는다. event, revision,
@@ -168,7 +189,7 @@ diff·revision을 Task에 연결한다. 후보 workflow가 후보 controller와 
 정의 검증을 강제하는지 확인되지 않으면 그 주장만 미확인으로 남긴다.
 일반 문서 교정에 새로운 전체 QA나 반복 승인을 추가하지 않는다.
 
-### Evaluation and QA Ownership
+#### Evaluation and QA Ownership
 
 agent 답변 점수와 완료된 Spec/Task 사건을 재증명하는 fixture는 정기 workspace
 QA가 아니다. 현재 [품질 정책](../../../../.agents/governance/quality-standards.md)이
@@ -184,13 +205,21 @@ QA가 아니다. 현재 [품질 정책](../../../../.agents/governance/quality-s
 입력이 없으면 해당 lane을 BLOCKED/NOT_RUN으로 남기고 독립적인 안전 작업을
 계속한다. static PASS를 HOME capacity·복구·배포 성공으로 확대하지 않는다.
 
-## Verification
+### Stop Conditions
+
+중단 조건은 두 곳에 있다. 관찰된 실패가 문서화된 단계와 일치하지 않으면 변경을 중단한다(Rollback), verification 실패·secret 노출 위험·파괴적 데이터 변경 필요·예상과 다른 상태는 작업을 중단하고 escalation한다(Escalation). private 접근이나 Docker 실행이 승인되지 않은 검사는 BLOCKED/NOT_RUN으로 남긴다(Safety Checks).
+
+## Validation
+
+### Service Checks
 
 `--explain`은 실행하지 않는 계획 조회다. 후보 aggregate QA는
 [quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix)의
 원격 PR 경로가 소유하며 조회 결과를 검증 PASS로 기록하지 않는다.
 
 이 runbook의 수용은 실제 변경에 선택된 현재 보장 검사와 독립 리뷰의 결과로 판단한다. 무관한 hook simulation·Graphify 보고·전체 QA를 모든 변경에 요구하지 않는다. `report-graphify-health.sh`는 실패로 취급하지 않는 advisory evidence이다. `status=advisory`는 대조 검증이 필요하지만 repository gate를 실패시키지는 않는다.
+
+### Evidence
 
 증거 출처:
 
@@ -204,12 +233,12 @@ QA가 아니다. 현재 [품질 정책](../../../../.agents/governance/quality-s
 - 이 runbook을 실행할 때마다 command 출력, timestamp, operator 또는 agent 조치를 기록한다.
 - 실패한 check, 관찰된 증상, 최종 recovery 또는 escalation 상태를 관련 task 또는 incident evidence에 기록한다.
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
 
 - 이 runbook에 이미 문서화된 recovery/rollback 단계만 사용한다.
-- 관찰된 실패가 문서화된 단계와 일치하지 않으면 변경을 중단하고 evidence를 보존한 뒤 `## Escalation`에 따라 escalation한다.
+- 관찰된 실패가 문서화된 단계와 일치하지 않으면 변경을 중단하고 evidence를 보존한 뒤 Escalation 절에 따라 escalation한다.
 - 문서 실수는 영향받은 stage doc 또는 README hunk만 되돌린다.
 - runtime catalog drift는 canonical agent governance role, skill, provider registry에서 provider projection을 다시 생성한다.
 - Compose validation 실패는 관련 없는 파일을 편집하기 전에 변경된 Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}` 파일을 먼저 점검한다.
@@ -218,15 +247,3 @@ QA가 아니다. 현재 [품질 정책](../../../../.agents/governance/quality-s
 ### Escalation
 
 verification이 실패하거나, secret 노출 위험이 나타나거나, 파괴적 데이터 변경이 필요하거나, 관찰된 상태가 예상 절차 결과와 다를 때 작업을 중단하고 @buenhyden에게 escalation한다. 수집한 evidence, 시도한 단계, 현재 rollback/recovery 상태를 포함한다.
-
-## Related Documents
-
-### Traceability
-
-- 과거 구현 출처: Harness and Agent-first Engineering Outcome (`SPEC-0094`, retired)
-- 같은 주제: [Guide](../../guides/01-common/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Policy](../../policies/01-common/0004-harness-agent-first-engineering.md) (`POL-0004`)
-
-- [Operations index](../../README.md)
-- [Agent Governance Hub](../../../../.agents/README.md)
-- [Subagent Protocol](../../../../.agents/governance/agentic.md)
-- 현재 승인된 Spec Package의 Plan과 Task evidence

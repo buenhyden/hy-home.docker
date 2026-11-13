@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Runbook"
-version: "1.0.5"
+version: "1.0.6"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0044"
 parent_ids:
@@ -14,15 +14,13 @@ created: "2026-05-17"
 
 # 06-Observability Optimization Hardening Runbook
 
-## Overview
+## Purpose
 
-> Scope: 관측 gateway·SSO middleware, Compose 상태 의존성, 커스텀 이미지 보안 강화, 검사, 재시작과 Git 기반 rollback 증거.
+### Trigger and Outcome
 
 이 런북은 `06-observability` hardening 회귀를 복구하는 실행 절차를 제공한다. Gateway/SSO middleware 누락, health dependency 회귀, custom image runtime hardening 누락, Pyroscope route availability 회귀, cAdvisor healthcheck 회귀, CI hardening baseline 실패를 중심으로 점검하고 복구한다.
 
 운영자는 관측 관리 route, Compose 의존성, healthcheck, custom image, hardening 검증 경계를 확인한다. runtime/security 정책 변경이 필요하면 별도 승인으로 분리한다.
-
-## Trigger
 
 다음 경우에 사용한다.
 
@@ -33,19 +31,42 @@ created: "2026-05-17"
 - Pyroscope 또는 cAdvisor route/healthcheck availability가 회귀했을 때.
 - hardening script, Compose, Dockerfile 또는 operations docs 변경 후 rollback 가능성을 확인해야 할 때.
 
-## Prerequisites
+### Scope
+
+> Scope: 관측 gateway·SSO middleware, Compose 상태 의존성, 커스텀 이미지 보안 강화, 검사, 재시작과 Git 기반 rollback 증거.
+
+- Declared parent: [06-Observability Optimization Hardening Usage Guide](../../guides/07-observability/0044-observability-optimization-hardening.md) (`GDE-0044`)
+- Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](../../guides/07-observability/0044-observability-optimization-hardening.md) (`GDE-0044`), [Policy](../../policies/07-observability/0044-observability-optimization-hardening.md) (`POL-0044`)
+
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+- [Operations index](../../README.md)
+- [Usage guide](../../guides/07-observability/0044-observability-optimization-hardening.md)
+- [Operations policy](../../policies/07-observability/0044-observability-optimization-hardening.md)
+
+## Preconditions
+
+### Authority and Access
 
 `cadvisor`는 host mount·device·privileged 접근의 승인을 먼저 확인한다. 기동 후 `/healthz`와 실제 container series를 별도로 확인한다. 중지·image 교체는 관측 공백을 만들지만 자체 애플리케이션 데이터 복원은 없다. node-exporter·DCGM 실행은 RUN-0045와 RUN-0055의 소유 경계를 따른다.
 
-## Procedure
-
-### Execution Boundary
+#### Execution Boundary
 
 저장소 root에서 아래의 정확한 service/profile과 기존 container를 선택한다. 변경 전에 승인 대상, source/image, 선행 readiness, 필요한 운영 권한과 부작용 범위를 확인한다. `up`은 dependency/provisioning job을 만들 수 있고 profile은 격리가 아니다. 진단은 기존 container의 `exec`를 사용하고 단순 조회를 위해 client/provisioner를 띄우지 않는다. 재시작은 요청 중단·memory/queue 손실·부작용 반복을 일으킬 수 있으므로 대상 drain/backup 조건을 먼저 충족한다. `restart`는 바뀐 Compose 설정이나 교체된 secret bind를 불러오지 않는다.
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Steps
+### Safety Checks
+
+사전 점검·백업 관련 문장은 `Steps`, `Planned isolated recovery rehearsal`에서 다룬다.
+
+## Steps
+
+### Actions
+
+실행 절차는 아래 항목을 따른다.
+
+#### Steps
 
 시작 전 점검:
 
@@ -103,11 +124,11 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
    이 런북은 route/middleware policy change, resource cap change, secret rotation, workflow gate redesign 또는 runtime security relaxation을 검증된 복구 절차로 제공하지 않는다. 해당 변경은 별도 approval과 rollback evidence가 필요하다.
 
-### cAdvisor and static-check limits
+#### cAdvisor and static-check limits
 
 이 항목은 [POL-0044](../../policies/07-observability/0044-observability-optimization-hardening.md#cadvisor-and-static-check-limits)가 소유한다. 요약: cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 쓰는 privileged 관측기이며, health는 process 응답만 확인하므로 Prometheus target과 예상 container series를 따로 검증한다. 관측 hardening 검사는 일부 문자열·파일만 보므로 통과만으로 통제를 완료하거나 privileged 권한 확대를 승인하지 않는다.
 
-### Planned isolated recovery rehearsal
+#### Planned isolated recovery rehearsal
 
 **Project 이름만 바꿔서는 실행할 수 없다.** Rehearsal 전에 고정 container name, host port, bind path, external network와 route 충돌을 제거하고 production 통지·workflow egress를 차단한 별도 Compose/storage 정의를 승인한다. 격리와 대상 backup 계약을 검토하기 전에는 NOT_RUN으로 유지한다. 임의 project에 production volume이나 credential을 연결하지 않는다.
 
@@ -118,7 +139,13 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 3. 상태, 예상 호스트·컨테이너 시계열, label 연속성, 수집 시간·cardinality, 보호된 cAdvisor 경로를 확인하고 예상하지 않은 쓰기 가능 마운트나 secret이 없는지 점검한다.
 4. 불일치하면 격리 서비스를 중지하고 이미지·설정을 되돌린다. 운영 권한이나 마운트 변경은 별도 보안 승인이 필요하다.
 
-## Verification
+### Stop Conditions
+
+중단·중지 관련 문장은 Authority and Access의 `Execution Boundary`, `Steps`, `Planned isolated recovery rehearsal`에 있다.
+
+## Validation
+
+### Service Checks
 
 - [ ] `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`가 통과한다.
 - [ ] `bash scripts/hardening/check-all-hardening.sh 06-observability` 실패가 0건이다.
@@ -138,9 +165,13 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - Hardening 장애는 failed check name, affected service/router, before/after command output, relevant redacted diff, recovery/escalation state를 함께 기록한다.
 - Route/resource/secret/workflow/security policy 변경 필요성이 보이면 approval state를 기록한다.
 
-## Failure and Recovery
+### Evidence
 
-### Rollback or Recovery
+증거 관련 문장은 Authority and Access의 `Execution Boundary`, `Steps`, `Planned isolated recovery rehearsal`에 있다.
+
+## Recovery
+
+### Rollback
 
 - Git-managed Compose, Dockerfile, entrypoint, hardening script, workflow 또는 operations doc change가 원인이면 직전 Git diff 단위로 되돌린다.
 - Runtime restart는 affected service의 documented runbook을 따른다.
@@ -151,16 +182,3 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 ### Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, route/resource/secret/workflow/security 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
-
-## Related Documents
-
-### Traceability
-
-- Declared parent: [06-Observability Optimization Hardening Usage Guide](../../guides/07-observability/0044-observability-optimization-hardening.md) (`GDE-0044`)
-- Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](../../guides/07-observability/0044-observability-optimization-hardening.md) (`GDE-0044`), [Policy](../../policies/07-observability/0044-observability-optimization-hardening.md) (`POL-0044`)
-
-- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
-- [Operations index](../../README.md)
-- [Usage guide](../../guides/07-observability/0044-observability-optimization-hardening.md)
-- [Operations policy](../../policies/07-observability/0044-observability-optimization-hardening.md)

@@ -67,7 +67,7 @@ resolved digest와 같지 않으므로 불변성 통제의 충족 여부를 따�
 
 ## Verification
 
-[Runbook step 1](../../runbooks/10-platform-and-backup/0083-renovate.md#procedure)에 따라 실제 실행 전에 저장소와
+[Runbook step 1](../../runbooks/10-platform-and-backup/0083-renovate.md#actions)에 따라 실제 실행 전에 저장소와
 self-host 설정 검증을 반드시 통과해야 한다.
 
 ## Related Documents
