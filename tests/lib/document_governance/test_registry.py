@@ -1141,7 +1141,9 @@ class DocumentRegistryTests(unittest.TestCase):
         )
         for key in retired:
             with self.subTest(key=key):
-                self.assertNotEqual((), validate_frontmatter({key: "x"}))
+                # A valid value proves the key itself is rejected.
+                value = "2026-01-01T00:00:00Z" if key == "archived_at" else "x"
+                self.assertNotEqual((), validate_frontmatter({key: value}))
         raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
         self.assertNotIn("archive_source_prefixes", raw["common"])
         self.assertFalse(set(retired) & set(raw["common"]["frontmatter_order"]))
