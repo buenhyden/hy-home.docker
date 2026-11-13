@@ -1,31 +1,31 @@
 ---
 title: "개발 PostgreSQL"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 created: "2026-10-02"
 ---
 
 # 개발 PostgreSQL
 
-## Overview
+## Purpose
+
+### Service Role
 
 `dev-pg`는 Compose와 Dockerfile에 선언된 TimescaleDB Community/PG 단일 인스턴스의 **소스 선언**입니다. `dev-data` 프로파일은 개발 PostgreSQL과 Valkey만 선택합니다. `dev-platform-provision`은 `analytics-engineering` 프로파일에서만 선택되며 명시된 `hyhome-platform` 기술 fixture의 `platform_dev` 데이터베이스를 만들도록 설계됐습니다. 공무원·언어 학습 앱이나 외부 업무 프로젝트 데이터베이스는 기본 설치에서 생성하지 않습니다.
 
-## Audience
+#### Audience
 
 개발 PostgreSQL과 프로젝트별 데이터 권한을 검토하는 maintainer와 operator를 대상으로 합니다.
-
-## Scope
 
 - 입력: `DEFAULT_DATA_DIR`의 새로운 `dev-pg` 디렉터리, 별도의 `${BACKUP_STATE_REPO_DIR}/dev-pgbackrest`, `DEV_PG_HOST_PORT`(기본 25433, localhost), `DEV_PG_ADMIN_USER`(기본 postgres), root의 `dev_data_net`, `dev_pg_admin_password`, `dev_pgbackrest_cipher_pass`, 플랫폼 fixture의 세 역할 비밀번호 secret. 실제 값은 저장소 밖 Docker secret으로 공급합니다.
 - 출력: `dev-pg:5432` endpoint와 `platform_dev`의 `platform_owner`(NOLOGIN), `platform_migrator`, `platform_runtime`, `platform_reader` 역할. DB와 schema `app`의 소유자는 `platform_owner`이며 migrator는 migration 때 `SET ROLE platform_owner`를 실행해야 새 객체에 기본 권한이 적용됩니다. Runtime과 reader는 DDL 권한이 없습니다.
 - 범위: 별도 `dev` pgBackRest stanza, 새 PGDATA `/var/lib/postgresql/18/docker`, 2 CPU/2 GiB RAM/256 MiB SHM, 100 연결(프로젝트 login role 예산: migrator 2, runtime 10, reader 5), 연속 WAL archive(`archive_mode=on`, 보존 full 2·differential 6, `archive-push-queue-max=2GiB`). 활성화 순서는 RUN-0021이 소유하며 `dev` stanza가 먼저 있어야 합니다. `max_wal_size=2GB`는 PostgreSQL WAL 디스크 사용의 강제 상한이 아닙니다. WAL/저장소 여유를 관측해야 합니다.
 - 검증: 2026-10-03 새 secret 경로 발급, 격리 이미지 빌드, Timescale 확장 로드, 플랫폼 역할의 읽기·쓰기·DDL 권한, pgBackRest 오프라인 전체 백업과 별도 볼륨 복원을 합성 상태에서 확인했습니다. retention(full 2·differential 6)은 소스에 선언되어 백업마다 만료가 적용됩니다. HOME stanza·WAL 활성화·최초 full·격리 restore canary는 2026-10-08 통과했고, HOME PITR·R2 복구는 미실행이며 그 검증은 POL-0021이 소유합니다. 5분 RPO는 archive 성공 시의 계획값이고 RTO 실측은 없습니다.
 
-## Structure
+#### Structure
 
 [`Dockerfile`](Dockerfile)은 TimescaleDB 이미지에 pgBackRest를 추가하고, [`backup/`](backup/)은 비활성 백업 설정을 소유합니다. [`provision/`](provision/)은 승인된 프로젝트의 role/DB 경계를 소유합니다. 루트 [`docker-compose.yml`](../docker-compose.yml)이 서비스를 선언합니다.
 
@@ -35,15 +35,17 @@ created: "2026-10-02"
 
 `platform_dev`은 승인된 시간 이력 테이블을 만들지 않습니다. 업무 migration은 외부 프로젝트 소유이며 UTC/단위/정밀도/NULL/중복/지연 도착, partition 차원을 포함한 유일키, chunk·index·continuous aggregate·refresh·raw retention과 백필/삭제 승인을 명시해야 합니다. 개발 DB 세부 운영 계약은 [운영 가이드 목록](../../../../docs/05.operations/guides/README.md)에서 확인합니다. 승인된 프로젝트 계약 전에는 hypertable과 retention 정책을 추가하지 않습니다.
 
-## Tech Stack
+### Supported Environment
 
 [Dockerfile](Dockerfile)이 TimescaleDB Community 기반 PostgreSQL 이미지와 pgBackRest 패키지를 선언합니다. 실제 호환성은 이미지 빌드와 격리 복원으로 확인해야 합니다.
 
-## Configuration
+## Interfaces
+
+### Inputs and Outputs
 
 상위 [Compose](../docker-compose.yml)의 `dev-pg`와 `dev-platform-provision`이 `dev_data_net`, 새 PGDATA 경로, 역할별 Docker secret, 비활성 백업 설정을 연결합니다.
 
-### 함수 전용 프로젝트의 cluster CONNECT 경계
+#### 함수 전용 프로젝트의 cluster CONNECT 경계
 
 Schema v2 provisioner는 다섯 marked role을 확인한 뒤 DB 생성·ACL·LOGIN 변경 전에
 모든 `datallowconn` database의 유효 CONNECT를 검사합니다. 대상 DB 밖의 PUBLIC,
@@ -62,15 +64,29 @@ PUBLIC template1이나 새 DB를 통해 접근할 수 있으면 NOLOGIN 상태�
 접근을 추가하지 않습니다. 기존 활성 role의 권한 변경·세션 종료는 별도 운영 조정 대상입니다. 복원 순서는 globals/roles,
 검토된 cluster ACL, 프로젝트 DB 복원과 실제 역할별 거부 시험입니다.
 
-## Validation
+### Security Boundary
 
-`python3 -m unittest tests.validation.test_dev_pg_provision`과 `project.py --validate-only`를 저장소 루트에서 실행합니다. 이미지·권한·복구의 실제 결과는 Task에 별도로 기록합니다.
+없음: 이 디렉터리는 Compose 서비스나 secret 참조를 직접 선언하지 않으며, 하위 `perf/`가 각자 선언한다.
 
-## Usage
+## Development
+
+### Local Workflow
 
 정적 확인: `python3 -m unittest tests.validation.test_dev_pg_provision` 및 `python3 infra/04-data/dev-db/pg/provision/project.py infra/04-data/dev-db/pg/provision/platform.json --validate-only`. 백업 운영 절차는 Stage 05의 기존 백업 정책·런북 소유자가 별도로 갱신합니다.
 
-## Related Documents
+### Checks
+
+`python3 -m unittest tests.validation.test_dev_pg_provision`과 `project.py --validate-only`를 저장소 루트에서 실행합니다. 이미지·권한·복구의 실제 결과는 Task에 별도로 기록합니다.
+
+## Operations
+
+### Runbook Links
+
+#### Related Documents
 
 [문서 진입점](../../../../docs/README.md)에서 현재 개발 DB 계약의
 POL-0100·RUN-0100과 백업·복구 RUN-0021을 참조하십시오.
+
+### Observability and Recovery
+
+없음: 이 디렉터리는 자체 헬스체크나 관측 대상을 선언하지 않으며, 하위 `perf/`가 각자 선언한다.

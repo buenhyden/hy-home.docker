@@ -1,38 +1,40 @@
 ---
 title: "Opsflow SMTP 개발 캡처 노드"
-version: "0.2.2"
+version: "0.2.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-13"
 ---
 
 # Opsflow SMTP 개발 캡처 노드
 
-## Overview
+## Purpose
+
+### Service Role
 
 native `smtp` credential API로 개발 Mailpit 캡처 설정만 확인하고
 `n8n-nodes-opsflow.opsflowSmtp` version 1의 단일 통지를 구현합니다.
 상위 workflow의 claim 검사와 별도로 닫힌 claim을 다시 검증합니다.
 
-## Audience
+#### Audience
 
 P05 작성자, SEC01·P03·P02 담당자와 독립 검토자입니다.
 
-## Scope
+#### Scope
 
 공개 source build, 합성 node API와 owned loopback의 실제 Nodemailer STARTTLS 시험입니다.
 과거 C19/C22 native 수용은 당시 범위로 보존합니다. 이번 보완의 n8n Worker·Mailpit native
 실행, 실제 자격 발급·회전과 HOME 복구는 별도 증거이며 source 시험으로 대체하지 않습니다.
 
-## Structure
+#### Structure
 
 - [OpsflowSmtp.node.ts](OpsflowSmtp.node.ts): native credential 조회와 제한된 오류 envelope.
 - [transport.ts](transport.ts): 고정 endpoint·envelope·Message-ID·socket 수명.
 - [package.json](package.json), [lock](package-lock.json), [tsconfig](tsconfig.json): 재현 build 입력.
 - [tests](tests/README.md): 합성 경계와 owned loopback STARTTLS 시험.
 
-## Tech Stack
+### Supported Environment
 
 선택 upstream n8n commit
 `bb72d756104542adb549b6966a57e21459bd52a2`(현재 pin의 stable release tag)의
@@ -62,7 +64,9 @@ downgrade하지 않습니다. 배포 패키지는 `node_modules`를 포함하지
 영향은 이 dev 트리와 무관하며 SEC01 담당으로 미확인입니다. 이 결과는 설치 이미지·실제 송신·
 전체 보안 수용의 PASS가 아닙니다.
 
-## Configuration
+## Interfaces
+
+### Inputs and Outputs
 
 두 capture profile 모두 `mailpit:1025`와 합성
 `notifier@opsflow.invalid` → `manifest@opsflow.invalid`로 고정됩니다.
@@ -108,7 +112,29 @@ socket을 소유하여 취소·deadline·최종 정리 시 직접 destroy합니�
 [공식 transport 소스](https://github.com/nodemailer/nodemailer/blob/v10.1.4/src/smtp-transport/index.ts)를 <!-- runtime-version-exception: compatibility — immutable upstream protocol evidence; package and lock own the dependency pin -->
 기준으로 실제 라이브러리와 in-memory SMTP byte 시험을 수행합니다.
 
-## Validation
+### Security Boundary
+
+credential은 host·port·secure·disableStartTls·user·password·hostName의 닫힌 허용 집합이고 임의 endpoint·CC/BCC·첨부·파일/URL 읽기·header·Code credential 접근을 제공하지 않습니다. lease token은 검증에만 쓰며 mail·출력·오류에 넣지 않고, 실제 credential ID는 private import artifact에서만 해결합니다. `NODE_EXTRA_CA_CERTS`로만 합성 CA를 제공합니다.
+
+## Development
+
+### Local Workflow
+
+builder가 비활성 workflow에서 이 node type을 참조합니다. 위 build는 패키지를
+생성할 뿐 실행 서비스에 설치하거나 mail을 보내지 않습니다. shared Dockerfile·mount·
+Compose 변경은 총괄에 제안하고 최종 endpoint·SQL hash·이미지 인계 이후 통합합니다.
+
+#### 서버 lease deadline
+
+닫힌 claim은 기존 다섯 필드와 필수 `lease_until`을 갖습니다. 서버가 UTC
+`YYYY-MM-DDTHH:mm:ss.SSSZ`로 투영하며 impossible date와 다른 timezone 형식도 거부합니다.
+Transport 생성 전과 send 직전에 SMTP 15초+ack 5초+clock skew 5초보다 남은 시간이
+커야 합니다. 시작 전 취소는 cancelled, 시작 후 취소·timeout·수락 응답 유실은 uncertain입니다.
+Workflow는 uncertain·ack 유실을 SQL004 unknown으로 격리하며 자동 재전송하지 않습니다.
+실제 clock skew/DB timeout과 중단 후 재개는 별도 native acceptance이며 시간 확인만으로
+분산 fencing 또는 exactly-once를 보장하지 않습니다.
+
+### Checks
 
 이 패키지 디렉터리에서 실행합니다.
 
@@ -125,26 +151,16 @@ coverage gate는 compiled production source의 line·branch·function을 각각 
 선택 이미지의 loader registration·credential binding·동일 main/worker artifact는
 native 시험 전 별도로 입증해야 합니다.
 
-## Usage
+## Operations
 
-builder가 비활성 workflow에서 이 node type을 참조합니다. 위 build는 패키지를
-생성할 뿐 실행 서비스에 설치하거나 mail을 보내지 않습니다. shared Dockerfile·mount·
-Compose 변경은 총괄에 제안하고 최종 endpoint·SQL hash·이미지 인계 이후 통합합니다.
-
-### 서버 lease deadline
-
-닫힌 claim은 기존 다섯 필드와 필수 `lease_until`을 갖습니다. 서버가 UTC
-`YYYY-MM-DDTHH:mm:ss.SSSZ`로 투영하며 impossible date와 다른 timezone 형식도 거부합니다.
-Transport 생성 전과 send 직전에 SMTP 15초+ack 5초+clock skew 5초보다 남은 시간이
-커야 합니다. 시작 전 취소는 cancelled, 시작 후 취소·timeout·수락 응답 유실은 uncertain입니다.
-Workflow는 uncertain·ack 유실을 SQL004 unknown으로 격리하며 자동 재전송하지 않습니다.
-실제 clock skew/DB timeout과 중단 후 재개는 별도 native acceptance이며 시간 확인만으로
-분산 fencing 또는 exactly-once를 보장하지 않습니다.
-
-## Related Documents
+### Runbook Links
 
 - [노드 탐색](../README.md)
 - [시험](tests/README.md)
 - [상위 workload](../../README.md)
 - [native SMTP credential 소스](https://github.com/n8n-io/n8n/blob/34ab9c7bf3d0c6d2ec3422e12e0b970aea5717c7/packages/nodes-base/credentials/Smtp.credentials.ts)
 - [upstream EmailSend 소스](https://github.com/n8n-io/n8n/blob/34ab9c7bf3d0c6d2ec3422e12e0b970aea5717c7/packages/nodes-base/nodes/EmailSend/v2/send.operation.ts)
+
+### Observability and Recovery
+
+출력은 `{run_id,state}`뿐이며 상태는 `accepted_by_smtp`, `uncertain`, `cancelled`입니다. 연결·greeting 3초, socket 5초, 전체 send 15초 제한과 소유 socket 직접 destroy로 정리하며, uncertain·ack 유실은 workflow가 SQL004 unknown으로 격리합니다. 복구 절차는 [상위 workload README](../../README.md)와 RUN-0053(`docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md`)을 따릅니다.

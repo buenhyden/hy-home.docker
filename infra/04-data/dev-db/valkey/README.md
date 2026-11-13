@@ -1,27 +1,27 @@
 ---
 title: "개발 Valkey"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-11-13"
 created: "2026-10-02"
 ---
 
 # 개발 Valkey
 
-## Overview
+## Purpose
+
+### Service Role
 
 `dev-valkey`는 개발 프로젝트가 명시적으로 등록될 때 사용하는 단일 Valkey입니다.
 관리용·LAB Valkey의 데이터와 계정을 공유하지 않습니다. 이 디렉터리는 설정과
 ACL 생성 스크립트를 소유하며 서비스 선언은 [상위 Compose](../docker-compose.yml)가
 소유합니다. 소스 선언은 승인된 기동 전까지 실행 상태가 아닙니다.
 
-## Audience
+#### Audience
 
 개발 DB 운영자, 프로젝트 provision 담당자, 보안 검토자를 대상으로 합니다.
-
-## Scope
 
 서비스는 새 `${DEFAULT_DATA_DIR}/dev-valkey/data` 영속 경로와
 `dev_data_net`을 사용하고 호스트 포트를 게시하지 않습니다. 관리자 자격 증명은
@@ -46,7 +46,7 @@ Valkey protected mode는 named-user ACL을 가진 원격 Compose peer의 인증 
 보조 명령 경계이며 DB 번호 자체는 프로젝트 격리 수단이 아닙니다. 이 ACL의
 2026-10-03 합성 A/B 프로젝트의 prefix·관리 명령·DB1 접근 거절을 격리 엔진에서 확인했습니다. HOME 실행은 `NOT_RUN`입니다.
 
-## Structure
+#### Structure
 
 - `config/valkey.conf`: 128 MiB `maxmemory`, `noeviction`, AOF `everysec`,
   정기 RDB snapshot.
@@ -64,19 +64,23 @@ Valkey protected mode는 named-user ACL을 가진 원격 Compose peer의 인증 
 않습니다. 메모리 한도에 도달하면 쓰기를 거절합니다. 큐의 `noeviction`과
 캐시의 LRU가 동시에 필요하면 별도 크기의 캐시 인스턴스를 승인받아야 합니다.
 
-## Tech Stack
+### Supported Environment
 
 [상위 Compose](../docker-compose.yml)가 Valkey 이미지를 선언하고, [`config/`](config/)와 [`scripts/`](scripts/)가 ACL·시작 절차를 소유합니다.
 
-## Configuration
+## Interfaces
+
+### Inputs and Outputs
 
 `dev_data_net`과 별도 `/data` bind 경로를 사용합니다. 관리자 비밀은 Docker secret으로, 프로젝트 ACL은 승인된 `projects.tsv`와 별도 비밀 디렉터리로 공급합니다.
 
-## Validation
+### Security Boundary
 
-아래 단위 검사는 ACL 생성 입력을 확인합니다. 실제 인증·prefix 거절·영속성은 격리 실행 결과를 따로 기록합니다.
+없음: 이 폴더에는 Compose 서비스와 secret 정의가 없으며, secret 값을 저장소에 두지 않는다.
 
-## Usage
+## Development
+
+### Local Workflow
 
 합성 비밀값을 쓰는 집중 검사는 저장소 루트에서 다음과 같이 실행합니다.
 
@@ -89,8 +93,20 @@ python3 -m unittest tests/validation/test_dev_valkey_acl.py
 소유권을 맞춰야 합니다. 이미지 기본 UID/GID는 실제 이미지 검사로 확인해야 합니다.
 격리 기동과 ACL 동작은 별도 Task에서 확인했고, HOME 기동·백업·복구는 `NOT_RUN`입니다.
 
-## Related Documents
+### Checks
+
+아래 단위 검사는 ACL 생성 입력을 확인합니다. 실제 인증·prefix 거절·영속성은 격리 실행 결과를 따로 기록합니다.
+
+## Operations
+
+### Runbook Links
+
+#### Related Documents
 
 [문서 진입점](../../../../docs/README.md)에서 개발 데이터 계약과 운영
 문서를 찾습니다. 공식 [Valkey ACL](https://valkey.io/topics/acl/) 및
 [지속성](https://valkey.io/topics/persistence/) 문서를 참고합니다.
+
+### Observability and Recovery
+
+없음: 이 폴더에는 헬스체크나 관측 대상 선언이 없다.

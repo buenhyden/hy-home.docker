@@ -1,36 +1,40 @@
 ---
 title: "Storybook Next.js Workspace"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-11-13"
 created: "2026-02-01"
 ---
 
 # Storybook Next.js Workspace
 
-## Overview
+## Purpose
+
+### Service Role
 
 이 작업공간은 공유 Storybook 정적 자산, 내부 UI 패키지와 로컬 문서 MCP의 소스입니다. Next.js 예제 앱은 Storybook 정적 origin과 별도이며 운영 배포 대상이 아닙니다.
 
-## Audience
+#### Audience
 
 내부 UI 개발자, 운영자, 검증 담당자가 사용합니다.
 
-## Scope
+#### Scope
 
 Storybook story, 검토된 `Button`·`AsyncState` 패키지와 디자인 토큰, 정적 빌드와 로컬 문서 MCP를 포함합니다. 신규 업무 앱, 원격 MCP 서비스, 사용자 전역 클라이언트 설정은 포함하지 않습니다.
 
-## Structure
+#### Structure
 
 `src/stories/`는 공유 컴포넌트의 상태별 story와 상호작용·접근성 검증, `packages/ui/`는 코드 소비 계약, `.storybook/`은 manifest 설정, `mcp/`는 로컬 문서 서버와 revision 기록, `Dockerfile`과 `nginx.conf`는 정적 origin을 소유합니다.
 
-## Tech Stack
+### Supported Environment
 
 npm lockfile이 Next.js, React, Storybook, TypeScript와 MCP 패키지 버전을 소유합니다. Node 빌더와 비특권 NGINX 이미지 참조는 `Dockerfile`이 소유합니다.
 
-## Configuration
+## Interfaces
+
+### Inputs and Outputs
 
 `npm ci` 후 `npm run build-storybook`은 `storybook-static/`과 `manifests/components.json`, `manifests/docs.json`, `revision.json`을 생성합니다. `STORYBOOK_SOURCE_REVISION`을 전달하면 revision 파일이 소스 커밋을 기록합니다. 전달하지 않으면 `uncommitted`로 표시합니다. revision 파일은 두 manifest의 SHA-256을 기록하며 로컬 MCP가 읽기 전 대조합니다.
 
@@ -43,7 +47,17 @@ npm lockfile이 Next.js, React, Storybook, TypeScript와 MCP 패키지 버전을
 
 Docker build context는 이 폴더입니다. `.dockerignore`가 환경 파일, secret, 의존성 캐시와 산출물을 제외합니다. origin은 내부 8080 포트에서 정적 파일만 제공하며 host 80/443을 열지 않습니다. 실제 자원 한도, 읽기 전용 root filesystem과 tmpfs는 Compose 서비스 정의가 소유합니다.
 
-## Validation
+### Security Boundary
+
+로컬 `npm run mcp:docs`는 `127.0.0.1:7613/mcp`에서 인증 없이 loopback만 받고, 원격 모드는 `STORYBOOK_MCP_RESOURCE`, `STORYBOOK_MCP_ISSUER` 같은 입력을 줄 때만 모든 주소에서 듣는다. `.dockerignore`가 환경 파일, secret, 의존성 캐시와 산출물을 Docker build context에서 제외한다.
+
+## Development
+
+### Local Workflow
+
+컴포넌트 구현은 `packages/ui/`에서 변경합니다. story는 Storybook docgen을 위해 해당 원본을 직접 import하고, 생성 manifest와 외부 소비 계약은 `@hy-home/storybook-ui` 패키지를 사용합니다. 토큰 값은 `packages/ui/src/styles.css`의 CSS 변수가 정의합니다. create-storybook 예제(Header, Page, Configure)는 공유 UI가 아니므로 제거했고 manifest에는 검토된 컴포넌트만 남습니다. 패키지 소비자는 [공유 UI 패키지](packages/ui/README.md)의 타입·CSS·peer 계약을 따릅니다. 공개 레지스트리 배포에는 별도 라이선스와 승인이 필요합니다.
+
+### Checks
 
 ```sh
 npm ci
@@ -61,11 +75,13 @@ npm run build:mcp
 
 TypeScript는 6.0.3에 고정합니다. 2026-10-09 기준 7.0.2와 7.1 nightly는 JavaScript compiler API를 제공하지 않아 `typescript-eslint`(지원 범위 6.1 미만)가 lint를 거부하고, Next.js는 `experimental.useTypeScriptCli: true`가 있어야 동작합니다. Storybook 빌드·docgen·story 시험과 MCP는 그 설정에서 7.x로 통과했습니다. 7.x 전환은 `typescript-eslint`가 7.x를 지원하는 릴리스를 낸 뒤 이 설정과 함께 진행합니다.
 
-## Usage
+## Operations
 
-컴포넌트 구현은 `packages/ui/`에서 변경합니다. story는 Storybook docgen을 위해 해당 원본을 직접 import하고, 생성 manifest와 외부 소비 계약은 `@hy-home/storybook-ui` 패키지를 사용합니다. 토큰 값은 `packages/ui/src/styles.css`의 CSS 변수가 정의합니다. create-storybook 예제(Header, Page, Configure)는 공유 UI가 아니므로 제거했고 manifest에는 검토된 컴포넌트만 남습니다. 패키지 소비자는 [공유 UI 패키지](packages/ui/README.md)의 타입·CSS·peer 계약을 따릅니다. 공개 레지스트리 배포에는 별도 라이선스와 승인이 필요합니다.
-
-## Related Documents
+### Runbook Links
 
 - [상위 Storybook 작업공간](../README.md)
 - [문서 인덱스](../../../docs/README.md)
+
+### Observability and Recovery
+
+없음: 소스 트리라 직접 관측 대상이 없다. 실행 중인 origin의 운영과 복구는 [Storybook Runbook](../../../docs/05.operations/runbooks/14-design-system/0101-storybook.md)(RUN-0101)을 따른다.

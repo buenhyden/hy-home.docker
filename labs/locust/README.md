@@ -1,38 +1,39 @@
 ---
 title: "Locust 분산 부하 LAB"
-version: "0.3.1"
+version: "0.3.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-13"
 created: "2026-10-03"
 ---
 
 <!-- [ID:11-quality:locust] -->
+
 # Locust 분산 부하 LAB
 
-## Overview
+## Purpose
+
+### Service Role
 
 이 문서는 root Compose에서 분리된 Locust master/worker LAB 계약을 설명한다.
 독립 project, network, scenario volume과 result volume을 사용하며 HOME 상태나
 정상 profile을 공유하지 않는다. 실행은 headless이고 승인된 제한 안에서 종료한다.
 
-## Audience
+#### Audience
 
 - Python 기반 분산 부하 실습을 준비하는 품질 담당자
 - LAB의 대상·자원·정리 경계를 승인하는 운영자
 - root와 LAB 분리를 검토하는 인프라 담당자
 
-## Scope
-
-### In Scope
+#### In Scope
 
 - master 한 개와 `LAB_LOCUST_EXPECT_WORKERS`개 worker의 독립 LAB closure
 - 승인된 scenario의 읽기 전용 mount
 - fresh result directory의 CSV summary와 full-history 출력
 - worker 수, 사용자 수, 생성률, 실행 시간, 종료 코드 제한. 전체 상한은 worker 대기 상한 + `--run-time` + `--stop-timeout`이며, master가 끝나면 worker는 quit 메시지로 종료한다. pin된 image에는 OpenTelemetry SDK가 없어 `--otel`은 사용하지 않는다(SPEC-0214).
 
-### Out of Scope
+#### Out of Scope
 
 - HOME 서비스 기동·재시작과 실제 target traffic
 - 외부 프로젝트 scenario 작성과 업무 API fixture의 의미 검증
@@ -40,7 +41,7 @@ created: "2026-10-03"
 - 실행 결과를 **perf_db**에 가져오는 절차
 - DB·Kafka 장애 주입처럼 WireMock 범위를 벗어나는 Toxiproxy 검토
 
-## Structure
+#### Structure
 
 ~~~text
 labs/locust/
@@ -61,7 +62,7 @@ labs/locust/
 컨테이너의 메트릭과 로그를 수집하지 않는다. Locust의 관측 연결은 별도 계약과 실제 검증을
 마친 뒤 구성한다.
 
-## Tech Stack
+### Supported Environment
 
 | Category | Contract |
 | --- | --- |
@@ -73,7 +74,9 @@ labs/locust/
 | Results | **LAB_LOCUST_RESULT_DIR** → **/mnt/locust/results:rw**; master만 mount |
 | Host exposure | 없음 |
 
-## Configuration
+## Interfaces
+
+### Inputs and Outputs
 
 | Variable | Required | Description |
 | --- | ---: | --- |
@@ -95,7 +98,24 @@ client timeout을 명시해야 한다. master readiness는 이미지에 있는 P
 별도 `pgrep` 실행 파일의 설치를 가정하지 않는다. 사용하는 client가 OpenTelemetry를 직접 지원하지
 않으면 Locust request event에서 별도 계측하는 계약을 외부 프로젝트가 소유한다.
 
-## Validation
+### Security Boundary
+
+Compose에 선언된 호스트 게시와 secret 참조가 없고 독립 project network와 scenario·result volume만 쓴다. scenario는 읽기 전용으로 mount하며 실제 target traffic은 승인된 제한 안에서만 생성한다.
+
+## Development
+
+### Local Workflow
+
+1. Docker context, project, target origin, network, volume, CPU/RAM/디스크와 정확한
+   정리 대상을 먼저 기록한다.
+2. scenario directory를 읽기 전용으로 검토하고 새로운 빈 result directory를
+   실행마다 지정한다.
+3. target 소유자의 승인 뒤에만 `python3 scripts/operations/lab.py run locust --purpose "<목적>" --lease <기간> --deadline <상한>`으로 실행한다. 제어기가 master 종료를 기다리고, 상한이나 SIGTERM에서 master를 멈춘 뒤 project를 내린다. 결과는 ledger의 `outcome`과 제어기 종료 코드(정상은 master 코드, 상한 124, 취소 130)로 남는다.
+4. master 종료 코드, worker 수와 CSV 산출물을 함께 보존한다.
+5. 정리는 이 LAB가 소유한 project와 경로만 대상으로 하며 **down -v**와 volume
+   prune을 사용하지 않는다.
+
+### Checks
 
 실제 컨테이너를 만들지 않는 정적 render 예시:
 
@@ -118,18 +138,13 @@ client와 실제 외부 프로젝트의 timeout 지원까지 검증한 것으로
 같은 디렉터리의 `lifecycle.py`는 `lab.py`의 감독 아래에서 완료·종료 코드 전달·상한·
 취소·master 비정상 종료·worker 탈락을 재현한다.
 
-## Usage
+## Operations
 
-1. Docker context, project, target origin, network, volume, CPU/RAM/디스크와 정확한
-   정리 대상을 먼저 기록한다.
-2. scenario directory를 읽기 전용으로 검토하고 새로운 빈 result directory를
-   실행마다 지정한다.
-3. target 소유자의 승인 뒤에만 `python3 scripts/operations/lab.py run locust --purpose "<목적>" --lease <기간> --deadline <상한>`으로 실행한다. 제어기가 master 종료를 기다리고, 상한이나 SIGTERM에서 master를 멈춘 뒤 project를 내린다. 결과는 ledger의 `outcome`과 제어기 종료 코드(정상은 master 코드, 상한 124, 취소 130)로 남는다.
-4. master 종료 코드, worker 수와 CSV 산출물을 함께 보존한다.
-5. 정리는 이 LAB가 소유한 project와 경로만 대상으로 하며 **down -v**와 volume
-   prune을 사용하지 않는다.
-
-## Related Documents
+### Runbook Links
 
 - [LAB 탐색](../README.md)
 - [운영 문서 색인](../../docs/05.operations/README.md) — `GDE-0062`, `POL-0062`, `RUN-0062`
+
+### Observability and Recovery
+
+master와 worker 모두 Compose 헬스체크를 선언한다. 결과는 새 result directory의 CSV summary로 확인하고 복구는 [Locust Runbook](../../docs/05.operations/runbooks/15-labs/0062-locust.md)를 따른다.

@@ -1,28 +1,28 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.5.0"
+version: "1.5.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 created: "2026-01-12"
 ---
 
 # Grafana 시각화와 대시보드
 
-## Overview
+## Purpose
+
+### Service Role
 
 `infra/06-observability/grafana`에는 `06-observability` 티어의 Grafana 구현이 들어 있습니다. Grafana는 compose 서비스 `grafana`, 컨테이너 `grafana`, 이미지 [declared runtime image](../../tech-stack.versions.json)로 실행되며 런타임 상태를 `grafana-data`에 저장하고 프로비저닝 및 대시보드 트리를 읽기 전용으로 마운트하며 접근 제어에는 Keycloak Generic OAuth 역할 매핑을 사용합니다.
 
-## Audience
+#### Audience
 
 - 메트릭, 로그, 트레이스, 알림, 프로파일을 탐색하는 Developers
 - 데이터소스와 대시보드 프로비저닝을 유지 관리하는 SREs
 - SSO, 대시보드, 데이터소스 장애를 처리하는 Operators
 
-## Scope
-
-### In Scope
+#### In Scope
 
 - Grafana compose 서비스와 보호된 라우트 `https://grafana.${DEFAULT_URL}`
 - `provisioning/datasources/datasource.yml`의 데이터소스 프로비저닝
@@ -30,14 +30,14 @@ created: "2026-01-12"
 - `dashboards/`의 대시보드 JSON 파일
 - Keycloak Generic OAuth 역할 매핑과 Docker Secret 파일 참조
 
-### Out of Scope
+#### Out of Scope
 
 - JSON으로 내보내지 않은 UI 전용 대시보드 변경
 - Grafana compose 경계 밖의 Keycloak realm/client 변경
 - Prometheus, Loki, Tempo, Pyroscope가 관리하는 백엔드 텔레메트리 저장소
 - 운영 근거 없이 이루어지는 런타임 역할 매핑, 시크릿, 라우트, 이미지, 프로비저닝 정책 변경
 
-## Structure
+#### Structure
 
 ```text
 grafana/
@@ -50,7 +50,7 @@ grafana/
 └── README.md         # This file
 ```
 
-## Service Boundary
+#### Service Boundary
 
 | Field | Evidence |
 | --- | --- |
@@ -71,15 +71,7 @@ grafana/
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh), [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 연결된 런북, compose 설정 렌더링, 서비스 로그, 헬스체크, 마스킹된 OAuth/데이터소스 근거로 시작합니다 |
 
-## Available Scripts
-
-| Command | Description |
-| :--- | :--- |
-| `docker compose --profile obs up -d grafana` | 저장소 루트에서 Grafana 시작 |
-| `docker compose --profile obs restart grafana` | 이미 연결된 provisioning·dashboard 파일 내용의 승인된 재적용; Compose 환경·시크릿 참조·이미지 변경에는 RUN-0041의 재생성 절차 사용 |
-| `docker compose --profile obs logs -f grafana` | 저장소 루트에서 Grafana 로그 확인 |
-
-## Tech Stack
+### Supported Environment
 
 Grafana 이미지와 데이터 소스 선언은 [Compose](../docker-compose.yml)와 이 패키지의 provisioning 설정이 소유합니다.
 
@@ -90,9 +82,11 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 새 후보의 성공으로 사용하지 않습니다. 실제 적용은 소유 Runbook의 대상·backup·
 재생성·복구 계약을 따릅니다.
 
-## Configuration
+## Interfaces
 
-### Datasources
+### Inputs and Outputs
+
+#### Datasources
 
 - **Prometheus**: `uid: Prometheus`, URL `http://prometheus:9090`
 - **Loki**: `uid: Loki`, URL `http://loki:3100`
@@ -100,7 +94,7 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 - **Alertmanager**: `uid: alertmanager`, URL `http://alertmanager:9093`
 - **Pyroscope**: `uid: Pyroscope`, 데이터소스 타입 `grafana-pyroscope-datasource`, URL `http://pyroscope:4040`, `minStep: 60s`(Alloy scrape 간격). 데이터소스는 한 개뿐이며 파일 맨 위 `deleteDatasources`는 UID 없이 만든 옛 항목을 한 번 지우는 마이그레이션이다. Drilldown > Profiles 앱은 Grafana 기본 preinstall로 설치되므로 provisioning이 없다
 
-### Dashboards and Access
+#### Dashboards and Access
 
 - 대시보드 프로바이더는 `/etc/grafana/dashboards/*`에서 JSON 파일을 마운트합니다.
 - 프로바이더 `editable: false`는 대시보드를 코드 소유 상태로 유지합니다.
@@ -109,7 +103,7 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 - `grafana_admin_password`와 `grafana_client_secret`은 Docker Secret 파일 참조를 통해 주입됩니다.
 - 공개 예외는 `/favicon.ico`와 `/robots.txt`의 `GET`/`HEAD`에만 priority 200으로 적용됩니다. 같은 경로의 다른 메서드는 priority 201의 `noop@internal` 라우터가 종료하며, 두 라우터 모두 기존 `gateway-standard-chain@file`의 `100 req/s`, burst `200` 제한을 사용합니다. 이 예외의 재검토일은 2026-12-02입니다.
 
-### Service Coverage
+#### Service Coverage
 
 정상 root에 포함되는 모든 infra Compose 서비스가 한 번씩 나옵니다. LAB 서비스는 독립 Compose와 LAB 문서에서 확인합니다. 컨테이너 대시보드와 Logs Drilldown은 전체를 다루고, 메트릭 소스가 있는 서비스는 자기 대시보드를 따로 가집니다. Metrics source가 `none`이면 이 스택이 수집하는 메트릭이 없다는 뜻입니다(SPEC-0193).
 
@@ -207,7 +201,7 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 
 독립 LAB의 `lab-locust-master`와 `lab-locust-worker`는 이 root 관측 범위에 포함하지 않으며, 위 표는 `hy-home-infra`만 유지한다.
 
-### perf_db 읽기 계약
+#### perf_db 읽기 계약
 
 `provisioning/contracts/perf-db.datasource.yml.example`은
 자동 데이터소스 로드 디렉터리 밖의 소비 계약이며 현재 활성화하지 않습니다.
@@ -233,7 +227,7 @@ project/run/attempt는 SQL literal escaping을 사용하고 결과는 500행으�
 [PostgreSQL security-invoker view 안내](https://www.postgresql.org/docs/current/sql-createview.html)를
 2026-10-03 확인했습니다.
 
-### Dashboard Sources
+#### Dashboard Sources
 
 프로비저닝된 대시보드마다 출처와 revision을 기록합니다. 방출되는 메트릭과 맞는 벤더·mixin·grafana.com 대시보드가 있으면 그것을 쓰고, 없을 때만 로컬 대시보드를 둡니다.
 
@@ -285,14 +279,28 @@ project/run/attempt는 SQL literal escaping을 사용하고 결과는 500행으�
 | `Security/keycloak-troubleshooting` | `hyhome-keycloak-troubleshooting` | keycloak/keycloak-grafana-dashboard dashboards/keycloak-troubleshooting-dashboard.json @f819507c13 |
 | `Security/openbao` | `openbao` | grafana.com dashboard 23725 revision 1 (2025-07-15); job set to openbao |
 
-## Usage
+### Security Boundary
+
+Compose가 참조하는 secret은 `grafana_admin_password`, `grafana_client_secret`, `grafana_metrics_password`, `grafana_reader_password`, `mng_postgres_password`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/06-observability/docker-compose.yml`의 `grafana`, `grafana-db-provision` 서비스)
+
+## Development
+
+### Local Workflow
+
+#### Available Scripts
+
+| Command | Description |
+| :--- | :--- |
+| `docker compose --profile obs up -d grafana` | 저장소 루트에서 Grafana 시작 |
+| `docker compose --profile obs restart grafana` | 이미 연결된 provisioning·dashboard 파일 내용의 승인된 재적용; Compose 환경·시크릿 참조·이미지 변경에는 RUN-0041의 재생성 절차 사용 |
+| `docker compose --profile obs logs -f grafana` | 저장소 루트에서 Grafana 로그 확인 |
 
 1. 사용법과 프로비저닝 맥락은 Grafana 가이드(`docs/05.operations/guides/07-observability/0041-grafana.md`)를 따릅니다.
 2. 준비 상태, SSO, 데이터소스, 대시보드 프로비저닝, 재시작, 롤백 절차는 Grafana 런북(`docs/05.operations/runbooks/07-observability/0041-grafana.md`)을 따릅니다.
 3. 관리자 비밀번호, OAuth 클라이언트 시크릿, 토큰, 렌더링된 시크릿 값은 문서, 로그, 태스크 근거, 커밋 메시지에 남기지 않습니다.
 4. 계획/태스크 근거와 롤백 기록 없이는 역할 매핑, 데이터소스 UID, 대시보드 프로바이더 잠금, 시크릿 참조, 이미지 버전, 라우트 미들웨어를 변경하지 않습니다.
 
-## Validation
+### Checks
 
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 인프라 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
@@ -301,23 +309,11 @@ project/run/attempt는 SQL literal escaping을 사용하고 결과는 500행으�
 - `rg -n 'folder:|editable: false|path: /etc/grafana/dashboards' infra/06-observability/grafana/provisioning/dashboards/dashboards.yml`로 대시보드 프로비저닝을 확인합니다.
 - `find infra/06-observability/grafana/dashboards -type f -name '*.json' | wc -l`로 대시보드 보유 현황을 확인합니다.
 
-## Troubleshooting
+## Operations
 
-- 네트워크, 볼륨, 시크릿, 환경, 레이블 참조가 올바르게 렌더링되는지 `docker compose --profile obs config --quiet`로 먼저 확인합니다.
-- 설정이나 시크릿 참조를 변경하기 전에 컨테이너 로그와 연결된 런북을 확인합니다.
-- SSO 실패 시 마스킹된 OAuth/역할 매핑 로그를 확인하고 `/admins` 또는 `/editors` 그룹 소속을 별도로 확인합니다.
-- 데이터소스 오류 시 프로비저닝 YAML에서 데이터소스 UID와 백엔드 엔드포인트를 확인합니다.
-- 대시보드 로딩 오류 시 대시보드 프로바이더 경로와 대시보드 JSON 파일을 검증합니다.
+### Runbook Links
 
-### Convergence contract
-
-- Classification: **HOME**. Exact profiles: `obs`, `obs-core`, `dev`, `logs`, `tracing`, `profiling`, `alerting`, `batch-metrics`.
-- Source authority: `infra/06-observability/docker-compose.yml`과 이 패키지의 추적 설정/빌드 입력. 이미지 선언이 권위이며 `infra/tech-stack.versions.json`은 파생 값입니다.
-- Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d grafana`.
-- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/07-observability/0041-grafana.md`; ID: `GDE-0041`, `POL-0041`, `RUN-0041`.
-- 해당 런북의 계획된 격리 복구 절차를 따릅니다. 날짜가 명시된 근거가 없는 한 아직 실행되지 않은 것으로 간주하며 이 README에서 운영 중인 상태를 변경하지 않습니다.
-
-## Related Documents
+#### Related Documents
 
 - [infra/README.md](../../README.md)
 - Operations index (`docs/05.operations/README.md`)
@@ -327,3 +323,21 @@ project/run/attempt는 SQL literal escaping을 사용하고 결과는 500행으�
 - [Documentation index](../../../docs/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 검증을 제공합니다.
+
+### Observability and Recovery
+
+#### Troubleshooting
+
+- 네트워크, 볼륨, 시크릿, 환경, 레이블 참조가 올바르게 렌더링되는지 `docker compose --profile obs config --quiet`로 먼저 확인합니다.
+- 설정이나 시크릿 참조를 변경하기 전에 컨테이너 로그와 연결된 런북을 확인합니다.
+- SSO 실패 시 마스킹된 OAuth/역할 매핑 로그를 확인하고 `/admins` 또는 `/editors` 그룹 소속을 별도로 확인합니다.
+- 데이터소스 오류 시 프로비저닝 YAML에서 데이터소스 UID와 백엔드 엔드포인트를 확인합니다.
+- 대시보드 로딩 오류 시 대시보드 프로바이더 경로와 대시보드 JSON 파일을 검증합니다.
+
+##### Convergence contract
+
+- Classification: **HOME**. Exact profiles: `obs`, `obs-core`, `dev`, `logs`, `tracing`, `profiling`, `alerting`, `batch-metrics`.
+- Source authority: `infra/06-observability/docker-compose.yml`과 이 패키지의 추적 설정/빌드 입력. 이미지 선언이 권위이며 `infra/tech-stack.versions.json`은 파생 값입니다.
+- Root preflight: `docker compose --profile obs config --quiet`. Root targeted start: `docker compose --profile obs up -d grafana`.
+- 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/07-observability/0041-grafana.md`; ID: `GDE-0041`, `POL-0041`, `RUN-0041`.
+- 해당 런북의 계획된 격리 복구 절차를 따릅니다. 날짜가 명시된 근거가 없는 한 아직 실행되지 않은 것으로 간주하며 이 README에서 운영 중인 상태를 변경하지 않습니다.

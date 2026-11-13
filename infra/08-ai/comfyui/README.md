@@ -1,39 +1,43 @@
 ---
 title: "ComfyUI Implementation"
-version: "0.2.6"
+version: "0.2.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-13"
 ---
 
 # ComfyUI
 
-## Overview
+## Purpose
+
+### Service Role
 
 이미지 워크플로우 서비스로 상시 실행이 요구됩니다. Ollama와 공유하는 GPU 워크로드의 동시성은 함께 측정해야 하며 런타임 이미지 예외는 별도 소유자가 관리합니다.
 
 Lifecycle: **OPTIONAL** (소유자가 2026-11-09 HOME에서 제외). 루트 Compose가 이 정의를 include하며, 명시적 프로필이 활성화를 제어합니다.
 
-## Audience
+#### Audience
 
 구현, 설정, 검증을 검토하는 운영자와 개발자.
 
-## Scope
+#### Scope
 
 로컬 서비스 정의와 구현 탐색. 운영 통제와 복구는 [documentation index](../../../docs/README.md)를 거쳐 `docs/05.operations/guides/09-ai-and-search/0081-comfyui.md`, `docs/05.operations/policies/09-ai-and-search/0081-comfyui.md`, `docs/05.operations/runbooks/09-ai-and-search/0081-comfyui.md`(ID: `GDE-0081`, `POL-0081`, `RUN-0081`)가 담당합니다.
 
-## Structure
+#### Structure
 
 - [Dockerfile](Dockerfile)
 - [docker-compose.yml](docker-compose.yml)
 - [docker-compose.egress.yml](docker-compose.egress.yml): 유지보수 때만 붙이는 외부 접속 overlay(SPEC-0268)
 
-## Tech Stack
+### Supported Environment
 
 런타임 고정 값은 [Compose](docker-compose.yml)와 그 참조 빌드 소스에 속합니다. [버전 레지스트리](../../../infra/tech-stack.versions.json)는 정제된 프로젝션이며 배포 매니페스트가 아닙니다.
 
-## Configuration
+## Interfaces
+
+### Inputs and Outputs
 
 | Service | Profiles | Networks | Host publication | Secret references |
 | --- | --- | --- | --- | --- |
@@ -61,15 +65,17 @@ ComfyUI-Manager는 `comfyui-user` volume의 `__manager/config.ini`에서 `securi
 
 환경 변수 키 이름과 기본값은 Compose와 [공개 환경 변수 예시](../../../.env.example)에 선언되어 있습니다. Compose의 마운트 권한과 헬스체크 명령은 구현을 설명할 뿐이며 설정 검사를 통과해도 런타임 준비 상태는 증명되지 않습니다. 비공개 환경 변수 값, 자격 증명 파일, 원본 렌더링된 설정은 출력하지 않습니다.
 
-## Validation
+### Security Boundary
 
-저장소 루트에서 문서화된 프로필을 선택하고 `scripts/validation/validate-docker-compose.sh`를 사용합니다. 대상별 런타임 확인과 승인 후 복구는 소유 운영 Runbook을 사용합니다. 마운트 누락, 예상치 못한 노출, 초기화 실패 시에는 중지합니다.
+기본 구성은 호스트 포트를 게시하지 않고 Traefik만 붙는 `comfyui_ingress_net`으로만 들어오며, 라우터는 `gateway-standard-chain`·`sso-errors`·`sso-auth`를 거칩니다. Compose Secret은 부여하지 않고, 외부 접속은 `docker-compose.egress.yml` overlay를 붙인 유지보수 동안에만 열립니다(SPEC-0268).
 
-## Usage
+## Development
+
+### Local Workflow
 
 Compose, 빌드 소스, 공개 환경 변수 키, 시크릿 참조를 일관되게 유지합니다. 게이트웨이 인증, 영속화, 리소스 예산, 버전 예외를 변경하기 전에 검토합니다. 여기에 명령을 중복 기록하지 말고 기존 운영 주제(operations subject)를 업데이트합니다.
 
-### Convergence contract
+#### Convergence contract
 
 - Classification: **OPTIONAL**. Exact profile: `ai-image`.
 - Source authority: 이 패키지의 Compose와 선택된 이미지/빌드 입력. `infra/tech-stack.versions.json`은 파생 프로젝션입니다.
@@ -77,8 +83,18 @@ Compose, 빌드 소스, 공개 환경 변수 키, 시크릿 참조를 일관되�
 - Stable entry point: [docs/README.md](../../../docs/README.md). Exact Stage 05 path `docs/05.operations/guides/09-ai-and-search/0081-comfyui.md`; ID: `GDE-0081`, `POL-0081`, `RUN-0081`.
 - 해당 런북의 격리 복구는 계획되어 있으나 아직 실행되지 않았습니다. 모델/콘텐츠 출처를 보존하고, 실행 중인 파일시스템 복사본을 복구 근거로 사용하지 않습니다.
 
-## Related Documents
+### Checks
+
+저장소 루트에서 문서화된 프로필을 선택하고 `scripts/validation/validate-docker-compose.sh`를 사용합니다. 대상별 런타임 확인과 승인 후 복구는 소유 운영 Runbook을 사용합니다. 마운트 누락, 예상치 못한 노출, 초기화 실패 시에는 중지합니다.
+
+## Operations
+
+### Runbook Links
 
 - [Infrastructure index](../../../infra/README.md)
 - [Documentation index](../../../docs/README.md)
 - [Public secret contract](../../../secrets/README.md)
+
+### Observability and Recovery
+
+`comfyui`에는 Compose 헬스체크가 선언되어 있으나 설정 검사 통과는 런타임 준비 상태를 증명하지 않습니다. 복구와 ComfyUI-Manager 보안 값 정정은 `docs/05.operations/runbooks/09-ai-and-search/0081-comfyui.md`(RUN-0081)가 소유합니다.

@@ -1,26 +1,26 @@
 ---
 title: "Owned OpenBao Build"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 ---
 
 # Owned OpenBao build
 
-## Overview
+## Purpose
+
+### Service Role
 
 OpenBao 2.7.2의 공개 서명된 source distribution과 UI를 보존하고 Go 1.27.3, <!-- runtime-version-exception: migration — 검토된 build packet의 고정 migration material이며 build-inputs.json이 pin을 소유함 -->
 `golang.org/x/net` 0.62.0, `go-jose/v4` 4.1.9, `klauspost/compress` 1.20.4 세 module 버전을 사용합니다. <!-- runtime-version-exception: migration — 검토된 build packet의 고정 module migration material이며 build-inputs.json이 pin을 소유함 -->
 결과 버전은 `2.7.2+hyhome.go1.27.3.net0.62.0.r1`이며 upstream OpenBao의 <!-- runtime-version-exception: migration — 검토된 build packet을 식별하는 owned result version이며 build-inputs.json이 authority임 -->
 서명된 이미지가 아닙니다. 다른 의존성의 취약점 해결을 보장하지 않습니다.
 
-## Audience
+#### Audience
 
 이 선택된 이미지의 source, 재현성, SEC01 증거를 검토하는 Developer와 Operator.
-
-## Scope
 
 [build-inputs.json](build-inputs.json)은 실제 source, builder, Alpine, APK closure,
 patch와 resource 한도를 고정합니다. [Dockerfile](Dockerfile)은 실제 runtime
@@ -41,7 +41,7 @@ binary에 링크되므로 이 packet이 해결하지 않는 잔여 위험으로 
 v3.24 main/community APKINDEX 기준으로 다시 고정했습니다. source, Go module, patch 입력은 그대로이고
 두 publisher receipt는 새로 검증했습니다. 정확한 digest와 version은 build-inputs.json이 소유합니다.
 
-## Structure
+#### Structure
 
 - [build-inputs.json](build-inputs.json): 선택된 source, builder, runtime, module, APK closure와 resource 한도를 고정합니다.
 - [Dockerfile](Dockerfile): 공개 material을 검증하고 owned runtime rootfs를 조립하는 recipe입니다.
@@ -49,14 +49,16 @@ v3.24 main/community APKINDEX 기준으로 다시 고정했습니다. source, Go
 - [owned_image_oci.py](owned_image_oci.py): 검증된 공개 runtime export를 결정론적 OCI archive로 포장합니다.
 - [build-owned-image.py](../scripts/build-owned-image.py): plan, 두 번의 build, 비교와 receipt 생성을 제한된 단계로 실행합니다.
 
-## Tech Stack
+### Supported Environment
 
 선택된 [build-inputs.json](build-inputs.json)이 이 owned build의 고정 build input과
 결과 version/tag의 권위입니다. [Dockerfile](Dockerfile)은 실제 runtime 조립 recipe이며,
 [공유 버전 레지스트리](../../../../infra/tech-stack.versions.json)는 Compose와 build
 source에서 파생된 투영으로서 이 build packet이나 배포 manifest를 대신하지 않습니다.
 
-## Configuration
+## Interfaces
+
+### Inputs and Outputs
 
 공개 material directory의 `materials.json` SHA와 일곱 source 파일의 packet SHA를
 명시하여 helper의 `--phase plan`을 실행합니다. packet은 정렬된 상대 경로,
@@ -91,22 +93,20 @@ Packet/material/patch hash는 OCI label로 연결됩니다. OCI archive를
 Docker에 load한 뒤 `hy-home/openbao:<tag>@sha256:<manifest>`를 `--pull=never`로
 조회 및 실행하여 고정 reference가 작동하는지 확인해야 합니다.
 
-## Validation
+### Security Boundary
 
-[contract tests](../../../../tests/validation/test_openbao_owned_image_contract.py)는
-경로·소유권·material hash·실제 container 제한·재현성 및 공개 export 경계를
-합성 입력으로 검증합니다. 실제 binary version, SBOM과 fresh offline CVE,
-P01 격리 rehearsal은 build 이후 해당 기존 gate에서 별도로 검증합니다.
-이 README와 build 성공만으로 runtime 수용을 선언하지 않습니다.
+없음: 이 폴더에는 Compose 서비스와 secret 정의가 없으며, secret 값을 저장소에 두지 않는다.
 
-## Usage
+## Development
+
+### Local Workflow
 
 새 build를 검토할 때는 [build-inputs.json](build-inputs.json)의 선택된 입력과
 [Dockerfile](Dockerfile), 공개 material receipt를 같은 packet으로 확인합니다.
 실제 build와 OCI 검증은 [helper](../scripts/build-owned-image.py)의 제한된 phase를
 사용하며, HOME 배포·인증·발급·복구는 소유 Runbook의 별도 수용 절차를 따릅니다.
 
-### Material 준비 절차
+#### Material 준비 절차
 
 다음 build를 같은 방식으로 재현하려면 [준비 script](../../../../scripts/operations/prepare-openbao-materials.py)를
 사용합니다. 공개 자료만 받으며 HOME, 인증, secret, `labs/`는 건드리지 않습니다.
@@ -140,8 +140,24 @@ P01 격리 rehearsal은 build 이후 해당 기존 gate에서 별도로 검증�
    `recipe_sha256`(Dockerfile의 SHA-256)을 다시 계산한 뒤, packet SHA(`current_packet` 규칙)를 계산하여
    `build-owned-image.py --phase plan`이 FAIL 없이 끝나는지 확인합니다. 그 뒤에만 `--phase build`를 승인된 창에서 실행합니다.
 
-## Related Documents
+### Checks
+
+[contract tests](../../../../tests/validation/test_openbao_owned_image_contract.py)는
+경로·소유권·material hash·실제 container 제한·재현성 및 공개 export 경계를
+합성 입력으로 검증합니다. 실제 binary version, SBOM과 fresh offline CVE,
+P01 격리 rehearsal은 build 이후 해당 기존 gate에서 별도로 검증합니다.
+이 README와 build 성공만으로 runtime 수용을 선언하지 않습니다.
+
+## Operations
+
+### Runbook Links
+
+#### Related Documents
 
 - [OpenBao implementation](../README.md)
 - [Shared runtime version projection](../../../../infra/tech-stack.versions.json)
 - [Owned image contract tests](../../../../tests/validation/test_openbao_owned_image_contract.py)
+
+### Observability and Recovery
+
+없음: 이 폴더에는 헬스체크나 관측 대상 선언이 없다.

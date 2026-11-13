@@ -1,16 +1,18 @@
 ---
 title: "공유 Storybook 정적 origin"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-11-13"
 created: "2026-10-03"
 ---
 
 # 공유 Storybook 정적 origin과 원격 문서 MCP
 
-## Overview
+## Purpose
+
+### Service Role
 
 `storybook` 서비스는 검토된 공유 UI story와 문서의 빌드 결과를 내부 8080
 포트에서 읽기 전용으로 제공한다. Traefik의 HTTPS 브라우저 route는 기존
@@ -18,17 +20,17 @@ OAuth2 Proxy의 Keycloak `/admins` 판정을 사용한다. `storybook-mcp`는 �
 빌드의 manifest를 다른 워크스페이스의 Codex·Claude Code에 문서 tool로 제공하며
 Keycloak bearer token만 받는다.
 
-## Audience
+#### Audience
 
 공유 UI 사용자, 디자인 검토자, 운영자와 검증 담당자를 위한 패키지다.
 
-## Scope
+#### Scope
 
 두 image 선언, 선택형 profile, Traefik route, 망과 health를 소유한다. 컴포넌트
 패키지, MCP 서버 코드와 image 빌드는
 [Storybook 프로젝트](../../../projects/storybook/nextjs/README.md)가 소유한다.
 
-## Structure
+#### Structure
 
 ```text
 storybook/
@@ -36,7 +38,7 @@ storybook/
 └── README.md          # 이 패키지 계약
 ```
 
-## Tech Stack
+### Supported Environment
 
 | Category | Technology | Notes |
 | --- | --- | --- |
@@ -45,7 +47,9 @@ storybook/
 | MCP 이미지 | `hy-home/storybook-mcp:<source-SHA>` | 정적 image와 같은 커밋; `pull_policy: never` |
 | 인증 | 정적 origin은 Traefik `sso-auth@file`; MCP는 서버의 bearer 검증 | 비인증 브라우저는 Keycloak으로 302, JSON 요청은 401; MCP는 401/403 |
 
-## Configuration
+## Interfaces
+
+### Inputs and Outputs
 
 root [Compose](../../../docker-compose.yml)가 leaf를 include한다. 유일한 선택
 profile은 `experience`이며 HOME에는 없다. `storybook`은 `internal: true`
@@ -76,7 +80,19 @@ metadata 응답을 확인한다. DNS/TLS와
 실제 브라우저 동작은 운영 실행 승인 전까지 미확인이다. Docker daemon
 권한으로 전용망에 다른 container를 붙일 수 있는 운영자 신뢰 경계는 남는다.
 
-## Validation
+### Security Boundary
+
+`storybook`은 `internal: true` 전용 `experience_ingress_net`에만 연결되고 Traefik만 이 망과 `edge_net`에 붙는다. 브라우저 route는 OAuth2 Proxy의 Keycloak `/admins` 판정을 거치며 내부 8080은 expose만 하고 호스트에 게시하지 않는다. Compose에 선언된 secret은 없다.
+
+## Development
+
+### Local Workflow
+
+1. `python3 scripts/operations/storybook_image.py verify`로 두 image의 커밋, OCI label, revision과 manifest hash를 대조한다.
+2. `experience` 선택과 HOME 미선택, 전용망의 두 서비스 연결, 관리자 ForwardAuth를 검토한다.
+3. 변경 후 정적 검사와 승인된 격리 검사를 수행하고 결과를 승인된 운영 Task와 RUN-0101 evidence handoff에 기록한다.
+
+### Checks
 
 ```bash
 docker compose --env-file .env.example --profile experience config --quiet
@@ -87,14 +103,14 @@ python3 scripts/validation/check-operations-catalog.py
 정적 검증과 격리 image 검사는 HOME 배포의 증거가 아니다. 실행 전 Docker context,
 project, port, network, volume, resource와 정리 범위를 확인한다.
 
-## Usage
+## Operations
 
-1. `python3 scripts/operations/storybook_image.py verify`로 두 image의 커밋, OCI label, revision과 manifest hash를 대조한다.
-2. `experience` 선택과 HOME 미선택, 전용망의 두 서비스 연결, 관리자 ForwardAuth를 검토한다.
-3. 변경 후 정적 검사와 승인된 격리 검사를 수행하고 결과를 승인된 운영 Task와 RUN-0101 evidence handoff에 기록한다.
-
-## Related Documents
+### Runbook Links
 
 - [13 경험 자산](../README.md)
 - [인프라 인덱스](../../README.md)
 - [문서 진입점](../../../docs/README.md)에서 GDE-0101, POL-0101, RUN-0101 확인
+
+### Observability and Recovery
+
+두 서비스 모두 `wget` 기반 Compose 헬스체크를 선언한다. 복구와 장애 대응은 [Storybook Runbook](../../../docs/05.operations/runbooks/14-design-system/0101-storybook.md)(RUN-0101)을 따른다.

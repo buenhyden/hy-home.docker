@@ -1,34 +1,35 @@
 ---
 title: "k6 성능 시험 인프라"
-version: "1.6.1"
+version: "1.6.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-11"
+updated: "2026-11-13"
 created: "2026-03-26"
 ---
 
 <!-- [ID:11-quality:k6] -->
+
 # k6 성능 시험 인프라
 
 > `hy-home.docker`의 k6 실행 전 검증과 결과 증거 계약입니다.
 
-## Overview
+## Purpose
+
+### Service Role
 
 이 패키지는 k6 manifest 검증, 기존 Traefik을 재사용하는 합성 HTTP 경로 경계, 격리 실행, 중단 증거, 결과 확정과 적재 봉투 생성을 제공합니다. 실제 앱 부하는 별도 승인과 target 계약이 필요합니다.
 
 > [!NOTE]
 > **구현 정보**: 이 디렉터리(`infra/11-quality/k6`)는 `testing` 프로필이 선택하는 단일 `k6` 서비스를 소유합니다. 분산 master-worker 실습은 별도 LAB의 Locust가 담당합니다.
 
-## Audience
+#### Audience
 
 - 부하 시험을 설계하고 판정하는 QA 담당자
 - 용량과 장애 영향을 검토하는 운영 담당자
 - 외부 프로젝트의 시나리오와 임계값을 관리하는 개발자
 
-## Scope
-
-### In Scope
+#### In Scope
 
 - **inventory job**: `testing` 프로필에서 image version만 확인하는 no-traffic 작업.
 - **실행 전 계약**: versioned manifest, target·redirect·budget, Docker network와
@@ -37,7 +38,7 @@ created: "2026-03-26"
   interrupted evidence 생성.
 - **결과 계약**: 불변 summary·exit·checksum·final, perf_db 적재 봉투와 receipt.
 
-### Out of Scope
+#### Out of Scope
 
 - **실제 부하**: 실제 앱 target·트래픽 승인이 없는 상태에서는 `BLOCKED`.
 - **Prometheus remote write**: executor는 remote write를 쓰지 않습니다. 실시간 지표는
@@ -45,7 +46,7 @@ created: "2026-03-26"
 - **시각화**: Grafana 대시보드 자체의 소유는 `06-observability`에 있음.
 - **업무 판정 변경**: 공식 판정 변경은 `perf_db` verdict 권한이 소유.
 
-## Structure
+#### Structure
 
 ```text
 k6/
@@ -66,31 +67,26 @@ k6/
 bind mount에 둡니다. 결과는 `DEFAULT_TOOLING_DIR/k6-results`에서 실행별 새
 디렉터리를 사용합니다. 기존 디렉터리를 재사용하거나 결과를 덮어쓰지 않습니다.
 
-## Tech Stack
+### Supported Environment
 
 - k6 실행 이미지는 [Dockerfile](Dockerfile)이 소유합니다.
 - 결과 계약 CLI는 Python 표준 라이브러리만 사용합니다.
 - 종료 후 계약은 `perf_db` importer로 전달합니다. 실시간 Prometheus remote
   write는 승인된 격리 adapter가 없어 현재 구성에서 제거했습니다.
 
-## Available Scripts
+## Interfaces
 
-| 명령                                                       | 설명                             |
-| ---------------------------------------------------------- | -------------------------------- |
-| `bash scripts/hardening/check-all-hardening.sh 11-quality` | 정적 hardening 계약 검사 |
-| `python3 scripts/validation/run-ci-gate.py --profile changed` | 문서 및 오래된 리터럴 가드 |
-| `docker compose ... logs -f k6` | 승인된 runtime context에서 실행 로그 확인 |
-| `python3 infra/11-quality/k6/quality_run.py --help` | 결과 계약 단계와 인자 확인 |
+### Inputs and Outputs
 
-## Configuration
+입력은 `DEFAULT_TOOLING_DIR/k6`의 읽기 전용 시나리오 스크립트와 `hyhome.quality-run/v2` manifest이고, 출력은 `DEFAULT_TOOLING_DIR/k6-results` 아래 실행별 새 디렉터리의 결과 증거이다. 필요한 환경 변수 키는 아래 표와 같다.
 
-### Environment Variables
+#### Environment Variables
 
 | 변수 | 필수 | 설명 |
 | --- | --- | --- |
 | `DEFAULT_TOOLING_DIR` | Yes | 스크립트와 결과 볼륨의 호스트 경로 |
 
-### 실행 manifest
+#### 실행 manifest
 
 현재 스키마는 `hyhome.quality-run/v2`이며 v1과 같은 필드에 `telemetry`
 객체(`{"mode": "none"}` 또는 `{"mode": "otlp"}`) 하나를 더 요구합니다. v1 manifest는
@@ -123,7 +119,7 @@ v1은 리다이렉트를 모두 거부하며 준비된 k6 argv에도
 DNS를 신뢰하지 않고 Docker network inspect의 subnet과 단일 WireMock endpoint를
 manifest CIDR과 대조합니다.
 
-### 결과 단계
+#### 결과 단계
 
 1. `prepare`는 manifest와 시나리오 해시를 검증하고 비어 있는 새 attempt
    디렉터리에 `manifest.json`을 배타적으로 생성합니다.
@@ -198,7 +194,7 @@ custom metric 이름을 검토할 책임은 남습니다.
 제거했습니다. 따라서 격리 실행의 실시간 dashboard 지표는 아직 `BLOCKED`이며
 종료 후 perf_db 적재만 source 계약이 있습니다.
 
-### 객체 보관 경계
+#### 객체 보관 경계
 
 현재 저장소에는 SeaweedFS bucket 준비 작업이 사용하는 AWS CLI 이미지가 있지만
 관리자 identity 전용입니다. `object_store.py`는 기존 AWS CLI를 사용하여 제한된
@@ -224,7 +220,48 @@ receipt 없는 로컬 적재의 object_ref는 `null`이며, 이미 적재된 ide
 호환성과 실비밀을 사용하는 업로드·복원은 `NOT_RUN`입니다. 합성 client 시험은 실제
 서버의 지원 증거가 아니며 관리자 identity를 runner/importer에 재사용하지 않습니다.
 
-## Validation
+### Security Boundary
+
+결과 디렉터리를 재사용하거나 덮어쓰지 않고 시나리오는 읽기 전용으로 마운트한다. 실제 앱 target과 트래픽은 별도 승인 없이는 `BLOCKED`이며, telemetry에는 endpoint·자격 증명·속성을 넣지 않는다.
+
+## Development
+
+### Local Workflow
+
+| 명령                                                       | 설명                             |
+| ---------------------------------------------------------- | -------------------------------- |
+| `bash scripts/hardening/check-all-hardening.sh 11-quality` | 정적 hardening 계약 검사 |
+| `python3 scripts/validation/run-ci-gate.py --profile changed` | 문서 및 오래된 리터럴 가드 |
+| `docker compose ... logs -f k6` | 승인된 runtime context에서 실행 로그 확인 |
+| `python3 infra/11-quality/k6/quality_run.py --help` | 결과 계약 단계와 인자 확인 |
+
+#### Usage
+
+1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.
+2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.
+3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
+4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
+
+런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 검증을 제공합니다.
+
+Build source authority: [Dockerfile](Dockerfile).
+
+#### SEC01 후보와 실행 경계
+
+upstream 태그와 OCI index digest는 [Dockerfile](Dockerfile)이 소유한다.
+Compose의 `version` inventory 명령·읽기 전용 scenario mount·restart 제한은 유지한다.
+[공식 릴리스](https://github.com/grafana/k6/releases)는 scenario 선택·
+`--once`·TLS AIA fetch opt-in·추가 extension 사용량 보고와 OTLP 수정 등을 포함한다.
+이 변경에서 새 CLI 기능·TLS 외부 조회·Cloud 사용·extension 자동 설치를 활성화하지 않는다.
+
+현재는 소스 계약 검증이다. 기존 격리 executor의 JSON 원본·summary·OTLP 출력,
+통계 및 종료 코드, network guard와 사용량 보고 opt-out의 실제 후보 이미지 동작은
+`NOT_RUN`이다. 승인된 internal 합성 대상과 고정 이미지 digest로 이 기능을 검증한
+뒤에만 부하 시험에 사용한다. 이전 2.2.0으로 되돌리는 경우 원본 artifact·receipt를 <!-- runtime-version-exception: migration — 이전 통계 출력과 receipt 비교에 사용하는 기준 이미지 -->
+보존하고 서로 다른 버전의 통계/출력 차이를 비교한다. manifest의 `tool_image`는
+별도 승인된 정확한 digest 입력이며 Dockerfile 변경으로 기존 run을 재실행하지 않는다.
+
+### Checks
 
 - k6에 영향을 주는 README나 Compose 참조 변경 후에는 `bash scripts/hardening/check-all-hardening.sh 11-quality`을 실행합니다.
 - 서비스 문서와 운영 링크를 동기화하려면 `python3 scripts/validation/run-ci-gate.py --profile changed`를 실행합니다.
@@ -232,12 +269,21 @@ receipt 없는 로컬 적재의 object_ref는 `null`이며, 이미 적재된 ide
 - `python3 -m unittest tests.validation.test_k6_results -v`로 manifest,
   threshold/exit, 0 sample, 잘린/비정상 숫자, 중단, replay 충돌 계약을 검사합니다.
 
-## Troubleshooting
+## Operations
+
+### Runbook Links
+
+- **Guide**: k6 Performance Testing Guide (`docs/05.operations/guides/12-testing-and-quality/0061-k6.md`)
+- **Policy**: k6 operations policy (`docs/05.operations/policies/12-testing-and-quality/0061-k6.md`)
+- **Runbook**: k6 recovery runbook (`docs/05.operations/runbooks/12-testing-and-quality/0061-k6.md`)
+- [Documentation index](../../../docs/README.md)
+
+### Observability and Recovery
 
 - k6 네트워크, 볼륨, 지표 싱크 참조가 계속 선언되어 있는지 hardening 점검으로 먼저 확인합니다.
 - 테스트 스크립트나 지표 대상을 변경하기 전에 k6 실행 출력과 연결된 런북을 확인합니다.
 
-## Service Readiness
+#### Service Readiness
 
 | 항목 | 근거 |
 | --- | --- |
@@ -254,36 +300,3 @@ receipt 없는 로컬 적재의 object_ref는 `null`이며, 이미 적재된 ide
 | Operations | Guide (`docs/05.operations/guides/12-testing-and-quality/0061-k6.md`), Policy (`docs/05.operations/policies/12-testing-and-quality/0061-k6.md`), Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0061-k6.md`) |
 | Validation | [check-all-hardening.sh](../../../scripts/hardening/check-all-hardening.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | hardening 점검으로 시작한 뒤 승인된 런타임 컨텍스트에서 서비스 로그와 연결된 운영/런북 근거를 확인합니다. |
-
-## Usage
-
-1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.
-2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.
-3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
-4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
-
-런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 검증을 제공합니다.
-
-Build source authority: [Dockerfile](Dockerfile).
-
-### SEC01 후보와 실행 경계
-
-upstream 태그와 OCI index digest는 [Dockerfile](Dockerfile)이 소유한다.
-Compose의 `version` inventory 명령·읽기 전용 scenario mount·restart 제한은 유지한다.
-[공식 릴리스](https://github.com/grafana/k6/releases)는 scenario 선택·
-`--once`·TLS AIA fetch opt-in·추가 extension 사용량 보고와 OTLP 수정 등을 포함한다.
-이 변경에서 새 CLI 기능·TLS 외부 조회·Cloud 사용·extension 자동 설치를 활성화하지 않는다.
-
-현재는 소스 계약 검증이다. 기존 격리 executor의 JSON 원본·summary·OTLP 출력,
-통계 및 종료 코드, network guard와 사용량 보고 opt-out의 실제 후보 이미지 동작은
-`NOT_RUN`이다. 승인된 internal 합성 대상과 고정 이미지 digest로 이 기능을 검증한
-뒤에만 부하 시험에 사용한다. 이전 2.2.0으로 되돌리는 경우 원본 artifact·receipt를 <!-- runtime-version-exception: migration — 이전 통계 출력과 receipt 비교에 사용하는 기준 이미지 -->
-보존하고 서로 다른 버전의 통계/출력 차이를 비교한다. manifest의 `tool_image`는
-별도 승인된 정확한 digest 입력이며 Dockerfile 변경으로 기존 run을 재실행하지 않는다.
-
-## Related Documents
-
-- **Guide**: k6 Performance Testing Guide (`docs/05.operations/guides/12-testing-and-quality/0061-k6.md`)
-- **Policy**: k6 operations policy (`docs/05.operations/policies/12-testing-and-quality/0061-k6.md`)
-- **Runbook**: k6 recovery runbook (`docs/05.operations/runbooks/12-testing-and-quality/0061-k6.md`)
-- [Documentation index](../../../docs/README.md)

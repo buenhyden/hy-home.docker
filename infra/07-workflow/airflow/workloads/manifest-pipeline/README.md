@@ -1,28 +1,28 @@
 ---
 title: "Independent Manifest Pipeline"
-version: "0.2.1"
+version: "0.2.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 ---
 
 # Independent Manifest Pipeline
 
-## Overview
+## Purpose
+
+### Service Role
 
 합성 운영 문서 목록을 S3에서 읽어 검증·readback한 뒤 DEV PostgreSQL에
 게시하는 단일 Airflow workload입니다. 입력의 해시 형식은 실제 Git 내용의
 인증 증거가 아닙니다. 원문 수집이나 Wiki 구현을 하지 않습니다.
-
-## Scope
 
 DAG `source_manifest_ingest`, pool `manifest_ingest`, DB `opsflow_dev`, schema
 `ops_flow`, bucket `opsflow-dev`의 전용 배치입니다. P04가 SQL 단독 작성자이며
 P05는 검토 후 고정한 SQL 버전·hash와 함수 계약을 소비합니다. 소스 회귀시험은
 실제 권한·배포·복구 수용과 별개이며 이번 P04에서 P05 실제 통지는 NOT_RUN입니다.
 
-## Structure
+#### Structure
 
 - [dags/](dags/README.md): 수동·paused DAG.
 - [workflow_lib/](workflow_lib/README.md): parser와 전용 adapter.
@@ -30,14 +30,13 @@ P05는 검토 후 고정한 SQL 버전·hash와 함수 계약을 소비합니다
 - [fixtures/](fixtures/README.md): 공개 합성 manifest와 값 없는 접속 예시.
 - Compose 변경은 [airflow Compose](../../docker-compose.yml)에 합쳐져 있고 별도 override는 없습니다.
 
-## Usage
+### Supported Environment
 
-저장소 root에서 전용 `tests.lib.ops.test_opsflow_manifest`,
-`tests.lib.ops.test_opsflow_adapters`, `tests.lib.ops.test_opsflow_provision_contract`,
-`tests.validation.test_opsflow_airflow_contract` unittest를 실행합니다.
-SDK double·driver double의 PASS는 실제 DAG import나 DEV 실행의 증거가 아닙니다.
+없음: 이 디렉터리에는 Compose 파일이나 Dockerfile이 없어 독립 런타임 환경을 선언하지 않는다. 포함 항목은 `dags/`, `fixtures/`, `secret-placeholder/`, `sql/`, `workflow_lib/`이다.
 
-### Configuration
+## Interfaces
+
+### Inputs and Outputs
 
 SEC01의 호환 이미지·dependencies와 P03의 endpoint·실제 worker UID/GID 계약을
 받아야 합니다. 이미지에는 필요한 패키지를 빌드 시 설치하며 startup pip를
@@ -75,7 +74,20 @@ Owner는 NOLOGIN이며 migrator만 명시적 SET ROLE 권한을 갖고 runtime�
 항목입니다. pool 한 slot 생성도 별도 실행 대상입니다. 기존 generic table-grant 계약을 이 workload에
 대입하거나 미지정 자격을 자동 발급하지 않습니다.
 
-### Validation
+### Security Boundary
+
+없음: 이 디렉터리는 Compose 서비스나 secret 참조를 직접 선언하지 않으며, 하위 `dags/`, `fixtures/`, `sql/`, `workflow_lib/`가 각자 선언한다.
+
+## Development
+
+### Local Workflow
+
+저장소 root에서 전용 `tests.lib.ops.test_opsflow_manifest`,
+`tests.lib.ops.test_opsflow_adapters`, `tests.lib.ops.test_opsflow_provision_contract`,
+`tests.validation.test_opsflow_airflow_contract` unittest를 실행합니다.
+SDK double·driver double의 PASS는 실제 DAG import나 DEV 실행의 증거가 아닙니다.
+
+### Checks
 
 실제 실행은 고정 이미지의 DAG import, SQL 직접 호출·역할/다른 DB/S3 거부,
 Celery worker 게시·재실행·경합·backfill·객체 후 DB 실패 및 빈 대상 복원이
@@ -96,10 +108,18 @@ PG/S3는 하나의 원자적 트랜잭션이 아니므로 DB 실패 후 객체�
 보존 정책으로만 판단합니다. Rollback은 이 DAG pause와 검토한 migration 복구이며
 MNG reset·공유 volume 초기화·전체 restart를 사용하지 않습니다.
 
-## Related Documents
+## Operations
+
+### Runbook Links
+
+#### Related Documents
 
 - [Workloads](../README.md)
 - [Airflow](../../README.md)
 - [문서 탐색](../../../../../docs/README.md)
 - [Task SDK](https://airflow.apache.org/docs/task-sdk/stable/api.html)
 - [Compose merge](https://docs.docker.com/reference/compose-file/merge/)
+
+### Observability and Recovery
+
+없음: 이 디렉터리는 자체 헬스체크나 관측 대상을 선언하지 않으며, 하위 `dags/`, `fixtures/`, `sql/`, `workflow_lib/`가 각자 선언한다.

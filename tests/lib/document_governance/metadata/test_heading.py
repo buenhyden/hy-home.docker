@@ -47,6 +47,7 @@ class CurrentBodyContractTests(unittest.TestCase):
             "guide": "Purpose|Prerequisites|Procedure|Verification",
             "policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
             "runbook": "Purpose|Preconditions|Steps|Validation|Recovery",
+            "package-readme": "Purpose|Interfaces|Development|Operations",
             "incident": "Summary|Impact|Timeline|Resolution|Evidence",
             "postmortem": "Summary|Root Cause|Impact|Corrective Actions|Evidence",
             "governance-policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
@@ -322,7 +323,7 @@ class RegisteredSectionContractTests(unittest.TestCase):
         """Map each enforced profile to one tracked document that carries it."""
 
         tracked = subprocess.run(
-            ["git", "ls-files", "docs"],
+            ["git", "ls-files", "docs", "infra"],
             capture_output=True,
             text=True,
             check=True,
@@ -454,6 +455,13 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Failure and Recovery", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Rollback or Recovery", "body-subheading-forbidden"),
+            ),
+            "package-readme": (
+                ("## Overview", "body-heading-forbidden"),
+                ("## Scope", "body-heading-forbidden"),
+                ("## Structure", "body-heading-forbidden"),
+                ("## Usage", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
             ),
             "adr": (
                 ("## Decision Drivers", "body-heading-forbidden"),

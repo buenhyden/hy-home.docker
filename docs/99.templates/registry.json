@@ -2085,55 +2085,35 @@
         "generated_by"
       ],
       "required_sections": [
-        "Overview",
-        "Scope",
-        "Structure",
-        "Usage",
-        "Related Documents"
+        "Purpose",
+        "Interfaces",
+        "Development",
+        "Operations"
       ],
-      "optional_sections": [
-        "Audience",
-        "Getting Started",
-        "Local Constraints",
-        "Documents",
-        "Verification",
-        "Architecture",
-        "Available Scripts",
-        "Change Impact",
-        "Configuration",
-        "Configuration (Environment Variables)",
-        "Files",
-        "Governance",
-        "Healthcheck Strategy",
-        "Image Tag Review",
-        "Implementation Details",
-        "Integration",
-        "Management Guide",
-        "Networking (Ports)",
-        "Operational Governance",
-        "Operational Status",
-        "Operations",
-        "Overview (KR/EN)",
-        "Runtime Surface",
-        "Service Boundary",
-        "Service Configuration",
-        "Service Matrix",
-        "Service Readiness",
-        "Service Type",
-        "Services",
-        "System Components",
-        "Tech Stack",
-        "Testing",
-        "Traceability (Golden 5)",
-        "Troubleshooting",
-        "Usage Instructions",
-        "Validation"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": [],
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Purpose": [
+          "Service Role",
+          "Supported Environment"
+        ],
+        "Interfaces": [
+          "Inputs and Outputs",
+          "Security Boundary"
+        ],
+        "Development": [
+          "Local Workflow",
+          "Checks"
+        ],
+        "Operations": [
+          "Runbook Links",
+          "Observability and Recovery"
+        ]
+      }
     },
     {
       "id": "runtime-governance-readme",

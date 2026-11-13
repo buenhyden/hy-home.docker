@@ -1,16 +1,18 @@
 ---
 title: "09-platform-ops: Platform Operations Tier"
-version: "1.3.0"
+version: "1.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-13"
 created: "2025-11-12"
 ---
 
 # 09-platform-ops: Platform Operations Tier
 
-## Overview
+## Purpose
+
+### Service Role
 
 IaC·아티팩트 배포·의존성 유지보수·플랫폼 공통 백업을 소유합니다.
 소프트웨어·설정 검증은 [11 Quality](../11-quality/README.md)가 담당합니다.
@@ -31,7 +33,7 @@ IaC·아티팩트 배포·의존성 유지보수·플랫폼 공통 백업을 소
 
 dbt 변환 작업은 독립 [dbt LAB](../../labs/dbt/docker-compose.yml)에서 관리합니다.
 
-## Audience
+#### Audience
 
 플랫폼 운영자, 이 도구들을 사용하는 개발자, 보안 검토자.
 
@@ -40,7 +42,7 @@ dbt 변환 작업은 독립 [dbt LAB](../../labs/dbt/docker-compose.yml)에서 �
 Security·Auth 및 Observability의 역할은 각 tier에 유지합니다. `tooling`은
 Registry와 SonarQube를 선택하는 기존 Compose 프로필이므로 이름을 바꾸지 않습니다.
 
-## Scope
+#### Scope
 
 - [OpenTofu](opentofu/README.md)는 워크스페이스 상태와 읽기 전용 provider
   자격 증명 마운트를 사용하는 로컬 CLI 작업입니다. Plan과 apply는 별도로
@@ -66,7 +68,7 @@ Registry와 SonarQube를 선택하는 기존 Compose 프로필이므로 이름�
 - [자원 최적화 준비](resource-optimization/README.md)는 범위가 제한된 공개 측정
   계약·합성 fixture·평가기를 제공합니다. 실제 부하·권한·HOME 수용은 별도입니다.
 
-## Structure
+#### Structure
 
 ```text
 09-platform-ops/
@@ -81,7 +83,23 @@ Registry와 SonarQube를 선택하는 기존 Compose 프로필이므로 이름�
 └── README.md
 ```
 
-## Usage
+### Supported Environment
+
+런타임은 Compose 프로필 `tooling`·`registry`·`iac`·`dependency-update`·`backup`이 선택하는 각 하위 leaf의 Compose/Dockerfile 선언이 소유합니다. 이 tier 디렉터리 자체에는 런타임 정의가 없습니다.
+
+## Interfaces
+
+### Inputs and Outputs
+
+이 tier 자체는 API·포트가 없고 입력은 위 Service Role 표의 프로필 선택입니다. Registry는 `127.0.0.1`의 5000 포트를 게시하고 Terrakube는 management PostgreSQL·SeaweedFS·Valkey에 의존합니다(Scope 참조).
+
+### Security Boundary
+
+Registry는 TLS/인증을 추적하지 않으므로 사용 전에 노출 범위를 제한해야 합니다. Renovate는 Docker Secret 토큰을 쓰고 원격 브랜치/PR 생성에 명시적 승인이 필요하며, OpenTofu plan/apply도 별도 승인입니다. Restic은 `secrets/`와 `.env`까지 스냅샷합니다.
+
+## Development
+
+### Local Workflow
 
 [documentation index](../../docs/README.md)를 사용한 뒤, `docs/05.operations/README.md`
 아래의 정확한 Stage 05 대상(`0021`, `0065`, `0069`, `0082`, `0083`)을 확인합니다. 저장소 루트에서 실행합니다.
@@ -96,8 +114,18 @@ HYHOME_COMPOSE_PROFILES=iac bash scripts/validation/validate-docker-compose.sh
 소유하며 [tech-stack.versions.json](../tech-stack.versions.json)은 파생된
 이미지 프로젝션입니다.
 
-## Related Documents
+### Checks
+
+Local Workflow의 `check-all-hardening.sh 09-platform-ops`와 `HYHOME_COMPOSE_PROFILES=iac`의 `validate-docker-compose.sh`가 검사입니다. 정적 검증은 부하 테스트·IaC apply·백업/복구·원격 업데이트·서비스 준비 상태의 근거가 아닙니다.
+
+## Operations
+
+### Runbook Links
 
 - [Documentation index](../../docs/README.md)
 - [Infrastructure index](../README.md)
 - Stage 05 Platform Operations 문서: `docs/05.operations/README.md`
+
+### Observability and Recovery
+
+백업·복구는 `docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md`, Registry는 `.../0065-registry.md`, Terrakube는 `.../0069-terrakube.md`, OpenTofu는 `.../0082-opentofu.md`, Renovate는 `.../0083-renovate.md` 런북을 따릅니다. 이 tier README 자체에는 헬스체크·지표가 없습니다.

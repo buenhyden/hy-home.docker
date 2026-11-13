@@ -1,10 +1,10 @@
 ---
 title: "Auth Tier (02-auth)"
-version: "1.1.2"
+version: "1.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-13"
 created: "2025-11-12"
 ---
 
@@ -12,21 +12,21 @@ created: "2025-11-12"
 
 > ID/접근 관리, Gateway ForwardAuth, 애플리케이션 native OIDC 통합.
 
-## Overview
+## Purpose
+
+### Service Role
 
 `02-auth` tier는 `hy-home.docker` 생태계의 보안 기반을 맡습니다. Keycloak은 중앙
 Identity Provider입니다. OAuth2 Proxy는 적절한 내장 OIDC가 없는 서비스에 Gateway
 ForwardAuth를 제공하며 Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao 같은 승인된
 애플리케이션은 애플리케이션 native OIDC로 Keycloak에 직접 인증합니다.
 
-## Audience
+#### Audience
 
 - Developers
 - Operators
 
-## Scope
-
-### In Scope
+#### In Scope
 
 - Keycloak: IAM 제공자
 - OAuth2 Proxy: ForwardAuth 게이트웨이
@@ -35,14 +35,14 @@ ForwardAuth를 제공하며 Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao 같�
 - PostgreSQL identity 영속성
 - OAuth2 Proxy용 Valkey 세션 저장
 
-### Out of Scope
+#### Out of Scope
 
 - TLS 종료(`01-gateway`)
 - 네트워크 방화벽
 - 애플리케이션 비즈니스 로직
 - 애플리케이션 내부 RBAC 구현 세부 사항
 
-## Structure
+#### Structure
 
 ```text
 02-auth/
@@ -51,9 +51,35 @@ ForwardAuth를 제공하며 Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao 같�
 └── README.md
 ```
 
-## Authentication Patterns
+### Supported Environment
 
-### Gateway ForwardAuth
+| Category | Technology | Notes |
+| --- | --- | --- |
+| IAM | Keycloak | 중앙 OIDC/SAML IdP |
+| ForwardAuth | OAuth2 Proxy | Gateway 인증 |
+| Native OIDC | Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao | Keycloak 직접 client |
+| Database | PostgreSQL | Identity 영속성 |
+| Session | Valkey | OAuth2 Proxy 세션 |
+| Gateway | Traefik | TLS/라우팅/미들웨어 |
+
+## Interfaces
+
+### Inputs and Outputs
+
+| Variable | Required | Description |
+| --- | ---: | --- |
+| `DEFAULT_URL` | Yes | 루트 도메인 |
+| `KEYCLOAK_REALM` | Yes | `hy-home.realm` |
+| `KEYCLOAK_URL` | Yes | 공개 Keycloak URL |
+| `OAUTH2_PROXY_CLIENT_ID` | Yes | ForwardAuth client |
+| `KAFBAT_OAUTH_CLIENT_ID` | Yes | Kafbat Native OIDC client |
+| `AIRFLOW_KEYCLOAK_CLIENT_ID` | Yes | Airflow Native OIDC client |
+
+### Security Boundary
+
+#### Authentication Patterns
+
+##### Gateway ForwardAuth
 
 ```text
 Browser -> Traefik -> OAuth2 Proxy -> Keycloak -> Service
@@ -65,7 +91,7 @@ Browser -> Traefik -> OAuth2 Proxy -> Keycloak -> Service
 - n8n
 - 자체 OIDC가 없는 내부 UI
 
-### Application-native OIDC
+##### Application-native OIDC
 
 ```text
 Browser -> Traefik -> Application -> Keycloak
@@ -81,7 +107,9 @@ Browser -> Traefik -> Application -> Keycloak
 
 Native OIDC 서비스 앞에 OAuth2 Proxy ForwardAuth를 기본적으로 중복 적용하지 않는다.
 
-## Usage
+## Development
+
+### Local Workflow
 
 1. [Auth Operations](../../docs/README.md)를 먼저 확인한다.
 2. Keycloak/OAuth2 Proxy compose/config를 변경하기 전에 guide/policy/runbook을 확인한다.
@@ -90,29 +118,16 @@ Native OIDC 서비스 앞에 OAuth2 Proxy ForwardAuth를 기본적으로 중복 
 5. secret은 `scripts/operations/gen-secrets.sh`와 Docker Secret 경계를 사용한다.
 6. root profile validation/hardening을 실행한다.
 
-## Tech Stack
+#### Change Impact
 
-| Category | Technology | Notes |
-| --- | --- | --- |
-| IAM | Keycloak | 중앙 OIDC/SAML IdP |
-| ForwardAuth | OAuth2 Proxy | Gateway 인증 |
-| Native OIDC | Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao | Keycloak 직접 client |
-| Database | PostgreSQL | Identity 영속성 |
-| Session | Valkey | OAuth2 Proxy 세션 |
-| Gateway | Traefik | TLS/라우팅/미들웨어 |
+- Keycloak realm/client 변경은 여러 application에 영향.
+- OAuth2 Proxy 변경은 ForwardAuth target에 영향.
+- Native OIDC client 변경은 해당 application login/RBAC에 영향.
+- secret rotation은 session/client 재로그인을 요구할 수 있다.
 
-## Configuration
+### Checks
 
-| Variable | Required | Description |
-| --- | ---: | --- |
-| `DEFAULT_URL` | Yes | 루트 도메인 |
-| `KEYCLOAK_REALM` | Yes | `hy-home.realm` |
-| `KEYCLOAK_URL` | Yes | 공개 Keycloak URL |
-| `OAUTH2_PROXY_CLIENT_ID` | Yes | ForwardAuth client |
-| `KAFBAT_OAUTH_CLIENT_ID` | Yes | Kafbat Native OIDC client |
-| `AIRFLOW_KEYCLOAK_CLIENT_ID` | Yes | Airflow Native OIDC client |
-
-## Testing
+#### Testing
 
 ```bash
 HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh
@@ -126,14 +141,11 @@ docker compose --profile auth exec keycloak sh -c   'exec 3<>/dev/tcp/127.0.0.1/
 docker compose --profile auth exec oauth2-proxy   wget -qO- http://127.0.0.1:4180/ping
 ```
 
-## Change Impact
+## Operations
 
-- Keycloak realm/client 변경은 여러 application에 영향.
-- OAuth2 Proxy 변경은 ForwardAuth target에 영향.
-- Native OIDC client 변경은 해당 application login/RBAC에 영향.
-- secret rotation은 session/client 재로그인을 요구할 수 있다.
+### Runbook Links
 
-## Related Documents
+#### Related Documents
 
 - [Gateway](../01-gateway/README.md)
 - [Data](../04-data/README.md)
@@ -143,3 +155,7 @@ docker compose --profile auth exec oauth2-proxy   wget -qO- http://127.0.0.1:418
 - [문서 인덱스](../../docs/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [derived Compose 이미지 투영](../tech-stack.versions.json)은 drift 검증을 제공합니다.
+
+### Observability and Recovery
+
+없음: 이 디렉터리는 자체 헬스체크나 관측 대상을 선언하지 않으며, 하위 `keycloak/`, `oauth2-proxy/`가 각자 선언한다.

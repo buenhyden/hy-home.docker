@@ -1,19 +1,22 @@
 ---
 title: "Trino (Iceberg)"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-13"
 created: "2026-09-23"
 ---
 
 <!-- [ID:04-data:lakehouse-trino] -->
+
 # Trino (Iceberg)
 
 > 승인된 Iceberg REST catalog의 table에 대한 lakehouse LAB의 on-demand 단일 노드 SQL 엔진입니다.
 
-## Overview
+## Purpose
+
+### Service Role
 
 Trino는 독립 Compose project인 [lakehouse LAB](../docker-compose.yml)
 (`lab-lakehouse` profile)의 SQL engine입니다. coordinator 한 개가 작업도 실행하며
@@ -22,26 +25,24 @@ S3 identity를 사용합니다. HOME network에 연결되지 않고, HTTP API에
 `127.0.0.1`에만 게시하며 Traefik route는 없습니다. HOME은 SeaweedFS를 LAB network에
 게시하지 않으므로 owner가 endpoint를 승인하기 전(미결정)까지는 render 검증만 합니다.
 
-## Audience
+#### Audience
 
 이 README의 주요 독자:
 
 - Data engineers
 - Operators
 
-## Scope
-
-### In Scope
+#### In Scope
 
 - `lakehouse` Iceberg catalog을 갖춘 단일 노드 Trino.
 - 환경 변수 기반 catalog 파일과 범위 S3 identity.
 
-### Out of Scope
+#### Out of Scope
 
 - Worker, TLS, 인증, Traefik route.
 - 배치 유지보수([Spark](../spark/README.md))와 스트리밍([Flink](../flink/README.md)).
 
-## Structure
+#### Structure
 
 ```text
 trino/
@@ -53,7 +54,7 @@ trino/
 
 서비스 정의는 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유합니다.
 
-## Tech Stack
+### Supported Environment
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
@@ -61,9 +62,13 @@ trino/
 | **Catalog** | Iceberg REST(`LAB_LAKEHOUSE_CATALOG_URI`) | SigV4(`signing-name=s3`), view endpoint 꺼짐 |
 | **Storage** | S3(`LAB_LAKEHOUSE_S3_ENDPOINT`) | Native S3 파일 시스템, path-style |
 
-## Configuration
+## Interfaces
 
-### Environment Variables
+### Inputs and Outputs
+
+`127.0.0.1:${LAB_TRINO_HOST_PORT:-18090}` -> 8080에서 단일 노드 SQL 엔드포인트를 제공하며 `LAB_LAKEHOUSE_CATALOG_URI`, `LAB_LAKEHOUSE_S3_ENDPOINT`가 가리키는 승인된 catalog와 S3를 읽는다. 환경 변수는 아래 표와 같다.
+
+#### Environment Variables
 
 | Variable | Required | Description |
 | :--- | :---: | :--- |
@@ -77,13 +82,19 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 `lakehouse`입니다. catalog 파일은 둘 다 `${ENV:…}`를 통해 읽습니다. HOME 값을
 복사하려면 별도 승인이 필요합니다.
 
-## Available Scripts
+### Security Boundary
+
+호스트 게시는 loopback뿐이며 TLS, 인증, Traefik route는 구성되지 않는다. `lab_lakehouse_net`에만 연결되고 HOME network는 없다. secret은 `lab_lakehouse_s3_lakehouse_secret_key`(-> `seaweedfs_s3_lakehouse_secret_key`)만 사용하고 값은 문서에 쓰지 않는다.
+
+## Development
+
+### Local Workflow
 
 아래 `LAB`은 저장소 루트에서
 `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse`입니다.
 `config`는 render만 합니다. 컨테이너를 시작하는 명령은
 `python3 scripts/operations/lab.py check|up|down lakehouse`의 lease 규칙
-([LAB 안내](../../README.md#usage))을 따릅니다.
+([LAB 안내](../../README.md#local-workflow))을 따릅니다.
 
 | Command | Description |
 | :--- | :--- |
@@ -97,18 +108,37 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 `NOT_RUN`입니다. 소스 복구는 이전 pin과 명령을 함께 되돌리는 변경이며,
 운영 데이터 복구나 실제 질의 호환성까지 검증한 것으로 해석하지 않습니다.
 
-## Validation
+#### Usage
+
+1. Trino는 자체 Iceberg 라이브러리를 포함합니다. 둘 중 하나를 업그레이드한 뒤에는 Spark가 쓴 table을 읽는지 확인하십시오.
+2. Renovate가 이미지 tag를 갱신합니다.
+3. Table 삭제와 snapshot 만료는 named table과 기록된 사유가 있을 때만 실행합니다.
+
+런타임 이미지 권한은 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유하며
+[derived Compose 이미지 투영](../../../infra/tech-stack.versions.json)은 drift 증거입니다.
+
+### Checks
 
 - `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 
-## Troubleshooting
+## Operations
+
+### Runbook Links
+
+- **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/15-labs/0094-lakehouse.md`)
+- **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/15-labs/0094-lakehouse.md`)
+- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/15-labs/0094-lakehouse.md`)
+- [LAB 탐색](../../README.md)
+- [문서 인덱스](../../../docs/README.md)
+
+### Observability and Recovery
 
 - Exit `64`: `lakehouse` secret이 없거나 비어 있습니다.
 - `Failed to list views`: `iceberg.rest-catalog.view-endpoints-enabled=false`가 누락되었습니다.
 - `ForbiddenException`: lakehouse runbook을 따르십시오.
 
-## Service Readiness
+#### Service Readiness
 
 | Field | Evidence |
 | --- | --- |
@@ -125,20 +155,3 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 | Operations | Guide (`docs/05.operations/guides/15-labs/0094-lakehouse.md`), Policy (`docs/05.operations/policies/15-labs/0094-lakehouse.md`), Runbook (`docs/05.operations/runbooks/15-labs/0094-lakehouse.md`) |
 | Validation | `config --quiet` render, `tests.validation.test_lab_isolation` |
 | Troubleshooting | 활성 lease 안에서 `SHOW SCHEMAS FROM lakehouse`를 실행한 뒤 runbook을 따름 |
-
-## Usage
-
-1. Trino는 자체 Iceberg 라이브러리를 포함합니다. 둘 중 하나를 업그레이드한 뒤에는 Spark가 쓴 table을 읽는지 확인하십시오.
-2. Renovate가 이미지 tag를 갱신합니다.
-3. Table 삭제와 snapshot 만료는 named table과 기록된 사유가 있을 때만 실행합니다.
-
-런타임 이미지 권한은 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유하며
-[derived Compose 이미지 투영](../../../infra/tech-stack.versions.json)은 drift 증거입니다.
-
-## Related Documents
-
-- **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/15-labs/0094-lakehouse.md`)
-- **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/15-labs/0094-lakehouse.md`)
-- **Runbook**: Lakehouse Recovery Runbook (`docs/05.operations/runbooks/15-labs/0094-lakehouse.md`)
-- [LAB 탐색](../../README.md)
-- [문서 인덱스](../../../docs/README.md)

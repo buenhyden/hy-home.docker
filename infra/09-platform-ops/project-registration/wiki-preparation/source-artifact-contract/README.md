@@ -1,15 +1,17 @@
 ---
 title: "원천·artifact·provenance와 권한 철회"
-version: "0.1.4"
+version: "0.1.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-11-13"
 ---
 
 # 원천·artifact·provenance와 권한 철회
 
-## Overview
+## Purpose
+
+### Service Role
 
 Git은 코드·문서 원천이고 blog-data는 사람이 검토한 Literature/Permanent/Maps·초안·출판물의 원본입니다. 준비 패키지는 두 번째 지식 원본을 만들지 않습니다. artifact는 revision·path·hash·retrieved/effective 시각·권리 근거·ACL·parser/chunker/embedding version·generation·idempotency와 provenance를 연결합니다. 합성 bytes의 hash 일치만 검사하며 원천 진위나 라이선스 검증으로 표현하지 않습니다.
 
@@ -19,34 +21,48 @@ caller policy는 source repository/ref/revision/path allowlist와 typed `version
 
 helper 결과의 scoped idempotency와 원본 source hash의 관계는 [준비 계약의 Idempotency Result Contract](../contracts/README.md#idempotency-result-contract)가 소유합니다.
 
-## Audience
+#### Audience
 
 인프라 담당자, 미래 consumer 작성자와 독립 검토자입니다.
 
-## Scope
+#### Scope
 
 준비 문서·기계 schema·합성 검증에 한정합니다.
 
-## Structure
+#### Structure
 
 [schema](../schemas/source-artifact.schema.json)
 
-## Tech Stack
+### Supported Environment
 
 기존 Python·jsonschema와 오프라인 JSON 문서를 사용합니다.
 
-## Configuration
+## Interfaces
+
+### Inputs and Outputs
 
 비밀값과 실제 환경 변수는 입력하지 않습니다.
 
-## Validation
+### Security Boundary
 
-저장소 루트에서 활성화한 격리 venv에 `python -m pip install -r scripts/requirements.txt`를 실행한 뒤 `python -m unittest tests.lib.ops.test_wiki_preparation tests.validation.test_wiki_preparation_contracts -v`를 실행합니다. 시스템의 오래된 jsonschema는 검증 환경이 아닙니다. 단위검사는 native 실행 증거가 아닙니다.
+이 계약은 비밀값과 실제 환경 변수를 입력으로 받지 않으며 오프라인 JSON 문서와 schema만 다룬다. 네트워크 접근, 포트, 컨테이너 자원이 없다.
 
-## Usage
+## Development
+
+### Local Workflow
 
 총괄의 공통 계약 통합 후 해당 증거를 Task에 연결합니다.
 
-## Related Documents
+### Checks
+
+저장소 루트에서 활성화한 격리 venv에 `python -m pip install -r scripts/requirements.txt`를 실행한 뒤 `python -m unittest tests.lib.ops.test_wiki_preparation tests.validation.test_wiki_preparation_contracts -v`를 실행합니다. 시스템의 오래된 jsonschema는 검증 환경이 아닙니다. 단위검사는 native 실행 증거가 아닙니다.
+
+## Operations
+
+### Runbook Links
 
 문서 체계는 저장소 docs README 진입점을 통해 확인합니다.
+
+### Observability and Recovery
+
+없음: 실행되는 서비스가 아니라 준비 문서와 schema 계약이므로 관측 대상 런타임과 복구 절차가 없다. 변경은 Git 이력으로 되돌린다.

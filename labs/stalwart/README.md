@@ -1,16 +1,18 @@
 ---
 title: "Stalwart Mail Server"
-version: "2.1.0"
+version: "2.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-13"
 created: "2025-12-03"
 ---
 
 # Stalwart Mail Server
 
-## Overview
+## Purpose
+
+### Service Role
 
 Stalwart는 독립 Compose project인 [Stalwart LAB](docker-compose.yml)(`mail-server`
 profile)의 메일 서버 실험입니다. root Compose에 포함되지 않고 HOME network에 연결되지
@@ -20,15 +22,15 @@ SMTP/IMAP listener는 `lab_stalwart_net` 안에서만 도달하며, 관리 UI·J
 `${LAB_HOST_BIND_IP}:${LAB_STALWART_HOST_PORT:-18093}`에 게시됩니다. 자체 완결 LAB이라
 HOME endpoint 입력이 없습니다. 운영 subject는 `0070-mail`입니다.
 
-## Audience
+#### Audience
 
 메일 운영자, DNS/TLS 담당자와 인프라 엔지니어.
 
-## Scope
+#### Scope
 
 Stalwart의 SMTP/IMAP/JMAP, 관리 UI, 비밀 참조와 데이터 저장 선언을 설명한다. 개발 SMTP 트랩과 DNS 공급자 변경 절차는 포함하지 않는다.
 
-## Structure
+#### Structure
 
 ```text
 labs/stalwart/
@@ -40,16 +42,13 @@ labs/stalwart/
 
 서비스 정의(`stalwart`, `stalwart-config`)는 [labs/stalwart/docker-compose.yml](docker-compose.yml)이 소유한다.
 
-## Usage
+### Supported Environment
 
-Guide `GDE-0070`(`docs/05.operations/guides/15-labs/0070-mail.md`), Policy `POL-0070`,
-Runbook `RUN-0070`을 따른다. 명령은 저장소 루트에서
-`docker compose --env-file labs/.env -f labs/stalwart/docker-compose.yml --profile mail-server` 접두사로
-실행한다. `config`는 render만 하며, 컨테이너를 시작하는 명령은
-`python3 scripts/operations/lab.py check|up|down stalwart`의 lease 규칙
-([LAB 안내](../README.md#usage))을 따른다. 시작 전 DNS, TLS, 인증, 데이터 복구 증거를 확보한다.
+서버 이미지와 config builder는 [Compose](docker-compose.yml)가 고정하며 `mail-server` profile의 독립 Compose project로 실행한다.
 
-## Configuration
+## Interfaces
+
+### Inputs and Outputs
 
 | Setting | Source / behavior |
 | --- | --- |
@@ -64,17 +63,22 @@ Runbook `RUN-0070`을 따른다. 명령은 저장소 루트에서
 | UI | Traefik route·SSO 없음; LAB bind 주소의 8080 게시 포트로만 접근 |
 | Labels | `hy-home.tier: lab`, `traefik.enable: 'false'` |
 
-## Service Readiness
+### Security Boundary
 
-서비스와 healthcheck는 [Compose](docker-compose.yml)에 선언되어 있다. `/healthz/live` healthcheck는 배달·TLS·인증 검증을 대신하지 않는다. 실제 메일함 데이터, 백업 및 복원 성공 여부는 별도 운영 증거가 필요하다. 개발 테스트는 Mailpit 가이드(`GDE-0084`)를 따른다.
+Compose가 게시하는 호스트 포트는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_STALWART_HOST_PORT:-18093}` -> 8080 하나이며 Traefik route와 HOME network 연결이 없다. secret은 `lab_stalwart_password`를 참조하고 값은 문서에 쓰지 않는다.
 
-서버 패치의 Compose 이미지와 config builder의 서버 `FROM`은 같은 tag/index로
-변경합니다. CLI는 독립 공급자 버전과 soak 조건을 따르며, 이번 서버 후보 준비에서
-기존 CLI pin·listener·인증·relay 선언은 유지합니다. 소스와 공개 artifact
-식별 대조는 실제 config job, SMTP/JMAP 배달, mailstore·backup·복원 인수가 아닙니다.
-운영 상태가 바뀐 뒤에는 소스 revert나 이전 tag만으로 데이터를 되돌리지 않습니다.
+## Development
 
-## Validation
+### Local Workflow
+
+Guide `GDE-0070`(`docs/05.operations/guides/15-labs/0070-mail.md`), Policy `POL-0070`,
+Runbook `RUN-0070`을 따른다. 명령은 저장소 루트에서
+`docker compose --env-file labs/.env -f labs/stalwart/docker-compose.yml --profile mail-server` 접두사로
+실행한다. `config`는 render만 하며, 컨테이너를 시작하는 명령은
+`python3 scripts/operations/lab.py check|up|down stalwart`의 lease 규칙
+([LAB 안내](../README.md#local-workflow))을 따른다. 시작 전 DNS, TLS, 인증, 데이터 복구 증거를 확보한다.
+
+### Checks
 
 저장소 루트에서 render-only로 검사한다. 공개 예시 입력으로 렌더링하며, 실제 실행은 승인된 `labs/.env`를 쓴다.
 
@@ -86,12 +90,24 @@ python3 -m unittest tests.validation.test_lab_isolation
 
 정적 검사 결과는 배달·복구 성공을 뜻하지 않는다. 런타임 리허설은 활성 lease와 별도 실행 승인이 있을 때만 수행한다.
 
-## Troubleshooting
+## Operations
 
-활성 lease 안에서 `... ps stalwart`로 상태를 확인한다. 관리 UI와 메일 프로토콜 오류를 분리하고 개인 메일·비밀을 제거한 증거만 런북에 기록한다. 데이터 삭제나 검증되지 않은 downgrade를 일반 복구로 실행하지 않는다.
-
-## Related Documents
+### Runbook Links
 
 - [LAB 탐색](../README.md)
 - [문서 인덱스](../../docs/README.md)
 - [Stalwart 공식 Docker 설치 문서](https://stalw.art/docs/install/platform/docker/).
+
+### Observability and Recovery
+
+서비스와 healthcheck는 [Compose](docker-compose.yml)에 선언되어 있다. `/healthz/live` healthcheck는 배달·TLS·인증 검증을 대신하지 않는다. 실제 메일함 데이터, 백업 및 복원 성공 여부는 별도 운영 증거가 필요하다. 개발 테스트는 Mailpit 가이드(`GDE-0084`)를 따른다.
+
+서버 패치의 Compose 이미지와 config builder의 서버 `FROM`은 같은 tag/index로
+변경합니다. CLI는 독립 공급자 버전과 soak 조건을 따르며, 이번 서버 후보 준비에서
+기존 CLI pin·listener·인증·relay 선언은 유지합니다. 소스와 공개 artifact
+식별 대조는 실제 config job, SMTP/JMAP 배달, mailstore·backup·복원 인수가 아닙니다.
+운영 상태가 바뀐 뒤에는 소스 revert나 이전 tag만으로 데이터를 되돌리지 않습니다.
+
+#### Troubleshooting
+
+활성 lease 안에서 `... ps stalwart`로 상태를 확인한다. 관리 UI와 메일 프로토콜 오류를 분리하고 개인 메일·비밀을 제거한 증거만 런북에 기록한다. 데이터 삭제나 검증되지 않은 downgrade를 일반 복구로 실행하지 않는다.

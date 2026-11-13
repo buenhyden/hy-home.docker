@@ -1,16 +1,18 @@
 ---
 title: "Kafka Cluster LAB"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 created: "2026-10-03"
 ---
 
 # Kafka 다중 broker LAB
 
-## Overview
+## Purpose
+
+### Service Role
 
 [`docker-compose.yml`](docker-compose.yml)은 독립 Compose project
 `hy-home-lab-kafka`입니다. 정상 root는 이 파일을 include하지 않습니다.
@@ -20,15 +22,15 @@ created: "2026-10-03"
 HOME `05-messaging`에서 옮겼습니다(HOME에서 connector 0개, subject 0개). 세 broker가 한 호스트를
 공유하므로 호스트 장애 가용성 실험은 아닙니다.
 
-## Audience
+#### Audience
 
 독립 Kafka 토폴로지를 검토하는 개발자와 운영자.
 
-## Scope
+#### Scope
 
 학습용 세 broker의 독립 Compose, 네트워크, 저장소와 정적 검증을 다룬다. 실제 실행과 데이터 이관은 별도 승인이다.
 
-## Structure
+#### Structure
 
 ```text
 labs/kafka-cluster/
@@ -50,7 +52,13 @@ HOME Grafana는 `infra/06-observability/grafana/dashboards/`만 provisioning하�
 `docker-compose.yml`이 전체 LAB closure를 정의하고 이 문서가 사용·복구 경계를 소유한다.
 [promotion manifest](promotion.yaml)는 HOME 단일 broker를 같은 형태로 대체하는 승격 계획이다.
 
-## Configuration
+### Supported Environment
+
+KRaft 모드 broker 3개와 Schema Registry, Debezium PostgreSQL plugin Connect가 Compose project `hy-home-lab-kafka`의 `lab-kafka` profile로 실행된다. 세 broker가 한 호스트를 공유하므로 호스트 장애 가용성은 검증하지 않는다.
+
+## Interfaces
+
+### Inputs and Outputs
 
 | Field | Evidence |
 | --- | --- |
@@ -64,7 +72,13 @@ HOME Grafana는 `infra/06-observability/grafana/dashboards/`만 provisioning하�
 - 동봉한 [대시보드](dashboards/)는 HOME 시절 JMX 지표용이며 이 LAB은 JMX agent를 쓰지 않으므로 그대로는 데이터가 없습니다.
 - `lab-kafka-init`은 세 broker가 healthy일 때 LAB topic `lab-events`, `lab-logs`를 replication factor 3으로 생성합니다. 생성 job의 성공과 실제 topic 상태는 별개로 확인해야 합니다.
 
-## Usage
+### Security Boundary
+
+`lab_kafka_net`은 project 내부 network이며 호스트 port, 정상 `kafka_net`, secret을 연결하지 않는다. Schema Registry와 Connect는 이 network 안에서만 도달하고 gateway route가 없다.
+
+## Development
+
+### Local Workflow
 
 저장소 루트에서 합성된 LAB 경로와 정상 cluster와 다른 LAB ID를 공급하여 다음 명령을 실행합니다. 이 명령은 서비스를 시작하지 않습니다.
 
@@ -80,7 +94,17 @@ LAB_DATA_DIR=/tmp/hyhome-lab-kafka-synthetic LAB_KAFKA_CLUSTER_ID=MkU3OEVBNTcwNT
 격리 cluster에 복원하며 기존 KRaft identity나 개별 broker directory를 그대로
 재사용하지 않습니다. source 안내 갱신은 실제 복구 검증이 아닙니다.
 
-## Related Documents
+### Checks
+
+검증 명령은 Local Workflow의 정적 render(`docker compose ... --profile lab-kafka config --quiet`)이며 서비스를 시작하지 않는다. render 통과는 broker 기동이나 topic 생성의 증거가 아니다.
+
+## Operations
+
+### Runbook Links
 
 - [Kafka LAB Compose](docker-compose.yml)
 - [운영 가이드 목록](../../docs/05.operations/guides/README.md)
+
+### Observability and Recovery
+
+`lab-kafka-init`은 세 broker가 healthy일 때 topic `lab-events`, `lab-logs`를 만들며 생성 job 성공과 실제 topic 상태는 별개로 확인해야 한다. 복구는 [Kafka cluster LAB Runbook](../../docs/05.operations/runbooks/15-labs/0108-kafka-cluster.md)를 따른다.

@@ -1,24 +1,24 @@
 ---
 title: "Management Database (mng-db)"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 created: "2025-12-03"
 ---
 
 # Management database
 
-## Overview
+## Purpose
+
+### Service Role
 
 이 패키지는 저장소의 HOME 관리 PostgreSQL과 Valkey를 정의합니다.
 
-## Audience
+#### Audience
 
 공유 관리 상태의 operator와 maintainer를 대상으로 합니다.
-
-## Scope
 
 [`docker-compose.yml`](docker-compose.yml)이 HOME `mng-pg`, `mng-pg-init`,
 `mng-pg-exporter`, `mng-valkey`, `mng-valkey-exporter`를 정의합니다. `mng`,
@@ -40,7 +40,7 @@ entrypoint가 시작되기 전에 `pgbackrest_cipher_pass` secret을
 환경 변수나 추적된 설정에 절대 들어가지 않습니다. 비어 있거나 공백만 있는
 secret은 컨테이너를 exit 64로 중지시킵니다.
 
-## Structure
+#### Structure
 
 `mng-pg-data`는 `${DEFAULT_MANAGEMENT_DIR}/pg`에 매핑됩니다. init job은
 n8n, Keycloak, Airflow, Terrakube, SonarQube와 설정된 애플리케이션 database를
@@ -88,7 +88,23 @@ PostgreSQL은 루트 `POSTGRES_HOST_PORT` 키로 `127.0.0.1`에만 호스트 포
 argv가 아니라 psql 환경(`\getenv`)으로 전달합니다. 각 feature는 자신의 SQL과
 grant를 자신의 패키지에 둡니다. 그 외 엔진 설정은 Compose에 남아 있습니다.
 
-## Usage
+### Supported Environment
+
+런타임은 `infra/04-data/mng-db/docker-compose.yml`의 `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` 서비스로 정의되며, 이미지와 태그는 해당 Compose 선언이 소유한다. 활성화 프로파일은 `bi`, `contract-testing`, `core`, `data-science`, `dev`, `local`, `mlops`, `mng`이다.
+
+## Interfaces
+
+### Inputs and Outputs
+
+호스트 게시 포트는 `${HOST_LAN_BIND_IP:-192.168.0.13}:${VALKEY_MNG_HOST_PORT:-26379}:${VALKEY_PORT:-6379}`, `127.0.0.1:${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}`이다. 연결 네트워크는 `mng_data_net`, `obs_net`이다. (출처: `infra/04-data/mng-db/docker-compose.yml`의 `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` 서비스)
+
+### Security Boundary
+
+Compose가 참조하는 secret은 `airflow_db_password`, `keycloak_db_password`, `mng_pg_monitor_password`, `mng_postgres_password`, `mng_valkey_inspector_password`, `mng_valkey_monitor_password`, `mng_valkey_n8n_password`, `mng_valkey_password`, `n8n_db_password`, `pgbackrest_cipher_pass`, `sonarqube_db_password`, `terrakube_db_password`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `${HOST_LAN_BIND_IP:-192.168.0.13}:${VALKEY_MNG_HOST_PORT:-26379}:${VALKEY_PORT:-6379}`, `127.0.0.1:${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}`이다. (출처: `infra/04-data/mng-db/docker-compose.yml`의 `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` 서비스)
+
+## Development
+
+### Local Workflow
 
 ```bash
 docker compose --env-file .env.example --profile mng config --quiet
@@ -102,7 +118,15 @@ restore)를 사용합니다. Valkey 복구는 RDB export를 사용합니다. 둘
 재생하기 전에는 workflow owner 승인을 받으십시오. synthetic rehearsal은
 `HYHOME_BACKUP_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.BackupRestoreRehearsalTests`입니다.
 
-## Related Documents
+### Checks
+
+`docker compose -f infra/04-data/mng-db/docker-compose.yml config`로 병합 결과를 검증한다.
+
+## Operations
+
+### Runbook Links
+
+#### Related Documents
 
 [문서 진입점](../../../docs/README.md)을 사용해 Stage 05 subject
 `docs/05.operations/guides/05-databases-and-storage/0028-management-database.md`, 백업 subject `docs/05.operations/guides/10-platform-and-backup/0021-backup-and-restore.md`
@@ -111,3 +135,7 @@ restore)를 사용합니다. Valkey 복구는 RDB export를 사용합니다. 둘
 [upgrade](https://www.postgresql.org/docs/current/upgrading.html),
 [Valkey persistence](https://valkey.io/topics/persistence/),
 [pgBackRest user guide](https://pgbackrest.org/user-guide.html).
+
+### Observability and Recovery
+
+헬스체크: `mng-valkey` 서비스는 `REDISCLI_AUTH=$$(tr -d "\r\n" </run/secrets/mng_valkey_password) valkey-cli --no-auth-warning -h 127.0.0.1 -p "$${MNG_VALKEY_PORT}" ping | grep -qx PONG` (interval 15s); `mng-valkey-exporter` 서비스는 `wget -qO- http://localhost:${VALKEY_EXPORTER_PORT:-9121}/metrics > /dev/null 2>&1 || exit 1` (interval 30s); `mng-pg` 서비스는 `pg_isready -h 127.0.0.1 -p "$${POSTGRES_PORT}" -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"` (interval 15s); `mng-pg-exporter` 서비스는 `wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1` (interval 15s).

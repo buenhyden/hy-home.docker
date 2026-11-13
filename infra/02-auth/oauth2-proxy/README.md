@@ -1,10 +1,10 @@
 ---
 title: "OAuth2 Proxy"
-version: "1.1.7"
+version: "1.1.8"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-13"
 created: "2025-11-29"
 ---
 
@@ -12,7 +12,9 @@ created: "2025-11-29"
 
 > 승인된 애플리케이션 native OIDC를 사용하지 않는 서비스를 위한 OIDC ForwardAuth 게이트웨이입니다.
 
-## Overview
+## Purpose
+
+### Service Role
 
 OAuth2 Proxy는 적절한 내장 OIDC 지원이 없는 서비스에 게이트웨이 인증을 제공합니다.
 OIDC에는 Keycloak을, 세션 상태에는 Valkey를 사용합니다.
@@ -21,14 +23,12 @@ OAuth2 Proxy는 모든 보호 대상 서브도메인의 필수 hop이 **아닙�
 Airflow와 Kafbat UI는 애플리케이션 native OIDC를 사용하며 OAuth2 Proxy
 ForwardAuth로 보호되지 않습니다.
 
-## Audience
+#### Audience
 
 - Developers
 - Operators
 
-## Scope
-
-### In Scope
+#### In Scope
 
 - OAuth2 Proxy 설정
 - Traefik ForwardAuth
@@ -36,13 +36,13 @@ ForwardAuth로 보호되지 않습니다.
 - secret 주입
 - cookie/issuer/redirect 계약
 
-### Out of Scope
+#### Out of Scope
 
 - Keycloak identity 관리
 - Native OIDC 애플리케이션 RBAC
 - TLS 인증서 발급
 
-## Structure
+#### Structure
 
 ```text
 oauth2-proxy/
@@ -55,18 +55,28 @@ oauth2-proxy/
 └── README.md
 ```
 
-## Service Readiness
+### Supported Environment
 
-| Field | Evidence |
-| --- | --- |
-| Service | `oauth2-proxy` |
-| Session | 기본값은 공유 `mng-valkey` |
-| Health | `/ping` |
-| Listener | `0.0.0.0:${OAUTH2_PROXY_PORT:-4180}`; health, Traefik, ForwardAuth가 같은 포트를 사용 |
-| OIDC client | `home-proxy-client` |
-| Issuer | `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm` |
+| Category | Technology | Notes |
+| --- | --- | --- |
+| Proxy | OAuth2 Proxy | ForwardAuth |
+| Session | Valkey | Redis 호환 |
+| Protocol | OIDC | Keycloak |
+| Gateway | Traefik | ForwardAuth 호출자 |
 
-## Usage
+## Interfaces
+
+### Inputs and Outputs
+
+호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `edge_net`, `mng_data_net`, `oauth2_proxy_metrics_net`, `obs_net`이다. (출처: `infra/02-auth/oauth2-proxy/docker-compose.yml`의 `oauth2-proxy` 서비스)
+
+### Security Boundary
+
+Compose가 참조하는 secret은 `mng_valkey_password`, `oauth2_proxy_client_secret`, `oauth2_proxy_cookie_secret`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/02-auth/oauth2-proxy/docker-compose.yml`의 `oauth2-proxy` 서비스)
+
+## Development
+
+### Local Workflow
 
 1. Auth Operations와 integration guide를 먼저 확인.
 2. new service onboarding 시 ForwardAuth vs Native OIDC를 먼저 분류.
@@ -75,7 +85,7 @@ oauth2-proxy/
 5. `Authorization` header forwarding은 upstream JWT scheme과 충돌 여부 검증.
 6. callback URL을 재사용하지 않는다.
 
-### SEC01 후보와 검증 경계
+#### SEC01 후보와 검증 경계
 
 upstream 바이너리 태그와 공개 OCI index digest는 [Dockerfile](Dockerfile)과
 [dev.Dockerfile](dev.Dockerfile)이 소유한다. Compose의 기본 빌드 경로와 명시적
@@ -91,7 +101,7 @@ upstream 바이너리 태그와 공개 OCI index digest는 [Dockerfile](Dockerfi
 갱신 시험은 `NOT_RUN`이다. 운영 반영 전에 동일 이미지의 기능 시험과 기존 이미지로
 되돌리는 인수 조건을 SPEC-0204-TSK-0009에서 충족해야 한다.
 
-### Authentication Applicability
+#### Authentication Applicability
 
 ForwardAuth 대상:
 
@@ -106,22 +116,15 @@ Native OIDC 대상:
 
 Native OIDC app에는 `sso-auth@file`/`sso-errors@file`을 중복 적용하지 않는다.
 
-### Secrets
+#### Secrets
 
 - `oauth2_proxy_cookie_secret`
 - `oauth2_proxy_client_secret`
 - 공유 Valkey secret (`mng_valkey_password`, 기본·대안 이미지 공통)
 
-## Tech Stack
+### Checks
 
-| Category | Technology | Notes |
-| --- | --- | --- |
-| Proxy | OAuth2 Proxy | ForwardAuth |
-| Session | Valkey | Redis 호환 |
-| Protocol | OIDC | Keycloak |
-| Gateway | Traefik | ForwardAuth 호출자 |
-
-## Testing
+#### Testing
 
 ```bash
 HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh
@@ -129,15 +132,11 @@ bash scripts/hardening/check-all-hardening.sh 02-auth
 docker compose --profile auth exec oauth2-proxy sh -c 'wget -qO- "http://127.0.0.1:$OAUTH2_PROXY_PORT/ping"'
 ```
 
-## Troubleshooting
+## Operations
 
-- issuer/redirect/cookie domain
-- Valkey connectivity
-- ForwardAuth middleware route
-- Native OIDC app에 중복 적용 여부
-- upstream `Authorization` collision
+### Runbook Links
 
-## Related Documents
+#### Related Documents
 
 - [Keycloak](../keycloak/README.md)
 - [Gateway](../../01-gateway/README.md)
@@ -148,3 +147,24 @@ docker compose --profile auth exec oauth2-proxy sh -c 'wget -qO- "http://127.0.0
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [curated 버전 투영](../../tech-stack.versions.json)은 drift 검증을 제공합니다.
 
 빌드 소스 권한: [Dockerfile](Dockerfile), [dev.Dockerfile](dev.Dockerfile).
+
+### Observability and Recovery
+
+#### Service Readiness
+
+| Field | Evidence |
+| --- | --- |
+| Service | `oauth2-proxy` |
+| Session | 기본값은 공유 `mng-valkey` |
+| Health | `/ping` |
+| Listener | `0.0.0.0:${OAUTH2_PROXY_PORT:-4180}`; health, Traefik, ForwardAuth가 같은 포트를 사용 |
+| OIDC client | `home-proxy-client` |
+| Issuer | `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm` |
+
+#### Troubleshooting
+
+- issuer/redirect/cookie domain
+- Valkey connectivity
+- ForwardAuth middleware route
+- Native OIDC app에 중복 적용 여부
+- upstream `Authorization` collision

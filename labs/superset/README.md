@@ -1,19 +1,22 @@
 ---
 title: "Superset"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-13"
 created: "2026-09-23"
 ---
 
 <!-- [ID:04-data:analytics-superset] -->
+
 # Superset
 
 > Keycloak native OIDC를 사용하는 on-demand BI 웹 애플리케이션 LAB입니다.
 
-## Overview
+## Purpose
+
+### Service Role
 
 Superset은 독립 Compose project인 [Superset LAB](docker-compose.yml)(`lab-superset`
 profile)입니다. root Compose에 포함되지 않고 HOME network에 연결되지 않으며 Traefik
@@ -29,28 +32,26 @@ render 검증만 하며 LAB 로그인 성공을 주장하지 않습니다. `supe
 lakehouse database(`trino://superset@trino:8080/lakehouse`)는 `trino` host에 도달할 수
 있는 곳에서만 해석되므로, 현재 선언으로는 Superset LAB에서 Trino 질의가 되지 않습니다.
 
-## Audience
+#### Audience
 
 이 README의 주요 독자:
 
 - Data analysts
 - Operators
 
-## Scope
-
-### In Scope
+#### In Scope
 
 - 웹 서버, metadata database 프로비저닝, init job.
 - Keycloak OIDC 로그인과 `lakehouse` Trino database 등록.
 
-### Out of Scope
+#### Out of Scope
 
 - Celery worker, alert/report, 썸네일, 공유 캐시.
 - Group 기반 role 매핑. Superset은 native OIDC로 로그인하므로 OAuth2 Proxy
   `/admins` allowlist는 적용되지 않으며 owner는 Admin이 role을 부여하는
   Gamma 가입 방식을 유지했습니다(2026-09-24).
 
-## Structure
+#### Structure
 
 ```text
 labs/superset/
@@ -67,7 +68,7 @@ labs/superset/
 서비스 정의(`superset-db-provision`, `superset-init`, `superset`)는
 [labs/superset/docker-compose.yml](docker-compose.yml)이 소유합니다.
 
-## Tech Stack
+### Supported Environment
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
@@ -76,9 +77,13 @@ labs/superset/
 | **Login** | Flask-AppBuilder를 통한 Keycloak OIDC | PKCE S256; 등록 role `Gamma` |
 | **Data** | Trino SQLAlchemy dialect | `lakehouse` catalog(별도 lakehouse LAB) |
 
-## Configuration
+## Interfaces
 
-### Environment Variables
+### Inputs and Outputs
+
+UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SUPERSET_HOST_PORT:-18092}` -> 8088에 게시하고 Keycloak OIDC로 로그인하며 `lakehouse` Trino database를 등록한다. 환경 변수는 아래 표와 같다.
+
+#### Environment Variables
 
 | Variable | Required | Description |
 | :--- | :---: | :--- |
@@ -97,13 +102,19 @@ Secrets는 `${LAB_SECRET_DIR}/superset/`의 LAB 전용 파일이며 원래 이�
 provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_password`.
 `superset_config.py`가 읽습니다. HOME 값을 복사하려면 별도 승인이 필요합니다.
 
-## Available Scripts
+### Security Boundary
+
+`lab_superset_net`만 사용하며 HOME network와 Traefik route가 없다. secret은 `lab_superset_secret_key`, `lab_superset_db_password`, `lab_superset_oidc_client_secret`, 프로비저닝 전용 `lab_superset_mng_postgres_password`이며 값은 문서에 쓰지 않는다.
+
+## Development
+
+### Local Workflow
 
 아래 `LAB`은 저장소 루트에서
 `docker compose --env-file labs/.env -f labs/superset/docker-compose.yml --profile lab-superset`입니다.
 `config`는 render만 합니다. 컨테이너를 시작하는 명령은
 `python3 scripts/operations/lab.py check|up|down superset`의 lease 규칙
-([LAB 안내](../README.md#usage))을 따르며, 최초 설정은 RUN-0097을 따릅니다.
+([LAB 안내](../README.md#local-workflow))을 따르며, 최초 설정은 RUN-0097을 따릅니다.
 
 | Command | Description |
 | :--- | :--- |
@@ -111,19 +122,38 @@ provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_passwo
 | `LAB up -d superset` | Provisioning, migration 후 시작. |
 | `LAB run --rm superset-init` | 업그레이드 후 migration 재실행. |
 
-## Validation
+#### Usage
+
+1. Renovate가 `requirements.txt`와 `FROM` 이미지를 갱신합니다. Superset 버전이 오르면 `image:` tag와 버전 투영도 바뀌며 `superset-init`이 필요합니다.
+2. 모든 credential은 `superset_config.py`가 읽는 secret 파일에 유지하십시오.
+3. named user에게만 role을 부여하십시오. 등록은 계속 `Gamma`입니다.
+
+런타임 이미지 권한은 [labs/superset/docker-compose.yml](docker-compose.yml)이 소유하며
+[derived Compose 이미지 투영](../../infra/tech-stack.versions.json)은 drift 증거입니다.
+
+### Checks
 
 - `docker compose --env-file labs/.env -f labs/superset/docker-compose.yml --profile lab-superset config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 - `HYHOME_PG_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests.test_6_superset_migrates_and_serves_on_its_own_database`
 
-## Troubleshooting
+## Operations
+
+### Runbook Links
+
+- **Guide**: Superset Usage Guide (`docs/05.operations/guides/15-labs/0097-superset.md`)
+- **Policy**: Superset Operations Policy (`docs/05.operations/policies/15-labs/0097-superset.md`)
+- **Runbook**: Superset Runbook (`docs/05.operations/runbooks/15-labs/0097-superset.md`)
+- [LAB 탐색](../README.md)
+- [문서 인덱스](../../docs/README.md)
+
+### Observability and Recovery
 
 - `superset: secret … must be one non-empty line`: named secret 파일이 비어 있거나 여러 줄입니다.
 - Keycloak 이후 로그인 오류: redirect URI 또는 client secret 불일치; RUN-0097을 따르십시오.
 - 로그인 후 데이터가 없음: Admin이 role을 부여하기 전까지 사용자는 `Gamma`입니다.
 
-## Service Readiness
+#### Service Readiness
 
 | Field | Evidence |
 | --- | --- |
@@ -140,20 +170,3 @@ provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_passwo
 | Operations | Guide (`docs/05.operations/guides/15-labs/0097-superset.md`), Policy (`docs/05.operations/policies/15-labs/0097-superset.md`), Runbook (`docs/05.operations/runbooks/15-labs/0097-superset.md`) |
 | Validation | `config --quiet` render, `tests.validation.test_lab_isolation` |
 | Troubleshooting | 활성 lease 안에서 `/health`와 init job 로그를 확인한 뒤 runbook을 따름 |
-
-## Usage
-
-1. Renovate가 `requirements.txt`와 `FROM` 이미지를 갱신합니다. Superset 버전이 오르면 `image:` tag와 버전 투영도 바뀌며 `superset-init`이 필요합니다.
-2. 모든 credential은 `superset_config.py`가 읽는 secret 파일에 유지하십시오.
-3. named user에게만 role을 부여하십시오. 등록은 계속 `Gamma`입니다.
-
-런타임 이미지 권한은 [labs/superset/docker-compose.yml](docker-compose.yml)이 소유하며
-[derived Compose 이미지 투영](../../infra/tech-stack.versions.json)은 drift 증거입니다.
-
-## Related Documents
-
-- **Guide**: Superset Usage Guide (`docs/05.operations/guides/15-labs/0097-superset.md`)
-- **Policy**: Superset Operations Policy (`docs/05.operations/policies/15-labs/0097-superset.md`)
-- **Runbook**: Superset Runbook (`docs/05.operations/runbooks/15-labs/0097-superset.md`)
-- [LAB 탐색](../README.md)
-- [문서 인덱스](../../docs/README.md)
