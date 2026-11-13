@@ -2674,3 +2674,153 @@ class LinkTypeTitleTests(unittest.TestCase):
 
         common = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))["common"]
         self.assertEqual(set(common["link_types"]), set(LINK_TYPES))
+
+
+class RelationLookupTests(unittest.TestCase):
+    """documentation-protocol.md Relations: reverse lookups and Change Impact
+    are derived from the forward records, never kept by hand."""
+
+    def lookup(self, files: dict[str, str], target: str) -> dict[str, tuple[str, ...]]:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            relation_lookup,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            for name, body in files.items():
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(body, encoding="utf-8")
+            graph = build_document_graph(
+                [root / name for name in files], repo_root=root
+            )
+            return relation_lookup(graph, pathlib.PurePosixPath(target))
+
+    SPEC = "---\nartifact_id: SPEC-0001\n---\n# Spec\n"
+    PLAN = (
+        '---\nartifact_id: SPEC-0001-PLAN-0001\nparent_ids:\n- "SPEC-0001"\n---\n'
+        "# Plan\n\n[Spec](spec.md)\n"
+    )
+    TASK = (
+        '---\nartifact_id: SPEC-0001-TSK-0001\nparent_ids:\n- "SPEC-0001-PLAN-0001"\n'
+        "---\n# Task\n"
+    )
+
+    def test_children_consumers_and_transitive_impact(self) -> None:
+        result = self.lookup(
+            {
+                "docs/s/spec.md": self.SPEC,
+                "docs/s/plan.md": self.PLAN,
+                "docs/s/tasks/tsk.md": self.TASK,
+                "docs/s/readme.md": "# R\n\n[Plan](plan.md)\n",
+            },
+            "docs/s/spec.md",
+        )
+        self.assertEqual(result["children"], ("docs/s/plan.md",))
+        self.assertEqual(result["consumers"], ("docs/s/plan.md",))
+        self.assertEqual(
+            result["impact"],
+            ("docs/s/plan.md", "docs/s/readme.md", "docs/s/tasks/tsk.md"),
+        )
+
+    def test_non_normative_titled_links_are_not_consumers(self) -> None:
+        for title in ("navigation", "historical", "evidence"):
+            with self.subTest(title=title):
+                result = self.lookup(
+                    {
+                        "docs/s/spec.md": self.SPEC,
+                        "docs/s/note.md": f'# N\n\n[Spec](spec.md "{title}")\n',
+                    },
+                    "docs/s/spec.md",
+                )
+                self.assertEqual(result["consumers"], ())
+                self.assertEqual(result["impact"], ())
+
+    def test_a_normative_title_or_a_second_untitled_link_still_consumes(self) -> None:
+        result = self.lookup(
+            {
+                "docs/s/spec.md": self.SPEC,
+                "docs/s/a.md": '# A\n\n[Spec](spec.md "normative")\n',
+                "docs/s/b.md": (
+                    '# B\n\n[Spec](spec.md "historical") and [again](spec.md)\n'
+                ),
+            },
+            "docs/s/spec.md",
+        )
+        self.assertEqual(result["consumers"], ("docs/s/a.md", "docs/s/b.md"))
+
+    def test_successors_come_from_supersedes(self) -> None:
+        result = self.lookup(
+            {
+                "docs/s/spec.md": self.SPEC,
+                "docs/s/new.md": '---\nartifact_id: SPEC-0002\nsupersedes:\n- "SPEC-0001"\n---\n# New\n',
+            },
+            "docs/s/spec.md",
+        )
+        self.assertEqual(result["successors"], ("docs/s/new.md",))
+
+    def test_folder_links_reach_the_readme_and_self_links_do_not_count(self) -> None:
+        result = self.lookup(
+            {
+                "docs/s/README.md": "# S\n\n[Self](README.md) [Here](./)\n",
+                "docs/a.md": "# A\n\n[S](s/)\n",
+            },
+            "docs/s/README.md",
+        )
+        self.assertEqual(result["consumers"], ("docs/a.md",))
+
+    def test_successors_stay_out_of_impact_and_ids_may_be_absent(self) -> None:
+        result = self.lookup(
+            {
+                "docs/s/spec.md": self.SPEC,
+                "docs/s/new.md": '---\nsupersedes:\n- "SPEC-0001"\n---\n# New\n',
+                "docs/s/plain.md": "# Plain\n",
+            },
+            "docs/s/spec.md",
+        )
+        self.assertEqual(result["successors"], ("docs/s/new.md",))
+        self.assertEqual(result["impact"], ())
+
+    def test_an_escaped_titled_link_does_not_hide_an_untitled_one(self) -> None:
+        result = self.lookup(
+            {
+                "docs/s/spec.md": self.SPEC,
+                "docs/s/b.md": '# B\n\n\\[x](spec.md "evidence") [Spec](spec.md)\n',
+            },
+            "docs/s/spec.md",
+        )
+        self.assertEqual(result["consumers"], ("docs/s/b.md",))
+
+    def test_cli_rejects_a_path_that_is_not_a_current_document(self) -> None:
+        completed = subprocess.run(
+            [
+                sys.executable,
+                "scripts/validation/check-document-links.py",
+                "--impact",
+                "docs/no-such-document.md",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(completed.returncode, 2)
+        self.assertIn("is not a current document", completed.stderr)
+
+    def test_cli_reports_without_failing(self) -> None:
+        completed = subprocess.run(
+            [
+                sys.executable,
+                "scripts/validation/check-document-links.py",
+                "--impact",
+                ".agents/governance/sdlc.md",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertIn("consumers:", completed.stdout)
+        self.assertIn("impact:", completed.stdout)

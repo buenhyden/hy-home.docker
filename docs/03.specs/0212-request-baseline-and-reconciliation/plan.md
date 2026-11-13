@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.58.0"
+version: "1.59.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -174,7 +174,8 @@ W121 in TSK-0063 runs v14.7 W04: the H-07 heading-form binding and the SDLC
 promotion and state-axis meaning.
 
 W122 in TSK-0064 runs v14.7 W05: the validator handoffs, each enforced with a
-failing and a passing test or recorded with its owner.
+failing and a passing test or recorded with its owner. W123 in the same Task
+derives reverse lookups and Change Impact (the TSK-0062 GAP).
 
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
@@ -348,6 +349,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W120 | 115 | Correct the W00 to W03 results that deviate from their requirements: glossary common rows, the never-retire policy rule, TemplateDefinition contract binding, and R07/R08 relation and link types | W119 | TSK-0062 | Contract comparison per row, RED and GREEN tests per contract change, metadata, links, lifecycle and governance checks, independent review |
 | W121 | 116 | Bind the Registry `common` heading values to the profiles' common form and read them in the Spec Package reader (H-07); state the promotion owners, state axes, transition events and acceptance and readiness rules in the SDLC policy; record a verdict per W04 ID | W120 | TSK-0063 | RED and GREEN Registry and reader tests, reader regression suites, per-ID verdicts with handoffs, metadata, links, lifecycle and governance checks, independent review |
 | W122 | 117 | Enforce the W05 handoffs a checker can hold: disposition reachability, the TemplateDefinition empty rule, the glossary-contract comparison, the Release role guard, operations currency and link types; record a verdict and owner per handoff | W121 | TSK-0064 | RED and GREEN Registry, TemplateDefinition and metadata tests, historical Registry validation, metadata, links, lifecycle and governance checks, independent review |
+| W123 | 118 | Derive reverse lookups and Change Impact from `parent_ids`, `supersedes` and untitled or `normative` links in a report-only `check-document-links.py --impact`; require each `consumer_paths` entry to be a tracked file; state both in the protocol | W122 | TSK-0064 | RED and GREEN link tests, links and lifecycle checks, independent review |
 
 #### Current v30 continuation and delivery
 
@@ -723,6 +725,10 @@ W122 promotes to `docs/99.templates/registry.json`
 schema, `.agents/governance/documentation-protocol.md` (the enforcement it now
 has) and the glossary Provenance. The handoff condition is the merge of its
 pull request; TSK-0064's Promotion Receipt records each target.
+
+W123 promotes to `.agents/governance/documentation-protocol.md` (the
+Relations derivation and the Change Impact row). The handoff condition is the
+merge of its pull request; TSK-0064's Promotion Receipt records the target.
 
 - [Master workspace reconciliation](tasks/tsk-0053-master-workspace-reconciliation.md)
 - [v14.7 W00 intake](tasks/tsk-0059-w00-v14-7-intake.md)
