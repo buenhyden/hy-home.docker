@@ -1,6 +1,6 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.9.2"
+version: "1.9.3"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
@@ -176,10 +176,13 @@ named section in the common form, for example Evidence under Verification
 Evidence as Results. `spec_packages.py` checks their structure, reads those
 places from the Registry and derives readiness. The corpus lifecycle check
 applies the 1.9.0 acceptance rules, including cancelled-item pairs, to each
-Criterion Acceptance row that is new or changed against the lifecycle base;
-an unchanged older row stands as recorded. The readiness derivation also
-requires every repository path a Plan's Promotion Map names in a code span to
-appear in a Task's Promotion Receipt.
+Criterion Acceptance row that is new or changed against the lifecycle base,
+or whose cited Evidence rows or live Plan pairs changed; any other older row
+stands as recorded. The readiness derivation also requires each path a
+Plan's Promotion Map names in a code span, when it holds a `/` and ends in
+`.md`, `.json`, `.yml`, `.yaml`, `.py`, `.sh` or `.toml` and is not the
+package's own `tasks/` or `contracts/` path, to appear by its
+full path in a non-cancelled Task's Promotion Receipt.
 `check-document-corpus-lifecycle.py --readiness` reports each package's
 readiness without changing the exit code, because readiness is never
 removal approval; a Promotion Map target named only in prose stays with

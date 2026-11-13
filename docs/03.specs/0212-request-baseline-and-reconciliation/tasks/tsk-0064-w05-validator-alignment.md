@@ -169,6 +169,23 @@ currency) on that branch, plus the record commit with this Task.
   `921d2fba…c06c`), which the Registry `source_sha256` (the `v14.5`
   vocabulary file) does not cover; 1.1.0 is this workspace's adoption on D1,
   and the other three workspaces adopt it themselves (W11 checks adoption).
+- Review fixes returned (`91663f1f9`): a decision row is re-checked when a
+  row it cites or its live Plan pairs change (I-1); Promotion targets match
+  by full path, a bare name only when unique (I-2); cancelled Tasks' receipts
+  count for nothing (M-9); a git-fixture test runs the real gate route
+  (M-1). The remaining Plan restatements were replaced by Task links
+  (`3e8fc2cd0`). Two protocol lines that `check-operations-catalog` read as
+  a Release document role were reworded (`46ff5e55c`); that checker had not
+  been in this Task's local selection, and the hosted candidate caught it.
+- Known limits from the re-review, each with an owner: a Registry
+  generation change between base and head would re-flag older decisions
+  whose cited rows are `optional` (N-2, the next generation's migration
+  owner); Q-07 renumbering changes the identities the comparison keys on,
+  so the Q-07 rehearsal must map old to new identities (N-3, DOC-12 and
+  Q07); a changed PASS row the decision does not cite escapes the
+  comparison, bounded by the completion check that needs a PASS for every
+  pair (N-4, review); prose such as `(see [x](y) (note))` could read as a
+  link titled `note` (N-6, none in the corpus today, review).
 - Readiness entrypoint (`e34801578`): `check-document-corpus-lifecycle.py
   --readiness` reports each package without changing the exit code. On the
   current tree SPEC-0248, 0249, 0250, 0260, 0264 and 0265 report ready,
@@ -233,13 +250,13 @@ roles" holds only if the workflow-form decision keeps `sdlc.md` and
 | Reverse lookups and Change Impact derivation | TSK-0062 | GAP | No tool derives them; W05 next unit, CLI wiring to W06 |
 | `template_roles[*].consumer_paths` manual reverse lookup | TSK-0062 | GAP | Same unit as the reverse lookups |
 | H-W04-1 acceptance rules | TSK-0063 | PASS | `fc639081c`: applied by the corpus lifecycle check to Criterion Acceptance rows new or changed against the lifecycle base, so the 8 criteria accepted before 1.9.0 in six Tasks stand as recorded; merged-PR-note fixture included |
-| H-W04-2 promotion check | TSK-0063 | PARTIAL | `ef049ad37`: readiness requires each code-span path in a Promotion Map to appear in a Promotion Receipt, reported by `--readiness` (`e34801578`); full-path matching (review I-2) is with its writer; prose targets stay with review; CI route is W06's |
+| H-W04-2 promotion check | TSK-0063 | PASS (code-span targets) | `ef049ad37`, `91663f1f9`: full-path match in non-cancelled receipts, reported by `--readiness` (`e34801578`); prose targets stay with review; CI route is W06's |
 | H-W04-4 untested branches | TSK-0063 | PASS | `4bee2c348`; the duplicate-Task message is unreachable because `_load_tasks` rejects the duplicate first |
 | H-W01-4 other fixtures | TSK-0060 | PASS | OPEN ID and KEEP marker done here; merged PR read as Acceptance with H-W04-1 |
 | H-W01-1, H-W01-5 | TSK-0060 | PASS | Done here for the hook layer; no hook gates a deployment command, and a transition-override `approval` string is recorded, not authenticated (both stay review) |
 | H-W01-6 (GOV-07) | TSK-0060 | PASS (owner decision D2) | A review rule in `quality-standards.md`; no checker |
 | H-W01-2 consumer revision check | TSK-0060 | PASS | Registry names both adopted revisions and the consumer reads them |
-| H-05 H3 model in `heading.py` | TSK-0059 | UNVERIFIED | W03 added H3 checks after H-05 was written; reassess before changing |
+| H-05 H3 model in `heading.py` | TSK-0059 | PASS (KEEP) | Reassessed at `91663f1f9`: H3 is read under its parent H2 and missing, duplicate, unregistered and out-of-order subsections are rejected (`heading.py` L829-887, 33 subsection tests); empty sections fail at every level and a same-named stand-in is `body-heading-repeated`; whether a conditional H3's condition applies and prohibited prose stay review |
 | H-08 unwired code and tests | TSK-0059 | PASS (measurement and manifest) | Hosted CI wiring of the 57 local-only modules, the link checker and candidate preflight is W06's (H-W05-1) |
 | OPEN-11 TSK-0011 L1307 Resolves | TSK-0059 | FAIL (verdict) | Invalid: different leaves; a fresh metadata and document-library PASS is needed before criterion 17 can be accepted |
 | H-W02-1 dead subgraph in `lifecycle/contract.py` | TSK-0057 | PASS | Done here |
@@ -322,6 +339,10 @@ roles" holds only if the workflow-form decision keeps `sdlc.md` and
 | Integrated review | 117 | W122 | independent-review | Fresh-context code-reviewer of `323891aaf..e35700381` (read only, no tests run) | FAIL | CHANGES_REQUIRED: I-1 a cited row or Plan pair could change under an unchanged decision row; I-2 Promotion targets matched by file name; I-3 Plan restatements left; nine Minor | required | - |
 | Link title RED | 117 | W122 | red-green-proof | `test_wrapped_bracketed_and_reference_links_are_checked` before `33188136f` | FAIL | 5 subtests: wrapped, bracketed and reference titles unchecked | required | - |
 | Link title GREEN | 117 | W122 | red-green-proof | `LinkTypeTitleTests`, `test_registry`, links alignment at `33188136f` | PASS | 6 and 153 tests OK; alignment PASS | required | Link title RED |
+| Review fixes GREEN | 117 | W122 | red-green-proof | Agent commit `a1c431e06` (picked as `91663f1f9`): new I-1, I-2 and M-9 tests failed before the fix (`1 != 0`, a README name collision, `2 != 0`); M-1 proved by removing the call and by breaking the generation guard; full `test_spec_packages`, corpus lifecycle against two bases | PASS | 139 tests OK; violations=0 | required | - |
+| Integrated re-review | 117 | W122 | independent-review | Same reviewer, `91663f1f9` (read only, no tests run) | PASS | I-1 to I-3 and M-1 to M-9 resolved or accepted as recorded; Minor N-1 and N-5 fixed after it, N-2 to N-4 and N-6 recorded with owners | required | Integrated review |
+| Local changed gate | 117 | W122 | ci-gate-local | `run-ci-gate.py --profile changed` at `91663f1f9`, Python 3.12.3 | NOT_RUN | Fails closed by design: the local toolchain differs from hosted Python 3.14.8; the uv 3.14.8 interpreter lacks the dependencies, which were not installed | optional | - |
+| Remote candidate 996 | 117 | W122 | remote-ci | PR #996 head `91663f1f9` | PASS | candidate-quality (11m23s), CodeQL, GitGuardian and triage passed; an earlier head `3e8fc2cd0` had failed candidate-quality on the two protocol lines | required | - |
 
 ### Resolution Links
 
@@ -331,8 +352,8 @@ by Currency GREEN, and Release RED by Release GREEN. Pre-commit is resolved
 by its rerun, and Link type RED by Link type GREEN. SemVer RED, Common form pin RED,
 Approval hook RED, Acceptance rule RED, Promotion readiness RED, Form
 serialization RED, Vocabulary 1.1.0 RED, Readiness RED and Link title RED
-are resolved by their GREEN rows. The Integrated review FAIL stays open until
-its re-review. The W05 review and
+are resolved by their GREEN rows. The Integrated review FAIL is resolved by
+the Integrated re-review. The W05 review and
 W05 re-review FAILs are resolved by the W05 final review, and the Spec Package
 regression by its rerun.
 
@@ -342,7 +363,7 @@ regression by its rerun.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 117 | pending | - | This run's rules pass their checks and review; the GAP, PARTIAL, UNVERIFIED and CONFLICT handoff rows and the owner's decision remain | SPEC-0212 TSK-0064 |
+| 117 | pending | - | This run's rules pass their checks, the re-review and the remote candidate; every W05 handoff has a verdict and owner; the owner's acceptance remains | SPEC-0212 TSK-0064 |
 
 ### Remaining Conditions
 

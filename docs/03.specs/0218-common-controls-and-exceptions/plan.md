@@ -1,6 +1,6 @@
 ---
 title: "Common Controls and Exceptions Plan"
-version: "1.0.3"
+version: "1.0.4"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -108,7 +108,7 @@ membership for the P04 overlay. A wrapper exit code or the pure
 `validate_service_inventory` subset is not the official gate result; a semantic
 FAIL stays FAIL. Counts and timings are in
 [TSK-0002](tasks/tsk-0002-p07-root-resource-optimization.md). These describe the
-existing overlay, not seven new services. P04/coordinator owns typed overlay projection repair without blanket
+existing overlay, not new services. P04/coordinator owns typed overlay projection repair without blanket
 include/profile acceptance or a P04 native change. W10 requires W9's admission
 substep, not completed classification or inventory GREEN. Public W9/W10 can
 proceed while final inventory and full operations acceptance wait for their own evidence.
