@@ -1,10 +1,10 @@
 ---
 title: "Workflow Tier (07-workflow)"
-version: "1.3.0"
+version: "1.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 created: "2025-11-12"
 ---
 
@@ -12,7 +12,11 @@ created: "2025-11-12"
 
 > Airflow의 code-first 오케스트레이션과 n8n의 low-code 자동화입니다.
 
-## Overview
+## Purpose
+
+### Service Role
+
+#### Overview
 
 `07-workflow`는 Airflow와 n8n을 운영합니다. 브로커는 공유 `mng-valkey`입니다.
 앱별 전용 Valkey는 ADR-0062 결정 10으로 제거되었습니다.
@@ -23,13 +27,13 @@ created: "2025-11-12"
 - Flower: OAuth2 Proxy ForwardAuth
 - n8n: OAuth2 Proxy ForwardAuth
 
-## Audience
+#### Audience
 
 - Data Engineers
 - Backend Developers
 - Operators
 
-## Scope
+#### Scope
 
 - Airflow
 - n8n
@@ -37,7 +41,7 @@ created: "2025-11-12"
 - 워크플로우 DB
 - 공개 UI 인증 경계
 
-## Structure
+#### Structure
 
 ```text
 07-workflow/
@@ -46,24 +50,7 @@ created: "2025-11-12"
 └── README.md
 ```
 
-## Usage
-
-1. Airflow/n8n 운영 문서를 확인합니다.
-2. Airflow 인증 변경 시에는 Native OIDC 계약을 확인합니다.
-3. Flower/n8n 인증 변경 시에는 ForwardAuth 계약을 확인합니다.
-4. 브로커 프로필과 host/secret 쌍을 함께 검토합니다.
-5. hardening/compose 검증을 실행합니다.
-
-## Tech Stack
-
-| Category | Technology | Notes |
-| --- | --- | --- |
-| Orchestration | Airflow | CeleryExecutor |
-| Automation | n8n | queue mode |
-| Broker | Valkey | shared/dedicated |
-| Database | PostgreSQL | `mng-pg` |
-
-## Service Matrix
+#### Service Matrix
 
 | Service | Protocol | Profile | Authentication |
 | --- | --- | --- | --- |
@@ -74,27 +61,51 @@ created: "2025-11-12"
 | `n8n` | HTTP | `workflow` | OAuth2 Proxy ForwardAuth |
 | `n8n-worker` | internal | `workflow` | internal |
 
-## Configuration
+### Supported Environment
+
+#### Tech Stack
+
+| Category | Technology | Notes |
+| --- | --- | --- |
+| Orchestration | Airflow | CeleryExecutor |
+| Automation | n8n | queue mode |
+| Broker | Valkey | shared/dedicated |
+| Database | PostgreSQL | `mng-pg` |
+
+## Interfaces
+
+### Inputs and Outputs
+
+#### Configuration
 
 - Airflow/n8n DB: `mng-pg`
 - 기본 브로커: `mng-valkey`
 - Airflow UI 인증: Keycloak 직접 연동
 - Flower/n8n UI 인증: ForwardAuth
 
-## Testing
+### Security Boundary
 
-```bash
-HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh
-bash scripts/hardening/check-all-hardening.sh 07-workflow
-```
+없음: 이 디렉터리는 Compose 서비스나 secret 참조를 직접 선언하지 않으며, 하위 `airflow/`, `n8n/`가 각자 선언한다.
 
-## Change Impact
+## Development
+
+### Local Workflow
+
+#### Usage
+
+1. Airflow/n8n 운영 문서를 확인합니다.
+2. Airflow 인증 변경 시에는 Native OIDC 계약을 확인합니다.
+3. Flower/n8n 인증 변경 시에는 ForwardAuth 계약을 확인합니다.
+4. 브로커 프로필과 host/secret 쌍을 함께 검토합니다.
+5. hardening/compose 검증을 실행합니다.
+
+#### Change Impact
 
 - Airflow 버전/provider 변경 -> DB/인증 마이그레이션이 필요할 수 있음
 - 브로커 변경 -> worker에 영향
 - 인증 미들웨어 변경 -> 로그인/접근에 영향
 
-### Convergence service and command map
+##### Convergence service and command map
 
 저장소 루트에서 실행합니다. 정적 사전 점검은 `docker compose --profile workflow config --quiet`, 핵심 대상 시작은 `docker compose --profile workflow up -d`입니다.
 
@@ -106,7 +117,20 @@ bash scripts/hardening/check-all-hardening.sh 07-workflow
 
 안정적인 문서 진입점은 [docs/README.md](../../docs/README.md)이며 정확한 Stage 05 대상은 `docs/05.operations/guides/08-workflows-and-automation/0050-airflow.md`의 `GDE/POL/RUN-0050`과 `docs/05.operations/guides/08-workflows-and-automation/0053-n8n.md`의 `GDE/POL/RUN-0053`입니다.
 
-## Related Documents
+### Checks
+
+#### Testing
+
+```bash
+HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh
+bash scripts/hardening/check-all-hardening.sh 07-workflow
+```
+
+## Operations
+
+### Runbook Links
+
+#### Related Documents
 
 - [Data](../04-data/README.md)
 - [Observability](../06-observability/README.md)
@@ -115,3 +139,7 @@ bash scripts/hardening/check-all-hardening.sh 07-workflow
 - [Documentation index](../../docs/README.md)
 
 워크플로우 서비스는 소유자가 확인한 상시 HOME 역량입니다. 런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../tech-stack.versions.json)으로 드리프트를 검증합니다.
+
+### Observability and Recovery
+
+없음: 이 디렉터리는 자체 헬스체크나 관측 대상을 선언하지 않으며, 하위 `airflow/`, `n8n/`가 각자 선언한다.

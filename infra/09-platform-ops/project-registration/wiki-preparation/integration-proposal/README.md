@@ -1,15 +1,17 @@
 ---
 title: "공통 등록 통합 인계"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-11-13"
 ---
 
 # 공통 등록 통합 인계
 
-## Overview
+## Purpose
+
+### Service Role
 
 P09는 기존 generic registration schema와 validator를 그대로 재사용합니다. schema는 메모리 URN `urn:hyhome:registration:v1`로만 참조하고, test harness가 기존 validator를 별도로 실행합니다. Public `wiki_preparation.py`는 parsed 문서, caller 정책, 합성 bytes와 prior receipt만 받으며 `PreparationError`를 re-export하는 유일한 API입니다. Private `wiki_preparation_semantics.py`는 그 validator 구현을 담고 직접 소비 API가 아닙니다. 두 모듈 모두 callback, filesystem, network, environment, secret, subprocess 또는 외부 쓰기를 사용하지 않습니다. generic schema PASS와 helper semantic PASS는 runtime, 권리, 원천 진위 또는 운영 readiness 보증이 아닙니다.
 
@@ -25,34 +27,48 @@ negative-boundary 확인을 거친 좁은 `AND`/target-rule/path/hash guard로
 소유합니다. checksum을 rename·line-break해 detector를 피하지 않으며 global
 lint skip 또는 넓은 glob 예외는 사용하지 않습니다.
 
-## Audience
+#### Audience
 
 인프라 담당자, 미래 consumer 작성자와 독립 검토자입니다.
 
-## Scope
+#### Scope
 
 준비 문서·기계 schema·합성 검증에 한정합니다.
 
-## Structure
+#### Structure
 
 [준비 패키지](../README.md), [schema](../schemas/README.md), [fixture 기대 결과](../fixtures/expectations.json)
 
-## Tech Stack
+### Supported Environment
 
 기존 Python·jsonschema와 오프라인 JSON 문서를 사용합니다.
 
-## Configuration
+## Interfaces
+
+### Inputs and Outputs
 
 비밀값과 실제 환경 변수는 입력하지 않습니다.
 
-## Validation
+### Security Boundary
 
-저장소 루트에서 활성화한 격리 venv에 `python -m pip install -r scripts/requirements.txt`를 실행한 뒤 `python -m unittest tests.lib.ops.test_wiki_preparation tests.validation.test_wiki_preparation_contracts -v`를 실행합니다. 시스템의 오래된 jsonschema는 검증 환경이 아닙니다. 단위검사는 native 실행 증거가 아닙니다.
+없음: 이 디렉터리는 Markdown 문서와 합성 JSON만 두며 Compose 서비스·포트·네트워크·Docker Secret·접근 제어를 정의하지 않는다. 비밀값과 실제 환경 변수는 입력하지 않는다.
 
-## Usage
+## Development
+
+### Local Workflow
 
 총괄의 공통 계약 통합 후 해당 증거를 Task에 연결합니다.
 
-## Related Documents
+### Checks
+
+저장소 루트에서 활성화한 격리 venv에 `python -m pip install -r scripts/requirements.txt`를 실행한 뒤 `python -m unittest tests.lib.ops.test_wiki_preparation tests.validation.test_wiki_preparation_contracts -v`를 실행합니다. 시스템의 오래된 jsonschema는 검증 환경이 아닙니다. 단위검사는 native 실행 증거가 아닙니다.
+
+## Operations
+
+### Runbook Links
 
 [project registration 계약](../README.md), [문서 진입점](../../../../../docs/README.md), 현재 Task ID는 `SPEC-0204-TSK-0008`입니다.
+
+### Observability and Recovery
+
+없음: 실행되는 서비스가 아니므로 헬스체크·지표·로그가 없고, 이 패키지를 대상으로 하는 운영 런북도 `docs/05.operations/runbooks`에 없다. 계약 문서가 어긋나면 위 Checks의 단위 검사 실패로 드러나며, 복구는 Git 이력에서 해당 문서 변경을 되돌리는 것이다.

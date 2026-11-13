@@ -1,15 +1,17 @@
 ---
 title: "제품 intake와 제외 범위"
-version: "0.1.2"
+version: "0.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-11-13"
 ---
 
 # 제품 intake와 제외 범위
 
-## Overview
+## Purpose
+
+### Service Role
 
 원천 문서의 출처·권한·최신성을 따라 추후 탐색하고 Literature 후보를 사람이 선택하여 인계하는 제품 준비입니다. 사용자는 권한이 있는 원천을 선택하고 동기화 상태·인용 근거·후보를 확인합니다. 지연 또는 실패 시 최신성 상태를 숨기지 않습니다.
 
@@ -21,34 +23,48 @@ MVP 단계는 (1) P09의 offline 계약·합성 fixture·future acceptance 준�
 
 미결정은 shared brief 본문, license와 verified main release, budget/on-call/resource owner입니다. 위험은 stale ACL 또는 index와 PG/object/Qdrant의 비원자성이므로, 미래 Task는 revoke/delete frontier와 recovery acceptance를 별도 증명해야 합니다. 학습 앱은 어느 MVP 단계에도 포함하지 않습니다.
 
-## Audience
+#### Audience
 
 인프라 담당자, 미래 consumer 작성자와 독립 검토자입니다.
 
-## Scope
+#### Scope
 
 준비 문서·기계 schema·합성 검증에 한정합니다.
 
-## Structure
+#### Structure
 
 [준비 패키지](../README.md)
 
-## Tech Stack
+### Supported Environment
 
 기존 Python·jsonschema와 오프라인 JSON 문서를 사용합니다.
 
-## Configuration
+## Interfaces
+
+### Inputs and Outputs
 
 비밀값과 실제 환경 변수는 입력하지 않습니다.
 
-## Validation
+### Security Boundary
 
-저장소 루트에서 활성화한 격리 venv에 `python -m pip install -r scripts/requirements.txt`를 실행한 뒤 `python -m unittest tests.lib.ops.test_wiki_preparation tests.validation.test_wiki_preparation_contracts -v`를 실행합니다. 시스템의 오래된 jsonschema는 검증 환경이 아닙니다. 단위검사는 native 실행 증거가 아닙니다.
+없음: 이 디렉터리는 Markdown 문서와 합성 JSON만 두며 Compose 서비스·포트·네트워크·Docker Secret·접근 제어를 정의하지 않는다. 비밀값과 실제 환경 변수는 입력하지 않는다.
 
-## Usage
+## Development
+
+### Local Workflow
 
 총괄의 공통 계약 통합 후 해당 증거를 Task에 연결합니다.
 
-## Related Documents
+### Checks
+
+저장소 루트에서 활성화한 격리 venv에 `python -m pip install -r scripts/requirements.txt`를 실행한 뒤 `python -m unittest tests.lib.ops.test_wiki_preparation tests.validation.test_wiki_preparation_contracts -v`를 실행합니다. 시스템의 오래된 jsonschema는 검증 환경이 아닙니다. 단위검사는 native 실행 증거가 아닙니다.
+
+## Operations
+
+### Runbook Links
 
 문서 체계는 저장소 docs README 진입점을 통해 확인합니다.
+
+### Observability and Recovery
+
+없음: 실행되는 서비스가 아니므로 헬스체크·지표·로그가 없고, 이 패키지를 대상으로 하는 운영 런북도 `docs/05.operations/runbooks`에 없다. 계약 문서가 어긋나면 위 Checks의 단위 검사 실패로 드러나며, 복구는 Git 이력에서 해당 문서 변경을 되돌리는 것이다.

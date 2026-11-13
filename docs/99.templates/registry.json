@@ -2706,55 +2706,35 @@
         "generated_by"
       ],
       "required_sections": [
-        "Overview",
-        "Scope",
-        "Structure",
-        "Usage",
-        "Related Documents"
+        "Purpose",
+        "Interfaces",
+        "Development",
+        "Operations"
       ],
-      "optional_sections": [
-        "Audience",
-        "Getting Started",
-        "Local Constraints",
-        "Documents",
-        "Verification",
-        "Architecture",
-        "Available Scripts",
-        "Change Impact",
-        "Configuration",
-        "Configuration (Environment Variables)",
-        "Files",
-        "Governance",
-        "Healthcheck Strategy",
-        "Image Tag Review",
-        "Implementation Details",
-        "Integration",
-        "Management Guide",
-        "Networking (Ports)",
-        "Operational Governance",
-        "Operational Status",
-        "Operations",
-        "Overview (KR/EN)",
-        "Runtime Surface",
-        "Service Boundary",
-        "Service Configuration",
-        "Service Matrix",
-        "Service Readiness",
-        "Service Type",
-        "Services",
-        "System Components",
-        "Tech Stack",
-        "Testing",
-        "Traceability (Golden 5)",
-        "Troubleshooting",
-        "Usage Instructions",
-        "Validation"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": [],
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Purpose": [
+          "Service Role",
+          "Supported Environment"
+        ],
+        "Interfaces": [
+          "Inputs and Outputs",
+          "Security Boundary"
+        ],
+        "Development": [
+          "Local Workflow",
+          "Checks"
+        ],
+        "Operations": [
+          "Runbook Links",
+          "Observability and Recovery"
+        ]
+      }
     },
     {
       "id": "runtime-governance-readme",
@@ -4178,11 +4158,15 @@
       "validation": {
         "positive": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
-          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar"
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract"
         ],
         "negative": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
-          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -4194,7 +4178,7 @@
         ]
       },
       "migration": {
-        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit 44801eb20 (profile, template and service READMEs, #986) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-package.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-package.template.md; load_registry and test_template_definition re-check the reverted Registry."
       }

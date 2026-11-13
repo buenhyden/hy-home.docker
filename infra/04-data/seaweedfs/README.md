@@ -1,25 +1,29 @@
 ---
 title: "SeaweedFS"
-version: "1.3.4"
+version: "1.3.5"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 created: "2025-12-06"
 ---
 
 # SeaweedFS
 
-## Overview
+## Purpose
+
+### Service Role
+
+#### Overview
 
 이 패키지는 HOME S3 오브젝트 스토어인 SeaweedFS를 정의합니다. SPEC-0180 S07에서
 MinIO를 대체했습니다.
 
-## Audience
+#### Audience
 
 오브젝트 저장소의 operator와 maintainer를 대상으로 합니다.
 
-## Scope
+#### Scope
 
 [`docker-compose.yml`](docker-compose.yml)이 `seaweedfs-master`,
 `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`를 정의합니다. `seaweedfs`,
@@ -30,7 +34,7 @@ MinIO를 대체했습니다.
 S3가 유일한 인터페이스입니다. FUSE mount는 S04에서 제거되었고 master와
 filer에는 route가 없습니다.
 
-## Structure
+#### Structure
 
 | Path | Role |
 | --- | --- |
@@ -46,7 +50,25 @@ S3는 client용 `object_net`과 route용 `edge_net`에도 참여합니다. S3 �
 Prometheus·Alloy만 함께 붙는 `seaweedfs_s3_metrics_net`에서 scrape하며, 이 망은 master·volume·filer API에
 닿지 않습니다(SPEC-0266). 메트릭 listener는 `-metricsIp`로 이 망의 `10.250.41.2`에만 bind합니다(SPEC-0267).
 
-## Usage
+### Supported Environment
+
+런타임은 `infra/04-data/seaweedfs/docker-compose.yml`의 `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` 서비스로 정의되며, 이미지와 태그는 해당 Compose 선언이 소유한다. 활성화 프로파일은 `data-science`, `lakehouse`, `logs`, `mlops`, `obs`, `seaweedfs`, `storage`, `storage-seaweedfs`, `tracing`이다.
+
+## Interfaces
+
+### Inputs and Outputs
+
+호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `edge_net`, `object_net`, `seaweed_internal`, `seaweedfs_metrics_net`, `seaweedfs_s3_metrics_net`이다. (출처: `infra/04-data/seaweedfs/docker-compose.yml`의 `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` 서비스)
+
+### Security Boundary
+
+Compose가 참조하는 secret은 `seaweedfs_jwt_filer_key`, `seaweedfs_jwt_volume_key`, `seaweedfs_s3_admin_secret_key`, `seaweedfs_s3_lakehouse_secret_key`, `seaweedfs_s3_loki_secret_key`, `seaweedfs_s3_mlflow_secret_key`, `seaweedfs_s3_opsflow_worker_secret_key`, `seaweedfs_s3_tempo_secret_key`, `seaweedfs_s3_terrakube_secret_key`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/04-data/seaweedfs/docker-compose.yml`의 `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` 서비스)
+
+## Development
+
+### Local Workflow
+
+#### Usage
 
 ```bash
 docker compose --env-file .env.example --profile seaweedfs config --quiet
@@ -54,13 +76,27 @@ HYHOME_SEAWEEDFS_REHEARSAL=1 python3 -m unittest \
   tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests
 ```
 
-최초 활성화, 백업, 복구는 RUN-0024를 따릅니다. 일일 백업은 filer metadata와
-volume/master 트리를 순서 있는 한 세트로 담습니다(RUN-0021).
+### Checks
 
-## Related Documents
+루트에서 `HYHOME_COMPOSE_PROFILES`를 지정해 `scripts/validation/validate-docker-compose.sh`로 구성을 검증한다. 개별 leaf Compose는 루트 network와 secret 선언에 의존하므로 leaf 단독으로 검증하지 않는다(`infra/README.md` 참조).
+
+## Operations
+
+### Runbook Links
+
+이 서비스의 런북은 다음과 같다.
+
+- RUN-0024: `docs/05.operations/runbooks/05-databases-and-storage/0024-seaweedfs.md`
+
+#### Related Documents
 
 [문서 진입점](../../../docs/README.md)에서 Stage 05 subject
 `docs/05.operations/guides/05-databases-and-storage/0024-seaweedfs.md`와 POL-0021을 찾으십시오. 공식 소스:
 [data backup](https://github.com/seaweedfs/seaweedfs/wiki/Data-Backup),
 [security](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration),
 [license](https://github.com/seaweedfs/seaweedfs/blob/master/LICENSE).
+
+### Observability and Recovery
+
+최초 활성화, 백업, 복구는 RUN-0024를 따릅니다. 일일 백업은 filer metadata와
+volume/master 트리를 순서 있는 한 세트로 담습니다(RUN-0021).

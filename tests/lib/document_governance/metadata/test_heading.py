@@ -56,6 +56,7 @@ class CurrentBodyContractTests(unittest.TestCase):
             "governance-knowledge-index": "Stage Responsibility|Contents|Workflow|Related Documents",
             "governance-prompt-index": "Stage Responsibility|Contents|Workflow|Related Documents",
             "governance-provider-index": "Stage Responsibility|Contents|Workflow|Related Documents",
+            "package-readme": "Purpose|Interfaces|Development|Operations",
             "incident": "Summary|Impact|Timeline|Resolution|Evidence",
             "postmortem": "Summary|Root Cause|Impact|Corrective Actions|Evidence",
             "governance-policy": "Purpose|Scope|Rules|Exceptions|Ownership",
@@ -334,7 +335,15 @@ class RegisteredSectionContractTests(unittest.TestCase):
         """Map each enforced profile to one tracked document that carries it."""
 
         tracked = subprocess.run(
-            ["git", "ls-files", "docs", ".agents", "README.md", ".claude/README.md"],
+            [
+                "git",
+                "ls-files",
+                "docs",
+                ".agents",
+                "infra",
+                "README.md",
+                ".claude/README.md",
+            ],
             capture_output=True,
             text=True,
             check=True,
@@ -500,6 +509,15 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Structure", "body-heading-forbidden"),
                 ("## Usage", "body-heading-forbidden"),
                 ("### Audience", "body-subheading-forbidden"),
+            ),
+            "package-readme": (
+                ("## Overview", "body-heading-forbidden"),
+                ("## Scope", "body-heading-forbidden"),
+                ("## Structure", "body-heading-forbidden"),
+                ("## Usage", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+                ("### Configuration", "body-subheading-forbidden"),
+                ("### Validation", "body-subheading-forbidden"),
             ),
             "adr": (
                 ("## Decision Drivers", "body-heading-forbidden"),

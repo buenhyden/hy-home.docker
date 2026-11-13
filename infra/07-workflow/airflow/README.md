@@ -1,10 +1,10 @@
 ---
 title: "Airflow (07-workflow)"
-version: "1.3.0"
+version: "1.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 created: "2025-11-12"
 ---
 
@@ -12,7 +12,11 @@ created: "2025-11-12"
 
 > Apache Airflow + CeleryExecutor + 네이티브 Keycloak Auth Manager입니다.
 
-## Overview
+## Purpose
+
+### Service Role
+
+#### Overview
 
 Airflow는 `hy-home.docker`의 code-first 워크플로우 오케스트레이션 엔진입니다.
 Compose 파일 하나에서 핵심 서비스와 선택적인 전용 Valkey를 구성합니다.
@@ -20,14 +24,14 @@ Compose 파일 하나에서 핵심 서비스와 선택적인 전용 Valkey를 �
 UI/API 인증은 OAuth2 Proxy ForwardAuth가 아니라
 `KeycloakAuthManager`를 통해 Keycloak에 직접 연결합니다.
 
-## Audience
+#### Audience
 
 - Data Engineers
 - SREs
 
-## Scope
+#### Scope
 
-### In Scope
+##### In Scope
 
 - apiserver
 - scheduler
@@ -38,12 +42,12 @@ UI/API 인증은 OAuth2 Proxy ForwardAuth가 아니라
 - StatsD
 - DB/broker/auth wiring
 
-### Out of Scope
+##### Out of Scope
 
 - 개별 DAG 비즈니스 로직
 - 외부 소스 인프라
 
-## Structure
+#### Structure
 
 ```text
 airflow/
@@ -56,7 +60,7 @@ airflow/
 
 개별 배치 소스는 [workloads/](workloads/README.md)에서 탐색합니다.
 
-## Current Implementation Notes
+#### Current Implementation Notes
 
 - base: [Dockerfile declaration](Dockerfile)
 - image: [declared runtime image](../../tech-stack.versions.json)
@@ -76,7 +80,7 @@ airflow/
   `traefik.http.routers.airflow.middlewares: gateway-standard-chain@file`
 - OAuth2 Proxy ForwardAuth: **Airflow에는 적용되지 않음**
 
-### Token Boundary
+##### Token Boundary
 
 Keycloak token:
 
@@ -90,7 +94,95 @@ Airflow internal JWT:
 
 두 토큰은 별개입니다.
 
-## Service Readiness
+### Supported Environment
+
+#### Tech Stack
+
+| Category | Technology | Version |
+| --- | --- | --- |
+| Airflow | Apache Airflow | declared version |
+| Keycloak Provider | apache-airflow-providers-keycloak | declared version |
+| Executor | CeleryExecutor | 분산 실행 |
+| Broker | Valkey | 공유/전용 |
+| DB | PostgreSQL | 관리용 DB |
+
+## Interfaces
+
+### Inputs and Outputs
+
+호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `airflow_net`, `dev_data_net`, `edge_net`, `flower_ingress_net`, `mng_data_net`, `object_net`, `obs_net`이다. (출처: `infra/07-workflow/airflow/docker-compose.yml`의 `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `flower`, `airflow-statsd-exporter` 서비스)
+
+### Security Boundary
+
+#### Keycloak Bootstrap
+
+Required realm roles:
+
+```text
+Viewer
+User
+Op
+Admin
+SuperAdmin
+```
+
+```bash
+docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-all     --username keycloak_admin     --user-realm master     --password
+```
+
+기존 non-team 구성에서 provider 0.9.0으로 업그레이드한 이후: <!-- runtime-version-exception: migration — permission migration is required when crossing this provider boundary -->
+
+```bash
+docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-permissions     --username keycloak_admin     --user-realm master     --password
+```
+
+## Development
+
+### Local Workflow
+
+#### Usage
+
+1. Airflow guide/policy/runbook 확인.
+2. DAG lifecycle guide 확인.
+3. auth route는 gateway-only 유지.
+4. secret 원문을 로그/문서에 기록하지 않는다.
+5. provider upgrade 시 Keycloak permission migration 검토.
+6. failure는 endpoint matrix로 authentication vs authorization을 구분.
+
+#### Available Scripts
+
+```bash
+HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh
+bash scripts/hardening/check-all-hardening.sh 07-workflow
+docker compose exec airflow-apiserver airflow db check
+docker compose exec airflow-apiserver airflow dags list
+```
+
+### Checks
+
+루트에서 `HYHOME_COMPOSE_PROFILES`를 지정해 `scripts/validation/validate-docker-compose.sh`로 구성을 검증한다. 개별 leaf Compose는 루트 network와 secret 선언에 의존하므로 leaf 단독으로 검증하지 않는다(`infra/README.md` 참조).
+
+## Operations
+
+### Runbook Links
+
+이 서비스의 런북은 다음과 같다.
+
+- RUN-0050: `docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md`
+
+#### Related Documents
+
+- [Architecture 탐색](../../../docs/02.architecture/descriptions/README.md)
+- [Guide 탐색](../../../docs/05.operations/guides/08-workflows-and-automation/README.md)
+- [Policy 탐색](../../../docs/05.operations/policies/08-workflows-and-automation/README.md)
+- [Runbook 탐색](../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md)
+- [Incident 탐색](../../../docs/05.operations/incidents/2026/README.md)
+
+런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
+
+### Observability and Recovery
+
+#### Service Readiness
 
 | Field | Evidence |
 | --- | --- |
@@ -107,7 +199,7 @@ Airflow internal JWT:
 사용해 비밀번호를 프로세스 argv에 포함하지 않습니다. monitor ACL overlay는
 동일 시작 wrapper에 최소 관측 계정만 추가합니다.
 
-### SEC01 업데이트 검증 경계
+##### SEC01 업데이트 검증 경계
 
 2026-10-10 공식 [Airflow release](https://github.com/apache/airflow/releases/tag/3.3.2)와 <!-- runtime-version-exception: compatibility — immutable source evidence reference; Compose/Dockerfile owns the deployment pin -->
 [Keycloak provider PyPI](https://pypi.org/project/apache-airflow-providers-keycloak/0.11.0/)를 조회했습니다. <!-- runtime-version-exception: compatibility — immutable source evidence reference; Compose/Dockerfile owns the deployment pin -->
@@ -157,7 +249,7 @@ Dockerfile lint에서 pipeline shell의 명시 선언 누락을 확인해 upstre
 선택하는 위 manifest에서 전체 8건을 새로 실행했습니다. 이전 후보의 시험 결과나 scan을
 새 digest의 증거로 재사용하지 않습니다. 새 digest의 서명·SBOM·scan은 NOT_RUN입니다.
 
-### 독립 게시 워크로드의 native 검증
+##### 독립 게시 워크로드의 native 검증
 
 고정 캐시 이미지의 import·provider 검사는 ISOLATED 증거입니다. 별도 opt-in Celery
 게시·재실행·빈 대상 복원 시험의 첫 전체 실행은 migration 세션의 role 선택 오류로
@@ -178,57 +270,7 @@ FAIL과 별도 exact reconciliation PASS를 유지하며 새 config 수정이 �
 Seaweed 내부 원인은 UNKNOWN이며 게시 수용·복원 성공 증거는 없습니다. Docker 잔여는
 없고 자동 cleanup FAIL은 보호된 진단 보존이며 별도 reconciliation·독립 확인 상태는 Task0020의 최신 증거를 확인합니다.
 
-## Keycloak Bootstrap
-
-Required realm roles:
-
-```text
-Viewer
-User
-Op
-Admin
-SuperAdmin
-```
-
-```bash
-docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-all     --username keycloak_admin     --user-realm master     --password
-```
-
-기존 non-team 구성에서 provider 0.9.0으로 업그레이드한 이후: <!-- runtime-version-exception: migration — permission migration is required when crossing this provider boundary -->
-
-```bash
-docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-permissions     --username keycloak_admin     --user-realm master     --password
-```
-
-## Usage
-
-1. Airflow guide/policy/runbook 확인.
-2. DAG lifecycle guide 확인.
-3. auth route는 gateway-only 유지.
-4. secret 원문을 로그/문서에 기록하지 않는다.
-5. provider upgrade 시 Keycloak permission migration 검토.
-6. failure는 endpoint matrix로 authentication vs authorization을 구분.
-
-## Tech Stack
-
-| Category | Technology | Version |
-| --- | --- | --- |
-| Airflow | Apache Airflow | declared version |
-| Keycloak Provider | apache-airflow-providers-keycloak | declared version |
-| Executor | CeleryExecutor | 분산 실행 |
-| Broker | Valkey | 공유/전용 |
-| DB | PostgreSQL | 관리용 DB |
-
-## Available Scripts
-
-```bash
-HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh
-bash scripts/hardening/check-all-hardening.sh 07-workflow
-docker compose exec airflow-apiserver airflow db check
-docker compose exec airflow-apiserver airflow dags list
-```
-
-## Troubleshooting
+#### Troubleshooting
 
 - config PermissionError -> 공유 볼륨 소유자/런타임 UID 확인
 - DB migration -> 동일 이미지에서 `airflow db migrate` 실행
@@ -238,19 +280,9 @@ docker compose exec airflow-apiserver airflow dags list
 - callback 403 -> `_oauth_state` 확인
 - Pool/DAG/Asset only 403 -> 리소스 authorization 확인
 
-### Convergence contract
+##### Convergence contract
 
 - Airflow core/StatsD 서비스는 `workflow`/`workflow-airflow`에서 **HOME**입니다. Flower는 2026-11-10 owner 결정(7일간 요청 0건)으로 opt-in `airflow-flower` profile로 옮겼고 HOME이 시작하지 않습니다. Prometheus job `flower`는 `expected_state: "off"`이며 Flower를 시작하면 `on`으로 바꿉니다. 앱별 전용 Valkey는 ADR-0062 결정 10으로 제거되었습니다.
 - Root preflight: `docker compose --profile workflow config --quiet`. Root start: `docker compose --profile workflow up -d airflow-apiserver airflow-scheduler airflow-dag-processor airflow-worker airflow-triggerer airflow-statsd-exporter`.
 - Broker는 `AIRFLOW_VALKEY_HOST`/`AIRFLOW_VALKEY_SECRET`의 기본값(`mng-valkey`, `mng_valkey_password`)뿐이며 `connection_uri.py`가 다른 조합을 거부합니다.
-- 운영 문서는 아래 탐색점의 `GDE-0050`, `POL-0050`, `RUN-0050`을 사용합니다. HOME 격리 복구는 미실행입니다.
-
-## Related Documents
-
-- [Architecture 탐색](../../../docs/02.architecture/descriptions/README.md)
-- [Guide 탐색](../../../docs/05.operations/guides/08-workflows-and-automation/README.md)
-- [Policy 탐색](../../../docs/05.operations/policies/08-workflows-and-automation/README.md)
-- [Runbook 탐색](../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md)
-- [Incident 탐색](../../../docs/05.operations/incidents/2026/README.md)
-
-런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
+- 운영 문서는 Runbook Links의 탐색점의 `GDE-0050`, `POL-0050`, `RUN-0050`을 사용합니다. HOME 격리 복구는 미실행입니다.
