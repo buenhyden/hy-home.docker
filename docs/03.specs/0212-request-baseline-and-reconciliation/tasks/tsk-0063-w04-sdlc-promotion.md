@@ -1,10 +1,10 @@
 ---
 title: "v14.7 W04 SDLC and Promotion Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0063"
 parent_ids:
@@ -168,6 +168,7 @@ operations document names is this repository's extension, decided here.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0063 | draft | ready | #w04-run-2026-11-13 |
 | SPEC-0212-TSK-0063 | ready | in-progress | #w04-run-2026-11-13 |
+| SPEC-0212-TSK-0063 | in-progress | completed | #review-and-completion |
 
 ### Blockers and Decisions
 
@@ -233,12 +234,19 @@ Binding RED is resolved by Binding GREEN, Binding review by Binding re-review, P
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 116 | pending | Binding GREEN, Binding re-review, Stage 03 checks, Pre-commit, Reader regression | Awaiting the owner's decision | SPEC-0212 TSK-0063 |
+| 116 | accepted | Binding GREEN, Binding re-review, Policy final review, Final checks, Relation GREEN, Relation re-review, Integrated checks | Owner @buenhyden accepted on 2026-11-14 in this chat, after #993 and #994 merged; validator enforcement and the other handoffs stay with H-W04-1 to H-W04-9 | SPEC-0212 TSK-0063 |
 
 ### Remaining Conditions
 
-Owner acceptance of criterion 116; push, pull request and merge on the
-owner's approval.
+None for this Task. The owners named in H-W04-1 to H-W04-9 hold the
+remaining work: W05 the validator items, W01 the glossary items, W02 the
+removal review, W11 the Stage 02 currency trace. Q-07 runs only after W11.
+
+#### Review and Completion
+
+Completed on 2026-11-14. Every required failing row is resolved by a later
+passing row, criterion 116 has PASS evidence for W121, and the owner accepted
+it, so the Task closes as `completed`.
 
 ## Handoff
 
@@ -250,7 +258,7 @@ owner's approval.
 | 116 | W121 | Policy final review, Final checks | `.agents/governance/sdlc.md`, `documentation-protocol.md`, `github-governance.md`, `.agents/knowledge/glossary.md` (commit `abfafba15`, merged as `9676865ba`) | Stage 03 README, Task and Plan templates, PR template; Final checks row |
 | 116 | W121 | Relation GREEN, Relation re-review | `docs/99.templates/registry.json` `common.document_relations`, schema, `registry.py`, `documentation-protocol.md` (commits `d11a99f62`, `f99e5334b`, `f4a51d217`, merged as `fcd0d657b`) | `test_relations`; Integrated checks row |
 
-Acceptance row: criterion 116, still `pending`. Residuals: H-W04-1 to H-W04-8.
+Acceptance row: criterion 116, `accepted`. Residuals: H-W04-1 to H-W04-8.
 
 ### Next Owner
 
