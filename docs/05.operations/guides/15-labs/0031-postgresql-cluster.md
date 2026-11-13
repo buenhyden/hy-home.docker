@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Cluster Usage Guide"
-version: "2.1.5"
+version: "2.1.6"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0031"
 parent_ids:
@@ -14,21 +14,40 @@ created: "2026-05-10"
 
 # PostgreSQL Cluster Usage Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 이 문서는 [PostgreSQL cluster Compose 구현](../../../../labs/postgresql-ha/docker-compose.yml)의 etcd/Patroni/HAProxy stack을 설명한다. 열한 서비스는 모두 exact `postgres-ha` profile에서 동작한다. frozen classification은 `LAB`이고 모든 members가 한 Docker host에 있으므로 host-level HA나 off-host disaster recovery를 제공하지 않는다.
-
-## Scope
-
-### Audience and Goal
 
 대상 독자: 운영자, 개발자, AI Agent.
 
 목적: 관계형 데이터베이스 연결과 일반 점검을 현재 compose의 service name, host port, secret mount, init job, exporter 경계와 맞춰 수행하도록 한다.
 
-## Concepts
+### Boundaries
 
-### Current implementation
+#### Traceability
+
+- Declared parent: [PostgreSQL Cluster Operations Policy](../../policies/15-labs/0031-postgresql-cluster.md) (`POL-0031`)
+- Governing authority: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- Subject peers: [Policy](../../policies/15-labs/0031-postgresql-cluster.md) (`POL-0031`), [Runbook](../../runbooks/15-labs/0031-postgresql-cluster.md) (`RUN-0031`)
+
+#### Related Documents
+
+- [PostgreSQL pg_dumpall reference](https://www.postgresql.org/docs/18/app-pg-dumpall.html)
+- [PostgreSQL license](https://www.postgresql.org/about/licence/)
+
+- [Operations index](../../README.md)
+- [Operations policy](../../policies/15-labs/0031-postgresql-cluster.md)
+- [Recovery runbook](../../runbooks/15-labs/0031-postgresql-cluster.md)
+- [LAB 설명](../../../../labs/postgresql-ha/README.md)
+- [Compose implementation: labs/postgresql-ha/docker-compose.yml](../../../../labs/postgresql-ha/docker-compose.yml)
+
+## Prerequisites
+
+### Environment
+
+#### Current implementation
 
 | 항목 | 이 저장소의 구현 결정 |
 | --- | --- |
@@ -43,9 +62,15 @@ created: "2026-05-10"
 | Backup·upgrade | globals와 database별 logical dump를 보존한다. upgrade/제거 전에 새 DCS/cluster에 복구한다(HA globals/ACL/router 복원은 미구현). |
 | License·edition | PostgreSQL에는 PostgreSQL License가 적용된다. Spilo, Patroni, etcd, HAProxy와 exporter는 각각 별도 license가 적용되는 의존성이다. |
 
-## Usage
+### Permissions
 
-### Identity-specific behavior
+secret은 `/run/secrets/lab_pg_*`(예: `lab_pg_exporter_password`)에서 container 내부로만 읽고 문서나 로그에 남기지 않는다. DCS destructive recovery와 leadership mutation은 승인된 runbook/escalation 영역이다.
+
+## Procedure
+
+### Actions
+
+#### Identity-specific behavior
 
 etcd의 3 member는 각각 ID/URL/data가 다르고 Spilo의 3 member는 각각 identity/data가 다르다. helper PostgreSQL image는 server major를 뜻하지 않는다. `pg-router`는 write/read backend 와 stats 를 제공하며 config syntax health 는 실제 routing 을 증명하지 않는다. init 는 roles/grants/database mutation, exporter0/1/2 는 서로 다른 PG target 이다. 실제 HA globals/모든 DB/ACL/extension/router restore 는 미구현이다. 한 host 의 quorum 은 host disaster recovery 가 아니다.
 
@@ -65,7 +90,7 @@ etcd의 3 member는 각각 ID/URL/data가 다르고 Spilo의 3 member는 각각 
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 
-### Preflight and normal use
+#### Preflight and normal use
 
 이 LAB의 입력은 [예시 환경 파일](../../../../labs/.env.example)과 비공개 `labs/.env`가 소유한다. secret 파일은 `LAB_SECRET_DIR`(기본 `../../secrets/labs`) 아래의 [LAB별 경로](../../../../labs/postgresql-ha/docker-compose.yml)에 둔다. source 반영, 실제 실행, 비밀 파일 이동 완료와 복구 검증은 별도로 확인한다.
 
@@ -87,24 +112,20 @@ etcd의 3 member는 각각 ID/URL/data가 다르고 Spilo의 3 member는 각각 
 
 3. Exporter는 `pg-0-exporter`, `pg-1-exporter`, `pg-2-exporter`가 각 node와 `lab_pg_exporter_password` secret을 기준으로 `${POSTGRES_EXPORTER_PORT:-9187}`에 metrics를 expose한다.
 
-### Common Checks
+### Exceptions
+
+이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
+
+## Verification
+
+### Expected Result
 
 - `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/postgresql-ha/docker-compose.yml --profile postgres-ha config --quiet`
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha/docker-compose.yml ps etcd-1 etcd-2 etcd-3 pg-router pg-0 pg-1 pg-2`
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha/docker-compose.yml exec pg-0 patronictl -c /home/postgres/postgres.yml list`
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha/docker-compose.yml logs --tail=120 pg-router pg-cluster-init`
 
-### Runbook Handoff
-
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [PostgreSQL cluster runbook](../../runbooks/15-labs/0031-postgresql-cluster.md)을 따른다.
-
-### Traceability
-
-- Declared parent: [PostgreSQL Cluster Operations Policy](../../policies/15-labs/0031-postgresql-cluster.md) (`POL-0031`)
-- Governing authority: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Policy](../../policies/15-labs/0031-postgresql-cluster.md) (`POL-0031`), [Runbook](../../runbooks/15-labs/0031-postgresql-cluster.md) (`RUN-0031`)
-
-## Troubleshooting
+### Troubleshooting
 
 - root의 `core` 또는 전체 profile render에는 `labs/postgresql-ha/docker-compose.yml`이 포함되지 않는다.
 - 직접 PostgreSQL node에 application traffic을 붙이면 failover 라우팅이 보장되지 않는다. 일반 연결 문서는 `pg-router`를 기준으로 한다.
@@ -112,13 +133,6 @@ etcd의 3 member는 각각 ID/URL/data가 다르고 Spilo의 3 member는 각각 
 - DCS destructive recovery, leadership mutation 같은 운영 변경은 guide가 아니라 승인된 runbook/escalation 영역이다.
 - logical recovery set에는 `pg_dumpall --globals-only` 역할/권한과 각 database의 schema/data dump가 모두 필요하다. Patroni/etcd state를 logical data backup처럼 복사하지 않는다.
 
-## Related Documents
+#### Runbook Handoff
 
-- [PostgreSQL pg_dumpall reference](https://www.postgresql.org/docs/18/app-pg-dumpall.html)
-- [PostgreSQL license](https://www.postgresql.org/about/licence/)
-
-- [Operations index](../../README.md)
-- [Operations policy](../../policies/15-labs/0031-postgresql-cluster.md)
-- [Recovery runbook](../../runbooks/15-labs/0031-postgresql-cluster.md)
-- [LAB 설명](../../../../labs/postgresql-ha/README.md)
-- [Compose implementation: labs/postgresql-ha/docker-compose.yml](../../../../labs/postgresql-ha/docker-compose.yml)
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [PostgreSQL cluster runbook](../../runbooks/15-labs/0031-postgresql-cluster.md)을 따른다.

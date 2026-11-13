@@ -1,10 +1,10 @@
 ---
 title: "Terrakube Usage Guide"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0069"
 parent_ids:
@@ -19,21 +19,33 @@ created: "2026-05-10"
 
 # Terrakube Usage Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 Terrakube는 `infra/09-platform-ops/terrakube/`의 `terrakube-api`, `terrakube-ui`, `terrakube-executor`로 구성한
 온디맨드 DEV IaC 자동화·제어 플레인이다. 세 service는 `iac` profile에서만 선택된다.
 
-## Scope
-
-### Audience and Goal
-
 대상 독자는 IaC 실행을 승인하고 운영하는 담당자다. 목표는 구성 요소 간 흐름, 현재 인증 경로의 제한,
 일반 사용 순서를 확인하는 것이다. 장애 진단과 백업·복원은 [Terrakube Runbook](../../runbooks/10-platform-and-backup/0069-terrakube.md)이 맡는다.
 
-## Concepts
+### Boundaries
 
-### 분류와 토폴로지
+- [Policy](../../policies/10-platform-and-backup/0069-terrakube.md) (`POL-0069`)
+- [Runbook](../../runbooks/10-platform-and-backup/0069-terrakube.md) (`RUN-0069`)
+- [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+
+- [Terrakube architecture](https://docs.terrakube.io/architecture)
+- [Terrakube Amazon-compatible storage](https://docs.terrakube.io/getting-started/deployment/storage-backend/amazon-cloud-storage)
+- [Terrakube project and Apache-2.0 license](https://github.com/terrakube-io/terrakube)
+- [Derived Compose image projection](../../../../infra/tech-stack.versions.json)
+- [Operations index](../../README.md)
+
+## Prerequisites
+
+### Environment
+
+#### 분류와 토폴로지
 
 Terrakube는 온디맨드 DEV IaC 자동화/제어 플레인이다. API, UI, executor는
 `iac`에만 속한다. 광범위한 `tooling`과 HOME은 이를 시작하지 않는다. 검토된 협업
@@ -41,9 +53,7 @@ Terrakube는 온디맨드 DEV IaC 자동화/제어 플레인이다. API, UI, exe
 각 컴포넌트를 하나의 복제본으로만 두고 외부 의존성도 단일 호스트로 구성한다.
 고가용성을 제공하거나 주장하지 않는다.
 
-## Usage
-
-### 구현과 데이터 흐름
+#### 구현과 데이터 흐름
 
 - [Terrakube Compose](../../../../infra/09-platform-ops/terrakube/docker-compose.yml)가
   서비스, profile, 이미지, secret, healthcheck, 라우트, executor의 Docker socket
@@ -65,7 +75,24 @@ Terrakube는 온디맨드 DEV IaC 자동화/제어 플레인이다. API, UI, exe
 - health endpoint는 컴포넌트 프로세스 준비 상태만 증명한다. DB, object-state,
   VCS, OIDC, executor의 end-to-end 수용을 증명하지 않는다.
 
-### 일반적인 사용
+#### 컴포넌트별 준비와 자원
+
+UI와 executor는 API의 health를 기다린다. API/executor의 버킷 초기화 의존성은
+선택적이며 PostgreSQL·Valkey readiness를 기다리는 선언은 없다. API/executor는
+`edge_net`, `terrakube_net`, `mng_data_net`, `object_net`, UI는 앞의 두 네트워크에
+연결된다. 각 자원 제한은 Compose·공통 템플릿이 소유한다. executor가 참조하는
+외부 도구의 `main` 및 Terraform release 목록은 특정 workspace 엔진 버전의 증거가
+아니다. 사용한 도구·엔진의 실제 식별자를 승인된 실행 근거에 남겨야 한다.
+
+### Permissions
+
+Secret은 `terrakube_db_password`, `seaweedfs_s3_terrakube_secret_key`, `terrakube_valkey_password`, `terrakube_pat_secret`, `terrakube_internal_secret`이며 값은 증거에 넣지 않는다. 인프라 apply·destroy는 별도의 원격 변경 승인이 필요하다.
+
+## Procedure
+
+### Actions
+
+#### 일반적인 사용
 
 1. organization/workspace, VCS repository/ref, provider credential, 예상
    리소스, state key, 승인 경계를 식별한다.
@@ -78,22 +105,13 @@ Terrakube는 온디맨드 DEV IaC 자동화/제어 플레인이다. API, UI, exe
    받은 뒤에만 서비스 기동·등록·비적용 plan 검증을 런북에 따라 수행한다.
 5. 인프라를 apply하거나 destroy하려면 별도의 원격 변경 승인이 필요하다.
 
-### 상태, 백업, 업그레이드
+#### 상태, 백업, 업그레이드
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0069-terrakube.md)의 `Coordinated backup and isolated restore`와 `Upgrade` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-### Common Checks
+### Exceptions
 
-- `docker compose --profile iac config --quiet`
-- `docker compose --profile iac config --services`
-- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
-
-### Runbook Handoff
-
-실행 실패, 조정된 백업/복원, OIDC 진단, 업그레이드에는
-[runbook](../../runbooks/10-platform-and-backup/0069-terrakube.md)을 사용한다.
-
-### 현재 실행 경로의 제한
+#### 현재 실행 경로의 제한
 
 추적되는 Compose와 README는 cookie 기반 ForwardAuth가 Terraform CLI/API 토큰
 요청 및 공개 API URL을 사용하는 executor 요청을 막는 상태임을 명시한다. 전용
@@ -101,29 +119,19 @@ Terrakube는 온디맨드 DEV IaC 자동화/제어 플레인이다. API, UI, exe
 현재 gateway 통제는 유지하며 로그인·health 성공을 실행 가능 증거로 기록하지 않는다.
 인증 오류를 우회하거나 실제 plan/apply를 재시도하지 말고 `@buenhyden`에게 보고한다.
 
-### 컴포넌트별 준비와 자원
+## Verification
 
-UI와 executor는 API의 health를 기다린다. API/executor의 버킷 초기화 의존성은
-선택적이며 PostgreSQL·Valkey readiness를 기다리는 선언은 없다. API/executor는
-`edge_net`, `terrakube_net`, `mng_data_net`, `object_net`, UI는 앞의 두 네트워크에
-연결된다. 각 자원 제한은 Compose·공통 템플릿이 소유한다. executor가 참조하는
-외부 도구의 `main` 및 Terraform release 목록은 특정 workspace 엔진 버전의 증거가
-아니다. 사용한 도구·엔진의 실제 식별자를 승인된 실행 근거에 남겨야 한다.
+### Expected Result
 
-### Traceability
+- `docker compose --profile iac config --quiet`
+- `docker compose --profile iac config --services`
+- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
 
-- [Policy](../../policies/10-platform-and-backup/0069-terrakube.md) (`POL-0069`)
-- [Runbook](../../runbooks/10-platform-and-backup/0069-terrakube.md) (`RUN-0069`)
-- [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+### Troubleshooting
 
-## Troubleshooting
+위 Expected Result가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0069-terrakube.md)의 절차로 진단한다.
 
-위 Common Checks가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0069-terrakube.md)의 절차로 진단한다.
+#### Runbook Handoff
 
-## Related Documents
-
-- [Terrakube architecture](https://docs.terrakube.io/architecture)
-- [Terrakube Amazon-compatible storage](https://docs.terrakube.io/getting-started/deployment/storage-backend/amazon-cloud-storage)
-- [Terrakube project and Apache-2.0 license](https://github.com/terrakube-io/terrakube)
-- [Derived Compose image projection](../../../../infra/tech-stack.versions.json)
-- [Operations index](../../README.md)
+실행 실패, 조정된 백업/복원, OIDC 진단, 업그레이드에는
+[runbook](../../runbooks/10-platform-and-backup/0069-terrakube.md)을 사용한다.

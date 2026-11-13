@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Usage Guide"
-version: "1.3.3"
+version: "1.3.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0004"
 parent_ids:
@@ -14,19 +14,28 @@ created: "2026-06-04"
 
 # Harness / Agent-first Engineering Usage Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 이 가이드는 `hy-home.docker`에서 하네스 엔지니어링과 Agent-first Engineering 상태를 다시 조사하거나 보완할 때 따라야 할 절차를 설명한다.
-
-## Scope
-
-### Audience and Goal
 
 대상 독자는 AI Agent, 문서 작성자, 인프라 운영자, 저장소 유지보수자다.
 
 목표는 workspace purpose, rules, runtime surface, governance contract, validation gate를 반복 가능한 방식으로 조사하는 것이다. 필요하면 stage 문서와 README를 템플릿에 맞춰 갱신한다. 이 문서는 하네스 구조와 감사 경계를 설명하는 가이드다.
 
-## Concepts
+### Boundaries
+
+- 과거 구현 출처: Harness and Agent-first Engineering Outcome (`SPEC-0094`)
+- 같은 주제: [Policy](../../policies/01-common/0004-harness-agent-first-engineering.md) (`POL-0004`), [Runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md) (`RUN-0004`)
+
+- [Operations index](../../README.md)
+- [Operations policy](../../policies/01-common/0004-harness-agent-first-engineering.md)
+- [Operations runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md)
+
+## Prerequisites
+
+### Environment
 
 시작하기 전에 다음을 확인한다.
 
@@ -51,9 +60,17 @@ HEAD가 다르면 bootstrap의 stale-snapshot 경계가 적용된다. 실행 순
 payload 검증은 [Runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md#procedure)이
 소유하며, syntax 성공만으로 payload parsing이나 native 전달을 증명하지 않는다.
 
-## Usage
+### Permissions
 
-### CI quality-gate version alignment
+이 가이드는 secret이나 credential 파일을 검사하지 않는다. runtime 승인은 증명하지 않으며, live 관측과 파생 배포는 별도 Task·승인 범위에서 다룬다.
+
+## Procedure
+
+### Actions
+
+정상 사용 절차는 아래 항목에 정리한다.
+
+#### CI quality-gate version alignment
 
 hosted quality gate가 local 결과와 어긋나면, 진단을 억제하거나 무관한 Dockerfile을
 변경하기 전에 tracked workflow가 선택한 executable을 먼저 식별한다.
@@ -87,7 +104,7 @@ main revision에 대한 단일 수동 SemVer 생산자가 소유한다. 정확�
 > 기록되어 있다. 이 문서는 실패한 hosted revision을 local 증거, 향후
 > GitHub Actions 통합 제안과 구분한다.
 
-### Evaluation Maintenance
+#### Evaluation Maintenance
 
 자동 답변 점수 evaluator와 과거 사건을 재증명하는 전용 QA는 폐기됐다.
 현재 QA 적용 범위는 quality policy가 소유하며 `.agents/evaluations/README.md`는
@@ -97,21 +114,17 @@ main revision에 대한 단일 수동 SemVer 생산자가 소유한다. 정확�
 날짜가 있는 공식 근거를 사용하며 native 실행이나 모델 품질을 추정하지 않는다.
 구체적인 live 관측과 파생 배포는 별도 Task·승인 범위로 둔다.
 
-### Common Checks
+### Exceptions
+
+이 가이드는 별도 예외 절을 두지 않으며, 한계와 경계는 Environment와 Actions의 해당 본문과 Troubleshooting에 함께 적혀 있다.
+
+## Verification
+
+### Expected Result
 
 - 연결된 Runbook에서 적용 가능한 검증의 실제 결과와 범위, 실패·차단·미실행을 확인한다.
 
-### Runbook Handoff
-
-반복 검증, evidence capture, rollback 또는 escalation 절차는
-[Harness / Agent-first Engineering Runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md)을 따른다.
-
-### Traceability
-
-- 과거 구현 출처: Harness and Agent-first Engineering Outcome (`SPEC-0094`)
-- 같은 주제: [Policy](../../policies/01-common/0004-harness-agent-first-engineering.md) (`POL-0004`), [Runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md) (`RUN-0004`)
-
-## Troubleshooting
+### Troubleshooting
 
 다음 실수를 피한다.
 
@@ -128,8 +141,7 @@ main revision에 대한 단일 수동 SemVer 생산자가 소유한다. 정확�
 - `graphify` CLI를 사용할 수 없는데 graph refresh를 주장하는 것.
 - repository 안내에도 불구하고 `pre-commit`을 수동으로 실행하는 것.
 
-## Related Documents
+#### Runbook Handoff
 
-- [Operations index](../../README.md)
-- [Operations policy](../../policies/01-common/0004-harness-agent-first-engineering.md)
-- [Operations runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md)
+반복 검증, evidence capture, rollback 또는 escalation 절차는
+[Harness / Agent-first Engineering Runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md)을 따른다.

@@ -1,10 +1,10 @@
 ---
 title: "Conftest Usage Guide"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0095"
 parent_ids:
@@ -17,21 +17,35 @@ created: "2026-09-23"
 
 # Conftest Usage Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트다. 실행
 중인 컨테이너가 아니라 인프라 소스에 대해 Open Policy Agent(Rego) 규칙을
 평가하므로, 시작 전에 잘못된 선언을 잡아낸다.
 
-## Scope
-
-### Audience and Goal
-
 인프라 소스에 정책 검사를 실행하는 개발자와 운영자를 위한 문서다. 검사 범위와 규칙을 이해하고 실패 신호를 해석하는 것이 목표다.
 
-## Concepts
+### Boundaries
 
-### Current implementation
+#### Traceability
+
+- [Policy](../../policies/12-testing-and-quality/0095-conftest.md) (`POL-0095`)
+- [Runbook](../../runbooks/12-testing-and-quality/0095-conftest.md) (`RUN-0095`)
+- [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+
+#### Related Documents
+
+- [Conftest package README](../../../../infra/11-quality/conftest/README.md)
+- [Conftest documentation](https://www.conftest.dev/)
+- [Rego policy language](https://www.openpolicyagent.org/docs/latest/policy-language/)
+
+## Prerequisites
+
+### Environment
+
+#### Current implementation
 
 - [Conftest Compose](../../../../infra/11-quality/conftest/docker-compose.yml)는
   고정된 `openpolicyagent/conftest` 이미지를 UID 1000, 읽기 전용 루트,
@@ -45,9 +59,15 @@ Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트�
   기본 `all`은 분리된 실행 범위이며 `deny`는 실패, `warn`은 출력만 한다.
   임시 공개 파생 입력은 읽기 전용이며 종료 시 정리된다.
 
-## Usage
+### Permissions
 
-### Rules
+별도 접근 권한이 필요 없다. 실행 container는 `secrets/`, `.env`, Docker socket을 mount하지 않는다(Environment).
+
+## Procedure
+
+### Actions
+
+#### Rules
 
 | Namespace | Deny | Warn |
 | --- | --- | --- |
@@ -59,7 +79,7 @@ Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트�
 탐지하거나 모든 보간이 안전하다고 증명하지 않는다. `*_FILE`·`*_CMD`의 예외도
 비밀 값 노출 금지 정책을 면제하지 않는다.
 
-### Commands
+#### Commands
 
 | Command | Effect |
 | --- | --- |
@@ -67,18 +87,7 @@ Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트�
 | `bash scripts/validation/check-conftest-policy.sh --mode corpus` | 준비된 Compose·Dockerfile corpus 검사만 실행 |
 | `bash scripts/validation/check-conftest-policy.sh --mode verify` | 정책 단위 테스트만 실행 |
 
-### Common Checks
-
-- CI는 `operations` suite의 `local.template-security-baseline` 아래
-  `leaf.conftest-policy`(`check-conftest-policy.sh --mode corpus`)로 corpus 검사를
-  실행한다. `leaf.conftest-policy-tests`(`--mode verify`)는 local 전용 gate다.
-- `HYHOME_COMPOSE_PROFILES=policy-check bash scripts/validation/validate-docker-compose.sh`
-
-### Runbook Handoff
-
-job이 실패하면 [runbook](../../runbooks/12-testing-and-quality/0095-conftest.md)을 사용한다.
-
-### 검사 범위와 실패 신호
+#### 검사 범위와 실패 신호
 
 wrapper는 root include·base 관계를 상속 profile 검증에만 사용한다. Rego에는
 Git으로 추적하는 공개 Compose·LAB·Dockerfile 입력이 전달된다. 부분 overlay는
@@ -91,19 +100,24 @@ wrapper 필요 오류로 종료하고 raw fallback은 없다. 직접 job `verify
 앞 단계가 실패하면 뒤 단계는 실행되지 않으므로 세 요약을 항상 기대하지 않는다.
 네트워크 없음·읽기 전용·사용자 제한을 갖춘 선언된 Compose 작업만 사용한다.
 
-### Traceability
+### Exceptions
 
-- [Policy](../../policies/12-testing-and-quality/0095-conftest.md) (`POL-0095`)
-- [Runbook](../../runbooks/12-testing-and-quality/0095-conftest.md) (`RUN-0095`)
-- [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
 
-## Troubleshooting
+## Verification
+
+### Expected Result
+
+- CI는 `operations` suite의 `local.template-security-baseline` 아래
+  `leaf.conftest-policy`(`check-conftest-policy.sh --mode corpus`)로 corpus 검사를
+  실행한다. `leaf.conftest-policy-tests`(`--mode verify`)는 local 전용 gate다.
+- `HYHOME_COMPOSE_PROFILES=policy-check bash scripts/validation/validate-docker-compose.sh`
+
+### Troubleshooting
 
 실패 단계(`verify`, Compose corpus, Dockerfile corpus)와 첫 `FAIL` 줄로 원인을 나누고
 수정 절차는 [runbook](../../runbooks/12-testing-and-quality/0095-conftest.md)을 따른다.
 
-## Related Documents
+#### Runbook Handoff
 
-- [Conftest package README](../../../../infra/11-quality/conftest/README.md)
-- [Conftest documentation](https://www.conftest.dev/)
-- [Rego policy language](https://www.openpolicyagent.org/docs/latest/policy-language/)
+job이 실패하면 [runbook](../../runbooks/12-testing-and-quality/0095-conftest.md)을 사용한다.

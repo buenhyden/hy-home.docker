@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Usage Guide"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0063"
 parent_ids:
@@ -14,15 +14,13 @@ created: "2026-05-17"
 
 # Platform Operations and Quality Optimization Hardening Usage Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 이 가이드는 `09-platform-ops`와 `11-quality`의 최적화·하드닝 변경을 재현 가능하게 적용하는 기준이다.
 공개 경계 보안, 네트워크 경계 표준화, 테스트 도구 안정성 계약, 검증 절차를 다룬다.
 `system-guide | how-to` 유형이다.
-
-## Scope
-
-### Audience and Goal
 
 대상 독자는 SRE/Platform Operator, DevOps Engineer, Platform Product Owner다.
 목표는 다음과 같다.
@@ -33,36 +31,7 @@ created: "2026-05-17"
 - 하드닝 회귀를 script와 CI로 일찍 막는다.
 - 카탈로그 확장 항목을 실행 가능한 로드맵으로 반영한다.
 
-## Concepts
-
-### 사전 조건
-
-- Docker와 Docker Compose 실행 환경
-- `infra/09-platform-ops`와 `infra/11-quality`의 수정 권한
-- Traefik middleware(`gateway-standard-chain`, `sso-errors`, `sso-auth`) 준비
-
-실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md)의 `Steps` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
-
-## Usage
-
-### 흔한 실수
-
-- 공개 라우터에 SSO 체인을 빠뜨린다.
-- service-local compose의 단독 config 실패를 root compose context와 구분하지 못한다.
-- 독립 LAB Locust worker의 health 상태를 root profile 검사로 오해한다.
-- k6 leaf에 없는 worker나 Traefik route를 문서에 적는다.
-
-### Common Checks
-
-- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
-- `bash scripts/validation/check-template-security-baseline.sh`
-- `python3 scripts/validation/check-document-links.py --mode traceability`
-
-### Runbook Handoff
-
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md)을 따른다.
-
-### Traceability
+### Boundaries
 
 - 상위 문서: [Platform Operations and Quality Optimization Hardening Operations Policy](../../policies/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`POL-0063`)
 - 설계 근거: [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
@@ -70,14 +39,55 @@ created: "2026-05-17"
 
 현재 IaC helper는 OpenTofu다. 기존 Terraform workspace는 [Terraform 이관](0082-opentofu.md#terraform-이관)을 따른다. Syncthing runtime은 제거되었으며 현재 하드닝 기동 대상에 포함하지 않는다.
 
-## Troubleshooting
-
-위 Common Checks가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md)의 절차로 진단한다.
-
-## Related Documents
-
 - 실행 버전의 원본은 Compose/Dockerfile 선언이며, [파생 버전 목록](../../../../infra/tech-stack.versions.json)은 변경 누락 검증에 사용한다.
 
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/10-platform-and-backup/0063-tooling-optimization-hardening.md)
+
+## Prerequisites
+
+### Environment
+
+#### 사전 조건
+
+- Docker와 Docker Compose 실행 환경
+- Traefik middleware(`gateway-standard-chain`, `sso-errors`, `sso-auth`) 준비
+
+### Permissions
+
+- `infra/09-platform-ops`와 `infra/11-quality`의 수정 권한
+
+## Procedure
+
+### Actions
+
+실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md)의 `Steps` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
+
+### Exceptions
+
+SonarQube는 SPEC-0262로 독립 LAB이 되어 gateway route 없이 loopback port만 게시하고, Syncthing runtime은 제거되어 현재 하드닝 기동 대상에 포함하지 않는다. 자세한 내용은 Outcome과 Boundaries에 있다.
+
+## Verification
+
+### Expected Result
+
+- `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `python3 scripts/validation/check-document-links.py --mode traceability`
+
+### Troubleshooting
+
+위 Expected Result가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md)의 절차로 진단한다.
+
+#### Runbook Handoff
+
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md)을 따른다.
+
 - [Recovery runbook](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md)
+
+#### 흔한 실수
+
+- 공개 라우터에 SSO 체인을 빠뜨린다.
+- service-local compose의 단독 config 실패를 root compose context와 구분하지 못한다.
+- 독립 LAB Locust worker의 health 상태를 root profile 검사로 오해한다.
+- k6 leaf에 없는 worker나 Traefik route를 문서에 적는다.

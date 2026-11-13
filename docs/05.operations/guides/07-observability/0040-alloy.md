@@ -1,10 +1,10 @@
 ---
 title: "Alloy Usage Guide"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0040"
 parent_ids:
@@ -17,7 +17,9 @@ created: "2026-05-10"
 
 # Alloy Usage Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 Grafana Alloy는 HOME 관측 계층의 telemetry collector다. 서비스 `alloy`는 `obs`, `logs`, `tracing`, `profiling` profile로 선택하며 [Compose](../../../../infra/06-observability/docker-compose.yml)가 구현을 소유한다.
 
@@ -29,10 +31,6 @@ Alloy는 세 가지 신호를 전달한다.
 
 Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정 파일 모두 Alloy 안에 자체 remote-write를 두지 않는다. 같은 series가 `integrations/self`로 한 번 더 들어오기 때문이다(SPEC-0193).
 
-## Scope
-
-### Audience and Goal
-
 대상 독자는 개발자, 운영자, SRE, AI Agent다. 이 가이드로 다음을 빠르게 파악한다.
 
 - Alloy 서비스 경계, Docker discovery, relabel, OTLP 입력 경계.
@@ -41,9 +39,21 @@ Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정
 
 복구, restart, endpoint 장애 대응, 설정 rollback은 [RUN-0040](../../runbooks/07-observability/0040-alloy.md)이 맡는다.
 
-## Concepts
+### Boundaries
 
-### 설정 파일의 역할
+- Declared parent: [Alloy Operations Policy](../../policies/07-observability/0040-alloy.md) (`POL-0040`)
+- Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Policy](../../policies/07-observability/0040-alloy.md) (`POL-0040`), [Runbook](../../runbooks/07-observability/0040-alloy.md) (`RUN-0040`)
+
+- [Runtime image declarations](../../../../infra/06-observability/docker-compose.yml)
+
+## Prerequisites
+
+### Environment
+
+이 가이드가 전제하는 환경과 개념은 아래와 같다.
+
+#### 설정 파일의 역할
 
 `ALLOY_CONFIG_FILE`이 두 파일 중 하나를 `/etc/alloy/config.alloy`로 mount한다. 값이 없으면 Compose 기본값 `config.alloy`를 쓰고, 공개 `.env.example`은 `config.home.alloy`를 선택한다. 두 파일은 합쳐 읽히지 않으므로 각각 따로 검사한다(`alloy fmt <file>`). 비공개 실행 환경의 선택값은 관찰하지 않았다(미검증).
 
@@ -60,16 +70,28 @@ Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정
 
 `config.home.alloy`의 OTLP trace 수신 주석에 따르면 hy-home.k8s의 Istio가 `192.168.0.13:4317`로 보낸다. k3d OTLP 진입은 [POL-0096](../../policies/10-platform-and-backup/0096-k8s-integration.md)이 관장한다.
 
-## Usage
+### Permissions
 
-### 정상 사용
+Docker socket 접근은 민감하며, Hermes 수신기는 `Authorization: Bearer` 인증을 쓴다. `ALLOY_CONFIG_FILE`로 선택하는 설정은 RUN-0040에서 승인한 것만 적용한다.
+
+## Procedure
+
+### Actions
+
+정상 사용과 확인 절차는 아래 항목을 따른다.
+
+#### 정상 사용
 
 - 애플리케이션 instrumentation은 가능한 OTLP endpoint를 쓴다. gRPC는 `alloy:4317`, HTTP는 `alloy:4318`이다. 현재 선언된 내부 송신자는 n8n main과 `n8n-worker`(OTLP/HTTP `alloy:4318`, `obs_net`)다.
 - Hermes agent(host systemd user unit `hermes-gateway.service`, 컨테이너 아님)는 `config.home.alloy`의 인증 수신기로만 보낸다. Hermes 설정 `monitoring.export.otlp`의 endpoint를 `http://127.0.0.1:4320`으로 두고 `Authorization: Bearer` header 값을 `secrets/observability/alloy/hermes_otlp_token.txt`에서 읽게 한다. `monitoring.gateway_health_export`도 같은 endpoint를 쓴다. Metric은 누적(cumulative) temporality로 export해야 하며, 로그는 `{service_name=~"hermes-(agent|gateway)"}`, trace는 `service.name =~ "hermes-(agent|gateway)"`로 Grafana `Applications/hermes-agent`에서 본다. token 파일은 소유자가 만들고 값은 어디에도 쓰지 않는다.
 - Pipeline debugging은 Alloy UI `https://alloy.${DEFAULT_URL}`에서 한다. **Graph View**에서 component 연결과 error state를, **Component Details**에서 target, receiver, exporter 상태를 본다.
 - 설정이나 collector health만으로 전달 성공을 판정하지 않는다. backend에서 실제 수신을 확인한다.
 
-### 구현 경계
+### Exceptions
+
+예외와 제한 사항은 아래 항목에 정리한다.
+
+#### 구현 경계
 
 - **흐름·의존성**: 읽기 전용 Docker socket과 container log를 Loki로, OTLP 입력을 Tempo로 보낸다. `depends_on`의 Prometheus, Loki, Tempo는 `required: false`이므로 일부 구성만 선택해도 시작된다. Docker와 선언된 network는 여전히 전제 조건이다.
 - **네트워크**: `edge_net`, `obs_net`, `quality_otlp_net`에 붙는다. OTLP 4317/4318은 `${HOST_LAN_BIND_IP:-192.168.0.13}`에 publish하고, Hermes 수신기 4320은 host loopback `127.0.0.1:${ALLOY_HERMES_OTLP_HOST_PORT:-4320}`에만 publish한다. Alloy UI는 Traefik 경로(`gateway-standard-chain@file,sso-errors@file,sso-auth@file`)로 노출한다.
@@ -80,7 +102,13 @@ Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정
 - **수명 주기**: config와 component별로 검증된 state를 보존한다. 전송을 drain하거나 문서화된 전송 중 손실을 허용하고, 고정된 version을 하나씩 update한다. component 호환성을 검증한 뒤 log/trace/metric을 확인한다.
 - **공식 문서·license**: 공식 [Alloy 동작 방식](https://grafana.com/docs/alloy/latest/introduction/how-alloy-works/)과 [remote_write/WAL](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.remote_write/) 문서를 따른다. Grafana Alloy에는 Apache-2.0 license가 적용된다.
 
-### Common Checks
+## Verification
+
+### Expected Result
+
+확인 항목과 기대 결과는 아래와 같다.
+
+#### Common Checks
 
 - `docker compose --profile obs ps alloy`
 - `docker logs --tail=100 alloy`
@@ -89,17 +117,7 @@ Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정
 - 품질 metric 수신기: `rg -n 'quality_otlp_token|otelcol.auth.bearer|0.0.0.0:4319|labelkeep' infra/06-observability/alloy/config/config.home.alloy`
 - Hermes 수신기: `rg -n 'hermes_otlp_token|otelcol.receiver.otlp "hermes"|0.0.0.0:4320|ALLOY_HERMES_OTLP_HOST_PORT' infra/06-observability/alloy/config/config.home.alloy infra/06-observability/docker-compose.yml`
 
-### Runbook Handoff
-
-반복 실행 절차, 장애 대응, rollback, escalation은 [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#procedure)를 따른다.
-
-### Traceability
-
-- Declared parent: [Alloy Operations Policy](../../policies/07-observability/0040-alloy.md) (`POL-0040`)
-- Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Policy](../../policies/07-observability/0040-alloy.md) (`POL-0040`), [Runbook](../../runbooks/07-observability/0040-alloy.md) (`RUN-0040`)
-
-## Troubleshooting
+### Troubleshooting
 
 주의할 점은 다음과 같다.
 
@@ -109,9 +127,10 @@ Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정
 - `pyroscope.write` endpoint가 있다고 profile이 자동 수집되지는 않는다. 선언된 pprof 대상(10개 + SeaweedFS 1개)만 수집한다.
 - `ALLOY_CONFIG_FILE` 공개 기본값으로 비공개 runtime 선택을 단정하지 않는다. 지원하는 두 파일을 검토하고 RUN-0040에서 승인한 선택 설정만 적용한다.
 
-## Related Documents
+#### Runbook Handoff
 
-- [Runtime image declarations](../../../../infra/06-observability/docker-compose.yml)
+반복 실행 절차, 장애 대응, rollback, escalation은 [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#procedure)를 따른다.
+
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/07-observability/0040-alloy.md)
 - [Recovery runbook](../../runbooks/07-observability/0040-alloy.md)

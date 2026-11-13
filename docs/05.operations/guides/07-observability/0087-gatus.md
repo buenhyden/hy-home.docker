@@ -1,10 +1,10 @@
 ---
 title: "Gatus Guide"
-version: "0.4.0"
+version: "0.4.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0087"
 parent_ids:
@@ -17,17 +17,24 @@ created: "2026-09-19"
 
 # Gatus Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 Gatus는 `obs`, `availability`, `dev`가 선택하는 상시 실행 HOME availability monitor이다. native Keycloak OIDC로 보호되는 status UI와 SQLite probe history를 제공한다.
 
-## Scope
-
-### Audience and Goal
-
 대상은 observability와 availability probe를 운영하는 @buenhyden과 기여자다. Gatus의 구성, 인증 경계, 상태 저장 방식을 이해하고, 승인이 필요한 진단·재시작·복구는 Runbook으로 넘기는 것이 목표다.
 
-## Concepts
+### Boundaries
+
+- [Policy](../../policies/07-observability/0087-gatus.md), [Runbook](../../runbooks/07-observability/0087-gatus.md)
+- [Gatus configuration reference](https://github.com/TwiN/gatus#configuration)
+
+- [Observability Compose](../../../../infra/06-observability/docker-compose.yml)
+
+## Prerequisites
+
+### Environment
 
 root Compose가 포함 여부를 관장하며,
 [observability Compose source](../../../../infra/06-observability/docker-compose.yml)가
@@ -46,15 +53,23 @@ SQLite history는 `gatus-data`를 통해 `/data/gatus.db`에 저장된다. probe
 결과는 운영 data이다. 설정과 database는 probe 대상 application이 완전히
 수용되었음을 증명하지 않으며, 선언된 endpoint check만 기록한다.
 
-## Usage
-
-### Selected source and readiness
+#### Selected source and readiness
 
 Linked Dockerfile은 고정 upstream commit archive와 checksum을 확인하고 로컬 OIDC patch를 zero-fuzz로 적용한 뒤 module 일치·API/security test와 binary build를 수행하도록 선언한다. 최종 Alpine stage는 binary와 secret/CA entrypoint를 COPY한다. Compose는 Gatus directory context를 쓰고 args/target은 없으며 config는 runtime bind다. Local tag는 checksum/test나 배포 bytes를 증명하지 않는다. 이 문서 감사에서는 build·runtime 검사를 실행하지 않았다.
 
 Health·bootstrap/auth는 의도적으로 공개되고 status/history API는 native OIDC로 보호한다. Metrics는 내부에 열려 있지만 public router에서 제외된다. Wrapper는 비어 있지 않은 정확한 subject와 읽을 수 있는 secret/CA를 요구하고 CA bundle을 만든 뒤 Gatus를 실행한다. 선택 non-root UID/GID가 secret/data 소유권과 맞아야 한다. Health로 OIDC·probe 전달을 증명하지 않는다. Keycloak·gateway·CA/state·probe 대상마다 readiness를 확인하며 설정 한도는 실측 여유가 아니다.
 
-### Normal operation and lifecycle
+### Permissions
+
+UI와 status/history API는 Keycloak native OIDC로 보호되며 `gatus_oidc_client_secret`을 쓴다. 승인이 필요한 진단·재시작·복구는 RUN-0087로 넘기고, 응답 본문·credential·token은 evidence에 넣지 않는다.
+
+## Procedure
+
+### Actions
+
+정상 사용과 확인 절차는 아래 항목을 따른다.
+
+#### Normal operation and lifecycle
 
 승인된 UI session에서 probe 이름과 상태 결과를 검토한다. 응답 본문,
 credential, token은 evidence에 넣지 않는다. local image를 upgrade하려면
@@ -70,7 +85,7 @@ SQLite backup에는 조율된 quiescence나 engine이 지원하는 consistent sn
 승인을 받는다. 중앙 [backup policy](../../policies/10-platform-and-backup/0021-backup-and-restore.md)가
 공유 retention과 custody control을 관장한다.
 
-### Source-backed operating contract
+#### Source-backed operating contract
 
 - **Purpose/classification/source**: `gatus`는 `obs`/`availability`/`dev`가
   선택하는 `HOME` availability dashboard이다.
@@ -96,27 +111,24 @@ SQLite backup에는 조율된 quiescence나 engine이 지원하는 consistent sn
   [Gatus repository/release](https://github.com/TwiN/gatus)를 따른다. Gatus는
   Apache-2.0 license이며 patch provenance를 보존한다.
 
-### Common Checks
+### Exceptions
+
+health가 login이나 probe coverage를 증명하지 않는 한계와 upgrade 전 source·SQLite custody 검토는 Troubleshooting에 기술되어 있다.
+
+## Verification
+
+### Expected Result
 
 - [Observability Compose](../../../../infra/06-observability/docker-compose.yml)에서
   native OIDC, `/metrics` router 제외, healthcheck를 점검한다.
 - 승인된 upgrade 전에 source와 SQLite custody를 검토한다. health는 login이나
   probe coverage를 증명하지 않는다.
 
-### Runbook Handoff
-
-승인 게이트가 걸린 진단, 재시작, recovery에는
-[Gatus Runbook](../../runbooks/07-observability/0087-gatus.md)을 사용한다.
-
-### Traceability
-
-- [Policy](../../policies/07-observability/0087-gatus.md), [Runbook](../../runbooks/07-observability/0087-gatus.md)
-- [Gatus configuration reference](https://github.com/TwiN/gatus#configuration)
-
-## Troubleshooting
+### Troubleshooting
 
 위 점검 결과가 기대와 다르면 증상별 진단, 재시작과 rollback은 [RUN-0087](../../runbooks/07-observability/0087-gatus.md)으로 넘긴다.
 
-## Related Documents
+#### Runbook Handoff
 
-- [Observability Compose](../../../../infra/06-observability/docker-compose.yml)
+승인 게이트가 걸린 진단, 재시작, recovery에는
+[Gatus Runbook](../../runbooks/07-observability/0087-gatus.md)을 사용한다.

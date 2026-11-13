@@ -1,10 +1,10 @@
 ---
 title: "RAG Workflow Usage Guide"
-version: "1.0.6"
+version: "1.0.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0059"
 created: "2026-03-25"
@@ -12,13 +12,11 @@ created: "2026-03-25"
 
 # RAG Workflow Usage Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 HOME의 RAG는 Qdrant와 n8n이 맡는다. 이 가이드는 독립 LAB Open WebUI 안에서만 적용되는, Ollama 임베딩 모델로 문서를 벡터화하고 검색 컨텍스트를 생성하는 RAG 흐름을 설명한다(ADR-0062 개정 2026-11-10). 구현은 `labs/open-webui/docker-compose.yml`의 `OLLAMA_BASE_URL`, `RAG_EMBEDDING_ENGINE`, `RAG_EMBEDDING_MODEL` 환경변수로 정의된다. `VECTOR_DB`를 설정하지 않으므로 벡터는 Open WebUI 기본 로컬 저장소(`${LAB_DATA_DIR}/open-webui/data`)에 저장되며 Qdrant는 쓰지 않는다(SPEC-0182에서 쓰이지 않던 `VECTOR_DB_URL`을 제거했다).
-
-## Scope
-
-### Audience and Goal
 
 **대상**
 
@@ -33,16 +31,35 @@ HOME의 RAG는 Qdrant와 n8n이 맡는다. 이 가이드는 독립 LAB Open WebU
 - RAG 연결성 점검은 현재 compose env와 선택한 profile 경계에 맞춰 수행한다.
 - 장애 대응과 rollback은 Open WebUI runbook으로 넘긴다.
 
-## Concepts
+### Boundaries
 
-### 사전 조건
+- Governing authority: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
+- Subject peers: `0059` 번호를 공유하는 Policy·Runbook은 없다.
+
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+
+- [Operations index](../../README.md)
+- [Open WebUI usage guide](../15-labs/0057-open-webui.md)
+- [Open WebUI operations policy](../../policies/15-labs/0057-open-webui.md)
+
+## Prerequisites
+
+### Environment
+
+#### 사전 조건
 
 - root `docker-compose.yml`은 이 LAB을 include하지 않는다. `python3 scripts/operations/lab.py`의 lease 안에서 `lab-open-webui` profile로만 기동한다.
 - Compose가 선언한 `RAG_EMBEDDING_MODEL` 모델이 Ollama에 준비되어야 한다.
 
-## Usage
+### Permissions
 
-### 사용 절차
+이 LAB은 `python3 scripts/operations/lab.py`의 lease 안에서만 기동한다. 이 가이드는 별도의 secret 이름이나 승인 항목을 기록하지 않는다.
+
+## Procedure
+
+### Actions
+
+#### 사용 절차
 
 1. Open WebUI compose env가 현재 계약과 일치하는지 확인한다.
    - `OLLAMA_BASE_URL`은 승인된 `LAB_OPEN_WEBUI_OLLAMA_BASE_URL`
@@ -53,35 +70,29 @@ HOME의 RAG는 Qdrant와 n8n이 맡는다. 이 가이드는 독립 LAB Open WebU
 4. 업로드 문서를 지정해 질문하고, 답변에 검색 컨텍스트가 반영되는지 확인한다.
 5. 인덱싱 실패나 연결 실패가 반복되면 Open WebUI runbook으로 handoff한다.
 
-### Local index ownership
+#### Local index ownership
 
 선언 WebUI는 같은 volume의 SQLite·upload와 `DATA_DIR/vector_db` Chroma를 사용한다. Embedding-model 변경에는 재인덱싱이 필요할 수 있으므로 [WebUI Runbook](../../runbooks/15-labs/0057-open-webui.md) 전에 원문·접근권한·모델 출처를 보존한다. 답변 성공만으로 검색 권한을 증명하지 않는다. 허용된 시험 문서의 retrieval/citation과 거부 문서 경계를 비공개 내용 노출 없이 확인한다. 외부 Qdrant 도입은 별도 설계 변경이다.
 
-### Common Checks
+### Exceptions
+
+이 가이드는 Troubleshooting 외에 별도의 예외 사례를 기록하지 않는다.
+
+## Verification
+
+### Expected Result
 
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`
 - `python3 scripts/operations/lab.py check open-webui`
 
-### Runbook Handoff
-
-반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [Open WebUI recovery runbook](../../runbooks/15-labs/0057-open-webui.md)을 따른다.
-
-### Traceability
-
-- Governing authority: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: `0059` 번호를 공유하는 Policy·Runbook은 없다.
-
-## Troubleshooting
+### Troubleshooting
 
 - 선언된 임베딩 모델이 Ollama에 없는데 RAG 인덱싱을 시작하는 경우.
 - 필수 `LAB_OPEN_WEBUI_*` 입력 없이 LAB을 렌더링해 거부를 구현 실패로 오해하는 경우.
 - host localhost로 Open WebUI 내부 endpoint를 직접 조회하는 경우. Open WebUI LAB은 gateway route 없이 `LAB_HOST_BIND_IP`에만 게시하고 container-internal healthcheck를 기준으로 한다.
 
-## Related Documents
+#### Runbook Handoff
 
-- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [Open WebUI recovery runbook](../../runbooks/15-labs/0057-open-webui.md)을 따른다.
 
-- [Operations index](../../README.md)
-- [Open WebUI usage guide](../15-labs/0057-open-webui.md)
-- [Open WebUI operations policy](../../policies/15-labs/0057-open-webui.md)
 - [Open WebUI recovery runbook](../../runbooks/15-labs/0057-open-webui.md)

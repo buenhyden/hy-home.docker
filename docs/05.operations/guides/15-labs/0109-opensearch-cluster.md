@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Cluster LAB Usage Guide"
-version: "0.1.0"
+version: "0.1.1"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0109"
 parent_ids:
@@ -20,22 +20,39 @@ created: "2026-11-05"
 
 # OpenSearch Cluster LAB Usage Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 [`labs/opensearch-cluster/docker-compose.yml`](../../../../labs/opensearch-cluster/docker-compose.yml)은
 독립 Compose project `hy-home-lab-opensearch`의 세 node OpenSearch cluster와 Dashboards LAB이다.
 정상 root는 이 파일을 include하지 않는다. 같은 host의 세 node는 host 고가용성이 아니다.
-
-## Scope
-
-### Audience and Goal
 
 대상 독자: 운영자, 개발자, AI Agent.
 
 목적: OpenSearch LAB의 구성, 인증서·secret·network 경계, 정적 검증과 승격 계획을 현재 Compose와
 맞춰 이해한다. HOME 단일 node는 [GDE-0019](../05-databases-and-storage/0019-opensearch.md)가 다룬다.
 
-## Concepts
+### Boundaries
+
+#### Traceability
+
+- Artifact: `GDE-0109`; governing policy: `POL-0109`.
+- Version projection: [tech-stack versions](../../../../infra/tech-stack.versions.json)는 Compose에서 파생된 drift 증거이며 정확한 pin은 Compose가 소유한다.
+- Runtime authority: `labs/opensearch-cluster/docker-compose.yml`.
+
+#### Related Documents
+
+- [Operations policy](../../policies/15-labs/0109-opensearch-cluster.md)
+- [OpenSearch LAB README](../../../../labs/opensearch-cluster/README.md)
+- [OpenSearch LAB runbook](../../runbooks/15-labs/0109-opensearch-cluster.md)
+- [LAB promotion policy](../../policies/15-labs/0107-lab-promotion.md)
+- [HOME OpenSearch guide](../05-databases-and-storage/0019-opensearch.md)
+- [OpenSearch Docker](https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/)
+
+## Prerequisites
+
+### Environment
 
 `opensearch-cluster` profile이 네 서비스를 선택한다.
 
@@ -62,9 +79,15 @@ created: "2026-11-05"
   [공통 template](../../../../infra/common-optimizations.yml)이 소유한다.
 - host disk가 OpenSearch high watermark(90%)를 넘으면 security index를 배치하지 못한다.
 
-## Usage
+### Permissions
 
-### Operator input
+실제 secret·인증서는 문서에 적지 않으며 합성 경로로만 render한다. LAB secret 사본 LAB-012부터 LAB-015는 승격되지 않았다.
+
+## Procedure
+
+### Actions
+
+#### Operator input
 
 `LAB_OPENSEARCH_CERT_DIR`는 필수이며 값이 없으면 정적 render도 실패한다. 현재 HOME
 입력의 render는 `NOT_RUN`이다. 2026-11-05 controller 보고에 따르면 `labs/.env`에 이 값이 없다(agent는
@@ -73,7 +96,7 @@ created: "2026-11-05"
 LAB README는 SPEC-0215 TSK-0002의 이전 기동 기록을 담고 있으나, 이 가이드는 현재 layout에서 그
 결과를 다시 관찰하지 않았다.
 
-### Static check
+#### Static check
 
 repository root에서 합성 경로로 render한다. 이 경로는 정적 render용이며 실제 secret·인증서가 아니다.
 
@@ -84,7 +107,7 @@ LAB_DATA_DIR=/tmp/synthetic-lab-data LAB_SECRET_DIR=/tmp/synthetic-lab-secrets L
 
 기동과 정지는 [RUN-0109](../../runbooks/15-labs/0109-opensearch-cluster.md)의 `lab.py` 절차만 쓴다.
 
-### Promotion
+#### Promotion
 
 [promotion manifest](../../../../labs/opensearch-cluster/promotion.yaml)는 `replace-same`이며 목적지는
 `infra/04-data/opensearch/`, profile `opensearch`이다. HOME `opensearch`와 `opensearch-dashboards`를
@@ -92,32 +115,23 @@ LAB_DATA_DIR=/tmp/synthetic-lab-data LAB_SECRET_DIR=/tmp/synthetic-lab-secrets L
 `secrets/data/opensearch/`의 `infra` secret을 쓴다. 문서 목적지는 `05-databases-and-storage` 역할
 폴더다. 승격 절차는 [RUN-0107](../../runbooks/15-labs/0107-lab-promotion.md)이 소유한다.
 
-### Common Checks
+### Exceptions
+
+이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
+
+## Verification
+
+### Expected Result
 
 profile, 네 data 경로, internal network, 읽기 전용 인증서 mount, secret 경로가
 `secrets/labs/opensearch-cluster/` 아래인지 render로 확인한다. 정적 통과는 configuration 증거일 뿐이다.
 
-### Runbook Handoff
-
-정적 점검, 기동·정지, 진단과 복구 계획은 [RUN-0109](../../runbooks/15-labs/0109-opensearch-cluster.md)를 따른다.
-
-### Traceability
-
-- Artifact: `GDE-0109`; governing policy: `POL-0109`.
-- Version projection: [tech-stack versions](../../../../infra/tech-stack.versions.json)는 Compose에서 파생된 drift 증거이며 정확한 pin은 Compose가 소유한다.
-- Runtime authority: `labs/opensearch-cluster/docker-compose.yml`.
-
-## Troubleshooting
+### Troubleshooting
 
 - render가 `set isolated LAB certificate directory`로 실패하면 `LAB_OPENSEARCH_CERT_DIR`가 없다.
 - node가 서로를 거부하면 인증서 subject와 `nodes_dn`을 확인한다.
 - node가 bind 디렉터리에 쓰지 못하면 그 LAB 경로만 uid 1000(`opensearch`) 소유로 맞춘다.
 
-## Related Documents
+#### Runbook Handoff
 
-- [Operations policy](../../policies/15-labs/0109-opensearch-cluster.md)
-- [OpenSearch LAB README](../../../../labs/opensearch-cluster/README.md)
-- [OpenSearch LAB runbook](../../runbooks/15-labs/0109-opensearch-cluster.md)
-- [LAB promotion policy](../../policies/15-labs/0107-lab-promotion.md)
-- [HOME OpenSearch guide](../05-databases-and-storage/0019-opensearch.md)
-- [OpenSearch Docker](https://docs.opensearch.org/latest/install-and-configure/install-opensearch/docker/)
+정적 점검, 기동·정지, 진단과 복구 계획은 [RUN-0109](../../runbooks/15-labs/0109-opensearch-cluster.md)를 따른다.

@@ -1,10 +1,10 @@
 ---
 title: "hy-home.k8s Integration Usage Guide"
-version: "1.5.0"
+version: "1.5.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0096"
 parent_ids:
@@ -14,7 +14,9 @@ created: "2026-09-23"
 
 # hy-home.k8s Integration Usage Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 hy-home.k8s 저장소는 같은 호스트에서 k3d 클러스터(`hyhome`)를 실행한다.
 k3d 제거 이후로는 어떤 Compose 서비스도 이와 Docker 네트워크를 공유하지
@@ -23,15 +25,22 @@ k3d 제거 이후로는 어떤 Compose 서비스도 이와 Docker 네트워크�
 그 계약을 설명하고 [runbook](../../runbooks/10-platform-and-backup/0096-k8s-integration.md)은 계약을 설정하고 클러스터를
 재구축할 때마다 반복하는 전체 절차다.
 
-## Scope
-
-### Audience and Goal
-
 hy-home.k8s 클러스터를 이 스택과 연결하는 운영자를 위한 문서다. 클러스터가 이 쪽에 기대는 계약을 이해하고 일상 점검 방법을 찾는 것이 목표다.
 
-## Concepts
+### Boundaries
 
-### Contract
+- [Policy](../../policies/10-platform-and-backup/0096-k8s-integration.md) (`POL-0096`)
+- [Runbook](../../runbooks/10-platform-and-backup/0096-k8s-integration.md) (`RUN-0096`)
+- [Compose network segmentation architecture](../../../02.architecture/descriptions/0026-standardize-infra-net.md)
+
+- [Prometheus policy](../../policies/07-observability/0045-prometheus.md)
+- [Traefik guide](../02-gateway-and-networking/0013-traefik.md)
+
+## Prerequisites
+
+### Environment
+
+#### Contract
 
 | 클러스터 consumer | Endpoint | 인증 | 이 쪽 owner |
 | --- | --- | --- | --- |
@@ -53,9 +62,15 @@ Kiali는 대신 Viewer 토큰을 사용). `config.home.alloy`는 `4317`/`4318`�
 없다. 네이티브 k3s NodePort로 가는 인증 없는 catch-all은 지난 7일간
 요청이 없어 2026-09-24에 제거했다.
 
-## Usage
+### Permissions
 
-### hy-home.k8s가 이 쪽에 요구하는 것
+필요한 자격 증명은 OpenBao `secret/platform/prometheus-api`와 `secret/platform/grafana-api`, ESO 역할 `eso-read-platform`, `.env`의 `PROMETHEUS_API_USERNAME`이며 값은 기록하지 않는다. Expected Result의 점검은 실행 승인이 있는 환경에서만 수행한다.
+
+## Procedure
+
+### Actions
+
+#### hy-home.k8s가 이 쪽에 요구하는 것
 
 | 항목 | 위치 | 전달 방법 |
 | --- | --- | --- |
@@ -73,7 +88,7 @@ Tempo 3200은 조회/API consumer가 있을 때의 경로다. contract의 주소
 `HOST_LAN_BIND_IP`, `DEFAULT_URL` 및 port 설정을 확인한다. 포트 연결 성공은
 인증·수집·조회 성공을 증명하지 않는다.
 
-### Routine Usage
+#### Routine Usage
 
 ESO는 HCL에 열거된 `argocd`, `postgres-app`, `notifications`, `prometheus-api`,
 `grafana-api`의 data/metadata를 읽는다. wildcard 권한은 없다. bootstrap은
@@ -85,7 +100,13 @@ Prometheus API는 `/api/v1/`과 `Authorization: Basic …`이 함께 있을 때 
 라우트를 선택한다. 잘못된 Basic은 401, 유효한 Basic은 200이며 header 없는 요청과
 UI는 현재 SSO redirect 302 경로다. TLS·DNS 실패 000을 인증 거절로 세지 않는다.
 
-### Common Checks
+### Exceptions
+
+이 가이드는 Troubleshooting 외에 별도의 예외 사례를 기록하지 않는다.
+
+## Verification
+
+### Expected Result
 
 아래 점검은 실행 승인이 있는 환경에서만 수행한다. metadata check는 private
 registry와 `.env` 값을 읽으며 hardening/Compose 검증은 임시 입력을 만들 수 있다.
@@ -95,18 +116,7 @@ registry와 `.env` 값을 읽으며 hardening/Compose 검증은 임시 입력을
 - `bash scripts/hardening/check-all-hardening.sh` (라우트, 정책, 미들웨어 고정)
 - `docker network inspect k3d-hyhome --format '{{range .Containers}}{{.Name}} {{end}}'`는 `k3d-hyhome-*` 컨테이너만 나열
 
-### Runbook Handoff
-
-최초 설정, 클러스터 재구축, 자격 증명 교체는
-[runbook](../../runbooks/10-platform-and-backup/0096-k8s-integration.md)을 따른다.
-
-### Traceability
-
-- [Policy](../../policies/10-platform-and-backup/0096-k8s-integration.md) (`POL-0096`)
-- [Runbook](../../runbooks/10-platform-and-backup/0096-k8s-integration.md) (`RUN-0096`)
-- [Compose network segmentation architecture](../../../02.architecture/descriptions/0026-standardize-infra-net.md)
-
-## Troubleshooting
+### Troubleshooting
 
 - 단일 파일 Docker secret은 컨테이너가 생성될 때의 inode를 유지한다.
   시크릿 파일을 재생성했다면 그 소비자도 재생성해야 한다
@@ -122,8 +132,9 @@ registry와 `.env` 값을 읽으며 hardening/Compose 검증은 임시 입력을
   복원할 수 있으므로 파일 이동 후 재실행은 회전이 아니다. RUN-0096의 교체 절차는
   별도 승인된 새 값 생성·전달 방법을 확보할 때까지 `BLOCKED`이다.
 
-## Related Documents
+#### Runbook Handoff
+
+최초 설정, 클러스터 재구축, 자격 증명 교체는
+[runbook](../../runbooks/10-platform-and-backup/0096-k8s-integration.md)을 따른다.
 
 - [OpenBao runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)
-- [Prometheus policy](../../policies/07-observability/0045-prometheus.md)
-- [Traefik guide](../02-gateway-and-networking/0013-traefik.md)

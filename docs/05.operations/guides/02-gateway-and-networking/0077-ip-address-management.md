@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Membership Usage Guide"
-version: "1.4.0"
+version: "1.4.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0077"
 parent_ids:
@@ -14,26 +14,44 @@ created: "2026-05-17"
 
 # Compose Network Membership Usage Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 이 가이드는 Compose 서비스의 Docker network 소속과 고정 주소 사용 기준을 설명한다.
-
-## Scope
-
-### Audience and Goal
 
 대상 독자는 개발자, 운영자, AI Agent다. 목표는 실제 호출 흐름에 맞는 network를 고르고
 불필요한 고정 주소를 만들지 않는 것이다.
 
-## Concepts
+### Boundaries
+
+- 상위 Policy: [POL-0077](../../policies/02-gateway-and-networking/0077-ip-address-management.md)
+- 구조: [AD-0026](../../../02.architecture/descriptions/0026-standardize-infra-net.md)
+- 같은 주제: [Policy](../../policies/02-gateway-and-networking/0077-ip-address-management.md), [Runbook](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md)
+
+- [Operations index](../../README.md)
+- [hy-home.k8s 통합](../10-platform-and-backup/0096-k8s-integration.md)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.
+
+## Prerequisites
+
+### Environment
 
 구조적 할당은 [AD-0026 Networks](../../../02.architecture/descriptions/0026-standardize-infra-net.md#networks),
 선언은 [루트 Compose](../../../../docker-compose.yml)와 해당 service fragment가
 소유한다. 서비스가 여러 network를 공유해도 개별 인증·권한 검증을 대신하지 않는다.
 
-## Usage
+### Permissions
 
-### Flow and membership
+공개 선언은 쓰기·runtime 권한이 없어도 읽을 수 있지만 변경·조회에는 별도 승인이 필요하다. 승인된 접근 범위는 Actions의 흔한 함정과 RUN-0077을 따른다.
+
+## Procedure
+
+### Actions
+
+정상 사용 절차는 아래 항목에 정리한다.
+
+#### Flow and membership
 
 Traefik이 route하는 backend 중 자체 인증이 있는 것은 `edge_net`, `sso-auth`만으로 보호되는 것은
 Traefik만 함께 붙는 `<service>_ingress_net`(`10.250.24.0/24`–`10.250.40.0/24`, SPEC-0266)을 쓰고
@@ -62,7 +80,11 @@ leaf 소유 isolated network와 root 생성 network를 구분한다. k3d와 Comp
 Docker network를 공유하지 않으며 기존 LAN endpoint 연동은
 [0096](../10-platform-and-backup/0096-k8s-integration.md)이 소유한다.
 
-### 흔한 함정
+### Exceptions
+
+특수 사례와 한계는 아래 항목에 정리한다.
+
+#### 흔한 함정
 
 - 다중 network 서버가 자기 DNS 이름의 한 주소에만 bind하면 다른 network의
   client가 닿지 못할 수 있다. 해당 listener는 승인된 container 내부
@@ -76,31 +98,21 @@ Docker network를 공유하지 않으며 기존 LAN endpoint 연동은
 - 필요한 Compose 기능은 [개발환경 Guide](../10-platform-and-backup/0002-developer-environment.md)를 따른다.
   쓰기·runtime 권한이 없어도 공개 선언을 읽을 수 있지만 변경·조회 승인은 별도다.
 
-### Common Checks
+## Verification
+
+### Expected Result
 
 root/leaf network 선언, peer와 endpoint, static 주소 이유, host 노출과 profile을
 함께 대조한다. [RUN-0077](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md)의 승인된
 공개 구성 검증은 live 연결이나 static-IP 무충돌의 완전한 증거가 아니다.
 선택·준비 상태의 차이는 [시스템 Guide](../01-common/0099-system-operations.md)를 따른다.
 
-### Runbook Handoff
-
-membership·주소 변경, 충돌 진단과 scoped rollback은
-[RUN-0077](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md)이 소유한다.
-
-### Traceability
-
-- 상위 Policy: [POL-0077](../../policies/02-gateway-and-networking/0077-ip-address-management.md)
-- 구조: [AD-0026](../../../02.architecture/descriptions/0026-standardize-infra-net.md)
-- 같은 주제: [Policy](../../policies/02-gateway-and-networking/0077-ip-address-management.md), [Runbook](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md)
-
-## Troubleshooting
+### Troubleshooting
 
 위 "흔한 함정"의 DNS·bind·중복 주소 증상부터 확인하고, 변경이나 충돌 진단은
 [RUN-0077](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md)로 넘긴다.
 
-## Related Documents
+#### Runbook Handoff
 
-- [Operations index](../../README.md)
-- [hy-home.k8s 통합](../10-platform-and-backup/0096-k8s-integration.md)
-- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.
+membership·주소 변경, 충돌 진단과 scoped rollback은
+[RUN-0077](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md)이 소유한다.

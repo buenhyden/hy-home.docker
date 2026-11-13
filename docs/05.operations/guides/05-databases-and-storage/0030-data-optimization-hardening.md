@@ -1,10 +1,10 @@
 ---
 title: "04-Data Optimization Hardening Usage Guide"
-version: "1.0.7"
+version: "1.0.8"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "GDE-0030"
 parent_ids:
@@ -14,24 +14,36 @@ created: "2026-05-17"
 
 # 04-Data Optimization Hardening Usage Guide
 
-## Overview
+## Purpose
+
+### Outcome
 
 이 subject는 data tier 전반의 static 제어를 검증한다: root profile 유효성,
 명시적 persistence 소유권, secret, healthcheck, 리소스, 네트워크 경계, 복구
 소유권. service 활성화, 데이터 접근, cleanup, migration, tuning을 승인하지
 않는다.
 
-## Scope
-
-### Audience and Goal
-
 대상 독자: 운영자, 개발자, AI Agent.
 
 목적: data tier의 정적 hardening 확인이 무엇을 증명하고 무엇을 증명하지 않는지 이해하고, root profile 렌더링과 점검 스크립트를 올바르게 사용한다.
 
-## Concepts
+### Boundaries
 
-### Root validation
+- Artifact: `GDE-0030`; 거버넌스 정책: `POL-0030`.
+- Runtime authority: root `docker-compose.yml`과 `scripts/hardening/check-all-hardening.sh`.
+
+- [Hardening policy](../../policies/05-databases-and-storage/0030-data-optimization-hardening.md)
+- [Hardening runbook](../../runbooks/05-databases-and-storage/0030-data-optimization-hardening.md)
+- [Backup policy](../../policies/10-platform-and-backup/0021-backup-and-restore.md)
+- [Storage exhaustion runbook](../../runbooks/05-databases-and-storage/0035-storage-exhaustion.md)
+
+## Prerequisites
+
+### Environment
+
+이 가이드가 전제하는 구현과 환경 사실은 아래 항목에 정리한다.
+
+#### Root validation
 
 leaf 파일이 root가 소유하는 네트워크, secret, 공유 템플릿에 의존하므로 저장소
 루트에서 실행한다. leaf 파일을 직접 렌더링하는 대신 대표적인 현재 profile을
@@ -47,39 +59,41 @@ profile 정합성, 고유한 writable volume, 선언된 네트워크, secret 파
 healthcheck, CPU/메모리 제한, 의도된 포트 게시, 엔진별 backup/restore
 소유자를 확인한다.
 
-## Usage
+### Permissions
 
-### Interpretation
+이 가이드는 service 활성화, 데이터 접근, cleanup, migration, tuning을 승인하지 않는다. leaf Compose source나 공유 템플릿 수정은 승인된 task 안에서만 한다.
+
+## Procedure
+
+### Actions
+
+정상 사용 절차는 아래 항목에 정리한다.
+
+#### Interpretation
 
 static pass는 parse와 정책 준수만 증명한다. runtime health, storage 용량,
 backup 완전성, 복구 시간, encryption at rest, 애플리케이션 호환성, 동일 host
 가용성은 증명하지 않는다. 범위를 정한 runtime test나 격리된 rehearsal로
 증거를 확보하기 전까지는 이들을 unverified로 기록한다.
 
-### Correction workflow
+#### Correction workflow
 
 승인된 task 안에서 소유하는 leaf Compose source나 공유 템플릿을 수정한 뒤
 동일한 root profile을 다시 렌더링한다. 범위를 정한 hardening 확인을
 재실행하고 정확한 diff를 점검한다. 복구에는 엔진 runbook을 사용하며, 일반
 data-copy나 cleanup 명령을 적용하지 않는다.
 
-### Common Checks
+### Exceptions
+
+이 가이드는 별도 예외 절을 두지 않으며, 한계와 경계는 Environment와 Actions의 해당 본문과 Troubleshooting에 함께 적혀 있다.
+
+## Verification
+
+### Expected Result
 
 - 대표 profile(`mng`, `dev-data`, `seaweedfs`, `storage`, `opensearch`, `graph`, `admin-data`)의 root render와 `bash scripts/hardening/check-all-hardening.sh 04-data`. 명령 순서는 RUN-0030이 소유한다.
 
-### Traceability
-
-- Artifact: `GDE-0030`; 거버넌스 정책: `POL-0030`.
-- Runtime authority: root `docker-compose.yml`과 `scripts/hardening/check-all-hardening.sh`.
-
-## Troubleshooting
+### Troubleshooting
 
 - render 실패: 대부분 root가 소유하는 network, secret 또는 `extends` 템플릿 누락이다. leaf를 단독 렌더링하지 말고 root에서 같은 profile로 재현한다.
 - `check-all-hardening.sh 04-data` 실패: 보고된 service의 소유 leaf Compose나 공유 템플릿을 고친다. 데이터 손실·손상 증상은 엔진별 runbook으로 넘긴다([RUN-0030](../../runbooks/05-databases-and-storage/0030-data-optimization-hardening.md#regression-response)).
-
-## Related Documents
-
-- [Hardening policy](../../policies/05-databases-and-storage/0030-data-optimization-hardening.md)
-- [Hardening runbook](../../runbooks/05-databases-and-storage/0030-data-optimization-hardening.md)
-- [Backup policy](../../policies/10-platform-and-backup/0021-backup-and-restore.md)
-- [Storage exhaustion runbook](../../runbooks/05-databases-and-storage/0035-storage-exhaustion.md)
