@@ -51,6 +51,7 @@ class CurrentBodyContractTests(unittest.TestCase):
             "postmortem": "Summary|Root Cause|Impact|Corrective Actions|Evidence",
             "governance-policy": "Purpose|Scope|Rules|Exceptions|Ownership",
             "governance-hook-policy": "Purpose|Scope|Rules|Exceptions|Ownership",
+            "governance-skill": "Purpose and Trigger|Procedure|Inputs and Outputs|Verification",
         }
         registry = metadata.load_registry(ROOT / "docs/99.templates/registry.json")
         for profile_id, names in expected.items():
