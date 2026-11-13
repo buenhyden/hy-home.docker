@@ -5950,17 +5950,17 @@ def _handoff_task(
 class AcceptanceDecisionTests(unittest.TestCase):
     """H-W04-1: acceptance under sdlc.md 1.9.0 and the cited-evidence rules."""
 
-    def findings(self, tasks, *, plan=_TWO_UNIT_PLAN, before=()):
+    def findings(self, tasks, *, plan=_TWO_UNIT_PLAN, before=(), before_plan=None):
         spec_packages = _spec_packages_module()
         registry = load_current_registry()
 
-        def package(members, evidence=None):
+        def package(members, members_plan, evidence=None):
             return spec_packages.SpecPackage(
                 pathlib.Path(_HANDOFF_ROOT),
                 "0001",
                 "example",
                 _generation6.SPEC,
-                plan,
+                members_plan,
                 tuple(members),
                 (),
                 evidence,
@@ -5970,8 +5970,8 @@ class AcceptanceDecisionTests(unittest.TestCase):
             _generation6.SPEC, plan, tuple(tasks), registry
         )
         return spec_packages._acceptance_findings(
-            (package(before),) if before else (),
-            (package(tasks, evidence),),
+            (package(before, before_plan or plan),) if before else (),
+            (package(tasks, plan, evidence),),
             registry,
             registry,
         )
@@ -6082,6 +6082,170 @@ class AcceptanceDecisionTests(unittest.TestCase):
             ),
         )
         self.assertEqual(1, len(self.findings((unsupported,), before=(pending,))))
+
+    def test_a_later_change_to_a_cited_row_re_records_the_decision(self) -> None:
+        one = _evidence_row("One", "1", "W1")
+        two = _evidence_row("Two", "1, 2", "W2")
+        supported = _handoff_task(
+            one + two, _decision_row("1", "One") + _decision_row("2", "Two")
+        )
+        self.assertEqual((), self.findings((supported,), before=(supported,)))
+        # A cited PASS row edited to an optional ERROR no longer supports it.
+        failed = dataclasses.replace(
+            supported,
+            body=supported.body.replace(
+                one, _evidence_row("One", "1", "W1", "ERROR", required="optional")
+            ),
+        )
+        found = self.findings((failed,), before=(supported,))
+        self.assertEqual(1, len(found))
+        self.assertIn("must cite a PASS row", found[0].message)
+        # A cited non-PASS row whose resolving row loses its Resolves is open again.
+        broken = _evidence_row("Broken", "1", "W1", "ERROR", required="optional")
+        fixed = _evidence_row("Fixed", "1", "W1", resolves="Broken")
+        resolved = _handoff_task(
+            broken + fixed + two,
+            _decision_row("1", "Broken, Fixed") + _decision_row("2", "Two"),
+        )
+        unresolved = dataclasses.replace(
+            resolved,
+            body=resolved.body.replace(
+                fixed, _evidence_row("Fixed", "1", "W1", resolves="-")
+            ),
+        )
+        self.assertEqual((), self.findings((resolved,), before=(resolved,)))
+        found = self.findings((unresolved,), before=(resolved,))
+        self.assertEqual(1, len(found))
+        self.assertIn("no later row resolves", found[0].message)
+        # A row field the rule does not read leaves the decision standing.
+        relocated = dataclasses.replace(
+            supported, body=supported.body.replace("receipt", "other receipt")
+        )
+        self.assertEqual((), self.findings((relocated,), before=(supported,)))
+
+    def test_a_work_unit_newly_assigned_to_the_criterion_needs_its_pass(self) -> None:
+        # W2 carries only criterion 2 in the base Plan, then criterion 1 as well.
+        task = _handoff_task(
+            _evidence_row("One", "1", "W1") + _evidence_row("Two", "2", "W2"),
+            _decision_row("1", "One") + _decision_row("2", "Two"),
+        )
+        self.assertEqual(
+            (),
+            self.findings(
+                (task,),
+                plan=_generation6.PLAN,
+                before=(task,),
+                before_plan=_generation6.PLAN,
+            ),
+        )
+        found = self.findings(
+            (task,),
+            plan=_TWO_UNIT_PLAN,
+            before=(task,),
+            before_plan=_generation6.PLAN,
+        )
+        self.assertEqual(1, len(found))
+        self.assertIn("criterion 1 has no PASS for Work Unit W2", found[0].message)
+
+    def test_the_gate_route_surfaces_an_unsupported_decision(self) -> None:
+        """The lifecycle gate, not only the helper, reports the finding."""
+
+        spec_packages = _spec_packages_module()
+        registry = load_current_registry()
+        registry_path = pathlib.Path("docs/99.templates/registry.json")
+        schema_path = pathlib.Path(
+            "docs/99.templates/contracts/document-profile.schema.json"
+        )
+        legacy = _generation6.generation6_registry()
+        earlier = json.loads((ROOT / registry_path).read_text())
+        for key in (
+            "contract_id",
+            "lifecycle_generation",
+            "evidence_columns",
+            "criterion_acceptance_columns",
+            "result_domain",
+        ):
+            earlier["common"][key] = legacy.common[key]
+        rows = (
+            _evidence_row("One", "1", "W1")
+            + _evidence_row("Broken", "1", "W1", "ERROR", required="optional")
+            + _evidence_row("Two", "2", "W2")
+        )
+        pending = _decision_row("1", "-", "pending") + _decision_row(
+            "2", "-", "pending"
+        )
+
+        def with_log(task):  # the event reader needs a Work Log section
+            return dataclasses.replace(
+                task, body=f"{task.body}\n## Work Log\n\nNone.\n"
+            )
+
+        base_task = with_log(_handoff_task(rows, pending))
+        accepted = with_log(
+            _handoff_task(
+                rows, _decision_row("1", "Broken") + _decision_row("2", "Two")
+            )
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+
+            def git(*args):
+                subprocess.run(
+                    ["git", "-C", str(root), *args], check=True, capture_output=True
+                )
+
+            def write(document):
+                target = root / document.path
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text(
+                    f"---\nartifact_id: {document.artifact_id}\n"
+                    f"status: {document.status}\n"
+                    f"parent_ids: {json.dumps(document.parent_ids)}\n---\n\n"
+                    f"{document.body}"
+                )
+
+            git("init", "-q")
+            git("config", "core.hooksPath", "")
+            git("config", "user.name", "Gate Fixture")
+            git("config", "user.email", "fixture@example.invalid")
+            (root / schema_path).parent.mkdir(parents=True)
+            (root / schema_path).write_text((ROOT / schema_path).read_text())
+            (root / registry_path).write_text(json.dumps(earlier))
+            for document in (
+                _generation6.SPEC,
+                _generation6.PLAN,
+                _generation6.task("", ""),
+            ):
+                write(document)
+            git("add", ".")
+            git("commit", "-qm", "generation 6 source")
+            (root / registry_path).write_text((ROOT / registry_path).read_text())
+            write(base_task)
+            git("add", ".")
+            git("commit", "-qm", "base")
+
+            def codes(task):
+                package = spec_packages.SpecPackage(
+                    root / _HANDOFF_ROOT,
+                    "0001",
+                    "example",
+                    _generation6.SPEC,
+                    _generation6.PLAN,
+                    (task,),
+                    (),
+                    spec_packages._v6_evidence_contract(
+                        _generation6.SPEC, _generation6.PLAN, (task,), registry
+                    ),
+                )
+                result = (
+                    spec_packages.validate_repository_spec_package_lifecycle_details(
+                        root, (package,), base_ref="HEAD", registry=registry
+                    )
+                )
+                return {finding.code for finding in result.findings}
+
+            self.assertNotIn("acceptance-unsupported", codes(base_task))
+            self.assertIn("acceptance-unsupported", codes(accepted))
 
     def test_acceptance_with_only_a_merged_pull_request_note_is_rejected(self) -> None:
         spec_packages = _spec_packages_module()
@@ -6375,6 +6539,78 @@ Owner @owner.
 
     def test_a_cancelled_package_needs_no_promotion(self) -> None:
         self.assertEqual((), self.readiness(None, status="cancelled"))
+
+    def test_a_shared_file_name_needs_the_full_path(self) -> None:
+        def promotion_map(*paths: str) -> str:
+            named = ", ".join(f"`{path}`" for path in paths)
+            return (
+                "\n## Promotion Map\n\n### Durable Meaning\n\n"
+                f"The contract lives in {named}.\n\n"
+                "### Owner and Receipt\n\nOwner @owner.\n"
+            )
+
+        both = promotion_map("docs/03.specs/README.md", "scripts/README.md")
+        message = "Promotion Map target {} appears in no Promotion Receipt"
+        # The other README does not stand for the target of the same name.
+        self.assertEqual(
+            (message.format("docs/03.specs/README.md"),),
+            self.readiness("`scripts/README.md`", promotion_map=both),
+        )
+        self.assertEqual(
+            (),
+            self.readiness(
+                "`docs/03.specs/README.md` and `scripts/README.md`",
+                promotion_map=both,
+            ),
+        )
+        # A bare shared name is ambiguous between two targets.
+        self.assertEqual(
+            (
+                message.format("docs/03.specs/README.md"),
+                message.format("scripts/README.md"),
+            ),
+            self.readiness("`README.md`", promotion_map=both),
+        )
+        # A lone target may be abbreviated to its bare name, not to another path.
+        lone = promotion_map("docs/03.specs/README.md")
+        self.assertEqual((), self.readiness("`README.md`", promotion_map=lone))
+        self.assertEqual(
+            (message.format("docs/03.specs/README.md"),),
+            self.readiness("`scripts/README.md`", promotion_map=lone),
+        )
+
+    def test_a_cancelled_task_receipt_covers_no_target(self) -> None:
+        spec_packages = _spec_packages_module()
+        receipt = (
+            "\n## Handoff\n\n### Promotion Receipt\n\n"
+            "`.agents/governance/sdlc.md` and `docs/99.templates/registry.json`\n"
+            "\n### Next Owner\n\n@owner\n"
+        )
+        plan = dataclasses.replace(
+            _generation6.PLAN, body=_generation6.PLAN.body + _PROMOTION_MAP
+        )
+        live = dataclasses.replace(
+            _generation6.task("", ""), status="completed", body="## Evidence\n"
+        )
+
+        def findings(status: str):
+            carrier = dataclasses.replace(
+                _generation6.second_task("", ""), status=status, body=receipt
+            )
+            return spec_packages._promotion_findings(
+                spec_packages.SpecPackage(
+                    pathlib.Path(_HANDOFF_ROOT),
+                    "0001",
+                    "example",
+                    _generation6.SPEC,
+                    plan,
+                    (live, carrier),
+                    (),
+                )
+            )
+
+        self.assertEqual((), findings("completed"))
+        self.assertEqual(2, len(findings("cancelled")))
 
 
 if __name__ == "__main__":
