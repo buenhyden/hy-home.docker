@@ -51,7 +51,7 @@ schema 1 보존, current 재사용, 재시도/conflict, 용량 경쟁, 재연결
 
 ### Prerequisites
 
-없음: 이 디렉터리 고유의 설치 절차는 없으며, 새 library 모듈의 테스트는 Script Manifest의 `tests`에 연결합니다.
+Python 3와 [scripts/README.md](../../scripts/README.md)의 hash lock(`requirements-controller.lock`)을 설치한 venv가 필요합니다. `tests/validation/test_mng_pg_init_sql.py` opt-in 통합 테스트에는 Docker daemon과 `tests/requirements-integration.txt`의 의존성이 추가로 필요합니다.
 
 ### First Verified Path
 

@@ -51,15 +51,17 @@ created: "2026-02-21"
 ```text
 tests/
 ├── README.md  # This file
+├── fixtures/          # 독립 consumer가 공유하는 합성 고정 입력
 ├── lib/<domain>/      # scripts/lib/<domain>/ library-unit 테스트
 ├── validation/        # validation/entrypoint 및 실행-context 테스트
 └── requirements-integration.txt  # opt-in 통합 테스트 전용 의존성 (수동 갱신)
 ```
 
-고정 입력 디렉터리는 없습니다. 현재 픽스처는 `_fixtures.py` 형태의 builder
-모듈이며, 테스트가 필요한 최소 입력만 만들어 씁니다. 독립 consumer가 읽어야
-하거나 형식 재현이 복잡해 builder로 감당되지 않는 입력이 생길 때만
-`tests/fixtures/`를 만듭니다.
+`tests/fixtures/`는 독립 consumer가 공유하는 비밀값 없는 고정 입력을 두며
+[README](fixtures/README.md)가 설명합니다. 그 밖의 픽스처는 `_fixtures.py` 형태의
+builder 모듈이며, 테스트가 필요한 최소 입력만 만들어 씁니다. 독립 consumer가
+읽어야 하거나 형식 재현이 복잡해 builder로 감당되지 않는 입력이 생길 때만
+`tests/fixtures/`에 추가합니다.
 
 ### Canonical Entry Points
 
@@ -69,7 +71,7 @@ tests/
 
 ### Prerequisites
 
-opt-in 통합 테스트는 Docker daemon과 `tests/requirements-integration.txt`의 의존성(`testcontainers`)이 필요합니다.
+Python 3와 [scripts/README.md](../scripts/README.md)의 hash lock(`requirements-controller.lock`)을 설치한 venv가 필요합니다. `tests/validation/test_mng_pg_init_sql.py` opt-in 통합 테스트에는 Docker daemon과 `tests/requirements-integration.txt`의 의존성이 추가로 필요합니다.
 
 ### First Verified Path
 

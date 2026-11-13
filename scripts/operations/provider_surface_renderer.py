@@ -328,7 +328,7 @@ def _pointer(
             "## Getting Started\n\n### Prerequisites\n\n"
             "이 어댑터를 사용하기 전에 연결된 원본을 읽습니다.\n\n"
             "### First Verified Path\n\n"
-            "`scripts/operations/provider_surface_renderer.py --check`로 이 생성물이 원본과 일치하는지 확인합니다.\n\n"
+            "`python3 scripts/operations/provider_surface_renderer.py --check`로 이 생성물이 원본과 일치하는지 확인합니다.\n\n"
             "## References\n\n### Current Documentation\n\n"
             f"- [`{source}`](../{source})\n\n"
             "### Support and Ownership\n\n"

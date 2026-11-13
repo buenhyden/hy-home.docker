@@ -46,7 +46,7 @@ library의 단위 테스트는 짝이 되는 `tests/lib/<domain>/`에 둡니다.
 
 ### Prerequisites
 
-없음: 이 디렉터리 고유의 설치 절차는 없으며, 테스트는 `python3 -m unittest`로 실행합니다.
+Python 3와 [scripts/README.md](../../scripts/README.md)의 hash lock(`requirements-controller.lock`)을 설치한 venv가 필요합니다. `tests/validation/test_mng_pg_init_sql.py` opt-in 통합 테스트에는 Docker daemon과 `tests/requirements-integration.txt`의 의존성이 추가로 필요합니다.
 
 ### First Verified Path
 

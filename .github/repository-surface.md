@@ -72,7 +72,7 @@ GitHub은 저장소에 표시할 README를 루트, `.github/`, `docs/` 순서로
 
 ### Prerequisites
 
-검사 명령은 저장소 루트에서 `python3`로 실행합니다.
+검사 명령은 저장소 루트에서 `python3`로 실행한다.
 
 ### First Verified Path
 
@@ -122,4 +122,4 @@ python3 scripts/validation/run-ci-gate.py --profile changed --explain
 
 ### Support and Ownership
 
-이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.
+문의와 오류 보고는 [bug_report.yml](ISSUE_TEMPLATE/bug_report.yml) 이슈 양식으로, 취약점 보고는 [SECURITY.md](SECURITY.md)의 경로로 한다. 이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있다.

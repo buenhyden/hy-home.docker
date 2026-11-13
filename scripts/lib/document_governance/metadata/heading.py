@@ -1440,6 +1440,10 @@ def _runtime_version_findings(
 README_DOCUMENTS_HEADINGS = frozenset({"Directories", "Current Items", "Documents"})
 
 
+def _is_path_module(columns: Sequence[str]) -> bool:
+    return any(c.strip().lower() == "path" for c in columns)
+
+
 def _registered_readme_documents_findings(
     record: Record,
     text: str,
@@ -1468,6 +1472,8 @@ def _registered_readme_documents_findings(
     findings: list[Finding] = []
     in_documents = False
     strict = True
+    seen = False
+    previous_row = False
     for line in _markdown_unfenced_lines(text):
         heading = re.match(r"^ {0,3}(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$", line)
         if heading:
@@ -1476,13 +1482,20 @@ def _registered_readme_documents_findings(
             if level <= 3:
                 in_documents = level == 3 and name in README_DOCUMENTS_HEADINGS
                 strict = name != "Directories"
+                seen = False
+            previous_row = False
             continue
-        if not in_documents or not line.strip().startswith("|"):
+        is_row = line.strip().startswith("|")
+        header = is_row and not previous_row
+        previous_row = is_row
+        if not in_documents or not header or (strict and seen):
             continue
+        seen = True
         columns = tuple(cell.strip() for cell in line.strip().strip("|").split("|"))
-        # ### Directories is a free map: only a Path-led table is the registered
-        # path module; another table shape there is the author's own.
-        if columns not in allowed and (strict or columns[0] == "Path"):
+        # ### Directories is a free map: a table with a Path column (any case,
+        # any position) is the registered path module; a table without one
+        # (for example Directory | Purpose) is the author's own.
+        if columns not in allowed and (strict or _is_path_module(columns)):
             findings.append(
                 _finding(
                     record,
@@ -1490,7 +1503,6 @@ def _registered_readme_documents_findings(
                     "README Documents table header must match the registered columns",
                 )
             )
-        in_documents = False
     return findings
 
 

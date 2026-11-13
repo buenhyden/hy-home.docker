@@ -44,7 +44,7 @@ generated_by: "scripts/operations/provider_surface_renderer.py"
 
 ### First Verified Path
 
-`scripts/operations/provider_surface_renderer.py --check`로 이 생성물이 원본과 일치하는지 확인합니다.
+`python3 scripts/operations/provider_surface_renderer.py --check`로 이 생성물이 원본과 일치하는지 확인합니다.
 
 ## References
 

@@ -35,15 +35,6 @@ canonical owner로 요약해 옮기고, staging 사본은 폐기합니다.
   절차(`docs/05.operations/`에 속함), 그리고 secret 값(항상 `secrets/`에
   속하며 이곳에는 절대 두지 않음)
 
-## Repository Map
-
-### Directories
-
-런타임 산출물은 `diagnostics/`와 `repo-support/` 아래에 두며 기본적으로 ignore됩니다.
-`diagnostics/`에는 secret과 raw log를 뺀 정제 결과만 둡니다. 생성된
-분석 요약, dry-run 미리보기, migration ledger, secret이나 raw 로그를 담지 않는
-subagent 인계 파일이 그 예입니다.
-
 #### Prohibited Surface
 
 다음 중 어느 것도 `_workspace` 아래에 두지 않습니다:
@@ -59,22 +50,33 @@ subagent 인계 파일이 그 예입니다.
 - 토큰이 포함된 명령 출력
 - secret 파일 전체 본문
 
-### Canonical Entry Points
+## Repository Map
 
-| Path | Tracked | Role |
-| :--- | :--- | :--- |
-| `README.md` | yes | 이 계약 문서 |
-| `diagnostics/README.md` | yes | 정제된 진단 결과 계약 |
-| `diagnostics/ci/README.md` | yes | 원격 CI 진단 |
-| `diagnostics/validation/README.md` | yes | 로컬 검사 진단 |
-| `repo-support/README.md` | yes | staging 트리 계약 |
-| `repo-support/analysis/README.md` | yes | 분석 요약 |
-| `repo-support/previews/README.md` | yes | dry-run 미리보기 |
-| 그 밖의 `diagnostics/**`, `repo-support/**` | no | task 도중 기록되는 ignore 대상 런타임 산출물 |
+### Directories
+
+런타임 산출물은 `diagnostics/`와 `repo-support/` 아래에 두며 기본적으로 ignore됩니다.
+`diagnostics/`에는 secret과 raw log를 뺀 정제 결과만 둡니다. 생성된
+분석 요약, dry-run 미리보기, migration ledger, secret이나 raw 로그를 담지 않는
+subagent 인계 파일이 그 예입니다.
+
+| Path | Purpose |
+| :--- | :--- |
+| `README.md` | 추적됨: 이 계약 문서 |
+| `diagnostics/README.md` | 추적됨: 정제된 진단 결과 계약 |
+| `diagnostics/ci/README.md` | 추적됨: 원격 CI 진단 |
+| `diagnostics/validation/README.md` | 추적됨: 로컬 검사 진단 |
+| `repo-support/README.md` | 추적됨: staging 트리 계약 |
+| `repo-support/analysis/README.md` | 추적됨: 분석 요약 |
+| `repo-support/previews/README.md` | 추적됨: dry-run 미리보기 |
+| 그 밖의 `diagnostics/**`, `repo-support/**` | 추적되지 않음: task 도중 기록되는 ignore 대상 런타임 산출물 |
 
 여기에 쓰는 스크립트는 `repo-support/` 아래 하위 디렉터리 이름을
 각자 정해 씁니다. 예를 들어 `scripts/security/verify-sample-service-supply-chain.sh`와
 `scripts/operations/rehearse-sample-service-delivery.sh`가 있습니다.
+
+### Canonical Entry Points
+
+계약 문서는 [Diagnostics contract](./diagnostics/README.md)와 [Staging tree contract](./repo-support/README.md)입니다.
 
 ## Getting Started
 
@@ -95,7 +97,7 @@ subagent 인계 파일이 그 예입니다.
 
 #### Tracking Contract
 
-루트 `.gitignore`는 `_workspace/` 아래 모든 것을 ignore하고, Structure에 명시된
+루트 `.gitignore`는 `_workspace/` 아래 모든 것을 ignore하고, Directories에 명시된
 일곱 개의 tracked 계약 README만 다시 포함합니다. 각 README마다
 다시 포함·다시 제외·다시 포함의 사다리가 필요합니다. Git은 제외된 디렉터리 안으로
 내려가지 않으므로, `repo-support/`는 다시 포함되고 그 내용물은 다시 제외된

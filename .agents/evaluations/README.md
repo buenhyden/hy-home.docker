@@ -37,39 +37,6 @@ Skill 구성원 계약은 각각의 원본 소유 문서에서 확인합니다.
 - 전체 활성 Skill 목록에 대한 대표 PASS 주장
 - 임시 출력을 지속 평가 증거로 대체하거나 점수를 repository 필수 QA로 사용
 
-## Repository Map
-
-### Directories
-
-현재 이 범주에는 이 README만 있습니다. 아래는 새 평가 주기에서 등록할 증거의
-구조이며, 해당 파일이나 평가가 이미 존재한다는 목록이 아닙니다.
-
-| Planned item | Evidence owner |
-| --- | --- |
-| `harnesses/<evaluation-id>/task.md` | 같은 비교 작업, 입력 revision, 기준과 시행 조건 |
-| `harnesses/<evaluation-id>/baseline.md` | Skill 없는 실제 출력 원문 |
-| `harnesses/<evaluation-id>/with-skill.md` | 명시적으로 Skill을 호출한 실제 출력 원문 |
-| `harnesses/<evaluation-id>/score.md` | 채점, 부분 점수 이유와 판정 |
-| `results.md` | 대표 결과의 점수·상태·검토자·날짜와 원문 참조 |
-| `templates/` | 새 작업·출력·채점의 등록된 작성 틀 |
-
-#### Tech Stack
-
-상시 합성 출력 채점기와 고정 fixture QA는 폐기했습니다. 비교 평가의 도구, 모델,
-시행 수, 권한과 예산은 실행 전에 개별 Task에서 선택합니다. 현재 이 README는
-실행 하네스나 채점 자동화를 제공하지 않습니다.
-
-### Canonical Entry Points
-
-수정 전에 아래 Local Constraints와 [평가 실행 정책](../governance/agentic.md#evaluation-evidence)
-에서 소유자와 실행 경계를 확인합니다. 현재 구성원은 [Provider Registry](../governance/providers/registry.yaml)의
-등록과 [canonical Skill 소유 규칙](../README.md#scope)에 따라 실제 `skills/<skill_id>/SKILL.md`에서 확인합니다. [Provider model evaluation](../skills/provider-model-evaluation/SKILL.md)은
-공식 출처와 native schema 비교의 별도 절차이며 Skill 출력 비교 평가를 대신하지 않습니다.
-
-## Getting Started
-
-### Prerequisites
-
 #### Local Constraints
 
 1. 새 평가의 작업·입력·기준과 실제 두 출력이 같은 비교 범위인지 명시합니다.
@@ -96,6 +63,41 @@ Skill 구성원 계약은 각각의 원본 소유 문서에서 확인합니다.
 Provider Registry는 현재 이 README만 canonical entry로 등록합니다. 새 증거·template의
 분류와 등록은 해당 변경 계약에서 함께 수행하고, 실행 파일은 script manifest의
 실제 소비자와 함께 등록합니다. 이 안내는 새로운 실행 파일이나 Skill을 설치하지 않습니다.
+
+## Repository Map
+
+### Directories
+
+현재 이 범주에는 이 README만 있습니다. 아래는 새 평가 주기에서 등록할 증거의
+구조이며, 해당 파일이나 평가가 이미 존재한다는 목록이 아닙니다.
+
+| Planned item | Evidence owner |
+| --- | --- |
+| `harnesses/<evaluation-id>/task.md` | 같은 비교 작업, 입력 revision, 기준과 시행 조건 |
+| `harnesses/<evaluation-id>/baseline.md` | Skill 없는 실제 출력 원문 |
+| `harnesses/<evaluation-id>/with-skill.md` | 명시적으로 Skill을 호출한 실제 출력 원문 |
+| `harnesses/<evaluation-id>/score.md` | 채점, 부분 점수 이유와 판정 |
+| `results.md` | 대표 결과의 점수·상태·검토자·날짜와 원문 참조 |
+| `templates/` | 새 작업·출력·채점의 등록된 작성 틀 |
+
+#### Tech Stack
+
+상시 합성 출력 채점기와 고정 fixture QA는 폐기했습니다. 비교 평가의 도구, 모델,
+시행 수, 권한과 예산은 실행 전에 개별 Task에서 선택합니다. 현재 이 README는
+실행 하네스나 채점 자동화를 제공하지 않습니다.
+
+### Canonical Entry Points
+
+수정 전에 위 Local Constraints와 [평가 실행 정책](../governance/agentic.md#evaluation-evidence)
+에서 소유자와 실행 경계를 확인합니다. 현재 구성원은 [Provider Registry](../governance/providers/registry.yaml)의
+등록과 [canonical Skill 소유 규칙](../README.md#scope)에 따라 실제 `skills/<skill_id>/SKILL.md`에서 확인합니다. [Provider model evaluation](../skills/provider-model-evaluation/SKILL.md)은
+공식 출처와 native schema 비교의 별도 절차이며 Skill 출력 비교 평가를 대신하지 않습니다.
+
+## Getting Started
+
+### Prerequisites
+
+없음: 이 README는 실행 하네스나 채점 자동화를 제공하지 않으며, 비교 평가의 도구·모델·권한·예산은 실행 전에 개별 Task에서 선택합니다.
 
 ### First Verified Path
 

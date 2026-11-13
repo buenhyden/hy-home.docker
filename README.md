@@ -44,6 +44,30 @@ created: "2025-11-12"
 - 애플리케이션 비즈니스 로직이나 서비스 내부 구현 설명
 - 사용자의 명시적 지시 없이 공식 stage 문서를 수정하는 작업
 
+#### Documentation Standards
+
+이 저장소의 문서는 다음 기준을 따릅니다.
+
+- 문서 작성 작업은 가능한 경우 `docs/99.templates`의 템플릿을 출발점으로 사용합니다.
+- 상위 문서와 하위 산출물 사이의 추적성을 유지하고, 중복된 SSoT 문서를 만들지 않습니다.
+
+문서 언어는 [문서 언어 규칙](.agents/governance/documentation-protocol.md#document-language)이 정합니다.
+
+#### Documentation Lifecycle
+
+문서 stage는 역할이 겹치지 않도록 다음 흐름으로 관리합니다.
+
+| Stage | Responsibility |
+| --- | --- |
+| `docs/01.requirements` | 사용자 가치, 문제 정의, 요구사항, 성공 기준 |
+| `docs/02.architecture` | 아키텍처 요구사항과 결정 기록 |
+| `docs/03.specs` | 기능별 기술 명세, 인터페이스, 구현 계약과 co-located Plan/Task evidence |
+| `docs/05.operations` | 운영 가이드, 정책, 런북, 사고 기록 |
+| `docs/90.references` | 느리게 변하는 참고 지식, 용어, source-backed reference |
+| `docs/99.templates` | 새 문서와 README의 canonical template |
+
+일반 작업 흐름은 요구사항 → 아키텍처 → 명세 → 실행 → 운영 순서입니다. 참고 문서는 active stage를 대체하지 않고, 템플릿은 새 문서 작성 전에 target 위치와 상대 링크를 다시 계산하는 기준으로만 사용합니다.
+
 ## Repository Map
 
 ### Directories
@@ -105,11 +129,12 @@ hy-home.docker/
 
 ### Canonical Entry Points
 
-#### Repository Map
+#### 문서·인프라·CI 진입 목록
 
 - [`docs/`](./docs/README.md) - 요구사항, 아키텍처, 명세, 실행, 운영 지식까지 포함하는 공식 문서 체계
 - `docs/05.operations` - 사용 가이드, 운영 정책, 런북, 사고 기록을 분리해 관리하는 운영 지식 베이스
 - `docs/90.references` - Docker, 학습 로드맵 등 느리게 변하는 참고 지식
+- [`AGENTS.md`](./AGENTS.md) - 에이전트 작업 규칙의 진입 shim
 - [`llms.txt`](./llms.txt) - LLM 에이전트용 repo-local 탐색 진입점
 - [`infra/`](./infra) - `01-gateway`부터 `11-laboratory`까지 계층별 서비스 정의
 - [`scripts/`](./scripts) - 사전 점검, Compose 검증, 하드닝/추적성 검사 스크립트
@@ -192,7 +217,7 @@ tracing profiling obs-gpu registry`의 명시적 결합이며, 선택되는 정�
 재현합니다. 이 명령은 배포 승인이나 용량·복구 증명이 아닙니다. profile 어휘, 구성원, 제외 규칙은
 [문서 인덱스](./docs/README.md)의 Compose Profile Vocabulary Policy
 (POL-0078)가 소유합니다. Canonical path는
-`docs/05.operations/policies/0078-compose-profile-vocabulary.md`입니다. `tooling`은 SonarQube(registry는 HOME의 `registry` profile), `testing`은 k6와 Locust,
+`docs/05.operations/policies/01-common/0078-compose-profile-vocabulary.md`입니다. `tooling`은 SonarQube(registry는 HOME의 `registry` profile), `testing`은 k6와 Locust,
 `iac`은 OpenTofu와 Terrakube의 명시적 운영 작업에만 사용합니다. Renovate는
 `dependency-update` 전용 job이며 `tooling`이나 HOME 선택에 포함되지 않습니다.
 
@@ -236,6 +261,22 @@ revision/version에 대해 단일 수동 workflow가 SemVer tag와 완성된 dra
 
 Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 action step에는 명시적 `name`을 둡니다.
 
+#### Common Documentation Workflows
+
+| Workflow | Start Here | Then Update | Verify |
+| --- | --- | --- | --- |
+| 새 요구사항 정의 | `docs/01.requirements/README.md` | PRD → ARD/ADR → Spec 링크를 target-relative로 연결 | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
+| 아키텍처 선택 기록 | `docs/02.architecture/README.md` | ARD 또는 ADR, 관련 Spec 링크 | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
+| 구현 명세 작성 | `docs/03.specs/README.md` | Spec child contracts and execution plan links | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
+| 실행 계획/작업 evidence 갱신 | `docs/03.specs/README.md` | owning capability에 Plan과 Task를 co-locate하고 검증 evidence 기록 | `python3 scripts/validation/check-document-links.py --mode traceability` |
+| 운영 지식 갱신 | `docs/05.operations/README.md` | guide, policy, runbook, incident 목적별 배치 | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
+| 참고 지식 추가 | `docs/90.references/README.md` | Reference가 active policy나 runbook을 대체하지 않는지 확인 | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
+| 템플릿 변경 | `docs/99.templates/README.md` | Template-to-folder mapping and target-relative links | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
+
+표의 `--explain`은 계획 조회이며 검증 PASS가 아닙니다. 후보 검증은 quality policy의 원격 PR 경로가 소유합니다.
+
+새 문서 작업은 항상 해당 stage README에서 시작하고, 생성된 문서의 `## Related Documents` 링크는 템플릿 파일 위치가 아니라 복사된 target 문서 위치 기준으로 다시 계산합니다.
+
 ## References
 
 ### Current Documentation
@@ -256,53 +297,6 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 - [`scripts/README.md`](./scripts/README.md)
 - [`secrets/README.md`](./secrets/README.md)
 
-#### Documentation Standards
-
-이 저장소의 문서는 다음 기준을 따릅니다.
-
-- 문서 작성 작업은 가능한 경우 `docs/99.templates`의 템플릿을 출발점으로 사용합니다.
-- 상위 문서와 하위 산출물 사이의 추적성을 유지하고, 중복된 SSoT 문서를 만들지 않습니다.
-
-문서 언어는 [문서 언어 규칙](.agents/governance/documentation-protocol.md#document-language)이 정합니다.
-
-#### Documentation Lifecycle
-
-문서 stage는 역할이 겹치지 않도록 다음 흐름으로 관리합니다.
-
-| Stage | Responsibility |
-| --- | --- |
-| `docs/01.requirements` | 사용자 가치, 문제 정의, 요구사항, 성공 기준 |
-| `docs/02.architecture` | 아키텍처 요구사항과 결정 기록 |
-| `docs/03.specs` | 기능별 기술 명세, 인터페이스, 구현 계약과 co-located Plan/Task evidence |
-| `docs/05.operations` | 운영 가이드, 정책, 런북, 사고 기록 |
-| `docs/90.references` | 느리게 변하는 참고 지식, 용어, source-backed reference |
-| `docs/99.templates` | 새 문서와 README의 canonical template |
-
-일반 작업 흐름은 요구사항 → 아키텍처 → 명세 → 실행 → 운영 순서입니다. 참고 문서는 active stage를 대체하지 않고, 템플릿은 새 문서 작성 전에 target 위치와 상대 링크를 다시 계산하는 기준으로만 사용합니다.
-
-#### Common Documentation Workflows
-
-| Workflow | Start Here | Then Update | Verify |
-| --- | --- | --- | --- |
-| 새 요구사항 정의 | `docs/01.requirements/README.md` | PRD → ARD/ADR → Spec 링크를 target-relative로 연결 | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
-| 아키텍처 선택 기록 | `docs/02.architecture/README.md` | ARD 또는 ADR, 관련 Spec 링크 | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
-| 구현 명세 작성 | `docs/03.specs/README.md` | Spec child contracts and execution plan links | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
-| 실행 계획/작업 evidence 갱신 | `docs/03.specs/README.md` | owning capability에 Plan과 Task를 co-locate하고 검증 evidence 기록 | `python3 scripts/validation/check-document-links.py --mode traceability` |
-| 운영 지식 갱신 | `docs/05.operations/README.md` | guide, policy, runbook, incident 목적별 배치 | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
-| 참고 지식 추가 | `docs/90.references/README.md` | Reference가 active policy나 runbook을 대체하지 않는지 확인 | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
-| 템플릿 변경 | `docs/99.templates/README.md` | Template-to-folder mapping and target-relative links | `python3 scripts/validation/run-ci-gate.py --profile changed --explain` |
-
-표의 `--explain`은 계획 조회이며 검증 PASS가 아닙니다. 후보 검증은 quality policy의 원격 PR 경로가 소유합니다.
-
-새 문서 작업은 항상 해당 stage README에서 시작하고, 생성된 문서의 `## Related Documents` 링크는 템플릿 파일 위치가 아니라 복사된 target 문서 위치 기준으로 다시 계산합니다.
-
-#### Agent Working Rules
-
-- 작업 시작 전 [`AGENTS.md`](./AGENTS.md)를 먼저 확인합니다.
-- Bootstrap 순서는 [canonical bootstrap](.agents/governance/bootstrap.md#canonical-load-order)이 소유합니다. Root shim을 통해 해당 native provider 문서와 필요한 정책·역할·명시적으로 선택한 skill, 현재 Spec/Task를 읽습니다.
-- 문서 작성/갱신 작업은 [`.agents/governance/stage-authoring-matrix.md`](.agents/governance/stage-authoring-matrix.md)를 기준으로 작성합니다.
-- 공식 stage 문서는 기본적으로 읽기 전용이며, 명시적 사용자 지시가 있을 때만 수정합니다.
-
 ### Support and Ownership
 
-이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.
+문의와 오류 보고는 [bug_report.yml](.github/ISSUE_TEMPLATE/bug_report.yml) 이슈 양식으로, 취약점 보고는 [SECURITY.md](.github/SECURITY.md)의 경로로 합니다. 이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.

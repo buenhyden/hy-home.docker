@@ -82,8 +82,8 @@ wrapper를 다시 만들지 않습니다.
 제거했으므로 대신 tier 인자를 사용합니다.
 
 각 스크립트의 정확한 경로, 소유권, 테스트 evidence는
-[`scripts/manifest.yaml`](manifest.yaml)이 소유합니다. 아래 Navigation /
-Inventory 표는 각 entrypoint의 용도를 설명합니다.
+[`scripts/manifest.yaml`](manifest.yaml)이 소유합니다. Canonical Entry Points의 Direct
+child 표는 각 entrypoint의 용도를 설명합니다.
 
 #### Active Surface Retention Rules
 
@@ -142,7 +142,21 @@ direct purpose folders so it does not duplicate that manifest.
 
 ### Prerequisites
 
-저장소 검증 스크립트는 `scripts/requirements.txt`에 유지되는 Python 모듈에 의존합니다.
+저장소 검증 스크립트는 `scripts/requirements.txt`에 유지되는 Python 모듈에 의존하며, 스크립트는 `python3`와 Bash로 실행합니다.
+
+GitHub Actions controller는 `requirements.txt`와
+`requirements-pre-commit.txt`에서 uv 0.12.18로 생성한
+`requirements-controller.lock`만 `--require-hashes`로 설치합니다. 이 lock은
+Linux x86-64의 Python 3.12와 3.14 조건을 함께 담습니다. 로컬 pre-commit
+도구 준비는 기존 `requirements-pre-commit.txt`를 계속 직접 소비하며, lock
+재생성은 입력 변경을 동반한 별도 리뷰 대상입니다.
+
+로컬에서 단위 테스트를 돌릴 때도 같은 lock이 필요합니다. 배포판 Python
+패키지는 더 오래될 수 있습니다. 예를 들어 `jsonschema` 4.10에는
+`referencing`이 없어 secret catalog, SMTP 생성기, metadata sync 테스트가
+실패합니다. lock을 별도 venv에 `--require-hashes`로 설치하고, 그 venv의
+`bin`을 `PATH` 맨 앞에 둡니다. `gen-secrets.sh`가 `PATH`의 `python3`를
+호출하기 때문입니다.
 
 ### First Verified Path
 
@@ -164,20 +178,6 @@ Blog-data에 접근하지 않습니다. Stage 03의 SPEC-0247 문서 탐색은
 5. `--profile changed --explain`으로 영향을 확인하고, 후보 aggregate 검사는 원격 PR에서 한 번 실행합니다. `full`은 승인된 전체 감사용입니다.
 6. secret 관련 예시는 절차만 남기고, 생성된 secret 값을 출력하거나 문서화하지 않습니다.
 7. 저장소 검증 스크립트의 Python 모듈 의존성은 `scripts/requirements.txt`에 유지합니다.
-
-GitHub Actions controller는 `requirements.txt`와
-`requirements-pre-commit.txt`에서 uv 0.12.18로 생성한
-`requirements-controller.lock`만 `--require-hashes`로 설치합니다. 이 lock은
-Linux x86-64의 Python 3.12와 3.14 조건을 함께 담습니다. 로컬 pre-commit
-도구 준비는 기존 `requirements-pre-commit.txt`를 계속 직접 소비하며, lock
-재생성은 입력 변경을 동반한 별도 리뷰 대상입니다.
-
-로컬에서 단위 테스트를 돌릴 때도 같은 lock이 필요합니다. 배포판 Python
-패키지는 더 오래될 수 있습니다. 예를 들어 `jsonschema` 4.10에는
-`referencing`이 없어 secret catalog, SMTP 생성기, metadata sync 테스트가
-실패합니다. lock을 별도 venv에 `--require-hashes`로 설치하고, 그 venv의
-`bin`을 `PATH` 맨 앞에 둡니다. `gen-secrets.sh`가 `PATH`의 `python3`를
-호출하기 때문입니다.
 
 #### Validation ownership
 

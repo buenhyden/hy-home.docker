@@ -583,6 +583,38 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 self._findings("repository-readme", good),
             )
 
+    def test_readme_directories_path_column_is_checked_in_any_form(self) -> None:
+        body, _ = self._conforming_body("repository-readme")
+        table = "\n| --- | --- |\n| a | b |\n"
+        for header, invalid in (
+            ("| Purpose | Path |", True),
+            ("| path | Purpose |", True),
+            ("| Directory | Purpose |", False),
+        ):
+            with self.subTest(header=header):
+                candidate = body.replace(
+                    "### Directories\n\n",
+                    "### Directories\n\n" + header + table,
+                    1,
+                )
+                self.assertEqual(
+                    invalid,
+                    "readme-documents-header-invalid"
+                    in self._findings("repository-readme", candidate),
+                )
+
+    def test_readme_directories_checks_every_table_including_h4(self) -> None:
+        body, _ = self._conforming_body("repository-readme")
+        table = "| Path | Purpose |\n| --- | --- |\n| a | b |\n\n"
+        bad = "#### Later\n\n| Purpose | Path |\n| --- | --- |\n| a | b |\n\n"
+        candidate = body.replace(
+            "### Directories\n\n", "### Directories\n\n" + table + bad, 1
+        )
+        self.assertIn(
+            "readme-documents-header-invalid",
+            self._findings("repository-readme", candidate),
+        )
+
     def test_readme_documents_module_rejects_other_header_shapes(self) -> None:
         body, _ = self._conforming_body("readme")
         for header in (

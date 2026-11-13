@@ -41,6 +41,27 @@ created: "2025-11-24"
 - 애플리케이션 비즈니스 로직과 프론트엔드 소스 코드.
 - 자격 증명 및 민감 변수 (`secrets/`에서 관리).
 
+#### Service Documentation Rubric
+
+각 서비스 README는 같은 서비스 디렉터리의 Compose/설정 파일과 정합성을 유지해야 하며
+다음의 agent 검증 가능 필드를 다뤄야 합니다.
+
+| Field | Required evidence |
+| :--- | :--- |
+| Purpose | 서비스 역할, 티어, 해당 서비스를 선택하는 프로필 |
+| Config files | Git 추적 `infra/**/{compose,docker-compose}*.{yml,yaml}`, Dockerfile, 스크립트, 마운트된 설정 경로 |
+| Config values | 동작에 영향을 주는 비밀이 아닌 환경 변수 키와 기본값 |
+| Compose linkage | 루트 include/프로필 상태 및 변형 compose 파일 |
+| Networks | 선언된 네트워크와 의도된 신뢰 경계 |
+| Volumes | 영속 데이터, 바인드 마운트, 백업 관련 경로 |
+| Ports | 내부 및 노출 포트와 프로토콜 참고 사항 |
+| Labels | Traefik, 라우팅, 옵저버빌리티, 정책 레이블 |
+| Secret refs | 시크릿 이름과 마운트 경로만; 시크릿 값은 절대 포함하지 않음 |
+| Healthcheck | 헬스 엔드포인트 또는 해당 없을 때의 명시적 사유 |
+| Operations | 정식 가이드, 정책, 런북, 서비스 README 참조 |
+| Validation | 관련 compose, hardening, repo-contract 점검 |
+| Troubleshooting | 알려진 실패 모드와 첫 진단 명령 |
+
 ## Repository Map
 
 ### Directories
@@ -178,8 +199,6 @@ HYHOME_COMPOSE_PROFILES="core mng ai workflow storage obs-core obs-host availabi
 4. **Operations and documentation**: 서비스 Guide의 `implementation_services` 매핑에 정확한 Compose 경로/서비스 바인딩을 추가하고 Policy/Runbook, 서비스 README, 현재 Spec/Task를 같은 변경에서 갱신합니다. operations catalog가 전역 조인을 검증하므로 별도 registry/checker를 만들지 않습니다.
 5. **Validation**: `scripts/validation/validate-docker-compose.sh`, operations catalog, metadata 및 link 점검을 변경 범위에 맞게 실행합니다.
 
-AI 에이전트의 작업 규칙은 [AGENTS.md](AGENTS.md)가 소유합니다.
-
 ## References
 
 ### Current Documentation
@@ -194,27 +213,6 @@ AI 에이전트의 작업 규칙은 [AGENTS.md](AGENTS.md)가 소유합니다.
 - [Root Compose](../docker-compose.yml)
 - [Tech Stack Versions](./tech-stack.versions.json)
 - [Documentation index](../docs/README.md)
-
-#### Service Documentation Rubric
-
-각 서비스 README는 같은 서비스 디렉터리의 Compose/설정 파일과 정합성을 유지해야 하며
-다음의 agent 검증 가능 필드를 다뤄야 합니다.
-
-| Field | Required evidence |
-| :--- | :--- |
-| Purpose | 서비스 역할, 티어, 해당 서비스를 선택하는 프로필 |
-| Config files | Git 추적 `infra/**/{compose,docker-compose}*.{yml,yaml}`, Dockerfile, 스크립트, 마운트된 설정 경로 |
-| Config values | 동작에 영향을 주는 비밀이 아닌 환경 변수 키와 기본값 |
-| Compose linkage | 루트 include/프로필 상태 및 변형 compose 파일 |
-| Networks | 선언된 네트워크와 의도된 신뢰 경계 |
-| Volumes | 영속 데이터, 바인드 마운트, 백업 관련 경로 |
-| Ports | 내부 및 노출 포트와 프로토콜 참고 사항 |
-| Labels | Traefik, 라우팅, 옵저버빌리티, 정책 레이블 |
-| Secret refs | 시크릿 이름과 마운트 경로만; 시크릿 값은 절대 포함하지 않음 |
-| Healthcheck | 헬스 엔드포인트 또는 해당 없을 때의 명시적 사유 |
-| Operations | 정식 가이드, 정책, 런북, 서비스 README 참조 |
-| Validation | 관련 compose, hardening, repo-contract 점검 |
-| Troubleshooting | 알려진 실패 모드와 첫 진단 명령 |
 
 ### Support and Ownership
 
