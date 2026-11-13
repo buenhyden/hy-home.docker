@@ -26,7 +26,6 @@ storage, block retention, metrics generator, secret boundary, protected route를
 ### Authority
 
 - Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](../../guides/07-observability/0049-tempo.md) (`GDE-0049`), [Runbook](../../runbooks/07-observability/0049-tempo.md) (`RUN-0049`)
 
 - Runtime pins: Compose/Dockerfile 선언이 authoritative하며, [derived Compose image projection](../../../../infra/tech-stack.versions.json)이 drift 검증을 제공한다.
 
@@ -133,6 +132,8 @@ Tempo gRPC `9095`은 listen address를 지정하지 않아 모든 인터페이�
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ### Change and Adoption
+
+- Subject peers: [Guide](../../guides/07-observability/0049-tempo.md) (`GDE-0049`), [Runbook](../../runbooks/07-observability/0049-tempo.md) (`RUN-0049`)
 
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/07-observability/0049-tempo.md)

@@ -22,8 +22,6 @@ Dozzle은 OPTIONAL 특권 관리자 뷰어다. 네이티브 OIDC와 CIDR 제한�
 
 ### Authority
 
-- [가이드](../../guides/07-observability/0072-dozzle.md) (`GDE-0072`)
-- [런북](../../runbooks/07-observability/0072-dozzle.md) (`RUN-0072`)
 - [Laboratory 아키텍처](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
 
 - [Dozzle Compose 소스](../../../../infra/06-observability/dozzle/docker-compose.yml)
@@ -84,5 +82,8 @@ ForwardAuth를 중복 추가하는 일반 절차를 적용하지 않는다. 이 
 이 정책의 소유자는 frontmatter `owner`에 기록된 @buenhyden이다.
 
 ### Change and Adoption
+
+- [가이드](../../guides/07-observability/0072-dozzle.md) (`GDE-0072`)
+- [런북](../../runbooks/07-observability/0072-dozzle.md) (`RUN-0072`)
 
 - [Dozzle 보안 고려사항](https://dozzle.dev/guide/authentication#security-considerations)

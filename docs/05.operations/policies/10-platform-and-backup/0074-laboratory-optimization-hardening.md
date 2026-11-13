@@ -23,7 +23,6 @@ created: "2026-05-10"
 ### Authority
 
 - 상위 문서: [Administration and Experimentation Architecture Description](../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- 동일 주제 문서: [Guide](../../guides/10-platform-and-backup/0074-laboratory-optimization-hardening.md) (`GDE-0074`), [Runbook](../../runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md) (`RUN-0074`)
 
 - 실행 버전의 원본은 Compose/Dockerfile 선언이며, [파생 버전 목록](../../../../infra/tech-stack.versions.json)은 변경 누락 검증에 사용한다.
 
@@ -103,6 +102,8 @@ created: "2026-05-10"
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
 ### Change and Adoption
+
+- 동일 주제 문서: [Guide](../../guides/10-platform-and-backup/0074-laboratory-optimization-hardening.md) (`GDE-0074`), [Runbook](../../runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md) (`RUN-0074`)
 
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/10-platform-and-backup/0074-laboratory-optimization-hardening.md)

@@ -24,8 +24,6 @@ Terrakube는 명시적인 `iac` 컨트롤 플레인이다. Apache-2.0 프로젝�
 
 ### Authority
 
-- [가이드](../../guides/10-platform-and-backup/0069-terrakube.md) (`GDE-0069`)
-- [런북](../../runbooks/10-platform-and-backup/0069-terrakube.md) (`RUN-0069`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 - [Terrakube Compose 소스](../../../../infra/09-platform-ops/terrakube/docker-compose.yml)
@@ -98,6 +96,9 @@ PostgreSQL/SeaweedFS/Valkey 데이터, 협조된 복구, 업그레이드, 제거
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
 ### Change and Adoption
+
+- [가이드](../../guides/10-platform-and-backup/0069-terrakube.md) (`GDE-0069`)
+- [런북](../../runbooks/10-platform-and-backup/0069-terrakube.md) (`RUN-0069`)
 
 - [Terrakube 문서](https://docs.terrakube.io/)
 - [Terrakube 라이선스](https://github.com/terrakube-io/terrakube/blob/main/LICENSE)

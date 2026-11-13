@@ -87,7 +87,7 @@ Keycloak과 OAuth2 Proxy 서비스 자체의 운영 통제는 [POL-0014](0014-ke
 - 과거 OAuth callback URL 또는 authorization code 재사용
 - Keycloak access token을 Airflow internal JWT로 취급
 
-#### Source nonconformance and ownership
+#### Shared controls
 
 공통 Secret 보존·runtime 변경 승인은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md)과
 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)을 적용한다.

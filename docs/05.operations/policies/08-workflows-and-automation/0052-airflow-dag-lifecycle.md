@@ -23,7 +23,6 @@ created: "2026-03-25"
 ### Authority
 
 - Declared parent: [Workflow Tier (07-workflow) Architecture Description](../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
-- Subject peers: [Guide](../../guides/08-workflows-and-automation/0051-airflow-dag-lifecycle.md) (`GDE-0051`)
 
 - Runtime pins: Compose/Dockerfile 선언이 authoritative하며, [derived Compose image projection](../../../../infra/tech-stack.versions.json)이 drift 검증을 제공한다.
 
@@ -75,6 +74,8 @@ Compliance는 [Airflow Procedure](../../runbooks/08-workflows-and-automation/005
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ### Change and Adoption
+
+- Subject peers: [Guide](../../guides/08-workflows-and-automation/0051-airflow-dag-lifecycle.md) (`GDE-0051`)
 
 - [Operations index](../../README.md)
 - [Airflow DAG basics guide](../../guides/08-workflows-and-automation/0051-airflow-dag-lifecycle.md)

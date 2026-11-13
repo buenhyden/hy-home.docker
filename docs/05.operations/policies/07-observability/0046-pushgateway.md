@@ -23,7 +23,6 @@ created: "2026-05-17"
 ### Authority
 
 - Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](../../guides/07-observability/0046-pushgateway.md) (`GDE-0046`), [Runbook](../../runbooks/07-observability/0046-pushgateway.md) (`RUN-0046`)
 
 - 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
@@ -93,6 +92,8 @@ created: "2026-05-17"
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ### Change and Adoption
+
+- Subject peers: [Guide](../../guides/07-observability/0046-pushgateway.md) (`GDE-0046`), [Runbook](../../runbooks/07-observability/0046-pushgateway.md) (`RUN-0046`)
 
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/07-observability/0046-pushgateway.md)

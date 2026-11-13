@@ -22,8 +22,6 @@ Mailpit은 개발용 이메일을 캡처한다. 일부러 느슨하게 둔 SMTP 
 
 ### Authority
 
-- [Guide](../../guides/11-mail-and-notifications/0084-mailpit.md) (`GDE-0084`)
-- [Runbook](../../runbooks/11-mail-and-notifications/0084-mailpit.md) (`RUN-0084`)
 - [Communication architecture](../../../02.architecture/descriptions/0010-communication-architecture.md)
 
 - [Mailpit Compose source](../../../../infra/11-quality/mailpit/docker-compose.yml)
@@ -92,6 +90,9 @@ gateway 경로만 SSO를 거친다. 직접 loopback UI와 두 네트워크의 pe
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
 ### Change and Adoption
+
+- [Guide](../../guides/11-mail-and-notifications/0084-mailpit.md) (`GDE-0084`)
+- [Runbook](../../runbooks/11-mail-and-notifications/0084-mailpit.md) (`RUN-0084`)
 
 - [Mailpit storage](https://mailpit.axllent.org/docs/configuration/email-storage/)
 - [Mailpit runtime options](https://mailpit.axllent.org/docs/configuration/runtime-options/)

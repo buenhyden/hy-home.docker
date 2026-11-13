@@ -23,8 +23,6 @@ OpenTofu는 명시적인 `iac` job이다. 정적 선택과 검증은 provider �
 
 ### Authority
 
-- [가이드](../../guides/10-platform-and-backup/0082-opentofu.md) (`GDE-0082`)
-- [런북](../../runbooks/10-platform-and-backup/0082-opentofu.md) (`RUN-0082`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 - [OpenTofu Compose 소스](../../../../infra/09-platform-ops/opentofu/docker-compose.yml)
@@ -104,6 +102,9 @@ plan, apply, apply 이후 결과를 구분한다. 실행되지 않은 상태 복
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
 ### Change and Adoption
+
+- [가이드](../../guides/10-platform-and-backup/0082-opentofu.md) (`GDE-0082`)
+- [런북](../../runbooks/10-platform-and-backup/0082-opentofu.md) (`RUN-0082`)
 
 - [OpenTofu 상태 저장소](https://opentofu.org/docs/language/state/backends/)
 - [OpenTofu state 명령 안전성](https://opentofu.org/docs/cli/commands/state/)

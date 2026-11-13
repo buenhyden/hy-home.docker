@@ -24,7 +24,6 @@ created: "2026-09-19"
 ### Authority
 
 - [Home/Dev architecture](../../../02.architecture/descriptions/0031-home-development-host.md) (`AD-0031`)
-- [Guide](../../guides/10-platform-and-backup/0086-dependency-version-management.md), [Policy](0086-dependency-version-management.md), [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)
 
 - [Runtime version projection](../../../../infra/tech-stack.versions.json)
 - [Repository Renovate policy](../../../../renovate.json5)
@@ -149,5 +148,7 @@ GPU나 데이터 형식 호환성의 증거가 되지는 않는다.
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
 ### Change and Adoption
+
+- [Guide](../../guides/10-platform-and-backup/0086-dependency-version-management.md), [Policy](0086-dependency-version-management.md), [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)
 
 - [Operations index](../../README.md)

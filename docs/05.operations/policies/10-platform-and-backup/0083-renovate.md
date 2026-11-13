@@ -25,7 +25,6 @@ Renovate는 HOME 호스트에서 self-hosted로 실행하는 Compose job(`depend
 ### Authority
 
 - 설계 근거: [AD-0009](../../../02.architecture/descriptions/0009-tooling-architecture.md)
-- 동일 주제 문서: [Guide](../../guides/10-platform-and-backup/0083-renovate.md), [Runbook](../../runbooks/10-platform-and-backup/0083-renovate.md)
 
 - [Renovate Compose source](../../../../infra/09-platform-ops/renovate/docker-compose.yml)
 - [Derived Compose image projection](../../../../infra/tech-stack.versions.json)
@@ -92,6 +91,8 @@ self-host 설정 검증을 반드시 통과해야 한다.
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
 ### Change and Adoption
+
+- 동일 주제 문서: [Guide](../../guides/10-platform-and-backup/0083-renovate.md), [Runbook](../../runbooks/10-platform-and-backup/0083-renovate.md)
 
 - [Renovate security and permissions](https://docs.renovatebot.com/security-and-permissions/)
 - [Operations index](../../README.md)

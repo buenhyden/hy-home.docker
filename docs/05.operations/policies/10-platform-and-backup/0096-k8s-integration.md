@@ -24,8 +24,6 @@ OpenBao 인증 경로를 사용한다. 이 정책은 그 집합과 인증 방식
 
 ### Authority
 
-- [가이드](../../guides/10-platform-and-backup/0096-k8s-integration.md) (`GDE-0096`)
-- [런북](../../runbooks/10-platform-and-backup/0096-k8s-integration.md) (`RUN-0096`)
 - [OpenBao 정책](../04-security-and-secrets/0085-openbao.md)
 
 - [OpenBao ESO read policy](../../../../infra/03-security/openbao/config/policies/eso-read-platform.hcl)
@@ -120,5 +118,8 @@ contract 표에 대한 검토된 변경이 필요하다.
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
 ### Change and Adoption
+
+- [가이드](../../guides/10-platform-and-backup/0096-k8s-integration.md) (`GDE-0096`)
+- [런북](../../runbooks/10-platform-and-backup/0096-k8s-integration.md) (`RUN-0096`)
 
 - 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

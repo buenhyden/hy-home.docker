@@ -23,7 +23,6 @@ Gatus는 native OIDC와 지속적인 probe history를 가진 HOME availability m
 ### Authority
 
 - Governing architecture: [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md)
-- Subject peers: [Guide](../../guides/07-observability/0087-gatus.md) and [Runbook](../../runbooks/07-observability/0087-gatus.md)
 
 - 런타임 고정값은 [observability Compose](../../../../infra/06-observability/docker-compose.yml)와 선택된 [Gatus Dockerfile](../../../../infra/06-observability/gatus/Dockerfile)이 소유하며, [derived Compose image projection](../../../../infra/tech-stack.versions.json)이 drift를 검증한다.
 
@@ -99,6 +98,8 @@ probe 커버리지, backup, restore는 별도로 승인된 target이 필요한 �
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ### Change and Adoption
+
+- Subject peers: [Guide](../../guides/07-observability/0087-gatus.md) and [Runbook](../../runbooks/07-observability/0087-gatus.md)
 
 - [Guide](../../guides/07-observability/0087-gatus.md), [Runbook](../../runbooks/07-observability/0087-gatus.md)
 - [Gatus upstream security policy](https://github.com/TwiN/gatus/security/policy)

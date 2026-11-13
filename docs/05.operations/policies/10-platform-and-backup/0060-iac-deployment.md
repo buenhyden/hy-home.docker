@@ -23,7 +23,6 @@ created: "2026-03-25"
 ### Authority
 
 - 상위 문서: [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- 동일 주제 문서: 없음 — `0060`은 독립 정책이며 같은 번호의 Guide/Runbook은 없다.
 
 - 실행 버전의 원본은 Compose/Dockerfile 선언이며, [파생 버전 목록](../../../../infra/tech-stack.versions.json)은 변경 누락 검증에 사용한다.
 
@@ -82,6 +81,8 @@ socket 권한과 외부 도구 선택은 OpenTofu의 읽기 전용 cloud credent
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
 ### Change and Adoption
+
+- 동일 주제 문서: 없음 — `0060`은 독립 정책이며 같은 번호의 Guide/Runbook은 없다.
 
 - [Operations index](../../README.md)
 - [OpenTofu guide](../../guides/10-platform-and-backup/0082-opentofu.md)

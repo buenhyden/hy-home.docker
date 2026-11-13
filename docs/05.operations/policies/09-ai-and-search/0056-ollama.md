@@ -23,7 +23,6 @@ created: "2026-05-17"
 ### Authority
 
 - Declared parent: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: [Guide](../../guides/09-ai-and-search/0056-ollama.md) (`GDE-0056`), [Runbook](../../runbooks/09-ai-and-search/0056-ollama.md) (`RUN-0056`)
 
 - 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
@@ -111,6 +110,8 @@ Ollama 추론 엔진 운영 전반:
 책임 소유자는 **@buenhyden**이다.
 
 ### Change and Adoption
+
+- Subject peers: [Guide](../../guides/09-ai-and-search/0056-ollama.md) (`GDE-0056`), [Runbook](../../runbooks/09-ai-and-search/0056-ollama.md) (`RUN-0056`)
 
 - [Ollama API authentication](https://docs.ollama.com/api/authentication): local API의 무인증 동작과 cloud API 인증을 구분한다.
 - [Operations index](../../README.md)

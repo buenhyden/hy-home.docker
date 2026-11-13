@@ -430,7 +430,7 @@ Guide의 실제 Compose/build와 그 릴리스 공식 근거를 다시 확인해
 `Host(grafana.${DEFAULT_URL})`의 `/favicon.ico` 또는 `/robots.txt` GET/HEAD만 SSO
 인증 예외이며 `gateway-standard-chain@file`은 유지한다. 다른 메서드는 더 높은 우선순위의
 `grafana-static-deny` router가 `noop@internal`으로 종료해 `418`을 반환한다. 리스크·rate
-limit·재검토일(2026-12-02)과 종료 조건은 [POL-0079](../../policies/03-identity-and-access/0079-application-auth-integration.md#source-nonconformance-and-ownership)가
+limit·재검토일(2026-12-02)과 종료 조건은 [POL-0079](../../policies/03-identity-and-access/0079-application-auth-integration.md#exception-conditions)가
 소유한다. 이 정적 소스 계약은 실제 Grafana 접근·로그인·권한·backend 호출의 새 운영
 검증을 의미하지 않는다.
 

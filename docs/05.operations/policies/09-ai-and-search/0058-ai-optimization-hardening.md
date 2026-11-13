@@ -23,7 +23,6 @@ created: "2026-05-10"
 ### Authority
 
 - Declared parent: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
-- Subject peers: [Guide](../../guides/09-ai-and-search/0058-ai-optimization-hardening.md) (`GDE-0058`), [Runbook](../../runbooks/09-ai-and-search/0058-ai-optimization-hardening.md) (`RUN-0058`)
 
 - 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
@@ -110,6 +109,8 @@ AI hardening은 일부 소스 문자열만 검사하며 GPU 여유, 사용자별
 책임 소유자는 **@buenhyden**이다.
 
 ### Change and Adoption
+
+- Subject peers: [Guide](../../guides/09-ai-and-search/0058-ai-optimization-hardening.md) (`GDE-0058`), [Runbook](../../runbooks/09-ai-and-search/0058-ai-optimization-hardening.md) (`RUN-0058`)
 
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/09-ai-and-search/0058-ai-optimization-hardening.md)

@@ -23,8 +23,6 @@ TLS/인증을 갖추지 않았으므로 명시적으로 격리된 신뢰 네트�
 
 ### Authority
 
-- [가이드](../../guides/10-platform-and-backup/0065-registry.md) (`GDE-0065`)
-- [런북](../../runbooks/10-platform-and-backup/0065-registry.md) (`RUN-0065`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 - [Registry Compose 소스](../../../../infra/09-platform-ops/registry/docker-compose.yml)
@@ -89,6 +87,9 @@ TLS/인증, push, pull, digest 일치가 포함된다.
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
 ### Change and Adoption
+
+- [가이드](../../guides/10-platform-and-backup/0065-registry.md) (`GDE-0065`)
+- [런북](../../runbooks/10-platform-and-backup/0065-registry.md) (`RUN-0065`)
 
 - [CNCF Distribution 배포](https://distribution.github.io/distribution/about/deploying/)
 - [가비지 컬렉션](https://distribution.github.io/distribution/about/garbage-collection/)

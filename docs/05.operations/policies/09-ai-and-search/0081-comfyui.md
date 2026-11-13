@@ -23,7 +23,6 @@ ComfyUI는 항상 켜져 있는 HOME 이미지 워크플로 인터페이스다.
 ### Authority
 
 - 상위 아키텍처: [AD-0008](../../../02.architecture/descriptions/0008-ai-architecture.md)
-- 대상 동위 문서: [가이드](../../guides/09-ai-and-search/0081-comfyui.md), [런북](../../runbooks/09-ai-and-search/0081-comfyui.md)
 
 - 런타임 고정 버전은 [ComfyUI Compose](../../../../infra/08-ai/comfyui/docker-compose.yml)가 소유한다. 로컬 Dockerfile 대신 선언된 이미지가 선택되며, [파생 Compose 이미지 projection](../../../../infra/tech-stack.versions.json)이 drift를 검증한다.
 
@@ -111,6 +110,8 @@ Image tag가 mutable이므로 image upgrade 전에는 새 image가 여전히 `/r
 책임 소유자는 **@buenhyden**이다.
 
 ### Change and Adoption
+
+- 대상 동위 문서: [가이드](../../guides/09-ai-and-search/0081-comfyui.md), [런북](../../runbooks/09-ai-and-search/0081-comfyui.md)
 
 - [가이드](../../guides/09-ai-and-search/0081-comfyui.md), [런북](../../runbooks/09-ai-and-search/0081-comfyui.md)
 - [중앙 백업 정책](../10-platform-and-backup/0021-backup-and-restore.md)

@@ -23,7 +23,6 @@ created: "2026-05-17"
 ### Authority
 
 - Declared parent: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](../../guides/09-ai-and-search/0034-qdrant.md) (`GDE-0034`), [Runbook](../../runbooks/09-ai-and-search/0034-qdrant.md) (`RUN-0034`)
 
 - [Infra README](../../../../infra/04-data/qdrant/README.md)
 
@@ -87,6 +86,8 @@ N/A - 현재 승인된 예외 없음.
 이 정책의 소유자는 frontmatter `owner`에 기록된 @buenhyden이다.
 
 ### Change and Adoption
+
+- Subject peers: [Guide](../../guides/09-ai-and-search/0034-qdrant.md) (`GDE-0034`), [Runbook](../../runbooks/09-ai-and-search/0034-qdrant.md) (`RUN-0034`)
 
 - [Qdrant snapshots](https://qdrant.tech/documentation/operations/snapshots/)
 - [Qdrant migration and recovery](https://qdrant.tech/documentation/migration-recovery-options/)

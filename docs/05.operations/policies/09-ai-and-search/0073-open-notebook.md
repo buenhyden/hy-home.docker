@@ -23,8 +23,6 @@ provider 자격 증명, 암호화 키가 하나의 복구 경계를 이룬다.
 
 ### Authority
 
-- [가이드](../../guides/09-ai-and-search/0073-open-notebook.md) (`GDE-0073`)
-- [런북](../../runbooks/09-ai-and-search/0073-open-notebook.md) (`RUN-0073`)
 - [Laboratory 아키텍처](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
 
 - [Open Notebook Compose 소스](../../../../infra/08-ai/open-notebook/docker-compose.yml)
@@ -100,6 +98,9 @@ API를 광범위하게 노출하거나, 키를 소스에 저장하거나, 대응
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
 ### Change and Adoption
+
+- [가이드](../../guides/09-ai-and-search/0073-open-notebook.md) (`GDE-0073`)
+- [런북](../../runbooks/09-ai-and-search/0073-open-notebook.md) (`RUN-0073`)
 
 - [Open Notebook 보안](https://github.com/lfnovo/open-notebook/blob/main/docs/5-CONFIGURATION/security.md)
 - [SurrealDB 백업 및 복구](https://surrealdb.com/docs/manage/self-hosted/backups-and-recovery)

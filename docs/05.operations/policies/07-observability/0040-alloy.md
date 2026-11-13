@@ -23,7 +23,6 @@ created: "2026-05-17"
 ### Authority
 
 - Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](../../guides/07-observability/0040-alloy.md) (`GDE-0040`), [Runbook](../../runbooks/07-observability/0040-alloy.md) (`RUN-0040`)
 
 - [Runtime image declarations](../../../../infra/06-observability/docker-compose.yml)
 
@@ -101,6 +100,8 @@ pipeline, exporter, Docker discovery, route, mount 예외는 사용자 승인과
 책임 소유자는 **@buenhyden**이다. 예외와 통제 변경에는 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ### Change and Adoption
+
+- Subject peers: [Guide](../../guides/07-observability/0040-alloy.md) (`GDE-0040`), [Runbook](../../runbooks/07-observability/0040-alloy.md) (`RUN-0040`)
 
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/07-observability/0040-alloy.md)
