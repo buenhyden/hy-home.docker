@@ -17,21 +17,35 @@ created: "{{CREATED}}"
 
 # {{TITLE}}
 
-## Overview
+## Purpose
 
-{{OVERVIEW}}
+### Outcome
 
-## Scope
+<!-- Author prompt: State the reader, the goal and the primary tutorial, how-to, reference or explanation need. -->
 
-### Audience and Goal
+{{READER_GOAL_AND_OUTCOME}}
 
-{{AUDIENCE_AND_GOAL}}
+### Boundaries
 
-## Concepts
+<!-- Author prompt: Say what this guide covers and leaves out, and link the implementation, requirement and policy that own the subject. -->
 
-{{CONCEPTS_AND_IMPLEMENTATION_BOUNDARIES}}
+{{SCOPE_BOUNDARIES_AND_AUTHORITY_LINKS}}
 
-## Usage
+## Prerequisites
+
+### Environment
+
+{{IMPLEMENTATION_ENVIRONMENT_AND_CONCEPTS}}
+
+### Permissions
+
+<!-- Author prompt: Name the access, approvals and secret names (never values) the reader needs; write "none" when nothing is required. -->
+
+{{ACCESS_APPROVALS_AND_SECRET_NAMES}}
+
+## Procedure
+
+### Actions
 
 <!-- Author prompt: For a service subject, cover only applicable fields; omit nonapplicable fields without filler. Identify the actual implementation and Compose ownership, service profiles and HOME/DEV/OPTIONAL/LAB classification, network and exposure, data and persistence, dependencies, environment and secret names (never values), resources, security and authentication, normal use, backup prerequisites and recovery, upgrade and migration, observable readiness, and official sources. For a non-service workspace subject, keep only the fields its implementation actually has. Route executable maintenance and recovery to the Runbook; do not duplicate its commands. -->
 
@@ -39,26 +53,20 @@ created: "{{CREATED}}"
 
 <!-- Author prompt: State the reader goal and primary tutorial, how-to, reference or explanation need. -->
 
-{{USAGE}}
+{{NORMAL_USE_AND_ACTIONS}}
 
-### Common Checks
+### Exceptions
 
-{{COMMON_CHECKS}}
+{{SPECIAL_CASES_AND_LIMITS}}
 
-### Runbook Handoff
+## Verification
 
-<!-- Author prompt: Keep this optional section only when an actual runbook owns executable steps; link it without copying commands. -->
+### Expected Result
 
-{{RUNBOOK_HANDOFF}}
+{{COMMON_CHECKS_AND_EXPECTED_RESULT}}
 
-### Traceability
+### Troubleshooting
 
-{{SUBJECT_AND_AUTHORITY_LINKS}}
-
-## Troubleshooting
+<!-- Author prompt: Give symptoms and diagnosis; when an actual runbook owns executable steps, link it without copying commands. -->
 
 {{SYMPTOMS_DIAGNOSIS_AND_RUNBOOK_HANDOFF}}
-
-## Related Documents
-
-{{RELATED_DOCUMENTS}}

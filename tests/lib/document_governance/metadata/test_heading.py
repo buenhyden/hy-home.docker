@@ -44,7 +44,7 @@ class CurrentBodyContractTests(unittest.TestCase):
             "spec": "Overview|Scope|Behavior Contract|Acceptance Criteria|References",
             "plan": "Overview|Dependencies|Implementation Strategy|Verification Plan|Risks|Promotion Map",
             "task": "Scope|Execution Log|Verification Evidence|Acceptance Decision|Handoff",
-            "guide": "Overview|Scope|Concepts|Usage|Troubleshooting|Related Documents",
+            "guide": "Purpose|Prerequisites|Procedure|Verification",
             "policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
             "runbook": "Overview|Trigger|Prerequisites|Procedure|Verification|Failure and Recovery|Related Documents",
             "incident": "Summary|Impact|Timeline|Resolution|Evidence",
@@ -437,6 +437,12 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Quality and Risks", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Runtime View", "body-subheading-forbidden"),
+            ),
+            "guide": (
+                ("## Overview", "body-heading-forbidden"),
+                ("## Usage", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+                ("### Common Checks", "body-subheading-forbidden"),
             ),
             "adr": (
                 ("## Decision Drivers", "body-heading-forbidden"),

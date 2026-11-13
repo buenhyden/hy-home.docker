@@ -1109,12 +1109,12 @@ class DocumentRegistryTests(unittest.TestCase):
             {item.code for item in validate_record(record, profiles, {})},
         )
 
-    def test_guide_handoff_is_optional_but_usage_is_required(self) -> None:
+    def test_guide_routes_runbook_handoff_through_troubleshooting(self) -> None:
         registry = load_registry()
         guide = registry.profiles["guide"]
-        self.assertIn("Runbook Handoff", guide["optional_sections"])
-        self.assertNotIn("Runbook Handoff", guide["required_sections"])
-        self.assertIn("Usage", guide["required_sections"])
+        self.assertNotIn("Runbook Handoff", guide["optional_sections"])
+        self.assertIn("Procedure", guide["required_sections"])
+        self.assertIn("Troubleshooting", guide["required_subsections"]["Verification"])
 
     def test_conditional_frontmatter_contract_rejects_unknown_status_or_key(
         self,
