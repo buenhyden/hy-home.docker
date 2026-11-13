@@ -76,7 +76,7 @@ The owner's instruction and choices of 2026-11-13 issue this Task.
 
 The contract `REPOSITORY-VOCABULARY.json` (`repository-vocabulary` v14.5)
 requires each common definition to be identical across the four
-repositories. Thirteen rows had local narrowings or dropped clauses. Each is
+repositories. Twenty rows had local narrowings or dropped clauses. Each is
 now an English rendering of the contract row, and its local meaning moved to
 a Local Extensions row:
 
@@ -86,7 +86,7 @@ a Local Extensions row:
 | TERM-APPROVAL | Dropped "distinct from accepting the result" | - |
 | TERM-ADOPTION | Added the Task record and tracked configuration | Adoption record |
 | TERM-EXECUTION | Moved the contract's distinction to Not to Confuse | - |
-| TERM-ACCEPTANCE | Added runtime and risk acceptance | Acceptance record |
+| TERM-ACCEPTANCE | Added runtime and risk acceptance; "authorized owner" for "authorized party" | Acceptance record |
 | TERM-RETIREMENT | Merged retirement into file deletion | Retirement, here |
 | TERM-ARCHIVE | Replaced the common goal with the local binding | Archive, here |
 | TERM-REMOVAL | Dropped "or an approved separate copy" | - |
@@ -95,9 +95,19 @@ a Local Extensions row:
 | TERM-PROFILE | Replaced the definition with the Registry entry form | Document Profile entry |
 | TERM-EVIDENCE | Replaced the scopes with local evidence classes | Evidence class (existing) |
 | TERM-RESOLVES | Narrowed to a PASS row with the same Check and Work Unit | Resolves row |
+| TERM-SUPERSESSION | Added "reciprocal" | Supersession lineage |
+| TERM-HOLD | Added "recorded"; "until resolved" for "until a basis to resolve" | - |
+| TERM-EXCEPTION | "review condition" for "period or end condition" | - |
+| TERM-TASK | Dropped "derive from" | - |
+| TERM-PROJECTION | Dropped "synchronized" | - |
+| TERM-HARNESS | Not to Confuse dropped "as actual application" | - |
+| TERM-VERIFICATION | "owner acceptance" for "user acceptance" | - |
 
 An automated comparison of the common rows with the contract file stays
 H-W01-4 (W05).
+
+The glossary moves from `draft` to `active`, an allowed `living` transition:
+the contract it implements is approved and adopted on `main` (TSK-0060).
 
 #### Never-retire rule 2026-11-13
 
@@ -126,11 +136,11 @@ None: each decision above was the owner's before the change.
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Pre-W04 audits | 115 | W120 | requirement-conformance-audit | W00 to W03 prompts and contracts against `main` `531d69f26` | PASS | Two rules-engineer reports; deviations listed above | required | - |
-| Glossary contract comparison | 115 | W120 | contract-row-comparison | Each common row against `REPOSITORY-VOCABULARY.json` v14.5 | PASS | 33 rows compared; 13 restored above | required | - |
+| Glossary contract comparison | 115 | W120 | contract-row-comparison | Each common row against `REPOSITORY-VOCABULARY.json` v14.5, commit `a69ee1f54` | FAIL | Fresh-context rules-engineer: 13 restored rows faithful, but TERM-SUPERSESSION, HOLD and EXCEPTION still added meaning and five rows dropped or shifted a clause; the Resolves row omitted "required" and "shared criterion" | required | - |
 
 ### Resolution Links
 
-None: no required observation has failed yet.
+The Glossary contract comparison FAIL is resolved by its re-comparison row once it passes.
 
 ## Acceptance Decision
 
