@@ -44,6 +44,44 @@ def release_tag(version: str) -> str:
     return "v" + version
 
 
+def parse_semver(version: object) -> tuple[tuple[int, ...], tuple[object, ...] | None]:
+    """Return (core, prerelease) for SemVer 2.0 precedence; build is dropped."""
+    match = SEMVER.fullmatch(version) if isinstance(version, str) else None
+    if match is None:
+        raise ReleaseError("not a complete SemVer 2.0 version without v prefix")
+    core = tuple(int(part) for part in match.groups()[:3])
+    pre = match.group(4)
+    if pre is None:
+        return core, None
+    return core, tuple(
+        (0, int(part)) if part.isdigit() else (1, part) for part in pre.split(".")
+    )
+
+
+def compare_semver(left: object, right: object) -> int:
+    """Return -1, 0 or 1 by SemVer precedence; build metadata is ignored."""
+    (a_core, a_pre), (b_core, b_pre) = parse_semver(left), parse_semver(right)
+    if a_core != b_core:
+        return -1 if a_core < b_core else 1
+    if a_pre == b_pre:
+        return 0
+    if a_pre is None or b_pre is None:  # a prerelease precedes its release
+        return 1 if a_pre is None else -1
+    # Numeric identifiers precede alphanumeric; a longer equal prefix is higher.
+    return -1 if a_pre < b_pre else 1
+
+
+def check_version_change(old: object, new: object) -> None:
+    """Refuse a missing, unchanged or lower version for the same object."""
+    if not old or not new:
+        raise ReleaseError("version is missing")
+    order = compare_semver(old, new)
+    if order == 0:
+        raise ReleaseError("version is unchanged in precedence")
+    if order > 0:
+        raise ReleaseError("version is a downgrade")
+
+
 def validate_changelog(text: str) -> dict[str, str]:
     lines = text.splitlines()
     headers = [(i, line) for i, line in enumerate(lines) if line.startswith("## ")]
@@ -137,6 +175,12 @@ def _new_version(run: Runner, repository: str, tag: str) -> None:
             if existing["tag_name"] in {tag, tag[1:]}:
                 raise ReleaseError(
                     "version already has a release or draft; recovery requires review"
+                )
+            published = existing["tag_name"].removeprefix("v")
+            if SEMVER.fullmatch(published) and compare_semver(published, tag[1:]) == 0:
+                raise ReleaseError(
+                    "a release of the same precedence exists; build metadata "
+                    "cannot reissue a version"
                 )
     tags = run(
         [
