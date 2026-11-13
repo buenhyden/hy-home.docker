@@ -87,8 +87,9 @@ docs/99.templates/
 
 TemplateDefinition의 `contract_version`은 profile이 `required_subsections`를
 선언하면 공통 양식 `COMMON-DOC-FORM-1` 판본이고, 그렇지 않으면 Registry
-`common.contract_id`입니다. 판본 값은 `template_definition.py`의
-`COMMON_FORM_VERSION` 한 곳에만 둡니다.
+`common.contract_id`입니다. 판본 값은 Registry
+`common.common_form_contract` 한 곳에만 둡니다. `template_definition.py`는
+이 값을 읽고 상수로 두지 않습니다.
 
 Consumer는 `scripts.lib.document_governance.registry`를 통해 Registry를
 로드해야 합니다. README 본문이나 template 본문을 machine policy로

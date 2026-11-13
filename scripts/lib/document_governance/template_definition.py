@@ -28,11 +28,10 @@ from scripts.lib.document_governance.registry import (
     _parse_json,
 )
 
-# The documentation protocol: a role has moved to the common form when its
-# profile declares `required_subsections`; every other role keeps the
-# Registry `common.contract_id`. docs/99.templates/README.md states this rule.
-COMMON_FORM_VERSION = "COMMON-DOC-FORM-1 1.0.0"
-
+# A role has moved to the common form when its profile declares
+# `required_subsections`; every other role keeps the Registry
+# `common.contract_id`. The common form's revision is the Registry's
+# `common.common_form_contract`, never a value held here.
 # COMMON-DOC-FORM-1 gives an H2 one empty rule and an H3 none; heading.py
 # enforces it at every level, treating an HTML comment as no content.
 _EMPTY_SECTION_RULE = (
@@ -604,11 +603,18 @@ def template_definition(
             f"{', '.join(registry.lifecycle_terminal_statuses.get(lifecycle_id, ())) or 'none'}"
         )
     language = profile.get("language")
+    if profile.get("required_subsections"):
+        contract_version = common.get("common_form_contract")
+        if not contract_version:
+            raise RegistryError(
+                f"{template_id} uses the common form but the Registry "
+                "common.common_form_contract names no revision"
+            )
+    else:
+        contract_version = common.get("contract_id")
     return {
         "template_id": template_id,
-        "contract_version": COMMON_FORM_VERSION
-        if profile.get("required_subsections")
-        else str(common.get("contract_id")),
+        "contract_version": str(contract_version),
         "role": template_id,
         "purpose": role["purpose"],
         "responsibility": role["responsibility"],

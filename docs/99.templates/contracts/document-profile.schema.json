@@ -206,6 +206,11 @@
             }
           }
         },
+        "common_form_contract": {
+          "$comment": "The adopted common section form revision (id and version). Optional so a Registry from before the pin still validates; template_definition reads it for every role that declares required_subsections.",
+          "type": "string",
+          "pattern": "^COMMON-DOC-FORM-[0-9]+ [0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
         "vocabulary_contract": {
           "$comment": "The adopted shared vocabulary contract: identity, version and Term ID to Term pairs only; the glossary owns meaning.",
           "type": "object",
