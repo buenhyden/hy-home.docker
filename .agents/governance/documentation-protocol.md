@@ -121,22 +121,26 @@ Markdown links.
 
 Seven relations connect documents, one per meaning of the shared contract;
 none stands in for another. Each one has a relation ID, one direction and its
-writers. The last column names the check that validates the writer, not the
-relation as a whole. A section writer is named `profile:H2/H3`.
+writers. A writer is a frontmatter key or link type, scoped to one profile as
+`profile:ref` where the same key means different things in different
+profiles, or a registered H3 named `profile:H2/H3`. The last column names the
+check for each kind of writer, not for the relation as a whole.
 
 | Relation | ID | Direction | Writer | Check that validates the writer |
 | --- | --- | --- | --- | --- |
 | Authority | `rel.authority` | Consumer to owner | Normative links | `check-document-links.py`: the link resolves |
-| Structural Ownership | `rel.structural-ownership` | Child to parent | Frontmatter `parent_ids` | `check-document-metadata.py`: `parent_ids` are valid |
-| Constraint | `rel.constraint` | Change to constraint | Spec `Owning Requirements`, Plan `Prerequisites` | `check-document-links.py`: the links resolve |
-| Traceability | `rel.traceability` | Work to evidence | Task `Results` rows and evidence links | `check-document-corpus-lifecycle.py`: the Evidence rows are valid |
-| Promotion | `rel.promotion` | Plan to target owner | Plan `Owner and Receipt` | None: the reviewer applies the [SDLC](sdlc.md#sequence) promotion rule |
-| Supersession | `rel.supersession` | Successor to predecessor | Frontmatter `supersedes` | `check-document-metadata.py`: the key is valid |
+| Structural Ownership | `rel.structural-ownership` | Child to parent | `parent_ids` of a Plan, Task, data model contract, research or audit member, and postmortem | `check-document-metadata.py`: `parent_ids` are valid |
+| Constraint | `rel.constraint` | Change to constraint | `parent_ids` of a Requirements package, Architecture description, ADR, Spec and operations policy; Spec `Owning Requirements` as prose | `check-document-metadata.py` for `parent_ids`; the prose is checked by review |
+| Traceability | `rel.traceability` | Record to source | Task `Results` rows and a Task's evidence links; `parent_ids` of research, audit, data, guide, runbook, incident and generated documents | `check-document-corpus-lifecycle.py` for Evidence rows; `check-document-links.py` for links; `check-document-metadata.py` for `parent_ids` |
+| Promotion | `rel.promotion` | Plan to target owner | Plan `Durable Meaning` and `Owner and Receipt` | None: the reviewer applies the [SDLC](sdlc.md#sequence) promotion rule |
+| Supersession | `rel.supersession` | Successor to predecessor | Frontmatter `supersedes`; ADR `Traceability` / `Supersession` | `check-document-metadata.py` for the key; the section is checked by review |
 | Change Impact | `rel.change-impact` | Owner to consumer | None: derived from Authority, Constraint and Structural Ownership | None: the reviewer applies this section |
 
 The frontmatter `owner` names an accountable person, not a related document,
 and historical and navigation links carry no relation; their link types above
-still govern them.
+still govern them. A `Traceability` section heading in a Stage 01 to 03
+document holds that document's basis and supersession records; it is a
+section name, not the `rel.traceability` relation.
 
 Only the side the Writer column names records a relation, and no document
 keeps a manual reverse-state table. Reverse lookups, such as the children of a
@@ -155,7 +159,8 @@ pins every relation ID and direction and every link-type and link-profile
 value; writers, owners and retained reverse fields are checked by the
 validator below, not pinned. The Registry validator also rejects a
 missing contract, a writer that names an undeclared frontmatter key, link type
-or relation or an unregistered profile section, a relation derived from itself,
+or relation, a profile or key a scoped writer does not have, or an unregistered
+profile H3, a relation derived from itself,
 an owner path that does not exist, and a retained reverse field that is not a frontmatter key. The
 checkers enforce only that links resolve, that metadata keys and `parent_ids`
 are valid, and that this Registry binding is valid. Existing links are not

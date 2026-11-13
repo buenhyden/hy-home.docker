@@ -321,7 +321,7 @@
                   "const": "rel.traceability"
                 },
                 "direction": {
-                  "const": "work-to-evidence"
+                  "const": "record-to-source"
                 },
                 "writers": {
                   "$ref": "#/$defs/relationWriters"

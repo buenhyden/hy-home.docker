@@ -73,19 +73,46 @@ class DocumentRelationContractTests(unittest.TestCase):
             },
             set(relations),
         )
+
+        def refs(name: str) -> set[str]:
+            return {writer["ref"] for writer in relations[name]["writers"]}
+
+        self.assertIn("plan:parent_ids", refs("structural_ownership"))
+        self.assertIn("task:parent_ids", refs("structural_ownership"))
+        self.assertIn("spec:parent_ids", refs("constraint"))
+        self.assertIn("adr:Traceability/Supersession", refs("supersession"))
         self.assertEqual(
-            [{"kind": "frontmatter", "ref": "parent_ids"}],
-            relations["structural_ownership"]["writers"],
-        )
-        self.assertEqual(
-            [{"kind": "frontmatter", "ref": "supersedes"}],
-            relations["supersession"]["writers"],
-        )
-        self.assertEqual(
-            [{"kind": "section", "ref": "plan:Promotion Map/Owner and Receipt"}],
-            relations["promotion"]["writers"],
+            {
+                "plan:Promotion Map/Durable Meaning",
+                "plan:Promotion Map/Owner and Receipt",
+            },
+            refs("promotion"),
         )
         self.assertEqual((), validate_registry(raw))
+
+    def test_each_parent_ids_writer_has_exactly_one_meaning(self) -> None:
+        raw = _registry()
+        relations = raw["common"]["document_relations"]
+        for profile in raw["profiles"]:
+            keys = [
+                *profile.get("required_frontmatter", ()),
+                *profile.get("optional_frontmatter", ()),
+            ]
+            if "parent_ids" not in keys:
+                continue
+            ref = f"{profile['id']}:parent_ids"
+            owners = [
+                name
+                for name, relation in relations.items()
+                for writer in relation["writers"]
+                if writer == {"kind": "frontmatter", "ref": ref}
+            ]
+            with self.subTest(profile=profile["id"]):
+                self.assertEqual(1, len(owners), owners)
+        self.assertNotIn(
+            {"kind": "frontmatter", "ref": "parent_ids"},
+            [w for relation in relations.values() for w in relation["writers"]],
+        )
 
     def test_manual_reverse_lookup_is_rejected(self) -> None:
         raw = _registry()
@@ -101,6 +128,13 @@ class DocumentRelationContractTests(unittest.TestCase):
     def test_unknown_writer_references_are_rejected(self) -> None:
         cases = (
             ("structural_ownership", {"kind": "frontmatter", "ref": "not_a_key"}),
+            ("structural_ownership", {"kind": "frontmatter", "ref": "plan:not_a_key"}),
+            ("structural_ownership", {"kind": "frontmatter", "ref": "nope:parent_ids"}),
+            (
+                "structural_ownership",
+                {"kind": "frontmatter", "ref": "governance-policy:parent_ids"},
+            ),
+            ("traceability", {"kind": "link", "ref": "task:not_a_link_type"}),
             ("authority", {"kind": "link", "ref": "not_a_link_type"}),
             ("change_impact", {"kind": "derived", "ref": "rel.missing"}),
             ("promotion", {"kind": "section", "ref": "plan:Promotion Map/Nope"}),
