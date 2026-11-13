@@ -447,7 +447,7 @@ leading zeros, compared by SemVer precedence, never as text or a number.
 | Common form contract | Registry `common.common_form_contract` | `COMMON-DOC-FORM-1/1.0.0` | Contract ID, `/`, SemVer version, as the shared contract writes it | `template_definition.py` |
 | Vocabulary contract | Registry `common.vocabulary_contract.version` | `1.1.0` | SemVer; the first adoption, from package label `v14.5` (kept as `source_label`), is 1.0.0, by the owner's decision recorded in SPEC-0212 TSK-0064 | Glossary `Contract Version` column, `vocabulary_contract_findings` |
 | Registry serialization | Registry `schema_version` | `1` | The Registry Schema Version, kept an integer by the same decision because its only consumer, the profile schema, pins `const: 1`; a breaking structure change raises it | Profile schema, `registry.py` |
-| Product release | release version, tagged as `v` plus the version, and CHANGELOG | per release | SemVer, checked by `scripts/operations/release.py`; the `v` belongs to the tag, not the value | Release Runbook, release workflow |
+| Product release | release version, tagged as `v` plus the version, and CHANGELOG | per release | SemVer, checked by `scripts/operations/release.py`; the `v` belongs to the tag, not the value | Release Runbook and the release workflow |
 
 Not versions: `common.contract_id` and other contract identifiers, the
 `lifecycle_generation` counter, artifact numbers and identity-space
@@ -468,7 +468,8 @@ Release is not a document role. Do not register a Release Record profile,
 template or generator under any name; release facts stay with the owners
 above. The Registry validator rejects a profile whose ID, type, template ID
 or path patterns, or a template role whose ID or source, has a `release` or
-`releases` name token; a Release role under another name, and a generator,
+`releases` name token; a role for Release records under another name, and a
+generator,
 are checked by review. This
 removes no GitHub Release, tag, CHANGELOG entry or release workflow. Remote release and
 deployment actions wait for their exact target under
