@@ -1,10 +1,10 @@
 ---
 title: "Security Tier (03-security) Requirements"
-version: "1.3.1"
+version: "1.4.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "requirements"
 artifact_id: "REQ-0003"
 created: "2026-03-26"
@@ -115,6 +115,18 @@ concepts; they are not a certification claim.
 - **REQ-0003-FR-0004**: Audit logging is enabled on the deployed server and
   required rotation and failure detections succeed; a rotation not yet observed
   stays pending in the service Task.
+- **REQ-0003-NFR-0005**: A single-node failure is detected, and a snapshot
+  restores into empty storage in an isolated run on the exact image and
+  snapshot identity, within the recovery-time target the operator set before
+  the authorized run. A synthetic pass does not accept recovery of the home
+  deployment.
+- **REQ-0003-NFR-0006**: The deployed server version's documented storage
+  encryption is an authenticated cipher with at least 256-bit key strength, and
+  the check is repeated at each version change.
+- **REQ-0003-NFR-0007**: Each consumer's lookup latency distribution, in
+  milliseconds under a named load, sample count and tool, meets the threshold
+  its owner set before measurement. A consumer with no threshold set stays
+  unjudged.
 
 ### Verification Method
 

@@ -1,10 +1,10 @@
 ---
 title: "Agent Governance Standardization Requirements"
-version: "1.7.1"
+version: "1.8.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "requirements"
 artifact_id: "REQ-0024"
 created: "2026-06-01"
@@ -149,23 +149,47 @@ This package covers the governance model, canonical ownership, provider adapters
 
 ### Acceptance Conditions
 
-- There is no name/source/scope drift between shared agent governance and
-  provider surfaces.
-- Tracked files under `.claude/` and `.codex/` are classified as authored
-  provider adapters, generated projections, or native runtime mechanics that
-  the Provider Registry allows.
-- The native entry of a canonical skill and its nested governance metadata
-  preserve the same ID, owner, and scope, and explicit invocation
-  configuration does not expand permissions.
-- Spec/Plan states express approval authority, while Task/item states express
-  execution. Executing Tasks have approved parents; cancelled or superseded
-  parents have no active children.
-- Registered governance and document suites pass without duplicate
-  predicates or dependence on historical fixtures.
-- The current authority does not use Stage 98 documents or deleted execution
-  ledgers as input.
-- Both providers read and revise the same memory record from different
-  worktrees, and a stale revision changes nothing.
+- **REQ-0024-FR-0001**: Each agent policy, workflow, canonical role, canonical
+  skill and provider-boundary rule has one owner under `.agents/`, and no file
+  under `.claude/` or `.codex/` defines one.
+- **REQ-0024-FR-0002**: Provider Registry entries hold only provider identity,
+  projection route, model and permission translation, and hook binding; none
+  sets a document profile, path or template.
+- **REQ-0024-FR-0003**: Tracked files under `.claude/` and `.codex/` are
+  classified as authored provider adapters, generated projections, or native
+  runtime mechanics that the Provider Registry allows.
+- **REQ-0024-FR-0004**: There is no name, source or scope drift between shared
+  agent governance and provider surfaces, and the native entry of a canonical
+  skill and its nested governance metadata preserve the same ID, owner and
+  scope.
+- **REQ-0024-FR-0005**: The bootstrap policy and both provider adapters route
+  an agent that changes the repository to the relevant Requirement,
+  Architecture, active Spec and current Task.
+- **REQ-0024-FR-0006**: Spec and Plan states express approval authority, while
+  Task and item states express execution. Executing Tasks have approved
+  parents; cancelled or superseded parents have no active children.
+- **REQ-0024-FR-0007**: The current authority does not use deleted execution
+  ledgers as input, and no completion check requires a branch SHA pin, a corpus
+  snapshot or a parallel handoff ledger.
+- **REQ-0024-FR-0008**: Registered governance and document suites pass without
+  dependence on historical fixtures, and the current authority does not use
+  Stage 98 documents as input.
+- **REQ-0024-FR-0014**: Every `.agents/` canonical category is one of the
+  listed categories, and each Markdown instruction category has a registered
+  Stage 99 profile and root inventory; evaluation data is not loaded as
+  execution instructions, and no category holds execution progress state.
+- **REQ-0024-FR-0015**: Both providers read and revise the same memory record
+  from different worktrees, and a stale revision changes nothing.
+- **REQ-0024-NFR-0009**: The same tree yields the same projection verdict on
+  every run, and an unknown or conflicting input fails instead of falling back.
+- **REQ-0024-NFR-0010**: Registered metadata checks report no language-rule
+  violation.
+- **REQ-0024-NFR-0011**: No tracked permission grants a write outside the
+  approved scope, and explicit skill invocation configuration does not expand
+  permissions.
+- **REQ-0024-NFR-0012**: Each failing check names one owner, and no predicate
+  is owned by more than one aggregate gate.
+- **REQ-0024-NFR-0013**: Registered governance suites pass on the current tree.
 
 ### Verification Method
 
