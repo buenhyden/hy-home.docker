@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: plaintext secrets"
-version: "1.0.4"
+version: "1.0.5"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 action: "block"
 conditions:
 - "field": "file_path"
@@ -20,15 +20,34 @@ name: "block-plaintext-secret-compose"
 
 # BLOCKED: plaintext secrets
 
-## Overview
+## Purpose
+
+### Objective
 
 Apply the declared `block` action for block-plaintext-secret-compose.
 
+### Authority
+
+Owning policies:
+
+- [Agent Bootstrap Policy](../bootstrap.md#hard-constraints)
+- [Environment constraints](../environment-constraints.md)
+- [Quality standards](../quality-standards.md)
+
 ## Scope
+
+### Applies To
 
 The `block-plaintext-secret-compose` rule applies on the `file` event and matches file edits whose path and text meet every structured `conditions` entry ("BLOCKED: plaintext secrets"). The frontmatter owns the exact matcher.
 
+### Exclusions
+
+**Exclusions:** `_FILE` suffixes, `${...}` variable references, `/run/secrets/`
+paths, and empty values are not flagged.
+
 ## Rules
+
+### Requirements
 
 **Plaintext secret detected in Docker Compose file (project rule)**
 
@@ -80,19 +99,28 @@ env_file:
   - .env
 ```
 
-**Exclusions:** `_FILE` suffixes, `${...}` variable references, `/run/secrets/`
-paths, and empty values are not flagged.
-
 The declared action applies when the pattern matches.
 
-## Exceptions
-
-No exception is declared by this rule.
-
-## Verification
+### Enforcement
 
 Native event delivery is a separate observation from the frontmatter match.
 
-## Related Documents
+## Exceptions
 
-- `.agents/README.md`
+### Exception Conditions
+
+No exception is declared by this rule.
+
+### Approval and Review
+
+None.
+
+## Ownership
+
+### Responsibilities
+
+`@buenhyden`.
+
+### Change and Adoption
+
+`.agents/README.md`.

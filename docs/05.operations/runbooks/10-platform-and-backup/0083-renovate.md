@@ -1,10 +1,10 @@
 ---
 title: "Renovate Runbook"
-version: "0.4.1"
+version: "0.4.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0083"
 parent_ids:
@@ -14,22 +14,40 @@ created: "2026-09-19"
 
 # Renovate Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 Renovate job의 정적 점검, 승인된 live run, 잘못된 변경의 복구, systemd timer 운영 절차다.
-
-## Trigger
 
 정적 readiness 점검, 구체적으로 승인된 live job, 또는 잘못된 Renovate 변경의 복구에
 사용한다.
 
-## Prerequisites
+### Scope
 
-### Trigger and Preconditions
+- 관장 architecture: [AD-0009](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+- 대상 peer 문서: [Guide](../../guides/10-platform-and-backup/0083-renovate.md), [Policy](../../policies/10-platform-and-backup/0083-renovate.md)
+
+- [Renovate Compose source](../../../../infra/09-platform-ops/renovate/docker-compose.yml)
+- [Derived Compose image projection](../../../../infra/tech-stack.versions.json)
+- [Renovate self-hosted configuration](https://docs.renovatebot.com/self-hosted-configuration/)
+- [운영 인덱스](../../README.md)
+
+## Preconditions
+
+### Authority and Access
 
 저장소 루트에서 작업한다.
 
-## Procedure
+### Safety Checks
+
+remote 저장소에 접근하지 않고 `renovate-config-validator`와 `sync-tech-stack-versions.sh --check`로 먼저 검증한다.
+
+시작 상태 확인은 Actions의 1단계에 있다. remote 저장소에 접근하지 않고 `renovate-config-validator`와 `sync-tech-stack-versions.sh --check`로 검증한다.
+
+## Steps
+
+### Actions
 
 1. remote 저장소에 접근하지 않고 검증한다.
 
@@ -55,7 +73,7 @@ Renovate job의 정적 점검, 승인된 live run, 잘못된 변경의 복구, s
 4. 정제된 exit status를 기록하고 생성된 remote 변경 사항을 열거한다. 각 branch/PR를 검토한다.
    이 실행 승인 범위에서는 merge나 close를 하지 않는다.
 
-### 캐시·원격 변경 복구와 업그레이드
+#### 캐시·원격 변경 복구와 업그레이드
 
 live job이 사용하지 않는지 확인한 후에만 cache를 삭제/재생성한다. policy를
 Git에서 복원하고, 잘못된 원격 branch/PR을 개별적으로 검토하거나 닫으며,
@@ -64,7 +82,7 @@ Git에서 복원하고, 잘못된 원격 branch/PR을 개별적으로 검토하�
 validation한 뒤, 제한된 repository 집합에 대해 dry-run/discovery를 실행하고
 단일 승인된 canary repository를 실행한다.
 
-### 승인된 systemd 설치
+#### 승인된 systemd 설치
 
 주간 timer(`hyhome-renovate.timer`)는 HOME 호스트에 설치된 기본 실행이다. 위 Compose 명령은 머지 사이의 rebase·재시도용 온디맨드 실행이다.
 host unit을 설치하거나 교체하는 것은 별도 승인이 필요한 host 변경이다.
@@ -84,7 +102,7 @@ sudo systemctl enable hyhome-renovate.timer
 sudo systemctl start hyhome-renovate.timer
 ```
 
-### Timer 점검·수동 실행·중지
+#### Timer 점검·수동 실행·중지
 
 ```bash
 # Timer status and next trigger time
@@ -106,7 +124,7 @@ sudo systemctl stop hyhome-renovate.service
 > policy와 runbook의 모든 live-run 승인과 evidence 규칙은 timer가 트리거한
 > run과 수동으로 트리거한 run에 똑같이 적용된다.
 
-### 예약 실행 변경의 예상 효과
+#### 예약 실행 변경의 예상 효과
 
 timer 시작·재활성화는 놓친 일정의 catch-up 작업을 유발할 수 있다. 승인 범위에
 대상 저장소·token 권한·실행 시간을 포함하고 원격 쓰기가 승인되지 않았다면 timer를
@@ -119,20 +137,32 @@ Compose project/service 및 one-off label로 해당 실행을 식별하고
 상태 조회로 확인한다. 남은 작업은 정확한 컨테이너에 한해 승인된 중지 절차로 종료한다.
 `--rm`은 컨테이너 종료 후 제거 설정이며 호스트 전역 prune은 금지한다.
 
-## Verification
+### Stop Conditions
 
-승인 여부, config commit, 이미지 선언, 대상 저장소, exit status, 정제된 job 요약, 생성된
-모든 branch/PR을 기록한다. token, 원본 환경 값, 저장소 credential은 기록하지 않는다.
+사전 secret 확인 또는 이미지 pull이 실패하면 실행을 중단하고 원인을 확인한다. 알 수 없는 remote write, 과도한 token 권한, token 노출 의심, 인식되지 않는 허용 명령, 안전하게 조정할 수 없는 remote 상태는 에스컬레이션 사유다.
 
-### 복구 완료 기준
+사전 secret 확인 또는 이미지 pull이 실패하면 Actions에서 실행을 중단하고 원인을 확인한다. 알 수 없는 remote write, 과도한 token 권한, token 노출 의심 등은 Escalation에 있다.
+
+## Validation
+
+### Service Checks
+
+서비스 점검은 아래 항목에 따른다.
+
+#### 복구 완료 기준
 
 Renovate job이 실행 중이지 않고, config가 검증되고, remote 변경 사항이 파악되고, token
 처리 상태가 확인되면 복구가 완료된 것이다. 이 복구 단계는 아직 실행되지 않았으므로
 remote 저장소 변경이나 token validation은 주장하지 않는다.
 
-## Failure and Recovery
+### Evidence
 
-### Rollback or Recovery
+승인 여부, config commit, 이미지 선언, 대상 저장소, exit status, 정제된 job 요약, 생성된
+모든 branch/PR을 기록한다. token, 원본 환경 값, 저장소 credential은 기록하지 않는다.
+
+## Recovery
+
+### Rollback
 
 1. 활성 실행이 원치 않는 변경을 만들고 있다면 해당 컨테이너를 중단한다.
 2. 잘못된 local policy를 Git에서 복원하고 strict validation을 다시 실행한다.
@@ -149,15 +179,3 @@ remote 저장소 변경이나 token validation은 주장하지 않는다.
 
 알 수 없는 remote write, 과도한 token 권한, token 노출 의심, 인식되지 않는 허용 명령, 또는
 한 번에 하나씩 안전하게 조정할 수 없는 remote 상태는 에스컬레이션한다.
-
-## Related Documents
-
-### Traceability
-
-- 관장 architecture: [AD-0009](../../../02.architecture/descriptions/0009-tooling-architecture.md)
-- 대상 peer 문서: [Guide](../../guides/10-platform-and-backup/0083-renovate.md), [Policy](../../policies/10-platform-and-backup/0083-renovate.md)
-
-- [Renovate Compose source](../../../../infra/09-platform-ops/renovate/docker-compose.yml)
-- [Derived Compose image projection](../../../../infra/tech-stack.versions.json)
-- [Renovate self-hosted configuration](https://docs.renovatebot.com/self-hosted-configuration/)
-- [운영 인덱스](../../README.md)

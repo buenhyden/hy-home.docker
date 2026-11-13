@@ -1,10 +1,10 @@
 ---
 title: "Pushgateway Metrics Buffer Recovery Runbook"
-version: "1.0.3"
+version: "1.0.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0046"
 parent_ids:
@@ -14,11 +14,11 @@ created: "2026-05-17"
 
 # Pushgateway Metrics Buffer Recovery Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 이 런북은 Pushgateway 운영 중 생기는 stale metric, metric group 오염, 메모리 압박, push 실패를 복구하는 실행 절차를 정의한다. 범위는 오래된 지표 정리, 준비 상태 확인, 메모리 버퍼 초기화다. Pushgateway의 안정적인 버퍼 상태를 유지하고 비정상 지표를 정리해 가시성 품질을 지키는 것이 목적이다.
-
-## Trigger
 
 다음 중 하나일 때 사용한다.
 
@@ -28,7 +28,33 @@ created: "2026-05-17"
 - Prometheus target에서 Pushgateway scrape 상태를 확인해야 하는데 scrape job 존재 여부가 불명확하다.
 - Pushgateway memory 사용량이 비정상적으로 높고 stale group 정리만으로 회복되지 않는다.
 
-## Prerequisites
+### Scope
+
+- Declared parent: [Pushgateway Usage Guide](../../guides/07-observability/0046-pushgateway.md) (`GDE-0046`)
+- Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](../../guides/07-observability/0046-pushgateway.md) (`GDE-0046`), [Policy](../../policies/07-observability/0046-pushgateway.md) (`POL-0046`)
+
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+
+- [Operations index](../../README.md)
+- [Usage guide](../../guides/07-observability/0046-pushgateway.md)
+- [Operations policy](../../policies/07-observability/0046-pushgateway.md)
+
+## Preconditions
+
+### Authority and Access
+
+승인·접근 조건은 아래 항목을 따른다.
+
+내부 HTTP 명령은 기존 승인된 `obs_net` client에서 실행하며 host DNS를 가정하지 않는다. Gateway 인증 redirect는 backend readiness 성공이 아니다. 현재 두 Prometheus config에 Pushgateway job이 없으므로 실패 target이 아닌 별도 integration gap으로 기록한다.
+
+#### Execution Boundary
+
+저장소 root에서 아래의 정확한 service/profile과 기존 container를 선택한다. 변경 전에 승인 대상, source/image, 선행 readiness, 필요한 운영 권한과 부작용 범위를 확인한다. `up`은 dependency/provisioning job을 만들 수 있고 profile은 격리가 아니다. 진단은 기존 container의 `exec`를 사용하고 단순 조회를 위해 client/provisioner를 띄우지 않는다. 재시작은 요청 중단·memory/queue 손실·부작용 반복을 일으킬 수 있으므로 대상 drain/backup 조건을 먼저 충족한다. `restart`는 바뀐 Compose 설정이나 교체된 secret bind를 불러오지 않는다.
+
+Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다.  Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
+
+### Safety Checks
 
 시작 전에 다음을 확인한다.
 
@@ -38,21 +64,17 @@ created: "2026-05-17"
 - [ ] Prometheus scrape job 존재 여부를 확인하고, 없으면 scrape failure가 아니라 integration gap으로 분류한다.
 - [ ] 삭제 대상 metric group이 운영자가 승인한 stale 또는 오염 group인지 확인한다.
 
-내부 HTTP 명령은 기존 승인된 `obs_net` client에서 실행하며 host DNS를 가정하지 않는다. Gateway 인증 redirect는 backend readiness 성공이 아니다. 현재 두 Prometheus config에 Pushgateway job이 없으므로 실패 target이 아닌 별도 integration gap으로 기록한다.
-
-### Service lifecycle prerequisites
+#### Service lifecycle prerequisites
 
 `pushgateway`를 기동하면 건강한 `prometheus`·`grafana` 의존성을 요구한다. `batch-metrics`도 선택 경로지만 HOME 편입 근거가 아니다. 정지·재시작은 모든 메모리 지표를 잃으므로 producer 소유자가 손실을 승인하고 현재 관측만 제한적으로 다시 보낸다. 업무 배치를 재실행해 지표를 복구하지 않는다.
 
-## Procedure
+## Steps
 
-### Execution Boundary
+### Actions
 
-저장소 root에서 아래의 정확한 service/profile과 기존 container를 선택한다. 변경 전에 승인 대상, source/image, 선행 readiness, 필요한 운영 권한과 부작용 범위를 확인한다. `up`은 dependency/provisioning job을 만들 수 있고 profile은 격리가 아니다. 진단은 기존 container의 `exec`를 사용하고 단순 조회를 위해 client/provisioner를 띄우지 않는다. 재시작은 요청 중단·memory/queue 손실·부작용 반복을 일으킬 수 있으므로 대상 drain/backup 조건을 먼저 충족한다. `restart`는 바뀐 Compose 설정이나 교체된 secret bind를 불러오지 않는다.
+실행 절차는 아래 항목을 따른다.
 
-Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
-
-### Diagnosis and cleanup
+#### Diagnosis and cleanup
 
 1. 현재 상태와 로그를 캡처한다.
 
@@ -96,29 +118,35 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    curl -I https://pushgateway.${DEFAULT_URL}/-/ready
    ```
 
-## Verification
+### Stop Conditions
 
-- 실행한 명령, timestamp, operator or agent action을 기록한다.
-- 삭제한 metric group path와 삭제 전후 `/metrics` evidence를 기록한다.
-- Prometheus scrape job check 결과를 기록한다.
-- 실패한 check, 관찰된 증상, 최종 recovery or escalation 상태를 관련 task or incident evidence에 남긴다.
+예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다.
 
-### Verification Steps
+## Validation
+
+### Service Checks
 
 - [ ] `curl -s http://pushgateway:9091/metrics` 출력에서 삭제 대상 `job` group이 사라졌는지 확인한다.
 - [ ] `curl -I http://pushgateway:9091/-/ready`가 successful HTTP status를 반환한다.
 - [ ] Prometheus scrape job이 존재하는 환경에서는 Prometheus UI `Targets`에서 `pushgateway` target이 `UP`인지 확인한다.
 - [ ] Scrape job이 없는 환경에서는 관련 task or gap evidence에 Prometheus config(`prometheus.dev.yml`, `prometheus.yml`) integration gap을 기록한다.
 
-### Evidence sources
+### Evidence
+
+- 실행한 명령, timestamp, operator or agent action을 기록한다.
+- 삭제한 metric group path와 삭제 전후 `/metrics` evidence를 기록한다.
+- Prometheus scrape job check 결과를 기록한다.
+- 실패한 check, 관찰된 증상, 최종 recovery or escalation 상태를 관련 task or incident evidence에 남긴다.
+
+#### Evidence sources
 
 - **Logs**: `docker logs --tail=100 pushgateway`
 - **Metrics**: `pushgateway_http_requests_total`, `process_resident_memory_bytes`, `push_time_seconds` (Prometheus가 수집할 때)
 - **Evidence to Capture**: 상태 명령, 삭제한 지표 group 경로, 전후 `/metrics` 발췌, 수집 job 점검 결과
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
 
 이 런북에 명시된 cleanup, restart, repush 절차만 사용한다. 이 범위를 벗어난 persistence option, scrape job 추가, route 변경, image 변경은 별도 task와 approval이 필요한 runtime configuration change다. 관찰된 실패가 절차와 다르면 변경을 중단하고 evidence를 보존한 뒤 Escalation으로 넘긴다.
 
@@ -146,17 +174,3 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 ### Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, metric 삭제 범위가 불명확하거나, runtime config 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
-
-## Related Documents
-
-### Traceability
-
-- Declared parent: [Pushgateway Usage Guide](../../guides/07-observability/0046-pushgateway.md) (`GDE-0046`)
-- Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](../../guides/07-observability/0046-pushgateway.md) (`GDE-0046`), [Policy](../../policies/07-observability/0046-pushgateway.md) (`POL-0046`)
-
-- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
-
-- [Operations index](../../README.md)
-- [Usage guide](../../guides/07-observability/0046-pushgateway.md)
-- [Operations policy](../../policies/07-observability/0046-pushgateway.md)

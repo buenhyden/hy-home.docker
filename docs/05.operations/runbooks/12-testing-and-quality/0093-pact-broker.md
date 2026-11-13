@@ -1,10 +1,10 @@
 ---
 title: "Pact Broker Recovery Runbook"
-version: "1.0.4"
+version: "1.0.5"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0093"
 parent_ids:
@@ -14,18 +14,35 @@ created: "2026-09-23"
 
 # Pact Broker Recovery Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 Pact Broker의 프로비저닝 실패, 비정상 상태, 401 오류, 데이터베이스 손실, 크리덴셜 교체를 다루는 복구 런북이다.
-
-## Trigger
 
 프로비저닝 실패, 비정상 broker, 인가되어야 할 클라이언트에 대한 401 오류,
 데이터베이스 손실, 크리덴셜 교체 시 사용한다.
 
-## Prerequisites
+### Scope
 
-### 작업 선택과 복구 전제
+- [Guide](../../guides/12-testing-and-quality/0093-pact-broker.md) (`GDE-0093`)
+- [Policy](../../policies/12-testing-and-quality/0093-pact-broker.md) (`POL-0093`)
+- [Pact Broker Compose](../../../../infra/11-quality/pact-broker/docker-compose.yml)
+
+- [관리 데이터베이스 런북](../05-databases-and-storage/0028-management-database.md)
+- [백업 및 복원 런북](../10-platform-and-backup/0021-backup-and-restore.md) (`RUN-0021`)
+
+## Preconditions
+
+### Authority and Access
+
+broker 변경 전 정확한 서비스·데이터 경로·승인자·중단 영향을 기록한다. credential 교체는 정확한 secret·서비스·클라이언트·중단 영향을 승인받고 등록된 workflow로 하며, helper 재실행은 별도 승인을 받는다.
+
+### Safety Checks
+
+변경 전 확인할 작업 선택과 복구 전제는 다음과 같다.
+
+#### 작업 선택과 복구 전제
 
 변경 전에 정확한 서비스·데이터 경로·승인자·중단 영향을 기록하고 [공통 복구 전제](../10-platform-and-backup/0021-backup-and-restore.md)를
 적용한다. 격리 대상, 복구본 식별자·무결성, 여유 공간, 비밀 보관, 작성자 정지와
@@ -34,7 +51,9 @@ Pact Broker의 프로비저닝 실패, 비정상 상태, 401 오류, 데이터�
 단일 파일 bind 재생성과 비밀 비노출 확인을 따른다. 재시작은 데이터 복원이나 자격 증명
 폐기 검증을 대신하지 않는다.
 
-## Procedure
+## Steps
+
+### Actions
 
 1. 점검한다.
 
@@ -59,7 +78,7 @@ Pact Broker의 프로비저닝 실패, 비정상 상태, 401 오류, 데이터�
 4. 401이면 사용자 이름·클라이언트 인증 전달 방식·설정·회전 이력을 확인한다.
    비밀번호 불일치로 단정하거나 secret을 출력하지 않는다.
 
-### Credential rotation
+#### Credential rotation
 
 정확한 secret·서비스·클라이언트·중단 영향을 승인받고 등록된 workflow로 교체한다.
 공통 단일 파일 bind 정책에 따라 broker를 재생성하며 재시작만으로 교체 반영을
@@ -69,7 +88,7 @@ Pact Broker의 프로비저닝 실패, 비정상 상태, 401 오류, 데이터�
 Basic secret은 모든 승인된 client에도 반영한다. 이전 자격 증명 거부, 새 자격 증명의
 합성 publish/read-back 및 heartbeat를 각각 확인한다.
 
-### 복원·업그레이드 경계
+#### 복원·업그레이드 경계
 
 공유 [백업 런북](../10-platform-and-backup/0021-backup-and-restore.md)에 포함되는 설정은 복원 성공 증거가
 아니다. `mng-pg` 전체 복원은 다른 서비스에도 영향을 주므로 이 broker만의 일반 복구로
@@ -77,14 +96,25 @@ Basic secret은 모든 승인된 client에도 반영한다. 이전 자격 증명
 검증 이력·인증을 확인한다. 승인 전 활성 DB를 덮어쓰지 않는다. 업그레이드는 helper 이미지와
 broker 선언 버전의 release/schema 근거 및 이전 이미지·DB 복구점을 함께 검토한다.
 
-## Verification
+### Stop Conditions
+
+basic auth 비활성화, 공개 읽기 허용, loopback 밖으로 포트 노출, 역할에
+자신의 데이터베이스 이상의 권한 부여 요청이 있으면 중단한다.
+
+## Validation
+
+### Service Checks
+
+heartbeat(`/diagnostic/status/heartbeat`)가 응답하고, credential 교체 뒤에는 이전 자격 증명이 거부되고 새 자격 증명의 합성 publish/read-back이 성공해야 한다.
+
+### Evidence
 
 종료 코드, heartbeat 상태, pacticipant와 pact 개수, 소스 커밋을 기록한다.
 크리덴셜이나 pact 본문은 절대 기록하지 않는다.
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
 
 broker 데이터베이스가 유일한 상태다. 이 데이터베이스는 `mng-pg` pgBackRest 백업에
 포함되며(RUN-0021), `mng-pg`를 복원하면 함께 복원된다. 데이터베이스를 잃으면
@@ -94,18 +124,4 @@ broker 데이터베이스가 유일한 상태다. 이 데이터베이스는 `mng
 
 ### Escalation
 
-책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
-
-basic auth 비활성화, 공개 읽기 허용, loopback 밖으로 포트 노출, 역할에
-자신의 데이터베이스 이상의 권한 부여 요청이 있으면 중단한다.
-
-## Related Documents
-
-### Traceability
-
-- [Guide](../../guides/12-testing-and-quality/0093-pact-broker.md) (`GDE-0093`)
-- [Policy](../../policies/12-testing-and-quality/0093-pact-broker.md) (`POL-0093`)
-- [Pact Broker Compose](../../../../infra/11-quality/pact-broker/docker-compose.yml)
-
-- [관리 데이터베이스 런북](../05-databases-and-storage/0028-management-database.md)
-- [백업 및 복원 런북](../10-platform-and-backup/0021-backup-and-restore.md) (`RUN-0021`)
+책임자는 `@buenhyden`이다. 위 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.

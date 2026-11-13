@@ -3,11 +3,11 @@ name: "workspace-audit-revalidation"
 description: "Use when a dated audit needs criterion-level revalidation against current representative repository evidence and explicit uncertainty."
 metadata:
   title: "workspace-audit-revalidation"
-  version: "1.2.0"
+  version: "1.2.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-29"
+  updated: "2026-11-13"
   function_id: "workspace-audit-revalidation"
   scope: "agentic"
   owner_agent: "eval-engineer"
@@ -15,46 +15,58 @@ metadata:
 
 # workspace-audit-revalidation
 
-## Purpose
+## Purpose and Trigger
 
-### Preconditions
+### When to Use
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
 
 A canonical audit, criterion definitions, current repository baseline, and representative evidence boundary must be fixed before scoring.
 
-## Inputs
+### When Not to Use
 
-- Canonical audit and current repository evidence.
-- Criterion IDs, scorers, thresholds, source cutoff, and known forward dependencies.
+None: this skill states no exclusion.
 
 ## Procedure
+
+### Steps
 
 1. Reproduce each criterion against current tracked source and generated freshness, treating advisory graphs and provider claims as non-authoritative.
 2. Apply the defined scorer and threshold to representative evidence, separating repository adoption from runtime acceptance or entitlement.
 3. Record changed statuses, unchanged gaps, confidence, and exact validation evidence without backdating or promoting unobserved claims.
 
-### Gates
+#### Gates
 
 - Evidence is representative, source-bounded, and reproducible.
 - No criterion receives a pass from absent runtime or provider observation.
 
-## Outputs
+### Failure Handling
+
+Return `needs_revalidation` when evidence, entitlement, cutoff, or calibration is insufficient; never infer completion from policy text alone.
+
+## Inputs and Outputs
+
+### Inputs
+
+- Canonical audit and current repository evidence.
+- Criterion IDs, scorers, thresholds, source cutoff, and known forward dependencies.
+
+### Outputs
 
 - A calibrated revalidation with criterion-level evidence and explicit uncertainty.
 
 ## Verification
 
+### Checks
+
 - Each criterion's status cites current tracked evidence and the scorer result.
 - No criterion passes on absent runtime or provider observation.
 - Changed statuses, unchanged gaps, and confidence are recorded without backdating.
 
-## Failure Handling
+### Completion and Handoff
 
-Return `needs_revalidation` when evidence, entitlement, cutoff, or calibration is insufficient; never infer completion from policy text alone.
-
-## References
+Owning role, policies and related documents:
 
 - [Evaluation engineer](../../roles/eval-engineer.md)
 - [Agent catalog contract](../../governance/providers/registry.yaml)

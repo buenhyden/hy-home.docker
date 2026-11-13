@@ -1,27 +1,41 @@
 ---
 title: "Provider Capability Matrix"
-version: "1.2.2"
+version: "1.2.3"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 ---
 
 # Provider Capability Matrix
 
-## Overview
+## Purpose
+
+### Objective
 
 Canonical agent governance supports exactly Claude and Codex. Capability
 documentation separates provider support, repository adoption, and observed
 runtime acceptance.
 
+### Authority
+
+This policy is the canonical owner of the provider capability matrix and authority namespaces under [bootstrap precedence](bootstrap.md#authority-and-precedence).
+
 ## Scope
+
+### Applies To
 
 Canonical ownership, provider adapters, tracked configuration, and observed runtime capabilities.
 
+### Exclusions
+
+None: this document states no exclusion.
+
 ## Rules
 
-### Authority Namespaces
+### Requirements
+
+#### Authority Namespaces
 
 | Namespace | Owns | Does not own |
 | --- | --- | --- |
@@ -48,11 +62,7 @@ not invocation or approval. No skill adds tool grants or installers.
 roots. Unknown or unsafe entries fail closed and are preserved for review;
 canonical files are never deleted or quarantined as stale projections.
 
-## Exceptions
-
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-## Verification
+### Enforcement
 
 Provider-native files may narrow behavior to actual capabilities. They cannot
 invent shared policy, roles, skills, approvals, or unsupported parity. A documented capability, configured source, observed runtime result, and
@@ -63,9 +73,27 @@ limits remain unknown until directly observed. Git hooks, provider hooks, editor
 actions, and CI are separate surfaces; an editor action requires its observed
 version and action ID.
 
-## Related Documents
+## Exceptions
+
+### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+### Approval and Review
+
+None: no exception exists to approve.
+
+## Ownership
+
+### Responsibilities
+
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
+
+### Change and Adoption
+
+Changes land in place with Task evidence; related documents:
 
 - [Provider registry](providers/registry.yaml)
+- [Agentic policy](agentic.md)
 - [Claude adapter](../../.claude/provider.md)
 - [Codex adapter](../../.codex/provider.md)
-- [Agentic policy](agentic.md)

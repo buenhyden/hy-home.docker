@@ -1,10 +1,10 @@
 ---
 title: "Management Database Operations Policy"
-version: "1.0.7"
+version: "1.0.8"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0028"
 parent_ids:
@@ -14,18 +14,33 @@ created: "2026-05-17"
 
 # Management Database Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 이 정책은 현재 소스 구성을 데이터 보호, 보안, 리소스, 생명주기와 독립적으로 검증 가능한
 운영 통제에 묶는다.
 
+### Authority
+
+- Artifact: `POL-0028`; parent: `AD-0004`.
+- Runtime 권한은 연결된 Compose/소스 파일에 남아 있으며, 정확한 pin도 그곳에 있다.
+
 ## Scope
+
+### Applies To
 
 여섯 개의 `mng-db` 서비스(`mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter`, `mng-valkey`, `mng-valkey-exporter`)는 HOME 대상이다. 공유 의존성이므로 database,
 role, broker, credential 변경은 consumer를 인지하는 유지보수와 rollback을
 요구한다.
 
+### Exclusions
+
+애플리케이션 인증 연동은 이 정책이 아니라 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)가 정한다.
+
 ## Rules
+
+### Requirements
 
 - `mng`, `core`, `dev`, `local` 중 하나와 함께 root project를 통해 운영한다(PostgreSQL 쪽은 `mlops`, `data-science`, `contract-testing`, `bi`가 의존성 closure로도 선택한다).
   Leaf Compose 파일을 독립적으로 실행하지 않는다.
@@ -48,7 +63,7 @@ role, broker, credential 변경은 consumer를 인지하는 유지보수와 roll
 - Valkey를 폐기 가능한 cache가 아니라 workflow broker state로 취급한다. 오래된
   queue를 복원하면 작업이 중복되거나 순서가 바뀔 수 있다.
 
-### Backup and restore
+#### Backup and restore
 
 아래는 필수 보존 계약이다. 현 RUN-0021 automation은 physical pgBackRest/WAL+globals와 RDB만 제공하며 database별 logical/AOF capture 및 앱 quiescence는 별도 구현·승인 작업이다. Restic 30일 archive가 broker 7일 업무 replay 승인을 대신하지 않는다.
 
@@ -66,40 +81,43 @@ schema, credential, queue가 마이그레이션되고 rollback-tested 상태여�
 workflow owner가 queue replay semantics를 승인한 뒤에만 복원한다. Production
 cutover나 data 교체는 별도 승인이 필요하다.
 
-### Upgrade policy
+#### Upgrade policy
 
 모든 pin 변경에 대해 공식 release note, extension/client 호환성, rollback을
 검토한다. PostgreSQL major upgrade는 isolated logical restore/rehearsal을
 요구한다. `PGDATA`를 직접 재사용하는 것은 금지한다. Acceptance와 rollback
 만료 시점까지 이전 volume을 보존한다.
 
-### Accountable lifecycle boundary
+#### Accountable lifecycle boundary
 
-적용 identity: `mng-pg`, `mng-pg-exporter`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-valkey`, `mng-valkey-exporter`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
+적용 identity: `mng-pg`, `mng-pg-exporter`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-valkey`, `mng-valkey-exporter`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-## Exceptions
-
-Workflow queue state에는 cache-only 예외가 적용되지 않는다. 예외는 runtime
-mutation, plaintext secret, raw active storage 복사, 동일 host 가용성 주장을
-허용하지 않는다.
-
-### Review Cadence
-
-Profile, image, volume, credential, consumer, retention 또는 upstream
-lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다.
-
-### Traceability
-
-- Artifact: `POL-0028`; parent: `AD-0004`.
-- Runtime 권한은 연결된 Compose/소스 파일에 남아 있으며, 정확한 pin도 그곳에 있다.
-
-## Verification
+### Enforcement
 
 `docker compose --env-file .env.example --profile mng config --quiet`와 `tests/validation/test_compose_baseline_gates.py` contract test로 root 구성을 정적 검증한 뒤, 승격이나 cutover
 전에 application 수준 acceptance를 갖춘 isolated compatible restore를
 요구한다. 검증되지 않은 runtime 속성은 명시적으로 기록한다.
 
-## Related Documents
+## Exceptions
+
+### Exception Conditions
+
+Workflow queue state에는 cache-only 예외가 적용되지 않는다. 예외는 runtime
+mutation, plaintext secret, raw active storage 복사, 동일 host 가용성 주장을
+허용하지 않는다.
+
+### Approval and Review
+
+Profile, image, volume, credential, consumer, retention 또는 upstream
+lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다.
+
+## Ownership
+
+### Responsibilities
+
+@buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다.
+
+### Change and Adoption
 
 - [Domain catalog](../../README.md)
 - [Runbook](../../runbooks/05-databases-and-storage/0028-management-database.md)

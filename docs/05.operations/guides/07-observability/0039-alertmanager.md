@@ -56,7 +56,7 @@ created: "2026-05-10"
 
 ### Actions
 
-1. Compose service와 config template 경계는 [RUN-0039 절차](../../runbooks/07-observability/0039-alertmanager.md#procedure)의 `rg` 명령으로 확인한다.
+1. Compose service와 config template 경계는 [RUN-0039 절차](../../runbooks/07-observability/0039-alertmanager.md#actions)의 `rg` 명령으로 확인한다.
 
 2. 현재 routing model을 이해한다.
 

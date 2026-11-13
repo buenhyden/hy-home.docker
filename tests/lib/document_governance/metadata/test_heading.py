@@ -45,12 +45,13 @@ class CurrentBodyContractTests(unittest.TestCase):
             "plan": "Overview|Dependencies|Implementation Strategy|Verification Plan|Risks|Promotion Map",
             "task": "Scope|Execution Log|Verification Evidence|Acceptance Decision|Handoff",
             "guide": "Purpose|Prerequisites|Procedure|Verification",
-            "policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
-            "runbook": "Overview|Trigger|Prerequisites|Procedure|Verification|Failure and Recovery|Related Documents",
+            "policy": "Purpose|Scope|Rules|Exceptions|Ownership",
+            "runbook": "Purpose|Preconditions|Steps|Validation|Recovery",
             "incident": "Summary|Impact|Timeline|Resolution|Evidence",
             "postmortem": "Summary|Root Cause|Impact|Corrective Actions|Evidence",
-            "governance-policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
-            "governance-hook-policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
+            "governance-policy": "Purpose|Scope|Rules|Exceptions|Ownership",
+            "governance-hook-policy": "Purpose|Scope|Rules|Exceptions|Ownership",
+            "governance-skill": "Purpose and Trigger|Procedure|Inputs and Outputs|Verification",
         }
         registry = metadata.load_registry(ROOT / "docs/99.templates/registry.json")
         for profile_id, names in expected.items():
@@ -71,13 +72,17 @@ class CurrentBodyContractTests(unittest.TestCase):
                     profile.get("required_subsections") or {}
                 ).items():
                     block = source.split(f"\n## {parent}\n", 1)[1].split("\n## ", 1)[0]
+                    found = [
+                        line[4:]
+                        for line in block.splitlines()
+                        if line.startswith("### ")
+                    ]
+                    # Required H3s keep their order; an optional H3 may sit anywhere.
                     self.assertEqual(
-                        [*children, *optional.get(parent, ())],
-                        [
-                            line[4:]
-                            for line in block.splitlines()
-                            if line.startswith("### ")
-                        ],
+                        list(children), [name for name in found if name in children]
+                    )
+                    self.assertEqual(
+                        sorted([*children, *optional.get(parent, ())]), sorted(found)
                     )
 
     def test_current_role_accepts_nested_content_and_rejects_empty_sections(
@@ -318,7 +323,7 @@ class RegisteredSectionContractTests(unittest.TestCase):
         """Map each enforced profile to one tracked document that carries it."""
 
         tracked = subprocess.run(
-            ["git", "ls-files", "docs"],
+            ["git", "ls-files", "docs", ".agents"],
             capture_output=True,
             text=True,
             check=True,
@@ -443,6 +448,26 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Usage", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Common Checks", "body-subheading-forbidden"),
+            ),
+            "runbook": (
+                ("## Overview", "body-heading-forbidden"),
+                ("## Procedure", "body-heading-forbidden"),
+                ("## Failure and Recovery", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+                ("### Rollback or Recovery", "body-subheading-forbidden"),
+            ),
+            "policy": (
+                ("## Overview", "body-heading-forbidden"),
+                ("## Verification", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+                ("### Traceability", "body-subheading-forbidden"),
+            ),
+            "governance-skill": (
+                ("## Purpose", "body-heading-forbidden"),
+                ("## Inputs", "body-heading-forbidden"),
+                ("## Failure Handling", "body-heading-forbidden"),
+                ("## References", "body-heading-forbidden"),
+                ("### Preconditions", "body-subheading-forbidden"),
             ),
             "adr": (
                 ("## Decision Drivers", "body-heading-forbidden"),

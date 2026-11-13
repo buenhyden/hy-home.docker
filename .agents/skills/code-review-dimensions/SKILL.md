@@ -3,11 +3,11 @@ name: "code-review-dimensions"
 description: "Use when a scoped diff needs evidence-backed correctness, security, maintainability, performance, and governance review with calibrated severity."
 metadata:
   title: "code-review-dimensions"
-  version: "1.2.0"
+  version: "1.2.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-29"
+  updated: "2026-11-13"
   function_id: "code-review-dimensions"
   scope: "common"
   owner_agent: "code-reviewer"
@@ -15,46 +15,58 @@ metadata:
 
 # code-review-dimensions
 
-## Purpose
+## Purpose and Trigger
 
-### Preconditions
+### When to Use
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
 
 An exact diff and governing specification must be available; review scope and non-goals must be explicit.
 
-## Inputs
+### When Not to Use
 
-- Exact diff or commit range.
-- Governing specification, risk boundaries, and implementation evidence.
+None: this skill states no exclusion.
 
 ## Procedure
+
+### Steps
 
 1. Evaluate correctness, security, maintainability, performance, and governance only where the diff and specification make each dimension relevant.
 2. Reproduce candidate defects against tracked code or tests and cite the narrowest useful file-and-line location.
 3. Calibrate Critical, Important, and Minor severity from impact, reachability, and remediation urgency.
 
-### Gates
+#### Gates
 
 - Every finding has a concrete evidence citation.
 - Severity is calibrated and does not inflate style preferences into blockers.
 
-## Outputs
+### Failure Handling
+
+Mark unverifiable requirements explicitly and request the missing artifact; do not infer either pass or failure.
+
+## Inputs and Outputs
+
+### Inputs
+
+- Exact diff or commit range.
+- Governing specification, risk boundaries, and implementation evidence.
+
+### Outputs
 
 - A dimensioned review with evidence-backed findings and a bounded verdict.
 
 ## Verification
 
+### Checks
+
 - Every finding cites a file and line and carries one calibrated severity.
 - A dimension the diff does not touch is stated as not assessed rather than passed.
 - The verdict is bounded to the reviewed diff and specification.
 
-## Failure Handling
+### Completion and Handoff
 
-Mark unverifiable requirements explicitly and request the missing artifact; do not infer either pass or failure.
-
-## References
+Owning role, policies and related documents:
 
 - [Code reviewer](../../roles/code-reviewer.md)
 - [Change review execution](../change-review-execution/SKILL.md)

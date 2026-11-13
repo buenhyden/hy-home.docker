@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.6.0"
+version: "1.6.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -14,11 +14,11 @@ created: "2026-09-22"
 
 # Backup and Restore Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 pgBackRest, Restic, SQLite export, R2 오프사이트 사본과 공유 에이전트 memory 저장소의 설정·실행·검증·복구 절차를 다룬다. 정책은 [POL-0021](../../policies/10-platform-and-backup/0021-backup-and-restore.md), 설명은 [GDE-0021](../../guides/10-platform-and-backup/0021-backup-and-restore.md)이 소유한다.
-
-## Trigger
 
 backup repository를 준비하거나, `mng-pg`를 pgBackRest image로 전환하거나,
 backup을 실행/검증하거나, PostgreSQL을 isolation 환경에서 특정 시점으로
@@ -26,27 +26,37 @@ backup을 실행/검증하거나, PostgreSQL을 isolation 환경에서 특정 �
 R2 오프사이트 사본을 설정하거나 그 사본에서 복원하거나, 공유 에이전트 memory 저장소를
 backup·restore할 때 사용한다.
 
-## Prerequisites
+### Scope
 
-### Trigger and Preconditions
+- Guide: [GDE-0021](../../guides/10-platform-and-backup/0021-backup-and-restore.md); Policy: [POL-0021](../../policies/10-platform-and-backup/0021-backup-and-restore.md)
+- Alerts: [host backup rules](../../../../infra/06-observability/prometheus/config/alert_rules/alert_rules.local.infra.yml)
+- Runtime pins: [Restic Compose](../../../../infra/09-platform-ops/restic/docker-compose.yml)
+  and the [`mng-pg` image](../../../../infra/04-data/mng-db/pg/backup/Dockerfile)
+- Rehearsal: `HYHOME_BACKUP_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.BackupRestoreRehearsalTests`
+
+- [pgBackRest user guide](https://pgbackrest.org/user-guide.html)
+- [Restic: preparing a repository](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html)
+- [Restic: removing snapshots](https://restic.readthedocs.io/en/stable/060_forget.html)
+
+## Preconditions
+
+### Authority and Access
 
 service를 재시작하거나 repository에 쓰거나 snapshot을 삭제하는
 모든 단계는 target을 명시한 별도의 approval이 필요하다.
 
-### Execution and stop boundary
-
-대상: `restic`, `restic-offsite`, `backup-sqlite-export`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
-
-기동/정지는 [GDE-0099](../../guides/01-common/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
-
-Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
-
-## Procedure
+### Safety Checks
 
 실행 중인 checkout의 repository root에서 command를 실행한다. secret 파일이나
 rendered Compose model을 절대 출력하지 않는다.
 
-### 1. Prepare `.env`, directories and keys (once, before the change is checked out on the host)
+## Steps
+
+### Actions
+
+절차는 아래 항목에 따른다.
+
+#### 1. Prepare `.env`, directories and keys (once, before the change is checked out on the host)
 
 먼저 `.env`를 sync한다. `BACKUP_STATE_REPO_DIR`를 설정하기 전에는
 `mng-pg`를 재생성하면 repository 경로가 없어 실패한다.
@@ -67,7 +77,7 @@ Expected: `.env`에 `BACKUP_STATE_REPO_DIR`, `BACKUP_HOST_REPO_DIR`,
 존재한다. 첫 backup 전에 두 key 값을 offline custody로 복사한다. 경로에
 이미 자신이 만들지 않은 데이터가 있으면 중단한다.
 
-### 2. Switch `mng-pg` to the pgBackRest image (approval: interrupts shared management-DB access)
+#### 2. Switch `mng-pg` to the pgBackRest image (approval: interrupts shared management-DB access)
 
 전제 조건: owner가 공유 DB interruption, image 호환성, cipher custody와 복구 지점을 승인한다. consumer 자동 재시작을 기대하지 않는다. 최소 20 GiB preflight만으로 dump/scratch 용량을 충족한다고 가정하지 않는다. Logical dump는 기존 파일을 덮어쓰지 않는 새 소유 파일에 만든다. 아래는 승인된 운영 예시이며 W4에서 실행하지 않았다.
 
@@ -107,7 +117,7 @@ WAL drop/queue 초과가 확인되면 해당 chain의 복구 가능성 판정을
 검증하기 전까지 새 PITR 기준점으로 인정하지 않는다.
 Rollback은 원래 PG major/extension와 data format 호환성을 확인한 image/config에 한해 별도 승인한다. Git revert가 data downgrade를 수행하지 않는다. repository를 사용할 수 없고 WAL 공간 위험이 있으면 RUN-0035로 전달하며 `archive_mode=off` 변경은 archive 중단과 RPO 손실을 승인받은 경우에만 한다.
 
-### 3. Initialize Restic and install the timer (once)
+#### 3. Initialize Restic and install the timer (once)
 
 ```bash
 docker compose --profile backup run --rm --no-deps restic init
@@ -119,7 +129,7 @@ sudo systemctl enable --now hyhome-backup.timer
 
 `init`은 이미 있는 repository는 건너뛰고 절대 re-key하지 않는다.
 
-### 4. Run or verify a backup
+#### 4. Run or verify a backup
 
 ```bash
 sudo systemctl start hyhome-backup.service
@@ -207,7 +217,7 @@ timestamp was not written"을 남기고 exit 1로 끝난다.
 | `HyhomeBackupStale` | 마지막 성공 후 26시간 경과, 또는 metric이 26시간 동안 없음 | `systemctl list-timers hyhome-backup.timer`와 서비스 결과를 보고, journal의 상태 줄로 멈춘 단계를 찾는다. 원인을 고친 뒤 이 step으로 한 번 실행한다. |
 | `HostSystemDiskLow` | `/` 여유 공간 25 GiB 미만이 15분 지속 | 20 GiB 아래에서는 다음 run이 exit 64로 멈춘다. `docker system df`로 빌드 캐시와 어떤 container도 쓰지 않는 image를 확인하고, 승인을 받아 정리한다. |
 
-### 5. Point-in-time restore of `mng-pg` into isolation
+#### 5. Point-in-time restore of `mng-pg` into isolation
 
 이 절차의 action readiness는 **BLOCKED**다. 2026-10-30 독립 stateful recovery 검토는 REQUEST_CHANGES 후 수정 범위 재검토에서 APPROVE_WITH_NOTES였다. 실행은 **NOT_RUN**이며 @buenhyden의 별도 실행 승인 전에는 실행하지 않는다. 실행 전에 정확한 source backup label, recovery timestamp(명시적 UTC offset 포함), 연속 WAL 범위, 원래 PostgreSQL major/extension/pgBackRest와의 image 호환성, 빈 target과 충분한 data-disk capacity를 owner가 확인한다. script는 실행 중인 `mng-pg`의 image ID를 쓰며 원래 backup image와 같다고 추정하지 않으므로 호환성은 owner가 검토한다.
 
@@ -303,7 +313,7 @@ cleanup_status=removed
 
 `result=FAIL`이면 `reason`이 멈춘 단계(`verify`, `restore`, `identity_mismatch`, `required_object_missing`, `count_unstable`, `probe_privileges`, `probe_auth_not_enforced`, `probe_session`, `probe_cleanup` 등)를 말하고 이후 필드는 `NOT_RUN`이다. `cleanup_status`가 `removed`나 `none_created`가 아니면 이름과 ID가 맞지 않은 container를 건드리지 않았다는 뜻이므로 소유자가 직접 확인한다. 통과해도 scratch PGDATA(UID 70 소유, mode 0700)는 남고 증거 수집 시점부터 7일 안에 @buenhyden가 검토한다. 삭제는 별도 identity·owner 승인이다.
 
-### 6. Restore files from Restic
+#### 6. Restore files from Restic
 
 승인 전 정확한 Restic snapshot ID, host/tag/time/source revision, 암호 키 custody, include 경로와 대상 owner를 선택한다. `latest`를 자동 선택하지 않는다. state와 host는 같은 성공 실행에 속하는 snapshot pair인지 확인한다. 일반 restore container는 data-disk의 새 소유 scratch, local repository read-only, `--network none`을 사용한다. hardened backup job은 ownership 재적용 권한이 없으므로 restore 도구와 UID/mode 복원 계약을 별도로 검토한다.
 
@@ -311,7 +321,7 @@ Restic의 `restore <reviewed-snapshot-id> --target <owned-scratch>`로 승인된
 
 SeaweedFS는 같은 state snapshot의 `/src/state/volumes/data/seaweedfs`와 `/src/state/exports/seaweedfs-filer.meta`를 함께 복원한다. `loki-bucket`·`tempo-bucket` collection의 volume file은 snapshot에 없으므로(SPEC-0228) 복원 뒤 Loki와 Tempo는 빈 상태에서 다시 수집한다. [RUN-0024](../05-databases-and-storage/0024-seaweedfs.md)의 빈 filer store, volume/master tree, `fs.meta.load` 계약을 따른다. restore 실패·identity 충돌·include 부재는 중단하며 자동 cleanup하지 않는다.
 
-### 7. Delete old snapshots (approval: irreversible)
+#### 7. Delete old snapshots (approval: irreversible)
 
 ```bash
 docker compose --profile backup run --rm --no-deps \
@@ -321,7 +331,7 @@ docker compose --profile backup run --rm --no-deps \
 세트당 daily 30개, weekly 13개, monthly 12개의 snapshot을 유지한다.
 pgBackRest는 자체 backup을 `repo1-retention-full=2`로 만료시킨다.
 
-### 8. Offsite copy (R2)
+#### 8. Offsite copy (R2)
 
 `restic-offsite`는 로컬 Restic repository 두 개의 snapshot을 Cloudflare R2의
 Restic repository 하나로 복사한다(ADR-0056). state set에 `pgbackrest/`가
@@ -490,7 +500,7 @@ Cloudflare에는 사용을 멈추는 지출 상한이 없다. 대신 다음을 �
 4. 한 달에 한 번 bucket의 **Metrics** 탭에서 storage와 operation 수를 보고, 8.5의
    Evidence 옆에 적는다.
 
-### 개발 PostgreSQL 편입 및 복구 전제
+#### 개발 PostgreSQL 편입 및 복구 전제
 
 1. 승인된 Docker context/프로젝트·정확한 image ID·새 PGDATA·별도
    `${BACKUP_STATE_REPO_DIR}/dev-pgbackrest` identity와 용량을 확인합니다.
@@ -546,7 +556,7 @@ full backup하고 현재 Restic state chain으로 snapshot/복원한 repository�
 reader 읽기 허용/쓰기·DDL 거절이 통과했으며 missing source exit3·unknown label
 exit75도 거절했습니다. 이 결과는 WAL/PITR·HOME·R2 복구나 RPO/RTO가 아닙니다.
 
-### 설치된 unit 갱신
+#### 설치된 unit 갱신
 
 소스 경로를 `09-platform-ops`로 이전해도 호스트에 복사해 설치한
 `hyhome-backup.service`는 예전 ExecStart 경로를 유지할 수 있습니다. 운영 배포 시
@@ -555,7 +565,7 @@ exit75도 거절했습니다. 이 결과는 WAL/PITR·HOME·R2 복구나 RPO/RTO
 그대로 유지하며, 활성화·catch-up 실행·수동 백업은 별도 승인 대상입니다.
 이 저장소 변경은 설치된 unit 갱신이나 실제 백업 성공을 뜻하지 않습니다.
 
-### P01 OpenBao failure and trust increment
+#### P01 OpenBao failure and trust increment
 
 OpenBao snapshot은 native TLS·검증된 CA를 쓰는 container CLI를 재사용한다. token은
 stdin으로만 전달하며 snapshot-only 정책과 주기 갱신을 유지한다. token 부재·실패
@@ -565,7 +575,7 @@ stdin으로만 전달하며 snapshot-only 정책과 주기 갱신을 유지한�
 identity/checksum·일관성·용량·rollback 경계가 확인된 후만 실행한다. P01 synthetic
 restore는 HOME/offsite custody를 대신하지 않는다.
 
-### 공유 에이전트 memory 저장소
+#### 공유 에이전트 memory 저장소
 
 실행 진입점은 `scripts/operations/agent_memory.py`다. 명령 해석은
 `scripts/lib/ops/memory_cli.py`, 용량 원장·예약은
@@ -732,15 +742,33 @@ snapshot과 남은 예약은 현재 metadata로 별도 조정한다. 실제 채�
 복구는 기록만 되살린다. 기록이 무엇이 될 수 없는지는
 [환경 제약 5절](../../../../.agents/governance/environment-constraints.md#5-shared-agent-memory)이 정한다.
 
-## Verification
+### Stop Conditions
+
+중단 조건은 아래 항목에 기록한다.
+
+#### Execution and stop boundary
+
+대상: `restic`, `restic-offsite`, `backup-sqlite-export`. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
+
+기동/정지는 [GDE-0099](../../guides/01-common/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
+
+Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
+
+## Validation
+
+### Service Checks
+
+각 단계의 `Expected:` 결과와 일치해야 한다. 예를 들어 backup 실행 단계는 exit 0, 새 pgBackRest backup, 새 Restic snapshot 두 개를 기대한다.
+
+### Evidence
 
 command, exit status, pgBackRest backup label, Restic snapshot ID, 복원된 row
 count 또는 file hash, 소요 시간을 기록한다. key 값, dump 내용, rendered
 configuration은 절대 기록하지 않는다.
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
 
 - `archive_command` 실패: `pgbackrest --stanza=mng check`가 원인을 보여준다.
   `pg_wal`이 disk를 채우기 전에 repository 경로나 ownership을 고치거나,
@@ -755,17 +783,3 @@ configuration은 절대 기록하지 않는다.
 
 restore rehearsal이 실패하거나, 두 disk 모두 오류를 보고하거나, key를
 잃어버렸을 때 @buenhyden에게 escalation한다.
-
-## Related Documents
-
-### Traceability
-
-- Guide: [GDE-0021](../../guides/10-platform-and-backup/0021-backup-and-restore.md); Policy: [POL-0021](../../policies/10-platform-and-backup/0021-backup-and-restore.md)
-- Alerts: [host backup rules](../../../../infra/06-observability/prometheus/config/alert_rules/alert_rules.local.infra.yml)
-- Runtime pins: [Restic Compose](../../../../infra/09-platform-ops/restic/docker-compose.yml)
-  and the [`mng-pg` image](../../../../infra/04-data/mng-db/pg/backup/Dockerfile)
-- Rehearsal: `HYHOME_BACKUP_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.BackupRestoreRehearsalTests`
-
-- [pgBackRest user guide](https://pgbackrest.org/user-guide.html)
-- [Restic: preparing a repository](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html)
-- [Restic: removing snapshots](https://restic.readthedocs.io/en/stable/060_forget.html)

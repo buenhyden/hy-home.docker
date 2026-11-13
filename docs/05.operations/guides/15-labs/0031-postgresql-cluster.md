@@ -98,7 +98,7 @@ etcd의 3 member는 각각 ID/URL/data가 다르고 Spilo의 3 member는 각각 
 - `LAB_DATA_DIR`, `LAB_PG_DEFAULT_DB`, `LAB_PG_SUPERUSER_USERNAME`, `LAB_PG_REPLICATION_USERNAME`, `LAB_PG_EXPORTER_USERNAME`, `LAB_PG_FIXTURE_DB`, `LAB_PG_FIXTURE_USERNAME`, PostgreSQL/HAProxy secret files가 준비되어 있어야 한다.
 - secret 값은 `/run/secrets/*`에서 container 내부로만 읽고 문서나 로그에 남기지 않는다.
 
-정상 운영 중 점검은 선택 클러스터 compose 렌더링, 핵심 서비스 상태, `patronictl list` 기준 Patroni cluster 상태 확인으로 구성된다. 실행 가능한 명령 순서와 기대 결과는 [PostgreSQL Cluster runbook](../../runbooks/15-labs/0031-postgresql-cluster.md#procedure)을 따른다.
+정상 운영 중 점검은 선택 클러스터 compose 렌더링, 핵심 서비스 상태, `patronictl list` 기준 Patroni cluster 상태 확인으로 구성된다. 실행 가능한 명령 순서와 기대 결과는 [PostgreSQL Cluster runbook](../../runbooks/15-labs/0031-postgresql-cluster.md#actions)을 따른다.
 
 1. 애플리케이션 연결은 `pg-router`를 기준으로 한다.
 

@@ -74,7 +74,7 @@ Repository checkout과 `infra/06-observability/docker-compose.yml`, `infra/06-ob
 #### Normal use
 
 1. Compose service 경계, scrape job, rule file 경계를 [Common Checks](#common-checks)의 명령으로 확인한다. Scrape/rule 목록은 선택된 config와 `rule_files`가 가리키는 파일에서 읽는다. 아래 SPEC-0193 수치는 그 시점의 근거이며 현재 목록을 복제하지 않는다.
-2. Config나 rule을 바꾸기 전후에는 `promtool`로 검증한다. 명령과 rule glob 확장 주의는 [RUN-0045 절차](../../runbooks/07-observability/0045-prometheus.md#procedure)가 소유한다.
+2. Config나 rule을 바꾸기 전후에는 `promtool`로 검증한다. 명령과 rule glob 확장 주의는 [RUN-0045 절차](../../runbooks/07-observability/0045-prometheus.md#actions)가 소유한다.
 3. Target 상태는 Prometheus UI `Targets` page나 API로 확인한다. Route는 `https://prometheus.${DEFAULT_URL}`이고, container 내부 health endpoint는 `http://localhost:9090/-/healthy`다.
 4. Reload, restart, scrape 장애 대응, TSDB 증상 분류가 필요하면 runbook으로 이동한다.
 

@@ -94,7 +94,7 @@ rep1/rep2 는 data member, arbiter 는 투표만 담당하며 data backup 이 �
 - `LAB_MONGODB_ROOT_USERNAME`, `LAB_MONGO_EXPRESS_USERNAME`, `lab_mongodb_root_password`, `lab_mongo_express_basicauth_password`가 준비되어 있어야 한다.
 - replica set 이름은 compose command에 고정된 `MyReplicaSet` 기준이다. 현재 구현에는 별도 replica-set-name 환경 변수가 없다.
 
-정상 운영 중 점검은 compose profile 렌더링, init job/replica member 상태, `mongodb-rep1` 내부 client의 native password prompt를 통한 `rs.status()` 확인으로 구성된다. 실행 가능한 명령 순서와 기대 결과는 [MongoDB runbook](../../runbooks/15-labs/0027-mongodb.md#procedure)을 따른다.
+정상 운영 중 점검은 compose profile 렌더링, init job/replica member 상태, `mongodb-rep1` 내부 client의 native password prompt를 통한 `rs.status()` 확인으로 구성된다. 실행 가능한 명령 순서와 기대 결과는 [MongoDB runbook](../../runbooks/15-labs/0027-mongodb.md#actions)을 따른다.
 
 1. 애플리케이션 연결 문자열은 내부 서비스명을 포함한다.
 
@@ -114,7 +114,7 @@ rep1/rep2 는 data member, arbiter 는 투표만 담당하며 data backup 이 �
 
 - `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/mongodb/docker-compose.yml --profile mongodb config --quiet`
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb/docker-compose.yml logs mongo-init`
-- `rs.status()` 확인은 [MongoDB runbook의 private TTY/native-prompt 절차](../../runbooks/15-labs/0027-mongodb.md#procedure)를 따른다. 승인된 custody/실제 TTY가 없으면 중단하고 password를 URL·argv·환경 변수·history·로그에 넣지 않는다.
+- `rs.status()` 확인은 [MongoDB runbook의 private TTY/native-prompt 절차](../../runbooks/15-labs/0027-mongodb.md#actions)를 따른다. 승인된 custody/실제 TTY가 없으면 중단하고 password를 URL·argv·환경 변수·history·로그에 넣지 않는다.
 
 ### Troubleshooting
 
