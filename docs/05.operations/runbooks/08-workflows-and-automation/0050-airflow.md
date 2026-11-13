@@ -1,10 +1,10 @@
 ---
 title: "Airflow Runbook"
-version: "1.5.0"
+version: "1.5.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0050"
 parent_ids:
@@ -14,17 +14,15 @@ created: "2026-05-17"
 
 # Airflow Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 이 런북은 Apache Airflow 서비스 장애 발생 시 운영자가 즉시 수행할 수 있는 복구 절차를 정의한다. 현재 서비스명은 Airflow 3의 `airflow-apiserver`를 기준으로 한다. broker는 공유 `mng-valkey`다(앱별 전용 Valkey는 ADR-0062 결정 10으로 제거됨).
-
-> Scope: Apache Airflow (07-workflow)
 
 - Airflow 서비스 가용성 즉각 복구
 - 파이프라인 중단 시간 최소화
 - 시스템 상태 검증 및 정상화 확인
-
-## Trigger
 
 - 태스크가 `Queued` 상태에서 장시간 머물러 있을 때.
 - Web UI 접근 시 DB 연결 에러 또는 50x 에러가 발생할 때.
@@ -32,21 +30,42 @@ created: "2026-05-17"
 - Airflow UI 로그인, Keycloak token exchange, 또는 TLS verification이 실패할 때.
 - Airflow token 또는 session이 노출되어 폐기해야 할 때.
 
-## Prerequisites
+### Scope
 
-### Service lifecycle prerequisites
+> Scope: Apache Airflow (07-workflow)
 
-처음 기동하거나 이미지를 바꾸기 전에 DB·broker, CA, DAG/plugin/config/log host 경로와 비root 쓰기 권한을 확인한다. `airflow-init`은 migration 가능한 root 일회성 작업이므로 DB backup·schema 계획 승인 뒤에만 실행한다. init은 chown이나 사용자 역할 배정을 하지 않는다. init 완료 뒤 API·scheduler·processor·triggerer, API 준비 뒤 worker·Flower가 요구하는 조건을 각각 검증한다. StatsD exporter도 init 완료에 의존하며 healthcheck는 `:9102/metrics` 응답만 확인하므로 이벤트가 생긴 뒤 metric을 확인한다. 전용 Valkey·exporter를 선택하면 RUN-0028의 broker backup·인증 절차를 적용하되 workflow 이력 복원으로 간주하지 않는다. 중지는 예약·입력을 먼저 차단하고 실행 작업의 외부 효과를 대조한 뒤 한다.
+- Declared parent: [Airflow Usage Guide](../../guides/08-workflows-and-automation/0050-airflow.md) (`GDE-0050`)
+- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
+- Subject peers: [Guide](../../guides/08-workflows-and-automation/0050-airflow.md) (`GDE-0050`), [Policy](../../policies/08-workflows-and-automation/0050-airflow.md) (`POL-0050`)
 
-## Procedure
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
-### Execution Boundary
+- [Operations index](../../README.md)
+- [Usage guide](../../guides/08-workflows-and-automation/0050-airflow.md)
+- [Operations policy](../../policies/08-workflows-and-automation/0050-airflow.md)
+- [Opsflow HOME 설치 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0051-opsflow-home-installation.md)
+
+## Preconditions
+
+### Authority and Access
+
+승인·운영자·접근 조건은 아래 항목을 따른다.
+
+#### Execution Boundary
 
 저장소 root에서 아래의 정확한 service/profile과 기존 container를 선택한다. 변경 전에 승인 대상, source/image, 선행 readiness, 필요한 운영 권한과 부작용 범위를 확인한다. `up`은 dependency/provisioning job을 만들 수 있고 profile은 격리가 아니다. 진단은 기존 container의 `exec`를 사용하고 단순 조회를 위해 client/provisioner를 띄우지 않는다. 재시작은 요청 중단·memory/queue 손실·부작용 반복을 일으킬 수 있으므로 대상 drain/backup 조건을 먼저 충족한다. `restart`는 바뀐 Compose 설정이나 교체된 secret bind를 불러오지 않는다.
 
-Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
+Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### 사전 점검
+### Safety Checks
+
+실행 전 확인할 점검은 아래 항목을 따른다.
+
+#### Service lifecycle prerequisites
+
+처음 기동하거나 이미지를 바꾸기 전에 DB·broker, CA, DAG/plugin/config/log host 경로와 비root 쓰기 권한을 확인한다. `airflow-init`은 migration 가능한 root 일회성 작업이므로 DB backup·schema 계획 승인 뒤에만 실행한다. init은 chown이나 사용자 역할 배정을 하지 않는다. init 완료 뒤 API·scheduler·processor·triggerer, API 준비 뒤 worker·Flower가 요구하는 조건을 각각 검증한다. StatsD exporter도 init 완료에 의존하며 healthcheck는 `:9102/metrics` 응답만 확인하므로 이벤트가 생긴 뒤 metric을 확인한다. 전용 Valkey·exporter를 선택하면 RUN-0028의 broker backup·인증 절차를 적용하되 workflow 이력 복원으로 간주하지 않는다. 중지는 예약·입력을 먼저 차단하고 실행 작업의 외부 효과를 대조한 뒤 한다.
+
+#### 사전 점검
 
 - [ ] `HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-compose.sh`가 통과하는가?
 - [ ] `AIRFLOW_VALKEY_HOST`/`AIRFLOW_VALKEY_SECRET`의 선택 이름과 일치 여부를 확인했는가? Profile만으로 broker를 추정하지 않는다.
@@ -56,7 +75,13 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
   `create-permissions`를 다시 실행하고, 로그인한 사용자로 Pools, DAGs, Assets,
   HITL 화면이 `403` 없이 열리는지 확인했는가? (inc-2026-0002)
 
-### 연결 주소와 Secret reader 계약
+## Steps
+
+### Actions
+
+실행 절차는 아래 항목을 따른다.
+
+#### 연결 주소와 Secret reader 계약
 
 현재 소스의 metadata DB·Celery result backend·broker `_CMD`는 이미지 안의
 `/opt/airflow/bin/connection_uri.py`를 호출한다. 비밀번호는 보호된 regular
@@ -83,7 +108,7 @@ Helper의 성공 출력은 `_CMD` 소비용 연결 주소다. 단독 출력, 전
 실제 이미지 교체·컨테이너 재생성은 drain·backup·복구 조건을 갖춘 별도 승인
 대상이다. 로컬 revert가 운영 DB·자격·queue 상태를 복구한 것으로 기록하지 않는다.
 
-### 시나리오 0: Keycloak 인증 또는 TLS 실패
+#### 시나리오 0: Keycloak 인증 또는 TLS 실패
 
 1. `airflow-apiserver` 로그에서 auth manager, `401`, `403`, certificate 오류를
    확인한다. Secret 값 자체는 출력하지 않는다.
@@ -97,7 +122,7 @@ Helper의 성공 출력은 `_CMD` 소비용 연결 주소다. 단독 출력, 전
 5. 이미지가 최신 Dockerfile 변경을 포함해야 하면 승인된 Compose build를
    수행하고, 이후 `airflow db check`와 UI 로그인 검증을 다시 실행한다.
 
-### 시나리오 1: 태스크 지연 (Task stuck in Queued)
+#### 시나리오 1: 태스크 지연 (Task stuck in Queued)
 
 1. 증거 캡처:
    - `docker compose logs --tail=100 airflow-worker airflow-scheduler airflow-apiserver`
@@ -108,13 +133,13 @@ Helper의 성공 출력은 `_CMD` 소비용 연결 주소다. 단독 출력, 전
 
 5. Flower(opt-in `airflow-flower`를 시작한 경우 `flower.${DEFAULT_URL}`) 또는 worker 로그에서 heartbeat 회복 여부를 확인한다.
 
-### 시나리오 2: 메타데이터 DB 오류
+#### 시나리오 2: 메타데이터 DB 오류
 
 1. DB 연결 정보 확인: `docker compose exec airflow-apiserver airflow db check`
 2. 비밀번호/시크릿 로드 여부 확인: `/run/secrets/airflow_db_password` 파일 존재 여부 확인.
 3. DB/secret 준비 문제가 남아 있으면 중단하고 소유자에게 넘긴다. 해당 준비가 회복되고 실행 작업의 외부 효과와 중단 영향이 승인된 경우에만 기존 설정의 서비스를 재시작한다: `docker compose restart airflow-apiserver airflow-scheduler`. Secret bind·환경변수·image 변경은 restart 대상이 아니며 R0085/R0086의 승인된 재생성 절차로 넘긴다.
 
-### 시나리오 3: 관리자 계정 접근 복구
+#### 시나리오 3: 관리자 계정 접근 복구
 
 Native Keycloak Auth Manager의 계정과 역할 소유자는 Keycloak이다.
 [RUN-0014](../03-identity-and-access/0014-keycloak.md)의 승인된 계정 복구 절차로 넘긴다.
@@ -122,7 +147,7 @@ FAB `airflow users reset-password`나 CLI 인자에 password를 넣는 방식은
 이 구현에 적용하지 않는다. 복구 뒤 native login과 필요한 권한을 확인한다.
 Permission bootstrap 완료만으로 사용자 역할이 부여되지는 않는다.
 
-### 시나리오 4: 노출된 Airflow token/session 폐기
+#### 시나리오 4: 노출된 Airflow token/session 폐기
 
 Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
 `airflow_api_jwt_secret`으로 서명)와 Keycloak access/refresh/id token cookie를
@@ -148,7 +173,7 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
 3. 확인: 기존 cookie의 요청이 `401`을 받고, 새로 로그인하면 DAGs, Pools,
    Assets, HITL이 `403` 없이 열린다. 증거는 경로와 상태 코드만 남긴다.
 
-### 시나리오 5: Opsflow 첫 HOME 설치 (D12)
+#### 시나리오 5: Opsflow 첫 HOME 설치 (D12)
 
 상태: **계획됨·미실행**. 실행 기록과 미확정 owner 항목(O1–O8)은
 [TSK-0051](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0051-opsflow-home-installation.md)이 소유한다.
@@ -250,12 +275,24 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
 
 전체 rollback은 설치한 파일을 제거하고 백업을 보존하며 1단계 이전부터 있던 것은 drop하지 않는다.
 
-## Verification
+### Stop Conditions
+
+시나리오 5의 각 단계는 `중단 조건`을 가진다: dump 실패·크기 0·디스크 부족, 파일 오류·기존 receipt/fingerprint 불일치·역할·ACL 사전 검사 거부, 기대와 다른 상태 코드, hash 불일치·이름 충돌·import 오류·DAG unpaused, 행·객체 누락·quarantine ContentType 불일치·잘못된 입력의 게시·계획 밖 run. 시나리오 2에서 DB/secret 준비 문제가 남아 있으면 중단하고 소유자에게 넘긴다.
+
+예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다.
+
+## Validation
+
+### Service Checks
 
 - [ ] `docker compose exec airflow-apiserver airflow dags list` 명령어로 정상 로드 여부 확인.
 - [ ] native Keycloak 로그인과 `/api/v2/monitor/health` JSON의 component status를 확인한다. HTTP 200만으로 정상 판정하지 않는다. Scheduler health, processor/triggerer job check, worker ping과 승인된 canary 결과도 확인한다.
 
-### Observability and Evidence Sources
+### Evidence
+
+증거 기록은 아래 항목을 따른다.
+
+#### Observability and Evidence Sources
 
 - **Signals**: Grafana의 worker 중단 alert와 Flower 큐 길이
 - **Evidence to Capture**: `docker compose logs --tail=100 airflow-scheduler airflow-worker airflow-apiserver`, broker ping, `celery --app airflow.providers.celery.executors.celery_executor.app inspect ping`, DAG list 결과.
@@ -266,14 +303,14 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
   - worker: prefork pool이 task를 reserve만 하고 실행하지 않는다.
   - 증상이 보이면 `airflow dags details <dag_id>`의 `is_stale`과 `celery inspect reserved`를 먼저 본다.
 
-### 증거 기록
+#### 증거 기록
 
 - 실행 명령·결과·시각과 운영자 또는 agent 조치를 기록한다.
 - 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태를 관련 Task/Incident에 남긴다.
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
 
 - 이 Runbook에 기록된 복구·rollback 절차와 아래의 `Safe Rollback or Recovery Procedure` 하위 절차만 사용한다.
 - 아래 격리 복원은 미실행 상태다. 상태를 변경하기 전에 날짜가 있는 출력과 산출물 checksum을 기록한다.
@@ -299,18 +336,3 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
 ### Escalation
 
 검증 실패, secret 노출 위험, 파괴적 변경 필요 또는 예상 절차와 다른 상태이면 중단하고 @buenhyden에게 넘긴다. 정제된 증거, 시도한 단계와 현재 rollback/recovery 상태를 함께 전달한다.
-
-## Related Documents
-
-### Traceability
-
-- Declared parent: [Airflow Usage Guide](../../guides/08-workflows-and-automation/0050-airflow.md) (`GDE-0050`)
-- Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
-- Subject peers: [Guide](../../guides/08-workflows-and-automation/0050-airflow.md) (`GDE-0050`), [Policy](../../policies/08-workflows-and-automation/0050-airflow.md) (`POL-0050`)
-
-- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
-
-- [Operations index](../../README.md)
-- [Usage guide](../../guides/08-workflows-and-automation/0050-airflow.md)
-- [Operations policy](../../policies/08-workflows-and-automation/0050-airflow.md)
-- [Opsflow HOME 설치 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0051-opsflow-home-installation.md)

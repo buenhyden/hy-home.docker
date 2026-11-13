@@ -131,7 +131,7 @@ secret은 LAB 전용 `lab_lakehouse_<purpose>`이며 SeaweedFS admin·`lakehouse
 명령은 `python3 scripts/operations/lab.py check|up|down lakehouse`의 목적·lease·충돌·예산
 규칙을 따르는 활성 lease 안에서만 쓰며, 승인된 S3·카탈로그 endpoint가 없으면 실행하지 않는다.
 `run --no-deps` 진단은 table-bucket provisioning과 Trino가 이미 준비된 경우에만 사용한다.
-준비되지 않았으면 중단하고 [lakehouse runbook](../../runbooks/15-labs/0094-lakehouse.md#procedure)을
+준비되지 않았으면 중단하고 [lakehouse runbook](../../runbooks/15-labs/0094-lakehouse.md#actions)을
 따른다. `--no-deps`는 bucket/policy/namespace provisioning의 암묵 실행을 막으며 이를 대신하지 않는다.
 
 | Command | Effect |

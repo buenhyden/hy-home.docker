@@ -62,7 +62,7 @@ created: "2026-05-10"
 
 #### Normal use
 
-1. Compose service, Tempo config(ingestion, retention, storage, metrics generator), Alloy exporter 경계는 [RUN-0049 절차](../../runbooks/07-observability/0049-tempo.md#procedure)의 `rg` 명령으로 확인한다.
+1. Compose service, Tempo config(ingestion, retention, storage, metrics generator), Alloy exporter 경계는 [RUN-0049 절차](../../runbooks/07-observability/0049-tempo.md#actions)의 `rg` 명령으로 확인한다.
 2. Grafana의 `Explore` 메뉴에서 `Tempo` datasource를 선택하고 `TraceQL`로 trace를 조회한다.
 
    ```text

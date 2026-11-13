@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Traefik Runbook"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0013"
 parent_ids:
@@ -14,13 +14,13 @@ created: "2026-05-17"
 
 # 01-Gateway Traefik Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 이 런북은 Traefik 미들웨어 회귀, dashboard 접근 장애, 라우팅 이상 상황에서 복구 절차를 정의한다.
 
 목적은 `gateway-standard-chain` 회귀 시 신속 복구, Dashboard 인증/접근 장애 진단, Traefik 서비스 정상성 복원이다.
-
-## Trigger
 
 다음 경우에 사용한다.
 
@@ -28,7 +28,23 @@ created: "2026-05-17"
 - 미들웨어 체인 누락/오타/잘못된 순서
 - Traefik healthcheck 실패
 
-## Prerequisites
+### Scope
+
+- Declared parent: [01-Gateway Traefik Usage Guide](../../guides/02-gateway-and-networking/0013-traefik.md) (`GDE-0013`)
+- Governing authority: [Gateway Tier Architecture Description](../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
+- Subject peers: [Guide](../../guides/02-gateway-and-networking/0013-traefik.md) (`GDE-0013`), [Policy](../../policies/02-gateway-and-networking/0013-traefik.md) (`POL-0013`)
+
+- [Official upstream operational documentation](https://doc.traefik.io/traefik/)
+
+- 런타임 버전은 Compose/Dockerfile 선언이 소유하며, [파생 Compose 이미지 목록](../../../../infra/tech-stack.versions.json)은 drift 검증에 사용한다.
+
+- [Operations index](../../README.md)
+- [Usage guide](../../guides/02-gateway-and-networking/0013-traefik.md)
+- [Operations policy](../../policies/02-gateway-and-networking/0013-traefik.md)
+
+## Preconditions
+
+### Authority and Access
 
 저장소 루트, 승인된 Docker context의 `traefik`만 대상으로 한다. `core`/`dev`/
 `local` 중 기존 선택, host bind/80·443, root network, 인증서와
@@ -36,9 +52,11 @@ BasicAuth Secret 참조, `${DEFAULT_SECURITY_DIR}/openbao/tls/ca.pem` 존재를 
 응답이나 secret mount 내용을 증거로 출력하지 않는다. config/image 변경·restart는
 서비스 영향과 이전 config/certificate/image identity가 확인된 별도 승인이 필요하다.
 
-## Procedure
+### Safety Checks
 
-### Static checks and diagnosis
+적용 전 정적 점검과 읽기 전용 진단:
+
+#### Static checks and diagnosis
 
 ```bash
 HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh
@@ -66,7 +84,11 @@ docker compose ps traefik
 docker compose exec -T traefik traefik healthcheck --ping
 ```
 
-### Startup, shutdown and apply
+## Steps
+
+### Actions
+
+#### Startup, shutdown and apply
 
 기존 로컬 image와 network·secret·cert 입력이 준비됐고 runtime 변경이 승인된
 경우에만 아래를 실행한다. start는 80/443을 점유하며 stop은 모든 해당 route를 중단한다.
@@ -85,15 +107,27 @@ post-apply hash 검사를 수행한다. healthy, dashboard BasicAuth 성공·거
 대표 ForwardAuth와 native OIDC route, 내부 metrics 수집을 별개로 확인한다.
 실패하면 새 설정 적용을 중단하고 아래 rollback으로 전달한다.
 
-## Verification
+### Stop Conditions
+
+새 설정 적용이 실패하면 적용을 중단하고 Rollback으로 전달한다(Actions의 마지막 단락). canary/격리 route가 준비되지 않았으면 적용을 중단한다(Rollback의 2번).
+
+## Validation
+
+### Service Checks
+
+Traefik healthcheck, dashboard BasicAuth 성공·거부, 대표 ForwardAuth와 native OIDC route, 내부 metrics 수집을 별개로 확인한다.
+
+### Evidence
 
 시각·revision·승인 대상, 명령 exit, chain 멤버십, 정제된 health/route/metrics
 결과만 Task/Incident에 남긴다. secret 값, Authorization/Cookie, 원문 access/error
 로그는 첨부하지 않는다. 증거별 static/runtime/NOT_RUN을 구분한다.
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
+
+#### Rollback or Recovery
 
 1. Git의 검토된 static/dynamic 설정과 private owner의 일치하는 인증서 세트를
    준비한다. key를 repository/evidence에 복사하지 않는다.
@@ -115,19 +149,3 @@ limiter 미준수, 인증 우회·credential 노출 징후, persistent health/ro
 잘못된 bind/network, 또는 canary·rollback 입력 부재는 @buenhyden에게 전달한다.
 영향 route, 정제된 관찰과 필요한 별도 구현/운영 승인을 기록한다. 여러 티어
 장애는 [RUN-0099](../01-common/0099-system-operations.md)로 연결한다.
-
-## Related Documents
-
-### Traceability
-
-- Declared parent: [01-Gateway Traefik Usage Guide](../../guides/02-gateway-and-networking/0013-traefik.md) (`GDE-0013`)
-- Governing authority: [Gateway Tier Architecture Description](../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
-- Subject peers: [Guide](../../guides/02-gateway-and-networking/0013-traefik.md) (`GDE-0013`), [Policy](../../policies/02-gateway-and-networking/0013-traefik.md) (`POL-0013`)
-
-- [Official upstream operational documentation](https://doc.traefik.io/traefik/)
-
-- 런타임 버전은 Compose/Dockerfile 선언이 소유하며, [파생 Compose 이미지 목록](../../../../infra/tech-stack.versions.json)은 drift 검증에 사용한다.
-
-- [Operations index](../../README.md)
-- [Usage guide](../../guides/02-gateway-and-networking/0013-traefik.md)
-- [Operations policy](../../policies/02-gateway-and-networking/0013-traefik.md)

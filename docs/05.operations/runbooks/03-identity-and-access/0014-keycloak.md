@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Runbook"
-version: "1.5.0"
+version: "1.5.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0014"
 parent_ids:
@@ -14,15 +14,13 @@ created: "2026-05-17"
 
 # 02-Auth Keycloak Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 이 런북은 Keycloak readiness 실패, DB 연결 오류, issuer/redirect 불일치, proxy header 오류, 시크릿 회전 후 인증 장애 상황의 복구 절차를 정의한다. 값이 필요한 점검은 secret 값을 출력하지 않는 방식으로만 수행한다.
 
-> Scope: Keycloak Runtime Recovery and OIDC Issuer Diagnostics
-
 목적은 Keycloak 가용성을 빠르게 복구하고, issuer, redirect URI, proxy header, CA trust 불일치를 안전하게 좁히며, 시크릿/설정 회귀 시 안전하게 롤백하는 것이다.
-
-## Trigger
 
 다음 경우에 사용한다.
 
@@ -33,9 +31,38 @@ created: "2026-05-17"
 - logout 후 즉시 재로그인되는 세션 경계 문제
 - token, session, client secret 노출 후 폐기가 필요할 때
 
-## Prerequisites
+### Scope
 
-### Target, approval and safe evidence
+> Scope: Keycloak Runtime Recovery and OIDC Issuer Diagnostics
+
+- Declared parent: [02-Auth Keycloak Usage Guide](../../guides/03-identity-and-access/0014-keycloak.md) (`GDE-0014`)
+- Governing authority: [02-Auth Architecture Description](../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Guide](../../guides/03-identity-and-access/0014-keycloak.md) (`GDE-0014`), [Policy](../../policies/03-identity-and-access/0014-keycloak.md) (`POL-0014`)
+
+- [Official Keycloak container guide](https://www.keycloak.org/server/containers)
+- [Official Keycloak hostname guide](https://www.keycloak.org/server/hostname)
+- [Official Keycloak reverse proxy guide](https://www.keycloak.org/server/reverseproxy)
+- [Official Keycloak health checks](https://www.keycloak.org/observability/health)
+- [Official Keycloak OIDC application guide](https://www.keycloak.org/securing-apps/oidc-layers)
+- [Official Keycloak import and export](https://www.keycloak.org/server/importExport)
+- [Official Keycloak upgrading guide](https://www.keycloak.org/docs/latest/upgrading/index.html)
+- [Official Keycloak server administration guide](https://www.keycloak.org/docs/latest/server_admin/index.html)
+- [Official Keycloak Admin REST API](https://www.keycloak.org/docs-api/latest/rest-api/index.html)
+
+- 런타임 버전은 Compose/Dockerfile 선언이 소유하며, [파생 Compose 이미지 목록](../../../../infra/tech-stack.versions.json)은 drift 검증에 사용한다.
+
+- [Operations index](../../README.md)
+- [Usage guide](../../guides/03-identity-and-access/0014-keycloak.md)
+- [Operations policy](../../policies/03-identity-and-access/0014-keycloak.md)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.
+
+## Preconditions
+
+### Authority and Access
+
+승인 대상과 증거 처리 기준은 다음과 같다.
+
+#### Target, approval and safe evidence
 
 저장소 루트의 승인된 Docker context에서 아래에 명시한 서비스만 다룬다.
 명령이 runtime을 변경하는 단계는 대상, 영향받는 사용자·소비자, 이전 image/config,
@@ -45,15 +72,21 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
 여러 앱 공통 장애는 [RUN-0099](../01-common/0099-system-operations.md), cold-start는
 [RUN-0098](../01-common/0098-cold-start-and-reboot.md)이 소유한다.
 
-## Procedure
+### Safety Checks
 
-### Preflight checks
+조치 전에 확인할 항목은 다음과 같다.
+
+#### Preflight checks
 
 - [ ] `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` 성공
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 결과 확인
 - [ ] 승인된 `docker compose ps keycloak mng-pg`에서 `keycloak`, `mng-pg` 상태 확인
 
-### Diagnosis and recovery steps
+## Steps
+
+### Actions
+
+#### Diagnosis and recovery steps
 
 1. 설정/로그 확인
    - Keycloak의 정제된 DB/OIDC 오류 요약(Compose 검증은 Preflight에서 수행)
@@ -117,7 +150,7 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
    - readiness 재확인
    - OAuth2 Proxy login/logout 플로우와 해당 native OIDC client login을 각각 별도 증거로 기록한다.
 
-### Lifecycle and configuration changes
+#### Lifecycle and configuration changes
 
 `keycloak`의 DB인 `mng-pg`가 먼저 준비되어야 하지만 Compose startup edge는 없다.
 기존 로컬 image, DB schema 호환성, conf/providers/themes mount와 두 Secret 참조를
@@ -145,7 +178,7 @@ restore 명령이 없으며 @buenhyden과 DB owner가 별도 복구 계약을 �
 
 `KC_HTTP_MANAGEMENT_HOST`는 build에 영향을 주는 옵션이다. 값을 바꾸면 Keycloak이 기동 시 server image를 다시 build한다(2026-11-08에는 SSO가 약 12분 중단되었고, 그동안 oauth2-proxy와 Gatus가 OIDC discovery에 실패했다). 재생성·upgrade 시 같은 시간을 예상하고, oauth2-proxy와 Gatus는 Keycloak이 healthy가 된 뒤에 시작한다.
 
-### Application authorization provisioning
+#### Application authorization provisioning
 
 Airflow Keycloak Auth Manager bootstrap은 Keycloak client와 realm role
 `Viewer`, `User`, `Op`, `Admin`, `SuperAdmin`을 먼저 준비하고, 승인된
@@ -177,28 +210,42 @@ Compose의 명시적 build args가 Dockerfile 기본값보다 우선하며 현�
 설치 성공은 관찰하지 않았다. 로그인 성공 외에 Pool/DAG/Asset별 허용·거부를 확인하고
 [Airflow Runbook](../08-workflows-and-automation/0050-airflow.md)으로 후속 앱 검증을 전달한다.
 
-## Verification
+### Stop Conditions
 
-### Acceptance checks
+runtime을 변경하는 단계는 중단 조건이 확인된 별도 승인 뒤에만 수행한다(Authority and Access). `invalid_scope` 또는 realm-role 404이면 중단한다(Actions의 Application authorization provisioning). 검증 실패, secret 노출 위험, 파괴적 data 변경 필요, 결과 불일치는 중단하고 에스컬레이션한다(Escalation).
+
+## Validation
+
+### Service Checks
+
+수용 확인은 다음과 같다.
+
+#### Acceptance checks
 
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 통과
 - [ ] `docker compose --profile auth exec keycloak bash -ec 'exec 3<>/dev/tcp/10.250.44.2/9000; printf "GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n" >&3; cat <&3'`에서 공백과 무관하게 status가 UP인지 확인(관리 listener는 `keycloak_management_net`의 `10.250.44.2:9000`에만 바인딩되며 loopback에는 없다; 기본9000 기준, listener 변경 시 승인된 관리 포트와 함께 조정)
 
-### Observability and evidence sources
+### Evidence
+
+관측 신호와 증거 기록은 다음과 같다.
+
+#### Observability and evidence sources
 
 - **Signals**: readiness 상태, Keycloak 로그의 DB/OIDC 오류
 - **Evidence to Capture**:
   - Keycloak의 정제된 DB/OIDC 오류 요약
   - `check-all-hardening.sh 02-auth` 실행 결과
 
-### 증거 기록
+#### 증거 기록
 
 - 원문을 제외한 명령 종료 상태·시각·승인 대상·조치와 미검증 항목만 기록한다.
 - 실패한 점검, 관찰된 증상과 최종 복구 또는 에스컬레이션 상태를 관련 Task나 incident evidence에 기록한다.
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
+
+#### Rollback or Recovery
 
 격리 복구 절차는 다음과 같다.
 
@@ -219,28 +266,3 @@ image와 migration 전 database 복원이 함께 필요하다. 위 격리 복구
 ### Escalation
 
 검증 실패, secret 노출 위험, 파괴적인 data 변경 필요, 또는 예상한 절차 결과와 관찰 상태의 불일치가 나타나면 중단하고 @buenhyden에게 에스컬레이션한다. 수집한 evidence, 시도한 단계와 현재 rollback/recovery 상태를 포함한다. evidence가 local 운영자 환경을 벗어나기 전에 credential, authorization code, token, cookie, session identifier, 필요한 경우 private IP, 개인 account 정보를 가린다.
-
-## Related Documents
-
-### Traceability
-
-- Declared parent: [02-Auth Keycloak Usage Guide](../../guides/03-identity-and-access/0014-keycloak.md) (`GDE-0014`)
-- Governing authority: [02-Auth Architecture Description](../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
-- Subject peers: [Guide](../../guides/03-identity-and-access/0014-keycloak.md) (`GDE-0014`), [Policy](../../policies/03-identity-and-access/0014-keycloak.md) (`POL-0014`)
-
-- [Official Keycloak container guide](https://www.keycloak.org/server/containers)
-- [Official Keycloak hostname guide](https://www.keycloak.org/server/hostname)
-- [Official Keycloak reverse proxy guide](https://www.keycloak.org/server/reverseproxy)
-- [Official Keycloak health checks](https://www.keycloak.org/observability/health)
-- [Official Keycloak OIDC application guide](https://www.keycloak.org/securing-apps/oidc-layers)
-- [Official Keycloak import and export](https://www.keycloak.org/server/importExport)
-- [Official Keycloak upgrading guide](https://www.keycloak.org/docs/latest/upgrading/index.html)
-- [Official Keycloak server administration guide](https://www.keycloak.org/docs/latest/server_admin/index.html)
-- [Official Keycloak Admin REST API](https://www.keycloak.org/docs-api/latest/rest-api/index.html)
-
-- 런타임 버전은 Compose/Dockerfile 선언이 소유하며, [파생 Compose 이미지 목록](../../../../infra/tech-stack.versions.json)은 drift 검증에 사용한다.
-
-- [Operations index](../../README.md)
-- [Usage guide](../../guides/03-identity-and-access/0014-keycloak.md)
-- [Operations policy](../../policies/03-identity-and-access/0014-keycloak.md)
-- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

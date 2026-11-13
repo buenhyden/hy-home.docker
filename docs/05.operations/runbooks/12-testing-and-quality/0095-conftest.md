@@ -1,10 +1,10 @@
 ---
 title: "Conftest Recovery Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0095"
 parent_ids:
@@ -14,21 +14,35 @@ created: "2026-09-23"
 
 # Conftest Recovery Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 `conftest` 정책 검사 작업이 실패했을 때 원인을 찾고 수정하는 런북이다.
 
-## Trigger
-
-### Trigger and Preconditions
-
 `conftest` 작업이 0이 아닌 상태로 종료될 때 사용한다.
 
-## Prerequisites
+### Scope
+
+- [Guide](../../guides/12-testing-and-quality/0095-conftest.md) (`GDE-0095`)
+- [Policy](../../policies/12-testing-and-quality/0095-conftest.md) (`POL-0095`)
+- [Conftest Compose](../../../../infra/11-quality/conftest/docker-compose.yml)
+
+- [Conftest 패키지 README](../../../../infra/11-quality/conftest/README.md)
+
+## Preconditions
+
+### Authority and Access
 
 저장소 루트의 승인된 로컬 컨테이너 작업만 대상으로 한다. 원본이 읽기 전용이어도 컨테이너 생성은 정적 문서 검사와 구분한다.
 
-## Procedure
+### Safety Checks
+
+이 런북은 별도 백업이나 읽기 전용 사전 점검을 요구하지 않고, 저장소 루트에서 승인된 로컬 컨테이너 작업을 실행해 첫 실패 단계를 읽는 것으로 시작한다.
+
+## Steps
+
+### Actions
 
 1. 저장소 루트에서 승인된 로컬 컨테이너 작업을 실행하고 첫 실패 단계·줄을 읽는다.
 
@@ -54,7 +68,7 @@ created: "2026-09-23"
    job 안의 xargs·shell 상태가 전달될 수도 있다. verify/Compose/Dockerfile
    중 실행된 단계와 오류를 확인하고 파싱·규칙·실행 환경 문제를 구분한다.
 
-### 수정·업그레이드·복구
+#### 수정·업그레이드·복구
 
 규칙과 파일 수정 전 실패 입력·기존 통제의 소유자를 확인한다. source 위반은 선언을
 수정하고, 규칙 결함이면 해당 정책 테스트와 근거를 보존해 검토받는다. 실패를 숨기기
@@ -62,30 +76,28 @@ created: "2026-09-23"
 테스트를 확인하고 검토한 이전 소스로 rollback한다. 작업 자체 데이터·credential·TLS
 복원은 적용되지 않으며 Git의 정책 원본과 정제된 검사 근거만 보존한다.
 
-## Verification
+### Stop Conditions
+
+`secrets/`, `.env` 또는 Docker 소켓을 작업에 마운트하라는 요청, 또는 실패하는
+변경을 통과시키기 위해 `deny`를 `warn`으로 바꾸라는 요청이 있으면 중단한다.
+
+## Validation
+
+### Service Checks
+
+`scripts/validation/check-conftest-policy.sh`가 0으로 종료하면 통과이고, 0이 아니면 첫 실패 단계·줄을 읽어 원인을 분리한다.
+
+### Evidence
 
 실제로 실행된 단계의 요약·exit와 소스 커밋을 기록한다. 첫 실패 뒤 실행되지 않은
 단계는 미실행으로 남기며 세 요약을 만들거나 전체 PASS로 해석하지 않는다.
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
 
 검사 원본과 운영 데이터는 변경하지 않는다. wrapper가 만든 임시 공개 입력과 일회성 job은 종료 시 정리하며 작업 데이터 복원은 적용되지 않는다.
 
 ### Escalation
 
-책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
-
-`secrets/`, `.env` 또는 Docker 소켓을 작업에 마운트하라는 요청, 또는 실패하는
-변경을 통과시키기 위해 `deny`를 `warn`으로 바꾸라는 요청이 있으면 중단한다.
-
-## Related Documents
-
-### Traceability
-
-- [Guide](../../guides/12-testing-and-quality/0095-conftest.md) (`GDE-0095`)
-- [Policy](../../policies/12-testing-and-quality/0095-conftest.md) (`POL-0095`)
-- [Conftest Compose](../../../../infra/11-quality/conftest/docker-compose.yml)
-
-- [Conftest 패키지 README](../../../../infra/11-quality/conftest/README.md)
+책임자는 `@buenhyden`이다. 위 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.

@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Runbook"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0066"
 parent_ids:
@@ -14,18 +14,36 @@ created: "2026-05-17"
 
 # SonarQube Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 SonarQube(`sonarqube` service)의 health·DB 연결 장애, 검색 인덱스 복구, 토큰 사고, DB 복원, 업그레이드 절차다.
-
-## Trigger
 
 health·DB 연결 실패, 백그라운드 작업 지연, 검색 인덱스 실패, 토큰·인증 사고,
 DB 복원 또는 승인된 업그레이드에 사용한다.
 
-## Prerequisites
+### Scope
 
-### 작업 선택과 복구 전제
+- [Guide](../../guides/15-labs/0066-sonarqube.md) (`GDE-0066`)
+- [Policy](../../policies/15-labs/0066-sonarqube.md) (`POL-0066`)
+- [SonarQube Compose](../../../../labs/sonarqube/docker-compose.yml)
+- SPEC-0262 Analytics labs migration(LAB 이전)
+
+- [SonarQube backup/restore](https://docs.sonarsource.com/sonarqube-server/9.9/instance-administration/backup-and-restore)
+- [SonarQube upgrade](https://docs.sonarsource.com/sonarqube-server/9.8/setup-and-upgrade/upgrade-the-server/upgrade-guide)
+
+## Preconditions
+
+### Authority and Access
+
+변경 전 정확한 서비스·데이터 경로·승인자·중단 영향을 기록한다. rollback 승인이 있을 때만 active instance를 upgrade하며, HOME mng-pg endpoint(`LAB_SONARQUBE_DB_HOST`)는 승인된 것만 사용한다.
+
+### Safety Checks
+
+변경 전 확인할 작업 선택과 복구 전제는 다음과 같다.
+
+#### 작업 선택과 복구 전제
 
 변경 전에 정확한 서비스·데이터 경로·승인자·중단 영향을 기록하고 [공통 복구 전제](../10-platform-and-backup/0021-backup-and-restore.md)를
 적용한다. 격리 대상, 복구본 식별자·무결성, 여유 공간, 비밀 보관, 작성자 정지와
@@ -34,7 +52,9 @@ DB 복원 또는 승인된 업그레이드에 사용한다.
 단일 파일 bind 재생성과 비밀 비노출 확인을 따른다. 재시작은 데이터 복원이나 자격 증명
 폐기 검증을 대신하지 않는다.
 
-## Procedure
+## Steps
+
+### Actions
 
 1. 저장소 루트에서 validate하고 bounded state를 캡처한다.
 
@@ -55,7 +75,7 @@ DB 복원 또는 승인된 업그레이드에 사용한다.
    rotate하고, 이전 token이 거부되는지 확인한다. IdP account 비활성화만으로는
    충분하지 않다.
 
-### Database restore and index recovery
+#### Database restore and index recovery
 
 1. SonarQube를 중지하고 DB write가 발생하지 않도록 중지 상태를 유지한다.
 2. 검증된 database-native backup을 isolated PostgreSQL target으로 복원한다. source
@@ -66,7 +86,7 @@ DB 복원 또는 승인된 업그레이드에 사용한다.
 4. reindexing을 허용한 뒤 project/settings/user count, permission, 대표 검색,
    analysis 하나를 확인한다. 승인 후에만 promote한다.
 
-### Upgrade and rollback
+#### Upgrade and rollback
 
 1. pre-upgrade DB backup과 plugin/config inventory를 확인하고, 모든 release note와
    prerequisite를 검토한다. 측정된 DB disk를 기준으로 migration headroom을 확보한다.
@@ -76,7 +96,7 @@ DB 복원 또는 승인된 업그레이드에 사용한다.
    pre-upgrade DB를 복원하고, 이전 image를 시작한다. target release가 이미 migrate한
    DB에 이전 image를 연결하지 않는다.
 
-### 보존 대상과 사전 검토
+#### 보존 대상과 사전 검토
 
 데이터베이스가 백업 권한을 갖는다. 공식 가이드는 데이터베이스 네이티브 백업을
 사용하고 복원 후 Elasticsearch 인덱스를 재구축한다. 일관되게 복구하려면 추적되는 설정,
@@ -91,42 +111,38 @@ DB secret 보관, 여기 표현되지 않은 외부 설치 plugin/config도 보�
 이미지 롤백만으로는 스키마 마이그레이션을 되돌릴 수 없다. 여기서는 백업/복원/
 업그레이드를 실행하지 않았다.
 
-### 버전 적용 한계
+#### 버전 적용 한계
 
 아래의 Server 9.8/9.9 링크는 과거 참고 자료이며 현재 Compose가 선택하는 Community
 Build의 실행 절차를 보증하지 않는다. 현재 선언과 일치하는 release·DB·plugin 지원
 근거를 확보하기 전에는 업그레이드와 재인덱싱 복구를 진행하지 않는다. 과거 명령을
 현재 이미지에 그대로 적용하지 않고 `@buenhyden`에게 호환성 확인을 요청한다.
 
-## Verification
+### Stop Conditions
+
+DB backup이 없거나 미검증이거나, migration이 모호하거나, DB가 corruption되었거나,
+plugin 호환성을 알 수 없거나, queue/index failure가 지속되거나, authorization bypass가
+있으면 중단한다.
+
+## Validation
+
+### Service Checks
+
+system health, loopback port 로그인, SonarQube permission, 대표 background task 하나가 정상이어야 하고, 복원 후에는 project/settings/user count, permission, 대표 검색, analysis 하나가 확인되어야 한다.
+
+### Evidence
 
 command exit, image/source commit, DB backup/checksum/schema, project와 task
 count, health/index status, plugin inventory, 최종 상태를 기록한다. DB 내용,
 source code, personal data, token은 절대 기록하지 않는다.
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
 
 database restore/reindex와 upgrade rehearsal은 **계획되었으나 미실행** 상태이다.
 검증된 database recovery point 없이 search index를 삭제해서는 안 된다.
 
 ### Escalation
 
-책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
-
-DB backup이 없거나 미검증이거나, migration이 모호하거나, DB가 corruption되었거나,
-plugin 호환성을 알 수 없거나, queue/index failure가 지속되거나, authorization bypass가
-있으면 중단한다.
-
-## Related Documents
-
-### Traceability
-
-- [Guide](../../guides/15-labs/0066-sonarqube.md) (`GDE-0066`)
-- [Policy](../../policies/15-labs/0066-sonarqube.md) (`POL-0066`)
-- [SonarQube Compose](../../../../labs/sonarqube/docker-compose.yml)
-- SPEC-0262 Analytics labs migration(LAB 이전)
-
-- [SonarQube backup/restore](https://docs.sonarsource.com/sonarqube-server/9.9/instance-administration/backup-and-restore)
-- [SonarQube upgrade](https://docs.sonarsource.com/sonarqube-server/9.8/setup-and-upgrade/upgrade-the-server/upgrade-guide)
+책임자는 `@buenhyden`이다. 위 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.

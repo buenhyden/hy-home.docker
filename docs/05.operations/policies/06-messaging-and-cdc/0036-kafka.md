@@ -114,7 +114,7 @@ lifecycle 변경 후 검토하며, 보관 중에는 최소 연 1회 검토한다
 
 ## Verification
 
-[RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md#procedure)의 root `messaging` render와 LAB render로 static 구성을 검증한 다음, promotion이나
+[RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md#actions)의 root `messaging` render와 LAB render로 static 구성을 검증한 다음, promotion이나
 cutover 전에 application-level acceptance를 갖춘 isolated compatible
 restore를 요구한다. 검증되지 않은 runtime property는 명시적으로 기록한다.
 

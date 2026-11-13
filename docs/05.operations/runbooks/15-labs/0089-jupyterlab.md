@@ -1,10 +1,10 @@
 ---
 title: "JupyterLab Recovery Runbook"
-version: "1.1.1"
+version: "1.1.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0089"
 parent_ids:
@@ -14,18 +14,37 @@ created: "2026-09-21"
 
 # JupyterLab Recovery Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 JupyterLab의 시작 실패, 토큰 노출, 커널 정지, 작업 파일 손실, 이미지 업그레이드를 다루는 복구 런북이다.
-
-## Trigger
 
 시작 실패, 토큰 노출, 멈춘 커널, 작업 파일 손실, 이미지 업그레이드 시
 사용한다.
 
-## Prerequisites
+### Scope
 
-### 작업 선택과 복구 전제
+- [Guide](../../guides/15-labs/0089-jupyterlab.md) (`GDE-0089`)
+- [Policy](../../policies/15-labs/0089-jupyterlab.md) (`POL-0089`)
+- [JupyterLab Compose](../../../../labs/jupyterlab/docker-compose.yml)
+- SPEC-0262 Analytics labs migration
+
+- [이미지 Dockerfile](../../../../labs/jupyterlab/Dockerfile)과
+  [파생 버전 프로젝션](../../../../infra/tech-stack.versions.json)
+- [MLflow 런북](../13-analytics-and-data-quality/0088-mlflow.md)
+
+## Preconditions
+
+### Authority and Access
+
+변경 전 정확한 서비스·데이터 경로·승인자·중단 영향을 기록한다. 토큰 교체는 등록된 시크릿 워크플로와 승인된 재생성으로 하고, 이전 notebook 재배치는 별도 승인 아래 수동으로 한다.
+
+### Safety Checks
+
+변경 전 확인할 작업 선택과 복구 전제는 다음과 같다.
+
+#### 작업 선택과 복구 전제
 
 변경 전에 정확한 서비스·데이터 경로·승인자·중단 영향을 기록하고 [공통 복구 전제](../10-platform-and-backup/0021-backup-and-restore.md)를
 적용한다. 격리 대상, 복구본 식별자·무결성, 여유 공간, 비밀 보관, 작성자 정지와
@@ -34,7 +53,9 @@ JupyterLab의 시작 실패, 토큰 노출, 커널 정지, 작업 파일 손실,
 단일 파일 bind 재생성과 비밀 비노출 확인을 따른다. 재시작은 데이터 복원이나 자격 증명
 폐기 검증을 대신하지 않는다.
 
-## Procedure
+## Steps
+
+### Actions
 
 1. 저장소 루트에서 점검한다. JupyterLab은 독립 LAB이다(SPEC-0262). `config`는 렌더링만 하며,
    기동·재시작은 `python3 scripts/operations/lab.py check|up|down jupyterlab`의 lease 규칙을 따른다.
@@ -58,7 +79,7 @@ JupyterLab의 시작 실패, 토큰 노출, 커널 정지, 작업 파일 손실,
 4. 멈춘 커널의 경우 UI에서 커널을 재시작한다. 서버 자체가 응답하지 않을
    때만 컨테이너를 재시작한다.
 
-### Restore and upgrade
+#### Restore and upgrade
 
 1. 서비스를 정지하고 작업 디렉터리를 복사한다. 소스 커밋과 파일 개수를
    기록한다.
@@ -68,20 +89,31 @@ JupyterLab의 시작 실패, 토큰 노출, 커널 정지, 작업 파일 손실,
    라이브러리를 import하는 노트북을 연다. MLflow 기록 확인은 승인된
    `LAB_JUPYTERLAB_MLFLOW_TRACKING_URI`가 있을 때만 한다(SPEC-0262 미결정 항목).
 
-### 작업 디렉터리와 라이브러리 보존
+#### 작업 디렉터리와 라이브러리 보존
 
 work 디렉터리를 복사하기 전에 server를 멈춘다. notebook과 output은 민감할
 수 있는 data로 취급한다. library를 바꾸려면 image를 재빌드하고, MLflow
 client version을 server와 맞춘다.
 
-## Verification
+### Stop Conditions
+
+알 수 없는 코드 실행의 증거, JupyterHub 없이 다중 사용자 접근 요청, 토큰
+비활성화 요청이 있으면 중단한다.
+
+## Validation
+
+### Service Checks
+
+토큰 교체 뒤에는 이전 token과 기존 cookie 거부를 각각 검증해야 회전 완료로 판정하며, 이미지 업그레이드는 고정된 모든 라이브러리를 import하는 노트북을 열어 확인한다.
+
+### Evidence
 
 종료 코드, 이미지 태그, 소스 커밋, 파일 개수를 기록한다. 토큰이나 노트북
 내용은 절대 기록하지 않는다.
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
 
 설정은 검토된 Compose와 requirements로 복원하고, 보존된 이전 이미지 식별자를
 우선 확인한다. 재빌드가 원래 이미지와 같다는 보장은 없다. 사용자 데이터는 먼저
@@ -103,20 +135,4 @@ client version을 server와 맞춘다.
 
 ### Escalation
 
-책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
-
-알 수 없는 코드 실행의 증거, JupyterHub 없이 다중 사용자 접근 요청, 토큰
-비활성화 요청이 있으면 중단한다.
-
-## Related Documents
-
-### Traceability
-
-- [Guide](../../guides/15-labs/0089-jupyterlab.md) (`GDE-0089`)
-- [Policy](../../policies/15-labs/0089-jupyterlab.md) (`POL-0089`)
-- [JupyterLab Compose](../../../../labs/jupyterlab/docker-compose.yml)
-- SPEC-0262 Analytics labs migration
-
-- [이미지 Dockerfile](../../../../labs/jupyterlab/Dockerfile)과
-  [파생 버전 프로젝션](../../../../infra/tech-stack.versions.json)
-- [MLflow 런북](../13-analytics-and-data-quality/0088-mlflow.md)
+책임자는 `@buenhyden`이다. 위 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.

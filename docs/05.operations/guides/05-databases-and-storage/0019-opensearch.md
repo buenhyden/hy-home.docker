@@ -89,7 +89,7 @@ Docker Secret ID는 `opensearch_admin_password`, `opensearch_dashboard_password`
    test -f labs/opensearch-cluster/docker-compose.yml
    ```
 
-2. Cluster health는 HTTPS와 admin secret으로 확인한다. 인증된 cluster 읽기는 [해당 Runbook](../../runbooks/05-databases-and-storage/0019-opensearch.md#procedure)의 private TTY/client prompt 절차를 따른다. source build/config 한계를 해결·검증하기 전에는 성공을 가정하지 않는다.
+2. Cluster health는 HTTPS와 admin secret으로 확인한다. 인증된 cluster 읽기는 [해당 Runbook](../../runbooks/05-databases-and-storage/0019-opensearch.md#actions)의 private TTY/client prompt 절차를 따른다. source build/config 한계를 해결·검증하기 전에는 성공을 가정하지 않는다.
 3. 정상 Dashboards만 `opensearch-dashboard.${DEFAULT_URL}` Traefik host rule을 사용한다. LAB Dashboard에는 그 route가 없다.
 4. 인덱스는 도메인별 패턴을 따른다(예: `logs-*-*`).
 
@@ -114,7 +114,7 @@ Docker Secret ID는 `opensearch_admin_password`, `opensearch_dashboard_password`
 
 ### Troubleshooting
 
-- `opensearch`가 healthy가 되지 않음: healthcheck는 `https://localhost:9200/_cluster/health?wait_for_status=yellow`를 admin secret으로 호출한다. 인증서 bind(`${DEFAULT_CERT_DIR}`)와 secret 파일 존재를 먼저 확인하고 [Runbook](../../runbooks/05-databases-and-storage/0019-opensearch.md#procedure)으로 넘긴다.
+- `opensearch`가 healthy가 되지 않음: healthcheck는 `https://localhost:9200/_cluster/health?wait_for_status=yellow`를 admin secret으로 호출한다. 인증서 bind(`${DEFAULT_CERT_DIR}`)와 secret 파일 존재를 먼저 확인하고 [Runbook](../../runbooks/05-databases-and-storage/0019-opensearch.md#actions)으로 넘긴다.
 - Dashboards가 시작하지 않음: `opensearch-dashboards`는 `opensearch`의 `service_healthy`를 기다린다. API 상태부터 확인한다.
 - API route 401: `opensearch-auth@file` basic auth가 OpenSearch 인증 앞에 있다.
 

@@ -1,10 +1,10 @@
 ---
 title: "Alertmanager Notification Recovery Runbook"
-version: "1.0.5"
+version: "1.0.6"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0039"
 parent_ids:
@@ -14,15 +14,13 @@ created: "2026-05-17"
 
 # Alertmanager Notification Recovery Runbook
 
-## Overview
+## Purpose
 
-> Scope: Alertmanager 준비 상태, Prometheus 전달 증거, secret으로 렌더링한 설정, 알림 경로 진단, 재시작과 설정 rollback.
+### Trigger and Outcome
 
 이 런북은 Alertmanager UI와 readiness 실패, Prometheus 알림 전달 누락, Slack 알림 실패, silence/inhibition 불일치, 설정 렌더링 회귀를 다룬다. Guide와 policy의 설명은 반복하지 않고, 실행 가능한 진단, 안전한 restart, evidence 수집, escalation 기준만 둔다.
 
 운영자가 `alertmanager` 상태를 확인하고 Prometheus의 `alertmanager:9093` 전달, route/receiver 설정, Docker Secret으로 렌더링한 runtime 경계, 보호된 UI route를 검증한다. Secret 노출이나 receiver 정책 변경 같은 위험 조치는 별도 승인으로 분리한다.
-
-## Trigger
 
 다음 경우에 사용한다.
 
@@ -32,26 +30,46 @@ created: "2026-05-17"
 - 잘못된 silence 또는 inhibition rule로 중요 알림이 차단된 것처럼 보일 때.
 - `config.yml` 변경 후 route, receiver, template, notification delivery 상태 검증이 필요할 때.
 
-## Prerequisites
+### Scope
+
+> Scope: Alertmanager 준비 상태, Prometheus 전달 증거, secret으로 렌더링한 설정, 알림 경로 진단, 재시작과 설정 rollback.
+
+- Declared parent: [Alertmanager Usage Guide](../../guides/07-observability/0039-alertmanager.md) (`GDE-0039`)
+- Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+- Subject peers: [Guide](../../guides/07-observability/0039-alertmanager.md) (`GDE-0039`), [Policy](../../policies/07-observability/0039-alertmanager.md) (`POL-0039`)
+
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+- [Operations index](../../README.md)
+- [Usage guide](../../guides/07-observability/0039-alertmanager.md)
+- [Operations policy](../../policies/07-observability/0039-alertmanager.md)
+
+## Preconditions
+
+### Authority and Access
 
 `alertmanager`를 처음 기동하면 건강한 `prometheus`·`grafana` 의존성을 요구한다. 알림 대상은 현재 Slack이며 SMTP secret도 renderer 입력으로 필요하다. 상태 점검 뒤 별도 승인한 합성 알림의 실제 도착을 확인한다. 정지 전 silence·notification 상태를 보존하고 운영 알림의 중단 영향을 승인받는다.
 
-## Procedure
-
-### Execution Boundary
+#### Execution Boundary
 
 저장소 root에서 아래의 정확한 service/profile과 기존 container를 선택한다. 변경 전에 승인 대상, source/image, 선행 readiness, 필요한 운영 권한과 부작용 범위를 확인한다. `up`은 dependency/provisioning job을 만들 수 있고 profile은 격리가 아니다. 진단은 기존 container의 `exec`를 사용하고 단순 조회를 위해 client/provisioner를 띄우지 않는다. 재시작은 요청 중단·memory/queue 손실·부작용 반복을 일으킬 수 있으므로 대상 drain/backup 조건을 먼저 충족한다. `restart`는 바뀐 Compose 설정이나 교체된 secret bind를 불러오지 않는다.
 
-Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
+Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Steps
+### Safety Checks
 
 시작 전 점검:
 
 - [ ] `alertmanager` service, `alertmanager` container, `alertmanager-data` volume, Docker Secret IDs 상태를 확인한다.
 - [ ] 문제 유형을 readiness, Prometheus delivery, receiver delivery, silence/inhibition, secret rendering, config regression 중 하나로 분류한다.
 - [ ] Secret value, rendered `/tmp/config.yml`, Slack webhook URL, SMTP credential 원문은 기록하지 않는다.
-- [ ] Route/receiver/inhibition/secret rendering을 변경해야 해 보이면 중단하고 repository owner @buenhyden approval을 받는다.
+
+## Steps
+
+### Actions
+
+실행 절차는 아래 항목을 따른다.
+
+#### Diagnosis and restart
 
 1. 현재 service 상태, 최근 로그, readiness를 캡처한다.
 
@@ -108,11 +126,11 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
    이 런북은 Slack webhook rotation, SMTP credential rotation, receiver/channel change, inhibition policy change, protected middleware change를 검증된 복구 절차로 제공하지 않는다. 해당 변경은 별도 approval과 rollback evidence가 필요하다.
 
-### Renderer and delivery limitation
+#### Renderer and delivery limitation
 
 이 항목은 [POL-0039](../../policies/07-observability/0039-alertmanager.md#renderer-and-delivery-limitation)이 소유한다. 요약: Compose 진입 스크립트는 SMTP/Slack 시크릿을 요구하지만 Slack 수신자만 활성화되어 있고, raw `sed` 치환은 임의 시크릿을 안전하게 인코딩하지 못한다. 비노출 방식으로 호환성을 확인할 수 없으면 시작·회전을 중단하고 @buenhyden에게 렌더러 수정을 요청한다. Readiness는 통지 성공을 증명하지 않으므로 승인된 시험 수신자와 제한된 알림으로 따로 검증한다.
 
-### Planned isolated restore rehearsal
+#### Planned isolated restore rehearsal
 
 **project 이름만 바꾸어서는 실행할 수 없다.** rehearsal 전에 고정된 container-name,
 host port, bind-path, external-network와 route의 충돌을 제거하고 운영 환경으로의
@@ -127,7 +145,15 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 3. secret 값을 노출하지 않고 readiness, source alert 수신, silence 보존, inhibition/grouping, notification-log 동작과 통제된 test 알림 전송 1회를 검증한다.
 4. 불일치가 있으면 격리된 project를 중지하고 log/checksum을 보존한다. 수정하지 않은 backup으로 돌아간다. 운영 route/state 교체는 별도로 승인받는다.
 
-## Verification
+### Stop Conditions
+
+- [ ] Route/receiver/inhibition/secret rendering을 변경해야 해 보이면 중단하고 repository owner @buenhyden approval을 받는다.
+
+예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다.
+
+## Validation
+
+### Service Checks
 
 - [ ] `docker compose --profile obs ps alertmanager`에서 `alertmanager` service가 running이다.
 - [ ] `/-/ready` endpoint가 성공한다.
@@ -135,6 +161,8 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 - [ ] Alertmanager UI에서 firing alerts, silences, receivers를 확인할 수 있다.
 - [ ] Slack notification failure가 있었으면 test alert 또는 다음 firing alert에서 expected receiver 도착 여부를 확인하고 timestamp를 기록한다.
 - [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
+
+### Evidence
 
 수집할 evidence는 다음과 같다.
 
@@ -151,29 +179,16 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 - Notification 장애는 affected receiver, matching route, alert labels, log excerpt, silence/inhibition state를 함께 기록한다.
 - Receiver/channel/secret/middleware 변경 필요성이 보이면 approval state를 기록한다.
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
 
 - Git-managed `config.yml`, Compose 또는 datasource/Prometheus endpoint change가 원인이면 직전 Git diff 단위로 되돌리고 Alertmanager를 재시작한다.
 - Runtime restart는 `obs` profile compose 명령만 사용한다.
 - Secret rotation, Slack webhook replacement, SMTP credential replacement, receiver/channel change 또는 protected route middleware change는 이 런북의 안전 롤백 범위를 벗어난다.
 
-이 런북에 명시된 validation, restart, Git-managed config rollback만 사용한다. Secret rotation, receiver/channel policy, inhibition policy, protected middleware 또는 external Slack/SMTP resource 변경은 검증된 안전 복구 절차가 아니므로 `## Escalation`으로 이동한다.
+이 런북에 명시된 validation, restart, Git-managed config rollback만 사용한다. Secret rotation, receiver/channel policy, inhibition policy, protected middleware 또는 external Slack/SMTP resource 변경은 검증된 안전 복구 절차가 아니므로 Escalation으로 이동한다.
 
 ### Escalation
 
 verification이 실패하거나, secret exposure risk가 보이거나, receiver/channel/secret/middleware 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
-
-## Related Documents
-
-### Traceability
-
-- Declared parent: [Alertmanager Usage Guide](../../guides/07-observability/0039-alertmanager.md) (`GDE-0039`)
-- Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](../../guides/07-observability/0039-alertmanager.md) (`GDE-0039`), [Policy](../../policies/07-observability/0039-alertmanager.md) (`POL-0039`)
-
-- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
-- [Operations index](../../README.md)
-- [Usage guide](../../guides/07-observability/0039-alertmanager.md)
-- [Operations policy](../../policies/07-observability/0039-alertmanager.md)

@@ -77,7 +77,7 @@ pipeline, exporter, Docker discovery, route, mount 예외는 사용자 승인과
 
 ## Verification
 
-- Compose 경계, pipeline 경계, 품질 metric 수신기 확인 명령은 [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks)와 [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#procedure)가 소유한다.
+- Compose 경계, pipeline 경계, 품질 metric 수신기 확인 명령은 [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks)와 [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#actions)가 소유한다.
 - Repository contracts: 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
 ## Related Documents

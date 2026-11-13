@@ -46,7 +46,7 @@ class CurrentBodyContractTests(unittest.TestCase):
             "task": "Scope|Execution Log|Verification Evidence|Acceptance Decision|Handoff",
             "guide": "Purpose|Prerequisites|Procedure|Verification",
             "policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
-            "runbook": "Overview|Trigger|Prerequisites|Procedure|Verification|Failure and Recovery|Related Documents",
+            "runbook": "Purpose|Preconditions|Steps|Validation|Recovery",
             "incident": "Summary|Impact|Timeline|Resolution|Evidence",
             "postmortem": "Summary|Root Cause|Impact|Corrective Actions|Evidence",
             "governance-policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
@@ -71,13 +71,17 @@ class CurrentBodyContractTests(unittest.TestCase):
                     profile.get("required_subsections") or {}
                 ).items():
                     block = source.split(f"\n## {parent}\n", 1)[1].split("\n## ", 1)[0]
+                    found = [
+                        line[4:]
+                        for line in block.splitlines()
+                        if line.startswith("### ")
+                    ]
+                    # Required H3s keep their order; an optional H3 may sit anywhere.
                     self.assertEqual(
-                        [*children, *optional.get(parent, ())],
-                        [
-                            line[4:]
-                            for line in block.splitlines()
-                            if line.startswith("### ")
-                        ],
+                        list(children), [name for name in found if name in children]
+                    )
+                    self.assertEqual(
+                        sorted([*children, *optional.get(parent, ())]), sorted(found)
                     )
 
     def test_current_role_accepts_nested_content_and_rejects_empty_sections(
@@ -443,6 +447,13 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Usage", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Common Checks", "body-subheading-forbidden"),
+            ),
+            "runbook": (
+                ("## Overview", "body-heading-forbidden"),
+                ("## Procedure", "body-heading-forbidden"),
+                ("## Failure and Recovery", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+                ("### Rollback or Recovery", "body-subheading-forbidden"),
             ),
             "adr": (
                 ("## Decision Drivers", "body-heading-forbidden"),

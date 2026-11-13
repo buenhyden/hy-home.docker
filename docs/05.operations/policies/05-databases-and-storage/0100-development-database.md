@@ -68,7 +68,7 @@ backup declaration 또는 external consumer가 바뀔 때 검토한다. runtime 
 
 ## Verification
 
-source change는 Compose render(`docker compose --env-file .env.example --profile dev-data config --quiet`)와 permission regression test를 통과해야 한다([RUN-0100](../../runbooks/05-databases-and-storage/0100-development-database.md#procedure)). fresh PGDATA,
+source change는 Compose render(`docker compose --env-file .env.example --profile dev-data config --quiet`)와 permission regression test를 통과해야 한다([RUN-0100](../../runbooks/05-databases-and-storage/0100-development-database.md#actions)). fresh PGDATA,
 repeat provision, app A/B isolation, reader write/DDL rejection, Timescale behavior, Valkey ACL,
 backup/restore, CDC replay와 external consumer switching은 runtime task에서 별도로 증명한다.
 SPEC-0202-TSK-0002는 합성 격리 엔진의 백업/복원과 일부 권한 거절만 증명한다.
