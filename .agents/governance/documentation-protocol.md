@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.22.0"
+version: "3.23.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -203,6 +203,9 @@ right type, stay a review. Existing links are not retyped by this rule.
    `version` at `0.1.0`; approval of its first stable contract promotes it to
    `1.0.0`. Patch, minor, and major increments communicate compatible correction,
    compatible meaning growth, and incompatible contract change respectively.
+   Below `1.0.0` a breaking or feature change raises the minor and a
+   compatible correction the patch; `1.0.0` marks the owner's explicit
+   approval of a stable contract, never a renumbering.
    Lifecycle status is independent of this content version. An artifact
    number, a numbering baseline or its reset, a Task completion and a pull
    request merge are not version events; none of them sets or resets a
@@ -429,6 +432,26 @@ evidence; surrounding instructions remain current and validated normally.
   refresh ownership. State evidence limitations and freshness triggers where
   applicable. Registered generators own generated outputs, whose freshness is
   verified without turning evidence into current policy.
+
+#### Version objects
+
+Each version below has one authored value; every other place reads it. A
+SemVer value is a `MAJOR.MINOR.PATCH` string with no `v` prefix and no
+leading zeros, compared by SemVer precedence, never as text or a number.
+
+| Object | Field | Current value | Rule | Consumers |
+| --- | --- | --- | --- | --- |
+| Document content | frontmatter `version` | per document | SemVer release value; the rule above | `contracts/document-frontmatter.schema.json`, metadata validator |
+| New-document start | Registry `common.template_initial_version` | `0.1.0` | SemVer release value | Profile schema, template checks |
+| Common form contract | Registry `common.common_form_contract` | `COMMON-DOC-FORM-1 1.0.0` | Contract ID and SemVer version | `template_definition.py` |
+| Vocabulary contract | Registry `common.vocabulary_contract.version` | `v14.5` | A shared package label, not SemVer; its SemVer mapping waits for the owner's decision recorded in SPEC-0212 TSK-0064 | Glossary `Contract Version` column, `vocabulary_contract_findings` |
+| Registry serialization | Registry `schema_version` | `1` | An integer the profile schema pins; its SemVer mapping waits for the same decision | Profile schema, `registry.py` |
+| Product release | release version, tagged as `v` plus the version, and CHANGELOG | per release | SemVer, checked by `scripts/operations/release.py`; the `v` belongs to the tag, not the value | Release Runbook, release workflow |
+
+Not versions: `common.contract_id` and other contract identifiers, the
+`lifecycle_generation` counter, artifact numbers and identity-space
+baselines, and input-package labels such as `v14.7`. A Task completion, a
+merge or a Q-07 renumbering changes none of the values above.
 
 #### Release Evidence Boundary
 
