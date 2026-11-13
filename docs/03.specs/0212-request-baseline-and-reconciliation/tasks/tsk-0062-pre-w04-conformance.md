@@ -1,8 +1,8 @@
 ---
 title: "Pre-W04 Conformance Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-13"
 layer: "specs"
@@ -71,6 +71,7 @@ The owner's instruction and choices of 2026-11-13 issue this Task.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0062 | draft | ready | #owner-directed-pre-w04-correction |
 | SPEC-0212-TSK-0062 | ready | in-progress | #owner-directed-pre-w04-correction |
+| SPEC-0212-TSK-0062 | in-progress | completed | #review-and-completion |
 
 #### Glossary common rows 2026-11-13
 
@@ -204,19 +205,29 @@ The Glossary contract comparison FAIL is resolved by the Glossary contract re-co
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 115 | pending | - | - | SPEC-0212 TSK-0062 |
+| 115 | accepted | Pre-W04 audits, Glossary contract re-comparison, TemplateDefinition GREEN, TemplateDefinition review, Relation fix GREEN, Relation types final review, Relation types final re-review | Owner accepted on 2026-11-13 in this chat, with the change in PR #992. Document-level link enforcement, the disposition entries and the validator items go to W05; the Skill section to W07 | SPEC-0212 TSK-0062 |
 
 ### Remaining Conditions
 
-All four corrections and their reviews pass. CI on PR #992 and owner
-acceptance of criterion 115 are open.
+None for this Task. W05 owns the document-level link and relation
+enforcement, the unreachable disposition entries with their check, the
+glossary contract comparison and the two recorded TemplateDefinition rule
+gaps; W07 owns the Skill `Completion and Handoff` section; Q-07 stays an
+open owner decision.
+
+#### Review and Completion
+
+Completed on 2026-11-13. Every correction has passing tests and a passing
+independent review, each required failing row is resolved by a later passing
+row, and the owner accepted criterion 115, so the Task closes as
+`completed`.
 
 ## Handoff
 
 ### Promotion Receipt
 
-None: the change has not landed on `main` yet.
+The glossary, documentation protocol, Registry, schema, TemplateDefinition and relation changes land on `main` through PR #992.
 
 ### Next Owner
 
-The current owner is @buenhyden, who decides criterion 115.
+The current owner is @buenhyden. W05 and W07 own the items under Remaining Conditions.
