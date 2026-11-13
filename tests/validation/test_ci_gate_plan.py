@@ -1536,6 +1536,41 @@ class CiGateRunnerContractTests(unittest.TestCase):
         execute.assert_not_called()
         self.assertEqual(expected, tuple(stdout.getvalue().splitlines()))
 
+    def test_crosswalk_reports_every_leaf_without_executing(self) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
+        with (
+            mock.patch.object(runner, "execute_execution_plan") as execute,
+            mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+            mock.patch.dict(
+                os.environ, {"HYHOME_CI_GATE_ROOT": str(root)}, clear=False
+            ),
+        ):
+            self.assertEqual(0, runner.main(["--profile", "full", "--crosswalk"]))
+        execute.assert_not_called()
+        lines = stdout.getvalue().splitlines()
+        registry = contract.parse_gate_registry(
+            contract.load_contract_document(ROOT), "contract"
+        )
+        leaves = [n.gate_id for n in registry.nodes if n.kind is contract.GateKind.LEAF]
+        self.assertEqual(leaves, [line.split("\t")[0] for line in lines[1:-1]])
+        self.assertTrue(lines[-1].startswith(f"# leaves={len(leaves)} "))
+
+    def test_crosswalk_rejects_every_other_report_option(self) -> None:
+        root = pathlib.Path(__file__).resolve().parents[2]
+        for option in ("--explain", "--requirements", "--local-only"):
+            with self.subTest(option=option):
+                with (
+                    mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+                    mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
+                    mock.patch.dict(
+                        os.environ, {"HYHOME_CI_GATE_ROOT": str(root)}, clear=False
+                    ),
+                ):
+                    status = runner.main(["--profile", "full", "--crosswalk", option])
+                self.assertEqual(2, status)
+                self.assertEqual("", stdout.getvalue())
+                self.assertIn("ci-gate-cli-arguments", stderr.getvalue())
+
     def test_requirements_reports_prerequisites_without_executing(self) -> None:
         environment = {
             "HYHOME_CI_GATE_ROOT": str(ROOT),

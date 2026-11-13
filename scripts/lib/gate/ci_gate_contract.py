@@ -380,6 +380,8 @@ class GateNode:
     timeout_minutes: int | None
     opaque: bool
     children: tuple[str, ...]
+    # Leaf-only: the unique security/deploy guarantee, "none" or "" otherwise.
+    guarantee: str = ""
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -1390,6 +1392,87 @@ def expand_public_gate_ids(
     return _expanded_ids(node_by_id, root_gate_ids)
 
 
+_GUARANTEES = frozenset({"security", "deploy", "none"})
+_SELF_AUTHORITY = ".github/workflow-contract.yml"
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class CrosswalkRow:
+    gate_id: str
+    suites: tuple[str, ...]
+    consumers: tuple[str, ...]
+    entrypoint: str
+    argv: tuple[str, ...]
+    test_modules: tuple[str, ...]
+    owner: str
+    local_only: bool
+    unique_guarantee: str
+    duplicate_of: tuple[str, ...]
+
+
+def build_gate_crosswalk(
+    registry: GateRegistry,
+    public: PublicGateContract,
+    authorities: Mapping[str, str],
+) -> tuple[CrosswalkRow, ...]:
+    """Derive the caller -> leaf -> consumer table from the typed contract.
+
+    `authorities` maps an entrypoint path to its manifest authority. An
+    authority that is the contract itself names no rule, so it is UNOWNED.
+    """
+
+    node_by_id = {node.gate_id: node for node in registry.nodes}
+    suites_of: dict[str, list[str]] = {}
+    for route in public.suites:
+        for gate_id in _expanded_ids(node_by_id, route.root_gate_ids):
+            suites_of.setdefault(gate_id, []).append(route.name)
+    parents: dict[str, list[str]] = {}
+    for node in registry.nodes:
+        for child in node.children:
+            parents.setdefault(child, []).append(node.gate_id)
+    leaves = [n for n in registry.nodes if n.kind is GateKind.LEAF]
+    command = {
+        n.gate_id: (n.entrypoint, n.argv, n.cwd, n.allowed_env_keys) for n in leaves
+    }
+    unique_ids = {n.gate_id for n in leaves if n.guarantee in ("security", "deploy")}
+    rows = []
+    for node in leaves:
+        gate_id = node.gate_id
+        unique = "" if node.guarantee == "none" else node.guarantee
+        twins = tuple(
+            other.gate_id
+            for other in leaves
+            if other.gate_id != gate_id and command[other.gate_id] == command[gate_id]
+        )
+        keepers = tuple(t for t in twins if t in unique_ids)
+        first = next(
+            (m.gate_id for m in leaves if m.gate_id in (gate_id, *twins)), gate_id
+        )
+        duplicate_of = ()
+        if twins and not unique:
+            duplicate_of = keepers or ((first,) if first != gate_id else ())
+        entrypoint = node.entrypoint.as_posix() if node.entrypoint else ""
+        modules = tuple(a for a in node.argv if a.startswith("tests."))
+        if entrypoint.startswith("tests/"):
+            modules += (entrypoint,)
+        authority = authorities.get(entrypoint, _SELF_AUTHORITY)
+        rows.append(
+            CrosswalkRow(
+                gate_id=gate_id,
+                suites=tuple(suites_of.get(gate_id, ())),
+                consumers=tuple(parents.get(gate_id, ())),
+                entrypoint=entrypoint,
+                argv=node.argv,
+                test_modules=modules,
+                owner="UNOWNED" if authority == _SELF_AUTHORITY else authority,
+                local_only=gate_id in public.local_only_gate_ids,
+                unique_guarantee=unique,
+                duplicate_of=duplicate_of,
+            )
+        )
+    return tuple(rows)
+
+
 def _require_fields(
     record: Mapping[str, object],
     allowed: frozenset[str],
@@ -1493,7 +1576,9 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
         "allowed_env_keys",
         "timeout_minutes",
     }
-    required = execution | ({"suite_key"} if kind is GateKind.LEAF else set())
+    required = execution | (
+        {"suite_key", "guarantee"} if kind is GateKind.LEAF else set()
+    )
     _require_fields(record, frozenset(required), required, "ci-gate-kind-fields", path)
     opaque = record["opaque"]
     if opaque is not (kind is GateKind.LEAF):
@@ -1522,6 +1607,15 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
         if kind is GateKind.LEAF
         else None
     )
+    guarantee = (
+        _string(record["guarantee"], "ci-gate-guarantee", path)
+        if kind is GateKind.LEAF
+        else ""
+    )
+    if kind is GateKind.LEAF and guarantee not in _GUARANTEES:
+        raise GateContractError(
+            "ci-gate-guarantee", path, "a leaf must declare security, deploy or none"
+        )
     if suite_key is not None and gate_id != f"leaf.{suite_key}":
         raise GateContractError(
             "ci-gate-suite-id", path, "leaf identity must match its suite key"
@@ -1537,6 +1631,7 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
         timeout,
         opaque,
         (),
+        guarantee,
     )
 
 
