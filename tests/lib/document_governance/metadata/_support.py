@@ -113,23 +113,38 @@ def body_with_headings(*headings: str) -> str:
 
 
 REQUIREMENT_TARGET_BODY = body_with_headings(
-    "## Problem and Goals",
-    "## Stakeholders and User Needs",
-    "## Functional Requirements",
-    "## Non-functional Requirements",
-    "## Constraints",
+    "## Overview",
+    "### Problem and Outcome",
+    "### Stakeholders",
+    "## Scope",
+    "### In Scope",
+    "### Constraints and Exclusions",
+    "## Requirements",
+    "### Functional Requirements",
     "## Acceptance Criteria",
+    "### Acceptance Conditions",
+    "### Verification Method",
     "## Traceability",
+    "### Source and Constraints",
+    "### Downstream Links",
 )
 
 POLICY_TARGET_BODY = body_with_headings(
     "## Purpose",
+    "### Objective",
+    "### Authority",
     "## Scope",
-    "## Policy Statements",
-    "## Enforcement",
+    "### Applies To",
+    "### Exclusions",
+    "## Rules",
+    "### Requirements",
+    "### Enforcement",
     "## Exceptions",
-    "## Verification",
-    "## Traceability",
+    "### Exception Conditions",
+    "### Approval and Review",
+    "## Ownership",
+    "### Responsibilities",
+    "### Change and Adoption",
 )
 
 
