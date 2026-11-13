@@ -1,10 +1,10 @@
 ---
 title: "v14.7 W04 SDLC and Promotion Task"
-version: "0.1.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0063"
 parent_ids:
@@ -115,6 +115,7 @@ each package is UNVERIFIED).
 | SDLC-07 | GAP | ADD | Transition events table |
 | SDLC-08 | PASS (separation), GAP (fixtures) | DEFER W05 | Negative tests listed under Handoffs |
 | SDLC-09, R147-07 | GAP (readiness) | CHANGE, DEFER W05 | Readiness requires each Promotion Map target document in a receipt or a no-update reason; a removing Task records receipts an older Task lacks |
+| R07 relations | CONFLICT | CHANGE | Seven relations replace the five TSK-0062 bound; see Relation correction |
 | Evidence ladder | CONFLICT | CHANGE | SPEC-0212 Spec: the source-evidence ladder is labelled a source-assurance axis, not the `Result` domain (owner: as the requirements say, 2026-11-13) |
 | Policy conflict | CONFLICT | CHANGE | `sdlc.md` said a criterion with only cancelled Tasks has no row but readiness needed it accepted; following SDLC-02 and the retirement preconditions, it stays open until the Plan assigns it to a current Task that decides it or the Spec drops it (a draft that let `withdrawal_ref` close it was withdrawn after review) |
 | SUP-03 | GAP | CHANGE | `github-governance.md` 1.8.2: any Issue closure; PR template no longer suggests a Project view |
@@ -132,12 +133,42 @@ templates, the PR template and the SPEC-0212 Spec and Plan. The validator still
 accepts a criterion with a PASS on any one pair and does not read promotion
 content; until W05 changes it, those two rules are held by review.
 
+#### Relation correction 2026-11-13
+
+The owner's direction of 2026-11-13 says a result decided or built
+differently from the W04-and-earlier requirements is corrected to those
+requirements. The W04 prompt section 7 and the shared contract
+(`COMMON-STANDARD.md` lines 43-45) treat authority, structural ownership,
+constraint, traceability, promotion, supersession and change impact as
+separate relation meanings. The R07 set TSK-0062 bound had five relations:
+`rel.authority`, `rel.ownership` (the frontmatter `owner` person),
+`rel.reference` (evidence, historical and navigation links),
+`rel.traceability` (`parent_ids` and `supersedes`) and
+`rel.change-propagation`. Constraint and Promotion were missing, and
+Structural Ownership and Supersession were folded into Traceability.
+TSK-0062 is terminal and keeps that record; this subsection is the current
+correction.
+
+Commits `d11a99f62`, `f99e5334b` and `f4a51d217` bind the seven relations in the Registry,
+schema, `registry.py` and the documentation protocol. A writer may be scoped
+to one profile as `profile:ref` or name a registered H3 as `profile:H2/H3`, and
+each profile's `parent_ids` has exactly one meaning: Structural Ownership for
+a Plan, Task, data model contract, research or audit member and postmortem;
+Constraint for a Requirements package, Architecture description, ADR and
+Spec; Traceability for research, audit, data, guide, runbook, operations
+policy, incident and generated documents. The ID `rel.traceability` now means
+record to source; no code consumer read the removed IDs (`rel.ownership`,
+`rel.reference`, `rel.change-propagation`). The shared contract names only
+Task-to-evidence traceability; extending it to the source a reference or
+operations document names is this repository's extension, decided here.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0063 | draft | ready | #w04-run-2026-11-13 |
 | SPEC-0212-TSK-0063 | ready | in-progress | #w04-run-2026-11-13 |
+| SPEC-0212-TSK-0063 | in-progress | completed | #review-and-completion |
 
 ### Blockers and Decisions
 
@@ -162,6 +193,7 @@ content; until W05 changes it, those two rules are held by review.
 | H-W04-5 | Done here | On the owner's choice of 2026-11-13, TSK-0047 and TSK-0055 moved from `draft` to `in-progress` with Lifecycle Events, and TSK-0055's criterion 108 text, Remaining Conditions and Next Owner and TSK-0047's Next Owner were refreshed; no evidence row changed and criterion 108 stays `pending` |
 | H-W04-6 | W11 | WP-21: a Stage 02 currency trace against source and Compose |
 | H-W04-7 | W02 | Removal review of 0248, 0249, 0250, 0260, 0264, 0265 after the promotion check |
+| H-W04-9 | W01 | Glossary entries for Structural Ownership, Constraint and Change Impact, and a Not-to-Confuse note that a `Traceability` heading is not `rel.traceability` |
 | H-W04-8 | W01 | Glossary Not-to-Confuse entry for "promotion" used as a status or LAB move (0259, 0261, 0263) |
 
 - Earlier handoffs stay with their owners: W05 H-05, H-08, H-12, OPEN-11;
@@ -182,10 +214,19 @@ content; until W05 changes it, those two rules are held by review.
 | Reader regression | 116 | W121 | unit-regression | `test_registry`, `test_spec_packages`, `test_template_definition`, `test_operations_catalog`, `test_surface_ownership` and `check-script-manifest` at `459800639`, Python 3 local | PASS | 413 tests OK in 1075 s; script manifest valid. An earlier run on the uncommitted tree had 4 errors because the Plan named TSK-0063 before its file existed | required | - |
 | Policy review | 116 | W121 | independent-review | Fresh-context rules-engineer of the staged policy change on `acef19488` | FAIL | CHANGES_REQUIRED: withdrawal closure contradicted `documentation-protocol.md` and the checklist; readiness had no rule for receipts older Tasks lack; new acceptance rules would have retroactively broken accepted criteria; Start and Block shared one precondition; PR text rule clashed with the PR template; enforcement overstated; receipt commit and terminal Tasks did not fit; Stage 03 README, template, glossary not updated; ten Minor | required | - |
 | Policy re-review | 116 | W121 | independent-review | Same reviewer, the staged tree on `acef19488` after the first review's fixes | FAIL | Every earlier finding resolved and TSK-0047/0055 evidence and decisions unchanged; new: the historical-criterion sentence contradicted the older-format rule and the reader, TSK-0063 handoffs and receipt were stale, glossary version not bumped | required | - |
+| Policy final review | 116 | W121 | independent-review | Same reviewer, the staged tree committed as `abfafba15` | PASS | N1 to N3 resolved; three Minor notes applied before the commit | required | Policy review, Policy re-review |
+| Final checks | 116 | W121 | document-checks | `abfafba15`, Python 3 local: corpus lifecycle, links alignment and commands, `test_template_definition`, `metadata.test_heading`, `test_surface_ownership`, `test_spec_packages`, `test_registry` | PASS | lifecycle and occupancy violations=0; links PASS in both modes; 248 Spec Package and Registry tests OK | required | - |
+| Remote candidate 993 | 116 | W121 | remote-ci | PR #993 head `abfafba15` | PASS | candidate-quality, CodeQL and GitGuardian passed; merged by the owner as `9676865ba` | required | - |
+| Relation RED | 116 | W121 | red-green-proof | `test_relations` against `abfafba15`, then the profile-scope test against `d11a99f62` | FAIL | 1 failure and 12 errors for the seven relations; 20 failures for one meaning per `parent_ids` profile | required | - |
+| Relation GREEN | 116 | W121 | red-green-proof | `test_relations` and `test_registry` at `f99e5334b` and `f4a51d217` | PASS | 143 tests OK, including the historical Registry at `73b1705b6` | required | Relation RED |
+| Relation review | 116 | W121 | independent-review | Fresh-context rules-engineer of `d11a99f62` | FAIL | CHANGES_REQUIRED: a Spec's `parent_ids` was labelled Structural Ownership; no ADR Supersession writer; Constraint check overstated; the change was not recorded in this Task | required | - |
+| Relation re-review | 116 | W121 | independent-review | Same reviewer, `f99e5334b` | PASS | Every `parent_ids` profile classified once; three Minor notes applied in `f4a51d217` and recorded here | required | Relation review |
+| Integrated checks | 116 | W121 | document-checks | `f4a51d217`, Python 3 local: metadata check-changed, corpus lifecycle, links alignment and commands, agent governance contract, relation, TemplateDefinition, heading and surface tests, `test_spec_packages`, `test_registry` | PASS | metadata violations=0; lifecycle 0; links PASS; governance PASS; tests OK; 248 Spec Package and Registry tests OK in 900 s | required | - |
+| Remote candidate 994 | 116 | W121 | remote-ci | PR #994 head `f4a51d217` | PASS | candidate-quality, CodeQL and GitGuardian passed; merged by the owner as `fcd0d657b` | required | - |
 
 ### Resolution Links
 
-Binding RED is resolved by Binding GREEN, and Binding review by Binding re-review.
+Binding RED is resolved by Binding GREEN, Binding review by Binding re-review, Policy review and Policy re-review by Policy final review, Relation RED by Relation GREEN, and Relation review by Relation re-review.
 
 ## Acceptance Decision
 
@@ -193,12 +234,19 @@ Binding RED is resolved by Binding GREEN, and Binding review by Binding re-revie
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 116 | pending | Binding GREEN, Binding re-review, Stage 03 checks, Pre-commit, Reader regression | Awaiting the owner's decision | SPEC-0212 TSK-0063 |
+| 116 | accepted | Binding GREEN, Binding re-review, Policy final review, Final checks, Relation GREEN, Relation re-review, Integrated checks | Owner @buenhyden accepted on 2026-11-14 in this chat, after #993 and #994 merged; validator enforcement and the other handoffs stay with H-W04-1 to H-W04-9 | SPEC-0212 TSK-0063 |
 
 ### Remaining Conditions
 
-Owner acceptance of criterion 116; push, pull request and merge on the
-owner's approval.
+None for this Task. The owners named in H-W04-1 to H-W04-9 hold the
+remaining work: W05 the validator items, W01 the glossary items, W02 the
+removal review, W11 the Stage 02 currency trace. Q-07 runs only after W11.
+
+#### Review and Completion
+
+Completed on 2026-11-14. Every required failing row is resolved by a later
+passing row, criterion 116 has PASS evidence for W121, and the owner accepted
+it, so the Task closes as `completed`.
 
 ## Handoff
 
@@ -207,9 +255,10 @@ owner's approval.
 | Criterion | Work Unit | Task result | Target | Consumer update and check |
 | --- | --- | --- | --- | --- |
 | 116 | W121 | Binding GREEN, Reader regression | `docs/99.templates/registry.json` `common.section_forms` (commit `459800639`) | `spec_packages.py` reader; Reader regression row |
-| 116 | W121 | Policy final review, Final checks | `.agents/governance/sdlc.md`, `documentation-protocol.md`, `github-governance.md`, `.agents/knowledge/glossary.md` (this run's policy commit) | Stage 03 README, Task and Plan templates, PR template; Final checks row |
+| 116 | W121 | Policy final review, Final checks | `.agents/governance/sdlc.md`, `documentation-protocol.md`, `github-governance.md`, `.agents/knowledge/glossary.md` (commit `abfafba15`, merged as `9676865ba`) | Stage 03 README, Task and Plan templates, PR template; Final checks row |
+| 116 | W121 | Relation GREEN, Relation re-review | `docs/99.templates/registry.json` `common.document_relations`, schema, `registry.py`, `documentation-protocol.md` (commits `d11a99f62`, `f99e5334b`, `f4a51d217`, merged as `fcd0d657b`) | `test_relations`; Integrated checks row |
 
-Acceptance row: criterion 116, still `pending`. Residuals: H-W04-1 to H-W04-8.
+Acceptance row: criterion 116, `accepted`. Residuals: H-W04-1 to H-W04-8.
 
 ### Next Owner
 
