@@ -1176,8 +1176,19 @@ class DocumentRegistryTests(unittest.TestCase):
                 )
         self.assertEqual((), validate_frontmatter({"parent_ids": []}))
 
-    def test_document_version_is_core_semver_string_only(self) -> None:
-        valid = ("0.1.0", "1.2.3", "1.10.0", "10.20.30")
+    def test_document_version_is_semver_string_only(self) -> None:
+        valid = (
+            "0.1.0",
+            "1.2.3",
+            "1.10.0",
+            "10.20.30",
+            "1.0.0-rc.1",
+            "1.0.0-0",
+            "1.0.0-alpha-beta.1",
+            "1.2.3+build.7",
+            "1.2.3-rc.1+build.7",
+            "1.2.3+001",
+        )
         invalid = (
             "1.2",
             "01.2.3",
@@ -1187,8 +1198,12 @@ class DocumentRegistryTests(unittest.TestCase):
             "v1.2.3",
             "1.2.3.4",
             "1.2.3-01",
+            "1.2.3-rc.01",
+            "1.2.3-rc..1",
             "1.2.3-",
             "1.2.3+",
+            "1.2.3+build..1",
+            "1.2.3-rc.1\n",
             "1.2.3\n",
             "1.2.3 ",
             "",
@@ -1202,7 +1217,44 @@ class DocumentRegistryTests(unittest.TestCase):
             with self.subTest(invalid=version):
                 self.assertNotEqual((), validate_frontmatter({"version": version}))
 
-    def test_registered_initial_version_is_core_semver_in_profile_schema(self) -> None:
+    def test_old_and_new_schema_producer_consumer_combinations(self) -> None:
+        # The release-only pattern is the previous consumer; the widening is a
+        # MINOR change: every old-valid value stays valid, only new values differ.
+        old = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$(?!\n)")
+        old_values = ("0.1.0", "1.10.0")
+        new_values = ("1.0.0-rc.1", "1.2.3+build.7")
+        for value in old_values:
+            with self.subTest(producer="old", consumer="old", value=value):
+                self.assertIsNotNone(old.match(value))
+            with self.subTest(producer="old", consumer="new", value=value):
+                self.assertEqual((), validate_frontmatter({"version": value}))
+        for value in new_values:
+            with self.subTest(producer="new", consumer="old", value=value):
+                self.assertIsNone(old.match(value))
+            with self.subTest(producer="new", consumer="new", value=value):
+                self.assertEqual((), validate_frontmatter({"version": value}))
+
+    def test_every_schema_version_pattern_is_the_same_semver_pattern(self) -> None:
+        contracts = ROOT / "docs/99.templates/contracts"
+        profile = json.loads(
+            (contracts / "document-profile.schema.json").read_text(encoding="utf-8")
+        )
+        frontmatter = json.loads(
+            (contracts / "document-frontmatter.schema.json").read_text(encoding="utf-8")
+        )
+        common = profile["properties"]["common"]["properties"]
+        patterns = {
+            frontmatter["properties"]["version"]["pattern"].removeprefix("^"),
+            common["template_initial_version"]["pattern"].removeprefix("^"),
+            common["vocabulary_contract"]["properties"]["version"][
+                "pattern"
+            ].removeprefix("^"),
+            common["common_form_contract"]["pattern"].split("/", 1)[1],
+        }
+        self.assertEqual(1, len(patterns), patterns)
+        self.assertIn("(?:-", patterns.pop())
+
+    def test_registered_initial_version_is_semver_in_profile_schema(self) -> None:
         raw = json.loads(
             (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")
         )
@@ -1219,6 +1271,9 @@ class DocumentRegistryTests(unittest.TestCase):
             ("00.1.0", False),
             ("v0.1.0", False),
             ("0.1.0-01", False),
+            ("0.1.0-rc.1", True),
+            ("0.1.0+build.7", True),
+            ("0.1.0-", False),
             ("0.1.0\n", False),
         ):
             with self.subTest(version=version):

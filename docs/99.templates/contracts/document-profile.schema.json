@@ -209,7 +209,7 @@
         "common_form_contract": {
           "$comment": "The adopted common section form revision (id and version). Optional so a Registry from before the pin still validates; template_definition reads it for every role that declares required_subsections.",
           "type": "string",
-          "pattern": "^COMMON-DOC-FORM-[0-9]+/(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$(?!\\n)"
+          "pattern": "^COMMON-DOC-FORM-[0-9]+/(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-((0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$(?!\\n)"
         },
         "vocabulary_contract": {
           "$comment": "The adopted shared vocabulary contract: identity, SemVer version, the source package label and hash it was first adopted from, and Term ID to Term pairs only; the glossary owns meaning.",
@@ -230,7 +230,7 @@
             },
             "version": {
               "type": "string",
-              "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$(?!\\n)"
+              "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-((0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$(?!\\n)"
             },
             "source_label": {
               "type": "string",
@@ -730,7 +730,7 @@
         },
         "template_initial_version": {
           "type": "string",
-          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$(?!\\n)"
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-((0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?(?:\\+([0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*))?$(?!\\n)"
         },
         "lifecycle_generation": {
           "type": "integer",
