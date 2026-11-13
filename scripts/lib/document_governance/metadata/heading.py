@@ -1436,13 +1436,21 @@ def _runtime_version_findings(
     return findings
 
 
+# H3 names that carry a README path table: Root form, Stage form, and the legacy name.
+README_DOCUMENTS_HEADINGS = frozenset({"Directories", "Current Items", "Documents"})
+
+
+def _is_path_module(columns: Sequence[str]) -> bool:
+    return any(c.strip().lower() == "path" for c in columns)
+
+
 def _registered_readme_documents_findings(
     record: Record,
     text: str,
     profile: Mapping[str, object],
     common: Mapping[str, object],
 ) -> list[Finding]:
-    """Validate a present README Documents module against its Registry columns."""
+    """Validate a README path table (### Documents, or ### Directories in the common form) against its Registry columns."""
 
     document_type = profile.get("type")
     if not isinstance(document_type, str) or not (
@@ -1463,18 +1471,31 @@ def _registered_readme_documents_findings(
     allowed = {tuple(required), (*required, *optional)}
     findings: list[Finding] = []
     in_documents = False
+    strict = True
+    seen = False
+    previous_row = False
     for line in _markdown_unfenced_lines(text):
         heading = re.match(r"^ {0,3}(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$", line)
         if heading:
             level = len(heading.group(1))
             name = heading.group(2).rstrip()
             if level <= 3:
-                in_documents = level == 3 and name == "Documents"
+                in_documents = level == 3 and name in README_DOCUMENTS_HEADINGS
+                strict = name != "Directories"
+                seen = False
+            previous_row = False
             continue
-        if not in_documents or not line.strip().startswith("|"):
+        is_row = line.strip().startswith("|")
+        header = is_row and not previous_row
+        previous_row = is_row
+        if not in_documents or not header or (strict and seen):
             continue
+        seen = True
         columns = tuple(cell.strip() for cell in line.strip().strip("|").split("|"))
-        if columns not in allowed:
+        # ### Directories is a free map: a table with a Path column (any case,
+        # any position) is the registered path module; a table without one
+        # (for example Directory | Purpose) is the author's own.
+        if columns not in allowed and (strict or _is_path_module(columns)):
             findings.append(
                 _finding(
                     record,
@@ -1482,7 +1503,6 @@ def _registered_readme_documents_findings(
                     "README Documents table header must match the registered columns",
                 )
             )
-        in_documents = False
     return findings
 
 

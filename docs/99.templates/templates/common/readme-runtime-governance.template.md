@@ -13,28 +13,46 @@ updated: "{{UPDATED}}"
 
 # {{TITLE}}
 
-## Overview
+## Purpose
+
+### Project Role
 
 {{ROUTE_STATEMENT}}
 
-## Scope
+### Boundaries
 
 {{SCOPE}}
 
-## Structure
+## Repository Map
 
-{{STRUCTURE}}
+### Directories
 
-### Documents
+{{DIRECTORY_PURPOSE}}
 
 | Path | Purpose |
 | --- | --- |
 | {{DIRECT_CHILD_PATH}} | {{DIRECT_CHILD_PURPOSE}} |
 
-## Usage
+### Canonical Entry Points
+
+{{CANONICAL_SOURCES}}
+
+## Getting Started
+
+### Prerequisites
+
+{{PREREQUISITES}}
+
+### First Verified Path
 
 {{USAGE}}
 
-## Related Documents
+## References
 
-{{RELATED_DOCUMENTS}}
+### Current Documentation
+
+{{CURRENT_DOCUMENTATION}}
+
+### Support and Ownership
+
+{{SUPPORT_AND_OWNERSHIP}}
