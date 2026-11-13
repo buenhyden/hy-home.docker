@@ -149,6 +149,6 @@ GPU나 데이터 형식 호환성의 증거가 되지는 않는다.
 
 ### Change and Adoption
 
-- [Guide](../../guides/10-platform-and-backup/0086-dependency-version-management.md), [Policy](0086-dependency-version-management.md), [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)
+- [Guide](../../guides/10-platform-and-backup/0086-dependency-version-management.md), [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)
 
 - [Operations index](../../README.md)

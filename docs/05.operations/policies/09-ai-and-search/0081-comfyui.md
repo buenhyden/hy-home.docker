@@ -111,8 +111,6 @@ Image tag가 mutable이므로 image upgrade 전에는 새 image가 여전히 `/r
 
 ### Change and Adoption
 
-- 대상 동위 문서: [가이드](../../guides/09-ai-and-search/0081-comfyui.md), [런북](../../runbooks/09-ai-and-search/0081-comfyui.md)
-
 - [가이드](../../guides/09-ai-and-search/0081-comfyui.md), [런북](../../runbooks/09-ai-and-search/0081-comfyui.md)
 - [중앙 백업 정책](../10-platform-and-backup/0021-backup-and-restore.md)
 - 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

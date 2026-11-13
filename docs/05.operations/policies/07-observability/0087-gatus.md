@@ -99,8 +99,6 @@ probe 커버리지, backup, restore는 별도로 승인된 target이 필요한 �
 
 ### Change and Adoption
 
-- Subject peers: [Guide](../../guides/07-observability/0087-gatus.md) and [Runbook](../../runbooks/07-observability/0087-gatus.md)
-
 - [Guide](../../guides/07-observability/0087-gatus.md), [Runbook](../../runbooks/07-observability/0087-gatus.md)
 - [Gatus upstream security policy](https://github.com/TwiN/gatus/security/policy)
 - 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.
