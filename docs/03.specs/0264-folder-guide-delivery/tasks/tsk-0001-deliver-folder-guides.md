@@ -292,7 +292,7 @@ is open; its acceptance is the owner's.
 | 5 | pending | E1, E6, E8 | owner acceptance | @buenhyden |
 | 6 | pending | E4, E25, E31 | owner acceptance | @buenhyden |
 | 7 | pending | E5 | owner acceptance | @buenhyden |
-| 8 | pending | E26, E27, E28, E32, E33, E34, E35, E36, E37 | Claude observed (E26); Codex hook health fixed (E32 resolves E28); live Codex delivery PASS after owner trust (E36 resolves E33, E34); re-delivery after compaction PASS (E37 resolves E27); no required observation open, awaiting owner acceptance | @buenhyden |
+| 8 | accepted | E26, E27, E28, E32, E33, E34, E35, E36, E37 | owner accepted 2026-11-13 after E36 and E37 resolved the open Codex observations | @buenhyden |
 | 9 | pending | E10, E11, E21, E24, E30 | owner acceptance | @buenhyden |
 | 10 | pending | E12, E13, E15, E16, E18, E19, E21, E23, E24, E30 | owner acceptance | @buenhyden |
 
