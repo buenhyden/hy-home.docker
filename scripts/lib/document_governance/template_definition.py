@@ -33,9 +33,11 @@ from scripts.lib.document_governance.registry import (
 # Registry `common.contract_id`. docs/99.templates/README.md states this rule.
 COMMON_FORM_VERSION = "COMMON-DOC-FORM-1 1.0.0"
 
-_EMPTY_SECTION_RULES = (
-    "A heading with no body below it.",
-    "A body that is only TODO, TBD, N/A or -.",
+# COMMON-DOC-FORM-1 gives an H2 one empty rule and an H3 none; heading.py
+# enforces it at every level, treating an HTML comment as no content.
+_EMPTY_SECTION_RULE = (
+    "A heading with no body, or a body that is only an unexplained "
+    "TODO, TBD, N/A, - or a template guidance comment."
 )
 _STAND_IN_RULE = (
     "A same-named heading inside a code fence, quote or comment "
@@ -361,8 +363,7 @@ def _section_headings(
             ),
             "prohibited_content": [
                 *([role_rule] if role_rule else []),
-                *_EMPTY_SECTION_RULES,
-                *([_STAND_IN_RULE] if level == 3 else []),
+                _STAND_IN_RULE if level == 3 else _EMPTY_SECTION_RULE,
             ],
             "empty_policy": "explain_none_or_not_applicable"
             if required

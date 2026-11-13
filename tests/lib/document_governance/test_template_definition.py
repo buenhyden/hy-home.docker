@@ -240,8 +240,9 @@ class TemplateDefinitionTests(unittest.TestCase):
         self.assertLessEqual(keys, set(self.registry.template_roles))
 
     def test_sections_carry_their_role_prohibited_content(self) -> None:
-        # COMMON-DOC-FORM-1 1.0.0 gives every section of a role one role
-        # rule; every H3 also forbids a stand-in heading.
+        # COMMON-DOC-FORM-1 1.0.0: an H2 carries the role rule and one empty
+        # rule that includes a guidance-comment-only body; an H3 carries the
+        # role rule and the stand-in rule, and no empty rule.
         role_rule = {
             "sdlc/requirement": "Implementation detail or Task status, which "
             "the Requirement does not own.",
@@ -253,19 +254,23 @@ class TemplateDefinitionTests(unittest.TestCase):
             "A same-named heading inside a code fence, quote or comment "
             "standing in for the real section."
         )
+        empty = (
+            "A heading with no body, or a body that is only an unexplained "
+            "TODO, TBD, N/A, - or a template guidance comment."
+        )
         for role, definition in self.definitions.items():
             if not self._profile(role).get("required_subsections"):
                 continue
             with self.subTest(role=role):
                 for heading in definition["headings"]:
                     rules = heading["prohibited_content"]
-                    self.assertEqual(3, len(rules), heading["title"])
-                    self.assertIn("A heading with no body below it.", rules)
+                    self.assertEqual(2, len(rules), heading["title"])
+                    self.assertEqual(empty, rules[1])
                     if role in role_rule:
                         self.assertEqual(role_rule[role], rules[0])
                     for child in heading["children"]:
                         self.assertEqual(
-                            [*rules, stand_in], child["prohibited_content"]
+                            [rules[0], stand_in], child["prohibited_content"]
                         )
 
     def test_headingless_templates_use_their_real_top_level_units(self) -> None:
