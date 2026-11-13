@@ -21,16 +21,6 @@ from scripts.lib.document_governance.registry import (
 
 SCHEMA_PATH = ROOT / "docs/99.templates/contracts/template-definition.schema.json"
 GLOSSARY = ROOT / ".agents/knowledge/glossary.md"
-# Machine contracts and runtime projections carry no Markdown H2. The approved
-# schema requires at least one heading, so these five cannot satisfy it until
-# the owner decides how a heading-less template is defined.
-HEADINGLESS = {
-    "governance/claude-agent",
-    "governance/codex-agent",
-    "sdlc/graphql",
-    "sdlc/openapi",
-    "sdlc/proto",
-}
 
 
 def _errors(definition: object) -> list[str]:
@@ -67,17 +57,15 @@ class TemplateDefinitionTests(unittest.TestCase):
         self.assertEqual(39, len(self.definitions))
         for role, definition in self.definitions.items():
             with self.subTest(role=role):
-                errors = _errors(definition)
-                if role in HEADINGLESS:
-                    self.assertEqual(["headings: minItems"], errors)
-                else:
-                    self.assertEqual([], errors)
+                self.assertEqual([], _errors(definition))
 
     def test_headings_equal_the_profile_sections(self) -> None:
         for role, definition in self.definitions.items():
             profile = self.registry.profiles[
                 self.registry.template_roles[role]["profiles"][0]
             ]
+            if not profile.get("required_sections"):
+                continue  # structural units; see test_headingless_templates_*
             with self.subTest(role=role):
                 self.assertEqual(
                     [
@@ -119,6 +107,43 @@ class TemplateDefinitionTests(unittest.TestCase):
                         loaded = importlib.import_module(module)
                         for part in filter(None, attribute.split(".")):
                             loaded = getattr(loaded, part)
+
+    def test_headingless_templates_use_their_real_top_level_units(self) -> None:
+        expected = {
+            "sdlc/openapi": ["openapi", "info", "paths", "components"],
+            "sdlc/graphql": ["schema", "type Query", "type __OBJECT_TYPE__"],
+            "sdlc/proto": [
+                'syntax = "proto3"',
+                "package __PACKAGE_NAME__",
+                "service __SERVICE_NAME__",
+                "message HealthRequest",
+                "message HealthResponse",
+            ],
+            "governance/codex-agent": [
+                "name",
+                "description",
+                "developer_instructions",
+                "model",
+                "model_reasoning_effort",
+                "sandbox_mode",
+            ],
+        }
+        for role, titles in expected.items():
+            with self.subTest(role=role):
+                self.assertEqual(
+                    titles, [h["title"] for h in self.definitions[role]["headings"]]
+                )
+        claude = [
+            h["title"] for h in self.definitions["governance/claude-agent"]["headings"]
+        ]
+        self.assertEqual("frontmatter name", claude[0])
+        self.assertIn("H1 {{NAME}}", claude)
+        self.assertIn("Body {{AGENT_BODY}}", claude)
+
+    def test_empty_headings_are_rejected(self) -> None:
+        definition = copy.deepcopy(self.definitions["sdlc/openapi"])
+        definition["headings"] = []
+        self.assertIn("headings: minItems", _errors(definition))
 
     def test_a_missing_required_field_is_rejected(self) -> None:
         definition = copy.deepcopy(self.definitions["sdlc/task"])
