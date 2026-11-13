@@ -1129,6 +1129,25 @@ class DocumentRegistryTests(unittest.TestCase):
                 {item.code for item in validate_registry(raw)},
             )
 
+    def test_retired_archive_vocabulary_is_rejected(self) -> None:
+        # Stage 98 holds no bodies, so nothing writes or reads these keys.
+        retired = (
+            "archived_from",
+            "archived_at",
+            "archive_reason",
+            "archive_disposition",
+            "archived_commit",
+            "archived_blob",
+        )
+        for key in retired:
+            with self.subTest(key=key):
+                # A valid value proves the key itself is rejected.
+                value = "2026-01-01T00:00:00Z" if key == "archived_at" else "x"
+                self.assertNotEqual((), validate_frontmatter({key: value}))
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        self.assertNotIn("archive_source_prefixes", raw["common"])
+        self.assertFalse(set(retired) & set(raw["common"]["frontmatter_order"]))
+
     def test_archive_authorization_schema_requires_scoped_explicit_approval(
         self,
     ) -> None:

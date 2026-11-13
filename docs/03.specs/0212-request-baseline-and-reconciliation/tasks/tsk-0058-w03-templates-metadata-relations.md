@@ -1,6 +1,6 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.5.8"
+version: "0.5.9"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -444,6 +444,24 @@ Held for a later change: Completion and Handoff in all 24 skills holds only
 links, and two Gates bullets (ops-runbook-agent, incident-response) state an
 output location rather than a gate.
 
+##### Handoffs H-W02-2 and H-13 2026-11-13
+
+Branch `docs/w03-archive-vocabulary`.
+
+- H-W02-2: a consumer survey found that nothing writes or reads
+  `common.archive_source_prefixes` (the live root set is the separate
+  `LEGACY_ARCHIVE_SOURCE_ROOTS` constant in `registry.py`) or the frontmatter
+  keys `archived_from`, `archived_at`, `archive_reason`,
+  `archive_disposition`, `archived_commit` and `archived_blob`; they were only
+  declared and validated, and no tracked document carries them. They are
+  retired from the Registry, both schemas, `metadata/profile.py`,
+  `metadata/lifecycle.py` and the template timestamp keys.
+  `archive_authorizations` stays, because the terminal TSK-0012 carries it,
+  and `archive_retention.disposition_entry_statuses` stays, because
+  `registry.py`, `spec_packages.py` and `lifecycle/occupancy.py` read it.
+- H-13: the architecture description template asks the author to review a
+  diagram against the C4 diagram review checklist; no rule requires it.
+
 Held for an owner decision, not changed here, because each would change
 what a requirement says:
 
@@ -532,6 +550,10 @@ None: nothing was recorded here before this Task moved to the common form.
 | W03 v14.7 Skill review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `8412eafea` (rebased as `5f18c6913`) | PASS | PASS: every finding fixed | required | W03 v14.7 Skill review, W03 v14.7 Skill re-review |
 | W03 v14.7 Skill GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `fd4d37dea` | PASS | Ran 810 tests, OK, including the skill old-form and template-outline tests | required | W03 v14.7 Skill form RED |
 | W03 v14.7 Skill checks | 111 | W116 | metadata-links-governance | The 24 moved skills at `fd4d37dea` | PASS | Heading contract 0 findings (384 on the old copies); renderer drift 0; agent governance contract failures 0; links alignment PASS | required | - |
+| W03 v14.7 archive vocabulary RED | 111 | W116 | red-green-proof | `test_retired_archive_vocabulary_is_rejected` against the Registry and schemas at `643629139` | FAIL | FAILED (failures=6): the retired keys were accepted and `archive_source_prefixes` was present | required | - |
+| W03 v14.7 archive vocabulary review | 111 | W116 | independent-review | Fresh-context code-reviewer of `84002bc55` and `c44de6697` | PASS | PASS: no consumer remains for any retired key; the supply-chain `archived_at` is a separate JSON ledger; the C4 prompt is optional and harmless; one minor test weakness (`archived_at` with an invalid value) fixed in the next commit | required | - |
+| W03 v14.7 archive vocabulary GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `c44de6697` | PASS | Ran 811 tests, OK | required | W03 v14.7 archive vocabulary RED |
+| W03 v14.7 archive vocabulary checks | 111 | W116 | metadata-links-governance | Registry, schemas and the active corpus at `84002bc55` | PASS | metadata check-active selected 534 violations 0; active stage occupancy violations 0 | required | - |
 
 ### Resolution Links
 
@@ -556,7 +578,7 @@ these profile flags is handed to W05; renumbering stays a Q-07 decision.
 
 ### Promotion Receipt
 
-Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook), #980 (Policy).
+Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook), #980 (Policy), #981 (Skill).
 
 ### Next Owner
 
