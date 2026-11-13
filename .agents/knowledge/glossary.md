@@ -1,6 +1,6 @@
 ---
 title: "Repository Vocabulary"
-version: "0.6.1"
+version: "0.7.0"
 type: "governance/vocabulary"
 status: "active"
 owner: "@buenhyden"
@@ -124,6 +124,11 @@ enforced.
 | Controlled wrapper | The single approved all-files pre-commit route; direct `pre-commit run` is prohibited | A direct hook run | [Quality standards](../governance/quality-standards.md#4-execution-boundary) |
 | Generated-artifact freshness | A generated output must be reproduced by its generator, never hand-edited to pass | Projection | [Quality standards](../governance/quality-standards.md) |
 | Evidence class | The weakest observation that supports a claim: configured, repository-enforced, local-executed, local-parser, official-source, or an unverified runtime, entitlement or remote state | Evidence itself; one class does not prove another | [Output style](../governance/output-style.md) |
+| Structural Ownership | The `rel.structural-ownership` relation: a Plan, Task, data model contract, research or audit member, or postmortem names in `parent_ids` the document that structurally contains it | The frontmatter `owner`, which names a person | [Documentation protocol](../governance/documentation-protocol.md#link-types-and-document-relations) |
+| Constraint | The `rel.constraint` relation: a Requirements package, Architecture description, ADR or Spec names in `parent_ids` the document that constrains it | Structural Ownership | [Documentation protocol](../governance/documentation-protocol.md#link-types-and-document-relations) |
+| Change Impact | The `rel.change-impact` relation from an owner to its consumers, derived from Authority, Constraint and Structural Ownership when a document is removed or moved; no document records it | A hand-kept reverse-state table | [Documentation protocol](../governance/documentation-protocol.md#link-types-and-document-relations) |
+| Traceability heading | A Stage 01 to 03 section that holds a document's basis and supersession records | The `rel.traceability` relation, which a Task's evidence rows and links write | [Documentation protocol](../governance/documentation-protocol.md#link-types-and-document-relations) |
+| Promote (older Specs and labs) | In SPEC-0259 and SPEC-0261, moving a draft operations document to `active` after it matched the source; in SPEC-0263, moving a lab workload into the managed stack under its `promotion.yaml` and the lab promotion policy | The common Promotion term, which hands lasting meaning to its owner through a Plan | [SDLC](../governance/sdlc.md#sequence) |
 
 ## Maintenance
 
