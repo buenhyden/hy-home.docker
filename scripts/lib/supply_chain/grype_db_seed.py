@@ -25,6 +25,10 @@ MAX_CACHE_FILES = 128
 # leaves room for growth while still refusing a runaway cache.
 MAX_CACHE_BYTES = 6 * 1024 * 1024 * 1024
 GENERATION = "hyhome-grype-db-seed-v1"
+SEED_RELATIVE = (
+    "_workspace/repo-support/"
+    "task-2026-07-23-security-supply-chain-runtime-closure/grype-db-seed"
+)
 EXACT_GRYPE_TOOL = {
     "image_ref": (
         "anchore/grype:v0.120.1@"
@@ -579,6 +583,27 @@ def inspect_current_seed(
         if generations_fd >= 0:
             os.close(generations_fd)
         os.close(output_fd)
+
+
+def current_seed_identity(base: pathlib.Path | str) -> str:
+    """Return the published seed's public identity for gate PASS reuse.
+
+    The identity is the generation digest, which already covers the DB package
+    checksum, the cache tree digest and the seeding time. It is metadata only;
+    no cache byte or credential is read. `ABSENT` means no readable pointer
+    exists and `INVALID` means a pointer exists but fails its own contract.
+    """
+    try:
+        output_fd, _ = _open_output_directory(base, SEED_RELATIVE, create=False)
+    except SeedContractError as exc:
+        return "ABSENT" if str(exc) == "seed-output-missing" else "INVALID"
+    try:
+        payload = _read_pointer(output_fd)[1]
+    except SeedContractError as exc:
+        return "ABSENT" if str(exc) == "seed-private-file-open-failed" else "INVALID"
+    finally:
+        os.close(output_fd)
+    return "sha256:" + payload["generation_path"].split("/", 1)[1]
 
 
 def resolve_seed_generation(

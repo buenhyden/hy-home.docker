@@ -299,6 +299,37 @@ class GrypeDbSeedPublicationTests(unittest.TestCase):
             )
             self.assertFalse(any(output.glob(".current.json.*.tmp")))
 
+    def test_current_seed_identity_is_absent_then_the_generation_digest(self) -> None:
+        """QA-C07: the gate keys PASS reuse on this public identity."""
+        with tempfile.TemporaryDirectory() as temporary:
+            base = pathlib.Path(temporary) / "repo"
+            base.mkdir(mode=0o700)
+            self.assertEqual("ABSENT", self.helper.current_seed_identity(base))
+            output_identity, stage_identity, stage, status_path = self.prepare(
+                pathlib.Path(temporary) / "other"
+            )
+            seeded = self.finalize(
+                pathlib.Path(temporary) / "other",
+                output_identity,
+                stage_identity,
+                stage,
+                status_path,
+            )
+            identity = self.helper.current_seed_identity(
+                pathlib.Path(temporary) / "other"
+            )
+            self.assertEqual(
+                "sha256:" + seeded["generation_path"].split("/", 1)[1], identity
+            )
+            pointer = (
+                pathlib.Path(temporary) / "other" / OUTPUT_RELATIVE / "current.json"
+            )
+            pointer.write_text("{}\n", encoding="utf-8")
+            self.assertEqual(
+                "INVALID",
+                self.helper.current_seed_identity(pathlib.Path(temporary) / "other"),
+            )
+
     def test_failed_new_seed_preserves_last_valid_pointer_and_generation(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             base = pathlib.Path(temporary) / "repo"
