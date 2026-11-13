@@ -1485,9 +1485,18 @@ class GateCrosswalkTests(unittest.TestCase):
 
     def test_unclassified_or_unknown_guarantee_fails_closed(self) -> None:
         baseline = contract.load_contract_document(ROOT)
-        for label, mutate in (
-            ("missing", lambda node: node.pop("guarantee")),
-            ("unknown", lambda node: node.update(guarantee="other")),
+        for label, mutate, code in (
+            ("missing", lambda node: node.pop("guarantee"), "ci-gate-kind-fields"),
+            (
+                "unknown",
+                lambda node: node.update(guarantee="other"),
+                "ci-gate-guarantee",
+            ),
+            (
+                "not-a-string",
+                lambda node: node.update(guarantee=["security"]),
+                "ci-gate-guarantee",
+            ),
         ):
             with self.subTest(label=label):
                 candidate = json.loads(json.dumps(baseline))
@@ -1495,10 +1504,7 @@ class GateCrosswalkTests(unittest.TestCase):
                 mutate(node)
                 with self.assertRaises(contract.GateContractError) as raised:
                     contract.parse_gate_registry(candidate, "contract")
-                self.assertIn(
-                    raised.exception.code,
-                    {"ci-gate-kind-fields", "ci-gate-guarantee"},
-                )
+                self.assertEqual(code, raised.exception.code)
 
     def test_current_registry_has_no_duplicate_producers(self) -> None:
         self.assertEqual([], [r.gate_id for r in self.rows if r.duplicate_of])

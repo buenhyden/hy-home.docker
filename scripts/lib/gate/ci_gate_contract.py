@@ -1607,7 +1607,11 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
         if kind is GateKind.LEAF
         else None
     )
-    guarantee = record["guarantee"] if kind is GateKind.LEAF else ""
+    guarantee = (
+        _string(record["guarantee"], "ci-gate-guarantee", path)
+        if kind is GateKind.LEAF
+        else ""
+    )
     if kind is GateKind.LEAF and guarantee not in _GUARANTEES:
         raise GateContractError(
             "ci-gate-guarantee", path, "a leaf must declare security, deploy or none"
