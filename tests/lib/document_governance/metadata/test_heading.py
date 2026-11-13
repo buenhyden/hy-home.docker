@@ -203,10 +203,15 @@ class CurrentBodyContractTests(unittest.TestCase):
         self.assertNotIn("> Rules:", "\n".join(item.message for item in findings))
 
     def test_new_file_body_deficit_is_blocked(self) -> None:
-        findings = self.introduced(
-            REQUIREMENT_TARGET_BODY + "\n{{NEW_FILE_TOKEN}}\n",
-            None,
+        # A body still in the retired requirement form, which a new file
+        # may not introduce.
+        old_form = body_with_headings(
+            "## Problem and Goals",
+            "## Functional Requirements",
+            "## Acceptance Criteria",
+            "## Traceability",
         )
+        findings = self.introduced(old_form + "\n{{NEW_FILE_TOKEN}}\n", None)
         self.assertEqual(
             [
                 "body-heading-forbidden",

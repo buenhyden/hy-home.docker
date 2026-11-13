@@ -1,6 +1,6 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.5.14"
+version: "0.5.15"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -578,6 +578,30 @@ Later correction of terminal records: TSK-0060 still says TemplateDefinition
 is "Approved; not implemented" and TSK-0059 still lists H-06 as open. Both
 are terminal, so their bodies stay; this branch is the implementation.
 
+##### W03 close-out 2026-11-13
+
+Every planned role and handoff has landed on `main`:
+
+| Item | Pull request |
+| --- | --- |
+| Requirement, Spec, ADR, Plan, Architecture | #967, #968, #969, #970, #971 |
+| Task, Guide, Runbook, Policy, Skill | #975, #977, #979, #980, #981 |
+| Root, Stage and Service README | #983, #985, #986 |
+| H-W02-2 archive vocabulary and H-13 C4 checklist | #982 |
+| Retirement and incident numbering | #984 |
+| H-06 TemplateDefinition | #987 |
+
+Verdict updates against the assessment table above:
+
+- DOC-01: the open service-README section set is no longer an owner
+  decision; the approved common section contract fixes it, and the 130
+  service READMEs carry it (#986). Verdict: CHANGE, done.
+- DOC-08: DEFER stands. The 78 runbooks now carry the common Runbook form
+  (#979), and no execution document delegates its procedure to a historical
+  link.
+- The target-body test fixtures now use the current Requirement and Policy
+  form; the test that needs a retired form builds its own.
+
 Held for an owner decision, not changed here, because each would change
 what a requirement says:
 
@@ -695,6 +719,7 @@ None: nothing was recorded here before this Task moved to the common form.
 | W03 v14.7 TemplateDefinition review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `6e4f5e3b0` | PASS | PASS: every finding fixed; the Codex profile change breaks no projection; the Task record was the one open item | required | W03 v14.7 TemplateDefinition review |
 | W03 v14.7 TemplateDefinition GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `b609385a9`; after merging the README forms, test_template_definition, test_registry, test_heading and test_profile | PASS | Ran 828 tests, OK; after the last merge 257 tests, OK | required | W03 v14.7 TemplateDefinition RED |
 | W03 v14.7 TemplateDefinition checks | 111 | W116 | metadata-links-governance | The vendored schema, Registry and 39 definitions | PASS | All 39 definitions validate against the approved schema; renderer drift 0; agent governance contract PASS; links alignment PASS; `tests/validation` shows only the 16 local-environment failures that `origin/main` shows too, and none new | required | - |
+| W03 v14.7 close-out checks | 111 | W116 | metadata-links-governance | The target-body fixtures and this Task after #987 | PASS | test_heading OK with the fixtures in the current Requirement and Policy form; metadata check-changed violations 0; links alignment PASS | required | - |
 
 ### Resolution Links
 
@@ -710,17 +735,20 @@ Each FAIL row in Results is resolved by the later PASS row of the same Check and
 
 ### Remaining Conditions
 
-In progress. The assessment and the reproduced-gap changes are recorded.
-Criterion 111 waits for the owner. Open: a fixed service-README section set
-(DOC-01) needs an owner decision on a new contract; validator work beyond
-these profile flags is handed to W05; renumbering stays a Q-07 decision.
+Every planned W03 role and handoff is on `main` (see W03 close-out). Criterion
+111 waits for owner acceptance. Held for an owner decision: the per-requirement
+acceptance split for REQ-0024 to REQ-0027 and acceptance conditions for
+REQ-0003. Handed to W05: validator work beyond the profile flags, and a
+Registry check that each disposition status belongs to its profile's
+lifecycle (the incident and postmortem entries cannot be reached).
+Renumbering stays a Q-07 decision.
 
 ## Handoff
 
 ### Promotion Receipt
 
-Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook), #980 (Policy), #981 (Skill), #982 (H-W02-2 and H-13), #983 (Root README), #984 (retirement and incident numbering), #985 (Stage README), #986 (Service README).
+Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook), #980 (Policy), #981 (Skill), #982 (H-W02-2 and H-13), #983 (Root README), #984 (retirement and incident numbering), #985 (Stage README), #986 (Service README), #987 (H-06 TemplateDefinition).
 
 ### Next Owner
 
-The current owner is @buenhyden. After each role pull request merges, the next W03 role starts here in the planned order; W05 owns the validator work handed over under Remaining Conditions.
+The current owner is @buenhyden, who decides criterion 111 and the held Requirement items. W05 owns the validator work and the disposition-status check handed over under Remaining Conditions.
