@@ -1,10 +1,10 @@
 ---
 title: "Folder Guide Delivery Task"
-version: "0.7.0"
+version: "0.8.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0264-TSK-0001"
 parent_ids:
@@ -226,6 +226,18 @@ Residuals, accepted for now:
 Live delivery stays unobserved. The changed hook file has a new hash, which
 the owner must trust in Codex before a live probe can run.
 
+### Live Codex delivery after trust (2026-11-13)
+
+Codex 0.167 cannot run without code mode: a run with
+`-c features.code_mode_host=false` stopped with "Code mode will fail closed",
+so every Codex edit arrives as `tools.apply_patch` inside the `exec` tool,
+which the `exec` coverage in the dispatcher (E35) handles. After the owner
+trusted the changed hooks in `/hooks` on 2026-11-13, a headless Codex 0.167.2
+session received the `infra/AGENTS.md` guide before its edit and a short
+reminder on the next one (E36, resolving E33 and E34). Re-delivery after
+`/compact` needs an interactive session and stays NOT_RUN, so E27 and
+criterion 8 remain open.
+
 ## Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
@@ -265,6 +277,7 @@ the owner must trust in Codex before a live probe can run.
 | E33 | 8 | W4 | live Codex delivery | The same session, editing `infra/README.md` through `tools.apply_patch` inside the Codex `exec` tool, then reverting | FAIL | no folder guide delivered and no delivery record; Codex 0.166 wraps tool calls in `exec`, which the matcher (`Bash` or `apply_patch`) does not match; compaction NOT_RUN headless | required | - |
 | E34 | 8 | W4 | live Codex delivery | Headless `codex exec` 0.167.1 at branch commit `72571d481`, 2026-11-11, applying and reverting one line in `infra/README.md` through `apply_patch` | FAIL | no folder guide and no delivery record; Stop hook fired; file restored byte-identical; matcher and trust unchanged | required | - |
 | E35 | 8 | W4 | exec dispatcher delivery | `agent-event-hook.sh PreToolUse` with the real E34 `exec` payload at `e5f00113b`, plus `tests.lib.hooks.test_tool_payload` and `test_folder_guides` | PASS | infra guide delivered; dynamic access denied; 37 tests OK; local dispatcher only, not live Codex delivery | optional | - |
+| E36 | 8 | W4 | live Codex delivery | Headless `codex exec` 0.167.2 at the repository root of main `894e4bc5f`, 2026-11-13, after the owner trusted the changed hooks in `/hooks`; one blank line added to and removed from `infra/README.md` through `tools.apply_patch` inside `exec` | PASS | the folder guide arrived before the edit (first line "Folder guide `infra/AGENTS.md` applies to files under `infra/`"), the second edit got only the short reminder, a delivery record was written under `~/.local/state/hy-home/folder-guides/`, and `git status` was clean afterwards; compaction re-delivery not exercised | required | E33, E34 |
 
 ## Criterion Acceptance
 
@@ -277,7 +290,7 @@ the owner must trust in Codex before a live probe can run.
 | 5 | pending | E1, E6, E8 | owner acceptance | @buenhyden |
 | 6 | pending | E4, E25, E31 | owner acceptance | @buenhyden |
 | 7 | pending | E5 | owner acceptance | @buenhyden |
-| 8 | pending | E26, E27, E28, E32, E33, E34, E35 | Claude observed; Codex hook health fixed (E32 resolves E28); Codex delivery FAIL under the `exec` tool model (E33) and again on 0.167.1 (E34), exec coverage implemented and dispatcher-verified (E35); live delivery needs owner-granted trust of the new hook hash | @buenhyden |
+| 8 | pending | E26, E27, E28, E32, E33, E34, E35, E36 | Claude observed (E26); Codex hook health fixed (E32 resolves E28); live Codex delivery on edit PASS after owner trust (E36 resolves E33, E34); compaction re-delivery (E27) still NOT_RUN | @buenhyden |
 | 9 | pending | E10, E11, E21, E24, E30 | owner acceptance | @buenhyden |
 | 10 | pending | E12, E13, E15, E16, E18, E19, E21, E23, E24, E30 | owner acceptance | @buenhyden |
 
