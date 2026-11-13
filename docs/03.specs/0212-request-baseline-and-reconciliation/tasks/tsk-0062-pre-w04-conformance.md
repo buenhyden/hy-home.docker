@@ -174,8 +174,9 @@ recorded for W05.
   Compacting would reissue reserved IDs, which the requirement forbids, or
   move IDs above the high-water mark. Either way the paths, `parent_ids`,
   about 8,600 links and `commit:path` evidence change. The owner decided that
-  Q-07 runs after the work under `docs/` is complete. Until then issued
-  numbers stay unchanged.
+  Q-07 runs after the work under `docs/` is complete, and the work before it
+  proceeds on the assumption that renumbering starts only then. Until then
+  issued numbers stay unchanged and no wave renumbers a document.
 
 ### Blockers and Decisions
 
