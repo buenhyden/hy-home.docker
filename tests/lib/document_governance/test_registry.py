@@ -128,6 +128,10 @@ def _reclassify_fixture_allocation(root: pathlib.Path) -> None:
     )
 
 
+# Last commit whose schemas accepted release-only versions.
+PRE_SEMVER_WIDENING_COMMIT = "57d327f12"
+
+
 class DocumentRegistryTests(unittest.TestCase):
     def test_section_forms_bind_each_common_heading_to_its_profile_form(
         self,
@@ -1220,7 +1224,22 @@ class DocumentRegistryTests(unittest.TestCase):
     def test_old_and_new_schema_producer_consumer_combinations(self) -> None:
         # The release-only pattern is the previous consumer; the widening is a
         # MINOR change: every old-valid value stays valid, only new values differ.
-        old = re.compile(r"^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$(?!\n)")
+        shown = subprocess.run(
+            [
+                "git",
+                "show",
+                f"{PRE_SEMVER_WIDENING_COMMIT}:"
+                "docs/99.templates/contracts/document-frontmatter.schema.json",
+            ],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if shown.returncode:
+            self.skipTest("pre-widening schema revision is not in this clone")
+        old = re.compile(json.loads(shown.stdout)["properties"]["version"]["pattern"])
+        self.assertNotIn("(?:-", old.pattern)
         old_values = ("0.1.0", "1.10.0")
         new_values = ("1.0.0-rc.1", "1.2.3+build.7")
         for value in old_values:
