@@ -4087,7 +4087,7 @@
         "documentation-readme"
       ],
       "purpose": "Korean navigation entry for the docs/ tree.",
-      "responsibility": "Route a reader from docs/README.md to each numbered stage and its README.",
+      "responsibility": "Route a reader from docs/README.md to each numbered stage README through the Current Items table under Contents.",
       "non_goals": [
         "Copying a Guide, Policy or Runbook procedure into the README.",
         "Owning a rule; it routes to the canonical owner instead."
@@ -4136,7 +4136,7 @@
         ]
       },
       "migration": {
-        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit b86a7a942 (profiles, templates and stage READMEs, #985) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-documentation.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-documentation.template.md; load_registry and test_template_definition re-check the reverted Registry."
       }
@@ -4205,7 +4205,7 @@
         "readme"
       ],
       "purpose": "Korean README that navigates one stage or folder.",
-      "responsibility": "List the folder's direct children in the Documents table and route readers to their owners.",
+      "responsibility": "State the stage's responsibility, list what exists now in the Current Items table under Contents, and route readers through its workflow and related documents.",
       "non_goals": [
         "Copying a Guide, Policy or Runbook procedure into the README.",
         "Owning a rule; it routes to the canonical owner instead."
@@ -4222,7 +4222,7 @@
       ],
       "applicability": "Applies to every file the readme profile owns: docs/01.requirements/README.md, docs/02.architecture/README.md, docs/02.architecture/decisions/README.md, docs/02.architecture/descriptions/README.md and 56 more registered paths.",
       "relationships": [
-        "Lists each direct child of its folder in the Documents table (Path, Purpose)."
+        "Lists the folder's current documents in the Current Items table (Path, Purpose, optional Owner)."
       ],
       "consumer_paths": [
         "scripts/lib/document_governance/registry.py",
@@ -4246,7 +4246,9 @@
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
-          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_readme_documents_module_rejects_other_header_shapes"
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_readme_documents_module_rejects_other_header_shapes",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_readme_documents_module_checks_every_table"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -4258,7 +4260,7 @@
         ]
       },
       "migration": {
-        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit b86a7a942 (profiles, templates and stage READMEs, #985) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-stage.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-stage.template.md; load_registry and test_template_definition re-check the reverted Registry."
       }
@@ -4269,7 +4271,7 @@
         "repository-readme"
       ],
       "purpose": "Korean root README.md and the READMEs of top-level folders such as infra/, scripts/ and tests/.",
-      "responsibility": "Route readers to implementation and documentation owners and name the lifecycle and validation entrypoints.",
+      "responsibility": "State the project role and boundaries, map the directories and canonical entry points, and give the first verified path and current documentation.",
       "non_goals": [
         "Copying a Guide, Policy or Runbook procedure into the README.",
         "Owning a rule; it routes to the canonical owner instead."
@@ -4286,7 +4288,7 @@
       ],
       "applicability": "Applies to every file the repository-readme profile owns: README.md, .github/repository-surface.md, _workspace/README.md, .agents/evaluations/README.md and 9 more registered paths.",
       "relationships": [
-        "Routes to the stage READMEs under docs/ and to the root AGENTS.md and CLAUDE.md shims."
+        "Routes to directories and stage READMEs through the Directories table under Repository Map, and to the root AGENTS.md and CLAUDE.md shims."
       ],
       "consumer_paths": [
         "scripts/lib/document_governance/registry.py",
@@ -4300,13 +4302,16 @@
         "positive": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
           "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
-          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract"
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_readme_documents_table_under_directories_uses_registered_columns"
         ],
         "negative": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
-          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_readme_directories_path_column_is_checked_in_any_form"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -4318,7 +4323,7 @@
         ]
       },
       "migration": {
-        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit d712aee54 (profiles, templates and root READMEs, #983) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-repository.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-repository.template.md; load_registry and test_template_definition re-check the reverted Registry."
       }
@@ -4329,7 +4334,7 @@
         "runtime-governance-readme"
       ],
       "purpose": "Generated pointer README for .claude/ and .codex/. The profile declares no language; documentation-protocol.md#document-language rule 1 makes every tracked README.md Korean.",
-      "responsibility": "Point a reader of a provider directory to its authored provider.md adapter.",
+      "responsibility": "Point a reader of a provider directory to its authored provider.md adapter in the root README form: Purpose, Repository Map, Getting Started, References.",
       "non_goals": [
         "Defining provider policy; the adapter and .agents/governance own it.",
         "Being hand-edited; the renderer writes it."
@@ -4361,11 +4366,15 @@
         "positive": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
           "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
           "scripts/operations/provider_surface_renderer.py --check"
         ],
         "negative": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
-          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -4376,7 +4385,7 @@
         ]
       },
       "migration": {
-        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit d712aee54 (profiles, templates and root READMEs, #983) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-runtime-governance.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-runtime-governance.template.md; load_registry and test_template_definition re-check the reverted Registry."
       }
@@ -5591,7 +5600,7 @@
         "reference-category-readme"
       ],
       "purpose": "Korean README of one Stage 90 category (research, audits, data).",
-      "responsibility": "List the category's packages and route to current audits, dated snapshots and supersession ledgers.",
+      "responsibility": "State the Stage 90 category's responsibility and list its current packages in the Current Items table under Contents.",
       "non_goals": [
         "Copying a Guide, Policy or Runbook procedure into the README.",
         "Owning a rule; it routes to the canonical owner instead."
@@ -5641,7 +5650,7 @@
         ]
       },
       "migration": {
-        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit b86a7a942 (profiles, templates and stage READMEs, #985) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-category.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-category.template.md; load_registry and test_template_definition re-check the reverted Registry."
       }
