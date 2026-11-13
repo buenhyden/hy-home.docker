@@ -127,6 +127,68 @@ def _reclassify_fixture_allocation(root: pathlib.Path) -> None:
 
 
 class DocumentRegistryTests(unittest.TestCase):
+    def test_section_forms_bind_each_common_heading_to_its_profile_form(
+        self,
+    ) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        forms = raw["common"]["section_forms"]
+        self.assertEqual(
+            {
+                "Acceptance Criteria",
+                "Work Breakdown",
+                "Evidence",
+                "Criterion Acceptance",
+                "Work Log",
+                "Corrective Actions",
+            },
+            set(forms),
+        )
+        self.assertEqual((), validate_registry(raw))
+
+        def broken(change) -> set[str]:
+            candidate = json.loads(json.dumps(raw))
+            change(candidate["common"])
+            return {finding.code for finding in validate_registry(candidate)}
+
+        def drop(common) -> None:
+            del common["section_forms"]["Work Log"]
+
+        def wrong_parent(common) -> None:
+            common["section_forms"]["Evidence"]["section"] = "Scope"
+
+        def unknown_child(common) -> None:
+            common["section_forms"]["Work Breakdown"]["subsection"] = "Work Plan"
+
+        def unknown_profile(common) -> None:
+            common["section_forms"]["Evidence"]["profile"] = "missing"
+
+        def stale(common) -> None:
+            common["section_forms"]["Retired"] = {
+                "profile": "task",
+                "section": "Handoff",
+                "subsection": "Next Owner",
+            }
+
+        def renamed_h2(common) -> None:
+            common["section_forms"]["Acceptance Criteria"]["section"] = "Scope"
+
+        for change in (
+            drop,
+            wrong_parent,
+            unknown_child,
+            unknown_profile,
+            stale,
+            renamed_h2,
+        ):
+            with self.subTest(change=change.__name__):
+                self.assertIn("common-section-form", broken(change))
+        historical = json.loads(json.dumps(raw))
+        del historical["common"]["section_forms"]
+        self.assertNotIn(
+            "common-section-form",
+            {finding.code for finding in validate_registry(historical)},
+        )
+
     def test_additional_operation_patterns_preserve_flat_route_and_reject_overlap(
         self,
     ) -> None:

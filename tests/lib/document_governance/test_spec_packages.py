@@ -2589,6 +2589,54 @@ Narrative after the registered table.
                         with self.assertRaises(module.SpecPackageError):
                             module._contract_section(broken, key)
 
+    def test_common_form_paths_come_from_the_registry(self) -> None:
+        module = _spec_packages_module()
+        registry = load_current_registry()
+        self.assertEqual(
+            {
+                "Work Breakdown": ("Implementation Strategy", "Work Breakdown"),
+                "Evidence": ("Verification Evidence", "Results"),
+                "Criterion Acceptance": ("Acceptance Decision", "Criterion Decisions"),
+                "Work Log": ("Execution Log", "Work Performed"),
+            },
+            dict(module._common_form_paths()),
+        )
+        task = registry.profiles["task"]
+        self.assertEqual(
+            {
+                name: tuple(task["required_subsections"][name])
+                for name in task["required_sections"]
+            },
+            dict(module._task_common_form()),
+        )
+        common = dict(registry.common)
+        forms = {key: dict(value) for key, value in common["section_forms"].items()}
+        forms["Work Breakdown"]["subsection"] = "Task List"
+        common["section_forms"] = forms
+        renamed = dataclasses.replace(registry, common=common)
+        module._common_form_paths.cache_clear()
+        try:
+            with mock.patch.object(
+                module.registry_module, "load_registry", return_value=renamed
+            ):
+                self.assertEqual(
+                    (["1. W1: New."], 3),
+                    module._contract_span(
+                        "## Implementation Strategy\n### Task List\n1. W1: New.\n",
+                        "Work Breakdown",
+                    ),
+                )
+            common.pop("section_forms")
+            unbound = dataclasses.replace(registry, common=common)
+            module._common_form_paths.cache_clear()
+            with mock.patch.object(
+                module.registry_module, "load_registry", return_value=unbound
+            ):
+                with self.assertRaises(module.RegistryError):
+                    module._contract_span("## Work Breakdown\nx\n", "Work Breakdown")
+        finally:
+            module._common_form_paths.cache_clear()
+
     def test_task_subsection_readers_are_level_aware(self) -> None:
         module = _spec_packages_module()
         registry = load_current_registry()

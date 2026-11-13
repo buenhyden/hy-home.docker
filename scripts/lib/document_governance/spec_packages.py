@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import dataclasses
 import datetime
+import functools
 import os
 import pathlib
 import re
@@ -12,7 +13,9 @@ import stat
 import subprocess
 import time
 from collections.abc import Mapping, Sequence
+from types import MappingProxyType
 
+from scripts.lib.document_governance import registry as registry_module
 from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
     frontmatter_record_from_text,
@@ -800,13 +803,22 @@ def _completion_visible_lines(body: str) -> list[str]:
 
 # A Registry ``common`` heading value names its legacy H2. A document in the
 # common form (COMMON-DOC-FORM-1) carries the same section as an H3 under a
-# new H2, so the value is a logical anchor resolved to exactly one form.
-_COMMON_FORM_PATHS = {
-    "Work Breakdown": ("Implementation Strategy", "Work Breakdown"),
-    "Evidence": ("Verification Evidence", "Results"),
-    "Criterion Acceptance": ("Acceptance Decision", "Criterion Decisions"),
-    "Work Log": ("Execution Log", "Work Performed"),
-}
+# new H2; Registry ``common.section_forms`` names that H2 and H3, and the
+# Registry check binds both to the profile's registered sections. The tracked
+# Registry is read directly, as `registry._registered_types` does.
+@functools.lru_cache(maxsize=1)
+def _common_form_paths() -> Mapping[str, tuple[str, str]]:
+    forms = registry_module.load_registry().common.get("section_forms")
+    if not isinstance(forms, Mapping):
+        # A current Registry without the binding must not read as "no section".
+        raise RegistryError("current Registry lacks common.section_forms")
+    return MappingProxyType(
+        {
+            heading: (str(form["section"]), str(form["subsection"]))
+            for heading, form in forms.items()  # type: ignore[union-attr]
+            if "subsection" in form
+        }
+    )
 
 
 def _section_end(lines: list[str], start: int, level: int) -> int:
@@ -825,7 +837,7 @@ def _contract_span(body: str, heading: str) -> tuple[list[str], int]:
     lines = _completion_visible_lines(body)
     marker = "## " + heading
     found = [(index, 2) for index, line in enumerate(lines) if line == marker]
-    path = _COMMON_FORM_PATHS.get(heading)
+    path = _common_form_paths().get(heading)
     if path is not None:
         parents = [index for index, line in enumerate(lines) if line == "## " + path[0]]
         for parent in parents:
@@ -2866,7 +2878,7 @@ def _legacy_table_lines(body: str, name: str, joined: bool | None) -> tuple[str,
     if not joined:
         lines = _contract_section(body, name)
     else:
-        target = _COMMON_FORM_PATHS[name][1]
+        target = _common_form_paths()[name][1]
         visible = _completion_visible_lines(body)
         lines = [
             line
@@ -4117,14 +4129,21 @@ def _validate_terminal_task_migration(
 _TASK_FIXED = (
     "None: nothing was recorded here before this Task moved to the common form."
 )
-# COMMON-DOC-FORM-1 for a Task: each H2 and its H3 subsections, in order.
-_TASK_COMMON_FORM = {
-    "Scope": ("Objective and Parent", "Inputs and Authority"),
-    "Execution Log": ("Work Performed", "Blockers and Decisions"),
-    "Verification Evidence": ("Results", "Resolution Links"),
-    "Acceptance Decision": ("Criterion Decisions", "Remaining Conditions"),
-    "Handoff": ("Promotion Receipt", "Next Owner"),
-}
+
+
+# COMMON-DOC-FORM-1 for a Task: each registered H2 and its H3s, in order.
+@functools.lru_cache(maxsize=1)
+def _task_common_form() -> Mapping[str, tuple[str, ...]]:
+    task = registry_module.load_registry().profiles["task"]
+    subsections = task["required_subsections"]
+    return MappingProxyType(
+        {
+            str(name): tuple(subsections[name])  # type: ignore[index]
+            for name in task["required_sections"]  # type: ignore[union-attr]
+        }
+    )
+
+
 # The common-form H3 that carries each legacy H2. A legacy H2 outside this
 # table cannot be placed, so its Task stays byte-strict.
 _TASK_LEGACY_TARGETS = {
@@ -4181,10 +4200,14 @@ def _task_items(body: str, legacy: bool) -> dict[str, list[tuple]] | None:
     if re.search(r"[\r\x0b\x0c\x1c-\x1e\x85\u2028\u2029]", body):
         return None
     children = {
-        child: parent for parent, group in _TASK_COMMON_FORM.items() for child in group
+        child: parent
+        for parent, group in _task_common_form().items()
+        for child in group
     }
     expected = [
-        name for parent, group in _TASK_COMMON_FORM.items() for name in (parent, *group)
+        name
+        for parent, group in _task_common_form().items()
+        for name in (parent, *group)
     ]
     structure: list[str] = []
     items: dict[str, list[tuple]] = {"": []}
@@ -4214,7 +4237,7 @@ def _task_items(body: str, legacy: bool) -> dict[str, list[tuple]] | None:
                 if current is None:
                     return None
                 items.setdefault(current, []).append(("anchor", text))
-            elif text in _TASK_COMMON_FORM:
+            elif text in _task_common_form():
                 structure.append(text)
                 parent, current = text, None
             else:
@@ -4266,7 +4289,7 @@ def _same_task_bucket(old: list[tuple], new: list[tuple]) -> bool:
             return j == len(new)
         text = old[i][1]
         if (
-            text not in _TASK_COMMON_FORM
+            text not in _task_common_form()
             and j < len(new)
             and new[j] == ("heading", 4, text)
             and any(walk(i + 1, j + 1, shift) for shift in (0, 1))
@@ -5631,8 +5654,6 @@ def _recorded_retirements(
     The Registry is read from `root`, never the code-time default, so a tree
     without its own valid, regular Registry grants no exemption.
     """
-
-    from scripts.lib.document_governance import registry as registry_module
 
     path = pathlib.Path(root) / "docs/99.templates/registry.json"
     try:

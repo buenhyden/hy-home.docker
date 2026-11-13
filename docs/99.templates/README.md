@@ -1,6 +1,6 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.6.0"
+version: "2.6.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -126,8 +126,9 @@ unit, 실제 check와 input, result, location, 그리고 같은 Task에서 crite
 기록합니다. 이전 판본의 보존 기록은 당시 표로 읽습니다. 정확한 열 순서와 vocabulary는 Registry가
 소유합니다. Registry `common`의 절 이름 값(`plan_section` 등)은 이전 H2 이름을
 가리키는 논리 이름입니다. 공통 양식으로 옮긴 문서에서는 같은 절이 새 H2 아래
-H3로 있으며(예: `Implementation Strategy` 아래 `Work Breakdown`), 검사기는 두
-형식 중 정확히 하나만 받아들입니다. Task에서는 `Evidence`가 `Verification
+H3로 있으며(예: `Implementation Strategy` 아래 `Work Breakdown`), 그 위치는
+Registry `common.section_forms`가 선언하고 Registry 검사가 profile의 등록 절과
+대조합니다. 검사기는 그 선언을 읽어 두 형식 중 정확히 하나만 받아들입니다. Task에서는 `Evidence`가 `Verification
 Evidence` 아래 `Results`, `Criterion Acceptance`가 `Acceptance Decision` 아래
 `Criterion Decisions`, `Work Log`가 `Execution Log` 아래 `Work Performed`를
 가리킵니다.

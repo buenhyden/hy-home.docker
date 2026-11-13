@@ -533,6 +533,69 @@ def _relation_contract_findings(
     return findings
 
 
+def _validate_section_forms(
+    raw: Mapping[str, object], findings: list[RegistryFinding]
+) -> None:
+    """Bind each `common` heading value to a section its profile registers.
+
+    The heading values stay pinned per generation; `section_forms` says where
+    each one sits in the common form. A Registry without it predates the
+    binding and is not checked here; the reader needs it for current documents.
+    """
+
+    common = raw.get("common")
+    forms = common.get("section_forms") if isinstance(common, Mapping) else None
+    if not isinstance(forms, Mapping):
+        return
+    nested = (
+        ("execution_items", "section"),
+        ("task_lifecycle_events", "section"),
+        ("incident_closure", "corrective_section"),
+    )
+    values = [
+        common.get(key)
+        for key in (
+            "spec_section",
+            "plan_section",
+            "task_section",
+            "criterion_acceptance_section",
+        )
+    ] + [
+        common[key].get(field)
+        for key, field in nested
+        if isinstance(common.get(key), Mapping)
+    ]
+    headings = {value for value in values if isinstance(value, str)}
+    profiles = {
+        profile.get("id"): profile
+        for profile in raw.get("profiles", ())  # type: ignore[union-attr]
+        if isinstance(profile, Mapping)
+    }
+    for heading in sorted(headings ^ set(forms)):
+        problem = "unbound" if heading in headings else "names no common heading"
+        findings.append(
+            RegistryFinding(
+                "common-section-form", "common.section_forms", f"{heading}: {problem}"
+            )
+        )
+    for heading, form in sorted(forms.items()):
+        if heading not in headings or not isinstance(form, Mapping):
+            continue
+        profile = profiles.get(form.get("profile"), {})
+        section, subsection = form.get("section"), form.get("subsection")
+        children = (profile.get("required_subsections") or {}).get(section, ())
+        if section not in profile.get("required_sections", ()) or (
+            subsection not in children if subsection is not None else section != heading
+        ):
+            findings.append(
+                RegistryFinding(
+                    "common-section-form",
+                    f"common.section_forms.{heading}",
+                    "not a registered section of its profile",
+                )
+            )
+
+
 def validate_registry(
     raw: Mapping[str, object],
     *,
@@ -760,6 +823,7 @@ def validate_registry(
                         artifact_pattern,
                     )
                 )
+    _validate_section_forms(raw, findings)
     duplicates = sorted({name for name in profile_ids if profile_ids.count(name) > 1})
     for name in duplicates:
         findings.append(RegistryFinding("profile-duplicate", "profiles", name))

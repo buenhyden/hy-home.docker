@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.55.0"
+version: "1.56.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -217,6 +217,12 @@ glossary rows that narrowed the shared contract wording, the incident and
 postmortem never-retire rule that had no policy owner, TemplateDefinition
 fields that lost the section contract's conditions, order and prohibited
 content, and the missing R07 relation and R08 link types.
+
+The v14.7 W04 run of 2026-11-13 adds criterion 116 and W121 in TSK-0063 for
+the TSK-0059 handoff H-07 and the W04 meaning: the Registry `common` heading
+names are bound to the common form the profiles declare and read from there,
+and the SDLC policy gives promotion its Plan, target-document and Task owners
+and keeps the SDLC phases, document Stages and state axes apart.
 
 ### Owning Requirements
 
@@ -911,6 +917,14 @@ target, backup, recovery boundary, and action-specific authorization.
      order and prohibited content; and the R07 relation and R08 link types
      are defined in the policy and bound in the Registry, each change with a
      passing and a failing test where a contract changes.
+116. TSK-0063 binds each Registry `common` heading value to its place in the
+     common form through `common.section_forms`, which the Registry check
+     compares with the profile's registered sections and the Spec Package
+     reader reads instead of a code table; and the SDLC policy states the
+     Plan, target-document and Task owners of promotion and the separate
+     record of each state axis. A wrong or missing binding fails, older
+     Registries without the binding still validate, and the existing reader
+     tests still pass.
 
 ### Evidence Requirements
 

@@ -74,7 +74,7 @@ created: "{{CREATED}}"
 
 ### Promotion Receipt
 
-<!-- Author prompt: Name the durable document that now holds what this Task established, and the check that shows it does. -->
+<!-- Author prompt: For each acceptance criterion, name the Plan work unit, the Task result, the durable document and commit that now hold what this Task established, and the consumer update and check that show it does, or why no durable update is needed. -->
 
 {{PROMOTION_TARGET_AND_RECEIPT}}
 

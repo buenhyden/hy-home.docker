@@ -1,6 +1,6 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.7.1"
+version: "1.8.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
@@ -42,17 +42,33 @@ Reuse approved Requirement and Architecture inputs when they already cover the
 change. Within Stage 03, clarify unresolved scope before writing the Spec, map
 its acceptance criteria into the Plan and Tasks, and analyze their coverage and
 consistency before implementation. Verify actual results, promote durable meaning
-to its Stage 01/02/05 owner, then bring the package to readiness for removal
+to its Stage 01/02/05 or governance owner, then bring the package to readiness for removal
 review before any separately approved retirement.
 This adapts the [Spec Kit workflow](https://github.com/github/spec-kit) while
 retaining this repository's separate numbered Task records.
 
-The current Task's `Evidence` owns the promotion receipt: connect
-each acceptance criterion to its Plan work unit, actual Task result, and durable
-target document, or record why no durable update is needed. Link existing
+Promotion has three owners. The Plan's Promotion Map plans it: each durable
+meaning names its target owner document, the intended change and the handoff
+condition. The target Stage 01, 02 or 05 document, or the governance owner,
+owns the promoted content itself. The current Task's Handoff records the
+Promotion Receipt: for each acceptance criterion, the Plan work unit, the
+actual Task result, the target document and commit, and the consumer update
+and its verification, or why no durable update is needed. Link existing
 evidence rather than copying it into a second ledger. Failed acceptance returns
 to the current Task; unresolved requirements or decisions return to their owning
 stage. Retry and approval boundaries remain in agent governance policy.
+
+The numbered steps above are SDLC phases; document Stages are folders. One
+phase can write into several Stages, and a Stage folder carries no phase state.
+Each state axis keeps its own record: approval of a document or change in its
+lifecycle status and the approval record, execution and its blockers in the
+Task, check results in Task evidence, acceptance per criterion in the Task's
+Criterion Acceptance, completion in the Task status, promotion as above, Git
+integration in the merge, operation in Stage 05, and retirement in the removing
+Task. No axis is inferred from another: a PASS check is not acceptance, an
+accepted ADR or approved Spec is not execution, and a merge is not acceptance
+or deployment. These terms follow the
+[glossary](../knowledge/glossary.md).
 
 Stage 99 assigns document-family states and legal transitions in the
 Registry `lifecycles` and `transitions`; this policy does not restate them.
@@ -113,7 +129,10 @@ the [retirement preconditions](documentation-protocol.md#retirement-precondition
 version history keeps its body.
 
 The Registry supplies the exact Evidence, Criterion Acceptance, Execution
-Items and Work Breakdown shapes. `spec_packages.py` implements their meaning.
+Items and Work Breakdown shapes, and its `common.section_forms` places each
+named section in the common form, for example Evidence under Verification
+Evidence as Results. `spec_packages.py` implements their meaning and reads
+those places from the Registry.
 A terminal Task unchanged since the current generation's migration source keeps
 the reader of the generation that closed it, bound by that migration's exact
 Git source proof. That compatibility does not authorize new legacy receipts. A

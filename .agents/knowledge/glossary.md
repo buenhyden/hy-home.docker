@@ -1,6 +1,6 @@
 ---
 title: "Repository Vocabulary"
-version: "0.5.0"
+version: "0.5.1"
 type: "governance/vocabulary"
 status: "active"
 owner: "@buenhyden"
@@ -94,7 +94,7 @@ enforced.
 | Lifecycle | The named status set and permitted transitions for a profile; `living` and `spec` differ | The SDLC stage or document stage | [Documentation protocol](../governance/documentation-protocol.md) |
 | Identity space | The monotonic allocator for an artifact prefix; an issued number is never reused | A display order | [Documentation protocol](../governance/documentation-protocol.md) |
 | Reserved history | The Registry list of retired numbers per identity space; it only grows | A removal record | [Documentation protocol](../governance/documentation-protocol.md#document-retention-and-retirement) |
-| Promotion receipt | The Task section connecting each acceptance criterion to its durable Stage 01, 02 or 05 owner | Promotion itself | [SDLC](../governance/sdlc.md#sequence) |
+| Promotion receipt | The Task section connecting each acceptance criterion to its durable Stage 01, 02 or 05 or governance owner | Promotion itself | [SDLC](../governance/sdlc.md#sequence) |
 | Adapter | An authored provider file that owns loading and syntax differences only | A Projection | `.claude/provider.md`, `.codex/provider.md` |
 | Native mechanics | Provider runtime configuration such as settings and hook registration | Native Runtime Evidence | [Providers index](../governance/providers/README.md) |
 | Tracked configuration | What a configured hook, provider surface or renderer parity proves: the setting is tracked | Adoption or a live event | [Approval boundaries](../governance/approval-boundaries.md) |
