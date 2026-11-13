@@ -1239,16 +1239,13 @@
         "next_review_at"
       ],
       "required_sections": [
-        "Overview",
+        "Purpose",
         "Scope",
         "Rules",
         "Exceptions",
-        "Verification",
-        "Related Documents"
+        "Ownership"
       ],
-      "optional_sections": [
-        "Definitions"
-      ],
+      "optional_sections": [],
       "ordered_sections": true,
       "nonempty_sections": true,
       "lifecycle_id": "operational-policy",
@@ -1285,7 +1282,29 @@
         "docs/05.operations/policies/13-analytics-and-data-quality/{number:4}-{slug}.md",
         "docs/05.operations/policies/14-design-system/{number:4}-{slug}.md",
         "docs/05.operations/policies/15-labs/{number:4}-{slug}.md"
-      ]
+      ],
+      "required_subsections": {
+        "Purpose": [
+          "Objective",
+          "Authority"
+        ],
+        "Scope": [
+          "Applies To",
+          "Exclusions"
+        ],
+        "Rules": [
+          "Requirements",
+          "Enforcement"
+        ],
+        "Exceptions": [
+          "Exception Conditions",
+          "Approval and Review"
+        ],
+        "Ownership": [
+          "Responsibilities",
+          "Change and Adoption"
+        ]
+      }
     },
     {
       "id": "runbook",
@@ -2540,19 +2559,15 @@
         "artifact_id",
         "runtime"
       ],
-      "free_form_sections": true,
+      "free_form_sections": false,
       "required_sections": [
-        "Overview",
+        "Purpose",
         "Scope",
         "Rules",
         "Exceptions",
-        "Verification",
-        "Related Documents"
+        "Ownership"
       ],
-      "optional_sections": [
-        "Enforcement",
-        "Purpose"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "operational-policy",
       "traceability": {},
       "exceptions": [],
@@ -2578,7 +2593,29 @@
         ]
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Purpose": [
+          "Objective",
+          "Authority"
+        ],
+        "Scope": [
+          "Applies To",
+          "Exclusions"
+        ],
+        "Rules": [
+          "Requirements",
+          "Enforcement"
+        ],
+        "Exceptions": [
+          "Exception Conditions",
+          "Approval and Review"
+        ],
+        "Ownership": [
+          "Responsibilities",
+          "Change and Adoption"
+        ]
+      }
     },
     {
       "id": "governance-hook-policy",
@@ -2611,18 +2648,13 @@
         "pattern"
       ],
       "required_sections": [
-        "Overview",
+        "Purpose",
         "Scope",
         "Rules",
         "Exceptions",
-        "Verification",
-        "Related Documents"
+        "Ownership"
       ],
-      "optional_sections": [
-        "Operator Message",
-        "Remediation",
-        "Trigger"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "operational-policy",
       "traceability": {},
       "exceptions": [],
@@ -2632,7 +2664,29 @@
         ]
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Purpose": [
+          "Objective",
+          "Authority"
+        ],
+        "Scope": [
+          "Applies To",
+          "Exclusions"
+        ],
+        "Rules": [
+          "Requirements",
+          "Enforcement"
+        ],
+        "Exceptions": [
+          "Exception Conditions",
+          "Approval and Review"
+        ],
+        "Ownership": [
+          "Responsibilities",
+          "Change and Adoption"
+        ]
+      }
     },
     {
       "id": "governance-role",

@@ -45,12 +45,12 @@ class CurrentBodyContractTests(unittest.TestCase):
             "plan": "Overview|Dependencies|Implementation Strategy|Verification Plan|Risks|Promotion Map",
             "task": "Scope|Execution Log|Verification Evidence|Acceptance Decision|Handoff",
             "guide": "Purpose|Prerequisites|Procedure|Verification",
-            "policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
+            "policy": "Purpose|Scope|Rules|Exceptions|Ownership",
             "runbook": "Purpose|Preconditions|Steps|Validation|Recovery",
             "incident": "Summary|Impact|Timeline|Resolution|Evidence",
             "postmortem": "Summary|Root Cause|Impact|Corrective Actions|Evidence",
-            "governance-policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
-            "governance-hook-policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
+            "governance-policy": "Purpose|Scope|Rules|Exceptions|Ownership",
+            "governance-hook-policy": "Purpose|Scope|Rules|Exceptions|Ownership",
         }
         registry = metadata.load_registry(ROOT / "docs/99.templates/registry.json")
         for profile_id, names in expected.items():
@@ -454,6 +454,12 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Failure and Recovery", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Rollback or Recovery", "body-subheading-forbidden"),
+            ),
+            "policy": (
+                ("## Overview", "body-heading-forbidden"),
+                ("## Verification", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+                ("### Traceability", "body-subheading-forbidden"),
             ),
             "adr": (
                 ("## Decision Drivers", "body-heading-forbidden"),
