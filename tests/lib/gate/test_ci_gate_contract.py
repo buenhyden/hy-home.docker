@@ -1346,5 +1346,87 @@ class CiGateContractTests(unittest.TestCase):
         )
 
 
+class GateCrosswalkTests(unittest.TestCase):
+    """QA-C05: one producer per guarantee, and a consumer for every result."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        document = contract.load_contract_document(ROOT)
+        cls.registry = contract.parse_gate_registry(document, "contract")
+        cls.public = contract.parse_public_gate_contract(document)
+        cls.rows = contract.build_gate_crosswalk(cls.registry, cls.public, {})
+
+    def test_every_leaf_is_reported_exactly_once(self) -> None:
+        leaves = [
+            node.gate_id
+            for node in self.registry.nodes
+            if node.kind is contract.GateKind.LEAF
+        ]
+        self.assertEqual(sorted(leaves), sorted(row.gate_id for row in self.rows))
+
+    def test_rows_link_leaf_to_suite_entrypoint_and_consumer(self) -> None:
+        by_id = {row.gate_id: row for row in self.rows}
+        row = by_id["leaf.workflow-contract-regressions"]
+        self.assertTrue(row.local_only)
+        self.assertIn("repository-integrity", row.suites)
+        self.assertIn("local.workflow-harness", row.consumers)
+        self.assertIn("tests.lib.gate.test_github_workflow_contract", row.test_modules)
+        self.assertEqual("UNOWNED", row.owner)
+        self.assertEqual(
+            set(self.public.local_only_gate_ids),
+            {row.gate_id for row in self.rows if row.local_only},
+        )
+
+    def test_owner_comes_from_a_non_self_referential_authority(self) -> None:
+        authorities = {
+            "scripts/validation/check-document-links.py": "docs/99.templates/registry.json",
+            "scripts/validation/check-github-workflow-contract.py": (
+                ".github/workflow-contract.yml"
+            ),
+        }
+        rows = {
+            row.gate_id: row
+            for row in contract.build_gate_crosswalk(
+                self.registry, self.public, authorities
+            )
+        }
+        self.assertEqual(
+            "docs/99.templates/registry.json", rows["leaf.docs-traceability"].owner
+        )
+        self.assertEqual("UNOWNED", rows["leaf.workflow-contract"].owner)
+
+    def test_security_and_deploy_leaves_are_never_reported_as_duplicates(self) -> None:
+        for gate_id in contract.UNIQUE_GUARANTEE_LEAVES:
+            self.assertIn(gate_id, {row.gate_id for row in self.rows})
+        by_id = {node.gate_id: node for node in self.registry.nodes}
+        zizmor = by_id["leaf.zizmor"]
+        docs = by_id["leaf.docs-traceability"]
+        clones = (
+            dataclasses.replace(zizmor, gate_id="leaf.aaa-zizmor-clone"),
+            dataclasses.replace(docs, gate_id="leaf.docs-clone"),
+        )
+        registry = dataclasses.replace(
+            self.registry, nodes=clones[:1] + self.registry.nodes + clones[1:]
+        )
+        rows = {
+            row.gate_id: row
+            for row in contract.build_gate_crosswalk(registry, self.public, {})
+        }
+        # The security leaf is the keeper even when an identical clone precedes it.
+        self.assertEqual((), rows["leaf.zizmor"].duplicate_of)
+        self.assertEqual("security", rows["leaf.zizmor"].unique_guarantee)
+        self.assertEqual(("leaf.zizmor",), rows["leaf.aaa-zizmor-clone"].duplicate_of)
+        self.assertEqual(
+            ("leaf.docs-traceability",), rows["leaf.docs-clone"].duplicate_of
+        )
+        self.assertEqual((), rows["leaf.docs-traceability"].duplicate_of)
+        for row in self.rows:
+            if row.unique_guarantee:
+                self.assertEqual((), row.duplicate_of, row.gate_id)
+
+    def test_current_registry_has_no_duplicate_producers(self) -> None:
+        self.assertEqual([], [r.gate_id for r in self.rows if r.duplicate_of])
+
+
 if __name__ == "__main__":
     unittest.main()

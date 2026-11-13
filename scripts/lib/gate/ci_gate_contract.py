@@ -1390,6 +1390,98 @@ def expand_public_gate_ids(
     return _expanded_ids(node_by_id, root_gate_ids)
 
 
+# Leaves that are the only producer of a security or deploy guarantee. A
+# crosswalk never reports one as a duplicate, so dedup cannot drop it.
+UNIQUE_GUARANTEE_LEAVES = {
+    "leaf.zizmor": "security",
+    "leaf.dependency-vulnerability-audit": "security",
+    "leaf.opsflow-smtp-npm-production-audit": "security",
+    "leaf.supply-chain-deterministic-policy": "security",
+    "leaf.supply-chain-fixture-policy": "security",
+    "leaf.conftest-policy": "security",
+    "leaf.conftest-policy-tests": "security",
+    "leaf.template-security-baseline": "security",
+    "leaf.infrastructure-hardening": "deploy",
+    "leaf.compose-validation": "deploy",
+    "leaf.compose-baseline-regressions": "deploy",
+}
+_SELF_AUTHORITY = ".github/workflow-contract.yml"
+
+
+@dataclasses.dataclass(frozen=True, slots=True)
+class CrosswalkRow:
+    gate_id: str
+    suites: tuple[str, ...]
+    consumers: tuple[str, ...]
+    entrypoint: str
+    argv: tuple[str, ...]
+    test_modules: tuple[str, ...]
+    owner: str
+    local_only: bool
+    unique_guarantee: str
+    duplicate_of: tuple[str, ...]
+
+
+def build_gate_crosswalk(
+    registry: GateRegistry,
+    public: PublicGateContract,
+    authorities: Mapping[str, str],
+) -> tuple[CrosswalkRow, ...]:
+    """Derive the caller -> leaf -> consumer table from the typed contract.
+
+    `authorities` maps an entrypoint path to its manifest authority. An
+    authority that is the contract itself names no rule, so it is UNOWNED.
+    """
+
+    node_by_id = {node.gate_id: node for node in registry.nodes}
+    suites_of: dict[str, list[str]] = {}
+    for route in public.suites:
+        for gate_id in _expanded_ids(node_by_id, route.root_gate_ids):
+            suites_of.setdefault(gate_id, []).append(route.name)
+    parents: dict[str, list[str]] = {}
+    for node in registry.nodes:
+        for child in node.children:
+            parents.setdefault(child, []).append(node.gate_id)
+    leaves = [n for n in registry.nodes if n.kind is GateKind.LEAF]
+    command = {n.gate_id: (n.entrypoint, n.argv) for n in leaves}
+    rows = []
+    for node in leaves:
+        gate_id = node.gate_id
+        unique = UNIQUE_GUARANTEE_LEAVES.get(gate_id, "")
+        twins = tuple(
+            other.gate_id
+            for other in leaves
+            if other.gate_id != gate_id and command[other.gate_id] == command[gate_id]
+        )
+        keepers = tuple(t for t in twins if t in UNIQUE_GUARANTEE_LEAVES)
+        first = next(
+            (m.gate_id for m in leaves if m.gate_id in (gate_id, *twins)), gate_id
+        )
+        duplicate_of = ()
+        if twins and not unique:
+            duplicate_of = keepers or ((first,) if first != gate_id else ())
+        entrypoint = node.entrypoint.as_posix() if node.entrypoint else ""
+        modules = tuple(a for a in node.argv if a.startswith("tests."))
+        if entrypoint.startswith("tests/"):
+            modules += (entrypoint,)
+        authority = authorities.get(entrypoint, _SELF_AUTHORITY)
+        rows.append(
+            CrosswalkRow(
+                gate_id=gate_id,
+                suites=tuple(suites_of.get(gate_id, ())),
+                consumers=tuple(parents.get(gate_id, ())),
+                entrypoint=entrypoint,
+                argv=node.argv,
+                test_modules=modules,
+                owner="UNOWNED" if authority == _SELF_AUTHORITY else authority,
+                local_only=gate_id in public.local_only_gate_ids,
+                unique_guarantee=unique,
+                duplicate_of=duplicate_of,
+            )
+        )
+    return tuple(rows)
+
+
 def _require_fields(
     record: Mapping[str, object],
     allowed: frozenset[str],

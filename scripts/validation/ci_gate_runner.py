@@ -36,8 +36,10 @@ from scripts.lib.gate.ci_gate_contract import (
     GateRegistry,
     PublicGateContract,
     PublicValidatorRoute,
+    build_gate_crosswalk,
     expand_public_gate_ids,
     load_contract_document,
+    load_manifest_document,
     parse_gate_registry,
     parse_public_gate_contract,
     public_root_gate_ids,
@@ -839,6 +841,54 @@ def render_public_validation_plan(
     )
 
 
+def render_gate_crosswalk(
+    root: pathlib.Path,
+    registry: GateRegistry,
+    public_contract: PublicGateContract,
+) -> tuple[str, ...]:
+    """One TSV row per leaf; the contract and script manifest are the only inputs."""
+
+    manifest = load_manifest_document(root / "scripts" / "manifest.yaml")
+    authorities = {
+        record["path"]: record["authority"]
+        for record in manifest["files"]
+        if isinstance(record, dict) and "authority" in record
+    }
+    rows = build_gate_crosswalk(registry, public_contract, authorities)
+
+    def dash(values: tuple[str, ...]) -> str:
+        return ",".join(values) or "-"
+
+    lines = [
+        "gate_id\tsuites\tconsumers\tentrypoint\targv\ttest_modules\towner"
+        "\tlocal_only\tunique\tduplicate_of"
+    ]
+    lines.extend(
+        "\t".join(
+            (
+                row.gate_id,
+                dash(row.suites),
+                dash(row.consumers),
+                row.entrypoint,
+                json.dumps(list(row.argv), separators=(",", ":")),
+                f"{len(row.test_modules)}:{dash(row.test_modules[:3])}",
+                row.owner,
+                "local-only" if row.local_only else "public",
+                row.unique_guarantee or "-",
+                dash(row.duplicate_of),
+            )
+        )
+        for row in rows
+    )
+    unowned = sum(row.owner == "UNOWNED" for row in rows)
+    lines.append(
+        f"# leaves={len(rows)} unowned={unowned} "
+        f"local_only={sum(row.local_only for row in rows)} "
+        f"duplicates={sum(bool(row.duplicate_of) for row in rows)}"
+    )
+    return tuple(lines)
+
+
 def _filter_execution_context(
     plan: tuple[GateInvocation, ...],
     context: ExecutionContext,
@@ -1405,6 +1455,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--explain", action="store_true")
     parser.add_argument("--requirements", action="store_true")
     parser.add_argument("--local-only", action="store_true")
+    parser.add_argument("--crosswalk", action="store_true")
     try:
         arguments = parser.parse_args(argv)
         root_value = os.environ.get("HYHOME_CI_GATE_ROOT")
@@ -1429,6 +1480,15 @@ def main(argv: list[str] | None = None) -> int:
                 )
             return 1
         public_contract = parse_public_gate_contract(document)
+        if arguments.crosswalk:
+            if arguments.explain or arguments.requirements or arguments.local_only:
+                raise argparse.ArgumentError(
+                    None,
+                    "--crosswalk excludes --explain, --requirements and --local-only",
+                )
+            for line in render_gate_crosswalk(root, registry, public_contract):
+                print(line)
+            return 0
         if arguments.local_only and context is not ExecutionContext.LOCAL:
             raise GateContractError(
                 "ci-gate-local-only-context",
