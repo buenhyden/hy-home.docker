@@ -1,16 +1,20 @@
 ---
 title: "OpenBao Consumer Migration Contracts"
-version: "0.1.16"
+version: "0.1.17"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 created: "2026-10-11"
 ---
 
 # OpenBao 소비자 이관 공개 계약
 
-## Overview
+## Purpose
+
+### Service Role
+
+#### Overview
 
 소비자별 이관을 준비하는 값 없는 공개 계약과 합성 검사 경로입니다. 공개 CLI는
 형식과 선택 거부 조건만 검증합니다. 별도 Python API에는 보호 파일과 실제 HTTPS를
@@ -20,11 +24,11 @@ created: "2026-10-11"
 있으며 이 API의 새 실행 영수증이 아닙니다. 새 실행의 선행 조건은
 현재 P06 Task(`docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0045-secret-structure-openbao.md`)를 따릅니다.
 
-## Audience
+#### Audience
 
 이관 계약을 통합하는 개발자와 공개 검사 결과를 확인하는 운영자.
 
-## Scope
+#### Scope
 
 공개 wave/receipt 계약은 합성 준비 단계에 한정됩니다. 복사 실행 API는 이 문서를
 읽거나 형식 검사를 통과했다고 활성화되지 않습니다. 기존 catalog 소유자가 발급한
@@ -32,7 +36,7 @@ created: "2026-10-11"
 연결이 실제 실행의 선행 조건입니다.
 형식 검사 통과와 입력의 hash 일치는 운영 승인이나 실제 수용 증거가 아닙니다.
 
-## Structure
+#### Structure
 
 - [wave.schema.json](wave.schema.json): 한 소비자의 공개 ID 선택과 공개 catalog 입력
   바인딩을 선언합니다. 임의 필드, 중복 ID, wildcard와 비밀값 칸은 거부합니다.
@@ -49,12 +53,18 @@ created: "2026-10-11"
   확인), `cutover <서비스>`·`rollback <서비스>`(`.env`의 경로 변수 한 줄만 바꾸고 그 서비스를
   다시 만든 뒤 검사)를 실행합니다. 값·hash·길이는 출력하지 않습니다.
 
-## Tech Stack
+### Supported Environment
+
+#### Tech Stack
 
 기존 Python과 `jsonschema` 검증기를 재사용합니다. 별도 Agent, catalog, 분류기,
 workflow 또는 운영 자원을 만들지 않습니다.
 
-## Configuration
+## Interfaces
+
+### Inputs and Outputs
+
+#### Configuration
 
 `catalog`의 `revision`, `schema_version`, `catalog_sha256`, `schema_sha256`,
 `source_sha256`은 공개 catalog·schema·API 소스의 바인딩입니다. 비밀값이나 비밀값에서
@@ -97,7 +107,7 @@ P02 catalog의 실제 승인 연결, P01의 실제 token·권한·mount·신뢰�
 실행 adapter는 여전히 필요합니다. 소스 시험 성공은 이 선행 조건의 승인이나
 실제 HOME 실행 수용을 대신하지 않습니다.
 
-### Controller-bound copy API
+##### Controller-bound copy API
 
 [openbao_consumer_migration.py](../../../../scripts/lib/ops/openbao_consumer_migration.py)의
 `execute_copy(CopyPlan, authorize=...)`는 공개 CLI와 분리된 실제 파일/HTTPS 실행 API입니다.
@@ -160,32 +170,22 @@ POST 시도가 있으면 전체 PARTIAL이며, 쓰기 시도 없이 정리만 �
 실행용 CLI와 P02 승인 연결이 없으므로 현재 W48은 source primitive까지의 부분 구현이며,
 실제 W50 pilot·전달·소비·복구·authority·폐기·회전은 미실행입니다.
 
-## Validation
+### Security Boundary
 
-저장소 루트에서 공개 합성 JSON을 표준 입력으로 전달합니다. 입력은 128 KiB,
-깊이 12, node 4096으로 제한하며 표준 입력 대기는 총 5초로 제한합니다.
-오류에는 입력 본문·argv·경로·예외 payload를 출력하지 않습니다.
+없음: 이 폴더에는 Compose 서비스나 secret 정의가 없고 secret 값도 두지 않는다. 소비자별 secret 전환 경계는 Local Workflow의 전환 계획과 Controller-bound copy API 절이 기술한다.
 
-```sh
-python3 scripts/operations/openbao-consumer-migration.py --help
-```
+## Development
 
-전용 시험은 `tests/lib/ops/test_openbao_consumer_migration.py`,
-`tests/validation/test_openbao_consumer_migration_contract.py`와
-`tests/lib/ops/test_openbao_copy_runtime.py`입니다. 마지막 시험은 OpenSSL로 생성한
-임시 합성 인증서와 loopback HTTPS 서버로 실제 transport·CAS·file/privacy 실패를
-검증합니다. 실제 credential·HOME API나 외부 runtime에는 접속하지 않습니다. 공통 Script
-Manifest·QA 등록은 현재 통합 소스를 재사용합니다. 공통 등록과 상위 README의 후속
-변경은 단일 통합 작성자가 소유합니다.
+### Local Workflow
 
-## Usage
+#### Usage
 
 `validate-wave`와 `validate-receipt`는 공개 형식만 검사합니다. 파일 읽기·KV 복사·삭제·
 비밀번호 변경 실행 옵션은 없습니다. 별도 Python API의 실제 사용은 controller의
 현재 승인과 정확한 선행 입력을 필요로 합니다. 실제 단계의 계약과 영수증이 없으면 대기하며,
 이 합성 결과를 HOME·이관·복구·배포 성공으로 사용하지 않습니다.
 
-### 첫 소비자 Grafana 전환 계획
+##### 첫 소비자 Grafana 전환 계획
 
 2026-10-27 최초 전환 전에는 Keycloak과 Grafana 관리자 비밀번호 두 개가 저장소 로컬
 `./secrets/` 파일을 읽었습니다. 이후 기존 P06 Task는 두 소비자의 전환·되돌리기·재전환을
@@ -223,7 +223,7 @@ Agent는 내용이 같은 출력 파일을 다시 쓰지 않으므로 template�
 Agent를 다시 시작하면 반영됩니다. 실행 중인 Agent의 health script는 main checkout에서 바로 읽히므로,
 재시작 없이 병합하는 경우에는 병합 직전에 그 파일의 mode를 Agent 사용자(UID 100)로 맞춥니다.
 
-### 두 번째 소비자 Keycloak 전환
+##### 두 번째 소비자 Keycloak 전환
 
 Keycloak(UID 1000, group 1000)은 Agent의 `out/auth` 디렉터리를 `/run/openbao/auth`에 읽기 전용으로
 bind하고(`create_host_path: false`), entrypoint가 `KEYCLOAK_ADMIN_PASSWORD_FILE`이 가리키는 파일을
@@ -261,7 +261,7 @@ Entrypoint는 파일의 CR·LF를 모두 지우므로 검사도 같은 방식으
 빈 파일이면 Keycloak은 시작하지 않습니다. 로그인 거부(`kcadm=invalid`)는 재시도하지 않으므로
 반복되면 원인을 찾기 전에 다시 실행하지 않습니다.
 
-### 세 번째 소비자 Grafana OIDC client secret 전환
+##### 세 번째 소비자 Grafana OIDC client secret 전환
 
 `grafana_client_secret`은 매 기동마다 읽히는 첫 비-bootstrap 값입니다. Agent는 같은 Grafana KV
 경로의 `grafana_client_secret` field를 `out/observability/grafana_client_secret.txt`(`0640`)로
@@ -297,7 +297,7 @@ bootstrap 값과 달리 KV를 바꾸면 다음 Grafana 기동부터 새 값이 �
 - 보호 복구 bundle은 새 template을 포함합니다. 반입 이전 snapshot으로 복구하면 field가 없어 health가
   실패하므로, 이 revision 이후의 복구 계약에는 반입 이후 snapshot이 필요합니다.
 
-### OIDC client secret 일괄 전환(7개)
+##### OIDC client secret 일괄 전환(7개)
 
 남은 OIDC client secret 7개를 한 번에 Agent 출력으로 옮깁니다. 소비자마다 KV 경로와 출력
 디렉터리가 하나씩이고, Compose 파일은 그 디렉터리만 `/run/openbao/<디렉터리>`에 읽기 전용으로
@@ -396,7 +396,7 @@ Agent와 소비자에 영향이 없습니다.
 보호 복구 bundle은 21개 파일을 요구하므로 이 revision의 bundle 영수증과 반입 이후 off-host snapshot이
 생기기 전까지 복구 계약은 `BLOCKED`입니다. 복구 값 비교는 아직 두 관리자 비밀번호만 대상입니다.
 
-### `./secrets` 사본 제거 계획
+##### `./secrets` 사본 제거 계획
 
 계획만 있고 실행하지 않았습니다. 전환한 소비자도 아직 `./secrets` 파일을 rollback 기본값
 (`${변수:-/run/secrets/…}`)과 root `docker-compose.yml`의 `secrets:` 선언으로 참조합니다. P02
@@ -432,9 +432,41 @@ catalog에서 확정 lane이 있는 항목은 `gen-secrets`가 `keep-catalog-pro
   Keycloak 관리자 비밀번호 사본은 마지막에 지우거나 off-host custody로 옮기는 별도 결정이 필요합니다.
 - DB 비밀번호 등 Agent가 렌더링하지 않는 `./secrets` 파일은 이 계획의 대상이 아닙니다.
 
-## Related Documents
+### Checks
+
+#### Validation
+
+저장소 루트에서 공개 합성 JSON을 표준 입력으로 전달합니다. 입력은 128 KiB,
+깊이 12, node 4096으로 제한하며 표준 입력 대기는 총 5초로 제한합니다.
+오류에는 입력 본문·argv·경로·예외 payload를 출력하지 않습니다.
+
+```sh
+python3 scripts/operations/openbao-consumer-migration.py --help
+```
+
+전용 시험은 `tests/lib/ops/test_openbao_consumer_migration.py`,
+`tests/validation/test_openbao_consumer_migration_contract.py`와
+`tests/lib/ops/test_openbao_copy_runtime.py`입니다. 마지막 시험은 OpenSSL로 생성한
+임시 합성 인증서와 loopback HTTPS 서버로 실제 transport·CAS·file/privacy 실패를
+검증합니다. 실제 credential·HOME API나 외부 runtime에는 접속하지 않습니다. 공통 Script
+Manifest·QA 등록은 현재 통합 소스를 재사용합니다. 공통 등록과 상위 README의 후속
+변경은 단일 통합 작성자가 소유합니다.
+
+## Operations
+
+### Runbook Links
+
+이 서비스의 런북은 다음과 같다.
+
+- RUN-0106: `docs/05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md`
+
+#### Related Documents
 
 - [OpenBao 구현 안내](../README.md)
 - [운영 라이브러리](../../../../scripts/lib/ops/README.md)
 - [검증 시험 안내](../../../../tests/validation/README.md)
 - [OpenBao KV-v2 CAS·삭제·metadata 공식 계약](https://openbao.org/docs/secrets/kv/kv-v2/)
+
+### Observability and Recovery
+
+없음: 이 폴더는 헬스체크를 선언하지 않는다. 소비 확인은 `verify-grafana-consumption.sh`, `verify-keycloak-consumption.sh`, `verify-oidc-client-secret.sh`, `verify-grafana-client-secret.sh`가 수행한다.

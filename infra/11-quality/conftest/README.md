@@ -1,19 +1,22 @@
 ---
 title: "Conftest"
-version: "1.0.3"
+version: "1.0.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-13"
 created: "2026-09-23"
 ---
 
 <!-- [ID:11-quality:conftest] -->
+
 # Conftest
 
 > `infra/` 하위 Compose 파일과 Dockerfile에 대한 온디맨드 **OPTIONAL** 정책 테스트(Open Policy Agent Rego)입니다.
 
-## Overview
+## Purpose
+
+### Service Role
 
 Conftest는 `policy-check` profile로 선택되는 **OPTIONAL** one-shot 작업입니다.
 공개 `infra/`와 `labs/`를 읽기 전용으로 마운트하고 network 없이 실행합니다.
@@ -22,26 +25,24 @@ profile만 준비한 뒤, 정책 단위 테스트와 해당 Compose·Dockerfile 
 `deny`는 실패, `warn`은 출력만 합니다. 무시된 설치 산출물은 읽지 않으며,
 무시되지 않은 미추적 소스 후보는 Docker 호출 전에 실패합니다.
 
-## Audience
+#### Audience
 
 이 README의 주요 독자:
 
 - Developers
 - Operators
 
-## Scope
-
-### In Scope
+#### In Scope
 
 - Compose leaf와 Dockerfile을 위한 Rego 정책과 그 단위 테스트.
 - 이를 추적 중인 인프라 소스에 대해 실행하는 작업.
 
-### Out of Scope
+#### Out of Scope
 
 - 컨테이너, 이미지, Docker 데몬의 런타임 검사.
 - 시크릿, `.env`, `infra/` 밖의 모든 것.
 
-## Structure
+#### Structure
 
 ```text
 conftest/
@@ -55,18 +56,26 @@ conftest/
     └── dockerfile_test.rego
 ```
 
-## Tech Stack
+### Supported Environment
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
 | **Tool** | Conftest (`openpolicyagent/conftest`) | Rego v1 정책 |
 | **Access** | 공개 `infra/`, `labs/`, 임시 파생 입력 읽기 전용 | 네트워크 없음, UID 1000, 읽기 전용 root |
 
-## Configuration
+## Interfaces
+
+### Inputs and Outputs
 
 환경 변수나 시크릿이 없습니다.
 
-## Available Scripts
+### Security Boundary
+
+컨테이너는 `network_mode: none`으로 실행하며 `infra/`와 `labs/`를 읽기 전용으로 마운트한다. 환경 변수와 secret이 없고 시크릿과 `.env`는 검사 범위 밖이다.
+
+## Development
+
+### Local Workflow
 
 | Command | Description |
 | :--- | :--- |
@@ -74,7 +83,16 @@ conftest/
 | `bash scripts/validation/check-conftest-policy.sh --mode corpus` | 준비된 Compose·Dockerfile corpus만 검사합니다. |
 | `bash scripts/validation/check-conftest-policy.sh --mode verify` | 정책 단위 테스트만 실행합니다. |
 
-## Validation
+#### Usage
+
+1. 새 규칙에는 같은 디렉터리에 통과·실패 테스트를 함께 추가한다.
+2. 현재 소스가 통과하지 못하는 규칙은 `warn`으로 시작한다.
+3. allowlist 항목은 서비스와 사유를 정책 파일에 적는다.
+
+런타임 이미지와 프로필의 권위는 [docker-compose.yml](docker-compose.yml)에 있으며
+[파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 근거입니다.
+
+### Checks
 
 - CI: `leaf.conftest-policy`가 `scripts/validation/check-conftest-policy.sh`를 실행합니다.
 - `HYHOME_COMPOSE_PROFILES=policy-check bash scripts/validation/validate-docker-compose.sh`
@@ -88,12 +106,21 @@ conftest/
 직접 선언된 job의 `verify`는 사용할 수 있으나, 준비되지 않은 `corpus`·기본 실행은
 wrapper가 필요하다는 오류로 종료합니다.
 
-## Troubleshooting
+## Operations
+
+### Runbook Links
+
+- **Guide**: Conftest Usage Guide (`docs/05.operations/guides/12-testing-and-quality/0095-conftest.md`)
+- **Policy**: Conftest Operations Policy (`docs/05.operations/policies/12-testing-and-quality/0095-conftest.md`)
+- **Runbook**: Conftest Recovery Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0095-conftest.md`)
+- [Documentation index](../../../docs/README.md)
+
+### Observability and Recovery
 
 - `FAIL - <file> - <namespace> - …`는 선언과 규칙을 가리키므로 해당 선언을 수정합니다.
 - `verify`가 실패하면 규칙과 그 테스트가 서로 어긋난다는 뜻입니다.
 
-## Service Readiness
+#### Service Readiness
 
 | Field | Evidence |
 | --- | --- |
@@ -110,19 +137,3 @@ wrapper가 필요하다는 오류로 종료합니다.
 | Operations | Guide (`docs/05.operations/guides/12-testing-and-quality/0095-conftest.md`), Policy (`docs/05.operations/policies/12-testing-and-quality/0095-conftest.md`), Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0095-conftest.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 작업을 실행하고 처음 실패한 선언을 수정합니다. 런북을 참고합니다. |
-
-## Usage
-
-1. 새 규칙에는 같은 디렉터리에 통과·실패 테스트를 함께 추가한다.
-2. 현재 소스가 통과하지 못하는 규칙은 `warn`으로 시작한다.
-3. allowlist 항목은 서비스와 사유를 정책 파일에 적는다.
-
-런타임 이미지와 프로필의 권위는 [docker-compose.yml](docker-compose.yml)에 있으며
-[파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 근거입니다.
-
-## Related Documents
-
-- **Guide**: Conftest Usage Guide (`docs/05.operations/guides/12-testing-and-quality/0095-conftest.md`)
-- **Policy**: Conftest Operations Policy (`docs/05.operations/policies/12-testing-and-quality/0095-conftest.md`)
-- **Runbook**: Conftest Recovery Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0095-conftest.md`)
-- [Documentation index](../../../docs/README.md)

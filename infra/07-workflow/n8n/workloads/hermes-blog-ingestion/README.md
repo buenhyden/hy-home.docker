@@ -1,15 +1,19 @@
 ---
 title: "Hermes 수집 전송 소스"
-version: "0.5.5"
+version: "0.5.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 ---
 
 # Hermes 수집 전송 소스
 
-## Overview
+## Purpose
+
+### Service Role
+
+#### Overview
 
 서버 A의 호스트 프로세스인 Hermes가 n8n Webhook에 직접 보고서를 제출하고, n8n
 Worker가 같은 서버 A의 격리된 Blog-data 수집 Gateway에 전달하는 경로의 소스입니다.
@@ -38,7 +42,7 @@ Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 �
 잔여 인계는 `SPEC-0212-TSK-0050`이 소유합니다. 다섯 경계(직접 토큰, Publisher
 서명, 독립 Attester, Gateway durable receipt, Windows ACK)는 서로 대신할 수 없습니다.
 
-## Scope
+#### Scope
 
 기존 구조화 내보내기 작업 `84d3f689378b`와 원래 조사·이메일을 재사용합니다.
 수집 대상은 `6eabd835f969`, `25674fbc0bf3`, `8d0925bc571d`의 완료 결과이며,
@@ -50,7 +54,25 @@ Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 �
 보존하고 같은 실행의 재입력은 중복으로 처리합니다. 내용 충돌은 최초 산출물과
 충돌 기록을 남깁니다. 재요약이나 원본 삭제는 수행하지 않습니다.
 
-### P11 직접 수집·제출 인터페이스
+#### Structure
+
+- [workflow.json](workflow.json): 인증 수신, 입력 선별, 내부 Gateway 전달과 영속 수신 응답 확인을 담은 비활성 흐름입니다.
+- [hermes-webhook.yml](../../../../01-gateway/traefik/dynamic/hermes-webhook.yml): Hermes Webhook 정확한 경로 하나만 SSO 없이 허용하는 Traefik 경로입니다. 2026-11-01 운영 디렉터리에 적용했습니다.
+- [blog-export.yml](../../../../01-gateway/traefik/dynamic/blog-export.yml): Windows B의 Export 조회·ACK와 서버 A 호스트의 Attestation 세 요청 형태만 허용하는 Traefik 경로입니다. 2026-11-01 운영 디렉터리에 적용했습니다.
+- [publisher/](publisher/README.md): 제한된 파일 읽기, 로컬 대기함과 전송 상태 처리입니다.
+- [tests/](tests/README.md): 합성 시험과 소스 경계 검증입니다.
+- [install.py](install.py): 커밋 하나를 root 소유 불변 release로 설치합니다. `--role publisher`(기본, `/opt/hermes-publisher`)와 `--role attester`(`/opt/hermes-attester`, 서명·원본 수집 모듈 포함)가 있습니다.
+- [pyproject.toml](pyproject.toml), [requirements.lock](requirements.lock): 실행 의존성 선언과 hash 고정본입니다.
+
+### Supported Environment
+
+Python 패키지(`pyproject.toml`, `requirements.lock`)와 `install.py`, `deploy/`로 Hermes 호스트의 제한된 프로세스에 설치한다. Compose나 Dockerfile은 없다.
+
+## Interfaces
+
+### Inputs and Outputs
+
+#### P11 직접 수집·제출 인터페이스
 
 현재 P11 source API는 `collect_research_source({item_id, source_url})`입니다.
 허용된 scheduler 실행의 `job_id`·`execution_id`·`scheduled_instant`가 없으면 네트워크
@@ -103,7 +125,7 @@ legacy/mixed Attester 기록은 자동 재전송하지 않습니다. 같은 UID�
 수집 원본은 항목당 최대 2 MiB, 실행당 최대 100개로 제한하지만 활성화 전에는 data owner가
 보존 기간·접근자·폐기 방법을 별도 승인해야 합니다. 이번에는 공개 원본을 수집하지 않았습니다.
 
-### 보고서 원본 계약 (SPEC-0265, ADR-0060)
+#### 보고서 원본 계약 (SPEC-0265, ADR-0060)
 
 `ingestion-v1` 필드는 바뀌지 않고 의미만 정해집니다. `source_text`는 에이전트가
 확정한 전체 일일 보고서 Markdown의 정확한 UTF-8 바이트이고 `source_sha256`은 그
@@ -177,44 +199,7 @@ legacy/mixed Attester 기록은 자동 재전송하지 않습니다. 같은 UID�
 source-only backup의 정확한 파일 집합만 복원합니다(overlay 금지). `doctor` 확인 뒤에도
 재시작은 별도 승인을 받아야 하며, 이 작업은 운영 rollback이나 재시작을 실행하지 않았습니다.
 
-## Structure
-
-- [workflow.json](workflow.json): 인증 수신, 입력 선별, 내부 Gateway 전달과 영속 수신 응답 확인을 담은 비활성 흐름입니다.
-- [hermes-webhook.yml](../../../../01-gateway/traefik/dynamic/hermes-webhook.yml): Hermes Webhook 정확한 경로 하나만 SSO 없이 허용하는 Traefik 경로입니다. 2026-11-01 운영 디렉터리에 적용했습니다.
-- [blog-export.yml](../../../../01-gateway/traefik/dynamic/blog-export.yml): Windows B의 Export 조회·ACK와 서버 A 호스트의 Attestation 세 요청 형태만 허용하는 Traefik 경로입니다. 2026-11-01 운영 디렉터리에 적용했습니다.
-- [publisher/](publisher/README.md): 제한된 파일 읽기, 로컬 대기함과 전송 상태 처리입니다.
-- [tests/](tests/README.md): 합성 시험과 소스 경계 검증입니다.
-- [install.py](install.py): 커밋 하나를 root 소유 불변 release로 설치합니다. `--role publisher`(기본, `/opt/hermes-publisher`)와 `--role attester`(`/opt/hermes-attester`, 서명·원본 수집 모듈 포함)가 있습니다.
-- [pyproject.toml](pyproject.toml), [requirements.lock](requirements.lock): 실행 의존성 선언과 hash 고정본입니다.
-
-## Usage
-
-로컬 준비·상태 명령은 발행기 설명, 재현 가능한 시험 명령은 시험 설명을 봅니다.
-배포 단위는 제한된 호스트 프로세스이며 설치물은 아래 "보호 설치"를 따릅니다.
-운영 계정 생성, 설치, 서비스·예약 실행 등록은 아직 수행하지 않았습니다. `dispatch` 명령은 있으나 추적 키 저장소가 비어 있어
-세 작업은 실제 인증 입력이나 네트워크 요청 없이 `blocked`를 반환합니다.
-
-흐름은 `headerAuth` 수신 후 입력을 선별하고 Gateway에 전달한 응답을 확인합니다.
-입력 선별은 전체 스키마 검증이 아니며 최종 판단은 Gateway가 담당합니다. 응답의
-200·201 상태와 JSON 영속 수신 증거를 확인하기 전에는 성공을 반환하지 않습니다.
-Webhook 경로는 `hermes-blog-ingestion`, 대상은 내부 격리망의
-`http://blog-ingestion:8787/v1/ingestions`로 고정했습니다. 이전 경로
-`hermes-blog-ingestion-contract-hold`와 `gateway.invalid`는 실수로 쓰이지 않게 막는
-예약값이었고, 지금은 비활성 상태와 연결되지 않은 인증 참조가 같은 역할을 합니다.
-운영 n8n에 가져오기·게시하는 일은 승인된 절차로만 수행합니다.
-
-격리 시험에서는 고정된 `webhookId`를 가진 합성 흐름을 게시해 Webhook을 등록한 뒤,
-추적된 흐름의 정확한 경로를 native helper로 확인하고, Worker와 외부 JavaScript
-Runner를 거쳐 가짜 Gateway의 `201`·합성 영속 수신을 확인했습니다. 이는 추적된
-흐름의 운영 요청이나 운영 Gateway 요청이 아닙니다. 실제 주소, 인증, TLS, 재시도·복구와
-영속 수신은 운영 검증 대기입니다.
-
-정확한 대상과 승인 조건이 확정되면 운영자가 암호화된 기본 인증 저장소와
-승인된 비밀 관리 경로로 인증을 연결합니다. 저장소와 공개 흐름에는 비밀값이나
-실제 인증 식별자를 넣지 않습니다. 실행 데이터 저장 제한은 관리자 접근이나
-실행 중 메모리까지 격리한다는 의미가 아닙니다.
-
-### Companion Evidence v1 계약
+#### Companion Evidence v1 계약
 
 Hermes 생산자가 후보 하나마다 함께 넘기는 직접 수집 기록입니다. 기존 후보
 producer v1.0.0의 필드는 바꾸지 않습니다. 합성 예시는
@@ -248,77 +233,7 @@ producer v1.0.0의 필드는 바꾸지 않습니다. 합성 예시는
 이 검증은 구조와 결속만 확인하며 생산자 인증이 아닙니다. 구조 PASS만으로는
 어떤 게이트도 열리지 않습니다.
 
-### 생산자 인증
-
-생산자 신뢰 경계는 분리 서명 하나로 정합니다.
-
-1. 원천 Receipt는 취득 시점에, 최종 Companion은 후보 확정 뒤에 만듭니다. 각
-   기록은 임시 파일에 쓰고 fsync한 뒤 rename으로 게시하며, 게시가 끝나기 전의
-   응답 바이트나 Receipt는 요약·내보내기·서명에 쓰지 않습니다. 이 순서는 영속화
-   전 소비를 막을 뿐 디스크 장애에 대한 보장은 아닙니다.
-2. Hermes LLM 도구·내보내기와 다른 제한 생산자 계정이 Ed25519 개인키를 보관합니다.
-   이 계정은 자신의 Receipt와 확정 후보를 읽어 Companion v1을 만들고 서명합니다.
-3. 서명 파일은 Companion과 같은 이름에 `.sig`를 붙이며, 생산자는 서명 파일을 먼저
-   쓰고 Companion을 나중에 게시합니다. 내용은
-   `{schema_version:"hermes-companion-signature/1", key_id, algorithm:"ed25519",
-   signature}`이고 서명 대상은 `hermes-companion-evidence/1` 뒤에 NUL 한 바이트와
-   Companion 원문 바이트를 이은 값입니다.
-4. Publisher는 공개키만 담은 추적 파일 [producer-keys.json](publisher/producer-keys.json)을
-   읽습니다. 항목은 `key_id`, `algorithm`, `public_key`(원시 32바이트 base64),
-   허용 `jobs`, `not_before`, `not_after`, 선택 `revoked_at`입니다. 폐기는 소급하여
-   이미 대기함에 있는 기록도 다시 막습니다. 같은 `key_id`가 둘이면 거부합니다.
-5. [trust.py](publisher/trust.py)의 판정 하나를 `dispatch`, 전송 처리기,
-   요청 결속, 재전송 경계가 함께 쓰며 HTTP 전송기는 그 결과 표지를 확인합니다.
-   서명·키·구조 중 하나라도 실패하면 모든 경계가 `blocked`입니다.
-
-같은 계정의 서명 없는 JSON, `trusted=true` 같은 표지, 강제 실행 옵션은 없습니다.
-추적 키 저장소는 비어 있으므로 실제 키를 검토해 추가하기 전까지 운영 기본값은
-`blocked`입니다. 키 추가·회전·폐기 절차는 RUN-0053을 따릅니다.
-
-서명 계약의 정본은 [trust.py](publisher/trust.py)의 `DOMAIN`, envelope 필드,
-저장소 검증입니다. Hermes 생산자에게 전달하는 조건은 다음과 같습니다.
-
-- `key_id`는 `[a-z0-9][a-z0-9._-]{0,63}`, `jobs`는 정확한 작업 ID 목록,
-  `not_before`·`not_after`·`revoked_at`은 시간대가 있는 ISO 8601이며
-  `not_before < not_after`입니다. 같은 공개키를 두 `key_id`로 등록할 수 없습니다.
-- 공개키 지문은 원시 32바이트 공개키의 SHA-256 16진수입니다. 등록 PR에는 이
-  지문과, 개인키가 생산자 계정 밖으로 나간 적 없다는 보호 생성·보관 증거를
-  함께 둡니다. 운영자가 생산자 계정에서 따로 받은 지문과 일치해야 등록합니다.
-- 개인키는 Publisher, 이 저장소, 시험 기록으로 가져오지 않습니다. 시험의 합성키는
-  추적 저장소에 넣지 않습니다.
-
-### 보호 설치
-
-운영 전제는 코드가 확인합니다. `python3 -I`로 격리 실행해야 하며, 인터프리터,
-venv 설정, 존재하는 모든 import 경로, 적재된 모듈 원본 파일(서명 검증과 인증
-자식 프로세스가 쓰는 `ssl`·`http.client` 포함),
-Publisher 모듈 전체와 키 저장소의 모든 상위 경로가 root 소유이고 group·other
-쓰기 권한이 없으며 실행 계정이 쓸 수 없어야 합니다. 실행 계정이 아닌 다른 일반
-계정(예: Hermes 생산자) 소유도 거부합니다. root로 실행하면 항상 막힙니다.
-이 검사는 봉인된 설치 위의 탐지선입니다. 바이트코드 캐시, `.pth`, 검사 전에 실행된
-코드는 root 소유 release가 보호합니다.
-
-설치물은 사용자 작업 사본이나 편집 가능 설치가 아닙니다. 운영자가 검토된 커밋을
-`git archive --format=tar <commit> -- infra/07-workflow/n8n/workloads/hermes-blog-ingestion`
-으로 만들고 root가 `python3 -I install.py --archive <tar>`로 설치합니다(Attester는 `--role attester`). clone,
-tar, 설치기는 root 전용이어야 하며 설치기는 root 전용이 아닌 tar와 prefix 상위
-경로를 거부합니다. 설치기는 pax 머리글의 커밋 ID로
-`/opt/hermes-publisher/releases/<commit>`을 만들고, 명시된 Publisher 모듈 목록과
-키 저장소·`requirements.lock`만 꺼내며(생산자 쪽 모듈은 설치하지 않음), lock을
-`--require-hashes --only-binary :all:`로 새 venv에 설치하고 pip를 제거합니다. 같은
-커밋을 다시 설치하지 않으며 되돌리기는 실행기를 이전 release로 바꾸는 것입니다.
-실행 계정 검증은 `<release>/venv/bin/python -I -m publisher.cli verify-install`이
-`{"keys": N, "runtime": "protected"}`를 내는지로 확인합니다.
-
-Gateway 수신 인증 파일도 그 전용 계정만 읽을 수 있어야 하며, Hermes
-계정이 읽을 수 있으면 Webhook을 직접 호출해 생산자 인증을 우회할 수 있습니다.
-Companion 디렉터리는 생산자 계정만 쓸 수 있어야 합니다.
-먼저 고정된 증거·서명이 이기므로 다른 계정이 먼저 쓰면 그 실행은 영구히 막힙니다.
-키 만료는 사용 시점에 확인하므로 미전송 기록은 `not_after` 전에 비워야 합니다.
-이 변경 전에 서명 없이 저장된 증거는 서명을 덧붙이거나 덮어쓸 수 없어 계속
-막히며, 복구는 새 실행으로 다시 만드는 것입니다.
-
-### 생산자 계약 버전과 이관
+#### 생산자 계약 버전과 이관
 
 항목 필드 집합이 바뀌면 `schema_version`을 올립니다. Publisher는 고정 검증기의
 필드 집합만 받으며 같은 1.0.0이라도 필드가 다른 후보를 호환으로 보지 않습니다.
@@ -327,7 +242,7 @@ Companion 디렉터리는 생산자 계정만 쓸 수 있어야 합니다.
 기존 기록과 충돌하지 않습니다. Hermes의 저장 전 검증기는 main 검증기
 `957d047c…`와 같은 판정을 내야 합니다.
 
-### 직접 제출 경로와 시간 제한
+#### 직접 제출 경로와 시간 제한
 
 Hermes 플러그인 `submit_research_report`(Hermes 소유)와 복구용 Publisher
 `dispatch`는 같은 Webhook에 제출합니다. Publisher 복구 경로는 `source_quotes`를 보내지
@@ -375,35 +290,7 @@ Hermes(호스트) ─HTTPS─▶ Traefik 정확한 경로 ─▶ n8n ─Queue─
   영구 거부로 처리하므로, 흐름 게시를 해제하기 전에 Publisher 실행기를 먼저 멈춥니다. 흐름에는 재시도와 예약 실행을 두지 않습니다. `uncertain`, 영구
   거부, 재시도 소진은 성공이 아니며 `dispatch` 종료 코드 1입니다.
 
-### 상태 대응과 관측
-
-새 상태 체계를 만들지 않고 기존 정본에 대응합니다. A의 Gateway 수신은 Windows
-저장 완료로 승격하지 않습니다.
-
-| 요청 상태 | 기존 정본 | 확인 위치 |
-| --- | --- | --- |
-| `produced` | Hermes Cron 실행 결과 | Hermes `~/.hermes/cron/output`(Hermes 소유) |
-| `queued` | Publisher `awaiting_contract`·`pending` | `publisher.cli status` |
-| `ingested` | Gateway 영수증 `persisted:true`, `status:"received"`(201·200) | n8n 응답, Gateway `/v1/ingestions/{id}` |
-| `export_prepared` | Attestation 뒤 Gateway Export `ready` | `GET /v1/exports?state=ready`(`export_read`) |
-| `delivered_acknowledged` | Gateway Export `acknowledged`(ACK 201·200) | `GET /v1/exports/{id}`의 `ack_id`·`updated_at` |
-| `retryable` | Publisher `pending`(다음 시도 예약)·`uncertain` | `publisher.cli status` |
-| `quarantined` | Publisher `blocked`(신뢰 실패), 서명자 `rejected`·건너뜀, Gateway 격리 판정, Export `held`(`hold_reason`) | `status`, `attest-queue` 출력, Gateway Review, `GET /v1/exports?state=held` |
-| `conflict` | Publisher `conflict`, Gateway 409 `IDEMPOTENCY_CONFLICT`, Export `conflict`(ACK 409) | `status`, n8n 응답, `GET /v1/exports?state=conflict` |
-
-관측은 기존 체계를 씁니다. n8n 지표(`n8n-monitor`)의 흐름별 실행 성공·실패,
-Traefik 라우터 지표(`addRoutersLabels`)의 `hermes-blog-ingestion-webhook` 상태 코드
-(401·403·413·429·5xx), 컨테이너·디스크 지표, Gateway `/v1/summary`(`read` 범위)의
-일자별 보고서 수와 종류·상태·중복별 후보 수, Publisher `status`의 대기 수입니다.
-작업별 최종 수신 시각은 summary에 없어 Gateway 조회 API 확장이 필요합니다. Export
-상태는 `export_read` 목록 조회로 셉니다. `state`별 `ready`·`held`·`conflict` 수와
-가장 오래된 `ready`의 `created_at`이 미수신 시간이고, `acknowledged` 항목의
-`updated_at`이 마지막 ACK 시각입니다. 서명 실패는 `attest-queue` 종료 코드와 Traefik
-`blog-attestation` 422, 반복 429·5xx는 `blog-export-*` 라우터 지표로 봅니다.
-Gateway에는 지표 엔드포인트가 없으므로 Prometheus 수집은 Blog-data와 지표 계약을
-정한 뒤 붙입니다(DEFER). 경보 기준은 운영 주기 확인 후 승인으로 정합니다.
-
-### Attestation과 Resource Export
+#### Attestation과 Resource Export
 
 Gateway는 `POST /v1/ingestions/{id}/attestations`의 Ed25519 서명이 저장된 보고서와
 맞을 때만 후보마다 Export를 만듭니다. 서명 대상은 `blog-data-attestation/2`, NUL,
@@ -431,7 +318,7 @@ python3 -I -m publisher.cli attest-queue \
 출력은 `attested`·`held_items`·`skipped`·`retry`·`rejected` 개수 한 줄이며
 `rejected`가 있으면 종료 코드 1입니다. 보고서·항목 본문과 URL, 자격 증명은 출력하지 않습니다.
 
-#### 항목 단위 Attester
+##### 항목 단위 Attester
 
 - 원본 가져오기는 SSRF 방어를 거칩니다. https만, 사용자 정보와 홈 영역 이름 금지,
   해석된 주소가 모두 전역 라우팅 가능해야 하며 검증한 IP로만 연결합니다. 크기 2 MiB,
@@ -472,7 +359,7 @@ Gateway는 `n8n_blog_ingest_net`(n8n-worker)과 `blog_export_net`(Traefik)에만
 | API·수신기 | Blog-data Resource Export 2.0(파일은 `application/json` record)과 Node.js 수신기 `scripts/ops/receive-hermes-exports.mjs`, 둘 다 `dev` `bcefdc0c0bc4fced9c47d0624d6ca815ddbcaf48`. 수신기는 1.0 Manifest를 `UNSAFE_MANIFEST`로 거부 |
 | 렌더링 | Markdown 렌더링·템플릿·Vault 규칙은 서버 B 수신기가 자기 checkout으로 처리합니다. `template_version`은 A와 B 사이에서 맞추지 않으며, 템플릿·양식 변경은 서버 A 이미지 교체 사유가 아닙니다 |
 
-### Blog-data Gateway 계약 비교
+#### Blog-data Gateway 계약 비교
 
 고정본은 Blog-data `dev` `a6d0957`의 1.0.0, 비교 대상은 2026-10-31 `dev`
 `1a4cd60`의 1.1.0입니다.
@@ -491,7 +378,7 @@ Gateway는 `n8n_blog_ingest_net`(n8n-worker)과 `blog_export_net`(Traefik)에만
 계약 참조를 추가합니다. 현재 조회 API에는 전문 검색 매개변수가 없고
 `date`, `kind`, `status`, `review_status`, `limit`, `after` 필터만 있습니다.
 
-## Configuration
+#### Configuration
 
 Gateway는 [n8n Compose](../../docker-compose.yml)의 `blog-ingestion` 서비스입니다.
 기존 프로필 선택에는 포함되지 않으며 `--profile blog-ingestion`과 로컬에 빌드된
@@ -501,7 +388,112 @@ Gateway는 [n8n Compose](../../docker-compose.yml)의 `blog-ingestion` 서비스
 만들어야 하며 없으면 시작이 실패합니다. Hermes 홈, Vault, Blog-data 체크아웃,
 Docker 소켓은 어느 컨테이너에도 연결하지 않습니다.
 
-## Verification
+### Security Boundary
+
+#### 생산자 인증
+
+생산자 신뢰 경계는 분리 서명 하나로 정합니다.
+
+1. 원천 Receipt는 취득 시점에, 최종 Companion은 후보 확정 뒤에 만듭니다. 각
+   기록은 임시 파일에 쓰고 fsync한 뒤 rename으로 게시하며, 게시가 끝나기 전의
+   응답 바이트나 Receipt는 요약·내보내기·서명에 쓰지 않습니다. 이 순서는 영속화
+   전 소비를 막을 뿐 디스크 장애에 대한 보장은 아닙니다.
+2. Hermes LLM 도구·내보내기와 다른 제한 생산자 계정이 Ed25519 개인키를 보관합니다.
+   이 계정은 자신의 Receipt와 확정 후보를 읽어 Companion v1을 만들고 서명합니다.
+3. 서명 파일은 Companion과 같은 이름에 `.sig`를 붙이며, 생산자는 서명 파일을 먼저
+   쓰고 Companion을 나중에 게시합니다. 내용은
+   `{schema_version:"hermes-companion-signature/1", key_id, algorithm:"ed25519",
+   signature}`이고 서명 대상은 `hermes-companion-evidence/1` 뒤에 NUL 한 바이트와
+   Companion 원문 바이트를 이은 값입니다.
+4. Publisher는 공개키만 담은 추적 파일 [producer-keys.json](publisher/producer-keys.json)을
+   읽습니다. 항목은 `key_id`, `algorithm`, `public_key`(원시 32바이트 base64),
+   허용 `jobs`, `not_before`, `not_after`, 선택 `revoked_at`입니다. 폐기는 소급하여
+   이미 대기함에 있는 기록도 다시 막습니다. 같은 `key_id`가 둘이면 거부합니다.
+5. [trust.py](publisher/trust.py)의 판정 하나를 `dispatch`, 전송 처리기,
+   요청 결속, 재전송 경계가 함께 쓰며 HTTP 전송기는 그 결과 표지를 확인합니다.
+   서명·키·구조 중 하나라도 실패하면 모든 경계가 `blocked`입니다.
+
+같은 계정의 서명 없는 JSON, `trusted=true` 같은 표지, 강제 실행 옵션은 없습니다.
+추적 키 저장소는 비어 있으므로 실제 키를 검토해 추가하기 전까지 운영 기본값은
+`blocked`입니다. 키 추가·회전·폐기 절차는 RUN-0053을 따릅니다.
+
+서명 계약의 정본은 [trust.py](publisher/trust.py)의 `DOMAIN`, envelope 필드,
+저장소 검증입니다. Hermes 생산자에게 전달하는 조건은 다음과 같습니다.
+
+- `key_id`는 `[a-z0-9][a-z0-9._-]{0,63}`, `jobs`는 정확한 작업 ID 목록,
+  `not_before`·`not_after`·`revoked_at`은 시간대가 있는 ISO 8601이며
+  `not_before < not_after`입니다. 같은 공개키를 두 `key_id`로 등록할 수 없습니다.
+- 공개키 지문은 원시 32바이트 공개키의 SHA-256 16진수입니다. 등록 PR에는 이
+  지문과, 개인키가 생산자 계정 밖으로 나간 적 없다는 보호 생성·보관 증거를
+  함께 둡니다. 운영자가 생산자 계정에서 따로 받은 지문과 일치해야 등록합니다.
+- 개인키는 Publisher, 이 저장소, 시험 기록으로 가져오지 않습니다. 시험의 합성키는
+  추적 저장소에 넣지 않습니다.
+
+#### 보호 설치
+
+운영 전제는 코드가 확인합니다. `python3 -I`로 격리 실행해야 하며, 인터프리터,
+venv 설정, 존재하는 모든 import 경로, 적재된 모듈 원본 파일(서명 검증과 인증
+자식 프로세스가 쓰는 `ssl`·`http.client` 포함),
+Publisher 모듈 전체와 키 저장소의 모든 상위 경로가 root 소유이고 group·other
+쓰기 권한이 없으며 실행 계정이 쓸 수 없어야 합니다. 실행 계정이 아닌 다른 일반
+계정(예: Hermes 생산자) 소유도 거부합니다. root로 실행하면 항상 막힙니다.
+이 검사는 봉인된 설치 위의 탐지선입니다. 바이트코드 캐시, `.pth`, 검사 전에 실행된
+코드는 root 소유 release가 보호합니다.
+
+설치물은 사용자 작업 사본이나 편집 가능 설치가 아닙니다. 운영자가 검토된 커밋을
+`git archive --format=tar <commit> -- infra/07-workflow/n8n/workloads/hermes-blog-ingestion`
+으로 만들고 root가 `python3 -I install.py --archive <tar>`로 설치합니다(Attester는 `--role attester`). clone,
+tar, 설치기는 root 전용이어야 하며 설치기는 root 전용이 아닌 tar와 prefix 상위
+경로를 거부합니다. 설치기는 pax 머리글의 커밋 ID로
+`/opt/hermes-publisher/releases/<commit>`을 만들고, 명시된 Publisher 모듈 목록과
+키 저장소·`requirements.lock`만 꺼내며(생산자 쪽 모듈은 설치하지 않음), lock을
+`--require-hashes --only-binary :all:`로 새 venv에 설치하고 pip를 제거합니다. 같은
+커밋을 다시 설치하지 않으며 되돌리기는 실행기를 이전 release로 바꾸는 것입니다.
+실행 계정 검증은 `<release>/venv/bin/python -I -m publisher.cli verify-install`이
+`{"keys": N, "runtime": "protected"}`를 내는지로 확인합니다.
+
+Gateway 수신 인증 파일도 그 전용 계정만 읽을 수 있어야 하며, Hermes
+계정이 읽을 수 있으면 Webhook을 직접 호출해 생산자 인증을 우회할 수 있습니다.
+Companion 디렉터리는 생산자 계정만 쓸 수 있어야 합니다.
+먼저 고정된 증거·서명이 이기므로 다른 계정이 먼저 쓰면 그 실행은 영구히 막힙니다.
+키 만료는 사용 시점에 확인하므로 미전송 기록은 `not_after` 전에 비워야 합니다.
+이 변경 전에 서명 없이 저장된 증거는 서명을 덧붙이거나 덮어쓸 수 없어 계속
+막히며, 복구는 새 실행으로 다시 만드는 것입니다.
+
+## Development
+
+### Local Workflow
+
+#### Usage
+
+로컬 준비·상태 명령은 발행기 설명, 재현 가능한 시험 명령은 시험 설명을 봅니다.
+배포 단위는 제한된 호스트 프로세스이며 설치물은 Security Boundary의 "보호 설치"를 따릅니다.
+운영 계정 생성, 설치, 서비스·예약 실행 등록은 아직 수행하지 않았습니다. `dispatch` 명령은 있으나 추적 키 저장소가 비어 있어
+세 작업은 실제 인증 입력이나 네트워크 요청 없이 `blocked`를 반환합니다.
+
+흐름은 `headerAuth` 수신 후 입력을 선별하고 Gateway에 전달한 응답을 확인합니다.
+입력 선별은 전체 스키마 검증이 아니며 최종 판단은 Gateway가 담당합니다. 응답의
+200·201 상태와 JSON 영속 수신 증거를 확인하기 전에는 성공을 반환하지 않습니다.
+Webhook 경로는 `hermes-blog-ingestion`, 대상은 내부 격리망의
+`http://blog-ingestion:8787/v1/ingestions`로 고정했습니다. 이전 경로
+`hermes-blog-ingestion-contract-hold`와 `gateway.invalid`는 실수로 쓰이지 않게 막는
+예약값이었고, 지금은 비활성 상태와 연결되지 않은 인증 참조가 같은 역할을 합니다.
+운영 n8n에 가져오기·게시하는 일은 승인된 절차로만 수행합니다.
+
+격리 시험에서는 고정된 `webhookId`를 가진 합성 흐름을 게시해 Webhook을 등록한 뒤,
+추적된 흐름의 정확한 경로를 native helper로 확인하고, Worker와 외부 JavaScript
+Runner를 거쳐 가짜 Gateway의 `201`·합성 영속 수신을 확인했습니다. 이는 추적된
+흐름의 운영 요청이나 운영 Gateway 요청이 아닙니다. 실제 주소, 인증, TLS, 재시도·복구와
+영속 수신은 운영 검증 대기입니다.
+
+정확한 대상과 승인 조건이 확정되면 운영자가 암호화된 기본 인증 저장소와
+승인된 비밀 관리 경로로 인증을 연결합니다. 저장소와 공개 흐름에는 비밀값이나
+실제 인증 식별자를 넣지 않습니다. 실행 데이터 저장 제한은 관리자 접근이나
+실행 중 메모리까지 격리한다는 의미가 아닙니다.
+
+### Checks
+
+#### Verification
 
 합성 전송기는 실제 연결 없이 중단·재시도·응답 유실과 대조 상태를 확인합니다.
 전송 중 중단은 미확정으로 복구하고, 일치하는 영속 저장 증거 없이 배달 완료로
@@ -516,8 +508,46 @@ Docker 소켓은 어느 컨테이너에도 연결하지 않습니다.
 승인 키로 서명된 Companion이 모든 항목의 실제 수집 시각을 결속하기 전에는
 발행기 전송이나 재전송을 시작할 수 없습니다.
 
-## Related Documents
+## Operations
+
+### Runbook Links
+
+이 서비스의 런북은 다음과 같다.
+
+- RUN-0053: `docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md`
+
+#### Related Documents
 
 - [워크로드 목록](../README.md)
 - [작업 탐색](../../../../../docs/03.specs/README.md): `SPEC-0204-TSK-0022`가 정본입니다.
 - [운영 절차 탐색](../../../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md): `RUN-0053`의 소스 검증·복구 범위를 확인합니다.
+
+### Observability and Recovery
+
+#### 상태 대응과 관측
+
+새 상태 체계를 만들지 않고 기존 정본에 대응합니다. A의 Gateway 수신은 Windows
+저장 완료로 승격하지 않습니다.
+
+| 요청 상태 | 기존 정본 | 확인 위치 |
+| --- | --- | --- |
+| `produced` | Hermes Cron 실행 결과 | Hermes `~/.hermes/cron/output`(Hermes 소유) |
+| `queued` | Publisher `awaiting_contract`·`pending` | `publisher.cli status` |
+| `ingested` | Gateway 영수증 `persisted:true`, `status:"received"`(201·200) | n8n 응답, Gateway `/v1/ingestions/{id}` |
+| `export_prepared` | Attestation 뒤 Gateway Export `ready` | `GET /v1/exports?state=ready`(`export_read`) |
+| `delivered_acknowledged` | Gateway Export `acknowledged`(ACK 201·200) | `GET /v1/exports/{id}`의 `ack_id`·`updated_at` |
+| `retryable` | Publisher `pending`(다음 시도 예약)·`uncertain` | `publisher.cli status` |
+| `quarantined` | Publisher `blocked`(신뢰 실패), 서명자 `rejected`·건너뜀, Gateway 격리 판정, Export `held`(`hold_reason`) | `status`, `attest-queue` 출력, Gateway Review, `GET /v1/exports?state=held` |
+| `conflict` | Publisher `conflict`, Gateway 409 `IDEMPOTENCY_CONFLICT`, Export `conflict`(ACK 409) | `status`, n8n 응답, `GET /v1/exports?state=conflict` |
+
+관측은 기존 체계를 씁니다. n8n 지표(`n8n-monitor`)의 흐름별 실행 성공·실패,
+Traefik 라우터 지표(`addRoutersLabels`)의 `hermes-blog-ingestion-webhook` 상태 코드
+(401·403·413·429·5xx), 컨테이너·디스크 지표, Gateway `/v1/summary`(`read` 범위)의
+일자별 보고서 수와 종류·상태·중복별 후보 수, Publisher `status`의 대기 수입니다.
+작업별 최종 수신 시각은 summary에 없어 Gateway 조회 API 확장이 필요합니다. Export
+상태는 `export_read` 목록 조회로 셉니다. `state`별 `ready`·`held`·`conflict` 수와
+가장 오래된 `ready`의 `created_at`이 미수신 시간이고, `acknowledged` 항목의
+`updated_at`이 마지막 ACK 시각입니다. 서명 실패는 `attest-queue` 종료 코드와 Traefik
+`blog-attestation` 422, 반복 429·5xx는 `blog-export-*` 라우터 지표로 봅니다.
+Gateway에는 지표 엔드포인트가 없으므로 Prometheus 수집은 Blog-data와 지표 계약을
+정한 뒤 붙입니다(DEFER). 경보 기준은 운영 주기 확인 후 승인으로 정합니다.

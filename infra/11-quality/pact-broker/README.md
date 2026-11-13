@@ -1,46 +1,47 @@
 ---
 title: "Pact Broker"
-version: "1.0.2"
+version: "1.0.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-13"
 created: "2026-09-23"
 ---
 
 <!-- [ID:11-quality:pact-broker] -->
+
 # Pact Broker
 
 > 온디맨드 **OPTIONAL** 계약 브로커이며 loopback 전용 포트에 basic auth를 사용하고 데이터는 기능 소유 `mng-pg` 데이터베이스에 저장합니다.
 
-## Overview
+## Purpose
+
+### Service Role
 
 Pact Broker는 consumer가 게시한 pact와 provider 검증 결과를 저장하는
 **OPTIONAL** 계약 저장소입니다. `contract-testing` profile로만 선택되며
 `pact-broker-db-provision`이 `mng-pg`에 전용 role·database를 만든 뒤 broker가
 기동합니다. 컨테이너 자체는 디스크 상태가 없습니다.
 
-## Audience
+#### Audience
 
 이 README의 주요 독자:
 
 - Developers
 - Operators
 
-## Scope
-
-### In Scope
+#### In Scope
 
 - Pact Broker 서버, 기능 전용 데이터베이스 프로비저닝, basic auth.
 - pact 게시 및 검증 클라이언트를 위한 loopback 호스트 게시.
 
-### Out of Scope
+#### Out of Scope
 
 - Traefik route, TLS, SSO (구현되어 있지 않음; 호스트 게시는 loopback 전용이며 `mng_data_net` peer 접근은 별도).
 - WireMock이 담당하는 HTTP 스터빙.
 - consumer나 provider 테스트 실행.
 
-## Structure
+#### Structure
 
 ```text
 pact-broker/
@@ -50,7 +51,7 @@ pact-broker/
     └── mng-pg.sql        # Feature-owned role and database
 ```
 
-## Tech Stack
+### Supported Environment
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
@@ -59,9 +60,13 @@ pact-broker/
 | **Port** | `127.0.0.1:${PACT_BROKER_HOST_PORT:-19292}` → `9292` | Loopback 전용 호스트 게시 |
 | **Auth** | Basic auth | `/diagnostic/status/heartbeat`만 공개됨 |
 
-## Configuration
+## Interfaces
 
-### Environment Variables
+### Inputs and Outputs
+
+호스트 `127.0.0.1:${PACT_BROKER_HOST_PORT:-19292}`가 컨테이너 9292로 연결되어 pact 게시와 검증 결과 조회를 받으며, 데이터는 `mng-pg`의 전용 데이터베이스에 저장한다. 환경 변수와 secret은 아래 표와 같다.
+
+#### Environment Variables
 
 | Variable | Required | Description |
 | :--- | :---: | :--- |
@@ -70,7 +75,7 @@ pact-broker/
 | `PACT_BROKER_DB_NAME` | No | 기능 전용 데이터베이스(기본값: `pact_broker`). |
 | `PACT_BROKER_BASIC_AUTH_USERNAME` | No | UI와 API용 basic auth 사용자(기본값: `pact`). |
 
-### Secrets
+#### Secrets
 
 | Secret | Registry | Consumers |
 | :--- | :--- | :--- |
@@ -82,7 +87,13 @@ pact-broker/
 broker 프로세스로 내보냅니다. Compose `environment`에는 어느 것도 선언되어
 있지 않습니다.
 
-## Available Scripts
+### Security Boundary
+
+호스트 게시는 loopback 전용이고 basic auth를 사용하며 Traefik route, TLS, SSO는 없다. `pact_broker_db_password`, `pact_broker_basic_auth_password`, `mng_postgres_password` secret 파일만 읽고 값은 문서에 쓰지 않는다.
+
+## Development
+
+### Local Workflow
 
 저장소 루트에서 다음 읽기 전용 확인 명령을 실행합니다. 서비스를 시작하려면
 런타임 승인이 필요합니다.
@@ -92,18 +103,36 @@ broker 프로세스로 내보냅니다. Compose `environment`에는 어느 것�
 | `docker compose --profile contract-testing config --services` | 선택된 root-project 서비스를 확인합니다. |
 | `docker compose --profile contract-testing logs --tail=100 pact-broker` | 승인된 실행 중인 서비스를 점검합니다. |
 
-## Validation
+#### Usage
+
+1. 상위 tier README와 `docker-compose.yml`을 먼저 확인한다.
+2. 권한을 넓히는 SQL 변경은 policy의 거절 조건을 먼저 확인한다.
+3. pact에는 합성 예시만 쓴다. 실제 payload·token·개인정보를 게시하지 않는다.
+
+런타임 이미지와 프로필의 권위는 [docker-compose.yml](docker-compose.yml)에 있으며
+[파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 근거입니다.
+
+### Checks
 
 - `HYHOME_COMPOSE_PROFILES=contract-testing bash scripts/validation/validate-docker-compose.sh`
 - `python3 -m unittest tests.validation.test_compose_baseline_gates`
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
 
-## Troubleshooting
+## Operations
+
+### Runbook Links
+
+- **Guide**: Pact Broker Usage Guide (`docs/05.operations/guides/12-testing-and-quality/0093-pact-broker.md`)
+- **Policy**: Pact Broker Operations Policy (`docs/05.operations/policies/12-testing-and-quality/0093-pact-broker.md`)
+- **Runbook**: Pact Broker Recovery Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0093-pact-broker.md`)
+- [Documentation index](../../../docs/README.md)
+
+### Observability and Recovery
 
 - 프로비저닝 종료 코드 `64` 또는 `3`과 broker 종료 코드 `64`는 런북에 설명되어 있습니다.
 - 401은 인증이 수락되지 않았다는 신호입니다. 자격 증명 누락·불일치와 전달 경로를 구분하고 비밀 값을 출력하지 않은 채 런북을 따릅니다.
 
-## Service Readiness
+#### Service Readiness
 
 | Field | Evidence |
 | --- | --- |
@@ -120,19 +149,3 @@ broker 프로세스로 내보냅니다. Compose `environment`에는 어느 것�
 | Operations | Guide (`docs/05.operations/guides/12-testing-and-quality/0093-pact-broker.md`), Policy (`docs/05.operations/policies/12-testing-and-quality/0093-pact-broker.md`), Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0093-pact-broker.md`) |
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh); [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | heartbeat를 먼저 확인한 뒤 프로비저닝과 broker 로그, 연결된 런북 순서로 확인합니다. |
-
-## Usage
-
-1. 상위 tier README와 `docker-compose.yml`을 먼저 확인한다.
-2. 권한을 넓히는 SQL 변경은 policy의 거절 조건을 먼저 확인한다.
-3. pact에는 합성 예시만 쓴다. 실제 payload·token·개인정보를 게시하지 않는다.
-
-런타임 이미지와 프로필의 권위는 [docker-compose.yml](docker-compose.yml)에 있으며
-[파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 근거입니다.
-
-## Related Documents
-
-- **Guide**: Pact Broker Usage Guide (`docs/05.operations/guides/12-testing-and-quality/0093-pact-broker.md`)
-- **Policy**: Pact Broker Operations Policy (`docs/05.operations/policies/12-testing-and-quality/0093-pact-broker.md`)
-- **Runbook**: Pact Broker Recovery Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0093-pact-broker.md`)
-- [Documentation index](../../../docs/README.md)

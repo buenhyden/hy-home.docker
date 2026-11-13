@@ -1,6 +1,6 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.5.4"
+version: "2.6.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -10,7 +10,9 @@ layer: "templates"
 
 # Stage 99 Document Contracts and Templates
 
-## Overview
+## Stage Responsibility
+
+### Purpose and Readers
 
 Stage 99는 문서 경로, profile, identifier, section, lifecycle 상태와 전이,
 traceability 형태, 복사용 template의 유일한 권위입니다. machine authority는
@@ -22,7 +24,7 @@ registry와 문서 frontmatter를 검증합니다. 사람과 AI agent를 위한 
 이전 계약은 Git history로 복구할 수 있으나, 현재 작성이나 검증 입력이
 아닙니다.
 
-## Scope
+### Inputs and Outputs
 
 Stage 99가 소유하는 것:
 
@@ -41,9 +43,9 @@ Stage 99가 소유하는 것:
 Stage 99는 agent 행동, 제품 사실, 아키텍처 결정, 구현 증거, 운영 정책,
 reference finding을 소유하지 않습니다.
 
-## Structure
+## Contents
 
-### Documents
+### Current Items
 
 | Path | Purpose |
 | --- | --- |
@@ -57,7 +59,8 @@ docs/99.templates/
 ├── registry.json
 ├── contracts/
 │   ├── document-frontmatter.schema.json
-│   └── document-profile.schema.json
+│   ├── document-profile.schema.json
+│   └── template-definition.schema.json
 └── templates/
     ├── governance/
     ├── runtime/
@@ -70,24 +73,22 @@ docs/99.templates/
     └── common/
 ```
 
-## Usage
+### Classification
 
-1. 등록된 profile과 template 역할을 선택합니다.
-2. 선언된 `type` 계약을 바꾸지 않고 등록된 source를 복사합니다.
-3. 저장된 high-water mark보다 높은 ID를 발급합니다.
-4. placeholder를 바꾸고 전체 traceability ID를 추가합니다.
-5. 문서 계약 validator와 owning stage gate를 실행합니다.
-6. 계약 자체가 바뀔 때는 Registry, schema, template, consumer, test를 하나의
-   검토된 논리적 단위에서 함께 바꿉니다.
-
-### Authority Model
+#### Authority Model
 
 | Surface | Authority | Purpose |
 | :--- | :--- | :--- |
 | [`registry.json`](./registry.json) | machine | profiles, paths, identities, lifecycle, traceability, template registration |
 | [`contracts/document-profile.schema.json`](./contracts/document-profile.schema.json) | machine | registry shape |
 | [`contracts/document-frontmatter.schema.json`](./contracts/document-frontmatter.schema.json) | machine | typed frontmatter value shape |
+| [`contracts/template-definition.schema.json`](./contracts/template-definition.schema.json) | machine | 승인된 TemplateDefinition v14.5 형식. `scripts/lib/document_governance/template_definition.py`가 각 `template_roles` 항목을 이 형식으로 투영합니다 |
 | [`templates/`](./templates/) | copy source | profile-referenced authoring forms |
+
+TemplateDefinition의 `contract_version`은 profile이 `required_subsections`를
+선언하면 공통 양식 `COMMON-DOC-FORM-1` 판본이고, 그렇지 않으면 Registry
+`common.contract_id`입니다. 판본 값은 `template_definition.py`의
+`COMMON_FORM_VERSION` 한 곳에만 둡니다.
 
 Consumer는 `scripts.lib.document_governance.registry`를 통해 Registry를
 로드해야 합니다. README 본문이나 template 본문을 machine policy로
@@ -103,7 +104,7 @@ fallback을 뜻하며 현재 작성 대상이 아닙니다. Stage 01~03 lifecycl
 `deprecated`, `superseded`, `retired`, `archived` 상태를 두지 않습니다.
 대체되거나 철회된 문서는 현재 owner에 요약한 뒤 삭제하고 번호를 예약합니다.
 
-### Common Role Forms
+#### Common Role Forms
 
 공통 역할 16개를 공통 절 계약 `COMMON-DOC-FORM-1` 1.0.0으로 옮기는 규칙은
 [문서 프로토콜](../../.agents/governance/documentation-protocol.md#role-specific-authoring)이
@@ -111,8 +112,6 @@ fallback을 뜻하며 현재 작성 대상이 아닙니다. Stage 01~03 lifecycl
 예외 조건이 모두 그곳에 있다. 역할별 절 이름은 Registry가 선언하며, 진행
 상황은 SPEC-0212 TSK-0059가 기록한다. 이 표기는 네 저장소 공동 채택을 뜻하지
 않는다.
-
-### Identity and Lifecycle Rules
 
 #### Stage 03 Evidence
 
@@ -199,6 +198,41 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
 - lifecycle 전이는 그 profile의 lifecycle에 등록된 경우에만 유효합니다.
   terminal 상태에는 나가는 전이가 없습니다.
 
+## Workflow
+
+### Create and Review
+
+1. 등록된 profile과 template 역할을 선택합니다.
+2. 선언된 `type` 계약을 바꾸지 않고 등록된 source를 복사합니다.
+3. 저장된 high-water mark보다 높은 ID를 발급합니다.
+4. placeholder를 바꾸고 전체 traceability ID를 추가합니다.
+5. 문서 계약 validator와 owning stage gate를 실행합니다.
+6. 계약 자체가 바뀔 때는 Registry, schema, template, consumer, test를 하나의
+   검토된 논리적 단위에서 함께 바꿉니다.
+
+#### Template Rules
+
+- `template_id`/template 역할이 등록한 source를 복사합니다.
+- Markdown template frontmatter는 profile의 `type`을 선언하며 구체적인
+  대상 경로를 담지 않습니다.
+- Markdown placeholder는 `{{UPPER_SNAKE_CASE}}`를 사용합니다. template
+  전용 작성 안내는 HTML comment로 나타날 수 있으나 승격 후까지 남아서는
+  안 됩니다. native machine contract template은 대신 `__UPPER_SNAKE__`
+  token을 사용합니다.
+- 공유되는 stage README 형태는 의도적인 destination-bound 예외입니다:
+  그 `layer` placeholder는 정확한 Registry `frontmatter_routes` 항목에서
+  해석됩니다. 여러 stage가 공유하는 source는 하나의 stage 리터럴을 쓸 수
+  없으며, 대상 문서는 등록된 리터럴을 사용해야 하고 stage를 임의로 만들
+  수 없습니다.
+- 대상 문서로 승격하기 전에 모든 placeholder를 바꿉니다.
+- 실행 가능한 OpenAPI, GraphQL, Proto 계약은 이를 소유하는 Stage 03 Spec
+  package에 속합니다. 그 결정적 파일명과 media type은 Registry profile이며,
+  Stage 01은 구현과 무관한 interface 필요를 유지합니다.
+- `DESIGN.md`는 root UI/design-system 권위로 남으며 Stage 03 design
+  artifact가 아닙니다.
+
+### Transition and Exit
+
 의미적 흐름은 profile마다 다릅니다: Requirement는 검토 후 승인하고, ADR은
 수락하거나 거부합니다. Spec과 Plan은 계약·계획의 승인 권한만 나타내며,
 진행·차단·완료는 Task 또는 Execution Item이 소유합니다.
@@ -221,29 +255,16 @@ active로 유지됩니다. `registry.json`이 모든 진입 상태, edge, termin
 삭제한 뒤, 그 번호를 `reserved_history`에 추가합니다. Stage 98은 기록을 담지
 않습니다.
 
-### Template Rules
-
-- `template_id`/template 역할이 등록한 source를 복사합니다.
-- Markdown template frontmatter는 profile의 `type`을 선언하며 구체적인
-  대상 경로를 담지 않습니다.
-- Markdown placeholder는 `{{UPPER_SNAKE_CASE}}`를 사용합니다. template
-  전용 작성 안내는 HTML comment로 나타날 수 있으나 승격 후까지 남아서는
-  안 됩니다. native machine contract template은 대신 `__UPPER_SNAKE__`
-  token을 사용합니다.
-- 공유되는 stage README 형태는 의도적인 destination-bound 예외입니다:
-  그 `layer` placeholder는 정확한 Registry `frontmatter_routes` 항목에서
-  해석됩니다. 여러 stage가 공유하는 source는 하나의 stage 리터럴을 쓸 수
-  없으며, 대상 문서는 등록된 리터럴을 사용해야 하고 stage를 임의로 만들
-  수 없습니다.
-- 대상 문서로 승격하기 전에 모든 placeholder를 바꿉니다.
-- 실행 가능한 OpenAPI, GraphQL, Proto 계약은 이를 소유하는 Stage 03 Spec
-  package에 속합니다. 그 결정적 파일명과 media type은 Registry profile이며,
-  Stage 01은 구현과 무관한 interface 필요를 유지합니다.
-- `DESIGN.md`는 root UI/design-system 권위로 남으며 Stage 03 design
-  artifact가 아닙니다.
-
 ## Related Documents
+
+### Upstream and Downstream
+
+[docs 색인](../README.md)이 stage 전체의 진입점이며, Stage 99는 다른 stage 문서의 profile, 경로, 식별자, template을 등록합니다.
+
+### Policy and Templates
 
 - [에이전트 작업 규칙](AGENTS.md)
 - [Template catalog](./templates/README.md)
 - [Canonical agent governance home ADR](../02.architecture/decisions/0032-canonical-agent-governance-home.md)
+- [문서 작성 계약](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [README 템플릿](templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

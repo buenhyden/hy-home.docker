@@ -327,6 +327,7 @@
         "tests.lib.document_governance.test_requirements",
         "tests.lib.document_governance.test_spec_packages",
         "tests.lib.document_governance.test_taxonomy",
+        "tests.lib.document_governance.test_template_definition",
         "-v"
       ],
       "cwd": ".",

@@ -1,25 +1,29 @@
 ---
 title: "Manifest Publication SQL"
-version: "0.4.0"
+version: "0.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-02"
+updated: "2026-11-13"
 ---
 
 # Manifest Publication SQL
 
-## Overview
+## Purpose
+
+### Service Role
+
+#### Overview
 
 기존 P04 게시 계약과 현재 P05 관리 복구의 versioned publication/outbox migration입니다.
 SQL 파일 존재는 실제 migration·권한·복구 수용을 뜻하지 않습니다.
 
-## Scope
+#### Scope
 
 Ingest는 게시 함수, notifier는 claim/ack/no-send retry/unknown, reader는 승인된 view만
 소비합니다. Owner·migration capability는 runtime에 전달하지 않습니다.
 
-## Structure
+#### Structure
 
 - [001_opsflow.sql](001_opsflow.sql): DB·role·기존 shape/ACL 검사와 원자적 게시 계약.
 - [002_checks.sql](002_checks.sql): 합성 직접 호출·역할·lease 검사.
@@ -33,77 +37,15 @@ Ingest는 게시 함수, notifier는 claim/ack/no-send retry/unknown, reader는 
 - [007_notification_recovery.sql](007_notification_recovery.sql): version 5 개별 no-send 재처리와 복원 sending 격리.
 - [008_checks.sql](008_checks.sql): version 5 receipt·shape·관리 함수 ACL의 읽기 전용 검사.
 
-## Usage
+### Supported Environment
 
-총괄이 함수 전용 provision·고정 이미지·빈 시험 대상·백업·복구 경계를 검토한
-뒤 실행합니다. 새 빈 대상은 `001`과 그 hash로 `002`를 검증한 뒤 `003`을
-적용하고, `003` hash로 `002`를 다시 검증합니다. `002`는 현재 version 1 또는
-2의 최신 receipt/fingerprint만 수용합니다. 파일 재적용은 임의 schema upgrade를
-허용하지 않습니다.
-후속 변경은 새 version migration으로 관리합니다. P05는 복사본을 만들지 않고
-이 파일의 검토된 version/hash·함수·view·lease·재시도 계약을 참조해야 합니다.
+없음: 이 폴더는 Compose나 Dockerfile 없이 `001_opsflow.sql`부터 `008_checks.sql`까지 8개 SQL 파일만 포함하며, 총괄이 검토한 빈 격리 대상에서 정해진 순서로 적용한다.
 
-초기 `001` draft는 PostgreSQL 18 native 적용에서 fingerprint의 내부 `"char"`
-catalog 값을 text와 직접 연결하다 SQLSTATE `42725`로 실패했고 transaction이
-commit되지 않았습니다. 현재 bootstrap은 해당 catalog 값만 명시적으로 text로
-변환하며 DDL·함수·권한 계약을 바꾸지 않습니다. 실패한 이전 draft hash는 수용된
-version 1 receipt가 아닙니다. 별도 대상에서 이전 hash의 receipt가 발견되면 자동
-승격하지 않고 DAG를 중지한 뒤 backup·schema fingerprint·적용 이력을 검토합니다.
+## Interfaces
 
-이후 격리 복원 시험에서는 네 table과 한 sequence의 실제 권한이 같지만
-`relacl`의 NULL 표현만 달라져 raw ACL 문자열 fingerprint가 실패했습니다. 현재
-fingerprint는 권한을 가질 수 있는 relation의 NULL ACL을 객체 종류와 owner의
-기본 ACL로 펼친 뒤 grantor·grantee(`PUBLIC` 포함)·권한 종류·grant option을 정렬된
-JSON 배열로 기록합니다. 명시적인 빈 ACL은 기본 ACL로 바꾸지 않으며, index 같은
-비권한 relation의 raw ACL metadata도 지우지 않습니다. Owner와 나머지 relation
-구조 필드는 기존 signature에 그대로 남습니다. 이 수정 전 draft의 실패도 수용된
-receipt가 아니며 기존 receipt를 자동 보정하지 않습니다.
+### Inputs and Outputs
 
-### Migration boundary
-
-기존 provisioner가 `opsflow_owner` NOLOGIN, 별도 `opsflow_migrator` LOGIN과
-세 runtime LOGIN을 함수 전용으로 준비해야 합니다. Migrator만 owner에
-ADMIN=false·INHERIT=false·SET=true membership을 갖습니다. 기존 넓은 grant나
-미확정 membership·DB/schema/default ACL은 migration 전에 거부합니다.
-이 SQL은 역할 생성·비밀번호 발급·기존 ACL의 자동 수정을 하지 않습니다.
-
-호출자는 적용할 `001_opsflow.sql` 또는 `003_business_date.sql`의 SHA256을
-각 실행의 `migration_sha256` psql 변수로 제공합니다. Version 1 장부에는
-`001` 값과 당시 객체·함수·role·ACL fingerprint를 저장합니다. `003`은 모든
-workload 기본 테이블을 10초 안에 잠그고 각 statement를 60초로 제한한 뒤
-고정된 `001` SHA256, 유일한 version 1 행,
-현재 fingerprint와 기존 UTC 업무일 충돌 부재를 DDL 전에 검사합니다. 하나라도
-다르면 자동 수정 없이 전체 transaction을 중단합니다. 성공하면 version 1 행을
-유지하고 version 2 hash/fingerprint를 새 행으로 기록합니다. 저장된 caller
-hash만으로 실제 파일 적용을 증명하지 않습니다. 재적용은 항상 거부합니다.
-
-`002_checks.sql`은 적용된 최신 migration의 SHA256을 `migration_sha256`으로
-받습니다. 기존 workload 행이 모두 없는 승인된 독립 대상에만 실행하고
-합성 행을 ROLLBACK하지만 identity sequence 증가는 되돌리지 않습니다.
-따라서 폐기 가능한 독립 DB가 필요하며 행 rollback을 빈 대상 복원으로 보지 않습니다.
-시험 session_user가 owner 및 각 client로 SET ROLE 가능한 별도 superuser 감사
-capability를 먼저 검토해야 합니다. 시험을 통과시키기 위해
-runtime membership을 추가하지 않습니다. 다른 DB의 CONNECT 거부·경합·객체 복원은
-별도 native 시험입니다. 이 스크립트만으로 해당 경계를 확인했다고 기록하지 않습니다.
-
-### Version 2 business-date invariant
-
-Version 2는 `runs_source_business_date_uidx`로 같은 source와
-`(captured_at AT TIME ZONE 'UTC')::date` 조합을 하나만 허용합니다. Version 1
-데이터에 해당 충돌이 있으면 index를 만들거나 행을 삭제·수정하지 않고 migration이
-실패합니다. 새 게시의 정확히 같은 시각 충돌은 기존 함수 오류로, 같은 UTC 날짜의
-다른 시각 충돌은 이름 있는 unique index의 원자적 오류로 거부됩니다. `runs`
-insert가 먼저 실패하므로 해당 호출은 document·현재 pointer·outbox를 남기지
-않습니다. 기존 source별 advisory lock과 DB unique invariant가 직렬·경합 호출에
-같은 규칙을 적용합니다.
-
-Commit 전 실패는 transaction rollback으로 끝납니다. Commit 뒤 source rollback은
-schema rollback이 아닙니다. 문제가 생기면 DAG를 일시 중지하고 accepted history와
-outbox를 보존한 채, 검토된 backup을 별도의 빈 workload 복구 대상에 적용해
-재검증합니다. 운영 데이터가 있는 대상에서 version 2 index나 장부 행을 임의로
-제거하지 않으며 MNG DB reset, 공유 volume 삭제, 전체 stack restart를 하지 않습니다.
-
-### P05 source interface
+#### P05 source interface
 
 현재 source version은 5입니다. 여섯 인자 `publish_manifest`와 여섯 claim 필드를
 유지하며 불확실 통지의 retry 의미는 아래 격리 계약으로 바꿉니다. SQL·보안 검토 뒤 파일 hash를
@@ -137,7 +79,7 @@ Ack는 SMTP acceptance만 기록하며 실제 배달을 보장하지 않습니�
 run-derived Message-ID, at-least-once 중복 불확실성과 accepted event 복원 정합은
 P05와 별도 native 검증에서 확인합니다. 현재 v5의 실제 소비자/복원 인수는 별도이며 과거 v3 C19/C22 수용은 보존합니다.
 
-### Version 3 notification quarantine
+#### Version 3 notification quarantine
 
 `004_notification_quarantine.sql`은 고정된 version 2 receipt와 실제 schema fingerprint를
 먼저 검증하며 과거 migration 파일은 수정하지 않습니다. 검토한 001→002 검사→003→002
@@ -166,7 +108,7 @@ unknown을 유지합니다. 실제 no-send가 확인되어도 다섯 번 상한�
 도달한 건은 dead로 남습니다. Runtime notifier에는 대조 권한이 없습니다.
 독립 복원 뒤 unknown·accepted 상태와 claim 결과를 확인한 후 polling을 허용합니다.
 
-### Version 4 data version and checks
+#### Version 4 data version and checks
 
 기존 `001`–`004` 파일은 변경하지 않습니다. 새 독립 대상의 검토한 순서는
 `001` → `002` 검사 → `003` → `002` 검사 → `004` → `005` → `006` 검사입니다.
@@ -185,7 +127,7 @@ P05의 역사 version 3 영수증을 version 4 수용으로 고쳐 쓰지 않으
 현재 호환과 수용은 P04 Task(`docs/03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0043-opsflow-data-path.md`)에서
 별도 인계합니다. 소스 revert는 실행한 schema rollback이 아닙니다.
 
-### Version 5 operator recovery and checks
+#### Version 5 operator recovery and checks
 
 기존001–006은 그대로 보존합니다. 검토한 빈 격리 대상에서는 version 4의 위 순서 뒤
 `007`과 자신의 SHA256을 적용하고 `008`에 `007`의 SHA256을 제공합니다. `007`은
@@ -221,7 +163,99 @@ attempt·reconciliation·audit·accepted/unknown 상태를 함께 보존하고 �
 실패하면 polling을 멈춘 채 근거를 보존합니다. source revert는 실행된 schema rollback이
 아니며 기존 장부/행을 삭제해 되돌리지 않습니다.
 
-## Related Documents
+### Security Boundary
+
+#### Migration boundary
+
+기존 provisioner가 `opsflow_owner` NOLOGIN, 별도 `opsflow_migrator` LOGIN과
+세 runtime LOGIN을 함수 전용으로 준비해야 합니다. Migrator만 owner에
+ADMIN=false·INHERIT=false·SET=true membership을 갖습니다. 기존 넓은 grant나
+미확정 membership·DB/schema/default ACL은 migration 전에 거부합니다.
+이 SQL은 역할 생성·비밀번호 발급·기존 ACL의 자동 수정을 하지 않습니다.
+
+호출자는 적용할 `001_opsflow.sql` 또는 `003_business_date.sql`의 SHA256을
+각 실행의 `migration_sha256` psql 변수로 제공합니다. Version 1 장부에는
+`001` 값과 당시 객체·함수·role·ACL fingerprint를 저장합니다. `003`은 모든
+workload 기본 테이블을 10초 안에 잠그고 각 statement를 60초로 제한한 뒤
+고정된 `001` SHA256, 유일한 version 1 행,
+현재 fingerprint와 기존 UTC 업무일 충돌 부재를 DDL 전에 검사합니다. 하나라도
+다르면 자동 수정 없이 전체 transaction을 중단합니다. 성공하면 version 1 행을
+유지하고 version 2 hash/fingerprint를 새 행으로 기록합니다. 저장된 caller
+hash만으로 실제 파일 적용을 증명하지 않습니다. 재적용은 항상 거부합니다.
+
+`002_checks.sql`은 적용된 최신 migration의 SHA256을 `migration_sha256`으로
+받습니다. 기존 workload 행이 모두 없는 승인된 독립 대상에만 실행하고
+합성 행을 ROLLBACK하지만 identity sequence 증가는 되돌리지 않습니다.
+따라서 폐기 가능한 독립 DB가 필요하며 행 rollback을 빈 대상 복원으로 보지 않습니다.
+시험 session_user가 owner 및 각 client로 SET ROLE 가능한 별도 superuser 감사
+capability를 먼저 검토해야 합니다. 시험을 통과시키기 위해
+runtime membership을 추가하지 않습니다. 다른 DB의 CONNECT 거부·경합·객체 복원은
+별도 native 시험입니다. 이 스크립트만으로 해당 경계를 확인했다고 기록하지 않습니다.
+
+#### Version 2 business-date invariant
+
+Version 2는 `runs_source_business_date_uidx`로 같은 source와
+`(captured_at AT TIME ZONE 'UTC')::date` 조합을 하나만 허용합니다. Version 1
+데이터에 해당 충돌이 있으면 index를 만들거나 행을 삭제·수정하지 않고 migration이
+실패합니다. 새 게시의 정확히 같은 시각 충돌은 기존 함수 오류로, 같은 UTC 날짜의
+다른 시각 충돌은 이름 있는 unique index의 원자적 오류로 거부됩니다. `runs`
+insert가 먼저 실패하므로 해당 호출은 document·현재 pointer·outbox를 남기지
+않습니다. 기존 source별 advisory lock과 DB unique invariant가 직렬·경합 호출에
+같은 규칙을 적용합니다.
+
+Commit 전 실패는 transaction rollback으로 끝납니다. Commit 뒤 source rollback은
+schema rollback이 아닙니다. 문제가 생기면 DAG를 일시 중지하고 accepted history와
+outbox를 보존한 채, 검토된 backup을 별도의 빈 workload 복구 대상에 적용해
+재검증합니다. 운영 데이터가 있는 대상에서 version 2 index나 장부 행을 임의로
+제거하지 않으며 MNG DB reset, 공유 volume 삭제, 전체 stack restart를 하지 않습니다.
+
+## Development
+
+### Local Workflow
+
+#### Usage
+
+총괄이 함수 전용 provision·고정 이미지·빈 시험 대상·백업·복구 경계를 검토한
+뒤 실행합니다. 새 빈 대상은 `001`과 그 hash로 `002`를 검증한 뒤 `003`을
+적용하고, `003` hash로 `002`를 다시 검증합니다. `002`는 현재 version 1 또는
+2의 최신 receipt/fingerprint만 수용합니다. 파일 재적용은 임의 schema upgrade를
+허용하지 않습니다.
+후속 변경은 새 version migration으로 관리합니다. P05는 복사본을 만들지 않고
+이 파일의 검토된 version/hash·함수·view·lease·재시도 계약을 참조해야 합니다.
+
+초기 `001` draft는 PostgreSQL 18 native 적용에서 fingerprint의 내부 `"char"`
+catalog 값을 text와 직접 연결하다 SQLSTATE `42725`로 실패했고 transaction이
+commit되지 않았습니다. 현재 bootstrap은 해당 catalog 값만 명시적으로 text로
+변환하며 DDL·함수·권한 계약을 바꾸지 않습니다. 실패한 이전 draft hash는 수용된
+version 1 receipt가 아닙니다. 별도 대상에서 이전 hash의 receipt가 발견되면 자동
+승격하지 않고 DAG를 중지한 뒤 backup·schema fingerprint·적용 이력을 검토합니다.
+
+이후 격리 복원 시험에서는 네 table과 한 sequence의 실제 권한이 같지만
+`relacl`의 NULL 표현만 달라져 raw ACL 문자열 fingerprint가 실패했습니다. 현재
+fingerprint는 권한을 가질 수 있는 relation의 NULL ACL을 객체 종류와 owner의
+기본 ACL로 펼친 뒤 grantor·grantee(`PUBLIC` 포함)·권한 종류·grant option을 정렬된
+JSON 배열로 기록합니다. 명시적인 빈 ACL은 기본 ACL로 바꾸지 않으며, index 같은
+비권한 relation의 raw ACL metadata도 지우지 않습니다. Owner와 나머지 relation
+구조 필드는 기존 signature에 그대로 남습니다. 이 수정 전 draft의 실패도 수용된
+receipt가 아니며 기존 receipt를 자동 보정하지 않습니다.
+
+### Checks
+
+읽기 전용 검사 SQL(`002_checks.sql`, `006_checks.sql`, `008_checks.sql`)이 receipt, shape와 ACL을 검증한다. 적용 순서는 Local Workflow의 version별 절차를 따른다.
+
+## Operations
+
+### Runbook Links
+
+이 서비스의 런북은 다음과 같다.
+
+- RUN-0050: `docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md`
+
+#### Related Documents
 
 - [배치](../README.md)
 - [Library](../workflow_lib/README.md)
+
+### Observability and Recovery
+
+없음: 이 폴더는 헬스체크를 선언하지 않는다. 적용 결과는 migration 뒤 읽기 전용 검사 SQL로 확인한다.

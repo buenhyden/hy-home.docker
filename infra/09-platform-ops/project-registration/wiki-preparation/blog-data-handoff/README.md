@@ -1,15 +1,17 @@
 ---
 title: "선택 후보의 blog-data 인계"
-version: "0.1.0"
+version: "0.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-10"
+updated: "2026-11-13"
 ---
 
 # 선택 후보의 blog-data 인계
 
-## Overview
+## Purpose
+
+### Service Role
 
 원문 출력은 Literature 후보에만 머뭅니다. Permanent·Maps·출판물은 별도 사람 검토로 승격합니다. 이 단계는 실제 쓰기 권한·branch·PR을 생성하지 않습니다. 합성 approval은 운영 승인을 대체하지 않습니다.
 
@@ -21,34 +23,48 @@ caller policy는 `project_id`, `repository`, `base_sha`, selected candidate ID�
 
 여기의 document receipt key는 원본 합성 blog receipt key이며 fixture 값은 변경하지 않습니다. helper 결과 scoped key와 `prior_receipts` key의 관계는 [준비 계약의 Idempotency Result Contract](../contracts/README.md#idempotency-result-contract)가 소유합니다.
 
-## Audience
+#### Audience
 
 인프라 담당자, 미래 consumer 작성자와 독립 검토자입니다.
 
-## Scope
+#### Scope
 
 준비 문서·기계 schema·합성 검증에 한정합니다.
 
-## Structure
+#### Structure
 
 [schema](../schemas/blog-data-handoff.schema.json)
 
-## Tech Stack
+### Supported Environment
 
 기존 Python·jsonschema와 오프라인 JSON 문서를 사용합니다.
 
-## Configuration
+## Interfaces
+
+### Inputs and Outputs
 
 비밀값과 실제 환경 변수는 입력하지 않습니다.
 
-## Validation
+### Security Boundary
 
-저장소 루트에서 활성화한 격리 venv에 `python -m pip install -r scripts/requirements.txt`를 실행한 뒤 `python -m unittest tests.lib.ops.test_wiki_preparation tests.validation.test_wiki_preparation_contracts -v`를 실행합니다. 시스템의 오래된 jsonschema는 검증 환경이 아닙니다. 단위검사는 native 실행 증거가 아닙니다.
+없음: 이 디렉터리는 Markdown 문서와 합성 JSON만 두며 Compose 서비스·포트·네트워크·Docker Secret·접근 제어를 정의하지 않는다. 비밀값과 실제 환경 변수는 입력하지 않는다.
 
-## Usage
+## Development
+
+### Local Workflow
 
 총괄의 공통 계약 통합 후 해당 증거를 Task에 연결합니다.
 
-## Related Documents
+### Checks
+
+저장소 루트에서 활성화한 격리 venv에 `python -m pip install -r scripts/requirements.txt`를 실행한 뒤 `python -m unittest tests.lib.ops.test_wiki_preparation tests.validation.test_wiki_preparation_contracts -v`를 실행합니다. 시스템의 오래된 jsonschema는 검증 환경이 아닙니다. 단위검사는 native 실행 증거가 아닙니다.
+
+## Operations
+
+### Runbook Links
 
 문서 체계는 저장소 docs README 진입점을 통해 확인합니다.
+
+### Observability and Recovery
+
+없음: 실행되는 서비스가 아니므로 헬스체크·지표·로그가 없고, 이 패키지를 대상으로 하는 운영 런북도 `docs/05.operations/runbooks`에 없다. 계약 문서가 어긋나면 위 Checks의 단위 검사 실패로 드러나며, 복구는 Git 이력에서 해당 문서 변경을 되돌리는 것이다.

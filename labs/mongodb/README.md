@@ -1,48 +1,39 @@
 ---
 title: "MongoDB Replica Set LAB"
-version: "1.1.2"
+version: "1.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-05"
+updated: "2026-11-13"
 created: "2025-11-12"
 ---
 
 # MongoDB Replica Set LAB
 
-## Overview
+## Purpose
+
+### Service Role
 
 이 문서는 root Compose에서 분리된 MongoDB Replica Set LAB topology의 source 계약을
 설명한다. normal HOME 또는 development stack의 상태·network·secret을 공유하지
 않으며, LAB 학습과 정적 render에만 사용한다.
 
-## Audience
+#### Audience
 
 - 개발자: 이 실습 topology의 연결과 상태 경계를 확인합니다.
 - 운영자: 격리된 LAB 렌더링과 복구 전제만 확인합니다.
 - Agent: root Compose와 분리된 보조 자산 경로를 추적합니다.
 
-## Scope
-
-### In Scope
+#### In Scope
 
 - replica set, key generator, initializer, Mongo Express의 학습·render 계약
 
-### Out of Scope
+#### Out of Scope
 
 - HOME 서비스, 관리 DB, root Compose, 운영 데이터와 credential 값
 - 실제 기동, 중지, 데이터 이관·삭제, credential rotation
 
-## Tech Stack
-
-| Category | Source of truth | Boundary |
-| --- | --- | --- |
-| Compose | [docker-compose.yml](./docker-compose.yml) | 독립 LAB project |
-| State | `${LAB_DATA_DIR:?set isolated LAB data root}` bind | HOME 상태와 미공유 |
-| Secrets | `${LAB_SECRET_DIR:-../secrets/labs}` 아래 LAB 전용 reference | 값은 문서화하지 않음 |
-| Networks | LAB 전용 network declarations | root network와 미공유 |
-
-## Structure
+#### Structure
 
 ```text
 labs/mongodb/
@@ -61,36 +52,22 @@ HOME Grafana는 `infra/06-observability/grafana/dashboards/`만 provisioning하�
 않습니다. LAB 관측을 연결하는 별도 계약이 승인되면 그 LAB의 Prometheus·Grafana가
 이 파일을 읽도록 구성하며, HOME provisioning 경로로 옮기지 않습니다.
 
-## Service Readiness
+### Supported Environment
 
-| Field | Evidence |
-| --- | --- |
-| Entry point | [docker-compose.yml](./docker-compose.yml) |
-| Project | `hy-home-lab-mongodb` |
-| Services | `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express` |
-| State | `mongo-key`, `mongodb{1,2,3}-data`를 `${LAB_DATA_DIR}/mongodb/` 아래에 bind. 이전 project named volume은 이동·삭제하지 않음 (SPEC-0215) |
-| Networks | `lab_mongodb_core_net`, `lab_mongodb_edge_net` |
-| Secret refs | `lab_mongodb_root_password`, `lab_mongo_express_basicauth_password` |
-| Host exposure | `mongo-express`만 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_MONGO_EXPRESS_HOST_PORT:-38081}`에 게시; HOME Traefik label 없음 (SPEC-0215) |
-| Helper assets | 없음 |
-| Readiness | Compose healthcheck/one-shot dependency declarations only; runtime result is unverified |
+| Category | Source of truth | Boundary |
+| --- | --- | --- |
+| Compose | [docker-compose.yml](./docker-compose.yml) | 독립 LAB project |
+| State | `${LAB_DATA_DIR:?set isolated LAB data root}` bind | HOME 상태와 미공유 |
+| Secrets | `${LAB_SECRET_DIR:-../secrets/labs}` 아래 LAB 전용 reference | 값은 문서화하지 않음 |
+| Networks | LAB 전용 network declarations | root network와 미공유 |
 
-## Usage
+## Interfaces
 
-1. `LAB_DATA_DIR`과 LAB secret reference directory를 독립 경로로 지정한다.
-2. 실제 기동 없이 `LAB_DATA_DIR=/tmp/hyhome-mongodb-static docker compose --env-file labs/.env.example -f labs/mongodb/docker-compose.yml --profile '*' config --quiet`로 렌더링한다.
-3. LAB Compose project, network, volume, port와 secret reference가 HOME 또는 management 경로와 겹치지 않는지 검토한다.
-4. 기동은 `python3 scripts/operations/lab.py up mongodb --purpose "<목적>" --lease <30m|4h>`로만 한다. 이 명령은 다른 LAB·HOME과의 이름·port·data 경로 충돌, 예산과 동시 LAB 수를 먼저 검사하고 `${LAB_DATA_DIR}/.ledger/mongodb.json`에 정리 대상을 기록한다. 종료는 `lab.py down mongodb`이며 volume과 data를 지우지 않는다. 만료 lease는 `lab.py reap`이 정지한다 (정책 `POL-0078`).
+### Inputs and Outputs
 
-## Available Scripts
+상태는 `mongo-key`, `mongodb{1,2,3}-data`를 `${LAB_DATA_DIR}/mongodb/` 아래에 bind하고 network는 `lab_mongodb_core_net`, `lab_mongodb_edge_net`을 사용한다. 환경 변수는 아래 표와 같다.
 
-| Command | Description |
-| --- | --- |
-| `LAB_DATA_DIR=/tmp/hyhome-mongodb-static docker compose --env-file labs/.env.example -f labs/mongodb/docker-compose.yml --profile '*' config --quiet` | LAB source render만 검증; 컨테이너를 만들지 않음 |
-
-## Configuration
-
-### Environment Variables
+#### Environment Variables
 
 | Variable | Required | Description |
 | --- | ---: | --- |
@@ -98,7 +75,26 @@ HOME Grafana는 `infra/06-observability/grafana/dashboards/`만 provisioning하�
 | `LAB_SECRET_DIR` | No | unset이면 `../secrets/labs` reference path 사용 |
 | LAB-specific port/network keys | No | Compose의 LAB default만 사용하며 root key와 공유하지 않음 |
 
-## Validation
+### Security Boundary
+
+secret은 `lab_mongodb_root_password`, `lab_mongo_express_basicauth_password`를 참조하며 값은 문서에 쓰지 않는다. `mongo-express`만 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_MONGO_EXPRESS_HOST_PORT:-38081}`에 게시하고 HOME Traefik label은 없다.
+
+## Development
+
+### Local Workflow
+
+1. `LAB_DATA_DIR`과 LAB secret reference directory를 독립 경로로 지정한다.
+2. 실제 기동 없이 `LAB_DATA_DIR=/tmp/hyhome-mongodb-static docker compose --env-file labs/.env.example -f labs/mongodb/docker-compose.yml --profile '*' config --quiet`로 렌더링한다.
+3. LAB Compose project, network, volume, port와 secret reference가 HOME 또는 management 경로와 겹치지 않는지 검토한다.
+4. 기동은 `python3 scripts/operations/lab.py up mongodb --purpose "<목적>" --lease <30m|4h>`로만 한다. 이 명령은 다른 LAB·HOME과의 이름·port·data 경로 충돌, 예산과 동시 LAB 수를 먼저 검사하고 `${LAB_DATA_DIR}/.ledger/mongodb.json`에 정리 대상을 기록한다. 종료는 `lab.py down mongodb`이며 volume과 data를 지우지 않는다. 만료 lease는 `lab.py reap`이 정지한다 (정책 `POL-0078`).
+
+#### Available Scripts
+
+| Command | Description |
+| --- | --- |
+| `LAB_DATA_DIR=/tmp/hyhome-mongodb-static docker compose --env-file labs/.env.example -f labs/mongodb/docker-compose.yml --profile '*' config --quiet` | LAB source render만 검증; 컨테이너를 만들지 않음 |
+
+### Checks
 
 Classification은 `LAB`입니다. 이 topology는 독립 Compose project, LAB 전용
 network, secret reference, state path를 사용합니다. 같은 host의 여러 member는
@@ -112,17 +108,36 @@ healthcheck가 통과한 뒤 replica set을 초기화합니다. initializer는
 비밀번호를 runtime 환경에서 소비하여 URI나 CLI 인자에 기록하지 않습니다.
 실제 인증과 replica set 결성은 격리 실행 전까지 검증되지 않았습니다.
 
-## Troubleshooting
+## Operations
+
+### Runbook Links
+
+- [Architecture index](../../docs/02.architecture/README.md)
+- [Operations index](../../docs/05.operations/README.md)
+- [RUN-0027 mongodb](../../docs/05.operations/runbooks/15-labs/0027-mongodb.md)
+
+- [RUN-0107 lab-promotion](../../docs/05.operations/runbooks/15-labs/0107-lab-promotion.md)
+
+### Observability and Recovery
+
+| Field | Evidence |
+| --- | --- |
+| Entry point | [docker-compose.yml](./docker-compose.yml) |
+| Project | `hy-home-lab-mongodb` |
+| Services | `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express` |
+| State | `mongo-key`, `mongodb{1,2,3}-data`를 `${LAB_DATA_DIR}/mongodb/` 아래에 bind. 이전 project named volume은 이동·삭제하지 않음 (SPEC-0215) |
+| Networks | `lab_mongodb_core_net`, `lab_mongodb_edge_net` |
+| Secret refs | `lab_mongodb_root_password`, `lab_mongo_express_basicauth_password` |
+| Host exposure | `mongo-express`만 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_MONGO_EXPRESS_HOST_PORT:-38081}`에 게시; HOME Traefik label 없음 (SPEC-0215) |
+| Helper assets | 없음 |
+| Readiness | Compose healthcheck/one-shot dependency declarations only; runtime result is unverified |
+
+#### Troubleshooting
 
 - `LAB_DATA_DIR` unset 오류는 안전한 fail-fast 동작이다. HOME data path를 대입하지 않는다.
 - keyfile 소유자·0400 권한이 맞지 않으면 원인을 확인하고 기존 key를 보존한다. secret file 누락은 LAB secret reference를 준비해야 하는 상태이며 값의 공개나 root secret 재사용 사유가 아니다.
 - 실제 cluster 재초기화·volume 삭제·restore는 별도 승인 없이는 실행하지 않는다.
 
-### Bind State Ownership
+#### Bind State Ownership
 
 `lab.py up`은 `${LAB_DATA_DIR}` 아래 bind 디렉터리를 실행 사용자 소유로 만든다. 이 LAB의 데이터 프로세스는 uid 999 (`mongodb`)로 쓰므로, 디렉터리 소유권이 맞지 않으면 기동이 실패할 수 있다. 그래서 rep1·rep2·arbiter는 `user: '999:999'`로 실행하고, `mongo-key-generator`는 `CHOWN`·`DAC_OVERRIDE`·`FOWNER`만 더해 keyfile을 uid 999 소유로 만든다. `gosu`는 보조 group을 버리므로 root entrypoint 경로로는 secret을 읽지 못한다. SPEC-0215 TSK-0002에서 합성 입력으로 기동해 `PRIMARY,SECONDARY,ARBITER`를 확인했고, `down` 뒤 container·network는 0개였다. 실패하면 해당 LAB 경로만 그 uid로 소유권을 맞추고 HOME 경로는 건드리지 않는다.
-
-## Related Documents
-
-- [Architecture index](../../docs/02.architecture/README.md)
-- [Operations index](../../docs/05.operations/README.md)

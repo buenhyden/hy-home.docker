@@ -1,6 +1,6 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.5.11"
+version: "0.5.14"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -506,6 +506,78 @@ statuses their lifecycles cannot reach, so those records never retire. No
 rule says whether they should; a Registry check that each listed status
 belongs to the profile's lifecycle is handed to W05 with the validator work.
 
+##### Stage README role 2026-11-13
+
+Branch `docs/w03-stage-readme-common-form`.
+
+- Registry `readme`, `documentation-readme`, `reference-category-readme`,
+  `incident-year-readme` and the three `.agents` index profiles: H2 Stage
+  Responsibility, Contents, Workflow, Related Documents with their required
+  H3s (Purpose and Readers, Inputs and Outputs; Current Items,
+  Classification; Create and Review, Transition and Exit; Upstream and
+  Downstream, Policy and Templates).
+- The README table check, merged with the root form's: every table under
+  Directories, Current Items or Documents is checked; under Directories and
+  Current Items only a table with a `Path` column must use the registered
+  columns, and under Documents every table must.
+- The 68 READMEs (Korean) are moved. Transition and Exit states each stage's
+  own lifecycle from the Registry and the retirement preconditions;
+  Classification states the identifier form and, for operations folders,
+  that other roles share the number and slug where they exist. Three folder
+  READMEs that linked into a child's files now name them as text.
+
+##### Service README role 2026-11-13
+
+Branch `docs/w03-service-readme-common-form`. This answers DOC-01's open
+item: the approved contract fixes the service README section set.
+
+- Registry `package-readme`: H2 Purpose, Interfaces, Development, Operations
+  with their required H3s (Service Role, Supported Environment; Inputs and
+  Outputs, Security Boundary; Local Workflow, Checks; Runbook Links,
+  Observability and Recovery). The old `Overview`, `Scope`, `Structure`,
+  `Usage`, `Related Documents` H2s and the `Configuration` and `Validation`
+  H3s are rejected.
+- The 130 service READMEs (Korean) under `infra/`, `labs/`, `examples/`,
+  `projects/` and `tests/fixtures/` are moved by three `doc-writer` agents.
+  Every old line, heading and code block is kept, demoted to H4 where it no
+  longer names a section. Sentences added where a required section was empty
+  state ports, secret names, health checks and networks read from each
+  folder's Compose file, the governing runbooks, or a checked "없음:" fact.
+- Review answers: truncated and multi-line health checks quoted in full or
+  described; leaf-only `docker compose -f` checks replaced by the root route;
+  false parent-to-child "declared below" chains and false "없음" lines
+  replaced by the real boundary; incomplete file lists completed; old Scope
+  and Usage headings kept; runbook links added for every existing runbook.
+
+##### Handoff H-06 2026-11-13
+
+Branch `docs/w03-template-definition`. The owner answered "follow the
+requirement" twice: the approved TemplateDefinition v14.5 schema is
+implemented rather than deferred, and the five templates without Markdown
+headings are defined by their real top-level units so the schema stays
+unchanged.
+
+- The approved schema is vendored byte for byte as
+  `docs/99.templates/contracts/template-definition.schema.json` (SHA-256
+  prefix `e490cf402419`).
+- Each of the 39 `template_roles` carries only the authored fields the
+  Registry lacked (purpose, responsibility, non_goals, policy_refs,
+  vocabulary_refs, applicability, relationships, consumer_paths, validation,
+  migration). Shared `common` dictionaries hold one meaning per frontmatter
+  key, table column and profile exception.
+- `scripts/lib/document_governance/template_definition.py` derives the rest
+  from the Registry and the template file: headings, metadata, tables,
+  lifecycle, language, extensions and contract_version. All 39 definitions
+  validate against the schema, and the load-time check rejects an undefined
+  key or column.
+- Requirement conflicts fixed on the way: `runtime-projection-codex` no
+  longer lists Claude-only keys, and `runtime-projection-claude` no longer
+  lists Codex-only keys; both now match what the renderer writes.
+
+Later correction of terminal records: TSK-0060 still says TemplateDefinition
+is "Approved; not implemented" and TSK-0059 still lists H-06 as open. Both
+are terminal, so their bodies stay; this branch is the implementation.
+
 Held for an owner decision, not changed here, because each would change
 what a requirement says:
 
@@ -606,6 +678,23 @@ None: nothing was recorded here before this Task moved to the common form.
 | W03 v14.7 retirement consistency review | 111 | W116 | independent-review | Fresh-context rules-engineer assessment of the two conflicts at `3607497a6` | PASS | The protocol is the owner; precondition 1 and the retention sentence change together; no `.agents` link to a numbered-stage document; the incident wording is confirmed and no other document repeats the restart claim | required | - |
 | W03 v14.7 retirement consistency checks | 111 | W116 | metadata-links-governance | The protocol, Stage 99 README and `identity_history.py` comment | PASS | test_identity_history OK; agent governance contract PASS; links alignment PASS; metadata check-changed at `92064f2f3` selected 3 violations 0 | required | - |
 | W03 v14.7 retirement consistency approval | 111 | W116 | independent-review | Fresh-context rules-engineer review of the applied commit `92064f2f3` | PASS | APPROVED: the protocol wording, the README line and the code comment match the assessed wording; no `.agents` link to a numbered-stage document; the held incident and postmortem entries are recorded without claiming a retention rule | required | - |
+| W03 v14.7 Stage README form RED | 111 | W116 | red-green-proof | The new test_heading cases against the stage README profiles at `588f2c3bd` | FAIL | Ran 90 tests, 13 failures: seven template outlines, five `readme` old-form cases and the Current Items table test | required | - |
+| W03 v14.7 Stage README review | 111 | W116 | independent-review | Fresh-context code-reviewer of `b86a7a942` | FAIL | CHANGES_REQUIRED: three folder READMEs linked into a child's files; stale "Structure" prose; content outside its section; generic Transition and Exit text; an overclaiming link label | required | - |
+| W03 v14.7 Stage README re-review | 111 | W116 | independent-review | Fresh-context code-reviewer of `8c062ce6d` | FAIL | CHANGES_REQUIRED: the operations README let Incident and Postmortem records retire, which no Registry status allows | required | - |
+| W03 v14.7 Stage README review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `8b000ae84` | PASS | PASS: removal limited to superseded or retired operations documents under the retirement preconditions; Incident transitions match the Registry | required | W03 v14.7 Stage README review, W03 v14.7 Stage README re-review |
+| W03 v14.7 Stage README GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `8b000ae84`; after merging main, test_heading and test_registry at `72e63401e` | PASS | Ran 812 tests, OK; after the merge 222 tests, OK | required | W03 v14.7 Stage README form RED |
+| W03 v14.7 Stage README checks | 111 | W116 | metadata-links-governance | The 68 READMEs at `8b000ae84` and `72e63401e` | PASS | Links alignment and navigation PASS; metadata check-changed violations 0; renderer drift 0; agent governance contract PASS | required | - |
+| W03 v14.7 Service README form RED | 111 | W116 | red-green-proof | The new test_heading cases against the `package-readme` profile at `588f2c3bd` | FAIL | One failure and five errors: the template outline differed and the five old-form H2 cases errored | required | - |
+| W03 v14.7 Service README review | 111 | W116 | independent-review | Fresh-context code-reviewer of `44801eb20` | FAIL | CHANGES_REQUIRED: truncated health checks; failing leaf-only Compose checks; false "없음" and parent-to-child chains; incomplete file lists; lost Scope headings; stale 아래/위 | required | - |
+| W03 v14.7 Service README re-review | 111 | W116 | independent-review | Fresh-context code-reviewer of `104ac0aca` | FAIL | CHANGES_REQUIRED: a one-line health check described as multi-line; runbook links missing in three READMEs | required | - |
+| W03 v14.7 Service README review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `3cafe4a22` | PASS | PASS: every finding fixed; health checks match Compose; runbook paths exist | required | W03 v14.7 Service README review, W03 v14.7 Service README re-review |
+| W03 v14.7 Service README GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `f73174b43`; after merging main, test_heading and test_registry | PASS | Ran 810 tests, OK; after the merge 222 tests, OK | required | W03 v14.7 Service README form RED |
+| W03 v14.7 Service README checks | 111 | W116 | metadata-links-governance | The 130 READMEs at `f73174b43` | PASS | Links alignment and navigation PASS; metadata check-changed selected 128 violations 0; pre-commit through `run-ci-precommit.sh --mode local-staged` exit 0 | required | - |
+| W03 v14.7 TemplateDefinition RED | 111 | W116 | red-green-proof | `tests/lib/document_governance/test_template_definition.py` before the implementation at `643629139` | FAIL | ImportError: `template_definition` did not exist (errors=1) | required | - |
+| W03 v14.7 TemplateDefinition review | 111 | W116 | independent-review | Fresh-context code-reviewer of `cf9f3a832` and `5b4502027` | FAIL | CHANGES_REQUIRED: validation cited tests that never reach the role; unverified migration commits; empty extensions; missing tables; filler section content; false requiredness for heading-less units; bare exceptions | required | - |
+| W03 v14.7 TemplateDefinition review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `6e4f5e3b0` | PASS | PASS: every finding fixed; the Codex profile change breaks no projection; the Task record was the one open item | required | W03 v14.7 TemplateDefinition review |
+| W03 v14.7 TemplateDefinition GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `b609385a9`; after merging the README forms, test_template_definition, test_registry, test_heading and test_profile | PASS | Ran 828 tests, OK; after the last merge 257 tests, OK | required | W03 v14.7 TemplateDefinition RED |
+| W03 v14.7 TemplateDefinition checks | 111 | W116 | metadata-links-governance | The vendored schema, Registry and 39 definitions | PASS | All 39 definitions validate against the approved schema; renderer drift 0; agent governance contract PASS; links alignment PASS; `tests/validation` shows only the 16 local-environment failures that `origin/main` shows too, and none new | required | - |
 
 ### Resolution Links
 
@@ -630,7 +719,7 @@ these profile flags is handed to W05; renumbering stays a Q-07 decision.
 
 ### Promotion Receipt
 
-Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook), #980 (Policy), #981 (Skill), #982 (H-W02-2 and H-13), #983 (Root README).
+Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook), #980 (Policy), #981 (Skill), #982 (H-W02-2 and H-13), #983 (Root README), #984 (retirement and incident numbering), #985 (Stage README), #986 (Service README).
 
 ### Next Owner
 
