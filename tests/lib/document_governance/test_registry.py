@@ -25,6 +25,7 @@ from scripts.lib.document_governance.metadata_validator import (
 )
 from scripts.lib.document_governance.registry import (
     DEFAULT_REGISTRY,
+    TEMPLATE_ROLE_KEYS,
     RegistryError,
     _declares_provider_binding,
     _path_patterns_overlap,
@@ -1831,7 +1832,7 @@ class DocumentRegistryTests(unittest.TestCase):
 
         for role, definition in raw["template_roles"].items():
             with self.subTest(role=role):
-                self.assertEqual({"source", "profiles"}, set(definition))
+                self.assertEqual(TEMPLATE_ROLE_KEYS, set(definition))
                 profiles = definition["profiles"]
                 self.assertIsInstance(profiles, list)
                 self.assertEqual(1, len(profiles))
