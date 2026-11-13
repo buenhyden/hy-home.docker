@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "3.20.0"
+version: "3.24.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 ---
 
 # Documentation Protocol
@@ -99,8 +99,12 @@ retired identities.
 
 Every link in a governed document has one of four types, and every link points
 forward from the document that writes it. A link never asks its target to
-write a link back. The author assigns the type and the reviewer confirms it;
-no link carries a machine-readable type marker, so no checker infers one.
+write a link back. The author assigns the type and the reviewer confirms it.
+An inline link's title carries the type, such as
+`[Run](https://github.com/<owner>/<repo>/blob/<commit>/<path> "evidence")`; an
+untitled link is a Normative or Navigation link, so existing links keep their
+meaning without a title. The title is one of `normative`, `evidence`,
+`historical` or `navigation`, and no other title is used.
 
 | Type | Required | Authority | Pinned version | When the target is removed or moved |
 | --- | --- | --- | --- | --- |
@@ -112,7 +116,8 @@ no link carries a machine-readable type marker, so no checker infers one.
 A required link must resolve. An evidence link whose target may later be
 deleted uses a revision-addressed form, such as a commit-pinned repository URL
 or a commit and path in plain text, because a relative link to a deleted file
-cannot stay resolved. Before a document is deleted or moved, the author sorts
+cannot stay resolved. A link titled `evidence` is a commit-pinned `https://`
+URL, whose path holds a 40-character commit. Before a document is deleted or moved, the author sorts
 its inbound consumers by link type and handles each as the last column says,
 and the reviewer confirms that sorting. Vault wiki links are a separate
 profile and are not typed this way. The Vault owner converts them outside this
@@ -162,9 +167,13 @@ missing contract, a writer that names an undeclared frontmatter key, link type
 or relation, a profile or key a scoped writer does not have, or an unregistered
 profile H3, a relation derived from itself,
 an owner path that does not exist, and a retained reverse field that is not a frontmatter key. The
-checkers enforce only that links resolve, that metadata keys and `parent_ids`
-are valid, and that this Registry binding is valid. Existing links are not
-retyped by this rule.
+checkers enforce that links resolve, that metadata keys and `parent_ids` are
+valid, that this Registry binding is valid, and, in
+`check-document-links.py --mode alignment`, that a link title is one of the
+four types and that a link titled `evidence` is commit-pinned. Whether an
+untitled link is Normative or Navigation, and whether an author chose the
+right type, stay a review. The link checker runs in the local profile;
+its hosted CI route is not wired yet. Existing links are not retyped by this rule.
 
 #### Authoring Rules
 
@@ -195,6 +204,9 @@ retyped by this rule.
    `version` at `0.1.0`; approval of its first stable contract promotes it to
    `1.0.0`. Patch, minor, and major increments communicate compatible correction,
    compatible meaning growth, and incompatible contract change respectively.
+   Below `1.0.0` a breaking or feature change raises the minor and a
+   compatible correction the patch; `1.0.0` marks the owner's explicit
+   approval of a stable contract, never a renumbering.
    Lifecycle status is independent of this content version. An artifact
    number, a numbering baseline or its reset, a Task completion and a pull
    request merge are not version events; none of them sets or resets a
@@ -422,6 +434,26 @@ evidence; surrounding instructions remain current and validated normally.
   applicable. Registered generators own generated outputs, whose freshness is
   verified without turning evidence into current policy.
 
+#### Version objects
+
+Each version below has one authored value; every other place reads it. A
+SemVer value is a `MAJOR.MINOR.PATCH` string with no `v` prefix and no
+leading zeros, compared by SemVer precedence, never as text or a number.
+
+| Object | Field | Current value | Rule | Consumers |
+| --- | --- | --- | --- | --- |
+| Document content | frontmatter `version` | per document | SemVer release value; the rule above | `contracts/document-frontmatter.schema.json`, metadata validator |
+| New-document start | Registry `common.template_initial_version` | `0.1.0` | SemVer release value | Profile schema, template checks |
+| Common form contract | Registry `common.common_form_contract` | `COMMON-DOC-FORM-1/1.0.0` | Contract ID, `/`, SemVer version, as the shared contract writes it | `template_definition.py` |
+| Vocabulary contract | Registry `common.vocabulary_contract.version` | `1.1.0` | SemVer; the first adoption, from package label `v14.5` (kept as `source_label`), is 1.0.0, by the owner's decision recorded in SPEC-0212 TSK-0064 | Glossary `Contract Version` column, `vocabulary_contract_findings` |
+| Registry serialization | Registry `schema_version` | `1` | The Registry Schema Version, kept an integer by the same decision because its only consumer, the profile schema, pins `const: 1`; a breaking structure change raises it | Profile schema, `registry.py` |
+| Product release | release version, tagged as `v` plus the version, and CHANGELOG | per release | SemVer, checked by `scripts/operations/release.py`; the `v` belongs to the tag, not the value | Release Runbook and the release workflow |
+
+Not versions: `common.contract_id` and other contract identifiers, the
+`lifecycle_generation` counter, artifact numbers and identity-space
+baselines, and input-package labels such as `v14.7`. A Task completion, a
+merge or a Q-07 renumbering changes none of the values above.
+
 #### Release Evidence Boundary
 
 The repository uses `external-release-evidence`: the Release Runbook owns the
@@ -434,8 +466,12 @@ event. Neither local readiness nor a Runbook proves deployment occurred.
 
 Release is not a document role. Do not register a Release Record profile,
 template or generator under any name; release facts stay with the owners
-above. This removes no GitHub Release, tag, CHANGELOG entry or release
-workflow. Remote release and
+above. The Registry validator rejects a profile whose ID, type, template ID
+or path patterns, or a template role whose ID or source, has a `release` or
+`releases` name token; a role for Release records under another name, and a
+generator,
+are checked by review. This
+removes no GitHub Release, tag, CHANGELOG entry or release workflow. Remote release and
 deployment actions wait for their exact target under
 [Approval boundaries](approval-boundaries.md).
 
@@ -543,8 +579,10 @@ Standalone documents keep their per-document disposition rule. Incident and
 Postmortem records never retire: they are permanent operational history and
 stay in place after closure, whatever their age, and no disposition status
 admits them to retirement. A Registry disposition entry that lists a status
-its profile's lifecycle cannot reach is a defect, not a retirement path. No
-rule here renames lifecycle statuses or applies a union of terminal sets to
+its profile's lifecycle cannot reach is a defect, not a retirement path. An
+empty entry admits no status. The Registry validator rejects an unreachable
+status, and any status on a profile with an Incident or Postmortem lifecycle.
+No rule here renames lifecycle statuses or applies a union of terminal sets to
 other stages.
 Stage 03 may be empty when no package remains.
 

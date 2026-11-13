@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.12.1"
+version: "1.12.3"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "specs"
 artifact_id: "SPEC-0204-PLAN-0001"
 parent_ids:
@@ -146,15 +146,15 @@ The order between work units is the Dependencies column of the Work Breakdown ta
 | W20 | 4, 11 | TLS listener/Agent/metrics/Traefik, protected root ceremony, restricted issuance/revocation and wrapped reissue/readiness; RUN-0105 owns maintenance and RUN-0021 links to it | W19 | TSK-0006 | RED/GREEN failure, argv/redaction, authenticated recovery access and endpoint tests |
 | W21 | 7, 11 | Declarative HMAC audit, capacity/failure alerts, protected bounded snapshot and host rotation; reuse existing backup ownership | W20 | TSK-0006 | Exact image isolated audit and snapshot recovery cases; atomic artifact and native rotation evidence |
 | W22 | 8, 11 | Changed QA, independent IaC/security/code review, scoped commits/PR | W21 | TSK-0006 | Registered local/hosted candidate checks and actual delivery receipt |
-| W23 | 11 | HOME cold boot, independent custody and selected real backup recovery | W22 | TSK-0006 | NOT_RUN until external facts, fixed runtime/cleanup proof and concrete boundary exist; HOME/P06 held |
+| W23 | 11 | HOME cold boot, independent custody and selected real backup recovery | W22 | TSK-0006 | Requires external facts, fixed runtime/cleanup proof and a concrete boundary before execution; HOME/P06 held; status in [TSK-0006](tasks/tsk-0006-openbao-trust-bootstrap-and-recovery.md) |
 | W24 | 12 | Assess consumers and implement the narrow private-unlink helper for material retired by another owner after SMTP01 evidence | W19 | TSK-0007 | Helper unit tests and document gates; private apply only after Task preflight |
-| W25 | 13 | Prepare bounded LLM Wiki contracts, synthetic fixtures and future acceptance without provisioning | None | TSK-0008 | Frozen preparation QA: 35 PASS, 99-percent coverage; registration integrated. Historical candidate CI failure retained in Task 0008; current local-main source gates/review support delivery, resource changes 0 |
+| W25 | 13 | Prepare bounded LLM Wiki contracts, synthetic fixtures and future acceptance without provisioning | None | TSK-0008 | Frozen preparation QA with coverage measurement, registration check and independent review; no resource changes; results in [TSK-0008](tasks/tsk-0008-llm-wiki-preparation.md) |
 | W26 | 14 | SMTP01 baseline, consumer/source map and failing regressions | None | TSK-0005 | Source SHA and RED command receipts |
 | W27 | 14 | Canonical root source and Supabase SMTP-only wrapper/target alias | W26 | TSK-0005 | Unit and synthetic selected Compose model |
 | W28 | 14 | COMM-002 ownership, COMM-003 tombstone and guarded retirement helper | W27 | TSK-0005 | Equal/mismatch/idempotency/race/privacy tests; no HOME mutation |
 | W29 | 14 | Exact-image synthetic SMTP authentication, capture and failure cases | W27 | TSK-0005 | Opt-in isolated native rehearsal, separate from HOME |
-| W30 | 8, 14 | Current-source checks, independent review and coordinator handoff | W28, W29 | TSK-0005 | Preserve logical commits; reviewed local-main delivery under the superseding user instruction; user-accepted delivered SMTP01/CLN01 scope; LAB GoTrue connection/activation excluded; any separately scoped ROOT/P05 operational receipt remains distinct |
-| W31 | 15 | Integrate SEC01 stable/security ledger, source receipts and bounded repairs; continue exact operational validation | None | TSK-0009 | Source/common repairs, isolated datastore and current local leaf receipts integrated. Current ROOT stable-version and reviewed security evidence; successful no-newer lookup needs no bump; HOME/recovery retain exact owner prerequisites; unknown evidence is not a clean PASS |
+| W30 | 8, 14 | Current-source checks, independent review and coordinator handoff | W28, W29 | TSK-0005 | Preserve logical commits; reviewed local-main delivery under the superseding user instruction; LAB GoTrue connection/activation excluded; any separately scoped ROOT/P05 operational receipt remains distinct; acceptance in [TSK-0005](tasks/tsk-0005-cross-tier-contracts-second-round.md) |
+| W31 | 15 | Integrate SEC01 stable/security ledger, source receipts and bounded repairs; continue exact operational validation | None | TSK-0009 | Verify by current ROOT stable-version and reviewed security evidence; a successful no-newer lookup needs no bump; HOME/recovery retain exact owner prerequisites; unknown evidence is not a clean PASS; receipts in [TSK-0009](tasks/tsk-0009-sec01-stable-security-integration.md) |
 | W32 | 16, 8 | P02 single value-free catalog, classification, generated views and reissuance guards | W27, W28 | TSK-0010 | Existing source/schema reuse, alias and privacy RED/GREEN, scoped changed/staged checks and independent review; real migration/recovery are separate lanes |
 | W33 | 1, 4, 6, 8, 17 | P03 current service/endpoint/environment, opt-in dedicated broker observer identities with minimal ACLs, and four-location port contracts; independent source preparation before consumer-specific runtime acceptance | W27, W28 | TSK-0011 | Existing inventory/tool reuse, synthetic RED/GREEN, privacy and DEV/MNG independence; final mappings and native/HOME checks follow their exact owning prerequisites |
 | W34 | 1, 8, 18 | P04 baseline, source reuse, exclusive ownership and RED cases | None | TSK-0012 | Current SHA/consumer ledger; reference audit is not native acceptance |
@@ -199,11 +199,11 @@ The order between work units is the Dependencies column of the Work Breakdown ta
 | W73 | 19 | Quarantine ambiguous sends and reject expired SMTP leases | W72 | TSK-0018 | Versioned SQL004, closed consumer contract, deadline and native quarantine tests |
 | W74 | 19 | Execute the existing n8n notifier through an actual isolated queue worker, external runner and SMTP capture, then perform serial empty restoration | W73 | TSK-0019 | Exact reviewed images, terminal execution and Code-node proof, capture/unknown/reconciliation/no-resend and separate metadata/DEV restore; no accepted-response-loss or HOME claim |
 | W75 | 18 | Execute existing Airflow manifest DAG through actual isolated Celery publication, retry, replay and serial empty restoration | None | TSK-0020 | Exact cached-image driver/UID preflight, terminal DagRun/task/Celery identity, real S3 readback and separate DEV/metadata PG18.6 restore |
-| W76 | 15 | Adopt the fixed Traefik v3.7.16 and Prometheus v3.15.1 image pins, supersede the lapsed SEC01 acceptances in POL-0013 and POL-0045, and record the owner pull, scan, config-check, HOME recreation and rollback steps | None | TSK-0021 | Registry digests and latest releases verified, pins, tech-stack projection and ledger refreshed; pull, scan, boot, recreation and rollback `NOT_RUN` |
+| W76 | 15 | Adopt the fixed Traefik v3.7.16 and Prometheus v3.15.1 image pins, supersede the lapsed SEC01 acceptances in POL-0013 and POL-0045, and record the owner pull, scan, config-check, HOME recreation and rollback steps | None | TSK-0021 | Verify Registry digests and latest releases; refresh pins, tech-stack projection and ledger; pull, scan, boot, recreation and rollback are owner steps; status in [TSK-0021](tasks/tsk-0021-traefik-prometheus-fixed-image-pins.md) |
 | W79 | 23 | Freeze runtime/source inventory, duplicate-workflow and validator dependencies | None | TSK-0022 | Redacted identities, roots, digests and owner exclusions |
 | W80 | 23 | Implement narrow discovery, lossless snapshots and private local Outbox | W79 | TSK-0022 | RED/GREEN replay, restart, multiple ideas, paths/hashes, conflict and permissions |
 | W81 | 23 | Implement adapter-independent delivery and reconciliation | W80 | TSK-0022 | Fake adapters prove bounded retry, response loss, strict durable receipt and request binding |
-| W82 | 23 | Prepare bounded generic transport; adopt exact Gateway fixtures and inactive n8n forwarding | W81 | TSK-0022 | Fixed PR620 dev contract/fixture pinned and source reviewed; actual conversion BLOCKED on article collection time; Native operation NOT_RUN |
+| W82 | 23 | Prepare bounded generic transport; adopt exact Gateway fixtures and inactive n8n forwarding | W81 | TSK-0022 | Fixed PR620 dev contract/fixture and source review; actual conversion needs an authoritative article collection time; native operation is a separate lane; status in [TSK-0022](tasks/tsk-0022-hermes-blog-ingestion.md) |
 | W83 | 8, 23 | Document recovery/metrics/MCP, independently review and admit approved Native checks | W80-W82 | TSK-0022 | Source/synthetic and actual worker-to-Gateway evidence separated |
 
 #### P10 staged admission and acceptance ownership
@@ -322,11 +322,12 @@ issuer/renderer/journal/config and subject0085 writer. P04 owns opsflow SQL,
 roles, adapters and DAGs; P05 owns notifier/native credential copies. P06
 proposes their required changes and never creates duplicate authorities.
 
-P01 has new source/diagnostic commits but remains blocked on current native,
-HOME, restricted snapshot and independent custody/restore evidence. P02 has
-committed source plus an uncommitted lifecycle/lock follow-up; the new ignored
-lock-inheritance proposal reports synthetic PASS and independent review but
-is not integrated generator acceptance. Its catalog has no opsflow entry or
+P01 ([TSK-0006](tasks/tsk-0006-openbao-trust-bootstrap-and-recovery.md))
+needs current native, HOME, restricted snapshot and independent custody/restore
+evidence. P02 ([TSK-0010](tasks/tsk-0010-p02-secret-catalog-and-views.md))
+lifecycle/lock follow-up and any lock-inheritance proposal need synthetic
+verification and independent review, and are not integrated generator
+acceptance until its Task records it. Its catalog has no opsflow entry or
 approved KV destination. P03 source contracts and P04/P05 drafts do not prove
 actual delivery or operational consumers. Preserve all these writers' changes.
 
@@ -444,7 +445,7 @@ returned `2b9f5ec82cb73ea148fb27bfbd2d35c10e328e51` and no open PRs. Local main
 contains three unpublished documentation commits. The worker starts at the
 Task issuance commit in its own `codex/p03-service-integration-contracts`
 branch and `.worktrees/p03-service-integration-contracts` worktree. This
-issuance creates no second implementation session. Completed TSK-0002/0003
+issuance creates no second implementation session. [TSK-0002](tasks/tsk-0002-external-project-integration.md)/[0003](tasks/tsk-0003-backup-and-cross-tier-operations.md)
 and TSK-0005's historical/SMTP work are not reopened or overwritten.
 
 W33's declared prerequisites W27/W28 have integrated source; full SEC01/HOME
@@ -529,7 +530,7 @@ private comparison, unlink, broad sync/prune, rotation or HOME deployment.
 
 #### P01 current continuation ownership and sequence
 
-The 2026-10-11 assessment continues existing blocked TSK-0006/W19-W23;
+The 2026-10-11 assessment continues existing [TSK-0006](tasks/tsk-0006-openbao-trust-bootstrap-and-recovery.md)/W19-W23;
 it allocates no new Task or Spec. Assessment input is clean local main
 `728ec6379f193256cee342550e38479cf3ebfc56`, remote main `2b9f5ec82`.
 Server/Agent declaration is SEC01's exact 2.7.1 contract; fresh HOME metadata
@@ -700,11 +701,14 @@ admission remains consumer-dependent rather than a repeat security fix.
 #### Historical closure-branch completion recheck — 2026-10-04
 
 At closure source `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7`, W4's
-Restic/dev-pg source chain and approved synthetic restore passed; TSK-0003 is completed with its exact selected-set/snapshot receipt.
-TSK-0002 and TSK-0004 remain completed. W2's exact-image n8n/Crawl4AI runtime
-and secret/egress security acceptance remain BLOCKED in TSK-0001, so this Plan
-and Spec remain active. Image pulls and the reviewed isolated security fixture
-require the pending scope approval; HOME and host policy changes remain held.
+Restic/dev-pg source chain and approved synthetic restore are verified in
+[TSK-0003](tasks/tsk-0003-backup-and-cross-tier-operations.md); see also
+[TSK-0002](tasks/tsk-0002-external-project-integration.md) and
+[TSK-0004](tasks/tsk-0004-secret-layout-and-environment-parity.md). W2's
+exact-image n8n/Crawl4AI runtime and secret/egress security acceptance are
+tracked in [TSK-0001](tasks/tsk-0001-runtime-compatibility-and-security.md), so
+this Plan and Spec remain active until it closes. Image pulls and the reviewed isolated security fixture
+require scope approval; HOME and host policy changes remain held.
 
 Protected PR358 activated the current Plan and Tasks; SPEC-0204-TSK-0001 now owns the
 exclusive reintegration ledger and fresh validation. The historical Task
@@ -716,10 +720,10 @@ or current lifecycle transitions. Runtime gaps keep this Plan active.
 The owner requested prerequisite reconciliation; exact writers for this pass
 are this Plan and [SPEC-0204-TSK-0001](tasks/tsk-0001-runtime-compatibility-and-security.md).
 Protected baseline is
-`ebeb83521c768fedc620380b0c2e92db10a6fcdc`; Task2/3/4 completed source and
-private parity receipts are already delivered. This pass neither reopens them
-nor duplicates their implementation. The current Task owns source, synthetic,
-image-cache, runtime, and security evidence; its derived status is `blocked`.
+`ebeb83521c768fedc620380b0c2e92db10a6fcdc`; Task2/3/4 source and
+private parity receipts are owned by [TSK-0002](tasks/tsk-0002-external-project-integration.md), [TSK-0003](tasks/tsk-0003-backup-and-cross-tier-operations.md) and [TSK-0004](tasks/tsk-0004-secret-layout-and-environment-parity.md). This pass
+neither reopens them nor duplicates their implementation. The current Task owns source, synthetic,
+image-cache, runtime, and security evidence and its status.
 
 Before separately authorized runtime work, the Task's recorded prerequisites
 remain exact image digest and entrypoint review, isolated non-HOME context,
@@ -743,7 +747,7 @@ operator-owned 0700 directory, and is a 0600 regular single-link file. No
 manifest value or credential byte enters tracked evidence.
 
 `PG-020` remains retained for rollback because its observed nlink is 2;
-canonical `COMM-002` remains protected; `COMM-003` is pending SMTP01 evidence
+canonical `COMM-002` remains protected; `COMM-003` requires SMTP01 evidence
 and all five checks.
 Optional stacks are `UNKNOWN_BLOCKED`; `owner@buenhyden` re-reviews them by
 2026-10-17. LAB runtime, secrets, data, images and Compose remain excluded.
@@ -853,12 +857,11 @@ worktrees, installed Cron, credentials and runtime resources from writes.
   headers and body after subprocess startup; input acquisition and subprocess
   creation are outside that deadline. Timeout kills and reaps the child and
   remains ambiguous. After a correction to pre-send connect failure classification,
-  independent security re-review passed. The final suite reported 74 PASS and
-  one optional validator SKIP out of 75, with Ruff check and format passing.
-  A separately approved synthetic localhost HTTP/TLS run passed 11/11 on the
-  final revision; the 93% measured coverage excludes its child subprocess.
-  Fixed-validator focused tests passed 14/14. Private CA and live operational
-  connectivity remain unverified.
+  run an independent security re-review, the full suite with Ruff check and
+  format, and a separately approved synthetic localhost HTTP/TLS run on the
+  final revision, measuring coverage outside the child subprocess, plus focused
+  fixed-validator tests. Private CA and live operational connectivity need
+  separate proof. Results are in [TSK-0022](tasks/tsk-0022-hermes-blog-ingestion.md).
 - [x] Prepare and test the initial inactive authenticated fail-closed stub;
   this historical step does not establish Gateway compatibility.
 - [ ] Retrieve and verify the Gateway API and fixture at the fixed Blog-data dev
@@ -873,20 +876,17 @@ worktrees, installed Cron, credentials and runtime resources from writes.
   workflow and its tests, then review their integration through explicit handoff.
   Source includes receipt/Outbox handling, pinned fixture and schema, content
   type, explicit offline replay and adapter/Outbox response loss. Synthetic
-  adapter/replay tests passed 6/6; independent code and security reviews were
-  performed. The inactive workflow uses a reserved domain, screens input and
+  adapter/replay tests and independent code and security reviews apply. The inactive workflow uses a reserved domain, screens input and
   returns a fixed 400 on invalid input, stricter than the Gateway contract.
   Native import, Queue execution, credentials, TLS, actual logs and alerts, URL
-  runner and runtime operation remain NOT_RUN. The 105-test full suite with one
-  skip predates the final IF test change and does not prove that later revision.
-  The latest source removes the URL global, delegates authority validation to
+  runner and runtime operation are separate lanes. The source removes the URL global, delegates authority validation to
   the Gateway to retain valid IDN/IPv6, applies a stricter 24-hour prefilter,
-  fixed fail-safe 400 IF branch and success MIME check. Empty-VM Node tests
-  passed 13/13. Its URL preprocessing admits only a subset of Gateway-valid
-  inputs. Independent final adapter, replay and workflow correctness/security
-  reviews found no remaining Critical or Important findings. The replacement
-  checkout's full suite passed 107 tests using the pinned validator and
-  synthetic localhost tests; this is not Native or hosted acceptance.
+  fixed fail-safe 400 IF branch and success MIME check. Verify with empty-VM Node tests,
+  the full suite using the pinned validator and synthetic localhost tests, and
+  independent final adapter, replay and workflow correctness/security reviews;
+  this is not Native or hosted acceptance. Its URL preprocessing admits only a
+  subset of Gateway-valid inputs. Counts and findings are in
+  [TSK-0022](tasks/tsk-0022-hermes-blog-ingestion.md).
 - [ ] Test those exact fixtures RED/GREEN, then prepare versioned inactive n8n
   source: authenticated event, schema and file/report identity checks, Gateway
   request, durable receipt validation, state recording and bounded error alerting.
@@ -958,7 +958,7 @@ worktrees, installed Cron, credentials and runtime resources from writes.
   worker-to-Gateway path from the actual n8n worker. Approve
   bounded outage/response-loss/replay and email/workflow regressions separately;
   never interrupt shared services just to simulate a fault. Keep all unexecuted
-  lanes visible and criterion 23 pending.
+  lanes visible; criterion 23 acceptance is owned by [TSK-0022](tasks/tsk-0022-hermes-blog-ingestion.md).
 
 ### Change and Rollback
 
@@ -978,7 +978,7 @@ to changed documents. Protected PR checks are required for remote integration;
 local success is not a merge receipt. HOME activation, real backup/restore,
 data migration and real external-project
 connection remain `NOT_RUN` here. The separately approved synthetic dev-pg
-Restic restore passed in TSK-0003 and is not HOME recovery evidence.
+Restic restore is owned by [TSK-0003](tasks/tsk-0003-backup-and-cross-tier-operations.md) and is not HOME recovery evidence.
 
 ### Stage Placement
 

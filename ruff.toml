@@ -45,10 +45,11 @@ ignore = ["RUF001", "RUF002", "RUF003"]
 
 # Two modules re-export names they never call, so `F401` reads their public
 # surface as dead code. Removing those imports was measured, not assumed: it
-# left `document_corpus_lifecycle` without `render_migration_manifest`,
-# `ManifestEvidence` and nine more attributes that registered tests reach
-# through the entrypoint, and it broke the symmetry of the `try` / `except
-# ModuleNotFoundError` pair that lets a gate leaf run as a sibling script.
+# left `document_corpus_lifecycle` without `_read_regular_repo_bytes`, which a
+# registered test reaches through the entrypoint, and it broke the symmetry of
+# the `try` / `except ModuleNotFoundError` pair that lets a gate leaf run as a
+# sibling script. `DEFAULT_CONTRACT` and `HISTORICAL_CONTRACT` are also still
+# re-exported unused.
 [lint.per-file-ignores]
 "scripts/validation/check-document-corpus-lifecycle.py" = ["F401"]
 "scripts/lib/gate/github_workflow_contract.py" = ["F401"]

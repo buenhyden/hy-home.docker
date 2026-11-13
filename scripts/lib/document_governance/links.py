@@ -1171,6 +1171,57 @@ def _links_into_retired_package(link: DocumentLink, reserved: frozenset[int]) ->
     return match is not None and int(match.group("number")) in reserved
 
 
+# documentation-protocol.md Link types: the inline-link title carries the
+# type; an untitled link is normative or navigation. Registry common.link_types
+# owns the names (a test keeps them equal).
+LINK_TYPES = frozenset({"normative", "evidence", "historical", "navigation"})
+_LINK_TITLE = r"""(?:"(?P<dq>[^"]*)"|'(?P<sq>[^']*)'|\((?P<pq>[^()]*)\))"""
+# A link may wrap inside a paragraph, and its text may hold one bracket pair.
+_TITLED_LINK = re.compile(
+    r"(?<!!)\[(?:[^\[\]]|\[[^\[\]]*\])*\]\(\s*<?(?P<dest>[^\s<>]+?)>?\s+"
+    + _LINK_TITLE
+    + r"\s*\)"
+)
+_TITLED_DEFINITION = re.compile(
+    r"^ {0,3}\[[^\]]+\]:\s*<?(?P<dest>[^\s<>]+?)>?\s+" + _LINK_TITLE + r"\s*$",
+    re.MULTILINE,
+)
+_COMMIT_PINNED_URL = re.compile(r"^https://\S+/[0-9a-f]{40}(?:[/#?]|$)")
+
+
+def _paragraphs(text: str) -> Iterable[tuple[int, str]]:
+    """Yield each unfenced paragraph with its first line number."""
+
+    start, lines = 0, []
+    for line_no, line in _unfenced_lines(text):
+        if line.strip():
+            if not lines:
+                start = line_no
+            lines.append(_without_inline_code(line))
+            continue
+        if lines:
+            yield start, "\n".join(lines)
+            start, lines = 0, []
+    if lines:
+        yield start, "\n".join(lines)
+
+
+def _link_type_findings(block: str) -> Iterable[tuple[str, str]]:
+    matches = [*_TITLED_LINK.finditer(block), *_TITLED_DEFINITION.finditer(block)]
+    for match in matches:
+        if _is_escaped(match.string, match.start()):
+            continue
+        title = next(
+            value
+            for value in (match["dq"], match["sq"], match["pq"])
+            if value is not None
+        )
+        if title not in LINK_TYPES:
+            yield "link-type-unknown", title
+        elif title == "evidence" and not _COMMIT_PINNED_URL.match(match["dest"]):
+            yield "link-evidence-unpinned", match["dest"]
+
+
 def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
     """Validate current local links, anchors, and old templates.
 
@@ -1235,6 +1286,11 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
             elif headings is not None and link.fragment not in headings:
                 findings.append(_finding(link, "missing-link-anchor", link.raw_target))
     for node in graph.nodes:
+        for line_no, block in _paragraphs(node.text):
+            findings.extend(
+                LinkFinding(f"{node.path.as_posix()}:{line_no}", code, message)
+                for code, message in _link_type_findings(block)
+            )
         for line_no, line in _unfenced_lines(node.text):
             if "operation.template.md" in line:
                 findings.append(

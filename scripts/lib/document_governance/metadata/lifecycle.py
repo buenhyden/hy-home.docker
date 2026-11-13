@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime
 import os
 import pathlib
 import re
@@ -90,6 +91,26 @@ def _expected_document_type(profile_id: str) -> str:
         return document_type(profile_id)
     except (KeyError, RegistryError):
         return profile_id
+
+
+# documentation-protocol.md: a Guide, Operations Policy or Runbook whose
+# next_review_at has passed is stale until reviewed.
+_CURRENCY_TYPES = frozenset(
+    {"operation/guide", "operation/policy", "operation/runbook"}
+)
+
+
+def _review_overdue(next_review: object, reviewed: object) -> bool:
+    try:
+        due = datetime.date.fromisoformat(str(next_review)[:10])
+    except ValueError:
+        return False  # absent or malformed: invalid-next-review-at reports it
+    if due >= datetime.datetime.now(datetime.UTC).date():
+        return False
+    try:
+        return datetime.date.fromisoformat(str(reviewed)[:10]) < due
+    except ValueError:
+        return True
 
 
 def validate_record(
@@ -705,12 +726,16 @@ def validate_record(
                 "superseded_by must resolve to current or verified retired lineage",
             )
         )
-    if status == "active" and "reviewed_at" in required and reviewed_at in (None, ""):
+    if (
+        status == "active"
+        and record.metadata.get("type") in _CURRENCY_TYPES
+        and _review_overdue(record.metadata.get("next_review_at"), reviewed_at)
+    ):
         findings.append(
             _finding(
                 record,
                 "stale-active",
-                "active freshness-managed artifact lacks reviewed_at evidence",
+                "next_review_at has passed without a reviewed_at on or after it",
             )
         )
     temporal_fields = (

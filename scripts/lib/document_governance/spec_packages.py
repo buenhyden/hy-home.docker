@@ -153,6 +153,11 @@ class PackageEvidence:
     acceptance: Mapping[str, str]
     unresolved_failures: frozenset[str]
     historically_closed: frozenset[str] = frozenset()
+    # (criterion, Task path, its decision row's first four cells, reason): an
+    # accepted criterion the sdlc 1.9.0 acceptance rule does not support.
+    acceptance_gaps: tuple[
+        tuple[str, pathlib.PurePosixPath, tuple[str, ...], str], ...
+    ] = ()
 
 
 @dataclasses.dataclass(frozen=True)
@@ -1301,16 +1306,7 @@ def _v5_evidence_contract(
     work: set[str] = set()
     planned_pairs: set[tuple[str, str]] = set()
     assignments: dict[tuple[str, str], frozenset[str]] = {}
-    task_references = {
-        reference: task.artifact_id
-        for task in tasks
-        for reference in (
-            task.artifact_id,
-            task.artifact_id.rsplit("-", 2)[-2]
-            + "-"
-            + task.artifact_id.rsplit("-", 1)[-1],
-        )
-    }
+    task_references = _task_references(tasks)
     for unit, raw_criteria, _, dependencies, raw_tasks, _ in plan_rows:
         if re.fullmatch(r"W[1-9][0-9]*", unit) is None or unit in work:
             raise SpecPackageError("Plan Work Unit identities must be unique W labels")
@@ -1530,6 +1526,53 @@ def _historical_pass_pairs(
     return (historical_completed_pairs or {}).get(task.path, frozenset())
 
 
+def _unit_is_live(task: SpecDocument, unit: str) -> bool:
+    """Whether a Task can still prove a Work Unit; a cancelled Task or item cannot."""
+
+    if task.status == "cancelled":
+        return False
+    return not task.items or any(
+        row[4] != "cancelled"
+        and unit in _cell_references(row[1], "Execution Item Work Unit")
+        for row in task.items
+    )
+
+
+def _task_references(tasks: Sequence[SpecDocument]) -> dict[str, str]:
+    """Map each ID form a Plan Task cell may use to the Task's artifact ID."""
+
+    return {
+        reference: task.artifact_id
+        for task in tasks
+        for reference in (
+            task.artifact_id,
+            task.artifact_id.rsplit("-", 2)[-2]
+            + "-"
+            + task.artifact_id.rsplit("-", 1)[-1],
+        )
+    }
+
+
+def _citation_gap(
+    criterion: str,
+    evidence: str,
+    names: Mapping[str, tuple[str, frozenset[str], str, str]],
+    resolved: set[tuple[str, str]],
+) -> str | None:
+    """Why an accepted criterion's cited rows fall short of sdlc 1.9.0, if they do."""
+
+    cited = () if evidence == "-" else _cell_references(evidence, "Acceptance Evidence")
+    if not any(names[ref][0] == "PASS" and criterion in names[ref][1] for ref in cited):
+        return f"criterion {criterion} must cite a PASS row for it"
+    for reference in cited:
+        if names[reference][0] != "PASS" and (reference, criterion) not in resolved:
+            return (
+                f"criterion {criterion} cites {reference}, a non-PASS row "
+                "no later row resolves"
+            )
+    return None
+
+
 def _v6_evidence_contract(
     spec: SpecDocument,
     plan: SpecDocument | None,
@@ -1569,16 +1612,7 @@ def _v6_evidence_contract(
     work: set[str] = set()
     planned_pairs: set[tuple[str, str]] = set()
     assignments: dict[tuple[str, str], frozenset[str]] = {}
-    task_references = {
-        reference: task.artifact_id
-        for task in tasks
-        for reference in (
-            task.artifact_id,
-            task.artifact_id.rsplit("-", 2)[-2]
-            + "-"
-            + task.artifact_id.rsplit("-", 1)[-1],
-        )
-    }
+    task_references = _task_references(tasks)
     for unit, raw_criteria, _, dependencies, raw_tasks, _ in plan_rows:
         if re.fullmatch(r"W[1-9][0-9]*", unit) is None or unit in work:
             raise SpecPackageError("Plan Work Unit identities must be unique W labels")
@@ -1604,6 +1638,10 @@ def _v6_evidence_contract(
     owned: dict[str, set[str]] = {}
     task_pass_pairs: dict[str, set[tuple[str, str]]] = {}
     historical_pairs: set[tuple[str, str]] = set()
+    live_pairs: set[tuple[str, str]] = set()
+    live_pass: set[tuple[str, str]] = set()
+    decision_rows: dict[str, tuple[pathlib.PurePosixPath, tuple[str, ...]]] = {}
+    gaps: dict[str, str] = {}
     current_tasks = tuple(task for task in tasks if task.path not in historical_tasks)
     for task in tasks:
         assigned_pairs = {
@@ -1617,6 +1655,7 @@ def _v6_evidence_contract(
             )
             pass_pairs.update(admitted)
             historical_pairs.update(admitted)
+            live_pass.update(admitted)
             continue
         task_registry = task.evidence_registry or registry
         generation = task_registry.common.get("lifecycle_generation", 6)
@@ -1624,6 +1663,7 @@ def _v6_evidence_contract(
             _registered_common_values(task_registry, "result_domain")
         )
         names: dict[str, tuple[str, frozenset[str], str, str]] = {}
+        resolved: set[tuple[str, str]] = set()
         passed: set[tuple[str, str]] = set()
         for row in _v6_evidence_rows(task, task_registry):
             name, raw_criteria, unit, check, _, result, _, *tail = row
@@ -1679,6 +1719,7 @@ def _v6_evidence_contract(
                             "Resolves requires the same Check and Work Unit"
                         )
                     for criterion in earlier[1] & row_criteria:
+                        resolved.add((target, criterion))
                         failures.get(criterion, set()).discard(
                             f"{task.artifact_id}:{target}"
                         )
@@ -1696,6 +1737,10 @@ def _v6_evidence_contract(
             names[name] = (result, row_criteria, unit, check)
         pass_pairs.update(passed)
         task_pass_pairs[task.artifact_id] = passed
+        live_pairs.update(
+            pair for pair in assigned_pairs if _unit_is_live(task, pair[1])
+        )
+        live_pass.update(pair for pair in passed if _unit_is_live(task, pair[1]))
         for row in _criterion_acceptance_rows(task, task_registry):
             criterion, decision, evidence, rationale, *owner = row
             if generation >= 7 and (not owner or owner[0] == "-"):
@@ -1730,6 +1775,14 @@ def _v6_evidence_contract(
                 )
             acceptance[criterion] = decision
             owned.setdefault(task.artifact_id, set()).add(criterion)
+            decision_rows[criterion] = (
+                task.path,
+                (criterion, decision, evidence, rationale),
+            )
+            if decision == "accepted":
+                reason = _citation_gap(criterion, evidence, names, resolved)
+                if reason is not None:
+                    gaps[criterion] = reason
     unresolved = frozenset(
         criterion for criterion, open_rows in failures.items() if open_rows
     )
@@ -1760,6 +1813,13 @@ def _v6_evidence_contract(
             raise SpecPackageError(
                 f"accepted criterion {criterion} has an unresolved "
                 + ("required observation" if generation >= 7 else "FAIL")
+            )
+        unproved = sorted(
+            pair[1] for pair in live_pairs - live_pass if pair[0] == criterion
+        )
+        if unproved and criterion not in gaps:
+            gaps[criterion] = (
+                f"criterion {criterion} has no PASS for Work Unit {unproved[0]}"
             )
     closed = {
         criterion
@@ -1832,6 +1892,10 @@ def _v6_evidence_contract(
         dict(acceptance),
         unresolved,
         historically_closed,
+        tuple(
+            (criterion, *decision_rows[criterion], reason)
+            for criterion, reason in sorted(gaps.items(), key=lambda item: int(item[0]))
+        ),
     )
 
 
@@ -1872,6 +1936,60 @@ def _v6_cancelled_task(
             )
 
 
+# A repository path in a code span. Promotion Map prose that names a target
+# without one ("the glossary") and a package-local link are not read.
+_PROMOTION_TARGET = re.compile(
+    r"`((?!tasks/|contracts/)[^`\s]+/[^`\s/]+\.(?:md|json|ya?ml|py|sh|toml))`"
+)
+
+
+def _promotion_findings(package: SpecPackage) -> tuple[str, ...]:
+    """Each target path the Plan's Promotion Map names must reach a receipt.
+
+    A receipt of a Task that is not cancelled covers a target by naming its
+    repository path, or its bare file name when no other target shares that
+    name, with the update or the reason none is needed; the commit, the reason
+    and any target the Plan names in prose stay a review.
+    """
+
+    if package.plan is None:
+        return ()
+    targets = tuple(
+        dict.fromkeys(
+            _PROMOTION_TARGET.findall(
+                "\n".join(
+                    line
+                    for subsection in ("Durable Meaning", "Owner and Receipt")
+                    for line in _subsection_lines(
+                        package.plan.body, "Promotion Map", subsection
+                    )
+                )
+            )
+        )
+    )
+    receipts = "\n".join(
+        line
+        for task in package.tasks
+        if task.status != "cancelled"
+        for line in _subsection_lines(task.body, "Handoff", "Promotion Receipt")
+    )
+    names = [pathlib.PurePosixPath(target).name for target in targets]
+
+    def covered(target: str, name: str) -> bool:
+        if re.search(rf"(?<![\w.-]){re.escape(target)}(?![\w-])", receipts):
+            return True
+        # A bare name abbreviates a target only when no other target shares it.
+        return names.count(name) == 1 and bool(
+            re.search(rf"(?<![\w./-]){re.escape(name)}(?![\w-])", receipts)
+        )
+
+    return tuple(
+        f"Promotion Map target {target} appears in no Promotion Receipt"
+        for target, name in zip(targets, names, strict=True)
+        if not covered(target, name)
+    )
+
+
 def archive_readiness_findings(
     package: SpecPackage, evidence: PackageEvidence
 ) -> tuple[str, ...]:
@@ -1908,6 +2026,7 @@ def archive_readiness_findings(
         f"criterion {criterion} has an unresolved FAIL"
         for criterion in sorted(evidence.unresolved_failures, key=int)
     )
+    findings.extend(_promotion_findings(package))
     return tuple(findings)
 
 
@@ -5395,6 +5514,102 @@ def _validate_legacy_multirow_receipts(
     return tuple(findings)
 
 
+def _acceptance_basis(
+    package: SpecPackage,
+    path: pathlib.PurePosixPath,
+    criterion: str,
+    registry: DocumentRegistry,
+) -> object | None:
+    """What one accepted criterion's decision rests on, or None if unreadable.
+
+    The decision row, each Evidence row it cites (name, criteria, Work Unit,
+    Check, Result, Required and whether a later row resolves it) and the live
+    (Work Unit, Task) pairs the Plan assigns to the criterion.
+    """
+
+    task = next((member for member in package.tasks if member.path == path), None)
+    if task is None or package.plan is None:
+        return None
+    task_registry = task.evidence_registry or registry
+    try:
+        decision = next(
+            row
+            for row in _criterion_acceptance_rows(task, task_registry)
+            if row[0] == criterion
+        )
+        rows = {row[0]: row for row in _v6_evidence_rows(task, task_registry)}
+        cited = () if decision[2] == "-" else _cell_references(decision[2], "Evidence")
+        resolved = {
+            target
+            for row in rows.values()
+            if row[-1] != "-"
+            for target in _cell_references(row[-1], "Evidence Resolves")
+        }
+        generation = task_registry.common.get("lifecycle_generation", 6)
+        evidence = tuple(
+            (
+                name,
+                *(rows[name][index] for index in (1, 2, 3, 5)),
+                rows[name][7] if generation >= 7 else "required",
+                name in resolved,
+            )
+            for name in sorted(cited)
+        )
+        references = _task_references(package.tasks)
+        members = {member.artifact_id: member for member in package.tasks}
+        live = frozenset(
+            (unit, members[references[reference]].artifact_id)
+            for unit, raw_criteria, _, _, raw_tasks, _ in _v5_plan_rows(
+                package.plan, registry
+            )
+            if criterion in _cell_references(raw_criteria, "Plan Criteria")
+            for reference in _cell_references(raw_tasks, "Plan Task")
+            if _unit_is_live(members[references[reference]], unit)
+        )
+    except (StopIteration, KeyError, SpecPackageError):
+        return None
+    return decision[:4], evidence, live
+
+
+def _acceptance_findings(
+    previous: Sequence[SpecPackage],
+    current: Sequence[SpecPackage],
+    previous_registry: DocumentRegistry,
+    registry: DocumentRegistry,
+) -> tuple[SpecPackageFinding, ...]:
+    """Hold a decision recorded in this change to the sdlc 1.9.0 acceptance rule.
+
+    A decision recorded under 1.9.0 or later is a Criterion Acceptance row that is
+    new or changed against the base, or one whose cited Evidence rows or live
+    Plan pairs changed; the Current Owner cell does not re-record it. A decision
+    left as recorded stands, so the rule never reaches back.
+    """
+
+    if previous_registry.common.get("lifecycle_generation", 0) < 6:
+        return ()
+    base = {package.spec.artifact_id: package for package in previous}
+    findings: list[SpecPackageFinding] = []
+    for package in current:
+        earlier = base.get(package.spec.artifact_id)
+        for criterion, path, _, reason in (
+            package.evidence.acceptance_gaps if package.evidence is not None else ()
+        ):
+            recorded = (
+                None
+                if earlier is None
+                else _acceptance_basis(earlier, path, criterion, previous_registry)
+            )
+            if recorded is None or recorded != _acceptance_basis(
+                package, path, criterion, registry
+            ):
+                findings.append(
+                    SpecPackageFinding(
+                        "acceptance-unsupported", path.as_posix(), f"accepted {reason}"
+                    )
+                )
+    return tuple(findings)
+
+
 def _failed_observation_findings(
     previous: Sequence[SpecPackage],
     current: Sequence[SpecPackage],
@@ -5611,8 +5826,13 @@ def validate_repository_spec_package_lifecycle_details(
             if previous_registry.common.get("lifecycle_generation", 0) >= 7
             else previous
         )
-        observation_findings = _failed_observation_findings(
-            observation_base, current, previous_registry, registry
+        observation_findings = (
+            *_failed_observation_findings(
+                observation_base, current, previous_registry, registry
+            ),
+            *_acceptance_findings(
+                observation_base, current, previous_registry, registry
+            ),
         )
     return SpecPackageLifecycleValidation(
         tuple(

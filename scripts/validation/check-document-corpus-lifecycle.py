@@ -22,22 +22,14 @@ from scripts.lib.document_governance.lifecycle.contract import (  # noqa: E402
     ROOT,
     SAFETY_FINDING_CODES,
     Finding,
-    ManifestEvidence,
-    MigrationManifestDocument,
-    MigrationManifestRow,
     ProfileError,
-    ReviewVerdict,
     _CorpusSafetyError,
     _ensure_metadata_loaded,
     _lexically_safe_path,
     _read_regular_repo_bytes,
     _rooted,
     _sensitive_value_is_present,
-    generate_manifest_skeleton,
-    load_migration_contract,
-    load_migration_manifest,
     metadata,
-    render_migration_manifest,
 )
 from scripts.lib.document_governance.lifecycle.occupancy import (  # noqa: E402
     run as run_occupancy,
@@ -92,7 +84,36 @@ def _parser() -> argparse.ArgumentParser:
         help="Stage 99 registry",
     )
     parser.add_argument("--base-ref")
+    parser.add_argument(
+        "--readiness",
+        action="store_true",
+        help="also report each Spec Package's removal-review readiness; "
+        "readiness never approves a removal and never changes the exit code",
+    )
     return parser
+
+
+def _print_readiness(root: pathlib.Path, registry: object) -> None:
+    """sdlc.md: readiness is derived on read and is never removal approval."""
+
+    from scripts.lib.document_governance import spec_packages
+
+    try:
+        packages = spec_packages.load_spec_packages(
+            root / "docs/03.specs", registry=registry
+        )
+    except spec_packages.SpecPackageError:
+        print("readiness: unavailable: Stage 03 packages did not load")
+        return
+    for package in packages:
+        if package.evidence is None:
+            state = "unknown"
+        else:
+            reasons = spec_packages.archive_readiness_findings(
+                package, package.evidence
+            )
+            state = "not-ready: " + "; ".join(reasons) if reasons else "ready"
+        print(f"readiness: SPEC-{package.number} {state}")
 
 
 def main(argv: collections.abc.Sequence[str] | None = None) -> int:
@@ -121,6 +142,8 @@ def main(argv: collections.abc.Sequence[str] | None = None) -> int:
         _print_findings(findings)
         print(f"document corpus lifecycle: violations={len(findings)}")
         occupancy_code = run_occupancy(root)
+        if args.readiness:
+            _print_readiness(root, registry)
         if any(_is_safety_finding(item) for item in findings):
             return 3
         return 1 if findings or occupancy_code else 0

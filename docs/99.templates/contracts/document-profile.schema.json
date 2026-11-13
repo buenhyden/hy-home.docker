@@ -35,7 +35,7 @@
             "disposition_entry_statuses": {
               "type": "object",
               "additionalProperties": {
-                "$ref": "#/$defs/stringList"
+                "$ref": "#/$defs/dispositionStatusList"
               }
             }
           }
@@ -201,6 +201,69 @@
                 },
                 "link_types": {
                   "const": false
+                }
+              }
+            }
+          }
+        },
+        "common_form_contract": {
+          "$comment": "The adopted common section form revision (id and version). Optional so a Registry from before the pin still validates; template_definition reads it for every role that declares required_subsections.",
+          "type": "string",
+          "pattern": "^COMMON-DOC-FORM-[0-9]+/(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$(?!\\n)"
+        },
+        "vocabulary_contract": {
+          "$comment": "The adopted shared vocabulary contract: identity, SemVer version, the source package label and hash it was first adopted from, and Term ID to Term pairs only; the glossary owns meaning.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "contract_id",
+            "version",
+            "source_label",
+            "source_sha256",
+            "glossary_path",
+            "terms"
+          ],
+          "properties": {
+            "contract_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "version": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$(?!\\n)"
+            },
+            "source_label": {
+              "type": "string",
+              "minLength": 1
+            },
+            "source_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$(?!\\n)"
+            },
+            "glossary_path": {
+              "type": "string",
+              "minLength": 1
+            },
+            "terms": {
+              "type": "array",
+              "minItems": 1,
+              "uniqueItems": true,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "term_id",
+                  "term"
+                ],
+                "properties": {
+                  "term_id": {
+                    "type": "string",
+                    "pattern": "^TERM-[A-Z][A-Z0-9-]*$"
+                  },
+                  "term": {
+                    "type": "string",
+                    "minLength": 1
+                  }
                 }
               }
             }
@@ -667,7 +730,7 @@
         },
         "template_initial_version": {
           "type": "string",
-          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$"
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$(?!\\n)"
         },
         "lifecycle_generation": {
           "type": "integer",
@@ -1134,6 +1197,10 @@
         "minLength": 1
       },
       "uniqueItems": true
+    },
+    "dispositionStatusList": {
+      "$comment": "Lists only statuses the profile's lifecycle can reach; an incident or postmortem lifecycle lists none. registry.py enforces both where this definition is declared.",
+      "$ref": "#/$defs/stringList"
     },
     "profile": {
       "type": "object",

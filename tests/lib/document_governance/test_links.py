@@ -2597,3 +2597,80 @@ class FencedCommandPathTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LinkTypeTitleTests(unittest.TestCase):
+    """documentation-protocol.md Link types: the link title carries the type;
+    an untitled link is normative or navigation."""
+
+    SHA = "0123456789abcdef0123456789abcdef01234567"
+
+    def codes(self, body: str) -> set[str]:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_alignment,
+        )
+
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            source = root / "docs/03.specs/0001-example/spec.md"
+            target = root / "docs/03.specs/0001-example/plan.md"
+            source.parent.mkdir(parents=True)
+            target.write_text("# Plan\n", encoding="utf-8")
+            source.write_text(f"# Spec\n\n{body}\n", encoding="utf-8")
+            graph = build_document_graph([source, target], repo_root=root)
+            return {finding.code for finding in check_alignment(graph)}
+
+    def test_untitled_and_typed_links_pass(self) -> None:
+        url = f"https://github.com/o/r/blob/{self.SHA}/docs/x.md"
+        for body in (
+            "[Plan](plan.md)",
+            '[Plan](plan.md "normative")',
+            "[Plan](plan.md 'navigation')",
+            '[Plan](plan.md "historical")',
+            f'[Run]({url} "evidence")',
+        ):
+            with self.subTest(body=body):
+                self.assertFalse(
+                    {"link-type-unknown", "link-evidence-unpinned"} & self.codes(body)
+                )
+
+    def test_an_unknown_type_is_rejected(self) -> None:
+        self.assertIn("link-type-unknown", self.codes('[Plan](plan.md "normtive")'))
+
+    def test_an_unpinned_evidence_link_is_rejected(self) -> None:
+        for body in (
+            '[Plan](plan.md "evidence")',
+            '[Run](https://github.com/o/r/blob/main/docs/x.md "evidence")',
+        ):
+            with self.subTest(body=body):
+                self.assertIn("link-evidence-unpinned", self.codes(body))
+
+    def test_wrapped_bracketed_and_reference_links_are_checked(self) -> None:
+        for body, code in (
+            ('[Run\nlog](plan.md "evidence")', "link-evidence-unpinned"),
+            ('[Plan](plan.md\n"normtive")', "link-type-unknown"),
+            ('[See [Plan]](plan.md "normtive")', "link-type-unknown"),
+            ('[r]: plan.md "evidence"\n\nUse [r].', "link-evidence-unpinned"),
+            ("[r]: plan.md 'normtive'\n\nUse [r].", "link-type-unknown"),
+        ):
+            with self.subTest(body=body):
+                self.assertIn(code, self.codes(body))
+
+    def test_titles_in_code_are_not_links(self) -> None:
+        for body in (
+            '`[Plan](plan.md "normtive")`',
+            '```\n[Plan](plan.md "normtive")\n```',
+            '<!-- [Plan](plan.md "normtive") -->',
+        ):
+            with self.subTest(body=body):
+                self.assertNotIn("link-type-unknown", self.codes(body))
+
+    def test_the_types_are_the_registry_link_types(self) -> None:
+        import json
+
+        from scripts.lib.document_governance.links import LINK_TYPES
+        from scripts.lib.document_governance.registry import DEFAULT_REGISTRY
+
+        common = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))["common"]
+        self.assertEqual(set(common["link_types"]), set(LINK_TYPES))

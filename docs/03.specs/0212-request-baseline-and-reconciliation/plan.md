@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.57.0"
+version: "1.58.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -172,6 +172,9 @@ before W04 starts.
 
 W121 in TSK-0063 runs v14.7 W04: the H-07 heading-form binding and the SDLC
 promotion and state-axis meaning.
+
+W122 in TSK-0064 runs v14.7 W05: the validator handoffs, each enforced with a
+failing and a passing test or recorded with its owner.
 
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
@@ -344,6 +347,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W119 | 114 | Give each requirement identity in REQ-0024 to REQ-0027 and each REQ-0003 quality requirement its own acceptance condition without adding an obligation | W116 | TSK-0061 | Per-ID coverage check, owner approval of the wording, metadata, links and lifecycle checks |
 | W120 | 115 | Correct the W00 to W03 results that deviate from their requirements: glossary common rows, the never-retire policy rule, TemplateDefinition contract binding, and R07/R08 relation and link types | W119 | TSK-0062 | Contract comparison per row, RED and GREEN tests per contract change, metadata, links, lifecycle and governance checks, independent review |
 | W121 | 116 | Bind the Registry `common` heading values to the profiles' common form and read them in the Spec Package reader (H-07); state the promotion owners, state axes, transition events and acceptance and readiness rules in the SDLC policy; record a verdict per W04 ID | W120 | TSK-0063 | RED and GREEN Registry and reader tests, reader regression suites, per-ID verdicts with handoffs, metadata, links, lifecycle and governance checks, independent review |
+| W122 | 117 | Enforce the W05 handoffs a checker can hold: disposition reachability, the TemplateDefinition empty rule, the glossary-contract comparison, the Release role guard, operations currency and link types; record a verdict and owner per handoff | W121 | TSK-0064 | RED and GREEN Registry, TemplateDefinition and metadata tests, historical Registry validation, metadata, links, lifecycle and governance checks, independent review |
 
 #### Current v30 continuation and delivery
 
@@ -714,10 +718,17 @@ boundary), `.agents/governance/github-governance.md` (Issue closure),
 templates, and the glossary. The handoff condition is the merge of its pull
 request; TSK-0063's Promotion Receipt records each target.
 
+W122 promotes to `docs/99.templates/registry.json`
+(`common.archive_retention`, `common.vocabulary_contract`), the profile
+schema, `.agents/governance/documentation-protocol.md` (the enforcement it now
+has) and the glossary Provenance. The handoff condition is the merge of its
+pull request; TSK-0064's Promotion Receipt records each target.
+
 - [Master workspace reconciliation](tasks/tsk-0053-master-workspace-reconciliation.md)
 - [v14.7 W00 intake](tasks/tsk-0059-w00-v14-7-intake.md)
 - [v14.7 W01 governance](tasks/tsk-0060-w01-v14-7-governance.md)
 - [v14.7 W04 SDLC and promotion](tasks/tsk-0063-w04-sdlc-promotion.md)
+- [v14.7 W05 validator alignment](tasks/tsk-0064-w05-validator-alignment.md)
 - [Existing supply-chain evidence owner](tasks/tsk-0052-supply-chain-evidence.md)
 - [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
 - [Opsflow data path Task](tasks/tsk-0043-opsflow-data-path.md)

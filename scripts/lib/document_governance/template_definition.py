@@ -28,14 +28,15 @@ from scripts.lib.document_governance.registry import (
     _parse_json,
 )
 
-# The documentation protocol: a role has moved to the common form when its
-# profile declares `required_subsections`; every other role keeps the
-# Registry `common.contract_id`. docs/99.templates/README.md states this rule.
-COMMON_FORM_VERSION = "COMMON-DOC-FORM-1 1.0.0"
-
-_EMPTY_SECTION_RULES = (
-    "A heading with no body below it.",
-    "A body that is only TODO, TBD, N/A or -.",
+# A role has moved to the common form when its profile declares
+# `required_subsections`; every other role keeps the Registry
+# `common.contract_id`. The common form's revision is the Registry's
+# `common.common_form_contract`, never a value held here.
+# COMMON-DOC-FORM-1 gives an H2 one empty rule and an H3 none; heading.py
+# enforces it at every level, treating an HTML comment as no content.
+_EMPTY_SECTION_RULE = (
+    "A heading with no body, or a body that is only an unexplained "
+    "TODO, TBD, N/A, - or a template guidance comment."
 )
 _STAND_IN_RULE = (
     "A same-named heading inside a code fence, quote or comment "
@@ -361,8 +362,7 @@ def _section_headings(
             ),
             "prohibited_content": [
                 *([role_rule] if role_rule else []),
-                *_EMPTY_SECTION_RULES,
-                *([_STAND_IN_RULE] if level == 3 else []),
+                _STAND_IN_RULE if level == 3 else _EMPTY_SECTION_RULE,
             ],
             "empty_policy": "explain_none_or_not_applicable"
             if required
@@ -603,11 +603,18 @@ def template_definition(
             f"{', '.join(registry.lifecycle_terminal_statuses.get(lifecycle_id, ())) or 'none'}"
         )
     language = profile.get("language")
+    if profile.get("required_subsections"):
+        contract_version = common.get("common_form_contract")
+        if not contract_version:
+            raise RegistryError(
+                f"{template_id} uses the common form but the Registry "
+                "common.common_form_contract names no revision"
+            )
+    else:
+        contract_version = common.get("contract_id")
     return {
         "template_id": template_id,
-        "contract_version": COMMON_FORM_VERSION
-        if profile.get("required_subsections")
-        else str(common.get("contract_id")),
+        "contract_version": str(contract_version),
         "role": template_id,
         "purpose": role["purpose"],
         "responsibility": role["responsibility"],

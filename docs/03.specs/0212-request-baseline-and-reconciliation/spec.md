@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.57.0"
+version: "1.58.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -223,6 +223,11 @@ the TSK-0059 handoff H-07 and the W04 meaning: the Registry `common` heading
 names are bound to the common form the profiles declare and read from there,
 and the SDLC policy gives promotion its Plan, target-document and Task owners
 and keeps the SDLC phases, document Stages and state axes apart.
+
+The v14.7 W05 run of 2026-11-14 adds criterion 117 and W122 in TSK-0064 for
+the validator handoffs of TSK-0059, TSK-0060, TSK-0057, TSK-0062 and
+TSK-0063: Registry rules that a checker can now enforce, with a failing and a
+passing test each, and a recorded owner for every handoff left open.
 
 ### Owning Requirements
 
@@ -932,6 +937,18 @@ target, backup, recovery boundary, and action-specific authorization.
      wrong or missing binding fails, older
      Registries without the binding still validate, and the existing reader
      tests still pass.
+117. TSK-0064 makes the checkers enforce the W05 rules they can: a
+     disposition entry lists only statuses its profile's lifecycle reaches and
+     none for an Incident or Postmortem lifecycle; each derived
+     TemplateDefinition H2 carries the contract's single empty rule and each
+     H3 none; the glossary's common rows match the adopted vocabulary contract
+     pinned in the Registry; a profile or template role with a `release` or
+     `releases` name token is rejected, other names staying a review; a link
+     title is one of the four link types and an `evidence` link is
+     commit-pinned; and a
+     passed `next_review_at` marks an operations document stale. Each rule has
+     a test that fails without it, historical Registries still validate, and
+     TSK-0064 records a verdict and owner for each W05 handoff.
 
 ### Evidence Requirements
 

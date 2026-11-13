@@ -168,6 +168,7 @@
       "resolved_at"
     ],
     "contract_id": "SDLC-COMMON-r10-local-v1",
+    "common_form_contract": "COMMON-DOC-FORM-1/1.0.0",
     "result_domain": [
       "PASS",
       "FAIL",
@@ -312,30 +313,16 @@
     },
     "archive_retention": {
       "disposition_entry_statuses": {
-        "requirements-package": [
-          "completed",
-          "cancelled"
-        ],
-        "architecture-description": [
-          "completed",
-          "cancelled"
-        ],
-        "adr": [
-          "completed",
-          "cancelled"
-        ],
+        "requirements-package": [],
+        "architecture-description": [],
+        "adr": [],
         "spec": [
           "approved",
-          "completed",
           "cancelled"
         ],
-        "data-model-contract": [
-          "completed",
-          "cancelled"
-        ],
+        "data-model-contract": [],
         "plan": [
           "approved",
-          "completed",
           "cancelled"
         ],
         "task": [
@@ -343,209 +330,93 @@
           "cancelled"
         ],
         "guide": [
-          "completed",
-          "cancelled",
           "superseded",
           "retired"
         ],
         "policy": [
-          "completed",
-          "cancelled",
           "superseded",
           "retired"
         ],
         "runbook": [
-          "completed",
-          "cancelled",
           "superseded",
           "retired"
         ],
-        "incident": [
-          "completed",
-          "cancelled",
-          "superseded",
-          "retired"
-        ],
-        "postmortem": [
-          "completed",
-          "cancelled",
-          "superseded",
-          "retired"
-        ],
-        "reference-category-readme": [
-          "completed",
-          "cancelled",
-          "superseded",
-          "retired"
-        ],
+        "incident": [],
+        "postmortem": [],
+        "reference-category-readme": [],
         "research": [
-          "completed",
-          "cancelled",
           "superseded",
           "retired"
         ],
         "audit": [
-          "completed",
-          "cancelled",
           "superseded",
           "retired"
         ],
         "data": [
-          "completed",
-          "cancelled",
           "superseded",
           "retired"
         ],
         "research-member": [
-          "completed",
-          "cancelled",
           "superseded",
           "retired"
         ],
         "audit-member": [
-          "completed",
-          "cancelled",
           "superseded",
           "retired"
         ],
-        "documentation-readme": [
-          "completed",
-          "cancelled",
-          "superseded",
-          "retired"
-        ],
-        "repository-readme": [
-          "completed",
-          "cancelled",
-          "superseded",
-          "retired"
-        ],
-        "package-readme": [
-          "completed",
-          "cancelled",
-          "superseded",
-          "retired"
-        ],
-        "runtime-governance-readme": [
-          "completed",
-          "cancelled",
-          "superseded",
-          "retired"
-        ],
-        "readme": [
-          "completed",
-          "cancelled",
-          "superseded",
-          "retired"
-        ],
+        "documentation-readme": [],
+        "repository-readme": [],
+        "package-readme": [],
+        "runtime-governance-readme": [],
+        "readme": [],
         "governance-policy": [
-          "completed",
-          "cancelled",
           "superseded",
           "retired"
         ],
         "governance-hook-policy": [
-          "completed",
-          "cancelled",
           "superseded",
           "retired"
         ],
         "governance-role": [
-          "completed",
-          "cancelled",
           "superseded",
           "retired"
         ],
         "governance-skill": [
-          "completed",
-          "cancelled",
           "superseded",
           "retired"
         ],
         "governance-provider": [
-          "completed",
-          "cancelled",
           "superseded",
           "retired"
         ],
-        "folder-agent-guide": [
-          "completed",
-          "cancelled",
-          "superseded",
-          "retired"
-        ],
-        "governance-provider-index": [
-          "completed",
-          "cancelled",
-          "superseded",
-          "retired"
-        ],
+        "folder-agent-guide": [],
+        "governance-provider-index": [],
         "governance-sdlc": [
-          "completed",
-          "cancelled",
           "superseded",
           "retired"
         ],
         "governance-knowledge": [
-          "completed",
-          "cancelled",
           "superseded",
           "retired"
         ],
         "governance-vocabulary": [
-          "completed",
-          "cancelled",
           "superseded",
           "retired"
         ],
-        "governance-knowledge-index": [
-          "completed",
-          "cancelled",
-          "superseded",
-          "retired"
-        ],
+        "governance-knowledge-index": [],
         "governance-prompt": [
-          "completed",
-          "cancelled",
           "superseded",
           "retired"
         ],
-        "governance-prompt-index": [
-          "completed",
-          "cancelled",
-          "superseded",
-          "retired"
-        ],
-        "runtime-projection-claude": [
-          "completed",
-          "cancelled",
-          "superseded",
-          "retired"
-        ],
-        "runtime-projection-codex": [
-          "completed",
-          "cancelled",
-          "superseded",
-          "retired"
-        ],
-        "template-source": [
-          "completed",
-          "cancelled",
-          "superseded",
-          "retired"
-        ],
+        "governance-prompt-index": [],
+        "runtime-projection-claude": [],
+        "runtime-projection-codex": [],
+        "template-source": [],
         "generated": [
-          "completed",
-          "cancelled",
           "superseded",
           "retired"
         ],
-        "incident-year-readme": [
-          "completed",
-          "cancelled",
-          "superseded",
-          "retired"
-        ]
+        "incident-year-readme": []
       }
     },
     "incident_closure": {
@@ -1421,6 +1292,179 @@
         "owner": ".agents/governance/documentation-protocol.md",
         "reverse_lookup": "derived"
       }
+    },
+    "vocabulary_contract": {
+      "contract_id": "repository-vocabulary",
+      "version": "1.1.0",
+      "source_label": "v14.5",
+      "source_sha256": "b03ae3c00a4228de90d90b48c9a7af4b716492651d83b6deab128d9e3bc92fce",
+      "glossary_path": ".agents/knowledge/glossary.md",
+      "terms": [
+        {
+          "term_id": "TERM-AUTHORITY",
+          "term": "Authority"
+        },
+        {
+          "term_id": "TERM-GOVERNANCE",
+          "term": "Governance"
+        },
+        {
+          "term_id": "TERM-POLICY",
+          "term": "Policy"
+        },
+        {
+          "term_id": "TERM-RULE",
+          "term": "Rule"
+        },
+        {
+          "term_id": "TERM-CONTRACT",
+          "term": "Contract"
+        },
+        {
+          "term_id": "TERM-CANONICAL",
+          "term": "Canonical Source"
+        },
+        {
+          "term_id": "TERM-APPROVAL",
+          "term": "Approval"
+        },
+        {
+          "term_id": "TERM-ADOPTION",
+          "term": "Adoption"
+        },
+        {
+          "term_id": "TERM-EXECUTION",
+          "term": "Execution"
+        },
+        {
+          "term_id": "TERM-VERIFICATION",
+          "term": "Verification"
+        },
+        {
+          "term_id": "TERM-VALIDATION",
+          "term": "Validation"
+        },
+        {
+          "term_id": "TERM-ACCEPTANCE",
+          "term": "Acceptance"
+        },
+        {
+          "term_id": "TERM-COMPLETION",
+          "term": "Completion"
+        },
+        {
+          "term_id": "TERM-PROMOTION",
+          "term": "Promotion"
+        },
+        {
+          "term_id": "TERM-RETIREMENT",
+          "term": "Retirement"
+        },
+        {
+          "term_id": "TERM-ARCHIVE",
+          "term": "Archive"
+        },
+        {
+          "term_id": "TERM-REMOVAL",
+          "term": "Removal"
+        },
+        {
+          "term_id": "TERM-SUPERSESSION",
+          "term": "Supersession"
+        },
+        {
+          "term_id": "TERM-HOLD",
+          "term": "Preservation Hold"
+        },
+        {
+          "term_id": "TERM-REGISTRY",
+          "term": "Registry"
+        },
+        {
+          "term_id": "TERM-TEMPLATE",
+          "term": "Template"
+        },
+        {
+          "term_id": "TERM-PROFILE",
+          "term": "Document Profile"
+        },
+        {
+          "term_id": "TERM-TASK",
+          "term": "Task"
+        },
+        {
+          "term_id": "TERM-EVIDENCE",
+          "term": "Evidence"
+        },
+        {
+          "term_id": "TERM-RESOLVES",
+          "term": "Resolves"
+        },
+        {
+          "term_id": "TERM-HISTORICAL-AUDIT",
+          "term": "Historical Audit ID"
+        },
+        {
+          "term_id": "TERM-HARNESS",
+          "term": "Harness"
+        },
+        {
+          "term_id": "TERM-NATIVE-EVIDENCE",
+          "term": "Native Runtime Evidence"
+        },
+        {
+          "term_id": "TERM-PROJECTION",
+          "term": "Projection"
+        },
+        {
+          "term_id": "TERM-EXCEPTION",
+          "term": "Exception"
+        },
+        {
+          "term_id": "TERM-UNVERIFIED",
+          "term": "Unverified"
+        },
+        {
+          "term_id": "TERM-KEEP",
+          "term": "Keep"
+        },
+        {
+          "term_id": "TERM-RELEASE-OPERATION",
+          "term": "Release Operation"
+        },
+        {
+          "term_id": "TERM-PUBLIC-CONTRACT",
+          "term": "Public Contract"
+        },
+        {
+          "term_id": "TERM-COMPATIBILITY",
+          "term": "Compatibility"
+        },
+        {
+          "term_id": "TERM-CONTRACT-VERSION",
+          "term": "Contract Version"
+        },
+        {
+          "term_id": "TERM-REGISTRY-SCHEMA-VERSION",
+          "term": "Registry Schema Version"
+        },
+        {
+          "term_id": "TERM-DOCUMENT-REVISION",
+          "term": "Document Revision"
+        },
+        {
+          "term_id": "TERM-PRERELEASE",
+          "term": "Prerelease"
+        },
+        {
+          "term_id": "TERM-BUILD-METADATA",
+          "term": "Build Metadata"
+        },
+        {
+          "term_id": "TERM-BASELINE-NAMESPACE",
+          "term": "Baseline Namespace"
+        }
+      ]
     }
   },
   "profiles": [

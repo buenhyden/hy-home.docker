@@ -158,7 +158,9 @@ files:
   authority: docs/99.templates/registry.json
   lifecycle: active
   mutation: none
-  consumers: []
+  consumers:
+  - scripts/lib/document_governance/spec_packages.py
+  - scripts/validation/check-document-metadata.py
   disposition: retain
   successor: null
   tests:
@@ -214,7 +216,9 @@ files:
   authority: .agents/governance/documentation-protocol.md
   lifecycle: active
   mutation: none
-  consumers: []
+  consumers:
+  - scripts/lib/document_governance/links.py
+  - scripts/lib/document_governance/metadata/heading.py
   disposition: retain
   successor: null
   tests:
@@ -389,6 +393,7 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/test_references.py
+  - tests/validation/test_reference_stage_repo_contract.py
 - path: scripts/lib/document_governance/registry.py
   kind: library
   authority: docs/99.templates/registry.json
@@ -448,7 +453,8 @@ files:
   authority: docs/99.templates/registry.json
   lifecycle: active
   mutation: none
-  consumers: []
+  consumers:
+  - docs/99.templates/README.md
   disposition: retain
   successor: null
   tests:
@@ -1051,6 +1057,7 @@ files:
   successor: null
   tests:
   - tests/validation/test_lab_controller.py
+  - tests/validation/test_lab_layout.py
 - path: scripts/operations/mng-pg-immediate-restore-rehearsal.py
   kind: operations
   authority: docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md

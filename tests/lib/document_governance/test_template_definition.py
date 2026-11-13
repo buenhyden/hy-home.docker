@@ -240,8 +240,9 @@ class TemplateDefinitionTests(unittest.TestCase):
         self.assertLessEqual(keys, set(self.registry.template_roles))
 
     def test_sections_carry_their_role_prohibited_content(self) -> None:
-        # COMMON-DOC-FORM-1 1.0.0 gives every section of a role one role
-        # rule; every H3 also forbids a stand-in heading.
+        # COMMON-DOC-FORM-1 1.0.0: an H2 carries the role rule and one empty
+        # rule that includes a guidance-comment-only body; an H3 carries the
+        # role rule and the stand-in rule, and no empty rule.
         role_rule = {
             "sdlc/requirement": "Implementation detail or Task status, which "
             "the Requirement does not own.",
@@ -253,19 +254,23 @@ class TemplateDefinitionTests(unittest.TestCase):
             "A same-named heading inside a code fence, quote or comment "
             "standing in for the real section."
         )
+        empty = (
+            "A heading with no body, or a body that is only an unexplained "
+            "TODO, TBD, N/A, - or a template guidance comment."
+        )
         for role, definition in self.definitions.items():
             if not self._profile(role).get("required_subsections"):
                 continue
             with self.subTest(role=role):
                 for heading in definition["headings"]:
                     rules = heading["prohibited_content"]
-                    self.assertEqual(3, len(rules), heading["title"])
-                    self.assertIn("A heading with no body below it.", rules)
+                    self.assertEqual(2, len(rules), heading["title"])
+                    self.assertEqual(empty, rules[1])
                     if role in role_rule:
                         self.assertEqual(role_rule[role], rules[0])
                     for child in heading["children"]:
                         self.assertEqual(
-                            [*rules, stand_in], child["prohibited_content"]
+                            [rules[0], stand_in], child["prohibited_content"]
                         )
 
     def test_headingless_templates_use_their_real_top_level_units(self) -> None:
@@ -443,6 +448,62 @@ class TemplateDefinitionTests(unittest.TestCase):
         registry = _registry_from_document(raw, pathlib.PurePosixPath("registry.json"))
         with self.assertRaisesRegex(RegistryError, "Tracking ID"):
             template_definition(registry, "operation/postmortem")
+
+    def _common_form_roles(self, registry) -> list[str]:
+        return [
+            role
+            for role, entry in registry.template_roles.items()
+            if registry.profiles[entry["profiles"][0]].get("required_subsections")
+        ]
+
+    def test_the_common_form_revision_is_read_from_the_registry(self) -> None:
+        """H-W01-2: the consumer reads the adopted revision, not a constant."""
+
+        pinned = self.registry.common["common_form_contract"]
+        roles = self._common_form_roles(self.registry)
+        self.assertTrue(roles)
+        for role in roles:
+            self.assertEqual(pinned, self.definitions[role]["contract_version"])
+        raw = copy.deepcopy(dict(load_registry_document()))
+        raw["common"]["common_form_contract"] = "COMMON-DOC-FORM-1/9.9.9"
+        moved = _registry_from_document(raw, pathlib.PurePosixPath("registry.json"))
+        for role in roles:
+            with self.subTest(role=role):
+                self.assertEqual(
+                    "COMMON-DOC-FORM-1/9.9.9",
+                    template_definition(moved, role)["contract_version"],
+                )
+        legacy = next(role for role in moved.template_roles if role not in set(roles))
+        self.assertEqual(
+            moved.common["contract_id"],
+            template_definition(moved, legacy)["contract_version"],
+        )
+
+    def test_a_registry_without_the_pin_fails_for_a_common_form_role(self) -> None:
+        raw = copy.deepcopy(dict(load_registry_document()))
+        del raw["common"]["common_form_contract"]
+        # A Registry from before the pin still validates; only the consumer
+        # that needs the revision refuses to guess it.
+        self.assertEqual([], [f.code for f in validate_registry(raw)])
+        bare = _registry_from_document(raw, pathlib.PurePosixPath("registry.json"))
+        role = self._common_form_roles(bare)[0]
+        with self.assertRaisesRegex(RegistryError, "common_form_contract"):
+            template_definition(bare, role)
+
+    def test_a_malformed_common_form_pin_is_rejected(self) -> None:
+        for value in (
+            "1.0.0",
+            "COMMON-DOC-FORM-1",
+            "COMMON-DOC-FORM-1/1.0",
+            "COMMON-DOC-FORM-1 1.0.0",
+            1,
+        ):
+            raw = copy.deepcopy(dict(load_registry_document()))
+            raw["common"]["common_form_contract"] = value
+            with self.subTest(value=value):
+                self.assertIn(
+                    "schema-invalid", {f.code for f in validate_registry(raw)}
+                )
 
     def test_unknown_role_and_missing_field_raise_registry_error(self) -> None:
         with self.assertRaises(RegistryError):

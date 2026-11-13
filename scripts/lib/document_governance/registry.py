@@ -619,6 +619,167 @@ def _validate_section_forms(
             )
 
 
+NEVER_RETIRE_LIFECYCLES = frozenset({"incident", "postmortem"})
+
+
+def _names_release_role(*values: object) -> bool:
+    """documentation-protocol.md Release Evidence Boundary: a name token
+    `release` or `releases` marks a Release role; other names are a review."""
+
+    return any(
+        {"release", "releases"} & set(re.split(r"[^a-z0-9]+", value.lower()))
+        for value in values
+        if isinstance(value, str)
+    )
+
+
+def _declares_reachable_dispositions(schema: Mapping[str, object]) -> bool:
+    defs = schema.get("$defs")
+    return isinstance(defs, Mapping) and "dispositionStatusList" in defs
+
+
+def _reachable_statuses(lifecycle: object) -> set[str]:
+    if not isinstance(lifecycle, Mapping):
+        return set()
+    start = lifecycle.get("initial_status")
+    edges = lifecycle.get("transitions")
+    if not isinstance(start, str) or not isinstance(edges, Mapping):
+        return set()
+    seen, stack = {start}, [start]
+    while stack:
+        targets = edges.get(stack.pop())
+        for status in targets if isinstance(targets, list) else ():
+            if isinstance(status, str) and status not in seen:
+                seen.add(status)
+                stack.append(status)
+    return seen
+
+
+def _disposition_reachability_findings(
+    raw: Mapping[str, object], entries: Mapping[str, object]
+) -> list[RegistryFinding]:
+    """documentation-protocol.md Retention by status: list only reachable
+    statuses, and none for an Incident or Postmortem lifecycle."""
+
+    lifecycles = raw.get("lifecycles")
+    lifecycles = lifecycles if isinstance(lifecycles, Mapping) else {}
+    profile_lifecycles = {
+        profile.get("id"): profile.get("lifecycle_id")
+        for profile in raw.get("profiles", ())
+        if isinstance(profile, Mapping)
+    }
+    findings: list[RegistryFinding] = []
+    for profile_id, states in entries.items():
+        if not isinstance(states, list):
+            continue
+        location = f"common.archive_retention.disposition_entry_statuses.{profile_id}"
+        lifecycle_id = profile_lifecycles.get(profile_id)
+        if lifecycle_id in NEVER_RETIRE_LIFECYCLES and states:
+            findings.append(
+                RegistryFinding(
+                    "archive-disposition-never-retire",
+                    location,
+                    f"a {lifecycle_id} record never retires; list no status",
+                )
+            )
+            continue
+        unreachable = sorted(
+            set(states) - _reachable_statuses(lifecycles.get(lifecycle_id))
+        )
+        if unreachable:
+            findings.append(
+                RegistryFinding(
+                    "archive-disposition-unreachable",
+                    location,
+                    f"lifecycle {lifecycle_id} cannot reach {', '.join(unreachable)}",
+                )
+            )
+    return findings
+
+
+_TERM_ID = re.compile(r"\bTERM-[A-Z][A-Z0-9-]*\b")
+
+
+def vocabulary_contract_findings(
+    common: Mapping[str, object], glossary_text: str
+) -> list[RegistryFinding]:
+    """Compare the glossary's common rows with the pinned vocabulary contract.
+
+    Checks Term ID set, order, Term name and Contract Version, and that no
+    common Term ID appears under Local Extensions. Meaning is a review.
+    """
+
+    from .metadata.heading import _markdown_unfenced_lines
+
+    contract = common.get("vocabulary_contract")
+    if not isinstance(contract, Mapping):
+        return [RegistryFinding("vocabulary-contract-missing", "common", "")]
+    path = str(contract.get("glossary_path", ""))
+    expected = [(str(t["term_id"]), str(t["term"])) for t in contract["terms"]]
+    if len({term_id for term_id, _ in expected}) != len(expected):
+        return [
+            RegistryFinding(
+                "vocabulary-contract-duplicate", "common.vocabulary_contract", ""
+            )
+        ]
+    sections: dict[str, list[str]] = {}
+    current: list[str] | None = None
+    for line in _markdown_unfenced_lines(glossary_text):
+        if line.startswith("## "):
+            current = sections.setdefault(line[3:].strip(), [])
+        elif current is not None:
+            current.append(line)
+    table = sections.get("Repository Vocabulary")
+    if table is None:
+        return [
+            RegistryFinding(
+                "vocabulary-table-missing", path, "## Repository Vocabulary not found"
+            )
+        ]
+    rows = [
+        [cell.strip() for cell in line.strip().strip("|").split("|")]
+        for line in table
+        if line.startswith("| TERM-")
+    ]
+    found = [(row[0], row[1] if len(row) > 1 else "") for row in rows]
+    names = dict(expected)
+    findings: list[RegistryFinding] = []
+    for term_id in sorted(set(names) - {row[0] for row in found}):
+        findings.append(RegistryFinding("vocabulary-term-missing", path, term_id))
+    for term_id, term in found:
+        if term_id not in names:
+            findings.append(
+                RegistryFinding("vocabulary-term-unregistered", path, term_id)
+            )
+        elif term != names[term_id]:
+            findings.append(
+                RegistryFinding(
+                    "vocabulary-term-name",
+                    path,
+                    f"{term_id} is {term!r}, contract says {names[term_id]!r}",
+                )
+            )
+    common_ids = [term_id for term_id, _ in found if term_id in names]
+    if common_ids != [term_id for term_id, _ in expected if term_id in common_ids]:
+        findings.append(
+            RegistryFinding(
+                "vocabulary-term-order", path, "rows differ from contract order"
+            )
+        )
+    version = str(contract["version"])
+    for row in rows:
+        if row[0] in names and row[-1] != version:
+            findings.append(
+                RegistryFinding(
+                    "vocabulary-contract-version", path, f"{row[0]} cites {row[-1]}"
+                )
+            )
+    shadowed = set(_TERM_ID.findall("\n".join(sections.get("Local Extensions", ()))))
+    for term_id in sorted(shadowed & set(names)):
+        findings.append(RegistryFinding("vocabulary-local-shadow", path, term_id))
+    return findings
+
+
 def validate_registry(
     raw: Mapping[str, object],
     *,
@@ -770,15 +931,22 @@ def validate_registry(
         }
         entries = contract["disposition_entry_statuses"]
         allowed = set(raw["common"]["allowed_statuses"])
+        # The current schema names the reachability contract; a historical
+        # Registry, checked against its own schema, keeps the older rule.
+        reachable_only = _declares_reachable_dispositions(schema)
+        if reachable_only:
+            findings.extend(_disposition_reachability_findings(raw, entries))
         if set(entries) != expected or any(
-            not states or len(set(states)) != len(states) or not set(states) <= allowed
+            (not states and not reachable_only)
+            or len(set(states)) != len(states)
+            or not set(states) <= allowed
             for states in entries.values()
         ):
             findings.append(
                 RegistryFinding(
                     "archive-disposition-contract-invalid",
                     "common.archive_retention.disposition_entry_statuses",
-                    "Every governed current profile needs registered nonempty disposition-entry states",
+                    "Every governed current profile needs a disposition entry of unique allowed states",
                 )
             )
     profiles = raw.get("profiles")
@@ -798,14 +966,28 @@ def validate_registry(
             if isinstance(profile_id, str):
                 profile_ids.append(profile_id)
                 profile_lifecycles[profile_id] = profile.get("lifecycle_id")
-                if profile_id == "release":
-                    findings.append(
-                        RegistryFinding(
-                            "retired-profile",
-                            f"profiles.{index}",
-                            "Release is not an active profile",
-                        )
+            if _names_release_role(
+                *(
+                    profile.get(key)
+                    for key in ("id", "type", "template_id", "path_pattern")
+                ),
+                *(
+                    value
+                    for key in ("additional_path_patterns", "additional_paths")
+                    for value in (
+                        profile.get(key)
+                        if isinstance(profile.get(key), (list, tuple))
+                        else ()
                     )
+                ),
+            ):
+                findings.append(
+                    RegistryFinding(
+                        "retired-profile",
+                        f"profiles.{index}",
+                        "a release name token marks a Release role, which is not a document role",
+                    )
+                )
             path_pattern = profile.get("path_pattern")
             if isinstance(path_pattern, str) and not _safe_path_pattern(path_pattern):
                 findings.append(
@@ -956,6 +1138,14 @@ def validate_registry(
         for role, definition in roles.items():
             if not isinstance(definition, Mapping):
                 continue
+            if _names_release_role(role, definition.get("source")):
+                findings.append(
+                    RegistryFinding(
+                        "retired-profile",
+                        f"template_roles.{role}",
+                        "a release name token marks a Release role, which is not a document role",
+                    )
+                )
             extra = set(definition) - TEMPLATE_ROLE_KEYS
             if extra:
                 findings.append(
