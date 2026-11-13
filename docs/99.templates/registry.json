@@ -1258,33 +1258,29 @@
         "owner": "scripts/validation/check-document-links.py",
         "reverse_lookup": "derived"
       },
-      "ownership": {
-        "id": "rel.ownership",
-        "direction": "document-to-owner",
+      "structural_ownership": {
+        "id": "rel.structural-ownership",
+        "direction": "child-to-parent",
         "writers": [
           {
             "kind": "frontmatter",
-            "ref": "owner"
+            "ref": "parent_ids"
           }
         ],
         "owner": "scripts/validation/check-document-metadata.py",
         "reverse_lookup": "derived"
       },
-      "reference": {
-        "id": "rel.reference",
-        "direction": "source-to-target",
+      "constraint": {
+        "id": "rel.constraint",
+        "direction": "change-to-constraint",
         "writers": [
           {
-            "kind": "link",
-            "ref": "evidence"
+            "kind": "section",
+            "ref": "spec:Overview/Owning Requirements"
           },
           {
-            "kind": "link",
-            "ref": "historical"
-          },
-          {
-            "kind": "link",
-            "ref": "navigation"
+            "kind": "section",
+            "ref": "plan:Dependencies/Prerequisites"
           }
         ],
         "owner": "scripts/validation/check-document-links.py",
@@ -1292,12 +1288,36 @@
       },
       "traceability": {
         "id": "rel.traceability",
-        "direction": "child-to-parent",
+        "direction": "work-to-evidence",
         "writers": [
           {
-            "kind": "frontmatter",
-            "ref": "parent_ids"
+            "kind": "section",
+            "ref": "task:Verification Evidence/Results"
           },
+          {
+            "kind": "link",
+            "ref": "evidence"
+          }
+        ],
+        "owner": "scripts/validation/check-document-corpus-lifecycle.py",
+        "reverse_lookup": "derived"
+      },
+      "promotion": {
+        "id": "rel.promotion",
+        "direction": "plan-to-target-owner",
+        "writers": [
+          {
+            "kind": "section",
+            "ref": "plan:Promotion Map/Owner and Receipt"
+          }
+        ],
+        "owner": ".agents/governance/sdlc.md",
+        "reverse_lookup": "derived"
+      },
+      "supersession": {
+        "id": "rel.supersession",
+        "direction": "successor-to-predecessor",
+        "writers": [
           {
             "kind": "frontmatter",
             "ref": "supersedes"
@@ -1309,8 +1329,8 @@
           "superseded_by"
         ]
       },
-      "change_propagation": {
-        "id": "rel.change-propagation",
+      "change_impact": {
+        "id": "rel.change-impact",
         "direction": "owner-to-consumer",
         "writers": [
           {
@@ -1319,7 +1339,11 @@
           },
           {
             "kind": "derived",
-            "ref": "rel.reference"
+            "ref": "rel.constraint"
+          },
+          {
+            "kind": "derived",
+            "ref": "rel.structural-ownership"
           }
         ],
         "owner": ".agents/governance/documentation-protocol.md",

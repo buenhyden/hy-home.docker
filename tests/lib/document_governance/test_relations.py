@@ -58,42 +58,60 @@ class LinkTypeContractTests(unittest.TestCase):
 
 
 class DocumentRelationContractTests(unittest.TestCase):
-    def test_registry_binds_five_relations_and_is_valid(self) -> None:
+    def test_registry_binds_the_seven_common_relations_and_is_valid(self) -> None:
         raw = _registry()
         relations = raw["common"]["document_relations"]
         self.assertEqual(
             {
                 "authority",
-                "ownership",
-                "reference",
+                "structural_ownership",
+                "constraint",
                 "traceability",
-                "change_propagation",
+                "promotion",
+                "supersession",
+                "change_impact",
             },
             set(relations),
         )
         self.assertEqual(
             [{"kind": "frontmatter", "ref": "parent_ids"}],
-            relations["traceability"]["writers"][:1],
+            relations["structural_ownership"]["writers"],
         )
-        self.assertEqual("child-to-parent", relations["traceability"]["direction"])
+        self.assertEqual(
+            [{"kind": "frontmatter", "ref": "supersedes"}],
+            relations["supersession"]["writers"],
+        )
+        self.assertEqual(
+            [{"kind": "section", "ref": "plan:Promotion Map/Owner and Receipt"}],
+            relations["promotion"]["writers"],
+        )
         self.assertEqual((), validate_registry(raw))
 
     def test_manual_reverse_lookup_is_rejected(self) -> None:
         raw = _registry()
-        raw["common"]["document_relations"]["traceability"]["reverse_lookup"] = "manual"
+        raw["common"]["document_relations"]["supersession"]["reverse_lookup"] = "manual"
         self.assertIn("schema-invalid", _codes(raw))
 
     def test_duplicate_relation_id_is_rejected(self) -> None:
         raw = _registry()
         relations = raw["common"]["document_relations"]
-        relations["reference"]["id"] = relations["authority"]["id"]
+        relations["constraint"]["id"] = relations["authority"]["id"]
         self.assertIn("schema-invalid", _codes(raw))
 
     def test_unknown_writer_references_are_rejected(self) -> None:
         cases = (
-            ("ownership", {"kind": "frontmatter", "ref": "not_a_key"}),
-            ("reference", {"kind": "link", "ref": "not_a_link_type"}),
-            ("change_propagation", {"kind": "derived", "ref": "rel.missing"}),
+            ("structural_ownership", {"kind": "frontmatter", "ref": "not_a_key"}),
+            ("authority", {"kind": "link", "ref": "not_a_link_type"}),
+            ("change_impact", {"kind": "derived", "ref": "rel.missing"}),
+            ("promotion", {"kind": "section", "ref": "plan:Promotion Map/Nope"}),
+            (
+                "promotion",
+                {"kind": "section", "ref": "nope:Promotion Map/Owner and Receipt"},
+            ),
+            (
+                "constraint",
+                {"kind": "section", "ref": "spec:Scope/Owning Requirements"},
+            ),
         )
         for name, writer in cases:
             with self.subTest(name=name):
@@ -110,14 +128,14 @@ class DocumentRelationContractTests(unittest.TestCase):
 
     def test_retained_reverse_field_must_be_a_frontmatter_key(self) -> None:
         raw = _registry()
-        raw["common"]["document_relations"]["traceability"][
+        raw["common"]["document_relations"]["supersession"][
             "retained_reverse_fields"
         ] = ["not_a_key"]
         self.assertIn("relation-contract-invalid", _codes(raw))
 
     def test_derived_writer_cannot_name_its_own_relation(self) -> None:
         raw = _registry()
-        relation = raw["common"]["document_relations"]["change_propagation"]
+        relation = raw["common"]["document_relations"]["change_impact"]
         relation["writers"] = [{"kind": "derived", "ref": relation["id"]}]
         self.assertIn("relation-contract-invalid", _codes(raw))
 
@@ -131,9 +149,10 @@ class PinnedContractValueTests(unittest.TestCase):
     """Every value the policy tables fix is pinned: a mutation fails closed."""
 
     MUTATIONS = (
-        ("document_relations", "traceability", "direction", "parent-to-child"),
+        ("document_relations", "structural_ownership", "direction", "parent-to-child"),
         ("document_relations", "authority", "direction", "owner-to-consumer"),
-        ("document_relations", "reference", "id", "rel.other"),
+        ("document_relations", "promotion", "id", "rel.other"),
+        ("document_relations", "supersession", "direction", "predecessor-to-successor"),
         ("link_types", "normative", "authority", "none"),
         ("link_types", "normative", "required", False),
         ("link_types", "evidence", "pinned_version", "current"),

@@ -487,12 +487,14 @@ def _template_dictionary_findings(raw: Mapping[str, object]) -> list[RegistryFin
 
 def _relation_contract_findings(
     common: Mapping[str, object],
+    profiles: Sequence[Mapping[str, object]] = (),
 ) -> list[RegistryFinding]:
     """Check the DOC-07 link types and DOC-09 relations beyond their schema.
 
     The schema pins every value the policy tables fix; this resolves every
-    writer against the frontmatter keys, link types and relation IDs the
-    Registry declares and rejects a relation derived from itself.
+    writer against the frontmatter keys, link types, profile H2/H3 sections
+    (`profile:H2/H3`) and relation IDs the Registry declares and rejects a
+    relation derived from itself.
     """
 
     names = ("link_types", "link_profiles", "document_relations")
@@ -512,6 +514,12 @@ def _relation_contract_findings(
     known = {
         "frontmatter": keys,
         "link": set(common["link_types"]),
+        "section": {
+            f"{profile.get('id')}:{section}/{subsection}"
+            for profile in profiles
+            for section, children in (profile.get("required_subsections") or {}).items()
+            for subsection in children
+        },
         "derived": set(ids),
     }
     findings: list[RegistryFinding] = []
@@ -734,7 +742,9 @@ def validate_registry(
     if "document_relations" in schema.get("properties", {}).get("common", {}).get(
         "properties", {}
     ):
-        findings.extend(_relation_contract_findings(raw.get("common", {})))
+        findings.extend(
+            _relation_contract_findings(raw.get("common", {}), raw.get("profiles", ()))
+        )
     contract = raw.get("common", {}).get("archive_retention")
     if isinstance(contract, Mapping):
         expected = {

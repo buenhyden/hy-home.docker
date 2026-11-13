@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.19.0"
+version: "3.20.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -119,21 +119,28 @@ profile and are not typed this way. The Vault owner converts them outside this
 repository, which has no wiki converter. A governed document uses relative
 Markdown links.
 
-Five relations connect documents. Each one has a relation ID, one direction
-and one writer. The last column names the check that validates the writer, not
-the relation as a whole.
+Seven relations connect documents, one per meaning of the shared contract;
+none stands in for another. Each one has a relation ID, one direction and its
+writers. The last column names the check that validates the writer, not the
+relation as a whole. A section writer is named `profile:H2/H3`.
 
 | Relation | ID | Direction | Writer | Check that validates the writer |
 | --- | --- | --- | --- | --- |
 | Authority | `rel.authority` | Consumer to owner | Normative links | `check-document-links.py`: the link resolves |
-| Ownership | `rel.ownership` | Document to owner | Frontmatter `owner` | `check-document-metadata.py`: the key is valid |
-| Reference | `rel.reference` | Source to target | Evidence, historical and navigation links | `check-document-links.py`: the link resolves |
-| Traceability | `rel.traceability` | Child to parent | Frontmatter `parent_ids`, and `supersedes` for lineage | `check-document-metadata.py`: the keys and `parent_ids` are valid |
-| Change Propagation | `rel.change-propagation` | Owner to consumer | None: derived from Authority and Reference | None: the reviewer applies this section |
+| Structural Ownership | `rel.structural-ownership` | Child to parent | Frontmatter `parent_ids` | `check-document-metadata.py`: `parent_ids` are valid |
+| Constraint | `rel.constraint` | Change to constraint | Spec `Owning Requirements`, Plan `Prerequisites` | `check-document-links.py`: the links resolve |
+| Traceability | `rel.traceability` | Work to evidence | Task `Results` rows and evidence links | `check-document-corpus-lifecycle.py`: the Evidence rows are valid |
+| Promotion | `rel.promotion` | Plan to target owner | Plan `Owner and Receipt` | None: the reviewer applies the [SDLC](sdlc.md#sequence) promotion rule |
+| Supersession | `rel.supersession` | Successor to predecessor | Frontmatter `supersedes` | `check-document-metadata.py`: the key is valid |
+| Change Impact | `rel.change-impact` | Owner to consumer | None: derived from Authority, Constraint and Structural Ownership | None: the reviewer applies this section |
+
+The frontmatter `owner` names an accountable person, not a related document,
+and historical and navigation links carry no relation; their link types above
+still govern them.
 
 Only the side the Writer column names records a relation, and no document
 keeps a manual reverse-state table. Reverse lookups, such as the children of a
-parent or the consumers of an owner, and Change Propagation are derived by the
+parent or the consumers of an owner, and Change Impact are derived by the
 reviewer from those records when a document is removed or moved; no tool
 derives them yet. The one retained reverse
 field is `superseded_by`, the single reciprocal successor of `supersedes`, as
@@ -142,13 +149,14 @@ requires a coordinated graph and lineage contract change.
 
 The Registry `common` section binds these definitions as `link_types`,
 `link_profiles` and `document_relations`, and each relation's `owner` names
-the check in the last column, or this policy where there is none. The schema
+the check in the last column, or the policy that owns the rule where there is
+none. The schema
 pins every relation ID and direction and every link-type and link-profile
 value; writers, owners and retained reverse fields are checked by the
 validator below, not pinned. The Registry validator also rejects a
 missing contract, a writer that names an undeclared frontmatter key, link type
-or relation, a relation derived from itself, an owner path that does not
-exist, and a retained reverse field that is not a frontmatter key. The
+or relation or an unregistered profile section, a relation derived from itself,
+an owner path that does not exist, and a retained reverse field that is not a frontmatter key. The
 checkers enforce only that links resolve, that metadata keys and `parent_ids`
 are valid, and that this Registry binding is valid. Existing links are not
 retyped by this rule.
