@@ -1,6 +1,6 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.12.2"
+version: "1.12.3"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -322,11 +322,12 @@ issuer/renderer/journal/config and subject0085 writer. P04 owns opsflow SQL,
 roles, adapters and DAGs; P05 owns notifier/native credential copies. P06
 proposes their required changes and never creates duplicate authorities.
 
-P01 has new source/diagnostic commits but remains blocked on current native,
-HOME, restricted snapshot and independent custody/restore evidence. P02 has
-committed source plus an uncommitted lifecycle/lock follow-up; the new ignored
-lock-inheritance proposal reports synthetic PASS and independent review but
-is not integrated generator acceptance. Its catalog has no opsflow entry or
+P01 ([TSK-0006](tasks/tsk-0006-openbao-trust-bootstrap-and-recovery.md))
+needs current native, HOME, restricted snapshot and independent custody/restore
+evidence. P02 ([TSK-0010](tasks/tsk-0010-p02-secret-catalog-and-views.md))
+lifecycle/lock follow-up and any lock-inheritance proposal need synthetic
+verification and independent review, and are not integrated generator
+acceptance until its Task records it. Its catalog has no opsflow entry or
 approved KV destination. P03 source contracts and P04/P05 drafts do not prove
 actual delivery or operational consumers. Preserve all these writers' changes.
 
@@ -444,7 +445,7 @@ returned `2b9f5ec82cb73ea148fb27bfbd2d35c10e328e51` and no open PRs. Local main
 contains three unpublished documentation commits. The worker starts at the
 Task issuance commit in its own `codex/p03-service-integration-contracts`
 branch and `.worktrees/p03-service-integration-contracts` worktree. This
-issuance creates no second implementation session. Completed TSK-0002/0003
+issuance creates no second implementation session. [TSK-0002](tasks/tsk-0002-external-project-integration.md)/[0003](tasks/tsk-0003-backup-and-cross-tier-operations.md)
 and TSK-0005's historical/SMTP work are not reopened or overwritten.
 
 W33's declared prerequisites W27/W28 have integrated source; full SEC01/HOME
@@ -529,7 +530,7 @@ private comparison, unlink, broad sync/prune, rotation or HOME deployment.
 
 #### P01 current continuation ownership and sequence
 
-The 2026-10-11 assessment continues existing blocked TSK-0006/W19-W23;
+The 2026-10-11 assessment continues existing [TSK-0006](tasks/tsk-0006-openbao-trust-bootstrap-and-recovery.md)/W19-W23;
 it allocates no new Task or Spec. Assessment input is clean local main
 `728ec6379f193256cee342550e38479cf3ebfc56`, remote main `2b9f5ec82`.
 Server/Agent declaration is SEC01's exact 2.7.1 contract; fresh HOME metadata
@@ -719,10 +720,10 @@ or current lifecycle transitions. Runtime gaps keep this Plan active.
 The owner requested prerequisite reconciliation; exact writers for this pass
 are this Plan and [SPEC-0204-TSK-0001](tasks/tsk-0001-runtime-compatibility-and-security.md).
 Protected baseline is
-`ebeb83521c768fedc620380b0c2e92db10a6fcdc`; Task2/3/4 completed source and
-private parity receipts are already delivered. This pass neither reopens them
-nor duplicates their implementation. The current Task owns source, synthetic,
-image-cache, runtime, and security evidence; its derived status is `blocked`.
+`ebeb83521c768fedc620380b0c2e92db10a6fcdc`; Task2/3/4 source and
+private parity receipts are owned by [TSK-0002](tasks/tsk-0002-external-project-integration.md), [TSK-0003](tasks/tsk-0003-backup-and-cross-tier-operations.md) and [TSK-0004](tasks/tsk-0004-secret-layout-and-environment-parity.md). This pass
+neither reopens them nor duplicates their implementation. The current Task owns source, synthetic,
+image-cache, runtime, and security evidence and its status.
 
 Before separately authorized runtime work, the Task's recorded prerequisites
 remain exact image digest and entrypoint review, isolated non-HOME context,
@@ -977,7 +978,7 @@ to changed documents. Protected PR checks are required for remote integration;
 local success is not a merge receipt. HOME activation, real backup/restore,
 data migration and real external-project
 connection remain `NOT_RUN` here. The separately approved synthetic dev-pg
-Restic restore passed in TSK-0003 and is not HOME recovery evidence.
+Restic restore is owned by [TSK-0003](tasks/tsk-0003-backup-and-cross-tier-operations.md) and is not HOME recovery evidence.
 
 ### Stage Placement
 

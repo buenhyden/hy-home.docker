@@ -1,6 +1,6 @@
 ---
 title: "Common Controls and Exceptions Plan"
-version: "1.0.2"
+version: "1.0.3"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -101,17 +101,17 @@ the service window, budgets, output sanitization and restoration boundary.
 The initial helper admits bounded public numeric/JSON inputs and refuses
 private environment, raw logs, credentials and ambient runtime access.
 
-At admission main `4c83f14b11a77e13e582eb85d0bf256685472a95`, the coordinator's
-official `check-operations-catalog.py` run failed with exit1 and 22 findings
-in 16.593 seconds: one include drift, seven missing profile declarations,
-seven Guide bindings and seven inventory membership entries for the P04
-overlay. The earlier pure `validate_service_inventory` subset returned 14
-findings despite its wrapper exiting0; that is a semantic FAIL, not the
-official gate result. These describe the existing overlay, not seven new
-services. P04/coordinator owns typed overlay projection repair without blanket
+At admission main `4c83f14b11a77e13e582eb85d0bf256685472a95`, the coordinator
+runs the official `check-operations-catalog.py` gate, whose findings cover
+include drift, missing profile declarations, Guide bindings and inventory
+membership for the P04 overlay. A wrapper exit code or the pure
+`validate_service_inventory` subset is not the official gate result; a semantic
+FAIL stays FAIL. Counts and timings are in
+[TSK-0002](tasks/tsk-0002-p07-root-resource-optimization.md). These describe the
+existing overlay, not seven new services. P04/coordinator owns typed overlay projection repair without blanket
 include/profile acceptance or a P04 native change. W10 requires W9's admission
 substep, not completed classification or inventory GREEN. Public W9/W10 can
-proceed while final inventory and full operations acceptance remain blocked.
+proceed while final inventory and full operations acceptance wait for their own evidence.
 
 The existing ComposeControlsTests are run at that baseline to confirm source
 reuse only, with no Docker or native execution. Actual receipts and document
