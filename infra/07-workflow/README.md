@@ -16,6 +16,8 @@ created: "2025-11-12"
 
 ### Service Role
 
+#### Overview
+
 `07-workflow`는 Airflow와 n8n을 운영합니다. 브로커는 공유 `mng-valkey`입니다.
 앱별 전용 Valkey는 ADR-0062 결정 10으로 제거되었습니다.
 
@@ -30,6 +32,8 @@ created: "2025-11-12"
 - Data Engineers
 - Backend Developers
 - Operators
+
+#### Scope
 
 - Airflow
 - n8n
@@ -59,6 +63,8 @@ created: "2025-11-12"
 
 ### Supported Environment
 
+#### Tech Stack
+
 | Category | Technology | Notes |
 | --- | --- | --- |
 | Orchestration | Airflow | CeleryExecutor |
@@ -69,6 +75,8 @@ created: "2025-11-12"
 ## Interfaces
 
 ### Inputs and Outputs
+
+#### Configuration
 
 - Airflow/n8n DB: `mng-pg`
 - 기본 브로커: `mng-valkey`
@@ -82,6 +90,8 @@ created: "2025-11-12"
 ## Development
 
 ### Local Workflow
+
+#### Usage
 
 1. Airflow/n8n 운영 문서를 확인합니다.
 2. Airflow 인증 변경 시에는 Native OIDC 계약을 확인합니다.

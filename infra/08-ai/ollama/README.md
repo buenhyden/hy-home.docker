@@ -102,6 +102,7 @@ curl "http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate" -d '{
 - **Guide**: Ollama usage guide (`docs/05.operations/guides/09-ai-and-search/0056-ollama.md`)
 - **Policy**: Ollama operations policy (`docs/05.operations/policies/09-ai-and-search/0056-ollama.md`)
 - **Runbook**: Ollama recovery runbook (`docs/05.operations/runbooks/09-ai-and-search/0056-ollama.md`)
+- **GPU recovery runbook**: `docs/05.operations/runbooks/09-ai-and-search/0055-gpu-recovery.md`
 - [Documentation index](../../../docs/README.md)
 
 ### Observability and Recovery

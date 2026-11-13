@@ -14,6 +14,8 @@ created: "2026-01-12"
 
 ### Service Role
 
+#### Overview
+
 `infra/06-observability/loki`에는 `06-observability` 티어의 Loki 구현이 들어 있습니다. Loki는 compose 서비스 `loki`, 컨테이너 `loki`, 이미지 [declared runtime image](../../tech-stack.versions.json)로 실행되며 작업 데이터를 `loki-data`에 저장하고 로그 청크와 인덱스에는 SeaweedFS S3 버킷 `loki-bucket`을 사용합니다. 커스텀 이미지는 Loki의 업스트림 바이너리를 유지하면서 Docker Secret `seaweedfs_s3_loki_secret_key`에서 `S3_SECRET_KEY`를 내보내는 작은 엔트리포인트를 거쳐 `-config.expand-env=true` 옵션으로 Loki를 시작합니다.
 
 #### Audience
@@ -22,7 +24,9 @@ created: "2026-01-12"
 - 보존, 저장, 쿼리 성능을 관리하는 SREs
 - Loki 준비 상태와 SeaweedFS 연결을 유지 관리하는 Operators
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - Grafana Alloy에서 `http://loki:3100/loki/api/v1/push`로의 로그 수집
 - SeaweedFS 기반 Loki 저장소와 버킷 `loki-bucket`
@@ -30,7 +34,7 @@ created: "2026-01-12"
 - Grafana 데이터소스 `Loki`를 통한 LogQL 쿼리
 - Compose 서비스, 커스텀 이미지, 엔트리포인트, 시크릿, 라우트, 준비 상태 경계
 
-#### Out of Scope
+##### Out of Scope
 
 - 애플리케이션 측 로깅 SDK 변경
 - 활성 보존 정책을 넘어서는 장기 감사 아카이빙
@@ -47,6 +51,14 @@ loki/
 ├── Dockerfile             # Builds declared runtime image from upstream Loki plus entrypoint
 └── README.md              # This file
 ```
+
+### Supported Environment
+
+런타임은 `infra/06-observability/docker-compose.yml`의 `loki` 서비스로 정의되며, 이미지와 태그는 해당 Compose 선언이 소유한다. 활성화 프로파일은 `logs`, `obs`이다.
+
+## Interfaces
+
+### Inputs and Outputs
 
 #### Service Boundary
 
@@ -73,15 +85,9 @@ loki/
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh), [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 연결된 런북, compose 설정 렌더링, 서비스 로그, 마스킹된 저장소/수집 근거로 시작합니다 |
 
-### Supported Environment
+#### Configuration
 
-런타임은 `infra/06-observability/docker-compose.yml`의 `loki` 서비스로 정의되며, 이미지와 태그는 해당 Compose 선언이 소유한다. 활성화 프로파일은 `logs`, `obs`이다.
-
-## Interfaces
-
-### Inputs and Outputs
-
-#### Storage and Retention
+##### Storage and Retention
 
 - **Bucket**: `loki-bucket`
 - **S3 endpoint**: `http://seaweedfs-s3:8333`
@@ -90,7 +96,7 @@ loki/
 - **Retention**: `retention_enabled: true`, `retention_period: 168h`
 - **Compactor**: `compaction_interval: 10m`, `retention_delete_delay: 2h`
 
-#### Ingestion and Querying
+##### Ingestion and Querying
 
 - Alloy는 `loki.write.local_loki`를 통해 `http://loki:3100/loki/api/v1/push`로 로그를 전송합니다.
 - Grafana는 URL `http://loki:3100`으로 데이터소스 `Loki`를 프로비저닝합니다.
@@ -112,12 +118,16 @@ Compose가 참조하는 secret은 `seaweedfs_s3_loki_secret_key`이며 값은 �
 | `docker compose --profile obs restart loki` | 이미 연결된 설정 파일 내용의 승인된 재적용; Compose·시크릿 참조·이미지 또는 baked entrypoint 변경은 RUN-0043을 따르되 marker 보존 결함이 해소되기 전에는 재생성 중단 |
 | `docker compose --profile obs logs -f loki` | 저장소 루트에서 Loki 로그 확인 |
 
+#### Usage
+
 1. 사용법과 쿼리 맥락은 Loki 가이드(`docs/05.operations/guides/07-observability/0043-loki.md`)를 따릅니다.
 2. 준비 상태, 저장소, 수집, 재시작, 롤백 절차는 Loki 런북(`docs/05.operations/runbooks/07-observability/0043-loki.md`)을 따릅니다.
 3. `S3_SECRET_KEY`, 렌더링된 환경 변수 값, SeaweedFS 자격 증명은 문서, 로그, 태스크 근거, 커밋 메시지에 남기지 않습니다.
 4. 계획/태스크 근거와 롤백 기록 없이는 보존, compactor, SeaweedFS 버킷, 리소스 상한, 시크릿 참조, 레이블 카디널리티 정책, 라우트 미들웨어를 변경하지 않습니다.
 
 ### Checks
+
+#### Validation
 
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 인프라 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.

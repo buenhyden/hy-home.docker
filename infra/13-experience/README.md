@@ -79,6 +79,7 @@ python3 scripts/validation/check-operations-catalog.py
 - [상위 인프라](../README.md)
 - [서비스 패키지](storybook/README.md)
 - [문서 진입점](../../docs/README.md)에서 GDE-0101, POL-0101, RUN-0101 확인
+- [RUN-0101 storybook](../../docs/05.operations/runbooks/14-design-system/0101-storybook.md)
 
 ### Observability and Recovery
 

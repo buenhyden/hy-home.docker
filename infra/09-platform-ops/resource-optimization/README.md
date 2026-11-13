@@ -22,6 +22,8 @@ P07 W10의 공개 측정 계약과 bounded 평가 자료입니다. 진행·검�
 
 서비스 소유자, 총괄 통합자와 코드·보안 검토자가 준비 자료를 사용합니다.
 
+#### Scope
+
 [measurement.schema.json](measurement.schema.json)은 source·배포 식별자, 관측 시간·주기,
 대표 업무 부하, 20개 측정값과 11개 예산, 기존 controls v2의 선택된 root projection을
 받습니다. provenance는 수집자 식별자·읽기 전용 수집 방법·공개 receipt SHA256·집계 방식을

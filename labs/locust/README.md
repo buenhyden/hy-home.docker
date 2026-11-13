@@ -144,6 +144,10 @@ client와 실제 외부 프로젝트의 timeout 지원까지 검증한 것으로
 
 - [LAB 탐색](../README.md)
 - [운영 문서 색인](../../docs/05.operations/README.md) — `GDE-0062`, `POL-0062`, `RUN-0062`
+- [RUN-0062 locust](../../docs/05.operations/runbooks/15-labs/0062-locust.md)
+
+- [RUN-0064 performance-testing](../../docs/05.operations/runbooks/12-testing-and-quality/0064-performance-testing.md)
+- [RUN-0107 lab-promotion](../../docs/05.operations/runbooks/15-labs/0107-lab-promotion.md)
 
 ### Observability and Recovery
 

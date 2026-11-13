@@ -462,6 +462,8 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Structure", "body-heading-forbidden"),
                 ("## Usage", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
+                ("### Configuration", "body-subheading-forbidden"),
+                ("### Validation", "body-subheading-forbidden"),
             ),
             "adr": (
                 ("## Decision Drivers", "body-heading-forbidden"),

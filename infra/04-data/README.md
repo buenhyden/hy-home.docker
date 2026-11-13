@@ -14,12 +14,16 @@ created: "2025-11-12"
 
 ### Service Role
 
+#### Overview
+
 데이터 저장·접근 기반 패키지를 서비스 이름으로 바로 배치합니다. 처리·변환·품질
 검증·BI는 독립 [LAB](../../labs/README.md)이 담당합니다(SPEC-0262). 루트 Compose는 정상 HOME 패키지만 include합니다.
 
 #### Audience
 
 공유 데이터와 선택형 데이터베이스의 operator·maintainer를 위한 인덱스입니다.
+
+#### Scope
 
 HOME 공유 상태와 개발 DB, 오브젝트·벡터 저장소, OPTIONAL 데이터 플랫폼을
 다룹니다. 애플리케이션 업무 로직과 분석 처리의 소유권은 포함하지 않습니다.
@@ -45,11 +49,15 @@ admin CIDR·SSO 경계를 유지하고 내부 네트워크 접근도 별도로 �
 
 ### Supported Environment
 
+#### Tech Stack
+
 PostgreSQL·Valkey·SeaweedFS·Qdrant와 선택형 데이터 엔진의 버전은 각 패키지 Compose 및 Dockerfile이 소유합니다.
 
 ## Interfaces
 
 ### Inputs and Outputs
+
+#### Configuration
 
 [루트 Compose](../../docker-compose.yml)의 include와 각 패키지의 profile·network·secret 선언을 함께 확인합니다.
 
@@ -61,6 +69,8 @@ PostgreSQL·Valkey·SeaweedFS·Qdrant와 선택형 데이터 엔진의 버전은
 
 ### Local Workflow
 
+#### Usage
+
 - 저장소 루트에서 정확한 profile을 선택합니다. `core`나 디렉터리 이름만으로
   데이터 의존성 전체가 기동되지는 않습니다.
 - 모든 상태 소유자는 named consumer, 용량·보존 경계, 엔진 지원 백업, 별도 암호화
@@ -71,6 +81,8 @@ PostgreSQL·Valkey·SeaweedFS·Qdrant와 선택형 데이터 엔진의 버전은
   참조·운영 문서는 정상 패키지 README에서 찾습니다.
 
 ### Checks
+
+#### Validation
 
 `python3 scripts/validation/run-ci-gate.py --profile changed`는 변경 경로에 맞는 검증을 선택합니다. 실행 여부와 종료 코드는 해당 Task에 기록합니다.
 

@@ -77,6 +77,9 @@ renovate/
 
 - [Infrastructure index](../../../infra/README.md)
 - [Documentation index](../../../docs/README.md)
+- [RUN-0083 renovate](../../../docs/05.operations/runbooks/10-platform-and-backup/0083-renovate.md)
+
+- [RUN-0086 dependency-version-management](../../../docs/05.operations/runbooks/10-platform-and-backup/0086-dependency-version-management.md)
 
 ### Observability and Recovery
 

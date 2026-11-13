@@ -13,6 +13,8 @@ updated: "2026-11-13"
 
 ### Service Role
 
+#### Overview
+
 이 패키지는 개발 PostgreSQL의 공유 `perf_db`와 `quality` schema에 정규화된
 시험 결과를 보관하는 소스 계약입니다. 엔진을 추가하지 않으며 관리 데이터베이스나
 외부 프로젝트의 업무 데이터베이스를 사용하지 않습니다.
@@ -21,6 +23,8 @@ updated: "2026-11-13"
 
 성능 시험 결과 importer, 프로젝트별 권한, Grafana 읽기 경계를 구현하거나
 검토하는 maintainer를 대상으로 합니다.
+
+#### Scope
 
 `run_id`와 `attempt`의 변경 불가능한 실행 신원, artifact checksum, metric summary,
 실행기가 보고한 판정과 별도 판정 권한의 이력을 저장합니다. 프로젝트 writer,
@@ -41,6 +45,8 @@ reader, verdict 역할은 명시적 manifest로 등록되며 모두 `NOLOGIN` gr
 
 ### Supported Environment
 
+#### Tech Stack
+
 상위 개발 PostgreSQL [Dockerfile](../Dockerfile)과
 [Compose](../../docker-compose.yml)에 선언된 이미지에서 PostgreSQL RLS, role
 membership, JSONB와 core SHA-256 함수를 사용합니다. 별도 데이터베이스 이미지나
@@ -49,6 +55,8 @@ Python 의존성을 추가하지 않습니다.
 ## Interfaces
 
 ### Inputs and Outputs
+
+#### Configuration
 
 등록 manifest는 `schema_version`, `project_id`, `roles.reader`, `roles.writer`,
 `roles.verdict`만 허용합니다. 역할 이름은 임의 조합하지 않고 승인된 manifest에
@@ -69,11 +77,13 @@ bootstrap 종료까지 유지합니다. 동시 job은 exit 75로 종료되며 �
 
 ### Security Boundary
 
-없음: 이 폴더에는 Compose 서비스와 secret 정의가 없으며, secret 값을 저장소에 두지 않는다.
+Compose가 참조하는 secret은 `dev_pg_admin_password`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/04-data/dev-db/docker-compose.yml`의 `dev-perf-provision` 서비스)
 
 ## Development
 
 ### Local Workflow
+
+#### Usage
 
 schema 변경은 새 migration version과 replay/conflict 검사를 함께 갱신합니다.
 project 등록 SQL은 admin이 `perf_db` migration 적용 후 실행하며 출력에
@@ -85,6 +95,8 @@ canonical UTF-8 bytes를 전달합니다. DB가 JSON 동등성과 SHA-256을 다
 않습니다.
 
 ### Checks
+
+#### Validation
 
 저장소 루트에서 다음 정적 검사를 실행합니다.
 
@@ -101,6 +113,10 @@ python3 infra/04-data/dev-db/pg/perf/register.py \
 
 ### Runbook Links
 
+이 서비스의 런북은 다음과 같다.
+
+- RUN-0100: `docs/05.operations/runbooks/05-databases-and-storage/0100-development-database.md`
+
 #### Related Documents
 
 [문서 진입점](../../../../../docs/README.md)에서 SPEC-0203과 개발 데이터 운영
@@ -108,4 +124,4 @@ python3 infra/04-data/dev-db/pg/perf/register.py \
 
 ### Observability and Recovery
 
-없음: 이 폴더에는 헬스체크나 관측 대상 선언이 없다.
+`infra/04-data/dev-db/docker-compose.yml`의 `dev-perf-provision` 서비스에 `healthcheck` 선언이 없다.

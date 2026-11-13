@@ -14,6 +14,8 @@ created: "2026-01-12"
 
 ### Service Role
 
+#### Overview
+
 `infra/06-observability/prometheus`는 `hy-home.docker` 플랫폼의 핵심 메트릭 엔진인 Prometheus의 구현 위치입니다. `config/prometheus.yml`에 정의된 대상을 스크레이프하고 시계열 데이터를 `prometheus-data` 볼륨에 저장하며 알림 규칙을 평가합니다. 레이블 카디널리티는 운영 정책을 통해 통제되어야 합니다.
 
 #### Audience
@@ -23,6 +25,8 @@ created: "2026-01-12"
 - Developers
 - Operators
 - Documentation Writers
+
+#### Scope
 
 - **Role**: 메트릭 수집 및 알림 엔진.
 - **Layer**: `06-observability` (텔레메트리 저장소).
@@ -54,6 +58,8 @@ infra/06-observability/prometheus/
 - **Storage**: 영속 TSDB 볼륨. 명시적 보존 플래그는 Compose에 선언되어 있지 않습니다.
 
 ### Supported Environment
+
+#### Tech Stack
 
 런타임 이미지 고정 값은 [Compose](../docker-compose.yml)에 선언되어 있습니다. [버전 레지스트리](../../tech-stack.versions.json)는 정제된 프로젝션입니다.
 
@@ -95,6 +101,8 @@ Compose가 참조하는 secret은 `grafana_metrics_password`, `openbao_token`, `
 - **Operations Policy**: `docs/05.operations/policies/07-observability/0045-prometheus.md`
 - **Runbook**: `docs/05.operations/runbooks/07-observability/0045-prometheus.md`
 
+#### Usage
+
 `scripts/operations/compose-start.py plan`은 공개 설정의 선택 및 companion을
 확인하는 소비자다. 운영자가 계획을 따로 검토하고 승인·복구 조건을 확인하기 전에는
 `up --plan`을 실행하지 않는다. 기대 대상의 갱신과 문제 해결은
@@ -108,6 +116,8 @@ Prometheus runbook(`docs/05.operations/runbooks/07-observability/0045-prometheus
 4. **Networking**: 스크레이프 대상은 `obs_net`에서 접근 가능해야 합니다.
 
 ### Checks
+
+#### Validation
 
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.

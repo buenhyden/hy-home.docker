@@ -73,7 +73,7 @@ Python 표준 라이브러리 `unittest`와 빈 Node VM으로 합성 시험을 �
 
 ### Security Boundary
 
-없음: 서비스 포트·Compose 정의가 없습니다. 시험은 합성 Token·합성 키와 가짜 전송 연결만 쓰고, 일회용 E2E는 임의 접미사의 네트워크·볼륨·컨테이너를 만든 뒤 종료 시 지우며 운영 스택·비밀·Traefik 디렉터리는 건드리지 않습니다(Local Workflow 참조).
+이 디렉터리는 서비스 포트나 Compose 정의를 두지 않고 경계를 시험으로 검증합니다. `test_ingress_route.py`는 제안 Traefik 경로가 정확한 경로·POST·호스트 출발지·본문·속도 제한만 허용하는지, `test_export_route.py`는 Export 경로의 네 요청 형태·출발지·본문·속도 제한을, `test_attestation.py`는 서명 키 보관과 신뢰 판정을, `test_source_fetch.py`는 원본 가져오기 방어를 확인합니다. 시험은 합성 Token·합성 키와 가짜 전송 연결만 쓰고, 일회용 E2E는 임의 접미사의 네트워크·볼륨·컨테이너를 만든 뒤 종료 시 지우며 운영 스택·비밀·Traefik 디렉터리는 건드리지 않습니다(Local Workflow 참조).
 
 ## Development
 
@@ -130,6 +130,7 @@ Gateway 컨테이너는 Compose에서 렌더링한 사용자·읽기 전용 루�
 
 - [수집 전송 소스](../README.md)
 - [로컬 발행기](../publisher/README.md)
+- n8n Runbook: `docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md`(RUN-0053)
 
 ### Observability and Recovery
 

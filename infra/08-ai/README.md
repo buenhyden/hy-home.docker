@@ -144,8 +144,14 @@ provider 자격 증명을 읽지 못할 수 있습니다. provider egress는 별
 - Operations guides - 08-ai (`docs/05.operations/guides/README.md`)
 - Operations policies - 08-ai (`docs/05.operations/policies/README.md`)
 - Operations runbooks - 08-ai (`docs/05.operations/runbooks/README.md`)
+- GPU 복구 런북 (`docs/05.operations/runbooks/09-ai-and-search/0055-gpu-recovery.md`)
+- Ollama 복구 런북 (`docs/05.operations/runbooks/09-ai-and-search/0056-ollama.md`, RUN-0056)
+- ComfyUI 복구 런북 (`docs/05.operations/runbooks/09-ai-and-search/0081-comfyui.md`, RUN-0081)
+- Open Notebook 복구 런북 (`docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md`, RUN-0073)
+- Crawl4AI 복구 런북 (`docs/05.operations/runbooks/09-ai-and-search/0091-crawl4ai.md`, RUN-0091)
+- MLflow 복구 런북 (`docs/05.operations/runbooks/13-analytics-and-data-quality/0088-mlflow.md`, RUN-0088)
 - [Documentation index](../../docs/README.md)
 
 ### Observability and Recovery
 
-`ollama`와 `ollama-exporter`에는 Compose 헬스체크가 있고 exporter가 `obs_net`으로 지표를 내보냅니다. GPU 장애는 `docs/05.operations/runbooks/09-ai-and-search/0055-gpu-recovery.md`, Ollama 복구는 `.../0056-ollama.md`, ComfyUI 복구는 `.../0081-comfyui.md`를 따릅니다.
+`ollama`와 `ollama-exporter`에는 Compose 헬스체크가 있고 exporter가 `obs_net`으로 지표를 내보냅니다. GPU 장애, Ollama, ComfyUI 복구는 Runbook Links의 런북을 따릅니다.

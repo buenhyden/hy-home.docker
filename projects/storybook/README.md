@@ -59,6 +59,7 @@ UI 변경은 `nextjs/`에서 진행합니다. 외부 프로젝트는 검토된 �
 - [하위 Storybook 작업공간](nextjs/README.md)
 - [프로젝트 인덱스](../README.md)
 - [문서 인덱스](../../docs/README.md)
+- [RUN-0101 storybook](../../docs/05.operations/runbooks/14-design-system/0101-storybook.md)
 
 ### Observability and Recovery
 

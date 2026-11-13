@@ -61,6 +61,7 @@ CLI로 게시한 변경은 n8n main을 재시작해야 반영됩니다.
 
 - [n8n 독립 워크로드](../README.md)
 - [Hermes 수집 전송](../hermes-blog-ingestion/README.md)
+- n8n Runbook: `docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md`(RUN-0053)
 
 ### Observability and Recovery
 

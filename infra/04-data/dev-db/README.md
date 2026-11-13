@@ -14,12 +14,16 @@ created: "2026-10-02"
 
 ### Service Role
 
+#### Overview
+
 이 패키지는 개발 업무용 PostgreSQL과 Valkey의 소스 선언을 소유합니다.
 관리 서비스의 `mng-db` 및 별도 LAB 상태와 저장 경로를 공유하지 않습니다.
 
 #### Audience
 
 개발 데이터 엔진과 외부 프로젝트 접속 계약을 검토하는 maintainer와 operator를 대상으로 합니다.
+
+#### Scope
 
 [`docker-compose.yml`](docker-compose.yml)은 `dev-pg`, `dev-platform-provision`,
 `dev-perf-provision`, `dev-valkey`와 지표 수집용 `dev-pg-monitor-provision`,
@@ -37,11 +41,15 @@ created: "2026-10-02"
 
 ### Supported Environment
 
+#### Tech Stack
+
 TimescaleDB Community 기반 PostgreSQL과 Valkey의 단일 개발 인스턴스를 정의합니다. 이미지와 확장 선언은 [`pg/`](pg/) 및 [`valkey/`](valkey/)가 소유합니다.
 
 ## Interfaces
 
 ### Inputs and Outputs
+
+#### Configuration
 
 [`docker-compose.yml`](docker-compose.yml)의 `dev-data` profile, `dev_data_net`(dev-pg는 notifier용 내부 `opsflow_notifier_db_net`도 추가로 사용), 별도 데이터 경로와 Docker secret 참조를 사용합니다. 프로젝트별 DB·ACL은 승인된 명시적 명세로만 등록합니다.
 
@@ -53,6 +61,8 @@ Compose가 참조하는 secret은 `dev_pg_admin_password`, `dev_pg_monitor_passw
 
 ### Local Workflow
 
+#### Usage
+
 루트에서 다음 정적 검사를 실행합니다. `config`는 컨테이너를 시작하지 않습니다.
 
 ```bash
@@ -62,11 +72,17 @@ python3 -m unittest tests.validation.test_dev_pg_provision tests.validation.test
 
 ### Checks
 
-아래 정적 명령은 Compose 렌더와 provision·ACL 입력 검증을 확인합니다. 실제 엔진 동작은 별도의 격리 실행 증거로 기록합니다.
+#### Validation
+
+Local Workflow의 정적 명령은 Compose 렌더와 provision·ACL 입력 검증을 확인합니다. 실제 엔진 동작은 별도의 격리 실행 증거로 기록합니다.
 
 ## Operations
 
 ### Runbook Links
+
+이 서비스의 런북은 다음과 같다.
+
+- RUN-0100: `docs/05.operations/runbooks/05-databases-and-storage/0100-development-database.md`
 
 #### Related Documents
 
@@ -77,4 +93,4 @@ GDE-0100·POL-0100·RUN-0100을 참조하십시오. 엔진 세부 사항은
 
 ### Observability and Recovery
 
-헬스체크: `dev-pg` 서비스는 `pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d postgres` (interval 15s); `dev-pg-exporter` 서비스는 `wget -qO- http://localhost:9187/metrics > /dev/null 2>&1 || exit 1` (interval 15s); `dev-valkey` 서비스는 `REDISCLI_AUTH=$$(tr -d "\n" </run/secrets/dev_valkey_admin_password) valkey-cli --user devadmin -h 127.0.0.1 -p 6379 ping | grep -qx PONG` (interval 15s); `dev-valkey-exporter` 서비스는 `wget -qO- http://localhost:9121/metrics > /dev/null 2>&1 || exit 1` (interval 30s).
+헬스체크: `dev-pg` 서비스는 `pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d postgres` (interval 15s); `dev-pg-exporter` 서비스는 `wget -qO- http://localhost:9187/metrics > /dev/null 2>&1 || exit 1` (interval 15s); `dev-valkey` 서비스는 여러 줄 명령으로 상태를 확인하며 명령 전문은 Compose 선언에 있다 (interval 15s); `dev-valkey-exporter` 서비스는 `wget -qO- http://localhost:9121/metrics > /dev/null 2>&1 || exit 1` (interval 30s).

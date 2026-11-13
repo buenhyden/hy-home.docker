@@ -16,6 +16,8 @@ created: "2026-03-26"
 
 ### Service Role
 
+#### Overview
+
 RedisInsight는 Redis 데이터를 시각화, 분석, 관리할 수 있는 강력한 GUI입니다. 키 탐색, 메모리 프로파일링, 실시간 모니터링 같은 기능을 제공합니다.
 
 #### Audience
@@ -23,6 +25,8 @@ RedisInsight는 Redis 데이터를 시각화, 분석, 관리할 수 있는 강�
 - **Operators**: Redis 상태 및 메모리 사용량 모니터링.
 - **Developers**: 데이터 구조 분석 및 애플리케이션 상태 디버깅.
 - **Data Engineers**: Redis 성능 프로파일링 및 병목 식별.
+
+#### Scope
 
 - **Included**: 웹 UI를 통한 Redis 키 탐색, 스트림 분석, 메모리 프로파일링, CLI 접근.
 - **Excluded**: Redis 서버 OS의 직접 관리, 하드웨어 수준 성능 튜닝.
@@ -80,13 +84,15 @@ Compose가 참조하는 secret은 `dev_valkey_inspector_password`, `mng_valkey_i
 
 ### Local Workflow
 
-#### 1. Initial Setup
+#### Usage
+
+##### 1. Initial Setup
 
 1. `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`로 루트에서 활성화되는 admin 프로필을 검증합니다.
 2. 승인된 실행 환경에서만 `https://redisinsight.${DEFAULT_URL}`에 접속합니다.
 3. 사전 등록된 `DEV / dev-valkey`와 `MNG / mng-valkey`만 보이는지 확인합니다. 연결은 수동으로 추가하지 않습니다.
 
-#### 2. Basic Usage
+##### 2. Basic Usage
 
 - 사전 등록 연결을 골라 읽기 전용으로 조회합니다. 쓰기는 거부됩니다.
 - 'Browser' 탭을 사용해 키와 값을 탐색합니다.
@@ -98,6 +104,8 @@ Compose가 참조하는 secret은 `dev_valkey_inspector_password`, `mng_valkey_i
 - `docker logs --tail 100 redisinsight`: 서비스 실행 중 로그를 확인합니다.
 
 ### Checks
+
+#### Validation
 
 - RedisInsight에 영향을 주는 README나 Compose 참조 변경 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 서비스 문서와 운영 링크를 동기화하려면 `python3 scripts/validation/run-ci-gate.py --profile changed`를 실행합니다.

@@ -91,6 +91,8 @@ CLI 및 계획 차이를 검증하고, 정확한 state·lockfile·provider 버�
 - [Documentation index](../../../docs/README.md)
 - [Public secret contract](../../../secrets/README.md)
 
+- Runbook: `docs/05.operations/runbooks/10-platform-and-backup/0082-opentofu.md`(RUN-0082)
+
 ### Observability and Recovery
 
 `opentofu`는 `iac` 프로필의 운영자 트리거 CLI job이며 Compose 헬스체크가 선언되어 있지 않습니다. 복구와 backend·state 복원은 `docs/05.operations/runbooks/10-platform-and-backup/0082-opentofu.md`(RUN-0082)를 따르고, 새 버전 apply 뒤 이미지만 되돌리는 것은 복구로 보지 않습니다.

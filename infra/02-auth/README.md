@@ -16,6 +16,8 @@ created: "2025-11-12"
 
 ### Service Role
 
+#### Overview
+
 `02-auth` tier는 `hy-home.docker` 생태계의 보안 기반을 맡습니다. Keycloak은 중앙
 Identity Provider입니다. OAuth2 Proxy는 적절한 내장 OIDC가 없는 서비스에 Gateway
 ForwardAuth를 제공하며 Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao 같은 승인된
@@ -26,7 +28,9 @@ ForwardAuth를 제공하며 Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao 같�
 - Developers
 - Operators
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - Keycloak: IAM 제공자
 - OAuth2 Proxy: ForwardAuth 게이트웨이
@@ -35,7 +39,7 @@ ForwardAuth를 제공하며 Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao 같�
 - PostgreSQL identity 영속성
 - OAuth2 Proxy용 Valkey 세션 저장
 
-#### Out of Scope
+##### Out of Scope
 
 - TLS 종료(`01-gateway`)
 - 네트워크 방화벽
@@ -53,6 +57,8 @@ ForwardAuth를 제공하며 Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao 같�
 
 ### Supported Environment
 
+#### Tech Stack
+
 | Category | Technology | Notes |
 | --- | --- | --- |
 | IAM | Keycloak | 중앙 OIDC/SAML IdP |
@@ -65,6 +71,8 @@ ForwardAuth를 제공하며 Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao 같�
 ## Interfaces
 
 ### Inputs and Outputs
+
+#### Configuration
 
 | Variable | Required | Description |
 | --- | ---: | --- |
@@ -110,6 +118,8 @@ Native OIDC 서비스 앞에 OAuth2 Proxy ForwardAuth를 기본적으로 중복 
 ## Development
 
 ### Local Workflow
+
+#### Usage
 
 1. [Auth Operations](../../docs/README.md)를 먼저 확인한다.
 2. Keycloak/OAuth2 Proxy compose/config를 변경하기 전에 guide/policy/runbook을 확인한다.

@@ -16,6 +16,8 @@ created: "2025-11-12"
 
 ### Service Role
 
+#### Overview
+
 Airflow는 `hy-home.docker`의 code-first 워크플로우 오케스트레이션 엔진입니다.
 Compose 파일 하나에서 핵심 서비스와 선택적인 전용 Valkey를 구성합니다.
 
@@ -27,7 +29,9 @@ UI/API 인증은 OAuth2 Proxy ForwardAuth가 아니라
 - Data Engineers
 - SREs
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - apiserver
 - scheduler
@@ -38,7 +42,7 @@ UI/API 인증은 OAuth2 Proxy ForwardAuth가 아니라
 - StatsD
 - DB/broker/auth wiring
 
-#### Out of Scope
+##### Out of Scope
 
 - 개별 DAG 비즈니스 로직
 - 외부 소스 인프라
@@ -92,6 +96,8 @@ Airflow internal JWT:
 
 ### Supported Environment
 
+#### Tech Stack
+
 | Category | Technology | Version |
 | --- | --- | --- |
 | Airflow | Apache Airflow | declared version |
@@ -134,6 +140,8 @@ docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-per
 
 ### Local Workflow
 
+#### Usage
+
 1. Airflow guide/policy/runbook 확인.
 2. DAG lifecycle guide 확인.
 3. auth route는 gateway-only 유지.
@@ -152,11 +160,15 @@ docker compose exec airflow-apiserver airflow dags list
 
 ### Checks
 
-`docker compose -f infra/07-workflow/airflow/docker-compose.yml config`로 병합 결과를 검증한다.
+루트에서 `HYHOME_COMPOSE_PROFILES`를 지정해 `scripts/validation/validate-docker-compose.sh`로 구성을 검증한다. 개별 leaf Compose는 루트 network와 secret 선언에 의존하므로 leaf 단독으로 검증하지 않는다(`infra/README.md` 참조).
 
 ## Operations
 
 ### Runbook Links
+
+이 서비스의 런북은 다음과 같다.
+
+- RUN-0050: `docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md`
 
 #### Related Documents
 
@@ -273,4 +285,4 @@ Seaweed 내부 원인은 UNKNOWN이며 게시 수용·복원 성공 증거는 �
 - Airflow core/StatsD 서비스는 `workflow`/`workflow-airflow`에서 **HOME**입니다. Flower는 2026-11-10 owner 결정(7일간 요청 0건)으로 opt-in `airflow-flower` profile로 옮겼고 HOME이 시작하지 않습니다. Prometheus job `flower`는 `expected_state: "off"`이며 Flower를 시작하면 `on`으로 바꿉니다. 앱별 전용 Valkey는 ADR-0062 결정 10으로 제거되었습니다.
 - Root preflight: `docker compose --profile workflow config --quiet`. Root start: `docker compose --profile workflow up -d airflow-apiserver airflow-scheduler airflow-dag-processor airflow-worker airflow-triggerer airflow-statsd-exporter`.
 - Broker는 `AIRFLOW_VALKEY_HOST`/`AIRFLOW_VALKEY_SECRET`의 기본값(`mng-valkey`, `mng_valkey_password`)뿐이며 `connection_uri.py`가 다른 조합을 거부합니다.
-- 운영 문서는 아래 탐색점의 `GDE-0050`, `POL-0050`, `RUN-0050`을 사용합니다. HOME 격리 복구는 미실행입니다.
+- 운영 문서는 Runbook Links의 탐색점의 `GDE-0050`, `POL-0050`, `RUN-0050`을 사용합니다. HOME 격리 복구는 미실행입니다.

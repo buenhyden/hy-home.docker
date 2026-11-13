@@ -16,6 +16,8 @@ created: "2025-11-12"
 
 ### Service Role
 
+#### Overview
+
 Traefik은 `hy-home.docker` 생태계의 주 에지 라우터입니다. Docker 프로바이더를 통한 동적 서비스 탐색과 자동 TLS 종료를 제공합니다. 트래픽 모니터링 및 관리를 위한 대시보드도 있습니다.
 
 ---
@@ -27,7 +29,9 @@ Traefik은 `hy-home.docker` 생태계의 주 에지 라우터입니다. Docker �
 - Infrastructure Engineers
 - SREs
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - 전역 entrypoint 정의(`web` 80, `websecure` 443, `metrics` 8082). `metrics`(Prometheus metrics와 ping)는 Prometheus만 함께 붙는 `traefik_metrics_net`의 `10.250.46.2`(alias `traefik-metrics`)에만 bind함(SPEC-0267).
 - Docker Provider를 통한 동적 서비스 탐색과 라우팅 label.
@@ -35,7 +39,7 @@ Traefik은 `hy-home.docker` 생태계의 주 에지 라우터입니다. Docker �
 - TLS store와 인증서 관리.
 - Observability 통합(Prometheus 메트릭, OTLP 추적).
 
-#### Out of Scope
+##### Out of Scope
 
 - 애플리케이션 수준의 비즈니스 로직.
 - 상세한 경로 기반 재작성.
@@ -56,19 +60,21 @@ traefik/
 
 ### Supported Environment
 
-런타임은 `infra/01-gateway/traefik/compose.window-ca.override.yml`, `infra/01-gateway/traefik/docker-compose.yml`의 `traefik`, `traefik` 서비스로 정의되며, 이미지와 태그는 해당 Compose 선언이 소유한다. 활성화 프로파일은 `core`, `dev`, `local`이다.
+런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [curated 버전 투영](../../tech-stack.versions.json)으로 drift를 검증합니다.
 
 ## Interfaces
 
 ### Inputs and Outputs
 
-#### Core Files
+#### Configuration
+
+##### Core Files
 
 - `config/traefik.yml`: 정적 설정(entrypoint, provider, API).
 - `dynamic/middleware.yml`: 공유 미들웨어(SSO/ForwardAuth, RateLimit, BasicAuth).
 - `dynamic/tls.yaml`: TLS 인증서 매핑과 store.
 
-#### Docker Healthcheck
+##### Docker Healthcheck
 
 Traefik의 내장 healthcheck는 내부 ping 엔드포인트를 사용합니다.
 
@@ -80,7 +86,7 @@ healthcheck:
   retries: 5
 ```
 
-#### Keycloak & OAuth2 Proxy Integration
+##### Keycloak & OAuth2 Proxy Integration
 
 Traefik은 `ForwardAuth` 미들웨어(`sso-auth@file`)를 사용해 인증을 OAuth2 Proxy에 위임합니다.
 
@@ -90,11 +96,13 @@ Traefik은 `ForwardAuth` 미들웨어(`sso-auth@file`)를 사용해 인증을 OA
 
 ### Security Boundary
 
-Compose가 참조하는 secret은 `traefik_basicauth_password`, `traefik_opensearch_basicauth_password`, `traefik_prometheus_api_htpasswd`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `${HOST_LAN_BIND_IP:-192.168.0.13}:${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}`, `${HOST_LAN_BIND_IP:-192.168.0.13}:${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}`이다. (출처: `infra/01-gateway/traefik/compose.window-ca.override.yml`, `infra/01-gateway/traefik/docker-compose.yml`의 `traefik`, `traefik` 서비스)
+2026-11-09에 Compose 고정을 GHSA-xv5x-242w-7hf7(인증 없는 NTLM/Negotiate 헤더가 연결마다 backend transport를 남기는 High 결함)이 고쳐진 Traefik 패치 릴리스로 올렸습니다. 해당 릴리스 migration guide의 Go 1.27 항목(GODEBUG TLS 설정 제거, 요청 header 값 500개 제한, Ingress-NGINX 생성 이름)은 이 설정에 해당하지 않습니다. 서명, 스캔, config 부팅과 HOME 재생성은 `NOT_RUN`이며 실행 중인 컨테이너는 바뀌지 않았습니다. 기록은 `infra/09-platform-ops/security-updates/`와 SPEC-0212-TSK-0041이 소유합니다.
 
 ## Development
 
 ### Local Workflow
+
+#### Usage
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 
@@ -107,7 +115,7 @@ Compose가 참조하는 secret은 `traefik_basicauth_password`, `traefik_opensea
 - **필수**: 모든 동적 라우팅 변경은 Traefik 대시보드로 검증해야 합니다.
 - **검증**: 정적 검증을 먼저 사용하고 승인된 실행 중 스택에 대해서만 Traefik 로그를 확인합니다.
 
-#### Environment Variables
+##### Environment Variables
 
 | Variable          | Required | Description |
 | ----------------- | -------: | ----------- |
@@ -116,6 +124,8 @@ Compose가 참조하는 secret은 `traefik_basicauth_password`, `traefik_opensea
 | `HTTPS_HOST_PORT` |       No | HTTPS 호스트 포트(기본값: 443) |
 
 ### Checks
+
+#### Validation
 
 | Command | Description |
 | --- | --- |
@@ -141,10 +151,6 @@ Compose가 참조하는 secret은 `traefik_basicauth_password`, `traefik_opensea
 - Traefik 런북 (`docs/05.operations/runbooks/02-gateway-and-networking/0013-traefik.md`)
 - [Traefik 대시보드](https://dashboard.${DEFAULT_URL:-localhost}) (내부용)
 - [문서 인덱스](../../../docs/README.md)
-
-런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [curated 버전 투영](../../tech-stack.versions.json)으로 drift를 검증합니다.
-
-2026-11-09에 Compose 고정을 GHSA-xv5x-242w-7hf7(인증 없는 NTLM/Negotiate 헤더가 연결마다 backend transport를 남기는 High 결함)이 고쳐진 Traefik 패치 릴리스로 올렸습니다. 해당 릴리스 migration guide의 Go 1.27 항목(GODEBUG TLS 설정 제거, 요청 header 값 500개 제한, Ingress-NGINX 생성 이름)은 이 설정에 해당하지 않습니다. 서명, 스캔, config 부팅과 HOME 재생성은 `NOT_RUN`이며 실행 중인 컨테이너는 바뀌지 않았습니다. 기록은 `infra/09-platform-ops/security-updates/`와 SPEC-0212-TSK-0041이 소유합니다.
 
 ### Observability and Recovery
 

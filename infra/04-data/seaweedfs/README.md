@@ -14,12 +14,16 @@ created: "2025-12-06"
 
 ### Service Role
 
+#### Overview
+
 이 패키지는 HOME S3 오브젝트 스토어인 SeaweedFS를 정의합니다. SPEC-0180 S07에서
 MinIO를 대체했습니다.
 
 #### Audience
 
 오브젝트 저장소의 operator와 maintainer를 대상으로 합니다.
+
+#### Scope
 
 [`docker-compose.yml`](docker-compose.yml)이 `seaweedfs-master`,
 `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`를 정의합니다. `seaweedfs`,
@@ -64,22 +68,25 @@ Compose가 참조하는 secret은 `seaweedfs_jwt_filer_key`, `seaweedfs_jwt_volu
 
 ### Local Workflow
 
+#### Usage
+
 ```bash
 docker compose --env-file .env.example --profile seaweedfs config --quiet
 HYHOME_SEAWEEDFS_REHEARSAL=1 python3 -m unittest \
   tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests
 ```
 
-최초 활성화, 백업, 복구는 RUN-0024를 따릅니다. 일일 백업은 filer metadata와
-volume/master 트리를 순서 있는 한 세트로 담습니다(RUN-0021).
-
 ### Checks
 
-`docker compose -f infra/04-data/seaweedfs/docker-compose.yml config`로 병합 결과를 검증한다.
+루트에서 `HYHOME_COMPOSE_PROFILES`를 지정해 `scripts/validation/validate-docker-compose.sh`로 구성을 검증한다. 개별 leaf Compose는 루트 network와 secret 선언에 의존하므로 leaf 단독으로 검증하지 않는다(`infra/README.md` 참조).
 
 ## Operations
 
 ### Runbook Links
+
+이 서비스의 런북은 다음과 같다.
+
+- RUN-0024: `docs/05.operations/runbooks/05-databases-and-storage/0024-seaweedfs.md`
 
 #### Related Documents
 
@@ -91,4 +98,5 @@ volume/master 트리를 순서 있는 한 세트로 담습니다(RUN-0021).
 
 ### Observability and Recovery
 
-헬스체크: `seaweedfs-master` 서비스는 `wget -q --spider http://localhost:${SEAWEEDFS_MASTER_HTTP_PORT:-9333}/cluster/status || exit 1` (interval 15s); `seaweedfs-volume` 서비스는 `wget -q --spider http://localhost:${SEAWEEDFS_VOLUME_HTTP_PORT:-8085}/status || exit 1` (interval 15s); `seaweedfs-filer` 서비스는 `wget -q --spider http://localhost:${SEAWEEDFS_FILER_HTTP_PORT:-8888}/healthz || exit 1` (interval 15s); `seaweedfs-s3` 서비스는 `wget -q --spider http://localhost:${SEAWEEDFS_S3_HTTP_PORT:-8333}/healthz || exit 1` (interval 15s).
+최초 활성화, 백업, 복구는 RUN-0024를 따릅니다. 일일 백업은 filer metadata와
+volume/master 트리를 순서 있는 한 세트로 담습니다(RUN-0021).

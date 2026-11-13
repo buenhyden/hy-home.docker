@@ -14,6 +14,8 @@ created: "2025-11-12"
 
 ### Service Role
 
+#### Overview
+
 이 패키지는 정상 root Compose의 선택형 단일 OpenSearch와 해당
 OpenSearch Dashboards를 소유합니다. 검색 API와 Dashboard는 기존 Traefik
 라우트를 사용합니다. 소스 변경만으로 실행 중인 서비스가 바뀌지는 않습니다.
@@ -21,6 +23,8 @@ OpenSearch Dashboards를 소유합니다. 검색 API와 Dashboard는 기존 Trae
 #### Audience
 
 검색 서비스의 developer, operator, 보안 검토자를 대상으로 합니다.
+
+#### Scope
 
 `docker-compose.yml`의 `opensearch` profile은 `opensearch`와
 `opensearch-dashboards`만 선택합니다. API는 HTTPS와 관리자 secret 기반
@@ -57,11 +61,15 @@ snapshot 복원 성공을 뜻하지 않습니다. 업그레이드한 노드는 �
 
 ### Supported Environment
 
+#### Tech Stack
+
 [Dockerfile](Dockerfile)과 [Compose](docker-compose.yml)가 단일 OpenSearch, Dashboards, exporter plugin을 선언합니다.
 
 ## Interfaces
 
 ### Inputs and Outputs
+
+#### Configuration
 
 `opensearch` profile, `edge_net`·`obs_net`, 기존 영속 경로와 secret·인증서 bind를 사용합니다. 서비스별 실제 참조는 Compose가 소유합니다.
 
@@ -72,6 +80,8 @@ Compose가 참조하는 secret은 `oauth2_proxy_client_secret`, `opensearch_admi
 ## Development
 
 ### Local Workflow
+
+#### Usage
 
 저장소 루트에서 정상 구성만 정적으로 확인합니다.
 
@@ -86,11 +96,17 @@ docker compose --profile opensearch config --services
 
 ### Checks
 
-아래 Compose 렌더를 정적으로 확인합니다. 이미지 빌드와 인증·readiness·복구는 별도 실행 결과가 필요합니다.
+#### Validation
+
+Local Workflow의 Compose 렌더를 정적으로 확인합니다. 이미지 빌드와 인증·readiness·복구는 별도 실행 결과가 필요합니다.
 
 ## Operations
 
 ### Runbook Links
+
+이 서비스의 런북은 다음과 같다.
+
+- RUN-0019: `docs/05.operations/runbooks/05-databases-and-storage/0019-opensearch.md`
 
 #### Related Documents
 
@@ -102,4 +118,4 @@ docker compose --profile opensearch config --services
 
 ### Observability and Recovery
 
-헬스체크: `opensearch` 서비스는 `password=$$(cat /run/secrets/opensearch_admin_password) [ -n "$$password" ] || exit 1 [ "$$(printf '%s' "$$pas` (interval 15s); `opensearch-dashboards` 서비스는 `code=$$(curl -ks -o /dev/null -w "%{http_code}" https://localhost:${KIBANA_PORT:-5601}/api/status); \ [ "$$cod` (interval 15s).
+헬스체크: `opensearch` 서비스는 여러 줄 명령으로 상태를 확인하며 명령 전문은 Compose 선언에 있다 (interval 15s); `opensearch-dashboards` 서비스는 여러 줄 명령으로 상태를 확인하며 명령 전문은 Compose 선언에 있다 (interval 15s).

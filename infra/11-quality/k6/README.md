@@ -277,6 +277,9 @@ Compose의 `version` inventory 명령·읽기 전용 scenario mount·restart 제
 - **Policy**: k6 operations policy (`docs/05.operations/policies/12-testing-and-quality/0061-k6.md`)
 - **Runbook**: k6 recovery runbook (`docs/05.operations/runbooks/12-testing-and-quality/0061-k6.md`)
 - [Documentation index](../../../docs/README.md)
+- [RUN-0061 k6](../../../docs/05.operations/runbooks/12-testing-and-quality/0061-k6.md)
+
+- [RUN-0064 performance-testing](../../../docs/05.operations/runbooks/12-testing-and-quality/0064-performance-testing.md)
 
 ### Observability and Recovery
 

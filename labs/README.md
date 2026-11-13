@@ -115,11 +115,6 @@ LAB은 HOME network, 상태, secret을 공유하지 않으며 기동은 `lab.py`
 Compose는 상대 경로와 `LAB_SECRET_DIR`를 `labs/<name>/` 기준으로 해석하므로
 `LAB_SECRET_DIR` 기본값은 `../../secrets/labs`입니다.
 
-같은 호스트의 복제 노드는 호스트 장애를 격리하지 않습니다. HOME 단일 인스턴스와
-LAB 클러스터를 구분하고 성능·HA를 측정 없이 보장하지 않습니다. Valkey LAB 복구에는
-조율된 RDB checkpoint와 완전한 AOF set/manifest, 새로운 cluster identity가 필요합니다.
-게시된 client/bus 포트의 노출 경계를 유지합니다. 이 source 정리는 복구 실행 증거가 아닙니다.
-
 ### Checks
 
 각 LAB의 정적 render는 `docker compose --env-file labs/.env.example -f labs/<name>/docker-compose.yml --profile '*' config --quiet`로 검증하며 개별 명령은 각 LAB README에 있다. source render 통과는 native 실행 성공의 증거가 아니다.
@@ -133,4 +128,9 @@ LAB 클러스터를 구분하고 성능·HA를 측정 없이 보장하지 않습
 
 ### Observability and Recovery
 
-없음: 이 디렉터리는 인덱스라 직접 관측 대상이 없다. LAB 운영은 [LAB Runbook 목록](../docs/05.operations/runbooks/15-labs/README.md)을 따른다.
+이 디렉터리는 인덱스라 직접 관측 대상이 없고 복구 경계는 아래와 같다. LAB 운영은 [LAB Runbook 목록](../docs/05.operations/runbooks/15-labs/README.md)을 따른다.
+
+같은 호스트의 복제 노드는 호스트 장애를 격리하지 않습니다. HOME 단일 인스턴스와
+LAB 클러스터를 구분하고 성능·HA를 측정 없이 보장하지 않습니다. Valkey LAB 복구에는
+조율된 RDB checkpoint와 완전한 AOF set/manifest, 새로운 cluster identity가 필요합니다.
+게시된 client/bus 포트의 노출 경계를 유지합니다. 이 source 정리는 복구 실행 증거가 아닙니다.

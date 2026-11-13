@@ -126,6 +126,10 @@ Local Workflow의 합성 경로 render 명령(`LAB_DATA_DIR`, `LAB_SECRET_DIR`, 
 
 - [OpenSearch LAB Compose](docker-compose.yml)
 - [운영 가이드 목록](../../docs/05.operations/guides/README.md)
+- [RUN-0109 opensearch-cluster](../../docs/05.operations/runbooks/15-labs/0109-opensearch-cluster.md)
+
+- [RUN-0019 opensearch](../../docs/05.operations/runbooks/05-databases-and-storage/0019-opensearch.md)
+- [RUN-0107 lab-promotion](../../docs/05.operations/runbooks/15-labs/0107-lab-promotion.md)
 
 ### Observability and Recovery
 

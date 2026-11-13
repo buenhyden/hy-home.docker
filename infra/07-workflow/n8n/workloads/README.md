@@ -13,7 +13,11 @@ updated: "2026-11-13"
 
 ### Service Role
 
+#### Overview
+
 기존 n8n의 독립 DEV 통지 소비자 소스와 합성 시험을 보관합니다.
+
+#### Scope
 
 공개 소스·비활성 workflow·합성 fixture에 한정합니다. SQL과 게시 배치는
 Airflow의 P04가 소유하며, 실제 import·예약·자격 증명 작업은 Task의 선행 조건을 따릅니다.
@@ -29,32 +33,38 @@ Airflow의 P04가 소유하며, 실제 import·예약·자격 증명 작업은 T
 
 ### Supported Environment
 
-없음: 이 디렉터리에는 Compose 파일이나 Dockerfile이 없어 독립 런타임 환경을 선언하지 않는다. 포함 항목은 `hermes-blog-ingestion/`, `manifest-outbox-notifier/`, `task-runner-warmup/`이다.
+없음: 이 디렉터리는 소스, 비활성 workflow, 합성 fixture만 보관하며 `infra/07-workflow/n8n/docker-compose.yml`은 이 폴더를 참조하지 않는다.
 
 ## Interfaces
 
 ### Inputs and Outputs
 
-없음: 이 디렉터리는 자체 포트나 네트워크 인터페이스를 선언하지 않으며, 인터페이스는 하위 `hermes-blog-ingestion/`, `manifest-outbox-notifier/`, `task-runner-warmup/`가 각자 선언한다.
+없음: 이 디렉터리 자체는 포트나 API를 노출하지 않으며, 워크로드별 입출력은 `hermes-blog-ingestion/`, `manifest-outbox-notifier/`, `task-runner-warmup/` 각 README를 따른다.
 
 ### Security Boundary
 
-없음: 이 디렉터리는 Compose 서비스나 secret 참조를 직접 선언하지 않으며, 하위 `hermes-blog-ingestion/`, `manifest-outbox-notifier/`, `task-runner-warmup/`가 각자 선언한다.
+없음: 이 디렉터리에는 secret 정의와 자격 증명 값이 없다. 실제 import·예약·자격 증명 작업은 Service Role의 Scope가 정한 대로 Task의 선행 조건을 따른다.
 
 ## Development
 
 ### Local Workflow
+
+#### Usage
 
 각 워크로드 README에서 소스 검증 명령과 운영 대기 조건을 확인합니다.
 공통 이미지·Compose·네트워크·CI 등록은 총괄 통합 제안으로 전달합니다.
 
 ### Checks
 
-없음: 이 디렉터리는 자체 테스트나 검증 스크립트를 두지 않으며, 하위 `hermes-blog-ingestion/`, `manifest-outbox-notifier/`, `task-runner-warmup/`가 각자 둔다.
+없음: 이 디렉터리 자체의 검사는 없으며, 소스 검증 명령은 각 워크로드 README의 Local Workflow를 따른다.
 
 ## Operations
 
 ### Runbook Links
+
+이 서비스의 런북은 다음과 같다.
+
+- RUN-0053: `docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md`
 
 #### Related Documents
 
@@ -63,4 +73,4 @@ Airflow의 P04가 소유하며, 실제 import·예약·자격 증명 작업은 T
 
 ### Observability and Recovery
 
-없음: 이 디렉터리는 자체 헬스체크나 관측 대상을 선언하지 않으며, 하위 `hermes-blog-ingestion/`, `manifest-outbox-notifier/`, `task-runner-warmup/`가 각자 선언한다.
+없음: 이 디렉터리의 workflow는 비활성이며 자체 헬스체크가 없다. 기존 n8n 서비스의 상태와 복구는 RUN-0053이 소유한다.

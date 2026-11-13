@@ -16,6 +16,8 @@ created: "2025-11-29"
 
 ### Service Role
 
+#### Overview
+
 OAuth2 Proxy는 적절한 내장 OIDC 지원이 없는 서비스에 게이트웨이 인증을 제공합니다.
 OIDC에는 Keycloak을, 세션 상태에는 Valkey를 사용합니다.
 
@@ -28,7 +30,9 @@ ForwardAuth로 보호되지 않습니다.
 - Developers
 - Operators
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - OAuth2 Proxy 설정
 - Traefik ForwardAuth
@@ -36,7 +40,7 @@ ForwardAuth로 보호되지 않습니다.
 - secret 주입
 - cookie/issuer/redirect 계약
 
-#### Out of Scope
+##### Out of Scope
 
 - Keycloak identity 관리
 - Native OIDC 애플리케이션 RBAC
@@ -56,6 +60,8 @@ oauth2-proxy/
 ```
 
 ### Supported Environment
+
+#### Tech Stack
 
 | Category | Technology | Notes |
 | --- | --- | --- |
@@ -78,6 +84,8 @@ Compose가 참조하는 secret은 `mng_valkey_password`, `oauth2_proxy_client_se
 
 ### Local Workflow
 
+#### Usage
+
 1. Auth Operations와 integration guide를 먼저 확인.
 2. new service onboarding 시 ForwardAuth vs Native OIDC를 먼저 분류.
 3. ForwardAuth 대상에만 OAuth2 Proxy middleware 적용.
@@ -85,7 +93,7 @@ Compose가 참조하는 secret은 `mng_valkey_password`, `oauth2_proxy_client_se
 5. `Authorization` header forwarding은 upstream JWT scheme과 충돌 여부 검증.
 6. callback URL을 재사용하지 않는다.
 
-#### SEC01 후보와 검증 경계
+##### SEC01 후보와 검증 경계
 
 upstream 바이너리 태그와 공개 OCI index digest는 [Dockerfile](Dockerfile)과
 [dev.Dockerfile](dev.Dockerfile)이 소유한다. Compose의 기본 빌드 경로와 명시적
@@ -101,7 +109,7 @@ upstream 바이너리 태그와 공개 OCI index digest는 [Dockerfile](Dockerfi
 갱신 시험은 `NOT_RUN`이다. 운영 반영 전에 동일 이미지의 기능 시험과 기존 이미지로
 되돌리는 인수 조건을 SPEC-0204-TSK-0009에서 충족해야 한다.
 
-#### Authentication Applicability
+##### Authentication Applicability
 
 ForwardAuth 대상:
 
@@ -116,7 +124,7 @@ Native OIDC 대상:
 
 Native OIDC app에는 `sso-auth@file`/`sso-errors@file`을 중복 적용하지 않는다.
 
-#### Secrets
+##### Secrets
 
 - `oauth2_proxy_cookie_secret`
 - `oauth2_proxy_client_secret`

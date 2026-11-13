@@ -95,6 +95,8 @@ Compose, 빌드 소스, 공개 환경 변수 키, 시크릿 참조를 일관되�
 - [Documentation index](../../../docs/README.md)
 - [Public secret contract](../../../secrets/README.md)
 
+- Runbook: `docs/05.operations/runbooks/09-ai-and-search/0081-comfyui.md`(RUN-0081)
+
 ### Observability and Recovery
 
 `comfyui`에는 Compose 헬스체크가 선언되어 있으나 설정 검사 통과는 런타임 준비 상태를 증명하지 않습니다. 복구와 ComfyUI-Manager 보안 값 정정은 `docs/05.operations/runbooks/09-ai-and-search/0081-comfyui.md`(RUN-0081)가 소유합니다.

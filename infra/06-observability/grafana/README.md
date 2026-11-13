@@ -14,6 +14,8 @@ created: "2026-01-12"
 
 ### Service Role
 
+#### Overview
+
 `infra/06-observability/grafana`에는 `06-observability` 티어의 Grafana 구현이 들어 있습니다. Grafana는 compose 서비스 `grafana`, 컨테이너 `grafana`, 이미지 [declared runtime image](../../tech-stack.versions.json)로 실행되며 런타임 상태를 `grafana-data`에 저장하고 프로비저닝 및 대시보드 트리를 읽기 전용으로 마운트하며 접근 제어에는 Keycloak Generic OAuth 역할 매핑을 사용합니다.
 
 #### Audience
@@ -22,7 +24,9 @@ created: "2026-01-12"
 - 데이터소스와 대시보드 프로비저닝을 유지 관리하는 SREs
 - SSO, 대시보드, 데이터소스 장애를 처리하는 Operators
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - Grafana compose 서비스와 보호된 라우트 `https://grafana.${DEFAULT_URL}`
 - `provisioning/datasources/datasource.yml`의 데이터소스 프로비저닝
@@ -30,7 +34,7 @@ created: "2026-01-12"
 - `dashboards/`의 대시보드 JSON 파일
 - Keycloak Generic OAuth 역할 매핑과 Docker Secret 파일 참조
 
-#### Out of Scope
+##### Out of Scope
 
 - JSON으로 내보내지 않은 UI 전용 대시보드 변경
 - Grafana compose 경계 밖의 Keycloak realm/client 변경
@@ -73,6 +77,8 @@ grafana/
 
 ### Supported Environment
 
+#### Tech Stack
+
 Grafana 이미지와 데이터 소스 선언은 [Compose](../docker-compose.yml)와 이 패키지의 provisioning 설정이 소유합니다.
 
 선택된 패치 이미지의 tag·index·amd64 manifest와 config descriptor는 SEC01 증거에
@@ -86,7 +92,9 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 
 ### Inputs and Outputs
 
-#### Datasources
+#### Configuration
+
+##### Datasources
 
 - **Prometheus**: `uid: Prometheus`, URL `http://prometheus:9090`
 - **Loki**: `uid: Loki`, URL `http://loki:3100`
@@ -94,7 +102,7 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 - **Alertmanager**: `uid: alertmanager`, URL `http://alertmanager:9093`
 - **Pyroscope**: `uid: Pyroscope`, 데이터소스 타입 `grafana-pyroscope-datasource`, URL `http://pyroscope:4040`, `minStep: 60s`(Alloy scrape 간격). 데이터소스는 한 개뿐이며 파일 맨 위 `deleteDatasources`는 UID 없이 만든 옛 항목을 한 번 지우는 마이그레이션이다. Drilldown > Profiles 앱은 Grafana 기본 preinstall로 설치되므로 provisioning이 없다
 
-#### Dashboards and Access
+##### Dashboards and Access
 
 - 대시보드 프로바이더는 `/etc/grafana/dashboards/*`에서 JSON 파일을 마운트합니다.
 - 프로바이더 `editable: false`는 대시보드를 코드 소유 상태로 유지합니다.
@@ -103,7 +111,7 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 - `grafana_admin_password`와 `grafana_client_secret`은 Docker Secret 파일 참조를 통해 주입됩니다.
 - 공개 예외는 `/favicon.ico`와 `/robots.txt`의 `GET`/`HEAD`에만 priority 200으로 적용됩니다. 같은 경로의 다른 메서드는 priority 201의 `noop@internal` 라우터가 종료하며, 두 라우터 모두 기존 `gateway-standard-chain@file`의 `100 req/s`, burst `200` 제한을 사용합니다. 이 예외의 재검토일은 2026-12-02입니다.
 
-#### Service Coverage
+##### Service Coverage
 
 정상 root에 포함되는 모든 infra Compose 서비스가 한 번씩 나옵니다. LAB 서비스는 독립 Compose와 LAB 문서에서 확인합니다. 컨테이너 대시보드와 Logs Drilldown은 전체를 다루고, 메트릭 소스가 있는 서비스는 자기 대시보드를 따로 가집니다. Metrics source가 `none`이면 이 스택이 수집하는 메트릭이 없다는 뜻입니다(SPEC-0193).
 
@@ -201,7 +209,7 @@ datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAut
 
 독립 LAB의 `lab-locust-master`와 `lab-locust-worker`는 이 root 관측 범위에 포함하지 않으며, 위 표는 `hy-home-infra`만 유지한다.
 
-#### perf_db 읽기 계약
+##### perf_db 읽기 계약
 
 `provisioning/contracts/perf-db.datasource.yml.example`은
 자동 데이터소스 로드 디렉터리 밖의 소비 계약이며 현재 활성화하지 않습니다.
@@ -227,7 +235,7 @@ project/run/attempt는 SQL literal escaping을 사용하고 결과는 500행으�
 [PostgreSQL security-invoker view 안내](https://www.postgresql.org/docs/current/sql-createview.html)를
 2026-10-03 확인했습니다.
 
-#### Dashboard Sources
+##### Dashboard Sources
 
 프로비저닝된 대시보드마다 출처와 revision을 기록합니다. 방출되는 메트릭과 맞는 벤더·mixin·grafana.com 대시보드가 있으면 그것을 쓰고, 없을 때만 로컬 대시보드를 둡니다.
 
@@ -295,12 +303,16 @@ Compose가 참조하는 secret은 `grafana_admin_password`, `grafana_client_secr
 | `docker compose --profile obs restart grafana` | 이미 연결된 provisioning·dashboard 파일 내용의 승인된 재적용; Compose 환경·시크릿 참조·이미지 변경에는 RUN-0041의 재생성 절차 사용 |
 | `docker compose --profile obs logs -f grafana` | 저장소 루트에서 Grafana 로그 확인 |
 
+#### Usage
+
 1. 사용법과 프로비저닝 맥락은 Grafana 가이드(`docs/05.operations/guides/07-observability/0041-grafana.md`)를 따릅니다.
 2. 준비 상태, SSO, 데이터소스, 대시보드 프로비저닝, 재시작, 롤백 절차는 Grafana 런북(`docs/05.operations/runbooks/07-observability/0041-grafana.md`)을 따릅니다.
 3. 관리자 비밀번호, OAuth 클라이언트 시크릿, 토큰, 렌더링된 시크릿 값은 문서, 로그, 태스크 근거, 커밋 메시지에 남기지 않습니다.
 4. 계획/태스크 근거와 롤백 기록 없이는 역할 매핑, 데이터소스 UID, 대시보드 프로바이더 잠금, 시크릿 참조, 이미지 버전, 라우트 미들웨어를 변경하지 않습니다.
 
 ### Checks
+
+#### Validation
 
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 인프라 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.

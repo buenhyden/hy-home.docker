@@ -86,20 +86,6 @@ SQL004의 legacy retry도 격리하므로 구버전 workflow가 불확실 전송
 실제 SMTP 시작 전 취소만 새 no-send retry 함수로 제한합니다. 기록이 실패하면 불확실한
 sending을 유지하고 만료 뒤 격리합니다. 오래된 SMTP node에서 재개하지 않습니다.
 
-dead 복구는 SQL007의 `requeue_dead_notification(id,attempt,request_id,evidence_sha256)`만
-사용합니다. 현재 attempt의 no-send 증거와 개별 승인마다 한 번의 추가 claim을 허용하고
-기존 attempt·대조·감사 이력을 보존합니다. 같은 요청의 재호출은 허용량을 늘리지 않습니다.
-직접 table UPDATE나 전체 상태 reset은 금지합니다. 관리 함수는 migrator session에서
-명시적으로 `SET ROLE opsflow_owner`한 context로 호출하며 runtime notifier에는 권한이 없습니다. 정확한 권한·오류·적용 순서는
-[SQL 계약](../../../airflow/workloads/manifest-pipeline/sql/README.md)을 따릅니다.
-
-복원 전 입력·polling을 중지하고 전송 가능한 실행·worker·socket을 drain/종료한 증거를
-확보합니다. 복원된 sending은 lease가 남아 있어도
-`quarantine_restored_notification`으로 unknown에 격리한 뒤 재개합니다.
-함수는 외부 장벽의 증거 지문을 기록할 뿐 SMTP fencing이나 미전송을 증명하지 않습니다.
-SMTP capture 부재만으로 no-send를 판단하지 않습니다. rollback은 이 workflow의 polling
-중지·inactive·선택 실행 조정과 outbox·audit 보존이며 실제 schema 복구와 구분합니다.
-
 #### Lease와 대조 조건
 
 Transport 생성 전과 send 직전에 SMTP 15초·ack 5초·시계 오차 5초를 합한 25초보다
@@ -129,7 +115,22 @@ metadata DB와 같은 encryption key의 일관된 복원, 진행 중 전송의 �
 
 - [워크로드 목록](../README.md)
 - [Spec Package 탐색](../../../../../docs/03.specs/README.md): 과거 수용은 SPEC-0204-TSK-0013, 현재 P05 보완은 SPEC-0212-TSK-0044가 소유합니다.
+- n8n Runbook: `docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md`(RUN-0053)
 
 ### Observability and Recovery
 
-정상 수락은 `accepted_by_smtp`이고 ack 유실·SMTP 응답 유실·node 오류는 unknown으로 격리됩니다. 복원 전 장벽, dead 복구(SQL007)와 `quarantine_restored_notification` 절차는 위 Local Workflow에 있고, 기존 native 실행·복구 명령은 `docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md`(RUN-0053)를 따릅니다.
+dead 복구는 SQL007의 `requeue_dead_notification(id,attempt,request_id,evidence_sha256)`만
+사용합니다. 현재 attempt의 no-send 증거와 개별 승인마다 한 번의 추가 claim을 허용하고
+기존 attempt·대조·감사 이력을 보존합니다. 같은 요청의 재호출은 허용량을 늘리지 않습니다.
+직접 table UPDATE나 전체 상태 reset은 금지합니다. 관리 함수는 migrator session에서
+명시적으로 `SET ROLE opsflow_owner`한 context로 호출하며 runtime notifier에는 권한이 없습니다. 정확한 권한·오류·적용 순서는
+[SQL 계약](../../../airflow/workloads/manifest-pipeline/sql/README.md)을 따릅니다.
+
+복원 전 입력·polling을 중지하고 전송 가능한 실행·worker·socket을 drain/종료한 증거를
+확보합니다. 복원된 sending은 lease가 남아 있어도
+`quarantine_restored_notification`으로 unknown에 격리한 뒤 재개합니다.
+함수는 외부 장벽의 증거 지문을 기록할 뿐 SMTP fencing이나 미전송을 증명하지 않습니다.
+SMTP capture 부재만으로 no-send를 판단하지 않습니다. rollback은 이 workflow의 polling
+중지·inactive·선택 실행 조정과 outbox·audit 보존이며 실제 schema 복구와 구분합니다.
+
+정상 수락은 `accepted_by_smtp`이고 ack 유실·SMTP 응답 유실·node 오류는 unknown으로 격리됩니다. 복원 전 장벽, dead 복구(SQL007)와 `quarantine_restored_notification` 절차는 위 본문에 있고, 기존 native 실행·복구 명령은 `docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md`(RUN-0053)를 따릅니다.

@@ -16,6 +16,8 @@ created: "2026-01-12"
 
 ### Service Role
 
+#### Overview
+
 Tempo는 S3 호환 백엔드(SeaweedFS)에 트레이스 데이터를 저장합니다. "TraceQL"로 강력한 쿼리를 지원하며 Span ID를 시작점으로 메트릭, 로그, 트레이스 간 상관관계를 분석할 수 있습니다. 또한 span 메트릭과 서비스 그래프를 자동으로 생성합니다.
 
 #### Audience
@@ -25,13 +27,15 @@ Tempo는 S3 호환 백엔드(SeaweedFS)에 트레이스 데이터를 저장합�
 - Backend Developers (지연 시간 분석)
 - SRE / DevOps Engineers (시스템 병목 식별)
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - Tempo 서비스 설정 및 배포.
 - OTLP 트레이스 데이터 수집 및 저장.
 - Span 메트릭 및 서비스 그래프 생성.
 
-#### Out of Scope
+##### Out of Scope
 
 - 애플리케이션 수준 계측 (OpenTelemetry SDK에서 처리).
 - 장기 트레이스 아카이빙 (Retention Policy(`docs/05.operations/policies/07-observability/0049-tempo.md`)에서 관리).
@@ -48,6 +52,8 @@ tempo/
 
 ### Supported Environment
 
+#### Tech Stack
+
 런타임 이미지 고정 값은 [Compose](../docker-compose.yml)에 선언되어 있습니다. [버전 레지스트리](../../tech-stack.versions.json)는 정제된 프로젝션입니다.
 
 | Category | Technology | Runtime source | Role |
@@ -59,6 +65,8 @@ tempo/
 ## Interfaces
 
 ### Inputs and Outputs
+
+#### Configuration
 
 - **Ingestion**: gRPC(4317)와 HTTP(4318)를 통한 OTLP를 지원합니다.
 - **Persistence**: SeaweedFS의 버킷 `tempo-bucket`.
@@ -79,13 +87,15 @@ Compose가 참조하는 secret은 `seaweedfs_s3_tempo_secret_key`이며 값은 �
 | `docker compose --profile obs up -d tempo` | 저장소 루트에서 Tempo 서비스 시작 |
 | `docker compose --profile obs logs -f tempo` | 저장소 루트에서 Tempo 로그 확인 |
 
+#### Usage
+
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 
 1. **TraceQL Analysis**: TraceQL로 지연 시간이 높은 span을 특정 서비스명과 상태 코드와 연관 짓습니다.
 2. **Service Graphs**: Grafana에서 서비스 의존성 맵을 시각화하려면 `metrics_generator`가 활성 상태인지 확인합니다.
 3. **Storage Health**: 트레이스 수집 공백이 발생하면 SeaweedFS 버킷 가용성을 모니터링합니다.
 
-#### SEC01 후보와 저장 형식 경계
+##### SEC01 후보와 저장 형식 경계
 
 upstream 바이너리 태그와 공개 OCI index digest는 [Dockerfile](Dockerfile),
 로컬 빌드 태그는 [Compose](../docker-compose.yml)가 소유한다. 비밀값 wrapper,
@@ -104,6 +114,8 @@ vParquet4로 명시한다. 이는 이전 쓰기 형식을 보존하며 최신 �
 대한 일괄 변환·삭제 없이 변경한다. vParquet5 전환은 별도 검증과 명시적 변경으로 남긴다.
 
 ### Checks
+
+#### Validation
 
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.

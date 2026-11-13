@@ -13,6 +13,8 @@ updated: "2026-11-13"
 
 ### Service Role
 
+#### Overview
+
 OpenBao 2.7.2의 공개 서명된 source distribution과 UI를 보존하고 Go 1.27.3, <!-- runtime-version-exception: migration — 검토된 build packet의 고정 migration material이며 build-inputs.json이 pin을 소유함 -->
 `golang.org/x/net` 0.62.0, `go-jose/v4` 4.1.9, `klauspost/compress` 1.20.4 세 module 버전을 사용합니다. <!-- runtime-version-exception: migration — 검토된 build packet의 고정 module migration material이며 build-inputs.json이 pin을 소유함 -->
 결과 버전은 `2.7.2+hyhome.go1.27.3.net0.62.0.r1`이며 upstream OpenBao의 <!-- runtime-version-exception: migration — 검토된 build packet을 식별하는 owned result version이며 build-inputs.json이 authority임 -->
@@ -21,6 +23,8 @@ OpenBao 2.7.2의 공개 서명된 source distribution과 UI를 보존하고 Go 1
 #### Audience
 
 이 선택된 이미지의 source, 재현성, SEC01 증거를 검토하는 Developer와 Operator.
+
+#### Scope
 
 [build-inputs.json](build-inputs.json)은 실제 source, builder, Alpine, APK closure,
 patch와 resource 한도를 고정합니다. [Dockerfile](Dockerfile)은 실제 runtime
@@ -51,6 +55,8 @@ v3.24 main/community APKINDEX 기준으로 다시 고정했습니다. source, Go
 
 ### Supported Environment
 
+#### Tech Stack
+
 선택된 [build-inputs.json](build-inputs.json)이 이 owned build의 고정 build input과
 결과 version/tag의 권위입니다. [Dockerfile](Dockerfile)은 실제 runtime 조립 recipe이며,
 [공유 버전 레지스트리](../../../../infra/tech-stack.versions.json)는 Compose와 build
@@ -59,6 +65,8 @@ source에서 파생된 투영으로서 이 build packet이나 배포 manifest를
 ## Interfaces
 
 ### Inputs and Outputs
+
+#### Configuration
 
 공개 material directory의 `materials.json` SHA와 일곱 source 파일의 packet SHA를
 명시하여 helper의 `--phase plan`을 실행합니다. packet은 정렬된 상대 경로,
@@ -95,18 +103,20 @@ Docker에 load한 뒤 `hy-home/openbao:<tag>@sha256:<manifest>`를 `--pull=never
 
 ### Security Boundary
 
-없음: 이 폴더에는 Compose 서비스와 secret 정의가 없으며, secret 값을 저장소에 두지 않는다.
+없음: 이 폴더에는 Compose 서비스나 secret 정의가 없고 `Dockerfile`, `build-inputs.json`, `go-modules.patch`, `owned_image_oci.py`만 두며 secret 값은 저장소에 두지 않는다.
 
 ## Development
 
 ### Local Workflow
+
+#### Usage
 
 새 build를 검토할 때는 [build-inputs.json](build-inputs.json)의 선택된 입력과
 [Dockerfile](Dockerfile), 공개 material receipt를 같은 packet으로 확인합니다.
 실제 build와 OCI 검증은 [helper](../scripts/build-owned-image.py)의 제한된 phase를
 사용하며, HOME 배포·인증·발급·복구는 소유 Runbook의 별도 수용 절차를 따릅니다.
 
-#### Material 준비 절차
+##### Material 준비 절차
 
 다음 build를 같은 방식으로 재현하려면 [준비 script](../../../../scripts/operations/prepare-openbao-materials.py)를
 사용합니다. 공개 자료만 받으며 HOME, 인증, secret, `labs/`는 건드리지 않습니다.
@@ -142,6 +152,8 @@ Docker에 load한 뒤 `hy-home/openbao:<tag>@sha256:<manifest>`를 `--pull=never
 
 ### Checks
 
+#### Validation
+
 [contract tests](../../../../tests/validation/test_openbao_owned_image_contract.py)는
 경로·소유권·material hash·실제 container 제한·재현성 및 공개 export 경계를
 합성 입력으로 검증합니다. 실제 binary version, SBOM과 fresh offline CVE,
@@ -152,6 +164,10 @@ P01 격리 rehearsal은 build 이후 해당 기존 gate에서 별도로 검증�
 
 ### Runbook Links
 
+이 서비스의 런북은 다음과 같다.
+
+- RUN-0085: `docs/05.operations/runbooks/04-security-and-secrets/0085-openbao.md`
+
 #### Related Documents
 
 - [OpenBao implementation](../README.md)
@@ -160,4 +176,4 @@ P01 격리 rehearsal은 build 이후 해당 기존 gate에서 별도로 검증�
 
 ### Observability and Recovery
 
-없음: 이 폴더에는 헬스체크나 관측 대상 선언이 없다.
+없음: 이 폴더는 이미지 빌드 입력이며 헬스체크를 선언하지 않는다. 실행 서비스는 상위 `openbao/docker-compose.yml`이 선언한다.

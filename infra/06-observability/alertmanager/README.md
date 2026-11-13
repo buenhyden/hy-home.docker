@@ -14,6 +14,8 @@ created: "2026-01-12"
 
 ### Service Role
 
+#### Overview
+
 Alertmanager는 Prometheus가 보낸 알림을 처리하여 중복을 제거하고, 그룹화하고, 억제하고, 무음 처리한 뒤 설정된 수신자(receiver) 통합으로 라우팅합니다. 이 스택에서는 `alertmanager`로 실행되며 [선언된 런타임 이미지](../../tech-stack.versions.json)를 사용합니다. 런타임 상태는 `alertmanager-data`에 저장하고 시작 시 Docker Secret 값을 임시 파일인 `/tmp/config.yml`로 렌더링합니다.
 
 #### Audience
@@ -24,14 +26,16 @@ Alertmanager는 Prometheus가 보낸 알림을 처리하여 중복을 제거하�
 - On-call Engineers (무음 처리 및 트러블슈팅)
 - DevOps Engineers (설정 관리)
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - Alertmanager 소스 설정(`config/config.yml`)과 시작 시 `/tmp/config.yml`로의 렌더링.
 - 알림 라우팅 규칙과 수신자 통합.
 - 무음(silencing) 및 억제(inhibition) 규칙.
 - 로컬 배포, 보호된 라우트, 준비 상태, 연결 설정.
 
-#### Out of Scope
+##### Out of Scope
 
 - 알림 규칙 정의 (Prometheus/Loki에서 관리).
 - 전역 텔레메트리 수집 (Grafana Alloy에서 관리).
@@ -47,6 +51,8 @@ alertmanager/
 
 ### Supported Environment
 
+#### Tech Stack
+
 | Category     | Technology   | Version | Notes                          |
 | :----------- | :----------- | :------ | :----------------------------- |
 | Alerting     | Alertmanager | declared version | Docker Secret로 렌더링되는 설정을 사용하는 단일 compose 서비스 |
@@ -56,7 +62,9 @@ alertmanager/
 
 ### Inputs and Outputs
 
-#### Docker Secrets
+#### Configuration
+
+##### Docker Secrets
 
 | Secret | Required | Description |
 | :----- | :------- | :---------- |
@@ -71,6 +79,8 @@ Compose가 참조하는 secret은 `slack_webhook`, `smtp_password`, `smtp_userna
 ## Development
 
 ### Local Workflow
+
+#### Usage
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 
@@ -94,6 +104,8 @@ Compose가 참조하는 secret은 `slack_webhook`, `smtp_password`, `smtp_userna
 | `docker compose --profile obs logs -f alertmanager` | 저장소 루트에서 Alertmanager 로그 확인 |
 
 ### Checks
+
+#### Validation
 
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.

@@ -61,6 +61,7 @@ UI(`${MAILPIT_UI_HOST_PORT:-8025}`)ì™€ SMTP(`${MAILPIT_SMTP_HOST_PORT:-1025}`)ëŠ
 
 - [Infrastructure index](../../../infra/README.md)
 - [Documentation index](../../../docs/README.md)
+- [RUN-0084 mailpit](../../../docs/05.operations/runbooks/11-mail-and-notifications/0084-mailpit.md)
 
 ### Observability and Recovery
 

@@ -16,6 +16,8 @@ created: "2025-11-12"
 
 ### Service Role
 
+#### Overview
+
 `qdrant` 서비스는 AI/ML 애플리케이션을 위한 벡터 데이터베이스 계층을 제공하며 고차원 임베딩의 빠른 의미 검색을 가능하게 합니다. `04-data` tier 안에 위치하며 Retrieval-Augmented Generation(RAG) 워크플로의 핵심 구성 요소입니다.
 
 #### Audience
@@ -26,14 +28,16 @@ created: "2025-11-12"
 - Operators(자원 튜닝과 snapshot)
 - Documentation Writers
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - Qdrant unprivileged 컨테이너 설정(`docker-compose.yml`)
 - REST 6333(SSO 뒤에서 라우팅)과 gRPC 6334(네트워크 내부 전용)
 - Snapshot 저장 설정(`/qdrant/storage/snapshots`)
 - Telemetry와 서비스 헬스 모니터링
 
-#### Out of Scope
+##### Out of Scope
 
 - 벡터 임베딩 생성(upstream 모델이 담당)
 - collection 수준의 스키마 설계(시스템 가이드 `docs/05.operations/guides/09-ai-and-search/0034-qdrant.md` 참조)
@@ -49,6 +53,8 @@ qdrant/
 ```
 
 ### Supported Environment
+
+#### Tech Stack
 
 | Category   | Technology   | Notes                          |
 | ---------- | ------------ | ------------------------------ |
@@ -71,12 +77,16 @@ Compose가 참조하는 secret은 `qdrant_api_key`, `qdrant_read_only_api_key`�
 
 ### Local Workflow
 
+#### Usage
+
 1. RAG 통합 패턴을 위해 시스템 가이드 (`docs/05.operations/guides/09-ai-and-search/0034-qdrant.md`)를 검토합니다.
 2. 배포 시 `ai`나 `qdrant` profile이 활성화되어 있는지 확인합니다.
 3. Snapshot은 persistent volume 안에 설정됩니다. owner 승인 백업 작업 전에 경로 매핑을 확인합니다.
 4. `/readyz` 엔드포인트로 헬스를 모니터링합니다.
 
 ### Checks
+
+#### Validation
 
 Classification은 `HOME`입니다. Qdrant는 `qdrant_api_key`(AI-008)의 API key가
 필요하며 이것이 없으면 health 엔드포인트만 응답합니다. Prometheus는

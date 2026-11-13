@@ -125,6 +125,7 @@ DELETE reset 뒤 count 0을 확인했다. load 모드는 같은 stub GET 200과
 - [품질 tier](../README.md)
 - [WireMock standalone options](https://wiremock.org/docs/standalone/java-jar/)
 - [WireMock request journal configuration](https://wiremock.org/docs/configuration/#request-journal)
+- [RUN-0092 wiremock](../../../docs/05.operations/runbooks/12-testing-and-quality/0092-wiremock.md)
 
 ### Observability and Recovery
 

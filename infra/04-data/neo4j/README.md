@@ -16,6 +16,8 @@ created: "2025-11-12"
 
 ### Service Role
 
+#### Overview
+
 `neo4j` 서비스는 관계가 중요한 데이터 모델을 위한 전용 그래프 저장 계층을 제공합니다. Cypher 쿼리 언어로 깊은 계층 구조와 복잡한 네트워크 구조를 효율적으로 조회할 수 있습니다. 이 인프라는 `04-data` tier 안에 위치하며 Community edition에 맞춰 최적화되어 있습니다.
 
 #### Audience
@@ -26,14 +28,16 @@ created: "2025-11-12"
 - Backend Developers(그래프 모델링)
 - Documentation Writers
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - Neo4j Community Edition 컨테이너 설정(`docker-compose.yml`)
 - 서비스별 보안(secret 기반 인증)
 - 그래프 전용 네트워킹(Bolt와 HTTP/S 프로토콜)
 - 그래프 워크로드를 위한 JVM 메모리 튜닝
 
-#### Out of Scope
+##### Out of Scope
 
 - 애플리케이션 수준의 그래프 모델링(시스템 가이드 `docs/05.operations/guides/05-databases-and-storage/0033-neo4j.md` 참조)
 - 운영 통제(운영 정책 `docs/05.operations/policies/05-databases-and-storage/0033-neo4j.md` 참조)
@@ -50,6 +54,8 @@ neo4j/
 ```
 
 ### Supported Environment
+
+#### Tech Stack
 
 | Category   | Technology        | Notes                     |
 | ---------- | ----------------- | ------------------------- |
@@ -72,12 +78,16 @@ Compose가 참조하는 secret은 `neo4j_password`이며 값은 저장소에 두
 
 ### Local Workflow
 
+#### Usage
+
 1. 아키텍처 맥락을 위해 시스템 가이드 (`docs/05.operations/guides/05-databases-and-storage/0033-neo4j.md`)부터 검토합니다.
 2. 서비스 시작 전에 `neo4j_password` secret이 provisioning되었는지 확인합니다.
 3. 자원 일관성을 위해 `docker-compose.yml`의 `template-stateful-med` 서비스 확장을 따릅니다.
 4. 컨테이너 로컬 `cypher-shell`이나 Traefik 뒤의 Neo4j Browser route로 연결을 확인합니다.
 
 ### Checks
+
+#### Validation
 
 Classification은 `OPTIONAL`입니다. Community 복구는 오프라인
 `neo4j-admin database dump/load`를 새로운 호환 target에 사용합니다.

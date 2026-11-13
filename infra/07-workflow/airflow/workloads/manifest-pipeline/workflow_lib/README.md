@@ -13,7 +13,11 @@ updated: "2026-11-13"
 
 ### Service Role
 
+#### Overview
+
 엄격한 합성 manifest parser와 task 실행 시 사용하는 전용 I/O adapter를 둡니다.
+
+#### Scope
 
 원본 bytes 기반 ID, 불변 records, 허용 source/date/path, 보호 설정 파일과
 S3 readback·불량 입력 격리·PG 게시를 소유합니다. 다른 DB·객체·자격 증명은 접근 대상이 아닙니다.
@@ -26,21 +30,23 @@ S3 readback·불량 입력 격리·PG 게시를 소유합니다. 다른 DB·객�
 
 ### Supported Environment
 
-없음: 이 디렉터리에는 Compose 파일이나 Dockerfile이 없어 독립 런타임 환경을 선언하지 않는다. 포함 항목은 `__init__.py`, `adapters.py`, `manifest.py`, `tls.py`이다.
+Airflow의 apiserver, scheduler, dag-processor, triggerer, worker가 `workflow_lib/`를 `infra/07-workflow/airflow/docker-compose.yml`에서 읽기 전용으로 mount해 import한다. 이 폴더에는 Compose나 Dockerfile이 없다.
 
 ## Interfaces
 
 ### Inputs and Outputs
 
-없음: 이 폴더는 자체 포트나 네트워크 인터페이스를 선언하지 않으며 `__init__.py`, `adapters.py`, `manifest.py`, `tls.py`만 둔다.
+DAG가 호출하는 Python 모듈(`manifest.py`, `adapters.py`, `tls.py`)이며 자체 포트는 없다. `adapters.py`가 `/run/opsflow`의 `pg.json`, `s3.json`을 읽고 `tls.py`가 `ca.pem`을 다룬다.
 
 ### Security Boundary
 
-없음: 이 폴더에는 Compose 서비스와 secret 정의가 없으며, secret 값을 저장소에 두지 않는다.
+`/run/opsflow`의 `pg.json`, `s3.json`은 고정 경로를 확인한 뒤 읽고, `ca.pem`은 `tls.py`가 검증해 전달한다. 값은 이 폴더에 두지 않는다.
 
 ## Development
 
 ### Local Workflow
+
+#### Usage
 
 드라이버는 task 실행 때만 import합니다. 실제 endpoint와 권한 검증을 합성
 double의 PASS로 대신하지 않습니다. 설정 예시는 실행 가능한 credential이 아닙니다.
@@ -59,11 +65,15 @@ Content-Type은 key 확장자와 같은 `application/json`이며(SeaweedFS는 `.
 
 ### Checks
 
-없음: 이 폴더는 자체 테스트나 검증 스크립트를 두지 않는다.
+없음: 이 폴더 자체의 검사 명령은 없으며, 검증은 상위 `manifest-pipeline/README.md`의 Local Workflow가 지정한 unittest를 따른다.
 
 ## Operations
 
 ### Runbook Links
+
+이 서비스의 런북은 다음과 같다.
+
+- RUN-0050: `docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md`
 
 #### Related Documents
 
@@ -72,4 +82,4 @@ Content-Type은 key 확장자와 같은 `application/json`이며(SeaweedFS는 `.
 
 ### Observability and Recovery
 
-없음: 이 폴더에는 헬스체크나 관측 대상 선언이 없다.
+없음: 이 폴더는 라이브러리이며 헬스체크나 관측 대상을 선언하지 않는다. 상태는 Airflow 서비스와 RUN-0050이 소유한다.

@@ -14,6 +14,8 @@ created: "2026-01-12"
 
 ### Service Role
 
+#### Overview
+
 Alloy는 `hy-home.docker` 플랫폼의 통합 수집 에이전트입니다. 프로그래밍 가능한 설정(Alloy HCL)으로 메트릭, 로그, 트레이스를 수집·처리·내보내며 레거시 에이전트를 대체합니다. 인프라 내 모든 애플리케이션의 기본 OTLP 게이트웨이 역할을 합니다.
 
 #### Audience
@@ -24,7 +26,9 @@ Alloy는 `hy-home.docker` 플랫폼의 통합 수집 에이전트입니다. 프�
 - Operators (파이프라인 모니터링 및 튜닝)
 - SREs (계층 간 텔레메트리 거버넌스)
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - **Ingestion**: OTLP(gRPC/HTTP), Docker 소켓 디스커버리. 공개 4317/4318은 trace만 받고, 품질 metrics는 `config.home.alloy`의 인증된 OTLP HTTP 수신기(4319, host 비공개, secret `quality_otlp_token`)로만 받습니다. 이 수신기에는 internal network `quality_otlp_net`에 붙은 run별 k6 relay만 닿습니다(SPEC-0214).
 - **Hermes OTLP**: host systemd user unit으로 도는 Hermes agent는 `config.home.alloy`의 인증된 OTLP HTTP 수신기(4320, secret `hermes_otlp_token`)로 trace·log·metric을 보냅니다. Compose는 이 포트를 host loopback `127.0.0.1:${ALLOY_HERMES_OTLP_HOST_PORT:-4320}`에만 공개하므로 같은 host의 호출자만 닿습니다. trace는 Tempo, log는 Loki(`service_name=~"hermes-(agent|gateway)"`), metric은 `service_name`·`instance`와 hermes-otel이 제한한 속성(`profile`·`platform`·`tool_name`·`token_type`·`gen_ai_request_model` 등)만 남기고 `service_name=~"hermes-(agent|gateway)"`인 series만 Prometheus remote write로 전달합니다. Hermes는 누적(cumulative) temporality로 export해야 합니다.
@@ -36,7 +40,7 @@ Alloy는 `hy-home.docker` 플랫폼의 통합 수집 에이전트입니다. 프�
   - Profiling -> 선언된 Go pprof/SeaweedFS scrape 소스(12개, 60초, block/mutex off)에서 Pyroscope writer로 전달
 - **Status**: Alloy UI를 통한 실시간 파이프라인 디버깅.
 
-#### Out of Scope
+##### Out of Scope
 
 - **Storage**: 메트릭/로그/트레이스 영속화 (Prometheus/Loki/Tempo에서 관리).
 - **Visualization**: 대시보드 (Grafana에서 관리).
@@ -52,6 +56,8 @@ alloy/
 
 ### Supported Environment
 
+#### Tech Stack
+
 런타임 이미지 고정 값은 [Compose](../docker-compose.yml)에 선언되어 있습니다. [버전 레지스트리](../../tech-stack.versions.json)는 정제된 프로젝션입니다.
 
 | Category  | Technology    | Runtime source | Notes                    |
@@ -64,7 +70,9 @@ alloy/
 
 ### Inputs and Outputs
 
-#### Environment Variables
+#### Configuration
+
+##### Environment Variables
 
 | Variable               | Required | Description                        |
 | :--------------------- | :------: | :--------------------------------- |
@@ -73,7 +81,7 @@ alloy/
 | `ALLOY_OTLP_HTTP_PORT` |    No    | OTLP HTTP 포트 (기본값: 4318)     |
 | `ALLOY_HERMES_OTLP_HOST_PORT` |    No    | Hermes OTLP 수신기의 host loopback 포트 (기본값: 4320, 컨테이너 내부는 4320 고정) |
 
-#### Hermes 연결
+##### Hermes 연결
 
 Hermes 설정(`monitoring.export.otlp`)의 endpoint를 `http://127.0.0.1:4320`으로 두고, `Authorization: Bearer <token>` header 값은 `secrets/observability/alloy/hermes_otlp_token.txt` 파일에서 읽습니다. 값은 문서나 설정에 쓰지 않습니다. `monitoring.gateway_health_export`도 같은 endpoint를 씁니다. Grafana의 `Applications/hermes-agent` 대시보드가 `{service_name=~"hermes-(agent|gateway)"}` 로그와 `service.name =~ "hermes-(agent|gateway)"` trace를 보여 줍니다.
 
@@ -84,6 +92,8 @@ Compose가 참조하는 secret은 `hermes_otlp_token`, `quality_otlp_token`이�
 ## Development
 
 ### Local Workflow
+
+#### Usage
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 
@@ -105,6 +115,8 @@ Compose가 참조하는 secret은 `hermes_otlp_token`, `quality_otlp_token`이�
 | `docker compose --profile obs logs -f alloy` | 저장소 루트에서 수집기 로그 확인 |
 
 ### Checks
+
+#### Validation
 
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.

@@ -14,6 +14,8 @@ created: "2026-10-02"
 
 ### Service Role
 
+#### Overview
+
 `dev-valkey`는 개발 프로젝트가 명시적으로 등록될 때 사용하는 단일 Valkey입니다.
 관리용·LAB Valkey의 데이터와 계정을 공유하지 않습니다. 이 디렉터리는 설정과
 ACL 생성 스크립트를 소유하며 서비스 선언은 [상위 Compose](../docker-compose.yml)가
@@ -22,6 +24,8 @@ ACL 생성 스크립트를 소유하며 서비스 선언은 [상위 Compose](../
 #### Audience
 
 개발 DB 운영자, 프로젝트 provision 담당자, 보안 검토자를 대상으로 합니다.
+
+#### Scope
 
 서비스는 새 `${DEFAULT_DATA_DIR}/dev-valkey/data` 영속 경로와
 `dev_data_net`을 사용하고 호스트 포트를 게시하지 않습니다. 관리자 자격 증명은
@@ -38,13 +42,6 @@ ACL 생성 스크립트를 소유하며 서비스 선언은 [상위 Compose](../
 선언한 Compose 조각의 디렉터리를 기준으로 해석됩니다. 누락·형식 오류·중복
 프로젝트/계정/prefix/비밀 파일명·symlink·여러 줄의 비밀값은 기동을
 거절합니다. 실제 비밀값은 추적된 소스나 문서에 두지 않습니다.
-
-Valkey protected mode는 named-user ACL을 가진 원격 Compose peer의 인증 전 요청을 차단할 수 있어 끕니다. 서비스는 `dev_data_net`에만 expose하고 host port를 게시하지 않으며 `default off`와 필수 named-user ACL로 접근을 제한합니다. 격리 실행에서는 같은 network의 peer에서 `AUTH <user> <password>`/PING, 다른 prefix 접근 거절, 익명 접근 거절을 함께 확인해야 합니다.
-
-프로젝트 계정은 명시된 `key_prefix:*`의 key/channel과 DB 0에만 접근합니다.
-관리, 스크립트, pubsub, 전역 key 열거 명령은 허용하지 않습니다. DB 0 제한은
-보조 명령 경계이며 DB 번호 자체는 프로젝트 격리 수단이 아닙니다. 이 ACL의
-2026-10-03 합성 A/B 프로젝트의 prefix·관리 명령·DB1 접근 거절을 격리 엔진에서 확인했습니다. HOME 실행은 `NOT_RUN`입니다.
 
 #### Structure
 
@@ -66,21 +63,32 @@ Valkey protected mode는 named-user ACL을 가진 원격 Compose peer의 인증 
 
 ### Supported Environment
 
+#### Tech Stack
+
 [상위 Compose](../docker-compose.yml)가 Valkey 이미지를 선언하고, [`config/`](config/)와 [`scripts/`](scripts/)가 ACL·시작 절차를 소유합니다.
 
 ## Interfaces
 
 ### Inputs and Outputs
 
+#### Configuration
+
 `dev_data_net`과 별도 `/data` bind 경로를 사용합니다. 관리자 비밀은 Docker secret으로, 프로젝트 ACL은 승인된 `projects.tsv`와 별도 비밀 디렉터리로 공급합니다.
 
 ### Security Boundary
 
-없음: 이 폴더에는 Compose 서비스와 secret 정의가 없으며, secret 값을 저장소에 두지 않는다.
+Valkey protected mode는 named-user ACL을 가진 원격 Compose peer의 인증 전 요청을 차단할 수 있어 끕니다. 서비스는 `dev_data_net`에만 expose하고 host port를 게시하지 않으며 `default off`와 필수 named-user ACL로 접근을 제한합니다. 격리 실행에서는 같은 network의 peer에서 `AUTH <user> <password>`/PING, 다른 prefix 접근 거절, 익명 접근 거절을 함께 확인해야 합니다.
+
+프로젝트 계정은 명시된 `key_prefix:*`의 key/channel과 DB 0에만 접근합니다.
+관리, 스크립트, pubsub, 전역 key 열거 명령은 허용하지 않습니다. DB 0 제한은
+보조 명령 경계이며 DB 번호 자체는 프로젝트 격리 수단이 아닙니다. 이 ACL의
+2026-10-03 합성 A/B 프로젝트의 prefix·관리 명령·DB1 접근 거절을 격리 엔진에서 확인했습니다. HOME 실행은 `NOT_RUN`입니다.
 
 ## Development
 
 ### Local Workflow
+
+#### Usage
 
 합성 비밀값을 쓰는 집중 검사는 저장소 루트에서 다음과 같이 실행합니다.
 
@@ -95,11 +103,19 @@ python3 -m unittest tests/validation/test_dev_valkey_acl.py
 
 ### Checks
 
-아래 단위 검사는 ACL 생성 입력을 확인합니다. 실제 인증·prefix 거절·영속성은 격리 실행 결과를 따로 기록합니다.
+#### Validation
+
+Local Workflow의 단위 검사는 ACL 생성 입력을 확인합니다. 실제 인증·prefix 거절·영속성은 격리 실행 결과를 따로 기록합니다.
 
 ## Operations
 
 ### Runbook Links
+
+이 서비스의 런북은 다음과 같다.
+
+- RUN-0076: `docs/05.operations/runbooks/05-databases-and-storage/0076-redisinsight.md`
+- RUN-0100: `docs/05.operations/runbooks/05-databases-and-storage/0100-development-database.md`
+- RUN-0021: `docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md`
 
 #### Related Documents
 
@@ -109,4 +125,4 @@ python3 -m unittest tests/validation/test_dev_valkey_acl.py
 
 ### Observability and Recovery
 
-없음: 이 폴더에는 헬스체크나 관측 대상 선언이 없다.
+헬스체크: `dev-valkey` 서비스는 여러 줄 명령으로 상태를 확인하며 명령 전문은 Compose 선언에 있다 (interval 15s); `dev-valkey-exporter` 서비스는 `wget -qO- http://localhost:9121/metrics > /dev/null 2>&1 || exit 1` (interval 30s).

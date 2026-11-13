@@ -104,6 +104,9 @@ cluster 결성은 격리 실행 전까지 검증되지 않았습니다. 재실�
 
 - [Architecture index](../../docs/02.architecture/README.md)
 - [Operations index](../../docs/05.operations/README.md)
+- [RUN-0026 couchdb](../../docs/05.operations/runbooks/15-labs/0026-couchdb.md)
+
+- [RUN-0107 lab-promotion](../../docs/05.operations/runbooks/15-labs/0107-lab-promotion.md)
 
 ### Observability and Recovery
 

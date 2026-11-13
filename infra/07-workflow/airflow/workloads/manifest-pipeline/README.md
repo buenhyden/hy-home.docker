@@ -13,9 +13,13 @@ updated: "2026-11-13"
 
 ### Service Role
 
+#### Overview
+
 합성 운영 문서 목록을 S3에서 읽어 검증·readback한 뒤 DEV PostgreSQL에
 게시하는 단일 Airflow workload입니다. 입력의 해시 형식은 실제 Git 내용의
 인증 증거가 아닙니다. 원문 수집이나 Wiki 구현을 하지 않습니다.
+
+#### Scope
 
 DAG `source_manifest_ingest`, pool `manifest_ingest`, DB `opsflow_dev`, schema
 `ops_flow`, bucket `opsflow-dev`의 전용 배치입니다. P04가 SQL 단독 작성자이며
@@ -32,11 +36,13 @@ P05는 검토 후 고정한 SQL 버전·hash와 함수 계약을 소비합니다
 
 ### Supported Environment
 
-없음: 이 디렉터리에는 Compose 파일이나 Dockerfile이 없어 독립 런타임 환경을 선언하지 않는다. 포함 항목은 `dags/`, `fixtures/`, `secret-placeholder/`, `sql/`, `workflow_lib/`이다.
+별도 이미지는 없다. Airflow 기본 이미지와 `infra/07-workflow/airflow/docker-compose.yml`가 이 폴더의 DAG와 `workflow_lib`를 읽기 전용으로 mount해 실행한다.
 
 ## Interfaces
 
 ### Inputs and Outputs
+
+#### Configuration
 
 SEC01의 호환 이미지·dependencies와 P03의 endpoint·실제 worker UID/GID 계약을
 받아야 합니다. 이미지에는 필요한 패키지를 빌드 시 설치하며 startup pip를
@@ -47,6 +53,8 @@ overlay 규칙은 POL-0078이 소유하며 이 workload는 overlay를 쓰지 않
 `OPSFLOW_SECRET_DIR`(없으면 추적된 빈 `secret-placeholder/`)을 `/run/opsflow`로 mount합니다.
 `OPSFLOW_SECRET_DIR`에는 worker 전용 보호 디렉터리의 정확한 경로를 지정합니다. 기본 이미지를 그대로 쓰며
 n8n 변경은 없습니다.
+
+### Security Boundary
 
 Worker는 `pg.json`, `s3.json`과 TLS를 선택한 경우 같은 보호 폴더의
 `ca.pem`을 읽습니다. CA 전달(`workflow_lib/tls.py`)은 보호된 경로·소유자·권한·
@@ -74,13 +82,11 @@ Owner는 NOLOGIN이며 migrator만 명시적 SET ROLE 권한을 갖고 runtime�
 항목입니다. pool 한 slot 생성도 별도 실행 대상입니다. 기존 generic table-grant 계약을 이 workload에
 대입하거나 미지정 자격을 자동 발급하지 않습니다.
 
-### Security Boundary
-
-없음: 이 디렉터리는 Compose 서비스나 secret 참조를 직접 선언하지 않으며, 하위 `dags/`, `fixtures/`, `sql/`, `workflow_lib/`가 각자 선언한다.
-
 ## Development
 
 ### Local Workflow
+
+#### Usage
 
 저장소 root에서 전용 `tests.lib.ops.test_opsflow_manifest`,
 `tests.lib.ops.test_opsflow_adapters`, `tests.lib.ops.test_opsflow_provision_contract`,
@@ -88,6 +94,8 @@ Owner는 NOLOGIN이며 migrator만 명시적 SET ROLE 권한을 갖고 runtime�
 SDK double·driver double의 PASS는 실제 DAG import나 DEV 실행의 증거가 아닙니다.
 
 ### Checks
+
+#### Validation
 
 실제 실행은 고정 이미지의 DAG import, SQL 직접 호출·역할/다른 DB/S3 거부,
 Celery worker 게시·재실행·경합·backfill·객체 후 DB 실패 및 빈 대상 복원이
@@ -103,14 +111,14 @@ UNVERIFIED이고 recovery는 NOT_RUN/BLOCKED입니다. Task0018(`docs/03.specs/0
 연결·입력 격리·data_version·객체 메타데이터 복원의 현재 차분과 실제 시험 결과를
 별도로 기록합니다. 정제된 명령·결과만 공개하고 원시 payload·자격·운영 로그는
 남기지 않습니다. 직렬 lock·소유 자원·cleanup HOLD는 기존 fixture 경계를 따릅니다.
-PG/S3는 하나의 원자적 트랜잭션이 아니므로 DB 실패 후 객체는 unpublished로
-남고 같은 bytes를 readback한 뒤 재사용합니다. Orphan 삭제는 게시 장부와 별도
-보존 정책으로만 판단합니다. Rollback은 이 DAG pause와 검토한 migration 복구이며
-MNG reset·공유 volume 초기화·전체 restart를 사용하지 않습니다.
 
 ## Operations
 
 ### Runbook Links
+
+이 서비스의 런북은 다음과 같다.
+
+- RUN-0050: `docs/05.operations/runbooks/08-workflows-and-automation/0050-airflow.md`
 
 #### Related Documents
 
@@ -122,4 +130,7 @@ MNG reset·공유 volume 초기화·전체 restart를 사용하지 않습니다.
 
 ### Observability and Recovery
 
-없음: 이 디렉터리는 자체 헬스체크나 관측 대상을 선언하지 않으며, 하위 `dags/`, `fixtures/`, `sql/`, `workflow_lib/`가 각자 선언한다.
+PG/S3는 하나의 원자적 트랜잭션이 아니므로 DB 실패 후 객체는 unpublished로
+남고 같은 bytes를 readback한 뒤 재사용합니다. Orphan 삭제는 게시 장부와 별도
+보존 정책으로만 판단합니다. Rollback은 이 DAG pause와 검토한 migration 복구이며
+MNG reset·공유 volume 초기화·전체 restart를 사용하지 않습니다.

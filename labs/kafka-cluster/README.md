@@ -88,12 +88,6 @@ LAB_DATA_DIR=/tmp/hyhome-lab-kafka-synthetic LAB_KAFKA_CLUSTER_ID=MkU3OEVBNTcwNT
 
 실행 전 Docker context, project name, 모든 port·network·volume, 가용 CPU/RAM/디스크, host bind UID/GID와 정확한 정리 대상이 별도로 승인되어야 합니다. 기동·종료는 `python3 scripts/operations/lab.py up kafka-cluster --purpose "<목적>" --lease <기간>`과 `lab.py down kafka-cluster`로 하며 충돌·예산 검사와 정리 대상 ledger를 남깁니다. 이 문서 갱신에서 LAB를 실행·정지하거나 상태를 삭제하지 않았습니다. `down -v` 또는 volume prune은 사용하지 않습니다. source 선언만으로 이전 정상 root의 broker 2/3 컨테이너가 정지되지는 않습니다.
 
-복구에는 topic record/config, partition, consumer offset와 KRaft metadata를
-포함합니다. Schema Registry·Connect의 subject, connector 정의와
-`_schemas`·`_connect-*` 내부 상태도 같은 복구 범위입니다. 승인된 replay/replication으로 새
-격리 cluster에 복원하며 기존 KRaft identity나 개별 broker directory를 그대로
-재사용하지 않습니다. source 안내 갱신은 실제 복구 검증이 아닙니다.
-
 ### Checks
 
 검증 명령은 Local Workflow의 정적 render(`docker compose ... --profile lab-kafka config --quiet`)이며 서비스를 시작하지 않는다. render 통과는 broker 기동이나 topic 생성의 증거가 아니다.
@@ -104,7 +98,17 @@ LAB_DATA_DIR=/tmp/hyhome-lab-kafka-synthetic LAB_KAFKA_CLUSTER_ID=MkU3OEVBNTcwNT
 
 - [Kafka LAB Compose](docker-compose.yml)
 - [운영 가이드 목록](../../docs/05.operations/guides/README.md)
+- [RUN-0108 kafka-cluster](../../docs/05.operations/runbooks/15-labs/0108-kafka-cluster.md)
+
+- [RUN-0036 kafka](../../docs/05.operations/runbooks/06-messaging-and-cdc/0036-kafka.md)
+- [RUN-0107 lab-promotion](../../docs/05.operations/runbooks/15-labs/0107-lab-promotion.md)
 
 ### Observability and Recovery
 
 `lab-kafka-init`은 세 broker가 healthy일 때 topic `lab-events`, `lab-logs`를 만들며 생성 job 성공과 실제 topic 상태는 별개로 확인해야 한다. 복구는 [Kafka cluster LAB Runbook](../../docs/05.operations/runbooks/15-labs/0108-kafka-cluster.md)를 따른다.
+
+복구에는 topic record/config, partition, consumer offset와 KRaft metadata를
+포함합니다. Schema Registry·Connect의 subject, connector 정의와
+`_schemas`·`_connect-*` 내부 상태도 같은 복구 범위입니다. 승인된 replay/replication으로 새
+격리 cluster에 복원하며 기존 KRaft identity나 개별 broker directory를 그대로
+재사용하지 않습니다. source 안내 갱신은 실제 복구 검증이 아닙니다.

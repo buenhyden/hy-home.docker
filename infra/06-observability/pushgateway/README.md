@@ -14,6 +14,8 @@ created: "2026-01-12"
 
 ### Service Role
 
+#### Overview
+
 Pushgateway는 표준 pull 모델을 사용할 수 없는 경우(예: 수명이 짧은 CI/CD 작업이나 배치 스크립트) 임시/배치 작업이 Prometheus에 메트릭을 노출할 수 있게 합니다. 일치하는 스크레이프 잡이 설정되어 있을 때 Prometheus가 스크레이프할 수 있는 임시 버퍼 역할을 합니다.
 
 #### Audience
@@ -23,13 +25,15 @@ Pushgateway는 표준 pull 모델을 사용할 수 없는 경우(예: 수명이 
 - DevOps Engineers
 - Backend Developers (Batch/CI)
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - Pushgateway 서비스 설정 및 배포.
 - 임시 작업을 위한 메트릭 수집 및 노출.
 - Prometheus 스크레이프 계약과 검증.
 
-#### Out of Scope
+##### Out of Scope
 
 - 범용 메트릭 프록시 또는 장기 저장소.
 - 카디널리티가 높은 시계열 저장소(가능하면 직접 계측을 사용).
@@ -43,6 +47,8 @@ pushgateway/
 
 ### Supported Environment
 
+#### Tech Stack
+
 런타임 이미지 고정 값은 [Compose](../docker-compose.yml)에 선언되어 있습니다. [버전 레지스트리](../../tech-stack.versions.json)는 정제된 프로젝션입니다.
 
 | Category | Technology | Runtime source | Role |
@@ -54,6 +60,8 @@ pushgateway/
 ## Interfaces
 
 ### Inputs and Outputs
+
+#### Configuration
 
 - **Ingestion**: 표준 Prometheus Pushgateway API (포트 9091).
 - **Exposure**: 보호된 Traefik 라우트를 통해 `https://pushgateway.${DEFAULT_URL}`로 접근 가능합니다.
@@ -87,6 +95,8 @@ docker compose --profile obs restart pushgateway
 echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/job/some_job
 ```
 
+#### Usage
+
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 
 1. **PromQL Optimization**: Pushgateway에서 메트릭을 쿼리할 때는 서로 다른 배치 실행을 구분할 수 있도록 항상 `job` 레이블을 포함합니다.
@@ -94,6 +104,8 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 3. **Traceability**: 정리 로직과 근거 수집은 전용 가이드와 런북을 참고합니다.
 
 ### Checks
+
+#### Validation
 
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.

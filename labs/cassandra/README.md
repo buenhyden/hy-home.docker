@@ -113,6 +113,9 @@ host-level HA를 증명하지 않습니다. 정적 render 통과는 실행·인�
 
 - [Architecture index](../../docs/02.architecture/README.md)
 - [Operations index](../../docs/05.operations/README.md)
+- [RUN-0025 cassandra](../../docs/05.operations/runbooks/15-labs/0025-cassandra.md)
+
+- [RUN-0107 lab-promotion](../../docs/05.operations/runbooks/15-labs/0107-lab-promotion.md)
 
 ### Observability and Recovery
 

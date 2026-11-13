@@ -117,6 +117,9 @@ HAProxy stats password는 설정 문자를 검증하고 `/tmp`에 렌더합니�
 
 - [Architecture index](../../docs/02.architecture/README.md)
 - [Operations index](../../docs/05.operations/README.md)
+- [RUN-0031 postgresql-cluster](../../docs/05.operations/runbooks/15-labs/0031-postgresql-cluster.md)
+
+- [RUN-0107 lab-promotion](../../docs/05.operations/runbooks/15-labs/0107-lab-promotion.md)
 
 ### Observability and Recovery
 

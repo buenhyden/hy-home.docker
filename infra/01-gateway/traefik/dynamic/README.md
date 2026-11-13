@@ -31,6 +31,8 @@ Traefik은 이 디렉터리의 설정을 재시작 없이 hot-reload합니다.
 
 ### Service Role
 
+#### Overview
+
 `infra/01-gateway/traefik/dynamic`는 Docker Compose 서비스, 설정, 운영 문서의 구현 위치다. 이 README는 하위 파일을 찾는 진입점이며 기존 본문과 실제 디렉터리 구조를 함께 기준으로 삼는다.
 
 #### Audience
@@ -41,13 +43,15 @@ Traefik은 이 디렉터리의 설정을 재시작 없이 hot-reload합니다.
 - Operators
 - Documentation Writers
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - Compose 서비스 정의와 관련 설정 설명
 - 서비스별 README와 운영 문서 연결
 - 검증 시 참고해야 할 구성 파일 인벤토리
 
-#### Out of Scope
+##### Out of Scope
 
 - secret 값 원문
 - 사용자 승인 없는 runtime 동작 변경
@@ -82,6 +86,8 @@ infra/01-gateway/traefik/dynamic/
 ## Development
 
 ### Local Workflow
+
+#### Usage
 
 1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.
 2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.

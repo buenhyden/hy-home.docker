@@ -16,6 +16,8 @@ created: "2026-03-27"
 
 ### Service Role
 
+#### Overview
+
 Dozzle은 작고 가벼운 애플리케이션으로, 웹 기반 인터페이스에서 Docker 컨테이너 로그를 실시간으로 확인할 수 있습니다. `06-observability` 티어의 일부로, 인프라 내 서비스의 모니터링과 디버깅에 사용됩니다.
 
 #### Audience
@@ -25,13 +27,15 @@ Dozzle은 작고 가벼운 애플리케이션으로, 웹 기반 인터페이스�
 - Operators (로그 모니터링 및 디버깅)
 - Developers (서비스 상태 확인)
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - Dozzle 서비스 설정 (`docker-compose.yml`)
 - 로컬 Docker 컨테이너의 로그 수집 및 표시
 - Dozzle native OIDC와 Traefik CIDR 제한을 통한 접근 제어; 공유 cookie ForwardAuth 경로와 구별
 
-#### Out of Scope
+##### Out of Scope
 
 - 중앙 집중식 로그 저장소 (예: Elasticsearch, Loki)
 - 로그 로테이션 정책 (Docker 데몬에서 관리)
@@ -47,6 +51,8 @@ dozzle/
 
 ### Supported Environment
 
+#### Tech Stack
+
 런타임 이미지 고정 값은 [Compose](docker-compose.yml)에 선언되어 있습니다. [버전 레지스트리](../../tech-stack.versions.json)는 파생된 Compose 이미지 프로젝션입니다.
 
 | Category   | Technology   | Notes                     |
@@ -59,7 +65,9 @@ dozzle/
 
 ### Inputs and Outputs
 
-#### Environment Variables
+#### Configuration
+
+##### Environment Variables
 
 | Variable               | Required | Description                        |
 | ---------------------- | -------: | ---------------------------------- |
@@ -75,12 +83,16 @@ Compose가 참조하는 secret은 `dozzle_client_secret`이며 값은 저장소�
 
 ### Local Workflow
 
+#### Usage
+
 1. [docker-compose.yml](./docker-compose.yml)을 통해 서비스 구성을 확인한다.
 2. 가이드 문서는 Dozzle guide (`docs/05.operations/guides/07-observability/0072-dozzle.md`)를 참조한다.
 3. 운영 정책은 Dozzle policy (`docs/05.operations/policies/07-observability/0072-dozzle.md`)를 확인한다.
 4. 장애 조치 지침은 Dozzle runbook (`docs/05.operations/runbooks/07-observability/0072-dozzle.md`)를 따른다.
 
 ### Checks
+
+#### Validation
 
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/hardening/check-all-hardening.sh 06-observability`를 실행합니다.
 - 루트에서 활성화되는 `admin` 프로필을 검증하려면 `HYHOME_COMPOSE_PROFILES=admin bash scripts/validation/validate-docker-compose.sh`를 실행합니다.

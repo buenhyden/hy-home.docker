@@ -19,6 +19,8 @@ updated: "2026-11-13"
 
 ### Service Role
 
+#### Overview
+
 `infra/01-gateway/traefik/config`는 Docker Compose 서비스, 설정, 운영 문서의 구현 위치다. 이 README는 하위 파일을 찾는 진입점이며 기존 본문과 실제 디렉터리 구조를 함께 기준으로 삼는다.
 
 #### Audience
@@ -29,13 +31,15 @@ updated: "2026-11-13"
 - Operators
 - Documentation Writers
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - Compose 서비스 정의와 관련 설정 설명
 - 서비스별 README와 운영 문서 연결
 - 검증 시 참고해야 할 구성 파일 인벤토리
 
-#### Out of Scope
+##### Out of Scope
 
 - secret 값 원문
 - 사용자 승인 없는 runtime 동작 변경
@@ -67,6 +71,8 @@ infra/01-gateway/traefik/config/
 
 ### Local Workflow
 
+#### Usage
+
 1. 상위 tier README와 해당 서비스의 `docker-compose*.yml` 또는 설정 파일을 먼저 확인한다.
 2. 새 문서나 README를 만들 때는 `docs/99.templates/`의 대응 템플릿을 따른다.
 3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
@@ -74,7 +80,7 @@ infra/01-gateway/traefik/config/
 
 ### Checks
 
-없음: 이 폴더는 자체 테스트나 검증 스크립트를 두지 않는다. 변경은 상위 `traefik` 서비스의 `docker compose config`와 헬스체크로 확인한다.
+없음: 이 폴더는 자체 테스트나 검증 스크립트를 두지 않는다. 구성 검증은 `infra/README.md`가 기술한 루트 Compose 검증 경로를 따른다.
 
 ## Operations
 

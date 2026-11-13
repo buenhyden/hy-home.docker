@@ -14,6 +14,8 @@ created: "2025-11-12"
 
 ### Service Role
 
+#### Overview
+
 `06-observability` 티어는 현재의 LGTM 스택(Loki, Grafana, Tempo, Prometheus)에 Grafana Alloy, Alertmanager, Pushgateway, cAdvisor, Pyroscope를 결합해 구현합니다. 외부 장기 메트릭 저장소는 추적 중인 compose 파일에 선언되어 있지 않습니다.
 
 #### Audience
@@ -23,7 +25,9 @@ created: "2025-11-12"
 - SREs & Platform Engineers (스택 유지보수)
 - Developers (디버깅 및 성능 튜닝)
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - LGTM 스택 (Loki, Grafana, Tempo, Prometheus)
 - Grafana Alloy (통합 수집기)
@@ -34,7 +38,7 @@ created: "2025-11-12"
 - Gatus (엔드포인트 가용성 모니터링)
 - Dozzle (선택적 컨테이너 로그 조회; 별도 leaf Compose)
 
-#### Out of Scope
+##### Out of Scope
 
 - 애플리케이션 수준의 비즈니스 분석
 - 외부 클라우드 모니터링(Datadog/New Relic)
@@ -60,6 +64,8 @@ created: "2025-11-12"
 
 ### Supported Environment
 
+#### Tech Stack
+
 런타임 이미지 고정 값은 [Compose](docker-compose.yml)에 선언되어 있습니다. [파생된 Compose 이미지 프로젝션](../tech-stack.versions.json)은 드리프트 확인용 뷰입니다.
 
 | Category   | Technology                     | Notes                     |
@@ -79,6 +85,8 @@ created: "2025-11-12"
 
 ### Inputs and Outputs
 
+#### Configuration
+
 - **Persistence**: Loki와 Tempo는 SeaweedFS(`04-data`)를 S3 호환 오브젝트 스토어로 사용하고 Prometheus와 Pyroscope는 로컬 바인드 기반 볼륨을 사용합니다.
 - **Auth**: Grafana는 OAuth2 SSO용으로 Keycloak(`02-auth`)과 통합되어 있습니다.
 - **OpenBao metrics**: Prometheus 소스 설정은 전용 `openbao_token` Docker Secret과 OpenBao `prometheus` 정책만 선언합니다. 시크릿 계약은 스테이징 상태로 아직 프로비저닝되지 않았습니다. 과거에 관측된 "Vault 다운/OpenBao 미로드" 상태는 현재 소스 준비 상태와 별개입니다. 추적된 소스 변경만으로는 실행 중인 Prometheus가 해당 잡을 로드했는지, 대상이 정상인지 증명되지 않습니다.
@@ -91,6 +99,8 @@ Compose가 참조하는 secret은 `gatus_oidc_client_secret`, `grafana_admin_pas
 ## Development
 
 ### Local Workflow
+
+#### Usage
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../.agents/governance/documentation-protocol.md)을 따른다.
 
@@ -120,6 +130,8 @@ docker exec prometheus wget -qO- http://localhost:9090/-/healthy
 # Verify Alloy configuration
 docker exec alloy alloy run --test /etc/alloy/config.alloy
 ```
+
+#### Validation
 
 - 옵저버빌리티 스택에 영향을 주는 README 또는 Compose 참조 변경 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 옵저버빌리티 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.

@@ -120,7 +120,7 @@ credential은 host·port·secure·disableStartTls·user·password·hostName의 �
 
 ### Local Workflow
 
-builder가 비활성 workflow에서 이 node type을 참조합니다. 위 build는 패키지를
+builder가 비활성 workflow에서 이 node type을 참조합니다. 아래 Checks의 build는 패키지를
 생성할 뿐 실행 서비스에 설치하거나 mail을 보내지 않습니다. shared Dockerfile·mount·
 Compose 변경은 총괄에 제안하고 최종 endpoint·SQL hash·이미지 인계 이후 통합합니다.
 

@@ -14,11 +14,15 @@ created: "2025-11-12"
 
 ### Service Role
 
+#### Overview
+
 이 패키지는 저장소의 Kafka 계열 메시징 surface를 정의합니다.
 
 #### Audience
 
 Kafka와 그 companion 서비스들의 operator 및 maintainer를 대상으로 합니다.
+
+#### Scope
 
 [`docker-compose.yml`](docker-compose.yml)은 정상 단일 `kafka-1`,
 `kafbat-ui`, `kafka-exporter`, `kafka-init`을 정의합니다. 정상 selector는
@@ -49,13 +53,17 @@ Traefik 라우트는 `gateway-standard-chain@file`을 사용하며 forwarding-au
 
 ### Supported Environment
 
+#### Tech Stack
+
 정상 Kafka 단일 브로커와 Kafbat·exporter 등의 이미지 선언은 [Compose](docker-compose.yml)가 소유합니다. Connect 이미지 빌드는 LAB의 [Dockerfile](../../../labs/kafka-cluster/connect/Dockerfile)이 소유합니다.
 
 ## Interfaces
 
 ### Inputs and Outputs
 
-정상 `kafka_net`의 secret, 라우트, 포트 및 healthcheck 계약은 위 구조와 Compose에 따릅니다.
+#### Configuration
+
+정상 `kafka_net`의 secret, 라우트, 포트 및 healthcheck 계약은 Service Role의 Structure와 Compose에 따릅니다.
 
 ### Security Boundary
 
@@ -65,6 +73,8 @@ Compose가 참조하는 secret은 `kafbat_client_secret`이며 값은 저장소�
 
 ### Local Workflow
 
+#### Usage
+
 ```bash
 docker compose --env-file .env.example --profile messaging config --quiet
 docker compose --env-file .env.example --profile messaging config --services
@@ -73,18 +83,19 @@ docker compose --env-file .env.example --profile messaging config --services
 정상 `kafka-init`은 복제 계수 1로 토픽을 만듭니다. 위 명령은 정적 render이며
 서비스와 topic을 시작·생성하지 않습니다.
 
-복구에는 토픽 record/config, 파티션, consumer offset, KRaft metadata가
-포함되어야 합니다. 승인된
-replay/replication을 통해 새로운 격리된 클러스터로 복원해야 하며 기존
-KRaft identity나 개별 broker 디렉터리를 그대로 재사용해서는 안 됩니다.
-
 ### Checks
 
-아래 명령으로 정상 구성을 렌더합니다. 렌더 성공은 브로커 복구 성공을 증명하지 않습니다.
+#### Validation
+
+Local Workflow의 명령으로 정상 구성을 렌더합니다. 렌더 성공은 브로커 복구 성공을 증명하지 않습니다.
 
 ## Operations
 
 ### Runbook Links
+
+이 서비스의 런북은 다음과 같다.
+
+- RUN-0036: `docs/05.operations/runbooks/06-messaging-and-cdc/0036-kafka.md`
 
 #### Related Documents
 
@@ -97,4 +108,7 @@ KRaft identity나 개별 broker 디렉터리를 그대로 재사용해서는 안
 
 ### Observability and Recovery
 
-헬스체크: `kafka-1` 서비스는 `unset KAFKA_OPTS; kafka-broker-api-versions --bootstrap-server localhost:${KAFKA_INTERNAL_PORT:-19092} >/dev/null || exit 1` (interval 60s); `kafbat-ui` 서비스는 `wget --no-verbose --tries=1 --spider http://localhost:${KAFKA_UI_PORT:-8080}/actuator/health` (interval 15s); `kafka-exporter` 서비스는 `wget --quiet --tries=1 --spider http://localhost:${KAFKA_EXPORTER_PORT:-9308}/metrics || exit 1` (interval 15s).
+복구에는 토픽 record/config, 파티션, consumer offset, KRaft metadata가
+포함되어야 합니다. 승인된
+replay/replication을 통해 새로운 격리된 클러스터로 복원해야 하며 기존
+KRaft identity나 개별 broker 디렉터리를 그대로 재사용해서는 안 됩니다.

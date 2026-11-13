@@ -75,6 +75,9 @@ bash scripts/hardening/check-all-hardening.sh 10-communication
 
 - [LAB source](../../labs/README.md)
 - [Infrastructure index](../README.md)
+- [RUN-0084 mailpit](../../docs/05.operations/runbooks/11-mail-and-notifications/0084-mailpit.md)
+
+- [RUN-0070 mail](../../docs/05.operations/runbooks/15-labs/0070-mail.md)
 
 ### Observability and Recovery
 

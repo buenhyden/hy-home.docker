@@ -16,6 +16,8 @@ created: "2025-11-12"
 
 ### Service Role
 
+#### Overview
+
 `01-gateway` tier는 `hy-home.docker` 생태계로 들어오는 트래픽의 단일 진입점입니다. 루트 스택은 `traefik` leaf를 무조건 include하며, profile이 실제로 기동되는 서비스를 결정합니다: `traefik`은 `core`, `dev`, `local`에 속합니다. profile이 선택되지 않으면 기동되지 않습니다. 대안 gateway였던 Nginx는 2026-11-10 소유자 결정으로 저장소에서 퇴역했습니다.
 
 #### Audience
@@ -26,13 +28,15 @@ created: "2025-11-12"
 - Backend Developers
 - Security Auditors
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - Traefik(에지 라우터) 설정과 루트 스택 배포.
 - TLS 종료와 인증서 관리.
 - Docker provider를 통한 동적 서비스 탐색.
 
-#### Out of Scope
+##### Out of Scope
 
 - 애플리케이션 수준의 비즈니스 로직.
 - 장기 로그 저장 또는 분석(Observability tier가 담당).
@@ -47,6 +51,8 @@ created: "2025-11-12"
 ```
 
 ### Supported Environment
+
+#### Tech Stack
 
 런타임 이미지 고정 값은 각 서비스의 compose 파일이 소유합니다: [traefik/](traefik/). [버전 레지스트리](../tech-stack.versions.json)는 파생된 Compose 이미지 투영입니다.
 
@@ -71,6 +77,8 @@ created: "2025-11-12"
 ## Development
 
 ### Local Workflow
+
+#### Usage
 
 1. [문서 인덱스](../../docs/README.md)와 subject package `docs/05.operations/README.md`를 검토해 트래픽 흐름을 이해합니다.
 2. 배포 전 `scripts/operations/gen-secrets.sh`로 secret을 생성했는지 확인합니다.

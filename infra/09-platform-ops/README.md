@@ -125,7 +125,12 @@ Local Workflow의 `check-all-hardening.sh 09-platform-ops`와 `HYHOME_COMPOSE_PR
 - [Documentation index](../../docs/README.md)
 - [Infrastructure index](../README.md)
 - Stage 05 Platform Operations 문서: `docs/05.operations/README.md`
+- 백업·복구 런북 (`docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md`)
+- Registry 런북 (`docs/05.operations/runbooks/10-platform-and-backup/0065-registry.md`)
+- Terrakube 런북 (`docs/05.operations/runbooks/10-platform-and-backup/0069-terrakube.md`)
+- OpenTofu 런북 (`docs/05.operations/runbooks/10-platform-and-backup/0082-opentofu.md`)
+- Renovate 런북 (`docs/05.operations/runbooks/10-platform-and-backup/0083-renovate.md`)
 
 ### Observability and Recovery
 
-백업·복구는 `docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md`, Registry는 `.../0065-registry.md`, Terrakube는 `.../0069-terrakube.md`, OpenTofu는 `.../0082-opentofu.md`, Renovate는 `.../0083-renovate.md` 런북을 따릅니다. 이 tier README 자체에는 헬스체크·지표가 없습니다.
+백업·복구, Registry, Terrakube, OpenTofu, Renovate 복구는 Runbook Links의 런북을 따릅니다. 이 tier README 자체에는 헬스체크·지표가 없습니다.

@@ -14,11 +14,15 @@ created: "2025-12-03"
 
 ### Service Role
 
+#### Overview
+
 이 패키지는 저장소의 HOME 관리 PostgreSQL과 Valkey를 정의합니다.
 
 #### Audience
 
 공유 관리 상태의 operator와 maintainer를 대상으로 합니다.
+
+#### Scope
 
 [`docker-compose.yml`](docker-compose.yml)이 HOME `mng-pg`, `mng-pg-init`,
 `mng-pg-exporter`, `mng-valkey`, `mng-valkey-exporter`를 정의합니다. `mng`,
@@ -106,25 +110,26 @@ Compose가 참조하는 secret은 `airflow_db_password`, `keycloak_db_password`,
 
 ### Local Workflow
 
+#### Usage
+
 ```bash
 docker compose --env-file .env.example --profile mng config --quiet
 docker compose --env-file .env.example --profile mng config --services
 ```
 
 저장소 루트에서 실행하십시오. leaf 전용 Compose 명령은 사용하지 마십시오.
-PostgreSQL 복구는 pgBackRest(물리 백업, WAL archive, point-in-time
-restore)를 사용합니다. Valkey 복구는 RDB export를 사용합니다. 둘 다 호스트
-백업 job에서 실행되며 먼저 격리된 target에만 복원합니다. queue 상태를
-재생하기 전에는 workflow owner 승인을 받으십시오. synthetic rehearsal은
-`HYHOME_BACKUP_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.BackupRestoreRehearsalTests`입니다.
 
 ### Checks
 
-`docker compose -f infra/04-data/mng-db/docker-compose.yml config`로 병합 결과를 검증한다.
+루트에서 `HYHOME_COMPOSE_PROFILES`를 지정해 `scripts/validation/validate-docker-compose.sh`로 구성을 검증한다. 개별 leaf Compose는 루트 network와 secret 선언에 의존하므로 leaf 단독으로 검증하지 않는다(`infra/README.md` 참조).
 
 ## Operations
 
 ### Runbook Links
+
+이 서비스의 런북은 다음과 같다.
+
+- RUN-0028: `docs/05.operations/runbooks/05-databases-and-storage/0028-management-database.md`
 
 #### Related Documents
 
@@ -138,4 +143,8 @@ restore)를 사용합니다. Valkey 복구는 RDB export를 사용합니다. 둘
 
 ### Observability and Recovery
 
-헬스체크: `mng-valkey` 서비스는 `REDISCLI_AUTH=$$(tr -d "\r\n" </run/secrets/mng_valkey_password) valkey-cli --no-auth-warning -h 127.0.0.1 -p "$${MNG_VALKEY_PORT}" ping | grep -qx PONG` (interval 15s); `mng-valkey-exporter` 서비스는 `wget -qO- http://localhost:${VALKEY_EXPORTER_PORT:-9121}/metrics > /dev/null 2>&1 || exit 1` (interval 30s); `mng-pg` 서비스는 `pg_isready -h 127.0.0.1 -p "$${POSTGRES_PORT}" -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"` (interval 15s); `mng-pg-exporter` 서비스는 `wget -qO- http://localhost:${POSTGRES_EXPORTER_PORT:-9187}/metrics > /dev/null 2>&1 || exit 1` (interval 15s).
+PostgreSQL 복구는 pgBackRest(물리 백업, WAL archive, point-in-time
+restore)를 사용합니다. Valkey 복구는 RDB export를 사용합니다. 둘 다 호스트
+백업 job에서 실행되며 먼저 격리된 target에만 복원합니다. queue 상태를
+재생하기 전에는 workflow owner 승인을 받으십시오. synthetic rehearsal은
+`HYHOME_BACKUP_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.BackupRestoreRehearsalTests`입니다.

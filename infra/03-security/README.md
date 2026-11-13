@@ -14,11 +14,15 @@ created: "2025-11-12"
 
 ### Service Role
 
+#### Overview
+
 HOME의 canonical 비밀 관리 서비스는 OpenBao와 `openbao-agent`다. Vault와 `vault-agent`는 SPEC-0180 S08에서 제거했고 보존된 데이터 경로만 비가동 상태로 남는다. 이 구성은 기존 비밀 데이터의 이전 또는 실제 unseal 완료를 주장하지 않는다.
 
 #### Audience
 
 Security owner, 인프라 운영자, 서비스 개발자와 자동화 담당자.
+
+#### Scope
 
 OpenBao 상시 서비스의 선언, Agent 출력 계약과 운영 문서 연결을 소유한다. 비밀 원문·키 관리 자료와 자동 자격 증명 회전은 포함하지 않는다.
 
@@ -30,11 +34,15 @@ OpenBao 상시 서비스의 선언, Agent 출력 계약과 운영 문서 연결�
 
 ### Supported Environment
 
+#### Tech Stack
+
 실행 이미지·profile·마운트의 원본은 [openbao/](openbao/)의 compose 선언이다. [Derived Compose image projection](../tech-stack.versions.json)은 선언 drift 검증을 제공한다.
 
 ## Interfaces
 
 ### Inputs and Outputs
+
+#### Configuration
 
 OpenBao는 `core`, `local`, `dev`, `security`, `secrets`에서 선택된다. `${DEFAULT_SECURITY_DIR}/openbao`와 보존된 `${DEFAULT_SECURITY_DIR}/vault` 경로를 공유하지 않는다. 외부 UI는 `openbao.${DEFAULT_URL}`이다.
 
@@ -45,6 +53,8 @@ OpenBao는 `core`, `local`, `dev`, `security`, `secrets`에서 선택된다. `${
 ## Development
 
 ### Local Workflow
+
+#### Usage
 
 1. 새 소비자는 [OpenBao 가이드 — 문서 인덱스](../../docs/README.md) (`GDE-0085`)를 따른다.
 2. 보존된 Vault 데이터 경로와 OpenBao 데이터 경로를 분리해 둔다. 백업·복원 및 현재 데이터 상태는 별도 검증 전까지 미확인으로 기록한다.

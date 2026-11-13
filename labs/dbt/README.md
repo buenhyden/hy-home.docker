@@ -116,6 +116,7 @@ secret은 `${LAB_SECRET_DIR}/dbt/`의 LAB 전용 `lab_dbt_db_password`와 프로
 - **Runbook**: dbt recovery runbook (`docs/05.operations/runbooks/15-labs/0090-dbt.md`)
 - [LAB 탐색](../README.md)
 - [Documentation index](../../docs/README.md)
+- [RUN-0107 lab-promotion](../../docs/05.operations/runbooks/15-labs/0107-lab-promotion.md)
 
 ### Observability and Recovery
 

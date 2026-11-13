@@ -102,6 +102,7 @@ UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_OPEN_WEBUI_HOST_PORT:-18095}` -> 808
 - Runbook(`docs/05.operations/runbooks/15-labs/0057-open-webui.md`) (`RUN-0057`)
 - ADR-0062(`docs/02.architecture/decisions/0062-home-lab-membership.md`)
 - [문서 인덱스](../../docs/README.md)
+- [RUN-0107 lab-promotion](../../docs/05.operations/runbooks/15-labs/0107-lab-promotion.md)
 
 ### Observability and Recovery
 

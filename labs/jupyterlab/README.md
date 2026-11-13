@@ -108,6 +108,7 @@ root Compose에 포함되지 않고 HOME network에 연결되지 않으며 Traef
 - [MLflow package](../../infra/08-ai/mlflow/README.md)
 - [LAB 탐색](../README.md)
 - [Documentation index](../../docs/README.md)
+- [RUN-0107 lab-promotion](../../docs/05.operations/runbooks/15-labs/0107-lab-promotion.md)
 
 ### Observability and Recovery
 

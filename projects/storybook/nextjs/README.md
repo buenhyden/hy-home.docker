@@ -81,6 +81,7 @@ TypeScript는 6.0.3에 고정합니다. 2026-10-09 기준 7.0.2와 7.1 nightly�
 
 - [상위 Storybook 작업공간](../README.md)
 - [문서 인덱스](../../../docs/README.md)
+- [RUN-0101 storybook](../../../docs/05.operations/runbooks/14-design-system/0101-storybook.md)
 
 ### Observability and Recovery
 

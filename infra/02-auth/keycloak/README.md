@@ -18,6 +18,8 @@ created: "2025-11-12"
 
 ### Service Role
 
+#### Overview
+
 Keycloak은 중앙 IdP다. 사용자 인증, 세션, OIDC/SAML token 발행과
 Airflow Authorization Services를 제공한다.
 
@@ -31,7 +33,9 @@ Canonical realm:
 - Infrastructure Operators
 - Security Reviewers
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - Keycloak runtime 배선
 - non-secret 환경 키
@@ -39,7 +43,7 @@ Canonical realm:
 - OIDC client 통합
 - realm role/group/policy 운영 계약
 
-#### Out of Scope
+##### Out of Scope
 
 - credential/token 값
 - 애플리케이션 비즈니스 로직
@@ -70,6 +74,8 @@ keycloak/
 | Airflow | `home-airflow` | Native Keycloak Auth Manager + Authorization Services |
 
 이 표는 `02-auth` tier 안에서 확인 가능한 client만 담습니다. Open WebUI, Gatus, OpenBao 같은 다른 tier의 native OIDC 통합은 각 서비스의 compose/config가 근거 문서입니다.
+
+#### Configuration
 
 - `KC_HOSTNAME=keycloak.${DEFAULT_URL}`
 - `KC_PROXY_HEADERS=xforwarded`
@@ -122,6 +128,8 @@ Kafbat은 Keycloak `groups` claim을 사용합니다.
 
 ### Local Workflow
 
+#### Usage
+
 1. Keycloak 운영 guide/policy/runbook을 확인합니다.
 2. secret은 Docker Secret을 사용합니다.
 3. `/health/ready`가 UP인지 확인한 뒤 의존 서비스를 검증합니다.
@@ -130,6 +138,8 @@ Kafbat은 Keycloak `groups` claim을 사용합니다.
 6. realm/client/role 변경 후 해당 application login/RBAC을 검증합니다.
 
 ### Checks
+
+#### Validation
 
 ```bash
 HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh

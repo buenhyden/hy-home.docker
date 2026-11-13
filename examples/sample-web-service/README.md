@@ -19,6 +19,8 @@ updated: "2026-11-13"
 
 ### Service Role
 
+#### Overview
+
 최소한의 정적 웹 서비스로 이 저장소의 컨테이너 하드닝과 Compose 관례(pinned image,
 non-root 런타임, read-only root filesystem, capability 제거, healthcheck, 리소스 제한,
 secret-free 설정)를 보여 줍니다. Compose 정의는
@@ -33,14 +35,16 @@ secret-free 설정)를 보여 줍니다. Compose 정의는
 - Operations/SRE Engineers
 - Documentation Writers
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - 복사 가능한 정적 웹 서비스 scaffold 파일
 - 컨테이너 하드닝, healthcheck, 리소스 제한, 로그 보존 예시
 - `.env.example`을 통한 secret이 아닌 로컬 환경 설정
 - 현재 README와 서비스 scaffold 템플릿으로의 링크
 
-#### Out of Scope
+##### Out of Scope
 
 - 프로덕션 서비스 소유권, SLA, 장애 대응 기록
 - TLS 종료, ingress 라우팅, 영속 데이터 서비스
@@ -88,6 +92,8 @@ sample-web-service/
 
 ### Local Workflow
 
+#### Usage
+
 1. 새 컨테이너 서비스 예시를 시작할 때 이 폴더를 복사합니다.
 2. 새 서비스에 맞게 이름, 이미지 태그, 포트, healthcheck, secret이 아닌 환경
    변수 키를 갱신합니다.
@@ -96,6 +102,8 @@ sample-web-service/
 5. 서비스를 사용하기 전에 Compose를 검증합니다.
 
 ### Checks
+
+#### Validation
 
 - `docker compose config`가 오류 없이 파싱됩니다.
 - `start_period` 이후 `docker compose ps`가 `healthy`를 보고합니다.
@@ -110,8 +118,8 @@ sample-web-service/
 
 - README template (`docs/99.templates/templates/common/readme-package.template.md`)
 - Spec contract template (`docs/99.templates/templates/specs/spec.template.md`)
-- New-service onboarding guide (`docs/05.operations/guides/0008-new-service-onboarding.md`)
-- Release management runbook (`docs/05.operations/runbooks/0009-release-management.md`)
+- New-service onboarding guide (`docs/05.operations/guides/10-platform-and-backup/0008-new-service-onboarding.md`)
+- Release management runbook (`docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md`)
 - [Documentation index](../../docs/README.md)
 
 ### Observability and Recovery

@@ -81,7 +81,7 @@ ACL 생성기가 `:<key>` 패턴을 붙입니다. `default`와 `devadmin`은 ACL
 
 ### Security Boundary
 
-없음: 포트·서비스를 만들지 않는 메타데이터 계약입니다. 비밀은 값이 아닌 이름(`secret_refs`)으로만 기록하며, 검증기는 허용 이름 목록이 기본적으로 비어 있어 `--allow-secret-ref`로 명시한 이름만 받습니다.
+이 계약은 포트·서비스를 만들지 않지만 접속 경계를 제한합니다. `endpoints`는 `same_daemon`·`host`·`external` 위치별로 scheme·host·port·path만 받고 `external`은 `https`·`rediss`와 DNS FQDN만 허용하며 DB endpoint는 거절합니다. 기본 Docker `host`·`none`·`bridge` 네트워크는 프로젝트 경계로 등록하지 않습니다. 비밀은 값이 아닌 이름(`secret_refs`)으로만 기록하며, 검증기는 허용 이름 목록이 기본적으로 비어 있어 `--allow-secret-ref`로 명시한 이름만 받습니다.
 
 ## Development
 

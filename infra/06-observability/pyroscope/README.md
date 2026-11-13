@@ -14,6 +14,8 @@ created: "2026-03-19"
 
 ### Service Role
 
+#### Overview
+
 Pyroscope는 애플리케이션을 연속적으로 프로파일링하여 성능 병목, CPU 핫 패스, 메모리 누수를 식별합니다. 프로파일링 데이터(CPU, 메모리 등)를 수집합니다. 개발자는 플레임그래프로 시간 경과에 따른 변화를 시각화할 수 있습니다.
 
 #### Audience
@@ -23,13 +25,15 @@ Pyroscope는 애플리케이션을 연속적으로 프로파일링하여 성능 
 - Backend Developers (성능 최적화)
 - SRE / DevOps Engineers (리소스 관리)
 
-#### In Scope
+#### Scope
+
+##### In Scope
 
 - Pyroscope 서비스 설정 및 배포.
 - 연속 프로파일링 데이터 수집 및 저장.
 - 시각화를 위한 Grafana 연동.
 
-#### Out of Scope
+##### Out of Scope
 
 - 애플리케이션 수준 프로파일링 SDK/에이전트: Go pprof는 [Grafana Alloy](../alloy/README.md)가 가져옵니다. n8n(Node)·Python·Java 서비스는 SDK나 eBPF가 필요해 아직 수집하지 않으며 계획은 GDE-0047의 Open item에 있습니다.
 - 프로파일링 데이터의 장기 보관 (Retention Policy(`docs/05.operations/policies/07-observability/0047-pyroscope.md`)에서 관리).
@@ -44,6 +48,8 @@ pyroscope/
 
 ### Supported Environment
 
+#### Tech Stack
+
 런타임 이미지 고정 값은 [Compose](../docker-compose.yml)에 선언되어 있습니다. [버전 레지스트리](../../tech-stack.versions.json)는 정제된 프로젝션입니다.
 
 | Category | Technology | Runtime source | Role |
@@ -55,6 +61,8 @@ pyroscope/
 ## Interfaces
 
 ### Inputs and Outputs
+
+#### Configuration
 
 - **Ingestion**: HTTP를 통한 Protobuf로 프로파일링 데이터를 수신합니다 (포트 4040).
 - **Storage**: 로컬 파일시스템 백엔드(`/var/lib/pyroscope`). 데이터는 Compose 볼륨 `pyroscope-data`/`pyroscope-metastore`가 호스트 폴더 `${DEFAULT_OBSERVABILITY_DIR}/pyroscope`·`pyroscope-metastore`(HDD)로 bind되어 있습니다. Docker named volume이 아니라 이미 호스트 폴더입니다.
@@ -77,6 +85,8 @@ pyroscope/
 | `docker compose --profile obs up -d pyroscope` | 저장소 루트에서 Pyroscope 서비스 시작 |
 | `docker compose --profile obs restart pyroscope` | 저장소 루트에서 설정 변경 사항 적용 |
 
+#### Usage
+
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
 
 1. **Flamegraph Analysis**: Grafana의 Drilldown > Profiles 또는 `Observability / Pyroscope` 대시보드에서 서비스별 flamegraph를 봅니다. Tempo span 상세의 프로파일 링크는 같은 `service_name`의 시간창을 엽니다.
@@ -84,6 +94,8 @@ pyroscope/
 3. **Traceability**: 재매핑 로직과 커스텀 레이블은 전용 시스템 가이드를 참고합니다.
 
 ### Checks
+
+#### Validation
 
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.

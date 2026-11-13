@@ -110,6 +110,7 @@ project, port, network, volume, resource와 정리 범위를 확인한다.
 - [13 경험 자산](../README.md)
 - [인프라 인덱스](../../README.md)
 - [문서 진입점](../../../docs/README.md)에서 GDE-0101, POL-0101, RUN-0101 확인
+- [RUN-0101 storybook](../../../docs/05.operations/runbooks/14-design-system/0101-storybook.md)
 
 ### Observability and Recovery
 
