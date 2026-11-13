@@ -1,6 +1,6 @@
 ---
 title: "Folder Guide Delivery Task"
-version: "0.7.1"
+version: "0.9.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -233,6 +233,19 @@ Residuals, accepted for now:
 Live delivery stays unobserved. The changed hook file has a new hash, which
 the owner must trust in Codex before a live probe can run.
 
+#### Live Codex delivery after trust (2026-11-13)
+
+Codex 0.167 cannot run without code mode: a run with
+`-c features.code_mode_host=false` stopped with "Code mode will fail closed",
+so every Codex edit arrives as `tools.apply_patch` inside the `exec` tool,
+which the `exec` coverage in the dispatcher (E35) handles. After the owner
+trusted the changed hooks in `/hooks` on 2026-11-13, a headless Codex 0.167.2
+session received the `infra/AGENTS.md` guide before its edit and a short
+reminder on the next one (E36, resolving E33 and E34). The owner then ran an interactive
+session with `/compact` between two edits: the guide was delivered again after
+the compaction (E37, resolving E27). No required observation for criterion 8
+is open; its acceptance is the owner's.
+
 ### Blockers and Decisions
 
 None: nothing was recorded here before this Task moved to the common form.
@@ -278,6 +291,8 @@ None: nothing was recorded here before this Task moved to the common form.
 | E33 | 8 | W4 | live Codex delivery | The same session, editing `infra/README.md` through `tools.apply_patch` inside the Codex `exec` tool, then reverting | FAIL | no folder guide delivered and no delivery record; Codex 0.166 wraps tool calls in `exec`, which the matcher (`Bash` or `apply_patch`) does not match; compaction NOT_RUN headless | required | - |
 | E34 | 8 | W4 | live Codex delivery | Headless `codex exec` 0.167.1 at branch commit `72571d481`, 2026-11-11, applying and reverting one line in `infra/README.md` through `apply_patch` | FAIL | no folder guide and no delivery record; Stop hook fired; file restored byte-identical; matcher and trust unchanged | required | - |
 | E35 | 8 | W4 | exec dispatcher delivery | `agent-event-hook.sh PreToolUse` with the real E34 `exec` payload at `e5f00113b`, plus `tests.lib.hooks.test_tool_payload` and `test_folder_guides` | PASS | infra guide delivered; dynamic access denied; 37 tests OK; local dispatcher only, not live Codex delivery | optional | - |
+| E36 | 8 | W4 | live Codex delivery | Headless `codex exec` 0.167.2 at the repository root of main `894e4bc5f`, 2026-11-13, after the owner trusted the changed hooks in `/hooks`; one blank line added to and removed from `infra/README.md` through `tools.apply_patch` inside `exec` | PASS | the folder guide arrived before the edit (first line "Folder guide `infra/AGENTS.md` applies to files under `infra/`"), the second edit got only the short reminder, a delivery record was written under `~/.local/state/hy-home/folder-guides/`, and `git status` was clean afterwards; compaction re-delivery not exercised | required | E33, E34 |
+| E37 | 8 | W4 | live Codex delivery | Interactive Codex 0.167.2 session `01a1d246…` run by the owner at the repository root of main `894e4bc5f`, 2026-11-13 09:20 KST: an `infra/README.md` edit and revert, `/compact`, then the same edit and revert again; read from the session record and `~/.local/state/hy-home/folder-guides/` | PASS | full guide before the first edit (00:20:45Z) and a short reminder on the revert; compaction at 00:21:10Z, the re-read notice at 00:21:12Z, the full guide again before the next edit (00:21:32Z) and a short reminder on its revert; the file was restored byte-identical | required | E27 |
 
 ### Resolution Links
 
@@ -296,7 +311,7 @@ None: nothing was recorded here before this Task moved to the common form.
 | 5 | pending | E1, E6, E8 | owner acceptance | @buenhyden |
 | 6 | pending | E4, E25, E31 | owner acceptance | @buenhyden |
 | 7 | pending | E5 | owner acceptance | @buenhyden |
-| 8 | pending | E26, E27, E28, E32, E33, E34, E35 | Claude observed; Codex hook health fixed (E32 resolves E28); Codex delivery FAIL under the `exec` tool model (E33) and again on 0.167.1 (E34), exec coverage implemented and dispatcher-verified (E35); live delivery needs owner-granted trust of the new hook hash | @buenhyden |
+| 8 | accepted | E26, E27, E28, E32, E33, E34, E35, E36, E37 | owner accepted 2026-11-13 after E36 and E37 resolved the open Codex observations | @buenhyden |
 | 9 | pending | E10, E11, E21, E24, E30 | owner acceptance | @buenhyden |
 | 10 | pending | E12, E13, E15, E16, E18, E19, E21, E23, E24, E30 | owner acceptance | @buenhyden |
 

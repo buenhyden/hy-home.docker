@@ -343,7 +343,8 @@ Branch `docs/w03-task-common-form`, on top of `main` after #971.
   other change stays byte-strict. The historical admissions and the terminal
   migration check use it.
 - All 104 Tasks are moved, including the 56 completed ones and tsk-0007 and
-  tsk-0049, whose status comes from Execution Items. They are moved by a deterministic script, not by agents.
+  tsk-0049, whose status comes from Execution Items. They are moved by a
+  deterministic script, not by agents.
   Each moved body passes `_same_task_body` against its old body; frontmatter
   of completed and status-less Tasks is unchanged, the others bump the patch
   version. A heading another document or the Task itself links to stays as an
@@ -408,6 +409,13 @@ None: nothing was recorded here before this Task moved to the common form.
 | W03 v14.7 Architecture review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `c9fa9d8aa` | PASS | PASS: every finding fixed, 18 required headings in each of the 27 descriptions | required | W03 v14.7 Architecture review, W03 v14.7 Architecture re-review |
 | W03 v14.7 Architecture GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `c9fa9d8aa` | PASS | Ran 782 tests, OK, including the Architecture old-form and template-outline tests | required | W03 v14.7 Architecture form RED |
 | W03 v14.7 Architecture checks | 111 | W116 | metadata-links-governance | The 27 descriptions after each review round | PASS | metadata check-changed selected 27 violations 0, then 5 violations 0 after the last answer; links alignment PASS | required | - |
+| W03 v14.7 Task form RED | 111 | W116 | red-green-proof | The Task reader, subsection, probe, terminal-body and heading tests against the code and `task` profile at `6350398ac` | FAIL | The resolver failed for Evidence, Criterion Acceptance and Work Log; the H4 subsection readers and the `#### Execution Items` probe failed; nine terminal-body accept cases failed; seven heading tests failed | required | - |
+| W03 v14.7 Task code review | 111 | W116 | independent-review | Fresh-context code-reviewer of `897d96334`, `654fcdbf1`, `6e16c0c4d` | FAIL | CHANGES_REQUIRED: the relaxed body rule dropped real headings, ignored heading levels and blank lines; a receipt probe skipped moved Tasks; four minor | required | - |
+| W03 v14.7 Task re-review | 111 | W116 | independent-review | Fresh-context code-reviewer of `3d0bbd341`, `319568e1d`, `363ce96cd` and the first moved Tasks | FAIL | CHANGES_REQUIRED: a referenced anchor could vanish while the rule passed; 86 Lifecycle Events anchors lost in 53 moved Tasks | required | - |
+| W03 v14.7 Task final review | 111 | W116 | independent-review | Fresh-context code-reviewer of `3532abdcc` and `ae4df1873` | FAIL | Code and anchors PASS; CHANGES_REQUIRED for this Task's text (W05 named as W04, an ambiguous count, an overstated level rule) | required | - |
+| W03 v14.7 Task review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `13b444534` | PASS | PASS: the three text findings fixed; earlier code and anchor findings stay fixed | required | W03 v14.7 Task code review, W03 v14.7 Task re-review, W03 v14.7 Task final review |
+| W03 v14.7 Task GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `ae4df1873` | PASS | Ran 810 tests, OK, including the terminal-body, admission, resolver and heading tests | required | W03 v14.7 Task form RED |
+| W03 v14.7 Task checks | 111 | W116 | metadata-links-governance | The 104 moved Tasks at `ae4df1873` with this Task's later text edits | PASS | Every completed Task body passes `_same_task_body` and the terminal migration check; Spec Package lifecycle against `origin/main` 0 findings; heading contract 0 findings; 0 lost same-file anchors; metadata check-changed selected 106 violations 0; links alignment PASS | required | - |
 
 ### Resolution Links
 
