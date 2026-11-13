@@ -465,12 +465,12 @@ class TemplateDefinitionTests(unittest.TestCase):
         for role in roles:
             self.assertEqual(pinned, self.definitions[role]["contract_version"])
         raw = copy.deepcopy(dict(load_registry_document()))
-        raw["common"]["common_form_contract"] = "COMMON-DOC-FORM-1 9.9.9"
+        raw["common"]["common_form_contract"] = "COMMON-DOC-FORM-1/9.9.9"
         moved = _registry_from_document(raw, pathlib.PurePosixPath("registry.json"))
         for role in roles:
             with self.subTest(role=role):
                 self.assertEqual(
-                    "COMMON-DOC-FORM-1 9.9.9",
+                    "COMMON-DOC-FORM-1/9.9.9",
                     template_definition(moved, role)["contract_version"],
                 )
         legacy = next(role for role in moved.template_roles if role not in set(roles))
@@ -491,7 +491,13 @@ class TemplateDefinitionTests(unittest.TestCase):
             template_definition(bare, role)
 
     def test_a_malformed_common_form_pin_is_rejected(self) -> None:
-        for value in ("1.0.0", "COMMON-DOC-FORM-1", "COMMON-DOC-FORM-1 1.0", 1):
+        for value in (
+            "1.0.0",
+            "COMMON-DOC-FORM-1",
+            "COMMON-DOC-FORM-1/1.0",
+            "COMMON-DOC-FORM-1 1.0.0",
+            1,
+        ):
             raw = copy.deepcopy(dict(load_registry_document()))
             raw["common"]["common_form_contract"] = value
             with self.subTest(value=value):
