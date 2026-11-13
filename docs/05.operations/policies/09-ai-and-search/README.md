@@ -1,26 +1,30 @@
 ---
 title: "AI와 검색 정책"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "operations"
 ---
 
 # AI와 검색 정책
 
-## Overview
+## Stage Responsibility
+
+### Purpose and Readers
 
 AI와 검색의 적용 범위의 필수 통제, 승인, 예외와 검토 기준을 확인한다.
 
-## Scope
+### Inputs and Outputs
 
 이 폴더는 아래 문서의 정책 역할만 소유한다. 구현과 운영 결과는 각 소유 문서와 Task에서 확인한다.
 
 실행 권한, 비밀값 원문, 새로운 서비스와 빈 분류 문서는 포함하지 않는다.
 
-## Structure
+## Contents
+
+### Current Items
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
@@ -31,7 +35,13 @@ AI와 검색의 적용 범위의 필수 통제, 승인, 예외와 검토 기준�
 | [ComfyUI Policy](0081-comfyui.md) | `POL-0081` | ComfyUI는 항상 켜져 있는 HOME 이미지 워크플로 인터페이스다. |
 | [Crawl4AI Operations Policy](0091-crawl4ai.md) | `POL-0091` | Crawl4AI는 SSRF가 가능한 서비스다. 검토된 consumer가 필요로 할 때까지 격리하고 인증을 적용한 채 사용하지 않는 상태로 유지한다. |
 
-## Usage
+### Classification
+
+이 폴더의 문서는 모두 정책 역할이며 `POL-NNNN` 식별자를 쓴다. 같은 subject의 다른 역할 문서는 같은 번호와 slug로 다른 역할 폴더에 있다.
+
+## Workflow
+
+### Create and Review
 
 1. 식별자와 문서 제목으로 대상을 고른다.
 2. 적용 범위의 필수 통제, 승인, 예외와 검토 기준을 확인한다.
@@ -40,8 +50,18 @@ AI와 검색의 적용 범위의 필수 통제, 승인, 예외와 검토 기준�
 
 작성·검토 책임은 `@buenhyden`에게 있다. 같은 통제나 절차의 정본을 복제하지 않는다.
 
+### Transition and Exit
+
+문서를 이동·삭제하면 이 목록의 행과 링크를 같은 변경에서 갱신하며, 문서의 원래 식별자와 생성일은 바뀌지 않는다.
+
 ## Related Documents
+
+### Upstream and Downstream
 
 - [상위 정책 분류](../README.md)
 - [운영 문서](../../README.md)
+
+### Policy and Templates
+
 - [문서 작성 계약](../../../../.agents/governance/documentation-protocol.md)
+- [README 템플릿](../../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본

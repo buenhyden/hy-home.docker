@@ -13,30 +13,58 @@ layer: "references"
 
 # {{TITLE}}
 
-## Overview
+## Stage Responsibility
 
-{{OVERVIEW}}
+### Purpose and Readers
 
-{{AUTHORITY_BOUNDARY}}
+<!-- Author prompt: State what this stage or folder is for and who reads it; separate fact from assumption and link the real owner. -->
 
-## Scope
+{{PURPOSE_AND_READERS}}
 
-{{SCOPE}}
+### Inputs and Outputs
 
-## Structure
+<!-- Author prompt: Say what information this folder owns and what flows in or out; name what it does not own. Do not manage Task status here. -->
 
-{{STRUCTURE}}
+{{OWNED_INFORMATION_AND_FLOW_CONDITIONS}}
 
-### Documents
+## Contents
+
+### Current Items
+
+<!-- Author prompt: List only documents or open changes that exist now. A table here uses the registered Path and Purpose columns. -->
 
 | Path | Purpose |
 | --- | --- |
 | {{DIRECT_CHILD_PATH}} | {{DIRECT_CHILD_PURPOSE}} |
 
-## Usage
+### Classification
 
-{{USAGE}}
+<!-- Author prompt: Name the subtypes, the canonical sources, and the boundary to non-authoritative records. Write the reason when none apply. -->
+
+{{SUBTYPES_AUTHORITY_AND_RECORD_BOUNDARY}}
+
+## Workflow
+
+### Create and Review
+
+<!-- Author prompt: Name the template, the review and approval path, and the checks to run before changing this folder. -->
+
+{{TEMPLATE_REVIEW_AND_APPROVAL_PATH}}
+
+### Transition and Exit
+
+<!-- Author prompt: State status transitions, promotion, and where an item goes when it leaves; write the reason when there is no transition. -->
+
+{{STATE_TRANSITIONS_PROMOTION_AND_DISPOSITION}}
 
 ## Related Documents
 
-{{RELATED_DOCUMENTS}}
+### Upstream and Downstream
+
+{{REQUIREMENT_DESIGN_TASK_AND_OPERATION_LINKS}}
+
+### Policy and Templates
+
+<!-- Author prompt: Link the governing policy and the template that shapes this document. -->
+
+{{GOVERNING_POLICY_AND_TEMPLATE_LINKS}}

@@ -1,22 +1,24 @@
 ---
 title: "AI Agent Governance"
-version: "1.4.5"
+version: "1.4.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "agent-governance"
 ---
 
 # Agent Governance
 
-## Overview
+## Stage Responsibility
+
+### Purpose and Readers
 
 `.agents/`는 공유 agent governance, role, 재사용 가능한 절차를 위한 저장소 소유의
 canonical home입니다. Claude와 Codex는 native adapter를 통해 이 source를
 소비합니다. canonical home은 authored content이며 renderer output이 아닙니다.
 
-## Scope
+### Inputs and Outputs
 
 - `governance/`는 approval, security, quality, Git, documentation, workflow,
   bootstrap, SDLC 동작을 소유합니다.
@@ -60,9 +62,9 @@ README 탐색과 디렉터리 목적 설명은 허용하지만, docs 밖의 현�
 승인된 Spec/Task 읽기와 필요한 registry/schema/template 입력은
 `governance/documentation-protocol.md`의 문서 경계 규칙에 따릅니다. 과거 결정의 출처 표시는 현재 실행 권한을 부여하지 않습니다.
 
-## Structure
+## Contents
 
-### Documents
+### Current Items
 
 | Path | Purpose |
 | --- | --- |
@@ -91,7 +93,13 @@ entry만 허용됩니다. 알 수 없는 entry는 보존되며 검토용으로 �
 않습니다. 여기에는 공통 runtime, progress ledger, installer, 생성된 role
 surface가 도입되지 않습니다.
 
-## Usage
+### Classification
+
+`governance/`·`roles/`·`skills/`·`knowledge/`·`prompts/`는 authored canonical 내용이고 `evaluations/`는 권위가 없는 평가 증거 영역이며, `governance/providers/registry.yaml`은 provider 사실에 한정한 machine authority입니다. 이 중 어느 것도 renderer output이 아닙니다.
+
+## Workflow
+
+### Create and Review
 
 1. 루트 `AGENTS.md` 또는 `CLAUDE.md`로 진입하여 `governance/bootstrap.md`
    (Bootstrap)를 따릅니다.
@@ -105,10 +113,21 @@ surface가 도입되지 않습니다.
 5. 공유 quality matrix(`governance/quality-standards.md#5-change-type-verification-matrix`)를
    통해 완료 점검을 선택합니다.
 
+### Transition and Exit
+
+삭제된 문서의 본문은 Git 이력이 보관합니다.
+
 ## Related Documents
+
+### Upstream and Downstream
+
+- [Documentation index](../docs/README.md)
+
+### Policy and Templates
 
 - `governance/sdlc.md` (SDLC)
 - `governance/bootstrap.md` (Bootstrap)
 - `governance/providers/registry.yaml` (Provider registry)
 - Canonical-home decision (`docs/02.architecture/decisions/0032-canonical-agent-governance-home.md`)
-- [Documentation index](../docs/README.md)
+- [문서 작성 계약](governance/documentation-protocol.md#readme-and-agentsmd): README 형식과 언어 규칙의 정본
+- [README 템플릿](../docs/99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본

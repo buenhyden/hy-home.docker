@@ -1436,6 +1436,13 @@ def _runtime_version_findings(
     return findings
 
 
+README_DOCUMENTS_HEADINGS = frozenset({"Directories", "Current Items", "Documents"})
+
+
+def _is_path_module(columns: Sequence[str]) -> bool:
+    return any(c.strip().lower() == "path" for c in columns)
+
+
 def _registered_readme_documents_findings(
     record: Record,
     text: str,
@@ -1463,26 +1470,34 @@ def _registered_readme_documents_findings(
     allowed = {tuple(required), (*required, *optional)}
     findings: list[Finding] = []
     in_documents = False
+    free_tables = False
+    in_table = False
     for line in _markdown_unfenced_lines(text):
         heading = re.match(r"^ {0,3}(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$", line)
         if heading:
             level = len(heading.group(1))
             name = heading.group(2).rstrip()
             if level <= 3:
-                in_documents = level == 3 and name == "Documents"
+                in_documents = level == 3 and name in README_DOCUMENTS_HEADINGS
+                # Current Items may hold tables with no Path column.
+                free_tables = name == "Current Items"
+            in_table = False
             continue
-        if not in_documents or not line.strip().startswith("|"):
+        is_row = line.strip().startswith("|")
+        header = is_row and not in_table
+        in_table = is_row
+        if not in_documents or not header:
             continue
         columns = tuple(cell.strip() for cell in line.strip().strip("|").split("|"))
-        if columns not in allowed:
-            findings.append(
-                _finding(
-                    record,
-                    "readme-documents-header-invalid",
-                    "README Documents table header must match the registered columns",
-                )
+        if columns in allowed or (free_tables and not _is_path_module(columns)):
+            continue
+        findings.append(
+            _finding(
+                record,
+                "readme-documents-header-invalid",
+                "README Documents table header must match the registered columns",
             )
-        in_documents = False
+        )
     return findings
 
 

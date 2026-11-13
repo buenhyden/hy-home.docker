@@ -1,17 +1,19 @@
 ---
 title: "Research Packages"
-version: "1.6.0"
+version: "1.6.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "references"
 created: "2026-07-02"
 ---
 
 # Research Packages
 
-## Overview
+## Stage Responsibility
+
+### Purpose and Readers
 
 외부 증거와 출처 기반 분석입니다. Research package는 현재 owner를
 대체하지 않고 정보를 제공합니다.
@@ -19,12 +21,14 @@ created: "2026-07-02"
 Stage 90 authority boundary와 package lifecycle 규칙은
 [References index](../README.md)와 Stage 99 Registry가 정의합니다.
 
-## Scope
+### Inputs and Outputs
 
 이 README는 현재 research package 경로와 은퇴한 번호 기록을 안내합니다. research claim, 관찰 날짜,
 인용과 provenance는 각각의 package가 소유합니다.
 
-## Structure
+## Contents
+
+### Current Items
 
 | Stable ID | Package |
 | :--- | :--- |
@@ -37,7 +41,7 @@ RES-0001, RES-0080, RES-0081을 포함해 은퇴한 `RES-` 번호는 Registry
 `reserved_history`가 보관하며 다시 발급하지 않습니다. 본문은 Git 이력에
 있습니다.
 
-### Consolidated Package Routing
+#### Consolidated Package Routing
 
 `RES-0002`는 현재 주제 연구와 cross-category routing의 canonical hub입니다.
 관련된 세 package는 증거 모델이 본질적으로 달라서 별도로
@@ -54,15 +58,17 @@ RES-0001, RES-0080, RES-0081을 포함해 은퇴한 `RES-` 번호는 Registry
 learning-roadmap 계열은 tree에서 은퇴했으며 현재 routing 후속은
 RES-0002입니다.
 
-### External Research Refresh
+### Classification
+
+#### External Research Refresh
 
 2026-09-27의 외부 자료만 갱신한 결과는 [RES-0002](./0002-agentic-engineering-research-pack/README.md)에만 속합니다. member coverage matrix와 후속 internal-check index는 primary-source 사실, 조건부 권고, 보존된 역사 관찰을 구분합니다. 내부 구현, runtime, 계정과 보안 상태는 `Not assessed in this run`입니다. 문서 baseline은 `f30b168e2fbb0959e4a31749935568fd5b3942f1`이며, 이는 새 workspace 평가가 아닙니다. 새 Actions 연구는 RES-0002-m0004에 속하고, RES-0084는 별도 날짜 증거를 유지합니다.
 
-### Historical workspace observations — not reassessed in this refresh
+#### Historical workspace observations — not reassessed in this refresh
 
 아래 route와 채택 label은 날짜가 있는 역사 기록이며 현재 승인이나 새 평가가 아닙니다. 2026-09-10 LLM Wiki 은퇴 기록도 보존되며, 이번 갱신으로 복원하지 않습니다.
 
-#### Re-review Baseline
+##### Re-review Baseline
 
 날짜가 있는 workspace baseline 재검증은
 [RES-0002](./0002-agentic-engineering-research-pack/README.md)의 `m0020`
@@ -84,7 +90,7 @@ commit과 도달 가능한 ref 범위를 함께 밝힙니다.
 사실은 공통 Agent 거버넌스 정책, provider adapter, Stage 03 계약, Stage 05
 운영, 추적되는 runtime 파일, script, test, CI 정의에 남습니다.
 
-#### Design Decisions
+##### Design Decisions
 
 1. **Canonical research를 재사용합니다.** 같은 subject를 두 번째 research
    pack에 복사하는 대신 기존 owner를 확장하거나 수정합니다.
@@ -103,7 +109,7 @@ commit과 도달 가능한 ref 범위를 함께 밝힙니다.
    model, CI configuration은 실제로 관찰된 수준까지만 채택 깊이를
    증명합니다.
 
-#### Category Routing and Current Assessment
+##### Category Routing and Current Assessment
 
 아래 표의 각 항목은 [RES-0002](./0002-agentic-engineering-research-pack/README.md)
 구성원(괄호 안 `m####`)이 소유하며 자세한 내용은 해당 package의
@@ -148,7 +154,7 @@ audit" 같은 audit 증거는 현재 tree에 없습니다. audit 범주에는 pa
 `candidate-quality` 하나입니다(`.github/rulesets/main-protection.md:88`). 표의
 label은 날짜가 있는 기록으로 보존합니다.
 
-#### Prioritized Design Gaps
+##### Prioritized Design Gaps
 
 1. 사용자 전역 설정을 읽거나 계정 entitlement를 가정하지 않고 native
    provider 수용 test를 추가합니다.
@@ -172,7 +178,9 @@ label은 날짜가 있는 기록으로 보존합니다.
 index는 routing과 설계만 기록하며, runtime, remote, provider, secret,
 infrastructure 변경을 승인하지 않습니다.
 
-## Usage
+## Workflow
+
+### Create and Review
 
 package는 `research/####-<slug>/` 아래에만 만들고, 대응하는 Stage 99
 템플릿을 사용합니다. 관찰 날짜, 인용, provenance, 활성 owner
@@ -182,7 +190,13 @@ Traceability를 보존합니다.
 검색합니다. question, 증거 모델, lifecycle이 이미 다뤄지고 있다면 기존
 owner를 확장합니다.
 
+### Transition and Exit
+
+은퇴한 `RES-` 번호는 Registry `reserved_history`가 보관하며 다시 발급하지 않고, 은퇴한 본문은 Git 이력에 있습니다.
+
 ## Related Documents
+
+### Upstream and Downstream
 
 - [References index](../README.md)
 - [Agentic engineering research](./0002-agentic-engineering-research-pack/README.md)
@@ -190,4 +204,9 @@ owner를 확장합니다.
 - [Dated workspace-baseline evidence](./0085-workspace-engineering-main-baseline-assessment/README.md)
 - [Archive disposition consistency assessment](./0096-archive-disposition-consistency/README.md)
 - [공통 Agent 거버넌스](../../../.agents/README.md)
+
+### Policy and Templates
+
 - [Stage 99 Registry](../../99.templates/registry.json)
+- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README 형식과 언어 규칙의 정본
+- [README 템플릿](../../99.templates/templates/common/readme-category.template.md): 이 README의 양식 원본

@@ -1,26 +1,30 @@
 ---
 title: "AI와 검색 런북"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "operations"
 ---
 
 # AI와 검색 런북
 
-## Overview
+## Stage Responsibility
+
+### Purpose and Readers
 
 AI와 검색의 상황별 전제, 명령, 기대 결과, 중단 조건, 검증과 복구를 확인한다.
 
-## Scope
+### Inputs and Outputs
 
 이 폴더는 아래 문서의 런북 역할만 소유한다. 구현과 운영 결과는 각 소유 문서와 Task에서 확인한다.
 
 실행 권한, 비밀값 원문, 새로운 서비스와 빈 분류 문서는 포함하지 않는다.
 
-## Structure
+## Contents
+
+### Current Items
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
@@ -32,7 +36,13 @@ AI와 검색의 상황별 전제, 명령, 기대 결과, 중단 조건, 검증�
 | [ComfyUI Runbook](0081-comfyui.md) | `RUN-0081` | 이 런북은 ComfyUI(`comfyui`, profile `ai`/`ai-image`)의 승인 게이트된 진단과 복구, custom-node·이미지 변경 실패 대응, 격리 복원 계획을 다룬다. |
 | [Crawl4AI Recovery Runbook](0091-crawl4ai.md) | `RUN-0091` | 이 런북은 OPTIONAL `crawl4ai`(`crawl4ai`, `crawl4ai-egress`, profile `crawl4ai`)의 시작 실패, 토큰 노출, 메모리 압박 대응과 consumer 연결·해제, 제거 절차를 다룬다. |
 
-## Usage
+### Classification
+
+이 폴더의 문서는 모두 런북 역할이며 `RUN-NNNN` 식별자를 쓴다. 같은 subject의 다른 역할 문서는 같은 번호와 slug로 다른 역할 폴더에 있다.
+
+## Workflow
+
+### Create and Review
 
 1. 식별자와 문서 제목으로 대상을 고른다.
 2. 상황별 전제, 명령, 기대 결과, 중단 조건, 검증과 복구를 확인한다.
@@ -41,8 +51,18 @@ AI와 검색의 상황별 전제, 명령, 기대 결과, 중단 조건, 검증�
 
 작성·검토 책임은 `@buenhyden`에게 있다. 같은 통제나 절차의 정본을 복제하지 않는다.
 
+### Transition and Exit
+
+문서를 이동·삭제하면 이 목록의 행과 링크를 같은 변경에서 갱신하며, 문서의 원래 식별자와 생성일은 바뀌지 않는다.
+
 ## Related Documents
+
+### Upstream and Downstream
 
 - [상위 런북 분류](../README.md)
 - [운영 문서](../../README.md)
+
+### Policy and Templates
+
 - [문서 작성 계약](../../../../.agents/governance/documentation-protocol.md)
+- [README 템플릿](../../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본

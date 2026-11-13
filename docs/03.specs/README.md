@@ -1,16 +1,18 @@
 ---
 title: "명세 패키지"
-version: "1.3.12"
+version: "1.3.13"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "specs"
 ---
 
 # 명세 패키지
 
-## Overview
+## Stage Responsibility
+
+### Purpose and Readers
 
 `docs/03.specs`는 범위가 정해진 변경의 명세와 실행 package를 관리합니다.
 package마다 Spec이 관찰 가능한 동작과 acceptance를, Plan이 구현 순서와
@@ -20,7 +22,11 @@ package마다 Spec이 관찰 가능한 동작과 acceptance를, Plan이 구현 �
 이 README는 현재 package로 가는 길만 안내합니다. package 안의 Spec, Plan,
 Task와 그 상태는 각 package가 소유하므로 여기에 옮겨 적지 않습니다.
 
-## Scope
+#### Audience
+
+현재 Spec Package와 Task를 찾는 작성자·검토자·운영자를 대상으로 합니다.
+
+### Inputs and Outputs
 
 - 포함: 진행 중인 변경, 검증이 끝나 삭제 승인을 기다리는 package의
   Spec·Plan·Task와 Spec이 직접 소유하는 실행 가능한 contract.
@@ -29,14 +35,16 @@ Task와 그 상태는 각 package가 소유하므로 여기에 옮겨 적지 않
   삭제된 package의 번호는 Registry `reserved_history`에 남고, 본문은 Git
   history가 기록합니다.
 
-## Structure
+## Contents
+
+### Current Items
 
 package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이름은
 `<4자리 번호>-<slug>`이며 package 안의 파일 경로와 역할은
 [Stage 99 Registry](../99.templates/registry.json)가 소유합니다.
 `design.md`, `tests.md`, 단수형 `task.md`는 package 역할이 아닙니다.
 
-### 현재 package
+#### 현재 package
 
 | ID | Package | 목적 |
 | --- | --- | --- |
@@ -69,7 +77,9 @@ package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance
 규칙대로 읽을 때 계산하며 표나 frontmatter에 적지 않습니다. 새 lifecycle
 상태도, 처분 승인도 아닙니다.
 
-### 역할 계약
+### Classification
+
+#### 역할 계약
 
 | 역할 | 책임 |
 | --- | --- |
@@ -78,13 +88,11 @@ package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance
 | Task | 실제 작업 기록, 명령 결과, 검토, commit, 이연 증거 |
 | Contract | Spec이 소유하는 등록된 실행 가능 인터페이스 |
 
-## Usage
+## Workflow
 
-### Audience
+### Create and Review
 
-현재 Spec Package와 Task를 찾는 작성자·검토자·운영자를 대상으로 합니다.
-
-### Authoring Flow
+#### Authoring Flow
 
 1. 관련 Requirement, Architecture Description, ADR을 먼저 읽습니다.
 2. 등록된 Spec template으로 `spec.md`를 만들거나 고칩니다.
@@ -99,7 +107,9 @@ package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance
    `reserved_history`에 추가합니다. clarify, analyze, 구현, 검증 순서는
    [SDLC](../../.agents/governance/sdlc.md)를 따릅니다.
 
-### Package 수명주기
+### Transition and Exit
+
+#### Package 수명주기
 
 - 현재 Requirement와 Architecture가 변경 범위를 이미 다루면 그대로
   재사용합니다.
@@ -129,9 +139,16 @@ package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance
 
 ## Related Documents
 
-- [에이전트 작업 규칙](AGENTS.md)
+### Upstream and Downstream
+
 - [Requirements](../01.requirements/README.md)
 - [Architecture](../02.architecture/README.md)
 - [Operations](../05.operations/README.md)
+
+### Policy and Templates
+
+- [에이전트 작업 규칙](AGENTS.md)
 - [Stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md)
 - [Document Registry](../99.templates/registry.json)
+- [문서 작성 계약](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README 형식과 언어 규칙의 정본
+- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본

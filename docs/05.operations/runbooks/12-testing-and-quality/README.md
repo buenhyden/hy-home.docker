@@ -1,26 +1,30 @@
 ---
 title: "시험과 품질 런북"
-version: "0.1.2"
+version: "0.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 ---
 
 # 시험과 품질 런북
 
-## Overview
+## Stage Responsibility
+
+### Purpose and Readers
 
 시험과 품질의 상황별 전제, 명령, 기대 결과, 중단 조건, 검증과 복구를 확인한다.
 
-## Scope
+### Inputs and Outputs
 
 이 폴더는 아래 문서의 런북 역할만 소유한다. 구현과 운영 결과는 각 소유 문서와 Task에서 확인한다.
 
 실행 권한, 비밀값 원문, 새로운 서비스와 빈 분류 문서는 포함하지 않는다.
 
-## Structure
+## Contents
+
+### Current Items
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
@@ -30,7 +34,13 @@ layer: "operations"
 | [Pact Broker Recovery Runbook](0093-pact-broker.md) | `RUN-0093` | 프로비저닝 실패, 비정상 broker, 401, DB 손실, 자격 증명 교체 |
 | [Conftest Recovery Runbook](0095-conftest.md) | `RUN-0095` | 정책 검사 실패 단계 분리와 선언·규칙 수정 |
 
-## Usage
+### Classification
+
+이 폴더의 문서는 모두 런북 역할이며 `RUN-NNNN` 식별자를 쓴다. 같은 subject의 다른 역할 문서는 같은 번호와 slug로 다른 역할 폴더에 있다.
+
+## Workflow
+
+### Create and Review
 
 1. 식별자와 문서 제목으로 대상을 고른다.
 2. 상황별 전제, 명령, 기대 결과, 중단 조건, 검증과 복구를 확인한다.
@@ -39,8 +49,18 @@ layer: "operations"
 
 작성·검토 책임은 `@buenhyden`에게 있다. 같은 통제나 절차의 정본을 복제하지 않는다.
 
+### Transition and Exit
+
+문서를 이동·삭제하면 이 목록의 행과 링크를 같은 변경에서 갱신하며, 문서의 원래 식별자와 생성일은 바뀌지 않는다.
+
 ## Related Documents
+
+### Upstream and Downstream
 
 - [상위 런북 분류](../README.md)
 - [운영 문서](../../README.md)
+
+### Policy and Templates
+
 - [문서 작성 계약](../../../../.agents/governance/documentation-protocol.md)
+- [README 템플릿](../../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본

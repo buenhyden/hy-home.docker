@@ -1,37 +1,49 @@
 ---
 title: "Documentation Space"
-version: "1.3.1"
+version: "1.3.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-13"
 ---
 
 # docs
 
-## Overview
+## Stage Responsibility
+
+### Purpose and Readers
 
 `docs/`는 shared harness-engineering and agent-first engineering 목적에 맞춰 프로젝트의 요구사항, 아키텍처, 결정 사항, 기술 명세, 실행 증거, 운영 지식을 통합 관리하는 표준 공간입니다. 활성 문서는 허용된 taxonomy 안에서만 관리하며, 검증 스크립트가 이 계약을 강제합니다.
 
 현재 문서 흐름은 `01.requirements -> 02.architecture -> 03.specs -> 05.operations`입니다. Plan과 Task는 별도 stage가 아니라 소유 패키지 안의 `03.specs/{number:4}-{slug}/plan.md`와 `03.specs/{number:4}-{slug}/tasks/`에 함께 놓입니다. 보조 문서 공간으로 `90.references`, `98.archive`, `99.templates`를 사용합니다. 공통 Agent 거버넌스는 문서 stage 밖의 [`.agents/`](../.agents/README.md)가 소유합니다.
 
-## Scope
+#### Audience
 
-### In Scope
+이 README의 주요 독자:
+
+- Developers
+- Operators
+- Documentation Writers
+
+### Inputs and Outputs
+
+#### In Scope
 
 - 공식 stage 문서 taxonomy와 작성 원칙
 - 문서 유형별 템플릿 매핑
 - 문서 추적성, 검증, README 작성 기준
 - Agent governance와 사람 대상 문서의 경계
 
-### Out of Scope
+#### Out of Scope
 
 - Docker Compose runtime 설정 원문
 - secret 값, credential, token, 인증서 원문
 - 임시 scratch 문서나 비표준 active stage 폴더
 - 개별 서비스의 상세 운영 절차 본문
 
-## Structure
+## Contents
+
+### Current Items
 
 ```text
 docs/
@@ -47,7 +59,7 @@ docs/
 
 각 stage 하위의 실제 구조는 그 stage의 README가 소유합니다.
 
-### Routing
+#### Routing
 
 | 하려는 작업 | 이동할 곳 |
 | --- | --- |
@@ -65,12 +77,12 @@ docs/
 | LLM 대상 저장소 탐색을 제공 | root `llms.txt`와 각 surface README |
 | 삭제된 문서의 내용을 확인 | 후속 01·02 문서의 Traceability와 Git 이력 |
 
-### Migration Map
+#### Migration Map
 
 이전 stage 경로의 이관 매핑은 Git 이력에서 찾습니다. 현재 경로와 작성 계약은
 Stage 99 Registry가 소유합니다.
 
-### Documentation Standards
+#### Documentation Standards
 
 - 가능한 경우 승인된 템플릿에서 시작합니다.
 - 기존 SSoT 문서를 중복 생성하지 않습니다.
@@ -80,13 +92,13 @@ Stage 99 Registry가 소유합니다.
   정하며, 각 Registry profile의 `language`가 그 결과를 소유합니다.
 - Markdown 링크는 상대 경로를 사용하며 절대 경로나 `file://`를 사용하지 않습니다.
 
-### Documentation Contract
+#### Documentation Contract
 
 [Stage 99](99.templates/README.md)가 모든 문서 profile, 경로, lifecycle,
 identifier, 등록된 template을 소유합니다. [공통 Agent 거버넌스](../.agents/README.md)는
 작성 행동과 승인 경계를 소유합니다. 이 index는 탐색 전용입니다.
 
-### Cross-link Rules
+#### Cross-link Rules
 
 - 새 문서와 갱신 문서는 하나의 `## Related Documents` 섹션을 유지합니다.
 - 상대 링크는 현재 파일 위치 기준으로 계산합니다.
@@ -97,7 +109,7 @@ identifier, 등록된 template을 소유합니다. [공통 Agent 거버넌스](.
   삭제하며, 폐기 번호를 Registry `reserved_history`에 추가합니다. 현재 문서는
   `98.archive/`로 링크하지 않습니다.
 
-### Template Usage
+#### Template Usage
 
 역할은 [99.templates](99.templates/README.md)의 Registry(`registry.json`)에서
 고르고, 그 source는 같은 곳의 template catalog(`templates/README.md`)에서
@@ -105,7 +117,7 @@ identifier, 등록된 template을 소유합니다. [공통 Agent 거버넌스](.
 Requirement 자식 identity는 그 package가 소유합니다. Stage 98은 기록을 담지 않고
 처분 체계만 설명합니다.
 
-### Document Contract Validation
+#### Document Contract Validation
 
 문서 체계의 후보 aggregate QA는 원격 PR 경로가 소유합니다. 로컬에서는
 아래 명령으로 선택 계획을 조회하거나 필요한 link 진단만 수행합니다.
@@ -120,14 +132,14 @@ python3 scripts/validation/check-document-links.py --mode traceability
 [workflow contract](../.github/workflow-contract.yml)가 소유합니다.
 `check-document-links.py --mode alignment`는 현재 문서의 링크와 anchor를 확인합니다.
 
-### Historical Refresh Evidence
+#### Historical Refresh Evidence
 
 이전 infra/secrets/docs refresh package(SPEC-0095)는 저장소에서 삭제되었고 Git
 이력에서만 복구할 수 있습니다. 현재 구조와 운영 안내는
 [infra README](../infra/README.md)와 [Operations](05.operations/README.md)가
 소유합니다.
 
-### LLM Wiki Ownership and Historical Evidence
+#### LLM Wiki Ownership and Historical Evidence
 
 repo-local LLM Wiki는 2026-09-10에 은퇴했습니다. 그 generator, 세 개의
 생성된 index, 이를 유지하던 operations package가 함께 제거되었습니다.
@@ -145,17 +157,15 @@ advisory graph는 advisory로 남고 `.agents/governance/environment-constraints
 | Retired indexes | `DATA-0076`, `DATA-0082`, `DATA-0083`, 삭제됨 |
 | Retired operations package | `GDE-0007`, `POL-0007`, `RUN-0007`, 삭제됨 |
 
-## Usage
+### Classification
 
-### Audience
+Stage 98은 현재 보존 기록을 담지 않으며, 삭제된 문서와 은퇴한 historical evidence는 비권위 기록이므로 현재 소유자 문서의 Traceability와 Git 이력에서 확인합니다.
 
-이 README의 주요 독자:
+## Workflow
 
-- Developers
-- Operators
-- Documentation Writers
+### Create and Review
 
-### Usage
+#### Usage
 
 1. 새 문서를 만들기 전에 이 README와 대상 stage의 `README.md`를 먼저 읽습니다.
 2. 새 active stage 문서는 반드시 위 Structure에 나열된 canonical 경로 아래에 둡니다.
@@ -163,17 +173,28 @@ advisory graph는 advisory로 남고 `.agents/governance/environment-constraints
 4. 문서 변경 후 상위 README, 관련 stage 문서, traceability 링크를 함께 갱신합니다.
 5. secret 값, token, 인증서 원문은 문서에 쓰지 않습니다.
 
+### Transition and Exit
+
+문서를 없앨 때는 남아야 할 내용을 01·02 문서의 Traceability에 요약하고 원본을 삭제하며 폐기 번호를 Registry `reserved_history`에 추가합니다. 현재 문서는 `98.archive/`로 링크하지 않습니다.
+
 ## Related Documents
 
-- [Agent governance README](../.agents/README.md)
+### Upstream and Downstream
+
 - [01.requirements/README.md](01.requirements/README.md)
 - [02.architecture/README.md](02.architecture/README.md)
 - [03.specs/README.md](03.specs/README.md)
 - [05.operations/README.md](05.operations/README.md)
 - [90.references/README.md](90.references/README.md)
 - 98.archive/README.md
-- [99.templates/README.md](99.templates/README.md)
 - [../README.md](../README.md)
 - [../infra/README.md](../infra/README.md)
 - [../secrets/README.md](../secrets/README.md)
 - [../scripts/README.md](../scripts/README.md)
+
+### Policy and Templates
+
+- [Agent governance README](../.agents/README.md)
+- [99.templates/README.md](99.templates/README.md)
+- [문서 작성 계약](../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README 형식과 언어 규칙의 정본
+- [README 템플릿](99.templates/templates/common/readme-documentation.template.md): 이 README의 양식 원본

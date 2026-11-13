@@ -47,6 +47,13 @@ class CurrentBodyContractTests(unittest.TestCase):
             "guide": "Purpose|Prerequisites|Procedure|Verification",
             "policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
             "runbook": "Purpose|Preconditions|Steps|Validation|Recovery",
+            "readme": "Stage Responsibility|Contents|Workflow|Related Documents",
+            "documentation-readme": "Stage Responsibility|Contents|Workflow|Related Documents",
+            "reference-category-readme": "Stage Responsibility|Contents|Workflow|Related Documents",
+            "incident-year-readme": "Stage Responsibility|Contents|Workflow|Related Documents",
+            "governance-knowledge-index": "Stage Responsibility|Contents|Workflow|Related Documents",
+            "governance-prompt-index": "Stage Responsibility|Contents|Workflow|Related Documents",
+            "governance-provider-index": "Stage Responsibility|Contents|Workflow|Related Documents",
             "incident": "Summary|Impact|Timeline|Resolution|Evidence",
             "postmortem": "Summary|Root Cause|Impact|Corrective Actions|Evidence",
             "governance-policy": "Overview|Scope|Rules|Exceptions|Verification|Related Documents",
@@ -60,6 +67,8 @@ class CurrentBodyContractTests(unittest.TestCase):
                 self.assertEqual(tuple(headings), profile["required_sections"])
                 self.assertTrue(profile.get("ordered_sections"))
                 self.assertTrue(profile.get("nonempty_sections"))
+                if profile.get("template_id") is None:
+                    continue
                 role = registry.template_roles[profile["template_id"]]
                 source = (ROOT / role["source"]).read_text(encoding="utf-8")
                 self.assertEqual(
@@ -455,6 +464,13 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Rollback or Recovery", "body-subheading-forbidden"),
             ),
+            "readme": (
+                ("## Overview", "body-heading-forbidden"),
+                ("## Scope", "body-heading-forbidden"),
+                ("## Structure", "body-heading-forbidden"),
+                ("## Usage", "body-heading-forbidden"),
+                ("### Audience", "body-subheading-forbidden"),
+            ),
             "adr": (
                 ("## Decision Drivers", "body-heading-forbidden"),
                 ("## Options", "body-heading-forbidden"),
@@ -545,6 +561,42 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 self.assertNotIn(
                     "readme-documents-header-invalid",
                     self._findings("readme", candidate),
+                )
+
+    def test_readme_current_items_table_rejects_wrong_header(self) -> None:
+        body, _ = self._conforming_body("readme")
+        wrong = body.replace(
+            "### Current Items\n\n이 절은 예시 본문입니다.",
+            "### Current Items\n\n| Path | Name |\n| --- | --- |",
+            1,
+        )
+        self.assertIn(
+            "readme-documents-header-invalid", self._findings("readme", wrong)
+        )
+
+    def test_readme_current_items_checks_only_path_led_tables(self) -> None:
+        body, _ = self._conforming_body("readme")
+        for header, reported in (
+            ("| Path | Status |", True),
+            ("| Purpose | Path |", True),
+            ("| path | Purpose |", True),
+            ("| 문서 | 식별자 | 한 줄 역할 |", False),
+            (
+                "| 문서 | 식별자 | 한 줄 역할 |\n| --- | --- | --- |\n| a | b | c |\n\n"
+                "#### More\n\n| Path | Status |",
+                True,
+            ),
+        ):
+            with self.subTest(header=header):
+                candidate = body.replace(
+                    "### Current Items\n\n이 절은 예시 본문입니다.",
+                    f"### Current Items\n\n{header}\n| --- | --- |",
+                    1,
+                )
+                self.assertEqual(
+                    reported,
+                    "readme-documents-header-invalid"
+                    in self._findings("readme", candidate),
                 )
 
     def test_readme_documents_module_rejects_other_header_shapes(self) -> None:

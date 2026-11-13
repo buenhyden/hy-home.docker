@@ -1,22 +1,30 @@
 ---
 title: "Requirement Packages"
-version: "1.1.8"
+version: "1.1.9"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "requirements"
 ---
 
 # Requirement Packages
 
-## Overview
+## Stage Responsibility
+
+### Purpose and Readers
 
 `docs/01.requirements`는 제품의 문제, 이해관계자 가치, 범위, 요구사항과
 수용 기준을 하나의 Requirement Package로 관리한다. 구현 구조는 Stage 02와
 Stage 03, 실행 증거는 Stage 03 Spec Package의 현재 Task, 운영 절차는 Stage 05가 소유한다.
 
-## Scope
+#### Audience
+
+- Product Owners
+- System Architects
+- Developers
+
+### Inputs and Outputs
 
 이 디렉터리는 현재 Requirement Package를 관리한다. 각 패키지는
 functional, quality(non-functional) 요구사항을 같은 경계에서 관리하고,
@@ -28,17 +36,11 @@ Requirement Package는 문제와 이해관계자, 요구사항, 수용 기준, �
 절차는 소유하지 않는다. 실행 가능한 OpenAPI, GraphQL, Proto payload는
 관련 Stage 03 Spec package가 소유한다.
 
-### PRD, SRS, and Interface Perspectives
+## Contents
 
-Requirement Package 하나가 PRD의 문제·사용자 가치·범위, SRS의 functional·
-non-functional 요구사항과 수용 기준, solution-independent interface 요구를
-각 section 관점으로 함께 소유한다. Interface 요구는 `Functional Requirements`,
-품질 요구는 `Quality Requirements` 절에 쓰며 별도 interface 절이나 `IF` 자식 ID는
-발급하지 않는다. PRD, SRS, interface-requirement를 별도
-profile이나 병렬 문서로 만들지 않는다. 실행 가능한 interface payload는
-Stage 03 Spec의 contract가 소유한다.
+### Current Items
 
-### Package Index
+#### Package Index
 
 | ID | 패키지 | 상태 |
 | --- | --- | --- |
@@ -61,8 +63,6 @@ Stage 03 Spec의 contract가 소유한다.
 | REQ-0026 | [Document Retention and Retirement Requirements](0026-document-retention-and-retirement.md) | `approved` |
 | REQ-0027 | [Home and Development Host Requirements](0027-home-development-host.md) | `approved` |
 
-## Structure
-
 ```text
 docs/01.requirements/
 ├── 0001-gateway.md
@@ -82,15 +82,23 @@ docs/01.requirements/
 반드시 `REQ-####-FR-####` 또는 `REQ-####-NFR-####` 전체 형태를 사용한다. 발급된 번호는 재사용하거나
 high-water를 낮추지 않는다.
 
-## Usage
+### Classification
 
-### Audience
+#### PRD, SRS, and Interface Perspectives
 
-- Product Owners
-- System Architects
-- Developers
+Requirement Package 하나가 PRD의 문제·사용자 가치·범위, SRS의 functional·
+non-functional 요구사항과 수용 기준, solution-independent interface 요구를
+각 section 관점으로 함께 소유한다. Interface 요구는 `Functional Requirements`,
+품질 요구는 `Quality Requirements` 절에 쓰며 별도 interface 절이나 `IF` 자식 ID는
+발급하지 않는다. PRD, SRS, interface-requirement를 별도
+profile이나 병렬 문서로 만들지 않는다. 실행 가능한 interface payload는
+Stage 03 Spec의 contract가 소유한다.
 
-### Authoring Flow
+## Workflow
+
+### Create and Review
+
+#### Authoring Flow
 
 1. [`requirement-package.template.md`](../99.templates/templates/requirements/requirement-package.template.md)를 사용한다.
 2. 동일한 문제와 범위를 소유하는 Requirement Package가 있는지 먼저 확인한다.
@@ -99,7 +107,7 @@ high-water를 낮추지 않는다.
 4. 구현 계약은 Stage 03 Spec, 운영 절차는 Stage 05에 둔다.
 5. 변경 후 metadata와 repository-local link 검증을 실행한다.
 
-### Documentation Standards
+#### Documentation Standards
 
 - `type: sdlc/requirement`와 안정 ID를 사용한다. Registry profile `id`는
   template binding과 validator routing에만 사용하며 문서 frontmatter에 복제하지 않는다.
@@ -112,11 +120,22 @@ high-water를 낮추지 않는다.
 - solution-independent interface 의미만 Stage 01에 두고 실행 가능한 계약은
   Stage 03에 둔다.
 
+### Transition and Exit
+
+패키지를 추가·변경·삭제하면 같은 변경에서 이 README를 갱신한다.
+
 ## Related Documents
 
-- [에이전트 작업 규칙](AGENTS.md)
+### Upstream and Downstream
+
 - [Architecture](../02.architecture/README.md)
 - [Architecture Descriptions](../02.architecture/descriptions/README.md)
 - [Architecture Decisions](../02.architecture/decisions/README.md)
 - [Specifications](../03.specs/README.md)
 - [Operations](../05.operations/README.md)
+
+### Policy and Templates
+
+- [에이전트 작업 규칙](AGENTS.md)
+- [문서 작성 계약](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README 형식과 언어 규칙의 정본
+- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본
