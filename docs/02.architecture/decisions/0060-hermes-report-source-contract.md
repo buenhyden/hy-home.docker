@@ -177,7 +177,7 @@ rejected; a receipt-set record exists beside every submission.
 
 ### Sources
 
-- [SPEC-0265](../../03.specs/0265-hermes-report-source-capture/spec.md)
+- SPEC-0265 (retired; its capture contract lives in this decision and the workload README; version history)
 - [Workload README](../../../infra/07-workflow/n8n/workloads/hermes-blog-ingestion/README.md)
 - [SPEC-0212 TSK-0050](../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0050-hermes-provenance-trust-export.md)
 - [Home and Development Host Architecture](../descriptions/0031-home-development-host.md)

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.59.0"
+version: "1.60.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -230,7 +230,9 @@ TSK-0063: Registry rules that a checker can now enforce, with a failing and a
 passing test each, and a recorded owner for every handoff left open. The
 review of 2026-11-14 adds criterion 118 and W123 in the same Task for the
 TSK-0062 handoffs it left as GAP: a tool that derives reverse lookups and
-Change Impact, and a check on the `consumer_paths` enumeration.
+Change Impact, and a check on the `consumer_paths` enumeration. The owner's
+approval of 2026-11-14 for six ready packages adds criterion 119 and W124 in
+the same Task.
 
 ### Owning Requirements
 
@@ -962,6 +964,15 @@ target, backup, recovery boundary, and action-specific authorization.
      TemplateDefinition contract's enumeration of consumers found; a test
      fails without each part, and the protocol no longer says no tool derives
      them.
+
+119. TSK-0064 removes the six ready packages SPEC-0248, SPEC-0249, SPEC-0250,
+     SPEC-0260, SPEC-0264 and SPEC-0265 under the retirement preconditions,
+     with the owner's approval of 2026-11-14. It records each package's
+     criterion state, a Promotion Receipt per package, the last commit and
+     path of each removed file with its reachability from `main`, and the
+     reservation of the six numbers in the Registry Spec `reserved_history`;
+     every inbound consumer is updated in the same change, and the restore
+     and byte comparison after merge is recorded or stays `NOT_RUN`.
 
 ### Evidence Requirements
 

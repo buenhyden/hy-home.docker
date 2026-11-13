@@ -3317,7 +3317,7 @@ class CurrentOwnerLookupTests(unittest.TestCase):
             operations_catalog.subprocess, "run", side_effect=failure
         ):
             with self.assertRaises(ValueError):
-                operations_catalog._current_owner(ROOT, "SPEC-0248")
+                operations_catalog._current_owner(ROOT, "SPEC-0212")
 
 
 if __name__ == "__main__":

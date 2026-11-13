@@ -1,6 +1,6 @@
 ---
 title: "v14.7 W05 Validator Alignment Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -222,7 +222,7 @@ to W04 blocks W05. Findings and actions:
 | `sdlc.md` and `workflows.md` keep a workflow form, not the Policy form | UNCONFIRMED | Confirmed on D3: a separate role; the Registry already keeps it outside the 16 common roles, so TSK-0060 "16 of 16 roles" holds |
 | `sdlc.md` said the reader did not yet check the 1.9.0 rules | Stale after H-W04-1 | Fixed (`e35700381`, 1.9.1): it names what the corpus check applies and that no entrypoint runs readiness |
 | Document `version` allows release values only | UNCONFIRMED | Kept: no document uses a prerelease, and SemVer format rules apply where one is used; recorded here as the decision basis |
-| H-W04-7 removal of 0248, 0249, 0250, 0260, 0264, 0265 | REMAINING | W02, after the H-W04-2 promotion check |
+| H-W04-7 removal of 0248, 0249, 0250, 0260, 0264, 0265 | Done in W124 (pending merge) | See Package removal 2026-11-14; the post-merge byte-compare restore is `NOT_RUN` |
 | SPEC-DISPOSITION per-criterion depth, Stage 02 currency, OPEN-07 | UNVERIFIED | W11 |
 | R147-07 SDLC and document-stage binding rows; Git cells | UNVERIFIED | Rows: W11 check; Git cells: W06 (H-09) |
 | OPEN-08, OPEN-10 live operations | UNVERIFIED | W10 |
@@ -236,6 +236,82 @@ where L241 says "to H-W04-9"; TSK-0059 L367 calls H-05 done while L197
 lists it open, and H-05 stays UNVERIFIED here; TSK-0060 L195 "16 of 16
 roles" holds only if the workflow-form decision keeps `sdlc.md` and
 `workflows.md` a separate role.
+
+#### Package removal 2026-11-14
+
+Approval: on 2026-11-14 the owner, @buenhyden, approved in this chat deleting
+exactly SPEC-0248, 0249, 0250, 0260, 0264 and 0265 ("6개 삭제 승인").
+`check-document-corpus-lifecycle.py --readiness` reported all six `ready` on the
+base `09778b761`. Each package had an approved Spec and Plan and one completed
+Task, TSK-0001. W124 removes the six packages whole; no other Task body was edited. Preconditions: (1) readiness lists each
+`ready`; (2) each durable meaning is in its owner, with a one-line lineage in
+the Stage 01 and 02 Traceability sections (REQ-0026 and AD-0030, REQ-0024 and
+AD-0027, REQ-0004, REQ-0005, AD-0004, AD-0031 and ADR-0060; the
+ADR-0097 named in the request is a Blog-data ADR with no file here, so it
+needed no edit); (3) the editable consumers are updated, and the links in
+terminal Tasks stay as they are because the numbers are reserved; (4) the six
+numbers are in the Registry Spec `reserved_history`; (5) the last commits
+below are ancestors of `origin/main`. SPEC-0212 plan line 150 and
+`test_operations_catalog.py` (`_current_owner` now takes SPEC-0212 in a mocked
+failure test) were updated. `docs/90.references/data/0096-workspace-inventory/data.yaml`
+is a dated scan (`observed_at` 2026-11-07, head `52556b386`) that lists
+deleted paths; it was not hand-edited, and a regeneration needs the `_workspace`
+review input that this checkout does not carry. Prose that names a retired
+SPEC ID for lineage (ADRs 0037, 0044, 0051, 0060, `decisions/README.md`,
+`data/README.md`, the 0251 and 0256 Tasks, code comments) stays, as the
+protocol allows.
+
+SPEC-0248: criteria 1 to 4 `accepted` (owner accepted 2026-11-12); Task TSK-0001 `completed`; Plan and Spec `approved`.
+
+| Removed file | Last commit | Reachable from `main` |
+| --- | --- | --- |
+| `docs/03.specs/0248-archive-and-migration-check-retirement/plan.md` | `d18403cccb45` | yes |
+| `docs/03.specs/0248-archive-and-migration-check-retirement/spec.md` | `25f280a66906` | yes |
+| `docs/03.specs/0248-archive-and-migration-check-retirement/tasks/tsk-0001-archive-and-migration-check-retirement.md` | `ae4df1873b4d` | yes |
+
+SPEC-0249: criteria 1 to 4 `accepted` (owner accepted 2026-11-12); Task TSK-0001 `completed`; Plan and Spec `approved`.
+
+| Removed file | Last commit | Reachable from `main` |
+| --- | --- | --- |
+| `docs/03.specs/0249-stage98-archive-deletion/plan.md` | `d18403cccb45` | yes |
+| `docs/03.specs/0249-stage98-archive-deletion/spec.md` | `25f280a66906` | yes |
+| `docs/03.specs/0249-stage98-archive-deletion/tasks/tsk-0001-stage98-archive-deletion.md` | `ae4df1873b4d` | yes |
+
+SPEC-0250: criteria 1 to 4 `accepted` (owner accepted 2026-11-12); Task TSK-0001 `completed`; Plan and Spec `approved`.
+
+| Removed file | Last commit | Reachable from `main` |
+| --- | --- | --- |
+| `docs/03.specs/0250-finished-spec-package-deletion/plan.md` | `d18403cccb45` | yes |
+| `docs/03.specs/0250-finished-spec-package-deletion/spec.md` | `25f280a66906` | yes |
+| `docs/03.specs/0250-finished-spec-package-deletion/tasks/tsk-0001-finished-spec-package-deletion.md` | `ae4df1873b4d` | yes |
+
+SPEC-0260: criteria 1 to 4 `accepted` (owner accepted 2026-11-12); Task TSK-0001 `completed`; Plan and Spec `approved`.
+
+| Removed file | Last commit | Reachable from `main` |
+| --- | --- | --- |
+| `docs/03.specs/0260-spec-0209-0231-retirement/plan.md` | `d18403cccb45` | yes |
+| `docs/03.specs/0260-spec-0209-0231-retirement/spec.md` | `25f280a66906` | yes |
+| `docs/03.specs/0260-spec-0209-0231-retirement/tasks/tsk-0001-spec-0209-0231-retirement.md` | `ae4df1873b4d` | yes |
+
+SPEC-0264: criteria 1 to 10 `accepted` (owner accepted 2026-11-13); Task TSK-0001 `completed`; Plan and Spec `approved`.
+
+| Removed file | Last commit | Reachable from `main` |
+| --- | --- | --- |
+| `docs/03.specs/0264-folder-guide-delivery/plan.md` | `d18403cccb45` | yes |
+| `docs/03.specs/0264-folder-guide-delivery/spec.md` | `9a0677a4321c` | yes |
+| `docs/03.specs/0264-folder-guide-delivery/tasks/tsk-0001-deliver-folder-guides.md` | `89629d0240b3` | yes |
+
+SPEC-0265: criteria 1 to 14 `accepted` (owner accepted 2026-11-11 (12 to 14) and 2026-11-13 (1 to 11)); Task TSK-0001 `completed`; Plan and Spec `approved`.
+
+| Removed file | Last commit | Reachable from `main` |
+| --- | --- | --- |
+| `docs/03.specs/0265-hermes-report-source-capture/plan.md` | `d18403cccb45` | yes |
+| `docs/03.specs/0265-hermes-report-source-capture/spec.md` | `68de09cc3a27` | yes |
+| `docs/03.specs/0265-hermes-report-source-capture/tasks/tsk-0001-report-source-capture.md` | `6d092b6dc7ea` | yes |
+
+Post-merge restore and byte comparison (precondition 5): `NOT_RUN`. It needs
+the merge commit; after merge this Task restores each body from the commit
+above and compares its bytes.
 
 #### Handoff Verdicts
 
@@ -352,6 +428,14 @@ roles" holds only if the workflow-form decision keeps `sdlc.md` and
 | Consumer paths GREEN | 118 | W123 | red-green-proof | Same test on the real Registry | PASS | OK | required | Consumer paths RED |
 | W123 re-review | 118 | W123 | independent-review | Same reviewer, the fixed tree (read only, no tests run) | PASS | Every earlier finding fixed or recorded as a limit; Minor: help text, exit-1 wording and one more limit, fixed after it | required | W123 review |
 | W123 regression | 118 | W123 | unit-regression | `test_registry`, `test_links`, `test_surface_ownership` on the fixed tree; corpus lifecycle; links alignment and commands; metadata check-changed; governance contract; script manifest | PASS | 283 tests OK; violations=0; PASS; selected=4 violations=0; PASS; valid | required | - |
+| W124 readiness | 119 | W124 | corpus-readiness | `check-document-corpus-lifecycle.py --readiness` on the W124 tree, six packages removed | PASS | The six packages no longer appear in the report; the owner's list was `ready` on the base before removal (TSK-0064 W05 run) | required | - |
+| W124 lifecycle | 119 | W124 | corpus-lifecycle | `check-document-corpus-lifecycle.py` on the W124 tree | PASS | document corpus lifecycle violations=0; active stage occupancy violations=0 | required | - |
+| W124 links | 119 | W124 | links-alignment | `check-document-links.py --mode alignment` and `--mode commands` on the W124 tree | PASS | alignment documents=891 failures=0; commands documents=891 failures=0 | required | - |
+| W124 metadata | 119 | W124 | metadata-check-changed | `check-document-metadata.py --mode check-changed --base-ref origin/main` | PASS | selected=32 violations=0 | required | - |
+| W124 governance and manifest | 119 | W124 | governance-contract | `check-agent-governance-contract.py`; `check-script-manifest.py` | PASS | failures=0; script manifest is valid | required | - |
+| W124 ruff | 119 | W124 | lint | `ruff format --check` and `ruff check` on `test_operations_catalog.py` | PASS | 1 file already formatted; no findings | required | - |
+| W124 unit regression | 119 | W124 | unit-regression | `test_operations_catalog`, `test_identity_history`, `metadata.test_reference`, `test_spec_packages`, `test_registry`, `tests.lib.test_surface_ownership` on the W124 tree | PASS | 492 tests OK | required | - |
+| W124 post-merge restore | 119 | W124 | byte-compare-restore | Restore each removed body from its recorded last commit and compare bytes | NOT_RUN | Needs the merge of this change; cannot run before it | required | - |
 
 ### Resolution Links
 
@@ -375,6 +459,7 @@ regression by its rerun.
 | --- | --- | --- | --- | --- |
 | 117 | accepted | Disposition GREEN, TemplateDefinition GREEN, Vocabulary 1.1.0 GREEN, Release GREEN, Link title GREEN, Currency GREEN, SemVer GREEN, Integrated checks, Integrated re-review, Remote candidate 996 final | Owner @buenhyden accepted on 2026-11-14 in this chat, after #996 merged; hosted CI wiring of the local-only leaves stays with H-W05-1 (W06) | SPEC-0212 TSK-0064 |
 | 118 | pending | - | The derivation passes its tests; the independent review, the remote candidate and the owner's acceptance remain | SPEC-0212 TSK-0064 |
+| 119 | pending | - | The six packages are removed in this change with the owner's 2026-11-14 approval; the checks, the remote candidate, the merge and the post-merge restore remain, and the owner's acceptance | SPEC-0212 TSK-0064 |
 
 ### Remaining Conditions
 
@@ -397,6 +482,10 @@ Q-07 runs only after W11.
 | 117 | W122 | TemplateDefinition GREEN | `template_definition.py` (commit `97a40d35c`) | `test_template_definition`, `metadata.test_heading` |
 | 117 | W122 | Currency GREEN | `metadata/lifecycle.py` (commit `88d9e465b`) | `metadata.test_lifecycle` |
 | 118 | W123 | Relation lookup GREEN | `.agents/governance/documentation-protocol.md` (Relations derivation, Change Impact row; commit `64769e71a`) | `test_links`; links alignment |
+| 119 | W124 | SPEC-0248, SPEC-0249, SPEC-0250 Promotion Map: archive-check removal, Stage 98 deletion, completed-package deletion | `.agents/governance/documentation-protocol.md`, phrases "no records: only its README remains", "Retired artifact numbers live in the Registry", "recorded exactly when its Spec number is reserved" (commit `c9363fd04`); `docs/99.templates/registry.json` `reserved_history` (commit `218d66934`); `scripts/lib/document_governance/lifecycle/occupancy.py` "Stage 98 holds no records" (commit `9692e4616`); lineage in REQ-0026 and AD-0030 Traceability (this change) | `grep` of each phrase on the base tree; links alignment; corpus lifecycle |
+| 119 | W124 | SPEC-0260 Promotion Map: generation 6 proof source | `scripts/lib/document_governance/spec_packages.py` `previous_generation_revision(root, 7)` (commit `3745b3db2`) and the protocol text "reads the generation 5 and 6 migration proofs from the last generation 6 revision" (protocol L572; commit `6c283d395` carried the section, later edits kept it); numbers 209 and 231 reserved; lineage in REQ-0026 and AD-0030 | `test_spec_packages`, `test_registry`, `test_identity_history` |
+| 119 | W124 | SPEC-0264 Promotion Map: folder guide delivery | `.claude/provider.md` "import shim" and "reminder naming" (commit `b085cabac`), `.codex/provider.md` `exec` route (commit `80c49cf71`), `scripts/lib/hooks/folder_guides.py` and `scripts/hooks/agent-event-hook.sh` (commit `b3c5345cc`), documentation protocol folder-guide text (commit `7bde84a10`); lineage in REQ-0024 and AD-0027 | `tests.lib.hooks.test_folder_guides` is outside the listed checks and was not run here; the receipt of the removed Task named it as passing on main |
+| 119 | W124 | SPEC-0265 Promotion Map: report source capture contract | `infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/tools.py` (`0600` report file, commit `bce52c6d9`), `deploy/research-submission-prompt.txt` and the workload `README.md` `source_text` meaning (commit `ce760c587`), `docs/02.architecture/decisions/0060-hermes-report-source-contract.md` (commit `13eac2103`); lineage in REQ-0004, REQ-0005, AD-0004, AD-0031 and ADR-0060 | grep of each phrase on the base tree; workload tests were not run (no runtime work) |
 
 The commits reached `main` through PR #996, merged as `5a1aa4b98` with a
 merge commit, so the promotion condition (merge) is met. Acceptance row:

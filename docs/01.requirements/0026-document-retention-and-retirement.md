@@ -162,7 +162,7 @@ This package covers how documents are retained, retired and summarized into a cu
 
 ### Verification Method
 
-Each condition is judged by running the registered metadata, lifecycle, link and regression checks on the explicitly selected snapshot; unavailable checks are reported, not treated as passing. The Spec Packages that list REQ-0026 as a parent, such as SPEC-0248, SPEC-0249 and SPEC-0250, record the check results in their Task evidence rows. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+Each condition is judged by running the registered metadata, lifecycle, link and regression checks on the explicitly selected snapshot; unavailable checks are reported, not treated as passing. The Spec Packages that list REQ-0026 as a parent, such as SPEC-0212, record the check results in their Task evidence rows. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
 
 ## Traceability
 
@@ -179,6 +179,8 @@ Each condition is judged by running the registered metadata, lifecycle, link and
 - [ADR-0037 Package waiting and Task cancellation](../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
 - [ADR-0048 Authority parents and criterion acceptance](../02.architecture/decisions/0048-authority-parents-and-criterion-acceptance.md)
 - ADR-0031, ADR-0033, ADR-0035, and ADR-0036 are superseded historical decisions.
-- SPEC-0249 retired three earlier items, whose numbers stay reserved in the
+- SPEC-0248, SPEC-0249, SPEC-0250 and SPEC-0260 (retired; version history)
+  delivered the archive-check removal, the Stage 98 deletion, the completed
+  package deletion and the proof-source change. SPEC-0249 retired three earlier items, whose numbers stay reserved in the
   Registry: a Tombstone namespace rule, immutable Stage 98 captures, and one
   capture record per unit. Stage 98 no longer holds records.

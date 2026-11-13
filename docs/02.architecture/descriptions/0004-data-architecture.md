@@ -137,6 +137,7 @@ Grafana together.
 
 ### Currentness and Lineage
 
+- SPEC-0265 (retired; version history) captured the Hermes report source under ADR-0060.
 - [Data packages](../../../infra/04-data/README.md)
 - [LAB entrypoints](../../../labs/README.md)
 - [Analytics architecture](0012-data-analytics-architecture.md)

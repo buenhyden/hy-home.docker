@@ -168,7 +168,7 @@ proven by this redesign. Keep these as deployment prerequisites, not PASS claims
 
 ### Currentness and Lineage
 
-- SPEC-0180 (retired; version history)
+- SPEC-0180 and SPEC-0265 (retired; version history; ADR-0060 holds the Hermes report source contract)
 - [Service disposition research](../../90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md)
 - [Infrastructure implementation](../../../infra/README.md)
 
