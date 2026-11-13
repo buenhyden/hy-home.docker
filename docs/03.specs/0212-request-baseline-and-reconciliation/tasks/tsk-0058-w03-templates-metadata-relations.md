@@ -1,6 +1,6 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.5.9"
+version: "0.5.10"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -462,6 +462,25 @@ Branch `docs/w03-archive-vocabulary`.
 - H-13: the architecture description template asks the author to review a
   diagram against the C4 diagram review checklist; no rule requires it.
 
+##### Root README role 2026-11-13
+
+Branch `docs/w03-root-readme-common-form`.
+
+- Registry `repository-readme` and `runtime-governance-readme`: H2 Purpose,
+  Repository Map, Getting Started, References with their required H3s
+  (Project Role, Boundaries; Directories, Canonical Entry Points;
+  Prerequisites, First Verified Path; Current Documentation, Support and
+  Ownership). The renderer writes the new form for `.claude/README.md` and
+  `.codex/README.md`.
+- The README Documents table check now reads `README_DOCUMENTS_HEADINGS`
+  (Directories, Current Items, Documents); under Directories it checks every
+  table that has a `Path` column.
+- The 13 authored READMEs (Korean) are moved; `secrets/README.md` was read and
+  edited with the owner's leave for that one file only. Added sentences state
+  real prerequisites (Python, the hashed lock, Docker for the opt-in test),
+  canonical entry points and the support routes (`bug_report.yml`,
+  `feature_request.yml`, `SECURITY.md`, the owner).
+
 Held for an owner decision, not changed here, because each would change
 what a requirement says:
 
@@ -554,6 +573,11 @@ None: nothing was recorded here before this Task moved to the common form.
 | W03 v14.7 archive vocabulary review | 111 | W116 | independent-review | Fresh-context code-reviewer of `84002bc55` and `c44de6697` | PASS | PASS: no consumer remains for any retired key; the supply-chain `archived_at` is a separate JSON ledger; the C4 prompt is optional and harmless; one minor test weakness (`archived_at` with an invalid value) fixed in the next commit | required | - |
 | W03 v14.7 archive vocabulary GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `c44de6697` | PASS | Ran 811 tests, OK | required | W03 v14.7 archive vocabulary RED |
 | W03 v14.7 archive vocabulary checks | 111 | W116 | metadata-links-governance | Registry, schemas and the active corpus at `84002bc55` | PASS | metadata check-active selected 534 violations 0; active stage occupancy violations 0 | required | - |
+| W03 v14.7 Root README form RED | 111 | W116 | red-green-proof | The new test_heading and test_registry cases against the root README profiles at `588f2c3bd` | FAIL | Two failures and 11 errors: the template outlines differed, the old-form cases errored for both profiles, and the Directories table test errored | required | - |
+| W03 v14.7 Root README review | 111 | W116 | independent-review | Fresh-context code-reviewer of `d712aee54` | FAIL | CHANGES_REQUIRED: a Path-column table could pass with swapped or lowercase headers; stale prose references; false "없음" prerequisites; content outside its section; incomplete support routes | required | - |
+| W03 v14.7 Root README review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `9a3836f72`, minors fixed in `a1683374f` | PASS | PASS: every finding fixed | required | W03 v14.7 Root README review |
+| W03 v14.7 Root README GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `a1683374f`; after merging main, test_heading and test_registry at `1ac114404` | PASS | Ran 813 tests, OK; after the merge 220 tests, OK | required | W03 v14.7 Root README form RED |
+| W03 v14.7 Root README checks | 111 | W116 | metadata-links-governance | The 13 READMEs and two generated READMEs at `a1683374f` and `1ac114404` | PASS | Renderer drift 0; agent governance contract PASS; metadata check-changed violations 0; links alignment and navigation PASS | required | - |
 
 ### Resolution Links
 
@@ -578,7 +602,7 @@ these profile flags is handed to W05; renumbering stays a Q-07 decision.
 
 ### Promotion Receipt
 
-Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook), #980 (Policy), #981 (Skill).
+Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook), #980 (Policy), #981 (Skill), #982 (H-W02-2 and H-13).
 
 ### Next Owner
 
