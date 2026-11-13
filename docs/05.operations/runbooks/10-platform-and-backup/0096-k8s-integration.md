@@ -1,10 +1,10 @@
 ---
 title: "hy-home.k8s Integration Runbook"
-version: "1.4.1"
+version: "1.4.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0096"
 parent_ids:
@@ -14,11 +14,11 @@ created: "2026-09-23"
 
 # hy-home.k8s Integration Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 hy-home.k8s 클러스터와 이 스택을 연결하는 전체 절차와 자격 증명 회전, 문제 해결을 다루는 런북이다. 계약은 가이드가 설명한다.
-
-## Trigger
 
 | 상황 | 단계 |
 | --- | --- |
@@ -30,13 +30,26 @@ hy-home.k8s 클러스터와 이 스택을 연결하는 전체 절차와 자격 �
 | Argo CD notifications Slack 토큰 설정 또는 교체 | 1, [Slack 토큰](#setting-or-replacing-the-slack-notifications-token), 8 |
 | OpenBao auth mount, policy, role 유실 | 1, 5 (모든 단계), 6, 7, 8 |
 
+### Scope
+
+- [Guide](../../guides/10-platform-and-backup/0096-k8s-integration.md) (`GDE-0096`)
+- [Policy](../../policies/10-platform-and-backup/0096-k8s-integration.md) (`POL-0096`)
+- [OpenBao runbook](../04-security-and-secrets/0085-openbao.md)
+
+- [Prometheus guide](../../guides/07-observability/0045-prometheus.md)
+- [Secrets README](../../../../secrets/README.md)
+
+## Preconditions
+
+### Authority and Access
+
+승인된 기존 kubeconfig/context만 사용하며, 별도 승인 없이 문서 점검을 runtime, private 입력 읽기 또는 k8s 변경으로 확장하지 않는다. secret 값은 파일이나 숨겨진 프롬프트로만 전달한다.
+
+### Safety Checks
+
 모든 단계에 적용되는 규칙:
 
 - HOME 호스트의 저장소 루트에서 작업한다.
-
-## Prerequisites
-
-### Trigger and Preconditions
 
 - 각 명령은 한 줄로 입력한다. 붙여넣은 줄 연속(line continuation)은
   인자를 조용히 빠뜨릴 수 있다.
@@ -46,9 +59,7 @@ hy-home.k8s 클러스터와 이 스택을 연결하는 전체 절차와 자격 �
 - 각 단계는 예상 결과로 끝난다. 결과가 일치할 때까지 다음 단계를 시작하지
   않는다.
 
-## Procedure
-
-### Shared prerequisites and result handling
+#### Shared prerequisites and result handling
 
 작업 전에 source revision, HOME host, Compose project, 정확한 service/profile,
 승인된 기존 kubeconfig/context와 변경 범위를 기록한다. 아래 주소·도메인·port는
@@ -69,7 +80,13 @@ JSON 오류를 `denied`, `revoked`로 간주하지 않는다. 원시 응답을 �
 않는다. 클라이언트 도구가 구조화된 판정에 필요한 필드를 제공하지 않으면 중단하고
 소유자가 같은 요청의 서버 응답을 확인한다.
 
-### Phase 1. Prepare the repository
+## Steps
+
+### Actions
+
+절차는 아래 항목에 따른다.
+
+#### Phase 1. Prepare the repository
 
 1.1 로컬 작업을 잃지 않고 `main`을 최신으로 갱신한다:
 
@@ -93,7 +110,7 @@ bash scripts/hardening/check-all-hardening.sh
 예상 결과: 둘 다 통과한다. [RUN-0086 정적 검증](0086-dependency-version-management.md#static-configuration-validation)의
 private 입력·임시 파일 경계를 먼저 승인한다. PASS는 실제 서비스 건강 증거가 아니다.
 
-### Phase 2. Secrets and environment
+#### Phase 2. Secrets and environment
 
 2.1 private registry와 `.env`(Git-ignored)를 백업한다:
 
@@ -142,7 +159,7 @@ stat -c '%n %s %a' secrets/observability/prometheus/prometheus_api_password.txt 
 
 예상 결과: `1`, 그리고 두 파일 모두 크기가 0이 아니고 모드가 `640`이다.
 
-### Phase 3. Gateway and Prometheus
+#### Phase 3. Gateway and Prometheus
 
 3.1 두 consumer를 재생성한다. 단일 파일 secret은 기존 inode를 유지하므로
 `INFRA-007` 변경 이후에는 Traefik을 반드시 재생성해야 한다.
@@ -175,7 +192,7 @@ curl -s -o /dev/null -w '%{http_code}\n' --resolve prometheus.hy.home.arpa:443:1
 redirect를 따라가지 않고 상태를 확인하며 000, 5xx, 예상 외 redirect는 중단한다.
 Basic header가 있는 API와 UI의 SSO 경로를 혼동하지 않는다.
 
-### Phase 4. Host endpoints
+#### Phase 4. Host endpoints
 
 4.1 k3d 네트워크에 남은 것이 없는지, 게시된 포트가 응답하는지 확인한다:
 
@@ -197,7 +214,7 @@ done
 `docker network disconnect`하지 않는다. Tempo 3200은 조회/API이고 trace 수집은
 Alloy 4317/4318이다. PostgreSQL HA는 LAB 전용이므로 HOME 포트 확인 대상이 아니다. TCP 성공만으로 인증이나 데이터 수집 성공을 선언하지 않는다.
 
-### Phase 5. OpenBao Kubernetes auth
+#### Phase 5. OpenBao Kubernetes auth
 
 5.1 새 클러스터 CA(public)를 private 작업 디렉터리에 기록한다:
 
@@ -408,7 +425,7 @@ unset T
 self-revoke하고 에스컬레이션한다. raw KV 응답은 private 임시 파일에서만 처리하고
 boolean만 기록한다. client 종료 전 임시 응답 파일의 custody를 정리한다.
 
-### Phase 6. Hand off to hy-home.k8s
+#### Phase 6. Hand off to hy-home.k8s
 
 다음을 클러스터 소유자에게 전달한다. bootstrap token만 보호된 채널로 보내며 Prometheus/Grafana 값은 ESO로 전달한다. public CA는 비밀이 아니다.
 
@@ -429,27 +446,7 @@ boolean만 기록한다. client 종료 전 임시 응답 파일의 custody를 �
 - Basic Auth credential과 `cluster` external label을 사용하는 Alloy remote write 및 Kiali
 - bearer 토큰을 사용하는 Kiali의 Grafana 연결
 
-### Phase 7. Verify from both sides
-
-7.1 클러스터 측에서 소유자는 ESO `SecretStore`가 유효하고 Argo CD
-`ExternalSecret`이 동기화되었는지 확인한다. 변경 이후의 새 auth 성공과
-reconcile 시각·Ready 상태만 기록한다. CA 교체 전의 기존 Ready만으로 통과시키지 않는다.
-
-7.2 호스트 측에서 클러스터의 샘플이 도착하는지 확인한다(3.2의 `prom_auth`
-사용):
-
-```bash
-prom_auth | curl -K - -s --resolve prometheus.hy.home.arpa:443:192.168.0.13 --cacert secrets/certs/rootCA.pem --data-urlencode 'query=count by (job) (up{cluster="k3d-hyhome"})' https://prometheus.hy.home.arpa/api/v1/query
-```
-
-예상 결과: 선택한 클러스터 job마다 새 시리즈가 도착한다. `count by(job)(up)`은
-up값0도 세므로 전체 클러스터 건강을 증명하지 않는다. 예상 job inventory와 fresh
-sample, 실제 up값을 별도로 확인한다. Loki 로그·trace 수집/조회·Kiali·선택 DB는
-각 consumer 소유자의 제한된 기능 검증으로 확인한다. synthetic 데이터 쓰기는
-별도 승인 없이는 실행하지 않는다. metrics NodePort 폐지는 이 증거와 별도
-클러스터 변경 승인 이후에만 가능하다.
-
-### Phase 8. Clean up and record
+#### Phase 8. Clean up and record
 
 클러스터 bootstrap 소비 완료 후 token 자신으로 self-revoke하고5.4.3과 같은
 서버 건강·동일 token lookup 분기로 폐기를 확인한다. 파일 삭제는 서버 폐기가
@@ -476,7 +473,7 @@ consumer 검증과 rollback 보존 기간에 대한 owner 확인 후에만 Phase
 단계, 그리고 3.2, 4.1, 5.4, 5.5, 5.7, 7.2의 예상 출력을 기록한다. 토큰,
 share, 비밀번호, KV 값은 절대 기록하지 않는다.
 
-### Rotating the Prometheus API credential
+#### Rotating the Prometheus API credential
 
 이 비밀번호는 세 곳에 있고 세 곳 모두 함께 바꿔야 한다:
 
@@ -503,7 +500,7 @@ backup/custody → 새 값과 hash 일치 검증 → 승인된 Traefik apply 및
 remote write/query 검증 → rollback 보존 승인 뒤 이전 자료 정리다. 본 문서는
 새 generator 기능이나 임의 credential 값을 만드는 명령을 추가하지 않는다.
 
-### Reissuing the Kiali Grafana token
+#### Reissuing the Kiali Grafana token
 
 5.1a의 토큰은 90일 동안 유효하다. OIDC operator는 root 세션 없이 해당
 항목을 교체할 수 있다.
@@ -541,7 +538,7 @@ remote write/query 검증 → rollback 보존 승인 뒤 이전 자료 정리다
    후에만 실행한다. 정확한 이전 ID를 확인하고 설치 pin의 API 성공 응답과 목록에서
    이전 ID가 사라졌는지 검증한다. 오류·불명확한 ID면 삭제하지 않는다.
 
-### Setting or replacing the Slack notifications token
+#### Setting or replacing the Slack notifications token
 
 `secret/platform/notifications`(`slack_token`)는 hy-home.k8s의
 `argocd-notifications-secret`에 값을 공급한다. 이 항목은 COMM-004의
@@ -571,7 +568,7 @@ policy는 SPEC-0181부터 이 경로를 허용한다. `hy-home-operator` policy�
 
    예상 결과: `SecretSynced`, `True`, 그다음 `Synced Healthy`이다.
 
-### Troubleshooting
+#### Troubleshooting
 
 | 증상 | 원인 | 조치 |
 | --- | --- | --- |
@@ -591,14 +588,46 @@ policy는 SPEC-0181부터 이 경로를 허용한다. `hy-home-operator` policy�
 | Kiali가 Grafana에 연결할 수 없거나 `401`을 표시 | `secret/platform/grafana-api`가 없거나, 만료되었거나, 토큰이 삭제됨 | 토큰 재발급, 그다음 ESO refresh |
 | 7.2에서 `cluster="k3d-hyhome"` 시리즈가 없음 | 클러스터 sender가 구성되지 않았거나 443에 도달할 수 없음 | 클러스터 소유자가 Alloy 로그, DNS, CA, egress를 확인 |
 
-## Verification
+### Stop Conditions
 
-Phase 8에 나열된 단계 출력, 소스 커밋, Trigger and Preconditions에서 적용된 상황을
+`ROOT STILL VALID`, `secret/platform/*` 밖을 읽는 토큰, OpenBao 앞에 SSO나 허용목록을 두라는 요청, 인증 없이 Prometheus나 Grafana를 게시하라는 요청이 있으면 중단한다. 빈 파일이나 다른 context, `INDETERMINATE` 판정도 중단한다. Prometheus API 비밀번호 교체는 BLOCKED이며 해소 전 consumer/KV 변경을 중단한다.
+
+`ROOT STILL VALID`, `secret/platform/*` 밖을 읽는 토큰, OpenBao 앞에 SSO나 허용목록을 두라는 요청, 인증 없이 Prometheus나 Grafana를 게시하라는 요청은 Escalation에 기록한 중단 조건이다. 단계별 중단 판정(빈 파일이나 다른 context, `INDETERMINATE`, `LEAK` 등)은 Actions의 각 Phase에 있다.
+
+## Validation
+
+### Service Checks
+
+서비스 점검은 아래 항목에 따른다.
+
+#### Phase 7. Verify from both sides
+
+7.1 클러스터 측에서 소유자는 ESO `SecretStore`가 유효하고 Argo CD
+`ExternalSecret`이 동기화되었는지 확인한다. 변경 이후의 새 auth 성공과
+reconcile 시각·Ready 상태만 기록한다. CA 교체 전의 기존 Ready만으로 통과시키지 않는다.
+
+7.2 호스트 측에서 클러스터의 샘플이 도착하는지 확인한다(3.2의 `prom_auth`
+사용):
+
+```bash
+prom_auth | curl -K - -s --resolve prometheus.hy.home.arpa:443:192.168.0.13 --cacert secrets/certs/rootCA.pem --data-urlencode 'query=count by (job) (up{cluster="k3d-hyhome"})' https://prometheus.hy.home.arpa/api/v1/query
+```
+
+예상 결과: 선택한 클러스터 job마다 새 시리즈가 도착한다. `count by(job)(up)`은
+up값0도 세므로 전체 클러스터 건강을 증명하지 않는다. 예상 job inventory와 fresh
+sample, 실제 up값을 별도로 확인한다. Loki 로그·trace 수집/조회·Kiali·선택 DB는
+각 consumer 소유자의 제한된 기능 검증으로 확인한다. synthetic 데이터 쓰기는
+별도 승인 없이는 실행하지 않는다. metrics NodePort 폐지는 이 증거와 별도
+클러스터 변경 승인 이후에만 가능하다.
+
+### Evidence
+
+Phase 8에 나열된 단계 출력, 소스 커밋, Trigger and Outcome에서 적용된 상황을
 기록한다.
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
 
 - **Prometheus API:** 현재 source와 보호된 이전 credential 상태를 비교하여 owner가
   승인한 정확한 rollback만 수행한다. API router 제거는 모든 API consumer를
@@ -614,14 +643,3 @@ Phase 8에 나열된 단계 출력, 소스 커밋, Trigger and Preconditions에�
 `ROOT STILL VALID`, `secret/platform/*` 밖을 읽는 토큰, 클러스터를 위해
 OpenBao 앞에 SSO나 허용목록을 두라는 요청, 또는 인증 없이 Prometheus나
 Grafana를 게시하라는 요청이 있으면 중단하고 @buenhyden에게 연락한다.
-
-## Related Documents
-
-### Traceability
-
-- [Guide](../../guides/10-platform-and-backup/0096-k8s-integration.md) (`GDE-0096`)
-- [Policy](../../policies/10-platform-and-backup/0096-k8s-integration.md) (`POL-0096`)
-- [OpenBao runbook](../04-security-and-secrets/0085-openbao.md)
-
-- [Prometheus guide](../../guides/07-observability/0045-prometheus.md)
-- [Secrets README](../../../../secrets/README.md)

@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Runbook"
-version: "0.6.0"
+version: "0.6.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0081"
 parent_ids:
@@ -14,35 +14,53 @@ created: "2026-09-19"
 
 # ComfyUI Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 이 런북은 ComfyUI(`comfyui`, profile `ai`/`ai-image`)의 승인 게이트된 진단과 복구, custom-node·이미지 변경 실패 대응, 격리 복원 계획을 다룬다.
-
-## Trigger
 
 승인된 ComfyUI 배포, UI 접근 불가, healthcheck 실패, 또는 계획된 데이터/이미지/custom-node
 복구에 사용한다.
 
-## Prerequisites
+### Scope
 
-### Trigger and Preconditions
+- 관장 architecture: [AD-0008](../../../02.architecture/descriptions/0008-ai-architecture.md)
+- 대상 peer 문서: [Guide](../../guides/09-ai-and-search/0081-comfyui.md), [Policy](../../policies/09-ai-and-search/0081-comfyui.md)
 
-런타임 변경 전에 commit, 선택한 서비스, mount 위치, 이미지 식별자와 backup
-증거를 기록한다.
+- [Guide](../../guides/09-ai-and-search/0081-comfyui.md), [Policy](../../policies/09-ai-and-search/0081-comfyui.md)
+- 런타임 고정 버전은 [ComfyUI Compose](../../../../infra/08-ai/comfyui/docker-compose.yml)가 소유한다. [derived Compose image projection](../../../../infra/tech-stack.versions.json)이 drift를 검증한다.
+- [중앙 backup 정책](../../policies/10-platform-and-backup/0021-backup-and-restore.md)
+- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.
 
-### Service lifecycle prerequisites
+## Preconditions
 
-image upgrade 전에 새 image가 `/root/ComfyUI`에서 시작하고 `models`, `custom_nodes`, `input`, `output`, `user` mount가 그 아래에 대응하는지 확인한다. 2026-11-08에 이 다섯 volume을 `/root/ComfyUI/<dir>`로 다시 mount했으므로 이전의 `/opt` 불일치는 해소되었다. 대응이 어긋나면 image 교체나 volume 정리를 중단한다.
+### Authority and Access
 
-## Procedure
+승인과 실행 경계는 아래 항목에 따른다.
 
-### Execution Boundary
+#### Execution Boundary
 
 저장소 root에서 아래의 정확한 service/profile과 기존 container를 선택한다. 변경 전에 승인 대상, source/image, 선행 readiness, 필요한 운영 권한과 부작용 범위를 확인한다. `up`은 dependency/provisioning job을 만들 수 있고 profile은 격리가 아니다. 진단은 기존 container의 `exec`를 사용하고 단순 조회를 위해 client/provisioner를 띄우지 않는다. 재시작은 요청 중단·memory/queue 손실·부작용 반복을 일으킬 수 있으므로 대상 drain/backup 조건을 먼저 충족한다. `restart`는 바뀐 Compose 설정이나 교체된 secret bind를 불러오지 않는다.
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### 진단과 복구 단계
+### Safety Checks
+
+런타임 변경 전에 commit, 선택한 서비스, mount 위치, 이미지 식별자와 backup
+증거를 기록한다.
+
+#### Service lifecycle prerequisites
+
+image upgrade 전에 새 image가 `/root/ComfyUI`에서 시작하고 `models`, `custom_nodes`, `input`, `output`, `user` mount가 그 아래에 대응하는지 확인한다. 2026-11-08에 이 다섯 volume을 `/root/ComfyUI/<dir>`로 다시 mount했으므로 이전의 `/opt` 불일치는 해소되었다. 대응이 어긋나면 image 교체나 volume 정리를 중단한다.
+
+## Steps
+
+### Actions
+
+절차는 아래 항목에 따른다.
+
+#### 진단과 복구 단계
 
 1. 비공개 환경 값을 렌더링하지 않고 source boundary를 확인한다.
 
@@ -70,7 +88,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    노드와 대표 workflow가 로드되는지 검증한 다음, 실제 데이터를 교체하기 전에 승인을 받는다.
    model과 캐시 다운로드는 source, digest, license, 호환성이 기록된 경우에만 다시 구축할 수 있다.
 
-### 유지보수용 외부 접속
+#### 유지보수용 외부 접속
 
 기본 구성의 ComfyUI는 외부로 나가지 못하고 host port도 없다(SPEC-0268). 모델이나
 custom node를 설치할 때만 @buenhyden의 승인을 받아 overlay를 붙이고, 작업이 끝나면
@@ -93,7 +111,7 @@ custom node를 설치할 때만 @buenhyden의 승인을 받아 overlay를 붙이
 
    network 목록이 `comfyui_ingress_net` 하나여야 한다. 아니면 중단하고 @buenhyden에게 넘긴다.
 
-### ComfyUI-Manager 보안 수준
+#### ComfyUI-Manager 보안 수준
 
 `comfyui-user` volume의 `__manager/config.ini`는 `security_level = normal`을 유지한다.
 image bundle은 첫 실행 때 `weak`로 이 파일을 만들지만, ComfyUI-Manager의 기본값은
@@ -114,21 +132,29 @@ docker exec comfyui grep '^security_level' /root/ComfyUI/user/__manager/config.i
 
 마지막 줄이 `security_level = normal`이고 container가 healthy로 돌아와야 한다.
 
-### Active-image persistence stop condition
+### Stop Conditions
+
+중단 조건은 아래 항목에 기록한다.
+
+#### Active-image persistence stop condition
 
 [정책의 조건](../../policies/09-ai-and-search/0081-comfyui.md#active-image-persistence-stop-condition)을 따른다. image upgrade 전에 `/root/ComfyUI` 아래 mount 대응을 확인하고, 어긋나면 @buenhyden의 승인 아래 중단한다.
 
-## Verification
+## Validation
+
+### Service Checks
 
 `docker compose --profile ai --profile ai-image ps comfyui`와 `/system_stats` 응답 상태를 확인한다. GPU 가시성과 승인된 대표 workflow는 별도로 확인한다.
+
+### Evidence
 
 정제된 명령 출력, 시각, commit, 선택한 profile, 이미지 식별자, mount 이름과 결과 상태를
 현재 Task에 기록한다. 사용자 자산, workflow 콘텐츠, 비공개 환경, 토큰, 원격 다운로드
 credential은 기록하지 않는다.
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
 
 추적된 구성만 검토된 버전으로 되돌린다. 영속 mount는 보존한다. 승인된 교체 전에 격리된
 스토리지로 복원한다.
@@ -148,15 +174,3 @@ credential은 기록하지 않는다.
 
 backup 부재, custom-node provenance 공백, 예상치 못한 노출, GPU 실패, 또는 파괴적 작업은
 @buenhyden에게 에스컬레이션한다.
-
-## Related Documents
-
-### Traceability
-
-- 관장 architecture: [AD-0008](../../../02.architecture/descriptions/0008-ai-architecture.md)
-- 대상 peer 문서: [Guide](../../guides/09-ai-and-search/0081-comfyui.md), [Policy](../../policies/09-ai-and-search/0081-comfyui.md)
-
-- [Guide](../../guides/09-ai-and-search/0081-comfyui.md), [Policy](../../policies/09-ai-and-search/0081-comfyui.md)
-- 런타임 고정 버전은 [ComfyUI Compose](../../../../infra/08-ai/comfyui/docker-compose.yml)가 소유한다. [derived Compose image projection](../../../../infra/tech-stack.versions.json)이 drift를 검증한다.
-- [중앙 backup 정책](../../policies/10-platform-and-backup/0021-backup-and-restore.md)
-- 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

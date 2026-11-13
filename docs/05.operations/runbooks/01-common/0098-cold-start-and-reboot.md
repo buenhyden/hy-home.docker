@@ -1,10 +1,10 @@
 ---
 title: "Cold Start and Reboot Runbook"
-version: "0.6.0"
+version: "0.6.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0098"
 created: "2026-09-25"
@@ -12,18 +12,33 @@ created: "2026-09-25"
 
 # Cold Start and Reboot Runbook
 
-## Overview
+## Purpose
 
-이 런북은 호스트 재부팅 전후에 HOME Docker Compose 스택과 hy-home.k8s(k3d) 컨테이너를 안전한 순서로 다시 세우고, 단계 사이의 health gate를 확인하는 절차를 제공한다.
-
-## Trigger
+### Trigger and Outcome
 
 호스트를 계획된 이유로 재부팅하기 전과 재부팅 직후, HOME Docker Compose 스택과
 같은 호스트의 hy-home.k8s(k3d) 컨테이너를 안전한 순서로 다시 세우고, 각 단계
 사이의 health gate를 확인할 때 사용한다. 정전이나 예정에 없던 재부팅 뒤 같은
 순서로 상태를 점검할 때도 쓴다.
 
-## Prerequisites
+### Scope
+
+- 과거 구현·리허설 근거: SPEC-0182
+  criterion 11, Plan W11,
+  Task 0003
+- 현재 결정: [ADR-0042](../../../02.architecture/decisions/0042-openbao-unseal-method.md)
+- 관련 runbook: [RUN-0085 OpenBao](../04-security-and-secrets/0085-openbao.md),
+  [RUN-0021 Backup and Restore](../10-platform-and-backup/0021-backup-and-restore.md),
+  [RUN hy-home.k8s Integration](../10-platform-and-backup/0096-k8s-integration.md)
+
+- [Operations index](../../README.md)
+- [Implementation: root Compose](../../../../docker-compose.yml),
+  [OpenBao Compose](../../../../infra/03-security/openbao/docker-compose.yml),
+  [common optimizations](../../../../infra/common-optimizations.yml)
+
+## Preconditions
+
+### Authority and Access
 
 이 런북은 unseal share, SecretID, root token,
 KV 값을 출력하거나 요청하지 않는다; 실제 재부팅 실행은 owner가 감독 아래
@@ -35,13 +50,11 @@ Unseal 방식은 [ADR-0042](../../../02.architecture/decisions/0042-openbao-unse
 채택되지 않았으므로 이 런북의 모든 단계는 owner가 직접 unseal과 SecretID 전달을
 수행한다고 전제한다.
 
-## Procedure
+### Safety Checks
 
-실행 중인 checkout의 저장소 root에서 명령을 수행한다. secret file, unseal share,
-SecretID, token, 렌더링된 Compose model을 출력하지 않는다. 현재 Task에 host·project·
-승인된 profile/service와 재부팅 전 expected container 집합을 기록한다.
+재부팅 전에 확인할 항목:
 
-### 0. Preconditions (재부팅 전, owner-run)
+#### 0. Preconditions (재부팅 전, owner-run)
 
 재부팅 전에 pgBackRest 백업, Restic 백업, `restic check`을 새로 남긴다.
 [RUN-0021](../10-platform-and-backup/0021-backup-and-restore.md) step 4의
@@ -54,7 +67,24 @@ Restic 백업, 그리고 `restic check`(`infra/09-platform-ops/restic/bin/hyhome
 [RUN-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 문제 해결
 절차를 따른다(잠금, 디스크 공간, 5 GiB 예산 초과 등).
 
-### 1. Docker와 Compose 컨테이너 (재부팅 직후)
+#### P01 external trust and bootstrap prerequisite
+
+재부팅 전에 OpenBao 외부 CA/server key 자료, 유효한 RUN-0105 5단계 custody 기록(SPEC-0242, 유효 조건은 POL-0085 위험 비례 재조정)과 제한
+재발급 신원을 확인한다. Agent process cache는 새 process/host boot를 넘지 않는다.
+[RUN-0103](../04-security-and-secrets/0103-openbao-renderer-delivery.md#renderer-secretid-delivery)의 60초 wrapping 전달 helper를
+사용하고, source health·KV version·render·실제 consumer 적용을 구분한다. Keycloak/DB는
+기존 Docker Secret bootstrap을 유지하므로 OIDC 발급 경로가 Agent 출력에 의존하지
+않는다. 이전 재부팅 receipt는 역사 증거이며 현재 P01 HOME cold boot 성공이 아니다.
+
+## Steps
+
+### Actions
+
+실행 중인 checkout의 저장소 root에서 명령을 수행한다. secret file, unseal share,
+SecretID, token, 렌더링된 Compose model을 출력하지 않는다. 현재 Task에 host·project·
+승인된 profile/service와 재부팅 전 expected container 집합을 기록한다.
+
+#### 1. Docker와 Compose 컨테이너 (재부팅 직후)
 
 지속 실행 service는 선택한 template의 `restart: unless-stopped` 등 실제 선언을
 따른다. 초기화·migration 같은 one-shot job의 `restart: "no"`는 자동 복귀 대상이
@@ -88,7 +118,7 @@ docker compose ps -a --format json
 상태다. 누락·추가·Exited·반복 재시작은 owner와 확인한다. `start_period`는 실패
 계수의 유예 기간이며 시작 완료 SLA가 아니다. 상태 JSON의 이름·상태만 기록한다.
 
-### Overlay 적용 점검 절차
+#### Overlay 적용 점검 절차
 
 규칙과 등록부는 [POL-0078](../../policies/01-common/0078-compose-profile-vocabulary.md#home-compose-overlay-등록부와-적용-규칙)이 소유한다. 이 절은 절차만 둔다. 값은 출력하지 않는다.
 
@@ -116,7 +146,7 @@ for n, s in json.load(sys.stdin)["services"].items():
    적용하고, 끝나면 base만으로 해당 서비스를 승인된 창에서 다시 만든다.
 5. 서비스 재생성은 별도 승인 작업이다. `.env` 편집만으로 실행 중 컨테이너는 바뀌지 않는다.
 
-### 2. 데이터와 인증 기반: `mng-pg`, `mng-valkey`, Traefik, Keycloak
+#### 2. 데이터와 인증 기반: `mng-pg`, `mng-valkey`, Traefik, Keycloak
 
 이 service들은 이후 OpenBao OIDC·hy-home.k8s 기능의 기반이다. `mng-pg`는
 `mng_data_net`의 관리 DB 경로를 사용한다. 모든 기반 service가 `secrets_net`과
@@ -145,7 +175,7 @@ docker logs --since 30m mng-pg 2>&1 | grep -E 'was shut down at|not properly shu
 예상 결과: `database system was shut down at …`만 나온다. `not properly shut down`이나
 `tini` 오류가 있으면 이전 종료가 깨끗하지 않았던 것이다.
 
-### 3. OpenBao: sealed 상태와 Agent 재시작 상태 확인
+#### 3. OpenBao: sealed 상태와 Agent 재시작 상태 확인
 
 `infra/03-security/openbao/docker-compose.yml`의 `openbao` healthcheck는
 `bao status`의 종료 코드 0(unsealed)만 healthy로 본다
@@ -169,7 +199,7 @@ logrotate가 매일 `docker kill --signal=HUP`을 보내 이 상태였고, 지�
 `docker exec … kill -HUP 1`을 쓴다. 남아 있으면 `docker start openbao`로 시작한 뒤
 4단계로 간다.
 
-### 4. Owner unseal (대화형, hidden input)
+#### 4. Owner unseal (대화형, hidden input)
 
 [RUN-0085](../04-security-and-secrets/0085-openbao.md)의 수동 unseal 계약을 따른다. 기존
 초기화된 storage를 사용하며 bootstrap/init·root 재발급을 시작하지 않는다: share 2개(threshold)를 대화형 터미널의 숨김 프롬프트에
@@ -182,16 +212,16 @@ docker compose exec -T openbao bao status
 ```
 
 예상 결과: 두 번째 명령 뒤 `Sealed  false`. 이 단계는 owner가 직접 수행하며
-시간(시작·종료)을 아래 Rehearsal Record에 기록한다.
+시간(시작·종료)을 현재 Task에 기록한다.
 
-### 5. Owner OIDC 로그인
+#### 5. Owner OIDC 로그인
 
 [RUN-0085 Human Login](../04-security-and-secrets/0085-openbao.md#human-login-and-normal-root-recovery)의
 [guide](../../guides/04-security-and-secrets/0085-openbao.md)를 따라 role `home-admin`으로
 OIDC 로그인한다. 결과 정책이 `default`와 `hy-home-operator`뿐이고 `root`가
 아님을 확인한다. Keycloak(2단계)이 `healthy`가 아니면 이 로그인은 실패한다.
 
-### 6. Wrapped SecretID 발급과 Agent 전달 (owner-run, 60초 이내)
+#### 6. Wrapped SecretID 발급과 Agent 전달 (owner-run, 60초 이내)
 
 [RUN-0103 Renderer SecretID Delivery](../04-security-and-secrets/0103-openbao-renderer-delivery.md#renderer-secretid-delivery)의
 현재 `host stop Agent → hidden issuer input/helper → TTL 내 start Agent → health` 절차와 검증 항목 전체를 실행한다. UI 로그인만으로 발급자 신원을 대신하지 않는다.
@@ -207,7 +237,7 @@ raw 로그·token·렌더링 값 대신 시각·version·일치 boolean만 현�
 SecretID 파일 부재나 옛 sink의 존재로 성공을 판정하지 않는다. 실제 소비자 적용은
 별도 증거이며 P01에서 mount를 바꾸지 않는다.
 
-### 7. hy-home.k8s(k3d) 컨테이너
+#### 7. hy-home.k8s(k3d) 컨테이너
 
 k3d 클러스터 노드는 같은 호스트의 Docker 컨테이너(`k3d-hyhome-*`)로 돈다.
 이 저장소에는 k3d 노드의 시작을 규정하는 문서나 systemd 단위가 없다.
@@ -246,32 +276,27 @@ docker network inspect k3d-hyhome --format '{{range .Containers}}{{.Name}} {{end
 Prometheus 시리즈 count나 pod Running만으로 클러스터 전체 건강을 선언하지 않는다. `k3d-hyhome` 네트워크에는 `k3d-hyhome-*` 컨테이너만 있어야
 한다.
 
-### 타이밍 요약
+#### 타이밍 요약
 
 | 단계 | 근거 | 예상 소요 |
 | --- | --- | --- |
 | 1. Docker/Compose 컨테이너 복귀 | 각 서비스 healthcheck `start_period` | 현재 선택·host 상태에 따라 달라짐. 2026-09-30 리허설의 약 16.5분 daemon 복귀/약19분 healthy는 아래 과거 기록에만 적용되며 현재 SLA가 아님 |
 | 3. OpenBao sealed 및 Agent 상태 확인 | `openbao` healthcheck `interval 15s`, `start_period 20s` | health 상태와 실제 unsealed/auth 결과를 각각 관찰; 고정 완료 시간 없음 |
-| 4. Owner unseal | 대화형, 소요 시간은 owner 입력 속도에 좌우 | **owner 확인 필요**; Rehearsal Record에 기록 |
+| 4. Owner unseal | 대화형, 소요 시간은 owner 입력 속도에 좌우 | **owner 확인 필요**; 현재 Task에 기록 |
 | 6. Wrapped SecretID 발급과 전달 | wrapping TTL 60초; 내부 SecretID 10분, 1회용 | wrap 만료 전에 시작 |
 | 7. hy-home.k8s 확인 | k3d 컨테이너 자체 기동 시간 문서화 안 됨 | **owner 확인 필요** |
 
-### P01 external trust and bootstrap prerequisite
+### Stop Conditions
 
-재부팅 전에 OpenBao 외부 CA/server key 자료, 유효한 RUN-0105 5단계 custody 기록(SPEC-0242, 유효 조건은 POL-0085 위험 비례 재조정)과 제한
-재발급 신원을 확인한다. Agent process cache는 새 process/host boot를 넘지 않는다.
-[RUN-0103](../04-security-and-secrets/0103-openbao-renderer-delivery.md#renderer-secretid-delivery)의 60초 wrapping 전달 helper를
-사용하고, source health·KV version·render·실제 consumer 적용을 구분한다. Keycloak/DB는
-기존 Docker Secret bootstrap을 유지하므로 OIDC 발급 경로가 Agent 출력에 의존하지
-않는다. 이전 재부팅 receipt는 역사 증거이며 현재 P01 HOME cold boot 성공이 아니다.
+0단계 백업이나 `restic check`이 실패하면 재부팅을 진행하지 않는다. 4단계 unseal이 실패하면 중단한다. 6단계 SecretID 전달이 실패하거나 시간을 넘기면 RUN-0103의 실패 처리를 따른다. 7단계에서 `k3d-hyhome-*` 컨테이너가 없으면 현재 cluster inventory와 이전 stop 의도를 확인하고 중단한다.
 
-## Verification
+## Validation
 
-각 단계의 실행 시각, `docker ps`/`docker inspect`/`bao status`의 상태 문자열,
-grep 결과(개수만)를 현재 Task에 기록한다. 원문 로그, secret 값, unseal share,
-SecretID, token 값은 기록하지 않는다.
+### Service Checks
 
-### Verification Record
+단계별 기대 결과는 지속 실행 service의 복귀와 job의 의도한 종료 상태, 재부팅 직후 `bao status`가 sealed(종료 코드 2, `unhealthy`)를 보고하고 unseal 뒤 `Sealed false`, `k3d-hyhome-*` 컨테이너 Up이다. 과거 실행 기록은 아래와 같다.
+
+#### Verification Record
 
 아래 표는 2026-09-30 실행 기록을 원문 그대로 보존한 것이다. 새로운 리허설은
 현재 Task에 별도 기록하며 이 표가 현재 readiness나 실행 권한을 제공하지 않는다.
@@ -291,9 +316,15 @@ SecretID, token 값은 기록하지 않는다.
 | 2026-09-30 | 6. SecretID delivery (owner, RUN-0085) | before 10:30:27 KST | 10:30:29 KST | PASS: Agent restarted 10:30:27, `authentication successful` 10:30:29, SecretID `consumed`, token renewed, no error after the restart |
 | 2026-09-30 | 7. k3d | 10:03:53 KST | 10:31 KST | PASS: five `k3d-hyhome-*` Up, 38 pods Running; `vault-backend` revalidated `Ready=True` at 10:11:17 after the unseal, and all six ExternalSecrets `SecretSynced` |
 
-## Failure and Recovery
+### Evidence
 
-### Rollback or Recovery
+각 단계의 실행 시각, `docker ps`/`docker inspect`/`bao status`의 상태 문자열,
+grep 결과(개수만)를 현재 Task에 기록한다. 원문 로그, secret 값, unseal share,
+SecretID, token 값은 기록하지 않는다.
+
+## Recovery
+
+### Rollback
 
 - 4단계(unseal)가 실패하면 중단하고 [RUN-0085](../04-security-and-secrets/0085-openbao.md)의 credential·
   cluster 상태 진단과 owner escalation을 따른다. unseal 실패만으로 Raft snapshot을
@@ -314,20 +345,3 @@ SecretID, token 값은 기록하지 않는다.
 Unseal share, SecretID, root token 발급 승인이 필요하거나, k3d 자동 시작
 여부처럼 이 런북이 owner 확인으로 남긴 항목이 실제로 막히면 @buenhyden에게
 알린다.
-
-## Related Documents
-
-### Traceability
-
-- 과거 구현·리허설 근거: SPEC-0182
-  criterion 11, Plan W11,
-  Task 0003
-- 현재 결정: [ADR-0042](../../../02.architecture/decisions/0042-openbao-unseal-method.md)
-- 관련 runbook: [RUN-0085 OpenBao](../04-security-and-secrets/0085-openbao.md),
-  [RUN-0021 Backup and Restore](../10-platform-and-backup/0021-backup-and-restore.md),
-  [RUN hy-home.k8s Integration](../10-platform-and-backup/0096-k8s-integration.md)
-
-- [Operations index](../../README.md)
-- [Implementation: root Compose](../../../../docker-compose.yml),
-  [OpenBao Compose](../../../../infra/03-security/openbao/docker-compose.yml),
-  [common optimizations](../../../../infra/common-optimizations.yml)

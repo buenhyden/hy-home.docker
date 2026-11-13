@@ -1,10 +1,10 @@
 ---
 title: "Tempo Operations Policy"
-version: "1.2.0"
+version: "1.2.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0049"
 parent_ids:
@@ -14,14 +14,24 @@ created: "2026-05-17"
 
 # Tempo Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 이 정책은 Tempo distributed tracing backend의 trace ingestion, SeaweedFS S3
 storage, block retention, metrics generator, secret boundary, protected route를
 정의한다. 사용 흐름은 Tempo guide가, 장애 대응 절차는 Tempo runbook이
 담당한다.
 
+### Authority
+
+- Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+
+- Runtime pins: Compose/Dockerfile 선언이 authoritative하며, [derived Compose image projection](../../../../infra/tech-stack.versions.json)이 drift 검증을 제공한다.
+
 ## Scope
+
+### Applies To
 
 이 정책은 current `infra/06-observability/tempo` compose와
 `config/tempo.yaml`에 선언된 Tempo 운영 기준을 다룬다.
@@ -29,7 +39,13 @@ storage, block retention, metrics generator, secret boundary, protected route를
 - **Systems**: compose service `tempo`, container `tempo`, image [hy/tempo image declaration](../../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/tempo/config/tempo.yaml`, volume `tempo-data`, SeaweedFS bucket `tempo-bucket`
 - **Environments**: 로컬·개발·홈랩 운영
 
+### Exclusions
+
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
+
 ## Rules
+
+### Requirements
 
 - **Required**:
   - Tempo service는 `template-stateful-high`, image
@@ -62,46 +78,28 @@ storage, block retention, metrics generator, secret boundary, protected route를
   - 승인 없이 bucket, retention, metrics generator processors, remote_write
     endpoint, route middleware, image version을 runtime에서 변경하는 행위
 
-### Lifecycle and data controls
+#### Lifecycle and data controls
 
 - Tempo는 `HOME`이다. SPEC-0182 W6에서 소유자가 `tracing`을 HOME에 추가했다(POL-0078). `tracing`을 빼는 대상으로 전환할 때는 `HOME up`이 이미 실행 중인 컨테이너를 제거하지 않으므로 Tempo를 명시적으로 중지한다.
 - `tempo-bucket`, local WAL/temp state, config, 대응하는 SeaweedFS credential을 하나의 조율된 recovery set으로 취급한다; object-store owner가 bucket backup/restore를 수행한다.
 - consistency 캡처 전에 OTLP ingestion을 멈춘다. isolated bucket/path로 rehearse하고 WAL replay, historical/new trace query, metrics-generator 동작, Alloy/Grafana integration을 검증한다.
 - Removal은 producer/exporter migration, retention 결정, credential/route 정리, object나 local data를 삭제하기 전 명시적 승인이 필요하다.
 
-### Retention enforcement gap
+#### Retention enforcement gap
 
 [POL-0048](0048-telemetry-retention.md)은 block 24h, compacted block 1h를 요구하지만 현재 설정에는 둘 다 없다. 선언된 Tempo 기본값은 336h/1h이므로 24h 준수가 입증되지 않는다. Bucket/receiver에 일치한 `rg`를 retention 검증으로 간주하지 않는다. 별도로 확인하고 누락은 통제 실패로 기록한다. 버전에 맞는 별도 구현 수정이 필요하다. Tempo 3은 backend scheduler/worker compaction 설정을 사용하므로 Tempo 2의 `compactor` 블록을 복사하지 않는다. 소스 검증은 실제 삭제나 trace 복원 증거가 아니다.
 
-### Approved LAN integration boundary
+#### Approved LAN integration boundary
 
 Traefik hostname에는 TLS/SSO middleware를 유지한다. 별도로 [POL-0096](../10-platform-and-backup/0096-k8s-integration.md#rules)의 기존 k3d 예외에 따라 Tempo HTTP `3200`을 `HOST_LAN_BIND_IP`(공개 기본값 `192.168.0.13`)에 gateway 인증·서비스 TLS 없이 게시한다. 완료된 SPEC-0188 Task의 2026-09-29 owner 승인에 따른 것으로 W5가 만든 예외가 아니다. Loki `auth_enabled: false`는 사용자 인증이 아니며 Tempo에도 native 인증 계층이 없다. Gateway middleware는 직접 포트를 보호하지 않는다.
 
 예외는 지정 cluster 통합 목적과 설정된 LAN 인터페이스로 한정한다. 소스에는 k3d만 식별하는 인증이 없으며 비공개 override, bind 성공, routing/firewall과 실제 도달성은 관찰하지 않았다. 사람은 보호된 hostname을, 기계 검증은 [GDE-0096](../../guides/10-platform-and-backup/0096-k8s-integration.md)을 따른다. 실제 log/trace payload 대신 상태와 시험 ID만 남긴다. 재바인딩·제거·인증/TLS 추가·노출 확대는 통합 소유자와 조정한 별도 승인 변경이다.
 
-### Internal gRPC listener
+#### Internal gRPC listener
 
 Tempo gRPC `9095`은 listen address를 지정하지 않아 모든 인터페이스에 인증 없이 bind하며 `tempo_ingress_net`, `obs_net`, `object_net`의 peer가 접근할 수 있다. 단일 바이너리 구성에서 이 포트는 Tempo 자신의 내부 호출에만 쓰이고 선언된 외부 소비자는 없다. 같은 서비스의 HTTP 포트도 인증이 없으므로 노출 수준이 같다. owner가 2026-11-12 이 노출을 수용했다. 이 listener는 REQ-0023-FR-0004가 다루는 metrics·관리·profiling·broker listener가 아니다. 분산 모드 전환, 외부 gRPC 소비자 추가, 인증 도입 때 다시 검토한다.
 
-## Exceptions
-
-- Retention, bucket, sampling, remote_write, route, secret reference 예외는
-  사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
-- 장애 대응 중 임시 조치가 필요하면 Tempo runbook에서 최소 조치와 rollback
-  evidence를 기록한다.
-
-### Review Cadence
-
-- Tempo image, config, retention, SeaweedFS bucket, metrics generator,
-  remote_write, route, secret reference, OTLP receiver가 변경될 때 검토한다.
-- 정기 검토는 quarterly cadence로 수행한다.
-
-### Traceability
-
-- Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](../../guides/07-observability/0049-tempo.md) (`GDE-0049`), [Runbook](../../runbooks/07-observability/0049-tempo.md) (`RUN-0049`)
-
-## Verification
+### Enforcement
 
 - Compose service boundary:
   `rg -n 'service: template-stateful-high|image: hy/tempo:|user: .10001:10001.|tempo-data|TEMPO_PORT|seaweedfs_s3_tempo_secret_key|tempo.middlewares' infra/06-observability/docker-compose.yml`
@@ -112,11 +110,30 @@ Tempo gRPC `9095`은 listen address를 지정하지 않아 모든 인터페이�
 - Repository contracts:
   원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
+## Exceptions
+
+### Exception Conditions
+
+- Retention, bucket, sampling, remote_write, route, secret reference 예외는
+  사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
+- 장애 대응 중 임시 조치가 필요하면 Tempo runbook에서 최소 조치와 rollback
+  evidence를 기록한다.
+
+### Approval and Review
+
+- Tempo image, config, retention, SeaweedFS bucket, metrics generator,
+  remote_write, route, secret reference, OTLP receiver가 변경될 때 검토한다.
+- 정기 검토는 quarterly cadence로 수행한다.
+
+## Ownership
+
+### Responsibilities
+
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-## Related Documents
+### Change and Adoption
 
-- Runtime pins: Compose/Dockerfile 선언이 authoritative하며, [derived Compose image projection](../../../../infra/tech-stack.versions.json)이 drift 검증을 제공한다.
+- Subject peers: [Guide](../../guides/07-observability/0049-tempo.md) (`GDE-0049`), [Runbook](../../runbooks/07-observability/0049-tempo.md) (`RUN-0049`)
 
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/07-observability/0049-tempo.md)

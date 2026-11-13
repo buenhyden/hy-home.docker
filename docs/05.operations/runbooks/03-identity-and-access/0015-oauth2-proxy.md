@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Runbook"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0015"
 parent_ids:
@@ -14,15 +14,13 @@ created: "2026-05-17"
 
 # 02-Auth OAuth2 Proxy Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 이 런북은 OAuth2 Proxy 인증 루프, OIDC 장애, CA/issuer/callback 불일치, Redis/Valkey session 장애, logout 경계 혼동, readonly/tmpfs 관련 오류, 설정 검증 실패 상황에 대한 복구 절차를 정의한다.
 
-> Scope: OAuth2 Proxy ForwardAuth Recovery
-
 목적은 인증 경로 장애의 신속한 복구, degraded-mode 수행/종료 통제, config lint 실패 시 안전한 롤백이다.
-
-## Trigger
 
 다음 경우에 사용한다.
 
@@ -36,9 +34,32 @@ created: "2026-05-17"
 - compose/config 변경 후 런타임 부팅 실패
 - Keycloak `/admins` group 사용자가 거부되거나 비허용 사용자가 통과할 때
 
-## Prerequisites
+### Scope
 
-### Target, approval and safe evidence
+> Scope: OAuth2 Proxy ForwardAuth Recovery
+
+- Declared parent: [02-Auth OAuth2 Proxy Usage Guide](../../guides/03-identity-and-access/0015-oauth2-proxy.md) (`GDE-0015`)
+- Governing authority: [02-Auth Architecture Description](../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+- Subject peers: [Guide](../../guides/03-identity-and-access/0015-oauth2-proxy.md) (`GDE-0015`), [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md) (`POL-0015`)
+
+- [Official OAuth2 Proxy Keycloak OIDC provider](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc/)
+- [Official OAuth2 Proxy configuration overview](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)
+- [Official OAuth2 Proxy session storage](https://oauth2-proxy.github.io/oauth2-proxy/configuration/session_storage/)
+- [Official OAuth2 Proxy endpoints](https://oauth2-proxy.github.io/oauth2-proxy/features/endpoints/)
+
+- 런타임 버전은 Compose/Dockerfile 선언이 소유하며, [파생 Compose 이미지 목록](../../../../infra/tech-stack.versions.json)은 drift 검증에 사용한다.
+
+- [Operations index](../../README.md)
+- [Usage guide](../../guides/03-identity-and-access/0015-oauth2-proxy.md)
+- [Operations policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md)
+
+## Preconditions
+
+### Authority and Access
+
+승인 대상과 증거 처리 기준은 다음과 같다.
+
+#### Target, approval and safe evidence
 
 저장소 루트의 승인된 Docker context에서 아래에 명시한 서비스만 다룬다.
 명령이 runtime을 변경하는 단계는 대상, 영향받는 사용자·소비자, 이전 image/config,
@@ -48,15 +69,21 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
 여러 앱 공통 장애는 [RUN-0099](../01-common/0099-system-operations.md), cold-start는
 [RUN-0098](../01-common/0098-cold-start-and-reboot.md)이 소유한다.
 
-## Procedure
+### Safety Checks
 
-### Preflight checks
+조치 전에 확인할 항목은 다음과 같다.
+
+#### Preflight checks
 
 - [ ] `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` 성공
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 실행
 - [ ] Proxy의 정제된 인증/backend 오류 요약 오류 패턴 확인
 
-### Diagnosis and recovery steps
+## Steps
+
+### Actions
+
+#### Diagnosis and recovery steps
 
 1. 기본 진단
    - `/ping` 확인: `docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`
@@ -93,7 +120,7 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
 9. config lint 실패 롤백
    - 아래 Rollback or Recovery의 파일 복원 절차를 따른다
 
-### Lifecycle, helpers and change acceptance
+#### Lifecycle, helpers and change acceptance
 
 Proxy의 issuer·CA와 공유 `mng-valkey`가 준비되어야 한다. 기본 공유 경로에서 `auth`
 선택이 DB/Valkey readiness를 기다린다고 가정하지 않는다. 기존 로컬 image를
@@ -114,9 +141,17 @@ docker compose stop oauth2-proxy
 공유 `mng-valkey`는 이 절차로 중지/flush하지 않는다. 세션 손실 시 재로그인이 기본
 복구이며 cleanup을 위해 `down -v`나 `FLUSHALL`을 사용하지 않는다.
 
-## Verification
+### Stop Conditions
 
-### Acceptance checks
+runtime을 변경하는 단계는 중단 조건이 확인된 별도 승인 뒤에만 수행한다(Authority and Access). 검증 실패, secret 노출 위험, 파괴적 data 변경 필요, 결과 불일치는 중단하고 에스컬레이션한다(Escalation).
+
+## Validation
+
+### Service Checks
+
+수용 확인은 다음과 같다.
+
+#### Acceptance checks
 
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 통과
 - [ ] `docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping` 성공
@@ -124,7 +159,11 @@ docker compose stop oauth2-proxy
 - [ ] `/ready`가 session store 연결까지 성공
 - [ ] `/oauth2/sign_out`과 Keycloak end-session redirect의 효과를 구분해서 기록
 
-### Observability and evidence sources
+### Evidence
+
+관측 신호와 증거 기록은 다음과 같다.
+
+#### Observability and evidence sources
 
 - **Signals**: `/ping`, oauth2-proxy 로그, Keycloak 연결 오류율
 - **Evidence to Capture**:
@@ -132,13 +171,13 @@ docker compose stop oauth2-proxy
   - Keycloak의 정제된 OIDC 오류 요약
   - check-all-hardening.sh 02-auth 출력
 
-### 증거 기록
+#### 증거 기록
 
 - 원문을 제외한 명령 종료 상태·시각·승인 대상·조치와 미검증 항목만 기록한다.
 - 실패한 점검, 관찰된 증상과 최종 복구 또는 에스컬레이션 상태를 관련 Task나 incident evidence에 기록한다.
 - Valkey credential의 노출 경계는 [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md#rules)를 따른다. `docker inspect`, `docker top`, `/proc/*/cmdline`·`environ`, 원문 `.State.Health.Log`는 기록하지 않는다.
 
-### Shared Valkey outage rehearsal (2026-09-22, owner-approved)
+#### Shared Valkey outage rehearsal (2026-09-22, owner-approved)
 
 > Historical evidence (not current authority; source: Git history):
 > Source: `c26bc8026254`, `docs/05.operations/runbooks/03-identity-and-access/0015-oauth2-proxy.md`, 2026-09-22 owner-approved rehearsal.
@@ -155,9 +194,11 @@ docker compose stop oauth2-proxy
 위 outage 관찰은 당시 공유 backend와 unauthenticated 요청만 다룬다. 현재 선언
 이미지에서 재실행한 결과도, 인증된 기존 세션의 fail-closed 검증도 아니다.
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
+
+#### Rollback or Recovery
 
 설정 파일 복원 절차는 다음과 같다.
 
@@ -187,22 +228,3 @@ rollback 경로는 계획된 절차이며 2026-09-20 문서 수정 때 실행하
 ### Escalation
 
 검증 실패, secret 노출 위험, 파괴적인 data 변경 필요, 또는 예상한 절차 결과와 관찰 상태의 불일치가 나타나면 중단하고 @buenhyden에게 에스컬레이션한다. 수집한 evidence, 시도한 단계와 현재 rollback/recovery 상태를 포함한다. evidence가 local 운영자 환경을 벗어나기 전에 credential, authorization code, token, cookie, session identifier, 필요한 경우 private IP, 개인 account 정보를 가린다.
-
-## Related Documents
-
-### Traceability
-
-- Declared parent: [02-Auth OAuth2 Proxy Usage Guide](../../guides/03-identity-and-access/0015-oauth2-proxy.md) (`GDE-0015`)
-- Governing authority: [02-Auth Architecture Description](../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
-- Subject peers: [Guide](../../guides/03-identity-and-access/0015-oauth2-proxy.md) (`GDE-0015`), [Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md) (`POL-0015`)
-
-- [Official OAuth2 Proxy Keycloak OIDC provider](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/keycloak_oidc/)
-- [Official OAuth2 Proxy configuration overview](https://oauth2-proxy.github.io/oauth2-proxy/configuration/overview/)
-- [Official OAuth2 Proxy session storage](https://oauth2-proxy.github.io/oauth2-proxy/configuration/session_storage/)
-- [Official OAuth2 Proxy endpoints](https://oauth2-proxy.github.io/oauth2-proxy/features/endpoints/)
-
-- 런타임 버전은 Compose/Dockerfile 선언이 소유하며, [파생 Compose 이미지 목록](../../../../infra/tech-stack.versions.json)은 drift 검증에 사용한다.
-
-- [Operations index](../../README.md)
-- [Usage guide](../../guides/03-identity-and-access/0015-oauth2-proxy.md)
-- [Operations policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md)

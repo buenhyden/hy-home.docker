@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Consumer Migration and Secret Catalog"
-version: "0.4.1"
+version: "0.4.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0106"
 parent_ids:
@@ -14,21 +14,30 @@ created: "2026-10-28"
 
 # OpenBao Consumer Migration and Secret Catalog
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 이 런북은 P06 소비자 이관 runtime의 운영 경계와 P02 공개 secret catalog 점검을 다룬다. 실제 소비자 전환 절차는 [consumer-migration README](../../../../infra/03-security/openbao/consumer-migration/README.md)가 소유한다.
 
-## Trigger
-
 소비자를 OpenBao Agent 출력으로 옮기거나, secret catalog를 점검·렌더·생성 점검하거나, SMTP01의 COMM-003 중복 퇴역을 수행할 때 사용한다.
 
-## Prerequisites
+### Scope
+
+- 공통 OpenBao 운영: [RUN-0085](0085-openbao.md)
+- [Implementation](../../../../infra/03-security/openbao/docker-compose.yml)과 [version projection](../../../../infra/tech-stack.versions.json)이 런타임 고정 버전을 소유한다.
+- [Guide](../../guides/04-security-and-secrets/0085-openbao.md), [Policy](../../policies/04-security-and-secrets/0085-openbao.md)
+- 관장 architecture: [AD-0003](../../../02.architecture/descriptions/0003-security-architecture.md)
+
+- [운영 인덱스](../../README.md)
+
+## Preconditions
+
+### Authority and Access
 
 저장소 루트에서 작업하고, 실제 copy·전환·삭제·회전은 P06 Task의 별도 입력·검토·수용을 거친다.
 
-## Procedure
-
-### P06 Consumer Migration Boundary
+#### P06 Consumer Migration Boundary
 
 이 Runbook은 [copy runtime](../../../../scripts/lib/ops/openbao_consumer_migration.py)과
 [HTTPS transport](../../../../scripts/lib/ops/_openbao_copy_transport.py)의 운영 실행 경계를 소유합니다.
@@ -43,7 +52,9 @@ consumer 렌더·pilot·authority 전환·복구·삭제·회전의 새 실행�
 이 과거 수용은 일반 copy API의 실행이나 현재 운영 동등성 증거가 아닙니다. source/unit
 통과로 어느 실행 경계도 완료 처리하지 않습니다.
 
-### P06 Read-only Structure and SMTP Checks
+### Safety Checks
+
+#### P06 Read-only Structure and SMTP Checks
 
 현재 작업에서 private 읽기를 허용하고, 합성 값 누출 시험과 독립 보안 검토를
 먼저 통과한 경우에만 운영자가 저장소 루트에서 다음 명령을 실행한다. 두 명령은
@@ -69,7 +80,11 @@ python3 scripts/operations/secret-structure.py --root "$PWD" smtp-equality --rea
 권한과 복구 경계를 갖춘 다음 해당 소비자 소유자에게 인계한다. 소스 되돌리기는
 도구 코드만 되돌리며 실제 credential의 서버 유효성 복원을 뜻하지 않는다.
 
-### SMTP 전환 확인과 중복 퇴역
+## Steps
+
+### Actions
+
+#### SMTP 전환 확인과 중복 퇴역
 
 Supabase LAB은 2026-11-06 owner 결정으로 제거되어 COMM-003 alias의 Auth 소비자는 남아 있지 않습니다(SPEC-0263 W8).
 
@@ -113,7 +128,7 @@ Supabase LAB은 2026-11-06 owner 결정으로 제거되어 COMM-003 alias의 Aut
 source revert나 격리 SMTP 성공으로 HOME 복구를 PASS로 기록하지 않습니다. 전체 up/down,
 volume 초기화와 일괄 credential 회전은 이 절차에 포함되지 않습니다.
 
-### SMTP01의 root·lock·증거 계약
+#### SMTP01의 root·lock·증거 계약
 
 receipt의 필수 필드는 `host`, `git_sha`, `source_sha256`,
 `root_identity: {st_dev, st_ino}`, `old_mount_consumers: []`,
@@ -168,7 +183,7 @@ quarantine을 제한된 로컬 프로세스에서 확인합니다. 평문 복제
 중복 파일을 삭제하지 않습니다. 과거 CLN01 초안의 target 변경이나 SMTP verdict 고정은
 자동 적용하지 않고 이 계약과 실제 native 결과에 맞춰 검토합니다.
 
-### n8n Native Credential Handoff
+#### n8n Native Credential Handoff
 
 기존 선택 업무의 PostgreSQL `opsflow_notifier`와 SMTP는 n8n에 저장된 서로 다른
 Credential이다. [기존 P06 기록](../../../03.specs/0204-service-integration-security-and-operations/tasks/tsk-0014-p06-openbao-consumer-migration.md)은
@@ -183,9 +198,11 @@ PostgreSQL native 회전의 과거 격리 수용과 두 자격의 OpenBao 전달
 즉시 전환은 가정하지 않는다. 실제 발급·회전·외부 전송은 별도 대상별 승인과 복구
 준비가 필요하며 이 문서는 실행 권한을 부여하지 않는다.
 
-### P02 Public Catalog Checks
+#### P02 Public Catalog Checks
 
-#### Metadata Check
+P02 공개 catalog 점검은 아래 세 절로 나뉜다.
+
+##### Metadata Check
 
 이 절차는 검토된 checkout의 공개 metadata와 staging view만 확인한다. OpenBao API,
 private metadata·환경·credential 파일, HOME 서비스에 접속하지 않는다. 저장소 루트의
@@ -202,7 +219,7 @@ python3 scripts/operations/secret-catalog.py --root "$PWD" check
 `P02_METADATA_BLOCKED`와 exit 2는 형식·원본·경로·의존성 등 검사 실패이므로 중단한다.
 이 결과는 credential 값 또는 권리·운영 상태를 검사한 결과가 아니다.
 
-#### Staging Views
+##### Staging Views
 
 staging이 필요한 경우에만 operator-owned `.agent-work`와 그 안의 regular, single-link,
 동일 소유자 `README.md`를 먼저 확인한다. 기존 타 작업자의 경로를 교체하거나 symlink,
@@ -222,7 +239,7 @@ exit 2다. 경로·소유권 등 안전 검사 실패는 `P02_METADATA_BLOCKED`,
 소비하지 말고 원인과 공개 입력을 검토한 뒤 동일 전용 staging을 다시 생성·검사한다.
 private 파일 삭제나 runtime rollback을 이 절차의 정리로 수행하지 않는다.
 
-#### Generation Refusal Probes
+##### Generation Refusal Probes
 
 아래 두 거절 probe는 각각 독립적으로 실행한다. `check-generation`은 생성 적격성만
 검사하며 secret을 발급하지 않는다. 두 명령 모두 `P02_GENERATION_BLOCKED`, exit 2가
@@ -241,14 +258,24 @@ guard가 거부해야 한다. 공개 staging만으로 실제 발급·수집·이
 `DEPLOYED` 항목만 `openbao_agent`다. 실제 pilot은 대상 ID·KV
 path·P01 인증/복구·P03 신원·P04 DEV/S3 증거가 있어야 한다. 현재 HOME/P06 hold를 유지한다.
 
-## Verification
+### Stop Conditions
 
-catalog 점검 결과 `P02_METADATA_VALID`, staging을 만든 경우 `P02_VIEWS_MATCH`, 두 거절 probe의
-`P02_GENERATION_BLOCKED`(exit 2)를 값 없이 Task에 기록한다. 소비자 전환의 수용은 P06 Task가 따로 가진다.
+trusted 작성자와 입력의 쓰기 중단을 확인한 뒤에만 검사한다(Safety Checks의 P06 Read-only Structure and SMTP Checks). `P02_METADATA_BLOCKED`와 exit 2는 중단하고(Actions의 Metadata Check), 거절 probe가 성공하거나 예상 출력과 다르면 중단한다(Actions의 Generation Refusal Probes). catalog 점검이 실패하면 생성·전환을 멈춘다(Rollback). 안전한 진행이 불가능하면 중단하고 @buenhyden에게 연락한다(Escalation).
 
-## Failure and Recovery
+## Validation
 
-### Rollback or Recovery
+### Service Checks
+
+catalog 점검 결과는 `P02_METADATA_VALID`, staging을 만든 경우 `P02_VIEWS_MATCH`, 두 거절 probe의
+`P02_GENERATION_BLOCKED`(exit 2)여야 한다. 소비자 전환의 수용은 P06 Task가 따로 가진다.
+
+### Evidence
+
+catalog 점검의 상태 문자열(Service Checks)을 값 없이 Task에 기록한다.
+
+## Recovery
+
+### Rollback
 
 catalog 점검이 실패하면 생성·전환을 멈추고 원인을 고친 뒤 다시 점검한다. 소비자 전환의 rollback은 consumer-migration README의 `rollback` 절차를 따른다.
 
@@ -256,14 +283,3 @@ catalog 점검이 실패하면 생성·전환을 멈추고 원인을 고친 뒤 
 
 credential, 파괴적 스토리지 변경, remote 변경, 또는 backup 부재로 안전한 진행이 불가능하면
 중단하고 @buenhyden에게 연락한다.
-
-## Related Documents
-
-### Traceability
-
-- 공통 OpenBao 운영: [RUN-0085](0085-openbao.md)
-- [Implementation](../../../../infra/03-security/openbao/docker-compose.yml)과 [version projection](../../../../infra/tech-stack.versions.json)이 런타임 고정 버전을 소유한다.
-- [Guide](../../guides/04-security-and-secrets/0085-openbao.md), [Policy](../../policies/04-security-and-secrets/0085-openbao.md)
-- 관장 architecture: [AD-0003](../../../02.architecture/descriptions/0003-security-architecture.md)
-
-- [운영 인덱스](../../README.md)

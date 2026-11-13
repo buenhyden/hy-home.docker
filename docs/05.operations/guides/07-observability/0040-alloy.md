@@ -129,7 +129,7 @@ Docker socket 접근은 민감하며, Hermes 수신기는 `Authorization: Bearer
 
 #### Runbook Handoff
 
-반복 실행 절차, 장애 대응, rollback, escalation은 [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#procedure)를 따른다.
+반복 실행 절차, 장애 대응, rollback, escalation은 [RUN-0040](../../runbooks/07-observability/0040-alloy.md)를 따른다.
 
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/07-observability/0040-alloy.md)

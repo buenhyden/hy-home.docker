@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Recovery Runbook"
-version: "1.2.3"
+version: "1.2.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0076"
 parent_ids:
@@ -14,18 +14,34 @@ created: "2026-05-17"
 
 # RedisInsight Recovery Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 RedisInsight의 gateway 접근, 설정 보존, inspector 비밀 회전, 업그레이드와 복구 절차를 다룬다.
-
-## Trigger
 
 gateway 로그인 실패, 설정 손실·손상, 대상 인증 실패, 자격 증명 노출, 설정 복원
 또는 업그레이드에 사용한다.
 
-## Prerequisites
+### Scope
 
-### 작업 선택과 복구 전제
+- [Guide](../../guides/05-databases-and-storage/0076-redisinsight.md) (`GDE-0076`)
+- [Policy](../../policies/05-databases-and-storage/0076-redisinsight.md) (`POL-0076`)
+- [RedisInsight Compose](../../../../infra/04-data/redisinsight/docker-compose.yml)
+
+- [RedisInsight configuration](https://redis.io/docs/latest/operate/redisinsight/configuration/)
+
+## Preconditions
+
+### Authority and Access
+
+Workbench의 파괴적 명령은 대상 소유자 승인이 필요하고, 사전 등록된 inspector 연결만 쓴다. 비밀 이름은 `inspector_password.txt`와 `redisinsight_encryption_key`이며 값은 출력하지 않는다. 책임자는 `@buenhyden`이다.
+
+### Safety Checks
+
+실행 전 확인할 점검은 아래 항목을 따른다.
+
+#### 작업 선택과 복구 전제
 
 변경 전에 정확한 서비스·데이터 경로·승인자·중단 영향을 기록하고 [공통 복구 전제](../10-platform-and-backup/0021-backup-and-restore.md)를
 적용한다. 격리 대상, 복구본 식별자·무결성, 여유 공간, 비밀 보관, 작성자 정지와
@@ -34,7 +50,9 @@ gateway 로그인 실패, 설정 손실·손상, 대상 인증 실패, 자격 �
 단일 파일 bind 재생성과 비밀 비노출 확인을 따른다. 재시작은 데이터 복원이나 자격 증명
 폐기 검증을 대신하지 않는다.
 
-## Procedure
+## Steps
+
+### Actions
 
 1. 루트에서 validate하고 점검한다.
 
@@ -62,7 +80,7 @@ gateway 로그인 실패, 설정 손실·손상, 대상 인증 실패, 자격 �
    보존한다.
 4. `/data` ownership/free-space와 gateway control이 통과한 후에만 재시작한다.
 
-### Inspector 비밀 회전
+#### Inspector 비밀 회전
 
 1. `secrets/db/dev-valkey/inspector_password.txt`(또는 MNG의 같은 파일)를 같은
    소유자·`640`으로 새 값으로 바꾼다. 값은 출력하지 않는다.
@@ -74,7 +92,7 @@ gateway 로그인 실패, 설정 손실·손상, 대상 인증 실패, 자격 �
    `docker compose --profile admin-data up -d --no-deps --force-recreate redisinsight`.
    사전 등록 연결이 새 비밀로 다시 저장되고 info가 200인지 본다.
 
-### 기존 `/data`의 암호화 전환
+#### 기존 `/data`의 암호화 전환
 
 `encryption` 동의가 꺼진 채 만든 `/data`에는 연결 비밀번호가 평문으로 남는다.
 
@@ -89,7 +107,7 @@ gateway 로그인 실패, 설정 손실·손상, 대상 인증 실패, 자격 �
 5. `/data`를 `700`, `redisinsight.db`를 `600`으로 둔다. 1단계의 사본은 평문
    자격 증명을 담으므로 확인 뒤 폐기 시점을 정해 기록한다.
 
-### Settings restore and upgrade
+#### Settings restore and upgrade
 
 1. RedisInsight를 중지하고 `/data` 전체를 protected storage로 복사한다. checksum과
    source commit을 기록하고 credential-bearing material로 보호한다.
@@ -100,7 +118,7 @@ gateway 로그인 실패, 설정 손실·손상, 대상 인증 실패, 자격 �
 4. upgrade 시에는 release/license note를 검토하고, 복사된 settings에서 target image를
    테스트하고, gateway access와 disposable test database connection을 확인한다.
 
-### 승인된 사용·설정 보존·업그레이드
+#### 승인된 사용·설정 보존·업그레이드
 
 `docker compose --profile admin-data config --quiet`로 검증한다. 게이트웨이
 인증/CIDR를 확인한 다음 사전 등록된 inspector 연결만 쓴다. 다른 연결을 수동으로 추가하지 않는다. Workbench의
@@ -109,7 +127,7 @@ gateway 로그인 실패, 설정 손실·손상, 대상 인증 실패, 자격 �
 
 설정 보존·복원·업그레이드 순서는 위 `Settings restore and upgrade`를 따른다. UI 설정 백업은 대상 데이터베이스 백업이 아니다.
 
-### 직접 접근 제한
+#### 직접 접근 제한
 
 listener는 `redisinsight_ingress_net`의 `10.250.18.3`에만 열린다. 데이터 망 peer에서
 `nc -z <redisinsight 데이터망 주소> 5540`이, 호스트에서
@@ -118,15 +136,25 @@ listener는 `redisinsight_ingress_net`의 `10.250.18.3`에만 열린다. 데이�
 안전한 배포나 복구 완료를 선언하지 않는다. 노출을 확대하거나 저장된 credential을
 진단 출력으로 사용하지 않는다.
 
-## Verification
+### Stop Conditions
+
+다음 경우 중단하고 `@buenhyden`에게 보고한다. 격리 대상, 복구본 식별자·무결성, 여유 공간, 비밀 보관, 작성자 정지, 승격 승인 중 하나라도 불명확할 때. `RI_APP_HOST`가 빠졌거나 바뀌어 데이터 망 peer나 호스트에서 5540 접근이 성공할 때. Escalation에 나열한 조건(credential exposure, encryption key 누락 등)이 있을 때.
+
+## Validation
+
+### Service Checks
+
+UI health(`/api/health/`)가 응답하고 `/api/databases/1/info`(MNG는 `2`)가 200이며, 데이터 망 peer와 호스트의 직접 접근 확인(`nc -z`, `curl`)이 실패해야 한다.
+
+### Evidence
 
 종료 코드·source 커밋·설정 checksum/개수·gateway/CIDR 판정·자격 증명 회전 근거·
 대상 계정 범위와 최종 상태를 기록한다. password,
 key, query history, data 값은 기록하지 않는다.
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
 
 settings restore와 upgrade rehearsal은 **계획되었으나 미실행** 상태이다. target
 Redis/Valkey data의 restore는 target engine runbook 소관이다.
@@ -138,13 +166,3 @@ Redis/Valkey data의 restore는 target engine runbook 소관이다.
 credential exposure, encrypted data의 encryption key 누락, 알 수 없는 target
 authority, settings corruption, license 모호성, restore rehearsal 중 production
 target reachability가 있으면 중단한다.
-
-## Related Documents
-
-### Traceability
-
-- [Guide](../../guides/05-databases-and-storage/0076-redisinsight.md) (`GDE-0076`)
-- [Policy](../../policies/05-databases-and-storage/0076-redisinsight.md) (`POL-0076`)
-- [RedisInsight Compose](../../../../infra/04-data/redisinsight/docker-compose.yml)
-
-- [RedisInsight configuration](https://redis.io/docs/latest/operate/redisinsight/configuration/)

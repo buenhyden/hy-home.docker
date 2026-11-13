@@ -1,27 +1,41 @@
 ---
 title: "Agentic Engineering Policy"
-version: "1.7.3"
+version: "1.7.4"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 ---
 
 # Agentic Engineering Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 Agent governance defines auditable, provider-neutral AI-agent execution. Canonical
 roles live in `.agents/roles/`, reusable procedures live in `.agents/skills/`, and provider
 selection and permission mappings live in `.agents/governance/providers/registry.yaml`.
 
+### Authority
+
+This policy is the canonical owner of provider-neutral agent execution, delegation, capability intake, and Task evidence under [bootstrap precedence](bootstrap.md#authority-and-precedence).
+
 ## Scope
+
+### Applies To
 
 Provider-neutral agent execution, delegation, capability intake, and Task evidence.
 
+### Exclusions
+
+None: this document states no exclusion.
+
 ## Rules
 
-### Execution Rules
+### Requirements
+
+#### Execution Rules
 
 - Discover repository evidence and the approved Spec, Plan, and Task before mutation.
 - Keep one primary owner for each logical unit and independent review separate.
@@ -68,7 +82,7 @@ Provider-neutral agent execution, delegation, capability intake, and Task eviden
   rewriting them. Adding any of these needs an approved Spec that names its
   command, permission, inputs, and output.
 
-### Delegation Contract
+#### Delegation Contract
 
 Delegate only to a role declared in `.agents/roles/` and mapped by the provider
 registry. Each envelope names the role and primary responsibility, exact owned
@@ -94,7 +108,7 @@ evidence. This contract does not infer account RPM, TPM, price, or a provider
 enforcement mechanism; only a supported native observation can show hard
 enforcement.
 
-### External Capability Intake
+#### External Capability Intake
 
 An external agent catalog, prompt collection, or role library is a discovery
 input, never an install source or a local authority. Taking in an external
@@ -117,7 +131,7 @@ Record the decision and its evidence in the current Task. Stage 90 research may
 describe an external catalog and recommend intake, but it never records the
 decision itself.
 
-### Lifecycle
+#### Lifecycle
 
 The sequence is discovery, applicability, approved execution, focused
 verification, independent review, and completion evidence. Failed verification
@@ -126,13 +140,9 @@ stops at approval. Retry bounds come from [workflows.md](workflows.md); provider
 controls come from the provider registry. Neither may be replaced by
 prompt-local policy.
 
-## Exceptions
+### Enforcement
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-## Verification
-
-### Evaluation Evidence
+#### Evaluation Evidence
 
 A paired Skill evaluation is a separately scoped experiment, not recurring
 repository QA. Before execution, the owning Task selects the same task/input and
@@ -159,12 +169,30 @@ Evaluation scores do not authorize publication, provider calls or remote writes.
 Execution and acceptance stay in the Task; aggregate scores are not a second
 progress ledger.
 
-## Related Documents
+## Exceptions
 
+### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+### Approval and Review
+
+None: no exception exists to approve.
+
+## Ownership
+
+### Responsibilities
+
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
+
+### Change and Adoption
+
+Changes land in place with Task evidence; related documents:
+
+- External catalog evidence (`docs/90.references/research/0002-agentic-engineering-research-pack/m0003-ai-agent-catalogs.md`)
+- [Workflow supervisor](../roles/workflow-supervisor.md)
+- [Documentation index](../../docs/README.md)
 - [Bootstrap policy](bootstrap.md)
 - [Workflows](workflows.md)
 - [Task checklists](task-checklists.md)
 - [Provider registry](providers/registry.yaml)
-- External catalog evidence (`docs/90.references/research/0002-agentic-engineering-research-pack/m0003-ai-agent-catalogs.md`)
-- [Workflow supervisor](../roles/workflow-supervisor.md)
-- [Documentation index](../../docs/README.md)

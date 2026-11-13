@@ -20,7 +20,7 @@ created: "2026-05-17"
 
 이 가이드는 05-messaging 계층의 hardening 점검 범위를 설명한다. 현재 messaging surface는 Kafka 전용이며 OPTIONAL이다.
 
-대상 독자는 Kafka family 구성을 바꾸고 그 hardening 상태를 검증하는 운영자다. 목표는 정적 확인으로 무엇을 증명하고 무엇을 증명하지 못하는지 구분하는 것이다. 정확한 명령은 [RUN-0037](../../runbooks/06-messaging-and-cdc/0037-messaging-optimization-hardening.md#procedure)이 소유한다.
+대상 독자는 Kafka family 구성을 바꾸고 그 hardening 상태를 검증하는 운영자다. 목표는 정적 확인으로 무엇을 증명하고 무엇을 증명하지 못하는지 구분하는 것이다. 정확한 명령은 [RUN-0037](../../runbooks/06-messaging-and-cdc/0037-messaging-optimization-hardening.md#actions)이 소유한다.
 
 ### Boundaries
 
@@ -54,7 +54,7 @@ secret은 `kafbat_client_secret` 이름으로만 다룬다. TLS/SASL, credential
 
 저장소 루트에서 root `.env.example`로 현재 messaging selector를 렌더링하고
 이 tier의 공유 hardening 확인 스크립트를 실행한다. 정확한 명령 순서는
-[05-Messaging Optimization Hardening runbook](../../runbooks/06-messaging-and-cdc/0037-messaging-optimization-hardening.md#procedure)이
+[05-Messaging Optimization Hardening runbook](../../runbooks/06-messaging-and-cdc/0037-messaging-optimization-hardening.md#actions)이
 소유한다. 렌더링된 서비스를 점검하고 다음을 확인한다.
 
 - 정확한 Kafka-family profile과 제거된 broker family가 없는지;

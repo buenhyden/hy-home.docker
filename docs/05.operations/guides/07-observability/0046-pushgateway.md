@@ -94,7 +94,7 @@ Prometheus dashboard나 alert가 Pushgateway metric에 의존하기 전에 scrap
 
 ##### 메트릭 삭제
 
-실행 중에는 metric TTL이 없어 마지막 값을 유지하지만 현재 persistence가 없어 process restart 시 사라진다. 종료된 group 정리는 [RUN-0046](../../runbooks/07-observability/0046-pushgateway.md)의 승인된 정확한 grouping-key 절차를 따른다. 삭제 명령은 [RUN-0046 절차](../../runbooks/07-observability/0046-pushgateway.md#procedure)가 소유한다.
+실행 중에는 metric TTL이 없어 마지막 값을 유지하지만 현재 persistence가 없어 process restart 시 사라진다. 종료된 group 정리는 [RUN-0046](../../runbooks/07-observability/0046-pushgateway.md)의 승인된 정확한 grouping-key 절차를 따른다. 삭제 명령은 [RUN-0046 절차](../../runbooks/07-observability/0046-pushgateway.md#actions)가 소유한다.
 
 #### Source-backed operating contract
 

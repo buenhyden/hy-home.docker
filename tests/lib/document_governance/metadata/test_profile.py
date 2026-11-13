@@ -194,17 +194,10 @@ class TemplateMetadataTests(unittest.TestCase):
     def test_governance_policy_profile_binds_approval_boundary_body(self) -> None:
         profile = self.registry.profiles["governance-policy"]
         self.assertEqual(
-            (
-                "Overview",
-                "Scope",
-                "Rules",
-                "Exceptions",
-                "Verification",
-                "Related Documents",
-            ),
+            ("Purpose", "Scope", "Rules", "Exceptions", "Ownership"),
             profile["required_sections"],
         )
-        self.assertTrue(profile["free_form_sections"])
+        self.assertFalse(profile["free_form_sections"])
         path = pathlib.Path(".agents/governance/approval-boundaries.md")
         record = metadata.Record(
             path,
@@ -227,12 +220,21 @@ class TemplateMetadataTests(unittest.TestCase):
             [],
             section_codes(
                 body_with_headings(
-                    "## Overview",
+                    "## Purpose",
+                    "### Objective",
+                    "### Authority",
                     "## Scope",
+                    "### Applies To",
+                    "### Exclusions",
                     "## Rules",
+                    "### Requirements",
+                    "### Enforcement",
                     "## Exceptions",
-                    "## Verification",
-                    "## Related Documents",
+                    "### Exception Conditions",
+                    "### Approval and Review",
+                    "## Ownership",
+                    "### Responsibilities",
+                    "### Change and Adoption",
                 )
             ),
         )
@@ -240,17 +242,24 @@ class TemplateMetadataTests(unittest.TestCase):
             "body-heading-missing",
             section_codes(
                 body_with_headings(
-                    "## Overview",
+                    "## Purpose",
+                    "### Objective",
+                    "### Authority",
                     "## Scope",
+                    "### Applies To",
+                    "### Exclusions",
                     "## Rules",
+                    "### Requirements",
+                    "### Enforcement",
                     "## Exceptions",
-                    "## Related Documents",
+                    "### Exception Conditions",
+                    "### Approval and Review",
                 )
             ),
         )
         self.assertIn(
             "body-heading-missing",
-            section_codes(body_with_headings("## Overview", "## Rules")),
+            section_codes(body_with_headings("## Purpose", "## Rules")),
         )
         for label in ("Core Rules", "Shared-worktree Safeguards", "Protected Surfaces"):
             self.assertIn(f"**{label}**", text)

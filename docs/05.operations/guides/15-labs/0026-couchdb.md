@@ -92,7 +92,7 @@ couchdb-1/2/3 는 각각 NODENAME/IP/bind data 가 다르며 common cookie/admin
 - `LAB_DATA_DIR`, `LAB_COUCHDB_HOST_PORT`, `LAB_COUCHDB_USERNAME`, `lab_couchdb_password`, `lab_couchdb_cookie`가 준비되어 있어야 한다.
 - 로컬 점검은 승인된 credential custody와 비공개 실제 TTY를 준비한 뒤 client의 native password prompt를 사용한다. 준비되지 않으면 중단한다.
 
-별도 승인 후 상태 점검은 LAB Compose 렌더링, 클러스터/init job 상태, `couchdb-1` 내부 client의 native password prompt를 통한 `_up` 및 `_membership` 확인으로 구성된다. 현재 독립 network는 HOME Traefik과 연결되지 않으므로 label의 route와 sticky cookie는 동작 경로가 아니다. 직접 host port publish도 없다. 실행 가능한 명령 순서와 기대 결과는 [CouchDB runbook](../../runbooks/15-labs/0026-couchdb.md#procedure)을 따른다.
+별도 승인 후 상태 점검은 LAB Compose 렌더링, 클러스터/init job 상태, `couchdb-1` 내부 client의 native password prompt를 통한 `_up` 및 `_membership` 확인으로 구성된다. 현재 독립 network는 HOME Traefik과 연결되지 않으므로 label의 route와 sticky cookie는 동작 경로가 아니다. 직접 host port publish도 없다. 실행 가능한 명령 순서와 기대 결과는 [CouchDB runbook](../../runbooks/15-labs/0026-couchdb.md#actions)을 따른다.
 
 ### Exceptions
 
@@ -104,7 +104,7 @@ couchdb-1/2/3 는 각각 NODENAME/IP/bind data 가 다르며 common cookie/admin
 
 - `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/couchdb/docker-compose.yml --profile couchdb config --quiet`
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/couchdb/docker-compose.yml logs couchdb-cluster-init`
-- `_membership` 확인은 [CouchDB runbook의 private TTY/native-prompt 절차](../../runbooks/15-labs/0026-couchdb.md#procedure)를 따른다. Password를 URL·argv·환경 변수·history·로그에 넣지 않으며 custody/TTY가 없으면 중단한다.
+- `_membership` 확인은 [CouchDB runbook의 private TTY/native-prompt 절차](../../runbooks/15-labs/0026-couchdb.md#actions)를 따른다. Password를 URL·argv·환경 변수·history·로그에 넣지 않으며 custody/TTY가 없으면 중단한다.
 
 ### Troubleshooting
 

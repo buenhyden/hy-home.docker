@@ -1,10 +1,10 @@
 ---
 title: "Terrakube Operations Policy"
-version: "1.1.4"
+version: "1.1.5"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0069"
 parent_ids:
@@ -14,18 +14,34 @@ created: "2026-05-17"
 
 # Terrakube Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 Terrakube는 명시적인 `iac` 컨트롤 플레인이다. Apache-2.0 프로젝트 라이선스가
 이 단일 호스트 배포의 지원, SLA, 엔터프라이즈 기능, HA를 보장하지는
 않는다.
 
+### Authority
+
+- [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
+
+- [Terrakube Compose 소스](../../../../infra/09-platform-ops/terrakube/docker-compose.yml)
+
 ## Scope
+
+### Applies To
 
 API/UI/executor 활성화, 네이티브/gateway 인증, Docker 소켓 및 provider 권한,
 PostgreSQL/SeaweedFS/Valkey 데이터, 협조된 복구, 업그레이드, 제거.
 
+### Exclusions
+
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
+
 ## Rules
+
+### Requirements
 
 - **Activation:** `iac`에서는 이름이 지정된 세 가지 Terrakube 서비스만 시작하고
   정확한 의존성은 별도로 선택한다. HOME/tooling에서는 제외한다.
@@ -50,36 +66,40 @@ PostgreSQL/SeaweedFS/Valkey 데이터, 협조된 복구, 업그레이드, 제거
 - **Removal:** 승인된 후속 시스템이 소유하기 전까지 workspace, run, 상태, 출력,
   VCS 매핑, 복구 보관을 유지한다. 컨테이너 삭제만으로는 충분하지 않다.
 
-### 현재 실행 경로의 제한
+#### 현재 실행 경로의 제한
 
 현재 gateway 통제를 유지하고 로그인·health 성공을 실행 가능 증거로 기록하지 않는다. 인증 경로 제한의 세부 내용은 [Guide](../../guides/10-platform-and-backup/0069-terrakube.md#현재-실행-경로의-제한)를 따른다.
 
-## Exceptions
-
-예외는 provider/apply 승인, Docker 소켓 검토, 시크릿 취급, 협조된 백업을
-우회할 수 없다. 만료 시점과 복구 담당자를 기록한다.
-
-### Review Cadence
-
-각 릴리스, 인증 변경, 저장소/백엔드 변경, Docker 소켓 권한 변경 전에
-검토한다.
-
-### Traceability
-
-- [가이드](../../guides/10-platform-and-backup/0069-terrakube.md) (`GDE-0069`)
-- [런북](../../runbooks/10-platform-and-backup/0069-terrakube.md) (`RUN-0069`)
-- [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
-
-## Verification
+### Enforcement
 
 정적 Compose와 컴포넌트 헬스는 부분적인 신호다. 엔드투엔드 증거에는
 로그인/권한 부여, DB/객체 접근 가능성, executor 등록, 그리고 검토된
 비적용(non-applying) plan이 필요하다. 복구는 리허설하기 전까지 검증되지
 않은 상태로 남는다.
 
-## Related Documents
+## Exceptions
 
-- [Terrakube Compose 소스](../../../../infra/09-platform-ops/terrakube/docker-compose.yml)
+### Exception Conditions
+
+예외는 provider/apply 승인, Docker 소켓 검토, 시크릿 취급, 협조된 백업을
+우회할 수 없다. 만료 시점과 복구 담당자를 기록한다.
+
+### Approval and Review
+
+각 릴리스, 인증 변경, 저장소/백엔드 변경, Docker 소켓 권한 변경 전에
+검토한다.
+
+## Ownership
+
+### Responsibilities
+
+책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
+
+### Change and Adoption
+
+- [가이드](../../guides/10-platform-and-backup/0069-terrakube.md) (`GDE-0069`)
+- [런북](../../runbooks/10-platform-and-backup/0069-terrakube.md) (`RUN-0069`)
+
 - [Terrakube 문서](https://docs.terrakube.io/)
 - [Terrakube 라이선스](https://github.com/terrakube-io/terrakube/blob/main/LICENSE)
 - [운영 인덱스](../../README.md)

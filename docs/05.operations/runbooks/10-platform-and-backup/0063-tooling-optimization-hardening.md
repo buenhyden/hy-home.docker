@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Runbook"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "RUN-0063"
 parent_ids:
@@ -14,20 +14,16 @@ created: "2026-05-17"
 
 # Platform Operations and Quality Optimization Hardening Runbook
 
-## Overview
+## Purpose
+
+### Trigger and Outcome
 
 `09-platform-ops`와 `11-quality` 하드닝 회귀가 의심될 때 문서화된 기준을 복구하는 절차다.
 공개 경계 SSO 체인, root가 소유한 network 경계, 독립 Locust LAB worker healthcheck,
 k6 volume 계약, 문서·검증 링크를 현재 구현 기준으로 되돌린다.
 범위는 선택한 profile에 해당하는 패키지로 한정한다.
 
-## Trigger
-
 service-local compose 단독 검증과 root compose context를 혼동하지 않고 하드닝 기준선을 다시 확인한다.
-
-## Prerequisites
-
-### Trigger and Preconditions
 
 다음 중 하나일 때 사용한다.
 
@@ -37,13 +33,39 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 - k6 volume 또는 서비스명 문서가 구현과 달라진다.
 - 활성 문서가 profile 선택 leaf를 root 문맥 없이 단독 실행할 수 있다고 설명한다.
 
-## Procedure
+### Scope
+
+- 상위 문서: [Platform Operations and Quality Optimization Hardening Usage Guide](../../guides/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`GDE-0063`)
+- 설계 근거: [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
+- 동일 주제 문서: [Guide](../../guides/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`GDE-0063`), [Policy](../../policies/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`POL-0063`)
+
+현재 IaC helper는 OpenTofu다. 기존 Terraform workspace는 [Terraform 이관](../../guides/10-platform-and-backup/0082-opentofu.md#terraform-이관)을 따른다. Syncthing runtime은 제거되었으며 현재 하드닝 기동 대상에 포함하지 않는다.
+
+- [Operations index](../../README.md)
+- [Usage guide](../../guides/10-platform-and-backup/0063-tooling-optimization-hardening.md)
+- [Operations policy](../../policies/10-platform-and-backup/0063-tooling-optimization-hardening.md)
+
+## Preconditions
+
+### Authority and Access
+
+runtime 재시작은 이 런북 범위 밖이며 대상 service runbook과 사용자 승인을 따른다. 책임자는 `@buenhyden`이다.
+
+이 런북은 CI·로컬 하드닝 검사를 다루며 runtime 재시작은 범위 밖이므로 대상 service runbook과 사용자 승인을 따른다(Rollback). 책임자는 `@buenhyden`이다(Escalation).
+
+### Safety Checks
 
 - [ ] Failure category를 middleware, network, healthcheck, volume, docs, script 중 하나로 분류한다.
 - [ ] 최근 변경 커밋과 affected files를 확인한다.
 - [ ] root `docker-compose.yml`이 09-platform-ops 및 11-quality Compose 파일을 모두 include하는지 확인하고, 이번 세션에서 선택한 profile을 기록한다.
 
-### Steps
+## Steps
+
+### Actions
+
+절차는 아래 항목에 따른다.
+
+#### Steps
 
 1. 하드닝 기준선을 실행한다.
 
@@ -77,10 +99,15 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 5. 도구별 카탈로그 확장 항목(opentofu/terrakube/registry/k6/renovate, LAB의 sonarqube/locust)은
    [Policy](../../policies/10-platform-and-backup/0063-tooling-optimization-hardening.md)의 확장 게이트에 따라 Task로 넘긴다.
 
-## Verification
+### Stop Conditions
 
-- 명령 결과, 시각, 실패 검사명, 변경 diff와 최종 검증 상태를 기록한다.
-- Compose 렌더링을 근거로 남길 때 선택한 프로필을 기록한다.
+실행 환경·데이터·자격 증명 변경이 필요하면 중단한다. 한정된 복구 후에도 검사가 실패하거나 비밀 노출, 루트 Compose 문맥 복구 실패, 실행 환경 변경 필요성이 있으면 책임자에게 보고한다.
+
+실행 환경·데이터·자격 증명 변경이 필요하면 Rollback에서 중단하고 Escalation을 따른다. 한정된 복구 후에도 검사가 실패하거나 비밀 노출, 루트 Compose 문맥 복구 실패, 실행 환경 변경 필요성이 있으면 책임자에게 보고한다.
+
+## Validation
+
+### Service Checks
 
 `--explain`은 실행하지 않는 계획 조회다. 후보 aggregate QA는
 [quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix)의
@@ -91,17 +118,22 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 - optimization-hardening guide/policy/runbook links가 guide, policy, runbook 각각의 목적 bucket을 가리킨다.
 - profile로 선택되는 tooling leaf runtime 검증은 root network/secret/dependency context 필요성이 문서화되어 있다.
 
-### 증거 출처
+### Evidence
+
+- 명령 결과, 시각, 실패 검사명, 변경 diff와 최종 검증 상태를 기록한다.
+- Compose 렌더링을 근거로 남길 때 선택한 프로필을 기록한다.
+
+#### 증거 출처
 
 - **Logs**: CI·로컬 검증 결과와 별도 런타임 승인이 있을 때의 제한된 서비스 로그.
 - **Metrics**: 문서 하드닝에는 런타임 지표가 적용되지 않는다. 리허설 지표는 별도 근거다.
 - **Evidence to Capture**: 실패한 검사, 변경 파일, 변경 전후 하드닝 결과와 문서 링크 결과.
 
-## Failure and Recovery
+## Recovery
 
-### Rollback or Recovery
+### Rollback
 
-위의 한정된 복구 단계만 사용한다. 실행 환경·데이터·자격 증명 변경이 필요하면 중단하고 `## Escalation`을 따른다.
+위의 한정된 복구 단계만 사용한다. 실행 환경·데이터·자격 증명 변경이 필요하면 중단하고 Escalation을 따른다.
 
 1. 문서-only 회귀는 직전 diff 단위로 되돌리거나 current-truth 문서로 정정한다.
 2. compose/script 회귀는 affected file만 최소 복구하고 hardening check를 재실행한다.
@@ -112,17 +144,3 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
 한정된 복구 후에도 검사가 실패하거나 비밀 노출, 루트 Compose 문맥 복구 실패, 실행 환경 변경 필요성이 있으면 책임자에게 보고한다.
-
-## Related Documents
-
-### Traceability
-
-- 상위 문서: [Platform Operations and Quality Optimization Hardening Usage Guide](../../guides/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`GDE-0063`)
-- 설계 근거: [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- 동일 주제 문서: [Guide](../../guides/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`GDE-0063`), [Policy](../../policies/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`POL-0063`)
-
-현재 IaC helper는 OpenTofu다. 기존 Terraform workspace는 [Terraform 이관](../../guides/10-platform-and-backup/0082-opentofu.md#terraform-이관)을 따른다. Syncthing runtime은 제거되었으며 현재 하드닝 기동 대상에 포함하지 않는다.
-
-- [Operations index](../../README.md)
-- [Usage guide](../../guides/10-platform-and-backup/0063-tooling-optimization-hardening.md)
-- [Operations policy](../../policies/10-platform-and-backup/0063-tooling-optimization-hardening.md)

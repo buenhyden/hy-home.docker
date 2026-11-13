@@ -1,6 +1,6 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.5.5"
+version: "0.5.8"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -372,6 +372,78 @@ Branch `docs/w03-guide-common-form`, on top of `main` after #975.
   secret-name and limit facts each file states; stale "Common Checks" and
   "Runbook Handoff" references renamed.
 
+##### Runbook role 2026-11-13
+
+Branch `docs/w03-runbook-common-form`, on top of the Guide branch that
+merged as #977.
+
+- Registry `runbook`: H2 Purpose, Preconditions, Steps, Validation, Recovery
+  with their required H3s (Trigger and Outcome, Scope; Authority and Access,
+  Safety Checks; Actions, Stop Conditions; Service Checks, Evidence;
+  Escalation) and the optional H3 Rollback. The operations catalog matches
+  required section names to headings and needs no code change.
+- The 78 Runbooks (Korean bodies) are moved by `doc-writer` agents. Every old
+  line and code block is kept apart from intended sentence edits; the 40
+  links to the old `#procedure` and `#verification` anchors now point to
+  `#actions` and `#service-checks`, and Guide and Policy link texts that
+  named the old headings are renamed.
+- Review answers: 0105 cleanup and abort rules moved under Rollback with their
+  "위/아래" references renamed; pointer-only sentences replaced by the stop
+  conditions, preflight checks and evidence lists each file states;
+  record-keeping text moved from Service Checks to Evidence; forward actions
+  moved out of Rollback and Escalation; false "별도의 점검 목록을 두지 않고"
+  sentences removed; the 0098 reboot expectation corrected to the sealed
+  `bao status` exit.
+
+##### Policy role 2026-11-13
+
+Branch `docs/w03-policy-common-form`, on top of the Runbook branch.
+
+- Registry `policy`, `governance-policy` and `governance-hook-policy`: H2
+  Purpose, Scope, Rules, Exceptions, Ownership with their required H3s
+  (Objective, Authority; Applies To, Exclusions; Requirements, Enforcement;
+  Exception Conditions, Approval and Review; Responsibilities, Change and
+  Adoption). `governance-policy` no longer allows free-form sections, so an
+  unregistered H2 is rejected. The operations catalog matches required
+  section names to headings and needs no code change.
+- The 77 operations Policies (Korean bodies) and the 32 governance policies
+  and hook rules (English) are moved by `doc-writer` agents. Every rule
+  sentence is kept and only moved; H4 titles other documents link to stay.
+- Review answers: templated Exclusions sentences replaced by the exclusions
+  each file states, or by "없음: 이 정책 본문에는 명시된 제외 대상이 없다.";
+  forbidden items and rule clauses moved out of Exclusions; owner and
+  approval paragraphs moved into Responsibilities; governance Authority
+  lists replaced by the canonical-owner sentence under bootstrap precedence,
+  with the displaced links returned to Change and Adoption; false Approval
+  and Review and Exclusions sentences corrected; duplicate Guide and Runbook
+  peer links removed.
+
+##### Skill role 2026-11-13
+
+Branch `docs/w03-skill-common-form`, on top of the Policy branch.
+
+- Registry `governance-skill`: H2 Purpose and Trigger, Procedure, Inputs and
+  Outputs, Verification with their required H3s (When to Use, When Not to
+  Use; Steps, Failure Handling; Inputs, Outputs; Checks, Completion and
+  Handoff). The old `Purpose`, `Inputs`, `Outputs`, `Failure Handling`,
+  `References` H2s and the `Preconditions` H3 are rejected. The heading test
+  now samples `.agents/` documents too, so the skill and governance profiles
+  are exercised.
+- The 24 skills are moved by two `skill-creator` agents. Every old line is
+  kept; Preconditions text sits directly under When to Use, Gates become an
+  H4 under Steps, and the old References links sit under Completion and
+  Handoff after "Owning role, policies and related documents:". When Not to
+  Use quotes the description's "Do NOT use" clause, states the exclusion the
+  body gives, or says "None: this skill states no exclusion." where none is
+  stated. Renderer drift 0.
+- Review answers: one stale "below" reference, a false lead-in, an
+  exclusion left under When to Use, four false "None" lines and two
+  misplaced paragraphs fixed; adr-writing gains its owning role link.
+
+Held for a later change: Completion and Handoff in all 24 skills holds only
+links, and two Gates bullets (ops-runbook-agent, incident-response) state an
+output location rather than a gate.
+
 Held for an owner decision, not changed here, because each would change
 what a requirement says:
 
@@ -440,6 +512,26 @@ None: nothing was recorded here before this Task moved to the common form.
 | W03 v14.7 Guide review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `a8a55aead` | PASS | PASS: every finding fixed; anchors resolve | required | W03 v14.7 Guide review, W03 v14.7 Guide re-review |
 | W03 v14.7 Guide GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `a8a55aead` | PASS | Ran 810 tests, OK, including the Guide old-form, template-outline and operations catalog tests | required | W03 v14.7 Guide form RED |
 | W03 v14.7 Guide checks | 111 | W116 | metadata-links-governance | The 78 moved Guides at `c7ca7356e` and `a8a55aead` | PASS | Heading contract 0 findings; metadata check-changed selected 78 violations 0; links alignment PASS; operations catalog, taxonomy and moves tests 162 OK; every old line and code block kept apart from 20 intended edits | required | - |
+| W03 v14.7 Runbook form RED | 111 | W116 | red-green-proof | The old-form and template-outline tests with Runbook cases against the `runbook` profile at `089d4246d` (rebased as `662623dc9`) | FAIL | Six failures in the old-form and template-outline Runbook cases | required | - |
+| W03 v14.7 Runbook review | 111 | W116 | independent-review | Fresh-context code-reviewer of the Runbook move at `61354e00e` | FAIL | CHANGES_REQUIRED: 0105 cleanup rules after their references; pointer-only sentences; preflight checks outside Safety Checks; Service Checks and Evidence swapped; forward actions under Rollback | required | - |
+| W03 v14.7 Runbook re-review | 111 | W116 | independent-review | Fresh-context code-reviewer of `bac33e6a4` | FAIL | CHANGES_REQUIRED, minor: leftover false sentences, among them the 0098 reboot expectation and the 0065 "별도의 점검 목록을 두지 않고" sentence | required | - |
+| W03 v14.7 Runbook review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `98c4edd78` (rebased as `436bcc974`) | PASS | PASS: every finding fixed; anchors resolve | required | W03 v14.7 Runbook review, W03 v14.7 Runbook re-review |
+| W03 v14.7 Runbook GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `436bcc974` | PASS | Ran 810 tests, OK, including the Runbook old-form, template-outline and operations catalog tests | required | W03 v14.7 Runbook form RED |
+| W03 v14.7 Runbook checks | 111 | W116 | metadata-links-governance | The 78 moved Runbooks and the Guide and Policy link texts at `436bcc974` | PASS | Heading contract 0 findings; metadata check-changed selected 113 violations 0; links alignment 905 documents 8319 links failures 0; operations catalog tests OK | required | - |
+| W03 v14.7 Policy form RED | 111 | W116 | red-green-proof | The `test_heading` and `test_profile` changes of `b939b2994` against the profiles at `f1c6074dc` | FAIL | Ran 234 tests, eight failures: the three Policy template outlines differed, the old `Overview`, `Verification`, `Related Documents` and `Traceability` headings were accepted, and the governance-policy profile test failed | required | - |
+| W03 v14.7 Policy review | 111 | W116 | independent-review | Fresh-context code-reviewer of the operations Policy move at `1a69231e3` (rebased as `9cd965911`) | FAIL | CHANGES_REQUIRED: templated Exclusions sentences; forbidden items and rule clauses under Exclusions; owner paragraphs outside Responsibilities; misplaced recovery, review and reconciliation text | required | - |
+| W03 v14.7 Policy re-review | 111 | W116 | independent-review | Fresh-context code-reviewer of `bc40f2d72` and `f9e5b0e44` (rebased as `5d6796b25`, `df771d097`) | FAIL | CHANGES_REQUIRED twice, minor; the last round named three duplicate Guide and Runbook peer links (0081, 0086, 0087) | required | - |
+| W03 v14.7 Policy review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `d1d776465` (rebased as `c724bab02`) | PASS | PASS: every finding of the review and both re-reviews fixed | required | W03 v14.7 Policy review, W03 v14.7 Policy re-review |
+| W03 v14.7 governance policy review | 111 | W116 | independent-review | Fresh-context code-reviewer of the governance move at `4ed686af5` (rebased as `7b48b923a`) | FAIL | CHANGES_REQUIRED: false Authority lists; false Approval and Review in approval-boundaries; false Exclusions in documentation-protocol; hook rule Applies To text | required | - |
+| W03 v14.7 governance policy review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `b7d418b31` (rebased as `1e0af3951`) | PASS | PASS: every finding fixed | required | W03 v14.7 governance policy review |
+| W03 v14.7 Policy GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `1e0af3951` | PASS | Ran 810 tests, OK, including the Policy old-form, template-outline, governance-policy profile and operations catalog tests | required | W03 v14.7 Policy form RED |
+| W03 v14.7 Policy checks | 111 | W116 | metadata-links-governance | The 77 operations Policies and 32 governance policies and hook rules at `1e0af3951` | PASS | Heading contract on 109 documents 0 findings; metadata check-changed selected 114 violations 0; links alignment PASS | required | - |
+| W03 v14.7 Skill form RED | 111 | W116 | red-green-proof | The `test_heading` changes of `e132c6607` and `fd4d37dea` against the `governance-skill` profile at `b7d418b31` | FAIL | The template outline failed (234 tests, one failure), and the old-form cases failed five times: `## Purpose`, `## Inputs`, `## Failure Handling`, `## References` and `### Preconditions` were accepted | required | - |
+| W03 v14.7 Skill review | 111 | W116 | independent-review | Fresh-context code-reviewer of `4c335014f` (rebased as `f7f37d495`) | FAIL | CHANGES_REQUIRED, minor: a stale "below", a false lead-in, an exclusion under When to Use, a false "None", misplaced paragraphs | required | - |
+| W03 v14.7 Skill re-review | 111 | W116 | independent-review | Fresh-context code-reviewer of `ae06dfc1f` (rebased as `8a8829190`) | FAIL | CHANGES_REQUIRED: the adr-writing lead-in had no role link; two more "None" lines were false | required | - |
+| W03 v14.7 Skill review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `8412eafea` (rebased as `5f18c6913`) | PASS | PASS: every finding fixed | required | W03 v14.7 Skill review, W03 v14.7 Skill re-review |
+| W03 v14.7 Skill GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `fd4d37dea` | PASS | Ran 810 tests, OK, including the skill old-form and template-outline tests | required | W03 v14.7 Skill form RED |
+| W03 v14.7 Skill checks | 111 | W116 | metadata-links-governance | The 24 moved skills at `fd4d37dea` | PASS | Heading contract 0 findings (384 on the old copies); renderer drift 0; agent governance contract failures 0; links alignment PASS | required | - |
 
 ### Resolution Links
 
@@ -464,7 +556,7 @@ these profile flags is handed to W05; renumbering stays a Q-07 decision.
 
 ### Promotion Receipt
 
-Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture).
+Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook), #980 (Policy).
 
 ### Next Owner
 

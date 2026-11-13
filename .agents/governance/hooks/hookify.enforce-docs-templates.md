@@ -1,10 +1,10 @@
 ---
 title: "WARNING: template use required"
-version: "1.1.4"
+version: "1.1.5"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -17,15 +17,32 @@ name: "enforce-docs-templates"
 
 # WARNING: template use required
 
-## Overview
+## Purpose
+
+### Objective
 
 Apply the declared `warn` action for enforce-docs-templates.
 
+### Authority
+
+Owning policies:
+
+- [Documentation protocol](../documentation-protocol.md)
+- [Stage authoring matrix](../stage-authoring-matrix.md)
+
 ## Scope
+
+### Applies To
 
 The `enforce-docs-templates` rule applies on the `file` event and matches file edits whose path meets its structured `conditions` entry ("WARNING: template use required"). The frontmatter owns the exact matcher.
 
+### Exclusions
+
+None.
+
 ## Rules
+
+### Requirements
 
 **Template use required (project rule)**
 
@@ -52,15 +69,26 @@ The plan inspection does not execute QA. Follow the current
 [quality policy](../quality-standards.md#canonical-delivery-phase-matrix) for
 focused authoring checks and remote PR candidate validation.
 
-## Exceptions
-
-No exception is declared by this rule.
-
-## Verification
+### Enforcement
 
 Native event delivery is a separate observation from the frontmatter match.
 
-## Related Documents
+## Exceptions
 
-- [Documentation protocol](../documentation-protocol.md)
-- [Stage authoring matrix](../stage-authoring-matrix.md)
+### Exception Conditions
+
+No exception is declared by this rule.
+
+### Approval and Review
+
+None.
+
+## Ownership
+
+### Responsibilities
+
+`@buenhyden`.
+
+### Change and Adoption
+
+None.
