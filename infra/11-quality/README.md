@@ -90,6 +90,7 @@ created: "2026-10-01"
 
 ### Runbook Links
 
+- [테스트·품질 Runbook 목록](../../docs/05.operations/runbooks/12-testing-and-quality/README.md)
 - [독립 LAB 인덱스](../../labs/README.md)
 
 - [인프라 인덱스](../README.md)

@@ -74,7 +74,7 @@ PUBLIC template1이나 새 DB를 통해 접근할 수 있으면 NOLOGIN 상태�
 
 ### Security Boundary
 
-Compose가 참조하는 secret은 `dev_pg_admin_password`, `dev_pg_monitor_password`, `dev_pgbackrest_cipher_pass`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `127.0.0.1:${DEV_PG_HOST_PORT:-25433}:5432`이다. (출처: `infra/04-data/dev-db/docker-compose.yml`의 `dev-pg`, `dev-pg-monitor-provision`, `dev-pg-exporter` 서비스)
+Compose가 참조하는 secret은 `dev_pg_admin_password`, `dev_pg_monitor_password`, `dev_pgbackrest_cipher_pass`이며, 이 폴더를 마운트하는 `dev-platform-provision`은 `dev_pg_platform_migrator_password`, `dev_pg_platform_runtime_password`, `dev_pg_platform_reader_password`, `dev_pg_opsflow_migrator_password`, `dev_pg_opsflow_ingest_password`, `dev_pg_opsflow_notifier_password`, `dev_pg_opsflow_reader_password`를, `dev-perf-provision`은 `dev_pg_admin_password`를 추가로 쓴다. 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `127.0.0.1:${DEV_PG_HOST_PORT:-25433}:5432`이다. (출처: `infra/04-data/dev-db/docker-compose.yml`의 `dev-pg`, `dev-pg-monitor-provision`, `dev-pg-exporter`, `dev-platform-provision`, `dev-perf-provision` 서비스)
 
 ## Development
 

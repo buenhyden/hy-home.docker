@@ -96,6 +96,8 @@ Traefik은 `ForwardAuth` 미들웨어(`sso-auth@file`)를 사용해 인증을 OA
 
 ### Security Boundary
 
+Compose가 참조하는 secret은 `traefik_basicauth_password`, `traefik_opensearch_basicauth_password`, `traefik_prometheus_api_htpasswd`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `${HOST_LAN_BIND_IP:-192.168.0.13}:${HTTP_HOST_PORT:-80}:${HTTP_PORT:-80}`, `${HOST_LAN_BIND_IP:-192.168.0.13}:${HTTPS_HOST_PORT:-443}:${HTTPS_PORT:-443}`이다. (출처: `infra/01-gateway/traefik/docker-compose.yml`, `infra/01-gateway/traefik/compose.window-ca.override.yml`의 `traefik` 서비스)
+
 2026-11-09에 Compose 고정을 GHSA-xv5x-242w-7hf7(인증 없는 NTLM/Negotiate 헤더가 연결마다 backend transport를 남기는 High 결함)이 고쳐진 Traefik 패치 릴리스로 올렸습니다. 해당 릴리스 migration guide의 Go 1.27 항목(GODEBUG TLS 설정 제거, 요청 header 값 500개 제한, Ingress-NGINX 생성 이름)은 이 설정에 해당하지 않습니다. 서명, 스캔, config 부팅과 HOME 재생성은 `NOT_RUN`이며 실행 중인 컨테이너는 바뀌지 않았습니다. 기록은 `infra/09-platform-ops/security-updates/`와 SPEC-0212-TSK-0041이 소유합니다.
 
 ## Development

@@ -109,6 +109,7 @@ v3 호환성 및 데이터 이전을 검증하고 별도 변경 승인을 받기
 
 ### Runbook Links
 
+- [RUN-0080 SurrealDB](../../../../docs/05.operations/runbooks/05-databases-and-storage/0080-surrealdb.md)
 - [Open Notebook README](../README.md)
 - [Documentation index](../../../../docs/README.md)
 - [Infrastructure index](../../../README.md)

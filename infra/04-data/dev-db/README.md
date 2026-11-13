@@ -93,4 +93,4 @@ GDE-0100·POL-0100·RUN-0100을 참조하십시오. 엔진 세부 사항은
 
 ### Observability and Recovery
 
-헬스체크: `dev-pg` 서비스는 `pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d postgres` (interval 15s); `dev-pg-exporter` 서비스는 `wget -qO- http://localhost:9187/metrics > /dev/null 2>&1 || exit 1` (interval 15s); `dev-valkey` 서비스는 여러 줄 명령으로 상태를 확인하며 명령 전문은 Compose 선언에 있다 (interval 15s); `dev-valkey-exporter` 서비스는 `wget -qO- http://localhost:9121/metrics > /dev/null 2>&1 || exit 1` (interval 30s).
+헬스체크: `dev-pg` 서비스는 `pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d postgres` (interval 15s); `dev-pg-exporter` 서비스는 `wget -qO- http://localhost:9187/metrics > /dev/null 2>&1 || exit 1` (interval 15s); `dev-valkey` 서비스는 `REDISCLI_AUTH=$$(tr -d "\n" </run/secrets/dev_valkey_admin_password) valkey-cli --user devadmin -h 127.0.0.1 -p 6379 ping | grep -qx PONG` (interval 15s); `dev-valkey-exporter` 서비스는 `wget -qO- http://localhost:9121/metrics > /dev/null 2>&1 || exit 1` (interval 30s).

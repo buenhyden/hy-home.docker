@@ -140,6 +140,8 @@ docker exec alloy alloy run --test /etc/alloy/config.alloy
 
 ### Runbook Links
 
+- [관측성 Runbook 목록](../../docs/05.operations/runbooks/07-observability/README.md)
+
 #### Related Documents
 
 - [04-data](../04-data/README.md) - 텔레메트리 저장용 SeaweedFS S3.
