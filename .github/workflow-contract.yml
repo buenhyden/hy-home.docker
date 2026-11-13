@@ -260,7 +260,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "ci-gate-adapter-regressions"
+      "suite_key": "ci-gate-adapter-regressions",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.ci-gate-contract-regressions",
@@ -276,7 +277,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "ci-gate-contract-regressions"
+      "suite_key": "ci-gate-contract-regressions",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.ci-gate-runner-regressions",
@@ -293,7 +295,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "ci-gate-runner-regressions"
+      "suite_key": "ci-gate-runner-regressions",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.ci-precommit-regressions",
@@ -304,7 +307,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "ci-precommit-regressions"
+      "suite_key": "ci-precommit-regressions",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.document-governance-library-regressions",
@@ -335,7 +339,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 45,
       "opaque": true,
-      "suite_key": "document-governance-library-regressions"
+      "suite_key": "document-governance-library-regressions",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.compose-validation",
@@ -346,7 +351,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "compose-validation"
+      "suite_key": "compose-validation",
+      "guarantee": "deploy"
     },
     {
       "gate_id": "leaf.dependency-vulnerability-audit",
@@ -363,7 +369,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "dependency-vulnerability-audit"
+      "suite_key": "dependency-vulnerability-audit",
+      "guarantee": "security"
     },
     {
       "gate_id": "leaf.operations-catalog",
@@ -374,7 +381,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "operations-catalog"
+      "suite_key": "operations-catalog",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.docs-traceability",
@@ -388,7 +396,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 5,
       "opaque": true,
-      "suite_key": "docs-traceability"
+      "suite_key": "docs-traceability",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.frontend-build",
@@ -405,7 +414,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 20,
       "opaque": true,
-      "suite_key": "frontend-build"
+      "suite_key": "frontend-build",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.frontend-lint",
@@ -422,7 +432,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 20,
       "opaque": true,
-      "suite_key": "frontend-lint"
+      "suite_key": "frontend-lint",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.frontend-quality",
@@ -439,7 +450,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 20,
       "opaque": true,
-      "suite_key": "frontend-quality"
+      "suite_key": "frontend-quality",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.frontend-typecheck",
@@ -456,7 +468,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 20,
       "opaque": true,
-      "suite_key": "frontend-typecheck"
+      "suite_key": "frontend-typecheck",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.commit-message-contract",
@@ -472,7 +485,8 @@
       ],
       "timeout_minutes": 5,
       "opaque": true,
-      "suite_key": "commit-message-contract"
+      "suite_key": "commit-message-contract",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.infrastructure-hardening",
@@ -483,7 +497,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "infrastructure-hardening"
+      "suite_key": "infrastructure-hardening",
+      "guarantee": "deploy"
     },
     {
       "gate_id": "leaf.local-agent-governance-contract",
@@ -499,7 +514,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "local-agent-governance-contract"
+      "suite_key": "local-agent-governance-contract",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.local-diff-hygiene",
@@ -515,7 +531,8 @@
       ],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "local-diff-hygiene"
+      "suite_key": "local-diff-hygiene",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.local-hook-rule-tests",
@@ -538,7 +555,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "local-hook-rule-tests"
+      "suite_key": "local-hook-rule-tests",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.local-document-corpus-lifecycle",
@@ -549,7 +567,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "local-document-corpus-lifecycle"
+      "suite_key": "local-document-corpus-lifecycle",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.local-document-metadata-tests",
@@ -569,7 +588,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 30,
       "opaque": true,
-      "suite_key": "local-document-metadata-tests"
+      "suite_key": "local-document-metadata-tests",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.local-document-corpus-lifecycle-tests",
@@ -587,7 +607,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "local-document-corpus-lifecycle-tests"
+      "suite_key": "local-document-corpus-lifecycle-tests",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.local-script-manifest",
@@ -598,7 +619,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "local-script-manifest"
+      "suite_key": "local-script-manifest",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.local-provider-surface-drift",
@@ -611,7 +633,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "local-provider-surface-drift"
+      "suite_key": "local-provider-surface-drift",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.local-shell-syntax",
@@ -624,7 +647,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "local-shell-syntax"
+      "suite_key": "local-shell-syntax",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.local-tech-stack-version-drift",
@@ -637,7 +661,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "local-tech-stack-version-drift"
+      "suite_key": "local-tech-stack-version-drift",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.storybook-contract",
@@ -648,7 +673,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "storybook-contract"
+      "suite_key": "storybook-contract",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.changed-style",
@@ -667,7 +693,8 @@
       ],
       "timeout_minutes": 20,
       "opaque": true,
-      "suite_key": "changed-style"
+      "suite_key": "changed-style",
+      "guarantee": "security"
     },
     {
       "gate_id": "leaf.compose-baseline-regressions",
@@ -800,7 +827,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "compose-baseline-regressions"
+      "suite_key": "compose-baseline-regressions",
+      "guarantee": "deploy"
     },
     {
       "gate_id": "leaf.p03-hermes",
@@ -811,7 +839,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "p03-hermes"
+      "suite_key": "p03-hermes",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.p11-hermes",
@@ -822,7 +851,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "p11-hermes"
+      "suite_key": "p11-hermes",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.release-regressions",
@@ -837,7 +867,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "release-regressions"
+      "suite_key": "release-regressions",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.repository-integrity-regressions",
@@ -913,7 +944,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 20,
       "opaque": true,
-      "suite_key": "repository-integrity-regressions"
+      "suite_key": "repository-integrity-regressions",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.repo-contracts-control-plane-regressions",
@@ -929,7 +961,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "repo-contracts-control-plane-regressions"
+      "suite_key": "repo-contracts-control-plane-regressions",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.repo-document-metadata",
@@ -945,7 +978,8 @@
       ],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "repo-document-metadata"
+      "suite_key": "repo-document-metadata",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.local-candidate-preflight",
@@ -956,7 +990,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 15,
       "opaque": true,
-      "suite_key": "local-candidate-preflight"
+      "suite_key": "local-candidate-preflight",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.repo-metadata-base",
@@ -971,7 +1006,8 @@
       ],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "repo-metadata-base"
+      "suite_key": "repo-metadata-base",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.storybook-coverage",
@@ -988,7 +1024,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 20,
       "opaque": true,
-      "suite_key": "storybook-coverage"
+      "suite_key": "storybook-coverage",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.supply-chain-deterministic-policy",
@@ -1001,7 +1038,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 5,
       "opaque": true,
-      "suite_key": "supply-chain-deterministic-policy"
+      "suite_key": "supply-chain-deterministic-policy",
+      "guarantee": "security"
     },
     {
       "gate_id": "leaf.supply-chain-fixture-policy",
@@ -1023,7 +1061,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 5,
       "opaque": true,
-      "suite_key": "supply-chain-fixture-policy"
+      "suite_key": "supply-chain-fixture-policy",
+      "guarantee": "security"
     },
     {
       "gate_id": "leaf.conftest-policy",
@@ -1037,7 +1076,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "conftest-policy"
+      "suite_key": "conftest-policy",
+      "guarantee": "security"
     },
     {
       "gate_id": "leaf.conftest-policy-tests",
@@ -1051,7 +1091,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "conftest-policy-tests"
+      "suite_key": "conftest-policy-tests",
+      "guarantee": "security"
     },
     {
       "gate_id": "leaf.template-security-baseline",
@@ -1062,7 +1103,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "template-security-baseline"
+      "suite_key": "template-security-baseline",
+      "guarantee": "security"
     },
     {
       "gate_id": "leaf.workflow-contract",
@@ -1073,7 +1115,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "workflow-contract"
+      "suite_key": "workflow-contract",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.workflow-contract-regressions",
@@ -1090,7 +1133,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "workflow-contract-regressions"
+      "suite_key": "workflow-contract-regressions",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.zizmor",
@@ -1103,7 +1147,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "zizmor"
+      "suite_key": "zizmor",
+      "guarantee": "security"
     },
     {
       "gate_id": "local.compose-validation",
@@ -1226,7 +1271,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 10,
       "opaque": true,
-      "suite_key": "opsflow-smtp-node-coverage"
+      "suite_key": "opsflow-smtp-node-coverage",
+      "guarantee": "none"
     },
     {
       "gate_id": "leaf.opsflow-smtp-npm-production-audit",
@@ -1240,7 +1286,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 5,
       "opaque": true,
-      "suite_key": "opsflow-smtp-npm-production-audit"
+      "suite_key": "opsflow-smtp-npm-production-audit",
+      "guarantee": "security"
     },
     {
       "gate_id": "leaf.opsflow-smtp-package",
@@ -1254,7 +1301,8 @@
       "allowed_env_keys": [],
       "timeout_minutes": 5,
       "opaque": true,
-      "suite_key": "opsflow-smtp-package"
+      "suite_key": "opsflow-smtp-package",
+      "guarantee": "none"
     }
   ],
   "public_gate": {
