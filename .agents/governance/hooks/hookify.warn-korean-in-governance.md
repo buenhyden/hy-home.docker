@@ -63,16 +63,14 @@ No exception is declared by this rule.
 
 ### Approval and Review
 
-None: this document states no separate approval or review step.
+None.
 
 ## Ownership
 
 ### Responsibilities
 
-The rule owner is `@buenhyden`.
+`@buenhyden`.
 
 ### Change and Adoption
 
-Canonical governance navigation:
-
-- `.agents/README.md`
+`.agents/README.md`.

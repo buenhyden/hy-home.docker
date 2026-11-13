@@ -18,12 +18,7 @@ A stricter rule in another canonical governance owner prevails over this documen
 
 ### Authority
 
-Owning and bootstrap documents:
-
-- [Git workflow](git-workflow.md)
-- [Quality standards](quality-standards.md)
-- [AI agent standards](standards.md)
-- [Bootstrap policy](bootstrap.md)
+This policy is the canonical owner of repository protection, pull requests, hosted workflows, and remote actions under [bootstrap precedence](bootstrap.md#authority-and-precedence).
 
 ## Scope
 
@@ -289,17 +284,17 @@ No exception is granted here; a separately authorized operation follows [Approva
 
 ### Approval and Review
 
-Separately authorized operations follow the [Approval boundaries](approval-boundaries.md) policy.
+None: no exception exists to approve.
 
 ## Ownership
 
 ### Responsibilities
 
-The document owner is @buenhyden.
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
 ### Change and Adoption
 
-Related documents:
+Changes land in place with Task evidence; related documents:
 
 - [Provider index](providers/README.md)
 - [Claude adapter](../../.claude/provider.md)
@@ -307,3 +302,7 @@ Related documents:
 - [Repository surface](../../.github/repository-surface.md)
 - [Main protection](../../.github/rulesets/main-protection.md)
 - [Platform and backup runbooks](../../docs/05.operations/runbooks/10-platform-and-backup/README.md)
+- [Git workflow](git-workflow.md)
+- [Quality standards](quality-standards.md)
+- [AI agent standards](standards.md)
+- [Bootstrap policy](bootstrap.md)

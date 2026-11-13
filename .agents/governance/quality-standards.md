@@ -17,8 +17,7 @@ Universal quality gate for agent-driven changes in this repository.
 
 ### Authority
 
-- `.agents/governance/github-governance.md`
-- `.agents/governance/agentic.md`
+This policy is the canonical owner of change-specific verification, security, reliability, and quality routing under [bootstrap precedence](bootstrap.md#authority-and-precedence).
 
 ## Scope
 
@@ -309,30 +308,6 @@ harness, evidence, documentation, and controlled-gate clauses determine which
 quality checks apply. PR-specific completion remains owned by the Completion
 Gate in `.agents/governance/github-governance.md`.
 
-### Enforcement
-
-#### 5. Change-Type Verification Matrix
-
-Use the smallest meaningful selected checks. This is the sole matrix for all
-providers; Task evidence names each input, result, acceptance and unexecuted lane.
-
-| Change | Focused authoring feedback | Remote candidate or distinct observation |
-| --- | --- | --- |
-| Ordinary documents/templates | Local-only registered links; scoped metadata and read-only style feedback | Profile, relationships and lifecycle; operations catalog when applicable; no link or implementation regression rerun |
-| Validator/parser/Registry implementation | RED/GREEN, relevant style and selected local-only implementation regressions | Actual content checks; no local implementation suite repeat |
-| Gate/workflow/style controller | Selected local-only selection, trust, failure and cleanup regressions | Actual workflow/contract validators; exact hosted job/event evidence |
-| Docker/Compose/service configuration | Relevant syntax/render/hardening feedback | Selected configuration checks; live HOME/smoke/restore only for a named exact target |
-| Commit/changelog/release implementation | Commitizen and SemVer/changelog/draft-asset regression | PR candidate checks; release publication only for its approved exact version |
-| Historical QA retirement | Caller/registration closure and continuing-owner proof | Applicable current document/runner checks |
-| Remote setting or high-risk runtime | Concrete approved target, before-state and recovery | Actual read-back or runtime receipt; source-only evidence is insufficient |
-
-A PASS check is not criterion acceptance, authorization, integration or runtime
-activation. ACCEPTED_RISK remains a typed security exception with its original
-expiry, not a vulnerability fix or live service success. No synthetic fixture
-proves arbitrary agent prose or provider performance. Missing required evidence
-remains FAIL, BLOCKED, NOT_RUN or unverified as applicable. Independent review
-reads the exact diff, contract and actual results; the current Task owns it.
-
 #### 6. Generated-Artifact Freshness
 
 Some artifacts are generated from repository content and must be regenerated as
@@ -476,6 +451,30 @@ and no separate formatting tool is added.
 - Adopting or changing a formatter reformats the corpus once, in its own
   commit, after every check that the reformatting would break is fixed.
 
+### Enforcement
+
+#### 5. Change-Type Verification Matrix
+
+Use the smallest meaningful selected checks. This is the sole matrix for all
+providers; Task evidence names each input, result, acceptance and unexecuted lane.
+
+| Change | Focused authoring feedback | Remote candidate or distinct observation |
+| --- | --- | --- |
+| Ordinary documents/templates | Local-only registered links; scoped metadata and read-only style feedback | Profile, relationships and lifecycle; operations catalog when applicable; no link or implementation regression rerun |
+| Validator/parser/Registry implementation | RED/GREEN, relevant style and selected local-only implementation regressions | Actual content checks; no local implementation suite repeat |
+| Gate/workflow/style controller | Selected local-only selection, trust, failure and cleanup regressions | Actual workflow/contract validators; exact hosted job/event evidence |
+| Docker/Compose/service configuration | Relevant syntax/render/hardening feedback | Selected configuration checks; live HOME/smoke/restore only for a named exact target |
+| Commit/changelog/release implementation | Commitizen and SemVer/changelog/draft-asset regression | PR candidate checks; release publication only for its approved exact version |
+| Historical QA retirement | Caller/registration closure and continuing-owner proof | Applicable current document/runner checks |
+| Remote setting or high-risk runtime | Concrete approved target, before-state and recovery | Actual read-back or runtime receipt; source-only evidence is insufficient |
+
+A PASS check is not criterion acceptance, authorization, integration or runtime
+activation. ACCEPTED_RISK remains a typed security exception with its original
+expiry, not a vulnerability fix or live service success. No synthetic fixture
+proves arbitrary agent prose or provider performance. Missing required evidence
+remains FAIL, BLOCKED, NOT_RUN or unverified as applicable. Independent review
+reads the exact diff, contract and actual results; the current Task owns it.
+
 ## Exceptions
 
 ### Exception Conditions
@@ -484,16 +483,18 @@ No exception is granted here; a separately authorized operation follows [Approva
 
 ### Approval and Review
 
-The [approval boundaries](approval-boundaries.md) policy governs a separately authorized operation.
+None: no exception exists to approve.
 
 ## Ownership
 
 ### Responsibilities
 
-This policy is owned by `@buenhyden`.
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
 ### Change and Adoption
 
-Related documents:
+Changes land in place with Task evidence; related documents:
 
+- `.agents/governance/github-governance.md`
+- `.agents/governance/agentic.md`
 - `.agents/governance/git-workflow.md`

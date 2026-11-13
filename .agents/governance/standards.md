@@ -17,8 +17,7 @@ Shared standards for instruction design, token efficiency, and execution quality
 
 ### Authority
 
-- `.agents/governance/bootstrap.md`
-- `.agents/governance/agentic.md`
+This policy is the canonical owner of shared instruction, token, language, and execution standards under [bootstrap precedence](bootstrap.md#authority-and-precedence).
 
 ## Scope
 
@@ -64,14 +63,16 @@ This section is intentionally thin to avoid duplication. Refer to that document 
 - GitHub Actions security baseline (least-privilege, OIDC, pinned actions, secret safety).
 - Local instruction authority boundary (`.agents/`, `.claude/` and `.codex/` vs. GitHub-native instruction files).
 
-### Enforcement
-
 #### Stage-Gate Compliance
 
 - Treat `docs/01` to `docs/99` as project SSoT.
 - Do not bypass `docs/01.requirements` and `docs/03.specs` for implementation work.
 - Keep reciprocal traceability across Requirement Package, Architecture
   Description, ADR, Spec, Plan, Task, Guide, Policy, and Runbook artifacts.
+
+### Enforcement
+
+None: this document states no separate check.
 
 ## Exceptions
 
@@ -81,17 +82,19 @@ No exception is granted here; a separately authorized operation follows [Approva
 
 ### Approval and Review
 
-The [approval boundaries](approval-boundaries.md) policy governs a separately authorized operation.
+None: no exception exists to approve.
 
 ## Ownership
 
 ### Responsibilities
 
-This policy is owned by `@buenhyden`.
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
 ### Change and Adoption
 
-Related documents:
+Changes land in place with Task evidence; related documents:
 
+- `.agents/governance/bootstrap.md`
+- `.agents/governance/agentic.md`
 - `.agents/governance/github-governance.md`
 - `.agents/governance/quality-standards.md`

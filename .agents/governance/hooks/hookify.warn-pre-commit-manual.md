@@ -28,20 +28,20 @@ Owning policy: [Quality standards execution boundary](../quality-standards.md#4-
 
 ### Applies To
 
-The `warn-pre-commit-manual` rule applies on the `bash` event. `.agents/governance/quality-standards.md#4-execution-boundary` owns this
-boundary: agents never run `pre-commit run` directly. An explicitly approved
-all-files gate uses only its controlled route and conditions. The admitted
-scoped route immediately before local commit is
-`scripts/validation/run-ci-precommit.sh --mode local-staged`; server PR checks
-use its authenticated `--mode pr-merge` route.
+Bash commands matching the frontmatter pattern.
 
 ### Exclusions
 
-None: this document states no exclusion.
+None.
 
 ## Rules
 
 ### Requirements
+
+Agents never run `pre-commit run` directly. The admitted
+scoped route immediately before local commit is
+`scripts/validation/run-ci-precommit.sh --mode local-staged`; server PR checks
+use its authenticated `--mode pr-merge` route.
 
 **Project pre-commit policy:**
 
@@ -73,18 +73,18 @@ The declared Bash event and unchanged native pattern identify matching commands.
 
 ### Exception Conditions
 
-No exception is declared by this rule.
+An explicitly approved all-files gate uses only its controlled route and conditions.
 
 ### Approval and Review
 
-None: this document states no separate approval or review step.
+That gate needs explicit approval under the execution boundary.
 
 ## Ownership
 
 ### Responsibilities
 
-The rule owner is `@buenhyden`.
+`@buenhyden`.
 
 ### Change and Adoption
 
-None: this document states no separate change or adoption step.
+None.

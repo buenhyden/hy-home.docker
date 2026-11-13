@@ -20,11 +20,7 @@ risks, and blockers without copying sensitive output.
 
 ### Authority
 
-Owning and bootstrap documents:
-
-- [Documentation protocol](documentation-protocol.md)
-- [Task checklists](task-checklists.md)
-- [AI agent standards](standards.md)
+This policy is the canonical owner of agent outcome, findings, procedure, and completion-report style under [bootstrap precedence](bootstrap.md#authority-and-precedence).
 
 ## Scope
 
@@ -89,16 +85,19 @@ No exception is granted here; a separately authorized operation follows [Approva
 
 ### Approval and Review
 
-Separately authorized operations follow the [Approval boundaries](approval-boundaries.md) policy.
+None: no exception exists to approve.
 
 ## Ownership
 
 ### Responsibilities
 
-The document owner is @buenhyden.
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
 ### Change and Adoption
 
-Related documents:
+Changes land in place with Task evidence; related documents:
 
 - [Provider capability matrix](provider-capability-matrix.md)
+- [Documentation protocol](documentation-protocol.md)
+- [Task checklists](task-checklists.md)
+- [AI agent standards](standards.md)

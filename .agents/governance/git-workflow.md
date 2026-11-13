@@ -17,10 +17,7 @@ This rule defines the mandatory git workflow for all contributors and agents.
 
 ### Authority
 
-Owning and bootstrap documents:
-
-- [GitHub governance](github-governance.md)
-- [Bootstrap policy](bootstrap.md)
+This policy is the canonical owner of local Git authoring, branch integration, commits, review, and remote delivery boundaries under [bootstrap precedence](bootstrap.md#authority-and-precedence).
 
 ## Scope
 
@@ -173,17 +170,19 @@ No exception is granted here; a separately authorized operation follows [Approva
 
 ### Approval and Review
 
-Separately authorized operations follow the [Approval boundaries](approval-boundaries.md) policy.
+None: no exception exists to approve.
 
 ## Ownership
 
 ### Responsibilities
 
-The document owner is @buenhyden.
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
 ### Change and Adoption
 
-Related documents:
+Changes land in place with Task evidence; related documents:
 
 - [Quality standards](quality-standards.md)
 - [Operations runbook index](../../docs/05.operations/runbooks/README.md)
+- [GitHub governance](github-governance.md)
+- [Bootstrap policy](bootstrap.md)

@@ -19,12 +19,7 @@ selection and permission mappings live in `.agents/governance/providers/registry
 
 ### Authority
 
-Owning and bootstrap documents:
-
-- [Bootstrap policy](bootstrap.md)
-- [Workflows](workflows.md)
-- [Task checklists](task-checklists.md)
-- [Provider registry](providers/registry.yaml)
+This policy is the canonical owner of provider-neutral agent execution, delegation, capability intake, and Task evidence under [bootstrap precedence](bootstrap.md#authority-and-precedence).
 
 ## Scope
 
@@ -182,18 +177,22 @@ No exception is granted here; a separately authorized operation follows [Approva
 
 ### Approval and Review
 
-Separately authorized operations follow the [Approval boundaries](approval-boundaries.md) policy.
+None: no exception exists to approve.
 
 ## Ownership
 
 ### Responsibilities
 
-The document owner is @buenhyden.
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
 ### Change and Adoption
 
-Related documents:
+Changes land in place with Task evidence; related documents:
 
 - External catalog evidence (`docs/90.references/research/0002-agentic-engineering-research-pack/m0003-ai-agent-catalogs.md`)
 - [Workflow supervisor](../roles/workflow-supervisor.md)
 - [Documentation index](../../docs/README.md)
+- [Bootstrap policy](bootstrap.md)
+- [Workflows](workflows.md)
+- [Task checklists](task-checklists.md)
+- [Provider registry](providers/registry.yaml)

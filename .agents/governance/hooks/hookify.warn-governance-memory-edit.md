@@ -25,7 +25,7 @@ Apply the declared `warn` action for warn-governance-memory-edit.
 
 ### Authority
 
-Owning policy: `.agents/governance/sdlc.md`.
+Watched authorities: `.agents/README.md` (governance inventory) and `.agents/governance/sdlc.md`.
 
 ## Scope
 
@@ -35,7 +35,7 @@ The `warn-governance-memory-edit` rule applies on the `file` event and matches f
 
 ### Exclusions
 
-None: this document states no exclusion.
+None.
 
 ## Rules
 
@@ -59,16 +59,14 @@ No exception is declared by this rule.
 
 ### Approval and Review
 
-None: this document states no separate approval or review step.
+None.
 
 ## Ownership
 
 ### Responsibilities
 
-The rule owner is `@buenhyden`.
+`@buenhyden`.
 
 ### Change and Adoption
 
-Canonical governance navigation:
-
-- `.agents/README.md`
+None.

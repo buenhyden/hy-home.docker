@@ -18,11 +18,7 @@ It never expands through delegation or provider handoff.
 
 ### Authority
 
-Owning and bootstrap documents:
-
-- [Environment constraints](environment-constraints.md)
-- [Agentic policy](agentic.md)
-- [Provider registry](providers/registry.yaml)
+This policy is the canonical owner of approval of protected operations and surfaces under [bootstrap precedence](bootstrap.md#authority-and-precedence).
 
 ## Scope
 
@@ -158,16 +154,19 @@ A current trusted user or native provider authorization permits only its stated 
 
 ### Approval and Review
 
-None: this document states no separate approval or review step.
+Policy changes require rules-engineer review (Documentation Write Permission); a shared contract needs the owner approval in Core Rules.
 
 ## Ownership
 
 ### Responsibilities
 
-The document owner is @buenhyden.
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
 ### Change and Adoption
 
-Related documents:
+Changes land in place with Task evidence; related documents:
 
 - [GitHub governance](github-governance.md)
+- [Environment constraints](environment-constraints.md)
+- [Agentic policy](agentic.md)
+- [Provider registry](providers/registry.yaml)

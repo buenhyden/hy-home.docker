@@ -35,7 +35,7 @@ The `warn-parallel-doc-file` rule applies on the `file` event and matches file e
 
 ### Exclusions
 
-None: this document states no exclusion.
+None.
 
 ## Rules
 
@@ -86,16 +86,14 @@ No exception is declared by this rule.
 
 ### Approval and Review
 
-None: this document states no separate approval or review step.
+None.
 
 ## Ownership
 
 ### Responsibilities
 
-The rule owner is `@buenhyden`.
+`@buenhyden`.
 
 ### Change and Adoption
 
-Canonical governance navigation:
-
-- `.agents/README.md`
+`.agents/README.md`.

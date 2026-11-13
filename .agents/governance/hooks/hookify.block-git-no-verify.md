@@ -41,7 +41,7 @@ retains the separate block on bypassing configured commit checks.
 
 ### Exclusions
 
-None: this document states no exclusion.
+None.
 
 ## Rules
 
@@ -85,14 +85,14 @@ No exception is declared by this rule.
 
 ### Approval and Review
 
-None: this document states no separate approval or review step.
+None.
 
 ## Ownership
 
 ### Responsibilities
 
-The rule owner is `@buenhyden`.
+`@buenhyden`.
 
 ### Change and Adoption
 
-None: this document states no separate change or adoption step.
+None.

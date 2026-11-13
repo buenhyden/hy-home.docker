@@ -13,6 +13,26 @@ updated: "2026-11-13"
 
 ### Objective
 
+Map each stage to its layer, canonical owner, and completion evidence.
+
+### Authority
+
+This policy is the canonical owner of the stage ownership and document type family map under [bootstrap precedence](bootstrap.md#authority-and-precedence).
+
+## Scope
+
+### Applies To
+
+Current stage roles, document families, canonical ownership, and verification routes.
+
+### Exclusions
+
+Shared README profiles, native envelopes, and scoped registry/schema/template reads keep the exceptions the documentation protocol registers.
+
+## Rules
+
+### Requirements
+
 | Stage | `layer` | Purpose | Canonical owner | Completion evidence |
 | --- | --- | --- | --- | --- |
 | Agent governance | — | shared policies, roles, skills, and provider translations | `.agents/` plus authored native adapters | contract, renderer parity, Task |
@@ -36,26 +56,6 @@ Stage ownership does not make an individual stage document a current instruction
 source for files outside docs. Use README navigation and canonical agent rules;
 scoped execution reads and required registry/schema/template inputs retain the
 narrow exceptions in that protocol.
-
-### Authority
-
-- [Documentation protocol](documentation-protocol.md)
-- [SDLC](sdlc.md)
-- Stage 99 registry (`docs/99.templates/registry.json`)
-
-## Scope
-
-### Applies To
-
-Current stage roles, document families, canonical ownership, and verification routes.
-
-### Exclusions
-
-None: this document states no exclusion.
-
-## Rules
-
-### Requirements
 
 #### Document Type Families
 
@@ -104,16 +104,19 @@ No exception is granted here; a separately authorized operation follows [Approva
 
 ### Approval and Review
 
-The [approval boundaries](approval-boundaries.md) policy governs a separately authorized operation.
+None: no exception exists to approve.
 
 ## Ownership
 
 ### Responsibilities
 
-This policy is owned by `@buenhyden`.
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
 ### Change and Adoption
 
-Related documents:
+Changes land in place with Task evidence; related documents:
 
+- [Documentation protocol](documentation-protocol.md)
+- [SDLC](sdlc.md)
+- Stage 99 registry (`docs/99.templates/registry.json`)
 - [Documentation index](../../docs/README.md)

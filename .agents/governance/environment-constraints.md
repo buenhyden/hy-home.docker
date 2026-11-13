@@ -17,12 +17,7 @@ Detailed execution boundaries, verification rules, Graphify behaviors, and share
 
 ### Authority
 
-Owning and bootstrap documents:
-
-- [Bootstrap policy](bootstrap.md)
-- [Agentic policy](agentic.md)
-- [GitHub governance](github-governance.md)
-- [Quality standards](quality-standards.md)
+This policy is the canonical owner of execution boundaries, verification, Graphify, and shared agent memory under [bootstrap precedence](bootstrap.md#authority-and-precedence).
 
 ## Scope
 
@@ -257,6 +252,16 @@ This project has a graphify knowledge graph at `graphify-out/`.
   `capacity status` open existing state read-only: they never initialize a
   database or schema, change permissions, or add a service or model API call.
 
+#### Provider Surface Regeneration
+
+- Provider surface `--write` is allowed once only after an approved canonical
+  agent governance or Provider Registry change. Ordinary postflight and CI use
+  `python3 scripts/operations/provider_surface_renderer.py --check`; hooks and validation
+  commands must not regenerate provider surfaces implicitly. A reported
+  quarantine is a nonzero cleanup handoff, not successful regeneration; follow
+  the exact-path procedure in `.agents/governance/providers/README.md`
+  before rerunning write and check.
+
 ### Enforcement
 
 #### 3. Verification
@@ -268,13 +273,6 @@ This project has a graphify knowledge graph at `graphify-out/`.
   remain Git-visible repository evidence only; this environment policy does not
   authorize direct invocation, ignored/outside writes, or a sandbox bypass.
 - Run the completion checklist in `.agents/governance/task-checklists.md` before declaring done.
-- Provider surface `--write` is allowed once only after an approved canonical
-  agent governance or Provider Registry change. Ordinary postflight and CI use
-  `python3 scripts/operations/provider_surface_renderer.py --check`; hooks and validation
-  commands must not regenerate provider surfaces implicitly. A reported
-  quarantine is a nonzero cleanup handoff, not successful regeneration; follow
-  the exact-path procedure in `.agents/governance/providers/README.md`
-  before rerunning write and check.
 
 ## Exceptions
 
@@ -290,10 +288,14 @@ Separately authorized operations follow the [Approval boundaries](approval-bound
 
 ### Responsibilities
 
-The document owner is @buenhyden.
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
 ### Change and Adoption
 
-Related documents:
+Changes land in place with Task evidence; related documents:
 
 - [Governance navigation](../README.md)
+- [Bootstrap policy](bootstrap.md)
+- [Agentic policy](agentic.md)
+- [GitHub governance](github-governance.md)
+- [Quality standards](quality-standards.md)

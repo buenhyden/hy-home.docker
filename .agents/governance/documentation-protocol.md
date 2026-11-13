@@ -17,10 +17,7 @@ Keep one document authority per role and preserve truthful provenance throughout
 
 ### Authority
 
-Owning and bootstrap documents:
-
-- [Stage authoring matrix](stage-authoring-matrix.md)
-- Stage 99 registry (`docs/99.templates/registry.json`)
+This policy is the canonical owner of document authority, authoring, and retirement under [bootstrap precedence](bootstrap.md#authority-and-precedence).
 
 ## Scope
 
@@ -30,7 +27,7 @@ Current authored documents, registered machine inputs, and retained historical u
 
 ### Exclusions
 
-None: this document states no exclusion.
+A provider-owned runtime projection is exempt from the metadata envelope. Operator-created files under `secrets/` and the body of a terminal Task at a registered Task path are outside the fenced-path check of `check-document-links.py`.
 
 ## Rules
 
@@ -522,18 +519,20 @@ No exception is granted here; a separately authorized operation follows [Approva
 
 ### Approval and Review
 
-Separately authorized operations follow the [Approval boundaries](approval-boundaries.md) policy.
+None: no exception exists to approve.
 
 ## Ownership
 
 ### Responsibilities
 
-The document owner is @buenhyden.
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
 ### Change and Adoption
 
-Related documents:
+Changes land in place with Task evidence; related documents:
 
 - [SDLC](sdlc.md)
 - [Task checklists](task-checklists.md)
 - [Documentation index](../../docs/README.md)
+- [Stage authoring matrix](stage-authoring-matrix.md)
+- Stage 99 registry (`docs/99.templates/registry.json`)

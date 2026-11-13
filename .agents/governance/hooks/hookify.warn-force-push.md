@@ -32,7 +32,7 @@ The `warn-force-push` rule applies on the `bash` event and matches Bash commands
 
 ### Exclusions
 
-None: this document states no exclusion.
+None.
 
 ## Rules
 
@@ -75,20 +75,18 @@ Native event delivery is a separate observation from the frontmatter match.
 
 ### Exception Conditions
 
-No exception is declared by this rule.
+Own feature branch after rebase, with `--force-with-lease` (see Requirements).
 
 ### Approval and Review
 
-None: this document states no separate approval or review step.
+None.
 
 ## Ownership
 
 ### Responsibilities
 
-The rule owner is `@buenhyden`.
+`@buenhyden`.
 
 ### Change and Adoption
 
-Canonical governance navigation:
-
-- `.agents/README.md`
+`.agents/README.md`.

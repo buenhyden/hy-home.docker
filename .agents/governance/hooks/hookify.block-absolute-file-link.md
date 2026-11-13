@@ -28,7 +28,7 @@ Apply the declared `block` action for block-absolute-file-link.
 
 ### Authority
 
-Canonical governance root: `.agents/README.md`.
+No governance policy states the file:// ban; this rule owns it.
 
 ## Scope
 
@@ -38,7 +38,7 @@ The `block-absolute-file-link` rule applies on the `file` event and matches file
 
 ### Exclusions
 
-None: this document states no exclusion.
+None.
 
 ## Rules
 
@@ -84,14 +84,14 @@ No exception is declared by this rule.
 
 ### Approval and Review
 
-None: this document states no separate approval or review step.
+None.
 
 ## Ownership
 
 ### Responsibilities
 
-The rule owner is `@buenhyden`.
+`@buenhyden`.
 
 ### Change and Adoption
 
-None: this document states no separate change or adoption step.
+None.

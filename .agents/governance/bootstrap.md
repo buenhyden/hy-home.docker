@@ -17,10 +17,7 @@ Provide the sole repository bootstrap sequence for supported agents.
 
 ### Authority
 
-Owning and bootstrap documents:
-
-- [Approval boundaries](approval-boundaries.md)
-- [Documentation protocol](documentation-protocol.md)
+This policy is the sole bootstrap authority.
 
 ## Scope
 
@@ -128,17 +125,19 @@ No exception is granted here; a separately authorized operation follows [Approva
 
 ### Approval and Review
 
-Separately authorized operations follow the [Approval boundaries](approval-boundaries.md) policy.
+None: no exception exists to approve.
 
 ## Ownership
 
 ### Responsibilities
 
-The document owner is @buenhyden.
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
 ### Change and Adoption
 
-Related documents:
+Changes land in place with Task evidence; related documents:
 
 - [Governance navigation](../README.md)
 - [Completion checklist](task-checklists.md)
+- [Approval boundaries](approval-boundaries.md)
+- [Documentation protocol](documentation-protocol.md)

@@ -17,8 +17,7 @@ Route completion verification to the actual changed authority surface.
 
 ### Authority
 
-- [Task checklists](task-checklists.md)
-- [Quality standards](quality-standards.md#4-execution-boundary)
+This policy is the canonical owner of completion verification routing for changed authority surfaces under [bootstrap precedence](bootstrap.md#authority-and-precedence).
 
 ## Scope
 
@@ -58,17 +57,19 @@ No exception is granted here; a separately authorized operation follows [Approva
 
 ### Approval and Review
 
-The [approval boundaries](approval-boundaries.md) policy governs a separately authorized operation.
+None: no exception exists to approve.
 
 ## Ownership
 
 ### Responsibilities
 
-This policy is owned by `@buenhyden`.
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
 ### Change and Adoption
 
-Related documents:
+Changes land in place with Task evidence; related documents:
 
+- [Task checklists](task-checklists.md)
+- [Quality standards](quality-standards.md#4-execution-boundary)
 - [Documentation protocol](documentation-protocol.md)
 - [Provider registry](providers/registry.yaml)

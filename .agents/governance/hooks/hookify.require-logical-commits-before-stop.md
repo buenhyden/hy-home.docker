@@ -22,7 +22,7 @@ Apply the declared `block` action for require-logical-commits-before-stop.
 
 ### Authority
 
-Canonical governance root: `.agents/README.md`.
+Owning policy: [Git workflow](../git-workflow.md#5-agent-completion-commit-discipline).
 
 ## Scope
 
@@ -32,7 +32,7 @@ The `require-logical-commits-before-stop` rule applies on the `stop` event and m
 
 ### Exclusions
 
-None: this document states no exclusion.
+None.
 
 ## Rules
 
@@ -71,14 +71,14 @@ No exception is declared by this rule.
 
 ### Approval and Review
 
-None: this document states no separate approval or review step.
+None.
 
 ## Ownership
 
 ### Responsibilities
 
-The rule owner is `@buenhyden`.
+`@buenhyden`.
 
 ### Change and Adoption
 
-None: this document states no separate change or adoption step.
+None.
