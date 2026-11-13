@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 import dataclasses
+import importlib.util
 import json
 import os
 import pathlib
@@ -33,6 +34,7 @@ def _invocation(
     *,
     cwd: str = ".",
     allowed_env_keys: tuple[str, ...] = (),
+    security_db: str = "",
 ) -> runner.GateInvocation:
     return runner.GateInvocation(
         gate_id=gate_id,
@@ -41,6 +43,7 @@ def _invocation(
         cwd=pathlib.PurePosixPath(cwd),
         allowed_env_keys=allowed_env_keys,
         timeout_seconds=60,
+        security_db=security_db,
     )
 
 
@@ -364,6 +367,110 @@ class DescriptorExecutionTests(unittest.TestCase):
         self.assertEqual(40, len(source["git_object"]))
         self.assertEqual("PASS", result["rows"][0]["status"])
         self.assertTrue(result["complete"])
+
+    def publish_seed(self, database: bytes) -> str:
+        """Publish a Grype DB seed generation under the fixture root."""
+        spec = importlib.util.spec_from_file_location(
+            "grype_db_seed", ROOT / "scripts/lib/supply_chain/grype_db_seed.py"
+        )
+        helper = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(helper)
+        relative = helper.SEED_RELATIVE
+        output_identity, stage_identity, stage = helper.prepare_seed_stage(
+            self.root, relative
+        )
+        (stage / "cache/6").mkdir(parents=True, mode=0o700)
+        (stage / "cache/6/vulnerability.db").write_bytes(database)
+        status = stage / "db-status.txt"
+        status.write_text(
+            "Schema: v6.1.9\nBuilt: 2026-07-23T00:00:00Z\nStatus: valid\n"
+            f"From: https://x/db.tar.zst?checksum=sha256%3A{'7' * 64}\n",
+            encoding="utf-8",
+        )
+        status.chmod(0o600)
+        tool = {
+            **helper.EXACT_GRYPE_TOOL,
+        }
+        return helper.finalize_seed_generation(
+            self.root,
+            relative,
+            output_identity,
+            stage_identity,
+            stage,
+            status,
+            tool,
+            "2026-07-23T00:00:00Z",
+        )["generation_path"]
+
+    def db_plan(self) -> tuple[runner.GateInvocation, ...]:
+        self.add_entrypoint("scripts/validation/db.py")
+        self.add_entrypoint("scripts/validation/plain.py")
+        return (
+            _invocation("leaf.db", "scripts/validation/db.py", security_db="grype"),
+            _invocation("leaf.plain", "scripts/validation/plain.py"),
+        )
+
+    def seed_db_evidence(self, plan) -> runner.ExecutionEvidenceRequest:
+        request = self.evidence_request(
+            pathlib.Path(self.temporary.name) / "ci-gate-evidence",
+            tuple(item.gate_id for item in plan),
+        )
+        runner.seed_execution_evidence(self.root, plan, {"PATH": os.defpath}, request)
+        return request
+
+    def test_security_db_identity_gates_evidence_reuse(self) -> None:
+        """QA-C07: a changed or newly seeded DB refuses the planned PASS."""
+        plan = self.db_plan()
+        generation = self.publish_seed(b"database one\n")
+        request = self.seed_db_evidence(plan)
+        rows = {
+            row["gate_id"]: row
+            for row in json.loads((request.directory / "plan.json").read_bytes())[
+                "rows"
+            ]
+        }
+        self.assertEqual(
+            "sha256:" + generation.split("/", 1)[1], rows["leaf.db"]["security_db"]
+        )
+        self.assertEqual("NOT_APPLICABLE", rows["leaf.plain"]["security_db"])
+        # Positive control: the identical DB executes and records PASS.
+        self.assertEqual(
+            0,
+            runner.execute_execution_plan(
+                self.root, plan, {"PATH": os.defpath}, evidence=request
+            ),
+        )
+        shutil.rmtree(request.directory)
+        request = self.seed_db_evidence(plan)
+        self.publish_seed(b"database two\n")
+        with self.assertRaises(contract.GateContractError):
+            runner.execute_execution_plan(
+                self.root, plan, {"PATH": os.defpath}, evidence=request
+            )
+        self.assertFalse((request.directory / "result.json").exists())
+
+    def test_absent_seed_then_published_seed_refuses_the_plan(self) -> None:
+        plan = self.db_plan()
+        request = self.seed_db_evidence(plan)
+        recorded = json.loads((request.directory / "plan.json").read_bytes())
+        self.assertEqual("ABSENT", recorded["rows"][0]["security_db"])
+        self.publish_seed(b"database one\n")
+        with self.assertRaises(contract.GateContractError):
+            runner.execute_execution_plan(
+                self.root, plan, {"PATH": os.defpath}, evidence=request
+            )
+
+    def test_a_leaf_without_security_db_ignores_the_seed(self) -> None:
+        self.add_entrypoint("scripts/validation/plain.py")
+        plan = (_invocation("leaf.plain", "scripts/validation/plain.py"),)
+        request = self.seed_db_evidence(plan)
+        self.publish_seed(b"database one\n")
+        self.assertEqual(
+            0,
+            runner.execute_execution_plan(
+                self.root, plan, {"PATH": os.defpath}, evidence=request
+            ),
+        )
 
     def test_local_cli_seeds_evidence_and_executes_the_same_request(self) -> None:
         self.add_entrypoint("scripts/validation/one.py")

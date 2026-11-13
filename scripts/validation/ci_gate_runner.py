@@ -54,6 +54,7 @@ from scripts.lib.gate.ci_gate_evidence import (
     capture_runtime_observation,
     local_toolchain_mismatch,
 )
+from scripts.lib.supply_chain.grype_db_seed import current_seed_identity
 
 _GIT_TIMEOUT_SECONDS = 5
 _SHEBANGS = {
@@ -134,6 +135,8 @@ class GateInvocation:
     cwd: pathlib.PurePosixPath
     allowed_env_keys: tuple[str, ...]
     timeout_seconds: int
+    # "grype" when the gate's result depends on the vulnerability DB (QA-C07).
+    security_db: str = ""
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -525,6 +528,7 @@ def build_public_execution_plan(
                 cwd=node.cwd,
                 allowed_env_keys=node.allowed_env_keys,
                 timeout_seconds=node.timeout_minutes * 60,
+                security_db=node.security_db,
             )
         )
     return tuple(invocations)
@@ -592,6 +596,7 @@ def build_public_validation_plan(
                 else ()
             ),
             timeout_seconds=(template.timeout_seconds if template is not None else 300),
+            security_db=template.security_db if template is not None else "",
         )
 
     canonical = {
@@ -927,6 +932,7 @@ def _git_path_for_verification(environ: Mapping[str, str], path_value: str) -> s
 
 
 def _evidence_rows(
+    root: pathlib.Path,
     verified: tuple[_VerifiedInvocation, ...],
     request: ExecutionEvidenceRequest,
 ) -> tuple[dict[str, object], ...]:
@@ -953,6 +959,11 @@ def _evidence_rows(
                 "size_bytes": item.source_size,
             },
             "tool_image_digest": "NOT_AVAILABLE",
+            **(
+                {"security_db": current_seed_identity(root)}
+                if item.invocation.security_db == "grype"
+                else {}
+            ),
         }
         for item in verified
     )
@@ -993,7 +1004,7 @@ def seed_execution_evidence(
 ) -> str:
     root_fd, verified = _verified_plan(root, plan, environ)
     try:
-        rows = _evidence_rows(tuple(verified), request)
+        rows = _evidence_rows(root, tuple(verified), request)
         try:
             with EvidenceStore.create(
                 request.directory,
@@ -1313,7 +1324,7 @@ def execute_execution_plan(
                 descriptor_root,
             )
             if evidence is not None:
-                rows = _evidence_rows(tuple(verified), evidence)
+                rows = _evidence_rows(canonical_root, tuple(verified), evidence)
                 try:
                     store = EvidenceStore.open(
                         evidence.directory,

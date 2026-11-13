@@ -1448,6 +1448,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "cwd",
                 "allowed_env_keys",
                 "timeout_seconds",
+                "security_db",
             ),
             tuple(field.name for field in dataclasses.fields(runner.GateInvocation)),
         )
@@ -2102,6 +2103,20 @@ class CiGateRunnerContractTests(unittest.TestCase):
         self.assertNotIn(
             pathlib.PurePosixPath("scripts/hardening/check-all-hardening.sh"),
             {item.entrypoint for item in plan},
+        )
+
+    def test_real_full_plan_carries_the_declared_security_db(self) -> None:
+        """QA-C07: the runner sees security_db on exactly the declared leaves."""
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        plan = _real_public_plan(public.suite_names, {})
+        self.assertEqual(
+            {
+                "leaf.supply-chain-deterministic-policy",
+                "leaf.supply-chain-fixture-policy",
+            },
+            {item.gate_id for item in plan if item.security_db == "grype"},
         )
 
     def test_base_plan_rejects_runtime_validator_rebind(self) -> None:
