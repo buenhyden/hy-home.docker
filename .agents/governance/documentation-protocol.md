@@ -130,8 +130,8 @@ check for each kind of writer, not for the relation as a whole.
 | --- | --- | --- | --- | --- |
 | Authority | `rel.authority` | Consumer to owner | Normative links | `check-document-links.py`: the link resolves |
 | Structural Ownership | `rel.structural-ownership` | Child to parent | `parent_ids` of a Plan, Task, data model contract, research or audit member, and postmortem | `check-document-metadata.py`: `parent_ids` are valid |
-| Constraint | `rel.constraint` | Change to constraint | `parent_ids` of a Requirements package, Architecture description, ADR, Spec and operations policy; Spec `Owning Requirements` as prose | `check-document-metadata.py` for `parent_ids`; the prose is checked by review |
-| Traceability | `rel.traceability` | Record to source | Task `Results` rows and a Task's evidence links; `parent_ids` of research, audit, data, guide, runbook, incident and generated documents | `check-document-corpus-lifecycle.py` for Evidence rows; `check-document-links.py` for links; `check-document-metadata.py` for `parent_ids` |
+| Constraint | `rel.constraint` | Change to constraint | `parent_ids` of a Requirements package, Architecture description, ADR and Spec; Spec `Owning Requirements` as prose | `check-document-metadata.py` for `parent_ids`; the prose is checked by review |
+| Traceability | `rel.traceability` | Record to source | Task `Results` rows and a Task's evidence links; `parent_ids` of research, audit, data, guide, runbook, operations policy, incident and generated documents | `check-document-corpus-lifecycle.py` for Evidence rows; `check-document-links.py` for links; `check-document-metadata.py` for `parent_ids` |
 | Promotion | `rel.promotion` | Plan to target owner | Plan `Durable Meaning` and `Owner and Receipt` | None: the reviewer applies the [SDLC](sdlc.md#sequence) promotion rule |
 | Supersession | `rel.supersession` | Successor to predecessor | Frontmatter `supersedes`; ADR `Traceability` / `Supersession` | `check-document-metadata.py` for the key; the section is checked by review |
 | Change Impact | `rel.change-impact` | Owner to consumer | None: derived from Authority, Constraint and Structural Ownership | None: the reviewer applies this section |
@@ -215,7 +215,7 @@ retyped by this rule.
    multiple predecessors in `supersedes` and one reciprocal successor in
    `superseded_by`; changing that singular successor to an array requires a
    coordinated graph and lineage contract change. A Registry-required root `parent_ids: []` records
-   structural root identity and is not optional placeholder metadata.
+   root identity and is not optional placeholder metadata.
 10. Title a Stage 03 Spec as `<Subject> Specification`. The subject names what
     the change contracts, not the document class, so `Technical`, `Capability`,
     and other class words do not appear in it.

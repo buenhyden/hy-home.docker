@@ -1311,10 +1311,6 @@
             "ref": "spec:parent_ids"
           },
           {
-            "kind": "frontmatter",
-            "ref": "policy:parent_ids"
-          },
-          {
             "kind": "section",
             "ref": "spec:Overview/Owning Requirements"
           }
@@ -1353,6 +1349,10 @@
           {
             "kind": "frontmatter",
             "ref": "runbook:parent_ids"
+          },
+          {
+            "kind": "frontmatter",
+            "ref": "policy:parent_ids"
           },
           {
             "kind": "frontmatter",
