@@ -99,8 +99,10 @@ Changes:
 ### Blockers and Decisions
 
 - The binding is not pinned per heading in the Registry check: the check
-  proves a registered section, and
-  `test_common_form_paths_come_from_the_registry` pins the exact four paths.
+  proves a registered section. `test_common_form_paths_come_from_the_registry`
+  pins the exact four moved paths, and the check's rule that an H2-only
+  binding keeps its heading name fixes Acceptance Criteria and Corrective
+  Actions.
 - Not run here and left to their owners: W05 validator items (H-05, H-08,
   H-12), W06 stage-QA cells (H-09, H-10), W07 Skill section. Q-07 runs only
   after W11.
@@ -112,10 +114,15 @@ Changes:
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Binding RED | 116 | W121 | red-green-proof | Two new tests against `73b1705b6` plus the tests only | FAIL | `KeyError: 'section_forms'` and no `_common_form_paths` in `spec_packages` | required | - |
+| Binding GREEN | 116 | W121 | red-green-proof | The two new tests and `test_common_key_resolves_the_legacy_h2_or_the_common_form_h3` at `459800639` | PASS | 3 tests OK | required | Binding RED |
+| Binding review | 116 | W121 | independent-review | Fresh-context code-reviewer of the uncommitted diff on `73b1705b6` | FAIL | CHANGES_REQUIRED: the reader read an absent `section_forms` as no common form, so a removed binding would pass silently; Minor: a correct-but-wrong binding passes the check, a stale binding was reported as unbound, `sdlc.md` and the glossary named different promotion targets, the template receipt prompt lacked the policy fields | required | - |
+| Binding re-review | 116 | W121 | independent-review | Same reviewer, commit `459800639` | PASS | Every finding resolved or recorded under Blockers and Decisions; no caller in `spec_packages.py` swallows the reader's `RegistryError`; two Minor notes (message text untested, H2-only bindings pinned by the check), both answered in the follow-up commit | required | Binding review |
+| Stage 03 checks | 116 | W121 | document-checks | `check-document-metadata --mode check-changed --base-ref main`, `check-document-links --mode alignment` and `--mode commands`, `check-document-corpus-lifecycle` on the staged `459800639` tree | PASS | metadata selected=7 violations=0; links failures=0 in both modes; lifecycle and occupancy violations=0 | required | - |
+| Pre-commit | 116 | W121 | precommit-local-staged | `run-ci-precommit.sh --mode local-staged` on the staged `459800639` tree | PASS | exit 0 | required | - |
 
 ### Resolution Links
 
-Pending the GREEN and regression rows.
+Binding RED is resolved by Binding GREEN, and Binding review by Binding re-review.
 
 ## Acceptance Decision
 
@@ -123,7 +130,7 @@ Pending the GREEN and regression rows.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 116 | pending | Binding RED | Awaiting the passing rows and the owner's decision | SPEC-0212 TSK-0063 |
+| 116 | pending | Binding GREEN, Binding re-review, Stage 03 checks, Pre-commit | Awaiting the regression row and the owner's decision | SPEC-0212 TSK-0063 |
 
 ### Remaining Conditions
 

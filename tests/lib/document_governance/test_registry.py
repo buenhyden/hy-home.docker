@@ -182,6 +182,19 @@ class DocumentRegistryTests(unittest.TestCase):
         ):
             with self.subTest(change=change.__name__):
                 self.assertIn("common-section-form", broken(change))
+
+        def messages(change) -> set[str]:
+            candidate = json.loads(json.dumps(raw))
+            change(candidate["common"])
+            return {
+                finding.message
+                for finding in validate_registry(candidate)
+                if finding.code == "common-section-form"
+            }
+
+        details = {"drop": messages(drop), "stale": messages(stale)}
+        self.assertEqual({"Work Log: unbound"}, details["drop"])
+        self.assertEqual({"Retired: names no common heading"}, details["stale"])
         historical = json.loads(json.dumps(raw))
         del historical["common"]["section_forms"]
         self.assertNotIn(
