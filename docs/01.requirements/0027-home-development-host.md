@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Requirements"
-version: "1.0.1"
+version: "1.1.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "requirements"
 artifact_id: "REQ-0027"
 created: "2026-09-19"
@@ -109,17 +109,41 @@ needed.
 
 ### Acceptance Conditions
 
-1. The classification of every service and HOME's required features and
-   dependencies can be confirmed in code and documentation.
-2. Missing entries and conflicts in configuration, secret metadata, profile,
-   and version ownership are checked automatically, and actual results are
-   recorded.
-3. Current documents link to the implementation and authoritative basis and
-   provide the required operations/recovery procedures.
-4. Local sync verifies value preservation and exposure prevention, and
-   execution deployment happens only after concrete approval.
-5. A reviewable change history, verification results, residual risk, and
-   incomplete execution verification are provided.
+- **REQ-0027-FR-0001**: The classification of every service, with its
+  consumers, data, resources and retention reason, can be confirmed in code and
+  documentation.
+- **REQ-0027-FR-0002**: HOME's required features and dependencies can be
+  confirmed in code and documentation, and development, experimentation and
+  update work start only when explicitly selected.
+- **REQ-0027-FR-0003**: Missing entries and conflicts in the profile vocabulary
+  and dependencies against the running configuration are checked automatically,
+  and actual results are recorded.
+- **REQ-0027-FR-0004**: Current documents for each retained service link to the
+  implementation and authoritative basis and provide the required operations
+  and recovery procedures.
+- **REQ-0027-FR-0005**: Missing entries and conflicts in configuration and
+  secret metadata are checked automatically with actual results recorded, and
+  local sync is verified to preserve existing values and unknown user entries.
+- **REQ-0027-FR-0006**: Missing entries and conflicts in version ownership are
+  checked automatically with actual results recorded, and each dependency area
+  has one update-proposal owner.
+- **REQ-0027-FR-0007**: Deployment executes only after concrete approval of a
+  presented target, preconditions, verification and recovery procedure.
+- **REQ-0027-FR-0008**: A reviewable change history, verification results,
+  residual risk and incomplete execution verification are provided, with
+  startup, status, authentication, persistence, resource, backup and recovery
+  results each marked verified or unverified.
+- **REQ-0027-FR-0009**: The `experience` profile is outside the default HOME
+  selection, its Storybook documentation and docs MCP reach only authenticated
+  administrators, and both are built from one source commit.
+- **REQ-0027-NFR-0001**: Scans of tracked files and reports find no secret
+  value, and local sync verifies exposure prevention.
+- **REQ-0027-NFR-0002**: Each recoverability claim cites a verified restore,
+  with configuration restore and data restore reported separately.
+- **REQ-0027-NFR-0003**: Each exact version has one owning declaration, and any
+  exception states its reason and basis.
+- **REQ-0027-NFR-0004**: Every non-PASS result is recorded as such, from a run
+  against the latest main.
 
 ### Verification Method
 

@@ -1,10 +1,10 @@
 ---
 title: "Operational Readiness Closure Requirements"
-version: "1.2.1"
+version: "1.3.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "requirements"
 artifact_id: "REQ-0025"
 created: "2026-07-19"
@@ -100,14 +100,41 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 ### Acceptance Conditions
 
-- The core readiness rehearsal verifies readiness, timeout, and cleanup
-  boundaries.
-- The supply-chain verification and policy check produce digest-bound
-  positive and negative verdicts.
-- The delivery rehearsal verifies canary, promotion, injected failure, and
-  rollback.
-- Related focused tests and the registered full profile pass, and Task
-  evidence contains no secrets or raw runtime logs.
+- **REQ-0025-FR-0001**: The core readiness rehearsal starts the approved core
+  set under a unique Compose project and verifies readiness, timeout and
+  cleanup boundaries.
+- **REQ-0025-FR-0002**: The rehearsal's inputs are synthetic, and its Compose
+  project, networks and volumes carry task-owned identities.
+- **REQ-0025-FR-0004**: SBOM, vulnerability, provenance and signature
+  verification for the sample web service produce digest-bound positive
+  verdicts and reject tampering and identity mismatch.
+- **REQ-0025-FR-0005**: The supply-chain checks run with the tool version and
+  container image the repository declares, with no host-global install of those
+  tools.
+- **REQ-0025-FR-0006**: Network-dependent security observations are reported as
+  advisory, and the CI verdict comes from local policy and fixtures only.
+- **REQ-0025-FR-0007**: The delivery rehearsal deploys only a verified digest
+  as canary and promotes it only after the health gate passes.
+- **REQ-0025-FR-0008**: An injected failure after canary or promotion rolls
+  back to the previous verified digest, and post-rollback health is confirmed.
+- **REQ-0025-FR-0009**: The current Task records command, scope, result,
+  cleanup and review for each run, and its lifecycle state matches those
+  results.
+- **REQ-0025-FR-0010**: Task evidence contains no raw runtime logs; durable
+  evidence holds only a secret-scrubbed summary and the immutable subject
+  identity.
+- **REQ-0025-NFR-0011**: Every cleanup targets only task-owned identities.
+- **REQ-0025-NFR-0012**: Tracked evidence contains no secret value.
+- **REQ-0025-NFR-0013**: Repeated offline runs of a blocking gate give
+  identical verdicts.
+- **REQ-0025-NFR-0014**: Target ambiguity, digest or integrity mismatch, and
+  cleanup failure each yield a failure exit.
+- **REQ-0025-NFR-0015**: Every link from this Requirement through AD-0028,
+  ADR-0028, the implementation scripts, the Operations procedure and the
+  current Task results resolves.
+- **REQ-0025-NFR-0016**: Task evidence names only the scope actually verified,
+  and claims no production readiness, full-profile coverage, live recovery or
+  remote release completion beyond it.
 
 ### Verification Method
 

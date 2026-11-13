@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.53.1"
+version: "1.54.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -204,9 +204,16 @@ TSK-0060. It records this repository's local adoption of each common contract
 revision and corrects governance policy that conflicts with the current
 requirement; Registry and template changes stay with W03.
 
+The owner decision of 2026-11-13 adds criterion 114 and W119 in TSK-0061. It
+carries the Requirement acceptance items TSK-0058 held: one acceptance
+condition per requirement identity in REQ-0024 to REQ-0027, and acceptance
+conditions for the REQ-0003 quality requirements. The owner approved the
+drafted wording, which reuses existing condition text or the requirement's own
+text and measure and adds no obligation.
+
 ### Owning Requirements
 
-This Spec makes concrete the frontmatter parents REQ-0004, REQ-0005, REQ-0024 and REQ-0027 together with AD-0004 and AD-0031. The body also cites REQ-0003 (the ISO/IEC measurement wording in the acceptance text) and ADR-0050, ADR-0003 and ADR-0018 (the Vault ADR acceptance and archival recorded for criterion 49/W54); it cites no REQ-####-FR or REQ-####-NFR identifier.
+This Spec makes concrete the frontmatter parents REQ-0004, REQ-0005, REQ-0024 and REQ-0027 together with AD-0004 and AD-0031. The body also cites REQ-0003 (the ISO/IEC measurement wording in the acceptance text, and criterion 114), REQ-0025 and REQ-0026 (criterion 114) and ADR-0050, ADR-0003 and ADR-0018 (the Vault ADR acceptance and archival recorded for criterion 49/W54); it cites no REQ-####-FR or REQ-####-NFR identifier.
 
 ## Scope
 
@@ -884,6 +891,11 @@ target, backup, recovery boundary, and action-specific authorization.
      records each common contract's revision, approval and local adoption
      state, and corrects conflicting governance policy with passing checks.
      Local adoption is never reported as adoption by another repository.
+114. TSK-0061 gives every functional and quality requirement in REQ-0024 to
+     REQ-0027 its own acceptance condition, and the REQ-0003 quality
+     requirements theirs, using only existing condition text or the
+     requirement's own text and measure. Each Requirement keeps its
+     verification method, and the metadata, link and lifecycle checks pass.
 
 ### Evidence Requirements
 
