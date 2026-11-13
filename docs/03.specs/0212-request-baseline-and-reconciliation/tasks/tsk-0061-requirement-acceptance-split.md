@@ -1,8 +1,8 @@
 ---
 title: "Requirement Acceptance Split Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-13"
 layer: "specs"
@@ -64,6 +64,7 @@ The owner's approval of 2026-11-13 issues this Task.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0061 | draft | ready | #owner-approved-requirement-wording |
 | SPEC-0212-TSK-0061 | ready | in-progress | #owner-approved-requirement-wording |
+| SPEC-0212-TSK-0061 | in-progress | completed | #review-and-completion |
 
 #### Acceptance conditions 2026-11-13
 
@@ -121,19 +122,26 @@ The Requirement wording review FAIL is resolved by the Requirement wording re-re
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 114 | pending | - | - | SPEC-0212 TSK-0061 |
+| 114 | accepted | Per-ID coverage, Requirement wording re-review, Requirement checks | Owner accepted on 2026-11-13 in this chat, with the change in PR #990 | SPEC-0212 TSK-0061 |
 
 ### Remaining Conditions
 
-The checks and the independent review pass. Owner acceptance of criterion
-114 is open.
+None. The checks and the independent review pass, and the owner accepted
+criterion 114.
+
+#### Review and Completion
+
+Completed on 2026-11-13. Every requirement identity in REQ-0024 to REQ-0027
+and every REQ-0003 quality requirement has its own acceptance condition, the
+wording review FAIL is resolved by its re-review PASS, and criterion 114 is
+accepted, so the Task closes as `completed`.
 
 ## Handoff
 
 ### Promotion Receipt
 
-None: the change has not landed on `main` yet.
+The five Requirement packages, criterion 114, W119 and this Task land on `main` through PR #990.
 
 ### Next Owner
 
-The current owner is @buenhyden, who decides criterion 114.
+The current owner is @buenhyden. Nothing is handed over; the validator work TSK-0058 gave W05 stays there.
