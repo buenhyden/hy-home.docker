@@ -121,6 +121,35 @@ currency) on that branch, plus the record commit with this Task.
   `link-evidence-unpinned`; `LINK_TYPES` equals the Registry `link_types`
   by test. No tracked Markdown used link titles before, so no existing link
   changed meaning. Choosing the right type stays a review.
+- Delegated units, each built in an isolated worktree and cherry-picked
+  here after its checks: SemVer (`fc4a34ca6`): both schema version patterns
+  accepted a trailing newline, now rejected; the release tag regex was
+  already correct; no code compares versions, so no precedence comparator
+  was added. H-W01-2 (`99625243f`): the Registry `common.common_form_contract`
+  names `COMMON-DOC-FORM-1 1.0.0` and `template_definition.py` reads it.
+  H-W01-1 and H-W01-5 (`f13f9daa4`): the real PreToolUse hook denies a
+  `main` push whatever approval claim the command carries, and lets an
+  in-scope reversible edit through unasked. H-W01-4 (`2ba9bc47b`): an
+  OPEN-NN ID stays an unresolved parent, and a KEEP or approval marker in
+  the Registry is a schema error; both pass today as regression guards.
+  H-W02-1 (`34ac206d5`): the uncalled migration-manifest subgraph, 2,289
+  lines, removed after an AST and `git grep` proof that none of the 16 roots
+  had a caller. H-08 (`9a56e787b`): three manifest rows without consumers and
+  two missing test mappings fixed, and an empty test package removed.
+- H-08 measurement: of 235 test modules, 178 run in hosted CI and 57 only
+  in the local `full` profile, including every document-governance library,
+  metadata, lifecycle and hook-rule test; `check-document-links.py` is
+  local-only too. Of 311 other code files none is dead: 86 are documented
+  operator commands and 67 run at runtime. Hosted CI wiring is W06's
+  (H-W05-1).
+- OPEN-11: the `Resolves` cell is now at SPEC-0204 TSK-0011 L1307. It names
+  the L1306 metadata and document-library exit-124 FAIL, but the PASS ran the
+  supply and integrity leaves, a different guarantee, and the Task itself
+  says so at L335. The FAIL stays unresolved; criterion 17 is still
+  `pending`, so nothing accepted relied on it. TSK-0011 is not edited here.
+- Pre-W05 items done now: TSK-0063 H-W04-8 and H-W04-9, the glossary
+  entries for Structural Ownership, Constraint, Change Impact, the
+  Traceability heading and the older sense of "promote" (`85d6c39db`).
 - Policy text now states the enforcement that exists: the documentation
   protocol (3.21.0) for the disposition and Release rules, and the glossary
   Provenance (0.6.1) for the comparison.
@@ -138,13 +167,16 @@ currency) on that branch, plus the record commit with this Task.
 | Reverse lookups and Change Impact derivation | TSK-0062 | GAP | No tool derives them; W05 next unit, CLI wiring to W06 |
 | `template_roles[*].consumer_paths` manual reverse lookup | TSK-0062 | GAP | Same unit as the reverse lookups |
 | H-W04-1 acceptance rules, H-W04-2 promotion check, H-W04-4 untested branches | TSK-0063 | GAP | W05 next unit |
-| H-W01-4 other fixtures (merged PR read as Acceptance, OPEN ID read as state, approved Registry read as KEEP) | TSK-0060 | GAP | W05 next unit |
-| H-W01-1, H-W01-5, H-W01-6 | TSK-0060 | GAP | W05 next unit |
-| H-W01-2 consumer revision check | TSK-0060 | PARTIAL | The Registry now names the vocabulary contract revision; `COMMON-DOC-FORM-1` is named only in `template_definition.py`; W05 next unit |
+| H-W01-4 other fixtures | TSK-0060 | PASS | OPEN ID and KEEP marker done here; merged PR read as Acceptance with H-W04-1 |
+| H-W01-1, H-W01-5 | TSK-0060 | PASS | Done here for the hook layer; no hook gates a deployment command, and a transition-override `approval` string is recorded, not authenticated (both stay review) |
+| H-W01-6 (GOV-07) | TSK-0060 | GAP | No deterministic checker: a tests-only change is often legitimate; stays a review rule in `quality-standards.md` |
+| H-W01-2 consumer revision check | TSK-0060 | PASS | Registry names both adopted revisions and the consumer reads them |
 | H-05 H3 model in `heading.py` | TSK-0059 | UNVERIFIED | W03 added H3 checks after H-05 was written; reassess before changing |
-| H-08 unwired code and tests, OPEN-11 L1193 Resolves | TSK-0059 | GAP | W05 next unit |
-| H-W02-1 dead subgraph in `lifecycle/contract.py` | TSK-0057 | GAP | W05 next unit |
-| SemVer parser tests | v14.7 W05 prompt | NOT_SELECTED | Not run here; W05 next unit |
+| H-08 unwired code and tests | TSK-0059 | PASS (measurement and manifest) | Hosted CI wiring of the 57 local-only modules, the link checker and candidate preflight is W06's (H-W05-1) |
+| OPEN-11 TSK-0011 L1307 Resolves | TSK-0059 | FAIL (verdict) | Invalid: different leaves; a fresh metadata and document-library PASS is needed before criterion 17 can be accepted |
+| H-W02-1 dead subgraph in `lifecycle/contract.py` | TSK-0057 | PASS | Done here |
+| SemVer tests | v14.7 W05 prompt | PASS | Done here; no comparator, since nothing orders versions |
+| H-W04-8, H-W04-9 glossary entries | TSK-0063 | PASS | Done here before W05 closes |
 
 #### Lifecycle Events
 
@@ -158,6 +190,17 @@ currency) on that branch, plus the record commit with this Task.
 - Link types: the owner's 2026-11-14 choice replaced the protocol rule that
   no link carries a marker; the title is the marker and untitled links keep
   their meaning, so about 8,600 existing links were not retyped.
+- H-W05-1, handed to W06 with one writer: wire into hosted CI the local-only
+  leaves `leaf.document-governance-library-regressions`,
+  `leaf.local-document-metadata-tests`,
+  `leaf.local-document-corpus-lifecycle-tests`, `leaf.local-hook-rule-tests`,
+  `leaf.supply-chain-fixture-policy` and the gate and release regression
+  leaves, plus `check-document-links.py` (`leaf.docs-traceability`) and
+  `check-candidate-preflight.sh`, sharded or in their own job because the
+  `candidate-quality` job's 30-minute limit is below the 45-minute
+  document-governance leaf; and a `leaf.project-registration` route for
+  `check-project-registration.py`. Until then every W05 check above is
+  local-executed evidence.
 - The glossary comparison pin is identity, version, hash and Term pairs only,
   so the glossary stays the single meaning owner.
 
@@ -189,13 +232,23 @@ currency) on that branch, plus the record commit with this Task.
 | Pre-commit rerun | 117 | W122 | precommit-local-staged | Same route after `ruff format` on the six changed Python files and the UP017 fix; `OperationsCurrencyTests` rerun OK | PASS | exit 0; every hook passed at commits `62b3e434b`, `97a40d35c` and `88d9e465b` | required | Pre-commit |
 | Link type RED | 117 | W122 | red-green-proof | New `LinkTypeTitleTests` against `88d9e465b` | FAIL | 3 failures and 1 error: no title check and no `LINK_TYPES` | required | - |
 | Link type GREEN | 117 | W122 | red-green-proof | `LinkTypeTitleTests` and `check-document-links --mode alignment` at `cf690ff0c`; pre-commit local-staged exit 0 | PASS | 5 tests OK; alignment PASS, 909 documents, 8,629 links | required | Link type RED |
+| SemVer RED | 117 | W122 | red-green-proof | New schema version tests in an agent worktree at `0eaf76cc0` | FAIL | 2 subtests: `1.2.3\n` and `0.1.0\n` accepted | required | - |
+| SemVer GREEN | 117 | W122 | red-green-proof | `test_registry`, `test_release` at agent commit `43a3e759c`; corpus metadata check-active and lifecycle | PASS | 131 and 18 tests OK; selected=535 violations=0 | required | SemVer RED |
+| Common form pin RED | 117 | W122 | red-green-proof | New `test_template_definition` tests in an agent worktree at `cf690ff0c` | FAIL | 22 subtests: the definition kept the code constant `1.0.0` | required | - |
+| Common form pin GREEN | 117 | W122 | red-green-proof | Agent commit `92c869d95`: `test_registry`, `test_template_definition`, `metadata.test_lifecycle`, `test_agent_governance_ci_routing` | PASS | 272 tests OK | required | Common form pin RED |
+| Approval hook RED | 117 | W122 | red-green-proof | Agent mutation: the dispatcher skipped denial on an approval claim, and a rule blocked every `tests/` edit | FAIL | 8 subtests and 1 assertion failed as intended; both mutations reverted | required | - |
+| Approval hook GREEN | 117 | W122 | red-green-proof | Agent commit `f6c5396b7`, the real hook | PASS | Both tests OK | required | Approval hook RED |
+| Dead subgraph removal | 117 | W122 | unit-regression | Agent commit `34ac206d5`: lifecycle suite, generation 6 and 7, surface ownership, script manifest, corpus lifecycle | PASS | 18, 39 and 8 tests OK; manifest valid; violations=0 | required | - |
+| Manifest wiring | 117 | W122 | unit-regression | Agent commit `9a56e787b`: script manifest, `test_surface_ownership`, `test_script_manifest`, `test_ci_gate_plan` | PASS | 119 tests OK; manifest valid | required | - |
+| Integration rerun | 117 | W122 | unit-regression | Branch after cherry-picks `fc4a34ca6` to `9a56e787b`'s pick: `test_registry`, `test_template_definition`, `metadata.test_lifecycle`, `test_agent_governance_ci_routing`, `test_release`, surface, generation 6 and 7, script manifest; metadata check-active; corpus lifecycle | PASS | 292, 47 and 59 tests OK; selected=535 violations=0; violations=0 | required | - |
 
 ### Resolution Links
 
 Disposition RED is resolved by Disposition GREEN, TemplateDefinition RED by
 TemplateDefinition GREEN, Vocabulary RED by Vocabulary GREEN, and Currency RED
 by Currency GREEN, and Release RED by Release GREEN. Pre-commit is resolved
-by its rerun, and Link type RED by Link type GREEN. The W05 review and
+by its rerun, and Link type RED by Link type GREEN. SemVer RED, Common form pin RED and
+Approval hook RED are resolved by their GREEN rows. The W05 review and
 W05 re-review FAILs are resolved by the W05 final review, and the Spec Package
 regression by its rerun.
 
