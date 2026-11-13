@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.26.0"
+version: "3.26.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -449,9 +449,12 @@ SemVer value is a SemVer 2.0.0 string: `MAJOR.MINOR.PATCH`, with no `v`
 prefix and no leading zeros, optionally followed by a prerelease (`-rc.1`) and
 build metadata (`+build.7`). A numeric prerelease identifier has no leading
 zero. Precedence ignores build metadata and puts a prerelease below its
-release; `scripts/operations/release.py` compares it (`compare_semver`) and
-refuses a missing, unchanged or lower version (`check_version_change`), never
-comparing as text or a number.
+release; `scripts/operations/release.py` compares it (`compare_semver`), never
+as text or a number. Its release publication refuses a version of equal
+precedence to a published release, tag or CHANGELOG entry. `compare_semver`
+and `check_version_change` are called by no other gate yet; checking an
+unchanged, missing or lower document or release version is handed to the
+future commit, pull request and tag consumer.
 
 | Object | Field | Current value | Rule | Consumers |
 | --- | --- | --- | --- | --- |
