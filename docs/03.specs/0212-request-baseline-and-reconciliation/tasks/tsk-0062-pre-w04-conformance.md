@@ -116,6 +116,21 @@ and Postmortem records never retire, and that a Registry disposition entry
 listing a status its lifecycle cannot reach is a defect. Removing those
 Registry entries and the reachability check stay with W05.
 
+#### TemplateDefinition binding 2026-11-13
+
+`template_definition.py` now derives the three contract-conditional H3s
+(Requirement Quality Requirements, ADR Supersession, Runbook Rollback) as
+`conditional` with the contract condition through `conditional_units`,
+keeps the template's declared subsection order, and carries each role's
+contract prohibited content from the new Registry
+`common.section_prohibited_content` (English renderings, 21 roles). A test
+rejects a key that names no template role.
+
+Recorded, not changed: the H3 rule list keeps both empty-section rules in
+addition to the contract's two, and the empty-section rules omit the
+contract's "only a template guidance comment" case; both predate this change
+and go to W05 with the validators.
+
 #### Held and corrected records
 
 - The Skill `Completion and Handoff` section, held in TSK-0058 without an
@@ -137,10 +152,14 @@ None: each decision above was the owner's before the change.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Pre-W04 audits | 115 | W120 | requirement-conformance-audit | W00 to W03 prompts and contracts against `main` `531d69f26` | PASS | Two rules-engineer reports; deviations listed above | required | - |
 | Glossary contract comparison | 115 | W120 | contract-row-comparison | Each common row against `REPOSITORY-VOCABULARY.json` v14.5, commit `a69ee1f54` | FAIL | Fresh-context rules-engineer: 13 restored rows faithful, but TERM-SUPERSESSION, HOLD and EXCEPTION still added meaning and five rows dropped or shifted a clause; the Resolves row omitted "required" and "shared criterion" | required | - |
+| Glossary contract re-comparison | 115 | W120 | contract-row-comparison | All 33 common rows and the Local Extensions rows at commit `40618cb38` | PASS | Same reviewer: every common row matches `REPOSITORY-VOCABULARY.md` in meaning; the 20 corrected rows listed above; Supersession lineage and Resolves rows match their policy lines | required | Glossary contract comparison |
+| TemplateDefinition RED | 115 | W120 | red-green-proof | Three new tests against `template_definition.py` before the fix | FAIL | 23 failures: Rollback, Supersession and Quality Requirements derived `optional`; Runbook Recovery order Escalation before Rollback; 21 roles without their prohibited content | required | - |
+| TemplateDefinition GREEN | 115 | W120 | red-green-proof | `test_template_definition`, `metadata.test_heading`, `test_registry` at `88613bc30` | PASS | 242 tests OK | required | TemplateDefinition RED |
+| TemplateDefinition review | 115 | W120 | independent-review | Fresh-context code-reviewer of `88613bc30` | PASS | No Critical or Important finding; conditional set, order and 15 role texts checked against the contract; three Minor findings, the unchecked map keys fixed by a test | required | - |
 
 ### Resolution Links
 
-The Glossary contract comparison FAIL is resolved by its re-comparison row once it passes.
+The Glossary contract comparison FAIL is resolved by the Glossary contract re-comparison PASS, and TemplateDefinition RED by TemplateDefinition GREEN.
 
 ## Acceptance Decision
 

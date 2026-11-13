@@ -234,6 +234,11 @@ class TemplateDefinitionTests(unittest.TestCase):
                 ]
                 self.assertEqual([t for t in h3 if t in children], children)
 
+    def test_prohibited_content_keys_name_template_roles(self) -> None:
+        # A misspelled key would otherwise be ignored silently.
+        keys = set(self.registry.common["section_prohibited_content"])
+        self.assertLessEqual(keys, set(self.registry.template_roles))
+
     def test_sections_carry_their_role_prohibited_content(self) -> None:
         # COMMON-DOC-FORM-1 1.0.0 gives every section of a role one role
         # rule; every H3 also forbids a stand-in heading.
