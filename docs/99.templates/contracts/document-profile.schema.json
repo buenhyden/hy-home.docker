@@ -514,6 +514,37 @@
               }
             }
           }
+        },
+        "profile_exception_definitions": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "owner",
+              "delta",
+              "validation",
+              "expiry_or_review"
+            ],
+            "properties": {
+              "owner": {
+                "type": "string",
+                "minLength": 1
+              },
+              "delta": {
+                "type": "string",
+                "minLength": 1
+              },
+              "validation": {
+                "type": "string",
+                "minLength": 1
+              },
+              "expiry_or_review": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
         }
       },
       "required": [
@@ -868,8 +899,7 @@
         "relationships",
         "consumer_paths",
         "validation",
-        "migration",
-        "extensions"
+        "migration"
       ],
       "properties": {
         "source": {
@@ -999,40 +1029,12 @@
             }
           }
         },
-        "extensions": {
-          "type": "array",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "condition",
-              "owner",
-              "delta",
-              "validation",
-              "expiry_or_review"
-            ],
-            "properties": {
-              "condition": {
-                "type": "string",
-                "minLength": 1
-              },
-              "owner": {
-                "type": "string",
-                "minLength": 1
-              },
-              "delta": {
-                "type": "string",
-                "minLength": 1
-              },
-              "validation": {
-                "type": "string",
-                "minLength": 1
-              },
-              "expiry_or_review": {
-                "type": "string",
-                "minLength": 1
-              }
-            }
+        "conditional_units": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "string",
+            "minLength": 1
           }
         }
       }

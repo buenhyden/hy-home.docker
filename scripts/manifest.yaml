@@ -442,6 +442,16 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/test_taxonomy.py
+- path: scripts/lib/document_governance/template_definition.py
+  kind: library
+  authority: docs/99.templates/registry.json
+  lifecycle: active
+  mutation: none
+  consumers: []
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_template_definition.py
 - path: scripts/lib/gate/ci_gate_adapters.py
   kind: validator
   authority: .github/workflow-contract.yml

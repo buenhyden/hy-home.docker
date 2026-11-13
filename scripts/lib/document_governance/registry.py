@@ -47,9 +47,12 @@ TEMPLATE_DEFINITION_FIELDS = (
     "consumer_paths",
     "validation",
     "migration",
-    "extensions",
 )
-TEMPLATE_ROLE_KEYS = frozenset({"source", "profiles", *TEMPLATE_DEFINITION_FIELDS})
+# `conditional_units` is optional: it names the top-level units of a
+# heading-less template that are examples or conditional rather than required.
+TEMPLATE_ROLE_KEYS = frozenset(
+    {"source", "profiles", "conditional_units", *TEMPLATE_DEFINITION_FIELDS}
+)
 FALLBACK_PROFILE_IDS = frozenset({"unsupported"})
 # Preserved records live only under this prefix. A record is kept as it was
 # when it was live, so its frontmatter is not managed against the current
@@ -421,6 +424,68 @@ def _identity_space(raw: Mapping[str, object]) -> IdentitySpace:
     )
 
 
+def _template_dictionary_findings(raw: Mapping[str, object]) -> list[RegistryFinding]:
+    """Every key and column a TemplateDefinition reports needs its dictionary entry."""
+
+    common = raw.get("common")
+    roles = raw.get("template_roles")
+    profiles = raw.get("profiles")
+    if not (
+        isinstance(common, Mapping)
+        and isinstance(roles, Mapping)
+        and isinstance(profiles, list)
+    ):
+        return []
+    by_id = {
+        profile.get("id"): profile
+        for profile in profiles
+        if isinstance(profile, Mapping)
+    }
+    keys = common.get("frontmatter_key_definitions", {})
+    columns = common.get("table_column_definitions", {})
+    findings: list[RegistryFinding] = []
+    # A historical Registry predates TemplateDefinition; only a role that
+    # carries the authored fields is held to the dictionaries.
+    defined = [
+        (role, definition)
+        for role, definition in roles.items()
+        if isinstance(definition, Mapping) and "purpose" in definition
+    ]
+    if not defined:
+        return []
+    for role, definition in defined:
+        for profile_id in definition.get("profiles", ()):
+            profile = by_id.get(profile_id, {})
+            for field in (
+                "required_frontmatter",
+                "optional_frontmatter",
+            ):
+                for key in profile.get(field, ()):
+                    if key not in keys:
+                        findings.append(
+                            RegistryFinding(
+                                "template-key-undefined",
+                                f"template_roles.{role}",
+                                str(key),
+                            )
+                        )
+    for contract in (
+        "evidence_columns",
+        "plan_columns",
+        "criterion_acceptance_columns",
+        "readme_documents_columns",
+        "readme_documents_optional_columns",
+    ):
+        for column in common.get(contract, ()):
+            if column not in columns:
+                findings.append(
+                    RegistryFinding(
+                        "template-column-undefined", f"common.{contract}", str(column)
+                    )
+                )
+    return findings
+
+
 def validate_registry(
     raw: Mapping[str, object],
     *,
@@ -786,6 +851,7 @@ def validate_registry(
         findings.append(
             RegistryFinding("template-source-duplicate", "template_roles", source)
         )
+    findings.extend(_template_dictionary_findings(raw))
     for index, profile in profile_entries:
         profile_id = profile.get("id")
         template_id = profile.get("template_id")
@@ -2586,389 +2652,3 @@ def load_registry(
         else pathlib.PurePosixPath(path.as_posix())
     )
     return _registry_from_document(raw, source)
-
-
-_EMPTY_SECTION_RULES = (
-    "A heading with no body below it.",
-    "A body that is only TODO, TBD, N/A or -.",
-)
-# Registry `common` table contracts: (columns key, optional columns key,
-# minimum rows). spec_packages rejects an empty registered table; a README
-# Documents table is checked only when present.
-_TABLE_CONTRACTS = (
-    ("evidence_columns", None, 1),
-    ("plan_columns", None, 1),
-    ("criterion_acceptance_columns", None, 1),
-    ("readme_documents_columns", "readme_documents_optional_columns", 0),
-)
-_COMMON_FORM_VERSION = "COMMON-DOC-FORM-1 1.0.0"
-
-
-def _plain(value: object) -> object:
-    if isinstance(value, Mapping):
-        return {str(key): _plain(item) for key, item in value.items()}
-    if isinstance(value, Sequence) and not isinstance(value, (str, bytes)):
-        return [_plain(item) for item in value]
-    return value
-
-
-def _section_slug(title: str) -> str:
-    return re.sub(r"[^a-z0-9]+", "-", title.lower()).strip("-")
-
-
-def _template_outline(
-    text: str,
-) -> tuple[dict[tuple[str, str | None], str], list[tuple[str, str | None, str]]]:
-    """Return each H2/H3's guidance text and every pipe-table header row."""
-
-    bodies: dict[tuple[str, str | None], list[str]] = {}
-    headers: list[tuple[str, str | None, str]] = []
-    h2: str | None = None
-    h3: str | None = None
-    fence = False
-    previous = ""
-    for line in text.splitlines():
-        stripped = line.strip()
-        if stripped.startswith(("```", "~~~")):
-            fence = not fence
-        match = None if fence else re.match(r"^(#{2,3})[ \t]+(.+?)[ \t]*$", line)
-        if match:
-            if len(match.group(1)) == 2:
-                h2, h3 = match.group(2), None
-            elif h2 is not None:
-                h3 = match.group(2)
-            bodies.setdefault((h2, h3), [])
-            previous = ""
-            continue
-        if h2 is None or not stripped:
-            previous = stripped
-            continue
-        if stripped.startswith("|") and not previous.startswith("|"):
-            headers.append((h2, h3, stripped))
-        if not stripped.startswith("|"):
-            prompt = re.sub(r"^<!--\s*(?:Author prompt:\s*)?|\s*-->$", "", stripped)
-            if prompt:
-                bodies[(h2, h3)].append(prompt)
-        previous = stripped
-    return {key: " ".join(lines) for key, lines in bodies.items()}, headers
-
-
-def _frontmatter_data_type(spec: Mapping[str, object]) -> str:
-    if "$ref" in spec:
-        return str(spec["$ref"]).rsplit("/", 1)[-1]
-    kind = spec.get("type", "string")
-    kind = "|".join(kind) if isinstance(kind, list) else str(kind)
-    return f"{kind} ({spec['format']})" if "format" in spec else kind
-
-
-@functools.lru_cache(maxsize=1)
-def _frontmatter_properties() -> Mapping[str, Mapping[str, object]]:
-    schema = _parse_json(DEFAULT_FRONTMATTER_SCHEMA, MAX_SCHEMA_BYTES)
-    if not isinstance(schema, Mapping) or not isinstance(
-        schema.get("properties"), Mapping
-    ):
-        raise RegistryError("frontmatter schema has no properties")
-    return schema["properties"]  # type: ignore[return-value]
-
-
-# A template without registered Markdown sections (a machine contract or a
-# provider projection) is described by its real top-level units instead.
-_STRUCTURAL_UNIT = {
-    ".toml": re.compile(r"^(\[[^\]]+\]|[A-Za-z_][\w-]*)\s*="),
-    ".yaml": re.compile(r"^([A-Za-z_][\w-]*):"),
-    ".graphql": re.compile(
-        r"^(?:schema|type|input|enum|interface|union|scalar|directive)\b"
-    ),
-    ".proto": re.compile(r"^(?:syntax|package|import|option|service|message|enum)\b"),
-}
-_MARKDOWN_FRONTMATTER_KEY = re.compile(r"^([A-Za-z_][\w-]*):")
-_PLACEHOLDER_CHECK = (
-    "tests.lib.document_governance.test_registry:DocumentRegistryTests"
-    ".test_registered_templates_use_one_placeholder_grammar"
-)
-
-
-def _structural_units(source: str, text: str) -> list[tuple[str, str, str | None]]:
-    """Return (title, held text, frontmatter key or None) per top-level unit."""
-
-    units: list[list[object]] = []
-    lines = text.splitlines()
-    if source.endswith(".md"):
-        end = lines.index("---", 1) if lines[:1] == ["---"] else 0
-        for line in lines[1:end]:
-            match = _MARKDOWN_FRONTMATTER_KEY.match(line)
-            if match:
-                units.append([f"frontmatter {match.group(1)}", [line], match.group(1)])
-            elif units and line.strip():
-                units[-1][1].append(line.strip())  # type: ignore[union-attr]
-        for line in lines[end + 1 :]:
-            stripped = line.strip()
-            if stripped.startswith("<!-- Author prompt:"):
-                units.append(["Author prompt comment", [stripped], None])
-            elif stripped.startswith("<!-- Generated by"):
-                units.append(["Generated-by marker comment", [stripped], None])
-            elif stripped.startswith("# "):
-                units.append([f"H1 {stripped[2:]}", [stripped], None])
-            elif stripped:
-                units.append([f"Body {stripped}", [stripped], None])
-    else:
-        pattern = _STRUCTURAL_UNIT[pathlib.PurePosixPath(source).suffix]
-        for line in lines:
-            match = pattern.match(line)
-            if match:
-                title = (match.group(1) if match.groups() else line).rstrip(" {};")
-                units.append([title, [line.strip()], None])
-            elif units and line.strip():
-                units[-1][1].append(line.strip())  # type: ignore[union-attr]
-    return [(str(t), " ".join(h), k) for t, h, k in units]  # type: ignore[misc]
-
-
-def _structural_headings(
-    template_id: str, source: str, text: str, profile: Mapping[str, object]
-) -> list[dict[str, object]]:
-    required_keys = set(profile.get("required_frontmatter", ()))  # type: ignore[arg-type]
-    grammar = (
-        "{{UPPER_SNAKE_CASE}}" if source.endswith(".md") else "__UPPER_SNAKE_CASE__"
-    )
-    headings: list[dict[str, object]] = []
-    for order, (title, held, key) in enumerate(_structural_units(source, text), 1):
-        required = key is None or key in required_keys
-        checks = (
-            ["template-frontmatter-missing", "template-frontmatter-unregistered"]
-            if key in required_keys
-            else ["template-frontmatter-unregistered"]
-            if key
-            else []
-        )
-        content = f"Holds `{held}` as it appears in {source}."
-        headings.append(
-            {
-                "section_id": f"{template_id}-{_section_slug(title)}",
-                "level": 2,
-                "parent_id": None,
-                "title": title,
-                "order": order,
-                "requiredness": "required" if required else "optional",
-                "condition": "always"
-                if required
-                else "optional: a registered optional frontmatter key",
-                "content": content,
-                "required_content": [content],
-                "prohibited_content": [
-                    "An empty unit.",
-                    f"A placeholder outside the {grammar} grammar.",
-                ],
-                "empty_policy": "forbidden"
-                if required
-                else "omit_when_condition_false",
-                "validation_ids": [*checks, _PLACEHOLDER_CHECK],
-                "children": [],
-            }
-        )
-    return headings
-
-
-def template_definition(
-    registry: DocumentRegistry, template_id: str, *, root: pathlib.Path = ROOT
-) -> dict[str, object]:
-    """Project one `template_roles` entry onto the TemplateDefinition v14.5 shape.
-
-    Authored fields come from the entry; everything else is derived from its
-    profile, the template source and the shared `common` dictionaries, so no
-    fact is held twice.
-    """
-
-    role = registry.template_roles[template_id]
-    profile_ids = role["profiles"]
-    profile = registry.profiles[str(profile_ids[0])]  # type: ignore[index]
-    common = registry.common
-    source = str(role["source"])
-    text = (root / source).read_text(encoding="utf-8")
-    guidance, table_headers = _template_outline(text)
-    required_sub = profile.get("required_subsections") or {}
-    optional_sub = profile.get("optional_subsections") or {}
-    has_subsections = bool(required_sub or optional_sub)
-    ordered = bool(profile.get("ordered_sections"))
-    nonempty = bool(profile.get("nonempty_sections"))
-
-    def section(
-        title: str,
-        parent: str | None,
-        parent_id: str | None,
-        order: int,
-        required: bool,
-        children: list[dict[str, object]],
-    ) -> dict[str, object]:
-        level = 2 if parent is None else 3
-        section_id = (
-            f"{template_id}-{_section_slug(title)}"
-            if parent_id is None
-            else f"{parent_id}-{_section_slug(title)}"
-        )
-        key = (title, None) if parent is None else (parent, title)
-        content = guidance.get(key, "")
-        if not content:
-            content = (
-                "Groups the subsections "
-                + ", ".join(c["title"] for c in children)
-                + "."  # type: ignore[misc]
-                if children
-                else f"{source} gives no guidance for this registered section."
-            )
-        prefix = "body-heading" if level == 2 else "body-subheading"
-        ids = (
-            [f"{prefix}-missing", f"{prefix}-duplicate"]
-            if required
-            else [f"{prefix}-duplicate"]
-        )
-        if required and (ordered if level == 2 else True):
-            ids.append(f"{prefix}-order")
-        if nonempty:
-            ids.append("body-section-empty")
-        if has_subsections:
-            ids.append("body-section-placeholder")
-        return {
-            "section_id": section_id,
-            "level": level,
-            "parent_id": parent_id,
-            "title": title,
-            "order": order,
-            "requiredness": "required" if required else "optional",
-            "condition": "always"
-            if required
-            else "optional: the profile registers no narrower condition; "
-            "omit the section when the document has nothing for it",
-            "content": content,
-            "required_content": [content]
-            + (
-                ["The content, or one sentence on why none applies."]
-                if required
-                else []
-            ),
-            "prohibited_content": list(_EMPTY_SECTION_RULES),
-            "empty_policy": "explain_none_or_not_applicable"
-            if required
-            else "omit_when_condition_false",
-            "validation_ids": ids,
-            "children": children,
-        }
-
-    headings: list[dict[str, object]] = []
-    titles = [
-        *((name, True) for name in profile.get("required_sections", ())),
-        *((name, False) for name in profile.get("optional_sections", ())),
-    ]
-    for order, (title, required) in enumerate(titles, start=1):
-        parent_id = f"{template_id}-{_section_slug(str(title))}"
-        sub = [
-            *((name, True) for name in required_sub.get(title, ())),
-            *((name, False) for name in optional_sub.get(title, ())),
-        ]
-        children = [
-            section(str(name), str(title), parent_id, index, flag, [])
-            for index, (name, flag) in enumerate(sub, start=1)
-        ]
-        headings.append(section(str(title), None, None, order, required, children))
-    if not titles:
-        headings = _structural_headings(template_id, source, text, profile)
-
-    keys = common.get("frontmatter_key_definitions", {})
-    properties = _frontmatter_properties()
-    by_status: dict[str, list[str]] = {}
-    for status, names in (profile.get("required_frontmatter_by_status") or {}).items():
-        for name in names:
-            by_status.setdefault(str(name), []).append(str(status))
-    fixed = profile.get("frontmatter_values") or {}
-    metadata = []
-    for name in dict.fromkeys(
-        [
-            *profile.get("required_frontmatter", ()),
-            *profile.get("optional_frontmatter", ()),
-            *by_status,
-        ]
-    ):
-        if name in by_status:
-            requiredness = "conditional"
-            condition = "required when status is " + " or ".join(by_status[name])
-        elif name in profile.get("required_frontmatter", ()):
-            requiredness, condition = "required", "always"
-        else:
-            requiredness, condition = "optional", "present only when it applies"
-        if name in fixed:
-            condition += f"; value must be {json.dumps(_plain(fixed[name]))}"
-        entry = keys[name]
-        metadata.append(
-            {
-                "name": name,
-                "meaning": entry["meaning"],
-                "data_type": _frontmatter_data_type(properties[name]),
-                "requiredness": requiredness,
-                "condition": condition,
-                "writer": entry["writer"],
-                "consumers": _plain(entry["consumers"]),
-            }
-        )
-
-    ids = {(h["title"], None): h["section_id"] for h in headings} | {
-        (h["title"], c["title"]): c["section_id"]
-        for h in headings
-        for c in h["children"]  # type: ignore[union-attr]
-    }
-    columns_dictionary = common.get("table_column_definitions", {})
-    tables = []
-    for key, optional_key, minimum in _TABLE_CONTRACTS:
-        required_columns = [str(item) for item in common.get(key, ())]
-        optional_columns = (
-            [str(item) for item in common.get(optional_key, ())] if optional_key else []
-        )
-        for h2, h3, header in table_headers:
-            cells = [cell.strip() for cell in header.strip("|").split("|")]
-            if cells not in (required_columns, required_columns + optional_columns):
-                continue
-            tables.append(
-                {
-                    "name": key.removesuffix("_columns"),
-                    "section": ids.get((h2, h3)) or ids[(h2, None)],
-                    "columns": [
-                        {
-                            "key": column,
-                            "meaning": columns_dictionary[column]["meaning"],
-                            "data_type": columns_dictionary[column]["data_type"],
-                            "required": column in required_columns,
-                        }
-                        for column in required_columns + optional_columns
-                    ],
-                    "minimum_rows": minimum,
-                    "row_identity": required_columns[0],
-                }
-            )
-
-    lifecycle_id = profile.get("lifecycle_id")
-    language = profile.get("language")
-    return {
-        "template_id": template_id,
-        "contract_version": _COMMON_FORM_VERSION
-        if profile.get("required_subsections")
-        else str(common.get("contract_id")),
-        "role": template_id,
-        "purpose": role["purpose"],
-        "responsibility": role["responsibility"],
-        "non_goals": _plain(role["non_goals"]),
-        "policy_refs": _plain(role["policy_refs"]),
-        "vocabulary_refs": _plain(role["vocabulary_refs"]),
-        "applicability": role["applicability"],
-        "metadata": metadata,
-        "headings": headings,
-        "tables": tables,
-        "relationships": _plain(role["relationships"]),
-        "lifecycle": f"{lifecycle_id}: " + ", ".join(registry.lifecycles[lifecycle_id])
-        if lifecycle_id
-        else "none: the profile has no lifecycle_id and its files carry no status",
-        "language": str(language)
-        if language
-        else "undeclared: the profile declares no language, so the language check does not judge it",
-        "consumer_paths": _plain(role["consumer_paths"]),
-        "validation": _plain(role["validation"]),
-        "migration": _plain(role["migration"]),
-        "extensions": _plain(role["extensions"]),
-    }

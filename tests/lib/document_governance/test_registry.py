@@ -25,6 +25,7 @@ from scripts.lib.document_governance.metadata_validator import (
 )
 from scripts.lib.document_governance.registry import (
     DEFAULT_REGISTRY,
+    TEMPLATE_DEFINITION_FIELDS,
     TEMPLATE_ROLE_KEYS,
     RegistryError,
     _declares_provider_binding,
@@ -1832,7 +1833,10 @@ class DocumentRegistryTests(unittest.TestCase):
 
         for role, definition in raw["template_roles"].items():
             with self.subTest(role=role):
-                self.assertEqual(TEMPLATE_ROLE_KEYS, set(definition))
+                self.assertLessEqual(
+                    {"source", "profiles", *TEMPLATE_DEFINITION_FIELDS}, set(definition)
+                )
+                self.assertLessEqual(set(definition), TEMPLATE_ROLE_KEYS)
                 profiles = definition["profiles"]
                 self.assertIsInstance(profiles, list)
                 self.assertEqual(1, len(profiles))
