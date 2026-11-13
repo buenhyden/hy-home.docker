@@ -60,8 +60,7 @@ FALLBACK_PROFILE_IDS = frozenset({"unsupported"})
 # profile.
 PRESERVED_RECORD_PREFIX = "docs/98.archive/"
 PRESERVED_DISPOSITIONS = ("completed", "superseded", "retired", "resolved")
-# Roots a document may have been retired from, mirroring the registry's
-# `archive_source_prefixes`. `docs/` is the implicit default.
+# Roots a document may have been retired from besides the implicit `docs/`.
 LEGACY_ARCHIVE_SOURCE_ROOTS = frozenset({"archive/"})
 GIT_READ_TIMEOUT_SECONDS = 10
 MAX_GIT_STDERR_BYTES = 64 * 1024
@@ -1281,9 +1280,7 @@ TEMPLATE_PLACEHOLDER = re.compile(r"^{{[A-Z][A-Z0-9_]*}}$")
 TEMPLATE_DATE_KEYS = frozenset(
     {"created", "updated", "observed_at", "reviewed_at", "next_review_at"}
 )
-TEMPLATE_TIMESTAMP_KEYS = frozenset(
-    {"occurred_at", "resolved_at", "completed_at", "archived_at"}
-)
+TEMPLATE_TIMESTAMP_KEYS = frozenset({"occurred_at", "resolved_at", "completed_at"})
 
 
 def _template_sentinel(key: str) -> str:
@@ -2432,10 +2429,9 @@ def preserved_origin_path(path: str | pathlib.PurePosixPath) -> str | None:
     if not separator or disposition not in PRESERVED_DISPOSITIONS or not rest:
         return None
     # Retirement predates the `docs/` reorganization for some records, so the
-    # source root is part of what is preserved. `archive_source_prefixes`
-    # registers the roots a document may have been retired from; a record whose
-    # first segment names one of them keeps it, and every other record is a
-    # stage under `docs/`.
+    # source root is part of what is preserved. A record whose first segment
+    # names a `LEGACY_ARCHIVE_SOURCE_ROOTS` entry keeps it, and every other
+    # record is a stage under `docs/`.
     head = rest.partition("/")[0]
     if f"{head}/" in LEGACY_ARCHIVE_SOURCE_ROOTS:
         return rest

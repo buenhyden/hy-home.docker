@@ -63,9 +63,6 @@
             }
           }
         },
-        "archive_source_prefixes": {
-          "$ref": "#/$defs/stringList"
-        },
         "frontmatter_order": {
           "$ref": "#/$defs/stringList"
         },

@@ -25,11 +25,6 @@
       "open",
       "closed"
     ],
-    "archive_source_prefixes": [
-      "docs/",
-      "archive/",
-      ".agents/"
-    ],
     "frozen_transition_fields": [
       "status",
       "version",
@@ -57,12 +52,6 @@
       "occurred_at",
       "resolved_at",
       "generated_by",
-      "archived_from",
-      "archived_at",
-      "archive_reason",
-      "archive_disposition",
-      "archived_commit",
-      "archived_blob",
       "preservation_class",
       "current_replacement",
       "snapshot_path",
@@ -176,8 +165,7 @@
       "reviewed_at",
       "next_review_at",
       "occurred_at",
-      "resolved_at",
-      "archived_at"
+      "resolved_at"
     ],
     "contract_id": "SDLC-COMMON-r10-local-v1",
     "result_domain": [
