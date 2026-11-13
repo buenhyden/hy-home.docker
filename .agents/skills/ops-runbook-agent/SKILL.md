@@ -26,7 +26,7 @@ Operational behavior must be implemented and verified; commands, expected outcom
 
 ### When Not to Use
 
-None: this skill states no exclusion.
+Commands that are unimplemented, destructive without approval or unverifiable are outside this skill, and design gaps route back to the Spec or Plan.
 
 ## Procedure
 

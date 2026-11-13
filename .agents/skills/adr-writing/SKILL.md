@@ -68,6 +68,7 @@ If the choice, authority, or alternatives are not decision-ready, return a decis
 
 Owning role, policies and related documents:
 
+- [Documentation writer](../../roles/doc-writer.md)
 - [Documentation protocol](../../governance/documentation-protocol.md)
 - [Documentation scope](../../governance/documentation-protocol.md)
 - [Agent catalog](../../README.md)

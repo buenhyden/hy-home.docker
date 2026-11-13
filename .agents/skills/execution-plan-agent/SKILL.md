@@ -26,7 +26,7 @@ An approved specification and corroborated repository baseline must exist; unres
 
 ### When Not to Use
 
-None: this skill states no exclusion.
+Interfaces, authority or completion criteria that cannot be made concrete are outside this skill; they return to the specification.
 
 ## Procedure
 
