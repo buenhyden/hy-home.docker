@@ -236,6 +236,25 @@ class ReleaseTests(unittest.TestCase):
             release.publish("1.2.3-rc.1+build.7", SHA, REPOSITORY, run=tampered)
         self.assertFalse(any("POST" in call for call in commands.calls))
 
+    def test_equal_precedence_remote_tag_blocks_a_new_version(self):
+        commands = FakeCommands()
+
+        def tagged(argv):
+            if argv[:3] == ["git", "ls-remote", "--tags"]:
+                return f"{SHA}\trefs/tags/v1.2.3-rc.1+build.1\n{SHA}\trefs/tags/nightly"
+            return commands(argv)
+
+        with self.assertRaisesRegex(release.ReleaseError, "same precedence"):
+            release.publish("1.2.3-rc.1+build.7", SHA, REPOSITORY, run=tagged)
+        self.assertFalse(any("POST" in call for call in commands.calls))
+
+    def test_changelog_entries_of_equal_precedence_are_duplicates(self):
+        text = CHANGELOG.replace(
+            "## [1.2.2] - 2026-10-06", "## [1.2.3-rc.1+build.8] - 2026-10-06"
+        )
+        with self.assertRaisesRegex(release.ReleaseError, "duplicate"):
+            release.validate_changelog(text)
+
     def test_unrelated_existing_tags_do_not_block_a_new_version(self):
         commands = FakeCommands()
 
@@ -303,7 +322,7 @@ class ReleaseTests(unittest.TestCase):
                         [[{"tag_name": "1.2.3-rc.1+build.7", "draft": False}]]
                     )
                 if legacy_kind == "tag" and argv[:3] == ["git", "ls-remote", "--tags"]:
-                    if "refs/tags/1.2.3-rc.1+build.7" in argv:
+                    if "refs/tags/1.2.3-rc.1+build.7" in argv or "refs/tags/*" in argv:
                         return f"{SHA}\trefs/tags/1.2.3-rc.1+build.7"
                     return ""
                 return commands(argv)

@@ -82,6 +82,12 @@ def check_version_change(old: object, new: object) -> None:
         raise ReleaseError("version is a downgrade")
 
 
+def _same_precedence(name: str, version: str) -> bool:
+    """True when a tag or version name is a SemVer equal in precedence."""
+    name = name.removeprefix("v")
+    return SEMVER.fullmatch(name) is not None and compare_semver(name, version) == 0
+
+
 def validate_changelog(text: str) -> dict[str, str]:
     lines = text.splitlines()
     headers = [(i, line) for i, line in enumerate(lines) if line.startswith("## ")]
@@ -106,7 +112,7 @@ def validate_changelog(text: str) -> dict[str, str]:
             raise ReleaseError(
                 "release heading contains an invalid calendar date"
             ) from error
-        if version in releases:
+        if any(_same_precedence(seen, version) for seen in releases):
             raise ReleaseError("duplicate CHANGELOG version")
         if not any(line.startswith("### ") for line in body) or not any(
             line.startswith("- ") and line[2:].strip() for line in body
@@ -176,8 +182,7 @@ def _new_version(run: Runner, repository: str, tag: str) -> None:
                 raise ReleaseError(
                     "version already has a release or draft; recovery requires review"
                 )
-            published = existing["tag_name"].removeprefix("v")
-            if SEMVER.fullmatch(published) and compare_semver(published, tag[1:]) == 0:
+            if _same_precedence(existing["tag_name"], tag[1:]):
                 raise ReleaseError(
                     "a release of the same precedence exists; build metadata "
                     "cannot reissue a version"
@@ -188,12 +193,18 @@ def _new_version(run: Runner, repository: str, tag: str) -> None:
             "ls-remote",
             "--tags",
             f"https://github.com/{repository}.git",
-            f"refs/tags/{tag}",
-            f"refs/tags/{tag[1:]}",
+            "refs/tags/*",
         ]
     )
-    if tags:
-        raise ReleaseError("tag already exists; it will not be moved or reused")
+    for line in tags.splitlines():
+        name = line.partition("\trefs/tags/")[2].removesuffix("^{}")
+        if name in {tag, tag[1:]}:
+            raise ReleaseError("tag already exists; it will not be moved or reused")
+        if _same_precedence(name, tag[1:]):
+            raise ReleaseError(
+                "a tag of the same precedence exists; build metadata "
+                "cannot reissue a version"
+            )
 
 
 def _assets(directory: Path, changelog: str, tag: str, sha: str) -> list[Path]:
