@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.53.1"
+version: "1.54.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -162,6 +162,10 @@ to one receiving work unit without starting that work.
 
 W118 in TSK-0060 runs the v14.7 W01 governance work: per-ID verdicts, the
 local adoption record of each common contract and the policy corrections.
+
+W119 in TSK-0061 splits the acceptance conditions of REQ-0024 to REQ-0027 per
+requirement identity and adds conditions for the REQ-0003 quality
+requirements, as handed over from TSK-0058.
 
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
@@ -331,6 +335,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W116 | 111 | Assess DOC-01 to DOC-12 and SUP-11 and change the template, metadata and relation contract only for reproduced gaps | W115 | TSK-0058 | Per-ID trace; each changed key, section or table with producer, consumer and passing and failing tests; current documents migrated, history unchanged |
 | W117 | 112 | Assess the v14.7 W00 obligations and the common-contract differences, correct conflicting current guidance and hand off each remaining difference | W116 | TSK-0059 | Read denominator, PR and OPEN-01 to OPEN-14 tables, per-file handoff table with one writer each; metadata, links and lifecycle checks |
 | W118 | 113 | Assess the v14.7 W01 governance obligations, record local adoption of each common contract revision and correct conflicting policy | W117 | TSK-0060 | Per-ID verdicts, adoption table with contract revision and approval source, changed policy with metadata, links, governance contract and renderer checks |
+| W119 | 114 | Give each requirement identity in REQ-0024 to REQ-0027 and each REQ-0003 quality requirement its own acceptance condition without adding an obligation | W116 | TSK-0061 | Per-ID coverage check, owner approval of the wording, metadata, links and lifecycle checks |
 
 #### Current v30 continuation and delivery
 

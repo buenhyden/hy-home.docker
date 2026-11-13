@@ -1,10 +1,10 @@
 ---
 title: "Document Retention and Retirement Requirements"
-version: "3.0.3"
+version: "3.1.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "requirements"
 artifact_id: "REQ-0026"
 created: "2026-09-01"
@@ -125,19 +125,39 @@ This package covers how documents are retained, retired and summarized into a cu
 
 ### Acceptance Conditions
 
-- A Stage 03 removal or Stage 01 gap passes only when its number is reserved in
-  the checked tree's Registry; an archive copy or a branch receipt does not
-  substitute.
-- Dropping a number from any identity space's `reserved_history` fails against
-  the trusted base.
-- Any tracked file under `docs/98.archive/` other than its README fails the
-  corpus lifecycle occupancy check.
-- No current document links into Stage 98 or names a retired identity in a typed
-  reference.
-- A waiting package passes occupancy only with terminal members and valid
-  cancellations. Withdrawal alone never satisfies a still-numbered criterion.
-- Retirement rules can be read from governance without loading a Spec Package.
-- Current metadata, lifecycle, link, and affected regression checks pass on the
+- **REQ-0026-FR-0001**: No document is removed automatically because of its age
+  or the corpus size; those only trigger review.
+- **REQ-0026-FR-0002**: A retired package or standalone document's
+  still-current substance appears in its Stage 01 or Stage 02 owner's
+  Traceability, the original is deleted in the same change, and its number is
+  in its identity space's `reserved_history`.
+- **REQ-0026-FR-0003**: A Stage 03 removal or Stage 01 gap passes only when its
+  number is reserved in the checked tree's Registry; an archive copy or a
+  branch receipt does not substitute. Dropping a number from any identity
+  space's `reserved_history` fails against the trusted base.
+- **REQ-0026-FR-0004**: Retirement rules can be read from governance without
+  loading a Spec Package.
+- **REQ-0026-FR-0005**: Every implemented capability names a Stage 01
+  Requirement owner and a Stage 02 Description or ADR owner, and no Stage 03
+  retirement removes either.
+- **REQ-0026-FR-0009**: A waiting package passes occupancy only with terminal
+  members and valid cancellations. Withdrawal alone never satisfies a
+  still-numbered criterion.
+- **REQ-0026-FR-0010**: Before a Stage 03 package retires, its steady-state
+  meaning is present in a Stage 02 Description or Stage 05 subject.
+- **REQ-0026-FR-0011**: Cross-links between Stages 01 to 05 resolve in both
+  directions under the registered link checks.
+- **REQ-0026-FR-0013**: Any tracked file under `docs/98.archive/` other than
+  its README fails the corpus lifecycle occupancy check.
+- **REQ-0026-FR-0014**: No current document links into Stage 98 or names a
+  retired identity in a typed reference.
+- **REQ-0026-FR-0015**: No recovery ledger exists in the tree, and existing
+  Task Commit Ledgers are left unchanged.
+- **REQ-0026-FR-0016**: Every resolved Incident has a nonempty `resolved_at`,
+  and its bundle does not claim all corrective work complete.
+- **REQ-0026-NFR-0006**: The same tree and Registry give the same verdict, and
+  a missing, symlinked, unreadable or invalid Registry reserves nothing.
+  Current metadata, lifecycle, link and affected regression checks pass on the
   explicitly selected snapshot; unavailable checks are reported.
 
 ### Verification Method
