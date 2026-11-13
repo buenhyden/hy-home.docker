@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.24.0"
+version: "3.24.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -172,7 +172,8 @@ valid, that this Registry binding is valid, and, in
 `check-document-links.py --mode alignment`, that a link title is one of the
 four types and that a link titled `evidence` is commit-pinned. Whether an
 untitled link is Normative or Navigation, and whether an author chose the
-right type, stay a review. Existing links are not retyped by this rule.
+right type, stay a review. The link checker runs in the local profile;
+its hosted CI route is not wired yet. Existing links are not retyped by this rule.
 
 #### Authoring Rules
 

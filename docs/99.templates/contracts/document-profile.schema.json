@@ -238,7 +238,7 @@
             },
             "source_sha256": {
               "type": "string",
-              "pattern": "^[0-9a-f]{64}$"
+              "pattern": "^[0-9a-f]{64}$(?!\\n)"
             },
             "glossary_path": {
               "type": "string",

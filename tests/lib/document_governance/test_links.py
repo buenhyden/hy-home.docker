@@ -2646,6 +2646,17 @@ class LinkTypeTitleTests(unittest.TestCase):
             with self.subTest(body=body):
                 self.assertIn("link-evidence-unpinned", self.codes(body))
 
+    def test_wrapped_bracketed_and_reference_links_are_checked(self) -> None:
+        for body, code in (
+            ('[Run\nlog](plan.md "evidence")', "link-evidence-unpinned"),
+            ('[Plan](plan.md\n"normtive")', "link-type-unknown"),
+            ('[See [Plan]](plan.md "normtive")', "link-type-unknown"),
+            ('[r]: plan.md "evidence"\n\nUse [r].', "link-evidence-unpinned"),
+            ("[r]: plan.md 'normtive'\n\nUse [r].", "link-type-unknown"),
+        ):
+            with self.subTest(body=body):
+                self.assertIn(code, self.codes(body))
+
     def test_titles_in_code_are_not_links(self) -> None:
         for body in (
             '`[Plan](plan.md "normtive")`',

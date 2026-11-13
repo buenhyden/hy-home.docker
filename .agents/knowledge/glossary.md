@@ -1,6 +1,6 @@
 ---
 title: "Repository Vocabulary"
-version: "0.8.0"
+version: "0.8.1"
 type: "governance/vocabulary"
 status: "active"
 owner: "@buenhyden"
@@ -146,7 +146,7 @@ Compiled from tracked sources at repository commit
 `9ede309a5b1feba91e6f8b973a729716b14c55ab` on 2026-09-06 and revalidated on
 2026-09-08 and 2026-11-03. On 2026-11-12 SPEC-0212 TSK-0059 moved it to the
 Repository Vocabulary form at `main` `4cd25b95b`. The common terms follow
-the four-repository target at contract version v14.5. The policy owners were
+the four-repository target published under package label `v14.5`. The policy owners were
 read at the lines cited in that Task. The local terms carry the earlier rows
 unchanged in meaning. On 2026-11-13 SPEC-0212 TSK-0062 restored
 twenty common rows to the contract wording and moved their local

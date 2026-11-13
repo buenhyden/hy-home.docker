@@ -4085,7 +4085,14 @@ class ApprovedRegistryIsNotAnExemptionTests(unittest.TestCase):
                         "root": self.raw,
                     }[place]
                     target[marker] = True
-                    self.assertNotEqual(set(), self.codes())
+                    self.assertTrue(
+                        any(
+                            finding.code == "schema-invalid"
+                            and f"'{marker}'" in finding.message
+                            for finding in validate_registry(self.raw)
+                        ),
+                        marker,
+                    )
 
 
 class ReleaseRoleGuardTests(unittest.TestCase):
