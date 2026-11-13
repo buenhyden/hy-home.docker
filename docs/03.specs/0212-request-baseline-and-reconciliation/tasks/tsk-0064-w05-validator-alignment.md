@@ -1,6 +1,6 @@
 ---
 title: "v14.7 W05 Validator Alignment Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -343,6 +343,7 @@ roles" holds only if the workflow-form decision keeps `sdlc.md` and
 | Integrated re-review | 117 | W122 | independent-review | Same reviewer, `91663f1f9` (read only, no tests run) | PASS | I-1 to I-3 and M-1 to M-9 resolved or accepted as recorded; Minor N-1 and N-5 fixed after it, N-2 to N-4 and N-6 recorded with owners | required | Integrated review |
 | Local changed gate | 117 | W122 | ci-gate-local | `run-ci-gate.py --profile changed` at `91663f1f9`, Python 3.12.3 | NOT_RUN | Fails closed by design: the local toolchain differs from hosted Python 3.14.8; the uv 3.14.8 interpreter lacks the dependencies, which were not installed | optional | - |
 | Remote candidate 996 | 117 | W122 | remote-ci | PR #996 head `91663f1f9` | PASS | candidate-quality (11m23s), CodeQL, GitGuardian and triage passed; an earlier head `3e8fc2cd0` had failed candidate-quality on the two protocol lines | required | - |
+| Remote candidate 996 final | 117 | W122 | remote-ci | PR #996 final head `6e57d3dc7`, merged as `5a1aa4b98` | PASS | candidate-quality (13m16s), CodeQL, GitGuardian and triage passed; main-security skipped as on every PR | required | - |
 
 ### Resolution Links
 
@@ -363,12 +364,13 @@ regression by its rerun.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 117 | pending | - | This run's rules pass their checks, the re-review and the remote candidate; every W05 handoff has a verdict and owner; the owner's acceptance remains | SPEC-0212 TSK-0064 |
+| 117 | accepted | Disposition GREEN, TemplateDefinition GREEN, Vocabulary 1.1.0 GREEN, Release GREEN, Link title GREEN, Currency GREEN, SemVer GREEN, Integrated checks, Integrated re-review, Remote candidate 996 final | Owner @buenhyden accepted on 2026-11-14 in this chat, after #996 merged; hosted CI wiring of the local-only leaves stays with H-W05-1 (W06) | SPEC-0212 TSK-0064 |
 
 ### Remaining Conditions
 
-The GAP, PARTIAL, UNVERIFIED, CONFLICT and NOT_SELECTED rows under Handoff
-Verdicts stay with this Task. The link-type CONFLICT needs the owner's choice.
+Criterion 117 is accepted. The two GAP rows under Handoff Verdicts (reverse
+lookups and Change Impact derivation, `consumer_paths`) lie outside criterion
+117 and keep this Task `in-progress`; the UNVERIFIED rows name their waves.
 Q-07 runs only after W11.
 
 ## Handoff
@@ -381,12 +383,11 @@ Q-07 runs only after W11.
 | 117 | W122 | TemplateDefinition GREEN | `template_definition.py` (commit `97a40d35c`) | `test_template_definition`, `metadata.test_heading` |
 | 117 | W122 | Currency GREEN | `metadata/lifecycle.py` (commit `88d9e465b`) | `metadata.test_lifecycle` |
 
-The commits are on branch `feat/w05-validator-alignment` only: no push, pull
-request or merge is authorized, so the promotion condition (merge) is not
-met. Acceptance row: criterion 117, `pending`.
+The commits reached `main` through PR #996, merged as `5a1aa4b98` with a
+merge commit, so the promotion condition (merge) is met. Acceptance row:
+criterion 117, `accepted`.
 
 ### Next Owner
 
-The current owner is @buenhyden. Resume on branch
-`feat/w05-validator-alignment`: the owner's choice on the link-type CONFLICT,
-then the GAP rows; a push and pull request need the owner's authorization.
+The current owner is @buenhyden. Resume from `main` with the two GAP rows;
+W06 takes H-W05-1.
