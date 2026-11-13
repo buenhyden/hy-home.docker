@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.21.0"
+version: "3.22.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -99,8 +99,12 @@ retired identities.
 
 Every link in a governed document has one of four types, and every link points
 forward from the document that writes it. A link never asks its target to
-write a link back. The author assigns the type and the reviewer confirms it;
-no link carries a machine-readable type marker, so no checker infers one.
+write a link back. The author assigns the type and the reviewer confirms it.
+An inline link's title carries the type, such as
+`[Run](https://github.com/<owner>/<repo>/blob/<commit>/<path> "evidence")`; an
+untitled link is a Normative or Navigation link, so existing links keep their
+meaning without a title. The title is one of `normative`, `evidence`,
+`historical` or `navigation`, and no other title is used.
 
 | Type | Required | Authority | Pinned version | When the target is removed or moved |
 | --- | --- | --- | --- | --- |
@@ -112,7 +116,8 @@ no link carries a machine-readable type marker, so no checker infers one.
 A required link must resolve. An evidence link whose target may later be
 deleted uses a revision-addressed form, such as a commit-pinned repository URL
 or a commit and path in plain text, because a relative link to a deleted file
-cannot stay resolved. Before a document is deleted or moved, the author sorts
+cannot stay resolved. A link titled `evidence` is a commit-pinned `https://`
+URL, whose path holds a 40-character commit. Before a document is deleted or moved, the author sorts
 its inbound consumers by link type and handles each as the last column says,
 and the reviewer confirms that sorting. Vault wiki links are a separate
 profile and are not typed this way. The Vault owner converts them outside this
@@ -162,9 +167,12 @@ missing contract, a writer that names an undeclared frontmatter key, link type
 or relation, a profile or key a scoped writer does not have, or an unregistered
 profile H3, a relation derived from itself,
 an owner path that does not exist, and a retained reverse field that is not a frontmatter key. The
-checkers enforce only that links resolve, that metadata keys and `parent_ids`
-are valid, and that this Registry binding is valid. Existing links are not
-retyped by this rule.
+checkers enforce that links resolve, that metadata keys and `parent_ids` are
+valid, that this Registry binding is valid, and, in
+`check-document-links.py --mode alignment`, that a link title is one of the
+four types and that a link titled `evidence` is commit-pinned. Whether an
+untitled link is Normative or Navigation, and whether an author chose the
+right type, stay a review. Existing links are not retyped by this rule.
 
 #### Authoring Rules
 

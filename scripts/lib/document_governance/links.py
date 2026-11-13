@@ -1171,6 +1171,32 @@ def _links_into_retired_package(link: DocumentLink, reserved: frozenset[int]) ->
     return match is not None and int(match.group("number")) in reserved
 
 
+# documentation-protocol.md Link types: the inline-link title carries the
+# type; an untitled link is normative or navigation. Registry common.link_types
+# owns the names (a test keeps them equal).
+LINK_TYPES = frozenset({"normative", "evidence", "historical", "navigation"})
+_TITLED_LINK = re.compile(
+    r"(?<!!)\[[^\[\]\n]*\]\(\s*<?(?P<dest>[^\s<>]+?)>?\s+"
+    r"(?:\"(?P<dq>[^\"]*)\"|'(?P<sq>[^']*)'|\((?P<pq>[^()]*)\))\s*\)"
+)
+_COMMIT_PINNED_URL = re.compile(r"^https://\S+/[0-9a-f]{40}(?:[/#?]|$)")
+
+
+def _link_type_findings(line: str) -> Iterable[tuple[str, str]]:
+    for match in _TITLED_LINK.finditer(_without_inline_code(line)):
+        if _is_escaped(match.string, match.start()):
+            continue
+        title = next(
+            value
+            for value in (match["dq"], match["sq"], match["pq"])
+            if value is not None
+        )
+        if title not in LINK_TYPES:
+            yield "link-type-unknown", title
+        elif title == "evidence" and not _COMMIT_PINNED_URL.match(match["dest"]):
+            yield "link-evidence-unpinned", match["dest"]
+
+
 def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
     """Validate current local links, anchors, and old templates.
 
@@ -1236,6 +1262,10 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
                 findings.append(_finding(link, "missing-link-anchor", link.raw_target))
     for node in graph.nodes:
         for line_no, line in _unfenced_lines(node.text):
+            findings.extend(
+                LinkFinding(f"{node.path.as_posix()}:{line_no}", code, message)
+                for code, message in _link_type_findings(line)
+            )
             if "operation.template.md" in line:
                 findings.append(
                     LinkFinding(
