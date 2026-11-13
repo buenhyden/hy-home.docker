@@ -187,8 +187,6 @@ exit0만으로 완료하지 않으며 기대 coverage와 unreadable0/diff0을 �
 
 `--check`는 의도한 항목만 추가·변경·삭제되고 성공해야 하며, 선택별 성공과 host-port 충돌 없음을 확인한다. 구문·선택 성공은 credential·network 도달성·health·복구 증거가 아니다.
 
-이 런북은 별도의 점검 목록을 두지 않고, Actions의 각 단계가 확인하는 상태와 종료 코드를 Evidence에 기록해 판정한다.
-
 ### Evidence
 
 명령·종료 코드·source commit·updater/validator 버전·선택과 coverage, 예상 결과와

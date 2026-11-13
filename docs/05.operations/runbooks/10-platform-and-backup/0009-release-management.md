@@ -274,7 +274,7 @@ helper는 전체 preflight 후 각 파일을 즉시 재검증한다. 부분 실�
 
 secret 노출 징후, 값 변경이 필요한 `.env` drift, 추적 문서로 입증할 수 없는 rollback 증거가 있으면 즉시 중단한다. release/tag 판단이 차단되거나 rollback 증거가 불완전하면 판단을 중단한다. Verdict pair가 하나라도 없거나 legacy, stale, mixed, substituted이면 class `10`에서 중단하며, local delivery cleanup의 ownership query가 누락되거나 ambiguous하면 broad cleanup 없이 class `60`으로 중단한다.
 
-대상별 중단 경계는 Actions의 `ROOT 인프라 image 후보와 승격` 표의 중단 경계 열에 있다. secret 노출 징후, 값 변경이 필요한 `.env` drift, 추적 문서로 입증할 수 없는 rollback 증거는 Escalation에 기록한 즉시 중단 조건이다.
+대상별 중단 경계는 Actions의 `ROOT 인프라 image 후보와 승격` 표의 중단 경계 열에 있다.
 
 ## Validation
 
@@ -298,8 +298,6 @@ secret 노출 징후, 값 변경이 필요한 `.env` drift, 추적 문서로 입
   runtime log, secret, credential, token은 기록하지 않는다.
 - Local-delivery record의 현재 verdict와 교체 전후 hash/inode는 해당 실행
   Task의 실제 증거에서 확인한다. 과거 문서 서술은 현재 실행 결과가 아니다.
-
-기록할 증거 목록(branch·작업 트리 상태, base/candidate SHA와 diff 요약, CHANGELOG heading과 SemVer·commit·draft 자산 hash, local delivery record 필드 등)은 Service Checks의 목록에 있다. HTTP body, runtime log, secret, credential, token은 기록하지 않는다(Service Checks 참조).
 
 ## Recovery
 

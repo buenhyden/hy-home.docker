@@ -121,8 +121,6 @@ active/unknown apply, DB-object 불일치, Docker-socket 예기치 않은 access
 
 `terrakube-api`, `terrakube-ui`, `terrakube-executor`의 `ps` 상태와 `docker compose --profile iac config --quiet` 통과를 확인한다.
 
-이 런북은 별도의 점검 목록을 두지 않고, Actions의 각 단계가 확인하는 상태와 종료 코드를 Evidence에 기록해 판정한다.
-
 ### Evidence
 
 정제된 컴포넌트 health·run/workspace 개수·백업 ID/checksum·state-key 개수·

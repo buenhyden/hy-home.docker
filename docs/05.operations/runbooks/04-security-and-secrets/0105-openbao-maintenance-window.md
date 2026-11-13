@@ -595,7 +595,7 @@ root를 읽어 채팅에 보내지 말고 W1c·W2·W7의 보호된 관리 입력
 ##### Previous Root Sweep
 
 server가 sealed라 window가 root를 폐기하지 못하고 끝나면 만료 없는 root가 OpenBao에 남는다
-(unsealed인데 OIDC가 안 되면 위 `cleanup --keep-root` 규칙을 따른다). W1 custody는 `$XDG_RUNTIME_DIR`
+(unsealed인데 OIDC가 안 되면 Rollback의 Abort and Cleanup Rules에 있는 `cleanup --keep-root` 규칙을 따른다). W1 custody는 `$XDG_RUNTIME_DIR`
 tmpfs에 있고 Linger나 남은 로그인 세션 때문에 재부팅 전까지 남으며, 저장소 UID로 도는 모든 process가 읽을 수 있다. 값은 영구 저장소로
 옮기지 않는다(backup 대상인 `secrets/` 포함). Rollback의 Abort and Cleanup Rules의 정리 명령으로 모든 custody·secret 파일을
 `shred -u`해 값을 아무도 갖지 않게 하고, 폐기하지 못한 사실만 값 없이 Task에 남긴다. accessor도

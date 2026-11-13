@@ -294,7 +294,7 @@ Prometheus 시리즈 count나 pod Running만으로 클러스터 전체 건강을
 
 ### Service Checks
 
-단계별 기대 결과는 지속 실행 service의 복귀와 job의 의도한 종료 상태, 재부팅 직후 `openbao`와 `openbao-agent` healthy 및 `Sealed true`, unseal 뒤 `Sealed false`, `k3d-hyhome-*` 컨테이너 Up이다. 과거 실행 기록은 아래와 같다.
+단계별 기대 결과는 지속 실행 service의 복귀와 job의 의도한 종료 상태, 재부팅 직후 `bao status`가 sealed(종료 코드 2, `unhealthy`)를 보고하고 unseal 뒤 `Sealed false`, `k3d-hyhome-*` 컨테이너 Up이다. 과거 실행 기록은 아래와 같다.
 
 #### Verification Record
 
