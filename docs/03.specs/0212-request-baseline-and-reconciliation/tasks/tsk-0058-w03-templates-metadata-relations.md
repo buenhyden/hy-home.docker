@@ -462,6 +462,31 @@ Branch `docs/w03-archive-vocabulary`.
 - H-13: the architecture description template asks the author to review a
   diagram against the C4 diagram review checklist; no rule requires it.
 
+##### Retirement and incident numbering 2026-11-13
+
+Branch `docs/w03-retirement-consistency`. Two conflicts the Stage README
+review surfaced, fixed toward the stated requirement:
+
+- A replaced ADR or Architecture Description is summarized into its
+  successor and deleted in the same change (the Stage 99 README and the ADR
+  on summarize-and-delete retirement). Retirement precondition 1 in the
+  documentation protocol required a Registry disposition status that neither
+  lifecycle can reach, so no ADR or Description could ever retire. The
+  precondition now also admits a document whose replacing ADR or Description,
+  carrying its summary, lands in the same change, and the retention sentence
+  says the same. The Registry map is unchanged: listing `accepted` or `active`
+  would make the occupancy check demand removal of every live document.
+- The Stage 99 README said incident numbers restart each year. The Registry
+  has one `incident` identity space and `identity_history.py` collects one
+  set, so the README now says the number comes from one global counter and
+  the year appears only in the path and artifact ID. The code comment says
+  the same.
+
+Held, not changed: the `incident` and `postmortem` disposition entries list
+statuses their lifecycles cannot reach, so those records never retire. No
+rule says whether they should; a Registry check that each listed status
+belongs to the profile's lifecycle is handed to W05 with the validator work.
+
 Held for an owner decision, not changed here, because each would change
 what a requirement says:
 
@@ -554,6 +579,8 @@ None: nothing was recorded here before this Task moved to the common form.
 | W03 v14.7 archive vocabulary review | 111 | W116 | independent-review | Fresh-context code-reviewer of `84002bc55` and `c44de6697` | PASS | PASS: no consumer remains for any retired key; the supply-chain `archived_at` is a separate JSON ledger; the C4 prompt is optional and harmless; one minor test weakness (`archived_at` with an invalid value) fixed in the next commit | required | - |
 | W03 v14.7 archive vocabulary GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `c44de6697` | PASS | Ran 811 tests, OK | required | W03 v14.7 archive vocabulary RED |
 | W03 v14.7 archive vocabulary checks | 111 | W116 | metadata-links-governance | Registry, schemas and the active corpus at `84002bc55` | PASS | metadata check-active selected 534 violations 0; active stage occupancy violations 0 | required | - |
+| W03 v14.7 retirement consistency review | 111 | W116 | independent-review | Fresh-context rules-engineer assessment of the two conflicts at `3607497a6` | PASS | The protocol is the owner; precondition 1 and the retention sentence change together; no `.agents` link to a numbered-stage document; the incident wording is confirmed and no other document repeats the restart claim | required | - |
+| W03 v14.7 retirement consistency checks | 111 | W116 | metadata-links-governance | The protocol, Stage 99 README and `identity_history.py` comment | PASS | test_identity_history OK; agent governance contract PASS; links alignment PASS; metadata check-changed selected 2 violations 0 | required | - |
 
 ### Resolution Links
 
