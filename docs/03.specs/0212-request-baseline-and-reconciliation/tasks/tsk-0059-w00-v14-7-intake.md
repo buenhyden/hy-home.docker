@@ -162,7 +162,7 @@ These are historical audit IDs. They are not current files, issues or Tasks.
 | OPEN-01 | SUPERSEDED | Owner decision 2026-11-12: superseded by the package's 106-ID requirement set, derived from the same original bytes (SHA `dc348e7f`), and the per-ID assessments in TSK-0053 and TSK-0056 to TSK-0059. The 1,250 lines stay preserved with their recorded `NOT_REVIEWED` status as history; no full line review runs |
 | OPEN-02 | SUPERSEDED | Same owner decision. The 14,028 pair candidates stay preserved as NOT_REVIEWED history; no full pair review runs. TSK-0030 judged a different set (10,878 pairs of 148 CRs) and is not reused for this |
 | OPEN-03 | CLOSED_BY_EVIDENCE (trace only) | The 52 Docker WP rows map to issued CR IDs, per TSK-0053. Each WP's own residual stays with its Task |
-| OPEN-04 | BLOCKED_EVIDENCE | The source bytes for WMC-20261110-03 and the 20261102 v4 input are absent from both the workspace and the package |
+| OPEN-04 | NOT_REQUIRED | Owner decision 2026-11-13: closed, no consumer. Was BLOCKED_EVIDENCE: the source bytes for WMC-20261110-03 and the 20261102 v4 input are absent from both the workspace and the package |
 | OPEN-05 | NOT_APPLICABLE | No current document, script or Compose file adopts the LambdaDB article (only TSK-0053 and this Task mention it). The OPEN-SOURCES closure accepts an explicit non-adoption basis; SPEC-0270 would reopen it only by adopting the source |
 | OPEN-06 | NOT_APPLICABLE | Nothing in the workspace adopts SillyMemory or other upstream code, so its code, license and 72-perspective review has no consumer here. Adoption would need its own review first |
 | OPEN-07 | CLOSED_BY_EVIDENCE (W00 scope) | The W00-selected surfaces were inventoried; the denominator is below. A full-repository semantic review is not claimed |
@@ -359,7 +359,7 @@ Wording corrections:
 | OPEN-01 | Semantic atomization of the 1,250 original lines | Original SHA `dc348e7f`; TSK-0053 trace section; owner answer 2026-11-12 | Superseded by the 106-ID set and per-ID assessments | Lineage only | None | TSK-0053, as history | SUPERSEDED | None | None |
 | OPEN-02 | Judgment of 14,028 relation candidates | Same; TSK-0030 covers a different set | Same decision | Lineage only | None | TSK-0053, as history | SUPERSEDED | None | None |
 | OPEN-03 | Current state of 208 legacy work packages | 52 Docker rows mapped to issued CR IDs in TSK-0053 | None needed | Trace | Each package's residual stays with its Task | Those Tasks | CLOSED_BY_EVIDENCE | None | None |
-| OPEN-04 | Byte comparison of WMC-20261110-03 and the 20261102 v4 original | Workspace and package searched; no copy, no consumer | None | Byte comparison | None | None | BLOCKED_EVIDENCE | Compare only if those exact bytes are supplied | The two-file byte comparison |
+| OPEN-04 | Byte comparison of WMC-20261110-03 and the 20261102 v4 original | Workspace and package searched; no copy, no consumer | None | Byte comparison | None | None | NOT_REQUIRED (owner decision 2026-11-13) | None | None |
 | OPEN-05 | Retrieval of the LambdaDB article | Direct fetch succeeded 2026-11-12 (DS-03) | Not adopted | Retrieval and adoption check | None | None | NOT_APPLICABLE | None | None |
 | OPEN-06 | Upstream code, license and 72 perspectives | DS-01 to DS-12 review; SillyMemory AGPL-3.0 | Not adopted | Six-perspective review | None | None | NOT_APPLICABLE | A future adoption runs its own review | None |
 | OPEN-07 | Local workspace inventory | This Task's read denominator | None needed | W00-selected surfaces | None | TSK-0059 | CLOSED_BY_EVIDENCE | None | None |
@@ -418,6 +418,18 @@ controller re-read the deciding lines for C-01, C-02, the PR table, the
 protected items and OPEN-01 to OPEN-14. The handoff file:line facts come from
 those agents and are re-verified by each receiving work unit before it edits.
 
+#### Owner decisions 2026-11-13
+
+Asked before W04, for items W00 to W03 left open:
+
+- OPEN-04: closed as not required. Nothing depends on the byte comparison and
+  the two source files are unavailable.
+- Incident and postmortem retirement (from TSK-0058, the W05 disposition-status
+  check): these records never retire. W05 removes the Registry disposition
+  entries their lifecycles cannot reach and adds the reachability check.
+- Q-07 renumbering (TSK-0058 DOC-12): kept open by the owner's choice; issued
+  numbers stay as they are until it is decided.
+
 ### Blockers and Decisions
 
 None: nothing was recorded here before this Task moved to the common form.
@@ -472,8 +484,9 @@ owner's own Task:
 - H-05 is done; H-08 and H-12 (W05); H-09 and H-10 (W06).
 - OPEN-09 and OPEN-11 (W05), OPEN-12 (TSK-0052), OPEN-13 and OPEN-14 (W06),
   OPEN-08 and OPEN-10 (W10, UNVERIFIED, not inspected here).
-- OPEN-04: BLOCKED_EVIDENCE for the two-file byte comparison only; no product
-  work depends on it.
+- OPEN-04: closed as NOT_REQUIRED by the owner on 2026-11-13.
+- Q-07 (renumbering, from TSK-0058 DOC-12) stays an open owner decision; no
+  wave owns it.
 
 #### Review and Completion
 
@@ -492,6 +505,6 @@ pull requests #967 to #987, recorded in TSK-0058.
 
 ### Next Owner
 
-The current owner is @buenhyden. W04 owns H-07, W05 owns H-08, H-12, OPEN-09
-and OPEN-11, W06 owns H-09, H-10, OPEN-13 and OPEN-14, and W10 owns OPEN-08
+The current owner is @buenhyden. W04 owns H-07, W05 owns H-08, H-12, OPEN-09,
+OPEN-11 and the never-retire rule for incidents and postmortems, W06 owns H-09, H-10, OPEN-13 and OPEN-14, and W10 owns OPEN-08
 and OPEN-10.
