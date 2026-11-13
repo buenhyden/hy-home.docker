@@ -1,6 +1,6 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.5.3"
+version: "2.5.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -177,8 +177,8 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
 - 폐기된 번호는 각 top-level identity space의 `reserved_history`에 정렬된
   목록으로 둡니다. 예약된 번호는 다시 발급하지 않으며, Stage 01 번호 공백과
   Stage 03 package 삭제는 그 번호가 예약되어 있을 때만 정당합니다.
-- Incident 번호는 연도 partition마다 다시 시작하므로, 연도는 경로뿐
-  아니라 identity에도 속합니다.
+- Incident 번호는 연도와 무관한 하나의 전역 counter에서 발급합니다. 연도는
+  경로(`<year>/`)와 artifact ID(`inc-YYYY-####`)에만 나타납니다.
 - 안정적인 package ID는 등록된 접두사와 대소문자를 유지합니다.
 - Requirement 자식은 owner를 완전히 포함한 ID를 사용합니다:
   `REQ-####-FR-####`, `REQ-####-NFR-####`. `IF` 자식은 더 발급하지 않으며,

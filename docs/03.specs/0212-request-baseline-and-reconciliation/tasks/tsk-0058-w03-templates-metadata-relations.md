@@ -1,6 +1,6 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.5.10"
+version: "0.5.11"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -481,6 +481,31 @@ Branch `docs/w03-root-readme-common-form`.
   canonical entry points and the support routes (`bug_report.yml`,
   `feature_request.yml`, `SECURITY.md`, the owner).
 
+##### Retirement and incident numbering 2026-11-13
+
+Branch `docs/w03-retirement-consistency`. Two conflicts the Stage README
+review surfaced, fixed toward the stated requirement:
+
+- A replaced ADR or Architecture Description is summarized into its
+  successor and deleted in the same change (the Stage 99 README and the ADR
+  on summarize-and-delete retirement). Retirement precondition 1 in the
+  documentation protocol required a Registry disposition status that neither
+  lifecycle can reach, so no ADR or Description could ever retire. The
+  precondition now also admits a document whose replacing ADR or Description,
+  carrying its summary, lands in the same change, and the retention sentence
+  says the same. The Registry map is unchanged: listing `accepted` or `active`
+  would make the occupancy check demand removal of every live document.
+- The Stage 99 README said incident numbers restart each year. The Registry
+  has one `incident` identity space and `identity_history.py` collects one
+  set, so the README now says the number comes from one global counter and
+  the year appears only in the path and artifact ID. The code comment says
+  the same.
+
+Held, not changed: the `incident` and `postmortem` disposition entries list
+statuses their lifecycles cannot reach, so those records never retire. No
+rule says whether they should; a Registry check that each listed status
+belongs to the profile's lifecycle is handed to W05 with the validator work.
+
 Held for an owner decision, not changed here, because each would change
 what a requirement says:
 
@@ -578,6 +603,9 @@ None: nothing was recorded here before this Task moved to the common form.
 | W03 v14.7 Root README review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `9a3836f72`, minors fixed in `a1683374f` | PASS | PASS: every finding fixed | required | W03 v14.7 Root README review |
 | W03 v14.7 Root README GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `a1683374f`; after merging main, test_heading and test_registry at `1ac114404` | PASS | Ran 813 tests, OK; after the merge 220 tests, OK | required | W03 v14.7 Root README form RED |
 | W03 v14.7 Root README checks | 111 | W116 | metadata-links-governance | The 13 READMEs and two generated READMEs at `a1683374f` and `1ac114404` | PASS | Renderer drift 0; agent governance contract PASS; metadata check-changed violations 0; links alignment and navigation PASS | required | - |
+| W03 v14.7 retirement consistency review | 111 | W116 | independent-review | Fresh-context rules-engineer assessment of the two conflicts at `3607497a6` | PASS | The protocol is the owner; precondition 1 and the retention sentence change together; no `.agents` link to a numbered-stage document; the incident wording is confirmed and no other document repeats the restart claim | required | - |
+| W03 v14.7 retirement consistency checks | 111 | W116 | metadata-links-governance | The protocol, Stage 99 README and `identity_history.py` comment | PASS | test_identity_history OK; agent governance contract PASS; links alignment PASS; metadata check-changed at `92064f2f3` selected 3 violations 0 | required | - |
+| W03 v14.7 retirement consistency approval | 111 | W116 | independent-review | Fresh-context rules-engineer review of the applied commit `92064f2f3` | PASS | APPROVED: the protocol wording, the README line and the code comment match the assessed wording; no `.agents` link to a numbered-stage document; the held incident and postmortem entries are recorded without claiming a retention rule | required | - |
 
 ### Resolution Links
 
@@ -602,7 +630,7 @@ these profile flags is handed to W05; renumbering stays a Q-07 decision.
 
 ### Promotion Receipt
 
-Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook), #980 (Policy), #981 (Skill), #982 (H-W02-2 and H-13).
+Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook), #980 (Policy), #981 (Skill), #982 (H-W02-2 and H-13), #983 (Root README).
 
 ### Next Owner
 

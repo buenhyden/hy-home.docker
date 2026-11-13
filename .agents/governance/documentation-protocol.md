@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.16.2"
+version: "3.17.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -401,7 +401,8 @@ project of its own, and a closed Spec gets no new standing verification
 pipeline. Retention follows lifecycle and ownership. Age and document count are
 never retention criteria. A document is retained while it owns current
 behavior, structure, decision, or procedure. It is retired when its status is
-terminal and its still-current meaning has moved to a canonical owner.
+terminal, or it is replaced as the retirement preconditions allow, and its
+still-current meaning has moved to a canonical owner.
 These rules govern development documents only. Operational data and backups
 keep the retention their Stage 05 owners set, and shared agent memory keeps
 the retention rules of the
@@ -469,7 +470,9 @@ Stage 03 may be empty when no package remains.
 Retire a package or a standalone document only when all of these hold.
 
 1. Its profile/status pair is eligible in the Registry's
-   `archive_retention.disposition_entry_statuses` map. Lifecycle terminality and
+   `archive_retention.disposition_entry_statuses` map, or it is an ADR or
+   Architecture Description whose replacing ADR or Description, carrying its
+   summary, lands in the same change. Lifecycle terminality and
    disposition eligibility are separate: neither one grants an automatic
    removal.
 2. Every still-current obligation, decision, structure, or procedure it owns is
