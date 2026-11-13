@@ -171,11 +171,17 @@ class TemplateDefinitionTests(unittest.TestCase):
                 if self._profile(role).get("required_subsections"):
                     h3 = [title for level, title in found if level == 3]
                     children = [
-                        c["title"]
-                        for h in definition["headings"]
-                        for c in h["children"]
+                        c for h in definition["headings"] for c in h["children"]
                     ]
-                    self.assertEqual(children, [t for t in h3 if t in children])
+                    required_children = [
+                        c["title"] for c in children if c["requiredness"] == "required"
+                    ]
+                    # The validator orders required subsections only; an
+                    # optional one may sit anywhere under its parent.
+                    self.assertEqual(
+                        required_children, [t for t in h3 if t in required_children]
+                    )
+                    self.assertLessEqual(set(h3), {c["title"] for c in children})
 
     def test_headingless_templates_use_their_real_top_level_units(self) -> None:
         expected = {
@@ -223,6 +229,25 @@ class TemplateDefinitionTests(unittest.TestCase):
         codex = self.definitions["governance/codex-agent"]
         self.assertEqual(
             expected["governance/codex-agent"], [m["name"] for m in codex["metadata"]]
+        )
+
+    def test_a_codex_projection_carries_only_the_rendered_keys(self) -> None:
+        from scripts.operations import provider_surface_renderer as renderer
+
+        profile = self.registry.profiles["runtime-projection-codex"]
+        rendered = {
+            m["name"] for m in self.definitions["governance/codex-agent"]["metadata"]
+        }
+        self.assertLessEqual(
+            {*profile["required_frontmatter"], *profile["optional_frontmatter"]},
+            rendered,
+        )
+        projection = (ROOT / ".codex/agents/doc-writer.toml").read_bytes()
+        self.assertTrue(renderer._is_codex_agent_projection(projection))
+        self.assertFalse(
+            renderer._is_codex_agent_projection(
+                projection + b'permissionMode = "plan"\n'
+            )
         )
 
     def test_authored_references_resolve(self) -> None:

@@ -3895,17 +3895,11 @@
       "template_id": "governance/codex-agent",
       "required_frontmatter": [
         "name",
-        "description"
-      ],
-      "optional_frontmatter": [
-        "effort",
+        "description",
         "model",
-        "model_reasoning_effort",
-        "permissionMode",
-        "skills",
-        "tools",
-        "version"
+        "model_reasoning_effort"
       ],
+      "optional_frontmatter": [],
       "required_sections": [],
       "optional_sections": [],
       "lifecycle_id": null,
@@ -4238,11 +4232,14 @@
       "validation": {
         "positive": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
-          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar"
+          "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract"
         ],
         "negative": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
-          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -4533,11 +4530,14 @@
         "positive": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
           "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
           "scripts/validation/check-agent-governance-contract.py"
         ],
         "negative": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
-          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -4549,7 +4549,7 @@
         ]
       },
       "migration": {
-        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit b939b2994 (profiles) and 7b48b923a (governance rules, #980) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/rule.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/rule.template.md; load_registry and test_template_definition re-check the reverted Registry."
       }
@@ -4656,12 +4656,15 @@
         "positive": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
           "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
           "tests.lib.document_governance.test_registry:RepositoryVocabularyProfileTests",
           "scripts/validation/check-agent-governance-contract.py"
         ],
         "negative": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
-          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -4720,11 +4723,15 @@
         "positive": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
           "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
+          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_governance_policy_profile_binds_approval_boundary_body",
           "scripts/validation/check-agent-governance-contract.py"
         ],
         "negative": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
-          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -4736,7 +4743,7 @@
         ]
       },
       "migration": {
-        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit b939b2994 (profiles) and 7b48b923a (governance policies, #980) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/control.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/control.template.md; load_registry and test_template_definition re-check the reverted Registry."
       }
@@ -4780,11 +4787,14 @@
         "positive": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
           "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
           "scripts/validation/check-agent-governance-contract.py"
         ],
         "negative": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
-          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -4904,11 +4914,14 @@
         "positive": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
           "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
           "scripts/validation/check-agent-governance-contract.py"
         ],
         "negative": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
-          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -4965,11 +4978,14 @@
         "positive": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
           "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
           "scripts/validation/check-agent-governance-contract.py"
         ],
         "negative": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
-          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -5027,11 +5043,15 @@
         "positive": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
           "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
           "scripts/validation/check-agent-governance-contract.py"
         ],
         "negative": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
-          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -5043,7 +5063,7 @@
         ]
       },
       "migration": {
-        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit b83c5a11e (profile) and f7f37d495 (the 24 skills, #981) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/skill.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/skill.template.md; load_registry and test_template_definition re-check the reverted Registry."
       }
@@ -5225,14 +5245,14 @@
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
           "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
-          "tests.lib.document_governance.test_operations_catalog:OperationsCatalogTopologyTests.test_registry_owns_the_exact_numbered_role_domains",
-          "tests.lib.document_governance.metadata.test_profile:TemplateMetadataTests.test_governance_policy_profile_binds_approval_boundary_body"
+          "tests.lib.document_governance.test_operations_catalog:OperationsCatalogTopologyTests.test_registry_owns_the_exact_numbered_role_domains"
         ],
         "negative": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
-          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -5244,7 +5264,7 @@
         ]
       },
       "migration": {
-        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit b939b2994 (profiles) and 9cd965911 (documents, #980) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/policy.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/policy.template.md; load_registry and test_template_definition re-check the reverted Registry."
       }
@@ -5362,7 +5382,8 @@
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
-          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -5374,7 +5395,7 @@
         ]
       },
       "migration": {
-        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit 662623dc9 (profile) and 8e430909b..436bcc974 (documents, #979) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/runbook.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/runbook.template.md; load_registry and test_template_definition re-check the reverted Registry."
       }
