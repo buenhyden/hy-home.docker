@@ -1,26 +1,30 @@
 ---
 title: "공통 운영 정책"
-version: "0.1.2"
+version: "0.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 ---
 
 # 공통 운영 정책
 
-## Overview
+## Stage Responsibility
+
+### Purpose and Readers
 
 공통 운영의 적용 범위의 필수 통제, 승인, 예외와 검토 기준을 확인한다.
 
-## Scope
+### Inputs and Outputs
 
 이 폴더는 아래 문서의 정책 역할만 소유한다. 구현과 운영 결과는 각 소유 문서와 Task에서 확인한다.
 
 실행 권한, 비밀값 원문, 새로운 서비스와 빈 분류 문서는 포함하지 않는다.
 
-## Structure
+## Contents
+
+### Current Items
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
@@ -29,7 +33,13 @@ layer: "operations"
 | [Infrastructure Optimization Governance Policy](0006-infrastructure-optimization-governance.md) | `POL-0006` | 이 정책은 root Compose가 include하는 정상 서비스와 `labs/*/docker-compose.yml`의 LAB 서비스에 대한 공통 운영 통제와 개선 백로그를 소유한다. |
 | [Compose Profile Vocabulary Policy](0078-compose-profile-vocabulary.md) | `POL-0078` | 추적된 Compose profile의 이름·분류·목적을 소유하며, 여러 profile 선택은 합집합이고 보안 격리를 제공하지 않는다. |
 
-## Usage
+### Classification
+
+이 폴더의 문서는 모두 정책 역할이며 `POL-NNNN` 식별자를 쓴다. 같은 subject의 다른 역할 문서는 있는 경우 같은 번호와 slug로 다른 역할 폴더에 있다.
+
+## Workflow
+
+### Create and Review
 
 1. 식별자와 문서 제목으로 대상을 고른다.
 2. 적용 범위의 필수 통제, 승인, 예외와 검토 기준을 확인한다.
@@ -38,8 +48,18 @@ layer: "operations"
 
 작성·검토 책임은 `@buenhyden`에게 있다. 같은 통제나 절차의 정본을 복제하지 않는다.
 
+### Transition and Exit
+
+문서는 `operational-policy` 수명주기(draft, in-review, active, deprecated, superseded, retired)를 따른다. superseded 또는 retired에 이른 문서는 [은퇴 전제 조건](../../../../.agents/governance/documentation-protocol.md#retirement-preconditions)을 모두 충족할 때에만 남아야 할 내용을 소유 문서에 요약한 뒤 삭제하고, 번호를 Registry `reserved_history`에 추가하며, 이 목록의 행과 링크를 같은 변경에서 제거한다.
+
 ## Related Documents
+
+### Upstream and Downstream
 
 - [상위 정책 분류](../README.md)
 - [운영 문서](../../README.md)
+
+### Policy and Templates
+
 - [문서 작성 계약](../../../../.agents/governance/documentation-protocol.md)
+- [README 템플릿](../../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

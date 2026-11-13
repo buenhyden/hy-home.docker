@@ -1,16 +1,18 @@
 ---
 title: "Template Catalog"
-version: "3.0.1"
+version: "3.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-04"
+updated: "2026-11-13"
 layer: "templates"
 ---
 
 # Template Catalog
 
-## Overview
+## Stage Responsibility
+
+### Purpose and Readers
 
 이 디렉터리는 [`../registry.json`](../registry.json)이 등록한 복사용 원본을
 담습니다. 문서 type과 template 원본의 정확한 대응은 Registry의
@@ -19,20 +21,20 @@ layer: "templates"
 [Stage 99 README](../README.md)에, 완성된 문서가 지켜야 할 규칙은 각 문서를
 소유한 stage에 있습니다.
 
-## Scope
+#### Audience
+
+- Documentation Writers
+- Repository Maintainers
+
+### Inputs and Outputs
 
 - 포함: Registry `template_roles`가 가리키는 template 원본.
 - 제외: 완성된 문서, 과거 template, category별 README. 과거 template은 Git
   history로만 복구하며 현재 작성에 복사하지 않습니다.
 
-### Audience
+## Contents
 
-- Documentation Writers
-- Repository Maintainers
-
-## Structure
-
-### Documents
+### Current Items
 
 | Path | Purpose |
 | --- | --- |
@@ -45,7 +47,13 @@ layer: "templates"
 | [runtime/](runtime/) | native provider projection source |
 | [specs/](specs/) | Spec·Plan·Task와 interface source |
 
-## Usage
+### Classification
+
+각 category 안의 template 원본만 정본이며 완성된 문서와 과거 template은 두지 않습니다(과거 template은 Git history로만 복구). template은 복사용 source이므로 복사해 만든 문서가 자기 profile의 수명주기를 시작합니다.
+
+## Workflow
+
+### Create and Review
 
 1. [`../registry.json`](../registry.json)의 `template_roles`에서 역할을 찾고
    등록된 `source`를 복사합니다. 디렉터리를 훑어서 template을 고르지
@@ -64,8 +72,18 @@ layer: "templates"
    또는 all-files 실행도 Task 범위와 controlled-wrapper 승인 경계를
    따릅니다.
 
+### Transition and Exit
+
+이 README는 `navigation` 수명주기의 `active` 상태만 가지며 다른 상태로 전이하지 않습니다. 목록 항목을 추가·이동·삭제할 때 이 문서를 함께 갱신하고, 삭제한 항목의 이력은 Git이 기록합니다.
+
 ## Related Documents
 
+### Upstream and Downstream
+
 - [Stage 99 authority](../README.md)
+
+### Policy and Templates
+
 - [Registry](../registry.json)
 - [Documentation protocol](../../../.agents/governance/documentation-protocol.md)
+- 이 README의 양식 원본은 `common/readme-stage.template.md`이며 형식은 [Stage 99 Registry](../registry.json)의 profile이 소유합니다

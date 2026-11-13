@@ -12,54 +12,54 @@ updated: "{{UPDATED}}"
 
 # {{TITLE}}
 
-## Overview
+## Purpose
+
+### Objective
 
 {{CONTROL_PURPOSE}}
 
+### Authority
+
+{{BOOTSTRAP_AND_OWNING_POLICY_LINKS}}
+
 ## Scope
 
-### Surfaces
+### Applies To
 
-{{SURFACES_UNDER_CONTROL}}
+{{SURFACES_AND_ACTORS_UNDER_CONTROL}}
 
-### Actors
+### Exclusions
 
-{{ACTORS_UNDER_CONTROL}}
+{{SURFACES_AND_ACTORS_OUTSIDE_THIS_CONTROL}}
 
 ## Rules
 
-### Required
+### Requirements
 
-{{REQUIRED_BEHAVIOR}}
+{{REQUIRED_AND_PROHIBITED_BEHAVIOR}}
 
-### Prohibited
+### Enforcement
 
-{{PROHIBITED_BEHAVIOR}}
+<!-- Author prompt: Name the scoped checks, their expected signals, and the limits of what that evidence proves. -->
+
+{{CHECKS_SIGNALS_AND_EVIDENCE_LIMITS}}
 
 ## Exceptions
 
-### Scoped Exceptions
+### Exception Conditions
 
 {{SCOPED_EXCEPTIONS}}
 
-### Authorization Boundaries
+### Approval and Review
 
 {{AUTHORIZATION_BOUNDARIES}}
 
-## Verification
+## Ownership
 
-### Checks
+### Responsibilities
 
-{{SCOPED_CHECKS}}
+{{OWNER_AND_ENFORCING_ROLES}}
 
-### Expected Signals
+### Change and Adoption
 
-{{EXPECTED_SIGNALS}}
-
-### Evidence Limits
-
-{{EVIDENCE_LIMITS}}
-
-## Related Documents
-
-{{BOOTSTRAP_AND_OWNING_POLICY_LINKS}}
+{{HOW_THIS_POLICY_CHANGES_AND_RELATED_DOCUMENTS}}

@@ -1,10 +1,10 @@
 ---
 title: "MongoDB Operations Policy"
-version: "2.1.5"
+version: "2.1.6"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0027"
 parent_ids:
@@ -14,11 +14,20 @@ created: "2026-05-17"
 
 # MongoDB Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 이 정책은 `hy-home.docker`의 `LAB` MongoDB replica set 운영 기준을 정의한다. runtime image/version은 Compose declaration이 소유하며, 정책 기준은 exact `mongodb` profile, `MyReplicaSet`, `mongo-key` named volume, Docker Secret 기반 root/UI credential이다.
 
+### Authority
+
+- Declared parent: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
+- [Compose implementation: labs/mongodb/docker-compose.yml](../../../../labs/mongodb/docker-compose.yml)
+
 ## Scope
+
+### Applies To
 
 - `labs/mongodb/docker-compose.yml`
 - `mongo-key-generator`, `mongodb-rep1`, `mongodb-rep2`, `mongodb-arbiter`, `mongo-init`, `mongo-express`
@@ -27,7 +36,13 @@ created: "2026-05-17"
 - HOME Traefik label 없음; Mongo Express loopback port `${LAB_MONGO_EXPRESS_HOST_PORT:-38081}`
 - Linked guide and runbook under `docs/05.operations`
 
+### Exclusions
+
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
+
 ## Rules
+
+### Requirements
 
 - **Required**: 문서는 현재 replica set을 `mongo-init`으로 초기화된 두 개의
   data-bearing node와 하나의 arbiter로 기술해야 한다.
@@ -58,26 +73,11 @@ created: "2026-05-17"
 - **Disallowed**: `mongodb-arbiter`를 backup/data node로 취급하거나 compose에
   선언되지 않은 host port로 MongoDB를 직접 노출하는 것.
 
-### Accountable lifecycle boundary
+#### Accountable lifecycle boundary
 
 적용 identity: `mongo-express`, `mongo-init`, `mongo-key-generator`, `mongodb-arbiter`, `mongodb-rep1`, `mongodb-rep2`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-## Exceptions
-
-N/A - 현재 승인된 예외 없음.
-
-### Review Cadence
-
-- MongoDB compose image/profile/secret/keyfile/replica-member 변경 시
-  검토한다.
-- Stage 05 운영 문서 audit 주기 동안 검토한다.
-
-### Traceability
-
-- Declared parent: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](../../guides/15-labs/0027-mongodb.md) (`GDE-0027`), [Runbook](../../runbooks/15-labs/0027-mongodb.md) (`RUN-0027`)
-
-## Verification
+### Enforcement
 
 - Compose 변경 후 이 정책을 [MongoDB guide](../../guides/15-labs/0027-mongodb.md),
   [MongoDB runbook](../../runbooks/15-labs/0027-mongodb.md),
@@ -86,14 +86,30 @@ N/A - 현재 승인된 예외 없음.
   승인하기 전에 `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/mongodb/docker-compose.yml --profile mongodb config --quiet`를 실행한다.
 - 정책이나 연결된 운영 문서 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
 
-## Related Documents
+## Exceptions
 
-- [Compose implementation: labs/mongodb/docker-compose.yml](../../../../labs/mongodb/docker-compose.yml)
+### Exception Conditions
 
+N/A - 현재 승인된 예외 없음.
+
+### Approval and Review
+
+- MongoDB compose image/profile/secret/keyfile/replica-member 변경 시
+  검토한다.
+- Stage 05 운영 문서 audit 주기 동안 검토한다.
+
+## Ownership
+
+### Responsibilities
+
+이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
+
+### Change and Adoption
+
+- Subject peers: [Guide](../../guides/15-labs/0027-mongodb.md) (`GDE-0027`), [Runbook](../../runbooks/15-labs/0027-mongodb.md) (`RUN-0027`)
 - [MongoDB backup and restore tools](https://www.mongodb.com/docs/v8.0/tutorial/backup-and-restore-tools/)
 - [MongoDB security hardening](https://www.mongodb.com/docs/v8.0/core/security-hardening/)
 - [MongoDB Community licensing](https://www.mongodb.com/legal/licensing/community-edition)
-
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/15-labs/0027-mongodb.md)
 - [Recovery runbook](../../runbooks/15-labs/0027-mongodb.md)

@@ -1,6 +1,6 @@
 ---
 title: "W03 Templates, Metadata and Relations Task"
-version: "0.5.6"
+version: "0.5.13"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -395,6 +395,160 @@ merged as #977.
   sentences removed; the 0098 reboot expectation corrected to the sealed
   `bao status` exit.
 
+##### Policy role 2026-11-13
+
+Branch `docs/w03-policy-common-form`, on top of the Runbook branch.
+
+- Registry `policy`, `governance-policy` and `governance-hook-policy`: H2
+  Purpose, Scope, Rules, Exceptions, Ownership with their required H3s
+  (Objective, Authority; Applies To, Exclusions; Requirements, Enforcement;
+  Exception Conditions, Approval and Review; Responsibilities, Change and
+  Adoption). `governance-policy` no longer allows free-form sections, so an
+  unregistered H2 is rejected. The operations catalog matches required
+  section names to headings and needs no code change.
+- The 77 operations Policies (Korean bodies) and the 32 governance policies
+  and hook rules (English) are moved by `doc-writer` agents. Every rule
+  sentence is kept and only moved; H4 titles other documents link to stay.
+- Review answers: templated Exclusions sentences replaced by the exclusions
+  each file states, or by "없음: 이 정책 본문에는 명시된 제외 대상이 없다.";
+  forbidden items and rule clauses moved out of Exclusions; owner and
+  approval paragraphs moved into Responsibilities; governance Authority
+  lists replaced by the canonical-owner sentence under bootstrap precedence,
+  with the displaced links returned to Change and Adoption; false Approval
+  and Review and Exclusions sentences corrected; duplicate Guide and Runbook
+  peer links removed.
+
+##### Skill role 2026-11-13
+
+Branch `docs/w03-skill-common-form`, on top of the Policy branch.
+
+- Registry `governance-skill`: H2 Purpose and Trigger, Procedure, Inputs and
+  Outputs, Verification with their required H3s (When to Use, When Not to
+  Use; Steps, Failure Handling; Inputs, Outputs; Checks, Completion and
+  Handoff). The old `Purpose`, `Inputs`, `Outputs`, `Failure Handling`,
+  `References` H2s and the `Preconditions` H3 are rejected. The heading test
+  now samples `.agents/` documents too, so the skill and governance profiles
+  are exercised.
+- The 24 skills are moved by two `skill-creator` agents. Every old line is
+  kept; Preconditions text sits directly under When to Use, Gates become an
+  H4 under Steps, and the old References links sit under Completion and
+  Handoff after "Owning role, policies and related documents:". When Not to
+  Use quotes the description's "Do NOT use" clause, states the exclusion the
+  body gives, or says "None: this skill states no exclusion." where none is
+  stated. Renderer drift 0.
+- Review answers: one stale "below" reference, a false lead-in, an
+  exclusion left under When to Use, four false "None" lines and two
+  misplaced paragraphs fixed; adr-writing gains its owning role link.
+
+Held for a later change: Completion and Handoff in all 24 skills holds only
+links, and two Gates bullets (ops-runbook-agent, incident-response) state an
+output location rather than a gate.
+
+##### Handoffs H-W02-2 and H-13 2026-11-13
+
+Branch `docs/w03-archive-vocabulary`.
+
+- H-W02-2: a consumer survey found that nothing writes or reads
+  `common.archive_source_prefixes` (the live root set is the separate
+  `LEGACY_ARCHIVE_SOURCE_ROOTS` constant in `registry.py`) or the frontmatter
+  keys `archived_from`, `archived_at`, `archive_reason`,
+  `archive_disposition`, `archived_commit` and `archived_blob`; they were only
+  declared and validated, and no tracked document carries them. They are
+  retired from the Registry, both schemas, `metadata/profile.py`,
+  `metadata/lifecycle.py` and the template timestamp keys.
+  `archive_authorizations` stays, because the terminal TSK-0012 carries it,
+  and `archive_retention.disposition_entry_statuses` stays, because
+  `registry.py`, `spec_packages.py` and `lifecycle/occupancy.py` read it.
+- H-13: the architecture description template asks the author to review a
+  diagram against the C4 diagram review checklist; no rule requires it.
+
+##### Root README role 2026-11-13
+
+Branch `docs/w03-root-readme-common-form`.
+
+- Registry `repository-readme` and `runtime-governance-readme`: H2 Purpose,
+  Repository Map, Getting Started, References with their required H3s
+  (Project Role, Boundaries; Directories, Canonical Entry Points;
+  Prerequisites, First Verified Path; Current Documentation, Support and
+  Ownership). The renderer writes the new form for `.claude/README.md` and
+  `.codex/README.md`.
+- The README Documents table check now reads `README_DOCUMENTS_HEADINGS`
+  (Directories, Current Items, Documents); under Directories it checks every
+  table that has a `Path` column.
+- The 13 authored READMEs (Korean) are moved; `secrets/README.md` was read and
+  edited with the owner's leave for that one file only. Added sentences state
+  real prerequisites (Python, the hashed lock, Docker for the opt-in test),
+  canonical entry points and the support routes (`bug_report.yml`,
+  `feature_request.yml`, `SECURITY.md`, the owner).
+
+##### Retirement and incident numbering 2026-11-13
+
+Branch `docs/w03-retirement-consistency`. Two conflicts the Stage README
+review surfaced, fixed toward the stated requirement:
+
+- A replaced ADR or Architecture Description is summarized into its
+  successor and deleted in the same change (the Stage 99 README and the ADR
+  on summarize-and-delete retirement). Retirement precondition 1 in the
+  documentation protocol required a Registry disposition status that neither
+  lifecycle can reach, so no ADR or Description could ever retire. The
+  precondition now also admits a document whose replacing ADR or Description,
+  carrying its summary, lands in the same change, and the retention sentence
+  says the same. The Registry map is unchanged: listing `accepted` or `active`
+  would make the occupancy check demand removal of every live document.
+- The Stage 99 README said incident numbers restart each year. The Registry
+  has one `incident` identity space and `identity_history.py` collects one
+  set, so the README now says the number comes from one global counter and
+  the year appears only in the path and artifact ID. The code comment says
+  the same.
+
+Held, not changed: the `incident` and `postmortem` disposition entries list
+statuses their lifecycles cannot reach, so those records never retire. No
+rule says whether they should; a Registry check that each listed status
+belongs to the profile's lifecycle is handed to W05 with the validator work.
+
+##### Stage README role 2026-11-13
+
+Branch `docs/w03-stage-readme-common-form`.
+
+- Registry `readme`, `documentation-readme`, `reference-category-readme`,
+  `incident-year-readme` and the three `.agents` index profiles: H2 Stage
+  Responsibility, Contents, Workflow, Related Documents with their required
+  H3s (Purpose and Readers, Inputs and Outputs; Current Items,
+  Classification; Create and Review, Transition and Exit; Upstream and
+  Downstream, Policy and Templates).
+- The README table check, merged with the root form's: every table under
+  Directories, Current Items or Documents is checked; under Directories and
+  Current Items only a table with a `Path` column must use the registered
+  columns, and under Documents every table must.
+- The 68 READMEs (Korean) are moved. Transition and Exit states each stage's
+  own lifecycle from the Registry and the retirement preconditions;
+  Classification states the identifier form and, for operations folders,
+  that other roles share the number and slug where they exist. Three folder
+  READMEs that linked into a child's files now name them as text.
+
+##### Service README role 2026-11-13
+
+Branch `docs/w03-service-readme-common-form`. This answers DOC-01's open
+item: the approved contract fixes the service README section set.
+
+- Registry `package-readme`: H2 Purpose, Interfaces, Development, Operations
+  with their required H3s (Service Role, Supported Environment; Inputs and
+  Outputs, Security Boundary; Local Workflow, Checks; Runbook Links,
+  Observability and Recovery). The old `Overview`, `Scope`, `Structure`,
+  `Usage`, `Related Documents` H2s and the `Configuration` and `Validation`
+  H3s are rejected.
+- The 130 service READMEs (Korean) under `infra/`, `labs/`, `examples/`,
+  `projects/` and `tests/fixtures/` are moved by three `doc-writer` agents.
+  Every old line, heading and code block is kept, demoted to H4 where it no
+  longer names a section. Sentences added where a required section was empty
+  state ports, secret names, health checks and networks read from each
+  folder's Compose file, the governing runbooks, or a checked "없음:" fact.
+- Review answers: truncated and multi-line health checks quoted in full or
+  described; leaf-only `docker compose -f` checks replaced by the root route;
+  false parent-to-child "declared below" chains and false "없음" lines
+  replaced by the real boundary; incomplete file lists completed; old Scope
+  and Usage headings kept; runbook links added for every existing runbook.
+
 Held for an owner decision, not changed here, because each would change
 what a requirement says:
 
@@ -469,6 +623,44 @@ None: nothing was recorded here before this Task moved to the common form.
 | W03 v14.7 Runbook review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `98c4edd78` (rebased as `436bcc974`) | PASS | PASS: every finding fixed; anchors resolve | required | W03 v14.7 Runbook review, W03 v14.7 Runbook re-review |
 | W03 v14.7 Runbook GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `436bcc974` | PASS | Ran 810 tests, OK, including the Runbook old-form, template-outline and operations catalog tests | required | W03 v14.7 Runbook form RED |
 | W03 v14.7 Runbook checks | 111 | W116 | metadata-links-governance | The 78 moved Runbooks and the Guide and Policy link texts at `436bcc974` | PASS | Heading contract 0 findings; metadata check-changed selected 113 violations 0; links alignment 905 documents 8319 links failures 0; operations catalog tests OK | required | - |
+| W03 v14.7 Policy form RED | 111 | W116 | red-green-proof | The `test_heading` and `test_profile` changes of `b939b2994` against the profiles at `f1c6074dc` | FAIL | Ran 234 tests, eight failures: the three Policy template outlines differed, the old `Overview`, `Verification`, `Related Documents` and `Traceability` headings were accepted, and the governance-policy profile test failed | required | - |
+| W03 v14.7 Policy review | 111 | W116 | independent-review | Fresh-context code-reviewer of the operations Policy move at `1a69231e3` (rebased as `9cd965911`) | FAIL | CHANGES_REQUIRED: templated Exclusions sentences; forbidden items and rule clauses under Exclusions; owner paragraphs outside Responsibilities; misplaced recovery, review and reconciliation text | required | - |
+| W03 v14.7 Policy re-review | 111 | W116 | independent-review | Fresh-context code-reviewer of `bc40f2d72` and `f9e5b0e44` (rebased as `5d6796b25`, `df771d097`) | FAIL | CHANGES_REQUIRED twice, minor; the last round named three duplicate Guide and Runbook peer links (0081, 0086, 0087) | required | - |
+| W03 v14.7 Policy review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `d1d776465` (rebased as `c724bab02`) | PASS | PASS: every finding of the review and both re-reviews fixed | required | W03 v14.7 Policy review, W03 v14.7 Policy re-review |
+| W03 v14.7 governance policy review | 111 | W116 | independent-review | Fresh-context code-reviewer of the governance move at `4ed686af5` (rebased as `7b48b923a`) | FAIL | CHANGES_REQUIRED: false Authority lists; false Approval and Review in approval-boundaries; false Exclusions in documentation-protocol; hook rule Applies To text | required | - |
+| W03 v14.7 governance policy review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `b7d418b31` (rebased as `1e0af3951`) | PASS | PASS: every finding fixed | required | W03 v14.7 governance policy review |
+| W03 v14.7 Policy GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `1e0af3951` | PASS | Ran 810 tests, OK, including the Policy old-form, template-outline, governance-policy profile and operations catalog tests | required | W03 v14.7 Policy form RED |
+| W03 v14.7 Policy checks | 111 | W116 | metadata-links-governance | The 77 operations Policies and 32 governance policies and hook rules at `1e0af3951` | PASS | Heading contract on 109 documents 0 findings; metadata check-changed selected 114 violations 0; links alignment PASS | required | - |
+| W03 v14.7 Skill form RED | 111 | W116 | red-green-proof | The `test_heading` changes of `e132c6607` and `fd4d37dea` against the `governance-skill` profile at `b7d418b31` | FAIL | The template outline failed (234 tests, one failure), and the old-form cases failed five times: `## Purpose`, `## Inputs`, `## Failure Handling`, `## References` and `### Preconditions` were accepted | required | - |
+| W03 v14.7 Skill review | 111 | W116 | independent-review | Fresh-context code-reviewer of `4c335014f` (rebased as `f7f37d495`) | FAIL | CHANGES_REQUIRED, minor: a stale "below", a false lead-in, an exclusion under When to Use, a false "None", misplaced paragraphs | required | - |
+| W03 v14.7 Skill re-review | 111 | W116 | independent-review | Fresh-context code-reviewer of `ae06dfc1f` (rebased as `8a8829190`) | FAIL | CHANGES_REQUIRED: the adr-writing lead-in had no role link; two more "None" lines were false | required | - |
+| W03 v14.7 Skill review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `8412eafea` (rebased as `5f18c6913`) | PASS | PASS: every finding fixed | required | W03 v14.7 Skill review, W03 v14.7 Skill re-review |
+| W03 v14.7 Skill GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `fd4d37dea` | PASS | Ran 810 tests, OK, including the skill old-form and template-outline tests | required | W03 v14.7 Skill form RED |
+| W03 v14.7 Skill checks | 111 | W116 | metadata-links-governance | The 24 moved skills at `fd4d37dea` | PASS | Heading contract 0 findings (384 on the old copies); renderer drift 0; agent governance contract failures 0; links alignment PASS | required | - |
+| W03 v14.7 archive vocabulary RED | 111 | W116 | red-green-proof | `test_retired_archive_vocabulary_is_rejected` against the Registry and schemas at `643629139` | FAIL | FAILED (failures=6): the retired keys were accepted and `archive_source_prefixes` was present | required | - |
+| W03 v14.7 archive vocabulary review | 111 | W116 | independent-review | Fresh-context code-reviewer of `84002bc55` and `c44de6697` | PASS | PASS: no consumer remains for any retired key; the supply-chain `archived_at` is a separate JSON ledger; the C4 prompt is optional and harmless; one minor test weakness (`archived_at` with an invalid value) fixed in the next commit | required | - |
+| W03 v14.7 archive vocabulary GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `c44de6697` | PASS | Ran 811 tests, OK | required | W03 v14.7 archive vocabulary RED |
+| W03 v14.7 archive vocabulary checks | 111 | W116 | metadata-links-governance | Registry, schemas and the active corpus at `84002bc55` | PASS | metadata check-active selected 534 violations 0; active stage occupancy violations 0 | required | - |
+| W03 v14.7 Root README form RED | 111 | W116 | red-green-proof | The new test_heading and test_registry cases against the root README profiles at `588f2c3bd` | FAIL | Two failures and 11 errors: the template outlines differed, the old-form cases errored for both profiles, and the Directories table test errored | required | - |
+| W03 v14.7 Root README review | 111 | W116 | independent-review | Fresh-context code-reviewer of `d712aee54` | FAIL | CHANGES_REQUIRED: a Path-column table could pass with swapped or lowercase headers; stale prose references; false "없음" prerequisites; content outside its section; incomplete support routes | required | - |
+| W03 v14.7 Root README review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `9a3836f72`, minors fixed in `a1683374f` | PASS | PASS: every finding fixed | required | W03 v14.7 Root README review |
+| W03 v14.7 Root README GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `a1683374f`; after merging main, test_heading and test_registry at `1ac114404` | PASS | Ran 813 tests, OK; after the merge 220 tests, OK | required | W03 v14.7 Root README form RED |
+| W03 v14.7 Root README checks | 111 | W116 | metadata-links-governance | The 13 READMEs and two generated READMEs at `a1683374f` and `1ac114404` | PASS | Renderer drift 0; agent governance contract PASS; metadata check-changed violations 0; links alignment and navigation PASS | required | - |
+| W03 v14.7 retirement consistency review | 111 | W116 | independent-review | Fresh-context rules-engineer assessment of the two conflicts at `3607497a6` | PASS | The protocol is the owner; precondition 1 and the retention sentence change together; no `.agents` link to a numbered-stage document; the incident wording is confirmed and no other document repeats the restart claim | required | - |
+| W03 v14.7 retirement consistency checks | 111 | W116 | metadata-links-governance | The protocol, Stage 99 README and `identity_history.py` comment | PASS | test_identity_history OK; agent governance contract PASS; links alignment PASS; metadata check-changed at `92064f2f3` selected 3 violations 0 | required | - |
+| W03 v14.7 retirement consistency approval | 111 | W116 | independent-review | Fresh-context rules-engineer review of the applied commit `92064f2f3` | PASS | APPROVED: the protocol wording, the README line and the code comment match the assessed wording; no `.agents` link to a numbered-stage document; the held incident and postmortem entries are recorded without claiming a retention rule | required | - |
+| W03 v14.7 Stage README form RED | 111 | W116 | red-green-proof | The new test_heading cases against the stage README profiles at `588f2c3bd` | FAIL | Ran 90 tests, 13 failures: seven template outlines, five `readme` old-form cases and the Current Items table test | required | - |
+| W03 v14.7 Stage README review | 111 | W116 | independent-review | Fresh-context code-reviewer of `b86a7a942` | FAIL | CHANGES_REQUIRED: three folder READMEs linked into a child's files; stale "Structure" prose; content outside its section; generic Transition and Exit text; an overclaiming link label | required | - |
+| W03 v14.7 Stage README re-review | 111 | W116 | independent-review | Fresh-context code-reviewer of `8c062ce6d` | FAIL | CHANGES_REQUIRED: the operations README let Incident and Postmortem records retire, which no Registry status allows | required | - |
+| W03 v14.7 Stage README review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `8b000ae84` | PASS | PASS: removal limited to superseded or retired operations documents under the retirement preconditions; Incident transitions match the Registry | required | W03 v14.7 Stage README review, W03 v14.7 Stage README re-review |
+| W03 v14.7 Stage README GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `8b000ae84`; after merging main, test_heading and test_registry at `72e63401e` | PASS | Ran 812 tests, OK; after the merge 222 tests, OK | required | W03 v14.7 Stage README form RED |
+| W03 v14.7 Stage README checks | 111 | W116 | metadata-links-governance | The 68 READMEs at `8b000ae84` and `72e63401e` | PASS | Links alignment and navigation PASS; metadata check-changed violations 0; renderer drift 0; agent governance contract PASS | required | - |
+| W03 v14.7 Service README form RED | 111 | W116 | red-green-proof | The new test_heading cases against the `package-readme` profile at `588f2c3bd` | FAIL | One failure and five errors: the template outline differed and the five old-form H2 cases errored | required | - |
+| W03 v14.7 Service README review | 111 | W116 | independent-review | Fresh-context code-reviewer of `44801eb20` | FAIL | CHANGES_REQUIRED: truncated health checks; failing leaf-only Compose checks; false "없음" and parent-to-child chains; incomplete file lists; lost Scope headings; stale 아래/위 | required | - |
+| W03 v14.7 Service README re-review | 111 | W116 | independent-review | Fresh-context code-reviewer of `104ac0aca` | FAIL | CHANGES_REQUIRED: a one-line health check described as multi-line; runbook links missing in three READMEs | required | - |
+| W03 v14.7 Service README review result | 111 | W116 | independent-review | Fresh-context code-reviewer of `3cafe4a22` | PASS | PASS: every finding fixed; health checks match Compose; runbook paths exist | required | W03 v14.7 Service README review, W03 v14.7 Service README re-review |
+| W03 v14.7 Service README GREEN | 111 | W116 | red-green-proof | `tests/lib/document_governance` discover at `f73174b43`; after merging main, test_heading and test_registry | PASS | Ran 810 tests, OK; after the merge 222 tests, OK | required | W03 v14.7 Service README form RED |
+| W03 v14.7 Service README checks | 111 | W116 | metadata-links-governance | The 130 READMEs at `f73174b43` | PASS | Links alignment and navigation PASS; metadata check-changed selected 128 violations 0; pre-commit through `run-ci-precommit.sh --mode local-staged` exit 0 | required | - |
 
 ### Resolution Links
 
@@ -493,7 +685,7 @@ these profile flags is handed to W05; renumbering stays a Q-07 decision.
 
 ### Promotion Receipt
 
-Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide).
+Each role's Registry profile, template and documents land in `main` through its pull request: #967 (Requirement), #968 (Spec), #969 (ADR), #970 (Plan), #971 (Architecture), #975 (Task), #977 (Guide), #979 (Runbook), #980 (Policy), #981 (Skill), #982 (H-W02-2 and H-13), #983 (Root README), #984 (retirement and incident numbering), #985 (Stage README).
 
 ### Next Owner
 

@@ -25,11 +25,6 @@
       "open",
       "closed"
     ],
-    "archive_source_prefixes": [
-      "docs/",
-      "archive/",
-      ".agents/"
-    ],
     "frozen_transition_fields": [
       "status",
       "version",
@@ -57,12 +52,6 @@
       "occurred_at",
       "resolved_at",
       "generated_by",
-      "archived_from",
-      "archived_at",
-      "archive_reason",
-      "archive_disposition",
-      "archived_commit",
-      "archived_blob",
       "preservation_class",
       "current_replacement",
       "snapshot_path",
@@ -176,8 +165,7 @@
       "reviewed_at",
       "next_review_at",
       "occurred_at",
-      "resolved_at",
-      "archived_at"
+      "resolved_at"
     ],
     "contract_id": "SDLC-COMMON-r10-local-v1",
     "result_domain": [
@@ -1239,16 +1227,13 @@
         "next_review_at"
       ],
       "required_sections": [
-        "Overview",
+        "Purpose",
         "Scope",
         "Rules",
         "Exceptions",
-        "Verification",
-        "Related Documents"
+        "Ownership"
       ],
-      "optional_sections": [
-        "Definitions"
-      ],
+      "optional_sections": [],
       "ordered_sections": true,
       "nonempty_sections": true,
       "lifecycle_id": "operational-policy",
@@ -1285,7 +1270,29 @@
         "docs/05.operations/policies/13-analytics-and-data-quality/{number:4}-{slug}.md",
         "docs/05.operations/policies/14-design-system/{number:4}-{slug}.md",
         "docs/05.operations/policies/15-labs/{number:4}-{slug}.md"
-      ]
+      ],
+      "required_subsections": {
+        "Purpose": [
+          "Objective",
+          "Authority"
+        ],
+        "Scope": [
+          "Applies To",
+          "Exclusions"
+        ],
+        "Rules": [
+          "Requirements",
+          "Enforcement"
+        ],
+        "Exceptions": [
+          "Exception Conditions",
+          "Approval and Review"
+        ],
+        "Ownership": [
+          "Responsibilities",
+          "Change and Adoption"
+        ]
+      }
     },
     {
       "id": "runbook",
@@ -1563,22 +1570,12 @@
         "generated_by"
       ],
       "required_sections": [
-        "Overview",
-        "Scope",
-        "Structure",
-        "Usage",
+        "Stage Responsibility",
+        "Contents",
+        "Workflow",
         "Related Documents"
       ],
-      "optional_sections": [
-        "Audience",
-        "Getting Started",
-        "Local Constraints",
-        "Documents",
-        "Verification",
-        "Canonical Current Audit",
-        "Dated Historical Snapshots",
-        "Supersession Ledgers"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": [],
@@ -1586,7 +1583,25 @@
         "layer": "references"
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Stage Responsibility": [
+          "Purpose and Readers",
+          "Inputs and Outputs"
+        ],
+        "Contents": [
+          "Current Items",
+          "Classification"
+        ],
+        "Workflow": [
+          "Create and Review",
+          "Transition and Exit"
+        ],
+        "Related Documents": [
+          "Upstream and Downstream",
+          "Policy and Templates"
+        ]
+      }
     },
     {
       "id": "research",
@@ -1933,34 +1948,35 @@
         "generated_by"
       ],
       "required_sections": [
-        "Overview",
-        "Scope",
-        "Structure",
-        "Usage",
+        "Stage Responsibility",
+        "Contents",
+        "Workflow",
         "Related Documents"
       ],
-      "optional_sections": [
-        "Audience",
-        "Getting Started",
-        "Local Constraints",
-        "Documents",
-        "Verification",
-        "Cross-link Rules",
-        "Current Inventory",
-        "Current LLM Wiki Evidence",
-        "Current Refresh Evidence",
-        "Document Contract Validation",
-        "Documentation Contract",
-        "Documentation Standards",
-        "Migration Map",
-        "Routing",
-        "Template Usage"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": [],
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Stage Responsibility": [
+          "Purpose and Readers",
+          "Inputs and Outputs"
+        ],
+        "Contents": [
+          "Current Items",
+          "Classification"
+        ],
+        "Workflow": [
+          "Create and Review",
+          "Transition and Exit"
+        ],
+        "Related Documents": [
+          "Upstream and Downstream",
+          "Policy and Templates"
+        ]
+      }
     },
     {
       "id": "repository-readme",
@@ -1999,27 +2015,33 @@
         "generated_by"
       ],
       "required_sections": [
-        "Overview",
-        "Scope",
-        "Structure",
-        "Usage",
-        "Related Documents"
-      ],
-      "optional_sections": [
-        "Audience",
+        "Purpose",
+        "Repository Map",
         "Getting Started",
-        "Local Constraints",
-        "Documents",
-        "Verification",
-        "Documentation Standards",
-        "Navigation / Inventory",
-        "Script Lifecycle",
-        "Utilities & Automation",
-        "Verification and Quality Gates"
+        "References"
       ],
+      "optional_sections": [],
       "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": [],
+      "required_subsections": {
+        "Purpose": [
+          "Project Role",
+          "Boundaries"
+        ],
+        "Repository Map": [
+          "Directories",
+          "Canonical Entry Points"
+        ],
+        "Getting Started": [
+          "Prerequisites",
+          "First Verified Path"
+        ],
+        "References": [
+          "Current Documentation",
+          "Support and Ownership"
+        ]
+      },
       "ordered_sections": true,
       "nonempty_sections": true
     },
@@ -2140,22 +2162,33 @@
         "generated_by"
       ],
       "required_sections": [
-        "Overview",
-        "Scope",
-        "Structure",
-        "Usage",
-        "Related Documents"
-      ],
-      "optional_sections": [
-        "Audience",
+        "Purpose",
+        "Repository Map",
         "Getting Started",
-        "Local Constraints",
-        "Documents",
-        "Verification"
+        "References"
       ],
+      "optional_sections": [],
       "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": [],
+      "required_subsections": {
+        "Purpose": [
+          "Project Role",
+          "Boundaries"
+        ],
+        "Repository Map": [
+          "Directories",
+          "Canonical Entry Points"
+        ],
+        "Getting Started": [
+          "Prerequisites",
+          "First Verified Path"
+        ],
+        "References": [
+          "Current Documentation",
+          "Support and Ownership"
+        ]
+      },
       "ordered_sections": true,
       "nonempty_sections": true
     },
@@ -2244,19 +2277,12 @@
         "runtime"
       ],
       "required_sections": [
-        "Overview",
-        "Scope",
-        "Structure",
-        "Usage",
+        "Stage Responsibility",
+        "Contents",
+        "Workflow",
         "Related Documents"
       ],
-      "optional_sections": [
-        "Audience",
-        "Getting Started",
-        "Local Constraints",
-        "Documents",
-        "Verification"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": [
@@ -2448,7 +2474,25 @@
         }
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Stage Responsibility": [
+          "Purpose and Readers",
+          "Inputs and Outputs"
+        ],
+        "Contents": [
+          "Current Items",
+          "Classification"
+        ],
+        "Workflow": [
+          "Create and Review",
+          "Transition and Exit"
+        ],
+        "Related Documents": [
+          "Upstream and Downstream",
+          "Policy and Templates"
+        ]
+      }
     },
     {
       "id": "incident-year-readme",
@@ -2473,19 +2517,12 @@
         "generated_by"
       ],
       "required_sections": [
-        "Overview",
-        "Scope",
-        "Structure",
-        "Usage",
+        "Stage Responsibility",
+        "Contents",
+        "Workflow",
         "Related Documents"
       ],
-      "optional_sections": [
-        "Audience",
-        "Getting Started",
-        "Local Constraints",
-        "Documents",
-        "Verification"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": [],
@@ -2493,7 +2530,25 @@
         "layer": "operations"
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Stage Responsibility": [
+          "Purpose and Readers",
+          "Inputs and Outputs"
+        ],
+        "Contents": [
+          "Current Items",
+          "Classification"
+        ],
+        "Workflow": [
+          "Create and Review",
+          "Transition and Exit"
+        ],
+        "Related Documents": [
+          "Upstream and Downstream",
+          "Policy and Templates"
+        ]
+      }
     },
     {
       "id": "governance-policy",
@@ -2520,19 +2575,15 @@
         "artifact_id",
         "runtime"
       ],
-      "free_form_sections": true,
+      "free_form_sections": false,
       "required_sections": [
-        "Overview",
+        "Purpose",
         "Scope",
         "Rules",
         "Exceptions",
-        "Verification",
-        "Related Documents"
+        "Ownership"
       ],
-      "optional_sections": [
-        "Enforcement",
-        "Purpose"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "operational-policy",
       "traceability": {},
       "exceptions": [],
@@ -2558,7 +2609,29 @@
         ]
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Purpose": [
+          "Objective",
+          "Authority"
+        ],
+        "Scope": [
+          "Applies To",
+          "Exclusions"
+        ],
+        "Rules": [
+          "Requirements",
+          "Enforcement"
+        ],
+        "Exceptions": [
+          "Exception Conditions",
+          "Approval and Review"
+        ],
+        "Ownership": [
+          "Responsibilities",
+          "Change and Adoption"
+        ]
+      }
     },
     {
       "id": "governance-hook-policy",
@@ -2591,18 +2664,13 @@
         "pattern"
       ],
       "required_sections": [
-        "Overview",
+        "Purpose",
         "Scope",
         "Rules",
         "Exceptions",
-        "Verification",
-        "Related Documents"
+        "Ownership"
       ],
-      "optional_sections": [
-        "Operator Message",
-        "Remediation",
-        "Trigger"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "operational-policy",
       "traceability": {},
       "exceptions": [],
@@ -2612,7 +2680,29 @@
         ]
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Purpose": [
+          "Objective",
+          "Authority"
+        ],
+        "Scope": [
+          "Applies To",
+          "Exclusions"
+        ],
+        "Rules": [
+          "Requirements",
+          "Enforcement"
+        ],
+        "Exceptions": [
+          "Exception Conditions",
+          "Approval and Review"
+        ],
+        "Ownership": [
+          "Responsibilities",
+          "Change and Adoption"
+        ]
+      }
     },
     {
       "id": "governance-role",
@@ -2701,19 +2791,12 @@
         "owner_agent"
       ],
       "required_sections": [
-        "Purpose",
-        "Inputs",
+        "Purpose and Trigger",
         "Procedure",
-        "Outputs",
-        "Verification",
-        "Failure Handling",
-        "References"
+        "Inputs and Outputs",
+        "Verification"
       ],
-      "optional_sections": [
-        "Preconditions",
-        "Gates",
-        "Related Documents"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "operational-policy",
       "traceability": {},
       "exceptions": [
@@ -2728,7 +2811,25 @@
         ]
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Purpose and Trigger": [
+          "When to Use",
+          "When Not to Use"
+        ],
+        "Procedure": [
+          "Steps",
+          "Failure Handling"
+        ],
+        "Inputs and Outputs": [
+          "Inputs",
+          "Outputs"
+        ],
+        "Verification": [
+          "Checks",
+          "Completion and Handoff"
+        ]
+      }
     },
     {
       "id": "governance-provider",
@@ -2870,24 +2971,35 @@
         "layer"
       ],
       "required_sections": [
-        "Overview",
-        "Scope",
-        "Structure",
-        "Usage",
+        "Stage Responsibility",
+        "Contents",
+        "Workflow",
         "Related Documents"
       ],
-      "optional_sections": [
-        "Audience",
-        "Getting Started",
-        "Local Constraints",
-        "Documents",
-        "Verification"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": [],
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Stage Responsibility": [
+          "Purpose and Readers",
+          "Inputs and Outputs"
+        ],
+        "Contents": [
+          "Current Items",
+          "Classification"
+        ],
+        "Workflow": [
+          "Create and Review",
+          "Transition and Exit"
+        ],
+        "Related Documents": [
+          "Upstream and Downstream",
+          "Policy and Templates"
+        ]
+      }
     },
     {
       "id": "governance-sdlc",
@@ -3060,24 +3172,35 @@
         "created"
       ],
       "required_sections": [
-        "Overview",
-        "Scope",
-        "Structure",
-        "Usage",
+        "Stage Responsibility",
+        "Contents",
+        "Workflow",
         "Related Documents"
       ],
-      "optional_sections": [
-        "Audience",
-        "Getting Started",
-        "Local Constraints",
-        "Documents",
-        "Verification"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": [],
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Stage Responsibility": [
+          "Purpose and Readers",
+          "Inputs and Outputs"
+        ],
+        "Contents": [
+          "Current Items",
+          "Classification"
+        ],
+        "Workflow": [
+          "Create and Review",
+          "Transition and Exit"
+        ],
+        "Related Documents": [
+          "Upstream and Downstream",
+          "Policy and Templates"
+        ]
+      }
     },
     {
       "id": "governance-prompt",
@@ -3150,24 +3273,35 @@
         "created"
       ],
       "required_sections": [
-        "Overview",
-        "Scope",
-        "Structure",
-        "Usage",
+        "Stage Responsibility",
+        "Contents",
+        "Workflow",
         "Related Documents"
       ],
-      "optional_sections": [
-        "Audience",
-        "Getting Started",
-        "Local Constraints",
-        "Documents",
-        "Verification"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "navigation",
       "traceability": {},
       "exceptions": [],
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Stage Responsibility": [
+          "Purpose and Readers",
+          "Inputs and Outputs"
+        ],
+        "Contents": [
+          "Current Items",
+          "Classification"
+        ],
+        "Workflow": [
+          "Create and Review",
+          "Transition and Exit"
+        ],
+        "Related Documents": [
+          "Upstream and Downstream",
+          "Policy and Templates"
+        ]
+      }
     },
     {
       "id": "runtime-projection-claude",

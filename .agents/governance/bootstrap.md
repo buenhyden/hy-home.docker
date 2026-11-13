@@ -1,25 +1,39 @@
 ---
 title: "Agent Bootstrap Policy"
-version: "1.8.0"
+version: "1.8.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-03"
+updated: "2026-11-13"
 ---
 
 # Agent Bootstrap Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 Provide the sole repository bootstrap sequence for supported agents.
 
+### Authority
+
+This policy is the sole bootstrap authority.
+
 ## Scope
+
+### Applies To
 
 Supported agent entry shims, authored provider adapters, and request-scoped canonical loading.
 
+### Exclusions
+
+None: this document states no exclusion.
+
 ## Rules
 
-### Canonical Load Order
+### Requirements
+
+#### Canonical Load Order
 
 1. Enter through root `AGENTS.md` or `CLAUDE.md`.
 2. Load this policy, the matching authored `.claude/provider.md` or
@@ -52,7 +66,7 @@ stage document. Current agent rules live in their canonical governance owner;
 README navigation, historical provenance and typed machine inputs follow the
 [documentation protocol](documentation-protocol.md#entry-point-for-documents-outside-docs).
 
-### Authority and Precedence
+#### Authority and Precedence
 
 1. Direct system and user instructions.
 2. Canonical governance policies, including workflow and approval behavior.
@@ -81,7 +95,7 @@ Execution progress and handoff state belong to the current Task. A document that
 leaves an active stage is summarized into its current owner and deleted; Git
 history is the record of what was removed.
 
-### Hard Constraints
+#### Hard Constraints
 
 - Governance, role, skill, knowledge, and prompt documents and provider
   guidance are written in English; every `README.md` is Korean. Native
@@ -95,21 +109,35 @@ history is the record of what was removed.
 - Use in-place canonical edits; do not create legacy redirects or parallel
   authority copies.
 
-## Exceptions
+### Enforcement
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-## Verification
-
-### Verification Routing
+#### Verification Routing
 
 Use [task-checklists.md](task-checklists.md) for completion and
 [approval-boundaries.md](approval-boundaries.md) for protected surfaces. Stage
 99 owns document shapes; registered scripts own executable checks.
 
-## Related Documents
+## Exceptions
+
+### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+### Approval and Review
+
+None: no exception exists to approve.
+
+## Ownership
+
+### Responsibilities
+
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
+
+### Change and Adoption
+
+Changes land in place with Task evidence; related documents:
 
 - [Governance navigation](../README.md)
+- [Completion checklist](task-checklists.md)
 - [Approval boundaries](approval-boundaries.md)
 - [Documentation protocol](documentation-protocol.md)
-- [Completion checklist](task-checklists.md)

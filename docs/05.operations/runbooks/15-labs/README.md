@@ -1,26 +1,30 @@
 ---
 title: "독립 LAB 문서 런북"
-version: "0.3.2"
+version: "0.3.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "operations"
 ---
 
 # 독립 LAB 문서 런북
 
-## Overview
+## Stage Responsibility
+
+### Purpose and Readers
 
 독립 LAB 문서의 상황별 전제, 명령, 기대 결과, 중단 조건, 검증과 복구를 확인한다.
 
-## Scope
+### Inputs and Outputs
 
 이 폴더는 아래 문서의 런북 역할만 소유한다. 구현과 운영 결과는 각 소유 문서와 Task에서 확인한다.
 
 실행 권한, 비밀값 원문, 새로운 서비스와 빈 분류 문서는 포함하지 않는다.
 
-## Structure
+## Contents
+
+### Current Items
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
@@ -41,7 +45,13 @@ layer: "operations"
 | [Kafka Cluster LAB Runbook](0108-kafka-cluster.md) | `RUN-0108` | Kafka LAB의 정적 점검, `lab.py` 기동·정지, broker 진단과 복구 계획이다. |
 | [OpenSearch Cluster LAB Runbook](0109-opensearch-cluster.md) | `RUN-0109` | OpenSearch LAB의 정적 점검, `lab.py` 기동·정지, cluster 진단과 복구 계획이다. |
 
-## Usage
+### Classification
+
+이 폴더의 문서는 모두 런북 역할이며 `RUN-NNNN` 식별자를 쓴다. 같은 subject의 다른 역할 문서는 있는 경우 같은 번호와 slug로 다른 역할 폴더에 있다.
+
+## Workflow
+
+### Create and Review
 
 1. 식별자와 문서 제목으로 대상을 고른다.
 2. 상황별 전제, 명령, 기대 결과, 중단 조건, 검증과 복구를 확인한다.
@@ -53,8 +63,18 @@ layer: "operations"
 이동 대상은 LAB 관련 운영 문서다. 서비스 소스는 저장소 루트 `labs/`가 소유한다.
 문서 이동은 LAB 서비스 기동, 배포, 비밀번호 변경, 데이터 이동·삭제 또는 복구 실행을 뜻하지 않는다.
 
+### Transition and Exit
+
+문서는 `operational-policy` 수명주기(draft, in-review, active, deprecated, superseded, retired)를 따른다. superseded 또는 retired에 이른 문서는 [은퇴 전제 조건](../../../../.agents/governance/documentation-protocol.md#retirement-preconditions)을 모두 충족할 때에만 남아야 할 내용을 소유 문서에 요약한 뒤 삭제하고, 번호를 Registry `reserved_history`에 추가하며, 이 목록의 행과 링크를 같은 변경에서 제거한다.
+
 ## Related Documents
+
+### Upstream and Downstream
 
 - [상위 런북 분류](../README.md)
 - [운영 문서](../../README.md)
+
+### Policy and Templates
+
 - [문서 작성 계약](../../../../.agents/governance/documentation-protocol.md)
+- [README 템플릿](../../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

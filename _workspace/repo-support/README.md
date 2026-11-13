@@ -1,16 +1,18 @@
 ---
 title: "Repository Support Staging"
-version: "1.1.3"
+version: "1.1.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 created: "2026-09-27"
 ---
 
 # _workspace/repo-support
 
-## Overview
+## Purpose
+
+### Project Role
 
 `_workspace/repo-support`는 비밀이 아닌 저장소 지원 산출물을 잠시 두는
 공간이며 Git이 무시합니다. agent 작업, migration, dry-run, 분석에서 생기는
@@ -21,11 +23,11 @@ created: "2026-09-27"
 이 디렉터리는 활성 문서 stage, archive, 운영 폴더, 런타임 설정, 장기 증거
 보관소가 아닙니다.
 
-## Audience
+#### Audience
 
 - Repository Maintainers
 
-## Scope
+### Boundaries
 
 작업 중 만들 수 있는 산출물:
 
@@ -43,7 +45,9 @@ created: "2026-09-27"
 - shell history, secret 값, token이 담긴 명령 출력
 - secret 파일 본문 전체
 
-## Structure
+## Repository Map
+
+### Directories
 
 `README.md`만 추적됩니다. 작업별 하위 디렉터리는 무시되는 임시 공간이므로
 이 README가 목록을 관리하지 않습니다.
@@ -57,7 +61,17 @@ created: "2026-09-27"
 | `scripts/operations/rehearse-sample-service-delivery.sh` | 배포 리허설 입력과 기록 |
 | `scripts/lib/ops/compose-core-readiness.sh` | readiness 기록 |
 
-## Usage
+### Canonical Entry Points
+
+작업 결과를 승격할 정본 owner는 `docs/03.specs/`의 Task, `docs/90.references/`, `.agents/governance/`의 해당 정책이며, 상위 계약은 [workspace README](../README.md)가 소유합니다.
+
+## Getting Started
+
+### Prerequisites
+
+없음: 이 디렉터리에는 설치할 도구나 별도 권한이 없으며, 산출물을 쓰는 스크립트의 사전 요건은 각 스크립트가 정합니다.
+
+### First Verified Path
 
 작업을 마치기 전에 오래 남길 비밀 아닌 결과를 정본 owner로 옮깁니다.
 
@@ -73,6 +87,12 @@ created: "2026-09-27"
 사용자가 비밀 아닌 산출물의 승격을 명시적으로 승인하지 않는 한, 원본
 임시 산출물은 무시된 상태로 둡니다.
 
-## Related Documents
+## References
+
+### Current Documentation
 
 - [workspace README](../README.md)
+
+### Support and Ownership
+
+이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.

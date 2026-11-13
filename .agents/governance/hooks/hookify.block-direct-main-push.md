@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: direct push to main"
-version: "1.2.2"
+version: "1.2.3"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 action: "block"
 enabled: true
 event: "bash"
@@ -14,17 +14,23 @@ pattern: "\\bgit(\\s+-C\\s+\\S+)*\\s+push\\b[^;&|\\n]*?(\\s|:|\\+)(refs/heads/)?
 
 # BLOCKED: direct push to main
 
-## Overview
+## Purpose
+
+### Objective
 
 Apply the declared `block` action for block-direct-main-push.
 
-## Scope
+### Authority
 
 `.agents/governance/github-governance.md` — Repository Protection Contract:
 
 > "Agents must treat `main` as a protected branch: no direct pushes, no force pushes, no bypass of required checks."
 
 > "\"No exceptions\" is mandatory agent behavior even when GitHub admin enforcement or repository rulesets do not fully enforce the same boundary."
+
+## Scope
+
+### Applies To
 
 The declared `bash` event and `pattern` match an explicit `main` destination
 (`main`, `HEAD:main`, `HEAD:refs/heads/main`, `+main`, `-u`, `--force`,
@@ -34,7 +40,13 @@ show: `HEAD` and `@`, implicit refspecs, `heads/main`, wildcard refspecs,
 push runs in (`cd`, `pushd`, `git -C`, `--git-dir`, `GIT_DIR`). A push from a
 repository it cannot read is denied.
 
+### Exclusions
+
+None.
+
 ## Rules
+
+### Requirements
 
 ```bash
 # BLOCKED: direct push to main
@@ -56,11 +68,7 @@ git push origin HEAD:refs/heads/feat/42-my-feature
 
 The declared action applies when the pattern matches.
 
-## Exceptions
-
-No exception is declared by this rule.
-
-## Verification
+### Enforcement
 
 The native Git hook installed by `scripts/hooks/install-pre-push-guard.sh`
 passes all raw refs to `scripts/hooks/pre-push-guard.sh`, including mixed-ref
@@ -71,6 +79,22 @@ it does not replace another host owner's chain. Hook bypass remains possible,
 so only remote protection without bypass enforces the boundary. Installation,
 synthetic pushes, provider delivery and editor sync are separate observations.
 
-## Related Documents
+## Exceptions
 
-- `.agents/README.md`
+### Exception Conditions
+
+No exception is declared by this rule.
+
+### Approval and Review
+
+None.
+
+## Ownership
+
+### Responsibilities
+
+`@buenhyden`.
+
+### Change and Adoption
+
+`.agents/README.md`.

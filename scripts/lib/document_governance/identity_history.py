@@ -348,7 +348,7 @@ def _record(identity: str, collected: dict[str, set[int]]) -> None:
         return
     package = numbers[0]
     if upper.startswith("INC-"):
-        # inc-YYYY-NNNN: the allocation follows the year.
+        # inc-YYYY-NNNN: the number after the year is the global allocation.
         collected.setdefault("incident", set()).add(
             numbers[1] if len(numbers) > 1 else package
         )

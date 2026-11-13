@@ -1,10 +1,10 @@
 ---
 title: "05.operations/incidents"
-version: "1.1.5"
+version: "1.1.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 ---
 
@@ -14,7 +14,9 @@ layer: "operations"
 
 > 사고 기록과 사후 분석을 보관하는 공식 incident stage
 
-## Overview
+## Stage Responsibility
+
+### Purpose and Readers
 
 이 폴더는 사고 사실 기록(Incident Record)과 사후 분석(Postmortem)을
 저장합니다. Incident는 실시간 또는 최근 종료된 대응 흐름을 기록하고
@@ -23,7 +25,7 @@ Postmortem은 사고 안정화 이후 구조적 원인과 재발 방지 조치�
 따르며 timestamps, IDs, commands, evidence labels, service names,
 environment variables는 원형을 유지합니다.
 
-### Audience
+#### Audience
 
 이 README의 주요 독자:
 
@@ -31,9 +33,9 @@ environment variables는 원형을 유지합니다.
 - Security Auditors
 - Incident Responders
 
-## Scope
+### Inputs and Outputs
 
-### In Scope
+#### In Scope
 
 - Incident ID, 영향 범위, 상태, 타임라인
 - 현재 가설, 대응 및 완화 조치, 증거
@@ -41,13 +43,15 @@ environment variables는 원형을 유지합니다.
 - SEV1/SEV2 사고의 구조적 원인, 기여 요인, 재발 방지 조치
 - Agent 사고의 model, prompt, tool, guardrail, trace, eval metadata
 
-### Out of Scope
+#### Out of Scope
 
 - 실행 가능한 복구 절차 자체 (Runbook 담당)
 - 장기 운영 정책 (Operations 담당)
 - 요구사항, 설계, 구현 계획
 
-## Structure
+## Contents
+
+### Current Items
 
 ```text
 05.operations/incidents/
@@ -58,16 +62,17 @@ environment variables는 원형을 유지합니다.
 연도 폴더 아래 각 사고는 `inc-####-<slug>/incident.md`와
 `inc-####-<slug>/postmortem.md`로 구성됩니다.
 
-### Current Incidents
+#### Current Incidents
 
 사고 기록과 사후 분석은 연도 폴더 아래에 있습니다: [`2026/`](2026/).
 
-### Templates
+### Classification
 
-- [incident.template.md](../../99.templates/templates/operations/incident.template.md)
-- [postmortem.template.md](../../99.templates/templates/operations/postmortem.template.md)
+Incident Record(`incident.md`)는 사고 사실과 대응 상태의 정본이고, Postmortem(`postmortem.md`)은 사고 안정화 이후의 구조적 원인과 재발 방지 조치를 기록하며 `parent_ids`로 해당 Incident를 연결합니다. 둘 다 사고별 폴더에 두며 서로의 내용을 대체하지 않습니다.
 
-## Usage
+## Workflow
+
+### Create and Review
 
 1. 새 사고는 `docs/05.operations/incidents/<year>/inc-####-<slug>/incident.md`
    경로에서 시작합니다.
@@ -83,9 +88,20 @@ environment variables는 원형을 유지합니다.
    구분합니다. Postmortem은 blameless 서술을 사용하며 각 corrective action에
    owner, tracking ID/link, verification 조건을 기록하고 완료 기한은 두지 않습니다.
 
+### Transition and Exit
+
+Incident는 open → investigating → mitigated 또는 resolved 순으로 전이하고 resolved에서만 closed로 닫히며(mitigated에서는 investigating 또는 resolved로, resolved에서는 investigating으로 돌아갈 수 있고 closed가 종료 상태), Postmortem은 draft → in-review → published로 전이하며 published가 종료 상태입니다.
+
 ## Related Documents
+
+### Upstream and Downstream
 
 - [Operations index](../README.md)
 - [Runbooks](../runbooks/README.md)
+
+### Policy and Templates
+
 - [Incident template](../../99.templates/templates/operations/incident.template.md)
 - [Postmortem template](../../99.templates/templates/operations/postmortem.template.md)
+- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [README 템플릿](../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

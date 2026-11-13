@@ -3,11 +3,11 @@ name: "compose-stack-agent"
 description: "Use when an approved Compose specification must become a minimal reversible configuration change with static validation."
 metadata:
   title: "compose-stack-agent"
-  version: "1.2.0"
+  version: "1.2.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-29"
+  updated: "2026-11-13"
   function_id: "compose-stack-agent"
   scope: "infra"
   owner_agent: "infra-implementer"
@@ -15,46 +15,58 @@ metadata:
 
 # compose-stack-agent
 
-## Purpose
+## Purpose and Trigger
 
-### Preconditions
+### When to Use
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
 
 An approved Compose specification, exact service scope, and rollback path must exist before configuration mutation.
 
-## Inputs
+### When Not to Use
 
-- Approved Compose specification and current Compose tree.
-- Service dependencies, networks, volumes, secrets, health checks, and resource constraints.
+None: this skill states no exclusion.
 
 ## Procedure
+
+### Steps
 
 1. Resolve the complete affected service graph and compare each requested change with workspace Compose conventions.
 2. Implement the smallest atomic YAML/configuration change while preserving external secret references and dependency semantics.
 3. Run static Compose validation and any explicitly approved scoped runtime check, then inspect the rendered delta.
 
-### Gates
+#### Gates
 
 - `docker compose config` or the repository wrapper succeeds.
 - Secret values never enter Compose files, logs, or evidence.
 
-## Outputs
+### Failure Handling
+
+Stop on unresolved variables, missing secret files, invalid dependency order, or unapproved runtime impact and revert the logical change.
+
+## Inputs and Outputs
+
+### Inputs
+
+- Approved Compose specification and current Compose tree.
+- Service dependencies, networks, volumes, secrets, health checks, and resource constraints.
+
+### Outputs
 
 - A validated Compose change plus exact configuration and safety evidence.
 
 ## Verification
 
+### Checks
+
 - `scripts/validation/validate-docker-compose.sh` passes on the changed stack.
 - The rendered `docker compose config` delta matches the requested change and nothing else.
 - No secret value appears in the Compose files, the rendered output, or the evidence.
 
-## Failure Handling
+### Completion and Handoff
 
-Stop on unresolved variables, missing secret files, invalid dependency order, or unapproved runtime impact and revert the logical change.
-
-## References
+Owning role, policies and related documents:
 
 - [Infrastructure implementer](../../roles/infra-implementer.md)
 - [Docker Compose patterns](../docker-compose-patterns/SKILL.md)

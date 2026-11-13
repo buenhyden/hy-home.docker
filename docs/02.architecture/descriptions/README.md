@@ -1,40 +1,40 @@
 ---
 title: "Architecture Descriptions"
-version: "1.3.0"
+version: "1.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "architecture"
 ---
 
 # Architecture Descriptions
 
-## Overview
+## Stage Responsibility
+
+### Purpose and Readers
 
 `docs/02.architecture/descriptions`는 시스템 또는 관심사별 현재 아키텍처를
 설명한다. 각 문서는 이해관계자와 경계, 구성 요소, runtime과 배포 view,
 품질 속성·위험·발전 방향, 관련 Requirement·ADR·Spec·Operations 문서를
 기록한다.
 
-## Scope
+#### Audience
+
+- System Architects
+- Developers
+- Operators
+
+### Inputs and Outputs
 
 이 디렉터리는 현재 유효한 Description을 보유한다. Description은 구현
 계획이나 운영 절차를 소유하지 않고 실제로 연결된 Requirement Package, ADR, Spec과
 Operations 문서의 역할을 대체하지 않는다. 개수는 유지 기준이 아니므로 아래
 Current Inventory와 실제 파일 목록이 권위이다.
 
-### C4 and arc42 Placement
+## Contents
 
-C4와 arc42의 비례적 적용 원칙과 diagram 품질 기준은
-[공통 Agent 거버넌스 작성 정책](../../../.agents/governance/documentation-protocol.md#role-specific-authoring)이
-소유한다. 템플릿의 `Overview`, `Scope`, `Structure`의 `Architecture`,
-`Runtime and Deployment`의 `Runtime View`와 `Deployment View`, `Quality and
-Risks`의 `Quality Attributes`, `Risks`, `Evolution`에 해당 내용을 배치한다.
-빈 framework section이나 병렬 문서를 만들지 않으며 선택·대안·근거는 ADR이
-소유한다.
-
-## Structure
+### Current Items
 
 ```text
 docs/02.architecture/descriptions/
@@ -49,7 +49,7 @@ docs/02.architecture/descriptions/
 └── README.md
 ```
 
-### Current Inventory
+#### Current Inventory
 
 `AD-0001`부터 `AD-0013`은 기본 tier와 서비스, `AD-0018`부터 `AD-0025`는
 각 tier의 hardening, `AD-0026` 이후는 network와 cross-cutting 아키텍처이다.
@@ -84,15 +84,23 @@ docs/02.architecture/descriptions/
 | [`AD-0031`](./0031-home-development-host.md) | Home and Development Host Architecture | `active` |
 | [`AD-0032`](./0032-experience-architecture.md) | Experience Tier Architecture Description | `active` |
 
-## Usage
+### Classification
 
-### Audience
+#### C4 and arc42 Placement
 
-- System Architects
-- Developers
-- Operators
+C4와 arc42의 비례적 적용 원칙과 diagram 품질 기준은
+[공통 Agent 거버넌스 작성 정책](../../../.agents/governance/documentation-protocol.md#role-specific-authoring)이
+소유한다. 템플릿의 `Overview`, `Scope`, `Structure`의 `Architecture`,
+`Runtime and Deployment`의 `Runtime View`와 `Deployment View`, `Quality and
+Risks`의 `Quality Attributes`, `Risks`, `Evolution`에 해당 내용을 배치한다.
+빈 framework section이나 병렬 문서를 만들지 않으며 선택·대안·근거는 ADR이
+소유한다.
 
-### Authoring Flow
+## Workflow
+
+### Create and Review
+
+#### Authoring Flow
 
 1. 상위 [Requirement Package](../../01.requirements/README.md)를 확인한다.
 2. 같은 system, tier 또는 concern을 설명하는 문서가 있는지 확인한다.
@@ -102,7 +110,7 @@ docs/02.architecture/descriptions/
    않는다.
 5. material choice는 [ADR](../decisions/README.md)에 기록한다.
 
-### Documentation Standards
+#### Documentation Standards
 
 - `<4-digit-id>-<slug>.md`, `artifact_id: AD-<4-digit-id>`,
   `type: sdlc/architecture-description`을 일치시킨다.
@@ -110,12 +118,23 @@ docs/02.architecture/descriptions/
 - 관련 결정과 구현 명세가 존재하면 typed link로 연결한다.
 - Description은 selection rationale나 실행 절차를 복제하지 않는다.
 
+### Transition and Exit
+
+Architecture Description은 draft → in-review → active로 전이하며 active에서 in-review로 돌아갈 수 있다. 더 이상 현재 구조를 설명하지 않는 문서는 내용을 현재 소유자에 요약하고 삭제하며 번호를 Registry `reserved_history`에 추가한다.
+
 ## Related Documents
 
-- [에이전트 작업 규칙](../AGENTS.md)
+### Upstream and Downstream
+
 - [Architecture](../README.md)
 - [Product Requirements](../../01.requirements/README.md)
 - [Architecture Decisions](../decisions/README.md)
 - [Specifications](../../03.specs/README.md)
 - [Operations](../../05.operations/README.md)
+
+### Policy and Templates
+
+- [에이전트 작업 규칙](../AGENTS.md)
 - [Architecture Description Template](../../99.templates/templates/architecture/description.template.md)
+- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [README 템플릿](../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

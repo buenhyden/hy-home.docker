@@ -3,11 +3,11 @@ name: "security-audit"
 description: "Use when an exact change needs read-only analysis of trust boundaries, exposed inputs, privileges, dependencies, and plausible security findings. Reach for it when someone asks whether a change has a security problem, wants exposed inputs or privilege paths examined, or asks whether a new dependency is safe to take. Do NOT use it to exploit a finding, to call an external system, to read or rotate a secret, or to sign off a release; it describes a mechanism and its evidence and changes nothing."
 metadata:
   title: "security-audit"
-  version: "1.3.0"
+  version: "1.3.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-29"
+  updated: "2026-11-13"
   function_id: "security-audit"
   scope: "security"
   owner_agent: "security-auditor"
@@ -15,34 +15,46 @@ metadata:
 
 # security-audit
 
-## Purpose
+## Purpose and Trigger
 
-### Preconditions
+### When to Use
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
 
 The exact change boundary, security contract, trust assumptions, and read-only authorization must be known.
 
-## Inputs
+### When Not to Use
+
+The skill description states: "Do NOT use it to exploit a finding, to call an external system, to read or rotate a secret, or to sign off a release; it describes a mechanism and its evidence and changes nothing."
+
+## Procedure
+
+### Steps
+
+1. Trace exposed inputs, privileges, credentials, data flows, dependencies, and execution sinks affected by the change.
+2. Reproduce plausible weaknesses using safe static or approved local checks and distinguish exploit paths from policy hardening.
+3. Rank findings by impact and reachability, cite evidence, and assign remediation or residual-risk ownership.
+
+#### Gates
+
+- Every finding cites exact evidence.
+- Secret values and prohibited sensitive payloads are absent from output.
+
+### Failure Handling
+
+Stop and redact on accidental sensitive-data exposure; escalate Critical risk or missing authorization without probing external systems.
+
+## Inputs and Outputs
+
+### Inputs
 
 - Exact change boundary and security contract.
 - Threat model, dependency/workflow metadata, secret boundaries, and validation evidence.
 - `references/analysis-axes.md`, which this skill owns, for what to look at on
   each axis and the mistake that makes each one look finished too early.
 
-## Procedure
-
-1. Trace exposed inputs, privileges, credentials, data flows, dependencies, and execution sinks affected by the change.
-2. Reproduce plausible weaknesses using safe static or approved local checks and distinguish exploit paths from policy hardening.
-3. Rank findings by impact and reachability, cite evidence, and assign remediation or residual-risk ownership.
-
-### Gates
-
-- Every finding cites exact evidence.
-- Secret values and prohibited sensitive payloads are absent from output.
-
-## Outputs
+### Outputs
 
 - A read-only analysis in the shape of `assets/findings.md`. Every axis gets a
   row even when it found nothing, and `not-assessable` is recorded as a result
@@ -50,15 +62,15 @@ The exact change boundary, security contract, trust assumptions, and read-only a
 
 ## Verification
 
+### Checks
+
 - The analysis follows `assets/findings.md`, with a row for every axis even when nothing was found.
 - Every finding cites exact evidence, and `not-assessable` is recorded as a result, not a pass.
 - The output holds no secret value or prohibited sensitive payload.
 
-## Failure Handling
+### Completion and Handoff
 
-Stop and redact on accidental sensitive-data exposure; escalate Critical risk or missing authorization without probing external systems.
-
-## References
+Owning role, policies and related documents:
 
 - [Security auditor](../../roles/security-auditor.md)
 - [Container threat modeling](../container-threat-modeling/SKILL.md)
