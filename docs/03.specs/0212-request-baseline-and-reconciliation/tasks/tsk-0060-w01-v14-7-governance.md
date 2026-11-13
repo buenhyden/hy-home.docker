@@ -1,8 +1,8 @@
 ---
 title: "W01 v14.7 Governance Task"
-version: "0.8.1"
+version: "0.9.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-13"
 layer: "specs"
@@ -78,6 +78,7 @@ outside the stated boundary.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0060 | draft | ready | #owner-directed-local-execution |
 | SPEC-0212-TSK-0060 | ready | in-progress | #owner-directed-local-execution |
+| SPEC-0212-TSK-0060 | in-progress | completed | #review-and-completion |
 
 #### Boundary 2026-11-12
 
@@ -184,6 +185,22 @@ merges to `main`; nothing here is effective yet.
 Every implemented state above rests on changes on this branch that are not
 yet on `main`. No row is reported as adopted by another repository.
 
+##### Adoption state after W03 2026-11-13
+
+The table above is the record as of 2026-11-12. On `main` now:
+
+| Contract | State here | Effective | Basis |
+| --- | --- | --- | --- |
+| Repository Vocabulary | Adopted | 2026-11-12, #960 | Glossary and `governance-vocabulary` profile on `main` |
+| Common section form | Adopted, 16 of 16 roles | 2026-11-13, #986 (last role) | Incident, Postmortem and AGENTS in #960; the other 13 roles in #967 to #986 (TSK-0058) |
+| Stage QA | Partial | Policy meanings 2026-11-12, #960 | Git-stage cells stay with TSK-0059 H-09 (W06) |
+| TemplateDefinition | Adopted | 2026-11-13, #987 | Every template defined against the v14.5 schema (TSK-0058 H-06) |
+| Template path | Adopted | 2026-11-12, #960 | Path unchanged |
+| Release document role removal | Partial | Fixed-name guards 2026-11-12, #960 | Renamed-profile guard stays with TSK-0059 H-12 (W05) |
+
+An automated check that each consumer reads the recorded revision is still
+H-W01-2 (W05). No row is reported as adopted by another repository.
+
 #### Handoffs
 
 | ID | Writer | Difference |
@@ -265,18 +282,28 @@ None: nothing was recorded here before this Task moved to the common form.
 
 ### Remaining Conditions
 
-In progress. The assessment, the adoption record and the policy corrections
-are recorded. The owner accepted criterion 113 on 2026-11-12. The Task stays
-in progress only as the record of the contract adoption it started.
-Open: H-W01-1, H-W01-2, H-W01-4, H-W01-5 and H-W01-6 (W05), H-W01-3 (W06), and the partial or unadopted contracts
-through TSK-0059 H-04, H-06, H-09 and H-12.
+None for this Task. The owner accepted criterion 113 on 2026-11-12, and the
+contract adoption this Task started is recorded above: four contracts are
+adopted and two are partial, each with a receiving owner. Open with their
+owners: H-W01-1, H-W01-2, H-W01-4, H-W01-5 and H-W01-6 (W05), H-W01-3 (W06),
+and the partial contracts through TSK-0059 H-09 (W06) and H-12 (W05).
+
+#### Review and Completion
+
+Closed on 2026-11-13, before W04 starts. Criterion 113 is accepted and every
+required non-PASS observation is resolved by a later PASS, so the Task closes
+as `completed`. TSK-0058's W03 close-out called this Task terminal while it
+was still in progress; this update makes that true and records the adoption
+state W03 reached.
 
 ## Handoff
 
 ### Promotion Receipt
 
-None: nothing was recorded here before this Task moved to the common form.
+The policy corrections and adoption record landed in #960; the W03 adoption
+work landed in #967 to #987.
 
 ### Next Owner
 
-None: nothing was recorded here before this Task moved to the common form.
+The current owner is @buenhyden. W05 owns H-W01-1, H-W01-2, H-W01-4, H-W01-5,
+H-W01-6 and TSK-0059 H-12; W06 owns H-W01-3 and TSK-0059 H-09.
