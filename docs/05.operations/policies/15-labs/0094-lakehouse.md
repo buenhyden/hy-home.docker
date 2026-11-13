@@ -23,8 +23,6 @@ Iceberg 테이블은 내장 REST 카탈로그 뒤의 SeaweedFS 테이블 버킷 
 
 ### Authority
 
-- [가이드](../../guides/15-labs/0094-lakehouse.md) (`GDE-0094`)
-- [런북](../../runbooks/15-labs/0094-lakehouse.md) (`RUN-0094`)
 - [SeaweedFS policy](../05-databases-and-storage/0024-seaweedfs.md)
 - SPEC-0262 Analytics labs migration
 - [Lakehouse LAB Compose source](../../../../labs/lakehouse/docker-compose.yml)
@@ -103,5 +101,7 @@ SeaweedFS, Iceberg, 엔진 업그레이드 시, 새 엔진 추가 시, 새 names
 
 ### Change and Adoption
 
+- [가이드](../../guides/15-labs/0094-lakehouse.md) (`GDE-0094`)
+- [런북](../../runbooks/15-labs/0094-lakehouse.md) (`RUN-0094`)
 - [LAB 공개 입력 예시](../../../../labs/.env.example)
 - [Compose profile vocabulary](../01-common/0078-compose-profile-vocabulary.md)

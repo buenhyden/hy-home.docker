@@ -25,8 +25,6 @@ Locust는 독립 LAB capability다. HOME root나 broad tooling startup에는
 
 ### Authority
 
-- [Guide](../../guides/15-labs/0062-locust.md) (`GDE-0062`)
-- [Runbook](../../runbooks/15-labs/0062-locust.md) (`RUN-0062`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - [Locust LAB Compose](../../../../labs/locust/docker-compose.yml)
 
@@ -40,7 +38,7 @@ scaling, image upgrade.
 
 ### Exclusions
 
-Locust는 HOME root나 broad tooling startup에 포함되지 않는다.
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
@@ -106,6 +104,8 @@ handling을 면제할 수 없다.
 
 ### Change and Adoption
 
+- [Guide](../../guides/15-labs/0062-locust.md) (`GDE-0062`)
+- [Runbook](../../runbooks/15-labs/0062-locust.md) (`RUN-0062`)
 - [Derived Compose image projection](../../../../infra/tech-stack.versions.json)
 - [Locust documentation](https://docs.locust.io/en/stable/)
 - [Operations index](../../README.md)

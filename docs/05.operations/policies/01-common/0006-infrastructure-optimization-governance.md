@@ -20,7 +20,7 @@ created: "2026-06-04"
 
 ### Authority
 
-- 같은 번호 `0006`의 Guide/Runbook은 없다.
+없음: 이 정책 본문에는 구현 권한 문서가 연결되어 있지 않다.
 
 ## Scope
 
@@ -275,6 +275,8 @@ Compose 정적 검증도 임시 파일 생성과 기존 입력 읽기가 있을 
 책임 소유자는 @buenhyden이며 미충족 통제는 별도 구현 변경으로 해결한다.
 
 ### Change and Adoption
+
+- 같은 번호 `0006`의 Guide/Runbook은 없다.
 
 - Compose/Dockerfile이 runtime pin을 소유하며 [파생 projection](../../../../infra/tech-stack.versions.json)은 Compose-image drift를 검사한다.
 - [Operations index](../../README.md)

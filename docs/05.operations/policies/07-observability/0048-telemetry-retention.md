@@ -42,7 +42,7 @@ backup 책임 경계를 다룬다.
 
 ### Exclusions
 
-Applies To에 나열한 대상과 환경 밖에는 이 정책을 적용하지 않는다.
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
@@ -107,8 +107,6 @@ Prometheus는 시간·크기 override가 없어 선언 릴리스의 15d 기본�
 - 긴급 장애 대응으로 임시 보관 또는 삭제 정책을 조정한 경우, 변경 후
   incident 또는 task evidence에 원인, 범위, rollback 상태를 기록한다.
 
-책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
 ### Approval and Review
 
 - 서비스 storage, retention, resource cap, SeaweedFS bucket, dashboard provisioning
@@ -119,7 +117,7 @@ Prometheus는 시간·크기 override가 없어 선언 릴리스의 15d 기본�
 
 ### Responsibilities
 
-이 정책의 소유자는 frontmatter `owner`에 기록된 @buenhyden이다.
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ### Change and Adoption
 

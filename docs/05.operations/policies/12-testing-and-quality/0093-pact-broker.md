@@ -23,8 +23,6 @@ verify를 할 수 있는지, 그리고 어디까지 도달할 수 있는지가 �
 
 ### Authority
 
-- [가이드](../../guides/12-testing-and-quality/0093-pact-broker.md) (`GDE-0093`)
-- [런북](../../runbooks/12-testing-and-quality/0093-pact-broker.md) (`RUN-0093`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
 - [Pact Broker Compose source](../../../../infra/11-quality/pact-broker/docker-compose.yml)
 
@@ -36,7 +34,7 @@ verify를 할 수 있는지, 그리고 어디까지 도달할 수 있는지가 �
 
 ### Exclusions
 
-Pact Broker는 HOME에 추가하지 않으며 `contract-testing` profile 밖에서는 선택하지 않는다.
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
@@ -93,4 +91,6 @@ non-root이고 읽기 전용인지, Compose 설정·argv·로그에 비밀 값�
 
 ### Change and Adoption
 
+- [가이드](../../guides/12-testing-and-quality/0093-pact-broker.md) (`GDE-0093`)
+- [런북](../../runbooks/12-testing-and-quality/0093-pact-broker.md) (`RUN-0093`)
 - [Management database policy](../05-databases-and-storage/0028-management-database.md)

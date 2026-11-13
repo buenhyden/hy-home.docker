@@ -23,7 +23,6 @@ HOME secret control plane이다. 레거시 Vault는 2026-09-25 폐기되었으�
 ### Authority
 
 - Governing architecture: [AD-0003](../../../02.architecture/descriptions/0003-security-architecture.md)
-- [Guide](../../guides/04-security-and-secrets/0085-openbao.md), [Policy](0085-openbao.md), [Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)
 - OpenBao 공식 TCP listener 파라미터: <https://openbao.org/docs/configuration/listener/tcp/>
 - OpenBao 공식 authenticated root generation API: <https://openbao.org/docs/api/system/generate-root-token/>
 - OpenBao 공식 deprecated legacy root generation API: <https://openbao.org/docs/api/system/generate-root/>
@@ -39,7 +38,7 @@ HOME secret control plane이다. 레거시 Vault는 2026-09-25 폐기되었으�
 
 ### Exclusions
 
-이 정책은 `infra/03-security/openbao`와 그 프로필 아래 서비스만 다루며, 폐기된 레거시 Vault는 현재 마이그레이션·복구 소스로 취급하지 않는다.
+폐기된 레거시 Vault는 이 정책의 대상이 아니다.
 
 ## Rules
 
@@ -304,6 +303,8 @@ swap은 기록 전부터 있던 조건이며, window 전에 기록해 window의 
 정책 소유자는 @buenhyden이다.
 
 ### Change and Adoption
+
+- [Guide](../../guides/04-security-and-secrets/0085-openbao.md), [Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)
 
 - [Operations index](../../README.md)
 - [Upstream documentation](https://openbao.org/docs/agent-and-proxy/agent/)

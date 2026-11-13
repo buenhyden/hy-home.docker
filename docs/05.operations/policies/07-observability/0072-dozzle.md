@@ -37,7 +37,7 @@ Dozzle은 OPTIONAL 특권 관리자 뷰어다. 네이티브 OIDC와 CIDR 제한�
 
 ### Exclusions
 
-Applies To에 나열한 대상과 환경 밖에는 이 정책을 적용하지 않는다.
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 

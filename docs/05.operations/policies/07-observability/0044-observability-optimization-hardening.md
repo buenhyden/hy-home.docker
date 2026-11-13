@@ -43,7 +43,7 @@ created: "2026-05-10"
 
 ### Exclusions
 
-Applies To에 나열한 대상과 환경 밖에는 이 정책을 적용하지 않는다.
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
@@ -118,8 +118,6 @@ cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는
 - 긴급 장애 대응 시 일시적으로 인증 경계 완화가 필요할 수 있다.
 - 단, 동일 릴리스 내 원상 복구 및 검증 증적 확보가 필수다.
 
-책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
 ### Approval and Review
 
 - 월 1회 정기 검토
@@ -129,7 +127,7 @@ cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는
 
 ### Responsibilities
 
-이 정책의 소유자는 frontmatter `owner`에 기록된 @buenhyden이다.
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ### Change and Adoption
 

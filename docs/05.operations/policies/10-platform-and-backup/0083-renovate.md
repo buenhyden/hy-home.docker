@@ -39,7 +39,7 @@ Renovate는 HOME 호스트에서 self-hosted로 실행하는 Compose job(`depend
 
 ### Exclusions
 
-이 정책은 위 Applies To에 나열한 대상 밖의 서비스와 환경에는 적용하지 않는다.
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 

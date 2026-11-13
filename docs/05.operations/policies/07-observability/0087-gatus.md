@@ -36,7 +36,7 @@ Gatus는 native OIDC와 지속적인 probe history를 가진 HOME availability m
 
 ### Exclusions
 
-Applies To에 나열한 대상과 환경 밖에는 이 정책을 적용하지 않는다.
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
@@ -88,8 +88,6 @@ probe 커버리지, backup, restore는 별도로 승인된 target이 필요한 �
 
 예외는 owner, scope, risk, expiry, recovery condition이 필요하다.
 
-책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
 ### Approval and Review
 
 매월, 그리고 인증, probe inventory, 소스, storage가 변경될 때 검토한다.
@@ -98,7 +96,7 @@ probe 커버리지, backup, restore는 별도로 승인된 target이 필요한 �
 
 ### Responsibilities
 
-이 정책의 소유자는 frontmatter `owner`에 기록된 @buenhyden이다.
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ### Change and Adoption
 

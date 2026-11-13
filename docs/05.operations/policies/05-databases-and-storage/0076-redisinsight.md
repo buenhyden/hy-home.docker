@@ -23,8 +23,6 @@ RedisInsight는 OPTIONAL 자격 증명 보유 관리자 클라이언트다. Gate
 
 ### Authority
 
-- [가이드](../../guides/05-databases-and-storage/0076-redisinsight.md) (`GDE-0076`)
-- [런북](../../runbooks/05-databases-and-storage/0076-redisinsight.md) (`RUN-0076`)
 - [Laboratory 아키텍처](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
 
 - [RedisInsight Compose 소스](../../../../infra/04-data/redisinsight/docker-compose.yml)
@@ -91,6 +89,9 @@ gateway/CIDR 허용/거부, 데이터 망에서의 직접 접속 거부, inspect
 정책 소유자는 @buenhyden이다.
 
 ### Change and Adoption
+
+- [가이드](../../guides/05-databases-and-storage/0076-redisinsight.md) (`GDE-0076`)
+- [런북](../../runbooks/05-databases-and-storage/0076-redisinsight.md) (`RUN-0076`)
 
 - [RedisInsight 설정](https://redis.io/docs/latest/operate/redisinsight/configuration/)
 - [RedisInsight 문서](https://redis.io/docs/latest/develop/tools/insight/)

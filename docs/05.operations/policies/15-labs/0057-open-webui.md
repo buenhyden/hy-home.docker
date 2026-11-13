@@ -25,7 +25,6 @@ created: "2026-05-17"
 
 - Declared parent: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
 - Governing decision: [ADR-0062](../../../02.architecture/decisions/0062-home-lab-membership.md)
-- Subject peers: [Guide](../../guides/15-labs/0057-open-webui.md) (`GDE-0057`), [Runbook](../../runbooks/15-labs/0057-open-webui.md) (`RUN-0057`)
 - 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
 
 ## Scope
@@ -39,7 +38,7 @@ created: "2026-05-17"
 
 ### Exclusions
 
-LAB은 root include, HOME network 합류, gateway route를 두지 않으므로 이들은 이 정책의 대상이 아니다.
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
@@ -81,8 +80,6 @@ LAB은 root include, HOME network 합류, gateway route를 두지 않으므로 �
 - 증적:
   - 변경 티켓(또는 PR), 검증 로그, 롤백 결과
 
-책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
 ## Exceptions
 
 ### Exception Conditions
@@ -98,10 +95,11 @@ LAB은 root include, HOME network 합류, gateway route를 두지 않으므로 �
 
 ### Responsibilities
 
-이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
 ### Change and Adoption
 
+- Subject peers: [Guide](../../guides/15-labs/0057-open-webui.md) (`GDE-0057`), [Runbook](../../runbooks/15-labs/0057-open-webui.md) (`RUN-0057`)
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/15-labs/0057-open-webui.md)
 - [Recovery runbook](../../runbooks/15-labs/0057-open-webui.md)

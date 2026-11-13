@@ -21,7 +21,8 @@ created: "2026-06-04"
 
 ### Authority
 
-- 같은 번호 `0001`의 Guide/Runbook은 없다.
+- [infra/common-optimizations.exceptions.json](../../../../infra/common-optimizations.exceptions.json)
+- [scripts/validation/compose_controls.py](../../../../scripts/validation/compose_controls.py)
 
 ## Scope
 
@@ -35,7 +36,7 @@ created: "2026-06-04"
 
 ### Exclusions
 
-이 정책은 `infra/common-optimizations.exceptions.json` 레지스트리에 등록된 예외만 다루며, 레지스트리에 없는 서비스·통제의 예외는 이 정책의 허용 목록에 속하지 않는다.
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
@@ -116,6 +117,8 @@ runtime health, 실제 이미지의 capability 필요 여부, 자원 사용량�
 새 승인을 만들지 않는다.
 
 ### Change and Adoption
+
+- 같은 번호 `0001`의 Guide/Runbook은 없다.
 
 - Compose/Dockerfile이 runtime pin을 소유한다. [파생 projection](../../../../infra/tech-stack.versions.json)은 Compose-image drift를 검사한다.
 - [Operations index](../../README.md)

@@ -24,8 +24,6 @@ baseline의 실행 가능한 부분집합이다. 이 정책은 새 통제를 정
 
 ### Authority
 
-- [가이드](../../guides/12-testing-and-quality/0095-conftest.md) (`GDE-0095`)
-- [런북](../../runbooks/12-testing-and-quality/0095-conftest.md) (`RUN-0095`)
 - [Compose profile vocabulary](../01-common/0078-compose-profile-vocabulary.md)
 - [Conftest Compose source](../../../../infra/11-quality/conftest/docker-compose.yml)
 
@@ -37,7 +35,7 @@ baseline의 실행 가능한 부분집합이다. 이 정책은 새 통제를 정
 
 ### Exclusions
 
-job 접근 범위에 Docker socket과 호스트 root·Git·scripts는 포함되지 않으며, 규칙 예외는 실행용 Compose나 다른 정책 필드를 바꾸지 않는다.
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
@@ -97,4 +95,6 @@ allowlist 항목이 추가될 때마다 검토한다.
 
 ### Change and Adoption
 
+- [가이드](../../guides/12-testing-and-quality/0095-conftest.md) (`GDE-0095`)
+- [런북](../../runbooks/12-testing-and-quality/0095-conftest.md) (`RUN-0095`)
 - [Dependency version management](../10-platform-and-backup/0086-dependency-version-management.md)

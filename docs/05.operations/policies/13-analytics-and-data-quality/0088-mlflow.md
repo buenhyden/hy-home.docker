@@ -23,8 +23,6 @@ MLflow는 OPTIONAL tracking 서비스다. MLflow의 데이터베이스와 artifa
 
 ### Authority
 
-- [Guide](../../guides/13-analytics-and-data-quality/0088-mlflow.md) (`GDE-0088`)
-- [Runbook](../../runbooks/13-analytics-and-data-quality/0088-mlflow.md) (`RUN-0088`)
 - [Laboratory architecture](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
 - [Image Dockerfile](../../../../infra/08-ai/mlflow/Dockerfile) and [derived version projection](../../../../infra/tech-stack.versions.json)
 - [MLflow Compose source](../../../../infra/08-ai/mlflow/docker-compose.yml)
@@ -38,7 +36,7 @@ MLflow tracking server의 활성화, 데이터베이스와 artifact 프로비저
 
 ### Exclusions
 
-MLflow는 `mlops` 또는 `data-science` profile 밖에서 선택하지 않으며, 명시적 결정 없이 HOME이나 현재 운영 명령에 추가하지 않는다.
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
@@ -96,5 +94,7 @@ MLflow 업그레이드, 인증 변경, bucket/데이터베이스 이름 변경, 
 
 ### Change and Adoption
 
+- [Guide](../../guides/13-analytics-and-data-quality/0088-mlflow.md) (`GDE-0088`)
+- [Runbook](../../runbooks/13-analytics-and-data-quality/0088-mlflow.md) (`RUN-0088`)
 - [Management database policy](../05-databases-and-storage/0028-management-database.md)
 - [SeaweedFS policy](../05-databases-and-storage/0024-seaweedfs.md)

@@ -24,7 +24,6 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 ### Authority
 
 - Parent: [ADR-0038](../../../02.architecture/decisions/0038-selective-native-oidc-for-native-auth-apps.md)
-- Child: [GDE-0079](../../guides/03-identity-and-access/0079-application-auth-integration.md)
 - Architecture: [AD-0002](../../../02.architecture/descriptions/0002-auth-architecture.md)
 
 ## Scope
@@ -42,13 +41,11 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 
 ### Exclusions
 
-Keycloak과 OAuth2 Proxy 서비스 자체의 운영 통제는 [POL-0014](0014-keycloak.md)와 [POL-0015](0015-oauth2-proxy.md)가 다루며, 이 정책은 애플리케이션 인증 연동만 다룬다.
+Keycloak과 OAuth2 Proxy 서비스 자체의 운영 통제는 [POL-0014](0014-keycloak.md)와 [POL-0015](0015-oauth2-proxy.md)가 다룬다.
 
 ## Rules
 
 ### Requirements
-
-인증 연동 통제는 필수 사항(Required), 금지 사항(Disallowed), 소스 미준수와 소유권으로 나뉜다.
 
 #### Required
 
@@ -67,7 +64,7 @@ Keycloak과 OAuth2 Proxy 서비스 자체의 운영 통제는 [POL-0014](0014-ke
   통과시킨다. 그룹을 넓히는 것은 owner 승인이 필요한 변경이다.
 - 모든 Traefik HTTP router는 SSO chain을 쓰거나, guide의 Route Authentication
   Matrix에 대체 인증을 명시한다. 인증 없는 route와 TCP route는 두지 않는다
-  (`RouteAuthContractTests`). 아래에 기록한 Grafana 정적 예외만 이 규칙의 범위를
+  (`RouteAuthContractTests`). Exception Conditions에 기록한 Grafana 정적 예외만 이 규칙의 범위를
   제한한다.
 - Open WebUI와 Gatus의 ForwardAuth 제거는 Task 0004 acceptance evidence 뒤에 완료됐다. Terrakube의 ForwardAuth 제거는 서비스별 acceptance evidence가 기록된 뒤에만 허용한다. 단계별 전환은 사용자가 이미 승인했으며, 같은 범위의 재승인을 요구하지 않는다.
 - Compose 기반 OIDC client secret은 Docker Secret 또는 소비자 Compose가 선언한 OpenBao Agent
@@ -92,21 +89,6 @@ Keycloak과 OAuth2 Proxy 서비스 자체의 운영 통제는 [POL-0014](0014-ke
 
 #### Source nonconformance and ownership
 
-운영 책임자는 @buenhyden이다. 2026-11-02 사용자 승인에 따라
-`grafana-static`은 Grafana host의 `/favicon.ico`와 `/robots.txt` GET/HEAD만
-SSO 인증 예외로 허용하며 `gateway-standard-chain@file`은 유지한다. 다른 메서드는 더 높은 우선순위의
-`grafana-static-deny` router가 `noop@internal`으로 종료하여 일반
-Grafana router로 우회하지 못하게 하고 `418`을 반환해야 한다. 이 예외는 Grafana
-RBAC, 다른 경로, 다른 host 또는 다른 method로 넓어지지 않는다.
-
-리스크는 인증 없는 응답이 두 정적 경로에 남는 것이다. 기존 초당 100회, burst
-200의 서비스 rate limit은 유지하며 사용자별 제한으로 표현하지 않는다. 이 예외는
-2026-12-02에 재검토하고, 경로·메서드 범위 확대, 인증 체인 변경 또는 관련 보안
-권고가 있으면 즉시 종료 또는 재승인한다. source와 테스트를 이 문서 변경만으로
-수정 또는 통과했다고 주장하지 않으며, 정적 계약은 Grafana 접근·로그인·권한·backend
-호출의 운영 검증이 아니다. LAN/TLS 도달 경계와 제한의 구현 증거는
-[Guide의 source 한계](../../guides/03-identity-and-access/0079-application-auth-integration.md)에
-기록한다.
 공통 Secret 보존·runtime 변경 승인은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md)과
 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)을 적용한다.
 
@@ -132,6 +114,22 @@ profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
 기록한 경우에만 허용한다. Native OIDC 앱에 임시 ForwardAuth를 적용하려면
 `Authorization` header 충돌이 없음을 먼저 검증해야 한다.
 
+2026-11-02 사용자 승인에 따라
+`grafana-static`은 Grafana host의 `/favicon.ico`와 `/robots.txt` GET/HEAD만
+SSO 인증 예외로 허용하며 `gateway-standard-chain@file`은 유지한다. 다른 메서드는 더 높은 우선순위의
+`grafana-static-deny` router가 `noop@internal`으로 종료하여 일반
+Grafana router로 우회하지 못하게 하고 `418`을 반환해야 한다. 이 예외는 Grafana
+RBAC, 다른 경로, 다른 host 또는 다른 method로 넓어지지 않는다.
+
+리스크는 인증 없는 응답이 두 정적 경로에 남는 것이다. 기존 초당 100회, burst
+200의 서비스 rate limit은 유지하며 사용자별 제한으로 표현하지 않는다. 이 예외는
+2026-12-02에 재검토하고, 경로·메서드 범위 확대, 인증 체인 변경 또는 관련 보안
+권고가 있으면 즉시 종료 또는 재승인한다. source와 테스트를 이 문서 변경만으로
+수정 또는 통과했다고 주장하지 않으며, 정적 계약은 Grafana 접근·로그인·권한·backend
+호출의 운영 검증이 아니다. LAN/TLS 도달 경계와 제한의 구현 증거는
+[Guide의 source 한계](../../guides/03-identity-and-access/0079-application-auth-integration.md)에
+기록한다.
+
 ### Approval and Review
 
 - Keycloak update
@@ -145,9 +143,11 @@ profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
 
 ### Responsibilities
 
-정책 소유자는 @buenhyden이다.
+운영 책임자는 @buenhyden이다.
 
 ### Change and Adoption
+
+- Child: [GDE-0079](../../guides/03-identity-and-access/0079-application-auth-integration.md)
 
 - 런타임 버전은 Compose/Dockerfile 선언이 소유하며, [파생 Compose 이미지 목록](../../../../infra/tech-stack.versions.json)은 drift 검증에 사용한다.
 

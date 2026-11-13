@@ -23,7 +23,6 @@ created: "2026-05-17"
 ### Authority
 
 - Declared parent: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](../../guides/15-labs/0031-postgresql-cluster.md) (`GDE-0031`), [Runbook](../../runbooks/15-labs/0031-postgresql-cluster.md) (`RUN-0031`)
 
 ## Scope
 
@@ -40,7 +39,7 @@ created: "2026-05-17"
 
 ### Exclusions
 
-root include와 `core` surface는 이 정책의 대상이 아니며, 이 cluster를 그 일부로 기술해서는 안 된다.
+root include와 `core` surface는 이 정책의 대상이 아니다.
 
 ## Rules
 
@@ -114,6 +113,7 @@ N/A - 현재 승인된 예외 없음.
 
 ### Change and Adoption
 
+- Subject peers: [Guide](../../guides/15-labs/0031-postgresql-cluster.md) (`GDE-0031`), [Runbook](../../runbooks/15-labs/0031-postgresql-cluster.md) (`RUN-0031`)
 - [PostgreSQL pg_dumpall reference](https://www.postgresql.org/docs/18/app-pg-dumpall.html)
 - [PostgreSQL license](https://www.postgresql.org/about/licence/)
 - [Operations index](../../README.md)

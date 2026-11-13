@@ -31,7 +31,6 @@ created: "2026-11-05"
   `PROMOTION_RESERVE`, `PROMOTION_EXTERNAL_ALLOWANCE`; `infra/common-optimizations.yml`의
   resource template.
 - Artifact: `POL-0107`; parent: `AD-0026`.
-- [Spec](../../../03.specs/0263-lab-promotion-contract/spec.md)
 
 ## Scope
 

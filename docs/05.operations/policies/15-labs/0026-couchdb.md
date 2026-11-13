@@ -23,7 +23,6 @@ created: "2026-05-17"
 ### Authority
 
 - Declared parent: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-- Subject peers: [Guide](../../guides/15-labs/0026-couchdb.md) (`GDE-0026`), [Runbook](../../runbooks/15-labs/0026-couchdb.md) (`RUN-0026`)
 
 ## Scope
 
@@ -38,7 +37,7 @@ created: "2026-05-17"
 
 ### Exclusions
 
-HOME Traefik label과 gateway 연결은 이 정책의 대상이 아니다.
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
@@ -107,6 +106,7 @@ N/A - 현재 승인된 예외 없음.
 
 ### Change and Adoption
 
+- Subject peers: [Guide](../../guides/15-labs/0026-couchdb.md) (`GDE-0026`), [Runbook](../../runbooks/15-labs/0026-couchdb.md) (`RUN-0026`)
 - [CouchDB backup guidance](https://docs.couchdb.org/en/stable/maintenance/backups.html)
 - [CouchDB upgrade guidance](https://docs.couchdb.org/en/stable/install/upgrading.html)
 - [CouchDB database security](https://docs.couchdb.org/en/stable/api/database/security.html)

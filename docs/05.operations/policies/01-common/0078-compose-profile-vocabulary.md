@@ -126,7 +126,7 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 
 ### Exclusions
 
-독립 LAB entrypoint는 root의 profile 선택 대상이 아니며, optional overlay는 독립 entrypoint나 새 서비스 inventory가 아니다.
+독립 LAB entrypoint는 root의 profile 선택 대상이 아니다.
 
 ## Rules
 

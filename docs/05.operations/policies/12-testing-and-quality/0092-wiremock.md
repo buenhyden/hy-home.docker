@@ -24,8 +24,6 @@ journal을 기록하고, load override 모드는 journal을 기록하지 않는�
 
 ### Authority
 
-- [Guide](../../guides/12-testing-and-quality/0092-wiremock.md) (`GDE-0092`)
-- [Runbook](../../runbooks/12-testing-and-quality/0092-wiremock.md) (`RUN-0092`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
 - [WireMock Compose source](../../../../infra/11-quality/wiremock/docker-compose.yml)
 
@@ -37,7 +35,7 @@ journal을 기록하고, load override 모드는 journal을 기록하지 않는�
 
 ### Exclusions
 
-WireMock은 HOME·도메인 profile에 추가하지 않으며, 기능 모드에는 Traefik route를 추가하지 않는다.
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
@@ -96,4 +94,6 @@ WireMock major 업그레이드, 신규 consumer, loopback을 넘는 노출이 �
 
 ### Change and Adoption
 
+- [Guide](../../guides/12-testing-and-quality/0092-wiremock.md) (`GDE-0092`)
+- [Runbook](../../runbooks/12-testing-and-quality/0092-wiremock.md) (`RUN-0092`)
 - [Compose profile vocabulary](../01-common/0078-compose-profile-vocabulary.md)

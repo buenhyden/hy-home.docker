@@ -31,7 +31,6 @@ role이 각자의 tier와 work profile을 소유한다. 이 문서는 운영 측
 ### Authority
 
 - 과거 구현 출처: Harness and Agent-first Engineering Outcome (`SPEC-0094`)
-- 같은 주제: [Guide](../../guides/01-common/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md) (`RUN-0004`)
 
 ## Scope
 
@@ -57,7 +56,7 @@ role이 각자의 tier와 work profile을 소유한다. 이 문서는 운영 측
 
 ### Exclusions
 
-이 정책은 위에 나열한 경로 밖의 대상에 적용하지 않으며, scope 밖 infra profile 실패는 HAFE acceptance criteria에 포함하지 않고 별도로 기록한다.
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
@@ -115,5 +114,6 @@ Docker·실제 환경 접근은 해당 Task의 승인 범위에서 실행하며 
 
 ### Change and Adoption
 
+- 같은 주제: [Guide](../../guides/01-common/0004-harness-agent-first-engineering.md) (`GDE-0004`), [Runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md) (`RUN-0004`)
+
 - [Operations index](../../README.md)
-- [Usage guide](../../guides/01-common/0004-harness-agent-first-engineering.md)

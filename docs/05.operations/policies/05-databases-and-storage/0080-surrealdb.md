@@ -24,7 +24,6 @@ created: "2026-09-19"
 ### Authority
 
 - 상위 아키텍처: [AD-0011](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
-- 대상 동위 문서: [가이드](../../guides/05-databases-and-storage/0080-surrealdb.md), [런북](../../runbooks/05-databases-and-storage/0080-surrealdb.md)
 
 ## Scope
 
@@ -95,6 +94,8 @@ created: "2026-09-19"
 정책 소유자는 @buenhyden이다.
 
 ### Change and Adoption
+
+- 대상 동위 문서: [가이드](../../guides/05-databases-and-storage/0080-surrealdb.md), [런북](../../runbooks/05-databases-and-storage/0080-surrealdb.md)
 
 - [SurrealDB export](https://surrealdb.com/docs/reference/cli/surrealdb-cli/commands/export)
 - [SurrealDB import](https://surrealdb.com/docs/reference/cli/surrealdb-cli/commands/import)

@@ -23,7 +23,6 @@ created: "2026-04-01"
 ### Authority
 
 - 상위 문서: [Compose Network Segmentation Architecture Description](../../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
-- 같은 주제: [Guide](../../guides/02-gateway-and-networking/0077-ip-address-management.md) (`GDE-0077`), [Runbook](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md) (`RUN-0077`)
 
 - [Compose network segmentation architecture](../../../02.architecture/descriptions/0026-standardize-infra-net.md)
 
@@ -38,7 +37,7 @@ created: "2026-04-01"
 
 ### Exclusions
 
-repository가 root Compose에서 소유하지 않는 network와 미래 production은 이 정책이 검증된 대상으로 다루지 않는다.
+repository가 root Compose에서 소유하지 않는 network는 이 정책의 관할이 아니다.
 
 ## Rules
 
@@ -94,7 +93,7 @@ repository가 root Compose에서 소유하지 않는 network와 미래 productio
 
 ### Change and Adoption
 
+- 같은 주제: [Guide](../../guides/02-gateway-and-networking/0077-ip-address-management.md) (`GDE-0077`), [Runbook](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md) (`RUN-0077`)
+
 - [Operations index](../../README.md)
-- [Usage guide](../../guides/02-gateway-and-networking/0077-ip-address-management.md)
-- [Recovery runbook](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md)
 - 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

@@ -23,7 +23,6 @@ created: "2026-05-17"
 ### Authority
 
 - Declared parent: [AD-0004](../../../02.architecture/descriptions/0004-data-architecture.md)
-- Subject peers: [GDE-0025](../../guides/15-labs/0025-cassandra.md), [RUN-0025](../../runbooks/15-labs/0025-cassandra.md)
 - [LAB Compose](../../../../labs/cassandra/docker-compose.yml)
 
 ## Scope
@@ -74,5 +73,6 @@ exporter와 Cassandra password secret은 현재 구현에 없다.
 
 ### Change and Adoption
 
+- Subject peers: [GDE-0025](../../guides/15-labs/0025-cassandra.md), [RUN-0025](../../runbooks/15-labs/0025-cassandra.md)
 - [LAB 설명](../../../../labs/cassandra/README.md)
 - [Cassandra backup](https://cassandra.apache.org/doc/stable/cassandra/managing/operating/backups.html)

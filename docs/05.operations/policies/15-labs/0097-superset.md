@@ -24,8 +24,6 @@ Superset는 자체 로그인, 메타데이터 데이터베이스, lakehouse 데�
 
 ### Authority
 
-- [가이드](../../guides/15-labs/0097-superset.md) (`GDE-0097`)
-- [런북](../../runbooks/15-labs/0097-superset.md) (`RUN-0097`)
 - [Application auth integration policy](../03-identity-and-access/0079-application-auth-integration.md)
 - SPEC-0262 Analytics labs migration
 - [Superset Compose source](../../../../labs/superset/docker-compose.yml) and [derived version projection](../../../../infra/tech-stack.versions.json)
@@ -38,7 +36,7 @@ Superset는 자체 로그인, 메타데이터 데이터베이스, lakehouse 데�
 
 ### Exclusions
 
-root include, HOME network 합류, HOME 이름 선택 추가는 금지되므로 이 정책의 대상이 아니다.
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
@@ -95,4 +93,6 @@ Superset 또는 Flask-AppBuilder 업그레이드, Keycloak client 변경, 새 �
 
 ### Change and Adoption
 
+- [가이드](../../guides/15-labs/0097-superset.md) (`GDE-0097`)
+- [런북](../../runbooks/15-labs/0097-superset.md) (`RUN-0097`)
 - [Compose profile vocabulary](../01-common/0078-compose-profile-vocabulary.md)

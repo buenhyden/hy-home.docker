@@ -20,7 +20,6 @@ created: "2026-10-27"
 
 ### Authority
 
-- 같은 번호 `0102`의 Guide/Runbook은 없다.
 - 근거와 수용 기록: SPEC-0246(삭제됨, 번호는 Registry `reserved_history`, 본문은 Git history)의
   C1–C6은 모두 소유자가 수용했다.
   - C1(2026-10-19): containerd 이전 뒤 이미지 목록, health, k3d node가 이전 전 snapshot과 같았다.
@@ -83,12 +82,6 @@ created: "2026-10-27"
 - `df -h /`와 `HostSystemDiskLow` 경보 상태로 루트 여유 공간을 확인한다.
 - 쓰기율 측정은 `scripts/operations/storage-write-rate.py`의 collect/compare를 쓴다.
 
-## Exceptions
-
-### Exception Conditions
-
-없음. 새 저장소를 SSD로 옮기려면 위 조건의 측정값과 소유자 결정을 해당 Task에 기록한다.
-
 #### Current reconciliation boundary
 
 2026-11-03 P09는 이 정책과 위 Authority에 요약한 SPEC-0246 C1–C6 수용 기록을 읽기 전용으로 대조한다.
@@ -97,6 +90,12 @@ created: "2026-10-27"
 mount 표시는 호스트 mount 실패로 해석하지 않는다. Prometheus·Tempo SSD 및
 Loki·Alloy·Pyroscope와 containerd/Docker/BuildKit HDD의 수용된 배치는 새로운 측정된
 drift와 명시적 소유자 승인이 없는 한 유지한다.
+
+## Exceptions
+
+### Exception Conditions
+
+없음. 새 저장소를 SSD로 옮기려면 위 조건의 측정값과 소유자 결정을 해당 Task에 기록한다.
 
 ### Approval and Review
 
@@ -111,5 +110,6 @@ drift와 명시적 소유자 승인이 없는 한 유지한다.
 
 ### Change and Adoption
 
+- 같은 번호 `0102`의 Guide/Runbook은 없다.
 - [Prometheus Guide](../../guides/07-observability/0045-prometheus.md)
 - [Backup and Restore Policy](0021-backup-and-restore.md)

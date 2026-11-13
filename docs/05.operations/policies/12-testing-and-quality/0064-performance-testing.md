@@ -29,7 +29,6 @@ created: "2026-05-17"
 ### Authority
 
 - 상위 문서: [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
-- 동일 주제 문서: [Guide](../../guides/12-testing-and-quality/0064-performance-testing.md) (`GDE-0064`), [Runbook](../../runbooks/12-testing-and-quality/0064-performance-testing.md) (`RUN-0064`)
 - 실행 버전의 원본은 Compose/Dockerfile 선언이며, [파생 버전 목록](../../../../infra/tech-stack.versions.json)은 변경 누락 검증에 사용한다.
 
 ## Scope
@@ -80,7 +79,6 @@ created: "2026-05-17"
 
 ### Enforcement
 
-- 중요한 운영 변경 전에는 같은 주제의 가이드·런북 및 연결된 구현 설정과 함께 정책을 검토한다.
 - 정책이나 연결된 운영 문서를 변경하면 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))로 검증한다.
 - 실행·운영 링크를 바꾸면 `python3 scripts/validation/check-document-links.py --mode traceability`로 검증한다.
 
@@ -92,6 +90,7 @@ created: "2026-05-17"
 
 ### Approval and Review
 
+- 중요한 운영 변경 전에는 같은 주제의 가이드·런북 및 연결된 구현 설정과 함께 정책을 검토한다.
 - 연결된 서비스 설정, 아키텍처 또는 런북 동작이 바뀔 때 검토한다.
 
 ## Ownership
@@ -102,6 +101,7 @@ created: "2026-05-17"
 
 ### Change and Adoption
 
+- 동일 주제 문서: [Guide](../../guides/12-testing-and-quality/0064-performance-testing.md) (`GDE-0064`), [Runbook](../../runbooks/12-testing-and-quality/0064-performance-testing.md) (`RUN-0064`)
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/12-testing-and-quality/0064-performance-testing.md)
 - [Recovery runbook](../../runbooks/12-testing-and-quality/0064-performance-testing.md)

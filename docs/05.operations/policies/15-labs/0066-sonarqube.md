@@ -23,8 +23,6 @@ created: "2026-05-17"
 
 ### Authority
 
-- [가이드](../../guides/15-labs/0066-sonarqube.md) (`GDE-0066`)
-- [런북](../../runbooks/15-labs/0066-sonarqube.md) (`RUN-0066`)
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
 - SPEC-0262 Analytics labs migration(LAB 이전)
 - [SonarQube Compose 소스](../../../../labs/sonarqube/docker-compose.yml)
@@ -100,5 +98,7 @@ created: "2026-05-17"
 
 ### Change and Adoption
 
+- [가이드](../../guides/15-labs/0066-sonarqube.md) (`GDE-0066`)
+- [런북](../../runbooks/15-labs/0066-sonarqube.md) (`RUN-0066`)
 - [Community Build 인증](https://docs.sonarsource.com/sonarqube-community-build/instance-administration/authentication/overview)
 - [SonarQube 토큰 관리](https://docs.sonarsource.com/sonarqube-community-build/user-guide/managing-tokens)

@@ -23,8 +23,6 @@ JupyterLab은 임의의 코드를 실행한다. kernel이나 terminal에 도달�
 
 ### Authority
 
-- [Guide](../../guides/15-labs/0089-jupyterlab.md) (`GDE-0089`)
-- [Runbook](../../runbooks/15-labs/0089-jupyterlab.md) (`RUN-0089`)
 - [Laboratory architecture](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
 - SPEC-0262 Analytics labs migration
 - [Image Dockerfile](../../../../labs/jupyterlab/Dockerfile) and [derived version projection](../../../../infra/tech-stack.versions.json)
@@ -39,7 +37,7 @@ backup, 제거.
 
 ### Exclusions
 
-root include, HOME network 합류, HOME 이름 선택 추가는 금지되므로 이 정책의 대상이 아니다.
+다중 사용자 JupyterHub 설계와 MLflow 서버 자체 통제(POL-0088)는 이 정책의 대상이 아니다.
 
 ## Rules
 
@@ -93,4 +91,6 @@ work 복구본과 원본은 격리하고 파일·노트북 출력의 민감성�
 
 ### Change and Adoption
 
+- [Guide](../../guides/15-labs/0089-jupyterlab.md) (`GDE-0089`)
+- [Runbook](../../runbooks/15-labs/0089-jupyterlab.md) (`RUN-0089`)
 - [Jupyter Server security](https://jupyter-server.readthedocs.io/en/latest/operators/security.html)

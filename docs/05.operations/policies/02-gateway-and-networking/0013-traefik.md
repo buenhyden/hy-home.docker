@@ -23,7 +23,6 @@ created: "2026-05-17"
 ### Authority
 
 - Declared parent: [Gateway Tier Architecture Description](../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
-- Subject peers: [Guide](../../guides/02-gateway-and-networking/0013-traefik.md) (`GDE-0013`), [Runbook](../../runbooks/02-gateway-and-networking/0013-traefik.md) (`RUN-0013`)
 
 ## Scope
 
@@ -38,7 +37,7 @@ created: "2026-05-17"
 
 ### Exclusions
 
-비게이트웨이 소유 라우터는 이 정책의 적용 대상이 아니며 gateway 체인을 전역 강제 적용하지 않는다.
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
@@ -80,15 +79,19 @@ bucket은 라우터·출발지별이다. host와 k3d 요청은 docker-proxy를 �
 
 #### Shared controls and accountability
 
-운영 책임자는 @buenhyden이다. 변경·재시작·credential 작업의 대상과 영향, 승인,
-종료 조건을 기록하며 예외는 위험·만료·원복 책임까지 명시한다. 공통 자원 상한과
+공통 자원 상한과
 mount 적용은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md), profile·
 상호 배제는 [POL-0078](../01-common/0078-compose-profile-vocabulary.md), image 변경과 검토는
-[POL-0086](../10-platform-and-backup/0086-dependency-version-management.md)을 적용한다. OOM·반복 재시작·
-인증 실패 증가 또는 이미지·노출·mount 변경 시 정기 주기를 기다리지 않고 검토한다.
-보존할 상태와 private credential은 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의
+[POL-0086](../10-platform-and-backup/0086-dependency-version-management.md)을 적용한다. 보존할 상태와 private credential은 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의
 접근·암호화·retention을 적용한다. 제거 전에 소비자와 복구 입력을 확인하고,
 volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상으로 한다.
+
+#### Recovery and Upgrade Controls
+
+Config rollback과 certificate rollback을 구분한다. 이전 config와 certificate가
+호환되는지 격리 route에서 확인한 후 80/443 트래픽을 수용한다. Image upgrade는
+공식 migration/release note 검토, config 검증, dashboard 인증, 대표 route, metrics와
+명시적인 이전 image rollback을 요구한다.
 
 ### Enforcement
 
@@ -119,30 +122,26 @@ upstream 릴리스(index `1336e85a`)로 바꾸기로 결정했으므로 이 수�
 offline scan, 독립 applicability 검토, config 부팅, HOME 재생성과 rollback은 아직 `NOT_RUN`이고
 SPEC-0204-TSK-0021이 owner 단계로 기록한다.
 
-#### Recovery and Upgrade Controls
-
-Config rollback과 certificate rollback을 구분한다. 이전 config와 certificate가
-호환되는지 격리 route에서 확인한 후 80/443 트래픽을 수용한다. Image upgrade는
-공식 migration/release note 검토, config 검증, dashboard 인증, 대표 route, metrics와
-명시적인 이전 image rollback을 요구한다.
-
 ### Approval and Review
 
 - 월 1회 정기 점검
 - Traefik 버전 변경/라우터 추가 시 수시 점검
 
+- OOM·반복 재시작·인증 실패 증가 또는 이미지·노출·mount 변경 시 정기 주기를 기다리지 않고 검토한다.
+
 ## Ownership
 
 ### Responsibilities
 
-정책 소유자는 @buenhyden이다. 책임 범위는 Requirements의 Shared controls and accountability가 정한다.
+운영 책임자는 @buenhyden이다. 변경·재시작·credential 작업의 대상과 영향, 승인,
+종료 조건을 기록하며 예외는 위험·만료·원복 책임까지 명시한다.
 
 ### Change and Adoption
+
+- Subject peers: [Guide](../../guides/02-gateway-and-networking/0013-traefik.md) (`GDE-0013`), [Runbook](../../runbooks/02-gateway-and-networking/0013-traefik.md) (`RUN-0013`)
 
 - [Official upstream operational documentation](https://doc.traefik.io/traefik/)
 
 - 런타임 버전은 Compose/Dockerfile 선언이 소유하며, [파생 Compose 이미지 목록](../../../../infra/tech-stack.versions.json)은 drift 검증에 사용한다.
 
 - [Operations index](../../README.md)
-- [Usage guide](../../guides/02-gateway-and-networking/0013-traefik.md)
-- [Recovery runbook](../../runbooks/02-gateway-and-networking/0013-traefik.md)
