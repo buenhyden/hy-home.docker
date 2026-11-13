@@ -318,3 +318,59 @@ class ExecutionItemsProbeTests(unittest.TestCase):
         ):
             with self.subTest(text=text):
                 self.assertFalse(self._declares(text))
+
+
+class OperationsCurrencyTests(unittest.TestCase):
+    """documentation-protocol.md: a passed next_review_at makes a Guide,
+    Operations Policy or Runbook stale until reviewed (TSK-0063 H-W04-3)."""
+
+    def codes(self, document_type: str = "operation/runbook", **extra: str) -> set[str]:
+        profiles = metadata.build_registry_profiles(metadata.load_registry(REGISTRY))
+        record = metadata.Record(
+            pathlib.Path("docs/05.operations/runbooks/01-common/0004-fixture.md"),
+            {
+                "artifact_id": "RUN-0004",
+                "type": document_type,
+                "status": "active",
+                "parent_ids": ["POL-0004"],
+                **extra,
+            },
+            "runbook",
+            frontmatter_present=True,
+        )
+        manifest = metadata.build_manifest([record])
+        return {
+            item.code for item in metadata.validate_record(record, profiles, manifest)
+        }
+
+    def test_a_passed_review_date_is_stale(self) -> None:
+        for document_type in (
+            "operation/runbook",
+            "operation/guide",
+            "operation/policy",
+        ):
+            with self.subTest(type=document_type):
+                self.assertIn(
+                    "stale-active",
+                    self.codes(document_type, next_review_at="2000-01-01"),
+                )
+
+    def test_other_types_are_not_operations_currency(self) -> None:
+        self.assertNotIn(
+            "stale-active",
+            self.codes("operation/incident", next_review_at="2000-01-01"),
+        )
+
+    def test_a_future_or_absent_review_date_is_current(self) -> None:
+        self.assertNotIn("stale-active", self.codes(next_review_at="2999-01-01"))
+        self.assertNotIn("stale-active", self.codes())
+
+    def test_a_review_on_or_after_the_due_date_clears_it(self) -> None:
+        self.assertNotIn(
+            "stale-active",
+            self.codes(next_review_at="2000-01-01", reviewed_at="2000-01-02"),
+        )
+        self.assertIn(
+            "stale-active",
+            self.codes(next_review_at="2000-01-02", reviewed_at="2000-01-01"),
+        )
