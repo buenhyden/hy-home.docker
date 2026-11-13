@@ -27,6 +27,7 @@ from scripts.lib.document_governance.registry import (
 from scripts.lib.document_governance.registry import (
     load_registry as load_current_registry,
 )
+from tests.lib.document_governance import test_generation6 as _generation6
 
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 GENERATION_4_SOURCE = "8b85e88fe2dfef54f4cc125ee2687982c86c1942"
@@ -5866,6 +5867,315 @@ class TerminalTaskBodyTests(unittest.TestCase):
                 self.assertEqual(
                     frozenset({self.PATH}) if admitted else frozenset(), historical
                 )
+
+
+_HANDOFF_ROOT = pathlib.PurePosixPath("docs/03.specs/0001-example")
+# W2 also carries criterion 1, so criterion 1 has two Plan Work Units.
+_TWO_UNIT_PLAN = dataclasses.replace(
+    _generation6.PLAN,
+    body=_generation6.PLAN.body.replace(
+        "| W2 | 2 | Second | W1 | TSK-0001 |", "| W2 | 1, 2 | Second | W1 | TSK-0001 |"
+    ),
+)
+# W2 is assigned to a second Task too.
+_SHARED_UNIT_PLAN = dataclasses.replace(
+    _TWO_UNIT_PLAN,
+    body=_TWO_UNIT_PLAN.body.replace(
+        "| W1 | TSK-0001 |", "| W1 | TSK-0001, TSK-0002 |"
+    ),
+)
+_EVIDENCE_HEADER = (
+    "## Evidence\n\n"
+    "| Evidence | Criteria | Work Unit | Check | Input | Result | Location "
+    "| Required | Resolves |\n"
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+)
+_DECISION_HEADER = (
+    "\n## Criterion Acceptance\n\n"
+    "| Criterion | Acceptance | Evidence | Decision | Current Owner |\n"
+    "| --- | --- | --- | --- | --- |\n"
+)
+
+
+def _evidence_row(
+    name: str,
+    criteria: str,
+    unit: str,
+    result: str = "PASS",
+    *,
+    required: str = "required",
+    resolves: str = "-",
+) -> str:
+    return (
+        f"| {name} | {criteria} | {unit} | Unit | candidate A | {result} | receipt "
+        f"| {required} | {resolves} |\n"
+    )
+
+
+def _decision_row(
+    criterion: str, evidence: str = "-", acceptance: str = "accepted"
+) -> str:
+    return (
+        f"| {criterion} | {acceptance} | {evidence} | reviewed "
+        "| [Owner](../spec.md) |\n"
+    )
+
+
+def _handoff_task(
+    evidence: str,
+    decisions: str | None,
+    *,
+    number: int = 1,
+    status: str = "in-progress",
+    items: tuple[tuple[str, ...], ...] = (),
+    cancellation: object = None,
+):
+    return _spec_packages_module().SpecDocument(
+        _HANDOFF_ROOT / f"tasks/tsk-000{number}-work.md",
+        "task",
+        f"SPEC-0001-TSK-000{number}",
+        status,
+        ("SPEC-0001-PLAN-0001",),
+        f"{_EVIDENCE_HEADER}{evidence}"
+        + (
+            "\n## Criterion Acceptance\n\nNone.\n"
+            if decisions is None
+            else f"{_DECISION_HEADER}{decisions}"
+        ),
+        cancellation=cancellation,
+        items=items,
+    )
+
+
+class AcceptanceDecisionTests(unittest.TestCase):
+    """H-W04-1: acceptance under sdlc.md 1.9.0 and the cited-evidence rules."""
+
+    def findings(self, tasks, *, plan=_TWO_UNIT_PLAN, before=()):
+        spec_packages = _spec_packages_module()
+        registry = load_current_registry()
+
+        def package(members, evidence=None):
+            return spec_packages.SpecPackage(
+                pathlib.Path(_HANDOFF_ROOT),
+                "0001",
+                "example",
+                _generation6.SPEC,
+                plan,
+                tuple(members),
+                (),
+                evidence,
+            )
+
+        evidence = spec_packages._v6_evidence_contract(
+            _generation6.SPEC, plan, tuple(tasks), registry
+        )
+        return spec_packages._acceptance_findings(
+            (package(before),) if before else (),
+            (package(tasks, evidence),),
+            registry,
+            registry,
+        )
+
+    def test_accepted_needs_a_pass_for_every_assigned_pair(self) -> None:
+        for second, expected in (
+            (
+                _evidence_row("Two", "2", "W2"),
+                "criterion 1 has no PASS for Work Unit W2",
+            ),
+            (_evidence_row("Two", "1, 2", "W2"), None),
+        ):
+            task = _handoff_task(
+                _evidence_row("One", "1", "W1") + second,
+                _decision_row("1", "One") + _decision_row("2", "Two"),
+            )
+            with self.subTest(expected=expected):
+                found = self.findings((task,))
+                if expected is None:
+                    self.assertEqual((), found)
+                else:
+                    self.assertEqual(
+                        [("acceptance-unsupported", task.path.as_posix())],
+                        [(finding.code, finding.path) for finding in found],
+                    )
+                    self.assertIn(expected, found[0].message)
+
+    def test_accepted_cites_a_pass_row_for_its_own_criterion(self) -> None:
+        rows = (
+            _evidence_row("Broken", "1", "W1", "ERROR", required="optional")
+            + _evidence_row("One", "1", "W1")
+            + _evidence_row("Two", "1, 2", "W2")
+        )
+        for cited, expected in (
+            ("Broken", "must cite a PASS row"),
+            ("Two, Broken", "Broken, a non-PASS row no later row resolves"),
+            ("One", None),
+        ):
+            task = _handoff_task(
+                rows, _decision_row("1", cited) + _decision_row("2", "Two")
+            )
+            with self.subTest(cited=cited):
+                found = self.findings((task,))
+                if expected is None:
+                    self.assertEqual((), found)
+                else:
+                    self.assertEqual(1, len(found))
+                    self.assertIn(expected, found[0].message)
+
+    def test_a_later_row_resolves_a_cited_non_pass_row(self) -> None:
+        rows = (
+            _evidence_row("Broken", "1", "W1", "ERROR", required="optional")
+            + _evidence_row("Fixed", "1", "W1", resolves="Broken")
+            + _evidence_row("Two", "1, 2", "W2")
+        )
+        task = _handoff_task(
+            rows, _decision_row("1", "Broken, Fixed") + _decision_row("2", "Two")
+        )
+        self.assertEqual((), self.findings((task,)))
+
+    def test_a_cancelled_task_or_item_leaves_its_pairs_open(self) -> None:
+        first = _evidence_row("One", "1", "W1")
+        decisions = _decision_row("1", "One") + _decision_row("2", "-", "pending")
+        # W2 sits only in a cancelled item, so criterion 1 owes it no PASS.
+        items = (
+            ("A", "W1", "First", "@owner", "completed", "-"),
+            ("B", "W2", "Second", "@owner", "cancelled", "Withdrawn"),
+        )
+        self.assertEqual(
+            (), self.findings((_handoff_task(first, decisions, items=items),))
+        )
+        running = (items[0], ("B", "W2", "Second", "@owner", "in-progress", "-"))
+        found = self.findings((_handoff_task(first, decisions, items=running),))
+        self.assertEqual(1, len(found))
+        self.assertIn("criterion 1 has no PASS for Work Unit W2", found[0].message)
+        # A PASS recorded only in a cancelled Task does not close a live Task's pair.
+        cancelled = _handoff_task(
+            _evidence_row("Elsewhere", "1", "W2"),
+            None,
+            number=2,
+            status="cancelled",
+            cancellation={
+                "criteria_disposition": [{"criterion": "1"}, {"criterion": "2"}]
+            },
+        )
+        found = self.findings(
+            (_handoff_task(first, decisions), cancelled), plan=_SHARED_UNIT_PLAN
+        )
+        self.assertEqual(1, len(found))
+        self.assertIn("criterion 1 has no PASS for Work Unit W2", found[0].message)
+
+    def test_a_decision_recorded_earlier_stands_as_recorded(self) -> None:
+        unsupported = _handoff_task(
+            _evidence_row("One", "1", "W1") + _evidence_row("Two", "2", "W2"),
+            _decision_row("1", "One") + _decision_row("2", "Two"),
+        )
+        self.assertEqual(1, len(self.findings((unsupported,))))
+        self.assertEqual((), self.findings((unsupported,), before=(unsupported,)))
+        other_owner = dataclasses.replace(
+            unsupported,
+            body=unsupported.body.replace("[Owner](../spec.md)", "[Other](../plan.md)"),
+        )
+        self.assertEqual((), self.findings((other_owner,), before=(unsupported,)))
+        pending = dataclasses.replace(
+            unsupported,
+            body=unsupported.body.replace(
+                "| 1 | accepted | One |", "| 1 | pending | - |"
+            ),
+        )
+        self.assertEqual(1, len(self.findings((unsupported,), before=(pending,))))
+
+    def test_acceptance_with_only_a_merged_pull_request_note_is_rejected(self) -> None:
+        spec_packages = _spec_packages_module()
+        run = _evidence_row("Run", "1", "W1", "NOT_RUN")
+        for evidence, cited, message in (
+            (_evidence_row("Two", "2", "W2"), "PR 12 merged", "this Task's Evidence"),
+            (run, "-", "no PASS evidence"),
+            (run, "Run", "no PASS evidence"),
+        ):
+            task = _handoff_task(
+                evidence,
+                _decision_row("1", cited).replace("reviewed", "PR 12 merged")
+                + _decision_row("2", "-", "pending"),
+            )
+            with self.subTest(evidence=evidence, cited=cited):
+                with self.assertRaisesRegex(spec_packages.SpecPackageError, message):
+                    spec_packages._v6_evidence_contract(
+                        _generation6.SPEC,
+                        _generation6.PLAN,
+                        (task,),
+                        load_current_registry(),
+                    )
+
+    def test_a_cancelled_pair_blocks_the_older_format_rule(self) -> None:
+        spec_packages = _spec_packages_module()
+        spec = dataclasses.replace(
+            _generation6.SPEC, body="## Acceptance Criteria\n\n1. First.\n"
+        )
+        plan = dataclasses.replace(
+            _generation6.PLAN,
+            body=_generation6.PLAN.body.replace(
+                "| W2 | 2 | Second | W1 | TSK-0001 |",
+                "| W2 | 1 | Second | W1 | TSK-0002 |",
+            ),
+        )
+        first = _handoff_task("", None, status="completed")
+
+        def readiness(admitted, *tasks):
+            evidence = spec_packages._v6_evidence_contract(
+                spec,
+                plan,
+                tasks,
+                load_current_registry(),
+                frozenset(admitted),
+                admitted,
+            )
+            package = spec_packages.SpecPackage(
+                pathlib.Path(_HANDOFF_ROOT), "0001", "example", spec, plan, tasks, ()
+            )
+            return spec_packages.archive_readiness_findings(package, evidence)
+
+        cancelled = _handoff_task(
+            _evidence_row("Dropped", "1", "W2", "CANCELLED", required="optional"),
+            None,
+            number=2,
+            status="cancelled",
+            cancellation={"criteria_disposition": [{"criterion": "1"}]},
+        )
+        self.assertEqual(
+            ("criterion 1 is not accepted",),
+            readiness({first.path: frozenset({("1", "W1")})}, first, cancelled),
+        )
+        second = _handoff_task("", None, number=2, status="completed")
+        self.assertEqual(
+            (),
+            readiness(
+                {
+                    first.path: frozenset({("1", "W1")}),
+                    second.path: frozenset({("1", "W2")}),
+                },
+                first,
+                second,
+            ),
+        )
+        # A criterion held only by a cancelled Task stays open as well.
+        only_cancelled = dataclasses.replace(
+            plan, body=plan.body.replace("| TSK-0001 |", "| TSK-0002 |")
+        )
+        package = spec_packages.SpecPackage(
+            pathlib.Path(_HANDOFF_ROOT),
+            "0001",
+            "example",
+            spec,
+            only_cancelled,
+            (cancelled,),
+            (),
+        )
+        evidence = spec_packages._v6_evidence_contract(
+            spec, only_cancelled, (cancelled,), load_current_registry()
+        )
+        self.assertEqual(
+            ("criterion 1 is not accepted",),
+            spec_packages.archive_readiness_findings(package, evidence),
+        )
 
 
 if __name__ == "__main__":
