@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Operations Policy"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0015"
 parent_ids:
@@ -14,11 +14,19 @@ created: "2026-05-17"
 
 # 02-Auth OAuth2 Proxy Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 이 문서는 `02-auth` OAuth2 Proxy 운영 정책을 정의한다. 시크릿 주입 경로, 세션/쿠키 표준, fail-closed 및 degraded-mode 운영 통제를 명시한다.
 
+### Authority
+
+- Declared parent: [02-Auth Architecture Description](../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
+
 ## Scope
+
+### Applies To
 
 - `infra/02-auth/oauth2-proxy/docker-compose.yml`
 - `infra/02-auth/oauth2-proxy/docker-entrypoint.sh`
@@ -30,7 +38,13 @@ created: "2026-05-17"
 - **Systems**: OAuth2 Proxy ForwardAuth gateway
 - **Environments**: Local, Dev, Stage, Production-like
 
+### Exclusions
+
+Keycloak realm/client 운영은 [POL-0014](0014-keycloak.md)가 다룬다.
+
 ## Rules
+
+### Requirements
 
 - **필수**:
   - `check-all-hardening.sh 02-auth` 실패 0건을 유지해야 한다.
@@ -55,12 +69,12 @@ created: "2026-05-17"
   - fail-open 상시 운영
   - 시크릿을 Compose/문서에 평문으로 저장
 
-### Session boundaries
+#### Session boundaries
 
 Valkey AOF는 세션 persistence이며 백업을 대신하지 않는다. 세션 손실 시 재로그인
 영향을 고지하고 공유 `mng-valkey`를 Proxy 복구만을 위해 비우거나 삭제하지 않는다.
 
-### Credential exposure boundary
+#### Credential exposure boundary
 
 Proxy는 entrypoint가 Secret 파일에서 읽어 `OAUTH2_PROXY_REDIS_PASSWORD` 환경 변수로
 password를 소비한다. Docker daemon/host process 접근도 credential 신뢰 경계다. full
@@ -68,19 +82,16 @@ password를 소비한다. Docker daemon/host process 접근도 credential 신뢰
 `.State.Health.Log`는 기록하지 않는다. 서비스명·image identity·health 상태·재시작
 횟수·시각처럼 허용된 필드만 사용한다. 실제 유출은 관찰하지 않았다.
 
-### Shared controls and accountability
+#### Shared controls and accountability
 
-운영 책임자는 @buenhyden이다. 변경·재시작·credential 작업의 대상과 영향, 승인,
-종료 조건을 기록하며 예외는 위험·만료·원복 책임까지 명시한다. 공통 자원 상한과
+공통 자원 상한과
 mount 적용은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md), profile·
 상호 배제는 [POL-0078](../01-common/0078-compose-profile-vocabulary.md), image 변경과 검토는
-[POL-0086](../10-platform-and-backup/0086-dependency-version-management.md)을 적용한다. OOM·반복 재시작·
-인증 실패 증가 또는 이미지·노출·mount 변경 시 정기 주기를 기다리지 않고 검토한다.
-보존할 상태와 private credential은 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의
+[POL-0086](../10-platform-and-backup/0086-dependency-version-management.md)을 적용한다. 보존할 상태와 private credential은 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의
 접근·암호화·retention을 적용한다. 제거 전에 소비자와 복구 입력을 확인하고,
 volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상으로 한다.
 
-### Session and Upgrade Controls
+#### Session and Upgrade Controls
 
 - Cookie, client, Valkey credential 값은 각각의 secret 소유자가 관리한다.
   회전할 때는 모든 활성 session이 무효화되는지 명시해야 한다.
@@ -90,32 +101,38 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
 - 격리된 OIDC/PKCE/ForwardAuth/logout test 후에만 upgrade한다.
   이전 image 선언을 보존하고 session 무효화 계획을 기록한다.
 
-## Exceptions
-
-- OIDC 공급자 장애가 장기화될 때 한시적 degraded-mode 허용 가능.
-- 단, 승인자 기록과 종료 조건(원복 기준)을 사전에 명시해야 한다.
-
-### Review Cadence
-
-- 월 1회 정기 점검
-- OAuth2 Proxy/Keycloak 버전 변경 시 수시 점검
-
-### Traceability
-
-- Declared parent: [02-Auth Architecture Description](../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
-- Subject peers: [Guide](../../guides/03-identity-and-access/0015-oauth2-proxy.md) (`GDE-0015`), [Runbook](../../runbooks/03-identity-and-access/0015-oauth2-proxy.md) (`RUN-0015`)
-
-## Verification
+### Enforcement
 
 - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 - `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
 - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 - Runtime-only: `docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`(기본 `OAUTH2_PROXY_PORT` 기준)
 
-## Related Documents
+## Exceptions
+
+### Exception Conditions
+
+- OIDC 공급자 장애가 장기화될 때 한시적 degraded-mode 허용 가능.
+- 단, 승인자 기록과 종료 조건(원복 기준)을 사전에 명시해야 한다.
+
+### Approval and Review
+
+- 월 1회 정기 점검
+- OAuth2 Proxy/Keycloak 버전 변경 시 수시 점검
+
+- OOM·반복 재시작·인증 실패 증가 또는 이미지·노출·mount 변경 시 정기 주기를 기다리지 않고 검토한다.
+
+## Ownership
+
+### Responsibilities
+
+운영 책임자는 @buenhyden이다. 변경·재시작·credential 작업의 대상과 영향, 승인,
+종료 조건을 기록하며 예외는 위험·만료·원복 책임까지 명시한다.
+
+### Change and Adoption
+
+- Subject peers: [Guide](../../guides/03-identity-and-access/0015-oauth2-proxy.md) (`GDE-0015`), [Runbook](../../runbooks/03-identity-and-access/0015-oauth2-proxy.md) (`RUN-0015`)
 
 - 런타임 버전은 Compose/Dockerfile 선언이 소유하며, [파생 Compose 이미지 목록](../../../../infra/tech-stack.versions.json)은 drift 검증에 사용한다.
 
 - [Operations index](../../README.md)
-- [Usage guide](../../guides/03-identity-and-access/0015-oauth2-proxy.md)
-- [Recovery runbook](../../runbooks/03-identity-and-access/0015-oauth2-proxy.md)

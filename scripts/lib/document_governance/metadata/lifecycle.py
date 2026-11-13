@@ -722,7 +722,6 @@ def validate_record(
         "next_review_at",
         "occurred_at",
         "resolved_at",
-        "archived_at",
     )
     for temporal_field in temporal_fields:
         temporal_value = record.metadata.get(temporal_field)

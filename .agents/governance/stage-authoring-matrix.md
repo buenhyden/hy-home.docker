@@ -1,15 +1,37 @@
 ---
 title: "Stage Authoring Matrix"
-version: "1.3.2"
+version: "1.3.3"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 ---
 
 # Stage Authoring Matrix
 
-## Overview
+## Purpose
+
+### Objective
+
+Map each stage to its layer, canonical owner, and completion evidence.
+
+### Authority
+
+This policy is the canonical owner of the stage ownership and document type family map under [bootstrap precedence](bootstrap.md#authority-and-precedence).
+
+## Scope
+
+### Applies To
+
+Current stage roles, document families, canonical ownership, and verification routes.
+
+### Exclusions
+
+Shared README profiles, native envelopes, and scoped registry/schema/template reads keep the exceptions the documentation protocol registers.
+
+## Rules
+
+### Requirements
 
 | Stage | `layer` | Purpose | Canonical owner | Completion evidence |
 | --- | --- | --- | --- | --- |
@@ -35,13 +57,7 @@ source for files outside docs. Use README navigation and canonical agent rules;
 scoped execution reads and required registry/schema/template inputs retain the
 narrow exceptions in that protocol.
 
-## Scope
-
-Current stage roles, document families, canonical ownership, and verification routes.
-
-## Rules
-
-### Document Type Families
+#### Document Type Families
 
 `type` is a `family/kind` pair. The family names the authority that owns the
 document; the kind names its role inside that family.
@@ -74,17 +90,31 @@ observed evidence and never authenticates an approval source. The Registry owns
 document-family state vocabulary, direct parent cardinality, result and review
 table shapes, and lifecycle generation; the SDLC owns their execution meaning.
 
-## Exceptions
-
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-## Verification
+### Enforcement
 
 The canonical home contains only registered canonical category sources.
 Unknown or unsafe entries fail closed and are preserved for review; they are not
 stale generated files eligible for automatic deletion.
 
-## Related Documents
+## Exceptions
+
+### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+### Approval and Review
+
+None: no exception exists to approve.
+
+## Ownership
+
+### Responsibilities
+
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
+
+### Change and Adoption
+
+Changes land in place with Task evidence; related documents:
 
 - [Documentation protocol](documentation-protocol.md)
 - [SDLC](sdlc.md)

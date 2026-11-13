@@ -3,11 +3,11 @@ name: "infra-cross-validate"
 description: "Use when a proposed infrastructure diff needs independent read-only cross-file review against architecture, operations, security, and rollback contracts."
 metadata:
   title: "infra-cross-validate"
-  version: "1.3.0"
+  version: "1.3.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-10-29"
+  updated: "2026-11-13"
   function_id: "infra-cross-validate"
   scope: "infra"
   owner_agent: "iac-reviewer"
@@ -15,48 +15,60 @@ metadata:
 
 # infra-cross-validate
 
-## Purpose
+## Purpose and Trigger
 
-### Preconditions
+### When to Use
 
 Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
 
 A proposed infrastructure diff, declared runtime contract, and static validation evidence must be available for independent review.
 
-## Inputs
+### When Not to Use
 
-- Proposed infrastructure diff and declared runtime contract.
-- Related architecture, operations, security, and rollback constraints.
+Applying the infrastructure change is outside this read-only review. Runtime-only questions go to `drift-detector` and security-sensitive gaps to `security-auditor`.
 
 ## Procedure
+
+### Steps
 
 1. Trace each changed service, network, volume, secret, health, and resource edge across all affected files.
 2. Compare the proposal with architecture and operations contracts, distinguishing pre-change static risk from post-change observed drift.
 3. When persistent state or recovery changes, route the sanitized recovery contract through [stateful recovery contract review](../stateful-recovery-contract-review/SKILL.md) before any operational recommendation.
 4. Report conflicts and required corrections without applying the infrastructure change.
 
-### Gates
+#### Gates
 
 - Review remains read-only.
 - Cross-file dependencies and declared behavior are mutually consistent.
 - A recovery-readiness verdict never authorizes or reports an operational restore.
 
-## Outputs
+### Failure Handling
+
+Mark runtime-only questions for `drift-detector` and security-sensitive gaps for `security-auditor`; never infer live state from configuration. Keep recovery readiness blocked when its required contract facts are missing.
+
+## Inputs and Outputs
+
+### Inputs
+
+- Proposed infrastructure diff and declared runtime contract.
+- Related architecture, operations, security, and rollback constraints.
+
+### Outputs
 
 - Cross-validation findings with exact file evidence, downstream observation needs, and any separate recovery-readiness verdict.
 
 ## Verification
 
+### Checks
+
 - Every changed service, network, volume, secret, health, and resource edge is traced to each affected file.
 - The review leaves the working tree unchanged and reports conflicts with exact file evidence.
 - Any recovery-readiness verdict is reported apart from, and never as, an executed restore.
 
-## Failure Handling
+### Completion and Handoff
 
-Mark runtime-only questions for `drift-detector` and security-sensitive gaps for `security-auditor`; never infer live state from configuration. Keep recovery readiness blocked when its required contract facts are missing.
-
-## References
+Owning role, policies and related documents:
 
 - [IaC reviewer](../../roles/iac-reviewer.md)
 - [Drift detector](../../roles/drift-detector.md)

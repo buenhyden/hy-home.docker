@@ -44,6 +44,8 @@ created: "{{CREATED}}"
 
 ### Building Blocks
 
+<!-- Author prompt: When a diagram shows the structure, review it against the [C4 diagram review checklist](https://c4model.com/diagrams/checklist). -->
+
 {{COMPONENTS_RESPONSIBILITIES_AND_OWNERS}}
 
 ### Runtime and Deployment

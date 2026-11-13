@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Operations Policy"
-version: "1.4.0"
+version: "1.4.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0047"
 parent_ids:
@@ -14,14 +14,24 @@ created: "2026-05-17"
 
 # Pyroscope Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 이 정책은 Pyroscope continuous profiling service의 ingestion, filesystem
 storage, capacity boundary, label/cardinality, route, health 기준을 정의한다.
 사용 흐름은 Pyroscope guide가, 장애 대응 절차는 Pyroscope runbook이
 담당한다.
 
+### Authority
+
+- Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+
 ## Scope
+
+### Applies To
 
 이 정책은 현재 `infra/06-observability/pyroscope` compose와
 `config/pyroscope.yaml`에 선언된 Pyroscope 운영 기준을 다룬다.
@@ -29,7 +39,13 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 - **Systems**: compose service `pyroscope`, container `pyroscope`, image [grafana/pyroscope image declaration](../../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/pyroscope/config/pyroscope.yaml`, volume `pyroscope-data`, `pyroscope-metastore`
 - **Environments**: 로컬·개발·홈랩 운영
 
+### Exclusions
+
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
+
 ## Rules
+
+### Requirements
 
 - **Required**:
   - Pyroscope service는 `template-infra-med`, image
@@ -71,38 +87,18 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
     persistent volume, config path를 runtime에서 변경하는 행위
   - 운영 환경에서 근거 없이 high-overhead block/mutex profiling을 상시 활성화하는 행위
 
-### Lifecycle and data controls
+#### Lifecycle and data controls
 
 - Pyroscope는 `HOME`이다. SPEC-0182 W6에서 소유자가 `profiling`을 HOME에 추가했다(POL-0078). `profiling`을 빼는 대상으로 전환할 때는 `HOME up`이 이미 실행 중인 컨테이너를 제거하지 않으므로 Pyroscope를 명시적으로 중지한다.
 - Gateway 인증과 로컬 filesystem 경계를 유지한다. Profile source 없이 쓰기 대상만 설정한 것은 수집 증거가 아니다.
 - 쓰기·서비스를 중지하거나 일관성을 검증한 snapshot으로만 백업한다. 격리 스토리지에서 rehearsal을 수행하며 과거·신규 조회와 producer label을 확인한다.
 - 제거 전 producer·Grafana 참조를 정리하고 보존 여부를 결정하며 경로를 닫는다. `pyroscope-data`와 `pyroscope-metastore` 삭제에는 명시적 승인이 필요하다.
 
-### Profile storage and source limits
+#### Profile storage and source limits
 
 두 Alloy 설정에는 Go(11개 대상)와 별도 SeaweedFS pprof source가 있다. 선택 파일·target과 제한된 profile query로 수신을 확인하며 writer/receiver readiness만으로 판정하지 않는다. Pyroscope는 선언 volume의 로컬 filesystem과 ingestion/cardinality 한도를 사용한다. retention은 `limits.retention_period: 168h`로 고정하며 삭제는 block 단위·유예 이후다. 기간 변경은 별도 승인된 설정·용량 검토가 필요하다. wget 존재를 가정하지 않고 선언된 `profilecli ready` probe를 쓴다. Profile/config를 일관되게 보존하고 삭제는 POL-0048을 따른다.
 
-## Exceptions
-
-- Retention, storage backend, ingestion limits, profile source, route 예외는
-  사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
-- 장애 대응 중 임시 조치가 필요하면 Pyroscope runbook에서 최소 조치와
-  rollback evidence를 기록한다.
-
-책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
-### Review Cadence
-
-- Pyroscope image, config, storage backend, ingestion limits, profile source,
-  route, healthcheck, retention/capacity policy가 변경될 때 검토한다.
-- 정기 검토는 분기마다 수행한다.
-
-### Traceability
-
-- Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](../../guides/07-observability/0047-pyroscope.md) (`GDE-0047`), [Runbook](../../runbooks/07-observability/0047-pyroscope.md) (`RUN-0047`)
-
-## Verification
+### Enforcement
 
 - Compose service boundary:
   `rg -n 'service: template-infra-med|image: grafana/pyroscope:|pyroscope-data|PYROSCOPE_PORT|/ready|pyroscope.middlewares' infra/06-observability/docker-compose.yml`
@@ -111,9 +107,31 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 - Repository contracts:
   원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
-## Related Documents
+## Exceptions
 
-- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+### Exception Conditions
+
+- Retention, storage backend, ingestion limits, profile source, route 예외는
+  사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
+- 장애 대응 중 임시 조치가 필요하면 Pyroscope runbook에서 최소 조치와
+  rollback evidence를 기록한다.
+
+### Approval and Review
+
+- Pyroscope image, config, storage backend, ingestion limits, profile source,
+  route, healthcheck, retention/capacity policy가 변경될 때 검토한다.
+- 정기 검토는 분기마다 수행한다.
+
+## Ownership
+
+### Responsibilities
+
+책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
+
+### Change and Adoption
+
+- Subject peers: [Guide](../../guides/07-observability/0047-pyroscope.md) (`GDE-0047`), [Runbook](../../runbooks/07-observability/0047-pyroscope.md) (`RUN-0047`)
+
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/07-observability/0047-pyroscope.md)
 - [Recovery runbook](../../runbooks/07-observability/0047-pyroscope.md)

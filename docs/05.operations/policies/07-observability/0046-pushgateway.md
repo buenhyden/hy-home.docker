@@ -1,10 +1,10 @@
 ---
 title: "Pushgateway Operations Policy"
-version: "1.1.0"
+version: "1.1.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0046"
 parent_ids:
@@ -14,18 +14,34 @@ created: "2026-05-17"
 
 # Pushgateway Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 이 문서는 `06-observability` 계층의 Pushgateway 운영 정책을 정의한다. Pushgateway는 Prometheus pull 모델이 직접 적용되기 어려운 단기 실행 작업과 배치 작업의 메트릭을 임시로 받는 버퍼이며, 장기 저장소나 일반 서비스 메트릭 프록시가 아니다.
 
+### Authority
+
+- Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
+
+- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+
 ## Scope
+
+### Applies To
 
 이 정책은 `infra/06-observability/docker-compose.yml`의 `pushgateway` 서비스, 해당 서비스에 메트릭을 push하는 작업, Pushgateway의 stale metric cleanup, 그리고 Prometheus scrape 연동 계약에 적용된다.
 
 - **Systems**: `pushgateway` service/container, image [prom/pushgateway image declaration](../../../../infra/06-observability/docker-compose.yml), port `9091`, `/-/ready` healthcheck, `pushgateway.${DEFAULT_URL}` protected Traefik route, Prometheus scrape integration contract
 - **Environments**: 로컬·홈랩 관측 환경의 `obs` 또는 `batch-metrics` Docker Compose profile
 
+### Exclusions
+
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
+
 ## Rules
+
+### Requirements
 
 - **Required**:
   - Compose 서비스는 `profiles: [obs, batch-metrics]`, `template-infra-readonly-low`, image [prom/pushgateway image declaration](../../../../infra/06-observability/docker-compose.yml), expose `${PUSHGATEWAY_PORT:-9091}`, `/-/ready` healthcheck, and protected Traefik middleware chain을 유지해야 한다.
@@ -44,27 +60,14 @@ created: "2026-05-17"
   - cardinality가 높은 label, 상한 없는 tenant·user·request·build 식별자, secret을 포함한 label·지표 payload를 사용하는 행위.
   - 현재 Compose에 선언되지 않은 persistence option, route relaxation, image change, or scrape-job behavior를 문서에서 구현 완료로 표현하는 행위.
 
-### Lifecycle and data controls
+#### Lifecycle and data controls
 
 - Pushgateway는 OPTIONAL을 유지한다. Batch 동안 시작하거나 기존 실행 컨테이너를 발견해도 HOME으로 재분류하지 않는다.
 - Metric은 휘발성이므로 grouping-key 소유권, stale-series 삭제, gateway 인증과 producer의 실제 관측을 요구한다. 영속 보존·정확한 복구를 주장하지 않는다.
 - Upgrade/restart는 metric 손실을 승인하고 현재 관측의 제한된 재전송을 준비해야 한다. 자원 변경에는 series/cardinality 근거가 필요하다.
 - 제거에는 producer 이전·중지, scrape 정리, stale group 삭제와 route 폐쇄가 필요하다. 삭제할 자체 데이터 볼륨은 없다.
 
-## Exceptions
-
-예외는 운영 owner가 승인해야 하며, 승인 사유, label cardinality boundary, cleanup 절차, rollback 기준, 관련 task or incident evidence를 남겨야 한다. Emergency cleanup은 runbook 절차로 수행하고 사후에 evidence를 보강한다.
-
-### Review Cadence
-
-분기마다, 그리고 image·profile·route middleware·healthcheck·영속성·scrape job·label 정책·cleanup 자동화가 바뀔 때 검토한다.
-
-### Traceability
-
-- Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
-- Subject peers: [Guide](../../guides/07-observability/0046-pushgateway.md) (`GDE-0046`), [Runbook](../../runbooks/07-observability/0046-pushgateway.md) (`RUN-0046`)
-
-## Verification
+### Enforcement
 
 - **Compose Check**: `rg -n 'service: template-infra-readonly-low|image: prom/pushgateway:|PUSHGATEWAY_PORT|/-/ready|pushgateway.middlewares' infra/06-observability/docker-compose.yml`
 - **Scrape Contract Check**: `rg -n 'job_name: "pushgateway"|pushgateway:9091|honor_labels' infra/06-observability/prometheus/config/`. Match가 없으면 Prometheus integration을 gap으로 기록하고 runtime 설정 변경 task를 별도로 만든다.
@@ -72,11 +75,25 @@ created: "2026-05-17"
 - **API Audit**: Pushgateway API or UI에서 비정상적으로 큰 metric group, high-cardinality labels, cleanup되지 않은 debug groups를 확인한다.
 - **Documentation Check**: guide and runbook은 사용법과 복구 절차만 설명하고, policy control은 이 문서에 유지한다.
 
+## Exceptions
+
+### Exception Conditions
+
+예외는 운영 owner가 승인해야 하며, 승인 사유, label cardinality boundary, cleanup 절차, rollback 기준, 관련 task or incident evidence를 남겨야 한다. Emergency cleanup은 runbook 절차로 수행하고 사후에 evidence를 보강한다.
+
+### Approval and Review
+
+분기마다, 그리고 image·profile·route middleware·healthcheck·영속성·scrape job·label 정책·cleanup 자동화가 바뀔 때 검토한다.
+
+## Ownership
+
+### Responsibilities
+
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-## Related Documents
+### Change and Adoption
 
-- 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
+- Subject peers: [Guide](../../guides/07-observability/0046-pushgateway.md) (`GDE-0046`), [Runbook](../../runbooks/07-observability/0046-pushgateway.md) (`RUN-0046`)
 
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/07-observability/0046-pushgateway.md)

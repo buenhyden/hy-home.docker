@@ -1129,6 +1129,25 @@ class DocumentRegistryTests(unittest.TestCase):
                 {item.code for item in validate_registry(raw)},
             )
 
+    def test_retired_archive_vocabulary_is_rejected(self) -> None:
+        # Stage 98 holds no bodies, so nothing writes or reads these keys.
+        retired = (
+            "archived_from",
+            "archived_at",
+            "archive_reason",
+            "archive_disposition",
+            "archived_commit",
+            "archived_blob",
+        )
+        for key in retired:
+            with self.subTest(key=key):
+                # A valid value proves the key itself is rejected.
+                value = "2026-01-01T00:00:00Z" if key == "archived_at" else "x"
+                self.assertNotEqual((), validate_frontmatter({key: value}))
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        self.assertNotIn("archive_source_prefixes", raw["common"])
+        self.assertFalse(set(retired) & set(raw["common"]["frontmatter_order"]))
+
     def test_archive_authorization_schema_requires_scoped_explicit_approval(
         self,
     ) -> None:
@@ -3297,11 +3316,9 @@ if __name__ == "__main__":
 class FreeFormProfileTests(unittest.TestCase):
     """A profile with no shared heading vocabulary declares itself free-form.
 
-    `governance-policy` spans 16 documents with 51 distinct H2 headings, of
-    which only `Related Documents` appears in more than one. Registering the
-    other 50 would state a contract nothing shares; leaving them unregistered
-    makes every edit to any of those documents a violation while the corpus
-    itself passes, because only headings a change introduces are counted.
+    `governance-knowledge` documents share no H2 set, so an unregistered H2 is
+    allowed there. `governance-policy` moved to the common form, whose shared
+    H2 set every governance policy now follows, so it is no longer free-form.
     """
 
     def _adapted(self):
@@ -3321,18 +3338,20 @@ class FreeFormProfileTests(unittest.TestCase):
 
     def test_free_form_profile_permits_an_unregistered_heading(self) -> None:
         codes = self._codes(
-            "governance-policy",
-            ".agents/governance/quality-standards.md",
-            ("Anything At All", "Related Documents"),
+            "governance-knowledge",
+            ".agents/knowledge/repository-map.md",
+            ("Overview", "Scope", "Rules", "Evidence", "Anything At All"),
         )
         self.assertNotIn("body-heading-forbidden", codes)
 
-    def test_free_form_profile_still_requires_related_documents(self) -> None:
+    def test_governance_policy_now_rejects_an_unregistered_heading(self) -> None:
+        # The common form gives every governance policy one shared H2 set.
         codes = self._codes(
             "governance-policy",
             ".agents/governance/quality-standards.md",
-            ("Anything At All",),
+            ("Anything At All", "Ownership"),
         )
+        self.assertIn("body-heading-forbidden", codes)
         self.assertIn("body-heading-missing", codes)
 
     def test_a_contracted_profile_still_rejects_an_unregistered_heading(self) -> None:

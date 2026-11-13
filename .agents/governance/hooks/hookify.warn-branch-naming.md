@@ -1,10 +1,10 @@
 ---
 title: "WARNING: branch naming rule violation"
-version: "1.0.6"
+version: "1.0.7"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 action: "warn"
 enabled: true
 event: "bash"
@@ -14,15 +14,29 @@ pattern: "git\\s+(checkout\\s+-b|switch\\s+-c)\\s+(?!(build|chore|ci|deps|docs|f
 
 # WARNING: branch naming rule violation
 
-## Overview
+## Purpose
+
+### Objective
 
 Apply the declared `warn` action for warn-branch-naming.
 
+### Authority
+
+Owning policy: [Git workflow](../git-workflow.md).
+
 ## Scope
+
+### Applies To
 
 The `warn-branch-naming` rule applies on the `bash` event and matches Bash commands that match its `pattern` ("WARNING: branch naming rule violation"). The frontmatter owns the exact matcher.
 
+### Exclusions
+
+None.
+
 ## Rules
+
+### Requirements
 
 **Branch naming rule violation detected (project rule)**
 
@@ -52,14 +66,26 @@ git checkout -b release/publish-v1.0.0
 
 Do not work directly on `main`. Start from a feature or fix branch.
 
-## Exceptions
-
-No exception is declared by this rule.
-
-## Verification
+### Enforcement
 
 Native event delivery is a separate observation from the frontmatter match.
 
-## Related Documents
+## Exceptions
 
-- `.agents/README.md`
+### Exception Conditions
+
+No exception is declared by this rule.
+
+### Approval and Review
+
+None.
+
+## Ownership
+
+### Responsibilities
+
+`@buenhyden`.
+
+### Change and Adoption
+
+`.agents/README.md`.

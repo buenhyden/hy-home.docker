@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Membership Operations Policy"
-version: "1.4.0"
+version: "1.4.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0077"
 parent_ids:
@@ -14,18 +14,34 @@ created: "2026-04-01"
 
 # Compose Network Membership Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 이 문서는 `hy-home.docker` 시스템의 Docker network 소속과 주소 할당 정책을 정의한다. IP 충돌 방지 및 일관성 유지를 위한 통제 기준을 제공한다.
 
+### Authority
+
+- 상위 문서: [Compose Network Segmentation Architecture Description](../../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
+
+- [Compose network segmentation architecture](../../../02.architecture/descriptions/0026-standardize-infra-net.md)
+
 ## Scope
+
+### Applies To
 
 이 정책은 repository가 root Compose에서 소유하는 모든 network의 소속과 주소 할당 방식을 관할한다.
 
 - **Systems**: `hy-home.docker` 기반 모든 서비스.
 - **Environments**: 현재 HOME/DEV와 명시적으로 선택한 OPTIONAL/LAB 환경. 미래 production을 검증된 대상으로 간주하지 않는다.
 
+### Exclusions
+
+repository가 root Compose에서 소유하지 않는 network는 이 정책의 관할이 아니다.
+
 ## Rules
+
+### Requirements
 
 - **필수**:
   - 서비스는 실제로 사용하는 peer가 있는 network에만 연결한다. peer가 없으면
@@ -43,24 +59,7 @@ created: "2026-04-01"
   - 사용하지 않는 peer를 위한 network 연결.
   - 외부망 주소와의 브릿징 설정 수동 수정.
 
-## Exceptions
-
-현재 예외는 없다. `k3d-hyhome` 공유 membership 예외는 2026-09-23 종료되었다.
-별도 LAN endpoint 연동은 [POL-0096](../10-platform-and-backup/0096-k8s-integration.md)의 기존 경계를 따른다.
-
-### Review Cadence
-
-책임 소유자는 @buenhyden이며, 주소·membership·노출 예외를 승인한다.
-
-- **Monthly**: AD-0026 **Networks** 표와 현재 Compose 파일 사이의 실태를 점검한다.
-- **On material change**: 신규 서비스, static IP 변경, profile include 변경, network gateway 변경 시 즉시 재검토한다.
-
-### Traceability
-
-- 상위 문서: [Compose Network Segmentation Architecture Description](../../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
-- 같은 주제: [Guide](../../guides/02-gateway-and-networking/0077-ip-address-management.md) (`GDE-0077`), [Runbook](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md) (`RUN-0077`)
-
-## Verification
+### Enforcement
 
 - `bash scripts/validation/validate-docker-compose.sh`를 통한 root compose 구조 검증.
 - 변경한 tier profile은 `HYHOME_COMPOSE_PROFILES`로 지정해 동일 검증을 반복한다.
@@ -74,10 +73,27 @@ created: "2026-04-01"
 중복은 별도로 검토한다. 이 구현 한계는 중복 금지 통제를 면제하지 않는다.
 검사 입력·임시 파일 효과는 [RUN-0086](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md#static-configuration-validation)을 따른다.
 
-## Related Documents
+## Exceptions
+
+### Exception Conditions
+
+현재 예외는 없다. `k3d-hyhome` 공유 membership 예외는 2026-09-23 종료되었다.
+별도 LAN endpoint 연동은 [POL-0096](../10-platform-and-backup/0096-k8s-integration.md)의 기존 경계를 따른다.
+
+### Approval and Review
+
+- **Monthly**: AD-0026 **Networks** 표와 현재 Compose 파일 사이의 실태를 점검한다.
+- **On material change**: 신규 서비스, static IP 변경, profile include 변경, network gateway 변경 시 즉시 재검토한다.
+
+## Ownership
+
+### Responsibilities
+
+책임 소유자는 @buenhyden이며, 주소·membership·노출 예외를 승인한다.
+
+### Change and Adoption
+
+- 같은 주제: [Guide](../../guides/02-gateway-and-networking/0077-ip-address-management.md) (`GDE-0077`), [Runbook](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md) (`RUN-0077`)
 
 - [Operations index](../../README.md)
-- [Usage guide](../../guides/02-gateway-and-networking/0077-ip-address-management.md)
-- [Recovery runbook](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md)
-- [Compose network segmentation architecture](../../../02.architecture/descriptions/0026-standardize-infra-net.md)
 - 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.

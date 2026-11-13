@@ -1,10 +1,10 @@
 ---
 title: "WARNING: non-Conventional Commit message"
-version: "1.0.5"
+version: "1.0.6"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 action: "warn"
 enabled: true
 event: "bash"
@@ -14,15 +14,29 @@ pattern: "git\\s+commit\\s+(?!.*--amend|.*-C[\\s=]).*-m\\s+(\"|\\')(?!(build|cho
 
 # WARNING: non-Conventional Commit message
 
-## Overview
+## Purpose
+
+### Objective
 
 Apply the declared `warn` action for warn-conventional-commit.
 
+### Authority
+
+Owning policy: [Git workflow](../git-workflow.md).
+
 ## Scope
+
+### Applies To
 
 The `warn-conventional-commit` rule applies on the `bash` event and matches Bash commands that match its `pattern` ("WARNING: non-Conventional Commit message"). The frontmatter owns the exact matcher.
 
+### Exclusions
+
+**Exclusions:** `--amend`, `-C` (message reuse), `Merge`, `Revert`, `Initial commit`
+
 ## Rules
+
+### Requirements
 
 **Non-Conventional Commit message detected (project rule)**
 
@@ -58,18 +72,28 @@ git commit -m "release: Publish v1.0.0"
 - `"feat something"` — missing colon separator
 - `"FEAT: something"` — uppercase type
 
-**Exclusions:** `--amend`, `-C` (message reuse), `Merge`, `Revert`, `Initial commit`
-
 Reference issue IDs, ADR IDs, or plan/task IDs in the footer when applicable.
 
-## Exceptions
-
-No exception is declared by this rule.
-
-## Verification
+### Enforcement
 
 Native event delivery is a separate observation from the frontmatter match.
 
-## Related Documents
+## Exceptions
 
-- `.agents/README.md`
+### Exception Conditions
+
+No exception is declared by this rule.
+
+### Approval and Review
+
+None.
+
+## Ownership
+
+### Responsibilities
+
+`@buenhyden`.
+
+### Change and Adoption
+
+`.agents/README.md`.

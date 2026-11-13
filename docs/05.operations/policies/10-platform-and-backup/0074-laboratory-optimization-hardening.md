@@ -1,10 +1,10 @@
 ---
 title: "Admin and Experiment Tools Hardening Operations Policy"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0074"
 parent_ids:
@@ -14,11 +14,21 @@ created: "2026-05-10"
 
 # Admin and Experiment Tools Hardening Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 이 문서는 여러 tier의 관리·실험 기능 최적화/하드닝 운영 정책을 정의한다. 관리 UI 보안 경계, 실험성 서비스 운영 통제, 카탈로그 확장 승인 게이트를 명문화한다.
 
+### Authority
+
+- 상위 문서: [Administration and Experimentation Architecture Description](../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
+
+- 실행 버전의 원본은 Compose/Dockerfile 선언이며, [파생 버전 목록](../../../../infra/tech-stack.versions.json)은 변경 누락 검증에 사용한다.
+
 ## Scope
+
+### Applies To
 
 - 각 패키지의 `docker-compose.yml`: `infra/04-data/redisinsight/`, `infra/06-observability/dozzle/`, `infra/08-ai/open-notebook/`, `infra/08-ai/mlflow/`; JupyterLab LAB은 `labs/jupyterlab/docker-compose.yml`과 `labs/jupyterlab/`(SPEC-0262)
 - `.env.example` (`ADMIN_UI_ALLOWED_CIDRS`)
@@ -27,7 +37,13 @@ created: "2026-05-10"
 - **Systems**: dozzle, redisinsight, open-notebook, surrealdb, mlflow, JupyterLab LAB
 - **Environments**: 단일 HOME/DEV 호스트의 관리 환경(별도 stage·production 환경은 없다)
 
+### Exclusions
+
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
+
 ## Rules
+
+### Requirements
 
 - **Required**:
   - 라우터는 해당 서비스 정책의 gateway·IP allowlist·인증 통제를 적용한다. Dozzle의 native OIDC와 Open Notebook의 공유 SSO 제외 예외를 유지한다.
@@ -45,7 +61,7 @@ created: "2026-05-10"
   - 인증 우회 direct 노출 복원
   - 감사 기준 없이 운영 캐시 직접 수정
 
-### Catalog Expansion Approval Gates
+#### Catalog Expansion Approval Gates
 
 - **dashboard 승인 조건**:
   - 실험성 dashboard 접근 만료 정책(자동 종료 기준) 문서화
@@ -60,31 +76,34 @@ created: "2026-05-10"
   - notebook data retention/expiration 기준 문서화
   - API/SurrealDB host-bound port 노출 필요성, 방화벽, 접근 경계 evidence 기록
 
-## Exceptions
-
-- 장애 대응 시 일시 완화는 승인 기록과 종료 조건이 필수다.
-- 예외 종료 후 동일 릴리스 내 기준선 복구 및 재검증을 수행한다.
-
-### Review Cadence
-
-- 월 1회 정기 검토
-- allowlist/권한/노출 정책 변경 시 수시 검토
-
-### Traceability
-
-- 상위 문서: [Administration and Experimentation Architecture Description](../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
-- 동일 주제 문서: [Guide](../../guides/10-platform-and-backup/0074-laboratory-optimization-hardening.md) (`GDE-0074`), [Runbook](../../runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md) (`RUN-0074`)
-
-## Verification
+### Enforcement
 
 - `HYHOME_COMPOSE_PROFILES=admin,notebook bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 scripts/validation/check-document-links.py --mode traceability`
 
-## Related Documents
+## Exceptions
 
-- 실행 버전의 원본은 Compose/Dockerfile 선언이며, [파생 버전 목록](../../../../infra/tech-stack.versions.json)은 변경 누락 검증에 사용한다.
+### Exception Conditions
+
+- 장애 대응 시 일시 완화는 승인 기록과 종료 조건이 필수다.
+- 예외 종료 후 동일 릴리스 내 기준선 복구 및 재검증을 수행한다.
+
+### Approval and Review
+
+- 월 1회 정기 검토
+- allowlist/권한/노출 정책 변경 시 수시 검토
+
+## Ownership
+
+### Responsibilities
+
+책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
+
+### Change and Adoption
+
+- 동일 주제 문서: [Guide](../../guides/10-platform-and-backup/0074-laboratory-optimization-hardening.md) (`GDE-0074`), [Runbook](../../runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md) (`RUN-0074`)
 
 - [Operations index](../../README.md)
 - [Usage guide](../../guides/10-platform-and-backup/0074-laboratory-optimization-hardening.md)
