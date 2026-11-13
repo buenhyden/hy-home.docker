@@ -14,16 +14,24 @@ created: "2026-11-06"
 
 # Opsflow First HOME Installation Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Record the D12 execution contract for the first installation of the Opsflow
 manifest workload (`source_manifest_ingest`) in HOME. TSK-0043 handed this
 installation off; this Task owns its six ordered steps, their checks and their
 evidence. No step has run.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Opsflow data path Task](tsk-0043-opsflow-data-path.md)
+- [Airflow Runbook](../../../05.operations/runbooks/08-workflows-and-automation/0050-airflow.md)
+- [Manifest pipeline README](../../../../infra/07-workflow/airflow/workloads/manifest-pipeline/README.md)
+
+### Inputs and Authority
 
 On 2026-11-06 the owner (@buenhyden) decided that for D12 the execution Task and
 the Runbook are written first and opened for review, and that the actual run
@@ -43,9 +51,11 @@ The step-by-step commands live in the
 [Airflow Runbook](../../../05.operations/runbooks/08-workflows-and-automation/0050-airflow.md);
 this Task does not copy them.
 
-## Work Log
+## Execution Log
 
-### Ordered steps
+### Work Performed
+
+#### Ordered steps
 
 | Step | Scope | Check | Open owner items | Status |
 | --- | --- | --- | --- | --- |
@@ -59,7 +69,7 @@ this Task does not copy them.
 Rollback removes the installed files, keeps every backup and drops nothing that
 existed before step 1.
 
-### 2026-11-10 owner decisions
+#### 2026-11-10 owner decisions
 
 On 2026-11-10 the owner (@buenhyden) approved the recommended answers to
 O1 through O8. They set what each step does; they do not approve any HOME
@@ -88,7 +98,7 @@ Still open after these answers: O2 (whether the roles already exist), O4, O5,
 and where the worker `pg.json` and `s3.json` under `OPSFLOW_SECRET_DIR` come
 from; the repository does not define that source.
 
-### Execution 2026-11-10
+#### Execution 2026-11-10
 
 Operator: the agent, with the owner (@buenhyden) approving each step in the
 session on 2026-11-10; the window opened at 13:00 KST and avoids the 08:00
@@ -164,7 +174,7 @@ Step record:
   reported `is_paused False` with `timetable_summary None`. The run list still
   held only the two step 5 runs.
 
-### Owner acceptance 2026-11-10
+#### Owner acceptance 2026-11-10
 
 On 2026-11-10 the owner (@buenhyden) accepted criterion 103 with all six steps
 at PASS and closed this Task. In the same session the owner approved removing
@@ -174,7 +184,7 @@ the test objects from `opsflow-dev`: the two step 5 inputs under
 were deleted with the SeaweedFS admin identity. The validated object, which
 `ops_flow.documents` references, and the step 5 quarantine object remain.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -182,7 +192,7 @@ were deleted with the SeaweedFS admin identity. The validated object, which
 | SPEC-0212-TSK-0051 | ready | in-progress | #execution-2026-11-10 |
 | SPEC-0212-TSK-0051 | in-progress | completed | #owner-acceptance-2026-11-10 |
 
-### Open owner items
+#### Open owner items
 
 These facts were not confirmed from the repository. Each stays open until the
 owner records an answer here, and the step that needs it does not start before.
@@ -198,7 +208,7 @@ owner records an answer here, and the step that needs it does not start before.
 | O7 | Which synthetic input key and body are used (the repository fixture is `fixtures/2026-10-10.json` for source `hy-home.docker`), and how does the one triggered run proceed while the DAG stays paused? The invalid-input case needs a different `business_date` and starts only after the first run ends (`max_active_runs=1`, source and business-date uniqueness); any run still queued must be recorded before step 6 unpauses. | Step 5 |
 | O8 | Which existing audit administrator login runs `008_checks.sql`? Its header and the `005`/`007` headers limit them to an approved isolated DB; does the owner approve running them on HOME `opsflow_dev`? | Step 2 |
 
-### Read-only answers 2026-11-10
+#### Read-only answers 2026-11-10
 
 These came from read-only checks against HOME on 2026-11-10 and from the
 repository at `0b7ffe8bc`. None of them changed HOME, and none of them approves a
@@ -213,7 +223,13 @@ credential decision.
 | O5 | The running `airflow-worker` image imports `boto3`, `psycopg2`, `jsonschema` and `pydantic`. | The current image may be named as `OPSFLOW_AIRFLOW_IMAGE`; a separate reviewed image is needed only if the workload adds a dependency the image lacks. |
 | O6 | The admin user is `postgres` on both `dev-pg` and `mng-pg`, and each container can read its mounted `POSTGRES_PASSWORD_FILE` (`/run/secrets/dev_pg_admin_password`, `/run/secrets/mng_postgres_password`). The values were not read. The backup target directory is still the owner's choice. | Step 1 can run inside each container with its own admin file once the owner names the backup directory. |
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -226,22 +242,30 @@ credential decision.
 | Step 5 synthetic run | 103 | W108 | Rows and quarantine readback | Pool `manifest_ingest`, one synthetic and one invalid input at `30be19b9b` | PASS | `step5-runs.txt` in the step 1 backup directory; see Execution 2026-11-10 (step 5). | required | - |
 | Step 6 unpause | 103 | W108 | DAG pause state | `source_manifest_ingest` at `30be19b9b` | PASS | `is_paused False`; only the two step 5 runs exist. | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 103 | accepted | Step 1 backups, Step 2 migrations, Step 3 bucket and canaries, Step 4 code install, Step 5 synthetic run, Step 6 unpause | All six steps passed on 2026-11-10; the owner accepted on 2026-11-10. | SPEC-0212 TSK-0051 |
 
-## Review and Completion
+### Remaining Conditions
 
 Every step's Evidence row is PASS from the approved 2026-11-10 window, and the
 owner accepted criterion 103 and closed this Task on 2026-11-10 (see Owner
 acceptance 2026-11-10 in the Work Log).
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Opsflow data path Task](tsk-0043-opsflow-data-path.md)
-- [Airflow Runbook](../../../05.operations/runbooks/08-workflows-and-automation/0050-airflow.md)
-- [Manifest pipeline README](../../../../infra/07-workflow/airflow/workloads/manifest-pipeline/README.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

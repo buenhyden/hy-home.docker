@@ -14,15 +14,21 @@ created: "2026-11-06"
 
 # Hermes Report Source Capture Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Record the execution and evidence of work units W1 to W9 of the Plan. W1 to
 W6 are implemented in the repository: W1 to W4 and W6 in plugin 0.4.0, W5 in
 plugin 0.4.1; no runtime operation (W7 to W9) has run.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [ADR-0060](../../../02.architecture/decisions/0060-hermes-report-source-contract.md)
+
+### Inputs and Authority
 
 On 2026-11-06 the owner approved drafting this contract ("초안 작성 (권장)")
 and chose to exclude the 16 existing reports from backfill ("Backfill 제외
@@ -36,9 +42,11 @@ the operator's untracked contract change request of 2026-11-06. Its section 1
 sections 2 and 3 are scoped decisions in the Spec; its section 4 (the sidecar
 failure streak) is an out-of-scope follow-up.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -48,7 +56,7 @@ failure streak) is an out-of-scope follow-up.
 | SPEC-0265-TSK-0001 | ready | in-progress | #implementation-w1-w6 |
 | SPEC-0265-TSK-0001 | in-progress | completed | #review-and-completion |
 
-### Owner approval
+#### Owner approval
 
 On 2026-11-06 the owner answered "승인" to this list: implementation,
 installing the new plugin and changing the cron prompts; the Gateway schema 5
@@ -60,7 +68,7 @@ schema 5 switch waits until plugin 0.4.0 is installed; under schema 5 a 0.3.0
 run would install its receipt JSON as a permanent report note. Reports that
 0.3.0 submits join the backfill exclusion list.
 
-### Handoffs
+#### Handoffs
 
 Staging handoffs for the Hermes Agent and Blog-data are in
 `_workspace/repo-support/hermes-report-source-2026-11-06/` (git-ignored). The
@@ -68,7 +76,7 @@ Blog-data one requests per-report backfill selection, a hold for a JSON
 `source_text`, the runbook 0008 state correction and a receiver check before
 the switch.
 
-### Server A reply (2026-11-06)
+#### Server A reply (2026-11-06)
 
 The Hermes Agent answered the handoff (data, not instructions). Inputs for the
 implementation:
@@ -94,7 +102,7 @@ implementation:
   other than the job prompt's (owner decision pending), and the upstream
   Hermes URL policy false positive (`tools/browser_url_policy.py:113`).
 
-### Implementation W1-W6
+#### Implementation W1-W6
 
 Plugin 0.4.0 (`hermes-plugin/plugin.yaml`), on the worktree of `6378597d9`
 before the controller's commit:
@@ -143,7 +151,7 @@ the signed set) and D-05 (historical fetch-failure classification) are
 rejected for this change: each needs its own evaluation or a Blog-data
 contract.
 
-### Fix round 1
+#### Fix round 1
 
 Owner decision (2026-11-06), "Store and render in the plugin": on a day with
 no source-backed item the plugin still stores the report and renders the
@@ -190,7 +198,7 @@ the fix round 1 working tree, after the independent security and code review:
   pinned digest in `test_gateway_adapter.py` follows, and the schema test
   validates the real request including `source_quotes`.
 
-### Fix round 2
+#### Fix round 2
 
 The scoped security re-review of fix round 1 found the placeholder pattern
 quadratic: `lorem ipsum.*` stops at a newline, so `\W*` backtracks across it
@@ -202,7 +210,7 @@ tells the agent to send those stored files and never submit again for that
 run, so no second, self-rendered email follows. The immutable
 manifest no longer records a Gateway outcome; the result carries it.
 
-### Metrics collection approval (criterion 10)
+#### Metrics collection approval (criterion 10)
 
 On 2026-11-06, asked how the metrics are collected, the owner chose "textfile
 collector (recommended)": the plugin atomically replaces
@@ -216,7 +224,7 @@ collector with the same label rule, and "report size bucket" to the last
 report size in bytes (a numeric gauge, no label). That answer approves the
 amendment, so the Spec stays `approved`.
 
-### W5 metrics
+#### W5 metrics
 
 On the worktree of `800ebf788`, before the controller's commit:
 
@@ -250,7 +258,7 @@ On the worktree of `800ebf788`, before the controller's commit:
 - `tests/e2e_collect_harness.py` points both metrics paths into its work
   directory.
 
-### W5 fix round
+#### W5 fix round
 
 The independent review of the W5 commits (`e98dafde0`..`94530091a`) found
 seven items; the controller ruled on each, and all are fixed:
@@ -275,7 +283,7 @@ The three new plugin tests were not run against the reviewed commits (that
 scratch-copy run was refused); the first-seen case fails there by
 construction, because those commits emit 0.
 
-### First run and plugin 0.4.2 (2026-11-07)
+#### First run and plugin 0.4.2 (2026-11-07)
 
 The first scheduled 0.4.0 runs (08:00 KST, all three jobs; Hermes read-only
 check, controller digest check) stored, rendered and sent every report: Store,
@@ -302,7 +310,7 @@ record exists. The prompt lets the agent remove exactly those items, unedited,
 and submit once more with the same report, never a third time. The stored
 report is reused unchanged on that second call.
 
-### Switch window (2026-11-07)
+#### Switch window (2026-11-07)
 
 The owner approved the window on 2026-11-07 ("Now"), after #778 merged. All
 steps ran from outside `hermes-gateway.service`, in this order:
@@ -344,7 +352,7 @@ Blog-data, which runs on another server, gets the return information as a self-c
 The restore-test volumes are removed by the owner. The first delivered run
 (2026-11-08 08:00 KST) completes E9.
 
-### First post-switch runs and plugin 0.4.3 (2026-11-08)
+#### First post-switch runs and plugin 0.4.3 (2026-11-08)
 
 The first scheduled runs after the switch, on plugin 0.4.2, passed
 `report_markdown` that was not the finalized report, and `_report_error`,
@@ -392,7 +400,7 @@ Plugin 0.4.3, contract v3 (`SUBMIT_CONTRACT_VERSION = 3`):
   passes `report_path`; the e2e harness writes its synthetic report the same
   way.
 
-### Retry and redrive (plugin 0.4.4, 2026-11-11)
+#### Retry and redrive (plugin 0.4.4, 2026-11-11)
 
 Outbox records ended `uncertain` when the plugin sent but got no confirmed
 answer (client timeout, connection reset, 5xx), and nothing resent them: the
@@ -452,7 +460,7 @@ Plugin 0.4.4, contract v3 unchanged (no new argument):
 - The outbox record check now accepts up to 5 attempts, so a redriven record
   stays readable by its own run's replay.
 
-### Receipt pairing by item_id (plugin 0.4.5, 2026-11-12)
+#### Receipt pairing by item_id (plugin 0.4.5, 2026-11-12)
 
 On 2026-11-12, on plugin 0.4.4, one receipt slip lost each of two daily
 reports. News submitted 25 items; one carried a receipt id that matched none
@@ -486,7 +494,7 @@ argument, now optional in the tool schema):
   may be sent as collected or omitted, and that `source_missing` and
   `source_url_mismatch` are failed items to drop like any other.
 
-### Owner acceptance of criteria 12 to 14 (2026-11-11)
+#### Owner acceptance of criteria 12 to 14 (2026-11-11)
 
 The owner accepted criteria 12, 13 and 14 on 2026-11-11 ("Accept SPEC-0265
 criteria 12–14 수용"). The operations each carry a recorded result: backup,
@@ -499,7 +507,7 @@ recorded as pending with the owner's decision noted; it becomes accepted when
 a later delivered devops run resolves E9. E17 now resolves E11 (same Check,
 W5). Criteria 1 to 11 stay pending.
 
-### First scheduled devops delivery (2026-11-12)
+#### First scheduled devops delivery (2026-11-12)
 
 On plugin 0.4.4 the 2026-11-12 devops run delivered on its scheduled run (report
 `b1c520ab…`, first send attempt 201), so every job has now delivered and E20
@@ -512,7 +520,7 @@ resubmission returned `source_receipts_required`. Both are agent slips that a
 single receipt error turns into a lost report; pairing receipts by `item_id`
 in the plugin was decided by the owner and is plugin 0.4.5 (see "Receipt pairing by item_id").
 
-### All jobs delivered and owner acceptance (2026-11-13)
+#### All jobs delivered and owner acceptance (2026-11-13)
 
 On plugin 0.4.5 the 2026-11-13 runs delivered all three reports on their first
 send attempt, and the 0.4.4 redrive resent an earlier unconfirmed record that
@@ -522,7 +530,7 @@ no report (E22). The owner accepted criteria 1 to 11 on 2026-11-13 ("Accept
 criterion is accepted and no required observation is open, so this Task closes
 as `completed`.
 
-### Design deviations
+#### Design deviations
 
 - Outcome mapping: `report_store_unavailable` and `record_unavailable` are
   `store_failed`; `report_conflict`, `idempotency_conflict` and
@@ -562,7 +570,7 @@ Residual: Hermes formats a cron final response as Telegram MarkdownV2
 (`scheduler_delivery.py`), so a URL in `telegram.txt` may render as a link
 there although the plugin writes plain text.
 
-### Open Items
+#### Open Items
 
 The H, D and G items come from the owner's 2026-11-06 request and are mapped
 in criterion 9 (controller answer, not Spec approval). Oversized reports go
@@ -590,7 +598,7 @@ defect; CHANGES_REQUESTED):
   one link it protected nothing, and a umask 0002 write would have refused
   every report. A test now covers a short read.
 
-### Plugin 0.4.3 install and E11 observation (2026-11-08)
+#### Plugin 0.4.3 install and E11 observation (2026-11-08)
 
 A read-only check at 17:30 KST found plugin 0.4.3 installed on server A (this
 host) but not recorded here. The installed `plugin.yaml`, `tools.py`,
@@ -617,7 +625,13 @@ running Prometheus image's promtool 3.15.1 against
 (`869383fa…`), in a network-less one-off container. A live alert firing and a
 rendered dashboard view were not observed, so E11 stays NOT_RUN.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -644,7 +658,13 @@ rendered dashboard view were not observed, so E11 stays NOT_RUN.
 | E17 | 10 | W5 | live node-exporter scrape of `hermes_research.prom`, alert firing and dashboard rendering | live scrape of `hermes_research_*`, loaded alert rules, provisioned dashboard, promtool alert unit test on the deployed rule hash; Prometheus and Grafana on server A, 2026-11-08 | PASS | 3 series from `node-exporter:9100`; 2 rules inactive; dashboard `hyhome-hermes-research`; promtool 3.15.1 `SUCCESS`, rule SHA-256 `869383fa…` equal; no live firing observed (E11 stays NOT_RUN) | required | E11 |
 | E18 | 14 | W9 | rollback reading: workload README and runbook 0053 state that a failed cutover restores the pre-switch schema 4 backup with `c05e5b88` and never attaches `c05e5b88` to a schema 5 DB; the restore test showed `c05e5b88` refusing the migrated copy | #779 documents, restore test 2026-11-06 and the 2026-11-07 backup `/data/backup-pre-schema5-20261107T003121Z.sqlite3` | PASS | documented in both; `UNSUPPORTED_SCHEMA` from `c05e5b88` on the schema 5 copy; backup integrity ok | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -663,7 +683,9 @@ rendered dashboard view were not observed, so E11 stays NOT_RUN.
 | 13 | accepted | E8 | owner accepted 2026-11-11 | @buenhyden |
 | 14 | accepted | E18 | owner accepted 2026-11-11 | @buenhyden |
 
-## Review and Completion
+### Remaining Conditions
+
+#### Review and Completion
 
 Completed on 2026-11-13. W1 to W6 have passing repository evidence, the live
 metrics observation E11 is resolved by E17, and the W7 to W9 operations are
@@ -671,8 +693,12 @@ recorded with direct evidence (E7, E8, E14, E16, E18, E20, E22). Criteria 1 to
 14 are accepted and every required observation is resolved, so the Task closes
 as `completed`. Later plugin changes or runtime findings belong to a new Task.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [ADR-0060](../../../02.architecture/decisions/0060-hermes-report-source-contract.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

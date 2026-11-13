@@ -1,10 +1,10 @@
 ---
 title: "P10 Opsflow Acceptance Task"
-version: "0.1.22"
+version: "0.1.23"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0016"
 parent_ids:
@@ -14,9 +14,11 @@ created: "2026-10-11"
 
 # P10 Opsflow Acceptance Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Own criterion 21 and W63–W69: acceptance of one bounded Opsflow vertical slice,
 from a manifest input through authenticated Airflow publication, DEV transaction
@@ -32,7 +34,16 @@ moves are already present in the corresponding Stage05 family `15-labs/`
 folders; its current increment corrects README descriptions and navigation only.
 The separate W68 command-directory dry run remains NOT_RUN.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [P04 Task](tsk-0012-p04-airflow-manifest-pipeline.md)
+- [P05 Task](tsk-0013-p05-n8n-outbox-notifier.md)
+- [P06 Task](tsk-0014-p06-openbao-consumer-migration.md)
+- [P08 Task](tsk-0015-p08-operations-document-layout.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The direct P10 request authorized an owning Task, source/test preparation,
 logical commits, review and reviewed local-main delivery; that delivery direction
@@ -64,9 +75,11 @@ Write a RED test before the corresponding implementation and retain both
 receipts. Shared registration, README/index, manifest, workflow and CI edits are
 coordinator proposals until one named writer takes a bounded lease.
 
-## Work Log
+## Execution Log
 
-### 현재 후속 증거와 완료 경계 — 2026-10-22
+### Work Performed
+
+#### 현재 후속 증거와 완료 경계 — 2026-10-22
 
 후속 [Task0019](tsk-0019-n8n-native-notification.md)의 W74 최종 native/cleanup
 PASS와 [Task0020](tsk-0020-airflow-native-publication.md)의 W75 generation-1
@@ -84,14 +97,14 @@ six-failure/one-error aggregate를, metadata PASS는 link FAIL을 그 자체로
 과거 실패와 입력을 보존한다. 이번 조정은 새 시험이나 owner 수락 없이 현재
 인계와 증거 해석만 명시한다.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0016 | draft | ready | #inputs-and-authorization |
 | SPEC-0204-TSK-0016 | ready | in-progress | #w63-frozen-public-input-audit-2026-10-11 |
 
-### W63 admission, reuse and source-receipt inventory
+#### W63 admission, reuse and source-receipt inventory
 
 Inventory existing P04 publication, P05 notification, P01 issuer/recovery,
 P02 catalog, P03 endpoint and P06 migration contracts before adding a test or
@@ -115,7 +128,7 @@ remain uncommitted and preserved. Task-reported historical tests are inputs to t
 fresh P10 tests; every P10 source, unit and runtime test remains NOT_RUN until
 its own receipt is recorded.
 
-### Dated prerequisite snapshot — 2026-10-11
+#### Dated prerequisite snapshot — 2026-10-11
 
 These are public owner-record observations at local main `43917df47`, not fresh
 native tests or automatic knowledge of other chats. GitHub observation proves
@@ -152,7 +165,7 @@ P10 neither edits nor stages the shared root's 24 foreign paths, SEC dirty
 source/evidence or SMTP Task0008. The owners must deliver current relevant
 artifact/connection/backup facts before the dependent P10 runtime lane starts.
 
-### W63 frozen public input audit — 2026-10-11
+#### W63 frozen public input audit — 2026-10-11
 
 Continuation starts at local main and clean P10 HEAD
 `73ebd1ea16d457b1de8ba7b99d02c42c73f48805`. The actual remote and
@@ -207,7 +220,7 @@ owner. W64 may proceed now against the frozen public inputs. The read-only
 inventory and hashes are preserved in ignored local audit material; the Task is
 the authoritative progress record.
 
-### W63 baseline regression and authored-row correction
+#### W63 baseline regression and authored-row correction
 
 At unchanged public source input `73ebd1ea`, the coordinator ran:
 
@@ -237,7 +250,7 @@ new evidence anchor used a manually guessed double hyphen. The existing
 `links._headings` API returned the single-hyphen anchor; that Task reference was
 corrected. Corrected final checks remain a separate receipt.
 
-### W64 synthetic acceptance preparation
+#### W64 synthetic acceptance preparation
 
 Prepare one value-free manifest and fault cases that model the accepted path:
 manifest validation, immutable object identity, DEV transaction/outbox state,
@@ -252,7 +265,7 @@ bounded synthetic bytes may model the existing public contracts. They prove only
 They do not provision PostgreSQL roles, a bucket, an Airflow DAG, an n8n import,
 an SMTP account or an OpenBao identity.
 
-### W64 caller seam RED/GREEN and registration — 2026-10-12
+#### W64 caller seam RED/GREEN and registration — 2026-10-12
 
 The initial assigned writer reported no source writes or executed tests after
 its read tools returned no output. The coordinator suspended that four-file
@@ -326,7 +339,7 @@ all other selected lint/secret checks had passed. Final staged/common-head
 checks and independent source/security review are required before the
 owning-Spec PR delivery; they are recorded separately below.
 
-### W64 exact fixture README gate correction
+#### W64 exact fixture README gate correction
 
 The initial styled eight-path candidate reached actual validation, not merely
 an explain plan. The registered run exited 2 at candidate preflight with
@@ -355,7 +368,7 @@ supporting source/test paths. Existing declarations and preserved foreign
 inputs must still match, and final source/security review and registered gates
 must be rerun against this new input.
 
-### W64 registered taxonomy failure and bounded continuation
+#### W64 registered taxonomy failure and bounded continuation
 
 The exact eleven-path registered aggregate exited 1. Candidate preflight,
 full links, fifteen lifecycle CLI regressions and 148 metadata regressions had
@@ -381,7 +394,7 @@ A final segmented result must explicitly identify its frozen inputs and the
 original aggregate exit 1; document-only receipt changes receive their own
 metadata/link/lifecycle/staged review rather than repeating unrelated suites.
 
-### W64 registered source acceptance and environment correction
+#### W64 registered source acceptance and environment correction
 
 The final frozen input is HEAD `73ebd1ea16d457b1de8ba7b99d02c42c73f48805`
 plus twelve owned paths, staged-diff SHA256
@@ -444,7 +457,7 @@ result-only Task additions require their own metadata, links, lifecycle, staged
 checks and independent review before commit. Local delivery is recorded below
 only after its actual commit and fast-forward result.
 
-### W63 selected running metadata — 2026-10-12
+#### W63 selected running metadata — 2026-10-12
 
 The coordinator ran `docker ps --filter label=com.docker.compose.service=<service>`
 for `airflow-worker`, `n8n` and `n8n-worker`, then inspected only Config.Image,
@@ -460,7 +473,7 @@ UID/GID, supplementary groups, installed-package, authenticated functional or
 security-readiness acceptance. No image was deployed. The selected newer local
 tag absence above and older running-image observations are separate facts.
 
-### W64 source commit and local-main receipt — 2026-10-12
+#### W64 source commit and local-main receipt — 2026-10-12
 
 The coordinator committed the eleven reviewed source/fixture/registration paths
 as `545272d3c3cdeb5cddee886b7cc12765f43d13fd`,
@@ -517,7 +530,7 @@ A manual Stop exception may apply only to its exact invocation to preserve
 foreign root changes; it is not a delivery-check waiver, a persistent hook edit
 or a claim that the desktop parent's environment inherits the exception.
 
-### W65 isolated vertical slice
+#### W65 isolated vertical slice
 
 After W64 and the selected exact contracts are reviewed, run one isolated
 vertical slice in dependency order: P04 native publication first, then P05
@@ -534,7 +547,7 @@ unrelated global SEC/P01/P06 completion claim, but it does stop if its selected
 owner contract or resource review is missing. Optional native skips remain
 NOT_RUN, never PASS.
 
-### W66 selected HOME acceptance
+#### W66 selected HOME acceptance
 
 HOME starts only after a named host, selected services, image digest, operator,
 approved rollout boundary, backups, resource budget and reversal path are
@@ -550,7 +563,7 @@ instruction; unrelated global completion is not a
 start gate for one admitted isolated consumer. This Task cannot select a HOME
 target by inference.
 
-### W67 failure, backup and empty-target restore
+#### W67 failure, backup and empty-target restore
 
 Inject faults only into an isolated or named approved scope: object timeout or
 wrong credential, validation failure, object-stored/database-unavailable,
@@ -576,7 +589,7 @@ Investigate them through the named owner records and read-only inventory before
 asking for a new operational action; their absence leaves this runtime lane
 NOT_RUN and does not stop W63/W64 source preparation.
 
-### W68 P08 path handoff and dry run
+#### W68 P08 path handoff and dry run
 
 After P08 final path delivery, bind each affected operation document to its
 exact old/new path, source and target hash, artifact ID, anchors, README coverage
@@ -585,7 +598,7 @@ dry run or selected command environment. Distinguish a typed LAB document move
 from LAB runtime work. If P08 has no final hash handoff, retain this lane as
 NOT_RUN.
 
-### W69 final owner report and delivery
+#### W69 final owner report and delivery
 
 At the actual final head, report every owner criterion and the separate SOURCE,
 UNIT, STATIC, ISOLATED, HOME, MIGRATION, ROTATION, RECOVERY and DELIVERY result.
@@ -597,7 +610,7 @@ merge; historical local-main receipts remain historical evidence only. Tests do
 not establish deployment, deletion, migration or recovery without their actual
 evidence.
 
-### W69 completed-source worktree cleanup — 2026-10-12
+#### W69 completed-source worktree cleanup — 2026-10-12
 
 The user's current instruction prioritizes integration and removal of completed
 worktrees and development branches. At main
@@ -640,7 +653,7 @@ operational Tasks. W65–W68, full SEC01/HOME, actual SMTP provider delivery,
 OpenBao authentication/recovery and the remaining owning runtime criteria stay
 open. This cleanup is not native E2E, migration, rotation or recovery evidence.
 
-### Current user-accepted SMTP/CLN boundary — 2026-10-12
+#### Current user-accepted SMTP/CLN boundary — 2026-10-12
 
 At clean root main `2773a20c1c24ce1b70f64b36fe8f6f5108f49542`, the user confirmed
 acceptance of the delivered SMTP01/CLN01 changes and excluded actual LAB GoTrue
@@ -656,7 +669,7 @@ message and user acceptance does not create a native/provider/restore result.
 The prior source/isolated receipts remain attributed to their actual inputs.
 No runtime, secret, account, message or data changed in this clarification.
 
-### Current completion reconciliation and draft cleanup — 2026-10-12
+#### Current completion reconciliation and draft cleanup — 2026-10-12
 
 At main `69b070b759e9ca235d5aa9ee31c2ab311df4dffc`, user-accepted SMTP01/CLN01
 scope and completed P09 preparation remain accepted. P01 HOME/recovery, P02
@@ -702,7 +715,7 @@ logs and rollback artifacts are not Git or execution authorities. Pending
 source/runtime acceptance stays in the owning Tasks; removed development
 worktrees are not required to keep those criteria open.
 
-### Dependency Matrix
+#### Dependency Matrix
 
 | Owner | Required handoff before dependent runtime | P10 preparation boundary |
 | --- | --- | --- |
@@ -718,7 +731,7 @@ worktrees are not required to keep those criteria open.
 | P07 / SPEC-0218 | Selected capacity/least-privilege baseline where relevant | No resource or permission change is accepted by a fixture. |
 | P08 / TSK-0015 | Final path/hash and README coverage handoff | W68 waits; no document move is inferred. |
 
-### Cleanup correction: unfinished scanner execution source
+#### Cleanup correction: unfinished scanner execution source
 
 The later SEC01 reuse audit found that two ignored v2 scanner execution sources
 in the removed SEC01 worktree were not included in the retained draft archive.
@@ -729,7 +742,7 @@ evidence; native execution is blocked pending exact-source recovery or fresh
 review. TSK-0009 records the missing hashes and current memory observation.
 No scan PASS, deployment or complete SEC01 acceptance is inferred.
 
-### COORD request 11–30 source reconciliation — 2026-10-12
+#### COORD request 11–30 source reconciliation — 2026-10-12
 
 At source baseline `23e37362b72e98028a4675f282819c0346ae59dc`, current ROOT
 discovery reports 111 unique service rows across 44 inputs; its discovery
@@ -876,7 +889,7 @@ suite.
 | 29 | P10 coordination routing | SOURCE_APPLIED | NOT_RUN | Current-warning-only image/scanner maintenance; deletion only after source, runtime, jobs, backup/restore and external consumers absence; individual numbering unspecified |
 | 30 | P10 coordination routing | SOURCE_APPLIED | NOT_RUN | Current-warning-only image/scanner maintenance; deletion only after source, runtime, jobs, backup/restore and external consumers absence; individual numbering unspecified |
 
-### COORD final-gate component receipt — 2026-10-12
+#### COORD final-gate component receipt — 2026-10-12
 
 At the frozen five-document candidate, registered local-only process `86838`
 exited 1: 628 selected tests had six failures, one error and 71 skips. Three
@@ -920,7 +933,7 @@ security reviews approved the exact one-line test change. This is a CRC/source
 receipt for the approved test boundary, not a broader gate PASS, runtime result
 or delivery receipt.
 
-### M2 current source and coordination receipt — 2026-10-12
+#### M2 current source and coordination receipt — 2026-10-12
 
 The ordinary ancestry-preserving merge is
 `4b9c9ba1cc17956934349973c6a715a0732e42fd`, with parents
@@ -1030,7 +1043,7 @@ latest-stable upgrades. Keep source, scan, native, HOME, migration, rotation,
 recovery and delivery acceptance separate; UNKNOWN is not clean.” No ledger,
 image, scanner, native or HOME mutation is made by this receipt.
 
-### Current source and requirement handoff — 2026-10-14
+#### Current source and requirement handoff — 2026-10-14
 
 The earlier 2026-10-12 request table is a dated observation. Its repeated
 “individual numbering unspecified” rows 27–30 are superseded by the current
@@ -1075,7 +1088,7 @@ passed on their frozen inputs; they are not relabeled as validation of this
 last wording change. Task-only metadata/link review and staged hooks must bind
 the corrected final hash before its logical commit.
 
-### Handoff from SPEC-0204 TSK-0013 2026-10-30
+#### Handoff from SPEC-0204 TSK-0013 2026-10-30
 
 TSK-0013 is final at `main` `c585c5244` (PR #666). Criteria 19 and 22 are accepted. Native attempt five passed every
 criterion 22 field: scheduled execution on the actual queue worker,
@@ -1089,7 +1102,13 @@ W65 uses attempt five's harness and image
 `sha256:1fda18a541144ae5519ac97bcaffa4e24fad0e71d424606d230464bec8fce153` as
 its n8n side.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -1124,14 +1143,20 @@ its n8n side.
 | Active LAB path instruction defect | 21 | W63 | Independent rules review found Objective still instructed a new move into obsolete labs paths | Task pre-fix SHA256 d5c9b4c3ec1de65185c7bc5ba56d614f8009a3f5ed0879ea8df5aca41040be2b | FAIL | Current source and requirement handoff — 2026-10-14 | - |
 | Active LAB path instruction correction | 21 | W63 | Objective names existing 15-labs folders, current README/navigation correction only, W68 dry run NOT_RUN; dated receipts preserved | Corrected Objective in this Task; final scoped checks/review required | PASS | Current source and requirement handoff — 2026-10-14 | Active LAB path instruction defect |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
 | 10 | pending | - | - |
 | 21 | pending | - | - |
 
-## Review and Completion
+### Remaining Conditions
 
 This in-progress Task records admission and the source-input audit. Synthetic
 tests now have source-layer receipts; final combined-head delivery is separate. It has no P10 native
@@ -1146,11 +1171,12 @@ reverting the reviewed logical commit; roll back a runtime lane only through its
 pre-recorded target-specific recovery plan. Do not treat this Task issuance or a
 synthetic test as a production readiness or restoration receipt.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [P04 Task](tsk-0012-p04-airflow-manifest-pipeline.md)
-- [P05 Task](tsk-0013-p05-n8n-outbox-notifier.md)
-- [P06 Task](tsk-0014-p06-openbao-consumer-migration.md)
-- [P08 Task](tsk-0015-p08-operations-document-layout.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

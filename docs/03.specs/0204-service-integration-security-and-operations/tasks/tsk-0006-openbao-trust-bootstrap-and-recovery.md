@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Trust Bootstrap and Recovery Task"
-version: "0.2.38"
+version: "0.2.39"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-11-08"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0006"
 parent_ids:
@@ -14,15 +14,25 @@ created: "2026-10-10"
 
 # OpenBao Trust Bootstrap and Recovery Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Implement P01 before P06: native verified TLS, fresh AppRole authentication,
 functional renderer readiness, HMAC audit and recoverable restricted snapshots.
 Keep source, synthetic tests, real consumption and external custody separate.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [P00 Task](../../0212-request-baseline-and-reconciliation/tasks/tsk-0003-active-contract-and-exclusions.md)
+- [OpenBao Runbook](../../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
+- [Backup Runbook](../../../05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The current 2026-10-10 P01 user request authorizes the named OpenBao source,
 clients, bootstrap/audit/recovery contracts, regressions, logical commits and
@@ -53,9 +63,11 @@ secret input, a named custody-location receipt or completed recovery evidence.
 Two distinct shares and current OIDC authentication still enter only through
 the reviewed protected client.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -63,7 +75,7 @@ the reviewed protected client.
 | SPEC-0204-TSK-0006 | ready | in-progress | #w19-baseline-and-boundaries |
 | SPEC-0204-TSK-0006 | in-progress | blocked | #w23-home-boundary-and-p06-hold |
 
-### W19 Baseline and Boundaries
+#### W19 Baseline and Boundaries
 
 Clean main, HEAD and fetched origin/main equal
 `1ee5d6707e3b75b61222baad0c51050c64e1b10d`. Baseline d19fbfde6-to-main has
@@ -91,7 +103,7 @@ fixtures, `infra/03-security/openbao/scripts/start-server.sh`, renderer role
 metadata/version templates and issuer policy. These are the same atomic TLS/
 bootstrap change, not extra engines or downstream consumer migration.
 
-### W20 TLS and Fresh Renderer Authentication
+#### W20 TLS and Fresh Renderer Authentication
 
 Fresh root regression RED: four selected tests on the original OpenBao source
 failed (TLS and missing-token failure assertions; absent audit/HTTPS scrape
@@ -125,7 +137,7 @@ failed, then passed. Read-only check-tls-material.sh validates explicit SAN,
 chain, expiry, key match and native UID readability without emitting material.
 The helper requires only exact readonly material files and no network/pull.
 
-### W21 Audit and Snapshot Recovery
+#### W21 Audit and Snapshot Recovery
 
 Independent IaC design verdict before mutation:
 READY_FOR_SOURCE_AND_ISOLATED_IMPLEMENTATION. HOME recovery readiness remains
@@ -168,7 +180,7 @@ the limited issuer is not silently broadened. Separate restricted cleanup
 identity/receipt proof is required before HOME acceptance. Real offsite key/
 unseal custody remains unverified; no external material is manufactured.
 
-### W22 Verification and Delivery
+#### W22 Verification and Delivery
 
 Fresh affected unit run: 38 tests PASS (runtime compatibility, 12 Agent stub
 contract cases and Gatus CA/identity entrypoint). First integration unit run
@@ -352,7 +364,7 @@ in 388.481s; remaining selected leaves are not predeclared PASS. Final results
 are recorded on the linked delivery PR before agent merge. W23 and full P01
 acceptance stay blocked regardless of source delivery.
 
-### W22 Regression Contract Follow-up
+#### W22 Regression Contract Follow-up
 
 PR #410 final head 14368bbee8885fe7dbaeceb7ed17db91414117a9 freshly
 completed hosted checks: seven PASS, main-security SKIP; candidate-quality
@@ -410,7 +422,7 @@ HOME target/custody, native-version security and restricted failed-delivery
 cleanup residuals stay in W23. No new acceptance owner or runtime success is
 created by correcting regression expectations.
 
-### W22 Final Registered Candidate Receipt
+#### W22 Final Registered Candidate Receipt
 
 Regression unit commit f6903c14f64f71ae51356215e6b4322706a4954e changes
 the three tests and this Task. Registered staged controller PASS, including
@@ -441,7 +453,7 @@ validation description and merge timeline own the actual hosted/delivery
 receipt before the agent makes it ready and merges it. Pending checks are
 never copied as PASS; W23/full P01 acceptance remain blocked.
 
-### W23 HOME Boundary and P06 Hold
+#### W23 HOME Boundary and P06 Hold
 
 HOME target/connection, CA/server material location and separate unseal/offsite
 custody were requested without asking for values. User answered `ok` only.
@@ -455,7 +467,7 @@ client trust through a reviewed override or fix-forward; never revert to HTTP
 or remove audit to restore requests. Fixture cleanup removes only owned
 names/paths and leaves HOME, LAB and user work untouched.
 
-### Current P01 Continuation — 2026-10-11
+#### Current P01 Continuation — 2026-10-11
 
 This is the existing blocked P01 Task, not a new issuance or implementation
 restart. Its artifact ID, created date, historical failures/receipts and W23
@@ -611,7 +623,7 @@ SOURCE/UNIT/STATIC/ISOLATED/HOME/MIGRATION/ROTATION/RECOVERY/DELIVERY separate.
 W23 and this Task stay blocked until their actual conditions pass; catalogue
 preparation and source delivery do not release P06.
 
-### W20/W22 Versioned Issuance Continuation — 2026-10-11
+#### W20/W22 Versioned Issuance Continuation — 2026-10-11
 
 The current user authorizes source compatibility on this existing Task, branch
 `codex/p01-openbao-recovery`, and worktree
@@ -816,7 +828,7 @@ latest-head hosted CI and independent review are still required by this request.
 `rtk proxy /tmp/hy-home-p09-qa/bin/cz check -l 75 -m
 'fix(openbao): Preserve versioned issuance journal identity'` exited 0.
 
-### W22 Source Commit and Isolated Attempt — 2026-10-11
+#### W22 Source Commit and Isolated Attempt — 2026-10-11
 
 The aligned registered gate command was:
 
@@ -892,7 +904,7 @@ compatibility explanation in the four existing documents, preserving their
 operational bodies and IDs. The earlier missing-patch hold is superseded by this
 actual preservation receipt. No new HOME command is invented.
 
-### W22 Sanitized Server Diagnostic Preparation — 2026-10-11
+#### W22 Sanitized Server Diagnostic Preparation — 2026-10-11
 
 The user's exclusive P01 native assignment and dedicated-test ownership remain
 valid; no new permission is inferred from elapsed time. Independent IaC review
@@ -970,7 +982,7 @@ for the additional existing fixture path. No ad-hoc skip or common mapping edit
 was made. The actual changed controller is running with QA-venv-first PATH at
 `/tmp/p01-diagnostic-gate.log`; its result is pending, not PASS at this checkpoint.
 
-### W22 Server Diagnostic Receipt and Owned Config Mode — 2026-10-11
+#### W22 Server Diagnostic Receipt and Owned Config Mode — 2026-10-11
 
 The diagnostic preparation index was
 `a9b51b30e4096de23070efdfc0b63ba86b012a74`. Its final-index staged controller
@@ -1039,7 +1051,7 @@ changed input after commit, fresh digest and preflight. No metadata retry or HOM
 is included. The running aggregate gate retains the earlier frozen QA input;
 the corrected fixture/test must receive focused revalidation before final delivery.
 
-### W22 Changed-Input Server Diagnostic — 2026-10-11
+#### W22 Changed-Input Server Diagnostic — 2026-10-11
 
 The config-mode correction index was
 `8367b28a257c1d948c635ce70c30ce740108057f`. The immediately following staged
@@ -1075,7 +1087,7 @@ exclusive native assignment persists. This is reviewed regression execution
 after a concrete fixture fix, not an unchanged-input automatic retry. It excludes
 the broader class, `DockerAPI.deliver`, Agent start, HOME, snapshot and recovery.
 
-### W22 Changed-Input Native Metadata Receipt — 2026-10-11
+#### W22 Changed-Input Native Metadata Receipt — 2026-10-11
 
 ```bash
 rtk bash -c 'umask 022; export PATH=/tmp/hy-home-p09-qa/bin:$PATH; export HYHOME_OPENBAO_REHEARSAL=1; rtk proxy python3 -m unittest tests.validation.test_openbao_rehearsal.OpenBaoRehearsalTests.test_native_versioned_issuance_reconciliation -v > /tmp/p01-versioned-native-mode-fixed.log 2>&1'
@@ -1100,7 +1112,7 @@ method above; HOME / MIGRATION / ROTATION / RECOVERY NOT_RUN, inputs undetermine
 DELIVERY commits present, owning-Spec PR/head CI/merge pending. Actual HOME and
 other operational resources changed: 0. W23 and P06 holds remain in effect.
 
-### W22 Registered Diagnostic Candidate Timeout — 2026-10-11
+#### W22 Registered Diagnostic Candidate Timeout — 2026-10-11
 
 ```bash
 rtk bash -c 'umask 022; export PATH=/tmp/hy-home-p09-qa/bin:$PATH; rtk proxy python3 scripts/validation/run-ci-gate.py --profile changed --local-only > /tmp/p01-diagnostic-gate.log 2>&1'
@@ -1163,7 +1175,7 @@ exited 0, but subsequent index corrections require a new final-index controller.
 This result-only paragraph adds no link or metadata identity. Final source/docs
 delivery remains an owning-Spec PR candidate; latest-head hosted CI is pending.
 
-### W22 Source PR and Final Staged Receipt — 2026-10-11
+#### W22 Source PR and Final Staged Receipt — 2026-10-11
 
 The corrected five-document final index was
 `dbe123017afc334ea4dab403144624ddd2f5ed89`. Immediately after its final mutation,
@@ -1201,7 +1213,7 @@ receipts and preserves canonical Evidence assignments. Its prospective latest
 head must receive hosted QA and exact-head rebind before source merge. W23,
 HOME/recovery/P06 remain blocked; no operational resource was changed.
 
-### W22 Accepted Source Delivery — 2026-10-11
+#### W22 Accepted Source Delivery — 2026-10-11
 
 Result-only receipt commit was `d3ae5587d7e3376bed22bbef82badf3875d8fb95`, tree
 `d0c4d82b7cb078251e8cd6ccb320300f0f0bb24b`. Its final-index staged controller
@@ -1249,7 +1261,7 @@ and Agent delivery are not proved by the narrow metadata method. W23/P06 retain
 their named-target, custody, snapshot/empty-restore and rollback prerequisites.
 Actual HOME / other operational resource changes: 0.
 
-### W22 P02 Catalog Documentation Reconciliation — 2026-10-11
+#### W22 P02 Catalog Documentation Reconciliation — 2026-10-11
 
 The user handed over P02's reviewed public catalog proposal to this P01 sole
 writer. Source commit is `962e11be50260a3dce2e2700b22951fce1b3f4f7`, synthetic
@@ -1358,7 +1370,7 @@ profile findings were a package-validation cascade, not archive changes; no
 archive or validator was edited. The affected metadata and staged checks are
 re-run on the corrected input before committing.
 
-### W22 P02 Documentation Submission Receipt — 2026-10-11
+#### W22 P02 Documentation Submission Receipt — 2026-10-11
 
 The corrected Task-only check completed exit 0:
 `rtk python3 scripts/validation/check-document-metadata.py --mode check-changed
@@ -1411,7 +1423,7 @@ proven CLI consumer. `rtk git apply --check` exited 0; the patch was not applied
 It and the public QA staging artifacts are preserved until accepted. No
 common file, P02 Task or another worker's branch/worktree was modified.
 
-### W22 P02 Documentation Delivery Receipt — 2026-10-11
+#### W22 P02 Documentation Delivery Receipt — 2026-10-11
 
 The document source commit47c263c and result-only submission commit
 `8cd71a252237f0cd96154bc2ab7982ba24c0d1ad` were delivered together in PR423.
@@ -1462,7 +1474,7 @@ the manifest-consumer proposal and public QA artifacts are preserved for
 the coordinator. No new Task or source implementation is introduced by
 this result-only delivery receipt.
 
-### W23 Current Acceptance Assessment — 2026-10-13
+#### W23 Current Acceptance Assessment — 2026-10-13
 
 Superseded in part: the TLS-files-absent finding below is superseded by W23
 Current TLS and Snapshot Retry Receipt (TLS_PREPARED / NOT_DEPLOYED), and the
@@ -1667,7 +1679,7 @@ later create its own restoreability receipt through the registered
 `first_isolated_restoreability` mode; synthetic evidence supplies no actual
 artifact proof.
 
-### W23 Client-Mount Correction Admission — 2026-10-13
+#### W23 Client-Mount Correction Admission — 2026-10-13
 
 Independent security review closes the mount-scope finding as HIGH for source
 correction. The user's private-key separation request authorizes the minimal
@@ -1711,7 +1723,7 @@ downtime choice above. This earlier receipt predates the current TLS and
 artifact-preparation results below; P01 remains blocked on custody and restore
 execution checks.
 
-### W23 Current TLS and Snapshot Retry Receipt — 2026-10-13
+#### W23 Current TLS and Snapshot Retry Receipt — 2026-10-13
 
 Implementation commit is `b8d3ea818c91b6e3f3da078906e70c361842c5d5`
 (parent `a4d8c9cf4`, tree `cb08b7c65da984d8915a14a6216836b0cb2ae294`);
@@ -1753,7 +1765,7 @@ successful recovery. The first restore ledger remains unused/prospective:
 `buenhyden`, implementer `p01_home_tls`, independent reviewer
 `home_readiness`; no restore executed. Task status remains blocked.
 
-### W23 Snapshot Salvage Receipt — 2026-10-13
+#### W23 Snapshot Salvage Receipt — 2026-10-13
 
 The refreshed-OIDC attempt made exactly one native save successfully, then
 remained PARTIAL because BusyBox `find -printf` is unsupported in the guard and
@@ -1787,7 +1799,7 @@ The first restore remains contract planning only: target absent, no restore
 execution, permanent backup issuer denied and its file absent. Task status
 remains blocked.
 
-### W23 Pre-Execution FILE_USABILITY Checkpoint — 2026-10-13
+#### W23 Pre-Execution FILE_USABILITY Checkpoint — 2026-10-13
 
 At receipt head `08891676e031d8900efe6250c1cc53260855e608`, candidate-quality
 failed with exit 2 in `leaf.local-diff-hygiene`: the pull-request-range adapter
@@ -1812,7 +1824,7 @@ NOT_RUN; HOME_COLD_BOOT, INDEPENDENT_CUSTODY, SELECTED_EMPTY_RESTORE and
 RECOVERY are also NOT_RUN. QA file layout proof and final independent readiness
 review are pending, and Task status remains blocked.
 
-### W23 Merged-Source Readiness Checkpoint — 2026-10-13
+#### W23 Merged-Source Readiness Checkpoint — 2026-10-13
 
 SOURCE_DELIVERY is PASS: the reviewed ten-path P01 diff is in integration
 commit `14ae4282948ef7a43ad54c16f5628bc6b15a8520`, merged as
@@ -1858,7 +1870,7 @@ pin/scanner and unrelated service configuration are NO_CHANGE; the only
 recorded P01 source exceptions are the client certificate bindings in three
 Compose files and their fixture, test and documentation receipts.
 
-### W23 Actual Pre-Restore Outcomes 01/02 — 2026-10-13
+#### W23 Actual Pre-Restore Outcomes 01/02 — 2026-10-13
 
 Actual attempt 01 was ABORTED_PREFLIGHT, consumed=false, exit 2 in about
 0.25 seconds. Its helper mode was 0775 where 0755 is required. The mode-only
@@ -1910,7 +1922,7 @@ The approved PR #431 description update is present remotely at
 for PR #431 is PASS; operational delivery remains blocked on this failure and
 future execution review/approval.
 
-### W23 Actual Pre-Restore Outcome 03 — 2026-10-13
+#### W23 Actual Pre-Restore Outcome 03 — 2026-10-13
 
 Attempt `p01-home-empty-restore-20261013-03` is
 BLOCKED_PRE_RESTORE_PARTIAL: consumed=true, preserved=true and
@@ -1945,7 +1957,7 @@ FILE_USABILITY, CURRENT_VERSION_AUTH and CONSUMER_READ are NOT_RUN. The live
 OpenBao 2.6 image remains running with restart 0 and OOM=false. Task status
 remains blocked; the 19-case local CAP_CHOWN source validation is SOURCE-only.
 
-### W23 Public Native Preparation Receipt — 2026-10-13
+#### W23 Public Native Preparation Receipt — 2026-10-13
 
 Public native preparation is SOURCE-only: the command exited 0 within the
 actual native bounds 2026-10-12T23:24:35.376695330Z–2026-10-12T23:25:45.455258032Z.
@@ -1972,7 +1984,7 @@ syntax/lint passed. PRIVATE, HOME, FILE_USABILITY, RECOVERY,
 CURRENT_VERSION_AUTH and CONSUMER_READ remain NOT_RUN; Task status remains
 blocked.
 
-### W23 Actual Selected Empty Restore 04 — 2026-10-13
+#### W23 Actual Selected Empty Restore 04 — 2026-10-13
 
 User authorization for this single FILE_USABILITY attempt, 900-second limit,
 180-second reserve and 1 GiB/64 postcondition was observed at
@@ -2021,7 +2033,7 @@ CURRENT_VERSION_AUTH, CONSUMER_READ, MIGRATION, production cutover,
 production RECOVERY and RPO/RTO remain NOT_RUN. W23/P06 holds remain; Task
 status remains blocked.
 
-### Isolated Native Rerun — 2026-10-13
+#### Isolated Native Rerun — 2026-10-13
 
 The owner asked on 2026-10-13 to review P01 and proceed. On a detached scratch
 worktree of `main` `958349408`, the two registered native opt-in commands ran
@@ -2038,7 +2050,7 @@ is an ISOLATED result only. HOME issuance and use, the snapshot-only
 credential, off-host custody, the reviewed stateful recovery contract and a
 real reboot remain the missing inputs that keep this Task blocked.
 
-### Source Corrections — 2026-10-13
+#### Source Corrections — 2026-10-13
 
 The owner asked on 2026-10-13 to review the P01 HOME lane, correct and extend
 it, and proceed. No HOME operation, credential read or service change was
@@ -2127,7 +2139,7 @@ Owner HOME checklist, in order; each step needs the approval named:
 10. Select a consumer and its ACL for current-version authentication and
     consumer read (P06 owner selection).
 
-### Preserved Attempt Cleanup — 2026-10-13
+#### Preserved Attempt Cleanup — 2026-10-13
 
 The owner chose "Delete after recording" for the preserved attempt targets
 (AskUserQuestion, 2026-10-13). Auto mode refused the deletion to the agent as
@@ -2160,7 +2172,7 @@ The audit file device declared in the repository Compose is therefore not yet
 deployed on HOME, and logrotate registration (checklist step 7) moves to the
 upgrade window. The snapshot token file is still absent.
 
-### Owner Decisions — 2026-10-13
+#### Owner Decisions — 2026-10-13
 
 The owner answered four AskUserQuestion prompts on 2026-10-13 after the HOME
 check recorded above.
@@ -2207,7 +2219,7 @@ gap.
 the unseal shares, the offsite key or the CA key exists. Checklist step 5 is
 NOT_RUN for that reason, and P01 stays blocked.
 
-### Maintenance Window Plan — 2026-10-13
+#### Maintenance Window Plan — 2026-10-13
 
 The owner chose on 2026-10-13 (AskUserQuestion) to prepare a maintenance
 window for the remaining HOME steps. RUN-0085 now has "HOME 유지보수 창 계획":
@@ -2226,7 +2238,7 @@ snapshot to an empty target with the previous image) and approver. The
 consumer and ACL (step 10) and the Agent alert Spec stay after the window.
 This is a document; no HOME step ran.
 
-### Maintenance-window input correction — 2026-10-14
+#### Maintenance-window input correction — 2026-10-14
 
 Current ALL_PROMPTS authorizes a safe Runbook correction only. Independent
 security review found that the window promised stdin-only sensitive values,
@@ -2257,7 +2269,7 @@ checks precede this result-only receipt, whose final document validation and
 staged hooks remain required. Source correction acceptance does not admit W1
 or supersede any HOME, maintenance or recovery finding.
 
-### Off-host Custody Procedure — 2026-10-14
+#### Off-host Custody Procedure — 2026-10-14
 
 On 2026-10-14 the owner asked to review and proceed with off-host custody
 separation, and chose (AskUserQuestion) to prepare the procedure first.
@@ -2281,7 +2293,7 @@ records a step 5 result only as `owner-attested` when every answer is yes
 says copy rather than move. Excluding the unseal file from the host backup
 needs a separately approved IaC change; that coupling stays open.
 
-### Unseal File Exposure Decisions — 2026-10-14
+#### Unseal File Exposure Decisions — 2026-10-14
 
 After PR #461 merged, a re-review of the procedure found the Cloudflare
 account (which can reissue the R2 credentials) missing from the confirmation
@@ -2297,7 +2309,7 @@ not change the keys a pre-rekey Raft snapshot opens with, so the exposure ends
 only when pre-exclusion host snapshots are deleted. Nothing ran on HOME; step 5 and
 criterion 11 stay as before.
 
-### Agent Alert Source — 2026-10-14
+#### Agent Alert Source — 2026-10-14
 
 SPEC-0239 added the Agent telemetry, scrape and alerts the 2026-10-13 gap
 record deferred: a `metrics_only` listener, Prometheus job `openbao-agent`,
@@ -2308,7 +2320,7 @@ Prometheus restart, both separately approved. A render that goes stale while
 authentication works still shows only as Docker `unhealthy`. RUN-0085 0.9.1
 states this; the gap row stays NOT_RUN until deployment.
 
-### Single-Administrator Custody Places — 2026-10-14
+#### Single-Administrator Custody Places — 2026-10-14
 
 The owner stated that one administrator holds every place and chose three
 places with a condition (AskUserQuestion). RUN-0085 0.10.0 now counts places,
@@ -2318,7 +2330,7 @@ exclusion is confirmed (SPEC-0240 criterion 4) and listings of the local host
 and R2 repositories show no pre-exclusion host snapshot. The first storage still needs a fourth, share-free
 place. Step 5 is attested against that table; SPEC-0240 W5 holds the record.
 
-### Current Operation Preparation — 2026-10-14
+#### Current Operation Preparation — 2026-10-14
 
 Local main and fetched origin/main were clean at
 `1e7e2ba841c4e428a06762a61a570011711bc1ef`. PR459 and PR460 had already
@@ -2794,7 +2806,7 @@ Restic repository for this new snapshot and receipt, beginning with read-only
 remote verification. A separate bounded public operator is being prepared;
 no remote connection, repository lock, upload or verification has run yet.
 
-### Latest main reconciliation and PGP preparation — 2026-10-14
+#### Latest main reconciliation and PGP preparation — 2026-10-14
 
 ROOT refreshed clean main and origin/main to
 `7f4c364f8681ea0db091f05ab6077c594661dfff`, then reapplied the task-owned staged
@@ -2837,7 +2849,7 @@ No Restic process or remote query ran; cleanup does not convert either failure
 to remote acceptance. The next corrected-source action needs its own frozen
 review and fresh bounded attempt; historical receipts remain preserved.
 
-### Actual R2 read-only result and incorporated-worktree cleanup — 2026-10-14
+#### Actual R2 read-only result and incorporated-worktree cleanup — 2026-10-14
 
 R2 attempt3 used frozen operator40ba8184, launcher ebdaeb8b and source receipt
 d2930cfa after independent code/security/IaC approval and ROOT's35-test replay.
@@ -2874,7 +2886,7 @@ clean7f4c364f. The public scanner's build-input path was separately updated to
 -latest with unchanged input bytes SHA1e8b356a before removing -current;
 its own new exact-hash review remains separate from this cleanup evidence.
 
-### Current documentation verification — 2026-10-14
+#### Current documentation verification — 2026-10-14
 
 RUN-0085 W1b full guide passed exact source/security/IaC review at06c64ba0.
 The later7c8b35a8 change adds only the required fixed-pre-upgrade CLI citation
@@ -2892,7 +2904,7 @@ owner. Archive findings are not yet classified against a fresh clean-main
 comparison and are not silently waived or edited. Final registered gates and
 source delivery remain pending; this is not an all-checks PASS claim.
 
-### Main 4c33 reconciliation, custody state, and renderer cleanup — 2026-10-14
+#### Main 4c33 reconciliation, custody state, and renderer cleanup — 2026-10-14
 
 ROOT reconciled the canonical integration worktree from clean main7f4c364f to
 clean main4c33d6ce. Main's six documentation changes were retained. Before
@@ -2947,7 +2959,7 @@ ROOT observation receipt SHA256 is
 This resolves the diagnosed synthetic fixture failure only. It does not prove
 HOME custody or deployment, and no HOME state changed.
 
-### Registered source-delivery checks — 2026-10-14
+#### Registered source-delivery checks — 2026-10-14
 
 The canonical changed metadata gate against main4c33 first failed on the
 appended RUN-0085 lifecycle row's malformed anchor, then on its out-of-package
@@ -2981,7 +2993,7 @@ Fresh token-free state projection found no remaining p01 fixture container;
 HOME server and Agent still run healthy on the original11fd image. The source
 candidate is ready for its owning-Spec draft PR; no HOME gate is promoted.
 
-### Source PR delivery and hosted field-metadata finding — 2026-10-14
+#### Source PR delivery and hosted field-metadata finding — 2026-10-14
 
 The reviewed source candidate was committed as932508be4 and delivered in
 [draft PR472](https://github.com/buenhyden/hy-home.docker/pull/472) from
@@ -3013,7 +3025,7 @@ this module is outside that fixture, so no native rerun or new HOME semantic
 restore is claimed. Hosted checks on the clarified follow-up remain pending
 at publication; the source PR stays draft and no merge/deployment is claimed.
 
-### PR review and synthetic TLS server minimum — 2026-10-14
+#### PR review and synthetic TLS server minimum — 2026-10-14
 
 The owner's subsequent PR-review request examined latestcbe95c588 against
 main4c33. Hosted CodeQL analysis jobs succeeded, but its aggregate failed
@@ -3046,7 +3058,7 @@ credential rotation or history rewrite was performed by the agent. A fresh
 hosted check must confirm clearance after that action. The TLS follow-up is
 prepared for the existing draft PR; no merge or runtime acceptance is claimed.
 
-### Source merge and remaining review fix — 2026-10-14
+#### Source merge and remaining review fix — 2026-10-14
 
 The owner reported merge completion. GitHub confirms PR472 merged at
 2026-10-14T06:48:39Z as5cdf684902b88bb68f048e99ed88e5525d4755c0,
@@ -3063,7 +3075,7 @@ a fresh worktree based at5cdf, for a small follow-up PR. No history rewrite,
 production code change or runtime mutation is required. The user's intended
 GitGuardian dashboard action remains separate from observed check clearance.
 
-### Host Custody for One Administrator — 2026-10-14
+#### Host Custody for One Administrator — 2026-10-14
 
 The owner withdrew the separated-place layout and the SPEC-0240 exclusion and
 chose host custody (SPEC-0242): shares and the CA key on the host and in the
@@ -3073,7 +3085,7 @@ holds the procedure and the step 5 table. The "HOME custody attestation" row
 keeps its earlier off-host check and stays NOT_RUN as history; the owner's
 step 5 table for the host layout will be recorded as a new row.
 
-### Step 5 Owner Record — 2026-10-14
+#### Step 5 Owner Record — 2026-10-14
 
 The owner returned the RUN-0085 step 5 table, value-free, on 2026-10-14, and
 clarified it the same day: the R2 account ID and bucket name, the R2
@@ -3089,7 +3101,7 @@ account or the owner's separate desktop. Every answer is yes, so step 5 is
 `PASS`, owner-attested. This is the owner's statement; the agent read no
 value, and the repository cannot certify where values are kept.
 
-### v29 current window and residual handoff — 2026-10-22
+#### v29 current window and residual handoff — 2026-10-22
 
 The v29 local request reuses completed work on main
 `49fd95a6ed482d7194c840b43b73a030be6f3d5d` and reconciles this active P01
@@ -3124,7 +3136,7 @@ Existing Evidence, Criterion Acceptance and lifecycle events remain unchanged;
 combined metadata, links, lifecycle and independent review are recorded by the
 v29 coordinator.
 
-### v30 B2 anonymous-volume cleanup source continuation — 2026-10-26
+#### v30 B2 anonymous-volume cleanup source continuation — 2026-10-26
 
 The current v30 sections 10.3.4–5 authorize bounded local source, regression
 and separately admitted isolated Native work. Independent read-only preflight
@@ -3205,7 +3217,7 @@ manifest, source review and installation. Native execution remains NOT_RUN
 until frozen source, independent actual-diff review and the controller's
 separate bounded execution admission. Criterion 11 and lifecycle stay pending.
 
-### v30 selected isolated Native observations — 2026-10-27
+#### v30 selected isolated Native observations — 2026-10-27
 
 The final code revision is
 `f4698d1e15212117dafb5809fb6c5c7596686be4`. All 55 declared source
@@ -3301,7 +3313,7 @@ still needs an owner decision, its exact newly approved commit and manifest,
 installation and separate operational acceptance. Existing Evidence, Criterion
 Acceptance, review status and blocked lifecycle remain unchanged.
 
-### v30 A3 runtime cleanup and B4 scheduling — 2026-10-27
+#### v30 A3 runtime cleanup and B4 scheduling — 2026-10-27
 
 SPEC-0243 TSK-0001 is terminal, so its A3/B4 handoffs are continued here. The
 owner chose "preserve then delete" for the runtime copies, a prepared sudo
@@ -3364,7 +3376,7 @@ OpenBao version supports token revoke-self. A new P01 approval for the changed
 helper hash is still required before any window. Implementation remains in a
 new session.
 
-### W5 Agent re-issue for the Grafana delivery — 2026-10-27
+#### W5 Agent re-issue for the Grafana delivery — 2026-10-27
 
 After PR #572 merged at `2289dcff8`, the owner ran the RUN-0085 SecretID
 Delivery block from a guarded script. It had the 10-22 inputs: issuer
@@ -3410,7 +3422,7 @@ exhausted-budget block. Issuance, custody, trust, Agent, semantic restore and
 rehearsal suites: 137 OK, 3 skipped. A new issuer commit
 needs owner approval and installation before the re-run.
 
-### W5 re-run, journal recovery and Agent restart — 2026-10-27
+#### W5 re-run, journal recovery and Agent restart — 2026-10-27
 
 The owner approved `422b4adfd` (PR #573) as the issuer commit, and it was
 installed with the 10-22 bootstrap. The three installed files are
@@ -3450,7 +3462,7 @@ Residuals:
 - Changing a template's `perms` takes effect only on a re-render. The
   consumer-migration README now says so, and a source-level fix is not decided.
 
-### v30 B4 renderer issuance journal v3 source — 2026-10-28
+#### v30 B4 renderer issuance journal v3 source — 2026-10-28
 
 Source only. No live token, root, lock or Agent was touched, and no window ran.
 The work was done in a worktree on `origin/main` `463eb3b0a`, which contains
@@ -3544,7 +3556,7 @@ the 08:14 one; the 10-22 generation is left alone.
   and its installation, are required before any W5.
 - The owner runs W5 in a terminal.
 
-### Unused renderer tokens: expiry observation — 2026-10-28
+#### Unused renderer tokens: expiry observation — 2026-10-28
 
 The 2026-10-27 residuals left two unused renderer-generation tokens valid. One
 came from the 08:14 start and one from 10-22. Neither is renewed: their Agent
@@ -3589,7 +3601,7 @@ the log retention start only, never the lease ID. Root and the other
 residuals stay out of scope. Source journal v3 (B4) will revoke the old
 generation at a future W5 instead of waiting for expiry.
 
-### OpenBao outage and v2 recovery (2026-10-28)
+#### OpenBao outage and v2 recovery (2026-10-28)
 
 **What happened.**
 
@@ -3659,7 +3671,7 @@ Installation runs RUN-0103 step 2 with `issuer_commit` set to the commit above
 and the existing operator tools root. A later W5 then passes that commit to
 `agent-restart`. RUN-0103 now describes v3 and this outage pattern.
 
-### Outage follow-ups and v3 install (2026-10-28)
+#### Outage follow-ups and v3 install (2026-10-28)
 
 **v3 issuer installed.** The owner approved B4 v3 for P01 on 2026-10-28
 ("Approve v3 for P01, then install it"). RUN-0103 step 2 ran verbatim from the
@@ -3783,7 +3795,7 @@ still bound the operator (`k8s-bootstrap`, 2 hours) and the renderer roles
 (5 minutes). OIDC tokens come from the `oidc/` mount (1 hour, 4 hours at
 most) and are not affected. The next 1-year rotation needs the same maximum.
 
-### Owner steps as scripts (2026-10-28)
+#### Owner steps as scripts (2026-10-28)
 
 The owner asked for each follow-up as a working script. Three steps join
 `owner-window.sh`:
@@ -3899,7 +3911,7 @@ was. If it was the 08:21 generation's token, the check after 07:35Z on 10-29
 shows no new line, and that token is then recorded from this line, not as
 UNKNOWN.
 
-### OpenBao runbooks: headings and script files (2026-10-28)
+#### OpenBao runbooks: headings and script files (2026-10-28)
 
 The owner asked to give each OpenBao runbook proper headings, and to move the
 scripts written in them into script files.
@@ -3970,7 +3982,7 @@ for an honest object store and a clean environment. Each finding was fixed:
   - the `p01_run` text now claims only blob re-hashing. Tree substitution is
     named as the accepted residual risk.
 
-### Metrics token rotation: owner run (2026-10-28)
+#### Metrics token rotation: owner run (2026-10-28)
 
 The owner ran the scripted RUN-0104 rotation in a clean `env -i` bash, using
 `P01_APPROVED_COMMIT` `67357246f1afae063878cc757aaa466a8747e75f` (PR #607).
@@ -4015,7 +4027,7 @@ Notes:
   redrawn out of place by the terminal. The function still ran, as the
   bootstrap's `OK` lines show.
 
-### 10-27 Agent run tokens: attribution (2026-10-28)
+#### 10-27 Agent run tokens: attribution (2026-10-28)
 
 The owner ran `renderer-expiry 2026-10-28T07:35:00Z` at about 14:40Z. It
 showed three revocations: 09:32:41.749Z, 09:32:41.847Z and 13:48:31.447Z. The
@@ -4063,7 +4075,7 @@ Corrections and findings:
   input redirection, so nothing ran. Neither changed anything. The Agent was
   healthy and needed no restart.
 
-### Deadline reconciliation 2026-10-30
+#### Deadline reconciliation 2026-10-30
 
 The v29 handoff listed the three D1 owner decisions "before 2026-11-15". The
 D1 items are the renderer token, the sealed-server cleanup and the kept W2
@@ -4077,7 +4089,7 @@ targets removed). B4 v3 is installed, but no W5 has run with it. The first W5
 with v3 starts with `owner-window.sh preflight`. The Evidence rows above are
 unchanged. Their reconciliation stays with the next approved window.
 
-### Handoff from SPEC-0204 TSK-0013 2026-10-30
+#### Handoff from SPEC-0204 TSK-0013 2026-10-30
 
 TSK-0013 is final at `main` `c585c5244` (PR #666). Criteria 19 and 22 are accepted. The OpenBao boundary P05 hands to
 P01: n8n credentials were rotated as n8n-native credentials in a disposable
@@ -4086,7 +4098,7 @@ future management of these credentials through OpenBao and native credential
 refresh. Next input: when P01 and P06 deliver, P06 decides whether the
 notifier's PostgreSQL and SMTP credentials move to OpenBao.
 
-### Agent auth outage and recovery 2026-11-08
+#### Agent auth outage and recovery 2026-11-08
 
 **Outage.** `openbao-agent` was unhealthy from about 2026-11-02 07:20Z with
 `no known secret ID`, the RUN-0103 restart case. `OpenBaoAgentAuthFailure`
@@ -4122,7 +4134,13 @@ resolution. On the last 26 hours of HOME data the new expression crosses the
 threshold only from 11:41Z to 11:51Z, and reads `0` now. Prometheus picks the
 rule up only after the change is merged and Prometheus reloads its rules.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -4201,13 +4219,19 @@ rule up only after the change is merged and Prometheus reloads its rules.
 | Semantic restore source independent review | 11 | W23 | Code/security/IaC blockers despite28 synthetic PASS80%branch; actual recovery NOT_READY | source4ffd0ec3/tests8ba3a111 | FAIL | Current Operation Preparation — 2026-10-14 | - |
 | Actual quoted R2 local readiness correction | 11 | W23 | Minimal Compose literal normalization, independent exact review,14+10 synthetic PASS; actual exit0 LOCAL_INPUTS_READY; no remote/custody proof | inspectorff6bae4f/launcher5f75e150 | PASS | Current Operation Preparation — 2026-10-14 | Actual offsite local readiness r2/r3 |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
 | 11 | pending | - | - |
 
-## Review and Completion
+### Remaining Conditions
 
 Prior source delivery merged in PR421 and PR431 (merge `7620f2d22`). The
 current protected-client/common integration and field-metadata clarification
@@ -4221,10 +4245,12 @@ outcomes; do not treat the earlier unperformed window steps as current failures
 or repeat issuance to close this document. Those scoped outcomes do not close
 criterion 11, accept all P06 migration/rotation or provide new operating authority.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [P00 Task](../../0212-request-baseline-and-reconciliation/tasks/tsk-0003-active-contract-and-exclusions.md)
-- [OpenBao Runbook](../../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
-- [Backup Runbook](../../../05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

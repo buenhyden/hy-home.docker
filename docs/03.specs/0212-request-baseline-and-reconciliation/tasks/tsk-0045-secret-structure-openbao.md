@@ -14,16 +14,26 @@ created: "2026-11-02"
 
 # Secret Structure and OpenBao Contract Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Implement the approved local P06 secret-structure, SMTP reader and OpenBao
 contract reconciliation. Preserve historical acceptance and separate current
 source, isolated validation and any authorized private read from actual HOME
 operation, rotation, independent restoration and final operator acceptance.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
+- [Opsflow notifier recovery Task](tsk-0044-opsflow-notifier-recovery.md)
+- [Historical OpenBao consumer migration Task](../../0204-service-integration-security-and-operations/tasks/tsk-0014-p06-openbao-consumer-migration.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The direct P06 plan authorizes local source, tests, documentation, CI selection,
 independent review, and a normal local logical commit. The actual `.env`, private
@@ -45,9 +55,11 @@ TSK-0044 native credential handoff, SPEC-0204 Task P01/P02/P06, and existing
 catalog, SMTP and consumer-migration sources. Source proof is not a new HOME
 acceptance. Historical Task bodies and issued secret identities stay intact.
 
-## Work Log
+## Execution Log
 
-### Single-writer leases
+### Work Performed
+
+#### Single-writer leases
 
 Each writer records exact existing-path public fingerprints and ABSENT new
 paths before editing; changed shared input pauses the affected slice only.
@@ -94,7 +106,7 @@ and CI routing test
 `e236dfb0704e9468d234c3844c11ec0bc11f28bac9566cc103b5e0c5493fe353`.
 The new structural CLI, library and test did not exist at the baseline.
 
-### Current dispositions
+#### Current dispositions
 
 | Item | Criterion | Work Unit | Initial disposition | Current boundary |
 | --- | --- | --- | --- | --- |
@@ -105,7 +117,7 @@ The new structural CLI, library and test did not exist at the baseline.
 | P06.05 | 80 | W85 | IMPLEMENT_GAP | Bound SMTP reader races and report observed old-copy absence without equality |
 | P06.06 | 81 | W86 | BLOCKED | Preserve recovery copies; no newly authorized retirement target or consumer-zero proof |
 
-### Safety and evidence boundaries
+#### Safety and evidence boundaries
 
 The comparison must reject symlink, hardlink, nonregular, permission, growth,
 rebind, duplicate and ambiguous inputs without writing private files. Values
@@ -121,7 +133,7 @@ this execution's direct operation, credential rotation, independent restore,
 remote CI and final acceptance are independent axes. Actual HOME changes,
 real rotation/restore, remote integration and P12 final acceptance are NOT_RUN.
 
-### Existing acceptance and applicability
+#### Existing acceptance and applicability
 
 SPEC-0204 TSK-0014 records the 2026-10-27 Grafana admin and Keycloak admin
 cutover, rollback and re-cutover, and the Grafana OIDC client's selected
@@ -193,7 +205,7 @@ P06 retains the exact producer/issuer, operator, native UI/API and recovery
 handoff as missing inputs; no synthetic P05 identity is issued as a production
 catalog identity.
 
-### Public catalog duplicate regression
+#### Public catalog duplicate regression
 
 The QA writer changed only `tests/validation/test_secret_metadata_sync.py`
 from baseline SHA `44c8193ca6d21aa7d835d523275dce79dca0fcc53023c05d2c1b78e521a82e2c`
@@ -210,7 +222,7 @@ seconds. Independent security reviewer `/root/p06_security_review` approved
 that newer source and reran three synthetic tests successfully. Neither source
 epoch establishes current private structure or image support.
 
-### SMTP reader correction and local regression
+#### SMTP reader correction and local regression
 
 The SMTP writer reproduced seven synthetic RED cases for FIFO replacement,
 growth and name/parent rebinding. The current source packet is public reader
@@ -236,7 +248,7 @@ test `1811aea7d36530c36edfe4a32fdf3f33bd98bda65cec104de75892069ee24ad8` packet.
 The reviewer reran 93 synthetic tests successfully. This supersedes the earlier
 contract/test source epoch only; no real SMTP or private consumer was tested.
 
-### CI registration and known residual
+#### CI registration and known residual
 
 The CI writer registered the new synthetic-only structure test and paths in
 the existing selector and manifest. Frozen workflow SHA
@@ -287,7 +299,7 @@ was absent from PATH, so Python dependency audit is NOT_RUN and no global
 installation was attempted. The manifest checker and normal staged wrapper
 remain pending until the newly added paths are staged.
 
-### Authorized private read-only observation
+#### Authorized private read-only observation
 
 After the synthetic leak tests and independent security approval on the then
 current source/test packet, the coordinator ran the explicit P06 read-only
@@ -323,7 +335,7 @@ argument reflection and diagnostic findings were corrected. The reviewer ran
 line coverage 303/320 (94.69%) and Ruff/format pass. Tests cover the closed
 output and failure paths, not HOME consumer or credential acceptance.
 
-### Current workspace inventory
+#### Current workspace inventory
 
 After the source writers reported frozen public inputs, DATA-0096 was refreshed
 with the existing scanner's connection extraction and explicit public paths for
@@ -346,7 +358,7 @@ current lease for each changed public path. This inventory records public
 source and aggregate exclusions only; no private file body or metadata output
 was retained by this scan.
 
-### D07 re-verification (2026-11-08)
+#### D07 re-verification (2026-11-08)
 
 A direct user request on 2026-11-08 re-ran this scope as D07 on `main`
 `2f86dd9e3`. The owner ran the private read-only checks; only fixed outputs
@@ -418,19 +430,19 @@ and KV data and needs an owner-run Agent restart, so the owner chose on
 consumer because `labs/supabase` no longer exists; their removal is an
 owner-run edit.
 
-### Criterion 80 owner decision 2026-11-10
+#### Criterion 80 owner decision 2026-11-10
 
 Criterion 80 records a missing historical SMTP copy without claiming equality.
 The old copy is absent, so the private equality comparison can never run; the
 owner accepted criterion 80 on single-source grounds (D07 SMTP single source)
 and the equality row became optional with its NOT_RUN result unchanged.
 
-### Owner closure 2026-11-10
+#### Owner closure 2026-11-10
 
 On 2026-11-10 the owner (@buenhyden) closed this Task after criteria 76 to 81
 were each accepted or not-required with no unresolved required observation.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -438,7 +450,13 @@ were each accepted or not-required with no unresolved required observation.
 | SPEC-0212-TSK-0045 | ready | in-progress | #d07-re-verification-2026-11-08 |
 | SPEC-0212-TSK-0045 | in-progress | completed | #owner-closure-2026-11-10 |
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -461,7 +479,13 @@ were each accepted or not-required with no unresolved required observation.
 | D07 private key-set prune | 77 | W82 | Owner-run `--sync-metadata-prune-check` and name-only key/ID comparison | Owner-pruned `.env` and registry after a name-only review on 2026-11-10 | PASS | Before: `files_changed=2`, rc 1; private-only names were nine retired `.env` keys (Kafka JMX and REST proxy, Open WebUI, the folded Opsflow overlay) and registry rows CACHE-028 to CACHE-030, each traced to its removal commit. The owner backed up both files and ran `--sync-metadata-prune`; the check then returned `files_changed=0`, rc 0, and `docker compose --profile '*' config` rendered with no unset-variable warning. | required | D07 private key-set comparison |
 | Private structure observation after realignment | 77 | W82 | Authorized read-only full structure comparison | Owner-realigned `.env` and registry (2026-11-09) | PASS | The same `secret-structure.py check --read-private` comparison as the D07 private structure realignment row returned `MATCH` for env and registry; recorded under this Check so it resolves the 2026-11-02 observation. | required | Private structure observation |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -472,7 +496,7 @@ were each accepted or not-required with no unresolved required observation.
 | 80 | accepted | SMTP source safety and alias, D07 SMTP single source | Accepted on single-source grounds without claiming equality: the old copy is absent (`OLD_ABSENT`), COMM-003 is `source_retired` and one canonical file remains. The criterion forbids claiming equality, so the private equality comparison is optional and stays NOT_RUN. Owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0045 |
 | 81 | accepted | Retirement and recovery assessment | The retirement and recovery assessment is recorded and unknown targets stay held with no deletion, which is what the criterion requires; PG-025 was retired separately with an explicit owner decision. Owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0045 |
 
-## Review and Completion
+### Remaining Conditions
 
 On 2026-11-10 the owner (@buenhyden) closed this Task: criteria 76 to 81 are each
 accepted or not-required and no required observation is unresolved. The
@@ -481,10 +505,12 @@ paragraphs below are kept as the state they recorded at the time.
 Current implementation, independent review and local checks are pending.
 No prospective test or historical acceptance is promoted to current operation.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
-- [Opsflow notifier recovery Task](tsk-0044-opsflow-notifier-recovery.md)
-- [Historical OpenBao consumer migration Task](../../0204-service-integration-security-and-operations/tasks/tsk-0014-p06-openbao-consumer-migration.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

@@ -1,10 +1,10 @@
 ---
 title: "n8n Stable Source Preparation Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0017"
 parent_ids:
@@ -14,16 +14,25 @@ created: "2026-10-16"
 
 # n8n Stable Source Preparation Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Prepare the confirmed n8n stable source candidate under INFRA-P2, preserving
 historical SEC01 evidence and the separate P05 safety writer. Source preparation
 and current public metadata do not accept the entire image audit, a native
 workflow, a HOME deployment, migration or recovery.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [SEC01 prior Task](tsk-0009-sec01-stable-security-integration.md)
+- [P05 prior Task](tsk-0013-p05-n8n-outbox-notifier.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The direct 2026-10-16 infrastructure request authorizes ROOT stable-version
 source changes, tests, documentation and matching current evidence. The
@@ -38,9 +47,11 @@ No completed Task, LAB source, live secret, runtime deployment, migration or
 production data is changed. Source rollback is an owning logical revert;
 image rollback cannot undo a database migration.
 
-## Work Log
+## Execution Log
 
-### 현재 source 진행과 lifecycle 구분 — 2026-10-22
+### Work Performed
+
+#### 현재 source 진행과 lifecycle 구분 — 2026-10-22
 
 현재 Compose/build 소스의 2.43.6 bundle, broker/launcher listener alias와
 read-only custom bind는 아래 구현 보고와 일치한다. Coupled source commit,
@@ -54,7 +65,7 @@ isolated build/module loading 및 후속 HOME upgrade/recreation 보고는 각�
 2의 기존 decision owner, pending exact-head review/gates와 전체 image/security/
 recovery 수락을 보존한다. 새 runtime 실행이나 criterion 수락은 수행하지 않았다.
 
-### W71 stable source preparation
+#### W71 stable source preparation
 
 Official GitHub latest and npm latest return n8n 2.43.6, published
 2026-10-15T07:26:03Z, and the Docker Hub stable/latest tags match its exact
@@ -116,7 +127,7 @@ legacy exceptions or transition overrides. It covers the initial six paths and
 resolves their earlier document metadata failure. Independent final review and
 exact-head registered delivery gates remain separate.
 
-### Coupled source commit and current base — 2026-10-16
+#### Coupled source commit and current base — 2026-10-16
 
 The coordinator approved one coupled source delivery for W71 (stable n8n
 artifact), W72 (DEV CONNECT admission) and W73 (notification safety), together
@@ -149,7 +160,7 @@ CI policy integration; pre-rebase tests are not relabeled as final-head or
 hosted CI evidence. The separate blocked image-native/HOME/recovery lanes
 remain visible.
 
-### Exact isolated image build and native peer correction — 2026-10-16
+#### Exact isolated image build and native peer correction — 2026-10-16
 
 The authorized isolated build of the committed source at
 `8306839bb377228f76881cadaeb1ebe0f14656b5` produced image
@@ -206,7 +217,7 @@ Full n8n workflow/queue/runner execution, full-image vulnerability scan,
 signature/provenance verification, HOME upgrade, combined backup/restore and
 runtime clock/quiescence proof remain NOT_RUN or BLOCKED in their owners.
 
-### ROOT official release metadata continuation — 2026-10-16
+#### ROOT official release metadata continuation — 2026-10-16
 
 The controller granted a separate writer lease limited to the existing
 `release-lookups.json` and `update-ledger.json` after independent review of
@@ -270,7 +281,7 @@ The gate was not weakened or made green by assigning untested targets. Remaining
 artifact selection, OCI/platform, applicability/support, signatures, SBOM,
 compatibility, native/HOME and recovery decisions need their own evidence.
 
-### Runner port aliases and deprecated runner switch — 2026-10-20
+#### Runner port aliases and deprecated runner switch — 2026-10-20
 
 The v22 execution prompt §8.3 asks whether the `N8N_BROKER_PORT` and
 `N8N_TASK_RUNNER_PORT` aliases move the real listeners. They did not. The
@@ -335,7 +346,7 @@ Opsflow bridge (`/opt/hyhome/n8n-custom` is absent). RUN-0053 stops HOME
 application until an isolated Code-node and DB-upgrade check and an
 independent backup with the same encryption key exist.
 
-### HOME 2.43.6 upgrade — 2026-10-20
+#### HOME 2.43.6 upgrade — 2026-10-20
 
 The owner asked on 2026-10-20 to review and then carry out the HOME recreation.
 RUN-0053 stops HOME application until an isolated Code-node and DB-upgrade
@@ -395,7 +406,7 @@ restore of this backup into HOME. Migrations are forward-only; going back
 means restoring this backup into an emptied database with the 2.41.6 image,
 not retagging the image.
 
-### HOME recreation after the merge — 2026-10-20
+#### HOME recreation after the merge — 2026-10-20
 
 After PR #522 was merged, the HOME checkout was fast-forwarded to `main`
 `532ff831e`, and the four n8n services were recreated at 13:06–13:07 +09:00
@@ -412,7 +423,7 @@ including under the old configuration. `n8n` runs with `EXECUTIONS_MODE=queue`
 and `OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true`, so executions use the worker
 broker. Whether the runner beside `n8n` is needed is a follow-up.
 
-### Source binding refresh — 2026-10-20
+#### Source binding refresh — 2026-10-20
 
 `test_workflow_version_bundle` binds the n8n Compose, build and custom-node
 inputs to `update-ledger.json#/n8n_source_preparation/source_binding`. The
@@ -428,7 +439,7 @@ reference `hy-home/sec01-n8n:2.43.6-opsflow-03892eb1a9a4` in
 `_opsflow_native_inputs.py` still names the reviewed build and is unchanged.
 Its native, HOME, signature, SBOM and recovery fields stay `NOT_RUN`.
 
-### Independent review — 2026-10-20
+#### Independent review — 2026-10-20
 
 A read-only `code-reviewer` subagent reviewed local head `148d324fe`, which has
 the same content as the pushed `d5d337ef0` (`git range-diff` shows every commit
@@ -446,26 +457,32 @@ approve with notes.
 This was a self-requested subagent review, not owner review. PR #522 was merged
 before these fixes were pushed, so they follow in a separate PR.
 
-### Owner decision 2026-10-29
+#### Owner decision 2026-10-29
 
 On 2026-10-29 the owner decided that the frontmatter `draft` is stale: the Work
 Log above already reports the stable source preparation, isolated build and HOME upgrade. The status moves `draft`, `ready`, then
 `in-progress`. No criterion is accepted here: criterion 2 keeps its acceptance owner in TSK-0001, and the exact-head review and image, security and recovery coverage stay open.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0017 | draft | ready | #inputs-and-authorization |
 | SPEC-0204-TSK-0017 | ready | in-progress | #owner-decision-2026-10-29 |
 
-### Supersession note 2026-11-10
+#### Supersession note 2026-11-10
 
 On 2026-11-10 the n8n 2.43.6 candidate is superseded: the current n8n and
 runners are 2.46.6 (`infra/07-workflow/n8n/docker-compose.yml:127,259`), and the
 `/tmp` checkout this Task used no longer exists. Earlier entries are unchanged.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -489,12 +506,18 @@ runners are 2.46.6 (`infra/07-workflow/n8n/docker-compose.yml:127,259`), and the
 | Current latest artifact target gate | 2 | W71 | Latest target and release readiness | Actual gate exit 2 ready false; unresolved/mismatch/applicability decisions remain | FAIL | ROOT official release metadata continuation — 2026-10-16 | required | - |
 | Native and recovery | 2 | W71 | Complete workflow and HOME recovery acceptance | Isolated module smoke does not prove workflow/queue/runner/HOME/restore | NOT_RUN | Exact isolated image build and native peer correction — 2026-10-16 | optional | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 Criterion 2 retains its existing durable acceptance owner in Task0001. W71
 provides supporting source evidence and does not create a duplicate acceptance row.
 
-## Review and Completion
+### Remaining Conditions
 
 The current Plan owns criterion routing. This continuation does not rewrite
 prior Task acceptance. Independent final source/security review and exact-head
@@ -502,9 +525,12 @@ gates remain pending. Current ROOT release research is joined above. Exact image
 signature, SBOM, compatibility and recovery coverage remains incomplete; neither
 release metadata nor the earlier four-service version preparation accepts it.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [SEC01 prior Task](tsk-0009-sec01-stable-security-integration.md)
-- [P05 prior Task](tsk-0013-p05-n8n-outbox-notifier.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

@@ -1,10 +1,10 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.17"
+version: "0.5.18"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-09"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0022"
 parent_ids:
@@ -14,16 +14,26 @@ created: "2026-10-30"
 
 # Hermes Blog Ingestion Transport Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Implement the independently testable, source-only Publisher/Outbox slice of
 criterion 23 without duplicating existing Hermes export or n8n crawling.
 Gateway contract adoption and actual operation remain separate required lanes.
 W79-W83 belong here; Task0013 and SPEC0247 retain their own files/acceptance.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Workflow requirement](../../../01.requirements/0008-workflow.md)
+- [Workflow architecture](../../../02.architecture/descriptions/0007-workflow-architecture.md)
+- [n8n guide](../../../05.operations/guides/08-workflows-and-automation/0053-n8n.md)
+- [n8n policy](../../../05.operations/policies/08-workflows-and-automation/0053-n8n.md)
+- [n8n runbook](../../../05.operations/runbooks/08-workflows-and-automation/0053-n8n.md)
+
+### Inputs and Authority
 
 The owner's 2026-10-30 request authorizes basic implementation and safe checks.
 Existing Cron changes, real secret use, workflow activation, Compose recreation,
@@ -32,7 +42,7 @@ secret value, auth file, raw log or broad Hermes home read is implied.
 Revert Task-owned source only; retain original output and Outbox evidence.
 No deployment, data deletion or queue reset is a rollback step.
 
-### Source admission
+#### Source admission
 
 - Reuse structured exporter `84d3f689378b`; do not create a new schedule.
 - Approved jobs: `6eabd835f969` (strategy-news), `25674fbc0bf3`
@@ -57,7 +67,7 @@ No deployment, data deletion or queue reset is a rollback step.
   `validate_candidate(data, source_root)` API; its mere presence is insufficient
   adoption of the stronger reviewed contract.
 
-### File ownership and dependencies
+#### File ownership and dependencies
 
 | Writer | Exclusive surface | Dependency and handoff |
 | --- | --- | --- |
@@ -75,9 +85,11 @@ All paths above use workload
 Task0013, Manifest Outbox Notifier, SPEC0247 and other worktrees are excluded.
 No global service/profile activation is required.
 
-## Work Log
+## Execution Log
 
-### Design admission — 2026-10-30
+### Work Performed
+
+#### Design admission — 2026-10-30
 
 Selected canonical doc-writer and explicitly loaded bootstrap/provider,
 documentation/approval policy, Stage99 Spec/Plan/Task profiles, governing
@@ -97,7 +109,7 @@ n8n metadata. No new service, database, Qdrant index or SeaweedFS fallback is
 provisioned. SeaweedFS remains a design alternative only if the direct approved
 private route proves unavailable.
 
-### Observed inventory — 2026-10-30
+#### Observed inventory — 2026-10-30
 
 Controller read-only inventory refreshed remote main with `ls-remote`:
 `e065bce168f054c9a75fef97e0c4e029fbca7baa`; initial root main matched and was
@@ -146,7 +158,7 @@ are not established by these read-only checks. Developing Blog-data drafts are
 uncommitted/unapproved interface evidence; required `scheduled_at` semantics
 are absent from producer candidates and must not be fabricated.
 
-### Gateway contract and native gates — earlier observation
+#### Gateway contract and native gates — earlier observation
 
 A read-only inspection of the shared diff in the “Hermes 수집 API 구축” chat
 found a provisional, uncommitted `ingestion-v1.schema.json`. It requires
@@ -184,7 +196,7 @@ Gateway durable receipt tests remain BLOCKED. Do not read/use real secrets to
 resolve them without separate concrete authorization. Existing n8n PostgreSQL,
 selected Valkey and OpenBao consumers are reused through their current owners.
 
-### Follow-up source admission — earlier observation, 2026-10-30
+#### Follow-up source admission — earlier observation, 2026-10-30
 
 The owner requested a fresh check of the developing Gateway and continuation of
 independent integration work. The separate Gateway chat remains active; its
@@ -237,7 +249,7 @@ was not yet implemented; Native operation remains pending. Focused tests using
 the fixed validator passed 14/14. The measured 93% coverage excludes the child
 subprocess; it is not a complete coverage figure for the transport child.
 
-### Gateway source admission after Blog-data PR #620
+#### Gateway source admission after Blog-data PR #620
 
 Blog-data PR #620 merged to `dev` at fixed revision
 `a6d0957ad380f179f73bdd2a60ff23792d53f7ae`. The contract inputs to obtain and
@@ -355,7 +367,7 @@ The replacement branch integrates `6a` without rewriting the existing history;
 its draft PR is not yet published. PR #684's malformed merge CI remains FAIL,
 and hosted acceptance, n8n Native and criterion completion are not established.
 
-### Publisher delivery CLI review — removed attempt
+#### Publisher delivery CLI review — removed attempt
 
 A proposed explicit single-record Publisher `deliver` CLI and synthetic test
 were reviewed with a fake authorization value and mocked HTTP responses. They
@@ -380,7 +392,7 @@ article's actual `collected_at`. Native worker-to-relay, relay-to-Gateway,
 TLS/authentication, durable receipt, outage/recovery and existing email/workflow
 regression remain NOT_RUN.
 
-### n8n Native admission follow-up — blocked import
+#### n8n Native admission follow-up — blocked import
 
 The operational n8n 2.43.6 package's `safeParseWorkflowStructure` accepted the
 tracked workflow bytes with `success: true`. This is a parser-only source check:
@@ -397,7 +409,7 @@ alerts, outage/recovery and email/workflow regression remain NOT_RUN. This
 bounded observation authorizes none of activation, Compose recreation, port or
 network changes.
 
-### Publisher endpoint binding follow-up — source and synthetic evidence
+#### Publisher endpoint binding follow-up — source and synthetic evidence
 
 The delivery path now obtains the configured relay endpoint's SHA-256 from the
 transport and writes it with the contract revision, destination, and immutable
@@ -448,7 +460,7 @@ no running Publisher, Cron, workflow, Compose configuration, network,
 credential, or remote resource. The focused synthetic suite now reports 117
 tests: 115 passed and two optional tests skipped, including rollback and retry.
 
-### n8n inactive workflow import — isolated Native PASS
+#### n8n inactive workflow import — isolated Native PASS
 
 The earlier 45-second `--help` delay was traced to an I/O wait followed by
 `EACCES` on the temporary n8n configuration directory, not to workflow parsing or import.
@@ -464,7 +476,7 @@ durable Gateway persistence, alerting, outage/recovery, and regression of
 existing email and workflows remain NOT_RUN. The synthetic key and isolated
 database prove none of those operational properties.
 
-### State, failures and later MCP
+#### State, failures and later MCP
 
 Outbox stores immutable original bytes and SHA-256 digests under
 `(job_id, run_id)`, private directory 0700/files 0600. Replays deduplicate;
@@ -485,7 +497,7 @@ cadence and operator agreement before activation. MCP is later read-only
 n8n Queue persistent-session verification. No Blog-data MCP setting changes or
 Vault mutation/publication authority follow from a search result.
 
-### W80 synthetic evidence
+#### W80 synthetic evidence
 
 The staging suite recorded RED before implementation and then 49 tests PASS
 in 2.6 seconds on synthetic fixtures. Measured line coverage was 448/494
@@ -559,7 +571,7 @@ synthetic validator does not prove schema or Gateway compatibility. The earlier
 selected=8, violations=0, no exceptions or overrides). This evidence-only Task
 update followed that check.
 
-### Final read-only freshness observation
+#### Final read-only freshness observation
 
 `git ls-remote origin refs/heads/main` returned
 `4d540c870a746a10dfd0104351ea450106f8891f`. The `e065bce168f054c9a75fef97e0c4e029fbca7baa`
@@ -571,7 +583,7 @@ remain source-only; latest-main integration and hosted checks are pending.
 The final `graphify update .` passed with 26,414 nodes and 49,344 edges; the
 optional SQL and HCL parsers remained unavailable.
 
-### Follow-up integration observation — earlier revision
+#### Follow-up integration observation — earlier revision
 
 PR #684 candidate-quality run `41030161941` passed for its then-current head
 `be0ee1b` and base `e0d68d`; changed head and main have not yet been revalidated
@@ -595,7 +607,7 @@ checks for the new revision remain NOT_RUN. The user requested commit and push o
 scope followed by the contract wait; that request does not establish completed
 Git integration or operational delivery.
 
-### Current producer and isolated Queue evidence — 2026-10-30
+#### Current producer and isolated Queue evidence — 2026-10-30
 
 PR #689 is merged. That merge does not close criterion 23: current evidence
 still distinguishes source implementation from operating acceptance.
@@ -618,7 +630,7 @@ NOT_RUN. All isolated test resources were removed and the observed production
 n8n services remained healthy. A previously reported shell-pipeline “PASS” was
 invalid and is explicitly excluded from this evidence.
 
-### Isolated Queue publication and dispatch follow-up — 2026-10-30
+#### Isolated Queue publication and dispatch follow-up — 2026-10-30
 
 The isolated n8n setup now uses the default workflow-publication API rather
 than assuming an imported active version has registered a webhook. The
@@ -643,7 +655,7 @@ not change the all-items collection-time hold. Likewise, an Outbox evidence
 snapshot is retained for later verification only: it is not dispatch authority
 and cannot cause a send, replay, activation, or credential use.
 
-### Publisher evidence-bound staging follow-up — source/synthetic only
+#### Publisher evidence-bound staging follow-up — source/synthetic only
 
 The current Publisher change makes the candidate/source snapshot and its opaque
 companion evidence one atomic Outbox operation.  It keeps the existing identity
@@ -676,7 +688,7 @@ result for the present uncommitted Publisher change and must not be used as its
 acceptance or merge evidence.  The current revision requires its own complete
 checks after the final committed PR head is known.
 
-### Post-PR #693 dispatch readiness — 2026-10-31
+#### Post-PR #693 dispatch readiness — 2026-10-31
 
 The owner assigned the Hermes direct-fetch receipt producer and exporter
 integration to the server-A Hermes lane, and the Blog-data TLS entry point and
@@ -747,7 +759,7 @@ recorded 153 held items remain a 2026-10-30 observation and no collection
 time was estimated. No Cron, secret, workflow, container, network
 or remote Git state was changed.
 
-### Handoff: Hermes producer lane (server A)
+#### Handoff: Hermes producer lane (server A)
 
 Deliver per run a Companion Evidence v1 file exactly as defined in the workload
 README `Companion Evidence v1 계약` section; candidate producer v1.0.0 fields stay unchanged.
@@ -786,7 +798,7 @@ Acceptance: real runs verify with zero rejections; crash injection between fetch
 and write yields no unbound item; a forged record from the exporter account is
 rejected by the approved mechanism.
 
-### Handoff: Blog-data Gateway lane (server B)
+#### Handoff: Blog-data Gateway lane (server B)
 
 1. Keep the Gateway on loopback `127.0.0.1:8787`; expose it only through an
    approved TLS terminator on `192.168.0.22` with a DNS name resolvable from the
@@ -808,7 +820,7 @@ Acceptance: from the n8n worker, DNS/TCP/TLS succeed, an invalid token returns
 200 for the identical request and 409 for a changed body, all durably visible
 through `GET /v1/ingestions/{id}`.
 
-### Live candidate and Hermes-lane alignment — 2026-10-31
+#### Live candidate and Hermes-lane alignment — 2026-10-31
 
 A read-only scan of the live exporter root
 (`~/storage/research/hermes-report-export/out`, Cron `84d3f689378b` every five
@@ -832,7 +844,7 @@ JSON plus SHA-256 is not authentication; prefer a restricted producer account,
 protected handoff and independent verifier) matches the admission condition
 above. The controller ran the suite: 151/151 with the added rejection subtests.
 
-### Producer authentication and gate unification — 2026-10-31
+#### Producer authentication and gate unification — 2026-10-31
 
 Start state: origin/main `31b92f95e`, local main fast-forwarded and clean; the
 earlier Codex worktree no longer exists and no PR was open. Main's validator
@@ -923,7 +935,7 @@ immutable signature, restart, revocation after binding). Ruff passed. These
 results do not replace the earlier 151/151 for the prior revision. Server B
 TCP 22/443/8443 still did not connect from server A.
 
-### Protected install and ingest-only contract — 2026-10-31
+#### Protected install and ingest-only contract — 2026-10-31
 
 PR #696 carried the producer verifier above; the owner merged it at head
 `7629bbad4` as `82dadf586` (2026-10-31T03:37:58Z) before this slice was pushed.
@@ -1007,7 +1019,7 @@ Approval units still open, none performed: A host `hermes-publisher` account;
 service/timer; producer key admission PR; A exact-path ingress router; worker
 DNS/`extra_hosts`; workflow URL/credential binding and publication.
 
-### Hermes host direct path with the Gateway on server A — 2026-10-31
+#### Hermes host direct path with the Gateway on server A — 2026-10-31
 
 Owner redirect: Hermes (server-A host process) submits directly to the existing
 n8n webhook; n8n forwards to the Blog-data Gateway hosted on server A; Windows
@@ -1071,7 +1083,7 @@ Approval units added, none performed (RUN-0053 "서버 A Gateway 배치와 직�
 `n8n-worker` recreation; two n8n credentials; workflow publication; Traefik route
 copy after measuring the live host source; Gateway backup connection.
 
-### Attestation, Resource Export and Windows pull — 2026-11-01
+#### Attestation, Resource Export and Windows pull — 2026-11-01
 
 Owner decisions for this slice: a separate host attester signs Blog-data
 attestations (not OpenBao Transit, not deferred), and PR #700 (Hermes plugin,
@@ -1137,7 +1149,7 @@ n8n credentials; workflow publication; webhook route; Traefik recreation onto
 `blog_export_net` and export route copy after measuring both sources; Windows
 dry run; real receive and ACK; backup connection.
 
-### Remaining blocked conditions and recovery
+#### Remaining blocked conditions and recovery
 
 - DELIVERY stays BLOCKED until both handoffs are accepted and a reviewed key is
   added to `publisher/producer-keys.json` and installed as a protected release;
@@ -1151,7 +1163,7 @@ dry run; real receive and ACK; backup connection.
   reopened automatically; uncertain records resolve only by explicit
   identical-byte, identical-key replay, because A holds no read token (RUN-0053).
 
-### Server A operational rollout — 2026-11-01
+#### Server A operational rollout — 2026-11-01
 
 Owner decisions: keep Export closed and design the trust adapter separately (no
 `export` block, so an authorized attestation would get 403 `EXPORT_DISABLED`;
@@ -1209,7 +1221,7 @@ routers carry it live, the E2E Traefik receives the real chain parts, and the
 routers are listed with their authentication. Important findings (stale
 evidence rows, section placement) and the binding wording were corrected.
 
-### Trust adapter design — 2026-11-01
+#### Trust adapter design — 2026-11-01
 
 Owner-approved design for the component that opens Export. Decisions marked
 as the owner's were answered directly; the read endpoints, n8n screen key,
@@ -1219,7 +1231,7 @@ workspaces carry the matching contract and test steps. Implementation in this
 repository starts once the Blog-data `attestation/2` contract is merged on
 `dev`, so its final field names and bounds are pinned, not guessed.
 
-#### Intent
+##### Intent
 
 Hermes Cron reports reach the Blog-data Gateway on server A as `received`
 through the direct path (Hermes plugin → n8n → Gateway, PR #699/#703). Nothing
@@ -1234,7 +1246,7 @@ The owner wants to stop three things:
 2. Content changed between submission and the Vault.
 3. Unapproved jobs mixed in.
 
-#### Goals
+##### Goals
 
 - Per-item verification: an item reaches `ready` only when its source URL was
   fetched by the verifier, its quotes appear verbatim in that page, and its
@@ -1250,7 +1262,7 @@ The owner wants to stop three things:
   (`resource-export/2+…`); the verifier pre-checks required profile fields and
   does not sign items that would fail rendering.
 
-#### Non-goals
+##### Non-goals
 
 - No model-based judgement (owner decision: no judge model). An item whose quotes
   are real but whose summary misreads them is left to human review: Blog-data
@@ -1261,16 +1273,16 @@ The owner wants to stop three things:
   (one-key change, republished as an approved ops unit).
 - No new service on Windows B; no Hermes migration to Docker.
 
-#### Anti-goals (failure even if it works)
+##### Anti-goals (failure even if it works)
 
 - A report reaches `ready` with a time or source the verifier did not observe.
 - Any manual "trusted=true", force flag or bypass path.
 - The signing key readable by Hermes, n8n, the Publisher or the repository.
 - Fetched page text treated as instructions anywhere.
 
-#### Decided shape
+##### Decided shape
 
-##### Blog-data contract change (Blog-data lane, `dev` PR first)
+###### Blog-data contract change (Blog-data lane, `dev` PR first)
 
 - Item schema gains `source_quotes`: 1–3 strings per item, original language,
   bounded length (builder picks bounds with Blog-data; suggest ≤ 500 chars each).
@@ -1296,12 +1308,12 @@ The owner wants to stop three things:
 - New test vectors in `attestation-v2.vectors.json`; hy-home pins the merged
   `dev` commit and rebuilds the image.
 
-##### Hermes lane (small plugin/prompt PR, not a rewrite)
+###### Hermes lane (small plugin/prompt PR, not a rewrite)
 
 - `submit_research_report` schema accepts and forwards `source_quotes`.
 - The three research Cron prompts ask for verbatim quotes per item.
 
-##### Verifier + attester on server A (this repo)
+###### Verifier + attester on server A (this repo)
 
 - One dedicated system account (e.g. `hermes-attester`), no login shell, not
   sharing a group with Hermes, n8n or the Publisher account.
@@ -1338,7 +1350,7 @@ The owner wants to stop three things:
   business idea `8d0925bc571d`.
 - Idempotent: an already-attested report is skipped; Gateway replay answers 200.
 
-##### Operations
+###### Operations
 
 - Gateway config gains the `export` block with the attester public key only
   when the above is deployed and verified; that is the moment Export opens.
@@ -1346,14 +1358,14 @@ The owner wants to stop three things:
 - Monitoring reuses existing signals: attester journal outcome counts
   (`attested`, `held_items`, `rejected`, `retry`) and the Gateway export list.
 
-#### Left to the builder
+##### Left to the builder
 
 - Exact quote/size/time bounds, HTML-to-text method, proper-noun extraction
   rule, timer interval, file layout under the attester account.
 - Whether verifier and attester are one module or two inside the workload.
 - Test design: synthetic pages served locally in tests (no real fetches in CI).
 
-#### Order
+##### Order
 
 1. Blog-data `dev` PR (`source_quotes`, `attestation/2`, `SOURCE_UNVERIFIED`,
    renderer fields, read endpoints).
@@ -1364,7 +1376,7 @@ The owner wants to stop three things:
    account, key, token, Gateway `export` block, timer; only then the Hermes
    plugin/prompt rollout.
 
-### Item-level attester implementation — 2026-11-01
+#### Item-level attester implementation — 2026-11-01
 
 Built on branch `feat/hermes-trust-adapter`, source and synthetic evidence only:
 
@@ -1395,7 +1407,7 @@ Built on branch `feat/hermes-trust-adapter`, source and synthetic evidence only:
   unverified; IPv4-compatible and NAT64 addresses are refused; the service unit uses
   `StateDirectory` and an empty capability set; the timer no longer sets `Persistent`.
 
-### First real Cron submission — 2026-11-01 08:00 KST
+#### First real Cron submission — 2026-11-01 08:00 KST
 
 Cron `25674fbc0bf3`, `6eabd835f969` and `8d0925bc571d` ran at 08:04–08:07 and
 delivered email and Telegram, but no report reached the Gateway. Five
@@ -1408,7 +1420,7 @@ passed. Fix: the registered handler returns `json.dumps(...)` of the unchanged
 result, plugin 0.2.1, with handler-result contract tests. The installed plugin is
 updated only after merge, and the hash comparison is repeated then.
 
-### Attester release role — 2026-11-01
+#### Attester release role — 2026-11-01
 
 Preparing deploy unit 7 found two defects. `install.py` shipped only Publisher
 modules, so no release could run `attest-queue`; and `cli.py` imported
@@ -1427,7 +1439,7 @@ Operations so far on server A: Gateway on `b372` schema 4, workflow
 republished, attester account, key and `attest`+`read` credential created,
 `export_enabled:true`; release install and timer NOT_RUN.
 
-### Attester live on server A — 2026-11-01
+#### Attester live on server A — 2026-11-01
 
 After PR #708 merged (`c2825bbe8`), the owner ran the install in a terminal.
 The release archive was `git archive c2825bbe8`, root-owned under `/root`;
@@ -1445,7 +1457,7 @@ and the Windows pull and ACK remain NOT_RUN until a Cron report arrives.
 Rollback: disable the timer, remove the two units and the `current` link,
 `daemon-reload`. Releases are left in place.
 
-### First manual Cron submission — 2026-11-01
+#### First manual Cron submission — 2026-11-01
 
 The owner ran `hermes cron run 25674fbc0bf3` (devops-daily-brief) at 10:16 KST.
 Email went out; the Gateway answered 403 `FORBIDDEN`. Traefik passed the source
@@ -1462,7 +1474,7 @@ offer", expired grant token, broker 403). Execution 90 timed out and 91 took
 30 s, so the plugin's first two 15 s attempts ended as Traefik 499 before the
 third reached the Gateway.
 
-### Runner cold start — 2026-11-01
+#### Runner cold start — 2026-11-01
 
 Both runner 403s since the container started (10-26 and 11-01) came from the
 first JavaScript task after a long idle. Timeline at 01:17:41: the launcher
@@ -1480,7 +1492,7 @@ test RED then GREEN. Applying it means recreating n8n, n8n-worker (with
 `docker-compose.ollama-local.yml`) and both runners; that is NOT_RUN until the
 owner approves.
 
-### Cron identity, source quotes and Export credentials — 2026-11-01
+#### Cron identity, source quotes and Export credentials — 2026-11-01
 
 Correction to the entry above: Hermes runs cron jobs inside the long-running
 `hermes-gateway.service` process, not in a fresh subprocess, so an installed
@@ -1520,7 +1532,7 @@ own `readConfig`, Gateway restarted healthy with `export_enabled:true`. The
 attester keeps its key `hermes-attester-1`. A second verifier key generated
 from the handoff note was not registered and the owner deleted it.
 
-### First end-to-end report on server A — 2026-11-01
+#### First end-to-end report on server A — 2026-11-01
 
 After #711 and #712 merged, the owner recreated n8n, n8n-worker and both
 runners, installed plugin 0.2.3 (the update script now restarts
@@ -1558,7 +1570,7 @@ diagnosis with the new rule passes the two Google Cloud items and still holds
 attestation; the rule applies to later reports after the attester release is
 reinstalled.
 
-### Windows receive and ACK — 2026-11-01
+#### Windows receive and ACK — 2026-11-01
 
 The owner reinstalled the attester at `5068fd95` (#713); `/opt/hermes-attester/current`
 points at it, its `source_check.py` carries the new first-word rule, and the
@@ -1574,7 +1586,7 @@ Windows storage signal; the Vault files themselves were not inspected from
 server A. Open: B's scheduled task registration and the restart/restore
 checks of step 15.
 
-### Site values from the environment — 2026-11-01
+#### Site values from the environment — 2026-11-01
 
 The Hermes routes and the attester no longer carry this site's addresses.
 `blog-export.yml`, `hermes-webhook.yml` and `hermes.yml` read their hosts and
@@ -1609,7 +1621,7 @@ path from their own location. `test_deploy_scripts` pins their syntax, the
 absence of site values and that the environment file holds exactly the
 variables the unit and `source_fetch` read; shellcheck passes.
 
-### Environment-driven routes applied — 2026-11-01
+#### Environment-driven routes applied — 2026-11-01
 
 The owner added `BLOG_EXPORT_RECEIVER_IP="192.168.0.22"` to `.env` and
 merged PRs #714 and #715 (`db23ea5`). The agent pulled the operator checkout and recreated
@@ -1630,7 +1642,7 @@ installed, so it rewrote `/etc/hermes-attester/environment`
 now reads `EnvironmentFile` and `--gateway ${HERMES_GATEWAY_URL}`, the manual
 run and the next timer run returned `Result=success` on an empty queue.
 
-### Gateway Export 2.0 pin — 2026-11-01
+#### Gateway Export 2.0 pin — 2026-11-01
 
 The owner asked to move the Gateway to Blog-data `dev`
 `c05e5b88bae36ae8f5421fd27beada9b1d596a19` (PR #649, ADR-0087): server A keeps
@@ -1657,7 +1669,7 @@ PowerShell receiver was removed in favour of the Node.js
 - Switch, Hermes run, attester `ready` and server-B receive are NOT_RUN until this
   pin is merged and the container is recreated.
 
-### Export 2.0 switch and research item quality — 2026-11-01
+#### Export 2.0 switch and research item quality — 2026-11-01
 
 The owner merged #717; the agent recreated only `blog-ingestion`. The running
 image is `sha256:7bf3881c…` (c05e5b88), healthy, schema 4 with every row kept
@@ -1715,7 +1727,7 @@ SHA-256 and length, UTF-8 JSON) and passed 53/53 against c05e5b88 with disposabl
 containers: persist 201, replay 200 duplicate, other content 409, attestation to
 one `ready` 2.0 Export, held items without a file, ACK 201 and replay 200.
 
-### Task runner cold start (2026-11-09)
+#### Task runner cold start (2026-11-09)
 
 The 2026-11-09 08:00 KST `devops` submission reached Traefik at 23:05:26 UTC and
 ended as `delivery_uncertain` after the 15-second client limit (Traefik 499).
@@ -1744,7 +1756,7 @@ were not restarted. `n8n execute --id` cannot run this workflow because its only
 start node is the schedule trigger (`Missing node to start execution`), so the
 first real run is the next 07:50 KST.
 
-### Crawl4AI open-web fallback (2026-11-09)
+#### Crawl4AI open-web fallback (2026-11-09)
 
 Of 120 source collections in Hermes sessions, 22 failed. The twelve distinct
 failed URLs were retried once through Crawl4AI: seven of the ten
@@ -1770,7 +1782,7 @@ publish ports of a container on internal networks only (tested), so
 The independent Attester re-fetches with the native fetcher, so a fallback source
 cannot be attested by it. Deployment is a separate approved step.
 
-### Devops replay and Crawl4AI deployment (2026-11-09)
+#### Devops replay and Crawl4AI deployment (2026-11-09)
 
 The owner directed a replay of the `uncertain` devops record. Following the RUN-0053
 rule, the same bytes and idempotency key were posted once; the Gateway answered 201
@@ -1785,7 +1797,13 @@ was installed with `deploy/update-hermes-plugin.sh`. The listener is on loopback
 fetched a URL the native fetcher refused with `status`, 30,513 characters, hash valid.
 A scheduled run through the fallback is NOT_RUN until the next 08:00 KST.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -1827,13 +1845,19 @@ A scheduled run through the fallback is NOT_RUN until the next 08:00 KST.
 | Crawl4AI HOME deployment | 8, 23 | W83 | Forwarder start, exposure checks, plugin install and one installed-code fetch | HOME, `main` `2dec3a3cc` | PASS | Loopback only; 401 without token; LAN refused; fallback fetch valid. Scheduled run NOT_RUN. | required | - |
 | Warm-up scheduled run | 8, 23 | W83 | First 07:50 KST execution readback | HOME n8n schedule | NOT_RUN | Awaits the next 07:50 KST; `n8n execute` cannot start a schedule-only workflow. | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 23 | pending | Bounded design and ownership | Basic source and safe synthetic checks may proceed; exact API and actual worker/Gateway evidence remain required. | SPEC-0204 TSK-0022 |
 
-## Review and Completion
+### Remaining Conditions
 
 2026-10-31 dispatch-readiness slice: a follow-up independent code review of the
 fix range confirmed all five prior findings fixed with no Critical or Important
@@ -1910,12 +1934,12 @@ content under another key could be attested again (duplicate exports only); the
 E2E publishes its throwaway Traefik on the LAN address while it runs and keeps
 its built images; the Windows receiver's 429 handling is untested.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Workflow requirement](../../../01.requirements/0008-workflow.md)
-- [Workflow architecture](../../../02.architecture/descriptions/0007-workflow-architecture.md)
-- [n8n guide](../../../05.operations/guides/08-workflows-and-automation/0053-n8n.md)
-- [n8n policy](../../../05.operations/policies/08-workflows-and-automation/0053-n8n.md)
-- [n8n runbook](../../../05.operations/runbooks/08-workflows-and-automation/0053-n8n.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

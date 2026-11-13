@@ -14,13 +14,19 @@ created: "2026-10-07"
 
 # Request Baseline and Inventory Task
 
-## Objective
+## Scope
+
+### Objective and Parent
 
 Record the baseline, requirement disposition, per-service-key inventory,
 profile probes, conflict map and QA/remote baseline for the 2026-10-07
 request, and hand off to the first implementation package.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [ADR-0047](../../../02.architecture/decisions/0047-dev-timescale-influx-retirement-and-load-tools.md)
+
+### Inputs and Authority
 
 The current user request on 2026-10-07 asks to execute prompt 00 of the
 analysis pack in the ignored local `_workspace/rrr/` directory (fifteen items,
@@ -34,9 +40,11 @@ access; those lanes stay `NOT_RUN`.
 Pack statements are dated analysis inputs, not current evidence. Every fact
 below was re-observed on 2026-10-07 between 10:40Z and 11:10Z.
 
-## Work Log
+## Execution Log
 
-### Baseline
+### Work Performed
+
+#### Baseline
 
 | Item | Observed |
 | --- | --- |
@@ -47,7 +55,7 @@ below was re-observed on 2026-10-07 between 10:40Z and 11:10Z.
 | Docker Compose | v5.6.0 |
 | Registry issuance | SPEC 211 to 212, ADR 46 to 47 |
 
-### Render Method
+#### Render Method
 
 All renders use `env -i PATH HOME` so the private root `.env` and the shell
 environment are not read. The root uses `docker compose --env-file
@@ -62,7 +70,7 @@ The scratch generators (`inventory.py` sha256 `523958ab97d8a115…`,
 `table.py` `666f224c846f67df…`) are not committed. Reproduce them with the
 commands above.
 
-### Profile Probes
+#### Profile Probes
 
 | Probe | Command delta | Exit | Services |
 | --- | --- | --- | --- |
@@ -82,7 +90,7 @@ became a service key. Root and LAB share zero service names and zero network
 names. P5 shows an unknown profile is accepted silently. P6 shows an explicit
 service target selects a profiled service, so profiles are not isolation.
 
-### Inventory Summary
+#### Inventory Summary
 
 161 service keys: 119 root and 42 LAB. Dispositions are `keep` 47,
 `preserve+complete` 18, `optional` 53, `lab` 42 and `retire` 1 (`influxdb`).
@@ -105,7 +113,7 @@ Source facts that drive follow-on work:
 Runtime consumers, image digests, actual UID and measured resources are
 `NOT_RUN`. The `depends_on` and Traefik columns are source consumers only.
 
-### Conflict Map
+#### Conflict Map
 
 | ID | Current rule and location | Conflict | Change | Owner |
 | --- | --- | --- | --- | --- |
@@ -125,7 +133,7 @@ Runtime consumers, image digests, actual UID and measured resources are
 | C14 | `infra/common-optimizations.exceptions.json` has per-service entries but `template_adoption.file_exceptions` is empty | Item 14 per-file/per-control exceptions | Schema, reader and Conftest per file/service/control | 05 |
 | C15 | Inventory: PIDs 2/161, `cap_drop` gaps, privileged `cadvisor`, duplicate gateway ports | Item 13 | Tiered budgets with exact exceptions | 05, 03 |
 
-### QA and Remote Baseline
+#### QA and Remote Baseline
 
 On clean `main`, `run-ci-gate.py --profile changed --local-only --explain`
 exited 0 with no selection. On this diff the explain selected only
@@ -159,7 +167,7 @@ reports 0. After the Task returned to `draft`, a local
 reported `violations=0`. An independent read-only review confirmed the
 spot-checked facts and raised six wording corrections, all applied.
 
-### Dependencies and Spec Bundles
+#### Dependencies and Spec Bundles
 
 Order: 12, then 01 and 03, then 02, 04 and 05, then 06 and 07, then 08. 09 and
 10 are independent discovery work, and 11 runs at each merge. Each prompt
@@ -169,7 +177,7 @@ time owns `docs/99.templates/registry.json`, `docs/03.specs/README.md` and
 `infra/common-optimizations*`. The first implementation entry is prompt 12,
 whose only confirmed conflict is C01 (confirm only), so 01 can start next.
 
-### Service-Key Inventory
+#### Service-Key Inventory
 
 | Service | Owner | Scope | Profiles | User/RO | cap_drop/add | Networks | Host ports | Secrets | depends_on / reverse | Health | CPU/Mem/PIDs | Traefik | Backup | Disposition | Prompt |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -335,7 +343,13 @@ whose only confirmed conflict is C01 (confirm only), so 01 can start next.
 | `valkey-node-4` | labs/valkey-cluster.yml | lab | valkey-cluster | -/rw | ALL / - | lab_valkey_core_net, lab_valkey_obs_net | 127.0.0.1:17383->6383 | 1 | - / valkey-cluster-exporter, valkey-cluster-init | yes | 1/512M/- | - | - | lab | 03 |
 | `valkey-node-5` | labs/valkey-cluster.yml | lab | valkey-cluster | -/rw | ALL / - | lab_valkey_core_net, lab_valkey_obs_net | 127.0.0.1:17384->6384 | 1 | - / valkey-cluster-exporter, valkey-cluster-init | yes | 1/512M/- | - | - | lab | 03 |
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -350,14 +364,28 @@ whose only confirmed conflict is C01 (confirm only), so 01 can start next.
 | Remote candidate rerun | 6 | W5 | PR `candidate-quality` run 37613874942 | Head `464837076` | PASS | QA and Remote Baseline | accepted |
 | HOME runtime state | 3 | W3 | Container, digest, UID and resource observation | No target authorized | NOT_RUN | Not observed | pending |
 
-## Review and Completion
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Remaining Conditions
 
 Source baseline work is done: local validation and the remote PR candidate
 rerun passed. The package stays `draft` until its follow-on owners pick it up.
 HOME runtime observation is outside this package and stays `NOT_RUN`.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [ADR-0047](../../../02.architecture/decisions/0047-dev-timescale-influx-retirement-and-load-tools.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

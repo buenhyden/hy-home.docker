@@ -1,10 +1,10 @@
 ---
 title: "Hermes Provenance, Trust and Export Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0050"
 parent_ids:
@@ -14,9 +14,11 @@ created: "2026-11-03"
 
 # Hermes Provenance, Trust and Export Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Implement the approved local P11 source and owned-isolation repair. New direct
 reports require collector-issued source receipts; direct submission and Attester
@@ -24,7 +26,13 @@ replay preserve immutable bytes and fail closed on uncertain or corrupt state.
 This Task documents the current Hermes trust boundaries without converting
 synthetic checks or history into operational acceptance.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Historical Hermes Task](../../0204-service-integration-security-and-operations/tasks/tsk-0022-hermes-blog-ingestion.md)
+- [n8n Runbook](../../../05.operations/runbooks/08-workflows-and-automation/0053-n8n.md)
+- [Hermes workload README](../../../../infra/07-workflow/n8n/workloads/hermes-blog-ingestion/README.md)
+
+### Inputs and Authority
 
 The observed clean starting revision was
 `e3a43821c6c1ba1a78aeee11f7070e57caa79aaf`. Local source, synthetic fixtures,
@@ -41,9 +49,11 @@ selected contract at Blog-data revision
 `c05e5b88bae36ae8f5421fd27beada9b1d596a19` (schema 4); a new real Windows B
 ACK, scheduled delivery and independent operational restore are not run here.
 
-## Work Log
+## Execution Log
 
-### Single-writer leases
+### Work Performed
+
+#### Single-writer leases
 
 | Scope | Single writer | Independent review | Boundary |
 | --- | --- | --- | --- |
@@ -80,7 +90,7 @@ restores the exact source-only backup file set into an empty mode-0700 target
 without an overlay, then runs `doctor`; restart remains separately approved.
 It is a source contract only and was not exercised against an operating plugin.
 
-### Five independent trust boundaries
+#### Five independent trust boundaries
 
 | Boundary | Current evidence | Decision and residual |
 | --- | --- | --- |
@@ -108,7 +118,13 @@ action. Both concerns need an operational observation/cursor contract before
 activation; neither is silently treated as a successful timeout or starvation
 control.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -138,7 +154,13 @@ control.
 | DNS lookup deadline | 98 | W103 | Operational residual | Fetch/runtime operator | NOT_RUN | Socket/redirect deadline does not bound stdlib `getaddrinfo`; resume only with a separately accepted operational DNS-timeout observation. | required | - |
 | Attester queue fairness | 101 | W106 | Operational residual | Attester operator and Blog-data provider | NOT_RUN | The terminal-count regression covers 100 terminal then one active report, but the fixed ten-pages/run reader has no Blog-data stable cursor, terminal ACK or compaction contract. Persistent local-terminal records beyond that window can indefinitely delay later reports. Resume only with a versioned provider cursor/terminal-ack/compaction contract and an observed over-window fairness test; do not claim this fixed. | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -148,19 +170,7 @@ control.
 | 101 | pending | Historical backup record, Attester replay and owned SQLite restore, Attester queue fairness | Local source and independent-volume proof pass; operational Attester replay/restore and fairness stay separate. | SPEC-0212 TSK-0050 |
 | 102 | pending | Security-reviewed plugin source identity, P11 gate registration and local plan, Broad P11 gate baseline, Independent security baseline, Pre-format host offline gate, DATA-0096 receipt-preserving refresh, Actual operation boundary, New Python execution coverage, Final restricted QA, Pre-hook document contract checks, Initial commit-hook formatting result, Gateway receipt format correction, Post-format P11 gate, Post-format P11 gate result, Same-UID and recovery handoff | The post-format host gate and cache-only contract pass; the final cache-only E2E is recorded above. Restricted-sandbox gid mapping is environment-specific. Live route, actual Queue execution, external ownership and operations remain separate. | SPEC-0212 TSK-0050 |
 
-## Handoff
-
-The Windows B owner consumes Export 2.0 through its external Node receiver
-`scripts/ops/receive-hermes-exports.mjs`; that repository is not modified here.
-Before a real acceptance it must record the Export schema/version, delivery ID,
-ACK ID, scheduled execution, response-loss behavior, restart sequence, backup
-and restore source, and the rule that held/uncertain reports are not silently
-resent. The external Hermes SDK owner separately owns any platform Call-ID
-binding: the local collector records only its own call identifier. The data
-owner must separately accept raw-source retention, access and expiry; no model
-or fetched source text can add an operational privilege.
-
-## Review and Completion
+### Remaining Conditions
 
 After source freeze, run the registered P11 offline gate and the focused source,
 security and document checks. Record coverage for new Python execution lines;
@@ -171,10 +181,20 @@ inventory workflow after all P11 source and public documents freeze. Run
 route reload, credential changes, Windows B acceptance, independent production
 restore, remote CI and final acceptance remain independent results.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Historical Hermes Task](../../0204-service-integration-security-and-operations/tasks/tsk-0022-hermes-blog-ingestion.md)
-- [n8n Runbook](../../../05.operations/runbooks/08-workflows-and-automation/0053-n8n.md)
-- [Hermes workload README](../../../../infra/07-workflow/n8n/workloads/hermes-blog-ingestion/README.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+The Windows B owner consumes Export 2.0 through its external Node receiver
+`scripts/ops/receive-hermes-exports.mjs`; that repository is not modified here.
+Before a real acceptance it must record the Export schema/version, delivery ID,
+ACK ID, scheduled execution, response-loss behavior, restart sequence, backup
+and restore source, and the rule that held/uncertain reports are not silently
+resent. The external Hermes SDK owner separately owns any platform Call-ID
+binding: the local collector records only its own call identifier. The data
+owner must separately accept raw-source retention, access and expiry; no model
+or fetched source text can add an operational privilege.

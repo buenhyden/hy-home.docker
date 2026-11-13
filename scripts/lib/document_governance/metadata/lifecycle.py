@@ -1444,10 +1444,11 @@ def _declares_execution_items(record: Record, common: Mapping[str, object]) -> b
     ):
         return False
     header = "| " + " | ".join(contract.get("table_headers", ())) + " |"
-    marker = "### " + str(contract.get("subsection"))
+    subsection = str(contract.get("subsection"))
+    markers = {"### " + subsection, "#### " + subsection}
     try:
         lines = pathlib.Path(record.path).read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError):
         return False
     lines = lines.splitlines()
-    return marker in lines and header in lines
+    return header in lines and any(marker in lines for marker in markers)

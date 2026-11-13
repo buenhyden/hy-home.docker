@@ -14,13 +14,19 @@ created: "2026-10-08"
 
 # Twenty-Item Reconciliation Task
 
-## Objective
+## Scope
+
+### Objective and Parent
 
 Revise the SPEC-0212 baseline for the twenty-item request, assign one primary
 owner to each item, replace the fixed inventory counts with set equality, and
 dispose of every open Spec.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Task 0001](tsk-0001-request-baseline-and-inventory.md)
+
+### Inputs and Authority
 
 The user request on 2026-10-08 asks to execute prompt 00 of the revised
 analysis pack: twenty items, items 16 to 19 linked to prompts 13 to 16, and
@@ -29,9 +35,11 @@ pack's twenty-item table arrived in the request body; its other files were not
 available locally, so this Task uses only facts re-observed on 2026-10-08.
 TSK-0001 stays as the 2026-10-07 record.
 
-## Work Log
+## Execution Log
 
-### Baseline
+### Work Performed
+
+#### Baseline
 
 | Item | Observed |
 | --- | --- |
@@ -42,7 +50,7 @@ TSK-0001 stays as the 2026-10-07 record.
 Spec states were read from each `spec.md` and Task frontmatter with a YAML
 parser, not from the Stage 03 README.
 
-### Item State
+#### Item State
 
 Owner columns are in SPEC-0212 Contract 1. State is what `main` and HOME
 showed on 2026-10-08, with items 04, 05, 07, 12 and A1 updated on 2026-10-09;
@@ -74,7 +82,7 @@ that state now sits in row 07, and row 04 holds Crawl4AI.
 | 20 | SPEC-0212 | This Task | — |
 | A1 | SPEC-0221 | Request scope, data-is-not-instruction rule, contract check and local candidate preflight merged (#396); the conflict table R1 to R15 is closed | — |
 
-### W7 Inventory Set Check
+#### W7 Inventory Set Check
 
 The rendered root model (`.env.example`, `--profile '*'`) has 121 services and
 the m0021 inventory has 121 rows; the sets are equal, which the
@@ -85,7 +93,7 @@ TSK-0001 table, and share no name with the root. Since TSK-0001 the root added
 removed `influxdb`. No tracked check enforces the LAB set yet; that belongs to
 the item 03 owner.
 
-### W8 Open Spec Disposition
+#### W8 Open Spec Disposition
 
 | Spec | State | Disposition | Reason |
 | --- | --- | --- | --- |
@@ -108,7 +116,7 @@ the item 03 owner.
 No Spec is superseded. Completed SPEC-0208, SPEC-0209 and SPEC-0210 are not
 reopened.
 
-### Handoff
+#### Handoff
 
 Next order: prompt 13 (item 16) and prompt 14 (item 17 remainder) reuse the
 DEV data owner; prompt 15 (item 18) verifies the running pins; prompts 04, 05,
@@ -117,7 +125,13 @@ Prompts 09 and 10 stay discovery-only. Each takes its Spec number from the
 Registry when it starts. One writer at a time owns the Registry, the Stage 03
 README and `.github/workflow-contract.yml`.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -125,13 +139,27 @@ README and `.github/workflow-contract.yml`.
 | Inventory set equality | 3 | W7 | Rendered root and LAB service sets against inventory rows | `.env.example`; `labs/*.yml` | PASS | W7 Inventory Set Check | accepted |
 | Open Spec disposition | 7 | W8 | Spec and Task frontmatter and completion sections | `main` `3d90aa653` | PASS | W8 Open Spec Disposition | accepted |
 
-## Review and Completion
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Remaining Conditions
 
 The twenty-item baseline, inventory check and Spec dispositions are recorded.
 Implementation stays with each owning prompt.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Task 0001](tsk-0001-request-baseline-and-inventory.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

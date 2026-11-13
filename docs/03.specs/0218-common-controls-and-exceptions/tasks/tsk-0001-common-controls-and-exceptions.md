@@ -14,15 +14,20 @@ created: "2026-10-09"
 
 # Common Controls and Exceptions Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Check every root and LAB service's effective controls against exact
 exceptions, fix the templates and leaves where the defaults were wrong, and
 record resource limits honestly as budgets or measurements.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
 
 The current user request on 2026-10-09 asks to execute prompt 05 of the
 analysis pack (common resource, permission and exception model) with
@@ -30,9 +35,11 @@ per-unit commits and a per-Spec PR merge. Baseline `main` `abfe94cca`. The
 registry issues SPEC-0218. HOME recreation of running services is not part
 of this request; changed definitions apply when the owner recreates them.
 
-## Work Log
+## Execution Log
 
-### Starting State
+### Work Performed
+
+#### Starting State
 
 Rendering the root with every profile and the eight LAB entrypoints gives 162
 services. Against the controls this package checks, 160 had no PID limit, 42
@@ -45,7 +52,7 @@ service name only: `pg-0`, `pg-1`, `pg-2` and `etcd-*` named LAB services
 the root render never contains, and QW-005 required every service to declare
 a Docker secret.
 
-### W1 Schema v2 and Validator
+#### W1 Schema v2 and Validator
 
 `scripts/validation/compose_controls.py` renders all nine models and checks
 registered controls against schema v2 entries keyed by scope, Compose file,
@@ -58,7 +65,7 @@ Ten unit tests cover each enforced control, lifecycle classification, exact
 values, root and LAB distinction and every registry defect. Commit
 `9fada6380`.
 
-### W2 Healthchecks
+#### W2 Healthchecks
 
 The statsd and Valkey exporters check their metrics endpoint with `wget`,
 which their images contain; `dcgm-exporter` has bash but no `head`, `grep` or
@@ -68,7 +75,7 @@ checks its listener. Each command passed in its exact image (Flink's shares
 the job manager's image and was not run); the MongoDB LAB later reached
 healthy with it. Seven exceptions retired. Commit `e00181953`.
 
-### W3 Secrets Group
+#### W3 Secrets Group
 
 The shared base no longer grants `SECRETS_GID`; the 119 leaves that read a
 secret or a bind under a secrets directory declare it, Traefik and
@@ -76,7 +83,7 @@ oauth2-proxy beside their certificate group. Of the 55 running HOME services,
 37 keep their groups and 18 lose 1000 on recreation; none of their mounts
 holds a file readable only through that group. Commit `e87d4f6c3`.
 
-### W4 Conftest URL Credentials
+#### W4 Conftest URL Credentials
 
 The literal-secret rule read only secret-named keys and accepted any value
 containing `://`. A URL with a literal userinfo password or a secret-named
@@ -89,7 +96,7 @@ The job now mounts `labs/` read-only, a missing `labs/` fails the run, and 364
 corpus checks pass, 56 of them from the eight LAB entrypoints (W8). Commits
 `558f1fcee`, `7356509d4`.
 
-### W5 Capabilities and Data Group
+#### W5 Capabilities and Data Group
 
 The DB templates drop all capabilities. LAB runs set each leaf:
 
@@ -107,7 +114,7 @@ Pyroscope (`/var/lib/pyroscope`) write `1000:1000` mode-775 directories only
 through it. They keep the group as recorded exceptions; re-owning OpenBao's
 Raft data on HOME is a separate decision. Commit `6d7026084`.
 
-### W6 GPU Template
+#### W6 GPU Template
 
 `template-stateful-ai-high` had no security fields. With `cap_drop: ALL`,
 `no-new-privileges` and `init`, `ollama/ollama:0.40.0` detected the GTX 1060
@@ -116,7 +123,7 @@ through CUDA and loaded `tev1:0.8b` onto it (KV and compute buffers on
 are enforced; the GPU check also sees `gpus:` and `runtime: nvidia`, which
 found ComfyUI. Commit `23b40d548`.
 
-### W7 Process Limits
+#### W7 Process Limits
 
 Measurements available on 2026-10-09: an idle `docker stats` of the running
 HOME services, the peak PID count of every LAB container sampled every 3 s
@@ -142,7 +149,7 @@ slowest scrape took 1.0 s against the 10 s default timeout;
 `mng-valkey-exporter` was throttled in 16% of periods. A change needs a
 latency or error target that these limits are shown to miss.
 
-### W8 Documents and Validation
+#### W8 Documents and Validation
 
 POL-0001, the operations runbook, the script manifest, the gate contract and
 this package describe the new validator; the Spec index and registry issue
@@ -168,7 +175,7 @@ mount fix is described in W4, and the subjects were reworded before merge.
 The SPEC-0212 ledger is unchanged; no
 ledger item maps to this package alone.
 
-### v22 R19 exception review — 2026-10-21
+#### v22 R19 exception review — 2026-10-21
 
 `python3 scripts/validation/compose_controls.py` on `main` `5b9ee9e74`:
 scopes=10, services=165, findings=0. `--report` lists 28 deviations on the
@@ -193,7 +200,7 @@ root user. Whether to register these controls is a separate decision. The file
 header says `review_cadence: monthly` with no next-review field; every entry has
 `review_by` 2027-04-07. R19 status: PARTIAL, review recorded.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -203,7 +210,7 @@ header says `review_cadence: monthly` with no next-review field; every entry has
 | SPEC-0218-TSK-0001 | ready | in-progress | #current-execution-review-on-2026-10-22 |
 | SPEC-0218-TSK-0001 | in-progress | completed | #current-completion-decision-on-2026-10-22 |
 
-### Current parent contract review on 2026-10-22
+#### Current parent contract review on 2026-10-22
 
 Under the owner's current request, the review of SPEC-0218 and its Plan at
 `bd4168e20861d557c9a4f31025a2a649be3e8066` approves both parents as their first
@@ -213,14 +220,14 @@ authority for existing W1–W8 and current P07 W9–W16. TSK-0001's accepted cri
 budgets, least privilege or HOME rollout/recovery in P07/TSK-0002. No current
 operational execution, token revocation or archive move ran.
 
-### Current readiness review on 2026-10-22
+#### Current readiness review on 2026-10-22
 
 The review checked the owner's current status/lifecycle request, the approved
 parents, this Task's assigned criterion/Work Unit pairs and the existing
 PASS/FAIL/acceptance records. Today's document closure review enters `ready`
 without backdating historical execution.
 
-### Current execution review on 2026-10-22
+#### Current execution review on 2026-10-22
 
 The document closure review actually compared the assigned criterion/Work Unit
 pairs, existing PASS and FAIL resolution links, acceptance ownership and parent
@@ -228,7 +235,7 @@ approvals. Today's work is this document review; historical test and operational
 dates and inputs remain as recorded in Evidence. No new runtime, cleanup or
 token operation ran.
 
-### Current completion decision on 2026-10-22
+#### Current completion decision on 2026-10-22
 
 Every criterion 1–5 pair assigned to W1–W8 has existing PASS evidence, and this
 Task's acceptance decisions are accepted. This bounded execution record is
@@ -239,7 +246,13 @@ Today's closure review marks this Task `completed` while preserving the
 historical evidence and acceptance tables exactly. This status does not claim
 new operational validation or an archive move.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -252,7 +265,13 @@ new operational validation or an archive move.
 | PID budgets | 3 | W7 | All LABs under the limits; HOME headroom | `e0741bd28` | PASS | W7 Process Limits | - |
 | Validation | 5 | W8 | Changed gate, exit 0 | `3aed94faa` | PASS | W8 Documents and Validation | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
@@ -262,7 +281,7 @@ new operational validation or an archive move.
 | 4 | accepted | URL credentials | Generation 5 row acceptance |
 | 5 | accepted | Validation | Generation 5 row acceptance |
 
-## Review and Completion
+### Remaining Conditions
 
 The historical owner residuals recorded on 2026-10-09 follow. Completion of
 W1–W8 in this Task is distinct from the still-open operational scope in
@@ -280,7 +299,12 @@ The current closure decision of 2026-10-22 is recorded under Current completion
 decision in the Work Log. Only the existing source/LAB slice is complete; the
 native residuals above have not been accepted.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

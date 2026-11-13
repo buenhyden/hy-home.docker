@@ -1,10 +1,10 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.20"
+version: "1.0.21"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0001"
 parent_ids:
@@ -14,35 +14,42 @@ created: "2026-10-03"
 
 # Runtime Compatibility and Security Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 After owner approval, correct the confirmed n8n compatibility and secret
 consumer defects, check Crawl4AI's security pin, and separate OpenBao sealed
 status from readiness. Verify Cassandra LAB's already changed official-image
 contract without moving data or creating LAB credentials again.
 
-## Inputs and Authorization
+- [Specification](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
 
 Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7` on 2026-10-03;
 SPEC-0201 W5, SPEC-0204 criteria 1-4/8 and Plan W1/W2/W5. The original approval-draft boundary below is historical for pre-PR359 planning. Later owner approval authorized the recorded source/document reconciliation only; it still does not authorize image pulls, HOME deployment, secret issuance, credential rotation, data restore or service operations.
 
-## Work Log
+## Execution Log
 
-### Current Lifecycle Reconciliation
+### Work Performed
+
+#### Current Lifecycle Reconciliation
 
 The present Stage 99 reconciliation derives `blocked` from the recorded
 exact-image, egress, Agent-renewal, and operational-approval blockers. Earlier
 transition anchors are not observed and are not backfilled.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0001 | in-progress | blocked | #current-lifecycle-reconciliation |
 
-### Authorized W7 Hosted PR QA Removal — 2026-10-06
+#### Authorized W7 Hosted PR QA Removal — 2026-10-06
 
 The repository owner twice explicitly instructed removal of the hosted pull
 request QA path and delivery of the locally accepted P01-P04 work to
@@ -359,7 +366,7 @@ next action and no future delivery receipt is inferred here. A minimum check
 and final receipt-only review of this last Task delta remain outside this
 recording cutoff and must not cause another self-result rewrite.
 
-### Completed migration QA retirement — 2026-10-06
+#### Completed migration QA retirement — 2026-10-06
 
 The repository owner approved P04 and reuse of this blocked Task for criterion
 8 / Plan W6. The implementation baseline is clean
@@ -470,7 +477,7 @@ separate expiry/remediation work remains owned by this Task. Runtime blockers,
 HOME operations, deployment, secrets, image/volume deletion, and archive
 disposition remain outside this maintenance slice.
 
-### Authorized P01–P04 Completion Resumption — 2026-10-06
+#### Authorized P01–P04 Completion Resumption — 2026-10-06
 
 The repository owner authorized resolving the remaining P01–P04 integration
 blockers, completing those bounded changes, and delivering them through the
@@ -669,7 +676,7 @@ The earlier five focused tests and three-Python Ruff result remain valid through
 their recorded exact-input proof. The one permitted fresh public retry, final
 review, and protected delivery remain pending; W6 remains unaccepted.
 
-### Protected source and archive integration writer ledger — approved reintegration
+#### Protected source and archive integration writer ledger — approved reintegration
 
 Protected PR358 delivered the active Spec/Plan and in-progress Tasks at
 `79b42b604b99bcc6712887d29e36f8244ec0f9eb` (run37177848208 PASS). This is the captured protected base
@@ -808,7 +815,7 @@ tests/validation/test_secret_metadata_sync.py
 tests/validation/test_service_runtime_compatibility.py
 ```
 
-#### Shared resolution — 18 exact paths
+##### Shared resolution — 18 exact paths
 
 | Path | Resolution contract |
 | --- | --- |
@@ -831,7 +838,7 @@ tests/validation/test_service_runtime_compatibility.py
 | `tests/validation/test_compose_baseline_gates.py` | Keep current Compose schema loader, dedicated Storybook ingress tests and pinned Ruff formatting; add closure dev-pg Restic failure/recovery assertions. |
 | `tests/validation/test_secret_metadata_sync.py` | Keep candidate _ComposeLoader and schema-tag/unsafe-tag rejection tests; add closure compose_default normalization, public-root metadata checks, regular-empty markers and service/instance-path ownership assertions. |
 
-#### Full packet preservation and consumer cutover
+##### Full packet preservation and consumer cutover
 
 Keep all14 completed closure members from `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7` with original raw bytes,
 modes/member sets and catalog Source. Preserve each current full packet from the actual protected base into its exact
@@ -863,7 +870,7 @@ declarations; OpenBao2.7 adoption is excluded, only its approved readiness corre
 
 `docs/05.operations/policies/0100-development-database.md` is an additional exact consumer writer: metadata parent and inline parent description move to current SPEC-0204; historical SPEC-0202 evidence and all controls remain unchanged. Prior Prompt02 GDE/POL/RUN-0100 handoff and independent policy review cover this correction.
 
-#### Integration, checks and rollback
+##### Integration, checks and rollback
 
 Normal three-way merge must make closure source commits ce001be7,686b7177, 9f89d0a2 ancestors; no squash, ours strategy,
 wholesale tree replacement or frozen-body edits. Preserve all unrelated worker state. Map every criterion and Plan unit
@@ -907,7 +914,7 @@ and [OpenBao status exit codes](https://openbao.org/docs/commands/status/).
 Recheck exact stable image, digest and compatibility at implementation time;
 none of these links is a tested HOME deployment.
 
-### Storybook blocker and alternative assessment — 2026-10-04
+#### Storybook blocker and alternative assessment — 2026-10-04
 
 The user requested investigation and alternatives if no immediate fix exists,
 then prioritized main integration and eligible package preservation. This is
@@ -980,7 +987,7 @@ Independent review requested precise CI-failure evidence wording, corrected
 above; final independent policy/document review returned PASS. Candidate install,
 consumer/build/audit, HOME changes and data migration are NOT_RUN.
 
-### OpenDesign assessment — 2026-10-04
+#### OpenDesign assessment — 2026-10-04
 
 The user's named candidate is assessed as [nexu-io/open-design](https://github.com/nexu-io/open-design),
 not the separate opendesign.cc design-system catalog or similarly named forks.
@@ -1029,7 +1036,7 @@ metadata selected6/violations0 and corpus violations0, followed by five high
 braces findings in sanitized diagnostics. This does not prove the new head's
 hosted result. Actual candidate execution remains NOT_RUN.
 
-### Lint substitution and temporary exception proposal — 2026-10-04
+#### Lint substitution and temporary exception proposal — 2026-10-04
 
 The user asked whether removing eslint-config-next in favor of
 eslint-plugin-storybook or governing a temporary exception is possible.
@@ -1098,7 +1105,7 @@ selected=1, violations=0 (exit 0); Markdownlint CLI2 0.22.1 (exit 0);
 Independent proposal/security/lifecycle review: PASS. Staged classifier:
 markdown=1, generated=0; no source or gate change.
 
-### Protected review edge — 2026-10-04
+#### Protected review edge — 2026-10-04
 
 Protected `origin/main` now contains PR352 at
 `7f939ae802afc1d23f96b8eca4100abfcc2bf629`, registering all six draft
@@ -1132,7 +1139,7 @@ PASS and formatting hooks PASS, but the gate exited1 with five high findings
 under `GHSA-vfj7-8cjw-p6xm`. The owner's braces hold remains; this document
 edge adds no security exception and does not merge that PR.
 
-### Required gate result and existing security hold — 2026-10-04
+#### Required gate result and existing security hold — 2026-10-04
 
 PR352 head `0ef17a4a58d0d53f7249f3b0eef7939457e5cb72`, hosted
 run `37158568358`, finished failure/exit1. Metadata selected2/violations0/
@@ -1159,7 +1166,7 @@ last observed equal at `0460795abf6da9203e38f30291a8f20118c6ab88`.
 Resume normal protected delivery only after the approved security hold clears.
 HOME/isolated execution/data migration remain NOT_RUN for this repair.
 
-### Pinned Python formatter scope amendment — 2026-10-04
+#### Pinned Python formatter scope amendment — 2026-10-04
 
 PR352 head `a959826519c77402133bb197c7335747faa3e9bf`, required
 run `37156755186`, finished failure/exit1. Metadata selected2/violations0/
@@ -1180,7 +1187,7 @@ condition, threshold, workflow or runtime behavior changes. Revert this
 format-only commit for recovery, preserving all prior objects. Required
 hosted CI must still pass before protected registration and later edges.
 
-### Hosted fixture validation and document formatting — 2026-10-04
+#### Hosted fixture validation and document formatting — 2026-10-04
 
 PR352 head `042b9db6d6e86025fc94af8105a18c63440ba071`, required
 run `37154950211`, job `111296335212`, finished failure/exit1. Hosted
@@ -1200,7 +1207,7 @@ remain unchanged. Raw CI output was not copied into this record; an automatic
 approval rejection of raw log printing was honored with bounded diagnostic
 extraction of checker results and hook identity.
 
-### Additional fixture scope proposal — 2026-10-04
+#### Additional fixture scope proposal — 2026-10-04
 
 PR352 head `b240f6150` hosted run `37154044478` returned failure, but
 metadata selected2/violations0/overrides0 and links/corpus/recovery passed.
@@ -1292,7 +1299,7 @@ rewriting or cancellation of already-completed work.
 | Current source static/synthetic checks | SOURCE_STATIC PASS; synthetic shell guard PASS / exact-image BLOCKED | n8n/source guards, OpenBao sealed readiness and LAB static checks exist; crawler egress deny, Agent renewal freshness and Cassandra auth remain blocked as stated below |
 | HOME n8n DB upgrade, crawler request, OpenBao unseal or service restart | NOT_RUN | Separate exact operational approval required |
 
-### Supersession note 2026-11-10
+#### Supersession note 2026-11-10
 
 On 2026-11-10 the exact-image targets at lines 1508-1509 and 1529 (n8n/runners
 2.41.6, Crawl4AI 0.9.4, OpenBao 2.6.2) are superseded by the current pins:
@@ -1301,7 +1308,13 @@ Crawl4AI 0.9.5 (`infra/08-ai/crawl4ai/docker-compose.yml:37`) and
 `hy-home/openbao` 2.7.1 (`infra/03-security/openbao/docker-compose.yml:42`).
 The blocker stays as recorded; earlier entries are unchanged.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -1400,7 +1413,13 @@ The blocker stays as recorded; earlier entries are unchanged.
 | W7 final Task receipt | 8 | W7 | Minimum checks and final receipt-only review after bounded acceptance recording | This last Task delta | NOT_RUN | External follow-up after this recording cutoff; no self-result rewrite | - |
 | W7 direct delivery | 8 | W7 | Commit, push, direct `origin/main` integration, and main readback | Authorized locally accepted input | NOT_RUN | Pending delivery receipts | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
@@ -1411,7 +1430,7 @@ The blocker stays as recorded; earlier entries are unchanged.
 | 5 | pending | - | - |
 | 8 | pending | - | - |
 
-## Review and Completion
+### Remaining Conditions
 
 | Acceptance criterion | Acceptance | Evidence |
 | --- | --- | --- |
@@ -1423,11 +1442,11 @@ The blocker stays as recorded; earlier entries are unchanged.
 
 Independent source/security review returned PASS for the approved source and document reconciliation recorded below. Runtime and HOME conditions remain pending unless explicitly marked by later exact operational evidence.
 
-### Commit Ledger
+#### Commit Ledger
 
 Prompt 04 source reconciliation merged through PR359 at `467bd644b071f9dfa02ca1af2d622502c3445d28`; completion receipts merged through PR360 at `ebeb83521c768fedc620380b0c2e92db10a6fcdc`. Earlier “No Prompt 04 commit” wording is historical for the draft phase. This receipt authorizes no HOME operation, restore, image pull, authentication change or private read.
 
-### Rulings
+#### Rulings
 
 Do not shrink main runners without path evidence. Do not use a generic `_FILE`
 assumption for `n8nio/runners`; verify its entrypoint first. If the pinned
@@ -1435,7 +1454,7 @@ runner lacks a safe supported file-consumption path, stop and amend this Task
 with the exact wrapper/Dockerfile path before writing one. Existing LAB
 Cassandra work is a verification item, not a repeat implementation.
 
-### Approved combined protected delivery
+#### Approved combined protected delivery
 
 The owner authorized commit, push and protected main integration for the
 listed SPEC backlog. Read-only policy review found no per-Task PR requirement.
@@ -1510,7 +1529,7 @@ actual protected base, focused validation and separate required hosted delivery.
 These observed receipts replace previous pending delivery descriptions only;
 no historical failure is converted to PASS and no HOME proof is inferred.
 
-### Source reintegration and historical acceptance transfer — 2026-10-04
+#### Source reintegration and historical acceptance transfer — 2026-10-04
 
 Normal merge `2de9cd69ad6e2b04d11202ba8f98a0a09f7f9ccb` retains closure
 `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7` source commits and frozen records. Task1 source receipt at `a51014aab597cd95bf5db19f00348e1d487ce642`
@@ -1538,7 +1557,7 @@ Latest fresh source check: 24 tests across four unittest modules/classes passed 
 Final current preflight reconciliation, 2026-10-04: default local Unix socket inspection found only cached `openbao/openbao:2.6.2` image ID `11fd73a2102cda9c55d5d881a8c3210303146a7ec1e8ac76f526e175c6d24641`; exact declared `hyhome/n8n:2.41.6-local`, `n8nio/runners:2.41.6`, `unclecode/crawl4ai:0.9.4` and `cassandra:5.0.9` were missing from cache. No image pull, container run, HOME start, restore, authentication change, private read or secret issue was performed.
 Remaining genuine source/runtime gaps are crawler private/link-local/metadata egress-deny runtime enforcement, OpenBao Agent renewal and rendered secret freshness, and Cassandra authentication absent by explicit LAB contract, not merely unobserved.
 
-### Approved current source reconciliation — 2026-10-04
+#### Approved current source reconciliation — 2026-10-04
 
 The owner approved the four-package plan, commit/push/protected merge and eligible branch cleanup. Exact writers are this Task, this package Plan, and existing `tests/validation/test_service_runtime_compatibility.py`; the latter tests Crawl4AI missing/empty/15-character rejection, 16-character acceptance and output/argv non-disclosure using the actual Compose command with synthetic files and a stub launcher. No production command, image or secret reference changes. A minimum-length-guard mutation must be rejected; existing n8n/OpenBao/LAB guards are reused. Baseline runtime module 6 PASS/exit0; minimum-length-guard mutation RED rejected 2 invalid inputs/exit1; current module 7 PASS/exit0 and combined runtime/observability/backup/route suite 25 PASS/exit0. Pinned Ruff0.15.12 lint/format and diff checks exit0. Independent test/security and source/lifecycle reviews PASS. Changed metadata14/corpus/archive recovery/links (one legacy provenance warning)/Markdown14/diff gates exited0; final receipt/parent checks are repeated before commit. Container/HOME/restore/migration remain NOT_RUN.
 SPEC-0206 source/static completion and archival are separately approved; its HOME TLS/OIDC/session and remote-MCP follow-ups remain with POL/RUN-0101. This replaces the earlier current package-blocker interpretation, not historical failures or execution receipts. Rollback is a scoped source/doc revert, never frozen-archive rewriting.
@@ -1546,7 +1565,12 @@ SPEC-0206 source/static completion and archival are separately approved; its HOM
 Protected completion PR361 merged as `275d708ab797e0c86a30508351666482ebc04907`: required CI run37186133788, CodeQL and GitGuardian PASS; main-security/channel run37187599350 PASS. Approved archive writers are the exact seven source deletions/raw copies for completed0193 (3 members) and completed0206 (4), `docs/03.specs/README.md`, `docs/98.archive/retention-catalog.md` and this receipt. Independent pre-unlink review verified source Git blobs/modes/member sets and unchanged existing catalog rows; catalog records that protected source SHA. Current consumers were promoted by PR361 to Stage05; frozen bodies remain unchanged. Empty source directories caused an initial lifecycle/metadata failure and were removed with exact rmdir; final gates follow in the archive PR. Links PASS/exit0 with the existing 2870 legacy-source warning; no operational authority, HOME action, image pull, secret change, restore or migration is granted by capture.
 Final archive pre-commit acceptance: metadata3 violations0, corpus violations0/preserved348, links failures0/one existing warning, authored Markdown3 and diff checks all exit0; independent final cutover/raw-object review PASS. Required archive PR CI remains a separate delivery gate.
 
-## Related Documents
+## Handoff
 
-- [Specification](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

@@ -1,10 +1,10 @@
 ---
 title: "REQ-0027 Approval Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0261-TSK-0001"
 parent_ids:
@@ -14,14 +14,22 @@ created: "2026-11-04"
 
 # REQ-0027 Approval Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Approve REQ-0027 and promote the dependent documents that match the
 implementation.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Operations](../../../05.operations/README.md)
+- [Stage authoring matrix](../../../../.agents/governance/stage-authoring-matrix.md)
+- [Document Registry](../../../99.templates/registry.json)
+
+### Inputs and Authority
 
 On 2026-11-04 the owner answered "REQ-0027 승인" to approve REQ-0027
 (`docs/01.requirements/0027-home-development-host.md`). Earlier that day, for
@@ -29,18 +37,20 @@ documents still draft although implemented, the owner answered "Review, then
 promote (recommended)": compare each with the implementation and promote only
 those that match. This Task pushes and merges nothing.
 
-## Work Log
+## Execution Log
 
-### Current contract decision
+### Work Performed
+
+#### Current contract decision
 
 The owner decisions authorize this Spec and Plan as written.
 
-### Current readiness and execution
+#### Current readiness and execution
 
 Inputs, work units and checks are recorded here. The Task is ready and in
 progress under the approved parents. Hosted CI has not run.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -49,7 +59,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0261-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0261-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
 
-### Decisions
+#### Decisions
 
 - REQ-0027 moved draft to approved, a direct Registry transition. Only the
   sentence that called the requirement a draft was reworded; the requirements,
@@ -89,7 +99,7 @@ progress under the approved parents. Hosted CI has not run.
 - Static comparison proves declaration only. No runtime, backup, restore or
   login result is claimed for any promoted document.
 
-### Changed
+#### Changed
 
 - REQ-0027, AD-0031, AD-0032 and the nine Stage 05 documents: status,
   minor version and date.
@@ -98,7 +108,7 @@ progress under the approved parents. Hosted CI has not run.
 - `docs/99.templates/registry.json`: `spec` high-water 261, next 262.
 - `docs/03.specs/README.md`: index row.
 
-### Open issues
+#### Open issues
 
 - RUN-0087 mentions "Task 0004" without a link; the text is historical and was
   left as is.
@@ -106,13 +116,13 @@ progress under the approved parents. Hosted CI has not run.
 - REQ-0027 and the promoted documents are not Task package members, so their
   transitions are recorded under Decisions, not in Lifecycle Events.
 
-### Supersession note 2026-11-10
+#### Supersession note 2026-11-10
 
 On 2026-11-10 the Dependabot references at lines 68 and 79 are superseded:
 `.github/dependabot.yml` no longer exists and `renovate.json5` is the sole
 dependency updater (PR #850, merge `87d3a18c8`). Earlier entries are unchanged.
 
-### Hosted CI evidence follow-up 2026-11-10
+#### Hosted CI evidence follow-up 2026-11-10
 
 A read-only GitHub lookup on 2026-11-10 for the actual implementation commit
 `a30e3598eb29bba094fbf76934d04eeac2b82858` returned CI Quality Gates run
@@ -125,7 +135,13 @@ rewritten. It does not prove the current source diff, runtime, backup, login,
 restore, or a new owner acceptance. A fresh-context independent document
 review and criteria1-4 owner decisions remain pending.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -139,7 +155,13 @@ review and criteria1-4 owner decisions remain pending.
 | E8 | 4 | W4 | operations-and-links | `check-operations-catalog.py`; links `alignment`, `navigation`, `language`, `traceability`, `entrypoint`, same tree | PASS | catalog PASS; every link mode PASS, 879 documents, 8109 links, zero failures | required | - |
 | E9 | 4 | W4 | hosted-ci | Original implementation commit a30e3598eb29bba094fbf76934d04eeac2b82858 | PASS | Read-only 2026-11-10 lookup: run41780400564, candidate-quality job126410378613 success; main-security skipped | required | E5 |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -148,17 +170,19 @@ review and criteria1-4 owner decisions remain pending.
 | 3 | pending | - | - | @buenhyden |
 | 4 | pending | - | - | @buenhyden |
 
-## Review and Completion
+### Remaining Conditions
 
 Local checks are recorded above. The original candidate hosted-CI result is
 now evidenced by E9. Hosted CI for the current diff, fresh-context independent
 review and owner criterion decisions remain pending; no criterion is accepted
 yet. Earlier unrun statements are preserved as the history they recorded.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Operations](../../../05.operations/README.md)
-- [Stage authoring matrix](../../../../.agents/governance/stage-authoring-matrix.md)
-- [Document Registry](../../../99.templates/registry.json)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

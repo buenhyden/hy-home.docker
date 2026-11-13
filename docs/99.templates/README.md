@@ -1,6 +1,6 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.5.2"
+version: "2.5.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -117,8 +117,8 @@ fallback을 뜻하며 현재 작성 대상이 아닙니다. Stage 01~03 lifecycl
 #### Stage 03 Evidence
 
 Task 상태는 frontmatter 하나에 둡니다. 여러 항목을 따로 추적하는 Task는
-Work Log 아래 `Execution Items` 표의 각 행이 상태를 가지며 frontmatter
-`status`를 쓰지 않습니다. `Evidence`의 각 행은 기존 criterion과 Plan work
+Execution Log의 Work Performed 아래 `Execution Items` 표의 각 행이 상태를
+가지며 frontmatter `status`를 쓰지 않습니다. `Evidence`의 각 행은 기존 criterion과 Plan work
 unit, 실제 check와 input, result, location, 그리고 같은 Task에서 criterion을
 공유하고 Check·Work Unit이 같은 앞선 non-PASS 관측을 해소하는 `Resolves`를
 기록합니다. 수용 판정은 criterion마다 한 번, Task의
@@ -128,7 +128,10 @@ unit, 실제 check와 input, result, location, 그리고 같은 Task에서 crite
 소유합니다. Registry `common`의 절 이름 값(`plan_section` 등)은 이전 H2 이름을
 가리키는 논리 이름입니다. 공통 양식으로 옮긴 문서에서는 같은 절이 새 H2 아래
 H3로 있으며(예: `Implementation Strategy` 아래 `Work Breakdown`), 검사기는 두
-형식 중 정확히 하나만 받아들입니다.
+형식 중 정확히 하나만 받아들입니다. Task에서는 `Evidence`가 `Verification
+Evidence` 아래 `Results`, `Criterion Acceptance`가 `Acceptance Decision` 아래
+`Criterion Decisions`, `Work Log`가 `Execution Log` 아래 `Work Performed`를
+가리킵니다.
 Lifecycle Events는 실제 직접 전이와 같은 Task의 evidence anchor만 기록하며
 승인 source를 인증하지 않습니다. 승인·검토·실행의 의미는
 [SDLC](../../.agents/governance/sdlc.md)가 소유합니다.

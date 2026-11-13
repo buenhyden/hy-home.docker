@@ -1,10 +1,10 @@
 ---
 title: "Workflow Lease and Database Connect Safety Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-29"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0018"
 parent_ids:
@@ -14,15 +14,23 @@ created: "2026-10-16"
 
 # Workflow Lease and Database Connect Safety Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Correct the reproduced cross-database CONNECT and stale/ambiguous SMTP claim
 boundaries. Existing TSK-0012 and TSK-0013 retain criterion 18 and 19 acceptance;
 this Task owns only the bounded corrective work and fresh evidence.
 
-## Inputs and Authorization
+- [Plan](../plan.md)
+- [P04 acceptance owner](tsk-0012-p04-airflow-manifest-pipeline.md)
+- [P05 acceptance owner](tsk-0013-p05-n8n-outbox-notifier.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The complete 2026-10-16 infrastructure request authorizes these confirmed
 source corrections, focused tests, and disposable native restore rehearsals.
@@ -36,9 +44,11 @@ Old migrations 001 through 003 and historical Task evidence remain unchanged.
 No HOME deployment, live ACL change, credential access, external SMTP or
 production restore is authorized by this source unit.
 
-## Work Log
+## Execution Log
 
-### 현재 source 진행과 lifecycle 구분 — 2026-10-22
+### Work Performed
+
+#### 현재 source 진행과 lifecycle 구분 — 2026-10-22
 
 공개 소스 대조에서 아래 frozen project.py, monitor.py, SQL004, builder 및 SMTP
 transport의 다섯 SHA256이 현재 추적 파일과 각각 일치했다. CONNECT guard,
@@ -69,7 +79,7 @@ plus two 16 MiB tmpfs mounts, six-minute fixture and two-minute cleanup budgets.
 All owned containers were removed and an independent label query was empty.
 The PostgreSQL-only restore is separate from combined S3/n8n/HOME recovery.
 
-### Current source and isolated verification
+#### Current source and isolated verification
 
 The cross-database guard RED failed on missing admission logic (exit 1). Its
 shared-provisioner implementation and affected existing tests subsequently
@@ -121,7 +131,7 @@ quarantine/expiry/reconciliation/empty-restore case passed 2 tests in 25.459
 seconds, exit 0, with all three owned container cleanups PASS. This later SQL
 receipt supersedes the prior SQL004 hash only; historical attempts are retained.
 
-### Independent review corrections
+#### Independent review corrections
 
 Independent review found that the monitor still inherited non-postgres CONNECT
 before its automatic LOGIN. A new focused test first failed on the missing
@@ -180,7 +190,7 @@ The preserved SQL001/002/003 hashes remain respectively
 7ed4bfd5f160e93ad810e8d32ce2221a02f1629946e5e4297817385acbbb13ed and
 830b62c6e8d175d5a4350bab27976121637df4aeca6688748865756be2d84d72.
 
-### Coupled source commit and current base — 2026-10-16
+#### Coupled source commit and current base — 2026-10-16
 
 The coordinator approved one coupled source delivery for W71 (stable n8n
 artifact), W72 (DEV CONNECT admission) and W73 (notification safety), together
@@ -213,20 +223,26 @@ CI policy integration; pre-rebase tests are not relabeled as final-head or
 hosted CI evidence. The separate blocked image-native/HOME/recovery lanes
 remain visible.
 
-### Owner decision 2026-10-29
+#### Owner decision 2026-10-29
 
 On 2026-10-29 the owner decided that the frontmatter `draft` is stale: the Work
 Log above already reports the source corrections and isolated verification. The status moves `draft`, `ready`, then
 `in-progress`. No criterion is accepted here: criteria 18 and 19 keep their acceptance owners in TSK-0012 and TSK-0013, and HOME and complete recovery stay `NOT_RUN`.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0018 | draft | ready | #inputs-and-authorization |
 | SPEC-0204-TSK-0018 | ready | in-progress | #owner-decision-2026-10-29 |
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -241,12 +257,18 @@ Log above already reports the source corrections and isolated verification. The 
 | Source regression suite | 19 | W73 | Affected source/unit/fixture boundary tests | 125 tests, 8.612s, exit 0; actual node coverage separate | PASS | Current source and isolated verification | required | - |
 | HOME and complete recovery | 19 | W73 | Real worker/S3/notifier/independent full restore | Exact live inputs, backups and consumer authority unavailable | NOT_RUN | Work Log | optional | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 Criterion 18 retains its durable decision in TSK-0012; criterion 19 retains its
 durable decision in TSK-0013. This corrective Task creates no duplicate decision.
 
-## Review and Completion
+### Remaining Conditions
 
 In progress. Record exact RED/GREEN, native denial/quarantine/restore, static
 checks and independent review before delivery. Source rollback reverts only
@@ -254,8 +276,12 @@ this logical unit; deployed ACL/schema changes require their own reviewed
 backup and recovery boundary. Unknown SMTP results remain quarantined across
 restart/restore; no exactly-once or HOME acceptance claim is made.
 
-## Related Documents
+## Handoff
 
-- [Plan](../plan.md)
-- [P04 acceptance owner](tsk-0012-p04-airflow-manifest-pipeline.md)
-- [P05 acceptance owner](tsk-0013-p05-n8n-outbox-notifier.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

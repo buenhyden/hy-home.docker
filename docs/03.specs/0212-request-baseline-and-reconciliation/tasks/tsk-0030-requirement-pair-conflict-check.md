@@ -14,15 +14,23 @@ created: "2026-10-29"
 
 # Requirement Pair Conflict Check Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W46: judge every pair of the request's 148 numbered requirements
 (CR-01.01 to CR-21.05), 10,878 pairs, for duplication and conflict
 (CR-04.04). This Task owns criterion 41 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Request line meaning audit](tsk-0029-request-line-meaning-audit.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-29 the owner asked for the pairwise conflict check that TSK-0026
 recorded as not performed, followed by commit, pull request, and merge. The
@@ -32,9 +40,11 @@ a different responsibility. The input is the owner's pasted request at
 `main` merged PR #626. The authorization covers this record, this branch,
 its pull request, and merge.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -42,7 +52,7 @@ its pull request, and merge.
 | SPEC-0212-TSK-0030 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0030 | in-progress | completed | #evidence |
 
-### Method
+#### Method
 
 1. Two read-only reviewers recorded, for each CR, its tags from one fixed
    vocabulary, its writer, its polarity, and when it applies. That table is
@@ -66,7 +76,7 @@ its pull request, and merge.
 | `CONTRA` | Real contradiction | `BLOCKED` until the owner decides |
 | `UNVER` | Cannot be judged | Stays open |
 
-### Result
+#### Result
 
 | Relation | Pairs |
 | --- | --- |
@@ -91,7 +101,7 @@ orders, native agent versus shared memory, SDLC versus SDD, bulk QA removal
 versus unique guarantee — were each judged, and none is `CONTRA` or
 `UNVER`.
 
-### Limits
+#### Limits
 
 - This is a static check of the requirement texts. Whether the current
   implementation conflicts with them is judged per line in TSK-0029, not per
@@ -105,7 +115,7 @@ versus unique guarantee — were each judged, and none is `CONTRA` or
 - The full per-pair file, including the `DIFF` reasons, stays outside the
   repository by the owner's choice.
 
-### Requirement attributes
+#### Requirement attributes
 
 | CR | Tags | Writer | Polarity | Temporal |
 | --- | --- | --- | --- | --- |
@@ -258,7 +268,7 @@ versus unique guarantee — were each judged, and none is `CONTRA` or
 | CR-21.04 | approval-security | owner approval | must,must-not | always |
 | CR-21.05 | approval-security,external-research | .agents/governance | must,must-not | always |
 
-### Pairs other than different responsibility
+#### Pairs other than different responsibility
 
 Every pair not listed here is `DIFF`, with the fields from the attribute
 table above.
@@ -1215,7 +1225,15 @@ table above.
 | CR-21.03 | CR-21.04 | COMP | policy change vs approval scopes; no false approval |
 | CR-21.04 | CR-21.05 | COMP | approval scope vs file text never counts as approval |
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -1224,19 +1242,29 @@ table above.
 | Metadata contracts | 41 | W46 | `check-document-metadata.py --mode check-contracts` | This branch | PASS | 0 violations | required | - |
 | Runtime conflict per pair | 41 | W46 | Pairwise check of implementation against both CRs | - | NOT_RUN | Judged per line in TSK-0029 instead | optional | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 41 | accepted | Pair coverage, Attribute coverage, Metadata contracts | All 10,878 pairs are judged; none contradicts or is unjudged; 37 duplicated duties in the request text are recorded for the owner. | SPEC-0212 TSK-0030 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Request line meaning audit](tsk-0029-request-line-meaning-audit.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

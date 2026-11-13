@@ -14,9 +14,11 @@ created: "2026-11-11"
 
 # W02 Archive and Safe Removal Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Own W115/criterion 110. Assess the v14.2 W02 obligations ARC-01 to ARC-09,
 and the v14.7 W02 obligations W02-A, W02-B, R147-08, QA-C04, WP-19, WP-20 and
@@ -24,7 +26,11 @@ OPEN-ARCHIVE, against the current retention and retirement owners. Before any re
 prove readiness and byte recovery for each candidate, and block a removal
 whose acceptance, promotion, hold, authority or recovery is unmet.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [W01 Task](tsk-0056-w01-governance-standardization.md)
+
+### Inputs and Authority
 
 On 2026-11-11 the owner approved this Task to own W02. The v14.2 package
 prompt `tasks/TASK-hy-home-docker-W02.md` under
@@ -47,14 +53,16 @@ This Task records their state and does not close them. It starts from
 `main` `e4fd7f5f3`, after PR 954 merged the retirement rules W01
 consolidated.
 
-## Work Log
+## Execution Log
 
-### Owner-approved local execution
+### Work Performed
+
+#### Owner-approved local execution
 
 The owner's approval of 2026-11-11 issues this Task. The lifecycle records that
 approval; it grants no removal or remote operation.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -62,7 +70,7 @@ approval; it grants no removal or remote operation.
 | SPEC-0212-TSK-0057 | ready | in-progress | #owner-approved-local-execution |
 | SPEC-0212-TSK-0057 | in-progress | completed | #review-and-completion |
 
-### W02 obligation assessment 2026-11-11
+#### W02 obligation assessment 2026-11-11
 
 A fresh-context `rules-engineer` read the retention and retirement owners at
 `main` `e4fd7f5f3`, and the controller re-checked the deciding lines.
@@ -106,7 +114,7 @@ DEFER, with scope:
   `LEGACY_ARCHIVE_SOURCE_ROOTS` instead. The key is due for its own
   retirement.
 
-### Removal candidates 2026-11-11
+#### Removal candidates 2026-11-11
 
 `archive_readiness_findings` reports five ready packages: 0226, 0266, 0267,
 0268 and 0269. Readiness is not removal approval. A delete dry-run in a
@@ -125,7 +133,7 @@ the existing gates block it:
 
 No package is removed. Removal waits for the owner's approval of that batch.
 
-### Batch removal 2026-11-11
+#### Batch removal 2026-11-11
 
 The owner approved removing 0226, 0266, 0267, 0268 and 0269 as one batch. A
 fresh-context promotion check found every still-current meaning of four of
@@ -153,7 +161,7 @@ scratch dry-run restored all 15 files of the five packages with zero byte
 mismatches. The post-merge restore and byte comparison for the four removed
 packages are recorded in this Task after the PR merges.
 
-### CI runner pin 2026-11-12
+#### CI runner pin 2026-11-12
 
 Three `candidate-quality` runs of PR 955 and one job rerun failed at the same
 step: `npx playwright install chromium --with-deps` could not resolve the
@@ -163,7 +171,7 @@ that step. On 2026-11-12 the owner chose to pin the runner. Commit `7a109158f`
 pins both CI Quality jobs to `ubuntu-24.04` in the workflow and in
 `.github/workflow-contract.yml`, and updates the contract test fixtures.
 
-### CI runner pin correction 2026-11-12
+#### CI runner pin correction 2026-11-12
 
 The pinned run failed the same way on `noble`. The cause is outside this
 repository: public DNS returns SERVFAIL for `azure.archive.ubuntu.com`, the
@@ -172,7 +180,7 @@ Playwright system packages. The image diagnosis above was wrong. On
 2026-11-12 the owner chose to revert the pin and rerun after the outage;
 commit `a3b289c5d` reverts `7a109158f`. No gate workaround is added.
 
-### Playwright install without apt 2026-11-12
+#### Playwright install without apt 2026-11-12
 
 The `azure.archive.ubuntu.com` outage continued, and run 43056362855 failed
 only at the Playwright install; its commit-range check passed. On
@@ -181,7 +189,7 @@ only at the Playwright install; its commit-range check passed. On
 installs only the Chromium binary and relies on the hosted image's system
 libraries. The adapter test changed first and failed, then passed.
 
-### Post-merge recovery proof 2026-11-12
+#### Post-merge recovery proof 2026-11-12
 
 PR 955 merged as `19e6b58dc`. The last carrying commit `e4fd7f5f3` is
 reachable from `main`. All 12 files of SPEC-0226, 0266, 0268 and 0269 were
@@ -189,7 +197,7 @@ restored from it into a new scratch folder outside the repository, and each
 restored file hashes to its `e4fd7f5f3` blob. None of the paths exists on
 `main`. Retirement precondition 5 is met for the four packages.
 
-### Removal record correction 2026-11-12
+#### Removal record correction 2026-11-12
 
 The v14.7 W00 intake in [TSK-0059](tsk-0059-w00-v14-7-intake.md) reviewed the
 PR 955 diff. The [SDLC](../../../../.agents/governance/sdlc.md#sequence) rule
@@ -207,7 +215,7 @@ Two corrections to the Batch removal record: the SPEC-0269 lineage line lives
 in AD-0026, not AD-0007, whose PR 955 change was only its version and date.
 Package removal is done; the closing text below no longer waits for it.
 
-### v14.7 W02 run 2026-11-12
+#### v14.7 W02 run 2026-11-12
 
 On 2026-11-12 the owner supplied the v14.7 W02 prompt
 `tasks/TASK-hy-home-docker-W02.md` (SHA-256 `af6fdbcb9ecb`), read as
@@ -244,7 +252,7 @@ PR 961 (SPEC-0248, criterion 4 pending its full-suite rerun), PR 962
 (SPEC-0249), PR 963 (SPEC-0250) and PR 964 (SPEC-0260). Their packages stay until their Tasks
 are terminal and a removal is approved.
 
-### SPEC-0267 retirement map 2026-11-12
+#### SPEC-0267 retirement map 2026-11-12
 
 The owner approved removing SPEC-0267 in the 2026-11-11 batch, so only its
 safety conditions remain.
@@ -286,7 +294,7 @@ outside the repository hash to their blobs, with 0 mismatches. The only
 inbound link is the `docs/03.specs/README.md` index row. The removal also
 adds 267 to the Spec `reserved_history`.
 
-### SPEC-0267 removal 2026-11-12
+#### SPEC-0267 removal 2026-11-12
 
 The final promotion re-check returned READY. Commit `06bf2e201` deletes the
 three files of SPEC-0267, removes its `docs/03.specs/README.md` index row (the
@@ -322,7 +330,7 @@ Both are recorded for the owner. On 2026-11-12 the owner chose to record the
 Loki and Tempo gRPC exposure as an accepted risk in POL-0043 and POL-0049,
 outside FR-0004.
 
-### SPEC-0267 post-merge recovery 2026-11-12
+#### SPEC-0267 post-merge recovery 2026-11-12
 
 PR 960 merged as `3736e3430` at 2026-11-12T06:55:44Z, from head `a4b6c327f`.
 The last carrying commit `4cd25b95b` is reachable from `main`. No path of the
@@ -332,7 +340,7 @@ outside the repository. Each hashes to its `4cd25b95b` blob (`plan.md`
 `8f6443102`, `spec.md` `3d7856520`, Task `7ade7b050`), with 0 mismatches.
 Retirement precondition 5 is met for SPEC-0267.
 
-### v14.7 handoffs
+#### v14.7 handoffs
 
 | ID | Writer | Difference |
 | --- | --- | --- |
@@ -340,7 +348,13 @@ Retirement precondition 5 is met for SPEC-0267.
 | H-W02-2 | W03 | Assess the Registry archive vocabulary: the inert `common.archive_source_prefixes` and the archive frontmatter fields in the Registry, `document-frontmatter.schema.json` and `metadata/profile.py`. Retire each field with no remaining consumer; keep `archive_retention.disposition_entry_statuses` |
 | H-W02-3 | Owner | Done 2026-11-12: REQ-0023-FR-0004 with recorded exceptions |
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -373,13 +387,21 @@ Retirement precondition 5 is met for SPEC-0267.
 | W02 v14.7 remote candidate | 110 | W115 | remote-candidate-quality | PR #960 head `a4b6c327f`, hosted run 43169451623, check rollup read on 2026-11-12 | PASS | `candidate-quality` SUCCESS; CodeQL, GitGuardian and triage SUCCESS; `main-security` and the greeting SKIPPED as designed for a PR | optional | - |
 | W02 SPEC-0267 post-merge recovery | 110 | W115 | removal-recovery-proof | `4cd25b95b` reachable from `main` `3736e3430`; the 3 files of SPEC-0267 | PASS | 3 files restored outside the repository, 0 byte mismatches against their blobs; no path present on `main`; 267 reserved | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 110 | accepted | W02 obligation assessment result, W02 batch removal, W02 post-merge recovery, W02 code review, W02 remote candidate final, W02 adapter without apt, W02 v14.7 assessment, W02 SPEC-0267 promotion final, W02 SPEC-0267 removal, W02 consumer tests, W02 v14.7 review result, W02 document checks, W02 blocking-case scenarios result | Owner accepted on 2026-11-12 in this chat. The SPEC-0267 post-merge byte comparison passed after merge (W02 SPEC-0267 post-merge recovery); H-W02-1 (W05) and H-W02-2 (W03) stay with their owners | SPEC-0212 TSK-0057 |
 
-## Review and Completion
+### Remaining Conditions
+
+#### Review and Completion
 
 Completed on 2026-11-12. The assessment, the dry-run, the reproduced-gap
 changes and the removal of 0226, 0266, 0268 and 0269 are recorded, with their
@@ -392,8 +414,12 @@ approved them. The owner accepted criterion 110 on 2026-11-12. H-W02-1 (W05)
 and H-W02-2 (W03) are recorded and executed in their writers' own Tasks, not
 here.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [W01 Task](tsk-0056-w01-governance-standardization.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

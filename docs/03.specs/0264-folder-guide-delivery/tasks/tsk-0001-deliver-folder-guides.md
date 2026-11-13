@@ -14,22 +14,29 @@ created: "2026-11-06"
 
 # Folder Guide Delivery Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Record the execution and evidence of work units W1 to W5 of the Plan.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
 
 The owner requested the change on 2026-11-06 and chose one shared hook over
 folder `CLAUDE.md` shims, then amended that choice the same day to a shim for
 Claude and the hook for Codex (#owner-amendment). Spec approval is the
 owner's, in the pull request.
 
-## Work Log
+## Execution Log
 
-### Implementation
+### Work Performed
+
+#### Implementation
 
 W1 to W3 are implemented on `feat/folder-agents-guide-hook`:
 `scripts/lib/hooks/folder_guides.py`, the dispatcher wiring, 8 tests, the
@@ -72,7 +79,7 @@ The #770 review round, committed as `8ac11bc58`..`13ebb04f1` on `fix/folder-guid
   guides (M8); `.claude/provider.md` names the marker comment (M9); Plan W4
   adds the Codex `compact` source check (M4).
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -88,27 +95,27 @@ The #770 review round, committed as `8ac11bc58`..`13ebb04f1` on `fix/folder-guid
 | SPEC-0264-TSK-0001 | blocked | in-progress | #amendment-approval |
 | SPEC-0264-TSK-0001 | in-progress | completed | #review-and-completion |
 
-### Owner approval
+#### Owner approval
 
 On 2026-11-06 the owner approved the Spec, Plan and Task in the pull request
 ("SPEC-0264(Spec·Plan·Task 초안) 승인") and assigned the live observation to
 the controller ("머지한 뒤 새 Claude 세션과 새 Codex 세션을 각각 repo root에서
 시작은 니가 한다").
 
-### Owner amendment
+#### Owner amendment
 
 On 2026-11-06, after approving the hook-only design, the owner chose a folder
 `CLAUDE.md` shim for Claude and the hook for Codex ("Claude는 shim, Codex는
 hook"). The Spec and Plan return to `in-review` for that amendment, and this
 Task stays `blocked` until the owner approves them again.
 
-### Amendment approval
+#### Amendment approval
 
 On 2026-11-06, asked whether to approve the amended Spec, the owner answered
 "승인 (권장)", so the Spec and Plan are `approved` again and this Task is
 `in-progress`.
 
-### Review fix approval
+#### Review fix approval
 
 On 2026-11-06 the #770 review fix M1 changed the Spec's Normal Behavior
 (0.4.1): the hook sends Claude the full guide when the folder's `CLAUDE.md`
@@ -116,7 +123,7 @@ shim is missing, is not a regular file or does not import `@AGENTS.md`. Asked
 whether to approve that sentence, the owner answered "승인 (권장)", so the
 Spec stays `approved`.
 
-### Live observation (criterion 8)
+#### Live observation (criterion 8)
 
 After merge, the controller starts a new Claude session and a new Codex
 session at the repository root. In Claude it reads a file under `infra/` and
@@ -126,7 +133,7 @@ edits a file under `infra/` and records whether the "Folder guide
 and records whether SessionStart arrives with `source` `compact`, because
 re-delivery after compaction depends on it.
 
-### Codex recheck (2026-11-11)
+#### Codex recheck (2026-11-11)
 
 The owner asked for the Codex recheck on 2026-11-11. The controller ran a
 headless `codex exec` (codex-cli 0.166.0) at the repository root of main
@@ -156,7 +163,7 @@ Making it work needs a separate change: confirm whether Codex fires
 PreToolUse for `exec` at all, and if so match `exec` and read the nested
 `tools.apply_patch` paths.
 
-### Codex 0.167.1 recheck (2026-11-11)
+#### Codex 0.167.1 recheck (2026-11-11)
 
 The owner approved the E33 follow-up on 2026-11-11. The CLI had moved to
 codex-cli 0.167.1, so the controller first repeated the unchanged probe with
@@ -178,7 +185,7 @@ The next step changes the Codex PreToolUse matcher and re-trusts its hash in
 the user-global `~/.codex/config.toml`. That trust is the owner's to grant in
 Codex's own prompt; this recheck did not write it.
 
-### Codex code-mode `exec` coverage (2026-11-11)
+#### Codex code-mode `exec` coverage (2026-11-11)
 
 The owner asked for the matcher change on 2026-11-11. The E34 session record
 (`~/.codex/sessions/.../rollout-...01a1ca32...jsonl`) shows each edit as a
@@ -227,7 +234,7 @@ Residuals, accepted for now:
 Live delivery stays unobserved. The changed hook file has a new hash, which
 the owner must trust in Codex before a live probe can run.
 
-### Live Codex delivery after trust (2026-11-13)
+#### Live Codex delivery after trust (2026-11-13)
 
 Codex 0.167 cannot run without code mode: a run with
 `-c features.code_mode_host=false` stopped with "Code mode will fail closed",
@@ -240,7 +247,13 @@ session with `/compact` between two edits: the guide was delivered again after
 the compaction (E37, resolving E27). No required observation for criterion 8
 is open; its acceptance is the owner's.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -282,7 +295,13 @@ is open; its acceptance is the owner's.
 | E36 | 8 | W4 | live Codex delivery | Headless `codex exec` 0.167.2 at the repository root of main `894e4bc5f`, 2026-11-13, after the owner trusted the changed hooks in `/hooks`; one blank line added to and removed from `infra/README.md` through `tools.apply_patch` inside `exec` | PASS | the folder guide arrived before the edit (first line "Folder guide `infra/AGENTS.md` applies to files under `infra/`"), the second edit got only the short reminder, a delivery record was written under `~/.local/state/hy-home/folder-guides/`, and `git status` was clean afterwards; compaction re-delivery not exercised | required | E33, E34 |
 | E37 | 8 | W4 | live Codex delivery | Interactive Codex 0.167.2 session `01a1d246…` run by the owner at the repository root of main `894e4bc5f`, 2026-11-13 09:20 KST: an `infra/README.md` edit and revert, `/compact`, then the same edit and revert again; read from the session record and `~/.local/state/hy-home/folder-guides/` | PASS | full guide before the first edit (00:20:45Z) and a short reminder on the revert; compaction at 00:21:10Z, the re-read notice at 00:21:12Z, the full guide again before the next edit (00:21:32Z) and a short reminder on its revert; the file was restored byte-identical | required | E27 |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -297,7 +316,7 @@ is open; its acceptance is the owner's.
 | 9 | accepted | E10, E11, E21, E24, E30 | owner accepted 2026-11-13 | @buenhyden |
 | 10 | accepted | E12, E13, E15, E16, E18, E19, E21, E23, E24, E30 | owner accepted 2026-11-13 | @buenhyden |
 
-## Review and Completion
+### Remaining Conditions
 
 Completed on 2026-11-13. The amended Spec and Plan are approved and the #770
 review findings are fixed (E29, E30). Criterion 8 is observed for Claude
@@ -311,7 +330,12 @@ every criterion is accepted and no required observation is open. The
 residuals listed above stay accepted as recorded. Later hook or Codex changes
 belong to a new Task.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

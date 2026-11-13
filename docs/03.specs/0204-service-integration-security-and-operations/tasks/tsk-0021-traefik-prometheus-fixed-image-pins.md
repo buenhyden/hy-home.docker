@@ -1,10 +1,10 @@
 ---
 title: "Traefik and Prometheus Fixed Image Pins Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0021"
 parent_ids:
@@ -14,9 +14,11 @@ created: "2026-10-30"
 
 # Traefik and Prometheus Fixed Image Pins Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Adopt the fixed upstream Traefik v3.7.16 and Prometheus v3.15.1 images in the
 Compose pins and supersede the two lapsed SEC01 risk acceptances recorded in
@@ -25,7 +27,16 @@ completed, frozen SPEC-0204-TSK-0009; this Task continues the SEC01 image
 version work as a new unit, as TSK-0017 did for n8n, and rewrites no earlier
 Task body.
 
-## Inputs and Authorization
+- [Plan](../plan.md)
+- [SEC01 Task (completed)](tsk-0009-sec01-stable-security-integration.md)
+- [POL-0013 Traefik policy](../../../05.operations/policies/02-gateway-and-networking/0013-traefik.md)
+- [POL-0045 Prometheus policy](../../../05.operations/policies/07-observability/0045-prometheus.md)
+- [RUN-0013 Traefik runbook](../../../05.operations/runbooks/02-gateway-and-networking/0013-traefik.md)
+- [RUN-0045 Prometheus runbook](../../../05.operations/runbooks/07-observability/0045-prometheus.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-30 the owner decided to adopt the fixed upstream images in place of
 the two acceptances in TSK-0009 ("Traefik and Prometheus upstream candidates",
@@ -43,9 +54,11 @@ an image pull, a scan, a container recreation or any other runtime action.
 The Go and x/net versions are the owner's release facts and the upstream
 release notes; the images were not pulled or inspected here.
 
-## Work Log
+## Execution Log
 
-### Source pins — 2026-10-30
+### Work Performed
+
+#### Source pins — 2026-10-30
 
 The anonymous Docker Hub registry API returned the index digests above. Each
 raw index body hashes to the `Docker-Content-Digest` header, and the
@@ -76,7 +89,7 @@ rehearsals need the new image cached; the owner pull below provides it.
 SPEC-0245 (in progress) preserves Prometheus on v3.15.0 and excludes a version
 change, so the owner should order its recreate and the one below explicitly.
 
-### Ledger and policy
+#### Ledger and policy
 
 The four ledger files in `infra/09-platform-ops/security-updates/` carry the
 new pins, digests, GitHub and registry lookups, new input SHA-256 values and a
@@ -87,7 +100,7 @@ was stale from an earlier non-image edit and is re-bound in the same refresh.
 POL-0013 and POL-0045 keep their 2026-10-15 acceptance paragraphs and add a
 dated "Superseded" paragraph. TSK-0009 is untouched.
 
-### Owner steps — NOT_RUN
+#### Owner steps — NOT_RUN
 
 Every step below needs a separate owner approval for its named target. None
 ran here, so no scan, applicability, boot, recreation or rollback result exists
@@ -171,20 +184,26 @@ for the adopted images.
    tag change does not reverse a TSDB or schema change, so a failed Prometheus
    start after a data-affecting step goes to the SPEC-0245 restore.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0021 | draft | ready | #inputs-and-authorization |
 | SPEC-0204-TSK-0021 | ready | in-progress | #source-pins-2026-10-30 |
 
-### Supersession note 2026-11-10
+#### Supersession note 2026-11-10
 
 On 2026-11-10 the Traefik v3.7.16 pin is superseded by v3.7.17 (PR #881,
 merge `125a884d1`; `infra/01-gateway/traefik/docker-compose.yml:13`). The
 Prometheus pin is unchanged. Earlier entries are unchanged.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -194,13 +213,19 @@ Prometheus pin is unchanged. Earlier entries are unchanged.
 | Config boot and promtool checks | 15 | W76 | Traefik config boot, `check config`, `check rules` | Adopted images; no pull | NOT_RUN | Owner steps | optional | - |
 | HOME recreation and rollback | 15 | W76 | Recreate, health, route and scrape checks, rollback | Named HOME target and backup absent | NOT_RUN | Owner steps | optional | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 Criterion 15 keeps its durable decision in the completed TSK-0009. This Task
 creates no duplicate decision. A pinned source is not a deployed update, and
 the latest and security gates still exit 2 for other open evidence.
 
-## Review and Completion
+### Remaining Conditions
 
 In progress. Source pins, ledger and policy text are done; the owner steps
 above remain `NOT_RUN`. Close this Task only after the scan, applicability
@@ -208,11 +233,12 @@ review, config checks and HOME recreation (or an owner decision to defer them)
 are recorded. Source rollback is a logical revert of this unit; it does not
 revert a recreated container or its data.
 
-## Related Documents
+## Handoff
 
-- [Plan](../plan.md)
-- [SEC01 Task (completed)](tsk-0009-sec01-stable-security-integration.md)
-- [POL-0013 Traefik policy](../../../05.operations/policies/02-gateway-and-networking/0013-traefik.md)
-- [POL-0045 Prometheus policy](../../../05.operations/policies/07-observability/0045-prometheus.md)
-- [RUN-0013 Traefik runbook](../../../05.operations/runbooks/02-gateway-and-networking/0013-traefik.md)
-- [RUN-0045 Prometheus runbook](../../../05.operations/runbooks/07-observability/0045-prometheus.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

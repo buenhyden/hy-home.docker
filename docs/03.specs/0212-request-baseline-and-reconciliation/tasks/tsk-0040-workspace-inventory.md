@@ -14,13 +14,21 @@ created: "2026-11-01"
 
 # Workspace Inventory Task
 
-## Overview
+## Scope
+
+### Objective and Parent
 
 Implement P01.01–P01.05 through W56–W60 and criteria 51–55. This Task owns
 workspace census, evidence classification, writer leases and owner handoffs.
 Service code and P12 final user-function acceptance remain with their leaf owners.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Workspace census and applicability](../../../90.references/data/0096-workspace-inventory/README.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The direct user request on 2026-11-01 approves the displayed P01 implementation
 plan, bounded local source/document/test/CI changes and local logical commits.
@@ -35,23 +43,25 @@ baseline/corrections, requirements crosscheck, ownership and scope coverage.
 Historical unavailable originals and private operator state remain unavailable.
 The bootstrap/provider, REQ-0027, AD-0031 and this Spec/Plan govern the local unit.
 
-## Work Log
+## Execution Log
 
-### Initial lifecycle boundary
+### Work Performed
+
+#### Initial lifecycle boundary
 
 This new Task starts at `draft` under the Registry's initial-state contract.
 The direct user request authorizes the local implementation independently of
 this metadata state. Later direct lifecycle edges must be observed against an
 issued source revision; no multi-edge shortcut or acceptance is fabricated.
 
-### Work allocation
+#### Work allocation
 
 W56 captures source identity; W57 implements and verifies the inventory; W58
 reconciles acceptance scope; W59 binds writer leases and handoffs; W60 records
 official applicability. These form one bounded Task execution, with one
 frontmatter state. No separate execution-item lifecycle is issued.
 
-### Single writers and source evidence
+#### Single writers and source evidence
 
 The qa-engineer owns the CLI/library/tests; the doc-writer owns this package,
 DATA-0096 and its Registry allocation; the ci-cd-engineer owns manifest/selector
@@ -67,7 +77,7 @@ observations, curated dispositions, research and ownership. Private per-path
 metadata and sanitized command receipts stay under local analysis. Secret values,
 authentication bodies, value hashes and raw operational logs are not collected.
 
-### Bounded follow-up admission and writers
+#### Bounded follow-up admission and writers
 
 The direct follow-up authorizes local diagnosis and correction of the 21 failed
 render cases, CI test-environment recovery and precise leaf-owner handoffs. Its
@@ -89,7 +99,7 @@ non-P01 service/example defect is handed off with exact source and fingerprints;
 it is not an authorization to recreate a service. Evidence remains pending until
 actual focused tests, rerendering and the registered full gate return their results.
 
-### Research and acceptance scope readback
+#### Research and acceptance scope readback
 
 The doc-writer directly consulted fifteen official pages: Compose profiles,
 startup order, include and config; Git status/worktree; Python 3.12 filesystem
@@ -112,7 +122,7 @@ non-cluster servers are unaffected by this specific issue. The current source
 version alone does not prove that a HOME server is vulnerable. Queue/cache,
 RDB/AOF, client and restore compatibility remain with P02/P05/P08.
 
-### Observed verification and correction chronology
+#### Observed verification and correction chronology
 
 Initial doc-writer changed-metadata checks reported 147 findings: the new Plan's
 empty dependency syntax, combined Work Unit cells and premature Task initial state
@@ -176,7 +186,7 @@ locked dependencies and sealing support; its actual preflight passed. The
 unavailable-build observation no longer describes the selected interpreter.
 Remote CI remains NOT_RUN.
 
-### Follow-up measurements and remaining source defect
+#### Follow-up measurements and remaining source defect
 
 The renderer now preserves root context for included sources, uses ordered bases
 for overlays, accepts declared typed synthetic inputs through `--render-inputs`,
@@ -259,7 +269,7 @@ did not retain every test title, so the P01 subset result within those 720 tests
 is unknown; the independent 48-test PASS is separate. No aggregate full-gate
 success follows from isolated tests or the six successful leaves.
 
-### Final registered integrity resolver
+#### Final registered integrity resolver
 
 The coordinator inspected the exact registered integrity invocation and contract
 fingerprint, preserved the real existing interpreter and ambient executable path,
@@ -285,7 +295,7 @@ credential changed. Independent review approved all seven frozen executable
 source/test files in its exact fingerprint scope. The only current configuration
 residual is the readiness fixture handoff above.
 
-### D01 re-observation at current main
+#### D01 re-observation at current main
 
 A direct user request on 2026-11-04 re-ran this inventory contract as D01. The
 input workspace was clean `main` at `d53a0cd6e8f6970b44e1c404e25842a258019ab3`,
@@ -310,7 +320,7 @@ no interpolated values and that unprofiled services are always enabled. The
 GitHub page gives no YAML size limit, so it does not apply to this ledger.
 Runtime, restore and Hosted CI for this observation remain NOT_RUN.
 
-### D01 re-observation after the LAB moves
+#### D01 re-observation after the LAB moves
 
 A direct user request on 2026-11-07 re-ran D01. The input workspace was clean
 `main` at `e75276ef1f7801997d3d6fba6223fcf1a3bbbd41`, equal to read-only
@@ -362,7 +372,7 @@ new Spec. The `/verify` harness was NOT_RUN because it marks repository commands
 untrusted without explicit consent; the same test selection ran directly.
 Runtime, restore and Hosted CI for this observation remain NOT_RUN.
 
-### D01 T03, T04 and stale receipts (2026-11-07, after PR #781)
+#### D01 T03, T04 and stale receipts (2026-11-07, after PR #781)
 
 The user then asked to finish the T03 semantic audit, re-check T04, and renew
 the 58 STALE review receipts and the 2 that named moved paths before D02. Work
@@ -427,7 +437,7 @@ curation: files fully reviewed 9/2,028, partially 89/2,028, STALE 0, missing 0;
 81 requirement rows, none without a subject. Runtime, restore and Hosted CI
 remain NOT_RUN.
 
-### Full local profile run 2026-11-10
+#### Full local profile run 2026-11-10
 
 On 2026-11-10 the owner (@buenhyden) allowed one run of the local full profile
 (`run-ci-gate.py --profile full --local-only`) as an exception to the no-labs
@@ -442,7 +452,7 @@ under the leaf's 15-minute budget; the other 12 leaves did not run. The cause
 is unconfirmed. Criteria 51 to 55 stay pending: the five full-gate FAIL rows
 still need a passing full profile, and no further run is authorized.
 
-### Owner disposition 2026-11-10
+#### Owner disposition 2026-11-10
 
 On 2026-11-10 the owner (@buenhyden) reviewed criteria 51 to 55 and set them to
 not-required. Their content passed in bounded source checks, the 720/720
@@ -451,7 +461,7 @@ passing repository-wide local full profile, does not test P01 content and
 stopped on a runner timeout in its one approved run. A runner fix is separate
 CI work. With every criterion not-required, the owner closed this Task.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -459,7 +469,13 @@ CI work. With every criterion not-required, the owner closed this Task.
 | SPEC-0212-TSK-0040 | ready | in-progress | #work-allocation |
 | SPEC-0212-TSK-0040 | in-progress | completed | #owner-disposition-2026-11-10 |
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -507,7 +523,13 @@ CI work. With every criterion not-required, the owner closed this Task.
 | D01 T03 requirement trace | 53 | W58 | Requirement rows against D01 table, SPEC-0212 criteria and Task Criterion Acceptance | 0942176c9 | PASS | 11 subjects filled, 11 rows added, subject-less rows rejected by validate | required | - |
 | D01 T04 ownership re-check | 54 | W59 | Open Spec/Task status, lease overlap and moved-path leases | 0942176c9 | PASS | No overlap; 2 moved leases closed; statusless multi-item Tasks confirmed valid | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -517,7 +539,7 @@ CI work. With every criterion not-required, the owner closed this Task.
 | 54 | not-required | Ownership verification, Document ownership contracts, Final selected ownership checks | Not required: owner @buenhyden retired this criterion on 2026-11-10. Its content is evidenced by the ownership verification and the 720/720 selected-leaf run; the only missing item is the repository-wide 14-leaf local full profile, which checks hooks, documents, CI and release surfaces rather than P01 and stopped on a runner timeout in its one approved run. The full-gate FAIL and NOT_RUN rows stay as recorded. | SPEC-0212 TSK-0040 |
 | 55 | not-required | Official research, Follow-up official research, Final selected research checks | Not required: owner @buenhyden retired this criterion on 2026-11-10. Its content is evidenced by the official research rows and the 720/720 selected-leaf run; the only missing item is the repository-wide 14-leaf local full profile, which checks hooks, documents, CI and release surfaces rather than P01 and stopped on a runner timeout in its one approved run. The full-gate FAIL and NOT_RUN rows stay as recorded. | SPEC-0212 TSK-0040 |
 
-## Review and Completion
+### Remaining Conditions
 
 On 2026-11-10 the owner (@buenhyden) set criteria 51 to 55 to not-required and
 closed this Task; see Owner disposition 2026-11-10. The paragraphs below are
@@ -558,6 +580,12 @@ Historical OpenBao P01 is SPEC-0204; this Task's P01 is workspace inventory.
 
 ## Handoff
 
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
 | Target | Disposition | Current writer/owner | Resume condition and recovery |
 | --- | --- | --- | --- |
 | Selected local toolchain | SOURCE_READY | Coordinator/QA | Existing Python 3.14.8 with locked dependencies and memfd sealing passed preflight; original missing-build block is historical; corrected exact integrity leaf720/720 PASS; six prior selected leaves PASS; no full14 aggregate claim |
@@ -572,9 +600,3 @@ DATA-0096 contains exact source paths/fingerprints for downstream P02–P12 hand
 including per-product support/license/compatibility/backup research residuals.
 Preserve user changes and initial fingerprints. Revert only this local logical
 source unit; no data, credential or service recovery is claimed from a Git revert.
-
-## Related Documents
-
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Workspace census and applicability](../../../90.references/data/0096-workspace-inventory/README.md)

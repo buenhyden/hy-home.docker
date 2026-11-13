@@ -14,7 +14,9 @@ created: "2026-10-03"
 
 # Backup and Cross-tier Operations Task
 
-## Objective
+## Scope
+
+### Objective and Parent
 
 After SPEC-0202 transfers backup/Kafka ownership and the owner approves this
 Task, include the development PostgreSQL repository in the existing backup
@@ -22,7 +24,7 @@ source chain. Close confirmed cross-tier service contracts only where a real
 consumer and bounded fixture exist. Source changes cannot prove HOME recovery
 or authorize data migration.
 
-## Inputs
+### Inputs and Authority
 
 Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`, SPEC-0202 synthetic
 dev-pg restore receipt, current POL/RUN-0021, SPEC-0201 W5 service ledger,
@@ -32,7 +34,9 @@ handoff before backup source writing. No existing/HOME/production backup
 repository contents, key values, HOME logs or production rows are read by this
 Task.
 
-## Work Log
+## Execution Log
+
+### Work Performed
 
 | Service and source evidence | Exact writer or read-only source | Regression and rollback | Approval boundary |
 | --- | --- | --- | --- |
@@ -53,9 +57,22 @@ must not copy live PGDATA or lower retention. Account for backup growth in
 alerts and measured capacity before HOME scheduling. A Korean Restic README
 change, if needed, requires an exact Task amendment.
 
+Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; package draft
+`0f67cb297`; review transition `2157e62c5`; backup source and first static
+receipt `ce001be7af93aebe6430f586b56a5c443fa9f386`; closure
+`451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7`; PR359 delivery `467bd644b071f9dfa02ca1af2d622502c3445d28`; CI `required CI run37180461557 PASS`.
+
+### Blockers and Decisions
+
+No new backup stack, live PGDATA copy, `latest` restore, retention deletion,
+new analytics engine or duplicate observability component. A missing consumer
+is a design/verification gap, not authority to provision one.
+
 ## Verification Evidence
 
-### Closure source evidence imported during 2026-10-04 integration
+### Results
+
+#### Closure source evidence imported during 2026-10-04 integration
 
 Closure commit `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7` recorded backup
 source commit `ce001be7af93aebe6430f586b56a5c443fa9f386` plus a later
@@ -73,7 +90,7 @@ static QA and the protected delivery receipt below.
 | Isolated synthetic offline recovery replay, final sanitized run `python3 /tmp/hyhome-p04-sanitized-btujdqhh/rehearsal.py` | HISTORICAL PASS, exit 0 | Fresh fixture only: synthetic DB/roles/secrets, cached images, internal network, no HOME repository, no actual BKP-001, no production data. |
 | HOME backup, offsite copy, online WAL/PITR, credential rotation, retention activation, RPO/RTO measurement, data migration | NOT_RUN | Separate exact operational approval required. |
 
-### Historical isolated recovery summary
+#### Historical isolated recovery summary
 
 The sanitized replay used explicit minimal child environment, empty invocation
 HOME and Docker config, `DOCKER_HOST=unix:///var/run/docker.sock`, root-owned
@@ -90,7 +107,7 @@ only; it is not actual HOME backup, online WAL/PITR, offsite restore,
 application cutover, credential rotation, retention activation, RPO/RTO proof or
 data migration.
 
-### Protected completion receipt — 2026-10-04
+#### Protected completion receipt — 2026-10-04
 
 PR359 delivered as `467bd644b071f9dfa02ca1af2d622502c3445d28` after required CI `required CI run37180461557 PASS`. Candidate
 source head `0ff55fa8378365ee6a9eb81c34c837bc494aa006` includes the approved
@@ -110,8 +127,6 @@ activation, RPO/RTO, credential rotation and data migration remain `NOT_RUN`.
 | 7 | W4 | PASS for source and isolated synthetic selected-set recovery; actual HOME/offsite/WAL/PITR remain NOT_RUN | [Backup runbook](../../../05.operations/runbooks/0021-backup-and-restore.md) |
 | 8 | W4 | PASS: focused source checks, independent review and protected delivery receipt recorded | [Backup guide](../../../05.operations/guides/0021-backup-and-restore.md) |
 
-## Review Evidence
-
 Closure-side independent backup/infra/security review approved the exact source
 diff with operational follow-up. The reviewer reran 11 backup tests, shell
 syntax, static backup render, catalog and corpus lifecycle; all exited 0. Final
@@ -120,21 +135,28 @@ POL/GDE/RUN-0021 summaries with no open CRITICAL/HIGH/MEDIUM finding. Independen
 WAL/PITR, offsite and actual HOME restore obligations remain with POL/RUN-0021
 and require separate approval.
 
-## Commit Ledger
+### Resolution Links
 
-Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; package draft
-`0f67cb297`; review transition `2157e62c5`; backup source and first static
-receipt `ce001be7af93aebe6430f586b56a5c443fa9f386`; closure
-`451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7`; PR359 delivery `467bd644b071f9dfa02ca1af2d622502c3445d28`; CI `required CI run37180461557 PASS`.
+None: nothing was recorded here before this Task moved to the common form.
 
-## Rulings
+## Acceptance Decision
 
-No new backup stack, live PGDATA copy, `latest` restore, retention deletion,
-new analytics engine or duplicate observability component. A missing consumer
-is a design/verification gap, not authority to provision one.
+### Criterion Decisions
 
-## Deferred Items
+None: nothing was recorded here before this Task moved to the common form.
+
+### Remaining Conditions
 
 Approved capacity and backup schedule; actual restoration target/image/WAL
 range; project S3/search/reader access; HOME and external mail/connector
 operations remain separate.
+
+## Handoff
+
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

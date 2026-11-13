@@ -14,15 +14,23 @@ created: "2026-10-29"
 
 # Partial Gap Rules Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W51: write the missing rule text behind the partly met request lines
 that TSK-0029 recorded, and record the lines already closed by later Tasks.
 This Task owns criterion 46 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Request line meaning audit](tsk-0029-request-line-meaning-audit.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-29 the owner asked for the remaining partly met lines to be
 handled the same way and chose all four groups: rule text, investigation
@@ -30,9 +38,11 @@ records, open Spec reconciliation, and owner decisions. This Task is the rule
 text group. The input is `main` at merged PR #631. The authorization covers
 these policy edits, this branch, its pull request, and merge.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -40,7 +50,7 @@ these policy edits, this branch, its pull request, and merge.
 | SPEC-0212-TSK-0035 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0035 | in-progress | completed | #evidence |
 
-### Rules added
+#### Rules added
 
 | Line | CR | Rule | Owner |
 | --- | --- | --- | --- |
@@ -58,7 +68,7 @@ these policy edits, this branch, its pull request, and merge.
 | L272 | CR-03.04 | Research, drafts, and isolated trials never require a future approval, commit, or digest; activating a shared norm needs its approval first, and a valid earlier approval is reused | `sdlc.md` 1.5.0 |
 | L294 | CR-07.03 | Inside `docs/`, link to Stage 99 templates and Stage 05 operations for shape and procedure; write everything else in the document | `documentation-protocol.md` 3.7.0 |
 
-### Lines already closed by later Tasks
+#### Lines already closed by later Tasks
 
 | Line | Closed by |
 | --- | --- |
@@ -67,7 +77,15 @@ these policy edits, this branch, its pull request, and merge.
 | L155, L156, L158 | TSK-0029 corrected the `_workspace` statement in `environment-constraints.md` |
 | L283, L383 | TSK-0031 recorded why skills are adapters and not symlinks |
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -77,19 +95,29 @@ these policy edits, this branch, its pull request, and merge.
 | Routing tests | 46 | W51 | `python3 -m unittest tests.validation.test_agent_governance_ci_routing` | This branch | PASS | OK | required | - |
 | Metadata contracts | 46 | W51 | `check-document-metadata.py --mode check-contracts` | This branch | PASS | 0 violations | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 46 | accepted | Agent governance, Provider projections, Language check, Routing tests, Metadata contracts | Every rule-text gap in the partly met lines now has its rule in one canonical owner. | SPEC-0212 TSK-0035 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Request line meaning audit](tsk-0029-request-line-meaning-audit.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

@@ -14,12 +14,14 @@ created: "2026-11-02"
 
 # Opsflow Data Path Task
 
-## Overview
+## Scope
+
+### Objective and Parent
 
 This draft Task records the approved P04 local implementation and its exact
 evidence. A draft label does not imply missing source or cancel earlier acceptance.
 
-### Objective
+#### Objective
 
 Repair the existing Opsflow Airflow path: safe connection URI construction,
 bounded invalid-input quarantine, explicit data_version, least-privilege fixture
@@ -27,7 +29,16 @@ access and metadata-preserving independent isolated restore. Preserve the
 existing CDC, analytics and optional Iceberg contracts. A new experiment waits
 for actual inputs rather than a fabricated dataset or application.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
+- [Historical P04 Task](../../0204-service-integration-security-and-operations/tasks/tsk-0012-p04-airflow-manifest-pipeline.md)
+- [Current P02 listener contracts](tsk-0041-service-connection-contracts.md)
+- [Current P03 model/Runner contracts](tsk-0042-models-runners-wiki.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The direct user approval of the P04 plan on 2026-11-02 authorizes bounded local
 source/configuration/documentation changes, synthetic and owned isolated tests,
@@ -50,9 +61,11 @@ provided P04 crosscheck/corrections/ownership material, and current tracked
 source. Historical SPEC-0204-TSK-0012 and its supporting Worker/restore records
 retain their original actor, generation, criterion and environment scope.
 
-## Work Log
+## Execution Log
 
-### Baseline and issued writer leases
+### Work Performed
+
+#### Baseline and issued writer leases
 
 The documentation writer recorded public pre-edit SHA-256 values at
 `_workspace/repo-support/analysis/p04/doc-baseline.json` before this amendment.
@@ -79,7 +92,7 @@ integrates these shared-file segments. The separate CI projection writer
 `/root/p03_docs_impl` retains only the canonical m0021 generated inventory block;
 the catalog correction changes seven Airflow Env cells and no historical prose.
 
-### Exact source lease packets
+#### Exact source lease packets
 
 - `/root/p04_uri` alone writes new `infra/07-workflow/airflow/connection_uri.py`
   and `tests/validation/test_airflow_connection_uri.py`. Its only existing P02
@@ -125,7 +138,7 @@ are separate. The local source acceptance owner is SPEC-0212 TSK-0043; actual
 business data owner and operating accepter remain UNASSIGNED until identified
 through their trusted channel. P labels and past names confer no account rights.
 
-### Current dispositions and evidence axes
+#### Current dispositions and evidence axes
 
 | P04 item | Criterion | Work Unit | Initial disposition | Current action and residual |
 | --- | --- | --- | --- | --- |
@@ -142,7 +155,7 @@ hosted CI and final acceptance are independent fields. Current operation,
 real credential actions, HOME independent restore, remote CI and P12 acceptance
 are NOT_RUN. A fixture restore will be recorded as isolated restore only.
 
-### Preserved consumer and acceptance scopes
+#### Preserved consumer and acceptance scopes
 
 The current CDC connector names `dev-pg:5432/platform_dev`, `app` plus
 `debezium_heartbeat`, publication `hyhome_platform_publication`, connector-owned
@@ -177,7 +190,7 @@ SDK identity and artifact recovery contracts remain prerequisites if P04.05 is
 resumed. P02/P03/P06 retain the machine-authentication handoff for MLflow;
 browser SSO and allowed-Host validation do not establish SDK authorization.
 
-### Implementation and recovery contract
+#### Implementation and recovery contract
 
 The URI helper reads bounded private files, uses one-time password-component
 encoding and outputs the URI only to Airflow's supported _CMD consumer. Errors
@@ -206,7 +219,7 @@ SMTP delivery service: outbox/claim/ack state is not proof of real delivery or
 absence of a repeated SMTP effect. Actual notification remains P05/P12 NOT_RUN.
 Existing custody/barrier procedures are reused.
 
-### Public connection extraction limit
+#### Public connection extraction limit
 
 The read-only inventory comparison found zero extracted Airflow _CMD rows both
 before and after this P04 change: the existing parser never recognized these
@@ -218,7 +231,7 @@ only the known helper commands, public port and host/secret-reference selectors;
 never execute the helper or read private values. No parser change is included
 in this P04 implementation.
 
-### Image and native environment observations
+#### Image and native environment observations
 
 The existing local `hy-home/airflow:3.3.2-keycloak` image is cached as
 `sha256:b7c57ce073b480a512240aa5e364be80d3acffdf88384b60ddee7a1958f37dfc`.
@@ -229,7 +242,7 @@ cached-image execution with injected reviewed helper/source is isolated behavior
 evidence only and does not accept a newly built image artifact. The new-image
 build and supply-chain acceptance remain P08/SEC01 residuals.
 
-### Existing file-size maintenance boundary
+#### Existing file-size maintenance boundary
 
 The existing Airflow-specific fixture was already 822 lines at the baseline
 and is now 846; new data/scenario/test files stay below 800. The bounded P04
@@ -238,7 +251,7 @@ verification. A later maintenance unit may split the existing helper under its
 own exact writer/review lease. This source-maintenance note is neither a
 security finding nor a runtime acceptance result.
 
-### Verification and stop conditions
+#### Verification and stop conditions
 
 RED precedes GREEN for each behavior change. New executable code must reach
 80% coverage. Use focused unit/integration/CLI tests, registered local QA,
@@ -254,7 +267,7 @@ receipt drift remains P05/P08-owned rather than a P04 success or blocker to
 unrelated local implementation. Roll back only this logical source delta;
 real data recovery requires its separate approved contract.
 
-### D04 phase diagnosis and native reruns
+#### D04 phase diagnosis and native reruns
 
 A direct user request on 2026-11-04 re-ran this contract as D04 on clean `main`
 `fb790c539b267f8acb85f5897a110db22ae347fa`, branch
@@ -297,7 +310,7 @@ Official pages re-read on 2026-11-04: Airflow DAGs and connections (3.3.2,
 slots retain WAL and must be dropped), Confluent Schema Registry (8.4,
 Community License) and dbt data tests.
 
-### Full rehearsal optimization and independent recovery
+#### Full rehearsal optimization and independent recovery
 
 A follow-up direct user request on 2026-11-04 asked to optimize the full Worker
 rehearsal and resolve the recovery phase. A measurement-only run with the work
@@ -320,7 +333,7 @@ Owned containers, networks and attempt directories were zero afterwards. The
 failed attempt directory of the 812.8 s run was moved into local custody with
 its inode, owner and mode preserved before the reruns.
 
-### Operating installation handoff to D12
+#### Operating installation handoff to D12
 
 The adapter fix is not yet operating: the production `airflow-scheduler`
 `/opt/airflow/dags` (bind-backed by `${DEFAULT_WORKFLOW_DIR}/airflow/dags`) is
@@ -345,7 +358,7 @@ wrote raw, validated, published and outbox rows, and the invalid input was
 quarantined with `application/json` and not published. That is HOME evidence
 for criteria 67 and 69; their acceptance is still the owner's decision.
 
-### T03 Kafka and CDC re-review
+#### T03 Kafka and CDC re-review
 
 The same 2026-11-04 request asked to re-review and optimize the Kafka,
 Debezium and Schema Registry path. Read-only HOME observation: the stack
@@ -373,7 +386,7 @@ no connector was registered and the runs say nothing about the connector
 change. The declared Debezium 3.6.3 image trails 3.7 and is a D09 image
 candidate.
 
-### T03 owner-approved stop and leftover removal
+#### T03 owner-approved stop and leftover removal
 
 After a re-review, the owner answered "정지와 삭제를 둘 다 실행" on
 2026-11-04. The re-review found that `messaging` is not in the POL-0078 HOME
@@ -393,7 +406,7 @@ shows no Kafka alert; its five firing alerts (backup staleness, OpenBao scrape
 and agent authentication, missing gatus and pyroscope targets) predate this
 action and belong to their owners.
 
-### T03 CDC rehearsal setup failure diagnosis
+#### T03 CDC rehearsal setup failure diagnosis
 
 A follow-up owner request on 2026-11-05 ("실패 검토후 진행") reviewed the CDC
 rehearsal failure. A third run at host load about 5 failed the same way, so
@@ -409,7 +422,7 @@ passed both tests in 345.1 s: stream decode, schema evolution and resume, and
 heartbeat writes advancing the slot, with the connector that no longer carries
 schema-history keys. Owned residue was zero.
 
-### T03 D09 Debezium 3.7.0.Final source pin
+#### T03 D09 Debezium 3.7.0.Final source pin
 
 The owner decided on 2026-11-06 ("D09 Debezium 3.7 — 정적 변경만 PR") to raise the
 declared Debezium image as a static change only. The `kafka-connect` build now
@@ -429,7 +442,7 @@ loading, snapshot/offset/restart/recovery on the existing slot, scan and HOME
 recreation are NOT_RUN: the messaging stack is stopped and this Task starts
 nothing.
 
-### T03 messaging restart review (2026-11-09)
+#### T03 messaging restart review (2026-11-09)
 
 The owner asked on 2026-11-09 to review and optimize `kafka-broker`,
 `kafka-exporter`, `kafka-connect` and `schema-registry`, then run them.
@@ -448,12 +461,12 @@ so the changes rest on static review and direct measurement:
 - **Connect image.** Only `...-debezium-3.6.3` exists locally; the declared
   3.7.0 image must be built before Connect can start.
 
-### Owner closure 2026-11-10
+#### Owner closure 2026-11-10
 
 On 2026-11-10 the owner (@buenhyden) closed this Task after criteria 66 to 71
 were each accepted or not-required with no unresolved required observation.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -461,7 +474,13 @@ were each accepted or not-required with no unresolved required observation.
 | SPEC-0212-TSK-0043 | ready | in-progress | #implementation-and-recovery-contract |
 | SPEC-0212-TSK-0043 | in-progress | completed | #owner-closure-2026-11-10 |
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -513,7 +532,15 @@ were each accepted or not-required with no unresolved required observation.
 | D12 HOME installation result | 67 | W72 | TSK-0051 steps 3 and 5 readback | HOME `opsflow-dev` and `opsflow_dev` at `30be19b9b` | PASS | [TSK-0051](tsk-0051-opsflow-home-installation.md) Execution 2026-11-10: canaries `ALL_PASS`; run `e2e-step5-2026-10-10` published one document with its outbox row; run `e2e-step5-2026-10-11` quarantined its input with `application/json` and published nothing. | required | - |
 | D12 HOME publication result | 69 | W74 | TSK-0051 step 5 readback | HOME `opsflow-dev` and `opsflow_dev` at `30be19b9b` | PASS | [TSK-0051](tsk-0051-opsflow-home-installation.md) Execution 2026-11-10: canaries `ALL_PASS`; run `e2e-step5-2026-10-10` published one document with its outbox row; run `e2e-step5-2026-10-11` quarantined its input with `application/json` and published nothing. | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
+
+#### Criterion Acceptance
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -524,7 +551,7 @@ were each accepted or not-required with no unresolved required observation.
 | 70 | not-required | Experiment input decision | No actual dataset, version, time field, target, baseline or data owner exists, so no experiment is invented. Owner @buenhyden set this to not-required on 2026-11-10; a real experiment reopens it through a new Task. | SPEC-0212 TSK-0043 |
 | 71 | accepted | Iceberg current-workload reconciliation | The optional Iceberg platform stays accepted and adoption for this workload is deferred, which is what the criterion requires; no expiry or orphan deletion is authorized. Owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0043 |
 
-## Review and Completion
+### Remaining Conditions
 
 On 2026-11-10 the owner (@buenhyden) closed this Task: criteria 66 to 71 are each
 accepted or not-required and no required observation is unresolved. The
@@ -556,11 +583,12 @@ P12 acceptance remain NOT_RUN. The final inventory
 keeps global render observations separate from the two actual synthetic
 Airflow render cases and preserves earlier dated receipts as history.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
-- [Historical P04 Task](../../0204-service-integration-security-and-operations/tasks/tsk-0012-p04-airflow-manifest-pipeline.md)
-- [Current P02 listener contracts](tsk-0041-service-connection-contracts.md)
-- [Current P03 model/Runner contracts](tsk-0042-models-runners-wiki.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

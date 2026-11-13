@@ -14,1098 +14,17 @@ created: "2026-10-11"
 
 # P05 n8n Independent Outbox Notifier Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Own criterion19/W40-W45: one independent DEV manifest-publication notifier
 using P04's outbox and the existing n8n queue worker with restricted Mailpit
 capture. Preserve at-least-once and uncertain delivery semantics. Issuance
 defines source ownership and prerequisite boundaries; it imports no workflow,
 creates no resources and changes no credentials or runtime.
-
-## Inputs and Authorization
-
-The user's full P05 execution prompt and current coordination request authorize
-assessment, formal Task issuance and independent worker instructions. Prompt
-SHA256 is `669a86c89a761a9a33172ebf9223eb9953d9bea062d76a2e025c4045912c7823`;
-historical baseline is `860ac1c3633eac9ad416fb1abd8a61a6e617ebd8`.
-Actual clean local main/HEAD is
-`4e26a5a8022a7307c7461af60337442912955df1`; fresh fetch/ls-remote confirms
-initial remote main `6da5e3bf380d5002e0e28181136fde8c016e49ce`. A later
-ls-remote/fetch confirms remote main at the same4e26a5a80, including P03/P04
-issuance; that publication was external to this assessment. Open PR list is
-empty. CI Quality Gates run38105014827 completed successfully at4e26a5a80;
-Push on main run38105014631 was still in progress at observation. These are
-remote observations, not P05 native, SEC security or HOME acceptance.
-
-Read bootstrap/provider, SPEC-0204/0212, TSK-0012 and the selected service
-owners. Preserve completed registration, DEV/MNG, Influx retirement,
-RedisInsight/exporter, k6/OTLP, common controls, Stage05 and P00. Preserve
-OpenBao PR409/410 TLS/wrapping/readiness/audit/snapshot source. Do not reopen
-historical Tasks0001-0004 or replace SMTP/history Task0005. New Task0013 owns
-only this P05 increment; no new Spec number is issued.
-
-The latest full P05 prompt requests logical commits and an owning-Spec PR after
-implementation, latest-head required CI and independent review. Older SEC01/
-SMTP01/CLN01 keep local-main/no-PR delivery. Dev is unused. Reconcile the
-unpublished documentation prefix and P04 dependency before a P05-only PR;
-do not implicitly push main. Already-authorized source and review need no
-repeated approval. Before private/runtime actions, establish exact target,
-effects, consumer, validation and recovery here; missing inputs defer only
-their dependent lane. Unsupported overall budgets remain unknown.
-
-### Worker and Exact Ownership
-
-One P05 writer now uses `codex/p05-n8n-outbox-integrated` in
-`/home/hyunyoun/data/hy-home.docker/.worktrees/p05-n8n-outbox-integrated`, from
-the observed clean local main `4c83f14b11a77e13e582eb85d0bf256685472a95`.
-The user's common-gate handoff explicitly authorizes preservation, a new
-worktree, source-only P04 reconciliation, default checks and logical commits.
-The old issuance worktree and its 28 staged paths remain preserved unchanged.
-This phase authorizes no push, PR, runtime or shared-file mutation.
-Other writers are active: never reset, stash, clean,
-stage or force-push their changes.
-
-After checking for existing consumers/implementations, own these new paths:
-
-- This Task, its execution evidence and logical commit ledger.
-- `infra/07-workflow/n8n/workloads/README.md` and one canonical subtree
-  `infra/07-workflow/n8n/workloads/manifest-outbox-notifier/`.
-- Within that subtree, Korean `README.md`; `tools/__init__.py` and
-  `tools/build_workflow.py`; inactive public
-  `workflows/manifest-outbox-mailpit.json`; synthetic `fixtures/`; and a
-  value-free `outbox-contract.json` binding the reviewed P04 schema/version/hash.
-  The contract is a consumer binding, not a second SQL authority.
-- If necessary for the verified SMTP gap, a narrowly scoped n8n custom node
-  under `nodes/OpsflowSmtp/`, with `OpsflowSmtp.node.ts`, `transport.ts`,
-  reviewed package/lock/build metadata and focused synthetic transport tests.
-  It uses n8n's native SMTP credential API and only this notifier operation;
-  no standalone mail service, arbitrary Code credential access or broad module
-  allowlist is introduced. Runtime registration/mount/build is a shared proposal.
-- `tests/lib/ops/test_n8n_outbox_workflow.py`,
-  `tests/validation/test_n8n_outbox_contract.py` and opt-in
-  `tests/validation/test_n8n_outbox_rehearsal.py`.
-
-Every new folder, including workloads/tools/workflows/fixtures/nodes and node
-children, receives Korean README navigation. Use one deterministic builder
-and generated JSON; no production reference/ duplicate. Building is a pure
-function with explicit CLI output; importing the builder never writes files.
-Existing parent README edits are proposals, not a second writer lease.
-
-P04 exclusively owns canonical SQL/migrations and publication contracts in
-`infra/07-workflow/airflow/workloads/manifest-pipeline/sql`. Do not copy the
-supplied DAG/SQL or create another opsflow schema/provisioner. With an active
-P04 writer, the standalone prompt fallback routes installation through that
-owner. If reassignment becomes necessary, the coordinator records the exact
-canonical-file handover first; no parallel installation or implicit takeover.
-P05 proposes SQL changes and consumes the reviewed version/hash read-only.
-
-SEC01 owns n8n main/worker/runners versions, existing Dockerfiles and immutable
-image/security decisions. P03 owns endpoint/network contracts; P02 catalog/
-schema/tools; P01 OpenBao helpers and subject0085; SMTP01 canonical COMM-002/
-COMM-003 and its retirement executor; CLN01 consumer/deletion assessment.
-Root/leaf Compose/environment, existing n8n custom-bind integration, gateway,
-Alloy, backup, catalogs/support, m0021/inventory, Registry, Spec/Plan, existing
-README/subject0053 documents, manifest/workflow and shared tests remain read-only
-to P05 until a specific exclusive lease. Submit base blob IDs, exact hunks,
-consumer/test map and rollback in ignored integration proposals; the named
-owner/coordinator integrates once after reviewing both sides.
-
-### Start Now and Wait Boundaries
-
-W40/W41 may start now: public reuse audit, deterministic inactive JSON,
-provisional state fixtures, RED/GREEN graph/validation/privacy/transport tests,
-bounded custom-node source and common-file proposals. P04 SQL is not frozen
-yet. Label draft interface assumptions and bind them later in W42; do not
-call mocked claim/ack a real database test. Full SEC/P03/P01/P06 completion is
-not a global source prerequisite.
-
-W42 final binding waits for P04 W36's independent SQL/security review and exact
-migration/interface hash. Record claim result fields/types, ack/retry boolean
-semantics, views, role grants, clock/lease, retry/dead and requeue rules.
-Reference defaults are a draft ten-minute lease, five attempts and bounded
-backoff; any change is a versioned P04 migration and reviewed P05 consumer
-update. Historical/backfill publication must not create a fresh notification.
-W43 native execution follows P04 W38's genuine publication/outbox fixture.
-
-Before native import/execution, SEC01 supplies exact compatible main/worker/
-runner image digest/ID, installed node schemas and relevant security receipt.
-Source currently selects2.42.6 while HOME still runs2.41.6. Verify Postgres2.6,
-EmailSend2.1 or reviewed replacement, IF2.2, Code2 if retained, StopAndError1
-and schedule trigger on that selected image; node fields are not arbitrary.
-Existing version/provider work is reused rather than repeated.
-
-P03 supplies exact DEV DB and Mailpit endpoints/ports, TLS/CA/timeout contracts
-and the process actually executing DB/mail nodes. Current source declares
-queue mode and OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true, but manual/scheduled
-worker execution still needs native proof. Add DEV/capture access only to that
-verified executor; runners need no DB/mail networks for a boolean-only Code
-check. Preserve existing MNG metadata, broker pair, networks and mounts.
-
-Current mail_net is an ordinary bridge shared with Stalwart; Mailpit is also
-on edge_net. Mailpit-only access cannot be inferred from the network name or
-loopback publication. Propose a dedicated bounded capture path/network if
-needed, with P03/coordinator review, keeping existing other consumers intact.
-The notifier SMTP implementation must restrict the actual Mailpit host/port,
-synthetic sender/recipient allowlist, run-derived Message-ID and small text
-payload; reject arbitrary SMTP hosts, relay, CC/BCC, attachments, file/URL
-reads and header injection. Prove denied Stalwart/external destinations and
-zero unintended effects. Existing accepts-any/insecure capture settings are
-DEV behavior, not production SMTP authentication evidence. Do not mount/copy
-real canonical COMM-002 into Mailpit credentials or create another Supabase
-SMTP password. P05 adds no external SMTP, Slack or webhook integration.
-
-P02 reviews value-free notifier credential references/classification. Credentials
-use the existing official n8n UI/API path and its encryption-key-protected
-native store, with operator-resolved local IDs in an ignored/private import
-artifact. Never invent IDs, export decrypted values, UPDATE credential data in
-SQL or assume .env changes refresh stored credentials. Notifier has only
-claim/ack/retry function EXECUTE; no owner/superuser/direct table writes or
-other database access. No provision/admin/ingest credential enters workflow.
-Encrypted native credentials remain inside the shared main/worker application
-trust boundary; they are not worker-only Docker secret mounts. Verify actual
-project/workflow access without claiming that network placement limits which
-n8n administrators can decrypt or use stored credentials.
-OpenBao remains the eventual management source; protected native execution
-copies may support bounded DEV proof before P01/P06 final delivery. Current
-edition and native external-store support must be verified, not assumed.
-
-### Required Workflow and Failure Semantics
-
-Import inactive with credential placeholders resolved only in the private
-artifact. First prove authenticated manual execution, then exactly one
-one-minute polling schedule; no parallel Airflow email or Wiki schedule.
-Empty claim returns no mail/ack/retry action. Validate a single closed claim
-row's id/run/source/count/token types; runtime lease tokens remain private
-capabilities and never enter tracked evidence. Parameterized SQL uses the
-same current id/token for ack/retry, never string interpolation.
-
-The provided generator has no stable Message-ID. Official selected n8n tag
-resolves to commit `34ab9c7bf3d0c6d2ec3422e12e0b970aea5717c7`;
-EmailSend v2 source lacks a Message-ID/custom-header option and explicit
-connection/greeting/socket timeout settings. Source hashes are send.operation.ts
-`f45a85c4d3839033bdcb434be00fe242fc15ec6de1b7e6bae7fc64843b8f59bb` and utils.ts
-`cfbb16fbd8c5320eabb910535ebe939eeb8d780ec750e0834f88b49b5dc2e68a`.
-These are upstream source observations, not installed-image proof. A narrow
-credential-aware node may close the gap with explicit bounded transport and
-redacted output. Unsupported JSON options or broad Code/nodemailer/secret
-access are not a solution. Existing custom bind can shadow image-installed
-nodes, so actual registration and identical main/worker artifacts must be proven.
-
-Freeze workflow execution budget (reference120seconds), DB and SMTP transport
-timeouts below the current lease with failure/cancellation tests. A workflow
-timeout alone does not establish socket cancellation. Close transports and
-return only bounded run/state/error outcomes; no raw SMTP response, recipient
-data, credential, payload or driver error enters execution exports/logs.
-Keep successful/error/manual data-saving disabled, clear pinData, and test
-synthetic leakage markers through both positive and failure paths.
-
-Ack only the expected recipient's positive SMTP acceptance for the claimed
-event; reject empty/unknown/rejected outcomes. Validate ack===true. Also verify
-retry===true before reporting retry/dead transition; false is stale/lost lease,
-not a successful requeue. DB error waits for fresh claim/lease reconciliation.
-SMTP acceptance and PG ack are not atomic: response loss or ack loss can cause
-duplicate mail. Stable Message-ID supports diagnosis/dedup but does not prove
-exactly-once or recipient delivery. Never restart an old execution at SMTP
-with its expired claim; retry the whole fresh-claim workflow.
-
-P04 owns any controlled dead requeue function/migration. P05 owns its operator
-procedure and tests: identify cause, preserve accepted/uncertain receipts,
-apply only the reviewed function under its named operator role, then fresh
-claim. No direct outbox UPDATE, table-wide reset or notifier privilege expansion.
-
-### Native, Recovery and Delivery Boundaries
-
-Before each native/private action record exact Docker context/project, image,
-workflow/credential reference, DB/role, capture target, resource/time budget,
-operational writer, effects, independent review, backup, owned empty restore
-target, identity-bound cleanup and rollback here. Synthetic isolated resources
-precede the selected operational DEV batch; no production fault injection or
-shared-volume initialization. Missing target defers only that operation.
-
-Prove native inactive import, schema/credential binding, manual and scheduled
-worker placement, actual P04 outbox consumption and Mailpit capture, two
-notifiers/one event, lease expiry/old ack denial, empty queue, DB and SMTP
-outage, send-response loss/ack loss, attempts cap/dead/fresh requeue, restart
-and exact notifier credential rotation through the official n8n path. Coordinate
-rotation with P04's role owner; do not broadly rotate passwords/encryption keys.
-Test stale native execution copies separately from file/management source.
-
-Recovery pairs a consistent n8n MNG metadata backup with the exact encryption
-key, custom artifacts/data and needed queue state, restored only to reviewed
-empty isolated targets with egress/schedules disabled. Coordinate DEV pointer/
-outbox reconciliation with P04's own recovery proof. Prove credentials decrypt,
-nodes register, and fresh claims preserve accepted/uncertain states without
-silently re-notifying accepted events. A file copy, image revert or Mailpit
-capture alone proves neither service recovery nor external delivery.
-
-Rollback stops this polling schedule and makes only this workflow inactive,
-drains/reconciles selected execution, and preserves outbox/receipts. Use compatible
-metadata/key restoration when required; no full-stack up/down, prune, MNG
-reset, broad chown, encryption-key replacement or private material deletion.
-
-## Work Log
-
-### 현재 후속 증거 인계 — 2026-10-22
-
-현재 builder/transport는 lease_until을 포함한 six-field claim과 SQL004의
-schema-v3 quarantine 계약을 소비한다. 후속
-[Task0018](tsk-0018-workflow-lease-and-connect-safety.md)은 그 safety correction과
-isolated SQL 증거를, [Task0019](tsk-0019-n8n-native-notification.md)는 최종 검토
-소스의 W74 attempt 11에서 native/cleanup PASS와 여섯 terminal execution을
-보고한다. 아래 2026-10-13 source-binding/preflight의 NOT_RUN은 당시 입력의
-기록이며 이 후속 supporting evidence와 구분한다.
-
-W74는 독립 synthetic fixture다. 같은 data의 Airflow→n8n W65 vertical, HOME,
-실제 provider delivery, credential rotation 또는 criterion 19 owner 수락으로
-승격하지 않는다. Criterion 19는 pending을 유지한다. Frozen Evidence에서
-source review PASS가 document/shared-gate FAIL을 `Resolves`로 가리키더라도
-review만으로 metadata나 registration 실패가 해소되지는 않는다. 실제 integrated
-checks와 현재 입력의 등록 gate 결과를 별도로 평가하며 과거 결과는 보존한다.
-이번 조정은 공개 소스 대조이며 새 native 실행이나 수락을 수행하지 않았다.
-
-### Lifecycle Events
-
-| Artifact | From | To | Evidence |
-| --- | --- | --- | --- |
-| SPEC-0204-TSK-0013 | draft | ready | #inputs-and-authorization |
-| SPEC-0204-TSK-0013 | ready | in-progress | #w40-w41-source-execution |
-| SPEC-0204-TSK-0013 | in-progress | completed | #handoffs-and-completion-2026-10-30 |
-
-### W40 W41 Source Execution
-
-The historical source-start request started W40/W41 in the issued P05 worktree.
-Its clean
-starting HEAD and branch were `f7543e0697e2473cbbbeb254792e7a1d5b4b8423`
-and `codex/p05-n8n-outbox-notifier`. Read-only `git ls-remote origin
-refs/heads/main` returned `4e26a5a8022a7307c7461af60337442912955df1`;
-`gh pr list --repo buenhyden/hy-home.docker --state open` returned no open PRs.
-Both commands exited0. At that observation, local main was at issuance HEAD;
-it was not pushed. P04's Task and workload/tests were dirty and preserved;
-no reviewed SQL hash or publication receipt had been handed off.
-W42-W44 were NOT_RUN.
-
-The implementation is split between the builder/graph/fixture/test owner and
-the bounded native SMTP-node owner; they share this Task, separate exact file
-scopes and no operational permission. Independent reviewers receive read-only
-scope. Applicable cost/token/time/retry ceilings and native budget enforcement
-are UNKNOWN; no account or runtime limits are inferred. The controller owns
-this Task and new workload navigation, and serializes final review/index/commit.
-The `test-authoring` skill and `test-design`, `diff-review`, `commit-message`
-and `handoff` prompt contracts apply to their respective outputs.
-
-The provisional consumer contract is explicitly unbound. It contains no
-invented P04 commit/hash, native credential ID, installation receipt or role
-grant. The generated workflow stays inactive; custom-node registration,
-network grants and suite registration are shared-owner proposals.
-
-Fresh baseline regression command from this worktree:
-
-```sh
-rtk proxy /tmp/hy-home-p09-qa/bin/python -m unittest \
-  tests.validation.test_workflow_version_bundle.WorkflowVersionBundleTests \
-  tests.lib.ops.test_smtp_contract \
-  tests.validation.test_service_wiring_contracts -q
-```
-
-Result: 45 tests PASS, 2.940s, exit0 on issuance HEAD. This is UNIT evidence;
-no native import, SMTP capture, schedule, credential or restoration ran.
-
-### Assessment and Next Work Units
-
-At initial assessment4e26a5a80, coordinator/main/P04 worktrees were clean.
-Later P04 began its workload and three dedicated source/test paths. No frozen
-SQL commit or native acceptance was handed off; untracked code is not that
-proof. P01/P02/P03 and old SEC/SMTP worktrees were separately observed and
-preserved. P02's later local HEAD was ea927d004d4e59c5e44af566abc3f5c2b6372c05.
-These local branch/uncommitted changes are not remote acceptance receipts.
-SMTP PR413 is merged source; existing Tasks still leave actual cutover,
-COMM-003 retirement and full recovery unaccepted. CLN retains PG-020 and
-unknown consumers. SEC full image/security/HOME acceptance remains pending.
-
-Safe inspect of six selected containers exited0: n8n main/worker run
-hyhome/n8n2.41.6-local, both runners2.41.6, Mailpit1.31.2 and dev-pg18.6.
-All reported running/healthy; worker networks are mng_data_net+n8n_net and
-Mailpit edge_net+mail_net. Source selects n8n2.42.6 and Mailpit1.31.4.
-This read-only metadata does not prove installed node schema, credential
-consumption, manual offload, SMTP capture or an opsflow database/role resource.
-
-1. W40: fresh source/owner audit and RED cases; read supplied six reference
-   files but do not copy P04's DAG/SQL into P05.
-2. W41: pure deterministic inactive builder/JSON and narrow SMTP node source,
-   with closed graph/input, privacy, empty queue, Message-ID/timeouts and
-   ack/retry/uncertainty tests; at least80percent meaningful coverage.
-3. W42: freeze reviewed P04 schema/interface hash, function-only role and
-   lease/requeue/recovery contract; revise draft consumer fixtures if needed.
-4. W43: reviewed exact-image native inactive import and official private
-   credential binding, then manual real-worker/DEV-to-Mailpit execution after
-   P04 publication proof and shared proposal integration.
-5. W44: one polling activation, concurrency/negative/failure/restart/rotation
-   and separately empty paired metadata/key restoration, with operational
-   writer/resources/cleanup/rollback evidence.
-6. W45: subject0053 and service README proposals, registered affected gates,
-   final independent code/security/SQL/IaC/docs reviews, CI and owning-Spec PR.
-
-### Historical W41 Source Results
-
-The controller resumed ownership of both source/test lanes after delegated
-tool/escalation calls stalled; existing edits were preserved and the transfers
-were acknowledged before further writes. The builder's initial test landed,
-but its worker did not observe RED. The controller then ran its five tests:
-exit1 with five expected missing-builder errors, before writing the builder.
-Eight graph/binding/preflight tests subsequently exited1 with four expected
-missing generated JSON/contract/preflight errors before those artifacts existed.
-The node owner observed the initial missing-dist RED (exit1).
-
-Final source snapshot SHA256 is
-`496e59646b17d6031f2687635bc0b9aaaba4818a1263e5a48572b6e148b088e5`,
-over the 27 new owned source/document/test paths, using SHA256 of the
-sorted JSON path-to-SHA256 map. The final map is preserved in ignored
-`.agent-work/p05-final-source-freeze.json`. Core source hashes are:
-
-- builder: `cb5f7611cd43a155986894441fdd67b45e872b69c3dc44a9ca482c5248cdc0e0`.
-- transport: `d6cb1df02693a66806385842fcc58c668f54c0cf596ddd9d92dc15ab779083aa`.
-- native node: `eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146`.
-
-The source has one deterministic builder, inactive JSON, supplied-reference
-draft binding, public synthetic cases and fail-closed structural preflight.
-It copies no P04 SQL/DAG and grants no native operation. DB statement/socket
-deadline and cancellation remain UNBOUND in the consumer contract; no fictitious
-Postgres JSON option claims enforcement. Actual credential IDs remain placeholders.
-
-Corrections observed during implementation/review:
-
-- Supplied-reference claim uses a 64-hex run, its four explicit sources and
-  row_count1..5000; an early UUID/slug/count draft was corrected on both sides.
-- A native error retains its node descriptor. The custom node now attaches only
-  a static minimal descriptor and static code; tests reject literal claim and
-  credential-reference leakage.
-- Pre-send cancellation is cancelled; in-flight cancellation is uncertain,
-  because DATA might already have been accepted. Owned sockets are destroyed.
-- The API development dependency's Axios audit found two HIGH entries. A scoped
-  exact override corrected the lock; both full and production audit now report
-  zero findings. This does not remediate installed n8n images.
-- A longer valid Message-ID is MIME-folded. The offline protocol test initially
-  failed on a one-line assumption; it now unfolds header whitespace and asserts
-  the same exact run-derived ID. No delivery assertion was weakened.
-- Trailing line-terminator negative cases pass the existing node regex guards
-  and the Python/JavaScript claim guards. No regex vulnerability is claimed.
-- Final evidence checks caught an undeclared criterion8/W41 pair and a
-  `BLOCKED` Result outside the registered domain. Both new rows now use the
-  assigned criterion19/W41 pair; failed metadata is `FAIL` with pending
-  acceptance and its blocking cause retained in Location. The existing Spec
-  Package loader then validated all 25 canonical packages, exit0.
-
-The following commands ran in that issuance worktree, all exit0:
-
-```sh
-rtk proxy /tmp/hy-home-p09-qa/bin/coverage run \
-  --data-file .agent-work/p05-builder.coverage --branch \
-  --source=infra/07-workflow/n8n/workloads/manifest-outbox-notifier/tools \
-  -m unittest tests.lib.ops.test_n8n_outbox_workflow \
-  tests.validation.test_n8n_outbox_contract \
-  tests.validation.test_n8n_outbox_rehearsal -q
-rtk proxy /tmp/hy-home-p09-qa/bin/coverage report \
-  --data-file .agent-work/p05-builder.coverage --fail-under=80 -m
-```
-
-Result: 15 tests PASS; combined statement/branch coverage98percent. Preflight
-tests inspect structural gaps and do not run a native rehearsal. In
-`infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp`:
-
-```sh
-rtk npm run test:coverage
-rtk npm audit --json
-rtk npm audit --omit=dev --json
-rtk npm pack --dry-run --ignore-scripts --json
-```
-
-Result: 24 tests PASS, lines97.33percent, branches94.83percent,
-functions87.88percent, each above80; both audits zero findings; pack dry-run
-includes only public README/package/compiled artifacts. Tests use stubs and
-actual Nodemailer over an in-memory Duplex byte stream; no TCP/DNS/SMTP service
-connection, real credential or database is used. Source API compatibility is
-not installed-image compatibility. Package/lock owns exact pins.
-
-Ruff check and format/check passed on the six owned Python files; the second
-format pass was unchanged. The local-staged official precommit controller
-passed on all 28 owned paths, including JSON, Markdown, Python format/lint and
-hardcoded-secret detection. It does not replace the document-contract gate.
-
-Metadata against the actual Registry failed with ten classification findings
-on exactly two required README paths under `nodes/OpsflowSmtp/`. The Registry's
-lowercase subpath profile does not classify this prescribed camel-case path.
-The immutable upstream version references now carry scoped advisory and
-compatibility explanations, with package/lock retaining pin ownership.
-
-The same check against a proposed Registry containing only the two exact
-`package-readme.additional_paths` entries passed: nine selected documents,
-zero violations, exit0. The explicit lifecycle comparison base was issuance
-HEAD `f7543e0697e2473cbbbeb254792e7a1d5b4b8423`. This candidate-only result does
-not mean the actual Registry or remote-main delivery gate passed. Reports are
-`.agent-work/p05-metadata-current.log` and `p05-metadata-proposed.log`.
-
-The authoritative changed-profile explain route selects document-contract,
-document-graph/lifecycle, agent-governance and existing static operations gates.
-The new Python and node test routes are not yet registered in its shared DAG.
-No full changed-profile PASS, native PASS or latest-head CI is claimed.
-At that issuance point, logical commits and PR publication were pending the
-required shared Registry integration. HEAD was the issuance SHA;
-all owned changes were preserved in that worktree.
-
-Final document links passed on 1202 documents and 11635 links: zero failures,
-one existing Stage98 historical-provenance warning, exit0. New README links
-route through the Stage03 navigation entry, and folder routers link only to
-direct child READMEs. Working-tree and cached `git diff --check` passed.
-
-Independent code review reported no source findings and approved the W40/W41
-source slice with follow-up. It directly observed the final 15 Python tests
-and an earlier 21-node test pass; final 24-node/coverage/audit receipts were
-controller-reported. Independent security review approved the same frozen
-source with no remaining findings. Both reviewed the final digest above and
-exclude shared integration, private credentials, runtime and delivery. The
-final Task result record is checked separately from the 27-file source map.
-Neither disposition completes criterion19 or grants native execution.
-
-### Historical Shared Integration Proposals
-
-Exact hunks and node gate commands are in ignored
-`.agent-work/p05-integration-proposals/`; they are proposals, not acceptance
-evidence or applied source. Their six base blobs at issuance HEAD are:
-
-| Shared path | Base blob | Proposed change | Applied |
-| --- | --- | --- | --- |
-| docs/99.templates/registry.json | 00ea622af93736ce4e2e23854caa714601c63955 | Two exact camel-case node README paths; candidate metadata PASS, actual gate blocked | no |
-| .github/workflow-contract.yml | 7dc037023853a003ef38a53d21e2c8d1ac0dd3b4 | Dedicated Python modules; typed node build/coverage/audit setup request | no |
-| infra/07-workflow/n8n/README.md | e45d694458dcbb4f35cb540cc55b64f881eda1e3 | Workload navigation | no |
-| docs/05.operations/guides/0053-n8n.md | 2e76cfcee57535b3e5430880877b18244af875e9 | Inactive source and native prerequisites | no |
-| docs/05.operations/policies/0053-n8n.md | 9777813a5ad646392153ada772c4079bdf5adcd3 | Function-only role, capture/privacy boundary | no |
-| docs/05.operations/runbooks/0053-n8n.md | e0443146d2c4de5c1f1ac494a7d15bc42f01618c | Uncertainty, fresh claim, paired restore and rollback | no |
-
-The current script manifest permits only scripts/ and .agents/evaluations/;
-the workload-local generator is outside that inventory. Manifest is NO_CHANGE;
-no schema extension is introduced merely to register it. Shared image/custom
-bind, DEV/capture networks, endpoint/credentials and native gate registration
-still wait for their exact owner contracts. Preserve P04 dirty work and deliver
-its dependency before final P05 PR integration.
-
-### Integrated Source Work Log
-
-The current integration baseline is local main
-`4c83f14b11a77e13e582eb85d0bf256685472a95`, after P04 and P06 source
-integration. Common validator/Registry commit
-`085d9bf795f31d9083f290cfdbcdc1a17ba72db3` already registers exactly the
-two prescribed OpsflowSmtp package README paths. No external Registry is used
-for this phase's metadata check. Prior candidate-only PASS and actual FAIL
-above describe the preserved issuance worktree, not the new integrated gate.
-
-Before migration, the sole writer fixed old HEAD
-`f7543e0697e2473cbbbeb254792e7a1d5b4b8423`, its index SHA256
-`44c772f1fc8c6efa37758a35430ed0b04b1e6bf899c2d1c4b3c31d6b0c86e433`
-and all 28 public owned file hashes. The binary staged patch SHA256 is
-`44db414ba98c88746df1dadcd3c4c69f519bf634cbe39b7f406cdcb0f130f33d`.
-The patch and receipt are preserved in each worktree's ignored
-`.agent-work/p05-integrated-handoff/`. New worktree creation at the exact
-baseline, apply-check and indexed apply each exited0. The canonical Task had
-no concurrent main change since issuance; its source results remain historical
-above, and this section records the current phase. Other worktrees and shared
-paths were not staged or changed.
-
-The canonical P04 SQL files are read-only inputs. Observed SHA256 values are
-001 `57a744cf33581bafd73f610b9c18c83d64c9457486a02e02398df56b444ee584`
-and 002 `0a00944569aa05b7a0eec6a555cc3357197b26257ee76a1779c7e258eb9a0b73`.
-Their claim result includes `lease_until`; the consumer explicitly projects
-only id/run_id/source/row_count/lease_token. The added regression failed with
-the original SELECT-star query (exit1), then all 16 Python synthetic tests
-passed after the projection fix (exit0). Contract source references assert
-those hashes and six upstream fields while all native binding fields remain
-null. This is source compatibility, not W42/W43 native acceptance.
-
-Actual producer publication, function ACLs, exact image/package/UID/TLS,
-credential/S3/backup and empty recovery targets remain unaccepted. Native
-import, notification, polling, DEV/HOME changes, rotation and recovery are
-NOT_RUN. P01 W23 and P06 pilot holds remain. Request/token/time/concurrency/
-retry ceilings and shared budget allocation remain UNKNOWN.
-
-The integrated 27-file source digest is
-`55856ce4aa2f121d63102731a460b12d054651ac6ff2cab1f3743554d7774b10`; its map is frozen in ignored
-`.agent-work/p05-integrated-source-freeze.json`. Task result-only changes are
-outside that source map. Both independent reviewers checked that exact map:
-code review reports no findings and APPROVE WITH FOLLOW-UP; security review
-reports no findings and approves the source-only scope. Neither disposition
-accepts installation, credentials, native execution or combined-head delivery.
-Security inspected the exact source; its independent hash command was blocked
-by sandbox/escalation tooling, so hash equality relies on the controller's
-frozen map and passing source-contract test. The separate read-only interface
-audit confirms ack/retry signatures and strict current-lease semantics; retry
-true may mean retry or dead, so the public result stays delivery-uncertain.
-
-Actual default Registry metadata passed on nine selected documents, zero
-violations, exit0, using explicit base4c83f14b11 and no external Registry.
-The all-document link check passed: 1213 documents, 11699 links, zero failures,
-one existing Stage98 historical-provenance warning, exit0. Reports are ignored
-`.agent-work/p05-integrated-metadata.log` and `p05-integrated-links.log`.
-Final source input preceded this result-only record; final Task metadata and
-its own staged gate are required again before the documentation commit.
-
-Python synthetic coverage command remains the one recorded above, now from
-the integrated worktree: 16 tests PASS, combined coverage98percent, exit0;
-the original five-field projection regression first failed as recorded.
-The six owned Python files passed Ruff lint and format/check. The existing
-workflow-version/SMTP/wiring regression command passed all45 tests in3.366s,
-exit0, on the integrated baseline.
-
-In the OpsflowSmtp package, `npm ci --ignore-scripts --no-audit --no-fund`
-installed the exact lock. `npm run test:coverage` built the TypeScript and
-passed24 offline tests, with lines97.33percent, branches94.83percent and
-functions87.88percent. `npm audit --json` and `npm audit --omit=dev --json`
-both exited0 with zero findings; `npm pack --dry-run --ignore-scripts --json`
-exited0 with eight public README/package/compiled files and no publication.
-All transport tests remain stubs or in-memory protocol bytes: no DB/TCP/DNS/
-service SMTP connection, runtime credential or installed-image acceptance.
-
-The official `run-ci-precommit.sh --mode local-staged` passed all28 owned
-paths before partition, exit0, including metadata-independent Markdown/JSON/
-Python style and secret detection. Every logical unit then separately passed
-Commitizen and that same staged gate immediately before its ordinary commit.
-The first ordinary node commit was blocked by the installed Git secret guard
-on a synthetic long password marker. No commit or bypass occurred. Replacing
-only that test marker with `dummy` preserved nonempty-password rejection and
-zero transport calls; Node build/24 tests/coverage and both independent source
-reviews then passed again for the final digest above, followed by the per-unit
-staged gate. No real secret, dependency or production behavior changed.
-Working-tree and cached `git diff --check` passed. A full registered changed
-profile, hosted/latest-head CI, PR, push and merge are NOT_RUN; their combined
-head cannot be accepted before the coordinator registers the new gates.
-
-Refreshed shared proposals are in ignored
-`.agent-work/p05-integration-proposals/proposal-index.json`; all five patch
-apply-checks exited0 without application. Registry is NO_CHANGE_ALREADY_INTEGRATED
-at085d9bf795, current blob `d792252f37995e09a7d24d739953b2873b1a88af`.
-The three Python modules and workload prefix appear in both changed-path and
-changed-root routing proposal tables. The exact node lock/build input hashes
-and setup/coverage/audit/pack command arrays request one typed Node integration
-and the same prefix in both routes. The coordinator owns adapters, budgets,
-registration, application, regression checks and combined-head acceptance.
-
-| Shared path | Current base blob | Applied |
-| --- | --- | --- |
-| .github/workflow-contract.yml | 0788cfe0197a279660c4effb9d6f4d83ba8e17f9 | no |
-| infra/07-workflow/n8n/README.md | e45d694458dcbb4f35cb540cc55b64f881eda1e3 | no |
-| docs/05.operations/guides/0053-n8n.md | 2e76cfcee57535b3e5430880877b18244af875e9 | no |
-| docs/05.operations/policies/0053-n8n.md | 9777813a5ad646392153ada772c4079bdf5adcd3 | no |
-| docs/05.operations/runbooks/0053-n8n.md | e0443146d2c4de5c1f1ac494a7d15bc42f01618c | no |
-
-### Commit Ledger
-
-| Commit | Logical unit | Scope | Verification |
-| --- | --- | --- | --- |
-| 9aee10677c5d1aa8481a843ca92d7db9a713c6d3 | Bounded SMTP capture node | 13 node/package/test/navigation paths | Node coverage/audits/build/pack, independent source reviews, Commitizen and per-unit staged gate PASS |
-| 673dd0fc72ae9aa6505fc15a2ff9f097da967f63 | Inactive workflow and source contracts | 14 builder/workflow/fixture/contract/test/navigation paths | 16 Python tests, coverage, default metadata/links, independent source reviews, Commitizen and per-unit staged gate PASS |
-
-This final Task record is a separate documentation commit; its full SHA is
-resolved from branch HEAD in the final machine receipt, without a self-reference.
-Next action is coordinator integration of the fixed source commits and refreshed
-typed Node/Python/workload proposals, followed by combined-head gates.
-Native notification and DEV/HOME changes remain NOT_RUN.
-
-### Coordinator Common Integration — 2026-10-11
-
-The coordinator adopts worker HEAD
-`53212d0b494f72658c52a4992fb4067936cf87da` and preserves all three logical
-commits in the dedicated `codex/p05-common-integration` worktree. The 27 public
-source files retain digest
-`55856ce4aa2f121d63102731a460b12d054651ac6ff2cab1f3743554d7774b10`.
-The old notifier worktree's 28 staged paths and binary patch digest
-`44db414ba98c88746df1dadcd3c4c69f519bf634cbe39b7f406cdcb0f130f33d`
-remain unchanged. The unrelated shared checkout's 24 paths remain untouched.
-
-At baseline `4c83f14b11a77e13e582eb85d0bf256685472a95`, direct remote main
-has the same SHA and GitHub reports no open PRs. These are remote observations;
-the worker source commits and current common changes are local only. The four
-public n8n README/Guide/Policy/Runbook proposal bases matched exactly before
-application. The coordinator applies those navigation and source-only usage
-changes, with preserved IDs/created timestamps. Registry is already integrated
-and unchanged. No source manifest records are needed for workload-local tools
-outside its governed script roots.
-
-Actual workflow registration adds the three Python modules to the existing
-repository-integrity leaf and routes the workload/tests in both changed-path
-and changed-root tables. The exact OpsflowSmtp package prefix additionally
-selects a typed package aggregate. Five fixed npm operations use only that
-package directory: install, dependency audit, production dependency audit,
-coverage/build and dry-run pack. Audits precede candidate build/test scripts.
-Existing workflow jobs, action pins, permissions, audit acceptance and
-P02/P03/P04/P06 registrations are retained. CI-only package leaves are excluded
-from unauthenticated local execution; no hosted result is inferred from a local
-plan or direct npm invocation.
-
-Fresh coordinator commands from the dedicated worktree passed, exit0:
-
-```sh
-env PYTHONDONTWRITEBYTECODE=1 /tmp/hy-home-p09-qa/bin/python -m unittest \
-  tests.lib.ops.test_n8n_outbox_workflow \
-  tests.validation.test_n8n_outbox_contract \
-  tests.validation.test_n8n_outbox_rehearsal -q
-```
-
-This passed16 synthetic tests in0.191s. From the exact OpsflowSmtp directory,
-Node v26.10.0 ran `npm ci --ignore-scripts --no-audit --no-fund`,
-`npm run test:coverage`, `npm audit`, `npm audit --omit=dev`, and
-`npm pack --dry-run --ignore-scripts --json`; each exited0. The24 offline tests
-measured lines97.33percent, branches94.83percent and functions87.88percent.
-Both audits reported zero findings; pack selected eight public files without
-publishing. The transport tests stayed offline; npm used public dependency operations.
-No application DB/SMTP connection or runtime node installation occurred.
-
-The first workflow-validator invocation used nonexistent
-`check-workflow-contract.py` and exited2; no validator ran. The corrected
-`check-github-workflow-contract.py` exited0 on the initial registered candidate.
-An unauthenticated `run-ci-gate.py --profile changed --explain` exited0 and
-selected nine local leaves. Its exclusion of CI-only package leaves is expected,
-not successful hosted package execution.
-
-Initial typed-adapter RED/GREEN and127 gate tests passed on the pre-review
-candidate, with86percent combined branch-enabled coverage. Subsequent independent
-security review blocked that input: candidate coverage ran before audit and
-inherited a repository-root FD. That receipt is superseded for final acceptance.
-The correction removes root capability/environment forwarding to npm, uses the
-fixed package directory FD, runs audits first, and rejects coverage mutation of
-explicitly frozen source/control inputs. It does not promise whole-checkout
-immutability or constrain arbitrary external hosts. Final corrected-input tests,
-metadata, staged gate, independent review and local-main delivery are recorded
-separately in the coordinator receipt after they actually finish.
-
-The corrected frozen-input gate command executed by the delegated CI engineer
-was `/tmp/hy-home-p09-qa/bin/python -m unittest
- tests.lib.gate.test_ci_gate_adapters tests.lib.gate.test_ci_gate_contract
- tests.validation.test_ci_gate_plan tests.validation.test_ci_gate_execution_context
- -v`, with PYTHONDONTWRITEBYTECODE=1. It passed128, exit0; log
-`/tmp/p05-node-gate-4modules-security-final.log`. Branch-enabled coverage of
-adapter/contract/runner measured combined86percent (individual83/88/86), and
-`coverage report --fail-under=80` exited0. Raw data and report are
-`/tmp/p05-node-gate-security-final.coverage` and
-`/tmp/p05-node-gate-coverage-report-final.log`. This is synthetic harness testing,
-not hosted CI or native consumer authentication. The exact aggregate order is
-validated with a negative reorder regression; missing-child diagnostic
-precedence is retained. Lockfile and adapter mutation regressions fail closed.
-Final security re-review passed with no P1/P2 findings. Scoped Ruff0.15.12 lint,
-format check and `git diff --check` passed on the frozen seven implementation/
-regression files. Independent combined-head quality review and final staged/
-metadata/local-main receipts remain separate below or in the coordinator ledger.
-
-Workflow SHA256 is
-`a7df8a8200c6865ec766f7701f54d9de3271a292d988657f1a95f802ead25ea7`.
-Adapter SHA256 is
-`7f5f64dcedd4f79cabdfa5de1f1f355521315c570cc298046b7d9cbdf4d2f4d6`;
-contract SHA256 is
-`89e00e59aa8bf0f8bd4524e7239cd0f9e6b9c59152df2041192c259175d9d740`;
-runner SHA256 is
-`77d5a3e418e32cd4026283d2b655adb29f4739e51889407811f9e6b5103cc7ba`.
-The frozen map in the ignored receipt includes the remaining four tests.
-Fresh all-document links passed1213 documents/11701 links, exit0, with zero
-failures and one pre-existing archive capture warning. No frozen source or
-package lock/build input was rewritten by the npm checks.
-
-Receipt paths under ignored `.agent-work/` retain public commands, input hashes,
-failed attempts, corrected results and final commit/main ancestry. This section
-keeps native W42/W43/W44 and criterion19 in-progress. P04 SQL hashes remain the
-same read-only bindings and native identity/version fields stay null. Exact
-SEC01 package/image, P03 UID/executor/TLS/endpoint, P02 credential delivery,
-P04 producer/function grants/S3 policy and paired backup/empty-restore acceptance
-are still required. No import, schedule activation, DEV/HOME change, migration,
-rotation, private deletion or recovery ran. P01 W23 and P06 pilot holds remain.
-
-### Segmented Local Source Validation — 2026-10-11
-
-Frozen source input is `5b1a92db48fd508feff4cee0753b3b4468dd41dc`, following
-common/worker integration `c7d56a383ad8b77dd615327d11605b3e15d2146e`.
-The registered local execution plan has33 nodes; public explain exposes10.
-The front-door run exited124 after nodes0–9 passed. First canonical continuation
-exited1 at node18; nodes10–17 passed. Permission-corrected continuation exited1
-at node26; nodes18–25 passed. Final continuation26–32 exited0 with ordinary
-Python, debug true/optimization0 and clean unchanged post-input. Thus all33
-nodes have segmented successful receipts; the original124 and both suffix1
-failures remain failures. No fresh aggregate exit0 or hosted PASS is claimed.
-
-Only two coordinator-checkout entrypoint modes changed775 to755, matching their
-tracked100755 modes: Open WebUI and Gatus. File content hashes and index were
-unchanged, with Git clean and no HOME/runtime effect. The only source delta
-from c7d56a383 is the synthetic workflow fixture's canonical working directory,
-seven changed lines in the existing test. RED: one test/four subcase failures,
-exit1,1.769s; GREEN:39 tests,exit0,7.492s; Ruff/staged checks exit0 and independent
-review ACCEPT. The registered workflow contract SHA256 remains
-`bdb1941e522865a9a381b0913f4a8e266dfb613cbb832ca35889ff26ac3ecfc5`.
-
-Receipts are `.agent-work/p04-p07-registered-suffix-final-fixture-result.json`,
-`.agent-work/p04-p07-checkout-permissions-repair.json` and
-`.agent-work/p05-fixture-cwd-receipt.json`; final output is
-`.agent-work/p04-p07-registered-suffix-final-fixture.log`. Earlier aggregate and
-suffix logs remain preserved. These SOURCE/UNIT/STATIC checks do not complete
-operational criteria. Local-main source integration awaits final documentation
-checks and review; its delivery SHA is not yet known. Current direct-user
-local-main delivery uses no dev, remote push, PR or hosted execution.
-
-Combined P04/P05 synthetic checks passed196 in19.313s, exit0; separate P06/P07
-checks passed62 in16.592s, exit0. Earlier24 offline Node tests and source audits
-retain their original input/version attribution and are not SMTP/native receipts.
-P04 retains sole ownership of SQL/outbox contracts; no copy or new provisioning
-was introduced. The final repository leaf passed494 tests/127.874s, exit0.
-Criterion19/W42–W44 remains open: actual frozen native SQL consumption, import,
-credential binding, queue-worker capture, scheduling and recovery are NOT_RUN.
-Source/common commits are preserved; no fresh coverage or production acceptance
-is inferred. Final Task checks and local-main source delivery remain pending.
-
-### Owner decision 2026-10-29
-
-On 2026-10-29 the owner split criterion 19. Its native evidence covered
-manual execution only: TSK-0019 W74 attempt 11 proved inactive import, the
-actual queue worker and external runner, Mailpit capture, Message-ID,
-unknown-outcome isolation, reconciliation, restart and generation-2 metadata
-and database restoration, and TSK-0018 W73 proved stale-lease rejection and
-ambiguous-send quarantine. No native run covered one-minute scheduled
-execution, concurrent claims, retry and dead-letter, or credential rotation.
-Those obligations move to new criterion 22, which this Task owns through
-W42–W45; their rows now name criterion 22 and stay open. Criterion 19 is
-accepted for the narrowed text.
-
-The Evidence and Criterion Acceptance tables move to the current shape so the
-decision can be recorded: each row gains `Required`, and each criterion row
-gains its current owner. `Independent source reviews` named the earlier
-`Document and shared gate integration` FAIL in `Resolves` with a different
-check, which the current shape does not allow, so its `Resolves` is now `-`
-and `Rerun of Document and shared gate integration` resolves that FAIL with
-the same check on today's `main`.
-
-### Criterion 22 harness source 2026-10-30
-
-The owner chose to build the criterion 22 harness, register it in the gate and
-merge it after independent review. The opt-in native class
-`OpsflowN8nNativeRehearsal` in `tests/validation/test_opsflow_native_rehearsal.py`
-now runs seven further steps after the existing manual run: scheduled
-execution, concurrent claims, retry and dead letter, empty queue, database
-credential rotation, paired restore decrypt in the fresh generation, and wrong
-key fail-closed after a correct-key control on the same path. The helpers live
-in `tests/validation/_opsflow_native_criterion22.py`, and the Docker-free guards
-in `tests/validation/test_opsflow_native_criterion22.py` join the default gate
-through `.github/workflow-contract.yml`. The work budget rises from 25 to 40
-minutes. SMTP credential rotation stays NOT_RUN, because Mailpit has no
-authentication to rotate.
-
-Security review approved; its medium finding (no correct-key control for the
-explicit-key path) and the shared `/tmp` probe path were fixed. Code review
-asked for changes, all applied: the race and retry outputs join a boolean onto
-text, which PostgreSQL renders as `true` or `false`, so the parsers and stubs
-had expected the wrong `t` or `f`; the session check after rotation now waits
-for terminated backends; and two minor test defects were removed. The concurrent
-claim and retry scenarios drive the database contract as the notifier role in
-`psql`, with the retry backoff fast-forwarded by the superuser, and the receipt
-records this as `driver` and `backoff` facts. Accepting criterion 22 on that
-reading is the owner's decision. After the fixes the offline set ran 67 tests,
-OK, one skipped (the opt-in native class), and the workflow contract and its
-gate tests passed. This is source only: no Docker command ran, W42 still waits
-for P04 W36, and criterion 22 stays pending until one approved native run
-returns its receipt.
-
-### Owner native attempt 2026-10-30
-
-The owner ran the opt-in native class once from `main` at `032818766`, before
-the criterion 22 harness merged, so the run carried none of the criterion 22
-steps. Attempt `opsflow-native-1b407daf3eb9138fa67527cb` used image
-`sha256:1fda18a541144ae5519ac97bcaffa4e24fad0e71d424606d230464bec8fce153`, the
-same image as TSK-0019 attempt 11, and source binding `03892eb1a9a4`. Main
-readiness and liveness, the worker broker and Mailpit all answered 200. The
-first manual execution did not turn terminal within 60 seconds, so the run
-stopped with `native` ERROR after 598.7 seconds. Cleanup passed: all eight
-containers were confirmed absent and nothing was retained.
-
-The harness for that step is unchanged since attempt 11, and the receipt kept
-no execution status or log, so the cause is unknown. The harness now records
-`execution_timeout_facts` when a queued execution times out: the last status
-seen and whether known main and worker log lines exist, as booleans only. One
-further native run is needed.
-
-### Owner native attempt with criterion 22 steps 2026-10-30
-
-The owner ran the native class again from `main` at `4de81f1a4`, with the
-criterion 22 harness and timeout diagnostics. Attempt
-`opsflow-native-5c855b474d846df902d87001` used the same image and source
-binding. This time the earlier steps passed: executions 1 to 4 turned
-terminal and every health probe answered 200. In `scheduled_execution`, the
-scheduled delivery itself passed: one trigger-mode execution within 60
-seconds, with the worker as the only member of the DEV network. The next
-publication then failed in PostgreSQL, so that step was recorded FAIL, the
-later six steps NOT_RUN, and `native` ERROR after 715.6 seconds. Cleanup
-passed and nothing was retained.
-
-The cause is a harness defect, not the notifier. `003_business_date.sql`
-adds a unique index on source and UTC business date, and `publish_next` gave
-every publication a time on 2026-10-16, the day of the earlier
-`hy-home.docker` publication. Each criterion 22 publication now takes its own
-UTC day from 2026-10-17, still rising, and the offline test pins those dates.
-The first attempt's manual-execution timeout did not recur, so it remains
-unexplained. One further native run is needed.
-
-### Owner decision on criterion 22 drivers 2026-10-30
-
-The owner chose on 2026-10-30 to accept criterion 22 with the concurrent claim
-and retry scenarios as they stand: driven in `psql` as the notifier role, with
-the retry backoff fast-forwarded by the superuser. These scenarios prove the
-database lease and retry contract. That n8n itself claims and acknowledges
-rows is proved by the scheduled and manual executions. The other options,
-one real n8n retry with a 30-second backoff or every scenario through n8n,
-were declined. This settles how the evidence is read, not whether it exists:
-criterion 22 stays pending until one native run returns all seven fields and
-`native` as PASS.
-
-### Owner native attempt three 2026-10-30
-
-The owner ran the native class a third time, from `main` with the
-business-date fix. Attempt `opsflow-native-cd9f2fadd4086d1c86311ead` passed
-`scheduled_execution`: one trigger-mode execution delivered in 41 seconds,
-with the worker as the only member of the DEV network, and the deactivated
-hold kept the next row unclaimed. In `concurrent_claims`, the race with one
-row and four claimers passed. The race with three rows and six claimers
-returned a summary the parser rejected. The step was recorded FAIL, the later
-five steps NOT_RUN, and `native` ERROR after 855.9 seconds. Cleanup passed.
-
-This was another harness defect. The reviewed provisioning gives
-`opsflow_notifier` `CONNECTION LIMIT 5`, and the workflow credential pools up
-to two connections as the same role. The sixth psql claimer could not
-connect, and its missing fields failed the parser. The four-claimer race
-passed only because the pool happened to hold few connections. Each race now
-uses three claimers, five minus two: one row with three claimers, then two
-rows with three claimers. An offline test pins the limit in the provisioning
-SQL and the pool size in the credential. One further native run is needed.
-
-### Owner native attempt four 2026-10-30
-
-The owner ran the native class a fourth time, from `main` at `2427700e4`.
-Attempt `opsflow-native-dc07812ebf96857acaa19f5f` failed after 70 seconds,
-before any container existed: creating the first secret-preparation
-container ended with `owned container identity is ambiguous`. The receipt
-reported cleanup PASS with nothing retained, but that was wrong (see the
-correction below). The daemon had not restarted. During the attempt, the Open WebUI
-Grype scan was running on the same host (08:53 to 09:09 KST, load
-average near 20), and each fixture Docker call has a 60-second limit. The
-harness withholds Docker's error, so contention is the likely cause but not
-proven. The same code passed this step in the three earlier attempts. The
-next run must not overlap other heavy work.
-
-Correction, 2026-10-30: the owner's pre-run check for attempt five found
-`opsflow-native-dc07812ebf96857acaa19f5f-g1-secret-prep` in state `Created`,
-made at 08:52:15 KST and carrying the attempt's labels. The daemon finished
-the create after the client call had failed. Cleanup found no container,
-dropped the pending role, and its sweep ran before the container existed, so
-its PASS was false. Cleanup now polls for up to 60 seconds before treating a
-pending container as never created. An offline test covers both a late
-create and a create that never appears. The leftover container, never started,
-is for the owner to remove; a later residue check showing none resolves the
-Attempt four residue row.
-
-### Owner native attempt five 2026-10-30
-
-The owner ran the native class a fifth time, from `main` at `badfddd01`. A
-read-only check found no labelled native container or network before the run.
-Attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` finished `OK` in 1,221.6
-seconds with `native` PASS. Its image was
-`sha256:1fda18a541144ae5519ac97bcaffa4e24fad0e71d424606d230464bec8fce153`,
-with source binding `03892eb1a9a4`. All seven criterion 22 fields passed:
-
-| Field | Facts |
-| --- | --- |
-| `scheduled_execution` | One trigger-mode execution delivered in 23 s; the worker was the only member of the DEV network |
-| `concurrent_claims` | Driven in psql as the notifier role (owner decision 2026-10-30) |
-| `retry_dead_letter` | Same driver, backoff fast-forwarded; five attempts to `dead`, exhausted row dead-lettered |
-| `empty_queue` | Manual execution succeeded with nothing claimed, sent or changed |
-| `credential_rotation` | Stale password denied, new one accepted; stale workflow `error`, rotated `success`; SMTP rotation NOT_RUN |
-| `paired_restore_decrypt` | Restored metadata and key decrypted the rotated credential and the SMTP host |
-| `wrong_key_fail_closed` | Right key decrypted; a wrong key exported nothing |
-
-The earlier fields also passed: `queue_runner`, `restore` and
-`smtp_connect_failure_before_acceptance`. `exactly_once` stays NOT_CLAIMED and
-`response_loss_after_acceptance` NOT_RUN. All nine containers were confirmed
-absent, nothing was retained, and a read-only check after the run found no
-labelled resource. These rows resolve the W43 and W44 failures. Criterion 22
-still has two NOT_RUN rows. W42 freezes the reviewed P04 SQL and interface
-hash. W45 is delivery with a final review. Criterion 22 stays pending on them.
-
-### W42 freeze, W45 review and criterion 22 acceptance 2026-10-30
-
-On 2026-10-30 the owner chose to freeze the P04 interface after an
-independent review, then accept criterion 22. The frozen binding is the three
-migrations that attempt five applied, at `main` `8e84763bd`:
-
-| File | SHA256 |
-| --- | --- |
-| `001_opsflow.sql` | `82a4762a8962832c7fdd05826df3b97cf02cc4f96c974a328e42e4493143b18f` |
-| `003_business_date.sql` | `830b62c6e8d175d5a4350bab27976121637df4aeca6688748865756be2d84d72` |
-| `004_notification_quarantine.sql` | `ad8176d875b75c15d0e7bfc21c1cb67cd5b31240a4901bccec5b8bb0d931bde9` |
-
-`sha256sum` gave these values. 003 and 004 also embed the receipts of 001 and
-003. The P05 contract consumes these functions:
-
-- `claim_notification`, which uses `FOR UPDATE SKIP LOCKED`;
-- `ack_notification`, which needs the lease token and an unexpired lease;
-- `retry_not_sent_notification`, which has the same guards, backs off 60 to
-  900 seconds and dead-letters after five attempts;
-- `unknown_notification`, which needs the token only and quarantines the row.
-
-An expired lease becomes `unknown` and is never resent automatically.
-
-An independent `security-auditor` reviewed the three files, the provisioner
-and `002_checks.sql`. It found no Critical or High issue and approved with
-notes. Medium: `002_checks.sql` accepts only versions 1 and 2, so no reusable
-post-004 drift and ACL check exists, and no executable case shows that ingest
-and reader cannot run `unknown_notification` or `retry_not_sent_notification`
-or read `notification_reconciliations`. Medium: the database cannot itself
-enforce "not sent" before `retry_not_sent_notification`. On the P05 side,
-`test_n8n_outbox_contract.py` checks that only a proven `cancelled` receipt
-reaches that function and that every SMTP, ack and ambiguous error reaches
-`unknown_notification`; attempt five passed
-`smtp_connect_failure_before_acceptance`. Low notes:
-
-- `search_path` lacks a trailing `pg_temp`, which cannot be exploited while
-  clients have no TEMP;
-- 001 has no lock or statement timeout of its own;
-- the claim's expiry sweep has no SKIP LOCKED;
-- a same-day publication fails with raw `23505`;
-- the migrator `EXECUTE` grant on reconcile has no effect;
-- the fingerprint omits connection limits;
-- the checksum input is checked for shape only.
-
-These are P04 follow-ups for TSK-0012 and do not change the frozen
-interface.
-
-An independent `code-reviewer` reviewed the harness changes since the
-reviewed `16fa28d6f` and approved with notes. Two notes were fixed here.
-Cleanup now removes known containers before polling pending ones, so the
-60-second poll cannot use up their removal budget, and each container still
-gets one removal. A test now checks that the concurrent-claims scenario
-passes `RACE_JOBS`. The grace comment also now states that a create landing
-after the grace and the final sweep can still escape. In that case, the
-residue check is the guard. Deferred: the dates overflow past 15
-publications (the scenario makes 8), and timeout diagnostics read the logs
-once per marker. The native offline set ran 64 tests, OK, one skipped.
-
-W45 delivery is PRs #656 to #665, each merged after `candidate-quality`
-passed, plus this change. Criterion 22 is accepted. Criterion 8 shares the
-Delivery row and stays with its owner.
-
-### Handoffs and completion 2026-10-30
-
-The final source is `main` `c585c5244` (PR #666). Each receiver has a dated
-"Handoff from SPEC-0204 TSK-0013 2026-10-30" section. Each section names this
-SHA, the native facts it can use, its NOT_RUN lanes and its next input.
-
-| Phase | Receiver | NOT_RUN lanes handed over |
-| --- | --- | --- |
-| P04 | TSK-0012 | `exactly_once` not claimed; response loss after acceptance; ingest and reader denial cases |
-| P02 | TSK-0010 | SMTP credential rotation; execution-copy catalog row |
-| P03 | TSK-0011 | Executor, endpoint and network denial tests; HOME endpoint and TLS |
-| P01 | TSK-0006 | OpenBao management and refresh of the notifier credentials |
-| P06 | TSK-0014 | OpenBao delivery of both notifier credentials; SMTP rotation |
-| P07 | SPEC-0218 TSK-0002 | CPU, memory and polling-load measurement |
-| P08 | TSK-0015 | None; nested 0053 paths and blobs given |
-| P10 | TSK-0016 | Airflow-to-n8n publication-to-capture chain (W65); HOME |
-
-SEC01's TSK-0009 is completed and frozen, so its handoff stays here. Native
-attempt five ran image
-`sha256:1fda18a541144ae5519ac97bcaffa4e24fad0e71d424606d230464bec8fce153`, built
-from n8n 2.43.6 with source binding `03892eb1a9a4`, the same image as TSK-0019
-attempt 11. NOT_RUN: an installed-node schema and security receipt for that
-image, and any HOME n8n upgrade from the running 2.41.6. A non-terminal SEC
-successor takes this up.
-
-Criteria 19 and 22 are accepted, and every assigned criterion and Work Unit
-pair has a PASS row, so the Task is complete. Criterion 8 shares the Delivery
-row, which stays unresolved for criterion 8. Its owner must add a criterion 8
-PASS row with the same Check before accepting it.
-
-## Evidence
-
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Git and owner baseline | 1, 19 | W40 | status/worktrees/fetch/open PR list | Local/remote4e26a5a80 | PASS | Baseline only; no remote or runtime write by this assessment | required | - |
-| Existing source contracts | 1, 8, 19 | W40 | Workflow version, SMTP and service wiring unittest | Clean4e26a5a80 | PASS | 45 tests, 3.023s, exit0; command below | required | - |
-| Supplied reference audit | 19 | W40 | Six public files, four static tests and JSON generator parity | Prompt669a86c89a76 | PASS | 4 tests, 0.02s, exit0; generator semantic parity; no native proof | required | - |
-| New notifier source | 19 | W41 | RED/GREEN builder/workflow/transport/privacy | Source snapshot 496e59646b17 | PASS | 15 Python and 24 offline node tests; coverage and audit above; native acceptance is separate | required | - |
-| Document and shared gate integration | 19 | W41 | Metadata, links, precommit and gate routing | Actual Registry at issuance; exact proposal only | FAIL | Links/precommit pass; actual metadata has ten findings on two node README paths; candidate-only metadata passes; shared CI registration pending | required | - |
-| Independent source reviews | 19 | W41 | Code/specification and source-security review | Source snapshot 496e59646b17 | PASS | Code approved with follow-up; security approved; no remaining source findings; runtime/delivery excluded | required | - |
-| Integrated source checks | 19 | W41 | Default Registry metadata, synthetic tests/coverage/audit/build/pack, links and staged gate | Source snapshot 55856ce4aa2f; base4c83f14b11 | PASS | Integrated work log and ignored receipts above; native and combined-head acceptance excluded | required | - |
-| Integrated independent reviews | 19 | W41 | Code and security review | Source snapshot 55856ce4aa2f | PASS | No source findings; code approved with follow-up; security approves source-only scope | required | - |
-| Frozen P04 binding | 22 | W42 | Reviewed SQL/version/hash and roles | P04 W36 pending | NOT_RUN | P04 remains sole SQL owner | required | - |
-| Native import and manual execution | 22 | W43 | Exact image, credential and worker/SMTP proof | P04 W38 and relevant readiness pending | NOT_RUN | No import/credential/network/DB action | required | - |
-| Scheduled failures and recovery | 22 | W44 | Polling, outages, restart/rotation and empty restoration | No exact action selected | NOT_RUN | No operational acceptance | required | - |
-| Delivery | 8, 22 | W45 | Latest-head CI/review/PR/merge | Integrated source phase | NOT_RUN | Two source commits recorded above; final Task commit and combined-head registration/CI remain separate; native holds are unchanged | required | - |
-| Segmented source checks | 8 | W45 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | required | - |
-| Rerun of Document and shared gate integration | 19 | W41 | Metadata, links, precommit and gate routing | `main` at merged PR #640 with the notifier source and node READMEs | PASS | `check-document-metadata.py --mode check-contracts` 0 violations; `check-document-links.py --mode all` PASS; PR #640 `candidate-quality` run 40874942142 success, which runs pre-commit and gate routing | required | Document and shared gate integration |
-| Criterion 22 harness source | 22 | W44 | Offline scenario guards, gate registration and independent review | Worktree on `main` at merged PR #654 | PASS | Criterion 22 harness source 2026-10-30; 67 tests OK with the native class skipped; no native run | required | - |
-| Owner native attempt | 22 | W43 | Opt-in native class, first manual execution | `main` at `032818766` before the criterion 22 harness; attempt `opsflow-native-1b407daf3eb9138fa67527cb` | FAIL | Owner native attempt 2026-10-30; queued execution did not turn terminal in 60 s; cleanup PASS | required | - |
-| Owner native attempt with criterion 22 steps | 22 | W44 | Opt-in native class, criterion 22 scenarios | `main` at `4de81f1a4`; attempt `opsflow-native-5c855b474d846df902d87001` | FAIL | Owner native attempt with criterion 22 steps 2026-10-30; scheduled delivery passed, next publication hit the business-date index; harness fixed; cleanup PASS | required | - |
-| Owner native attempt three | 22 | W44 | Opt-in native class, criterion 22 scenarios | `main` at `e3e504514`; attempt `opsflow-native-cd9f2fadd4086d1c86311ead` | FAIL | Owner native attempt three 2026-10-30; scheduled execution PASS; six-claimer race exceeded the notifier connection limit; harness fixed; cleanup PASS | required | - |
-| Owner native attempt four | 22 | W43 | Opt-in native class, fixture creation | `main` at `2427700e4`; attempt `opsflow-native-dc07812ebf96857acaa19f5f` | FAIL | Owner native attempt four 2026-10-30; first container create failed while a Grype scan loaded the host; cleanup PASS | required | - |
-| Attempt four residue | 22 | W43 | Owner pre-run check for labelled native containers and networks | `docker ps -a` by attempt label before attempt five, 2026-10-30 | FAIL | Owner native attempt four 2026-10-30, correction; one `Created` secret-prep container of attempt `opsflow-native-dc07812ebf96857acaa19f5f` remained after a reported cleanup PASS | required | - |
-| Native import and manual execution, attempt five | 22 | W43 | Exact image, credential and worker/SMTP proof | `main` at `badfddd01`; attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` | PASS | Owner native attempt five 2026-10-30; exact image and source binding, manual queue-worker executions to Mailpit | required | Native import and manual execution |
-| Owner native attempt five, manual execution | 22 | W43 | Opt-in native class, first manual execution | `main` at `badfddd01`; attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` | PASS | Owner native attempt five 2026-10-30; manual executions turned terminal | required | Owner native attempt |
-| Owner native attempt five, fixture creation | 22 | W43 | Opt-in native class, fixture creation | `main` at `badfddd01`; attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` | PASS | Owner native attempt five 2026-10-30; all nine containers created and confirmed absent after cleanup | required | Owner native attempt four |
-| Attempt five residue | 22 | W43 | Owner pre-run check for labelled native containers and networks | Read-only `docker ps -a` and `docker network ls` by attempt label before and after attempt five | PASS | Owner native attempt five 2026-10-30; none before and none after | required | Attempt four residue |
-| Scheduled failures and recovery, attempt five | 22 | W44 | Polling, outages, restart/rotation and empty restoration | `main` at `badfddd01`; attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` | PASS | Owner native attempt five 2026-10-30; scheduled polling, SMTP outage, rotation, paired restore and wrong-key checks | required | Scheduled failures and recovery |
-| Owner native attempt five | 22 | W44 | Opt-in native class, criterion 22 scenarios | `main` at `badfddd01`; attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` | PASS | Owner native attempt five 2026-10-30; seven criterion 22 fields and `native` PASS; cleanup PASS | required | Owner native attempt with criterion 22 steps, Owner native attempt three |
-| Reviewed frozen P04 binding | 22 | W42 | Reviewed SQL/version/hash and roles | 001, 003 and 004 at `8e84763bd` with the SHA256 values above; independent `security-auditor` review | PASS | W42 freeze, W45 review and criterion 22 acceptance 2026-10-30; approved with notes, no Critical or High; the notes are P04 follow-ups | required | Frozen P04 binding |
-| Criterion 22 delivery | 22 | W45 | Latest-head CI/review/PR/merge | PRs #656 to #665 merged after `candidate-quality` success; independent `code-reviewer` review with two notes fixed here | PASS | W42 freeze, W45 review and criterion 22 acceptance 2026-10-30; native offline set 64 tests OK, one skipped | required | Delivery |
-
-Actual existing-source command, exit0:
-
-```sh
-/tmp/hy-home-p09-qa/bin/python -m unittest \
-  tests.validation.test_workflow_version_bundle.WorkflowVersionBundleTests \
-  tests.lib.ops.test_smtp_contract \
-  tests.validation.test_service_wiring_contracts -q
-```
-
-All six supplied files were extracted only under ignored
-`.agent-work/p05-reference-audit/reference/`. Existing isolated reference QA
-Python ran `python -m pytest <reference>/tests -q` with that PYTHONPATH and
-automatic plugins disabled. The explicit generator exited0 and its JSON
-semantically matched the supplied inactive JSON. These tests inspect files;
-they do not install Airflow/n8n, apply SQL, authenticate SMTP or test native
-credentials. No shared QA environment was changed.
-
-Worker verification selects new unit/contract modules plus affected existing
-modules above, reproducible custom-node build/transport tests if used, and
-opt-in native rehearsal with exact public/private inputs and cleanup. Record
-commands, SHA/blob hashes, RED/GREEN exits, coverage, skipped native classes,
-failures/corrections and actual receipts. Coordinator integrates registration
-into existing manifest/workflow before final registered changed-profile QA and
-run-ci-precommit.sh --mode local-staged; proposal-only registration is not PASS.
-Run document metadata/links and git diff --check. Keep SOURCE / UNIT / STATIC /
-ISOLATED / HOME / MIGRATION / ROTATION / RECOVERY / DELIVERY separate. Do not
-close native acceptance using reference test results or container health.
-
-W40 corrected a stale verifier route: `scripts/qa.py` does not exist at the
-issuance HEAD (attempt exited2). The current controller is
-`scripts/validation/run-ci-gate.py --profile changed --explain`; executable
-local leaves use its `--local-only` route and hosted aggregate acceptance stays
-separate. No shared harness was created or replaced to satisfy the stale text.
-
-## Criterion Acceptance
-
-| Criterion | Acceptance | Evidence | Decision | Current Owner |
-| --- | --- | --- | --- | --- |
-| 19 | accepted | Git and owner baseline, Supplied reference audit, New notifier source, Integrated source checks, Integrated independent reviews, Rerun of Document and shared gate integration | Owner accepted on 2026-10-29 for the narrowed criterion: this Task's source rows plus native manual execution, isolation, reconciliation, restart and restoration in TSK-0018 W73 and TSK-0019 W74. | SPEC-0204 TSK-0013 |
-| 22 | accepted | Owner native attempt five, Attempt five residue, Reviewed frozen P04 binding, Criterion 22 delivery | Owner accepted on 2026-10-30: native attempt five passed every criterion 22 field, with concurrent claims and retry driven in psql (owner decision 2026-10-30), after independent SQL and harness reviews. | SPEC-0204 TSK-0013 |
-
-## Review and Completion
-
-Complete. The notifier source (criterion 19) and the native proof (criterion
-22) are accepted. The P04 interface is frozen at the three SQL SHA256 values.
-The handoffs above name every lane left NOT_RUN. Wiki implementation and
-schedules, learning-app planning, LAB runtime, raw Git collection, the
-external workspace and blog-data writes stay excluded.
-
-## Related Documents
 
 - [Specification](../spec.md)
 - [Plan](../plan.md)
@@ -1123,7 +42,7 @@ external workspace and blog-data writes stay excluded.
 - [Official queue execution](https://docs.n8n.io/hosting/scaling/queue-mode/)
 - [Selected SMTP node source](https://github.com/n8n-io/n8n/blob/34ab9c7bf3d0c6d2ec3422e12e0b970aea5717c7/packages/nodes-base/nodes/EmailSend/v2/send.operation.ts)
 
-### W42 image-owned package bridge source increment — 2026-10-12
+#### W42 image-owned package bridge source increment — 2026-10-12
 
 The coordinator assigned one writer at `codex/p05-install-completion`, clean
 baseline `241a470d246191751a7a5655a86d5ec4f679a0ff`, with an explicit lease for
@@ -1280,7 +199,7 @@ dependencies and exited 0. Neither result proves the selected image runtime or
 latest builder. Final receipt-only metadata/lifecycle/staged checks and commit
 admission are completed separately after focused review.
 
-### Current P05 Source Binding and Native Preflight — 2026-10-13 KST
+#### Current P05 Source Binding and Native Preflight — 2026-10-13 KST
 
 The current direct P05 prompt authorizes this bounded source correction,
 logical commit, owning-Spec PR and merge after independent review and latest
@@ -1317,7 +236,7 @@ NO_CHANGE. Initial inspection is a fresh result, not a rerun of historical PASS.
 | Current ROOT-image vulnerability scan | RUNTIME_UNVERIFIED | No current image warning established here; no image/scanner changes |
 | LAB runtime/data/testing, Wiki implementation and learning applications | OUT_OF_SCOPE | Completed Wiki preparation remains NO_CHANGE; no actions |
 
-#### Reviewed P04 SQL Handoff
+##### Reviewed P04 SQL Handoff
 
 Two independent read-only assessments verified that SQL commit
 `79dde32059dbf6eae8dacd9f5f2a04aee29f31a5` is contained in this main and
@@ -1344,7 +263,7 @@ authorization even for a complete source binding. No P04 SQL, builder, generated
 workflow, node implementation, fixtures, Dockerfile, Compose or secret changed.
 W42 source handoff is PASS; transport/role/native portions remain unverified.
 
-#### Fresh Verification and Acceptance Separation
+##### Fresh Verification and Acceptance Separation
 
 All source commands used the stated input SHA plus this bounded diff. Package
 builds use the unchanged lock in the owned worktree, without lifecycle scripts.
@@ -1420,7 +339,7 @@ deactivates only this workflow, stops its polling, reconciles selected execution
 and preserves outbox/accepted/uncertain receipts. Image/source revert cannot
 undo DB formats, credential rotation or restore metadata/key consistency.
 
-#### Independent Review and Current Gate Blocker
+##### Independent Review and Current Gate Blocker
 
 Independent code and security reviewers approved the exact six-path source
 candidate at the stated input with no remaining Critical, Important or Minor
@@ -1482,7 +401,7 @@ Task delta and separately recomputed the three stale SEC01 source hashes.
 The logical commit unit is `fix(p05): Bind reviewed P04 outbox SQL source`;
 its exact object and hosted checks are observable through the owning PR.
 
-#### Hosted Candidate Receipt and Latest Main Refresh
+##### Hosted Candidate Receipt and Latest Main Refresh
 
 The source unit is commit `18dd539765b2b906fc96837e6f9585d2103bae18`.
 Its branch push and [PR435](https://github.com/buenhyden/hy-home.docker/pull/435)
@@ -1520,7 +439,7 @@ change, scanner change or native operation is included in this refresh.
 Post-refresh head/run/merge identities are observable in this same PR; they
 cannot be inferred from the first run's PASS.
 
-#### Bounded Nodemailer security source correction — 2026-10-26
+##### Bounded Nodemailer security source correction — 2026-10-26
 
 The v30 local-source request authorizes this four-path P05 correction from
 HEAD `0d2392f93b975faa36f03b2361d80f3ddb72e487`: the OpsflowSmtp package,
@@ -1593,3 +512,1110 @@ pending this candidate's coordinator handoff. Native loader discovery, service
 installation, actual SMTP/DB execution, HOME, migration, rotation and recovery
 remain NOT_RUN for this increment. Earlier failures and historical receipts
 above remain unchanged; no source result accepts those lanes.
+
+### Inputs and Authority
+
+#### Inputs and Authorization
+
+The user's full P05 execution prompt and current coordination request authorize
+assessment, formal Task issuance and independent worker instructions. Prompt
+SHA256 is `669a86c89a761a9a33172ebf9223eb9953d9bea062d76a2e025c4045912c7823`;
+historical baseline is `860ac1c3633eac9ad416fb1abd8a61a6e617ebd8`.
+Actual clean local main/HEAD is
+`4e26a5a8022a7307c7461af60337442912955df1`; fresh fetch/ls-remote confirms
+initial remote main `6da5e3bf380d5002e0e28181136fde8c016e49ce`. A later
+ls-remote/fetch confirms remote main at the same4e26a5a80, including P03/P04
+issuance; that publication was external to this assessment. Open PR list is
+empty. CI Quality Gates run38105014827 completed successfully at4e26a5a80;
+Push on main run38105014631 was still in progress at observation. These are
+remote observations, not P05 native, SEC security or HOME acceptance.
+
+Read bootstrap/provider, SPEC-0204/0212, TSK-0012 and the selected service
+owners. Preserve completed registration, DEV/MNG, Influx retirement,
+RedisInsight/exporter, k6/OTLP, common controls, Stage05 and P00. Preserve
+OpenBao PR409/410 TLS/wrapping/readiness/audit/snapshot source. Do not reopen
+historical Tasks0001-0004 or replace SMTP/history Task0005. New Task0013 owns
+only this P05 increment; no new Spec number is issued.
+
+The latest full P05 prompt requests logical commits and an owning-Spec PR after
+implementation, latest-head required CI and independent review. Older SEC01/
+SMTP01/CLN01 keep local-main/no-PR delivery. Dev is unused. Reconcile the
+unpublished documentation prefix and P04 dependency before a P05-only PR;
+do not implicitly push main. Already-authorized source and review need no
+repeated approval. Before private/runtime actions, establish exact target,
+effects, consumer, validation and recovery here; missing inputs defer only
+their dependent lane. Unsupported overall budgets remain unknown.
+
+#### Worker and Exact Ownership
+
+One P05 writer now uses `codex/p05-n8n-outbox-integrated` in
+`/home/hyunyoun/data/hy-home.docker/.worktrees/p05-n8n-outbox-integrated`, from
+the observed clean local main `4c83f14b11a77e13e582eb85d0bf256685472a95`.
+The user's common-gate handoff explicitly authorizes preservation, a new
+worktree, source-only P04 reconciliation, default checks and logical commits.
+The old issuance worktree and its 28 staged paths remain preserved unchanged.
+This phase authorizes no push, PR, runtime or shared-file mutation.
+Other writers are active: never reset, stash, clean,
+stage or force-push their changes.
+
+After checking for existing consumers/implementations, own these new paths:
+
+- This Task, its execution evidence and logical commit ledger.
+- `infra/07-workflow/n8n/workloads/README.md` and one canonical subtree
+  `infra/07-workflow/n8n/workloads/manifest-outbox-notifier/`.
+- Within that subtree, Korean `README.md`; `tools/__init__.py` and
+  `tools/build_workflow.py`; inactive public
+  `workflows/manifest-outbox-mailpit.json`; synthetic `fixtures/`; and a
+  value-free `outbox-contract.json` binding the reviewed P04 schema/version/hash.
+  The contract is a consumer binding, not a second SQL authority.
+- If necessary for the verified SMTP gap, a narrowly scoped n8n custom node
+  under `nodes/OpsflowSmtp/`, with `OpsflowSmtp.node.ts`, `transport.ts`,
+  reviewed package/lock/build metadata and focused synthetic transport tests.
+  It uses n8n's native SMTP credential API and only this notifier operation;
+  no standalone mail service, arbitrary Code credential access or broad module
+  allowlist is introduced. Runtime registration/mount/build is a shared proposal.
+- `tests/lib/ops/test_n8n_outbox_workflow.py`,
+  `tests/validation/test_n8n_outbox_contract.py` and opt-in
+  `tests/validation/test_n8n_outbox_rehearsal.py`.
+
+Every new folder, including workloads/tools/workflows/fixtures/nodes and node
+children, receives Korean README navigation. Use one deterministic builder
+and generated JSON; no production reference/ duplicate. Building is a pure
+function with explicit CLI output; importing the builder never writes files.
+Existing parent README edits are proposals, not a second writer lease.
+
+P04 exclusively owns canonical SQL/migrations and publication contracts in
+`infra/07-workflow/airflow/workloads/manifest-pipeline/sql`. Do not copy the
+supplied DAG/SQL or create another opsflow schema/provisioner. With an active
+P04 writer, the standalone prompt fallback routes installation through that
+owner. If reassignment becomes necessary, the coordinator records the exact
+canonical-file handover first; no parallel installation or implicit takeover.
+P05 proposes SQL changes and consumes the reviewed version/hash read-only.
+
+SEC01 owns n8n main/worker/runners versions, existing Dockerfiles and immutable
+image/security decisions. P03 owns endpoint/network contracts; P02 catalog/
+schema/tools; P01 OpenBao helpers and subject0085; SMTP01 canonical COMM-002/
+COMM-003 and its retirement executor; CLN01 consumer/deletion assessment.
+Root/leaf Compose/environment, existing n8n custom-bind integration, gateway,
+Alloy, backup, catalogs/support, m0021/inventory, Registry, Spec/Plan, existing
+README/subject0053 documents, manifest/workflow and shared tests remain read-only
+to P05 until a specific exclusive lease. Submit base blob IDs, exact hunks,
+consumer/test map and rollback in ignored integration proposals; the named
+owner/coordinator integrates once after reviewing both sides.
+
+#### Start Now and Wait Boundaries
+
+W40/W41 may start now: public reuse audit, deterministic inactive JSON,
+provisional state fixtures, RED/GREEN graph/validation/privacy/transport tests,
+bounded custom-node source and common-file proposals. P04 SQL is not frozen
+yet. Label draft interface assumptions and bind them later in W42; do not
+call mocked claim/ack a real database test. Full SEC/P03/P01/P06 completion is
+not a global source prerequisite.
+
+W42 final binding waits for P04 W36's independent SQL/security review and exact
+migration/interface hash. Record claim result fields/types, ack/retry boolean
+semantics, views, role grants, clock/lease, retry/dead and requeue rules.
+Reference defaults are a draft ten-minute lease, five attempts and bounded
+backoff; any change is a versioned P04 migration and reviewed P05 consumer
+update. Historical/backfill publication must not create a fresh notification.
+W43 native execution follows P04 W38's genuine publication/outbox fixture.
+
+Before native import/execution, SEC01 supplies exact compatible main/worker/
+runner image digest/ID, installed node schemas and relevant security receipt.
+Source currently selects2.42.6 while HOME still runs2.41.6. Verify Postgres2.6,
+EmailSend2.1 or reviewed replacement, IF2.2, Code2 if retained, StopAndError1
+and schedule trigger on that selected image; node fields are not arbitrary.
+Existing version/provider work is reused rather than repeated.
+
+P03 supplies exact DEV DB and Mailpit endpoints/ports, TLS/CA/timeout contracts
+and the process actually executing DB/mail nodes. Current source declares
+queue mode and OFFLOAD_MANUAL_EXECUTIONS_TO_WORKERS=true, but manual/scheduled
+worker execution still needs native proof. Add DEV/capture access only to that
+verified executor; runners need no DB/mail networks for a boolean-only Code
+check. Preserve existing MNG metadata, broker pair, networks and mounts.
+
+Current mail_net is an ordinary bridge shared with Stalwart; Mailpit is also
+on edge_net. Mailpit-only access cannot be inferred from the network name or
+loopback publication. Propose a dedicated bounded capture path/network if
+needed, with P03/coordinator review, keeping existing other consumers intact.
+The notifier SMTP implementation must restrict the actual Mailpit host/port,
+synthetic sender/recipient allowlist, run-derived Message-ID and small text
+payload; reject arbitrary SMTP hosts, relay, CC/BCC, attachments, file/URL
+reads and header injection. Prove denied Stalwart/external destinations and
+zero unintended effects. Existing accepts-any/insecure capture settings are
+DEV behavior, not production SMTP authentication evidence. Do not mount/copy
+real canonical COMM-002 into Mailpit credentials or create another Supabase
+SMTP password. P05 adds no external SMTP, Slack or webhook integration.
+
+P02 reviews value-free notifier credential references/classification. Credentials
+use the existing official n8n UI/API path and its encryption-key-protected
+native store, with operator-resolved local IDs in an ignored/private import
+artifact. Never invent IDs, export decrypted values, UPDATE credential data in
+SQL or assume .env changes refresh stored credentials. Notifier has only
+claim/ack/retry function EXECUTE; no owner/superuser/direct table writes or
+other database access. No provision/admin/ingest credential enters workflow.
+Encrypted native credentials remain inside the shared main/worker application
+trust boundary; they are not worker-only Docker secret mounts. Verify actual
+project/workflow access without claiming that network placement limits which
+n8n administrators can decrypt or use stored credentials.
+OpenBao remains the eventual management source; protected native execution
+copies may support bounded DEV proof before P01/P06 final delivery. Current
+edition and native external-store support must be verified, not assumed.
+
+#### Required Workflow and Failure Semantics
+
+Import inactive with credential placeholders resolved only in the private
+artifact. First prove authenticated manual execution, then exactly one
+one-minute polling schedule; no parallel Airflow email or Wiki schedule.
+Empty claim returns no mail/ack/retry action. Validate a single closed claim
+row's id/run/source/count/token types; runtime lease tokens remain private
+capabilities and never enter tracked evidence. Parameterized SQL uses the
+same current id/token for ack/retry, never string interpolation.
+
+The provided generator has no stable Message-ID. Official selected n8n tag
+resolves to commit `34ab9c7bf3d0c6d2ec3422e12e0b970aea5717c7`;
+EmailSend v2 source lacks a Message-ID/custom-header option and explicit
+connection/greeting/socket timeout settings. Source hashes are send.operation.ts
+`f45a85c4d3839033bdcb434be00fe242fc15ec6de1b7e6bae7fc64843b8f59bb` and utils.ts
+`cfbb16fbd8c5320eabb910535ebe939eeb8d780ec750e0834f88b49b5dc2e68a`.
+These are upstream source observations, not installed-image proof. A narrow
+credential-aware node may close the gap with explicit bounded transport and
+redacted output. Unsupported JSON options or broad Code/nodemailer/secret
+access are not a solution. Existing custom bind can shadow image-installed
+nodes, so actual registration and identical main/worker artifacts must be proven.
+
+Freeze workflow execution budget (reference120seconds), DB and SMTP transport
+timeouts below the current lease with failure/cancellation tests. A workflow
+timeout alone does not establish socket cancellation. Close transports and
+return only bounded run/state/error outcomes; no raw SMTP response, recipient
+data, credential, payload or driver error enters execution exports/logs.
+Keep successful/error/manual data-saving disabled, clear pinData, and test
+synthetic leakage markers through both positive and failure paths.
+
+Ack only the expected recipient's positive SMTP acceptance for the claimed
+event; reject empty/unknown/rejected outcomes. Validate ack===true. Also verify
+retry===true before reporting retry/dead transition; false is stale/lost lease,
+not a successful requeue. DB error waits for fresh claim/lease reconciliation.
+SMTP acceptance and PG ack are not atomic: response loss or ack loss can cause
+duplicate mail. Stable Message-ID supports diagnosis/dedup but does not prove
+exactly-once or recipient delivery. Never restart an old execution at SMTP
+with its expired claim; retry the whole fresh-claim workflow.
+
+P04 owns any controlled dead requeue function/migration. P05 owns its operator
+procedure and tests: identify cause, preserve accepted/uncertain receipts,
+apply only the reviewed function under its named operator role, then fresh
+claim. No direct outbox UPDATE, table-wide reset or notifier privilege expansion.
+
+#### Native, Recovery and Delivery Boundaries
+
+Before each native/private action record exact Docker context/project, image,
+workflow/credential reference, DB/role, capture target, resource/time budget,
+operational writer, effects, independent review, backup, owned empty restore
+target, identity-bound cleanup and rollback here. Synthetic isolated resources
+precede the selected operational DEV batch; no production fault injection or
+shared-volume initialization. Missing target defers only that operation.
+
+Prove native inactive import, schema/credential binding, manual and scheduled
+worker placement, actual P04 outbox consumption and Mailpit capture, two
+notifiers/one event, lease expiry/old ack denial, empty queue, DB and SMTP
+outage, send-response loss/ack loss, attempts cap/dead/fresh requeue, restart
+and exact notifier credential rotation through the official n8n path. Coordinate
+rotation with P04's role owner; do not broadly rotate passwords/encryption keys.
+Test stale native execution copies separately from file/management source.
+
+Recovery pairs a consistent n8n MNG metadata backup with the exact encryption
+key, custom artifacts/data and needed queue state, restored only to reviewed
+empty isolated targets with egress/schedules disabled. Coordinate DEV pointer/
+outbox reconciliation with P04's own recovery proof. Prove credentials decrypt,
+nodes register, and fresh claims preserve accepted/uncertain states without
+silently re-notifying accepted events. A file copy, image revert or Mailpit
+capture alone proves neither service recovery nor external delivery.
+
+Rollback stops this polling schedule and makes only this workflow inactive,
+drains/reconciles selected execution, and preserves outbox/receipts. Use compatible
+metadata/key restoration when required; no full-stack up/down, prune, MNG
+reset, broad chown, encryption-key replacement or private material deletion.
+
+## Execution Log
+
+### Work Performed
+
+#### 현재 후속 증거 인계 — 2026-10-22
+
+현재 builder/transport는 lease_until을 포함한 six-field claim과 SQL004의
+schema-v3 quarantine 계약을 소비한다. 후속
+[Task0018](tsk-0018-workflow-lease-and-connect-safety.md)은 그 safety correction과
+isolated SQL 증거를, [Task0019](tsk-0019-n8n-native-notification.md)는 최종 검토
+소스의 W74 attempt 11에서 native/cleanup PASS와 여섯 terminal execution을
+보고한다. 아래 2026-10-13 source-binding/preflight의 NOT_RUN은 당시 입력의
+기록이며 이 후속 supporting evidence와 구분한다.
+
+W74는 독립 synthetic fixture다. 같은 data의 Airflow→n8n W65 vertical, HOME,
+실제 provider delivery, credential rotation 또는 criterion 19 owner 수락으로
+승격하지 않는다. Criterion 19는 pending을 유지한다. Frozen Evidence에서
+source review PASS가 document/shared-gate FAIL을 `Resolves`로 가리키더라도
+review만으로 metadata나 registration 실패가 해소되지는 않는다. 실제 integrated
+checks와 현재 입력의 등록 gate 결과를 별도로 평가하며 과거 결과는 보존한다.
+이번 조정은 공개 소스 대조이며 새 native 실행이나 수락을 수행하지 않았다.
+
+#### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0204-TSK-0013 | draft | ready | #inputs-and-authorization |
+| SPEC-0204-TSK-0013 | ready | in-progress | #w40-w41-source-execution |
+| SPEC-0204-TSK-0013 | in-progress | completed | #handoffs-and-completion-2026-10-30 |
+
+#### W40 W41 Source Execution
+
+The historical source-start request started W40/W41 in the issued P05 worktree.
+Its clean
+starting HEAD and branch were `f7543e0697e2473cbbbeb254792e7a1d5b4b8423`
+and `codex/p05-n8n-outbox-notifier`. Read-only `git ls-remote origin
+refs/heads/main` returned `4e26a5a8022a7307c7461af60337442912955df1`;
+`gh pr list --repo buenhyden/hy-home.docker --state open` returned no open PRs.
+Both commands exited0. At that observation, local main was at issuance HEAD;
+it was not pushed. P04's Task and workload/tests were dirty and preserved;
+no reviewed SQL hash or publication receipt had been handed off.
+W42-W44 were NOT_RUN.
+
+The implementation is split between the builder/graph/fixture/test owner and
+the bounded native SMTP-node owner; they share this Task, separate exact file
+scopes and no operational permission. Independent reviewers receive read-only
+scope. Applicable cost/token/time/retry ceilings and native budget enforcement
+are UNKNOWN; no account or runtime limits are inferred. The controller owns
+this Task and new workload navigation, and serializes final review/index/commit.
+The `test-authoring` skill and `test-design`, `diff-review`, `commit-message`
+and `handoff` prompt contracts apply to their respective outputs.
+
+The provisional consumer contract is explicitly unbound. It contains no
+invented P04 commit/hash, native credential ID, installation receipt or role
+grant. The generated workflow stays inactive; custom-node registration,
+network grants and suite registration are shared-owner proposals.
+
+Fresh baseline regression command from this worktree:
+
+```sh
+rtk proxy /tmp/hy-home-p09-qa/bin/python -m unittest \
+  tests.validation.test_workflow_version_bundle.WorkflowVersionBundleTests \
+  tests.lib.ops.test_smtp_contract \
+  tests.validation.test_service_wiring_contracts -q
+```
+
+Result: 45 tests PASS, 2.940s, exit0 on issuance HEAD. This is UNIT evidence;
+no native import, SMTP capture, schedule, credential or restoration ran.
+
+#### Assessment and Next Work Units
+
+At initial assessment4e26a5a80, coordinator/main/P04 worktrees were clean.
+Later P04 began its workload and three dedicated source/test paths. No frozen
+SQL commit or native acceptance was handed off; untracked code is not that
+proof. P01/P02/P03 and old SEC/SMTP worktrees were separately observed and
+preserved. P02's later local HEAD was ea927d004d4e59c5e44af566abc3f5c2b6372c05.
+These local branch/uncommitted changes are not remote acceptance receipts.
+SMTP PR413 is merged source; existing Tasks still leave actual cutover,
+COMM-003 retirement and full recovery unaccepted. CLN retains PG-020 and
+unknown consumers. SEC full image/security/HOME acceptance remains pending.
+
+Safe inspect of six selected containers exited0: n8n main/worker run
+hyhome/n8n2.41.6-local, both runners2.41.6, Mailpit1.31.2 and dev-pg18.6.
+All reported running/healthy; worker networks are mng_data_net+n8n_net and
+Mailpit edge_net+mail_net. Source selects n8n2.42.6 and Mailpit1.31.4.
+This read-only metadata does not prove installed node schema, credential
+consumption, manual offload, SMTP capture or an opsflow database/role resource.
+
+1. W40: fresh source/owner audit and RED cases; read supplied six reference
+   files but do not copy P04's DAG/SQL into P05.
+2. W41: pure deterministic inactive builder/JSON and narrow SMTP node source,
+   with closed graph/input, privacy, empty queue, Message-ID/timeouts and
+   ack/retry/uncertainty tests; at least80percent meaningful coverage.
+3. W42: freeze reviewed P04 schema/interface hash, function-only role and
+   lease/requeue/recovery contract; revise draft consumer fixtures if needed.
+4. W43: reviewed exact-image native inactive import and official private
+   credential binding, then manual real-worker/DEV-to-Mailpit execution after
+   P04 publication proof and shared proposal integration.
+5. W44: one polling activation, concurrency/negative/failure/restart/rotation
+   and separately empty paired metadata/key restoration, with operational
+   writer/resources/cleanup/rollback evidence.
+6. W45: subject0053 and service README proposals, registered affected gates,
+   final independent code/security/SQL/IaC/docs reviews, CI and owning-Spec PR.
+
+#### Historical W41 Source Results
+
+The controller resumed ownership of both source/test lanes after delegated
+tool/escalation calls stalled; existing edits were preserved and the transfers
+were acknowledged before further writes. The builder's initial test landed,
+but its worker did not observe RED. The controller then ran its five tests:
+exit1 with five expected missing-builder errors, before writing the builder.
+Eight graph/binding/preflight tests subsequently exited1 with four expected
+missing generated JSON/contract/preflight errors before those artifacts existed.
+The node owner observed the initial missing-dist RED (exit1).
+
+Final source snapshot SHA256 is
+`496e59646b17d6031f2687635bc0b9aaaba4818a1263e5a48572b6e148b088e5`,
+over the 27 new owned source/document/test paths, using SHA256 of the
+sorted JSON path-to-SHA256 map. The final map is preserved in ignored
+`.agent-work/p05-final-source-freeze.json`. Core source hashes are:
+
+- builder: `cb5f7611cd43a155986894441fdd67b45e872b69c3dc44a9ca482c5248cdc0e0`.
+- transport: `d6cb1df02693a66806385842fcc58c668f54c0cf596ddd9d92dc15ab779083aa`.
+- native node: `eb4c88949d5b9547a2572754c46275e921e60232f5032c82ddf293701915f146`.
+
+The source has one deterministic builder, inactive JSON, supplied-reference
+draft binding, public synthetic cases and fail-closed structural preflight.
+It copies no P04 SQL/DAG and grants no native operation. DB statement/socket
+deadline and cancellation remain UNBOUND in the consumer contract; no fictitious
+Postgres JSON option claims enforcement. Actual credential IDs remain placeholders.
+
+Corrections observed during implementation/review:
+
+- Supplied-reference claim uses a 64-hex run, its four explicit sources and
+  row_count1..5000; an early UUID/slug/count draft was corrected on both sides.
+- A native error retains its node descriptor. The custom node now attaches only
+  a static minimal descriptor and static code; tests reject literal claim and
+  credential-reference leakage.
+- Pre-send cancellation is cancelled; in-flight cancellation is uncertain,
+  because DATA might already have been accepted. Owned sockets are destroyed.
+- The API development dependency's Axios audit found two HIGH entries. A scoped
+  exact override corrected the lock; both full and production audit now report
+  zero findings. This does not remediate installed n8n images.
+- A longer valid Message-ID is MIME-folded. The offline protocol test initially
+  failed on a one-line assumption; it now unfolds header whitespace and asserts
+  the same exact run-derived ID. No delivery assertion was weakened.
+- Trailing line-terminator negative cases pass the existing node regex guards
+  and the Python/JavaScript claim guards. No regex vulnerability is claimed.
+- Final evidence checks caught an undeclared criterion8/W41 pair and a
+  `BLOCKED` Result outside the registered domain. Both new rows now use the
+  assigned criterion19/W41 pair; failed metadata is `FAIL` with pending
+  acceptance and its blocking cause retained in Location. The existing Spec
+  Package loader then validated all 25 canonical packages, exit0.
+
+The following commands ran in that issuance worktree, all exit0:
+
+```sh
+rtk proxy /tmp/hy-home-p09-qa/bin/coverage run \
+  --data-file .agent-work/p05-builder.coverage --branch \
+  --source=infra/07-workflow/n8n/workloads/manifest-outbox-notifier/tools \
+  -m unittest tests.lib.ops.test_n8n_outbox_workflow \
+  tests.validation.test_n8n_outbox_contract \
+  tests.validation.test_n8n_outbox_rehearsal -q
+rtk proxy /tmp/hy-home-p09-qa/bin/coverage report \
+  --data-file .agent-work/p05-builder.coverage --fail-under=80 -m
+```
+
+Result: 15 tests PASS; combined statement/branch coverage98percent. Preflight
+tests inspect structural gaps and do not run a native rehearsal. In
+`infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp`:
+
+```sh
+rtk npm run test:coverage
+rtk npm audit --json
+rtk npm audit --omit=dev --json
+rtk npm pack --dry-run --ignore-scripts --json
+```
+
+Result: 24 tests PASS, lines97.33percent, branches94.83percent,
+functions87.88percent, each above80; both audits zero findings; pack dry-run
+includes only public README/package/compiled artifacts. Tests use stubs and
+actual Nodemailer over an in-memory Duplex byte stream; no TCP/DNS/SMTP service
+connection, real credential or database is used. Source API compatibility is
+not installed-image compatibility. Package/lock owns exact pins.
+
+Ruff check and format/check passed on the six owned Python files; the second
+format pass was unchanged. The local-staged official precommit controller
+passed on all 28 owned paths, including JSON, Markdown, Python format/lint and
+hardcoded-secret detection. It does not replace the document-contract gate.
+
+Metadata against the actual Registry failed with ten classification findings
+on exactly two required README paths under `nodes/OpsflowSmtp/`. The Registry's
+lowercase subpath profile does not classify this prescribed camel-case path.
+The immutable upstream version references now carry scoped advisory and
+compatibility explanations, with package/lock retaining pin ownership.
+
+The same check against a proposed Registry containing only the two exact
+`package-readme.additional_paths` entries passed: nine selected documents,
+zero violations, exit0. The explicit lifecycle comparison base was issuance
+HEAD `f7543e0697e2473cbbbeb254792e7a1d5b4b8423`. This candidate-only result does
+not mean the actual Registry or remote-main delivery gate passed. Reports are
+`.agent-work/p05-metadata-current.log` and `p05-metadata-proposed.log`.
+
+The authoritative changed-profile explain route selects document-contract,
+document-graph/lifecycle, agent-governance and existing static operations gates.
+The new Python and node test routes are not yet registered in its shared DAG.
+No full changed-profile PASS, native PASS or latest-head CI is claimed.
+At that issuance point, logical commits and PR publication were pending the
+required shared Registry integration. HEAD was the issuance SHA;
+all owned changes were preserved in that worktree.
+
+Final document links passed on 1202 documents and 11635 links: zero failures,
+one existing Stage98 historical-provenance warning, exit0. New README links
+route through the Stage03 navigation entry, and folder routers link only to
+direct child READMEs. Working-tree and cached `git diff --check` passed.
+
+Independent code review reported no source findings and approved the W40/W41
+source slice with follow-up. It directly observed the final 15 Python tests
+and an earlier 21-node test pass; final 24-node/coverage/audit receipts were
+controller-reported. Independent security review approved the same frozen
+source with no remaining findings. Both reviewed the final digest above and
+exclude shared integration, private credentials, runtime and delivery. The
+final Task result record is checked separately from the 27-file source map.
+Neither disposition completes criterion19 or grants native execution.
+
+#### Historical Shared Integration Proposals
+
+Exact hunks and node gate commands are in ignored
+`.agent-work/p05-integration-proposals/`; they are proposals, not acceptance
+evidence or applied source. Their six base blobs at issuance HEAD are:
+
+| Shared path | Base blob | Proposed change | Applied |
+| --- | --- | --- | --- |
+| docs/99.templates/registry.json | 00ea622af93736ce4e2e23854caa714601c63955 | Two exact camel-case node README paths; candidate metadata PASS, actual gate blocked | no |
+| .github/workflow-contract.yml | 7dc037023853a003ef38a53d21e2c8d1ac0dd3b4 | Dedicated Python modules; typed node build/coverage/audit setup request | no |
+| infra/07-workflow/n8n/README.md | e45d694458dcbb4f35cb540cc55b64f881eda1e3 | Workload navigation | no |
+| docs/05.operations/guides/0053-n8n.md | 2e76cfcee57535b3e5430880877b18244af875e9 | Inactive source and native prerequisites | no |
+| docs/05.operations/policies/0053-n8n.md | 9777813a5ad646392153ada772c4079bdf5adcd3 | Function-only role, capture/privacy boundary | no |
+| docs/05.operations/runbooks/0053-n8n.md | e0443146d2c4de5c1f1ac494a7d15bc42f01618c | Uncertainty, fresh claim, paired restore and rollback | no |
+
+The current script manifest permits only scripts/ and .agents/evaluations/;
+the workload-local generator is outside that inventory. Manifest is NO_CHANGE;
+no schema extension is introduced merely to register it. Shared image/custom
+bind, DEV/capture networks, endpoint/credentials and native gate registration
+still wait for their exact owner contracts. Preserve P04 dirty work and deliver
+its dependency before final P05 PR integration.
+
+#### Integrated Source Work Log
+
+The current integration baseline is local main
+`4c83f14b11a77e13e582eb85d0bf256685472a95`, after P04 and P06 source
+integration. Common validator/Registry commit
+`085d9bf795f31d9083f290cfdbcdc1a17ba72db3` already registers exactly the
+two prescribed OpsflowSmtp package README paths. No external Registry is used
+for this phase's metadata check. Prior candidate-only PASS and actual FAIL
+above describe the preserved issuance worktree, not the new integrated gate.
+
+Before migration, the sole writer fixed old HEAD
+`f7543e0697e2473cbbbeb254792e7a1d5b4b8423`, its index SHA256
+`44c772f1fc8c6efa37758a35430ed0b04b1e6bf899c2d1c4b3c31d6b0c86e433`
+and all 28 public owned file hashes. The binary staged patch SHA256 is
+`44db414ba98c88746df1dadcd3c4c69f519bf634cbe39b7f406cdcb0f130f33d`.
+The patch and receipt are preserved in each worktree's ignored
+`.agent-work/p05-integrated-handoff/`. New worktree creation at the exact
+baseline, apply-check and indexed apply each exited0. The canonical Task had
+no concurrent main change since issuance; its source results remain historical
+above, and this section records the current phase. Other worktrees and shared
+paths were not staged or changed.
+
+The canonical P04 SQL files are read-only inputs. Observed SHA256 values are
+001 `57a744cf33581bafd73f610b9c18c83d64c9457486a02e02398df56b444ee584`
+and 002 `0a00944569aa05b7a0eec6a555cc3357197b26257ee76a1779c7e258eb9a0b73`.
+Their claim result includes `lease_until`; the consumer explicitly projects
+only id/run_id/source/row_count/lease_token. The added regression failed with
+the original SELECT-star query (exit1), then all 16 Python synthetic tests
+passed after the projection fix (exit0). Contract source references assert
+those hashes and six upstream fields while all native binding fields remain
+null. This is source compatibility, not W42/W43 native acceptance.
+
+Actual producer publication, function ACLs, exact image/package/UID/TLS,
+credential/S3/backup and empty recovery targets remain unaccepted. Native
+import, notification, polling, DEV/HOME changes, rotation and recovery are
+NOT_RUN. P01 W23 and P06 pilot holds remain. Request/token/time/concurrency/
+retry ceilings and shared budget allocation remain UNKNOWN.
+
+The integrated 27-file source digest is
+`55856ce4aa2f121d63102731a460b12d054651ac6ff2cab1f3743554d7774b10`; its map is frozen in ignored
+`.agent-work/p05-integrated-source-freeze.json`. Task result-only changes are
+outside that source map. Both independent reviewers checked that exact map:
+code review reports no findings and APPROVE WITH FOLLOW-UP; security review
+reports no findings and approves the source-only scope. Neither disposition
+accepts installation, credentials, native execution or combined-head delivery.
+Security inspected the exact source; its independent hash command was blocked
+by sandbox/escalation tooling, so hash equality relies on the controller's
+frozen map and passing source-contract test. The separate read-only interface
+audit confirms ack/retry signatures and strict current-lease semantics; retry
+true may mean retry or dead, so the public result stays delivery-uncertain.
+
+Actual default Registry metadata passed on nine selected documents, zero
+violations, exit0, using explicit base4c83f14b11 and no external Registry.
+The all-document link check passed: 1213 documents, 11699 links, zero failures,
+one existing Stage98 historical-provenance warning, exit0. Reports are ignored
+`.agent-work/p05-integrated-metadata.log` and `p05-integrated-links.log`.
+Final source input preceded this result-only record; final Task metadata and
+its own staged gate are required again before the documentation commit.
+
+Python synthetic coverage command remains the one recorded above, now from
+the integrated worktree: 16 tests PASS, combined coverage98percent, exit0;
+the original five-field projection regression first failed as recorded.
+The six owned Python files passed Ruff lint and format/check. The existing
+workflow-version/SMTP/wiring regression command passed all45 tests in3.366s,
+exit0, on the integrated baseline.
+
+In the OpsflowSmtp package, `npm ci --ignore-scripts --no-audit --no-fund`
+installed the exact lock. `npm run test:coverage` built the TypeScript and
+passed24 offline tests, with lines97.33percent, branches94.83percent and
+functions87.88percent. `npm audit --json` and `npm audit --omit=dev --json`
+both exited0 with zero findings; `npm pack --dry-run --ignore-scripts --json`
+exited0 with eight public README/package/compiled files and no publication.
+All transport tests remain stubs or in-memory protocol bytes: no DB/TCP/DNS/
+service SMTP connection, runtime credential or installed-image acceptance.
+
+The official `run-ci-precommit.sh --mode local-staged` passed all28 owned
+paths before partition, exit0, including metadata-independent Markdown/JSON/
+Python style and secret detection. Every logical unit then separately passed
+Commitizen and that same staged gate immediately before its ordinary commit.
+The first ordinary node commit was blocked by the installed Git secret guard
+on a synthetic long password marker. No commit or bypass occurred. Replacing
+only that test marker with `dummy` preserved nonempty-password rejection and
+zero transport calls; Node build/24 tests/coverage and both independent source
+reviews then passed again for the final digest above, followed by the per-unit
+staged gate. No real secret, dependency or production behavior changed.
+Working-tree and cached `git diff --check` passed. A full registered changed
+profile, hosted/latest-head CI, PR, push and merge are NOT_RUN; their combined
+head cannot be accepted before the coordinator registers the new gates.
+
+Refreshed shared proposals are in ignored
+`.agent-work/p05-integration-proposals/proposal-index.json`; all five patch
+apply-checks exited0 without application. Registry is NO_CHANGE_ALREADY_INTEGRATED
+at085d9bf795, current blob `d792252f37995e09a7d24d739953b2873b1a88af`.
+The three Python modules and workload prefix appear in both changed-path and
+changed-root routing proposal tables. The exact node lock/build input hashes
+and setup/coverage/audit/pack command arrays request one typed Node integration
+and the same prefix in both routes. The coordinator owns adapters, budgets,
+registration, application, regression checks and combined-head acceptance.
+
+| Shared path | Current base blob | Applied |
+| --- | --- | --- |
+| .github/workflow-contract.yml | 0788cfe0197a279660c4effb9d6f4d83ba8e17f9 | no |
+| infra/07-workflow/n8n/README.md | e45d694458dcbb4f35cb540cc55b64f881eda1e3 | no |
+| docs/05.operations/guides/0053-n8n.md | 2e76cfcee57535b3e5430880877b18244af875e9 | no |
+| docs/05.operations/policies/0053-n8n.md | 9777813a5ad646392153ada772c4079bdf5adcd3 | no |
+| docs/05.operations/runbooks/0053-n8n.md | e0443146d2c4de5c1f1ac494a7d15bc42f01618c | no |
+
+#### Commit Ledger
+
+| Commit | Logical unit | Scope | Verification |
+| --- | --- | --- | --- |
+| 9aee10677c5d1aa8481a843ca92d7db9a713c6d3 | Bounded SMTP capture node | 13 node/package/test/navigation paths | Node coverage/audits/build/pack, independent source reviews, Commitizen and per-unit staged gate PASS |
+| 673dd0fc72ae9aa6505fc15a2ff9f097da967f63 | Inactive workflow and source contracts | 14 builder/workflow/fixture/contract/test/navigation paths | 16 Python tests, coverage, default metadata/links, independent source reviews, Commitizen and per-unit staged gate PASS |
+
+This final Task record is a separate documentation commit; its full SHA is
+resolved from branch HEAD in the final machine receipt, without a self-reference.
+Next action is coordinator integration of the fixed source commits and refreshed
+typed Node/Python/workload proposals, followed by combined-head gates.
+Native notification and DEV/HOME changes remain NOT_RUN.
+
+#### Coordinator Common Integration — 2026-10-11
+
+The coordinator adopts worker HEAD
+`53212d0b494f72658c52a4992fb4067936cf87da` and preserves all three logical
+commits in the dedicated `codex/p05-common-integration` worktree. The 27 public
+source files retain digest
+`55856ce4aa2f121d63102731a460b12d054651ac6ff2cab1f3743554d7774b10`.
+The old notifier worktree's 28 staged paths and binary patch digest
+`44db414ba98c88746df1dadcd3c4c69f519bf634cbe39b7f406cdcb0f130f33d`
+remain unchanged. The unrelated shared checkout's 24 paths remain untouched.
+
+At baseline `4c83f14b11a77e13e582eb85d0bf256685472a95`, direct remote main
+has the same SHA and GitHub reports no open PRs. These are remote observations;
+the worker source commits and current common changes are local only. The four
+public n8n README/Guide/Policy/Runbook proposal bases matched exactly before
+application. The coordinator applies those navigation and source-only usage
+changes, with preserved IDs/created timestamps. Registry is already integrated
+and unchanged. No source manifest records are needed for workload-local tools
+outside its governed script roots.
+
+Actual workflow registration adds the three Python modules to the existing
+repository-integrity leaf and routes the workload/tests in both changed-path
+and changed-root tables. The exact OpsflowSmtp package prefix additionally
+selects a typed package aggregate. Five fixed npm operations use only that
+package directory: install, dependency audit, production dependency audit,
+coverage/build and dry-run pack. Audits precede candidate build/test scripts.
+Existing workflow jobs, action pins, permissions, audit acceptance and
+P02/P03/P04/P06 registrations are retained. CI-only package leaves are excluded
+from unauthenticated local execution; no hosted result is inferred from a local
+plan or direct npm invocation.
+
+Fresh coordinator commands from the dedicated worktree passed, exit0:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 /tmp/hy-home-p09-qa/bin/python -m unittest \
+  tests.lib.ops.test_n8n_outbox_workflow \
+  tests.validation.test_n8n_outbox_contract \
+  tests.validation.test_n8n_outbox_rehearsal -q
+```
+
+This passed16 synthetic tests in0.191s. From the exact OpsflowSmtp directory,
+Node v26.10.0 ran `npm ci --ignore-scripts --no-audit --no-fund`,
+`npm run test:coverage`, `npm audit`, `npm audit --omit=dev`, and
+`npm pack --dry-run --ignore-scripts --json`; each exited0. The24 offline tests
+measured lines97.33percent, branches94.83percent and functions87.88percent.
+Both audits reported zero findings; pack selected eight public files without
+publishing. The transport tests stayed offline; npm used public dependency operations.
+No application DB/SMTP connection or runtime node installation occurred.
+
+The first workflow-validator invocation used nonexistent
+`check-workflow-contract.py` and exited2; no validator ran. The corrected
+`check-github-workflow-contract.py` exited0 on the initial registered candidate.
+An unauthenticated `run-ci-gate.py --profile changed --explain` exited0 and
+selected nine local leaves. Its exclusion of CI-only package leaves is expected,
+not successful hosted package execution.
+
+Initial typed-adapter RED/GREEN and127 gate tests passed on the pre-review
+candidate, with86percent combined branch-enabled coverage. Subsequent independent
+security review blocked that input: candidate coverage ran before audit and
+inherited a repository-root FD. That receipt is superseded for final acceptance.
+The correction removes root capability/environment forwarding to npm, uses the
+fixed package directory FD, runs audits first, and rejects coverage mutation of
+explicitly frozen source/control inputs. It does not promise whole-checkout
+immutability or constrain arbitrary external hosts. Final corrected-input tests,
+metadata, staged gate, independent review and local-main delivery are recorded
+separately in the coordinator receipt after they actually finish.
+
+The corrected frozen-input gate command executed by the delegated CI engineer
+was `/tmp/hy-home-p09-qa/bin/python -m unittest
+ tests.lib.gate.test_ci_gate_adapters tests.lib.gate.test_ci_gate_contract
+ tests.validation.test_ci_gate_plan tests.validation.test_ci_gate_execution_context
+ -v`, with PYTHONDONTWRITEBYTECODE=1. It passed128, exit0; log
+`/tmp/p05-node-gate-4modules-security-final.log`. Branch-enabled coverage of
+adapter/contract/runner measured combined86percent (individual83/88/86), and
+`coverage report --fail-under=80` exited0. Raw data and report are
+`/tmp/p05-node-gate-security-final.coverage` and
+`/tmp/p05-node-gate-coverage-report-final.log`. This is synthetic harness testing,
+not hosted CI or native consumer authentication. The exact aggregate order is
+validated with a negative reorder regression; missing-child diagnostic
+precedence is retained. Lockfile and adapter mutation regressions fail closed.
+Final security re-review passed with no P1/P2 findings. Scoped Ruff0.15.12 lint,
+format check and `git diff --check` passed on the frozen seven implementation/
+regression files. Independent combined-head quality review and final staged/
+metadata/local-main receipts remain separate below or in the coordinator ledger.
+
+Workflow SHA256 is
+`a7df8a8200c6865ec766f7701f54d9de3271a292d988657f1a95f802ead25ea7`.
+Adapter SHA256 is
+`7f5f64dcedd4f79cabdfa5de1f1f355521315c570cc298046b7d9cbdf4d2f4d6`;
+contract SHA256 is
+`89e00e59aa8bf0f8bd4524e7239cd0f9e6b9c59152df2041192c259175d9d740`;
+runner SHA256 is
+`77d5a3e418e32cd4026283d2b655adb29f4739e51889407811f9e6b5103cc7ba`.
+The frozen map in the ignored receipt includes the remaining four tests.
+Fresh all-document links passed1213 documents/11701 links, exit0, with zero
+failures and one pre-existing archive capture warning. No frozen source or
+package lock/build input was rewritten by the npm checks.
+
+Receipt paths under ignored `.agent-work/` retain public commands, input hashes,
+failed attempts, corrected results and final commit/main ancestry. This section
+keeps native W42/W43/W44 and criterion19 in-progress. P04 SQL hashes remain the
+same read-only bindings and native identity/version fields stay null. Exact
+SEC01 package/image, P03 UID/executor/TLS/endpoint, P02 credential delivery,
+P04 producer/function grants/S3 policy and paired backup/empty-restore acceptance
+are still required. No import, schedule activation, DEV/HOME change, migration,
+rotation, private deletion or recovery ran. P01 W23 and P06 pilot holds remain.
+
+#### Segmented Local Source Validation — 2026-10-11
+
+Frozen source input is `5b1a92db48fd508feff4cee0753b3b4468dd41dc`, following
+common/worker integration `c7d56a383ad8b77dd615327d11605b3e15d2146e`.
+The registered local execution plan has33 nodes; public explain exposes10.
+The front-door run exited124 after nodes0–9 passed. First canonical continuation
+exited1 at node18; nodes10–17 passed. Permission-corrected continuation exited1
+at node26; nodes18–25 passed. Final continuation26–32 exited0 with ordinary
+Python, debug true/optimization0 and clean unchanged post-input. Thus all33
+nodes have segmented successful receipts; the original124 and both suffix1
+failures remain failures. No fresh aggregate exit0 or hosted PASS is claimed.
+
+Only two coordinator-checkout entrypoint modes changed775 to755, matching their
+tracked100755 modes: Open WebUI and Gatus. File content hashes and index were
+unchanged, with Git clean and no HOME/runtime effect. The only source delta
+from c7d56a383 is the synthetic workflow fixture's canonical working directory,
+seven changed lines in the existing test. RED: one test/four subcase failures,
+exit1,1.769s; GREEN:39 tests,exit0,7.492s; Ruff/staged checks exit0 and independent
+review ACCEPT. The registered workflow contract SHA256 remains
+`bdb1941e522865a9a381b0913f4a8e266dfb613cbb832ca35889ff26ac3ecfc5`.
+
+Receipts are `.agent-work/p04-p07-registered-suffix-final-fixture-result.json`,
+`.agent-work/p04-p07-checkout-permissions-repair.json` and
+`.agent-work/p05-fixture-cwd-receipt.json`; final output is
+`.agent-work/p04-p07-registered-suffix-final-fixture.log`. Earlier aggregate and
+suffix logs remain preserved. These SOURCE/UNIT/STATIC checks do not complete
+operational criteria. Local-main source integration awaits final documentation
+checks and review; its delivery SHA is not yet known. Current direct-user
+local-main delivery uses no dev, remote push, PR or hosted execution.
+
+Combined P04/P05 synthetic checks passed196 in19.313s, exit0; separate P06/P07
+checks passed62 in16.592s, exit0. Earlier24 offline Node tests and source audits
+retain their original input/version attribution and are not SMTP/native receipts.
+P04 retains sole ownership of SQL/outbox contracts; no copy or new provisioning
+was introduced. The final repository leaf passed494 tests/127.874s, exit0.
+Criterion19/W42–W44 remains open: actual frozen native SQL consumption, import,
+credential binding, queue-worker capture, scheduling and recovery are NOT_RUN.
+Source/common commits are preserved; no fresh coverage or production acceptance
+is inferred. Final Task checks and local-main source delivery remain pending.
+
+#### Owner decision 2026-10-29
+
+On 2026-10-29 the owner split criterion 19. Its native evidence covered
+manual execution only: TSK-0019 W74 attempt 11 proved inactive import, the
+actual queue worker and external runner, Mailpit capture, Message-ID,
+unknown-outcome isolation, reconciliation, restart and generation-2 metadata
+and database restoration, and TSK-0018 W73 proved stale-lease rejection and
+ambiguous-send quarantine. No native run covered one-minute scheduled
+execution, concurrent claims, retry and dead-letter, or credential rotation.
+Those obligations move to new criterion 22, which this Task owns through
+W42–W45; their rows now name criterion 22 and stay open. Criterion 19 is
+accepted for the narrowed text.
+
+The Evidence and Criterion Acceptance tables move to the current shape so the
+decision can be recorded: each row gains `Required`, and each criterion row
+gains its current owner. `Independent source reviews` named the earlier
+`Document and shared gate integration` FAIL in `Resolves` with a different
+check, which the current shape does not allow, so its `Resolves` is now `-`
+and `Rerun of Document and shared gate integration` resolves that FAIL with
+the same check on today's `main`.
+
+#### Criterion 22 harness source 2026-10-30
+
+The owner chose to build the criterion 22 harness, register it in the gate and
+merge it after independent review. The opt-in native class
+`OpsflowN8nNativeRehearsal` in `tests/validation/test_opsflow_native_rehearsal.py`
+now runs seven further steps after the existing manual run: scheduled
+execution, concurrent claims, retry and dead letter, empty queue, database
+credential rotation, paired restore decrypt in the fresh generation, and wrong
+key fail-closed after a correct-key control on the same path. The helpers live
+in `tests/validation/_opsflow_native_criterion22.py`, and the Docker-free guards
+in `tests/validation/test_opsflow_native_criterion22.py` join the default gate
+through `.github/workflow-contract.yml`. The work budget rises from 25 to 40
+minutes. SMTP credential rotation stays NOT_RUN, because Mailpit has no
+authentication to rotate.
+
+Security review approved; its medium finding (no correct-key control for the
+explicit-key path) and the shared `/tmp` probe path were fixed. Code review
+asked for changes, all applied: the race and retry outputs join a boolean onto
+text, which PostgreSQL renders as `true` or `false`, so the parsers and stubs
+had expected the wrong `t` or `f`; the session check after rotation now waits
+for terminated backends; and two minor test defects were removed. The concurrent
+claim and retry scenarios drive the database contract as the notifier role in
+`psql`, with the retry backoff fast-forwarded by the superuser, and the receipt
+records this as `driver` and `backoff` facts. Accepting criterion 22 on that
+reading is the owner's decision. After the fixes the offline set ran 67 tests,
+OK, one skipped (the opt-in native class), and the workflow contract and its
+gate tests passed. This is source only: no Docker command ran, W42 still waits
+for P04 W36, and criterion 22 stays pending until one approved native run
+returns its receipt.
+
+#### Owner native attempt 2026-10-30
+
+The owner ran the opt-in native class once from `main` at `032818766`, before
+the criterion 22 harness merged, so the run carried none of the criterion 22
+steps. Attempt `opsflow-native-1b407daf3eb9138fa67527cb` used image
+`sha256:1fda18a541144ae5519ac97bcaffa4e24fad0e71d424606d230464bec8fce153`, the
+same image as TSK-0019 attempt 11, and source binding `03892eb1a9a4`. Main
+readiness and liveness, the worker broker and Mailpit all answered 200. The
+first manual execution did not turn terminal within 60 seconds, so the run
+stopped with `native` ERROR after 598.7 seconds. Cleanup passed: all eight
+containers were confirmed absent and nothing was retained.
+
+The harness for that step is unchanged since attempt 11, and the receipt kept
+no execution status or log, so the cause is unknown. The harness now records
+`execution_timeout_facts` when a queued execution times out: the last status
+seen and whether known main and worker log lines exist, as booleans only. One
+further native run is needed.
+
+#### Owner native attempt with criterion 22 steps 2026-10-30
+
+The owner ran the native class again from `main` at `4de81f1a4`, with the
+criterion 22 harness and timeout diagnostics. Attempt
+`opsflow-native-5c855b474d846df902d87001` used the same image and source
+binding. This time the earlier steps passed: executions 1 to 4 turned
+terminal and every health probe answered 200. In `scheduled_execution`, the
+scheduled delivery itself passed: one trigger-mode execution within 60
+seconds, with the worker as the only member of the DEV network. The next
+publication then failed in PostgreSQL, so that step was recorded FAIL, the
+later six steps NOT_RUN, and `native` ERROR after 715.6 seconds. Cleanup
+passed and nothing was retained.
+
+The cause is a harness defect, not the notifier. `003_business_date.sql`
+adds a unique index on source and UTC business date, and `publish_next` gave
+every publication a time on 2026-10-16, the day of the earlier
+`hy-home.docker` publication. Each criterion 22 publication now takes its own
+UTC day from 2026-10-17, still rising, and the offline test pins those dates.
+The first attempt's manual-execution timeout did not recur, so it remains
+unexplained. One further native run is needed.
+
+#### Owner decision on criterion 22 drivers 2026-10-30
+
+The owner chose on 2026-10-30 to accept criterion 22 with the concurrent claim
+and retry scenarios as they stand: driven in `psql` as the notifier role, with
+the retry backoff fast-forwarded by the superuser. These scenarios prove the
+database lease and retry contract. That n8n itself claims and acknowledges
+rows is proved by the scheduled and manual executions. The other options,
+one real n8n retry with a 30-second backoff or every scenario through n8n,
+were declined. This settles how the evidence is read, not whether it exists:
+criterion 22 stays pending until one native run returns all seven fields and
+`native` as PASS.
+
+#### Owner native attempt three 2026-10-30
+
+The owner ran the native class a third time, from `main` with the
+business-date fix. Attempt `opsflow-native-cd9f2fadd4086d1c86311ead` passed
+`scheduled_execution`: one trigger-mode execution delivered in 41 seconds,
+with the worker as the only member of the DEV network, and the deactivated
+hold kept the next row unclaimed. In `concurrent_claims`, the race with one
+row and four claimers passed. The race with three rows and six claimers
+returned a summary the parser rejected. The step was recorded FAIL, the later
+five steps NOT_RUN, and `native` ERROR after 855.9 seconds. Cleanup passed.
+
+This was another harness defect. The reviewed provisioning gives
+`opsflow_notifier` `CONNECTION LIMIT 5`, and the workflow credential pools up
+to two connections as the same role. The sixth psql claimer could not
+connect, and its missing fields failed the parser. The four-claimer race
+passed only because the pool happened to hold few connections. Each race now
+uses three claimers, five minus two: one row with three claimers, then two
+rows with three claimers. An offline test pins the limit in the provisioning
+SQL and the pool size in the credential. One further native run is needed.
+
+#### Owner native attempt four 2026-10-30
+
+The owner ran the native class a fourth time, from `main` at `2427700e4`.
+Attempt `opsflow-native-dc07812ebf96857acaa19f5f` failed after 70 seconds,
+before any container existed: creating the first secret-preparation
+container ended with `owned container identity is ambiguous`. The receipt
+reported cleanup PASS with nothing retained, but that was wrong (see the
+correction below). The daemon had not restarted. During the attempt, the Open WebUI
+Grype scan was running on the same host (08:53 to 09:09 KST, load
+average near 20), and each fixture Docker call has a 60-second limit. The
+harness withholds Docker's error, so contention is the likely cause but not
+proven. The same code passed this step in the three earlier attempts. The
+next run must not overlap other heavy work.
+
+Correction, 2026-10-30: the owner's pre-run check for attempt five found
+`opsflow-native-dc07812ebf96857acaa19f5f-g1-secret-prep` in state `Created`,
+made at 08:52:15 KST and carrying the attempt's labels. The daemon finished
+the create after the client call had failed. Cleanup found no container,
+dropped the pending role, and its sweep ran before the container existed, so
+its PASS was false. Cleanup now polls for up to 60 seconds before treating a
+pending container as never created. An offline test covers both a late
+create and a create that never appears. The leftover container, never started,
+is for the owner to remove; a later residue check showing none resolves the
+Attempt four residue row.
+
+#### Owner native attempt five 2026-10-30
+
+The owner ran the native class a fifth time, from `main` at `badfddd01`. A
+read-only check found no labelled native container or network before the run.
+Attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` finished `OK` in 1,221.6
+seconds with `native` PASS. Its image was
+`sha256:1fda18a541144ae5519ac97bcaffa4e24fad0e71d424606d230464bec8fce153`,
+with source binding `03892eb1a9a4`. All seven criterion 22 fields passed:
+
+| Field | Facts |
+| --- | --- |
+| `scheduled_execution` | One trigger-mode execution delivered in 23 s; the worker was the only member of the DEV network |
+| `concurrent_claims` | Driven in psql as the notifier role (owner decision 2026-10-30) |
+| `retry_dead_letter` | Same driver, backoff fast-forwarded; five attempts to `dead`, exhausted row dead-lettered |
+| `empty_queue` | Manual execution succeeded with nothing claimed, sent or changed |
+| `credential_rotation` | Stale password denied, new one accepted; stale workflow `error`, rotated `success`; SMTP rotation NOT_RUN |
+| `paired_restore_decrypt` | Restored metadata and key decrypted the rotated credential and the SMTP host |
+| `wrong_key_fail_closed` | Right key decrypted; a wrong key exported nothing |
+
+The earlier fields also passed: `queue_runner`, `restore` and
+`smtp_connect_failure_before_acceptance`. `exactly_once` stays NOT_CLAIMED and
+`response_loss_after_acceptance` NOT_RUN. All nine containers were confirmed
+absent, nothing was retained, and a read-only check after the run found no
+labelled resource. These rows resolve the W43 and W44 failures. Criterion 22
+still has two NOT_RUN rows. W42 freezes the reviewed P04 SQL and interface
+hash. W45 is delivery with a final review. Criterion 22 stays pending on them.
+
+#### W42 freeze, W45 review and criterion 22 acceptance 2026-10-30
+
+On 2026-10-30 the owner chose to freeze the P04 interface after an
+independent review, then accept criterion 22. The frozen binding is the three
+migrations that attempt five applied, at `main` `8e84763bd`:
+
+| File | SHA256 |
+| --- | --- |
+| `001_opsflow.sql` | `82a4762a8962832c7fdd05826df3b97cf02cc4f96c974a328e42e4493143b18f` |
+| `003_business_date.sql` | `830b62c6e8d175d5a4350bab27976121637df4aeca6688748865756be2d84d72` |
+| `004_notification_quarantine.sql` | `ad8176d875b75c15d0e7bfc21c1cb67cd5b31240a4901bccec5b8bb0d931bde9` |
+
+`sha256sum` gave these values. 003 and 004 also embed the receipts of 001 and
+003. The P05 contract consumes these functions:
+
+- `claim_notification`, which uses `FOR UPDATE SKIP LOCKED`;
+- `ack_notification`, which needs the lease token and an unexpired lease;
+- `retry_not_sent_notification`, which has the same guards, backs off 60 to
+  900 seconds and dead-letters after five attempts;
+- `unknown_notification`, which needs the token only and quarantines the row.
+
+An expired lease becomes `unknown` and is never resent automatically.
+
+An independent `security-auditor` reviewed the three files, the provisioner
+and `002_checks.sql`. It found no Critical or High issue and approved with
+notes. Medium: `002_checks.sql` accepts only versions 1 and 2, so no reusable
+post-004 drift and ACL check exists, and no executable case shows that ingest
+and reader cannot run `unknown_notification` or `retry_not_sent_notification`
+or read `notification_reconciliations`. Medium: the database cannot itself
+enforce "not sent" before `retry_not_sent_notification`. On the P05 side,
+`test_n8n_outbox_contract.py` checks that only a proven `cancelled` receipt
+reaches that function and that every SMTP, ack and ambiguous error reaches
+`unknown_notification`; attempt five passed
+`smtp_connect_failure_before_acceptance`. Low notes:
+
+- `search_path` lacks a trailing `pg_temp`, which cannot be exploited while
+  clients have no TEMP;
+- 001 has no lock or statement timeout of its own;
+- the claim's expiry sweep has no SKIP LOCKED;
+- a same-day publication fails with raw `23505`;
+- the migrator `EXECUTE` grant on reconcile has no effect;
+- the fingerprint omits connection limits;
+- the checksum input is checked for shape only.
+
+These are P04 follow-ups for TSK-0012 and do not change the frozen
+interface.
+
+An independent `code-reviewer` reviewed the harness changes since the
+reviewed `16fa28d6f` and approved with notes. Two notes were fixed here.
+Cleanup now removes known containers before polling pending ones, so the
+60-second poll cannot use up their removal budget, and each container still
+gets one removal. A test now checks that the concurrent-claims scenario
+passes `RACE_JOBS`. The grace comment also now states that a create landing
+after the grace and the final sweep can still escape. In that case, the
+residue check is the guard. Deferred: the dates overflow past 15
+publications (the scenario makes 8), and timeout diagnostics read the logs
+once per marker. The native offline set ran 64 tests, OK, one skipped.
+
+W45 delivery is PRs #656 to #665, each merged after `candidate-quality`
+passed, plus this change. Criterion 22 is accepted. Criterion 8 shares the
+Delivery row and stays with its owner.
+
+#### Handoffs and completion 2026-10-30
+
+The final source is `main` `c585c5244` (PR #666). Each receiver has a dated
+"Handoff from SPEC-0204 TSK-0013 2026-10-30" section. Each section names this
+SHA, the native facts it can use, its NOT_RUN lanes and its next input.
+
+| Phase | Receiver | NOT_RUN lanes handed over |
+| --- | --- | --- |
+| P04 | TSK-0012 | `exactly_once` not claimed; response loss after acceptance; ingest and reader denial cases |
+| P02 | TSK-0010 | SMTP credential rotation; execution-copy catalog row |
+| P03 | TSK-0011 | Executor, endpoint and network denial tests; HOME endpoint and TLS |
+| P01 | TSK-0006 | OpenBao management and refresh of the notifier credentials |
+| P06 | TSK-0014 | OpenBao delivery of both notifier credentials; SMTP rotation |
+| P07 | SPEC-0218 TSK-0002 | CPU, memory and polling-load measurement |
+| P08 | TSK-0015 | None; nested 0053 paths and blobs given |
+| P10 | TSK-0016 | Airflow-to-n8n publication-to-capture chain (W65); HOME |
+
+SEC01's TSK-0009 is completed and frozen, so its handoff stays here. Native
+attempt five ran image
+`sha256:1fda18a541144ae5519ac97bcaffa4e24fad0e71d424606d230464bec8fce153`, built
+from n8n 2.43.6 with source binding `03892eb1a9a4`, the same image as TSK-0019
+attempt 11. NOT_RUN: an installed-node schema and security receipt for that
+image, and any HOME n8n upgrade from the running 2.41.6. A non-terminal SEC
+successor takes this up.
+
+Criteria 19 and 22 are accepted, and every assigned criterion and Work Unit
+pair has a PASS row, so the Task is complete. Criterion 8 shares the Delivery
+row, which stays unresolved for criterion 8. Its owner must add a criterion 8
+PASS row with the same Check before accepting it.
+
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Git and owner baseline | 1, 19 | W40 | status/worktrees/fetch/open PR list | Local/remote4e26a5a80 | PASS | Baseline only; no remote or runtime write by this assessment | required | - |
+| Existing source contracts | 1, 8, 19 | W40 | Workflow version, SMTP and service wiring unittest | Clean4e26a5a80 | PASS | 45 tests, 3.023s, exit0; command below | required | - |
+| Supplied reference audit | 19 | W40 | Six public files, four static tests and JSON generator parity | Prompt669a86c89a76 | PASS | 4 tests, 0.02s, exit0; generator semantic parity; no native proof | required | - |
+| New notifier source | 19 | W41 | RED/GREEN builder/workflow/transport/privacy | Source snapshot 496e59646b17 | PASS | 15 Python and 24 offline node tests; coverage and audit above; native acceptance is separate | required | - |
+| Document and shared gate integration | 19 | W41 | Metadata, links, precommit and gate routing | Actual Registry at issuance; exact proposal only | FAIL | Links/precommit pass; actual metadata has ten findings on two node README paths; candidate-only metadata passes; shared CI registration pending | required | - |
+| Independent source reviews | 19 | W41 | Code/specification and source-security review | Source snapshot 496e59646b17 | PASS | Code approved with follow-up; security approved; no remaining source findings; runtime/delivery excluded | required | - |
+| Integrated source checks | 19 | W41 | Default Registry metadata, synthetic tests/coverage/audit/build/pack, links and staged gate | Source snapshot 55856ce4aa2f; base4c83f14b11 | PASS | Integrated work log and ignored receipts above; native and combined-head acceptance excluded | required | - |
+| Integrated independent reviews | 19 | W41 | Code and security review | Source snapshot 55856ce4aa2f | PASS | No source findings; code approved with follow-up; security approves source-only scope | required | - |
+| Frozen P04 binding | 22 | W42 | Reviewed SQL/version/hash and roles | P04 W36 pending | NOT_RUN | P04 remains sole SQL owner | required | - |
+| Native import and manual execution | 22 | W43 | Exact image, credential and worker/SMTP proof | P04 W38 and relevant readiness pending | NOT_RUN | No import/credential/network/DB action | required | - |
+| Scheduled failures and recovery | 22 | W44 | Polling, outages, restart/rotation and empty restoration | No exact action selected | NOT_RUN | No operational acceptance | required | - |
+| Delivery | 8, 22 | W45 | Latest-head CI/review/PR/merge | Integrated source phase | NOT_RUN | Two source commits recorded above; final Task commit and combined-head registration/CI remain separate; native holds are unchanged | required | - |
+| Segmented source checks | 8 | W45 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | required | - |
+| Rerun of Document and shared gate integration | 19 | W41 | Metadata, links, precommit and gate routing | `main` at merged PR #640 with the notifier source and node READMEs | PASS | `check-document-metadata.py --mode check-contracts` 0 violations; `check-document-links.py --mode all` PASS; PR #640 `candidate-quality` run 40874942142 success, which runs pre-commit and gate routing | required | Document and shared gate integration |
+| Criterion 22 harness source | 22 | W44 | Offline scenario guards, gate registration and independent review | Worktree on `main` at merged PR #654 | PASS | Criterion 22 harness source 2026-10-30; 67 tests OK with the native class skipped; no native run | required | - |
+| Owner native attempt | 22 | W43 | Opt-in native class, first manual execution | `main` at `032818766` before the criterion 22 harness; attempt `opsflow-native-1b407daf3eb9138fa67527cb` | FAIL | Owner native attempt 2026-10-30; queued execution did not turn terminal in 60 s; cleanup PASS | required | - |
+| Owner native attempt with criterion 22 steps | 22 | W44 | Opt-in native class, criterion 22 scenarios | `main` at `4de81f1a4`; attempt `opsflow-native-5c855b474d846df902d87001` | FAIL | Owner native attempt with criterion 22 steps 2026-10-30; scheduled delivery passed, next publication hit the business-date index; harness fixed; cleanup PASS | required | - |
+| Owner native attempt three | 22 | W44 | Opt-in native class, criterion 22 scenarios | `main` at `e3e504514`; attempt `opsflow-native-cd9f2fadd4086d1c86311ead` | FAIL | Owner native attempt three 2026-10-30; scheduled execution PASS; six-claimer race exceeded the notifier connection limit; harness fixed; cleanup PASS | required | - |
+| Owner native attempt four | 22 | W43 | Opt-in native class, fixture creation | `main` at `2427700e4`; attempt `opsflow-native-dc07812ebf96857acaa19f5f` | FAIL | Owner native attempt four 2026-10-30; first container create failed while a Grype scan loaded the host; cleanup PASS | required | - |
+| Attempt four residue | 22 | W43 | Owner pre-run check for labelled native containers and networks | `docker ps -a` by attempt label before attempt five, 2026-10-30 | FAIL | Owner native attempt four 2026-10-30, correction; one `Created` secret-prep container of attempt `opsflow-native-dc07812ebf96857acaa19f5f` remained after a reported cleanup PASS | required | - |
+| Native import and manual execution, attempt five | 22 | W43 | Exact image, credential and worker/SMTP proof | `main` at `badfddd01`; attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` | PASS | Owner native attempt five 2026-10-30; exact image and source binding, manual queue-worker executions to Mailpit | required | Native import and manual execution |
+| Owner native attempt five, manual execution | 22 | W43 | Opt-in native class, first manual execution | `main` at `badfddd01`; attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` | PASS | Owner native attempt five 2026-10-30; manual executions turned terminal | required | Owner native attempt |
+| Owner native attempt five, fixture creation | 22 | W43 | Opt-in native class, fixture creation | `main` at `badfddd01`; attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` | PASS | Owner native attempt five 2026-10-30; all nine containers created and confirmed absent after cleanup | required | Owner native attempt four |
+| Attempt five residue | 22 | W43 | Owner pre-run check for labelled native containers and networks | Read-only `docker ps -a` and `docker network ls` by attempt label before and after attempt five | PASS | Owner native attempt five 2026-10-30; none before and none after | required | Attempt four residue |
+| Scheduled failures and recovery, attempt five | 22 | W44 | Polling, outages, restart/rotation and empty restoration | `main` at `badfddd01`; attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` | PASS | Owner native attempt five 2026-10-30; scheduled polling, SMTP outage, rotation, paired restore and wrong-key checks | required | Scheduled failures and recovery |
+| Owner native attempt five | 22 | W44 | Opt-in native class, criterion 22 scenarios | `main` at `badfddd01`; attempt `opsflow-native-85d1c643ffb54ca7bf5da4e7` | PASS | Owner native attempt five 2026-10-30; seven criterion 22 fields and `native` PASS; cleanup PASS | required | Owner native attempt with criterion 22 steps, Owner native attempt three |
+| Reviewed frozen P04 binding | 22 | W42 | Reviewed SQL/version/hash and roles | 001, 003 and 004 at `8e84763bd` with the SHA256 values above; independent `security-auditor` review | PASS | W42 freeze, W45 review and criterion 22 acceptance 2026-10-30; approved with notes, no Critical or High; the notes are P04 follow-ups | required | Frozen P04 binding |
+| Criterion 22 delivery | 22 | W45 | Latest-head CI/review/PR/merge | PRs #656 to #665 merged after `candidate-quality` success; independent `code-reviewer` review with two notes fixed here | PASS | W42 freeze, W45 review and criterion 22 acceptance 2026-10-30; native offline set 64 tests OK, one skipped | required | Delivery |
+
+Actual existing-source command, exit0:
+
+```sh
+/tmp/hy-home-p09-qa/bin/python -m unittest \
+  tests.validation.test_workflow_version_bundle.WorkflowVersionBundleTests \
+  tests.lib.ops.test_smtp_contract \
+  tests.validation.test_service_wiring_contracts -q
+```
+
+All six supplied files were extracted only under ignored
+`.agent-work/p05-reference-audit/reference/`. Existing isolated reference QA
+Python ran `python -m pytest <reference>/tests -q` with that PYTHONPATH and
+automatic plugins disabled. The explicit generator exited0 and its JSON
+semantically matched the supplied inactive JSON. These tests inspect files;
+they do not install Airflow/n8n, apply SQL, authenticate SMTP or test native
+credentials. No shared QA environment was changed.
+
+Worker verification selects new unit/contract modules plus affected existing
+modules above, reproducible custom-node build/transport tests if used, and
+opt-in native rehearsal with exact public/private inputs and cleanup. Record
+commands, SHA/blob hashes, RED/GREEN exits, coverage, skipped native classes,
+failures/corrections and actual receipts. Coordinator integrates registration
+into existing manifest/workflow before final registered changed-profile QA and
+run-ci-precommit.sh --mode local-staged; proposal-only registration is not PASS.
+Run document metadata/links and git diff --check. Keep SOURCE / UNIT / STATIC /
+ISOLATED / HOME / MIGRATION / ROTATION / RECOVERY / DELIVERY separate. Do not
+close native acceptance using reference test results or container health.
+
+W40 corrected a stale verifier route: `scripts/qa.py` does not exist at the
+issuance HEAD (attempt exited2). The current controller is
+`scripts/validation/run-ci-gate.py --profile changed --explain`; executable
+local leaves use its `--local-only` route and hosted aggregate acceptance stays
+separate. No shared harness was created or replaced to satisfy the stale text.
+
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
+
+| Criterion | Acceptance | Evidence | Decision | Current Owner |
+| --- | --- | --- | --- | --- |
+| 19 | accepted | Git and owner baseline, Supplied reference audit, New notifier source, Integrated source checks, Integrated independent reviews, Rerun of Document and shared gate integration | Owner accepted on 2026-10-29 for the narrowed criterion: this Task's source rows plus native manual execution, isolation, reconciliation, restart and restoration in TSK-0018 W73 and TSK-0019 W74. | SPEC-0204 TSK-0013 |
+| 22 | accepted | Owner native attempt five, Attempt five residue, Reviewed frozen P04 binding, Criterion 22 delivery | Owner accepted on 2026-10-30: native attempt five passed every criterion 22 field, with concurrent claims and retry driven in psql (owner decision 2026-10-30), after independent SQL and harness reviews. | SPEC-0204 TSK-0013 |
+
+### Remaining Conditions
+
+Complete. The notifier source (criterion 19) and the native proof (criterion
+22) are accepted. The P04 interface is frozen at the three SQL SHA256 values.
+The handoffs above name every lane left NOT_RUN. Wiki implementation and
+schedules, learning-app planning, LAB runtime, raw Git collection, the
+external workspace and blog-data writes stay excluded.
+
+## Handoff
+
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

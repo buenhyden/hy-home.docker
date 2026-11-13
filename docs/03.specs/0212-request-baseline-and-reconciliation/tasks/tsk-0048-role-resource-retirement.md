@@ -1,10 +1,10 @@
 ---
 title: "Role, Resource and Retirement Input Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0048"
 parent_ids:
@@ -14,9 +14,11 @@ created: "2026-11-03"
 
 # Role, Resource and Retirement Input Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Implement the approved local P09 source and synthetic-checking work. Record
 the fifteen requested role comparisons, preserve valid default and optional
@@ -24,7 +26,13 @@ composition, bind common-control and resource evidence to canonical public
 inputs, reuse accepted storage placement, and reject unsafe retirement inputs.
 This is not the historical SPEC-0204 P09 Wiki-preparation Task.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
+- [Common profile policy](../../../05.operations/policies/01-common/0078-compose-profile-vocabulary.md)
+- [Host storage placement policy](../../../05.operations/policies/10-platform-and-backup/0102-host-storage-placement.md)
+
+### Inputs and Authority
 
 The direct P09 plan authorizes public-source documentation, implementation,
 synthetic fixtures and local checks. It excludes service recreation, host
@@ -41,7 +49,7 @@ and the SPEC-0246 C1–C6 acceptance, now summarized in the POL-0102
 Traceability, remain authoritative at their recorded actor, environment and
 criterion scope.
 
-### Read-only host observation
+#### Read-only host observation
 
 At `2026-11-03T08:06:58+09:00`, a read-only Docker query reported Docker Root
 Dir `/home/hyunyoun/storage/docker-root/docker` and one instantaneous selected
@@ -52,9 +60,11 @@ No raw log was retained. This is neither a complete host census nor evidence
 of declared limit correctness, health, use, peak demand, storage placement,
 RPO/RTO, energy cost or a runtime acceptance result.
 
-## Work Log
+## Execution Log
 
-### Single-writer leases
+### Work Performed
+
+#### Single-writer leases
 
 | Scope | Single writer | Independent review | Boundary |
 | --- | --- | --- | --- |
@@ -71,7 +81,7 @@ README `e7a80b0e7c922b28a76c2d8e4a8a0278e175c8865226a0589741a60d81061517` and
 DATA payload `7638992aef2681af307ef36cf5db2276cdcf0d85fce2896d34bf2a65df2f663f`.
 They identify source only and do not prove runtime state.
 
-### Fifteen role dispositions
+#### Fifteen role dispositions
 
 `DATA-0096` service and connection rows are the public declaration evidence;
 the table does not upgrade a declaration, fixture, profile or historical record
@@ -96,7 +106,7 @@ not a retirement candidate.
 | Mailpit / Stalwart | `infra/11-quality/mailpit`, `infra/10-communication/stalwart` | RETAIN_SEPARATE | P05 isolated capture; actual Stalwart sender UNKNOWN | capture is not final delivery; P06 owns credentials and Secret lifecycle |
 | NoSQL / graph stores | Neo4j, OpenSearch, SurrealDB/Qdrant declaration surfaces | DEFER_OPTIONAL | consumer/data owner UNKNOWN | no candidate removal until consumer, backup reader and recovery evidence are explicit |
 
-### Nginx gateway retirement (2026-11-10)
+#### Nginx gateway retirement (2026-11-10)
 
 On 2026-11-10 the owner decided to retire `infra/01-gateway/nginx` from the
 repository, replacing the 2026-11-03 RETAIN_SEPARATE disposition above.
@@ -128,7 +138,7 @@ Disposition and consumer cutover, all in one change:
   data in HOME is a separate approved step and was not performed. The
   historical SEC01 lookup records for nginx are kept.
 
-### Historical/source reconciliation
+#### Historical/source reconciliation
 
 Historical ADR bodies are preserved. ADR-0005 names RabbitMQ, ADR-0006 names
 MinIO and ADR-0010 names MailHog, while current public sources use the relevant
@@ -142,7 +152,7 @@ Prometheus and Tempo on SSD while Loki, Alloy, Pyroscope, containerd, Docker
 and BuildKit remain on HDD. P09 does not re-run any migration, change C6 to
 pending, or interpret an observational read-only mount as a host fault.
 
-### Official applicability
+#### Official applicability
 
 The 2026-11-03 P09 research reread the official Docker documentation for
 [Compose profiles](https://docs.docker.com/compose/how-tos/profiles/),
@@ -154,7 +164,7 @@ They support source-level selection, bounded-resource and recovery planning;
 they do not prove this host's live use or authorize mutation. The dependencies
 package was unavailable and is recorded as such.
 
-### Retirement safety boundary
+#### Retirement safety boundary
 
 No new deletion target is confirmed. The retirement parser must reject malformed
 or unsafe public manifests and preserve the existing external-owner directory,
@@ -167,7 +177,7 @@ checks the target; this is not a deletion success receipt. Secret copies,
 SMTP-specific retirement and protected recovery material remain P06/existing
 executor handoffs.
 
-### 2026-11-10 Kafka CDC LAB move (ADR-0062 amendment)
+#### 2026-11-10 Kafka CDC LAB move (ADR-0062 amendment)
 
 The owner decided on 2026-11-10 to move `kafka-connect` and `schema-registry` (the Debezium
 CDC path) out of HOME into `labs/kafka-cluster` (`lab-kafka-connect`, `lab-schema-registry`).
@@ -198,7 +208,7 @@ their retirement.
 
 The owner removed the PG-025 row from `secrets/SENSITIVE_ENV_VARS.md.example` in the same change, since `secrets/` is denied to agents, and prunes the private registry row after merge with `gen-secrets.sh --sync-metadata-prune`.
 
-### 2026-11-10 Flower opt-in profile (ADR-0062 amendment)
+#### 2026-11-10 Flower opt-in profile (ADR-0062 amendment)
 
 The owner decided on 2026-11-10 that Airflow `flower` leaves the HOME `workflow` and
 `workflow-airflow` profiles for the dedicated opt-in profile `airflow-flower`. Sanitized
@@ -218,14 +228,20 @@ workflow and Grafana READMEs were updated.
 Nothing was started, stopped or recreated, so Prometheus still scrapes the old label set and the
 `flower` container still runs until the owner recreates `prometheus` and removes `flower`.
 
-### Owner decisions 2026-11-10
+#### Owner decisions 2026-11-10
 
 On 2026-11-10 the owner (@buenhyden) set the service operation, storage move,
 credential, deletion and remote CI boundary row to not required, because
 criterion 92 reuses SPEC-0246 C1-C6 at its recorded scope and authorizes none
 of those operations, and accepted criterion 92.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -244,7 +260,13 @@ of those operations, and accepted criterion 92.
 | C1–C6 acceptance readback | 92 | W97 | Historical acceptance readback | POL-0102 Traceability at `59d1fe69f` | PASS | POL-0102 records owner acceptance of all six SPEC-0246 criteria C1–C6 with dates; no migration, restore or runtime check was run. | required | - |
 | HOME resource census 2026-11-11 | 90 | W95 | Read-only `docker inspect` limits and `docker stats` | HOME, 2026-11-11 14:26 KST, 57 running containers | PASS | All 57 containers carry CPU, memory and PID limits; none is unhealthy or starting; none uses more than 80% of its memory limit (highest CPU `kafka-1` 21.8%). Host 31 GiB, 21 GiB available. This is resource readback, not runtime role use. | optional | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -253,7 +275,7 @@ of those operations, and accepted criterion 92.
 | 92 | accepted | C1–C6 historical placement, C1–C6 acceptance readback | Existing SPEC-0246 acceptance, summarized in POL-0102, is reused at its recorded scope; measured drift plus an approved recovery plan is required to reopen. The operation boundary row is out of scope by the criterion wording, and the owner set it to not required and accepted 92 on 2026-11-10. | @buenhyden |
 | 93 | pending | Retirement parser | Parser rejection tests pass; apply remains blocked pending exact owner, writer stop and target approval. | SPEC-0212 TSK-0048 |
 
-## Review and Completion
+### Remaining Conditions
 
 Run documentation, DATA, focused QA and CI-selector checks after source freeze;
 record any timeout or unavailable tool as `NOT_RUN`. Run `graphify update .`
@@ -262,10 +284,12 @@ do not edit another writer's leased path. Current operation, independent restore
 actual deletion, credential rotation, remote CI and final operational acceptance
 remain independent results.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
-- [Common profile policy](../../../05.operations/policies/01-common/0078-compose-profile-vocabulary.md)
-- [Host storage placement policy](../../../05.operations/policies/10-platform-and-backup/0102-host-storage-placement.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

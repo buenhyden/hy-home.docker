@@ -1,10 +1,10 @@
 ---
 title: "Retire the Supabase LAB Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0263-TSK-0003"
 parent_ids:
@@ -14,15 +14,22 @@ created: "2026-11-06"
 
 # Retire the Supabase LAB Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Carry out Plan work unit W8: remove the supabase LAB, its operations
 documents, catalog rows and Docker socket allowance, and keep the SMTP01
 retirement of COMM-003 working without it.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [LAB Promotion Contract Task](tsk-0001-lab-promotion-contract.md)
+- [RUN-0106](../../../05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md)
+
+### Inputs and Authority
 
 On 2026-11-06 the owner decided to remove the supabase LAB (`labs/supabase/`).
 No LAB is promoted. The owner approved the Spec amendment draft the same day
@@ -32,9 +39,11 @@ This Task starts, stops and recreates no container, reads no secret value and
 edits nothing under `secrets/`. The owner applies the public registry edit and
 removes the private files (see [Owner steps](#owner-steps)).
 
-## Work Log
+## Execution Log
 
-### Spec amendment approval
+### Work Performed
+
+#### Spec amendment approval
 
 SPEC-0263 moved to `in-review` for the amendment to version 0.4.0: criterion 3
 became "No LAB reads a HOME secret path; each LAB uses `secrets/labs/<name>/`
@@ -43,7 +52,7 @@ Docker socket.", the section 3 socket exception was removed, and the
 Background records the removal. The owner approved the draft on 2026-11-06
 ("Spec 수정 초안 승인"), so SPEC-0263 returned to `approved`.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -52,7 +61,7 @@ Background records the removal. The owner approved the draft on 2026-11-06
 | SPEC-0263-TSK-0003 | draft | ready | #w8-implementation |
 | SPEC-0263-TSK-0003 | ready | in-progress | #w8-implementation |
 
-### W8 implementation
+#### W8 implementation
 
 - **LAB source.** `labs/supabase/` is deleted (Compose, README,
   `naming-exceptions.json`, `promotion.yaml`, `.env.example`). `labs/README.md`
@@ -102,7 +111,7 @@ Background records the removal. The owner approved the draft on 2026-11-06
   into absence checks. The opt-in GoTrue rehearsal skips while its source is
   absent. `test_smtp_contract` records that a missing Auth alias is accepted.
 
-### Owner steps
+#### Owner steps
 
 1. Remove these 12 rows from `secrets/SENSITIVE_ENV_VARS.md.example`: SUPA-002,
    SUPA-003, SUPA-004, SUPA-005, SUPA-006, SUPA-007, SUPA-008, SUPA-009,
@@ -126,7 +135,13 @@ Background records the removal. The owner approved the draft on 2026-11-06
    `${LAB_DATA_DIR}/supabase` and any leftover `hy-home-lab-supabase*`
    network or volume in an owner window.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -151,13 +166,19 @@ Background records the removal. The owner approved the draft on 2026-11-06
 | E19 | 3 | W8 | operations catalog | `check-operations-catalog.py` on main `e6031ac93` | PASS | `operations-catalog: PASS` | required | E11 |
 | E20 | 3 | W8 | full suite | `env -u LAB_DATA_DIR python -m unittest discover -s tests -t .` on main `b496a291c` | PASS | 3337 tests OK, skipped=108 | required | E13 |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 3 | pending | E4, E6, E7, E8, E9, E12, E14, E15, E16, E17, E18, E19, E20 | every required row now passes; owner acceptance pending | @buenhyden |
 
-## Review and Completion
+### Remaining Conditions
 
 W8 is implemented on the uncommitted tree. The non-PASS rows have two causes,
 neither a W8 defect: deleted files stay in the Git index until the controller
@@ -170,9 +191,12 @@ After #763 merged and the owner applied step 1, E14 to E20 re-ran the
 failed checks on main: each now passes and resolves its earlier row.
 Criterion 3 waits only for the owner's acceptance.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [LAB Promotion Contract Task](tsk-0001-lab-promotion-contract.md)
-- [RUN-0106](../../../05.operations/runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

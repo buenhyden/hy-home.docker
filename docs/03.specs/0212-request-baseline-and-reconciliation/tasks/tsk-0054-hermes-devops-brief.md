@@ -1,10 +1,10 @@
 ---
 title: "Hermes DevOps Daily Brief Recovery Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0054"
 parent_ids:
@@ -14,9 +14,11 @@ created: "2026-11-11"
 
 # Hermes DevOps Daily Brief Recovery Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Restore the scheduled Hermes `devops` daily brief. Its last successful
 submission was on 2026-11-08, so `HermesResearchNoSuccess` and
@@ -24,7 +26,12 @@ submission was on 2026-11-08, so `HermesResearchNoSuccess` and
 `business_ideas` topics keep submitting. The Task finds the cause, fixes what
 belongs to this repository, and records any external cause as a residual.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Hermes provenance Task](tsk-0050-hermes-provenance-trust-export.md)
+- [Exporter observability Task](tsk-0046-exporter-observability.md)
+
+### Inputs and Authority
 
 On 2026-11-11 the owner (@buenhyden) asked for this failure to run as its own
 Task. That covers read-only diagnosis and a repository-side fix. Hermes agent
@@ -32,9 +39,11 @@ configuration under `~/.hermes`, a model or provider change, and any paid
 model use stay owner decisions, under the
 [approval boundaries](../../../../.agents/governance/approval-boundaries.md).
 
-## Work Log
+## Execution Log
 
-### Observed failures
+### Work Performed
+
+#### Observed failures
 
 | Date | Outcome | Observation |
 | --- | --- | --- |
@@ -47,7 +56,7 @@ The same morning `news` and `business_ideas` each logged one `gateway_error`
 and one `source_quality` refusal, then submitted. Those topics are healthy and
 are context only.
 
-### Open questions
+#### Open questions
 
 | Item | Question |
 | --- | --- |
@@ -56,7 +65,7 @@ are context only.
 | H3 | Are `report_not_final` and `report_path_not_allowed` (2026-11-09) from the job's prompt or report path, or from the Gateway's validation? |
 | H4 | What did the Gateway reject on 2026-11-10? |
 
-### Diagnosis (2026-11-11)
+#### Diagnosis (2026-11-11)
 
 Read-only sources: `~/.hermes/cron/jobs.json`, `~/.hermes/logs/agent.log*`,
 the plugin outbox under `~/.hermes/data/research-report-outbox/`, and the
@@ -69,7 +78,7 @@ Prometheus `hermes_research_*` series.
 | H3 | `report_not_final` (2026-11-08) and `report_path_not_allowed` (2026-11-09 08:05:20) are the plugin's own report checks refusing the agent's report file. They work as designed; the agent retried in the same run. |
 | H4 | The Gateway did not reject anything. On 2026-11-09 08:05:41 and 2026-11-10 08:08:23 and 08:15:45 the plugin's POST hit its 15 s per-attempt limit and returned `delivery_uncertain` (`timeout`); the outbox records stay `uncertain` and are never retried. The workload README nests the limits as Gateway 20 s < flow `executionTimeout` 30 s < submitter attempt 45 s, and the Publisher uses 45 s, but the direct plugin path still used 15 s. A Gateway answer that takes 15–30 s, which is plausible during the 08:00 burst of jobs, is therefore lost. The flow saves no execution data, so whether those two reports were stored is not recorded. |
 
-### Repository fix
+#### Repository fix
 
 The direct plugin path now uses 45 s per attempt (`_HTTP_TIMEOUT` and
 `MAX_REQUEST_TIMEOUT`), the same as the Publisher, inside the existing 60 s
@@ -77,7 +86,7 @@ total and three attempts. A new test keeps the attempt longer than the flow's
 `executionTimeout`. The installed copy under `~/.hermes/plugins/research-report`
 is owner-managed and needs the two changed files and a gateway restart.
 
-### Host session kills during verification (2026-11-11)
+#### Host session kills during verification (2026-11-11)
 
 While verifying the timeout change, three local runs of the transport tests
 (12:28:52, 12:33:50 and 12:59:10 KST) each killed every UID 1000 process on
@@ -91,14 +100,20 @@ child group (`int` pid above 1), with a test that a mock, 0, 1 or -1 is
 never signalled. The 12:35:57 suspend was a separate `sudo systemctl suspend`
 sent over SSH from the owner's client, not from this work.
 
-### Residual for the owner
+#### Residual for the owner
 
 The 2026-11-11 failure is a model-provider failure, not a repository defect:
 the primary model's HTTP 400 for this job and a fallback chain where only one
 entry still works. Choosing the fallback chain or pinning a model for the job
 is the owner's decision under `~/.hermes`; no paid model is assumed.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -106,21 +121,30 @@ is the owner's decision under `~/.hermes`; no paid model is assumed.
 | DevOps brief diagnosis | 107 | W112 | Read-only Hermes cron, agent log, outbox and Prometheus readback | HOME, 2026-11-11 12:40 KST | PASS | H1–H4 answered in Diagnosis (2026-11-11). | optional | - |
 | DevOps brief scheduled success | 107 | W112 | One scheduled `devops` run submitted and both alerts resolved | Next scheduled run after the fix | NOT_RUN | Waits for the diagnosis. | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 107 | pending | DevOps brief failure observation, DevOps brief diagnosis, DevOps brief scheduled success | Diagnosis done; the timeout fix waits for the owner's plugin install and the next scheduled run. | SPEC-0212 TSK-0054 |
 
-## Review and Completion
+### Remaining Conditions
 
 Completion needs one scheduled `devops` run that submits a final report and
 both alerts resolving for it, or the external cause recorded as a residual
 with the owner's decision.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Hermes provenance Task](tsk-0050-hermes-provenance-trust-export.md)
-- [Exporter observability Task](tsk-0046-exporter-observability.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

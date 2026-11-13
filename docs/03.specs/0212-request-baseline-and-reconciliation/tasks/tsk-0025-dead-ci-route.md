@@ -14,14 +14,21 @@ created: "2026-10-29"
 
 # Dead CI Route Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W41: find active references and routing to files that do not exist,
 and remove the dead ones. This Task owns criterion 36 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The original request asks that no QA or CI path links a deleted or outdated
 manifest, and that scripts which do not reflect the current state be fixed.
@@ -29,9 +36,11 @@ On 2026-10-29 the owner asked for the request review to continue through to
 merge. The input is `main` at merged PR #622. The authorization covers this
 change, this branch, its pull request, and merge.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -39,7 +48,7 @@ change, this branch, its pull request, and merge.
 | SPEC-0212-TSK-0025 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0025 | in-progress | completed | #evidence |
 
-### Scan
+#### Scan
 
 Every `scripts/`, `infra/`, `labs/`, `.github/`, and `tests/` path with a file
 extension, named by a tracked file outside `docs/03.specs/`,
@@ -57,7 +66,15 @@ tracked tree. 56 named paths did not exist.
 | `scripts/ws.sh` in the product-intake README | Kept; a Project-Template script, quoted from that repository. |
 | Skill-relative `scripts/` links | Kept; recorded in TSK-0024. |
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -66,18 +83,29 @@ tracked tree. 56 named paths did not exist.
 | Workflow-contract and gate tests | 36 | W41 | `python3 -m unittest tests.lib.gate.test_github_workflow_contract tests.validation.test_ci_gate_plan tests.validation.test_agent_governance_ci_routing` | This branch | PASS | 182 tests OK | required | - |
 | Metadata contracts | 36 | W41 | `check-document-metadata.py --mode check-contracts` | This branch | PASS | 0 violations | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 36 | accepted | Path existence scan, Contract parse, Workflow-contract and gate tests, Metadata contracts | No CI routing names a file that does not exist; the other missing paths are dated, synthetic, relative, conditional, or intentionally absent. | SPEC-0212 TSK-0025 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

@@ -1,10 +1,10 @@
 ---
 title: "Image, Supply-Chain and Storybook Compatibility Task"
-version: "0.1.10"
+version: "0.1.11"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0047"
 parent_ids:
@@ -14,9 +14,11 @@ created: "2026-11-03"
 
 # Image, Supply-Chain and Storybook Compatibility Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Implement the approved local P08 source and isolated compatibility work:
 reconcile the public image/package ledger, evaluate selected Valkey 9.1.3 and
@@ -25,7 +27,15 @@ chain evidence to the exact artifact it concerns. This is not the historical
 SPEC-0204 P08 operations-document-layout Task; neither its accepted records
 nor its ownership are reopened.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
+- [P02 service connection Task](tsk-0041-service-connection-contracts.md)
+- [P03 models and Runner Task](tsk-0042-models-runners-wiki.md)
+- [P05 notifier recovery Task](tsk-0044-opsflow-notifier-recovery.md)
+- [Historic P08 operations-document-layout Task](../../0204-service-integration-security-and-operations/tasks/tsk-0015-p08-operations-document-layout.md)
+
+### Inputs and Authority
 
 The direct P08 plan authorizes local source changes, bounded candidate artifact
 preparation, synthetic and isolated validation, independent review, graph
@@ -45,9 +55,11 @@ historic SPEC-0204 P08 task concerns operations-document layout only. Existing
 C19/C22, Storybook and OpenBao records retain their recorded version, actor,
 environment, consumer and date scope.
 
-## Work Log
+## Execution Log
 
-### Single-writer leases
+### Work Performed
+
+#### Single-writer leases
 
 Writers preserve one integration writer per path. Acceptance owner, writer,
 reviewer, data owner and operational accepter are separate; agent labels do
@@ -71,7 +83,7 @@ and DATA payload
 This Task was absent at that baseline. Those hashes are source identity only,
 not runtime, artifact or credential evidence.
 
-### Current dispositions
+#### Current dispositions
 
 | Item | Criterion | Work Unit | Initial disposition | Current boundary |
 | --- | --- | --- | --- | --- |
@@ -80,7 +92,7 @@ not runtime, artifact or credential evidence.
 | P08.03 | 88 | W93 | REUSE_ACCEPTED | Storybook 10.6.3 remains selected; the local 10.6.2 installation is not tracked-lock evidence |
 | P08.04 | 89 | W94 | TEST_RESIDUAL | Existing sample-service receipts cannot prove actual service/custom image signatures or provenance |
 
-### Official applicability and safety boundaries
+#### Official applicability and safety boundaries
 
 On 2026-11-03, the official [Valkey 9.1.3 release](https://github.com/valkey-io/valkey/releases/tag/9.1.3)
 and GHSA-f4q9-j22m-xqq9 were read as an update candidate. The advisory is
@@ -147,7 +159,7 @@ receipt and sets `freshness_verified`, `stable_channel_verified` and
 prove OCI availability, stable-channel support, security applicability,
 compatibility, license, runtime or deployment acceptance.
 
-### D09 evidence 2026-11-10
+#### D09 evidence 2026-11-10
 
 Recorded 2026-11-10; no criterion is accepted.
 
@@ -170,7 +182,7 @@ Recorded 2026-11-10; no criterion is accepted.
 4. Remaining NOT_RUN: cgroup/resource measurement, Storybook a11y/MCP
    regression, rollback rehearsal.
 
-### Owner review 2026-11-10
+#### Owner review 2026-11-10
 
 The owner asked for the Storybook audit and the n8n candidate verification to be
 analyzed and reviewed. No criterion is accepted by this review.
@@ -212,11 +224,11 @@ analyzed and reviewed. No criterion is accepted by this review.
   deleted the three rehearsal directories under `/tmp`, and the next run sets
   `GOTOOLCHAIN=local` and uses only the approved hosts.
 
-### OpenBao r3 owner acceptance 2026-11-10
+#### OpenBao r3 owner acceptance 2026-11-10
 
 r2 failed the RUN-0105 SEC01 gate (x/net, go-jose v4 and klauspost Highs with fixed releases, and OpenBao v2.7.2 as a newer security release), so the owner approved r3 on v2.7.2. Its scan has Critical 0 and one High, GHSA-mgcc-cww5-fp2q in go-jose/v3 v3.0.5 with no fixed release; the owner accepted that residual risk with the two go-jose/v3 Mediums on 2026-11-10, recorded in POL-0085. The HOME cutover still needs the RUN-0105 window.
 
-### Owner decisions 2026-11-10
+#### Owner decisions 2026-11-10
 
 The owner (@buenhyden) decided three items on 2026-11-10. For criterion 86
 the owner accepts the latest-version gate FAIL as the record of missing lookups
@@ -226,7 +238,7 @@ resolves only through a later PASS and a same-day rerun still fails. Criterion 8
 longer bind it. For criterion 88 the accepted moderate findings are recorded
 by a high-threshold audit that passes.
 
-### HOME image deployments 2026-11-10
+#### HOME image deployments 2026-11-10
 
 The owner approved two HOME image deployments on 2026-11-10; neither changes
 a criterion acceptance. #905: mailpit v1.33.0, crawl4ai sidecars on Python
@@ -242,7 +254,7 @@ before the deploy stay as they were; Grafana updated its bundled cloudwatch
 plugin from the network at start. openbao and openbao-agent still run 2.7.1 r1
 until the RUN-0105 window.
 
-### Supply-chain handoff 2026-11-10
+#### Supply-chain handoff 2026-11-10
 
 On 2026-11-10 the owner (@buenhyden) set criteria 86 and 89 to not-required in
 this Task and handed them to a dedicated supply-chain Task: fresh reviews and
@@ -251,7 +263,7 @@ with every entry `blocked-evidence`), and per-artifact signature, provenance
 and SBOM evidence. That Task opens with its own network-scope approval. The
 FAIL and NOT_RUN rows stay as recorded.
 
-### OpenBao custody reconfirmation 2026-11-11
+#### OpenBao custody reconfirmation 2026-11-11
 
 These three records belong to the OpenBao r3 window this Task prepared (see OpenBao r3 owner acceptance 2026-11-10). SPEC-0204 TSK-0006 keeps the 2026-10-14 custody record, but its tables are frozen at the pre-generation-7 source, so later owner statements are recorded here.
 
@@ -270,7 +282,7 @@ owner's statement; the agent read no value. The same day the SEC01 gate failed
 other CVEs; the image is built with Go 1.27.3), so the owner limited the window
 to W1–W3b and kept the server and Agent at r1.
 
-### OpenBao window cancelled 2026-11-11
+#### OpenBao window cancelled 2026-11-11
 
 At 14:44 KST the owner cancelled the 15:45 window before any step ran (W0
 preflight at 14:36 KST: `problems: 0`; `p01_run` was only defined, nothing was
@@ -294,7 +306,7 @@ window this removes the K8s writer stop (no External Secrets controller
 exists); the unused Kubernetes auth mount and the ESO policy in OpenBao are
 cleaned up with that window's root, or kept if the integration resumes.
 
-### OpenBao custody proportionality decision 2026-11-11
+#### OpenBao custody proportionality decision 2026-11-11
 
 After the reconfirmation the owner asked for the custody rules to match the
 real risk of this HOME: a personal development server for one administrator,
@@ -315,7 +327,13 @@ RUN-0021 now point to the validity rule, and RUN-0105 no longer says the
 daily OpenBao snapshot fails. The first half-yearly place A restore has not
 run yet.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -346,7 +364,13 @@ run yet.
 | n8n advisory fixed-range readback | 87 | W92 | Official advisory patched-range readback | GHSA-prmc-fg87-r4gh and the n8n 2.46.6 pin and HOME containers at `27cd872ea` | PASS | Patched `>= 2.46.1`; repository and HOME run 2.46.6, so the 2.45.7 candidate is superseded. SSRF/egress and private-workflow review stays open. | required | - |
 | Storybook audit high threshold | 88 | W93 | `npm audit` | Copies of the Storybook `package.json` and `package-lock.json` at `59d1fe69f`, `--audit-level=high` | PASS | Exit 0: 0 high, 0 critical over 744 dependencies. 17 moderate packages trace to the two advisories the owner accepted as development-tooling risk (`glob` GHSA-3g3m-2fjr-6pw4, `minimatch` GHSA-g3hv-75wg-m249). | required | Storybook audit, Storybook audit rerun |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -355,7 +379,7 @@ run yet.
 | 88 | accepted | Storybook clean lock install, Storybook isolated regressions, Storybook audit, Storybook audit rerun, Storybook audit high threshold | The high-threshold audit passes with 0 high and 0 critical; the remaining moderate findings are the two development-tooling advisories the owner accepted on 2026-11-10. No required observation is unresolved; owner @buenhyden accepted on 2026-11-10. | SPEC-0212 TSK-0047 |
 | 89 | not-required | Supply-chain gate, Selected candidate verification | Not required in this Task: owner @buenhyden handed this to a dedicated supply-chain Task on 2026-11-10. It owns per-artifact signature, provenance and SBOM evidence; no cross-artifact inference is made. That Task opens with its own network-scope approval; until then nothing here is claimed as verified. | SPEC-0212 TSK-0047 |
 
-## Review and Completion
+### Remaining Conditions
 
 Before final acceptance, refresh DATA-0096 only after source changes freeze;
 compare its start/end fingerprint, preserve changed-review invalidation and
@@ -370,12 +394,12 @@ final operational acceptance are `NOT_RUN` unless separately evidenced and
 authorized. Candidate image activation and any host/service recreation remain
 outside this Task's local source evidence.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
-- [P02 service connection Task](tsk-0041-service-connection-contracts.md)
-- [P03 models and Runner Task](tsk-0042-models-runners-wiki.md)
-- [P05 notifier recovery Task](tsk-0044-opsflow-notifier-recovery.md)
-- [Historic P08 operations-document-layout Task](../../0204-service-integration-security-and-operations/tasks/tsk-0015-p08-operations-document-layout.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

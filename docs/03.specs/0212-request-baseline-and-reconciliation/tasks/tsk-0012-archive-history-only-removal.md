@@ -2571,9 +2571,11 @@ archive_authorizations:
 
 # Archive History-Only Removal Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W28: move 196 of the 213 candidate units named by TSK-0011 to
 `git-history-only` availability and remove their 244 payload files from the
@@ -2582,13 +2584,19 @@ blocked stay `retained`, and so do the seventeen units its correction moved to
 blocked. Their authorization entries below were recorded before the correction
 and are not used.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Archive disposition dry-run Task](tsk-0011-archive-disposition-dry-run.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The input is branch `docs/archive-disposition-dryrun` on published main
 `2059b0d572db75f5d6ce907b27a77f813cbdbb68`, carrying TSK-0011 and the
 pre-catalog capture amendment in `.agents/governance/documentation-protocol.md`.
 
-### Owner approval
+#### Owner approval
 
 On 2026-10-29, after reviewing the TSK-0011 dry-run, the owner directly approved
 removal for the candidate units and the contract change that gives the
@@ -3025,9 +3033,11 @@ stays reachable. It does not cover the 24 blocked units or any history rewrite.
 > @buenhyden approved assess for superseded/90.references/research/0081-roadmap/README.md on 2026-10-29.
 > @buenhyden approved remove for superseded/90.references/research/0081-roadmap/README.md on 2026-10-29.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -3035,7 +3045,7 @@ stays reachable. It does not cover the 24 blocked units or any history rewrite.
 | SPEC-0212-TSK-0012 | ready | in-progress | #inputs-and-authorization |
 | SPEC-0212-TSK-0012 | in-progress | completed | #evidence |
 
-### Scope
+#### Scope
 
 36 captured candidates keep their existing capture rows. 160 pre-catalog
 candidates receive a capture row in the removal change, naming the base commit
@@ -3045,7 +3055,7 @@ and `superseded/` units whose frozen record remains accurate history, all with
 availability `git-history-only`, hold `none`, and this Task revision as the
 decision.
 
-### TSK-0011 correction
+#### TSK-0011 correction
 
 The consumer trace missed three consumer kinds, which this removal run exposed through the repository checks:
 
@@ -3069,9 +3079,17 @@ candidates and 41 blocked units. `check-document-links.py --mode alignment`
 and `check-document-metadata.py` are the authorities that caught them. TSK-0011 stays
 as recorded, because a completed Task body is immutable.
 
-## Evidence
+### Blockers and Decisions
 
-### Validator corrections
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
+
+##### Validator corrections
 
 Removal exposed two latent defects in the archive validators, fixed in the
 same delivery with regression coverage:
@@ -3102,20 +3120,30 @@ catalog check and once in the archive route). That cost is open, not accepted.
 | Changed document metadata | 23 | W28 | `check-document-metadata.py --mode check-changed --base-ref origin/main` | This branch | PASS | 0 violations | required | - |
 | Archive regressions | 23 | W28 | `python3 -m unittest tests.lib.document_governance.test_archive tests.lib.document_governance.test_archive_assessments` | This branch; Python 3.12.3 | PASS | 103 tests | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 23 | accepted | Approval structure, Archive integrity, Current link regression, Changed document metadata, Archive regressions | 196 units moved to `git-history-only` with whole-payload removal; 41 blocked units stay retained. | SPEC-0212 TSK-0012 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request, which must merge with a merge commit so the
 pinned decision revision stays reachable.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Archive disposition dry-run Task](tsk-0011-archive-disposition-dry-run.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

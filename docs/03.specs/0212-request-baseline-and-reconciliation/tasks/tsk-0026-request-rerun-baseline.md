@@ -14,15 +14,22 @@ created: "2026-10-29"
 
 # Request Re-run Baseline Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W42: re-run the full request against the current baseline, keep
 completed work, and close or record what remains. This Task owns criterion 37
 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-29 the owner pasted the full execution specification again. Its
 own rules keep completed work (`KEEP`), change only real gaps, and treat no
@@ -31,9 +38,11 @@ to close TSK-0008 and to record the specification-level audits as not
 performed. The input is `main` at merged PR #623. The authorization covers
 the TSK-0008 transition, this Task, this branch, its pull request, and merge.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -41,7 +50,7 @@ the TSK-0008 transition, this Task, this branch, its pull request, and merge.
 | SPEC-0212-TSK-0026 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0026 | in-progress | completed | #evidence |
 
-### Baseline
+#### Baseline
 
 The specification's start checks were run on 2026-10-29. Local `HEAD` and
 `git ls-remote origin refs/heads/main` were both `a71cb9767`; the working
@@ -49,7 +58,7 @@ tree, index, and diff were clean; one worktree existed; the common Git
 directory was `.git`; no pull request was open. The specification's recorded
 remote HEAD `136b7cac4` from 2026-10-27 is superseded by this readback.
 
-### Decisions
+#### Decisions
 
 | Item | Decision | Basis |
 | --- | --- | --- |
@@ -62,7 +71,15 @@ remote HEAD `136b7cac4` from 2026-10-27 is superseded by this readback.
 | Conflict check of the 10,878 CR pairs (CR-04.04) | UNVERIFIED | Not performed, by the owner's choice. No claim is made that the specification is free of duplication or conflict. |
 | Four-repository adoption and the Codex loader | NOT_RUN | Held by the owner (TSK-0017, TSK-0018). |
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -71,18 +88,29 @@ remote HEAD `136b7cac4` from 2026-10-27 is superseded by this readback.
 | Request-line meaning audit | 37 | W42 | CR-01.02 atomization of 355 lines | - | NOT_RUN | Owner chose to record it as not performed | optional | - |
 | Pairwise CR conflict check | 37 | W42 | CR-04.04 review of 10,878 pairs | - | NOT_RUN | Owner chose to record it as not performed | optional | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 37 | accepted | Baseline readback, Metadata contracts | Completed work is kept; TSK-0008 is closed on its accepted criterion; the two specification-level audits are recorded as not performed. | SPEC-0212 TSK-0026 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

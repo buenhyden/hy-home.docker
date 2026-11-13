@@ -1,10 +1,10 @@
 ---
 title: "Implementation Alignment Batch 3 Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0259-TSK-0001"
 parent_ids:
@@ -14,14 +14,19 @@ created: "2026-11-04"
 
 # Implementation Alignment Batch 3 Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Correct the audited Stage 02 labels and the RUN-0105 sentence, accept
 ADR-0038, and promote the draft documents that match the implementation.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
 
 The user directed that documents be corrected to the present state
 ("현재에 맞게 수정하고 보완한다") and that executable not-started requirements
@@ -30,18 +35,20 @@ be reviewed and carried out ("Not started 중 지금 실행할 수 있는 요구
 for ADR-0038 and "Review, then promote (recommended)" for the draft documents.
 This Task pushes and merges nothing.
 
-## Work Log
+## Execution Log
 
-### Current contract decision
+### Work Performed
+
+#### Current contract decision
 
 The user's direction authorizes this Spec and Plan as written.
 
-### Current readiness and execution
+#### Current readiness and execution
 
 Inputs, work units and checks are recorded here. The Task is ready and in
 progress under the approved parents. Hosted CI has not run.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -50,7 +57,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0259-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0259-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
 
-### Decisions
+#### Decisions
 
 - ADR-0038 moved proposed to accepted, a direct Registry transition; the
   decision body is unchanged, only version, status and date were edited.
@@ -73,20 +80,20 @@ progress under the approved parents. Hosted CI has not run.
   AD-0032 (parent REQ-0027) and every Stage 05 document under AD-0031 stay
   draft.
 
-### Promoted (draft to active, minor version bump, 2026-11-04)
+#### Promoted (draft to active, minor version bump, 2026-11-04)
 
 Stage 05 policies, guides and runbooks for 0079, 0080, 0081, 0083, 0084, 0085,
 0094, 0095, 0096, 0097 (policy, guide, runbook where draft), guide 0021,
 runbook 0098, plus ADR-0038 (accepted). 30 Stage 05 documents in total.
 
-### Changed
+#### Changed
 
 - 21 Stage 02 files under `docs/02.architecture/` (list in the Report).
 - `docs/05.operations/runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md`.
 - `docs/99.templates/registry.json`: `spec` high-water 259, next 260.
 - `docs/03.specs/README.md`: index row.
 
-### Open issues
+#### Open issues
 
 - Left draft because of the parent chain (REQ-0027 draft): REQ-0027, AD-0031,
   AD-0032, POL/GDE/RUN-0087, POL/GDE/RUN-0086, POL/GDE/RUN-0100.
@@ -97,7 +104,13 @@ runbook 0098, plus ADR-0038 (accepted). 30 Stage 05 documents in total.
 - ADR-0009:26/36 and ADR-0024:18 call the layer `09-tooling`; accepted
   decision text, left as is.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -113,7 +126,13 @@ runbook 0098, plus ADR-0038 (accepted). 30 Stage 05 documents in total.
 | E10 | 4 | W4 | metadata-active | `check-active`, same tree | PASS | selected 533, zero violations | required | - |
 | E11 | 4 | W4 | operations-and-links | `check-operations-catalog.py`; links `alignment`, `navigation`, `language`, `traceability`, `entrypoint`, same tree | PASS | catalog PASS; every link mode PASS, 879 documents, 8113 links, zero failures | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -122,12 +141,12 @@ runbook 0098, plus ADR-0038 (accepted). 30 Stage 05 documents in total.
 | 3 | pending | - | - | @buenhyden |
 | 4 | pending | - | - | @buenhyden |
 
-## Review and Completion
+### Remaining Conditions
 
 Local checks are recorded above. Independent review and hosted CI have not
 run, and no criterion is accepted yet.
 
-### Merge receipt 2026-11-10
+#### Merge receipt 2026-11-10
 
 Recorded 2026-11-10 from `gh pr view`: #738 merge `1f8adb89b` at
 2026-11-04T05:07:11Z. Hosted checks on the merged PR: every completed check
@@ -135,7 +154,12 @@ SUCCESS, the rest SKIPPED, none failing. Candidate quality: the merged change
 is a candidate that passed hosted CI. This receipt is not owner acceptance: no
 criterion is accepted and the status is unchanged.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

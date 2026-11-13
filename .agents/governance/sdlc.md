@@ -1,10 +1,10 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.7.0"
+version: "1.7.1"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-13"
 ---
 
 # Software Development Lifecycle
@@ -69,9 +69,10 @@ a terminal Plan and terminal Tasks. Parent status
 never reflects execution.
 
 Execution state has one owner. A single-mode Task keeps one frontmatter
-`status`. A multi-item Task has an `Execution Items` table under its Work Log
-with at least two rows, owns one status per row, assigns each Work Unit to one
-item, and declares no frontmatter `status`; its summary is derived on read.
+`status`. A multi-item Task has an `Execution Items` table under Work Performed
+in its Execution Log with at least two rows, owns one status per row, assigns
+each Work Unit to one item, and declares no frontmatter `status`; its summary is
+derived on read.
 
 Evidence rows record observations only: criterion, Work Unit, Check, Input,
 Result, Location, Required, and Resolves. Required is either `required` or

@@ -14,12 +14,18 @@ created: "2026-10-10"
 
 # SMTP01 Request Contract Task
 
-## Objective
+## Scope
+
+### Objective and Parent
 
 Record current routing and the SEC01 → SMTP01 → CLN01 order without expanding
 authority to Wiki implementation, LAB runtime or learning applications.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Completed P00 Task](tsk-0003-active-contract-and-exclusions.md)
+
+### Inputs and Authority
 
 The input baseline is `a03c8930a5a15a82f4176bbcfe457bc2ce09db4b`. SEC01 is
 the prerequisite on its owning-Spec branch and has no code here. SMTP01 owns
@@ -27,15 +33,17 @@ the source transition after SEC01; CLN01 owns old-file deletion after SMTP01.
 The contract PR waits for SEC01 and precedes the SMTP source PR; no lane merges
 unilaterally. This Task owns only the two parent documents and itself.
 
-## Work Log
+## Execution Log
 
-### W13 Current-request contract
+### Work Performed
+
+#### W13 Current-request contract
 
 `SOURCE` is the amended contract; `UNIT` is a value-free probe; `STATIC` is
 Stage 99 validation. `ISOLATED`, `HOME`, `MIGRATION`, `ROTATION`, `RECOVERY`
 and `DELIVERY` are separate and not inferred from this document change.
 
-### Lifecycle verification history
+#### Lifecycle verification history
 
 The earlier completed-parent reopen candidate used an unregistered
 `completed -> in-progress` edge and failed with three lifecycle-event violations.
@@ -46,14 +54,20 @@ checkpoint below. The resumed corpus failure was traced to a blank line inside
 SPEC-0204's registered Work Breakdown table, not to this Task's NOT_RUN row.
 The blank line is removed while all evidence rows remain preserved.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0005 | draft | ready | #w13-current-request-contract |
 | SPEC-0212-TSK-0005 | ready | completed | #review-and-completion |
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -63,14 +77,30 @@ The blank line is removed while all evidence rows remain preserved.
 | Lifecycle checkpoint before resumed validation | 8 | W13 | `check-document-corpus-lifecycle.py --base-ref a03c8930a5a15a82f4176bbcfe457bc2ce09db4b`; rerun required after legal lifecycle completion | Current W13 source | NOT_RUN | Isolated SMTP01 worktree | pending |
 | Resumed lifecycle validation | 8 | W13 | `check-document-corpus-lifecycle.py --base-ref a03c8930a5a15a82f4176bbcfe457bc2ce09db4b`, exit 0; corpus and archive recovery 0 violations | Actual corrected SMTP01 worktree; completed-parent contract-only Task; contiguous 0204 tables | PASS | Lifecycle verification history | accepted |
 
-## Review and Completion
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Remaining Conditions
+
+#### Review and Completion
 
 This completed route-contract Task does not attest SMTP migration, deletion,
 runtime recovery, PR delivery or merge. SEC01 delivery, the SMTP source PR and
 CLN01 deletion remain separately owned and pending.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Completed P00 Task](tsk-0003-active-contract-and-exclusions.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

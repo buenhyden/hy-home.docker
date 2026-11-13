@@ -1,10 +1,10 @@
 ---
 title: "README and Agent Guide Split Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0251-TSK-0001"
 parent_ids:
@@ -14,14 +14,19 @@ created: "2026-11-03"
 
 # README and Agent Guide Split Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Give people a `README.md` and agents a folder `AGENTS.md`, placed only where
 the folder's role needs agent-specific working rules.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
 
 The user directed that every README targets people and every AGENTS.md targets
 AI agents; that this be reflected in governance, structure and rules; that each
@@ -36,18 +41,20 @@ are. This Task pushes and merges nothing: the coordinator pushed the branch
 and opened PR #728 under the user's instruction to continue the approved plan,
 and the user merges.
 
-## Work Log
+## Execution Log
 
-### Current contract decision
+### Work Performed
+
+#### Current contract decision
 
 The user's direction authorizes this Spec and Plan as written.
 
-### Current readiness and execution
+#### Current readiness and execution
 
 Inputs, work units and checks are recorded here. The Task is ready and in
 progress under the approved parents. Hosted CI has not run.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -56,7 +63,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0251-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0251-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
 
-### Decisions
+#### Decisions
 
 - Placement: a folder carries AGENTS.md only when an agent needs folder-specific
   working rules no single canonical owner routes: a stage with templates,
@@ -102,7 +109,7 @@ progress under the approved parents. Hosted CI has not run.
   placement test; the Spec's Error Behavior now says so. The probe file was
   removed.
 
-### Changed
+#### Changed
 
 - Governance: `documentation-protocol.md` (new "README and AGENTS.md" rule,
   AGENTS.md language rule, navigation note), `bootstrap.md` (load step 4),
@@ -126,7 +133,7 @@ progress under the approved parents. Hosted CI has not run.
   `AI Agent Guidance` sections, the `infra` README loses its agent step list,
   and each points to its AGENTS.md.
 
-### Open issues
+#### Open issues
 
 - `.github/labeler.yml` now labels every `**/AGENTS.md` as `area/governance`,
   under the user's direct approval of 2026-11-04 (E22). `.github/CODEOWNERS`
@@ -149,7 +156,13 @@ progress under the approved parents. Hosted CI has not run.
   main, where `infra` READMEs link Stage 03 Task bodies; they are not
   caused by this change and belong to the legacy and link cleanup phase.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -182,7 +195,13 @@ progress under the approved parents. Hosted CI has not run.
 | E27 | 4 | W4 | review-fix-gates | revision fd8de6704: metadata check-changed and check-active, corpus lifecycle, links alignment/navigation/language/traceability, Script Manifest, renderer `--check`, agent governance contract | PASS | 72 and 497 selected with zero violations; lifecycle and occupancy zero; renderer drift 0; contract zero failures | required | - |
 | E28 | 4 | W4 | validation-suites | CI routing and surface ownership, revision fd8de6704 | PASS | 92 tests OK | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -191,14 +210,14 @@ progress under the approved parents. Hosted CI has not run.
 | 3 | pending | - | - | @buenhyden |
 | 4 | pending | - | - | @buenhyden |
 
-## Review and Completion
+### Remaining Conditions
 
 Local checks are recorded above. Independent review 1 and re-review 2 requested
 changes (E23, E24); both sets are addressed on this branch and await
 re-review. Hosted CI on PR #728 is not observed here, and no criterion is
 accepted yet.
 
-### Merge receipt 2026-11-10
+#### Merge receipt 2026-11-10
 
 Recorded 2026-11-10 from `gh pr view`: #728 merge `4adeb3d37` at
 2026-11-03T23:19:36Z. Hosted checks on the merged PR: every completed check
@@ -206,7 +225,12 @@ SUCCESS, the rest SKIPPED, none failing. Candidate quality: the merged change
 is a candidate that passed hosted CI. This receipt is not owner acceptance: no
 criterion is accepted and the status is unchanged.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.
