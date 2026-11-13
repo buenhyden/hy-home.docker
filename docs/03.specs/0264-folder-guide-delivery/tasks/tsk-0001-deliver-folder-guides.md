@@ -1,8 +1,8 @@
 ---
 title: "Folder Guide Delivery Task"
-version: "0.9.0"
+version: "0.10.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-13"
 layer: "specs"
@@ -86,6 +86,7 @@ The #770 review round, committed as `8ac11bc58`..`13ebb04f1` on `fix/folder-guid
 | SPEC-0264 | in-review | approved | #amendment-approval |
 | SPEC-0264-PLAN-0001 | in-review | approved | #amendment-approval |
 | SPEC-0264-TSK-0001 | blocked | in-progress | #amendment-approval |
+| SPEC-0264-TSK-0001 | in-progress | completed | #review-and-completion |
 
 ### Owner approval
 
@@ -285,26 +286,30 @@ is open; its acceptance is the owner's.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | E1, E2, E6, E7, E8, E9, E17, E20, E22, E29 | owner acceptance | @buenhyden |
-| 2 | pending | E1, E6, E20, E22, E29 | owner acceptance | @buenhyden |
-| 3 | pending | E1, E6 | owner acceptance | @buenhyden |
-| 4 | pending | E1, E2, E6, E7, E8, E22, E29 | owner acceptance | @buenhyden |
-| 5 | pending | E1, E6, E8 | owner acceptance | @buenhyden |
-| 6 | pending | E4, E25, E31 | owner acceptance | @buenhyden |
-| 7 | pending | E5 | owner acceptance | @buenhyden |
+| 1 | accepted | E1, E2, E6, E7, E8, E9, E17, E20, E22, E29 | owner accepted 2026-11-13 | @buenhyden |
+| 2 | accepted | E1, E6, E20, E22, E29 | owner accepted 2026-11-13 | @buenhyden |
+| 3 | accepted | E1, E6 | owner accepted 2026-11-13 | @buenhyden |
+| 4 | accepted | E1, E2, E6, E7, E8, E22, E29 | owner accepted 2026-11-13 | @buenhyden |
+| 5 | accepted | E1, E6, E8 | owner accepted 2026-11-13 | @buenhyden |
+| 6 | accepted | E4, E25, E31 | owner accepted 2026-11-13 | @buenhyden |
+| 7 | accepted | E5 | owner accepted 2026-11-13 | @buenhyden |
 | 8 | accepted | E26, E27, E28, E32, E33, E34, E35, E36, E37 | owner accepted 2026-11-13 after E36 and E37 resolved the open Codex observations | @buenhyden |
-| 9 | pending | E10, E11, E21, E24, E30 | owner acceptance | @buenhyden |
-| 10 | pending | E12, E13, E15, E16, E18, E19, E21, E23, E24, E30 | owner acceptance | @buenhyden |
+| 9 | accepted | E10, E11, E21, E24, E30 | owner accepted 2026-11-13 | @buenhyden |
+| 10 | accepted | E12, E13, E15, E16, E18, E19, E21, E23, E24, E30 | owner accepted 2026-11-13 | @buenhyden |
 
 ## Review and Completion
 
-The amended Spec and Plan are approved and the #770 review findings are
-fixed in commits `8ac11bc58`..`13ebb04f1`, rechecked at `13ebb04f1` (E29, E30). Criterion 8 is observed for Claude (E26); the
-Codex observation, including the `compact` source, is NOT_RUN until the Codex
-usage limit resets on 2026-11-09 18:37 KST (E27), and Codex reports its
-SessionStart and UserPromptSubmit hooks as failed at revisions before and
-after #770 (E28). Every criterion needs owner acceptance. A Codex shell read does not trigger delivery, and native delivery
-in a live session of this repository is not yet observed.
+Completed on 2026-11-13. The amended Spec and Plan are approved and the #770
+review findings are fixed (E29, E30). Criterion 8 is observed for Claude
+(E26) and for Codex: the hooks run without failure (E32 resolves E28), the
+folder guide arrives on a Codex edit made through `tools.apply_patch` inside
+`exec` once the owner trusted the changed hooks (E36 resolves E33 and E34), and
+it is delivered again after `/compact` (E37 resolves E27). Codex 0.167 cannot
+run without code mode, so the `exec` coverage (E35) is the delivery route.
+The owner accepted criterion 8 and criteria 1 to 7, 9 and 10 on 2026-11-13;
+every criterion is accepted and no required observation is open. The
+residuals listed above stay accepted as recorded. Later hook or Codex changes
+belong to a new Task.
 
 ## Related Documents
 
