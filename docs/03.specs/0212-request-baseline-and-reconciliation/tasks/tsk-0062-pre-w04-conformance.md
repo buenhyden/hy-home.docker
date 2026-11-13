@@ -131,6 +131,29 @@ addition to the contract's two, and the empty-section rules omit the
 contract's "only a template guidance comment" case; both predate this change
 and go to W05 with the validators.
 
+#### Link types and document relations 2026-11-13
+
+The documentation protocol gains `Link types and document relations`, and the
+Registry `common` binds `link_types`, `link_profiles` and
+`document_relations`, validated by `registry.py` against the profile schema:
+
+- R08: normative, evidence, historical and navigation links, each forward
+  only, with requiredness, authority, a pinned version and the consumer
+  action when the target is removed or moved. Vault wiki links are a separate
+  `vault-wiki` profile.
+- R07: `rel.traceability` (child to parent through `parent_ids`, and
+  `supersedes`), `rel.ownership` (frontmatter `owner`), `rel.authority`
+  (normative links), `rel.reference` (other links) and
+  `rel.change-propagation` (derived), each with direction, writers and an
+  owning check. Reverse lookups are derived.
+
+Existing documents are not retyped and the link checker does not yet read the
+new fields; enforcement on documents goes to W05 with the validators.
+`superseded_by` stays as a recorded hand-written reverse until the
+coordinated lineage change the protocol already requires. The Registry
+`template_roles[*].consumer_paths` list is a manual reverse lookup; it is
+recorded for W05.
+
 #### Held and corrected records
 
 - The Skill `Completion and Handoff` section, held in TSK-0058 without an
@@ -156,10 +179,12 @@ None: each decision above was the owner's before the change.
 | TemplateDefinition RED | 115 | W120 | red-green-proof | Three new tests against `template_definition.py` before the fix | FAIL | 23 failures: Rollback, Supersession and Quality Requirements derived `optional`; Runbook Recovery order Escalation before Rollback; 21 roles without their prohibited content | required | - |
 | TemplateDefinition GREEN | 115 | W120 | red-green-proof | `test_template_definition`, `metadata.test_heading`, `test_registry` at `88613bc30` | PASS | 242 tests OK | required | TemplateDefinition RED |
 | TemplateDefinition review | 115 | W120 | independent-review | Fresh-context code-reviewer of `88613bc30` | PASS | No Critical or Important finding; conditional set, order and 15 role texts checked against the contract; three Minor findings, the unchecked map keys fixed by a test | required | - |
+| Relation types RED | 115 | W120 | red-green-proof | Ten new `test_relations` tests before the Registry binding | FAIL | All ten errored with `KeyError: 'link_types'` | required | - |
+| Relation types GREEN | 115 | W120 | red-green-proof | `test_relations` and `test_registry` at `5adac8664` | PASS | 138 tests OK; two historical-Registry cases first failed and were fixed by checking the contract only where the schema declares it | required | Relation types RED |
 
 ### Resolution Links
 
-The Glossary contract comparison FAIL is resolved by the Glossary contract re-comparison PASS, and TemplateDefinition RED by TemplateDefinition GREEN.
+The Glossary contract comparison FAIL is resolved by the Glossary contract re-comparison PASS, TemplateDefinition RED by TemplateDefinition GREEN, and Relation types RED by Relation types GREEN.
 
 ## Acceptance Decision
 
@@ -171,9 +196,8 @@ The Glossary contract comparison FAIL is resolved by the Glossary contract re-co
 
 ### Remaining Conditions
 
-The TemplateDefinition binding and the R07 and R08 types are in progress on
-their own branches. Checks, an independent review and owner acceptance of
-criterion 115 are open.
+All four corrections are on this branch. The relation review, the final
+checks and owner acceptance of criterion 115 are open.
 
 ## Handoff
 
