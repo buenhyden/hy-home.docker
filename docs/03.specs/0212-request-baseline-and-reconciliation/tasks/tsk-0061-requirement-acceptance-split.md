@@ -1,6 +1,6 @@
 ---
 title: "Requirement Acceptance Split Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -106,12 +106,14 @@ None: the owner approved the wording before any file changed.
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Per-ID coverage | 114 | W119 | identity-coverage | Uncommitted change on `main` `16e4e6f5b`: requirement identities under Requirements against bold identities under Acceptance Conditions in the five packages | PASS | Equal sets: REQ-0003 7, REQ-0024 15, REQ-0025 15, REQ-0026 13, REQ-0027 13 | required | - |
-| Requirement wording review | 114 | W119 | independent-review | Fresh-context code-reviewer of the uncommitted change on `16e4e6f5b` | FAIL | CHANGES_REQUIRED: REQ-0024-FR-0014 and REQ-0026-FR-0001 wider than their requirement; four minor (REQ-0027 recorded-results clause, REQ-0024 Stage 98 clause placement, REQ-0026 check-mode name, revision missing in this Task) | required | - |
+| Per-ID coverage | 114 | W119 | identity-coverage | Branch `docs/req-acceptance-split` based on `main` `16e4e6f5b`: requirement identities under Requirements against bold identities under Acceptance Conditions in the five packages | PASS | Equal sets: REQ-0003 7, REQ-0024 15, REQ-0025 15, REQ-0026 13, REQ-0027 13 | required | - |
+| Requirement wording review | 114 | W119 | independent-review | Fresh-context code-reviewer of the uncommitted branch change based on `16e4e6f5b` | FAIL | CHANGES_REQUIRED: REQ-0024-FR-0014 and REQ-0026-FR-0001 wider than their requirement; four minor (REQ-0027 recorded-results clause, REQ-0024 Stage 98 clause placement, REQ-0026 check-mode name, revision missing in this Task) | required | - |
+| Requirement wording re-review | 114 | W119 | independent-review | Same reviewer, commit `c0ba93782` | PASS | Findings 1, 2, 3, 5 and 6 resolved; finding 4 kept by choice with its text unchanged; no condition adds an obligation | required | Requirement wording review |
+| Requirement checks | 114 | W119 | metadata-links-lifecycle | Commit `c0ba93782` | PASS | metadata check-changed selected 8 violations 0; links alignment PASS and commands PASS; corpus lifecycle violations 0, occupancy 0 | required | - |
 
 ### Resolution Links
 
-The wording review FAIL is resolved by the re-review row once it passes.
+The Requirement wording review FAIL is resolved by the Requirement wording re-review PASS.
 
 ## Acceptance Decision
 
@@ -123,8 +125,8 @@ The wording review FAIL is resolved by the re-review row once it passes.
 
 ### Remaining Conditions
 
-The checks, an independent review and owner acceptance of criterion 114 are
-open.
+The checks and the independent review pass. Owner acceptance of criterion
+114 is open.
 
 ## Handoff
 
