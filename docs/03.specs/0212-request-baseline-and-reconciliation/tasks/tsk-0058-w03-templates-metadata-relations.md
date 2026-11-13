@@ -336,14 +336,14 @@ Branch `docs/w03-task-common-form`, on top of `main` after #971.
 - Terminal Tasks (owner decision of 2026-11-12, one-time heading move):
   `_same_task_body` accepts a legacy-to-common move only when every content
   line keeps its text, order and mapped target, inner headings move exactly
-  one level (two under an anchor heading that keeps a linked slug), blank
+  one level (or two, consistently, under an H4 anchor heading), blank
   lines between content stay, every anchor the old body referenced still
   resolves, and the only added text is the fixed "None: nothing was recorded
   here before this Task moved to the common form." in an empty target. Every
   other change stays byte-strict. The historical admissions and the terminal
   migration check use it.
-- The 104 Tasks (56 completed, plus tsk-0007 and tsk-0049 whose status comes
-  from Execution Items) are moved by a deterministic script, not by agents.
+- All 104 Tasks are moved, including the 56 completed ones and tsk-0007 and
+  tsk-0049, whose status comes from Execution Items. They are moved by a deterministic script, not by agents.
   Each moved body passes `_same_task_body` against its old body; frontmatter
   of completed and status-less Tasks is unchanged, the others bump the patch
   version. A heading another document or the Task itself links to stays as an
@@ -436,4 +436,4 @@ Each role's Registry profile, template and documents land in `main` through its 
 
 ### Next Owner
 
-The current owner is @buenhyden. After each role pull request merges, the next W03 role starts here in the planned order; W04 owns the validator work handed over under Remaining Conditions.
+The current owner is @buenhyden. After each role pull request merges, the next W03 role starts here in the planned order; W05 owns the validator work handed over under Remaining Conditions.
