@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "3.20.0"
+version: "3.21.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 ---
 
 # Documentation Protocol
@@ -434,8 +434,11 @@ event. Neither local readiness nor a Runbook proves deployment occurred.
 
 Release is not a document role. Do not register a Release Record profile,
 template or generator under any name; release facts stay with the owners
-above. This removes no GitHub Release, tag, CHANGELOG entry or release
-workflow. Remote release and
+above. The Registry validator rejects a profile whose ID, type, template ID
+or path patterns, or a template role whose ID or source, has a `release` or
+`releases` name token; a Release role under another name, and a generator,
+are checked by review. This
+removes no GitHub Release, tag, CHANGELOG entry or release workflow. Remote release and
 deployment actions wait for their exact target under
 [Approval boundaries](approval-boundaries.md).
 
@@ -543,8 +546,10 @@ Standalone documents keep their per-document disposition rule. Incident and
 Postmortem records never retire: they are permanent operational history and
 stay in place after closure, whatever their age, and no disposition status
 admits them to retirement. A Registry disposition entry that lists a status
-its profile's lifecycle cannot reach is a defect, not a retirement path. No
-rule here renames lifecycle statuses or applies a union of terminal sets to
+its profile's lifecycle cannot reach is a defect, not a retirement path. An
+empty entry admits no status. The Registry validator rejects an unreachable
+status, and any status on a profile with an Incident or Postmortem lifecycle.
+No rule here renames lifecycle statuses or applies a union of terminal sets to
 other stages.
 Stage 03 may be empty when no package remains.
 

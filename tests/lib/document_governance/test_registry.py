@@ -3824,3 +3824,212 @@ class SubsectionRegistryTests(unittest.TestCase):
             self.codes(self.candidate({"Impact": ["Scope"]}, {"Impact": ["Scope"]})),
         )
         self.assertTrue(self.codes(self.candidate({"Impact": "Scope"})))
+
+
+def _reachable_statuses(lifecycle: dict) -> set[str]:
+    seen = {lifecycle["initial_status"]}
+    stack = [lifecycle["initial_status"]]
+    while stack:
+        for status in lifecycle["transitions"].get(stack.pop(), ()):
+            if status not in seen:
+                seen.add(status)
+                stack.append(status)
+    return seen
+
+
+class DispositionReachabilityTests(unittest.TestCase):
+    """documentation-protocol.md Retention by status: Incident and Postmortem
+    never retire, and an entry listing an unreachable status is a defect."""
+
+    def setUp(self) -> None:
+        self.raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        self.entries = self.raw["common"]["archive_retention"][
+            "disposition_entry_statuses"
+        ]
+
+    def codes(self) -> set[str]:
+        return {finding.code for finding in validate_registry(self.raw)}
+
+    def test_current_entries_list_only_reachable_statuses(self) -> None:
+        lifecycles = {p["id"]: p.get("lifecycle_id") for p in self.raw["profiles"]}
+        for profile_id, statuses in self.entries.items():
+            with self.subTest(profile=profile_id):
+                lifecycle = lifecycles[profile_id]
+                reachable = (
+                    _reachable_statuses(self.raw["lifecycles"][lifecycle])
+                    if lifecycle
+                    else set()
+                )
+                self.assertLessEqual(set(statuses), reachable)
+        self.assertEqual([], self.entries["incident"])
+        self.assertEqual([], self.entries["postmortem"])
+        self.assertEqual((), validate_registry(self.raw))
+
+    def test_unreachable_status_is_rejected(self) -> None:
+        for profile_id, status in (
+            ("guide", "completed"),
+            ("requirements-package", "cancelled"),
+            ("readme", "retired"),
+            ("runtime-projection-claude", "retired"),
+        ):
+            with self.subTest(profile=profile_id, status=status):
+                self.setUp()
+                self.entries[profile_id].append(status)
+                self.assertIn("archive-disposition-unreachable", self.codes())
+
+    def test_incident_and_postmortem_admit_no_status_even_a_reachable_one(
+        self,
+    ) -> None:
+        for profile_id, status in (("incident", "closed"), ("postmortem", "published")):
+            with self.subTest(profile=profile_id):
+                self.setUp()
+                self.entries[profile_id] = [status]
+                self.assertIn("archive-disposition-never-retire", self.codes())
+
+    def test_a_profile_on_the_incident_lifecycle_never_retires_under_any_id(
+        self,
+    ) -> None:
+        profile = next(
+            p for p in self.raw["profiles"] if p.get("lifecycle_id") == "incident"
+        )
+        profile_id = profile["id"]
+        renamed = f"{profile_id}-record"
+        profile["id"] = renamed
+        self.raw["transitions"][renamed] = self.raw["transitions"].pop(profile_id)
+        self.entries[renamed] = ["closed"]
+        del self.entries[profile_id]
+        self.assertIn("archive-disposition-never-retire", self.codes())
+
+    def test_an_empty_entry_is_still_required_for_every_governed_profile(
+        self,
+    ) -> None:
+        del self.entries["incident"]
+        self.assertIn("archive-disposition-contract-invalid", self.codes())
+
+
+class VocabularyContractTests(unittest.TestCase):
+    """H-W01-4: the glossary's common rows match the adopted contract pinned
+    in the Registry; meaning stays an independent review."""
+
+    def setUp(self) -> None:
+        self.common = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))["common"]
+        self.path = ROOT / self.common["vocabulary_contract"]["glossary_path"]
+        self.text = self.path.read_text(encoding="utf-8")
+
+    def codes(self, text: str | None = None, common: dict | None = None) -> list[str]:
+        return [
+            finding.code
+            for finding in registry_module.vocabulary_contract_findings(
+                common or self.common, self.text if text is None else text
+            )
+        ]
+
+    def test_the_glossary_matches_the_pinned_contract(self) -> None:
+        self.assertEqual(33, len(self.common["vocabulary_contract"]["terms"]))
+        self.assertEqual([], self.codes())
+
+    def test_a_missing_row_is_rejected(self) -> None:
+        text = re.sub(r"^\| TERM-HOLD \|.*\n", "", self.text, flags=re.MULTILINE)
+        self.assertIn("vocabulary-term-missing", self.codes(text))
+
+    def test_a_renamed_term_is_rejected(self) -> None:
+        text = self.text.replace("| TERM-KEEP | Keep |", "| TERM-KEEP | Retain |")
+        self.assertIn("vocabulary-term-name", self.codes(text))
+
+    def test_a_wrong_contract_version_is_rejected(self) -> None:
+        text = re.sub(
+            r"(^\| TERM-TASK \|.*\| )v14\.5( \|)$",
+            r"\g<1>v14.4\2",
+            self.text,
+            flags=re.MULTILINE,
+        )
+        self.assertNotEqual(self.text, text)
+        self.assertIn("vocabulary-contract-version", self.codes(text))
+
+    def test_an_extra_common_row_is_rejected(self) -> None:
+        text = self.text.replace(
+            "| TERM-KEEP |",
+            "| TERM-LOCAL | Local | x | y | z | v14.5 |\n| TERM-KEEP |",
+            1,
+        )
+        self.assertIn("vocabulary-term-unregistered", self.codes(text))
+
+    def test_out_of_order_rows_are_rejected(self) -> None:
+        lines = self.text.splitlines(keepends=True)
+        first = next(i for i, line in enumerate(lines) if line.startswith("| TERM-"))
+        lines[first], lines[first + 1] = lines[first + 1], lines[first]
+        self.assertIn("vocabulary-term-order", self.codes("".join(lines)))
+
+    def test_a_common_id_under_local_extensions_is_rejected(self) -> None:
+        text = self.text.replace(
+            "## Local Extensions\n",
+            "## Local Extensions\n\nTERM-ACCEPTANCE is narrowed here.\n",
+            1,
+        )
+        self.assertIn("vocabulary-local-shadow", self.codes(text))
+
+    def test_a_duplicate_contract_term_id_is_rejected(self) -> None:
+        common = json.loads(json.dumps(self.common))
+        common["vocabulary_contract"]["terms"].append(
+            {"term_id": "TERM-KEEP", "term": "Retain"}
+        )
+        self.assertEqual(["vocabulary-contract-duplicate"], self.codes(common=common))
+
+    def test_a_heading_in_a_code_fence_is_not_the_table(self) -> None:
+        start = self.text.index("## Repository Vocabulary")
+        end = self.text.index("## Local Extensions")
+        fenced = (
+            self.text[:start]
+            + "```\n"
+            + self.text[start:end]
+            + "```\n\n"
+            + self.text[end:]
+        )
+        self.assertIn("vocabulary-table-missing", self.codes(fenced))
+
+
+class ReleaseRoleGuardTests(unittest.TestCase):
+    """H-12: a `release` name token marks a Release role, which is not a
+    document role (documentation-protocol.md Release Evidence Boundary)."""
+
+    def setUp(self) -> None:
+        self.raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+
+    def codes(self) -> set[str]:
+        return {finding.code for finding in validate_registry(self.raw)}
+
+    def test_the_current_registry_has_no_release_role(self) -> None:
+        self.assertNotIn("retired-profile", self.codes())
+
+    def test_a_renamed_release_profile_is_rejected(self) -> None:
+        for key, value in (
+            ("id", "release-record"),
+            ("type", "operation/release"),
+            ("template_id", "operation/release-record"),
+            ("path_pattern", "docs/05.operations/releases/{number:4}-{slug}.md"),
+            ("additional_path_patterns", ["docs/05.operations/releases/index.md"]),
+        ):
+            with self.subTest(key=key):
+                self.setUp()
+                profile = dict(self.raw["profiles"][0])
+                profile["id"] = "ship-record"
+                profile[key] = value
+                self.raw["profiles"].append(profile)
+                self.assertIn("retired-profile", self.codes())
+
+    def test_a_neutral_profile_copy_is_not_a_release_role(self) -> None:
+        profile = dict(self.raw["profiles"][0])
+        profile["id"] = "ship-record"
+        self.raw["profiles"].append(profile)
+        self.assertNotIn("retired-profile", self.codes())
+
+    def test_a_release_template_role_is_rejected(self) -> None:
+        roles = self.raw["template_roles"]
+        roles["operation/release-record"] = dict(roles["sdlc/requirement"])
+        self.assertIn("retired-profile", self.codes())
+
+    def test_a_release_runbook_name_inside_a_slug_is_not_a_role(self) -> None:
+        profile = dict(self.raw["profiles"][0])
+        profile["id"] = "prereleased-notes"
+        self.raw["profiles"].append(profile)
+        self.assertNotIn("retired-profile", self.codes())

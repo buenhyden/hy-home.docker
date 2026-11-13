@@ -1,10 +1,10 @@
 ---
 title: "Repository Vocabulary"
-version: "0.6.0"
+version: "0.6.1"
 type: "governance/vocabulary"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 created: "2026-09-06"
 observed_at: "2026-11-13"
 review_cycle: "on-contract-change"
@@ -137,7 +137,12 @@ the four-repository target at contract version v14.5. The policy owners were
 read at the lines cited in that Task. The local terms carry the earlier rows
 unchanged in meaning. On 2026-11-13 SPEC-0212 TSK-0062 restored
 twenty common rows to the contract wording and moved their local
-narrowings into Local Extensions.
+narrowings into Local Extensions. On 2026-11-14 SPEC-0212 TSK-0064 pinned
+the adopted contract's ID, version, source hash and Term ID to Term pairs in
+the Registry `common.vocabulary_contract`; a Registry test fails when the
+Repository Vocabulary rows differ from it in ID, order, Term or Contract
+Version, or when a common Term ID appears under Local Extensions. Meaning
+stays an independent review against the contract.
 
 ### Refresh Triggers
 
