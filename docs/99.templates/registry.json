@@ -1258,49 +1258,141 @@
         "owner": "scripts/validation/check-document-links.py",
         "reverse_lookup": "derived"
       },
-      "ownership": {
-        "id": "rel.ownership",
-        "direction": "document-to-owner",
+      "structural_ownership": {
+        "id": "rel.structural-ownership",
+        "direction": "child-to-parent",
         "writers": [
           {
             "kind": "frontmatter",
-            "ref": "owner"
+            "ref": "plan:parent_ids"
+          },
+          {
+            "kind": "frontmatter",
+            "ref": "task:parent_ids"
+          },
+          {
+            "kind": "frontmatter",
+            "ref": "data-model-contract:parent_ids"
+          },
+          {
+            "kind": "frontmatter",
+            "ref": "research-member:parent_ids"
+          },
+          {
+            "kind": "frontmatter",
+            "ref": "audit-member:parent_ids"
+          },
+          {
+            "kind": "frontmatter",
+            "ref": "postmortem:parent_ids"
           }
         ],
         "owner": "scripts/validation/check-document-metadata.py",
         "reverse_lookup": "derived"
       },
-      "reference": {
-        "id": "rel.reference",
-        "direction": "source-to-target",
+      "constraint": {
+        "id": "rel.constraint",
+        "direction": "change-to-constraint",
         "writers": [
           {
-            "kind": "link",
-            "ref": "evidence"
+            "kind": "frontmatter",
+            "ref": "requirements-package:parent_ids"
           },
           {
-            "kind": "link",
-            "ref": "historical"
+            "kind": "frontmatter",
+            "ref": "architecture-description:parent_ids"
           },
           {
-            "kind": "link",
-            "ref": "navigation"
+            "kind": "frontmatter",
+            "ref": "adr:parent_ids"
+          },
+          {
+            "kind": "frontmatter",
+            "ref": "spec:parent_ids"
+          },
+          {
+            "kind": "section",
+            "ref": "spec:Overview/Owning Requirements"
           }
         ],
-        "owner": "scripts/validation/check-document-links.py",
+        "owner": "scripts/validation/check-document-metadata.py",
         "reverse_lookup": "derived"
       },
       "traceability": {
         "id": "rel.traceability",
-        "direction": "child-to-parent",
+        "direction": "record-to-source",
         "writers": [
           {
-            "kind": "frontmatter",
-            "ref": "parent_ids"
+            "kind": "section",
+            "ref": "task:Verification Evidence/Results"
+          },
+          {
+            "kind": "link",
+            "ref": "task:evidence"
           },
           {
             "kind": "frontmatter",
+            "ref": "research:parent_ids"
+          },
+          {
+            "kind": "frontmatter",
+            "ref": "audit:parent_ids"
+          },
+          {
+            "kind": "frontmatter",
+            "ref": "data:parent_ids"
+          },
+          {
+            "kind": "frontmatter",
+            "ref": "guide:parent_ids"
+          },
+          {
+            "kind": "frontmatter",
+            "ref": "runbook:parent_ids"
+          },
+          {
+            "kind": "frontmatter",
+            "ref": "policy:parent_ids"
+          },
+          {
+            "kind": "frontmatter",
+            "ref": "incident:parent_ids"
+          },
+          {
+            "kind": "frontmatter",
+            "ref": "generated:parent_ids"
+          }
+        ],
+        "owner": "scripts/validation/check-document-corpus-lifecycle.py",
+        "reverse_lookup": "derived"
+      },
+      "promotion": {
+        "id": "rel.promotion",
+        "direction": "plan-to-target-owner",
+        "writers": [
+          {
+            "kind": "section",
+            "ref": "plan:Promotion Map/Durable Meaning"
+          },
+          {
+            "kind": "section",
+            "ref": "plan:Promotion Map/Owner and Receipt"
+          }
+        ],
+        "owner": ".agents/governance/sdlc.md",
+        "reverse_lookup": "derived"
+      },
+      "supersession": {
+        "id": "rel.supersession",
+        "direction": "successor-to-predecessor",
+        "writers": [
+          {
+            "kind": "frontmatter",
             "ref": "supersedes"
+          },
+          {
+            "kind": "section",
+            "ref": "adr:Traceability/Supersession"
           }
         ],
         "owner": "scripts/validation/check-document-metadata.py",
@@ -1309,8 +1401,8 @@
           "superseded_by"
         ]
       },
-      "change_propagation": {
-        "id": "rel.change-propagation",
+      "change_impact": {
+        "id": "rel.change-impact",
         "direction": "owner-to-consumer",
         "writers": [
           {
@@ -1319,7 +1411,11 @@
           },
           {
             "kind": "derived",
-            "ref": "rel.reference"
+            "ref": "rel.constraint"
+          },
+          {
+            "kind": "derived",
+            "ref": "rel.structural-ownership"
           }
         ],
         "owner": ".agents/governance/documentation-protocol.md",

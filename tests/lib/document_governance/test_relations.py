@@ -58,42 +58,94 @@ class LinkTypeContractTests(unittest.TestCase):
 
 
 class DocumentRelationContractTests(unittest.TestCase):
-    def test_registry_binds_five_relations_and_is_valid(self) -> None:
+    def test_registry_binds_the_seven_common_relations_and_is_valid(self) -> None:
         raw = _registry()
         relations = raw["common"]["document_relations"]
         self.assertEqual(
             {
                 "authority",
-                "ownership",
-                "reference",
+                "structural_ownership",
+                "constraint",
                 "traceability",
-                "change_propagation",
+                "promotion",
+                "supersession",
+                "change_impact",
             },
             set(relations),
         )
+
+        def refs(name: str) -> set[str]:
+            return {writer["ref"] for writer in relations[name]["writers"]}
+
+        self.assertIn("plan:parent_ids", refs("structural_ownership"))
+        self.assertIn("task:parent_ids", refs("structural_ownership"))
+        self.assertIn("spec:parent_ids", refs("constraint"))
+        self.assertIn("adr:Traceability/Supersession", refs("supersession"))
         self.assertEqual(
-            [{"kind": "frontmatter", "ref": "parent_ids"}],
-            relations["traceability"]["writers"][:1],
+            {
+                "plan:Promotion Map/Durable Meaning",
+                "plan:Promotion Map/Owner and Receipt",
+            },
+            refs("promotion"),
         )
-        self.assertEqual("child-to-parent", relations["traceability"]["direction"])
         self.assertEqual((), validate_registry(raw))
+
+    def test_each_parent_ids_writer_has_exactly_one_meaning(self) -> None:
+        raw = _registry()
+        relations = raw["common"]["document_relations"]
+        for profile in raw["profiles"]:
+            keys = [
+                *profile.get("required_frontmatter", ()),
+                *profile.get("optional_frontmatter", ()),
+            ]
+            if "parent_ids" not in keys:
+                continue
+            ref = f"{profile['id']}:parent_ids"
+            owners = [
+                name
+                for name, relation in relations.items()
+                for writer in relation["writers"]
+                if writer == {"kind": "frontmatter", "ref": ref}
+            ]
+            with self.subTest(profile=profile["id"]):
+                self.assertEqual(1, len(owners), owners)
+        self.assertNotIn(
+            {"kind": "frontmatter", "ref": "parent_ids"},
+            [w for relation in relations.values() for w in relation["writers"]],
+        )
 
     def test_manual_reverse_lookup_is_rejected(self) -> None:
         raw = _registry()
-        raw["common"]["document_relations"]["traceability"]["reverse_lookup"] = "manual"
+        raw["common"]["document_relations"]["supersession"]["reverse_lookup"] = "manual"
         self.assertIn("schema-invalid", _codes(raw))
 
     def test_duplicate_relation_id_is_rejected(self) -> None:
         raw = _registry()
         relations = raw["common"]["document_relations"]
-        relations["reference"]["id"] = relations["authority"]["id"]
+        relations["constraint"]["id"] = relations["authority"]["id"]
         self.assertIn("schema-invalid", _codes(raw))
 
     def test_unknown_writer_references_are_rejected(self) -> None:
         cases = (
-            ("ownership", {"kind": "frontmatter", "ref": "not_a_key"}),
-            ("reference", {"kind": "link", "ref": "not_a_link_type"}),
-            ("change_propagation", {"kind": "derived", "ref": "rel.missing"}),
+            ("structural_ownership", {"kind": "frontmatter", "ref": "not_a_key"}),
+            ("structural_ownership", {"kind": "frontmatter", "ref": "plan:not_a_key"}),
+            ("structural_ownership", {"kind": "frontmatter", "ref": "nope:parent_ids"}),
+            (
+                "structural_ownership",
+                {"kind": "frontmatter", "ref": "governance-policy:parent_ids"},
+            ),
+            ("traceability", {"kind": "link", "ref": "task:not_a_link_type"}),
+            ("authority", {"kind": "link", "ref": "not_a_link_type"}),
+            ("change_impact", {"kind": "derived", "ref": "rel.missing"}),
+            ("promotion", {"kind": "section", "ref": "plan:Promotion Map/Nope"}),
+            (
+                "promotion",
+                {"kind": "section", "ref": "nope:Promotion Map/Owner and Receipt"},
+            ),
+            (
+                "constraint",
+                {"kind": "section", "ref": "spec:Scope/Owning Requirements"},
+            ),
         )
         for name, writer in cases:
             with self.subTest(name=name):
@@ -110,14 +162,14 @@ class DocumentRelationContractTests(unittest.TestCase):
 
     def test_retained_reverse_field_must_be_a_frontmatter_key(self) -> None:
         raw = _registry()
-        raw["common"]["document_relations"]["traceability"][
+        raw["common"]["document_relations"]["supersession"][
             "retained_reverse_fields"
         ] = ["not_a_key"]
         self.assertIn("relation-contract-invalid", _codes(raw))
 
     def test_derived_writer_cannot_name_its_own_relation(self) -> None:
         raw = _registry()
-        relation = raw["common"]["document_relations"]["change_propagation"]
+        relation = raw["common"]["document_relations"]["change_impact"]
         relation["writers"] = [{"kind": "derived", "ref": relation["id"]}]
         self.assertIn("relation-contract-invalid", _codes(raw))
 
@@ -131,9 +183,10 @@ class PinnedContractValueTests(unittest.TestCase):
     """Every value the policy tables fix is pinned: a mutation fails closed."""
 
     MUTATIONS = (
-        ("document_relations", "traceability", "direction", "parent-to-child"),
+        ("document_relations", "structural_ownership", "direction", "parent-to-child"),
         ("document_relations", "authority", "direction", "owner-to-consumer"),
-        ("document_relations", "reference", "id", "rel.other"),
+        ("document_relations", "promotion", "id", "rel.other"),
+        ("document_relations", "supersession", "direction", "predecessor-to-successor"),
         ("link_types", "normative", "authority", "none"),
         ("link_types", "normative", "required", False),
         ("link_types", "evidence", "pinned_version", "current"),

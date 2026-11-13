@@ -487,12 +487,15 @@ def _template_dictionary_findings(raw: Mapping[str, object]) -> list[RegistryFin
 
 def _relation_contract_findings(
     common: Mapping[str, object],
+    profiles: Sequence[Mapping[str, object]] = (),
 ) -> list[RegistryFinding]:
     """Check the DOC-07 link types and DOC-09 relations beyond their schema.
 
     The schema pins every value the policy tables fix; this resolves every
-    writer against the frontmatter keys, link types and relation IDs the
-    Registry declares and rejects a relation derived from itself.
+    writer against the frontmatter keys and link types (optionally scoped as
+    `profile:ref`), registered profile H3 sections (`profile:H2/H3`) and
+    relation IDs the Registry declares and rejects a relation derived from
+    itself.
     """
 
     names = ("link_types", "link_profiles", "document_relations")
@@ -509,9 +512,29 @@ def _relation_contract_findings(
     keys = set(common.get("frontmatter_order", ()))
     relations = common["document_relations"]
     ids = [relation["id"] for relation in relations.values()]
+    link_types = set(common["link_types"])
     known = {
-        "frontmatter": keys,
-        "link": set(common["link_types"]),
+        # A writer may be scoped to one profile as `profile:ref`.
+        "frontmatter": keys
+        | {
+            f"{profile.get('id')}:{key}"
+            for profile in profiles
+            for key in (
+                *profile.get("required_frontmatter", ()),
+                *profile.get("optional_frontmatter", ()),
+            )
+        },
+        "link": link_types
+        | {
+            f"{profile.get('id')}:{name}" for profile in profiles for name in link_types
+        },
+        "section": {
+            f"{profile.get('id')}:{section}/{subsection}"
+            for profile in profiles
+            for field in ("required_subsections", "optional_subsections")
+            for section, children in (profile.get(field) or {}).items()
+            for subsection in children
+        },
         "derived": set(ids),
     }
     findings: list[RegistryFinding] = []
@@ -522,7 +545,7 @@ def _relation_contract_findings(
     for name, relation in relations.items():
         location = f"common.document_relations.{name}"
         for writer in relation["writers"]:
-            if writer["ref"] not in known[writer["kind"]]:
+            if writer["ref"] not in known.get(writer["kind"], ()):
                 invalid(location, f"unknown {writer['kind']} writer {writer['ref']}")
             if writer["kind"] == "derived" and writer["ref"] == relation["id"]:
                 invalid(location, "a relation cannot be derived from itself")
@@ -734,7 +757,9 @@ def validate_registry(
     if "document_relations" in schema.get("properties", {}).get("common", {}).get(
         "properties", {}
     ):
-        findings.extend(_relation_contract_findings(raw.get("common", {})))
+        findings.extend(
+            _relation_contract_findings(raw.get("common", {}), raw.get("profiles", ()))
+        )
     contract = raw.get("common", {}).get("archive_retention")
     if isinstance(contract, Mapping):
         expected = {

@@ -211,10 +211,12 @@
           "additionalProperties": false,
           "required": [
             "authority",
-            "ownership",
-            "reference",
+            "structural_ownership",
+            "constraint",
             "traceability",
-            "change_propagation"
+            "promotion",
+            "supersession",
+            "change_impact"
           ],
           "properties": {
             "authority": {
@@ -246,7 +248,7 @@
                 }
               }
             },
-            "ownership": {
+            "structural_ownership": {
               "type": "object",
               "additionalProperties": false,
               "required": [
@@ -258,10 +260,10 @@
               ],
               "properties": {
                 "id": {
-                  "const": "rel.ownership"
+                  "const": "rel.structural-ownership"
                 },
                 "direction": {
-                  "const": "document-to-owner"
+                  "const": "child-to-parent"
                 },
                 "writers": {
                   "$ref": "#/$defs/relationWriters"
@@ -275,7 +277,7 @@
                 }
               }
             },
-            "reference": {
+            "constraint": {
               "type": "object",
               "additionalProperties": false,
               "required": [
@@ -287,10 +289,10 @@
               ],
               "properties": {
                 "id": {
-                  "const": "rel.reference"
+                  "const": "rel.constraint"
                 },
                 "direction": {
-                  "const": "source-to-target"
+                  "const": "change-to-constraint"
                 },
                 "writers": {
                   "$ref": "#/$defs/relationWriters"
@@ -312,15 +314,73 @@
                 "direction",
                 "writers",
                 "owner",
-                "reverse_lookup",
-                "retained_reverse_fields"
+                "reverse_lookup"
               ],
               "properties": {
                 "id": {
                   "const": "rel.traceability"
                 },
                 "direction": {
-                  "const": "child-to-parent"
+                  "const": "record-to-source"
+                },
+                "writers": {
+                  "$ref": "#/$defs/relationWriters"
+                },
+                "owner": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "reverse_lookup": {
+                  "const": "derived"
+                }
+              }
+            },
+            "promotion": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "direction",
+                "writers",
+                "owner",
+                "reverse_lookup"
+              ],
+              "properties": {
+                "id": {
+                  "const": "rel.promotion"
+                },
+                "direction": {
+                  "const": "plan-to-target-owner"
+                },
+                "writers": {
+                  "$ref": "#/$defs/relationWriters"
+                },
+                "owner": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "reverse_lookup": {
+                  "const": "derived"
+                }
+              }
+            },
+            "supersession": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "direction",
+                "writers",
+                "owner",
+                "reverse_lookup",
+                "retained_reverse_fields"
+              ],
+              "properties": {
+                "id": {
+                  "const": "rel.supersession"
+                },
+                "direction": {
+                  "const": "successor-to-predecessor"
                 },
                 "writers": {
                   "$ref": "#/$defs/relationWriters"
@@ -337,7 +397,7 @@
                 }
               }
             },
-            "change_propagation": {
+            "change_impact": {
               "type": "object",
               "additionalProperties": false,
               "required": [
@@ -349,7 +409,7 @@
               ],
               "properties": {
                 "id": {
-                  "const": "rel.change-propagation"
+                  "const": "rel.change-impact"
                 },
                 "direction": {
                   "const": "owner-to-consumer"
@@ -1511,6 +1571,7 @@
             "enum": [
               "frontmatter",
               "link",
+              "section",
               "derived"
             ]
           },

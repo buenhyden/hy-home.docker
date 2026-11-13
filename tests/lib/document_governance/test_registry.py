@@ -528,6 +528,7 @@ class DocumentRegistryTests(unittest.TestCase):
         for revision, generation in (
             ("2bba11baa1009e673a763a727b0a9e3d7e0bb5a7", None),
             ("8b85e88fe2dfef54f4cc125ee2687982c86c1942", 4),
+            ("73b1705b6dc5919f01043bd4fb955d4f9ae67722", 7),
         ):
             with self.subTest(generation=generation):
                 raw = registry_module.load_registry_document_at_revision(
