@@ -1174,6 +1174,127 @@
       "sdlc/requirement": "Implementation detail or Task status, which the Requirement does not own.",
       "sdlc/spec": "A second copy of the Plan's execution order or the Task's progress.",
       "sdlc/task": "A new acceptance criterion or policy invented here, or an overwritten original failure output."
+    },
+    "link_types": {
+      "normative": {
+        "direction": "forward",
+        "required": true,
+        "authority": "binding",
+        "pinned_version": "current",
+        "on_target_removal": "update-consumer"
+      },
+      "evidence": {
+        "direction": "forward",
+        "required": true,
+        "authority": "none",
+        "pinned_version": "revision",
+        "on_target_removal": "keep-pinned"
+      },
+      "historical": {
+        "direction": "forward",
+        "required": false,
+        "authority": "none",
+        "pinned_version": "revision",
+        "on_target_removal": "plain-text"
+      },
+      "navigation": {
+        "direction": "forward",
+        "required": true,
+        "authority": "none",
+        "pinned_version": "current",
+        "on_target_removal": "update-consumer"
+      }
+    },
+    "link_profiles": {
+      "markdown": {
+        "syntax": "relative-markdown",
+        "link_types": true
+      },
+      "vault-wiki": {
+        "syntax": "wiki",
+        "link_types": false
+      }
+    },
+    "document_relations": {
+      "authority": {
+        "id": "rel.authority",
+        "direction": "consumer-to-owner",
+        "writers": [
+          {
+            "kind": "link",
+            "ref": "normative"
+          }
+        ],
+        "owner": "scripts/validation/check-document-links.py",
+        "reverse_lookup": "derived"
+      },
+      "ownership": {
+        "id": "rel.ownership",
+        "direction": "document-to-owner",
+        "writers": [
+          {
+            "kind": "frontmatter",
+            "ref": "owner"
+          }
+        ],
+        "owner": "scripts/validation/check-document-metadata.py",
+        "reverse_lookup": "derived"
+      },
+      "reference": {
+        "id": "rel.reference",
+        "direction": "source-to-target",
+        "writers": [
+          {
+            "kind": "link",
+            "ref": "evidence"
+          },
+          {
+            "kind": "link",
+            "ref": "historical"
+          },
+          {
+            "kind": "link",
+            "ref": "navigation"
+          }
+        ],
+        "owner": "scripts/validation/check-document-links.py",
+        "reverse_lookup": "derived"
+      },
+      "traceability": {
+        "id": "rel.traceability",
+        "direction": "child-to-parent",
+        "writers": [
+          {
+            "kind": "frontmatter",
+            "ref": "parent_ids"
+          },
+          {
+            "kind": "frontmatter",
+            "ref": "supersedes"
+          }
+        ],
+        "owner": "scripts/validation/check-document-metadata.py",
+        "reverse_lookup": "derived",
+        "retained_reverse_fields": [
+          "superseded_by"
+        ]
+      },
+      "change_propagation": {
+        "id": "rel.change-propagation",
+        "direction": "owner-to-consumer",
+        "writers": [
+          {
+            "kind": "derived",
+            "ref": "rel.authority"
+          },
+          {
+            "kind": "derived",
+            "ref": "rel.reference"
+          }
+        ],
+        "owner": "scripts/validation/check-document-links.py",
+        "reverse_lookup": "derived"
+      }
     }
   },
   "profiles": [

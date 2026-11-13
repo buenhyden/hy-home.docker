@@ -95,6 +95,48 @@ instruction dependencies. Links inside `docs/` keep their existing rules;
 [Document Retention and Retirement](#document-retention-and-retirement) governs
 retired identities.
 
+#### Link types and document relations
+
+Every link in a governed document has one of four types, and every link points
+forward from the document that writes it. A link never asks its target to
+write a link back.
+
+| Type | Required | Authority | Pinned version | When the target is removed or moved |
+| --- | --- | --- | --- | --- |
+| Normative | Yes | The target governs the linked meaning | Current target | Update the consumer in the same change |
+| Evidence | Yes | None: it supports a claim | A revision or content hash | Keep the pinned reference |
+| Historical | No | None: it explains lineage | A revision | Turn the link into plain text |
+| Navigation | Yes | None: it routes a reader | Current target | Update the consumer in the same change |
+
+A required link must resolve. Before a document is deleted or moved, sort its
+inbound consumers by link type and handle each as the last column says.
+Vault wiki links are a separate profile. They are not typed this way and are
+converted at the Vault publish boundary. A governed document uses relative
+Markdown links.
+
+Five relations connect documents. Each one has a relation ID, one direction,
+one writer and an owning check.
+
+| Relation | ID | Direction | Writer | Owner |
+| --- | --- | --- | --- | --- |
+| Authority | `rel.authority` | Consumer to owner | Normative links | `check-document-links.py` |
+| Ownership | `rel.ownership` | Document to owner | Frontmatter `owner` | `check-document-metadata.py` |
+| Reference | `rel.reference` | Source to target | Evidence, historical and navigation links | `check-document-links.py` |
+| Traceability | `rel.traceability` | Child to parent | Frontmatter `parent_ids`, and `supersedes` for lineage | `check-document-metadata.py` |
+| Change Propagation | `rel.change-propagation` | Owner to consumer | Derived from Authority and Reference | `check-document-links.py` |
+
+Only the side the Writer column names records a relation. Reverse lookups,
+such as the children of a parent or the consumers of an owner, are derived
+from those records, and no document keeps a manual reverse-state table. The
+one retained reverse field is `superseded_by`, the reciprocal of `supersedes`;
+it stays until a coordinated graph and lineage contract change removes it, as
+[Authoring Rules](#authoring-rules) item 9 states. The Registry `common`
+section binds these definitions as `link_types`, `link_profiles` and
+`document_relations`. Its validator rejects a missing contract, a duplicate
+relation ID, a writer that names an undeclared frontmatter key, link type or
+relation, an owner path that does not exist, and any reverse lookup that is
+not derived. Existing links are not retyped by this rule.
+
 #### Authoring Rules
 
 1. Select the registry profile before creating or moving a document.
