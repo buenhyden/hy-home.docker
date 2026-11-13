@@ -330,6 +330,31 @@ class GrypeDbSeedPublicationTests(unittest.TestCase):
                 self.helper.current_seed_identity(pathlib.Path(temporary) / "other"),
             )
 
+    def test_unreadable_or_corrupt_pointer_is_invalid_not_absent(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            base = pathlib.Path(temporary) / "repo"
+            base.mkdir(mode=0o700)
+            output = base / OUTPUT_RELATIVE
+            output.mkdir(parents=True, mode=0o700)
+            # An existing output directory with no pointer is still ABSENT.
+            self.assertEqual("ABSENT", self.helper.current_seed_identity(base))
+            pointer = output / "current.json"
+            for label, body in (
+                ("not-utf8", b"\xff\xfe\x00"),
+                ("too-deep", b"[" * 100_000),
+            ):
+                with self.subTest(label=label):
+                    pointer.write_bytes(body)
+                    pointer.chmod(0o600)
+                    self.assertEqual("INVALID", self.helper.current_seed_identity(base))
+                    pointer.unlink()
+            target = output / "elsewhere.json"
+            target.write_text("{}\n", encoding="utf-8")
+            target.chmod(0o600)
+            pointer.symlink_to(target)
+            with self.subTest(label="symlink"):
+                self.assertEqual("INVALID", self.helper.current_seed_identity(base))
+
     def test_failed_new_seed_preserves_last_valid_pointer_and_generation(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             base = pathlib.Path(temporary) / "repo"

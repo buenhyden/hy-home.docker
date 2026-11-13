@@ -541,7 +541,7 @@ def _read_pointer(output_fd: int) -> tuple[bytes, dict[str, Any]]:
     body = _read_private_file_at(output_fd, "current.json", limit=MAX_STATUS_BYTES)
     try:
         payload = json.loads(body)
-    except json.JSONDecodeError as exc:
+    except (ValueError, RecursionError) as exc:
         raise SeedContractError("seed-pointer-json-invalid") from exc
     return body, _validate_payload(payload)
 
@@ -590,8 +590,9 @@ def current_seed_identity(base: pathlib.Path | str) -> str:
 
     The identity is the generation digest, which already covers the DB package
     checksum, the cache tree digest and the seeding time. It is metadata only;
-    no cache byte or credential is read. `ABSENT` means no readable pointer
-    exists and `INVALID` means a pointer exists but fails its own contract.
+    no cache byte or credential is read. `ABSENT` means no pointer
+    exists (ENOENT only) and `INVALID` means any other failure to read or
+    validate it, which the gate refuses.
     """
     try:
         output_fd, _ = _open_output_directory(base, SEED_RELATIVE, create=False)
@@ -600,7 +601,10 @@ def current_seed_identity(base: pathlib.Path | str) -> str:
     try:
         payload = _read_pointer(output_fd)[1]
     except SeedContractError as exc:
-        return "ABSENT" if str(exc) == "seed-private-file-open-failed" else "INVALID"
+        missing = str(exc) == "seed-private-file-open-failed" and isinstance(
+            exc.__cause__, FileNotFoundError
+        )
+        return "ABSENT" if missing else "INVALID"
     finally:
         os.close(output_fd)
     return "sha256:" + payload["generation_path"].split("/", 1)[1]
