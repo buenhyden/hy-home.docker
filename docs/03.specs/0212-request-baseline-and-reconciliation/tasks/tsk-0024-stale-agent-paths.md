@@ -14,15 +14,22 @@ created: "2026-10-29"
 
 # Stale Agent Paths Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W40: find repository paths named in `.agents/`, `.claude/`, and
 `.codex/` that no longer exist, and correct them. This Task owns criterion 35
 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The original request asks for outdated statements in `.agents/`, `.claude/`,
 and `.codex/` to be found and corrected. On 2026-10-29 the owner asked for the
@@ -30,9 +37,11 @@ request review to continue through to merge. The input is `main` at merged
 PR #621. The authorization covers path corrections in those surfaces, this
 branch, its pull request, and merge.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -40,7 +49,7 @@ branch, its pull request, and merge.
 | SPEC-0212-TSK-0024 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0024 | in-progress | completed | #evidence |
 
-### Scan
+#### Scan
 
 Every backticked path under a repository root (`scripts/`, `docs/`, `infra/`,
 `labs/`, `.agents/`, `.claude/`, `.codex/`, `.github/`, `tests/`, `secrets/`,
@@ -55,7 +64,15 @@ surfaces was compared with the tracked tree.
 | `.codex/skills/` | `.codex/provider.md` | Kept; the text states that it is absent |
 | `docs/01`, `docs/05`, `docs/90`, `docs/99`, `docs/...` | Rule and hook text | Kept; stage ranges, not paths |
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -64,18 +81,29 @@ surfaces was compared with the tracked tree.
 | Provider render | 35 | W40 | `provider_surface_renderer.py --check` | This branch | PASS | 0 drift | required | - |
 | Metadata contracts | 35 | W40 | `check-document-metadata.py --mode check-contracts` | This branch | PASS | 0 violations | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 35 | accepted | Path existence scan, Governance contract, Provider render, Metadata contracts | Every repository path the agent and provider surfaces name now exists or is intentionally absent. | SPEC-0212 TSK-0024 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

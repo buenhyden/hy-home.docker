@@ -290,3 +290,31 @@ class CurrentSpecRelationTests(unittest.TestCase):
 
         self.assertIn("parent-cycle", codes(first))
         self.assertIn("parent-cardinality", codes(plan))
+
+
+class ExecutionItemsProbeTests(unittest.TestCase):
+    """A multi-item Task declares its table at H3 (legacy) or H4 (common form)."""
+
+    HEADER = "| Item | Work Unit | Scope | Owner | Status | Blocker |"
+
+    def _declares(self, text: str) -> bool:
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / "tsk-0001-x.md"
+            path.write_text(text, encoding="utf-8")
+            record = metadata.Record(path, {}, "task")
+            common = metadata.load_registry(REGISTRY).common
+            return lifecycle_module._declares_execution_items(record, common)
+
+    def test_either_heading_level_declares_the_table(self) -> None:
+        table = f"{self.HEADER}\n| --- | --- | --- | --- | --- | --- |\n"
+        for marker in ("### Execution Items", "#### Execution Items"):
+            with self.subTest(marker=marker):
+                self.assertTrue(self._declares(f"## Work Log\n{marker}\n{table}"))
+        for text in (
+            f"## Work Log\n##### Execution Items\n{table}",
+            f"## Work Log\n## Execution Items\n{table}",
+            "## Work Log\n#### Execution Items\nno table\n",
+            f"## Work Log\n#### Other\n{table}",
+        ):
+            with self.subTest(text=text):
+                self.assertFalse(self._declares(text))

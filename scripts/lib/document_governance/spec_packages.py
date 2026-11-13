@@ -755,21 +755,25 @@ def _validate_execution_states(
         )
 
 
-def _completion_visible_lines(body: str) -> list[str]:
-    """Exclude fenced examples and HTML comments without mixing their states."""
-    visible: list[str] = []
+def _completion_line_states(
+    lines: Sequence[str],
+) -> list[tuple[str, str | None]]:
+    """Pair each line with its visible text; a fenced line has none."""
+    states: list[tuple[str, str | None]] = []
     fence: str | None = None
     comment = False
-    for line in body.splitlines():
+    for line in lines:
         if fence is not None:
             if re.fullmatch(
                 rf" {{0,3}}{re.escape(fence[0])}{{{len(fence)},}}[ \t]*", line
             ):
                 fence = None
+            states.append((line, None))
             continue
         opening = re.match(r"^ {0,3}(`{3,}|~{3,})(.*)$", line)
         if not comment and opening and not (opening[1][0] == "`" and "`" in opening[2]):
             fence = opening[1]
+            states.append((line, None))
             continue
         parts: list[str] = []
         for token in re.split(r"(<!--|--!?>)", line):
@@ -781,8 +785,17 @@ def _completion_visible_lines(body: str) -> list[str]:
                 parts.append(" ")
             else:
                 parts.append(token)
-        visible.append("".join(parts))
-    return visible
+        states.append((line, "".join(parts)))
+    return states
+
+
+def _completion_visible_lines(body: str) -> list[str]:
+    """Exclude fenced examples and HTML comments without mixing their states."""
+    return [
+        visible
+        for _, visible in _completion_line_states(body.splitlines())
+        if visible is not None
+    ]
 
 
 # A Registry ``common`` heading value names its legacy H2. A document in the
@@ -790,6 +803,9 @@ def _completion_visible_lines(body: str) -> list[str]:
 # new H2, so the value is a logical anchor resolved to exactly one form.
 _COMMON_FORM_PATHS = {
     "Work Breakdown": ("Implementation Strategy", "Work Breakdown"),
+    "Evidence": ("Verification Evidence", "Results"),
+    "Criterion Acceptance": ("Acceptance Decision", "Criterion Decisions"),
+    "Work Log": ("Execution Log", "Work Performed"),
 }
 
 
@@ -829,6 +845,39 @@ def _contract_span(body: str, heading: str) -> tuple[list[str], int]:
 
 def _contract_section(body: str, heading: str) -> list[str]:
     return _contract_span(body, heading)[0]
+
+
+def _child_blocks(
+    section: list[str], level: int, subsection: str
+) -> tuple[str, list[list[str]]]:
+    """Return the child marker and each block it opens inside a section.
+
+    A subsection is one heading level below its section: H3 under a legacy H2
+    and H4 under a common-form H3.
+    """
+    prefix = "#" * (level + 1) + " "
+    marker = prefix + subsection
+    blocks = []
+    for index, line in enumerate(section):
+        if line == marker:
+            end = next(
+                (
+                    stop
+                    for stop in range(index + 1, len(section))
+                    if section[stop].startswith(prefix)
+                ),
+                len(section),
+            )
+            blocks.append(section[index + 1 : end])
+    return marker, blocks
+
+
+def _has_execution_items(text: str) -> bool:
+    """Say whether a document declares Execution Items at either heading level."""
+    return any(
+        line in {"### Execution Items", "#### Execution Items"}
+        for line in text.splitlines()
+    )
 
 
 def acceptance_criterion_numbers(spec_body: str, heading: str) -> tuple[int, ...]:
@@ -1366,25 +1415,15 @@ def _v5_evidence_contract(
 
 def _subsection_lines(body: str, section: str, subsection: str) -> list[str]:
     try:
-        lines = _contract_section(body, section)
+        lines, level = _contract_span(body, section)
     except SpecPackageError:
         return []
-    marker = "### " + subsection
-    starts = [index for index, line in enumerate(lines) if line == marker]
-    if not starts:
+    marker, blocks = _child_blocks(lines, level, subsection)
+    if not blocks:
         return []
-    if len(starts) != 1:
+    if len(blocks) != 1:
         raise SpecPackageError(f"{marker} must occur only once")
-    start = starts[0] + 1
-    end = next(
-        (
-            index
-            for index in range(start, len(lines))
-            if lines[index].startswith("### ")
-        ),
-        len(lines),
-    )
-    return lines[start:end]
+    return blocks[0]
 
 
 def _execution_item_rows(
@@ -2637,7 +2676,7 @@ def _v5_historical_admission(
             if task.status in {"completed", "cancelled"}
             and task.path in source_tasks
             and source_tasks[task.path].status in {"completed", "cancelled"}
-            and task.source_text == source_tasks[task.path].source_text
+            and _same_task_source(source_tasks[task.path], task)
         }
         | set(mainline_historical_tasks)
     )
@@ -2770,7 +2809,7 @@ def _v6_historical_admission(
                 task.status not in terminal
                 or source is None
                 or source.status not in terminal
-                or task.source_text != source.source_text
+                or not _same_task_source(source, task)
             ):
                 continue
             historical.add(task.path)
@@ -2778,7 +2817,7 @@ def _v6_historical_admission(
                 pairs[task.path] = v5_pairs.get(task.path, frozenset())
                 continue
             admitted: set[tuple[str, str]] = set()
-            for row in _v5_evidence_rows(task, source_registry):
+            for row in _v5_evidence_rows(source, source_registry):
                 if row[5] == "PASS" and row[7] == "accepted":
                     admitted.update(
                         (criterion, row[2])
@@ -2817,6 +2856,28 @@ def previous_generation_revision(root: pathlib.Path, generation: int) -> str:
     raise SpecPackageError("previous Registry generation is unavailable")
 
 
+def _legacy_table_lines(body: str, name: str, joined: bool | None) -> tuple[str, ...]:
+    """Read a legacy section's table lines; a moved Task joins every legacy H2.
+
+    ``joined`` is None for the Task itself, and says for its source whether the
+    Task moved to the common form, where one H3 holds every legacy H2 that
+    maps to it.
+    """
+    if not joined:
+        lines = _contract_section(body, name)
+    else:
+        target = _COMMON_FORM_PATHS[name][1]
+        visible = _completion_visible_lines(body)
+        lines = [
+            line
+            for index, heading in enumerate(visible)
+            if heading.startswith("## ")
+            and _TASK_LEGACY_TARGETS.get(heading[3:]) == target
+            for line in visible[index + 1 : _section_end(visible, index + 1, 2)]
+        ]
+    return tuple(line for line in lines if line.lstrip().startswith("|"))
+
+
 def _bind_legacy_task_tables(
     task: SpecDocument, source: SpecDocument | None, source_registry: DocumentRegistry
 ) -> SpecDocument:
@@ -2829,31 +2890,22 @@ def _bind_legacy_task_tables(
         if line.lstrip().startswith("|")
     ):
         return task
-    sections = ("task_section", "criterion_acceptance_section")
-    current = tuple(
-        tuple(
-            line
-            for line in _contract_section(task.body, str(source_registry.common[key]))
-            if line.lstrip().startswith("|")
-        )
-        for key in sections
+    sections = tuple(
+        str(source_registry.common[key])
+        for key in ("task_section", "criterion_acceptance_section")
     )
+    current = tuple(_legacy_table_lines(task.body, name, None) for name in sections)
     if (
         not current[0]
         or tuple(cell.strip() for cell in current[0][0].strip().strip("|").split("|"))
         != old_columns
     ):
         return task
+    moved = tuple(_contract_span(task.body, name)[1] == 3 for name in sections)
     original = (
         tuple(
-            tuple(
-                line
-                for line in _contract_section(
-                    source.body, str(source_registry.common[key])
-                )
-                if line.lstrip().startswith("|")
-            )
-            for key in sections
+            _legacy_table_lines(source.body, name, moved[index])
+            for index, name in enumerate(sections)
         )
         if source is not None
         else ()
@@ -2917,7 +2969,7 @@ def _v7_historical_admission(
             if (
                 current is None
                 or task.status not in {"completed", "cancelled"}
-                or current.source_text != task.source_text
+                or not _same_task_source(task, current)
             ):
                 continue
             admitted.add(task.path)
@@ -3607,7 +3659,7 @@ def _load_base_spec_packages(
             raise SpecPackageError(
                 f"base Spec Package member is not UTF-8: {source}"
             ) from error
-        if "### Execution Items" in text.splitlines():
+        if _has_execution_items(text):
             snapshot_registry = snapshot_registry or load_registry_at_revision(
                 commit, root=root
             )
@@ -3692,23 +3744,13 @@ def _migration_proof(
     proofs: list[_MigrationProof] = []
     for package in current:
         for task in package.tasks:
-            section = _contract_section(task.body, section_name)
-            marker = "### " + subsection
-            starts = [index for index, line in enumerate(section) if line == marker]
-            if not starts:
+            section, level = _contract_span(task.body, section_name)
+            _, blocks = _child_blocks(section, level, subsection)
+            if not blocks:
                 continue
-            if len(starts) != 1:
+            if len(blocks) != 1:
                 raise SpecPackageError("Contract Migration subsection must occur once")
-            start = starts[0] + 1
-            end = next(
-                (
-                    index
-                    for index in range(start, len(section))
-                    if section[index].startswith("### ")
-                ),
-                len(section),
-            )
-            rows = _registered_table_rows(section[start:end], tuple(raw_headers))
+            rows = _registered_table_rows(blocks[0], tuple(raw_headers))
             if len(rows) != 1:
                 raise SpecPackageError(
                     "Contract Migration requires exactly one proof row"
@@ -4072,6 +4114,233 @@ def _validate_terminal_task_migration(
             raise SpecPackageError(f"terminal Task body or identity changed: {path}")
 
 
+_TASK_FIXED = (
+    "None: nothing was recorded here before this Task moved to the common form."
+)
+# COMMON-DOC-FORM-1 for a Task: each H2 and its H3 subsections, in order.
+_TASK_COMMON_FORM = {
+    "Scope": ("Objective and Parent", "Inputs and Authority"),
+    "Execution Log": ("Work Performed", "Blockers and Decisions"),
+    "Verification Evidence": ("Results", "Resolution Links"),
+    "Acceptance Decision": ("Criterion Decisions", "Remaining Conditions"),
+    "Handoff": ("Promotion Receipt", "Next Owner"),
+}
+# The common-form H3 that carries each legacy H2. A legacy H2 outside this
+# table cannot be placed, so its Task stays byte-strict.
+_TASK_LEGACY_TARGETS = {
+    "Overview": "Objective and Parent",
+    "Objective": "Objective and Parent",
+    "Related Documents": "Objective and Parent",
+    "Inputs and Authorization": "Inputs and Authority",
+    "Inputs": "Inputs and Authority",
+    "Work Log": "Work Performed",
+    "Commit Ledger": "Work Performed",
+    "Blocked and Deferred": "Blockers and Decisions",
+    "Rulings": "Blockers and Decisions",
+    "Evidence": "Results",
+    "Verification Evidence": "Results",
+    "Review Evidence": "Results",
+    "Criterion Acceptance": "Criterion Decisions",
+    "Review and Completion": "Remaining Conditions",
+    "Deferred Items": "Remaining Conditions",
+    "Handoff": "Next Owner",
+}
+
+
+_BLANK = ("blank",)
+
+
+def _blank_between_lines(items: list[tuple]) -> list[tuple]:
+    """Keep one blank only between two content lines; drop it at every edge."""
+    kept: list[tuple] = []
+    pending = False
+    for item in items:
+        if item == _BLANK:
+            pending = True
+            continue
+        if pending and item[0] == "line" and kept and kept[-1][0] == "line":
+            kept.append(_BLANK)
+        pending = False
+        kept.append(item)
+    return kept
+
+
+def _task_items(body: str, legacy: bool) -> dict[str, list[tuple]] | None:
+    """Read a Task body as its ordered content per common-form H3 target.
+
+    Legacy: every H2 names a target through ``_TASK_LEGACY_TARGETS`` and
+    leaves an ``anchor`` item at its position, and a repeated target joins in
+    document order. Common: every registered H2 and H3 must appear once, in
+    order. A deeper heading is kept with its level, which a move changes by
+    exactly one (a legacy H6 cannot move). Every other line is content
+    verbatim, fenced and commented text included, and one blank counts only
+    between two content lines. A common target holding only the fixed sentence
+    is empty. None means the body cannot be read, so the caller falls back to
+    byte equality.
+    """
+    if re.search(r"[\r\x0b\x0c\x1c-\x1e\x85\u2028\u2029]", body):
+        return None
+    children = {
+        child: parent for parent, group in _TASK_COMMON_FORM.items() for child in group
+    }
+    expected = [
+        name for parent, group in _TASK_COMMON_FORM.items() for name in (parent, *group)
+    ]
+    structure: list[str] = []
+    items: dict[str, list[tuple]] = {"": []}
+    current: str | None = ""
+    parent: str | None = None
+    seen_section = False
+    for raw, visible in _completion_line_states(body.splitlines()):
+        heading = None if visible is None else re.fullmatch(r"(#{1,6}) (.*)", visible)
+        if heading is not None and visible != raw:
+            return None
+        if heading is None or (not seen_section and len(heading[1]) != 2):
+            if visible is not None and not raw.strip():
+                if current is not None:
+                    items[current].append(_BLANK)
+            elif current is None:
+                return None
+            else:
+                items[current].append(("line", raw))
+            continue
+        level, text = len(heading[1]), heading[2]
+        if level == 1:
+            return None
+        if level == 2:
+            seen_section = True
+            if legacy:
+                current = _TASK_LEGACY_TARGETS.get(text)
+                if current is None:
+                    return None
+                items.setdefault(current, []).append(("anchor", text))
+            elif text in _TASK_COMMON_FORM:
+                structure.append(text)
+                parent, current = text, None
+            else:
+                return None
+        elif level == 3 and not legacy:
+            if children.get(text) != parent:
+                return None
+            structure.append(text)
+            current = text
+            items.setdefault(current, [])
+        elif current is None or (legacy and level == 6):
+            return None
+        else:
+            items[current].append(("heading", level + legacy, text))
+    if not legacy and structure != expected:
+        return None
+    result: dict[str, list[tuple]] = {}
+    for key, bucket in items.items():
+        bucket = _blank_between_lines(bucket)
+        if legacy and all(item[0] == "anchor" for item in bucket):
+            continue
+        if not legacy and key and bucket == [("line", _TASK_FIXED)]:
+            continue
+        if bucket:
+            result[key] = bucket
+    return result
+
+
+def _same_task_bucket(old: list[tuple], new: list[tuple]) -> bool:
+    """Match legacy items to common items; an anchor stands for an optional H4.
+
+    A keeper must sit at its anchor's position with its text. Where an unkept
+    anchor joins two content lines, the new body must keep one blank between
+    them. A keeper cannot repeat a common H2 name, whose slug the common H2
+    already owns. The headings of a kept section may move one level deeper
+    than the usual one, all together, so a section made only of subsections
+    still has them under its keeper.
+    """
+
+    def walk(i: int, j: int, shift: int = 0) -> bool:
+        while i < len(old) and old[i][0] != "anchor":
+            item = old[i]
+            if item[0] == "heading":
+                item = ("heading", item[1] + shift, item[2])
+            if j >= len(new) or new[j] != item:
+                return False
+            i, j = i + 1, j + 1
+        if i == len(old):
+            return j == len(new)
+        text = old[i][1]
+        if (
+            text not in _TASK_COMMON_FORM
+            and j < len(new)
+            and new[j] == ("heading", 4, text)
+            and any(walk(i + 1, j + 1, shift) for shift in (0, 1))
+        ):
+            return True
+        blank = j < len(new) and new[j] == _BLANK
+        joins_lines = (
+            j > 0
+            and new[j - 1][0] == "line"
+            and i + 1 < len(old)
+            and old[i + 1][0] == "line"
+        )
+        return (blank or not joins_lines) and walk(i + 1, j + blank)
+
+    return walk(0, 0)
+
+
+_ANCHOR_POINTER = re.compile(r"(?<![\w&/#])#([a-z0-9][a-z0-9_-]*)", re.IGNORECASE)
+
+
+def _anchor_pointers(body: str) -> frozenset[str]:
+    """Collect the same-file ``#slug`` pointers of a body's visible lines."""
+    return frozenset(
+        "#" + match.group(1).lower()
+        for line in _completion_visible_lines(body)
+        if re.match(r"#{1,6} ", line) is None
+        for match in _ANCHOR_POINTER.finditer(line)
+    )
+
+
+def _same_task_body(before: str, after: str) -> bool:
+    """Match a terminal Task body, relaxing only a legacy to common-form move.
+
+    A pointer that resolved to a heading before the move must still resolve to
+    one afterwards, because a keeper heading is otherwise optional.
+    """
+    if before == after:
+        return True
+    old, new = _task_items(before, True), _task_items(after, False)
+    return (
+        old is not None
+        and new is not None
+        and old.keys() == new.keys()
+        and all(_same_task_bucket(old[key], new[key]) for key in old)
+        and not (
+            _anchor_pointers(before)
+            & _document_anchor_references(before) - _document_anchor_references(after)
+        )
+    )
+
+
+def _same_task_source(before: SpecDocument, after: SpecDocument) -> bool:
+    """Match a terminal Task file: the same frontmatter text and Task body."""
+    if before.source_text == after.source_text:
+        return True
+    try:
+        records = tuple(
+            frontmatter_record_from_text(
+                pathlib.Path(document.path.as_posix()), document.source_text
+            )
+            for document in (before, after)
+        )
+    except FrontmatterError:
+        return False
+    first, second = records
+    return (
+        first.frontmatter_present
+        and second.frontmatter_present
+        and before.source_text[: len(before.source_text) - len(first.body)]
+        == after.source_text[: len(after.source_text) - len(second.body)]
+        and _same_task_body(first.body, second.body)
+    )
+
+
 def _terminal_task_migration_matches(before: SpecDocument, task: SpecDocument) -> bool:
     """Match a terminal Task while allowing only the approved envelope move."""
 
@@ -4105,9 +4374,8 @@ def _terminal_task_migration_matches(before: SpecDocument, task: SpecDocument) -
         for key, value in current_record.metadata.items()
         if key not in {"parent_ids", "updated"}
     }
-    return (
-        before_metadata == current_metadata
-        and current_record.body == before_record.body
+    return before_metadata == current_metadata and _same_task_body(
+        before_record.body, current_record.body
     )
 
 
@@ -4148,7 +4416,7 @@ def _mainline_historical_terminal_tasks(
             or merged.artifact_id != task.artifact_id
             or merged.status != task.status
             or not merged.source_text
-            or merged.source_text != task.source_text
+            or not _same_task_source(merged, task)
         ):
             continue
         admitted.add(path)
@@ -4174,23 +4442,13 @@ def _lifecycle_event_rows(
         or not all(isinstance(header, str) and header for header in raw_headers)
     ):
         raise SpecPackageError("Task lifecycle event contract is malformed")
-    section = _contract_section(task.body, section_name)
-    marker = "### " + subsection_name
-    starts = [index for index, line in enumerate(section) if line == marker]
-    if not starts:
+    section, level = _contract_span(task.body, section_name)
+    marker, blocks = _child_blocks(section, level, subsection_name)
+    if not blocks:
         return ()
-    if len(starts) != 1:
+    if len(blocks) != 1:
         raise SpecPackageError(f"Task lifecycle evidence requires one {marker}")
-    start = starts[0] + 1
-    end = next(
-        (
-            index
-            for index in range(start, len(section))
-            if section[index].startswith("### ")
-        ),
-        len(section),
-    )
-    rows = _registered_table_rows(section[start:end], tuple(raw_headers))
+    rows = _registered_table_rows(blocks[0], tuple(raw_headers))
     if not rows:
         return ()
     anchor_counts: dict[str, int] = {}
@@ -4286,27 +4544,21 @@ def _lifecycle_reconciliation_rows(
         events.get("reconciliation") if isinstance(events, Mapping) else None
     )
     if reconciliation is None:
-        if "### Lifecycle Event Reconciliation" in _completion_visible_lines(task.body):
+        visible = _completion_visible_lines(task.body)
+        if {
+            "### Lifecycle Event Reconciliation",
+            "#### Lifecycle Event Reconciliation",
+        } & set(visible):
             raise SpecPackageError("lifecycle reconciliation contract is malformed")
         return ()
     section_name, subsection, headers, disposition = _reconciliation_contract(registry)
-    section = _contract_section(task.body, section_name)
-    marker = "### " + subsection
-    starts = [index for index, line in enumerate(section) if line == marker]
-    if not starts:
+    section, level = _contract_span(task.body, section_name)
+    marker, blocks = _child_blocks(section, level, subsection)
+    if not blocks:
         return ()
-    if len(starts) != 1:
+    if len(blocks) != 1:
         raise SpecPackageError(f"lifecycle reconciliation requires one {marker}")
-    start = starts[0] + 1
-    end = next(
-        (
-            index
-            for index in range(start, len(section))
-            if section[index].startswith("### ")
-        ),
-        len(section),
-    )
-    rows = _registered_table_rows(section[start:end], headers)
+    rows = _registered_table_rows(blocks[0], headers)
     anchor_counts: dict[str, int] = {}
     for line in _completion_visible_lines(task.body):
         match = re.fullmatch(r"#{1,6} +(.+?) *#*", line)
@@ -4454,7 +4706,7 @@ def _git_reconciliation_document(
         path,
         text,
         registry=load_registry_at_revision(commit, root=root)
-        if "### Execution Items" in text.splitlines()
+        if _has_execution_items(text)
         else None,
     )
     if document is None:
@@ -5079,9 +5331,11 @@ def _validate_legacy_multirow_receipts(
     for package in current:
         for task in package.tasks:
             legacy_section = contract.get("task_section")
-            if not isinstance(legacy_section, str) or (
-                f"## {legacy_section}" not in task.body.splitlines()
-            ):
+            if not isinstance(legacy_section, str):
+                continue
+            try:
+                _contract_span(task.body, legacy_section)
+            except SpecPackageError:
                 continue
             legacy_rows = next(
                 (
@@ -5102,7 +5356,7 @@ def _validate_legacy_multirow_receipts(
                 and before.status == task.status == "completed"
                 and bool(before.source_text)
                 and (
-                    before.source_text == task.source_text
+                    _same_task_source(before, task)
                     or (migration_source is not None and before.body == task.body)
                 )
             ):

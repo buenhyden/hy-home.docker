@@ -1,10 +1,10 @@
 ---
 title: "Handoff Prompt"
-version: "0.3.0"
+version: "0.3.1"
 type: "governance/prompt"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-13"
 created: "2026-09-06"
 ---
 
@@ -19,15 +19,15 @@ resuming never requires the previous conversation.
 
 ## Inputs
 
-- The current Spec Package Task path and its `Work Log`, `Verification
-  Evidence`, and `Commit Ledger` sections.
+- The current Spec Package Task path and its `Work Performed`, `Results`, and
+  `Next Owner` subsections.
 - Branch name and `git rev-parse HEAD`, both read from Git. A branch name
   written in a Task is historical: a short branch is retired at integration,
   so the file cannot stay current. Report the Git value, and report a
   disagreement with the Task rather than reconciling it.
 - `git status --porcelain` output, so uncommitted work is stated rather than
   implied.
-- The approval scope recorded in the Task's `Inputs`.
+- The approval scope recorded in the Task's `Inputs and Authority`.
 - The governing Spec's `Acceptance Contract` and the Plan's work-unit labels.
 - Repository and worktree identities, relevant owned-file digests, the current
   non-revoked approval source and scope, exclusive writer, partial-result state,

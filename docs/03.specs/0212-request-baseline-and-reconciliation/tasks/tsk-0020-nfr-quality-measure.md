@@ -14,14 +14,21 @@ created: "2026-10-29"
 
 # NFR Quality Measure Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W36: give the requirement template's non-functional line a quality
 characteristic and a measure. This Task owns criterion 31 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The original request asks that ISO/IEC 25010, 25023, and 25030 be reflected
 in governance and templates by connecting them to existing quality
@@ -31,9 +38,11 @@ REQ-0003 applied them, through its own Quality Measurement table. On
 merged PR #617. The authorization covers that template line, this branch, its
 pull request, and merge.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -41,7 +50,7 @@ pull request, and merge.
 | SPEC-0212-TSK-0020 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0020 | in-progress | completed | #evidence |
 
-### Template line
+#### Template line
 
 `docs/99.templates/templates/requirements/requirement-package.template.md` now
 declares a non-functional requirement as
@@ -52,14 +61,22 @@ uses the existing label slot of the requirement declaration grammar in
 the declaration over three lines was rejected by that parser as malformed and
 was not kept. Existing requirement packages are not rewritten.
 
-### Kept
+#### Kept
 
 The 30-day expiry in `quality-standards.md` bounds a security risk
 acceptance, not a work schedule, so it does not conflict with the request's
 ban on time-boxed work. `github-governance.md` already assigns requests and
 priority to Issues and a filtered work view to Projects.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -67,18 +84,29 @@ priority to Issues and a filtered work view to Projects.
 | Template lint | 31 | W36 | `markdownlint-cli2` on the changed template | This branch | PASS | 0 issues | required | - |
 | Metadata contracts | 31 | W36 | `check-document-metadata.py --mode check-contracts` | This branch | PASS | 0 violations | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 31 | accepted | Template tests, Template lint, Metadata contracts | New non-functional requirements name a quality characteristic and a measure; no separate compliance structure was added. | SPEC-0212 TSK-0020 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

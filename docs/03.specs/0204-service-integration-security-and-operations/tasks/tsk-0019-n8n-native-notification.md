@@ -14,9 +14,11 @@ created: "2026-10-16"
 
 # n8n Native Notification Rehearsal Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 W74 prepares and, after independent prechange and safety approval, executes the
 existing inactive notifier workflow through a genuine n8n queue worker,
@@ -25,7 +27,14 @@ also proves explicit no-send reconciliation and serial empty restoration of
 separate n8n metadata and DEV databases. This is supporting evidence for
 criterion 19; TSK-0013 remains its durable acceptance owner.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [P05 Task](tsk-0013-p05-n8n-outbox-notifier.md)
+- [P10 Task](tsk-0016-p10-opsflow-acceptance.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The direct infrastructure request and controller's bounded 2026-10-16 dispatch
 authorize six focused test files, this draft Task and W74 registration. The
@@ -41,9 +50,11 @@ The runners and Mailpit images use their reviewed linux/amd64 digest
 descriptors. All Docker creates remain blocked until the independent reviewers
 approve the frozen source and a fresh host readiness check passes.
 
-## Work Log
+## Execution Log
 
-### W74 source and execution boundary
+### Work Performed
+
+#### W74 source and execution boundary
 
 The steady seven-container topology is capped at 3136 MiB and 1.60 CPU:
 metadata PostgreSQL, DEV PostgreSQL, Valkey, n8n main, n8n worker, external
@@ -105,7 +116,7 @@ generation replacement. Old containers are removed before empty generation-2
 targets start. Restored inactive workflow and audit history must persist, old
 rows must not resend and a new terminal execution must capture once.
 
-### Source preparation receipt
+#### Source preparation receipt
 
 The default command `python3 -m unittest
 tests.validation.test_opsflow_native_boundaries
@@ -767,7 +778,7 @@ Before receipt `c848413e07050e249272667c980db8b8a115148a939c9651bb07bd1f979f7d17
 bind that manual `PASS`; independent final zero found both attempt globs and owner resources empty and the lock exact/free.
 Local `/tmp` receipts have no durability guarantee. This later cleanup does not rewrite the native result; worker, runner, workflow import, SMTP and restore remain `NOT_RUN`.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -777,7 +788,7 @@ Local `/tmp` receipts have no durability guarantee. This later cleanup does not 
 | SPEC-0204-TSK-0019 | blocked | in-progress | #w74-native-rerun-2026-10-20 |
 | SPEC-0204-TSK-0019 | in-progress | completed | #owner-decision-2026-10-29 |
 
-### Fixture runner switch removal — 2026-10-20
+#### Fixture runner switch removal — 2026-10-20
 
 On the owner's instruction `_n8n_env` in
 `tests/validation/_opsflow_native_fixture.py` no longer passes
@@ -789,7 +800,7 @@ any earlier fixture source hash, changed: the frozen-source review and the
 fresh host readiness check that gate the next W74 run must cover this revision.
 Earlier W74 receipts stay valid for the revision they name.
 
-### V16 readiness predicate review — 2026-10-20
+#### V16 readiness predicate review — 2026-10-20
 
 The owner asked for the blocked R15–R17 chain to be reviewed and resolved.
 This section supersedes the V16 conclusion above that the false predicate was
@@ -847,7 +858,7 @@ and the second main start is about 500 s of waiting, which leaves under
 so the deadline is a recorded risk. Docker-free suites
 (`test_opsflow_native_boundaries`, `_evidence`, `_health_probe`, `_rehearsal`): OK, 1 skipped.
 
-### W74 native rerun — 2026-10-20
+#### W74 native rerun — 2026-10-20
 
 The owner asked for the blocker to be resolved and approved the reruns
 ("점검후 수행하여 Blocked 해결한다"). The registered selector
@@ -896,7 +907,7 @@ Attempt 11, `opsflow-native-d4d77ba49bd1026ff4c1557d`, on that final source,
 and six executions reached a terminal state. The receipt is in
 `w74-attempt-pass-d4d77ba49bd1026ff4c1557d/` (`SHA256SUMS`).
 
-### Owner decision 2026-10-29
+#### Owner decision 2026-10-29
 
 On 2026-10-29 the owner accepted this Task's W74 work and completed it. The
 blocker is cleared and native attempt 11 passed on the final reviewed source
@@ -906,7 +917,13 @@ Criterion 19 has one acceptance row, in TSK-0013, which stays `pending` and is
 not changed here. The result is isolated synthetic fixture evidence; HOME
 deployment, real SMTP delivery and exactly-once delivery are not shown.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -918,12 +935,20 @@ deployment, real SMTP delivery and exactly-once delivery are not shown.
 | Actual queue/runner/SMTP execution, attempt 11 | 19 | W74 | Terminal workflow, external Code node, capture and unknown isolation | Attempt 11: six executions terminal, runner and SMTP capture, unknown outcome isolated; `native` PASS | PASS | W74 native rerun — 2026-10-20 | required | Actual queue/runner/SMTP execution |
 | Reconciliation and empty restore, attempt 11 | 19 | W74 | Quiesced no-send evidence, one resend and separate DB replacement | Attempt 11: reconciliation, restore and restart inside the passing run; cleanup PASS | PASS | W74 native rerun — 2026-10-20 | required | Reconciliation and empty restore |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 Criterion 19 retains TSK-0013 as its durable acceptance owner (still `pending` there). TSK-0016 retains complete
 vertical acceptance. W74 adds supporting native evidence only and does not add an acceptance-criteria row.
 
-## Review and Completion
+### Remaining Conditions
+
+#### Review and Completion
 
 Runtime work is blocked: V16 proved liveness 200 and readiness 503, while the false connected, migrated or fully-ready predicate or exact startup stage remains `UNKNOWN`. This new artifact must retain its required initial `draft` frontmatter until that baseline lands; the truthful follow-up chain is `draft → ready → in-progress → blocked`. Owner `@buenhyden` and named n8n implementer `native_workflow_rehearsal` may resume only with exact protected startup-stage/predicate evidence and a source-reviewed cause fix under fresh review and an approved slot; blind rerun and guessed timeout, egress or license changes are prohibited, joint same-data execution remains `NOT_RUN`/`BLOCKED`, and manual cleanup does not complete HOME deployment, recovery, real SMTP or exactly-once delivery.
 
@@ -939,9 +964,12 @@ to `in-progress`. The step fixes were reviewed independently (APPROVE WITH
 NOTES, notes applied), and attempt 11 passed on the final source. Still open:
 the owner's acceptance of this Task's criteria.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [P05 Task](tsk-0013-p05-n8n-outbox-notifier.md)
-- [P10 Task](tsk-0016-p10-opsflow-acceptance.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

@@ -14,7 +14,9 @@ created: "2026-10-03"
 
 # External Project Integration Task
 
-## Objective
+## Scope
+
+### Objective and Parent
 
 Define and, after approval, implement an infra-owned metadata schema and
 validator for external Project-Template-derived applications. Inspect current
@@ -23,7 +25,7 @@ source until a named project and exact follow-up Task exist. Prompt 06 owns
 the external application's consumed manifest, source, migrations, Compose
 and deployment.
 
-## Inputs
+### Inputs and Authority
 
 SPEC-0201 external-project field contract; SPEC-0202 dev DB/Valkey roles;
 SPEC-0203's bounded Alloy metrics path; current Traefik, Keycloak,
@@ -36,7 +38,9 @@ and `tests/validation/test_project_registration.py`. No resource provision,
 secret issuance, external project deployment or service change is authorized by
 this Task alone.
 
-## Work Log
+## Execution Log
+
+### Work Performed
 
 | Service and source evidence | Writer scope or read-only source | Regression and rollback | Approval boundary |
 | --- | --- | --- | --- |
@@ -73,9 +77,25 @@ paths. Root, Alloy, environment and Registry service-source edits are excluded
 until a later exact Task and project approval; SPEC-0203's merged source is not
 runtime proof.
 
+Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; package draft
+`0f67cb297`; review transition `2157e62c5`; historical source commit
+`d302f54cb` recorded by closure `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7`.
+PR359 delivery `467bd644b071f9dfa02ca1af2d622502c3445d28`; CI `required CI run37180461557 PASS`. No external project or resource action.
+
+### Blockers and Decisions
+
+No blanket `exposedByDefault`, full-Docker discovery, shared admin client,
+management superuser, shared OpenBao renderer, unauthenticated OTLP producer,
+fake collection RBAC or root include of app source. A manifest is metadata until
+a separate operation provisions a resource. `external` endpoints currently allow
+HTTPS/Rediss FQDNs only; external DB remains blocked until a named TLS contract
+is approved.
+
 ## Verification Evidence
 
-### Closure source evidence imported during 2026-10-04 integration
+### Results
+
+#### Closure source evidence imported during 2026-10-04 integration
 
 Closure commit `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7` recorded source
 commit `d302f54cb` as a historical implementation receipt for the generic
@@ -90,7 +110,7 @@ focused checks were:
 | Default-empty secret allowlist and safe error output | HISTORICAL PASS synthetic | `--allow-secret-ref` is explicit; semantic errors return fixed non-value reasons. No secret bytes read or echoed. |
 | External project network, OIDC/S3/search/DB provision, DNS/TLS certificate, Alloy ingestion and HOME restart | NOT_RUN | Named project and separate operation approval absent. `approval`/`verification` fields are not an authorization source. |
 
-### Protected completion receipt — 2026-10-04
+#### Protected completion receipt — 2026-10-04
 
 PR359 delivered as `467bd644b071f9dfa02ca1af2d622502c3445d28` after required CI `required CI run37180461557 PASS`. Candidate
 source head `0ff55fa8378365ee6a9eb81c34c837bc494aa006` includes the approved
@@ -110,8 +130,6 @@ ingestion, credential issuance and HOME restart remain `NOT_RUN`.
 | 5 | W3/W5 | PASS: infra metadata schema and validator delivered; consumed app manifest and real resources NOT_RUN | This Task and Prompt 06 external repository |
 | 8 | W5 | PASS: focused source checks, independent review and protected delivery receipt recorded | This Task verification receipts |
 
-## Review Evidence
-
 Closure-side independent code and security reviewers found no remaining
 Critical or Important source issue in the historical validator diff. Review
 fixes rejected single-label Docker DNS outside the same daemon, legacy loopback
@@ -124,24 +142,28 @@ resource authorization, secret-byte scanning and the truth of Git/Task/approval
 references need a named consumer and separate exact Task. No service consumes
 this metadata as an authorization decision today. Independent current integration review returned PASS.
 
-## Commit Ledger
+### Resolution Links
 
-Baseline `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`; package draft
-`0f67cb297`; review transition `2157e62c5`; historical source commit
-`d302f54cb` recorded by closure `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7`.
-PR359 delivery `467bd644b071f9dfa02ca1af2d622502c3445d28`; CI `required CI run37180461557 PASS`. No external project or resource action.
+None: nothing was recorded here before this Task moved to the common form.
 
-## Rulings
+## Acceptance Decision
 
-No blanket `exposedByDefault`, full-Docker discovery, shared admin client,
-management superuser, shared OpenBao renderer, unauthenticated OTLP producer,
-fake collection RBAC or root include of app source. A manifest is metadata until
-a separate operation provisions a resource. `external` endpoints currently allow
-HTTPS/Rediss FQDNs only; external DB remains blocked until a named TLS contract
-is approved.
+### Criterion Decisions
 
-## Deferred Items
+None: nothing was recorded here before this Task moved to the common form.
+
+### Remaining Conditions
 
 Project ID, endpoint topology, real audience/client, network, bucket, search
 permission, secret names and quotas; HOME collector/gateway changes and all
 project deployment/credentials remain separately gated.
+
+## Handoff
+
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

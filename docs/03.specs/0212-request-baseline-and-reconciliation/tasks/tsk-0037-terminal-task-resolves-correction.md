@@ -14,15 +14,23 @@ created: "2026-10-29"
 
 # Terminal Task Resolves Correction Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W53: let the Spec validator accept the one owner-approved correction
 of a completed Task, so SPEC-0211 criteria 2 and 3 can be recorded. This
 Task owns criterion 48 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Investigation records](tsk-0036-investigation-records-and-currency-fixes.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 SPEC-0211 TSK-0002 is completed. Its `Final hosted candidate recovery` PASS
 row answered the two earlier hosted FAIL rows, `First hosted candidate RED`
@@ -32,9 +40,11 @@ cell names only `Final hosted candidate`. A completed Task is frozen, and
 accepted decision for criteria 2 and 3. On 2026-10-29 the owner chose a
 one-off correction of that cell. The input is `main` at merged PR #633.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -42,7 +52,7 @@ one-off correction of that cell. The input is `main` at merged PR #633.
 | SPEC-0212-TSK-0037 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0037 | in-progress | completed | #evidence |
 
-### Change
+#### Change
 
 `_TERMINAL_TASK_RESOLVES_CORRECTIONS` in
 `scripts/lib/document_governance/spec_packages.py` names the Task path, the
@@ -63,7 +73,15 @@ unchanged Task.
 A package-wide `Resolves` was not used: a resolving row in another Task would
 need W70, which the Plan assigns only to TSK-0002.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -75,19 +93,29 @@ need W70, which the Plan assigns only to TSK-0002.
 | Spec package tests | 48 | W53 | `python3 -m unittest tests.lib.document_governance.test_spec_packages` | This branch | PASS | 91 tests OK in 347 s | required | - |
 | Lint | 48 | W53 | `ruff check` and `ruff format --check` | Changed Python files | PASS | No findings | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 48 | accepted | Correction GREEN, Unchanged Task fix, End-to-end check, Spec package tests, Lint | The validator accepts exactly the one approved correction and still rejects every other change to a completed Task. | SPEC-0212 TSK-0037 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Investigation records](tsk-0036-investigation-records-and-currency-fixes.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

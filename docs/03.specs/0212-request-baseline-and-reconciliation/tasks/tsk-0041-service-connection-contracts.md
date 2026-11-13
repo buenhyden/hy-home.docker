@@ -1,10 +1,10 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.45"
+version: "0.1.46"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0041"
 parent_ids:
@@ -14,16 +14,155 @@ created: "2026-11-02"
 
 # Service Connection Contracts Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Implement P02.01–P02.05 as a bounded local source and isolated-test unit. This
 Task owns the current connection-contract routing and evidence. It is distinct
 from the completed historical P02 secret catalog in SPEC-0204. It does not
 grant operating, host, credential, external-repository or remote-CI authority.
 
-## Inputs and Authorization
+- [SPEC-0212](../spec.md)
+- [SPEC-0212 Plan](../plan.md)
+- [Historical P03 service integration contracts](../../0204-service-integration-security-and-operations/tasks/tsk-0011-p03-service-integration-contracts.md)
+- [Application authentication guide](../../../05.operations/guides/03-identity-and-access/0079-application-auth-integration.md)
+- [Workspace inventory data](../../../90.references/data/0096-workspace-inventory/README.md)
+
+#### 2026-11-09 n8n code sandbox: vfs storage for the inner Docker
+
+The Assistant workspace setup failed with `install-dependencies: canceled`. On the host
+kernel `overlay.redirect_dir` is off, so `npm install` over the image-layer `node_modules`
+hits `EXDEV` on directory renames and exceeds n8n's 120 s budget. The same install took
+6 s on a copy of that tree. IPv6, dependency versions and sandbox 1.14.0 were tested and
+ruled out. The runner now sets `SANDBOX_RUNNER_DOCKER_STORAGE_DRIVER=vfs`. The guide and
+AD-0026 now state the measured egress limits of sandbox containers.
+
+#### 2026-11-09 dedicated Valkey leftovers retired
+
+Owner-directed follow-up to the dedicated Valkey removal. `start-dedicated.sh` and
+`render-monitor-acl.sh` were unmounted and used by no live service, so both are deleted
+with their script-level tests (`DedicatedValkeyWrapperTests`, `ValkeyMonitorRendererTests`)
+and `test_p02_secret_presentation_native`, whose only subject was the renderer. The
+workflow contract, its test and the CI gate plan test drop that opt-in module (optional
+selectors 33 to 32). The `start.sh` write-refusal check stays. The renderer entry in the
+`local_source_rebindings` record of `build-inputs.json` is history and stays.
+
+The alternative `Dockerfile` entrypoint of oauth2-proxy now reads `mng_valkey_password`
+like `docker-entrypoint.dev.sh`. `oauth2_valkey_password` is removed from the oauth2-proxy
+Compose file and the root `docker-compose.yml`, and catalog entry CACHE-012 is removed from
+`secret-catalog.json` (its ID is not reused). The hardening script, the `sec01` entrypoint
+test, the guide, the service README and the `m0021` inventory follow.
+
+Held. The public registry `secrets/SENSITIVE_ENV_VARS.md.example` still lists CACHE-012;
+the owner removes that row. The secret catalog contract and metadata sync tests report
+the drift until then. The private file `secrets/db/mng-valkey/oauth2_password.txt` is not
+deleted.
+
+#### 2026-11-09 Renovate image bumps keep the SEC01 ledger in sync
+
+Renovate image PRs failed `candidate-quality` because the SEC01 update ledger and several
+tests pinned the old image. `scripts/operations/sync-update-ledger.sh --write` is now a
+Renovate post-upgrade task beside `sync-tech-stack-versions.sh --write` (allowlisted in
+`config.js`; `update-ledger.json` and `build-inputs.json` added to `fileFilters`). It runs
+`ledger_rebind --accept-image-updates`, which accepts only a full `name:tag@sha256:<64 hex>`
+reference of the same repository on an existing row. A new or removed service, a repository
+change, a reference without a digest and a build change exit 2 and write nothing. An accepted
+row keeps `UNKNOWN` target digests, `NOT_RUN` review, scan and acceptance fields,
+`BLOCKED`, and `UNBOUND_CURRENT_TARGET`; the replaced values stay in
+`source_refreshes[].previous_service_images`. Nothing contacts a registry, so the digest,
+signature and provenance are not verified. An n8n input change now rehashes
+`n8n_source_preparation.source_binding` identically in both documents.
+
+Tests that pinned a Renovate-owned version now check the repository, the full digest form
+and the ledger row instead: `test_sec01_version_contract`, `test_sec01_next_stable_candidates`,
+`test_sec01_next_tool_candidates`, `test_service_wiring_contracts`, `test_crawl4ai_egress`,
+`test_workflow_version_bundle` and the updater contract in
+`test_tech_stack_version_contract`. Replaying the open PRs 854, 857, 859, 860, 861, 864, 865,
+872, 876 and 877 in throwaway copies passed the gating suites and the second run changed
+nothing. PRs 856, 858 and 866 change tag-only images and are refused, as designed. The step
+has not run inside the Renovate container; its Python version and the noexec `/tmp` behavior
+are unobserved.
+
+#### 2026-11-09 n8n code sandbox: per-principal mTLS mounts
+
+A security review found that `n8n-sandbox-api` and `n8n-sandbox-runner-1` both mounted the
+whole `n8n-sandbox-tls` volume, so each could read the other's private keys. Each service
+now mounts only its own subpath (`api`, `runner`) read-only.
+
+#### 2026-11-09 n8n code sandbox: CA key removal on every exit path
+
+A security review noted that a failure between certificate generation and the final `rm`
+would leave `ca.key` in `n8n-sandbox-tls`. The job now removes it through a shell `trap` on
+exit. Reproduced on the pinned image: the key stayed before the change and is gone after it.
+
+#### 2026-11-10 Renovate memory limit
+
+After the sole-updater configuration, a Renovate run exited with code 134: the Node heap
+reached about 512 MB under the 1 GiB limit. The limit and reservation are now 2 GiB for
+this on-demand job.
+
+#### 2026-11-10 open-webui moved to a LAB (ADR-0062 amendment)
+
+The owner amended ADR-0062 on 2026-11-10 (decision 13): open-webui leaves HOME `08-ai` for
+the standalone LAB `labs/open-webui/`. Evidence recorded in the ADR without user content: one
+user, one chat, last activity 2026-10-26, no files and no knowledge entries; no dependent
+service; every role duplicated in HOME (Hermes and the n8n Assistant/Agents for chat, the
+n8n Assistant with SearXNG for web search, Qdrant with n8n for RAG, Hermes faster-whisper for
+speech-to-text; `ENABLE_OPENAI_API` false); a 16.5 GB image, about 840 MiB RSS, an OIDC client
+secret, a Traefik router and Renovate churn; and a bundled PyTorch cu128 build without sm_61
+kernels for the GTX 1060.
+
+Done in source only; no container, volume or image was touched. The Compose file, entrypoint
+and README moved as renames to `labs/open-webui/` and follow the Superset LAB pattern:
+project `hy-home-lab-open-webui`, profile `lab-open-webui`, network `lab_open_webui_net` only,
+no Traefik route, UI on `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_OPEN_WEBUI_HOST_PORT:-18095}`,
+data at `${LAB_DATA_DIR}/open-webui/data`, required inputs `LAB_OPEN_WEBUI_OLLAMA_BASE_URL`,
+`LAB_OPEN_WEBUI_DEFAULT_URL` and `LAB_OPEN_WEBUI_CA_FILE`, and the LAB-only secret
+`lab_open_webui_oidc_client_secret` (catalog `LAB-037`) mounted at the original target. Qdrant
+and `depends_on` are gone because the LAB reaches no HOME network. `promotion.yaml` is
+`kind: undecided`. The root include, the root `openwebui_oidc_client_secret` declaration,
+`OPENWEBUI_OIDC_CLIENT_SECRET_FILE` and `OLLAMA_WEBUI_PORT`, the Gatus probes and their port
+variable, the Restic mount, SQLite export and state include rows, and the Grafana coverage row
+were removed. The 08-ai hardening function now checks the `labs/` source (no gateway route, LAB
+bind port, native OIDC flags, LAB network, healthcheck). As with Superset, the OpenBao Agent
+still renders `08-ai/open-webui` and `IAM-011` keeps feeding the OpenBao import through
+`consumer-migration/oidc-client-secrets.sh`; no root consumer binds it. The SEC01 ledger moved the
+row to `historical_lab_entries` with a `source_refreshes` record, dropped it from the P08
+related-service list (denominator 94 to 93, related services 80 to 79), and `ledger_rebind`
+re-bound 16 rows and 3 include hashes; the tech-stack projection was regenerated with
+`sync-tech-stack-versions.sh --write`. GDE/POL/RUN-0057 moved to `15-labs/`, the `m0021`
+inventory was re-rendered with `render_service_inventory`, and Stage 05 cross-references,
+POL-0078 (`ai`, `ai-llm`, new `lab-open-webui`), READMEs and pinning tests were updated. The
+three open-webui rows left the root-only `infra/secret-file-support.json`, and the LAB inputs
+joined the synthetic sets of `compose_controls.py` and `test_lab_isolation.py`.
+
+Verification at base 0b7ffe8bc with the change staged: `validate-docker-compose.sh` passed
+(64 selections, HOME 44 services); `check-all-hardening.sh 08-ai` passed;
+`check-template-security-baseline.sh` reported 22 scopes, 708 services, 0 findings;
+`check-operations-catalog.py`, `check-document-links.py --mode all` (0 failures),
+`check-document-metadata.py --mode check-changed` (0 violations), the corpus lifecycle, agent
+governance, script manifest, supply-chain policy and conftest checks passed. The full unittest
+discovery ran 3431 tests: the only failures are the three secret-registry assertions held
+below; `test_service_runtime_compatibility` passed after the support-file change.
+
+Held. `secrets/SENSITIVE_ENV_VARS.md.example` needs a `LAB-037` row for
+`secrets/labs/open-webui/oidc_client_secret.txt`; agent edits under `secrets/` are denied, so
+the owner adds it. Until then `test_secret_catalog_contract` (issued IDs, view round-trip
+`catalog_public_source_drift`) and `test_secret_metadata_sync` (registered path) fail on that row.
+
+Owner decisions that remain, each a separate approval, in the order of RUN-0057 "HOME
+retirement steps": a final consistent backup of `${DEFAULT_AI_MODEL_DIR}/open-webui`; stopping
+and removing the HOME `open-webui` container and its image; keeping, migrating to the LAB data
+root or deleting the volume `hy-home-infra_open-webui`; keeping or retiring the Keycloak client
+`home-openwebui` (and registering a LAB redirect if kept); and `chat.${DEFAULT_URL}` DNS and
+certificate cleanup. Stage 01 and Stage 02 text that still places Open WebUI in HOME (REQ-0009,
+REQ-0013, AD-0008, AD-0013, AD-0023, ADR-0059) is reconciled by its owners, as the ADR-0062
+follow-up states.
+
+### Inputs and Authority
 
 The direct user request of 2026-11-02 authorizes the approved P02 plan,
 including local source, documentation, test and logical-commit work. The source
@@ -50,9 +189,11 @@ normal Grafana route. Existing Grafana RBAC and the documented rate limit of
 `@buenhyden`; reconsider by 2026-12-02 or immediately after route widening,
 authentication changes or a relevant advisory.
 
-## Work Log
+## Execution Log
 
-### Issued writer leases
+### Work Performed
+
+#### Issued writer leases
 
 This Task is issued before implementation changes. Each writer must compare the
 current fingerprint recorded in the P02 local curation receipt before editing;
@@ -82,7 +223,7 @@ consumer behavior, P06 owns secret issuance and custody, P07 owns observations,
 and P08 owns the Valkey update/advisory decision. A service source change stays
 under the infra lease even when those owners receive a handoff.
 
-### 2026-11-02 residual follow-up lease
+#### 2026-11-02 residual follow-up lease
 
 At `2026-11-02T10:40:48+09:00`, the direct user request authorizes a local
 cause analysis of three retained residuals: the full SSO class not run, the
@@ -118,7 +259,7 @@ and [unittest](https://docs.python.org/3.14/library/unittest.html) semantics:
 the implementation records completed child output only, bounds captured bytes,
 and preserves a timeout as a timeout rather than synthesizing a test result.
 
-### Contract decisions and residual boundaries
+#### Contract decisions and residual boundaries
 
 P02 reconciles four port locations separately: process listener, service DNS,
 host publication and gateway backend. It rejects using host publications from a
@@ -131,7 +272,7 @@ credential, model registration, successful external delivery, a current
 operator run, credential rotation, recovery or remote CI result. Those items
 remain explicitly routed to their owning task.
 
-### D02 re-verification at current main
+#### D02 re-verification at current main
 
 A direct user request on 2026-11-04 re-ran this contract as D02 on clean
 `main` `d3f1cfaac3d1237331fa59786948c4e4dbabc9be`, branch
@@ -160,7 +301,7 @@ traffic uses the container port, host ports only from outside), OIDC Core
 §3.1.3.7 ID Token validation and RFC 8725. They match the existing P02 contract;
 no new authentication change was adopted from them.
 
-### D02 re-verification after the LAB moves (2026-11-07)
+#### D02 re-verification after the LAB moves (2026-11-07)
 
 A direct user request on 2026-11-07 re-ran D02 on clean `main`
 `636c9191cc92e5bb04ea9c35a967aabde2a1f5e7`, equal to read-only `git ls-remote`
@@ -230,7 +371,7 @@ with no isolation claim) and `docker compose up` (`--wait` means running or
 healthy only, not function proof). Runtime, restore and Hosted CI for this run
 are NOT_RUN.
 
-### D03 data-tier re-verification at current main
+#### D03 data-tier re-verification at current main
 
 A direct user request on 2026-11-04 re-ran the data, Valkey and storage
 contract as D03 on clean `main` `73ccd9930c64e38b4a51d4bb191b061ecf1c9b95`,
@@ -265,7 +406,13 @@ isolation boundary; channels start empty for new users), Valkey persistence
 (AOF `everysec` default, safe AOF copy procedure), PostgreSQL backup (current
 major 18) and Docker volumes (removing a service keeps its volumes).
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -348,7 +495,13 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | n8n router letter-case behaviour live 2026-11-11 | 57 | W62 | `GET /METRICS`, `/Metrics` and a mixed-case Hermes POST through Traefik | HOME, 2026-11-11 14:26 KST | PASS | `GET /METRICS`, `GET /Metrics`, `POST /Webhook/Hermes-Blog-Ingestion`, `POST /WEBHOOK/hermes-blog-ingestion` and a trailing-slash POST all answered 404. | required | n8n router letter-case behaviour live |
 | D03 n8n named-user readback 2026-11-11 | 59 | W64 | Approved recreate of `mng-valkey`, `n8n` and `n8n-worker`, then readback | HOME, 2026-11-11 14:26 KST; containers already recreated (`mng-valkey` 9.1.3, `hyhome/n8n:2.46.6-local`) | PASS | `n8n` and `n8n-worker` set `QUEUE_BULL_REDIS_USERNAME=n8n` against `mng-valkey`; an unauthenticated `PING` answers `NOAUTH`; the inspector user is refused `ACL WHOAMI` and `ACL USERS` (least privilege). No value or hash read. The earlier FAIL row cannot be named here because its name contains a comma, which the Resolves cell uses as a separator; this row records the result without resolving it. | optional | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -358,7 +511,7 @@ major 18) and Docker volumes (removing a service keeps its volumes).
 | 59 | pending | Valkey contract regression | SOURCE_READY: selected shared-MNG/default and opt-in topology source checks pass; credential issue, rotation, queue drain and restore remain unexecuted | SPEC-0212 TSK-0041 |
 | 60 | pending | Connection ledger and handoff validation | SOURCE_READY: 67-source census yields 22 connection rows, one explicit unknown gap, 10 extracted sources and one unhandled source; generated DATA-0096 is validated, while broader metadata/QA and final acceptance remain separate | SPEC-0212 TSK-0041 |
 
-## Review and Completion
+### Remaining Conditions
 
 Independent code, security, IaC and document review must cover the exact changed
 fingerprints. Required local tests, metadata, link and changed-file checks must
@@ -368,7 +521,7 @@ historical operation, current operation, rotation, restore, remote CI and final
 acceptance. A logical local commit may follow these checks; push, PR, merge,
 release and deployment remain unapproved.
 
-### Bounded review records
+#### Bounded review records
 
 The current curation contains 56 `complete: false` partial review records: two
 retained P01 records, 29 IaC records, six code records, 13 README records,
@@ -517,7 +670,7 @@ through its owned provenance transaction; its exact test is
 These are failures, not `NOT_RUN`, and no actual secret, provenance ledger or
 operating service was changed here.
 
-### Lifecycle comparator closure lease
+#### Lifecycle comparator closure lease
 
 The registered gate exposed a semantic conflict: the schema requires a
 non-PASS evidence row to use `Resolves: -`, while the lifecycle comparator was
@@ -600,7 +753,7 @@ appends corrective evidence, preserves the original FAIL receipt/history, and
 reruns the exact hash audit and controller gates. `npm audit` is separately
 `NOT_RUN` because P02 changed no npm dependency tree.
 
-### Catalog synchronization and supply-chain residual
+#### Catalog synchronization and supply-chain residual
 
 The generated inventory projection in
 `docs/90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md`
@@ -678,7 +831,7 @@ The four test/ledger/build-input source fingerprints are byte-identical before
 and after the run. This durable receipt supplements, and does not erase, the
 earlier timestamp-unrecorded 1.966299674-second observation.
 
-### 2026-11-08 root source re-binding
+#### 2026-11-08 root source re-binding
 
 On clean `main` `6361e93b5`, `test_update_gates` failed 57 times: 56 rows of
 `test_current_rows_match_root_compose_source` and
@@ -700,7 +853,7 @@ promoted. Afterwards `test_update_gates`, `test_sec01_next_tool_candidates`,
 `test_p08_ci_routing` and `test_workflow_version_bundle` ran 63 tests: OK, two
 declared skips.
 
-### 2026-11-08 ComfyUI-Manager security level HOME apply
+#### 2026-11-08 ComfyUI-Manager security level HOME apply
 
 The `yanwk/comfyui-boot` bundle seeds `user/__manager/config.ini` with
 `security_level = weak`; ComfyUI-Manager 3.41 defaults to `normal`. RUN-0081
@@ -714,7 +867,7 @@ appeared on the previous start; torch 2.14.0+cu126 imports in the container and
 `/system_stats` lists a `cuda` device. Rollback restores the saved file and
 restarts the container.
 
-### 2026-11-08 shared Valkey memory cap HOME apply
+#### 2026-11-08 shared Valkey memory cap HOME apply
 
 The D03 cap above stayed source-only: on 2026-11-08 Prometheus still reported
 `redis_memory_max_bytes` 0 for `mng-valkey` (started 2026-11-02, before the
@@ -737,7 +890,7 @@ afterwards. One oauth2-proxy session lookup in that window failed to load.
 Rollback is to stop the container, restore the saved `/data` and recreate from
 the previous source.
 
-### 2026-11-08 D03 re-verification
+#### 2026-11-08 D03 re-verification
 
 A direct user request on 2026-11-08 re-ran D03 on clean `main`
 `f5ab642ef`, Docker context `default`, branch
@@ -788,7 +941,7 @@ isolation claim) and Airflow Connections (documents 3.4.0, installed 3.3.2;
 environment connections resolve on the worker and do not appear in the UI).
 Runtime change, restore and Hosted CI for this run are NOT_RUN.
 
-### 2026-11-08 named Valkey user durable native rehearsal
+#### 2026-11-08 named Valkey user durable native rehearsal
 
 With the owner's approval on 2026-11-08, the opt-in native class gained
 `test_named_queue_user_survives_restart_and_aof_reload_on_nondefault_port`.
@@ -804,7 +957,7 @@ zero. With the data directory switched back to tmpfs the new test failed on
 the lost key and list, so it detects a non-durable broker. This is isolated
 evidence; the HOME switch is separate.
 
-### 2026-11-08 n8n named-user HOME switch, first attempts
+#### 2026-11-08 n8n named-user HOME switch, first attempts
 
 With the owner's approval, the secret owner issued
 `secrets/db/mng-valkey/n8n_password.txt` (group-readable by Valkey, one
@@ -843,7 +996,7 @@ exercises the new commands, including `MGET` from Lua, and refuses `MGET` and
 both this branch and clean `main` and is unrelated to this change; the hosted
 CI result is the record for it.
 
-### 2026-11-08 n8n named-user HOME switch after the ACL fix
+#### 2026-11-08 n8n named-user HOME switch after the ACL fix
 
 After #821 merged (`main` `9939431c3`), the queue was empty again and
 `mng-valkey` `/data` was saved again (`data-0715`, 2.1 MB). At 07:33 UTC
@@ -864,7 +1017,7 @@ the fixed overlay set and the override rollback. Rollback: recreate `n8n` and
 `n8n-worker` with the default-user override; the saved `/data` restores the
 broker if needed.
 
-### 2026-11-08 live job and local metadata-suite failure
+#### 2026-11-08 live job and local metadata-suite failure
 
 Execution 127, a manual run, was enqueued by `n8n`, started and finished by
 `n8n-worker`, and reported finished to main at 07:51 UTC. The n8n database
@@ -884,7 +1037,7 @@ blocks of `gen-secrets.sh` now name a missing module and point to the
 requirements file, without printing any value; the new test failed before
 that change.
 
-### 2026-11-09 root source re-binding and crawl4ai-loopback
+#### 2026-11-09 root source re-binding and crawl4ai-loopback
 
 On clean `main` `b4d09cbd7`, `test_update_gates` failed 51 times: 50 rows of
 `test_current_rows_match_root_compose_source` and
@@ -907,7 +1060,7 @@ with an `added_root_service_mapping` record; the observation rows are
 unchanged. The n8n rows were not touched. No test code was stale, so none
 changed. Afterwards `test_update_gates` ran 39 tests: OK.
 
-### 2026-11-09 n8n 2.46.6 and native login only
+#### 2026-11-09 n8n 2.46.6 and native login only
 
 The owner asked: "n8n 최신 안정판(2.46.6)으로 업데이트하고, n8n 로그인만 유지." and
 "이중 로그인은 불가하다." The `n8n` Traefik router therefore drops `sso-errors@file`
@@ -984,7 +1137,7 @@ The stale n8n statements in AD-0007 and AD-0022 now say n8n uses its own login. 
 architecture guide forbids rewriting an accepted decision body and requires a separately
 approved new ADR to replace it, so it is left unchanged and reported.
 
-### 2026-11-09 n8n OpenTelemetry tracing and a case-bypass fix
+#### 2026-11-09 n8n OpenTelemetry tracing and a case-bypass fix
 
 The owner asked to configure and apply n8n OpenTelemetry. In `n8n@2.46.6` the `otel`
 module is a default module for `main`, `worker` and `webhook` instances, has no license
@@ -1048,7 +1201,7 @@ binding was rehashed in the ledger and build inputs. The `m0021` n8n and n8n-wor
 inventory cells were refreshed from `render_service_inventory`. Nothing was recreated, so
 neither the spans nor the router change are live.
 
-### 2026-11-09 n8n Assistant: model and web search, code sandbox held
+#### 2026-11-09 n8n Assistant: model and web search, code sandbox held
 
 The owner asked to configure the n8n Assistant (Instance AI) with Web search through
 SearXNG and Code sandbox through n8n-sandbox, model `anthropic/claude-sonnet-5`, with a
@@ -1100,7 +1253,7 @@ tech-stack projection, POL-0078 (`workflow`, `workflow-n8n`), the `m0021` invent
 paragraph, the n8n README, AD-0026 network table and the Grafana coverage README were
 updated. Nothing was started, so neither SearXNG nor the Assistant settings are live.
 
-### 2026-11-09 dedicated Valkey removal (ADR-0062 decision 10)
+#### 2026-11-09 dedicated Valkey removal (ADR-0062 decision 10)
 
 The owner accepted ADR-0062, whose decision 10 removes the per-app Valkey and exporter
 sets of airflow, n8n and oauth2-proxy (`dedicated-valkey` profile, never created in
@@ -1144,7 +1297,7 @@ are untouched and need separate approval to remove; the private files under
 (with their script-level tests and `test_p02_secret_presentation_native`) are kept for a
 separate retirement.
 
-### 2026-11-09 n8n Assistant code sandbox: privileged Docker-in-Docker runner
+#### 2026-11-09 n8n Assistant code sandbox: privileged Docker-in-Docker runner
 
 The owner overrode the earlier exclusion for this one service and chose n8n's privileged
 Docker-in-Docker runner for the Assistant code sandbox ("privileged DinD"). The
@@ -1234,7 +1387,7 @@ keys. Nothing was started: the DinD start, the mTLS registration between API and
 the first sandbox creation, the `no-new-privileges` and `cap_drop` defaults under an
 inner dockerd, and the sandbox image pull are all unproven.
 
-### 2026-11-09 Traefik v3.7.17 for GHSA-xv5x-242w-7hf7
+#### 2026-11-09 Traefik v3.7.17 for GHSA-xv5x-242w-7hf7
 
 The owner approved prioritizing security-relevant updates. GHSA-xv5x-242w-7hf7 (High,
 published 2026-11-02) affects Traefik v3.7.14 through v3.7.16: an `Authorization` header with the
@@ -1272,6 +1425,12 @@ POL-0013, the workspace inventory data).
 
 ## Handoff
 
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
 | Target | Disposition | Current owner | Resume condition and recovery |
 | --- | --- | --- | --- |
 | P03 product/model registration | OUT_OF_SCOPE | P03 acceptance owner | Consume the exact P02 connection row; product-side registration and function proof remain separate |
@@ -1280,142 +1439,3 @@ POL-0013, the workspace inventory data).
 | P06 secret custody and issuance | OUT_OF_SCOPE | P06 acceptance owner | Issue or rotate only with actual secret owner, target and recovery boundary. P02's synthetic presentation contract permits group-readable `0440`/`0640` where the service has the group, or runtime-`999` owned `0400`/`0600`; it rejects `0444`, `0644`, symlinks and hardlinks. The earlier grant finding was corrected in P02 by narrowing an overbroad mount; P06 custody, issuance and rotation remain unexecuted. P02 records no value and does not issue a credential. |
 | P07 observations | OUT_OF_SCOPE | P07 acceptance owner | Add measurements only after selected source topology and consumer evidence are stable |
 | P08 Valkey 9.1.3 advisory, supply-chain provenance and dependency audit | IMPROVEMENT_CANDIDATE | P08 image/advisory owner | Assess declared 9.1.2 against the official advisory, client compatibility and rollback before any image update. Jointly with P05, own the blog identity/provenance and 13-input reconciliation transaction above. Archive the old n8n binding aggregate `57ad4d23833e8563576b9021ac3b4a8f67f8a2ecb04faefe41225d99cea7707a` and stored Compose `8792a345bd2ead857d108fc2eb100b8be19a9c5012caa5e457829b978b2adcc3`; mirror the current source-only aggregate `f791262bbd771759c5157b1c3c63e8993e8ca8d24f685d55dcd0f492b5933ca2` and Compose `afe7eabe63e19a889ec608fb76900ff908b0da32faf261f99099fb0e5b6009f7` across `update-ledger.json` and `build-inputs.json` on source base `0592303d1f7d96b46019be7a730c115c53cbbcab`. Then rerun `WorkflowVersionBundleTests.test_n8n_source_receipt_does_not_reuse_previous_native_acceptance` and its nested SEC01 route check. Signature, SBOM, Native, HOME operation and recovery evidence remain `NOT_RUN`. Rollback only the owned receipt transaction. Own the failed controller dependency transaction: update canonical dependency input manifest(s), generated lock and appended evidence together; verify affected controller gates. Recovery reverts only the input-plus-lock delta and preserves the original FAIL receipt/history. |
-
-## Related Documents
-
-- [SPEC-0212](../spec.md)
-- [SPEC-0212 Plan](../plan.md)
-- [Historical P03 service integration contracts](../../0204-service-integration-security-and-operations/tasks/tsk-0011-p03-service-integration-contracts.md)
-- [Application authentication guide](../../../05.operations/guides/03-identity-and-access/0079-application-auth-integration.md)
-- [Workspace inventory data](../../../90.references/data/0096-workspace-inventory/README.md)
-
-### 2026-11-09 n8n code sandbox: vfs storage for the inner Docker
-
-The Assistant workspace setup failed with `install-dependencies: canceled`. On the host
-kernel `overlay.redirect_dir` is off, so `npm install` over the image-layer `node_modules`
-hits `EXDEV` on directory renames and exceeds n8n's 120 s budget. The same install took
-6 s on a copy of that tree. IPv6, dependency versions and sandbox 1.14.0 were tested and
-ruled out. The runner now sets `SANDBOX_RUNNER_DOCKER_STORAGE_DRIVER=vfs`. The guide and
-AD-0026 now state the measured egress limits of sandbox containers.
-
-### 2026-11-09 dedicated Valkey leftovers retired
-
-Owner-directed follow-up to the dedicated Valkey removal. `start-dedicated.sh` and
-`render-monitor-acl.sh` were unmounted and used by no live service, so both are deleted
-with their script-level tests (`DedicatedValkeyWrapperTests`, `ValkeyMonitorRendererTests`)
-and `test_p02_secret_presentation_native`, whose only subject was the renderer. The
-workflow contract, its test and the CI gate plan test drop that opt-in module (optional
-selectors 33 to 32). The `start.sh` write-refusal check stays. The renderer entry in the
-`local_source_rebindings` record of `build-inputs.json` is history and stays.
-
-The alternative `Dockerfile` entrypoint of oauth2-proxy now reads `mng_valkey_password`
-like `docker-entrypoint.dev.sh`. `oauth2_valkey_password` is removed from the oauth2-proxy
-Compose file and the root `docker-compose.yml`, and catalog entry CACHE-012 is removed from
-`secret-catalog.json` (its ID is not reused). The hardening script, the `sec01` entrypoint
-test, the guide, the service README and the `m0021` inventory follow.
-
-Held. The public registry `secrets/SENSITIVE_ENV_VARS.md.example` still lists CACHE-012;
-the owner removes that row. The secret catalog contract and metadata sync tests report
-the drift until then. The private file `secrets/db/mng-valkey/oauth2_password.txt` is not
-deleted.
-
-### 2026-11-09 Renovate image bumps keep the SEC01 ledger in sync
-
-Renovate image PRs failed `candidate-quality` because the SEC01 update ledger and several
-tests pinned the old image. `scripts/operations/sync-update-ledger.sh --write` is now a
-Renovate post-upgrade task beside `sync-tech-stack-versions.sh --write` (allowlisted in
-`config.js`; `update-ledger.json` and `build-inputs.json` added to `fileFilters`). It runs
-`ledger_rebind --accept-image-updates`, which accepts only a full `name:tag@sha256:<64 hex>`
-reference of the same repository on an existing row. A new or removed service, a repository
-change, a reference without a digest and a build change exit 2 and write nothing. An accepted
-row keeps `UNKNOWN` target digests, `NOT_RUN` review, scan and acceptance fields,
-`BLOCKED`, and `UNBOUND_CURRENT_TARGET`; the replaced values stay in
-`source_refreshes[].previous_service_images`. Nothing contacts a registry, so the digest,
-signature and provenance are not verified. An n8n input change now rehashes
-`n8n_source_preparation.source_binding` identically in both documents.
-
-Tests that pinned a Renovate-owned version now check the repository, the full digest form
-and the ledger row instead: `test_sec01_version_contract`, `test_sec01_next_stable_candidates`,
-`test_sec01_next_tool_candidates`, `test_service_wiring_contracts`, `test_crawl4ai_egress`,
-`test_workflow_version_bundle` and the updater contract in
-`test_tech_stack_version_contract`. Replaying the open PRs 854, 857, 859, 860, 861, 864, 865,
-872, 876 and 877 in throwaway copies passed the gating suites and the second run changed
-nothing. PRs 856, 858 and 866 change tag-only images and are refused, as designed. The step
-has not run inside the Renovate container; its Python version and the noexec `/tmp` behavior
-are unobserved.
-
-### 2026-11-09 n8n code sandbox: per-principal mTLS mounts
-
-A security review found that `n8n-sandbox-api` and `n8n-sandbox-runner-1` both mounted the
-whole `n8n-sandbox-tls` volume, so each could read the other's private keys. Each service
-now mounts only its own subpath (`api`, `runner`) read-only.
-
-### 2026-11-09 n8n code sandbox: CA key removal on every exit path
-
-A security review noted that a failure between certificate generation and the final `rm`
-would leave `ca.key` in `n8n-sandbox-tls`. The job now removes it through a shell `trap` on
-exit. Reproduced on the pinned image: the key stayed before the change and is gone after it.
-
-### 2026-11-10 Renovate memory limit
-
-After the sole-updater configuration, a Renovate run exited with code 134: the Node heap
-reached about 512 MB under the 1 GiB limit. The limit and reservation are now 2 GiB for
-this on-demand job.
-
-### 2026-11-10 open-webui moved to a LAB (ADR-0062 amendment)
-
-The owner amended ADR-0062 on 2026-11-10 (decision 13): open-webui leaves HOME `08-ai` for
-the standalone LAB `labs/open-webui/`. Evidence recorded in the ADR without user content: one
-user, one chat, last activity 2026-10-26, no files and no knowledge entries; no dependent
-service; every role duplicated in HOME (Hermes and the n8n Assistant/Agents for chat, the
-n8n Assistant with SearXNG for web search, Qdrant with n8n for RAG, Hermes faster-whisper for
-speech-to-text; `ENABLE_OPENAI_API` false); a 16.5 GB image, about 840 MiB RSS, an OIDC client
-secret, a Traefik router and Renovate churn; and a bundled PyTorch cu128 build without sm_61
-kernels for the GTX 1060.
-
-Done in source only; no container, volume or image was touched. The Compose file, entrypoint
-and README moved as renames to `labs/open-webui/` and follow the Superset LAB pattern:
-project `hy-home-lab-open-webui`, profile `lab-open-webui`, network `lab_open_webui_net` only,
-no Traefik route, UI on `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_OPEN_WEBUI_HOST_PORT:-18095}`,
-data at `${LAB_DATA_DIR}/open-webui/data`, required inputs `LAB_OPEN_WEBUI_OLLAMA_BASE_URL`,
-`LAB_OPEN_WEBUI_DEFAULT_URL` and `LAB_OPEN_WEBUI_CA_FILE`, and the LAB-only secret
-`lab_open_webui_oidc_client_secret` (catalog `LAB-037`) mounted at the original target. Qdrant
-and `depends_on` are gone because the LAB reaches no HOME network. `promotion.yaml` is
-`kind: undecided`. The root include, the root `openwebui_oidc_client_secret` declaration,
-`OPENWEBUI_OIDC_CLIENT_SECRET_FILE` and `OLLAMA_WEBUI_PORT`, the Gatus probes and their port
-variable, the Restic mount, SQLite export and state include rows, and the Grafana coverage row
-were removed. The 08-ai hardening function now checks the `labs/` source (no gateway route, LAB
-bind port, native OIDC flags, LAB network, healthcheck). As with Superset, the OpenBao Agent
-still renders `08-ai/open-webui` and `IAM-011` keeps feeding the OpenBao import through
-`consumer-migration/oidc-client-secrets.sh`; no root consumer binds it. The SEC01 ledger moved the
-row to `historical_lab_entries` with a `source_refreshes` record, dropped it from the P08
-related-service list (denominator 94 to 93, related services 80 to 79), and `ledger_rebind`
-re-bound 16 rows and 3 include hashes; the tech-stack projection was regenerated with
-`sync-tech-stack-versions.sh --write`. GDE/POL/RUN-0057 moved to `15-labs/`, the `m0021`
-inventory was re-rendered with `render_service_inventory`, and Stage 05 cross-references,
-POL-0078 (`ai`, `ai-llm`, new `lab-open-webui`), READMEs and pinning tests were updated. The
-three open-webui rows left the root-only `infra/secret-file-support.json`, and the LAB inputs
-joined the synthetic sets of `compose_controls.py` and `test_lab_isolation.py`.
-
-Verification at base 0b7ffe8bc with the change staged: `validate-docker-compose.sh` passed
-(64 selections, HOME 44 services); `check-all-hardening.sh 08-ai` passed;
-`check-template-security-baseline.sh` reported 22 scopes, 708 services, 0 findings;
-`check-operations-catalog.py`, `check-document-links.py --mode all` (0 failures),
-`check-document-metadata.py --mode check-changed` (0 violations), the corpus lifecycle, agent
-governance, script manifest, supply-chain policy and conftest checks passed. The full unittest
-discovery ran 3431 tests: the only failures are the three secret-registry assertions held
-below; `test_service_runtime_compatibility` passed after the support-file change.
-
-Held. `secrets/SENSITIVE_ENV_VARS.md.example` needs a `LAB-037` row for
-`secrets/labs/open-webui/oidc_client_secret.txt`; agent edits under `secrets/` are denied, so
-the owner adds it. Until then `test_secret_catalog_contract` (issued IDs, view round-trip
-`catalog_public_source_drift`) and `test_secret_metadata_sync` (registered path) fail on that row.
-
-Owner decisions that remain, each a separate approval, in the order of RUN-0057 "HOME
-retirement steps": a final consistent backup of `${DEFAULT_AI_MODEL_DIR}/open-webui`; stopping
-and removing the HOME `open-webui` container and its image; keeping, migrating to the LAB data
-root or deleting the volume `hy-home-infra_open-webui`; keeping or retiring the Keycloak client
-`home-openwebui` (and registering a LAB redirect if kept); and `chat.${DEFAULT_URL}` DNS and
-certificate cleanup. Stage 01 and Stage 02 text that still places Open WebUI in HOME (REQ-0009,
-REQ-0013, AD-0008, AD-0013, AD-0023, ADR-0059) is reconciled by its owners, as the ADR-0062
-follow-up states.

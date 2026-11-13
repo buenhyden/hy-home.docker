@@ -1,10 +1,10 @@
 ---
 title: "Airflow Native Publication Rehearsal Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-10-20"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0020"
 parent_ids:
@@ -14,9 +14,11 @@ created: "2026-10-16"
 
 # Airflow Native Publication Rehearsal Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 W75 prepares and, only after independent prechange approval and complete n8n
 fixture cleanup, executes the existing manifest DAG through a genuine Celery
@@ -25,7 +27,14 @@ The source, registration, worker publication, failure/retry, replay and empty
 synthetic restoration lanes have separate receipts. No HOME, production OIDC,
 TimescaleDB extension, offsite custody or real consumer acceptance is inferred.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [P04 Task](tsk-0012-p04-airflow-manifest-pipeline.md)
+- [P10 Task](tsk-0016-p10-opsflow-acceptance.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The direct infrastructure request and controller's bounded 2026-10-16 dispatch
 authorize these three test files and this draft Task. The shared Plan writer
@@ -42,16 +51,18 @@ cleanup. The one-container cached-image UID/import probe follows the same host
 lock and serial boundary. Images are already cached and immutable; no pull,
 HOME network, public port, host state volume or real credential is permitted.
 
-## Work Log
+## Execution Log
 
-### W75 boundary and execution plan
+### Work Performed
+
+#### W75 boundary and execution plan
 
 | Order | Preserved chronological record |
 | --- | --- |
 | 1 | Use eight owned containers with summed hard caps of 3648 MiB and 2 CPU: metadata PostgreSQL, DEV PostgreSQL, Valkey, single-process SeaweedFS, execution API, scheduler, DAG processor and one Celery worker. Separate internal control/data networks admit only the worker to both. The workload stops at T+780 seconds, reserving 120 seconds for exact identity-checked cleanup. The host lock is shared with the n8n rehearsal; stale owner labels or either fixture's attempt directories block a new execution. |
 | 2 | Reuse the existing DockerClientBoundary, private-file writer, DEV provision and migration functions. Copy only public frozen DAG/library source and protected synthetic connection files into owned tmpfs. The existing DAG stays unchanged. After actual worker publication and one controlled permission failure/retry, repeat the same manifest to prove no duplicate rows/outbox/artifact. Quiesce all Airflow writers before snapshots, then restore metadata, DEV and S3 into empty serial replacement targets and execute a new worker replay. PostgreSQL 18.6 proves the isolated SQL contract only; ROOT TimescaleDB compatibility is separate. |
 
-### Source preparation receipt
+#### Source preparation receipt
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -63,7 +74,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 6 | The worker gate requires terminal successful DagRun and task state, actual Celery external executor ID/worker hostname, a task retry after a controlled function EXECUTE denial, one publication/outbox after replay and exact S3 key and SHA256 readback. Recovery stops scheduler/processor/API, requires no queued or running DagRun and exactly one idle Celery worker with no active/reserved tasks, captures S3 before stopping that worker, and then dumps both distinct PG clusters. Role snapshots exclude passwords; synthetic credentials and Fernet/JWT material remain private files. All old containers are removed before empty replacement targets are created. A post-restore actual worker replay must keep the same publication, outbox and S3 bytes. Source hashes in the receipt bind the bytes copied into tmpfs. These assertions are prepared source until native GO. |
 | 7 | The canonical metadata check scoped to this Task initially returned an unknown W75 reference plus 145 cascading archive-profile diagnostics while its shared Plan registration was pending. After the sole Plan writer registered W74/W75, the same scoped `check-document-metadata.py --mode check-changed --changed-path` check completed exit0: selected1, violations0, legacy exceptions0, transition overrides0. No archive file was edited. The observed command completion is agent-local session20153, exit0; check-changed mode did not emit the optional report JSON path. A controller-observed result receipt preserves the actual stdout and command at `/tmp/hyhome-airflow-task0020-metadata-registered.receipt.json`. Independent scoped source security review passed the exact v2 source manifest; that source verdict is separate from prechange runtime GO and native execution. |
 
-### Authorized admission attempt 1
+#### Authorized admission attempt 1
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -72,7 +83,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 3 | The authorized diagnostic correction now records only typed UID/GID, strict numeric semantic versions, driver booleans and a closed allowlist of safe forbidden-environment names before validation. Environment values, unknown names, credentials, bodies and raw logs are excluded. A focused test first failed because the helper was absent, then passed; unknown token fields cannot reach the receipt. The exact authored and verified security option is already `no-new-privileges=true` in both places; no admission guard was relaxed. That diagnostic was probe-only and required a new exact freeze, both reviews, fresh readiness and the coordinator's single serial slot. Its exact minimal temporary driver is `/tmp/hyhome-airflow-admission-probe-only.py`, SHA256 `21eca11290485375f7ac0eb92b83ac93cc1d12780fbdad3cfbc431a49354ee9d`. It verified the two then-current owning source hashes, constructs `AirflowFixture`, calls only `prerequisites()` and `probe()`, then runs cleanup and prints the sanitized receipt in nested finally. It imports no full workflow scenario and invokes no native unittest, network creation or role beyond `probe`; a probe PASS cannot continue into eight containers. Work is capped at 120 seconds and the global deadline at 240 seconds, including the 120-second cleanup reserve. |
 | 4 | The reviewed invocation uses a fresh child environment with only `PATH=/usr/bin:/bin`, `LANG=C.UTF-8`, `LC_ALL=C.UTF-8`, `PYTHONPATH=/tmp/hyhome-infra-spec0204`, the exact cached `OPSFLOW_AIRFLOW_NATIVE_IMAGE` and context `default`. It runs `/usr/bin/python3 -B -s -S -P /tmp/hyhome-airflow-admission-probe-only.py` from the shared worktree. No HOME, Docker auth/config or other credential environment is forwarded. Python disables bytecode writes, user site, unsafe script-directory search and all site initialization. The sole explicit import path is the trusted worktree; the shared `/tmp` script directory and optional dependency target cannot inject modules or sitecustomize. DockerClientBoundary still selects its exact private config/socket. |
 
-### Authorized admission attempt 2 and candidate correction
+#### Authorized admission attempt 2 and candidate correction
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -82,7 +93,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 4 | A focused candidate-selection test failed against the old038 selector (RED), then passed after exact8c selection. Typed digest regressions and the complete source suite now pass fourteen boundary tests with one native skip. Pure admission, sanitization and resource helpers moved into the private guards module without changing the resource or cleanup contract. Ruff passes; each owning Python file remains below 800 lines. A hardened import/resource-reader smoke also passed without constructing a fixture or making any Docker call. |
 | 5 | The next proposed admission uses only the successor temporary driver `/tmp/hyhome-airflow-candidate-admission-probe-only.py`, SHA256 `c72fe66eda3c44bf1c441a26718e28d6c9d1fe9e7d13acea7178ebf486bc6263`. It verifies all three current source hashes before importing repository code, then calls only AirflowFixture prerequisites, probe and nested-finally cleanup plus safe receipt printing. The exact invocation is `/usr/bin/python3 -B -s -S -P /tmp/hyhome-airflow-candidate-admission-probe-only.py` with the same clean six-variable environment above, except the exact image is now the8c index. Only a512MiB/.25CPU/128PID probe is proposed, with120 seconds work and240 seconds global including120 seconds reserved cleanup. No full scenario can be reached. Its new invocation receipt binds the three source files, this Task and the driver. Both renewed exact reviews, fresh host readiness and an allocated serial slot are required before execution; the candidate admission was NOT_RUN at that freeze. A later full eight-role attempt requires separate approval after actual candidate admission PASS. |
 
-### Authorized candidate admission PASS
+#### Authorized candidate admission PASS
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -91,7 +102,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 3 | Child cleanup was PASS: tracked/pending/final swept container and network identities were empty and the attempt directory was null. Publication and recovery were explicitly NOT_RUN. The two older ROOT038 admission FAILs remain preserved above; the current candidate's matching immutable admission and safe driver observations supply their corresponding GREEN resolution only. This does not accept actual worker publication or restoration. Independent post-checks confirmed empty owner container/network sweeps, exact `/tmp/hyhome-opsflow-native-attempt-*` and `/tmp/hyhome-opsflow-airflow-native-attempt-*` globs empty, and the shared lock free. The reviewer's earlier shortened glob wording was corrected by rerunning these exact helper prefixes; that earlier check is not used as evidence. |
 | 4 | The next proposed run invokes only the existing native unittest `tests.validation.test_opsflow_airflow_native_rehearsal.AirflowNativeRehearsal.test_actual_celery_publication_retry_replay_and_empty_restore` under the same hardened clean environment and exact8c selector. That existing method includes one probe phase before its eight-role scenario, within the same total780-second work/900-second global budget and120-second cleanup reserve. A separate exact full-entry/capture packet and both independent reviews plus fresh serial-slot GO are required. Current full execution is NOT_RUN. Any shared subprocess interruption or capture finding must be closed before admission; no outer timeout may silently orphan the controller or an active Docker CLI. |
 
-### Full invocation preparation
+#### Full invocation preparation
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -100,7 +111,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 3 | The outer work cutoff sends SIGINT to the exact child group at780 seconds, allowing the remaining120 seconds for the existing finally/fixture cleanup. At900 seconds it escalates TERM then bounded KILL/reap. PostgreSQL recovery here means logical pg_dump/role SQL/pg_restore into fresh independent nativePG18.6 containers; the source receipt label "physicalPG" describes the independent server runtime and proves no physical-backup recovery. The reviewed shared boundary separately terminates/reaps any active Docker CLI group before propagating interruption. Unexpected outer exceptions or missing/invalid child receipts produce a safe FAIL with cleanup UNKNOWN; private attempt barriers and outputs remain for exact reviewed recovery. A normal PASS requires exit0, publication and recovery PASS, final restored worker identity, cleanup PASS, exact empty cleanup_failures and all tracked/pending/swept IDs explicitly empty with a null attempt directory. Overflow cannot pass. |
 | 4 | Docker-free capture checks proved the live cap and receipt after overflow, rejected replaced output paths and absent/unknown cleanup fields, and used a real harmless Python child to observe work-cutoff SIGINT, its cleanup receipt and exact group reap. That timeout remained FAIL despite child cleanup PASS. The missing-attempt-directory negative first failed, then passed after the explicit retained-field schema guard. Full Airflow execution remains NOT_RUN; this packet still requires both exact reviews and fresh serial-slot allocation. |
 
-### Narrow resource-policy correction
+#### Narrow resource-policy correction
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -108,7 +119,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 2 | The focused regression first failed when healthy RAM/disk/inodes with swap0 was rejected (RED), then passed after removing only the SwapFree condition. Low RAM, low disk and low inodes still fail; runtime low-memory and owner network rejection remain covered. The complete source module passed fourteen boundary tests with one native skip; Ruff passed all four owned modules. This is source evidence, not a native rerun or runtime GO. |
 | 3 | The coordinator separately requires a fresh bounded observation interval and HOLDS on any positive delta in oom_kill, memory PSI full total or pswpout. No generic pressure parser, host tuning or threshold relaxation is introduced. All full input/entry bindings must be refreshed to the corrected source before both exact reviews and any later fresh slot allocation. |
 
-### Observed ordinary-network lifecycle correction
+#### Observed ordinary-network lifecycle correction
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -116,7 +127,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 2 | The existing private guards module now checks exact registered owned network name keys and authored alias lists first. Created requires empty NetworkID and EndpointID; running requires the exact owned NetworkID and a64hex EndpointID; exited requires the owned NetworkID and empty EndpointID. Other states deny. No guessed address, optional-field or null-shape constraints are added. The fixture includes State.Status in its safe inspect fields and applies this pure matcher. Its secondary worker network now explicitly authors the same reviewed role alias as its primary network; arbitrary alias overrides are rejected. Both expected network names/IDs come from the exact owned internal-network map. Probe network-none validation and minimum deletion authorization stay separate. |
 | 3 | The focused missing-validator regression first failed (RED), then the complete Docker-free suite passed23 tests:22 PASS and one native SKIP, comprising15 Airflow boundary tests plus7 shared process-boundary tests. Cases cover actual created/running/exited states, foreign network names, wrong network/endpoint IDs, wrong aliases and unknown lifecycle state. Ruff passed all four source files. Only the existing13-line WAIT/S3-client/function/role literal block moved into the existing fixture to keep the new focused test within800 lines. Source files are153/798/799 lines; no workflow, SQL, image or copied workload bytes changed. No extra Docker probe or full Airflow scenario ran for this correction. |
 
-### Shared subprocess interruption correction
+#### Shared subprocess interruption correction
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -124,7 +135,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 2 | The real harmless Python-sleeper regression first failed for both KeyboardInterrupt and unexpected OSError (zero termination calls). Its test finally removed/reaped both RED children. After the patch, all seven shared boundary tests passed, including existing output-cap checks. The new regression requires one exact termination call, SIGKILL return status and absence of the exact process PID/group after reap. Callback interruption occurs once and subsequent sleep calls use the original implementation. Airflow boundary tests still pass fourteen with one native skip; Ruff passes. Independent prechange and controller diff review approved this narrow fix. The existing shared file already exceeded800 lines; this authorized patch does not broaden/refactor it. Both native invocation bindings must include this changed transitive authority. |
 | 3 | Actual Celery publication, recovery, native coverage, actual TimescaleDB, HOME, Keycloak/OIDC and offsite recovery remain NOT_RUN. No image pull or runtime package installation occurred. |
 
-### Full attempt 1: migration caller failure and exact reconciliation
+#### Full attempt 1: migration caller failure and exact reconciliation
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -134,7 +145,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 4 | The focused regression first reported one migration-user assertion FAIL and one removal OSError ERROR. The corrected caller explicitly uses `user="opsflow_migrator"` for all three migrations. Exact removal still verifies ownership before requesting deletion; it catches ordinary Exception only from the rm call, then confirms exact CID absence before dropping the record. A present CID retains the record; KeyboardInterrupt propagates without further inspection or mutation. All fifteen Docker-free Airflow checks now PASS with one native SKIP; Ruff check and diff whitespace checks PASS. The source hashes are fixture `95dd3dc3e0d7178f7060b29f6d30b5f24013a069d4ba12f690d58db440606d30` and test `f59a60f5e4f4d9a203f0762f594565d453abfeb5fb235ff0408e086a980f2b9a`. Equivalent existing call layout was compacted to retain 797/799-line files. No second full attempt is authorized by this correction or manual cleanup. |
 | 5 | Before this attempt, the controller and both reviewers explicitly refined the operational PSI gate using the kernel's documented distinction between recent stall percentages and cumulative microseconds. Both interval endpoints required memory full avg10/avg60 0.00, zero OOM-kill and swapout deltas, at least 7 GiB available RAM and all existing resource/serial gates. The final two-second interval recorded total +1 microsecond, OOM/swapout zero and 14,532,579,328 bytes available. Total was retained as evidence rather than an automatic microsecond denial. No host settings or source resource caps changed. See the official [kernel PSI documentation](https://docs.kernel.org/accounting/psi.html). A successor invocation remains NOT_RUN pending fresh source/packet review and an explicit sole serial allocation. |
 
-### Full attempt 2: Airflow database initialization failure
+#### Full attempt 2: Airflow database initialization failure
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -143,7 +154,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 3 | The original cleanup is again FAIL: two `container` failures and `retained Docker state`, despite final owned Docker sweeps being empty. The private barrier is `/tmp/hyhome-opsflow-airflow-native-attempt-a6ec19a286538153b5790293`; retained record CIDs are `1aae3f96a3283ffac16f1f7d21946f4a29450b50b3d9df57b0692283081723f5` and `523d4d0f7c371e10df4a848f96710e5881c01d2e0a2fe762af45275ac3262eb9`. Independent immediate inspection found owner containers/networks empty and the shared lock free. Under the persistent controller-authorized exact pattern, the recorded host identities and file hashes were revalidated after both exact CIDs and owner resources were absent. Only the two authored synthetic files and two empty owned directories were removed. Manual reconciliation PASS is separately recorded in `/tmp/hyhome-airflow-full-attempt2-exact-reconciliation.json`, SHA256 `f276a9ff6ed47f8d6ce2c24422ec85653cae496f6fc81dffc32644722d0a5bb3`. Both exact attempt globs are empty and the shared lock is free. This does not rewrite the original automatic cleanup FAIL or authorize another attempt. |
 | 4 | Protected stdout SHA256 is `657bf66718bf7b54deaf690a5cf0bf4f31517f42c520a1bcfa7f898292518f09`, stderr `12790553f9700ca18d452fa3985fe3fc52c95c5a99ea86a060c1a71d4ffd2253` and sanitized receipt `a36a163c56c3b7c413f3acda6b97f93437dc04614a5155a28cb86d95606f59f5`; all are `/tmp/hyhome-airflow-full-run-v3-0ea6.{stdout,stderr,receipt}`. The scoped canonical metadata command for the pre-run Task completed exit0, selected1/violations0/legacy exceptions0/overrides0 in session43672. Its protected receipt `/tmp/hyhome-airflow-task0020-attempt2-metadata.receipt.json` SHA256 is `efcab36a17a8502583ecec916799f48f737d29b5c634ea09c8fc43125edd708f`. This does not claim another metadata run after this actual-outcome append. |
 
-### Protected failure evidence and exact config-path correction
+#### Protected failure evidence and exact config-path correction
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -153,14 +164,14 @@ HOME network, public port, host state volume or real credential is permitted.
 | 4 | Safe `cleanup_observations` record role/stage/finite exception class and exact inspect exit/absence observations; exception messages are withheld. Original ownership checks and CID removal decisions remain. Integrated review found that the old cleanup boundary converted cancellation into RehearsalFailure, despite remove rethrowing it. The correction records finite facts, finalizes the receipt and unlock attempt, then rethrows the original first non-Exception cancellation. A later unlock cancellation cannot replace it; no extra Docker sweep runs after cancellation. Begin/remove/unlock KeyboardInterrupt and SystemExit first failed six focused subcases, then all passed. When command evidence exists, exact Docker cleanup still runs, but the explicit `protected failure evidence retained` category preserves the private host barrier. Original cleanup FAIL and separately authorized manual reconciliation remain separate receipts. Inspect protected evidence only after independent Docker-zero verification, then remove only recorded authored file identities with exact SHA/dev/inode/owner/mode/link/size/time checks and empty directories. The restart validator opens the parent and files through no-follow directory file descriptors, validates metadata's receipt-bound identity before parsing, uses bounded read/fstat/read-completion/fstat/name identity checks, and requires the exact complete child set before and after. It rejects stream mutation, metadata replacement/symlink, extra/missing entries and empty config replacement including observed inode reuse. Raw protected diagnosis must validate this binding first and redact the fixture secret map and encoded values/URLs/tokens before returning a short exception/frame summary; preserved bytes are not replaced by guessed error-marker booleans. The public wrapper must keep these new private metadata fields closed and withhold raw output; old runtime closures are obsolete until reviewed refresh. |
 | 5 | The original focused RED run had two missing-evidence ERRORs and one missing config-assignment FAIL. Later review regression also caught empty config inode reuse and head-only loss of final error text; both now reject/preserve context respectively. All eight focused checks now PASS, including parent privacy, exclusive symlink refusal, no overwrite, checked/unchecked SQL, both-stream/UTF-8 bounds, finite unknown diagnostics, secret absence from JSON and retained evidence. The full Docker-free command `python3 -B -s -S -P -m unittest tests.validation.test_opsflow_airflow_native_evidence tests.validation.test_opsflow_airflow_native_rehearsal tests.validation.test_datastore_rehearsal_boundary.DatastoreRehearsalBoundaryTests -q` ran31 tests:30 PASS and exactly one native SKIP, under a clean environment with repo-only PYTHONPATH. Ruff check passed. Source hashes are fixture `4cda4305508a3ac43e43861f0ca2d15235b1c6cc5882bcdaa60cf5b45cb86181`, guards `47f24c6f35da7e7a57b481f1636d1f59b9ed5e0661fe87b206f5c5ffd29c44be`, native test `db7b07f40ff89efde9f506216dc4bea6c32899e650c0a113f1669bef9f1bdea5` and evidence test `d1b729b386ca46ba8a2ac20534b6577ef59913f0f6d01db36121d86325b04621`. The exact predecessor diff is `/tmp/hyhome-airflow-diagnostic-source-v2.patch`, SHA256 `6d2f6de1477725e6b11718030f938429f286d5dc7987e17f873db7dc9a77f251`. This source correction performs no further native execution; actual Celery, retry/replay and empty restoration remain NOT_RUN pending reviewed successor entry/closure and fresh sole serial allocation. |
 
-### SimpleAuthManager key namespace correction
+#### SimpleAuthManager key namespace correction
 
 | Order | Preserved chronological record |
 | --- | --- |
 | 1 | During the runtime HOLD, official Airflow3.3.2 source review found a separate fixture binding defect. The authored `AIRFLOW__SIMPLE_AUTH_MANAGER__PASSWORDS_FILE` does not configure the core `simple_auth_manager_passwords_file` option. Its ignored value leaves the read-only home default `simple_auth_manager_passwords.json.generated` in use. The exact key is now `AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_PASSWORDS_FILE`, using the already-installed `/run/airflow-fixture/simple-passwords.json` in the existing private tmpfs. No auth policy, HOME, image, file content, resource or root writability changes. The prior actual db-migrate inner cause remains UNKNOWN; this is an independently established authored namespace defect. See the official [Simple auth manager contract](https://airflow.apache.org/docs/apache-airflow/3.3.2/core-concepts/auth-manager/simple/index.html) and [versioned implementation](https://raw.githubusercontent.com/apache/airflow/3.3.2/airflow-core/src/airflow/api_fastapi/auth/managers/simple/simple_auth_manager.py). |
 | 2 | The focused guard first FAILed because the official core key was absent, then passed after the one-key correction. It also rejects retaining the ignored key and requires the existing private tmpfs plus read-only root. Nine evidence tests, fifteen Airflow boundaries and seven shared boundaries now PASS, with exactly one actual native SKIP (32 total). Ruff check passes. The source-v2 packet was withdrawn before any execution and this source-only revision needs coherent Task/closure/entry review again. Source hashes are guards `c2030c9e52f04d750e901421885d7526a472cf568623cfc285498b991bfb16ec` and evidence test `2507a44d96284f68e570b72b4e1edb0c403835b88f70090dbd6fe4d7cb91332d`; fixture `4cda4305508a3ac43e43861f0ca2d15235b1c6cc5882bcdaa60cf5b45cb86181` and native test `db7b07f40ff89efde9f506216dc4bea6c32899e650c0a113f1669bef9f1bdea5` are unchanged. The exact predecessor patch is `/tmp/hyhome-airflow-diagnostic-source-v3.patch`, SHA256 `67a895e6b7ac6ef458ea5daf316ff1fca306d02cc35689fa2cf305af387e8571`. No new native execution occurred. |
 
-### Full attempt 3: verified PostgreSQL host-authentication failure
+#### Full attempt 3: verified PostgreSQL host-authentication failure
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -169,7 +180,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 3 | Original automatic cleanup is FAIL. One scheduler removal returned a finite ordinary exception; the immediate exact-CID inspect still observed it present, while the final owner sweeps and independent later exact inspect found it absent. The original retained CID was `6e963c5c8d6ad598e1216792b2ac05b97bdd84555ce581ce2e7ae1549cc79bcf`. The protected failure-evidence barrier was intentionally retained. After independent Docker-zero/lock verification and complete identity/hash validation, the separately authorized exact reconciliation removed only the five bound files and empty config/parent directories. Manual reconciliation PASS is `/tmp/hyhome-airflow-v5-exact-reconciliation.json`, SHA256 `5145a1c32e23fdfa58d450930e7304a55c97450eeda5f274ad15231dd8751d3e`. Both exact attempt prefixes and owner resources are empty, and the lock is free. Raw command files were unlinked only after verified redacted diagnosis; their original hashes remain recorded, stdout `0afd5fdaf1062edf07521652437b4b1957cc68f059fcd109daf37ca105b37010` and stderr `27fe56c8de2c78f9f26dfe07c2cde67aa19ff8800c8aba951da5028b1e91f58a`. The original cleanup FAIL is not rewritten by manual reconciliation. |
 | 4 | Outer artifacts remain `/tmp/hyhome-airflow-full-run-v5-a565.{stdout,stderr,receipt}`, SHA256 respectively `a155b4d9e1c80db4af0713c7c457b6596ed6e35c539e09aebaecdfbaf8d45f45`, `2897ea24fe1dec359e8fa450fa49638ed423ce42816a862192f5edb3b0014618` and `82b14fb6a5d302852c28ff8bbec05181e5839532b4e789549af06e01954a8172`. The post-run independent pressure interval had full avg10/avg60 0.00 at both endpoints and zero OOM, swapout and full-total deltas. No resource cap changed. |
 
-### Exact host-authentication and asynchronous removal correction
+#### Exact host-authentication and asynchronous removal correction
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -177,7 +188,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 2 | Measured removal timing also supports a bounded family-local completion check. After exact ownership verification and one rm request, the fixture polls only that exact CID for at most five additional seconds, capped by the existing active work/cleanup deadline. The temporary client deadline is restored in a finally block. Exit 0 with exactly the CID is present; only the observed exit 1, empty stdout and exact no-such-object diagnostic for the same CID prove absence. Permission/daemon/unrelated errors remain UNKNOWN and retain the record. A persistent CID or expired deadline remains FAIL; cancellation propagates. The shared 2.4-second cleanup CLI timeout and global 120-second reserve are unchanged. |
 | 3 | The actual registered unittest also preserves its first scenario KeyboardInterrupt/SystemExit through an ordinary cleanup failure or secondary cancellation, after the cleanup receipt is finalized and printed exactly once. A focused run first witnessed seven FAILs and four ERRORs across the new HBA, polling and lifecycle checks. The corrected clean Docker-free command ran 37 tests: 36 PASS and exactly one native SKIP. It covers both generations' exact rules, unknown role denial, exact-CID present-to-absent completion, existing and five-second deadline caps, persistent/unknown/CID mismatch denials, cancellation and first-cancellation precedence. Ruff and scoped diff checks PASS. One existing probe user/tmpfs check moved unchanged into the focused evidence module to keep the native scenario file below 800 lines. Source V4 hashes are fixture `255048ee9f8f3be0723d07e106391de5d89bdcb250f5dd8cbb7438566e5abf69`, guards `c18b162012b20cf2b10ff5b5aba822ba25311cbd42cbd556ccb2fca281b47ee9`, native test `3496a61f65cbcad0493168f3b0878089e834196799885ba0ca6e45a147f3bc28` and evidence `03501805161aade513b4272f4cb24c9d0c63a9caaa0c88b7d353668ad3bfee45`. The exact delta from executed v5 is `/tmp/hyhome-airflow-hba-removal-lifecycle-source-v4.patch`, SHA256 `344581d19c777844ca86d61be35304f19457136965c3d06905e4b1797a0e75f8`. The successor packet remains NOT_RUN pending both reviews and fresh sole-slot allocation; no standalone or same-data producer/consumer acceptance is inferred. |
 
-### Full attempt 4: verified S3 input-upload failure
+#### Full attempt 4: verified S3 input-upload failure
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -187,7 +198,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 4 | The first exact host reconciliation validated the complete manifest and removed only its five bound files and empty Docker-config directory, then stopped on a procedural guard: deleting that child legitimately changes parent nlink 3 to 2. The old guard compared the unchanged capture-time link count. Its PARTIAL receipt is `/tmp/hyhome-airflow-v6-partial-reconciliation.json`, SHA256 `35b91e12f86ed543f0e1bd1c4c9d7ab836bfa4f9ad2dd066d5c4ca99b9563628`. The original metadata's parent dev/inode was not persisted externally before unlink and was not subsequently recovered; no capture-bound final rmdir is claimed. Under a separate explicit controller authorization, the sole operator freshly verified current dev 64512/inode 3078968/uid-gid 1000/mode 0700/nlink 2, exact emptiness, owner Docker zero and the free lock. It persisted and fsynced `/tmp/hyhome-airflow-v6-empty-parent-before.json`, SHA256 `f731cef4ab5441036c7d7ad2c61b709e30c18ab02dcfb3b99bb1935a367ac888`, before removing only that exact empty parent. Current-state reconciliation PASS, with the missing-original-identity limitation, is separately recorded in `/tmp/hyhome-airflow-v6-empty-parent-reconciliation.json`, SHA256 `0c6261a532f9aba88d49083091195d2d632d5eb83e50874ce9ceafb71b0d5ee6`. Original ERROR, automatic evidence hold and partial reconciliation remain intact. |
 | 5 | The canonical changed-Task metadata check completed exit 0 at exact unchanged pre-run Task `56e7deb7`, selected 1/violations 0/legacy exceptions 0/overrides 0. Its protected receipt is `/tmp/hyhome-airflow-task0020-v6-stable-metadata.receipt.json`, SHA256 `63a4e88d6543fdb595111c83017449b2a0cd7b3606030a47ecd6ed3c38285105`. This is not a claim that the same metadata run included this later outcome append. |
 
-### Persisted Seaweed policy and pre-mutation reconciliation correction
+#### Persisted Seaweed policy and pre-mutation reconciliation correction
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -195,7 +206,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 2 | The initial/restore policy guards first failed two subcases for the missing apply flag; the persisted readback guard first ERRORed before the method existed. All 39 Docker-free tests now finish with 38 PASS and exactly one native SKIP; Ruff PASS and all four owned source files remain under 800 lines. SOURCE V5 hashes are fixture `aec387d9ae6ebc43008365e1d5b55646029a502ae42eba7abb23d21d40de37d1`, guards `29697ce2f6244f03d991b4ef3b4c57ea10d1c152de0f51b6060ea9c89bbd48b7`, native test `9a2612d44f0e589b917aface92885b548c631a14647e82958e685e69706b18fb` and evidence `bfadde1d52728e59284ed77f5b736616c71fb0aaf7acd48f083c66badc45f928`. Exact V6 delta `/tmp/hyhome-airflow-seaweed-apply-source-v5.patch` has SHA256 `fa35f83aa57311e929a117595e9b7b23e56fab66a482385ccc8f0b4c3a9c5913`. |
 | 3 | The private future manual procedure now persists and fsyncs the full validated manifest, metadata self-identity and current complete parent identity BEFORE any unlink. Its final guard expects the exact same parent identity with nlink 3 to 2 after the recorded config-directory removal; all other identity fields remain bound. The actual partial reconciliation supplies the witnessed RED. Two Docker-free temporary-directory guards now PASS: durable complete receipt before every unlink plus successful link transition, and no unlink on receipt collision or unknown file. Procedure `/tmp/hyhome-airflow-retained-reconciliation-v2.py`, SHA256 `1566c45df8a7a4280285a7372e5e6b9a8d429c8981259141685de83298f3116f`, has no automatic execution entry. Guard `/tmp/test_hyhome_airflow_retained_reconciliation_v2.py`, SHA256 `162a49352967dac9ab3d0640666f3a5c38a51783f05b6b12e7feea99600d91a3`, used only synthetic temporary directories. This does not weaken fixture cleanup or grant another deletion/run. Successor source/Task/closures/entry remain NOT_RUN pending exact independent reviews and fresh sole-slot allocation. |
 
-### Optimization-independent boundary correction
+#### Optimization-independent boundary correction
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -203,7 +214,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 2 | SOURCE V6 hashes are fixture `aec387d9ae6ebc43008365e1d5b55646029a502ae42eba7abb23d21d40de37d1`, guards `37ab1fba30720ac985c0abf074a2e028c67cfe45bc001f060f05087889834fc8`, native test `9a2612d44f0e589b917aface92885b548c631a14647e82958e685e69706b18fb` and evidence `9fe54f8ac3526490649064a30d3694770a1c8f959ef1192c31909c2c56564070`. The exact executed-V6 delta is `/tmp/hyhome-airflow-seaweed-explicit-source-v6.patch`, SHA256 `580f3f815577b3c03e9912453c20fe812eb88539a7cbde6dd39d93287e5cb2f5`. The clean Docker-free suite now runs 40 tests: 39 PASS and exactly one native SKIP, including actual optimized Python denials for missing/foreign/wrong-growth policy. Scoped Ruff PASS. The corrected private procedure `/tmp/hyhome-airflow-retained-reconciliation-v3.py` has SHA256 `67c01052b5457ec77e304adafbb024a5486aaa89026bdfed0afffa0bee880e7f`; guard `/tmp/test_hyhome_airflow_retained_reconciliation_v3.py`, SHA256 `92d09589729a3c79e7bc8c1b712c3a2cba4f3e97e3fc3ac2c700e213794951ab`, runs two tests PASS under both ordinary Python and `-O`. Wrong metadata identity, unknown files and existing receipt prevent every unlink; successful synthetic reconciliation persists the complete original manifest before mutation and accepts only the expected parent link transition. Real use still independently requires Docker-zero, exact scope and lock authority; the function has no main entry and this guard performed no real retained-data deletion. |
 | 3 | The later full metadata run in session 93561 completed exit 1 with one real new-Task defect: its new GREEN reconciliation row's Resolves reference used a different Check. That invalidated package loading and produced 145 archive type cascade symptoms. Only this new row's Check was aligned to its referenced row; no archive document was edited. A fresh canonical result remains pending after this correction; the earlier exact Task metadata PASS remains historical. |
 
-### Named-entry reconciliation boundary
+#### Named-entry reconciliation boundary
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -212,7 +223,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 3 | Procedure `/tmp/hyhome-airflow-retained-reconciliation-v4.py`, SHA256 `19140641eeedd2e9830dd190b955e8c1156b99cdfd964a12a6a489f7703eab56`, and guard `/tmp/test_hyhome_airflow_retained_reconciliation_v4.py`, SHA256 `bee42a5536d083c8ec51637b34053a270660af641618970f66a6525a88feb692`, are frozen. Three tests PASS in ordinary Python and three PASS under `-O`. Meaningful injections replace a file while the old fd remains open and just after binding returns; both leave the unvalidated replacement and metadata untouched. Existing bad-identity/unknown-file/receipt-collision denials and pre-persisted complete manifest plus nlink 3 to 2 success remain covered. These used only synthetic temporary directories and did not delete real retained data. |
 | 4 | After the new evidence Check alignment, the real canonical `load_spec_packages` reader completed exit 0, 36 packages, in session 61688. This proves the original Resolves defect is corrected without archive edits; the earlier full metadata FAIL remains recorded and a final full changed-Task pass remains pending. |
 
-### Full attempt 5: S3 failure persists after stored-policy verification
+#### Full attempt 5: S3 failure persists after stored-policy verification
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -222,7 +233,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 4 | Protected outer artifacts `/tmp/hyhome-airflow-full-run-v8-735a.{stdout,stderr,receipt}` have SHA256 respectively `38b920880e05bb3a70543e429e630cb65579bf98f4bcf79b55d8e100da389e3e`, `af320c9d08bd21c61341438990e10ffdba042220ebff1c6371ec68c24d7d8ef7` and `ace77a226aaf887f2253b931a533f7db26bfc2ac83c453b762fe3214950d9f04`. The final pre-run canonical Task metadata check in session 32298 completed exit 0, selected 1/violations 0/legacy exceptions 0/overrides 0 at exact unchanged Task `735a7d4a`. Its protected receipt `/tmp/hyhome-airflow-task0020-v8-stable-metadata.receipt.json` has SHA256 `bc4682649a7a7e18ee6f897b4a07daf7c050c98ad0148e1afb7c45d53e08c4f2`. This historical PASS does not claim it covered the later actual-outcome append. |
 | 5 | Publication/recovery remain NOT_RUN. Another blind full scenario is not admitted. The controller instead authorized preparation of one temporary diagnostic using only the existing exact S3 and Airflow Python-client images/fixture methods, with bounded protected S3 server logs, stored policy and topology/volume facts captured before cleanup. No PostgreSQL, DAG, additional resident test system, image change or server fix is inferred; that diagnostic requires its own exact packet, both reviews and fresh sole serial allocation. N8n receives its own next slot after independent final zero; no overlapping Docker work is authorized. |
 
-### Temporary two-role S3 diagnostic preparation
+#### Temporary two-role S3 diagnostic preparation
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -231,7 +242,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 3 | On the first real owned-command failure, the original client stdout/stderr and exit status remain authoritative. Before cleanup, the driver rechecks the exact S3 container's ownership and captures only its logs `--tail 100`, with the existing active deadline temporarily capped to five seconds. It first reuses the runtime RAM/deadline gate; low memory performs no extra Docker log calls. Bounded S3 context is combined into the existing private failure-stderr stream and existing 256 KiB head-tail custody. No new retained filename/manifest framework or raw public output is added. Failed log capture becomes explicit diagnostic PARTIAL, without converting the original client failure into success. First cancellation survives later capture/cleanup failure and the private receipt is emitted once. No REST/topology/writability probes are admitted unless these actual logs prove insufficient and a separate reviewed scope is issued. |
 | 4 | Temporary driver `/tmp/hyhome-airflow-s3-diagnostic-once-v1.py` SHA256 is `d9dfb5caf3d9f1d1ddeabc4cbf05013af22c886976b5d92d0bd78391d08f71e5`; its 21-input closure `/tmp/hyhome-airflow-s3-diagnostic-input-v1.json` SHA256 is `b1090538df25ccbc1259b97a2a651e17db6c59b76c209a5523e5655c4ac2eb68`. All hashes are checked before repository imports. Pure guard `/tmp/test_hyhome_airflow_s3_diagnostic_v1.py` SHA256 is `19cd49439c0f255804de7de1125814d989dff8ce4be7a648a07e03db37dd9e06`. The actual low-memory log-phase regression first FAILed because extra Docker verification occurred, then passed after the existing runtime gate was added. Seven tests PASS under ordinary Python and seven PASS with `-O`, including exact role/image closure, actual embedded client-code compilation, no full-scenario call, original client failure retention, five-second bound, partial log capture and first-cancellation/budget/one-receipt behavior. Scoped Ruff PASS. These guards used mocks only and performed no native diagnostic execution. The closed outer controller/input custody requires both exact reviews and a fresh sole serial slot after n8n; actual diagnostic execution remains NOT_RUN. |
 
-### Actual two-role S3 diagnostic V2: bounded read/write only
+#### Actual two-role S3 diagnostic V2: bounded read/write only
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -243,7 +254,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 6 | Protected owner Q6 result `/tmp/hyhome-airflow-s3-diagnostic-v2-result.json` SHA256 is `26827f24ab96118cd1d5cba46b1fcd2ebe9fca5047650521275477e1a0bb2e1e`. Start `/tmp/hyhome-airflow-s3-diagnostic-v2-start.json` is `379f16a1e053cc5af868d6dc71c72dbea2d8703ba8d56260f80c7ac709c40401`. The three same-fd verified protected outputs share prefix `/tmp/hyhome-airflow-s3-diagnostic-v2-a7e7`: `.stdout` is 1385 bytes, `395c00833279e6b6ca073f387805e1e665e97fa25a5d2766319fb447831c660f`; `.stderr` is empty, `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`; `.receipt` is 371 bytes, `78234dc8487baf906cba63c3fff92049d48d1e4646e99e42a5e95ea042aefa5b`. These are local protected temporary artifacts with recorded identity/hash, not durable or offsite custody. No raw output or synthetic-secret values are exposed. |
 | 7 | Read-only source comparison is preserved in `/tmp/hyhome-airflow-s3-authored-comparison-20261016.json`, SHA256 `8de5315943b9decfcbd572ae4905ea684099abf92347fb9a52baaa01a79b2a3a`. The full upload uses the 352-byte public manifest and a different key, runs in a real Celery worker with Airflow environment and two network attachments, and occurs later in an eight-role stack. Both use the exact same S3_CLIENT, images, endpoint, explicit synthetic credentials, SDK timeout/retry/path configuration, server command/caps and stored policy. No explicit checksum/signature/streaming override is authored in either. This comparison establishes differences only, not their cause. A proposed next counterexample changes only the diagnostic body to the exact 352-byte public fixture while preserving its key and all other boundaries; it remains NOT_RUN pending separate scope, review and fresh slot. |
 
-### Actual S3 V3 counterexample: public manifest body alone
+#### Actual S3 V3 counterexample: public manifest body alone
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -253,7 +264,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 4 | Protected owner result `/tmp/hyhome-airflow-s3-diagnostic-v3-result.json` SHA256 is `11dae28cbcbf2dc243d785d9b3845529441becb6835eb3cb70394482b73fe142`; start `/tmp/hyhome-airflow-s3-diagnostic-v3-start.json` is `0d32d6ca8685c8d5aee70c47c591bd61e7ad331c73e70fae2ee220a900e738d6`. Private output prefix `/tmp/hyhome-airflow-s3-diagnostic-v3-59b1` has `.stdout` 1419 bytes, `32d605d54262d3a0439d33a1fc3d470de2c30065c008234900fd777b07acc595`; empty `.stderr`, `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`; and `.receipt` 371 bytes, `3a08be70dd4b53747ec7fbb71ad9edbf412f37b68dd2343c4b9af7fd68408090`. Same-fd protected identities/hashes were checked; custody remains local temporary, without durable/offsite guarantees. The result was written before the subsequent independent message, so its independent-zero field remains PENDING-at-write. Likewise, original V2 supplemental result retained inherited `status=STARTING` with a separate terminal PASS and pending independent-zero field. Those original bytes are preserved. The final Task assessment is actual bounded diagnostic PASS plus later message-only independent zero, not a claim that either supplemental file is a complete finalized Q6 schema or a reviewer receipt. |
 | 5 | The exact body bytes/length alone do not reproduce the prior full-run error on the reduced path. Its inner SeaweedFS cause remains UNKNOWN; publication, Celery/retry/replay, recovery, same-data handoff and HOME remain NOT_RUN. No chain of additional reduced probes or full retry is authorized. The next proposed source unit records bounded exact-S3-CID server logs at the existing full initial PutObject failure site, using existing private stderr custody and preserving behavior, resource/deadline policy and original failure/cancellation. It needs its own source review, frozen packet and fresh serial allocation before execution. |
 
-### Q6 pre-write protection and initial full-upload context source V7
+#### Q6 pre-write protection and initial full-upload context source V7
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -264,7 +275,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 5 | Six new focused methods first demonstrated missing instrumentation, original raw stream retention and unbound registry writes before the source correction. After the change, the relevant Airflow/shared suite ran 46 tests: 45 PASS and exactly one native SKIP. The evidence module passed 24 tests under optimized Python; scoped Ruff PASS. The guard reads actual retained files and intercepts pre-write bodies, including an original secret across the head/tail cut, to prove raw/URL/base64/JSON and generic PostgreSQL-URI/quoted-password/token/JWT/opaque examples are absent. It also covers success with no extra Docker, missing/replaced/symlink registry, exact CID/tail/deadline restoration, low-memory refusal, partial logs and first cancellation with subsequent write failure. Existing fixtures were supplied the now-required registry while collision/custody/privacy assertions were preserved. |
 | 6 | The exact Airflow-only delta is `/tmp/hyhome-airflow-q6-initial-upload-source-v7.patch`, SHA256 `bdd16caa4b67abcde79289fece70bfa661c13f01af5950346b0de53dc732ed21`. Source hashes are helper `c9af0202e2116221638fdd155fc38928bbe31c5fffacf14746d8fcbfdfb75a1e`, fixture `886a9352a94d1b85cee0bf3762c3a105613e735df04fa2f91bd9a6c9b656ed23`, native test `0d195cfafe5a5e8f4b246ebae93210ea07b9826b271e2a48c0ca93b6e0bfa50e`, evidence test `b01862348e452365eaa6e7e206061d0ac4979dee1d4d792944fd0515017514df`. The shared pure redactor binding is `76ea63fa7d108e90f464442c5fd4f756a918f6b95b527223d93aee08144f9f02`; Airflow guards and shared subprocess boundary retain their prior exact hashes. All files remain below 800 lines. Python stdlib executable-line tracing of the 24 evidence tests measured 100/110 lines (90.91%) in the new helper and 42/46 (91.30%) in the shared pure redactor; this is line coverage, not branch coverage. Protected receipt `/tmp/hyhome-airflow-q6-source-v7-line-coverage.json` SHA256 is `7286619bf79aa2981ecd814b253284253140a476463a1035e16cd19dd70c3e65`. Independent prechange and Safety source reviews passed these exact bytes. A coherent successor packet and fresh sole-slot allocation remain separate; no full native run has occurred on this source unit. |
 
-### Full attempt 6: pre-write protected S3 allocation diagnosis
+#### Full attempt 6: pre-write protected S3 allocation diagnosis
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -272,7 +283,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 2 | The COMPLETE private capture passed creation-identity validation and was redacted before retention. Stderr recorded 17762 original numeric source bytes, 17084 sanitized pre-bound bytes and 17084 retained sanitized bytes, SHA `90c369fc786e3ae57d692ada5ce131fa31dccd02d84ff90a21bdc827e726dff6`. The independently checked sanitized diagnosis is `/tmp/hyhome-airflow-v9-q6-sanitized-diagnosis.json`, SHA `33e489d6dc14f3dceff290a57da875f01a0f851cfbbf494beaaeac621a18d3a1`. Server frames show an earlier empty-collection allocation occupying the single global volume slot, followed by the actual 352-byte `opsflow-dev` PUT failing with no free/writable volume. The earlier caller's identity remains UNKNOWN. The official one-minute metadata-log flush path is strongly consistent with its timing; this source inference does not uniquely identify that caller. |
 | 3 | Automatic Docker cleanup passed with empty maps, pending identities and final sweeps. The original overall cleanup remained FAIL because protected evidence was intentionally retained. Automatic approval review first rejected deleting that exact directory because trusted direct user approval was absent; no reconciliation process executed. The direct user subsequently answered `정확한 디렉터리 정리 승인`. After fresh custody and independent Docker-zero checks, the sole operator executed reviewed manual V4 once. The durable external before manifest SHA is `ced275eea728cd85f580f6d2a443d1fee30f1f9a41c7003d56f90da15bf28757`. Separate manual reconciliation PASS is recorded in `/tmp/hyhome-airflow-v9-q6-exact-reconciliation.json`, SHA `1afdbb50cba35935565eb209ea77ecdace735abd4b2025b6257f89f247241274`. The coordinator independently confirmed empty owner containers/networks, both exact attempt globs empty and the shared lock free; no separate reviewer receipt was created. External protected diagnosis, before manifest and hashes remain local `/tmp` artifacts. This is not offsite retention or publication acceptance. |
 
-### Bounded two-collection allocation source V8
+#### Bounded two-collection allocation source V8
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -280,7 +291,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 2 | The common initial/restore backend now writes exact `/data/master.toml` with `[master.volume_growth]` and `copy_1 = 1` before the ready marker. It starts `weed -config_dir=/data server` with exactly `-volume.max=2`. One metadata/default volume and one bucket volume fit within the existing 64 MiB per-volume bound and 192 MiB data tmpfs. Existing 384 MiB memory/no-extra-swap, 0.15 CPU, 128 PIDs, images, authentication, networks, timeouts and explicit bucket growth 1 remain unchanged. Only the directly modified backend staging body moved into the existing family fixture to keep both source files below 800 lines. |
 | 3 | The meaningful RED guard executed the old staging shell in a harmless local temporary directory and reproduced missing `master.toml`. GREEN ran 40 default Airflow tests: 39 PASS and exactly one native SKIP, both ordinary and optimized. The guard executes real shell staging, parses exact TOML (rejecting broader content), verifies write-before-ready, exact global flag order, max 2 and 64 MiB, and asserts both initial/restore use the same fixed command. Scoped Ruff and diff-check pass. No Docker run or new full packet is accepted by this source change; publication, recovery and HOME remain NOT_RUN. |
 
-### Full attempt 7: publication PASS and recovery preflight parse failure
+#### Full attempt 7: publication PASS and recovery preflight parse failure
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -289,7 +300,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 3 | Automatic cleanup passed with empty failures, maps, pending identities, retained entries and final sweeps. The coordinator independently confirmed both owner container/network sweeps and both exact attempt globs empty, lock uid/gid1000 mode0600/free, and final two-sample pressure avg10/avg60 zero with zero OOM/swapout deltas. No evidence barrier or manual deletion remained. The independent verification is message evidence; no separate reviewer receipt was created. Protected stdout/stderr/receipt remain local `/tmp` artifacts. |
 | 4 | Actual Q6 owner result `/tmp/hyhome-airflow-full-v10-allocation-actual-result.json`, SHA `b63750abe3e5d1c681ad66b06dcbc18ec696d4f3827c90283a39945d82e386af`, binds the input Git HEAD, WIP runtime closure `fa483187fad78a87aff8c0e9a48e2888ab3c5a226ffca21fc0105aa9c21e70fe`, wrapper closure `27dd69526dcc5931ee333323f8aa96f0f9a7fea65d8d981ceb76b01b86e66d14`, public argv, exact cached OCI/config identities, owner, existing `leaf.compose-baseline-regressions`, isolated-native profile, actual start, exit/status, terminal artifact timing and local retention limits. The start receipt SHA is `333d0f5a89cb1998e59bf8da94d0dcc6eeff6b29699ded78e84dd9c910203341`. The sanitized finite diagnosis is `/tmp/hyhome-airflow-v10-allocation-sanitized-diagnosis.json`, SHA `284e59cfaddc4f0bde74a80b0d20664434803399603243ffc330d591ade58f31`. Its generic redactor was applied before writing; exact generated-registry variant verification is unavailable after successful automatic host cleanup. No all-variant leak audit or offsite custody is claimed. No rerun is authorized by this receipt. The proposed correction must preserve actual hostname and empty active/reserved semantic conditions, isolate third-party output, and retain unparseable original command output through the existing Q6 boundary. |
 
-### Celery quiescence stdout protocol source V9
+#### Celery quiescence stdout protocol source V9
 
 | Order | Preserved chronological record |
 | --- | --- |
@@ -298,7 +309,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 3 | One new focused Docker-free module, `tests.validation.test_opsflow_airflow_native_quiescence`, preserves the existing compose leaf and adds no new gate or framework. Its exact path registration is reserved for the sole native workflow contract writer after the active n8n freeze window. The new source/test paths are outside n8n's frozen 23-file closure; shared redactor and subprocess boundary remain unchanged. |
 | 4 | RED executed the original unredirected script against noisy fake import and inspect operations and reproduced invalid JSON stdout. The six focused tests then passed, ordinary and optimized, including exact host/non-idle rejection, wrong JSON shape/duplicate fields/nonzero outcomes, actual rc-0 redacted file retention, capture-error/cancellation precedence and registered caller routing. The complete Airflow default suite ran 46 tests: 45 PASS and one exact native SKIP. Scoped Ruff and diff-check passed; every source file remains below 800 lines. Standard-library trace measured changed helper line coverage 125/134, 93.28%, not branch coverage, in `/tmp/hyhome-airflow-idle-protocol-source-v9-line-coverage.json`, SHA `7433195f0d041496df62197738353d633260ceffe2ec05f9d979a5db64f488cc`. Exact source delta is `/tmp/hyhome-airflow-idle-protocol-source-v9.patch`, SHA `4b564ec1765aa020803666b31fee527d5af7a2fed03bfb56aad4484970b8864f`. This is source preparation only. New full execution remains NOT_RUN until its complete successor packet, independent reviews and fresh sole-slot admission. |
 
-### Full attempt 8: V11 publication PASS, recovery BLOCKED and retained barrier
+#### Full attempt 8: V11 publication PASS, recovery BLOCKED and retained barrier
 
 | Order | Dated actual result and limit |
 | --- | --- |
@@ -311,7 +322,7 @@ HOME network, public port, host state volume or real credential is permitted.
 | 7 | Preserved outer artifacts: `/tmp/hyhome-airflow-full-run-v11-idle-d1b0.stdout`4568B SHA256 `e29b9433acc707ba88df0394810fe76c654e282c80b6cc4599362b00fe73fbc9`; `/tmp/hyhome-airflow-full-run-v11-idle-d1b0.stderr`1181B SHA256 `944f440f34453d35faf41a882812aa8777ef101b87e9514cd3a3c4d3e77e2e78`; `/tmp/hyhome-airflow-full-run-v11-idle-d1b0.receipt`398B SHA256 `eb1cfb2e24cb58802c125f621655617b31940446a251c61c0115ad319a89bcdc`. Source-end closure locations are `/tmp/hyhome-airflow-full-wrapper-closure-v12-idle.json` and `/tmp/hyhome-airflow-full-input-closure-v12-idle.json`; the diagnosis records their end-match counts, not an invented extra review artifact. |
 | 8 | Independently source-proven role-parser regex `[a-z_]+` at fixture line585 excludes digit4 in required `p04_audit`; snapshot-file presence is consistent with that defect but does not establish the actual lost V11 exception. Lifecycle and role-parser TDD corrections belong to the source owner; final exact correction/review receipts remain pending, no rerun is authorized here. |
 
-### Editorial preservation and current recovery handoff
+#### Editorial preservation and current recovery handoff
 
 The2026-10-16 editorial consolidation preserves every original historical paragraph, all source/result dates, artifact locations/hashes and existing Evidence rows; it changes layout only before the separately dated V11 append. Each original paragraph maps one-to-one, in order, to its heading's chronological table. Historical preparation and NOT_RUN statements retain their dated scope; later records do not silently replace earlier FAILs or infer an unobserved cause. This is the same draft Task/W75, not a new registry or acceptance owner.
 
@@ -321,7 +332,7 @@ Current runtime recovery is BLOCKED: Task0012/Task0016 retain acceptance, the so
 
 The first scoped editorial metadata command on Task SHA `d51f29be3c89633fe10f43faaf6370182425a7fefcfda7ebeb16b7757970f5e4` returned exit1/selected1/147diagnostics: the new operational BLOCKED label was outside the registered Evidence Result domain, with package-load failure followed by sibling/archive diagnostics. The row now uses registered Result NOT_RUN while explicitly retaining BLOCKED runtime classification, owner and trigger. No registry, sibling Task or archive was edited; a fresh scoped metadata result is required after this correction.
 
-### 2026-10-16 V11 follow-up source: first failure and closed role parsing
+#### 2026-10-16 V11 follow-up source: first failure and closed role parsing
 
 | Order | Source-only correction, verification and limits |
 | --- | --- |
@@ -331,11 +342,11 @@ The first scoped editorial metadata command on Task SHA `d51f29be3c89633fe10f43f
 | 4 | Final owner normal48tests=47PASS/1nativeSKIP0.943s; optimized same0.744s; scoped Ruff PASS. Both renewed independent source reviews APPROVED V2: focused23PASS/1nativeSKIP under normal/optimized Python; prechange broader shared/evidence54PASS/1SKIP. The closed role parser now denies the reproduced whitespace bypass. Review and Docker-free GREEN are source evidence only, not a repeated native run or restored generation2. |
 | 5 | Current actual V11 remains runtime ERROR, publication/retry/replay and actual generation1 Celery PASS, generation2UNVERIFIED/recoveryNOT_RUN/original causeUNKNOWN. The0483 barrier has no deletion authority and current-state inventory is not capture-time custody. Runtime recovery stays BLOCKED until future protected original scenario evidence, independent packet/readiness review and separate fresh execution authorization; no rerun, migration, HOME, TimescaleDB/offsite or whole-function acceptance follows this correction. |
 
-### Merged source custody
+#### Merged source custody
 
 PR #509 merged this Task's sources after delivery formatting. The merged fixture and native test hashes therefore differ from the reviewed V2 hashes above; the Evidence row `Merged source custody` records the exact difference. It is formatting plus one gitleaks-safe assignment, so it does not revoke the V2 source reviews and is not a new runtime result.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -343,7 +354,7 @@ PR #509 merged this Task's sources after delivery formatting. The merged fixture
 | SPEC-0204-TSK-0020 | ready | in-progress | #w75-boundary-and-execution-plan |
 | SPEC-0204-TSK-0020 | in-progress | blocked | #editorial-preservation-and-current-recovery-handoff |
 
-### Retained barrier custody move — 2026-10-20
+#### Retained barrier custody move — 2026-10-20
 
 The native fixture refuses every rehearsal, n8n included, while a
 `/tmp/hyhome-opsflow-airflow-native-attempt-*` directory exists
@@ -363,7 +374,13 @@ is unchanged, so the barrier's evidence value is the same as before: it still
 records no failure metadata and does not recover the masked V11 exception. The
 new location is host-local; it is longer-lived than `/tmp` but not offsite.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -447,13 +464,19 @@ new location is host-local; it is longer-lived than `/tmp` but not offsite.
 | First failure and closed role parser GREEN | 18 | W75 | Preserve first failure and exact closed role scope | Reviewed exact V2; owner47PASS/1nativeSKIP normal/optimized, independent23PASS/1SKIP and broader54PASS/1SKIP | PASS | 2026-10-16 V11 follow-up source: first failure and closed role parsing; source-only, runtime recovery BLOCKED | required | First failure and closed role parser RED |
 | Merged source custody | 18 | W75 | Compare merged test sources with the reviewed V2 hashes | Reviewed fixture `1981a748a461e5dffa00ce13ad0e753bc28154c8462357061fbcf83369d045f1` and native test `1a3e6dee892274ddc14a37220c94bd8be62fe0e58868bda217d6122d5b5cf95a`, read from unreachable local Git blobs that are not durable; merged main `76e64933f` fixture `43f1ae528442669c…`, native test `3311383f4ad3a11c…` | PASS | Fixture: `ruff format` of V2 equals the merged bytes and the AST is identical. Native test: one function, `test_empty_restored_cluster_keeps_reviewed_connect_boundary`, assigns the same synthetic value without a chained literal for gitleaks; every other node is identical. Quiescence test hash unchanged | optional | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 Criterion 18 retains Task0012 as its durable acceptance owner. Task0016 retains
 the complete vertical acceptance. W75 supplies supporting native evidence only
 and creates no duplicate acceptance row.
 
-## Review and Completion
+### Remaining Conditions
 
 Initial artifact status remains draft before first commit. Source validation,
 independent review, actual runtime and cleanup receipts remain distinct. Revert
@@ -462,9 +485,12 @@ A fixture PASS cannot complete HOME, actual TimescaleDB, OIDC or offsite recover
 
 PR #509 landed the draft baseline. Runtime recovery is BLOCKED as recorded above, so the current status is `blocked` with the same owner and resume conditions.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [P04 Task](tsk-0012-p04-airflow-manifest-pipeline.md)
-- [P10 Task](tsk-0016-p10-opsflow-acceptance.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

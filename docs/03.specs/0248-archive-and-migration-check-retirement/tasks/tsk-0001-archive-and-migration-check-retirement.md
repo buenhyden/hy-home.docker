@@ -14,14 +14,19 @@ created: "2026-11-03"
 
 # Archive and Migration Check Retirement Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Implement W1–W5: remove every gate that validates Stage 98, keep the
 non-archive checks beside it, and inventory what still reads Stage 98.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
 
 The user directed that CI/CD checks of `docs/98.archive/` files and records be
 minimized and preferably deleted, that the related migration checks be deleted
@@ -31,19 +36,21 @@ are not edited here; the user scheduled their removal as a later phase that
 keeps only the folder structure and README. Exclusions: no push, pull request,
 or merge from this Task.
 
-## Work Log
+## Execution Log
 
-### Current contract decision
+### Work Performed
+
+#### Current contract decision
 
 The user's direction authorizes this Spec and Plan as written. It does not
 authorize removing Stage 98 bodies, which is the next phase.
 
-### Current readiness and execution
+#### Current readiness and execution
 
 Inputs, work units and checks are recorded here. The Task is ready and in
 progress under the approved parents. Hosted CI has not run.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -53,7 +60,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0248-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
 | SPEC-0248-TSK-0001 | in-progress | completed | #owner-acceptance-2026-11-12 |
 
-### Removed
+#### Removed
 
 - Modules: `archive_assessments.py`, `archive_snapshots.py`,
   `lifecycle/recovery.py`, `lifecycle/promoted.py`.
@@ -85,7 +92,7 @@ progress under the approved parents. Hosted CI has not run.
   was zero, and the `--profiles` transition alias of the metadata and corpus
   lifecycle CLIs, whose only callers were tests.
 
-### Kept and moved
+#### Kept and moved
 
 - Active-stage occupancy and Task cancellation moved to
   `lifecycle/occupancy.py` and still run from the corpus lifecycle route.
@@ -100,7 +107,7 @@ progress under the approved parents. Hosted CI has not run.
 - `docs/98.archive/` stays in the document suite path trigger, so an
   archive-only change still runs the current checks that read Stage 98.
 
-### Remaining Stage 98 readers
+#### Remaining Stage 98 readers
 
 Each reader below is read-only. The next phase, which removes the Stage 98
 bodies, must replace or drop each one first. Three of them deliberately stay
@@ -129,7 +136,7 @@ structure and scheme stay defined by `docs/98.archive/README.md`, the Registry
 `tombstone`, `archive-retention-catalog` and `archive-record-*` profiles, and the
 templates under `docs/99.templates/templates/archive/`.
 
-### Forward dependencies for the archive-file deletion phase
+#### Forward dependencies for the archive-file deletion phase
 
 - M3: removing `active-archive-link` lets a current document add a new link
   into Stage 98. Those links become broken targets when the bodies go; repoint
@@ -138,7 +145,7 @@ templates under `docs/99.templates/templates/archive/`.
   `build_current_manifest`, so their identities remain available to parent
   resolution of current records. Replace that input before the bodies go.
 
-### Legacy and deprecated backlog
+#### Legacy and deprecated backlog
 
 | Item | Current inventory | Reason kept | Removal condition |
 | --- | --- | --- | --- |
@@ -147,7 +154,13 @@ templates under `docs/99.templates/templates/archive/`.
 | `metadata_validator.py` compatibility facade | imported by validators and tests | public import surface of the split validator | remove when callers import the split modules directly |
 | Generation 5–7 Spec migration, terminal Task immutability, transition overrides | in use by current Spec packages | current lifecycle contracts | out of scope |
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -180,7 +193,13 @@ templates under `docs/99.templates/templates/archive/`.
 | E27 | 4 | W5 | full-suite-comparison | `tests/lib/document_governance`, `tests/lib` and `tests/validation` discovery in a detached worktree at `main` `4cd25b95b`, which lacks the ignored local files, quiet tree | FAIL | document_governance 770 OK; lib 1092 OK; validation 2317 with 17 failures and 4 errors: secret metadata sync 15, SMTP generator 1, supply-chain runtime pin 1, two module load errors, one hook guidance test and one secret catalog round-trip. These are the same failure classes E24 found on `main`; whether the missing ignored files cause them is not checked | required | - |
 | E28 | 4 | W5 | full-suite-comparison | `tests/lib` and `tests/validation` discovery with the project `.venv` (Python 3.12.3, `scripts/requirements.txt` installed) started at `main` `3736e3430`; only Task documents changed to `2fcc726c0` during the run. The two failing modules then rerun at `355e8caa1` (before this package), `ec8555d09` (its merge) and `main` `fc2fb72e9` | PASS | lib 1099 OK; validation 2338 with 16 failures, all in `test_secret_metadata_sync` (15) and `test_supply_chain_wrapper` (1), none in a module this package changed. The two modules fail the same 14 of 84 tests before and after this package's merge, and the merge changes no file they test. The 2 added on `main` come later: one test added after the merge, and the sample Dockerfile moved to nginx `1.31.7` while the test still expects `1.31.6`. The secret sync tests run their scripts with a `python3` that lacks `referencing`. No failure is introduced by this package; the failures belong to the secret and supply-chain owners | required | E24, E27 |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -189,14 +208,14 @@ templates under `docs/99.templates/templates/archive/`.
 | 3 | accepted | E2 | Accepted by the owner on 2026-11-12 | @buenhyden |
 | 4 | accepted | E6, E9, E11, E12, E13, E14, E17, E18, E22, E23, E25, E28 | Accepted by the owner on 2026-11-12 | @buenhyden |
 
-## Review and Completion
+### Remaining Conditions
 
 Local checks are recorded above. Independent review of PR #721 requested
 changes (I1–I6, M1–M5); they are addressed in this branch and recorded in the
 Evidence table, with M3 and M4 kept as forward dependencies. Hosted CI for the
 corrected head had not run then; the owner acceptance below records the later state.
 
-### Merge receipt 2026-11-10
+#### Merge receipt 2026-11-10
 
 Recorded 2026-11-10 from `gh pr view`: #721 merge `ec8555d09` at
 2026-11-03T06:33:54Z; #722 merge `b9fdd67d4` at 2026-11-03T08:12:37Z; #723
@@ -205,14 +224,19 @@ every completed check SUCCESS, the rest SKIPPED, none failing. Candidate
 quality: the merged change is a candidate that passed hosted CI. This receipt
 is not owner acceptance: no criterion is accepted and the status is unchanged.
 
-### Owner acceptance 2026-11-12
+#### Owner acceptance 2026-11-12
 
 On 2026-11-12 the owner accepted criteria 1 to 4 in the
 SPEC-0212 TSK-0057 session. New evidence rows resolve the open required
 results with the same check and work unit; the earlier rows are kept.
 E28 resolves E24 and E27: the full suite with the project environment fails only in two modules this package does not touch, and their failures are identical across its merge. The owner's acceptance then covers criterion 4, and the Task closes as `completed`.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

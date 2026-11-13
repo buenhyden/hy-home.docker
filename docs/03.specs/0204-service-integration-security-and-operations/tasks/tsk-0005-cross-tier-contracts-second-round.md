@@ -1,10 +1,10 @@
 ---
 title: "Cross-tier Contracts Second Round Task"
-version: "0.6.13"
+version: "0.6.14"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-22"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0005"
 parent_ids:
@@ -14,15 +14,22 @@ created: "2026-10-08"
 
 # Cross-tier Contracts Second Round Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Re-run prompt 04 against the current tree: observe authentication, workflow,
 CDC and backup state on the HOME host, close the source gaps that can be
 proven with tests, and name each remaining gap with the owner action it needs.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The current user request on 2026-10-08 asks to execute prompt 04 of the
 analysis pack ("connect authentication, variables, workflows and backup
@@ -37,16 +44,18 @@ The direct 2026-10-10 SMTP01 integration request authorizes W26–W30 source,
 synthetic isolation, logical commits and owning-Spec delivery. Private retirement
 requires separately established exact operator facts and remains NOT_RUN.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0005 | draft | ready | #inputs-and-authorization |
 | SPEC-0204-TSK-0005 | ready | in-progress | #coordinator-required-regression-registration |
 
-### W8 Baseline, Owner Map and HOME Observations
+#### W8 Baseline, Owner Map and HOME Observations
 
 Files this round writes, and the owners whose work it must not overwrite:
 
@@ -94,7 +103,7 @@ HOME observations, read-only, 2026-10-08:
   OpenSearch has no snapshot repository.
 - **Images.** No active Compose file, LAB or Dockerfile uses a Bitnami image.
 
-### W9 Dev-valkey Snapshot and Queue Replay
+#### W9 Dev-valkey Snapshot and Queue Replay
 
 The nightly run now exports a `dev-valkey` RDB as the `devadmin` ACL user
 under the same 300 s in-container limit as `mng-valkey`, drops a partial
@@ -107,7 +116,7 @@ entry; `XAUTOCLAIM` handed that entry to a new consumer. RUN-0021 states
 that replay is at-least-once. The new assertion failed against the previous
 script (RED) and passes now. Commit `abcc1d7a7`.
 
-### W10 Secret File Support Matrix
+#### W10 Secret File Support Matrix
 
 `infra/secret-file-support.json` gives each of the 73 image and key pairs
 in the rendered root a verdict:
@@ -129,7 +138,7 @@ The Keycloak wrapper now refuses an empty admin or database password; with
 an empty mounted file the exact image exits 1 before `kc.sh`. Commit
 `4630384fe`.
 
-### W11 Image Residue and Mail Outcomes
+#### W11 Image Residue and Mail Outcomes
 
 A test refuses any `bitnami/` image across tracked Compose, LAB and
 Dockerfiles; it failed after a Bitnami base was injected. Commit
@@ -137,7 +146,7 @@ Dockerfiles; it failed after a Bitnami base was injected. Commit
 recipient, ties retries to a fixed `Message-ID`, and keeps Mailpit as
 capture only. Commit `b84b2b87c`.
 
-### W12 Validation and Handoff
+#### W12 Validation and Handoff
 
 The changed-profile local gate ran in a throwaway worktree holding the
 branch diff against `670b39e53` as staged changes, with the checkout's group
@@ -148,7 +157,7 @@ rehearsals; the backup rehearsal covers pgBackRest and Restic round trips,
 not the Valkey export, so it was not run for this change.
 `pre-commit run --from-ref origin/main --to-ref HEAD` exited 0.
 
-### Third Round Inputs
+#### Third Round Inputs
 
 The user pasted prompt 04 again on 2026-10-08 after PR #387 merged at
 `b0a72d2e5`, which this round reads as a request to close the open items.
@@ -156,7 +165,7 @@ The owner had freed the host disk to 64%, so image pulls and the OpenSearch
 LAB rerun became possible. Branch `claude/spec-0204-round3` started at `b0a72d2e5` and was rebased onto
 `fb468bba5` after PR #389 (SPEC-0215) merged.
 
-### W13 OpenBao Raft Snapshot
+#### W13 OpenBao Raft Snapshot
 
 The nightly run reads a token from
 `secrets/backup/openbao/snapshot_token.txt`, passes it on stdin, renews it
@@ -177,7 +186,7 @@ sealed again when observed, and no token exists yet, so HOME runs report the
 gap until the owner creates one (RUN-0021 gives the steps). Commit
 `4ef6d3f7d`.
 
-### W14 Open WebUI Key
+#### W14 Open WebUI Key
 
 The image sets `WEBUI_SECRET_KEY` empty, so `start.sh` generated the key in
 the container layer and each recreation replaced it. `WEBUI_SECRET_KEY_FILE`
@@ -187,7 +196,7 @@ exact image two containers on one volume kept the same key. The first HOME
 recreation after this change logs users out once. Commits `06d2a8953`,
 `b325dec30` (matrix row).
 
-### W15 CDC Stream Rehearsal
+#### W15 CDC Stream Rehearsal
 
 `CdcStreamRehearsalTests` (opt-in `HYHOME_CDC_REHEARSAL=1`) runs dev-pg,
 Kafka, Schema Registry and Connect on an internal network with synthetic
@@ -204,7 +213,7 @@ passed in 260 s:
 Topics have three partitions, so order holds only per key. Commit
 `619c984cb`.
 
-### W16 Gateway Machine Path
+#### W16 Gateway Machine Path
 
 A machine client with `Accept: application/json` got the same 302 to the
 Keycloak login page as a browser on every route behind `sso-errors`, and a
@@ -228,7 +237,7 @@ Schema Registry, with the same authorize parameters; Grafana, which has its
 own login, was unchanged. A signed-in HOME session was not exercised. The
 unused `sso-auth-open-webui` middleware is retired. Commit `e342aaa9d`.
 
-### W17 SonarQube Secret
+#### W17 SonarQube Secret
 
 The image ignores `SONAR_JDBC_PASSWORD_FILE`. A wrapper now reads the
 secret, refuses an empty one and execs the image entrypoint. In isolation
@@ -238,7 +247,7 @@ which needs a successful login; it had not reported `UP` within 450 s on the
 loaded host. An empty secret stopped the container before start. Commit
 `a677d609c`.
 
-### W18 Validation
+#### W18 Validation
 
 The changed-profile gate ran in a throwaway worktree holding the branch diff
 against `fb468bba5` as staged changes. Its runs exposed three things:
@@ -254,7 +263,7 @@ against `fb468bba5` as staged changes. Its runs exposed three things:
 
 The final run exited 0 with 911 tests across the selected leaves.
 
-### W26–W30 SMTP01 Current Increment
+#### W26–W30 SMTP01 Current Increment
 
 The current 2026-10-10 request supersedes only active contradictory contracts;
 W8–W18 above remain historical evidence. Baseline main/origin/main/HEAD was
@@ -298,7 +307,7 @@ custody and an actual selected restore remain unverified; no recovery PASS is
 inferred from tests. Restore/revert scope is canonical mapping plus the affected
 consumer, with no entire-stack restart, volume initialization or bulk rotation.
 
-#### Current session ownership and interfaces
+##### Current session ownership and interfaces
 
 SMTP01 reserves criterion 14 and W26–W30 in this isolated increment. The
 integration coordinator owns the intervening allocation: CLN01 criterion 12/W24
@@ -336,7 +345,7 @@ Current host quiescence, backup/restore and external consumer evidence are UNKNO
 Current actual comparison, lock acquisition, apply and deletion are NOT_RUN.
 RUN-0029 owns partial-failure handling and exact named-host recovery boundaries.
 
-#### Coordinator proof and isolation replacement
+##### Coordinator proof and isolation replacement
 
 The coordinator merged main `e93e0c8223191bf26aea7578a231b2dbf016fc7c`
 into the received `e7bff9149f29a4bbb23d977dadf01f5988ee12fc`, preserving
@@ -380,7 +389,7 @@ GoTrue index/USER/Entrypoint/Cmd match SEC01's read-only contract. This uses onl
 owned temporary synthetic resources; actual HOME/private comparison, catalog
 mutation, COMM-003 deletion, rotation and real recovery all remain NOT_RUN.
 
-#### Operational continuation — 2026-10-10 UTC 14:45–14:50
+##### Operational continuation — 2026-10-10 UTC 14:45–14:50
 
 The user authorized full SEC security plus SMTP/CLN retirement and recovery
 continuation, including investigation of backup facts. Read-only observations
@@ -437,7 +446,7 @@ an independent IaC reviewer reviews readiness; `buenhyden` is the separate
 human approver under that direct authorization. Actual retirement stays blocked by a clean root,
 fresh full backup, five-axis/external-consumer evidence and quiescence.
 
-#### Current bounded continuation receipt — 2026-10-11
+##### Current bounded continuation receipt — 2026-10-11
 
 The actual read-only SMTP `--retire-check` receipt exited 1. It recorded
 `applied=false`, equality as true and retirement as pending; it did not apply,
@@ -476,7 +485,7 @@ Full restore and apply remain `NOT_RUN`. The existing v1 readiness is
 verdict and reuses the matching current direct user authorization. No additional
 approval is inferred from a Task field, receipt or CLI flag.
 
-#### Exact FIRST attempt contract — observed 2026-10-10T16:17:49Z
+##### Exact FIRST attempt contract — observed 2026-10-10T16:17:49Z
 
 The coordinator selects single-use attempt `smtp01-first-20261011T003500KST`
 and the absent target
@@ -656,7 +665,7 @@ The earlier deadline-expiry finding was withdrawn: actual clock
 reader-lease design was independently accepted in principle; this is not an
 execution verdict or a successful restore receipt.
 
-#### Command receipts
+##### Command receipts
 
 The source receipts below use synthetic fixtures or public tracked source in
 this worktree. The dated operational continuation above separately records
@@ -673,7 +682,7 @@ candidates. Earlier PASS rows are historical, not fresh final-source evidence.
 | `python3 -m unittest tests.validation.test_secret_metadata_sync -q` | 0 | 46 scanner/catalog tests |
 | `python3 -m unittest tests.validation.test_supabase_smtp_rehearsal -q` | 0 | Final fixture: 4 unit PASS, 6 native SKIP by default; opt-in receipt below |
 
-#### Historical Worker Source and Delivery Receipt
+##### Historical Worker Source and Delivery Receipt
 
 The three initial independent regressions and later fixture failures were genuine
 FAIL results. Service-less includes and duplicate definitions now fail closed;
@@ -733,7 +742,7 @@ coordinator while preserving P09 criterion 13/W25 and CLN01 criterion 12/W24.
 At that capture, the worker branch had not been merged or rebased onto that main.
 Earlier test receipts do not establish compatibility with its newer tree.
 
-#### Final native receipt
+##### Final native receipt
 
 The final command was
 `HYHOME_SUPABASE_SMTP_REHEARSAL=1 python3 -m unittest tests.validation.test_supabase_smtp_rehearsal -v`.
@@ -783,7 +792,7 @@ before Docker resources were created. The reference was corrected and this final
 10-case run is fresh proof for the renamed source. Older native hashes/PASS are
 not used as the current verdict. SEC01 final-image acceptance remains NOT_RUN.
 
-#### Frozen static receipt and file manifest
+##### Frozen static receipt and file manifest
 
 `python3 /tmp/smtp01-scoped-static.py /tmp/hy-home-smtp01` exited 0:
 `smtp_scoped_static=PASS source=smtp_password target=supabase_smtp_password checks=7/7`.
@@ -855,7 +864,7 @@ SEC01 owns image/version/projection changes; CLN01 owns final retirement facts
 and actual deletion. SMTP01 alone owns generator/helper. Preserve their diffs,
 reconcile criterion gaps under the coordinator, and never use force push/reset.
 
-#### Historical Worker Delivery Checkpoint
+##### Historical Worker Delivery Checkpoint
 
 Logical commits are contract `d90d9f1`, helper/catalog `3d0a8a1`, consumer
 `3181921`, protected static repair `1f32477`, native fixture `63ac2cf`, and
@@ -924,7 +933,7 @@ SEC01 final image-contract proof and coordinator common-file integration remain
 prerequisites. SMTP01 is source/isolated ready; actual private retirement,
 HOME recovery and end-to-end delivery remain NOT_RUN.
 
-#### Outstanding operational commands and acceptance
+##### Outstanding operational commands and acceptance
 
 SOURCE has one canonical root definition and no active old host-path source
 reference in its validated include graph. Auth retains the old container target;
@@ -956,7 +965,7 @@ with the fixture pins/assertions reviewed against SEC01's final tag, platform,
 digest, USER, Entrypoint and Cmd first. That final-contract run is NOT_RUN.
 No Wiki engine/app/workspace, learning-app work or LAB runtime action occurred.
 
-### Coordinator Required Regression Registration
+#### Coordinator Required Regression Registration
 
 Current read-only GitHub reconciliation: PR #412 is merged at
 `55c92bc5916260929b76cc0b219efeae6e3cfc3e`; PR #413 is open, non-draft
@@ -981,7 +990,7 @@ and proof consumers (86 tests, two FAIL, exit 1). Sorting only those records
 retained both owners; the identical 86-test replay passed, exit 0 (17.213
 seconds). Routing, workflow and manifest tests are SOURCE/UNIT checks only.
 
-#### Reported SMTP Duplicate Retirement — 2026-10-11 KST
+##### Reported SMTP Duplicate Retirement — 2026-10-11 KST
 
 The read-only Supabase research assignee reported performing SMTP retirement
 outside its assigned boundary and authored commit `39ff7f91562906ae87194693a0e3895f33a8acd3`.
@@ -1058,7 +1067,7 @@ the canonical ignored file. These remain assignee-reported MIGRATION/RECOVERY
 claims for the duplicate file, pending independent verification. Current file
 absence alone does not prove the reported backup, equality or restoration.
 
-#### Coordinator Read-only Audit and Local Delivery Continuation
+##### Coordinator Read-only Audit and Local Delivery Continuation
 
 The current direct instruction requires local branch/worktree integration
 without PRs. Preserve logical commits and perform registered local checks and
@@ -1107,7 +1116,7 @@ freeze precede the next audit. Snapshot metadata, full integrity, actual restore
 SMTP send/authentication, external consumer absence and HOME activation remain
 NOT_RUN or unverified; the reported restore is not accepted by this continuation.
 
-#### Reviewed Missing-parent Audit Repair
+##### Reviewed Missing-parent Audit Repair
 
 The current auditor SHA-256 is
 `5b3dc1c463958d8feb0eedfae0c29016724fddb9a592896ae9658d39718477ae`;
@@ -1124,7 +1133,7 @@ only, the same reported snapshot/time and two exact paths, and the unchanged
 read-only execution/cleanup contract. It cannot replay consumed restore IDs.
 Actual snapshot/integrity outcomes remain NOT_RUN until a new receipt exists.
 
-#### Actual Read-only Backup Verification
+##### Actual Read-only Backup Verification
 
 The reviewed missing-parent repair ran once in a fresh audit, completed
 2026-10-10T19:16:16.634137Z, exit 0. Immutable receipt SHA-256 is
@@ -1146,7 +1155,7 @@ logical commits and foreign dirty paths; merge only independently reviewed
 source changes after registered local gates. Local delivery does not accept
 HOME activation or the reported operational retirement.
 
-#### Current Recovery Review and Main Delivery Boundary
+##### Current Recovery Review and Main Delivery Boundary
 
 Independent SOURCE security review blocked the fresh two-file restore operator
 before execution: public parent/ledger path rebinding, nested contract keys and
@@ -1165,7 +1174,7 @@ that cell with registered `pending` preserves its unaccepted status; re-run the
 regression and aggregate after this correction is committed. This failure does
 not justify weakening the validator or changing unrelated fixtures.
 
-### Fresh Single-Use Isolated Recovery Attempt
+#### Fresh Single-Use Isolated Recovery Attempt
 
 The independently reviewed first-attempt contract used snapshot
 `b52564b8466037a57655b7993f398eecdd8c1236ba4edd04352c2142eaaa44b5`
@@ -1194,7 +1203,7 @@ lock or live SMTP file was removed. These cleanup facts never relabel the
 failed restore as successful. A repaired source requires independent review
 and a fresh reviewed single-use selection before another actual attempt.
 
-### Preserved Retry Failures and Docker 29 Kernel Admission
+#### Preserved Retry Failures and Docker 29 Kernel Admission
 
 Attempt `smtp01-isolated-8c80414b2d4a492a` aborted before claim because ROOT
 put prose in the constrained public-reference field. Pure replay confirmed
@@ -1222,7 +1231,7 @@ verify the exact tmpfs root, type, source, security options, sizes and mode;
 unsafe, missing, alias, nested and malformed metadata aborts. Source PASS
 never supplies an actual restore receipt.
 
-### Actual Two-file Isolated Restoreability Receipt
+#### Actual Two-file Isolated Restoreability Receipt
 
 The independently reviewed fourth selection used fresh attempt
 `smtp01-isolated-27b990afd8114c67` and contract SHA-256
@@ -1248,7 +1257,7 @@ not application recovery, SMTP authentication/send, live activation, production
 RPO/RTO, offsite custody, migration, rotation or external-consumer absence.
 Those lanes and independent operational retirement acceptance remain open.
 
-### SMTP/CLN Shared Root Lock Source Completion
+#### SMTP/CLN Shared Root Lock Source Completion
 
 Source-only shared-lock completion now makes SMTP acquire the existing CLN01
 opened-root retirement lock before the SMTP-local persistent lock, in that fixed
@@ -1330,7 +1339,7 @@ migration, rotation, any private unlink, or any unused-source inference from the
 root compose graph. Root/LAB consumer binding remains a separate coordinated
 audit.
 
-### Current main lock integration receipt — 2026-10-12
+#### Current main lock integration receipt — 2026-10-12
 
 The coordinator integrated the reviewed ten-file source commit
 `04c7f69c16fe725c2419d5df12ba90f87526d846` over main
@@ -1367,7 +1376,7 @@ coordinator unlink receipt. Final receipt-bearing metadata/staged checks and
 independent combined-tree review precede the local merge commit; no remote
 push or hosted CI is claimed.
 
-### Current SMTP consumer boundary observation — 2026-10-12
+#### Current SMTP consumer boundary observation — 2026-10-12
 
 The user's current question separates consumer verification from password-file
 retirement. SMTP01 changes source references, the Supabase GoTrue file-loader
@@ -1410,7 +1419,7 @@ private retirement acceptance remain open. The already-absent duplicate is
 never reported as a new coordinator unlink or as a reason to rotate the
 canonical password.
 
-### Public consumer readiness review — 2026-10-12
+#### Public consumer readiness review — 2026-10-12
 
 At input main `319861b112cf37028c9cee8ab78aac5e0c6e9120`, the coordinator
 parsed only tracked public declarations at `2026-10-12T05:26:27.418972+00:00`.
@@ -1447,7 +1456,7 @@ SMTP account files and other Supabase secrets remain protected. No new unlink,
 password rotation, provider send, production recovery or final retirement
 acceptance occurred in this review.
 
-### W30 selected ROOT/LAB source proof correction — 2026-10-12
+#### W30 selected ROOT/LAB source proof correction — 2026-10-12
 
 Source commit `5fd53971120c68e242f48f1582a519e371ec3999` contains six author files and three coordinator
 registration files. The public Compose reader binds tracked, bounded,
@@ -1487,7 +1496,7 @@ activation, external/job closure, current production recovery, rotation and
 final operational retirement acceptance remain open. No new private unlink or
 credential/runtime change occurred in this source correction.
 
-### User acceptance and LAB GoTrue exclusion — 2026-10-12
+#### User acceptance and LAB GoTrue exclusion — 2026-10-12
 
 At clean main `2773a20c1c24ce1b70f64b36fe8f6f5108f49542`, the user confirmed
 acceptance of the delivered SMTP01/CLN01 changes and clarified that actual LAB
@@ -1526,7 +1535,7 @@ metadata/staged checks before the normal local-main commit. Implementation
 UNIT, native/provider, recovery and HOME checks were not rerun for this
 text-only correction; no new result is attributed to those lanes.
 
-### SMTP01 latest-main reassessment — 2026-10-13
+#### SMTP01 latest-main reassessment — 2026-10-13
 
 The current request supersedes the earlier local-only delivery instruction for
 this increment: an owning-Spec PR needs fresh candidate checks and independent
@@ -1612,7 +1621,7 @@ proof. Preserve the canonical file/mapping; never implicitly recreate the old
 plaintext duplicate. Reverting this logical receipt commit restores only text,
 without claiming private data or runtime recovery.
 
-### v29 current OpenBao handoff reconciliation — 2026-10-22
+#### v29 current OpenBao handoff reconciliation — 2026-10-22
 
 The v29 local request reuses completed verification and corrects the current
 handoff against main `49fd95a6ed482d7194c840b43b73a030be6f3d5d`.
@@ -1633,7 +1642,13 @@ no Evidence, Criterion Acceptance, lifecycle event, credential or runtime.
 Current metadata, links and lifecycle checks belong to the combined v29 local
 validation recorded by the coordinator.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -1656,7 +1671,13 @@ validation recorded by the coordinator.
 | SMTP delivery and handoff | 8, 14 | W30 | Reviewed local-main source delivery and explicit user acceptance of the delivered scope | Main `2773a20c1`; user clarification 2026-10-12 | PASS | User acceptance and LAB GoTrue exclusion | - |
 | Reported duplicate SMTP retirement | 14 | W30 | Assignee report of snapshot, restore, comparison and unlink; current canonical presence/duplicate absence independently observed only | Assignee commit `39ff7f915`; no independent restore receipt | DEFER | Reported SMTP Duplicate Retirement — 2026-10-11 KST | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
@@ -1665,7 +1686,7 @@ validation recorded by the coordinator.
 | 9 | accepted | Dev-valkey snapshot and replay, Secret file matrix, OpenBao snapshot, Open WebUI key, SonarQube secret | Generation 5 row acceptance |
 | 14 | pending | - | - |
 
-## Review and Completion
+### Remaining Conditions
 
 The delivered SMTP01/CLN01 increment is user-accepted. This broader
 second-round Task still contains separate owner work below; excluded LAB
@@ -1697,7 +1718,12 @@ GoTrue connection/activation is not an SMTP01 completion condition.
   a snapshot repository is needed only once a project registers a
   collection that cannot be rebuilt.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

@@ -14,16 +14,24 @@ created: "2026-10-29"
 
 # Governance Language English Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W48: make English the language of non-README governance, hook, role,
 skill, knowledge, and prompt documents and of the authored provider guidance,
 keep every `README.md` Korean, and enforce it. This Task owns criterion 43
 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Governance gap rules](tsk-0031-governance-gap-rules.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-29 the owner directed that the governance documents just changed
 be written in English, that the rule itself change with them, and that
@@ -33,9 +41,11 @@ translate the existing Korean passages in the same change. The input is
 `main` at merged PR #628. The authorization covers these edits, this branch,
 its pull request, and merge.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -43,7 +53,7 @@ its pull request, and merge.
 | SPEC-0212-TSK-0032 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0032 | in-progress | completed | #evidence |
 
-### Rule change
+#### Rule change
 
 | Surface | Before | After |
 | --- | --- | --- |
@@ -56,7 +66,7 @@ its pull request, and merge.
 | 8 governance template author prompts | Write new prose in Korean | Write body prose in English |
 | `test_language.py`, `test_registry.py` | Expected `ko-or-en` for `governance-*` | Expect `en` |
 
-### Passages translated
+#### Passages translated
 
 About 105 Korean lines became English without changing meaning: the shared
 memory store rules in `environment-constraints.md`, the commit-time and local
@@ -66,7 +76,15 @@ language bullets in `standards.md` and `bootstrap.md`, and the Scope line of
 15 hook rule documents. No remaining non-README document under `.agents/` or
 provider document contains Hangul. `README.md` files were not touched.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -77,19 +95,29 @@ provider document contains Hangul. `README.md` files were not touched.
 | Provider projections | 43 | W48 | `provider_surface_renderer.py --check` | This branch | PASS | 2 providers, 0 drift | required | - |
 | Metadata contracts | 43 | W48 | `check-document-metadata.py --mode check-contracts` | This branch | PASS | 0 violations | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 43 | accepted | Language check, Language and registry tests, Gate and routing tests, Agent governance, Provider projections, Metadata contracts | Governance and provider guidance is English and enforced as English; README files stay Korean. | SPEC-0212 TSK-0032 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Governance gap rules](tsk-0031-governance-gap-rules.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

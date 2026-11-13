@@ -14,14 +14,25 @@ created: "2026-10-10"
 
 # LLM Wiki Preparation Task
 
-## Objective
+## Scope
+
+### Objective and Parent
 
 Issue the P09 implementation boundary for an unimplemented LLM Wiki. The
 eventual implementer prepares contracts, schemas, synthetic fixtures and
 acceptance criteria so a later task can build the product without guessing its
 authority or resource boundaries. This Task does not implement the Wiki.
 
-## Inputs and Authorization
+- [SPEC-0204](../spec.md)
+- [SPEC-0204 Plan](../plan.md)
+- [REQ-0027](../../../01.requirements/0027-home-development-host.md)
+- [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md)
+- [ADR-0046](../../../02.architecture/decisions/0046-capability-tiers-and-quality-boundary.md)
+- [Project registration](../../../../infra/09-platform-ops/project-registration/README.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The direct 2026-10-10 P09 request authorizes this Task, its future owned
 source/docs/tests, logical commits, PR, review and merge after checks. It
@@ -59,9 +70,11 @@ read secret values, private environment/authentication files, raw HOME logs or
 user data. Learning applications and LAB runtime changes are excluded. P08,
 not this Task, owns any later Stage 05 LAB documentation move.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -71,14 +84,14 @@ not this Task, owns any later Stage 05 LAB documentation move.
 | SPEC-0204-PLAN-0001 | blocked | in-progress | #w25-received-execution-handoff |
 | SPEC-0204-TSK-0008 | in-progress | completed | #w25-local-preparation-completion |
 
-### Lifecycle Event Reconciliation
+#### Lifecycle Event Reconciliation
 
 | Artifact | From | To | Canonical carrier | Canonical source commit | Canonical integration commit | Duplicate source commit | Duplicate integration commit | Disposition | Evidence |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | SPEC-0204 | blocked | in-progress | SPEC-0204-TSK-0009 | a27163a4f8efcea005d931b7f92e4f616132d8f3 | 80c31405df7983dc4b7d8ad8823f73323247d264 | 9666aa6b610f1f524893e10095ddd253a381fddc | abe2b8b19a2fe17cd08f06681f338a0e07a4c3f9 | concurrent-duplicate-observation | #w25-concurrent-lifecycle-reconciliation |
 | SPEC-0204-PLAN-0001 | blocked | in-progress | SPEC-0204-TSK-0009 | a27163a4f8efcea005d931b7f92e4f616132d8f3 | 80c31405df7983dc4b7d8ad8823f73323247d264 | 9666aa6b610f1f524893e10095ddd253a381fddc | abe2b8b19a2fe17cd08f06681f338a0e07a4c3f9 | concurrent-duplicate-observation | #w25-concurrent-lifecycle-reconciliation |
 
-### W25 Concurrent Lifecycle Reconciliation
+#### W25 Concurrent Lifecycle Reconciliation
 
 Task 0009's source commit and PR #418 first integrated the two package lifecycle
 transitions. Task 0008's divergent source commit independently recorded the
@@ -96,7 +109,7 @@ Ready contract issuance: the issuance branch contains no accepted P09
 implementation. That observation is separate from unaccepted worker-owned
 local material.
 
-### W25 Issuance and Boundaries
+#### W25 Issuance and Boundaries
 
 The remote baseline `a03c8930a5a15a82f4176bbcfe457bc2ce09db4b` contains Tasks
 0001 through 0006 and no issued Task 0008. A previous proposal of Task 0009
@@ -201,7 +214,7 @@ reported execution log later. The coordinator has no cross-chat stop/send
 mechanism; user reports are the sole handoff for actual session-stop status and
 are distinct from this worktree's observations.
 
-### W25 Received Execution Handoff
+#### W25 Received Execution Handoff
 
 The received worker record is the immutable Git tree
 `aa110d58e8de2b8b37eb3c5ad4f4de854ee86299` at this Task path. Its Task draft
@@ -235,7 +248,7 @@ registration, metadata/lifecycle reconciliation, and staged Gitleaks false
 positives for synthetic checksums. Those historical FAIL, BLOCKED and NOT_RUN
 states were resolved in later source work; their original receipts remain below.
 
-### W25 Security Finding and Correction History
+#### W25 Security Finding and Correction History
 
 Independent security review found that the trusted policy did not bound job
 `max_attempts` or timeout: synthetic input admitted `max_attempts=1000000000`
@@ -275,7 +288,7 @@ Malformed trusted-policy collections were an additional P2 finding resolved by
 the same root TDD fix and re-review; they were not accepted merely because the
 collection had a valid outer document shape.
 
-### W25 Frozen Fix Receipt
+#### W25 Frozen Fix Receipt
 
 The frozen helper SHA-256 is
 `836a1de27cb5f82c2fcb589797caadb2a11943d88020a565755d3ecc8621febb`;
@@ -319,7 +332,7 @@ source input documentation now match that model. Replacement frozen QA and
 review later passed; source authenticity, store completeness and runtime remain
 `NOT_RUN`.
 
-### W25 Revoked Frozen Source QA Receipt
+#### W25 Revoked Frozen Source QA Receipt
 
 The pre-replacement frozen source input passed 34 tests in 4.670 seconds. Its
 public helper SHA-256 is
@@ -339,7 +352,7 @@ coverage receipt below supersede them. This source QA does not prove source
 authenticity, store completeness, runtime, HOME, migration, rotation, recovery
 or delivery.
 
-### W25 Replacement Frozen Source QA Receipt
+#### W25 Replacement Frozen Source QA Receipt
 
 The Qdrant role-order parity RED case exited 1 with an error; the replacement
 GREEN validates exact map keys/collection and a typed duplicate-free role set.
@@ -377,7 +390,7 @@ violations: the SPEC and Plan frontmatter transitions lacked registered
 evidence. The parent `blocked` to `in-progress` lifecycle rows above correct
 that exact omission; no transition override or validator change is used.
 
-### Issuance Verification
+#### Issuance Verification
 
 Independent rules review found no remaining P1 or P2 contract finding. An
 initial metadata check returned exit 1 because W25's Dependencies cell had an
@@ -409,7 +422,7 @@ links with `--root . --mode all`, and `git diff --check`. Re-run those commands
 on the final staged input before delivery; no implementation or runtime command
 is implied by this documentation issuance.
 
-### Historical Delivery Status and Superseding Local Integration
+#### Historical Delivery Status and Superseding Local Integration
 
 Read-only GitHub API verification confirmed that [PR #417](https://github.com/buenhyden/hy-home.docker/pull/417)
 was merged at `abe2b8b19a2fe17cd08f06681f338a0e07a4c3f9` on
@@ -431,7 +444,7 @@ NOT_RUN boundaries. This is preparation only: actual Wiki application and
 operational resources remain unimplemented; no external workspace, collection,
 credential, runtime client or schedule is created by this receipt.
 
-### W25 Local Preparation Completion
+#### W25 Local Preparation Completion
 
 The direct continuation request completes P09 preparation only and uses reviewed
 local-main integration without dev, push or a required PR. Baseline and source
@@ -508,7 +521,13 @@ separately, not inferred from this authored candidate. Rollback is a reviewed
 revert of the documentation-only closure commit; no operational rollback is
 needed. Other workers' root, SEC, SMTP and staged P05 copies remain preserved.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Acceptance |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -527,7 +546,17 @@ needed. Other workers' root, SEC, SMTP and staged P05 copies remain preserved.
 | Current preparation acceptance | 13 | W25 | Unchanged source; fresh 43 tests, 99-percent scoped coverage, manifest/workflow/Gitleaks and independent preparation review | Main 241a470d2; replacement hashes above | PASS | W25 Local Preparation Completion | accepted |
 | HOME, migration, rotation and recovery | 13 | W25 | No operational action is authorized by preparation | No concrete operational target | NOT_RUN | Future exact Task | pending |
 
-## Review and Completion
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Remaining Conditions
 
 P09 preparation is completed for criterion 13/W25 at the scoped source boundary
 recorded above. The earlier prospective PR sequence is superseded by the current
@@ -540,11 +569,12 @@ No Wiki resource or learning/LAB runtime is created. Future implementation must
 resolve the recorded bootstrap/rights/operator and exact runtime/backup/custody
 facts in its own approved Task; preparation completion does not grant that work.
 
-## Related Documents
+## Handoff
 
-- [SPEC-0204](../spec.md)
-- [SPEC-0204 Plan](../plan.md)
-- [REQ-0027](../../../01.requirements/0027-home-development-host.md)
-- [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md)
-- [ADR-0046](../../../02.architecture/decisions/0046-capability-tiers-and-quality-boundary.md)
-- [Project registration](../../../../infra/09-platform-ops/project-registration/README.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

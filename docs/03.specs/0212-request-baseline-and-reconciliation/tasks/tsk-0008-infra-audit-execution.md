@@ -14,9 +14,11 @@ created: "2026-10-16"
 
 # Infrastructure Audit Execution Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute `INFRA-P0` only: establish a current, value-free source snapshot and
 single-owner routing for infrastructure requirements 11–32 before P1 or any
@@ -25,7 +27,16 @@ reopen historical Task bodies or r10 criteria 11–18, and it does not accept
 leaf implementation, native, HOME, recovery, hosted delivery, or remote
 protection results.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [R10 reconciliation Task](tsk-0007-r10-reconciliation.md)
+- [Current coordination audit Task](tsk-0006-current-coordination-audit.md)
+- [Bounded service inventory](../../../90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md)
+- [Integration owner](../../0204-service-integration-security-and-operations/spec.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The direct user supplied an independent infrastructure-audit prompt identified
 by SHA-256 `ea9ddbdd8db5ea93b2e8858c477d223e2ea877cdccd99c7c1e86a22303cc4935`.
@@ -51,9 +62,11 @@ current package Spec is draft. This is a lifecycle/source inventory, not an
 acceptance-PASS claim: each draft or nonterminal record retains its own
 criteria, evidence, merge, and operation disposition under its primary owner.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -61,7 +74,7 @@ criteria, evidence, merge, and operation disposition under its primary owner.
 | SPEC-0212-TSK-0008 | ready | in-progress | #p0-execution-state |
 | SPEC-0212-TSK-0008 | in-progress | completed | #completion-2026-10-29 |
 
-### Completion (2026-10-29)
+#### Completion (2026-10-29)
 
 The owner accepted criterion 19 on 2026-10-28; every required row passes or
 has a same-Check resolver (#c19-row-resolutions-2026-10-28). On 2026-10-29
@@ -71,7 +84,7 @@ recovery, hosted delivery, and remote protection left with their named
 owners. The `draft` wording in the sections below records the state when
 they were written.
 
-### P0 execution state
+#### P0 execution state
 
 W24 source preparation is active while this newly issued Task remains `draft`
 under the lifecycle contract. Its scope is source inventory, owner routing,
@@ -80,7 +93,7 @@ source findings and independent review remain pending; they do not block
 unrelated, reversible owner source/test/document work. P1 blocks only live or
 irreversible operations until its named prerequisites are met.
 
-### Current P0 source snapshot
+#### Current P0 source snapshot
 
 The bounded current-service inventory projection records 43 root Compose
 includes, 13 infrastructure layers, and 111 services. Its service rows are
@@ -105,7 +118,7 @@ coupled P2 source change, and the P04/P05 outbox currently omits its SQL
 owns the versioned SQL/manual-reconciliation correction and P05 owns its
 consumer contract; neither is accepted here.
 
-### Requirement routes and shared leases
+#### Requirement routes and shared leases
 
 | Requirements | Primary owner | P0 route | Next boundary |
 | --- | --- | --- | --- |
@@ -131,7 +144,7 @@ consumer contract; neither is accepted here.
 | 30 | CLN01 | Consumer, backup, external-dependency, authorization, recovery evidence | No deletion from profile-off or no-traffic observation. |
 | 31 | SPEC-0204 / SEC01 (TSK-0009) | Same-unit Guide, Policy, Runbook, README, template, test, and configuration route | P08 checks structure; runs with each actual image change. Rerouted from P09 by the owner on 2026-10-21. |
 
-### Requirement source, gate, and blocker trace
+#### Requirement source, gate, and blocker trace
 
 | Requirement | Current source / Task | Validator or gate | P0 state and blocker |
 | --- | --- | --- | --- |
@@ -165,7 +178,7 @@ on `feature/spec-0212-infra-audit`. Read-only P0 contributors are
 they hold no write lease. No task-level token, time, or rate limit is known;
 no ceiling is invented or used to release a lease.
 
-### Evidence domains, stop, and recovery boundaries
+#### Evidence domains, stop, and recovery boundaries
 
 The evidence ladder is `SOURCE_APPLIED`, `STATIC_PASS`, `ISOLATED_PASS`,
 `NATIVE_PASS`, `HOME_PASS`, `RECOVERY_PASS`, `BLOCKED`, `OUT_OF_SCOPE`,
@@ -176,7 +189,7 @@ is missing. Secret rotation, data migration, retirement, and live upgrades
 require their owner’s rollback plan; an isolated documentation rollback does
 not restore runtime data.
 
-### v30 current input and survey — 2026-10-26
+#### v30 current input and survey — 2026-10-26
 
 The current direct user request supersedes earlier delivery authority for this
 execution: local source, tests, documents, logical commits and per-Spec review
@@ -227,7 +240,7 @@ W74 in-progress and later bounded successes supersede its old blanket block;
 W75 remains blocked at its exact recovery evidence boundary. The historical
 FAILs below remain unchanged and are not newly rerun or resolved by this survey.
 
-### v30 four-axis requirement routing
+#### v30 four-axis requirement routing
 
 In the following tables, retained prompt coverage means the current instruction
 contains the condition. Source reuse refers to the cited current owner and
@@ -262,7 +275,7 @@ row. These remain inputs rather than a duplicate execution ledger.
 | R31 | SEC01 image owner; SPEC-0219 TSK-0001 W4; existing P05 SMTP source owner; P08 structure | retained | Existing impacts and exact source/package supplements complete in READYfreeze | Central all36documents metadataPASS; source audits/tests separate; final changed plan pending | No runtime-image pin, old image/module reacceptance, risk extension or foreign criterion acceptance |
 | R32 | SPEC-0246 TSK-0001 | retained | Reuse moves/GC/Ollama/W7 guards | Existing C1–4 and move evidence | C6/HDD disposition then W6/C5 |
 
-### v30 F01–F29 execution crosswalk
+#### v30 F01–F29 execution crosswalk
 
 The F namespace records the 2026-10-26 audit, independently of original R
 identifiers and historical aliases. Multiple findings attached to U1/U2/U3
@@ -301,7 +314,7 @@ the new input; no prior receipt or reviewer name grants new acceptance.
 | F28 | COORD; QA/P04/P05 and existing Storybook owners | retained | Mature security corrections and corrected current Task prose in READYfreeze | Actual all36document metadataPASS; final changed-path plan/aggregate NOT_RUN | Native/HOME/owner acceptance, real prior introduced metadata failures and partial audits remain separate |
 | F29 | P02/P05 | retained | U1 applied in existing TSK-0010 | No duplicate Task/ledger | C16/C17 remain pending |
 
-### v30 bounded source readiness and writer leases
+#### v30 bounded source readiness and writer leases
 
 The accessible source survey and owner reconciliation admit the following
 bounded reversible source units once their exact independent prechange review
@@ -360,7 +373,7 @@ source tests, independent review, Docker config, Native/HOME and acceptance.
 This Task remains draft and criterion19 pending until its current required
 evidence and independent review support a registered lifecycle decision.
 
-### v30 coordinator document checks
+#### v30 coordinator document checks
 
 `rtk git diff --check` passed on the current worktree. A Python standard-library
 assertion verified exactly 22 unique R rows and 29 unique F rows in this Task,
@@ -380,7 +393,7 @@ lease/result-only additions; the delivery owner must bind its final registered
 checks and independent review to the integrated source rather than reuse that
 prepared-input result as final delivery acceptance.
 
-### v30 implemented source and bounded verification
+#### v30 implemented source and bounded verification
 
 The subsequent source/test/document changes use the existing SPEC-0204
 TSK-0010 criterion16 (P02/U1) and TSK-0011 criterion17 (P03/U2/U3), both
@@ -426,7 +439,7 @@ The final registered public changed gate is NOT_RUN pending execution after
 the logical commits. No remote CI, PR, merge, deployment or final operational
 acceptance follows from these local results.
 
-### v30 local per-Spec PR drafts
+#### v30 local per-Spec PR drafts
 
 This earlier three-package draft is historical. The current four-package
 handoff and exact final Native scope are recorded in the 2026-10-27 continuation
@@ -442,7 +455,7 @@ after its registered gates; none is invented here.
 | SPEC-0214 | Preserve interrupted Quality attempt evidence. Cancellation retains failure/artifact context and cleanup no longer masks the original interruption. | 31unitPASS/0SKIP, parent7-of-7 changed-line trace, independent review without actionable findings | Final registered delivery gate NOT_RUN; no new whole-Quality or runtime acceptance |
 | SPEC-0212 | Reconcile v30 source routes and local delivery. Existing C19/W24 now maps R11–R32 and F01–F29, records actual bounded results and preserves completed records. | Package281checks/274regressions, scoped links/metadata and exact22R/29F assertions with their documented input boundaries | Final integrated registered checks/independent review and logical delivery remain separate; draft C19 pending |
 
-### v30 final bounded source and Native facts — 2026-10-27
+#### v30 final bounded source and Native facts — 2026-10-27
 
 The current exact tested code HEAD is
 `f4698d1e15212117dafb5809fb6c5c7596686be4`. The current Task-only writer lease
@@ -509,7 +522,7 @@ rows were withdrawn to draft with a dated27KST note, retaining source/Evidence
 and pending criterion. Failed attempts remain distinct; central36PASS covers
 its prior frozen input, not this later Task-only delta or a future aggregate.
 
-### v30 actual invocations and bounded retained evidence
+#### v30 actual invocations and bounded retained evidence
 
 | Actual invocation and fixed input | Result | Boundary |
 | --- | --- | --- |
@@ -574,7 +587,7 @@ All seven pre/post hashes, directory/file modes0700/0600 and exclusive/nofollow
 checks PASS; no raw, private or unlisted files were copied. This evidence index
 grants no disposal or additional-copy authority.
 
-### v30 original subconditions and unnumbered remainder
+#### v30 original subconditions and unnumbered remainder
 
 The following English summaries preserve all68original subcondition IDs and
 one existing primary route each. They do not replace original quotes or make
@@ -690,7 +703,7 @@ identified P04/P05/P10consumer/recovery inputs. Source security remains partial:
 Storybook producer/image facts, exact soak/artifact/channel barriers and
 SurrealDB Critical advisories/exposureUNKNOWN are not erased by local tests.
 
-### v30 current four-package local PR drafts
+#### v30 current four-package local PR drafts
 
 These are local reusable handoff drafts. No remote PR was created or modified,
 no push/remote merge/release/deployment ran, and the local integration target
@@ -705,7 +718,7 @@ aggregate input/results must be bound separately without inventing a future SHA.
 | SPEC-0214 | Preserve interrupted Quality reload evidence | Retain cancellation outcome/artifacts and original failure across cleanup; reuse the runner and preserve completed criterion7. |31unitPASS/0skip;7of7changed-line trace; independent review; normal logical commit. | Local cf5ac41 draft; new Task staysdraft with dated withdrawal note, criterion pending; no new whole-Quality/runtime acceptance. |
 | SPEC-0212 | Reconcile exact v30 source routes and local evidence | Keep22R/68sub/10U/29F under existing owners, preserve65historical aliases and record scoped actual results without a parallel ledger. | Prior281/274packaging checks, exact-ID assertions and scoped metadata/links; current Task-only delta requires its own final checks. | Local draft/C19pending; no foreign acceptance, remote write or inferred local integration; future aggregate remainsNOT_RUN. |
 
-### v30 registered delivery attempt and comment-only correction (2026-10-27)
+#### v30 registered delivery attempt and comment-only correction (2026-10-27)
 
 The actual aggregate tested clean HEAD452115b8d5370981752bfc3bdac91e7e621e60b6
 from16:52:47.909563 to17:31:37.714833UTC: FAIL2329.616646seconds,
@@ -727,7 +740,7 @@ The staged public-SHA false-positive FAIL was corrected to structured fields;
 fresh staged checks PASSed before ordinary commit452. The next complete
 registered attempt remains NOT_RUN; focused GREEN cannot promote aggregateFAIL.
 
-### v30 corrective commits and complete registered changed rerun (2026-10-27)
+#### v30 corrective commits and complete registered changed rerun (2026-10-27)
 
 The061ec87a aggregate failed only `leaf.conftest-policy` with16NOT_RUN; a
 separate15-leaf diagnostic found compose-baseline and repository-integrity
@@ -798,7 +811,7 @@ binding was rehashed in both SEC01 ledgers with the prior binding archived;
 218 related tests and the supply-chain policy check passed. The installed n8n
 image's Zod, Native and HOME acceptance remain SEC01 NOT_RUN.
 
-### v30 residual review and owner decisions (2026-10-27)
+#### v30 residual review and owner decisions (2026-10-27)
 
 After PR #561 merged as ec3b6df6c, the earlier unlogged local GID1000 ERROR in
 the OpenBao TLS/restore/token modules was investigated: 12 serial runs, 12 runs
@@ -828,7 +841,7 @@ widen the helper API allowlist. Dependent pins and RUN-0085 hashes were
 updated; 436 OpenBao and runbook-consumer tests passed. The next window needs a
 new P01 approval and install check before this helper is used.
 
-### OpenBao native reruns and HOME n8n recreate (2026-10-27)
+#### OpenBao native reruns and HOME n8n recreate (2026-10-27)
 
 Separate opt-in native invocations on the B1 helper source: B3
 `HYHOME_OPENBAO_TLS_DELAY_NATIVE=1` test_openbao_tls_material 29 tests OK in
@@ -847,7 +860,7 @@ key, fixed by 617ad4339). The owner then approved the n8n HOME recreate; its
 result and the healthcheck start-period follow-up are in SEC01 Task 0009.
 B4, P06, A3 cleanup and owner acceptance remain open.
 
-### C19 reruns and owner disposition (2026-10-27)
+#### C19 reruns and owner disposition (2026-10-27)
 
 Three required C19 failures were rerun with their recorded checks on main
 `7ba82fcf3` and now pass:
@@ -865,7 +878,7 @@ it as expected-by-design, covered by hosted candidate-quality PASS on real PRs.
 operator `.agent-work` staging, and `native-home-recovery` stays with the
 P1–P10 owners. The owner kept C19 pending on those two rows.
 
-### C19 row resolutions (2026-10-28)
+#### C19 row resolutions (2026-10-28)
 
 The three remaining required C19 rows now have resolvers with the identical
 Check and W24. The original FAIL and NOT_RUN rows are unchanged.
@@ -909,7 +922,13 @@ Check and W24. The original FAIL and NOT_RUN rows are unchanged.
 
 The owner accepted criterion 19 on 2026-10-28 on this basis.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -940,13 +959,19 @@ The owner accepted criterion 19 on 2026-10-28 on this basis.
 | ci-local-context-pr602 | 19 | W24 | `python3 scripts/validation/run-ci-gate.py --profile changed --requirements` without invented PR context | Hosted PR #602 run `40646915873`, authenticated `pull_request` context | PASS | #c19-row-resolutions-2026-10-28; `candidate-quality` step "Select candidate prerequisites" success | required | ci-local-context |
 | native-home-recovery-mlflow-20261028 | 19 | W24 | Native service, HOME flow, and isolated restore result | MLflow on HOME, owner terminal 2026-10-28 16:11 KST | PASS | #c19-row-resolutions-2026-10-28; healthy, `/health` OK, 2 experiments; HOME `dc11669786a5` 2/2; dump 65 TABLE DATA; isolated restore `dc11669786a5` 2/2; cleaned up; single named target (MLflow) only, not P1–P10 acceptance | required | native-home-recovery |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 19 | accepted | main-baseline, document-baseline, current-service-inventory, secret-catalog-views, ci-local-context, remote-protection, root-hardening-coverage, ci-routing-regressions, workflow-source-suite, workflow-isolated-denial, native-home-recovery, ci-routing-regressions-main-7ba82fcf3, root-hardening-coverage-main-7ba82fcf3, workflow-isolated-denial-main-7ba82fcf3, secret-catalog-views-home-20261028, ci-local-context-pr602, native-home-recovery-mlflow-20261028 | Owner accepted 2026-10-28. Every required row passes or has a same-Check resolver: routing, hardening and workflow denial on main 7ba82fcf3; secret-catalog-views, ci-local-context and native-home-recovery on 2026-10-28 (#c19-row-resolutions-2026-10-28). native-home-recovery covers one named target (MLflow), not P1–P10 acceptance; downstream native, HOME, recovery and delivery stay with their owners. | SPEC-0212 coordinator for routing; named primary owners for execution. |
 
-## Review and Completion
+### Remaining Conditions
 
 Independent review must verify that every requirement 11–32 has exactly one
 primary owner, all shared-file leases are explicit, and the P0 snapshot does
@@ -956,11 +981,12 @@ changed selector for this exact diff, records command/result/input revision,
 and makes one logical documentation commit. No push, PR, merge, remote setting,
 or live operation is performed by this Task record.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [R10 reconciliation Task](tsk-0007-r10-reconciliation.md)
-- [Current coordination audit Task](tsk-0006-current-coordination-audit.md)
-- [Bounded service inventory](../../../90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md)
-- [Integration owner](../../0204-service-integration-security-and-operations/spec.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

@@ -1,10 +1,10 @@
 ---
 title: "Implementation Alignment Fixes Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0255-TSK-0001"
 parent_ids:
@@ -14,14 +14,19 @@ created: "2026-11-04"
 
 # Implementation Alignment Fixes Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Correct the verified discrepancies between current documents and the
 implementation that no open branch owns.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
 
 The user directed that README, AGENTS.md, `.agents/`, `.claude/`, `.codex/`
 and the documents under `docs/01.requirements`, `docs/02.architecture`,
@@ -32,18 +37,20 @@ implementation and corrected ("현재에 맞게 수정하고 보완한다"), and
 Task pushes and merges nothing; the coordinator pushes the branch and opens
 the pull request, and the user merges.
 
-## Work Log
+## Execution Log
 
-### Current contract decision
+### Work Performed
+
+#### Current contract decision
 
 The user's direction authorizes this Spec and Plan as written.
 
-### Current readiness and execution
+#### Current readiness and execution
 
 Inputs, work units and checks are recorded here. The Task is ready and in
 progress under the approved parents. Hosted CI has not run.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -52,7 +59,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0255-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0255-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
 
-### Decisions
+#### Decisions
 
 - Open branches own other findings: SPEC-0252 (Registry, Stage 01–03
   lifecycles, ADR-0011), SPEC-0253 (pre-commit, hook, gate evidence owner,
@@ -87,7 +94,7 @@ progress under the approved parents. Hosted CI has not run.
   `crawl4ai_egress_net` as the one exception, with no new child ID. AD-0026
   marks the row.
 
-#### Deleted Spec reference decisions
+##### Deleted Spec reference decisions
 
 | Location | Citation | Decision |
 | --- | --- | --- |
@@ -108,7 +115,7 @@ progress under the approved parents. Hosted CI has not run.
 | ADR-0037:35, :41 | SPEC-0179 "records" / "owns" | kept: accepted decision body |
 | remaining citations | past events, provenance parentheticals | kept: lineage prose (ADR-0051 D6) |
 
-### Changed
+#### Changed
 
 - `docs/02.architecture/descriptions/0026-standardize-infra-net.md`: ten
   network rows added or corrected (`dev_data_net`, `experience_ingress_net`,
@@ -135,9 +142,9 @@ progress under the approved parents. Hosted CI has not run.
   exception (version 1.2.0).
 - `docs/99.templates/registry.json`: `spec` high-water 255, `next_number` 256.
 
-### Open issues
+#### Open issues
 
-#### Batch 2 (after the open branches merge)
+##### Batch 2 (after the open branches merge)
 
 - 249 backticked operations paths without their domain folder in 46 infra
   READMEs and the root README (SPEC-0254 edits infra READMEs).
@@ -154,12 +161,18 @@ progress under the approved parents. Hosted CI has not run.
   and Trino. Their owning documents mention credentials only in prose, so
   adding them needs a decision on where each list lives.
 
-#### Other
+##### Other
 
 - ADR-0040:28-29 names the retired `service_valkey_password` inside an
   accepted decision; left as history.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -175,7 +188,13 @@ progress under the approved parents. Hosted CI has not run.
 | E10 | 4 | W4 | corpus-lifecycle | `check-document-corpus-lifecycle.py`, same tree | PASS | lifecycle zero, occupancy zero | required | - |
 | E11 | 4 | W4 | operations-and-links | `check-operations-catalog.py`; links `alignment`, `navigation`, `language`, `traceability`, same tree | PASS | operations catalog PASS; every link mode PASS | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -184,12 +203,12 @@ progress under the approved parents. Hosted CI has not run.
 | 3 | pending | - | - | @buenhyden |
 | 4 | pending | - | - | @buenhyden |
 
-## Review and Completion
+### Remaining Conditions
 
 Local checks are recorded above. Independent review and hosted CI have not
 run, and no criterion is accepted yet.
 
-### Merge receipt 2026-11-10
+#### Merge receipt 2026-11-10
 
 Recorded 2026-11-10 from `gh pr view`: #732 merge `b56fd4480` at
 2026-11-04T03:15:49Z. Hosted checks on the merged PR: every completed check
@@ -197,7 +216,12 @@ SUCCESS, the rest SKIPPED, none failing. Candidate quality: the merged change
 is a candidate that passed hosted CI. This receipt is not owner acceptance: no
 criterion is accepted and the status is unchanged.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

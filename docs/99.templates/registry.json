@@ -1073,18 +1073,13 @@
         "archive_authorizations"
       ],
       "required_sections": [
-        "Overview",
-        "Inputs and Authorization",
-        "Work Log",
-        "Evidence",
-        "Criterion Acceptance",
-        "Review and Completion",
-        "Related Documents"
-      ],
-      "optional_sections": [
-        "Blocked and Deferred",
+        "Scope",
+        "Execution Log",
+        "Verification Evidence",
+        "Acceptance Decision",
         "Handoff"
       ],
+      "optional_sections": [],
       "lifecycle_id": "task",
       "traceability": {
         "allowed_parent_profiles": [
@@ -1102,7 +1097,29 @@
         ]
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Scope": [
+          "Objective and Parent",
+          "Inputs and Authority"
+        ],
+        "Execution Log": [
+          "Work Performed",
+          "Blockers and Decisions"
+        ],
+        "Verification Evidence": [
+          "Results",
+          "Resolution Links"
+        ],
+        "Acceptance Decision": [
+          "Criterion Decisions",
+          "Remaining Conditions"
+        ],
+        "Handoff": [
+          "Promotion Receipt",
+          "Next Owner"
+        ]
+      }
     },
     {
       "id": "guide",

@@ -14,14 +14,21 @@ created: "2026-10-29"
 
 # Residual Owner Choices Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W34: apply the owner's choices on the four items TSK-0017 left open.
 This Task owns criterion 29 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-29 the owner chose, per item: allow merge commits only; validate
 Compose statically without starting anything; diagnose the pre-existing unit
@@ -34,9 +41,11 @@ The owner's handoff choice named a Stage 90 document. The audits index
 retires that category under SPEC-0158 and places a cross-stage audit in a Task
 under its governing Spec, so the handoff is recorded here instead.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -44,7 +53,7 @@ under its governing Spec, so the handoff is recorded here instead.
 | SPEC-0212-TSK-0018 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0018 | in-progress | completed | #evidence |
 
-### Merge methods
+#### Merge methods
 
 `gh api -X PATCH repos/buenhyden/hy-home.docker` set
 `allow_squash_merge=false` and `allow_rebase_merge=false`, keeping
@@ -52,7 +61,7 @@ under its governing Spec, so the handoff is recorded here instead.
 back unchanged. The before-state, after-state, and rollback are recorded in
 `.github/rulesets/main-protection.md`.
 
-### Pre-existing unit failures
+#### Pre-existing unit failures
 
 The 18 failures TSK-0015 recorded have one cause: the system Python
 `jsonschema` is 4.10.3, which predates the `referencing` package that
@@ -66,7 +75,7 @@ all 124 tests in the six affected modules pass. No code or secret surface is
 wrong; `scripts/README.md` now says how to run them locally. The system Python
 was not changed.
 
-### Static Compose validation
+#### Static Compose validation
 
 `scripts/validation/validate-docker-compose.sh` in its default mode creates
 placeholder `.env` and secret files where they are missing. To keep it away
@@ -75,7 +84,7 @@ from the operator's real files, it ran in a temporary detached worktree of
 service definitions and passed. The log holds profile names only. Nothing was
 started or stopped; containers already running were not touched.
 
-### Cross-repository handoff
+#### Cross-repository handoff
 
 Read without writing on 2026-10-29: Project-Template and hy-home.k8s from
 their local checkouts at `HEAD` without fetching, blog-data from its remote
@@ -91,12 +100,20 @@ The four repositories share no edition identifier for their governance or
 archive contract. Common adoption needs one agreed edition and a change in
 each repository under that repository's own approval. Nothing here claims it.
 
-### Codex loader
+#### Codex loader
 
 The Codex loader stays `NOT_RUN`: it is not observable from a Claude Code
 session, and the owner did not choose to supply a Codex session's output.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -109,18 +126,29 @@ session, and the owner did not choose to supply a Codex session's output.
 | Codex loader acceptance | 29 | W34 | Native Codex session load | - | NOT_RUN | Not observable from this session | optional | - |
 | Runtime acceptance | 29 | W34 | Compose start and health | - | NOT_RUN | Owner chose static validation only | optional | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 29 | accepted | Merge-method read-back, Isolated-venv test run, System-Python reproduction, Static Compose validation, Cross-repository read, Metadata contracts | Merge commits only, applied and read back; the pre-existing failures are a local dependency gap, not a defect; Compose validates statically; cross-repository gaps handed to their owners; Codex loader and runtime stay not run. | SPEC-0212 TSK-0018 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

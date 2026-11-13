@@ -1,10 +1,10 @@
 ---
 title: "LAB Promotion Reservations Task"
-version: "0.3.2"
+version: "0.3.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0263-TSK-0002"
 parent_ids:
@@ -14,15 +14,21 @@ created: "2026-11-06"
 
 # LAB Promotion Reservations Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Carry out Plan work unit W7: the resource rule moves from summed limits to
 summed reservations plus an external-workload allowance, and the unmeasured
 section 5 sub-checks become owner check items.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Task 0001](tsk-0001-lab-promotion-contract.md)
+
+### Inputs and Authority
 
 The owner made these decisions on 2026-11-06, after PR #753 merged:
 
@@ -36,15 +42,17 @@ The owner made these decisions on 2026-11-06, after PR #753 merged:
 This Task starts, stops and recreates no container. The HOME services pick up
 the new reservations only when they are recreated, in an owner window.
 
-## Work Log
+## Execution Log
 
-### Current contract decision
+### Work Performed
+
+#### Current contract decision
 
 SPEC-0263 moves to `in-review` for the amendment to version 0.3.0. It returns
 to `approved` when the owner approves the amended Spec. The owner approved
 version 0.3.0 on 2026-11-06 ("승인").
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -53,7 +61,7 @@ version 0.3.0 on 2026-11-06 ("승인").
 | SPEC-0263-TSK-0002 | draft | ready | #review-and-completion |
 | SPEC-0263-TSK-0002 | ready | in-progress | #review-and-completion |
 
-### W7 implementation
+#### W7 implementation
 
 - **Code and tests** (`f395b0ec4`). `footprint` reads limits from the short
   form or `deploy.resources.limits` and records per-service reservations and
@@ -116,7 +124,7 @@ version 0.3.0 on 2026-11-06 ("승인").
   `python3` it errors because `referencing` (jsonschema) is missing, which
   also explains the 15 local failures seen earlier.
 
-### Measurements
+#### Measurements
 
 On 2026-11-06, read-only:
 
@@ -126,7 +134,7 @@ On 2026-11-06, read-only:
 - Of the 97 HOME services in the root render, 97 declare limits and 2
   (`dcgm-exporter`, `ollama`) declare reservations.
 
-#### Reservation samples
+##### Reservation samples
 
 Four `docker stats --no-stream` samples of the 60 running containers were
 taken at 2026-11-05T15:55:13Z, 15:56:19Z, 15:58:06Z and 16:01:02Z (2026-11-06
@@ -198,7 +206,7 @@ reservation = limit until measured in an approved LAB lease run
 | superset | 3 | 2.5 | 1792 |
 | valkey-cluster | 8 | 7 | 3584 |
 
-#### HOME reservation sum
+##### HOME reservation sum
 
 With the new values, the 55 running HOME containers reserve 27.75 CPUs and
 22080 MiB. `x-resource-db` gives 20.00 CPUs of that (10 members at 2.00),
@@ -206,7 +214,13 @@ With the new values, the 55 running HOME containers reserve 27.75 CPUs and
 comes from `airflow-dag-processor`, which peaked at 1.654 CPU while parsing
 DAGs; the next member peak is 0.077 CPU.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -242,13 +256,21 @@ DAGs; the next member peak is 0.077 CPU.
 | E30 | 8 | W7 | LAB check | `lab.py --env-file labs/.env check valkey-cluster`, read-only, at `961b5d475` | FAIL | exit 3; only the LAB budget: 9.95 CPUs / 25696 MiB against `LAB_HOST_BUDGET_*` 4 / 8192 | required | - |
 | E31 | 8 | W7 | LAB check | `lab.py --env-file labs/.env check valkey-cluster`, read-only, with the host budget 10 / 27924, at `339a6d7be` | PASS | exit 0, no problem | required | E10, E30 |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18, E19, E20, E21, E22, E23, E24, E25, E26, E27, E28, E29, E30, E31 | - | @buenhyden |
 
-## Review and Completion
+### Remaining Conditions
+
+#### Review and Completion
 
 The owner approved Spec 0.3.0. W7 is implemented. Criterion 8 waits for owner
 acceptance.
@@ -335,8 +357,12 @@ Owner decisions on the review findings and the resource `FAIL` (2026-11-06):
   the `undecided` LABs) are closed without action, and the manifests stay
   as they are.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Task 0001](tsk-0001-lab-promotion-contract.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

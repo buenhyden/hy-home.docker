@@ -1,10 +1,10 @@
 ---
 title: "P07 Root Resource Optimization"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0218-TSK-0002"
 parent_ids:
@@ -14,9 +14,11 @@ created: "2026-10-11"
 
 # P07 Root Resource Optimization
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Continue existing common controls with measured root-service resource and
 least-privilege optimization. Own criterion3's open HOME residual and
@@ -24,7 +26,14 @@ criteria6–10 through W9–W16. TSK-0001 and W1–W8 retain their original byte
 criteria and historical source/LAB/initial-budget evidence. Admission and
 source preparation do not close this Task or prove runtime savings.
 
-## Inputs and Authorization
+- [Specification](../spec.md)
+- [Plan](../plan.md)
+- [Earlier common-controls evidence](tsk-0001-common-controls-and-exceptions.md)
+- [Shared-service integration package](../../0204-service-integration-security-and-operations/spec.md)
+- [Canonical service inventory](../../../90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md)
+- [Exceptions policy](../../../05.operations/policies/01-common/0001-common-optimizations-template-exceptions.md)
+
+### Inputs and Authority
 
 The user's P07 execution prompt and subsequent coordinator instructions
 authorize public preparation, scoped implementation, and tests. Future delivery
@@ -43,7 +52,7 @@ origin/main, HEAD, worktree/index state and ownership before implementation.
 The reviewed issuance commit becomes the worker's baseline; record its full
 SHA rather than guessing a commit that has not been created.
 
-### Exclusive Writer and Reuse
+#### Exclusive Writer and Reuse
 
 One worker uses branch `codex/p07-root-resource-optimization` and worktree
 `/home/hyunyoun/data/hy-home.docker/.worktrees/p07-root-resource-optimization`
@@ -73,7 +82,7 @@ unit. Required unknown load values remain unknown and block optimization.
 Every new folder and parent family gets Korean README navigation from its
 owner; shared parent README edits are proposals.
 
-### Shared Owners and Mutation Boundaries
+#### Shared Owners and Mutation Boundaries
 
 After issuance, Spec/Plan edits, common controls and exceptions, shared
 `compose_controls`/baseline tests, root/leaf Compose, environment, gateway,
@@ -94,9 +103,11 @@ worker acquires their files or operating targets through this Task. Actual
 benchmarking, observations and runtime changes require an exclusive window
 for the named service and independent IaC/security review before mutation.
 
-## Work Log
+## Execution Log
 
-### W9 Admission and Blocking Facts
+### Work Performed
+
+#### W9 Admission and Blocking Facts
 
 Prepare current root classification from the canonical include/service graph
 and inventory. For each retained service, record consumer/data owner, role,
@@ -160,7 +171,7 @@ independent runtime observations by this Task. Relevant service readiness,
 not an unqualified global completion claim, controls load and mutation in
 W12–W15. W11 read-only baseline observation has its separate boundary below.
 
-### W10 Public Assessment and Synthetic Tests
+#### W10 Public Assessment and Synthetic Tests
 
 W9's recorded admission and ownership substep is sufficient to start W10;
 final classification and inventory GREEN are not source-preparation
@@ -176,7 +187,7 @@ unknown measurements, contradictory facts and refusal of private/raw data.
 Witness focused RED before implementation, then GREEN and meaningful branch
 coverage of at least 80%; fixture PASS proves only SOURCE/UNIT/STATIC.
 
-### W11–W15 Measured Service Changes
+#### W11–W15 Measured Service Changes
 
 For W11 read-only baseline observation, bind the exact host/service, deployed
 image/platform/digest, read-only tool permission, Task-recorded observation
@@ -213,7 +224,7 @@ Use scoped functional/negative checks and before/after workload results with
 the named backup, empty restore, rollback and cleanup boundaries. Preserve
 data/outbox state; source revert alone is not recovery.
 
-### W16 Verification and Delivery
+#### W16 Verification and Delivery
 
 Future checks use existing registered owners and the new modules only after
 their files exist. The commands below remain verification inputs. Baseline
@@ -292,7 +303,7 @@ reviewed SHA can start public source/synthetic preparation, not delivery
 acceptance. Do not merge before the P04/coordinator repair and relevant gates
 and review. Run local-staged after staging the reviewed candidate.
 
-### Scope Reconciliation Receipt — 2026-10-12
+#### Scope Reconciliation Receipt — 2026-10-12
 
 Baseline: `23e37362b72e98028a4675f282819c0346ae59dc` (the coordinator's
 current main input). This receipt changes only the future delivery instruction:
@@ -357,7 +368,7 @@ Python checker and succeeded, exit0:
 This validates the commit range after the fact; it does not assert an earlier
 pre-commit `cz` invocation.
 
-### Main Integration Continuation — 2026-10-12
+#### Main Integration Continuation — 2026-10-12
 
 Input is delivered main `b70bc01b58ae35a486860377519155a882af3d76`, produced
 through [SPEC-0204 PR #425](https://github.com/buenhyden/hy-home.docker/pull/425).
@@ -370,7 +381,7 @@ data action ran. Delivery remains pending the owning SPEC-0218 PR, its
 current-head CI, and independent review; reverting the later P07-only commit
 removes this continuation record without rolling back delivered main.
 
-### Remote Source Adoption Audit — 2026-10-13
+#### Remote Source Adoption Audit — 2026-10-13
 
 At observation, the integration started from delivered main
 `b70bc01b58ae35a486860377519155a882af3d76`; the current remote main is
@@ -389,7 +400,7 @@ can validate only this receipt and current boundary, while original source-route
 proof remains unproved. Native/HOME, runtime, migration, rotation and recovery
 remain `NOT_RUN`.
 
-### Admission Document Validation History
+#### Admission Document Validation History
 
 The initial selected metadata check failed with exit1 and 146 violations
 after the new Plan Dependencies cells contained prose rather than Work Unit
@@ -408,7 +419,7 @@ admission SHA: 11 tests passed in 0.042 seconds, exit0, with public output in
 UNIT evidence only. No new P07 helper, schema or fixture exists; no Docker,
 HOME, benchmark, permission, migration, rotation or recovery check ran.
 
-### Segmented Local Source Validation — 2026-10-11
+#### Segmented Local Source Validation — 2026-10-11
 
 Frozen source input is `5b1a92db48fd508feff4cee0753b3b4468dd41dc`, following
 common/worker integration `c7d56a383ad8b77dd615327d11605b3e15d2146e`.
@@ -429,7 +440,7 @@ exit1,1.769s; GREEN:39 tests,exit0,7.492s; Ruff/staged checks exit0 and independ
 review ACCEPT. The registered workflow contract SHA256 remains
 `bdb1941e522865a9a381b0913f4a8e266dfb613cbb832ca35889ff26ac3ecfc5`.
 
-### Historical Local-Main Source-Preparation Receipt — 2026-10-11
+#### Historical Local-Main Source-Preparation Receipt — 2026-10-11
 
 Receipts are `.agent-work/p04-p07-registered-suffix-final-fixture-result.json`,
 `.agent-work/p04-p07-checkout-permissions-repair.json` and
@@ -461,7 +472,7 @@ change occurred. At this historical point, final documentation review and
 local-main source delivery were pending and conferred no operational acceptance
 or lifecycle closure.
 
-### Availability and recovery targets — 2026-10-21
+#### Availability and recovery targets — 2026-10-21
 
 v22 §9.1 asks for per-function allowed outage and loss, RTO and RPO, restart
 order and freshness alerts, without invented numbers. Options were derived
@@ -519,7 +530,7 @@ T1 to T4 still need their own measured restore, and criterion 7 stays pending
 on the W11 and W12 workload and budget measurements. S9.1 status: PARTIAL, T5
 RTO set, T1 to T4 RTO pending measurement.
 
-### Current Registration Reconciliation — 2026-10-22
+#### Current Registration Reconciliation — 2026-10-22
 
 At `d7bec9a9a4318caa60cc0f5f99a1de6cfa71a580`, `scripts/manifest.yaml`
 registers the assessment library and CLI with both dedicated test modules;
@@ -540,7 +551,7 @@ measurement, native proof or permission change. Canonical exception binding,
 service workload and recovery evidence remain open. Historical receipts and
 the acceptance tables below are preserved.
 
-### v29 Source Readiness Review 2026-10-22
+#### v29 Source Readiness Review 2026-10-22
 
 The current readiness review on 2026-10-22 confirms that SPEC-0218 and its
 Plan are approved at version 1.0.0 following PR #559. The direct v29 request
@@ -553,7 +564,7 @@ P07 implementation or its delivery route. Representative workload, exact
 service observation, least privilege and recovery prerequisites remain
 unmet for their dependent operational steps.
 
-### v29 Source Execution Start 2026-10-22
+#### v29 Source Execution Start 2026-10-22
 
 The authorized v29 source work began after the investigation gate established
 those inputs: exception-date regression tests, witnessed RED results and the
@@ -564,14 +575,14 @@ tests ran again or start W11–W15 runtime work,
 accept criteria 6–10, complete P07, or authorize any host, native, credential
 or remote action. Historical evidence and acceptance decisions remain intact.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0218-TSK-0002 | draft | ready | #v29-source-readiness-review-2026-10-22 |
 | SPEC-0218-TSK-0002 | ready | in-progress | #v29-source-execution-start-2026-10-22 |
 
-### v29 exception-date boundary correction — 2026-10-22
+#### v29 exception-date boundary correction — 2026-10-22
 
 The direct v29 continuation and the completed investigation gate authorize this
 bounded P07 source correction on baseline
@@ -636,7 +647,7 @@ W11–W16 and their existing owners. No load, actual W7 collection, secret,
 Docker runtime mutation, token action or remote write ran. Root retains final
 registered gates, independent review and commit ownership.
 
-### Handoff from SPEC-0204 TSK-0013 2026-10-30
+#### Handoff from SPEC-0204 TSK-0013 2026-10-30
 
 SPEC-0204 TSK-0013 (P05 n8n notifier) is final at `main`
 `c585c5244`. Its only measured facts that bear on P07 are timings from one
@@ -647,7 +658,13 @@ NOT_RUN: CPU, memory and polling-load measurement of the notifier. Next input:
 measure the notifier's one-minute polling load on HOME when P07 W11 binds
 its inputs.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -676,7 +693,13 @@ its inputs.
 | Projection and delivery | 9, 10 | W16 | Current-target-head CI and independent review before owning-Spec PR merge | P07 source/helpers present and `NO_CHANGE`; SPEC-0218 docs PR/CI/review/merge pending | NOT_RUN | Future delivery contract above; no SPEC-0218 PR/push/merge receipt | - |
 | Segmented source checks | 9, 10 | W16 | Registered local nodes0–32 across preserved runs; final continuation26–32 exit0 | c7d56a383 then5b1a92db; unchanged registered contract | PASS | Segmented Local Source Validation; original aggregate124 and suffix1/1 preserved; final docs/delivery pending | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
@@ -686,9 +709,9 @@ its inputs.
 | 9 | pending | - | - |
 | 10 | pending | - | - |
 
-## Review and Completion
+### Remaining Conditions
 
-### W10 Source Preparation Receipt
+#### W10 Source Preparation Receipt
 
 The changed tracked paths are this Task, the resource-optimization README and
 measurement schema, its fixtures README and two synthetic JSON files, the
@@ -772,11 +795,12 @@ evidence. Source/schema checks cannot close HOME or recovery acceptance.
 Preserve TSK-0001 and all other writers; record every changed file, exclusion,
 criterion result, commit/delivery input and next actionable blocker here.
 
-## Related Documents
+## Handoff
 
-- [Specification](../spec.md)
-- [Plan](../plan.md)
-- [Earlier common-controls evidence](tsk-0001-common-controls-and-exceptions.md)
-- [Shared-service integration package](../../0204-service-integration-security-and-operations/spec.md)
-- [Canonical service inventory](../../../90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md)
-- [Exceptions policy](../../../05.operations/policies/01-common/0001-common-optimizations-template-exceptions.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

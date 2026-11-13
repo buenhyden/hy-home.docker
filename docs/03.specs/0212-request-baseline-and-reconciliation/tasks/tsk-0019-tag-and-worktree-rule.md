@@ -14,15 +14,22 @@ created: "2026-10-29"
 
 # Tag and Worktree Rule Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W35: apply the owner's choices on two gaps found by re-reading the
 original request against the current repository. This Task owns criterion 30
 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-29 a re-read of the request found that tags must be SemVer and
 that worktrees must be created under `.worktrees`. The owner then approved
@@ -33,9 +40,11 @@ for this one ref. The input is branch `chore/merge-method-and-residual-review`
 (PR #615). The authorization covers that tag deletion, this branch, its pull
 request, and merge.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -43,7 +52,7 @@ request, and merge.
 | SPEC-0212-TSK-0019 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0019 | in-progress | completed | #evidence |
 
-### Tag cleanup
+#### Tag cleanup
 
 `main-current` was a lightweight tag on `849ef009a` (2026-10-06), left by the
 retired `update-main-current` job. No workflow, script, or document used it.
@@ -52,19 +61,27 @@ It was deleted from `origin` and locally; the commit stays reachable from
 now reads that deleting or rewriting a historical ref needs the owner's
 approval for that ref.
 
-### Worktree rule
+#### Worktree rule
 
 `.gitignore` already ignored `.worktrees/`, but no policy named it.
 `git-workflow.md` now says linked worktrees go under `.worktrees/<branch>`
 and are removed with their merged branch when the work ends.
 
-### Request re-read
+#### Request re-read
 
 The tests that name Task paths use synthetic fixture packages, not completed
 documents, so the request's rule against tests bound to a completed
 document's state already holds.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -74,18 +91,29 @@ document's state already holds.
 | Provider render | 30 | W35 | `provider_surface_renderer.py --check` | This branch | PASS | 0 drift | required | - |
 | Gate adapter tests | 30 | W35 | `python3 -m unittest tests.lib.gate.test_ci_gate_adapters` | This branch | PASS | OK | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 30 | accepted | Remote tag read-back, Tag consumer scan, Governance contract, Provider render, Gate adapter tests | The stale tag is gone with its commit kept; the worktree location is a policy rule. | SPEC-0212 TSK-0019 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

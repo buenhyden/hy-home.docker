@@ -1,10 +1,10 @@
 ---
 title: "Observability CA Execution Task"
-version: "0.1.24"
+version: "0.1.25"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0245-TSK-0001"
 parent_ids:
@@ -14,15 +14,20 @@ created: "2026-10-16"
 
 # Observability CA Execution Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Complete service-specific backup and isolated-recovery rehearsals for
 Prometheus and Gatus before either CA recreation, then recreate Prometheus
 before Gatus while preserving production data boundaries.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
 
 - **Request:** on 2026-10-16 the owner authorized the current host's
   Prometheus and Gatus backup/restore validation followed by their bounded CA
@@ -45,25 +50,27 @@ before Gatus while preserving production data boundaries.
   0400. The path shares device 2064 with production data, so it is a
   pre-recreate recovery gate only, not a disk-failure disaster-recovery claim.
 
-## Work Log
+## Execution Log
 
-### Initial State
+### Work Performed
+
+#### Initial State
 
 The approved Spec and Plan define the execution order. No backup, isolated
 restore, image build, CA application, recreation, or operational review has
 run under this Task.
 
-### Spec Approval
+#### Spec Approval
 
 The direct 2026-10-16 user authorization approved the bounded SPEC-0245
 contract before this Task was created.
 
-### Plan Approval
+#### Plan Approval
 
 The same direct authorization approved SPEC-0245-PLAN-0001's bounded work and
 verification sequence before this Task was created.
 
-### Ready Transition
+#### Ready Transition
 
 On 2026-10-16, W1 bound the exact, value-free backup phase contract and its
 two guard helpers to the selected host-local protected artifact path. The
@@ -77,7 +84,7 @@ The Task transitions to `in-progress` only when an approved W2 or W3 recovery
 gate actually starts. The reviewed recovery packet must still pass its
 independent IaC/security review before the relevant operation proceeds.
 
-### In-progress Transition
+#### In-progress Transition
 
 On 2026-10-16, independent IaC and security reviews returned READY for the
 backup phase only, bound to the final W1 packet. The operator was released to
@@ -85,7 +92,7 @@ hash-recheck that packet and start the approved W2/W3 recovery gate. This
 transition records the release and start boundary only; it does not claim any
 backup, restore, image build, CA application, recreation, or health outcome.
 
-### Backup Capture Receipts
+#### Backup Capture Receipts
 
 The approved backup phase captured both production service archives on
 2026-10-16. These are capture receipts only: their independent integrity
@@ -106,7 +113,7 @@ CA change.
 The receipts are durable task evidence for the completed captures. A separate
 independent rehash and each isolated restore remain required recovery gates.
 
-### Structural Validation Receipt
+#### Structural Validation Receipt
 
 Before the backup-capture receipt commit, the complete active-document
 metadata selection passed at source snapshot `78684ac`. This validates the
@@ -114,7 +121,7 @@ seven selected document records and their lifecycle bindings at that snapshot;
 it does not validate the later receipt edit, the pending independent rehashes
 or restores, or any runtime CA result.
 
-### Isolated Restore Plan and Release Receipts
+#### Isolated Restore Plan and Release Receipts
 
 The initial isolated-mode `restore-01` packet was prepared against workspace
 identity `174588272`. Its frozen contract SHA-256 was
@@ -145,7 +152,7 @@ production-target state. No isolated restore has started or completed. These
 plan and release receipts change neither the required integrity rehashes nor
 the pending acceptance of criteria 2 and 3.
 
-### Isolated Restore Attempt 01 Failure
+#### Isolated Restore Attempt 01 Failure
 
 The released `restore-01` reached its synthetic-ownership probe and failed
 closed. Its immutable sanitized failure receipt SHA-256 is
@@ -160,7 +167,7 @@ launcher diagnostic occurred before script entry and created no restore state;
 it is not classified as this attempt failure. A new reviewed sibling attempt
 is required before any retry. CA work remains blocked.
 
-### Isolated Restore Attempt 02 Release
+#### Isolated Restore Attempt 02 Release
 
 `restore-02` is a new, unused sibling attempt under the same approved parent;
 it preserves Attempt 01's immutable failure receipt. Its final v2 contract
@@ -180,7 +187,7 @@ reviews are READY. Root GO remains conditional on operator READY, this Task
 receipt, and fresh hash rechecks. No restore-02 action has run, and CA work
 remains blocked until a successful recovery gate.
 
-### Isolated Restore Attempt 02 Failure
+#### Isolated Restore Attempt 02 Failure
 
 `restore-02` failed closed at its synthetic-owner stage before any archive
 handling. Its immutable sanitized failure receipt SHA-256 is
@@ -195,7 +202,7 @@ remained, and the original services remained healthy. No CA or image-build
 work started. A newly reviewed `restore-03` sibling is required; Attempt 01
 and Attempt 02 receipts remain preserved.
 
-### Isolated Restore Attempt 03 Release
+#### Isolated Restore Attempt 03 Release
 
 `restore-03` is a new, unused sibling that preserves both prior failure
 receipts. Its final v3 contract SHA-256 is
@@ -213,7 +220,7 @@ remains conditional on operator READY, this Task receipt, and immediate hash
 and target checks. No restore-03 action has run, and CA work remains blocked
 until the recovery gate succeeds.
 
-### Isolated Restore Attempt 03 Failure
+#### Isolated Restore Attempt 03 Failure
 
 `restore-03` completed the full Prometheus archive extraction, then failed
 closed at `prometheus-offline-preflight` with exit 1. Its immutable sanitized
@@ -226,7 +233,7 @@ or retry action ran.
 The diagnosis remains open. This receipt does not infer archive corruption or
 accept either recovery gate.
 
-### Prometheus image decision and runtime state — 2026-10-21
+#### Prometheus image decision and runtime state — 2026-10-21
 
 The owner chose to keep Prometheus on the installed image
 (`prom/prometheus:v3.15.0`, digest `efd719c9`) instead of the 3.14 rollback
@@ -251,7 +258,7 @@ scrape over that CA once OpenBao serves TLS after the SPEC-0243 window. Gatus
 still needs its W3 backup, isolated restore and the CA-aware delta image.
 No restore, recreation or CA action ran here.
 
-### Tracked isolated restore procedure — 2026-10-21
+#### Tracked isolated restore procedure — 2026-10-21
 
 The restore-01 to restore-03 packet (contract, script and test) is not in the
 repository or in the attempt workspace, and restore-03's preflight failure is
@@ -282,7 +289,7 @@ SPEC-0243 window to finish; its extraction and ready seconds become the first
 measured parts of the observability tier's RTO (SPEC-0218 TSK-0002). Nothing
 ran yet.
 
-### Gatus image identity and entrypoint — 2026-10-21
+#### Gatus image identity and entrypoint — 2026-10-21
 
 Read-only observation: the running Gatus container and `hy/gatus:local` are the
 same image, `sha256:c52ad951…` (built 2026-09-19), so RUN-0085's window
@@ -297,7 +304,7 @@ then a no-network delta image `FROM` `c52ad951` that copies only the tracked
 entrypoint, then recreation. The base identity above is now recorded. Nothing
 was built or recreated.
 
-### Prometheus isolated restore and Gatus W3 — 2026-10-21
+#### Prometheus isolated restore and Gatus W3 — 2026-10-21
 
 The owner approved both ("Prometheus 격리 복원을 실행, Gatus W3를 진행 승인").
 
@@ -338,7 +345,7 @@ recreating it again there is harmless. Criteria 2 and 3: restore steps PASS
 (Prometheus as a deviation), Gatus CA application done, consumer verification
 after the window.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -347,7 +354,7 @@ after the window.
 | SPEC-0245-TSK-0001 | draft | ready | #ready-transition |
 | SPEC-0245-TSK-0001 | ready | in-progress | #in-progress-transition |
 
-### Later-result reconciliation — 2026-10-22
+#### Later-result reconciliation — 2026-10-22
 
 The later Work Log above already records the 2026-10-21 Prometheus restore
 and Gatus W3 outcomes. The appended evidence rows below expose those results
@@ -366,7 +373,7 @@ consumers before this Task can accept them. No criterion is accepted by this
 documentation correction. The later rows use separately recorded inputs and
 checks, so they do not declare `Resolves` against the earlier NOT_RUN rows.
 
-### TLS consumer binding 2026-10-30
+#### TLS consumer binding 2026-10-30
 
 The OpenBao window of 2026-10-22 recorded its W6 consumer results in SPEC-0243
 TSK-0001 ("W6" row). OpenBao answered HTTPS and refused plain HTTP. Prometheus
@@ -377,7 +384,7 @@ It does not cover rule health or Alertmanager delivery. It does not accept any
 criterion. Acceptance of criteria 1 to 7, including the criterion 2 ordering
 deviation, stays with the owner.
 
-### Owner decision on criterion 2 ordering 2026-10-30
+#### Owner decision on criterion 2 ordering 2026-10-30
 
 On 2026-10-30 the owner chose to accept the pre-recreation ordering deviation
 for criterion 2 as recorded, rather than run a fresh backup, restore and
@@ -390,7 +397,7 @@ needs those rows reconciled, either by matching PASS rows or by an owner
 decision that the later evidence supersedes them. The rule and alert checks in
 RUN-0045 are also still not run. Criteria 1 and 3 to 7 stay pending.
 
-### Criterion 2 acceptance 2026-10-30
+#### Criterion 2 acceptance 2026-10-30
 
 On 2026-10-30 the owner decided that the later Prometheus evidence supersedes
 the earlier criterion 2 rows that were never resolved: the integrity rehash,
@@ -403,7 +410,13 @@ decision and resolves its row. Criterion 2 is accepted with the
 pre-recreation ordering recorded as a deviation. Not covered: rule health and
 Alertmanager delivery (RUN-0045). Criteria 1 and 3 to 7 stay pending.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -448,7 +461,13 @@ Alertmanager delivery (RUN-0045). Criteria 1 and 3 to 7 stay pending.
 | Isolated restore attempt 02 superseded | 2 | W2 | Released synthetic-owner stage for the second isolated restore attempt | Owner decision 2026-10-30: superseded by Later Prometheus isolated restore (archive prefix `c9cb29e5…`, receipt prefix `58a7abdc…`, exit 0) | PASS | Criterion 2 acceptance 2026-10-30 | required | Isolated restore attempt 02 |
 | Isolated restore attempt 03 superseded | 2 | W2 | Released Prometheus isolated restore through offline preflight | Owner decision 2026-10-30: superseded by Later Prometheus isolated restore (archive prefix `c9cb29e5…`, receipt prefix `58a7abdc…`, exit 0) | PASS | Criterion 2 acceptance 2026-10-30 | required | Isolated restore attempt 03 |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -460,14 +479,19 @@ Alertmanager delivery (RUN-0045). Criteria 1 and 3 to 7 stay pending.
 | 6 | pending | - | Await W6 outcome if a gate fails | @buenhyden |
 | 7 | pending | - | Await W7 reviews and checks | @buenhyden |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task has no accepted criterion. Completion requires the service-specific
 execution evidence listed in SPEC-0245; a source-only check, image build, or
 Compose render does not prove a production backup, isolated restore, or CA
 application.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

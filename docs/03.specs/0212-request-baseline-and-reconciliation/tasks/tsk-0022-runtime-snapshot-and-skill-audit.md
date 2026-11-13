@@ -14,14 +14,21 @@ created: "2026-10-29"
 
 # Runtime Snapshot and Skill Audit Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W38: record a read-only runtime snapshot and audit the canonical
 skills for needed references or scripts. This Task owns criterion 33 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-29 the owner chose to read the state of running containers without
 changing any, to audit skill bundles before creating any, and to keep the Codex
@@ -29,9 +36,11 @@ loader `NOT_RUN`. The input is `main` at merged PR #619. The authorization
 covers `docker ps` and `docker inspect` reads, this branch, its pull request,
 and merge. It grants no container start, stop, restart, or recreation.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -39,7 +48,7 @@ and merge. It grants no container start, stop, restart, or recreation.
 | SPEC-0212-TSK-0022 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0022 | in-progress | completed | #evidence |
 
-### Runtime snapshot
+#### Runtime snapshot
 
 Read on 2026-10-29 with `docker ps`, `docker ps -a`, and `docker inspect`; no
 environment variable or secret value was printed.
@@ -56,7 +65,7 @@ on `/metrics`, last changed 2026-10-28, but the running container was created
 on 2026-10-08 and `docker inspect` shows no healthcheck. Recreating that one
 container applies it; that is a runtime change for the owner and was not made.
 
-### Skill bundle audit
+#### Skill bundle audit
 
 Of 24 canonical skills, 6 already carry `references/`, `scripts/`, or
 `assets/`: `infra-validate`, `policy-gate-agent`,
@@ -76,11 +85,19 @@ verification matrix selects checks; this is consistent, not a gap.
 Existing skills keep the section layout they were written with; the
 subtopics TSK-0015 added to the skill template apply to new skills.
 
-### Codex loader
+#### Codex loader
 
 The Codex loader stays `NOT_RUN` by the owner's choice.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -90,18 +107,29 @@ The Codex loader stays `NOT_RUN` by the owner's choice.
 | Runtime drift correction | 33 | W38 | Recreate `airflow-statsd-exporter` | - | NOT_RUN | Runtime change not authorized | optional | - |
 | Codex loader acceptance | 33 | W38 | Native Codex session load | - | NOT_RUN | Owner kept it out of scope | optional | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 33 | accepted | Runtime snapshot, Skill inventory, Metadata contracts | Running state recorded with one drift left for the owner; no skill needs a new bundle; the Codex loader stays not run. | SPEC-0212 TSK-0022 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

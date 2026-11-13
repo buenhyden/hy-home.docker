@@ -14,24 +14,34 @@ created: "2026-10-29"
 
 # Skill Verification Sections Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W49: give every canonical skill a `Verification` section that states
 how success is checked (request line L340), and require it for new skills.
 This Task owns criterion 44 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Request line meaning audit](tsk-0029-request-line-meaning-audit.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-29 the owner asked for every gap offered after TSK-0029 to be
 done, and then directed that governance documents be written in English. The
 input is `main` at merged PR #629. The authorization covers these edits, this
 branch, its pull request, and merge.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -39,7 +49,7 @@ branch, its pull request, and merge.
 | SPEC-0212-TSK-0033 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0033 | in-progress | completed | #evidence |
 
-### Changes
+#### Changes
 
 - Each of the 24 `.agents/skills/*/SKILL.md` files gains `## Verification`
   between `## Outputs` and `## Failure Handling`. It has three observable
@@ -55,7 +65,15 @@ branch, its pull request, and merge.
   `{{OBSERVABLE_SUCCESS_CONDITIONS}}` placeholder.
 - The new prose is English, under the language rule of TSK-0032.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -65,19 +83,29 @@ branch, its pull request, and merge.
 | Language check | 44 | W49 | `check-document-links.py --mode language` | This branch | PASS | 0 failures | required | - |
 | Provider projections | 44 | W49 | `provider_surface_renderer.py --check` | This branch | PASS | 2 providers, 0 drift | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 44 | accepted | Section coverage, Metadata contracts, Registry and heading tests, Language check, Provider projections | Every skill states its observable success conditions, and the Registry requires the section for new skills. | SPEC-0212 TSK-0033 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Request line meaning audit](tsk-0029-request-line-meaning-audit.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

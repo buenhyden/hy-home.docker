@@ -14,15 +14,23 @@ created: "2026-10-16"
 
 # Historical Link Classification Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Classify the 2,870 links counted by the standing `historical-links-unrecorded`
 warning of `check-document-links.py --mode all`. This Task owns criterion 21
 only. It does not reopen TSK-0009 or change its criterion 20 decision.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [R13 reconciliation Task](tsk-0009-r13-reconciliation.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 The direct user request on 2026-10-16 authorized starting this classification
 and then recording it as W26 in a separate branch. The input is published main
@@ -31,9 +39,11 @@ documentation change, its branch, pull request, and merge through the protected
 path. It does not authorize an archived-body edit, a retention-catalog row, a
 checker change, or any runtime action.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -41,7 +51,7 @@ checker change, or any runtime action.
 | SPEC-0212-TSK-0010 | ready | in-progress | #warning-source |
 | SPEC-0212-TSK-0010 | in-progress | completed | #classification |
 
-### Warning source
+#### Warning source
 
 `scripts/lib/document_governance/links.py` counts a historical link as
 unrecorded when its archive retention unit has no capture source in
@@ -50,7 +60,7 @@ preserved before it existed are not loaded retroactively. The warning is
 therefore an intended visibility signal for pre-catalog units, not a defect,
 and adding catalog rows for those units would contradict the catalog contract.
 
-### Classification
+#### Classification
 
 A read-only analysis reused the checker's own graph builder, retention-unit
 mapping, and capture-source loader, so it counted exactly the same 2,870 links
@@ -94,7 +104,13 @@ and the 2 directory links) therefore lack a proven historical resolution.
 No current document is affected: current links are checked separately and the
 same full run reports 0 failures.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -109,19 +125,29 @@ The analysis scripts ran from an ignored session scratch directory and are not
 a durable artifact; the method above and the Git objects at the named commits
 reproduce every count.
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 21 | accepted | Unrecorded link count, Origin resolution, Rename cause, Pre-rename resolution, Current link regression, Changed document metadata | The warning set is classified with a proven cause for the rename residual; no archived body, catalog row, or checker changes. | SPEC-0212 TSK-0010 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the source evidence above. It makes no hosted, merge,
 or runtime claim; those are observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [R13 reconciliation Task](tsk-0009-r13-reconciliation.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

@@ -1,10 +1,10 @@
 ---
 title: "Opsflow Notifier Recovery Task"
-version: "0.5.6"
+version: "0.5.7"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0044"
 parent_ids:
@@ -14,19 +14,27 @@ created: "2026-11-02"
 
 # Opsflow Notifier Recovery Task
 
-## Overview
+## Scope
+
+### Objective and Parent
 
 This Task owns the approved P05 local notifier source, isolated test and
 handoff evidence. It is distinct from historical SPEC-0204 P05 and does not
 cancel or rebuild its accepted n8n C19/C22 queue/schedule scope.
 
-### Objective
+#### Objective
 
 Implement bounded manual no-send reprocessing, restored/in-flight recovery
 safety and selected notifier credential refresh. Reuse the existing queue,
 schedule and storage contracts; add no new binary consumer or storage service.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
+- [P04 data path residual](tsk-0043-opsflow-data-path.md)
+- [Historical P05 notifier Task](../../0204-service-integration-security-and-operations/tasks/tsk-0013-p05-n8n-outbox-notifier.md)
+
+### Inputs and Authority
 
 The direct approved P05 plan authorizes local source, configuration,
 documentation, owned synthetic isolated tests, independent review and a normal
@@ -46,9 +54,11 @@ current notifier/SQL/fixture source and the preserved SPEC-0204 C19/C22 record.
 Historical 2.43.6 acceptance, current declared/cached image and private workflow
 state are separate evidence. Private bodies and actual secrets are not read.
 
-## Work Log
+## Execution Log
 
-### Issued single-writer leases
+### Work Performed
+
+#### Issued single-writer leases
 
 Each writer records exact existing-path fingerprints before editing; new paths
 record ABSENT. Changed shared input pauses only the affected slice. Actor names
@@ -65,7 +75,7 @@ reviewer, data owner and operational accepter remain separate.
 | CI selector/script manifest registration | `/root/p03_docs_impl` | independent CI review | Exact registration slices only; projection/catalog writer remains separate from living-doc writer |
 | Current source-preparation receipt/hash parity | `/root/p04_infra` assigned as P08 source-preparation writer | independent supply-chain/source review | Exact canonical receipt only; documentation writer does not own this correction or image updates |
 
-### Exact initial source path packets
+#### Exact initial source path packets
 
 - SQL writer `/root/p04_pipeline` owns new
   `infra/07-workflow/airflow/workloads/manifest-pipeline/sql/007_notification_recovery.sql`,
@@ -106,7 +116,7 @@ and payload `513a742753ee06d46d172164929faa89c38e0cff96b21f8e003b2118e8b8f195`.
 This new Task was ABSENT. Actual data owner and operational accepter remain
 UNASSIGNED until the trusted owner identifies them.
 
-### Frozen source and scoped verification receipts
+#### Frozen source and scoped verification receipts
 
 SQL007 SHA `8fc05ddcefe86d64c51d9ad130472c019558ac41f86d8f346478aa503dab0d32`
 and008 `f0f39f09341bb0783c10f27c136aea40ff770b2edbbf9ffd37dee618db3d4e77`
@@ -156,7 +166,7 @@ this local source binding does not establish signatures, a rebuilt image, native
 execution, HOME readiness, rotation or recovery. Focused stale-receipt RED became
 eight WorkflowVersionBundle checks PASS without skips; independent source-binding receipt review approved the exact public-input match and preserved history.
 
-### Current item dispositions
+#### Current item dispositions
 
 | Item | Criterion | Work Unit | Current disposition | Current contract |
 | --- | --- | --- | --- | --- |
@@ -170,7 +180,7 @@ this execution's direct operation, credential rotation, independent restore,
 remote CI and final acceptance are independent axes. Direct HOME operation,
 actual rotation/restore, remote CI and P12 final acceptance remain NOT_RUN.
 
-### Implementation, refusal and recovery contract
+#### Implementation, refusal and recovery contract
 
 Do not bulk-reset dead/unknown rows or erase attempts. One manual no-send
 reprocess consumes one explicit owner approval and retains its audit evidence;
@@ -192,7 +202,7 @@ RED/GREEN tests must cover normal, rejection, interruption and recovery with
 at least 80% new executable-code coverage. Independent reviews, registered local
 gates, graphify and source fingerprint comparison precede local delivery.
 
-### Native fixture preparation before execution
+#### Native fixture preparation before execution
 
 The QA writer's first prelaunch packet binds `_p05_opsflow_native.py` to
 `776ae030a4badb00a8d50ae57f114b473800f80c9bd547a79ccc717946504d98`,
@@ -224,7 +234,7 @@ terminal executions; it proves quiesced old processes/sockets/jobs, not an
 interruption of an actively sending SMTP execution. That active-send interruption
 scope remains a separate TEST_RESIDUAL unless directly exercised.
 
-### Docker-free fixture control-flow regression
+#### Docker-free fixture control-flow regression
 
 The separately assigned QA writer created only
 `tests/validation/test_p05_opsflow_scenario.py` (ABSENT baseline), frozen SHA
@@ -289,7 +299,7 @@ five hashes, reran23 tests without skips and independently recomputed all three
 coverage ratios. Embedded JavaScript, real editor POST, SMTP and restoration
 remain separate from this trace.
 
-### First full-fixture execution
+#### First full-fixture execution
 
 The first full candidate rehearsal ended ERROR after134.276 seconds; cleanup
 was PASS, with zero owned containers/networks, absent attempt directory and
@@ -351,7 +361,7 @@ wrong-old/new material, next-execution refresh and restoration still await their
 actual terminal receipt. Earlier trials' NOT_RUN business stages remain historical
 facts and are not rewritten by this later progress.
 
-### Final owned editor-REST native result
+#### Final owned editor-REST native result
 
 The later trial passed in747.701 seconds with cleanup PASS. I directly inspected
 the sanitized structured receipt
@@ -394,7 +404,7 @@ rehearsal check without rewriting their historical outcomes. Independent reviewe
 `a241ae94965752fc9378e0fcdea3da3444687c0f3be1a2517cc12e7d20388a94`
 only for these observed fields and explicitly retained the recovery residuals.
 
-### Restore replay and active-send interruption (2026-11-04)
+#### Restore replay and active-send interruption (2026-11-04)
 
 The owner's 2026-11-04 request to re-review the n8n notification consumer
 contract authorized closing the two residuals above in the owned native
@@ -470,7 +480,7 @@ Receipts and logs are in the executing worktree's ignored
 receipt SHA256 is
 `cf43208d549d19afa4fb9e069449b132b6625711b4b6267e11bd5da2dc533f6b`.
 
-#### Independent review and kill-based correction
+##### Independent review and kill-based correction
 
 The independent code review returned CHANGES_REQUESTED, with one important
 and two minor findings:
@@ -554,13 +564,13 @@ Remaining limits:
 - Same-input replay covers repeated publication, not replay of an n8n execution.
 - Re-review of the kill-based correction is pending.
 
-### Interrupted broker job and execution recovery (2026-11-05)
+#### Interrupted broker job and execution recovery (2026-11-05)
 
 The owner's 2026-11-05 request to review and then implement the remaining
 T05 items authorized this increment. Branch
 `fix/opsflow-notifier-interrupted-job-recovery` from `729d16da7`.
 
-#### Review before code
+##### Review before code
 
 The n8n documentation, retrieved 2026-11-05, does not describe what happens to
 a job or execution after a worker crash:
@@ -602,7 +612,7 @@ and the barrier is not weakened. A failed job kept by a non-zero retention
 still matches the probe, which also scans failed and completed jobs, so the
 barrier fails closed. The outbox row was already safe through lease expiry.
 
-#### Implementation and guards
+##### Implementation and guards
 
 - The interruption now runs before the quiesced barrier, as in the earlier
   barrier-refusal attempt.
@@ -630,7 +640,7 @@ separate weakenings each turned the suites RED:
 Stdlib-trace coverage of executable lines added since `729d16da7` is native
 29/29 and recovery 13/13. Whole files are 690/693 and 124/124.
 
-#### Native results
+##### Native results
 
 Every attempt used the same candidate `9dea1967` and binding `d4b51cee`:
 
@@ -673,14 +683,14 @@ The guarded operator step is in the
 [n8n Runbook](../../../05.operations/runbooks/08-workflows-and-automation/0053-n8n.md#강제-종료된-worker의-queue-job과-실행-기록).
 HOME execution is NOT_RUN. An independent review of this increment is NOT_RUN.
 
-### Main restart, crashed-execution retry and HOME check (2026-11-05)
+#### Main restart, crashed-execution retry and HOME check (2026-11-05)
 
 The owner's 2026-11-05 request asked to apply the recovery procedure to HOME
 operations (approval given), to cover a main restart, and to apply a replay
 of the n8n execution itself, then to finish the remaining T05 items. Branch
 `test/opsflow-notifier-main-restart-and-retry` from `f0ce46fda`.
 
-#### HOME application
+##### HOME application
 
 Read-only inspection on 2026-11-05 used the `mnginspector` Valkey account
 and a read-only metadata session. The `n8n:jobs` active, wait, delayed,
@@ -691,7 +701,7 @@ defaults the rehearsal assumes. With no target the procedure restarts
 nothing, so the HOME worker and main restarts were not run. The read-only
 step is now step 0 of RUN-0053.
 
-#### Source review
+##### Source review
 
 Read from the declared image `n8nio/n8n:2.43.6`:
 
@@ -704,7 +714,7 @@ Read from the declared image `n8nio/n8n:2.43.6`:
   for an unknown reason.")` is thrown when no post-execute result is
   attached.
 
-#### Native result
+##### Native result
 
 Attempt 14 on the final code `444e1a2ae` (candidate `9dea1967…`, binding
 `d4b51cee…`) passed in 981.189 seconds with cleanup PASS and zero owned
@@ -736,7 +746,7 @@ So n8n's own retry cannot replay a worker-killed notifier execution. The
 replay is a new execution of the workflow, and the interrupted row stays
 `unknown` for reconciliation.
 
-#### Review
+##### Review
 
 The independent review of `f0ce46fda..174155ab5` returned CHANGES_REQUESTED
 with two Important findings. First, any HTTP 500 was read as `not_started`,
@@ -755,7 +765,7 @@ returned retry id was not bound to its row, and a NULL status could be
 dropped. Commit `444e1a2ae` fixes them. Removing the late-retry refusal
 now turns the scenario suite RED.
 
-#### Failed attempts
+##### Failed attempts
 
 Each attempt's cleanup passed with zero owned residue. Logs are in the
 ignored `_workspace/repo-support/analysis/p05/main-restart-retry/`.
@@ -775,7 +785,7 @@ ignored `_workspace/repo-support/analysis/p05/main-restart-retry/`.
 RUN-0053 1.10.0 adds steps 0, 6 and 7. HOME worker and main restarts remain
 NOT_RUN because there is no target.
 
-### Actual isolated SQL-only verification
+#### Actual isolated SQL-only verification
 
 The first guarded attempt stopped before007 after the driver expected a different
 SQLSTATE for the direct no-SET-ROLE call; cleanup passed. Existing authority was
@@ -807,7 +817,7 @@ metric. Native-only coverage remains 78.873%; the combined lower bound meets 80%
 for the Python QA driver, not PostgreSQL stored-function coverage. Neither metric
 proves full n8n Worker/SMTP/metadata restoration, HOME operation or real delivery.
 
-### Independent living-document review
+#### Independent living-document review
 
 The independent P08 writer `/root/p04_infra` reviewed the nine assigned living
 document deltas against current source, without editing them. Two minor findings
@@ -823,7 +833,7 @@ is `abbede46808302625cb805695e264c0112604b38038f2712d6afb4ee31525378`;
 its narrow follow-up review was independently approved with no remaining finding.
 This is changed-document/source-contract review, not whole-corpus or runtime acceptance.
 
-### Cross-owner residuals
+#### Cross-owner residuals
 
 The old source-preparation receipt named n8n Compose hash `8792…`
 instead of current `63c9…`; P08 corrected only its canonical current source binding
@@ -838,7 +848,7 @@ The selected notifier uses PostgreSQL/SMTP, not that HTTP node path; private
 workflows are uninspected. P08 evaluates the advisory and image update under
 its own consumer/recovery contract; P05 does not upgrade the image.
 
-### Existing CI admission residual
+#### Existing CI admission residual
 
 The CI writer's read-only `scripts/validation/run-ci-gate.py --profile changed
 --explain` returned nonzero for only `[ci-gate-public-execution-parity]`:
@@ -857,7 +867,7 @@ No route/admission rule is weakened to hide this failure; passing P05 local
 checks cannot resolve it. No prior raw receipt exists for this CI-writer probe;
 its reported command/result and these public fingerprints are the available evidence.
 
-### Final public census and source comparison
+#### Final public census and source comparison
 
 The no-render `scan --connections` completed successfully at
 2026-11-02T11:52:56.169761Z, followed by metadata validation PASS. Accessible
@@ -888,7 +898,7 @@ writer rows after validation; they do not rerun global render or claim a new
 whole-corpus body review. Public changes are31 owned paths; private metadata
 remains local. Operating/data-owner grants are not inferred from these leases.
 
-### Final reviews and registered local checks
+#### Final reviews and registered local checks
 
 Independent document reviewer `/root/p04_infra` approved all fourteen matching
 Doc/DATA hashes, all31 unique P05 writer leases and before/current fingerprints,
@@ -921,7 +931,7 @@ its result is NOT_RUN here. The final exact staged payload must pass that wrappe
 before the local logical commit. Remote CI remains NOT_RUN, and the unchanged
 P03 global explain/admission failure remains unresolved by these local checks.
 
-### HOME producer check (2026-11-08)
+#### HOME producer check (2026-11-08)
 
 A read-only check on 2026-11-08 found HOME `dev-pg` holding only `postgres`,
 `template0` and `template1`. The notifier reads `opsflow_dev` (schema
@@ -939,13 +949,13 @@ capture. HOME n8n itself is current: `n8n`, `n8n-worker` and the runner run
 2.43.6 with `N8N_RUNNERS_TASK_TIMEOUT=300`, and execution 127 ran through
 the queue to `success` on 2026-11-08.
 
-### Owner decisions 2026-11-10
+#### Owner decisions 2026-11-10
 
 On 2026-11-10 the owner (@buenhyden) handed the Python dependency audit
 capability (pip-audit is not installed) to P08 supply-chain work and accepted
 criterion 73. The audit row stays NOT_RUN and is optional for this Task.
 
-### HOME activation (2026-11-11)
+#### HOME activation (2026-11-11)
 
 The owner approved each step on 2026-11-11 after the read-only window above.
 
@@ -985,7 +995,13 @@ The owner approved each step on 2026-11-11 after the read-only window above.
   `opsflow_capture_net` without authentication. It holds only DEV capture mail
   and delivers nothing outside; recorded in RUN-0053 by PR #948.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -1065,7 +1081,13 @@ The owner approved each step on 2026-11-11 after the read-only window above.
 | HOME notifier one-claim delivery 2026-11-11 | 75 | W80 | One-claim delivery through Mailpit | HOME, 2026-11-11 15:32 KST | PASS | Execution 150 success; outbox 1 `accepted_by_smtp` (attempt 2); Mailpit exactly one message; no duplicate after unpublish. | optional | HOME notifier first activation 2026-11-11 |
 | HOME notifier worker restart drill 2026-11-11 | 75 | W80 | `docker compose restart n8n-worker`, 90 s wait, queue and execution readback | HOME, 2026-11-11 15:34–15:36 KST | PASS | Healthy in 22 s; Bull keys `none`; no non-terminal or crashed execution; networks kept. | optional | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
@@ -1074,7 +1096,7 @@ The owner approved each step on 2026-11-11 after the read-only window above.
 | 74 | accepted | Selected binary/storage contract | NO_CHANGE for storage adoption; scoped source/rejection checks PASS, installed/private override and operational behavior separate. Owner @buenhyden accepted on 2026-11-06. | SPEC-0212 TSK-0044 |
 | 75 | pending | Isolated STARTTLS and same-ID refresh, Final candidate native quiesced rehearsal | SOURCE_READY with scoped actual native increment PASS; formal owner acceptance, actual P06 producer and operating rotation remain separate. | SPEC-0212 TSK-0044 |
 
-## Review and Completion
+### Remaining Conditions
 
 Current source and owned isolated implementation receipts are recorded above.
 Independent source/document reviews, metadata/links/catalog/Registry/lifecycle
@@ -1094,10 +1116,12 @@ admission remains an explicit residual.
 All future outcomes must bind exact source, actor, environment, time and receipt
 without cancelling accepted history or promoting a lower evidence axis.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
-- [P04 data path residual](tsk-0043-opsflow-data-path.md)
-- [Historical P05 notifier Task](../../0204-service-integration-security-and-operations/tasks/tsk-0013-p05-n8n-outbox-notifier.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

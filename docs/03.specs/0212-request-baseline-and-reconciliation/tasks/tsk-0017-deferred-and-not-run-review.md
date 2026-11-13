@@ -14,14 +14,21 @@ created: "2026-10-29"
 
 # Deferred and Not-Run Review Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W33: review again the items TSK-0016 left deferred or not run. This
 Task owns criterion 28 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-29 the owner asked for the deferred and not-run items to be
 reviewed and the work carried through to merge. The input is `main` at merged
@@ -30,9 +37,11 @@ GitHub API reads, read-only reads of the other three repositories, this
 branch, its pull request, and merge. It grants no remote setting change, no
 write to another repository, and no runtime start.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -40,7 +49,7 @@ write to another repository, and no runtime start.
 | SPEC-0212-TSK-0017 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0017 | in-progress | completed | #evidence |
 
-### Past-removal absence checks
+#### Past-removal absence checks
 
 | TSK-0016 row | Decision | Current guard |
 | --- | --- | --- |
@@ -49,7 +58,7 @@ write to another repository, and no runtime start.
 | `infra/10-communication/mailpit` | Kept, reclassified | ADR-0046 and architecture description 0010 place Mailpit in `11-quality`; a second package would duplicate it. This is a current rule. |
 | Prefixed `mig-0003` migration path | Kept, reclassified | The frozen migration has one path; a prefixed copy would be a second frozen record. This is a current rule. |
 
-### Remote protection
+#### Remote protection
 
 Read back through the authenticated API on 2026-10-29 for `main`: required
 context `candidate-quality` with `strict=true`, zero required approvals,
@@ -63,7 +72,7 @@ reachable from `main`. A squash or rebase merge of a pull request that adds
 one would leave that commit unreachable. Restricting the merge methods is a
 remote setting change and is not made here.
 
-### Four repositories
+#### Four repositories
 
 Read without writing on 2026-10-29. Project-Template and hy-home.k8s were read
 from their local checkouts at `HEAD` without fetching; blog-data was read from
@@ -81,7 +90,7 @@ Each repository versions these files independently; no shared
 adoption therefore stays unclaimed. Any alignment is work in those
 repositories under their own approval.
 
-### Native loaders and runtime
+#### Native loaders and runtime
 
 This Claude Code session loaded root `CLAUDE.md`, which imported
 `.agents/governance/bootstrap.md` and `.claude/provider.md`; that is a direct
@@ -89,7 +98,15 @@ observation of the Claude loader for one session. The Codex loader was not
 observed. Runtime acceptance needs `docker compose up`, which this work may
 not run, so it stays `NOT_RUN`.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -101,18 +118,29 @@ not run, so it stays `NOT_RUN`.
 | Codex loader acceptance | 28 | W33 | Native Codex session load | - | NOT_RUN | Not observable from this session | optional | - |
 | Runtime acceptance | 28 | W33 | Compose start and health | - | NOT_RUN | Runtime start not authorized | optional | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 28 | accepted | Tier and routing tests, Tier negative check, Manifest negative check, Remote protection read, Cross-repository read | Two past-removal checks replaced by current-rule guards, two reclassified; remote protection matches with one merge-method gap for the owner; four-repository adoption not claimed; Codex loader and runtime stay not run. | SPEC-0212 TSK-0017 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

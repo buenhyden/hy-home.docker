@@ -14,15 +14,23 @@ created: "2026-10-29"
 
 # Archive Migration Module Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W50: move the Migration 0003 cutover proof out of the general Stage 98
 archive module (request lines L113, L126, L132) without changing what any
 check proves. This Task owns criterion 45 only.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [Request line meaning audit](tsk-0029-request-line-meaning-audit.md)
+
+### Inputs and Authority
+
+#### Inputs and Authorization
 
 On 2026-10-29 the owner asked for every gap offered after TSK-0029 to be
 done. `quality-standards.md` keeps proof readers for preserved bytes even when
@@ -31,9 +39,11 @@ option. Given that, the owner chose to separate the module instead of keeping
 it as it was. The input is `main` at merged PR #630. The authorization covers
 this refactor, this branch, its pull request, and merge.
 
-## Work Log
+## Execution Log
 
-### Lifecycle Events
+### Work Performed
+
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -41,7 +51,7 @@ this refactor, this branch, its pull request, and merge.
 | SPEC-0212-TSK-0034 | ready | in-progress | #objective |
 | SPEC-0212-TSK-0034 | in-progress | completed | #evidence |
 
-### Change
+#### Change
 
 - `scripts/lib/document_governance/archive_migration_0003.py` now holds the 21
   definitions used only for Migration 0003:
@@ -62,7 +72,15 @@ this refactor, this branch, its pull request, and merge.
   registers the new module and updates `archive.py`'s consumers.
 - No check was removed or skipped, and no proof changed.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
+
+#### Evidence
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -73,19 +91,29 @@ this refactor, this branch, its pull request, and merge.
 | Lint and format | 45 | W50 | `ruff check` and `ruff format --check` on `scripts/lib/document_governance` and `tests/lib/document_governance` | This branch | PASS | No findings | required | - |
 | Metadata and links | 45 | W50 | `check-document-metadata.py --mode check-contracts`, `check-document-links.py --mode alignment` | This branch | PASS | 0 violations, 0 failures | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 45 | accepted | Archive behavior parity, Affected suites, Document governance suite, Script manifest, Lint and format, Metadata and links | The Migration 0003 proof lives in its own module, the general archive module holds no value of that migration, and every check proves the same as before. | SPEC-0212 TSK-0034 |
 
-## Review and Completion
+### Remaining Conditions
 
 This Task completes on the evidence above. Hosted checks and the merge are
 observed on the pull request.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [Request line meaning audit](tsk-0029-request-line-meaning-audit.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

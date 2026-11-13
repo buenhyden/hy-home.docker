@@ -14,16 +14,24 @@ created: "2026-10-13"
 
 # Current Coordination Audit Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Execute W14–W15: create a current, value-free routing and handoff record for
 requirements 11–30. This Task owns criteria 9–10 only. It does not reopen the
 completed bodies or acceptance of TSK-0001, TSK-0002, TSK-0003 or TSK-0005, and
 does not duplicate the named owners' criteria.
 
-## Inputs and Authorization
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [P01 OpenBao Task](../../0204-service-integration-security-and-operations/tasks/tsk-0006-openbao-trust-bootstrap-and-recovery.md)
+- [P08 document layout Task](../../0204-service-integration-security-and-operations/tasks/tsk-0015-p08-operations-document-layout.md)
+- [P10 acceptance Task](../../0204-service-integration-security-and-operations/tasks/tsk-0016-p10-opsflow-acceptance.md)
+
+### Inputs and Authority
 
 The user authorized the COORD prompt's safe source authoring, checks and
 sequential delivery. The input prompt is
@@ -44,9 +52,11 @@ possible owner activity, not proof that an owner is active or idle. No live
 runtime, secret, migration, rotation, deletion, recovery or remote write is
 performed by this Task.
 
-## Work Log
+## Execution Log
 
-### W14 Current input identity
+### Work Performed
+
+#### W14 Current input identity
 
 The fixed historical investigation baseline is
 `5bfa644f0aa9b03716707d72e233c36bd2c71f68`. The current source input is the
@@ -54,7 +64,7 @@ newer PR #457 merge above. The current audit consumes the merge as source
 state; it does not recertify the OpenBao maintenance plan, runbook or backup
 receipt changed by that PR.
 
-### W15 Requirement routing and classification
+#### W15 Requirement routing and classification
 
 The following classifications are current prose results. `SOURCE_APPLIED` is
 not a native, HOME, migration, rotation, recovery or delivery result.
@@ -106,7 +116,7 @@ The current lifecycle inventory reports 32 tracked packages: 12 approved and
 execution states of their Tasks or Execution Items; the final selector result
 remains pending W15 validation.
 
-### W15 Writer locks and recovery boundaries
+#### W15 Writer locks and recovery boundaries
 
 | Owner | Exclusive surface | Release condition |
 | --- | --- | --- |
@@ -125,14 +135,14 @@ only in its owning Task after it names the exact resource, operator/window,
 backup material and recoverable boundary. Owner activity is unknown whenever
 only a worktree path is observed.
 
-### W15 Verification and handoff
+#### W15 Verification and handoff
 
 The source audit is ready for document validation and independent review. The
 Task will not mark static checks, a commit, a PR or delivery complete until they
 run against this branch's exact final HEAD. Runtime-related owner results above
 remain unchanged by those document checks.
 
-### Delivery correction and worktree recovery
+#### Delivery correction and worktree recovery
 
 The first branch published commit `cdc66cfbbc1943904e4ba6f53114e7f42c12d846`
 with the invalid lowercase subject `docs: add current coordination audit`.
@@ -150,7 +160,7 @@ worktree retains the patch. Patch SHA256 is
 `be4501a3c7f290ae4c0c87e7c1852405917e89d30259c5208ff59a97596922e5`.
 No other writer's files, commits, branches, or runtime state were changed.
 
-### R31 routing conflict and draft — 2026-10-21
+#### R31 routing conflict and draft — 2026-10-21
 
 The approved Spec routes R31 to "SPEC-0204 / P09" (`spec.md` routing table row
 31, repeated in TSK-0008), but SPEC-0204 `plan.md` says "P09 now owns only
@@ -170,7 +180,7 @@ table row 31 and both TSK-0008 rows now name the SEC01 image owner (SPEC-0204
 TSK-0009) with P08 structure checks. The routing conflict is closed; R31 stays
 PARTIAL until each later ROOT-image change shows its same-unit updates.
 
-### v22 NOT_RUN review — 2026-10-21
+#### v22 NOT_RUN review — 2026-10-21
 
 The v22 audit's NOT_RUN items, reviewed at `main` `710631e60`:
 
@@ -218,7 +228,7 @@ RedisInsight (SSPL-1.0) are in use and not OSI-approved; n8n's Sustainable Use
 License allows internal use; the Grafana stack, k6, Renovate and Stalwart are
 AGPL, which matters only if repackaged images are published.
 
-### v28 local continuation plan and source census — 2026-10-22
+#### v28 local continuation plan and source census — 2026-10-22
 
 The direct user requested execution of the attached v28 document, SHA-256
 `b497f05146cbd7002262f819bb5a1d9d620d161f3c2a6b0ac4d9827c920c1a89`.
@@ -283,7 +293,7 @@ The files are reused without copying their bodies into this repository:
 | `_workspace/learning-app-prompts/01-civil-service-exam-app.md` | 4119 | `e585922622a049bf31b6224d581c89040296f885956303841d3a7464ee09024a` |
 | `_workspace/learning-app-prompts/02-en-ja-reading-speaking-app.md` | 4041 | `32712c13aa33d47fb1656907cc6952cd6deb48d6768b02ce2b154ebff1f67cf3` |
 
-### v28 requirement routes and evidence boundaries
+#### v28 requirement routes and evidence boundaries
 
 The four result columns below are independent. “Retained” means the v28
 instruction contains the named obligation, not that all unavailable original
@@ -352,7 +362,7 @@ observed BuildKit floor and separating restored data from mere startup;
 they do not authenticate this host's outcomes. The Compose volumes page
 timed out, so it is not cited as verified product evidence.
 
-### v28 local PR draft and resume handoff
+#### v28 local PR draft and resume handoff
 
 Local PR title: `docs(specs): Reconcile recorded operational task outcomes`.
 Draft body: “Current summaries still wait for observations already recorded
@@ -374,7 +384,7 @@ existing P01/P06/P07/SEC01/0244–0246 Tasks with exact targets, current inputs,
 review, approval and recovery boundaries; no pending protected operation blocks
 unrelated safe source/tests/docs work.
 
-### v28 source and style observations
+#### v28 source and style observations
 
 The v28 public-source census used the existing `expected_from_root`,
 `validate_service_inventory` and `project_root` helpers, exact local public
@@ -395,7 +405,7 @@ reported metadata findings still require scoped investigation; their number
 alone does not prove they are baseline defects. Final validation, independent
 review and local delivery remain pending, with remote actions NOT_RUN.
 
-### v28 local delivery receipt — 2026-10-22
+#### v28 local delivery receipt — 2026-10-22
 
 The reviewed work is on `codex/v28-local-residuals`, based on
 `73433adc1b685582741604d8acc1f6f70be0adbe`. GitHub main was read again before
@@ -456,7 +466,7 @@ integration has no confirmed target approval. Remote push, PR, hosted CI,
 deployment and protected operations remain NOT_RUN. The legacy tables below
 are preserved; current progress belongs to this Work Log.
 
-### v28 current status audit of 39 packages and disposition — 2026-10-22
+#### v28 current status audit of 39 packages and disposition — 2026-10-22
 
 The reviewed source input is clean HEAD
 `d7bec9a9a4318caa60cc0f5f99a1de6cfa71a580`. Five bounded public-source
@@ -559,7 +569,7 @@ disposal. Remote delivery/settings and protected operational work remain outside
 this local execution and follow their separately scoped approval, exact target
 and recovery boundary; they do not block independent safe source/docs work.
 
-### v28 final local delivery and approval handoff — 2026-10-22
+#### v28 final local delivery and approval handoff — 2026-10-22
 
 The 39-package audit and all KEEP dispositions above are complete for their
 declared source scope. Current contradictory clauses were corrected at their
@@ -610,7 +620,7 @@ executable approval choice. Token revocation is excluded from this request.
 Rollback, if later requested, reverts a complete reviewed logical source unit;
 OpenBao helper/caller pins and assessment must move together. No rollback ran.
 
-### v28 approved merge and source rollout — 2026-10-22
+#### v28 approved merge and source rollout — 2026-10-22
 
 The user first approved push of all 13 existing commits and a main-targeted
 Draft PR, then directly authorized operational changes, merge and deployment.
@@ -671,7 +681,7 @@ Evidence and Criterion Acceptance stay preserved. B1 exact identity, B4/P06,
 A3 disposition, ROOT security/recovery and owner acceptance remain open;
 D1 retains 2026-11-15 without new risk acceptance.
 
-### v28 current lifecycle reconciliation — 2026-10-22
+#### v28 current lifecycle reconciliation — 2026-10-22
 
 The user explicitly authorized pushing operational record `bd4168e20`, creating
 its PR, merging after required checks, and reconciling implemented Spec, Plan
@@ -680,14 +690,14 @@ and Task status and lifecycle. That commit was pushed to
 only its exact head may merge after required checks pass. Token revocation
 remains excluded.
 
-### Current coordination readiness 2026-10-22
+#### Current coordination readiness 2026-10-22
 
 The existing 39-package audit, approved parent Spec/Plan, criteria 9–10 assigned
 to W14–W15 and previous verification were available. Today's documentation
 reconciliation was actually ready, so this Task entered `draft → ready`.
 This does not backdate an execution state for earlier implementation.
 
-### Current coordination execution 2026-10-22
+#### Current coordination execution 2026-10-22
 
 Today's lifecycle reconciliation actually started, so the Task entered
 `ready → in-progress`. Parallel writers had separate package ownership and
@@ -706,7 +716,7 @@ formal acceptance remains pending and this Task remains in-progress. Current
 audit and check results belong in this Work Log, without replacing an acceptance
 decision.
 
-### Current lifecycle verification and handoff 2026-10-22
+#### Current lifecycle verification and handoff 2026-10-22
 
 The reviewed change touches 54 Stage 03 documents in 22 packages. The current
 owner instruction authorizes 15 Spec/Plan pairs to become approved at 1.0.0,
@@ -749,7 +759,7 @@ same branch, followed by a main-targeted PR and expected-head merge only after
 required checks pass. No protection changes or history rewrite are authorized;
 recovery is a separately reviewed source revert, not service or data mutation.
 
-### v29 current investigation and execution boundary — 2026-10-22
+#### v29 current investigation and execution boundary — 2026-10-22
 
 The user supplied v29 as the current implementation instruction. Its original
 attachment SHA256 is `f564973ffcc408748660505ab4350297c63a5fdc40336edd66798b8452e5e5b8`.
@@ -805,7 +815,7 @@ collector-format correction, not a service-health failure or operating change.
 Its sanitized scratch receipt SHA256 is
 `47019c1121264c3cb874d9806c4331fb13d9760adacc9400e150e02bd9eaa725`.
 
-### v29 single-writer changes and remaining acceptance
+#### v29 single-writer changes and remaining acceptance
 
 | Requirement / audit scope | Existing primary owner | Current local action / preserved boundary |
 | --- | --- | --- |
@@ -839,7 +849,7 @@ expiry. Native memory/hook, CA ordering, W75 recovery, P07 workload, full image
 security, sustained backup/26-hour freshness and P06 acceptance remain with the
 existing active owners. These lanes do not block unrelated local source fixes.
 
-### v29 current criterion and work-unit routing
+#### v29 current criterion and work-unit routing
 
 This current reconciliation supersedes the execution-state descriptions in the
 earlier dated W15 table, while reusing its unchanged criterion/unit/source
@@ -875,7 +885,7 @@ those owners' acceptance. Original R, unnamed compound rows and historical
 aliases retain their namespaces rather than becoming duplicate implementation
 jobs or new canonical IDs.
 
-### v29 official research applicability
+#### v29 official research applicability
 
 The assigned read-only investigations consulted the following primary sources
 on 2026-10-22. Exact source versions and observed runtime versions remain
@@ -898,7 +908,7 @@ supplier's WAF. Search-index excerpts were not treated as a full primary
 source or a new rated-endurance acceptance. SMART extrapolation and a
 manufacturer-rated lifetime budget therefore remain distinct owner decisions.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
@@ -906,7 +916,7 @@ manufacturer-rated lifetime budget therefore remain distinct owner decisions.
 | SPEC-0212-TSK-0006 | ready | in-progress | #current-coordination-execution-2026-10-22 |
 | SPEC-0212-TSK-0006 | in-progress | completed | #v29-current-coordination-completion-2026-10-22 |
 
-### v29 final local verification and bounded decision
+#### v29 final local verification and bounded decision
 
 The five investigations finished before implementation. Their gate manifest
 SHA256 is `2fb7f0460a41a9552dd2f8f61e6acec6df315da7dd227ec38ac8d35128c315e8`.
@@ -973,7 +983,7 @@ The first final-commit attempt was rejected by Markdown MD012 for two extra
 blank separators in the active tables. Those separators were corrected;
 normal hooks must pass on the actual final staged index before delivery.
 
-### v29 current coordination completion 2026-10-22
+#### v29 current coordination completion 2026-10-22
 
 The current request authorizes this local reconciliation. After the actual
 investigation, source comparison, generation7 adoption, verification and
@@ -996,7 +1006,7 @@ Push, remote PR, merge, release, deployment, runtime change and token operations
 are NOT_RUN in v29. Local Spec-grouped handoff drafts reuse the prepared prompts;
 no external app, new Spec, cleanup target or destructive action is introduced.
 
-### v29 generation7 observation migration
+#### v29 generation7 observation migration
 
 The current v29 request authorizes local document reconciliation at source
 `49fd95a6ed482d7194c840b43b73a030be6f3d5d`. This amendment changes only the current observation-table
@@ -1045,7 +1055,7 @@ an explicit current-graph projection, not a rewrite of those old observations.
 
 ```
 
-### v29 legacy Check identities and actual invocations
+#### v29 legacy Check identities and actual invocations
 
 **The copied Check strings are immutable legacy check identities, including
 their original invalid-message and exit14 wording. They are not the argv or
@@ -1085,7 +1095,13 @@ negative control correctly rejected removal of the three active failed rows;
 this retained-failure migration does not use that rejected path or any parser
 exception.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -1109,14 +1125,20 @@ exception.
 | v29 current routing audit | 9 | W15 | Current C/W/Task routing, source/check classification, declaration and residual-owner comparison; independent review | Source49fd95a6e plus reviewed patch330d9c6e and current routing amendment | PASS | #v29-final-local-verification-and-bounded-decision | required | - |
 | v29 current package audit | 10 | W14 | Canonical39-package inventory, metadata/lifecycle/link checks and independent bounded-scope review | Current inventory SHA2569700edd5b2208526be6c5791d35ebd3981159a442558f3d9721681a413ea0ba7; reviewed source manifestcc758f8b | PASS | #v29-final-local-verification-and-bounded-decision | required | - |
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 9 | accepted | v29 current routing audit, Current retained-check resolution 1, Current retained-check resolution 2, Current retained-check resolution 3 | Current requirement routing and residual-owner audit completed under the v29 local request; foreign operational acceptance is excluded. | @buenhyden / SPEC-0212-TSK-0006 |
 | 10 | accepted | v29 current package audit | Current39-package status/criterion inventory and lifecycle review completed; no unsupported cancellation or archive move. | @buenhyden / SPEC-0212-TSK-0006 |
 
-## Review and Completion
+### Remaining Conditions
 
 The current execution status is `completed`. Today's v29 bounded decision
 above accepts only C9/W15 and C10/W14 after the current audit and independent
@@ -1147,10 +1169,12 @@ existing owners. Remote and operational actions retain their separately scoped
 approval and recovery boundaries. Token revocation/disposal is excluded from
 this local continuation.
 
-## Related Documents
+## Handoff
 
-- [Spec](../spec.md)
-- [Plan](../plan.md)
-- [P01 OpenBao Task](../../0204-service-integration-security-and-operations/tasks/tsk-0006-openbao-trust-bootstrap-and-recovery.md)
-- [P08 document layout Task](../../0204-service-integration-security-and-operations/tasks/tsk-0015-p08-operations-document-layout.md)
-- [P10 acceptance Task](../../0204-service-integration-security-and-operations/tasks/tsk-0016-p10-opsflow-acceptance.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.

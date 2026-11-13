@@ -1,10 +1,10 @@
 ---
 title: "P04 Airflow Independent Manifest Pipeline Task"
-version: "0.1.24"
+version: "0.1.25"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-10-30"
+updated: "2026-11-13"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0012"
 parent_ids:
@@ -14,9 +14,11 @@ created: "2026-10-11"
 
 # P04 Airflow Independent Manifest Pipeline Task
 
-## Overview
+## Scope
 
-### Objective
+### Objective and Parent
+
+#### Objective
 
 Own criterion18/W34-W39: implement the independent synthetic manifest
 validation/publication batch using the existing DEV PostgreSQL, object storage
@@ -25,7 +27,19 @@ This batch is not a Wiki engine, crawler, search system or learning application.
 Initial issuance defines ownership and prerequisites; it implements no workload
 and changes no database, bucket, credential or runtime.
 
-## Inputs and Authorization
+- [Specification](../spec.md)
+- [Plan](../plan.md)
+- [Current reconciliation](../../0212-request-baseline-and-reconciliation/spec.md)
+- [SEC01 image and security owner](tsk-0009-sec01-stable-security-integration.md)
+- [P01 OpenBao continuation](tsk-0006-openbao-trust-bootstrap-and-recovery.md)
+- [P02 catalog](tsk-0010-p02-secret-catalog-and-views.md)
+- [P03 integration contracts](tsk-0011-p03-service-integration-contracts.md)
+- [Airflow guide](../../../05.operations/guides/08-workflows-and-automation/0050-airflow.md)
+- [Airflow source](../../../../infra/07-workflow/airflow/README.md)
+- [DEV database source](../../../../infra/04-data/dev-db/README.md)
+- [SeaweedFS source](../../../../infra/04-data/seaweedfs/README.md)
+
+### Inputs and Authority
 
 The user's complete P04 prompt and current coordination request authorize
 assessment, Task issuance and the independent worker instructions below.
@@ -53,7 +67,7 @@ User authorization is not requested again for already-authorized source work.
 Each actual shared/private operation still binds exact target, effects,
 consumer, validation and recovery in this Task before execution.
 
-### Independent Worker and Exclusive Files
+#### Independent Worker and Exclusive Files
 
 One writer uses `codex/p04-airflow-manifest-pipeline` in
 `/home/hyunyoun/data/hy-home.docker/.worktrees/p04-airflow-manifest-pipeline`,
@@ -104,7 +118,7 @@ base blob IDs, exact hunks, tests, consumer effects and rollback in ignored
 `.agent-work/integration-proposal/README.md`. Same-file changes are integrated
 once after both sides are reviewed. The new override has no n8n changes.
 
-### Parallel Work and Operational Prerequisites
+#### Parallel Work and Operational Prerequisites
 
 Proceed with W34-W37 public source, RED/GREEN unit/static tests, draft SQL and
 outbox contract, and integration proposals. Full SEC01 and P03 completion are
@@ -147,7 +161,7 @@ unrelated global image gate. Do not reuse MNG, production app data or an
 occupied restore target. No full-stack up/down, volume prune, shared PGDATA
 initialization, broad role revoke, credential rotation or LAB runtime change.
 
-### Canonical SQL, S3 and P05 Interface
+#### Canonical SQL, S3 and P05 Interface
 
 Use database `opsflow_dev`, schema `ops_flow`, NOLOGIN owner `opsflow_owner`,
 LOGIN `opsflow_ingest`, `opsflow_notifier`, `opsflow_reader`; distinguish a
@@ -204,9 +218,11 @@ None initially. DAG parse has zero workload-file/DB/S3 I/O and no Airflow ORM.
 One task performs I/O; XCom contains only bounded run/status/count metadata.
 Prove actual Celery worker execution with sanitized metadata, never raw logs.
 
-## Work Log
+## Execution Log
 
-### 현재 후속 증거 인계 — 2026-10-22
+### Work Performed
+
+#### 현재 후속 증거 인계 — 2026-10-22
 
 현재 소스에는 manifest/adapters/TLS, manual paused DAG와 versioned SQL이
 구현되어 있다. 아래 2026-10-13–14 CONNECT FAIL은 당시 입력의 결과로 보존한다.
@@ -222,14 +238,14 @@ TimescaleDB, HOME, TLS/권한/consumer 및 전체 복구 수락이나 P05와 같
 과거 Evidence/실패와 source-only delivery 기록은 그대로 보존한다. 이번 공개
 소스 대조는 native 실행이나 새 수락을 수행하지 않았다.
 
-### Lifecycle Events
+#### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0204-TSK-0012 | draft | ready | #worker-start-and-ownership |
 | SPEC-0204-TSK-0012 | ready | in-progress | #worker-start-and-ownership |
 
-### Worker Start and Ownership
+#### Worker Start and Ownership
 
 The user dispatched W34-W37 on 2026-10-11 in the issued dedicated worktree.
 Actual HEAD and local main were `4e26a5a8022a7307c7461af60337442912955df1`,
@@ -285,7 +301,7 @@ Airflow/Celery execution. Public API basis is the official
 the version-specific public-interface page was unavailable. Exact compatible
 SDK acceptance belongs to the future fixed-image import.
 
-### Intermediate Source Gates
+#### Intermediate Source Gates
 
 On a later read, local main advanced to
 `f7543e0697e2473cbbbeb254792e7a1d5b4b8423` while origin/main and an actual
@@ -328,7 +344,7 @@ the missing guard (RED), then the fixed denial (GREEN). Internal protected-file
 connections still require W38 endpoint/network authorization. TLS delivery,
 actual identity readability, native role/policy and recovery remain NOT_RUN.
 
-### Assessment Observations and Next Units
+#### Assessment Observations and Next Units
 
 Local main and coordinator were clean at74feff942. P01 was clean at6da5e3bf3;
 P02 had eight catalog/schema/tool/test/Task changes; P03 was clean at74feff942.
@@ -364,7 +380,7 @@ OpenBao source2.7.1 versus observed2.6.2 remains P01/SEC ownership.
    rerun affected registered changed/staged checks, independent code/security/
    SQL/IaC/docs review and latest-head CI before the owning-Spec PR merge.
 
-### Source Validation Receipt
+#### Source Validation Receipt
 
 The Python source unit was committed locally as
 `944cf2ec1af877d39f9f5e788bc84e13a9b08189` after independent code and security
@@ -453,7 +469,7 @@ reviewed resolved-image projection is now another coordinator prerequisite;
 do not insert an old image default, bypass the guard or claim latest-image
 acceptance to clear it.
 
-### Exclusive File and Shared Interface Ledger
+#### Exclusive File and Shared Interface Ledger
 
 Intermediate source receipt at `b2a46bc88` plus the earlier SQL inputs below:
 the same coverage command with data file `/tmp/p04-root-source-final.coverage`
@@ -548,7 +564,7 @@ source hunks. It does not reverse schema/state; future native rollback pauses
 this DAG, preserves accepted receipts and restores only the reviewed isolated
 or DEV workload target without MNG reset, volume deletion or global restart.
 
-### Latest Source Handoff
+#### Latest Source Handoff
 
 The user's latest reply leaves SEC01 and P03 execution contracts unconfirmed.
 Continue source and synthetic work; actual image import, private delivery,
@@ -669,7 +685,7 @@ disposable isolated database. It does not test backup/empty restore, cross-DB
 isolation or real S3 publication. TLS CA delivery is fail-closed in the source;
 its accepted implementation requires the P03 protected-delivery contract.
 
-### Local Commit and Delivery Ledger
+#### Local Commit and Delivery Ledger
 
 | Logical unit | Local commit |
 | --- | --- |
@@ -685,7 +701,7 @@ The branch-specific GitHub PR query returned an empty list, exit0. No P04 push,
 PR, merge or remote CI result exists. Source rollback is limited to these
 owned commits; no private/runtime state requires reversal because none changed.
 
-### Coordinator source integration — 2026-10-11
+#### Coordinator source integration — 2026-10-11
 
 Actual base is remote `8bef97d915495d4adb8dddd1801724db8065783e`.
 Merge `24bdda3d99d292d773ee122f890af793016e8d25` preserves all four worker
@@ -708,7 +724,7 @@ input hashes, logs and failures are retained in the coordinator's ignored
 Local source integration does not closeW38/criterion18. PR/remote CI, native
 image import, DEV publication, HOME, migration and empty restore remain NOT_RUN.
 
-### Optional overlay source classification repair — 2026-10-11
+#### Optional overlay source classification repair — 2026-10-11
 
 The current integration input is main
 `4c83f14b11a77e13e582eb85d0bf256685472a95`. The twenty worker source files
@@ -857,7 +873,7 @@ owning-Spec/current-head checks and independent review. W38 and criterion18
 remain open; only the relevant accepted image and exact resource/recovery
 contract can enable the native batch and P05's subsequent notification proof.
 
-### Required-image-input projection repair — 2026-10-11
+#### Required-image-input projection repair — 2026-10-11
 
 The first overlay classification unit was committed as
 `f1a7726c4a77220d7dddc5f0b027b7fedcfe879d`. The subsequent registered local
@@ -933,7 +949,7 @@ accept SEC01's image, installed dependencies or grants. Criterion18/W38,
 native image import, DEV execution, HOME, migration, rotation and recovery
 remain open or NOT_RUN under their exact resource/image/restore contracts.
 
-### Segmented Local Source Validation — 2026-10-11
+#### Segmented Local Source Validation — 2026-10-11
 
 Frozen source input is `5b1a92db48fd508feff4cee0753b3b4468dd41dc`, following
 common/worker integration `c7d56a383ad8b77dd615327d11605b3e15d2146e`.
@@ -979,7 +995,7 @@ release18/0.023s and final repository494/127.874s. Native criterion18/W38,
 ISOLATED/HOME/MIGRATION/ROTATION/RECOVERY and remote delivery remain open or
 NOT_RUN as previously recorded; segmented source checks do not close this Task.
 
-### Function-only Provision Source Completion — 2026-10-12
+#### Function-only Provision Source Completion — 2026-10-12
 
 Baseline `241a470d246191751a7a5655a86d5ec4f679a0ff` now has a closed
 schema-v2 source contract for the five fixed Opsflow identities. The existing
@@ -1033,7 +1049,7 @@ Splitting the SQL keyword from the psql placeholder with normal Python string
 concatenation preserves the generated v1 bytes and v2 quoting while allowing
 the same hook to inspect the staged source without that false positive.
 
-### Native acceptance reassessment — 2026-10-13
+#### Native acceptance reassessment — 2026-10-13
 
 This reassessment binds the Task to dedicated-worktree HEAD
 `603a7637f77df1b5d63c971453853388a39c7df6`. `git fetch origin main` exited 0;
@@ -1092,7 +1108,7 @@ raw logs, and personal data. Source rollback is a logical revert of the owning
 P04 migration/source commit; it does not reverse a later database migration,
 object write, credential change, or restore action.
 
-#### HOME rollout preparation receipt
+##### HOME rollout preparation receipt
 
 The selected preparation target is Docker's default context with Compose project
 `hy-home-infra` and root configuration at the repository's absolute main path.
@@ -1142,7 +1158,7 @@ HOME-preparation scope. Neither role may invent credentials, claim a production
 recovery result, or convert an unsigned/SBOM-unscanned/advisory-unreviewed
 Airflow candidate into a HOME-approved image.
 
-#### P05 schema-v2 source handoff
+##### P05 schema-v2 source handoff
 
 The reviewed source handoff remains `SOURCE_REVIEW_ONLY`, observed on main
 `603a7637`. Earlier hashes in this Task remain historical receipts. The current
@@ -1176,7 +1192,7 @@ is NOT_RUN. The registered replacement
 seconds on base `603a7637`. This receipt is distinct from the earlier verified
 16-pass consumer-contract commands and does not bind a P05 runtime target.
 
-#### Fresh bounded-native and integration receipts
+##### Fresh bounded-native and integration receipts
 
 The user explicitly approved the P04 branch's public source-reference JSON
 hunk. P05's foreign dirty diff was preserved. The JSON receipt begins
@@ -1225,7 +1241,7 @@ Worker README metadata passed and the prior link corpus result was 1,272
 documents/11,441 links with one historical warning; both predate this Task
 amendment. Final long gates remain pending and criterion 18 is not closed.
 
-#### PostgreSQL corrective progression
+##### PostgreSQL corrective progression
 
 Project source `6cd65c97` corrected the quoted `DO`-block psql interpolation;
 the associated DEV-PG test source begins `37381`. Positive attempt `20f40`
@@ -1266,7 +1282,7 @@ documents/11,441 links. Source changed during the aggregate run, so those
 partial receipts are not a final atomic-head result. No gate code was changed
 or bypassed; a hosted candidate must test the committed head.
 
-#### Isolated PostgreSQL empty-restore result
+##### Isolated PostgreSQL empty-restore result
 
 Native source execution reached `001`, `002`, `003`, the business-date v1 RED
 and v2 GREEN cases, idempotent/concurrent/backfill behavior, reader view,
@@ -1291,7 +1307,7 @@ Full HOME PostgreSQL-plus-S3 recovery remains NOT_RUN. The current Task and
 README metadata run selected two documents with zero violations before this
 amendment; it is not metadata acceptance for this newer Task revision.
 
-#### Corrected source handoff freeze for C1
+##### Corrected source handoff freeze for C1
 
 The latest fetched origin/main observation begins `5bf0`; P05 PR 435 is merged.
 This freeze prepares the concrete P04 C1 source commit only. It records isolated
@@ -1310,7 +1326,7 @@ The user granted the subsequent minimal binding-reconciliation permission.
 P05 may reference C1 only through its own reviewed QA integration; the existing
 historical P05 consumer heading and string remain preserved until then.
 
-#### HOME preparation matrix — proposed, no execution authority
+##### HOME preparation matrix — proposed, no execution authority
 
 This matrix makes the selected HOME-preparation lane reviewable. Values marked
 `<REQUIRED>` are not observed facts and cannot be inferred from source. The
@@ -1400,7 +1416,7 @@ restic restore <REQUIRED: reviewed paired state snapshot> \
   --target <REQUIRED: owned empty SeaweedFS target>
 ```
 
-#### P05 binding recipe — proposed under explicit user approval
+##### P05 binding recipe — proposed under explicit user approval
 
 P05's owner verifies the C1 corrected-source-handoff-freeze-for-C1 hashes,
 updates only its approved binding/test inputs, runs its owned QA, and records
@@ -1410,7 +1426,7 @@ target database to a separate target, validates it, and rebinds only after
 approval; accepted outbox receipts are retained. It never changes MNG, deletes
 shared volumes, runs `down -v`, or destructively repairs S3 orphans.
 
-#### C2 P05 binding checkpoint
+##### C2 P05 binding checkpoint
 
 After explicit user approval, P05 committed the narrow reconciliation as
 `fc3289738ee7bca59c22102e52e0b97bae66e001`. Its public JSON, contract-test,
@@ -1434,7 +1450,7 @@ an omitted default; the driver's required `SET TRUE` may therefore reject valid
 grammar. A QA RED/fix candidate is pending strict catalog checks and is not
 accepted. No raw dump is recorded.
 
-#### Restore-stable source handoff
+##### Restore-stable source handoff
 
 This is the sole current official P05 handoff. The restore-stable schema-v2
 sources are `001_opsflow.sql`
@@ -1495,7 +1511,7 @@ SQL README SHA256 `cd2f33`; it predates this amendment and is not a PASS for
 this amendment. The prior final local-staged check also passed before C1; neither
 receipt replaces the required check on the final integrated head.
 
-### Current TLS source correction — 2026-10-14
+#### Current TLS source correction — 2026-10-14
 
 The current user request authorizes safe source fixes, tests and owning-Spec
 PR delivery from `ALL_PROMPTS.md` input SHA256
@@ -1545,7 +1561,7 @@ NOT_RUN. The existing internal plaintext :8333 lane is preserved. Historical
 cross-database CONNECT denial FAIL is a separate privilege gap and is not
 resolved by this source unit. Criterion 18 remains pending.
 
-### Current TLS logical commit receipt — 2026-10-14
+#### Current TLS logical commit receipt — 2026-10-14
 
 The reviewed eight-file source/document unit was committed as
 `667dcd9328ca6aa2923ad14a012967931877931b`,
@@ -1572,7 +1588,7 @@ review approved the last wording clarification before the staged gate.
 Task-only metadata/links/review must cover this new receipt before commit;
 unchanged source tests are not repeated merely to record their result.
 
-### Follow-ups from the TSK-0013 W42 review 2026-10-30
+#### Follow-ups from the TSK-0013 W42 review 2026-10-30
 
 TSK-0013 froze 001, 003 and 004 as the P05 interface after an independent
 security review that approved them with notes. The notes belong to this Task.
@@ -1597,7 +1613,7 @@ Low, for the next migration:
 None of these changes the frozen interface. A migration that does change it
 needs a new TSK-0013 binding.
 
-### Handoff from SPEC-0204 TSK-0013 2026-10-30
+#### Handoff from SPEC-0204 TSK-0013 2026-10-30
 
 TSK-0013 is final at `main` `c585c5244` (PR #666). Criteria 19 and 22 are accepted. The P05 notifier consumes the
 frozen P04 interface: SHA256 `82a4762a…` (001), `830b62c6…` (003) and `ad8176d8…`
@@ -1612,7 +1628,13 @@ NOT_RUN. The SQL review follow-ups are in "Follow-ups from the TSK-0013 W42
 review 2026-10-30". Next input: any migration that changes these functions
 needs a new TSK-0013 binding.
 
-## Evidence
+### Blockers and Decisions
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Verification Evidence
+
+### Results
 
 | Evidence | Criteria | Work Unit | Check | Input | Result | Location | Resolves |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -1683,13 +1705,19 @@ registration is not a PASS. Run document metadata/links and git diff --check.
 Keep SOURCE / UNIT / STATIC / ISOLATED / HOME / MIGRATION / ROTATION /
 RECOVERY / DELIVERY separate; unit results do not satisfy native acceptance.
 
-## Criterion Acceptance
+### Resolution Links
+
+None: nothing was recorded here before this Task moved to the common form.
+
+## Acceptance Decision
+
+### Criterion Decisions
 
 | Criterion | Acceptance | Evidence | Decision |
 | --- | --- | --- | --- |
 | 18 | pending | - | - |
 
-## Review and Completion
+### Remaining Conditions
 
 Issuance was draft; the current worker transition is in-progress as recorded
 above. The user's latest reply again leaves SEC01/P03 contracts unconfirmed.
@@ -1722,16 +1750,12 @@ Wiki preparation remains P09; no app, raw source collection, production OIDC,
 search/embedding/model, Wiki schedule, blog-data write, external workspace,
 learning-app planning or LAB runtime action is included.
 
-## Related Documents
+## Handoff
 
-- [Specification](../spec.md)
-- [Plan](../plan.md)
-- [Current reconciliation](../../0212-request-baseline-and-reconciliation/spec.md)
-- [SEC01 image and security owner](tsk-0009-sec01-stable-security-integration.md)
-- [P01 OpenBao continuation](tsk-0006-openbao-trust-bootstrap-and-recovery.md)
-- [P02 catalog](tsk-0010-p02-secret-catalog-and-views.md)
-- [P03 integration contracts](tsk-0011-p03-service-integration-contracts.md)
-- [Airflow guide](../../../05.operations/guides/08-workflows-and-automation/0050-airflow.md)
-- [Airflow source](../../../../infra/07-workflow/airflow/README.md)
-- [DEV database source](../../../../infra/04-data/dev-db/README.md)
-- [SeaweedFS source](../../../../infra/04-data/seaweedfs/README.md)
+### Promotion Receipt
+
+None: nothing was recorded here before this Task moved to the common form.
+
+### Next Owner
+
+None: nothing was recorded here before this Task moved to the common form.
