@@ -56,13 +56,13 @@ HOME 전환 전에는 실행 중 소비자가 사용하는 옛 경로에 동일 
 
 ### Canonical Entry Points
 
-공개 메타데이터의 정본은 [secret-catalog.json](../infra/03-security/openbao/secret-catalog.json)이며, 값 없이 공개 계약을 확인하는 명령은 `bash scripts/operations/gen-secrets.sh --dry-run`입니다.
+공개 메타데이터의 정본은 [secret-catalog.json](../infra/03-security/openbao/secret-catalog.json)이며, 값 없이 공개 계약을 확인하는 명령은 `bash scripts/operations/gen-secrets.sh --dry-run`이다.
 
 ## Getting Started
 
 ### Prerequisites
 
-개인 파일을 다루는 작업은 사전에 대상·승인·백업·복구 범위를 Task에 기록해야 하며, 값 파일이나 개인 등록표의 원문은 어떤 출력에도 넣지 않습니다.
+개인 파일을 다루는 작업은 사전에 대상·승인·백업·복구 범위를 Task에 기록해야 하며, 값 파일이나 개인 등록표의 원문은 어떤 출력에도 넣지 않는다.
 
 ### First Verified Path
 
@@ -83,10 +83,10 @@ HOME 전환 전에는 실행 중 소비자가 사용하는 옛 경로에 동일 
 ### Current Documentation
 
 - [문서 인덱스](../docs/README.md): 아래 단계 문서는 이 인덱스에서 찾는다.
-- 민감 변수 비교: `docs/05.operations/guides/0010-sensitive-env-vars-comparison.md`
-- 백업·복구 정책: `docs/05.operations/policies/0021-backup-and-restore.md`
+- 민감 변수 비교: `docs/05.operations/guides/04-security-and-secrets/0010-sensitive-env-vars-comparison.md`
+- 백업·복구 정책: `docs/05.operations/policies/10-platform-and-backup/0021-backup-and-restore.md`
 - README 양식: `docs/99.templates/templates/common/readme-repository.template.md`
 
 ### Support and Ownership
 
-이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.
+이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있다.

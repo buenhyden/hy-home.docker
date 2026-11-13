@@ -299,4 +299,4 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 
 ### Support and Ownership
 
-문의와 오류 보고는 [bug_report.yml](.github/ISSUE_TEMPLATE/bug_report.yml) 이슈 양식으로, 취약점 보고는 [SECURITY.md](.github/SECURITY.md)의 경로로 합니다. 이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.
+오류 보고는 [bug_report.yml](.github/ISSUE_TEMPLATE/bug_report.yml), 기능 요청은 [feature_request.yml](.github/ISSUE_TEMPLATE/feature_request.yml) 이슈 양식으로, 취약점 보고는 [SECURITY.md](.github/SECURITY.md)의 경로로 합니다. 이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.

@@ -51,7 +51,7 @@ schema 1 보존, current 재사용, 재시도/conflict, 용량 경쟁, 재연결
 
 ### Prerequisites
 
-Python 3와 [scripts/README.md](../../scripts/README.md)의 hash lock(`requirements-controller.lock`)을 설치한 venv가 필요합니다. `tests/validation/test_mng_pg_init_sql.py` opt-in 통합 테스트에는 Docker daemon과 `tests/requirements-integration.txt`의 의존성이 추가로 필요합니다.
+Python 3와 [scripts/README.md](../../scripts/README.md)의 hash lock(`requirements-controller.lock`)을 설치한 venv가 필요합니다.
 
 ### First Verified Path
 
