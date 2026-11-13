@@ -1,10 +1,10 @@
 ---
 title: "WARNING: Stage document edit"
-version: "1.1.3"
+version: "1.1.4"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -17,15 +17,29 @@ name: "warn-stage-doc-edit"
 
 # WARNING: Stage document edit
 
-## Overview
+## Purpose
+
+### Objective
 
 Apply the declared `warn` action for warn-stage-doc-edit.
 
+### Authority
+
+Owning policy: [Agent Bootstrap Policy](../bootstrap.md#hard-constraints).
+
 ## Scope
+
+### Applies To
 
 The `warn-stage-doc-edit` rule applies on the `file` event and matches file edits whose path meets its structured `conditions` entry ("WARNING: Stage document edit"). The frontmatter owns the exact matcher.
 
+### Exclusions
+
+None: this document states no exclusion.
+
 ## Rules
+
+### Requirements
 
 **Stage document edit detected (project rule)**
 
@@ -51,14 +65,28 @@ The plan inspection does not execute QA. Follow the current
 [quality policy](../quality-standards.md#canonical-delivery-phase-matrix) for
 focused authoring checks and remote PR candidate validation.
 
-## Exceptions
-
-No exception is declared by this rule.
-
-## Verification
+### Enforcement
 
 Native event delivery is a separate observation from the frontmatter match.
 
-## Related Documents
+## Exceptions
+
+### Exception Conditions
+
+No exception is declared by this rule.
+
+### Approval and Review
+
+None: this document states no separate approval or review step.
+
+## Ownership
+
+### Responsibilities
+
+The rule owner is `@buenhyden`.
+
+### Change and Adoption
+
+Canonical governance navigation:
 
 - `.agents/README.md`

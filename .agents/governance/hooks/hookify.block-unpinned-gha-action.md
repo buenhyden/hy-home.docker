@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: floating reference"
-version: "1.0.4"
+version: "1.0.5"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 action: "block"
 conditions:
 - "field": "file_path"
@@ -20,15 +20,29 @@ name: "block-unpinned-gha-action"
 
 # BLOCKED: floating reference
 
-## Overview
+## Purpose
+
+### Objective
 
 Apply the declared `block` action for block-unpinned-gha-action.
 
+### Authority
+
+Owning policy: [GitHub governance](../github-governance.md).
+
 ## Scope
+
+### Applies To
 
 The `block-unpinned-gha-action` rule applies on the `file` event and matches file edits whose path and text meet every structured `conditions` entry ("BLOCKED: floating reference"). The frontmatter owns the exact matcher.
 
+### Exclusions
+
+None: this document states no exclusion.
+
 ## Rules
+
+### Requirements
 
 **Floating GitHub Actions reference blocked (project rule)**
 
@@ -59,14 +73,28 @@ Commit SHA pinning is safest. If a version tag is used, prefer digest verificati
 
 The declared action applies when the pattern matches.
 
-## Exceptions
-
-No exception is declared by this rule.
-
-## Verification
+### Enforcement
 
 Native event delivery is a separate observation from the frontmatter match.
 
-## Related Documents
+## Exceptions
+
+### Exception Conditions
+
+No exception is declared by this rule.
+
+### Approval and Review
+
+None: this document states no separate approval or review step.
+
+## Ownership
+
+### Responsibilities
+
+The rule owner is `@buenhyden`.
+
+### Change and Adoption
+
+Canonical governance navigation:
 
 - `.agents/README.md`

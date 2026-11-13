@@ -1,10 +1,10 @@
 ---
 title: "WARNING: hook parity contract review required"
-version: "1.0.5"
+version: "1.0.6"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -17,15 +17,29 @@ name: "warn-hook-parity-edit"
 
 # WARNING: hook parity contract review required
 
-## Overview
+## Purpose
+
+### Objective
 
 Apply the declared `warn` action for warn-hook-parity-edit.
 
+### Authority
+
+Owning contract: `.agents/governance/providers/registry.yaml`.
+
 ## Scope
+
+### Applies To
 
 The `warn-hook-parity-edit` rule applies on the `file` event and matches file edits whose path meets its structured `conditions` entry ("WARNING: hook parity contract review required"). The frontmatter owns the exact matcher.
 
+### Exclusions
+
+None: this document states no exclusion.
+
 ## Rules
+
+### Requirements
 
 **Hook file edit detected; parity contract review required (project rule)**
 
@@ -55,15 +69,28 @@ python3 scripts/validation/check-agent-governance-contract.py --mode repository 
 python3 scripts/operations/provider_surface_renderer.py --check
 ```
 
-## Exceptions
-
-No exception is declared by this rule.
-
-## Verification
+### Enforcement
 
 Native event delivery is a separate observation from the frontmatter match.
 
-## Related Documents
+## Exceptions
+
+### Exception Conditions
+
+No exception is declared by this rule.
+
+### Approval and Review
+
+None: this document states no separate approval or review step.
+
+## Ownership
+
+### Responsibilities
+
+The rule owner is `@buenhyden`.
+
+### Change and Adoption
+
+Canonical governance navigation:
 
 - `.agents/README.md`
-- `.agents/governance/providers/registry.yaml`

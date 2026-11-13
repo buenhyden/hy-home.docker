@@ -1,15 +1,17 @@
 ---
 title: "Stage Authoring Matrix"
-version: "1.3.2"
+version: "1.3.3"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 ---
 
 # Stage Authoring Matrix
 
-## Overview
+## Purpose
+
+### Objective
 
 | Stage | `layer` | Purpose | Canonical owner | Completion evidence |
 | --- | --- | --- | --- | --- |
@@ -35,13 +37,27 @@ source for files outside docs. Use README navigation and canonical agent rules;
 scoped execution reads and required registry/schema/template inputs retain the
 narrow exceptions in that protocol.
 
+### Authority
+
+- [Documentation protocol](documentation-protocol.md)
+- [SDLC](sdlc.md)
+- Stage 99 registry (`docs/99.templates/registry.json`)
+
 ## Scope
+
+### Applies To
 
 Current stage roles, document families, canonical ownership, and verification routes.
 
+### Exclusions
+
+None: this document states no exclusion.
+
 ## Rules
 
-### Document Type Families
+### Requirements
+
+#### Document Type Families
 
 `type` is a `family/kind` pair. The family names the authority that owns the
 document; the kind names its role inside that family.
@@ -74,19 +90,30 @@ observed evidence and never authenticates an approval source. The Registry owns
 document-family state vocabulary, direct parent cardinality, result and review
 table shapes, and lifecycle generation; the SDLC owns their execution meaning.
 
-## Exceptions
-
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-## Verification
+### Enforcement
 
 The canonical home contains only registered canonical category sources.
 Unknown or unsafe entries fail closed and are preserved for review; they are not
 stale generated files eligible for automatic deletion.
 
-## Related Documents
+## Exceptions
 
-- [Documentation protocol](documentation-protocol.md)
-- [SDLC](sdlc.md)
-- Stage 99 registry (`docs/99.templates/registry.json`)
+### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+### Approval and Review
+
+The [approval boundaries](approval-boundaries.md) policy governs a separately authorized operation.
+
+## Ownership
+
+### Responsibilities
+
+This policy is owned by `@buenhyden`.
+
+### Change and Adoption
+
+Related documents:
+
 - [Documentation index](../../docs/README.md)

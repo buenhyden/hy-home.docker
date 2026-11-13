@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: absolute file:// link"
-version: "1.0.4"
+version: "1.0.5"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 action: "block"
 conditions:
 - "field": "file_path"
@@ -20,15 +20,29 @@ name: "block-absolute-file-link"
 
 # BLOCKED: absolute file:// link
 
-## Overview
+## Purpose
+
+### Objective
 
 Apply the declared `block` action for block-absolute-file-link.
 
+### Authority
+
+Canonical governance root: `.agents/README.md`.
+
 ## Scope
+
+### Applies To
 
 The `block-absolute-file-link` rule applies on the `file` event and matches file edits whose path and text meet every structured `conditions` entry ("BLOCKED: absolute file:// link"). The frontmatter owns the exact matcher.
 
+### Exclusions
+
+None: this document states no exclusion.
+
 ## Rules
+
+### Requirements
 
 **Absolute `file://` link blocked (project rule)**
 
@@ -58,14 +72,26 @@ Calculate relative paths from the current file location.
 
 The declared action applies when the pattern matches.
 
-## Exceptions
-
-No exception is declared by this rule.
-
-## Verification
+### Enforcement
 
 Native event delivery is a separate observation from the frontmatter match.
 
-## Related Documents
+## Exceptions
 
-- `.agents/README.md`
+### Exception Conditions
+
+No exception is declared by this rule.
+
+### Approval and Review
+
+None: this document states no separate approval or review step.
+
+## Ownership
+
+### Responsibilities
+
+The rule owner is `@buenhyden`.
+
+### Change and Adoption
+
+None: this document states no separate change or adoption step.

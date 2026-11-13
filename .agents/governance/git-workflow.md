@@ -1,25 +1,42 @@
 ---
 title: "Git Workflow Governance"
-version: "1.6.2"
+version: "1.6.3"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-13"
 ---
 
 # Git Workflow Governance
 
-## Overview
+## Purpose
+
+### Objective
 
 This rule defines the mandatory git workflow for all contributors and agents.
 
+### Authority
+
+Owning and bootstrap documents:
+
+- [GitHub governance](github-governance.md)
+- [Bootstrap policy](bootstrap.md)
+
 ## Scope
+
+### Applies To
 
 Local Git authoring, branch integration, commits, review, and remote delivery boundaries.
 
+### Exclusions
+
+None: this document states no exclusion.
+
 ## Rules
 
-### 1. Commit Standards
+### Requirements
+
+#### 1. Commit Standards
 
 Use Conventional Commits with explicit scopes where possible.
 
@@ -60,7 +77,7 @@ review the diff, restage, and commit normally; when the index changes, an
 earlier PASS is not reused. It never replaces a user-global hook or claims
 automatic enforcement from configuration alone.
 
-### 2. Branching Strategy
+#### 2. Branching Strategy
 
 - Protected baseline: `main`
 - Short-lived human branches use `<type>/<short-description>`, where `type` is
@@ -82,7 +99,7 @@ automatic enforcement from configuration alone.
   stash, reset, discard, or force-commit uncommitted user work to make room;
   stop and ask instead.
 
-### 3. Pull Request Protocol
+#### 3. Pull Request Protocol
 
 1. Self-review changes before opening or updating a PR.
 2. Run focused authoring checks and inspect the selected prerequisites; the
@@ -106,7 +123,7 @@ automatic enforcement from configuration alone.
 9. Request review only after self-review and programmatic checks pass. Summarize scope, risk, and how to verify so reviewers can act efficiently.
 10. Incorporate review feedback explicitly: resolve or reply to each finding, re-run affected checks, and record what changed before re-requesting review.
 
-### 4. Operational Best Practices
+#### 4. Operational Best Practices
 
 - Use `fix` for user-visible or operational defect corrections and include regression evidence.
 - Use `refactor` only for behavior-preserving structure changes and list checks that demonstrate unchanged behavior.
@@ -126,7 +143,7 @@ automatic enforcement from configuration alone.
   approved target and recovery path. Select `RUN-0009` through the
   [platform and backup runbook index](../../docs/05.operations/runbooks/10-platform-and-backup/README.md).
 
-### 5. Agent Completion Commit Discipline
+#### 5. Agent Completion Commit Discipline
 
 - For repository-modifying agent work, the completion default is to create
   logical Conventional Commits after verification and before declaring the task
@@ -141,20 +158,32 @@ automatic enforcement from configuration alone.
   would include secrets or unrelated changes. In that case, report the reason and
   remaining state.
 
-## Exceptions
+### Enforcement
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-## Verification
-
-### 6. Enforcement
+#### 6. Enforcement
 
 Changes that bypass checks or violate secret safety must not be merged.
 GitHub-specific enforcement rules (branch protection, required checks, CODEOWNERS, Actions security) are governed by `.agents/governance/github-governance.md`.
 
-## Related Documents
+## Exceptions
 
-- [GitHub governance](github-governance.md)
+### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+### Approval and Review
+
+Separately authorized operations follow the [Approval boundaries](approval-boundaries.md) policy.
+
+## Ownership
+
+### Responsibilities
+
+The document owner is @buenhyden.
+
+### Change and Adoption
+
+Related documents:
+
 - [Quality standards](quality-standards.md)
-- [Bootstrap policy](bootstrap.md)
 - [Operations runbook index](../../docs/05.operations/runbooks/README.md)

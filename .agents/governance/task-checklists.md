@@ -1,25 +1,40 @@
 ---
 title: "Task Checklists"
-version: "1.5.0"
+version: "1.5.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-13"
 ---
 
 # Task Checklists
 
-## Overview
+## Purpose
+
+### Objective
 
 Check scope, implementation evidence, and completion before changing repository state.
 
+### Authority
+
+- [Agentic policy](agentic.md)
+- [Approval boundaries](approval-boundaries.md)
+
 ## Scope
+
+### Applies To
 
 Approved repository edits, ongoing implementation, and completion evidence.
 
+### Exclusions
+
+None: this document states no exclusion.
+
 ## Rules
 
-### Before Editing
+### Requirements
+
+#### Before Editing
 
 - [ ] Confirm the approved objective, editable paths, protected surfaces, and exclusions.
 - [ ] Load applicable Requirement, Architecture, Spec, Plan, Task, policy, and skill sources.
@@ -27,7 +42,7 @@ Approved repository edits, ongoing implementation, and completion evidence.
       provider changes to explicit approval, validation, and recovery.
 - [ ] Define acceptance checks and inspect the shared worktree.
 
-### During Work
+#### During Work
 
 - [ ] Keep changes traceable to the approved Plan Task.
 - [ ] Keep canonical sources separate from generated provider projections.
@@ -36,13 +51,9 @@ Approved repository edits, ongoing implementation, and completion evidence.
 - [ ] Record actual evidence in the Task, not a second progress or handoff document.
 - [ ] Stop on missing authority, destructive ambiguity, or unexpected scope.
 
-## Exceptions
+### Enforcement
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-## Verification
-
-### Before Completion
+#### Before Completion
 
 - [ ] Follow the [execution boundary](quality-standards.md#4-execution-boundary)
       for staged lint/format immediately before local commit, server PR final
@@ -64,9 +75,25 @@ No exception is granted here; a separately authorized operation follows [Approva
       missing history or unsupported checkout conversion without claiming success.
 - [ ] Create logical Conventional Commits after the review findings are resolved.
 
-## Related Documents
+## Exceptions
 
-- [Agentic policy](agentic.md)
-- [Approval boundaries](approval-boundaries.md)
+### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+### Approval and Review
+
+The [approval boundaries](approval-boundaries.md) policy governs a separately authorized operation.
+
+## Ownership
+
+### Responsibilities
+
+This policy is owned by `@buenhyden`.
+
+### Change and Adoption
+
+Related documents:
+
 - [Git workflow](git-workflow.md)
 - [Postflight checklist](postflight-checklist.md)

@@ -1,31 +1,48 @@
 ---
 title: "Documentation Protocol"
-version: "3.16.1"
+version: "3.16.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 ---
 
 # Documentation Protocol
 
-## Overview
+## Purpose
+
+### Objective
 
 Keep one document authority per role and preserve truthful provenance throughout authoring and retirement.
 
+### Authority
+
+Owning and bootstrap documents:
+
+- [Stage authoring matrix](stage-authoring-matrix.md)
+- Stage 99 registry (`docs/99.templates/registry.json`)
+
 ## Scope
+
+### Applies To
 
 Current authored documents, registered machine inputs, and retained historical units.
 
+### Exclusions
+
+None: this document states no exclusion.
+
 ## Rules
 
-### Authority
+### Requirements
+
+#### Authority
 
 The Stage 99 registry is the only machine authority for paths, profiles,
 required sections, lifecycle values, and identifier relations. agent governance owns
 authoring behavior and `scripts/` owns executable validation.
 
-### Document Boundaries
+#### Document Boundaries
 
 - Stage 01 owns long-lived solution-independent requirements.
 - Stage 02 owns current architecture descriptions and durable decisions.
@@ -81,7 +98,7 @@ instruction dependencies. Links inside `docs/` keep their existing rules;
 [Document Retention and Retirement](#document-retention-and-retirement) governs
 retired identities.
 
-### Authoring Rules
+#### Authoring Rules
 
 1. Select the registry profile before creating or moving a document.
 2. Use four-digit numbered slugs where the profile requires an identity.
@@ -380,7 +397,7 @@ of external templates.
 | Shape or lifecycle | `docs/99.templates/` | Change the registry, schema, or copyable template. |
 | Protected or ambiguous change | `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` Task/audit gap first | Stop mutation and bind approval, scope, and recovery first. |
 
-### Document Retention and Retirement
+#### Document Retention and Retirement
 
 Retirement is a disposition inside the current approved Task, never a new Spec
 project of its own, and a closed Spec gets no new standing verification
@@ -481,7 +498,7 @@ investigate, not permission to delete. Record the summary map and consumer
 cutover in the current Task. Age may trigger a disposition review. It never
 triggers a deletion.
 
-### Implementation coverage
+#### Implementation coverage
 
 Every capability implemented in this workspace has one Stage 01 Requirement
 owner for its obligation and one Stage 02 Description or ADR owner for its
@@ -489,11 +506,7 @@ structure and durable decision. Retiring a Stage 03 package never removes that
 coverage: the package's implemented outcome moves to those owners before the
 package is retired.
 
-## Exceptions
-
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-## Verification
+### Enforcement
 
 - `python scripts/validation/check-document-metadata.py --mode check-active`
 - `python scripts/validation/check-document-links.py --mode all` (links, entry
@@ -501,10 +514,26 @@ No exception is granted here; a separately authorized operation follows [Approva
 - Stage checks selected by the
   [change-type verification matrix](quality-standards.md#5-change-type-verification-matrix).
 
-## Related Documents
+## Exceptions
 
-- [Stage authoring matrix](stage-authoring-matrix.md)
-- Stage 99 registry (`docs/99.templates/registry.json`)
+### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+### Approval and Review
+
+Separately authorized operations follow the [Approval boundaries](approval-boundaries.md) policy.
+
+## Ownership
+
+### Responsibilities
+
+The document owner is @buenhyden.
+
+### Change and Adoption
+
+Related documents:
+
 - [SDLC](sdlc.md)
 - [Task checklists](task-checklists.md)
 - [Documentation index](../../docs/README.md)

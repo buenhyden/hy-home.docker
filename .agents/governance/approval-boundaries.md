@@ -1,26 +1,44 @@
 ---
 title: "Approval Boundaries"
-version: "1.5.0"
+version: "1.5.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 ---
 
 # Approval Boundaries
 
-## Overview
+## Purpose
+
+### Objective
 
 Approval is bound to a named surface, operation, evidence route, and recovery.
 It never expands through delegation or provider handoff.
 
+### Authority
+
+Owning and bootstrap documents:
+
+- [Environment constraints](environment-constraints.md)
+- [Agentic policy](agentic.md)
+- [Provider registry](providers/registry.yaml)
+
 ## Scope
+
+### Applies To
 
 Actors, owned surfaces, protected operations, and their current trusted authorization sources.
 
+### Exclusions
+
+None: this document states no exclusion.
+
 ## Rules
 
-### Authorization Source and Records
+### Requirements
+
+#### Authorization Source and Records
 
 The current trusted user, operator, or native provider channel supplies an
 authorization only for its stated actor, operation, subject, revision or scope,
@@ -118,11 +136,7 @@ redaction boundary are defined by
   even when it routes or reviews writable work.
 - Policy changes require `rules-engineer` review.
 
-## Exceptions
-
-A current trusted user or native provider authorization permits only its stated operation and scope. The Authorization Source and Records rules above determine that boundary.
-
-## Verification
+### Enforcement
 
 **Protected Surfaces**
 
@@ -136,9 +150,24 @@ A current trusted user or native provider authorization permits only its stated 
 | `.agents/**` | canonical contract, links, and Task evidence | restore approved authored sources; never treat them as generated cleanup |
 | `docs/99.templates/**` | registry/schema validation and Task evidence | revert logical commit |
 
-## Related Documents
+## Exceptions
 
-- [Environment constraints](environment-constraints.md)
-- [Agentic policy](agentic.md)
-- [Provider registry](providers/registry.yaml)
+### Exception Conditions
+
+A current trusted user or native provider authorization permits only its stated operation and scope. The Authorization Source and Records rules above determine that boundary.
+
+### Approval and Review
+
+None: this document states no separate approval or review step.
+
+## Ownership
+
+### Responsibilities
+
+The document owner is @buenhyden.
+
+### Change and Adoption
+
+Related documents:
+
 - [GitHub governance](github-governance.md)

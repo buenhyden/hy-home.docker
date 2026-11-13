@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: prints a secret to logs"
-version: "1.0.4"
+version: "1.0.5"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 action: "block"
 conditions:
 - "field": "file_path"
@@ -20,15 +20,29 @@ name: "block-gha-secrets-in-run"
 
 # BLOCKED: prints a secret to logs
 
-## Overview
+## Purpose
+
+### Objective
 
 Apply the declared `block` action for block-gha-secrets-in-run.
 
+### Authority
+
+Owning policy: [GitHub governance](../github-governance.md).
+
 ## Scope
+
+### Applies To
 
 The `block-gha-secrets-in-run` rule applies on the `file` event and matches file edits whose path and text meet every structured `conditions` entry ("BLOCKED: prints a secret to logs"). The frontmatter owns the exact matcher.
 
+### Exclusions
+
+None: this document states no exclusion.
+
 ## Rules
+
+### Requirements
 
 **GitHub Actions secret exposure pattern blocked (project rule)**
 
@@ -63,14 +77,28 @@ Prefer OIDC-based cloud credentials over long-lived repository secrets.
 
 The declared action applies when the pattern matches.
 
-## Exceptions
-
-No exception is declared by this rule.
-
-## Verification
+### Enforcement
 
 Native event delivery is a separate observation from the frontmatter match.
 
-## Related Documents
+## Exceptions
+
+### Exception Conditions
+
+No exception is declared by this rule.
+
+### Approval and Review
+
+None: this document states no separate approval or review step.
+
+## Ownership
+
+### Responsibilities
+
+The rule owner is `@buenhyden`.
+
+### Change and Adoption
+
+Canonical governance navigation:
 
 - `.agents/README.md`

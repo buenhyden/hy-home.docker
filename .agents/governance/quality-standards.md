@@ -1,25 +1,40 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.11.0"
+version: "1.11.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 ---
 
 # Agent Quality and Security Standards
 
-## Overview
+## Purpose
+
+### Objective
 
 Universal quality gate for agent-driven changes in this repository.
 
+### Authority
+
+- `.agents/governance/github-governance.md`
+- `.agents/governance/agentic.md`
+
 ## Scope
+
+### Applies To
 
 Change-specific verification, security, reliability, generated freshness, and local or hosted quality routing.
 
+### Exclusions
+
+None: this document states no exclusion.
+
 ## Rules
 
-### 1. Documentation Quality Rubric
+### Requirements
+
+#### 1. Documentation Quality Rubric
 
 | Grade | Description | Requirements                                                           |
 | :---- | :---------- | :--------------------------------------------------------------------- |
@@ -35,7 +50,7 @@ Quality dimensions:
 - Conciseness: avoid generic filler.
 - Accuracy: references match current repository structure.
 
-### 2. Security Baseline
+#### 2. Security Baseline
 
 - Never commit plaintext credentials.
 - Prefer secret managers or mounted secret files.
@@ -53,7 +68,7 @@ Quality dimensions:
 - Network hardening: isolate traffic on intended networks and enforce TLS at
   ingress boundaries.
 
-#### Bounded npm risk acceptance
+##### Bounded npm risk acceptance
 
 No npm risk acceptance is active. The single bounded acceptance for
 GHSA-vfj7-8cjw-p6xm was retired after GitHub withdrew the advisory on
@@ -69,7 +84,7 @@ omitted development audit.
 Remote PR candidate validation and independent review own candidate acceptance, while
 main-push security remains a post-merge observation.
 
-### 3. Reliability Baseline
+#### 3. Reliability Baseline
 
 - Recurring QA covers current document forms, templates, frontmatter, identity,
   relationships, links, lifecycle and preservation, plus this workspace's
@@ -140,7 +155,7 @@ main-push security remains a post-merge observation.
   Changing the canonical rule itself needs its owner's approval under
   [approval boundaries](approval-boundaries.md#authorization-source-and-records).
 
-### 4. Execution Boundary
+#### 4. Execution Boundary
 
 - **Authoring**: explicit formatting may write eligible authored files. Focused
   RED/GREEN and selected read-only lint help diagnose a change. Observe actual
@@ -236,7 +251,7 @@ main-push security remains a post-merge observation.
   tools must not block a small document-only plan. Preserve bounded process,
   pipe and descendant cleanup; do not hide environment failures by skipping it.
 
-#### Canonical delivery phase matrix
+##### Canonical delivery phase matrix
 
 | Boundary | Automatic owner | Distinct evidence |
 | --- | --- | --- |
@@ -277,7 +292,7 @@ CodeQL and external security integrations are distinct remote observations;
 source edits do not prove that their server-side settings changed. Actual
 protection settings require approved mutation and authenticated read-back.
 
-### 8. Workflow and Language Routing
+#### 8. Workflow and Language Routing
 
 - Follow the sole load order in `.agents/governance/bootstrap.md#canonical-load-order`.
 - Follow repeatable orchestration in `.agents/governance/workflows.md`.
@@ -287,20 +302,16 @@ protection settings require approved mutation and authenticated read-back.
   `.agents/governance/documentation-protocol.md#readme-navigation`.
 - Resolve write permission through `.agents/governance/approval-boundaries.md`.
 
-### 9. Completion Routing
+#### 9. Completion Routing
 
 Use only `.agents/governance/task-checklists.md#before-completion`. Its conditional
 harness, evidence, documentation, and controlled-gate clauses determine which
 quality checks apply. PR-specific completion remains owned by the Completion
 Gate in `.agents/governance/github-governance.md`.
 
-## Exceptions
+### Enforcement
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-## Verification
-
-### 5. Change-Type Verification Matrix
+#### 5. Change-Type Verification Matrix
 
 Use the smallest meaningful selected checks. This is the sole matrix for all
 providers; Task evidence names each input, result, acceptance and unexecuted lane.
@@ -322,7 +333,7 @@ proves arbitrary agent prose or provider performance. Missing required evidence
 remains FAIL, BLOCKED, NOT_RUN or unverified as applicable. Independent review
 reads the exact diff, contract and actual results; the current Task owns it.
 
-### 6. Generated-Artifact Freshness
+#### 6. Generated-Artifact Freshness
 
 Some artifacts are generated from repository content and must be regenerated as
 part of QA before completion. Treat regeneration as a verification step, not an
@@ -342,7 +353,7 @@ optional cleanup.
 - **General rule**: never hand-edit a generated artifact to pass a check. Re-run
   its generator and commit the generated result as a separate logical unit.
 
-### 7. Local QA/CI Orchestration
+#### 7. Local QA/CI Orchestration
 
 Use `python3 scripts/validation/run-ci-gate.py --profile changed --explain` to render the
 selected public suite-to-validator mapping without execution. The public runner
@@ -385,7 +396,7 @@ The explicit `--mode local-staged` route is separate from aggregate QA and runs
 real staged checks immediately before commit. Isolated wrapper regressions do
 not substitute for an observed local or hosted execution.
 
-#### Explicit Full Audit
+##### Explicit Full Audit
 
 `full` is an explicitly scoped comprehensive audit, not a commit, feature-push,
 PR, main or release completion ritual. Record its selected context, tools,
@@ -400,7 +411,7 @@ Final review and evidence-update reuse follow
 slice revalidation and mandatory protected-surface expertise. An evidence-only
 Task update does not create another independent source-review gate.
 
-#### Gate and Fixture Ownership
+##### Gate and Fixture Ownership
 
 A gate owns one current invariant, not a historical document count, a copied
 command list, or a Task's observed commit. The workflow manifest owns composition;
@@ -419,7 +430,7 @@ require model execution or a second all-files sweep for wording-only edits.
 Retain negative cases for authorization, ownership, symlinks, and fail-closed
 execution. A smaller suite must not mean missing behavioral coverage.
 
-### 10. Formatting and Linting Ownership
+#### 10. Formatting and Linting Ownership
 
 At commit time, end-of-file and trailing whitespace are checked by
 read-only checkers, mixed-line-ending runs with `--fix=no`, Ruff format with
@@ -465,8 +476,24 @@ and no separate formatting tool is added.
 - Adopting or changing a formatter reformats the corpus once, in its own
   commit, after every check that the reformatting would break is fixed.
 
-## Related Documents
+## Exceptions
 
-- `.agents/governance/github-governance.md`
+### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+### Approval and Review
+
+The [approval boundaries](approval-boundaries.md) policy governs a separately authorized operation.
+
+## Ownership
+
+### Responsibilities
+
+This policy is owned by `@buenhyden`.
+
+### Change and Adoption
+
+Related documents:
+
 - `.agents/governance/git-workflow.md`
-- `.agents/governance/agentic.md`
