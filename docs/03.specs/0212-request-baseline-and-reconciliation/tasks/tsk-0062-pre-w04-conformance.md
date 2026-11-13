@@ -150,8 +150,9 @@ Registry `common` binds `link_types`, `link_profiles` and
 
 Authors assign link types and reviewers confirm them. The checkers enforce
 only that links resolve, that metadata keys and `parent_ids` are valid and
-that the Registry binding is valid; the schema pins every value of the
-policy tables. Existing documents are not retyped, and tool enforcement of
+that the Registry binding is valid; the schema pins every relation ID and direction and every
+link-type and link-profile value, and the validator checks the writers,
+owners and retained reverse fields. Existing documents are not retyped, and tool enforcement of
 types, reverse lookups and change propagation goes to W05.
 `superseded_by` stays as a recorded hand-written reverse until the
 coordinated lineage change the protocol already requires. The Registry
@@ -188,10 +189,11 @@ None: each decision above was the owner's before the change.
 | Relation types review | 115 | W120 | independent-review | Fresh-context rules-engineer of `e8b456e00` | FAIL | CHANGES_REQUIRED: the policy claimed checker enforcement and derived lookups that no code provides; the schema accepted any relation, link type or profile value; four minor (`superseded_by` wording, Vault converter, evidence pinning, test gaps) | required | - |
 | Relation fix RED | 115 | W120 | red-green-proof | Three new mutation tests against `e8b456e00` | FAIL | 11 of 14 mutation cases accepted, including a derived writer naming its own relation | required | - |
 | Relation fix GREEN | 115 | W120 | red-green-proof | `test_relations`, `test_registry`, `test_template_definition`, `test_surface_ownership` at `535557ef8` | PASS | All pass; check-contracts 0, agent governance contract 0, links alignment 0 | required | Relation fix RED |
+| Relation types re-review | 115 | W120 | independent-review | Same reviewer, commits `535557ef8` and `dfdb04c1d` | FAIL | All six earlier findings resolved; new Important: policy and this Task claimed the schema pins every table value, but writers, owners and retained reverse fields are only validator-checked; Minor: the policy named the W05 wave | required | - |
 
 ### Resolution Links
 
-The Glossary contract comparison FAIL is resolved by the Glossary contract re-comparison PASS, TemplateDefinition RED by TemplateDefinition GREEN, Relation types RED by Relation types GREEN, and Relation fix RED by Relation fix GREEN. The Relation types review FAIL is resolved by its re-review once it passes.
+The Glossary contract comparison FAIL is resolved by the Glossary contract re-comparison PASS, TemplateDefinition RED by TemplateDefinition GREEN, Relation types RED by Relation types GREEN, and Relation fix RED by Relation fix GREEN. The Relation types review and re-review FAILs are resolved by the final re-review once it passes.
 
 ## Acceptance Decision
 

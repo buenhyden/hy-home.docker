@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.18.1"
+version: "3.18.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -134,8 +134,8 @@ the relation as a whole.
 Only the side the Writer column names records a relation, and no document
 keeps a manual reverse-state table. Reverse lookups, such as the children of a
 parent or the consumers of an owner, and Change Propagation are derived by the
-reviewer from those records when a document is removed or moved. Tool
-enforcement of that derivation is handed to W05. The one retained reverse
+reviewer from those records when a document is removed or moved; no tool
+derives them yet. The one retained reverse
 field is `superseded_by`, the single reciprocal successor of `supersedes`, as
 [Authoring Rules](#authoring-rules) item 9 keeps it. Making it an array
 requires a coordinated graph and lineage contract change.
@@ -143,7 +143,9 @@ requires a coordinated graph and lineage contract change.
 The Registry `common` section binds these definitions as `link_types`,
 `link_profiles` and `document_relations`, and each relation's `owner` names
 the check in the last column, or this policy where there is none. The schema
-pins every value the tables above fix. The Registry validator also rejects a
+pins every relation ID and direction and every link-type and link-profile
+value; writers, owners and retained reverse fields are checked by the
+validator below, not pinned. The Registry validator also rejects a
 missing contract, a writer that names an undeclared frontmatter key, link type
 or relation, a relation derived from itself, an owner path that does not
 exist, and a retained reverse field that is not a frontmatter key. The
