@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import bisect
+import collections
 import dataclasses
 import html
 import json
@@ -1220,6 +1221,97 @@ def _link_type_findings(block: str) -> Iterable[tuple[str, str]]:
             yield "link-type-unknown", title
         elif title == "evidence" and not _COMMIT_PINNED_URL.match(match["dest"]):
             yield "link-evidence-unpinned", match["dest"]
+
+
+def _ids(value: object) -> tuple[str, ...]:
+    if isinstance(value, str):
+        return (value,)
+    if isinstance(value, (list, tuple)):
+        return tuple(item for item in value if isinstance(item, str))
+    return ()
+
+
+def _non_consuming_titles(node: DocumentNode) -> collections.Counter[str]:
+    """Count each destination's links titled with a type other than normative."""
+
+    counts: collections.Counter[str] = collections.Counter()
+    for _, block in _paragraphs(node.text):
+        for pattern in (_TITLED_LINK, _TITLED_DEFINITION):
+            for match in pattern.finditer(block):
+                if _is_escaped(match.string, match.start()):
+                    continue
+                title = next(
+                    value
+                    for value in (match["dq"], match["sq"], match["pq"])
+                    if value is not None
+                )
+                if title in LINK_TYPES - {"normative"}:
+                    counts[match["dest"]] += 1
+    return counts
+
+
+def relation_lookup(
+    graph: DocumentGraph, target: pathlib.PurePosixPath
+) -> dict[str, tuple[str, ...]]:
+    """Derive one document's reverse relations from the forward records.
+
+    children: documents whose `parent_ids` name the target (Structural
+    Ownership and Constraint); successors: documents whose `supersedes` names
+    it; consumers: documents with an untitled or `normative` link to it
+    (Authority; an untitled link may also be navigation, which a reviewer
+    tells apart); impact: the transitive closure over children and consumers
+    (Change Impact).
+    """
+
+    by_id: dict[str, pathlib.PurePosixPath] = {}
+    for node in graph.nodes:
+        for artifact in _ids(node.metadata.get("artifact_id")):
+            by_id[artifact] = node.path
+    children: dict[pathlib.PurePosixPath, set[pathlib.PurePosixPath]]
+    children = collections.defaultdict(set)
+    successors: dict[pathlib.PurePosixPath, set[pathlib.PurePosixPath]]
+    successors = collections.defaultdict(set)
+    for node in graph.nodes:
+        for key, edges in (("parent_ids", children), ("supersedes", successors)):
+            for artifact in _ids(node.metadata.get(key)):
+                if artifact in by_id:
+                    edges[by_id[artifact]].add(node.path)
+    paths = {node.path for node in graph.nodes}
+
+    def document(linked: pathlib.PurePosixPath) -> pathlib.PurePosixPath:
+        # A folder link reaches the folder's README.
+        readme = linked / "README.md"
+        return readme if linked not in paths and readme in paths else linked
+
+    excluded = {node.path: _non_consuming_titles(node) for node in graph.nodes}
+    totals = collections.Counter(
+        (link.source, document(link.target), link.raw_target)
+        for link in graph.links
+        if link.source != document(link.target)
+    )
+    consumers: dict[pathlib.PurePosixPath, set[pathlib.PurePosixPath]]
+    consumers = collections.defaultdict(set)
+    for (source, linked, raw), count in totals.items():
+        if count > excluded.get(source, collections.Counter())[raw]:
+            consumers[linked].add(source)
+
+    def ordered(paths: Iterable[pathlib.PurePosixPath]) -> tuple[str, ...]:
+        return tuple(sorted(path.as_posix() for path in paths))
+
+    seen: set[pathlib.PurePosixPath] = set()
+    queue = collections.deque([target])
+    while queue:
+        current = queue.popleft()
+        for dependent in children[current] | consumers[current]:
+            if dependent != target and dependent not in seen:
+                seen.add(dependent)
+                queue.append(dependent)
+    return {
+        "children": ordered(children[target]),
+        "successors": ordered(successors[target]),
+        "consumers": ordered(consumers[target]),
+        "impact": ordered(seen),
+    }
 
 
 def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:

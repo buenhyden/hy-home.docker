@@ -7,6 +7,7 @@ import argparse
 import dataclasses
 import json
 import pathlib
+import posixpath
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -20,6 +21,7 @@ from scripts.lib.document_governance.frontmatter import (  # noqa: E402
 from scripts.lib.document_governance.links import (  # noqa: E402
     MODE_HANDLERS,
     build_document_graph,
+    relation_lookup,
     removed_template_mention_total,
     run_mode,
     traceability_pair_total,
@@ -105,13 +107,51 @@ def _paths(
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=pathlib.Path, default=ROOT)
-    parser.add_argument("--mode", required=True, choices=(*tuple(MODE_HANDLERS), "all"))
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument("--mode", choices=(*tuple(MODE_HANDLERS), "all"))
+    mode.add_argument(
+        "--impact",
+        type=pathlib.PurePosixPath,
+        help="report one document's derived reverse relations; fails on nothing it finds",
+    )
     return parser
+
+
+def _print_impact(root: pathlib.Path, target: pathlib.PurePosixPath) -> int:
+    """Print derived reverse lookups and Change Impact; a report, not a gate."""
+
+    if target.is_absolute():
+        try:
+            target = pathlib.PurePosixPath(
+                pathlib.Path(target).resolve().relative_to(root).as_posix()
+            )
+        except ValueError:
+            pass
+    target = pathlib.PurePosixPath(posixpath.normpath(target.as_posix()))
+    try:
+        current_paths, _ = _path_sets(root)
+        graph = build_document_graph(current_paths, repo_root=root)
+    except (OSError, ValueError, TypeError, KeyError, OperationsAuthorityError):
+        print(
+            "document-link-input-invalid: bounded document or Registry input is invalid",
+            file=sys.stderr,
+        )
+        return 1
+    if target not in {node.path for node in graph.nodes}:
+        print(f"impact: {target} is not a current document", file=sys.stderr)
+        return 2
+    for name, paths in relation_lookup(graph, target).items():
+        print(f"{name}: {len(paths)}")
+        for path in paths:
+            print(f"  {path}")
+    return 0
 
 
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     root = args.root.resolve()
+    if args.impact is not None:
+        return _print_impact(root, args.impact)
     try:
         modes = tuple(MODE_HANDLERS) if args.mode == "all" else (args.mode,)
         current_paths, alignment_paths = _path_sets(root)

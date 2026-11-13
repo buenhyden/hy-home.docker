@@ -1997,6 +1997,24 @@ class DocumentRegistryTests(unittest.TestCase):
 
         self.assertEqual(len(sources), len(set(sources)))
 
+    def test_template_role_consumers_are_tracked_files(self) -> None:
+        # TemplateDefinition contract: consumer_paths lists consumers actually
+        # found; a `role:` token or a missing path is not evidence of a file.
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        tracked = set(
+            subprocess.run(
+                ["git", "ls-files", "-z"],
+                cwd=ROOT,
+                capture_output=True,
+                check=True,
+                text=True,
+            ).stdout.split("\0")
+        )
+        for role, definition in raw["template_roles"].items():
+            for path in definition["consumer_paths"]:
+                with self.subTest(role=role, path=path):
+                    self.assertIn(path, tracked)
+
     def test_authored_frontmatter_schema_is_closed_and_unambiguous(self) -> None:
         schema_path = (
             ROOT / "docs/99.templates/contracts/document-frontmatter.schema.json"
