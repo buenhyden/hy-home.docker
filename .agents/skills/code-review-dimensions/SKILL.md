@@ -66,7 +66,7 @@ Mark unverifiable requirements explicitly and request the missing artifact; do n
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [Code reviewer](../../roles/code-reviewer.md)
 - [Change review execution](../change-review-execution/SKILL.md)

@@ -66,7 +66,7 @@ If the choice, authority, or alternatives are not decision-ready, return a decis
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [Documentation protocol](../../governance/documentation-protocol.md)
 - [Documentation scope](../../governance/documentation-protocol.md)

@@ -75,7 +75,7 @@ Exclude unsafe or unverifiable paths, record the omission, and stop if provenanc
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [Documentation writer](../../roles/doc-writer.md)
 - [Documentation scope](../../governance/documentation-protocol.md)

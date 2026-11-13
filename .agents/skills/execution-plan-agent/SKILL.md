@@ -66,7 +66,7 @@ Return to specification when interfaces, authority, or completion criteria canno
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [Workflow supervisor](../../roles/workflow-supervisor.md)
 - [Task breakdown](../task-breakdown-agent/SKILL.md)

@@ -181,7 +181,7 @@ named human approval boundary.
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [IaC reviewer](../../roles/iac-reviewer.md)
 - [Infrastructure cross-validation](../infra-cross-validate/SKILL.md)

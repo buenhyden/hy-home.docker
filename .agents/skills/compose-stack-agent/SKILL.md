@@ -66,7 +66,7 @@ Stop on unresolved variables, missing secret files, invalid dependency order, or
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [Infrastructure implementer](../../roles/infra-implementer.md)
 - [Docker Compose patterns](../docker-compose-patterns/SKILL.md)

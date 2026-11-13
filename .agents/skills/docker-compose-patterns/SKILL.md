@@ -26,7 +26,7 @@ Compose requirements and workspace conventions must identify whether the task is
 
 ### When Not to Use
 
-None: this skill states no exclusion.
+A requirement that no Compose-native pattern meets is outside this skill; it escalates to architecture design.
 
 ## Procedure
 
@@ -66,7 +66,7 @@ Escalate to architecture design when no Compose-native pattern meets the require
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [Infrastructure implementer](../../roles/infra-implementer.md)
 - [Compose stack function](../compose-stack-agent/SKILL.md)

@@ -66,7 +66,7 @@ Quarantine no test silently; isolate flaky environment dependencies and escalate
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [QA engineer](../../roles/qa-engineer.md)
 - [Test authoring](../test-authoring/SKILL.md)

@@ -66,7 +66,7 @@ Return to planning when a unit cannot be made reversible, testable, or independe
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [Workflow supervisor](../../roles/workflow-supervisor.md)
 - [Execution plan function](../execution-plan-agent/SKILL.md)

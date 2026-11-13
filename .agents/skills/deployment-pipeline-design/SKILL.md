@@ -66,7 +66,7 @@ Defer implementation when environment credentials, promotion authority, or rollb
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [CI/CD engineer](../../roles/ci-cd-engineer.md)
 - [CI/CD patterns](../ci-cd-patterns/SKILL.md)

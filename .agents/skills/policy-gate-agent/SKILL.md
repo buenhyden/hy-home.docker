@@ -77,7 +77,7 @@ Fail closed on ambiguous ownership, conflicting policy, unsafe paths, or missing
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [Rules engineer](../../roles/rules-engineer.md)
 - Agent governance artifacts contract (`docs/99.templates/registry.json`)

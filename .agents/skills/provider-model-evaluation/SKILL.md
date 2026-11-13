@@ -23,12 +23,13 @@ Explicit invocation only, under the
 [agent execution rules](../../governance/agentic.md#execution-rules).
 
 The provider/model question, official source boundary and repository work profile
-must be explicit before evaluation begins. A manual comparison is not a
-recurring workspace scoring gate.
+must be explicit before evaluation begins.
 
 ### When Not to Use
 
 The skill description states: "Do NOT use it to call a provider, to benchmark quality or latency, or to grant an entitlement; it reports a sourced disposition and stops."
+
+A manual comparison is not a recurring workspace scoring gate.
 
 ## Procedure
 
@@ -85,7 +86,7 @@ acceptance, entitlement, quality, cost, or latency.
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [Evaluation engineer role](../../roles/eval-engineer.md)
 - [Provider model contract](../../governance/providers/registry.yaml)

@@ -49,15 +49,6 @@ The skill description states: "Do NOT use it to judge whether the code is correc
 2. Run the smallest deterministic checks, apply approved formatter changes, and inspect all hook-managed fallout.
 3. Record commands, results, skipped/CI-only checks, and any remaining style finding without masking semantic defects.
 
-#### Gates
-
-- Formatting is deterministic and generated ownership is preserved.
-- Linting is scoped to relevant authored files and does not rely on blanket suppression.
-
-### Failure Handling
-
-Stop on unexpected paths, formatter oscillation, or conflicting style authorities. Do not invoke `pre-commit run` directly, and do not delete content to satisfy lint.
-
 Immediately before local commit, use
 `scripts/validation/run-ci-precommit.sh --mode local-staged` on the reviewed
 index. The controller derives check-only modes from staged shared configuration;
@@ -73,6 +64,15 @@ owns the conditions it carries, and those conditions decide whether an all-files
 pass is available at all. Read them before reaching for it; the normal answer to
 a scoped change is the scoped check, not the whole tree.
 
+#### Gates
+
+- Formatting is deterministic and generated ownership is preserved.
+- Linting is scoped to relevant authored files and does not rely on blanket suppression.
+
+### Failure Handling
+
+Stop on unexpected paths, formatter oscillation, or conflicting style authorities. Do not invoke `pre-commit run` directly, and do not delete content to satisfy lint.
+
 ## Inputs and Outputs
 
 ### Inputs
@@ -83,7 +83,7 @@ a scoped change is the scoped check, not the whole tree.
   which owns which of these may be run locally and on what scope.
 - [`scripts/classify-changed-files.sh`](./scripts/classify-changed-files.sh),
   which this skill owns beside this file rather than at the repository root,
-  for the bucket split the procedure below reads.
+  for the bucket split the procedure above reads.
 
 ### Outputs
 
@@ -99,7 +99,7 @@ a scoped change is the scoped check, not the whole tree.
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [QA engineer](../../roles/qa-engineer.md)
 - [Task checklists](../../governance/task-checklists.md)

@@ -26,7 +26,7 @@ A proposed infrastructure diff, declared runtime contract, and static validation
 
 ### When Not to Use
 
-None: this skill states no exclusion.
+Applying the infrastructure change is outside this read-only review. Runtime-only questions go to `drift-detector` and security-sensitive gaps to `security-auditor`.
 
 ## Procedure
 
@@ -68,7 +68,7 @@ Mark runtime-only questions for `drift-detector` and security-sensitive gaps for
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [IaC reviewer](../../roles/iac-reviewer.md)
 - [Drift detector](../../roles/drift-detector.md)

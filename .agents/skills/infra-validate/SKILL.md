@@ -86,7 +86,7 @@ Stop on invalid rendered configuration, missing authority, or unexpected runtime
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [Infrastructure implementer](../../roles/infra-implementer.md)
 - [Compose stack function](../compose-stack-agent/SKILL.md)

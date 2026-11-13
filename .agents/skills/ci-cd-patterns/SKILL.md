@@ -66,7 +66,7 @@ Stop when credentials, remote rulesets, or promotion authority are required; pro
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [CI/CD engineer](../../roles/ci-cd-engineer.md)
 - [GitHub governance](../../governance/github-governance.md)

@@ -76,7 +76,7 @@ Stop unsafe recovery, preserve metadata instead of prohibited payloads, and esca
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [Incident responder](../../roles/incident-responder.md)
 - [Operations scope](../../governance/quality-standards.md)

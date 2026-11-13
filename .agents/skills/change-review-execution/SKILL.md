@@ -26,7 +26,7 @@ The review package must identify the base/head range, task requirements, and obs
 
 ### When Not to Use
 
-None: this skill states no exclusion.
+Editing the implementation under review is outside this skill; the reviewer never edits it.
 
 ## Procedure
 
@@ -66,7 +66,7 @@ Return `cannot verify` with the missing evidence when the package is incomplete;
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [Code reviewer role](../../roles/code-reviewer.md)
 - [Code review dimensions](../code-review-dimensions/SKILL.md)

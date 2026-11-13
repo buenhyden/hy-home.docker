@@ -70,7 +70,7 @@ Do not publish commands that are unimplemented, destructive without approval, or
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [Documentation writer](../../roles/doc-writer.md)
 - [Operations scope](../../governance/quality-standards.md)

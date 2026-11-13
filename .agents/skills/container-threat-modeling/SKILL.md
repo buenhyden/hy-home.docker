@@ -66,7 +66,7 @@ Record unknown boundaries and stop any claim of completeness when configuration 
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [Security auditor](../../roles/security-auditor.md)
 - [Security audit](../security-audit/SKILL.md)

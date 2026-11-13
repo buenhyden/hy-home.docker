@@ -66,7 +66,7 @@ Return `needs_revalidation` when evidence, entitlement, cutoff, or calibration i
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [Evaluation engineer](../../roles/eval-engineer.md)
 - [Agent catalog contract](../../governance/providers/registry.yaml)

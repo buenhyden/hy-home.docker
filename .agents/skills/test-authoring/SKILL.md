@@ -76,7 +76,7 @@ two disagree, the disagreement is the finding.
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [QA engineer](../../roles/qa-engineer.md)
 - [E2E testing](../e2e-testing/SKILL.md)

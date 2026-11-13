@@ -70,7 +70,7 @@ Stop and redact on accidental sensitive-data exposure; escalate Critical risk or
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [Security auditor](../../roles/security-auditor.md)
 - [Container threat modeling](../container-threat-modeling/SKILL.md)

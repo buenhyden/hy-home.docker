@@ -26,7 +26,7 @@ Requirements must be approved, testable, and traceable; unresolved product choic
 
 ### When Not to Use
 
-None: this skill states no exclusion.
+Unresolved product choices and ambiguous or conflicting requirements are outside this skill; they return to Stage 01.
 
 ## Procedure
 
@@ -66,7 +66,7 @@ Return ambiguous or conflicting requirements to Stage 01 with concrete questions
 
 ### Completion and Handoff
 
-Owning role and policies:
+Owning role, policies and related documents:
 
 - [Rules engineer](../../roles/rules-engineer.md)
 - [ADR writing](../adr-writing/SKILL.md)
