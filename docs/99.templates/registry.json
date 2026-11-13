@@ -1292,7 +1292,7 @@
             "ref": "rel.reference"
           }
         ],
-        "owner": "scripts/validation/check-document-links.py",
+        "owner": ".agents/governance/documentation-protocol.md",
         "reverse_lookup": "derived"
       }
     }

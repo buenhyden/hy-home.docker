@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.18.0"
+version: "3.18.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -99,7 +99,8 @@ retired identities.
 
 Every link in a governed document has one of four types, and every link points
 forward from the document that writes it. A link never asks its target to
-write a link back.
+write a link back. The author assigns the type and the reviewer confirms it;
+no link carries a machine-readable type marker, so no checker infers one.
 
 | Type | Required | Authority | Pinned version | When the target is removed or moved |
 | --- | --- | --- | --- | --- |
@@ -108,34 +109,47 @@ write a link back.
 | Historical | No | None: it explains lineage | A revision | Turn the link into plain text |
 | Navigation | Yes | None: it routes a reader | Current target | Update the consumer in the same change |
 
-A required link must resolve. Before a document is deleted or moved, sort its
-inbound consumers by link type and handle each as the last column says.
-Vault wiki links are a separate profile. They are not typed this way and are
-converted at the Vault publish boundary. A governed document uses relative
+A required link must resolve. An evidence link whose target may later be
+deleted uses a revision-addressed form, such as a commit-pinned repository URL
+or a commit and path in plain text, because a relative link to a deleted file
+cannot stay resolved. Before a document is deleted or moved, the author sorts
+its inbound consumers by link type and handles each as the last column says,
+and the reviewer confirms that sorting. Vault wiki links are a separate
+profile and are not typed this way. The Vault owner converts them outside this
+repository, which has no wiki converter. A governed document uses relative
 Markdown links.
 
-Five relations connect documents. Each one has a relation ID, one direction,
-one writer and an owning check.
+Five relations connect documents. Each one has a relation ID, one direction
+and one writer. The last column names the check that validates the writer, not
+the relation as a whole.
 
-| Relation | ID | Direction | Writer | Owner |
+| Relation | ID | Direction | Writer | Check that validates the writer |
 | --- | --- | --- | --- | --- |
-| Authority | `rel.authority` | Consumer to owner | Normative links | `check-document-links.py` |
-| Ownership | `rel.ownership` | Document to owner | Frontmatter `owner` | `check-document-metadata.py` |
-| Reference | `rel.reference` | Source to target | Evidence, historical and navigation links | `check-document-links.py` |
-| Traceability | `rel.traceability` | Child to parent | Frontmatter `parent_ids`, and `supersedes` for lineage | `check-document-metadata.py` |
-| Change Propagation | `rel.change-propagation` | Owner to consumer | Derived from Authority and Reference | `check-document-links.py` |
+| Authority | `rel.authority` | Consumer to owner | Normative links | `check-document-links.py`: the link resolves |
+| Ownership | `rel.ownership` | Document to owner | Frontmatter `owner` | `check-document-metadata.py`: the key is valid |
+| Reference | `rel.reference` | Source to target | Evidence, historical and navigation links | `check-document-links.py`: the link resolves |
+| Traceability | `rel.traceability` | Child to parent | Frontmatter `parent_ids`, and `supersedes` for lineage | `check-document-metadata.py`: the keys and `parent_ids` are valid |
+| Change Propagation | `rel.change-propagation` | Owner to consumer | None: derived from Authority and Reference | None: the reviewer applies this section |
 
-Only the side the Writer column names records a relation. Reverse lookups,
-such as the children of a parent or the consumers of an owner, are derived
-from those records, and no document keeps a manual reverse-state table. The
-one retained reverse field is `superseded_by`, the reciprocal of `supersedes`;
-it stays until a coordinated graph and lineage contract change removes it, as
-[Authoring Rules](#authoring-rules) item 9 states. The Registry `common`
-section binds these definitions as `link_types`, `link_profiles` and
-`document_relations`. Its validator rejects a missing contract, a duplicate
-relation ID, a writer that names an undeclared frontmatter key, link type or
-relation, an owner path that does not exist, and any reverse lookup that is
-not derived. Existing links are not retyped by this rule.
+Only the side the Writer column names records a relation, and no document
+keeps a manual reverse-state table. Reverse lookups, such as the children of a
+parent or the consumers of an owner, and Change Propagation are derived by the
+reviewer from those records when a document is removed or moved. Tool
+enforcement of that derivation is handed to W05. The one retained reverse
+field is `superseded_by`, the single reciprocal successor of `supersedes`, as
+[Authoring Rules](#authoring-rules) item 9 keeps it. Making it an array
+requires a coordinated graph and lineage contract change.
+
+The Registry `common` section binds these definitions as `link_types`,
+`link_profiles` and `document_relations`, and each relation's `owner` names
+the check in the last column, or this policy where there is none. The schema
+pins every value the tables above fix. The Registry validator also rejects a
+missing contract, a writer that names an undeclared frontmatter key, link type
+or relation, a relation derived from itself, an owner path that does not
+exist, and a retained reverse field that is not a frontmatter key. The
+checkers enforce only that links resolve, that metadata keys and `parent_ids`
+are valid, and that this Registry binding is valid. Existing links are not
+retyped by this rule.
 
 #### Authoring Rules
 

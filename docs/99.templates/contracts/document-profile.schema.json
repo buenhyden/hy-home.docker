@@ -51,16 +51,116 @@
           ],
           "properties": {
             "normative": {
-              "$ref": "#/$defs/linkType"
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "direction",
+                "required",
+                "authority",
+                "pinned_version",
+                "on_target_removal"
+              ],
+              "properties": {
+                "direction": {
+                  "const": "forward"
+                },
+                "required": {
+                  "const": true
+                },
+                "authority": {
+                  "const": "binding"
+                },
+                "pinned_version": {
+                  "const": "current"
+                },
+                "on_target_removal": {
+                  "const": "update-consumer"
+                }
+              }
             },
             "evidence": {
-              "$ref": "#/$defs/linkType"
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "direction",
+                "required",
+                "authority",
+                "pinned_version",
+                "on_target_removal"
+              ],
+              "properties": {
+                "direction": {
+                  "const": "forward"
+                },
+                "required": {
+                  "const": true
+                },
+                "authority": {
+                  "const": "none"
+                },
+                "pinned_version": {
+                  "const": "revision"
+                },
+                "on_target_removal": {
+                  "const": "keep-pinned"
+                }
+              }
             },
             "historical": {
-              "$ref": "#/$defs/linkType"
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "direction",
+                "required",
+                "authority",
+                "pinned_version",
+                "on_target_removal"
+              ],
+              "properties": {
+                "direction": {
+                  "const": "forward"
+                },
+                "required": {
+                  "const": false
+                },
+                "authority": {
+                  "const": "none"
+                },
+                "pinned_version": {
+                  "const": "revision"
+                },
+                "on_target_removal": {
+                  "const": "plain-text"
+                }
+              }
             },
             "navigation": {
-              "$ref": "#/$defs/linkType"
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "direction",
+                "required",
+                "authority",
+                "pinned_version",
+                "on_target_removal"
+              ],
+              "properties": {
+                "direction": {
+                  "const": "forward"
+                },
+                "required": {
+                  "const": true
+                },
+                "authority": {
+                  "const": "none"
+                },
+                "pinned_version": {
+                  "const": "current"
+                },
+                "on_target_removal": {
+                  "const": "update-consumer"
+                }
+              }
             }
           }
         },
@@ -73,10 +173,36 @@
           ],
           "properties": {
             "markdown": {
-              "$ref": "#/$defs/linkProfile"
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "syntax",
+                "link_types"
+              ],
+              "properties": {
+                "syntax": {
+                  "const": "relative-markdown"
+                },
+                "link_types": {
+                  "const": true
+                }
+              }
             },
             "vault-wiki": {
-              "$ref": "#/$defs/linkProfile"
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "syntax",
+                "link_types"
+              ],
+              "properties": {
+                "syntax": {
+                  "const": "wiki"
+                },
+                "link_types": {
+                  "const": false
+                }
+              }
             }
           }
         },
@@ -92,19 +218,153 @@
           ],
           "properties": {
             "authority": {
-              "$ref": "#/$defs/documentRelation"
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "direction",
+                "writers",
+                "owner",
+                "reverse_lookup"
+              ],
+              "properties": {
+                "id": {
+                  "const": "rel.authority"
+                },
+                "direction": {
+                  "const": "consumer-to-owner"
+                },
+                "writers": {
+                  "$ref": "#/$defs/relationWriters"
+                },
+                "owner": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "reverse_lookup": {
+                  "const": "derived"
+                }
+              }
             },
             "ownership": {
-              "$ref": "#/$defs/documentRelation"
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "direction",
+                "writers",
+                "owner",
+                "reverse_lookup"
+              ],
+              "properties": {
+                "id": {
+                  "const": "rel.ownership"
+                },
+                "direction": {
+                  "const": "document-to-owner"
+                },
+                "writers": {
+                  "$ref": "#/$defs/relationWriters"
+                },
+                "owner": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "reverse_lookup": {
+                  "const": "derived"
+                }
+              }
             },
             "reference": {
-              "$ref": "#/$defs/documentRelation"
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "direction",
+                "writers",
+                "owner",
+                "reverse_lookup"
+              ],
+              "properties": {
+                "id": {
+                  "const": "rel.reference"
+                },
+                "direction": {
+                  "const": "source-to-target"
+                },
+                "writers": {
+                  "$ref": "#/$defs/relationWriters"
+                },
+                "owner": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "reverse_lookup": {
+                  "const": "derived"
+                }
+              }
             },
             "traceability": {
-              "$ref": "#/$defs/documentRelation"
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "direction",
+                "writers",
+                "owner",
+                "reverse_lookup",
+                "retained_reverse_fields"
+              ],
+              "properties": {
+                "id": {
+                  "const": "rel.traceability"
+                },
+                "direction": {
+                  "const": "child-to-parent"
+                },
+                "writers": {
+                  "$ref": "#/$defs/relationWriters"
+                },
+                "owner": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "reverse_lookup": {
+                  "const": "derived"
+                },
+                "retained_reverse_fields": {
+                  "$ref": "#/$defs/stringList"
+                }
+              }
             },
             "change_propagation": {
-              "$ref": "#/$defs/documentRelation"
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "id",
+                "direction",
+                "writers",
+                "owner",
+                "reverse_lookup"
+              ],
+              "properties": {
+                "id": {
+                  "const": "rel.change-propagation"
+                },
+                "direction": {
+                  "const": "owner-to-consumer"
+                },
+                "writers": {
+                  "$ref": "#/$defs/relationWriters"
+                },
+                "owner": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "reverse_lookup": {
+                  "const": "derived"
+                }
+              }
             }
           }
         },
@@ -737,124 +997,6 @@
     }
   },
   "$defs": {
-    "linkType": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "direction",
-        "required",
-        "authority",
-        "pinned_version",
-        "on_target_removal"
-      ],
-      "properties": {
-        "direction": {
-          "const": "forward"
-        },
-        "required": {
-          "type": "boolean"
-        },
-        "authority": {
-          "enum": [
-            "binding",
-            "none"
-          ]
-        },
-        "pinned_version": {
-          "enum": [
-            "current",
-            "revision"
-          ]
-        },
-        "on_target_removal": {
-          "enum": [
-            "update-consumer",
-            "keep-pinned",
-            "plain-text"
-          ]
-        }
-      }
-    },
-    "linkProfile": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "syntax",
-        "link_types"
-      ],
-      "properties": {
-        "syntax": {
-          "enum": [
-            "relative-markdown",
-            "wiki"
-          ]
-        },
-        "link_types": {
-          "type": "boolean"
-        }
-      }
-    },
-    "documentRelation": {
-      "type": "object",
-      "additionalProperties": false,
-      "required": [
-        "id",
-        "direction",
-        "writers",
-        "owner",
-        "reverse_lookup"
-      ],
-      "properties": {
-        "id": {
-          "type": "string",
-          "pattern": "^rel\\.[a-z][a-z-]*$"
-        },
-        "direction": {
-          "enum": [
-            "consumer-to-owner",
-            "document-to-owner",
-            "source-to-target",
-            "child-to-parent",
-            "owner-to-consumer"
-          ]
-        },
-        "writers": {
-          "type": "array",
-          "minItems": 1,
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "kind",
-              "ref"
-            ],
-            "properties": {
-              "kind": {
-                "enum": [
-                  "frontmatter",
-                  "link",
-                  "derived"
-                ]
-              },
-              "ref": {
-                "type": "string",
-                "minLength": 1
-              }
-            }
-          }
-        },
-        "owner": {
-          "type": "string",
-          "minLength": 1
-        },
-        "reverse_lookup": {
-          "const": "derived"
-        },
-        "retained_reverse_fields": {
-          "$ref": "#/$defs/stringList"
-        }
-      }
-    },
     "stringMap": {
       "type": "object",
       "additionalProperties": {
@@ -1327,6 +1469,31 @@
         "$ref": "#/$defs/stringList"
       },
       "minProperties": 1
+    },
+    "relationWriters": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "kind",
+          "ref"
+        ],
+        "properties": {
+          "kind": {
+            "enum": [
+              "frontmatter",
+              "link",
+              "derived"
+            ]
+          },
+          "ref": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
     }
   }
 }

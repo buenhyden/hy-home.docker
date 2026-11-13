@@ -87,7 +87,7 @@ class DocumentRelationContractTests(unittest.TestCase):
         raw = _registry()
         relations = raw["common"]["document_relations"]
         relations["reference"]["id"] = relations["authority"]["id"]
-        self.assertIn("relation-contract-invalid", _codes(raw))
+        self.assertIn("schema-invalid", _codes(raw))
 
     def test_unknown_writer_references_are_rejected(self) -> None:
         cases = (
@@ -114,6 +114,42 @@ class DocumentRelationContractTests(unittest.TestCase):
             "retained_reverse_fields"
         ] = ["not_a_key"]
         self.assertIn("relation-contract-invalid", _codes(raw))
+
+    def test_derived_writer_cannot_name_its_own_relation(self) -> None:
+        raw = _registry()
+        relation = raw["common"]["document_relations"]["change_propagation"]
+        relation["writers"] = [{"kind": "derived", "ref": relation["id"]}]
+        self.assertIn("relation-contract-invalid", _codes(raw))
+
+    def test_missing_relations_alone_is_rejected(self) -> None:
+        raw = _registry()
+        del raw["common"]["document_relations"]
+        self.assertIn("relation-contract-missing", _codes(raw))
+
+
+class PinnedContractValueTests(unittest.TestCase):
+    """Every value the policy tables fix is pinned: a mutation fails closed."""
+
+    MUTATIONS = (
+        ("document_relations", "traceability", "direction", "parent-to-child"),
+        ("document_relations", "authority", "direction", "owner-to-consumer"),
+        ("document_relations", "reference", "id", "rel.other"),
+        ("link_types", "normative", "authority", "none"),
+        ("link_types", "normative", "required", False),
+        ("link_types", "evidence", "pinned_version", "current"),
+        ("link_types", "historical", "on_target_removal", "update-consumer"),
+        ("link_types", "navigation", "authority", "binding"),
+        ("link_profiles", "vault-wiki", "link_types", True),
+        ("link_profiles", "vault-wiki", "syntax", "relative-markdown"),
+        ("link_profiles", "markdown", "link_types", False),
+    )
+
+    def test_each_mutated_value_is_rejected(self) -> None:
+        for section, entry, key, value in self.MUTATIONS:
+            with self.subTest(section=section, entry=entry, key=key):
+                raw = _registry()
+                raw["common"][section][entry][key] = value
+                self.assertIn("schema-invalid", _codes(raw))
 
 
 if __name__ == "__main__":

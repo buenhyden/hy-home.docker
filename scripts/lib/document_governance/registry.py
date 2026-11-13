@@ -490,8 +490,9 @@ def _relation_contract_findings(
 ) -> list[RegistryFinding]:
     """Check the DOC-07 link types and DOC-09 relations beyond their schema.
 
-    The schema fixes each shape; this resolves every writer against the
-    frontmatter keys, link types and relation IDs the Registry declares.
+    The schema pins every value the policy tables fix; this resolves every
+    writer against the frontmatter keys, link types and relation IDs the
+    Registry declares and rejects a relation derived from itself.
     """
 
     names = ("link_types", "link_profiles", "document_relations")
@@ -518,13 +519,13 @@ def _relation_contract_findings(
     def invalid(location: str, message: str) -> None:
         findings.append(RegistryFinding("relation-contract-invalid", location, message))
 
-    if len(set(ids)) != len(ids):
-        invalid("common.document_relations", "relation IDs must be unique")
     for name, relation in relations.items():
         location = f"common.document_relations.{name}"
         for writer in relation["writers"]:
             if writer["ref"] not in known[writer["kind"]]:
                 invalid(location, f"unknown {writer['kind']} writer {writer['ref']}")
+            if writer["kind"] == "derived" and writer["ref"] == relation["id"]:
+                invalid(location, "a relation cannot be derived from itself")
         if not (ROOT / relation["owner"]).is_file():
             invalid(location, f"owner {relation['owner']} is not a file")
         if not set(relation.get("retained_reverse_fields", ())) <= keys:
