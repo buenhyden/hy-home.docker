@@ -4044,6 +4044,37 @@ class VocabularyContractTests(unittest.TestCase):
         self.assertIn("vocabulary-table-missing", self.codes(fenced))
 
 
+class ApprovedRegistryIsNotAnExemptionTests(unittest.TestCase):
+    """H-W01-4: approved Registry content stays open to reform (TERM-REGISTRY),
+    and no entry can mark itself exempt (TERM-KEEP is a verdict in a Task)."""
+
+    def setUp(self) -> None:
+        self.raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+
+    def codes(self, raw: dict | None = None) -> set[tuple[str, str]]:
+        return {
+            (finding.code, finding.path)
+            for finding in validate_registry(self.raw if raw is None else raw)
+        }
+
+    def test_the_approved_registry_passes_with_no_exemption_marker(self) -> None:
+        self.assertEqual(set(), self.codes())
+
+    def test_a_keep_or_approved_marker_exempts_no_entry(self) -> None:
+        for marker in ("keep", "exempt", "approved", "status"):
+            for place in ("profile", "common", "role", "root"):
+                with self.subTest(marker=marker, place=place):
+                    self.setUp()
+                    target = {
+                        "profile": self.raw["profiles"][0],
+                        "common": self.raw["common"],
+                        "role": self.raw["template_roles"]["sdlc/task"],
+                        "root": self.raw,
+                    }[place]
+                    target[marker] = True
+                    self.assertNotEqual(set(), self.codes())
+
+
 class ReleaseRoleGuardTests(unittest.TestCase):
     """H-12: a `release` name token marks a Release role, which is not a
     document role (documentation-protocol.md Release Evidence Boundary)."""

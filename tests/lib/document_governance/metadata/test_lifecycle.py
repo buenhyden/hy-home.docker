@@ -224,6 +224,35 @@ class CurrentSpecRelationTests(unittest.TestCase):
         self.assertIn("unresolved-parent", codes)
         self.assertIn("unresolved-supersedes", codes)
 
+    def test_a_historical_audit_id_is_not_a_current_identity(self) -> None:
+        """H-W01-4: OPEN-01..OPEN-14 name an earlier audit's items
+        (TERM-HISTORICAL-AUDIT). Used as a parent or supersession target they
+        read as current state, so the validator leaves them unresolved."""
+
+        profiles = metadata.build_registry_profiles(metadata.load_registry(REGISTRY))
+        for audit_id in ("OPEN-01", "OPEN-07", "OPEN-14"):
+            record = metadata.Record(
+                pathlib.Path("docs/03.specs/0001-example/spec.md"),
+                {
+                    "artifact_id": "SPEC-0001",
+                    "type": "sdlc/spec",
+                    "status": "draft",
+                    "parent_ids": [audit_id],
+                    "supersedes": [audit_id],
+                },
+                "spec",
+                frontmatter_present=True,
+            )
+            codes = {
+                finding.code
+                for finding in metadata.validate_record(
+                    record, profiles, metadata.build_manifest([record])
+                )
+            }
+            with self.subTest(audit_id=audit_id):
+                self.assertIn("unresolved-parent", codes)
+                self.assertIn("unresolved-supersedes", codes)
+
     def test_current_spec_cannot_use_another_spec_as_its_parent(self) -> None:
         profiles = metadata.build_registry_profiles(metadata.load_registry(REGISTRY))
         parent = metadata.Record(
