@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.17.0"
+version: "3.18.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -461,8 +461,13 @@ withdrawal reference (`withdrawal_ref`). An empty list means no assigned criteri
 never exempts a criterion still present in the Spec from PASS evidence; only a
 Criterion Acceptance `not-required` decision closes a criterion without PASS.
 A cancelled Spec keeps no package members in active Stage 03.
-Standalone documents keep their per-document disposition rule. No rule here
-renames lifecycle statuses or applies a union of terminal sets to other stages.
+Standalone documents keep their per-document disposition rule. Incident and
+Postmortem records never retire: they are permanent operational history and
+stay in place after closure, whatever their age, and no disposition status
+admits them to retirement. A Registry disposition entry that lists a status
+its profile's lifecycle cannot reach is a defect, not a retirement path. No
+rule here renames lifecycle statuses or applies a union of terminal sets to
+other stages.
 Stage 03 may be empty when no package remains.
 
 #### Retirement preconditions
