@@ -16,26 +16,52 @@ name: "{{NAME}}"
 
 # {{TITLE}}
 
-## Overview
+## Purpose
+
+### Objective
 
 {{WHY_THIS_RUNTIME_RULE_EXISTS}}
 
+### Authority
+
+{{OWNING_POLICY_LINK}}
+
 ## Scope
+
+### Applies To
 
 {{RULE_NAME_EVENT_AND_MATCHING_SCOPE}}
 
+### Exclusions
+
+{{EVENTS_AND_PATHS_THE_RULE_DOES_NOT_MATCH}}
+
 ## Rules
+
+### Requirements
 
 {{MESSAGE_SHOWN_WHEN_THE_RULE_FIRES}}
 
+### Enforcement
+
+{{DECLARED_ACTION_AND_MATCHING_SCOPE_CHECKS}}
+
 ## Exceptions
+
+### Exception Conditions
 
 {{APPROVED_ALTERNATIVE_ACTION}}
 
-## Verification
+### Approval and Review
 
-{{MATCHING_SCOPE_CHECKS_AND_EVIDENCE_LIMITS}}
+{{WHO_APPROVES_AN_EXCEPTION}}
 
-## Related Documents
+## Ownership
 
-{{OWNING_POLICY_AND_PARITY_LINKS}}
+### Responsibilities
+
+{{RULE_OWNER_AND_PARITY_OWNER}}
+
+### Change and Adoption
+
+{{HOW_THE_RULE_CHANGES_AND_PARITY_LINKS}}

@@ -1,25 +1,39 @@
 ---
 title: "Environment Constraints"
-version: "1.10.1"
+version: "1.10.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 ---
 
 # Environment Constraints
 
-## Overview
+## Purpose
+
+### Objective
 
 Detailed execution boundaries, verification rules, Graphify behaviors, and shared agent memory rules for the `hy-home.docker` workspace.
 
+### Authority
+
+This policy is the canonical owner of execution boundaries, verification, Graphify, and shared agent memory under [bootstrap precedence](bootstrap.md#authority-and-precedence).
+
 ## Scope
+
+### Applies To
 
 Local repository work, infrastructure execution, secrets handling, verification environment, and the shared agent memory store.
 
+### Exclusions
+
+None: this document states no exclusion.
+
 ## Rules
 
-### 1. Hard Constraints
+### Requirements
+
+#### 1. Hard Constraints
 
 - `_workspace` is an ignored repo-support staging surface, not an active stage.
   The seven contract READMEs listed in `_workspace/README.md` are its only
@@ -40,7 +54,7 @@ Local repository work, infrastructure execution, secrets handling, verification 
 - A provider sandbox that cannot start on this host is recorded in that
   provider's adapter. Recording it grants no sandbox relaxation.
 
-### 2. Infrastructure Constraints
+#### 2. Infrastructure Constraints
 
 - **Networking**: inter-service traffic must stay on the repository-owned
   Compose networks, and a service joins one only for a peer it uses. Direct
@@ -93,7 +107,7 @@ Secret value reads, writes, or rotations require a concrete target and task
 evidence that records the redaction boundary, validation command, and rollback
 or recovery path. Do not commit, print, summarize, or quote secret values.
 
-### 4. Graphify
+#### 4. Graphify
 
 This project has a graphify knowledge graph at `graphify-out/`.
 
@@ -116,7 +130,7 @@ This project has a graphify knowledge graph at `graphify-out/`.
   tool writes alongside a refusal is a byproduct, not a release, and is not
   committed without checking its node count against the tracked graph.
 
-### 5. Shared Agent Memory
+#### 5. Shared Agent Memory
 
 - Every supported provider shares one memory store,
   `.workspace-memory/memory.sqlite3` in the main checkout, which Git ignores.
@@ -238,21 +252,8 @@ This project has a graphify knowledge graph at `graphify-out/`.
   `capacity status` open existing state read-only: they never initialize a
   database or schema, change permissions, or add a service or model API call.
 
-## Exceptions
+#### Provider Surface Regeneration
 
-Approved secrets work follows the scoped, redacted protocol in [Approved secrets work](#22-approved-secrets-work-protocol). Runtime and destructive operations wait for their exact target under [Approval boundaries](approval-boundaries.md).
-
-## Verification
-
-### 3. Verification
-
-- For infra changes, run `bash scripts/validation/validate-docker-compose.sh`.
-- For governance/root changes, run `python3 scripts/validation/check-document-links.py --mode all`.
-- The [execution boundary](quality-standards.md#4-execution-boundary) owns the
-  local, CI-only, and approved all-files pre-commit route. Its wrapper limits
-  remain Git-visible repository evidence only; this environment policy does not
-  authorize direct invocation, ignored/outside writes, or a sandbox bypass.
-- Run the completion checklist in `.agents/governance/task-checklists.md` before declaring done.
 - Provider surface `--write` is allowed once only after an approved canonical
   agent governance or Provider Registry change. Ordinary postflight and CI use
   `python3 scripts/operations/provider_surface_renderer.py --check`; hooks and validation
@@ -261,7 +262,37 @@ Approved secrets work follows the scoped, redacted protocol in [Approved secrets
   the exact-path procedure in `.agents/governance/providers/README.md`
   before rerunning write and check.
 
-## Related Documents
+### Enforcement
+
+#### 3. Verification
+
+- For infra changes, run `bash scripts/validation/validate-docker-compose.sh`.
+- For governance/root changes, run `python3 scripts/validation/check-document-links.py --mode all`.
+- The [execution boundary](quality-standards.md#4-execution-boundary) owns the
+  local, CI-only, and approved all-files pre-commit route. Its wrapper limits
+  remain Git-visible repository evidence only; this environment policy does not
+  authorize direct invocation, ignored/outside writes, or a sandbox bypass.
+- Run the completion checklist in `.agents/governance/task-checklists.md` before declaring done.
+
+## Exceptions
+
+### Exception Conditions
+
+Approved secrets work follows the scoped, redacted protocol in [Approved secrets work](#22-approved-secrets-work-protocol). Runtime and destructive operations wait for their exact target under [Approval boundaries](approval-boundaries.md).
+
+### Approval and Review
+
+Separately authorized operations follow the [Approval boundaries](approval-boundaries.md) policy.
+
+## Ownership
+
+### Responsibilities
+
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
+
+### Change and Adoption
+
+Changes land in place with Task evidence; related documents:
 
 - [Governance navigation](../README.md)
 - [Bootstrap policy](bootstrap.md)

@@ -1,10 +1,10 @@
 ---
 title: "WARNING: manual pre-commit execution"
-version: "1.1.2"
+version: "1.1.3"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-15"
+updated: "2026-11-13"
 action: "warn"
 enabled: true
 event: "bash"
@@ -14,20 +14,34 @@ pattern: "pre-commit\\s+run"
 
 # Manual Pre-commit Execution Warning
 
-## Overview
+## Purpose
+
+### Objective
 
 **Manual `pre-commit run` detected (project rule)**
 
+### Authority
+
+Owning policy: [Quality standards execution boundary](../quality-standards.md#4-execution-boundary).
+
 ## Scope
 
-`.agents/governance/quality-standards.md#4-execution-boundary` owns this
-boundary: agents never run `pre-commit run` directly. An explicitly approved
-all-files gate uses only its controlled route and conditions. The admitted
+### Applies To
+
+Bash commands matching the frontmatter pattern.
+
+### Exclusions
+
+None.
+
+## Rules
+
+### Requirements
+
+Agents never run `pre-commit run` directly. The admitted
 scoped route immediately before local commit is
 `scripts/validation/run-ci-precommit.sh --mode local-staged`; server PR checks
 use its authenticated `--mode pr-merge` route.
-
-## Rules
 
 **Project pre-commit policy:**
 
@@ -51,14 +65,26 @@ git commit -m "feat(scope): My change"
 
 If lint or format issues exist, fix the affected files directly before committing.
 
-## Exceptions
-
-No exception is declared by this rule.
-
-## Verification
+### Enforcement
 
 The declared Bash event and unchanged native pattern identify matching commands.
 
-## Related Documents
+## Exceptions
 
-- [Quality standards execution boundary](../quality-standards.md#4-execution-boundary)
+### Exception Conditions
+
+An explicitly approved all-files gate uses only its controlled route and conditions.
+
+### Approval and Review
+
+That gate needs explicit approval under the execution boundary.
+
+## Ownership
+
+### Responsibilities
+
+`@buenhyden`.
+
+### Change and Adoption
+
+None.

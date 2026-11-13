@@ -1,10 +1,10 @@
 ---
 title: "Common Optimizations Template Exceptions Policy"
-version: "1.4.6"
+version: "1.4.7"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0001"
 created: "2026-06-04"
@@ -12,12 +12,21 @@ created: "2026-06-04"
 
 # Common Optimizations Template Exceptions Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 이 문서는 `infra/common-optimizations.yml` 적용 시 허용되는 예외 목록과 승인 기준을 정의한다.
 예외는 임시 편의가 아니라 운영/보안 상의 명시적 승인 항목으로 관리하며, 모든 검증 스크립트와 운영 문서는 동일 레지스트리를 참조해야 한다.
 
+### Authority
+
+- [infra/common-optimizations.exceptions.json](../../../../infra/common-optimizations.exceptions.json)
+- [scripts/validation/compose_controls.py](../../../../scripts/validation/compose_controls.py)
+
 ## Scope
+
+### Applies To
 
 - `common-optimizations.yml` 템플릿 계열(`template-*`)의 제어항목 예외 관리
 - Quick Win 기준선(`PLN-QW-001~005`) 검증 시 허용되는 서비스 단위 예외 관리
@@ -25,7 +34,13 @@ created: "2026-06-04"
 - **Systems**: Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}` (root 통합 Compose 해석 기준)
 - **Environments**: Local, Dev, Stage, Production-like
 
+### Exclusions
+
+없음: 이 정책 본문에는 명시된 제외 대상이 없다.
+
 ## Rules
+
+### Requirements
 
 - **Required**:
   - 예외 목록 SSoT는 [infra/common-optimizations.exceptions.json](../../../../infra/common-optimizations.exceptions.json)(schema v2) 단일 파일이다.
@@ -51,14 +66,29 @@ created: "2026-06-04"
   - root와 LAB의 같은 서비스 이름을 하나의 예외로 묶는 것
   - 문서와 레지스트리 간 불일치 상태로 배포 진행
 
-### AI Agent Policy
+#### AI Agent Policy
 
 - **Model / Prompt Change Process**: [agentic governance](../../../../.agents/governance/agentic.md)가 소유한다.
 - **Eval / Guardrail Threshold**: 문서 변경 후 관련 validation을 통과해야 한다.
 - **Log / Trace Retention**: [task checklists](../../../../.agents/governance/task-checklists.md)를 따른다.
 - **Safety Incident Thresholds**: secret 노출 또는 승인 없는 runtime 변경 징후가 있으면 즉시 중단한다.
 
+### Enforcement
+
+- `bash scripts/validation/check-template-security-baseline.sh`
+- `python3 scripts/validation/compose_controls.py --report`(등록 전 control 포함 전체 편차 보고)
+- `python3 scripts/validation/check-document-links.py --mode traceability`
+- `bash scripts/validation/validate-docker-compose.sh`
+
+검증기는 root 전체 profile과 모든 LAB을 렌더하지만 정적 선언만 검사한다.
+runtime health, 실제 이미지의 capability 필요 여부, 자원 사용량은 증명하지 않는다.
+`verification` 필드에 그 근거(실행 기록, 시험)를 적는다. 공개 입력·임시 파일 경계는
+[RUN-0086](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md#static-configuration-validation)을
+따른다. 구현이 통제를 충족하지 못하면 예외를 임의 추가하지 않고 별도 remediation으로 남긴다.
+
 ## Exceptions
+
+### Exception Conditions
 
 - 예외의 상세 항목은 [infra/common-optimizations.exceptions.json](../../../../infra/common-optimizations.exceptions.json)을 기준으로 한다.
   schema v1의 `template_exceptions`, `quickwin_baseline`, `security_baseline`은
@@ -74,32 +104,21 @@ created: "2026-06-04"
 >   - `healthcheck`: `pg-cluster-init`, `valkey-cluster-init`
 >   - `secrets`: `etcd-1`, `etcd-2`, `etcd-3`
 
-### Review Cadence
-
-책임 소유자는 @buenhyden이다. registry의 role 표기는 책임 설명이며 별도 팀이나
-새 승인을 만들지 않는다.
+### Approval and Review
 
 - 월 1회 정기 검토
 - 신규 예외 추가/삭제 시 즉시 검토
 
-### Traceability
+## Ownership
+
+### Responsibilities
+
+책임 소유자는 @buenhyden이다. registry의 role 표기는 책임 설명이며 별도 팀이나
+새 승인을 만들지 않는다.
+
+### Change and Adoption
 
 - 같은 번호 `0001`의 Guide/Runbook은 없다.
-
-## Verification
-
-- `bash scripts/validation/check-template-security-baseline.sh`
-- `python3 scripts/validation/compose_controls.py --report`(등록 전 control 포함 전체 편차 보고)
-- `python3 scripts/validation/check-document-links.py --mode traceability`
-- `bash scripts/validation/validate-docker-compose.sh`
-
-검증기는 root 전체 profile과 모든 LAB을 렌더하지만 정적 선언만 검사한다.
-runtime health, 실제 이미지의 capability 필요 여부, 자원 사용량은 증명하지 않는다.
-`verification` 필드에 그 근거(실행 기록, 시험)를 적는다. 공개 입력·임시 파일 경계는
-[RUN-0086](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md#static-configuration-validation)을
-따른다. 구현이 통제를 충족하지 못하면 예외를 임의 추가하지 않고 별도 remediation으로 남긴다.
-
-## Related Documents
 
 - Compose/Dockerfile이 runtime pin을 소유한다. [파생 projection](../../../../infra/tech-stack.versions.json)은 Compose-image drift를 검사한다.
 - [Operations index](../../README.md)

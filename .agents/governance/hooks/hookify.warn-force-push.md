@@ -1,10 +1,10 @@
 ---
 title: "Prefer --force-with-lease over --force."
-version: "1.0.4"
+version: "1.0.5"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-13"
 action: "warn"
 enabled: true
 event: "bash"
@@ -14,15 +14,29 @@ pattern: "git\\s+push\\s+.*(--force\\b|--force-with-lease\\b|-f\\s|-f$)"
 
 # Prefer --force-with-lease over --force
 
-## Overview
+## Purpose
+
+### Objective
 
 Apply the declared `warn` action for warn-force-push.
 
+### Authority
+
+Owning policy: [GitHub governance](../github-governance.md).
+
 ## Scope
+
+### Applies To
 
 The `warn-force-push` rule applies on the `bash` event and matches Bash commands that match its `pattern` ("Prefer --force-with-lease over --force."). The frontmatter owns the exact matcher.
 
+### Exclusions
+
+None.
+
 ## Rules
+
+### Requirements
 
 **Force push detected (project rule)**
 
@@ -53,14 +67,26 @@ The `warn-force-push` rule applies on the `bash` event and matches Bash commands
 git push --force-with-lease origin feat/42-my-feature
 ```
 
-## Exceptions
-
-No exception is declared by this rule.
-
-## Verification
+### Enforcement
 
 Native event delivery is a separate observation from the frontmatter match.
 
-## Related Documents
+## Exceptions
 
-- `.agents/README.md`
+### Exception Conditions
+
+Own feature branch after rebase, with `--force-with-lease` (see Requirements).
+
+### Approval and Review
+
+None.
+
+## Ownership
+
+### Responsibilities
+
+`@buenhyden`.
+
+### Change and Adoption
+
+`.agents/README.md`.

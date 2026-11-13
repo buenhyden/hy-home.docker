@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Operations Policy"
-version: "1.8.1"
+version: "1.8.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-13"
 layer: "operations"
 artifact_id: "POL-0024"
 parent_ids:
@@ -14,12 +14,22 @@ created: "2026-05-17"
 
 # SeaweedFS Operations Policy
 
-## Overview
+## Purpose
+
+### Objective
 
 이 정책은 현재 소스 구성을 데이터 보호, 보안, 리소스, 생명주기와 독립적으로 검증 가능한
 운영 통제에 묶는다.
 
+### Authority
+
+- Runtime source: [SeaweedFS Compose](../../../../infra/04-data/seaweedfs/docker-compose.yml).
+- Artifact: `POL-0024`; parent: `AD-0004`.
+- Runtime 권한은 연결된 Compose/소스 파일에 남아 있으며, 정확한 pin도 그곳에 있다.
+
 ## Scope
+
+### Applies To
 
 SeaweedFS는 S3 object store이며 SPEC-0180 S07에서 MinIO를 대체했다. HOME 대상이다.
 S3 consumer를 선택하는 모든 profile(`storage`, `obs`, `logs`, `tracing`,
@@ -28,7 +38,13 @@ S3 consumer를 선택하는 모든 profile(`storage`, `obs`, `logs`, `tracing`,
 선택하고, `seaweedfs-table-bucket`은 SPEC-0262에서 독립 LAB `labs/lakehouse/docker-compose.yml`로 옮겨졌다. Terrakube(`iac`, HOME이 제외하는 자동화
 profile)는 `storage`와 함께 동작한다.
 
+### Exclusions
+
+애플리케이션 인증 연동은 이 정책이 아니라 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)가 정한다.
+
 ## Rules
+
+### Requirements
 
 - **영속 세트.** Master(`-mdir=/data`), volume(`-dir=/data`)과 filer의 내장
   leveldb2 store(`/data/filerldb2`)는 각각 `${DEFAULT_DATA_DIR}/seaweedfs` 아래
@@ -74,7 +90,7 @@ profile)는 `storage`와 함께 동작한다.
   쓰기를 중단한다(`-minFreeSpace`, POL-0035). 동일 host replica는 host
   가용성이 아니므로 replication은 `000`이다.
 
-### Backup and restore
+#### Backup and restore
 
 일일 orchestrator(RUN-0021)는 vacuum을 멈추고 `fs.meta.save`로 filer metadata를
 저장한 뒤, Restic이 volume과 master tree를 읽게 하고 종료 시 vacuum을 다시
@@ -91,40 +107,42 @@ RTO 8시간이며, isolated rehearsal은 HOME 타이밍이 아니라 방법을 �
 store를 비운 뒤 `fs.meta.load`를 실행하고 S3 읽기를 확인한다. HOME에서의
 cutover, 삭제, state 재사용은 별도 승인이 필요하다.
 
-### Change policy
+#### Change policy
 
 Image 갱신에는 공식 release와 license 검토, 통과한 `SeaweedfsRehearsalTests`
 실행이 필요하다. Identity, key, certificate 교체는 모든 구성 요소를 재시작하며
 승인이 필요하다. 새 consumer identity는 해당 consumer의 cutover와 같은
 change에서 추가한다.
 
-### Accountable lifecycle boundary
+#### Accountable lifecycle boundary
 
-적용 identity: `seaweedfs-buckets`, `seaweedfs-filer`, `seaweedfs-master`, `seaweedfs-s3`, `seaweedfs-volume`. `seaweedfs-table-bucket`은 [POL-0094](../15-labs/0094-lakehouse.md)가 적용된다. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
+적용 identity: `seaweedfs-buckets`, `seaweedfs-filer`, `seaweedfs-master`, `seaweedfs-s3`, `seaweedfs-volume`. `seaweedfs-table-bucket`은 [POL-0094](../15-labs/0094-lakehouse.md)가 적용된다. 문서의 정적 검증과 runtime 운영 승인을 분리한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-## Exceptions
-
-FUSE mount는 별도 승인이 필요하다. 예외는 runtime mutation, plaintext secret,
-raw active storage 복사, 동일 host 가용성 주장을 허용하지 않는다.
-
-### Review Cadence
-
-Profile, image, volume, credential, consumer, retention 또는 upstream
-lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다.
-
-### Traceability
-
-- Runtime source: [SeaweedFS Compose](../../../../infra/04-data/seaweedfs/docker-compose.yml).
-- Artifact: `POL-0024`; parent: `AD-0004`.
-- Runtime 권한은 연결된 Compose/소스 파일에 남아 있으며, 정확한 pin도 그곳에 있다.
-
-## Verification
+### Enforcement
 
 `docker compose --env-file .env.example --profile seaweedfs config --quiet`로 root 구성을 정적 검증하고, 승인된 disposable rehearsal(`tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests`, [RUN-0024](../../runbooks/05-databases-and-storage/0024-seaweedfs.md#actions))으로 identity·JWT·mTLS 거부를 확인한 뒤, 승격이나 cutover
 전에 application 수준 acceptance를 갖춘 isolated compatible restore를
 요구한다. 검증되지 않은 runtime 속성은 명시적으로 기록한다.
 
-## Related Documents
+## Exceptions
+
+### Exception Conditions
+
+FUSE mount는 별도 승인이 필요하다. 예외는 runtime mutation, plaintext secret,
+raw active storage 복사, 동일 host 가용성 주장을 허용하지 않는다.
+
+### Approval and Review
+
+Profile, image, volume, credential, consumer, retention 또는 upstream
+lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다.
+
+## Ownership
+
+### Responsibilities
+
+@buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다.
+
+### Change and Adoption
 
 - [Domain catalog](../../README.md)
 - [Runbook](../../runbooks/05-databases-and-storage/0024-seaweedfs.md)
