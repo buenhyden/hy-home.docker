@@ -1,10 +1,10 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.9.0"
+version: "1.9.1"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 ---
 
 # Software Development Lifecycle
@@ -174,9 +174,14 @@ The Registry supplies the exact Evidence, Criterion Acceptance, Execution
 Items and Work Breakdown shapes, and its `common.section_forms` places each
 named section in the common form, for example Evidence under Verification
 Evidence as Results. `spec_packages.py` checks their structure, reads those
-places from the Registry and derives readiness. It does not yet check the
-1.9.0 acceptance additions, cancelled-item pairs or Promotion Receipts; review
-holds those rules, and a validator PASS does not show conformance to them.
+places from the Registry and derives readiness. The corpus lifecycle check
+applies the 1.9.0 acceptance rules, including cancelled-item pairs, to each
+Criterion Acceptance row that is new or changed against the lifecycle base;
+an unchanged older row stands as recorded. The readiness derivation also
+requires every repository path a Plan's Promotion Map names in a code span to
+appear in a Task's Promotion Receipt, but no entrypoint runs the readiness
+derivation yet, so readiness and every Promotion Map target named only in
+prose stay with review, and a validator PASS does not show them.
 A terminal Task unchanged since the current generation's migration source keeps
 the reader of the generation that closed it, bound by that migration's exact
 Git source proof. That compatibility does not authorize new legacy receipts. A
