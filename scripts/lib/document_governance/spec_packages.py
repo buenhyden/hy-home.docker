@@ -1943,6 +1943,50 @@ def _v6_cancelled_task(
             )
 
 
+# A repository path in a code span. Promotion Map prose that names a target
+# without one ("the glossary") and a package-local link are not read.
+_PROMOTION_TARGET = re.compile(
+    r"`((?!tasks/|contracts/)[^`\s]+/[^`\s/]+\.(?:md|json|ya?ml|py|sh|toml))`"
+)
+
+
+def _promotion_findings(package: SpecPackage) -> tuple[str, ...]:
+    """Each target path the Plan's Promotion Map names must reach a receipt.
+
+    A receipt covers a target by naming its file, with the update or the reason
+    none is needed; the commit, the reason and any target the Plan names in
+    prose stay a review.
+    """
+
+    if package.plan is None:
+        return ()
+    targets = dict.fromkeys(
+        _PROMOTION_TARGET.findall(
+            "\n".join(
+                line
+                for subsection in ("Durable Meaning", "Owner and Receipt")
+                for line in _subsection_lines(
+                    package.plan.body, "Promotion Map", subsection
+                )
+            )
+        )
+    )
+    receipts = "\n".join(
+        line
+        for task in package.tasks
+        for line in _subsection_lines(task.body, "Handoff", "Promotion Receipt")
+    )
+    return tuple(
+        f"Promotion Map target {target} appears in no Promotion Receipt"
+        for target in targets
+        if re.search(
+            rf"(?<![\w.-]){re.escape(pathlib.PurePosixPath(target).name)}(?![\w-])",
+            receipts,
+        )
+        is None
+    )
+
+
 def archive_readiness_findings(
     package: SpecPackage, evidence: PackageEvidence
 ) -> tuple[str, ...]:
@@ -1979,6 +2023,7 @@ def archive_readiness_findings(
         f"criterion {criterion} has an unresolved FAIL"
         for criterion in sorted(evidence.unresolved_failures, key=int)
     )
+    findings.extend(_promotion_findings(package))
     return tuple(findings)
 
 

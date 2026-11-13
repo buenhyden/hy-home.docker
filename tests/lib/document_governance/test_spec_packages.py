@@ -6268,5 +6268,114 @@ class ParentAuthorityBranchTests(unittest.TestCase):
                     spec_packages.load_spec_packages(stage, **contracts)
 
 
+_PROMOTION_MAP = """
+## Promotion Map
+
+### Durable Meaning
+
+The contract lives in `.agents/governance/sdlc.md` and
+`docs/99.templates/registry.json`, the glossary and [the Task](tasks/tsk-0001-work.md).
+
+### Owner and Receipt
+
+Owner @owner; the receipt is TSK-0001.
+"""
+
+
+class PromotionReadinessTests(unittest.TestCase):
+    """H-W04-2: readiness reads each target path the Promotion Map names."""
+
+    def readiness(
+        self,
+        receipt: str | None,
+        *,
+        promotion_map: str = _PROMOTION_MAP,
+        status: str = "approved",
+    ) -> tuple[str, ...]:
+        spec_packages = _spec_packages_module()
+        registry = _generation6.generation6_registry()
+        spec = dataclasses.replace(_generation6.SPEC, status=status)
+        plan = dataclasses.replace(
+            _generation6.PLAN,
+            status=status,
+            body=_generation6.PLAN.body + promotion_map,
+        )
+        done = _generation6.task(_generation6.PASS_BOTH, _generation6.ACCEPT_BOTH)
+        done = dataclasses.replace(
+            done,
+            status="completed",
+            body=done.body
+            + (
+                ""
+                if receipt is None
+                else f"\n## Handoff\n\n### Promotion Receipt\n\n{receipt}\n"
+                "\n### Next Owner\n\n@owner\n"
+            ),
+        )
+        evidence = spec_packages._v6_evidence_contract(spec, plan, (done,), registry)
+        package = spec_packages.SpecPackage(
+            pathlib.Path(_HANDOFF_ROOT), "0001", "example", spec, plan, (done,), ()
+        )
+        return spec_packages.archive_readiness_findings(package, evidence)
+
+    def test_a_target_in_no_receipt_keeps_the_package_unready(self) -> None:
+        self.assertEqual(
+            (
+                "Promotion Map target docs/99.templates/registry.json "
+                "appears in no Promotion Receipt",
+            ),
+            self.readiness("Updated `.agents/governance/sdlc.md` in commit abc1234."),
+        )
+        self.assertEqual(
+            (
+                "Promotion Map target .agents/governance/sdlc.md "
+                "appears in no Promotion Receipt",
+                "Promotion Map target docs/99.templates/registry.json "
+                "appears in no Promotion Receipt",
+            ),
+            self.readiness(None),
+        )
+        # A longer file name does not stand for the target's own name.
+        self.assertEqual(
+            (
+                "Promotion Map target .agents/governance/sdlc.md "
+                "appears in no Promotion Receipt",
+            ),
+            self.readiness("`docs/other-sdlc.md` and `registry.json`"),
+        )
+
+    def test_a_receipt_naming_every_target_or_its_no_update_reason_is_ready(
+        self,
+    ) -> None:
+        for receipt in (
+            "`.agents/governance/sdlc.md`, `docs/99.templates/registry.json` (abc1234)",
+            "Updated `.agents/governance/sdlc.md`; `registry.json` abbreviates its path.",
+            "Updated `sdlc.md`. No durable update to `registry.json` is needed: "
+            "the change is read-only.",
+        ):
+            with self.subTest(receipt=receipt):
+                self.assertEqual((), self.readiness(receipt))
+
+    def test_only_a_named_target_path_is_read(self) -> None:
+        # Prose targets and package-local links name no repository path.
+        prose = """
+## Promotion Map
+
+### Durable Meaning
+
+The glossary and the Task and Plan templates hold it, per
+[the Task](tasks/tsk-0001-work.md) and `tasks/tsk-0001-work.md`.
+
+### Owner and Receipt
+
+Owner @owner.
+"""
+        self.assertEqual((), self.readiness("None.", promotion_map=prose))
+        self.assertEqual((), self.readiness(None, promotion_map=prose))
+
+    def test_a_cancelled_package_needs_no_promotion(self) -> None:
+        self.assertEqual((), self.readiness(None, status="cancelled"))
+
+
 if __name__ == "__main__":
     unittest.main()
