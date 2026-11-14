@@ -1,6 +1,6 @@
 ---
 title: "Agent Guide Follow-ups Task"
-version: "0.1.3"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -126,6 +126,7 @@ None: nothing was recorded here before this Task moved to the common form.
 | E11 | 4 | W4 | document-governance | `tests/lib/document_governance` discovery, revision fa156dbee | FAIL | 768 run, 1 failure: the SPEC-0254 index row named a status word | required | - |
 | E12 | 4 | W4 | document-governance | `test_spec_packages` after rewording the index row | PASS | OK, run together with E13 (134 tests) | required | E11 |
 | E13 | 4 | W4 | ci-routing | `tests.lib.gate.test_github_workflow_contract` at its real path | PASS | OK, run together with E12 (134 tests); the other routing modules passed in E10 | required | E10 |
+| E14 | 4 | W4 | links-commands | `--mode commands`, origin/main 705310723 | PASS | `failures=0 warnings=0`, exit 0 | required | E8 |
 
 ### Resolution Links
 
@@ -144,8 +145,8 @@ None: nothing was recorded here before this Task moved to the common form.
 
 ### Remaining Conditions
 
-Local checks are recorded above; E8 was pre-existing debt; its
-cause, the DATA-0096 command paths, left with DATA-0096 on 2026-11-14.
+Local checks are recorded above; E8 is resolved by E14; its
+cause, the DATA-0096 command paths, left with DATA-0096 (#1018).
 No independent review has run and hosted CI is not observed here; no
 criterion is accepted yet.
 
