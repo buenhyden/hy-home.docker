@@ -1298,6 +1298,92 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     "workflow-trigger-forbidden", {finding.code for finding in findings}
                 )
 
+    def assert_workflow_edit_rejected(
+        self, name: str, old: str, new: str, code: str
+    ) -> None:
+        with self.workflow_fixture() as root:
+            workflow = root / ".github/workflows" / name
+            text = workflow.read_text(encoding="utf-8")
+            self.assertIn(old, text)
+            workflow.write_text(text.replace(old, new, 1), encoding="utf-8")
+            findings = self.module.validate_workflows(
+                root, self.module.load_workflow_contract(root)
+            )
+        self.assertIn(code, {finding.code for finding in findings})
+
+    def test_protected_action_without_its_authority_is_rejected(self) -> None:
+        # A job that needs `contents: write` or `security-events: write` loses
+        # it, or the release loses its reviewed input or main-only condition.
+        release = "publish-release.yml"
+        for label, name, old, new, code in (
+            (
+                "release-contents-write",
+                release,
+                "    permissions:\n      contents: write\n",
+                "    permissions:\n      contents: read\n",
+                "workflow-job-permission-mismatch",
+            ),
+            (
+                "release-reviewed-input",
+                release,
+                "    inputs:\n      version:\n",
+                "    inputs:\n      other:\n",
+                "workflow-trigger-mismatch",
+            ),
+            (
+                "release-main-only",
+                release,
+                "    if: github.ref == 'refs/heads/main'\n",
+                "",
+                "workflow-job-condition-mismatch",
+            ),
+            (
+                "main-security-sarif",
+                "ci-quality.yml",
+                "      contents: read\n      security-events: write\n",
+                "      contents: read\n",
+                "workflow-job-permission-mismatch",
+            ),
+        ):
+            with self.subTest(label=label):
+                self.assert_workflow_edit_rejected(name, old, new, code)
+
+    def test_merge_queue_stays_unapproved_and_recorded_unused(self) -> None:
+        # merge_group is rejected above even with a contract entry. The only
+        # local merge-queue record is the ruleset read-back: it must keep saying
+        # the queue is unused, so a later change cannot silently approve one.
+        record = (ROOT / ".github/rulesets/main-protection.md").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("no\n  merge queue", record)
+        document = json.loads(
+            (ROOT / ".github/workflow-contract.yml").read_text(encoding="utf-8")
+        )
+        for path, spec in document["workflows"].items():
+            self.assertNotIn("merge_group", spec["triggers"], path)
+
+    def test_manual_dispatch_is_never_candidate_acceptance(self) -> None:
+        document = json.loads(
+            (ROOT / ".github/workflow-contract.yml").read_text(encoding="utf-8")
+        )
+        for path, spec in document["workflows"].items():
+            if spec["classification"] == "required-quality":
+                self.assertNotIn("workflow_dispatch", spec["triggers"], path)
+        self.assert_workflow_edit_rejected(
+            "ci-quality.yml",
+            "on:\n  push:\n",
+            "on:\n  workflow_dispatch:\n  push:\n",
+            "workflow-trigger-mismatch",
+        )
+        # The aggregate only counts a pull_request event; a dispatch run of the
+        # required workflow would otherwise satisfy it.
+        self.assert_workflow_edit_rejected(
+            "ci-quality.yml",
+            "always() && github.event_name == 'pull_request'",
+            "always()",
+            "workflow-job-condition-mismatch",
+        )
+
     def test_evidence_upload_rejects_broader_or_missing_paths(self) -> None:
         for replacement in (
             "${{ runner.temp }}/ci-gate-evidence/*.json",
@@ -1809,6 +1895,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             root = pathlib.Path(directory)
             shutil.copytree(ROOT / ".github", root / ".github")
             shutil.copytree(ROOT / "scripts", root / "scripts")
+            shutil.copytree(ROOT / ".agents/governance", root / ".agents/governance")
             # Registry validation checks all admitted cwd values, including
             # the P05 Node leaves; this fixture does not execute npm there.
             (
