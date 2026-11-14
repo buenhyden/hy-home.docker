@@ -242,7 +242,6 @@ no longer fits the 30-minute candidate job, which the shard split fixes.
 | Fixture git RED | 121 | W126 | red-green-proof | `FixtureGitTests.test_init_git_names_main_from_a_detached_clone` before the fix | FAIL | `RuntimeError: fatal: cannot rename the current branch while not on any`, the hosted error | required | - |
 | Fixture git GREEN | 121 | W126 | red-green-proof | `_support.init_git` uses `git checkout -B main`; `metadata.test_reference` at `deea4dbf2` | PASS | module OK; the failing test unchanged | required | Fixture git RED |
 | Shard split hosted final | 121 | W126 | remote-candidate | PR #1007 at `deea4dbf2`, run 43555699221 | PASS | `candidate-core` 16 min 10 s; `candidate-documents` 15 min 1 s with all four leaves PASS and 956 tests run (21 lifecycle, 164 metadata, 771 library), equal to the local counts; `candidate-quality` success; merged as `b38664681` | required | Shard split hosted first run, Shard split hosted second run |
-| Docs budget timeout | 121 | W126 | remote-candidate | PR #1011 at `0bc487b04`, run 43563856321 | FAIL | `leaf.docs-traceability` ERROR exit 124 `TIMEOUT` at 300 s against its 5-minute budget; its earlier hosted runs took 159 s and 231 s; the aggregate failed closed | required | - |
 | Budget RED | 121 | W126 | red-green-proof | `test_hosted_job_timeout_covers_its_leaf_budgets_in_sequence` with the leaf at 15 minutes and the job at 90 | FAIL | `100 not less than or equal to 90` | required | - |
 | Budget GREEN | 121 | W126 | red-green-proof | Same test with the job at 100; `check-github-workflow-contract.py`; gate contract and plan suites | PASS | 163 tests OK; contract PASS | required | Budget RED |
 
@@ -250,7 +249,7 @@ no longer fits the 30-minute candidate job, which the shard split fixes.
 
 Fixture git RED is resolved by Fixture git GREEN, and the Shard split hosted
 first and second runs by the Shard split hosted final run. Budget RED is
-resolved by Budget GREEN, and the Docs budget timeout by Docs budget hosted.
+resolved by Budget GREEN.
 
 ## Acceptance Decision
 
