@@ -14,7 +14,15 @@ from unittest import mock
 from scripts.lib.document_governance.metadata import (
     lifecycle as lifecycle_module,
 )
-from tests.lib.document_governance.metadata._support import REGISTRY, metadata
+from scripts.lib.document_governance.metadata import version as version_module
+from scripts.lib.document_governance.metadata.profile import Record
+from tests.lib.document_governance.metadata._support import (
+    REGISTRY,
+    git,
+    init_git,
+    metadata,
+    write_doc,
+)
 
 
 class HistoricalBlobBatchTests(unittest.TestCase):
@@ -403,3 +411,82 @@ class OperationsCurrencyTests(unittest.TestCase):
             "stale-active",
             self.codes(next_review_at="2000-01-02", reviewed_at="2000-01-01"),
         )
+
+
+class VersionDowngradeTests(unittest.TestCase):
+    """SemVer 2.0 precedence of a changed document's `version` against its base."""
+
+    DOC = pathlib.Path("docs/90.references/research/0001-x/note.md")
+
+    def findings(self, base: str | None, head: str | None, *, tracked: bool = True):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            other = pathlib.Path("README.md")
+            write_doc(root / other, {"version": "9.9.9"})
+            if tracked:
+                write_doc(root / self.DOC, None if base is None else {"version": base})
+            self.assertEqual(0, git(root, "add", ".").returncode)
+            self.assertEqual(0, git(root, "commit", "-qm", "base").returncode)
+            base_ref = git(root, "rev-parse", "HEAD").stdout.strip()
+            write_doc(root / self.DOC, {} if head is None else {"version": head})
+            record = Record(self.DOC, {} if head is None else {"version": head}, "x")
+            return version_module.version_downgrade_findings(
+                root, {self.DOC.as_posix(): record}, base_ref
+            )
+
+    def test_lower_precedence_is_a_downgrade(self) -> None:
+        for base, head in (
+            ("1.2.0", "1.1.9"),
+            ("1.2.0", "1.2.0-rc.1"),
+            ("1.10.0", "1.9.0"),
+            ("1.0.0-rc.1", "1.0.0-beta.11"),
+        ):
+            with self.subTest(base=base, head=head):
+                (finding,) = self.findings(base, head)
+                self.assertEqual("version-downgrade", finding.code)
+                self.assertEqual(self.DOC.as_posix(), finding.path)
+                self.assertEqual("error", finding.severity)
+
+    def test_equal_or_higher_precedence_passes(self) -> None:
+        for base, head in (
+            ("1.2.0", "1.2.0"),
+            ("1.2.0", "1.2.0+build.2"),
+            ("1.2.0", "1.10.0"),
+            ("1.2.0", "1.2.1-rc.1"),
+            ("1.0.0-rc.1", "1.0.0"),
+        ):
+            with self.subTest(base=base, head=head):
+                self.assertEqual([], self.findings(base, head))
+
+    def test_new_document_or_missing_or_malformed_version_is_not_compared(
+        self,
+    ) -> None:
+        self.assertEqual([], self.findings(None, "0.1.0", tracked=False))
+        self.assertEqual([], self.findings(None, "0.1.0"))  # base has no version
+        self.assertEqual([], self.findings("1.2.0", None))  # head has no version
+        self.assertEqual([], self.findings("v1.2.0", "1.0.0"))
+        self.assertEqual([], self.findings("1.2.0", "1.1"))
+
+    def test_private_semver_agrees_with_release_reference(self) -> None:
+        from scripts.operations import release
+
+        chain = (
+            "1.0.0-alpha",
+            "1.0.0-alpha.1",
+            "1.0.0-alpha.beta",
+            "1.0.0-beta",
+            "1.0.0-beta.2",
+            "1.0.0-beta.11",
+            "1.0.0-rc.1",
+            "1.0.0",
+            "1.0.1",
+            "1.10.0",
+        )
+        for i, low in enumerate(chain):
+            for j, high in enumerate(chain):
+                expected = (i > j) - (i < j)
+                with self.subTest(low=low, high=high):
+                    self.assertEqual(expected, version_module.compare_semver(low, high))
+                    self.assertEqual(expected, release.compare_semver(low, high))
+        self.assertEqual(0, version_module.compare_semver("1.2.3+a", "1.2.3+b"))

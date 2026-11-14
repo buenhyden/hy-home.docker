@@ -79,6 +79,9 @@ from scripts.lib.document_governance.metadata.profile import (
     build_registry_profiles,
     registered_generated_owner,
 )
+from scripts.lib.document_governance.metadata.version import (
+    version_downgrade_findings,
+)
 from scripts.lib.document_governance.operations_catalog import (
     OperationsAuthorityError,
     read_bounded_regular,
@@ -1863,6 +1866,18 @@ def main(argv: Sequence[str] | None = None) -> int:
                 base_text,
                 profiles,
             )
+    version_findings: list[Finding] = []
+    if args.mode == "check-changed":
+        version_findings = version_downgrade_findings(
+            root,
+            {
+                path: records_by_path[path]
+                for path in changed_selection
+                if path in records_by_path
+            },
+            base.merge_base,
+            profiles,
+        )
     relation_impact_findings: dict[str, list[Finding]] = {}
     if args.mode == "check-changed":
         try:
@@ -1913,6 +1928,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     selected_paths = directly_selected_paths | set(relation_impact_findings)
     selected_findings = sorted(
         set(native_findings)
+        | set(version_findings)
         | {
             finding
             for path in directly_selected_paths
