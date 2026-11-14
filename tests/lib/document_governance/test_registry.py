@@ -4306,6 +4306,36 @@ class StateAxisLifecycleTests(unittest.TestCase):
                     sorted(statuses),
                 )
 
+    def test_architecture_description_records_authority_only(self) -> None:
+        lifecycle = self.raw["lifecycles"]["architecture-description"]
+        self.assertEqual(["draft", "in-review", "approved"], lifecycle["statuses"])
+        self.assertEqual("draft", lifecycle["initial_status"])
+        self.assertEqual([], lifecycle["terminal_statuses"])
+        self.assertEqual(
+            {
+                "draft": ["in-review", "approved"],
+                "in-review": ["approved", "draft"],
+                "approved": ["in-review"],
+            },
+            lifecycle["transitions"],
+        )
+
+    def test_no_lifecycle_mixes_approval_with_a_currency_state(self) -> None:
+        currency = {"active", "deprecated", "superseded", "retired"}
+        for lifecycle_id, lifecycle in self.raw["lifecycles"].items():
+            statuses = set(lifecycle["statuses"])
+            if "approved" in statuses:
+                with self.subTest(lifecycle=lifecycle_id):
+                    self.assertFalse(statuses & currency, sorted(statuses))
+
+    def test_no_current_architecture_description_is_active(self) -> None:
+        registry = load_registry()
+        pattern = registry.profiles["architecture-description"]["path_pattern"]
+        root = pathlib.Path(pattern.split("{")[0])
+        for path in sorted((ROOT / root).glob("[0-9]*.md")):
+            with self.subTest(path=path.name):
+                self.assertIn('\nstatus: "approved"\n', path.read_text("utf-8"))
+
     def test_no_lifecycle_keeps_the_review_alias_of_in_review(self) -> None:
         for lifecycle_id, lifecycle in self.raw["lifecycles"].items():
             with self.subTest(lifecycle=lifecycle_id):

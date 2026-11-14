@@ -1,10 +1,10 @@
 ---
 title: "Analytics Tier Architecture Description"
-version: "1.3.1"
+version: "1.3.2"
 type: "sdlc/architecture-description"
-status: "active"
+status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "architecture"
 artifact_id: "AD-0012"
 parent_ids:

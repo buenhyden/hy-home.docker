@@ -6904,25 +6904,25 @@
     },
     "architecture-description": {
       "initial_status": "draft",
+      "terminal_statuses": [],
       "statuses": [
         "draft",
         "in-review",
-        "active"
+        "approved"
       ],
       "transitions": {
         "draft": [
           "in-review",
-          "active"
+          "approved"
         ],
         "in-review": [
-          "active",
+          "approved",
           "draft"
         ],
-        "active": [
+        "approved": [
           "in-review"
         ]
-      },
-      "terminal_statuses": []
+      }
     },
     "architecture-decision": {
       "initial_status": "proposed",

@@ -1,6 +1,6 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.10.0"
+version: "1.10.1"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
@@ -103,7 +103,9 @@ authenticate it.
 
 Stage 99 assigns document-family states and legal transitions in the
 Registry `lifecycles` and `transitions`; this policy does not restate them.
-Specs and Plans record authority only. Stage 01 to 03 documents never use
+Requirements, Architecture Descriptions, Specs, Plans and data model contracts
+record authority only (`draft`, `in-review`, `approved`, and `cancelled` for
+Specs and Plans); only a Task records execution. Stage 01 to 03 documents never use
 `deprecated`, `superseded`, `retired`, or `archived`: a replaced or withdrawn
 document is summarized into its current owner and deleted, and its number is
 reserved.

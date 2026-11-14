@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.29.0"
+version: "3.30.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -429,10 +429,13 @@ evidence; surrounding instructions remain current and validated normally.
 - A Guide, Operations Policy or Runbook stays current by event: a change to
   the service, pin, command or procedure it describes updates it in the same
   change. It also carries `next_review_at`, the date its next review is due,
-  at most 180 days after `updated`. A `next_review_at` that has passed makes
-  it stale until a `reviewed_at` on or after it, and a missing date or one
-  beyond the interval is rejected. A README is navigation, kept current by the
-  link and navigation checks, and carries no review date.
+  at most 180 days after `updated`, the owner's decision of 2026-11-14. A
+  `next_review_at` that has passed makes it stale until a `reviewed_at` on or
+  after it, and a missing date or one beyond the interval is rejected. A README
+  is navigation, kept current by the link and navigation checks, and carries no
+  review date. An Architecture Description records authority only (`draft`,
+  `in-review`, `approved`) and is kept current by event with its parent
+  Requirement and Spec, so it carries no review date either.
 - An Incident records observed impact, severity, affected service, coordination,
   timeline, hypotheses, mitigation, and the next responsible action. Put
   severity and service details in the body unless the Registry declares a
