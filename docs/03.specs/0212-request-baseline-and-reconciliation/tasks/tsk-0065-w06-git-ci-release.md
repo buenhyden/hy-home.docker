@@ -198,6 +198,16 @@ and document-library leaves exceeded their older 600 s and 900 s budgets
 (SPEC-0204 TSK-0011), now 30 and 45 minutes, and the 45-minute library leaf
 no longer fits the 30-minute candidate job, which the shard split fixes.
 
+Hosted CI then showed the same mechanism: `leaf.docs-traceability` ran 159 s,
+231 s and then 300 s, where its 5-minute budget killed it with exit 124
+(Docs budget timeout). The common cause is a budget set before any hosted
+measurement. #1012 raised that budget and added a test that a job limit
+covers its leaf budgets in sequence. Budget measurement then read every
+leaf's duration from nine hosted runs: the highest max-to-budget ratio is
+0.33, so every budget now has at least three times its longest observed run.
+OPEN-14 is closed on that measurement; its single earlier record cannot be
+replayed, and a later exit 124 is now a measured overrun, not an unknown.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
