@@ -1071,7 +1071,7 @@ def _check_commit_range(root: pathlib.Path, environ: Mapping[str, str]) -> int:
     # commitizen exempts any message that starts with an allowed prefix before
     # the schema and length checks; only a real merge (2+ parents) may use it.
     listing = _run_child(
-        ("git", "log", "--no-merges", "--format=%s%x00", f"{base}..{head}"),
+        ("git", "log", "--no-merges", "--format=%B%x00", f"{base}..{head}"),
         root=root,
         environ=environ,
         capture_output=True,
@@ -1082,8 +1082,10 @@ def _check_commit_range(root: pathlib.Path, environ: Mapping[str, str]) -> int:
             "the pull request history could not be verified",
         )
     if any(
-        subject.lstrip("\n").startswith(merge_prefixes)
-        for subject in listing.stdout.decode("utf-8", errors="replace").split("\0")
+        message.lstrip().startswith(
+            merge_prefixes
+        )  # cz strips, so lstrip is a superset
+        for message in listing.stdout.decode("utf-8", errors="replace").split("\0")
     ):
         sys.stderr.write(
             "FAIL: a single-parent commit uses a merge-message prefix; "

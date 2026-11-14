@@ -898,7 +898,7 @@ class CiGateAdapterTests(unittest.TestCase):
                 ("git", "rev-list", "--parents", "--max-count=1", "HEAD"),
                 ("git", "merge-base", base, head),
                 ("git", "rev-list", "--count", f"{base}..{head}"),
-                ("git", "log", "--no-merges", "--format=%s%x00", f"{base}..{head}"),
+                ("git", "log", "--no-merges", "--format=%B%x00", f"{base}..{head}"),
                 (
                     "cz",
                     "check",
@@ -968,7 +968,7 @@ class CiGateAdapterTests(unittest.TestCase):
         self.assertEqual(f"{base}..{head}", commitizen_calls[0][3])
 
     def synthetic_merge_with_feature_merge(
-        self, *, real_update_merge: bool
+        self, *, single_parent_message: str | None
     ) -> tuple[str, str]:
         self.git("init", "-q", "-b", "main")
         self.git("config", "user.name", "Diagnostic")
@@ -980,21 +980,30 @@ class CiGateAdapterTests(unittest.TestCase):
         self.git("commit", "--allow-empty", "-qm", "chore: Advance target")
         base = self.git("rev-parse", "HEAD")
         self.git("switch", "-q", "feature")
-        if real_update_merge:
+        if single_parent_message is None:
             self.git(
                 "merge", "--no-ff", "main", "-qm", "Merge branch 'main' into feature"
             )
         else:
-            self.git("commit", "--allow-empty", "-qm", "Merge branch whatever")
+            message_file = self.root.parent / f"{self.root.name}.msg"
+            message_file.write_bytes(single_parent_message.encode("utf-8"))
+            self.git(
+                "commit",
+                "--allow-empty",
+                "-q",
+                "--cleanup=verbatim",
+                "-F",
+                str(message_file),
+            )
         head = self.git("rev-parse", "HEAD")
         self.git("switch", "-q", "main")
         self.git("merge", "--no-ff", "feature", "-qm", "Synthetic candidate")
         return base, head
 
-    def run_commit_range(self, *, real_update_merge: bool) -> int:
+    def run_commit_range(self, *, single_parent_message: str | None) -> int:
         (self.root / ".cz.toml").write_bytes((ROOT / ".cz.toml").read_bytes())
         base, head = self.synthetic_merge_with_feature_merge(
-            real_update_merge=real_update_merge
+            single_parent_message=single_parent_message
         )
         actual_child = adapters._run_child
 
@@ -1014,10 +1023,25 @@ class CiGateAdapterTests(unittest.TestCase):
             )
 
     def test_commit_range_accepts_a_real_two_parent_update_merge(self) -> None:
-        self.assertEqual(0, self.run_commit_range(real_update_merge=True))
+        self.assertEqual(0, self.run_commit_range(single_parent_message=None))
 
     def test_commit_range_rejects_a_single_parent_merge_prefixed_commit(self) -> None:
-        self.assertNotEqual(0, self.run_commit_range(real_update_merge=False))
+        for message in (
+            "Merge branch whatever\n",
+            " Merge branch whatever\n",
+            "\tMerge branch whatever\n",
+            "\n\nMerge branch whatever\n",
+            "\r\nMerge branch whatever\r\n",
+            "  \r\n  Merge branch whatever\r\n",
+            "Merge pull request #1 from o/b\n",
+        ):
+            with self.subTest(message=message):
+                self.root = pathlib.Path(
+                    tempfile.mkdtemp(dir=self.temporary.name)
+                ).resolve()
+                self.assertNotEqual(
+                    0, self.run_commit_range(single_parent_message=message)
+                )
 
     def test_commit_contract_allows_only_git_automatic_merge_messages(self) -> None:
         commitizen = tomllib.loads((ROOT / ".cz.toml").read_text(encoding="utf-8"))[
