@@ -710,6 +710,44 @@ def atomic_write(root, relative, document):
         os.close(directory_fd)
 
 
+PUBLISHED = "docs/90.references/data/0096-workspace-inventory/data.yaml"
+PUBLISHED_README = "docs/90.references/data/0096-workspace-inventory/README.md"
+
+
+def check_published(root, relative=PUBLISHED, readme=PUBLISHED_README):
+    """Reject a tracked snapshot that is not exactly the producer's own output.
+
+    The scan records a clock reading and the commit it ran on, so it cannot be
+    replayed offline; freshness here means untouched, valid and consistently dated.
+    """
+    root = Path(root).resolve()
+    raw = _read_public(root, relative).decode("utf-8")
+    document = load_public(root, relative)
+    _require(validate(document))
+    _require(
+        raw == yaml.safe_dump(document, allow_unicode=True, sort_keys=False),
+        "Snapshot differs from producer serialization.",
+    )
+    workspace = document.get("workspace")
+    _require(
+        isinstance(workspace, dict)
+        and re.fullmatch(r"[0-9a-f]{40}", str(workspace.get("head"))),
+        "Snapshot head is not a commit id.",
+    )
+    observed = str(document.get("observed_at"))
+    _require(
+        re.fullmatch(r"\d{4}-\d{2}-\d{2}T[\d:.]+Z", observed),
+        "Snapshot observation time is malformed.",
+    )
+    front = _read_public(root, readme).decode("utf-8").split("---\n", 2)
+    _require(len(front) == 3, "README has no front matter.")
+    _require(
+        str(yaml.safe_load(front[1]).get("observed_at")) == observed[:10],
+        "README observation date differs from the snapshot.",
+    )
+    return True
+
+
 def load_public(root, relative):
     """Load a bounded public YAML/JSON document without arbitrary constructors."""
     try:

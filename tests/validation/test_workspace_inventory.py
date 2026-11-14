@@ -260,5 +260,87 @@ class CommittedLedgerTests(unittest.TestCase):
         self.assertTrue(validate(yaml.safe_load(ledger.read_text())))
 
 
+class PublishedSnapshotFreshnessTests(unittest.TestCase):
+    """DATA-0096 is a dated scan the producer cannot replay offline.
+
+    Its freshness contract is therefore provenance: the tracked bytes must be
+    exactly the producer's serialization, valid, and dated like its README.
+    """
+
+    ROOT = CLI.parents[2]
+    LEDGER = "docs/90.references/data/0096-workspace-inventory/data.yaml"
+    README = "docs/90.references/data/0096-workspace-inventory/README.md"
+
+    def staged(self, edit=None, readme_edit=None):
+        tmp = tempfile.TemporaryDirectory(prefix="snapshot ")
+        self.addCleanup(tmp.cleanup)
+        root = Path(tmp.name)
+        for relative, change in ((self.LEDGER, edit), (self.README, readme_edit)):
+            text = (self.ROOT / relative).read_text()
+            target = root / relative
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(change(text) if change else text)
+        return root
+
+    def check(self, root):
+        from scripts.lib.ops.workspace_inventory import check_published
+
+        return check_published(root, self.LEDGER, self.README)
+
+    def test_committed_snapshot_is_current_with_its_producer_contract(self):
+        self.assertTrue(self.check(self.ROOT))
+
+    def test_stale_or_hand_edited_snapshot_is_rejected(self):
+        from scripts.lib.ops.workspace_inventory import InventoryError
+
+        cases = {
+            "non-canonical bytes": lambda t: t.replace(
+                "schema_version: 1\n", "schema_version:   1\n", 1
+            ),
+            "unparsed trailing hand edit": lambda t: t + "\n",
+            "moved observation date": lambda t: t.replace(
+                "observed_at: '2026-11-07", "observed_at: '2026-11-01", 1
+            ),
+            "forged head": lambda t: t.replace(
+                "head: 52556b386d2dee1b5d06923354e69df8c04e1e1d", "head: nothex", 1
+            ),
+            "broken coverage": lambda t: t.replace(
+                "coverage:\n", "coverage:\n  forged: true\n", 1
+            ),
+        }
+        for name, edit in cases.items():
+            with self.subTest(name):
+                with self.assertRaises(InventoryError):
+                    self.check(self.staged(edit))
+
+    def test_readme_date_must_match_the_observation(self):
+        from scripts.lib.ops.workspace_inventory import InventoryError
+
+        root = self.staged(
+            readme_edit=lambda t: t.replace(
+                'observed_at: "2026-11-07"', 'observed_at: "2026-11-08"', 1
+            )
+        )
+        with self.assertRaises(InventoryError):
+            self.check(root)
+
+    def test_cli_check_exits_nonzero_on_a_stale_snapshot(self):
+        good = subprocess.run(
+            [sys.executable, str(CLI), "check", "--root", str(self.ROOT)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(good.returncode, 0, good.stderr)
+        root = self.staged(lambda t: t + "\n")
+        bad = subprocess.run(
+            [sys.executable, str(CLI), "check", "--root", str(root)],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(bad.returncode, 2)
+
+
 if __name__ == "__main__":
     unittest.main()

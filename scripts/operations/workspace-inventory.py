@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Scan public source evidence, compare dated inventories, or validate metadata."""
+"""Scan public source evidence, compare dated inventories, validate or check metadata."""
 
 from __future__ import annotations
 
@@ -11,8 +11,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts.lib.ops.workspace_inventory import (
+    PUBLISHED,
+    PUBLISHED_README,
     InventoryError,
     atomic_write,
+    check_published,
     compare,
     load_public,
     render_inventory,
@@ -46,6 +49,8 @@ def main(argv=None):
     checking = commands.add_parser("validate")
     checking.add_argument("--root", type=Path, default=Path.cwd())
     checking.add_argument("--input", required=True)
+    published = commands.add_parser("check")
+    published.add_argument("--root", type=Path, default=Path.cwd())
     args = parser.parse_args(argv)
     try:
         if args.command == "scan":
@@ -103,6 +108,12 @@ def main(argv=None):
             result = compare(
                 load_public(args.root, args.before), load_public(args.root, args.after)
             )
+        elif args.command == "check":
+            check_published(args.root, PUBLISHED, PUBLISHED_README)
+            result = {
+                "result": "PASS",
+                "meaning": "Snapshot is untouched producer output; not a replay.",
+            }
         else:
             validate(load_public(args.root, args.input))
             result = {
