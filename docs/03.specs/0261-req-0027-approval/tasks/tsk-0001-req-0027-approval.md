@@ -1,8 +1,8 @@
 ---
 title: "REQ-0027 Approval Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-15"
 layer: "specs"
@@ -58,6 +58,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0261-PLAN-0001 | draft | approved | #current-contract-decision |
 | SPEC-0261-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0261-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
+| SPEC-0261-TSK-0001 | in-progress | completed | #criterion-decisions |
 
 #### Decisions
 
@@ -156,6 +157,9 @@ None: nothing was recorded here before this Task moved to the common form.
 | E7 | 4 | W4 | corpus-lifecycle | `check-document-corpus-lifecycle.py --base-ref origin/main`, same tree | PASS | lifecycle zero, occupancy zero | required | - |
 | E8 | 4 | W4 | operations-and-links | `check-operations-catalog.py`; links `alignment`, `navigation`, `language`, `traceability`, `entrypoint`, same tree | PASS | catalog PASS; every link mode PASS, 879 documents, 8109 links, zero failures | required | - |
 | E9 | 4 | W4 | hosted-ci | Original implementation commit a30e3598eb29bba094fbf76934d04eeac2b82858 | PASS | Read-only 2026-11-10 lookup: run41780400564, candidate-quality job126410378613 success; main-security skipped | required | E5 |
+| E10 | 2 | W2 | source-review | 2026-11-15 independent acceptance review of SPEC-0261 criteria 1 to 4 | FAIL | Criteria 1, 3 and 4 MET; criterion 2 NOT_MET: AD-0031 line 59 put Open WebUI and ComfyUI under HOME profile `ai` | required | - |
+| E11 | 2 | W2 | source-review | AD-0031 against the Ollama, Qdrant, ComfyUI and Open WebUI Compose files after the fix | PASS | Ollama and Qdrant `ai`, `ai-llm`; ComfyUI `ai-image`; Open WebUI LAB `lab-open-webui`; criterion 2 fixed by this change | required | E10 |
+| E12 | 4 | W4 | hosted-ci | PR #739, merge d53a0cd6e8f6970b44e1c404e25842a258019ab3, read-only `gh pr view` 2026-11-15 | PASS | 8 SUCCESS, 2 SKIPPED, none failing | required | - |
 
 ### Resolution Links
 
@@ -167,17 +171,14 @@ None: nothing was recorded here before this Task moved to the common form.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | - | - | @buenhyden |
-| 2 | pending | - | - | @buenhyden |
-| 3 | pending | - | - | @buenhyden |
-| 4 | pending | - | - | @buenhyden |
+| 1 | accepted | E1 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review and the fix in this change | SPEC-0261 TSK-0001 |
+| 2 | accepted | E2, E10, E11 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review and the fix in this change | SPEC-0261 TSK-0001 |
+| 3 | accepted | E3, E4 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review and the fix in this change | SPEC-0261 TSK-0001 |
+| 4 | accepted | E5, E6, E7, E8, E9, E12 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review and the fix in this change | SPEC-0261 TSK-0001 |
 
 ### Remaining Conditions
 
-Local checks are recorded above. The original candidate hosted-CI result is
-now evidenced by E9. Hosted CI for the current diff, fresh-context independent
-review and owner criterion decisions remain pending; no criterion is accepted
-yet. Earlier unrun statements are preserved as the history they recorded.
+All four criteria are accepted and the Task is completed. The 2026-11-15 independent review found criterion 2 NOT_MET (E10); the fix is verified in E11. Hosted CI is E9 for the original commit and E12 for the merged PR #739. Backup, bootstrap and resource acceptance stay unverified acceptance conditions of REQ-0027; no runtime result is claimed.
 
 ## Handoff
 

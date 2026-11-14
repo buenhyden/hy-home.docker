@@ -1,10 +1,10 @@
 ---
 title: "Capacity Search and Backup Task"
-version: "0.1.1"
+version: "0.2.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0270-TSK-0001"
 parent_ids:
@@ -70,6 +70,7 @@ authenticated permission or operational acceptance.
 | SPEC-0270-PLAN-0001 | draft | approved | #owner-approved-local-execution |
 | SPEC-0270-TSK-0001 | draft | ready | #owner-approved-local-execution |
 | SPEC-0270-TSK-0001 | ready | in-progress | #owner-approved-local-execution |
+| SPEC-0270-TSK-0001 | in-progress | completed | #criterion-decisions |
 
 #### Verification boundary
 
@@ -185,6 +186,7 @@ None: nothing was recorded here before this Task moved to the common form.
 | Final document checks | 6 | W5 | documentation-checks | Final source documents before this result-only entry | PASS | Metadata selected13 violations0; lifecycle/occupancy0; alignment912 documents/8269 links failures0, warnings0 | required | - |
 | Independent source verification | 5 | W6 | independent-review-and-registration | Final source diff | NOT_RUN | Awaiting integration and review | required | - |
 | Final source and registration review | 5 | W6 | independent-review-and-registration | Final hashes in Work Log and registered script/test routes | PASS | Code and exact-hash security APPROVED; manifest, workflow contract, governance, renderer parity and ownership checks PASS | required | Independent source verification |
+| Hosted CI | 5 | W6 | hosted-ci | PR #935, head a9efaf501e6c81b2e13c8740ec936c83aa02ccf8, merge 8c55be479e1ab886754fbf021a142145930a7c12, delivering commit f16b179fd; read-only `gh pr view` 2026-11-15 | PASS | 7 SUCCESS, 1 SKIPPED (`main-security`), none failing | required | - |
 
 ### Resolution Links
 
@@ -196,22 +198,16 @@ None: nothing was recorded here before this Task moved to the common form.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | Final capacity regressions | Source verified; owner acceptance pending | SPEC-0270 TSK-0001 |
-| 2 | pending | Final writer regressions | Source verified; owner acceptance pending | SPEC-0270 TSK-0001 |
-| 3 | pending | Final search regressions | Source verified; owner acceptance pending | SPEC-0270 TSK-0001 |
-| 4 | pending | Final backup regressions | Source verified; operational adoption remains NOT_RUN | SPEC-0270 TSK-0001 |
-| 5 | pending | Final source and registration review | Source review approved; owner acceptance and hosted CI remain separate | SPEC-0270 TSK-0001 |
-| 6 | pending | Final document checks | Current guidance verified; owner acceptance pending | SPEC-0270 TSK-0001 |
+| 1 | accepted | Final capacity regressions, Hosted CI | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review and the fix in this change | SPEC-0270 TSK-0001 |
+| 2 | accepted | Final writer regressions, Hosted CI | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review and the fix in this change | SPEC-0270 TSK-0001 |
+| 3 | accepted | Final search regressions, Hosted CI | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review and the fix in this change | SPEC-0270 TSK-0001 |
+| 4 | accepted | Final backup regressions, Hosted CI | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review and the fix in this change; accepted as source-only: operational adoption, Docker, Restic, R2, backup and restore stay NOT_RUN | SPEC-0270 TSK-0001 |
+| 5 | accepted | Final source and registration review, Hosted CI | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review and the fix in this change | SPEC-0270 TSK-0001 |
+| 6 | accepted | Final document checks, Hosted CI | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review and the fix in this change | SPEC-0270 TSK-0001 |
 
 ### Remaining Conditions
 
-Local implementation and independent source review are complete. This Task
-remains in progress pending the owner's criterion acceptance. Real inventory
-adoption, native provider behavior, Docker/Restic/R2 operation, backup/restore
-and hosted CI remain NOT_RUN and are not inferred from isolated checks.
-Local logical commits are source checkpoints, not criterion acceptance.
-Required supply-chain evidence and the other owners' acceptance remain
-separate outstanding work.
+All six criteria are accepted and the Task is completed. Criterion 4 is accepted as source-only: real inventory adoption, native provider behavior, Docker/Restic/R2 operation and backup/restore stay NOT_RUN and are not inferred. Hosted CI for PR #935 is the Hosted CI row.
 
 ## Handoff
 
