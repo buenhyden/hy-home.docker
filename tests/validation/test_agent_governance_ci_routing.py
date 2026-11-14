@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import glob
 import json
 import os
 import pathlib
@@ -2409,6 +2410,170 @@ class ReadOnlyCommitStyleTests(unittest.TestCase):
                 )
                 self.assertEqual(b"unstaged local bytes\n", target.read_bytes())
 
+    @staticmethod
+    def _commitizen() -> str | None:
+        found = [
+            shutil.which("cz"),
+            *sorted(
+                glob.glob(
+                    str(pathlib.Path.home() / ".cache/pre-commit/repo*/py_env-*/bin/cz")
+                )
+            ),
+        ]
+        for candidate in filter(None, found):
+            probe = subprocess.run(
+                [candidate, "version"], capture_output=True, text=True, check=False
+            )
+            if re.fullmatch(r"\d+\.\d+\.\d+\S*", probe.stdout.strip()):
+                return candidate
+        return None
+
+    def test_installed_commit_msg_hook_blocks_bad_message_and_passes_good(
+        self,
+    ) -> None:
+        commitizen = self._commitizen()
+        if commitizen is None:
+            if os.environ.get("CI"):
+                self.fail("python commitizen cz is required in CI")
+            self.skipTest("NOT_RUN: python commitizen cz is not installed")
+        config = yaml.safe_load((ROOT / ".pre-commit-config.yaml").read_text())
+        upstream = next(
+            hook
+            for repo in config["repos"]
+            if "commitizen" in repo["repo"]
+            for hook in repo["hooks"]
+        )
+        entry = " ".join(
+            [shlex.quote(commitizen), "check", *map(shlex.quote, upstream["args"])]
+        )
+        local_hook = {
+            "id": "commitizen",
+            "name": "commitizen check",
+            "entry": entry,
+            "language": "system",
+            "stages": ["commit-msg"],
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            repo = pathlib.Path(directory)
+            shutil.copy2(ROOT / ".cz.toml", repo / ".cz.toml")
+            (repo / ".pre-commit-config.yaml").write_text(
+                yaml.safe_dump({"repos": [{"repo": "local", "hooks": [local_hook]}]})
+            )
+            environment = {
+                **os.environ,
+                "PRE_COMMIT_HOME": str(repo / ".pre-commit-cache"),
+            }
+
+            def run_git(*arguments: str) -> subprocess.CompletedProcess[str]:
+                return subprocess.run(
+                    ["git", *arguments],
+                    cwd=repo,
+                    env=environment,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                )
+
+            for arguments in (
+                ("init", "-q", "-b", "main"),
+                ("config", "user.name", "Test"),
+                ("config", "user.email", "test@example.com"),
+            ):
+                self.assertEqual(0, run_git(*arguments).returncode)
+            subprocess.run(
+                ["pre-commit", "install", "--hook-type", "commit-msg"],
+                cwd=repo,
+                env=environment,
+                check=True,
+                capture_output=True,
+            )
+            message = repo / "message.txt"
+            for text, passes in (
+                ("update stuff\n", False),
+                ("merge: lowercase type\n", False),
+                ("feat(auth): Add login guard\n", True),
+                ("Merge branch 'main' into feat/x\n", True),
+            ):
+                with self.subTest(message=text):
+                    message.write_text(text, encoding="utf-8")
+                    result = run_git(
+                        "commit", "-q", "--allow-empty", "-F", "message.txt"
+                    )
+                    output = result.stdout + result.stderr
+                    self.assertEqual(passes, result.returncode == 0, output)
+                    if not passes:
+                        self.assertIn("commitizen check", output)
+
+    def test_installed_commit_hook_checks_index_for_awkward_filenames(self) -> None:
+        config = yaml.safe_load((ROOT / ".pre-commit-config.yaml").read_text())
+        local = [repo for repo in config["repos"] if repo["repo"] == "local"]
+        for name in (" leading space.txt", "new\nline.txt"):
+            for staged, worktree, passes in (
+                (b"staged secret-sentinel \n", b"clean\n", False),
+                (b"clean\n", b"dirty secret-sentinel \n", True),
+            ):
+                with (
+                    self.subTest(name=name, passes=passes),
+                    tempfile.TemporaryDirectory() as directory,
+                ):
+                    repo = pathlib.Path(directory)
+                    source = repo / TEXT_STYLE_CHECKER.relative_to(ROOT)
+                    source.parent.mkdir(parents=True)
+                    shutil.copy2(TEXT_STYLE_CHECKER, source)
+                    (repo / ".pre-commit-config.yaml").write_text(
+                        yaml.safe_dump({"repos": local})
+                    )
+                    environment = {
+                        **os.environ,
+                        "PRE_COMMIT_HOME": str(repo / ".pre-commit-cache"),
+                    }
+                    target = repo / name
+                    target.write_bytes(b"seed\n")
+                    for arguments in (
+                        ("init", "-q", "-b", "main"),
+                        ("config", "user.name", "Test"),
+                        ("config", "user.email", "test@example.com"),
+                        ("add", "."),
+                        ("commit", "-qm", "Seed"),
+                    ):
+                        subprocess.run(
+                            ["git", *arguments],
+                            cwd=repo,
+                            env=environment,
+                            check=True,
+                            capture_output=True,
+                        )
+                    subprocess.run(
+                        ["pre-commit", "install", "--hook-type", "pre-commit"],
+                        cwd=repo,
+                        env=environment,
+                        check=True,
+                        capture_output=True,
+                    )
+                    target.write_bytes(staged)
+                    subprocess.run(["git", "add", "--", name], cwd=repo, check=True)
+                    target.write_bytes(worktree)
+                    result = subprocess.run(
+                        ["git", "commit", "-qm", "fix: Check staged input"],
+                        cwd=repo,
+                        env=environment,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                    )
+                    output = result.stdout + result.stderr
+                    self.assertEqual(passes, result.returncode == 0, output)
+                    self.assertNotIn("secret-sentinel", output)
+                    if not passes:
+                        self.assertIn("check-trailing-whitespace", output)
+                        self.assertEqual(
+                            staged,
+                            subprocess.check_output(
+                                ["git", "show", f":{name}"], cwd=repo
+                            ),
+                        )
+                    self.assertEqual(worktree, target.read_bytes())
+
     def test_checker_refuses_symlinks_and_fifos_without_blocking(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
@@ -2644,6 +2809,121 @@ class InstalledPrePushGuardTests(unittest.TestCase):
                 self.assertEqual(0, result.returncode, result.stderr)
                 self.assertEqual(prior, (hooks / "pre-push.before-native").read_bytes())
                 self.assertEqual("#!/bin/sh\nexit 0\n", other.read_text())
+
+    def test_guard_stdin_refuses_main_deletion_and_allows_new_branch(self) -> None:
+        # Characterization of git's pre-push stdin: <local ref> <local sha> <remote ref> <remote sha>.
+        zero, sha = "0" * 40, "a" * 40
+        guard = ROOT / "scripts/hooks/pre-push-guard.sh"
+        for line, refused in (
+            (f"(delete) {zero} refs/heads/main {sha}\n", True),
+            (f"refs/heads/main {sha} refs/heads/main {sha}\n", True),
+            (f"refs/heads/feat/x {sha} refs/heads/feat/x {zero}\n", False),
+            (f"(delete) {zero} refs/heads/feat/x {sha}\n", False),
+        ):
+            with self.subTest(line=line):
+                result = subprocess.run(
+                    ["bash", str(guard)],
+                    input=line,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                    env={
+                        k: v
+                        for k, v in os.environ.items()
+                        if k != "PRE_COMMIT_REMOTE_BRANCH"
+                    },
+                )
+                self.assertEqual(refused, result.returncode != 0, result.stderr)
+
+    def test_default_install_hook_types_have_no_post_commit_claim(self) -> None:
+        config = yaml.safe_load((ROOT / ".pre-commit-config.yaml").read_text())
+        types = config["default_install_hook_types"]
+        self.assertEqual(["pre-commit", "commit-msg"], types)
+        self.assertFalse([t for t in types if t.startswith("post-")])
+
+    def _check_hooks(self, repo: pathlib.Path) -> subprocess.CompletedProcess[str]:
+        script = ROOT / "scripts/hooks/install-pre-push-guard.sh"
+        return subprocess.run(
+            ["bash", str(script), "--check-hooks"],
+            cwd=repo,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+
+    def test_check_hooks_distinguishes_uninstalled_from_installed(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo = pathlib.Path(directory) / "bare"
+            repo.mkdir()
+            self.assertEqual(0, self._git(repo, "init", "-q", "-b", "main").returncode)
+            hooks = repo / ".git/hooks"
+            before = sorted(p.name for p in hooks.iterdir())
+            result = self._check_hooks(repo)
+            self.assertEqual(3, result.returncode, result.stdout + result.stderr)
+            for hook in ("pre-commit", "commit-msg", "pre-push"):
+                self.assertIn(f"MISSING: {hook}", result.stdout)
+            self.assertEqual(before, sorted(p.name for p in hooks.iterdir()))
+            (repo / ".pre-commit-config.yaml").write_text("repos: []\n")
+            environment = {**os.environ, "PRE_COMMIT_HOME": str(repo / ".cache")}
+
+            def install(hook_type: str) -> None:
+                subprocess.run(
+                    ["pre-commit", "install", "--hook-type", hook_type],
+                    cwd=repo,
+                    env=environment,
+                    check=True,
+                    capture_output=True,
+                )
+
+            install("pre-commit")
+            install("commit-msg")
+            result = self._check_hooks(repo)
+            self.assertEqual(3, result.returncode, result.stdout + result.stderr)
+            self.assertIn("PASS: pre-commit", result.stdout)
+            self.assertIn("PASS: commit-msg", result.stdout)
+            self.assertIn("MISSING: pre-push", result.stdout)
+            install("pre-push")
+            result = self._check_hooks(repo)
+            self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+            self.assertNotIn("MISSING", result.stdout)
+
+    def test_check_hooks_reports_a_wrong_type_shim_as_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo = pathlib.Path(directory) / "bare"
+            repo.mkdir()
+            self.assertEqual(0, self._git(repo, "init", "-q", "-b", "main").returncode)
+            (repo / ".pre-commit-config.yaml").write_text("repos: []\n")
+            environment = {**os.environ, "PRE_COMMIT_HOME": str(repo / ".cache")}
+            for hook_type in ("pre-commit", "commit-msg", "pre-push"):
+                subprocess.run(
+                    ["pre-commit", "install", "--hook-type", hook_type],
+                    cwd=repo,
+                    env=environment,
+                    check=True,
+                    capture_output=True,
+                )
+            self.assertEqual(0, self._check_hooks(repo).returncode)
+            hooks = repo / ".git/hooks"
+            shim = (hooks / "pre-push").read_text()
+            self.assertIn("--hook-type=pre-push", shim)
+            (hooks / "commit-msg").write_text(shim)
+            result = self._check_hooks(repo)
+            self.assertEqual(3, result.returncode, result.stdout + result.stderr)
+            self.assertIn("MISSING: commit-msg", result.stdout)
+            self.assertIn("PASS: pre-commit", result.stdout)
+            self.assertIn("PASS: pre-push", result.stdout)
+            # The native wrapper is valid for pre-push only.
+            guard = repo / "scripts/hooks/pre-push-guard.sh"
+            guard.parent.mkdir(parents=True)
+            shutil.copy2(ROOT / "scripts/hooks/pre-push-guard.sh", guard)
+            installed = self._install(repo)
+            self.assertEqual(0, installed.returncode, installed.stderr)
+            native = (hooks / "pre-push").read_text()
+            self.assertIn("native pre-push guard", native)
+            self.assertIn("PASS: pre-push", self._check_hooks(repo).stdout)
+            (hooks / "pre-commit").write_text(native)
+            (hooks / "pre-commit").chmod(0o755)
+            self.assertIn("MISSING: pre-commit", self._check_hooks(repo).stdout)
 
     def test_installer_refuses_unknown_hook_or_selected_hook_directory(self) -> None:
         for condition in (

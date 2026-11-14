@@ -1,7 +1,7 @@
 [tool.commitizen]
   name            ="cz_customize"
   message_length_limit=75
-  allowed_prefixes=[]
+  allowed_prefixes=["Merge branch ", "Merge pull request ", "Merge remote-tracking branch "]
   version_provider="scm"
   version_scheme="semver2"
   tag_format="v$version"

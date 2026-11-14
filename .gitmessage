@@ -9,7 +9,7 @@
 ################
 # Body Message (선택사항)
 # 본문(구체적인 내용)을 아랫줄에 작성
-# 여러 줄의 메시지를 작성할 땐 "-"로 구분 (한 줄은 72자 이내)
+# 여러 줄의 메시지를 작성할 땐 "-"로 구분 (줄 길이는 권장 사항이며 강제되지 않음)
 - <Message>
 
 ################
@@ -20,6 +20,10 @@
 
 # --- COMMIT END ---
 # Type와 문법의 기준은 .cz.toml입니다.
+# 이 템플릿은 자동 연결되지 않습니다: git config commit.template .gitmessage 로 직접 지정합니다.
+# Git이 만드는 Merge branch / Merge pull request / Merge remote-tracking branch 메시지는 .cz.toml allowed_prefixes가 허용합니다.
+# 이 예외는 실제 merge 커밋(부모 2개 이상) 전용입니다. 로컬 commit-msg hook은 부모를 볼 수 없으므로
+# 부모가 1개인 커밋의 Merge 접두사는 CI check-commit-range가 거부합니다.
 # change_type_map이 허용 type을, change_type 질문의 choices가 설명을 소유합니다.
 # 전체 type 목록을 이 파일에서 별도로 관리하지 않습니다.
 # 예) release: Publish v1.0.0
