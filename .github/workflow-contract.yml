@@ -351,6 +351,7 @@
         "tests.lib.document_governance.test_registry",
         "tests.lib.document_governance.test_relations",
         "tests.lib.document_governance.test_requirements",
+        "tests.lib.document_governance.test_semver",
         "tests.lib.document_governance.test_spec_packages",
         "tests.lib.document_governance.test_taxonomy",
         "tests.lib.document_governance.test_template_definition",
@@ -2219,6 +2220,7 @@
         "prefixes": [
           "CHANGELOG.md",
           ".github/workflows/publish-release.yml",
+          "scripts/lib/document_governance/semver.py",
           "scripts/operations/release.py",
           "tests/validation/test_release.py"
         ],

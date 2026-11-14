@@ -432,6 +432,18 @@ files:
   successor: null
   tests:
   - tests/lib/document_governance/test_requirements.py
+- path: scripts/lib/document_governance/semver.py
+  kind: library
+  authority: .agents/governance/documentation-protocol.md
+  lifecycle: active
+  mutation: none
+  consumers:
+  - scripts/lib/document_governance/metadata/version.py
+  - scripts/operations/release.py
+  disposition: retain
+  successor: null
+  tests:
+  - tests/lib/document_governance/test_semver.py
 - path: scripts/lib/document_governance/spec_packages.py
   kind: library
   authority: docs/99.templates/registry.json

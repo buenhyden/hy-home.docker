@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 import hashlib
-import itertools
+import inspect
 import json
 import unittest
 from pathlib import Path
 from unittest.mock import patch
 
+from scripts.lib.document_governance import semver
 from scripts.operations import release
 
 CHANGELOG = """# Changelog
@@ -163,66 +164,13 @@ class ReleaseTests(unittest.TestCase):
             with self.subTest(version=version), self.assertRaises(release.ReleaseError):
                 release.release_tag(version)
 
-    def test_precedence_orders_numbers_and_prerelease_not_text(self):
-        ordered = (
-            ["1.9.0", "1.10.0"],
-            ["1.0.0-rc.2", "1.0.0-rc.10", "1.0.0"],
-            ["1.0.0-alpha", "1.0.0-alpha.1", "1.0.0-alpha.beta", "1.0.0-beta"],
-            ["1.0.0-beta.2", "1.0.0-beta.11", "1.0.0-rc.1", "1.0.0"],
-            ["1.0.0-9", "1.0.0-alpha"],
-            ["0.9.9", "1.0.0-0", "1.0.0"],
-        )
-        for chain in ordered:
-            for low, high in itertools.pairwise(chain):
-                with self.subTest(low=low, high=high):
-                    self.assertEqual(-1, release.compare_semver(low, high))
-                    self.assertEqual(1, release.compare_semver(high, low))
-
-    def test_build_metadata_is_ignored_for_precedence(self):
-        self.assertEqual(0, release.compare_semver("1.2.3+build.1", "1.2.3+build.2"))
-        self.assertEqual(0, release.compare_semver("1.2.3", "1.2.3+build.2"))
-        self.assertEqual(0, release.compare_semver("1.2.3-rc.1+a", "1.2.3-rc.1+b"))
-        self.assertEqual(-1, release.compare_semver("1.2.3-rc.1+z", "1.2.3-rc.2+a"))
-
-    def test_comparison_refuses_malformed_and_non_string_versions(self):
-        for bad in ("v1.2.3", "1.2", "01.2.3", "1.2.3-01", "", None, 1.2, 12):
-            with self.subTest(bad=bad), self.assertRaises(release.ReleaseError):
-                release.compare_semver(bad, "1.0.0")
-            with self.subTest(bad=bad), self.assertRaises(release.ReleaseError):
-                release.compare_semver("1.0.0", bad)
-
-    def test_artifact_numbers_and_input_labels_are_not_versions(self):
-        for not_version in ("SPEC-0064", "TSK-0001", "v14.7", "0064", 14.7):
-            with (
-                self.subTest(value=not_version),
-                self.assertRaises(release.ReleaseError),
-            ):
-                release.compare_semver(not_version, "1.0.0")
-        # A renumbered baseline does not reset or reorder a version.
-        self.assertEqual(1, release.compare_semver("1.10.0", "1.9.0"))
-
-    def test_version_change_must_raise_precedence(self):
-        for old, new in (
-            ("1.9.0", "1.10.0"),
-            ("1.0.0-rc.2", "1.0.0-rc.10"),
-            ("1.0.0-rc.10", "1.0.0"),
-        ):
-            with self.subTest(old=old, new=new):
-                release.check_version_change(old, new)
-        for old, new, reason in (
-            ("1.10.0", "1.9.0", "downgrade"),
-            ("1.0.0", "1.0.0-rc.10", "downgrade"),
-            ("1.2.3", "1.2.3", "unchanged"),
-            ("1.2.3+build.1", "1.2.3+build.2", "unchanged"),
-            ("1.2.3", None, "missing"),
-            (None, "1.2.3", "missing"),
-            ("1.2.3", "", "missing"),
-        ):
-            with (
-                self.subTest(old=old, new=new),
-                self.assertRaisesRegex(release.ReleaseError, reason),
-            ):
-                release.check_version_change(old, new)
+    def test_release_reuses_the_one_semver_implementation(self):
+        # Precedence, malformed-value and version-change cases live with the
+        # shared module in tests/lib/document_governance/test_semver.py.
+        self.assertIs(semver.SEMVER, release.SEMVER)
+        self.assertIs(semver.compare_semver, release.compare_semver)
+        self.assertFalse(hasattr(release, "parse_semver"))
+        self.assertIs(semver.check_version_change, release.check_version_change)
 
     def test_equal_precedence_release_cannot_reissue_a_published_version(self):
         commands = FakeCommands()
@@ -265,29 +213,53 @@ class ReleaseTests(unittest.TestCase):
         except release.ReleaseError as error:
             return error, commands
 
-    def test_version_below_highest_published_is_refused_unless_backport(self):
+    def test_version_below_highest_published_is_always_refused(self):
         for source in ("releases", "tags"):
             with self.subTest(source=source, case="downgrade"):
                 result, commands = self._publish_against(**{source: ["v2.0.0"]})
                 self.assertIsInstance(result, release.ReleaseError)
                 self.assertIn("lower", str(result))
-                self.assertIn("reviewed workflow input", str(result))
-                self.assertNotIn("--allow-backport", str(result))
+                self.assertNotIn("backport", str(result))
                 self.assertFalse(any("POST" in call for call in commands.calls))
-            with self.subTest(source=source, case="backport"):
-                result, _ = self._publish_against(
-                    allow_backport=True, **{source: ["v2.0.0"]}
+            with self.subTest(source=source, case="prerelease of a published release"):
+                result, commands = self._publish_against(
+                    **{source: ["v1.2.3-rc.2", "v1.2.3"]}
                 )
-                self.assertEqual("v1.2.3-rc.1+build.7", result["tag"])
+                self.assertIn("lower", str(result))
+                self.assertFalse(any("POST" in call for call in commands.calls))
             with self.subTest(source=source, case="higher"):
                 result, _ = self._publish_against(**{source: ["v1.2.2", "1.0.0"]})
                 self.assertEqual("v1.2.3-rc.1+build.7", result["tag"])
             with self.subTest(source=source, case="unchanged"):
                 result, commands = self._publish_against(
-                    allow_backport=True, **{source: ["v1.2.3-rc.1+build.1"]}
+                    **{source: ["v1.2.3-rc.1+build.1"]}
                 )
                 self.assertIn("same precedence", str(result))
                 self.assertFalse(any("POST" in call for call in commands.calls))
+
+    def test_old_and_new_published_version_against_old_and_new_release(self):
+        """Old and new producer values, each as the published and the new release."""
+
+        old, new = "1.2.0", "1.3.0-rc.1+build.7"
+        expected = {
+            (old, old): "already has a release",
+            (old, new): None,
+            (new, old): "lower",
+            (new, new): "already has a release",
+        }
+        for (published, version), refusal in expected.items():
+
+            def existing(argv, published=published):
+                if argv[:3] == ["gh", "api", f"repos/{REPOSITORY}/releases"]:
+                    return json.dumps([[{"tag_name": f"v{published}"}]])
+                return ""  # no remote tags
+
+            with self.subTest(published=published, version=version):
+                if refusal is None:
+                    release._new_version(existing, REPOSITORY, f"v{version}")
+                else:
+                    with self.assertRaisesRegex(release.ReleaseError, refusal):
+                        release._new_version(existing, REPOSITORY, f"v{version}")
 
     def test_unprefixed_highest_tag_blocks_a_lower_version(self):
         for source in ("releases", "tags"):
@@ -297,12 +269,35 @@ class ReleaseTests(unittest.TestCase):
                 self.assertIn("lower", str(result))
                 self.assertFalse(any("POST" in call for call in commands.calls))
 
-    def test_cli_exposes_allow_backport_only_on_publish(self):
+    def test_tampered_release_with_another_tag_is_refused_after_the_draft(self):
+        commands = FakeCommands()
+
+        def tampered(argv):
+            body = commands(argv)
+            if argv[:3] == [
+                "gh",
+                "api",
+                f"repos/{REPOSITORY}/releases/tags/v1.2.3-rc.1+build.7",
+            ]:
+                return json.dumps({**json.loads(body), "tag_name": "v9.9.9"})
+            return body
+
+        with self.assertRaisesRegex(release.ReleaseError, "tag differs"):
+            release.publish("1.2.3-rc.1+build.7", SHA, REPOSITORY, run=tampered)
+        self.assertFalse(commands.published)
+
+    def test_cli_has_no_backport_option(self):
         with patch("sys.argv", ["release.py", "publish", "--help"]):
             with self.assertRaises(SystemExit), patch("sys.stdout") as stdout:
                 release.main()
-        self.assertIn(
-            "--allow-backport", "".join(c.args[0] for c in stdout.write.mock_calls)
+        self.assertNotIn(
+            "backport", "".join(c.args[0] for c in stdout.write.mock_calls)
+        )
+        with patch("sys.argv", ["release.py", "publish", "--allow-backport"]):
+            with self.assertRaises(SystemExit), patch("sys.stderr"):
+                release.main()
+        self.assertNotIn(
+            "allow_backport", inspect.signature(release.publish).parameters
         )
 
     def test_changelog_entries_of_equal_precedence_are_duplicates(self):
