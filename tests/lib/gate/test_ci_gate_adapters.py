@@ -888,6 +888,7 @@ class CiGateAdapterTests(unittest.TestCase):
                 ),
                 subprocess.CompletedProcess((), 0, f"{common}\n".encode(), b""),
                 subprocess.CompletedProcess((), 0, b"1\n", b""),
+                subprocess.CompletedProcess((), 0, b"feat: Add x\0", b""),
                 subprocess.CompletedProcess((), 0, b"", b""),
             ],
         )
@@ -897,6 +898,7 @@ class CiGateAdapterTests(unittest.TestCase):
                 ("git", "rev-list", "--parents", "--max-count=1", "HEAD"),
                 ("git", "merge-base", base, head),
                 ("git", "rev-list", "--count", f"{base}..{head}"),
+                ("git", "log", "--no-merges", "--format=%s%x00", f"{base}..{head}"),
                 (
                     "cz",
                     "check",
@@ -964,6 +966,58 @@ class CiGateAdapterTests(unittest.TestCase):
             )
         self.assertEqual(1, len(commitizen_calls))
         self.assertEqual(f"{base}..{head}", commitizen_calls[0][3])
+
+    def synthetic_merge_with_feature_merge(
+        self, *, real_update_merge: bool
+    ) -> tuple[str, str]:
+        self.git("init", "-q", "-b", "main")
+        self.git("config", "user.name", "Diagnostic")
+        self.git("config", "user.email", "diagnostic@example.invalid")
+        self.git("commit", "--allow-empty", "-qm", "chore: Establish common base")
+        self.git("switch", "-q", "-c", "feature")
+        self.git("commit", "--allow-empty", "-qm", "fix(ci): Add feature work")
+        self.git("switch", "-q", "main")
+        self.git("commit", "--allow-empty", "-qm", "chore: Advance target")
+        base = self.git("rev-parse", "HEAD")
+        self.git("switch", "-q", "feature")
+        if real_update_merge:
+            self.git(
+                "merge", "--no-ff", "main", "-qm", "Merge branch 'main' into feature"
+            )
+        else:
+            self.git("commit", "--allow-empty", "-qm", "Merge branch whatever")
+        head = self.git("rev-parse", "HEAD")
+        self.git("switch", "-q", "main")
+        self.git("merge", "--no-ff", "feature", "-qm", "Synthetic candidate")
+        return base, head
+
+    def run_commit_range(self, *, real_update_merge: bool) -> int:
+        (self.root / ".cz.toml").write_bytes((ROOT / ".cz.toml").read_bytes())
+        base, head = self.synthetic_merge_with_feature_merge(
+            real_update_merge=real_update_merge
+        )
+        actual_child = adapters._run_child
+
+        def execute(argv: tuple[str, ...], **kwargs: object):
+            if argv[:2] == ("cz", "check"):  # commitizen exempts both by prefix
+                return subprocess.CompletedProcess(argv, 0, b"", b"")
+            return actual_child(argv, **kwargs)  # type: ignore[arg-type]
+
+        with (
+            mock.patch.object(adapters, "_run_child", side_effect=execute),
+            mock.patch.object(sys, "stderr", io.StringIO()),
+        ):
+            return adapters.run_adapter(
+                self.root,
+                ("check-commit-range",),
+                {"PATH": os.defpath, "PR_BASE_SHA": base, "PR_HEAD_SHA": head},
+            )
+
+    def test_commit_range_accepts_a_real_two_parent_update_merge(self) -> None:
+        self.assertEqual(0, self.run_commit_range(real_update_merge=True))
+
+    def test_commit_range_rejects_a_single_parent_merge_prefixed_commit(self) -> None:
+        self.assertNotEqual(0, self.run_commit_range(real_update_merge=False))
 
     def test_commit_contract_allows_only_git_automatic_merge_messages(self) -> None:
         commitizen = tomllib.loads((ROOT / ".cz.toml").read_text(encoding="utf-8"))[
