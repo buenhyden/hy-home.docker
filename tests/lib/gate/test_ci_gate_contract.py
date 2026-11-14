@@ -1527,6 +1527,20 @@ class GateCrosswalkTests(unittest.TestCase):
         self.assertEqual([], [r.gate_id for r in self.rows if r.owner == "UNOWNED"])
         self.assertEqual((), contract.validate_rule_owners(ROOT, self.registry))
 
+    def test_promotion_readiness_is_reported_by_the_lifecycle_leaf(self) -> None:
+        """H-W04-2: SDLC-PROMOTION reuses the lifecycle check's --readiness
+        report; it only prints, so the leaf's exit semantics stay unchanged."""
+        by_id = {row.gate_id: row for row in self.rows}
+        self.assertEqual(
+            ("--readiness",), by_id["leaf.local-document-corpus-lifecycle"].argv
+        )
+        validator = next(
+            item
+            for item in self.public.validators
+            if item.gate_id == "leaf.local-document-corpus-lifecycle"
+        )
+        self.assertEqual(("--readiness",), validator.argv)
+
     def test_missing_or_malformed_rule_owner_is_rejected_at_parse(self) -> None:
         baseline = contract.load_contract_document(ROOT)
         for label, mutate in (
