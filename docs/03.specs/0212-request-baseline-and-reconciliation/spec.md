@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.62.1"
+version: "1.62.2"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -58,7 +58,7 @@ retention catalog, or a checker.
 A request on 2026-10-29 asks for a per-unit dry-run of the Stage 98 retention
 payload before any Git-history-only disposition. Criterion 22/W27 records it in
 TSK-0011 without an archived-body edit, a catalog row, a checker change, or a
-removal; any later removal needs its own unit-scoped approval. The owner then
+removal. The owner then
 approved removal of its candidates the same day; criterion 23/W28 applies it in
 TSK-0012. Criterion 24/W29 records the follow-up review of the remaining
 request areas in TSK-0013. Criterion 25/W30 corrects the archive check
@@ -152,8 +152,7 @@ contract and Runbook procedure for review; every step runs later in an
 owner-approved window, so no HOME change is authorized by this amendment.
 
 The owner decision of 2026-11-10 adds criteria 104 and 105 and W109–W110 in
-TSK-0052. TSK-0047 set criteria 86 and 89 to not-required and handed their
-unfinished evidence here. The amendment authorizes the Task only; every
+TSK-0052. The amendment authorizes the Task only; every
 network lookup waits for the owner to approve its host scope in that Task.
 
 The direct implementation request of2026-11-10 adds criterion106/W111 in
@@ -447,8 +446,7 @@ activity remains a handoff fact rather than an inferred lock release.
    `RECOVERY` and `DELIVERY` separate. Secret path migration, source creation,
    reference wiring, actual consumption, rotation, recovery and merge are
    distinct states. Local PASS never means native service or remote CI PASS.
-7. Registry profiles and language rules govern authoring: repository README
-   and Stage 05 bodies remain Korean; Spec/Plan/Task bodies remain English.
+7. Registry profiles and the [documentation protocol](../../../.agents/governance/documentation-protocol.md#document-language) govern authoring language.
    Preserve issued IDs, created dates and historical completed Task bodies.
    Reuse an existing owner; allocate a new Spec only through the actual Registry
    when new acceptance ownership is necessary, never reserve future numbers.
@@ -469,14 +467,6 @@ authorized by the direct request. Remote push, PR, merge, publication,
 deployment, credentials, managed/global settings and actual data removal
 retain their action-specific authorization boundary. Unknown execution and
 approval evidence remain unknown; a local source PASS does not replace them.
-
-The current local Stage 99 Registry remains the executable input while the
-r10 target changes are made concrete. Record the proposed Evidence `Required`
-column and result-domain changes, Criterion Acceptance `Current Owner`,
-Execution Items columns, lifecycle edges and role headings as a coupled
-Registry/schema/template/reader/test amendment. No revised shared meaning is
-silently issued as an already approved WGOV-CORE/3.0.0 contract. Existing
-records retain their original generation and acceptance meaning.
 
 P02 also reconciles the language owner for new common agent explanations
 with the request's Korean default; it does not bulk-translate old instructions
@@ -509,7 +499,7 @@ target, backup, recovery boundary, and action-specific authorization.
    evidence-backed NO_CHANGE actions and concrete residual targets.
 3. Every draft, in-progress or blocked Spec found from frontmatter has a
    source/evidence/merge/operation disposition. Stale-record reconciliation
-   and code work are distinguished without rewriting completed Tasks.
+   and code work are distinguished without rewriting completed Tasks. (Historical wording: current Spec states are draft, in-review, approved and cancelled; in-progress and blocked are Task states.)
 4. SPEC-0204 and this package use the current request, CI and ownership
    contracts; genuine enforcer conflicts are fixed together or recorded absent.
 5. The Plan names shared writers, execution dependencies, verification and
@@ -842,7 +832,7 @@ target, backup, recovery boundary, and action-specific authorization.
     Secret and protected recovery material remain under their existing owners.
 94. P10.01 normalizes only current generation-7 evidence and acceptance records,
     preserving completed bodies and recording metadata/corpus validator failures
-    as residuals rather than rewriting archives or declaring completion.
+    as residuals rather than rewriting completed Task bodies or declaring completion.
 95. P10.02 registers existing P03 public validation and P04/P05 required
     selectors in every declared local context without admission weakening or
     converting local plan evidence into remote CI acceptance.

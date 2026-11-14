@@ -1,10 +1,10 @@
 ---
 title: "Exporter and Observability Contracts Task"
-version: "0.1.16"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0046"
 parent_ids:
@@ -564,6 +564,20 @@ fix them. Most HOME targets are scraped and have dashboards. Five were not:
 On 2026-11-10 the owner (@buenhyden) accepted criteria 82 and 84 after the
 target-plan reruns, the independent launcher re-review and the isolated OTLP
 fixture run.
+
+#### State currency 2026-11-13
+
+On the owner's decision of 2026-11-13 (SPEC-0212 TSK-0063), this Task's
+status follows the work it records: it left `draft` when work started and is
+`in-progress`. The rows below record those observed transitions; they do not
+change any evidence row or acceptance decision.
+
+#### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0046 | draft | ready | #state-currency-2026-11-13 |
+| SPEC-0212-TSK-0046 | ready | in-progress | #state-currency-2026-11-13 |
 
 ### Blockers and Decisions
 

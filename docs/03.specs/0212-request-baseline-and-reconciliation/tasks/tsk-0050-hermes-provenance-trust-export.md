@@ -1,10 +1,10 @@
 ---
 title: "Hermes Provenance, Trust and Export Task"
-version: "0.1.2"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0050"
 parent_ids:
@@ -118,6 +118,20 @@ action. Both concerns need an operational observation/cursor contract before
 activation; neither is silently treated as a successful timeout or starvation
 control.
 
+#### State currency 2026-11-13
+
+On the owner's decision of 2026-11-13 (SPEC-0212 TSK-0063), this Task's
+status follows the work it records: it left `draft` when work started and is
+`in-progress`. The rows below record those observed transitions; they do not
+change any evidence row or acceptance decision.
+
+#### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0050 | draft | ready | #state-currency-2026-11-13 |
+| SPEC-0212-TSK-0050 | ready | in-progress | #state-currency-2026-11-13 |
+
 ### Blockers and Decisions
 
 None: nothing was recorded here before this Task moved to the common form.
@@ -175,8 +189,7 @@ None: nothing was recorded here before this Task moved to the common form.
 After source freeze, run the registered P11 offline gate and the focused source,
 security and document checks. Record coverage for new Python execution lines;
 record a failed, cancelled or unavailable check with its actual Result rather
-than upgrading it to PASS. Refresh DATA-0096 only through the receipt-preserving
-inventory workflow after all P11 source and public documents freeze. Run
+than upgrading it to PASS. Run
 `graphify update .` only after all writers finish. Operational service changes,
 route reload, credential changes, Windows B acceptance, independent production
 restore, remote CI and final acceptance remain independent results.
