@@ -30,18 +30,18 @@ SEED_HELPER = ROOT / "scripts/lib/supply_chain/grype_db_seed.py"
 SAMPLE_DOCKERFILE = ROOT / "examples/sample-web-service/Dockerfile"
 
 RUNTIME_MATERIAL_REF = (
-    "nginxinc/nginx-unprivileged:1.31.6-alpine3.24-slim@"
-    "sha256:ac4d9c7e457c6510b95ac72dd84b27f7cc68ecb9a83fbd44f05a6460cf08aba4"
+    "nginxinc/nginx-unprivileged:1.31.7-alpine3.24-slim@"
+    "sha256:a8cb0f33d51fa107c96fd2bd3a71aaf564ec131e9d2bdf8700944f0ed8b170d7"
 )
 RUNTIME_MATERIAL_REPO_DIGEST = (
     "nginxinc/nginx-unprivileged@"
-    "sha256:ac4d9c7e457c6510b95ac72dd84b27f7cc68ecb9a83fbd44f05a6460cf08aba4"
+    "sha256:a8cb0f33d51fa107c96fd2bd3a71aaf564ec131e9d2bdf8700944f0ed8b170d7"
 )
 RUNTIME_MATERIAL_CONFIG_ID = (
     "sha256:658e72ae393f8796dbf093f84968c16ecc9bdc2224915eb785b2e0a53bf7e77c"
 )
 RUNTIME_MATERIAL_TARGET_DESCRIPTOR_DIGEST = (
-    "sha256:ac4d9c7e457c6510b95ac72dd84b27f7cc68ecb9a83fbd44f05a6460cf08aba4"
+    "sha256:a8cb0f33d51fa107c96fd2bd3a71aaf564ec131e9d2bdf8700944f0ed8b170d7"
 )
 BUILD_MATERIAL_CONFIG_ID = (
     "sha256:320994c3b997e2ec6433f717f153e108023c5bec8fefa8d76b83451d16d05ea8"

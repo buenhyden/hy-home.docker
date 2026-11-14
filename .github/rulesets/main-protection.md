@@ -162,7 +162,8 @@ settings by itself.
 ## Required Status Checks
 
 The source target is `candidate-quality` alone. It is the aggregate PR job:
-it needs every candidate shard job and fails unless each one succeeded, so a
+it needs the `candidate-core` and `candidate-documents` shard jobs, which run
+the selected changed validation, and fails unless each one succeeded, so a
 skipped, cancelled or missing shard is not a pass. Individual leaves and shard
 jobs are not separate contexts, so the required check name did not change
 when the candidate was split into shards.

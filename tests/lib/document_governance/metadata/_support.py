@@ -68,7 +68,7 @@ def init_git(root: pathlib.Path) -> None:
     git(root, "config", "user.name", "Metadata Fixture")
     git(root, "config", "user.email", "metadata@example.invalid")
     if git(root, "rev-parse", "--verify", "-q", "HEAD").returncode == 0:
-        named = git(root, "branch", "-M", "main")
+        named = git(root, "checkout", "-q", "-B", "main")
     else:
         named = git(root, "symbolic-ref", "HEAD", "refs/heads/main")
     if named.returncode != 0:

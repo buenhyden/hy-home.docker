@@ -40,24 +40,112 @@ class RetiredNpmAuditAcceptanceTests(unittest.TestCase):
             contract.parse_gate_registry(amended, "contract")
 
 
+class HostedJobAssignmentTests(unittest.TestCase):
+    DOCUMENT_LEAVES = (
+        "leaf.document-governance-library-regressions",
+        "leaf.local-document-metadata-tests",
+        "leaf.local-document-corpus-lifecycle-tests",
+        "leaf.docs-traceability",
+    )
+
+    def test_document_leaves_are_the_only_non_default_assignment(self) -> None:
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        self.assertEqual("candidate-core", public.default_job)
+        self.assertEqual(
+            (("candidate-documents", self.DOCUMENT_LEAVES),),
+            public.job_leaf_gate_ids,
+        )
+        self.assertEqual(("candidate-core", "candidate-documents"), public.job_names)
+        for gate_id in self.DOCUMENT_LEAVES:
+            self.assertEqual("candidate-documents", public.job_for(gate_id))
+        self.assertEqual("candidate-core", public.job_for("leaf.release-regressions"))
+
+    def test_every_hosted_leaf_is_routed_to_hosted_ci(self) -> None:
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        for gate_id in (
+            *self.DOCUMENT_LEAVES,
+            "leaf.ci-gate-adapter-regressions",
+            "leaf.ci-gate-runner-regressions",
+            "leaf.release-regressions",
+            "leaf.repo-contracts-control-plane-regressions",
+            "leaf.supply-chain-fixture-policy",
+            "leaf.workflow-contract-regressions",
+        ):
+            with self.subTest(gate_id=gate_id):
+                self.assertNotIn(gate_id, public.local_only_gate_ids)
+        self.assertEqual(
+            (
+                "leaf.ci-precommit-regressions",
+                "leaf.local-hook-rule-tests",
+                "leaf.local-candidate-preflight",
+                "leaf.conftest-policy-tests",
+            ),
+            public.local_only_gate_ids,
+        )
+        docs = next(
+            row for row in public.validators if row.gate_id == "leaf.docs-traceability"
+        )
+        self.assertEqual(
+            ("local", "pull_request", "push", "workflow_dispatch"), docs.contexts
+        )
+
+    def test_job_assignment_fails_closed_on_invalid_drift(self) -> None:
+        baseline = contract.load_contract_document(ROOT)
+        cases: dict[str, dict[str, object]] = {}
+
+        def drift(label: str) -> dict[str, object]:
+            document = json.loads(json.dumps(baseline))
+            cases[label] = document
+            return document["public_gate"]["hosted_jobs"]
+
+        drift("in-two-jobs")["leaf_gate_ids"]["candidate-extra"] = [
+            self.DOCUMENT_LEAVES[0]
+        ]
+        drift("unknown-leaf")["leaf_gate_ids"]["candidate-documents"].append(
+            "leaf.unknown-hosted"
+        )
+        drift("local-only-leaf")["leaf_gate_ids"]["candidate-documents"].append(
+            "leaf.local-hook-rule-tests"
+        )
+        drift("default-job-listed")["leaf_gate_ids"]["candidate-core"] = [
+            "leaf.release-regressions"
+        ]
+        drift("duplicate-in-job")["leaf_gate_ids"]["candidate-documents"].append(
+            self.DOCUMENT_LEAVES[0]
+        )
+        drift("empty-job")["leaf_gate_ids"]["candidate-extra"] = []
+        drift("unknown-field")["extra"] = []
+        # Names owned by the aggregate and main-security jobs are never shards.
+        for reserved in ("candidate-quality", "main-security"):
+            drift(f"default-{reserved}")["default"] = reserved
+            drift(f"assigned-{reserved}")["leaf_gate_ids"][reserved] = [
+                "leaf.release-regressions"
+            ]
+        missing = json.loads(json.dumps(baseline))
+        del missing["public_gate"]["hosted_jobs"]
+        cases["missing"] = missing
+        for label, document in cases.items():
+            with self.subTest(label=label):
+                with self.assertRaises(contract.GateContractError) as caught:
+                    contract.parse_public_gate_contract(document)
+                self.assertIn(
+                    caught.exception.code,
+                    {"ci-gate-hosted-jobs", "ci-gate-public-contract"},
+                )
+
+
 class PublicSuiteRegistryTests(unittest.TestCase):
     def test_local_only_gate_ids_are_typed_current_leaves(self) -> None:
         document = contract.load_contract_document(ROOT)
         expected = (
-            "leaf.ci-gate-adapter-regressions",
-            "leaf.ci-gate-runner-regressions",
             "leaf.ci-precommit-regressions",
-            "leaf.document-governance-library-regressions",
-            "leaf.docs-traceability",
             "leaf.local-hook-rule-tests",
-            "leaf.local-document-metadata-tests",
-            "leaf.local-document-corpus-lifecycle-tests",
-            "leaf.release-regressions",
-            "leaf.repo-contracts-control-plane-regressions",
             "leaf.local-candidate-preflight",
-            "leaf.supply-chain-fixture-policy",
             "leaf.conftest-policy-tests",
-            "leaf.workflow-contract-regressions",
         )
         self.assertEqual(
             expected,
@@ -92,7 +180,7 @@ class PublicSuiteRegistryTests(unittest.TestCase):
 
         missing_local_unit = json.loads(json.dumps(baseline))
         missing_local_unit["public_gate"]["local_only_gate_ids"].remove(
-            "leaf.ci-gate-runner-regressions"
+            "leaf.local-hook-rule-tests"
         )
         cases.append(("unapproved-hosted-unit", missing_local_unit))
 
@@ -103,13 +191,22 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         cases.append(("approved-hosted-unit-moved-local", hosted_unit_moved_local))
 
         remote_context = json.loads(json.dumps(baseline))
-        links = next(
+        preflight = next(
             row
             for row in remote_context["public_gate"]["validators"]
+            if row["gate_id"] == "leaf.local-candidate-preflight"
+        )
+        preflight["contexts"].append("pull_request")
+        cases.append(("validator-context", remote_context))
+
+        hosted_local_context = json.loads(json.dumps(baseline))
+        links = next(
+            row
+            for row in hosted_local_context["public_gate"]["validators"]
             if row["gate_id"] == "leaf.docs-traceability"
         )
-        links["contexts"].append("pull_request")
-        cases.append(("validator-context", remote_context))
+        links["contexts"] = ["local"]
+        cases.append(("hosted-validator-with-local-contexts", hosted_local_context))
 
         for label, document in cases:
             with self.subTest(label=label):
@@ -434,10 +531,20 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         }
         registered_units.add("leaf.conftest-policy-tests")
         hosted_units = {
+            "leaf.ci-gate-adapter-regressions",
             "leaf.ci-gate-contract-regressions",
+            "leaf.ci-gate-runner-regressions",
             "leaf.compose-baseline-regressions",
+            "leaf.document-governance-library-regressions",
+            "leaf.local-document-corpus-lifecycle-tests",
+            "leaf.local-document-metadata-tests",
+            "leaf.release-regressions",
+            "leaf.repo-contracts-control-plane-regressions",
             "leaf.repository-integrity-regressions",
+            "leaf.supply-chain-fixture-policy",
+            "leaf.workflow-contract-regressions",
         }
+        self.assertEqual(hosted_units, set(contract.HOSTED_UNIT_GATE_IDS))
         self.assertLessEqual(hosted_units, registered_units)
         self.assertLessEqual(
             registered_units - hosted_units,
@@ -1394,7 +1501,7 @@ class GateCrosswalkTests(unittest.TestCase):
     def test_rows_link_leaf_to_suite_entrypoint_and_consumer(self) -> None:
         by_id = {row.gate_id: row for row in self.rows}
         row = by_id["leaf.workflow-contract-regressions"]
-        self.assertTrue(row.local_only)
+        self.assertFalse(row.local_only)
         self.assertIn("repository-integrity", row.suites)
         self.assertIn("local.workflow-harness", row.consumers)
         self.assertIn("tests.lib.gate.test_github_workflow_contract", row.test_modules)

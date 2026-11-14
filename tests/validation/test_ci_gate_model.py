@@ -101,14 +101,33 @@ class PublicSuiteModelTests(unittest.TestCase):
         jobs = yaml.safe_load((root / ".github/workflows/ci-quality.yml").read_text())[
             "jobs"
         ]
-        self.assertEqual({"candidate-quality", "main-security"}, set(jobs))
         self.assertEqual(
-            2,
-            sum(
-                "scripts/validation/run-ci-gate.py" in step.get("run", "")
+            {
+                "candidate-core",
+                "candidate-documents",
+                "candidate-quality",
+                "main-security",
+            },
+            set(jobs),
+        )
+        self.assertEqual(
+            set(public.job_names), {"candidate-core", "candidate-documents"}
+        )
+        for job_id in public.job_names:
+            self.assertEqual(
+                2,
+                sum(
+                    "scripts/validation/run-ci-gate.py" in step.get("run", "")
+                    for step in jobs[job_id]["steps"]
+                    if isinstance(step, dict)
+                ),
+            )
+        # The aggregate only joins results; it never runs the gate itself.
+        self.assertFalse(
+            any(
+                "run-ci-gate.py" in step.get("run", "")
                 for step in jobs["candidate-quality"]["steps"]
-                if isinstance(step, dict)
-            ),
+            )
         )
         # No package installation: explicitly expose the already-installed site
         # dependencies to an otherwise clean interpreter, then import the runner.
@@ -201,6 +220,8 @@ class PublicSuiteModelTests(unittest.TestCase):
                 "changed_fallback_suites",
                 "local_only_gate_ids",
                 "hosted_unit_bindings",
+                "default_job",
+                "job_leaf_gate_ids",
             ),
             tuple(field.name for field in dataclasses.fields(public)),
         )
@@ -286,7 +307,7 @@ class PublicSuiteModelTests(unittest.TestCase):
                 "PR_HEAD_SHA": "2" * 40,
             },
         }
-        hosted_unit_suites = {"repository-integrity"}
+        hosted_unit_suites = {"operations", "repository-integrity"}
         for context, environ in environments.items():
             for suite, expected in expected_by_suite.items():
                 with self.subTest(context=context, suite=suite):
