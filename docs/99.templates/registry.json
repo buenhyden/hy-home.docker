@@ -21,7 +21,6 @@
       "mitigated",
       "resolved",
       "published",
-      "review",
       "open",
       "closed"
     ],
@@ -7167,26 +7166,24 @@
     },
     "contract": {
       "initial_status": "draft",
-      "terminal_statuses": [
-        "active"
-      ],
+      "terminal_statuses": [],
       "statuses": [
         "draft",
-        "review",
-        "approved",
-        "active"
+        "in-review",
+        "approved"
       ],
       "transitions": {
         "draft": [
-          "review"
-        ],
-        "review": [
+          "in-review",
           "approved"
         ],
-        "approved": [
-          "active"
+        "in-review": [
+          "approved",
+          "draft"
         ],
-        "active": []
+        "approved": [
+          "in-review"
+        ]
       }
     },
     "template": {

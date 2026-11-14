@@ -4276,3 +4276,38 @@ class ReleaseRoleGuardTests(unittest.TestCase):
 
     def test_the_runbook_rollback_and_outcome_sections_are_not_a_release(self) -> None:
         self.assertNotIn("retired-profile", self.codes())
+
+
+class StateAxisLifecycleTests(unittest.TestCase):
+    """D-02: a Stage 01 to 03 lifecycle records one axis, authority or
+    execution (sdlc.md): approval by `approved`, execution by the Task statuses.
+    No lifecycle keeps an alias of a state another one already names."""
+
+    AUTHORITY = frozenset({"draft", "in-review", "approved", "cancelled"})
+    EXECUTION = frozenset(
+        {"draft", "ready", "in-progress", "blocked", "completed", "cancelled"}
+    )
+
+    def setUp(self) -> None:
+        self.raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+
+    def test_a_stage_03_lifecycle_never_mixes_authority_with_currency(self) -> None:
+        registry = load_registry()
+        for profile_id, profile in registry.profiles.items():
+            lifecycle_id = profile.get("lifecycle_id")
+            if not lifecycle_id or not str(profile.get("path_pattern", "")).startswith(
+                "docs/03.specs/"
+            ):
+                continue
+            with self.subTest(profile=profile_id):
+                statuses = set(registry.lifecycles[lifecycle_id])
+                self.assertTrue(
+                    statuses <= self.AUTHORITY or statuses <= self.EXECUTION,
+                    sorted(statuses),
+                )
+
+    def test_no_lifecycle_keeps_the_review_alias_of_in_review(self) -> None:
+        for lifecycle_id, lifecycle in self.raw["lifecycles"].items():
+            with self.subTest(lifecycle=lifecycle_id):
+                self.assertNotIn("review", lifecycle["statuses"])
+        self.assertNotIn("review", self.raw["common"]["allowed_statuses"])
