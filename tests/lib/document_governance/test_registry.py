@@ -2151,6 +2151,8 @@ class DocumentRegistryTests(unittest.TestCase):
             "docs/02.architecture/decisions/0050-openbao-as-secrets-manager.md",
             "docs/03.specs/0212-request-baseline-and-reconciliation/spec.md",
             "docs/03.specs/0212-request-baseline-and-reconciliation/plan.md",
+            "docs/03.specs/0212-request-baseline-and-reconciliation/tasks/"
+            "tsk-0065-w06-git-ci-release.md",
         ):
             source = (ROOT / relative).read_text(encoding="utf-8")
             for status in ("deprecated", "superseded", "retired", "archived"):
