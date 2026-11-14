@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.60.0"
+version: "1.61.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -232,7 +232,10 @@ review of 2026-11-14 adds criterion 118 and W123 in the same Task for the
 TSK-0062 handoffs it left as GAP: a tool that derives reverse lookups and
 Change Impact, and a check on the `consumer_paths` enumeration. The owner's
 approval of 2026-11-14 for six ready packages adds criterion 119 and W124 in
-the same Task.
+the same Task. The W05 conformance audit of 2026-11-14 adds criterion 120 and
+W125 for the W05-primary QA cases it found open: the check crosswalk
+(QA-C05), result reuse (QA-C07, including the security database), the staged
+index (QA-C08), SemVer precedence and the QA-08 cost baseline.
 
 ### Owning Requirements
 
@@ -973,6 +976,18 @@ target, backup, recovery boundary, and action-specific authorization.
      reservation of the six numbers in the Registry Spec `reserved_history`;
      every inbound consumer is updated in the same change, and the restore
      and byte comparison after merge is recorded or stays `NOT_RUN`.
+120. TSK-0064 closes the W05-primary QA cases: `run-ci-gate.py --crosswalk`
+     derives a caller, leaf, entrypoint, test, owner and consumer row for every
+     gate leaf from `.github/workflow-contract.yml`, where each leaf declares a
+     typed `guarantee` so a security or deploy leaf is never reported as a
+     duplicate; a recorded PASS is refused when the source, base, a toolchain
+     lock digest or, for a leaf declaring `security_db: grype`, the Grype
+     database identity changes, and an `INVALID` identity is refused outright;
+     document versions accept full SemVer 2.0.0 and `release.py` compares them
+     by precedence, refusing an equal-precedence release, tag or CHANGELOG
+     entry; the staged-index tests are named; and a per-module local timing
+     baseline is recorded. Each behavior change has a test that fails without
+     it, and each limit names its owner.
 
 ### Evidence Requirements
 

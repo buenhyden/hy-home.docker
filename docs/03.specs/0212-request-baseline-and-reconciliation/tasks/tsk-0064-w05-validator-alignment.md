@@ -1,6 +1,6 @@
 ---
 title: "v14.7 W05 Validator Alignment Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -221,8 +221,8 @@ to W04 blocks W05. Findings and actions:
 | H-W01-6 (GOV-07) left review-only | UNCONFIRMED | Confirmed on D2: a review rule |
 | `sdlc.md` and `workflows.md` keep a workflow form, not the Policy form | UNCONFIRMED | Confirmed on D3: a separate role; the Registry already keeps it outside the 16 common roles, so TSK-0060 "16 of 16 roles" holds |
 | `sdlc.md` said the reader did not yet check the 1.9.0 rules | Stale after H-W04-1 | Fixed (`e35700381`, 1.9.1): it names what the corpus check applies and that no entrypoint runs readiness |
-| Document `version` allows release values only | UNCONFIRMED | Kept: no document uses a prerelease, and SemVer format rules apply where one is used; recorded here as the decision basis |
-| H-W04-7 removal of 0248, 0249, 0250, 0260, 0264, 0265 | Done in W124 (pending merge) | See Package removal 2026-11-14; the post-merge byte-compare restore is `NOT_RUN` |
+| Document `version` allows release values only | CONFLICT | Fixed on the owner's 2026-11-14 choice to follow the W05 SemVer requirement (W125, #1001): full SemVer 2.0.0 accepted and compared by precedence; the earlier "Kept" was an agent judgement, not an owner decision |
+| H-W04-7 removal of 0248, 0249, 0250, 0260, 0264, 0265 | REMAINING | Done in W124, pending merge; see Package removal 2026-11-14; the post-merge byte-compare restore is `NOT_RUN` |
 | SPEC-DISPOSITION per-criterion depth, Stage 02 currency, OPEN-07 | UNVERIFIED | W11 |
 | R147-07 SDLC and document-stage binding rows; Git cells | UNVERIFIED | Rows: W11 check; Git cells: W06 (H-09) |
 | OPEN-08, OPEN-10 live operations | UNVERIFIED | W10 |
@@ -329,15 +329,25 @@ above and compares its bytes.
 | H-W04-2 promotion check | TSK-0063 | PASS (code-span targets) | `ef049ad37`, `91663f1f9`: full-path match in non-cancelled receipts, reported by `--readiness` (`e34801578`); prose targets stay with review; CI route is W06's |
 | H-W04-4 untested branches | TSK-0063 | PASS | `4bee2c348`; the duplicate-Task message is unreachable because `_load_tasks` rejects the duplicate first |
 | H-W01-4 other fixtures | TSK-0060 | PASS | OPEN ID and KEEP marker done here; merged PR read as Acceptance with H-W04-1 |
-| H-W01-1, H-W01-5 | TSK-0060 | PASS | Done here for the hook layer; no hook gates a deployment command, and a transition-override `approval` string is recorded, not authenticated (both stay review) |
+| H-W01-1, H-W01-5 | TSK-0060 | PASS | Done here for the hook layer; no hook gates a deployment command, and a transition-override `approval` string is recorded, not authenticated (both stay review); the owner chose on 2026-11-14 to keep deployment approval a review rule, since this repository's hooks do not run deployment commands |
 | H-W01-6 (GOV-07) | TSK-0060 | PASS (owner decision D2) | A review rule in `quality-standards.md`; no checker |
 | H-W01-2 consumer revision check | TSK-0060 | PASS | Registry names both adopted revisions and the consumer reads them |
 | H-05 H3 model in `heading.py` | TSK-0059 | PASS (KEEP) | Reassessed at `91663f1f9`: H3 is read under its parent H2 and missing, duplicate, unregistered and out-of-order subsections are rejected (`heading.py` L829-887, 33 subsection tests); empty sections fail at every level and a same-named stand-in is `body-heading-repeated`; whether a conditional H3's condition applies and prohibited prose stay review |
 | H-08 unwired code and tests | TSK-0059 | PASS (measurement and manifest) | Hosted CI wiring of the 57 local-only modules, the link checker and candidate preflight is W06's (H-W05-1) |
-| OPEN-11 TSK-0011 L1307 Resolves | TSK-0059 | FAIL (verdict) | Invalid: different leaves; a fresh metadata and document-library PASS is needed before criterion 17 can be accepted |
+| OPEN-11 TSK-0011 L1307 Resolves | TSK-0059 | FAIL (verdict); DELTA | Invalid: different leaves. Owner SPEC-0204 TSK-0011, criterion 17: rerun the same metadata and document-library leaves, then rewrite the Resolves; resume when W06 runs them in hosted CI (H-W05-1) or a local Python 3.14.8 toolchain with the locked dependencies exists. The historical "11 Tasks, 7 manifest failures" counts are not carried: `check-script-manifest.py` passes today and `--readiness` lists each open Task with its owner |
 | H-W02-1 dead subgraph in `lifecycle/contract.py` | TSK-0057 | PASS | Done here |
-| SemVer tests | v14.7 W05 prompt | PASS | Done here; no comparator, since nothing orders versions |
+| SemVer tests | v14.7 W05 prompt | PASS (W125) | First pass here kept release-only values; the audit found that a CONFLICT and W125 (#1001) accepts full SemVer 2.0.0 with `compare_semver`; the equal-precedence release refusal is wired, and `check_version_change` for unchanged or lower versions has no caller yet: W06 commit, pull request and tag consumer |
 | H-W04-8, H-W04-9 glossary entries | TSK-0063 | PASS | Done here before W05 closes |
+| QA-C05 check crosswalk (QA-01, QA-17, QA-ALIGN-01) | TSK-0053, TSK-0059 | PASS (W125, #999) | `run-ci-gate.py --profile full --crosswalk`: leaves=48 unowned=42 local_only=14 unique=12 duplicates=0; every leaf declares `guarantee`. 42 leaves have no rule owner because the contract has no owner field: a W06 contract change (H-W05-1) |
+| QA-C07 result reuse | W05 prompt | PASS (W125, #999 and #1002) | Registry- or policy-only diffs select the document suites (characterization); a PASS is refused on a changed source, base or lock digest and, for `security_db: grype` leaves, a changed, seeded, removed or `INVALID` Grype identity. Limits: no leaf runs real Grype, hosted CI records `ABSENT`, the binding is plan equality at `EvidenceStore.open`, and the detector is one hop |
+| QA-C08 staged index | W05 prompt | PASS (existing) | `tests/validation/test_run_ci_precommit.sh`; `test_ci_gate_plan` `test_initial_repository_collects_staged_and_untracked_paths`, `test_automatic_pre_commit_sees_index_content_and_untracked_paths`; `test_agent_governance_ci_routing` `test_installed_commit_hook_checks_index_and_preserves_partial_staging` |
+| QA-08, WP-26 cost baseline | TSK-0053 | PASS (baseline); WP-26 BLOCKED | Owner chose on 2026-11-14 to measure in W05: see QA-08 timing baseline. Trimming fixtures waits for the runner exit 124 diagnosis (W06, OPEN-14 and H-10) |
+| DOCKER-03 QA, supply chain, release and acceptance residue | W05 prompt | DELTA | TSK-0053 L316 keeps it under TSK-0052; criteria 104 and 105 there stay pending with FAIL gates. A CI PASS, the supply-chain ledger and signatures are not rollout or final acceptance. Owner SPEC-0212 TSK-0052 (OPEN-12); rollout W10 |
+| WP-23 CI and QA call graph | W05 prompt | DELTA | Closed by the QA-C05 crosswalk (#999); stage QA cells stay with W06 (H-09) |
+| WP-24 stage QA and evidence reuse | W05 prompt | DELTA | QA-C07 here; stage QA cells W06 (H-09) |
+| WP-25 one-off, legacy and deprecated QA | W05 prompt | DELTA | Owner SPEC-0253 TSK-0001 (in-progress): hosted CI, then criteria 1 to 3 |
+| OPEN-09 checks fit contracts | W05 prompt | DELTA | H-05, H-12 and H-08 PASS here, QA-C05/C07/C08 in W125; hosted wiring of the local-only modules is W06 (H-W05-1) |
+| TSK-0058 L743 validator work beyond the profile flags | TSK-0058 | PASS | Mapped to H-05 (H3 model) and H-12 (Release guard), both PASS here |
 
 #### Lifecycle Events
 
@@ -351,17 +361,26 @@ above and compares its bytes.
 - Link types: the owner's 2026-11-14 choice replaced the protocol rule that
   no link carries a marker; the title is the marker and untitled links keep
   their meaning, so about 8,600 existing links were not retyped.
-- H-W05-1, handed to W06 with one writer: wire into hosted CI the local-only
-  leaves `leaf.document-governance-library-regressions`,
-  `leaf.local-document-metadata-tests`,
-  `leaf.local-document-corpus-lifecycle-tests`, `leaf.local-hook-rule-tests`,
-  `leaf.supply-chain-fixture-policy` and the gate and release regression
-  leaves, plus `check-document-links.py` (`leaf.docs-traceability`) and
-  `check-candidate-preflight.sh`, sharded or in their own job because the
-  `candidate-quality` job's 30-minute limit is below the 45-minute
-  document-governance leaf; and a `leaf.project-registration` route for
-  `check-project-registration.py`. Until then every W05 check above is
-  local-executed evidence.
+- H-W05-1, handed to W06 with one writer. The 14
+  `public_gate.local_only_gate_ids`, each with this Task's recommendation:
+  wire `leaf.ci-gate-adapter-regressions`, `leaf.ci-gate-runner-regressions`,
+  `leaf.document-governance-library-regressions`, `leaf.docs-traceability`
+  (`check-document-links.py`), `leaf.local-document-metadata-tests`,
+  `leaf.local-document-corpus-lifecycle-tests`, `leaf.release-regressions`,
+  `leaf.repo-contracts-control-plane-regressions`,
+  `leaf.supply-chain-fixture-policy` and `leaf.workflow-contract-regressions`;
+  keep local `leaf.ci-precommit-regressions` (git and pre-commit sandbox),
+  `leaf.local-hook-rule-tests` (local agent hooks),
+  `leaf.local-candidate-preflight` (local candidate state) and
+  `leaf.conftest-policy-tests` (needs the conftest binary until a hosted tool
+  image is pinned). Shard the document-governance leaf or give it its own job:
+  its modules took 2,283 s locally (QA-08 baseline), above the
+  `candidate-quality` job's 30-minute limit. Also: create the
+  `leaf.project-registration` route for `check-project-registration.py`; add
+  a rule-owner field so the crosswalk's 42 `UNOWNED` leaves get owners; call
+  `release.check_version_change` from the commit, pull request and tag
+  consumer; and rerun SPEC-0204 TSK-0011's two leaves (OPEN-11). Until then
+  every W05 check above is local-executed evidence.
 - The glossary comparison pin is identity, version, hash and Term pairs only,
   so the glossary stays the single meaning owner.
 
@@ -436,6 +455,35 @@ above and compares its bytes.
 | W124 ruff | 119 | W124 | lint | `ruff format --check` and `ruff check` on `test_operations_catalog.py` | PASS | 1 file already formatted; no findings | required | - |
 | W124 unit regression | 119 | W124 | unit-regression | `test_operations_catalog`, `test_identity_history`, `metadata.test_reference`, `test_spec_packages`, `test_registry`, `tests.lib.test_surface_ownership` on the W124 tree | PASS | 492 tests OK | required | - |
 | W124 post-merge restore | 119 | W124 | byte-compare-restore | Restore each removed body from its recorded last commit and compare bytes | NOT_RUN | Needs the merge of this change; cannot run before it | required | - |
+| Remote candidate 998 | 118 | W123 | remote-ci | PR #998 head `09778b761`, merged as `a4142f99a` with a merge commit | PASS | candidate-quality (4m55s), CodeQL, GitGuardian and triage passed; main-security skipped as on every PR | required | - |
+| W124 base readiness | 119 | W124 | corpus-readiness | `check-document-corpus-lifecycle.py --readiness` on base `09778b761`, Python 3.12.3 | PASS | SPEC-0248, 0249, 0250, 0260, 0264 and 0265 each `ready` | required | - |
+| W124 folder guide consumer | 119 | W124 | unit-regression | `tests.lib.hooks.test_folder_guides` on the W124 tree after merging main (`821a630ec`) | PASS | OK; the SPEC-0264 receipt's consumer check | required | - |
+| W124 removal review | 119 | W124 | independent-review | Fresh-context rules-engineer of `2647ce44c` (read only, no tests run) | PASS | No Critical or Important; Minor: a base readiness row, the folder-guide run, ADR-0060 L172 still names SPEC-0265 (left: an accepted ADR, a follow-up for its owner), a table class value and a long line, all handled here | required | - |
+| Crosswalk RED | 120 | W125 | red-green-proof | New `GateCrosswalkTests` before `build_gate_crosswalk` existed | FAIL | 5 errors: no attribute `build_gate_crosswalk` | required | - |
+| Crosswalk GREEN | 120 | W125 | red-green-proof | Commits `f913bc225`, `0d8168c60`: `test_ci_gate_contract`, `test_ci_gate_evidence`, `test_ci_gate_plan` | PASS | 61 plan tests OK; contract and evidence OK | required | Crosswalk RED |
+| Crosswalk review | 120 | W125 | independent-review | Fresh-context code-reviewer of `feat/w05-check-crosswalk` (read only) | FAIL | CHANGES_REQUIRED: the hand list of unique leaves missed `leaf.changed-style`; the reuse test did not prove the security-DB claim and no such input existed; Minor: twin key, docstring, untested flag rejections | required | - |
+| Guarantee RED | 120 | W125 | red-green-proof | `test_every_leaf_is_classified_and_changed_style_is_security`, `test_unclassified_or_unknown_guarantee_fails_closed` before the loader knew `guarantee` | FAIL | 14 contract tests errored on the unknown field | required | - |
+| Guarantee GREEN | 120 | W125 | red-green-proof | Commits `511a4e4a9`, `233b927a3`, `d87d28c5f` (a non-string `guarantee` raised `TypeError` before `d87d28c5f`) | PASS | 126 and 34 tests OK; workflow-contract and manifest PASS | required | Guarantee RED |
+| Reuse lock digest RED | 120 | W125 | red-green-proof | `_expected_plan` mutated to drop dependency digests | FAIL | `lock-digest` subtest: EvidenceError not raised; restored | required | - |
+| Reuse lock digest GREEN | 120 | W125 | red-green-proof | `test_recorded_pass_is_reused_only_for_identical_inputs` at `233b927a3`, with a positive control | PASS | OK; the source, base and selection subtests are characterization of behavior that already held | required | Reuse lock digest RED |
+| Crosswalk re-review | 120 | W125 | independent-review | Same reviewer, `233b927a3` (read only) | PASS | Every finding fixed or recorded; Minor: a non-string guarantee, pinned error codes (fixed in `d87d28c5f`), the security-DB gap to record (done here) | required | Crosswalk review |
+| Routing suite | 120 | W125 | unit-regression | `tests.validation.test_agent_governance_ci_routing` at `233b927a3`, with other suites running on the host | FAIL | 85 tests, 1 failure, not reproduced | required | - |
+| Routing suite rerun | 120 | W125 | unit-regression | Same module and tree, twice, after the load ended | PASS | 85 tests OK both times; the single failure is recorded as a possible load-dependent flake | required | Routing suite |
+| Remote candidate 999 | 120 | W125 | remote-ci | PR #999 head `d87d28c5f`, merged as `dd6e4a0e1` | PASS | candidate-quality, CodeQL, GitGuardian and triage passed | required | - |
+| SemVer precedence RED | 120 | W125 | red-green-proof | New `test_release` and schema tests before `57d327f12` and `84fa7a812` | FAIL | 45 errors (no `compare_semver` or `check_version_change`); 11 schema failures | required | - |
+| SemVer precedence GREEN | 120 | W125 | red-green-proof | Commits `57d327f12` to `144799c5d`: `test_release`, `test_registry`, `test_surface_ownership`; metadata check-active | PASS | 213, then 191 tests OK; selected=535 violations=0; the old-consumer test reads the schema at `57d327f12` | required | SemVer precedence RED |
+| SemVer review | 120 | W125 | independent-review | Fresh-context code-reviewer of `feat/w05-semver-precedence` (read only) | FAIL | CHANGES_REQUIRED: the protocol claimed an unwired unchanged and downgrade refusal; Minor: string CHANGELOG duplicates, exact-tag remote check, an in-test old pattern | required | - |
+| SemVer re-review | 120 | W125 | independent-review | Same reviewer, `144799c5d` (read only) | PASS | All fixed; hosted checkouts use `fetch-depth: 0`, so the pinned commit stays reachable under merge commits | required | SemVer review |
+| Remote candidate 1001 | 120 | W125 | remote-ci | PR #1001 head `6f1a7b5cf` (replaces #1000, whose GitHub update-branch commit failed commitizen), merged as `e249285b2` | PASS | candidate-quality (4m53s), CodeQL and GitGuardian passed | required | - |
+| Security DB RED | 120 | W125 | red-green-proof | New seed identity, evidence-row, contract and runner tests before `d922daed0` to `938e24b07` | FAIL | `AttributeError`; 7 failures or errors; 3 errors; `TypeError` | required | - |
+| Security DB GREEN | 120 | W125 | red-green-proof | Commits `d922daed0` to `7cd3ed24d` after merging main (`0e35da472`): contract, evidence, execution context, plan, Grype seed and surface suites | PASS | OK; 177 tests before the merge; workflow-contract and manifest PASS | required | Security DB RED |
+| Security DB review | 120 | W125 | independent-review | Fresh-context code-reviewer of `feat/w05-security-db-reuse` (read only) | FAIL | CHANGES_REQUIRED: an `INVALID` pointer reopened a PASS; Minor: decode errors, non-ENOENT as ABSENT, root canonicalization, a text detector, the manifest consumer row | required | - |
+| Security DB re-review | 120 | W125 | independent-review | Same reviewer, `7cd3ed24d` (read only) | PASS | All fixed; no runner-level test feeds an `INVALID` pointer through execution (it relies on the evidence-store rejection) | required | Security DB review |
+| Remote candidate 1002 | 120 | W125 | remote-ci | PR #1002 head `aceffb21c` (after a conventional merge of main), merged as `9e4c8f361` | PASS | candidate-quality (11m35s), CodeQL and GitGuardian passed | required | - |
+| W125 record links commands | 120 | W125 | links-commands | `check-document-links.py --mode commands` on this record change, first with a 400 s limit, then without | FAIL | exit 124 at the 400 s limit, no output: the limit, not a finding | required | - |
+| W125 record links commands rerun | 120 | W125 | links-commands | Same command and tree without the limit | PASS | documents=891 links=8605 failures=0 in 467 s | required | W125 record links commands |
+| W125 record checks | 120 | W125 | document-checks | This record change after merging main: corpus lifecycle, links alignment, governance contract, metadata check-changed, `test_spec_packages` | PASS | violations=0; PASS; failures=0; selected=33 violations=0; `test_spec_packages` OK (count not captured) | required | - |
+| QA-08 timing baseline | 120 | W125 | timing-baseline | Each `tests.lib.document_governance` module timed alone at `09778b761`, Python 3.12.3, with other test runs sharing the host | PASS | 22 modules, 921 tests, 2,283 s in total; slowest `test_spec_packages` 827 s, `metadata.test_reference` 409 s, `test_operations_catalog` 329 s, `test_links` 191 s; host load inflates these, so they are an upper bound | optional | - |
 
 ### Resolution Links
 
@@ -446,7 +494,11 @@ by its rerun, and Link type RED by Link type GREEN. SemVer RED, Common form pin 
 Approval hook RED, Acceptance rule RED, Promotion readiness RED, Form
 serialization RED, Vocabulary 1.1.0 RED, Readiness RED, Link title RED,
 Relation lookup RED and Consumer paths RED are resolved by their GREEN rows,
-and the W123 review FAIL by the W123 re-review. The Integrated review FAIL is resolved by
+and the W123 review FAIL by the W123 re-review. Crosswalk RED, Guarantee RED,
+Reuse lock digest RED, SemVer precedence RED and Security DB RED are resolved
+by their GREEN rows; the Crosswalk, SemVer and Security DB review FAILs by
+their re-reviews; the Routing suite FAIL by its rerun; and the W125 record
+links commands FAIL by its rerun. The Integrated review FAIL is resolved by
 the Integrated re-review. The W05 review and
 W05 re-review FAILs are resolved by the W05 final review, and the Spec Package
 regression by its rerun.
@@ -458,14 +510,17 @@ regression by its rerun.
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
 | 117 | accepted | Disposition GREEN, TemplateDefinition GREEN, Vocabulary 1.1.0 GREEN, Release GREEN, Link title GREEN, Currency GREEN, SemVer GREEN, Integrated checks, Integrated re-review, Remote candidate 996 final | Owner @buenhyden accepted on 2026-11-14 in this chat, after #996 merged; hosted CI wiring of the local-only leaves stays with H-W05-1 (W06) | SPEC-0212 TSK-0064 |
-| 118 | pending | - | The derivation passes its tests; the independent review, the remote candidate and the owner's acceptance remain | SPEC-0212 TSK-0064 |
+| 118 | accepted | Relation lookup GREEN, W123 review fixes, Consumer paths GREEN, W123 re-review, W123 regression, Remote candidate 998 | Owner @buenhyden accepted on 2026-11-14 in this chat, after #998 merged | SPEC-0212 TSK-0064 |
 | 119 | pending | - | The six packages are removed in this change with the owner's 2026-11-14 approval; the checks, the remote candidate, the merge and the post-merge restore remain, and the owner's acceptance | SPEC-0212 TSK-0064 |
+| 120 | pending | - | #999, #1001 and #1002 are merged; the owner's acceptance remains | SPEC-0212 TSK-0064 |
 
 ### Remaining Conditions
 
-Criterion 117 is accepted and criterion 118 is pending: the remote
-candidate and the owner's acceptance remain. The UNVERIFIED rows
-name their waves. Limits: a reference definition used twice, or an
+Criteria 117 and 118 are accepted; 119 and 120 are pending as their rows
+state. The UNVERIFIED and DELTA rows name their owners. State per axis:
+approval as recorded in each row; acceptance as in Criterion Decisions; merge
+as each Remote candidate row records; operation: none, since W05 changed no
+runtime. Limits: a reference definition used twice, or an
 angle-bracket destination with a space, can count a titled link as a
 consumer, an unused titled reference definition can hide an untitled link to
 the same file, and a duplicate `artifact_id` keeps the last path (the metadata
@@ -487,11 +542,18 @@ Q-07 runs only after W11.
 | 119 | W124 | SPEC-0264 Promotion Map: folder guide delivery | `.claude/provider.md` "import shim" and "reminder naming" (commit `b085cabac`), `.codex/provider.md` `exec` route (commit `80c49cf71`), `scripts/lib/hooks/folder_guides.py` and `scripts/hooks/agent-event-hook.sh` (commit `b3c5345cc`), documentation protocol folder-guide text (commit `7bde84a10`); lineage in REQ-0024 and AD-0027 | `tests.lib.hooks.test_folder_guides` is outside the listed checks and was not run here; the receipt of the removed Task named it as passing on main |
 | 119 | W124 | SPEC-0265 Promotion Map: report source capture contract | `infra/07-workflow/n8n/workloads/hermes-blog-ingestion/hermes-plugin/tools.py` (`0600` report file, commit `bce52c6d9`), `deploy/research-submission-prompt.txt` and the workload `README.md` `source_text` meaning (commit `ce760c587`), `docs/02.architecture/decisions/0060-hermes-report-source-contract.md` (commit `13eac2103`); lineage in REQ-0004, REQ-0005, AD-0004, AD-0031 and ADR-0060 | grep of each phrase on the base tree; workload tests were not run (no runtime work) |
 
-The commits reached `main` through PR #996, merged as `5a1aa4b98` with a
-merge commit, so the promotion condition (merge) is met. Acceptance row:
-criterion 117, `accepted`.
+| 120 | W125 | Guarantee GREEN, Security DB GREEN | `.github/workflow-contract.yml` (`guarantee` in `511a4e4a9`; `security_db` in `6670c855c`, merged by #1002 as `9e4c8f361`) | `check-github-workflow-contract.py`; `test_ci_gate_contract` |
+| 120 | W125 | SemVer precedence GREEN | `docs/99.templates/contracts/document-frontmatter.schema.json` and `docs/99.templates/contracts/document-profile.schema.json` (commit `84fa7a812`); `.agents/governance/documentation-protocol.md` SemVer text (commit `144799c5d`) and Version objects columns (this change) | `test_registry`; metadata check-active |
+
+The W122 commits reached `main` through PR #996, merged as `5a1aa4b98`; W123
+through PR #998 (`a4142f99a`); and the W125 commits through PR #999
+(`dd6e4a0e1`), PR #1001 (`e249285b2`) and PR #1002 (`9e4c8f361`), all with
+merge commits. W124 waits for its pull request.
 
 ### Next Owner
 
-The current owner is @buenhyden. Resume from `main` with the two GAP rows;
-W06 takes H-W05-1.
+The current owner is @buenhyden. Resume from `main` after the W124 pull
+request merges: run the W124 post-merge restore, record each
+remote candidate, and ask for acceptance of criteria 119 and 120. W06 takes
+H-W05-1 as listed under Blockers and Decisions; SPEC-0204 TSK-0011 takes the
+OPEN-11 rerun.

@@ -181,6 +181,7 @@ Each condition is judged by running the registered metadata, lifecycle, link and
 - ADR-0031, ADR-0033, ADR-0035, and ADR-0036 are superseded historical decisions.
 - SPEC-0248, SPEC-0249, SPEC-0250 and SPEC-0260 (retired; version history)
   delivered the archive-check removal, the Stage 98 deletion, the completed
-  package deletion and the proof-source change. SPEC-0249 retired three earlier items, whose numbers stay reserved in the
-  Registry: a Tombstone namespace rule, immutable Stage 98 captures, and one
-  capture record per unit. Stage 98 no longer holds records.
+  package deletion and the proof-source change. SPEC-0249 retired three
+  earlier items, whose numbers stay reserved in the Registry: a Tombstone
+  namespace rule, immutable Stage 98 captures, and one capture record per
+  unit. Stage 98 no longer holds records.

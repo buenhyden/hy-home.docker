@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.26.1"
+version: "3.27.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -456,14 +456,18 @@ and `check_version_change` are called by no other gate yet; checking an
 unchanged, missing or lower document or release version is handed to the
 future commit, pull request and tag consumer.
 
-| Object | Field | Current value | Rule | Consumers |
-| --- | --- | --- | --- | --- |
-| Document content | frontmatter `version` | per document | SemVer value; the rule above | `contracts/document-frontmatter.schema.json`, metadata validator |
-| New-document start | Registry `common.template_initial_version` | `0.1.0` | SemVer value | Profile schema, template checks |
-| Common form contract | Registry `common.common_form_contract` | `COMMON-DOC-FORM-1/1.0.0` | Contract ID, `/`, SemVer version, as the shared contract writes it | `template_definition.py` |
-| Vocabulary contract | Registry `common.vocabulary_contract.version` | `1.1.0` | SemVer; the first adoption, from package label `v14.5` (kept as `source_label`), is 1.0.0, by the owner's decision recorded in SPEC-0212 TSK-0064 | Glossary `Contract Version` column, `vocabulary_contract_findings` |
-| Registry serialization | Registry `schema_version` | `1` | The Registry Schema Version, kept an integer by the same decision because its only consumer, the profile schema, pins `const: 1`; a breaking structure change raises it | Profile schema, `registry.py` |
-| Product release | release version, tagged as `v` plus the version, and CHANGELOG | per release | SemVer, checked by `scripts/operations/release.py`; the `v` belongs to the tag, not the value | Release Runbook and the release workflow |
+The Field column is the one authored place; the Producer writes it, and the
+Compatibility surface is what its consumers depend on, so a change there
+decides the increment.
+
+| Object | Field | Current value | Rule | Producer | Consumers | Compatibility surface | Deploy unit |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Document content | frontmatter `version` | per document | SemVer value; the rule above | The document's writer | `contracts/document-frontmatter.schema.json`, metadata validator | The keys, sections, tables, states and link directions its profile's consumers read | The document |
+| New-document start | Registry `common.template_initial_version` | `0.1.0` | SemVer value | Stage 99 owner | Profile schema, template checks | The first version a new document carries | The Registry |
+| Common form contract | Registry `common.common_form_contract` | `COMMON-DOC-FORM-1/1.0.0` | Contract ID, `/`, SemVer version, as the shared contract writes it | Stage 99 owner, adopting the shared contract | `template_definition.py` | The common H1, H2 and H3 form and the empty-section rule | The shared contract, adopted per workspace |
+| Vocabulary contract | Registry `common.vocabulary_contract.version` | `1.1.0` | SemVer; the first adoption, from package label `v14.5` (kept as `source_label`), is 1.0.0, by the owner's decision recorded in SPEC-0212 TSK-0064 | Glossary owner | Glossary `Contract Version` column, `vocabulary_contract_findings` | The common Term IDs, names, order and meanings | The shared contract, adopted per workspace |
+| Registry serialization | Registry `schema_version` | `1` | The Registry Schema Version, kept an integer by the same decision because its only consumer, the profile schema, pins `const: 1`; a breaking structure change raises it | Stage 99 owner | Profile schema, `registry.py` | The JSON structure the profile schema and `registry.py` read | The Registry |
+| Product release | release version, tagged as `v` plus the version, and CHANGELOG | per release | SemVer, checked by `scripts/operations/release.py`; the `v` belongs to the tag, not the value | The release workflow, through `release.py` | Release Runbook and the release workflow | The repository's published release | One tagged release |
 
 Not versions: `common.contract_id` and other contract identifiers, the
 `lifecycle_generation` counter, artifact numbers and identity-space

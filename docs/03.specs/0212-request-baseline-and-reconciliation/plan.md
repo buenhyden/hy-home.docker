@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.60.0"
+version: "1.61.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -177,7 +177,8 @@ W122 in TSK-0064 runs v14.7 W05: the validator handoffs, each enforced with a
 failing and a passing test or recorded with its owner. W123 in the same Task
 derives reverse lookups and Change Impact (the TSK-0062 GAP). W124 in the same
 Task removes the six packages the readiness report lists, with the owner's
-approval.
+approval. W125 closes the W05-primary QA cases the conformance audit found
+open.
 
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
@@ -353,6 +354,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W122 | 117 | Enforce the W05 handoffs a checker can hold: disposition reachability, the TemplateDefinition empty rule, the glossary-contract comparison, the Release role guard, operations currency and link types; record a verdict and owner per handoff | W121 | TSK-0064 | RED and GREEN Registry, TemplateDefinition and metadata tests, historical Registry validation, metadata, links, lifecycle and governance checks, independent review |
 | W123 | 118 | Derive reverse lookups and Change Impact from `parent_ids`, `supersedes` and untitled or `normative` links in a report-only `check-document-links.py --impact`; require each `consumer_paths` entry to be a tracked file; state both in the protocol | W122 | TSK-0064 | RED and GREEN link tests, links and lifecycle checks, independent review |
 | W124 | 119 | Remove SPEC-0248, 0249, 0250, 0260, 0264 and 0265 under the retirement preconditions: Promotion Receipt per package, lineage in the Stage 01 and 02 owners, consumers updated, numbers reserved, last commit and reachability recorded | W123 | TSK-0064 | Corpus lifecycle, links alignment and commands, metadata check-changed, governance contract, script manifest, unit regression |
+| W125 | 120 | Gate crosswalk and typed `guarantee` (QA-C05); PASS reuse bound to lock digests and the Grype database identity (QA-C07); staged-index tests named (QA-C08); full SemVer 2.0.0 with precedence comparison; local timing baseline (QA-08); version-object inventory columns | W124 | TSK-0064 | RED and GREEN gate, evidence, release and Registry tests, workflow-contract and manifest checks, independent review, remote candidates |
 
 #### Current v30 continuation and delivery
 
@@ -738,6 +740,13 @@ the documentation protocol, the Registry `reserved_history`, the provider
 adapters, the folder guide library, the workload README and ADR-0060.
 TSK-0064's Promotion Receipt names the target, phrase and commit per package;
 the handoff condition is the merge of its pull request.
+
+W125 promotes to `.github/workflow-contract.yml` (`guarantee`, `security_db`),
+`docs/99.templates/contracts/document-frontmatter.schema.json` and
+`docs/99.templates/contracts/document-profile.schema.json` (SemVer patterns)
+and `.agents/governance/documentation-protocol.md` (Version objects). The
+handoff condition is the merge of each pull request; TSK-0064's Promotion
+Receipt records each target.
 
 - [Master workspace reconciliation](tasks/tsk-0053-master-workspace-reconciliation.md)
 - [v14.7 W00 intake](tasks/tsk-0059-w00-v14-7-intake.md)
