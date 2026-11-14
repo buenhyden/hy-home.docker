@@ -20,12 +20,17 @@ from datetime import date
 from functools import cmp_to_key
 from pathlib import Path
 
-SEMVER = re.compile(
-    r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)"
-    r"(?:-((?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)"
-    r"(?:\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?"
-    r"(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?"
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from scripts.lib.document_governance.semver import (  # noqa: E402
+    SEMVER,
+    SemVerError,
+    VersionChangeError,
+    check_version_change,
+    compare_semver,
 )
+
 RELEASE_HEADING = re.compile(r"## \[([^\]]+)\] - ([0-9]{4}-[0-9]{2}-[0-9]{2})")
 CATEGORIES = frozenset(
     {"Added", "Changed", "Deprecated", "Removed", "Fixed", "Security"}
@@ -43,44 +48,6 @@ def release_tag(version: str) -> str:
             "version must be a complete SemVer 2.0 version without v prefix"
         )
     return "v" + version
-
-
-def parse_semver(version: object) -> tuple[tuple[int, ...], tuple[object, ...] | None]:
-    """Return (core, prerelease) for SemVer 2.0 precedence; build is dropped."""
-    match = SEMVER.fullmatch(version) if isinstance(version, str) else None
-    if match is None:
-        raise ReleaseError("not a complete SemVer 2.0 version without v prefix")
-    core = tuple(int(part) for part in match.groups()[:3])
-    pre = match.group(4)
-    if pre is None:
-        return core, None
-    return core, tuple(
-        (0, int(part)) if part.isdigit() else (1, part) for part in pre.split(".")
-    )
-
-
-def compare_semver(left: object, right: object) -> int:
-    """Return -1, 0 or 1 by SemVer precedence; build metadata is ignored."""
-    (a_core, a_pre), (b_core, b_pre) = parse_semver(left), parse_semver(right)
-    if a_core != b_core:
-        return -1 if a_core < b_core else 1
-    if a_pre == b_pre:
-        return 0
-    if a_pre is None or b_pre is None:  # a prerelease precedes its release
-        return 1 if a_pre is None else -1
-    # Numeric identifiers precede alphanumeric; a longer equal prefix is higher.
-    return -1 if a_pre < b_pre else 1
-
-
-def check_version_change(old: object, new: object) -> None:
-    """Refuse a missing, unchanged or lower version for the same object."""
-    if not old or not new:
-        raise ReleaseError("version is missing")
-    order = compare_semver(old, new)
-    if order == 0:
-        raise ReleaseError("version is unchanged in precedence")
-    if order > 0:
-        raise ReleaseError("version is a downgrade")
 
 
 def _same_precedence(name: str, version: str) -> bool:
@@ -167,9 +134,7 @@ def _ref_sha(run: Runner, repository: str, ref: str) -> str:
     return sha
 
 
-def _new_version(
-    run: Runner, repository: str, tag: str, *, allow_backport: bool = False
-) -> None:
+def _new_version(run: Runner, repository: str, tag: str) -> None:
     pages = _json(
         run, ["gh", "api", f"repos/{repository}/releases", "--paginate", "--slurp"]
     )
@@ -213,15 +178,15 @@ def _new_version(
         published.append(name)
     versions = [n.removeprefix("v") for n in published]
     versions = [n for n in versions if SEMVER.fullmatch(n) is not None]
-    if (
-        versions
-        and not allow_backport
-        and compare_semver(max(versions, key=cmp_to_key(compare_semver)), tag[1:]) > 0
-    ):
-        raise ReleaseError(
-            "version is lower than the highest published release or tag; "
-            "a backport needs a reviewed workflow input"
-        )
+    if versions:
+        # A backport is not allowed: a version below the highest published
+        # release or tag is always refused. Equal precedence returned above.
+        try:
+            check_version_change(max(versions, key=cmp_to_key(compare_semver)), tag[1:])
+        except VersionChangeError as error:
+            raise ReleaseError(
+                "version is lower than the highest published release or tag"
+            ) from error
 
 
 def _assets(directory: Path, changelog: str, tag: str, sha: str) -> list[Path]:
@@ -303,7 +268,6 @@ def publish(
     repository: str,
     *,
     run: Runner = run_command,
-    allow_backport: bool = False,
 ) -> dict[str, str | bool]:
     tag = release_tag(version)
     if re.fullmatch(r"[0-9a-f]{40}", sha) is None:
@@ -316,7 +280,7 @@ def publish(
     run(["git", "merge-base", "--is-ancestor", sha, remote_main])
     changelog = run(["git", "show", f"{sha}:CHANGELOG.md"]) + "\n"
     notes = release_notes(changelog, version)
-    _new_version(run, repository, tag, allow_backport=allow_backport)
+    _new_version(run, repository, tag)
     _json(
         run,
         [
@@ -403,11 +367,6 @@ def main() -> int:
     production.add_argument("--version", required=True)
     production.add_argument("--sha", required=True)
     production.add_argument("--repository", required=True)
-    production.add_argument(
-        "--allow-backport",
-        action="store_true",
-        help="permit a version lower than the highest published release or tag",
-    )
     arguments = parser.parse_args()
     try:
         if arguments.command == "validate":
@@ -418,10 +377,9 @@ def main() -> int:
                 arguments.version,
                 arguments.sha,
                 arguments.repository,
-                allow_backport=arguments.allow_backport,
             )
             print(json.dumps(receipt))
-    except (ReleaseError, OSError, UnicodeError) as error:
+    except (ReleaseError, SemVerError, OSError, UnicodeError) as error:
         print(f"FAIL: {error}", file=sys.stderr)
         return 1
     return 0
