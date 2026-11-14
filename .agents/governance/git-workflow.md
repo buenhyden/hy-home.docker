@@ -1,10 +1,10 @@
 ---
 title: "Git Workflow Governance"
-version: "1.6.3"
+version: "1.7.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 ---
 
 # Git Workflow Governance
@@ -125,10 +125,13 @@ automatic enforcement from configuration alone.
 - Use `fix` for user-visible or operational defect corrections and include regression evidence.
 - Use `refactor` only for behavior-preserving structure changes and list checks that demonstrate unchanged behavior.
 - Reference issue IDs, ADR IDs, or plan/task IDs when applicable.
-- `.gitmessage` is an authoring aid for the `.cz.toml` grammar. Commitizen's
-  default Merge/fixup prefix escapes are disabled (`allowed_prefixes=[]`);
-  GitHub's synthetic candidate merge is outside the validated contributor
-  commit range.
+- `.gitmessage` is an authoring aid for the `.cz.toml` grammar, which every
+  consumer reads: the `commit-msg` hook and the pull request commit-range
+  check. Only Git's and GitHub's automatic merge subjects are exempt
+  (`allowed_prefixes`), by the owner's decision of 2026-11-14, so a
+  `Merge branch 'main' into …` update commit passes; fixup and squash escapes
+  stay disabled. GitHub's synthetic candidate merge is outside the validated
+  contributor commit range.
 - Main-targeted release-preparation PRs maintain `CHANGELOG.md` in Keep a
   Changelog form. No development push generates or publishes a changelog.
 - Future release tags are `v` plus strict SemVer (`.cz.toml` `tag_format`). Do
@@ -161,6 +164,31 @@ automatic enforcement from configuration alone.
 
 Changes that bypass checks or violate secret safety must not be merged.
 GitHub-specific enforcement rules (branch protection, required checks, CODEOWNERS, Actions security) are governed by `.agents/governance/github-governance.md`.
+
+#### 7. Git action stages
+
+Each Git action is checked before, during or after it only where a real
+trigger exists. A check after the fact records; it never claims to have
+blocked. Client hooks can be bypassed with `--no-verify`, so only the server
+rows are enforcement.
+
+| Cell | Trigger and input | Action |
+| --- | --- | --- |
+| Commit before | `run-ci-precommit.sh --mode local-staged` on the index tree | Run: the agent route before a commit |
+| Commit during | Installed `pre-commit` hook on the index; `commit-msg` hook on the message file | Run: blocks the commit |
+| Commit after | No `post-commit` hook | Not applicable: nothing could block |
+| Push before | Installed native `pre-push` guard on the pushed refs | Run: refuses any `refs/heads/main` update |
+| Push during | GitHub branch protection on `main` | Observe: the server accepts or refuses |
+| Push after | Git has no `post-push` hook; the `push` event on `main` runs `main-security` | Observe: security audit of the merged input |
+| PR before | No hook; the pull request template | Not applicable: opening a PR is a separate remote write |
+| PR during | `pull_request` opened, synchronize or reopened; candidate shard jobs and the `candidate-quality` aggregate | Run: required check on the merge candidate |
+| PR after | Gate evidence artifacts per shard | Observe: each artifact is bound to its run |
+| Merge before | Branch protection: strict up to date, required `candidate-quality`, resolved conversations | Run (server): blocks the merge |
+| Merge during | Merge commit only; no merge queue | Not applicable: no queue, and the strict rule already tested this tree |
+| Merge after | `push` on `main` | Reuse: the merged tree equals the checked candidate; `main-security` runs |
+
+SDLC phases and document Stages are separate axes from these cells, and the
+current Task records each binding's evidence.
 
 ## Exceptions
 
