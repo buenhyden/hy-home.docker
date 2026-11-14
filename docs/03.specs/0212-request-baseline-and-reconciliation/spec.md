@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.62.2"
+version: "1.62.3"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -158,7 +158,8 @@ network lookup waits for the owner to approve its host scope in that Task.
 The direct implementation request of2026-11-10 adds criterion106/W111 in
 TSK-0053 for the master assessment and current-guidance corrections. The
 concurrently issued TSK-0052 retains criteria104/105 and its existing
-supply-chain scope. SPEC-0270 separately owns memory capacity/search/backup.
+supply-chain scope. SPEC-0270 (retired; version history) delivered memory capacity, search and
+backup source.
 
 The owner decision of 2026-11-11 adds criterion 107 and W112 in TSK-0054 for
 the failing Hermes `devops` daily brief. It authorizes investigation and a
@@ -1009,7 +1010,6 @@ target, backup, recovery boundary, and action-specific authorization.
 - [v14.7 W00 intake](tasks/tsk-0059-w00-v14-7-intake.md)
 - [v14.7 W01 governance](tasks/tsk-0060-w01-v14-7-governance.md)
 - [Existing supply-chain evidence owner](tasks/tsk-0052-supply-chain-evidence.md)
-- [Memory capacity and search](../0270-shared-memory-capacity-and-search/spec.md)
 
 - [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
 - [Service connection contracts Task](tasks/tsk-0041-service-connection-contracts.md)

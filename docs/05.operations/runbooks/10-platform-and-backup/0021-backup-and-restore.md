@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.6.2"
+version: "1.6.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-15"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -707,7 +707,7 @@ conflict를 보존하고 검사한 뒤 교체한다. DB/backup/임시 복사본�
 모두 거부됐다(`available_bytes` 0). 소유자 결정으로 `hyhome-backup.sh`의 매일 경로와
 `backup.sh backup`·`offsite.sh copy`는 용량 승인 없이 직접 실행한다.
 `budget-backup`·`budget-copy`와 예약 경로는 그대로 두며, snapshot 계산을 다시
-설계한 뒤 SPEC-0270이 매일 경로를 다시 옮긴다.
+설계하는 새 Spec이 생기기 전에는 매일 경로를 옮기지 않는다.
 같은 이유로 staging의 기억 export가 용량 거부(exit 4)로 끝나면 export만 버리고 경고를
 남기며 run은 실패로 처리하지 않는다. 그동안 기억 저장소는 매일 snapshot에 들어가지 않으므로
 마지막 복사본은 그 전 snapshot이다. 다른 export 실패는 그대로 run을 실패시킨다.

@@ -158,8 +158,8 @@ case "$action" in
         fi
         ;;
     copy)
-        # Daily path stays ungated until SPEC-0270 redesigns snapshot
-        # accounting; budget-copy keeps the admission-gated route.
+        # Daily path stays ungated; snapshot accounting is not admission-gated
+        # yet, and budget-copy keeps the admission-gated route.
         require_initialized
         # copy skips snapshots the remote already has. --no-lock applies to
         # the read-only source only; the orchestrator's flock excludes writers.

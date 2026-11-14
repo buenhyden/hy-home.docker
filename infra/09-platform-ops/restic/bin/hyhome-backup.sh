@@ -210,7 +210,7 @@ memory_store="$repo_root/.workspace-memory/memory.sqlite3"
 if [[ ! -e "$memory_store" && ! -L "$memory_store" ]]; then
     echo "agent memory store absent: backup skipped"
 else
-    # Exit 4 is only the SPEC-0270 capacity refusal: its 1 GiB ledger charges
+    # Exit 4 is only the memory capacity refusal: its 1 GiB ledger charges
     # 64 MiB per existing snapshot and stays saturated, so that refusal drops
     # the export with a warning instead of failing the run (2026-11-11).
     memory_rc=0

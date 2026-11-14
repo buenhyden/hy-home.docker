@@ -1,10 +1,10 @@
 ---
 title: "Document Lifecycle Governance Architecture"
-version: "3.0.4"
+version: "3.0.5"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-15"
 layer: "architecture"
 artifact_id: "AD-0030"
 parent_ids:
@@ -178,6 +178,7 @@ Unsafe traversal, missing approval, and a missing, symlinked, unreadable or inva
 ### Currentness and Lineage
 
 - ADR-0030, ADR-0031, ADR-0033, ADR-0035 and ADR-0036 were retired; their numbers are reserved and version history holds their bodies.
+- SPEC-0257 and SPEC-0261 (retired; version history) delivered the second implementation-alignment corrections of paths, links, Registry exceptions and secret names, and the REQ-0027 approval with the promotion of its dependent documents.
 - SPEC-0248, SPEC-0249, SPEC-0250 and SPEC-0260 (retired; version history) delivered the Stage 98 check removal and deletion, the completed-package deletion rule and the generation 6 proof source.
 - [Documentation protocol](../../../.agents/governance/documentation-protocol.md)
 
