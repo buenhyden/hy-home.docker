@@ -1,15 +1,16 @@
 ---
 title: "Open Notebook Recovery Runbook"
-version: "1.1.5"
+version: "1.1.6"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "RUN-0073"
 parent_ids:
 - "GDE-0073"
 created: "2026-05-17"
+next_review_at: "2027-05-13"
 ---
 
 # Open Notebook Recovery Runbook

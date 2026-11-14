@@ -1,10 +1,10 @@
 ---
 title: "Shared Storybook Usage Guide"
-version: "1.2.5"
+version: "1.2.6"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0101"
 parent_ids:
@@ -14,6 +14,7 @@ implementation_services:
   - "storybook"
   - "storybook-mcp"
 created: "2026-10-03"
+next_review_at: "2027-05-13"
 ---
 
 # Shared Storybook Usage Guide

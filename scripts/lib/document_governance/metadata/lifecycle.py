@@ -100,6 +100,20 @@ _CURRENCY_TYPES = frozenset(
 )
 
 
+# SDLC-06: the review date is at most this many days after `updated`, so a
+# far-future date cannot keep an operations document current for good.
+_REVIEW_INTERVAL_DAYS = 180
+
+
+def _review_interval_exceeded(next_review: object, updated: object) -> bool:
+    try:
+        due = datetime.date.fromisoformat(str(next_review)[:10])
+        last = datetime.date.fromisoformat(str(updated)[:10])
+    except ValueError:
+        return False  # absent or malformed: the date checks report it
+    return (due - last).days > _REVIEW_INTERVAL_DAYS
+
+
 def _review_overdue(next_review: object, reviewed: object) -> bool:
     try:
         due = datetime.date.fromisoformat(str(next_review)[:10])
@@ -736,6 +750,16 @@ def validate_record(
                 record,
                 "stale-active",
                 "next_review_at has passed without a reviewed_at on or after it",
+            )
+        )
+    if record.metadata.get("type") in _CURRENCY_TYPES and _review_interval_exceeded(
+        record.metadata.get("next_review_at"), record.metadata.get("updated")
+    ):
+        findings.append(
+            _finding(
+                record,
+                "review-interval-exceeded",
+                f"next_review_at is more than {_REVIEW_INTERVAL_DAYS} days after updated",
             )
         )
     temporal_fields = (

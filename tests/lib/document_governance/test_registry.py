@@ -2985,6 +2985,7 @@ class DocumentRegistryTests(unittest.TestCase):
             "parent_ids": [],
             "created": "2026-08-20",
             "updated": "2026-08-20",
+            "next_review_at": "2026-09-20",
             "observed_at": "2026-08-20",
             "reviewed_at": "2026-08-20",
             "occurred_at": "2026-08-20T00:00:00Z",

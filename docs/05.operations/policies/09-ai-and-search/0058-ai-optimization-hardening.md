@@ -1,15 +1,16 @@
 ---
 title: "08-AI Optimization Hardening Operations Policy"
-version: "1.0.5"
+version: "1.0.6"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "POL-0058"
 parent_ids:
 - "AD-0008"
 created: "2026-05-10"
+next_review_at: "2027-05-13"
 ---
 
 # 08-AI Optimization Hardening Operations Policy

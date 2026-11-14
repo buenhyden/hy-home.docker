@@ -1,15 +1,16 @@
 ---
 title: "MLflow Operations Policy"
-version: "1.0.7"
+version: "1.0.8"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "POL-0088"
 parent_ids:
 - "AD-0011"
 created: "2026-09-21"
+next_review_at: "2027-05-13"
 ---
 
 # MLflow Operations Policy

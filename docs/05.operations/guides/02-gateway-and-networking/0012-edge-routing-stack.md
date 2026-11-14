@@ -1,13 +1,14 @@
 ---
 title: "Edge Routing Stack Operations"
-version: "1.4.1"
+version: "1.4.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0012"
 created: "2026-07-06"
+next_review_at: "2027-05-13"
 ---
 
 # Edge Routing Stack Operations

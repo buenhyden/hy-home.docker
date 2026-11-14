@@ -1,15 +1,16 @@
 ---
 title: "Conftest Operations Policy"
-version: "1.1.2"
+version: "1.1.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "POL-0095"
 parent_ids:
 - "AD-0009"
 created: "2026-09-23"
+next_review_at: "2027-05-13"
 ---
 
 # Conftest Operations Policy

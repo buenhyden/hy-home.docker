@@ -1,15 +1,16 @@
 ---
 title: "Valkey Cluster Health Runbook"
-version: "2.1.3"
+version: "2.1.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "RUN-0022"
 parent_ids:
 - "GDE-0022"
 created: "2026-05-17"
+next_review_at: "2027-05-13"
 ---
 
 # Valkey Cluster Health and Recovery Runbook

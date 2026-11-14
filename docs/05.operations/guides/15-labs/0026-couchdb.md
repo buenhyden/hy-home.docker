@@ -1,15 +1,16 @@
 ---
 title: "CouchDB Usage Guide"
-version: "2.1.5"
+version: "2.1.6"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0026"
 parent_ids:
 - "POL-0026"
 created: "2026-05-10"
+next_review_at: "2027-05-13"
 ---
 
 # CouchDB Usage Guide

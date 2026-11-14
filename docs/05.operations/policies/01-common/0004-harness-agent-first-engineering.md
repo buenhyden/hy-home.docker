@@ -1,15 +1,16 @@
 ---
 title: "Harness / Agent-first Engineering Operations Policy"
-version: "1.3.2"
+version: "1.3.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "POL-0004"
 parent_ids:
 - "REQ-0024"
 created: "2026-06-04"
+next_review_at: "2027-05-13"
 ---
 
 # Harness / Agent-first Engineering Operations Policy

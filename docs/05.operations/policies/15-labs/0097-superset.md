@@ -1,15 +1,16 @@
 ---
 title: "Superset Operations Policy"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "POL-0097"
 parent_ids:
 - "AD-0012"
 created: "2026-09-23"
+next_review_at: "2027-05-13"
 ---
 
 # Superset Operations Policy

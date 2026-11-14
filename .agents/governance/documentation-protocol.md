@@ -426,10 +426,13 @@ evidence; surrounding instructions remain current and validated normally.
   blast radius, ordered actions, expected signals, verification, recovery,
   escalation, and evidence handoff. Place these in its registered sections;
   do not copy a past execution result into a reusable instruction.
-- A Guide, Operations Policy or Runbook stays current by event, not by a new
-  field: a change to the service, pin, command or procedure it describes
-  updates it in the same change, and a `next_review_at` that has passed, when
-  the document sets one, makes it stale until reviewed.
+- A Guide, Operations Policy or Runbook stays current by event: a change to
+  the service, pin, command or procedure it describes updates it in the same
+  change. It also carries `next_review_at`, the date its next review is due,
+  at most 180 days after `updated`. A `next_review_at` that has passed makes
+  it stale until a `reviewed_at` on or after it, and a missing date or one
+  beyond the interval is rejected. A README is navigation, kept current by the
+  link and navigation checks, and carries no review date.
 - An Incident records observed impact, severity, affected service, coordination,
   timeline, hypotheses, mitigation, and the next responsible action. Put
   severity and service details in the body unless the Registry declares a
@@ -497,7 +500,7 @@ or path patterns, or a template role whose ID or source, has a `release` or
 names or frontmatter values carry that token or at least three of the retired
 Release shape's groups (artifacts, rollout or rollback, approvals, outcome),
 and a template role whose purpose, responsibility or applicability does, so a
-Release role is rejected under any ID, type or template. A generator is checked
+role for release records is rejected under any ID, type or template. A generator is checked
 by review. This
 removes no GitHub Release, tag, CHANGELOG entry or release workflow. Remote release and
 deployment actions wait for their exact target under

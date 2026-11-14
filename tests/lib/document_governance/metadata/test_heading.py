@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import datetime
 import json
 import os
 import pathlib
@@ -255,17 +256,19 @@ class CurrentBodyContractTests(unittest.TestCase):
         )
 
     def test_policy_optional_and_additional_fields_follow_the_registry(self) -> None:
+        today = datetime.datetime.now(datetime.UTC).date()
         base = {
             "title": "Common Optimizations Template Exceptions",
             "version": "1.0.0",
             "type": "operation/policy",
             "status": "active",
             "owner": "@buenhyden",
-            "updated": "2026-08-01",
+            "updated": today.isoformat(),
             "layer": "operations",
             "artifact_id": "POL-0001",
             "created": "2026-08-01",
         }
+        review = (today + datetime.timedelta(days=30)).isoformat()
 
         def findings(extra: dict[str, object]) -> list[object]:
             record = metadata.Record(
@@ -273,7 +276,7 @@ class CurrentBodyContractTests(unittest.TestCase):
                     "docs/05.operations/policies/"
                     "0001-common-optimizations-template-exceptions.md"
                 ),
-                {**base, **extra},
+                {**base, **extra, "next_review_at": review},
                 "policy",
                 frontmatter_present=True,
             )
@@ -769,12 +772,12 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
 
     def test_template_rejects_unknown_placeholder_without_key_mapping(self) -> None:
         self.assertNotIn(
-            "next_review_at", self.profiles["common"]["template_placeholders"]
+            "resolved_at", self.profiles["common"]["template_placeholders"]
         )
         self.assertIn(
             "invalid-template-placeholder",
             self.template_codes(
-                {**self.template_values, "next_review_at": "{{UNREGISTERED_VALUE}}"}
+                {**self.template_values, "resolved_at": "{{UNREGISTERED_VALUE}}"}
             ),
         )
 
@@ -1445,12 +1448,15 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             source.write_text(
                 "services:\n  exampledb:\n    image: vendor/exampledb:4.2.3\n"
             )
+            today = datetime.datetime.now(datetime.UTC).date()
+            review = today + datetime.timedelta(days=30)
             frontmatter = (
                 '---\ntitle: "ExampleDB"\nversion: "1.0.0"\n'
                 'type: "operation/policy"\nstatus: "active"\n'
-                'owner: "@fixture"\nupdated: "2026-09-19"\n'
+                f'owner: "@fixture"\nupdated: "{today}"\n'
                 'layer: "operations"\nartifact_id: "POL-9999"\n'
-                'created: "2026-09-19"\n---\n\n# ExampleDB\n\n'
+                f'created: "2026-09-19"\nnext_review_at: "{review}"\n'
+                "---\n\n# ExampleDB\n\n"
             )
             pointer = "[Runtime](/infra/04-data/exampledb/docker-compose.yml)\n"
             body_prefix = (
@@ -1483,7 +1489,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             )
             readme_metadata = readme_metadata.replace(
                 'layer: "operations"\nartifact_id: "POL-9999"\n', ""
-            )
+            ).replace(f'next_review_at: "{review}"\n', "")
             runtime_readme.write_text(readme_metadata + pointer + "ExampleDB 3.9.8\n")
             unrelated = runtime_readme.parent / "private-config.md"
             unrelated.write_text("---\ninvalid: [\n")

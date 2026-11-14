@@ -1,15 +1,16 @@
 ---
 title: "Docker Registry Operations Policy"
-version: "1.2.6"
+version: "1.2.7"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "POL-0065"
 parent_ids:
 - "AD-0009"
 created: "2026-05-17"
+next_review_at: "2027-05-13"
 ---
 
 # Docker Registry Operations Policy

@@ -398,6 +398,64 @@ class OperationsCurrencyTests(unittest.TestCase):
             self.codes("operation/incident", next_review_at="2000-01-01"),
         )
 
+    def messages(self, document_type: str, **extra: str) -> set[str]:
+        profiles = metadata.build_registry_profiles(metadata.load_registry(REGISTRY))
+        record = metadata.Record(
+            pathlib.Path("docs/05.operations/runbooks/01-common/0004-fixture.md"),
+            {
+                "artifact_id": "RUN-0004",
+                "type": document_type,
+                "status": "active",
+                "parent_ids": ["POL-0004"],
+                **extra,
+            },
+            "runbook",
+            frontmatter_present=True,
+        )
+        manifest = metadata.build_manifest([record])
+        return {
+            f"{item.code}: {item.message}"
+            for item in metadata.validate_record(record, profiles, manifest)
+        }
+
+    def test_a_missing_review_date_is_rejected(self) -> None:
+        """SDLC-06: an active operations document cannot skip its review date."""
+
+        for document_type in (
+            "operation/runbook",
+            "operation/guide",
+            "operation/policy",
+        ):
+            with self.subTest(type=document_type):
+                self.assertIn(
+                    "missing-required-key: required key is missing: next_review_at",
+                    self.messages(document_type),
+                )
+                self.assertNotIn(
+                    "missing-required-key: required key is missing: next_review_at",
+                    self.messages(document_type, next_review_at="2999-01-01"),
+                )
+
+    def test_a_review_date_beyond_the_interval_is_rejected(self) -> None:
+        for document_type in (
+            "operation/runbook",
+            "operation/guide",
+            "operation/policy",
+        ):
+            with self.subTest(type=document_type):
+                self.assertIn(
+                    "review-interval-exceeded",
+                    self.codes(
+                        document_type, updated="2026-11-14", next_review_at="2999-01-01"
+                    ),
+                )
+                self.assertNotIn(
+                    "review-interval-exceeded",
+                    self.codes(
+                        document_type, updated="2026-11-14", next_review_at="2027-05-13"
+                    ),
+                )
+
     def test_a_future_or_absent_review_date_is_current(self) -> None:
         self.assertNotIn("stale-active", self.codes(next_review_at="2999-01-01"))
         self.assertNotIn("stale-active", self.codes())

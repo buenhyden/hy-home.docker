@@ -1,15 +1,16 @@
 ---
 title: "Crawl4AI Operations Policy"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "POL-0091"
 parent_ids:
 - "AD-0008"
 created: "2026-09-21"
+next_review_at: "2027-05-13"
 ---
 
 # Crawl4AI Operations Policy

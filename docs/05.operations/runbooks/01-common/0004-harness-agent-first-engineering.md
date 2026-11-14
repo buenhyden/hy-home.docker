@@ -1,15 +1,16 @@
 ---
 title: "Harness / Agent-first Engineering Runbook"
-version: "1.4.1"
+version: "1.4.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "RUN-0004"
 parent_ids:
 - "POL-0004"
 created: "2026-06-04"
+next_review_at: "2027-05-13"
 ---
 # Harness / Agent-first Engineering Runbook
 

@@ -1,10 +1,10 @@
 ---
 title: "Kafka Usage Guide"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0036"
 parent_ids:
@@ -16,6 +16,7 @@ implementation_services:
   - 'kafka-exporter'
   - 'kafka-init'
 created: "2026-05-10"
+next_review_at: "2027-05-13"
 ---
 
 # Kafka Usage Guide

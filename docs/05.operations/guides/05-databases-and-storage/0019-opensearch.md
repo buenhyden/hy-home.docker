@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Usage Guide"
-version: "2.2.1"
+version: "2.2.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0019"
 parent_ids:
@@ -14,6 +14,7 @@ implementation_services:
   - 'opensearch'
   - 'opensearch-dashboards'
 created: "2026-05-10"
+next_review_at: "2027-05-13"
 ---
 
 # OpenSearch Usage Guide

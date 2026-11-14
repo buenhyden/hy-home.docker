@@ -1,10 +1,10 @@
 ---
 title: "SurrealDB Guide"
-version: "0.3.2"
+version: "0.3.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0080"
 parent_ids:
@@ -13,6 +13,7 @@ implementation_services:
   infra/08-ai/open-notebook/docker-compose.yml:
   - 'surrealdb'
 created: "2026-09-19"
+next_review_at: "2027-05-13"
 ---
 
 # SurrealDB Guide

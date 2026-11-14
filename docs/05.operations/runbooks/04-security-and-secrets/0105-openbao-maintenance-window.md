@@ -1,15 +1,16 @@
 ---
 title: "OpenBao Maintenance Window"
-version: "0.4.1"
+version: "0.4.2"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "RUN-0105"
 parent_ids:
 - "POL-0085"
 created: "2026-10-28"
+next_review_at: "2027-05-13"
 ---
 
 # OpenBao Maintenance Window

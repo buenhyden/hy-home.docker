@@ -1,15 +1,16 @@
 ---
 title: "Harness / Agent-first Engineering Usage Guide"
-version: "1.3.4"
+version: "1.3.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0004"
 parent_ids:
 - "POL-0004"
 created: "2026-06-04"
+next_review_at: "2027-05-13"
 ---
 
 # Harness / Agent-first Engineering Usage Guide

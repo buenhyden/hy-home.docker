@@ -126,7 +126,8 @@
       "created": "{{CREATED}}",
       "observed_at": "{{OBSERVED_AT}}",
       "occurred_at": "{{OCCURRED_AT}}",
-      "review_cycle": "{{REVIEW_CYCLE}}"
+      "review_cycle": "{{REVIEW_CYCLE}}",
+      "next_review_at": "{{NEXT_REVIEW_AT}}"
     },
     "template_required_placeholders": [
       "title",
@@ -2038,7 +2039,8 @@
         "status",
         "owner",
         "updated",
-        "artifact_id"
+        "artifact_id",
+        "next_review_at"
       ],
       "optional_frontmatter": [
         "layer",
@@ -2047,8 +2049,7 @@
         "superseded_by",
         "parent_ids",
         "implementation_services",
-        "reviewed_at",
-        "next_review_at"
+        "reviewed_at"
       ],
       "required_sections": [
         "Purpose",
@@ -2128,7 +2129,8 @@
         "status",
         "owner",
         "updated",
-        "artifact_id"
+        "artifact_id",
+        "next_review_at"
       ],
       "optional_frontmatter": [
         "layer",
@@ -2136,8 +2138,7 @@
         "supersedes",
         "superseded_by",
         "parent_ids",
-        "reviewed_at",
-        "next_review_at"
+        "reviewed_at"
       ],
       "required_sections": [
         "Purpose",
@@ -2223,7 +2224,8 @@
         "status",
         "owner",
         "updated",
-        "artifact_id"
+        "artifact_id",
+        "next_review_at"
       ],
       "optional_frontmatter": [
         "layer",
@@ -2231,8 +2233,7 @@
         "supersedes",
         "superseded_by",
         "parent_ids",
-        "reviewed_at",
-        "next_review_at"
+        "reviewed_at"
       ],
       "required_sections": [
         "Purpose",

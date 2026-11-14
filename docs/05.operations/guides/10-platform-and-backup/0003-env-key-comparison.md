@@ -1,13 +1,14 @@
 ---
 title: "`.env.example` vs `.env` Key Comparison"
-version: "3.2.2"
+version: "3.2.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0003"
 created: "2026-06-04"
+next_review_at: "2027-05-13"
 ---
 
 # `.env.example` vs `.env` Key Comparison

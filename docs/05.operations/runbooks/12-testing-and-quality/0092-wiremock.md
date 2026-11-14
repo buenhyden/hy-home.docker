@@ -1,15 +1,16 @@
 ---
 title: "WireMock Recovery Runbook"
-version: "1.0.6"
+version: "1.0.7"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "RUN-0092"
 parent_ids:
 - "GDE-0092"
 created: "2026-09-23"
+next_review_at: "2027-05-13"
 ---
 
 # WireMock Recovery Runbook
