@@ -1756,9 +1756,13 @@ first real run is the next 07:50 KST.
 
 On 2026-11-15 the owner moved the Hermes daily jobs from 08:00 to 07:00 KST,
 starting 2026-11-16. The warm-up source moved with them to 06:50 KST
-(`50 6 * * *`), still ten minutes ahead. HOME n8n keeps the 07:50 schedule
-until the changed workflow is imported, published and n8n main restarted, a
-separate approved step.
+(`50 6 * * *`), still ten minutes ahead. With owner approval the same day, the
+live workflow was exported as a backup (`50 7 * * *`), the changed file was
+imported and published, and the `n8n` main container was restarted at 08:51
+KST. It came back healthy; the readback shows `TaskRunnerWarmUp` active on
+`50 6 * * *` and `HermesBlogIngest` still active. `n8n-worker` and
+`n8n-task-runner-worker` were not restarted. The first 06:50 run is on
+2026-11-16.
 
 #### Crawl4AI open-web fallback (2026-11-09)
 
@@ -1848,7 +1852,8 @@ None: nothing was recorded here before this Task moved to the common form.
 | Devops uncertain replay | 8, 23 | W83 | One explicit replay of identical bytes and idempotency key | Outbox record for 2026-11-09 devops | PASS | HTTP 201, receipt validated, record persisted. | required | - |
 | Crawl4AI HOME deployment | 8, 23 | W83 | Forwarder start, exposure checks, plugin install and one installed-code fetch | HOME, `main` `2dec3a3cc` | PASS | Loopback only; 401 without token; LAN refused; fallback fetch valid. Scheduled run NOT_RUN. | required | - |
 | Warm-up scheduled run | 8, 23 | W83 | First 07:50 KST execution readback | HOME n8n schedule | NOT_RUN | Awaits the next 07:50 KST; `n8n execute` cannot start a schedule-only workflow. | required | - |
-| Warm-up moved to 06:50 | 8, 23 | W83 | `N8nTaskRunnerWarmupContractTests` RED then GREEN; `test_p03_runner_consumers` | `50 6 * * *` in test and `workflow.json`; README 0.1.3 | PASS | Test failed on `50 7 * * *` and passes after; 3 tests OK. HOME n8n re-import NOT_RUN. | required | - |
+| Warm-up moved to 06:50 | 8, 23 | W83 | `N8nTaskRunnerWarmupContractTests` RED then GREEN; `test_p03_runner_consumers` | `50 6 * * *` in test and `workflow.json`; README 0.1.3 | PASS | Test failed on `50 7 * * *` and passes after; 3 tests OK. | required | - |
+| Warm-up 06:50 HOME activation | 8, 23 | W83 | Export backup, `import:workflow`, `publish:workflow`, n8n main restart, export readback | `fix/n8n-warmup-0650` `5e490ccde`; HOME n8n | PASS | n8n healthy; both workflows active; workers not restarted. First 06:50 run NOT_RUN. | required | - |
 
 ### Resolution Links
 
