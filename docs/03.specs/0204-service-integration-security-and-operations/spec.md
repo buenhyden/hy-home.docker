@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Specification"
-version: "1.12.1"
+version: "1.12.2"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0204"
 parent_ids:
@@ -27,11 +27,8 @@ current execution follows the 2026-10-10 request reconciled by SPEC-0212 P00 at
 `d19fbfde605e257299aa2b39e25f2d7413a78221`. Re-read main and the worktree
 before each unit. Existing delivery and runtime receipts remain in their Tasks.
 
-Current owners are SPEC-0213 for development data/Influx retirement,
-SPEC-0214 for quality/OTLP, SPEC-0218 for common controls,
-SPEC-0219 for Storybook, SPEC-0220 for crawler egress,
-SPEC-0223 for RedisInsight, SPEC-0224 for datastore observation and
-SPEC-0227 for the Stage 05 body refresh. Applied source is NO_CHANGE;
+Common controls are owned by SPEC-0218; other former owners are retired, and
+their current meaning lives in Stage 01, 02 and 05. Applied source is NO_CHANGE;
 old prompt numbers and draft labels never authorize reimplementation.
 P03 routes endpoint/port integration, P04 Airflow, P05 n8n, P01/P02/P06
 secret classification/mapping/consumption, P09 offline Wiki preparation and P10 the
@@ -56,7 +53,7 @@ TSK-0004 records the user's subsequent explicit 2026-10-03 authorization,
 including value-preserving path moves and incident disposition. Each Task owns exact files and focused regressions in
 its Task ledger before source mutation. Shared root, Alloy, environment,
 Registry and backup files have one writer at a time. If a named project or
-consumer is missing, record a versioned contract and `BLOCKED` runtime result
+consumer is missing, record a versioned contract and `NOT_RUN` runtime result
 instead of provisioning resources. P00 changes no HOME service or real data.
 Follow-on native, host, credential, migration and recovery actions proceed only
 when their concrete target, effects, validation and recovery boundary are
@@ -65,11 +62,7 @@ other authorized work or require repeated delivery approval.
 
 The approved maintenance slice reuses TSK-0001 for criterion 8. It removes the
 completed SPEC-0153 migration-only gate after transferring the continuing
-lifecycle topology to the current contract, hook, and corpus owners. General
-archive preservation, current retired-authority guards, frozen bodies, and the
-bounded npm acceptance remain under their existing owners. This maintenance
-does not authorize archive disposition or change the package's blocked runtime
-status.
+lifecycle topology to the current contract, hook, and corpus owners.
 The public metadata regression fixture uses coherent Git-baseline packages and
 does not mix unrelated current-owner Tasks from a later live worktree.
 A separately approved tenth path may correct only the timeout fixture's source
@@ -84,9 +77,7 @@ W7's old CI disposition into current execution. For remaining future units,
 the current request selects an owning-Spec PR after exact-head CI and
 independent review; delivery is recorded only after that PR is merged. Preserve
 logical commits, run the required local checks, and retain historical hosted
-failures without relabeling them. SPEC-0221 already owns the request
-precedence policy, hooks and validator. Change an enforcer with its regression
-only when a current conflict is found; otherwise record NO_CHANGE.
+failures without relabeling them.
 
 **Open Questions.**
 
@@ -321,10 +312,7 @@ registry is empty, and n8n never holds the Attester key. Windows server B pulls
 ready exports from the Blog-data-owned Export API over HTTPS through exact-path
 Traefik routes with separate read and ACK tokens. Gateway durable persistence,
 Attester readiness and A-side export readiness are never reported as Windows
-storage or final delivery. SPEC-0204-TSK-0022 preserves the dated operational
-record of two Export 1.0 ACKs; SPEC-0212-TSK-0050 owns the current local
-source/isolated Export 2.0 contract and leaves a new Windows ACK as a separate
-required lane.
+storage or final delivery.
 
 **Interfaces and Data.**
 
@@ -344,9 +332,7 @@ required lane.
   a manifest records planned scopes and owners but cannot provision or deploy.
   TSK-0008 records received schema, fixture and synthetic-helper source
   evidence separately from the coordinator-owned registration and final
-  delivery gates. Replacement frozen source QA passed 35 tests with 99-percent
-  coverage after Qdrant role-order parity correction; latest-head CI, review
-  and delivery remain pending gates. It changes no operational resource.
+  delivery gates. It changes no operational resource.
 
 ### Failure and Edge Cases
 
@@ -417,8 +403,7 @@ Missing permission or target defers only the dependent operation.
 
 11. P01 completes one coherent native TLS endpoint/CA contract for OpenBao,
     Agent, metrics, operational clients and Traefik backend; bootstrap trust
-    and the server key are provisioned independently of that OpenBao. Historical
-    exact 2.6.2 isolated proof is preserved; final verification uses SEC01's
+    and the server key are provisioned independently of that OpenBao. Final verification uses SEC01's
     current stable server/Agent/snapshot CLI contract (2.7.1 at the current
     assessment), with fresh input binding. The tests exercise wrong CA/SAN,
     expiry/denial, sealing, fresh
@@ -433,8 +418,7 @@ Missing permission or target defers only the dependent operation.
     cleanup is reused; the requested issuance_id metadata contract requires
     explicit journal compatibility, never blind renaming of outstanding receipts.
     No new KMS/engine, LAB action or learning-app planning is included.
-    TSK-0006 owns this increment; TSK-0005/0229's applied snapshot source is
-    NO_CHANGE and their historical results are never a fresh P01 PASS.
+    TSK-0006 owns this increment.
 12. CLN01 owns the consumer assessment and narrow private-unlink helper for
     material already retired by its owning source contract. It permits a
     `COMM-003` disposition only after SMTP01 has merged and its source
@@ -476,14 +460,8 @@ Missing permission or target defers only the dependent operation.
     backup/restore and external consumers are verified. Missing private facts
     defer migration/deletion alone. Rollback uses the canonical source mapping
     and only the affected consumer; no volume reset or broad rotation occurs.
-    The 2026-10-12 user clarification accepts the delivered SMTP01/CLN01
-    changes and excludes actual LAB GoTrue SMTP connection configuration,
-    activation and sending from criteria 12 and 14. Missing LAB readiness
-    cannot reopen that acceptance. Existing source mapping and isolated
-    fixture evidence remain valid within their recorded scope; user acceptance
-    is not a new provider authentication, send or recovery receipt. Any later
-    genuine send uses the operator-supplied designated sender/recipient mailbox
-    under its bounded ROOT or P05 lane, without publishing the address here.
+    Actual LAB GoTrue SMTP connection configuration, activation and sending
+    are excluded from criteria 12 and 14.
 
 <!-- markdownlint-disable MD029 -->
 15. SEC01 maintains a current security integration ledger and its version
@@ -509,9 +487,8 @@ Missing permission or target defers only the dependent operation.
     security-disposition gates; missing or stale evidence remains UNKNOWN,
     never a clean verdict. Do not invent a replacement scanner or optional gate.
     Bind current ROOT inputs independently and exclude relocated LAB
-    Supabase/GoTrue rows. Existing completed source and baseline evidence is
-    preserved. Native acceptance, migration and recovery retain their own
-    Tasks; user-accepted SMTP01/CLN01 scope and P09 preparation are not reopened.
+    Supabase/GoTrue rows. Native acceptance, migration and recovery retain their own
+    Tasks.
 16. P02 provides one value-free secret catalog with preserved issued IDs,
     canonical COMM-002 and an alias/tombstone for COMM-003, explicit
     classification, consumers, delivery and independent recovery dependencies.

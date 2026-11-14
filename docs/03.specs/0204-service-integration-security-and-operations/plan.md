@@ -1,10 +1,10 @@
 ---
 title: "Service Integration, Security, and Operations Plan"
-version: "1.12.3"
+version: "1.12.4"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0204-PLAN-0001"
 parent_ids:
@@ -44,7 +44,7 @@ SPEC-0212-TSK-0003 owns the P00 baseline and documentation amendment; existing
 SPEC-0204 Tasks retain their historical evidence. P03 owns port/endpoints,
 P04 Airflow native integration, P05 n8n native import/execution and P01/P02/P06
 secret classification/mapping/consumption under this package's acceptance.
-SPEC-0213/0214/0218/0219/0220/0223/0224/0227 retain their delivered source;
+SPEC-0218 retains its delivered source;
 no old prompt label creates duplicate work. Learning apps, including planning,
 are out-of-scope. LAB runtime operations remain outside the source-relocation
 amendment below. P08 may separately move typed LAB
@@ -56,8 +56,7 @@ Historical W7 CI retirement does not govern this pass: current quality policy
 and workflow-contract route hosted PR candidate QA and independent review.
 Historical source-only restrictions bind the old slice, not all future units.
 Only a missing real target/tool permission stops its dependent action. Follow
-current approval-boundaries and SPEC-0221; no policy/hook/validator rewrite is
-needed when the current enforcer already meets the request.
+current approval-boundaries.
 
 Shared root, gateway, Alloy, environment and backup files have one writer at a
 time. Complete feature edits before the P08 document move writer starts, then
@@ -68,16 +67,6 @@ LAB service/source relocation is out of scope for future units and is neither
 revalidated nor reversed; this documentation exception does not move live data
 or secrets or start/stop a LAB resource.
 
-The 2026-10-12 user clarification accepts the delivered SMTP01/CLN01 changes.
-Actual LAB GoTrue SMTP connection configuration, activation and sending are
-outside W24 and W26–W30; missing LAB readiness is not their completion gate.
-Retain canonical source/wrapper and isolated fixture evidence without claiming
-a fresh native result. A genuine later send uses the operator-supplied
-designated sender/recipient mailbox in the bounded ROOT or P05 lane. This
-clarification selects that mailbox but does not dispatch a message, provision
-a LAB account or start a LAB service. Remaining ROOT/P05 operational receipts
-and independently scoped material checks keep their existing owners.
-
 #### Current security-warning and delivery continuation — 2026-10-12
 
 Use the existing latest-version and security gates plus independent ROOT include
@@ -86,7 +75,7 @@ version change or scanner correction is permitted only for an actual confirmed
 current-image security warning. A successful current stable-channel lookup with
 no newer release requires no version bump; absent/stale evidence remains
 UNKNOWN. Existing feature/native/recovery Tasks retain exact scopes;
-user-accepted SMTP01/CLN01 and completed P09 stay accepted. Version/source
+Version/source
 acceptance is distinct from deployed-service acceptance. Each future delivery
 uses the owning-Spec PR, exact-head CI and independent review before merge.
 
@@ -96,13 +85,7 @@ uses the owning-Spec PR, exact-head CI and independent review before merge.
 
 - Local and remote `main` at `d2a5dfc79c33c412a6a9f06b9a8b49db9eb65bf7`
   when drafting; fetch/recompare before source implementation.
-- SPEC-0201 W5 exact handoff, SPEC-0202's dev data/backup contract, SPEC-0203's
-  completed source and isolated synthetic quality/Alloy contract and current
-  Requirement/Architecture. Real external-project/store/reader connections
-  remain outside that completion receipt.
 - User approval of this Plan and the listed Task source scopes on 2026-10-03.
-- Kafka connector and backup-policy ownership transfer follows SPEC-0202 lifecycle
-  closure, integrated locally before TSK-0003 source writing.
 - Official n8n, Crawl4AI, Cassandra, backup and security references rechecked
   at implementation; image architecture/digest and secret consumer behavior
   remain runtime-unverified until bounded acceptance.
@@ -129,7 +112,7 @@ The order between work units is the Dependencies column of the Work Breakdown ta
 | W3 | 4, 5 | Contract external connection | W1 | TSK-0002 | Task evidence |
 | W4 | 6, 7 | Close backup and cross-tier handoffs | None | TSK-0003 | Task evidence |
 | W5 | 1, 2, 3, 4, 5, 6, 7, 8 | Verify and hand off | W2, W3, W4 | TSK-0001, TSK-0004 | Task evidence |
-| W6 | 8 | Retire completed migration-only QA while preserving current lifecycle and archive owners | None | TSK-0001 | Task evidence |
+| W6 | 8 | Retire completed migration-only QA while preserving current lifecycle owners | None | TSK-0001 | Task evidence |
 | W7 | 8 | Retire hosted public QA while preserving local changed/full selectors, main security, and historical evidence | W6 | TSK-0001 | Task evidence |
 | W8 | 1, 9 | Second-round baseline, owner map and HOME observations | None | TSK-0005 | Task evidence |
 | W9 | 7, 9 | Dev-valkey snapshot and isolated queue replay | W8 | TSK-0005 | Task evidence |
@@ -153,7 +136,7 @@ The order between work units is the Dependencies column of the Work Breakdown ta
 | W27 | 14 | Canonical root source and Supabase SMTP-only wrapper/target alias | W26 | TSK-0005 | Unit and synthetic selected Compose model |
 | W28 | 14 | COMM-002 ownership, COMM-003 tombstone and guarded retirement helper | W27 | TSK-0005 | Equal/mismatch/idempotency/race/privacy tests; no HOME mutation |
 | W29 | 14 | Exact-image synthetic SMTP authentication, capture and failure cases | W27 | TSK-0005 | Opt-in isolated native rehearsal, separate from HOME |
-| W30 | 8, 14 | Current-source checks, independent review and coordinator handoff | W28, W29 | TSK-0005 | Preserve logical commits; reviewed local-main delivery under the superseding user instruction; LAB GoTrue connection/activation excluded; any separately scoped ROOT/P05 operational receipt remains distinct; acceptance in [TSK-0005](tasks/tsk-0005-cross-tier-contracts-second-round.md) |
+| W30 | 8, 14 | Current-source checks, independent review and coordinator handoff | W28, W29 | TSK-0005 | Preserve logical commits; LAB GoTrue connection/activation excluded; any separately scoped ROOT/P05 operational receipt remains distinct; acceptance in [TSK-0005](tasks/tsk-0005-cross-tier-contracts-second-round.md) |
 | W31 | 15 | Integrate SEC01 stable/security ledger, source receipts and bounded repairs; continue exact operational validation | None | TSK-0009 | Verify by current ROOT stable-version and reviewed security evidence; a successful no-newer lookup needs no bump; HOME/recovery retain exact owner prerequisites; unknown evidence is not a clean PASS; receipts in [TSK-0009](tasks/tsk-0009-sec01-stable-security-integration.md) |
 | W32 | 16, 8 | P02 single value-free catalog, classification, generated views and reissuance guards | W27, W28 | TSK-0010 | Existing source/schema reuse, alias and privacy RED/GREEN, scoped changed/staged checks and independent review; real migration/recovery are separate lanes |
 | W33 | 1, 4, 6, 8, 17 | P03 current service/endpoint/environment, opt-in dedicated broker observer identities with minimal ACLs, and four-location port contracts; independent source preparation before consumer-specific runtime acceptance | W27, W28 | TSK-0011 | Existing inventory/tool reuse, synthetic RED/GREEN, privacy and DEV/MNG independence; final mappings and native/HOME checks follow their exact owning prerequisites |
@@ -208,13 +191,6 @@ The order between work units is the Dependencies column of the Work Breakdown ta
 
 #### P10 staged admission and acceptance ownership
 
-TSK-0016 is issued from local main
-`43917df47f94f0ddd7e1dbbf7bb7cc87701a56c8`; actual remote main and origin/main
-are `c26c3b93f4e73034ddad4d08ba9da8eaa9fec0c7` at assessment. GitHub has no
-open PR at that observation. The two local P08 commits are not remote delivery.
-The worker uses `codex/p10-opsflow-acceptance` and its independent worktree from
-this reviewed issuance. No new Spec is allocated, and dev remains excluded.
-
 W63/W64 may start now: current public receipt inventory, acceptance scenarios,
 synthetic fixtures and one dedicated integration test. The sole worker owns
 Task16, `tests/validation/test_opsflow_e2e_acceptance.py` and the public
@@ -240,8 +216,7 @@ independent custody and empty restore target. SMTP01 is COMM-003's sole
 proposed unlink executor after CLN01's fresh assessment; P10 never duplicates
 it. Actual restore, migration, deletion and rotation executors stay with their
 feature owners unless an exact runtime lease is transferred; P10 owns bounded
-acceptance faults/reconciliation and receipt collection. Current private cutover/deletion/restore and global SEC01 acceptance remain
-unverified. W68 waits for final P08 W62 paths and hashes; typed LAB document
+acceptance faults/reconciliation and receipt collection. W68 waits for final P08 W62 paths and hashes; typed LAB document
 moves belong under `docs/05.operations/{guides,policies,runbooks}/labs/`.
 
 Preserve logical source/test, public contract, actual native receipt and final
@@ -254,12 +229,7 @@ service, DB, object, credential, schedule or document path changes on issuance.
 
 #### P08 single-writer continuation
 
-TSK-0015 owns W56–W62 under criterion 8 and SPEC-0212 requirement 25; completed
-0212/P00 and 0227 records remain unchanged. Initial branch
-`codex/p08-operations-document-layout` starts at observed main
-`4c83f14b11a77e13e582eb85d0bf256685472a95`. The separate source candidate's
-ongoing gates are not a PASS or P08 baseline; adopt its reviewed final main SHA
-only after delivery and re-read inputs before every move lease.
+TSK-0015 owns W56–W62 under criterion 8 and SPEC-0212 requirement 25.
 
 Initial public preparation owns only the Task and, if semantic reuse analysis
 establishes the gap, `scripts/lib/document_governance/operations_moves.py`,
@@ -306,12 +276,7 @@ review before merge. No native or operational acceptance follows from a move.
 
 #### P06 parallel preparation and per-consumer admission
 
-TSK-0014 is issued against local main
-`f7543e0697e2473cbbbeb254792e7a1d5b4b8423`; remote main is
-`4e26a5a8022a7307c7461af60337442912955df1` at assessment. Neither fresh
-remote CI success nor merged SMTP source is a real migration receipt. No
-new Spec is created. One worker uses `codex/p06-openbao-consumer-migration`
-and its separate worktree from the issuance commit. The Task fixes exact
+No new Spec is created. The Task fixes exact
 new-file ownership, provenance, tests and native admission facts.
 
 W46/W47 public schemas, provisional synthetic contracts, RED cases and
@@ -327,8 +292,7 @@ needs current native, HOME, restricted snapshot and independent custody/restore
 evidence. P02 ([TSK-0010](tasks/tsk-0010-p02-secret-catalog-and-views.md))
 lifecycle/lock follow-up and any lock-inheritance proposal need synthetic
 verification and independent review, and are not integrated generator
-acceptance until its Task records it. Its catalog has no opsflow entry or
-approved KV destination. P03 source contracts and P04/P05 drafts do not prove
+acceptance until its Task records it. P03 source contracts and P04/P05 drafts do not prove
 actual delivery or operational consumers. Preserve all these writers' changes.
 
 W50 waits for the exact selected OpenBao artifact's SEC acceptance, P01 W23
@@ -355,13 +319,8 @@ records each downstream contract and exact final SHA.
 
 #### P05 parallel preparation and single SQL owner
 
-TSK-0013 starts from assessed clean local main
-`4e26a5a8022a7307c7461af60337442912955df1`. Remote main initially returned
-`6da5e3bf380d5002e0e28181136fde8c016e49ce`, then advanced externally to
-the same 4e26a5a80 with successful CI Quality Gates and no open PRs. P04 was
-initially clean, then began its workload and dedicated tests; no frozen SQL
-handoff or native producer acceptance was received. Use `codex/p05-n8n-outbox-notifier` and
-`.worktrees/p05-n8n-outbox-notifier` from the reviewed issuance commit. No second
+TSK-0013 uses `codex/p05-n8n-outbox-notifier` and
+`.worktrees/p05-n8n-outbox-notifier`. No second
 implementation chat or operational resource is created by issuance.
 
 W40/W41 may proceed on explicitly provisional interface fixtures. W42 waits
@@ -372,8 +331,7 @@ standalone provisioning fallback is routed through that existing writer; a
 necessary reassignment requires a recorded exact handover, never concurrent
 writing. P05 native W43 follows P04 W38's real publication/outbox proof.
 
-Source selects n8n/core/runners2.42.6 and Mailpit1.31.4; read-only HOME metadata
-still shows2.41.6 and1.31.2. SEC01 supplies the selected compatible immutable
+Source selects n8n/core/runners2.42.6 and Mailpit1.31.4. SEC01 supplies the selected compatible immutable
 images and security receipt, not a source-tag-only waiver. P03 supplies exact
 DEV/Mailpit endpoints, worker execution/network and UID/mode boundaries; P02
 reviews credential references. P05 uses only notifier credentials and encrypted
@@ -401,14 +359,6 @@ makes no remote write, workflow import, credential update or deployment.
 
 #### P04 start, ownership and ordered native acceptance
 
-TSK-0012 is issued from clean local main
-`74feff9429d302233d2475b31beed3dbf2ac07c9`; fresh fetch confirmed remote main
-`6da5e3bf380d5002e0e28181136fde8c016e49ce` with no open PRs and successful
-remote quality checks. Those checks do not certify SEC01 security/HOME or a
-P04 workload. The worker branch is `codex/p04-airflow-manifest-pipeline` in
-`.worktrees/p04-airflow-manifest-pipeline`, from the issuance commit. This
-assessment launches no implementation chat and preserves other dirty worktrees.
-
 W34-W37 public source, synthetic tests and draft SQL/outbox design may begin
 independently of full W31/SEC01 and W33/P03 completion. There is no current P04
 workload to reimplement. TSK-0012 lists the exact new workload/test files; one
@@ -434,18 +384,12 @@ P04 SQL or silently changes outbox semantics.
 P04's full prompt selects logical commits and an owning-Spec PR with actual
 latest-head CI and independent review. Reconcile the local documentation
 prefix with fresh remote main before that PR. This issuance performs no remote
-write or deployment; SEC01/SMTP01/CLN01 keep their local-main delivery. Do not
+write or deployment. Do not
 close Task-0012 or the broader P04/P05 workflow acceptance on unit tests alone.
 
 #### P03 parallel start and dependency boundaries
 
-TSK-0011 is issued from clean local main
-`6da5e3bf380d5002e0e28181136fde8c016e49ce`; read-only remote verification
-returned `2b9f5ec82cb73ea148fb27bfbd2d35c10e328e51` and no open PRs. Local main
-contains three unpublished documentation commits. The worker starts at the
-Task issuance commit in its own `codex/p03-service-integration-contracts`
-branch and `.worktrees/p03-service-integration-contracts` worktree. This
-issuance creates no second implementation session. [TSK-0002](tasks/tsk-0002-external-project-integration.md)/[0003](tasks/tsk-0003-backup-and-cross-tier-operations.md)
+[TSK-0002](tasks/tsk-0002-external-project-integration.md)/[0003](tasks/tsk-0003-backup-and-cross-tier-operations.md)
 and TSK-0005's historical/SMTP work are not reopened or overwritten.
 
 W33's declared prerequisites W27/W28 have integrated source; full SEC01/HOME
@@ -479,16 +423,12 @@ in Task issuance.
 The supplied P03 prompt requests its owning-Spec PR after implementation,
 current-head CI and independent review. First reconcile the local-only
 preparation prefix with the fresh remote base; do not include unrelated worker
-commits or publish main implicitly. SEC01/SMTP01/CLN01 keep their authorized
-local-main delivery. Dev remains unused. Task 0011 carries the executable
+commits or publish main implicitly. Dev remains unused. Task 0011 carries the executable
 worker handoff and exact acceptance/evidence map.
 
 #### P02 parallel start and shared ownership
 
-TSK-0010 is issued from clean local main `2b9f5ec82cb73ea148fb27bfbd2d35c10e328e51`.
-The first remote observation was `a31a38ca`; a later `ls-remote` and fetch
-confirmed remote main at the same `2b9f5ec82` integration revision. P02 uses its own worktree and
-`codex/p02-secret-catalog` branch from the Task issuance commit. Integrated
+P02 uses its own worktree and `codex/p02-secret-catalog` branch. Integrated
 SMTP01 permits public classification and provisional mapping now; P01's final
 OpenBao image, authentication and recovery evidence still gate final runtime
 destinations and P06 migration. This narrows the historical P01-before-P02
@@ -501,8 +441,7 @@ CLN01 owns consumer/delete assessment. Existing shared generator, public view
 and support-matrix changes are proposals until the coordinator serially
 integrates them against the current head. Root Compose, environment, Registry,
 workflow/manifest registration, backup and other active Tasks are read-only to
-the P02 writer. The SEC01/SMTP01/CLN01 integration retains its local-main
-delivery instruction. The newly supplied P02 execution prompt instead requests
+the P02 writer. The P02 execution prompt requests
 an owning-Spec PR after implementation, current-head CI and independent review.
 P02's PR must contain only its own logical units against a fresh remote baseline;
 this assessment/issuance performs no remote push or PR creation. Dev remains
@@ -510,7 +449,7 @@ unused. Current remote synchronization does not certify operational acceptance.
 
 #### SMTP01 sequence and private-operation boundary
 
-SMTP01 starts at `a03c8930a5a15a82f4176bbcfe457bc2ce09db4b`. Work is isolated
+Work is isolated
 in `/tmp/hy-home-smtp01` on `codex/smtp01-canonical`; concurrent root edits are
 preserved. The integration order is SEC01, SMTP01, then CLN01, subject to actual
 owning-Spec dependencies. Current implementation and tests do not change HOME,
@@ -531,10 +470,7 @@ private comparison, unlink, broad sync/prune, rotation or HOME deployment.
 #### P01 current continuation ownership and sequence
 
 The 2026-10-11 assessment continues existing [TSK-0006](tasks/tsk-0006-openbao-trust-bootstrap-and-recovery.md)/W19-W23;
-it allocates no new Task or Spec. Assessment input is clean local main
-`728ec6379f193256cee342550e38479cf3ebfc56`, remote main `2b9f5ec82`.
-Server/Agent declaration is SEC01's exact 2.7.1 contract; fresh HOME metadata
-still reports both on 2.6.2. Historical source and isolated receipts are retained.
+it allocates no new Task or Spec. Server/Agent declaration is SEC01's exact 2.7.1 contract. Historical source and isolated receipts are retained.
 Task-0006's current continuation section owns the exact worker instructions.
 
 One P01 writer owns OpenBao scripts/config except P02's catalog/schema,
@@ -569,9 +505,7 @@ unused. The following original scope is historical, not a current writer lease.
 
 #### P01 historical source scope and sequence
 
-The original source input was main/origin/main
-`1ee5d6707e3b75b61222baad0c51050c64e1b10d`, clean at start. Compared with d19fbfde6, only P00 documentation changed;
-OpenBao executable source is unchanged. This request authorizes source,
+This request authorizes source,
 synthetic isolated 2.6.2 tests, documentation, commits and checked PR delivery.
 The user's `ok` accepts isolation first and supplies no HOME host/CA/custody
 facts. No HOME rollout, real credential use/rotation, host reboot, raw auth/log
@@ -637,11 +571,7 @@ bootstrap change, not extra engines or downstream consumer migration.
    SPEC-0153-only leaf, its current gate callers, and its dedicated test module
    after a RED regression proves the lifecycle aggregate still has the obsolete
    fourth child. The contract, hook, and corpus lifecycle leaves remain the
-   exact current owners. Preserve general archive tests, frozen source and
-   recovery references, current retired-authority guards, and the bounded npm
-   exception. The prerequisite is the approved current source baseline and
-   frozen W6 writer ledger, not completion of runtime-blocked W5. Maps 8 without
-   completing this blocked package.
+   exact current owners. Maps 8.
    Keep the public metadata regression on a coherent Git baseline instead of
    copying unrelated live owner Tasks into its synthetic SPEC-0210 snapshot.
    If the final gate reaches the PostgreSQL timeout fixture, add only its
@@ -689,41 +619,17 @@ bootstrap change, not extra engines or downstream consumer migration.
 
 #### Rulings
 
-SPEC-0203 already wrote the common Alloy metrics path; TSK-0002 may extend only
-bounded external discovery after review. SPEC-0202 development DB source and lifecycle handoff are integrated in this
-closure branch before the backup source change. SPEC-0219 owns Storybook. P09
+P09
 W25 prepares future application-manifest and deployment acceptance only; it
 does not create an external workspace. Existing LAB evidence is excluded from
 new execution.
-SPEC-0220 already owns Crawl4AI security/egress and HOME receipts; its consumer
-admission remains consumer-dependent rather than a repeat security fix.
-
-#### Historical closure-branch completion recheck — 2026-10-04
-
-At closure source `451b1ec7e4c5509e088a17c9c0f33e3dab93ddd7`, W4's
-Restic/dev-pg source chain and approved synthetic restore are verified in
-[TSK-0003](tasks/tsk-0003-backup-and-cross-tier-operations.md); see also
-[TSK-0002](tasks/tsk-0002-external-project-integration.md) and
-[TSK-0004](tasks/tsk-0004-secret-layout-and-environment-parity.md). W2's
-exact-image n8n/Crawl4AI runtime and secret/egress security acceptance are
-tracked in [TSK-0001](tasks/tsk-0001-runtime-compatibility-and-security.md), so
-this Plan and Spec remain active until it closes. Image pulls and the reviewed isolated security fixture
-require scope approval; HOME and host policy changes remain held.
-
-Protected PR358 activated the current Plan and Tasks; SPEC-0204-TSK-0001 now owns the
-exclusive reintegration ledger and fresh validation. The historical Task
-completion statements above are closure-branch receipts, not new execution
-or current lifecycle transitions. Runtime gaps keep this Plan active.
 
 #### Current prerequisite routing — 2026-10-04
 
 The owner requested prerequisite reconciliation; exact writers for this pass
 are this Plan and [SPEC-0204-TSK-0001](tasks/tsk-0001-runtime-compatibility-and-security.md).
-Protected baseline is
-`ebeb83521c768fedc620380b0c2e92db10a6fcdc`; Task2/3/4 source and
-private parity receipts are owned by [TSK-0002](tasks/tsk-0002-external-project-integration.md), [TSK-0003](tasks/tsk-0003-backup-and-cross-tier-operations.md) and [TSK-0004](tasks/tsk-0004-secret-layout-and-environment-parity.md). This pass
-neither reopens them nor duplicates their implementation. The current Task owns source, synthetic,
-image-cache, runtime, and security evidence and its status.
+The current Task owns source, synthetic,
+image-cache, runtime, and security evidence.
 
 Before separately authorized runtime work, the Task's recorded prerequisites
 remain exact image digest and entrypoint review, isolated non-HOME context,
@@ -746,17 +652,16 @@ mapping to that checkout. A manifest is under `/tmp/cln01-<run>/`, in an
 operator-owned 0700 directory, and is a 0600 regular single-link file. No
 manifest value or credential byte enters tracked evidence.
 
-`PG-020` remains retained for rollback because its observed nlink is 2;
+`PG-020` remains retained for rollback;
 canonical `COMM-002` remains protected; `COMM-003` requires SMTP01 evidence
 and all five checks.
-Optional stacks are `UNKNOWN_BLOCKED`; `owner@buenhyden` re-reviews them by
-2026-10-17. LAB runtime, secrets, data, images and Compose remain excluded.
+LAB runtime, secrets, data, images and Compose remain excluded.
 Source rollback is a logical owning-commit revert. Private recovery requires an
 existing encrypted artifact or a proven reissue path and is not promised.
 
 The generic CLN01 helper refuses COMM-003 by ID and exact path. The proposed
 sole candidate executor is SMTP01's `smtp_contract --retire`; CLN01 owns the
-assessment/hold. Integration must confirm that executor, resolve the currently failed cross-executor lock/order compatibility and
+assessment/hold. Integration must confirm that executor and
 enforce receipt freshness before any private apply. The present user-integration
 hold remains until the supervisor selects one route; no private execution is
 authorized by either tool's source checks.
@@ -848,22 +753,11 @@ worktrees, installed Cron, credentials and runtime resources from writes.
 
 ##### W82: exact Gateway and inactive n8n source
 
-- [x] Implement and test bounded generic HTTP transport independently of a
-  Gateway protocol, using isolated loopback tests and fake credentials only.
-  Follow the exact HTTPS, TLS, redirect, ambiguity and reconciliation limits
-  in Task0022; no CLI dispatch or runtime resource changes are included.
-  The first experiment was removed after independent review found idle timeouts
-  did not bound the complete request. Its replacement bounds DNS, TLS, request,
-  headers and body after subprocess startup; input acquisition and subprocess
-  creation are outside that deadline. Timeout kills and reaps the child and
-  remains ambiguous. After a correction to pre-send connect failure classification,
-  run an independent security re-review, the full suite with Ruff check and
-  format, and a separately approved synthetic localhost HTTP/TLS run on the
-  final revision, measuring coverage outside the child subprocess, plus focused
-  fixed-validator tests. Private CA and live operational connectivity need
-  separate proof. Results are in [TSK-0022](tasks/tsk-0022-hermes-blog-ingestion.md).
-- [x] Prepare and test the initial inactive authenticated fail-closed stub;
-  this historical step does not establish Gateway compatibility.
+- [ ] Implement and test a bounded generic HTTP transport independently of a
+  Gateway protocol, using isolated loopback tests and fake credentials only;
+  see [TSK-0022](tasks/tsk-0022-hermes-blog-ingestion.md).
+- [ ] Prepare an inactive authenticated fail-closed workflow stub; see
+  [TSK-0022](tasks/tsk-0022-hermes-blog-ingestion.md).
 - [ ] Retrieve and verify the Gateway API and fixture at the fixed Blog-data dev
   revision recorded in Task0022. Bind tests to its exact requests, authentication,
   idempotency/conflict, durable receipt and reconciliation semantics. Establish
@@ -893,46 +787,26 @@ worktrees, installed Cron, credentials and runtime resources from writes.
   Never record real credential IDs/values in workflow JSON.
 - [ ] Preserve the existing PR and prepare the user-selected replacement PR to
   address the candidate failure caused by a malformed merge commit message.
-  The replacement branch integrates `6a` without rewriting existing history;
-  its draft PR is not yet published. Run applicable hosted checks on it.
+  The replacement branch integrates `6a` without rewriting existing history. Run applicable hosted checks on it.
 - [ ] Review existing network/overlay policy before restricted host transport
   or non-root container membership in `n8n_net`. No new public path or port;
   any later Compose source gets scoped validation and independent review.
 
 ##### W83: docs, review and Native admission
 
-- [x] Realign the Publisher validator pin from the pre-merge draft to the
-  main-tracked validator bytes after diff, corpus and independent review; add
-  Companion Evidence v1 structural verification and the bounded `dispatch`
-  entry point over existing delivery components. All three Hermes jobs stay
-  fail-closed until a producer trust anchor is admitted (TSK-0022, 2026-10-31).
-- [x] Decide one producer authentication design (restricted account, Ed25519
-  detached signature over Companion v1, tracked public key store with job scope,
-  validity and retroactive revocation), implement `trust.authorize` as the single
-  decision for dispatch, processing, request binding and replay, align timeouts
-  and record the producer contract cross-check. The tracked key store stays empty
-  until a real producer key is reviewed (TSK-0022, 2026-10-31).
-- [x] Close the protected-install gap: declare and hash-lock `cryptography`,
-  install one immutable root-owned release per commit, require root ownership
-  without group/other write for interpreter, import paths, loaded modules and
-  key store, add `verify-install` and a separate-account container check, count
-  rejections by value-free reason, correct the Traefik timeout meaning and record
-  the ingest-only server-B contract. Server-A account, install and service stay
-  separate approval units (TSK-0022, 2026-10-31).
-- [x] Redirect to the Hermes host direct path: point the inactive workflow at
-  the production webhook path and the internal Gateway, host the Blog-data
-  Gateway on server A as an opt-in pinned service on an internal isolated
-  network shared only with `n8n-worker`, propose the exact-path Traefik router
-  outside the live directory, and prove host → Traefik → native n8n → Gateway →
-  SQLite in a disposable E2E. Export/ACK stays blocked on Blog-data; every
-  deployment step stays a separate approval unit (TSK-0022, 2026-10-31).
-- [x] Connect attestation and Resource Export: pin the Gateway to Blog-data
-  `dev` with Resource Export, add a Traefik-only isolated export network,
-  propose exact-path export and attestation routes, add a separately run
-  `attest` command that signs only producer-verified requests, and prove
-  attestation → ready export → pull → ACK, the schema-3 upgrade and backup
-  restore in disposable E2Es. Production signer, Windows receiver and every
-  deployment step stay separate approval units (TSK-0022, 2026-11-01).
+- [ ] Realign the Publisher validator pin to the main-tracked validator bytes
+  and add Companion Evidence v1 verification; see
+  [TSK-0022](tasks/tsk-0022-hermes-blog-ingestion.md).
+- [ ] Decide one producer authentication design and implement
+  `trust.authorize` as its single decision; see
+  [TSK-0022](tasks/tsk-0022-hermes-blog-ingestion.md).
+- [ ] Close the protected-install gap with hash-locked immutable releases and
+  `verify-install`; see [TSK-0022](tasks/tsk-0022-hermes-blog-ingestion.md).
+- [ ] Redirect to the Hermes host direct path with an opt-in Gateway on an
+  isolated network; see
+  [TSK-0022](tasks/tsk-0022-hermes-blog-ingestion.md).
+- [ ] Connect attestation and Resource Export through isolated export routes;
+  see [TSK-0022](tasks/tsk-0022-hermes-blog-ingestion.md).
 
 - [ ] Update Korean workload README and existing RUN-0053 only with implemented
   safe commands and recovery/uncertainty limits. Record metrics design for
