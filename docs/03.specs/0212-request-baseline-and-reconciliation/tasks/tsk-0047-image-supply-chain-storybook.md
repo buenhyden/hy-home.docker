@@ -29,7 +29,7 @@ nor its ownership are reopened.
 
 - [Spec](../spec.md)
 - [Plan](../plan.md)
-- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
+- Workspace inventory: DATA-0096, retired 2026-11-14; Git history keeps it
 - [P02 service connection Task](tsk-0041-service-connection-contracts.md)
 - [P03 models and Runner Task](tsk-0042-models-runners-wiki.md)
 - [P05 notifier recovery Task](tsk-0044-opsflow-notifier-recovery.md)
