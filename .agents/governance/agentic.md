@@ -1,6 +1,6 @@
 ---
 title: "Agentic Engineering Policy"
-version: "1.8.0"
+version: "1.9.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
