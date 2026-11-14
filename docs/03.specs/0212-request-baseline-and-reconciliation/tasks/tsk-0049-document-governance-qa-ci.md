@@ -1,6 +1,6 @@
 ---
 title: "Documentation, Governance, QA and CI Contract Task"
-version: "0.2.2"
+version: "0.3.0"
 type: "sdlc/task"
 owner: "@buenhyden"
 updated: "2026-11-15"
@@ -58,6 +58,14 @@ The execution items and lifecycle events below record this Task's work.
 ### Blockers and Decisions
 
 - On 2026-11-15 the owner directed that content conflicting with the v14.7 W00 to W05 requirements be discarded from SPEC-0212; removed or corrected: Plan status copies, the evidence ladder as a Result domain, archive and Stage 98 wording, retired DATA-0096 and SPEC-0265 routes; seven draft Tasks with executed rows moved to in-progress under WP-15.
+- On 2026-11-15 the owner approved retiring the ready SPEC-0253 package
+  (readiness `ready`; its Task completed and accepted on 2026-11-14). Its
+  lineage moves to REQ-0024 and AD-0027 Traceability, the Stage 03 README row
+  is removed, and 253 joins the Registry Spec `reserved_history`. The last
+  commit carrying each removed body is `fb9ab7dd3`, reachable from `main`:
+  `docs/03.specs/0253-qa-ci-legacy-cleanup/spec.md`, `plan.md` and
+  `tasks/tsk-0001-qa-ci-legacy-cleanup.md`. Before removal each body at that
+  commit was byte-identical to `main` at `6c51e726b`.
 
 ## Verification Evidence
 
