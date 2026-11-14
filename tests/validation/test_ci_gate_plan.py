@@ -1995,6 +1995,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                     runner, "load_contract_document", return_value=document
                 ),
                 mock.patch.object(runner, "validate_gate_registry", return_value=()),
+                mock.patch.object(runner, "validate_rule_owners", return_value=()),
                 mock.patch.object(
                     runner,
                     "collect_changed_paths",

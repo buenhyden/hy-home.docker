@@ -1,6 +1,6 @@
 ---
 title: "Git Workflow Governance"
-version: "1.7.0"
+version: "1.8.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -177,15 +177,25 @@ rows are enforcement.
 | Commit before | `run-ci-precommit.sh --mode local-staged` on the index tree | Run: the agent route before a commit |
 | Commit during | Installed `pre-commit` hook on the index; `commit-msg` hook on the message file | Run: blocks the commit |
 | Commit after | No `post-commit` hook | Not applicable: nothing could block |
-| Push before | Installed native `pre-push` guard on the pushed refs | Run: refuses any `refs/heads/main` update |
+| Push before | Installed native `pre-push` guard on the pushed refs | Run: refuses any `refs/heads/main` update and nothing else; it runs no QA, because the pull request candidate owns it |
 | Push during | GitHub branch protection on `main` | Observe: the server accepts or refuses |
 | Push after | Git has no `post-push` hook; the `push` event on `main` runs `main-security` | Observe: security audit of the merged input |
-| PR before | No hook; the pull request template | Not applicable: opening a PR is a separate remote write |
-| PR during | `pull_request` opened, synchronize or reopened; candidate shard jobs and the `candidate-quality` aggregate | Run: required check on the merge candidate |
+| PR before | No hook. The agent runs `python3 scripts/validation/run-ci-gate.py --profile changed` (inspect with `--explain`) and the local candidate preflight (`scripts/validation/check-candidate-preflight.sh`) on the final source, then fills every section of `.github/PULL_REQUEST_TEMPLATE.md` | Observe: a local, advisory route; opening a PR is a separate remote write, and no gate reads the PR body |
+| PR during | `pull_request` `opened`, `synchronize` or `reopened`; candidate shard jobs and the `candidate-quality` aggregate | Run: required check on the merge candidate |
 | PR after | Gate evidence artifacts per shard | Observe: each artifact is bound to its run |
 | Merge before | Branch protection: strict up to date, required `candidate-quality`, resolved conversations | Run (server): blocks the merge |
 | Merge during | Merge commit only; no merge queue | Not applicable: no queue, and the strict rule already tested this tree |
 | Merge after | `push` on `main` | Reuse: the merged tree equals the checked candidate; `main-security` runs |
+
+The `pull_request` types stay `opened`, `synchronize` and `reopened`, decided
+from the inputs the candidate actually reads. Those are the base, head and merge
+commits, never the PR title, body or draft state: no job condition filters on
+`draft`, and no gate consumes `github.event.pull_request.title` or `.body`.
+`edited` therefore changes no gate input and `ready_for_review` changes no
+checked tree, and neither type is added. A later check that reads the PR body
+must add `edited` in the same change, and a check that skips draft PRs must add
+`ready_for_review`; the workflow contract rejects any trigger type it does not
+list.
 
 SDLC phases and document Stages are separate axes from these cells, and the
 current Task records each binding's evidence.
