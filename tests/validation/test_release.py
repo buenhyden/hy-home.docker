@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import itertools
 import json
 import unittest
 from pathlib import Path
@@ -162,6 +163,110 @@ class ReleaseTests(unittest.TestCase):
             with self.subTest(version=version), self.assertRaises(release.ReleaseError):
                 release.release_tag(version)
 
+    def test_precedence_orders_numbers_and_prerelease_not_text(self):
+        ordered = (
+            ["1.9.0", "1.10.0"],
+            ["1.0.0-rc.2", "1.0.0-rc.10", "1.0.0"],
+            ["1.0.0-alpha", "1.0.0-alpha.1", "1.0.0-alpha.beta", "1.0.0-beta"],
+            ["1.0.0-beta.2", "1.0.0-beta.11", "1.0.0-rc.1", "1.0.0"],
+            ["1.0.0-9", "1.0.0-alpha"],
+            ["0.9.9", "1.0.0-0", "1.0.0"],
+        )
+        for chain in ordered:
+            for low, high in itertools.pairwise(chain):
+                with self.subTest(low=low, high=high):
+                    self.assertEqual(-1, release.compare_semver(low, high))
+                    self.assertEqual(1, release.compare_semver(high, low))
+
+    def test_build_metadata_is_ignored_for_precedence(self):
+        self.assertEqual(0, release.compare_semver("1.2.3+build.1", "1.2.3+build.2"))
+        self.assertEqual(0, release.compare_semver("1.2.3", "1.2.3+build.2"))
+        self.assertEqual(0, release.compare_semver("1.2.3-rc.1+a", "1.2.3-rc.1+b"))
+        self.assertEqual(-1, release.compare_semver("1.2.3-rc.1+z", "1.2.3-rc.2+a"))
+
+    def test_comparison_refuses_malformed_and_non_string_versions(self):
+        for bad in ("v1.2.3", "1.2", "01.2.3", "1.2.3-01", "", None, 1.2, 12):
+            with self.subTest(bad=bad), self.assertRaises(release.ReleaseError):
+                release.compare_semver(bad, "1.0.0")
+            with self.subTest(bad=bad), self.assertRaises(release.ReleaseError):
+                release.compare_semver("1.0.0", bad)
+
+    def test_artifact_numbers_and_input_labels_are_not_versions(self):
+        for not_version in ("SPEC-0064", "TSK-0001", "v14.7", "0064", 14.7):
+            with (
+                self.subTest(value=not_version),
+                self.assertRaises(release.ReleaseError),
+            ):
+                release.compare_semver(not_version, "1.0.0")
+        # A renumbered baseline does not reset or reorder a version.
+        self.assertEqual(1, release.compare_semver("1.10.0", "1.9.0"))
+
+    def test_version_change_must_raise_precedence(self):
+        for old, new in (
+            ("1.9.0", "1.10.0"),
+            ("1.0.0-rc.2", "1.0.0-rc.10"),
+            ("1.0.0-rc.10", "1.0.0"),
+        ):
+            with self.subTest(old=old, new=new):
+                release.check_version_change(old, new)
+        for old, new, reason in (
+            ("1.10.0", "1.9.0", "downgrade"),
+            ("1.0.0", "1.0.0-rc.10", "downgrade"),
+            ("1.2.3", "1.2.3", "unchanged"),
+            ("1.2.3+build.1", "1.2.3+build.2", "unchanged"),
+            ("1.2.3", None, "missing"),
+            (None, "1.2.3", "missing"),
+            ("1.2.3", "", "missing"),
+        ):
+            with (
+                self.subTest(old=old, new=new),
+                self.assertRaisesRegex(release.ReleaseError, reason),
+            ):
+                release.check_version_change(old, new)
+
+    def test_equal_precedence_release_cannot_reissue_a_published_version(self):
+        commands = FakeCommands()
+
+        def tampered(argv):
+            if argv[:3] == ["gh", "api", f"repos/{REPOSITORY}/releases"]:
+                return json.dumps([[{"tag_name": "v1.2.3-rc.1+build.1"}]])
+            return commands(argv)
+
+        with self.assertRaisesRegex(release.ReleaseError, "same precedence"):
+            release.publish("1.2.3-rc.1+build.7", SHA, REPOSITORY, run=tampered)
+        self.assertFalse(any("POST" in call for call in commands.calls))
+
+    def test_equal_precedence_remote_tag_blocks_a_new_version(self):
+        commands = FakeCommands()
+
+        def tagged(argv):
+            if argv[:3] == ["git", "ls-remote", "--tags"]:
+                return f"{SHA}\trefs/tags/v1.2.3-rc.1+build.1\n{SHA}\trefs/tags/nightly"
+            return commands(argv)
+
+        with self.assertRaisesRegex(release.ReleaseError, "same precedence"):
+            release.publish("1.2.3-rc.1+build.7", SHA, REPOSITORY, run=tagged)
+        self.assertFalse(any("POST" in call for call in commands.calls))
+
+    def test_changelog_entries_of_equal_precedence_are_duplicates(self):
+        text = CHANGELOG.replace(
+            "## [1.2.2] - 2026-10-06", "## [1.2.3-rc.1+build.8] - 2026-10-06"
+        )
+        with self.assertRaisesRegex(release.ReleaseError, "duplicate"):
+            release.validate_changelog(text)
+
+    def test_unrelated_existing_tags_do_not_block_a_new_version(self):
+        commands = FakeCommands()
+
+        def mixed(argv):
+            if argv[:3] == ["gh", "api", f"repos/{REPOSITORY}/releases"]:
+                rows = [{"tag_name": "v1.2.2"}, {"tag_name": "nightly"}]
+                return json.dumps([rows])
+            return commands(argv)
+
+        receipt = release.publish("1.2.3-rc.1+build.7", SHA, REPOSITORY, run=mixed)
+        self.assertEqual("v1.2.3-rc.1+build.7", receipt["tag"])
+
     def test_exact_dated_heading_supplies_only_requested_notes(self):
         notes = release.release_notes(CHANGELOG, "1.2.3-rc.1+build.7")
         self.assertIn("## [1.2.3-rc.1+build.7] - 2026-10-07", notes)
@@ -217,7 +322,7 @@ class ReleaseTests(unittest.TestCase):
                         [[{"tag_name": "1.2.3-rc.1+build.7", "draft": False}]]
                     )
                 if legacy_kind == "tag" and argv[:3] == ["git", "ls-remote", "--tags"]:
-                    if "refs/tags/1.2.3-rc.1+build.7" in argv:
+                    if "refs/tags/1.2.3-rc.1+build.7" in argv or "refs/tags/*" in argv:
                         return f"{SHA}\trefs/tags/1.2.3-rc.1+build.7"
                     return ""
                 return commands(argv)
