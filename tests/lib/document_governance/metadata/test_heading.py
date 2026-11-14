@@ -2274,3 +2274,86 @@ class SubsectionContractTests(unittest.TestCase):
     def test_fenced_subheading_does_not_count(self) -> None:
         fenced = self.VALID.replace("### Second\n\nTwo.", "```text\n### Second\n```")
         self.assertIn("body-subheading-missing", self.codes(fenced))
+
+
+class RegisteredTableContractTests(unittest.TestCase):
+    """W03-A: a role whose template declares a table has it enforced.
+
+    Only `spec_packages.py` and the README Documents check used to read a
+    table contract, so a postmortem action table or a glossary table of the
+    wrong width, order or value passed.
+    """
+
+    TARGETS: ClassVar[dict[str, str]] = {
+        "postmortem": "docs/05.operations/incidents/2026/inc-0002-airflow-keycloak-native-auth/postmortem.md",
+        "governance-vocabulary": ".agents/knowledge/glossary.md",
+    }
+    HEADERS: ClassVar[dict[str, str]] = {
+        "postmortem": "| Action | Owner | Tracking ID | Verification |",
+        "governance-vocabulary": "| Term | Definition | Not to Confuse | Policy Owner |",
+    }
+    ROW = "| @buenhyden | RUN-0050 | "
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.profiles = current_profiles()
+
+    def _body(self, profile_id: str) -> str:
+        text = (ROOT / self.TARGETS[profile_id]).read_text(encoding="utf-8")
+        return text.split("\n---\n", 1)[1]
+
+    def _table_codes(self, profile_id: str, body: str) -> list[str]:
+        record = metadata.Record(
+            pathlib.Path(self.TARGETS[profile_id]),
+            {"artifact_type": profile_id, "status": "active"},
+            profile_id,
+            frontmatter_present=True,
+        )
+        return [
+            item.code
+            for item in heading_module.validate_body_contract(
+                record, body, self.profiles, False
+            )
+            if item.code.startswith("table-")
+        ]
+
+    def _mutate(self, profile_id: str, old: str, new: str) -> str:
+        body = self._body(profile_id)
+        self.assertIn(old, body)
+        return body.replace(old, new, 1)
+
+    def test_the_current_tables_pass(self) -> None:
+        for profile_id in self.TARGETS:
+            with self.subTest(profile=profile_id):
+                body = self._body(profile_id)
+                self.assertEqual([], self._table_codes(profile_id, body))
+
+    def test_a_wrong_table_width_is_rejected(self) -> None:
+        for profile_id, header in self.HEADERS.items():
+            with self.subTest(profile=profile_id):
+                narrower = header.rsplit(" | ", 1)[0] + " |"
+                body = self._mutate(profile_id, header, narrower)
+                codes = self._table_codes(profile_id, body)
+                self.assertIn("table-header-invalid", codes)
+
+    def test_a_wrong_column_order_is_rejected(self) -> None:
+        swapped = {
+            "postmortem": "| Owner | Action | Tracking ID | Verification |",
+            "governance-vocabulary": "| Definition | Term | Not to Confuse | Policy Owner |",
+        }
+        for profile_id, header in self.HEADERS.items():
+            with self.subTest(profile=profile_id):
+                body = self._mutate(profile_id, header, swapped[profile_id])
+                codes = self._table_codes(profile_id, body)
+                self.assertIn("table-header-invalid", codes)
+
+    def test_a_row_of_the_wrong_width_is_rejected(self) -> None:
+        body = self._mutate("postmortem", self.ROW, self.ROW + "extra | ")
+        self.assertIn("table-row-width", self._table_codes("postmortem", body))
+
+    def test_a_disallowed_cell_value_is_rejected(self) -> None:
+        for cell in ("", "TBD", "{{TRACKING_ID}}"):
+            with self.subTest(cell=cell):
+                body = self._mutate("postmortem", self.ROW, f"| @buenhyden | {cell} | ")
+                codes = self._table_codes("postmortem", body)
+                self.assertIn("table-value-invalid", codes)
