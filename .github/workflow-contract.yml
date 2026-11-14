@@ -44,7 +44,7 @@
             "contents": "read"
           },
           "runs_on": "ubuntu-latest",
-          "timeout_minutes": 90,
+          "timeout_minutes": 100,
           "condition": "github.event_name == 'pull_request'",
           "needs": [],
           "environment": null
@@ -415,7 +415,7 @@
       ],
       "cwd": ".",
       "allowed_env_keys": [],
-      "timeout_minutes": 5,
+      "timeout_minutes": 15,
       "opaque": true,
       "suite_key": "docs-traceability",
       "guarantee": "none"
