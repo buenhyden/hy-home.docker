@@ -66,6 +66,7 @@ The execution items and lifecycle events below record this Task's work.
   `docs/03.specs/0253-qa-ci-legacy-cleanup/spec.md`, `plan.md` and
   `tasks/tsk-0001-qa-ci-legacy-cleanup.md`. Before removal each body at that
   commit was byte-identical to `main` at `6c51e726b`.
+- After #1026 merged (`7053107`), each removed SPEC-0253 body was restored from `fb9ab7dd3` with exit 0, its bytes matched the pre-removal body (sha256 d82754266146, ac8438f8f76c, d05f59d126d0 for spec, plan, Task), and `fb9ab7dd3` is reachable from `main`.
 - On 2026-11-15 the owner approved retiring the ready SPEC-0257, SPEC-0261 and
   SPEC-0270 packages ("Retire all three"; readiness `ready`, their Tasks
   completed in #1027). Their lineage moves to REQ-0024, REQ-0026, REQ-0027,
