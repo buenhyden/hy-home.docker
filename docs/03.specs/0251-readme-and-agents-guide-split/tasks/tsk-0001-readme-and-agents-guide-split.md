@@ -1,6 +1,6 @@
 ---
 title: "README and Agent Guide Split Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -152,9 +152,7 @@ progress under the approved parents. Hosted CI has not run.
 - The type name `governance/agent-guide` puts a folder guide in the governance
   family although it lives beside stage documents; recorded for review, not
   changed.
-- The `entrypoint` findings (E5, E17, E25) are pre-existing baseline debt on
-  main, where `infra` READMEs link Stage 03 Task bodies; they are not
-  caused by this change and belong to the legacy and link cleanup phase.
+- The `entrypoint` findings (E5, E17, E25) and the `commands` finding (E18) are resolved by E29 and E30: the cause left main (W06 #1009 routed the `infra` links, #1018 retired DATA-0096).
 
 ### Blockers and Decisions
 
@@ -196,6 +194,8 @@ None: nothing was recorded here before this Task moved to the common form.
 | E26 | 4 | W2 | governance-unit-tests | `tests/lib/document_governance` discovery, revision fd8de6704, quiet tree | PASS | 768 tests OK | required | - |
 | E27 | 4 | W4 | review-fix-gates | revision fd8de6704: metadata check-changed and check-active, corpus lifecycle, links alignment/navigation/language/traceability, Script Manifest, renderer `--check`, agent governance contract | PASS | 72 and 497 selected with zero violations; lifecycle and occupancy zero; renderer drift 0; contract zero failures | required | - |
 | E28 | 4 | W4 | validation-suites | CI routing and surface ownership, revision fd8de6704 | PASS | 92 tests OK | required | - |
+| E29 | 2, 3 | W3 | document-entrypoint | `check-document-links.py --mode entrypoint`, origin/main 705310723 | PASS | `failures=0 warnings=0`, exit 0 | required | E5, E17, E25 |
+| E30 | 2, 3 | W3 | document-commands | `check-document-links.py --mode commands`, origin/main 705310723 | PASS | `failures=0 warnings=0`, exit 0 | required | E18 |
 
 ### Resolution Links
 

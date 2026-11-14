@@ -1,6 +1,6 @@
 ---
 title: "Legacy Document Status Ban Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -185,6 +185,8 @@ None: nothing was recorded here before this Task moved to the common form.
 | E16 | 4 | W4 | governance-suite | `tests/lib/document_governance` discovery after the review fixes, commit b8893cc28 on 46a7811dd, quiet tree | FAIL | 760 tests, 1 error: `test_v4_preexecution_and_terminal_package_occupancy` still iterated `superseded`, which the narrowed loader rejects | required | - |
 | E17 | 4 | W4 | review-fix-suites | CI routing and surface ownership, validation lifecycle, `test_ci_gate_evidence` (system python3), `tests/lib/gate`, commit b8893cc28 | PASS | 89, 20, 21, and 139 tests OK | required | - |
 | E18 | 4 | W4 | review-fix-checks | metadata check-changed against `origin/main` 46a7811dd and check-active, corpus lifecycle, links alignment and commands, Script Manifest, renderer `--check`, agent governance contract, commit b8893cc28 | PASS | 20 and 497 selected, zero violations; lifecycle and occupancy zero; both link modes PASS; manifest valid; drift 0; contract failures 0 | required | - |
+| E19 | 4 | W4 | document-commands | `check-document-links.py --mode commands`, origin/main 705310723 | PASS | `failures=0 warnings=0`, exit 0 | required | E13 |
+| E20 | 4 | W4 | governance-suite | single failing test rerun: `python3 -m unittest tests.lib.document_governance.test_spec_packages -k test_v4_preexecution_and_terminal_package_occupancy`, origin/main 705310723 | PASS | `Ran 1 test`, `OK`, exit 0; the whole suite was not rerun | required | E16 |
 
 ### Resolution Links
 
@@ -203,7 +205,7 @@ None: nothing was recorded here before this Task moved to the common form.
 
 ### Remaining Conditions
 
-Local checks are recorded above. E8, E10, E11, and E12 predate the rebases
+Local checks are recorded above. E13 and E16 are resolved by E19 and E20. E8, E10, E11, and E12 predate the rebases
 onto 4adeb3d37 and 46a7811dd; the rows from E16 on are the review-fix runs.
 Independent review requested changes I1 to I4 and M1 to M8, which commits
 bf3ea869e and b8893cc28 and the follow-up test fix address. Hosted CI has not
