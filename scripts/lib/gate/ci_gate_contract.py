@@ -98,6 +98,7 @@ _OPTIONAL_CHANGED_ROOT_GATE_IDS = (
     "leaf.storybook-contract",
     "local.workflow-harness",
 )
+_RESERVED_JOB_NAMES = frozenset({"candidate-quality", "main-security"})
 HOSTED_UNIT_GATE_IDS = frozenset(
     {
         "leaf.ci-gate-adapter-regressions",
@@ -1099,6 +1100,10 @@ def _parse_hosted_jobs(
     assignments = raw["leaf_gate_ids"]
     if not isinstance(assignments, Mapping):
         raise invalid("hosted job assignments must be an object")
+    if {default, *assignments} & _RESERVED_JOB_NAMES:
+        raise invalid(
+            "hosted job names must not reuse the aggregate or main security job"
+        )
     seen: set[str] = set()
     jobs: list[tuple[str, tuple[str, ...]]] = []
     for name, value in assignments.items():

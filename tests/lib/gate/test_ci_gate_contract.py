@@ -119,6 +119,12 @@ class HostedJobAssignmentTests(unittest.TestCase):
         )
         drift("empty-job")["leaf_gate_ids"]["candidate-extra"] = []
         drift("unknown-field")["extra"] = []
+        # Names owned by the aggregate and main-security jobs are never shards.
+        for reserved in ("candidate-quality", "main-security"):
+            drift(f"default-{reserved}")["default"] = reserved
+            drift(f"assigned-{reserved}")["leaf_gate_ids"][reserved] = [
+                "leaf.release-regressions"
+            ]
         missing = json.loads(json.dumps(baseline))
         del missing["public_gate"]["hosted_jobs"]
         cases["missing"] = missing
