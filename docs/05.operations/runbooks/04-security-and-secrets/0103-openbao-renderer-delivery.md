@@ -1,15 +1,16 @@
 ---
 title: "OpenBao Renderer SecretID Delivery"
-version: "0.3.2"
+version: "0.3.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "RUN-0103"
 parent_ids:
 - "POL-0085"
 created: "2026-10-28"
+next_review_at: "2027-05-13"
 ---
 
 # OpenBao Renderer SecretID Delivery

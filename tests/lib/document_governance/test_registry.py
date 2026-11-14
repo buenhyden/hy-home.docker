@@ -2985,6 +2985,7 @@ class DocumentRegistryTests(unittest.TestCase):
             "parent_ids": [],
             "created": "2026-08-20",
             "updated": "2026-08-20",
+            "next_review_at": "2026-09-20",
             "observed_at": "2026-08-20",
             "reviewed_at": "2026-08-20",
             "occurred_at": "2026-08-20T00:00:00Z",
@@ -4232,3 +4233,129 @@ class ReleaseRoleGuardTests(unittest.TestCase):
         profile["id"] = "prereleased-notes"
         self.raw["profiles"].append(profile)
         self.assertNotIn("retired-profile", self.codes())
+
+    # H-12 structural guard: the role is rejected under any id, type or
+    # template, because its sections and purpose still describe a release.
+
+    def _renamed(self, **changes: object) -> dict:
+        profile = dict(self.raw["profiles"][0])
+        profile.update(id="ship-record", type="operation/ship", **changes)
+        self.raw["profiles"].append(profile)
+        return profile
+
+    def test_a_renamed_role_with_the_release_section_shape_is_rejected(self) -> None:
+        self._renamed(
+            required_sections=[
+                "Scope",
+                "Artifacts",
+                "Rollout",
+                "Approvals",
+                "Outcome",
+            ],
+            required_subsections={"Scope": ["Boundaries"]},
+            optional_subsections={"Outcome": ["Observed Impact"]},
+        )
+        self.assertIn("retired-profile", self.codes())
+
+    def test_a_release_section_name_hides_under_a_neutral_profile_id(self) -> None:
+        self._renamed(
+            required_subsections={"Overview": ["Release Artifacts"]},
+        )
+        self.assertIn("retired-profile", self.codes())
+
+    def test_a_release_frontmatter_value_is_rejected(self) -> None:
+        self._renamed(frontmatter_values={"layer": "release"})
+        self.assertIn("retired-profile", self.codes())
+
+    def test_a_template_role_describing_a_release_is_rejected(self) -> None:
+        roles = self.raw["template_roles"]
+        role = dict(roles["sdlc/requirement"])
+        role["purpose"] = "Records the verified outcome of a release."
+        roles["operation/ship-record"] = role
+        self.assertIn("retired-profile", self.codes())
+
+    def test_the_runbook_rollback_and_outcome_sections_are_not_a_release(self) -> None:
+        self.assertNotIn("retired-profile", self.codes())
+
+
+class StateAxisLifecycleTests(unittest.TestCase):
+    """D-02: a Stage 01 to 03 lifecycle records one axis, authority or
+    execution (sdlc.md): approval by `approved`, execution by the Task statuses.
+    No lifecycle keeps an alias of a state another one already names."""
+
+    AUTHORITY = frozenset({"draft", "in-review", "approved", "cancelled"})
+    EXECUTION = frozenset(
+        {"draft", "ready", "in-progress", "blocked", "completed", "cancelled"}
+    )
+
+    def setUp(self) -> None:
+        self.raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+
+    def test_a_stage_03_lifecycle_never_mixes_authority_with_currency(self) -> None:
+        registry = load_registry()
+        for profile_id, profile in registry.profiles.items():
+            lifecycle_id = profile.get("lifecycle_id")
+            if not lifecycle_id or not str(profile.get("path_pattern", "")).startswith(
+                "docs/03.specs/"
+            ):
+                continue
+            with self.subTest(profile=profile_id):
+                statuses = set(registry.lifecycles[lifecycle_id])
+                self.assertTrue(
+                    statuses <= self.AUTHORITY or statuses <= self.EXECUTION,
+                    sorted(statuses),
+                )
+
+    def test_architecture_description_records_authority_only(self) -> None:
+        lifecycle = self.raw["lifecycles"]["architecture-description"]
+        self.assertEqual(["draft", "in-review", "approved"], lifecycle["statuses"])
+        self.assertEqual("draft", lifecycle["initial_status"])
+        self.assertEqual([], lifecycle["terminal_statuses"])
+        self.assertEqual(
+            {
+                "draft": ["in-review", "approved"],
+                "in-review": ["approved", "draft"],
+                "approved": ["in-review"],
+            },
+            lifecycle["transitions"],
+        )
+
+    def test_the_architecture_description_status_migration_is_registered(
+        self,
+    ) -> None:
+        """The change-check reads this one registered normalization instead of
+        an override file, so the one-time `active` to `approved` move passes."""
+
+        normalizations = self.raw["common"]["task_lifecycle_events"]["migration"][
+            "normalizations"
+        ]
+        self.assertIn(
+            {
+                "lifecycle_id": "architecture-description",
+                "from_status": "active",
+                "to_status": "approved",
+            },
+            normalizations,
+        )
+
+    def test_no_lifecycle_mixes_approval_with_a_currency_state(self) -> None:
+        currency = {"active", "deprecated", "superseded", "retired"}
+        for lifecycle_id, lifecycle in self.raw["lifecycles"].items():
+            statuses = set(lifecycle["statuses"])
+            if "approved" in statuses:
+                with self.subTest(lifecycle=lifecycle_id):
+                    self.assertFalse(statuses & currency, sorted(statuses))
+
+    def test_no_current_architecture_description_is_active(self) -> None:
+        registry = load_registry()
+        pattern = registry.profiles["architecture-description"]["path_pattern"]
+        root = pathlib.Path(pattern.split("{")[0])
+        for path in sorted((ROOT / root).glob("[0-9]*.md")):
+            with self.subTest(path=path.name):
+                self.assertIn('\nstatus: "approved"\n', path.read_text("utf-8"))
+
+    def test_no_lifecycle_keeps_the_review_alias_of_in_review(self) -> None:
+        for lifecycle_id, lifecycle in self.raw["lifecycles"].items():
+            with self.subTest(lifecycle=lifecycle_id):
+                self.assertNotIn("review", lifecycle["statuses"])
+        self.assertNotIn("review", self.raw["common"]["allowed_statuses"])

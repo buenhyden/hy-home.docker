@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Usage Guide"
-version: "1.2.2"
+version: "1.2.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0066"
 parent_ids:
@@ -13,6 +13,7 @@ implementation_services:
   labs/sonarqube/docker-compose.yml:
   - sonarqube
 created: "2026-05-10"
+next_review_at: "2027-05-13"
 ---
 
 # SonarQube Usage Guide

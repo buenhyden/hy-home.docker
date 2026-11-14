@@ -633,6 +633,47 @@ def _names_release_role(*values: object) -> bool:
     )
 
 
+# H-12: a Release role is rejected under any name. Besides the name tokens, a
+# profile is a Release role when its section names carry release semantics:
+# a release token, or the retired Release shape (artifacts, rollout, approvals
+# and outcome). A runbook's Rollback and Outcome stay two groups.
+_RELEASE_SHAPE_GROUPS = (
+    frozenset({"artifact", "artifacts"}),
+    frozenset({"rollout", "rollback", "deploy", "deployment", "promotion"}),
+    frozenset({"approval", "approvals"}),
+    frozenset({"outcome", "outcomes"}),
+)
+
+
+def _section_names(profile: Mapping[str, object]) -> list[str]:
+    names: list[str] = []
+    for key in ("required_sections", "optional_sections"):
+        value = profile.get(key)
+        if isinstance(value, (list, tuple)):
+            names.extend(item for item in value if isinstance(item, str))
+    for key in ("required_subsections", "optional_subsections"):
+        value = profile.get(key)
+        if isinstance(value, Mapping):
+            for parent, children in value.items():
+                names.append(str(parent))
+                if isinstance(children, (list, tuple)):
+                    names.extend(item for item in children if isinstance(item, str))
+    return names
+
+
+def _declares_release_semantics(profile: Mapping[str, object]) -> bool:
+    names = _section_names(profile)
+    values = profile.get("frontmatter_values")
+    if isinstance(values, Mapping):
+        names.extend(item for item in values.values() if isinstance(item, str))
+    if _names_release_role(*names):
+        return True
+    tokens = {
+        token for name in names for token in re.split(r"[^a-z0-9]+", name.lower())
+    }
+    return sum(bool(group & tokens) for group in _RELEASE_SHAPE_GROUPS) >= 3
+
+
 def _declares_reachable_dispositions(schema: Mapping[str, object]) -> bool:
     defs = schema.get("$defs")
     return isinstance(defs, Mapping) and "dispositionStatusList" in defs
@@ -966,7 +1007,7 @@ def validate_registry(
             if isinstance(profile_id, str):
                 profile_ids.append(profile_id)
                 profile_lifecycles[profile_id] = profile.get("lifecycle_id")
-            if _names_release_role(
+            if _declares_release_semantics(profile) or _names_release_role(
                 *(
                     profile.get(key)
                     for key in ("id", "type", "template_id", "path_pattern")
@@ -1138,7 +1179,13 @@ def validate_registry(
         for role, definition in roles.items():
             if not isinstance(definition, Mapping):
                 continue
-            if _names_release_role(role, definition.get("source")):
+            if _names_release_role(
+                role,
+                *(
+                    definition.get(key)
+                    for key in ("source", "purpose", "responsibility", "applicability")
+                ),
+            ):
                 findings.append(
                     RegistryFinding(
                         "retired-profile",
@@ -1560,6 +1607,8 @@ def validate_registry(
                     _validate_requirement_allocation_transition(
                         requirement_space, trusted_requirement_baseline, findings
                     )
+    if isinstance(spaces, Mapping) and "identity_namespaces" in raw:
+        _validate_identity_namespaces(raw.get("identity_namespaces"), spaces, findings)
     transitions = raw.get("transitions")
     if isinstance(transitions, Mapping):
         for profile_id, lifecycle_id in transitions.items():
@@ -1891,6 +1940,53 @@ def _validate_identity_spaces(
             _validate_identity_spaces(
                 children, f"{location}.{name}.child_spaces", findings
             )
+
+
+def _validate_identity_namespaces(
+    namespaces: object,
+    spaces: Mapping[str, object],
+    findings: list[RegistryFinding],
+) -> None:
+    """D-17/DOC-12: the next numbering namespace is prepared and untouched.
+
+    It mirrors the current top-level spaces, so the Q-07 cutover (after W11
+    only) can start each at 1 without a space, prefix or width drifting. It
+    issues nothing and reserves nothing until that cutover.
+    """
+
+    from scripts.lib.document_governance.identity_history import cutover_findings
+
+    location = "identity_namespaces"
+
+    def invalid(message: str) -> None:
+        findings.append(
+            RegistryFinding("identity-namespace-invalid", location, message)
+        )
+
+    if not isinstance(namespaces, Mapping) or not isinstance(
+        namespaces.get("next"), Mapping
+    ):
+        invalid("the Registry must declare the prepared next namespace")
+        return
+    following = namespaces["next"]
+    for message in cutover_findings({"identity_namespaces": namespaces}):
+        invalid(message)
+    if following.get("id") == namespaces.get("active"):
+        invalid("the next namespace must differ from the active baseline")
+    declared = following.get("spaces")
+    if not isinstance(declared, Mapping):
+        return
+    if set(declared) != set(spaces):
+        invalid("the next namespace must declare exactly the current identity spaces")
+    for name, space in declared.items():
+        current = spaces.get(name)
+        if isinstance(current, Mapping) and isinstance(space, Mapping):
+            if (space.get("prefix"), space.get("width")) != (
+                current.get("prefix"),
+                current.get("width"),
+            ):
+                invalid(f"{name} must keep the current prefix and width")
+    _validate_identity_spaces(declared, f"{location}.next.spaces", findings)
 
 
 def _validate_identity_space_bounds(

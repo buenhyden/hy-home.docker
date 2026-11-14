@@ -1,15 +1,16 @@
 ---
 title: "08-AI Optimization Hardening Runbook"
-version: "1.0.6"
+version: "1.0.7"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "RUN-0058"
 parent_ids:
 - "GDE-0058"
 created: "2026-05-17"
+next_review_at: "2027-05-13"
 ---
 
 # 08-AI Optimization Hardening Runbook

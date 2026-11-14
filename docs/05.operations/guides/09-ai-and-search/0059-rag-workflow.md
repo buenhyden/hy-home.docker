@@ -1,13 +1,14 @@
 ---
 title: "RAG Workflow Usage Guide"
-version: "1.0.7"
+version: "1.0.8"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0059"
 created: "2026-03-25"
+next_review_at: "2027-05-13"
 ---
 
 # RAG Workflow Usage Guide

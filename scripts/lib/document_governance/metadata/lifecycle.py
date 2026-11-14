@@ -100,6 +100,48 @@ _CURRENCY_TYPES = frozenset(
 )
 
 
+# SDLC-06: the review date is at most this many days after `updated`, so a
+# far-future date cannot keep an operations document current for good.
+_REVIEW_INTERVAL_DAYS = 180
+
+
+def _review_interval_exceeded(next_review: object, updated: object) -> bool:
+    try:
+        due = datetime.date.fromisoformat(str(next_review)[:10])
+        last = datetime.date.fromisoformat(str(updated)[:10])
+    except ValueError:
+        return False  # absent or malformed: the date checks report it
+    return (due - last).days > _REVIEW_INTERVAL_DAYS
+
+
+def _retired_status_migration(
+    registry: object, profile_id: str, previous: str, status: str
+) -> bool:
+    """D-02: a base status the profile's lifecycle no longer offers may move to
+    the successor the Registry registers as a normalization."""
+
+    if not isinstance(registry, DocumentRegistry):
+        return False
+    lifecycle_id = registry.profiles.get(profile_id, {}).get("lifecycle_id")
+    if previous in registry.lifecycles.get(str(lifecycle_id), (previous,)):
+        return False
+    events = registry.common.get("task_lifecycle_events")
+    migration = events.get("migration") if isinstance(events, Mapping) else None
+    entries = (
+        migration.get("normalizations", ()) if isinstance(migration, Mapping) else ()
+    )
+    return any(
+        isinstance(entry, Mapping)
+        and (
+            entry.get("lifecycle_id"),
+            entry.get("from_status"),
+            entry.get("to_status"),
+        )
+        == (lifecycle_id, previous, status)
+        for entry in entries
+    )
+
+
 def _review_overdue(next_review: object, reviewed: object) -> bool:
     try:
         due = datetime.date.fromisoformat(str(next_review)[:10])
@@ -409,6 +451,9 @@ def validate_record(
             and override_key not in (actual_lifecycle_transitions or ())
             and override_key not in (actual_lifecycle_normalizations or ())
             and not actual_normalization_transition
+            and not _retired_status_migration(
+                registry, record.artifact_type, previous_status, status
+            )
         ):
             findings.append(
                 _finding(
@@ -736,6 +781,16 @@ def validate_record(
                 record,
                 "stale-active",
                 "next_review_at has passed without a reviewed_at on or after it",
+            )
+        )
+    if record.metadata.get("type") in _CURRENCY_TYPES and _review_interval_exceeded(
+        record.metadata.get("next_review_at"), record.metadata.get("updated")
+    ):
+        findings.append(
+            _finding(
+                record,
+                "review-interval-exceeded",
+                f"next_review_at is more than {_REVIEW_INTERVAL_DAYS} days after updated",
             )
         )
     temporal_fields = (

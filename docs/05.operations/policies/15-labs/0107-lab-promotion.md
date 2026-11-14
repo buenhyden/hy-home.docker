@@ -1,15 +1,16 @@
 ---
 title: "LAB Promotion Policy"
-version: "0.2.5"
+version: "0.2.6"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "POL-0107"
 parent_ids:
 - "AD-0026"
 created: "2026-11-05"
+next_review_at: "2027-05-13"
 ---
 
 # LAB Promotion Policy

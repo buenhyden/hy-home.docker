@@ -1,10 +1,10 @@
 ---
 title: "Lakehouse Usage Guide"
-version: "1.5.2"
+version: "1.5.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0094"
 parent_ids:
@@ -18,6 +18,7 @@ implementation_services:
   - spark
   - trino
 created: "2026-09-23"
+next_review_at: "2027-05-13"
 ---
 
 # Lakehouse Usage Guide

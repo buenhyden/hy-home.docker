@@ -1,15 +1,16 @@
 ---
 title: "OpenTofu Runbook"
-version: "1.0.2"
+version: "1.0.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "RUN-0082"
 parent_ids:
 - "POL-0082"
 created: "2026-09-19"
+next_review_at: "2027-05-13"
 ---
 
 # OpenTofu Runbook

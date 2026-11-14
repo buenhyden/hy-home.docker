@@ -8,6 +8,7 @@ updated: "{{UPDATED}}"
 layer: "operations"
 artifact_id: "{{ARTIFACT_ID}}"
 created: "{{CREATED}}"
+next_review_at: "{{NEXT_REVIEW_AT}}"
 ---
 
 <!-- Author prompt: Service Guides add optional `implementation_services` frontmatter as a mapping from each repo-relative active Compose path to its nonempty list of owned service names; workspace and process Guides omit it. -->

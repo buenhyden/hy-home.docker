@@ -1,15 +1,16 @@
 ---
 title: "Kafka Cluster LAB Operations Policy"
-version: "0.2.1"
+version: "0.2.2"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "POL-0108"
 parent_ids:
 - "AD-0026"
 created: "2026-11-05"
+next_review_at: "2027-05-13"
 ---
 
 # Kafka Cluster LAB Operations Policy

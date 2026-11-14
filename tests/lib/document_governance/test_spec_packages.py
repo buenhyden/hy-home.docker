@@ -1386,8 +1386,8 @@ Narrative after the registered table.
                         ],
                     },
                     source_text=(
-                        "## Authorization\n\nApproved record.\n\n"
-                        "## Withdrawal\n\nApproved withdrawal.\n"
+                        "## Authorization\n\nSource: user\n\nApproved record.\n\n"
+                        "## Withdrawal\n\nSource: user\n\nApproved withdrawal.\n"
                     ),
                 )
                 statuses = {artifact_id: "cancelled"}
@@ -1423,6 +1423,54 @@ Narrative after the registered table.
                         mismatched, frozenset({1}), statuses
                     )
                 )
+
+    def test_v5_cancellation_approval_must_name_an_allowed_source(self) -> None:
+        """SDLC-07: sdlc.md says an approval without its source is invalid, so
+        a cancellation's authorization and withdrawal records name one."""
+
+        module = _spec_packages_module()
+
+        def findings(authorization: str, withdrawal: str) -> tuple[str, ...]:
+            document = module.SpecDocument(
+                pathlib.PurePosixPath("docs/03.specs/0001-example/spec.md"),
+                "spec",
+                "SPEC-0001",
+                "cancelled",
+                (),
+                cancellation={
+                    "reason": "Approved scope withdrawal",
+                    "authorization_ref": "#authorization",
+                    "criteria_disposition": [
+                        {"criterion": 1, "withdrawal_ref": "#withdrawal"}
+                    ],
+                },
+                source_text=(
+                    f"## Authorization\n\n{authorization}\n\n"
+                    f"## Withdrawal\n\n{withdrawal}\n"
+                ),
+            )
+            return module._v5_cancellation_findings(
+                document, frozenset({1}), {"SPEC-0001": "cancelled"}
+            )
+
+        for source in ("user", "operator", "native-provider"):
+            with self.subTest(source=source):
+                self.assertEqual(
+                    (),
+                    findings(f"Source: {source}", "Source: user, message of the day"),
+                )
+        for authorization, withdrawal in (
+            ("Approved record.", "Source: user"),
+            ("Source: user", "Approved withdrawal."),
+            ("Source: agent", "Source: user"),
+            ("Source: user", "Source: this Task"),
+            ("Source:", "Source: user"),
+            ("Source: hook", "Source: operator"),
+        ):
+            with self.subTest(authorization=authorization, withdrawal=withdrawal):
+                found = findings(authorization, withdrawal)
+                self.assertTrue(found)
+                self.assertIn("source", found[0])
 
     def test_v4_four_column_completion_requires_registered_result_and_review(
         self,

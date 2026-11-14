@@ -21,7 +21,6 @@
       "mitigated",
       "resolved",
       "published",
-      "review",
       "open",
       "closed"
     ],
@@ -126,7 +125,8 @@
       "created": "{{CREATED}}",
       "observed_at": "{{OBSERVED_AT}}",
       "occurred_at": "{{OCCURRED_AT}}",
-      "review_cycle": "{{REVIEW_CYCLE}}"
+      "review_cycle": "{{REVIEW_CYCLE}}",
+      "next_review_at": "{{NEXT_REVIEW_AT}}"
     },
     "template_required_placeholders": [
       "title",
@@ -306,6 +306,11 @@
           {
             "lifecycle_id": "plan",
             "from_status": "completed",
+            "to_status": "approved"
+          },
+          {
+            "lifecycle_id": "architecture-description",
+            "from_status": "active",
             "to_status": "approved"
           }
         ]
@@ -2038,7 +2043,8 @@
         "status",
         "owner",
         "updated",
-        "artifact_id"
+        "artifact_id",
+        "next_review_at"
       ],
       "optional_frontmatter": [
         "layer",
@@ -2047,8 +2053,7 @@
         "superseded_by",
         "parent_ids",
         "implementation_services",
-        "reviewed_at",
-        "next_review_at"
+        "reviewed_at"
       ],
       "required_sections": [
         "Purpose",
@@ -2128,7 +2133,8 @@
         "status",
         "owner",
         "updated",
-        "artifact_id"
+        "artifact_id",
+        "next_review_at"
       ],
       "optional_frontmatter": [
         "layer",
@@ -2136,8 +2142,7 @@
         "supersedes",
         "superseded_by",
         "parent_ids",
-        "reviewed_at",
-        "next_review_at"
+        "reviewed_at"
       ],
       "required_sections": [
         "Purpose",
@@ -2223,7 +2228,8 @@
         "status",
         "owner",
         "updated",
-        "artifact_id"
+        "artifact_id",
+        "next_review_at"
       ],
       "optional_frontmatter": [
         "layer",
@@ -2231,8 +2237,7 @@
         "supersedes",
         "superseded_by",
         "parent_ids",
-        "reviewed_at",
-        "next_review_at"
+        "reviewed_at"
       ],
       "required_sections": [
         "Purpose",
@@ -6904,25 +6909,25 @@
     },
     "architecture-description": {
       "initial_status": "draft",
+      "terminal_statuses": [],
       "statuses": [
         "draft",
         "in-review",
-        "active"
+        "approved"
       ],
       "transitions": {
         "draft": [
           "in-review",
-          "active"
+          "approved"
         ],
         "in-review": [
-          "active",
+          "approved",
           "draft"
         ],
-        "active": [
+        "approved": [
           "in-review"
         ]
-      },
-      "terminal_statuses": []
+      }
     },
     "architecture-decision": {
       "initial_status": "proposed",
@@ -7166,26 +7171,24 @@
     },
     "contract": {
       "initial_status": "draft",
-      "terminal_statuses": [
-        "active"
-      ],
+      "terminal_statuses": [],
       "statuses": [
         "draft",
-        "review",
-        "approved",
-        "active"
+        "in-review",
+        "approved"
       ],
       "transitions": {
         "draft": [
-          "review"
-        ],
-        "review": [
+          "in-review",
           "approved"
         ],
-        "approved": [
-          "active"
+        "in-review": [
+          "approved",
+          "draft"
         ],
-        "active": []
+        "approved": [
+          "in-review"
+        ]
       }
     },
     "template": {
@@ -9268,6 +9271,105 @@
         234
       ],
       "child_spaces": {}
+    }
+  },
+  "identity_namespaces": {
+    "active": "baseline-1",
+    "next": {
+      "id": "baseline-2",
+      "state": "prepared",
+      "predecessor": "baseline-1",
+      "cutover": "Q07_AFTER_W11_ONLY",
+      "spaces": {
+        "requirement": {
+          "prefix": "REQ-",
+          "width": 4,
+          "high_water": 0,
+          "next_number": 1,
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "architecture-description": {
+          "prefix": "AD-",
+          "width": 4,
+          "high_water": 0,
+          "next_number": 1,
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "adr": {
+          "prefix": "ADR-",
+          "width": 4,
+          "high_water": 0,
+          "next_number": 1,
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "spec": {
+          "prefix": "SPEC-",
+          "width": 4,
+          "high_water": 0,
+          "next_number": 1,
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "operations-subject": {
+          "prefix": "OPS-",
+          "width": 4,
+          "high_water": 0,
+          "next_number": 1,
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "incident": {
+          "prefix": "inc-",
+          "width": 4,
+          "high_water": 0,
+          "next_number": 1,
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "research": {
+          "prefix": "RES-",
+          "width": 4,
+          "high_water": 0,
+          "next_number": 1,
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "audit": {
+          "prefix": "AUD-",
+          "width": 4,
+          "high_water": 0,
+          "next_number": 1,
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "data": {
+          "prefix": "DATA-",
+          "width": 4,
+          "high_water": 0,
+          "next_number": 1,
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "migration": {
+          "prefix": "MIG-",
+          "width": 4,
+          "high_water": 0,
+          "next_number": 1,
+          "reserved_history": [],
+          "child_spaces": {}
+        },
+        "tombstone": {
+          "prefix": "tomb-",
+          "width": 4,
+          "high_water": 0,
+          "next_number": 1,
+          "reserved_history": [],
+          "child_spaces": {}
+        }
+      }
     }
   },
   "transitions": {

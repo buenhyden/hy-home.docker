@@ -1,10 +1,10 @@
 ---
 title: "Development Database Usage Guide"
-version: "0.3.2"
+version: "0.3.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0100"
 parent_ids:
@@ -19,6 +19,7 @@ implementation_services:
   - "dev-valkey"
   - "dev-valkey-exporter"
 created: "2026-10-03"
+next_review_at: "2027-05-13"
 ---
 
 # Development Database Usage Guide

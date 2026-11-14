@@ -1,15 +1,16 @@
 ---
 title: "Shared Storybook Operations Policy"
-version: "1.1.3"
+version: "1.1.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "POL-0101"
 parent_ids:
 - "AD-0031"
 created: "2026-10-03"
+next_review_at: "2027-05-13"
 ---
 
 # Shared Storybook Operations Policy

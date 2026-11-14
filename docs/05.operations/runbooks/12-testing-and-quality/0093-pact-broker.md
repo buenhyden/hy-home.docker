@@ -1,15 +1,16 @@
 ---
 title: "Pact Broker Recovery Runbook"
-version: "1.0.5"
+version: "1.0.6"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "RUN-0093"
 parent_ids:
 - "GDE-0093"
 created: "2026-09-23"
+next_review_at: "2027-05-13"
 ---
 
 # Pact Broker Recovery Runbook

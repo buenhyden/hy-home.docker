@@ -1,15 +1,16 @@
 ---
 title: "Dependency Version Management Policy"
-version: "0.5.1"
+version: "0.5.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "POL-0086"
 parent_ids:
 - "AD-0031"
 created: "2026-09-19"
+next_review_at: "2027-05-13"
 ---
 
 # Dependency Version Management Policy

@@ -1504,6 +1504,108 @@ def _registered_readme_documents_findings(
     return findings
 
 
+# Tables whose contract another reader owns: `spec_packages.py` (plan,
+# evidence, criterion_acceptance) and the README Documents check above.
+_TABLES_CHECKED_ELSEWHERE = frozenset(
+    {"plan", "evidence", "criterion_acceptance", "readme_documents"}
+)
+_TABLE_PLACEHOLDER = re.compile(r"^(TODO|TBD)$|\{\{.*\}\}", re.IGNORECASE)
+_TABLE_CELL_SPLIT = re.compile(r"(?<!\\)\|")
+
+
+def _registered_table_findings(
+    record: Record, text: str, profile_id: str, registry: DocumentRegistry
+) -> list[Finding]:
+    """W03-A: check each table a profile's role declares for width, column
+    order and cell values; the TemplateDefinition `tables` are the contract."""
+
+    from scripts.lib.document_governance.template_definition import (
+        template_definition,
+    )
+
+    declared: dict[tuple[str, str | None], list[dict[str, object]]] = {}
+    for role, definition in registry.template_roles.items():
+        if profile_id not in definition.get("profiles", ()):
+            continue
+        spec = template_definition(registry, role)
+        titles: dict[str, tuple[str, str | None]] = {}
+        for heading in spec["headings"]:  # type: ignore[union-attr]
+            titles[str(heading["section_id"])] = (str(heading["title"]), None)
+            for child in heading["children"]:
+                titles[str(child["section_id"])] = (
+                    str(heading["title"]),
+                    str(child["title"]),
+                )
+        for table in spec["tables"]:  # type: ignore[union-attr]
+            if table["name"] not in _TABLES_CHECKED_ELSEWHERE:
+                declared.setdefault(titles[str(table["section"])], []).append(table)
+    if not declared:
+        return []
+    findings: list[Finding] = []
+    h2: str | None = None
+    h3: str | None = None
+    block: list[str] = []
+
+    def check(rows: list[str]) -> None:
+        tables = declared.get((h2 or "", h3), [])
+        if not rows or not tables:
+            return
+        cells = [
+            [cell.strip() for cell in _TABLE_CELL_SPLIT.split(row.strip())[1:-1]]
+            for row in rows
+        ]
+        header = cells[0]
+        for table in tables:
+            columns = [str(column["key"]) for column in table["columns"]]
+            required = [
+                str(column["key"]) for column in table["columns"] if column["required"]
+            ]
+            if header in (required, columns):
+                break
+        else:
+            findings.append(
+                _finding(
+                    record,
+                    "table-header-invalid",
+                    f"table under {h2}/{h3 or '-'} must have the registered columns "
+                    f"{', '.join(required)} in order",
+                )
+            )
+            return
+        for row in cells[2:]:
+            if len(row) != len(header):
+                findings.append(
+                    _finding(
+                        record,
+                        "table-row-width",
+                        f"a row under {h2}/{h3 or '-'} has {len(row)} cells, "
+                        f"the header {len(header)}",
+                    )
+                )
+            elif any(not cell or _TABLE_PLACEHOLDER.search(cell) for cell in row):
+                findings.append(
+                    _finding(
+                        record,
+                        "table-value-invalid",
+                        f"a row under {h2}/{h3 or '-'} has an empty or placeholder cell",
+                    )
+                )
+
+    for line in [*_markdown_unfenced_lines(text), ""]:
+        if line.lstrip().startswith("|"):
+            block.append(line)
+            continue
+        check(block)
+        block = []
+        heading = re.match(r"^ {0,3}(#{1,3})[ \t]+(.+?)[ \t]*#*[ \t]*$", line)
+        if heading:
+            if len(heading.group(1)) == 2:
+                h2, h3 = heading.group(2), None
+            elif len(heading.group(1)) == 3:
+                h3 = heading.group(2)
+    return findings
+
+
 def validate_body_contract(
     record: Record,
     text: str,
@@ -1541,6 +1643,9 @@ def validate_body_contract(
                 section_findings.extend(
                     _registered_readme_documents_findings(record, text, profile, common)
                 )
+            section_findings.extend(
+                _registered_table_findings(record, text, record.artifact_type, registry)
+            )
             declared = profile.get("language")
             # The message carries no ratio: it is the deficit identity, so an
             # edit to a body already in the wrong language is not "introduced".

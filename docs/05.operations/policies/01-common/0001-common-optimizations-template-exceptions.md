@@ -1,13 +1,14 @@
 ---
 title: "Common Optimizations Template Exceptions Policy"
-version: "1.4.7"
+version: "1.4.8"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "POL-0001"
 created: "2026-06-04"
+next_review_at: "2027-05-13"
 ---
 
 # Common Optimizations Template Exceptions Policy

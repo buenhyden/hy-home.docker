@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Guide"
-version: "1.3.2"
+version: "1.3.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0021"
 parent_ids:
@@ -15,6 +15,7 @@ implementation_services:
   - restic-offsite
   - backup-sqlite-export
 created: "2026-09-22"
+next_review_at: "2027-05-13"
 ---
 
 # Backup and Restore Guide

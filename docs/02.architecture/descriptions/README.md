@@ -1,10 +1,10 @@
 ---
 title: "Architecture Descriptions"
-version: "1.3.1"
+version: "1.3.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "architecture"
 ---
 
@@ -56,33 +56,33 @@ docs/02.architecture/descriptions/
 
 | ID | 제목 | 상태 |
 | --- | --- | --- |
-| [`AD-0001`](./0001-gateway-architecture.md) | Gateway Tier Architecture Description | `active` |
-| [`AD-0002`](./0002-auth-architecture.md) | 02-Auth Architecture Description | `active` |
-| [`AD-0003`](./0003-security-architecture.md) | Security Tier Architecture Description | `active` |
-| [`AD-0004`](./0004-data-architecture.md) | Data Tier (04-data) Architecture Description | `active` |
-| [`AD-0005`](./0005-messaging-architecture.md) | Messaging Architecture Description | `active` |
-| [`AD-0006`](./0006-observability-architecture.md) | Observability Architecture Description | `active` |
-| [`AD-0007`](./0007-workflow-architecture.md) | Workflow Tier (07-workflow) Architecture Description | `active` |
-| [`AD-0008`](./0008-ai-architecture.md) | AI Infrastructure Architecture Description | `active` |
-| [`AD-0009`](./0009-tooling-architecture.md) | Platform Operations and Software Verification Architecture Description | `active` |
-| [`AD-0010`](./0010-communication-architecture.md) | Communication Tier Architecture Description | `active` |
-| [`AD-0011`](./0011-laboratory-architecture.md) | Administration and Experimentation Architecture Description | `active` |
-| [`AD-0012`](./0012-data-analytics-architecture.md) | Analytics Tier Architecture Description | `active` |
-| [`AD-0013`](./0013-open-webui-architecture.md) | Open WebUI Architecture Description | `active` |
-| [`AD-0018`](./0018-security-optimization-hardening-architecture.md) | Security Optimization and Hardening Architecture | `active` |
-| [`AD-0019`](./0019-data-optimization-hardening-architecture.md) | Data Optimization and Hardening Architecture | `active` |
-| [`AD-0020`](./0020-messaging-optimization-hardening-architecture.md) | 05-Messaging Optimization Hardening Architecture Description | `active` |
-| [`AD-0021`](./0021-observability-optimization-hardening-architecture.md) | 06-Observability Optimization Hardening Architecture Description | `active` |
-| [`AD-0022`](./0022-workflow-optimization-hardening-architecture.md) | 07-Workflow Optimization Hardening Architecture Description | `active` |
-| [`AD-0023`](./0023-ai-optimization-hardening-architecture.md) | 08-AI Optimization Hardening Architecture Description | `active` |
-| [`AD-0024`](./0024-tooling-optimization-hardening-architecture.md) | Platform Operations and Quality Optimization Hardening Architecture Description | `active` |
-| [`AD-0025`](./0025-laboratory-optimization-hardening-architecture.md) | Admin and Experiment Tools Hardening Architecture Description | `active` |
-| [`AD-0026`](./0026-standardize-infra-net.md) | Compose Network Segmentation Architecture Description | `active` |
-| [`AD-0027`](./0027-agent-governance-canonical-adapter.md) | Agent Governance Canonical Adapter Architecture | `active` |
-| [`AD-0028`](./0028-operational-readiness-closure.md) | Operational Readiness Closure Architecture | `active` |
-| [`AD-0030`](./0030-document-lifecycle-governance.md) | Document Lifecycle Governance Architecture | `active` |
-| [`AD-0031`](./0031-home-development-host.md) | Home and Development Host Architecture | `active` |
-| [`AD-0032`](./0032-experience-architecture.md) | Experience Tier Architecture Description | `active` |
+| [`AD-0001`](./0001-gateway-architecture.md) | Gateway Tier Architecture Description | `approved` |
+| [`AD-0002`](./0002-auth-architecture.md) | 02-Auth Architecture Description | `approved` |
+| [`AD-0003`](./0003-security-architecture.md) | Security Tier Architecture Description | `approved` |
+| [`AD-0004`](./0004-data-architecture.md) | Data Tier (04-data) Architecture Description | `approved` |
+| [`AD-0005`](./0005-messaging-architecture.md) | Messaging Architecture Description | `approved` |
+| [`AD-0006`](./0006-observability-architecture.md) | Observability Architecture Description | `approved` |
+| [`AD-0007`](./0007-workflow-architecture.md) | Workflow Tier (07-workflow) Architecture Description | `approved` |
+| [`AD-0008`](./0008-ai-architecture.md) | AI Infrastructure Architecture Description | `approved` |
+| [`AD-0009`](./0009-tooling-architecture.md) | Platform Operations and Software Verification Architecture Description | `approved` |
+| [`AD-0010`](./0010-communication-architecture.md) | Communication Tier Architecture Description | `approved` |
+| [`AD-0011`](./0011-laboratory-architecture.md) | Administration and Experimentation Architecture Description | `approved` |
+| [`AD-0012`](./0012-data-analytics-architecture.md) | Analytics Tier Architecture Description | `approved` |
+| [`AD-0013`](./0013-open-webui-architecture.md) | Open WebUI Architecture Description | `approved` |
+| [`AD-0018`](./0018-security-optimization-hardening-architecture.md) | Security Optimization and Hardening Architecture | `approved` |
+| [`AD-0019`](./0019-data-optimization-hardening-architecture.md) | Data Optimization and Hardening Architecture | `approved` |
+| [`AD-0020`](./0020-messaging-optimization-hardening-architecture.md) | 05-Messaging Optimization Hardening Architecture Description | `approved` |
+| [`AD-0021`](./0021-observability-optimization-hardening-architecture.md) | 06-Observability Optimization Hardening Architecture Description | `approved` |
+| [`AD-0022`](./0022-workflow-optimization-hardening-architecture.md) | 07-Workflow Optimization Hardening Architecture Description | `approved` |
+| [`AD-0023`](./0023-ai-optimization-hardening-architecture.md) | 08-AI Optimization Hardening Architecture Description | `approved` |
+| [`AD-0024`](./0024-tooling-optimization-hardening-architecture.md) | Platform Operations and Quality Optimization Hardening Architecture Description | `approved` |
+| [`AD-0025`](./0025-laboratory-optimization-hardening-architecture.md) | Admin and Experiment Tools Hardening Architecture Description | `approved` |
+| [`AD-0026`](./0026-standardize-infra-net.md) | Compose Network Segmentation Architecture Description | `approved` |
+| [`AD-0027`](./0027-agent-governance-canonical-adapter.md) | Agent Governance Canonical Adapter Architecture | `approved` |
+| [`AD-0028`](./0028-operational-readiness-closure.md) | Operational Readiness Closure Architecture | `approved` |
+| [`AD-0030`](./0030-document-lifecycle-governance.md) | Document Lifecycle Governance Architecture | `approved` |
+| [`AD-0031`](./0031-home-development-host.md) | Home and Development Host Architecture | `approved` |
+| [`AD-0032`](./0032-experience-architecture.md) | Experience Tier Architecture Description | `approved` |
 
 ### Classification
 
@@ -120,7 +120,7 @@ Risks`의 `Quality Attributes`, `Risks`, `Evolution`에 해당 내용을 배치�
 
 ### Transition and Exit
 
-Architecture Description은 draft → in-review → active로 전이하며 active에서 in-review로 돌아갈 수 있다. 더 이상 현재 구조를 설명하지 않는 문서는 내용을 현재 소유자에 요약하고 삭제하며 번호를 Registry `reserved_history`에 추가한다.
+Architecture Description은 draft → in-review → approved로 전이하며 approved에서 in-review로 돌아갈 수 있다. 더 이상 현재 구조를 설명하지 않는 문서는 내용을 현재 소유자에 요약하고 삭제하며 번호를 Registry `reserved_history`에 추가한다.
 
 ## Related Documents
 

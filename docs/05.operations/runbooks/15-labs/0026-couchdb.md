@@ -1,15 +1,16 @@
 ---
 title: "CouchDB Cluster Triage Runbook"
-version: "2.0.4"
+version: "2.0.5"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "RUN-0026"
 parent_ids:
 - "GDE-0026"
 created: "2026-05-17"
+next_review_at: "2027-05-13"
 ---
 
 # CouchDB Cluster Triage Runbook

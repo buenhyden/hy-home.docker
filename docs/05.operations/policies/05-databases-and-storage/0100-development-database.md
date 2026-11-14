@@ -1,16 +1,17 @@
 ---
 title: "Development Database Operations Policy"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "POL-0100"
 parent_ids:
 - "AD-0031"
 - "SPEC-0204"
 created: "2026-10-03"
+next_review_at: "2027-05-13"
 ---
 
 # Development Database Operations Policy

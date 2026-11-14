@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.7.1"
+version: "1.7.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0024"
 parent_ids:
@@ -17,6 +17,7 @@ implementation_services:
   - 'seaweedfs-s3'
   - 'seaweedfs-volume'
 created: "2026-05-10"
+next_review_at: "2027-05-13"
 ---
 
 # SeaweedFS Usage Guide

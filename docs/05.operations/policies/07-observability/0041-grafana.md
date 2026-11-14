@@ -1,15 +1,16 @@
 ---
 title: "Grafana Operations Policy"
-version: "1.3.1"
+version: "1.3.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "POL-0041"
 parent_ids:
 - "AD-0006"
 created: "2026-05-17"
+next_review_at: "2027-05-13"
 ---
 
 # Grafana Operations Policy

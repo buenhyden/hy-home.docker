@@ -1,15 +1,16 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Operations Policy"
-version: "1.4.3"
+version: "1.4.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "POL-0063"
 parent_ids:
 - "AD-0009"
 created: "2026-05-10"
+next_review_at: "2027-05-13"
 ---
 
 # Platform Operations and Quality Optimization Hardening Operations Policy
