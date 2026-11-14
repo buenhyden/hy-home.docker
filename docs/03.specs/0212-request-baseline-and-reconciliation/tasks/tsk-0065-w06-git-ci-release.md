@@ -1,0 +1,173 @@
+---
+title: "v14.7 W06 Git, CI and Release Task"
+version: "0.1.0"
+type: "sdlc/task"
+status: "in-progress"
+owner: "@buenhyden"
+updated: "2026-11-14"
+layer: "specs"
+artifact_id: "SPEC-0212-TSK-0065"
+parent_ids:
+- "SPEC-0212-PLAN-0001"
+created: "2026-11-14"
+---
+
+# v14.7 W06 Git, CI and Release Task
+
+## Scope
+
+### Objective and Parent
+
+#### Objective
+
+Own W126/criterion 121, the v14.7 W06 run for this workspace: bind each Git
+action stage to a real trigger, run the leaves W05 handed off in hosted CI
+without a skipped job reading as a pass, keep one commit grammar, release
+producer and review path, and record a verdict and owner for every W06
+requirement and carry-forward key.
+
+- [Spec](../spec.md)
+- [Plan](../plan.md)
+- [W05 validator alignment](tsk-0064-w05-validator-alignment.md)
+
+### Inputs and Authority
+
+The owner's request of 2026-11-14 runs the W06 prompt of the v14.7 revision
+package (`_workspace/workspace_execution_tasks_v14_7_revision_20261113_r1/`,
+read as reference data). Its named residue for this workspace is the stage QA
+cells, the runner timeout cause, and the remote branch protection read-back.
+W00 to W05 are completed and accepted; this run did not repeat them.
+
+The same day the owner approved commit, push, pull request and merge for the
+W06 changes, asked for each remote-settings change to be presented before it
+is applied, and chose: allow Git's automatic merge subjects in the commit
+grammar; split the long candidate work into its own CI job; enable
+`sha_pinning_required` and immutable releases, and leave required signatures
+and required reviews as they are.
+
+## Execution Log
+
+### Work Performed
+
+#### W06 run 2026-11-14
+
+Start check: `/home/hyunyoun/data/hy-home.docker` is the Git top level, on
+`main` at `abe66a156` equal to `origin/main`, with a clean index and worktree
+and no stash. Four read-only investigations covered the remote GitHub state,
+the local hooks and commit grammar, the runner timeout and CI wiring, and the
+signing gate, review path and carry-forward keys.
+
+Remote state, read back on 2026-11-14 with GET calls only: merge commits are
+the only merge method; `main` protection has `strict=true`, the single
+required check `candidate-quality` from GitHub Actions app 15368, zero
+required approvals, `enforce_admins=true` and `required_signatures` disabled;
+rulesets are empty and no merge queue is used; workflows run on
+`ubuntu-latest`, use no `pull_request_target` or `workflow_run`, are pinned by
+SHA and default to `read` permissions; `publish-release.yml` through
+`release.py` is the only tag and release producer; no Dependabot or Renovate
+configuration file exists in `.github/`, and Renovate (`renovate.json5`,
+POL-0086) is the dependency updater with `automerge: false`. The live
+`0.0.1` release predates the current producer and was not touched.
+
+Remote changes, at the owner's direction with before and after read-back:
+`actions/permissions` `sha_pinning_required` false to true, and
+`immutable-releases` disabled to enabled. Branch protection was not changed.
+The 2026-11-14 entry in `.github/rulesets/main-protection.md` records both and
+their rollbacks.
+
+The twelve Git action cells are bound in the
+[Git workflow policy](../../../../.agents/governance/git-workflow.md) section 7.
+No `post-commit` or `post-push` hook exists, so those cells observe or do not
+apply; the client hooks are bypassable, so only the branch protection rows
+are enforcement.
+
+#### Handoff Verdicts
+
+| ID | Source | Verdict | Action and owner |
+| --- | --- | --- | --- |
+| QA-12 hook responsibilities | W06 prompt | DELTA | `pre-commit` checks the index and `commit-msg` the message file; installed-hook, filename and uninstalled-hook tests in this run |
+| QA-13 workflow events and inputs | W06 prompt | PASS (observed) | Events, permissions, runner and checkout read back above; no privileged event runs PR code |
+| QA-14 single producer per guarantee | W06 prompt, TSK-0064 crosswalk | DELTA | Shard jobs keep one producer per leaf; the aggregate is the one required context |
+| QA-C09 required gate and trust | W06 prompt | DELTA | The aggregate fails on a skipped, cancelled or missing shard |
+| GIT-01 branch roles | W06 prompt | PASS | `main` only; no `dev`; protection read back |
+| GIT-02 work base | W06 prompt | PASS | Each unit branched from current `origin/main` in its own worktree; no user change reverted |
+| GIT-03 one commit grammar | W06 prompt | DELTA | `.cz.toml` owns the grammar for both consumers; Git automatic merge subjects allowed on the owner's choice; PR titles are not commit subjects under merge-commit-only, so no title check |
+| GIT-04 single tag and release producer | W06 prompt | DELTA | `release.py` is the only producer; this run adds the downgrade refusal |
+| GIT-05 CHANGELOG ownership | W06 prompt | PASS | Main release-preparation PRs own `CHANGELOG.md`; no dev branch exists |
+| GIT-06 immutable release order | W06 prompt | PASS | Draft, assets, verify, publish in `release.py`; immutable releases enabled on the owner's choice |
+| GIT-07 dependency PR privilege | W06 prompt | PASS | Renovate only, `automerge: false`, no `pull_request_target` |
+| GIT-08 personal-signature gate (D-19) | W06 prompt | PASS (none exists) | No code, hook or policy requires a signed commit or tag for acceptance; stated explicitly in `github-governance.md` section 2 |
+| GIT-09, SUP-10 single-person review | W06 prompt | DELTA | Review path names its risk owners, diff checklist and explicit acceptance; no model-inference API, including self-hosted or proxied |
+| R147-14 dev/main template | W06 prompt | N/A | No `dev` branch or template generator; it belongs to Project-Template |
+| WP-27 workflows, runners, protection | LEGACY-208 | DELTA | Closed by the read-back and stage cells here |
+| WP-28 build and verification profile | LEGACY-208 | DELTA | Source QA is not deploy acceptance (`quality-standards.md`); the runner timeout is OPEN-14 |
+| WP-29 hooks and commit grammar | LEGACY-208 | DELTA | QA-12 and GIT-03 here |
+| WP-30 branches, tags, release, CHANGELOG | LEGACY-208 | DELTA | GIT-04 to GIT-06 here |
+| WP-45 single-person non-API review | LEGACY-208 | DELTA | GIT-09 here; its "record the operator's signed acceptance" clause is superseded by D-19 |
+| WP-49 Dependabot PR trust | LEGACY-208 | RETIRED_ALIAS | Renovate under POL-0086 is the updater; Dependabot security updates are off |
+| OPEN-13 required check vs GitHub allowed states | W06 prompt | DELTA | Aggregate added here; GitHub still accepts a skipped required check, so the aggregate, not a shard, is required |
+| OPEN-14 runner exit 124 | TSK-0040 | DELTA | See OPEN-14 diagnosis |
+
+#### OPEN-14 diagnosis
+
+TSK-0040 recorded exit 124 for the candidate preflight leaf in a local-only
+run of 528 s. The runner returns 124 only when a leaf exceeds its own
+`timeout_seconds` (`ci_gate_runner.py`), and that leaf's budget is 900 s, so
+a budget expiry inside a 528 s run is not possible. Run alone on 2026-11-14
+at `abe66a156`, `check-candidate-preflight.sh` exited 0 in 182 s. The record
+is therefore likely misattributed or its duration is the run total; the run's
+evidence directory, which holds each leaf's end time and reason, would settle
+it and was not available here. The proven timeouts are separate: the metadata
+and document-library leaves exceeded their older 600 s and 900 s budgets
+(SPEC-0204 TSK-0011), now 30 and 45 minutes, and the 45-minute library leaf
+no longer fits the 30-minute candidate job, which the shard split fixes.
+
+#### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0065 | draft | ready | #w06-run-2026-11-14 |
+| SPEC-0212-TSK-0065 | ready | in-progress | #w06-run-2026-11-14 |
+
+### Blockers and Decisions
+
+- Required signatures and required reviews stay off by the owner's choice of
+  2026-11-14; the read-back records them.
+- No Dependabot configuration is added: Renovate is the single updater.
+
+## Verification Evidence
+
+### Results
+
+| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Remote read-back | 121 | W126 | remote-observation | GET `repos`, `branches/main/protection`, `rulesets`, `rules/branches/main`, `actions/permissions`, `immutable-releases` on 2026-11-14 | PASS | Values recorded under W06 run 2026-11-14; no call refused | required | - |
+| Remote settings change | 121 | W126 | remote-mutation | PUT `actions/permissions` with `sha_pinning_required=true`; PUT `immutable-releases`, at the owner's direction | PASS | Before `false`/`enabled:false`; after `true`/`enabled:true` | required | - |
+| Preflight timing | 121 | W126 | timing-baseline | `bash scripts/validation/check-candidate-preflight.sh` at `abe66a156`, Python 3.12.3, run alone | PASS | exit 0 in 182 s; budget 900 s | optional | - |
+
+### Resolution Links
+
+None yet.
+
+## Acceptance Decision
+
+### Criterion Decisions
+
+| Criterion | Acceptance | Evidence | Decision | Current Owner |
+| --- | --- | --- | --- | --- |
+| 121 | pending | - | The W06 units are in progress | SPEC-0212 TSK-0065 |
+
+### Remaining Conditions
+
+The shard split, the hook and grammar unit and this record land through their
+own pull requests; then the owner's acceptance. Q-07 runs only after W11.
+
+## Handoff
+
+### Promotion Receipt
+
+None yet: the targets change in this run's pull requests.
+
+### Next Owner
+
+The current owner is @buenhyden; this Task continues the W06 run.
