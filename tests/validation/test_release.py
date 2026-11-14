@@ -271,6 +271,8 @@ class ReleaseTests(unittest.TestCase):
                 result, commands = self._publish_against(**{source: ["v2.0.0"]})
                 self.assertIsInstance(result, release.ReleaseError)
                 self.assertIn("lower", str(result))
+                self.assertIn("reviewed workflow input", str(result))
+                self.assertNotIn("--allow-backport", str(result))
                 self.assertFalse(any("POST" in call for call in commands.calls))
             with self.subTest(source=source, case="backport"):
                 result, _ = self._publish_against(
@@ -285,6 +287,14 @@ class ReleaseTests(unittest.TestCase):
                     allow_backport=True, **{source: ["v1.2.3-rc.1+build.1"]}
                 )
                 self.assertIn("same precedence", str(result))
+                self.assertFalse(any("POST" in call for call in commands.calls))
+
+    def test_unprefixed_highest_tag_blocks_a_lower_version(self):
+        for source in ("releases", "tags"):
+            with self.subTest(source=source):
+                result, commands = self._publish_against(**{source: ["3.0.0"]})
+                self.assertIsInstance(result, release.ReleaseError)
+                self.assertIn("lower", str(result))
                 self.assertFalse(any("POST" in call for call in commands.calls))
 
     def test_cli_exposes_allow_backport_only_on_publish(self):

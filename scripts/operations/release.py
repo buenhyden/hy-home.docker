@@ -220,7 +220,7 @@ def _new_version(
     ):
         raise ReleaseError(
             "version is lower than the highest published release or tag; "
-            "pass --allow-backport for an intentional backport"
+            "a backport needs a reviewed workflow input"
         )
 
 
