@@ -363,6 +363,31 @@ class EvidenceStoreTests(unittest.TestCase):
                 retention_days=14,
             )
 
+    def test_open_rejects_evidence_seeded_by_another_run_or_revision(self) -> None:
+        # An artifact from another run, attempt, job or revision must not be
+        # adopted: the plan binds every identity field.
+        self.create()
+        for field in (
+            "run_id",
+            "run_attempt",
+            "job",
+            "input_sha",
+            "base_sha",
+            "head_sha",
+        ):
+            other = "9" * 40 if field.endswith("_sha") else "99999"
+            if field == "job":
+                other = "candidate-documents"
+            self.assertNotEqual(other, self.identity[field])
+            with self.subTest(field=field):
+                with self.assertRaisesRegex(EvidenceError, "plan does not match"):
+                    EvidenceStore.open(
+                        self.output,
+                        identity={**self.identity, field: other},
+                        rows=self.rows,
+                        retention_days=14,
+                    )
+
     def test_schema_rejects_untyped_or_sensitive_payloads(self) -> None:
         bad_identity = {**self.identity, "token": "secret"}
         with self.assertRaisesRegex(EvidenceError, "identity fields"):
