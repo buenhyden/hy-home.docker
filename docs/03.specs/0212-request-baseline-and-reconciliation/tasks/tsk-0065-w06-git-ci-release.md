@@ -210,6 +210,8 @@ no longer fits the 30-minute candidate job, which the shard split fixes.
 | Remote read-back | 121 | W126 | remote-observation | GET `repos`, `branches/main/protection`, `rulesets`, `rules/branches/main`, `actions/permissions`, `immutable-releases` on 2026-11-14 | PASS | Values recorded under W06 run 2026-11-14; no call refused | required | - |
 | Remote settings change | 121 | W126 | remote-mutation | PUT `actions/permissions` with `sha_pinning_required=true`; PUT `immutable-releases`, at the owner's direction | PASS | Before `false`/`enabled:false`; after `true`/`enabled:true` | required | - |
 | Preflight timing | 121 | W126 | timing-baseline | `bash scripts/validation/check-candidate-preflight.sh` at `abe66a156`, Python 3.12.3, run alone | PASS | exit 0 in 182 s; budget 900 s | optional | - |
+| Hooks and grammar | 121 | W126 | remote-candidate | PR #1005: merge-prefix grammar, one-parent merge-prefix rejection in `check-commit-range`, `--check-hooks`, release downgrade refusal; tests written RED first | PASS | `candidate-quality` success; merged as `bf81ab106`; two MEDIUM security findings fixed before merge | required | - |
+| Shard split local | 121 | W126 | unit-tests | `feat/w06-ci-split` gate, workflow-contract, release and supply-chain suites, Python 3.12.3 | PASS | 204 tests OK before the main merge, 169 OK after; review PASS with M1–M3 fixed | required | - |
 
 ### Resolution Links
 
