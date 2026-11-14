@@ -1261,6 +1261,43 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertIn("workflow-trigger-forbidden", codes)
         self.assertIn("action-ref-mutable", codes)
 
+    def test_merge_group_trigger_is_rejected_even_when_the_contract_lists_it(
+        self,
+    ) -> None:
+        # The merge queue is unused: no contract entry approves it, so a
+        # workflow that adds the trigger fails whether or not the contract
+        # was edited to match.
+        for label, edit_contract in (("workflow-only", False), ("both", True)):
+            with self.subTest(label=label), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                shutil.copytree(ROOT / ".github", root / ".github")
+                workflow = root / ".github/workflows/ci-quality.yml"
+                text = workflow.read_text(encoding="utf-8")
+                workflow.write_text(
+                    text.replace(
+                        "on:\n  push:\n",
+                        "on:\n  merge_group:\n    types: [checks_requested]\n  push:\n",
+                        1,
+                    ),
+                    encoding="utf-8",
+                )
+                if edit_contract:
+                    contract_file = root / ".github/workflow-contract.yml"
+                    document = json.loads(contract_file.read_text(encoding="utf-8"))
+                    triggers = document["workflows"][
+                        ".github/workflows/ci-quality.yml"
+                    ]["triggers"]
+                    triggers["merge_group"] = {"types": ["checks_requested"]}
+                    contract_file.write_text(
+                        json.dumps(document, indent=2) + "\n", encoding="utf-8"
+                    )
+                findings = self.module.validate_workflows(
+                    root, self.module.load_workflow_contract(root)
+                )
+                self.assertIn(
+                    "workflow-trigger-forbidden", {finding.code for finding in findings}
+                )
+
     def test_evidence_upload_rejects_broader_or_missing_paths(self) -> None:
         for replacement in (
             "${{ runner.temp }}/ci-gate-evidence/*.json",

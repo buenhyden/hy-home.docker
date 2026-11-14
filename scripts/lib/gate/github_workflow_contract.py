@@ -1380,7 +1380,12 @@ def validate_workflows(
         None,
     )
     sha_pattern = re.compile(r"[0-9a-f]{40}")
-    forbidden_events = {"pull_request_target", "workflow_run", "workflow_call"}
+    forbidden_events = {
+        "merge_group",
+        "pull_request_target",
+        "workflow_call",
+        "workflow_run",
+    }
     workflow_names: dict[str, str] = {}
     for document in documents:
         workflow_name = document.data.get("name")
