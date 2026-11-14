@@ -46,6 +46,7 @@ from scripts.lib.gate.ci_gate_contract import (
     select_public_suites,
     validate_gate_registry,
     validate_public_execution_argv,
+    validate_rule_owners,
 )
 from scripts.lib.gate.ci_gate_evidence import (
     EvidenceError,
@@ -1507,7 +1508,10 @@ def main(argv: list[str] | None = None) -> int:
             document,
             ".github/workflow-contract.yml",
         )
-        findings = validate_gate_registry(root, registry)
+        findings = (
+            *validate_gate_registry(root, registry),
+            *validate_rule_owners(root, registry),
+        )
         if findings:
             for finding in findings:
                 print(

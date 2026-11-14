@@ -26,6 +26,7 @@ from scripts.lib.gate.ci_gate_contract import (
     public_root_gate_ids,
     select_public_suites,
     validate_gate_registry,
+    validate_rule_owners,
 )
 
 WORKFLOW_CONTRACT: Final = pathlib.PurePosixPath(".github/workflow-contract.yml")
@@ -1358,7 +1359,10 @@ def validate_workflows(
 ) -> tuple[WorkflowFinding, ...]:
     findings: list[WorkflowFinding] = [
         _finding(finding.code, finding.path, finding.message)
-        for finding in validate_gate_registry(root, contract.gate_registry)
+        for finding in (
+            *validate_gate_registry(root, contract.gate_registry),
+            *validate_rule_owners(root, contract.gate_registry),
+        )
     ]
     try:
         documents = load_workflows(root)
