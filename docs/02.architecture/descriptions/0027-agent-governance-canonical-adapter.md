@@ -163,6 +163,7 @@ This description records no failure boundary beyond its Risks: static renderer p
 
 - [canonical agent governance bootstrap](../../../.agents/governance/bootstrap.md)
 - [Stage 99 Registry](../../99.templates/registry.json)
+- SPEC-0264 (retired; version history) delivered folder guides through the provider adapters and the shared hook dispatcher.
 
 #### Evolution
 

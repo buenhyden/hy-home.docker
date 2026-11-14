@@ -53,9 +53,6 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0218 | [공통 control·예외](./0218-common-controls-and-exceptions/) | root·LAB 모든 서비스의 최종 control을 정확한 예외와 대조, secret group·capability·PID 예산 정리 |
 | SPEC-0244 | [Native memory 통제 검증](./0244-native-memory-controlled-verification/) | Claude native memory effective-state와 hook delivery를 설정·메뉴·영수증별로 분리해 통제 검증 |
 | SPEC-0245 | [Observability CA 실행](./0245-observability-ca-execution/) | Prometheus·Gatus의 백업·격리 복원 검증 후 순차 CA 재생성과 rollback 경계 |
-| SPEC-0248 | [Archive·migration 검사 폐기](./0248-archive-and-migration-check-retirement/) | Stage 98 기록과 migration ledger를 검증하던 gate를 삭제하고 현재 검사가 쓰는 읽기 전용 loader와 legacy 허용만 남겨 목록으로 관리 |
-| SPEC-0249 | [Stage 98 archive 삭제](./0249-stage98-archive-deletion/) | Stage 98 기록을 01·02 문서에 요약하고 삭제하며, 폐기 번호를 Registry `reserved_history`로 옮기고 archive를 읽던 검사를 제거 |
-| SPEC-0250 | [완료 Spec package 삭제](./0250-finished-spec-package-deletion/) | 모든 문서가 terminal인 Spec package를 삭제하고 번호를 Registry `reserved_history`에 예약하며, 현재 문서의 링크를 일반 텍스트로 바꿈 |
 | SPEC-0251 | [README와 AGENTS.md 분리](./0251-readme-and-agents-guide-split/) | README는 사람, 폴더 AGENTS.md는 AI agent를 대상으로 나누고, AGENTS.md를 둘 폴더의 규칙과 9개 폴더 guide를 정합니다 |
 | SPEC-0253 | [QA·CI legacy 정리](./0253-qa-ci-legacy-cleanup/) | 빈 frozen archive payload 경계와 삭제된 Task를 가리키던 CI gate evidence owner를 정리하고, 일회성 script·test를 점검합니다 |
 | SPEC-0254 | [Agent guide 후속 정리](./0254-agent-guide-follow-ups/) | infra README의 개별 stage 링크를 정리하고, 폴더 guide 변경이 agent-governance suite를 고르게 하며, guide type을 `common/agent-guide`로 바꾸고 guide를 사용 상태로 전환합니다 |
@@ -64,11 +61,8 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0257 | [구현 정합성 수정 2차](./0257-implementation-alignment-batch2/) | infra README의 운영 문서 경로, Grafana 링크, Registry의 깨진 예외 항목, 누락된 secret 이름을 바로잡습니다. |
 | SPEC-0259 | [구현 정합성 수정 3차](./0259-implementation-alignment-batch3/) | 삭제된 Spec 경로를 라벨로 쓰는 Stage 02 링크, OpenBao audit 서술, 구현과 일치하는 Stage 05 문서의 승격을 다룹니다 |
 | SPEC-0261 | [REQ-0027 승인](./0261-req-0027-approval/) | REQ-0027 요구사항 승인과, 구현과 일치하는 AD-0031, AD-0032, Stage 05 문서의 승격을 다룹니다 |
-| SPEC-0260 | [SPEC-0209·0231 삭제](./0260-spec-0209-0231-retirement/) | generation 5·6 migration proof를 generation 6 revision에서 읽게 하고, proof를 지녔던 두 package를 삭제해 번호를 Registry `reserved_history`에 예약함 |
 | SPEC-0262 | [분석 서비스 LAB 이전](./0262-analytics-labs-migration/) | Lakehouse, dbt, Superset, JupyterLab, SonarQube, Stalwart를 root Compose에서 독립 LAB entrypoint로 옮기고, 참조와 Stage 05 문서를 `15-labs`로 정리함 |
 | SPEC-0263 | [LAB 이전 계약](./0263-lab-promotion-contract/) | LAB의 표준 구조, 이전 명세, LAB secret 복사본, infra·운영 문서 이동 규칙, 이전 전 자원 공존 점검과 세 가지 이전 절차를 정함 |
-| SPEC-0264 | [폴더 guide 전달](./0264-folder-guide-delivery/) | Codex와 Claude가 읽지 못하는 폴더 AGENTS.md를 Claude는 생성된 폴더 `CLAUDE.md` import shim으로, Codex는 공유 hook으로 받게 함 |
-| SPEC-0265 | [Hermes 보고서 원문 계약](./0265-hermes-report-source-capture/) | Hermes가 Gateway로 보내는 `source_text`를 확정된 전체 일일 보고서 원문으로 바꾸고, 이메일·Telegram·Gateway가 같은 저장 바이트에서 나오게 하며, schema 5 전환과 backfill 제외를 운영 작업으로 분리함 |
 
 | SPEC-0270 | [공유 기억 용량·검색](./0270-shared-memory-capacity-and-search/) | 1 GiB 공통 용량 원장, 읽기 전용 검색, 수동·일일·offsite 백업 예약과 중단 복구를 구현함 |
 

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.59.0"
+version: "1.61.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -148,7 +148,7 @@ handoffs, not as this Task's changes.
 W115 in TSK-0057 runs the v14.2 W02 archive and safe-removal assessment.
 Removal candidates get readiness and byte-recovery proofs first; deletion
 waits for the owner's approval of each batch. The SPEC-0248, 0249, 0250 and
-0260 Tasks keep their own residual criteria.
+0260 packages were later removed by W124.
 
 W116 in TSK-0058 runs the v14.2 W03 template, metadata and relation work; W05
 owns the validators. Its H2-retention decision Q-03 was superseded on
@@ -175,7 +175,10 @@ promotion and state-axis meaning.
 
 W122 in TSK-0064 runs v14.7 W05: the validator handoffs, each enforced with a
 failing and a passing test or recorded with its owner. W123 in the same Task
-derives reverse lookups and Change Impact (the TSK-0062 GAP).
+derives reverse lookups and Change Impact (the TSK-0062 GAP). W124 in the same
+Task removes the six packages the readiness report lists, with the owner's
+approval. W125 closes the W05-primary QA cases the conformance audit found
+open.
 
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
@@ -350,6 +353,8 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W121 | 116 | Bind the Registry `common` heading values to the profiles' common form and read them in the Spec Package reader (H-07); state the promotion owners, state axes, transition events and acceptance and readiness rules in the SDLC policy; record a verdict per W04 ID | W120 | TSK-0063 | RED and GREEN Registry and reader tests, reader regression suites, per-ID verdicts with handoffs, metadata, links, lifecycle and governance checks, independent review |
 | W122 | 117 | Enforce the W05 handoffs a checker can hold: disposition reachability, the TemplateDefinition empty rule, the glossary-contract comparison, the Release role guard, operations currency and link types; record a verdict and owner per handoff | W121 | TSK-0064 | RED and GREEN Registry, TemplateDefinition and metadata tests, historical Registry validation, metadata, links, lifecycle and governance checks, independent review |
 | W123 | 118 | Derive reverse lookups and Change Impact from `parent_ids`, `supersedes` and untitled or `normative` links in a report-only `check-document-links.py --impact`; require each `consumer_paths` entry to be a tracked file; state both in the protocol | W122 | TSK-0064 | RED and GREEN link tests, links and lifecycle checks, independent review |
+| W124 | 119 | Remove SPEC-0248, 0249, 0250, 0260, 0264 and 0265 under the retirement preconditions: Promotion Receipt per package, lineage in the Stage 01 and 02 owners, consumers updated, numbers reserved, last commit and reachability recorded | W123 | TSK-0064 | Corpus lifecycle, links alignment and commands, metadata check-changed, governance contract, script manifest, unit regression |
+| W125 | 120 | Gate crosswalk and typed `guarantee` (QA-C05); PASS reuse bound to lock digests and the Grype database identity (QA-C07); staged-index tests named (QA-C08); full SemVer 2.0.0 with precedence comparison; local timing baseline (QA-08); version-object inventory columns | W124 | TSK-0064 | RED and GREEN gate, evidence, release and Registry tests, workflow-contract and manifest checks, independent review, remote candidates |
 
 #### Current v30 continuation and delivery
 
@@ -729,6 +734,19 @@ pull request; TSK-0064's Promotion Receipt records each target.
 W123 promotes to `.agents/governance/documentation-protocol.md` (the
 Relations derivation and the Change Impact row). The handoff condition is the
 merge of its pull request; TSK-0064's Promotion Receipt records the target.
+
+W124 promotes nothing new: each removed package's durable meaning already lives in
+the documentation protocol, the Registry `reserved_history`, the provider
+adapters, the folder guide library, the workload README and ADR-0060.
+TSK-0064's Promotion Receipt names the target, phrase and commit per package;
+the handoff condition is the merge of its pull request.
+
+W125 promotes to `.github/workflow-contract.yml` (`guarantee`, `security_db`),
+`docs/99.templates/contracts/document-frontmatter.schema.json` and
+`docs/99.templates/contracts/document-profile.schema.json` (SemVer patterns)
+and `.agents/governance/documentation-protocol.md` (Version objects). The
+handoff condition is the merge of each pull request; TSK-0064's Promotion
+Receipt records each target.
 
 - [Master workspace reconciliation](tasks/tsk-0053-master-workspace-reconciliation.md)
 - [v14.7 W00 intake](tasks/tsk-0059-w00-v14-7-intake.md)

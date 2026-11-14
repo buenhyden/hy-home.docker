@@ -115,7 +115,7 @@ reserved-number rule for Stage 03; the Requirement loader enforces it for Stage
 - [REQ-0026 Document retention and retirement](../../01.requirements/0026-document-retention-and-retirement.md)
 - [AD-0030 Document lifecycle governance](../descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0037 Package waiting and Task cancellation](0037-package-disposition-wait-and-task-cancellation.md)
-- [SPEC-0249 Stage 98 archive deletion](../../03.specs/0249-stage98-archive-deletion/spec.md)
+- SPEC-0249 Stage 98 archive deletion (retired; version history)
 - [Documentation protocol](../../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)
 
 ### Supersession

@@ -102,7 +102,7 @@ needs without naming an engine.
 
 ### Verification Method
 
-Each condition is judged by reviewing the documented engine boundaries and the acceptance evidence the condition names; latency is claimed only from separate benchmark evidence. SPEC-0212, SPEC-0262 and SPEC-0265 cite REQ-0005, with SPEC-0262 covering the lakehouse LAB; their Task evidence rows record the review and any benchmark. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+Each condition is judged by reviewing the documented engine boundaries and the acceptance evidence the condition names; latency is claimed only from separate benchmark evidence. SPEC-0212 and SPEC-0262 cite REQ-0005, with SPEC-0262 covering the lakehouse LAB; their Task evidence rows record the review and any benchmark. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
 
 ## Traceability
 
@@ -117,4 +117,5 @@ document governs it.
 - **Spec**: [SPEC-0262 analytics LAB migration](../03.specs/0262-analytics-labs-migration/spec.md); SPEC-0180 (lakehouse adoption and the removal of ksqlDB and StarRocks) is retired and its body is in version history.
 - **Guide**: [Operations guides](../05.operations/guides/README.md)
 - **ADR**: [ADR-0062 HOME Membership and Planned LABs](../02.architecture/decisions/0062-home-lab-membership.md) (supersedes ADR-0015), [0047-dev-timescale-influx-retirement-and-load-tools.md](../02.architecture/decisions/0047-dev-timescale-influx-retirement-and-load-tools.md)
+- **SPEC-0265** (retired; version history) captured the Hermes report source; ADR-0060 holds the contract.
 - **Retired domain Spec SPEC-0005** (data-analytics): replaced by the data-analytics guides, policies and runbooks in the operations catalog under `docs/05.operations/`.
