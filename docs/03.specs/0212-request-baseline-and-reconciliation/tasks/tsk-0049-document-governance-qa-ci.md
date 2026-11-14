@@ -1,6 +1,6 @@
 ---
 title: "Documentation, Governance, QA and CI Contract Task"
-version: "0.3.1"
+version: "0.4.0"
 type: "sdlc/task"
 owner: "@buenhyden"
 updated: "2026-11-15"
@@ -67,6 +67,20 @@ The execution items and lifecycle events below record this Task's work.
   `tasks/tsk-0001-qa-ci-legacy-cleanup.md`. Before removal each body at that
   commit was byte-identical to `main` at `6c51e726b`.
 - After #1026 merged (`7053107`), each removed SPEC-0253 body was restored from `fb9ab7dd3` with exit 0, its bytes matched the pre-removal body (sha256 d82754266146, ac8438f8f76c, d05f59d126d0 for spec, plan, Task), and `fb9ab7dd3` is reachable from `main`.
+- On 2026-11-15 the owner approved retiring the ready SPEC-0257, SPEC-0261 and
+  SPEC-0270 packages ("Retire all three"; readiness `ready`, their Tasks
+  completed in #1027). Their lineage moves to REQ-0024, REQ-0026, REQ-0027,
+  AD-0027 and AD-0030 Traceability, the Stage 03 README rows are removed, and
+  257, 261 and 270 join the Registry Spec `reserved_history`. The last commit
+  carrying each removed body is `e80789fb5`, reachable from `main`, for
+  `docs/03.specs/0257-implementation-alignment-batch2/`,
+  `docs/03.specs/0261-req-0027-approval/` and
+  `docs/03.specs/0270-shared-memory-capacity-and-search/`, each with `spec.md`,
+  `plan.md` and its `tasks/tsk-0001-*.md`. Before removal each body at that
+  commit was byte-identical to `main` at `b6b73ece1`.
+- The restic daily-path snapshot accounting redesign that SPEC-0270 deferred has
+  no open Spec; it needs a new Spec before the daily path gains admission
+  gating.
 
 ## Verification Evidence
 

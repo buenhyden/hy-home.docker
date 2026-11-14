@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.62.1"
+version: "1.62.2"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -130,8 +130,8 @@ reopen installation. The decisions for criteria 66 to 71 are in
 Terminal bodies stay unchanged; this is the current correction route.
 
 W111 in TSK-0053 assesses the108 master requirements and supplements and
-owns scoped current-guidance corrections. SPEC-0270 separately owns the
-approved memory capacity/search/backup follow-up. The concurrently issued
+owns scoped current-guidance corrections. SPEC-0270 (retired; version history)
+delivered the approved memory capacity, search and backup follow-up. The concurrently issued
 TSK-0052 owns the supply-chain successor criteria104/105/W109-W110.
 
 W112 in TSK-0054 diagnoses and fixes the failing Hermes `devops` daily brief;
@@ -216,7 +216,6 @@ The plan works under the approved SPEC-0212; the direct user request authorizes 
 The approved Spec, and the related current owners this plan coordinates with (Spec 0270 and the 0204 Plan):
 
 - [Spec](spec.md)
-- [Memory capacity and search](../0270-shared-memory-capacity-and-search/spec.md)
 - [Integration plan](../0204-service-integration-security-and-operations/plan.md)
 
 ### Dependency Order

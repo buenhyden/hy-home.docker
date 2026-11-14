@@ -1,6 +1,6 @@
 ---
 title: "명세 패키지"
-version: "1.3.15"
+version: "1.3.16"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -57,13 +57,9 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0254 | [Agent guide 후속 정리](./0254-agent-guide-follow-ups/) | infra README의 개별 stage 링크를 정리하고, 폴더 guide 변경이 agent-governance suite를 고르게 하며, guide type을 `common/agent-guide`로 바꾸고 guide를 사용 상태로 전환합니다 |
 | SPEC-0255 | [구현 정합성 수정](./0255-implementation-alignment-fixes/) | 감사에서 확인된 문서와 구현의 차이 중 열린 branch 밖의 항목을 고칩니다: AD-0026 network, 삭제된 Spec을 현재 소유자로 가리키는 문구, 운영 문서의 secret 이름과 database 목록 |
 | SPEC-0256 | [Legacy 문서 상태 금지](./0256-legacy-document-status-ban/) | Stage 01~03 lifecycle에서 legacy 상태와 lineage key를 없애고, ADR-0011을 요약·삭제하며, archive scaffolding을 정리함 |
-| SPEC-0257 | [구현 정합성 수정 2차](./0257-implementation-alignment-batch2/) | infra README의 운영 문서 경로, Grafana 링크, Registry의 깨진 예외 항목, 누락된 secret 이름을 바로잡습니다. |
 | SPEC-0259 | [구현 정합성 수정 3차](./0259-implementation-alignment-batch3/) | 삭제된 Spec 경로를 라벨로 쓰는 Stage 02 링크, OpenBao audit 서술, 구현과 일치하는 Stage 05 문서의 승격을 다룹니다 |
-| SPEC-0261 | [REQ-0027 승인](./0261-req-0027-approval/) | REQ-0027 요구사항 승인과, 구현과 일치하는 AD-0031, AD-0032, Stage 05 문서의 승격을 다룹니다 |
 | SPEC-0262 | [분석 서비스 LAB 이전](./0262-analytics-labs-migration/) | Lakehouse, dbt, Superset, JupyterLab, SonarQube, Stalwart를 root Compose에서 독립 LAB entrypoint로 옮기고, 참조와 Stage 05 문서를 `15-labs`로 정리함 |
 | SPEC-0263 | [LAB 이전 계약](./0263-lab-promotion-contract/) | LAB의 표준 구조, 이전 명세, LAB secret 복사본, infra·운영 문서 이동 규칙, 이전 전 자원 공존 점검과 세 가지 이전 절차를 정함 |
-
-| SPEC-0270 | [공유 기억 용량·검색](./0270-shared-memory-capacity-and-search/) | 1 GiB 공통 용량 원장, 읽기 전용 검색, 수동·일일·offsite 백업 예약과 중단 복구를 구현함 |
 
 처분된 package의 본문은 Git 이력에서 찾습니다.
 package가 removal review 준비 상태인지는 [SDLC](../../.agents/governance/sdlc.md#sequence)

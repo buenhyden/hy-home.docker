@@ -79,8 +79,8 @@ case "$action" in
         done
         ;;
     backup)
-        # Daily path stays ungated until SPEC-0270 redesigns snapshot
-        # accounting; budget-backup keeps the admission-gated route.
+        # Daily path stays ungated; snapshot accounting is not admission-gated
+        # yet, and budget-backup keeps the admission-gated route.
         for set in $SETS; do
             require_initialized "$set"
         done
