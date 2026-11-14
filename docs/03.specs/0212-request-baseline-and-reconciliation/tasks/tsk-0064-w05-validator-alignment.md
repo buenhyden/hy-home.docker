@@ -1,6 +1,6 @@
 ---
 title: "v14.7 W05 Validator Alignment Task"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -222,7 +222,7 @@ to W04 blocks W05. Findings and actions:
 | `sdlc.md` and `workflows.md` keep a workflow form, not the Policy form | UNCONFIRMED | Confirmed on D3: a separate role; the Registry already keeps it outside the 16 common roles, so TSK-0060 "16 of 16 roles" holds |
 | `sdlc.md` said the reader did not yet check the 1.9.0 rules | Stale after H-W04-1 | Fixed (`e35700381`, 1.9.1): it names what the corpus check applies and that no entrypoint runs readiness |
 | Document `version` allows release values only | CONFLICT | Fixed on the owner's 2026-11-14 choice to follow the W05 SemVer requirement (W125, #1001): full SemVer 2.0.0 accepted and compared by precedence; the earlier "Kept" was an agent judgement, not an owner decision |
-| H-W04-7 removal of 0248, 0249, 0250, 0260, 0264, 0265 | REMAINING | Done in W124, pending merge; see Package removal 2026-11-14; the post-merge byte-compare restore is `NOT_RUN` |
+| H-W04-7 removal of 0248, 0249, 0250, 0260, 0264, 0265 | REMAINING | Done in W124 (#1003, `ca5dc8f4a`); the post-merge restore passed |
 | SPEC-DISPOSITION per-criterion depth, Stage 02 currency, OPEN-07 | UNVERIFIED | W11 |
 | R147-07 SDLC and document-stage binding rows; Git cells | UNVERIFIED | Rows: W11 check; Git cells: W06 (H-09) |
 | OPEN-08, OPEN-10 live operations | UNVERIFIED | W10 |
@@ -309,9 +309,9 @@ SPEC-0265: criteria 1 to 14 `accepted` (owner accepted 2026-11-11 (12 to 14) and
 | `docs/03.specs/0265-hermes-report-source-capture/spec.md` | `68de09cc3a27` | yes |
 | `docs/03.specs/0265-hermes-report-source-capture/tasks/tsk-0001-report-source-capture.md` | `6d092b6dc7ea` | yes |
 
-Post-merge restore and byte comparison (precondition 5): `NOT_RUN`. It needs
-the merge commit; after merge this Task restores each body from the commit
-above and compares its bytes.
+Post-merge restore and byte comparison (precondition 5): `PASS` after merge
+`ca5dc8f4a`; all 18 bodies restored from the commits above match byte for
+byte (W124 post-merge restore rerun).
 
 #### Handoff Verdicts
 
@@ -483,6 +483,8 @@ above and compares its bytes.
 | W125 record links commands | 120 | W125 | links-commands | `check-document-links.py --mode commands` on this record change, first with a 400 s limit, then without | FAIL | exit 124 at the 400 s limit, no output: the limit, not a finding | required | - |
 | W125 record links commands rerun | 120 | W125 | links-commands | Same command and tree without the limit | PASS | documents=891 links=8605 failures=0 in 467 s | required | W125 record links commands |
 | W125 record checks | 120 | W125 | document-checks | This record change after merging main: corpus lifecycle, links alignment, governance contract, metadata check-changed, `test_spec_packages` | PASS | violations=0; PASS; failures=0; selected=33 violations=0; `test_spec_packages` OK (count not captured) | required | - |
+| Remote candidate 1003 | 119 | W124 | remote-ci | PR #1003 head `95252f0a5`, merged as `ca5dc8f4a` | PASS | candidate-quality (4m27s), CodeQL and GitGuardian passed | required | - |
+| W124 post-merge restore rerun | 119 | W124 | byte-compare-restore | After merge `ca5dc8f4a`: each of the 18 removed files restored with `git show <recorded commit>:<path>` and compared by SHA-256 with the body at the merge's first parent `9e4c8f361`; reachability from `main` and absence on `main` checked | PASS | rows=18 restored_equal=18 problems=0 | required | W124 post-merge restore |
 | QA-08 timing baseline | 120 | W125 | timing-baseline | Each `tests.lib.document_governance` module timed alone at `09778b761`, Python 3.12.3, with other test runs sharing the host | PASS | 22 modules, 921 tests, 2,283 s in total; slowest `test_spec_packages` 827 s, `metadata.test_reference` 409 s, `test_operations_catalog` 329 s, `test_links` 191 s; host load inflates these, so they are an upper bound | optional | - |
 
 ### Resolution Links
@@ -497,8 +499,9 @@ Relation lookup RED and Consumer paths RED are resolved by their GREEN rows,
 and the W123 review FAIL by the W123 re-review. Crosswalk RED, Guarantee RED,
 Reuse lock digest RED, SemVer precedence RED and Security DB RED are resolved
 by their GREEN rows; the Crosswalk, SemVer and Security DB review FAILs by
-their re-reviews; the Routing suite FAIL by its rerun; and the W125 record
-links commands FAIL by its rerun. The Integrated review FAIL is resolved by
+their re-reviews; the Routing suite FAIL by its rerun; the W125 record
+links commands FAIL by its rerun; and the W124 post-merge restore `NOT_RUN` by
+its rerun. The Integrated review FAIL is resolved by
 the Integrated re-review. The W05 review and
 W05 re-review FAILs are resolved by the W05 final review, and the Spec Package
 regression by its rerun.
@@ -511,7 +514,7 @@ regression by its rerun.
 | --- | --- | --- | --- | --- |
 | 117 | accepted | Disposition GREEN, TemplateDefinition GREEN, Vocabulary 1.1.0 GREEN, Release GREEN, Link title GREEN, Currency GREEN, SemVer GREEN, Integrated checks, Integrated re-review, Remote candidate 996 final | Owner @buenhyden accepted on 2026-11-14 in this chat, after #996 merged; hosted CI wiring of the local-only leaves stays with H-W05-1 (W06) | SPEC-0212 TSK-0064 |
 | 118 | accepted | Relation lookup GREEN, W123 review fixes, Consumer paths GREEN, W123 re-review, W123 regression, Remote candidate 998 | Owner @buenhyden accepted on 2026-11-14 in this chat, after #998 merged | SPEC-0212 TSK-0064 |
-| 119 | pending | - | The six packages are removed in this change with the owner's 2026-11-14 approval; the checks, the remote candidate, the merge and the post-merge restore remain, and the owner's acceptance | SPEC-0212 TSK-0064 |
+| 119 | pending | - | The six packages are removed (#1003, `ca5dc8f4a`) and the post-merge restore passed; the owner's acceptance remains | SPEC-0212 TSK-0064 |
 | 120 | pending | - | #999, #1001 and #1002 are merged; the owner's acceptance remains | SPEC-0212 TSK-0064 |
 
 ### Remaining Conditions
@@ -548,12 +551,11 @@ Q-07 runs only after W11.
 The W122 commits reached `main` through PR #996, merged as `5a1aa4b98`; W123
 through PR #998 (`a4142f99a`); and the W125 commits through PR #999
 (`dd6e4a0e1`), PR #1001 (`e249285b2`) and PR #1002 (`9e4c8f361`), all with
-merge commits. W124 waits for its pull request.
+merge commits; W124 through PR #1003 (`ca5dc8f4a`).
 
 ### Next Owner
 
-The current owner is @buenhyden. Resume from `main` after the W124 pull
-request merges: run the W124 post-merge restore, record each
-remote candidate, and ask for acceptance of criteria 119 and 120. W06 takes
+The current owner is @buenhyden. Resume from `main`: the owner's
+acceptance of criteria 119 and 120 remains. W06 takes
 H-W05-1 as listed under Blockers and Decisions; SPEC-0204 TSK-0011 takes the
 OPEN-11 rerun.
