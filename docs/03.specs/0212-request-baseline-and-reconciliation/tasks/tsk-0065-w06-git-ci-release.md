@@ -117,31 +117,45 @@ rules version is the file at the candidate SHA (`.pre-commit-config.yaml`,
 uv and Actions pinned by SHA, and `pre-commit` hook `rev:` pins; the hosted
 evidence is the gate evidence artifact, kept 14 days.
 
-| Cell | Trigger and input | SHAs | Runner | Entrypoint | Action | Invalidation | Failure | Evidence | Approval |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Commit before | agent route; index tree | HEAD, index tree | local | `run-ci-precommit.sh --mode local-staged` | RUN | index change | non-zero exit, no commit | Task | none |
-| Commit during | `git commit`; index and message file | HEAD, index | local, bypassable | installed `pre-commit` and `commit-msg` | RUN | `--no-verify` | blocks the commit | terminal | none |
-| Commit after | no hook | n/a | n/a | n/a | NOT_APPLICABLE | n/a | n/a | n/a | n/a |
-| Push before | `git push`; refs on stdin | remote old, local new | local, bypassable | `pre-push-guard.sh` | RUN | hook not installed | refuses `refs/heads/main` | stderr | none |
-| Push during | server ref update | old, new | hosted | branch protection | OBSERVE | settings change | server refuses | read-back | owner |
-| Push after | `push` on `main` | parent, `GITHUB_SHA` | hosted | `main-security` | OBSERVE | next push | reports only | security evidence artifact | `security-events: write` |
-| PR before | none | n/a | n/a | n/a | NOT_APPLICABLE | n/a | n/a | n/a | opening a PR is a remote write |
-| PR during | `pull_request`; merge ref | base, head, merge `GITHUB_SHA` | hosted, `contents: read` | candidate shards, then the `candidate-quality` aggregate | RUN | new push or base move | fails closed | per-shard evidence artifact | none |
-| PR after | job end; evidence files | as PR during | hosted | `actions/upload-artifact` | OBSERVE | rerun | missing artifact | same | none |
-| Merge before | merge attempt; required check | strict up to date | hosted | branch protection | RUN (server) | base move | blocks | check status | owner |
-| Merge during | merge commit; no `merge_group` | n/a | n/a | n/a | NOT_APPLICABLE | n/a | n/a | n/a | a queue needs approval |
-| Merge after | `push` on `main`; merged SHA | candidate tree | hosted | `main-security` | REUSE | n/a | reports only | security evidence artifact | as Push after |
+| Cell | Stages (SDLC; DOC) | Trigger and input | SHAs | Runner | Entrypoint | Writer | Consumer | Action | Invalidation | Failure | Evidence | Approval |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Commit before | SDLC-IMPLEMENTATION; changed paths' DOC stage | agent route; index tree | HEAD, index tree | local | `run-ci-precommit.sh --mode local-staged` | agent in its worktree | the commit hook | RUN | index change | non-zero exit, no commit | Task | none |
+| Commit during | SDLC-IMPLEMENTATION; changed paths' DOC stage | `git commit`; index and message file | HEAD, index | local, bypassable | installed `pre-commit` and `commit-msg` | committer | Git | RUN | `--no-verify` | blocks the commit | terminal | none |
+| Commit after | n/a | no hook | n/a | n/a | n/a | n/a | n/a | NOT_APPLICABLE | n/a | n/a | n/a | n/a |
+| Push before | SDLC-IMPLEMENTATION; n/a | `git push`; refs on stdin | remote old, local new | local, bypassable | `pre-push-guard.sh` | pusher | Git | RUN | hook not installed | refuses `refs/heads/main` | stderr | none |
+| Push during | SDLC-PROMOTION; n/a | server ref update | old, new | hosted | branch protection | owner (settings) | GitHub | OBSERVE | settings change | server refuses | read-back | owner |
+| Push after | SDLC-OPERATIONS; DOC-S00 to DOC-S99 by path | `push` on `main` | parent, `GITHUB_SHA` | hosted | `main-security` | workflow run | code scanning, owner | OBSERVE | next push | reports only | security evidence artifact | `security-events: write` |
+| PR before | n/a | none | n/a | n/a | n/a | n/a | n/a | NOT_APPLICABLE | n/a | n/a | n/a | opening a PR is a remote write |
+| PR during | SDLC-IMPLEMENTATION, SDLC-SPEC; DOC stages by path rule | `pull_request`; merge ref | base, head, merge `GITHUB_SHA` | hosted, `contents: read` | candidate shards, then the `candidate-quality` aggregate | workflow run | aggregate, branch protection | RUN | new push or base move | fails closed | per-shard evidence artifact | none |
+| PR after | SDLC-VERIFICATION; same | job end; evidence files | as PR during | hosted | `actions/upload-artifact` | workflow run | Task evidence, reviewer | OBSERVE | rerun | missing artifact | same | none |
+| Merge before | SDLC-VERIFICATION; n/a | merge attempt; required check | strict up to date | hosted | branch protection | GitHub | merger | RUN (server) | base move | blocks | check status | owner |
+| Merge during | n/a | merge commit; no `merge_group` | n/a | n/a | n/a | n/a | n/a | NOT_APPLICABLE | n/a | n/a | n/a | a queue needs approval |
+| Merge after | SDLC-PROMOTION; DOC stages by path | `push` on `main`; merged SHA | candidate tree | hosted | `main-security` | workflow run | Task promotion receipt | REUSE | n/a | reports only | security evidence artifact | as Push after |
 
-Required counterexamples: partial stage, newline and leading-space filenames,
-a one-parent commit with a merge subject, PR parents differing from base and
-head, skipped or zero-test leaves, cancellation, toolchain drift, YAML `on`
-spellings, permission co-mutation and tracked worktree drift each have a test
-(this run's branches add the ones they name in Evidence). The aggregate over
-shard conclusions, `merge_group` without approval, other-run artifacts,
-deleting `main` or a first push at the pre-push guard, and the absence of a
-`post-commit` hook are added by this run's CI and hook units. The latest
-base move is held by strict branch protection and is recorded as a server
-observation.
+Required counterexamples, each mapped to a test read on 2026-11-14 (the
+`tests/` prefix is omitted):
+
+| Counterexample | Test | Source |
+| --- | --- | --- |
+| Partial stage | `validation/test_ci_gate_plan.py` `test_automatic_pre_commit_sees_index_content_and_untracked_paths` | existing |
+| Newline and leading-space filenames | `validation/test_agent_governance_ci_routing.py` `test_installed_commit_hook_checks_index_for_awkward_filenames` | #1005 |
+| First push and ref deletion | same file, `test_guard_stdin_refuses_main_deletion_and_allows_new_branch` | #1005 |
+| Latest base move | none; strict branch protection refuses an out-of-date head | server observation |
+| PR head, merge SHA and parents | `lib/gate/test_ci_gate_adapters.py` `test_pr_range_rejects_wrong_merge_parents_and_empty_history`; `validation/test_ci_gate_plan.py` `test_pull_request_identity_is_bound_to_raw_merge_topology` | existing |
+| Skipped, neutral, cancelled, timed out, failed or missing shard | `lib/gate/test_github_workflow_contract.py` `test_aggregate_fails_unless_every_needed_job_succeeded` | shard PR |
+| Skipped or zero tests in a leaf | `lib/gate/test_ci_gate_adapters.py` `test_required_unittest_gate_rejects_skipped_tests`, `test_run_unittest_rejects_zero_tests_and_missing_execution_summary` | existing |
+| Another run's or revision's evidence | `lib/gate/test_ci_gate_evidence.py` `test_open_rejects_evidence_seeded_by_another_run_or_revision` | shard PR |
+| Permission co-mutation | `lib/gate/test_github_workflow_contract.py` `test_required_permission_contract_co_mutations_fail_baseline` | existing |
+| `merge_group` without a queue | same file, `test_merge_group_trigger_is_rejected_even_when_the_contract_lists_it` | shard PR |
+| `post-commit` failure | `validation/test_agent_governance_ci_routing.py` `test_default_install_hook_types_have_no_post_commit_claim`; no hook exists to fail | #1005 |
+| YAML `on` spellings | `lib/gate/test_github_workflow_contract.py` `test_mixed_yaml_on_spellings_are_rejected_as_ambiguous` | existing |
+| Stale generator | `validation/test_script_manifest.py` `test_generated_checks_fail_closed_on_stale_missing_and_mutating_commands` | existing |
+| Toolchain drift | `lib/gate/test_ci_gate_evidence.py` `test_other_python_version_is_rejected`; `validation/test_ci_gate_plan.py` `test_local_run_with_a_mismatched_toolchain_executes_nothing` | existing |
+| One-parent commit with a merge subject | `lib/gate/test_ci_gate_adapters.py` `test_commit_range_rejects_a_single_parent_merge_prefixed_commit` | #1005 |
+| Tracked worktree drift | `validation/test_ci_gate_plan.py` `test_local_evidence_head_rejects_tracked_worktree_drift` | existing |
+
+A job's `needs` result is never `neutral` on GitHub; the case is tested so
+the aggregate stays closed if a later check-run consumer reads it.
 
 #### Handoff Verdicts
 
@@ -211,6 +225,8 @@ no longer fits the 30-minute candidate job, which the shard split fixes.
 | Remote settings change | 121 | W126 | remote-mutation | PUT `actions/permissions` with `sha_pinning_required=true`; PUT `immutable-releases`, at the owner's direction | PASS | Before `false`/`enabled:false`; after `true`/`enabled:true` | required | - |
 | Preflight timing | 121 | W126 | timing-baseline | `bash scripts/validation/check-candidate-preflight.sh` at `abe66a156`, Python 3.12.3, run alone | PASS | exit 0 in 182 s; budget 900 s | optional | - |
 | Hooks and grammar | 121 | W126 | remote-candidate | PR #1005: merge-prefix grammar, one-parent merge-prefix rejection in `check-commit-range`, `--check-hooks`, release downgrade refusal; tests written RED first | PASS | `candidate-quality` success; merged as `bf81ab106`; two MEDIUM security findings fixed before merge | required | - |
+| Document version downgrade | 121 | W126 | remote-candidate | PR #1006: `check-document-metadata.py --mode check-changed` reports `version-downgrade` when a changed document's SemVer is lower than its base; `VersionDowngradeTests` written RED first | PASS | `candidate-quality` success in 9 min 55 s; merged as `f0b13094b`; review PASS; the SemVer parser is a private copy so `release.py` stays a standalone script | required | - |
+| Counterexample map | 121 | W126 | test-inventory | Read-only search of `origin/main` and `feat/w06-ci-split` for each required counterexample | PASS | Every case maps to a named test except the latest base move, a server observation; `neutral` was added to the aggregate test | required | - |
 | Shard split local | 121 | W126 | unit-tests | `feat/w06-ci-split` gate, workflow-contract, release and supply-chain suites, Python 3.12.3 | PASS | 204 tests OK before the main merge, 169 OK after; review PASS with M1–M3 fixed | required | - |
 
 ### Resolution Links
