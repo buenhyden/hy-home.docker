@@ -1,6 +1,6 @@
 ---
 title: "v14.7 W06 Git, CI and Release Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
