@@ -1,10 +1,10 @@
 ---
 title: "Lakehouse LAB"
-version: "1.0.1"
+version: "1.0.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 created: "2026-11-05"
 ---
 
@@ -71,7 +71,7 @@ labs/lakehouse/
 
 ### Security Boundary
 
-LAB은 HOME network에 연결되지 않으며 secret은 `LAB_SECRET_DIR` 아래 `lakehouse/s3_admin_secret_key.txt`, `lakehouse/s3_lakehouse_secret_key.txt` 파일로만 참조하고 값은 문서에 쓰지 않는다. 호스트 노출은 loopback `LAB_TRINO_HOST_PORT`, `LAB_FLINK_HOST_PORT`뿐이다.
+LAB은 HOME network에 연결되지 않으며 secret은 `LAB_SECRET_DIR` 아래 `lakehouse/s3_admin_secret_key.txt`(Compose secret `lab_lakehouse_s3_admin_secret_key`), `lakehouse/s3_lakehouse_secret_key.txt`(Compose secret `lab_lakehouse_s3_lakehouse_secret_key`) 파일로만 참조하고 값은 문서에 쓰지 않는다. 호스트 노출은 loopback `LAB_TRINO_HOST_PORT`, `LAB_FLINK_HOST_PORT`뿐이다.
 
 ## Development
 
@@ -107,6 +107,6 @@ docker compose --env-file labs/.env.example -f labs/lakehouse/docker-compose.yml
 | Entry point | [docker-compose.yml](docker-compose.yml) |
 | Project | `hy-home-lab-lakehouse` |
 | Services | `seaweedfs-table-bucket`, `spark`, `trino`, `great-expectations`, `flink-jobmanager`, `flink-taskmanager` |
-| Secret refs | `LAB_SECRET_DIR` 아래 `lakehouse/s3_admin_secret_key.txt`, `lakehouse/s3_lakehouse_secret_key.txt` |
+| Secret refs | `LAB_SECRET_DIR` 아래 `lakehouse/s3_admin_secret_key.txt`(Compose secret `lab_lakehouse_s3_admin_secret_key`), `lakehouse/s3_lakehouse_secret_key.txt`(Compose secret `lab_lakehouse_s3_lakehouse_secret_key`) |
 | Host exposure | loopback `LAB_TRINO_HOST_PORT`, `LAB_FLINK_HOST_PORT` |
 | Promotion | [promotion.yaml](promotion.yaml); 대상 미정(`undecided`) |
