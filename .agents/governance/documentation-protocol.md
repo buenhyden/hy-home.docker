@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.29.0"
+version: "4.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -469,8 +469,12 @@ publication applies it to the highest published release or tag, refuses a
 version of equal precedence to a published release, tag or CHANGELOG entry, and
 allows no backport: a version below the highest published release or tag is
 always refused. The document check applies it as the Document content row
-states. No other row has a gate that compares a changed value; its change is
-reviewed against the Compatibility surface.
+states. A product version row is checked in the same `check-changed` run, by
+its `version` field only: a changed value must be a valid SemVer value not
+lower than the merge base (`version-malformed`, `version-downgrade`), and an
+unchanged value with other edits to the file is allowed, because the product
+releases on its own cadence. The other rows have no gate that compares a
+changed value; their change is reviewed against the Compatibility surface.
 
 The Canonical source column is the one authored place; the Producer writes it,
 and the Compatibility surface is what its consumers depend on, so a change
@@ -485,10 +489,10 @@ product's change; a documentation change raises no other object's version.
 | `vocabulary-contract` | Registry `common.vocabulary_contract.version` | `1.1.0` | SemVer; the first adoption, from package label `v14.5` (kept as `source_label`), is 1.0.0, by the owner's decision recorded in SPEC-0212 TSK-0064 | `docs/99.templates/registry.json` | Glossary owner | Glossary `Contract Version` column, `vocabulary_contract_findings` | The common Term IDs, names, order and meanings | The shared contract, adopted per workspace |
 | `registry-serialization` | Registry `schema_version` | `1` | The Registry Schema Version, kept an integer by the same decision because its only consumer, the profile schema, pins `const: 1`; a breaking structure change raises it | `docs/99.templates/registry.json` | Stage 99 owner | Profile schema, `registry.py` | The JSON structure the profile schema and `registry.py` read | The Registry |
 | `product-release` | release version, tagged as `v` plus the version, and CHANGELOG | per release | SemVer, checked by `scripts/operations/release.py` against the published releases and tags; the `v` belongs to the tag, not the value; no backport | `CHANGELOG.md` dated heading, then the tag | The release workflow, through `release.py` | Release Runbook and the release workflow | The repository's published release | One tagged release |
-| `product-opsflow-smtp` | `version` in `package.json` | `0.1.0` | SemVer value; `package-lock.json` mirrors it | `infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json` | The node package's maintainer | npm, `package-lock.json` | The n8n node's parameters, credentials and outputs | The n8n community node package |
-| `product-hermes-publisher` | `version` in `pyproject.toml` | `1.0.0` | SemVer value | `infra/07-workflow/n8n/workloads/hermes-blog-ingestion/pyproject.toml` | The workload's maintainer | The Python build backend; installation reads only `requirements.lock` | The publisher's command line and the payloads it reads and writes | The hermes-blog-ingestion workload |
-| `product-storybook-nextjs` | `version` in `package.json` | `0.1.0` | SemVer value | `projects/storybook/nextjs/package.json` | The Storybook app's maintainer | npm, `package-lock.json` | The Storybook app's build outputs and exported design artifacts | The Storybook Next.js app |
-| `product-storybook-ui` | `version` in `package.json` | `0.2.0` | SemVer value | `projects/storybook/nextjs/packages/ui/package.json` | The UI package's maintainer | The Storybook app's workspace dependency | The exported components, props and design tokens | The `@hy-home/storybook-ui` workspace package |
+| `product-opsflow-smtp` | `version` in `package.json` | `0.1.0` | SemVer value, checked by `check-document-metadata.py --mode check-changed`; `package-lock.json` mirrors it | `infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json` | The node package's maintainer | npm, `package-lock.json` | The n8n node's parameters, credentials and outputs | The n8n community node package |
+| `product-hermes-publisher` | `version` in `pyproject.toml` | `1.0.0` | SemVer value, checked by `check-document-metadata.py --mode check-changed` | `infra/07-workflow/n8n/workloads/hermes-blog-ingestion/pyproject.toml` | The workload's maintainer | The Python build backend; installation reads only `requirements.lock` | The publisher's command line and the payloads it reads and writes | The hermes-blog-ingestion workload |
+| `product-storybook-nextjs` | `version` in `package.json` | `0.1.0` | SemVer value, checked by `check-document-metadata.py --mode check-changed` | `projects/storybook/nextjs/package.json` | The Storybook app's maintainer | npm, `package-lock.json` | The Storybook app's build outputs and exported design artifacts | The Storybook Next.js app |
+| `product-storybook-ui` | `version` in `package.json` | `0.2.0` | SemVer value, checked by `check-document-metadata.py --mode check-changed` | `projects/storybook/nextjs/packages/ui/package.json` | The UI package's maintainer | The Storybook app's workspace dependency | The exported components, props and design tokens | The `@hy-home/storybook-ui` workspace package |
 
 Not versions: `common.contract_id` and other contract identifiers, the
 `lifecycle_generation` counter, artifact numbers and identity-space
