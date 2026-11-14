@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import pathlib
 import subprocess
 import tempfile
@@ -558,3 +559,127 @@ class VersionChangeTests(unittest.TestCase):
         self.assertIs(semver, version_module.semver)
         self.assertFalse(hasattr(version_module, "_SEMVER"))
         self.assertFalse(hasattr(version_module, "compare_semver"))
+
+
+class ProductVersionTests(unittest.TestCase):
+    """The inventoried product version fields against the merge base."""
+
+    NODE = "projects/storybook/nextjs/package.json"
+    PYTHON = "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/pyproject.toml"
+
+    @staticmethod
+    def package(version: str | None, dependency: str = "1.0.0") -> str:
+        body = {"name": "x", "dependencies": {"left-pad": dependency}}
+        if version is not None:
+            body = {"name": "x", "version": version, **body}
+        return json.dumps(body, indent=2) + "\n"
+
+    @staticmethod
+    def project(version: str | None, dependency: str = "1.0.0") -> str:
+        line = "" if version is None else f'version = "{version}"\n'
+        return (
+            f'[project]\nname = "hermes-publisher"\n{line}'
+            f'dependencies = ["requests=={dependency}"]\n'
+        )
+
+    def findings(self, path: str, base: str | None, head: str | None):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            if base is not None:
+                (root / path).parent.mkdir(parents=True, exist_ok=True)
+                (root / path).write_text(base, encoding="utf-8")
+            self.assertEqual(0, git(root, "add", ".").returncode)
+            self.assertEqual(0, git(root, "commit", "-qm", "base").returncode)
+            base_ref = git(root, "rev-parse", "HEAD").stdout.strip()
+            if head is not None:
+                (root / path).parent.mkdir(parents=True, exist_ok=True)
+                (root / path).write_text(head, encoding="utf-8")
+            elif (root / path).exists():
+                (root / path).unlink()
+            return version_module.product_version_findings(root, base_ref)
+
+    def codes(self, path: str, base: str | None, head: str | None) -> list[str]:
+        return [finding.code for finding in self.findings(path, base, head)]
+
+    def test_inventory_lists_the_four_product_version_files(self) -> None:
+        self.assertEqual(
+            {
+                "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/"
+                "OpsflowSmtp/package.json",
+                self.PYTHON,
+                self.NODE,
+                "projects/storybook/nextjs/packages/ui/package.json",
+            },
+            set(version_module.PRODUCT_VERSION_FILES),
+        )
+
+    def test_a_lower_version_is_a_downgrade(self) -> None:
+        self.assertEqual(
+            ["version-downgrade"],
+            self.codes(self.NODE, self.package("1.2.0"), self.package("1.1.9")),
+        )
+        self.assertEqual(
+            ["version-downgrade"],
+            self.codes(self.PYTHON, self.project("1.0.0"), self.project("1.0.0-rc.1")),
+        )
+
+    def test_a_malformed_changed_version_is_refused(self) -> None:
+        for head in ("v1.2.0", "1.2", "01.2.0", "SPEC-0064", "14.7", ""):
+            with self.subTest(head=head):
+                self.assertEqual(
+                    ["version-malformed"],
+                    self.codes(self.NODE, self.package("1.0.0"), self.package(head)),
+                )
+        self.assertEqual(
+            ["version-malformed"],
+            self.codes(self.NODE, self.package("1.0.0"), self.package(None)),
+        )
+        self.assertEqual(
+            ["version-malformed"],
+            self.codes(self.PYTHON, self.project("1.0.0"), self.project("1.2")),
+        )
+
+    def test_a_raised_version_passes(self) -> None:
+        self.assertEqual(
+            [], self.codes(self.NODE, self.package("1.0.0"), self.package("1.0.1"))
+        )
+        self.assertEqual(
+            [],
+            self.codes(
+                self.PYTHON, self.project("1.0.0"), self.project("1.1.0-rc.1+build.7")
+            ),
+        )
+
+    def test_an_unchanged_version_with_other_edits_is_allowed(self) -> None:
+        # A product releases on its own cadence; the version field is the object.
+        self.assertEqual(
+            [],
+            self.codes(
+                self.NODE,
+                self.package("1.0.0"),
+                self.package("1.0.0", dependency="2.0.0"),
+            ),
+        )
+        self.assertEqual(
+            [],
+            self.codes(
+                self.PYTHON,
+                self.project("1.0.0"),
+                self.project("1.0.0", dependency="2.0.0"),
+            ),
+        )
+
+    def test_an_untouched_deleted_new_or_unparsable_file_is_not_compared(self) -> None:
+        base = self.package("1.0.0")
+        self.assertEqual([], self.codes(self.NODE, base, base))
+        self.assertEqual([], self.codes(self.NODE, None, self.package("0.0.1")))
+        self.assertEqual([], self.codes(self.NODE, base, None))
+        self.assertEqual([], self.codes(self.NODE, "{not json", self.package("0.1.0")))
+        self.assertEqual([], self.codes(self.NODE, base, "{not json"))
+
+    def test_only_the_inventoried_files_are_checked(self) -> None:
+        other = "projects/other/package.json"
+        self.assertEqual(
+            [], self.codes(other, self.package("1.2.0"), self.package("1.1.0"))
+        )

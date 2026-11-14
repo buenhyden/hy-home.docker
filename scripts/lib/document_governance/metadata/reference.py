@@ -80,6 +80,7 @@ from scripts.lib.document_governance.metadata.profile import (
     registered_generated_owner,
 )
 from scripts.lib.document_governance.metadata.version import (
+    product_version_findings,
     version_change_findings,
 )
 from scripts.lib.document_governance.operations_catalog import (
@@ -1877,7 +1878,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             },
             base.merge_base,
             profiles,
-        )
+        ) + product_version_findings(root, base.merge_base)
     relation_impact_findings: dict[str, list[Finding]] = {}
     if args.mode == "check-changed":
         try:

@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import json
 import pathlib
 import re
+import tomllib
 from collections.abc import Mapping
 
 from scripts.lib.document_governance import semver
@@ -85,4 +87,74 @@ def version_change_findings(
         else:
             continue
         findings.append(_finding(record, code, message))
+    return findings
+
+
+# The inventoried product version files (documentation protocol, Version
+# objects). A product releases on its own cadence, so only its `version` field
+# is checked, never whether other edits to the file need a new version.
+PRODUCT_VERSION_FILES = (
+    "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/"
+    "OpsflowSmtp/package.json",
+    "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/pyproject.toml",
+    "projects/storybook/nextjs/package.json",
+    "projects/storybook/nextjs/packages/ui/package.json",
+)
+
+
+def _product_version(text: str | None, path: str) -> tuple[bool, object]:
+    """Return (parsed, version); a missing text or an unparsable file is not parsed."""
+    if text is None:
+        return False, None
+    try:
+        if path.endswith(".toml"):
+            return True, tomllib.loads(text).get("project", {}).get("version")
+        values = json.loads(text)
+    except (ValueError, AttributeError):
+        return False, None
+    return isinstance(values, dict), values.get("version") if isinstance(
+        values, dict
+    ) else None
+
+
+def product_version_findings(root: pathlib.Path, base_ref: str | None) -> list[Finding]:
+    """Flag a changed product `version` that is malformed or lower than its base.
+
+    Only a version value that differs from the merge-base value is judged; an
+    unchanged value with other edits is allowed. A new, deleted or unparsable
+    file is not compared.
+    """
+
+    findings: list[Finding] = []
+    if not base_ref:
+        return findings
+    for path in PRODUCT_VERSION_FILES:
+        try:
+            head_text = (root / path).read_text(encoding="utf-8")
+        except (OSError, UnicodeError):
+            continue
+        base_ok, base = _product_version(
+            _text_at_ref(root, pathlib.Path(path), base_ref), path
+        )
+        head_ok, head = _product_version(head_text, path)
+        if not (base_ok and head_ok) or not semver.is_semver(base) or head == base:
+            continue
+        if not semver.is_semver(head):
+            findings.append(
+                Finding(
+                    path,
+                    "version-malformed",
+                    f"version {head!r} is not a complete SemVer 2.0 version "
+                    "without v prefix",
+                )
+            )
+        elif semver.version_change_code(base, head) == "version-downgrade":
+            findings.append(
+                Finding(
+                    path,
+                    "version-downgrade",
+                    f"version {head} has lower SemVer precedence than {base} at "
+                    "the merge base; raise it or restore the base version",
+                )
+            )
     return findings
