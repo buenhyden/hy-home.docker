@@ -320,6 +320,7 @@ Requirement IDs that no SPEC-0212 Task named, with the evidence read on
 | SPEC-0253 hosted CI | 121 | W126 | remote-candidate | PR #1017: SPEC-0253 TSK-0001 evidence E21 resolves E20 | PASS | `candidate-quality` success; merged as `8353a6cca` | required | - |
 | DATA-0096 retirement | 121 | W126 | remote-candidate | PR #1018: snapshot deleted, `data` number 96 reserved, link alignment excuses a terminal Task link into a reserved package; `test_a_terminal_task_link_into_a_reserved_data_package_is_excused` | PASS | `candidate-quality` success; merged as `95f9a9b46` | required | - |
 | Single SemVer comparator | 121 | W126 | remote-candidate | PR #1019: one comparator in `scripts/lib/document_governance/semver.py` with `version-unchanged`, `version-downgrade` and `version-malformed`; product version files route to the metadata check; `spec.md` 1.62.1 states release publication always refuses a version below a published one; `documentation-protocol.md` 4.0.0 | PASS | metadata check-changed 0 violations, 226 tests OK locally; `candidate-core` 10 min 17 s, `candidate-documents` 29 min 17 s, `candidate-quality` success at `9e1b38f99`; merged as `4e413e42f` | required | - |
+| Document governance guards | 121 | W126 | remote-candidate | PR #1020: Release role rejected by shape or token; registered role table checks; `next_review_at` required on Guide, Policy and Runbook with `review-interval-exceeded` at 180 days; cancellation `Source:` limited to user, operator or native-provider, also in active-stage occupancy; Architecture Description and `contract` lifecycles end at `approved`, 27 ADs migrated by a registered normalization; Registry `identity_namespaces` with baseline-2 prepared for Q-07; `documentation-protocol.md` 5.0.0, `sdlc.md` 1.10.1; each new rule RED first; independent review PASS with LOW 1 to 3 fixed | PASS | targeted tests only, by the owner's no-full-test decision; metadata check-changed 268 selected, 0 violations; `candidate-core` 11 min 48 s, `candidate-documents` 28 min 42 s, `candidate-quality` success at `4a252e47c`; merged as `bb0c4a04c` | required | - |
 
 ### Resolution Links
 
@@ -333,7 +334,7 @@ resolved by Budget GREEN, and the Docs budget timeout by Docs budget hosted.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 121 | pending | Remote read-back, Remote settings change, Hooks and grammar, Document version downgrade, Counterexample map, Governance record, Link routes, Fixture git GREEN, Shard split hosted final, Budget GREEN, Docs budget hosted, Budget measurement, Base move test, Rule owners, SPEC-0253 hosted CI, DATA-0096 retirement, Single SemVer comparator | All W06 units merged; awaiting the owner's acceptance | SPEC-0212 TSK-0065 |
+| 121 | pending | Remote read-back, Remote settings change, Hooks and grammar, Document version downgrade, Counterexample map, Governance record, Link routes, Fixture git GREEN, Shard split hosted final, Budget GREEN, Docs budget hosted, Budget measurement, Base move test, Rule owners, SPEC-0253 hosted CI, DATA-0096 retirement, Single SemVer comparator, Document governance guards | All W06 units merged; awaiting the owner's acceptance | SPEC-0212 TSK-0065 |
 
 ### Remaining Conditions
 
