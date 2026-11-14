@@ -1,10 +1,10 @@
 ---
 title: "Workspace Inventory"
-version: "0.8.6"
+version: "0.8.7"
 type: "reference/data-pack"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-07"
+updated: "2026-11-14"
 layer: "references"
 artifact_id: "DATA-0096"
 parent_ids:
@@ -87,6 +87,13 @@ python3 scripts/operations/workspace-inventory.py scan --root . --output _worksp
 검토 기록의 필수 필드는 `path`, `reviewer`, `observed_at`, `sha256`, `scope`다.
 현재 편집한 구간만 읽은 기록을 `complete: true`로 바꾸지 않는다. 공개 사본과
 이전 관측 비교 및 원장 검증은 각각 `compare`와 `validate`를 사용한다.
+추적 중인 `data.yaml`의 현재성은 재생성으로 증명할 수 없다. 스캔은 시계 값과 실행
+당시 커밋을 기록하므로 오프라인에서 같은 바이트를 재현하지 못한다. 대신
+`python3 scripts/operations/workspace-inventory.py check`가 원장이 생산자의
+직렬화 그대로이고 `validate`를 통과하며 `workspace.head`와 `observed_at`이
+형식에 맞고 이 README의 `observed_at` 날짜와 같은지 확인한다. 손으로 고친
+원장과 날짜가 어긋난 원장은 거부하며, 다시 스캔한 원장은 같은 변경에서
+이 README 날짜도 갱신한다.
 
 `--render`는 공개 소스 복제본과 합성 입력만으로 제한된 구성 검사를 수행한다.
 사설 입력은 합성 파일로 대체하고 경계 밖 포함·상속 경로는 거부한다. 각 사례의
