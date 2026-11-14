@@ -23,6 +23,8 @@ from tests.lib.document_governance.metadata._support import (
     ROOT,
     copy_registry_contract_fixture,
     current_profiles,
+    git,
+    init_git,
     metadata,
     run_checker,
 )
@@ -108,6 +110,22 @@ class MetadataValidatorCompatibilityTests(unittest.TestCase):
             if not hasattr(metadata_validator, name)
         ]
         self.assertEqual([], missing)
+
+
+class FixtureGitTests(unittest.TestCase):
+    def test_init_git_names_main_from_a_detached_clone(self) -> None:
+        # Hosted CI checks out the PR merge ref detached; a clone of it is too.
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            git(root, "init", "-q")
+            git(root, "config", "user.name", "Fixture")
+            git(root, "config", "user.email", "fixture@example.invalid")
+            git(root, "commit", "-q", "--allow-empty", "-m", "seed")
+            git(root, "checkout", "-q", "--detach")
+            init_git(root)
+            self.assertEqual(
+                "main", git(root, "branch", "--show-current").stdout.strip()
+            )
 
 
 class RepositoryContractIntegrationTests(unittest.TestCase):

@@ -48,18 +48,21 @@ def _invocation(
 
 
 class LocalExecutionBoundaryTests(unittest.TestCase):
-    LOCAL_UNIT_GATE_IDS = frozenset(
-        {
-            "leaf.conftest-policy-tests",
-            "leaf.release-regressions",
-            "leaf.supply-chain-fixture-policy",
-        }
-    )
+    LOCAL_UNIT_GATE_IDS = frozenset({"leaf.conftest-policy-tests"})
     HOSTED_CONTRACT_GATE_IDS = frozenset(
         {
+            "leaf.ci-gate-adapter-regressions",
             "leaf.ci-gate-contract-regressions",
+            "leaf.ci-gate-runner-regressions",
             "leaf.compose-baseline-regressions",
+            "leaf.document-governance-library-regressions",
+            "leaf.local-document-corpus-lifecycle-tests",
+            "leaf.local-document-metadata-tests",
+            "leaf.release-regressions",
+            "leaf.repo-contracts-control-plane-regressions",
             "leaf.repository-integrity-regressions",
+            "leaf.supply-chain-fixture-policy",
+            "leaf.workflow-contract-regressions",
         }
     )
     OPSFLOW_SMTP_HOSTED_GATE_IDS = frozenset(

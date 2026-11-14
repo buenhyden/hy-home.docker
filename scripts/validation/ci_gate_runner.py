@@ -674,6 +674,28 @@ def build_local_only_validation_plan(
     )
 
 
+def select_job_plan(
+    plan: tuple[GateInvocation, ...],
+    public_contract: PublicGateContract,
+    job: str,
+) -> tuple[GateInvocation, ...]:
+    """Select the hosted leaves one candidate job runs from a selected plan."""
+
+    if job not in public_contract.job_names:
+        raise GateContractError(
+            "ci-gate-job-unknown",
+            "job",
+            "the selected job is not a registered hosted job",
+        )
+    local_only = set(public_contract.local_only_gate_ids)
+    return tuple(
+        invocation
+        for invocation in plan
+        if invocation.gate_id not in local_only
+        and public_contract.job_for(invocation.gate_id) == job
+    )
+
+
 def canonical_invocation_key(
     root: pathlib.Path,
     invocation: GateInvocation,
@@ -1469,6 +1491,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--requirements", action="store_true")
     parser.add_argument("--local-only", action="store_true")
     parser.add_argument("--crosswalk", action="store_true")
+    parser.add_argument("--job")
     try:
         arguments = parser.parse_args(argv)
         root_value = os.environ.get("HYHOME_CI_GATE_ROOT")
@@ -1494,14 +1517,23 @@ def main(argv: list[str] | None = None) -> int:
             return 1
         public_contract = parse_public_gate_contract(document)
         if arguments.crosswalk:
-            if arguments.explain or arguments.requirements or arguments.local_only:
+            if (
+                arguments.explain
+                or arguments.requirements
+                or arguments.local_only
+                or arguments.job
+            ):
                 raise argparse.ArgumentError(
                     None,
-                    "--crosswalk excludes --explain, --requirements and --local-only",
+                    "--crosswalk excludes --explain, --requirements, --local-only and --job",
                 )
             for line in render_gate_crosswalk(root, registry, public_contract):
                 print(line)
             return 0
+        if arguments.job and arguments.local_only:
+            raise argparse.ArgumentError(
+                None, "--job and --local-only are mutually exclusive"
+            )
         if arguments.local_only and context is not ExecutionContext.LOCAL:
             raise GateContractError(
                 "ci-gate-local-only-context",
@@ -1532,6 +1564,9 @@ def main(argv: list[str] | None = None) -> int:
             profile=arguments.profile,
             root=root,
         )
+        full_plan = plan
+        if arguments.job:
+            plan = select_job_plan(plan, public_contract, arguments.job)
         if arguments.local_only:
             plan = build_local_only_validation_plan(
                 plan,
@@ -1551,13 +1586,19 @@ def main(argv: list[str] | None = None) -> int:
                 )
                 if arguments.local_only
                 else render_public_validation_plan(
-                    plan,
+                    full_plan,
                     public_contract,
                     selected_suites,
                     context,
                     profile=arguments.profile,
                 )
             )
+            if arguments.job:
+                # Parity was proven on the whole plan; show the job's slice of it.
+                lines = tuple(
+                    f"{arguments.job}\t{invocation.gate_id}\t{invocation.entrypoint}"
+                    for invocation in plan
+                )
             for line in lines:
                 print(line)
             return 0
@@ -1568,6 +1609,10 @@ def main(argv: list[str] | None = None) -> int:
                     "requirements",
                     "hosted prerequisites require a pull-request context",
                 )
+            if arguments.job and not plan:
+                # A job with no selected gate seeds no evidence and runs nothing.
+                print("node=false\ndocker=false\ncompose=false\nselected=false")
+                return 0
             prerequisites = selected_prerequisites(plan, changed_paths)
             evidence = _execution_evidence_request(
                 execution_environment,
@@ -1589,6 +1634,10 @@ def main(argv: list[str] | None = None) -> int:
             print(f"node={'true' if prerequisites.node else 'false'}")
             print(f"docker={'true' if prerequisites.docker else 'false'}")
             print(f"compose={'true' if prerequisites.compose else 'false'}")
+            print("selected=true")
+            return 0
+        if arguments.job and not plan:
+            print(f"{arguments.job}: no selected gate", file=sys.stderr)
             return 0
         if context is ExecutionContext.LOCAL and (
             mismatch := local_toolchain_mismatch(root)

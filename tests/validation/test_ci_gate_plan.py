@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import dataclasses
 import io
+import itertools
 import json
 import os
 import pathlib
@@ -467,6 +468,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "leaf.repo-metadata-base",
                 "leaf.repo-document-metadata",
                 "leaf.local-document-corpus-lifecycle",
+                "leaf.docs-traceability",
                 "leaf.local-diff-hygiene",
                 "leaf.changed-style",
                 "leaf.commit-message-contract",
@@ -499,6 +501,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "leaf.repo-document-metadata",
                 "leaf.local-document-corpus-lifecycle",
                 "leaf.operations-catalog",
+                "leaf.docs-traceability",
                 "leaf.local-diff-hygiene",
                 "leaf.changed-style",
                 "leaf.commit-message-contract",
@@ -523,7 +526,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             runner.selected_prerequisites(plan, paths),
         )
 
-    def test_document_links_are_local_only_for_changed_and_full_plans(self) -> None:
+    def test_document_links_run_in_every_changed_and_full_plan(self) -> None:
         paths = ("docs/03.specs/0001-example/spec.md",)
         local_changed = build_public_plan(
             "changed", runner.ExecutionContext.LOCAL, paths
@@ -540,12 +543,10 @@ class CiGateRunnerContractTests(unittest.TestCase):
             "leaf.docs-traceability", {item.gate_id for item in local_changed}
         )
         self.assertIn("leaf.docs-traceability", {item.gate_id for item in local_full})
-        self.assertNotIn(
+        self.assertIn(
             "leaf.docs-traceability", {item.gate_id for item in remote_changed}
         )
-        self.assertNotIn(
-            "leaf.docs-traceability", {item.gate_id for item in hosted_full}
-        )
+        self.assertIn("leaf.docs-traceability", {item.gate_id for item in hosted_full})
 
     def test_implementation_regressions_have_explicit_execution_owners(
         self,
@@ -554,12 +555,12 @@ class CiGateRunnerContractTests(unittest.TestCase):
             "scripts/lib/document_governance/spec_packages.py": (
                 "leaf.document-governance-library-regressions",
                 "leaf.repo-document-metadata",
-                False,
+                True,
             ),
             ".github/workflow-contract.yml": (
                 "leaf.workflow-contract-regressions",
                 "leaf.workflow-contract",
-                False,
+                True,
             ),
             "scripts/hooks/hook_rules.py": (
                 "leaf.local-hook-rule-tests",
@@ -692,7 +693,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             ("docs/03.specs/0001-example/spec.md",),
         )
         self.assertEqual(
-            ("leaf.local-candidate-preflight", "leaf.docs-traceability"),
+            ("leaf.local-candidate-preflight",),
             tuple(
                 invocation.gate_id
                 for invocation in runner.build_local_only_validation_plan(
@@ -716,7 +717,8 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 runner.ExecutionContext.LOCAL,
             )
         }
-        self.assertIn("leaf.workflow-contract-regressions", local_only_ids)
+        self.assertIn("leaf.ci-precommit-regressions", local_only_ids)
+        self.assertNotIn("leaf.workflow-contract-regressions", local_only_ids)
         self.assertNotIn("leaf.workflow-contract", local_only_ids)
 
         # A representative service change (Compose plus its guide) gets the
@@ -852,7 +854,8 @@ class CiGateRunnerContractTests(unittest.TestCase):
         )
         selected_ids = {invocation.gate_id for invocation in selected_plans[0]}
         self.assertLessEqual(selected_ids, set(public.local_only_gate_ids))
-        self.assertIn("leaf.workflow-contract-regressions", selected_ids)
+        self.assertIn("leaf.ci-precommit-regressions", selected_ids)
+        self.assertNotIn("leaf.workflow-contract-regressions", selected_ids)
         self.assertNotIn("leaf.workflow-contract", selected_ids)
 
         with (
@@ -878,9 +881,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         lines = tuple(stdout.getvalue().splitlines())
         self.assertTrue(lines)
         self.assertTrue(all(line.startswith("local-only\t") for line in lines))
-        self.assertTrue(
-            any("leaf.workflow-contract-regressions" in line for line in lines)
-        )
+        self.assertTrue(any("leaf.ci-precommit-regressions" in line for line in lines))
 
     def test_document_owner_changes_select_regressions(self) -> None:
         owners = (
@@ -921,8 +922,14 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 hosted = build_public_plan(
                     "changed", runner.ExecutionContext.PULL_REQUEST, (path,)
                 )
+                self.assertEqual(
+                    1,
+                    [item.gate_id for item in hosted].count(
+                        "leaf.repo-contracts-control-plane-regressions"
+                    ),
+                )
                 self.assertNotIn(
-                    "leaf.repo-contracts-control-plane-regressions",
+                    "leaf.local-hook-rule-tests",
                     {item.gate_id for item in hosted},
                 )
 
@@ -946,7 +953,9 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 )
                 self.assertFalse(targets & {item.gate_id for item in plan})
 
-    def test_release_owner_changes_select_release_regression_only_locally(self) -> None:
+    def test_release_owner_changes_select_release_regression_locally_and_hosted(
+        self,
+    ) -> None:
         release_inputs = (
             "scripts/operations/release.py",
             "tests/validation/test_release.py",
@@ -964,7 +973,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 )
                 hosted_ids = {item.gate_id for item in hosted}
                 local_ids = {item.gate_id for item in local}
-                self.assertNotIn("leaf.release-regressions", hosted_ids)
+                self.assertIn("leaf.release-regressions", hosted_ids)
                 self.assertIn("leaf.release-regressions", local_ids)
                 self.assertFalse(
                     {
@@ -1101,7 +1110,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             "tests/validation/test_supply_chain_wrapper.py": (
                 "leaf.supply-chain-fixture-policy",
                 None,
-                False,
+                True,
             ),
             "infra/11-quality/conftest/policy/compose.rego": (
                 "leaf.conftest-policy-tests",
@@ -1572,6 +1581,143 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 self.assertEqual("", stdout.getvalue())
                 self.assertIn("ci-gate-cli-arguments", stderr.getvalue())
 
+    def _hosted_job_main(
+        self,
+        *arguments: str,
+        paths: tuple[str, ...] = ("scripts/lib/document_governance/example.py",),
+    ) -> tuple[int, str, str]:
+        environment = {
+            "HYHOME_CI_GATE_ROOT": str(ROOT),
+            "PATH": os.defpath,
+            "GITHUB_ACTIONS": "true",
+            "GITHUB_EVENT_NAME": "pull_request",
+            "EVENT_NAME": "pull_request",
+            "PR_BASE_SHA": "a" * 40,
+            "PR_HEAD_SHA": "b" * 40,
+        }
+        with (
+            mock.patch.dict(os.environ, environment, clear=True),
+            mock.patch.object(
+                runner,
+                "_authenticated_execution_environment",
+                return_value=environment,
+            ),
+            mock.patch.object(
+                runner,
+                "collect_changed_paths",
+                return_value=paths,
+            ),
+            mock.patch("sys.stdout", new_callable=io.StringIO) as stdout,
+            mock.patch("sys.stderr", new_callable=io.StringIO) as stderr,
+        ):
+            status = runner.main(["--profile", "changed", *arguments])
+        return status, stdout.getvalue(), stderr.getvalue()
+
+    def test_job_option_selects_only_that_jobs_leaves(self) -> None:
+        documents = {
+            "leaf.document-governance-library-regressions",
+            "leaf.local-document-metadata-tests",
+            "leaf.local-document-corpus-lifecycle-tests",
+            "leaf.docs-traceability",
+        }
+        status, out, err = self._hosted_job_main(
+            "--explain", "--job", "candidate-documents"
+        )
+        self.assertEqual((0, ""), (status, err))
+        selected = {line.split("\t")[1] for line in out.splitlines()}
+        self.assertEqual(documents, selected)
+        status, out, err = self._hosted_job_main("--explain", "--job", "candidate-core")
+        self.assertEqual((0, ""), (status, err))
+        selected = {line.split("\t")[1] for line in out.splitlines()}
+        self.assertTrue(selected)
+        self.assertFalse(selected & documents)
+        self.assertFalse(selected & set(self._local_only_ids()))
+
+    @staticmethod
+    def _local_only_ids() -> tuple[str, ...]:
+        return contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        ).local_only_gate_ids
+
+    def test_job_option_rejects_unknown_job_and_report_options(self) -> None:
+        status, out, err = self._hosted_job_main("--explain", "--job", "candidate-x")
+        self.assertEqual((1, ""), (status, out))
+        self.assertIn("ci-gate-job-unknown", err)
+        for option in ("--crosswalk", "--local-only"):
+            with self.subTest(option=option):
+                status, out, err = self._hosted_job_main(
+                    option, "--job", "candidate-core"
+                )
+                self.assertEqual((2, ""), (status, out))
+                self.assertIn("ci-gate-cli-arguments", err)
+
+    def test_job_plans_partition_every_hosted_leaf_exactly_once(self) -> None:
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        local_only = set(public.local_only_gate_ids)
+        for profile, paths in (
+            ("changed", ("scripts/lib/document_governance/example.py",)),
+            # No document rule maps this path: the documents job has no gate.
+            ("changed", ("scripts/lib/gate/example.py",)),
+            ("full", ()),
+        ):
+            plan = build_public_plan(
+                profile, runner.ExecutionContext.PULL_REQUEST, paths
+            )
+            hosted = [item.gate_id for item in plan if item.gate_id not in local_only]
+            by_job = [
+                [item.gate_id for item in runner.select_job_plan(plan, public, job)]
+                for job in public.job_names
+            ]
+            with self.subTest(profile=profile, paths=paths):
+                self.assertEqual(
+                    sorted(hosted), sorted(itertools.chain.from_iterable(by_job))
+                )
+                self.assertEqual(
+                    paths == ("scripts/lib/gate/example.py",),
+                    not by_job[1],
+                )
+                self.assertTrue(by_job[0])
+        self.assertTrue(
+            {"leaf.release-regressions", "leaf.docs-traceability"}
+            <= {item.gate_id for item in plan}
+        )
+
+    def test_job_without_selected_gates_reports_selected_false_and_runs_nothing(
+        self,
+    ) -> None:
+        # A pull request that selects no document gate leaves the documents job
+        # empty; it must neither seed evidence nor execute, and must say so.
+        path = ("scripts/lib/gate/example.py",)
+        with (
+            mock.patch.object(runner, "execute_execution_plan") as execute,
+            mock.patch.object(runner, "seed_execution_evidence") as seed,
+        ):
+            status, out, err = self._hosted_job_main(
+                "--requirements", "--job", "candidate-documents", paths=path
+            )
+            self.assertEqual((0, ""), (status, err))
+            self.assertEqual(
+                "node=false\ndocker=false\ncompose=false\nselected=false\n", out
+            )
+            status, out, err = self._hosted_job_main(
+                "--job", "candidate-documents", paths=path
+            )
+            self.assertEqual((0, ""), (status, out))
+            self.assertIn("no selected gate", err)
+            status, out, err = self._hosted_job_main(
+                "--explain", "--job", "candidate-documents", paths=path
+            )
+            self.assertEqual((0, "", ""), (status, out, err))
+        execute.assert_not_called()
+        seed.assert_not_called()
+        status, out, err = self._hosted_job_main(
+            "--requirements", "--job", "candidate-core", paths=path
+        )
+        self.assertEqual((0, ""), (status, err))
+        self.assertIn("selected=true\n", out)
+
     def test_requirements_reports_prerequisites_without_executing(self) -> None:
         environment = {
             "HYHOME_CI_GATE_ROOT": str(ROOT),
@@ -1602,7 +1748,10 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 runner.main(["--profile", "changed", "--requirements"]),
             )
         execute.assert_not_called()
-        self.assertEqual("node=false\ndocker=false\ncompose=false\n", stdout.getvalue())
+        self.assertEqual(
+            "node=false\ndocker=false\ncompose=false\nselected=true\n",
+            stdout.getvalue(),
+        )
 
     def test_requirements_seeds_authenticated_evidence_before_reporting(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
@@ -1862,7 +2011,8 @@ class CiGateRunnerContractTests(unittest.TestCase):
                     runner.main(["--profile", "changed", "--requirements"]),
                 )
             self.assertEqual(
-                "node=false\ndocker=false\ncompose=false\n", stdout.getvalue()
+                "node=false\ndocker=false\ncompose=false\nselected=true\n",
+                stdout.getvalue(),
             )
 
             poisoned = {

@@ -4,6 +4,7 @@ import contextlib
 import copy
 import dataclasses
 import importlib.util
+import itertools
 import json
 import os
 import pathlib
@@ -21,8 +22,10 @@ from scripts.lib.gate import ci_gate_contract as gate_contract
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 MODULE_PATH = ROOT / "scripts/lib/gate/github_workflow_contract.py"
 
+SHARD_JOBS = ("candidate-core", "candidate-documents")
 REQUIRED_CI_JOBS = frozenset(
     {
+        *SHARD_JOBS,
         "candidate-quality",
         "main-security",
     }
@@ -398,112 +401,116 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         self.assertNotIn("workflow_dispatch", workflow.data["on"])
         self.assertEqual(REQUIRED_CI_JOBS, set(workflow.data["jobs"]))
-        candidate = workflow.data["jobs"]["candidate-quality"]
-        self.assertEqual({"contents": "read"}, candidate["permissions"])
-        self.assertEqual(
-            "github.event_name == 'pull_request'",
-            candidate["if"],
-        )
-        self.assertNotIn("env", candidate)
-        steps = candidate["steps"]
-        capture = next(
-            step
-            for step in steps
-            if step.get("name") == "Capture trusted pull request context"
-        )
-        install_index = next(
-            index
-            for index, step in enumerate(steps)
-            if step.get("name") == "Install validation controller dependencies"
-        )
-        self.assertLess(steps.index(capture), install_index)
-        self.assertEqual("trusted-context", capture["id"])
-        self.assertEqual(
-            "/usr/bin/bash --noprofile --norc -eo pipefail {0}", capture["shell"]
-        )
-        for required in (
-            'test "$GITHUB_EVENT_NAME" = pull_request',
-            "export GIT_NO_REPLACE_OBJECTS=1",
-            '"$git_path" cat-file commit "$GITHUB_SHA"',
-            'test "${#parents[@]}" -eq 2',
-            "printf 'git-path=%s\\n' \"$git_path\"",
-            "printf 'python-path=%s\\n' \"$python_path\"",
-        ):
-            self.assertIn(required, capture["run"])
-        trusted_environment = {
-            "TRUSTED_EVENT_NAME": "${{ steps.trusted-context.outputs.event-name }}",
-            "TRUSTED_MERGE_SHA": "${{ steps.trusted-context.outputs.merge-sha }}",
-            "TRUSTED_BASE_SHA": "${{ steps.trusted-context.outputs.base-sha }}",
-            "TRUSTED_HEAD_SHA": "${{ steps.trusted-context.outputs.head-sha }}",
-            "TRUSTED_GIT_PATH": "${{ steps.trusted-context.outputs.git-path }}",
-            "TRUSTED_PYTHON_PATH": "${{ steps.trusted-context.outputs.python-path }}",
-            "TRUSTED_GIT_VERSION": "${{ steps.trusted-context.outputs.git-version }}",
-            "TRUSTED_GIT_SHA256": "${{ steps.trusted-context.outputs.git-sha256 }}",
-            "TRUSTED_PYTHON_VERSION": "${{ steps.trusted-context.outputs.python-version }}",
-            "TRUSTED_PYTHON_SHA256": "${{ steps.trusted-context.outputs.python-sha256 }}",
-            "TRUSTED_UV_PATH": "${{ steps.uv-context.outputs.uv-path }}",
-            "TRUSTED_UV_VERSION": "${{ steps.uv-context.outputs.uv-version }}",
-            "TRUSTED_UV_SHA256": "${{ steps.uv-context.outputs.uv-sha256 }}",
-            "TRUSTED_IMAGE_OS": "${{ steps.trusted-context.outputs.image-os }}",
-            "TRUSTED_IMAGE_VERSION": "${{ steps.trusted-context.outputs.image-version }}",
-            "TRUSTED_RUNNER_ARCH": "${{ steps.trusted-context.outputs.runner-arch }}",
-            "CI_GATE_EVIDENCE_DIR": "${{ runner.temp }}/ci-gate-evidence",
-        }
-        prerequisite_step = next(
-            item
-            for item in steps
-            if item.get("name") == "Select candidate prerequisites"
-        )
-        self.assertEqual(trusted_environment, prerequisite_step["env"])
-        run_step = next(
-            item
-            for item in steps
-            if item.get("name") == "Run changed candidate validation"
-        )
-        self.assertEqual(
-            {
-                **trusted_environment,
-                "TRUSTED_NODE_PATH": "${{ steps.node-context.outputs.node-path }}",
-                "TRUSTED_NODE_VERSION": "${{ steps.node-context.outputs.node-version }}",
-                "TRUSTED_NODE_SHA256": "${{ steps.node-context.outputs.node-sha256 }}",
-            },
-            run_step["env"],
-        )
-        for name in (
-            "Capture trusted pull request context",
-            "Capture trusted uv context",
-            "Install validation controller dependencies",
-            "Select candidate prerequisites",
-            "Capture selected Node context",
-            "Verify selected Docker prerequisite",
-            "Run changed candidate validation",
-        ):
-            step = next(item for item in steps if item.get("name") == name)
-            self.assertEqual(
-                "/usr/bin/bash --noprofile --norc -eo pipefail {0}",
-                step["shell"],
-            )
-        install = next(
-            item
-            for item in steps
-            if item.get("name") == "Install validation controller dependencies"
-        )
-        self.assertEqual(
-            {
-                "TRUSTED_PYTHON_PATH": "${{ steps.trusted-context.outputs.python-path }}",
-                "TRUSTED_UV_PATH": "${{ steps.uv-context.outputs.uv-path }}",
-            },
-            install["env"],
-        )
-        self.assertEqual(
-            1,
-            sum(
-                step.get("run")
-                == '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed'
-                for step in candidate["steps"]
-                if isinstance(step, dict)
-            ),
-        )
+        for job_id in SHARD_JOBS:
+            with self.subTest(job_id=job_id):
+                candidate = workflow.data["jobs"][job_id]
+                self.assertEqual({"contents": "read"}, candidate["permissions"])
+                self.assertEqual(
+                    "github.event_name == 'pull_request'",
+                    candidate["if"],
+                )
+                self.assertNotIn("env", candidate)
+                steps = candidate["steps"]
+                capture = next(
+                    step
+                    for step in steps
+                    if step.get("name") == "Capture trusted pull request context"
+                )
+                install_index = next(
+                    index
+                    for index, step in enumerate(steps)
+                    if step.get("name") == "Install validation controller dependencies"
+                )
+                self.assertLess(steps.index(capture), install_index)
+                self.assertEqual("trusted-context", capture["id"])
+                self.assertEqual(
+                    "/usr/bin/bash --noprofile --norc -eo pipefail {0}",
+                    capture["shell"],
+                )
+                for required in (
+                    'test "$GITHUB_EVENT_NAME" = pull_request',
+                    "export GIT_NO_REPLACE_OBJECTS=1",
+                    '"$git_path" cat-file commit "$GITHUB_SHA"',
+                    'test "${#parents[@]}" -eq 2',
+                    "printf 'git-path=%s\\n' \"$git_path\"",
+                    "printf 'python-path=%s\\n' \"$python_path\"",
+                ):
+                    self.assertIn(required, capture["run"])
+                trusted_environment = {
+                    "TRUSTED_EVENT_NAME": "${{ steps.trusted-context.outputs.event-name }}",
+                    "TRUSTED_MERGE_SHA": "${{ steps.trusted-context.outputs.merge-sha }}",
+                    "TRUSTED_BASE_SHA": "${{ steps.trusted-context.outputs.base-sha }}",
+                    "TRUSTED_HEAD_SHA": "${{ steps.trusted-context.outputs.head-sha }}",
+                    "TRUSTED_GIT_PATH": "${{ steps.trusted-context.outputs.git-path }}",
+                    "TRUSTED_PYTHON_PATH": "${{ steps.trusted-context.outputs.python-path }}",
+                    "TRUSTED_GIT_VERSION": "${{ steps.trusted-context.outputs.git-version }}",
+                    "TRUSTED_GIT_SHA256": "${{ steps.trusted-context.outputs.git-sha256 }}",
+                    "TRUSTED_PYTHON_VERSION": "${{ steps.trusted-context.outputs.python-version }}",
+                    "TRUSTED_PYTHON_SHA256": "${{ steps.trusted-context.outputs.python-sha256 }}",
+                    "TRUSTED_UV_PATH": "${{ steps.uv-context.outputs.uv-path }}",
+                    "TRUSTED_UV_VERSION": "${{ steps.uv-context.outputs.uv-version }}",
+                    "TRUSTED_UV_SHA256": "${{ steps.uv-context.outputs.uv-sha256 }}",
+                    "TRUSTED_IMAGE_OS": "${{ steps.trusted-context.outputs.image-os }}",
+                    "TRUSTED_IMAGE_VERSION": "${{ steps.trusted-context.outputs.image-version }}",
+                    "TRUSTED_RUNNER_ARCH": "${{ steps.trusted-context.outputs.runner-arch }}",
+                    "CI_GATE_EVIDENCE_DIR": "${{ runner.temp }}/ci-gate-evidence",
+                }
+                prerequisite_step = next(
+                    item
+                    for item in steps
+                    if item.get("name") == "Select candidate prerequisites"
+                )
+                self.assertEqual(trusted_environment, prerequisite_step["env"])
+                run_step = next(
+                    item
+                    for item in steps
+                    if item.get("name") == "Run changed candidate validation"
+                )
+                self.assertEqual(
+                    {
+                        **trusted_environment,
+                        "TRUSTED_NODE_PATH": "${{ steps.node-context.outputs.node-path }}",
+                        "TRUSTED_NODE_VERSION": "${{ steps.node-context.outputs.node-version }}",
+                        "TRUSTED_NODE_SHA256": "${{ steps.node-context.outputs.node-sha256 }}",
+                    },
+                    run_step["env"],
+                )
+                for name in (
+                    "Capture trusted pull request context",
+                    "Capture trusted uv context",
+                    "Install validation controller dependencies",
+                    "Select candidate prerequisites",
+                    "Capture selected Node context",
+                    "Verify selected Docker prerequisite",
+                    "Run changed candidate validation",
+                ):
+                    step = next(item for item in steps if item.get("name") == name)
+                    self.assertEqual(
+                        "/usr/bin/bash --noprofile --norc -eo pipefail {0}",
+                        step["shell"],
+                    )
+                install = next(
+                    item
+                    for item in steps
+                    if item.get("name") == "Install validation controller dependencies"
+                )
+                self.assertEqual(
+                    {
+                        "TRUSTED_PYTHON_PATH": "${{ steps.trusted-context.outputs.python-path }}",
+                        "TRUSTED_UV_PATH": "${{ steps.uv-context.outputs.uv-path }}",
+                    },
+                    install["env"],
+                )
+                self.assertEqual(
+                    1,
+                    sum(
+                        step.get("run")
+                        == '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed '
+                        f"--job {job_id}"
+                        for step in candidate["steps"]
+                        if isinstance(step, dict)
+                    ),
+                )
         quality_contract = document["workflows"][".github/workflows/ci-quality.yml"]
         self.assertEqual(
             workflow.data["on"]["pull_request"],
@@ -688,7 +695,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         )
         capture_run = next(
             step["run"]
-            for step in ci.data["jobs"]["candidate-quality"]["steps"]
+            for step in ci.data["jobs"]["candidate-core"]["steps"]
             if step.get("name") == "Capture trusted pull request context"
         )
         main_capture_run = next(
@@ -705,7 +712,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         }
         node_capture_run = next(
             step["run"]
-            for step in ci.data["jobs"]["candidate-quality"]["steps"]
+            for step in ci.data["jobs"]["candidate-core"]["steps"]
             if step.get("name") == "Capture selected Node context"
         )
         self.assertEqual(
@@ -716,10 +723,19 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 node_capture_run,
                 '"$TRUSTED_PYTHON_PATH" scripts/lib/gate/ci_gate_adapters.py run-zizmor-sarif',
                 '"$TRUSTED_UV_PATH" pip install --python "$TRUSTED_PYTHON_PATH" --require-hashes -r scripts/requirements-controller.lock',
-                '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed --requirements >> "$GITHUB_OUTPUT"',
+                *(
+                    command
+                    for job_id in SHARD_JOBS
+                    for command in (
+                        '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py '
+                        f'--profile changed --job {job_id} --requirements >> "$GITHUB_OUTPUT"',
+                        '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py '
+                        f"--profile changed --job {job_id}",
+                    )
+                ),
                 "docker version",
                 "/usr/bin/docker compose version",
-                '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed',
+                'test "$CORE_RESULT" = success\ntest "$DOCUMENTS_RESULT" = success\n',
             },
             set(run_values),
         )
@@ -900,7 +916,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             data = copy.deepcopy(document.data)
             step = next(
                 item
-                for item in data["jobs"]["candidate-quality"]["steps"]
+                for item in data["jobs"]["candidate-core"]["steps"]
                 if item.get("name") == step_name
             )
             line = f"/usr/bin/chmod go-w -- {token}\n"
@@ -936,7 +952,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             if workflow.path == ".github/workflows/ci-quality.yml"
         )
         self.assertEqual(REQUIRED_CI_JOBS, frozenset(ci.jobs))
-        self.assertEqual(2, len(ci.jobs))
+        self.assertEqual(4, len(ci.jobs))
         declared = self.load_contract_document(ROOT)["gate_nodes"]
         self.assertEqual(len(declared), len(contract.gate_registry.nodes))
         public = self.module.parse_public_gate_contract(
@@ -1114,7 +1130,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             "/usr/bin/bash --noprofile --norc -eo pipefail {0}",
             security_capture["shell"],
         )
-        candidate_steps = ci_jobs["candidate-quality"]["steps"]
+        candidate_steps = ci_jobs["candidate-core"]["steps"]
         candidate_python = next(
             step for step in candidate_steps if step.get("name") == "Set up Python"
         )
@@ -1189,7 +1205,8 @@ class GithubWorkflowContractTests(unittest.TestCase):
             upload_action,
         )
         for job_id, artifact_name in (
-            ("candidate-quality", "candidate-quality-gate-evidence"),
+            ("candidate-core", "candidate-core-gate-evidence"),
+            ("candidate-documents", "candidate-documents-gate-evidence"),
             ("main-security", "main-security-gate-evidence"),
         ):
             upload = next(
@@ -1197,7 +1214,12 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 for step in ci_jobs[job_id]["steps"]
                 if step.get("name") == "Upload gate evidence"
             )
-            self.assertEqual("always()", upload["if"])
+            self.assertEqual(
+                "always()"
+                if job_id == "main-security"
+                else "always() && steps.prerequisites.outputs.selected != 'false'",
+                upload["if"],
+            )
             self.assertEqual(upload_action, upload["uses"])
             self.assertEqual(
                 {
@@ -1238,6 +1260,43 @@ class GithubWorkflowContractTests(unittest.TestCase):
         codes = {finding.code for finding in findings}
         self.assertIn("workflow-trigger-forbidden", codes)
         self.assertIn("action-ref-mutable", codes)
+
+    def test_merge_group_trigger_is_rejected_even_when_the_contract_lists_it(
+        self,
+    ) -> None:
+        # The merge queue is unused: no contract entry approves it, so a
+        # workflow that adds the trigger fails whether or not the contract
+        # was edited to match.
+        for label, edit_contract in (("workflow-only", False), ("both", True)):
+            with self.subTest(label=label), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                shutil.copytree(ROOT / ".github", root / ".github")
+                workflow = root / ".github/workflows/ci-quality.yml"
+                text = workflow.read_text(encoding="utf-8")
+                workflow.write_text(
+                    text.replace(
+                        "on:\n  push:\n",
+                        "on:\n  merge_group:\n    types: [checks_requested]\n  push:\n",
+                        1,
+                    ),
+                    encoding="utf-8",
+                )
+                if edit_contract:
+                    contract_file = root / ".github/workflow-contract.yml"
+                    document = json.loads(contract_file.read_text(encoding="utf-8"))
+                    triggers = document["workflows"][
+                        ".github/workflows/ci-quality.yml"
+                    ]["triggers"]
+                    triggers["merge_group"] = {"types": ["checks_requested"]}
+                    contract_file.write_text(
+                        json.dumps(document, indent=2) + "\n", encoding="utf-8"
+                    )
+                findings = self.module.validate_workflows(
+                    root, self.module.load_workflow_contract(root)
+                )
+                self.assertIn(
+                    "workflow-trigger-forbidden", {finding.code for finding in findings}
+                )
 
     def test_evidence_upload_rejects_broader_or_missing_paths(self) -> None:
         for replacement in (
@@ -1280,7 +1339,9 @@ class GithubWorkflowContractTests(unittest.TestCase):
         jobs = self._required_quality_jobs(self.module, ROOT)
         self.assertEqual(
             {
-                "candidate-quality": "github.event_name == 'pull_request'",
+                "candidate-core": "github.event_name == 'pull_request'",
+                "candidate-documents": "github.event_name == 'pull_request'",
+                "candidate-quality": "always() && github.event_name == 'pull_request'",
                 "main-security": "github.event_name == 'push' && github.ref == 'refs/heads/main'",
             },
             {job_id: job["if"] for job_id, job in jobs.items()},
@@ -1293,21 +1354,26 @@ class GithubWorkflowContractTests(unittest.TestCase):
         ]
         self.assertEqual(
             [
-                (
-                    "candidate-quality",
-                    "Capture selected Node context",
-                    "steps.prerequisites.outputs.node == 'true'",
-                ),
-                (
-                    "candidate-quality",
-                    "Verify selected Docker prerequisite",
-                    "steps.prerequisites.outputs.docker == 'true'",
-                ),
-                (
-                    "candidate-quality",
-                    "Verify selected Compose CLI prerequisite",
-                    "steps.prerequisites.outputs.compose == 'true'",
-                ),
+                (job_id, name, condition)
+                for job_id in SHARD_JOBS
+                for name, condition in (
+                    (
+                        "Capture selected Node context",
+                        "steps.prerequisites.outputs.node == 'true'",
+                    ),
+                    (
+                        "Verify selected Docker prerequisite",
+                        "steps.prerequisites.outputs.docker == 'true'",
+                    ),
+                    (
+                        "Verify selected Compose CLI prerequisite",
+                        "steps.prerequisites.outputs.compose == 'true'",
+                    ),
+                    (
+                        "Run changed candidate validation",
+                        "steps.prerequisites.outputs.selected == 'true'",
+                    ),
+                )
             ],
             conditioned_steps,
         )
@@ -1325,12 +1391,18 @@ class GithubWorkflowContractTests(unittest.TestCase):
         }
         for job_id, job in jobs.items():
             with self.subTest(job_id=job_id):
+                if job_id == "candidate-quality":
+                    # The aggregate only reads needs results; it checks out nothing.
+                    self.assertFalse(
+                        any("uses" in step for step in job["steps"]),
+                    )
+                    continue
                 self.assertEqual(expected_checkout, job["steps"][0])
 
     def test_main_security_is_independent_from_candidate_validation(self) -> None:
         jobs = self._required_quality_jobs(self.module, ROOT)
         security = jobs["main-security"]
-        candidate = jobs["candidate-quality"]
+        candidate = jobs["candidate-core"]
         self.assertNotIn("needs", security)
         self.assertNotIn("needs", candidate)
         self.assertEqual(
@@ -1359,7 +1431,8 @@ class GithubWorkflowContractTests(unittest.TestCase):
             1,
             sum(
                 step.get("run")
-                == '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed'
+                == '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed '
+                "--job candidate-core"
                 for step in candidate["steps"]
             ),
         )
@@ -1376,7 +1449,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         cases = (
             (
                 "candidate-dependency",
-                "candidate-quality",
+                "candidate-core",
                 lambda job: job.update({"needs": "main-security"}),
                 "workflow-gate-dependency-invalid",
             ),
@@ -1406,19 +1479,29 @@ class GithubWorkflowContractTests(unittest.TestCase):
             ),
             (
                 "candidate-continue-on-error",
-                "candidate-quality",
+                "candidate-core",
                 lambda job: job.update({"continue-on-error": True}),
                 "workflow-gate-execution-context-invalid",
             ),
             (
                 "candidate-validation",
-                "candidate-quality",
+                "candidate-core",
                 lambda job: job["steps"].pop(),
                 "workflow-gate-projection-mismatch",
             ),
             (
+                "candidate-unconditional-run",
+                "candidate-documents",
+                lambda job: next(
+                    step
+                    for step in job["steps"]
+                    if step.get("name") == "Run changed candidate validation"
+                ).pop("if"),
+                "workflow-gate-projection-mismatch",
+            ),
+            (
                 "candidate-mutable-shell-path",
-                "candidate-quality",
+                "candidate-core",
                 lambda job: next(
                     step
                     for step in job["steps"]
@@ -1451,6 +1534,176 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     document.path, data, data["jobs"], contract
                 )
                 self.assertIn(expected, {finding.code for finding in findings})
+
+    def test_aggregate_needs_every_candidate_job_and_runs_only_on_pull_requests(
+        self,
+    ) -> None:
+        # RS-26: the one required check name stays `candidate-quality`.
+        jobs = self._required_quality_jobs(self.module, ROOT)
+        aggregate = jobs["candidate-quality"]
+        self.assertEqual(list(SHARD_JOBS), aggregate["needs"])
+        self.assertEqual(
+            "always() && github.event_name == 'pull_request'", aggregate["if"]
+        )
+        self.assertEqual({}, aggregate["permissions"])
+        self.assertLessEqual(aggregate["timeout-minutes"], 10)
+        self.assertFalse(any("uses" in step for step in aggregate["steps"]))
+        contract = self.module.load_workflow_contract(ROOT)
+        quality = next(
+            workflow
+            for workflow in contract.workflows
+            if workflow.path == ".github/workflows/ci-quality.yml"
+        )
+        public = gate_contract.parse_public_gate_contract(
+            self.load_contract_document(ROOT)
+        )
+        self.assertEqual(SHARD_JOBS, public.job_names)
+        self.assertEqual(SHARD_JOBS, quality.jobs["candidate-quality"].needs)
+        self.assertEqual(
+            "always() && github.event_name == 'pull_request'",
+            quality.jobs["candidate-quality"].condition,
+        )
+
+    def test_aggregate_result_variables_are_valid_shell_names(self) -> None:
+        name = self.module.aggregate_result_variable
+        self.assertEqual("FOO_BAR_RESULT", name("candidate-foo-bar"))
+        self.assertEqual("CORE_RESULT", name("candidate-core"))
+        step = self._required_quality_jobs(self.module, ROOT)["candidate-quality"][
+            "steps"
+        ][0]
+        for variable in step["env"]:
+            self.assertRegex(variable, r"^[A-Z_][A-Z0-9_]*$")
+
+    def test_aggregate_fails_unless_every_needed_job_succeeded(self) -> None:
+        aggregate = self._required_quality_jobs(self.module, ROOT)["candidate-quality"]
+        (step,) = aggregate["steps"]
+        results = (
+            "success",
+            "skipped",
+            "cancelled",
+            "failure",
+            "timed_out",
+            "neutral",
+            "",
+        )
+        for values in itertools.product(results, repeat=len(step["env"])):
+            environment = dict(zip(step["env"], values, strict=True))
+            with self.subTest(**environment):
+                completed = subprocess.run(
+                    [
+                        "/usr/bin/bash",
+                        "--noprofile",
+                        "--norc",
+                        "-eo",
+                        "pipefail",
+                        "-c",
+                        step["run"],
+                    ],
+                    env=environment,
+                    capture_output=True,
+                    check=False,
+                )
+                self.assertEqual(
+                    all(value == "success" for value in values),
+                    completed.returncode == 0,
+                )
+
+    def test_aggregate_projection_fails_closed_on_weakening(self) -> None:
+        document = next(
+            item
+            for item in self.module.load_workflows(ROOT)
+            if item.path == ".github/workflows/ci-quality.yml"
+        )
+        contract = self.module.load_workflow_contract(ROOT)
+        cases = (
+            (
+                "drops-a-result-check",
+                lambda job: job["steps"][0].update(
+                    {"run": 'test "$CORE_RESULT" = success\n'}
+                ),
+                "workflow-aggregate-projection-mismatch",
+            ),
+            (
+                "accepts-skipped",
+                lambda job: job["steps"][0].update(
+                    {"run": job["steps"][0]["run"].replace("= success", "!= failure")}
+                ),
+                "workflow-aggregate-projection-mismatch",
+            ),
+            (
+                "extra-step",
+                lambda job: job["steps"].insert(
+                    0, {"name": "Extra", "run": "true", "shell": "bash"}
+                ),
+                "workflow-aggregate-projection-mismatch",
+            ),
+            (
+                "misses-a-needed-job",
+                lambda job: job.update({"needs": ["candidate-core"]}),
+                "workflow-gate-dependency-invalid",
+            ),
+            (
+                "not-always",
+                lambda job: job.update({"if": "github.event_name == 'pull_request'"}),
+                "workflow-gate-execution-context-invalid",
+            ),
+            (
+                "continue-on-error",
+                lambda job: job.update({"continue-on-error": True}),
+                "workflow-gate-execution-context-invalid",
+            ),
+        )
+        for label, mutation, expected in cases:
+            with self.subTest(label=label):
+                data = copy.deepcopy(document.data)
+                mutation(data["jobs"]["candidate-quality"])
+                findings = self.module._workflow_projection_findings(
+                    document.path, data, data["jobs"], contract
+                )
+                self.assertIn(expected, {finding.code for finding in findings})
+
+    def test_candidate_jobs_must_match_the_typed_hosted_job_layout(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            shutil.copytree(ROOT / ".github", root / ".github")
+            contract_file = root / ".github/workflow-contract.yml"
+            text = contract_file.read_text(encoding="utf-8")
+            self.assertIn('"default": "candidate-core"', text)
+            contract_file.write_text(
+                text.replace(
+                    '"default": "candidate-core"', '"default": "candidate-other"', 1
+                ),
+                encoding="utf-8",
+            )
+            with self.assertRaises(self.module.WorkflowContractError) as caught:
+                self.module.load_workflow_contract(root)
+        self.assertEqual("contract-required-quality-invalid", caught.exception.code)
+
+    def test_aggregate_contract_must_need_every_job_and_run_always(self) -> None:
+        for label, old, new in (
+            (
+                "not-always",
+                "\"always() && github.event_name == 'pull_request'\"",
+                "\"github.event_name == 'pull_request'\"",
+            ),
+            (
+                "misses-a-needed-job",
+                '"candidate-core",\n            "candidate-documents"\n          ],',
+                '"candidate-core"\n          ],',
+            ),
+        ):
+            with self.subTest(label=label), tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                shutil.copytree(ROOT / ".github", root / ".github")
+                contract_file = root / ".github/workflow-contract.yml"
+                text = contract_file.read_text(encoding="utf-8")
+                self.assertIn(old, text)
+                contract_file.write_text(text.replace(old, new, 1), encoding="utf-8")
+                with self.assertRaises(self.module.WorkflowContractError) as caught:
+                    self.module.load_workflow_contract(root)
+                self.assertEqual(
+                    "contract-required-quality-invalid", caught.exception.code
+                )
 
     def test_candidate_commands_ignore_a_hostile_path(self) -> None:
         with tempfile.TemporaryDirectory() as directory:

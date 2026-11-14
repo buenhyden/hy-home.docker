@@ -29,14 +29,35 @@
         "cancel-in-progress": true
       },
       "jobs": {
-        "candidate-quality": {
+        "candidate-core": {
           "permissions": {
             "contents": "read"
           },
           "runs_on": "ubuntu-latest",
-          "timeout_minutes": 30,
+          "timeout_minutes": 60,
           "condition": "github.event_name == 'pull_request'",
           "needs": [],
+          "environment": null
+        },
+        "candidate-documents": {
+          "permissions": {
+            "contents": "read"
+          },
+          "runs_on": "ubuntu-latest",
+          "timeout_minutes": 90,
+          "condition": "github.event_name == 'pull_request'",
+          "needs": [],
+          "environment": null
+        },
+        "candidate-quality": {
+          "permissions": {},
+          "runs_on": "ubuntu-latest",
+          "timeout_minutes": 5,
+          "condition": "always() && github.event_name == 'pull_request'",
+          "needs": [
+            "candidate-core",
+            "candidate-documents"
+          ],
           "environment": null
         },
         "main-security": {
@@ -1313,21 +1334,22 @@
       "full"
     ],
     "local_only_gate_ids": [
-      "leaf.ci-gate-adapter-regressions",
-      "leaf.ci-gate-runner-regressions",
       "leaf.ci-precommit-regressions",
-      "leaf.document-governance-library-regressions",
-      "leaf.docs-traceability",
       "leaf.local-hook-rule-tests",
-      "leaf.local-document-metadata-tests",
-      "leaf.local-document-corpus-lifecycle-tests",
-      "leaf.release-regressions",
-      "leaf.repo-contracts-control-plane-regressions",
       "leaf.local-candidate-preflight",
-      "leaf.supply-chain-fixture-policy",
-      "leaf.conftest-policy-tests",
-      "leaf.workflow-contract-regressions"
+      "leaf.conftest-policy-tests"
     ],
+    "hosted_jobs": {
+      "default": "candidate-core",
+      "leaf_gate_ids": {
+        "candidate-documents": [
+          "leaf.document-governance-library-regressions",
+          "leaf.local-document-metadata-tests",
+          "leaf.local-document-corpus-lifecycle-tests",
+          "leaf.docs-traceability"
+        ]
+      }
+    },
     "suite_roots": {
       "agent-governance": [
         "leaf.local-provider-surface-drift",
@@ -1426,7 +1448,10 @@
           "all"
         ],
         "contexts": [
-          "local"
+          "local",
+          "pull_request",
+          "push",
+          "workflow_dispatch"
         ]
       },
       {
