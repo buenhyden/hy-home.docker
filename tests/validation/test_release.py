@@ -537,6 +537,27 @@ class ReleaseTests(unittest.TestCase):
             any(call[1:3] == ("release", "edit") for call in commands.calls)
         )
 
+    def test_deleted_release_ref_is_not_candidate_acceptance(self):
+        """QA-13: a vanished main or tag ref never counts; nothing publishes."""
+        for deleted in (
+            f"repos/{REPOSITORY}/git/ref/heads/main",
+            f"repos/{REPOSITORY}/git/ref/tags/v1.2.3-rc.1+build.7",
+        ):
+            commands = FakeCommands()
+
+            def gone(argv, deleted=deleted, commands=commands):
+                if argv[:3] == ["gh", "api", deleted]:
+                    commands.calls.append(tuple(argv))
+                    raise release.ReleaseError("release command failed")
+                return commands(argv)
+
+            with self.subTest(deleted=deleted):
+                with self.assertRaises(release.ReleaseError):
+                    release.publish("1.2.3-rc.1+build.7", SHA, REPOSITORY, run=gone)
+                self.assertFalse(
+                    any(call[1:3] == ("release", "edit") for call in commands.calls)
+                )
+
     def test_annotated_tag_and_malformed_asset_metadata_refused(self):
         for invalid_kind in (
             "annotated-tag",

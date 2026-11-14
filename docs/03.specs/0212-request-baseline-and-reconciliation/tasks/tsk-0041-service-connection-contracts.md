@@ -29,7 +29,7 @@ grant operating, host, credential, external-repository or remote-CI authority.
 - [SPEC-0212 Plan](../plan.md)
 - [Historical P03 service integration contracts](../../0204-service-integration-security-and-operations/tasks/tsk-0011-p03-service-integration-contracts.md)
 - [Application authentication guide](../../../05.operations/guides/03-identity-and-access/0079-application-auth-integration.md)
-- [Workspace inventory data](../../../90.references/data/0096-workspace-inventory/README.md)
+- Workspace inventory data: DATA-0096, retired 2026-11-14; Git history keeps it
 
 #### 2026-11-09 n8n code sandbox: vfs storage for the inner Docker
 

@@ -140,14 +140,14 @@ class ReferencePackageTests(unittest.TestCase):
     def test_reference_roots_and_package_paths_are_exact(self) -> None:
         corpus = self.references.load_reference_packages(ROOT / "docs/90.references")
         self.assertEqual(("audits", "data", "research"), corpus.category_names)
-        # The three categories stay declared. `audits` remains empty, while
-        # `data` again carries the consumer-bound workspace inventory package.
+        # The three categories stay declared. `audits` remains empty, and
+        # `data` is empty again since DATA-0096 retired on 2026-11-14.
         # An observed prefix therefore proves a package exists, and every
         # observed prefix must still be a declared one.
         observed = {
             item.artifact_id.rsplit("-", 1)[0] + "-" for item in corpus.packages
         }
-        self.assertEqual({"DATA-", "RES-"}, observed)
+        self.assertEqual({"RES-"}, observed)
         self.assertLessEqual(observed, {"AUD-", "DATA-", "RES-"})
         self.assertTrue(
             all(

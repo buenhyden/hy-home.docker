@@ -646,6 +646,7 @@ def leaf(gate_id: str, suite_key: str) -> contract.GateNode:
         timeout_minutes=10,
         opaque=True,
         children=(),
+        rule_owner=".agents/governance/quality-standards.md#4-execution-boundary",
     )
 
 
@@ -852,6 +853,10 @@ class CiGateContractTests(unittest.TestCase):
                         "kind": "leaf",
                         "suite_key": f"over-{index}",
                         "guarantee": "none",
+                        "rule_owner": (
+                            ".agents/governance/quality-standards.md"
+                            "#4-execution-boundary"
+                        ),
                         "entrypoint": "scripts/check.py",
                         "argv": [],
                         "cwd": ".",
@@ -879,6 +884,7 @@ class CiGateContractTests(unittest.TestCase):
             "kind": "leaf",
             "suite_key": "invalid",
             "guarantee": "none",
+            "rule_owner": ".agents/governance/quality-standards.md#4-execution-boundary",
             "entrypoint": "scripts/check.py",
             "argv": [],
             "cwd": ".",
@@ -1402,6 +1408,7 @@ class CiGateContractTests(unittest.TestCase):
             "kind": "leaf",
             "suite_key": "safe",
             "guarantee": "none",
+            "rule_owner": ".agents/governance/quality-standards.md#4-execution-boundary",
             "entrypoint": "scripts/check.py",
             "argv": [],
             "cwd": ".",
@@ -1520,11 +1527,77 @@ class GateCrosswalkTests(unittest.TestCase):
         self.assertIn("repository-integrity", row.suites)
         self.assertIn("local.workflow-harness", row.consumers)
         self.assertIn("tests.lib.gate.test_github_workflow_contract", row.test_modules)
-        self.assertEqual("UNOWNED", row.owner)
+        self.assertEqual(
+            ".agents/governance/github-governance.md"
+            "#4-github-actions-security-contract",
+            row.owner,
+        )
         self.assertEqual(
             set(self.public.local_only_gate_ids),
             {row.gate_id for row in self.rows if row.local_only},
         )
+
+    def test_every_leaf_has_a_resolving_rule_owner(self) -> None:
+        """R147-07 / H-W05-1: no leaf is UNOWNED and every anchor resolves."""
+        self.assertEqual([], [r.gate_id for r in self.rows if r.owner == "UNOWNED"])
+        self.assertEqual((), contract.validate_rule_owners(ROOT, self.registry))
+
+    def test_promotion_readiness_is_reported_by_the_lifecycle_leaf(self) -> None:
+        """H-W04-2: SDLC-PROMOTION reuses the lifecycle check's --readiness
+        report; it only prints, so the leaf's exit semantics stay unchanged."""
+        by_id = {row.gate_id: row for row in self.rows}
+        self.assertEqual(
+            ("--readiness",), by_id["leaf.local-document-corpus-lifecycle"].argv
+        )
+        validator = next(
+            item
+            for item in self.public.validators
+            if item.gate_id == "leaf.local-document-corpus-lifecycle"
+        )
+        self.assertEqual(("--readiness",), validator.argv)
+
+    def test_missing_or_malformed_rule_owner_is_rejected_at_parse(self) -> None:
+        baseline = contract.load_contract_document(ROOT)
+        for label, mutate in (
+            ("missing", lambda node: node.pop("rule_owner")),
+            ("empty", lambda node: node.update(rule_owner="")),
+            ("not-a-string", lambda node: node.update(rule_owner=["x"])),
+            ("no-anchor", lambda node: node.update(rule_owner="a/b.md")),
+            (
+                "outside-governance",
+                lambda node: node.update(rule_owner="docs/x.md#a"),
+            ),
+            (
+                "traversal",
+                lambda node: node.update(rule_owner=".agents/governance/../x.md#a"),
+            ),
+        ):
+            with self.subTest(label=label):
+                candidate = json.loads(json.dumps(baseline))
+                node = next(g for g in candidate["gate_nodes"] if g["kind"] == "leaf")
+                mutate(node)
+                with self.assertRaises(contract.GateContractError):
+                    contract.parse_gate_registry(candidate, "contract")
+
+    def test_unknown_rule_owner_document_or_anchor_is_rejected(self) -> None:
+        for owner in (
+            ".agents/governance/quality-standards.md#no-such-heading",
+            ".agents/governance/no-such-policy.md#4-execution-boundary",
+        ):
+            with self.subTest(owner=owner):
+                nodes = tuple(
+                    dataclasses.replace(node, rule_owner=owner)
+                    if node.gate_id == "leaf.zizmor"
+                    else node
+                    for node in self.registry.nodes
+                )
+                findings = contract.validate_rule_owners(
+                    ROOT, dataclasses.replace(self.registry, nodes=nodes)
+                )
+                self.assertEqual(
+                    [("ci-gate-rule-owner", "gate_nodes/leaf.zizmor")],
+                    [(item.code, item.path) for item in findings],
+                )
 
     def test_owner_comes_from_a_non_self_referential_authority(self) -> None:
         authorities = {
@@ -1537,6 +1610,18 @@ class GateCrosswalkTests(unittest.TestCase):
             row.gate_id: row
             for row in contract.build_gate_crosswalk(
                 self.registry, self.public, authorities
+            )
+        }
+        bare = {
+            node.gate_id: dataclasses.replace(node, rule_owner="")
+            for node in self.registry.nodes
+        }
+        rows = {
+            row.gate_id: row
+            for row in contract.build_gate_crosswalk(
+                dataclasses.replace(self.registry, nodes=tuple(bare.values())),
+                self.public,
+                authorities,
             )
         }
         self.assertEqual(

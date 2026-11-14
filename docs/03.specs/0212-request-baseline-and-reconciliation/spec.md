@@ -296,7 +296,7 @@ remain excluded; Wiki remains preparation only.
 Only one current writer integrates each changed path or explicit segment. The
 requirement acceptance owner, writer, independent reviewer, data owner and
 operational accepter remain separate fields. Unknown identities stay unknown.
-P02–P12 routes are handoff labels, not user/account authority. DATA-0096 is a
+P02–P12 routes are handoff labels, not user/account authority. DATA-0096, retired on 2026-11-14, was a
 non-normative observation consumed by TSK-0040 and exact downstream handoffs;
 existing service, port, Secret and version sources remain canonical.
 
@@ -1033,7 +1033,6 @@ target, backup, recovery boundary, and action-specific authorization.
 - [Documentation, governance, QA and CI Task](tasks/tsk-0049-document-governance-qa-ci.md)
 - [Hermes provenance, trust and export Task](tasks/tsk-0050-hermes-provenance-trust-export.md)
 - [Opsflow first HOME installation Task](tasks/tsk-0051-opsflow-home-installation.md)
-- [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 
 - [Plan](plan.md)
 - [R10 reconciliation Task](tasks/tsk-0007-r10-reconciliation.md)

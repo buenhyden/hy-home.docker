@@ -1,10 +1,10 @@
 ---
 title: "QA and CI Legacy Cleanup Task"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "specs"
 artifact_id: "SPEC-0253-TSK-0001"
 parent_ids:
@@ -194,6 +194,7 @@ None: nothing was recorded here before this Task moved to the common form.
 | E18 | 2 | W3 | rehearsal-retirement-unit-suites | surface ownership, operations taxonomy, Registry, CI gate adapters/contract/model/plan, workflow contract, Script Manifest, validator entrypoints, workspace inventory and the remaining operations-suite modules, worktree on main 4528c1ea7 | PASS | 580 tests OK | required | - |
 | E19 | 3 | W4 | rehearsal-retirement-document-checks | agent governance contract, metadata `check-active` and `check-changed --base-ref origin/main`, links `all`, corpus lifecycle, operations catalog, Script Manifest, supply-chain policy, renderer `--check`, worktree on main 4528c1ea7 | PASS | zero failures; links 911 documents, 0 failures; manifest valid; drift 0 | required | - |
 | E20 | 3 | W4 | hosted-ci | GitHub Actions for the retirement branch | NOT_RUN | branch not yet pushed | required | - |
+| E21 | 3 | W4 | hosted-ci | CI Quality Gates run 43555699221 (PR #1007, head deea4dbf2, contains #896 merge 2ba0539cf), read-only `gh run view` and gate-evidence artifacts; runs 43565612839 (f76079d6c) and 43567181806 (866b77d06) also concluded success | PASS | candidate-core, candidate-documents and candidate-quality success, main-security skipped by trigger; artifacts complete=true with every row exit 0: provider-surface-drift, agent-governance-contract, repo-document-metadata, document-corpus-lifecycle, local-script-manifest, ci-gate-contract/runner/adapter, workflow-contract(-regressions), repository-integrity-regressions, docs-traceability (links) | required | E20 |
 
 ### Resolution Links
 

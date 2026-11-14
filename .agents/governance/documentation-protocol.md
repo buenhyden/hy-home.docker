@@ -605,8 +605,10 @@ plain text, and version history keeps the body. A package with any
 non-terminal Task stays, with its completed Tasks. A terminal Task body stays
 immutable while its package exists, so a link it holds into a package deleted
 later is not repaired; link alignment excuses exactly that link, from a
-terminal Task at a registered Task path into a package whose number the
-checked root's Registry reserves. From lifecycle generation 7 the loader reads
+terminal Task at a registered Task path into a numbered Spec, data, research
+or audit package whose number the checked root's Registry reserves in that
+package's identity space. A non-terminal document turns such a link into
+plain text that names the retired identity. From lifecycle generation 7 the loader reads
 the generation 5 and 6 migration proofs from the last generation 6 revision,
 not the working tree, so a package that carried one is retired like any other.
 
