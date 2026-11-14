@@ -2,7 +2,7 @@
 title: "v14.7 W05 Validator Alignment Task"
 version: "0.6.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-14"
 layer: "specs"
@@ -355,6 +355,7 @@ byte (W124 post-merge restore rerun).
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0064 | draft | ready | #w05-run-2026-11-14 |
 | SPEC-0212-TSK-0064 | ready | in-progress | #w05-run-2026-11-14 |
+| SPEC-0212-TSK-0064 | in-progress | completed | #criterion-decisions |
 
 ### Blockers and Decisions
 
@@ -514,13 +515,12 @@ regression by its rerun.
 | --- | --- | --- | --- | --- |
 | 117 | accepted | Disposition GREEN, TemplateDefinition GREEN, Vocabulary 1.1.0 GREEN, Release GREEN, Link title GREEN, Currency GREEN, SemVer GREEN, Integrated checks, Integrated re-review, Remote candidate 996 final | Owner @buenhyden accepted on 2026-11-14 in this chat, after #996 merged; hosted CI wiring of the local-only leaves stays with H-W05-1 (W06) | SPEC-0212 TSK-0064 |
 | 118 | accepted | Relation lookup GREEN, W123 review fixes, Consumer paths GREEN, W123 re-review, W123 regression, Remote candidate 998 | Owner @buenhyden accepted on 2026-11-14 in this chat, after #998 merged | SPEC-0212 TSK-0064 |
-| 119 | pending | - | The six packages are removed (#1003, `ca5dc8f4a`) and the post-merge restore passed; the owner's acceptance remains | SPEC-0212 TSK-0064 |
-| 120 | pending | - | #999, #1001 and #1002 are merged; the owner's acceptance remains | SPEC-0212 TSK-0064 |
+| 119 | accepted | W124 base readiness, W124 lifecycle, W124 links, W124 metadata, W124 unit regression, W124 folder guide consumer, W124 removal review, Remote candidate 1003, W124 post-merge restore rerun | Owner @buenhyden accepted on 2026-11-14 in this chat, after #1003 merged and the restore matched; the 0096 scan and the ADR-0060 mention stay as recorded | SPEC-0212 TSK-0064 |
+| 120 | accepted | Crosswalk GREEN, Guarantee GREEN, Reuse lock digest GREEN, Crosswalk re-review, SemVer precedence GREEN, SemVer re-review, Security DB GREEN, Security DB re-review, Remote candidate 999, Remote candidate 1001, Remote candidate 1002 | Owner @buenhyden accepted on 2026-11-14 in this chat, after #999, #1001 and #1002 merged; the rule-owner field, the version-change consumer and hosted wiring stay with H-W05-1 (W06) | SPEC-0212 TSK-0064 |
 
 ### Remaining Conditions
 
-Criteria 117 and 118 are accepted; 119 and 120 are pending as their rows
-state. The UNVERIFIED and DELTA rows name their owners. State per axis:
+Criteria 117 to 120 are accepted and the Task is completed. The UNVERIFIED and DELTA rows name their owners. State per axis:
 approval as recorded in each row; acceptance as in Criterion Decisions; merge
 as each Remote candidate row records; operation: none, since W05 changed no
 runtime. Limits: a reference definition used twice, or an
@@ -555,7 +555,6 @@ merge commits; W124 through PR #1003 (`ca5dc8f4a`).
 
 ### Next Owner
 
-The current owner is @buenhyden. Resume from `main`: the owner's
-acceptance of criteria 119 and 120 remains. W06 takes
+The current owner is @buenhyden. No W05 work remains in this Task. W06 takes
 H-W05-1 as listed under Blockers and Decisions; SPEC-0204 TSK-0011 takes the
 OPEN-11 rerun.
