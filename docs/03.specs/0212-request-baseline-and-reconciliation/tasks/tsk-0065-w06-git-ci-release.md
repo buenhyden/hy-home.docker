@@ -81,6 +81,68 @@ No `post-commit` or `post-push` hook exists, so those cells observe or do not
 apply; the client hooks are bypassable, so only the branch protection rows
 are enforcement.
 
+#### Stage bindings
+
+SDLC phases, bound to their existing owners; no check was invented.
+
+| ID | Guarantee | Owner | Action | Reason |
+| --- | --- | --- | --- | --- |
+| SDLC-REQUIREMENT | Stable IDs and decidable criteria | `sdlc.md` Stage 01; `leaf.repo-document-metadata` | REUSE | The candidate selects it when `docs/01.requirements/` changes |
+| SDLC-ARCHITECTURE | Decision effect and lineage | `sdlc.md` Stage 02; corpus lifecycle check | REUSE | Same path selection |
+| SDLC-SPEC | Spec, Plan and Task chain | corpus lifecycle check; candidate preflight | RUN | Local route before submission, candidate in CI |
+| SDLC-PLAN | Writer and verification mapping | `sdlc.md` Start event; review | OBSERVE | No machine check; review only |
+| SDLC-IMPLEMENTATION | RED and GREEN, actual diff | candidate shards and `candidate-quality` | RUN | Pull request candidate |
+| SDLC-VERIFICATION | A PASS kept apart from acceptance | `sdlc.md` Verify and Accept; Task evidence | OBSERVE | Acceptance is the owner's act |
+| SDLC-PROMOTION | Receipt and consumer check | `sdlc.md` Promote; readiness report | REUSE | The merged tree equals the checked candidate |
+| SDLC-RETIREMENT | Safe disposal | `sdlc.md` Retire; corpus lifecycle check | RUN | Staged shape only; the removal review stays manual |
+| SDLC-OPERATIONS | Real environment | `leaf.operations-catalog`, compose validation | RUN (static); NOT_RUN (runtime) | No operating environment is touched by W06 |
+
+Document Stages.
+
+| ID | Path | Leaf | Action | Reason |
+| --- | --- | --- | --- | --- |
+| DOC-S00 | `.agents/` | agent governance contract; provider surface drift | RUN | `.agents/` path rule; no `docs/00` exists |
+| DOC-S01 | `docs/01.requirements/` | `leaf.repo-document-metadata` | RUN | Document contract rule |
+| DOC-S02 | `docs/02.architecture/` | same, and the corpus lifecycle check | RUN | Same rule |
+| DOC-S03 | `docs/03.specs/` | corpus lifecycle check; candidate preflight | RUN | Same rule |
+| DOC-S05 | `docs/05.operations/` | `leaf.operations-catalog` | RUN | Operations path rule |
+| DOC-S90 | `docs/90.references/` | `leaf.repo-document-metadata` | RUN; freshness GAP | No leaf checks that a generated reference snapshot is current; the scan is dated and not hand-edited |
+| DOC-S98 | `docs/98.archive/` | `leaf.repo-document-metadata` | REUSE | Checked on change only; no whole-corpus recheck |
+| DOC-S99 | `docs/99.templates/` | document governance library and metadata tests | RUN | Selected by the document governance path rules |
+| DOC-DOMAINS | Vault, content, site | none | N/A | None of these directories exist here |
+
+Execution contract per Git action cell. Unless a row says otherwise: the
+rules version is the file at the candidate SHA (`.pre-commit-config.yaml`,
+`.cz.toml`, `.github/workflow-contract.yml`); the tools are Python 3.14.8,
+uv and Actions pinned by SHA, and `pre-commit` hook `rev:` pins; the hosted
+evidence is the gate evidence artifact, kept 14 days.
+
+| Cell | Trigger and input | SHAs | Runner | Entrypoint | Action | Invalidation | Failure | Evidence | Approval |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Commit before | agent route; index tree | HEAD, index tree | local | `run-ci-precommit.sh --mode local-staged` | RUN | index change | non-zero exit, no commit | Task | none |
+| Commit during | `git commit`; index and message file | HEAD, index | local, bypassable | installed `pre-commit` and `commit-msg` | RUN | `--no-verify` | blocks the commit | terminal | none |
+| Commit after | no hook | n/a | n/a | n/a | NOT_APPLICABLE | n/a | n/a | n/a | n/a |
+| Push before | `git push`; refs on stdin | remote old, local new | local, bypassable | `pre-push-guard.sh` | RUN | hook not installed | refuses `refs/heads/main` | stderr | none |
+| Push during | server ref update | old, new | hosted | branch protection | OBSERVE | settings change | server refuses | read-back | owner |
+| Push after | `push` on `main` | parent, `GITHUB_SHA` | hosted | `main-security` | OBSERVE | next push | reports only | security evidence artifact | `security-events: write` |
+| PR before | none | n/a | n/a | n/a | NOT_APPLICABLE | n/a | n/a | n/a | opening a PR is a remote write |
+| PR during | `pull_request`; merge ref | base, head, merge `GITHUB_SHA` | hosted, `contents: read` | candidate shards, then the `candidate-quality` aggregate | RUN | new push or base move | fails closed | per-shard evidence artifact | none |
+| PR after | job end; evidence files | as PR during | hosted | `actions/upload-artifact` | OBSERVE | rerun | missing artifact | same | none |
+| Merge before | merge attempt; required check | strict up to date | hosted | branch protection | RUN (server) | base move | blocks | check status | owner |
+| Merge during | merge commit; no `merge_group` | n/a | n/a | n/a | NOT_APPLICABLE | n/a | n/a | n/a | a queue needs approval |
+| Merge after | `push` on `main`; merged SHA | candidate tree | hosted | `main-security` | REUSE | n/a | reports only | security evidence artifact | as Push after |
+
+Required counterexamples: partial stage, newline and leading-space filenames,
+a one-parent commit with a merge subject, PR parents differing from base and
+head, skipped or zero-test leaves, cancellation, toolchain drift, YAML `on`
+spellings, permission co-mutation and tracked worktree drift each have a test
+(this run's branches add the ones they name in Evidence). The aggregate over
+shard conclusions, `merge_group` without approval, other-run artifacts,
+deleting `main` or a first push at the pre-push guard, and the absence of a
+`post-commit` hook are added by this run's CI and hook units. The latest
+base move is held by strict branch protection and is recorded as a server
+observation.
+
 #### Handoff Verdicts
 
 | ID | Source | Verdict | Action and owner |
@@ -134,6 +196,10 @@ no longer fits the 30-minute candidate job, which the shard split fixes.
 - Required signatures and required reviews stay off by the owner's choice of
   2026-11-14; the read-back records them.
 - No Dependabot configuration is added: Renovate is the single updater.
+- DOC-S90 snapshot freshness has no checker: the generated reference data
+  under `docs/90.references/data/` is dated and regenerated by its own
+  producer. Owner: W11 adoption review, which decides whether a freshness
+  leaf is worth adding.
 
 ## Verification Evidence
 
