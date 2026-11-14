@@ -1,8 +1,8 @@
 ---
 title: "v14.7 W06 Git, CI and Release Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-14"
 layer: "specs"
@@ -247,6 +247,7 @@ Requirement IDs that no SPEC-0212 Task named, with the evidence read on
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0065 | draft | ready | #w06-run-2026-11-14 |
 | SPEC-0212-TSK-0065 | ready | in-progress | #w06-run-2026-11-14 |
+| SPEC-0212-TSK-0065 | in-progress | completed | #criterion-decisions |
 
 ### Blockers and Decisions
 
@@ -334,17 +335,17 @@ resolved by Budget GREEN, and the Docs budget timeout by Docs budget hosted.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 121 | pending | Remote read-back, Remote settings change, Hooks and grammar, Document version downgrade, Counterexample map, Governance record, Link routes, Fixture git GREEN, Shard split hosted final, Budget GREEN, Docs budget hosted, Budget measurement, Base move test, Rule owners, SPEC-0253 hosted CI, DATA-0096 retirement, Single SemVer comparator, Document governance guards | All W06 units merged; awaiting the owner's acceptance | SPEC-0212 TSK-0065 |
+| 121 | accepted | Remote read-back, Remote settings change, Hooks and grammar, Document version downgrade, Counterexample map, Governance record, Link routes, Fixture git GREEN, Shard split hosted final, Budget GREEN, Docs budget hosted, Budget measurement, Base move test, Rule owners, SPEC-0253 hosted CI, DATA-0096 retirement, Single SemVer comparator, Document governance guards | Owner @buenhyden accepted on 2026-11-14 in this chat, after #1021 merged (`6eefc722d`); two LOW review findings stay open with their owners (W11 adoption review, Q-07) | SPEC-0212 TSK-0065 |
 
 ### Remaining Conditions
 
 Every W06 unit is merged as its remote candidate row records; this record
-lands through its own pull request, then the owner's acceptance. State per
-axis: approval as the owner gave it on 2026-11-14; acceptance pending; merge
+landed through #1021, and the owner accepted criterion 121 on 2026-11-14. State per
+axis: approval as the owner gave it on 2026-11-14; acceptance accepted; merge
 as each remote candidate row records; operation: none, since W06 changed no
 runtime. Limits: DOCKER-03 stays with W10, OPEN-07 with W11 and OPEN-08 and
 OPEN-10 with W10, as the gap audit records; SPEC-0253 TSK-0001 criteria 1 to
-3 need the owner's acceptance; Q-07 runs only after W11.
+3 were accepted the same day in that Task; Q-07 runs only after W11.
 
 ## Handoff
 
@@ -360,4 +361,4 @@ OPEN-10 with W10, as the gap audit records; SPEC-0253 TSK-0001 criteria 1 to
 
 ### Next Owner
 
-The current owner is @buenhyden, for the acceptance of criterion 121; W07 starts after it.
+Criterion 121 is accepted; W07 is next, owned by @buenhyden.
