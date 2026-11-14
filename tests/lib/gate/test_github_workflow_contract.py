@@ -1577,7 +1577,15 @@ class GithubWorkflowContractTests(unittest.TestCase):
     def test_aggregate_fails_unless_every_needed_job_succeeded(self) -> None:
         aggregate = self._required_quality_jobs(self.module, ROOT)["candidate-quality"]
         (step,) = aggregate["steps"]
-        results = ("success", "skipped", "cancelled", "failure", "timed_out", "")
+        results = (
+            "success",
+            "skipped",
+            "cancelled",
+            "failure",
+            "timed_out",
+            "neutral",
+            "",
+        )
         for values in itertools.product(results, repeat=len(step["env"])):
             environment = dict(zip(step["env"], values, strict=True))
             with self.subTest(**environment):
