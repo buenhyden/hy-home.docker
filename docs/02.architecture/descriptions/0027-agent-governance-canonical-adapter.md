@@ -1,10 +1,10 @@
 ---
 title: "Agent Governance Canonical Adapter Architecture"
-version: "1.6.3"
+version: "1.6.4"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-15"
 layer: "architecture"
 artifact_id: "AD-0027"
 parent_ids:
@@ -164,6 +164,7 @@ This description records no failure boundary beyond its Risks: static renderer p
 - [canonical agent governance bootstrap](../../../.agents/governance/bootstrap.md)
 - [Stage 99 Registry](../../99.templates/registry.json)
 - SPEC-0264 (retired; version history) delivered folder guides through the provider adapters and the shared hook dispatcher.
+- SPEC-0253 (retired; version history) removed the frozen archive payload boundary and the deleted-Task CI gate evidence owner from the QA and CI surfaces.
 
 #### Evolution
 

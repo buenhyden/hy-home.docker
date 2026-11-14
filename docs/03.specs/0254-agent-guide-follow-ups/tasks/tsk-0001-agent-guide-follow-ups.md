@@ -1,10 +1,10 @@
 ---
 title: "Agent Guide Follow-ups Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0254-TSK-0001"
 parent_ids:
@@ -144,7 +144,8 @@ None: nothing was recorded here before this Task moved to the common form.
 
 ### Remaining Conditions
 
-Local checks are recorded above; E8 is pre-existing debt owned by SPEC-0253.
+Local checks are recorded above; E8 was pre-existing debt; its
+cause, the DATA-0096 command paths, left with DATA-0096 on 2026-11-14.
 No independent review has run and hosted CI is not observed here; no
 criterion is accepted yet.
 

@@ -1,10 +1,10 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.18"
+version: "0.5.19"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0022"
 parent_ids:
@@ -23,7 +23,7 @@ created: "2026-10-30"
 Implement the independently testable, source-only Publisher/Outbox slice of
 criterion 23 without duplicating existing Hermes export or n8n crawling.
 Gateway contract adoption and actual operation remain separate required lanes.
-W79-W83 belong here; Task0013 and SPEC0247 retain their own files/acceptance.
+W79-W83 belong here; Task0013 retains their own files/acceptance.
 
 - [Spec](../spec.md)
 - [Plan](../plan.md)
@@ -60,9 +60,7 @@ No deployment, data deletion or queue reset is a rollback step.
   Invoke `validate(data)` for structural validation after source review and
   digest verification. Publisher independently reads bytes through bounded
   directory descriptors with no-follow checks and verifies restricted roots
-  and SHA-256. Missing or changed dependency fails closed. The dependency is
-  on an unpublished SPEC0247 branch; it is not a tracked runtime artifact.
-  This file remains SPEC0247-owned and is never edited/copied by Task0022.
+  and SHA-256. Missing or changed dependency fails closed.
 - The active sidecar's `validate_candidates.py` has the weaker
   `validate_candidate(data, source_root)` API; its mere presence is insufficient
   adoption of the stronger reviewed contract.
@@ -1906,7 +1904,7 @@ confirmed unchanged.
 
 Design self-review checked scope, dependencies, immutable Outbox interfaces,
 coverage of failure cases, and protected runtime exclusions against the direct
-request. Basic source implementation is currently authorized and active.
+request.
 Design and implementation sequencing are concrete; source work may proceed in
 the assigned isolated worktree. This Task starts as draft under the registered
 profile; no fabricated completed transition is recorded. The controller records

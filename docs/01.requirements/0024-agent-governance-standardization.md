@@ -1,10 +1,10 @@
 ---
 title: "Agent Governance Standardization Requirements"
-version: "1.8.0"
+version: "1.8.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "requirements"
 artifact_id: "REQ-0024"
 created: "2026-06-01"
@@ -204,7 +204,7 @@ Each condition is judged by running the registered governance and document suite
 ### Downstream Links
 
 - **Architecture Description**: [AD-0027 Agent Governance Canonical Adapter](../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)
-- **Historical implementation evidence**: SPEC-0158; SPEC-0264 (retired; version history) delivered folder guides
+- **Historical implementation evidence**: SPEC-0158; SPEC-0264 (retired; version history) delivered folder guides; SPEC-0253 (retired; version history) removed the frozen archive payload boundary and the deleted-Task CI evidence owner from QA and CI
 - **Decision**: [ADR-0032 Canonical Agent Governance Home](../02.architecture/decisions/0032-canonical-agent-governance-home.md)
 - **Decision**: [ADR-0034 Canonical Knowledge and Prompt Surfaces](../02.architecture/decisions/0034-canonical-knowledge-and-prompt-surfaces.md)
 - **Decision**: [ADR-0049 Shared Agent Memory Store](../02.architecture/decisions/0049-shared-agent-memory-store.md)
