@@ -2810,6 +2810,37 @@ class InstalledPrePushGuardTests(unittest.TestCase):
                 self.assertEqual(prior, (hooks / "pre-push.before-native").read_bytes())
                 self.assertEqual("#!/bin/sh\nexit 0\n", other.read_text())
 
+    def test_guard_stdin_refuses_main_deletion_and_allows_new_branch(self) -> None:
+        # Characterization of git's pre-push stdin: <local ref> <local sha> <remote ref> <remote sha>.
+        zero, sha = "0" * 40, "a" * 40
+        guard = ROOT / "scripts/hooks/pre-push-guard.sh"
+        for line, refused in (
+            (f"(delete) {zero} refs/heads/main {sha}\n", True),
+            (f"refs/heads/main {sha} refs/heads/main {sha}\n", True),
+            (f"refs/heads/feat/x {sha} refs/heads/feat/x {zero}\n", False),
+            (f"(delete) {zero} refs/heads/feat/x {sha}\n", False),
+        ):
+            with self.subTest(line=line):
+                result = subprocess.run(
+                    ["bash", str(guard)],
+                    input=line,
+                    capture_output=True,
+                    text=True,
+                    check=False,
+                    env={
+                        k: v
+                        for k, v in os.environ.items()
+                        if k != "PRE_COMMIT_REMOTE_BRANCH"
+                    },
+                )
+                self.assertEqual(refused, result.returncode != 0, result.stderr)
+
+    def test_default_install_hook_types_have_no_post_commit_claim(self) -> None:
+        config = yaml.safe_load((ROOT / ".pre-commit-config.yaml").read_text())
+        types = config["default_install_hook_types"]
+        self.assertEqual(["pre-commit", "commit-msg"], types)
+        self.assertFalse([t for t in types if t.startswith("post-")])
+
     def _check_hooks(self, repo: pathlib.Path) -> subprocess.CompletedProcess[str]:
         script = ROOT / "scripts/hooks/install-pre-push-guard.sh"
         return subprocess.run(

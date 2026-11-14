@@ -350,6 +350,22 @@ printf '%s\n' unstaged >"$REAL_REPO/candidate.txt"
 [[ "$(cat "$REAL_REPO/candidate.txt")" == "unstaged" ]] || fail "pre-commit did not restore unstaged bytes"
 [[ "$(git -C "$REAL_REPO" show :candidate.txt)" == "staged" ]] || fail "pre-commit changed staged bytes"
 
+# Characterization: a bad staged version stays rejected when the worktree copy
+# was fixed afterwards, because the hook sees the index, not the worktree.
+printf '%s\n' bad >"$REAL_REPO/candidate.txt"
+git -C "$REAL_REPO" add candidate.txt
+printf '%s\n' staged >"$REAL_REPO/candidate.txt"
+set +e
+(
+  cd "$REAL_REPO"
+  "$WRAPPER" --mode local-staged >/dev/null 2>&1
+)
+fixed_worktree_exit=$?
+set -e
+[[ "$fixed_worktree_exit" -ne 0 ]] || fail "bad staged bytes passed because the worktree was fixed"
+[[ "$(git -C "$REAL_REPO" show :candidate.txt)" == "bad" ]] || fail "rejected run changed staged bytes"
+[[ "$(cat "$REAL_REPO/candidate.txt")" == "staged" ]] || fail "rejected run changed the fixed worktree bytes"
+
 git -C "$REAL_REPO" reset -q --hard HEAD
 expect_rejected "local mode without staged paths" \
   env -C "$REAL_REPO" "$WRAPPER" --mode local-staged
