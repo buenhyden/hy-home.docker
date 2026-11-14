@@ -1,8 +1,8 @@
 ---
 title: "Agent Guide Follow-ups Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-15"
 layer: "specs"
@@ -55,6 +55,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0254-PLAN-0001 | draft | approved | #current-contract-decision |
 | SPEC-0254-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0254-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
+| SPEC-0254-TSK-0001 | in-progress | completed | #criterion-decisions |
 
 #### Decisions
 
@@ -127,6 +128,11 @@ None: nothing was recorded here before this Task moved to the common form.
 | E12 | 4 | W4 | document-governance | `test_spec_packages` after rewording the index row | PASS | OK, run together with E13 (134 tests) | required | E11 |
 | E13 | 4 | W4 | ci-routing | `tests.lib.gate.test_github_workflow_contract` at its real path | PASS | OK, run together with E12 (134 tests); the other routing modules passed in E10 | required | E10 |
 | E14 | 4 | W4 | links-commands | `--mode commands`, origin/main 705310723 | PASS | `failures=0 warnings=0`, exit 0 | required | E8 |
+| E15 | 4 | W4 | hosted-ci | PR #733, merge 4c891aeed41565b484247c06d6af92e36d056602, read-only `gh pr view` 2026-11-15 | PASS | candidate-quality, CodeQL, 3 Analyze, triage, pull-request-greeting and GitGuardian SUCCESS; issue-greeting and main-security SKIPPED; none failing | required | - |
+| E16 | 1 | W1 | independent-review | 2026-11-15 independent acceptance review of SPEC-0254 criterion 1 | PASS | MET: no stage-document link outside `docs/` | required | - |
+| E17 | 2 | W2 | independent-review | 2026-11-15 independent acceptance review of SPEC-0254 criterion 2 | PASS | MET: guides routed to `agent-governance` (`.github/workflow-contract.yml:1612-1651`) | required | - |
+| E18 | 3 | W3 | independent-review | 2026-11-15 independent acceptance review of SPEC-0254 criterion 3 | PASS | MET: all nine guides are `common/agent-guide` and `active` | required | - |
+| E19 | 4 | W4 | independent-review | 2026-11-15 independent acceptance review of SPEC-0254 criterion 4 | PASS | MET: evidence E8 to E14 holds Caveat: relied on recorded results plus hosted CI; the full suite was not rerun. | required | - |
 
 ### Resolution Links
 
@@ -138,17 +144,14 @@ None: nothing was recorded here before this Task moved to the common form.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | - | - | @buenhyden |
-| 2 | pending | - | - | @buenhyden |
-| 3 | pending | - | - | @buenhyden |
-| 4 | pending | - | - | @buenhyden |
+| 1 | accepted | E1, E2, E16 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review | SPEC-0254 TSK-0001 |
+| 2 | accepted | E3, E17 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review | SPEC-0254 TSK-0001 |
+| 3 | accepted | E18 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review | SPEC-0254 TSK-0001 |
+| 4 | accepted | E4, E5, E6, E7, E8, E9, E10, E11, E12, E13, E14, E15, E19 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review | SPEC-0254 TSK-0001 |
 
 ### Remaining Conditions
 
-Local checks are recorded above; E8 is resolved by E14; its
-cause, the DATA-0096 command paths, left with DATA-0096 (#1018).
-No independent review has run and hosted CI is not observed here; no
-criterion is accepted yet.
+All four criteria are accepted and the Task is completed. The 2026-11-15 independent review found every criterion MET (E16 to E19); the failing rows E8, E10 and E11 are resolved by E14, E13 and E12. Hosted CI for the merged PR #733 is E15. The DATA-0096 command paths left with DATA-0096 (#1018). The review's caveat: criterion 4 relied on recorded results plus hosted CI and the full suite was not rerun. The merge receipt below is kept as dated history.
 
 #### Merge receipt 2026-11-10
 

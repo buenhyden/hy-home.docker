@@ -1,8 +1,8 @@
 ---
 title: "Legacy Document Status Ban Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-15"
 layer: "specs"
@@ -56,6 +56,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0256-PLAN-0001 | draft | approved | #current-contract-decision |
 | SPEC-0256-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0256-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
+| SPEC-0256-TSK-0001 | in-progress | completed | #criterion-decisions |
 
 #### Removed states and keys
 
@@ -187,6 +188,11 @@ None: nothing was recorded here before this Task moved to the common form.
 | E18 | 4 | W4 | review-fix-checks | metadata check-changed against `origin/main` 46a7811dd and check-active, corpus lifecycle, links alignment and commands, Script Manifest, renderer `--check`, agent governance contract, commit b8893cc28 | PASS | 20 and 497 selected, zero violations; lifecycle and occupancy zero; both link modes PASS; manifest valid; drift 0; contract failures 0 | required | - |
 | E19 | 4 | W4 | document-commands | `check-document-links.py --mode commands`, origin/main 705310723 | PASS | `failures=0 warnings=0`, exit 0 | required | E13 |
 | E20 | 4 | W4 | governance-suite | single failing test rerun: `python3 -m unittest tests.lib.document_governance.test_spec_packages -k test_v4_preexecution_and_terminal_package_occupancy`, origin/main 705310723 | PASS | `Ran 1 test`, `OK`, exit 0; the whole suite was not rerun | required | E16 |
+| E21 | 4 | W4 | hosted-ci | PR #735, merge 0ab42bc30855adbae56ce06545e7296858983c10, read-only `gh pr view` 2026-11-15 | PASS | candidate-quality, CodeQL, 3 Analyze, triage, pull-request-greeting and GitGuardian SUCCESS; issue-greeting and main-security SKIPPED; none failing | required | - |
+| E22 | 1 | W1 | independent-review | 2026-11-15 independent acceptance review of SPEC-0256 criterion 1 | PASS | MET: no legacy status in the Stage 01-03 lifecycles (Registry) and none in the corpus | required | - |
+| E23 | 2 | W2 | independent-review | 2026-11-15 independent acceptance review of SPEC-0256 criterion 2 | PASS | MET: ADR-0011 removed and 11 reserved | required | - |
+| E24 | 3 | W3 | independent-review | 2026-11-15 independent acceptance review of SPEC-0256 criterion 3 | PASS | MET: `archive_retention` holds only `disposition_entry_statuses` | required | - |
+| E25 | 4 | W4 | independent-review | 2026-11-15 independent acceptance review of SPEC-0256 criterion 4 | PASS | MET: E13 and E16 resolved by E19 and E20 Caveat: relied on recorded results plus hosted CI; the full suite was not rerun. | required | - |
 
 ### Resolution Links
 
@@ -198,18 +204,14 @@ None: nothing was recorded here before this Task moved to the common form.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | - | - | @buenhyden |
-| 2 | pending | - | - | @buenhyden |
-| 3 | pending | - | - | @buenhyden |
-| 4 | pending | - | - | @buenhyden |
+| 1 | accepted | E2, E3, E22 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review | SPEC-0256 TSK-0001 |
+| 2 | accepted | E4, E5, E6, E23 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review | SPEC-0256 TSK-0001 |
+| 3 | accepted | E24 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review | SPEC-0256 TSK-0001 |
+| 4 | accepted | E8, E10, E11, E12, E13, E15, E16, E17, E18, E19, E20, E21, E25 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review | SPEC-0256 TSK-0001 |
 
 ### Remaining Conditions
 
-Local checks are recorded above. E13 and E16 are resolved by E19 and E20. E8, E10, E11, and E12 predate the rebases
-onto 4adeb3d37 and 46a7811dd; the rows from E16 on are the review-fix runs.
-Independent review requested changes I1 to I4 and M1 to M8, which commits
-bf3ea869e and b8893cc28 and the follow-up test fix address. Hosted CI has not
-run, and no criterion is accepted yet.
+All four criteria are accepted and the Task is completed. The 2026-11-15 independent review found every criterion MET (E22 to E25); E13 and E16 are resolved by E19 and E20. Hosted CI for the merged PR #735 is E21. The review's caveat: criterion 4 relied on recorded results plus hosted CI and the full suite was not rerun. The merge receipt below is kept as dated history.
 
 #### Merge receipt 2026-11-10
 
