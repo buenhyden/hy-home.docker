@@ -1574,6 +1574,38 @@ class GithubWorkflowContractTests(unittest.TestCase):
         for variable in step["env"]:
             self.assertRegex(variable, r"^[A-Z_][A-Z0-9_]*$")
 
+    def test_hosted_job_timeout_covers_its_leaf_budgets_in_sequence(self) -> None:
+        # A shard runs its leaves in sequence; a job limit below their summed
+        # budgets would cancel a leaf that is still inside its own budget.
+        contract = json.loads(
+            (ROOT / ".github/workflow-contract.yml").read_text(encoding="utf-8")
+        )
+        budgets: dict[str, int] = {}
+
+        def collect(node: object) -> None:
+            if isinstance(node, dict):
+                if "gate_id" in node and "timeout_minutes" in node:
+                    budgets[node["gate_id"]] = node["timeout_minutes"]
+                for value in node.values():
+                    collect(value)
+            elif isinstance(node, list):
+                for value in node:
+                    collect(value)
+
+        collect(contract)
+        hosted = contract["public_gate"]["hosted_jobs"]["leaf_gate_ids"]
+        jobs = next(
+            workflow["jobs"]
+            for workflow in contract["workflows"].values()
+            if all(job in workflow.get("jobs", {}) for job in hosted)
+        )
+        for job, leaves in hosted.items():
+            with self.subTest(job=job):
+                self.assertLessEqual(
+                    sum(budgets[leaf] for leaf in leaves),
+                    jobs[job]["timeout_minutes"],
+                )
+
     def test_aggregate_fails_unless_every_needed_job_succeeded(self) -> None:
         aggregate = self._required_quality_jobs(self.module, ROOT)["candidate-quality"]
         (step,) = aggregate["steps"]
