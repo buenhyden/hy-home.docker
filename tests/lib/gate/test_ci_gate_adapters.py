@@ -965,6 +965,36 @@ class CiGateAdapterTests(unittest.TestCase):
         self.assertEqual(1, len(commitizen_calls))
         self.assertEqual(f"{base}..{head}", commitizen_calls[0][3])
 
+    def test_commit_contract_allows_only_git_automatic_merge_messages(self) -> None:
+        commitizen = tomllib.loads((ROOT / ".cz.toml").read_text(encoding="utf-8"))[
+            "tool"
+        ]["commitizen"]
+        prefixes = commitizen["allowed_prefixes"]
+        pattern = re.compile(commitizen["customize"]["schema_pattern"])
+
+        def accepted(message: str) -> bool:
+            # commitizen cz check: any str.startswith(allowed_prefixes) match
+            # skips the schema; everything else must match schema_pattern.
+            return message.startswith(tuple(prefixes)) or bool(pattern.match(message))
+
+        for message in (
+            "Merge branch 'main' into feat/x",
+            "Merge pull request #1 from o/b",
+            "Merge remote-tracking branch 'origin/main' into feat/x",
+            "feat(auth): Add login guard",
+        ):
+            with self.subTest(accepted=message):
+                self.assertTrue(accepted(message))
+        for message in (
+            "update stuff",
+            "merge: lowercase type",
+            "Merged branch main",
+            'Revert "feat: Add x"',
+            "fixup! feat: Add x",
+        ):
+            with self.subTest(rejected=message):
+                self.assertFalse(accepted(message))
+
     def test_commit_contract_translations_cover_every_canonical_type(self) -> None:
         commitizen = tomllib.loads((ROOT / ".cz.toml").read_text(encoding="utf-8"))[
             "tool"
