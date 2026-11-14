@@ -1,8 +1,8 @@
 ---
 title: "Implementation Alignment Batch 2 Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-15"
 layer: "specs"
@@ -55,6 +55,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0257-PLAN-0001 | draft | approved | #current-contract-decision |
 | SPEC-0257-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0257-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
+| SPEC-0257-TSK-0001 | in-progress | completed | #criterion-decisions |
 
 #### Decisions
 
@@ -106,6 +107,9 @@ None: nothing was recorded here before this Task moved to the common form.
 | E7 | 3 | W3 | corpus-lifecycle | `check-document-corpus-lifecycle.py --base-ref origin/main`, revision 1d1aac4ba | PASS | lifecycle and occupancy zero | required | - |
 | E8 | 5 | W5 | operations-catalog | `check-operations-catalog.py`, revision 1d1aac4ba | PASS | PASS | required | - |
 | E9 | 2 | W2 | links-modes | alignment, navigation, language, traceability, entrypoint and commands, revision 1d1aac4ba | PASS | every mode PASS | required | - |
+| E10 | 4 | W4 | independent-review | 2026-11-15 independent acceptance review of SPEC-0257 criteria 1 to 5 | FAIL | Criteria 1, 2, 3 and 5 MET; criterion 4 NOT_MET: `lab_lakehouse_s3_admin_secret_key` appears in no `.md` file | required | - |
+| E11 | 4 | W4 | independent-review | `labs/lakehouse/README.md` after the fix, search of both lakehouse secret names in `.md` files | PASS | the secret name now sits beside its file path in the README; criterion 4 fixed by this change | required | E10 |
+| E12 | 5 | W5 | hosted-ci | PR #736, merge 52d08bf947dba4236bdc03d570ef04ad5b8af1b6, read-only `gh pr view` 2026-11-15 | PASS | 8 SUCCESS, 2 SKIPPED, none failing | required | - |
 
 ### Resolution Links
 
@@ -117,16 +121,15 @@ None: nothing was recorded here before this Task moved to the common form.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | - | - | @buenhyden |
-| 2 | pending | - | - | @buenhyden |
-| 3 | pending | - | - | @buenhyden |
-| 4 | pending | - | - | @buenhyden |
-| 5 | pending | - | - | @buenhyden |
+| 1 | accepted | E1, E2 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review and the fix in this change | SPEC-0257 TSK-0001 |
+| 2 | accepted | E9 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review and the fix in this change | SPEC-0257 TSK-0001 |
+| 3 | accepted | E7 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review and the fix in this change | SPEC-0257 TSK-0001 |
+| 4 | accepted | E3, E4, E10, E11 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review and the fix in this change | SPEC-0257 TSK-0001 |
+| 5 | accepted | E5, E6, E8, E12 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent review and the fix in this change | SPEC-0257 TSK-0001 |
 
 ### Remaining Conditions
 
-Local checks E2 and E4 to E9 pass. No independent review has run and hosted
-CI is not observed; no criterion is accepted yet.
+All five criteria are accepted and the Task is completed. The 2026-11-15 independent review found criterion 4 NOT_MET (E10); the fix is verified in E11. Hosted CI for the merged PR #736 is E12. The earlier merge receipt below is kept as dated history.
 
 #### Merge receipt 2026-11-10
 
