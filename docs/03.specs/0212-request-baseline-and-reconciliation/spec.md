@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.62.0"
+version: "1.62.1"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -996,8 +996,8 @@ target, backup, recovery boundary, and action-specific authorization.
      `candidate-quality` job that fails unless every shard succeeded; Git's
      automatic merge subjects pass the one commit grammar, the installed
      `commit-msg` hook and unusual staged filenames are tested, and an
-     uninstalled hook is reported as such; release publication refuses a
-     version lower than a published one unless explicitly marked a backport;
+     uninstalled hook is reported as such; release publication always refuses
+     a version lower than a published one, since backports are disallowed;
      the single-person review path names its risk owners, diff checklist and
      explicit acceptance, and its no-model-API rule covers self-hosted and
      proxied models; the owner-approved SHA pinning and immutable releases are

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import pathlib
 import subprocess
 import tempfile
@@ -506,25 +507,40 @@ class OperationsCurrencyTests(unittest.TestCase):
         )
 
 
-class VersionDowngradeTests(unittest.TestCase):
-    """SemVer 2.0 precedence of a changed document's `version` against its base."""
+class VersionChangeTests(unittest.TestCase):
+    """A changed document's `version` against the same path at the merge base."""
 
     DOC = pathlib.Path("docs/90.references/research/0001-x/note.md")
+    BASE_BODY = "# Fixture\n"
 
-    def findings(self, base: str | None, head: str | None, *, tracked: bool = True):
+    def findings(
+        self,
+        base: str | None,
+        head: str | None,
+        *,
+        tracked: bool = True,
+        head_body: str = "# Fixture changed\n",
+        head_extra: dict[str, object] | None = None,
+        base_extra: dict[str, object] | None = None,
+    ):
         with tempfile.TemporaryDirectory() as directory:
             root = pathlib.Path(directory)
             init_git(root)
             other = pathlib.Path("README.md")
             write_doc(root / other, {"version": "9.9.9"})
             if tracked:
-                write_doc(root / self.DOC, None if base is None else {"version": base})
+                write_doc(
+                    root / self.DOC,
+                    None if base is None else {"version": base, **(base_extra or {})},
+                    self.BASE_BODY,
+                )
             self.assertEqual(0, git(root, "add", ".").returncode)
             self.assertEqual(0, git(root, "commit", "-qm", "base").returncode)
             base_ref = git(root, "rev-parse", "HEAD").stdout.strip()
-            write_doc(root / self.DOC, {} if head is None else {"version": head})
-            record = Record(self.DOC, {} if head is None else {"version": head}, "x")
-            return version_module.version_downgrade_findings(
+            values = {} if head is None else {"version": head, **(head_extra or {})}
+            write_doc(root / self.DOC, values, head_body)
+            record = Record(self.DOC, values, "x")
+            return version_module.version_change_findings(
                 root, {self.DOC.as_posix(): record}, base_ref
             )
 
@@ -541,16 +557,79 @@ class VersionDowngradeTests(unittest.TestCase):
                 self.assertEqual(self.DOC.as_posix(), finding.path)
                 self.assertEqual("error", finding.severity)
 
-    def test_equal_or_higher_precedence_passes(self) -> None:
+    def test_changed_content_with_the_same_precedence_is_unchanged(self) -> None:
+        for base, head in (("1.2.0", "1.2.0"), ("1.2.0", "1.2.0+build.2")):
+            with self.subTest(base=base, head=head):
+                (finding,) = self.findings(base, head)
+                self.assertEqual("version-unchanged", finding.code)
+                self.assertEqual(self.DOC.as_posix(), finding.path)
+                self.assertEqual("error", finding.severity)
+
+    def test_raised_precedence_passes(self) -> None:
         for base, head in (
-            ("1.2.0", "1.2.0"),
-            ("1.2.0", "1.2.0+build.2"),
             ("1.2.0", "1.10.0"),
             ("1.2.0", "1.2.1-rc.1"),
             ("1.0.0-rc.1", "1.0.0"),
         ):
             with self.subTest(base=base, head=head):
                 self.assertEqual([], self.findings(base, head))
+
+    def test_old_and_new_producer_against_old_and_new_consumer(self) -> None:
+        old, new = "1.2.0", "1.3.0-rc.1+build.7"
+        expected = {
+            (old, old): "version-unchanged",
+            (old, new): None,
+            (new, old): "version-downgrade",
+            (new, new): "version-unchanged",
+        }
+        for (base, head), code in expected.items():
+            with self.subTest(base=base, head=head):
+                self.assertEqual(
+                    [] if code is None else [code],
+                    [finding.code for finding in self.findings(base, head)],
+                )
+
+    def test_a_path_whose_bytes_did_not_change_is_not_a_change(self) -> None:
+        self.assertEqual([], self.findings("1.2.0", "1.2.0", head_body=self.BASE_BODY))
+
+    def test_a_lifecycle_only_edit_does_not_need_a_new_version(self) -> None:
+        # Status and review dates are lifecycle state, independent of content.
+        for extra_base, extra_head in (
+            ({"status": "draft"}, {"status": "active"}),
+            ({"updated": "2026-01-01"}, {"updated": "2026-02-02"}),
+            (
+                {"next_review_at": "2026-03-01"},
+                {"next_review_at": "2026-09-01", "reviewed_at": "2026-02-01"},
+            ),
+        ):
+            with self.subTest(head=extra_head):
+                self.assertEqual(
+                    [],
+                    self.findings(
+                        "1.2.0",
+                        "1.2.0",
+                        head_body=self.BASE_BODY,
+                        base_extra=extra_base,
+                        head_extra=extra_head,
+                    ),
+                )
+        # A body edit beside a status change is still a content change.
+        (finding,) = self.findings(
+            "1.2.0",
+            "1.2.0",
+            base_extra={"status": "draft"},
+            head_extra={"status": "active"},
+        )
+        self.assertEqual("version-unchanged", finding.code)
+        # A change to another frontmatter key is a content change too.
+        (finding,) = self.findings(
+            "1.2.0",
+            "1.2.0",
+            head_body=self.BASE_BODY,
+            base_extra={"owner": "@a"},
+            head_extra={"owner": "@b"},
+        )
+        self.assertEqual("version-unchanged", finding.code)
 
     def test_new_document_or_missing_or_malformed_version_is_not_compared(
         self,
@@ -561,25 +640,139 @@ class VersionDowngradeTests(unittest.TestCase):
         self.assertEqual([], self.findings("v1.2.0", "1.0.0"))
         self.assertEqual([], self.findings("1.2.0", "1.1"))
 
-    def test_private_semver_agrees_with_release_reference(self) -> None:
-        from scripts.operations import release
+    def test_q07_numbering_is_not_a_version(self) -> None:
+        # A renumbered artifact id or input label never counts as a version.
+        for head in ("SPEC-0064", "v14.7", "0064"):
+            with self.subTest(head=head):
+                self.assertEqual([], self.findings("1.2.0", head))
 
-        chain = (
-            "1.0.0-alpha",
-            "1.0.0-alpha.1",
-            "1.0.0-alpha.beta",
-            "1.0.0-beta",
-            "1.0.0-beta.2",
-            "1.0.0-beta.11",
-            "1.0.0-rc.1",
-            "1.0.0",
-            "1.0.1",
-            "1.10.0",
+    def test_the_comparator_is_the_shared_one(self) -> None:
+        from scripts.lib.document_governance import semver
+
+        self.assertIs(semver, version_module.semver)
+        self.assertFalse(hasattr(version_module, "_SEMVER"))
+        self.assertFalse(hasattr(version_module, "compare_semver"))
+
+
+class ProductVersionTests(unittest.TestCase):
+    """The inventoried product version fields against the merge base."""
+
+    NODE = "projects/storybook/nextjs/package.json"
+    PYTHON = "infra/07-workflow/n8n/workloads/hermes-blog-ingestion/pyproject.toml"
+
+    @staticmethod
+    def package(version: str | None, dependency: str = "1.0.0") -> str:
+        body = {"name": "x", "dependencies": {"left-pad": dependency}}
+        if version is not None:
+            body = {"name": "x", "version": version, **body}
+        return json.dumps(body, indent=2) + "\n"
+
+    @staticmethod
+    def project(version: str | None, dependency: str = "1.0.0") -> str:
+        line = "" if version is None else f'version = "{version}"\n'
+        return (
+            f'[project]\nname = "hermes-publisher"\n{line}'
+            f'dependencies = ["requests=={dependency}"]\n'
         )
-        for i, low in enumerate(chain):
-            for j, high in enumerate(chain):
-                expected = (i > j) - (i < j)
-                with self.subTest(low=low, high=high):
-                    self.assertEqual(expected, version_module.compare_semver(low, high))
-                    self.assertEqual(expected, release.compare_semver(low, high))
-        self.assertEqual(0, version_module.compare_semver("1.2.3+a", "1.2.3+b"))
+
+    def findings(self, path: str, base: str | None, head: str | None):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            if base is not None:
+                (root / path).parent.mkdir(parents=True, exist_ok=True)
+                (root / path).write_text(base, encoding="utf-8")
+            self.assertEqual(0, git(root, "add", ".").returncode)
+            self.assertEqual(0, git(root, "commit", "-qm", "base").returncode)
+            base_ref = git(root, "rev-parse", "HEAD").stdout.strip()
+            if head is not None:
+                (root / path).parent.mkdir(parents=True, exist_ok=True)
+                (root / path).write_text(head, encoding="utf-8")
+            elif (root / path).exists():
+                (root / path).unlink()
+            return version_module.product_version_findings(root, base_ref)
+
+    def codes(self, path: str, base: str | None, head: str | None) -> list[str]:
+        return [finding.code for finding in self.findings(path, base, head)]
+
+    def test_inventory_lists_the_four_product_version_files(self) -> None:
+        self.assertEqual(
+            {
+                "infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/"
+                "OpsflowSmtp/package.json",
+                self.PYTHON,
+                self.NODE,
+                "projects/storybook/nextjs/packages/ui/package.json",
+            },
+            set(version_module.PRODUCT_VERSION_FILES),
+        )
+
+    def test_a_lower_version_is_a_downgrade(self) -> None:
+        self.assertEqual(
+            ["version-downgrade"],
+            self.codes(self.NODE, self.package("1.2.0"), self.package("1.1.9")),
+        )
+        self.assertEqual(
+            ["version-downgrade"],
+            self.codes(self.PYTHON, self.project("1.0.0"), self.project("1.0.0-rc.1")),
+        )
+
+    def test_a_malformed_changed_version_is_refused(self) -> None:
+        for head in ("v1.2.0", "1.2", "01.2.0", "SPEC-0064", "14.7", ""):
+            with self.subTest(head=head):
+                self.assertEqual(
+                    ["version-malformed"],
+                    self.codes(self.NODE, self.package("1.0.0"), self.package(head)),
+                )
+        self.assertEqual(
+            ["version-malformed"],
+            self.codes(self.NODE, self.package("1.0.0"), self.package(None)),
+        )
+        self.assertEqual(
+            ["version-malformed"],
+            self.codes(self.PYTHON, self.project("1.0.0"), self.project("1.2")),
+        )
+
+    def test_a_raised_version_passes(self) -> None:
+        self.assertEqual(
+            [], self.codes(self.NODE, self.package("1.0.0"), self.package("1.0.1"))
+        )
+        self.assertEqual(
+            [],
+            self.codes(
+                self.PYTHON, self.project("1.0.0"), self.project("1.1.0-rc.1+build.7")
+            ),
+        )
+
+    def test_an_unchanged_version_with_other_edits_is_allowed(self) -> None:
+        # A product releases on its own cadence; the version field is the object.
+        self.assertEqual(
+            [],
+            self.codes(
+                self.NODE,
+                self.package("1.0.0"),
+                self.package("1.0.0", dependency="2.0.0"),
+            ),
+        )
+        self.assertEqual(
+            [],
+            self.codes(
+                self.PYTHON,
+                self.project("1.0.0"),
+                self.project("1.0.0", dependency="2.0.0"),
+            ),
+        )
+
+    def test_an_untouched_deleted_new_or_unparsable_file_is_not_compared(self) -> None:
+        base = self.package("1.0.0")
+        self.assertEqual([], self.codes(self.NODE, base, base))
+        self.assertEqual([], self.codes(self.NODE, None, self.package("0.0.1")))
+        self.assertEqual([], self.codes(self.NODE, base, None))
+        self.assertEqual([], self.codes(self.NODE, "{not json", self.package("0.1.0")))
+        self.assertEqual([], self.codes(self.NODE, base, "{not json"))
+
+    def test_only_the_inventoried_files_are_checked(self) -> None:
+        other = "projects/other/package.json"
+        self.assertEqual(
+            [], self.codes(other, self.package("1.2.0"), self.package("1.1.0"))
+        )

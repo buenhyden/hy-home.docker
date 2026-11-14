@@ -80,7 +80,8 @@ from scripts.lib.document_governance.metadata.profile import (
     registered_generated_owner,
 )
 from scripts.lib.document_governance.metadata.version import (
-    version_downgrade_findings,
+    product_version_findings,
+    version_change_findings,
 )
 from scripts.lib.document_governance.operations_catalog import (
     OperationsAuthorityError,
@@ -1868,7 +1869,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             )
     version_findings: list[Finding] = []
     if args.mode == "check-changed":
-        version_findings = version_downgrade_findings(
+        version_findings = version_change_findings(
             root,
             {
                 path: records_by_path[path]
@@ -1877,7 +1878,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             },
             base.merge_base,
             profiles,
-        )
+        ) + product_version_findings(root, base.merge_base)
     relation_impact_findings: dict[str, list[Finding]] = {}
     if args.mode == "check-changed":
         try:
