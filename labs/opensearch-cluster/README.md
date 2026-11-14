@@ -126,11 +126,9 @@ Local Workflow의 합성 경로 render 명령(`LAB_DATA_DIR`, `LAB_SECRET_DIR`, 
 
 - [OpenSearch LAB Compose](docker-compose.yml)
 - [운영 가이드 목록](../../docs/05.operations/guides/README.md)
-- [RUN-0109 opensearch-cluster](../../docs/05.operations/runbooks/15-labs/0109-opensearch-cluster.md)
-
-- [RUN-0019 opensearch](../../docs/05.operations/runbooks/05-databases-and-storage/0019-opensearch.md)
-- [RUN-0107 lab-promotion](../../docs/05.operations/runbooks/15-labs/0107-lab-promotion.md)
+- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0109 opensearch-cluster, RUN-0107 lab-promotion
+- [05-databases-and-storage runbooks](../../docs/05.operations/runbooks/05-databases-and-storage/README.md): RUN-0019 opensearch
 
 ### Observability and Recovery
 
-node와 Dashboards에 Compose healthcheck가 선언되어 있고 Docker secret을 curl 설정 stdin으로 전달한다. 복구는 [OpenSearch cluster LAB Runbook](../../docs/05.operations/runbooks/15-labs/0109-opensearch-cluster.md)를 따른다.
+node와 Dashboards에 Compose healthcheck가 선언되어 있고 Docker secret을 curl 설정 stdin으로 전달한다. 복구는 [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md)의 RUN-0109 OpenSearch cluster LAB Runbook를 따른다.

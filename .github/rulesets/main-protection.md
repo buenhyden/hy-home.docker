@@ -121,6 +121,20 @@ settings by itself.
   `main`, which a squash or rebase merge would drop. Branch protection was
   read back unchanged. The rollback is the before-state, after a fresh
   read-back and separate approval.
+- On 2026-11-14, an authenticated read-only lookup (SPEC-0212 TSK-0065)
+  confirmed `strict=true`, the single required check `candidate-quality` from
+  GitHub Actions app 15368, zero required approvals, no CODEOWNERS review,
+  `enforce_admins=true`, conversation resolution on, force pushes, deletions
+  and linear history off, `required_signatures` disabled, empty rulesets, no
+  merge queue, merge commits as the only merge method, and default workflow
+  permissions `read`. The entries above that report `enforce_admins=false`
+  describe their own dates. The same day, at the owner's direction
+  (AskUserQuestion), two repository settings changed with before and after
+  read-back: `actions/permissions` `sha_pinning_required` false to true
+  (every workflow was already SHA-pinned), and `immutable-releases` disabled
+  to enabled. Rollbacks are the same `actions/permissions` call with `false`
+  and `DELETE` on `immutable-releases`, by separate approval. Branch
+  protection was not changed.
 
 ## Target Ruleset
 
@@ -147,10 +161,12 @@ settings by itself.
 
 ## Required Status Checks
 
-The source target is `candidate-quality` alone: one always-present PR job
-aggregates the `candidate-core` and `candidate-documents` jobs that run the
-selected changed validation, and fails unless both succeeded. Individual
-leaves and the two candidate jobs are not separate contexts.
+The source target is `candidate-quality` alone. It is the aggregate PR job:
+it needs the `candidate-core` and `candidate-documents` shard jobs, which run
+the selected changed validation, and fails unless each one succeeded, so a
+skipped, cancelled or missing shard is not a pass. Individual leaves and shard
+jobs are not separate contexts, so the required check name did not change
+when the candidate was split into shards.
 There is no feature-push QA, title-edit validation, or main full-profile repeat.
 Main security/SARIF uses merged input and a different trust purpose; it is not
 candidate acceptance. Manual SemVer publication is a separate approved action.

@@ -1,10 +1,10 @@
 ---
 title: "Agentic Engineering Policy"
-version: "1.7.4"
+version: "1.8.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 ---
 
 # Agentic Engineering Policy
@@ -62,7 +62,11 @@ None: this document states no exclusion.
 - No automatic PR reviewer or test-case generator is installed. Both would
   call a model API, which the single-developer review path forbids; an agent
   may review a diff or draft tests only inside the developer's interactive
-  session.
+  session. The review, test-drafting and summarizing paths call no
+  model-inference API of any kind, including a self-hosted, `localhost` or
+  proxy-routed model, and no wrapper or advisory step routes around that.
+  This does not restrict a product feature's own API or the GitHub API used
+  for repository work.
 - Generated native role and skill projections are adapters and never own shared
   policy, role intent, or procedure content. Authored native `provider.md` files
   own loading and syntax differences only; `.agents/` is canonical input.

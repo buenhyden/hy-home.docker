@@ -116,8 +116,8 @@ secret은 `${LAB_SECRET_DIR}/dbt/`의 LAB 전용 `lab_dbt_db_password`와 프로
 - **Runbook**: dbt recovery runbook (`docs/05.operations/runbooks/15-labs/0090-dbt.md`)
 - [LAB 탐색](../README.md)
 - [Documentation index](../../docs/README.md)
-- [RUN-0107 lab-promotion](../../docs/05.operations/runbooks/15-labs/0107-lab-promotion.md)
+- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0107 lab-promotion
 
 ### Observability and Recovery
 
-없음: 1회성 작업이라 장기 실행 컨테이너와 헬스체크가 없다. 실패는 명령 종료 코드로 확인하고 복구는 [dbt Runbook](../../docs/05.operations/runbooks/15-labs/0090-dbt.md)을 따른다.
+없음: 1회성 작업이라 장기 실행 컨테이너와 헬스체크가 없다. 실패는 명령 종료 코드로 확인하고 복구는 [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md)의 RUN-0090 dbt Runbook을 따른다.

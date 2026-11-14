@@ -77,10 +77,8 @@ renovate/
 
 - [Infrastructure index](../../../infra/README.md)
 - [Documentation index](../../../docs/README.md)
-- [RUN-0083 renovate](../../../docs/05.operations/runbooks/10-platform-and-backup/0083-renovate.md)
-
-- [RUN-0086 dependency-version-management](../../../docs/05.operations/runbooks/10-platform-and-backup/0086-dependency-version-management.md)
+- [10-platform-and-backup runbooks](../../../docs/05.operations/runbooks/10-platform-and-backup/README.md): RUN-0083 renovate, RUN-0086 dependency-version-management
 
 ### Observability and Recovery
 
-주간 systemd timer가 `hyhome-renovate.service`(oneshot)를 실행하므로 실행 결과는 해당 unit 상태로 확인한다. 실패 시 이전 검토된 이미지 고정으로 되돌리고 이미 생성된 원격 변경을 별도로 확인하며, 절차는 [Renovate Runbook](../../../docs/05.operations/runbooks/10-platform-and-backup/0083-renovate.md)을 따른다.
+주간 systemd timer가 `hyhome-renovate.service`(oneshot)를 실행하므로 실행 결과는 해당 unit 상태로 확인한다. 실패 시 이전 검토된 이미지 고정으로 되돌리고 이미 생성된 원격 변경을 별도로 확인하며, 절차는 [10-platform-and-backup runbooks](../../../docs/05.operations/runbooks/10-platform-and-backup/README.md)의 RUN-0083 Renovate Runbook을 따른다.

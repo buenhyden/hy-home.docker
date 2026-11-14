@@ -61,8 +61,8 @@ UI(`${MAILPIT_UI_HOST_PORT:-8025}`)와 SMTP(`${MAILPIT_SMTP_HOST_PORT:-1025}`)�
 
 - [Infrastructure index](../../../infra/README.md)
 - [Documentation index](../../../docs/README.md)
-- [RUN-0084 mailpit](../../../docs/05.operations/runbooks/11-mail-and-notifications/0084-mailpit.md)
+- [11-mail-and-notifications runbooks](../../../docs/05.operations/runbooks/11-mail-and-notifications/README.md): RUN-0084 mailpit
 
 ### Observability and Recovery
 
-Compose에 헬스체크가 선언되어 있으며 SMTP 캡처 확인과 복구는 [Mailpit Runbook](../../../docs/05.operations/runbooks/11-mail-and-notifications/0084-mailpit.md)을 따른다.
+Compose에 헬스체크가 선언되어 있으며 SMTP 캡처 확인과 복구는 [11-mail-and-notifications runbooks](../../../docs/05.operations/runbooks/11-mail-and-notifications/README.md)의 RUN-0084 Mailpit Runbook을 따른다.
