@@ -1,8 +1,8 @@
 ---
 title: "v14.7 W06 Git, CI and Release Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-14"
 layer: "specs"
@@ -204,6 +204,7 @@ no longer fits the 30-minute candidate job, which the shard split fixes.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0065 | draft | ready | #w06-run-2026-11-14 |
 | SPEC-0212-TSK-0065 | ready | in-progress | #w06-run-2026-11-14 |
+| SPEC-0212-TSK-0065 | in-progress | completed | #criterion-decisions |
 
 ### Blockers and Decisions
 
@@ -253,13 +254,13 @@ first and second runs by the Shard split hosted final run.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 121 | pending | Remote read-back, Remote settings change, Hooks and grammar, Document version downgrade, Counterexample map, Governance record, Link routes, Fixture git GREEN, Shard split hosted final | All W06 units merged; awaiting the owner's acceptance | SPEC-0212 TSK-0065 |
+| 121 | accepted | Remote read-back, Remote settings change, Hooks and grammar, Document version downgrade, Counterexample map, Governance record, Link routes, Fixture git GREEN, Shard split hosted final | Owner @buenhyden accepted on 2026-11-14 in this chat, after #1010 merged; OPEN-14, DOC-S90 freshness (W11), the latest base move and the single documents-shard measurement stay as recorded | SPEC-0212 TSK-0065 |
 
 ### Remaining Conditions
 
-Every W06 unit is merged (#1005 to #1009); this record lands through its own
-pull request, then the owner's acceptance. State per axis: approval as the
-owner gave it on 2026-11-14; acceptance pending; merge as each remote
+Criterion 121 is accepted and the Task is completed; every W06 unit is
+merged (#1005 to #1010). State per axis: approval as the owner gave it on
+2026-11-14; acceptance as in Criterion Decisions; merge as each remote
 candidate row records; operation: none, since W06 changed no runtime. Limits:
 OPEN-14 stays a likely misattribution because the original evidence is gone;
 DOC-S90 freshness has no checker (W11); the latest base move is a server
@@ -280,4 +281,4 @@ observation, not a test; the documents shard measured 15 min 1 s against its
 
 ### Next Owner
 
-The current owner is @buenhyden, for the acceptance of criterion 121; W07 starts after it.
+None: the Task is completed. The next W07 run opens its own Task; @buenhyden owns starting it.
