@@ -230,6 +230,21 @@ class PublicSuiteRegistryTests(unittest.TestCase):
             public.suite_names,
         )
 
+    def test_a_product_version_file_selects_the_metadata_check(self) -> None:
+        from scripts.lib.document_governance.metadata.version import (
+            PRODUCT_VERSION_FILES,
+        )
+
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        for path in PRODUCT_VERSION_FILES:
+            with self.subTest(path=path):
+                self.assertIn(
+                    "document-contract",
+                    contract.select_public_suites(public, "changed", (path,)),
+                )
+
     def test_public_profiles_and_changed_path_impacts_are_closed(self) -> None:
         document = contract.load_contract_document(ROOT)
         public = contract.parse_public_gate_contract(document)

@@ -2135,8 +2135,7 @@
         "suites": [
           "repository-integrity"
         ]
-      }
-,
+      },
       {
         "prefixes": [
           "tests/validation/test_opsflow_e2e_acceptance.py",
@@ -2144,6 +2143,15 @@
         ],
         "suites": [
           "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
+          "projects/storybook/nextjs/package.json",
+          "projects/storybook/nextjs/packages/ui/package.json"
+        ],
+        "suites": [
+          "document-contract"
         ]
       }
     ],
@@ -2679,8 +2687,7 @@
           "leaf.local-script-manifest",
           "leaf.repository-integrity-regressions"
         ]
-      }
-,
+      },
       {
         "prefixes": [
           "tests/validation/test_opsflow_e2e_acceptance.py",
