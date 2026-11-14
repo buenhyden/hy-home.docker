@@ -140,7 +140,7 @@ Required counterexamples, each mapped to a test read on 2026-11-14 (the
 | Partial stage | `validation/test_ci_gate_plan.py` `test_automatic_pre_commit_sees_index_content_and_untracked_paths` | existing |
 | Newline and leading-space filenames | `validation/test_agent_governance_ci_routing.py` `test_installed_commit_hook_checks_index_for_awkward_filenames` | #1005 |
 | First push and ref deletion | same file, `test_guard_stdin_refuses_main_deletion_and_allows_new_branch` | #1005 |
-| Latest base move | none; strict branch protection refuses an out-of-date head | server observation |
+| Latest base move | `validation/test_ci_gate_plan.py` `test_moved_pull_request_base_is_not_reused_after_the_check`; GitHub's own detection stays a strict branch protection observation | #1014 |
 | PR head, merge SHA and parents | `lib/gate/test_ci_gate_adapters.py` `test_pr_range_rejects_wrong_merge_parents_and_empty_history`; `validation/test_ci_gate_plan.py` `test_pull_request_identity_is_bound_to_raw_merge_topology` | existing |
 | Skipped, neutral, cancelled, timed out, failed or missing shard | `lib/gate/test_github_workflow_contract.py` `test_aggregate_fails_unless_every_needed_job_succeeded` | shard PR |
 | Skipped or zero tests in a leaf | `lib/gate/test_ci_gate_adapters.py` `test_required_unittest_gate_rejects_skipped_tests`, `test_run_unittest_rejects_zero_tests_and_missing_execution_summary` | existing |
@@ -256,6 +256,7 @@ replayed, and a later exit 124 is now a measured overrun, not an unknown.
 | Budget RED | 121 | W126 | red-green-proof | `test_hosted_job_timeout_covers_its_leaf_budgets_in_sequence` with the leaf at 15 minutes and the job at 90 | FAIL | `100 not less than or equal to 90` | required | - |
 | Budget GREEN | 121 | W126 | red-green-proof | Same test with the job at 100; `check-github-workflow-contract.py`; gate contract and plan suites | PASS | 163 tests OK; contract PASS | required | Budget RED |
 | Budget measurement | 121 | W126 | timing-baseline | Every leaf's `duration_ms` in the evidence artifacts of nine hosted runs (43545382947 to 43567181806), against `.github/workflow-contract.yml` budgets after #1012 | PASS | Highest max-to-budget ratio 0.33 (`docs-traceability` 300 s of 15 min, the 300 s run killed at the old 5-minute budget); `repository-integrity-regressions` 237 s of 20 min, library regressions 489 s of 45 min, document metadata tests 120 s of 30 min; documents job wall time 4 min 9 s to 15 min 1 s of 100 min | required | - |
+| Base move test | 121 | W126 | remote-candidate | PR #1014: a real repository with two merge commits for one candidate; the runner refuses the moved base with the old merge, the new merge on the old checkout and a stale merge with the new `PR_BASE_SHA`; old evidence reopened under the new `base_sha` is refused | PASS | The code already refused it; mutation proof (base dropped from the evidence identity, or the parent-0 and `PR_BASE_SHA` checks removed) fails the test; 235 gate tests OK; the test ran in hosted `candidate-core`; merged as `2c2eecb34` | required | - |
 
 ### Resolution Links
 
