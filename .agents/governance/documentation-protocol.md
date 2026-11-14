@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.28.0"
+version: "3.29.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -493,9 +493,12 @@ Release is not a document role. Do not register a Release Record profile,
 template or generator under any name; release facts stay with the owners
 above. The Registry validator rejects a profile whose ID, type, template ID
 or path patterns, or a template role whose ID or source, has a `release` or
-`releases` name token; a role for Release records under another name, and a
-generator,
-are checked by review. This
+`releases` name token. It also rejects a profile whose section or subsection
+names or frontmatter values carry that token or at least three of the retired
+Release shape's groups (artifacts, rollout or rollback, approvals, outcome),
+and a template role whose purpose, responsibility or applicability does, so a
+Release role is rejected under any ID, type or template. A generator is checked
+by review. This
 removes no GitHub Release, tag, CHANGELOG entry or release workflow. Remote release and
 deployment actions wait for their exact target under
 [Approval boundaries](approval-boundaries.md).

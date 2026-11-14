@@ -4232,3 +4232,46 @@ class ReleaseRoleGuardTests(unittest.TestCase):
         profile["id"] = "prereleased-notes"
         self.raw["profiles"].append(profile)
         self.assertNotIn("retired-profile", self.codes())
+
+    # H-12 structural guard: the role is rejected under any id, type or
+    # template, because its sections and purpose still describe a release.
+
+    def _renamed(self, **changes: object) -> dict:
+        profile = dict(self.raw["profiles"][0])
+        profile.update(id="ship-record", type="operation/ship", **changes)
+        self.raw["profiles"].append(profile)
+        return profile
+
+    def test_a_renamed_role_with_the_release_section_shape_is_rejected(self) -> None:
+        self._renamed(
+            required_sections=[
+                "Scope",
+                "Artifacts",
+                "Rollout",
+                "Approvals",
+                "Outcome",
+            ],
+            required_subsections={"Scope": ["Boundaries"]},
+            optional_subsections={"Outcome": ["Observed Impact"]},
+        )
+        self.assertIn("retired-profile", self.codes())
+
+    def test_a_release_section_name_hides_under_a_neutral_profile_id(self) -> None:
+        self._renamed(
+            required_subsections={"Overview": ["Release Artifacts"]},
+        )
+        self.assertIn("retired-profile", self.codes())
+
+    def test_a_release_frontmatter_value_is_rejected(self) -> None:
+        self._renamed(frontmatter_values={"layer": "release"})
+        self.assertIn("retired-profile", self.codes())
+
+    def test_a_template_role_describing_a_release_is_rejected(self) -> None:
+        roles = self.raw["template_roles"]
+        role = dict(roles["sdlc/requirement"])
+        role["purpose"] = "Records the verified outcome of a release."
+        roles["operation/ship-record"] = role
+        self.assertIn("retired-profile", self.codes())
+
+    def test_the_runbook_rollback_and_outcome_sections_are_not_a_release(self) -> None:
+        self.assertNotIn("retired-profile", self.codes())

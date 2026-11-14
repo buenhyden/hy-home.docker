@@ -633,6 +633,47 @@ def _names_release_role(*values: object) -> bool:
     )
 
 
+# H-12: a Release role is rejected under any name. Besides the name tokens, a
+# profile is a Release role when its section names carry release semantics:
+# a release token, or the retired Release shape (artifacts, rollout, approvals
+# and outcome). A runbook's Rollback and Outcome stay two groups.
+_RELEASE_SHAPE_GROUPS = (
+    frozenset({"artifact", "artifacts"}),
+    frozenset({"rollout", "rollback", "deploy", "deployment", "promotion"}),
+    frozenset({"approval", "approvals"}),
+    frozenset({"outcome", "outcomes"}),
+)
+
+
+def _section_names(profile: Mapping[str, object]) -> list[str]:
+    names: list[str] = []
+    for key in ("required_sections", "optional_sections"):
+        value = profile.get(key)
+        if isinstance(value, (list, tuple)):
+            names.extend(item for item in value if isinstance(item, str))
+    for key in ("required_subsections", "optional_subsections"):
+        value = profile.get(key)
+        if isinstance(value, Mapping):
+            for parent, children in value.items():
+                names.append(str(parent))
+                if isinstance(children, (list, tuple)):
+                    names.extend(item for item in children if isinstance(item, str))
+    return names
+
+
+def _declares_release_semantics(profile: Mapping[str, object]) -> bool:
+    names = _section_names(profile)
+    values = profile.get("frontmatter_values")
+    if isinstance(values, Mapping):
+        names.extend(item for item in values.values() if isinstance(item, str))
+    if _names_release_role(*names):
+        return True
+    tokens = {
+        token for name in names for token in re.split(r"[^a-z0-9]+", name.lower())
+    }
+    return sum(bool(group & tokens) for group in _RELEASE_SHAPE_GROUPS) >= 3
+
+
 def _declares_reachable_dispositions(schema: Mapping[str, object]) -> bool:
     defs = schema.get("$defs")
     return isinstance(defs, Mapping) and "dispositionStatusList" in defs
@@ -966,7 +1007,7 @@ def validate_registry(
             if isinstance(profile_id, str):
                 profile_ids.append(profile_id)
                 profile_lifecycles[profile_id] = profile.get("lifecycle_id")
-            if _names_release_role(
+            if _declares_release_semantics(profile) or _names_release_role(
                 *(
                     profile.get(key)
                     for key in ("id", "type", "template_id", "path_pattern")
@@ -1138,7 +1179,13 @@ def validate_registry(
         for role, definition in roles.items():
             if not isinstance(definition, Mapping):
                 continue
-            if _names_release_role(role, definition.get("source")):
+            if _names_release_role(
+                role,
+                *(
+                    definition.get(key)
+                    for key in ("source", "purpose", "responsibility", "applicability")
+                ),
+            ):
                 findings.append(
                     RegistryFinding(
                         "retired-profile",
