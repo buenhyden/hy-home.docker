@@ -527,6 +527,7 @@ class DescriptorExecutionTests(unittest.TestCase):
             mock.patch.dict(os.environ, environment, clear=True),
             mock.patch.object(runner, "load_contract_document", return_value=document),
             mock.patch.object(runner, "validate_gate_registry", return_value=()),
+            mock.patch.object(runner, "validate_rule_owners", return_value=()),
             mock.patch.object(runner, "collect_changed_paths", return_value=()),
             mock.patch.object(
                 runner, "build_public_validation_plan", return_value=plan

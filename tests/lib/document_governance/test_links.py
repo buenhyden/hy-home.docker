@@ -2362,6 +2362,7 @@ class RetiredPackageLinkTests(unittest.TestCase):
             if registry:
                 raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
                 raw["identity_spaces"]["spec"]["reserved_history"] = [1]
+                raw["identity_spaces"]["data"]["reserved_history"] = [1]
                 path = root / "docs/99.templates/registry.json"
                 path.parent.mkdir(parents=True)
                 text = json.dumps(raw)
@@ -2387,6 +2388,30 @@ class RetiredPackageLinkTests(unittest.TestCase):
         self.assertNotIn(
             "missing-link-target", self._codes(self._task("completed", "0001-gone"))
         )
+
+    DATA_TASK = (
+        "---\ntitle: Fixture\ntype: sdlc/task\nstatus: {status}\n---\n"
+        "# Fixture\n\n[gone](../../../90.references/data/{target}/README.md)\n"
+    )
+
+    def test_a_terminal_task_link_into_a_reserved_data_package_is_excused(
+        self,
+    ) -> None:
+        cases = (
+            ("completed", "0001-gone", False),
+            ("in-progress", "0001-gone", True),
+            ("completed", "0002-gone", True),
+        )
+        for status, target, reported in cases:
+            with self.subTest(status=status, target=target):
+                codes = self._codes(
+                    {
+                        "docs/03.specs/0002-live/tasks/tsk-0001-a.md": (
+                            self.DATA_TASK.format(status=status, target=target)
+                        )
+                    }
+                )
+                self.assertEqual(reported, "missing-link-target" in codes)
 
     MULTI_ITEM = (
         "---\ntitle: Fixture\ntype: sdlc/task\n---\n# Fixture\n\n"

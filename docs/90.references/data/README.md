@@ -36,13 +36,9 @@ Stage 99 profile을 만족할 때 존재합니다. 필요한 의미를 canonical
 
 ### Current Items
 
-현재 패키지는 다음과 같습니다.
+현재 package는 없습니다.
 
-| Path | Purpose |
-| --- | --- |
-| [워크스페이스 조사 원장](0096-workspace-inventory/README.md) | 현재 파일·서비스 분모, 증거 수준, 작성권과 후속 인계 |
-
-열세 개 package가 2026-09-10에 은퇴했습니다. SPEC-0173은 이 범주가 따르는
+열세 개 package가 2026-09-10에 은퇴했고, DATA-0096은 날짜가 고정된 조사 결과여서 오프라인에서 재현하거나 최신성을 증명할 수 없어 2026-11-14에 은퇴했습니다. SPEC-0173은 이 범주가 따르는
 규칙을 명시합니다: Stage 90 데이터는 "현재 consumer가 존재하는 동안만
 현재성을 유지한다." 이 package들을 살아 있게 만들던 모든 consumer,
 곧 등록된 generator, freshness gate, 해당 경로를 적어 두던 metadata
@@ -59,7 +55,7 @@ DATA-0067은 Migration 0003의 복구 비교가 마지막 consumer였습니다. 
 
 ### Classification
 
-열세 개 package가 2026-09-10에 은퇴해 현재 tree에는 없으며, 은퇴한 `DATA-` 번호는 Registry `reserved_history`가 보관하고 본문은 Git 이력에만 있는 비권위 기록입니다.
+열세 개 package가 2026-09-10에, DATA-0096이 2026-11-14에 은퇴해 현재 tree에는 없으며, 은퇴한 `DATA-` 번호는 Registry `reserved_history`가 보관하고 본문은 Git 이력에만 있는 비권위 기록입니다.
 
 ## Workflow
 

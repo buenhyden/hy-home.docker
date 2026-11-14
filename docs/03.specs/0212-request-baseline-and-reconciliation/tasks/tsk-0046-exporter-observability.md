@@ -27,7 +27,7 @@ execution evidence.
 
 - [Spec](../spec.md)
 - [Plan](../plan.md)
-- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
+- Workspace inventory: DATA-0096, retired 2026-11-14; Git history keeps it
 - [Secret structure Task](tsk-0045-secret-structure-openbao.md)
 - [Compose profiles policy](../../../05.operations/policies/01-common/0078-compose-profile-vocabulary.md)
 - [Alloy recovery Runbook](../../../05.operations/runbooks/07-observability/0040-alloy.md)

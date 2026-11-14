@@ -28,7 +28,7 @@ This is not the historical SPEC-0204 P09 Wiki-preparation Task.
 
 - [Spec](../spec.md)
 - [Plan](../plan.md)
-- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
+- Workspace inventory: DATA-0096, retired 2026-11-14; Git history keeps it
 - [Common profile policy](../../../05.operations/policies/01-common/0078-compose-profile-vocabulary.md)
 - [Host storage placement policy](../../../05.operations/policies/10-platform-and-backup/0102-host-storage-placement.md)
 

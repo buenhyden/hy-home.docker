@@ -395,6 +395,9 @@ class GateNode:
     # Leaf-only: "grype" when the result depends on the vulnerability DB, so the
     # runner keys PASS reuse to the seed identity (QA-C07); "" otherwise.
     security_db: str = ""
+    # Leaf-only: `<canonical document path>#<heading anchor>` of the rule that
+    # owns the check (H-W05-1); validate_gate_registry resolves it.
+    rule_owner: str = ""
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -1540,7 +1543,7 @@ _SECURITY_DB_MARKER = re.compile(
     r"|anchore/grype"
 )
 _MAX_ENTRYPOINT_BYTES = 1024 * 1024
-_SELF_AUTHORITY = ".github/workflow-contract.yml"
+_RULE_OWNER = re.compile(r"\.agents/governance/[a-z0-9-]+\.md#[a-z0-9-]+")
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -1564,8 +1567,9 @@ def build_gate_crosswalk(
 ) -> tuple[CrosswalkRow, ...]:
     """Derive the caller -> leaf -> consumer table from the typed contract.
 
-    `authorities` maps an entrypoint path to its manifest authority. An
-    authority that is the contract itself names no rule, so it is UNOWNED.
+    The owner is the leaf's declared `rule_owner`. A leaf without one falls back
+    to the manifest authority of its entrypoint in `authorities`; an authority
+    that is the contract itself names no rule, so it is UNOWNED.
     """
 
     node_by_id = {node.gate_id: node for node in registry.nodes}
@@ -1602,7 +1606,7 @@ def build_gate_crosswalk(
         modules = tuple(a for a in node.argv if a.startswith("tests."))
         if entrypoint.startswith("tests/"):
             modules += (entrypoint,)
-        authority = authorities.get(entrypoint, _SELF_AUTHORITY)
+        authority = node.rule_owner or authorities.get(entrypoint, "")
         rows.append(
             CrosswalkRow(
                 gate_id=gate_id,
@@ -1611,7 +1615,9 @@ def build_gate_crosswalk(
                 entrypoint=entrypoint,
                 argv=node.argv,
                 test_modules=modules,
-                owner="UNOWNED" if authority == _SELF_AUTHORITY else authority,
+                owner=authority
+                if authority and authority != ".github/workflow-contract.yml"
+                else "UNOWNED",
                 local_only=gate_id in public.local_only_gate_ids,
                 unique_guarantee=unique,
                 duplicate_of=duplicate_of,
@@ -1724,7 +1730,7 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
         "timeout_minutes",
     }
     required = execution | (
-        {"suite_key", "guarantee"} if kind is GateKind.LEAF else set()
+        {"suite_key", "guarantee", "rule_owner"} if kind is GateKind.LEAF else set()
     )
     optional = {"security_db"} if kind is GateKind.LEAF else set()
     _require_fields(
@@ -1766,6 +1772,17 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
         raise GateContractError(
             "ci-gate-guarantee", path, "a leaf must declare security, deploy or none"
         )
+    rule_owner = (
+        _string(record["rule_owner"], "ci-gate-rule-owner", path)
+        if kind is GateKind.LEAF
+        else ""
+    )
+    if kind is GateKind.LEAF and not _RULE_OWNER.fullmatch(rule_owner):
+        raise GateContractError(
+            "ci-gate-rule-owner",
+            path,
+            "rule_owner must be <.agents/governance document>.md#<anchor>",
+        )
     security_db = record.get("security_db", "")
     if security_db not in _SECURITY_DBS:
         raise GateContractError(
@@ -1788,6 +1805,7 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
         (),
         guarantee,
         security_db,
+        rule_owner,
     )
 
 
@@ -1917,6 +1935,55 @@ def _json_depth_within_limit(source: str) -> bool:
             if depth < 0:
                 return False
     return depth == 0 and not in_string
+
+
+def validate_rule_owners(
+    root: pathlib.Path,
+    registry: GateRegistry,
+) -> tuple[GateFinding, ...]:
+    """Every leaf names an existing canonical heading as its rule owner."""
+
+    findings: list[GateFinding] = []
+    anchors: dict[str, frozenset[str]] = {}
+    for node in registry.nodes:
+        if node.kind is not GateKind.LEAF:
+            continue
+        document, _, anchor = node.rule_owner.partition("#")
+        if document not in anchors:
+            anchors[document] = _heading_anchors(root, document)
+        if anchor not in anchors[document]:
+            findings.append(
+                GateFinding(
+                    "ci-gate-rule-owner",
+                    f"gate_nodes/{node.gate_id}",
+                    "rule_owner must name an existing canonical document heading",
+                )
+            )
+    return tuple(findings)
+
+
+def _heading_anchors(root: pathlib.Path, document: str) -> frozenset[str]:
+    """GitHub-style heading anchors of one tracked canonical document."""
+
+    path = pathlib.PurePosixPath(document)
+    if (
+        not _RULE_OWNER.fullmatch(f"{document}#x")
+        or not _path_without_symlinks(root, path)
+        or not root.joinpath(*path.parts).is_file()
+    ):
+        return frozenset()
+    try:
+        text = (root / document).read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return frozenset()
+    anchors = set()
+    for line in text.splitlines():
+        match = re.fullmatch(r"#{1,6}\s+(.+?)\s*", line)
+        if match:
+            slug = re.sub(r"[`*_~]", "", match.group(1).lower())
+            slug = re.sub(r"[^\w\- ]", "", slug)
+            anchors.add(re.sub(r" ", "-", slug).strip("-"))
+    return frozenset(anchors)
 
 
 def _tracked_regular_file(root: pathlib.Path, path: pathlib.PurePosixPath) -> bool:

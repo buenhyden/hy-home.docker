@@ -1007,7 +1007,6 @@ class CiGateRunnerContractTests(unittest.TestCase):
             "tests/lib/ops/test_workspace_inventory.py",
             "tests/lib/ops/test_workspace_services.py",
             "tests/validation/test_workspace_inventory.py",
-            "docs/90.references/data/0096-workspace-inventory/data.yaml",
         )
         modules = {
             "tests.lib.ops.test_workspace_inventory",
@@ -1996,6 +1995,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
                     runner, "load_contract_document", return_value=document
                 ),
                 mock.patch.object(runner, "validate_gate_registry", return_value=()),
+                mock.patch.object(runner, "validate_rule_owners", return_value=()),
                 mock.patch.object(
                     runner,
                     "collect_changed_paths",
