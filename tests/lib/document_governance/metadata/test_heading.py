@@ -6,6 +6,7 @@ import datetime
 import json
 import os
 import pathlib
+import re
 import subprocess
 import sys
 import tempfile
@@ -1506,6 +1507,27 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             runtime_readme.write_text(readme_metadata + pointer + "Connection setup.\n")
             result = run_checker(root, "check-active", profiles=profiles)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+    def test_check_active_selects_an_approved_document(self) -> None:
+        """An Architecture Description is `approved`, not `active`; moving it
+        to the authority axis must not drop it from the active-document check."""
+
+        counts = {}
+        for status in ("draft", "approved"):
+            with tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                profiles = copy_registry_contract_fixture(root)
+                document = root / "docs/01.requirements/0001-fixture.md"
+                document.parent.mkdir(parents=True)
+                document.write_text(
+                    f'---\ntitle: "Fixture"\nstatus: "{status}"\n---\n\n# Fixture\n'
+                )
+                self.assertEqual(0, git(root, "add", ".").returncode)
+                result = run_checker(root, "check-active", profiles=profiles)
+                match = re.search(r"selected=(\d+)", result.stdout)
+                self.assertIsNotNone(match, result.stdout + result.stderr)
+                counts[status] = int(match.group(1))
+        self.assertEqual(counts["draft"] + 1, counts["approved"])
 
     def test_active_general_readmes_and_architecture_decisions_are_checked(
         self,

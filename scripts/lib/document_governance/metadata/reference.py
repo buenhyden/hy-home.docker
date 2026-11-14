@@ -1922,7 +1922,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         else {
             record.path.as_posix()
             for record in records
-            if record.metadata.get("status") == "active"
+            if record.metadata.get("status") in {"active", "approved"}
         }
     )
     selected_paths = directly_selected_paths | set(relation_impact_findings)
