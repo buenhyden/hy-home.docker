@@ -1,10 +1,10 @@
 ---
 title: "Image, Supply-Chain and Storybook Compatibility Task"
-version: "0.2.0"
+version: "0.2.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0047"
 parent_ids:
@@ -395,9 +395,7 @@ None: nothing was recorded here before this Task moved to the common form.
 
 ### Remaining Conditions
 
-Before final acceptance, refresh DATA-0096 only after source changes freeze;
-compare its start/end fingerprint, preserve changed-review invalidation and
-record only the affected observations. Run documentation, registry, relevant
+Before final acceptance, run documentation, registry, relevant
 QA and CI selector checks without converting a local check into hosted CI.
 Run `graphify update .` after the final source diff. Independent code,
 security, IaC and document reviewers report their own evidence without

@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.62.0"
+version: "1.62.1"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -147,8 +147,7 @@ handoffs, not as this Task's changes.
 
 W115 in TSK-0057 runs the v14.2 W02 archive and safe-removal assessment.
 Removal candidates get readiness and byte-recovery proofs first; deletion
-waits for the owner's approval of each batch. The SPEC-0248, 0249, 0250 and
-0260 packages were later removed by W124.
+waits for the owner's approval of each batch.
 
 W116 in TSK-0058 runs the v14.2 W03 template, metadata and relation work; W05
 owns the validators. Its H2-retention decision Q-03 was superseded on
@@ -320,15 +319,15 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W88 | 83 | Add selection-bound expected scrape, backend and freshness signals with dashboards and alert rules | W87 | TSK-0046 | Synthetic configuration, promtool rules and isolated metrics checks |
 | W89 | 84 | Reuse authenticated OTLP and test pinned Alloy delivery and outage recovery | None | TSK-0046 | Existing quality regressions and owned isolated Alloy/Prometheus proof |
 | W90 | 85 | Bind HOME/profile expected-state and recovery handoffs without changing operating resources | W87, W88, W89 | TSK-0046 | Selection on/off, absent inventory, owner review and scoped evidence |
-| W91 | 86 | Preserve the not-required decision and hand fresh source review to successor W109/TSK-0052 | None | TSK-0047 | Historical source receipts and explicit successor ownership; fresh lookup remains separate |
-| W92 | 87 | Evaluate selected Valkey 9.1.3 and owner-retargeted n8n 2.46.6 compatibility bundles without promoting a candidate to operation | W91 | TSK-0047 | Pin/consumer/source checks and bounded isolated ACL, queue, restore and runner regressions |
+| W91 | 86 | Hand fresh source review to successor W109/TSK-0052 | None | TSK-0047 | Historical source receipts and explicit successor ownership; fresh lookup remains separate |
+| W92 | 87 | Evaluate selected Valkey and n8n compatibility bundles without promoting a candidate to operation | W91 | TSK-0047 | Pin/consumer/source checks and bounded isolated ACL, queue, restore and runner regressions |
 | W93 | 88 | Preserve Storybook 10.6.3 and verify its tracked lock in a clean isolated installation | W91 | TSK-0047 | Isolated install, lint/typecheck/build and scoped UI/MCP/OIDC regression evidence |
-| W94 | 89 | Preserve the not-required decision and hand exact artifact verification to successor W110/TSK-0052 | W91, W92 | TSK-0047 | Historical receipts and explicit successor ownership; no cross-artifact inference |
+| W94 | 89 | Hand exact artifact verification to successor W110/TSK-0052 | W91, W92 | TSK-0047 | Historical receipts and explicit successor ownership; no cross-artifact inference |
 | W95 | 90 | Record the fifteen current role comparisons with public-source/consumer evidence and explicit unknowns | None | TSK-0048 | DATA-0096 role rows, preserved historical decisions and no deletion inference |
 | W96 | 91 | Preserve common controls while binding base/overlay provenance and measurement inputs to canonical sources | W95 | TSK-0048 | RED/GREEN synthetic overlay, exception and canonical-binding checks; runtime remains separate |
 | W97 | 92 | Reuse accepted C1–C6 placement and record only measured drift as a future candidate | W95 | TSK-0048 | Read-only current-source comparison and explicit no-migration boundary |
 | W98 | 93 | Reject unsafe or incomplete retirement manifests without creating an eligible deletion target | W95 | TSK-0048 | RED/GREEN manifest parser and owned-fixture rejection checks; apply remains blocked |
-| W99 | 94 | Normalize current document evidence and acceptance contracts without rewriting historical archives | None | TSK-0049 | Generation-7 document contract and sequential metadata/corpus/link checks; failures remain explicit |
+| W99 | 94 | Normalize current document evidence and acceptance contracts without rewriting completed Task bodies | None | TSK-0049 | Generation-7 document contract and sequential metadata/corpus/link checks; failures remain explicit |
 | W100 | 95 | Register existing P03 public validation and correct required P04/P05 selector expectations | W99 | TSK-0049 | Public plan/parity and exact selector tests in registered contexts |
 | W101 | 96 | Align hook and governance wording with active repository-change scope while preserving fail-closed admission | W99 | TSK-0049 | Synthetic payload and temporary-Git-fixture regressions |
 | W102 | 97 | Preserve result lifecycle and record local QA/CI residuals without upgrading them to remote acceptance | W99–W101 | TSK-0049 | EvidenceStore lifecycle and explicit NOT_RUN remote/operational outcomes |
@@ -498,8 +497,8 @@ preceding source identity and review are fixed.
    config, secrets and runtime are not moved.
 5. Each feature owner completes its Task, independent review and per-Spec PR.
    P00's inventory or merge receipt cannot complete a downstream native run.
-6. W24 records its reviewed P0 route before P1 or any variable source change;
-   criterion acceptance remains pending while its evidence rows stay open. P1 establishes
+6. W24 records its reviewed P0 route before P1 or any variable source change.
+   P1 establishes
    non-destructive restore prerequisites before live or irreversible image,
    connection, leaf, workflow, or retirement work; it does not block unrelated
    reversible source, test, CI, or P9 documentation work. Every logical change
@@ -659,9 +658,10 @@ findings, not permission to move LAB runtime assets.
 
 W24 records only tracked, value-free source and authenticated public Git
 observations. `SOURCE_APPLIED`, `STATIC_PASS`, `ISOLATED_PASS`, `NATIVE_PASS`,
-`HOME_PASS`, and `RECOVERY_PASS` are ordered domains; no lower domain implies a
-higher one. A local changed no-op or `full --explain` selection is not hosted
-required-check coverage. Missing live targets remain `BLOCKED` or `NOT_RUN`.
+`HOME_PASS`, and `RECOVERY_PASS` are ordered levels of the source-assurance
+axis, not Evidence `Result` values; no lower level implies a higher one. A
+local changed no-op or `full --explain` selection is not hosted required-check
+coverage. A missing live target is recorded as an Evidence `NOT_RUN` row.
 
 After independent review, validate the Conventional Commit message and run
 `scripts/validation/run-ci-precommit.sh --mode local-staged` on the exact

@@ -1,10 +1,10 @@
 ---
 title: "Hermes DevOps Daily Brief Recovery Task"
-version: "0.2.2"
+version: "0.3.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0054"
 parent_ids:
@@ -106,6 +106,20 @@ The 2026-11-11 failure is a model-provider failure, not a repository defect:
 the primary model's HTTP 400 for this job and a fallback chain where only one
 entry still works. Choosing the fallback chain or pinning a model for the job
 is the owner's decision under `~/.hermes`; no paid model is assumed.
+
+#### State currency 2026-11-13
+
+On the owner's decision of 2026-11-13 (SPEC-0212 TSK-0063), this Task's
+status follows the work it records: it left `draft` when work started and is
+`in-progress`. The rows below record those observed transitions; they do not
+change any evidence row or acceptance decision.
+
+#### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0054 | draft | ready | #state-currency-2026-11-13 |
+| SPEC-0212-TSK-0054 | ready | in-progress | #state-currency-2026-11-13 |
 
 ### Blockers and Decisions
 
