@@ -240,6 +240,101 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
             self.assertEqual(1, result)
             self.assertIn("index-member-unlisted", output.getvalue())
 
+    def test_changed_mode_reports_version_change_findings(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root, registry = self.fixture(directory)
+            finding = reference_module.Finding(
+                "docs/90.references/research/README.md",
+                "version-unchanged",
+                "fixture",
+            )
+            output = io.StringIO()
+            with (
+                mock.patch.object(
+                    reference_module,
+                    "_validate_repository_contracts",
+                    return_value=(
+                        [],
+                        frozenset(),
+                        frozenset(),
+                        reference_module._GenerationBindings(),
+                    ),
+                ),
+                mock.patch.object(
+                    reference_module, "collect_records_at_ref", return_value=[]
+                ),
+                mock.patch.object(reference_module, "validate_record", return_value=[]),
+                mock.patch.object(
+                    reference_module,
+                    "version_change_findings",
+                    return_value=[finding],
+                ) as changes,
+                contextlib.redirect_stdout(output),
+            ):
+                result = reference_module.main(
+                    [
+                        "--root",
+                        str(root),
+                        "--registry",
+                        str(registry),
+                        "--mode",
+                        "check-changed",
+                        "--base-ref",
+                        "HEAD",
+                    ]
+                )
+            changes.assert_called_once()
+            self.assertEqual(1, result)
+            self.assertIn("version-unchanged", output.getvalue())
+            self.assertFalse(hasattr(reference_module, "version_downgrade_findings"))
+
+    def test_changed_mode_reports_product_version_findings(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root, registry = self.fixture(directory)
+            finding = reference_module.Finding(
+                "projects/storybook/nextjs/package.json",
+                "version-downgrade",
+                "fixture",
+            )
+            output = io.StringIO()
+            with (
+                mock.patch.object(
+                    reference_module,
+                    "_validate_repository_contracts",
+                    return_value=(
+                        [],
+                        frozenset(),
+                        frozenset(),
+                        reference_module._GenerationBindings(),
+                    ),
+                ),
+                mock.patch.object(
+                    reference_module, "collect_records_at_ref", return_value=[]
+                ),
+                mock.patch.object(reference_module, "validate_record", return_value=[]),
+                mock.patch.object(
+                    reference_module,
+                    "product_version_findings",
+                    return_value=[finding],
+                ) as changes,
+                contextlib.redirect_stdout(output),
+            ):
+                result = reference_module.main(
+                    [
+                        "--root",
+                        str(root),
+                        "--registry",
+                        str(registry),
+                        "--mode",
+                        "check-changed",
+                        "--base-ref",
+                        "HEAD",
+                    ]
+                )
+            changes.assert_called_once()
+            self.assertEqual(1, result)
+            self.assertIn("version-downgrade", output.getvalue())
+
     def test_contracts_share_exact_baseline_and_historical_input_context(self) -> None:
         profiles = current_profiles()
         previous = {

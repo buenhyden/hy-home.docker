@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.29.0"
+version: "4.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -215,11 +215,15 @@ its hosted CI route is not wired yet. Existing links are not retyped by this rul
    Below `1.0.0` a breaking or feature change raises the minor and a
    compatible correction the patch; `1.0.0` marks the owner's explicit
    approval of a stable contract, never a renumbering. A changed document's
-   `version` never has lower SemVer precedence than the same path at the
-   merge base: `check-document-metadata.py --mode check-changed` reports
-   `version-downgrade`, and a new document or one without a base version is
-   not compared. Whether a content change also needed a higher version is
-   left to review.
+   `version` has higher SemVer precedence than the same path at the merge
+   base: `check-document-metadata.py --mode check-changed` reports
+   `version-unchanged` for equal precedence and `version-downgrade` for lower
+   precedence. A new document, a document without a SemVer `version` on either
+   side, a path Git does not show at the merge base (a rename is never
+   guessed) and a path whose content is the base content are not compared. An
+   edit confined to the lifecycle keys `status`, `updated`, `reviewed_at` and
+   `next_review_at` is no content change, so it needs no new version. Which
+   increment a change needs is left to review.
    Lifecycle status is independent of this content version. An artifact
    number, a numbering baseline or its reset, a Task completion and a pull
    request merge are not version events; none of them sets or resets a
@@ -454,25 +458,41 @@ SemVer value is a SemVer 2.0.0 string: `MAJOR.MINOR.PATCH`, with no `v`
 prefix and no leading zeros, optionally followed by a prerelease (`-rc.1`) and
 build metadata (`+build.7`). A numeric prerelease identifier has no leading
 zero. Precedence ignores build metadata and puts a prerelease below its
-release; `scripts/operations/release.py` compares it (`compare_semver`), never
-as text or a number. Its release publication refuses a version of equal
-precedence to a published release, tag or CHANGELOG entry. `compare_semver`
-and `check_version_change` are called by no other gate yet; checking an
-unchanged, missing or lower document or release version is handed to the
-future commit, pull request and tag consumer.
+release, and is never compared as text or a number. One parser and comparator
+serves every consumer: `scripts/lib/document_governance/semver.py`
+(`compare_semver`, `version_change_code`, `check_version_change`), imported by
+`scripts/operations/release.py` and by the document `version` check, neither
+of which keeps a copy. The one change rule is that a changed object's version
+has higher precedence than its base: equal precedence is `version-unchanged`,
+lower is `version-downgrade`, and a missing side is `version-missing`. Release
+publication applies it to the highest published release or tag, refuses a
+version of equal precedence to a published release, tag or CHANGELOG entry, and
+allows no backport: a version below the highest published release or tag is
+always refused. The document check applies it as the Document content row
+states. A product version row is checked in the same `check-changed` run, by
+its `version` field only: a changed value must be a valid SemVer value not
+lower than the merge base (`version-malformed`, `version-downgrade`), and an
+unchanged value with other edits to the file is allowed, because the product
+releases on its own cadence. The other rows have no gate that compares a
+changed value; their change is reviewed against the Compatibility surface.
 
-The Field column is the one authored place; the Producer writes it, and the
-Compatibility surface is what its consumers depend on, so a change there
-decides the increment.
+The Canonical source column is the one authored place; the Producer writes it,
+and the Compatibility surface is what its consumers depend on, so a change
+there decides the increment. A product version rises only with its own
+product's change; a documentation change raises no other object's version.
 
-| Object | Field | Current value | Rule | Producer | Consumers | Compatibility surface | Deploy unit |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Document content | frontmatter `version` | per document | SemVer value; the rule above | The document's writer | `contracts/document-frontmatter.schema.json`, metadata validator | The keys, sections, tables, states and link directions its profile's consumers read | The document |
-| New-document start | Registry `common.template_initial_version` | `0.1.0` | SemVer value | Stage 99 owner | Profile schema, template checks | The first version a new document carries | The Registry |
-| Common form contract | Registry `common.common_form_contract` | `COMMON-DOC-FORM-1/1.0.0` | Contract ID, `/`, SemVer version, as the shared contract writes it | Stage 99 owner, adopting the shared contract | `template_definition.py` | The common H1, H2 and H3 form and the empty-section rule | The shared contract, adopted per workspace |
-| Vocabulary contract | Registry `common.vocabulary_contract.version` | `1.1.0` | SemVer; the first adoption, from package label `v14.5` (kept as `source_label`), is 1.0.0, by the owner's decision recorded in SPEC-0212 TSK-0064 | Glossary owner | Glossary `Contract Version` column, `vocabulary_contract_findings` | The common Term IDs, names, order and meanings | The shared contract, adopted per workspace |
-| Registry serialization | Registry `schema_version` | `1` | The Registry Schema Version, kept an integer by the same decision because its only consumer, the profile schema, pins `const: 1`; a breaking structure change raises it | Stage 99 owner | Profile schema, `registry.py` | The JSON structure the profile schema and `registry.py` read | The Registry |
-| Product release | release version, tagged as `v` plus the version, and CHANGELOG | per release | SemVer, checked by `scripts/operations/release.py`; the `v` belongs to the tag, not the value | The release workflow, through `release.py` | Release Runbook and the release workflow | The repository's published release | One tagged release |
+| Object ID | Version field | Current value | Rule | Canonical source | Producer | Consumers | Compatibility surface | Deploy unit |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `document-content` | frontmatter `version` | per document | SemVer value; the rule above, checked by `check-document-metadata.py --mode check-changed` | The document's own frontmatter | The document's writer | `contracts/document-frontmatter.schema.json`, metadata validator | The keys, sections, tables, states and link directions its profile's consumers read | The document |
+| `new-document-start` | Registry `common.template_initial_version` | `0.1.0` | SemVer value | `docs/99.templates/registry.json` | Stage 99 owner | Profile schema, template checks | The first version a new document carries | The Registry |
+| `common-form-contract` | Registry `common.common_form_contract` | `COMMON-DOC-FORM-1/1.0.0` | Contract ID, `/`, SemVer version, as the shared contract writes it | `docs/99.templates/registry.json` | Stage 99 owner, adopting the shared contract | `template_definition.py` | The common H1, H2 and H3 form and the empty-section rule | The shared contract, adopted per workspace |
+| `vocabulary-contract` | Registry `common.vocabulary_contract.version` | `1.1.0` | SemVer; the first adoption, from package label `v14.5` (kept as `source_label`), is 1.0.0, by the owner's decision recorded in SPEC-0212 TSK-0064 | `docs/99.templates/registry.json` | Glossary owner | Glossary `Contract Version` column, `vocabulary_contract_findings` | The common Term IDs, names, order and meanings | The shared contract, adopted per workspace |
+| `registry-serialization` | Registry `schema_version` | `1` | The Registry Schema Version, kept an integer by the same decision because its only consumer, the profile schema, pins `const: 1`; a breaking structure change raises it | `docs/99.templates/registry.json` | Stage 99 owner | Profile schema, `registry.py` | The JSON structure the profile schema and `registry.py` read | The Registry |
+| `product-release` | release version, tagged as `v` plus the version, and CHANGELOG | per release | SemVer, checked by `scripts/operations/release.py` against the published releases and tags; the `v` belongs to the tag, not the value; no backport | `CHANGELOG.md` dated heading, then the tag | The release workflow, through `release.py` | Release Runbook and the release workflow | The repository's published release | One tagged release |
+| `product-opsflow-smtp` | `version` in `package.json` | `0.1.0` | SemVer value, checked by `check-document-metadata.py --mode check-changed`; `package-lock.json` mirrors it | `infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json` | The node package's maintainer | npm, `package-lock.json` | The n8n node's parameters, credentials and outputs | The n8n community node package |
+| `product-hermes-publisher` | `version` in `pyproject.toml` | `1.0.0` | SemVer value, checked by `check-document-metadata.py --mode check-changed` | `infra/07-workflow/n8n/workloads/hermes-blog-ingestion/pyproject.toml` | The workload's maintainer | The Python build backend; installation reads only `requirements.lock` | The publisher's command line and the payloads it reads and writes | The hermes-blog-ingestion workload |
+| `product-storybook-nextjs` | `version` in `package.json` | `0.1.0` | SemVer value, checked by `check-document-metadata.py --mode check-changed` | `projects/storybook/nextjs/package.json` | The Storybook app's maintainer | npm, `package-lock.json` | The Storybook app's build outputs and exported design artifacts | The Storybook Next.js app |
+| `product-storybook-ui` | `version` in `package.json` | `0.2.0` | SemVer value, checked by `check-document-metadata.py --mode check-changed` | `projects/storybook/nextjs/packages/ui/package.json` | The UI package's maintainer | The Storybook app's workspace dependency | The exported components, props and design tokens | The `@hy-home/storybook-ui` workspace package |
 
 Not versions: `common.contract_id` and other contract identifiers, the
 `lifecycle_generation` counter, artifact numbers and identity-space

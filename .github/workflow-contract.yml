@@ -355,6 +355,7 @@
         "tests.lib.document_governance.test_registry",
         "tests.lib.document_governance.test_relations",
         "tests.lib.document_governance.test_requirements",
+        "tests.lib.document_governance.test_semver",
         "tests.lib.document_governance.test_spec_packages",
         "tests.lib.document_governance.test_taxonomy",
         "tests.lib.document_governance.test_template_definition",
@@ -2185,8 +2186,7 @@
         "suites": [
           "repository-integrity"
         ]
-      }
-,
+      },
       {
         "prefixes": [
           "tests/validation/test_opsflow_e2e_acceptance.py",
@@ -2194,6 +2194,15 @@
         ],
         "suites": [
           "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
+          "projects/storybook/nextjs/package.json",
+          "projects/storybook/nextjs/packages/ui/package.json"
+        ],
+        "suites": [
+          "document-contract"
         ]
       }
     ],
@@ -2270,6 +2279,7 @@
         "prefixes": [
           "CHANGELOG.md",
           ".github/workflows/publish-release.yml",
+          "scripts/lib/document_governance/semver.py",
           "scripts/operations/release.py",
           "tests/validation/test_release.py"
         ],
@@ -2727,8 +2737,7 @@
           "leaf.local-script-manifest",
           "leaf.repository-integrity-regressions"
         ]
-      }
-,
+      },
       {
         "prefixes": [
           "tests/validation/test_opsflow_e2e_acceptance.py",
