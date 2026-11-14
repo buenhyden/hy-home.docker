@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.25.0"
+version: "3.26.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -445,13 +445,21 @@ evidence; surrounding instructions remain current and validated normally.
 #### Version objects
 
 Each version below has one authored value; every other place reads it. A
-SemVer value is a `MAJOR.MINOR.PATCH` string with no `v` prefix and no
-leading zeros, compared by SemVer precedence, never as text or a number.
+SemVer value is a SemVer 2.0.0 string: `MAJOR.MINOR.PATCH`, with no `v`
+prefix and no leading zeros, optionally followed by a prerelease (`-rc.1`) and
+build metadata (`+build.7`). A numeric prerelease identifier has no leading
+zero. Precedence ignores build metadata and puts a prerelease below its
+release; `scripts/operations/release.py` compares it (`compare_semver`), never
+as text or a number. Its release publication refuses a version of equal
+precedence to a published release, tag or CHANGELOG entry. `compare_semver`
+and `check_version_change` are called by no other gate yet; checking an
+unchanged, missing or lower document or release version is handed to the
+future commit, pull request and tag consumer.
 
 | Object | Field | Current value | Rule | Consumers |
 | --- | --- | --- | --- | --- |
-| Document content | frontmatter `version` | per document | SemVer release value; the rule above | `contracts/document-frontmatter.schema.json`, metadata validator |
-| New-document start | Registry `common.template_initial_version` | `0.1.0` | SemVer release value | Profile schema, template checks |
+| Document content | frontmatter `version` | per document | SemVer value; the rule above | `contracts/document-frontmatter.schema.json`, metadata validator |
+| New-document start | Registry `common.template_initial_version` | `0.1.0` | SemVer value | Profile schema, template checks |
 | Common form contract | Registry `common.common_form_contract` | `COMMON-DOC-FORM-1/1.0.0` | Contract ID, `/`, SemVer version, as the shared contract writes it | `template_definition.py` |
 | Vocabulary contract | Registry `common.vocabulary_contract.version` | `1.1.0` | SemVer; the first adoption, from package label `v14.5` (kept as `source_label`), is 1.0.0, by the owner's decision recorded in SPEC-0212 TSK-0064 | Glossary `Contract Version` column, `vocabulary_contract_findings` |
 | Registry serialization | Registry `schema_version` | `1` | The Registry Schema Version, kept an integer by the same decision because its only consumer, the profile schema, pins `const: 1`; a breaking structure change raises it | Profile schema, `registry.py` |
