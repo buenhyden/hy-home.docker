@@ -1,10 +1,10 @@
 ---
 title: "Hermes Provenance, Trust and Export Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0050"
 parent_ids:
@@ -175,8 +175,7 @@ None: nothing was recorded here before this Task moved to the common form.
 After source freeze, run the registered P11 offline gate and the focused source,
 security and document checks. Record coverage for new Python execution lines;
 record a failed, cancelled or unavailable check with its actual Result rather
-than upgrading it to PASS. Refresh DATA-0096 only through the receipt-preserving
-inventory workflow after all P11 source and public documents freeze. Run
+than upgrading it to PASS. Run
 `graphify update .` only after all writers finish. Operational service changes,
 route reload, credential changes, Windows B acceptance, independent production
 restore, remote CI and final acceptance remain independent results.

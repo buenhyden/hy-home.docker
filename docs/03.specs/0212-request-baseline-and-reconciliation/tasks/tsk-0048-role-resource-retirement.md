@@ -1,10 +1,10 @@
 ---
 title: "Role, Resource and Retirement Input Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0048"
 parent_ids:
@@ -83,7 +83,7 @@ They identify source only and do not prove runtime state.
 
 #### Fifteen role dispositions
 
-`DATA-0096` service and connection rows are the public declaration evidence;
+`DATA-0096` service and connection rows were the public declaration evidence;
 the table does not upgrade a declaration, fixture, profile or historical record
 into an operating consumer. An `UNKNOWN` owner, usage, cost or recovery row is
 not a retirement candidate.

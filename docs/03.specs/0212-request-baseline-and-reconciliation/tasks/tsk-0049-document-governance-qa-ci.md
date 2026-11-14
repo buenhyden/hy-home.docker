@@ -1,9 +1,9 @@
 ---
 title: "Documentation, Governance, QA and CI Contract Task"
-version: "0.2.1"
+version: "0.2.2"
 type: "sdlc/task"
 owner: "@buenhyden"
-updated: "2026-11-10"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0049"
 parent_ids:
@@ -57,7 +57,7 @@ The execution items and lifecycle events below record this Task's work.
 
 ### Blockers and Decisions
 
-None: nothing was recorded here before this Task moved to the common form.
+- On 2026-11-15 the owner directed that content conflicting with the v14.7 W00 to W05 requirements be discarded from SPEC-0212; removed or corrected: Plan status copies, the evidence ladder as a Result domain, archive and Stage 98 wording, retired DATA-0096 and SPEC-0265 routes; seven draft Tasks with executed rows moved to in-progress under WP-15.
 
 ## Verification Evidence
 
@@ -119,7 +119,7 @@ Affected Task entries (target, package writer, current state and resume conditio
 
 ### Remaining Conditions
 
-Run metadata, corpus lifecycle and link alignment sequentially after final source changes, observing each up to five minutes and recording the actual exit result. Archive type mismatches remain owned historical debt: do not weaken the validator or rewrite preserved archives. Run `graphify update .` after all writers freeze source changes.
+Run metadata, corpus lifecycle and link alignment sequentially after final source changes, observing each up to five minutes and recording the actual exit result. Run `graphify update .` after all writers freeze source changes.
 
 ## Handoff
 

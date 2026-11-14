@@ -1,10 +1,10 @@
 ---
 title: "Models, Runners and Wiki Preparation Task"
-version: "0.1.17"
+version: "0.1.18"
 type: "sdlc/task"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0042"
 parent_ids:
@@ -272,7 +272,7 @@ Results:
 **Other items.** T03: the runner sandbox native rerun passed earlier on
 2026-11-08 (criterion 63 rows above). T04: no n8n agent workflow is active
 (the only active workflow is Hermes Blog Ingestion), so there is no n8n agent
-tool to scope; the Hermes agent's own tool policy belongs to SPEC-0265.
+tool to scope.
 T05: the Wiki preparation stays REUSE_ACCEPTED (criterion 65). T06: no
 evaluation data set, owner or baseline exists, so the comparison is BLOCKED
 until those are named.
