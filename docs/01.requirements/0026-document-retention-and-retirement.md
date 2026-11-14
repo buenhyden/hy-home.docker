@@ -1,10 +1,10 @@
 ---
 title: "Document Retention and Retirement Requirements"
-version: "3.1.0"
+version: "3.1.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "requirements"
 artifact_id: "REQ-0026"
 created: "2026-09-01"
@@ -179,6 +179,7 @@ Each condition is judged by running the registered metadata, lifecycle, link and
 - [ADR-0037 Package waiting and Task cancellation](../02.architecture/decisions/0037-package-disposition-wait-and-task-cancellation.md)
 - [ADR-0048 Authority parents and criterion acceptance](../02.architecture/decisions/0048-authority-parents-and-criterion-acceptance.md)
 - ADR-0031, ADR-0033, ADR-0035, and ADR-0036 are superseded historical decisions.
+- SPEC-0257 and SPEC-0261 (retired; version history) delivered the second implementation-alignment corrections of paths, links, Registry exceptions and secret names, and the REQ-0027 approval with the promotion of its dependent documents.
 - SPEC-0248, SPEC-0249, SPEC-0250 and SPEC-0260 (retired; version history)
   delivered the archive-check removal, the Stage 98 deletion, the completed
   package deletion and the proof-source change. SPEC-0249 retired three
