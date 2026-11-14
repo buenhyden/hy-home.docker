@@ -1,8 +1,8 @@
 ---
 title: "QA and CI Legacy Cleanup Task"
-version: "0.2.3"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-14"
 layer: "specs"
@@ -58,6 +58,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0253-PLAN-0001 | draft | approved | #current-contract-decision |
 | SPEC-0253-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0253-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
+| SPEC-0253-TSK-0001 | in-progress | completed | #criterion-decisions |
 
 #### Decisions
 
@@ -206,15 +207,16 @@ None: nothing was recorded here before this Task moved to the common form.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | - | - | @buenhyden |
-| 2 | pending | - | - | @buenhyden |
-| 3 | pending | - | - | @buenhyden |
+| 1 | accepted | E2, E5, E12, E16 | Owner @buenhyden accepted on 2026-11-14 in this chat, after hosted CI E21 (#1017) | @buenhyden |
+| 2 | accepted | E6, E13, E18 | Owner @buenhyden accepted on 2026-11-14 in this chat, after hosted CI E21 (#1017) | @buenhyden |
+| 3 | accepted | E14, E15, E17, E19, E21 | Owner @buenhyden accepted on 2026-11-14 in this chat, after hosted CI E21 (#1017) | @buenhyden |
 
 ### Remaining Conditions
 
 Local checks are recorded above, last on head 1914065b1 (E16, E17). The
 independent review of PR #729 approved after fixes; those fixes are on this
-branch. Hosted CI passed on 09171c663 (E15). No criterion is accepted yet.
+branch. Hosted CI passed on 09171c663 (E15) and for the retirement in run 43555699221
+(E21). The owner accepted criteria 1 to 3 on 2026-11-14.
 
 #### Merge receipt 2026-11-10
 
