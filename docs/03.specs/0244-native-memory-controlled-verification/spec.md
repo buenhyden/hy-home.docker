@@ -1,10 +1,10 @@
 ---
 title: "Native Memory Controlled Verification"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0244"
 parent_ids:
@@ -21,15 +21,11 @@ created: "2026-10-16"
 ### Intent
 
 The owner authorized a bounded continuation of the Claude native-memory and
-hook investigation. The earlier sanitized normal-session observation confirmed
-that the menus can be opened without an error marker, but did not surface a
-non-mutating effective-memory state or individual event receipts. This package
-defines one controlled verification route that records that distinction rather
-than promoting configured state or menu availability to an effective-off claim.
+hook investigation. This package
+defines one controlled verification route that does not promote configured state or menu availability to an effective-off claim.
 
-SPEC-0236 remains the broader shared-memory design and implementation package.
-This package neither changes its draft scope nor reads, migrates, or writes a
-native or shared memory store.
+ADR-0049 owns the shared-memory decision. This package reads, migrates or
+writes no native or shared memory store.
 
 ### Owning Requirements
 
@@ -72,7 +68,7 @@ Out of scope:
   exposes it;
 - asserting an individual hook was delivered when no event-specific receipt is
   available; and
-- reopening completed SPEC-0212 TSK-0009 or accepting SPEC-0236 criteria.
+- reopening completed SPEC-0212 TSK-0009.
 
 ## Behavior Contract
 

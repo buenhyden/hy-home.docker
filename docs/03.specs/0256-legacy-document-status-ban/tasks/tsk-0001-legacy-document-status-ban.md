@@ -1,10 +1,10 @@
 ---
 title: "Legacy Document Status Ban Task"
-version: "0.1.2"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0256-TSK-0001"
 parent_ids:
@@ -158,6 +158,8 @@ body begins with `status:`.
 ### Blockers and Decisions
 
 None: nothing was recorded here before this Task moved to the common form.
+
+- On 2026-11-15 the owner directed that content conflicting with the v14.7 W00 to W05 requirements be discarded; this package's Spec/Plan lost the number-allocation status paragraph.
 
 ## Verification Evidence
 

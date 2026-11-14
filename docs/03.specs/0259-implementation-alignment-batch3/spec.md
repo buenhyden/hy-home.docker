@@ -1,10 +1,10 @@
 ---
 title: "Implementation Alignment Batch 3 Specification"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0259"
 parent_ids:
@@ -46,7 +46,7 @@ This Spec makes concrete REQ-0026 and AD-0030, its frontmatter `parent_ids`. The
 ### Non-goals
 
 - Accepted ADR decision bodies; `09-tooling` wording in ADR-0009 and ADR-0024.
-- The body of GDE-0100 (open PR) and documents whose parent stays draft.
+- The body of GDE-0100 and documents whose parent stays draft.
 - Pushing, merging and any runtime or remote state change.
 
 ## Behavior Contract

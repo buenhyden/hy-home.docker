@@ -1,10 +1,10 @@
 ---
 title: "LAB Promotion Contract Specification"
-version: "0.4.1"
+version: "0.4.2"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0263"
 parent_ids:
@@ -30,33 +30,6 @@ This Spec defines four things:
 - the check that decides whether a LAB may be promoted;
 - the procedure for each kind.
 
-#### Observed state
-
-Observed on 2026-11-05 at `c1db5ef65`:
-
-- **LAB entrypoints are inconsistent.**
-  - Each LAB is a flat `labs/<name>.yml`.
-  - Some LABs also have an asset folder `labs/<name>/`, some a guide
-    `labs/<name>.md`, and some neither.
-  - Loose helpers sit at the `labs/` root: `couchdb-cluster-init.sh` and
-    `opensearch-cluster-dashboards.config`.
-- **Operations documents are uneven.**
-  - Thirteen LABs have a Guide and a Runbook under
-    `docs/05.operations/{guides,runbooks}/15-labs/`, sharing one number.
-  - The Kafka and OpenSearch cluster LABs have only `labs/<name>.md`.
-- **infra services follow one pattern.** A service in `infra/` lives in
-  `infra/<tier>/<service>/` with its `docker-compose.yml`, `README.md` and
-  assets. It is included by the root `docker-compose.yml` and has profiles in
-  the POL-0078 vocabulary.
-- **Four LABs are cluster forms of HOME single-node services.**
-  `valkey-cluster`, `postgresql-ha`, `opensearch-cluster` and `kafka-cluster`.
-  The rest are new services.
-- **supabase uses HOME resources.**
-  - It reads ten secrets from HOME paths under `secrets/data/supabase/` and
-    `secrets/db/mng-pg/`, plus HOME's SMTP password.
-  - It binds the Docker socket.
-  - `scripts/operations/lab.py check` (PR #752) refuses all of these.
-
 ### Owning Requirements
 
 The owner stated the following on 2026-11-05:
@@ -80,22 +53,14 @@ The owner stated the following on 2026-11-05:
   cutover as a defined procedure.
 - **LAB secrets.** A LAB uses its own secret copies under
   `secrets/labs/<name>/`, and promotion moves them to their `infra` location.
-- **supabase.** It stays a LAB and is brought into this structure.
 
-The owner answered three open questions on 2026-11-05:
+The owner answered an open question on 2026-11-05:
 
 - **Host budget.** The budget is the measured host capacity minus a reserve
   for the OS and Docker. Only running services count, and a replacement
   subtracts the resources of the service it retires.
-- **supabase secret copies.** They copy the HOME values. The secrets only
-  supabase uses move into the LAB location, `secrets/labs/supabase/`.
-- **Docker socket.** supabase's Docker socket bind is allowed by the LAB
-  check.
 
-The owner amended the resource rule and the section 5 scope on 2026-11-06,
-after the first readiness runs. Those runs showed that HOME's declared limits
-already total about 64 CPUs on a 12-CPU host, while the running containers use
-about 3 CPUs and 9 GiB:
+The owner amended the resource rule and the section 5 scope on 2026-11-06:
 
 - **Reservations, not limits.** The resource budget sums declared
   reservations. HOME declares them in the shared resource templates of
@@ -107,10 +72,7 @@ about 3 CPUs and 9 GiB:
   clashes, are owner check items in each promotion Task, not readiness
   measurements.
 
-The owner removed the supabase LAB on 2026-11-06 (version 0.4.0, work unit
-W8). This supersedes the 2026-11-05 supabase statements above: `labs/supabase/`,
-its operations documents, catalog rows and Docker socket allowance are gone,
-and no LAB binds the Docker socket.
+The owner removed the supabase LAB on 2026-11-06; no LAB binds the Docker socket.
 
 This Spec makes concrete REQ-0004 and AD-0026, its frontmatter `parent_ids`. The body cites no REQ-####-FR or REQ-####-NFR identifier.
 

@@ -1,10 +1,10 @@
 ---
 title: "Common Controls and Exceptions Plan"
-version: "1.0.4"
+version: "1.0.5"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0218-PLAN-0001"
 parent_ids:
@@ -22,9 +22,7 @@ Convert the schema and validator first, then fix leaves one control at a
 time, each proven by a real run, then record budgets and the remaining
 exceptions. Each unit is one commit.
 
-W1–W8 below preserve the earlier source/LAB/initial-budget execution contract
-and TSK-0001 evidence. P07 continues through TSK-0002, which owns criterion3's
-open HOME residual and criteria6–10. Public preparation may begin now;
+W1–W8 are assigned to TSK-0001 and W9–W16 to TSK-0002. Public preparation may begin now;
 measurements and mutation wait for each service's exact readiness and lease.
 
 W1–W8 establish schema-v2 exceptions and effective-control validation with
@@ -101,24 +99,6 @@ the service window, budgets, output sanitization and restoration boundary.
 The initial helper admits bounded public numeric/JSON inputs and refuses
 private environment, raw logs, credentials and ambient runtime access.
 
-At admission main `4c83f14b11a77e13e582eb85d0bf256685472a95`, the coordinator
-runs the official `check-operations-catalog.py` gate, whose findings cover
-include drift, missing profile declarations, Guide bindings and inventory
-membership for the P04 overlay. A wrapper exit code or the pure
-`validate_service_inventory` subset is not the official gate result; a semantic
-FAIL stays FAIL. Counts and timings are in
-[TSK-0002](tasks/tsk-0002-p07-root-resource-optimization.md). These describe the
-existing overlay, not new services. P04/coordinator owns typed overlay projection repair without blanket
-include/profile acceptance or a P04 native change. W10 requires W9's admission
-substep, not completed classification or inventory GREEN. Public W9/W10 can
-proceed while final inventory and full operations acceptance wait for their own evidence.
-
-The existing ComposeControlsTests are run at that baseline to confirm source
-reuse only, with no Docker or native execution. Actual receipts and document
-validation history belong in
-[TSK-0002](tasks/tsk-0002-p07-root-resource-optimization.md); neither that UNIT
-result nor a fixture PASS replaces the operations FAIL or proves measured resource or least-privilege acceptance.
-
 Prefer exact root leaf changes. A proposed common-template change requires
 a static comparison proving zero LAB effective-config delta and preservation
 of existing LAB exception rows; no LAB runtime execution is authorized.
@@ -127,11 +107,7 @@ of existing LAB exception rows; no LAB runtime execution is authorized.
 
 Future delivery uses one PR for its owning Spec. Before that PR merges, refresh
 it to the current target head and obtain its applicable current-head CI and an
-independent review. Formal Task issuance remains a logical commit on the
-isolated admission branch; its reviewed SHA can start public source/synthetic
-preparation, not delivery acceptance. Do not merge before the P04/coordinator
-repair and relevant gates and review. Source admission is not full main-gate
-acceptance.
+independent review.
 
 ## Risks
 
@@ -139,8 +115,7 @@ acceptance.
 
 The template changes reach HOME services only when they are recreated. The
 group removal could break a service that reads or writes through group 1000;
-mounts of the running services were checked, and the data-directory writers
-keep the group.
+data-directory writers keep the group through recorded exceptions.
 
 ### Escalation
 
