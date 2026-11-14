@@ -208,6 +208,39 @@ leaf's duration from nine hosted runs: the highest max-to-budget ratio is
 OPEN-14 is closed on that measurement; its single earlier record cannot be
 replayed, and a later exit 124 is now a measured overrun, not an unknown.
 
+#### W00 to W06 gap audit
+
+At the owner's request of 2026-11-14, three read-only audits compared the
+W00 to W06 prompts with their Tasks and with `origin/main` at `2c2eecb34`.
+They found 58 items. Each is fixed by a W06 follow-up pull request, recorded
+here because its owning Task is terminal, or still owned by the later wave
+the prompt names. The owner decided the two points the requirements leave
+open: release backports are disallowed, and a subagent started inside the
+developer's own session is not an added model API (`agentic.md` 1.9.0).
+
+| ID | Source | Verdict | Action and evidence |
+| --- | --- | --- | --- |
+| OPEN-11 | TSK-0064 | DELTA (closed here) | SPEC-0204 TSK-0011's legacy Evidence tables are frozen by the validators, so the correction lands here: its two FAIL leaves, document metadata tests and document governance library regressions, passed in hosted run 43555699221 (PR #1007, `deea4dbf2`, 164 and 771 tests), and the `Resolves` of its supply and integrity row (TSK-0011 line 1307) should be `-`. Criterion 17 stays pending for its own runtime and delivery rows |
+| OPEN-04 label | TSK-0059 | NOT_APPLICABLE | TSK-0059 recorded the owner's 2026-11-13 closure as `NOT_REQUIRED`, which is outside the R45-11 verdict set; the allowed value is NOT_APPLICABLE |
+| Q-07 direction | W00, TSK-0062 | DECIDED | Q07_AFTER_W11_ONLY: renumbering runs only after W11, and the final cutover may restart the namespace so the next Spec is SPEC-0001 without reissuing a reserved number; it is not an open choice |
+| H-09 `PR_BASE_SHA` | TSK-0059 | KEEP_VERIFIED | `ci_gate_runner.py` maps `TRUSTED_*` to `PR_*` and refuses a base or head that disagrees with the merge topology; `test_pull_request_identity_is_bound_to_raw_merge_topology`, `test_moved_pull_request_base_is_not_reused_after_the_check` |
+| H-W01-3, GOV-05 | TSK-0060 | KEEP_VERIFIED | The 2026-11-14 read-back shows zero required approvals and `enforce_admins=true`; one person's review is never counted as two approvals |
+| W02-B Stage 98 | TSK-0060, TSK-0057 | KEEP_VERIFIED | `test_any_tracked_stage_98_file_but_its_readme_is_a_violation` (`tests/validation/lifecycle/test_occupancy.py`) enforces README-only; TSK-0060's "no check" sentence is stale |
+| W06-B, RS-03 | W06 | KEEP_VERIFIED | Merge commits only (`main-protection.md`); squash and rebase are off, so no source commit is lost; `test_pr_range_rejects_wrong_merge_parents_and_empty_history` |
+| WP-26 | TSK-0064 | DELTA | Its blocker OPEN-14 is closed; fixture trimming resumes under its owner Task with the measured budgets above |
+| DOCKER-03 | TSK-0064 | REMAINING (W10) | Criteria 104 and 105 of TSK-0052 need supply-chain and artifact work, not CI |
+| OPEN-07, per-obligation classification, adoption states | TSK-0059, TSK-0060, TSK-0064 | REMAINING (W11) | The W11 Task classifies every obligation and re-records the adoption states after W06 |
+| OPEN-08, OPEN-10, O-1 to O-4 | TSK-0059 | REMAINING (W10) | Inside each named approval boundary |
+| WP-12, WP-47, WP-52 | W03 | REMAINING (Q-07) | Renumbering after W11 |
+
+Requirement IDs that no SPEC-0212 Task named, with the evidence read on
+`origin/main`:
+
+| Verdict | IDs and evidence |
+| --- | --- |
+| DELTA_DONE | WP-10, WP-11, R45-10 (TemplateDefinition, #987); WP-17 (README common form, `test_language`); WP-18 (link types, hosted `docs-traceability`); OPEN-Q03 for this workspace (`COMMON-DOC-FORM-1/1.0.0` pin); R45-06 (TSK-0058 Registry changes); R147-05, QA-ALIGN-02, QA-C06, W05-A (TSK-0064 RED and GREEN rows); R147-06, QA-ALIGN-04, W06-A (this Task's cells and aggregate test); R147-20, D-05, QA-07, W05-B (QA-C07, #999, #1002); D-06 (`hosted_jobs`, #1007); QA-03 (stage bindings); QA-04 (H-W02-1); QA-05 (fault-injection rows); QA-09 (aggregate and skipped-test tests); W00-A, W00-B (TSK-0059 trace tables) |
+| KEEP_VERIFIED | R147-04 (`required_subsections`, `test_heading`); R147-10, R45-07 (`docs/99.templates` registry); D-11 (README `frontmatter_policy`); D-13, QA-16 (Grype `security_db`, gitleaks); QA-02 (crosswalk duplicates 0); QA-10 (`quality-standards.md`); QA-11 (`git-workflow.md` section 7, #1014); QA-C10 (`test_script_manifest`); RS-01 (`test_duplicate_yaml_key_is_rejected`); RS-02 (`test_frontmatter_schema_enforces_date_formats`) |
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
