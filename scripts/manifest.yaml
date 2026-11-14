@@ -935,6 +935,7 @@ files:
   consumers:
   - scripts/security/seed-grype-db-cache.sh
   - scripts/security/verify-sample-service-supply-chain.sh
+  - scripts/validation/ci_gate_runner.py
   disposition: retain
   successor: null
   tests:

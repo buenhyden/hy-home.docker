@@ -1039,7 +1039,8 @@
       "timeout_minutes": 5,
       "opaque": true,
       "suite_key": "supply-chain-deterministic-policy",
-      "guarantee": "security"
+      "guarantee": "security",
+      "security_db": "grype"
     },
     {
       "gate_id": "leaf.supply-chain-fixture-policy",
@@ -1062,7 +1063,8 @@
       "timeout_minutes": 5,
       "opaque": true,
       "suite_key": "supply-chain-fixture-policy",
-      "guarantee": "security"
+      "guarantee": "security",
+      "security_db": "grype"
     },
     {
       "gate_id": "leaf.conftest-policy",
