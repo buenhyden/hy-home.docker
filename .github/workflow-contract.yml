@@ -1943,8 +1943,7 @@
           "tests/lib/ops/test_workspace_services.py",
           "tests/lib/ops/test_workspace_connections.py",
           "tests/lib/ops/test_workspace_model_connections.py",
-          "tests/validation/test_workspace_inventory.py",
-          "docs/90.references/data/0096-workspace-inventory/"
+          "tests/validation/test_workspace_inventory.py"
         ],
         "suites": [
           "repository-integrity"
@@ -2510,8 +2509,7 @@
           "tests/lib/ops/test_workspace_services.py",
           "tests/lib/ops/test_workspace_connections.py",
           "tests/lib/ops/test_workspace_model_connections.py",
-          "tests/validation/test_workspace_inventory.py",
-          "docs/90.references/data/0096-workspace-inventory/"
+          "tests/validation/test_workspace_inventory.py"
         ],
         "root_gate_ids": [
           "leaf.repository-integrity-regressions"
