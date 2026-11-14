@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Architecture"
-version: "0.5.3"
+version: "0.5.4"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-15"
 layer: "architecture"
 artifact_id: "AD-0031"
 parent_ids:
@@ -56,13 +56,15 @@ Profiles are not a security isolation boundary and share the same Docker daemon 
 | --- | --- | --- |
 | HOME | Traefik, Keycloak, OAuth2 Proxy, OpenBao | `core`; OpenBao bootstrap readiness required |
 | HOME | Management PostgreSQL/Valkey and exporters | `mng`; service metadata, sessions and management queues |
-| HOME | Ollama, Open WebUI, ComfyUI, Qdrant | `ai`; shared GPU concurrency is bounded |
+| HOME | Ollama and Qdrant | `ai`, `ai-llm`; shared GPU concurrency is bounded |
+| HOME | ComfyUI | `ai-image`; shared GPU concurrency is bounded |
 | HOME | Airflow and n8n, workers and runners | `workflow`; initialization and daemon readiness differ |
 | HOME | Single-node object storage | `storage`; no single-host HA claim |
 | HOME | Metrics, host/GPU signals, availability, logs, alerts, tracing and profiling | narrow observability profiles from POL-0078 |
 | DEV | Single TimescaleDB Community PostgreSQL and Valkey | `dev-data`; project database/roles and ACL prefixes are separately approved |
 | DEV | Mail capture and explicit update/IaC jobs | jobs run only for a named operation |
 | OPTIONAL | Additional application databases and analytics | enable only for a known consumer |
+| LAB | Open WebUI, a standalone LAB with profile `lab-open-webui` under `labs/open-webui/` | outside the root project; not a HOME service |
 | LAB | Standalone projects under `labs/<name>/`: multi-node database, broker and storage variants, analytics and quality tools | outside the root project; rehearsal topology, not physical fault isolation; none promoted |
 | MIGRATE | superseded tooling awaiting acceptance | preserve data and references until migration acceptance |
 
