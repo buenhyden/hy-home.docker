@@ -1007,7 +1007,6 @@ class CiGateRunnerContractTests(unittest.TestCase):
             "tests/lib/ops/test_workspace_inventory.py",
             "tests/lib/ops/test_workspace_services.py",
             "tests/validation/test_workspace_inventory.py",
-            "docs/90.references/data/0096-workspace-inventory/data.yaml",
         )
         modules = {
             "tests.lib.ops.test_workspace_inventory",

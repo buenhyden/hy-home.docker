@@ -23,7 +23,7 @@ Implement the approved local P10 document-contract, CI-route and governance word
 
 - [Spec](../spec.md)
 - [Plan](../plan.md)
-- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
+- Workspace inventory: DATA-0096, retired 2026-11-14; Git history keeps it
 
 ### Inputs and Authority
 

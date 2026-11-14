@@ -615,7 +615,7 @@ files:
   - tests/lib/ops/test_secret_catalog.py
 - path: scripts/lib/ops/_workspace_connection_sources.py
   kind: library
-  authority: docs/90.references/data/0096-workspace-inventory/README.md
+  authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
   consumers:
@@ -626,7 +626,7 @@ files:
   - tests/lib/ops/test_workspace_connections.py
 - path: scripts/lib/ops/_workspace_connections.py
   kind: library
-  authority: docs/90.references/data/0096-workspace-inventory/README.md
+  authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
   consumers:
@@ -637,7 +637,7 @@ files:
   - tests/lib/ops/test_workspace_connections.py
 - path: scripts/lib/ops/_workspace_model_connections.py
   kind: library
-  authority: docs/90.references/data/0096-workspace-inventory/README.md
+  authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
   consumers:
@@ -648,7 +648,7 @@ files:
   - tests/lib/ops/test_workspace_model_connections.py
 - path: scripts/lib/ops/_workspace_render.py
   kind: library
-  authority: docs/90.references/data/0096-workspace-inventory/README.md
+  authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: check-write
   consumers:
@@ -660,11 +660,10 @@ files:
   - tests/validation/test_workspace_inventory.py
 - path: scripts/lib/ops/_workspace_services.py
   kind: library
-  authority: docs/90.references/data/0096-workspace-inventory/README.md
+  authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: none
   consumers:
-  - docs/90.references/data/0096-workspace-inventory/README.md
   - scripts/lib/ops/workspace_inventory.py
   disposition: retain
   successor: null
@@ -928,11 +927,10 @@ files:
   - tests/validation/test_wiki_preparation_contracts.py
 - path: scripts/lib/ops/workspace_inventory.py
   kind: library
-  authority: docs/90.references/data/0096-workspace-inventory/README.md
+  authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: check-write
   consumers:
-  - docs/90.references/data/0096-workspace-inventory/README.md
   - scripts/operations/workspace-inventory.py
   disposition: retain
   successor: null
@@ -1288,11 +1286,11 @@ files:
   - tests/validation/test_validator_entrypoints.py
 - path: scripts/operations/workspace-inventory.py
   kind: operations
-  authority: docs/90.references/data/0096-workspace-inventory/README.md
+  authority: .github/workflow-contract.yml
   lifecycle: active
   mutation: check-write
   consumers:
-  - docs/90.references/data/0096-workspace-inventory/README.md
+  - tests/validation/test_workspace_inventory.py
   disposition: retain
   successor: null
   tests:

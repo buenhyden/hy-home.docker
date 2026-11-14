@@ -1164,12 +1164,38 @@ def _is_terminal_task(node: DocumentNode, registry) -> bool:
     return status in terminal
 
 
-def _links_into_retired_package(link: DocumentLink, reserved: frozenset[int]) -> bool:
+# Package roots whose numbered directories carry a Registry identity space.
+_PACKAGE_ROOTS = {
+    ("docs", "03.specs"): "spec",
+    ("docs", "90.references", "data"): "data",
+    ("docs", "90.references", "research"): "research",
+    ("docs", "90.references", "audits"): "audit",
+}
+
+
+def _reserved_package_numbers(registry) -> dict[str, frozenset[int]]:
+    """Retired numbers per package identity space; nothing without a Registry."""
+
+    if registry is None:
+        return {}
+    return {
+        space: frozenset(registry.identity_spaces[space].reserved_history)
+        for space in _PACKAGE_ROOTS.values()
+        if space in registry.identity_spaces
+    }
+
+
+def _links_into_retired_package(
+    link: DocumentLink, reserved: dict[str, frozenset[int]]
+) -> bool:
     parts = link.target.parts
-    if len(parts) < 3 or parts[:2] != ("docs", "03.specs"):
-        return False
-    match = _RETIRED_PACKAGE_DIRECTORY.fullmatch(parts[2])
-    return match is not None and int(match.group("number")) in reserved
+    for root, space in _PACKAGE_ROOTS.items():
+        if len(parts) > len(root) and parts[: len(root)] == root:
+            match = _RETIRED_PACKAGE_DIRECTORY.fullmatch(parts[len(root)])
+            return match is not None and int(match.group("number")) in reserved.get(
+                space, frozenset()
+            )
+    return False
 
 
 # documentation-protocol.md Link types: the inline-link title carries the
@@ -1328,7 +1354,7 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
     evidence_links = _HistoricalEvidenceLinks(graph, nodes)
     root_registry = None
     registry_loaded = False
-    reserved: frozenset[int] = frozenset()
+    reserved: dict[str, frozenset[int]] = {}
     terminal_tasks: dict[pathlib.PurePosixPath, bool] = {}
     for link in graph.links:
         if link.absolute:
@@ -1358,7 +1384,7 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
                     if not registry_loaded:
                         registry_loaded = True
                         root_registry = _checked_root_registry(graph.repo_root)
-                        reserved = _reserved_spec_numbers(root_registry)
+                        reserved = _reserved_package_numbers(root_registry)
                     if link.source not in terminal_tasks:
                         terminal_tasks[link.source] = _is_terminal_task(
                             source, root_registry
