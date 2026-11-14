@@ -1,6 +1,6 @@
 ---
 title: "v14.7 W06 Git, CI and Release Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -140,7 +140,7 @@ Required counterexamples, each mapped to a test read on 2026-11-14 (the
 | Partial stage | `validation/test_ci_gate_plan.py` `test_automatic_pre_commit_sees_index_content_and_untracked_paths` | existing |
 | Newline and leading-space filenames | `validation/test_agent_governance_ci_routing.py` `test_installed_commit_hook_checks_index_for_awkward_filenames` | #1005 |
 | First push and ref deletion | same file, `test_guard_stdin_refuses_main_deletion_and_allows_new_branch` | #1005 |
-| Latest base move | none; strict branch protection refuses an out-of-date head | server observation |
+| Latest base move | `validation/test_ci_gate_plan.py` `test_moved_pull_request_base_is_not_reused_after_the_check`; GitHub's own detection stays a strict branch protection observation | #1014 |
 | PR head, merge SHA and parents | `lib/gate/test_ci_gate_adapters.py` `test_pr_range_rejects_wrong_merge_parents_and_empty_history`; `validation/test_ci_gate_plan.py` `test_pull_request_identity_is_bound_to_raw_merge_topology` | existing |
 | Skipped, neutral, cancelled, timed out, failed or missing shard | `lib/gate/test_github_workflow_contract.py` `test_aggregate_fails_unless_every_needed_job_succeeded` | shard PR |
 | Skipped or zero tests in a leaf | `lib/gate/test_ci_gate_adapters.py` `test_required_unittest_gate_rejects_skipped_tests`, `test_run_unittest_rejects_zero_tests_and_missing_execution_summary` | existing |
@@ -182,7 +182,7 @@ the aggregate stays closed if a later check-run consumer reads it.
 | WP-45 single-person non-API review | LEGACY-208 | DELTA | GIT-09 here; its "record the operator's signed acceptance" clause is superseded by D-19 |
 | WP-49 Dependabot PR trust | LEGACY-208 | RETIRED_ALIAS | Renovate under POL-0086 is the updater; Dependabot security updates are off |
 | OPEN-13 required check vs GitHub allowed states | W06 prompt | DELTA | Aggregate added here; GitHub still accepts a skipped required check, so the aggregate, not a shard, is required |
-| OPEN-14 runner exit 124 | TSK-0040 | DELTA | See OPEN-14 diagnosis |
+| OPEN-14 runner exit 124 | TSK-0040 | DELTA (closed) | Cause found in hosted CI: leaf budgets set before any hosted measurement; see OPEN-14 diagnosis |
 
 #### OPEN-14 diagnosis
 
@@ -198,6 +198,49 @@ and document-library leaves exceeded their older 600 s and 900 s budgets
 (SPEC-0204 TSK-0011), now 30 and 45 minutes, and the 45-minute library leaf
 no longer fits the 30-minute candidate job, which the shard split fixes.
 
+Hosted CI then showed the same mechanism: `leaf.docs-traceability` ran 159 s,
+231 s and then 300 s, where its 5-minute budget killed it with exit 124
+(Docs budget timeout). The common cause is a budget set before any hosted
+measurement. #1012 raised that budget and added a test that a job limit
+covers its leaf budgets in sequence. Budget measurement then read every
+leaf's duration from nine hosted runs: the highest max-to-budget ratio is
+0.33, so every budget now has at least three times its longest observed run.
+OPEN-14 is closed on that measurement; its single earlier record cannot be
+replayed, and a later exit 124 is now a measured overrun, not an unknown.
+
+#### W00 to W06 gap audit
+
+At the owner's request of 2026-11-14, three read-only audits compared the
+W00 to W06 prompts with their Tasks and with `origin/main` at `2c2eecb34`.
+They found 58 items. Each is fixed by a W06 follow-up pull request, recorded
+here because its owning Task is terminal, or still owned by the later wave
+the prompt names. The owner decided the two points the requirements leave
+open: release backports are disallowed, and a subagent started inside the
+developer's own session is not an added model API (`agentic.md` 1.9.0).
+
+| ID | Source | Verdict | Action and evidence |
+| --- | --- | --- | --- |
+| OPEN-11 | TSK-0064 | DELTA (closed here) | SPEC-0204 TSK-0011's legacy Evidence tables are frozen by the validators, so the correction lands here: its two FAIL leaves, document metadata tests and document governance library regressions, passed in hosted run 43555699221 (PR #1007, `deea4dbf2`, 164 and 771 tests), and the `Resolves` of its supply and integrity row (TSK-0011 line 1307) should be `-`. Criterion 17 stays pending for its own runtime and delivery rows |
+| OPEN-04 label | TSK-0059 | NOT_APPLICABLE | TSK-0059 recorded the owner's 2026-11-13 closure as `NOT_REQUIRED`, which is outside the R45-11 verdict set; the allowed value is NOT_APPLICABLE |
+| Q-07 direction | W00, TSK-0062 | DECIDED | Q07_AFTER_W11_ONLY: renumbering runs only after W11, and the final cutover may restart the namespace so the next Spec is SPEC-0001 without reissuing a reserved number; it is not an open choice |
+| H-09 `PR_BASE_SHA` | TSK-0059 | KEEP_VERIFIED | `ci_gate_runner.py` maps `TRUSTED_*` to `PR_*` and refuses a base or head that disagrees with the merge topology; `test_pull_request_identity_is_bound_to_raw_merge_topology`, `test_moved_pull_request_base_is_not_reused_after_the_check` |
+| H-W01-3, GOV-05 | TSK-0060 | KEEP_VERIFIED | The 2026-11-14 read-back shows zero required approvals and `enforce_admins=true`; one person's review is never counted as two approvals |
+| W02-B Stage 98 | TSK-0060, TSK-0057 | KEEP_VERIFIED | `test_any_tracked_stage_98_file_but_its_readme_is_a_violation` (`tests/validation/lifecycle/test_occupancy.py`) enforces README-only; TSK-0060's "no check" sentence is stale |
+| W06-B, RS-03 | W06 | KEEP_VERIFIED | Merge commits only (`main-protection.md`); squash and rebase are off, so no source commit is lost; `test_pr_range_rejects_wrong_merge_parents_and_empty_history` |
+| WP-26 | TSK-0064 | DELTA | Its blocker OPEN-14 is closed; fixture trimming resumes under its owner Task with the measured budgets above |
+| DOCKER-03 | TSK-0064 | REMAINING (W10) | Criteria 104 and 105 of TSK-0052 need supply-chain and artifact work, not CI |
+| OPEN-07, per-obligation classification, adoption states | TSK-0059, TSK-0060, TSK-0064 | REMAINING (W11) | The W11 Task classifies every obligation and re-records the adoption states after W06 |
+| OPEN-08, OPEN-10, O-1 to O-4 | TSK-0059 | REMAINING (W10) | Inside each named approval boundary |
+| WP-12, WP-47, WP-52 | W03 | REMAINING (Q-07) | Renumbering after W11 |
+
+Requirement IDs that no SPEC-0212 Task named, with the evidence read on
+`origin/main`:
+
+| Verdict | IDs and evidence |
+| --- | --- |
+| DELTA_DONE | WP-10, WP-11, R45-10 (TemplateDefinition, #987); WP-17 (README common form, `test_language`); WP-18 (link types, hosted `docs-traceability`); OPEN-Q03 for this workspace (`COMMON-DOC-FORM-1/1.0.0` pin); R45-06 (TSK-0058 Registry changes); R147-05, QA-ALIGN-02, QA-C06, W05-A (TSK-0064 RED and GREEN rows); R147-06, QA-ALIGN-04, W06-A (this Task's cells and aggregate test); R147-20, D-05, QA-07, W05-B (QA-C07, #999, #1002); D-06 (`hosted_jobs`, #1007); QA-03 (stage bindings); QA-04 (H-W02-1); QA-05 (fault-injection rows); QA-09 (aggregate and skipped-test tests); W00-A, W00-B (TSK-0059 trace tables) |
+| KEEP_VERIFIED | R147-04 (`required_subsections`, `test_heading`); R147-10, R45-07 (`docs/99.templates` registry); D-11 (README `frontmatter_policy`); D-13, QA-16 (Grype `security_db`, gitleaks); QA-02 (crosswalk duplicates 0); QA-10 (`quality-standards.md`); QA-11 (`git-workflow.md` section 7, #1014); QA-C10 (`test_script_manifest`); RS-01 (`test_duplicate_yaml_key_is_rejected`); RS-02 (`test_frontmatter_schema_enforces_date_formats`) |
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -210,10 +253,36 @@ no longer fits the 30-minute candidate job, which the shard split fixes.
 - Required signatures and required reviews stay off by the owner's choice of
   2026-11-14; the read-back records them.
 - No Dependabot configuration is added: Renovate is the single updater.
-- DOC-S90 snapshot freshness has no checker: the generated reference data
-  under `docs/90.references/data/` is dated and regenerated by its own
-  producer. Owner: W11 adoption review, which decides whether a freshness
-  leaf is worth adding.
+- DOC-S90: the owner chose on 2026-11-14 to retire the stale snapshot
+  instead of adding a freshness checker. DATA-0096 was deleted, its number
+  reserved, and link alignment excuses a terminal Task's link into a reserved
+  package (#1018). #1015, a provenance check for the same snapshot, was closed
+  unmerged.
+- Owner decisions of 2026-11-14: backports are disallowed, so release
+  publication always refuses a version below a published one; an in-session
+  subagent is not an added model-inference API (SUP-10, `agentic.md` 1.9.0);
+  Guide, Policy and Runbook documents carry `next_review_at` on a 180-day
+  cycle; the Architecture Description `contract` lifecycle ends at
+  `approved` and the `review` alias is removed (D-02).
+- The independent review of the guards branch (#1020) returned PASS with
+  five LOW findings. LOW 1 to 3 are fixed there: the cutover check needs a
+  named baseline and object spaces, and active-stage occupancy checks a
+  cancellation `Source:`. Two stay open with an owner: a registered status
+  normalization applies without generation-source evidence, which no
+  document on `main` can reach (W11 adoption review); the prepared allocator
+  would issue `inc-0001` instead of `inc-YYYY-NNNN` (Q-07, before cutover).
+- #1011 and #1013, earlier drafts of this record, were closed unmerged; this
+  record replaces them.
+- Not done, with reason: `leaf.project-registration` is not added because no
+  tracked registration file exists until a project is approved, and
+  `test_project_registration` inside the repository-integrity leaf covers
+  the behavior. A PR-body check is not added because parsing a PR body would
+  open an injection surface; the PR-before cell stays OBSERVE through the
+  local route in `git-workflow.md` §7.
+- The owner decided on 2026-11-14 that full test runs are avoided until W11
+  completes: local runs cover the test classes and checks a change touches,
+  and the hosted `changed` profile covers the candidate. A whole-corpus or
+  full-suite run is no completion evidence before W11.
 - Hosting `leaf.docs-traceability` exposed a defect already on `main`: the
   2026-11-13 service README common form linked individual Stage 05 runbooks
   and a Stage 99 template from outside `docs/`, which the
@@ -241,11 +310,23 @@ no longer fits the 30-minute candidate job, which the shard split fixes.
 | Fixture git RED | 121 | W126 | red-green-proof | `FixtureGitTests.test_init_git_names_main_from_a_detached_clone` before the fix | FAIL | `RuntimeError: fatal: cannot rename the current branch while not on any`, the hosted error | required | - |
 | Fixture git GREEN | 121 | W126 | red-green-proof | `_support.init_git` uses `git checkout -B main`; `metadata.test_reference` at `deea4dbf2` | PASS | module OK; the failing test unchanged | required | Fixture git RED |
 | Shard split hosted final | 121 | W126 | remote-candidate | PR #1007 at `deea4dbf2`, run 43555699221 | PASS | `candidate-core` 16 min 10 s; `candidate-documents` 15 min 1 s with all four leaves PASS and 956 tests run (21 lifecycle, 164 metadata, 771 library), equal to the local counts; `candidate-quality` success; merged as `b38664681` | required | Shard split hosted first run, Shard split hosted second run |
+| Docs budget timeout | 121 | W126 | remote-candidate | PR #1011 at `0bc487b04`, run 43563856321 | FAIL | `leaf.docs-traceability` ERROR exit 124 `TIMEOUT` at 300 s against its 5-minute budget; its earlier hosted runs took 159 s and 231 s; the aggregate failed closed | required | - |
+| Docs budget hosted | 121 | W126 | remote-candidate | PR #1011 at `f76079d6c`, run 43565612839, after #1012 (merge `9e2fcd3aa`) set the leaf to 15 minutes and the job to 100 | PASS | `leaf.docs-traceability` PASS in 229 s; `candidate-quality` success | required | Docs budget timeout |
+| Budget RED | 121 | W126 | red-green-proof | `test_hosted_job_timeout_covers_its_leaf_budgets_in_sequence` with the leaf at 15 minutes and the job at 90 | FAIL | `100 not less than or equal to 90` | required | - |
+| Budget GREEN | 121 | W126 | red-green-proof | Same test with the job at 100; `check-github-workflow-contract.py`; gate contract and plan suites | PASS | 163 tests OK; contract PASS | required | Budget RED |
+| Budget measurement | 121 | W126 | timing-baseline | Every leaf's `duration_ms` in the evidence artifacts of nine hosted runs (43545382947 to 43567181806), against `.github/workflow-contract.yml` budgets after #1012 | PASS | Highest max-to-budget ratio 0.33 (`docs-traceability` 300 s of 15 min, the 300 s run killed at the old 5-minute budget); `repository-integrity-regressions` 237 s of 20 min, library regressions 489 s of 45 min, document metadata tests 120 s of 30 min; documents job wall time 4 min 9 s to 15 min 1 s of 100 min | required | - |
+| Base move test | 121 | W126 | remote-candidate | PR #1014: a real repository with two merge commits for one candidate; the runner refuses the moved base with the old merge, the new merge on the old checkout and a stale merge with the new `PR_BASE_SHA`; old evidence reopened under the new `base_sha` is refused | PASS | The code already refused it; mutation proof (base dropped from the evidence identity, or the parent-0 and `PR_BASE_SHA` checks removed) fails the test; 235 gate tests OK; the test ran in hosted `candidate-core`; merged as `2c2eecb34` | required | - |
+| Rule owners | 121 | W126 | remote-candidate | PR #1016: every leaf in `.github/workflow-contract.yml` names a `rule_owner` heading, checked by `validate_rule_owners`; lifecycle leaf passes `--readiness`; counterexample tests for an unauthorized protected action, `merge_group`, `workflow_dispatch` and a deleted release ref | PASS | crosswalk `unowned=0`; `candidate-quality` success; merged as `379aef8b7` | required | - |
+| SPEC-0253 hosted CI | 121 | W126 | remote-candidate | PR #1017: SPEC-0253 TSK-0001 evidence E21 resolves E20 | PASS | `candidate-quality` success; merged as `8353a6cca` | required | - |
+| DATA-0096 retirement | 121 | W126 | remote-candidate | PR #1018: snapshot deleted, `data` number 96 reserved, link alignment excuses a terminal Task link into a reserved package; `test_a_terminal_task_link_into_a_reserved_data_package_is_excused` | PASS | `candidate-quality` success; merged as `95f9a9b46` | required | - |
+| Single SemVer comparator | 121 | W126 | remote-candidate | PR #1019: one comparator in `scripts/lib/document_governance/semver.py` with `version-unchanged`, `version-downgrade` and `version-malformed`; product version files route to the metadata check; `spec.md` 1.62.1 states release publication always refuses a version below a published one; `documentation-protocol.md` 4.0.0 | PASS | metadata check-changed 0 violations, 226 tests OK locally; `candidate-core` 10 min 17 s, `candidate-documents` 29 min 17 s, `candidate-quality` success at `9e1b38f99`; merged as `4e413e42f` | required | - |
+| Document governance guards | 121 | W126 | remote-candidate | PR #1020: Release role rejected by shape or token; registered role table checks; `next_review_at` required on Guide, Policy and Runbook with `review-interval-exceeded` at 180 days; cancellation `Source:` limited to user, operator or native-provider, also in active-stage occupancy; Architecture Description and `contract` lifecycles end at `approved`, 27 ADs migrated by a registered normalization; Registry `identity_namespaces` with baseline-2 prepared for Q-07; `documentation-protocol.md` 5.0.0, `sdlc.md` 1.10.1; each new rule RED first; independent review PASS with LOW 1 to 3 fixed | PASS | targeted tests only, by the owner's no-full-test decision; metadata check-changed 268 selected, 0 violations; `candidate-core` 11 min 48 s, `candidate-documents` 28 min 42 s, `candidate-quality` success at `4a252e47c`; merged as `bb0c4a04c` | required | - |
 
 ### Resolution Links
 
 Fixture git RED is resolved by Fixture git GREEN, and the Shard split hosted
-first and second runs by the Shard split hosted final run.
+first and second runs by the Shard split hosted final run. Budget RED is
+resolved by Budget GREEN, and the Docs budget timeout by Docs budget hosted.
 
 ## Acceptance Decision
 
@@ -253,18 +334,17 @@ first and second runs by the Shard split hosted final run.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 121 | pending | Remote read-back, Remote settings change, Hooks and grammar, Document version downgrade, Counterexample map, Governance record, Link routes, Fixture git GREEN, Shard split hosted final | All W06 units merged; awaiting the owner's acceptance | SPEC-0212 TSK-0065 |
+| 121 | pending | Remote read-back, Remote settings change, Hooks and grammar, Document version downgrade, Counterexample map, Governance record, Link routes, Fixture git GREEN, Shard split hosted final, Budget GREEN, Docs budget hosted, Budget measurement, Base move test, Rule owners, SPEC-0253 hosted CI, DATA-0096 retirement, Single SemVer comparator, Document governance guards | All W06 units merged; awaiting the owner's acceptance | SPEC-0212 TSK-0065 |
 
 ### Remaining Conditions
 
-Every W06 unit is merged (#1005 to #1009); this record lands through its own
-pull request, then the owner's acceptance. State per axis: approval as the
-owner gave it on 2026-11-14; acceptance pending; merge as each remote
-candidate row records; operation: none, since W06 changed no runtime. Limits:
-OPEN-14 stays a likely misattribution because the original evidence is gone;
-DOC-S90 freshness has no checker (W11); the latest base move is a server
-observation, not a test; the documents shard measured 15 min 1 s against its
-90-minute budget on one run only. Q-07 runs only after W11.
+Every W06 unit is merged as its remote candidate row records; this record
+lands through its own pull request, then the owner's acceptance. State per
+axis: approval as the owner gave it on 2026-11-14; acceptance pending; merge
+as each remote candidate row records; operation: none, since W06 changed no
+runtime. Limits: DOCKER-03 stays with W10, OPEN-07 with W11 and OPEN-08 and
+OPEN-10 with W10, as the gap audit records; SPEC-0253 TSK-0001 criteria 1 to
+3 need the owner's acceptance; Q-07 runs only after W11.
 
 ## Handoff
 
