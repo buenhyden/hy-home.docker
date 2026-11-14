@@ -468,7 +468,16 @@ evidence가 필요합니다. `run-agent-precommit-all-files.sh`는 fixer 훅을 
 `--mode pr-merge`는 GitHub Actions의 인증된 PR 병합 후보를 scratch에 체크아웃하는
 changed-ref 검증입니다. 두 경로는 같은 pin에서 fixer를 제외하고 등록된 check 모드를
 사용하는 `mutation: none`이며 source bytes를 보존합니다. hook 설치나 배포는 수행하지
-않습니다.
+않습니다. `hooks/install-pre-push-guard.sh --check-hooks`는 읽기 전용으로
+pre-commit, commit-msg, pre-push hook 설치 상태를 `PASS`/`MISSING`으로 보고하며,
+미설치가 하나라도 있으면 exit `3`을 반환해 통과(exit `0`)와 구분하고, exit `2`는
+허용되지 않은 인자입니다. pre-commit과 commit-msg는 해당 `--hook-type`으로 만든
+pre-commit shim만 설치로 인정하며, native wrapper는 pre-push에만 인정합니다.
+`.gitmessage`는 `git config commit.template .gitmessage`로 직접 연결해야 합니다.
+`.cz.toml`의 `allowed_prefixes`(Merge branch / Merge pull request /
+Merge remote-tracking branch)는 실제 merge 커밋(부모 2개 이상) 전용 예외입니다.
+로컬 commit-msg hook은 부모를 볼 수 없으므로, 부모가 1개인 커밋이 이 접두사를 쓰면
+CI `check-commit-range`가 거부합니다.
 
 전환(transition) 행에는 non-retain disposition, 구분되는 tracked successor,
 비어 있지 않은 `removal_condition`이 모두 있어야 합니다. active 행은

@@ -983,10 +983,10 @@ def _hash_opsflow_input(root_fd: int, components: tuple[str, ...]) -> bytes:
 
 def _load_commit_contract(
     root: pathlib.Path,
-) -> tuple[re.Pattern[str], int, frozenset[str]]:
+) -> tuple[re.Pattern[str], int, frozenset[str], tuple[str, ...]]:
     root_fd = _owned_root_descriptor(root)
     descriptor = -1
-    result: tuple[re.Pattern[str], int, frozenset[str]] | None = None
+    result: tuple[re.Pattern[str], int, frozenset[str], tuple[str, ...]] | None = None
     failed = False
     try:
         try:
@@ -1006,6 +1006,11 @@ def _load_commit_contract(
             customize = commitizen["customize"]
             message_length_limit = commitizen["message_length_limit"]
             change_type_map = customize["change_type_map"]
+            allowed_prefixes = commitizen["allowed_prefixes"]
+            if not isinstance(allowed_prefixes, list) or any(
+                not isinstance(prefix, str) or not prefix for prefix in allowed_prefixes
+            ):
+                raise ValueError
             if (
                 commitizen["name"] != "cz_customize"
                 or type(message_length_limit) is not int
@@ -1033,6 +1038,7 @@ def _load_commit_contract(
                 re.compile(customize["schema_pattern"]),
                 message_length_limit,
                 change_types,
+                tuple(allowed_prefixes),
             )
         except (
             AttributeError,
@@ -1060,8 +1066,33 @@ def _load_commit_contract(
 
 
 def _check_commit_range(root: pathlib.Path, environ: Mapping[str, str]) -> int:
-    _, message_length_limit, _ = _load_commit_contract(root)
+    _, message_length_limit, _, merge_prefixes = _load_commit_contract(root)
     base, head, _ = _authenticated_pull_request_range(root, environ)
+    # commitizen exempts any message that starts with an allowed prefix before
+    # the schema and length checks; only a real merge (2+ parents) may use it.
+    listing = _run_child(
+        ("git", "log", "--no-merges", "--format=%B%x00", f"{base}..{head}"),
+        root=root,
+        environ=environ,
+        capture_output=True,
+    )
+    if listing.returncode != 0:
+        raise AdapterError(
+            "ci-gate-adapter-pull-request-range",
+            "the pull request history could not be verified",
+        )
+    # commitizen tests %s (Git joins the first paragraph's lines) plus %b after
+    # strip(); %B lstripped and whitespace-collapsed are supersets of that view.
+    if any(
+        text.startswith(merge_prefixes)
+        for message in listing.stdout.decode("utf-8", errors="replace").split("\0")
+        for text in (message.lstrip(), re.sub(r"\s+", " ", message).strip())
+    ):
+        sys.stderr.write(
+            "FAIL: a single-parent commit uses a merge-message prefix; "
+            "the prefix is reserved for real merge commits\n"
+        )
+        return 1
     result = _run_child(
         (
             "cz",

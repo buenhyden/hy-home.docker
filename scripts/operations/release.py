@@ -17,6 +17,7 @@ import sys
 import tempfile
 from collections.abc import Callable
 from datetime import date
+from functools import cmp_to_key
 from pathlib import Path
 
 SEMVER = re.compile(
@@ -166,12 +167,15 @@ def _ref_sha(run: Runner, repository: str, ref: str) -> str:
     return sha
 
 
-def _new_version(run: Runner, repository: str, tag: str) -> None:
+def _new_version(
+    run: Runner, repository: str, tag: str, *, allow_backport: bool = False
+) -> None:
     pages = _json(
         run, ["gh", "api", f"repos/{repository}/releases", "--paginate", "--slurp"]
     )
     if not isinstance(pages, list) or any(not isinstance(page, list) for page in pages):
         raise ReleaseError("invalid GitHub release listing")
+    published = []
     for page in pages:
         for existing in page:
             if not isinstance(existing, dict) or not isinstance(
@@ -187,6 +191,7 @@ def _new_version(run: Runner, repository: str, tag: str) -> None:
                     "a release of the same precedence exists; build metadata "
                     "cannot reissue a version"
                 )
+            published.append(existing["tag_name"])
     tags = run(
         [
             "git",
@@ -205,6 +210,18 @@ def _new_version(run: Runner, repository: str, tag: str) -> None:
                 "a tag of the same precedence exists; build metadata "
                 "cannot reissue a version"
             )
+        published.append(name)
+    versions = [n.removeprefix("v") for n in published]
+    versions = [n for n in versions if SEMVER.fullmatch(n) is not None]
+    if (
+        versions
+        and not allow_backport
+        and compare_semver(max(versions, key=cmp_to_key(compare_semver)), tag[1:]) > 0
+    ):
+        raise ReleaseError(
+            "version is lower than the highest published release or tag; "
+            "a backport needs a reviewed workflow input"
+        )
 
 
 def _assets(directory: Path, changelog: str, tag: str, sha: str) -> list[Path]:
@@ -281,7 +298,12 @@ def _verify_release(
 
 
 def publish(
-    version: str, sha: str, repository: str, *, run: Runner = run_command
+    version: str,
+    sha: str,
+    repository: str,
+    *,
+    run: Runner = run_command,
+    allow_backport: bool = False,
 ) -> dict[str, str | bool]:
     tag = release_tag(version)
     if re.fullmatch(r"[0-9a-f]{40}", sha) is None:
@@ -294,7 +316,7 @@ def publish(
     run(["git", "merge-base", "--is-ancestor", sha, remote_main])
     changelog = run(["git", "show", f"{sha}:CHANGELOG.md"]) + "\n"
     notes = release_notes(changelog, version)
-    _new_version(run, repository, tag)
+    _new_version(run, repository, tag, allow_backport=allow_backport)
     _json(
         run,
         [
@@ -381,13 +403,23 @@ def main() -> int:
     production.add_argument("--version", required=True)
     production.add_argument("--sha", required=True)
     production.add_argument("--repository", required=True)
+    production.add_argument(
+        "--allow-backport",
+        action="store_true",
+        help="permit a version lower than the highest published release or tag",
+    )
     arguments = parser.parse_args()
     try:
         if arguments.command == "validate":
             validate_changelog(arguments.changelog.read_text(encoding="utf-8"))
             print("PASS: main changelog format")
         else:
-            receipt = publish(arguments.version, arguments.sha, arguments.repository)
+            receipt = publish(
+                arguments.version,
+                arguments.sha,
+                arguments.repository,
+                allow_backport=arguments.allow_backport,
+            )
             print(json.dumps(receipt))
     except (ReleaseError, OSError, UnicodeError) as error:
         print(f"FAIL: {error}", file=sys.stderr)
