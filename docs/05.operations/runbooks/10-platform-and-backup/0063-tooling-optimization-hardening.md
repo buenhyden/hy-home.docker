@@ -1,15 +1,16 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Runbook"
-version: "1.3.2"
+version: "1.3.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "RUN-0063"
 parent_ids:
 - "GDE-0063"
 created: "2026-05-17"
+next_review_at: "2027-05-13"
 ---
 
 # Platform Operations and Quality Optimization Hardening Runbook

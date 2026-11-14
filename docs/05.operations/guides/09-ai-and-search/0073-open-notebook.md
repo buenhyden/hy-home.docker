@@ -1,10 +1,10 @@
 ---
 title: "Open Notebook Usage Guide"
-version: "1.1.6"
+version: "1.1.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0073"
 parent_ids:
@@ -13,6 +13,7 @@ implementation_services:
   infra/08-ai/open-notebook/docker-compose.yml:
   - open_notebook
 created: "2026-05-10"
+next_review_at: "2027-05-13"
 ---
 
 # Open Notebook Usage Guide

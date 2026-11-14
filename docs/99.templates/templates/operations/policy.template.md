@@ -8,6 +8,7 @@ updated: "{{UPDATED}}"
 layer: "operations"
 artifact_id: "{{ARTIFACT_ID}}"
 created: "{{CREATED}}"
+next_review_at: "{{NEXT_REVIEW_AT}}"
 ---
 
 <!-- Author prompt: Replace every {{UPPER_SNAKE_CASE}} value and remove this comment before publishing. -->

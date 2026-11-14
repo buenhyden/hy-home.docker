@@ -1,15 +1,16 @@
 ---
 title: "Locust Recovery Runbook"
-version: "1.3.3"
+version: "1.3.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "RUN-0062"
 parent_ids:
 - "GDE-0062"
 created: "2026-05-17"
+next_review_at: "2027-05-13"
 ---
 
 # Locust Recovery Runbook

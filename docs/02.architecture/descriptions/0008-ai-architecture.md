@@ -1,10 +1,10 @@
 ---
 title: "AI Infrastructure Architecture Description"
-version: "1.2.1"
+version: "1.2.2"
 type: "sdlc/architecture-description"
-status: "active"
+status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "architecture"
 artifact_id: "AD-0008"
 parent_ids:

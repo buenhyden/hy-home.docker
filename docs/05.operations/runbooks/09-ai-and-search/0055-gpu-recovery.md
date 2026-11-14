@@ -1,13 +1,14 @@
 ---
 title: "AI GPU Recovery Runbook"
-version: "1.0.5"
+version: "1.0.6"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "RUN-0055"
 created: "2026-03-25"
+next_review_at: "2027-05-13"
 ---
 
 # AI GPU Recovery Runbook

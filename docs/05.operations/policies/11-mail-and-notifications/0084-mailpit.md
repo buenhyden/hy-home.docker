@@ -1,15 +1,16 @@
 ---
 title: "Mailpit Policy"
-version: "0.3.1"
+version: "0.3.2"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "POL-0084"
 parent_ids:
 - "AD-0010"
 created: "2026-09-19"
+next_review_at: "2027-05-13"
 ---
 
 # Mailpit Policy

@@ -909,6 +909,19 @@ def acceptance_criterion_numbers(spec_body: str, heading: str) -> tuple[int, ...
     )
 
 
+# sdlc.md says an approval without its source is invalid, and
+# approval-boundaries.md#authorization-source-and-records names the channels
+# that supply one: the user, an operator through a trusted channel, or a
+# native provider permission origin. An agent, hook, schema, CLI argument or
+# the Task itself is none of them, because a record cannot authorize itself.
+APPROVAL_SOURCES = frozenset({"user", "operator", "native-provider"})
+_APPROVAL_SOURCE_MESSAGE = (
+    "cancellation {} section must state `Source:` as user, operator or "
+    "native-provider; a record cannot name itself or an agent as its source"
+)
+_SOURCE_LINE = re.compile(r"^[-*]?\s*Source:\s*([A-Za-z][A-Za-z-]*)", re.I)
+
+
 def task_cancellation_findings(
     task_id: str,
     cancellation: object,
@@ -917,6 +930,7 @@ def task_cancellation_findings(
     *,
     generation: int = 4,
     references: frozenset[str] = frozenset(),
+    approval_sources: Mapping[str, str | None] | None = None,
 ) -> tuple[str, ...]:
     """Judge cancellation without changing metadata or exempting completion."""
     if not isinstance(cancellation, Mapping):
@@ -935,6 +949,12 @@ def task_cancellation_findings(
             return (
                 "cancellation authorization_ref must resolve to one unique same-Task heading",
             )
+        if (
+            approval_sources is not None
+            and approval_sources.get(str(cancellation["authorization_ref"]))
+            not in APPROVAL_SOURCES
+        ):
+            return (_APPROVAL_SOURCE_MESSAGE.format("authorization_ref"),)
         entries = cancellation.get("criteria_disposition")
         if not isinstance(entries, (list, tuple)):
             return ("cancellation criteria_disposition must be a list",)
@@ -961,6 +981,11 @@ def task_cancellation_findings(
                     return (
                         "cancellation withdrawal_ref must resolve to one unique same-Task heading",
                     )
+                if (
+                    approval_sources is not None
+                    and approval_sources.get(reference) not in APPROVAL_SOURCES
+                ):
+                    return (_APPROVAL_SOURCE_MESSAGE.format("withdrawal_ref"),)
                 continue
             target = entry["successor"]
             if (
@@ -1036,6 +1061,7 @@ def _v5_cancellation_findings(
         statuses,
         generation=5,
         references=_document_anchor_references(document.source_text),
+        approval_sources=_document_anchor_sources(document.source_text),
     )
     if findings:
         return findings
@@ -1046,6 +1072,35 @@ def _v5_cancellation_findings(
     if disposed != set(criteria):
         return ("cancellation criteria disposition must match assigned criteria",)
     return ()
+
+
+def _document_anchor_sources(source_text: str) -> Mapping[str, str | None]:
+    """Map each unique heading anchor to the source its section states.
+
+    The first `Source:` line of the section names it; a section without one
+    maps to None, and a non-unique heading stays unresolved elsewhere.
+    """
+
+    lines = _completion_visible_lines(source_text)
+    found: list[tuple[str, int, int]] = []
+    for index, line in enumerate(lines):
+        match = re.fullmatch(r"(#{1,6}) +(.+?) *#*", line)
+        if match is not None:
+            found.append(("#" + _heading_anchor(match.group(2)), len(match[1]), index))
+    sources: dict[str, str | None] = {}
+    for anchor, level, index in found:
+        if [name for name, _, _ in found].count(anchor) != 1:
+            continue
+        end = _section_end(lines, index + 1, level)
+        sources[anchor] = next(
+            (
+                found_source.group(1).lower()
+                for line in lines[index + 1 : end]
+                if (found_source := _SOURCE_LINE.match(line.strip())) is not None
+            ),
+            None,
+        )
+    return sources
 
 
 def _document_anchor_references(source_text: str) -> frozenset[str]:
@@ -2685,6 +2740,7 @@ def _load_package(
                     task_statuses,
                     generation=generation,
                     references=_document_anchor_references(task.source_text),
+                    approval_sources=_document_anchor_sources(task.source_text),
                 )
                 if findings:
                     raise SpecPackageError(f"{task.path}: {findings[0]}")
@@ -3351,6 +3407,7 @@ def load_spec_packages(
                         task_statuses,
                         generation=5,
                         references=_document_anchor_references(task.source_text),
+                        approval_sources=_document_anchor_sources(task.source_text),
                     )
                     if findings:
                         raise SpecPackageError(f"{task.path}: {findings[0]}")

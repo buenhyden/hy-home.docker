@@ -1,10 +1,10 @@
 ---
 title: "Gatus Guide"
-version: "0.4.1"
+version: "0.4.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0087"
 parent_ids:
@@ -13,6 +13,7 @@ implementation_services:
   infra/06-observability/docker-compose.yml:
   - gatus
 created: "2026-09-19"
+next_review_at: "2027-05-13"
 ---
 
 # Gatus Guide

@@ -1,15 +1,16 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Usage Guide"
-version: "1.2.2"
+version: "1.2.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0063"
 parent_ids:
 - "POL-0063"
 created: "2026-05-17"
+next_review_at: "2027-05-13"
 ---
 
 # Platform Operations and Quality Optimization Hardening Usage Guide

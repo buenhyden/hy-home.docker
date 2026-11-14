@@ -1,15 +1,16 @@
 ---
 title: "Valkey Cluster Operations Policy"
-version: "2.0.3"
+version: "2.0.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "POL-0022"
 parent_ids:
 - "AD-0004"
 created: "2026-05-17"
+next_review_at: "2027-05-13"
 ---
 
 # Valkey Cluster Operations Policy

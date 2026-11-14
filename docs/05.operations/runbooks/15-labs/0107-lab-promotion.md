@@ -1,15 +1,16 @@
 ---
 title: "LAB Promotion Runbook"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "RUN-0107"
 parent_ids:
 - "POL-0107"
 created: "2026-11-05"
+next_review_at: "2027-05-13"
 ---
 
 # LAB Promotion Runbook

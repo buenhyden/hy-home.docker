@@ -1,13 +1,14 @@
 ---
 title: "Release Management Runbook"
-version: "1.4.2"
+version: "1.4.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "RUN-0009"
 created: "2026-06-04"
+next_review_at: "2027-05-13"
 ---
 
 # Release Management Runbook

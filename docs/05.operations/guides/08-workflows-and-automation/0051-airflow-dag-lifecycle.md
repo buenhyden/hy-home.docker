@@ -1,15 +1,16 @@
 ---
 title: "Airflow Dag Basics Operations"
-version: "1.0.6"
+version: "1.0.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0051"
 parent_ids:
 - "POL-0052"
 created: "2026-03-25"
+next_review_at: "2027-05-13"
 ---
 
 # Airflow Dag Basics Operations

@@ -1,13 +1,14 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "2.1.4"
+version: "2.1.5"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "POL-0006"
 created: "2026-06-04"
+next_review_at: "2027-05-13"
 ---
 # Infrastructure Optimization Governance Policy
 

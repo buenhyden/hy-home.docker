@@ -52,7 +52,7 @@ def _document_text(
     prefix = "AD" if profile_id == "architecture-description" else "ADR"
     artifact_id = artifact_id or f"{prefix}-{number}"
     status = status or (
-        "active" if profile_id == "architecture-description" else "accepted"
+        "approved" if profile_id == "architecture-description" else "accepted"
     )
     if parent_ids is None:
         parent_ids = (

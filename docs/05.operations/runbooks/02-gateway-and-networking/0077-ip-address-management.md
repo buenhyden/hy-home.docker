@@ -1,15 +1,16 @@
 ---
 title: "Compose Network Membership Runbook"
-version: "1.1.4"
+version: "1.1.5"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "RUN-0077"
 parent_ids:
 - "GDE-0077"
 created: "2026-05-10"
+next_review_at: "2027-05-13"
 ---
 
 # Compose Network Membership Runbook

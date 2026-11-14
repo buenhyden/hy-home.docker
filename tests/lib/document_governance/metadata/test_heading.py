@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import datetime
 import json
 import os
 import pathlib
+import re
 import subprocess
 import sys
 import tempfile
@@ -255,17 +257,19 @@ class CurrentBodyContractTests(unittest.TestCase):
         )
 
     def test_policy_optional_and_additional_fields_follow_the_registry(self) -> None:
+        today = datetime.datetime.now(datetime.UTC).date()
         base = {
             "title": "Common Optimizations Template Exceptions",
             "version": "1.0.0",
             "type": "operation/policy",
             "status": "active",
             "owner": "@buenhyden",
-            "updated": "2026-08-01",
+            "updated": today.isoformat(),
             "layer": "operations",
             "artifact_id": "POL-0001",
             "created": "2026-08-01",
         }
+        review = (today + datetime.timedelta(days=30)).isoformat()
 
         def findings(extra: dict[str, object]) -> list[object]:
             record = metadata.Record(
@@ -273,7 +277,7 @@ class CurrentBodyContractTests(unittest.TestCase):
                     "docs/05.operations/policies/"
                     "0001-common-optimizations-template-exceptions.md"
                 ),
-                {**base, **extra},
+                {**base, **extra, "next_review_at": review},
                 "policy",
                 frontmatter_present=True,
             )
@@ -769,12 +773,12 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
 
     def test_template_rejects_unknown_placeholder_without_key_mapping(self) -> None:
         self.assertNotIn(
-            "next_review_at", self.profiles["common"]["template_placeholders"]
+            "resolved_at", self.profiles["common"]["template_placeholders"]
         )
         self.assertIn(
             "invalid-template-placeholder",
             self.template_codes(
-                {**self.template_values, "next_review_at": "{{UNREGISTERED_VALUE}}"}
+                {**self.template_values, "resolved_at": "{{UNREGISTERED_VALUE}}"}
             ),
         )
 
@@ -1445,12 +1449,15 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             source.write_text(
                 "services:\n  exampledb:\n    image: vendor/exampledb:4.2.3\n"
             )
+            today = datetime.datetime.now(datetime.UTC).date()
+            review = today + datetime.timedelta(days=30)
             frontmatter = (
                 '---\ntitle: "ExampleDB"\nversion: "1.0.0"\n'
                 'type: "operation/policy"\nstatus: "active"\n'
-                'owner: "@fixture"\nupdated: "2026-09-19"\n'
+                f'owner: "@fixture"\nupdated: "{today}"\n'
                 'layer: "operations"\nartifact_id: "POL-9999"\n'
-                'created: "2026-09-19"\n---\n\n# ExampleDB\n\n'
+                f'created: "2026-09-19"\nnext_review_at: "{review}"\n'
+                "---\n\n# ExampleDB\n\n"
             )
             pointer = "[Runtime](/infra/04-data/exampledb/docker-compose.yml)\n"
             body_prefix = (
@@ -1483,7 +1490,7 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             )
             readme_metadata = readme_metadata.replace(
                 'layer: "operations"\nartifact_id: "POL-9999"\n', ""
-            )
+            ).replace(f'next_review_at: "{review}"\n', "")
             runtime_readme.write_text(readme_metadata + pointer + "ExampleDB 3.9.8\n")
             unrelated = runtime_readme.parent / "private-config.md"
             unrelated.write_text("---\ninvalid: [\n")
@@ -1500,6 +1507,27 @@ class RuntimeVersionBodyTests(unittest.TestCase):
             runtime_readme.write_text(readme_metadata + pointer + "Connection setup.\n")
             result = run_checker(root, "check-active", profiles=profiles)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+
+    def test_check_active_selects_an_approved_document(self) -> None:
+        """An Architecture Description is `approved`, not `active`; moving it
+        to the authority axis must not drop it from the active-document check."""
+
+        counts = {}
+        for status in ("draft", "approved"):
+            with tempfile.TemporaryDirectory() as directory:
+                root = pathlib.Path(directory)
+                profiles = copy_registry_contract_fixture(root)
+                document = root / "docs/01.requirements/0001-fixture.md"
+                document.parent.mkdir(parents=True)
+                document.write_text(
+                    f'---\ntitle: "Fixture"\nstatus: "{status}"\n---\n\n# Fixture\n'
+                )
+                self.assertEqual(0, git(root, "add", ".").returncode)
+                result = run_checker(root, "check-active", profiles=profiles)
+                match = re.search(r"selected=(\d+)", result.stdout)
+                self.assertIsNotNone(match, result.stdout + result.stderr)
+                counts[status] = int(match.group(1))
+        self.assertEqual(counts["draft"] + 1, counts["approved"])
 
     def test_active_general_readmes_and_architecture_decisions_are_checked(
         self,
@@ -2274,3 +2302,86 @@ class SubsectionContractTests(unittest.TestCase):
     def test_fenced_subheading_does_not_count(self) -> None:
         fenced = self.VALID.replace("### Second\n\nTwo.", "```text\n### Second\n```")
         self.assertIn("body-subheading-missing", self.codes(fenced))
+
+
+class RegisteredTableContractTests(unittest.TestCase):
+    """W03-A: a role whose template declares a table has it enforced.
+
+    Only `spec_packages.py` and the README Documents check used to read a
+    table contract, so a postmortem action table or a glossary table of the
+    wrong width, order or value passed.
+    """
+
+    TARGETS: ClassVar[dict[str, str]] = {
+        "postmortem": "docs/05.operations/incidents/2026/inc-0002-airflow-keycloak-native-auth/postmortem.md",
+        "governance-vocabulary": ".agents/knowledge/glossary.md",
+    }
+    HEADERS: ClassVar[dict[str, str]] = {
+        "postmortem": "| Action | Owner | Tracking ID | Verification |",
+        "governance-vocabulary": "| Term | Definition | Not to Confuse | Policy Owner |",
+    }
+    ROW = "| @buenhyden | RUN-0050 | "
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.profiles = current_profiles()
+
+    def _body(self, profile_id: str) -> str:
+        text = (ROOT / self.TARGETS[profile_id]).read_text(encoding="utf-8")
+        return text.split("\n---\n", 1)[1]
+
+    def _table_codes(self, profile_id: str, body: str) -> list[str]:
+        record = metadata.Record(
+            pathlib.Path(self.TARGETS[profile_id]),
+            {"artifact_type": profile_id, "status": "active"},
+            profile_id,
+            frontmatter_present=True,
+        )
+        return [
+            item.code
+            for item in heading_module.validate_body_contract(
+                record, body, self.profiles, False
+            )
+            if item.code.startswith("table-")
+        ]
+
+    def _mutate(self, profile_id: str, old: str, new: str) -> str:
+        body = self._body(profile_id)
+        self.assertIn(old, body)
+        return body.replace(old, new, 1)
+
+    def test_the_current_tables_pass(self) -> None:
+        for profile_id in self.TARGETS:
+            with self.subTest(profile=profile_id):
+                body = self._body(profile_id)
+                self.assertEqual([], self._table_codes(profile_id, body))
+
+    def test_a_wrong_table_width_is_rejected(self) -> None:
+        for profile_id, header in self.HEADERS.items():
+            with self.subTest(profile=profile_id):
+                narrower = header.rsplit(" | ", 1)[0] + " |"
+                body = self._mutate(profile_id, header, narrower)
+                codes = self._table_codes(profile_id, body)
+                self.assertIn("table-header-invalid", codes)
+
+    def test_a_wrong_column_order_is_rejected(self) -> None:
+        swapped = {
+            "postmortem": "| Owner | Action | Tracking ID | Verification |",
+            "governance-vocabulary": "| Definition | Term | Not to Confuse | Policy Owner |",
+        }
+        for profile_id, header in self.HEADERS.items():
+            with self.subTest(profile=profile_id):
+                body = self._mutate(profile_id, header, swapped[profile_id])
+                codes = self._table_codes(profile_id, body)
+                self.assertIn("table-header-invalid", codes)
+
+    def test_a_row_of_the_wrong_width_is_rejected(self) -> None:
+        body = self._mutate("postmortem", self.ROW, self.ROW + "extra | ")
+        self.assertIn("table-row-width", self._table_codes("postmortem", body))
+
+    def test_a_disallowed_cell_value_is_rejected(self) -> None:
+        for cell in ("", "TBD", "{{TRACKING_ID}}"):
+            with self.subTest(cell=cell):
+                body = self._mutate("postmortem", self.ROW, f"| @buenhyden | {cell} | ")
+                codes = self._table_codes("postmortem", body)
+                self.assertIn("table-value-invalid", codes)

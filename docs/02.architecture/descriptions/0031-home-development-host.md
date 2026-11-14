@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Architecture"
-version: "0.5.2"
+version: "0.5.3"
 type: "sdlc/architecture-description"
-status: "active"
+status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "architecture"
 artifact_id: "AD-0031"
 parent_ids:

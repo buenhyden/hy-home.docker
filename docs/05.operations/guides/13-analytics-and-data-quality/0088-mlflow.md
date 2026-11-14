@@ -1,10 +1,10 @@
 ---
 title: "MLflow Usage Guide"
-version: "1.0.8"
+version: "1.0.9"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0088"
 parent_ids:
@@ -14,6 +14,7 @@ implementation_services:
   - mlflow
   - mlflow-db-provision
 created: "2026-09-21"
+next_review_at: "2027-05-13"
 ---
 
 # MLflow Usage Guide

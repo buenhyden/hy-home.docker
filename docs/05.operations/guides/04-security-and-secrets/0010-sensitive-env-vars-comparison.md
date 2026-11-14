@@ -1,13 +1,14 @@
 ---
 title: "`SENSITIVE_ENV_VARS.md.example` vs `SENSITIVE_ENV_VARS.md` Comparison"
-version: "3.5.2"
+version: "3.5.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0010"
 created: "2026-06-04"
+next_review_at: "2027-05-13"
 ---
 
 # `SENSITIVE_ENV_VARS.md.example` vs `SENSITIVE_ENV_VARS.md` Comparison

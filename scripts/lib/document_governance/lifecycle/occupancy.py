@@ -58,6 +58,7 @@ def validate_active_stage_occupancy(
     from scripts.lib.document_governance.spec_packages import (
         SpecPackageError,
         _document_anchor_references,
+        _document_anchor_sources,
         acceptance_criterion_numbers,
         disposition_entry_statuses,
         task_cancellation_findings,
@@ -177,6 +178,7 @@ def validate_active_stage_occupancy(
                         (root / package / "spec.md").read_text(encoding="utf-8"),
                         heading,
                     )
+                    task_text = (root / relative).read_text(encoding="utf-8")
                     findings.extend(
                         f"{relative}: {finding}"
                         for finding in task_cancellation_findings(
@@ -185,9 +187,8 @@ def validate_active_stage_occupancy(
                             frozenset(criteria),
                             task_statuses,
                             generation=generation,
-                            references=_document_anchor_references(
-                                (root / relative).read_text(encoding="utf-8")
-                            ),
+                            references=_document_anchor_references(task_text),
+                            approval_sources=_document_anchor_sources(task_text),
                         )
                     )
                 except (OSError, SpecPackageError) as error:

@@ -1,10 +1,10 @@
 ---
 title: "Experience Tier Architecture Description"
-version: "0.2.2"
+version: "0.2.3"
 type: "sdlc/architecture-description"
-status: "active"
+status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "architecture"
 artifact_id: "AD-0032"
 parent_ids:

@@ -1,10 +1,10 @@
 ---
 title: "Architecture"
-version: "1.1.6"
+version: "1.1.7"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "architecture"
 ---
 
@@ -81,7 +81,7 @@ docs/02.architecture/
 
 ### Transition and Exit
 
-Architecture Description은 draft → in-review → active로, ADR은 proposed에서 accepted 또는 rejected로 전이한다. 대체되거나 철회된 문서는 현재 소유자에 요약한 뒤 삭제하고 번호를 Registry `reserved_history`에 추가한다.
+Architecture Description은 draft → in-review → approved로, ADR은 proposed에서 accepted 또는 rejected로 전이한다. 대체되거나 철회된 문서는 현재 소유자에 요약한 뒤 삭제하고 번호를 Registry `reserved_history`에 추가한다.
 
 ## Related Documents
 

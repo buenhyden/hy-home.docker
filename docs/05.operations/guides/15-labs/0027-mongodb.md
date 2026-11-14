@@ -1,15 +1,16 @@
 ---
 title: "MongoDB Usage Guide"
-version: "2.2.4"
+version: "2.2.5"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0027"
 parent_ids:
 - "POL-0027"
 created: "2026-05-10"
+next_review_at: "2027-05-13"
 ---
 
 # MongoDB Usage Guide

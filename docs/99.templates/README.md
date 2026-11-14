@@ -1,10 +1,10 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.6.1"
+version: "2.7.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "templates"
 ---
 
@@ -198,6 +198,15 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
   role-subject 소속을 소유합니다.
 - Incident 연도 디렉터리만 날짜-경로 예외입니다.
 - lifecycle 전이는 그 profile의 lifecycle에 등록된 경우에만 유효합니다.
+  Stage 03 lifecycle은 승인(`draft`, `in-review`, `approved`, `cancelled`)과
+  실행(Task) 중 한 축만 기록하며, `review` 같은 별칭 상태를 두지 않습니다.
+- `identity_namespaces.next`는 Q-07 전환 이후에 쓸 다음 번호 기준선
+  (`baseline-2`)을 준비만 해 둔 항목입니다. 현재 `identity_spaces`와 같은
+  공간·접두사·폭을 가지며, 전환 전에는 어떤 번호도 발급하거나 예약하지
+  않습니다. `identity_history.py`의 `rehearse_allocation`은 복사본에서만
+  SPEC-0001부터 발급을 시험합니다.
+- Guide, Policy, Runbook은 `next_review_at`을 필수로 두며 값은 `updated`로부터
+  180일 이내여야 합니다.
   terminal 상태에는 나가는 전이가 없습니다.
 
 ## Workflow

@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Usage Guide"
-version: "1.0.8"
+version: "1.0.9"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0044"
 parent_ids:
@@ -13,6 +13,7 @@ implementation_services:
   infra/06-observability/docker-compose.yml:
   - cadvisor
 created: "2026-05-17"
+next_review_at: "2027-05-13"
 ---
 
 # 06-Observability Optimization Hardening Usage Guide

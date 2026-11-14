@@ -1,15 +1,16 @@
 ---
 title: "OpenSearch Cluster LAB Operations Policy"
-version: "0.1.1"
+version: "0.1.2"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "POL-0109"
 parent_ids:
 - "AD-0026"
 created: "2026-11-05"
+next_review_at: "2027-05-13"
 ---
 
 # OpenSearch Cluster LAB Operations Policy

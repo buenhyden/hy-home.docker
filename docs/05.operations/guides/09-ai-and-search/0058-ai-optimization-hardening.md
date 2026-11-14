@@ -1,15 +1,16 @@
 ---
 title: "08-AI Optimization Hardening Usage Guide"
-version: "1.0.5"
+version: "1.0.6"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0058"
 parent_ids:
 - "POL-0058"
 created: "2026-05-17"
+next_review_at: "2027-05-13"
 ---
 
 # 08-AI Optimization Hardening Usage Guide

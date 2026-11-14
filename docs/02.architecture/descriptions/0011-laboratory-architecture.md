@@ -1,10 +1,10 @@
 ---
 title: "Administration and Experimentation Architecture Description"
-version: "1.3.2"
+version: "1.3.3"
 type: "sdlc/architecture-description"
-status: "active"
+status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "architecture"
 artifact_id: "AD-0011"
 parent_ids:

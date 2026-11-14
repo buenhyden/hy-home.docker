@@ -1,10 +1,10 @@
 ---
 title: "Terrakube Usage Guide"
-version: "1.2.1"
+version: "1.2.2"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 layer: "operations"
 artifact_id: "GDE-0069"
 parent_ids:
@@ -15,6 +15,7 @@ implementation_services:
   - terrakube-executor
   - terrakube-ui
 created: "2026-05-10"
+next_review_at: "2027-05-13"
 ---
 
 # Terrakube Usage Guide
