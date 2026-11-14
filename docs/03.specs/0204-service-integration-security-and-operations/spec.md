@@ -367,7 +367,7 @@ Missing permission or target defers only the dependent operation.
    target and DNS/redirect/private-destination checks; LAB is out-of-scope.
 4. Gateway, OIDC, machine auth, secret and socket boundaries have explicit
    route/identity/readiness and direct-backend/project A-to-B denial tests or
-   named `BLOCKED` evidence.
+   named `NOT_RUN` evidence.
 5. A versioned infra-owned schema and validator reject malformed project
    metadata, unapproved reference names and credential-bearing endpoint
    syntax without provisioning resources. Closed fields and a separate secret
@@ -617,7 +617,7 @@ Missing permission or target defers only the dependent operation.
 ### Evidence Requirements
 
 - Each criterion is evidenced by rows in the Task under `tasks/` that owns its lane (for example the Hermes transport, P08 layout and P10 opsflow acceptance Tasks); a row records the observation, the check run and its actual result.
-- Source, document and regression checks named by a criterion are run by the executing Task owner and recorded with their real result; `NOT_RUN`, `BLOCKED` and unknown runtime facts stay visible and are not counted as passes.
+- Source, document and regression checks named by a criterion are run by the executing Task owner and recorded with their real result; `NOT_RUN` results and unknown runtime facts stay visible and are not counted as passes.
 - The frontmatter owner (`@buenhyden`) judges each criterion and records the decision in the Task's Criterion Acceptance table; historical receipts are not fresh runtime evidence.
 
 ## References

@@ -558,7 +558,7 @@ bootstrap change, not extra engines or downstream consumer migration.
    SPEC-0202 ownership handoff. Review CDC/Avro, workflow payload, AI GPU,
    mail delivery and analytics reader/checkpoint paths. Source modifications
    require confirmed consumers and contract fixtures; otherwise mark them
-   `BLOCKED` with a named follow-up owner. Maps 6 and 7.
+   `NOT_RUN` with a named follow-up owner. Maps 6 and 7.
 5. **W5: verify, document and hand off.** TSK-0004 serially owns the later
    whole-tree secret path, metadata and actual/public environment parity
    request. It preserves values and IDs, writes only its exact consumer
