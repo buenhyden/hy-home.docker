@@ -1,10 +1,10 @@
 ---
 title: "Legacy Document Status Ban Specification"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0256"
 parent_ids:
@@ -39,9 +39,6 @@ profile schemas, the Spec Package loader, ADR-0011 (the only `deprecated`
 document), the inert `branch_integration_receipts` field, the archive profiles
 and templates, and the governance text that names these states. Operational,
 reference, and governance profiles keep their own lifecycles.
-SPEC-0251 and SPEC-0253 are on main, and SPEC-0252 was never issued.
-SPEC-0254 belongs to PR #733 and SPEC-0255 to PR #732, so this package takes
-SPEC-0256 and the Registry Spec `high_water` is 256.
 
 ### Non-goals
 

@@ -1,10 +1,10 @@
 ---
 title: "P07 Root Resource Optimization"
-version: "0.2.1"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0218-TSK-0002"
 parent_ids:
@@ -661,6 +661,8 @@ its inputs.
 ### Blockers and Decisions
 
 None: nothing was recorded here before this Task moved to the common form.
+
+- On 2026-11-15 the owner directed that content conflicting with the v14.7 W00 to W05 requirements be discarded; this package's Spec/Plan lost the W1-W8 history notes, the admission-baseline and ComposeControlsTests paragraphs and the delivery-ordering sentences.
 
 ## Verification Evidence
 

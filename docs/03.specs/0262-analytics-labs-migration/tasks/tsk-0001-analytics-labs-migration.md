@@ -1,10 +1,10 @@
 ---
 title: "Analytics Labs Migration Task"
-version: "0.2.2"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0262-TSK-0001"
 parent_ids:
@@ -83,7 +83,7 @@ progress under the approved parents. Hosted CI passed on PR #747, merged as
   `labs/jupyterlab/`, `labs/sonarqube/` and `labs/stalwart/`. The Stage 05
   guides bind each LAB through `implementation_services`, so no separate
   `labs/<name>.md` guide was added.
-- HOME reachability (owner to confirm): SPEC-0215 forbids a LAB from sharing a
+- HOME reachability (owner to confirm): POL-0107 forbids a LAB from sharing a
   root network (`test_lab_isolation`, `lab.py` collision checks), and no
   existing LAB reaches a HOME service over a network. The smallest documented
   option chosen: each LAB has its own network and takes each HOME dependency
@@ -92,7 +92,7 @@ progress under the approved parents. Hosted CI passed on PR #747, merged as
   `LAB_SUPERSET_DEFAULT_URL`, `LAB_SUPERSET_CA_FILE`, `LAB_SONARQUBE_DB_HOST`,
   optional `LAB_JUPYTERLAB_MLFLOW_TRACKING_URI`). HOME publishes none of these
   services to a LAB network, so these LABs are render-only until the owner
-  approves a reachable endpoint or a SPEC-0215 amendment. Stalwart needs no
+  approves a reachable endpoint or a POL-0107 amendment. Stalwart needs no
   HOME service.
 - Secrets: the secret contract allows canonical root secret paths only for the
   Supabase LAB, so the new LABs declare LAB-only `lab_<lab>_*` secrets under
@@ -292,6 +292,8 @@ The real budget is an operator input.
 ### Blockers and Decisions
 
 None: nothing was recorded here before this Task moved to the common form.
+
+- On 2026-11-15 the owner directed that content conflicting with the v14.7 W00 to W05 requirements be discarded; this package's Spec/Plan lost the SPEC-0215 reference (now POL-0107).
 
 ## Verification Evidence
 

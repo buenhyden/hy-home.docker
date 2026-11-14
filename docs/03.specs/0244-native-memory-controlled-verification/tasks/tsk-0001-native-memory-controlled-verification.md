@@ -1,10 +1,10 @@
 ---
 title: "Native Memory Controlled Verification Task"
-version: "0.1.25"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0244-TSK-0001"
 parent_ids:
@@ -575,6 +575,8 @@ versions are not covered.
 ### Blockers and Decisions
 
 None: nothing was recorded here before this Task moved to the common form.
+
+- On 2026-11-15 the owner directed that content conflicting with the v14.7 W00 to W05 requirements be discarded; this package's Spec/Plan lost the earlier-observation recap, the SPEC-0236 references and the Durable Meaning retention claim.
 
 ## Verification Evidence
 

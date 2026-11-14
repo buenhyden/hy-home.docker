@@ -1,10 +1,10 @@
 ---
 title: "REQ-0027 Approval Specification"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0261"
 parent_ids:
@@ -38,7 +38,7 @@ This Spec makes concrete REQ-0026 and AD-0030, its frontmatter `parent_ids`. REQ
 ### In Scope
 
 - REQ-0027 draft to approved, with its draft self-description reworded.
-- AD-0031 and AD-0032 draft to active when they match Compose and scripts.
+- AD-0031 and AD-0032 draft to approved when they match Compose and scripts.
 - Policy, guide and runbook for 0086, 0087 and 0100 draft to active when their
   concrete claims match Compose, scripts and configuration.
 
@@ -77,7 +77,7 @@ This Task pushes and merges nothing.
 ### Criteria
 
 1. REQ-0027 is approved and no longer calls itself a draft.
-2. AD-0031 and AD-0032 are active only if they match the implementation.
+2. AD-0031 and AD-0032 are approved only if they match the implementation.
 3. The 0086, 0087 and 0100 documents are active only if their claims match.
 4. The document gates pass locally, with actual results in the Task.
 
