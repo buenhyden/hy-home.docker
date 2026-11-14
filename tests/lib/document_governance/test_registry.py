@@ -4320,6 +4320,24 @@ class StateAxisLifecycleTests(unittest.TestCase):
             lifecycle["transitions"],
         )
 
+    def test_the_architecture_description_status_migration_is_registered(
+        self,
+    ) -> None:
+        """The change-check reads this one registered normalization instead of
+        an override file, so the one-time `active` to `approved` move passes."""
+
+        normalizations = self.raw["common"]["task_lifecycle_events"]["migration"][
+            "normalizations"
+        ]
+        self.assertIn(
+            {
+                "lifecycle_id": "architecture-description",
+                "from_status": "active",
+                "to_status": "approved",
+            },
+            normalizations,
+        )
+
     def test_no_lifecycle_mixes_approval_with_a_currency_state(self) -> None:
         currency = {"active", "deprecated", "superseded", "retired"}
         for lifecycle_id, lifecycle in self.raw["lifecycles"].items():

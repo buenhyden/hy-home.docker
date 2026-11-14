@@ -114,6 +114,34 @@ def _review_interval_exceeded(next_review: object, updated: object) -> bool:
     return (due - last).days > _REVIEW_INTERVAL_DAYS
 
 
+def _retired_status_migration(
+    registry: object, profile_id: str, previous: str, status: str
+) -> bool:
+    """D-02: a base status the profile's lifecycle no longer offers may move to
+    the successor the Registry registers as a normalization."""
+
+    if not isinstance(registry, DocumentRegistry):
+        return False
+    lifecycle_id = registry.profiles.get(profile_id, {}).get("lifecycle_id")
+    if previous in registry.lifecycles.get(str(lifecycle_id), (previous,)):
+        return False
+    events = registry.common.get("task_lifecycle_events")
+    migration = events.get("migration") if isinstance(events, Mapping) else None
+    entries = (
+        migration.get("normalizations", ()) if isinstance(migration, Mapping) else ()
+    )
+    return any(
+        isinstance(entry, Mapping)
+        and (
+            entry.get("lifecycle_id"),
+            entry.get("from_status"),
+            entry.get("to_status"),
+        )
+        == (lifecycle_id, previous, status)
+        for entry in entries
+    )
+
+
 def _review_overdue(next_review: object, reviewed: object) -> bool:
     try:
         due = datetime.date.fromisoformat(str(next_review)[:10])
@@ -423,6 +451,9 @@ def validate_record(
             and override_key not in (actual_lifecycle_transitions or ())
             and override_key not in (actual_lifecycle_normalizations or ())
             and not actual_normalization_transition
+            and not _retired_status_migration(
+                registry, record.artifact_type, previous_status, status
+            )
         ):
             findings.append(
                 _finding(

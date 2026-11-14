@@ -307,6 +307,11 @@
             "lifecycle_id": "plan",
             "from_status": "completed",
             "to_status": "approved"
+          },
+          {
+            "lifecycle_id": "architecture-description",
+            "from_status": "active",
+            "to_status": "approved"
           }
         ]
       }

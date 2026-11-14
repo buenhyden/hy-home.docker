@@ -163,6 +163,41 @@ class TransitionOverrideEvidencePathTests(unittest.TestCase):
                 )
 
 
+class RetiredStatusMigrationTests(unittest.TestCase):
+    """D-02: a document whose base status the lifecycle no longer offers may
+    move to the one successor the Registry registers, with no override file."""
+
+    def codes(self, previous: str, status: str) -> set[str]:
+        profiles = metadata.build_registry_profiles(metadata.load_registry(REGISTRY))
+        record = metadata.Record(
+            pathlib.Path("docs/02.architecture/descriptions/0031-fixture.md"),
+            {
+                "artifact_id": "AD-0031",
+                "type": "sdlc/architecture-description",
+                "status": status,
+                "parent_ids": ["REQ-0001"],
+            },
+            "architecture-description",
+            previous_status=previous,
+            frontmatter_present=True,
+        )
+        manifest = metadata.build_manifest([record])
+        return {
+            item.code for item in metadata.validate_record(record, profiles, manifest)
+        }
+
+    def test_the_registered_successor_is_accepted(self) -> None:
+        self.assertNotIn("invalid-transition", self.codes("active", "approved"))
+
+    def test_any_other_move_from_the_retired_status_is_rejected(self) -> None:
+        for status in ("draft", "in-review"):
+            with self.subTest(status=status):
+                self.assertIn("invalid-transition", self.codes("active", status))
+
+    def test_a_status_the_lifecycle_still_offers_gets_no_shortcut(self) -> None:
+        self.assertIn("invalid-transition", self.codes("approved", "draft"))
+
+
 class CurrentSpecRelationTests(unittest.TestCase):
     def test_only_an_unchanged_generation_status_replaces_the_older_base(self) -> None:
         profiles = metadata.build_registry_profiles(metadata.load_registry(REGISTRY))
