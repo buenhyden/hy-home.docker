@@ -110,8 +110,8 @@ project, port, network, volume, resource와 정리 범위를 확인한다.
 - [13 경험 자산](../README.md)
 - [인프라 인덱스](../../README.md)
 - [문서 진입점](../../../docs/README.md)에서 GDE-0101, POL-0101, RUN-0101 확인
-- [RUN-0101 storybook](../../../docs/05.operations/runbooks/14-design-system/0101-storybook.md)
+- [14-design-system runbooks](../../../docs/05.operations/runbooks/14-design-system/README.md): RUN-0101 storybook
 
 ### Observability and Recovery
 
-두 서비스 모두 `wget` 기반 Compose 헬스체크를 선언한다. 복구와 장애 대응은 [Storybook Runbook](../../../docs/05.operations/runbooks/14-design-system/0101-storybook.md)(RUN-0101)을 따른다.
+두 서비스 모두 `wget` 기반 Compose 헬스체크를 선언한다. 복구와 장애 대응은 [14-design-system runbooks](../../../docs/05.operations/runbooks/14-design-system/README.md)의 RUN-0101 Storybook Runbook을 따른다.

@@ -75,10 +75,9 @@ bash scripts/hardening/check-all-hardening.sh 10-communication
 
 - [LAB source](../../labs/README.md)
 - [Infrastructure index](../README.md)
-- [RUN-0084 mailpit](../../docs/05.operations/runbooks/11-mail-and-notifications/0084-mailpit.md)
-
-- [RUN-0070 mail](../../docs/05.operations/runbooks/15-labs/0070-mail.md)
+- [11-mail-and-notifications runbooks](../../docs/05.operations/runbooks/11-mail-and-notifications/README.md): RUN-0084 mailpit
+- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0070 mail
 
 ### Observability and Recovery
 
-없음: 이 tier에는 실행 서비스가 없다. 메일 관련 운영은 [Stalwart LAB README](../../labs/stalwart/README.md)와 [Mailpit Runbook](../../docs/05.operations/runbooks/11-mail-and-notifications/0084-mailpit.md)를 따른다.
+없음: 이 tier에는 실행 서비스가 없다. 메일 관련 운영은 [Stalwart LAB README](../../labs/stalwart/README.md)와 [11-mail-and-notifications runbooks](../../docs/05.operations/runbooks/11-mail-and-notifications/README.md)의 RUN-0084 Mailpit Runbook를 따른다.

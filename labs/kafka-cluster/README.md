@@ -98,14 +98,12 @@ LAB_DATA_DIR=/tmp/hyhome-lab-kafka-synthetic LAB_KAFKA_CLUSTER_ID=MkU3OEVBNTcwNT
 
 - [Kafka LAB Compose](docker-compose.yml)
 - [운영 가이드 목록](../../docs/05.operations/guides/README.md)
-- [RUN-0108 kafka-cluster](../../docs/05.operations/runbooks/15-labs/0108-kafka-cluster.md)
-
-- [RUN-0036 kafka](../../docs/05.operations/runbooks/06-messaging-and-cdc/0036-kafka.md)
-- [RUN-0107 lab-promotion](../../docs/05.operations/runbooks/15-labs/0107-lab-promotion.md)
+- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0108 kafka-cluster, RUN-0107 lab-promotion
+- [06-messaging-and-cdc runbooks](../../docs/05.operations/runbooks/06-messaging-and-cdc/README.md): RUN-0036 kafka
 
 ### Observability and Recovery
 
-`lab-kafka-init`은 세 broker가 healthy일 때 topic `lab-events`, `lab-logs`를 만들며 생성 job 성공과 실제 topic 상태는 별개로 확인해야 한다. 복구는 [Kafka cluster LAB Runbook](../../docs/05.operations/runbooks/15-labs/0108-kafka-cluster.md)를 따른다.
+`lab-kafka-init`은 세 broker가 healthy일 때 topic `lab-events`, `lab-logs`를 만들며 생성 job 성공과 실제 topic 상태는 별개로 확인해야 한다. 복구는 [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md)의 RUN-0108 Kafka cluster LAB Runbook를 따른다.
 
 복구에는 topic record/config, partition, consumer offset와 KRaft metadata를
 포함합니다. Schema Registry·Connect의 subject, connector 정의와

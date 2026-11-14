@@ -125,8 +125,8 @@ DELETE reset 뒤 count 0을 확인했다. load 모드는 같은 stub GET 200과
 - [품질 tier](../README.md)
 - [WireMock standalone options](https://wiremock.org/docs/standalone/java-jar/)
 - [WireMock request journal configuration](https://wiremock.org/docs/configuration/#request-journal)
-- [RUN-0092 wiremock](../../../docs/05.operations/runbooks/12-testing-and-quality/0092-wiremock.md)
+- [12-testing-and-quality runbooks](../../../docs/05.operations/runbooks/12-testing-and-quality/README.md): RUN-0092 wiremock
 
 ### Observability and Recovery
 
-Compose에 헬스체크가 선언되어 있으며 복구와 장애 대응은 [WireMock Runbook](../../../docs/05.operations/runbooks/12-testing-and-quality/0092-wiremock.md)을 따른다.
+Compose에 헬스체크가 선언되어 있으며 복구와 장애 대응은 [12-testing-and-quality runbooks](../../../docs/05.operations/runbooks/12-testing-and-quality/README.md)의 RUN-0092 WireMock Runbook을 따른다.

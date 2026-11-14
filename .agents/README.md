@@ -130,4 +130,4 @@ surface가 도입되지 않습니다.
 - `governance/providers/registry.yaml` (Provider registry)
 - Canonical-home decision (`docs/02.architecture/decisions/0032-canonical-agent-governance-home.md`)
 - `governance/documentation-protocol.md`의 `#readme-and-agentsmd`: README와 AGENTS.md의 역할 구분
-- [README 템플릿](../docs/99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
+- [README 템플릿 폴더](../docs/99.templates/README.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
