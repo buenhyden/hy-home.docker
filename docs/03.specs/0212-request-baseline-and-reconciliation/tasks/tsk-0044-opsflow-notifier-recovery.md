@@ -30,7 +30,7 @@ schedule and storage contracts; add no new binary consumer or storage service.
 
 - [Spec](../spec.md)
 - [Plan](../plan.md)
-- [Workspace inventory](../../../90.references/data/0096-workspace-inventory/README.md)
+- Workspace inventory: DATA-0096, retired 2026-11-14; Git history keeps it
 - [P04 data path residual](tsk-0043-opsflow-data-path.md)
 - [Historical P05 notifier Task](../../0204-service-integration-security-and-operations/tasks/tsk-0013-p05-n8n-outbox-notifier.md)
 

@@ -72,7 +72,7 @@ variable implementation; it does not reopen r10 criteria 11–18.
 
 W56–W60 implement the direct 2026-11-01 P01 request in TSK-0040. The
 existing service, port, Secret and version owners remain canonical. DATA-0096
-is a non-normative current observation consumed by this Task and P02–P12
+(retired on 2026-11-14) was a non-normative observation consumed by this Task and P02–P12
 handoffs; it does not replace their acceptance contracts.
 
 W61–W65 implement the direct 2026-11-02 P02 request in TSK-0041. The
@@ -214,11 +214,10 @@ The plan works under the approved SPEC-0212; the direct user request authorizes 
 
 ### Prerequisites
 
-The approved Spec, and the related current owners this plan coordinates with (Spec 0270, DATA-0096 and the 0204 Plan):
+The approved Spec, and the related current owners this plan coordinates with (Spec 0270 and the 0204 Plan):
 
 - [Spec](spec.md)
 - [Memory capacity and search](../0270-shared-memory-capacity-and-search/spec.md)
-- [Workspace inventory data](../../90.references/data/0096-workspace-inventory/README.md)
 - [Integration plan](../0204-service-integration-security-and-operations/plan.md)
 
 ### Dependency Order

@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.11.1"
+version: "1.12.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 ---
 
 # Agent Quality and Security Standards
@@ -265,14 +265,18 @@ main-push security remains a post-merge observation.
 | Future deployment | Server lint/format evidence for exact promoted inputs, then deployment-specific checks | Distinct deployment authority/result; no deployment workflow currently |
 
 The canonical delivery phase matrix above implements the policy meanings of
-`QA-STAGES-1` 1.0.0; not all of its Git-stage cells are implemented yet. A Git
+`QA-STAGES-1` 1.0.0. The twelve Git-stage cells (four actions, each before,
+during and after) are bound in
+[git-workflow section 7](git-workflow.md#7-git-action-stages), each as Run,
+Observe, Reuse or Not applicable. A Git
 event (commit, push, pull request or merge, each before, during or after), the
 SDLC stage and the document stage are separate axes; a check
 names the event and revision it binds to. A check that runs after its event,
 such as the main-push observation, observes and reports. It does not block that
 event and is never described as having blocked it. No workflow declares a
-`merge_group` trigger, and the remote merge queue setting is unverified; the
-trigger is added only together with an approved merge queue.
+`merge_group` trigger. The remote merge queue was read back as unused on
+2026-11-14 (`.github/rulesets/main-protection.md`); the workflow contract
+rejects the trigger, and it is added only together with an approved merge queue.
 
 The machine workflow contract owns exact job identities, DAG and path-to-root
 selection. Ordinary documents retain profile, parent and lifecycle/content
@@ -392,7 +396,11 @@ A gate owns one current invariant, not a historical document count, a copied
 command list, or a Task's observed commit. The workflow manifest owns composition;
 agent governance owns approval and completion policy; Stage 99 owns document structure.
 A provider adapter and a PR template refer to these owners rather than adding
-another unconditional full run or independent checklist.
+another unconditional full run or independent checklist. Every leaf in
+`.github/workflow-contract.yml` names its governing rule in `rule_owner`, a
+`.agents/governance/<document>.md#<heading anchor>` that must resolve; a leaf
+without one, or one naming a missing document or heading, fails the workflow
+contract and shows as `UNOWNED` in `run-ci-gate.py --crosswalk`.
 
 Both public profiles use one Compose leaf. With no inherited profile override,
 it validates every declared selection independently, including port-collision
