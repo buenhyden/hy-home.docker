@@ -1,10 +1,10 @@
 ---
 title: "Common Controls and Exceptions"
-version: "1.0.1"
+version: "1.0.2"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0218"
 parent_ids:
@@ -30,10 +30,6 @@ service. This package checks the effective controls of all services, gives
 each exception an exact target and rationale, and corrects the templates and
 leaves where the defaults were wrong.
 
-The W1–W8 execution record remains historical evidence in TSK-0001. P07
-continues this package through TSK-0002 using the existing controls and
-inventory owners; it does not repeat accepted source or LAB work.
-
 ### Owning Requirements
 
 This Spec makes concrete the frontmatter parents REQ-0027 (HOME development host), AD-0031 and ADR-0062 (HOME LAB membership). The body cites no REQ-####-FR or REQ-####-NFR identifier.
@@ -44,9 +40,7 @@ This Spec makes concrete the frontmatter parents REQ-0027 (HOME development host
 
 In scope: the shared templates, the exception registry and its validator, the
 leaves that deviate, the Conftest Compose policy, the tests and the operations
-documents that state these rules. The W1–W8 source slice excluded measured
-optimal limits, new read-only root filesystems and HOME recreation. Those
-exclusions describe that earlier slice, not the current P07 continuation.
+documents that state these rules.
 
 P07 includes retained root-service consumer classification, representative
 workload measurements, measured resource budgets, least privilege and
@@ -127,8 +121,7 @@ function, backup and recovery evidence.
 3. Template and leaf changes are proven by real runs of the affected LABs or
    exact images, and HOME services that change on recreation are listed with
    the evidence that they keep working.
-   Earlier LAB/exact-image evidence remains historical; TSK-0002 owns only
-   the open HOME residual for changed root services, without new LAB runs.
+   TSK-0002 covers changed root services on HOME, without new LAB runs.
 4. The Conftest rule has positive and negative fixtures that fail against the
    previous policy.
 5. Operations documents, the script manifest and the gate contract match the

@@ -1,10 +1,10 @@
 ---
 title: "Implementation Alignment Batch 2 Specification"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0257"
 parent_ids:
@@ -26,8 +26,7 @@ files, so documents and the Registry state what the repository holds now.
 
 The user directed that README, AGENTS.md and the Stage 01, 02, 05 and 99
 documents be checked against the implementation and corrected, including
-missing owners. SPEC-0255 listed the remaining findings as batch 2; PR #733
-has merged, so the infra READMEs are free to edit.
+missing owners. SPEC-0255 listed the remaining findings as batch 2.
 
 SPEC-0257 has parent_ids REQ-0026 and AD-0030. It makes concrete REQ-0026 (document retention and retirement) and the AD-0030 document lifecycle architecture constraint by finishing the deferred alignment findings of SPEC-0255. The body cites no REQ-0026-FR or NFR identifier.
 

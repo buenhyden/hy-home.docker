@@ -1,10 +1,10 @@
 ---
 title: "LAB Promotion Contract Plan"
-version: "0.3.1"
+version: "0.3.2"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0263-PLAN-0001"
 parent_ids:
@@ -79,7 +79,7 @@ W1 has no dependencies; W2 starts after W1; W3 starts after W2; W4 starts after 
 
 | Work Unit | Criteria | Work | Dependencies | Task | Verification |
 | --- | --- | --- | --- | --- | --- |
-| W1 | 2, 3 | `lab.py` resolves `labs/<name>/docker-compose.yml`, validates `promotion.yaml`, and allows only supabase `vector`'s read-only socket | None | TSK-0001 | `test_lab_controller.py` |
+| W1 | 2, 3 | `lab.py` resolves `labs/<name>/docker-compose.yml`, validates `promotion.yaml`, and refuses every Docker socket bind | None | TSK-0001 | `test_lab_controller.py` |
 | W2 | 1, 2 | Move the 15 LABs, their assets and dashboards into `labs/<name>/`, fix relative paths, write each manifest, reconcile active references | W1 | TSK-0001 | `compose config` per LAB; `lab.py check` render; unit suite; hardening |
 | W3 | 3 | supabase reads only `secrets/labs/supabase/`; catalog rows, the new SMTP copy row and tests follow; prepare the registry edits for the owner | W2 | TSK-0001 | `test_secret_metadata_sync.py`; `test_supabase_smtp_rehearsal.py`; `lab.py check` |
 | W4 | 5 | `lab.py readiness <name>` writes the section 5 report from measured host values, with the reserve from the promotion policy | W1, W2 | TSK-0001 | `test_lab_controller.py`; one read-only run on HOME |
@@ -95,8 +95,6 @@ W1 has no dependencies; W2 starts after W1; W3 starts after W2; W4 starts after 
   and `labs/.env.example` stay at the `labs/` root.
 - **Kinds.** `kind` is one of `add`, `replace-same`, `replace-substitute` or
   `undecided`. A manifest with kind `undecided` has no `target`.
-- **Docker socket.** No LAB binds the Docker socket. The supabase `vector`
-  exception went with the supabase LAB in W8.
 - **Never touched.** No secret value is read or written, and `secrets/` is not
   edited. The owner applies `secrets/SENSITIVE_ENV_VARS.md.example`.
 - **Moves.** Document moves keep `artifact_id` and `created`. Use `git mv` so
@@ -118,14 +116,8 @@ W1 has no dependencies; W2 starts after W1; W3 starts after W2; W4 starts after 
    so the value must become `../../secrets/labs`. The same applies to every
    `${LAB_SECRET_DIR:-../secrets/labs}` default. W2 asserts the rendered
    secret paths start with `secrets/labs/<name>/`.
-3. **A socket bind that only looks like the exception.** W1 wrote this for the
-   supabase `vector` exception; since W8 every socket bind is refused. The
-   check must still refuse:
-   - a writable bind on `vector`;
-   - the same bind on another supabase service;
-   - a `.sock` source under another name.
-
-   W1 tests all three.
+3. **A socket bind.** Every socket bind is refused, including a `.sock` source
+   under another name. W1 tests it.
 4. **A running container with no limits.** One such container makes the
    resource criterion `NOT_RUN`, never `PASS`. W4 tests it.
 5. **A replacement whose retired service is not running.** Its resources are
@@ -632,13 +624,9 @@ TSK-0003.
 
 **The readiness run.** One read-only `lab.py readiness` run on HOME.
 
-**Known gap.** The local full CI gate stays `BLOCKED`, because it needs
-Python 3.14.8 with memfd sealing. The Task records that, and hosted CI is the
-gate.
-
 ### Stage Placement
 
-The Plan places no stage-specific checks beyond the Verification Matrix; the local full CI gate stays `BLOCKED` and hosted CI is the gate, as the Task records.
+The Plan places no stage-specific checks beyond the Verification Matrix; the Task records each run.
 
 ## Risks
 

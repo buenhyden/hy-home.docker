@@ -1,10 +1,10 @@
 ---
 title: "Observability CA Execution Plan"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0245-PLAN-0001"
 parent_ids:
@@ -115,7 +115,7 @@ Work stops before the next service when a gate fails and returns to the owner, p
 
 ### Durable Meaning
 
-The package changes no source contract of its own; the sanitized durable receipts in TSK-0001 hold the operating outcome for the two services.
+The operating CA and recovery facts belong to the Prometheus and Gatus runbooks (RUN-0045, RUN-0087); TSK-0001 records the receipts.
 
 ### Owner and Receipt
 

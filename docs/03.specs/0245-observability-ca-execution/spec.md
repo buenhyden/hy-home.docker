@@ -1,10 +1,10 @@
 ---
 title: "Observability CA Execution"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0245"
 parent_ids:
@@ -22,15 +22,13 @@ created: "2026-10-16"
 
 The owner authorized backup and isolated-restore validation followed by a
 bounded CA application and recreation for the current host's Prometheus and
-Gatus services. Earlier observation established that neither service had the
-declared CA mount applied at runtime. Prometheus stays on its installed
+Gatus services. Prometheus stays on its installed
 `prom/prometheus:v3.15.0` (digest `efd719c9`) image, the owner's 2026-10-21 choice; no further version change
 is included. Gatus needs a smallest-delta
 image from its exact current immutable identity that copies the tracked
 CA-aware entrypoint, because the current entrypoint cannot be trusted to
 establish the required CA bundle.
 
-SPEC-0243 remains the broader OpenBao maintenance-window readiness package.
 This package does not open an OpenBao window, render secrets, unseal OpenBao,
 or change any service outside the two named observability services.
 
@@ -69,8 +67,7 @@ Out of scope:
   data migration or replacement, or an unreviewed image pull;
 - recreating a service before its own backup and isolated restore pass;
 - any unlisted service, stack-wide restart, deployment, or restoration of a
-  production data volume; and
-- accepting or altering SPEC-0243's draft criteria or its Task.
+  production data volume.
 
 ## Behavior Contract
 

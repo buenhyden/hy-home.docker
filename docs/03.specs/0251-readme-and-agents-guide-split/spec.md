@@ -1,10 +1,10 @@
 ---
 title: "README and Agent Guide Split Specification"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0251"
 parent_ids:
@@ -41,7 +41,7 @@ SPEC-0251 has parent_ids REQ-0024 and AD-0027. It makes concrete REQ-0024 (one c
 
 - A placement rule and AGENTS.md shape in the documentation protocol, a
   bootstrap load step, and provider loading notes.
-- A Registry `folder-agent-guide` profile and `governance/agent-guide`
+- A Registry `folder-agent-guide` profile and `common/agent-guide`
   template.
 - Folder AGENTS.md files in `docs/01.requirements/`, `docs/02.architecture/`,
   `docs/03.specs/`, `docs/05.operations/`, `docs/90.references/`,
@@ -61,7 +61,7 @@ SPEC-0251 has parent_ids REQ-0024 and AD-0027. It makes concrete REQ-0024 (one c
 
 Each listed folder carries a `README.md` written for people and an
 `AGENTS.md` written in English for agents. The AGENTS.md follows the
-`governance/agent-guide` template, routes to canonical owners, and names only
+`common/agent-guide` template, routes to canonical owners, and names only
 registered checks. Stage loaders, the operations catalog and the Stage 90
 corpus accept an `AGENTS.md` at their root, and a folder router stays a router.
 

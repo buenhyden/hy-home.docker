@@ -1,10 +1,10 @@
 ---
 title: "REQ-0027 Approval Task"
-version: "0.1.3"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0261-TSK-0001"
 parent_ids:
@@ -138,6 +138,8 @@ review and criteria1-4 owner decisions remain pending.
 ### Blockers and Decisions
 
 None: nothing was recorded here before this Task moved to the common form.
+
+- On 2026-11-15 the owner directed that content conflicting with the v14.7 W00 to W05 requirements be discarded; this package's Spec/Plan lost the "active" target status for AD-0031 and AD-0032 (now approved).
 
 ## Verification Evidence
 
