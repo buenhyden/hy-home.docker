@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.61.0"
+version: "1.62.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -235,7 +235,9 @@ approval of 2026-11-14 for six ready packages adds criterion 119 and W124 in
 the same Task. The W05 conformance audit of 2026-11-14 adds criterion 120 and
 W125 for the W05-primary QA cases it found open: the check crosswalk
 (QA-C05), result reuse (QA-C07, including the security database), the staged
-index (QA-C08), SemVer precedence and the QA-08 cost baseline.
+index (QA-C08), SemVer precedence and the QA-08 cost baseline. The v14.7 W06
+run of 2026-11-14 adds criterion 121 and W126 in TSK-0065 for the Git hook,
+CI, release and delivery contract.
 
 ### Owning Requirements
 
@@ -988,6 +990,20 @@ target, backup, recovery boundary, and action-specific authorization.
      entry; the staged-index tests are named; and a per-module local timing
      baseline is recorded. Each behavior change has a test that fails without
      it, and each limit names its owner.
+121. TSK-0065 runs v14.7 W06 for this workspace: the twelve Git action cells
+     are bound to real triggers in the Git workflow policy; hosted CI runs the
+     ten leaves W05 handed off, in shard jobs under one aggregate
+     `candidate-quality` job that fails unless every shard succeeded; Git's
+     automatic merge subjects pass the one commit grammar, the installed
+     `commit-msg` hook and unusual staged filenames are tested, and an
+     uninstalled hook is reported as such; release publication refuses a
+     version lower than a published one unless explicitly marked a backport;
+     the single-person review path names its risk owners, diff checklist and
+     explicit acceptance, and its no-model-API rule covers self-hosted and
+     proxied models; the owner-approved SHA pinning and immutable releases are
+     applied with read-back; and each W06 requirement, carry-forward key and
+     OPEN-13/OPEN-14 has a verdict and owner. Each behavior change has a test
+     that fails without it.
 
 ### Evidence Requirements
 

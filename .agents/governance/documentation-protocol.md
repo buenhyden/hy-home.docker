@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "3.27.0"
+version: "3.28.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -214,7 +214,12 @@ its hosted CI route is not wired yet. Existing links are not retyped by this rul
    compatible meaning growth, and incompatible contract change respectively.
    Below `1.0.0` a breaking or feature change raises the minor and a
    compatible correction the patch; `1.0.0` marks the owner's explicit
-   approval of a stable contract, never a renumbering.
+   approval of a stable contract, never a renumbering. A changed document's
+   `version` never has lower SemVer precedence than the same path at the
+   merge base: `check-document-metadata.py --mode check-changed` reports
+   `version-downgrade`, and a new document or one without a base version is
+   not compared. Whether a content change also needed a higher version is
+   left to review.
    Lifecycle status is independent of this content version. An artifact
    number, a numbering baseline or its reset, a Task completion and a pull
    request merge are not version events; none of them sets or resets a

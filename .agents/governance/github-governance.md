@@ -1,10 +1,10 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.8.2"
+version: "1.9.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-14"
 ---
 
 # GitHub Governance Policy
@@ -69,12 +69,21 @@ target and action.
 - Draft/WIP PRs are allowed for collaboration; section 3 owns what that means for merge readiness.
 - Agents must not self-approve or bypass required reviewers.
 - This repository has one developer and no second reviewer. That risk is
-  handled by the required `candidate-quality` check, a review of the final diff
-  in a fresh context separate from the one that wrote it, and the owner's own
-  merge. The review path calls no model API, under the
+  handled by five parts together. The change's risk is read from the existing
+  owners, the [change-type verification matrix](quality-standards.md#5-change-type-verification-matrix)
+  and the [protected surfaces](approval-boundaries.md#enforcement),
+  with no separate tier scheme. The required `candidate-quality` check runs
+  the static and contract checks. The final diff is reviewed in a fresh
+  context separate from the one that wrote it, against the
+  [diff review checklist](../prompts/diff-review.md). The owner then accepts
+  each criterion explicitly in the Task's Criterion Acceptance, which a merge
+  is not. Git history and the recovery rules below cover rollback. The review
+  path calls no model-inference API, under the
   [agentic policy](agentic.md#execution-rules). One person's review is never
   recorded as two independent approvals, and an automated check, App, or
-  signature does not stand in for the owner's acceptance.
+  signature does not stand in for the owner's acceptance. No acceptance or
+  ADR decision requires a signed commit or tag; GitHub's signed-commit
+  protection is a separate server setting.
 - When agents propose changes, they must list which CODEOWNERS paths are touched and which review gates apply.
 - Git history is the recovery mechanism. A current Task may name a temporary
   recovery commit, but must not turn a branch tip, expected SHA, checksum, or
@@ -117,7 +126,9 @@ rule of its own.
 
 - Workflows must use least-privilege `GITHUB_TOKEN` — request only the permissions the job actually needs.
 - Prefer OIDC-based cloud credentials over long-lived secrets stored as repository secrets. When proposing or reviewing workflow changes, flag any use of long-lived cloud secrets as a `medium` finding.
-- Pin actions to a specific commit SHA or a digest-verified tag, not a floating branch or `@latest`.
+- Pin actions to a full commit SHA, not a tag, floating branch or `@latest`.
+  The repository setting `sha_pinning_required` enforces this on GitHub's side
+  since 2026-11-14.
 - `.github/workflow-contract.yml` records the locally verified manifest URL,
   retrieval date, runtime, approved consumers, and security disposition for
   every direct external Action. The focused checker
@@ -230,12 +241,19 @@ change impact and immutable Action provenance. The generic focused checker
 compares workflow definitions to that one typed source instead of maintaining
 another copied job/action census.
 
-The PR candidate invokes `changed` once with read-only permissions and validated
-base/head context. No feature-push, title-edit or main full-profile rerun is
-registered. The separate main security job writes only its SARIF result. Release
+The PR candidate invokes `changed` in shard jobs, each selecting its own
+leaves, with read-only permissions and validated base/head context. One
+aggregate job named `candidate-quality`, the required check, needs every shard
+and fails unless each one succeeded, so a skipped, cancelled or missing shard
+never reads as a pass. No feature-push, title-edit or main full-profile rerun
+is registered: with merge commits only and strict up-to-date protection, the
+merged tree is the tree the candidate checked, and pull request titles never
+become commit subjects. The separate main security job writes only its SARIF result. Release
 publication is a main-only manual workflow, with `contents: write` restricted to
 its producer. It creates a SemVer tag and complete draft assets before publish;
-there is no second tag-push or moving-channel producer.
+there is no second tag-push or moving-channel producer. Immutable releases are
+enabled on the repository since 2026-11-14, so a published release's tag and
+assets cannot change afterward.
 
 Greetings, stale-thread handling and PR labels are non-QA coordination jobs.
 Their pin, permission and event safety remain checked; they do not own candidate
