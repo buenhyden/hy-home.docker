@@ -264,6 +264,13 @@ Requirement IDs that no SPEC-0212 Task named, with the evidence read on
   Guide, Policy and Runbook documents carry `next_review_at` on a 180-day
   cycle; the Architecture Description `contract` lifecycle ends at
   `approved` and the `review` alias is removed (D-02).
+- The independent review of the guards branch (#1020) returned PASS with
+  five LOW findings. LOW 1 to 3 are fixed there: the cutover check needs a
+  named baseline and object spaces, and active-stage occupancy checks a
+  cancellation `Source:`. Two stay open with an owner: a registered status
+  normalization applies without generation-source evidence, which no
+  document on `main` can reach (W11 adoption review); the prepared allocator
+  would issue `inc-0001` instead of `inc-YYYY-NNNN` (Q-07, before cutover).
 - #1011 and #1013, earlier drafts of this record, were closed unmerged; this
   record replaces them.
 - Not done, with reason: `leaf.project-registration` is not added because no
@@ -312,6 +319,7 @@ Requirement IDs that no SPEC-0212 Task named, with the evidence read on
 | Rule owners | 121 | W126 | remote-candidate | PR #1016: every leaf in `.github/workflow-contract.yml` names a `rule_owner` heading, checked by `validate_rule_owners`; lifecycle leaf passes `--readiness`; counterexample tests for an unauthorized protected action, `merge_group`, `workflow_dispatch` and a deleted release ref | PASS | crosswalk `unowned=0`; `candidate-quality` success; merged as `379aef8b7` | required | - |
 | SPEC-0253 hosted CI | 121 | W126 | remote-candidate | PR #1017: SPEC-0253 TSK-0001 evidence E21 resolves E20 | PASS | `candidate-quality` success; merged as `8353a6cca` | required | - |
 | DATA-0096 retirement | 121 | W126 | remote-candidate | PR #1018: snapshot deleted, `data` number 96 reserved, link alignment excuses a terminal Task link into a reserved package; `test_a_terminal_task_link_into_a_reserved_data_package_is_excused` | PASS | `candidate-quality` success; merged as `95f9a9b46` | required | - |
+| Single SemVer comparator | 121 | W126 | remote-candidate | PR #1019: one comparator in `scripts/lib/document_governance/semver.py` with `version-unchanged`, `version-downgrade` and `version-malformed`; product version files route to the metadata check; `spec.md` 1.62.1 states release publication always refuses a version below a published one; `documentation-protocol.md` 4.0.0 | PASS | metadata check-changed 0 violations, 226 tests OK locally; `candidate-core` 10 min 17 s, `candidate-documents` 29 min 17 s, `candidate-quality` success at `9e1b38f99`; merged as `4e413e42f` | required | - |
 
 ### Resolution Links
 
@@ -325,7 +333,7 @@ resolved by Budget GREEN, and the Docs budget timeout by Docs budget hosted.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 121 | pending | Remote read-back, Remote settings change, Hooks and grammar, Document version downgrade, Counterexample map, Governance record, Link routes, Fixture git GREEN, Shard split hosted final, Budget GREEN, Docs budget hosted, Budget measurement, Base move test, Rule owners, SPEC-0253 hosted CI, DATA-0096 retirement | All W06 units merged; awaiting the owner's acceptance | SPEC-0212 TSK-0065 |
+| 121 | pending | Remote read-back, Remote settings change, Hooks and grammar, Document version downgrade, Counterexample map, Governance record, Link routes, Fixture git GREEN, Shard split hosted final, Budget GREEN, Docs budget hosted, Budget measurement, Base move test, Rule owners, SPEC-0253 hosted CI, DATA-0096 retirement, Single SemVer comparator | All W06 units merged; awaiting the owner's acceptance | SPEC-0212 TSK-0065 |
 
 ### Remaining Conditions
 
