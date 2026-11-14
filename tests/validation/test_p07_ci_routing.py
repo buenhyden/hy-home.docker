@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import copy
+import itertools
 import json
 import unittest
 from pathlib import Path
@@ -49,17 +50,20 @@ class P07RoutingTests(unittest.TestCase):
             if item.path == ".github/workflows/ci-quality.yml"
         )
         contract = github_workflow_contract.load_workflow_contract(ROOT)
-        for field, value in (
-            ("if", "false"),
-            ("shell", "bash"),
-            ("run", "true"),
-            ("name", "removed"),
+        for job_id, (field, value) in itertools.product(
+            ("candidate-core", "candidate-documents"),
+            (
+                ("if", "false"),
+                ("shell", "bash"),
+                ("run", "true"),
+                ("name", "removed"),
+            ),
         ):
-            with self.subTest(field=field):
+            with self.subTest(job_id=job_id, field=field):
                 data = copy.deepcopy(document.data)
                 step = next(
                     item
-                    for item in data["jobs"]["candidate-quality"]["steps"]
+                    for item in data["jobs"][job_id]["steps"]
                     if item.get("name") == "Verify selected Compose CLI prerequisite"
                 )
                 step[field] = value

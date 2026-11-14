@@ -32,6 +32,9 @@ WORKFLOW_CONTRACT: Final = pathlib.PurePosixPath(".github/workflow-contract.yml"
 WORKFLOW_ROOT: Final = pathlib.PurePosixPath(".github/workflows")
 MAX_YAML_BYTES: Final = 2 * 1_048_576
 MAX_WORKFLOWS: Final = 128
+AGGREGATE_JOB: Final = "candidate-quality"
+AGGREGATE_RESULT_STEP: Final = "Require every candidate job to succeed"
+FIXED_SHELL: Final = "/usr/bin/bash --noprofile --norc -eo pipefail {0}"
 
 
 @dataclasses.dataclass(frozen=True, order=True, slots=True)
@@ -706,7 +709,7 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
             if (
                 not isinstance(timeout, int)
                 or isinstance(timeout, bool)
-                or not 1 <= timeout <= 30
+                or not 1 <= timeout <= 120
             ):
                 raise WorkflowContractError(
                     "contract-schema-invalid",
@@ -865,14 +868,28 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
         for workflow in workflows
         if workflow.classification == "required-quality"
     ]
+    try:
+        shard_jobs = parse_public_gate_contract(raw).job_names
+    except GateContractError as error:
+        raise WorkflowContractError(error.code, error.path, error.message) from None
     if len(required_workflows) != 1 or set(required_workflows[0].jobs) != {
-        "candidate-quality",
+        AGGREGATE_JOB,
         "main-security",
+        *shard_jobs,
     }:
         raise WorkflowContractError(
             "contract-required-quality-invalid",
             WORKFLOW_CONTRACT.as_posix(),
-            "exactly one required-quality workflow with candidate and main security jobs is required",
+            "exactly one required-quality workflow with the typed candidate jobs, the aggregate and main security is required",
+        )
+    aggregate = required_workflows[0].jobs[AGGREGATE_JOB]
+    if aggregate.needs != shard_jobs or not (aggregate.condition or "").startswith(
+        "always() && "
+    ):
+        raise WorkflowContractError(
+            "contract-required-quality-invalid",
+            WORKFLOW_CONTRACT.as_posix(),
+            "the aggregate must need every candidate job and run even when one is skipped or fails",
         )
     return WorkflowContract(
         schema_version=2,
@@ -1034,7 +1051,7 @@ def _workflow_projection_findings(
             if isinstance(step, dict) and isinstance(step.get("name"), str)
         }
         checkout = steps_by_name.get("Checkout repository")
-        if checkout != {
+        if raw_job_id != AGGREGATE_JOB and checkout != {
             "name": "Checkout repository",
             "uses": f"actions/checkout@{action_shas.get('actions/checkout')}",
             "with": {"persist-credentials": False, "fetch-depth": 0},
@@ -1046,15 +1063,40 @@ def _workflow_projection_findings(
                     f"job {raw_job_id} checkout differs from the audited projection",
                 )
             )
-        if raw_job_id == "candidate-quality":
+        if raw_job_id == AGGREGATE_JOB:
+            expected_step = {
+                "name": AGGREGATE_RESULT_STEP,
+                "env": {
+                    f"{need.removeprefix('candidate-').upper()}_RESULT": (
+                        "${{ needs." + need + ".result }}"
+                    )
+                    for need in expected_job.needs
+                },
+                "shell": FIXED_SHELL,
+                "run": "".join(
+                    f'test "${need.removeprefix("candidate-").upper()}_RESULT" = success\n'
+                    for need in expected_job.needs
+                ),
+            }
+            if steps != [expected_step]:
+                findings.append(
+                    _finding(
+                        "workflow-aggregate-projection-mismatch",
+                        path,
+                        "the aggregate must fail unless every needed job result is success",
+                    )
+                )
+        elif raw_job_id.startswith("candidate-"):
             commands = {
                 step.get("run")
                 for step in steps
                 if isinstance(step, dict) and isinstance(step.get("run"), str)
             }
             required_commands = {
-                '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed --requirements >> "$GITHUB_OUTPUT"',
-                '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed',
+                '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed '
+                f'--job {raw_job_id} --requirements >> "$GITHUB_OUTPUT"',
+                '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed '
+                f"--job {raw_job_id}",
             }
             if not required_commands <= commands:
                 findings.append(
@@ -1121,6 +1163,17 @@ def _workflow_projection_findings(
                             f"candidate step {name} must drop group/other write before hashing",
                         )
                     )
+            run_step = steps_by_name.get("Run changed candidate validation")
+            if not isinstance(run_step, dict) or run_step.get("if") != (
+                "steps.prerequisites.outputs.selected == 'true'"
+            ):
+                findings.append(
+                    _finding(
+                        "workflow-gate-projection-mismatch",
+                        path,
+                        "candidate validation must run only when the job selected a gate",
+                    )
+                )
             node_step = steps_by_name.get("Set up Node.js")
             if not isinstance(node_step, dict) or node_step.get("if") != (
                 "steps.prerequisites.outputs.node == 'true'"
@@ -1259,15 +1312,20 @@ def _expected_evidence_upload_step(
     job_id: str,
     action_sha: str | None,
 ) -> dict[str, object] | None:
-    artifact_name = {
-        "candidate-quality": "candidate-quality-gate-evidence",
-        "main-security": "main-security-gate-evidence",
-    }.get(job_id)
-    if artifact_name is None or action_sha is None:
+    if job_id == AGGREGATE_JOB or not (
+        job_id.startswith("candidate-") or job_id == "main-security"
+    ):
+        return None
+    artifact_name = f"{job_id}-gate-evidence"
+    if action_sha is None:
         return None
     return {
         "name": "Upload gate evidence",
-        "if": "always()",
+        "if": (
+            "always()"
+            if job_id == "main-security"
+            else "always() && steps.prerequisites.outputs.selected != 'false'"
+        ),
         "uses": f"actions/upload-artifact@{action_sha}",
         "with": {
             "name": artifact_name,

@@ -194,11 +194,17 @@ argv, context 필드를 두지 않습니다. 최종 계획 승인은 상속된 �
 argv, 실행 컨텍스트가 필요하며 adapter 경로와 미분류 경로도 예외가
 아닙니다. Explain은 같은 완전한 계획을 먼저 검증한 뒤 canonical validator
 행을 렌더링합니다. workflow contract는 구성과 실행 정책의 drift를
-거부합니다. 세부 unit은 기본적으로 LOCAL suite에 등록합니다. 단, workflow
-contract가 닫힌 집합으로 선언한 CI gate-contract, Compose-baseline,
-repository-integrity 회귀는 변경 경로가 선택할 때 로컬과 hosted candidate에서
-모두 실행합니다. 로컬에서는 `--profile changed`가 이 세 회귀를 소유하고,
-`--local-only`는 나머지 보완 단위만 선택합니다. 정확한 gate
+거부합니다. workflow contract가 닫힌 집합으로 선언한 회귀 unit은 변경 경로가
+선택할 때 로컬과 hosted candidate에서 모두 실행하고, 나머지 네 leaf
+(`ci-precommit-regressions`, `local-hook-rule-tests`,
+`local-candidate-preflight`, `conftest-policy-tests`)만 LOCAL 전용입니다.
+hosted leaf는 `public_gate.hosted_jobs`가 정확히 한 job에 배정합니다.
+`candidate-documents`가 문서 거버넌스 leaf를 실행하고 `candidate-core`가 그
+외 모두를 실행하며, `run-ci-gate.py --job <name>`이 선택된 계획과 그 job의
+교집합만 실행합니다. 필수 check `candidate-quality`는 두 job이 모두 `success`일
+때만 통과하는 집계 job이고, skipped/cancelled/failure/누락은 모두 실패입니다.
+로컬에서는 `--profile changed`가 모든 회귀를 소유하고, `--local-only`는 LOCAL
+전용 leaf만 선택합니다. 정확한 gate
 ID·entrypoint·argv 바인딩이 아니면 hosted
 admission이 실패합니다. CLI·통합 동작은 `tests/validation/`의 현재 소유자에
 연결하고, 배정은 디렉터리 고정 기대값보다 실제 동작 증명을 따릅니다.

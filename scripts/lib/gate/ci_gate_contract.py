@@ -100,9 +100,18 @@ _OPTIONAL_CHANGED_ROOT_GATE_IDS = (
 )
 HOSTED_UNIT_GATE_IDS = frozenset(
     {
+        "leaf.ci-gate-adapter-regressions",
         "leaf.ci-gate-contract-regressions",
+        "leaf.ci-gate-runner-regressions",
         "leaf.compose-baseline-regressions",
+        "leaf.document-governance-library-regressions",
+        "leaf.local-document-corpus-lifecycle-tests",
+        "leaf.local-document-metadata-tests",
+        "leaf.release-regressions",
+        "leaf.repo-contracts-control-plane-regressions",
         "leaf.repository-integrity-regressions",
+        "leaf.supply-chain-fixture-policy",
+        "leaf.workflow-contract-regressions",
     }
 )
 _LOCAL_AGGREGATE_CHILDREN = {
@@ -430,10 +439,24 @@ class PublicGateContract:
     changed_fallback_suites: tuple[str, ...]
     local_only_gate_ids: tuple[str, ...]
     hosted_unit_bindings: tuple[tuple[str, pathlib.PurePosixPath, tuple[str, ...]], ...]
+    default_job: str
+    job_leaf_gate_ids: tuple[tuple[str, tuple[str, ...]], ...]
 
     @property
     def suite_names(self) -> tuple[str, ...]:
         return tuple(route.name for route in self.suites)
+
+    @property
+    def job_names(self) -> tuple[str, ...]:
+        return (self.default_job, *(name for name, _ in self.job_leaf_gate_ids))
+
+    def job_for(self, gate_id: str) -> str:
+        """Return the one hosted job that runs this gate."""
+
+        for name, gate_ids in self.job_leaf_gate_ids:
+            if gate_id in gate_ids:
+                return name
+        return self.default_job
 
 
 def load_contract_document(root: pathlib.Path) -> dict[str, object]:
@@ -680,6 +703,7 @@ def parse_public_gate_contract(
                 "changed_root_rules",
                 "changed_fallback_suites",
                 "local_only_gate_ids",
+                "hosted_jobs",
             }
         ),
         frozenset(
@@ -691,6 +715,7 @@ def parse_public_gate_contract(
                 "changed_root_rules",
                 "changed_fallback_suites",
                 "local_only_gate_ids",
+                "hosted_jobs",
             }
         ),
         "ci-gate-public-contract",
@@ -912,6 +937,10 @@ def parse_public_gate_contract(
                 "local-only validator contexts and typed gate ownership must agree",
             )
 
+    default_job, job_leaf_gate_ids = _parse_hosted_jobs(
+        raw["hosted_jobs"], node_by_id, reachable, local_only_set
+    )
+
     raw_rules = _require_records(
         raw["changed_path_rules"],
         "ci-gate-changed-rules",
@@ -1042,7 +1071,59 @@ def parse_public_gate_contract(
         fallback,
         local_only_gate_ids,
         hosted_unit_bindings,
+        default_job,
+        job_leaf_gate_ids,
     )
+
+
+def _parse_hosted_jobs(
+    raw: object,
+    node_by_id: Mapping[object, Mapping[str, object]],
+    reachable: set[str],
+    local_only: set[str],
+) -> tuple[str, tuple[tuple[str, tuple[str, ...]], ...]]:
+    """Validate the hosted job layout: each hosted leaf runs in exactly one job.
+
+    Leaves listed under a job run there; every other hosted leaf runs in the
+    default job, so no hosted leaf is unassigned.
+    """
+
+    def invalid(message: str) -> GateContractError:
+        return GateContractError(
+            "ci-gate-hosted-jobs", "public_gate/hosted_jobs", message
+        )
+
+    if not isinstance(raw, Mapping) or set(raw) != {"default", "leaf_gate_ids"}:
+        raise invalid("hosted jobs require exactly a default job and leaf assignments")
+    default = _string(raw["default"], "ci-gate-hosted-jobs", "public_gate/hosted_jobs")
+    assignments = raw["leaf_gate_ids"]
+    if not isinstance(assignments, Mapping):
+        raise invalid("hosted job assignments must be an object")
+    seen: set[str] = set()
+    jobs: list[tuple[str, tuple[str, ...]]] = []
+    for name, value in assignments.items():
+        gate_ids = _strings(
+            value, "ci-gate-hosted-jobs", f"public_gate/hosted_jobs/{name}"
+        )
+        if (
+            not isinstance(name, str)
+            or name == default
+            or not gate_ids
+            or len(gate_ids) != len(set(gate_ids))
+            or seen.intersection(gate_ids)
+            or any(
+                gate_id not in reachable
+                or gate_id in local_only
+                or node_by_id.get(gate_id, {}).get("kind") != "leaf"
+                for gate_id in gate_ids
+            )
+        ):
+            raise invalid(
+                "each hosted job needs unique reachable hosted leaves that no other job runs"
+            )
+        seen.update(gate_ids)
+        jobs.append((name, gate_ids))
+    return default, tuple(jobs)
 
 
 def select_public_suites(

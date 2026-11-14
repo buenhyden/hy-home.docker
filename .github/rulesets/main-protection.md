@@ -147,8 +147,10 @@ settings by itself.
 
 ## Required Status Checks
 
-The source target is `candidate-quality` alone: one always-present PR job runs
-selected changed validation. Individual leaves are not separate contexts.
+The source target is `candidate-quality` alone: one always-present PR job
+aggregates the `candidate-core` and `candidate-documents` jobs that run the
+selected changed validation, and fails unless both succeeded. Individual
+leaves and the two candidate jobs are not separate contexts.
 There is no feature-push QA, title-edit validation, or main full-profile repeat.
 Main security/SARIF uses merged input and a different trust purpose; it is not
 candidate acceptance. Manual SemVer publication is a separate approved action.
