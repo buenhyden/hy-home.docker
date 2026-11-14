@@ -66,7 +66,11 @@ None: this document states no exclusion.
   model-inference API of any kind, including a self-hosted, `localhost` or
   proxy-routed model, and no wrapper or advisory step routes around that.
   This does not restrict a product feature's own API or the GitHub API used
-  for repository work.
+  for repository work. A subagent that the developer's own interactive
+  session starts, inside that session, is part of the session and not an
+  added model-inference API; it may give the separate-context diff review
+  (owner decision of 2026-11-14). A service, bot or scheduled job that calls a
+  model on its own is still an added API.
 - Generated native role and skill projections are adapters and never own shared
   policy, role intent, or procedure content. Authored native `provider.md` files
   own loading and syntax differences only; `.agents/` is canonical input.
