@@ -1034,6 +1034,10 @@ class CiGateAdapterTests(unittest.TestCase):
             "\r\nMerge branch whatever\r\n",
             "  \r\n  Merge branch whatever\r\n",
             "Merge pull request #1 from o/b\n",
+            "Merge\nbranch whatever\n",
+            "Merge\r\nbranch whatever\r\n",
+            "Merge pull\n request #1 from o/b\n",
+            "\n  Merge\tbranch whatever\n",
         ):
             with self.subTest(message=message):
                 self.root = pathlib.Path(

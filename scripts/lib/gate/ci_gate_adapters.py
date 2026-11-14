@@ -1081,11 +1081,12 @@ def _check_commit_range(root: pathlib.Path, environ: Mapping[str, str]) -> int:
             "ci-gate-adapter-pull-request-range",
             "the pull request history could not be verified",
         )
+    # commitizen tests %s (Git joins the first paragraph's lines) plus %b after
+    # strip(); %B lstripped and whitespace-collapsed are supersets of that view.
     if any(
-        message.lstrip().startswith(
-            merge_prefixes
-        )  # cz strips, so lstrip is a superset
+        text.startswith(merge_prefixes)
         for message in listing.stdout.decode("utf-8", errors="replace").split("\0")
+        for text in (message.lstrip(), re.sub(r"\s+", " ", message).strip())
     ):
         sys.stderr.write(
             "FAIL: a single-parent commit uses a merge-message prefix; "
