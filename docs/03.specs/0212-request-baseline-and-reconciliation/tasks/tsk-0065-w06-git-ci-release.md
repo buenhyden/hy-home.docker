@@ -182,7 +182,7 @@ the aggregate stays closed if a later check-run consumer reads it.
 | WP-45 single-person non-API review | LEGACY-208 | DELTA | GIT-09 here; its "record the operator's signed acceptance" clause is superseded by D-19 |
 | WP-49 Dependabot PR trust | LEGACY-208 | RETIRED_ALIAS | Renovate under POL-0086 is the updater; Dependabot security updates are off |
 | OPEN-13 required check vs GitHub allowed states | W06 prompt | DELTA | Aggregate added here; GitHub still accepts a skipped required check, so the aggregate, not a shard, is required |
-| OPEN-14 runner exit 124 | TSK-0040 | DELTA | See OPEN-14 diagnosis |
+| OPEN-14 runner exit 124 | TSK-0040 | DELTA (closed) | Cause found in hosted CI: leaf budgets set before any hosted measurement; see OPEN-14 diagnosis |
 
 #### OPEN-14 diagnosis
 
@@ -241,11 +241,17 @@ no longer fits the 30-minute candidate job, which the shard split fixes.
 | Fixture git RED | 121 | W126 | red-green-proof | `FixtureGitTests.test_init_git_names_main_from_a_detached_clone` before the fix | FAIL | `RuntimeError: fatal: cannot rename the current branch while not on any`, the hosted error | required | - |
 | Fixture git GREEN | 121 | W126 | red-green-proof | `_support.init_git` uses `git checkout -B main`; `metadata.test_reference` at `deea4dbf2` | PASS | module OK; the failing test unchanged | required | Fixture git RED |
 | Shard split hosted final | 121 | W126 | remote-candidate | PR #1007 at `deea4dbf2`, run 43555699221 | PASS | `candidate-core` 16 min 10 s; `candidate-documents` 15 min 1 s with all four leaves PASS and 956 tests run (21 lifecycle, 164 metadata, 771 library), equal to the local counts; `candidate-quality` success; merged as `b38664681` | required | Shard split hosted first run, Shard split hosted second run |
+| Docs budget timeout | 121 | W126 | remote-candidate | PR #1011 at `0bc487b04`, run 43563856321 | FAIL | `leaf.docs-traceability` ERROR exit 124 `TIMEOUT` at 300 s against its 5-minute budget; its earlier hosted runs took 159 s and 231 s; the aggregate failed closed | required | - |
+| Docs budget hosted | 121 | W126 | remote-candidate | PR #1011 at `f76079d6c`, run 43565612839, after #1012 (merge `9e2fcd3aa`) set the leaf to 15 minutes and the job to 100 | PASS | `leaf.docs-traceability` PASS in 229 s; `candidate-quality` success | required | Docs budget timeout |
+| Budget RED | 121 | W126 | red-green-proof | `test_hosted_job_timeout_covers_its_leaf_budgets_in_sequence` with the leaf at 15 minutes and the job at 90 | FAIL | `100 not less than or equal to 90` | required | - |
+| Budget GREEN | 121 | W126 | red-green-proof | Same test with the job at 100; `check-github-workflow-contract.py`; gate contract and plan suites | PASS | 163 tests OK; contract PASS | required | Budget RED |
+| Budget measurement | 121 | W126 | timing-baseline | Every leaf's `duration_ms` in the evidence artifacts of nine hosted runs (43545382947 to 43567181806), against `.github/workflow-contract.yml` budgets after #1012 | PASS | Highest max-to-budget ratio 0.33 (`docs-traceability` 300 s of 15 min, the 300 s run killed at the old 5-minute budget); `repository-integrity-regressions` 237 s of 20 min, library regressions 489 s of 45 min, document metadata tests 120 s of 30 min; documents job wall time 4 min 9 s to 15 min 1 s of 100 min | required | - |
 
 ### Resolution Links
 
 Fixture git RED is resolved by Fixture git GREEN, and the Shard split hosted
-first and second runs by the Shard split hosted final run.
+first and second runs by the Shard split hosted final run. Budget RED is
+resolved by Budget GREEN, and the Docs budget timeout by Docs budget hosted.
 
 ## Acceptance Decision
 
