@@ -1,6 +1,6 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.9.3"
+version: "1.10.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
@@ -93,7 +93,13 @@ reports the checks of its own candidate and links the Task for the rest.
 The Registry `transitions` own the legal edges; this table names who moves an
 edge and what proves it. A transition outside the Registry edges, an approval
 without its source, and a second completion of a terminal Task or item are
-invalid.
+invalid. The source of an approval is the user, an operator through a trusted
+channel, or a native provider permission origin, as the approval boundaries
+name them. A cancellation's `authorization_ref` and `withdrawal_ref` sections
+each state it on a `Source:` line as `user`, `operator` or `native-provider`,
+and `spec_packages.py` rejects one with no source or another, such as an agent,
+a hook or the Task itself. That check reads the stated source only; it does not
+authenticate it.
 
 Stage 99 assigns document-family states and legal transitions in the
 Registry `lifecycles` and `transitions`; this policy does not restate them.
