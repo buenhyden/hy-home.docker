@@ -1,10 +1,10 @@
 ---
 title: "Service Connection Contracts Task"
-version: "0.1.46"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0041"
 parent_ids:
@@ -405,6 +405,20 @@ Official pages re-read on 2026-11-04: Valkey ACL (database index is not an
 isolation boundary; channels start empty for new users), Valkey persistence
 (AOF `everysec` default, safe AOF copy procedure), PostgreSQL backup (current
 major 18) and Docker volumes (removing a service keeps its volumes).
+
+#### State currency 2026-11-13
+
+On the owner's decision of 2026-11-13 (SPEC-0212 TSK-0063), this Task's
+status follows the work it records: it left `draft` when work started and is
+`in-progress`. The rows below record those observed transitions; they do not
+change any evidence row or acceptance decision.
+
+#### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0041 | draft | ready | #state-currency-2026-11-13 |
+| SPEC-0212-TSK-0041 | ready | in-progress | #state-currency-2026-11-13 |
 
 ### Blockers and Decisions
 
