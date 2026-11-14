@@ -133,7 +133,7 @@ UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SONARQUBE_HOST_PORT:-18094}` -> 9000
 - **Runbook**: SonarQube Runbook (`docs/05.operations/runbooks/15-labs/0066-sonarqube.md`)
 - [LAB 탐색](../README.md)
 - [Documentation index](../../docs/README.md)
-- [RUN-0107 lab-promotion](../../docs/05.operations/runbooks/15-labs/0107-lab-promotion.md)
+- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0107 lab-promotion
 
 ### Observability and Recovery
 
