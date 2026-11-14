@@ -1,10 +1,10 @@
 ---
 title: "Opsflow Notifier Recovery Task"
-version: "0.5.7"
+version: "0.6.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0044"
 parent_ids:
@@ -994,6 +994,20 @@ The owner approved each step on 2026-11-11 after the read-only window above.
 - Residual: Mailpit's UI/API (8025) is reachable from `n8n-worker` over
   `opsflow_capture_net` without authentication. It holds only DEV capture mail
   and delivers nothing outside; recorded in RUN-0053 by PR #948.
+
+#### State currency 2026-11-13
+
+On the owner's decision of 2026-11-13 (SPEC-0212 TSK-0063), this Task's
+status follows the work it records: it left `draft` when work started and is
+`in-progress`. The rows below record those observed transitions; they do not
+change any evidence row or acceptance decision.
+
+#### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0044 | draft | ready | #state-currency-2026-11-13 |
+| SPEC-0212-TSK-0044 | ready | in-progress | #state-currency-2026-11-13 |
 
 ### Blockers and Decisions
 

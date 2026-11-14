@@ -1,8 +1,8 @@
 ---
 title: "Role, Resource and Retirement Input Task"
-version: "0.1.4"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-11-15"
 layer: "specs"
@@ -234,6 +234,20 @@ On 2026-11-10 the owner (@buenhyden) set the service operation, storage move,
 credential, deletion and remote CI boundary row to not required, because
 criterion 92 reuses SPEC-0246 C1-C6 at its recorded scope and authorizes none
 of those operations, and accepted criterion 92.
+
+#### State currency 2026-11-13
+
+On the owner's decision of 2026-11-13 (SPEC-0212 TSK-0063), this Task's
+status follows the work it records: it left `draft` when work started and is
+`in-progress`. The rows below record those observed transitions; they do not
+change any evidence row or acceptance decision.
+
+#### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0048 | draft | ready | #state-currency-2026-11-13 |
+| SPEC-0212-TSK-0048 | ready | in-progress | #state-currency-2026-11-13 |
 
 ### Blockers and Decisions
 

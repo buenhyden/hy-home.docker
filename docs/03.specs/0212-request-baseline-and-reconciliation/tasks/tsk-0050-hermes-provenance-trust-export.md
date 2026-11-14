@@ -1,8 +1,8 @@
 ---
 title: "Hermes Provenance, Trust and Export Task"
-version: "0.1.3"
+version: "0.2.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-11-15"
 layer: "specs"
@@ -117,6 +117,20 @@ records can still delay later reports until Gateway compaction or operator
 action. Both concerns need an operational observation/cursor contract before
 activation; neither is silently treated as a successful timeout or starvation
 control.
+
+#### State currency 2026-11-13
+
+On the owner's decision of 2026-11-13 (SPEC-0212 TSK-0063), this Task's
+status follows the work it records: it left `draft` when work started and is
+`in-progress`. The rows below record those observed transitions; they do not
+change any evidence row or acceptance decision.
+
+#### Lifecycle Events
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0212-TSK-0050 | draft | ready | #state-currency-2026-11-13 |
+| SPEC-0212-TSK-0050 | ready | in-progress | #state-currency-2026-11-13 |
 
 ### Blockers and Decisions
 
