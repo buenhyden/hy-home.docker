@@ -114,9 +114,7 @@ healthcheck가 통과한 뒤 replica set을 초기화합니다. initializer는
 
 - [Architecture index](../../docs/02.architecture/README.md)
 - [Operations index](../../docs/05.operations/README.md)
-- [RUN-0027 mongodb](../../docs/05.operations/runbooks/15-labs/0027-mongodb.md)
-
-- [RUN-0107 lab-promotion](../../docs/05.operations/runbooks/15-labs/0107-lab-promotion.md)
+- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0027 mongodb, RUN-0107 lab-promotion
 
 ### Observability and Recovery
 

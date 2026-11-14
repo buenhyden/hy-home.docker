@@ -97,9 +97,7 @@ python3 -m unittest tests.validation.test_lab_isolation
 - [LAB 탐색](../README.md)
 - [문서 인덱스](../../docs/README.md)
 - [Stalwart 공식 Docker 설치 문서](https://stalw.art/docs/install/platform/docker/).
-- [RUN-0070 mail](../../docs/05.operations/runbooks/15-labs/0070-mail.md)
-
-- [RUN-0107 lab-promotion](../../docs/05.operations/runbooks/15-labs/0107-lab-promotion.md)
+- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0070 mail, RUN-0107 lab-promotion
 
 ### Observability and Recovery
 

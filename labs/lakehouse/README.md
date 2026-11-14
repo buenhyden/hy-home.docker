@@ -98,9 +98,7 @@ docker compose --env-file labs/.env.example -f labs/lakehouse/docker-compose.yml
 
 - [LAB 탐색](../README.md)
 - [운영 문서 색인](../../docs/05.operations/README.md) — `GDE-0094`, `POL-0094`, `RUN-0094`
-- [RUN-0094 lakehouse](../../docs/05.operations/runbooks/15-labs/0094-lakehouse.md)
-
-- [RUN-0107 lab-promotion](../../docs/05.operations/runbooks/15-labs/0107-lab-promotion.md)
+- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0094 lakehouse, RUN-0107 lab-promotion
 
 ### Observability and Recovery
 

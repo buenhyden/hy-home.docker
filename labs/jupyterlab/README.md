@@ -108,8 +108,8 @@ root Compose에 포함되지 않고 HOME network에 연결되지 않으며 Traef
 - [MLflow package](../../infra/08-ai/mlflow/README.md)
 - [LAB 탐색](../README.md)
 - [Documentation index](../../docs/README.md)
-- [RUN-0107 lab-promotion](../../docs/05.operations/runbooks/15-labs/0107-lab-promotion.md)
+- [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0107 lab-promotion
 
 ### Observability and Recovery
 
-Compose 헬스체크는 인증이 필요 없는 `GET /api`이며 서버 응답만 증명하고 커널 상태는 증명하지 않는다. 복구는 [JupyterLab Runbook](../../docs/05.operations/runbooks/15-labs/0089-jupyterlab.md)을 따른다.
+Compose 헬스체크는 인증이 필요 없는 `GET /api`이며 서버 응답만 증명하고 커널 상태는 증명하지 않는다. 복구는 [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md)의 RUN-0089 JupyterLab Runbook을 따른다.

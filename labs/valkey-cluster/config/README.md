@@ -65,4 +65,4 @@ source와 소비하는 Compose를 함께 검토하며 실행 entrypoint는 상�
 
 ### Observability and Recovery
 
-없음: 이 디렉터리는 전용 런북이 없는 설정 조각이며 상위 LAB의 런북을 따른다. 실행과 복구는 [상위 LAB README](../README.md)와 [Valkey Cluster Runbook](../../../docs/05.operations/runbooks/15-labs/0022-valkey-cluster.md)를 따른다.
+없음: 이 디렉터리는 전용 런북이 없는 설정 조각이며 상위 LAB의 런북을 따른다. 실행과 복구는 [상위 LAB README](../README.md)와 [15-labs runbooks](../../../docs/05.operations/runbooks/15-labs/README.md)의 RUN-0022 Valkey Cluster Runbook를 따른다.

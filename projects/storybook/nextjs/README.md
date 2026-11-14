@@ -81,8 +81,8 @@ TypeScript는 6.0.3에 고정합니다. 2026-10-09 기준 7.0.2와 7.1 nightly�
 
 - [상위 Storybook 작업공간](../README.md)
 - [문서 인덱스](../../../docs/README.md)
-- [RUN-0101 storybook](../../../docs/05.operations/runbooks/14-design-system/0101-storybook.md)
+- [14-design-system runbooks](../../../docs/05.operations/runbooks/14-design-system/README.md): RUN-0101 storybook
 
 ### Observability and Recovery
 
-없음: 소스 트리라 직접 관측 대상이 없다. 실행 중인 origin의 운영과 복구는 [Storybook Runbook](../../../docs/05.operations/runbooks/14-design-system/0101-storybook.md)(RUN-0101)을 따른다.
+없음: 소스 트리라 직접 관측 대상이 없다. 실행 중인 origin의 운영과 복구는 [14-design-system runbooks](../../../docs/05.operations/runbooks/14-design-system/README.md)의 RUN-0101 Storybook Runbook을 따른다.
