@@ -1607,6 +1607,8 @@ def validate_registry(
                     _validate_requirement_allocation_transition(
                         requirement_space, trusted_requirement_baseline, findings
                     )
+    if isinstance(spaces, Mapping) and "identity_namespaces" in raw:
+        _validate_identity_namespaces(raw.get("identity_namespaces"), spaces, findings)
     transitions = raw.get("transitions")
     if isinstance(transitions, Mapping):
         for profile_id, lifecycle_id in transitions.items():
@@ -1938,6 +1940,53 @@ def _validate_identity_spaces(
             _validate_identity_spaces(
                 children, f"{location}.{name}.child_spaces", findings
             )
+
+
+def _validate_identity_namespaces(
+    namespaces: object,
+    spaces: Mapping[str, object],
+    findings: list[RegistryFinding],
+) -> None:
+    """D-17/DOC-12: the next numbering namespace is prepared and untouched.
+
+    It mirrors the current top-level spaces, so the Q-07 cutover (after W11
+    only) can start each at 1 without a space, prefix or width drifting. It
+    issues nothing and reserves nothing until that cutover.
+    """
+
+    from scripts.lib.document_governance.identity_history import cutover_findings
+
+    location = "identity_namespaces"
+
+    def invalid(message: str) -> None:
+        findings.append(
+            RegistryFinding("identity-namespace-invalid", location, message)
+        )
+
+    if not isinstance(namespaces, Mapping) or not isinstance(
+        namespaces.get("next"), Mapping
+    ):
+        invalid("the Registry must declare the prepared next namespace")
+        return
+    following = namespaces["next"]
+    for message in cutover_findings({"identity_namespaces": namespaces}):
+        invalid(message)
+    if following.get("id") == namespaces.get("active"):
+        invalid("the next namespace must differ from the active baseline")
+    declared = following.get("spaces")
+    if not isinstance(declared, Mapping):
+        return
+    if set(declared) != set(spaces):
+        invalid("the next namespace must declare exactly the current identity spaces")
+    for name, space in declared.items():
+        current = spaces.get(name)
+        if isinstance(current, Mapping) and isinstance(space, Mapping):
+            if (space.get("prefix"), space.get("width")) != (
+                current.get("prefix"),
+                current.get("width"),
+            ):
+                invalid(f"{name} must keep the current prefix and width")
+    _validate_identity_spaces(declared, f"{location}.next.spaces", findings)
 
 
 def _validate_identity_space_bounds(

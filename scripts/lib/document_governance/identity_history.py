@@ -111,6 +111,110 @@ class IdentityHistoryError(RuntimeError):
     """Raised when Git history cannot be inspected safely."""
 
 
+def _namespace_space(namespace: Mapping[str, object], name: str) -> dict[str, object]:
+    spaces = namespace.get("spaces")
+    space = spaces.get(name) if isinstance(spaces, Mapping) else None
+    if not isinstance(space, Mapping):
+        raise IdentityHistoryError(f"identity space {name!r} is not in the namespace")
+    return dict(space)
+
+
+def rehearse_allocation(
+    namespace: Mapping[str, object],
+    space_name: str,
+    *,
+    baseline: str,
+    expected_next: int,
+) -> tuple[str, dict[str, object]]:
+    """Allocate in a numbering namespace without changing it (D-17, DOC-12).
+
+    The Q-07 cutover starts a new baseline whose spaces begin at 1. This
+    allocator is the one that cutover will use; it returns the identity and the
+    next space state and never mutates its input, so a rehearsal on a Registry
+    copy burns no real number. A request names the baseline it was made
+    against and the next number it saw: another baseline (the closed one, or
+    one that does not exist yet) and a stale or concurrent request are
+    rejected, as is a number the space has reserved.
+    """
+
+    space = _namespace_space(namespace, space_name)
+    if baseline != namespace.get("id"):
+        raise IdentityHistoryError(
+            f"request names baseline {baseline!r}, not {namespace.get('id')!r}"
+        )
+    next_number = space["next_number"]
+    if expected_next != next_number:
+        raise IdentityHistoryError(
+            f"stale request: expected {expected_next}, next is {next_number}"
+        )
+    reserved = space.get("reserved_history", [])
+    if not isinstance(reserved, list) or next_number in reserved:
+        raise IdentityHistoryError(f"{space_name} number {next_number} is reserved")
+    assert isinstance(next_number, int)
+    width = space["width"]
+    assert isinstance(width, int)
+    identity = f"{space['prefix']}{next_number:0{width}d}"
+    return identity, {
+        **space,
+        "high_water": next_number,
+        "next_number": next_number + 1,
+    }
+
+
+def allocate_identity(
+    namespace: Mapping[str, object],
+    space_name: str,
+    *,
+    baseline: str,
+    expected_next: int,
+) -> tuple[str, dict[str, object]]:
+    """Issue a real identity; only an active namespace may (Q07_AFTER_W11_ONLY)."""
+
+    if namespace.get("state") != "active":
+        raise IdentityHistoryError(
+            f"namespace {namespace.get('id')!r} is {namespace.get('state')!r}; "
+            "it issues nothing before the Q-07 cutover"
+        )
+    return rehearse_allocation(
+        namespace, space_name, baseline=baseline, expected_next=expected_next
+    )
+
+
+def reserve_number(space: Mapping[str, object], number: int) -> dict[str, object]:
+    """Return the space with an issued number added to its reserved history."""
+
+    reserved = space.get("reserved_history", [])
+    high_water = space["high_water"]
+    assert isinstance(reserved, list) and isinstance(high_water, int)
+    if type(number) is not int or not 1 <= number <= high_water or number in reserved:
+        raise IdentityHistoryError(f"number {number!r} cannot be reserved")
+    return {**space, "reserved_history": sorted([*reserved, number])}
+
+
+def cutover_findings(raw: Mapping[str, object]) -> tuple[str, ...]:
+    """Refuse a cutover that would reset an issued namespace (a re-run reset).
+
+    Preparing the next namespace is this module's job; executing the cutover
+    is Q-07's. It starts only from a prepared, untouched namespace whose
+    predecessor is the active baseline.
+    """
+
+    namespaces = raw.get("identity_namespaces")
+    following = namespaces.get("next") if isinstance(namespaces, Mapping) else None
+    if not isinstance(namespaces, Mapping) or not isinstance(following, Mapping):
+        return ("the Registry declares no prepared numbering namespace",)
+    findings = []
+    if following.get("state") != "prepared":
+        findings.append("the next namespace is not prepared")
+    if namespaces.get("active") != following.get("predecessor"):
+        findings.append("the active baseline is not the predecessor of the next one")
+    spaces = following.get("spaces")
+    for name, space in spaces.items() if isinstance(spaces, Mapping) else ():
+        if space.get("high_water") != 0 or space.get("reserved_history"):
+            findings.append(f"{name} already issued a number; a reset would reissue it")
+    return tuple(findings)
+
+
 def match_historical_requirement_path(path: str) -> re.Match[str] | None:
     """Match one immutable pre-taxonomy Requirement package path."""
 

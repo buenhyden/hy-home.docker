@@ -17,14 +17,22 @@ from scripts.lib.document_governance.identity_history import (
     IDENTITY_PREFIX_SPACES,
     IdentityHistoryError,
     IssuedIdentities,
+    allocate_identity,
     collect_issued_identities,
+    cutover_findings,
+    rehearse_allocation,
+    reserve_number,
     validate_identity_history,
 )
 from scripts.lib.document_governance.metadata.profile import (
     build_registry_profiles,
     infer_artifact_type,
 )
-from scripts.lib.document_governance.registry import load_registry
+from scripts.lib.document_governance.registry import (
+    DEFAULT_REGISTRY,
+    load_registry,
+    validate_registry,
+)
 
 LEGACY_REQUIREMENT = pathlib.PurePosixPath("docs/01.requirements/prd-0042-preserved.md")
 
@@ -1400,3 +1408,167 @@ class GitPredicateTests(unittest.TestCase):
             message = str(caught.exception)
             self.assertIn("merge-base --is-ancestor not-a-commit HEAD", message)
             self.assertNotEqual("bounded Git identity scan failed", message)
+
+
+class IdentityNamespaceRehearsalTests(unittest.TestCase):
+    """D-17/DOC-12: the next numbering namespace is prepared, not executed.
+
+    After W11 the Q-07 cutover starts new Specs at SPEC-0001. These tests
+    rehearse that allocator on a copy of the Registry, so no real number is
+    issued and no reserved or historical identity is reissued.
+    """
+
+    def setUp(self) -> None:
+        self.raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        self.before = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        self.namespace = self.raw["identity_namespaces"]["next"]
+        self.baseline = self.namespace["id"]
+
+    def codes(self) -> set[str]:
+        return {finding.code for finding in validate_registry(self.raw)}
+
+    def rehearse(self, space: str = "spec", **overrides: object):
+        arguments = {
+            "baseline": self.baseline,
+            "expected_next": self.namespace["spaces"][space]["next_number"],
+            **overrides,
+        }
+        return rehearse_allocation(self.namespace, space, **arguments)
+
+    def rehearse_state(self, name: str, space: dict):
+        spaces = {**self.namespace["spaces"], name: space}
+        return rehearse_allocation(
+            {**self.namespace, "spaces": spaces},
+            name,
+            baseline=self.baseline,
+            expected_next=space["next_number"],
+        )
+
+    def test_the_prepared_namespace_issues_nothing_and_matches_the_current_spaces(
+        self,
+    ) -> None:
+        self.assertEqual("baseline-1", self.raw["identity_namespaces"]["active"])
+        self.assertEqual("prepared", self.namespace["state"])
+        self.assertEqual("Q07_AFTER_W11_ONLY", self.namespace["cutover"])
+        self.assertEqual(
+            self.raw["identity_spaces"].keys(), self.namespace["spaces"].keys()
+        )
+        for name, space in self.namespace["spaces"].items():
+            with self.subTest(space=name):
+                current = self.raw["identity_spaces"][name]
+                self.assertEqual(
+                    (current["prefix"], current["width"], 0, 1, []),
+                    (
+                        space["prefix"],
+                        space["width"],
+                        space["high_water"],
+                        space["next_number"],
+                        space["reserved_history"],
+                    ),
+                )
+        self.assertFalse(
+            {code for code in self.codes() if code.startswith("identity-namespace")}
+        )
+
+    def test_a_namespace_that_already_issued_a_number_is_rejected(self) -> None:
+        self.namespace["spaces"]["spec"].update(high_water=1, next_number=2)
+        self.assertIn("identity-namespace-invalid", self.codes())
+
+    def test_a_namespace_that_differs_from_the_current_spaces_is_rejected(
+        self,
+    ) -> None:
+        for mutate in (
+            lambda ns: ns["spaces"].pop("spec"),
+            lambda ns: ns["spaces"]["spec"].update(prefix="PKG-"),
+            lambda ns: ns["spaces"]["spec"].update(width=5),
+            lambda ns: ns.update(predecessor="baseline-3"),
+            lambda ns: ns.update(id="baseline-1"),
+        ):
+            with self.subTest(mutate=mutate):
+                self.setUp()
+                mutate(self.namespace)
+                self.assertIn("identity-namespace-invalid", self.codes())
+
+    def test_a_registry_without_the_prepared_namespace_is_rejected(self) -> None:
+        del self.raw["identity_namespaces"]
+        self.assertTrue({"schema-invalid", "identity-namespace-invalid"} & self.codes())
+
+    def test_the_first_allocation_is_spec_0001_and_the_rehearsal_changes_nothing(
+        self,
+    ) -> None:
+        identity, state = self.rehearse()
+        self.assertEqual("SPEC-0001", identity)
+        self.assertEqual((1, 2), (state["high_water"], state["next_number"]))
+        self.assertEqual(self.before, self.raw)
+
+    def test_every_space_starts_at_one_without_a_gap(self) -> None:
+        for name, space in self.namespace["spaces"].items():
+            with self.subTest(space=name):
+                issued = []
+                for _ in range(3):
+                    identity, space = self.rehearse_state(name, space)
+                    issued.append(identity)
+                prefix, width = space["prefix"], space["width"]
+                self.assertEqual([f"{prefix}{n:0{width}d}" for n in (1, 2, 3)], issued)
+
+    def test_a_reserved_or_retired_number_is_never_reissued(self) -> None:
+        space = self.namespace["spaces"]["spec"]
+        issued: list[str] = []
+        for _ in range(40):
+            identity, space = self.rehearse_state("spec", space)
+            issued.append(identity)
+            # Retire every third number, as a removed package does.
+            if len(issued) % 3 == 0:
+                space = reserve_number(space, space["high_water"])
+        self.assertEqual(len(issued), len(set(issued)))
+        self.assertEqual(list(range(3, 40, 3)), space["reserved_history"])
+        self.assertEqual(40, space["high_water"])
+
+    def test_a_number_already_reserved_cannot_be_allocated(self) -> None:
+        space = {**self.namespace["spaces"]["spec"], "reserved_history": [1]}
+        with self.assertRaises(IdentityHistoryError):
+            self.rehearse_state("spec", space)
+
+    def test_a_stale_or_concurrent_request_is_rejected(self) -> None:
+        for expected in (0, 2, 99):
+            with (
+                self.subTest(expected=expected),
+                self.assertRaises(IdentityHistoryError),
+            ):
+                self.rehearse(expected_next=expected)
+
+    def test_the_old_and_new_baselines_are_not_confused(self) -> None:
+        for baseline in ("baseline-1", "baseline-3", ""):
+            with (
+                self.subTest(baseline=baseline),
+                self.assertRaises(IdentityHistoryError),
+            ):
+                self.rehearse(baseline=baseline)
+
+    def test_an_unknown_space_is_rejected(self) -> None:
+        with self.assertRaises(IdentityHistoryError):
+            rehearse_allocation(
+                self.namespace, "nope", baseline=self.baseline, expected_next=1
+            )
+
+    def test_a_prepared_namespace_refuses_a_real_allocation(self) -> None:
+        with self.assertRaises(IdentityHistoryError):
+            allocate_identity(
+                self.namespace, "spec", baseline=self.baseline, expected_next=1
+            )
+
+    def test_the_cutover_is_refused_once_the_new_namespace_has_issued_a_number(
+        self,
+    ) -> None:
+        self.assertEqual((), cutover_findings(self.raw))
+        self.namespace["spaces"]["spec"].update(high_water=1, next_number=2)
+        self.assertTrue(cutover_findings(self.raw))
+        self.setUp()
+        self.raw["identity_namespaces"]["active"] = self.baseline
+        self.assertTrue(cutover_findings(self.raw))
+
+    def test_the_closed_baseline_keeps_every_reserved_number(self) -> None:
+        # The rehearsal never touches baseline-1, so its reserved history and
+        # high-water stay exactly as the Registry records them.
+        self.rehearse()
+        self.assertEqual(self.before["identity_spaces"], self.raw["identity_spaces"])

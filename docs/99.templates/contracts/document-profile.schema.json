@@ -12,7 +12,8 @@
     "identity_spaces",
     "transitions",
     "common",
-    "indexes"
+    "indexes",
+    "identity_namespaces"
   ],
   "properties": {
     "schema_version": {
@@ -1125,6 +1126,54 @@
       "minProperties": 1,
       "additionalProperties": {
         "$ref": "#/$defs/identitySpace"
+      }
+    },
+    "identity_namespaces": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "active",
+        "next"
+      ],
+      "properties": {
+        "active": {
+          "type": "string",
+          "pattern": "^baseline-[1-9][0-9]*$"
+        },
+        "next": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "id",
+            "state",
+            "predecessor",
+            "cutover",
+            "spaces"
+          ],
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^baseline-[1-9][0-9]*$"
+            },
+            "state": {
+              "const": "prepared"
+            },
+            "predecessor": {
+              "type": "string",
+              "pattern": "^baseline-[1-9][0-9]*$"
+            },
+            "cutover": {
+              "const": "Q07_AFTER_W11_ONLY"
+            },
+            "spaces": {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {
+                "$ref": "#/$defs/identitySpace"
+              }
+            }
+          }
+        }
       }
     },
     "transitions": {
