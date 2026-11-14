@@ -248,6 +248,63 @@ class ReleaseTests(unittest.TestCase):
             release.publish("1.2.3-rc.1+build.7", SHA, REPOSITORY, run=tagged)
         self.assertFalse(any("POST" in call for call in commands.calls))
 
+    def _publish_against(self, *, releases=(), tags=(), **options):
+        commands = FakeCommands()
+
+        def existing(argv):
+            if argv[:3] == ["gh", "api", f"repos/{REPOSITORY}/releases"]:
+                return json.dumps([[{"tag_name": name} for name in releases]])
+            if argv[:3] == ["git", "ls-remote", "--tags"]:
+                return "\n".join(f"{SHA}\trefs/tags/{name}" for name in tags)
+            return commands(argv)
+
+        try:
+            return release.publish(
+                "1.2.3-rc.1+build.7", SHA, REPOSITORY, run=existing, **options
+            ), commands
+        except release.ReleaseError as error:
+            return error, commands
+
+    def test_version_below_highest_published_is_refused_unless_backport(self):
+        for source in ("releases", "tags"):
+            with self.subTest(source=source, case="downgrade"):
+                result, commands = self._publish_against(**{source: ["v2.0.0"]})
+                self.assertIsInstance(result, release.ReleaseError)
+                self.assertIn("lower", str(result))
+                self.assertIn("reviewed workflow input", str(result))
+                self.assertNotIn("--allow-backport", str(result))
+                self.assertFalse(any("POST" in call for call in commands.calls))
+            with self.subTest(source=source, case="backport"):
+                result, _ = self._publish_against(
+                    allow_backport=True, **{source: ["v2.0.0"]}
+                )
+                self.assertEqual("v1.2.3-rc.1+build.7", result["tag"])
+            with self.subTest(source=source, case="higher"):
+                result, _ = self._publish_against(**{source: ["v1.2.2", "1.0.0"]})
+                self.assertEqual("v1.2.3-rc.1+build.7", result["tag"])
+            with self.subTest(source=source, case="unchanged"):
+                result, commands = self._publish_against(
+                    allow_backport=True, **{source: ["v1.2.3-rc.1+build.1"]}
+                )
+                self.assertIn("same precedence", str(result))
+                self.assertFalse(any("POST" in call for call in commands.calls))
+
+    def test_unprefixed_highest_tag_blocks_a_lower_version(self):
+        for source in ("releases", "tags"):
+            with self.subTest(source=source):
+                result, commands = self._publish_against(**{source: ["3.0.0"]})
+                self.assertIsInstance(result, release.ReleaseError)
+                self.assertIn("lower", str(result))
+                self.assertFalse(any("POST" in call for call in commands.calls))
+
+    def test_cli_exposes_allow_backport_only_on_publish(self):
+        with patch("sys.argv", ["release.py", "publish", "--help"]):
+            with self.assertRaises(SystemExit), patch("sys.stdout") as stdout:
+                release.main()
+        self.assertIn(
+            "--allow-backport", "".join(c.args[0] for c in stdout.write.mock_calls)
+        )
+
     def test_changelog_entries_of_equal_precedence_are_duplicates(self):
         text = CHANGELOG.replace(
             "## [1.2.2] - 2026-10-06", "## [1.2.3-rc.1+build.8] - 2026-10-06"
