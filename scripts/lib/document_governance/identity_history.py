@@ -206,11 +206,21 @@ def cutover_findings(raw: Mapping[str, object]) -> tuple[str, ...]:
     findings = []
     if following.get("state") != "prepared":
         findings.append("the next namespace is not prepared")
-    if namespaces.get("active") != following.get("predecessor"):
+    active = namespaces.get("active")
+    if (
+        not isinstance(active, str)
+        or not active
+        or active != following.get("predecessor")
+    ):
         findings.append("the active baseline is not the predecessor of the next one")
     spaces = following.get("spaces")
-    for name, space in spaces.items() if isinstance(spaces, Mapping) else ():
-        if space.get("high_water") != 0 or space.get("reserved_history"):
+    if not isinstance(spaces, Mapping):
+        findings.append("the next namespace declares no spaces")
+        spaces = {}
+    for name, space in spaces.items():
+        if not isinstance(space, Mapping):
+            findings.append(f"{name} must be an object")
+        elif space.get("high_water") != 0 or space.get("reserved_history"):
             findings.append(f"{name} already issued a number; a reset would reissue it")
     return tuple(findings)
 

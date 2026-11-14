@@ -1567,6 +1567,14 @@ class IdentityNamespaceRehearsalTests(unittest.TestCase):
         self.raw["identity_namespaces"]["active"] = self.baseline
         self.assertTrue(cutover_findings(self.raw))
 
+    def test_the_cutover_needs_a_named_baseline_and_object_spaces(self) -> None:
+        del self.raw["identity_namespaces"]["active"]
+        del self.namespace["predecessor"]
+        self.assertTrue(cutover_findings(self.raw))
+        self.setUp()
+        self.namespace["spaces"]["adr"] = 0
+        self.assertTrue(cutover_findings(self.raw))
+
     def test_the_closed_baseline_keeps_every_reserved_number(self) -> None:
         # The rehearsal never touches baseline-1, so its reserved history and
         # high-water stay exactly as the Registry records them.
