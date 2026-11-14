@@ -464,7 +464,9 @@ changed-ref 검증입니다. 두 경로는 같은 pin에서 fixer를 제외하�
 사용하는 `mutation: none`이며 source bytes를 보존합니다. hook 설치나 배포는 수행하지
 않습니다. `hooks/install-pre-push-guard.sh --check-hooks`는 읽기 전용으로
 pre-commit, commit-msg, pre-push hook 설치 상태를 `PASS`/`MISSING`으로 보고하며,
-미설치가 하나라도 있으면 exit `3`을 반환해 통과(exit `0`)와 구분합니다.
+미설치가 하나라도 있으면 exit `3`을 반환해 통과(exit `0`)와 구분하고, exit `2`는
+허용되지 않은 인자입니다. pre-commit과 commit-msg는 해당 `--hook-type`으로 만든
+pre-commit shim만 설치로 인정하며, native wrapper는 pre-push에만 인정합니다.
 `.gitmessage`는 `git config commit.template .gitmessage`로 직접 연결해야 합니다.
 `.cz.toml`의 `allowed_prefixes`(Merge branch / Merge pull request /
 Merge remote-tracking branch)는 실제 merge 커밋(부모 2개 이상) 전용 예외입니다.

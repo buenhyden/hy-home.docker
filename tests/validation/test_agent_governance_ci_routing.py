@@ -2433,6 +2433,8 @@ class ReadOnlyCommitStyleTests(unittest.TestCase):
     ) -> None:
         commitizen = self._commitizen()
         if commitizen is None:
+            if os.environ.get("CI"):
+                self.fail("python commitizen cz is required in CI")
             self.skipTest("NOT_RUN: python commitizen cz is not installed")
         config = yaml.safe_load((ROOT / ".pre-commit-config.yaml").read_text())
         upstream = next(
@@ -2853,6 +2855,44 @@ class InstalledPrePushGuardTests(unittest.TestCase):
             result = self._check_hooks(repo)
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
             self.assertNotIn("MISSING", result.stdout)
+
+    def test_check_hooks_reports_a_wrong_type_shim_as_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            repo = pathlib.Path(directory) / "bare"
+            repo.mkdir()
+            self.assertEqual(0, self._git(repo, "init", "-q", "-b", "main").returncode)
+            (repo / ".pre-commit-config.yaml").write_text("repos: []\n")
+            environment = {**os.environ, "PRE_COMMIT_HOME": str(repo / ".cache")}
+            for hook_type in ("pre-commit", "commit-msg", "pre-push"):
+                subprocess.run(
+                    ["pre-commit", "install", "--hook-type", hook_type],
+                    cwd=repo,
+                    env=environment,
+                    check=True,
+                    capture_output=True,
+                )
+            self.assertEqual(0, self._check_hooks(repo).returncode)
+            hooks = repo / ".git/hooks"
+            shim = (hooks / "pre-push").read_text()
+            self.assertIn("--hook-type=pre-push", shim)
+            (hooks / "commit-msg").write_text(shim)
+            result = self._check_hooks(repo)
+            self.assertEqual(3, result.returncode, result.stdout + result.stderr)
+            self.assertIn("MISSING: commit-msg", result.stdout)
+            self.assertIn("PASS: pre-commit", result.stdout)
+            self.assertIn("PASS: pre-push", result.stdout)
+            # The native wrapper is valid for pre-push only.
+            guard = repo / "scripts/hooks/pre-push-guard.sh"
+            guard.parent.mkdir(parents=True)
+            shutil.copy2(ROOT / "scripts/hooks/pre-push-guard.sh", guard)
+            installed = self._install(repo)
+            self.assertEqual(0, installed.returncode, installed.stderr)
+            native = (hooks / "pre-push").read_text()
+            self.assertIn("native pre-push guard", native)
+            self.assertIn("PASS: pre-push", self._check_hooks(repo).stdout)
+            (hooks / "pre-commit").write_text(native)
+            (hooks / "pre-commit").chmod(0o755)
+            self.assertIn("MISSING: pre-commit", self._check_hooks(repo).stdout)
 
     def test_installer_refuses_unknown_hook_or_selected_hook_directory(self) -> None:
         for condition in (
