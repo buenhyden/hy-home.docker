@@ -1564,6 +1564,16 @@ class GithubWorkflowContractTests(unittest.TestCase):
             quality.jobs["candidate-quality"].condition,
         )
 
+    def test_aggregate_result_variables_are_valid_shell_names(self) -> None:
+        name = self.module.aggregate_result_variable
+        self.assertEqual("FOO_BAR_RESULT", name("candidate-foo-bar"))
+        self.assertEqual("CORE_RESULT", name("candidate-core"))
+        step = self._required_quality_jobs(self.module, ROOT)["candidate-quality"][
+            "steps"
+        ][0]
+        for variable in step["env"]:
+            self.assertRegex(variable, r"^[A-Z_][A-Z0-9_]*$")
+
     def test_aggregate_fails_unless_every_needed_job_succeeded(self) -> None:
         aggregate = self._required_quality_jobs(self.module, ROOT)["candidate-quality"]
         (step,) = aggregate["steps"]

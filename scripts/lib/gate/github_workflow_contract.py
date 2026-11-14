@@ -900,6 +900,12 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
     )
 
 
+def aggregate_result_variable(need: str) -> str:
+    """Shell-safe variable carrying one needed job's result into the aggregate."""
+
+    return f"{need.removeprefix('candidate-').upper().replace('-', '_')}_RESULT"
+
+
 def _job_tokens(job: dict[object, object]) -> tuple[str, ...]:
     tokens: list[str] = []
     steps = job.get("steps")
@@ -1067,14 +1073,14 @@ def _workflow_projection_findings(
             expected_step = {
                 "name": AGGREGATE_RESULT_STEP,
                 "env": {
-                    f"{need.removeprefix('candidate-').upper()}_RESULT": (
+                    aggregate_result_variable(need): (
                         "${{ needs." + need + ".result }}"
                     )
                     for need in expected_job.needs
                 },
                 "shell": FIXED_SHELL,
                 "run": "".join(
-                    f'test "${need.removeprefix("candidate-").upper()}_RESULT" = success\n'
+                    f'test "${aggregate_result_variable(need)}" = success\n'
                     for need in expected_job.needs
                 ),
             }
