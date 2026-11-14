@@ -462,7 +462,10 @@ evidence가 필요합니다. `run-agent-precommit-all-files.sh`는 fixer 훅을 
 `--mode pr-merge`는 GitHub Actions의 인증된 PR 병합 후보를 scratch에 체크아웃하는
 changed-ref 검증입니다. 두 경로는 같은 pin에서 fixer를 제외하고 등록된 check 모드를
 사용하는 `mutation: none`이며 source bytes를 보존합니다. hook 설치나 배포는 수행하지
-않습니다.
+않습니다. `hooks/install-pre-push-guard.sh --check-hooks`는 읽기 전용으로
+pre-commit, commit-msg, pre-push hook 설치 상태를 `PASS`/`MISSING`으로 보고하며,
+미설치가 하나라도 있으면 exit `3`을 반환해 통과(exit `0`)와 구분합니다.
+`.gitmessage`는 `git config commit.template .gitmessage`로 직접 연결해야 합니다.
 
 전환(transition) 행에는 non-retain disposition, 구분되는 tracked successor,
 비어 있지 않은 `removal_condition`이 모두 있어야 합니다. active 행은
