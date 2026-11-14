@@ -2037,6 +2037,139 @@ class CiGateRunnerContractTests(unittest.TestCase):
                             repo, {**environment, key: value}
                         )
 
+    def test_moved_pull_request_base_is_not_reused_after_the_check(self) -> None:
+        """W06 counterexample: the base branch moved after the candidate check."""
+        row = {
+            "gate_id": "leaf.example",
+            "argv": ["scripts/validation/example.py"],
+            "selection_reason": "changed_path",
+            "environment_keys": [],
+            "source": {
+                "path": "scripts/validation/example.py",
+                "sha256": "4" * 64,
+                "git_object": "5" * 40,
+                "size_bytes": 1,
+            },
+            "tool_image_digest": "NOT_AVAILABLE",
+        }
+
+        def request_identity(environment, root):
+            with mock.patch.object(runner, "_controller_toolchain", return_value=None):
+                request = runner._execution_evidence_request(
+                    {
+                        **environment,
+                        "GITHUB_RUN_ID": "1",
+                        "GITHUB_RUN_ATTEMPT": "1",
+                        "GITHUB_JOB": "candidate-quality",
+                        "CI_GATE_EVIDENCE_DIR": str(root / "unused"),
+                    },
+                    root=root,
+                    profile="changed",
+                    context=runner.ExecutionContext.PULL_REQUEST,
+                    selection_reasons={},
+                    node_selected=False,
+                    observe_runtime=False,
+                )
+            return request.identity
+
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            root_owned_system_git_fixture(),
+        ):
+            repo = self._changed_path_repo(pathlib.Path(directory))
+            git = self._git
+            trunk = git(repo, "rev-parse", "--abbrev-ref", "HEAD").stdout.strip()
+            base_one = git(repo, "rev-parse", "HEAD").stdout.strip()
+            git(repo, "checkout", "-qb", "candidate")
+            (repo / "candidate.txt").write_text("candidate\n", encoding="utf-8")
+            git(repo, "add", "candidate.txt")
+            git(repo, "commit", "-qm", "candidate")
+            head = git(repo, "rev-parse", "HEAD").stdout.strip()
+            git(repo, "checkout", "-q", trunk)
+            git(repo, "merge", "--no-ff", "-qm", "merge one", "candidate")
+            merge_one = git(repo, "rev-parse", "HEAD").stdout.strip()
+            # The base branch moves; GitHub rebuilds the merge on the new base.
+            git(repo, "checkout", "-qb", "moved", base_one)
+            (repo / "other.txt").write_text("other\n", encoding="utf-8")
+            git(repo, "add", "other.txt")
+            git(repo, "commit", "-qm", "base moved")
+            base_two = git(repo, "rev-parse", "HEAD").stdout.strip()
+            git(repo, "merge", "--no-ff", "-qm", "merge two", "candidate")
+            merge_two = git(repo, "rev-parse", "HEAD").stdout.strip()
+
+            def event(merge: str, base: str, **extra: str) -> dict[str, str]:
+                return {
+                    "PATH": os.defpath,
+                    "GITHUB_ACTIONS": "true",
+                    "GITHUB_EVENT_NAME": "pull_request",
+                    "GITHUB_SHA": merge,
+                    "TRUSTED_EVENT_NAME": "pull_request",
+                    "TRUSTED_MERGE_SHA": merge,
+                    "TRUSTED_BASE_SHA": base,
+                    "TRUSTED_HEAD_SHA": head,
+                    "TRUSTED_GIT_PATH": shutil.which("git") or "/usr/bin/git",
+                    **extra,
+                }
+
+            # Candidate checked against the first base: record a PASS.
+            git(repo, "checkout", "-q", merge_one)
+            first = runner._authenticated_execution_environment(
+                repo, event(merge_one, base_one)
+            )
+            first_identity = request_identity(first, repo)
+            self.assertEqual(base_one, first_identity["base_sha"])
+            evidence = pathlib.Path(directory) / "ci-gate-evidence"
+            store = runner.EvidenceStore.create(
+                evidence, identity=first_identity, rows=[row], retention_days=14
+            )
+            store.initialize_result()
+            store.mark_started("leaf.example", started_at_utc="2026-10-16T00:00:00Z")
+            store.mark_terminal(
+                "leaf.example",
+                status="PASS",
+                exit_code=0,
+                ended_at_utc="2026-10-16T00:00:01Z",
+                duration_ms=1,
+            )
+            store.close()
+            runner.EvidenceStore.open(
+                evidence, identity=first_identity, rows=[row], retention_days=14
+            ).close()
+
+            # The base moved to base_two, so the event now names the new merge.
+            # The old checkout cannot be authenticated as the moved candidate.
+            for label, moved in (
+                ("moved-base-old-merge", event(merge_one, base_two)),
+                ("old-checkout-new-merge", event(merge_two, base_two)),
+                (
+                    "stale-mutable-base",
+                    event(merge_one, base_one, PR_BASE_SHA=base_two),
+                ),
+            ):
+                with self.subTest(label=label):
+                    with self.assertRaises(contract.GateContractError):
+                        runner._authenticated_execution_environment(repo, moved)
+
+            # A fresh run on the moved base authenticates, but its identity
+            # must not reopen the PASS recorded against the old base.
+            git(repo, "checkout", "-q", merge_two)
+            second = runner._authenticated_execution_environment(
+                repo, event(merge_two, base_two)
+            )
+            second_identity = request_identity(second, repo)
+            self.assertEqual(base_two, second_identity["base_sha"])
+            for label, identity in (
+                ("fresh-run", second_identity),
+                ("base-only", {**first_identity, "base_sha": base_two}),
+            ):
+                with self.subTest(label=label):
+                    with self.assertRaisesRegex(
+                        runner.EvidenceError, "plan does not match"
+                    ):
+                        runner.EvidenceStore.open(
+                            evidence, identity=identity, rows=[row], retention_days=14
+                        )
+
     def test_poisoned_custom_event_fails_before_prerequisite_selection(self) -> None:
         document = contract.load_contract_document(ROOT)
         environment = {
