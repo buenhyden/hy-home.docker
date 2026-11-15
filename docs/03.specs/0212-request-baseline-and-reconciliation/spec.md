@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.65.0"
+version: "1.66.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -240,7 +240,8 @@ run of 2026-11-14 adds criterion 121 and W126 in TSK-0065 for the Git hook,
 CI, release and delivery contract. The W00-DELTA run of the 3.0.1 package on
 2026-11-15 adds criterion 122 and W127 in TSK-0066, and its gap audit the same
 day adds criterion 123 and W128 in TSK-0067. The W01-CONTRACT run of the
-same day adds criterion 124 and W129 in TSK-0068.
+same day adds criterion 124 and W129 in TSK-0068, and its gap audit adds
+criterion 125 and W130 in TSK-0069.
 
 ### Owning Requirements
 
@@ -1017,6 +1018,11 @@ target, backup, recovery boundary, and action-specific authorization.
      review effort follows risk (Q08); a draft never authorizes work on its
      own (Q-DRAFT); and every changed rule's consumers change with it. Each
      behavior change has a test that fails without it.
+125. TSK-0069 audits TSK-0068 against every W01-CONTRACT step and
+     acceptance test: every governance policy has its purpose, owner, code
+     consumers and enforcement recorded; document and contract versions are
+     three integers only, as Q03 and the shared vocabulary require, with
+     product versions unchanged; and fit and violation cases are recorded.
 
 ### Evidence Requirements
 
