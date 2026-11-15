@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.62.3"
+version: "1.63.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -237,7 +237,8 @@ W125 for the W05-primary QA cases it found open: the check crosswalk
 (QA-C05), result reuse (QA-C07, including the security database), the staged
 index (QA-C08), SemVer precedence and the QA-08 cost baseline. The v14.7 W06
 run of 2026-11-14 adds criterion 121 and W126 in TSK-0065 for the Git hook,
-CI, release and delivery contract.
+CI, release and delivery contract. The W00-DELTA run of the 3.0.1 package on
+2026-11-15 adds criterion 122 and W127 in TSK-0066.
 
 ### Owning Requirements
 
@@ -995,6 +996,12 @@ target, backup, recovery boundary, and action-specific authorization.
      applied with read-back; and each W06 requirement, carry-forward key and
      OPEN-13/OPEN-14 has a verdict and owner. Each behavior change has a test
      that fails without it.
+122. TSK-0066 runs the 3.0.1 W00-DELTA for this workspace: the baseline,
+     the pull requests merged since criterion 121 was accepted, and a
+     KEEP_VERIFIED, CHANGE, REPLACE, REMOVE or UNVERIFIED verdict per
+     docker-profile item are recorded with their evidence and read scope, and
+     each remaining difference names one receiving work unit. No requirement
+     is lowered to match the implementation.
 
 ### Evidence Requirements
 
