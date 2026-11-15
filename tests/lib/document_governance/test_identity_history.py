@@ -676,7 +676,9 @@ class IdentityHistoryTests(unittest.TestCase):
             registry_path.parent.mkdir(parents=True)
             registry_path.write_bytes(registry_module.DEFAULT_REGISTRY.read_bytes())
             registry = load_registry(registry_path)
-            issued = registry.identity_spaces["spec"].high_water
+            space = registry.identity_spaces["spec"]
+            reserved = set(space.reserved_history)
+            issued = max(n for n in range(1, space.high_water + 1) if n not in reserved)
             preserved = root / (
                 f"docs/98.archive/completed/03.specs/{issued:04d}-fixture/spec.md"
             )
