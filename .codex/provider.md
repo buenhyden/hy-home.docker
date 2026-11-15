@@ -1,6 +1,6 @@
 ---
 title: "Codex Provider Adapter"
-version: "1.6.2"
+version: "1.6.3"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
@@ -108,6 +108,11 @@ Direct `apply_patch`, other trust or enablement states, and the native
 resume or compact path remain unobserved for this brief guard.
 The [environment constraints](../.agents/governance/environment-constraints.md#1-hard-constraints)
 record the separate host CLI sandbox limitation.
+The project role projects `sandbox_mode = "read-only"`. In the managed
+desktop collaboration route, a session invoked as `code-reviewer` could
+open a disposable `/tmp` file for writing through its normal shell tool.
+The review left the file intact. Use a launch path with verified effective
+read-only permissions for work that requires filesystem isolation.
 Respect the active sandbox and approval boundary; do not mutate user-global or
 ignored local configuration or install global skill copies.
 

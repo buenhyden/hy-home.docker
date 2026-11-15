@@ -1,6 +1,6 @@
 ---
 title: "W07 Native Provider Adapter Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -102,6 +102,48 @@ baseline took the wrong Stop path. These measurements cover local command
 startup and dispatch only. The large SessionStart fixture uses a synthetic
 extra field to exercise transport independent of the provider payload schema.
 
+#### Resume verification at e2c307bcc
+
+The direct W07-ADAPTER resume request binds this clean baseline and the
+Task and authored Codex adapter paths. Reuse the reviewed dispatcher and
+registered hook bindings. Recheck the focused fixture cases and use the
+installed clients with disposable profiles to identify which remaining
+guarantees can be measured locally. Preserve project trust and account
+settings. If a runtime exposes effective permissions that differ from
+the projection, record the particular route and target in its adapter.
+A rollback of that documentation leaves the runtime behavior unchanged.
+
+The focused `python3 -m unittest` invocation selected
+`HookOutputAndMainPushTests`, the long Stop retry case and
+`tests.lib.hooks.test_request_brief`. All 31 tests passed. Repository
+contract, provider renderer and script manifest checks returned zero
+failures. The hook implementation and timing inputs did not change, so the
+previous paired measurements still describe the implementation change.
+The same two PRs remained open in the new read-only lookup.
+
+Codex CLI 0.169.0 returned a native `initialize` and `hooks/list`
+response from `codex app-server --listen stdio://` in a fresh temporary
+profile. The response listed no project-defined hooks at this workspace
+path. The local desktop proxy could not connect. The standalone
+`command/exec` request with the `readOnly` policy produced no response
+within the probe budget. The separate `codex sandbox linux` launch
+stopped at its app-server socket directory prerequisite before the
+permission check ran.
+
+Claude Code 2.1.325 also ran `--print --init-only --output-format stream-json`
+with project settings, an empty MCP configuration and disposable state.
+It returned zero, and the trace again showed project SessionStart discovery
+and a trust or permission notice. The stream produced no hook lifecycle
+result. The probe submitted no model prompt.
+
+In the current Codex desktop collaboration route, the `code-reviewer` role
+could open the synthetic temporary fixture with `O_WRONLY` through its
+normal shell tool. The operation wrote zero bytes and the author checked
+the unchanged fixture before removing it. The witness confirms that opening
+this exact temporary path for writing was allowed. The installed
+CLI role and protected paths require their own tests. The authored Codex
+adapter now records this distinction without changing any role or permission.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -138,6 +180,12 @@ project trust before it can supply the missing delivery evidence.
 | Native malformed output | 135 | W140 | native unsupported-pretool-output control case | Both provider runtimes | NOT_RUN | No disposable trusted runtime with the control input observed | required | - |
 | Native reviewer boundaries | 135 | W140 | shell write and sensitive path denial | Both provider review roles | NOT_RUN | Effective role permission and denial have no witness | required | - |
 | Native cross-provider integration | 135 | W140 | capture, memory and worker dispatch witness | Both provider runtimes | NOT_RUN | Capture and memory are W08 dependencies and native dispatch needs an authorized worker fixture | required | - |
+| Resume focused verification | 135 | W140 | focused unittest, governance contract all, renderer and manifest | e2c307bcc and installed clients | PASS | 31 tests, zero projection drift, all four commands exit 0 | required | - |
+| Installed Codex discovery probe | 135 | W140 | app-server hooks/list discovery | Codex CLI 0.169.0 with an isolated temporary profile | PASS | Native protocol responded and reported zero project hooks in that profile | optional | - |
+| Resume Claude native delivery | 135 | W140 | isolated init-only and trusted delivery acceptance | Claude 2.1.325 and stream-json in a disposable profile | NOT_RUN | Hook found in startup trace, trust or permission notice, no hook result | required | - |
+| Codex CLI native sandbox probe | 135 | W140 | read-only launcher and synthetic write-open | Codex 0.169.0 CLI and app-server | NOT_RUN | Server permission request timed out and launcher did not reach the target | required | - |
+| Codex desktop reviewer write-open | 135 | W140 | normal reviewer shell open of a synthetic file | Managed desktop code-reviewer and disposable temporary path | FAIL | Write-mode open succeeded without an override, fixture content untouched | required | - |
+| Resume evidence review | 135 | W140 | independent document diff and witness scope | TSK-0079 and authored Codex adapter against e2c307bcc | PASS | Review distinguished write-mode open from a file mutation and CLI role isolation | optional | - |
 
 ### Resolution Links
 
