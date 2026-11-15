@@ -798,11 +798,17 @@ def _completion_line_states(
 
 
 def _completion_visible_lines(body: str) -> list[str]:
-    """Exclude fenced examples and HTML comments without mixing their states."""
+    """Keep completion evidence inside the shared Markdown form boundary."""
+    from scripts.lib.document_governance.metadata.heading import _markdown_form_lines
+
+    lines = body.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    if not lines[-1]:
+        lines.pop()
+    form_lines = _markdown_form_lines(body)
+    # Hidden HTML can contain a comment boundary that affects later lines.
     return [
-        visible
-        for _, visible in _completion_line_states(body.splitlines())
-        if visible is not None
+        (visible or "") if form_lines[index][1] else ""
+        for index, (_, visible) in enumerate(_completion_line_states(lines))
     ]
 
 

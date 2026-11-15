@@ -2585,6 +2585,42 @@ Narrative after the registered table.
             ),
         )
 
+    def test_acceptance_criteria_read_only_markdown_outside_raw_html(self) -> None:
+        module = _spec_packages_module()
+        body = "## Acceptance Criteria\n\n<div>\n90. Example.\n</div>\n\n1. Actual.\n"
+        self.assertEqual(
+            (1,), module.acceptance_criterion_numbers(body, "Acceptance Criteria")
+        )
+        with self.assertRaises(module.SpecPackageError):
+            module.acceptance_criterion_numbers(
+                "<div>\n## Acceptance Criteria\n90. Example.\n</div>\n",
+                "Acceptance Criteria",
+            )
+
+    def test_common_section_ignores_duplicate_heading_inside_raw_html(self) -> None:
+        module = _spec_packages_module()
+        body = (
+            "## Acceptance Decision\n\n"
+            "<div>\n### Criterion Decisions\n</div>\n\n"
+            "### Criterion Decisions\n\nOwner decision goes here.\n"
+        )
+        section, level = module._contract_span(body, "Criterion Acceptance")
+        self.assertEqual(3, level)
+        self.assertIn("Owner decision goes here.", section)
+
+    def test_acceptance_criteria_keep_comment_boundaries_across_raw_html(self) -> None:
+        module = _spec_packages_module()
+        for example in (
+            "<div>\n<!--\n</div>\n\n90. Hidden.\n-->\n",
+            "Intro <!--\n<div>\n-->\n</div>\n\n",
+        ):
+            with self.subTest(example=example):
+                body = f"## Acceptance Criteria\n\n{example}1. Actual.\n"
+                self.assertEqual(
+                    (1,),
+                    module.acceptance_criterion_numbers(body, "Acceptance Criteria"),
+                )
+
     def test_common_key_resolves_the_legacy_h2_or_the_common_form_h3(self) -> None:
         module = _spec_packages_module()
         legacy = "## Work Breakdown\n1. W1: Old.\n## Verification Plan\nx\n"
