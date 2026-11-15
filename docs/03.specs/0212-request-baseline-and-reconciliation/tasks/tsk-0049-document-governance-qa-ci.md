@@ -1,6 +1,6 @@
 ---
 title: "Documentation, Governance, QA and CI Contract Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 owner: "@buenhyden"
 updated: "2026-11-15"
@@ -81,6 +81,16 @@ The execution items and lifecycle events below record this Task's work.
 - The restic daily-path snapshot accounting redesign that SPEC-0270 deferred has
   no open Spec; it needs a new Spec before the daily path gains admission
   gating.
+- On 2026-11-15 the owner approved retiring the ready SPEC-0254 and SPEC-0256
+  packages ("Retire both"; readiness `ready`, their Tasks completed in #1030).
+  Their lineage moves to REQ-0024, AD-0027, REQ-0026, AD-0030 and ADR-0048
+  Traceability, the Stage 03 README rows are removed, and 254 and 256 join the
+  Registry Spec `reserved_history`. The last commit carrying each removed body
+  is `8994b94ce`, reachable from `main`, for
+  `docs/03.specs/0254-agent-guide-follow-ups/` and
+  `docs/03.specs/0256-legacy-document-status-ban/`, each with `spec.md`,
+  `plan.md` and its `tasks/tsk-0001-*.md`. Before removal each body at that
+  commit was byte-identical to `main` at `2adf05673`.
 
 ## Verification Evidence
 
