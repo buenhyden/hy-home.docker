@@ -1,6 +1,6 @@
 ---
 title: "Analytics Labs Migration Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -321,6 +321,9 @@ None: nothing was recorded here before this Task moved to the common form.
 | E18 | 2 | W1 | unit-tests | `test_lab_controller` and `test_lab_isolation` on `6f4eb08dc`, plus script manifest, CI routing and compose baseline modules | PASS | observer, shared tracked file, source-tree, HOME secret/env/Docker-root, tracked/clean, literal pathspec, allowlist, root validation, configs/build/env_file tests GREEN after RED | required | - |
 | E20 | 2 | W1 | lab-controller-allowlist | synthetic check of all 16 LABs on `6f4eb08dc` | PASS | 15 LABs: no overlap or allowlist problem; supabase refused as decided (HOME secrets; Docker socket refused by the allowlist) | required | - |
 | E19 | 2 | W1 | security-review | Independent review of the LAB overlap change through `8b231c5e3` | FAIL | CHANGES_REQUESTED: 2 Important (HOME secrets, root env and Docker root uncovered; gitignored .env accepted), 1 Minor (tests) | required | - |
+| E21 | 2 | W1 | lab-root-coverage-tests | The three `c94497269` tests (HOME secret/root env/Docker root, source-tree tracked non-env, `.env` sensitivity) replayed against the pre-fix `lab.py` at `dad8b32c6` | FAIL | `root_footprint()` rejects `env_file` (TypeError: no HOME secret, root env or Docker root footprint); gitignored `.env` and untracked source-tree files not refused (`[] is not true` x2); `labs/.env` not sensitive | required | - |
+| E22 | 2 | W1 | lab-root-coverage-tests | same three tests, `test_lab_controller` and `test_lab_isolation` on `1279b4ed0` (`origin/main`, includes `c94497269`) | PASS | 3 tests OK; 111 tests OK in the two modules | required | E21 |
+| E23 | 2 | W1 | security-review | Fix verification of E19 on `1279b4ed0`: fix `c94497269` plus later hardening through `6f4eb08dc` are on `origin/main`; E21 and E22 replay | PASS | Important 1 fixed: compose secret files are sensitive inputs, the root env file and `DockerRootDir` are HOME state, so a LAB that mounts or declares them collides. Important 2 fixed: `.env` files are sensitive and only git-tracked, unmodified paths qualify for the source-tree exemption. Minor fixed: the replayed tests cover each item. The Minor's full text is not recorded, so this reading is an assumption. No source change was needed; this review is a replay, not a new independent review | required | E19 |
 
 ### Resolution Links
 
