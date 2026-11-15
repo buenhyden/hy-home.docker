@@ -6551,7 +6551,7 @@ class N8nTaskRunnerWarmupContractTests(unittest.TestCase):
             {"n8n-nodes-base.scheduleTrigger", "n8n-nodes-base.code"}, set(by_type)
         )
         self.assertEqual(
-            [{"field": "cronExpression", "expression": "50 7 * * *"}],
+            [{"field": "cronExpression", "expression": "50 6 * * *"}],
             by_type["n8n-nodes-base.scheduleTrigger"]["parameters"]["rule"]["interval"],
         )
 
