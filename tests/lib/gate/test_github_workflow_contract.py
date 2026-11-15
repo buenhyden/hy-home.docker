@@ -735,7 +735,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 ),
                 "docker version",
                 "/usr/bin/docker compose version",
-                'test "$CORE_RESULT" = success\ntest "$DOCUMENTS_RESULT" = success\n',
+                self.module._aggregate_result_step(SHARD_JOBS)["run"],
             },
             set(run_values),
         )
@@ -1576,6 +1576,14 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "workflow-gate-projection-mismatch",
             ),
             (
+                "candidate-rebinds-outcome",
+                "candidate-core",
+                lambda job: job["outputs"].update(
+                    {"execution": "${{ steps.prerequisites.outcome }}"}
+                ),
+                "workflow-gate-projection-mismatch",
+            ),
+            (
                 "candidate-unconditional-run",
                 "candidate-documents",
                 lambda job: next(
@@ -1692,7 +1700,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     jobs[job]["timeout_minutes"],
                 )
 
-    def test_aggregate_fails_unless_every_needed_job_succeeded(self) -> None:
+    def test_aggregate_requires_expected_selection_and_actual_outcome(self) -> None:
         aggregate = self._required_quality_jobs(self.module, ROOT)["candidate-quality"]
         (step,) = aggregate["steps"]
         results = (
@@ -1704,8 +1712,45 @@ class GithubWorkflowContractTests(unittest.TestCase):
             "neutral",
             "",
         )
-        for values in itertools.product(results, repeat=len(step["env"])):
-            environment = dict(zip(step["env"], values, strict=True))
+        valid = {
+            "CORE_RESULT": "success",
+            "CORE_SELECTED": "true",
+            "CORE_EXECUTION": "success",
+            "DOCUMENTS_RESULT": "success",
+            "DOCUMENTS_SELECTED": "false",
+            "DOCUMENTS_EXECUTION": "skipped",
+        }
+        scenarios = [
+            (
+                dict(valid, CORE_RESULT=core, DOCUMENTS_RESULT=documents),
+                core == documents == "success",
+            )
+            for core, documents in itertools.product(results, repeat=2)
+        ]
+        for side in ("CORE", "DOCUMENTS"):
+            for selected, execution in (
+                ("true", "success"),
+                ("false", "skipped"),
+                ("true", "skipped"),
+                ("false", "success"),
+                ("true", "failure"),
+                ("true", "cancelled"),
+                ("true", ""),
+                ("", "success"),
+                ("", ""),
+            ):
+                scenarios.append(
+                    (
+                        {
+                            **valid,
+                            f"{side}_SELECTED": selected,
+                            f"{side}_EXECUTION": execution,
+                        },
+                        (selected, execution)
+                        in {("true", "success"), ("false", "skipped")},
+                    )
+                )
+        for environment, expected in scenarios:
             with self.subTest(**environment):
                 completed = subprocess.run(
                     [
@@ -1722,7 +1767,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
                     check=False,
                 )
                 self.assertEqual(
-                    all(value == "success" for value in values),
+                    expected,
                     completed.returncode == 0,
                 )
 

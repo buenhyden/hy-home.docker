@@ -49,6 +49,7 @@ from scripts.lib.document_governance.operations_catalog import (
 )
 from scripts.lib.document_governance.registry import (
     DocumentRegistry,
+    FrontmatterValidator,
     RegistryError,
     _declares_provider_binding,
     document_type,
@@ -64,6 +65,7 @@ from scripts.lib.document_governance.registry import (
 def _validate_template_source(
     record: Record,
     profiles: dict[str, object],
+    frontmatter_validator: FrontmatterValidator | None = None,
 ) -> list[Finding] | None:
     template_roles = profiles.get("template_roles", {})
     if not isinstance(template_roles, dict):
@@ -128,7 +130,7 @@ def _validate_template_source(
             )
         return sorted(set(findings))
     try:
-        schema_findings = validate_frontmatter(
+        schema_findings = (frontmatter_validator or validate_frontmatter)(
             resolve_template_placeholders(record.metadata)
         )
     except RegistryError:

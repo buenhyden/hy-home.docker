@@ -2028,69 +2028,92 @@ class LinkSelectionScopeTests(unittest.TestCase):
                 )
             track_repository(root)
             selected = {
-                path.relative_to(root).as_posix() for path in module._paths(root)
+                node.path.as_posix() for node in module._current_graph(root).nodes
             }
             self.assertNotIn("docs/90.references/audits/0001-a/README.md", selected)
             self.assertNotIn("docs/90.references/audits/0001-b/README.md", selected)
             self.assertIn("docs/90.references/audits/0001-c/README.md", selected)
 
-    def test_all_mode_parses_disjoint_current_and_historical_inputs(self) -> None:
-        from scripts.lib.document_governance.links import (
-            DocumentGraph,
-            LinkFinding,
+    def test_all_mode_reads_each_tracked_document_once(self) -> None:
+        from scripts.lib.document_governance import links
+        from scripts.lib.document_governance.operations_catalog import (
+            read_bounded_regular,
         )
 
         module = load_links_cli()
-        root = ROOT.resolve()
-        current = root / "docs/current.md"
-        historical = root / "docs/98.archive/retired/historical.md"
-        current_finding = LinkFinding("docs/current.md", "current-input", "current")
-        historical_finding = LinkFinding(
-            "docs/98.archive/retired/historical.md",
-            "historical-input",
-            "historical",
-        )
-        graphs = iter(
-            (
-                DocumentGraph(root, (), (), (current_finding,)),
-                DocumentGraph(root, (), (), (historical_finding,)),
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            self._tree(root, "docs/current.md")
+            with (
+                mock.patch.object(
+                    links, "read_bounded_regular", wraps=read_bounded_regular
+                ) as graph_read,
+                mock.patch.object(
+                    module,
+                    "read_bounded_regular",
+                    wraps=read_bounded_regular,
+                    create=True,
+                ) as selection_read,
+                mock.patch.object(module, "run_mode", return_value=[]),
+                mock.patch("sys.stdout", io.StringIO()),
+            ):
+                self.assertEqual(0, module.main(["--root", str(root), "--mode", "all"]))
+            self.assertEqual(1, graph_read.call_count + selection_read.call_count)
+
+    def test_configured_root_reuses_registry_across_modes(self) -> None:
+        from scripts.lib.document_governance import links
+        from scripts.lib.document_governance.registry import DEFAULT_REGISTRY
+
+        module = load_links_cli()
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            self._tree(root, "docs/current.md")
+            registry_path = root / "docs/99.templates/registry.json"
+            registry_path.parent.mkdir(parents=True)
+            shutil.copyfile(DEFAULT_REGISTRY, registry_path)
+
+            def run_mode(mode, graph):
+                if mode in {"alignment", "language", "commands"}:
+                    return links.run_mode(mode, graph)
+                return []
+
+            with (
+                mock.patch.object(
+                    module, "load_registry", wraps=module.load_registry
+                ) as load,
+                mock.patch.object(
+                    links, "load_registry", wraps=links.load_registry
+                ) as fallback_load,
+                mock.patch.object(module, "run_mode", side_effect=run_mode),
+                mock.patch("sys.stdout", io.StringIO()),
+            ):
+                self.assertEqual(0, module.main(["--root", str(root), "--mode", "all"]))
+            load.assert_called_once_with(registry_path)
+            fallback_load.assert_not_called()
+
+    def test_all_modes_share_the_current_graph(self) -> None:
+        module = load_links_cli()
+        with tempfile.TemporaryDirectory() as raw:
+            root = pathlib.Path(raw)
+            self._tree(root, "docs/current.md", "docs/retired.md")
+            (root / "docs/retired.md").write_text(
+                "---\nstatus: retired\n---\n\n# Retired\n", encoding="utf-8"
             )
-        )
-        observed: dict[str, tuple[str, ...]] = {}
-
-        def run_mode(mode: str, graph: DocumentGraph) -> list[object]:
-            observed[mode] = tuple(item.code for item in graph.input_findings)
-            return []
-
-        with (
-            mock.patch.object(
-                module,
-                "_path_sets",
-                create=True,
-                return_value=((current,), (current, historical)),
-            ),
-            mock.patch.object(
-                module,
-                "_paths",
-                side_effect=AssertionError("all mode must select paths once"),
-            ),
-            mock.patch.object(
-                module,
-                "build_document_graph",
-                side_effect=lambda paths, repo_root: next(graphs),
-            ) as build,
-            mock.patch.object(module, "run_mode", side_effect=run_mode),
-            mock.patch("sys.stdout", io.StringIO()),
-            mock.patch("sys.stderr", io.StringIO()),
-        ):
-            self.assertEqual(0, module.main(["--root", str(root), "--mode", "all"]))
-
+            track_repository(root)
+            with (
+                mock.patch.object(module, "run_mode", return_value=[]) as run,
+                mock.patch("sys.stdout", io.StringIO()),
+            ):
+                self.assertEqual(0, module.main(["--root", str(root), "--mode", "all"]))
         self.assertEqual(
-            [((current,),), ((historical,),)],
-            [call.args for call in build.call_args_list],
+            tuple(module.MODE_HANDLERS), tuple(c.args[0] for c in run.call_args_list)
         )
-        self.assertEqual(("current-input",), observed["traceability"])
-        self.assertEqual(("historical-input", "current-input"), observed["alignment"])
+        graph = run.call_args_list[0].args[1]
+        for call in run.call_args_list:
+            self.assertIs(graph, call.args[1])
+        self.assertEqual(
+            ["docs/current.md"], [node.path.as_posix() for node in graph.nodes]
+        )
 
     def test_selection_has_no_path_exemption(self) -> None:
         """Nothing is skipped for where it lives, only for what it claims.
@@ -2526,6 +2549,22 @@ class FencedCommandPathTests(unittest.TestCase):
         self.assertEqual("document-command-path-missing", findings[0].code)
         self.assertEqual("README.md:2", findings[0].path)
         self.assertIn("scripts/gone.sh", findings[0].message)
+
+    def test_command_check_reuses_registry_for_path_classification(self) -> None:
+        from scripts.lib.document_governance import registry
+
+        with mock.patch.object(
+            registry, "load_registry", wraps=registry.load_registry
+        ) as repeated_load:
+            findings = self._findings(
+                {
+                    "scripts/keep.sh": "",
+                    "README.md": "```bash\nbash scripts/gone.sh\n```\n",
+                    "docs/readme.md": "# Also tracked\n",
+                }
+            )
+        self.assertEqual(1, len(findings))
+        repeated_load.assert_not_called()
 
     def test_only_a_terminal_task_body_may_name_a_retired_script(self) -> None:
         task = (

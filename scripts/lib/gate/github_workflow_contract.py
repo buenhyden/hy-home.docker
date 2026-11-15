@@ -36,6 +36,10 @@ MAX_WORKFLOWS: Final = 128
 AGGREGATE_JOB: Final = "candidate-quality"
 AGGREGATE_RESULT_STEP: Final = "Require every candidate job to succeed"
 FIXED_SHELL: Final = "/usr/bin/bash --noprofile --norc -eo pipefail {0}"
+_CANDIDATE_OUTPUTS: Final = {
+    "selected": "${{ steps.prerequisites.outputs.selected }}",
+    "execution": "${{ steps.validation.outcome }}",
+}
 
 
 @dataclasses.dataclass(frozen=True, order=True, slots=True)
@@ -901,10 +905,35 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
     )
 
 
-def aggregate_result_variable(need: str) -> str:
-    """Shell-safe variable carrying one needed job's result into the aggregate."""
+def aggregate_result_variable(need: str, field: str = "RESULT") -> str:
+    """Shell-safe variable carrying one needed job's evidence into the aggregate."""
 
-    return f"{need.removeprefix('candidate-').upper().replace('-', '_')}_RESULT"
+    return f"{need.removeprefix('candidate-').upper().replace('-', '_')}_{field}"
+
+
+def _aggregate_result_step(needs: tuple[str, ...]) -> dict[str, object]:
+    environment: dict[str, str] = {}
+    checks: list[str] = []
+    for job in needs:
+        result = aggregate_result_variable(job)
+        selected = aggregate_result_variable(job, "SELECTED")
+        execution = aggregate_result_variable(job, "EXECUTION")
+        environment[result] = "${{ needs." + job + ".result }}"
+        environment[selected] = "${{ needs." + job + ".outputs.selected }}"
+        environment[execution] = "${{ needs." + job + ".outputs.execution }}"
+        checks.append(
+            f'test "${result}" = success\n'
+            f'case "${selected}:${execution}" in\n'
+            "  true:success|false:skipped) ;;\n"
+            "  *) exit 1 ;;\n"
+            "esac\n"
+        )
+    return {
+        "name": AGGREGATE_RESULT_STEP,
+        "env": environment,
+        "shell": FIXED_SHELL,
+        "run": "".join(checks),
+    }
 
 
 def _job_tokens(job: dict[object, object]) -> tuple[str, ...]:
@@ -1043,6 +1072,19 @@ def _workflow_projection_findings(
             admitted_keys.add("needs")
         if expected_job.environment is not None:
             admitted_keys.add("env")
+        is_candidate = (
+            raw_job_id.startswith("candidate-") and raw_job_id != AGGREGATE_JOB
+        )
+        if is_candidate:
+            admitted_keys.add("outputs")
+            if raw_job.get("outputs") != _CANDIDATE_OUTPUTS:
+                findings.append(
+                    _finding(
+                        "workflow-gate-projection-mismatch",
+                        path,
+                        f"job {raw_job_id} must expose typed selection and execution outcomes",
+                    )
+                )
         if set(raw_job) != admitted_keys:
             findings.append(
                 _finding(
@@ -1071,41 +1113,36 @@ def _workflow_projection_findings(
                 )
             )
         if raw_job_id == AGGREGATE_JOB:
-            expected_step = {
-                "name": AGGREGATE_RESULT_STEP,
-                "env": {
-                    aggregate_result_variable(need): (
-                        "${{ needs." + need + ".result }}"
-                    )
-                    for need in expected_job.needs
-                },
-                "shell": FIXED_SHELL,
-                "run": "".join(
-                    f'test "${aggregate_result_variable(need)}" = success\n'
-                    for need in expected_job.needs
-                ),
-            }
-            if steps != [expected_step]:
+            if steps != [_aggregate_result_step(expected_job.needs)]:
                 findings.append(
                     _finding(
                         "workflow-aggregate-projection-mismatch",
                         path,
-                        "the aggregate must fail unless every needed job result is success",
+                        "the aggregate must verify all needed results and compare selection with execution",
                     )
                 )
-        elif raw_job_id.startswith("candidate-"):
-            commands = {
+        elif is_candidate:
+            runner_command = (
+                '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py '
+                f"--profile changed --job {raw_job_id}"
+            )
+            commands = [
                 step.get("run")
                 for step in steps
                 if isinstance(step, dict) and isinstance(step.get("run"), str)
-            }
+            ]
             required_commands = {
-                '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed '
-                f'--job {raw_job_id} --requirements >> "$GITHUB_OUTPUT"',
-                '"$TRUSTED_PYTHON_PATH" scripts/validation/run-ci-gate.py --profile changed '
-                f"--job {raw_job_id}",
+                "Select candidate prerequisites": (
+                    f'{runner_command} --requirements >> "$GITHUB_OUTPUT"'
+                ),
+                "Run changed candidate validation": runner_command,
             }
-            if not required_commands <= commands:
+            prerequisites = steps_by_name.get("Select candidate prerequisites", {})
+            if prerequisites.get("id") != "prerequisites" or any(
+                commands.count(command) != 1
+                or steps_by_name.get(name, {}).get("run") != command
+                for name, command in required_commands.items()
+            ):
                 findings.append(
                     _finding(
                         "workflow-gate-projection-mismatch",
@@ -1171,8 +1208,11 @@ def _workflow_projection_findings(
                         )
                     )
             run_step = steps_by_name.get("Run changed candidate validation")
-            if not isinstance(run_step, dict) or run_step.get("if") != (
-                "steps.prerequisites.outputs.selected == 'true'"
+            if (
+                not isinstance(run_step, dict)
+                or run_step.get("id") != "validation"
+                or run_step.get("if")
+                != "steps.prerequisites.outputs.selected == 'true'"
             ):
                 findings.append(
                     _finding(

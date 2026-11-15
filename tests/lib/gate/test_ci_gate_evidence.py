@@ -439,6 +439,21 @@ class EvidenceStoreTests(unittest.TestCase):
         with self.assertRaisesRegex(EvidenceError, "STARTED"):
             store.finalize(blocked_reason="blocked_by_prior")
 
+    def test_success_requires_a_pass_for_every_planned_gate(self) -> None:
+        store = self.create()
+        store.initialize_result()
+        store.mark_started("leaf.example", started_at_utc="2026-10-16T00:00:00Z")
+        store.mark_terminal(
+            "leaf.example",
+            status="PASS",
+            exit_code=0,
+            ended_at_utc="2026-10-16T00:00:01Z",
+            duration_ms=1,
+        )
+        with self.assertRaisesRegex(EvidenceError, "required.*PASS"):
+            store.finalize(blocked_reason="blocked_by_prior", require_pass=True)
+        self.assertFalse((self.output / "evidence-manifest.json").exists())
+
     def test_recorded_pass_is_reused_only_for_identical_inputs(self) -> None:
         # Characterization: whole-plan equality predates QA-C07. The toolchain
         # case is the one that proves per-input digests are compared.

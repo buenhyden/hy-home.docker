@@ -1458,7 +1458,7 @@ def execute_execution_plan(
                     return int(result)
             if store is not None:
                 try:
-                    store.finalize(blocked_reason="blocked_by_prior")
+                    store.finalize(blocked_reason="blocked_by_prior", require_pass=True)
                 except EvidenceError as error:
                     raise _evidence_error(error) from error
             return 0
@@ -1641,8 +1641,21 @@ def main(argv: list[str] | None = None) -> int:
             print("selected=true")
             return 0
         if arguments.job and not plan:
-            print(f"{arguments.job}: no selected gate", file=sys.stderr)
-            return 0
+            raise GateContractError(
+                "ci-gate-empty-job-plan",
+                arguments.job,
+                "job execution requires the selected prerequisite plan",
+            )
+        if (
+            arguments.job
+            and context is ExecutionContext.PULL_REQUEST
+            and not execution_environment.get("CI_GATE_EVIDENCE_DIR")
+        ):
+            raise GateContractError(
+                "ci-gate-required-job-evidence",
+                arguments.job,
+                "hosted job execution requires prerequisite evidence",
+            )
         if context is ExecutionContext.LOCAL and (
             mismatch := local_toolchain_mismatch(root)
         ):

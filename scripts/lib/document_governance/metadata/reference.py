@@ -88,7 +88,9 @@ from scripts.lib.document_governance.operations_catalog import (
     read_bounded_regular,
 )
 from scripts.lib.document_governance.registry import (
+    DEFAULT_FRONTMATTER_SCHEMA,
     DocumentRegistry,
+    FrontmatterValidator,
     RegistryError,
     _declares_provider_binding,
     document_type,
@@ -98,7 +100,6 @@ from scripts.lib.document_governance.registry import (
     load_trusted_requirement_allocation_baseline,
     normalize_profile_frontmatter,
     resolve_template_placeholders,
-    validate_frontmatter,
 )
 from scripts.lib.document_governance.registry import (
     classify_path as classify_registered_path,
@@ -356,6 +357,7 @@ def _validate_repository_contracts(
     base_ref: str | None = None,
     transition_ref: str | None = None,
     previous_records: Mapping[str, Record] | None = None,
+    frontmatter_validator: FrontmatterValidator | None = None,
 ) -> tuple[
     list[Finding],
     frozenset[tuple[str, str, str]],
@@ -382,6 +384,7 @@ def _validate_repository_contracts(
     registry_native = isinstance(profiles.get("_registry"), DocumentRegistry)
 
     if registry_native:
+        frontmatter_validator = frontmatter_validator or FrontmatterValidator()
         active_registry = profiles.get("_registry")
         assert isinstance(active_registry, DocumentRegistry)
         findings.extend(_reference_delegation_findings(root, profiles))
@@ -627,6 +630,7 @@ def _validate_repository_contracts(
                     ),
                     unchanged_generation_statuses=unchanged_generation_statuses,
                     enforce_initial_status=transition_ref is not None,
+                    frontmatter_validator=frontmatter_validator,
                 )
                 if finding.severity == "error"
             )
@@ -859,6 +863,7 @@ def validate_repository_contracts(
     *,
     base_ref: str | None = None,
     transition_ref: str | None = None,
+    frontmatter_validator: FrontmatterValidator | None = None,
 ) -> list[Finding]:
     """Validate repository contracts while keeping transition details internal."""
 
@@ -867,6 +872,7 @@ def validate_repository_contracts(
         profiles,
         base_ref=base_ref,
         transition_ref=transition_ref,
+        frontmatter_validator=frontmatter_validator,
     )
     return findings
 
@@ -1483,9 +1489,18 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"configuration-error: {error}", file=sys.stderr)
         return 2
     profiles = {**profiles, "_runtime_root": root}
+    frontmatter_validator = FrontmatterValidator()
     if args.mode == "check-contracts" and args.profiles.suffix.lower() == ".json":
         assert registry is not None
         contract_findings: list[Finding] = []
+        template_schema = (
+            root / "docs/99.templates/contracts/document-frontmatter.schema.json"
+        )
+        template_validator = (
+            frontmatter_validator
+            if template_schema == DEFAULT_FRONTMATTER_SCHEMA
+            else FrontmatterValidator(template_schema)
+        )
         for role, definition in registry.template_roles.items():
             source = definition.get("source")
             if not isinstance(source, str):
@@ -1566,11 +1581,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     )
                 try:
                     schema_values = resolve_template_placeholders(values)
-                    schema_findings = validate_frontmatter(
-                        schema_values,
-                        root
-                        / "docs/99.templates/contracts/document-frontmatter.schema.json",
-                    )
+                    schema_findings = template_validator(schema_values)
                 except RegistryError:
                     contract_findings.append(
                         Finding(
@@ -1654,6 +1665,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     # committed predecessor to compare against, so it is
                     # where the transition rule becomes reachable.
                     transition_ref="HEAD" if args.history_scope == "full" else None,
+                    frontmatter_validator=frontmatter_validator,
                 )
             )
         except ProfileError as error:
@@ -1785,6 +1797,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     previous_records=(
                         base_records_by_path if base.merge_base is not None else None
                     ),
+                    frontmatter_validator=frontmatter_validator,
                 )
                 actual_lifecycle_normalization_sources = {
                     path: source for path, source, _ in actual_lifecycle_normalizations
@@ -1808,6 +1821,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                 actual_lifecycle_normalization_sources
             ),
             unchanged_generation_statuses=generation_bindings.unchanged_statuses,
+            frontmatter_validator=frontmatter_validator,
         )
         for record in records
     }

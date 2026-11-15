@@ -12,6 +12,7 @@ import tempfile
 import unittest
 from unittest import mock
 
+from scripts.lib.document_governance import registry as registry_module
 from scripts.lib.document_governance.metadata import reference as reference_module
 from scripts.lib.document_governance.metadata.heading import (
     extract_markdown_headings,
@@ -31,6 +32,62 @@ from tests.lib.document_governance.metadata._support import (
 
 
 class MetadataValidatorCompatibilityTests(unittest.TestCase):
+    def test_metadata_cli_reads_frontmatter_schema_once_per_invocation(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            paths = (
+                pathlib.Path(".agents/governance/bootstrap.md"),
+                pathlib.Path(".agents/governance/quality-standards.md"),
+            )
+            for relative in paths:
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes((ROOT / relative).read_bytes())
+            self.assertEqual(0, git(root, "add", "--", *map(str, paths)).returncode)
+            argv = [
+                "--root",
+                str(root),
+                "--registry",
+                str(ROOT / "docs/99.templates/registry.json"),
+            ]
+
+            with mock.patch.object(
+                registry_module, "_parse_json", wraps=registry_module._parse_json
+            ) as parse_json:
+                for _ in range(2):
+                    parse_json.reset_mock()
+                    stdout = io.StringIO()
+                    with contextlib.redirect_stdout(stdout):
+                        self.assertEqual(0, reference_module.main(argv))
+                    for relative in paths:
+                        self.assertIn(relative.as_posix(), stdout.getvalue())
+                    schema_loads = [
+                        call
+                        for call in parse_json.call_args_list
+                        if call.args[0] == registry_module.DEFAULT_FRONTMATTER_SCHEMA
+                    ]
+                    self.assertEqual(1, len(schema_loads))
+
+    def test_frontmatter_schema_snapshot_is_not_shared_between_invocations(
+        self,
+    ) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            schema = pathlib.Path(directory) / "frontmatter.json"
+            schema.write_text('{"type": "object"}', encoding="utf-8")
+            snapshot = registry_module.FrontmatterValidator(schema)
+            self.assertEqual((), snapshot({}))
+
+            schema.write_text('{"required": ["title"]}', encoding="utf-8")
+            self.assertEqual((), snapshot({}))
+            self.assertEqual(
+                ("frontmatter-schema-invalid",),
+                tuple(
+                    item.code
+                    for item in registry_module.validate_frontmatter({}, schema)
+                ),
+            )
+
     def test_generated_inventory_has_registered_audit_metadata(self) -> None:
         from scripts.lib.document_governance.registry import validate_frontmatter
 

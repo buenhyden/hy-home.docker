@@ -45,7 +45,6 @@ class HostedJobAssignmentTests(unittest.TestCase):
         "leaf.document-governance-library-regressions",
         "leaf.local-document-metadata-tests",
         "leaf.local-document-corpus-lifecycle-tests",
-        "leaf.docs-traceability",
     )
 
     def test_document_leaves_are_the_only_non_default_assignment(self) -> None:
@@ -80,6 +79,7 @@ class HostedJobAssignmentTests(unittest.TestCase):
         self.assertEqual(
             (
                 "leaf.ci-precommit-regressions",
+                "leaf.docs-traceability",
                 "leaf.local-hook-rule-tests",
                 "leaf.local-candidate-preflight",
                 "leaf.conftest-policy-tests",
@@ -89,9 +89,7 @@ class HostedJobAssignmentTests(unittest.TestCase):
         docs = next(
             row for row in public.validators if row.gate_id == "leaf.docs-traceability"
         )
-        self.assertEqual(
-            ("local", "pull_request", "push", "workflow_dispatch"), docs.contexts
-        )
+        self.assertEqual(("local",), docs.contexts)
 
     def test_job_assignment_fails_closed_on_invalid_drift(self) -> None:
         baseline = contract.load_contract_document(ROOT)
@@ -143,6 +141,7 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         document = contract.load_contract_document(ROOT)
         expected = (
             "leaf.ci-precommit-regressions",
+            "leaf.docs-traceability",
             "leaf.local-hook-rule-tests",
             "leaf.local-candidate-preflight",
             "leaf.conftest-policy-tests",
@@ -199,14 +198,14 @@ class PublicSuiteRegistryTests(unittest.TestCase):
         preflight["contexts"].append("pull_request")
         cases.append(("validator-context", remote_context))
 
-        hosted_local_context = json.loads(json.dumps(baseline))
+        remote_link_context = json.loads(json.dumps(baseline))
         links = next(
             row
-            for row in hosted_local_context["public_gate"]["validators"]
+            for row in remote_link_context["public_gate"]["validators"]
             if row["gate_id"] == "leaf.docs-traceability"
         )
-        links["contexts"] = ["local"]
-        cases.append(("hosted-validator-with-local-contexts", hosted_local_context))
+        links["contexts"].append("pull_request")
+        cases.append(("local-links-with-hosted-context", remote_link_context))
 
         for label, document in cases:
             with self.subTest(label=label):
@@ -397,27 +396,22 @@ class PublicSuiteRegistryTests(unittest.TestCase):
                 )
                 self.assertEqual(expected, optional & roots)
 
-        selected = contract.select_public_suites(
-            public, "changed", ("docs/03.specs/example.md", "unknown-root.txt")
-        )
-        self.assertLessEqual(
-            optional,
-            set(
-                contract.public_root_gate_ids(
-                    public,
-                    selected,
-                    changed_paths=("docs/03.specs/example.md", "unknown-root.txt"),
-                )
-            ),
-        )
+        with self.assertRaisesRegex(contract.GateContractError, "unmapped"):
+            contract.public_root_gate_ids(
+                public,
+                public.suite_names,
+                changed_paths=("docs/03.specs/example.md", "unknown-root.txt"),
+            )
 
-    def test_unknown_path_selects_all_public_suites(self) -> None:
+    def test_unknown_path_blocks_changed_but_not_explicit_full_profile(self) -> None:
         public = contract.parse_public_gate_contract(
             contract.load_contract_document(ROOT)
         )
+        with self.assertRaisesRegex(contract.GateContractError, "unmapped"):
+            contract.select_public_suites(public, "changed", ("unknown-root.txt",))
         self.assertEqual(
             public.suite_names,
-            contract.select_public_suites(public, "changed", ("unknown-root.txt",)),
+            contract.select_public_suites(public, "full", ("unknown-root.txt",)),
         )
 
     def test_changed_root_rules_reject_mandatory_or_unknown_roots(self) -> None:

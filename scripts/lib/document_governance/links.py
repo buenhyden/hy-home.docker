@@ -134,6 +134,7 @@ class DocumentGraph:
     nodes: tuple[DocumentNode, ...]
     links: tuple[DocumentLink, ...]
     input_findings: tuple[LinkFinding, ...] = ()
+    registry: DocumentRegistry | None = None
 
 
 @dataclasses.dataclass(frozen=True, order=True)
@@ -692,8 +693,10 @@ def build_document_graph(
     paths: Iterable[pathlib.Path],
     *,
     repo_root: pathlib.Path,
+    excluded_statuses: frozenset[str] = frozenset(),
+    registry: DocumentRegistry | None = None,
 ) -> DocumentGraph:
-    """Read the supplied Markdown paths once and build a sorted local graph."""
+    """Read each path once, admitting documents by their parsed status."""
 
     root = repo_root.absolute()
     nodes: list[DocumentNode] = []
@@ -779,6 +782,9 @@ def build_document_graph(
                     error.code,
                 )
             )
+        routing_status = metadata.get("status")
+        if isinstance(routing_status, str) and routing_status in excluded_statuses:
+            continue
         nodes.append(DocumentNode(relative, text, metadata, _headings(text)))
         links.extend(parse_local_markdown_links(relative, text))
     return DocumentGraph(
@@ -796,6 +802,7 @@ def build_document_graph(
             )
         ),
         tuple(sorted(set(input_findings))),
+        registry,
     )
 
 
@@ -891,6 +898,7 @@ def _historical_operations_target(
     graph: DocumentGraph,
     nodes: Mapping[pathlib.PurePosixPath, DocumentNode],
     link: DocumentLink,
+    registry: DocumentRegistry,
 ) -> pathlib.PurePosixPath | None:
     """Resolve one moved role document for immutable historical sources only."""
 
@@ -901,7 +909,7 @@ def _historical_operations_target(
         ("operation/postmortem", "published"): "postmortem",
         ("sdlc/task", "completed"): "task",
     }.get((node.metadata.get("type"), node.metadata.get("status")))
-    if source_profile is None or classify_path(link.source) != source_profile:
+    if source_profile is None or classify_path(link.source, registry) != source_profile:
         return None
     matched = _LEGACY_FLAT_OPERATION_ROLE.fullmatch(link.target.as_posix())
     if matched is None:
@@ -914,7 +922,7 @@ def _historical_operations_target(
         for path in nodes
         if path.parent.parent == role_root
         and path.name == matched.group("name")
-        and classify_path(path) == profile
+        and classify_path(path, registry) == profile
         and _regular_target(graph, path)[0] is not None
     ]
     return candidates[0] if len(candidates) == 1 else None
@@ -991,9 +999,10 @@ def _declared_historical_rows(text: str) -> frozenset[int]:
 class _HistoricalEvidenceLinks:
     """Invocation-local immutable Git observations for missing marked links."""
 
-    def __init__(self, graph: DocumentGraph, nodes):
+    def __init__(self, graph: DocumentGraph, nodes, registry: DocumentRegistry):
         self.graph = graph
         self.nodes = nodes
+        self.registry = registry
         self.rows = {}
         self.observations = {}
         self.origins = {}
@@ -1001,7 +1010,7 @@ class _HistoricalEvidenceLinks:
         self.targets = {}
 
     def _admitted_source(self, node):
-        profile = classify_path(node.path)
+        profile = classify_path(node.path, self.registry)
         source_type = {
             "research-member": "reference/research",
             "research": "reference/research-pack",
@@ -1143,7 +1152,8 @@ class _HistoricalEvidenceLinks:
                     elif (
                         link.fragment
                         and link.target.suffix == ".md"
-                        and classify_path(link.target) in {None, *FALLBACK_PROFILE_IDS}
+                        and classify_path(link.target, self.registry)
+                        in {None, *FALLBACK_PROFILE_IDS}
                     ):
                         code = "historical-evidence-target-unadmitted"
                     elif link.fragment:
@@ -1196,11 +1206,13 @@ def _reserved_spec_numbers(registry) -> frozenset[int]:
     return frozenset(space.reserved_history) if space is not None else frozenset()
 
 
-def _is_terminal_task(node: DocumentNode, registry) -> bool:
+def _is_terminal_task(
+    node: DocumentNode, registry, path_registry: DocumentRegistry | None = None
+) -> bool:
     """A Task by its Registry path profile whose own or row-derived status is
     terminal under the checked root's Registry; never without that Registry."""
 
-    if registry is None or classify_path(node.path.as_posix()) != "task":
+    if registry is None or classify_path(node.path, path_registry) != "task":
         return False
     terminal = frozenset(registry.lifecycle_terminal_statuses.get("task", ()))
     status = node.metadata.get("status")
@@ -1437,7 +1449,8 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
 
     findings: list[LinkFinding] = list(graph.input_findings)
     nodes = _node_map(graph)
-    evidence_links = _HistoricalEvidenceLinks(graph, nodes)
+    path_registry = graph.registry or load_registry()
+    evidence_links = _HistoricalEvidenceLinks(graph, nodes, path_registry)
     root_registry = None
     registry_loaded = False
     reserved: dict[str, frozenset[int]] = {}
@@ -1454,7 +1467,9 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
         resolved_target = link.target
         target_path, target_error = _regular_target(graph, resolved_target)
         if target_path is None and target_error == "missing-link-target":
-            historical_target = _historical_operations_target(graph, nodes, link)
+            historical_target = _historical_operations_target(
+                graph, nodes, link, path_registry
+            )
             if historical_target is not None:
                 resolved_target = historical_target
                 target_path, target_error = _regular_target(graph, resolved_target)
@@ -1469,11 +1484,13 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
                 if source is not None:
                     if not registry_loaded:
                         registry_loaded = True
-                        root_registry = _checked_root_registry(graph.repo_root)
+                        root_registry = graph.registry or _checked_root_registry(
+                            graph.repo_root
+                        )
                         reserved = _reserved_package_numbers(root_registry)
                     if link.source not in terminal_tasks:
                         terminal_tasks[link.source] = _is_terminal_task(
-                            source, root_registry
+                            source, root_registry, path_registry
                         )
                     if terminal_tasks[link.source] and _links_into_retired_package(
                         link, reserved
@@ -1877,7 +1894,7 @@ def check_language(graph: DocumentGraph) -> list[LinkFinding]:
     Stage 98 record or a generated adapter, is not judged.
     """
 
-    registry = load_registry()
+    registry = graph.registry or load_registry()
     findings: list[LinkFinding] = list(graph.input_findings)
     for node in graph.nodes:
         profile_id = classify_path(node.path.as_posix(), registry)
@@ -1982,13 +1999,13 @@ def check_commands(graph: DocumentGraph) -> list[LinkFinding]:
 
     root = graph.repo_root
     surfaces = {entry.name for entry in root.iterdir()} if root.is_dir() else set()
-    registry = load_registry()
+    registry = graph.registry or load_registry()
     terminal_task_statuses = registry.lifecycle_terminal_statuses["task"]
     findings: list[LinkFinding] = []
     for node in graph.nodes:
         # The Registry path profile, not a self-declared `type`, makes a Task.
         if (
-            classify_path(node.path.as_posix()) == "task"
+            classify_path(node.path.as_posix(), registry) == "task"
             and _task_status(node, registry) in terminal_task_statuses
         ):
             continue

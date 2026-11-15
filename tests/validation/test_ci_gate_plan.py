@@ -468,7 +468,6 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "leaf.repo-metadata-base",
                 "leaf.repo-document-metadata",
                 "leaf.local-document-corpus-lifecycle",
-                "leaf.docs-traceability",
                 "leaf.local-diff-hygiene",
                 "leaf.changed-style",
                 "leaf.commit-message-contract",
@@ -501,7 +500,6 @@ class CiGateRunnerContractTests(unittest.TestCase):
                 "leaf.repo-document-metadata",
                 "leaf.local-document-corpus-lifecycle",
                 "leaf.operations-catalog",
-                "leaf.docs-traceability",
                 "leaf.local-diff-hygiene",
                 "leaf.changed-style",
                 "leaf.commit-message-contract",
@@ -526,7 +524,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             runner.selected_prerequisites(plan, paths),
         )
 
-    def test_document_links_run_in_every_changed_and_full_plan(self) -> None:
+    def test_document_links_stay_local_in_changed_and_full_plans(self) -> None:
         paths = ("docs/03.specs/0001-example/spec.md",)
         local_changed = build_public_plan(
             "changed", runner.ExecutionContext.LOCAL, paths
@@ -543,10 +541,34 @@ class CiGateRunnerContractTests(unittest.TestCase):
             "leaf.docs-traceability", {item.gate_id for item in local_changed}
         )
         self.assertIn("leaf.docs-traceability", {item.gate_id for item in local_full})
-        self.assertIn(
+        self.assertNotIn(
             "leaf.docs-traceability", {item.gate_id for item in remote_changed}
         )
-        self.assertIn("leaf.docs-traceability", {item.gate_id for item in hosted_full})
+        self.assertNotIn(
+            "leaf.docs-traceability", {item.gate_id for item in hosted_full}
+        )
+
+    def test_navigation_and_document_form_have_distinct_regressions(self) -> None:
+        document_tests = {
+            "leaf.local-document-corpus-lifecycle-tests",
+            "leaf.local-document-metadata-tests",
+            "leaf.document-governance-library-regressions",
+        }
+        for path, expected in (
+            ("docs/README.md", set()),
+            ("docs/99.templates/registry.json", document_tests),
+            (
+                "docs/99.templates/contracts/document-profile.schema.json",
+                document_tests,
+            ),
+        ):
+            with self.subTest(path=path):
+                plan = build_public_plan(
+                    "changed", runner.ExecutionContext.PULL_REQUEST, (path,)
+                )
+                ids = {item.gate_id for item in plan}
+                self.assertEqual(expected, ids & document_tests)
+                self.assertIn("leaf.repo-document-metadata", ids)
 
     def test_implementation_regressions_have_explicit_execution_owners(
         self,
@@ -693,7 +715,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             ("docs/03.specs/0001-example/spec.md",),
         )
         self.assertEqual(
-            ("leaf.local-candidate-preflight",),
+            ("leaf.local-candidate-preflight", "leaf.docs-traceability"),
             tuple(
                 invocation.gate_id
                 for invocation in runner.build_local_only_validation_plan(
@@ -1236,10 +1258,8 @@ class CiGateRunnerContractTests(unittest.TestCase):
             "tests/validation/test_future_unmapped.py",
         ):
             with self.subTest(path=path):
-                self.assertEqual(
-                    public.suite_names,
-                    contract.select_public_suites(public, "changed", (path,)),
-                )
+                with self.assertRaisesRegex(contract.GateContractError, "unmapped"):
+                    contract.select_public_suites(public, "changed", (path,))
 
     def test_style_controller_inputs_select_their_harness_without_npm_audit(
         self,
@@ -1301,6 +1321,34 @@ class CiGateRunnerContractTests(unittest.TestCase):
                     expected_gate_ids & actual_gate_ids,
                     f"{path} does not select one of {sorted(expected_gate_ids)}",
                 )
+
+    def test_newly_routed_producers_retain_their_existing_guarantees(self) -> None:
+        baseline = "leaf.compose-baseline-regressions"
+        control = "leaf.repo-contracts-control-plane-regressions"
+        integrity = "leaf.repository-integrity-regressions"
+        shell = "leaf.local-shell-syntax"
+        supply = "leaf.supply-chain-fixture-policy"
+        for path, expected in (
+            ("scripts/operations/storybook_image.py", {baseline}),
+            ("scripts/operations/storybook_design_export.py", {baseline}),
+            ("tests/validation/test_storybook_image.py", {baseline}),
+            ("scripts/validation/check-text-style.py", {control}),
+            ("scripts/validation/check-agent-governance-contract.py", {integrity}),
+            ("scripts/knowledge/report-graphify-health.sh", {shell, integrity}),
+            ("scripts/lib/ops/compose-core-readiness.sh", {shell, supply}),
+            ("scripts/operations/sync-update-ledger.sh", {shell, supply, integrity}),
+            ("scripts/security/seed-grype-db-cache.sh", {shell, supply}),
+            ("scripts/security/verify-sample-service-supply-chain.sh", {shell, supply}),
+            ("scripts/validation/check-candidate-preflight.sh", {shell, integrity}),
+            ("tests/lib/ops/_support.py", {supply}),
+        ):
+            with self.subTest(path=path):
+                plan = build_public_plan(
+                    "changed", runner.ExecutionContext.LOCAL, (path,)
+                )
+                ids = {item.gate_id for item in plan}
+                self.assertLessEqual(expected, ids)
+                self.assertNotIn("leaf.document-governance-library-regressions", ids)
 
     def test_prerequisites_follow_the_selected_plan(self) -> None:
         document = contract.load_contract_document(ROOT)
@@ -1376,11 +1424,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
             ),
         )
 
-    def test_mixed_unknown_path_keeps_document_regressions(self) -> None:
-        targets = {
-            "leaf.local-document-metadata-tests",
-            "leaf.document-governance-library-regressions",
-        }
+    def test_unknown_path_blocks_even_with_an_admitted_document(self) -> None:
         for paths in (
             (
                 "docs/03.specs/0200-path-aware-pr-regressions/spec.md",
@@ -1389,10 +1433,8 @@ class CiGateRunnerContractTests(unittest.TestCase):
             ("unknown-root.txt",),
         ):
             with self.subTest(paths=paths):
-                plan = build_public_plan(
-                    "changed", runner.ExecutionContext.LOCAL, paths
-                )
-                self.assertLessEqual(targets, {item.gate_id for item in plan})
+                with self.assertRaisesRegex(contract.GateContractError, "unmapped"):
+                    build_public_plan("changed", runner.ExecutionContext.LOCAL, paths)
 
     def test_full_plan_keeps_document_regressions_once(self) -> None:
         plan = build_public_plan("full", runner.ExecutionContext.LOCAL)
@@ -1617,7 +1659,6 @@ class CiGateRunnerContractTests(unittest.TestCase):
             "leaf.document-governance-library-regressions",
             "leaf.local-document-metadata-tests",
             "leaf.local-document-corpus-lifecycle-tests",
-            "leaf.docs-traceability",
         }
         status, out, err = self._hosted_job_main(
             "--explain", "--job", "candidate-documents"
@@ -1678,12 +1719,10 @@ class CiGateRunnerContractTests(unittest.TestCase):
                     not by_job[1],
                 )
                 self.assertTrue(by_job[0])
-        self.assertTrue(
-            {"leaf.release-regressions", "leaf.docs-traceability"}
-            <= {item.gate_id for item in plan}
-        )
+        self.assertIn("leaf.release-regressions", {item.gate_id for item in plan})
+        self.assertNotIn("leaf.docs-traceability", {item.gate_id for item in plan})
 
-    def test_job_without_selected_gates_reports_selected_false_and_runs_nothing(
+    def test_empty_job_plan_is_inapplicable_only_before_execution(
         self,
     ) -> None:
         # A pull request that selects no document gate leaves the documents job
@@ -1703,8 +1742,8 @@ class CiGateRunnerContractTests(unittest.TestCase):
             status, out, err = self._hosted_job_main(
                 "--job", "candidate-documents", paths=path
             )
-            self.assertEqual((0, ""), (status, out))
-            self.assertIn("no selected gate", err)
+            self.assertEqual((1, ""), (status, out))
+            self.assertIn("ci-gate-empty-job-plan", err)
             status, out, err = self._hosted_job_main(
                 "--explain", "--job", "candidate-documents", paths=path
             )
@@ -1716,6 +1755,13 @@ class CiGateRunnerContractTests(unittest.TestCase):
         )
         self.assertEqual((0, ""), (status, err))
         self.assertIn("selected=true\n", out)
+
+    def test_selected_hosted_job_requires_seed_evidence(self) -> None:
+        with mock.patch.object(runner, "execute_execution_plan") as execute:
+            status, stdout, stderr = self._hosted_job_main("--job", "candidate-core")
+        self.assertEqual((1, ""), (status, stdout))
+        self.assertIn("ci-gate-required-job-evidence", stderr)
+        execute.assert_not_called()
 
     def test_requirements_reports_prerequisites_without_executing(self) -> None:
         environment = {
@@ -2277,7 +2323,7 @@ class CiGateRunnerContractTests(unittest.TestCase):
         public = contract.parse_public_gate_contract(document)
         suites = public
         changed = contract.select_public_suites(
-            public, "changed", ("scripts/validation/example.py",)
+            public, "changed", ("scripts/validation/check-document-links.py",)
         )
         full = contract.select_public_suites(public, "full", ())
         contexts = {

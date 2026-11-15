@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.71.0"
+version: "1.72.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -251,6 +251,9 @@ The direct W04-LIFECYCLE 3.0.1 request adds criterion 130 and W135 in
 TSK-0074 for the approved draft boundary and remaining lifecycle checks.
 The direct W04-CONTENT 3.0.1 request adds criterion 131 and W136 in
 TSK-0075 for staged document claims and their implementation evidence.
+The direct W05-GATES 3.0.0 request adds criterion 132 and W137 in
+TSK-0076 for unique quality guarantees, closed evidence selection and
+measured document feedback.
 
 ### Owning Requirements
 
@@ -1061,6 +1064,11 @@ target, backup, recovery boundary, and action-specific authorization.
      requirement with its implementation owner. Isolated command checks
      support only the exercised behavior. Unread claims and unobserved
      live operations stay explicit.
+132. TSK-0076 identifies the actual event, candidate, check and result
+     consumers. A small authored document change avoids unrelated validator
+     regressions. Shared immutable inputs reduce measured corpus cost while
+     keeping the document and security findings. Missing, stale or invalid
+     required execution evidence cannot close a hosted check.
 
 ### Evidence Requirements
 

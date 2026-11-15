@@ -69,6 +69,7 @@ from scripts.lib.document_governance.operations_catalog import (
 )
 from scripts.lib.document_governance.registry import (
     DocumentRegistry,
+    FrontmatterValidator,
     RegistryError,
     document_type,
     preserved_origin_path,
@@ -166,6 +167,7 @@ def validate_record(
     actual_lifecycle_normalizations: Set[tuple[str, str, str]] | None = None,
     actual_lifecycle_normalization_sources: Mapping[str, str] | None = None,
     unchanged_generation_statuses: Mapping[str, str] | None = None,
+    frontmatter_validator: FrontmatterValidator | None = None,
 ) -> list[Finding]:
     """Validate one record against its typed profile and the global manifest."""
 
@@ -194,11 +196,15 @@ def validate_record(
             _finding(record, f"frontmatter-{parse_code}", record.parse_error)
         )
         return findings
-    template_findings = _validate_template_source(record, profiles)
+    template_findings = _validate_template_source(
+        record, profiles, frontmatter_validator
+    )
     if template_findings is not None:
         return template_findings
     try:
-        schema_findings = validate_frontmatter(record.metadata)
+        schema_findings = (frontmatter_validator or validate_frontmatter)(
+            record.metadata
+        )
     except RegistryError:
         findings.append(
             _finding(

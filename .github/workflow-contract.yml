@@ -1386,6 +1386,7 @@
     ],
     "local_only_gate_ids": [
       "leaf.ci-precommit-regressions",
+      "leaf.docs-traceability",
       "leaf.local-hook-rule-tests",
       "leaf.local-candidate-preflight",
       "leaf.conftest-policy-tests"
@@ -1396,8 +1397,7 @@
         "candidate-documents": [
           "leaf.document-governance-library-regressions",
           "leaf.local-document-metadata-tests",
-          "leaf.local-document-corpus-lifecycle-tests",
-          "leaf.docs-traceability"
+          "leaf.local-document-corpus-lifecycle-tests"
         ]
       }
     },
@@ -1430,6 +1430,7 @@
       ],
       "repository-integrity": [
         "leaf.local-diff-hygiene",
+        "leaf.compose-baseline-regressions",
         "leaf.local-shell-syntax",
         "leaf.local-script-manifest",
         "leaf.local-tech-stack-version-drift",
@@ -1501,10 +1502,7 @@
           "all"
         ],
         "contexts": [
-          "local",
-          "pull_request",
-          "push",
-          "workflow_dispatch"
+          "local"
         ]
       },
       {
@@ -1653,6 +1651,16 @@
       {
         "prefixes": [
           "README.md",
+          "docs/README.md",
+          "RTK.md",
+          "llms.txt",
+          "scripts/README.md",
+          "scripts/lib/README.md",
+          "scripts/lib/ops/README.md",
+          "tests/README.md",
+          "tests/lib/README.md",
+          "tests/lib/ops/README.md",
+          "tests/validation/README.md",
           "_workspace/",
           "docs/01.requirements/",
           "docs/02.architecture/",
@@ -1680,6 +1688,8 @@
       {
         "prefixes": [
           "docker-compose.yml",
+          ".env.example",
+          "renovate.json5",
           "examples/",
           "infra/",
           "labs/",
@@ -1746,7 +1756,15 @@
           "scripts/validation/check-document-corpus-lifecycle.py",
           "scripts/validation/check-document-links.py",
           "scripts/validation/check-document-metadata.py",
+          "docs/99.templates/registry.json",
+          "docs/99.templates/contracts/",
+          "docs/99.templates/templates/",
+          "scripts/validation/check-candidate-preflight.sh",
           "tests/lib/document_governance/",
+          "tests/validation/lifecycle/",
+          "tests/validation/test_document_metadata_identity_cli.py",
+          "tests/validation/test_p10_document_contract.py",
+          "tests/validation/test_reference_stage_repo_contract.py",
           "tests/fixtures/README.md",
           "tests/fixtures/document_governance/README.md",
           "tests/fixtures/document_governance/operations-moves/",
@@ -1756,6 +1774,69 @@
           "document-contract",
           "document-graph",
           "document-lifecycle",
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/validation/check-agent-governance-contract.py"
+        ],
+        "suites": [
+          "agent-governance",
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/knowledge/report-graphify-health.sh",
+          "scripts/operations/storybook_design_export.py",
+          "scripts/operations/storybook_image.py",
+          "scripts/validation/check-hermes-candidate.py",
+          "scripts/validation/check-project-registration.py",
+          "scripts/validation/check-text-style.py",
+          "tests/__init__.py",
+          "tests/lib/__init__.py",
+          "tests/validation/__init__.py",
+          "tests/validation/test_hermes_candidate_validator.py",
+          "tests/validation/test_project_registration.py",
+          "tests/validation/test_storybook_image.py",
+          "tests/validation/test_validator_entrypoints.py"
+        ],
+        "suites": [
+          "repository-integrity"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/lib/ops/compose-core-readiness.sh",
+          "scripts/operations/mng-pg-immediate-restore-rehearsal.py",
+          "scripts/operations/prepare-openbao-materials.py",
+          "scripts/operations/prometheus-isolated-restore.py",
+          "scripts/operations/sync-update-ledger.sh",
+          "scripts/requirements-renovate.lock",
+          "scripts/security/seed-grype-db-cache.sh",
+          "scripts/security/verify-sample-service-supply-chain.sh",
+          "tests/lib/ops/_support.py",
+          "tests/lib/ops/test_compose_core_readiness.py",
+          "tests/requirements-integration.txt",
+          "tests/validation/_mng_valkey_bull_client.cjs",
+          "tests/validation/_openbao_rehearsal_clients.py",
+          "tests/validation/_openbao_rehearsal_fixture.py",
+          "tests/validation/_openbao_tls_delay_native.py",
+          "tests/validation/_sample_delivery_fixtures.py",
+          "tests/validation/fixtures/",
+          "tests/validation/test_compose_core_readiness.py",
+          "tests/validation/test_crawl4ai_adapter.py",
+          "tests/validation/test_crawl4ai_egress.py",
+          "tests/validation/test_openbao_tls_material.py",
+          "tests/validation/test_opsflow_database_rehearsal.py",
+          "tests/validation/test_p02_native_contracts.py",
+          "tests/validation/test_p02_oauth_native.py",
+          "tests/validation/test_sample_service_delivery_rehearsal.py",
+          "tests/validation/test_supabase_smtp_rehearsal.py"
+        ],
+        "suites": [
+          "operations",
           "repository-integrity"
         ]
       },
@@ -2255,7 +2336,12 @@
           "scripts/validation/check-document-corpus-lifecycle.py",
           "scripts/validation/check-document-links.py",
           "scripts/validation/check-document-metadata.py",
+          "docs/99.templates/registry.json",
+          "docs/99.templates/contracts/",
+          "docs/99.templates/templates/",
           "tests/lib/document_governance/",
+          "tests/validation/lifecycle/",
+          "tests/validation/test_document_metadata_identity_cli.py",
           "tests/fixtures/README.md",
           "tests/fixtures/document_governance/README.md",
           "tests/fixtures/document_governance/operations-moves/"
@@ -2264,6 +2350,67 @@
           "leaf.local-document-corpus-lifecycle-tests",
           "leaf.local-document-metadata-tests",
           "leaf.document-governance-library-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/operations/storybook_design_export.py",
+          "scripts/operations/storybook_image.py",
+          "tests/validation/test_storybook_image.py"
+        ],
+        "root_gate_ids": [
+          "leaf.compose-baseline-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/validation/check-text-style.py"
+        ],
+        "root_gate_ids": [
+          "leaf.repo-contracts-control-plane-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/validation/check-agent-governance-contract.py"
+        ],
+        "root_gate_ids": [
+          "leaf.repo-contracts-control-plane-regressions",
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/knowledge/report-graphify-health.sh",
+          "scripts/validation/check-candidate-preflight.sh"
+        ],
+        "root_gate_ids": [
+          "leaf.local-shell-syntax",
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/operations/sync-update-ledger.sh"
+        ],
+        "root_gate_ids": [
+          "leaf.local-shell-syntax",
+          "leaf.local-tech-stack-version-drift",
+          "leaf.repository-integrity-regressions"
+        ]
+      },
+      {
+        "prefixes": [
+          "scripts/validation/check-hermes-candidate.py",
+          "scripts/validation/check-project-registration.py",
+          "tests/validation/test_hermes_candidate_validator.py",
+          "tests/validation/test_p10_document_contract.py",
+          "tests/validation/test_project_registration.py",
+          "tests/validation/test_reference_stage_repo_contract.py",
+          "tests/validation/test_validator_entrypoints.py"
+        ],
+        "root_gate_ids": [
+          "leaf.repository-integrity-regressions"
         ]
       },
       {
@@ -2350,6 +2497,9 @@
           "scripts/hooks/post-tool-validate.sh",
           "scripts/hooks/agent-event-hook.sh",
           "scripts/hooks/pre-push-guard.sh",
+          "scripts/lib/ops/compose-core-readiness.sh",
+          "scripts/security/seed-grype-db-cache.sh",
+          "scripts/security/verify-sample-service-supply-chain.sh",
           "scripts/validation/check-template-security-baseline.sh",
           "scripts/validation/validate-docker-compose.sh",
           "scripts/validation/check-conftest-policy.sh"

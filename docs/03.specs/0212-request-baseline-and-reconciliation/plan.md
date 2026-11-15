@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.71.0"
+version: "1.72.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -188,6 +188,8 @@ W135 in TSK-0074 uses the verified W03-FORMS functionality to check the
 3.0.1 draft authority boundary and close demonstrated lifecycle gaps.
 W136 in TSK-0075 uses the accepted W01 contract to reconcile current
 document claims against local source and observed evidence.
+W137 in TSK-0076 uses the accepted W00 delta to measure and improve
+quality feedback and preserve distinct candidate guarantees.
 
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
@@ -373,6 +375,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W134 | 129 | Compare the role purposes and close demonstrated document structure gaps | W133 | TSK-0073 | RED and GREEN form tests, corpus checks, independent review |
 | W135 | 130 | Preserve draft authoring and verify the authority, lifecycle and relation boundaries; reject explicit prose placeholders in effective documents | W134 | TSK-0074 | Focused authoring and lifecycle tests, relation checks, corpus checks, independent review |
 | W136 | 131 | Record the Stage 01, 02, 05 and 90 denominator and actual semantic coverage; correct demonstrated mismatches with their sources and preserve implementation obligations | W129 | TSK-0075 | Claim readback, focused synthetic command checks, affected metadata and links, corpus lifecycle, review of high-risk claims |
+| W137 | 132 | Trace delivery and local feedback, preserve unique checks, share immutable inputs, and fail closed on missing or changed required execution | W128 | TSK-0076 | Paired local timing, selection and evidence fixtures, document regressions, independent review |
 
 #### Current v30 continuation and delivery
 
@@ -782,6 +785,10 @@ entrypoints. TSK-0074 records the focused checks and authorization boundary.
 
 W136 promotes proven corrections to the affected requirement, architecture,
 operations and research owners. TSK-0075 records the evidence and unread scope.
+W137 promotes performance and evidence boundary corrections to the existing
+document and candidate gate owners. TSK-0076 records the measured limits.
+
+- [W05 quality gates](tasks/tsk-0076-w05-gates-3-0-0.md)
 
 - [Master workspace reconciliation](tasks/tsk-0053-master-workspace-reconciliation.md)
 - [v14.7 W00 intake](tasks/tsk-0059-w00-v14-7-intake.md)
