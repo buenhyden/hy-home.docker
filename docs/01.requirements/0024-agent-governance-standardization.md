@@ -1,6 +1,6 @@
 ---
 title: "Agent Governance Standardization Requirements"
-version: "1.8.3"
+version: "1.8.4"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
@@ -193,7 +193,7 @@ This package covers the governance model, canonical ownership, provider adapters
 
 ### Verification Method
 
-Each condition is judged by running the registered governance and document suites on the current tree, as the determinism and currency measures state, and by reviewing the provider surfaces they classify. The condition that both providers revise the same memory record from different worktrees also needs a runtime observation across both providers, not only a suite run. The Spec Packages that list REQ-0024 as a parent, such as SPEC-0212, SPEC-0244 and SPEC-0251, record the suite results and the observation in their Task evidence rows. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+Each condition is judged by running the registered governance and document suites on the current tree, as the determinism and currency measures state, and by reviewing the provider surfaces they classify. The condition that both providers revise the same memory record from different worktrees also needs a runtime observation across both providers, not only a suite run. The Spec Packages that list REQ-0024 as a parent, such as SPEC-0212 and SPEC-0244, record the suite results and the observation in their Task evidence rows. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
 
 ## Traceability
 
@@ -206,6 +206,7 @@ Each condition is judged by running the registered governance and document suite
 - **Architecture Description**: [AD-0027 Agent Governance Canonical Adapter](../02.architecture/descriptions/0027-agent-governance-canonical-adapter.md)
 - **Historical implementation evidence**: SPEC-0158; SPEC-0264 (retired; version history) delivered folder guides; SPEC-0253 (retired; version history) removed the frozen archive payload boundary and the deleted-Task CI evidence owner from QA and CI; SPEC-0270 (retired; version history) delivered the 1 GiB shared memory capacity ledger, bounded read-only search and memory backup source
 - SPEC-0254 (retired; version history) delivered the plain-text stage identities in infra READMEs, the agent-governance suite selection for folder guide edits, the `common/agent-guide` type and the active folder guides.
+- SPEC-0251 (retired; version history) split folder README (people) from folder AGENTS.md (agents), added the placement rule and the nine first folder guides.
 - **Decision**: [ADR-0032 Canonical Agent Governance Home](../02.architecture/decisions/0032-canonical-agent-governance-home.md)
 - **Decision**: [ADR-0034 Canonical Knowledge and Prompt Surfaces](../02.architecture/decisions/0034-canonical-knowledge-and-prompt-surfaces.md)
 - **Decision**: [ADR-0049 Shared Agent Memory Store](../02.architecture/decisions/0049-shared-agent-memory-store.md)

@@ -1,6 +1,6 @@
 ---
 title: "Documentation, Governance, QA and CI Contract Task"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/task"
 owner: "@buenhyden"
 updated: "2026-11-15"
@@ -91,6 +91,16 @@ The execution items and lifecycle events below record this Task's work.
   `docs/03.specs/0256-legacy-document-status-ban/`, each with `spec.md`,
   `plan.md` and its `tasks/tsk-0001-*.md`. Before removal each body at that
   commit was byte-identical to `main` at `2adf05673`.
+- On 2026-11-15 the owner approved retiring the ready SPEC-0251 and SPEC-0259
+  packages ("Retire both"; readiness `ready`, their Tasks completed in #1033).
+  Their lineage moves to REQ-0024, AD-0027, REQ-0026 and AD-0030 Traceability,
+  the Stage 03 README rows are removed, and 251 and 259 join the Registry Spec
+  `reserved_history`. The last commit carrying each removed body is
+  `806c4c058`, reachable from `main`, for
+  `docs/03.specs/0251-readme-and-agents-guide-split/` and
+  `docs/03.specs/0259-implementation-alignment-batch3/`, each with `spec.md`,
+  `plan.md` and its `tasks/tsk-0001-*.md`. Before removal each body at that
+  commit was byte-identical to `main` at `f47d46cfb`.
 
 ## Verification Evidence
 

@@ -1,6 +1,6 @@
 ---
 title: "Agent Governance Canonical Adapter Architecture"
-version: "1.6.6"
+version: "1.6.7"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
@@ -167,6 +167,7 @@ This description records no failure boundary beyond its Risks: static renderer p
 - SPEC-0253 (retired; version history) removed the frozen archive payload boundary and the deleted-Task CI gate evidence owner from the QA and CI surfaces.
 - SPEC-0270 (retired; version history) delivered the 1 GiB shared memory capacity ledger, bounded read-only search and memory backup source.
 - SPEC-0254 (retired; version history) delivered the plain-text stage identities in infra READMEs, the agent-governance suite selection for folder guide edits, the `common/agent-guide` type and the active folder guides.
+- SPEC-0251 (retired; version history) split folder README (people) from folder AGENTS.md (agents), added the placement rule and the nine first folder guides.
 
 #### Evolution
 
