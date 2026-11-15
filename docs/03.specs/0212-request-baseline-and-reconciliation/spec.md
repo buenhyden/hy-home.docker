@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.64.0"
+version: "1.65.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -239,7 +239,8 @@ index (QA-C08), SemVer precedence and the QA-08 cost baseline. The v14.7 W06
 run of 2026-11-14 adds criterion 121 and W126 in TSK-0065 for the Git hook,
 CI, release and delivery contract. The W00-DELTA run of the 3.0.1 package on
 2026-11-15 adds criterion 122 and W127 in TSK-0066, and its gap audit the same
-day adds criterion 123 and W128 in TSK-0067.
+day adds criterion 123 and W128 in TSK-0067. The W01-CONTRACT run of the
+same day adds criterion 124 and W129 in TSK-0068.
 
 ### Owning Requirements
 
@@ -1009,6 +1010,13 @@ target, backup, recovery boundary, and action-specific authorization.
      comparison are recorded; a verdict that over-blocks the confirmed draft
      rule is corrected; and an accepted requirement left unmet by a retired
      package is handed to a receiving work unit instead of being dropped.
+124. TSK-0068 runs the 3.0.1 W01-CONTRACT for this workspace: each rule it
+     compares has a verdict, owner, consumers and enforcement state; the
+     glossary follows the owner-approved `repository-vocabulary` 3.0.1 with
+     the Korean column and the check rejects a row that does not fill it;
+     review effort follows risk (Q08); a draft never authorizes work on its
+     own (Q-DRAFT); and every changed rule's consumers change with it. Each
+     behavior change has a test that fails without it.
 
 ### Evidence Requirements
 
