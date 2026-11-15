@@ -1,10 +1,10 @@
 ---
 title: "Hermes OTLP Observability Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0055"
 parent_ids:
@@ -116,6 +116,7 @@ change any evidence row or acceptance decision.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0055 | draft | ready | #state-currency-2026-11-13 |
 | SPEC-0212-TSK-0055 | ready | in-progress | #state-currency-2026-11-13 |
+| SPEC-0212-TSK-0055 | in-progress | completed | #criterion-decisions |
 
 ### Blockers and Decisions
 
@@ -142,7 +143,7 @@ None: nothing was recorded here before this Task moved to the common form.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 108 | pending | Hermes ingest source and tests rerun, Hermes live telemetry readback 2026-11-11 | Source, test and live readback rows PASS and resolve the earlier NOT_RUN rows; acceptance waits for the owner's decision. | SPEC-0212 TSK-0055 |
+| 108 | accepted | Hermes ingest source and tests rerun, Hermes live telemetry readback 2026-11-11 | Source, test and live readback rows PASS and resolve the earlier NOT_RUN rows. Owner @buenhyden accepted on 2026-11-15 (SPEC-0212 TSK-0070). | SPEC-0212 TSK-0055 |
 
 ### Remaining Conditions
 

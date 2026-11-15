@@ -1,8 +1,8 @@
 ---
 title: "Image, Supply-Chain and Storybook Compatibility Task"
-version: "0.2.1"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-15"
 layer: "specs"
@@ -340,6 +340,7 @@ change any evidence row or acceptance decision.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0047 | draft | ready | #state-currency-2026-11-13 |
 | SPEC-0212-TSK-0047 | ready | in-progress | #state-currency-2026-11-13 |
+| SPEC-0212-TSK-0047 | in-progress | completed | #criterion-decisions |
 
 ### Blockers and Decisions
 

@@ -1,8 +1,8 @@
 ---
 title: "W02 Disposition 3.0.1 Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-15"
 layer: "specs"
@@ -150,6 +150,7 @@ document-only pull requests 1036 and 1037 took 3 to 6 minutes.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0070 | draft | ready | #inputs-and-authority |
 | SPEC-0212-TSK-0070 | ready | in-progress | #open-task-dispositions |
+| SPEC-0212-TSK-0070 | in-progress | completed | #criterion-decisions |
 
 ### Blockers and Decisions
 
@@ -176,7 +177,7 @@ None.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 126 | pending | Disposition audit, Status corrections, Cutover inventory | Awaiting owner acceptance | SPEC-0212 TSK-0070 |
+| 126 | accepted | Disposition audit, Status corrections, Cutover inventory | Owner @buenhyden accepted on 2026-11-15 in this chat | SPEC-0212 TSK-0070 |
 
 ### Remaining Conditions
 
