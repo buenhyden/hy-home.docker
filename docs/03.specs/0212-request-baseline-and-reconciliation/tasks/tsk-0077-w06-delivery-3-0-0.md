@@ -1,6 +1,6 @@
 ---
 title: "W06 Delivery 3.0.0 Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -55,6 +55,25 @@ Git fixtures, retain unauthorized-path and missing-result negatives, and
 measure native hooks through Trace2. Revert the bounded tracked changes
 to recover the previous routes.
 
+#### Resume design
+
+The direct W06 resume request rebinds local execution to the clean
+`a6729e578` candidate. Its workflow projection, real merge-path regression
+and isolated style contract passed again. The prior native commit and
+unchanged push guard remain separate evidence.
+
+Run the canonical changed-plan selector in a small routing job, using only
+Git and system Python. Keep the core job independent so its long checks
+cannot delay a document job that was selected. The routing job must admit
+only the authenticated topology and expose a strict boolean. The document
+job starts only on true and runs its existing selection and execution checks.
+The stable aggregate rejects a missing or failed routing result, a skipped
+selected job, and a successful job that contradicts a negative selection.
+Reject a second path-pattern implementation and a route behind core.
+Keep candidate-run evidence distinct from remotely adopted independent
+enforcement. Reverting the workflow, planner and contract changes together
+restores the prior two-shard schedule.
+
 #### Implementation and observation
 
 Read the package observations, decisions, workspace profiles and applicable
@@ -89,6 +108,22 @@ for uv and dependency installation, and 1,255 s for validation. Existing
 main run 43729056797 completed in 37 s with only main security selected.
 Hosted queue, setup, run and retry costs for W138 remain unmeasured.
 
+#### Resume implementation and observation
+
+Routing and execution use the same registered document gate plan. Routing
+uses system Python without site packages and produces only `selected=true`
+or `selected=false`. Core starts independently. When selected, the document
+job recomputes its plan before running leaves and publishing evidence.
+A distinct runner with full Git ancestry still supplies routing. It replaces
+unused document setup on non-applicable inputs and adds a scheduling and
+checkout dependency for selected inputs.
+
+In seven local pairs per synthetic merge, the planner median was 0.3378 to
+0.3268 s for a README change and 0.3365 to 0.3186 s for a document validator
+change. The paired predecessor modeled its original YAML import. Neither
+sample wrote execution evidence. Checkout, queue, setup and installation time
+are outside the interval, so no hosted critical path is estimated.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -102,13 +137,15 @@ Candidate Git histories are local or synthetic. Existing hosted runs may
 be read as historical evidence. Publication, remote writes, full-stack
 operation and changes to branch protection remain outside this request.
 The Kubernetes-specific provision does not apply to this Docker checkout.
-The unprivileged PR jobs execute the candidate controller and lock. The
-aggregate records candidate self-check evidence. Independent enforcement
-would require separately adopted remote definitions and observed settings.
-An unselected documents shard still starts its runner and installs controller
-dependencies before resolving non-applicability. Routing it earlier through
-the core job would serialize selected work behind core validation. No
-same-input hosted measurements support that scheduling change yet.
+The unprivileged PR jobs execute candidate code. Routing and the aggregate
+record candidate self-check evidence. Independent enforcement needs a
+base-owned verifier that treats candidate objects as data and a separate
+check with a verified App identity. Main protection must name that check
+and App ID after separate approval and read-back. The trusted base definition
+observed locally is `origin/main` at `17bbde05a`. The current Verifier App
+mapping and permissions are unobserved. The existing `qa-control` environment
+admits protected branches and has no custom main-only policy. Hosted proof
+is needed for both selected and non-applicable routing paths.
 Read-back on remote main confirmed an up-to-date required `candidate-quality`
 check, resolved conversations and administrator enforcement. The rulesets
 endpoint returned no applicable rules. This is a read-only observation.
@@ -133,11 +170,19 @@ endpoint returned no applicable rules. This is a read-only observation.
 | Independent scope review | 133 | W138 | independent review of W06 coverage | Hosted trust and early shard routing | FAIL | Independent trust and pre-setup non-applicability remain open | required | - |
 | Installed commit hooks | 133 | W138 | normal git commit with Trace2 | Reviewed and staged W138 candidate | NOT_RUN | Pending final local delivery | required | - |
 | Hosted continuation | 133 | W138 | actual PR and main Actions run | W138 revision | NOT_RUN | No hosted dispatch or transport in scope | required | - |
+| Prior native commit observed | 133 | W138 | normal git commit with Trace2 | a6729e578 | PASS | Wall 3.28 s; pre-commit 2.593 s and commit-msg 0.648 s | required | Installed commit hooks |
+| Resume baseline | 133 | W138 | workflow projection, merge-path unit and style wrapper | Clean a6729e578 | PASS | Exact Git candidate and style checks passed again | required | - |
+| Resume planning and receipt regressions | 133 | W138 | focused runner, contract, workflow, evidence and context tests | W138 routing and aggregate changes on a6729e578 | PASS | 120 planner and contract tests, 88 workflow and evidence tests, 32 context and ownership tests | required | - |
+| Resume hosted workflow structure | 133 | W138 | actionlint and workflow contract | W138 candidate job graph | PASS | Five workflows, ten jobs, nine actions | required | - |
+| Resume routing timing | 133 | W138 | interleaved subprocess comparison | Seven synthetic merge pairs per outcome | PASS | Planner timings and excluded costs recorded above | optional | - |
+| Resume protection read-back | 133 | W138 | read-only GitHub API | Current main and qa-control | PASS | candidate-quality App 15368, strict; environment lacks a custom branch policy | optional | - |
+| Resume independent route review | 133 | W138 | implementation review against a6729e578 | Routing, aggregate, trust and performance | PASS | Local change approved; hosted comparison and independent trust remain open | required | - |
 
 ### Resolution Links
 
-Local evidence resolves the demonstrated rename and checkout regressions.
-Hosted outcomes remain attributable only to the candidate that ran them.
+Local evidence resolves the demonstrated rename, checkout and late document
+selection defects. The earlier independent scope finding remains open for
+hosted timing and adoption of the independent verifier.
 
 ## Acceptance Decision
 

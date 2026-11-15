@@ -23,9 +23,10 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 MODULE_PATH = ROOT / "scripts/lib/gate/github_workflow_contract.py"
 
 SHARD_JOBS = ("candidate-core", "candidate-documents")
+AGGREGATE_NEEDS = (*SHARD_JOBS, "candidate-routing")
 REQUIRED_CI_JOBS = frozenset(
     {
-        *SHARD_JOBS,
+        *AGGREGATE_NEEDS,
         "candidate-quality",
         "main-security",
     }
@@ -406,7 +407,9 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 candidate = workflow.data["jobs"][job_id]
                 self.assertEqual({"contents": "read"}, candidate["permissions"])
                 self.assertEqual(
-                    "github.event_name == 'pull_request'",
+                    self.module._DOCUMENTS_CONDITION
+                    if job_id == "candidate-documents"
+                    else "github.event_name == 'pull_request'",
                     candidate["if"],
                 )
                 self.assertNotIn("env", candidate)
@@ -735,7 +738,8 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 ),
                 "docker version",
                 "/usr/bin/docker compose version",
-                self.module._aggregate_result_step(SHARD_JOBS)["run"],
+                self.module._ROUTE_STEP["run"],
+                self.module._aggregate_result_step(AGGREGATE_NEEDS)["run"],
             },
             set(run_values),
         )
@@ -952,7 +956,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
             if workflow.path == ".github/workflows/ci-quality.yml"
         )
         self.assertEqual(REQUIRED_CI_JOBS, frozenset(ci.jobs))
-        self.assertEqual(4, len(ci.jobs))
         declared = self.load_contract_document(ROOT)["gate_nodes"]
         self.assertEqual(len(declared), len(contract.gate_registry.nodes))
         public = self.module.parse_public_gate_contract(
@@ -1421,12 +1424,27 @@ class GithubWorkflowContractTests(unittest.TestCase):
             raise AssertionError("required-quality jobs must be a mapping")
         return jobs
 
+    def test_empty_document_shard_is_routed_before_runner_setup(self) -> None:
+        jobs = self._required_quality_jobs(self.module, ROOT)
+        routing = jobs["candidate-routing"]
+        self.assertEqual(
+            ["Checkout repository", "Select document shard"],
+            [step["name"] for step in routing["steps"]],
+        )
+        self.assertFalse(jobs["candidate-core"].get("needs"))
+        self.assertEqual(["candidate-routing"], jobs["candidate-documents"]["needs"])
+        self.assertIn(
+            "needs.candidate-routing.outputs.selected == 'true'",
+            jobs["candidate-documents"]["if"],
+        )
+
     def test_only_registered_run_conditions_are_admitted(self) -> None:
         jobs = self._required_quality_jobs(self.module, ROOT)
         self.assertEqual(
             {
                 "candidate-core": "github.event_name == 'pull_request'",
-                "candidate-documents": "github.event_name == 'pull_request'",
+                "candidate-routing": "github.event_name == 'pull_request'",
+                "candidate-documents": self.module._DOCUMENTS_CONDITION,
                 "candidate-quality": "always() && github.event_name == 'pull_request'",
                 "main-security": "github.event_name == 'push' && github.ref == 'refs/heads/main'",
             },
@@ -1650,7 +1668,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
         # RS-26: the one required check name stays `candidate-quality`.
         jobs = self._required_quality_jobs(self.module, ROOT)
         aggregate = jobs["candidate-quality"]
-        self.assertEqual(list(SHARD_JOBS), aggregate["needs"])
+        self.assertEqual(list(AGGREGATE_NEEDS), aggregate["needs"])
         self.assertEqual(
             "always() && github.event_name == 'pull_request'", aggregate["if"]
         )
@@ -1667,7 +1685,7 @@ class GithubWorkflowContractTests(unittest.TestCase):
             self.load_contract_document(ROOT)
         )
         self.assertEqual(SHARD_JOBS, public.job_names)
-        self.assertEqual(SHARD_JOBS, quality.jobs["candidate-quality"].needs)
+        self.assertEqual(AGGREGATE_NEEDS, quality.jobs["candidate-quality"].needs)
         self.assertEqual(
             "always() && github.event_name == 'pull_request'",
             quality.jobs["candidate-quality"].condition,
@@ -1728,12 +1746,14 @@ class GithubWorkflowContractTests(unittest.TestCase):
             "",
         )
         valid = {
+            "ROUTING_RESULT": "success",
+            "ROUTING_SELECTED": "true",
             "CORE_RESULT": "success",
             "CORE_SELECTED": "true",
             "CORE_EXECUTION": "success",
             "DOCUMENTS_RESULT": "success",
-            "DOCUMENTS_SELECTED": "false",
-            "DOCUMENTS_EXECUTION": "skipped",
+            "DOCUMENTS_SELECTED": "true",
+            "DOCUMENTS_EXECUTION": "success",
         }
         scenarios = [
             (
@@ -1742,7 +1762,24 @@ class GithubWorkflowContractTests(unittest.TestCase):
             )
             for core, documents in itertools.product(results, repeat=2)
         ]
-        for side in ("CORE", "DOCUMENTS"):
+        unselected = dict(
+            valid,
+            ROUTING_SELECTED="false",
+            DOCUMENTS_RESULT="skipped",
+            DOCUMENTS_SELECTED="",
+            DOCUMENTS_EXECUTION="",
+        )
+        scenarios.append((unselected, True))
+        for baseline in (valid, unselected):
+            for result in results[1:]:
+                scenarios.append((dict(baseline, ROUTING_RESULT=result), False))
+            for selection in (("false" if baseline is valid else "true"), "", "True"):
+                scenarios.append((dict(baseline, ROUTING_SELECTED=selection), False))
+        for side, baseline in (
+            ("CORE", valid),
+            ("DOCUMENTS", valid),
+            ("DOCUMENTS", unselected),
+        ):
             for selected, execution in (
                 ("true", "success"),
                 ("false", "skipped"),
@@ -1757,12 +1794,18 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 scenarios.append(
                     (
                         {
-                            **valid,
+                            **baseline,
                             f"{side}_SELECTED": selected,
                             f"{side}_EXECUTION": execution,
                         },
                         (selected, execution)
-                        in {("true", "success"), ("false", "skipped")},
+                        in (
+                            {("true", "success"), ("false", "skipped")}
+                            if side == "CORE"
+                            else {("true", "success")}
+                            if baseline is valid
+                            else {("", "")}
+                        ),
                     )
                 )
         for environment, expected in scenarios:
@@ -1857,26 +1900,31 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 self.module.load_workflow_contract(root)
         self.assertEqual("contract-required-quality-invalid", caught.exception.code)
 
-    def test_aggregate_contract_must_need_every_job_and_run_always(self) -> None:
-        for label, old, new in (
+    def test_contract_requires_the_routing_and_aggregate_dependencies(self) -> None:
+        for job, field, value in (
             (
-                "not-always",
-                "\"always() && github.event_name == 'pull_request'\"",
-                "\"github.event_name == 'pull_request'\"",
+                "candidate-quality",
+                "condition",
+                "github.event_name == 'pull_request'",
             ),
-            (
-                "misses-a-needed-job",
-                '"candidate-core",\n            "candidate-documents"\n          ],',
-                '"candidate-core"\n          ],',
-            ),
+            ("candidate-quality", "needs", list(SHARD_JOBS)),
+            ("candidate-documents", "needs", []),
+            ("candidate-documents", "condition", "github.event_name == 'pull_request'"),
+            ("candidate-core", "needs", ["candidate-routing"]),
+            ("candidate-routing", "permissions", {"contents": "write"}),
         ):
-            with self.subTest(label=label), tempfile.TemporaryDirectory() as directory:
+            with (
+                self.subTest(job=job, field=field),
+                tempfile.TemporaryDirectory() as directory,
+            ):
                 root = pathlib.Path(directory)
                 shutil.copytree(ROOT / ".github", root / ".github")
                 contract_file = root / ".github/workflow-contract.yml"
-                text = contract_file.read_text(encoding="utf-8")
-                self.assertIn(old, text)
-                contract_file.write_text(text.replace(old, new, 1), encoding="utf-8")
+                document = self.load_contract_document(root)
+                document["workflows"][".github/workflows/ci-quality.yml"]["jobs"][job][
+                    field
+                ] = value
+                contract_file.write_text(json.dumps(document), encoding="utf-8")
                 with self.assertRaises(self.module.WorkflowContractError) as caught:
                     self.module.load_workflow_contract(root)
                 self.assertEqual(

@@ -34,8 +34,32 @@ WORKFLOW_ROOT: Final = pathlib.PurePosixPath(".github/workflows")
 MAX_YAML_BYTES: Final = 2 * 1_048_576
 MAX_WORKFLOWS: Final = 128
 AGGREGATE_JOB: Final = "candidate-quality"
+ROUTING_JOB: Final = "candidate-routing"
+DOCUMENTS_JOB: Final = "candidate-documents"
 AGGREGATE_RESULT_STEP: Final = "Require every candidate job to succeed"
 FIXED_SHELL: Final = "/usr/bin/bash --noprofile --norc -eo pipefail {0}"
+_PR_CONDITION: Final = "github.event_name == 'pull_request'"
+_DOCUMENTS_CONDITION: Final = (
+    f"{_PR_CONDITION} && needs.{ROUTING_JOB}.outputs.selected == 'true'"
+)
+_ROUTING_OUTPUTS: Final = {"selected": "${{ steps.route.outputs.selected }}"}
+_ROUTE_STEP: Final = {
+    "name": "Select document shard",
+    "id": "route",
+    "shell": FIXED_SHELL,
+    "run": (
+        "export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1 GIT_NO_REPLACE_OBJECTS=1\n"
+        "export TRUSTED_GIT_PATH=/usr/bin/git\n"
+        'test "$GITHUB_EVENT_NAME" = pull_request\n'
+        '[[ "$GITHUB_SHA" =~ ^[0-9a-f]{40}$ ]]\n'
+        r"""mapfile -t parents < <("$TRUSTED_GIT_PATH" cat-file commit "$GITHUB_SHA" | /usr/bin/sed -n '/^$/q; s/^parent \([0-9a-f]\{40\}\)$/\1/p')"""
+        "\n"
+        'test "${#parents[@]}" -eq 2\n'
+        'export TRUSTED_EVENT_NAME="$GITHUB_EVENT_NAME" TRUSTED_MERGE_SHA="$GITHUB_SHA"\n'
+        'export TRUSTED_BASE_SHA="${parents[0]}" TRUSTED_HEAD_SHA="${parents[1]}"\n'
+        '/usr/bin/python3 -ES scripts/validation/run-ci-gate.py --profile changed --job candidate-documents --routing >> "$GITHUB_OUTPUT"\n'
+    ),
+}
 _CANDIDATE_OUTPUTS: Final = {
     "selected": "${{ steps.prerequisites.outputs.selected }}",
     "execution": "${{ steps.validation.outcome }}",
@@ -879,6 +903,7 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
         raise WorkflowContractError(error.code, error.path, error.message) from None
     if len(required_workflows) != 1 or set(required_workflows[0].jobs) != {
         AGGREGATE_JOB,
+        ROUTING_JOB,
         "main-security",
         *shard_jobs,
     }:
@@ -887,14 +912,24 @@ def load_workflow_contract(root: pathlib.Path) -> WorkflowContract:
             WORKFLOW_CONTRACT.as_posix(),
             "exactly one required-quality workflow with the typed candidate jobs, the aggregate and main security is required",
         )
-    aggregate = required_workflows[0].jobs[AGGREGATE_JOB]
-    if aggregate.needs != shard_jobs or not (aggregate.condition or "").startswith(
-        "always() && "
+    jobs = required_workflows[0].jobs
+    aggregate = jobs[AGGREGATE_JOB]
+    if (
+        DOCUMENTS_JOB not in shard_jobs
+        or jobs[ROUTING_JOB].needs
+        or jobs[ROUTING_JOB].condition != _PR_CONDITION
+        or jobs[ROUTING_JOB].permissions != {"contents": "read"}
+        or jobs[ROUTING_JOB].timeout_minutes != 5
+        or jobs[DOCUMENTS_JOB].needs != (ROUTING_JOB,)
+        or jobs[DOCUMENTS_JOB].condition != _DOCUMENTS_CONDITION
+        or any(jobs[job].needs for job in shard_jobs if job != DOCUMENTS_JOB)
+        or aggregate.needs != (*shard_jobs, ROUTING_JOB)
+        or aggregate.condition != f"always() && {_PR_CONDITION}"
     ):
         raise WorkflowContractError(
             "contract-required-quality-invalid",
             WORKFLOW_CONTRACT.as_posix(),
-            "the aggregate must need every candidate job and run even when one is skipped or fails",
+            "routing must gate only the document job and the aggregate must need every candidate job even on failure",
         )
     return WorkflowContract(
         schema_version=2,
@@ -912,9 +947,14 @@ def aggregate_result_variable(need: str, field: str = "RESULT") -> str:
 
 
 def _aggregate_result_step(needs: tuple[str, ...]) -> dict[str, object]:
-    environment: dict[str, str] = {}
-    checks: list[str] = []
+    environment = {
+        "ROUTING_RESULT": "${{ needs.candidate-routing.result }}",
+        "ROUTING_SELECTED": "${{ needs.candidate-routing.outputs.selected }}",
+    }
+    checks = ['test "$ROUTING_RESULT" = success\n']
     for job in needs:
+        if job == ROUTING_JOB:
+            continue
         result = aggregate_result_variable(job)
         selected = aggregate_result_variable(job, "SELECTED")
         execution = aggregate_result_variable(job, "EXECUTION")
@@ -922,7 +962,12 @@ def _aggregate_result_step(needs: tuple[str, ...]) -> dict[str, object]:
         environment[selected] = "${{ needs." + job + ".outputs.selected }}"
         environment[execution] = "${{ needs." + job + ".outputs.execution }}"
         checks.append(
-            f'test "${result}" = success\n'
+            f'case "$ROUTING_SELECTED:${result}:${selected}:${execution}" in\n'
+            "  true:success:true:success|false:skipped::) ;;\n"
+            "  *) exit 1 ;;\n"
+            "esac\n"
+            if job == DOCUMENTS_JOB
+            else f'test "${result}" = success\n'
             f'case "${selected}:${execution}" in\n'
             "  true:success|false:skipped) ;;\n"
             "  *) exit 1 ;;\n"
@@ -1072,12 +1117,16 @@ def _workflow_projection_findings(
             admitted_keys.add("needs")
         if expected_job.environment is not None:
             admitted_keys.add("env")
-        is_candidate = (
-            raw_job_id.startswith("candidate-") and raw_job_id != AGGREGATE_JOB
-        )
-        if is_candidate:
+        is_candidate = raw_job_id.startswith("candidate-") and raw_job_id not in {
+            AGGREGATE_JOB,
+            ROUTING_JOB,
+        }
+        if is_candidate or raw_job_id == ROUTING_JOB:
             admitted_keys.add("outputs")
-            if raw_job.get("outputs") != _CANDIDATE_OUTPUTS:
+            outputs = (
+                _ROUTING_OUTPUTS if raw_job_id == ROUTING_JOB else _CANDIDATE_OUTPUTS
+            )
+            if raw_job.get("outputs") != outputs:
                 findings.append(
                     _finding(
                         "workflow-gate-projection-mismatch",
@@ -1122,6 +1171,15 @@ def _workflow_projection_findings(
                         "workflow-aggregate-projection-mismatch",
                         path,
                         "the aggregate must verify all needed results and compare selection with execution",
+                    )
+                )
+        elif raw_job_id == ROUTING_JOB:
+            if steps != [checkout, _ROUTE_STEP]:
+                findings.append(
+                    _finding(
+                        "workflow-gate-projection-mismatch",
+                        path,
+                        "candidate routing must use only checkout and the audited selection step",
                     )
                 )
         elif is_candidate:
@@ -1362,7 +1420,7 @@ def _expected_evidence_upload_step(
     job_id: str,
     action_sha: str | None,
 ) -> dict[str, object] | None:
-    if job_id == AGGREGATE_JOB or not (
+    if job_id in {AGGREGATE_JOB, ROUTING_JOB} or not (
         job_id.startswith("candidate-") or job_id == "main-security"
     ):
         return None

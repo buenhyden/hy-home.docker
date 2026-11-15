@@ -1490,11 +1490,21 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--profile", required=True)
     parser.add_argument("--explain", action="store_true")
     parser.add_argument("--requirements", action="store_true")
+    parser.add_argument("--routing", action="store_true")
     parser.add_argument("--local-only", action="store_true")
     parser.add_argument("--crosswalk", action="store_true")
     parser.add_argument("--job")
     try:
         arguments = parser.parse_args(argv)
+        if arguments.routing and (
+            arguments.profile != "changed"
+            or arguments.job != "candidate-documents"
+            or arguments.crosswalk
+            or arguments.explain
+            or arguments.local_only
+            or arguments.requirements
+        ):
+            parser.error("--routing requires only the changed document job selection")
         root_value = os.environ.get("HYHOME_CI_GATE_ROOT")
         root = (
             pathlib.Path(root_value)
@@ -1503,6 +1513,12 @@ def main(argv: list[str] | None = None) -> int:
         )
         execution_environment = _authenticated_execution_environment(root, os.environ)
         context = derive_execution_context(execution_environment)
+        if arguments.routing and context is not ExecutionContext.PULL_REQUEST:
+            raise GateContractError(
+                "ci-gate-routing-context",
+                "routing",
+                "job routing requires an authenticated pull-request context",
+            )
         document = load_contract_document(root)
         registry = parse_gate_registry(
             document,
@@ -1571,6 +1587,9 @@ def main(argv: list[str] | None = None) -> int:
         full_plan = plan
         if arguments.job:
             plan = select_job_plan(plan, public_contract, arguments.job)
+        if arguments.routing:
+            print("selected=true" if plan else "selected=false")
+            return 0
         if arguments.local_only:
             plan = build_local_only_validation_plan(
                 plan,

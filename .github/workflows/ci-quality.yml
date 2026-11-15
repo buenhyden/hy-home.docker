@@ -187,8 +187,37 @@ jobs:
           overwrite: false
           include-hidden-files: false
 
-  candidate-documents:
+  candidate-routing:
     if: github.event_name == 'pull_request'
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      selected: ${{ steps.route.outputs.selected }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Select document shard
+        id: route
+        shell: /usr/bin/bash --noprofile --norc -eo pipefail {0}
+        run: |
+          export GIT_CONFIG_GLOBAL=/dev/null GIT_CONFIG_NOSYSTEM=1 GIT_NO_REPLACE_OBJECTS=1
+          export TRUSTED_GIT_PATH=/usr/bin/git
+          test "$GITHUB_EVENT_NAME" = pull_request
+          [[ "$GITHUB_SHA" =~ ^[0-9a-f]{40}$ ]]
+          mapfile -t parents < <("$TRUSTED_GIT_PATH" cat-file commit "$GITHUB_SHA" | /usr/bin/sed -n '/^$/q; s/^parent \([0-9a-f]\{40\}\)$/\1/p')
+          test "${#parents[@]}" -eq 2
+          export TRUSTED_EVENT_NAME="$GITHUB_EVENT_NAME" TRUSTED_MERGE_SHA="$GITHUB_SHA"
+          export TRUSTED_BASE_SHA="${parents[0]}" TRUSTED_HEAD_SHA="${parents[1]}"
+          /usr/bin/python3 -ES scripts/validation/run-ci-gate.py --profile changed --job candidate-documents --routing >> "$GITHUB_OUTPUT"
+
+  candidate-documents:
+    if: github.event_name == 'pull_request' && needs.candidate-routing.outputs.selected == 'true'
+    needs: [candidate-routing]
     permissions:
       contents: read
     runs-on: ubuntu-latest
@@ -364,12 +393,15 @@ jobs:
     needs:
       - candidate-core
       - candidate-documents
+      - candidate-routing
     permissions: {}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
       - name: Require every candidate job to succeed
         env:
+          ROUTING_RESULT: ${{ needs.candidate-routing.result }}
+          ROUTING_SELECTED: ${{ needs.candidate-routing.outputs.selected }}
           CORE_RESULT: ${{ needs.candidate-core.result }}
           CORE_SELECTED: ${{ needs.candidate-core.outputs.selected }}
           CORE_EXECUTION: ${{ needs.candidate-core.outputs.execution }}
@@ -378,14 +410,14 @@ jobs:
           DOCUMENTS_EXECUTION: ${{ needs.candidate-documents.outputs.execution }}
         shell: /usr/bin/bash --noprofile --norc -eo pipefail {0}
         run: |
+          test "$ROUTING_RESULT" = success
           test "$CORE_RESULT" = success
           case "$CORE_SELECTED:$CORE_EXECUTION" in
             true:success|false:skipped) ;;
             *) exit 1 ;;
           esac
-          test "$DOCUMENTS_RESULT" = success
-          case "$DOCUMENTS_SELECTED:$DOCUMENTS_EXECUTION" in
-            true:success|false:skipped) ;;
+          case "$ROUTING_SELECTED:$DOCUMENTS_RESULT:$DOCUMENTS_SELECTED:$DOCUMENTS_EXECUTION" in
+            true:success:true:success|false:skipped::) ;;
             *) exit 1 ;;
           esac
 

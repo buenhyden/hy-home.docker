@@ -39,14 +39,26 @@
           "needs": [],
           "environment": null
         },
+        "candidate-routing": {
+          "permissions": {
+            "contents": "read"
+          },
+          "runs_on": "ubuntu-latest",
+          "timeout_minutes": 5,
+          "condition": "github.event_name == 'pull_request'",
+          "needs": [],
+          "environment": null
+        },
         "candidate-documents": {
           "permissions": {
             "contents": "read"
           },
           "runs_on": "ubuntu-latest",
           "timeout_minutes": 100,
-          "condition": "github.event_name == 'pull_request'",
-          "needs": [],
+          "condition": "github.event_name == 'pull_request' && needs.candidate-routing.outputs.selected == 'true'",
+          "needs": [
+            "candidate-routing"
+          ],
           "environment": null
         },
         "candidate-quality": {
@@ -56,7 +68,8 @@
           "condition": "always() && github.event_name == 'pull_request'",
           "needs": [
             "candidate-core",
-            "candidate-documents"
+            "candidate-documents",
+            "candidate-routing"
           ],
           "environment": null
         },

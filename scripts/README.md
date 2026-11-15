@@ -1,6 +1,6 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.5.9"
+version: "1.5.10"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -201,8 +201,10 @@ argv, 실행 컨텍스트가 필요하며 adapter 경로와 미분류 경로도 
 hosted leaf는 `public_gate.hosted_jobs`가 정확히 한 job에 배정합니다.
 `candidate-documents`가 문서 거버넌스 leaf를 실행하고 `candidate-core`가 그
 외 모두를 실행하며, `run-ci-gate.py --job <name>`이 선택된 계획과 그 job의
-교집합만 실행합니다. 필수 check `candidate-quality`는 두 job이 모두 `success`일
-때만 통과하는 집계 job이고, skipped/cancelled/failure/누락은 모두 실패입니다.
+교집합만 실행합니다. `candidate-routing`이 같은 선택기로 문서 검사 필요 여부를
+먼저 판정합니다. 필수 check `candidate-quality`는 라우팅과 핵심 검사 성공을
+요구합니다. 라우팅이 문서 검사를 선택했으면 실행 성공을 요구하고, 비적용이면
+실행 결과 없이 건너뛴 경우만 허용합니다.
 로컬에서는 `--profile changed`가 모든 회귀를 소유하고, `--local-only`는 LOCAL
 전용 leaf만 선택합니다. 정확한 gate
 ID·entrypoint·argv 바인딩이 아니면 hosted

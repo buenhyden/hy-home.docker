@@ -10,6 +10,7 @@ import pathlib
 import shutil
 import stat
 import subprocess
+import sys
 import tempfile
 import unittest
 from unittest import mock
@@ -1762,6 +1763,133 @@ class CiGateRunnerContractTests(unittest.TestCase):
         self.assertEqual((1, ""), (status, stdout))
         self.assertIn("ci-gate-required-job-evidence", stderr)
         execute.assert_not_called()
+
+    def test_routing_accepts_only_changed_document_selection(self) -> None:
+        for arguments in (
+            (),
+            ("--job", "candidate-core"),
+            ("--job", "candidate-documents", "--profile", "full"),
+            *(
+                ("--job", "candidate-documents", option)
+                for option in (
+                    "--crosswalk",
+                    "--explain",
+                    "--local-only",
+                    "--requirements",
+                )
+            ),
+        ):
+            with self.subTest(arguments=arguments):
+                status, out, err = self._hosted_job_main("--routing", *arguments)
+                self.assertEqual((2, ""), (status, out))
+                self.assertIn("ci-gate-cli-arguments", err)
+        with (
+            mock.patch.dict(os.environ, {}, clear=True),
+            contextlib.redirect_stdout(io.StringIO()) as out,
+            contextlib.redirect_stderr(io.StringIO()) as err,
+        ):
+            status = runner.main(
+                ["--profile", "changed", "--job", "candidate-documents", "--routing"]
+            )
+        self.assertEqual((1, ""), (status, out.getvalue()))
+        self.assertIn("ci-gate-routing-context", err.getvalue())
+
+    def test_routing_uses_stdlib_and_authenticated_merge_without_evidence(self) -> None:
+        contract_path = ".github/workflow-contract.yml"
+        registry = contract.parse_gate_registry(
+            contract.load_contract_document(ROOT), contract_path
+        )
+        input_paths = {contract_path}
+        for node in registry.nodes:
+            if node.entrypoint is not None:
+                input_paths.add(node.entrypoint.as_posix())
+            if node.rule_owner:
+                input_paths.add(node.rule_owner.partition("#")[0])
+        with tempfile.TemporaryDirectory() as directory:
+            repo = self._changed_path_repo(pathlib.Path(directory))
+            for relative in sorted(input_paths):
+                target = repo / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(ROOT / relative, target)
+            for node in registry.nodes:
+                if node.cwd is not None:
+                    (repo / node.cwd).mkdir(parents=True, exist_ok=True)
+            self._git(repo, "add", "-A")
+            self._git(repo, "commit", "-qm", "gate contract inputs")
+            base = self._git(repo, "rev-parse", "HEAD").stdout.strip()
+            command = (
+                sys.executable,
+                "-S",
+                "-B",
+                "-c",
+                "import pathlib, runpy, sys\n"
+                "from tests.lib.gate.subprocess_support import root_owned_system_git_fixture\n"
+                "entrypoint = pathlib.Path(sys.argv.pop(1))\n"
+                "sys.path.insert(0, str(entrypoint.parent))\n"
+                "with root_owned_system_git_fixture():\n"
+                "    runpy.run_path(str(entrypoint), run_name='__main__')\n",
+                str(ROOT / "scripts/validation/run-ci-gate.py"),
+                "--profile",
+                "changed",
+                "--job",
+                "candidate-documents",
+                "--routing",
+            )
+            evidence = pathlib.Path(directory, "evidence")
+            for relative, selected in (
+                ("README.md", "false"),
+                ("scripts/lib/document_governance/example.py", "true"),
+            ):
+                with self.subTest(relative=relative):
+                    self._git(repo, "checkout", "-qb", f"candidate-{selected}", base)
+                    candidate = repo / relative
+                    candidate.parent.mkdir(parents=True, exist_ok=True)
+                    candidate.write_text("candidate\n", encoding="utf-8")
+                    self._git(repo, "add", relative)
+                    self._git(repo, "commit", "-qm", "candidate input")
+                    head = self._git(repo, "rev-parse", "HEAD").stdout.strip()
+                    self._git(repo, "checkout", "-q", "--detach", base)
+                    self._git(repo, "merge", "--no-ff", "-qm", "candidate merge", head)
+                    merge = self._git(repo, "rev-parse", "HEAD").stdout.strip()
+                    environment = {
+                        "PATH": os.defpath,
+                        "HYHOME_CI_GATE_ROOT": str(repo),
+                        "GITHUB_ACTIONS": "true",
+                        "GITHUB_EVENT_NAME": "pull_request",
+                        "GITHUB_SHA": merge,
+                        "TRUSTED_EVENT_NAME": "pull_request",
+                        "TRUSTED_MERGE_SHA": merge,
+                        "TRUSTED_BASE_SHA": base,
+                        "TRUSTED_HEAD_SHA": head,
+                        "TRUSTED_GIT_PATH": (
+                            shutil.which("git", path=os.defpath) or "/usr/bin/git"
+                        ),
+                        "CI_GATE_EVIDENCE_DIR": str(evidence),
+                    }
+                    result = subprocess.run(
+                        command,
+                        cwd=ROOT,
+                        env=environment,
+                        capture_output=True,
+                        text=True,
+                        check=False,
+                        timeout=30,
+                    )
+                    self.assertEqual(0, result.returncode, result.stderr)
+                    self.assertEqual(f"selected={selected}\n", result.stdout)
+                    self.assertEqual("", result.stderr)
+            result = subprocess.run(
+                command,
+                cwd=ROOT,
+                env={**environment, "TRUSTED_BASE_SHA": head},
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=30,
+            )
+            self.assertEqual((1, ""), (result.returncode, result.stdout))
+            self.assertIn("ci-gate-execution-context", result.stderr)
+            self.assertFalse(evidence.exists())
 
     def test_requirements_reports_prerequisites_without_executing(self) -> None:
         environment = {

@@ -12,14 +12,10 @@ import subprocess
 import sys
 from collections.abc import Mapping
 
-import yaml
-
 if __package__ in {None, ""}:
     _BOOTSTRAP_ROOT = pathlib.Path(__file__).resolve().parents[3]
     if str(_BOOTSTRAP_ROOT) not in sys.path:
         sys.path.insert(0, str(_BOOTSTRAP_ROOT))
-
-from scripts.lib.document_governance.frontmatter import safe_load_unique
 
 _CONTRACT_PATH = pathlib.PurePosixPath(".github/workflow-contract.yml")
 _MAX_CONTRACT_BYTES = 1024 * 1024
@@ -232,6 +228,9 @@ class ManifestContractError(ValueError):
 
 def load_manifest_document(path: pathlib.Path) -> object:
     """Read the manifest through one bounded, no-follow YAML boundary."""
+    import yaml
+
+    from scripts.lib.document_governance.frontmatter import safe_load_unique
 
     def snapshot(value: os.stat_result) -> tuple[int, ...]:
         return (
