@@ -214,8 +214,14 @@ class OutboxWorkerPlacementTests(unittest.TestCase):
         capture_network = "opsflow_capture_net"
         db_network = "opsflow_notifier_db_net"
         root = yaml.safe_load((ROOT / "docker-compose.yml").read_text())
-        self.assertEqual({"internal": True}, root["networks"][capture_network])
-        self.assertEqual({"internal": True}, root["networks"][db_network])
+        self.assertEqual(
+            {"internal": True, "ipam": {"config": [{"subnet": "10.250.48.0/24"}]}},
+            root["networks"][capture_network],
+        )
+        self.assertEqual(
+            {"internal": True, "ipam": {"config": [{"subnet": "10.250.49.0/24"}]}},
+            root["networks"][db_network],
+        )
         dev_pg = yaml.safe_load(
             (ROOT / "infra/04-data/dev-db/docker-compose.yml").read_text()
         )["services"]["dev-pg"]
