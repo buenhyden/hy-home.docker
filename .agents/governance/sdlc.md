@@ -1,10 +1,10 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.10.1"
+version: "1.11.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-15"
 ---
 
 # Software Development Lifecycle
@@ -113,7 +113,17 @@ reserved.
 A Plan has one Spec parent and a Task has one Plan parent. A Plan is never
 ahead of its Spec and never ends before it. A Task, and each of its items,
 runs only while both are `approved`; under a `draft` or `in-review` parent a
-remaining Task or item stays `draft` or `blocked`. A `cancelled` Spec requires
+remaining Task or item stays `draft` or `blocked`.
+
+A draft document of any family may be written, revised and reviewed. On its
+own it never authorizes implementation, an operational action or a
+completion or acceptance decision; a status value or a passing check does not
+either. Work runs under a separate valid authority for the same target and
+scope, such as an approved Spec and Plan or a direct user instruction, and
+completion follows the Task's criteria, evidence and acceptance. An unrelated
+draft never blocks independent work. The Spec Package reader enforces the
+Task rule above; for other families this rule is enforced by review, not by
+a check. A `cancelled` Spec requires
 a terminal Plan and terminal Tasks. Parent status
 never reflects execution.
 
@@ -212,7 +222,7 @@ templates refer here for completion meaning.
 ## Stop Conditions
 
 Every transition requires the smallest applicable validation set, exact Task
-evidence, independent review for material changes, and logical Conventional
+evidence, review by [risk](workflows.md#review-risk), and logical Conventional
 Commits when committing is authorized. A local-only request may finish with a
 reviewed working-tree diff; it does not authorize commit, push, PR, release, or
 runtime action. Document lifecycle states do not grant those permissions.

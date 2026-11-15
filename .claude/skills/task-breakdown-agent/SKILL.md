@@ -1,6 +1,6 @@
 ---
 name: "task-breakdown-agent"
-description: "Use when an approved plan needs reversible logical work units with one implementer, acceptance checks, dependencies, and independent review."
+description: "Use when an approved plan needs reversible logical work units with one implementer, acceptance checks, dependencies, and review by risk."
 disable-model-invocation: true
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: "workflow-supervisor"
-description: "Route approved work to bounded roles, enforce independent review and stop conditions, and synthesize evidence without absorbing specialist ownership. Use when: A task spans multiple scopes, protected surfaces, or dependent implementation units; Conflicting specialist findings require an explicit, evidence-backed resolution; Stateful recovery work needs separate review, human approval, execution, and resume boundaries."
+description: "Route approved work to bounded roles, enforce review by risk and stop conditions, and synthesize evidence without absorbing specialist ownership. Use when: A task spans multiple scopes, protected surfaces, or dependent implementation units; Conflicting specialist findings require an explicit, evidence-backed resolution; Stateful recovery work needs separate review, human approval, execution, and resume boundaries."
 tools:
 - "Read"
 - "Grep"
@@ -19,7 +19,7 @@ skills:
 
 ## Overview
 
-Route approved work to bounded roles, enforce independent review and stop conditions, and synthesize evidence without absorbing specialist ownership.
+Route approved work to bounded roles, enforce review by risk and stop conditions, and synthesize evidence without absorbing specialist ownership.
 
 ### Use When
 
@@ -31,7 +31,7 @@ Route approved work to bounded roles, enforce independent review and stop condit
 
 ### Success Criteria
 
-Each logical task has one implementer, independent review, bounded retry/stop behavior, exact evidence, and no silent scope expansion. Recovery review and operational action have separate owners and approval evidence.
+Each logical task has one implementer, review by risk (independent for high-risk, focused checks and an author check for low-risk), bounded retry/stop behavior, exact evidence, and no silent scope expansion. Recovery review and operational action have separate owners and approval evidence.
 
 ## Allowed Changes
 
