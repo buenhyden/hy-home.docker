@@ -128,7 +128,10 @@ class OptionalIntegrationContractTests(unittest.TestCase):
         valkey = _service("infra/04-data/mng-db/docker-compose.yml", "mng-valkey")
         self.assertIn("mng_valkey_n8n_password", valkey["secrets"])
         self.assertEqual("1", str(valkey["environment"]["MNG_VALKEY_N8N_ENABLED"]))
-        self.assertEqual({"internal": True}, root["networks"]["n8n_ollama_net"])
+        self.assertEqual(
+            {"internal": True, "ipam": {"config": [{"subnet": "10.250.47.0/24"}]}},
+            root["networks"]["n8n_ollama_net"],
+        )
         for path, name in (
             ("infra/07-workflow/n8n/docker-compose.yml", "n8n-worker"),
             ("infra/08-ai/ollama/docker-compose.yml", "ollama"),
