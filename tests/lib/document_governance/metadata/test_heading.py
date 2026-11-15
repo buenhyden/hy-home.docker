@@ -672,6 +672,19 @@ class RegisteredSectionContractTests(unittest.TestCase):
             self._findings("repository-readme", candidate),
         )
 
+    def test_commented_heading_cannot_move_a_readme_path_table(self) -> None:
+        body, _ = self._conforming_body("repository-readme")
+        candidate = body.replace(
+            "### Directories\n\n",
+            "### Directories\n\n<!-- Example\n### Other\n-->\n\n"
+            "| Purpose | Path |\n| --- | --- |\n| a | b |\n\n",
+            1,
+        )
+        self.assertIn(
+            "readme-documents-header-invalid",
+            self._findings("repository-readme", candidate),
+        )
+
     def test_readme_current_items_checks_only_path_column_tables(self) -> None:
         body, _ = self._conforming_body("readme")
         for header, reported in (
@@ -2302,6 +2315,28 @@ class SubsectionContractTests(unittest.TestCase):
     def test_fenced_subheading_does_not_count(self) -> None:
         fenced = self.VALID.replace("### Second\n\nTwo.", "```text\n### Second\n```")
         self.assertIn("body-subheading-missing", self.codes(fenced))
+
+    def test_commented_headings_cannot_supply_or_duplicate_sections(self) -> None:
+        hidden = self.VALID.replace(
+            "### Second\n\nTwo.", "<!-- example\n### Second\nTwo.\n-->"
+        )
+        self.assertIn("body-subheading-missing", self.codes(hidden))
+        hidden_parent = self.VALID.replace(
+            "## Beta\n\nThree.", "<!-- example\n## Beta\nThree.\n-->"
+        )
+        self.assertIn("body-heading-missing", self.codes(hidden_parent))
+        self.assertEqual(
+            [], self.codes(self.VALID + "\n<!-- example\n## Beta\n### First\n-->\n")
+        )
+
+    def test_a_quoted_or_list_nested_example_does_not_supply_an_h3(self) -> None:
+        for example in (
+            "> ### Second\n> Two.",
+            "- Example\n\n  ### Second\n\n  Two.",
+        ):
+            with self.subTest(example=example):
+                text = self.VALID.replace("### Second\n\nTwo.", example)
+                self.assertIn("body-subheading-missing", self.codes(text))
 
 
 class RegisteredTableContractTests(unittest.TestCase):

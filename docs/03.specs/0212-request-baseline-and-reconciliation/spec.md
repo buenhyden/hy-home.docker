@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.68.0"
+version: "1.69.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -244,6 +244,9 @@ same day adds criterion 124 and W129 in TSK-0068, and its gap audit adds
 criterion 125 and W130 in TSK-0069. The W02-DISPOSITION run of the same day
 adds criterion 126 and W131 in TSK-0070. The owner's approval of the same day
 adds criterion 127 and W132 in TSK-0071 for the root network subnets.
+The 3.0.1 W03-FORMS request adds criterion 128 and W133 in TSK-0072 for
+the W03-VERSION prerequisite, then criterion 129 and W134 in TSK-0073 for
+the remaining authoring form and reader differences in this workspace.
 
 ### Owning Requirements
 
@@ -1034,6 +1037,15 @@ target, backup, recovery boundary, and action-specific authorization.
      explicit subnet, which a contract test enforces, records them in
      AD-0026, and applies them by recreating only the three affected
      networks and their four containers, with each subnet read back.
+128. TSK-0072 makes the Registry and TemplateDefinition expose separate
+     contract identity and numeric version. Current document values use
+     the numeric profile, historical comparisons preserve their documented
+     precedence, and product releases retain full SemVer.
+129. After the W03-VERSION functionality is proven, TSK-0073 checks the
+     3.0.1 role purposes against the current forms and implements demonstrated
+     gaps. Authored forms and template projections distinguish real sections
+     and tables from Markdown examples. Focused checks cover conditional
+     content, relations, native formats and the retired Release document role.
 
 ### Evidence Requirements
 

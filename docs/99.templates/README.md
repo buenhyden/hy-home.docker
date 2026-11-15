@@ -1,10 +1,10 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.7.0"
+version: "2.8.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "templates"
 ---
 
@@ -82,14 +82,15 @@ docs/99.templates/
 | [`registry.json`](./registry.json) | machine | profiles, paths, identities, lifecycle, traceability, template registration |
 | [`contracts/document-profile.schema.json`](./contracts/document-profile.schema.json) | machine | registry shape |
 | [`contracts/document-frontmatter.schema.json`](./contracts/document-frontmatter.schema.json) | machine | typed frontmatter value shape |
-| [`contracts/template-definition.schema.json`](./contracts/template-definition.schema.json) | machine | 승인된 TemplateDefinition v14.5 형식. `scripts/lib/document_governance/template_definition.py`가 각 `template_roles` 항목을 이 형식으로 투영합니다 |
+| [`contracts/template-definition.schema.json`](./contracts/template-definition.schema.json) | machine | TemplateDefinition 출력 계약 2.0.0. `scripts/lib/document_governance/template_definition.py`가 각 `template_roles` 항목을 이 형식으로 투영합니다 |
 | [`templates/`](./templates/) | copy source | profile-referenced authoring forms |
 
-TemplateDefinition의 `contract_version`은 profile이 `required_subsections`를
-선언하면 공통 양식 `COMMON-DOC-FORM-1` 판본이고, 그렇지 않으면 Registry
-`common.contract_id`입니다. 판본 값은 Registry
-`common.common_form_contract` 한 곳에만 둡니다. `template_definition.py`는
-이 값을 읽고 상수로 두지 않습니다.
+TemplateDefinition의 `contract_id`는 적용 양식을 식별하고
+`contract_version`은 그 양식의 숫자 판본을 나타냅니다. Profile이
+`required_subsections`를 선언하면 Registry의 `common.common_form_contract`에서
+두 값을 읽습니다. 다른 profile은 `common`의 식별자와 판본을 사용합니다.
+이 출력 형식 변경으로 Registry 직렬화 판본은 2가 됩니다. 과거 Registry 검증은
+해당 Git 판본의 스키마를 사용합니다.
 
 Consumer는 `scripts.lib.document_governance.registry`를 통해 Registry를
 로드해야 합니다. README 본문이나 template 본문을 machine policy로

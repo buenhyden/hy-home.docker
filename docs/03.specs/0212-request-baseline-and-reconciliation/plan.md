@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.68.0"
+version: "1.69.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -182,6 +182,8 @@ delivery. W127 in TSK-0066 runs the 3.0.1 W00-DELTA baseline and verdicts. W128 
 TSK-0067 closes the gaps its audit found. W129 in TSK-0068 runs the 3.0.1
 W01-CONTRACT. W130 in TSK-0069 closes the gaps its audit found. W131 in TSK-0070 runs the
 3.0.1 W02-DISPOSITION. W132 in TSK-0071 gives the root networks explicit subnets.
+W133 in TSK-0072 closes the W03-VERSION prerequisite for W134 in TSK-0073,
+which implements the remaining 3.0.1 W03-FORMS differences.
 
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
@@ -363,6 +365,8 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W130 | 125 | Audit TSK-0068; policy inventory; restrict document and contract versions to X.X.X (Q03); fit and violation cases; latency | W129 | TSK-0069 | RED and GREEN schema tests, active metadata check, independent review |
 | W131 | 126 | Classify every open Task; record the owner's per-item withdrawals; fix status lag; confirm closed audit questions stay inactive; list cutover targets without changing them | W130 | TSK-0070 | Source review, lifecycle and metadata checks, read-only remote inventory |
 | W132 | 127 | Explicit subnets for `n8n_ollama_net`, `opsflow_capture_net` and `opsflow_notifier_db_net`; contract test; AD-0026; recreate only those networks and their four containers | W131 | TSK-0071 | RED and GREEN contract test, Compose render and policy checks, independent IaC review, runtime read-back |
+| W133 | 128 | Split contract identity and version in the Registry and its projection; check document numeric and historical version boundaries | W130 | TSK-0072 | RED and GREEN version and projection tests, version fixtures, historical Registry check, independent review |
+| W134 | 129 | Compare the role purposes and close demonstrated document structure gaps | W133 | TSK-0073 | RED and GREEN form tests, corpus checks, independent review |
 
 #### Current v30 continuation and delivery
 

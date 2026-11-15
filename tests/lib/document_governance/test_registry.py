@@ -1265,6 +1265,9 @@ class DocumentRegistryTests(unittest.TestCase):
         frontmatter = json.loads(
             (contracts / "document-frontmatter.schema.json").read_text(encoding="utf-8")
         )
+        definition = json.loads(
+            (contracts / "template-definition.schema.json").read_text(encoding="utf-8")
+        )
         common = profile["properties"]["common"]["properties"]
         patterns = {
             frontmatter["properties"]["version"]["pattern"].removeprefix("^"),
@@ -1272,7 +1275,8 @@ class DocumentRegistryTests(unittest.TestCase):
             common["vocabulary_contract"]["properties"]["version"][
                 "pattern"
             ].removeprefix("^"),
-            common["common_form_contract"]["pattern"].split("/", 1)[1],
+            common["contract_version"]["pattern"].removeprefix("^"),
+            definition["properties"]["contract_version"]["pattern"].removeprefix("^"),
         }
         self.assertEqual(1, len(patterns), patterns)
         # Q03: document and contract versions are three ASCII integers only;

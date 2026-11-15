@@ -350,17 +350,54 @@ def _strip_inline_code_spans(text: str) -> str:
 
 
 def extract_markdown_headings(text: str) -> tuple[list[str], list[str]]:
-    """Return canonical H1 and H2 headings outside fenced code blocks."""
+    """Return canonical top-level ATX H1 and H2 headings."""
 
     h1: list[str] = []
     h2: list[str] = []
-    for line in _markdown_unfenced_lines(text):
-        match = re.match(r"^ {0,3}(#{1,2})[ \t]+(.+?)[ \t]*#*[ \t]*$", line)
-        if not match:
-            continue
-        heading = f"{match.group(1)} {match.group(2).rstrip()}"
-        (h1 if len(match.group(1)) == 1 else h2).append(heading)
+    for _, _, heading in _markdown_form_lines(text):
+        if heading is not None and heading[0] in (1, 2):
+            level, title = heading
+            (h1 if level == 1 else h2).append(f"{'#' * level} {title}")
     return h1, h2
+
+
+@functools.lru_cache(maxsize=8)
+def _markdown_form_lines(
+    text: str,
+) -> tuple[tuple[int, str, tuple[int, str] | None], ...]:
+    """Map source lines to real headings and exclude blocks used as examples."""
+
+    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+    lines = normalized.split("\n")
+    tokens = MarkdownIt("commonmark").parse(normalized)
+    headings: dict[int, tuple[int, str]] = {}
+    hidden: set[int] = set()
+    for index, token in enumerate(tokens):
+        if token.map is None:
+            continue
+        start, end = token.map
+        if (
+            token.type == "heading_open"
+            and token.level == 0
+            and token.markup.startswith("#")
+        ):
+            title = tokens[index + 1].content
+            if title:
+                headings[start] = (len(token.markup), title)
+        elif token.type in {"fence", "code_block", "blockquote_open"}:
+            hidden.update(range(start, end))
+        elif token.type in {"bullet_list_open", "ordered_list_open"}:
+            hidden.update(
+                line
+                for line in range(start, end)
+                if lines[line].lstrip().startswith("|")
+            )
+        elif token.type == "html_block" and end > start + 1:
+            hidden.update(range(start, end))
+    return tuple(
+        (index, "" if index in hidden else line, headings.get(index))
+        for index, line in enumerate(lines)
+    )
 
 
 def _body_target_scan_text(text: str) -> str:
@@ -831,15 +868,15 @@ def _registered_subsection_findings(
     children: dict[str, list[str]] = collections.defaultdict(list)
     bodies: list[tuple[str, list[str]]] = []
     parent: str | None = None
-    for line in _markdown_unfenced_lines(text):
-        match = _HEADING_LINE.match(line)
-        if match:
-            level, title = len(match.group(1)), match.group(2).rstrip()
+    for _, line, heading in _markdown_form_lines(text):
+        if heading is not None:
+            level, title = heading
             if level == 2:
                 parent = title
             elif level == 3 and parent is not None:
                 children[parent].append(title)
-            bodies.append((f"{'#' * level} {title}", []))
+            if level >= 2:
+                bodies.append((f"{'#' * level} {title}", []))
             continue
         if bodies and line.strip() and not line.strip().startswith("<!--"):
             bodies[-1][1].append(line.strip())
@@ -922,7 +959,14 @@ def _empty_section_findings(record: Record, text: str) -> list[Finding]:
     fence_character: str | None = None
     fence_length = 0
     in_comment = False
-    for line in text.splitlines():
+    headings = {
+        index: heading
+        for index, _, heading in _markdown_form_lines(text)
+        if heading is not None and heading[0] >= 2
+    }
+    for index, line in enumerate(
+        text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    ):
         if fence_character is not None:
             if re.match(
                 rf"^ {{0,3}}{re.escape(fence_character)}{{{fence_length},}}[ \t]*$",
@@ -945,9 +989,8 @@ def _empty_section_findings(record: Record, text: str) -> list[Finding]:
             fence_length = len(opening.group(1))
             mark_content()
             continue
-        match = _HEADING_LINE.match(line)
-        if match:
-            sections.append((len(match.group(1)), match.group(2).rstrip(), False))
+        if index in headings:
+            sections.append((*headings[index], False))
             continue
         while stripped.startswith("<!--"):
             if "-->" not in stripped:
@@ -1473,11 +1516,9 @@ def _registered_readme_documents_findings(
     in_documents = False
     free_tables = False
     in_table = False
-    for line in _markdown_unfenced_lines(text):
-        heading = re.match(r"^ {0,3}(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$", line)
-        if heading:
-            level = len(heading.group(1))
-            name = heading.group(2).rstrip()
+    for _, line, heading in _markdown_form_lines(text):
+        if heading is not None:
+            level, name = heading
             if level <= 3:
                 in_documents = level == 3 and name in README_DOCUMENTS_HEADINGS
                 # Directories and Current Items may hold the author's own
@@ -1591,18 +1632,19 @@ def _registered_table_findings(
                     )
                 )
 
-    for line in [*_markdown_unfenced_lines(text), ""]:
+    for _, line, heading in _markdown_form_lines(text):
         if line.lstrip().startswith("|"):
             block.append(line)
             continue
         check(block)
         block = []
-        heading = re.match(r"^ {0,3}(#{1,3})[ \t]+(.+?)[ \t]*#*[ \t]*$", line)
-        if heading:
-            if len(heading.group(1)) == 2:
-                h2, h3 = heading.group(2), None
-            elif len(heading.group(1)) == 3:
-                h3 = heading.group(2)
+        if heading is not None:
+            level, title = heading
+            if level == 2:
+                h2, h3 = title, None
+            elif level == 3:
+                h3 = title
+    check(block)
     return findings
 
 

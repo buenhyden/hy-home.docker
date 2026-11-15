@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "5.1.0"
+version: "5.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 ---
 
 # Documentation Protocol
@@ -496,9 +496,11 @@ product's change; a documentation change raises no other object's version.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `document-content` | frontmatter `version` | per document | Numeric value; the rule above, checked by `check-document-metadata.py --mode check-changed` | The document's own frontmatter | The document's writer | `contracts/document-frontmatter.schema.json`, metadata validator | The keys, sections, tables, states and link directions its profile's consumers read | The document |
 | `new-document-start` | Registry `common.template_initial_version` | `0.1.0` | Numeric value | `docs/99.templates/registry.json` | Stage 99 owner | Profile schema, template checks | The first version a new document carries | The Registry |
-| `common-form-contract` | Registry `common.common_form_contract` | `COMMON-DOC-FORM-1/1.0.0` | Contract ID, `/`, numeric version, as the shared contract writes it | `docs/99.templates/registry.json` | Stage 99 owner, adopting the shared contract | `template_definition.py` | The common H1, H2 and H3 form and the empty-section rule | The shared contract, adopted per workspace |
+| `common-form-contract` | Registry `common.common_form_contract.contract_version` | `1.0.0` | Numeric version; `contract_id` holds `COMMON-DOC-FORM-1` separately | `docs/99.templates/registry.json` | Stage 99 owner, adopting the shared contract | `template_definition.py` | The common H1, H2 and H3 form and the empty-section rule | The shared contract, adopted per workspace |
+| `legacy-form-contract` | Registry `common.contract_version` | `1.0.0` | Numeric version; `common.contract_id` holds the existing legacy identity | `docs/99.templates/registry.json` | Stage 99 owner | `template_definition.py` | The legacy form for roles without common subsections | The Registry |
+| `template-definition-projection` | Stage 99 projection schema | `2.0.0` | Major change for the split output fields | `docs/99.templates/contracts/template-definition.schema.json` | Stage 99 owner | `template_definition.py`, body validator | The projected role definition, including the identity and version fields | Stage 99 template definitions |
 | `vocabulary-contract` | Registry `common.vocabulary_contract.version` | `3.0.1` | Numeric value; the first adoption, from package label `v14.5`, is 1.0.0, by the owner's decision recorded in SPEC-0212 TSK-0064; the owner approved adopting the shared 3.0.1 on 2026-11-15 (SPEC-0212 TSK-0068), and `source_label` names the adopted source | `docs/99.templates/registry.json` | Glossary owner | Glossary `Contract Version` column, `vocabulary_contract_findings` | The common Term IDs, names, order and meanings | The shared contract, adopted per workspace |
-| `registry-serialization` | Registry `schema_version` | `1` | The Registry Schema Version, kept an integer by the same decision because its only consumer, the profile schema, pins `const: 1`; a breaking structure change raises it | `docs/99.templates/registry.json` | Stage 99 owner | Profile schema, `registry.py` | The JSON structure the profile schema and `registry.py` read | The Registry |
+| `registry-serialization` | Registry `schema_version` | `2` | Integer format epoch; the profile schema pins the current epoch and Git revisions use their committed schema | `docs/99.templates/registry.json` | Stage 99 owner | Profile schema, `registry.py` | The JSON structure the profile schema and `registry.py` read | The Registry |
 | `product-release` | release version, tagged as `v` plus the version, and CHANGELOG | per release | SemVer, checked by `scripts/operations/release.py` against the published releases and tags; the `v` belongs to the tag, not the value; no backport | `CHANGELOG.md` dated heading, then the tag | The release workflow, through `release.py` | Release Runbook and the release workflow | The repository's published release | One tagged release |
 | `product-opsflow-smtp` | `version` in `package.json` | `0.1.0` | SemVer value, checked by `check-document-metadata.py --mode check-changed`; `package-lock.json` mirrors it | `infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json` | The node package's maintainer | npm, `package-lock.json` | The n8n node's parameters, credentials and outputs | The n8n community node package |
 | `product-hermes-publisher` | `version` in `pyproject.toml` | `1.0.0` | SemVer value, checked by `check-document-metadata.py --mode check-changed` | `infra/07-workflow/n8n/workloads/hermes-blog-ingestion/pyproject.toml` | The workload's maintainer | The Python build backend; installation reads only `requirements.lock` | The publisher's command line and the payloads it reads and writes | The hermes-blog-ingestion workload |

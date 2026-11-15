@@ -5,9 +5,13 @@
       "type": "string",
       "minLength": 1
     },
-    "contract_version": {
+    "contract_id": {
       "type": "string",
       "minLength": 1
+    },
+    "contract_version": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$(?!\\n)"
     },
     "role": {
       "type": "string",
@@ -311,6 +315,7 @@
   },
   "required": [
     "template_id",
+    "contract_id",
     "contract_version",
     "role",
     "purpose",
@@ -332,7 +337,7 @@
   ],
   "additionalProperties": false,
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "TemplateDefinition — 프로젝트 공통 구현 입력 계약 v14.5",
+  "title": "TemplateDefinition — projection contract 2.0.0",
   "$comment": "기존 제품 Registry 구조를 교체하는 파일이 아니다. 역할 의미를 실제 Registry에 매핑한다. 원격 경로 검증과 의미 심사는 별도다.",
   "$defs": {
     "section": {

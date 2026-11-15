@@ -17,7 +17,7 @@
   ],
   "properties": {
     "schema_version": {
-      "const": 1
+      "const": 2
     },
     "common": {
       "type": "object",
@@ -208,9 +208,23 @@
           }
         },
         "common_form_contract": {
-          "$comment": "The adopted common section form revision (id and version). Optional so a Registry from before the pin still validates; template_definition reads it for every role that declares required_subsections.",
+          "$comment": "The adopted common section form identity and revision. TemplateDefinition reads this record for each role that declares required_subsections.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["contract_id", "contract_version"],
+          "properties": {
+            "contract_id": {
+              "type": "string",
+              "pattern": "^COMMON-DOC-FORM-[0-9]+$(?!\\n)"
+            },
+            "contract_version": {
+              "$ref": "#/properties/common/properties/contract_version"
+            }
+          }
+        },
+        "contract_version": {
           "type": "string",
-          "pattern": "^COMMON-DOC-FORM-[0-9]+/(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$(?!\\n)"
+          "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$(?!\\n)"
         },
         "vocabulary_contract": {
           "$comment": "The adopted shared vocabulary contract: identity, numeric X.X.X version, the source package label and hash it was first adopted from, and Term ID to Term pairs only; the glossary owns meaning.",
@@ -1031,7 +1045,9 @@
       },
       "required": [
         "frozen_transition_fields",
-        "template_initial_version"
+        "template_initial_version",
+        "contract_version",
+        "common_form_contract"
       ],
       "allOf": [
         {

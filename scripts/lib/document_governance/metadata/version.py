@@ -55,8 +55,8 @@ def version_change_findings(
     """Flag a changed record whose `version` is unchanged or lower than its base.
 
     The rule is `semver.version_change_code`, the one every consumer shares.
-    A new document, an absent or non-SemVer version on either side, and any path
-    Git does not show at the base are not compared: a rename is never guessed.
+    The current document must use a numeric version. The merge base may use
+    the full SemVer admitted by earlier schemas. New paths are not compared.
     A path whose content, apart from lifecycle keys, is the base content is not
     a change, so only a lower version is reported for it.
     """
@@ -69,7 +69,7 @@ def version_change_findings(
         base = (_metadata_at_ref(root, record.path, base_ref, profiles) or {}).get(
             "version"
         )
-        if not (semver.is_semver(head) and semver.is_semver(base)):
+        if not (semver.is_numeric_version(head) and semver.is_semver(base)):
             continue
         code = semver.version_change_code(base, head)
         if code == "version-unchanged":

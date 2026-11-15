@@ -10,9 +10,10 @@ from __future__ import annotations
 
 import re
 
+_NUMERIC_CORE = r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)"
+NUMERIC_VERSION = re.compile(_NUMERIC_CORE)
 SEMVER = re.compile(
-    r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)"
-    r"(?:-((?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)"
+    _NUMERIC_CORE + r"(?:-((?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)"
     r"(?:\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?"
     r"(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?"
 )
@@ -38,6 +39,10 @@ class VersionChangeError(SemVerError):
 
 def is_semver(version: object) -> bool:
     return isinstance(version, str) and SEMVER.fullmatch(version) is not None
+
+
+def is_numeric_version(version: object) -> bool:
+    return isinstance(version, str) and NUMERIC_VERSION.fullmatch(version) is not None
 
 
 def parse_semver(version: object) -> tuple[tuple[int, ...], tuple[object, ...] | None]:

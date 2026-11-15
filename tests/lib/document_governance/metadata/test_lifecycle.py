@@ -548,9 +548,7 @@ class VersionChangeTests(unittest.TestCase):
     def test_lower_precedence_is_a_downgrade(self) -> None:
         for base, head in (
             ("1.2.0", "1.1.9"),
-            ("1.2.0", "1.2.0-rc.1"),
             ("1.10.0", "1.9.0"),
-            ("1.0.0-rc.1", "1.0.0-beta.11"),
         ):
             with self.subTest(base=base, head=head):
                 (finding,) = self.findings(base, head)
@@ -559,34 +557,28 @@ class VersionChangeTests(unittest.TestCase):
                 self.assertEqual("error", finding.severity)
 
     def test_changed_content_with_the_same_precedence_is_unchanged(self) -> None:
-        for base, head in (("1.2.0", "1.2.0"), ("1.2.0", "1.2.0+build.2")):
-            with self.subTest(base=base, head=head):
-                (finding,) = self.findings(base, head)
-                self.assertEqual("version-unchanged", finding.code)
-                self.assertEqual(self.DOC.as_posix(), finding.path)
-                self.assertEqual("error", finding.severity)
+        (finding,) = self.findings("1.2.0", "1.2.0")
+        self.assertEqual("version-unchanged", finding.code)
+        self.assertEqual(self.DOC.as_posix(), finding.path)
+        self.assertEqual("error", finding.severity)
 
     def test_raised_precedence_passes(self) -> None:
-        for base, head in (
-            ("1.2.0", "1.10.0"),
-            ("1.2.0", "1.2.1-rc.1"),
-            ("1.0.0-rc.1", "1.0.0"),
+        self.assertEqual([], self.findings("1.2.0", "1.10.0"))
+
+    def test_non_numeric_document_versions_only_get_schema_diagnostics(self) -> None:
+        for invalid in ("1.0.0-rc.1", "1.2.0+build.2", "1.0.0\n", "１.0.0", 1):
+            with self.subTest(invalid=invalid):
+                self.assertEqual([], self.findings("1.2.0", invalid))
+
+    def test_historical_semver_base_keeps_comparison_precedence(self) -> None:
+        for base, head, code in (
+            ("2.0.0-rc.1", "1.0.0", "version-downgrade"),
+            ("1.2.0+build.2", "1.2.0", "version-unchanged"),
+            ("1.2.0-rc.1", "1.2.0", None),
         ):
             with self.subTest(base=base, head=head):
-                self.assertEqual([], self.findings(base, head))
-
-    def test_old_and_new_producer_against_old_and_new_consumer(self) -> None:
-        old, new = "1.2.0", "1.3.0-rc.1+build.7"
-        expected = {
-            (old, old): "version-unchanged",
-            (old, new): None,
-            (new, old): "version-downgrade",
-            (new, new): "version-unchanged",
-        }
-        for (base, head), code in expected.items():
-            with self.subTest(base=base, head=head):
                 self.assertEqual(
-                    [] if code is None else [code],
+                    [code] if code else [],
                     [finding.code for finding in self.findings(base, head)],
                 )
 
