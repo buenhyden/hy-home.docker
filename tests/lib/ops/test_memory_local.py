@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 import re
 import sqlite3
 import subprocess
@@ -146,9 +147,10 @@ def abrupt(database,*args,**kwargs):
 memory.sqlite3.connect=abrupt
 memory.restore(Path(sys.argv[1]),Path(sys.argv[2]))
 """
-        root = Path(__file__).resolve().parents[3]
-        # Under the CI gate the tree is a sealed snapshot at /proc/self/fd/N;
-        # that path names the child's own descriptor, so hand fd N down.
+        # Under the CI gate the tree is a sealed snapshot at /proc/self/fd/N.
+        # resolve() would follow that magic link away from the snapshot, and
+        # the path names the child's own descriptor, so keep it and pass fd N.
+        root = Path(os.path.abspath(__file__)).parents[3]
         snapshot = re.fullmatch(r"/proc/self/fd/([0-9]+)", str(root))
         result = subprocess.run(
             [sys.executable, "-c", program, str(self.output), str(self.path)],
