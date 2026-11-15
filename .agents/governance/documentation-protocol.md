@@ -215,10 +215,10 @@ its hosted CI route is not wired yet. Existing links are not retyped by this rul
    Below `1.0.0` a breaking or feature change raises the minor and a
    compatible correction the patch; `1.0.0` marks the owner's explicit
    approval of a stable contract, never a renumbering. A changed document's
-   `version` has higher SemVer precedence than the same path at the merge
+   `version` has higher numeric precedence than the same path at the merge
    base: `check-document-metadata.py --mode check-changed` reports
    `version-unchanged` for equal precedence and `version-downgrade` for lower
-   precedence. A new document, a document without a SemVer `version` on either
+   precedence. A new document, a document without a valid `version` on either
    side, a path Git does not show at the merge base (a rename is never
    guessed) and a path whose content is the base content are not compared. An
    edit confined to the lifecycle keys `status`, `updated`, `reviewed_at` and

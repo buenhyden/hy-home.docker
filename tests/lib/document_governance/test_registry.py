@@ -1180,7 +1180,7 @@ class DocumentRegistryTests(unittest.TestCase):
                 )
         self.assertEqual((), validate_frontmatter({"parent_ids": []}))
 
-    def test_document_version_is_semver_string_only(self) -> None:
+    def test_document_version_is_numeric_string_only(self) -> None:
         valid = (
             "0.1.0",
             "1.2.3",
@@ -1225,7 +1225,7 @@ class DocumentRegistryTests(unittest.TestCase):
 
     def test_old_and_new_schema_producer_consumer_combinations(self) -> None:
         # W06 widened the pattern to full SemVer; Q03 narrows it back to the
-        # release-only form. Narrowing is breaking in principle: a widened
+        # numeric X.X.X form. Narrowing is breaking in principle: a widened
         # producer's prerelease or build value is now refused. No tracked
         # document carries one (TSK-0069), and release-only values stay valid.
         shown = subprocess.run(
@@ -1257,7 +1257,7 @@ class DocumentRegistryTests(unittest.TestCase):
             with self.subTest(producer="widened", consumer="current", value=value):
                 self.assertNotEqual((), validate_frontmatter({"version": value}))
 
-    def test_every_schema_version_pattern_is_the_same_semver_pattern(self) -> None:
+    def test_every_schema_version_pattern_is_the_same_numeric_pattern(self) -> None:
         contracts = ROOT / "docs/99.templates/contracts"
         profile = json.loads(
             (contracts / "document-profile.schema.json").read_text(encoding="utf-8")
@@ -1290,7 +1290,7 @@ class DocumentRegistryTests(unittest.TestCase):
         ):
             self.assertIsNone(pattern.fullmatch(value), repr(value))
 
-    def test_registered_initial_version_is_semver_in_profile_schema(self) -> None:
+    def test_registered_initial_version_is_numeric_in_profile_schema(self) -> None:
         raw = json.loads(
             (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")
         )

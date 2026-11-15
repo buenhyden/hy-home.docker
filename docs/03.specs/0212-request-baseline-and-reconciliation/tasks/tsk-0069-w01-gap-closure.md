@@ -133,6 +133,7 @@ No new question. Q03 settles D-13.
 | Version profile GREEN | 125 | W130 | red-green-proof | `test_registry` at `431313255` | PASS | module OK | required | Version profile RED |
 | Active documents | 125 | W130 | document-metadata | `check-document-metadata.py --mode check-active` at `431313255` | PASS | selected 569, violations 0 | required | - |
 | Gap audit | 125 | W130 | source-review | TSK-0068 against each W01 step and acceptance test | PASS | G-01 to G-06 | required | - |
+| Independent review | 125 | W130 | independent-review | `code-reviewer`, read-only, commit `431313255` | PASS | No HIGH or MEDIUM; L2 and L3 wording fixed in this branch; L1 (the document change check still parses full SemVer, so a forbidden value gets a duplicate finding) handed to W03-VERSION | required | - |
 | PR 1038 hosted | 125 | W130 | remote-candidate | PR 1038 at `ba64ba551`, run 43702920379 | PASS | `candidate-quality` success; merged as `108006595` | required | - |
 
 ### Resolution Links
@@ -145,12 +146,12 @@ Version profile RED is resolved by Version profile GREEN.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 125 | pending | Version profile GREEN, Active documents, Gap audit, PR 1038 hosted | Awaiting independent review and owner acceptance | SPEC-0212 TSK-0069 |
+| 125 | pending | Version profile GREEN, Active documents, Gap audit, Independent review, PR 1038 hosted | Awaiting owner acceptance | SPEC-0212 TSK-0069 |
 
 ### Remaining Conditions
 
-An independent review of the schema change, hosted candidate checks and
-owner acceptance of criteria 123, 124 and 125.
+Hosted candidate checks and owner acceptance of criteria 123, 124 and 125.
+Review finding L1 stays with W03-VERSION.
 
 ## Handoff
 
