@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.67.0"
+version: "1.68.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -242,7 +242,8 @@ CI, release and delivery contract. The W00-DELTA run of the 3.0.1 package on
 day adds criterion 123 and W128 in TSK-0067. The W01-CONTRACT run of the
 same day adds criterion 124 and W129 in TSK-0068, and its gap audit adds
 criterion 125 and W130 in TSK-0069. The W02-DISPOSITION run of the same day
-adds criterion 126 and W131 in TSK-0070.
+adds criterion 126 and W131 in TSK-0070. The owner's approval of the same day
+adds criterion 127 and W132 in TSK-0071 for the root network subnets.
 
 ### Owning Requirements
 
@@ -1029,6 +1030,10 @@ target, backup, recovery boundary, and action-specific authorization.
      per-item withdrawals change a criterion; no unfinished work is deleted
      or marked completed; closed audit questions stay inactive; and the final
      cutover targets are listed without being changed.
+127. TSK-0071 gives every network the root `docker-compose.yml` defines an
+     explicit subnet, which a contract test enforces, records them in
+     AD-0026, and applies them by recreating only the three affected
+     networks and their four containers, with each subnet read back.
 
 ### Evidence Requirements
 

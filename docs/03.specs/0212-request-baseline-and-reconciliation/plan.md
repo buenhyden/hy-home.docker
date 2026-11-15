@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.67.0"
+version: "1.68.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -181,7 +181,7 @@ open. W126 in TSK-0065 runs v14.7 W06: Git hooks, CI shards, release and
 delivery. W127 in TSK-0066 runs the 3.0.1 W00-DELTA baseline and verdicts. W128 in
 TSK-0067 closes the gaps its audit found. W129 in TSK-0068 runs the 3.0.1
 W01-CONTRACT. W130 in TSK-0069 closes the gaps its audit found. W131 in TSK-0070 runs the
-3.0.1 W02-DISPOSITION.
+3.0.1 W02-DISPOSITION. W132 in TSK-0071 gives the root networks explicit subnets.
 
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
@@ -362,6 +362,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W129 | 124 | Verdict per rule; adopt `repository-vocabulary` 3.0.1 with the Korean column; review by risk; draft authority rule; template version fix | W128 | TSK-0068 | RED and GREEN Registry and lifecycle tests, governance contract, renderer parity, metadata and links checks, independent review |
 | W130 | 125 | Audit TSK-0068; policy inventory; restrict document and contract versions to X.X.X (Q03); fit and violation cases; latency | W129 | TSK-0069 | RED and GREEN schema tests, active metadata check, independent review |
 | W131 | 126 | Classify every open Task; record the owner's per-item withdrawals; fix status lag; confirm closed audit questions stay inactive; list cutover targets without changing them | W130 | TSK-0070 | Source review, lifecycle and metadata checks, read-only remote inventory |
+| W132 | 127 | Explicit subnets for `n8n_ollama_net`, `opsflow_capture_net` and `opsflow_notifier_db_net`; contract test; AD-0026; recreate only those networks and their four containers | W131 | TSK-0071 | RED and GREEN contract test, Compose render and policy checks, independent IaC review, runtime read-back |
 
 #### Current v30 continuation and delivery
 
@@ -775,6 +776,7 @@ Receipt records each target.
 - [3.0.1 W01 contract](tasks/tsk-0068-w01-contract-3-0-1.md)
 - [3.0.1 W01 gap closure](tasks/tsk-0069-w01-gap-closure.md)
 - [3.0.1 W02 disposition](tasks/tsk-0070-w02-disposition-3-0-1.md)
+- [Root network subnets](tasks/tsk-0071-root-network-subnets.md)
 - [Existing supply-chain evidence owner](tasks/tsk-0052-supply-chain-evidence.md)
 - [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
 - [Opsflow data path Task](tasks/tsk-0043-opsflow-data-path.md)
