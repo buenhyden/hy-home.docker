@@ -1,10 +1,10 @@
 ---
 title: "Open Notebook Usage Guide"
-version: "1.1.7"
+version: "1.1.8"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "GDE-0073"
 parent_ids:
@@ -24,7 +24,8 @@ next_review_at: "2027-05-13"
 
 Open Notebook은 OPTIONAL 노트북 지식 워크스페이스이다. `open_notebook` 서비스는
 오직 `notebook`에만 속한다. 소유자 커밋 `d5912ab03`가 이를 포괄 `admin` selector에서
-제거했으며 HOME에서도 제외된다. 이 서비스의 `surrealdb` 의존성은 같은
+제거했으며 HOME 기본 선택에도 포함되지 않는다. 현재 루트 Compose에는 선택형으로 남아 있고
+독립 LAB으로 옮기는 작업은 아직 적용되지 않았다. 이 서비스의 `surrealdb` 의존성은 같은
 [Open Notebook Compose](../../../../infra/08-ai/open-notebook/docker-compose.yml)에
 함께 들어 있고 같은 selector를 공유하며 영속 데이터베이스를 제공한다.
 

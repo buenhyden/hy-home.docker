@@ -1,10 +1,10 @@
 ---
 title: "Shared Storybook Usage Guide"
-version: "1.2.6"
+version: "1.2.7"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "GDE-0101"
 parent_ids:
@@ -32,7 +32,7 @@ next_review_at: "2027-05-13"
 #### Traceability
 
 - Artifact: `GDE-0101`; governing policy: `POL-0101`.
-- 역사적 source/static 완료 근거: `SPEC-0206`. 아키텍처 맥락 `AD-0031`은 draft 상태이며 이 가이드가 승격하지 않는다.
+- 역사적 source/static 완료 근거: `SPEC-0206`. 승인된 [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md)이 아키텍처를 소유한다. HOME 배포에는 별도의 승인과 실행 증거가 필요하다.
 - Runtime declaration: `infra/13-experience/storybook/docker-compose.yml`.
 
 #### Related Documents

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.70.0"
+version: "1.71.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -249,6 +249,8 @@ the W03-VERSION prerequisite, then criterion 129 and W134 in TSK-0073 for
 the remaining authoring form and reader differences in this workspace.
 The direct W04-LIFECYCLE 3.0.1 request adds criterion 130 and W135 in
 TSK-0074 for the approved draft boundary and remaining lifecycle checks.
+The direct W04-CONTENT 3.0.1 request adds criterion 131 and W136 in
+TSK-0075 for staged document claims and their implementation evidence.
 
 ### Owning Requirements
 
@@ -1053,6 +1055,12 @@ target, backup, recovery boundary, and action-specific authorization.
      Execution and acceptance use their applicable authority and evidence.
      Effective authored documents reject unresolved author markers, and
      structural checks do not issue approval.
+131. TSK-0075 inventories the current Stage 01, 02, 05 and 90 documents,
+     records actual read and evidence coverage per file, corrects demonstrated
+     claim mismatches in the owning documents, and retains any unmet
+     requirement with its implementation owner. Isolated command checks
+     support only the exercised behavior. Unread claims and unobserved
+     live operations stay explicit.
 
 ### Evidence Requirements
 

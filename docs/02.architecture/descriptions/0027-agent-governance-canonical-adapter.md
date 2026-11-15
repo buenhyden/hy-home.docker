@@ -1,10 +1,10 @@
 ---
 title: "Agent Governance Canonical Adapter Architecture"
-version: "1.6.7"
+version: "1.6.8"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 layer: "architecture"
 artifact_id: "AD-0027"
 parent_ids:
@@ -45,9 +45,10 @@ verifies projection drift.
   and syntax differences. Generated README, role, and Claude skill adapters,
   and existing runtime mechanics, neither define shared policy nor overwrite
   the canonical source.
-- The current Task owns the execution result. After completion, its durable
-  meaning moves to current owners, the package is deleted, and version history
-  keeps its body.
+- The current Task owns the execution result. Its durable meaning moves to
+  current owners. A completed package can wait until its removal is separately
+  approved under the [SDLC retirement rules](../../../.agents/governance/sdlc.md#sequence).
+  Once removed, version history keeps its body.
 - User-global configuration, credentials, provider availability, and
   deployment state are outside this architecture. `.agents/evaluations/README.md`
   routes paired Skill task, raw output, scoring and aggregate evidence. Current
@@ -101,9 +102,12 @@ discovery itself is neither an approval nor observed runtime acceptance.
 The Provider Registry's translation facts generate and verify the native
 surface, and the Stage 99 Registry verifies the profile and lifecycle of
 repository documents. The execution result returns to the current Task and
-the reviewed Git diff. Handoff is a derived Task view that rechecks repository
-and worktree identity,
-approval, evidence, and bounded shared allocations before resumption.
+the reviewed Git diff. Handoff is a derived Task view. Before resumption the
+controller re-reads the Task and latest trusted request, checks repository and
+worktree identity, and reconciles the applicable request revision, target,
+authorization scope and conditions, evidence and shared allocations under
+[Approval Boundaries](../../../.agents/governance/approval-boundaries.md#authorization-source-and-records).
+A material mismatch stops dependent work until it is reconciled.
 
 #### Deployment View
 

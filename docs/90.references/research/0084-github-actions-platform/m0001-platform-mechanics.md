@@ -1,10 +1,10 @@
 ---
 title: "Reference: GitHub Actions Platform Mechanics"
-version: "0.2.0"
+version: "0.2.1"
 type: "reference/research"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-16"
 layer: "references"
 artifact_id: "RES-0084-m0001"
 parent_ids:
@@ -452,7 +452,10 @@ The two are complementary rather than alternative: actionlint catches workflows
 that will not behave as written, zizmor catches workflows that behave exactly as
 written and should not.
 
-This repository runs both, by different routes. zizmor is the `zizmor` job in
+An earlier account described both checks on the routes below. The 2026-09-05
+revalidation records the later aggregate workflow, with `validation-changed`
+for pull requests and `validation-full` for pushes and manual dispatch.
+The earlier account identified zizmor as the `zizmor` job in
 `ci-quality.yml`, uploading SARIF; there is no zizmor configuration file, so the
 default persona applies. Note the version gap: the figures above are for
 v1.29.0, while `ci_gate_adapters.py:1010` pins `zizmor==1.28.0`, so the audit
@@ -462,7 +465,12 @@ count in force here is whatever 1.28.0 shipped rather than the 40 above. actionl
 entrypoint of `leaf.pre-commit` under the required-quality root
 `ci.pre-commit` — executes `pre-commit run --all-files` skipping
 `public-validation-changed` and `public-validation-full`. Both therefore run on
-every push and pull request to `main`.
+every push and pull request to `main` in that account. For the current routes,
+read the [quality workflow](../../../../.github/workflows/ci-quality.yml) and
+[execution policy](../../../../.agents/governance/quality-standards.md#4-execution-boundary).
+The tracked workflow separates PR candidate QA and main-push security
+observation. The PR style controller selects the authenticated changed paths.
+The dated finding alone cannot establish a current hosted run.
 
 Corrected 2026-09-08: the sentence above named `eslint-nextjs` as the skip.
 That hook id left `.pre-commit-config.yaml` in `1c620dd07`, and `3989da584`

@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Policy"
-version: "0.4.3"
+version: "1.0.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "POL-0081"
 parent_ids:
@@ -19,7 +19,7 @@ next_review_at: "2027-05-13"
 
 ### Objective
 
-ComfyUI는 항상 켜져 있는 HOME 이미지 워크플로 인터페이스다.
+ComfyUI는 명시적으로 선택하는 이미지 워크플로 인터페이스다.
 
 ### Authority
 
@@ -31,7 +31,9 @@ ComfyUI는 항상 켜져 있는 HOME 이미지 워크플로 인터페이스다.
 
 ### Applies To
 
-`comfyui`를 `ai`와 `ai-image` 아래에서 항상 켜져 있는 HOME 기능으로 유지한다.
+현재 루트 Compose의 `ai-image`가 `comfyui`를 선택한다. `ai`와 HOME 기본 선택에는
+들어가지 않는다. [ADR-0062](../../../02.architecture/decisions/0062-home-lab-membership.md)의
+독립 LAB 이동은 적용 전 별도 작업이다.
 Compose가 서비스 선택, gateway 레이블, GPU 요청, 리소스, 마운트를 소유한다.
 
 ### Exclusions
@@ -62,7 +64,7 @@ Compose가 서비스 선택, gateway 레이블, GPU 요청, 리소스, 마운트
 
 #### Lifecycle and data controls
 
-- ComfyUI는 소유자가 확인한 `HOME`으로 남는다. 라우팅 인증, 기본 Compose의 host port 미게시,
+- 선택형으로 실행할 때도 라우팅 인증, 기본 Compose의 host port 미게시,
   GPU 접근, 소스 리소스 제한은 명시적으로 남아야 한다. 제한은 측정된
   여유분이 아니다.
 - 워크플로/사용자 설정, 복구에 필요한 입력/출력, 커스텀 노드 리비전

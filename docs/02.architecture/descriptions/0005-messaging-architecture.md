@@ -1,10 +1,10 @@
 ---
 title: "Messaging Architecture Description"
-version: "1.5.2"
+version: "1.5.3"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "architecture"
 artifact_id: "AD-0005"
 parent_ids:
@@ -21,8 +21,8 @@ created: "2026-03-26"
 `05-messaging` is the optional Kafka event-streaming boundary. The HOME
 implementation has one Kafka KRaft broker, Kafbat UI, Kafka Exporter and a
 topic-init job. Schema Registry and Kafka Connect (Debezium CDC) moved to the LAB
-`labs/kafka-cluster` by the ADR-0062 amendment of 2026-11-10. No second broker
-family is part of the architecture.
+`labs/kafka-cluster` by the ADR-0062 amendment of 2026-11-10. Kafka is the sole
+broker family. ADR-0062 removed the HOME broker REST proxy.
 
 ### System Boundary
 
@@ -47,7 +47,7 @@ Kafka stays OPTIONAL; see Evolution under Currentness and Lineage. All listeners
 
 ### Building Blocks
 
-All services are in `infra/05-messaging/kafka/docker-compose.yml` on
+The HOME services are in `infra/05-messaging/kafka/docker-compose.yml` on
 `kafka_net`:
 
 - `kafka-1`, the single broker, and `kafka-exporter` (with `obs_net`).
@@ -57,7 +57,10 @@ All services are in `infra/05-messaging/kafka/docker-compose.yml` on
 
 The three-broker `lab-kafka-1/2/3` topology is a separate project in
 `labs/kafka-cluster/docker-compose.yml`; its init job declares replication
-factor 3, and it also runs `lab-schema-registry` and `lab-kafka-connect`.
+factor 3. `lab-schema-registry` and `lab-kafka-connect` use the LAB brokers on
+`lab_kafka_net`. Connect has no configured source connector or source database
+credential in the tracked Compose. A connector requires separately approved
+inputs and operation.
 
 ### Runtime and Deployment
 
@@ -68,15 +71,16 @@ producer / consumer -> kafka-1
 browser -> Traefik standard chain -> kafbat-ui -> Keycloak OIDC
 ```
 
-Kafbat renders native `auth.type: OAUTH2` from its tracked template, reads its
-client secret from Docker secrets, trusts the local CA and maps the Keycloak
-`groups` claim to `/admins` and `/users` roles. OAuth2 Proxy is not in front of
-Kafbat.
+Kafbat renders native `auth.type: OAUTH2` from its tracked template, reads the
+configured client secret file, trusts the local CA and maps the Keycloak
+`groups` claim to `/admins` and `/users` roles. This is the HOME HTTP management
+route. LAB Schema Registry and Connect listen inside the LAB network.
 
 #### Deployment View
 
-`messaging` selects the full stack; `messaging-broker` and `messaging-admin`
-select narrower sets. The broker volume is a separate bind-backed named volume.
+`messaging` selects the full HOME messaging stack. `messaging-broker` and
+`messaging-admin` select narrower sets. The standalone LAB uses `lab-kafka`.
+The HOME broker volume is a separate bind-backed named volume.
 Recovery must coordinate topic records and configs, consumer offsets and KRaft
 metadata (plus Schema Registry subjects and Connect state when the LAB uses
 them). The preferred path is producer replay
@@ -87,7 +91,10 @@ and live cluster-ID reuse are outside the architecture.
 
 ### Contracts
 
-Services run on `kafka_net` in `infra/05-messaging/kafka/docker-compose.yml`. Kafbat uses native `auth.type: OAUTH2` and maps the Keycloak `groups` claim to `/admins` and `/users`; other HTTP interfaces use ForwardAuth. JMX and Kafka Exporter metrics carry no record payloads or secrets.
+HOME services use `kafka_net`. Kafbat exposes management through native OIDC
+and role mapping. JMX and Kafka Exporter expose metrics without record payloads
+or secrets. Schema Registry and Connect expose LAB-internal HTTP interfaces
+without a HOME gateway route.
 
 ### Failure Boundaries
 
@@ -98,16 +105,19 @@ Replication factor 1 on one broker gives no broker redundancy (see Risks below).
 ### Decision Links
 
 - [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md)
+- [ADR-0062 HOME Membership and Planned LABs](../decisions/0062-home-lab-membership.md)
 
 ### Quality and Risks
 
 #### Quality Attributes
 
-- **Reliability:** health checks, explicit broker and Connect volumes, and
-  complete topic, offset, schema and connector recovery.
-- **Security:** Kafbat uses native OIDC and RBAC; the other HTTP interfaces use
-  ForwardAuth.
-- **Operability:** exact root profiles and static rendering.
+- **Reliability:** health checks and explicit broker volumes. LAB recovery
+  accounts for schema subjects and the Connect configuration, offset and
+  status topics in its brokers.
+- **Security:** Kafbat uses native OIDC and RBAC. Schema Registry and Connect
+  stay inside the LAB network.
+- **Operability:** run static rendering for the selected HOME or LAB profile.
+  Confirm actual authentication, connector execution and scrape separately.
 - **Observability:** JMX and Kafka Exporter metrics without record payloads or
   secrets.
 
@@ -129,6 +139,7 @@ availability. Confluent edition-specific capabilities are not assumed.
 
 - [Kafka guide](../../05.operations/guides/06-messaging-and-cdc/0036-kafka.md)
 - [Kafka Compose](../../../infra/05-messaging/kafka/docker-compose.yml)
+- [Kafka LAB Compose](../../../labs/kafka-cluster/docker-compose.yml)
 
 #### Evolution
 

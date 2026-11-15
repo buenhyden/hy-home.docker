@@ -1,10 +1,10 @@
 ---
 title: "LAB Promotion Policy"
-version: "0.2.6"
+version: "0.2.7"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "POL-0107"
 parent_ids:
@@ -37,8 +37,8 @@ next_review_at: "2027-05-13"
 
 ### Applies To
 
-현재 14개 LAB 전부와 이후 추가되는 LAB에 적용된다. 이 정책은 어떤 LAB도 승격하지 않는다.
-각 승격은 이 정책을 따르는 별도 Task이며 그 Task에 owner 승인과 운영 window가 필요하다.
+추적된 `labs/*/promotion.yaml`이 등록하는 각 LAB에 적용한다. 이 초안은 증거를 준비할 때
+참고한다. 실제 승격은 별도 Task가 소유하며 해당 대상에 대한 owner 승인과 운영 window가 필요하다.
 
 ### Exclusions
 

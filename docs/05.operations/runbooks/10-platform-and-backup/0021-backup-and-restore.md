@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.6.3"
+version: "1.6.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -404,9 +404,9 @@ orchestrator는 run이 실패해도 확인된 크기를 별도 파일
 `restic check --read-data-subset 10%`도 실행한다. copy나 check가 실패하면
 `offsite copy to R2 failed` 또는 `offsite check of R2 failed`를 남기고 다른 단계의
 실패처럼 unit이 exit 1로 끝난다. 로컬 snapshot의 전체 export 포함 여부는 별도 확인한다. 로컬 Restic backup/check가 실패하면 `offsite copy skipped`다. 그러나 앞선 pgBackRest/globals/Valkey/SQLite/SeaweedFS 실패는 `restic_ok`를 내리지 않아 partial snapshot과 원격 copy가 진행될 수 있다. 이는 전체 복구 세트 성공이 아니며 unit exit1과 성공 timestamp 부재를 유지한다. 기존 shell producer에서 원격이
-초기화되지 않았거나 닿지 않으면 exit 65다. 공유 기억 호스트 조정자는
-용량·metadata·불명 실행 거부를 exit 4로 반환하고 일일 unit은 실패를 유지한다. 오프사이트까지 성공한 run만
-step 4의 성공 timestamp를 쓴다.
+초기화되지 않았거나 닿지 않으면 exit 65다. 예약 복사의 호스트 조정자가 반환한 exit 4는
+해당 예약 복사를 중단한다. 일일 unit의 공유 기억 export 용량 거부는 아래 예외를 따른다.
+일일 unit의 성공 timestamp와 공유 기억 파일 포함 여부는 따로 확인한다.
 
 R2 repository는 10 GB를 절대 넘지 않는다(owner 2026-10-20). `copy`와 `artifact`는
 올리기 전에 지금 저장된 byte(사용하지 않는 pack 포함)에 이번에 올릴 수 있는 최대량의
@@ -674,12 +674,12 @@ CLI와 helper를 함께 사용한다. 구버전 CLI는 새 재사용/용량 계�
 
 Claude와 Codex가 함께 쓰는 memory 저장소(`.workspace-memory/memory.sqlite3`,
 규칙은 [환경 제약](../../../../.agents/governance/environment-constraints.md#5-shared-agent-memory))는
-Git이 무시하므로 Git으로 복구되지 않는다. 매일 `hyhome-backup.service`가 SQLite
-online backup으로 저장소를 staging의 `agent-memory.sqlite3`에 복사하고 Restic
-snapshot에 담는다. 일일 export와 local/offsite snapshot은 같은 용량 원장과
-호스트 조정자를 사용한다. 저장소가 아직 없는 host에서는 이 단계를 건너뛰고, 백업이
-실패하면 부분 파일을 지우고 run을 실패로 남긴다. 그 밖에 따로 백업 파일 하나가
-필요하면 저장소 checkout 안에서 다음을 실행한다.
+Git이 무시하므로 Git으로 복구되지 않는다. 매일 `hyhome-backup.service`는 저장소가 있는
+경우 용량 원장을 사용하는 SQLite export를 시도한다. 성공한 staging 파일
+`agent-memory.sqlite3`만 state Restic snapshot에 포함될 수 있다. 일일 local snapshot과
+offsite copy는 현재 해당 원장의 호스트 조정자를 거치지 않는다. 원장이 export를 거부하면
+아래 예외를 적용하며, 다른 export 실패는 부분 파일을 지우고 run을 실패로 남긴다.
+별도 백업 파일이 필요하면 저장소 checkout 안에서 다음을 실행한다.
 
 ```bash
 python3 scripts/operations/agent_memory.py backup --output "$HOME/backups/agent-memory/memory.sqlite3"
@@ -704,13 +704,16 @@ conflict를 보존하고 검사한 뒤 교체한다. DB/backup/임시 복사본�
 
 1 GiB 용량 상한이 기존 snapshot마다 64 MiB를 보수적으로 계산해, 채택 후에도
 기존 60개 snapshot(state 30, offsite 30)만으로 약 3.9 GiB가 되어 매일의 backup이
-모두 거부됐다(`available_bytes` 0). 소유자 결정으로 `hyhome-backup.sh`의 매일 경로와
-`backup.sh backup`·`offsite.sh copy`는 용량 승인 없이 직접 실행한다.
-`budget-backup`·`budget-copy`와 예약 경로는 그대로 두며, snapshot 계산을 다시
-설계하는 새 Spec이 생기기 전에는 매일 경로를 옮기지 않는다.
+모두 거부됐다(`available_bytes` 0). 소유자 결정으로 매일 `backup.sh backup`과
+`offsite.sh copy`는 공유 기억 용량 원장을 거치지 않는다. SQLite export에는 용량 승인이
+계속 적용되며 offsite copy의 R2 바이트 제한도 따로 적용된다.
+`budget-backup`·`budget-copy`와 예약 경로는 사용할 수 있다. 일일 경로를 포함한
+용량 승인 요구의 미충족 부분은 [D-11 인계](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0067-w00-delta-gap-closure.md#new-items)의
+W08-MEMORY가 소유한다.
 같은 이유로 staging의 기억 export가 용량 거부(exit 4)로 끝나면 export만 버리고 경고를
-남기며 run은 실패로 처리하지 않는다. 그동안 기억 저장소는 매일 snapshot에 들어가지 않으므로
-마지막 복사본은 그 전 snapshot이다. 다른 export 실패는 그대로 run을 실패시킨다.
+남기며 이 거부만으로 run을 실패 처리하지 않는다. 따라서 일일 unit이 성공해도 공유 기억의
+복구 가능성은 확인되지 않는다. 필요한 파일이 있는 마지막 snapshot과 그 날짜를 별도로 확인한다.
+다른 export 실패는 그대로 run을 실패시킨다.
 
 예약 경로로 local state snapshot을 만들 때는 원장을 채택한 뒤 호스트에서
 `python3 scripts/operations/agent_memory.py backup-run --target state`를 사용한다.

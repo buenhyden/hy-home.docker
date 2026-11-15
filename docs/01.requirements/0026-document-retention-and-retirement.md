@@ -1,10 +1,10 @@
 ---
 title: "Document Retention and Retirement Requirements"
-version: "3.1.3"
+version: "3.1.4"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 layer: "requirements"
 artifact_id: "REQ-0026"
 created: "2026-09-01"
@@ -75,7 +75,7 @@ This package covers how documents are retained, retired and summarized into a cu
   that coverage.
 - **REQ-0026-FR-0009**: Stage 03 occupancy is judged per package using registered
   Spec, Plan, and Task terminal sets. A package is ready for removal review
-  when its Spec and Plan are approved (or validly cancelled or superseded),
+  when its Spec and Plan are approved (or validly cancelled),
   every Task or Execution Item is terminal, every numbered Spec criterion is
   accepted or `not-required`, and no required non-PASS observation is
   unresolved; an older Task format without the typed Criterion Acceptance table
@@ -86,12 +86,15 @@ This package covers how documents are retained, retired and summarized into a cu
   is approved, then is deleted with its number reserved. A terminal Task's link
   into a deleted package whose number is reserved is not a link failure. In
   an unfinished package, completed and validly cancelled Tasks may
-  remain but a terminal Plan may not. A cancelled or superseded Spec keeps no
-  member in the active stage. Other stages keep per-document disposition rules.
-  Cancellation records a reason, approver, valid approval date, and criterion
-  dispositions: reassignment to another non-cancelled package Task or approved
-  withdrawal reason. Empty criteria means no assigned criteria; withdrawal
-  never exempts a criterion still numbered in the Spec from PASS evidence.
+  remain but a terminal Plan may not. A cancelled Spec keeps no member in the
+  active stage. Other stages keep per-document disposition rules.
+  Cancelling a Task requires a trusted approval and a record of its approving
+  authority and date. The Task records the reason, an authorization reference
+  and each criterion disposition. A disposition identifies a successor
+  non-cancelled package Task or references an approved withdrawal. An empty
+  disposition list means there were no assigned criteria. A criterion still
+  numbered in the Spec keeps its completion obligations after withdrawal.
+  A separate `not-required` decision may close it without PASS evidence.
   Waiting grants neither new work nor removal permission.
 - **REQ-0026-FR-0010**: Stage 03 packages contract bounded changes. Steady-state
   meaning belongs to Stage 02 Descriptions and Stage 05 subjects and transfers

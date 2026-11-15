@@ -1,10 +1,10 @@
 ---
 title: "Reference: Local Docker Service Consolidation"
-version: "0.11.14"
+version: "0.11.15"
 type: "reference/research"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-16"
 layer: "references"
 artifact_id: "RES-0002-m0021"
 parent_ids:
@@ -26,7 +26,7 @@ reviewed_at: "2026-11-06"
 
 What evidence should govern optional-service selection, capability overlap and operating cost without inventing new local service decisions?
 
-Repository baseline: `f30b168e2fbb0959e4a31749935568fd5b3942f1`. External sources checked and document updated: 2026-09-27. This refresh is external-only, non-normative research. Internal application, runtime, account and security status: **Not assessed in this run**. Adoption requires the existing owner and an authorized change; historical observations below retain their original dates and scope. Historical Compose paths in the dated inventory remain plain text after their LAB entrypoints moved; the current data package index links to those LAB documents.
+Repository baseline: `f30b168e2fbb0959e4a31749935568fd5b3942f1`. External sources checked and document updated: 2026-09-27. This refresh is external-only, non-normative research. Internal application, runtime, account and security status: **Not assessed in this run**. Adoption requires the existing owner and an authorized change; historical observations below retain their original dates and scope. Historical Compose paths in the dated inventory remain plain text after their LAB entrypoints moved. The [LAB runbook index](../../../05.operations/runbooks/15-labs/README.md) lists current operating documents.
 
 ### Selection model and operating principles
 

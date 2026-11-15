@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Guide"
-version: "1.3.3"
+version: "1.3.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "GDE-0021"
 parent_ids:
@@ -138,13 +138,13 @@ repository를 열려면 같은 Restic password가 필요하므로 두 값의 off
 
 #### Identity-specific behavior
 
-restic/restic-offsite 는 기본 snapshots job 이고 backup/check/copy/prune 는 각각 다른 쓰기 효과다. SQLite helper 는 세 DB Online Backup API 와 integrity check 로 staging 을 만들며 원본 WAL/SHM 처리를 위해 source mount 가 rw 다. local restic 은 network none, offsite 만 전용 outbound network 다. 전체 성공은 unit exit0·모든 export 와 check·timestamp 로 판단하고 partial snapshot/copy 는 실패를 지우지 않는다. detailed recovery/capacity/custody 는 RUN/POL-0021 의 계약을 따른다.
+restic/restic-offsite 는 기본 snapshots job 이고 backup/check/copy/prune 는 각각 다른 쓰기 효과다. SQLite helper는 Grafana와 Gatus의 Online Backup API와 integrity check로 staging을 만들며 원본 WAL/SHM 처리를 위해 source mount가 rw다. 공유 기억은 별도의 호스트 CLI가 내보낸다. local restic은 network none이고 offsite만 전용 outbound network를 쓴다. unit 종료와 timestamp를 보고 각 복구 대상의 export와 snapshot 포함 여부를 따로 확인한다. 공유 기억 export가 용량 제한으로 생략되어도 일일 unit은 성공할 수 있다. 복구·용량·custody는 RUN/POL-0021의 계약을 따른다.
 
 | 정확한 식별자 | 목적·상태·기동 차이 | 준비 상태 판단의 한계 | 구현 소유자 |
 | --- | --- | --- | --- |
 | `restic` | local snapshot/check job; 두 encrypted repository write | HTTP health 없음; 종료 코드와 읽기/검증 결과 확인 | [선택·의존·접속·입력·mount](../../../../infra/09-platform-ops/restic/docker-compose.yml) |
 | `restic-offsite` | remote copy/check/prune job; local repository read-only | HTTP health 없음; 종료 코드와 읽기/검증 결과 확인 | [선택·의존·접속·입력·mount](../../../../infra/09-platform-ops/restic/docker-compose.yml) |
-| `backup-sqlite-export` | 세 SQLite online export job; source WAL/SHM rw 예외 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../../infra/09-platform-ops/restic/docker-compose.yml) |
+| `backup-sqlite-export` | Grafana·Gatus SQLite online export job; source WAL/SHM rw 예외 | HTTP health 없음; 종료 코드와 변경된 대상의 실제 상태 확인 | [선택·의존·접속·입력·mount](../../../../infra/09-platform-ops/restic/docker-compose.yml) |
 
 선택 profile, version, port, 환경 입력, secret identifier와 mount의 정확한 값은 각 행의 구현이 소유한다. [공통 template](../../../../infra/common-optimizations.yml)의 resource·security 상속과 서비스 override를 함께 읽는다. 값의 2026-10-01 source snapshot과 official version/build 검토는 W4 Task에 보존했다. 반복 OOM, disk/WAL/checkpoint 증가와 metrics 누락은 capacity 검토 trigger이며 health는 사용자 기능이나 복원을 증명하지 않는다.
 

@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Requirements"
-version: "1.2.1"
+version: "1.2.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-16"
 layer: "requirements"
 artifact_id: "REQ-0013"
 created: "2026-03-27"
@@ -19,9 +19,9 @@ created: "2026-03-27"
 Talking to local LLMs often needs CLI knowledge or fragmented tools. Users need
 one visual, secure interface for chat with local models and for querying their
 own documents through retrieval-augmented generation (RAG). This package states
-the needs that Open WebUI meets for the platform: model selection from the
-local model runtime (Ollama), document indexing and retrieval, persistent
-history, and access through the gateway with the shared identity provider.
+the needs for Open WebUI: local model selection, document indexing and
+retrieval, persistent history, and authenticated access through the shared
+identity provider. The current placement is a standalone LAB under ADR-0062.
 
 ### Stakeholders
 
@@ -36,8 +36,8 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 ### In Scope
 
 - The web interface, its RAG behavior (embedding through the local
-  model runtime and a vector store it owns), gateway routing and
-  authentication.
+  model runtime and a vector store it owns), isolated LAB access and
+  authentication. Gateway routing applies to an approved HOME promotion.
 
 ### Constraints and Exclusions
 
@@ -47,7 +47,9 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 **Assumptions.**
 
-- The local model runtime is healthy for inference and embedding.
+- LAB inference and embedding require an approved, reachable local model
+  endpoint. Login requires an approved HTTPS origin and an identity-provider
+  redirect registered for that origin.
 - The host has enough GPU memory for accelerated embedding and inference.
 - Disabling the identity-provider login or upgrading a major image version
   needs owner approval.
@@ -68,26 +70,35 @@ The owner, @buenhyden, writes, reviews and accepts this package.
   local model runtime and keeps vectors in a store owned by Open WebUI.
 - **REQ-0013-FR-0003**: Persist chat history, document metadata and the vector
   index across restarts.
-- **REQ-0013-FR-0004**: Serve the interface only through the gateway with TLS,
-  and authenticate every user through the shared identity provider (Keycloak)
-  with password login and self sign-up disabled.
+- **REQ-0013-FR-0004**: Authenticate every user through the shared identity
+  provider (Keycloak) with password login and self sign-up disabled. Limit LAB
+  access to its approved isolated boundary. Serve any approved HOME promotion
+  only through the gateway with TLS.
 
 ## Acceptance Criteria
 
 ### Acceptance Conditions
 
 - **REQ-0013-FR-0001**: The interface lists the models served by the local model
-  runtime over the internal AI network.
+  runtime at the approved local endpoint.
 - **REQ-0013-FR-0002**: A standard PDF is indexed in under 5 seconds with GPU
   acceleration, claimed only with separate benchmark evidence, and is retrieved as context for a query.
 - **REQ-0013-FR-0003**: History and indexed documents remain after the service
   is recreated.
-- **REQ-0013-FR-0004**: The login page offers only the identity-provider login,
-  and the interface publishes no host port outside the gateway.
+- **REQ-0013-FR-0004**: The login page offers only the identity-provider login.
+  LAB access stays within its approved bind boundary and uses the approved
+  secure login origin. A promoted HOME interface has no host publication
+  outside its TLS gateway.
 
 ### Verification Method
 
-Each condition is judged by a runtime observation of the running interface: the model list it shows, a PDF indexed and retrieved, history after the service is recreated, and the login page and published ports. The 5-second indexing figure is claimed only from separate benchmark evidence. No current Spec Package cites REQ-0013; a Spec that implements it records the evidence in its Task. The evidence is the observed result of each check, recorded in that Task. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+After separate runtime authorization, observe the model list, an indexed and
+retrieved synthetic PDF, history after recreation, and the login and published
+ports. A LAB render only verifies the declared settings. The 5-second
+indexing figure requires separate benchmark evidence. Record observed results
+in the implementing Task. The owner named in the frontmatter, @buenhyden,
+judges each condition from that evidence and accepts the requirement once
+every condition is judged met.
 
 ## Traceability
 
@@ -100,3 +111,4 @@ This package records the owner's requirements for the Open WebUI service; no ups
 - **Architecture Description**: [Open WebUI architecture](../02.architecture/descriptions/0013-open-webui-architecture.md)
   and [AI architecture](../02.architecture/descriptions/0008-ai-architecture.md)
 - **ADR**: [ADR-0059 Native OIDC for Open WebUI and the Airflow UI](../02.architecture/decisions/0059-native-oidc-open-webui-and-airflow.md)
+- **Current placement**: [ADR-0062 HOME and LAB Membership](../02.architecture/decisions/0062-home-lab-membership.md)

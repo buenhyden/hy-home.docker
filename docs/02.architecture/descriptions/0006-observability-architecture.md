@@ -1,10 +1,10 @@
 ---
 title: "Observability Architecture Description"
-version: "1.1.2"
+version: "1.1.3"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "architecture"
 artifact_id: "AD-0006"
 parent_ids:
@@ -98,7 +98,10 @@ Scrapes and datasource queries use `obs_net`, object storage uses `object_net`, 
 
 ### Failure Boundaries
 
-Recovery covers Loki and Tempo object blocks in SeaweedFS together with each service's local WAL and working state. The open Tempo retention gap is recorded under Risks below; the description records no other failure boundary.
+The HOME Restic state set excludes SeaweedFS `loki-bucket` and `tempo-bucket`
+volume files. Lost object history is outside HOME backup recovery, and the
+services collect new data. The [backup policy](../../05.operations/policies/10-platform-and-backup/0021-backup-and-restore.md)
+owns the recovery boundary. The open Tempo retention gap is recorded below.
 
 ## Decisions
 
@@ -113,8 +116,9 @@ Recovery covers Loki and Tempo object blocks in SeaweedFS together with each ser
 - **Performance:** Alloy batches traces before export.
 - **Security:** Grafana, Gatus and Dozzle use native Keycloak OIDC; the other
   UIs use ForwardAuth; the Prometheus API route uses `prometheus-api-auth@file`.
-- **Reliability:** recovery covers Loki and Tempo object blocks in SeaweedFS
-  together with each service's local WAL and working state.
+- **Reliability:** the current snapshot boundary for Loki and Tempo is stated
+  under Failure Boundaries. SeaweedFS use alone provides no evidence of recovery
+  for the excluded telemetry history.
 - **Scalability:** the Prometheus local TSDB is the durable authority; the
   enabled remote-write receiver does not imply an external long-term store.
 - **Observability:** the stack includes self-monitoring dashboards.

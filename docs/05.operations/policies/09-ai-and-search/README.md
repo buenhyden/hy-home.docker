@@ -1,10 +1,10 @@
 ---
 title: "AI와 검색 정책"
-version: "0.1.2"
+version: "0.1.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-16"
 layer: "operations"
 ---
 
@@ -32,7 +32,7 @@ AI와 검색의 적용 범위의 필수 통제, 승인, 예외와 검토 기준�
 | [Ollama Operations Policy](0056-ollama.md) | `POL-0056` | 이 문서는 Ollama 운영 정책을 정의한다. 제한된 GPU 자원에서 안정적으로 추론 서비스를 제공하기 위해 모델 도입 기준, 리소스 사용 한계, 장애 대응 기준을 규정한다. |
 | [08-AI Optimization Hardening Operations Policy](0058-ai-optimization-hardening.md) | `POL-0058` | 이 문서는 `08-ai` 계층의 최적화/하드닝 운영 정책을 정의한다. gateway 경계 보안, Ollama GPU 보호, Open WebUI LAB 경계, 모델 승격/접근 통제/로그 보존 정책을 통제한다. |
 | [Open Notebook Operations Policy](0073-open-notebook.md) | `POL-0073` | Open Notebook은 OPTIONAL 지식/모델 워크스페이스다. 콘텐츠, 데이터베이스, provider 자격 증명, 암호화 키가 하나의 복구 경계를 이룬다. |
-| [ComfyUI Policy](0081-comfyui.md) | `POL-0081` | ComfyUI는 항상 켜져 있는 HOME 이미지 워크플로 인터페이스다. |
+| [ComfyUI Policy](0081-comfyui.md) | `POL-0081` | 선택형 이미지 워크플로의 접근, GPU, 데이터 보존 및 변경 조건을 정의한다. |
 | [Crawl4AI Operations Policy](0091-crawl4ai.md) | `POL-0091` | Crawl4AI는 SSRF가 가능한 서비스다. 검토된 consumer가 필요로 할 때까지 격리하고 인증을 적용한 채 사용하지 않는 상태로 유지한다. |
 
 ### Classification

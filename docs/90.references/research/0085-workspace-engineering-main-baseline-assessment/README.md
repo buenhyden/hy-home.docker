@@ -1,10 +1,10 @@
 ---
 title: "Workspace Engineering Main Baseline Assessment"
-version: "0.5.0"
+version: "0.5.1"
 type: "reference/research-pack"
 status: "in-review"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-16"
 layer: "references"
 artifact_id: "RES-0085"
 created: "2026-09-04"
@@ -15,7 +15,6 @@ observed_at: "2026-09-05"
 
 ## Overview
 
-현재 workspace-baseline 소유권이 RES-0002-m0020으로 통합된 뒤,
 `main@4c6d211129615eab372d720ebd209b6c27618c86` 평가에서 어떤 binding
 범위, 증거 경계, identity-recovery provenance를 보존해야 하는가?
 
@@ -24,11 +23,11 @@ publication lifecycle이 review를 거치는 동안 날짜가 있는 평가 enve
 복구된 request identity를 보존합니다.
 
 이 package는 [RES-0002](../0002-agentic-engineering-research-pack/README.md)
-아래에서 보존된, 날짜가 있는 증거 carrier입니다. 현재 baseline owner인
-[RES-0002-m0020](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)이나
-전문 GitHub Actions 증거인
-[RES-0084](../0084-github-actions-platform/README.md)와 경쟁하지 않습니다.
-identity-recovery tuple과 관찰 경계는 그대로 유지됩니다.
+아래에서 보존된, 날짜가 있는 증거 carrier입니다.
+[RES-0002-m0020](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)은
+과거 workspace-baseline 종합을, [RES-0084](../0084-github-actions-platform/README.md)는
+GitHub Actions 주제 연구를 담습니다. 이 package는 identity-recovery tuple과
+관찰 경계를 보존합니다.
 
 ## Scope
 
@@ -41,9 +40,9 @@ identity-recovery tuple과 관찰 경계는 그대로 유지됩니다.
 - 제외: secret 또는 credential 값, 사용자 전역 Claude/Codex 설정, shell
   history, raw log, 새 provider call, 새 runtime 변경, live deployment,
   tag, release.
-- 현재 baseline 해석과 주제 연구는
+- 당시 baseline 해석과 주제 연구는
   [RES-0002-m0020](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)과
-  그 형제 구성원이 소유합니다. GitHub Actions mechanics는
+  그 형제 구성원에서 확인합니다. GitHub Actions mechanics는
   [RES-0084](../0084-github-actions-platform/README.md)에 남습니다.
 
 ### Method
@@ -52,10 +51,9 @@ identity-recovery tuple과 관찰 경계는 그대로 유지됩니다.
    identity, 상호 Task decision을 보존합니다.
 2. question, 증거 모델, lifecycle, decision-route 기준으로 이 package의
    question을 RES-0002-m0020과 비교합니다.
-3. recovery carrier를 옮기거나 재식별하지 않고 가변적인 현재 baseline
-   소유권을 RES-0002-m0020으로 옮깁니다.
-4. 여기에는 날짜가 있는 증거만 남기고, 주제나 현재 claim은 canonical
-   구성원으로 route합니다.
+3. 당시 통합 결정은 recovery carrier의 경로와 식별자를 보존하면서
+   workspace-baseline 종합을 RES-0002-m0020으로 옮겼습니다.
+4. 이 package에 날짜가 있는 증거를 보존하고 주제 연구는 관련 구성원에 연결합니다.
 5. `draft`에서 `review`로의 forward transition, identity recovery,
    inbound link, 보호된 RES-0002 집합, 생성된 index 신선도를
    검증합니다.
@@ -89,18 +87,17 @@ Revalidated 2026-11-06: AUD-0097은 2026-09-09에 은퇴했고 audit 범주에�
 
 ## Usage
 
-- 현재 workspace-baseline 결론과 향후 baseline 재관찰에는
-  RES-0002-m0020을 사용합니다.
+- 과거 workspace-baseline 종합은 RES-0002-m0020에서 확인합니다. 현재 구현은
+  해당 소유자의 추적 소스로, 새 관찰은 범위가 승인된 Task의 증거로 확인합니다.
 - forward publication lifecycle이 이후 `superseded` 전이를 허용할 때까지
   이 package를 그대로 유지합니다; redirect로 대체하지 않습니다.
 - 그 lifecycle 동안 정확한 identity-recovery tuple과 Task decision을
   보존합니다.
-- 실행 가능한 현재 gap은 canonical RES-0002 구성원과 일반적인
-  Requirement-to-Task chain을 통해 route합니다.
+- 현재 개선 사항은 소유 Requirement와 해당 Task에서 다룹니다.
 
 ## Related Documents
 
-- 현재 baseline, 주제 구성원, 보존 선언:
+- 과거 baseline 종합, 주제 구성원, 보존 선언:
   [RES-0002](../0002-agentic-engineering-research-pack/README.md)와
   [RES-0002-m0020](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md).
 - GitHub Actions mechanics: [RES-0084](../0084-github-actions-platform/README.md).
@@ -139,21 +136,20 @@ Revalidated 2026-11-06: AUD-0097은 2026-09-09에 은퇴했고 audit 범주에�
   [Claude Code feature model](https://code.claude.com/docs/en/features-overview),
   [Codex sandbox and approval controls](https://openai.com/index/running-codex-safely/),
   2026-09-05에 다시 확인함.
-- 세부 주제와 현재 baseline source는 대응하는 RES-0002 구성원과
-  RES-0084에 남습니다; 이 날짜가 있는 증거 package는 그 source
-  inventory를 복사하지 않습니다.
+- 세부 주제와 당시 baseline source는 대응하는 RES-0002 구성원과 RES-0084에서
+  확인합니다.
 
 ## Findings
 
 | Evidence retained here | Dated result | Evidence depth | Current owner / disposition |
 | --- | --- | --- | --- |
-| Assessment target | `main@4c6d211129615eab372d720ebd209b6c27618c86`, 2026-09-05 관찰 | Defined, Local-executed | 역사적 평가 경계; 현재 baseline은 RES-0002-m0020으로 이동 |
+| Assessment target | `main@4c6d211129615eab372d720ebd209b6c27618c86`, 2026-09-05 관찰 | Defined, Local-executed | 역사적 평가 경계; RES-0002-m0020에 당시 종합을 보존 |
 | Request identity | `RES-0085-SCOPE`가 같은 package 안에서 `RES-0085-m0001`로 복구됨 | Repository-enforced | 정확한 carrier와 상호 SPEC-0173 Task 1 tuple을 보존 |
-| Evidence classes | 저장소, Hosted, provider, runtime, remote 관찰은 서로 대체할 수 없음 | Defined | RES-0002-m0020이 이 class를 현재 결론에 적용 |
+| Evidence classes | 저장소, Hosted, provider, runtime, remote 관찰은 서로 대체할 수 없음 | Defined | RES-0002-m0020의 역사적 평가에 적용 |
 | Hosted and remote observations | 완료된 SPEC-0172 결과가 정확한 Hosted 실행과 2026-09-05 protection read-back을 기록 | Hosted-executed, cutoff 시점 Remote-verified | 완료된 Spec과 main-protection record가 날짜가 있는 증거를 보존 |
 | Deployment and release | 정확한 target이나 version이 제공되지 않음 | Unverified / 채택되지 않음 | 수용 claim 없음; 별도 SDLC 작업 필요 |
 | Consolidation lifecycle | package와 구성원이 `draft`에서 `review`로 진행 | Repository-enforced | publication과 이후 supersession은 후속 forward transition이 필요 |
 
-세부 현재 finding은 여기서 반복하지 않습니다. 그 내용은
+당시 평가의 세부 finding은
 [RES-0002-m0020](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)에
 통합되어 있습니다.

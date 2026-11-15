@@ -1,10 +1,10 @@
 ---
 title: "08-AI Optimization Hardening Architecture Description"
-version: "1.1.2"
+version: "1.1.3"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "architecture"
 artifact_id: "AD-0023"
 parent_ids:
@@ -18,18 +18,18 @@ created: "2026-03-28"
 
 ### Purpose and Readers
 
-This Description records the hardening structure of the two core `08-ai`
-planes: Ollama, the local LLM inference and embedding engine, and Open WebUI,
-the chat interface and RAG orchestrator. It covers their gateway and identity
-boundary, GPU concurrency limits, stateful storage and the hardening gate.
+This Description records the hardening scope for HOME Ollama, the local LLM
+inference and embedding engine, and the independent Open WebUI LAB. It covers
+their distinct access and identity boundaries, GPU concurrency limits,
+stateful storage and the shared hardening gate.
 Requirement owners, implementers and operators share these concerns; the tier
 structure itself is in [AD-0008](0008-ai-architecture.md).
 
 ### System Boundary
 
-- **Owns**: the ingress and identity boundary of the Ollama and Open WebUI
-  routes, the Ollama concurrency and queue ceiling, the Open WebUI stateful
-  storage contract, and the `08-ai` checks of the hardening gate.
+- **Owns**: Ollama gateway ingress and identity, the Open WebUI LAB access
+  and stateful storage boundaries, the Ollama concurrency and queue ceiling,
+  and the `08-ai` checks of the hardening gate.
 - **Consumes**: the `01-gateway` standard middleware chain, the `02-auth`
   ForwardAuth middleware and Keycloak OIDC.
 - **Does not own**: model training or fine-tuning, Qdrant schema and index
@@ -43,11 +43,18 @@ structure itself is in [AD-0008](0008-ai-architecture.md).
 
 ### Context
 
-Users reach `ollama.${DEFAULT_URL}` and `chat.${DEFAULT_URL}` through Traefik `websecure`. The Description consumes the `01-gateway` standard middleware chain, the `02-auth` ForwardAuth middleware and Keycloak OIDC, and Open WebUI calls Ollama for generation and embedding.
+The HOME Ollama route uses Traefik `websecure`. Open WebUI uses a separate
+LAB bind, native Keycloak OIDC, and an approved, reachable Ollama endpoint
+for generation and embedding. The LAB has no gateway route or HOME network
+attachment.
 
 ### Constraints
 
-Every public route passes the gateway standard chain, plus ForwardAuth for Ollama or native OIDC for Open WebUI. Ollama defaults to `OLLAMA_NUM_PARALLEL=2`, `OLLAMA_MAX_LOADED_MODELS=1` and `OLLAMA_MAX_QUEUE=16`, which bounds GPU load, and the hardening checks are static, so they prove no running service or login.
+The HOME Ollama route passes the standard gateway chain and ForwardAuth.
+LAB login requires a separately approved HTTPS origin and matching identity
+redirect. The Ollama concurrency and queue defaults below bound GPU load.
+Static hardening evidence covers configuration, while service health and
+login require an actual runtime check.
 
 ## Current Structure
 
@@ -55,10 +62,9 @@ Every public route passes the gateway standard chain, plus ForwardAuth for Ollam
 
 - **Ingress**: Traefik `websecure` routes `ollama.${DEFAULT_URL}` through
   `gateway-standard-chain`, `sso-errors` and `sso-auth`
-  (`infra/08-ai/ollama/docker-compose.yml:79`). It routes `chat.${DEFAULT_URL}`
-  to Open WebUI through `gateway-standard-chain` only; Open WebUI
-  authenticates users with native Keycloak OIDC, with the login form and OAuth
-  sign-up disabled (`infra/08-ai/open-webui/docker-compose.yml:44-62,73`).
+  (`infra/08-ai/ollama/docker-compose.yml`). Open WebUI uses the bind in
+  [`labs/open-webui/docker-compose.yml`](../../../labs/open-webui/docker-compose.yml)
+  and native Keycloak OIDC with the login form and OAuth sign-up disabled.
 - **Inference and RAG**: Open WebUI calls Ollama for generation and embedding
   (`RAG_EMBEDDING_ENGINE: ollama`). It sets no external vector database, so its
   vector store is the default embedded store inside its own data volume.
@@ -74,16 +80,16 @@ Every public route passes the gateway standard chain, plus ForwardAuth for Ollam
 - **Storage**: the Ollama model cache is bound from
   `${OLLAMA_MODEL_DIR:-${DEFAULT_AI_MODEL_DIR}/ollama}`; Open WebUI state,
   including its embedded vector store, is bound from
-  `${DEFAULT_AI_MODEL_DIR}/open-webui`.
+  `${LAB_DATA_DIR}/open-webui/data`.
 - **Concurrency**: Ollama defaults to `OLLAMA_NUM_PARALLEL=2`,
   `OLLAMA_MAX_LOADED_MODELS=1` and `OLLAMA_MAX_QUEUE=16`
   (`infra/08-ai/ollama/docker-compose.yml:42-44`).
 
 #### Deployment View
 
-- **Platform**: Docker Compose packages `infra/08-ai/ollama` (Ollama and
-  `ollama-exporter`) and `infra/08-ai/open-webui` (stateful, depends on
-  Ollama), included by the root `docker-compose.yml` under the `ai` profile.
+- **Platform**: root Compose includes `infra/08-ai/ollama` (Ollama and
+  `ollama-exporter`). Open WebUI lives in a separate Compose project and
+  `lab-open-webui` profile with its own network and data root.
 - **Evidence**: `scripts/validation/validate-docker-compose.sh`,
   `scripts/hardening/check-all-hardening.sh 08-ai` and the CI
   `infrastructure-hardening` job. These are static checks; they prove no
@@ -93,28 +99,35 @@ Every public route passes the gateway standard chain, plus ForwardAuth for Ollam
 
 ### Contracts
 
-- Traefik `websecure` routes `ollama.${DEFAULT_URL}` and `chat.${DEFAULT_URL}` per the Ingress item in Building Blocks.
-- Open WebUI calls Ollama for generation and embedding (`RAG_EMBEDDING_ENGINE: ollama`).
+- Traefik `websecure` routes `ollama.${DEFAULT_URL}` per the Ingress item in
+  Building Blocks. Open WebUI uses its independent LAB bind.
+- Open WebUI uses `LAB_OPEN_WEBUI_OLLAMA_BASE_URL` for generation and embedding.
 - Ollama concurrency and queue limits are set in `infra/08-ai/ollama/docker-compose.yml:42-44`.
 
 ### Failure Boundaries
 
-Health-gated dependencies and healthchecks order startup. The Ollama concurrency and queue ceiling bounds GPU load. The embedded vector store shares the Open WebUI volume, so losing it loses the RAG index along with the application state. The guide, policy and runbook linked under Currentness and Lineage govern change and recovery.
+LAB health checks do not order startup across projects. Verify access to the
+approved Ollama endpoint before accepting chat or embedding. The Ollama
+concurrency and queue ceiling bounds GPU load. Losing the Open WebUI data bind
+loses the embedded RAG index and application state. The operations owners
+linked under Currentness and Lineage govern change and recovery.
 
 ## Decisions
 
 ### Decision Links
 
-- **ADR**: [ADR-0059](../decisions/0059-native-oidc-open-webui-and-airflow.md)
+- **Identity decision**: [ADR-0059](../decisions/0059-native-oidc-open-webui-and-airflow.md)
+- **Current placement**: [ADR-0062](../decisions/0062-home-lab-membership.md)
 
 ### Quality and Risks
 
 #### Quality Attributes
 
 - **Performance**: the Ollama concurrency and queue ceiling bounds GPU load.
-- **Security**: every public route passes the gateway standard chain, plus
-  ForwardAuth for Ollama or native OIDC for Open WebUI.
-- **Reliability**: health-gated dependencies and healthchecks order startup.
+- **Security**: HOME Ollama uses the gateway standard chain and ForwardAuth.
+  Open WebUI uses its LAB bind and native OIDC.
+- **Reliability**: each project has its own health checks and requires a
+  reachable dependency where applicable.
 - **Observability**: `ollama-exporter` supplies metrics, and the hardening gate
   detects contract drift.
 

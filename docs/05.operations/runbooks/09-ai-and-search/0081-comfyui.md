@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Runbook"
-version: "0.6.2"
+version: "0.6.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "RUN-0081"
 parent_ids:
@@ -19,7 +19,7 @@ next_review_at: "2027-05-13"
 
 ### Trigger and Outcome
 
-이 런북은 ComfyUI(`comfyui`, profile `ai`/`ai-image`)의 승인 게이트된 진단과 복구, custom-node·이미지 변경 실패 대응, 격리 복원 계획을 다룬다.
+이 런북은 선택형 ComfyUI(`comfyui`, profile `ai-image`)의 승인된 진단과 복구, custom-node·이미지 변경 실패 대응, 격리 복원 계획을 다룬다.
 
 승인된 ComfyUI 배포, UI 접근 불가, healthcheck 실패, 또는 계획된 데이터/이미지/custom-node
 복구에 사용한다.
@@ -72,7 +72,7 @@ image upgrade 전에 새 image가 `/root/ComfyUI`에서 시작하고 `models`, `
 2. 승인된 실행 중인 target에서 선택한 서비스만 확인하고 exit status를 캡처한다.
 
    ```bash
-   docker compose --profile ai --profile ai-image ps comfyui
+   docker compose --profile ai-image ps comfyui
    docker exec comfyui wget -qO /dev/null http://127.0.0.1:${COMFYUI_PORT:-8188}/system_stats
    ```
 
@@ -99,14 +99,14 @@ custom node를 설치할 때만 @buenhyden의 승인을 받아 overlay를 붙이
    `127.0.0.1:8188`이 생긴다.
 
    ```bash
-   docker compose -p hy-home-infra -f docker-compose.yml -f infra/08-ai/comfyui/docker-compose.egress.yml --profile ai --profile ai-image up -d --no-deps --force-recreate comfyui
+   docker compose -p hy-home-infra -f docker-compose.yml -f infra/08-ai/comfyui/docker-compose.egress.yml --profile ai-image up -d --no-deps --force-recreate comfyui
    ```
 
 2. 설치를 마치고 설치한 model과 custom node의 source·revision을 기록한다.
 3. 떼어내기: overlay 없이 다시 재생성하고 외부 접속이 막혔는지 확인한다.
 
    ```bash
-   docker compose -p hy-home-infra -f docker-compose.yml --profile ai --profile ai-image up -d --no-deps --force-recreate comfyui
+   docker compose -p hy-home-infra -f docker-compose.yml --profile ai-image up -d --no-deps --force-recreate comfyui
    docker inspect comfyui --format '{{range $k, $v := .NetworkSettings.Networks}}{{$k}} {{end}}'
    ```
 
@@ -145,7 +145,7 @@ docker exec comfyui grep '^security_level' /root/ComfyUI/user/__manager/config.i
 
 ### Service Checks
 
-`docker compose --profile ai --profile ai-image ps comfyui`와 `/system_stats` 응답 상태를 확인한다. GPU 가시성과 승인된 대표 workflow는 별도로 확인한다.
+`docker compose --profile ai-image ps comfyui`와 `/system_stats` 응답 상태를 확인한다. GPU 가시성과 승인된 대표 workflow는 별도로 확인한다.
 
 ### Evidence
 

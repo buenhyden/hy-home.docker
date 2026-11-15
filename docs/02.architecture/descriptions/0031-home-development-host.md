@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Architecture"
-version: "0.5.4"
+version: "0.5.5"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 layer: "architecture"
 artifact_id: "AD-0031"
 parent_ids:
@@ -57,7 +57,7 @@ Profiles are not a security isolation boundary and share the same Docker daemon 
 | HOME | Traefik, Keycloak, OAuth2 Proxy, OpenBao | `core`; OpenBao bootstrap readiness required |
 | HOME | Management PostgreSQL/Valkey and exporters | `mng`; service metadata, sessions and management queues |
 | HOME | Ollama and Qdrant | `ai`, `ai-llm`; shared GPU concurrency is bounded |
-| HOME | ComfyUI | `ai-image`; shared GPU concurrency is bounded |
+| Optional root | ComfyUI | `ai-image`; shared GPU concurrency is bounded, and standalone LAB placement remains planned |
 | HOME | Airflow and n8n, workers and runners | `workflow`; initialization and daemon readiness differ |
 | HOME | Single-node object storage | `storage`; no single-host HA claim |
 | HOME | Metrics, host/GPU signals, availability, logs, alerts, tracing and profiling | narrow observability profiles from POL-0078 |
@@ -131,7 +131,12 @@ npm for Storybook and the OpsflowSmtp node. Dependabot version updates are retir
 
 ### Failure Boundaries
 
-Single-host power, storage, Docker daemon and GPU failure affect multiple HOME capabilities, and Git configuration rollback cannot undo database migrations. Unattended startup excludes cluster variants, legacy selectors and update/IaC jobs, and backup and restore are proven on isolated data.
+Single-host power, storage, Docker daemon and GPU failure affect multiple HOME
+capabilities. Git configuration rollback cannot undo database migrations.
+Unattended startup excludes cluster variants, legacy selectors and update/IaC
+jobs. Deployment requires isolated backup and restore evidence for the affected
+data. The dated [MLflow recovery receipt](../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0008-infra-audit-execution.md#c19-row-resolutions-2026-10-28 "navigation")
+covers the named MLflow target on 2026-10-28.
 
 ## Decisions
 
