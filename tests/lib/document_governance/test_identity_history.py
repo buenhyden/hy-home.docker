@@ -138,6 +138,23 @@ class IdentityHistoryTests(unittest.TestCase):
             infer_artifact_type(pathlib.Path(LEGACY_REQUIREMENT), profiles),
         )
 
+    def test_a_requirement_id_glued_to_another_id_is_not_issued(self) -> None:
+        # History holds "REQ-0026-REQ-0010-FR-0011"; REQ-0010 never issued
+        # FR-0011, so the embedded tail must not raise its high-water mark.
+        collected: dict[str, set[int]] = {}
+        identity_history._record_line(
+            "docs/01.requirements/0010-tooling.md",
+            "+  traceability clause moved to REQ-0026-REQ-0010-FR-0011.",
+            collected,
+        )
+        self.assertNotIn(11, collected.get("requirement.REQ-0010.FR", set()))
+        identity_history._record_line(
+            "docs/01.requirements/0010-tooling.md",
+            "+  See REQ-0010-FR-0007 and (REQ-0010-FR-0006).",
+            collected,
+        )
+        self.assertEqual({6, 7}, collected.get("requirement.REQ-0010.FR"))
+
     def test_history_reader_parses_legacy_requirement_children(self) -> None:
         historical, declarations = (
             identity_history.parse_historical_requirement_declarations(
