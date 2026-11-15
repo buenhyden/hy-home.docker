@@ -1,10 +1,10 @@
 ---
 title: "Agentic Engineering Policy"
-version: "1.9.0"
+version: "1.9.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-15"
 ---
 
 # Agentic Engineering Policy
@@ -38,7 +38,7 @@ None: this document states no exclusion.
 #### Execution Rules
 
 - Discover repository evidence and the approved Spec, Plan, and Task before mutation.
-- Keep one primary owner for each logical unit and independent review separate.
+- Keep one primary owner for each logical unit and, for high-risk work, independent review separate.
 - Delegation cannot broaden approval, mutation scope, runtime access, or permissions.
 - Invoking a skill runs a procedure; it does not select a role. The already
   selected role's permission profile and the approved Task scope keep governing,

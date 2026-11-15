@@ -75,6 +75,8 @@ def version_change_findings(
         if code == "version-unchanged":
             # A template source stays at the registered initial version
             # (`invalid-template-version`), so its edits never need a raise.
+            # Template drift is caught by that pin, the Registry and template
+            # tests and the protected-surface review of `docs/99.templates/**`.
             if record.artifact_type == "template-source" or not _content_changed(
                 root, record, base_ref
             ):

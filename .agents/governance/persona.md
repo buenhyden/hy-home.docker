@@ -1,10 +1,10 @@
 ---
 title: "AI Agent Identity Routing"
-version: "1.0.3"
+version: "1.0.4"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 ---
 
 # AI Agent Identity Routing
@@ -39,8 +39,8 @@ provider-local identity. Provider-native adapters preserve role intent but do
 not own names, permissions, or model policy.
 
 If no role matches or multiple roles conflict, stop and route the ambiguity to
-`workflow-supervisor`. Multi-role work keeps one supervising owner and separates
-implementation from independent review.
+`workflow-supervisor`. Multi-role work keeps one supervising owner and, for
+high-risk work, separates implementation from independent review.
 
 ### Enforcement
 

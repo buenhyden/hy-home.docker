@@ -65,8 +65,7 @@ cannot broaden it.
 ### Review Risk
 
 A change is high-risk when it touches a
-[protected surface](approval-boundaries.md#enforcement) other than an
-evidence-only edit of the current Task, changes a policy, role, skill,
+[protected surface](approval-boundaries.md#enforcement), changes a policy, role, skill,
 shared contract or Registry rule, changes validator, gate or hook behavior,
 or performs a security, secret, remote, runtime or data action. Every other
 change is low-risk: an ordinary document or README edit, a Task evidence or

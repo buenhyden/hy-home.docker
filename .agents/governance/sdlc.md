@@ -113,7 +113,8 @@ reserved.
 A Plan has one Spec parent and a Task has one Plan parent. A Plan is never
 ahead of its Spec and never ends before it. A Task, and each of its items,
 runs only while both are `approved`; under a `draft` or `in-review` parent a
-remaining Task or item stays `draft` or `blocked`.
+remaining Task or item stays `draft` or `blocked`. A `cancelled` Spec requires
+a terminal Plan and terminal Tasks. Parent status never reflects execution.
 
 A draft document of any family may be written, revised and reviewed. On its
 own it never authorizes implementation, an operational action or a
@@ -123,9 +124,7 @@ scope, such as an approved Spec and Plan or a direct user instruction, and
 completion follows the Task's criteria, evidence and acceptance. An unrelated
 draft never blocks independent work. The Spec Package reader enforces the
 Task rule above; for other families this rule is enforced by review, not by
-a check. A `cancelled` Spec requires
-a terminal Plan and terminal Tasks. Parent status
-never reflects execution.
+a check.
 
 Execution state has one owner. A single-mode Task keeps one frontmatter
 `status`. A multi-item Task has an `Execution Items` table under Work Performed
