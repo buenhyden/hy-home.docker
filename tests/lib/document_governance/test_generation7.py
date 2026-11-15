@@ -8,6 +8,7 @@ import pathlib
 import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 from scripts.lib.document_governance import spec_packages as module
 from scripts.lib.document_governance.registry import load_registry
@@ -445,7 +446,30 @@ parent_ids:
             self.assertEqual(source, module.previous_generation_revision(root, 7))
             self.assertEqual("", git("rev-list", "--merges", "HEAD"))
             snapshots = module._load_base_spec_packages(root, base_ref="HEAD")
-            bound = module._bind_legacy_evidence(snapshots, root)
+            context = module.HistoricalSpecSnapshotContext()
+            with mock.patch.object(
+                module, "_bounded_git", wraps=module._bounded_git
+            ) as read:
+                bound = module._bind_legacy_evidence(snapshots, root, context)
+                repeated = module._bind_legacy_evidence(snapshots, root, context)
+            self.assertEqual(bound, repeated)
+            self.assertEqual(
+                1,
+                sum(
+                    call.args[1:3] == ("rev-list", "--first-parent")
+                    for call in read.call_args_list
+                ),
+            )
+            self.assertIn(
+                mock.call(
+                    root,
+                    "rev-list",
+                    "--first-parent",
+                    git("rev-parse", "HEAD"),
+                    byte_limit=module.MAX_TOTAL_ENTRIES * 65,
+                ),
+                read.call_args_list,
+            )
             self.assertEqual(
                 6, bound[0].tasks[0].evidence_registry.common["lifecycle_generation"]
             )
@@ -455,6 +479,41 @@ parent_ids:
                     bound, bound, load_registry(), load_registry()
                 ),
             )
+            (root / registry_path).write_text(json.dumps(earlier))
+            git("add", ".")
+            git("commit", "-qm", "different predecessor")
+            self.assertEqual(
+                git("rev-parse", "HEAD"),
+                module.previous_generation_revision(root, 7, context=context),
+            )
+
+    def test_generation_search_retries_an_invalid_ancestor(self):
+        root = pathlib.Path(".")
+        source = "a" * 40
+        context = module.HistoricalSpecSnapshotContext()
+        with (
+            mock.patch.object(
+                module, "_bounded_git", return_value=source.encode()
+            ) as read,
+            mock.patch.object(
+                module,
+                "load_registry_document_at_revision",
+                return_value={"common": {"lifecycle_generation": 6}},
+            ),
+            mock.patch.object(
+                module,
+                "_validate_source_registry",
+                side_effect=(module.SpecPackageError("invalid Registry"), None),
+            ),
+        ):
+            with self.assertRaisesRegex(module.SpecPackageError, "invalid Registry"):
+                module.previous_generation_revision(root, 7, context=context)
+            self.assertEqual(
+                source, module.previous_generation_revision(root, 7, context=context)
+            )
+        self.assertEqual(
+            2, sum(call.args[1] == "rev-list" for call in read.call_args_list)
+        )
 
 
 if __name__ == "__main__":

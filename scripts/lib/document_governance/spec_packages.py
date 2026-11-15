@@ -102,14 +102,15 @@ class _HistoricalSpecSnapshot:
 
 
 class HistoricalSpecSnapshotContext:
-    """Bounded raw Git inputs shared only by one validation invocation.
+    """Bounded committed Git inputs shared only by one validation invocation.
 
     Never retain working files, symbolic ref resolutions, parsed mutable
-    metadata, or validation results. Each consumer still parses and validates.
+    metadata, or document verdicts. Each consumer still parses and validates.
     """
 
     def __init__(self) -> None:
         self._snapshots: tuple[_HistoricalSpecSnapshot, ...] = ()
+        self._generation_sources: dict[tuple[pathlib.Path, str, int], str] = {}
 
     def lookup(self, root: pathlib.Path, commit: str) -> _HistoricalSpecSnapshot | None:
         return next(
@@ -3020,14 +3021,32 @@ def _v6_historical_admission(
     return frozenset(historical), pairs
 
 
-def previous_generation_revision(root: pathlib.Path, generation: int) -> str:
+def previous_generation_revision(
+    root: pathlib.Path,
+    generation: int,
+    *,
+    context: HistoricalSpecSnapshotContext | None = None,
+) -> str:
     """Find an actual ancestor Registry, without making a Task an authority."""
+    head = "HEAD"
+    if context is not None:
+        root = root.resolve()
+        head = (
+            _bounded_git(root, "rev-parse", "--verify", "HEAD^{commit}", byte_limit=256)
+            .decode("ascii")
+            .strip()
+        )
+        if _RECOVERY_COMMIT.fullmatch(head) is None:
+            raise SpecPackageError("Spec Package HEAD did not resolve to a commit")
+        key = (root, head, generation)
+        if (revision := context._generation_sources.get(key)) is not None:
+            return revision
     revisions = (
         _bounded_git(
             root,
             "rev-list",
             "--first-parent",
-            "HEAD",
+            head,
             byte_limit=MAX_TOTAL_ENTRIES * 65,
         )
         .decode("ascii")
@@ -3045,6 +3064,11 @@ def previous_generation_revision(root: pathlib.Path, generation: int) -> str:
             _validate_source_registry(
                 raw, generation, source_revision=revision, root=root
             )
+            if context is not None and len(context._generation_sources) < 4:
+                context._generation_sources = {
+                    **context._generation_sources,
+                    key: revision,
+                }
             return revision
     raise SpecPackageError("previous Registry generation is unavailable")
 
@@ -3125,7 +3149,7 @@ def _v7_historical_admission(
     dict[pathlib.PurePosixPath, frozenset[tuple[str, str]]],
 ]:
     root = stage_root.parent.parent
-    revision = previous_generation_revision(root, 7)
+    revision = previous_generation_revision(root, 7, context=context)
     # Only a package still in the tree can admit a Task; a deleted one's
     # number is reserved instead, so its historical tables are not re-read.
     # The migration proofs come from the full generation 6 tree instead.
@@ -3185,7 +3209,7 @@ def _bind_legacy_evidence(
     root: pathlib.Path,
     context: HistoricalSpecSnapshotContext | None = None,
 ) -> tuple[SpecPackage, ...]:
-    revision = previous_generation_revision(root, 7)
+    revision = previous_generation_revision(root, 7, context=context)
     source_registry = load_registry_at_revision(revision, root=root)
     source_tasks = {
         task.path: task
@@ -3298,6 +3322,9 @@ def load_spec_packages(
             # generation 6 tree, so a proof package may leave the working tree.
             proof_packages: tuple[SpecPackage, ...] | None = None
             if active_registry.common.get("lifecycle_generation", 0) >= 7:
+                _historical_context = (
+                    _historical_context or HistoricalSpecSnapshotContext()
+                )
                 packages = list(
                     _bind_legacy_evidence(
                         packages, stage_root.parent.parent, _historical_context
@@ -3305,7 +3332,9 @@ def load_spec_packages(
                 )
                 proof_packages = _load_base_spec_packages(
                     stage_root.parent.parent,
-                    base_ref=previous_generation_revision(stage_root.parent.parent, 7),
+                    base_ref=previous_generation_revision(
+                        stage_root.parent.parent, 7, context=_historical_context
+                    ),
                     context=_historical_context,
                 )
             (
@@ -5804,7 +5833,9 @@ def validate_repository_spec_package_lifecycle_details(
     normalizations: frozenset[tuple[str, str, str]] = frozenset()
     generation_source: str | None = None
     if generation == 7:
-        generation_source = previous_generation_revision(root, 7)
+        generation_source = previous_generation_revision(
+            root, 7, context=_historical_context
+        )
     if current_surface:
         if generation not in {4, 5, 6, 7}:
             raise SpecPackageError("current lifecycle generation must be 4, 5, 6 or 7")

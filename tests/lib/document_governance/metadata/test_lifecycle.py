@@ -49,13 +49,23 @@ class HistoricalBlobBatchTests(unittest.TestCase):
                     encoding="utf-8",
                 )
             git("add", ".")
+            (root / paths[0]).write_bytes(
+                (root / paths[0]).read_bytes().replace(b"\n", b"\r\n")
+            )
+            git("add", paths[0])
             git("commit", "-qm", "fixture")
             expected = {
                 path: git("show", f"HEAD:{path}").decode("utf-8") for path in paths
             }
+            raw_blobs = {}
             self.assertEqual(
                 expected,
-                lifecycle_module._read_markdown_texts_at_ref(root, paths, "HEAD"),
+                lifecycle_module._read_markdown_texts_at_ref(
+                    root, paths, "HEAD", raw_blobs=raw_blobs
+                ),
+            )
+            self.assertEqual(
+                {p: text.encode("utf-8") for p, text in expected.items()}, raw_blobs
             )
             self.assertEqual(
                 {"docs/a[1].md": expected["docs/a[1].md"]},
@@ -98,12 +108,43 @@ class HistoricalBlobBatchTests(unittest.TestCase):
             (root / "docs/large.md").write_text(large, encoding="utf-8")
             git("add", ".")
             git("commit", "-qm", "oversized fixture")
+            raw_blobs = {}
             self.assertEqual(
                 {"docs/large.md": large},
                 lifecycle_module._read_markdown_texts_at_ref(
-                    root, ("docs/large.md",), "HEAD"
+                    root, ("docs/large.md",), "HEAD", raw_blobs=raw_blobs
                 ),
             )
+            self.assertEqual({}, raw_blobs)
+
+    def test_shared_current_records_keep_each_selection(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            tracked = "docs/01.requirements/0001-tracked.md"
+            selected = "docs/01.requirements/0002-selected.md"
+            other = "docs/01.requirements/0003-native.md"
+            for name in (tracked, selected, other):
+                write_doc(root / name, {"version": "1.0.0"})
+            self.assertEqual(0, git(root, "add", tracked).returncode)
+            outer = lifecycle_module.collect_records(
+                root, {}, selected_paths=(selected,)
+            )
+            with mock.patch.object(
+                lifecycle_module,
+                "_record_from_text",
+                wraps=lifecycle_module._record_from_text,
+            ) as parse:
+                native = lifecycle_module.collect_records(
+                    root,
+                    {},
+                    selected_paths=(other,),
+                    current_records={r.path.as_posix(): r for r in outer},
+                )
+            self.assertEqual([tracked, other], [r.path.as_posix() for r in native])
+            self.assertIs(outer[0], native[0])
+            self.assertEqual(pathlib.Path(other), parse.call_args.args[0])
+            self.assertEqual(1, parse.call_count)
 
 
 class TransitionOverrideEvidencePathTests(unittest.TestCase):
@@ -512,6 +553,52 @@ class VersionChangeTests(unittest.TestCase):
 
     DOC = pathlib.Path("docs/90.references/research/0001-x/note.md")
     BASE_BODY = "# Fixture\n"
+
+    def test_exact_base_text_avoids_individual_git_reads(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            name = self.DOC.as_posix()
+            values = {"version": "1.2.0"}
+            (root / self.DOC).parent.mkdir(parents=True)
+            (root / self.DOC).write_bytes(
+                b'---\r\nversion: "1.2.0"\r\n---\r\n# Fixture\r\n'
+            )
+            self.assertEqual(0, git(root, "add", name).returncode)
+            self.assertEqual(0, git(root, "commit", "-qm", "base").returncode)
+            base_ref = git(root, "rev-parse", "HEAD").stdout.strip()
+            base_texts = {}
+            lifecycle_module.collect_records_at_ref(
+                root, {}, base_ref, texts_by_path=base_texts
+            )
+            with (
+                mock.patch.object(
+                    lifecycle_module, "resolve_git_provenance"
+                ) as git_read,
+                mock.patch.object(version_module, "_text_at_ref") as version_read,
+            ):
+                (root / self.DOC).write_bytes(base_texts[name].encode("utf-8"))
+                self.assertEqual(
+                    [],
+                    version_module.version_change_findings(
+                        root,
+                        {name: Record(self.DOC, values, "x")},
+                        base_ref,
+                        base_texts=base_texts,
+                    ),
+                )
+                (root / self.DOC).write_bytes(
+                    base_texts[name].replace("# Fixture", "# Different").encode("utf-8")
+                )
+                findings = version_module.version_change_findings(
+                    root,
+                    {name: Record(self.DOC, values, "x")},
+                    base_ref,
+                    base_texts=base_texts,
+                )
+            self.assertEqual(["version-unchanged"], [f.code for f in findings])
+            git_read.assert_not_called()
+            version_read.assert_not_called()
 
     def findings(
         self,

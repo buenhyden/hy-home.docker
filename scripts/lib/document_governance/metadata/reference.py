@@ -238,13 +238,25 @@ def _registered_generation_normalization(
 
 
 def _source_blob_matches_worktree(
-    root: pathlib.Path, path: pathlib.Path, revision: str | None
+    root: pathlib.Path,
+    path: pathlib.Path,
+    revision: str | None,
+    *,
+    source_blob: bytes | None = None,
 ) -> bool:
     """Return whether a generation blob exactly matches current file bytes."""
 
     if revision is None:
         return False
     try:
+        if source_blob is not None:
+            return len(
+                source_blob
+            ) <= MAX_SPEC_FILE_BYTES and source_blob == read_bounded_regular(
+                root,
+                pathlib.PurePosixPath(path.as_posix()),
+                max_bytes=MAX_SPEC_FILE_BYTES,
+            )
         listing = _bounded_git(
             root,
             "ls-tree",
@@ -357,6 +369,7 @@ def _validate_repository_contracts(
     base_ref: str | None = None,
     transition_ref: str | None = None,
     previous_records: Mapping[str, Record] | None = None,
+    current_records: Mapping[str, Record] | None = None,
     frontmatter_validator: FrontmatterValidator | None = None,
 ) -> tuple[
     list[Finding],
@@ -409,6 +422,7 @@ def _validate_repository_contracts(
             ),
             previous_records=previous_records,
             require_git=True,
+            current_records=current_records,
         )
         manifest = build_current_manifest(root, records)
         findings.extend(_index_membership_findings(root, active_registry, records))
@@ -494,11 +508,13 @@ def _validate_repository_contracts(
                         if isinstance(source_profiles, list)
                         else {}
                     )
+                    source_blobs: dict[str, bytes] = {}
                     source_records = collect_selected_records_at_ref(
                         root,
                         profiles,
                         [record.path.as_posix() for record in records],
                         spec_lifecycle.generation_source,
+                        raw_blobs=source_blobs,
                     )
                     for record in records:
                         source = source_records.get(record.path.as_posix())
@@ -577,7 +593,10 @@ def _validate_repository_contracts(
                             )
                         ):
                             if _source_blob_matches_worktree(
-                                root, record.path, spec_lifecycle.generation_source
+                                root,
+                                record.path,
+                                spec_lifecycle.generation_source,
+                                source_blob=source_blobs.get(record.path.as_posix()),
                             ):
                                 frozen_terminal_tasks.add(record.path.as_posix())
                         normalization = (
@@ -1735,9 +1754,15 @@ def main(argv: Sequence[str] | None = None) -> int:
             print(f"configuration-error: {error}", file=sys.stderr)
             return 2
     base_records: list[Record] = []
+    base_texts: dict[str, str] = {}
     if base.merge_base:
         try:
-            base_records = collect_records_at_ref(root, profiles, base.merge_base)
+            base_records = collect_records_at_ref(
+                root,
+                profiles,
+                base.merge_base,
+                texts_by_path=base_texts if args.mode == "check-changed" else None,
+            )
         except ProfileError as error:
             print(f"configuration-error: {error}", file=sys.stderr)
             return 2
@@ -1777,6 +1802,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(f"configuration-error: {error}", file=sys.stderr)
         return 2
     native_findings: list[Finding] = []
+    records_by_path = {record.path.as_posix(): record for record in records}
     actual_lifecycle_transitions: frozenset[tuple[str, str, str]] = frozenset()
     actual_lifecycle_normalizations: frozenset[tuple[str, str, str]] = frozenset()
     actual_lifecycle_normalization_sources: dict[str, str] = {}
@@ -1797,6 +1823,7 @@ def main(argv: Sequence[str] | None = None) -> int:
                     previous_records=(
                         base_records_by_path if base.merge_base is not None else None
                     ),
+                    current_records=records_by_path,
                     frontmatter_validator=frontmatter_validator,
                 )
                 actual_lifecycle_normalization_sources = {
@@ -1842,7 +1869,6 @@ def main(argv: Sequence[str] | None = None) -> int:
                 *findings_by_path[path_text],
                 *_runtime_version_findings(record, text, root),
             ]
-    records_by_path = {record.path.as_posix(): record for record in records}
     changed_body_findings: dict[str, list[Finding]] = {}
     if args.mode == "check-changed":
         for path_text in sorted(changed_selection):
@@ -1873,7 +1899,9 @@ def main(argv: Sequence[str] | None = None) -> int:
                 base_record = generation_record
                 base_text = generation_text
             if base_text is None:
-                base_text = _text_at_ref(root, record.path, base.merge_base)
+                base_text = base_texts.get(path_text)
+                if base_text is None:
+                    base_text = _text_at_ref(root, record.path, base.merge_base)
             changed_body_findings[path_text] = _introduced_body_findings(
                 record,
                 current_text,
@@ -1892,6 +1920,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             },
             base.merge_base,
             profiles,
+            base_texts=base_texts,
         ) + product_version_findings(root, base.merge_base)
     relation_impact_findings: dict[str, list[Finding]] = {}
     if args.mode == "check-changed":

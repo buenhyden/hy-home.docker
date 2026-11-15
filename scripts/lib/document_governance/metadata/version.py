@@ -44,8 +44,11 @@ def _versioned_content(path: pathlib.Path, text: str) -> tuple[dict[str, object]
     }, document.body
 
 
-def _content_changed(root: pathlib.Path, record: Record, base_ref: str) -> bool:
-    base_text = _text_at_ref(root, record.path, base_ref)
+def _content_changed(
+    root: pathlib.Path, record: Record, base_ref: str, base_text: str | None
+) -> bool:
+    if base_text is None:
+        base_text = _text_at_ref(root, record.path, base_ref)
     try:
         head_text = (root / record.path).read_text(encoding="utf-8")
     except (OSError, UnicodeError):
@@ -65,6 +68,8 @@ def version_change_findings(
     records: Mapping[str, Record],
     base_ref: str | None,
     profiles: Mapping[str, object] | None = None,
+    *,
+    base_texts: Mapping[str, str] | None = None,
 ) -> list[Finding]:
     """Flag a changed record whose `version` is unchanged or lower than its base.
 
@@ -80,9 +85,13 @@ def version_change_findings(
         return findings
     for record in records.values():
         head = record.metadata.get("version")
-        base = (_metadata_at_ref(root, record.path, base_ref, profiles) or {}).get(
-            "version"
-        )
+        base_text = (base_texts or {}).get(record.path.as_posix())
+        base = (
+            _metadata_at_ref(
+                root, record.path, base_ref, profiles, known_text=base_text
+            )
+            or {}
+        ).get("version")
         if not (semver.is_numeric_version(head) and semver.is_semver(base)):
             continue
         code = semver.version_change_code(base, head)
@@ -92,7 +101,7 @@ def version_change_findings(
             # Template drift is caught by that pin, the Registry and template
             # tests and the protected-surface review of `docs/99.templates/**`.
             if record.artifact_type == "template-source" or not _content_changed(
-                root, record, base_ref
+                root, record, base_ref, base_text
             ):
                 continue
             message = (

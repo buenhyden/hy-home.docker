@@ -186,6 +186,33 @@ class FixtureGitTests(unittest.TestCase):
 
 
 class RepositoryContractIntegrationTests(unittest.TestCase):
+    def test_generation_byte_snapshot_keeps_exact_and_bounded_worktree_proof(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            path = pathlib.Path("docs/task.md")
+            (root / path).parent.mkdir()
+            (root / path).write_bytes(b"# Fixture\r\n")
+            with mock.patch.object(reference_module, "_bounded_git") as git_read:
+                for source, expected in (
+                    (b"# Fixture\r\n", True),
+                    (b"# Fixture\n", False),
+                ):
+                    self.assertEqual(
+                        expected,
+                        reference_module._source_blob_matches_worktree(
+                            root, path, "a" * 40, source_blob=source
+                        ),
+                    )
+                (root / path).unlink()
+                (root / "target.md").write_bytes(b"# Fixture\r\n")
+                (root / path).symlink_to("../target.md")
+                self.assertFalse(
+                    reference_module._source_blob_matches_worktree(
+                        root, path, "a" * 40, source_blob=b"# Fixture\r\n"
+                    )
+                )
+            git_read.assert_not_called()
+
     def test_generation_normalization_accepts_only_registered_named_edges(self) -> None:
         registered = frozenset(
             {
