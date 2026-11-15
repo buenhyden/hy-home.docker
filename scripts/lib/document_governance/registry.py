@@ -777,14 +777,33 @@ def vocabulary_contract_findings(
                 "vocabulary-table-missing", path, "## Repository Vocabulary not found"
             )
         ]
-    rows = [
-        [cell.strip() for cell in line.strip().strip("|").split("|")]
-        for line in table
-        if line.startswith("| TERM-")
-    ]
+
+    def cells(line: str) -> list[str]:
+        return [cell.strip() for cell in line.strip().strip("|").split("|")]
+
+    header = next((cells(line) for line in table if line.startswith("| Term ID")), [])
+    rows = [cells(line) for line in table if line.startswith("| TERM-")]
     found = [(row[0], row[1] if len(row) > 1 else "") for row in rows]
     names = dict(expected)
     findings: list[RegistryFinding] = []
+    # The template's registered table owns the header; each common row must
+    # fill it, and the shared contract's Korean label must not be empty.
+    korean = header.index("Korean") if "Korean" in header else None
+    if korean is None:
+        findings.append(
+            RegistryFinding("vocabulary-korean-missing", path, "no Korean column")
+        )
+    for row in rows:
+        if len(row) != len(header):
+            findings.append(
+                RegistryFinding(
+                    "vocabulary-row-width",
+                    path,
+                    f"{row[0]} has {len(row)} cells, header has {len(header)}",
+                )
+            )
+        elif korean is not None and not row[korean]:
+            findings.append(RegistryFinding("vocabulary-korean-missing", path, row[0]))
     for term_id in sorted(set(names) - {row[0] for row in found}):
         findings.append(RegistryFinding("vocabulary-term-missing", path, term_id))
     for term_id, term in found:

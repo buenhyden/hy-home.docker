@@ -30,9 +30,9 @@ review_cycle: "{{REVIEW_CYCLE}}"
 
 ## Repository Vocabulary
 
-| Term ID | Term | Definition | Not to Confuse | Policy Owner | Contract Version |
-| --- | --- | --- | --- | --- | --- |
-| {{TERM_ID}} | {{TERM}} | {{DEFINITION}} | {{NOT_TO_CONFUSE}} | {{POLICY_OWNER_LINK}} | {{CONTRACT_VERSION}} |
+| Term ID | Term | Korean | Definition | Not to Confuse | Policy Owner | Contract Version |
+| --- | --- | --- | --- | --- | --- | --- |
+| {{TERM_ID}} | {{TERM}} | {{KOREAN}} | {{DEFINITION}} | {{NOT_TO_CONFUSE}} | {{POLICY_OWNER_LINK}} | {{CONTRACT_VERSION}} |
 
 ## Local Extensions
 

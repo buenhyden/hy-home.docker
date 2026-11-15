@@ -1,10 +1,10 @@
 ---
 title: "Workflows"
-version: "1.4.2"
+version: "1.5.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-15"
 ---
 
 # Workflows
@@ -40,16 +40,19 @@ Every repository change follows one lifecycle:
 4. **Implement** — the assigned contributor changes only approved scope.
 5. **Validate** — `qa-engineer` runs focused checks and any applicable
    repository Gate; a configured hook is supporting evidence, not approval.
-6. **Independent review** — a read-only reviewer who did not implement the
-   change evaluates the exact diff and verification evidence.
+6. **Review by risk** — a high-risk change gets an independent review: a
+   read-only reviewer who did not implement it evaluates the exact diff and
+   verification evidence. A low-risk change closes with the focused checks
+   and an author check recorded in the Task; it needs no second reviewer.
+   [Review risk](#review-risk) defines the two classes.
 7. **Evidence** — the Task records commands, results, recovery, skipped checks
    with rationale, review disposition, and remaining uncertainty.
 8. **Handoff** — `workflow-supervisor` reports the next owner or completion
    without broadening scope.
 
-After required approval, routine semantic review may close through the smallest
-relevant deterministic checks plus an independent read-only agent reviewer who
-did not implement the change. The reviewer evaluates the same diff and revision,
+After required approval, a high-risk semantic review may close through the
+smallest relevant deterministic checks plus an independent read-only agent
+reviewer who did not implement the change. The reviewer evaluates the same diff and revision,
 maps each applicable acceptance criterion to its canonical source and evidence,
 and rejects unsupported claims. Record findings, `BLOCKED`, `NOT_RUN`, and
 remaining uncertainty in the owning Task. Escalate semantic review to a human
@@ -58,6 +61,23 @@ uncertainty remains, a new or out-of-scope operation is needed, or a canonical
 or protected-branch rule requires human review. Existing approval remains
 applicable only while its recorded scope is unchanged; review and delegation
 cannot broaden it.
+
+### Review Risk
+
+A change is high-risk when it touches a
+[protected surface](approval-boundaries.md#enforcement), changes a policy, role, skill,
+shared contract or Registry rule, changes validator, gate or hook behavior,
+or performs a security, secret, remote, runtime or data action. Every other
+change is low-risk: an ordinary document or README edit, a Task evidence or
+acceptance record, or a Stage 01 to 05 prose correction that changes no
+rule.
+
+A high-risk change gets one independent review as below. A low-risk change
+closes with its focused checks and an author check in the Task that names
+what was compared and what was not checked; the author check is not called
+independent review. When the class is unclear, treat the change as
+high-risk. A reviewer does not rerun a check whose input is unchanged, and
+an evidence-only commit after review needs no new review.
 
 ### Review Scope and Evidence Updates
 

@@ -1,10 +1,10 @@
 ---
 title: "workflow-supervisor"
-version: "1.1.0"
+version: "1.2.0"
 type: "governance/role"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-15"
 agent_id: "workflow-supervisor"
 scope: "agentic"
 tier: "supervisor"
@@ -20,7 +20,7 @@ skill_ids:
 
 ## Overview
 
-Route approved work to bounded roles, enforce independent review and stop conditions, and synthesize evidence without absorbing specialist ownership.
+Route approved work to bounded roles, enforce review by risk and stop conditions, and synthesize evidence without absorbing specialist ownership.
 
 ### Use When
 
@@ -32,7 +32,7 @@ Route approved work to bounded roles, enforce independent review and stop condit
 
 ### Success Criteria
 
-Each logical task has one implementer, independent review, bounded retry/stop behavior, exact evidence, and no silent scope expansion. Recovery review and operational action have separate owners and approval evidence.
+Each logical task has one implementer, review by risk (independent for high-risk, focused checks and an author check for low-risk), bounded retry/stop behavior, exact evidence, and no silent scope expansion. Recovery review and operational action have separate owners and approval evidence.
 
 ## Allowed Changes
 

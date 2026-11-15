@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.64.0"
+version: "1.65.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -179,7 +179,8 @@ Task removes the six packages the readiness report lists, with the owner's
 approval. W125 closes the W05-primary QA cases the conformance audit found
 open. W126 in TSK-0065 runs v14.7 W06: Git hooks, CI shards, release and
 delivery. W127 in TSK-0066 runs the 3.0.1 W00-DELTA baseline and verdicts. W128 in
-TSK-0067 closes the gaps its audit found.
+TSK-0067 closes the gaps its audit found. W129 in TSK-0068 runs the 3.0.1
+W01-CONTRACT.
 
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
@@ -357,6 +358,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W126 | 121 | Bind the twelve Git action cells; shard hosted CI under one aggregate `candidate-quality` and wire the ten W05 leaves; allow Git automatic merge subjects; test the commit-msg hook, staged filenames and hook installation; refuse release downgrades; state the review path and no-model-API scope; apply the approved SHA pinning and immutable releases; record W06 verdicts | W125 | TSK-0065 | RED and GREEN gate, adapter, release and hook tests, workflow-contract and manifest checks, remote read-back, independent review, remote candidates |
 | W127 | 122 | Record the 3.0.1 W00-DELTA baseline, the pull requests since criterion 121, a verdict per docker-profile item and one receiving work unit per remaining difference | W126 | TSK-0066 | Source review with read scope, package structure check, metadata, links and lifecycle checks |
 | W128 | 123 | Audit TSK-0066 against the W00-DELTA prompt; record mounts, tools, PR diff review, external sources, verdict axes and latency; correct D-03; hand D-11 and D-12 to their work units | W127 | TSK-0067 | Source and diff review, metadata, links and lifecycle checks |
+| W129 | 124 | Verdict per rule; adopt `repository-vocabulary` 3.0.1 with the Korean column; review by risk; draft authority rule; template version fix | W128 | TSK-0068 | RED and GREEN Registry and lifecycle tests, governance contract, renderer parity, metadata and links checks, independent review |
 
 #### Current v30 continuation and delivery
 
@@ -767,6 +769,7 @@ Receipt records each target.
 - [v14.7 W06 Git, CI and release](tasks/tsk-0065-w06-git-ci-release.md)
 - [3.0.1 W00 delta](tasks/tsk-0066-w00-delta-3-0-1.md)
 - [3.0.1 W00 delta gap closure](tasks/tsk-0067-w00-delta-gap-closure.md)
+- [3.0.1 W01 contract](tasks/tsk-0068-w01-contract-3-0-1.md)
 - [Existing supply-chain evidence owner](tasks/tsk-0052-supply-chain-evidence.md)
 - [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
 - [Opsflow data path Task](tasks/tsk-0043-opsflow-data-path.md)

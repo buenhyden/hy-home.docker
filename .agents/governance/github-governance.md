@@ -1,10 +1,10 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.9.0"
+version: "1.10.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-15"
 ---
 
 # GitHub Governance Policy
@@ -69,13 +69,14 @@ target and action.
 - Draft/WIP PRs are allowed for collaboration; section 3 owns what that means for merge readiness.
 - Agents must not self-approve or bypass required reviewers.
 - This repository has one developer and no second reviewer. That risk is
-  handled by five parts together. The change's risk is read from the existing
-  owners, the [change-type verification matrix](quality-standards.md#5-change-type-verification-matrix)
-  and the [protected surfaces](approval-boundaries.md#enforcement),
-  with no separate tier scheme. The required `candidate-quality` check runs
-  the static and contract checks. The final diff is reviewed in a fresh
-  context separate from the one that wrote it, against the
-  [diff review checklist](../prompts/diff-review.md). The owner then accepts
+  handled by five parts together. The change's risk class is the one
+  [Review risk](workflows.md#review-risk) defines, read with the
+  [change-type verification matrix](quality-standards.md#5-change-type-verification-matrix)
+  and the [protected surfaces](approval-boundaries.md#enforcement).
+  The required `candidate-quality` check runs the static and contract checks.
+  A high-risk final diff is reviewed in a fresh context separate from the one
+  that wrote it, against the [diff review checklist](../prompts/diff-review.md);
+  a low-risk diff closes with the author check that policy defines. The owner then accepts
   each criterion explicitly in the Task's Criterion Acceptance, which a merge
   is not. Git history and the recovery rules below cover rollback. The review
   path calls no model-inference API, under the

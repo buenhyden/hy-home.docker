@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.12.0"
+version: "1.12.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-15"
 ---
 
 # Agent Quality and Security Standards
@@ -80,7 +80,7 @@ never a vulnerability fix or a branch protection bypass. Never use a skipped
 audit, lower threshold, continue-on-error, blanket package exception or
 omitted development audit.
 
-Remote PR candidate validation and independent review own candidate acceptance, while
+Remote PR candidate validation and review by [risk](workflows.md#review-risk) own candidate acceptance, while
 main-push security remains a post-merge observation.
 
 #### 3. Reliability Baseline
