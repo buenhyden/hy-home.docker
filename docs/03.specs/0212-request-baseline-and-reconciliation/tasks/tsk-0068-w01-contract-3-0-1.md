@@ -157,11 +157,12 @@ it on 2026-11-15. No other question was needed.
 | Links alignment | 124 | W129 | document-links | `check-document-links.py --mode alignment` | PASS | failures 0 | required | - |
 | Script manifest | 124 | W129 | script-manifest | `check-script-manifest.py` | PASS | valid | required | - |
 | Independent review | 124 | W129 | independent-review | `rules-engineer`, read-only, diff `101b8ec7f..6504d0cd7` | FAIL | 2 HIGH, 2 MEDIUM, 4 LOW; see Review findings and fixes | required | - |
+| Independent re-review | 124 | W129 | independent-review | Same `rules-engineer`, fix slice `986765c7e` | PASS | Every finding resolved; L3 provider-binding gap stays LOW; D-13 open with W03-VERSION | required | Independent review |
 
 ### Resolution Links
 
-Vocabulary RED is resolved by Vocabulary GREEN, and Template version RED by
-Template version GREEN.
+Vocabulary RED is resolved by Vocabulary GREEN, Template version RED by
+Template version GREEN, and Independent review by Independent re-review.
 
 ## Acceptance Decision
 
@@ -169,12 +170,12 @@ Template version GREEN.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 124 | pending | Vocabulary GREEN, Template version GREEN, Governance contract, Renderer parity | Awaiting independent review and owner acceptance | SPEC-0212 TSK-0068 |
+| 124 | pending | Vocabulary GREEN, Template version GREEN, Governance contract, Renderer parity, Independent re-review | Awaiting owner acceptance | SPEC-0212 TSK-0068 |
 
 ### Remaining Conditions
 
-Independent `rules-engineer` review of the three commits, hosted candidate
-checks and owner acceptance of criterion 124.
+Hosted candidate checks and owner acceptance of criterion 124. D-13 stays with
+W03-VERSION.
 
 ## Handoff
 
