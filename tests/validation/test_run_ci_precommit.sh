@@ -91,7 +91,10 @@ sed -i 's/MD013: false/MD013: true/' "$CANDIDATE_REPO/.markdownlint-cli2.yaml"
 sed -i 's/common-side/base-side/' "$CANDIDATE_REPO/interaction.md"
 git -C "$CANDIDATE_REPO" commit -qam "chore: Advance base configuration"
 BASE_SHA="$(git -C "$CANDIDATE_REPO" rev-parse HEAD)"
-git -C "$CANDIDATE_REPO" merge -q --no-ff feature -m "Merge candidate"
+git -C "$CANDIDATE_REPO" merge -q --no-ff --no-commit feature
+printf '%s\n' '# Merge-only resolution' >"$CANDIDATE_REPO/merge-only.md"
+git -C "$CANDIDATE_REPO" add merge-only.md
+git -C "$CANDIDATE_REPO" commit -qm "Merge candidate"
 MERGE_SHA="$(git -C "$CANDIDATE_REPO" rev-parse HEAD)"
 
 expect_rejected "missing GITHUB_ACTIONS" \
@@ -161,7 +164,7 @@ fi
 ! grep -qx -- '--all-files' "$CALL_FILE" || fail "all-files mode was used"
 [[ "$(grep -c '^--from-ref$' "$CALL_FILE")" -eq 1 ]] || fail "changed range was not used"
 [[ "$(grep -c "^$BASE_SHA$" "$CALL_FILE")" -eq 1 ]] || fail "base SHA drifted"
-[[ "$(grep -c "^$HEAD_SHA$" "$CALL_FILE")" -eq 1 ]] || fail "head SHA drifted"
+[[ "$(grep -A1 -x -- '--to-ref' "$CALL_FILE" | tail -1)" == "$MERGE_SHA" ]] || fail "merge candidate was not selected"
 ! grep -qx "PWD=$CANDIDATE_REPO" "$CALL_FILE" || fail "style checks ran in the source worktree"
 
 set +e

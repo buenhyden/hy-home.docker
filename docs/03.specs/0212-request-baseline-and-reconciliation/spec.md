@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.72.0"
+version: "1.73.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -254,6 +254,8 @@ TSK-0075 for staged document claims and their implementation evidence.
 The direct W05-GATES 3.0.0 request adds criterion 132 and W137 in
 TSK-0076 for unique quality guarantees, closed evidence selection and
 measured document feedback.
+The direct W06-DELIVERY 3.0.0 request adds criterion 133 and W138 in
+TSK-0077 for exact Git delivery inputs and measured stage costs.
 
 ### Owning Requirements
 
@@ -1069,6 +1071,12 @@ target, backup, recovery boundary, and action-specific authorization.
      regressions. Shared immutable inputs reduce measured corpus cost while
      keeping the document and security findings. Missing, stale or invalid
      required execution evidence cannot close a hosted check.
+133. TSK-0077 binds installed Git checks and hosted selection to their
+     actual staged, ref and merge candidate inputs. A changed path in the
+     authenticated merge result stays selectable even if the PR head names
+     another path. Retain the required aggregate, tool isolation controls
+     and distinct main security evidence, with hosted observations scoped
+     to the inputs actually exercised.
 
 ### Evidence Requirements
 

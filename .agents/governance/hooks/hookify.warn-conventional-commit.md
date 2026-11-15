@@ -1,10 +1,10 @@
 ---
 title: "WARNING: non-Conventional Commit message"
-version: "1.0.6"
+version: "1.0.7"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-16"
 action: "warn"
 enabled: true
 event: "bash"
@@ -50,10 +50,10 @@ The message does not follow Commit Standards in
 ```
 
 Allowed types are the keys in `.cz.toml`'s `change_type_map`. This warning's
-pattern is a lightweight translation of that map. Explicit Commitizen checks
-the complete grammar before commit, and the remote candidate checks its
-authenticated contributor range. A `commit-msg` hook enforces that grammar only
-when its installation and delivery are actually observed.
+pattern is a lightweight translation of that map. The installed `commit-msg`
+hook checks the complete grammar when its delivery is observed. Use explicit
+Commitizen validation when that delivery is unconfirmed or diagnosis is needed.
+The remote candidate checks its authenticated contributor range.
 
 **Correct examples:**
 

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.72.0"
+version: "1.73.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -190,6 +190,8 @@ W136 in TSK-0075 uses the accepted W01 contract to reconcile current
 document claims against local source and observed evidence.
 W137 in TSK-0076 uses the accepted W00 delta to measure and improve
 quality feedback and preserve distinct candidate guarantees.
+W138 in TSK-0077 uses verified W05 implementation evidence to bind delivery
+checks to the actual candidate and remove avoidable setup.
 
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
@@ -376,6 +378,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W135 | 130 | Preserve draft authoring and verify the authority, lifecycle and relation boundaries; reject explicit prose placeholders in effective documents | W134 | TSK-0074 | Focused authoring and lifecycle tests, relation checks, corpus checks, independent review |
 | W136 | 131 | Record the Stage 01, 02, 05 and 90 denominator and actual semantic coverage; correct demonstrated mismatches with their sources and preserve implementation obligations | W129 | TSK-0075 | Claim readback, focused synthetic command checks, affected metadata and links, corpus lifecycle, review of high-risk claims |
 | W137 | 132 | Trace delivery and local feedback, preserve unique checks, share immutable inputs, and fail closed on missing or changed required execution | W128 | TSK-0076 | Paired local timing, selection and evidence fixtures, document regressions, independent review |
+| W138 | 133 | Verify installed Git routes, select cumulative PR and final merge paths, align style scope, and avoid unnecessary checkout history where possible | W137 | TSK-0077 | Trace2, real Git fixtures, workflow projection and independent review |
 
 #### Current v30 continuation and delivery
 
@@ -684,9 +687,10 @@ axis, not Evidence `Result` values; no lower level implies a higher one. A
 local changed no-op or `full --explain` selection is not hosted required-check
 coverage. A missing live target is recorded as an Evidence `NOT_RUN` row.
 
-After independent review, validate the Conventional Commit message and run
-`scripts/validation/run-ci-precommit.sh --mode local-staged` on the exact
-staged set. Read actual branch protection and PR checks. Push this request's
+After independent review, stage the exact set and let the installed
+pre-commit and commit-msg hooks check it on the ordinary commit. Use the
+manual staged or message check for unconfirmed hook delivery or diagnosis
+only. Read actual branch protection and PR checks. Push this request's
 branch, create its PR and attach it; merge only when its current review/check
 conditions are satisfied. Record hosted results separately from local results.
 
@@ -787,7 +791,10 @@ W136 promotes proven corrections to the affected requirement, architecture,
 operations and research owners. TSK-0075 records the evidence and unread scope.
 W137 promotes performance and evidence boundary corrections to the existing
 document and candidate gate owners. TSK-0076 records the measured limits.
+W138 promotes exact candidate selection and checkout rules in the delivery
+runner and workflow. TSK-0077 records native, fixture and hosted boundaries.
 
+- [W06 delivery](tasks/tsk-0077-w06-delivery-3-0-0.md)
 - [W05 quality gates](tasks/tsk-0076-w05-gates-3-0-0.md)
 
 - [Master workspace reconciliation](tasks/tsk-0053-master-workspace-reconciliation.md)

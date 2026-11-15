@@ -1,10 +1,10 @@
 ---
 title: "Commit Message Prompt"
-version: "0.2.0"
+version: "0.2.1"
 type: "governance/prompt"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-16"
 created: "2026-09-06"
 ---
 
@@ -72,19 +72,18 @@ One draft message:
    anything the diff already shows plainly.
 3. **Trailers** — only trailers the repository's conventions define.
 
-Validate the draft against the enforced pattern before offering it. A message
-that fails the commit-message check after a long pre-commit run wastes the whole
-run, so check the cheapest gate first:
+Offer the draft for the ordinary commit path when commit-msg delivery is
+confirmed. When delivery is unconfirmed or diagnosis is needed, validate
+the draft with Commitizen:
 
 ```bash
 cz check --message-length-limit 75 \
   --message "docs(governance): Align commit contract"
 ```
 
-Explicit Commitizen validation checks the full grammar before the staged style
-check and ordinary commit. Claim `commit-msg` hook enforcement only when its
-installation and delivery are observed; the remote candidate validates the
-authenticated contributor commit range separately.
+Explicit Commitizen validation checks the full grammar. Claim `commit-msg`
+hook enforcement only when its installation and delivery are observed. The
+remote candidate validates the authenticated contributor commit range separately.
 
 Alongside the draft, list any staged path the message does not account for. That
 list being empty is part of the output.

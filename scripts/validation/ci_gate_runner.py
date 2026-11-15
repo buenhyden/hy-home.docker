@@ -1771,6 +1771,20 @@ def collect_changed_paths(
                 "the pull-request comparison base is unavailable",
             )
         commands = ((git_executable, "diff", *name_status, f"{base}...{head}"),)
+        if environ.get("GITHUB_ACTIONS") == "true":
+            merge = environ.get("GITHUB_SHA", "")
+            if (
+                not _FULL_SHA.fullmatch(merge)
+                or merge in {"0" * 40, base, head}
+                or merge != environ.get("TRUSTED_MERGE_SHA")
+            ):
+                raise GateContractError(
+                    "ci-gate-changed-paths",
+                    "git",
+                    "the authenticated pull-request merge is unavailable",
+                )
+            # Base-side changes can move a contribution to another candidate path.
+            commands = (*commands, (git_executable, "diff", *name_status, base, merge))
     elif event == "push":
         base = environ.get("PUSH_BEFORE_SHA", "")
         if not _FULL_SHA.fullmatch(base):

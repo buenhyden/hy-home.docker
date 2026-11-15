@@ -1103,7 +1103,10 @@ def _workflow_projection_findings(
         if raw_job_id != AGGREGATE_JOB and checkout != {
             "name": "Checkout repository",
             "uses": f"actions/checkout@{action_shas.get('actions/checkout')}",
-            "with": {"persist-credentials": False, "fetch-depth": 0},
+            "with": {
+                "persist-credentials": False,
+                "fetch-depth": 1 if raw_job_id == "main-security" else 0,
+            },
         }:
             findings.append(
                 _finding(

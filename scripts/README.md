@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.5.8"
+version: "1.5.9"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 created: "2026-02-21"
 ---
 
@@ -262,10 +262,12 @@ source하지 않습니다. 선택적 QA/CI 도구를 다른 방법으로 사용�
 헬퍼를 명시적으로 source합니다. 반복 source해도 기존 PATH 순서는 유지되고
 사용 가능한 디렉터리만 한 번씩 추가됩니다.
 
-`scripts/validation/run-ci-precommit.sh --mode local-staged`는 검토한 파일을 staging한
-직후, 로컬 commit 직전에 실행하는 lint·format 검사 경로입니다. index의 설정과 staged
-파일을 사용하며 원문과 index를 변경하지 않습니다. 실패하면 명시적으로 수정·검토·restaging한
-뒤 다시 검사합니다. Git hook을 설치하거나 기존 ECC secret 검사를 대체하지 않습니다.
+일반 커밋에서는 실행이 확인된 설치 훅이 최종 index와 커밋 메시지를 검사합니다.
+훅 실행을 아직 확인하지 못했거나 별도 진단이 필요할 때는
+`scripts/validation/run-ci-precommit.sh --mode local-staged`로 검토한 index의
+lint·format을 확인한 뒤 일반 커밋 경로를 따릅니다. 이 명령은 index의 설정과 staged
+파일을 읽고 원문과 index를 보존합니다. 검사에서 실패하면 파일을 수정하고 변경을 검토해 다시
+staging한 뒤 재검사합니다. Git hook 설치와 기존 ECC secret 검사는 각자의 경로에서 이루어집니다.
 같은 도구 pin과 read-only 검사 규칙을 서버 PR의 `--mode pr-merge`가 인증된 merge
 입력에 적용합니다. 로컬 결과와 서버 결과는 별개이며, PR 후보의 선택된 빌드는 이 서버
 검사 결과를 사용합니다. 개발 push와 main에서 같은 style 검사를 다시 실행하지 않습니다.
@@ -463,7 +465,8 @@ argv `check_command`와 자신이 소유하는 정확한 tracked `outputs`를 �
 중에는 실행하지 않으며 명시적으로 호출하려면 먼저 현재 Runbook과 선언된 테스트
 evidence가 필요합니다. `run-agent-precommit-all-files.sh`는 fixer 훅을 포함하는
 `check-write` 전체 감사이며 승인된 격리 linked worktree에서만 실행됩니다.
-`run-ci-precommit.sh --mode local-staged`는 commit 직전 index의 staged 검증이며,
+`run-ci-precommit.sh --mode local-staged`는 설치된 훅 실행을 확인하지 못했거나 별도
+진단이 필요할 때 사용하는 커밋 직전 index 검사입니다.
 `--mode pr-merge`는 GitHub Actions의 인증된 PR 병합 후보를 scratch에 체크아웃하는
 changed-ref 검증입니다. 두 경로는 같은 pin에서 fixer를 제외하고 등록된 check 모드를
 사용하는 `mutation: none`이며 source bytes를 보존합니다. hook 설치나 배포는 수행하지

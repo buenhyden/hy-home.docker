@@ -1982,6 +1982,46 @@ class CiGateRunnerContractTests(unittest.TestCase):
         ):
             runner._trusted_git_executable({"TRUSTED_GIT_PATH": "/missing/git"})
 
+    def test_hosted_paths_include_base_side_rename_in_merge_candidate(self) -> None:
+        with (
+            tempfile.TemporaryDirectory() as directory,
+            root_owned_system_git_fixture(),
+        ):
+            repo = self._changed_path_repo(pathlib.Path(directory))
+            old_path = repo / "old.md"
+            original = "one\ntwo\nthree\nfour\nfive\n"
+            old_path.write_text(original, encoding="utf-8")
+            self._git(repo, "add", "old.md")
+            self._git(repo, "commit", "-qm", "original path")
+            branch = self._git(repo, "branch", "--show-current").stdout.strip()
+            self._git(repo, "checkout", "-qb", "candidate")
+            old_path.write_text(original + "PR contribution\n", encoding="utf-8")
+            self._git(repo, "commit", "-qam", "edit old path")
+            head = self._git(repo, "rev-parse", "HEAD").stdout.strip()
+            self._git(repo, "checkout", "-q", branch)
+            self._git(repo, "mv", "old.md", "renamed.md")
+            self._git(repo, "commit", "-qm", "rename on base")
+            base = self._git(repo, "rev-parse", "HEAD").stdout.strip()
+            self._git(repo, "merge", "--no-ff", "-qm", "merge candidate", "candidate")
+            merge = self._git(repo, "rev-parse", "HEAD").stdout.strip()
+            authenticated = runner._authenticated_execution_environment(
+                repo,
+                {
+                    "GITHUB_ACTIONS": "true",
+                    "GITHUB_EVENT_NAME": "pull_request",
+                    "GITHUB_SHA": merge,
+                    "TRUSTED_EVENT_NAME": "pull_request",
+                    "TRUSTED_MERGE_SHA": merge,
+                    "TRUSTED_BASE_SHA": base,
+                    "TRUSTED_HEAD_SHA": head,
+                    "TRUSTED_GIT_PATH": shutil.which("git") or "/usr/bin/git",
+                },
+            )
+            self.assertEqual(
+                ("old.md", "renamed.md"),
+                runner.collect_changed_paths(repo, authenticated),
+            )
+
     def test_pull_request_identity_is_bound_to_raw_merge_topology(self) -> None:
         with (
             tempfile.TemporaryDirectory() as directory,

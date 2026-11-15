@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.12.1"
+version: "1.12.2"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 ---
 
 # Agent Quality and Security Standards
@@ -371,9 +371,10 @@ workflow definitions through
 `scripts/validation/check-github-workflow-contract.py`. The required
 `leaf.local-tech-stack-version-drift` owns version drift detection in every
 public context. The public runner admits only the authenticated `--mode pr-merge` invocation.
-The explicit `--mode local-staged` route is separate from aggregate QA and runs
-real staged checks immediately before commit. Isolated wrapper regressions do
-not substitute for an observed local or hosted execution.
+The explicit `--mode local-staged` route is separate from aggregate QA. Use
+it to check the staged input when installed hook delivery is unconfirmed or
+diagnosis is needed. Isolated wrapper regressions do not substitute for an
+observed local or hosted execution.
 
 ##### Explicit Full Audit
 

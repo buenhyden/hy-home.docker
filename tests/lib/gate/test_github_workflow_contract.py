@@ -1470,11 +1470,6 @@ class GithubWorkflowContractTests(unittest.TestCase):
         checkout = next(
             action for action in contract.actions if action.action == "actions/checkout"
         )
-        expected_checkout = {
-            "name": "Checkout repository",
-            "uses": f"actions/checkout@{checkout.sha}",
-            "with": {"persist-credentials": False, "fetch-depth": 0},
-        }
         for job_id, job in jobs.items():
             with self.subTest(job_id=job_id):
                 if job_id == "candidate-quality":
@@ -1483,6 +1478,14 @@ class GithubWorkflowContractTests(unittest.TestCase):
                         any("uses" in step for step in job["steps"]),
                     )
                     continue
+                expected_checkout = {
+                    "name": "Checkout repository",
+                    "uses": f"actions/checkout@{checkout.sha}",
+                    "with": {
+                        "persist-credentials": False,
+                        "fetch-depth": 1 if job_id == "main-security" else 0,
+                    },
+                }
                 self.assertEqual(expected_checkout, job["steps"][0])
 
     def test_main_security_is_independent_from_candidate_validation(self) -> None:
@@ -1607,6 +1610,18 @@ class GithubWorkflowContractTests(unittest.TestCase):
                 "security-checkout-order",
                 "main-security",
                 lambda job: job["steps"].insert(1, job["steps"].pop(0)),
+                "workflow-gate-projection-mismatch",
+            ),
+            (
+                "security-checkout-fetches-history",
+                "main-security",
+                lambda job: job["steps"][0]["with"].update({"fetch-depth": 0}),
+                "workflow-gate-projection-mismatch",
+            ),
+            (
+                "candidate-checkout-omits-history",
+                "candidate-core",
+                lambda job: job["steps"][0]["with"].update({"fetch-depth": 1}),
                 "workflow-gate-projection-mismatch",
             ),
             (
