@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "5.2.0"
+version: "6.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -491,6 +491,26 @@ The Canonical source column is the one authored place; the Producer writes it,
 and the Compatibility surface is what its consumers depend on, so a change
 there decides the increment. A product version rises only with its own
 product's change; a documentation change raises no other object's version.
+
+For a versioned document or contract, review the proposed change against the
+prior valid producers and consumers. Include required keys, sections, table
+columns, relations, lifecycle states, meaning, diagnostics and output shape
+when they are part of the contract.
+
+- **MAJOR** when a prior valid producer or consumer breaks. Reset MINOR and
+  PATCH to zero. Moving all consumers together still requires a MAJOR increase
+  if the old interface breaks.
+- **MINOR** for a compatible addition. Reset PATCH to zero.
+- **PATCH** for a correction that preserves the consumer contract.
+
+Record the affected consumer and the compatibility evidence in the current
+Task. An accepted contract change receives its own revision. A new
+observation follows the document content rule, and a lifecycle-only edit
+follows the lifecycle exception.
+
+The numeric grammar is authored in `semver.py`. The standalone Stage 99
+schemas mirror it for schema consumers. The Registry regression checks
+the copies against the Python grammar, including rejection of a final newline.
 
 | Object ID | Version field | Current value | Rule | Canonical source | Producer | Consumers | Compatibility surface | Deploy unit |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |

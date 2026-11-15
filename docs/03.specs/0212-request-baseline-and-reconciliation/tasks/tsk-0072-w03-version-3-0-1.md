@@ -1,6 +1,6 @@
 ---
 title: "W03 Version 3.0.1 Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -53,6 +53,44 @@ existing domains. Historical Registry checks use the schema committed at
 the historical revision. Reverting the logical change restores the former
 Registry and projection shape together.
 
+#### Standalone W03-VERSION design
+
+The 2026-11-16 W03-VERSION request exercises D02 3.0.1 directly against
+local commit `0386a1f90`. The prior W130 acceptance and W133 evidence
+cover the existing bindings and syntax. A 5,000-digit core component
+passes both the schema grammar and Python fullmatch but raises an
+uncaught conversion error in precedence. A numeric product prerelease
+identifier reaches the same conversion. Use exact integer conversion
+for both paths. Preserve accepted input width instead of introducing
+a new grammar cap or raising the interpreter limit for the process.
+
+Keep the Stage 99 schemas independently readable. Treat their numeric
+patterns as checked projections of the Python numeric core and test
+them against the authored grammar. In the version-policy owner, state
+the compatibility rule for producer/consumer pairs and the reset rule
+for lower components. Compatibility of prose and contracts is a review
+decision. The comparator keeps its existing precedence diagnostics.
+Use focused RED and GREEN tests, historical Registry validation, the
+bundled syntax examples and product release regression. Revert the
+follow-up source and policy together if the new behavior regresses.
+
+#### Standalone W03-VERSION compatibility decision
+
+The prior acceptance policy compared precedence and delegated compatibility
+to review. The documentation protocol now requires the correct bump class
+and lower-component resets, which can reject a previously admissible change.
+Its version rises from 5.2.0 to 6.0.0. The comparator correction preserves
+the version grammar and returns exact integers through the existing
+interface. The Registry, TemplateDefinition projection, template default,
+product values and identity counters keep their existing revisions.
+No consumer reads the bundled fixtures during normal operation.
+
+On 2026-11-16, a paired Python 3.12.3 timing sample compared the
+`0386a1f90` source with the follow-up. The median of five passes over
+40,000 ordinary comparisons was 0.241927 seconds before and 0.243602
+seconds after. The pair exercises numeric component ordering and
+numeric product prerelease ordering.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -82,10 +120,18 @@ retains the older comparison grammar at the historical boundary.
 | Product release regression | 128 | W133 | product-version | tests.validation.test_release on the candidate | PASS | 29 local tests, exit 0 | required | - |
 | Version review finding | 128 | W133 | independent-review | First local version implementation | FAIL | Historical precedence and prerequisite tracking required fixes | required | - |
 | Version fix review | 128 | W133 | independent-review | Historical comparator and W133 to W134 dependency in the staged change | PASS | Rules-engineer approved the fixes | required | Version review finding |
+| Long component RED | 128 | W133 | long-version-order | test_semver long core and product prerelease fixture against 0386a1f90 | ERROR | 5,000-digit core raises ValueError, exit 1 | required | - |
+| Long component GREEN | 128 | W133 | long-version-order | test_semver, metadata VersionChangeTests, two Registry syntax tests and product test_release | PASS | 51 tests in 3.461 seconds, exit 0 | required | Long component RED |
+| Standalone syntax probe | 128 | W133 | version-fixtures | 24 bundled values through Python fullmatch, three schema rules and Node RegExp | PASS | 24 cases per reader and 1.9.0 below 1.10.0, exit 0 | required | - |
+| Standalone governance | 128 | W133 | governance-contract | check-agent-governance-contract.py with compatibility policy 6.0.0 | PASS | 0 failures, exit 0 | required | - |
+| Standalone metadata | 128 | W133 | metadata | check-document-metadata.py --mode check-changed --base-ref HEAD with the policy and this Task selected | PASS | Base 0386a1f90, 2 documents and 0 violations, exit 0 | required | - |
+| Standalone review finding | 128 | W133 | standalone-review | Initial comparator, compatibility policy and schema test diff | FAIL | The test could miss a deleted schema start anchor | required | - |
+| Standalone review resolution | 128 | W133 | standalone-review | Raw schema pattern parity and the prefixed input case | PASS | Rules-engineer approved the fix. Both focused schema tests passed and a missing anchor mutation was detected | required | Standalone review finding |
 
 ### Resolution Links
 
-The two GREEN rows resolve the matching comparison and projection failures.
+The GREEN rows resolve the matching comparison, projection and long
+component failures.
 
 ## Acceptance Decision
 
