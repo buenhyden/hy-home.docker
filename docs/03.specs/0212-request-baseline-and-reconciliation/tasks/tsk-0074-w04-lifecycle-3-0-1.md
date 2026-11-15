@@ -1,6 +1,6 @@
 ---
 title: "W04 Lifecycle 3.0.1 Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -76,6 +76,19 @@ draft preparation, to record its own result without promoting the draft.
 Keep the historical records and their existing evidence readers. Test fresh
 closure, retained earlier decisions and approval-backed closure.
 
+#### Resumed cited input design
+
+The continuation on `c53828d95` found that changing an accepted criterion's
+cited Evidence Input left the decision basis unchanged. D03 3.0.1 and the
+SDLC require acceptance to stay bound to its executed input. Include the
+cited Input in the existing committed-base comparison. Keep the Location
+cell and uncited observations outside that comparison. This detects a new
+basis under a non-approved parent pair and applies existing acceptance checks
+under approved parents. It does not authenticate an input claim or create an
+approval. A source revert restores the previous comparison. Verify a cited
+input change, the same change with approved parents, an uncited input change,
+and a Location-only correction.
+
 #### Resume and reference impact design
 
 The SessionStart dispatcher supplies a fresh-context reminder for compaction
@@ -144,6 +157,12 @@ with zero findings on both runs. The elapsed alignment difference does not
 establish a speedup. Supplemental CommonMark diagnostics identify the
 containing block's first line.
 
+In the continuation, the baseline focus suite took 84.602 seconds for 43
+tests. The candidate took 148.163 seconds for 44 tests, while other local
+checks were running. The median of three warm rounds of 200 comparisons on
+the same synthetic acceptance input was 0.119 seconds at `c53828d95` and
+0.152 seconds with the cited Input included. These are observed wall times.
+
 ### Blockers and Decisions
 
 The accepted [earlier W04 Task](tsk-0063-w04-sdlc-promotion.md) retains its
@@ -187,6 +206,14 @@ Separate open dispositions still belong to the owners that Task identifies.
 | Candidate preflight | 130 | W135 | candidate-preflight | check-candidate-preflight.sh on the local branch with 17bbde05a as its main merge base | PASS | 11 documents, 0 violations and synchronized tech-stack registry, exit 0 | required | - |
 | Staged style and secret check | 130 | W135 | local-precommit | run-ci-precommit.sh --mode local-staged on the reviewed candidate | PASS | Applicable checks passed, exit 0 | required | - |
 | Independent review | 130 | W135 | independent-review | Applied prose, closure, hook, reference and protected policy slices against 60609d51a | PASS | Reviewers rechecked their own correction ranges and found no remaining material issue | required | - |
+| Continuation baseline | 130 | W135 | lifecycle-regression | AcceptanceDecisionTests, ParentAuthorityBranchTests, TemplateAndAuthoredResidueTests, RelationLookupTests and the SessionStart context test at c53828d95 | PASS | 43 tests in 84.602 seconds, exit 0. Main still 17bbde05a, no W04 PR | required | - |
+| Cited input RED | 130 | W135 | cited-evidence-input | test_changed_cited_input_needs_approved_parents on c53828d95 | FAIL | The changed cited Input returned no authority finding under in-review parents, exit 1 | required | - |
+| Cited input GREEN | 130 | W135 | cited-evidence-input | Same five focused entries on the candidate with the regression test | PASS | 44 tests in 148.163 seconds, exit 0. Only the changed cited Input reopened its decision | required | Cited input RED |
+| Cited input corpus | 130 | W135 | lifecycle | check-document-corpus-lifecycle.py --base-ref c53828d95 on the corrected reader | PASS | 0 lifecycle and occupancy violations in 208.90 seconds, exit 0 | required | - |
+| Continuation governance | 130 | W135 | governance | check-script-manifest.py, provider_surface_renderer.py --check and check-agent-governance-contract.py | PASS | Manifest valid, no renderer drift or governance findings, exit 0 | required | - |
+| Cited input review | 130 | W135 | independent-review | Evidence Input comparison and regression against c53828d95 | PASS | Independent approval of the current and historical row formats and both parent-state branches | required | - |
+| Continuation Task metadata | 130 | W135 | document-metadata | check-document-metadata.py --mode check-changed --base-ref c53828d95 scoped to TSK-0074 | PASS | 1 selected, 0 violations, exit 0 | required | - |
+| Continuation staged checks | 130 | W135 | local-precommit | run-ci-precommit.sh --mode local-staged on the reviewed three-file candidate | PASS | Applicable checks passed, exit 0 | required | - |
 
 ### Resolution Links
 

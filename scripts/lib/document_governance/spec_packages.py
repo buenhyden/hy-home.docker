@@ -5616,7 +5616,7 @@ def _acceptance_basis(
     """What one accepted criterion's decision rests on, or None if unreadable.
 
     The decision row, each Evidence row it cites (name, criteria, Work Unit,
-    Check, Result, Required and whether a later row resolves it) and the live
+    Check, Input, Result, Required and whether a later row resolves it) and the live
     (Work Unit, Task) pairs the Plan assigns to the criterion.
     """
 
@@ -5642,7 +5642,7 @@ def _acceptance_basis(
         evidence = tuple(
             (
                 name,
-                *(rows[name][index] for index in (1, 2, 3, 5)),
+                *rows[name][1:6],
                 rows[name][7] if generation >= 7 else "required",
                 name in resolved,
             )

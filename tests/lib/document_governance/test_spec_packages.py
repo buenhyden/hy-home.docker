@@ -6250,6 +6250,42 @@ class AcceptanceDecisionTests(unittest.TestCase):
         )
         self.assertEqual((), self.findings((relocated,), before=(supported,)))
 
+    def test_changed_cited_input_needs_approved_parents(self) -> None:
+        cited = _evidence_row("One", "1", "W1")
+        uncited = _evidence_row("Extra", "1", "W1")
+        task = _handoff_task(
+            cited + _evidence_row("Two", "1, 2", "W2") + uncited,
+            _decision_row("1", "One") + _decision_row("2", "Two"),
+            status="blocked",
+        )
+        review = {
+            "spec": dataclasses.replace(_generation6.SPEC, status="in-review"),
+            "plan": dataclasses.replace(_TWO_UNIT_PLAN, status="in-review"),
+        }
+        for original, correction in (
+            (cited, cited.replace("receipt", "updated receipt location")),
+            (uncited, uncited.replace("candidate A", "candidate B")),
+        ):
+            with self.subTest(row=original):
+                retained = dataclasses.replace(
+                    task, body=task.body.replace(original, correction)
+                )
+                self.assertEqual(
+                    (), self.findings((retained,), before=(task,), **review)
+                )
+
+        changed = dataclasses.replace(
+            task,
+            body=task.body.replace(cited, cited.replace("candidate A", "candidate B")),
+        )
+        self.assertEqual((), self.findings((changed,), before=(task,)))
+        findings = self.findings((changed,), before=(task,), **review)
+        self.assertEqual(
+            [("acceptance-without-approved-parents", task.path.as_posix())],
+            [(finding.code, finding.path) for finding in findings],
+        )
+        self.assertIn("criterion 1", findings[0].message)
+
     def test_a_work_unit_newly_assigned_to_the_criterion_needs_its_pass(self) -> None:
         # W2 carries only criterion 2 in the base Plan, then criterion 1 as well.
         task = _handoff_task(
