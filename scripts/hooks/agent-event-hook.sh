@@ -11,13 +11,13 @@ cd "$PROJECT_DIR"
 
 if [[ -z "$EVENT" ]]; then
   EVENT="$(
-    HOOK_INPUT="$INPUT" python3 - <<'PY'
+    python3 - 3<<<"$INPUT" <<'PY'
 import json
-import os
 
 try:
-    data = json.loads(os.environ.get("HOOK_INPUT", "") or "{}")
-except Exception:
+    with open(3, encoding="utf-8") as stream:
+        data = json.load(stream)
+except ValueError:
     data = {}
 
 print(data.get("hook_event_name", "") if isinstance(data, dict) else "")
@@ -26,17 +26,17 @@ PY
 fi
 
 session_start() {
-  HOOK_INPUT="$INPUT" python3 - "$PROJECT_DIR" "$HOOK_PAYLOAD_MODULE" <<'PY'
+  python3 - "$PROJECT_DIR" "$HOOK_PAYLOAD_MODULE" 3<<<"$INPUT" <<'PY'
 import json
-import os
 import pathlib
 import subprocess
 import sys
 
 project = pathlib.Path(sys.argv[1])
 try:
-    payload = json.loads(os.environ.get("HOOK_INPUT", "") or "{}")
-except Exception:
+    with open(3, encoding="utf-8") as stream:
+        payload = json.load(stream)
+except ValueError:
     payload = {}
 source = payload.get("source", "") if isinstance(payload, dict) else ""
 source = source if isinstance(source, str) else ""
@@ -357,7 +357,7 @@ print(json.dumps({"hookSpecificOutput": {"hookEventName": "PostToolUse",
     "additionalContext": "Post-edit validation failed; fix before committing:\n" + report}}))'
 }
 
-session_end() {
+stop_reminder() {
   python3 - "$PROJECT_DIR" <<'PY' || true
 import json
 import pathlib
@@ -395,13 +395,13 @@ PY
 }
 
 stop_retry_active() {
-  HOOK_INPUT="$INPUT" python3 - <<'PY'
+  python3 - 3<<<"$INPUT" <<'PY'
 import json
-import os
 
 try:
-    payload = json.loads(os.environ.get("HOOK_INPUT", "") or "{}")
-except (TypeError, ValueError):
+    with open(3, encoding="utf-8") as stream:
+        payload = json.load(stream)
+except ValueError:
     payload = {}
 raise SystemExit(0 if isinstance(payload, dict) and payload.get("stop_hook_active") is True else 1)
 PY
@@ -502,7 +502,7 @@ stop() {
   fi
 
   if logical_commit_stop_gate "$git_status"; then
-    session_end
+    stop_reminder
   fi
   return 0
 }
@@ -752,9 +752,6 @@ PreToolUse)
   ;;
 PostToolUse)
   post_tool_use
-  ;;
-SessionEnd)
-  session_end
   ;;
 Stop)
   stop

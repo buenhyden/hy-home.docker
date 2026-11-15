@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.74.0"
+version: "1.75.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -258,6 +258,8 @@ The direct W06-DELIVERY 3.0.0 request adds criterion 133 and W138 in
 TSK-0077 for exact Git delivery inputs and measured stage costs.
 The direct W07-BRIEF 3.0.0 request adds criterion 134 and W139 in
 TSK-0078 for request-bound understanding and scope checks.
+The direct W07-ADAPTER 3.0.0 request adds criterion 135 and W140 in
+TSK-0079 for native hook compatibility and evidence boundaries.
 
 ### Owning Requirements
 
@@ -1084,6 +1086,12 @@ target, backup, recovery boundary, and action-specific authorization.
      Clear authorized work needs no repeated confirmation. Brief records
      and draft references confer no execution authority. Provider limits
      remain visible alongside observed consumption.
+135. TSK-0079 preserves the provider's lifecycle decisions on long event
+     payloads. Each registered event uses its supported interface. Both
+     providers need native delivery, allow and deny observations, including
+     unsupported output handling and reviewer permission boundaries.
+     The Task tracks the real briefing and dispatch entry points and the
+     separate capture and shared memory integration.
 
 ### Evidence Requirements
 
