@@ -1180,20 +1180,22 @@ class DocumentRegistryTests(unittest.TestCase):
                 )
         self.assertEqual((), validate_frontmatter({"parent_ids": []}))
 
-    def test_document_version_is_semver_string_only(self) -> None:
+    def test_document_version_is_numeric_string_only(self) -> None:
         valid = (
             "0.1.0",
             "1.2.3",
             "1.10.0",
             "10.20.30",
+        )
+        # Q03: a document version is three ASCII integers; prerelease and
+        # build metadata belong to product versions only.
+        invalid = (
             "1.0.0-rc.1",
             "1.0.0-0",
             "1.0.0-alpha-beta.1",
             "1.2.3+build.7",
             "1.2.3-rc.1+build.7",
             "1.2.3+001",
-        )
-        invalid = (
             "1.2",
             "01.2.3",
             "1.02.3",
@@ -1222,8 +1224,10 @@ class DocumentRegistryTests(unittest.TestCase):
                 self.assertNotEqual((), validate_frontmatter({"version": version}))
 
     def test_old_and_new_schema_producer_consumer_combinations(self) -> None:
-        # The release-only pattern is the previous consumer; the widening is a
-        # MINOR change: every old-valid value stays valid, only new values differ.
+        # W06 widened the pattern to full SemVer; Q03 narrows it back to the
+        # numeric X.X.X form. Narrowing is breaking in principle: a widened
+        # producer's prerelease or build value is now refused. No tracked
+        # document carries one (TSK-0069), and release-only values stay valid.
         shown = subprocess.run(
             [
                 "git",
@@ -1248,12 +1252,12 @@ class DocumentRegistryTests(unittest.TestCase):
             with self.subTest(producer="old", consumer="new", value=value):
                 self.assertEqual((), validate_frontmatter({"version": value}))
         for value in new_values:
-            with self.subTest(producer="new", consumer="old", value=value):
+            with self.subTest(producer="widened", consumer="old", value=value):
                 self.assertIsNone(old.match(value))
-            with self.subTest(producer="new", consumer="new", value=value):
-                self.assertEqual((), validate_frontmatter({"version": value}))
+            with self.subTest(producer="widened", consumer="current", value=value):
+                self.assertNotEqual((), validate_frontmatter({"version": value}))
 
-    def test_every_schema_version_pattern_is_the_same_semver_pattern(self) -> None:
+    def test_every_schema_version_pattern_is_the_same_numeric_pattern(self) -> None:
         contracts = ROOT / "docs/99.templates/contracts"
         profile = json.loads(
             (contracts / "document-profile.schema.json").read_text(encoding="utf-8")
@@ -1271,9 +1275,22 @@ class DocumentRegistryTests(unittest.TestCase):
             common["common_form_contract"]["pattern"].split("/", 1)[1],
         }
         self.assertEqual(1, len(patterns), patterns)
-        self.assertIn("(?:-", patterns.pop())
+        # Q03: document and contract versions are three ASCII integers only;
+        # prerelease and build extensions belong to product versions.
+        pattern = re.compile("^" + patterns.pop())
+        for value in ("0.1.0", "1.10.0", "10.0.12"):
+            self.assertIsNotNone(pattern.fullmatch(value), value)
+        for value in (
+            "1.0.0-rc.1",
+            "1.0.0+build.7",
+            "01.0.0",
+            "1.0",
+            "1.0.0\n",
+            " 1.0.0",
+        ):
+            self.assertIsNone(pattern.fullmatch(value), repr(value))
 
-    def test_registered_initial_version_is_semver_in_profile_schema(self) -> None:
+    def test_registered_initial_version_is_numeric_in_profile_schema(self) -> None:
         raw = json.loads(
             (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")
         )
@@ -1290,8 +1307,8 @@ class DocumentRegistryTests(unittest.TestCase):
             ("00.1.0", False),
             ("v0.1.0", False),
             ("0.1.0-01", False),
-            ("0.1.0-rc.1", True),
-            ("0.1.0+build.7", True),
+            ("0.1.0-rc.1", False),
+            ("0.1.0+build.7", False),
             ("0.1.0-", False),
             ("0.1.0\n", False),
         ):
