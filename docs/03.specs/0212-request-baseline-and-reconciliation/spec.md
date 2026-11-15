@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.73.0"
+version: "1.74.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -256,6 +256,8 @@ TSK-0076 for unique quality guarantees, closed evidence selection and
 measured document feedback.
 The direct W06-DELIVERY 3.0.0 request adds criterion 133 and W138 in
 TSK-0077 for exact Git delivery inputs and measured stage costs.
+The direct W07-BRIEF 3.0.0 request adds criterion 134 and W139 in
+TSK-0078 for request-bound understanding and scope checks.
 
 ### Owning Requirements
 
@@ -1077,6 +1079,11 @@ target, backup, recovery boundary, and action-specific authorization.
      another path. Retain the required aggregate, tool isolation controls
      and distinct main security evidence, with hosted observations scoped
      to the inputs actually exercised.
+134. TSK-0078 binds the execution brief to the current request, workspace,
+     baseline and exact actions. Material changes invalidate dependent work.
+     Clear authorized work needs no repeated confirmation. Brief records
+     and draft references confer no execution authority. Provider limits
+     remain visible alongside observed consumption.
 
 ### Evidence Requirements
 

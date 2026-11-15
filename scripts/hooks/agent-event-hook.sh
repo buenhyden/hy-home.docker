@@ -39,6 +39,7 @@ try:
 except Exception:
     payload = {}
 source = payload.get("source", "") if isinstance(payload, dict) else ""
+source = source if isinstance(source, str) else ""
 try:
     sys.path.insert(0, str(pathlib.Path(sys.argv[2]).resolve().parents[3]))
     import scripts.lib.hooks.folder_guides as folder_guides
@@ -96,6 +97,15 @@ if source != "startup":
         "and additional spending. Preserve tracked, staged, and untracked state and "
         "keep unrelated work visible.\n"
     )
+    if source in {"compact", "resume"} and isinstance(payload, dict):
+        from scripts.lib.hooks.request_brief import invalidate_request
+
+        invalidate_request(project, payload)
+        message += (
+            "\nReconcile any registered execution brief before the next covered "
+            "edit or delegated write. Read the current binding with "
+            "`python3 -m scripts.lib.hooks.request_brief status SESSION`.\n"
+        )
 
 try:
     if source in folder_guides.RESTART_SOURCES:
@@ -154,6 +164,16 @@ if not isinstance(tool_input, dict):
     tool_input = {}
 
 paths = list(dict.fromkeys(path for path, _ in edits))
+
+if paths and data.get("session_id"):
+    try:
+        from scripts.lib.hooks.request_brief import guard_edits
+
+        reason = guard_edits(project, data, tuple(paths))
+    except Exception:
+        deny_policy_failure("Request brief check could not run for the observed edit.")
+    if reason:
+        deny_policy_failure(reason)
 
 system_messages = []
 additional_context = []
@@ -488,20 +508,27 @@ stop() {
 }
 
 user_prompt_submit() {
-  HOOK_INPUT="$INPUT" python3 - "$PROJECT_DIR" <<'PY'
+  python3 - "$PROJECT_DIR" "$HOOK_PAYLOAD_MODULE" 3<<<"$INPUT" <<'PY'
 import json
-import os
 import pathlib
 import sys
 
 project = sys.argv[1]
-raw = os.environ.get("HOOK_INPUT", "")
+with open(3, encoding="utf-8") as payload_file:
+    raw = payload_file.read()
 
 try:
     data = json.loads(raw) if raw.strip() else {}
 except Exception:
     data = {}
 
+if not isinstance(data, dict):
+    data = {}
+
+sys.path.insert(0, str(pathlib.Path(sys.argv[2]).resolve().parents[3]))
+from scripts.lib.hooks.request_brief import observe_request
+
+binding_context = observe_request(pathlib.Path(project), data)
 prompt = str(data.get("prompt", "")).lower()
 
 # Routing owns keywords only. The skill id derives the canonical path and the
@@ -646,10 +673,12 @@ matched = [
     if any(keyword in prompt for keyword in keywords)
 ]
 
-if not matched:
+if not matched and not binding_context:
     sys.exit(0)
 
-lines = ["Canonical agent function routes that may apply to this prompt:"]
+lines = [binding_context] if binding_context else []
+if matched:
+    lines.append("Canonical agent function routes that may apply to this prompt:")
 for skill_id in matched:
     entry = f"  - **{skill_id}** (`.agents/skills/{skill_id}/SKILL.md`)"
     summary = canonical_summary(skill_id)
@@ -665,13 +694,23 @@ PY
 }
 
 pre_compact() {
-  python3 - "$PROJECT_DIR" <<'PY' || true
+  python3 - "$PROJECT_DIR" "$HOOK_PAYLOAD_MODULE" 3<<<"$INPUT" <<'PY' || true
 import json
 import pathlib
 import subprocess
 import sys
 
 project = pathlib.Path(sys.argv[1])
+sys.path.insert(0, str(pathlib.Path(sys.argv[2]).resolve().parents[3]))
+from scripts.lib.hooks.request_brief import invalidate_request
+
+try:
+    with open(3, encoding="utf-8") as payload_file:
+        payload = json.load(payload_file)
+except ValueError:
+    payload = {}
+if isinstance(payload, dict):
+    invalidate_request(project, {**payload, "source": "compact"})
 
 def run(cmd, fallback="unknown", timeout=3):
     try:

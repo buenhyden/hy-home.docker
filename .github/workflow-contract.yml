@@ -601,6 +601,7 @@
         "tests.validation.test_agent_memory_capacity",
         "tests.validation.test_memory_backup_contract",
         "tests.lib.hooks.test_folder_guides",
+        "tests.lib.hooks.test_request_brief",
         "-v"
       ],
       "cwd": ".",

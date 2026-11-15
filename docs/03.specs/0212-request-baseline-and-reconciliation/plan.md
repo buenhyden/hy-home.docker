@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.73.0"
+version: "1.74.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -192,6 +192,8 @@ W137 in TSK-0076 uses the accepted W00 delta to measure and improve
 quality feedback and preserve distinct candidate guarantees.
 W138 in TSK-0077 uses verified W05 implementation evidence to bind delivery
 checks to the actual candidate and remove avoidable setup.
+W139 in TSK-0078 uses the accepted W01 contract to bind an execution brief
+to observed request inputs, edit scope and the delegation preflight.
 
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
@@ -379,6 +381,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W136 | 131 | Record the Stage 01, 02, 05 and 90 denominator and actual semantic coverage; correct demonstrated mismatches with their sources and preserve implementation obligations | W129 | TSK-0075 | Claim readback, focused synthetic command checks, affected metadata and links, corpus lifecycle, review of high-risk claims |
 | W137 | 132 | Trace delivery and local feedback, preserve unique checks, share immutable inputs, and fail closed on missing or changed required execution | W128 | TSK-0076 | Paired local timing, selection and evidence fixtures, document regressions, independent review |
 | W138 | 133 | Verify installed Git routes, select cumulative PR and final merge paths, align style scope, and avoid unnecessary checkout history where possible | W137 | TSK-0077 | Trace2, real Git fixtures, workflow projection and independent review |
+| W139 | 134 | Bind a brief to the request, compare exact actions and stop stale dependent work | W129 | TSK-0078 | Provider-shaped hook fixtures, explicit delegation preflight and independent review |
 
 #### Current v30 continuation and delivery
 
