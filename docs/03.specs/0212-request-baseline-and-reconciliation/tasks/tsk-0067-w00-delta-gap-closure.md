@@ -1,8 +1,8 @@
 ---
 title: "W00 Delta Gap Closure Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-15"
 layer: "specs"
@@ -150,6 +150,7 @@ local feedback cost for D-05 (W05-GATES).
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0067 | draft | ready | #inputs-and-authority |
 | SPEC-0212-TSK-0067 | ready | in-progress | #audit-of-tsk-0066-against-the-prompt |
+| SPEC-0212-TSK-0067 | in-progress | completed | #criterion-decisions |
 
 ### Blockers and Decisions
 
@@ -180,7 +181,7 @@ None.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 123 | pending | Gap audit, PR diff review | Awaiting owner acceptance | SPEC-0212 TSK-0067 |
+| 123 | accepted | Gap audit, PR diff review | Owner @buenhyden accepted on 2026-11-15 in this chat | SPEC-0212 TSK-0067 |
 
 ### Remaining Conditions
 

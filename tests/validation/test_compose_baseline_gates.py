@@ -2391,7 +2391,7 @@ python3() {
                     self.assertTrue((staging / "agent-memory.sqlite3").exists())
                 elif case == "capacity":
                     # Only the capacity refusal (exit 4) is a warning: the
-                    # saturated SPEC-0270 ledger must not fail the whole run.
+                    # saturated memory capacity ledger must not fail the whole run.
                     self.assertEqual(0, result.returncode)
                     self.assertIn("capacity", result.stderr)
                     self.assertFalse((staging / "agent-memory.sqlite3").exists())

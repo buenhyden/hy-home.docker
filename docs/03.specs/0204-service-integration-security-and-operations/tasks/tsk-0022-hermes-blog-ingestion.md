@@ -1,8 +1,8 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.5.20"
+version: "0.6.0"
 type: "sdlc/task"
-status: "draft"
+status: "in-progress"
 owner: "@buenhyden"
 updated: "2026-11-15"
 layer: "specs"
@@ -1804,6 +1804,18 @@ was installed with `deploy/update-hermes-plugin.sh`. The listener is on loopback
 `/crawl` without a token returned 401 and the LAN address refused. The installed code
 fetched a URL the native fetcher refused with `status`, 30,513 characters, hash valid.
 A scheduled run through the fallback is NOT_RUN until the next 08:00 KST.
+
+#### Lifecycle Events
+
+Recorded on 2026-11-15 (SPEC-0212 TSK-0070): the owner's 2026-10-30
+request authorized this work under the approved Spec and Plan, and work
+started that day, but the status stayed `draft`. The status now follows the
+work it records; no criterion changes.
+
+| Artifact | From | To | Evidence |
+| --- | --- | --- | --- |
+| SPEC-0204-TSK-0022 | draft | ready | #inputs-and-authority |
+| SPEC-0204-TSK-0022 | ready | in-progress | #source-admission |
 
 ### Blockers and Decisions
 

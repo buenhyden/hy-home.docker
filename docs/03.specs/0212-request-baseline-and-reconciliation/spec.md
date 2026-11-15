@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.66.0"
+version: "1.67.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -241,7 +241,8 @@ CI, release and delivery contract. The W00-DELTA run of the 3.0.1 package on
 2026-11-15 adds criterion 122 and W127 in TSK-0066, and its gap audit the same
 day adds criterion 123 and W128 in TSK-0067. The W01-CONTRACT run of the
 same day adds criterion 124 and W129 in TSK-0068, and its gap audit adds
-criterion 125 and W130 in TSK-0069.
+criterion 125 and W130 in TSK-0069. The W02-DISPOSITION run of the same day
+adds criterion 126 and W131 in TSK-0070.
 
 ### Owning Requirements
 
@@ -1023,6 +1024,11 @@ target, backup, recovery boundary, and action-specific authorization.
      consumers and enforcement recorded; document and contract versions are
      three integers only, as Q03 and the shared vocabulary require, with
      product versions unchanged; and fit and violation cases are recorded.
+126. TSK-0070 runs the 3.0.1 W02-DISPOSITION for this workspace: every
+     open Task has a class, a remaining item and an owner; only the owner's
+     per-item withdrawals change a criterion; no unfinished work is deleted
+     or marked completed; closed audit questions stay inactive; and the final
+     cutover targets are listed without being changed.
 
 ### Evidence Requirements
 

@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Contract Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -494,11 +494,15 @@ None: nothing was recorded here before this Task moved to the common form.
 | 1 | accepted | E49 | owner request 2026-11-05; PASS, no unresolved required row | @buenhyden |
 | 2 | accepted | E50 | owner request 2026-11-05; PASS, no unresolved required row | @buenhyden |
 | 4 | accepted | E28, E29, E30, E31, E32, E33, E37, E67 | owner request 2026-11-05; PASS, E27 resolved by E67 | @buenhyden |
-| 5 | pending | E13, E15, E18, E19, E20, E22, E24, E26, E52, E63, E64, E65, E66 | open: E25, E54 (postgresql-ha resources FAIL); owner keeps it pending, 2026-11-06 | @buenhyden |
+| 5 | not-required | E13, E15, E18, E19, E20, E22, E24, E26, E52, E63, E64, E65, E66 | Not required: owner @buenhyden withdrew this criterion on 2026-11-15 (SPEC-0212 TSK-0070), because the owner decided on 2026-11-06 that no LAB is promoted. E25 and E54 stay recorded as resource measurements, not as a promotion request | @buenhyden |
 | 6 | accepted | E29, E30, E31, E32, E33, E34, E37, E69 | owner request 2026-11-05; PASS, E35 resolved by E69 | @buenhyden |
 | 7 | pending | E1, E38, E40, E42, E43, E44, E45, E46, E55, E56, E57, E59 | open: E39 (example inputs empty by owner decision), E47 (local CI gate, Python 3.14.8) | @buenhyden |
 
 ### Remaining Conditions
+
+On 2026-11-15 the owner withdrew criterion 5 as not-required, citing the
+2026-11-06 decision that no LAB is promoted (SPEC-0212 TSK-0070). Criterion
+7 and the owner items below stay open.
 
 The final review fix wave (E49 to E58) re-ran the checks at `4bec12fa2`.
 Readiness now shows the unmeasured section 5 sub-checks as `NOT_RUN`, a

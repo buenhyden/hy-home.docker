@@ -1,8 +1,8 @@
 ---
 title: "W01 Contract 3.0.1 Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-15"
 layer: "specs"
@@ -135,6 +135,7 @@ repository's adoption.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0068 | draft | ready | #inputs-and-authority |
 | SPEC-0212-TSK-0068 | ready | in-progress | #design-summary |
+| SPEC-0212-TSK-0068 | in-progress | completed | #criterion-decisions |
 
 ### Blockers and Decisions
 
@@ -170,7 +171,7 @@ Template version GREEN, and Independent review by Independent re-review.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 124 | pending | Vocabulary GREEN, Template version GREEN, Governance contract, Renderer parity, Independent re-review | Awaiting owner acceptance | SPEC-0212 TSK-0068 |
+| 124 | accepted | Vocabulary GREEN, Template version GREEN, Governance contract, Renderer parity, Independent re-review | Owner @buenhyden accepted on 2026-11-15 in this chat; D-13 was resolved in TSK-0069 | SPEC-0212 TSK-0068 |
 
 ### Remaining Conditions
 

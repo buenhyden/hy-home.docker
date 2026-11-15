@@ -1,8 +1,8 @@
 ---
 title: "W01 Gap Closure Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-15"
 layer: "specs"
@@ -134,6 +134,7 @@ difference follows the leaves the changed paths select.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0069 | draft | ready | #inputs-and-authority |
 | SPEC-0212-TSK-0069 | ready | in-progress | #audit-of-tsk-0068-against-the-prompt |
+| SPEC-0212-TSK-0069 | in-progress | completed | #criterion-decisions |
 
 ### Blockers and Decisions
 
@@ -162,7 +163,7 @@ Version profile RED is resolved by Version profile GREEN.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 125 | pending | Version profile GREEN, Active documents, Gap audit, Independent review, PR 1038 hosted | Awaiting owner acceptance | SPEC-0212 TSK-0069 |
+| 125 | accepted | Version profile GREEN, Active documents, Gap audit, Independent review, PR 1038 hosted | Owner @buenhyden accepted on 2026-11-15 in this chat; review finding L1 stays with W03-VERSION | SPEC-0212 TSK-0069 |
 
 ### Remaining Conditions
 
