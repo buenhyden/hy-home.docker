@@ -1,6 +1,6 @@
 ---
 title: "W02 Disposition 3.0.1 Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -43,6 +43,28 @@ not-required (Q04). Remote history removal and renumbering are not run here
 ## Execution Log
 
 ### Work Performed
+
+#### Design summary
+
+| Item | Content |
+| --- | --- |
+| Designs | D00, D14, D15, bundle 3.0.1; sources S03 to S07, S25, S27, S28 |
+| Target | Each open obligation stays with one owner or ends by the owner's per-item withdrawal; nothing unfinished is deleted or marked completed; the cutover is prepared, not run |
+| Choice | Classify from each Task's own criteria and evidence; change only what a confirmed decision or the owner settles |
+| Rejected | Closing Tasks by status edits; deleting the supabase secret or other user data here (secret actions need their own approval); rewriting remote history now (Q01, Q10 run in Q07-CUTOVER) |
+| Interface | Criterion Decisions rows, Lifecycle Events tables, Remaining Conditions notes |
+| Risk | Low: Task records and one test comment; focused checks and an author check |
+| Sources applied | S25: removing managed refs is separate from residues such as PR refs and outside clones, which the cutover list reports. S28: a worktree isolates files only, so it is not counted as an isolated environment |
+
+#### Read scope
+
+Listed: every Task in the eight open Spec packages. Read: frontmatter,
+objective, lifecycle, Criterion Decisions, Remaining Conditions and Next
+Owner of each open Task (by three read-only agents), and the cited lines
+the author re-checked: SPEC-0263 TSK-0001 and TSK-0002 decisions and rows,
+SPEC-0212 TSK-0007 lifecycle, the Next Owner headings of five SPEC-0212
+Tasks, SPEC-0204 TSK-0022 authority and headings, and tracked references to
+`supabase_password`. Not read: the full bodies of the open Tasks.
 
 #### Open Task dispositions
 
@@ -90,6 +112,13 @@ or blocking. No retired package (SPEC-0251, 0253, 0254, 0256, 0257, 0259,
 0261, 0270) is regenerated. The unmet SPEC-0270 criterion 2 stays handed to
 W08-MEMORY (TSK-0067 D-11).
 
+#### Retired package consumers
+
+A search of `scripts/`, `tests/`, `.github/` and `docs/99.templates/` for
+the retired Spec numbers found one stale test comment naming SPEC-0270
+(`test_compose_baseline_gates.py:2394`); it now names the memory capacity
+ledger. No caller, fixture or registration reads a retired package.
+
 #### Final cutover targets
 
 Prepared only; nothing below is changed here. Q07-CUTOVER confirms each
@@ -108,6 +137,12 @@ recovery copy (Q10).
 | Local worktrees | 1 | `main` only |
 | Spec packages | 8 open (0204, 0212, 0218, 0244, 0245, 0255, 0262, 0263) | Close or withdraw each before renumbering (Q02) |
 | `_workspace/` | `diagnostics/`, `governance/`, `repo-support/` | Git-ignored; removed after acceptance |
+
+#### Latency
+
+Local: lifecycle and metadata checks finished within a minute each. Hosted
+candidate times for this pull request are recorded when its checks finish;
+document-only pull requests 1036 and 1037 took 3 to 6 minutes.
 
 #### Lifecycle Events
 
