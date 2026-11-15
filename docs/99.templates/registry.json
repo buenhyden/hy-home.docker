@@ -6231,7 +6231,7 @@
       ],
       "applicability": "Applies to every file the adr profile owns: docs/02.architecture/decisions/{number:4}-{slug}.md.",
       "relationships": [
-        "parent_ids may name a Requirement Package or Architecture Description; supersedes and superseded_by keep reciprocal lineage."
+        "parent_ids may name a Requirement Package or Architecture Description."
       ],
       "consumer_paths": [
         "scripts/lib/document_governance/registry.py",
@@ -8659,14 +8659,17 @@
         250,
         252,
         253,
+        257,
         258,
         260,
+        261,
         264,
         265,
         266,
         267,
         268,
-        269
+        269,
+        270
       ],
       "child_spaces": {}
     },

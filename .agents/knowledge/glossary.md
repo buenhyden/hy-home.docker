@@ -1,10 +1,10 @@
 ---
 title: "Repository Vocabulary"
-version: "0.8.1"
+version: "0.8.2"
 type: "governance/vocabulary"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-15"
 created: "2026-09-06"
 observed_at: "2026-11-13"
 review_cycle: "on-contract-change"
@@ -136,7 +136,7 @@ enforced.
 | Constraint | The `rel.constraint` relation: a Requirements package, Architecture description, ADR or Spec names in `parent_ids` the document that constrains it | Structural Ownership | [Documentation protocol](../governance/documentation-protocol.md#link-types-and-document-relations) |
 | Change Impact | The `rel.change-impact` relation from an owner to its consumers, derived from Authority, Constraint and Structural Ownership when a document is removed or moved; no document records it | A hand-kept reverse-state table | [Documentation protocol](../governance/documentation-protocol.md#link-types-and-document-relations) |
 | Traceability heading | A Stage 01 to 03 section that holds a document's basis and supersession records | The `rel.traceability` relation, which a Task's evidence rows and links write | [Documentation protocol](../governance/documentation-protocol.md#link-types-and-document-relations) |
-| Promote (older Specs and labs) | In SPEC-0259 and SPEC-0261, moving a draft operations document to `active` after it matched the source; in SPEC-0263, moving a lab workload into the managed stack under its `promotion.yaml` and the lab promotion policy | The common Promotion term, which hands lasting meaning to its owner through a Plan | [SDLC](../governance/sdlc.md#sequence) |
+| Promote (older Specs and labs) | In SPEC-0259 and SPEC-0261 (retired), moving a draft operations document to `active` after it matched the source; in SPEC-0263, moving a lab workload into the managed stack under its `promotion.yaml` and the lab promotion policy | The common Promotion term, which hands lasting meaning to its owner through a Plan | [SDLC](../governance/sdlc.md#sequence) |
 
 ## Maintenance
 
