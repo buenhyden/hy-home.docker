@@ -4075,9 +4075,9 @@ class VocabularyContractTests(unittest.TestCase):
 
     def test_the_glossary_matches_the_pinned_contract(self) -> None:
         contract = self.common["vocabulary_contract"]
-        self.assertEqual(41, len(contract["terms"]))
-        self.assertEqual("1.1.0", contract["version"])
-        self.assertEqual("v14.5", contract["source_label"])
+        self.assertEqual(43, len(contract["terms"]))
+        self.assertEqual("3.0.1", contract["version"])
+        self.assertEqual("3.0.1", contract["source_label"])
         self.assertEqual([], self.codes())
 
     def test_a_package_label_is_not_a_contract_version(self) -> None:
@@ -4100,7 +4100,7 @@ class VocabularyContractTests(unittest.TestCase):
 
     def test_a_wrong_contract_version_is_rejected(self) -> None:
         text = re.sub(
-            r"(^\| TERM-TASK \|.*\| )1\.1\.0( \|)$",
+            r"(^\| TERM-TASK \|.*\| )3\.0\.1( \|)$",
             r"\g<1>1.0.0\2",
             self.text,
             flags=re.MULTILINE,
@@ -4111,10 +4111,30 @@ class VocabularyContractTests(unittest.TestCase):
     def test_an_extra_common_row_is_rejected(self) -> None:
         text = self.text.replace(
             "| TERM-KEEP |",
-            "| TERM-LOCAL | Local | x | y | z | 1.1.0 |\n| TERM-KEEP |",
+            "| TERM-LOCAL | Local | 지역 | x | y | z | 3.0.1 |\n| TERM-KEEP |",
             1,
         )
         self.assertIn("vocabulary-term-unregistered", self.codes(text))
+
+    def test_a_row_without_the_korean_column_is_rejected(self) -> None:
+        text = re.sub(
+            r"^(\| TERM-TASK \| Task \| )[^|]+\| ",
+            r"\1",
+            self.text,
+            flags=re.MULTILINE,
+        )
+        self.assertNotEqual(self.text, text)
+        self.assertIn("vocabulary-row-width", self.codes(text))
+
+    def test_an_empty_korean_cell_is_rejected(self) -> None:
+        text = re.sub(
+            r"^(\| TERM-TASK \| Task \| )[^|]+\|",
+            r"\1 |",
+            self.text,
+            flags=re.MULTILINE,
+        )
+        self.assertNotEqual(self.text, text)
+        self.assertIn("vocabulary-korean-missing", self.codes(text))
 
     def test_out_of_order_rows_are_rejected(self) -> None:
         lines = self.text.splitlines(keepends=True)

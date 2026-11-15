@@ -1001,6 +1001,10 @@
         "meaning": "The term as written.",
         "data_type": "string"
       },
+      "Korean": {
+        "meaning": "The shared contract's Korean label for the term.",
+        "data_type": "string"
+      },
       "Definition": {
         "meaning": "What the term means in this repository.",
         "data_type": "string"
@@ -1300,9 +1304,9 @@
     },
     "vocabulary_contract": {
       "contract_id": "repository-vocabulary",
-      "version": "1.1.0",
-      "source_label": "v14.5",
-      "source_sha256": "b03ae3c00a4228de90d90b48c9a7af4b716492651d83b6deab128d9e3bc92fce",
+      "version": "3.0.1",
+      "source_label": "3.0.1",
+      "source_sha256": "a8f595f543f380f992a20a52886d0cc2b4f340c47a449537d2f90ec082f39dfb",
       "glossary_path": ".agents/knowledge/glossary.md",
       "terms": [
         {
@@ -1406,10 +1410,6 @@
           "term": "Resolves"
         },
         {
-          "term_id": "TERM-HISTORICAL-AUDIT",
-          "term": "Historical Audit ID"
-        },
-        {
           "term_id": "TERM-HARNESS",
           "term": "Harness"
         },
@@ -1468,6 +1468,18 @@
         {
           "term_id": "TERM-BASELINE-NAMESPACE",
           "term": "Baseline Namespace"
+        },
+        {
+          "term_id": "TERM-DRAFT",
+          "term": "Draft"
+        },
+        {
+          "term_id": "TERM-READINESS",
+          "term": "Readiness"
+        },
+        {
+          "term_id": "TERM-DESIGN-FIT",
+          "term": "Design Fitness"
         }
       ]
     }
