@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.62.2"
+version: "1.63.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -178,7 +178,7 @@ derives reverse lookups and Change Impact (the TSK-0062 GAP). W124 in the same
 Task removes the six packages the readiness report lists, with the owner's
 approval. W125 closes the W05-primary QA cases the conformance audit found
 open. W126 in TSK-0065 runs v14.7 W06: Git hooks, CI shards, release and
-delivery.
+delivery. W127 in TSK-0066 runs the 3.0.1 W00-DELTA baseline and verdicts.
 
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
@@ -354,6 +354,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W124 | 119 | Remove SPEC-0248, 0249, 0250, 0260, 0264 and 0265 under the retirement preconditions: Promotion Receipt per package, lineage in the Stage 01 and 02 owners, consumers updated, numbers reserved, last commit and reachability recorded | W123 | TSK-0064 | Corpus lifecycle, links alignment and commands, metadata check-changed, governance contract, script manifest, unit regression |
 | W125 | 120 | Gate crosswalk and typed `guarantee` (QA-C05); PASS reuse bound to lock digests and the Grype database identity (QA-C07); staged-index tests named (QA-C08); full SemVer 2.0.0 with precedence comparison; local timing baseline (QA-08); version-object inventory columns | W124 | TSK-0064 | RED and GREEN gate, evidence, release and Registry tests, workflow-contract and manifest checks, independent review, remote candidates |
 | W126 | 121 | Bind the twelve Git action cells; shard hosted CI under one aggregate `candidate-quality` and wire the ten W05 leaves; allow Git automatic merge subjects; test the commit-msg hook, staged filenames and hook installation; refuse release downgrades; state the review path and no-model-API scope; apply the approved SHA pinning and immutable releases; record W06 verdicts | W125 | TSK-0065 | RED and GREEN gate, adapter, release and hook tests, workflow-contract and manifest checks, remote read-back, independent review, remote candidates |
+| W127 | 122 | Record the 3.0.1 W00-DELTA baseline, the pull requests since criterion 121, a verdict per docker-profile item and one receiving work unit per remaining difference | W126 | TSK-0066 | Source review with read scope, package structure check, metadata, links and lifecycle checks |
 
 #### Current v30 continuation and delivery
 
@@ -762,6 +763,7 @@ Receipt records each target.
 - [v14.7 W04 SDLC and promotion](tasks/tsk-0063-w04-sdlc-promotion.md)
 - [v14.7 W05 validator alignment](tasks/tsk-0064-w05-validator-alignment.md)
 - [v14.7 W06 Git, CI and release](tasks/tsk-0065-w06-git-ci-release.md)
+- [3.0.1 W00 delta](tasks/tsk-0066-w00-delta-3-0-1.md)
 - [Existing supply-chain evidence owner](tasks/tsk-0052-supply-chain-evidence.md)
 - [Workspace inventory Task](tasks/tsk-0040-workspace-inventory.md)
 - [Opsflow data path Task](tasks/tsk-0043-opsflow-data-path.md)
