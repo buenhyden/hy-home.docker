@@ -519,6 +519,7 @@ class VersionChangeTests(unittest.TestCase):
         head: str | None,
         *,
         tracked: bool = True,
+        artifact_type: str = "x",
         head_body: str = "# Fixture changed\n",
         head_extra: dict[str, object] | None = None,
         base_extra: dict[str, object] | None = None,
@@ -539,7 +540,7 @@ class VersionChangeTests(unittest.TestCase):
             base_ref = git(root, "rev-parse", "HEAD").stdout.strip()
             values = {} if head is None else {"version": head, **(head_extra or {})}
             write_doc(root / self.DOC, values, head_body)
-            record = Record(self.DOC, values, "x")
+            record = Record(self.DOC, values, artifact_type)
             return version_module.version_change_findings(
                 root, {self.DOC.as_posix(): record}, base_ref
             )
@@ -630,6 +631,16 @@ class VersionChangeTests(unittest.TestCase):
             head_extra={"owner": "@b"},
         )
         self.assertEqual("version-unchanged", finding.code)
+
+    def test_a_template_source_keeps_its_initial_version(self) -> None:
+        # A template must stay at the registered initial version
+        # (invalid-template-version), so a body edit never asks it to rise.
+        self.assertEqual(
+            [], self.findings("0.1.0", "0.1.0", artifact_type="template-source")
+        )
+        # A lower version is still a downgrade.
+        (finding,) = self.findings("0.2.0", "0.1.0", artifact_type="template-source")
+        self.assertEqual("version-downgrade", finding.code)
 
     def test_new_document_or_missing_or_malformed_version_is_not_compared(
         self,
