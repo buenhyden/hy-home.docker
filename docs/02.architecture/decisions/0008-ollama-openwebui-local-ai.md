@@ -87,4 +87,3 @@ The confirming evidence for this decision is limited to the Architecture Descrip
 
 - **PRD**: [009-ai.md](../../01.requirements/0009-ai.md)
 - **Architecture Description**: [0008-ai-architecture.md](../descriptions/0008-ai-architecture.md)
-- **Architecture Description**: [AD-0008 AI Infrastructure Architecture Description](../descriptions/0008-ai-architecture.md)

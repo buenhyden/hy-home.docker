@@ -99,4 +99,3 @@ The confirming evidence for this decision is limited to the Architecture Descrip
 
 - **PRD**: [008-workflow.md](../../01.requirements/0008-workflow.md)
 - **Architecture Description**: [0007-workflow-architecture.md](../descriptions/0007-workflow-architecture.md)
-- **Architecture Description**: [AD-0007 Workflow Tier (07-workflow) Architecture Description](../descriptions/0007-workflow-architecture.md)
