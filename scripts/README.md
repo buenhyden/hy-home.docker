@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.5.7"
+version: "1.5.8"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 created: "2026-02-21"
 ---
 
@@ -343,12 +343,11 @@ active stage 점유 결과를 함께 보고합니다. Stage 98에 대한 검사�
 실행합니다. 실행 가능한 테스트 인벤토리는 `tests/validation/lifecycle/` 아래
 네 개 책임 모듈이며, legacy 통합본이나 redirect는 남아 있지 않습니다.
 
-`scripts/validation/run-agent-precommit-all-files.sh`는
-`pre-commit run --all-files`용으로 승인된 유일한 agent entrypoint입니다.
-승인된 최종 QA 게이트에서 실행하며 초기 상태가 깨끗한 linked worktree에서 tracked된
-`docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` 경로 하나와 저장소 상대
-경로인 `--allow-prefix` 값 하나 이상을 함께 넘깁니다. all-files를 직접
-실행하는 것은 금지됩니다. 이 wrapper는 훅 출력을 임시 파일에 담고 보고하는 것은 명령,
+`scripts/validation/run-agent-precommit-all-files.sh`는 전체 파일 대상 pre-commit 실행을
+위한 승인된 wrapper입니다. 승인된 최종 QA 게이트에서 초기 상태가 깨끗한 linked worktree에서
+tracked된 `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` 경로 하나와 저장소 상대
+경로인 `--allow-prefix` 값 하나 이상을 함께 넘겨 실행합니다. agent 실행 규칙은
+[scripts/AGENTS.md](AGENTS.md)가 정합니다. 이 wrapper는 훅 출력을 임시 파일에 담고 보고하는 것은 명령,
 prefix, 훅 exit, 값이 없는 first-failure 결과, 변경 전/후/새로 변경된
 Git-visible 경로뿐입니다. 실행이 성공하면 `first_failure=not_applicable`을
 보고합니다. 훅 exit이 0이 아니면 튜플을 최대 하나 보고합니다. 이 튜플에는 정확하고

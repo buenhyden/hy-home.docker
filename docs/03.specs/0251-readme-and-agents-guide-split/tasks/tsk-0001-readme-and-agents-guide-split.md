@@ -78,6 +78,10 @@ progress under the approved parents. Hosted CI has not run.
   reading the folder guide, and no folder `CLAUDE.md` pointer is added. Codex
   documents a root-to-working-directory merge of `AGENTS.md`, not observed
   here.
+  Correction 2026-11-15: the "no folder `CLAUDE.md` pointer" statement is
+  superseded; each folder `AGENTS.md` now has a generated `CLAUDE.md` import shim
+  (for example `docs/03.specs/CLAUDE.md`) that the provider surface renderer
+  writes. The original sentence stays as history.
 - SPEC-0251 follows SPEC-0250, which #725 merged; after the coordinator's
   rebases onto main c5ec612ff and then cb7c324d3 (with #727) the Spec
   high-water is 251 and the index lists both.

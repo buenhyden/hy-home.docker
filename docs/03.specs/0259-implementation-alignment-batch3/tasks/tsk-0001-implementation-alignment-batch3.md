@@ -79,6 +79,8 @@ progress under the approved parents. Hosted CI has not run.
   its own text that it is a draft recording the audit scope, so AD-0031 and
   AD-0032 (parent REQ-0027) and every Stage 05 document under AD-0031 stay
   draft.
+  Update 2026-11-15: POL/GDE/RUN-0086, -0087 and -0100 are now active; the
+  statement above is kept as the history of this change.
 
 #### Promoted (draft to active, minor version bump, 2026-11-04)
 
@@ -97,6 +99,7 @@ runbook 0098, plus ADR-0038 (accepted). 30 Stage 05 documents in total.
 
 - Left draft because of the parent chain (REQ-0027 draft): REQ-0027, AD-0031,
   AD-0032, POL/GDE/RUN-0087, POL/GDE/RUN-0086, POL/GDE/RUN-0100.
+  Update 2026-11-15: 0086, 0087 and 0100 are now active.
   GDE-0100 is also edited by open PR #736 and is untouched here.
 - Decision needed from the owner: approve REQ-0027 (its scope text calls it a
   draft and backup/restore, OpenBao bootstrap and resource acceptance are not
