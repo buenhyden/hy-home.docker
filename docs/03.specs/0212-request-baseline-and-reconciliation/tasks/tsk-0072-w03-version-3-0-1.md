@@ -1,6 +1,6 @@
 ---
 title: "W03 Version 3.0.1 Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -91,6 +91,28 @@ On 2026-11-16, a paired Python 3.12.3 timing sample compared the
 seconds after. The pair exercises numeric component ordering and
 numeric product prerelease ordering.
 
+#### Pre-1.0 compatibility alignment
+
+The repeated W03-VERSION request starts at `efdf08f92`. D02 3.0.1
+requires MAJOR for a previously valid producer or consumer that breaks.
+The Version objects section already says so. The authoring section of
+the same policy still instead directs authors below 1.0.0 to use MINOR
+for breaking changes. Route authors to Version objects and apply the
+same compatibility decision to 0.x versions. Keep the initial 0.1.0
+template pin. Record the owner's approval of the exact revision in the
+lifecycle. An approval-only transition keeps its content version.
+
+The policy advances from 6.0.0 to 7.0.0 because an author following the
+former 0.x exception could submit a breaking MINOR increase. Approval
+alone also ceases to require a jump to 1.0.0.
+For a breaking change from 0.4.2 the new rule requires 1.0.0 and
+rejects 0.5.0. For a compatible addition it requires 0.5.0, and for
+a correction preserving the consumer contract it requires 0.4.3.
+An approval-only transition of 0.4.2 keeps 0.4.2.
+Review the cases against the policy. Reuse the existing numeric
+precedence checker and keep its output, schema and product domain.
+Reverting this source unit restores the former policy text.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -127,6 +149,11 @@ retains the older comparison grammar at the historical boundary.
 | Standalone metadata | 128 | W133 | metadata | check-document-metadata.py --mode check-changed --base-ref HEAD with the policy and this Task selected | PASS | Base 0386a1f90, 2 documents and 0 violations, exit 0 | required | - |
 | Standalone review finding | 128 | W133 | standalone-review | Initial comparator, compatibility policy and schema test diff | FAIL | The test could miss a deleted schema start anchor | required | - |
 | Standalone review resolution | 128 | W133 | standalone-review | Raw schema pattern parity and the prefixed input case | PASS | Rules-engineer approved the fix. Both focused schema tests passed and a missing anchor mutation was detected | required | Standalone review finding |
+| Pre-1.0 review finding | 128 | W133 | pre-one-review | First policy reconciliation | FAIL | Mandatory 1.0.0 on approval changed content version without a compatibility change | required | - |
+| Pre-1.0 review resolution | 128 | W133 | pre-one-review | Version objects rules and the four cases from 0.4.2 | PASS | Rules-engineer confirmed the compatibility classes and approval of the exact revision | required | Pre-1.0 review finding |
+| Version recheck | 128 | W133 | version-regression | test_semver, metadata VersionChangeTests, the Registry syntax pair, the TemplateDefinition binding pair and test_release on efdf08f92 | PASS | 53 tests, exit 0 | required | - |
+| Fixture recheck | 128 | W133 | version-fixtures | Bundled values in Python, five schema rules and Node plus the Registry at 17bbde05a | PASS | 24 cases per reader and no historical Registry violations, exit 0 | required | - |
+| Policy alignment checks | 128 | W133 | policy-alignment | Governance contract, document link alignment and change metadata for the policy and this Task | PASS | Governance and links had no failures. Metadata selected 2 and reported 0 violations in 224.48 seconds | required | - |
 
 ### Resolution Links
 

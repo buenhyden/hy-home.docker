@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "6.0.0"
+version: "7.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -209,12 +209,8 @@ its hosted CI route is not wired yet. Existing links are not retyped by this rul
    carries the `family/kind` document role, so a reader learns a document's
    family without resolving its path. `title` never repeats the artifact
    identity, because the identity is already a field. A new document starts its
-   `version` at `0.1.0`; approval of its first stable contract promotes it to
-   `1.0.0`. Patch, minor, and major increments communicate compatible correction,
-   compatible meaning growth, and incompatible contract change respectively.
-   Below `1.0.0` a breaking or feature change raises the minor and a
-   compatible correction the patch; `1.0.0` marks the owner's explicit
-   approval of a stable contract, never a renumbering. A changed document's
+   `version` at `0.1.0`. Choose the increment under
+   [Version objects](#version-objects). A changed document's
    `version` has higher numeric precedence than the same path at the merge
    base: `check-document-metadata.py --mode check-changed` reports
    `version-unchanged` for equal precedence and `version-downgrade` for lower
@@ -502,6 +498,11 @@ when they are part of the contract.
   if the old interface breaks.
 - **MINOR** for a compatible addition. Reset PATCH to zero.
 - **PATCH** for a correction that preserves the consumer contract.
+
+The same rules apply to `0.x` versions. Apply them to the proposed
+content before submitting that revision for approval. Record the owner's
+approval of that revision through the document's lifecycle. An
+approval limited to lifecycle metadata keeps the content version.
 
 Record the affected consumer and the compatibility evidence in the current
 Task. An accepted contract change receives its own revision. A new
