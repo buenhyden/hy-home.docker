@@ -30,7 +30,7 @@ created: "{{CREATED}}"
 
 ### Inputs and Authority
 
-<!-- Author prompt: Name the Spec criteria, the Plan work units and the authority this Task works under. An authorization grants no operation by being named here. -->
+<!-- Author prompt: Name the Spec criteria, Plan work units, request identity and revision supplied by the trusted origin or unknown, authorization source, exact scope and current applicability. Record a changed, expired or withdrawn binding before resuming affected work. Naming an authorization here only records it. -->
 
 {{INPUTS_AND_AUTHORITY}}
 

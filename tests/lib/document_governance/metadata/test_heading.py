@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import datetime
 import json
 import os
@@ -909,6 +910,60 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
                         }
                         & {item.code for item in findings}
                     )
+
+    def test_prose_placeholders_cannot_enter_approved_spec(self) -> None:
+        markers = (
+            "TODO",
+            "- **TODO:** Confirm the implementation.",
+            "Deployment target: **TBD**.",
+            "**TO**DO: Confirm scope.",
+            "TO<!-- reviewer note -->DO: Name the exact target.",
+            "Target owner: T**B**D.",
+        )
+        for status in ("draft", "in-review", "approved"):
+            record = dataclasses.replace(
+                self.spec_record,
+                metadata={**self.spec_record.metadata, "status": status},
+            )
+            for marker in markers:
+                with self.subTest(status=status, marker=marker):
+                    findings = heading_module.validate_body_contract(
+                        record, self.spec_text + f"\n\n{marker}\n", self.profiles, False
+                    )
+                    codes = {item.code for item in findings}
+                    self.assertEqual(
+                        status == "approved", "effective-body-placeholder" in codes
+                    )
+
+    def test_effective_prose_keeps_examples_and_future_work(self) -> None:
+        text = self.spec_text + (
+            "\n\n<!-- TODO: Hidden example. -->\n\n"
+            "```markdown\nTODO: Fenced example.\n```\n\n"
+            "> - TODO: Quoted example.\n\n"
+            "    TODO: Indented example.\n\n"
+            "`TODO:` is the rule's example marker.\n\n"
+            "TO<br>DO: These are separate visible lines.\n\n"
+            "The dependent pull request is TBD.\n\n"
+            "The chosen deployment target is the read-only test host.\n"
+        )
+        findings = heading_module.validate_body_contract(
+            self.spec_record, text, self.profiles, False
+        )
+        self.assertNotIn("effective-body-placeholder", {item.code for item in findings})
+
+    def test_active_policy_rejects_unresolved_prose(self) -> None:
+        path = pathlib.Path(".agents/governance/documentation-protocol.md")
+        text = (ROOT / path).read_text(encoding="utf-8")
+        record = metadata.Record(
+            path,
+            parse_frontmatter_text(text),
+            classify_path(path.as_posix(), self.profiles["_registry"]),
+            frontmatter_present=True,
+        )
+        findings = heading_module.validate_body_contract(
+            record, text + "\n\nSource owner: TBD.\n", self.profiles, False
+        )
+        self.assertIn("effective-body-placeholder", {item.code for item in findings})
 
     def test_current_non_sdlc_authored_document_rejects_residue(self) -> None:
         path = pathlib.Path(".agents/governance/documentation-protocol.md")

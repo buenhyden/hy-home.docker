@@ -3032,20 +3032,32 @@ class HookOutputAndMainPushTests(unittest.TestCase):
                         message,
                     )
 
-    def test_session_start_context_reaches_the_model(self) -> None:
-        for source in ("startup", "compact"):
-            with self.subTest(source=source):
-                result = self._event("SessionStart", {"source": source})
-                self.assertEqual(0, result.returncode, result.stderr)
-                output = json.loads(result.stdout)
-                self.assertNotIn("systemMessage", output)
-                specific = output["hookSpecificOutput"]
-                self.assertEqual("SessionStart", specific["hookEventName"])
-                self.assertIn("`CLAUDE.md`", specific["additionalContext"])
-                self.assertEqual(
-                    source == "compact",
-                    "Context was just compacted" in specific["additionalContext"],
-                )
+    def test_session_start_emits_provider_shaped_context(self) -> None:
+        for provider in ("claude", "codex"):
+            for source in ("startup", "compact", "resume", "unrecognized", []):
+                with self.subTest(provider=provider, source=source):
+                    result = self._event(
+                        "SessionStart", {"source": source}, provider=provider
+                    )
+                    self.assertEqual(0, result.returncode, result.stderr)
+                    output = json.loads(result.stdout)
+                    self.assertNotIn("systemMessage", output)
+                    specific = output["hookSpecificOutput"]
+                    self.assertEqual("SessionStart", specific["hookEventName"])
+                    context = specific["additionalContext"]
+                    self.assertIn("`CLAUDE.md`", context)
+                    for reminder in (
+                        "Re-read the active Stage 03 Task and the latest trusted request",
+                        "repository, worktree, branch, HEAD and relevant digests",
+                        "applicable request identity and revision",
+                        "authorized operation, target, scope and conditions",
+                        "withdrawal or cancellation",
+                        "exclusive writer and partial-result state",
+                        "stop dependent work",
+                    ):
+                        self.assertEqual(
+                            source != "startup", reminder in context, reminder
+                        )
 
     def test_pre_tool_guidance_reaches_the_model(self) -> None:
         payload = {

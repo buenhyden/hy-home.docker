@@ -21,6 +21,7 @@ from scripts.lib.document_governance.frontmatter import (  # noqa: E402
 from scripts.lib.document_governance.links import (  # noqa: E402
     MODE_HANDLERS,
     build_document_graph,
+    inbound_link_lookup,
     relation_lookup,
     removed_template_mention_total,
     run_mode,
@@ -32,6 +33,7 @@ from scripts.lib.document_governance.operations_catalog import (  # noqa: E402
     tracked_paths,
 )
 from scripts.lib.document_governance.registry import (  # noqa: E402
+    DEFAULT_REGISTRY,
     DocumentRegistry,
     load_registry,
 )
@@ -75,11 +77,13 @@ def _routing_status(
 
 def _path_sets(
     root: pathlib.Path,
+    registry: DocumentRegistry | None = None,
 ) -> tuple[tuple[pathlib.Path, ...], tuple[pathlib.Path, ...]]:
     """Select current paths and their historical superset in one pass."""
 
     registry_path = root / "docs/99.templates/registry.json"
-    registry = load_registry(registry_path) if registry_path.exists() else None
+    if registry is None and registry_path.exists():
+        registry = load_registry(registry_path)
     candidates = {
         root / relative.as_posix()
         for relative in tracked_paths(root)
@@ -112,7 +116,7 @@ def _parser() -> argparse.ArgumentParser:
     mode.add_argument(
         "--impact",
         type=pathlib.PurePosixPath,
-        help="report one document's derived reverse relations; fails on nothing it finds",
+        help="report derived reverse relations and inbound references by link type",
     )
     return parser
 
@@ -129,18 +133,23 @@ def _print_impact(root: pathlib.Path, target: pathlib.PurePosixPath) -> int:
             pass
     target = pathlib.PurePosixPath(posixpath.normpath(target.as_posix()))
     try:
-        current_paths, _ = _path_sets(root)
+        registry_path = root / "docs/99.templates/registry.json"
+        registry = load_registry(
+            registry_path if registry_path.exists() else DEFAULT_REGISTRY
+        )
+        current_paths, _ = _path_sets(root, registry=registry)
         graph = build_document_graph(current_paths, repo_root=root)
+        if target not in {node.path for node in graph.nodes}:
+            print(f"impact: {target} is not a current document", file=sys.stderr)
+            return 2
+        inbound = inbound_link_lookup(graph, target, registry)
     except (OSError, ValueError, TypeError, KeyError, OperationsAuthorityError):
         print(
             "document-link-input-invalid: bounded document or Registry input is invalid",
             file=sys.stderr,
         )
         return 1
-    if target not in {node.path for node in graph.nodes}:
-        print(f"impact: {target} is not a current document", file=sys.stderr)
-        return 2
-    for name, paths in relation_lookup(graph, target).items():
+    for name, paths in (*relation_lookup(graph, target).items(), *inbound.items()):
         print(f"{name}: {len(paths)}")
         for path in paths:
             print(f"  {path}")

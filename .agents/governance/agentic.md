@@ -1,10 +1,10 @@
 ---
 title: "Agentic Engineering Policy"
-version: "1.9.1"
+version: "2.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 ---
 
 # Agentic Engineering Policy
@@ -99,10 +99,14 @@ and external-action boundaries, shared-worktree non-reversion rule, and required
 return evidence.
 
 Workers report `working`, `blocked`, or `done`. A delegation or resumption
-envelope records Task-declared applicable request, token, time, concurrency,
-and retry ceilings, the shared-budget identity and remaining allocation, and the
-authorization source and scope. Those fields are structural records, not
-authentication; their validity is resolved through approval boundaries.
+envelope records the applicable request identity and revision as supplied by
+the trusted origin or as unknown, authorization source, scope and current
+applicability, Task-declared request, token, time, concurrency and retry
+ceilings, and the shared-budget identity and remaining allocation. These are
+structural records. The controller resolves authority itself through
+[Approval Boundaries](approval-boundaries.md#authorization-source-and-records)
+on dispatch and resumption. A material mismatch or unresolved authority stops
+dependent mutation and additional spending until the controller reconciles it.
 Unsupported fields are recorded unknown. It refuses an unapproved fallback,
 extra spend, or silent resume. A retry after a failed check stays within the
 [workflows.md](workflows.md) bound. Every agent loop has five exits: success, failure, no progress,

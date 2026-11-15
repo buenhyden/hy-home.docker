@@ -5259,6 +5259,21 @@ def _event_finding(path: pathlib.PurePosixPath, message: str) -> SpecPackageFind
     )
 
 
+def _completed_work(task: SpecDocument | None) -> frozenset[str]:
+    if task is None:
+        return frozenset()
+    if not task.items:
+        return (
+            frozenset({task.artifact_id}) if task.status == "completed" else frozenset()
+        )
+    return frozenset(
+        unit
+        for row in task.items
+        if row[4] == "completed"
+        for unit in _cell_references(row[1], "Execution Item Work Unit")
+    )
+
+
 def _validate_task_lifecycle_events(
     previous: Sequence[SpecPackage],
     current: Sequence[SpecPackage],
@@ -5290,9 +5305,24 @@ def _validate_task_lifecycle_events(
         prior_tasks = {task.path: task for task in prior.tasks} if prior else {}
         prefix = prefix_by_name.get(package.spec.path.parts[2])
         prefix_tasks = {task.path: task for task in prefix.tasks} if prefix else {}
+        closure_needs_authority = (
+            registry.common.get("lifecycle_generation", 0) >= 7
+            and package.plan is not None
+            and (package.spec.status, package.plan.status) != ("approved", "approved")
+        )
         historical_suffix: list[_LifecycleEvent] = []
         current_suffix: list[_LifecycleEvent] = []
         for task in package.tasks:
+            if closure_needs_authority and (
+                _completed_work(task) - _completed_work(prefix_tasks.get(task.path))
+            ):
+                findings.append(
+                    SpecPackageFinding(
+                        "completion-without-approved-parents",
+                        task.path.as_posix(),
+                        "new Task or item completion requires an approved Spec and Plan",
+                    )
+                )
             try:
                 current_rows = _lifecycle_event_rows(task, registry)
                 previous_rows = (
@@ -5654,6 +5684,33 @@ def _acceptance_findings(
     findings: list[SpecPackageFinding] = []
     for package in current:
         earlier = base.get(package.spec.artifact_id)
+        if (
+            registry.common.get("lifecycle_generation", 0) >= 7
+            and package.evidence is not None
+            and package.plan is not None
+            and (package.spec.status, package.plan.status) != ("approved", "approved")
+        ):
+            for criterion, state in package.evidence.acceptance.items():
+                if state not in {"accepted", "not-required"}:
+                    continue
+                for task in package.tasks:
+                    current_basis = _acceptance_basis(
+                        package, task.path, criterion, registry
+                    )
+                    if current_basis is not None and (
+                        earlier is None
+                        or current_basis
+                        != _acceptance_basis(
+                            earlier, task.path, criterion, previous_registry
+                        )
+                    ):
+                        findings.append(
+                            SpecPackageFinding(
+                                "acceptance-without-approved-parents",
+                                task.path.as_posix(),
+                                f"new {state} disposition for criterion {criterion} requires an approved Spec and Plan",
+                            )
+                        )
         for criterion, path, _, reason in (
             package.evidence.acceptance_gaps if package.evidence is not None else ()
         ):

@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.69.0"
+version: "1.70.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -184,6 +184,8 @@ W01-CONTRACT. W130 in TSK-0069 closes the gaps its audit found. W131 in TSK-0070
 3.0.1 W02-DISPOSITION. W132 in TSK-0071 gives the root networks explicit subnets.
 W133 in TSK-0072 closes the W03-VERSION prerequisite for W134 in TSK-0073,
 which implements the remaining 3.0.1 W03-FORMS differences.
+W135 in TSK-0074 uses the verified W03-FORMS functionality to check the
+3.0.1 draft authority boundary and close demonstrated lifecycle gaps.
 
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
@@ -367,6 +369,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W132 | 127 | Explicit subnets for `n8n_ollama_net`, `opsflow_capture_net` and `opsflow_notifier_db_net`; contract test; AD-0026; recreate only those networks and their four containers | W131 | TSK-0071 | RED and GREEN contract test, Compose render and policy checks, independent IaC review, runtime read-back |
 | W133 | 128 | Split contract identity and version in the Registry and its projection; check document numeric and historical version boundaries | W130 | TSK-0072 | RED and GREEN version and projection tests, version fixtures, historical Registry check, independent review |
 | W134 | 129 | Compare the role purposes and close demonstrated document structure gaps | W133 | TSK-0073 | RED and GREEN form tests, corpus checks, independent review |
+| W135 | 130 | Preserve draft authoring and verify the authority, lifecycle and relation boundaries; reject explicit prose placeholders in effective documents | W134 | TSK-0074 | Focused authoring and lifecycle tests, relation checks, corpus checks, independent review |
 
 #### Current v30 continuation and delivery
 
@@ -768,6 +771,11 @@ pinning, CI shards, immutable releases), `.agents/governance/agentic.md`
 `.github/workflows/ci-quality.yml` (shards and aggregate) and `.cz.toml`. The
 handoff condition is the merge of each pull request; TSK-0065's Promotion
 Receipt records each target.
+
+W135 promotes the effective-document and request binding rules to the existing
+SDLC, delegation and handoff owners, with the Task template and SessionStart
+hook as consumers. The document validator and impact query keep their current
+entrypoints. TSK-0074 records the focused checks and authorization boundary.
 
 - [Master workspace reconciliation](tasks/tsk-0053-master-workspace-reconciliation.md)
 - [v14.7 W00 intake](tasks/tsk-0059-w00-v14-7-intake.md)

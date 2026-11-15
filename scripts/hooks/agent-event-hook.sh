@@ -85,12 +85,17 @@ Key rules:
 - Run the relevant focused checks at the planned delivery boundary.
 """
 
-if source == "compact":
-    message += """
-Context was just compacted:
-- Re-read the active Stage 03 Task before continuing; it, not memory, holds progress.
-- Preserve tracked, staged, and untracked state; do not hide unrelated work.
-"""
+if source != "startup":
+    message += (
+        "\nRe-read the active Stage 03 Task and the latest trusted request before "
+        "continuing work carried over from an earlier context. Reconcile the "
+        "repository, worktree, branch, HEAD and relevant digests, applicable request "
+        "identity and revision, authorized operation, target, scope and conditions, "
+        "any withdrawal or cancellation, and the exclusive writer and partial-result "
+        "state. If authority is unavailable, stale or mismatched, stop dependent work "
+        "and additional spending. Preserve tracked, staged, and untracked state and "
+        "keep unrelated work visible.\n"
+    )
 
 try:
     if source in folder_guides.RESTART_SOURCES:

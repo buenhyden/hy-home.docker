@@ -405,6 +405,12 @@ def _body_target_scan_text(text: str) -> str:
 
 
 AUTHOR_PROMPT = re.compile(r"<!--\s*Author prompt:(?:[\s\S]*?-->|[\s\S]*$)")
+_UNRESOLVED_PROSE = re.compile(
+    r"^\s*(?:todo|tbd)(?:[ \t]*:|[ \t]*[.!]?[ \t]*$)"
+    r"|:[ \t]*(?:todo|tbd)[ \t]*[.!]?[ \t]*$",
+    re.IGNORECASE,
+)
+_HTML_BREAK = re.compile(r"<br(?:[ \t]|/?>)", re.IGNORECASE)
 
 
 def _authored_body_target(record: Record, profiles: dict[str, object]) -> bool:
@@ -435,6 +441,31 @@ def _authored_residue_scan_text(text: str) -> str:
     )
 
 
+def _has_unresolved_prose(text: str) -> bool:
+    quotes = 0
+    for block in _SECTION_MARKDOWN.parse(text):
+        if block.type == "blockquote_open":
+            quotes += 1
+        elif block.type == "blockquote_close":
+            quotes -= 1
+        elif block.type == "inline" and not quotes:
+            visible: list[str] = []
+            for token in block.children or ():
+                if token.type == "text":
+                    visible.append(token.content)
+                elif token.type in {"softbreak", "hardbreak"} or (
+                    token.type == "html_inline" and _HTML_BREAK.match(token.content)
+                ):
+                    visible.append("\n")
+                elif token.type in {"code_inline", "image"}:
+                    visible.append(" ")
+            if any(
+                _UNRESOLVED_PROSE.search(line) for line in "".join(visible).splitlines()
+            ):
+                return True
+    return False
+
+
 def _authored_residue_findings(record: Record, text: str) -> list[Finding]:
     scan_text = _authored_residue_scan_text(text)
     findings = []
@@ -452,6 +483,16 @@ def _authored_residue_findings(record: Record, text: str) -> list[Finding]:
                 record,
                 "template-body-token-in-target",
                 "authored document retains an unresolved Markdown body token",
+            )
+        )
+    if record.metadata.get("status") in ("approved", "active", "accepted") and (
+        _has_unresolved_prose(text)
+    ):
+        findings.append(
+            _finding(
+                record,
+                "effective-body-placeholder",
+                "effective authored prose retains an unresolved TODO or TBD marker",
             )
         )
     return findings
