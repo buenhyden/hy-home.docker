@@ -1,8 +1,8 @@
 ---
 title: "Root Network Subnets Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-15"
 layer: "specs"
@@ -89,6 +89,7 @@ minutes; no volume was touched.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0071 | draft | ready | #inputs-and-authority |
 | SPEC-0212-TSK-0071 | ready | in-progress | #design-summary |
+| SPEC-0212-TSK-0071 | in-progress | completed | #criterion-decisions |
 
 ### Blockers and Decisions
 
@@ -120,11 +121,12 @@ Subnet RED is resolved by Subnet GREEN.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 127 | pending | Subnet GREEN, Compose render, Compose controls, Independent review, Hosted candidate final, Runtime apply live | Awaiting owner acceptance | SPEC-0212 TSK-0071 |
+| 127 | accepted | Subnet GREEN, Compose render, Compose controls, Independent review, Hosted candidate final, Runtime apply live | Owner @buenhyden accepted on 2026-11-15 in this chat | SPEC-0212 TSK-0071 |
 
 ### Remaining Conditions
 
-Owner acceptance of criterion 127. Merge and the live apply are done.
+None. The owner accepted criterion 127 on 2026-11-15 after the merge and the
+live apply.
 
 ## Handoff
 
@@ -136,4 +138,4 @@ Owner acceptance of criterion 127. Merge and the live apply are done.
 
 ### Next Owner
 
-@buenhyden accepts criterion 127 after the runtime apply.
+Criterion 127 is accepted; no owner action remains.
