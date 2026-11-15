@@ -138,9 +138,11 @@ The PR 1036 document-only candidate took 3 min 45 s (`candidate-core`) and
 4 min 14 s on its second. TSK-0065 recorded 10 to 16 min and 15 to 29 min for
 code-changing W06 candidates. The inputs differ, so this shows the selection
 cost of a document-only change, not a speed-up. Locally,
-`check-document-links.py --mode commands` exceeded the 600 s tool timeout,
-while `--mode alignment` finished well inside it; this is a local feedback
-cost for D-05 (W05-GATES), not measured precisely here.
+`check-document-links.py --mode commands` took 408 s in one timed run on this
+branch (869 documents, 8500 links), while `--mode alignment` finished well
+inside a minute. The earlier TSK-0066 run passed the 600 s tool timeout
+because it ran right after other checks. One sample, not an average; it is a
+local feedback cost for D-05 (W05-GATES).
 
 #### Lifecycle Events
 
@@ -163,6 +165,10 @@ W08-MEMORY may present with options.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Gap audit | 123 | W128 | source-review | TSK-0066 against each W00-DELTA step and acceptance test at `f8a68537d` | PASS | G-01 to G-10 closed above | required | - |
 | PR diff review | 123 | W128 | source-review | `git diff <merge>^1 <merge>` of PRs 1023 to 1035 as scoped above | PASS | PR review 1023 to 1035 | required | - |
+| Corpus lifecycle | 123 | W128 | document-lifecycle | `check-document-corpus-lifecycle.py` on the work branch over `f8a68537d` | PASS | violations 0, occupancy violations 0 | required | - |
+| Metadata changed | 123 | W128 | document-metadata | `check-document-metadata.py --mode check-changed --base-ref origin/main` | PASS | selected 3, violations 0 | required | - |
+| Links alignment | 123 | W128 | document-links | `check-document-links.py --mode alignment` | PASS | failures 0 | required | - |
+| Links commands | 123 | W128 | document-links | `check-document-links.py --mode commands`, timed with `/usr/bin/time` | PASS | 869 documents, 8500 links, failures 0; 408 s | required | - |
 
 ### Resolution Links
 
