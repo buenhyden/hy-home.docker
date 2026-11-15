@@ -1,6 +1,6 @@
 ---
 title: "W07 Native Provider Adapter Task"
-version: "0.1.4"
+version: "0.1.5"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -251,6 +251,44 @@ turn indicator. It contained no preceding block paired with that Stop in
 the same turn. PreCompact was planned and no invocation or completion was
 reported for it.
 
+#### Claude manual PreCompact at 62426a1d2
+
+The user ran `/compact` in the trusted Claude session. The terminal
+reported that the project `.claude/hooks/pre-compact.sh` completed
+successfully and returned the state snapshot for `codex/w07-brief` at
+`62426a1d2` with zero changed files. Claude also reported that compaction
+finished. The terminal separately reported a plugin PreCompact success.
+The project result is the evidence for this check. The pasted result
+reported success without displaying a numeric exit code.
+
+#### Claude Stop retry at 62426a1d2
+
+In the earlier 07:42 trial, the session reported a Stop reminder with
+`preventedContinuation: false`. That trial ended without a retry.
+
+In the later trial, the user reported that the project Stop blocked the
+turn and named the uncommitted Task. A filtered read of that Claude
+session's hook diagnostics verified the project block feedback and the
+first `.claude/hooks/stop.sh` completion at 23:14:22.131 UTC. It also
+verified the next project Stop completion at 23:14:31.547 UTC with exit
+code 0. The trace contains no intervening UserPromptSubmit completion
+and no further project block response in the retry group. This records
+the project hook's retry outcome separately from plugin hooks.
+
+The same diagnostic read found PostToolUse completion codes for plugin
+hooks. No project PostToolUse exit code was available for the monitored
+synthetic Edit. The earlier project invocation and process completion
+remain the only confirmed results for that test.
+
+#### Claude project PostToolUse exit at 62426a1d2
+
+A separate trusted Claude trial bound only the ignored synthetic README.
+Its native Edit changed `v1` to `v2`. The user supplied the filtered
+completion result from the project `.claude/hooks/post-tool-validate.sh`
+route, `2026-11-15T23:35:01.179Z PostToolUse:Edit exit=0`. This records
+the project hook process's exit status. The internal validator's
+outcome requires separate evidence.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -303,9 +341,12 @@ project trust before it can supply the missing delivery evidence.
 | Trusted Claude out-of-scope deny | 135 | W140 | native Edit outside the bound brief | Gitignored synthetic out-of-scope fixture, f05d4e805 | PASS | Hook denied before execution, digest, size and mtime unchanged | required | - |
 | Trusted Claude Stop continuation | 135 | W140 | live Stop with an uncommitted Task change | Same session, f05d4e805 | PASS | Project Stop blocked the first stop, named the uncommitted Task path and continued the turn | required | - |
 | Trusted Claude PostToolUse process delivery | 135 | W140 | native PostToolUse invocation and process completion | Reported trusted Claude session, b3cff1273, native Edit of a scoped synthetic file | PASS | Dispatcher and child observed, both ended, fixture changed from v1 to v2 | optional | - |
-| Trusted Claude PostToolUse exit status | 135 | W140 | native PostToolUse exit-status witness | Same process-monitor run | NOT_RUN | Monitor did not observe an exit code | required | - |
+| Trusted Claude PostToolUse exit status | 135 | W140 | native PostToolUse exit-status witness | Synthetic Edit process monitor and later filtered hook diagnostics | NOT_RUN | Monitor captured no exit code and the diagnostic completion codes identified plugin hooks | required | - |
+| Trusted Claude project PostToolUse exit | 135 | W140 | native PostToolUse exit-status witness | User-filtered project hook result from a separate native Edit at 62426a1d2 | PASS | PostToolUse:Edit exited 0 at 2026-11-15T23:35:01.179Z | required | Trusted Claude PostToolUse exit status |
 | Trusted Claude PreCompact | 135 | W140 | native PreCompact witness | Reported trusted Claude session | NOT_RUN | Planned trigger only, no invocation or completion reported | required | - |
+| Trusted Claude manual PreCompact completion | 135 | W140 | native PreCompact witness | Reported trusted Claude session, manual /compact at 62426a1d2 | PASS | Project hook reported successful completion and returned its state snapshot, compaction finished | required | Trusted Claude PreCompact |
 | Trusted Claude Stop retry | 135 | W140 | silent native Stop retry witness | Reported trusted Claude session | NOT_RUN | Closing reminder and turn end observed, no same-turn block and retry pair reported | required | - |
+| Trusted Claude project Stop retry completion | 135 | W140 | silent native Stop retry witness | Trusted Claude hook diagnostics and reported first block, 62426a1d2 | PASS | Same-turn project retry exited 0 with no further project block response | required | Trusted Claude Stop retry |
 | Reported Claude Task metadata | 135 | W140 | document metadata | Claude-authored Task snapshot before reconciliation | PASS | Session reported 92 documents selected, zero violations and exit 0 | optional | - |
 
 ### Resolution Links
@@ -314,7 +355,10 @@ The focused command suite resolves the length regression. The lifecycle
 table resolves the authoring check failure. The trusted interactive
 SessionStart witness resolves the earlier missing Claude startup delivery
 evidence for criterion 135. The isolated startup observations retain their
-original outcomes.
+original outcomes. The manual PreCompact completion resolves the earlier
+missing PreCompact witness. The later same-turn Stop pair resolves the
+missing retry witness. The filtered exit code from a separate native
+Edit resolves the missing project PostToolUse exit-status witness.
 
 ## Acceptance Decision
 
@@ -322,15 +366,15 @@ original outcomes.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 135 | pending | Trusted Claude SessionStart, Trusted Claude UserPromptSubmit, Trusted Claude in-scope allow, Trusted Claude out-of-scope deny, Trusted Claude Stop continuation | Required lifecycle and permission evidence remains open | @buenhyden |
+| 135 | pending | Trusted Claude SessionStart, Trusted Claude UserPromptSubmit, Trusted Claude in-scope allow, Trusted Claude out-of-scope deny, Trusted Claude Stop continuation, Trusted Claude manual PreCompact completion, Trusted Claude project Stop retry completion, Trusted Claude project PostToolUse exit | Required lifecycle and permission evidence remains open | @buenhyden |
 
 ### Remaining Conditions
 
 A trusted Claude session observed SessionStart and UserPromptSubmit
 delivery and a PreToolUse allow and deny on the native Edit route only.
-A blocking Stop continuation was also observed. The later report verifies
-PostToolUse invocation and process completion. Its exit status, PreCompact
-and the silent Stop retry remain unverified.
+The Claude evidence also covers manual PreCompact success, a project
+Stop block followed by a successful same-turn retry, and a native Edit
+whose project PostToolUse hook exited 0.
 The Codex desktop hook pass covers the observed edit route. Its separate
 reviewer write-open failure remains unresolved. Unsupported-output
 behavior, the remaining native reviewer boundaries, worker dispatch and
