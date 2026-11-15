@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.19.2"
+version: "1.19.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "POL-0078"
 created: "2026-09-04"
@@ -340,12 +340,17 @@ MinIO 및 ADR-0010의 MailHog 표기는 당시 결정 문맥이며, 현행 sourc
 선언 상한(CPU 합계 / 메모리 MiB 합계)이며 측정값이 아니다. 보존 데이터는 그 그룹의
 named volume 또는 bind 경로이고, 퇴역 시 함께 다룰 상태다.
 
+[ADR-0062](../../../02.architecture/decisions/0062-home-lab-membership.md#follow-up)가 결정한
+독립 LAB 이동과 단일 OpenSearch 퇴역은 후속 변경이다. ComfyUI, Neo4j, Open Notebook과
+SurrealDB, Pact Broker, WireMock, Terrakube는 이동 전까지 각 루트 profile에 남는다.
+현재 선언과 목표를 읽을 때 2026-10-08 관찰과 구분한다.
+
 | Service group | Role | Consumer | 비용(CPU / MiB) | 보존 데이터 | Decision | 퇴역 조건 | Host 2026-10-08 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | Traefik | 기본 ingress·TLS·ForwardAuth | 모든 routed UI | 1 / 512 | 없음(설정은 Git) | HOME 유지 | 대체하지 않음 | 실행 |
 | Loki | HOME 로그 저장·Grafana 조회 | Alloy, Grafana | 2 / 2048 | `loki-data` | HOME 유지 | 로그 수집을 다른 backend로 옮길 때 | 실행 |
 | Dozzle | 실시간 container 로그 UI | 운영자 | 1 / 512 | `dozzle-data` | OPTIONAL `admin`; 상주는 소유자 선택 | Grafana Loki 조회로 충분해질 때 | 실행 |
-| OpenSearch (single) | 전문 검색·분석 실험 | 이름 있는 소비자 없음 | 3 / 2560 | `opensearch-data`, `opensearch-dashboards-data` | OPTIONAL on-demand; 상주하지 않음 | 검색 소비자가 없으면 퇴역 검토 | 미실행 |
+| OpenSearch (single) | 전문 검색·분석 실험 | 이름 있는 소비자 없음 | 3 / 2560 | `opensearch-data`, `opensearch-dashboards-data` | 현재 루트의 선택형 `opensearch`; 검색 실험은 독립 LAB에 유지 | ADR-0062에 따른 별도 퇴역 절차 | 미실행 |
 | Airflow | 예약 batch·backfill DAG | DAG; Flower는 opt-in `airflow-flower` | 10 / 9472 | `airflow-dags`·`-config`·`-plugins`·`-logs` | HOME 유지 | 예약 DAG가 없어질 때 | 실행 |
 | n8n | 외부 이벤트·webhook·알림 | workflow | 5 / 4608 | `n8n-data`, task runner volume | HOME 유지 | 이벤트 workflow가 없어질 때 | 실행 |
 | Mailpit | 개발 SMTP 캡처 | 앱 메일 시험 | 1 / 512 | `mailpit-data` | DEV on-demand | 메일 시험이 없을 때 | 미실행 |
@@ -354,14 +359,14 @@ named volume 또는 bind 경로이고, 퇴역 시 함께 다룰 상태다.
 | Spark, Flink, Trino, Great Expectations | lakehouse batch·stream·query·검증 | lakehouse 작업 | 8 / 7936 | `flink-checkpoints`(SPEC-0262 이후 `${LAB_DATA_DIR}/lakehouse/flink/checkpoints`); 데이터는 object store | 2026-11-04 LAB `labs/lakehouse/docker-compose.yml`로 이전; one-shot·예산 검사 | 기능·학습 시나리오가 없을 때 선택하지 않음 | 미실행 |
 | Superset | BI | 운영자 | 2.5 / 1792 | MNG PostgreSQL DB | 2026-11-04 LAB `labs/superset/docker-compose.yml`로 이전 | 대시보드 소비자가 없을 때 | 미실행 |
 | Open WebUI | 채팅·RAG UI | 사용자 1명, 마지막 활동 2026-10-26 | 2 / 2048 | `open-webui`(이전 후 `${LAB_DATA_DIR}/open-webui/data`) | 2026-11-10 LAB `labs/open-webui/docker-compose.yml`로 이전; HOME 컨테이너·volume 퇴역은 별도 승인 | 채팅 실험 수요가 없을 때 | 실행 |
-| Neo4j | graph | 이름 있는 소비자 없음 | 1 / 512 | `neo4j-data` | OPTIONAL | graph 시나리오가 없으면 퇴역 검토 | 미실행 |
+| Neo4j | graph | 이름 있는 소비자 없음 | 1 / 512 | `neo4j-data` | 현재 루트의 선택형 `graph`; 독립 LAB 이동 예정 | 별도 이동 작업에서 상태와 소비자를 확인 | 미실행 |
 | RedisInsight | Valkey UI | 운영자 | 1 / 512 | `redisinsight-data`(연결 정의) | OPTIONAL `admin` | Valkey 조회 수요가 없을 때 | 실행 |
-| Terrakube | IaC server | 운영자 | 4 / 3072 | MNG PostgreSQL DB | DEV; 상주 금지 | IaC 실습이 없을 때 | 미실행 |
+| Terrakube | IaC server | 운영자 | 4 / 3072 | MNG PostgreSQL DB | 현재 루트의 선택형 `iac`; 독립 LAB 이동 예정 | 별도 이동 작업에서 상태와 소비자를 확인 | 미실행 |
 | JupyterLab, MLflow | data science·실험 추적 | MLflow는 JupyterLab | 3.5 / 3328 | MNG PostgreSQL DB, object store artifact | MLflow OPTIONAL; JupyterLab은 2026-11-04 LAB `labs/jupyterlab/docker-compose.yml`로 이전 | 실험 추적 수요가 없을 때 | 미실행 |
-| Open Notebook, SurrealDB | notebook | 이름 있는 소비자 없음 | 1.5 / 768 | `open-notebook-data`, `surrealdb-data` | OPTIONAL | 소비자가 없으면 퇴역 검토 | 미실행 |
+| Open Notebook, SurrealDB | notebook | 이름 있는 소비자 없음 | 1.5 / 768 | `open-notebook-data`, `surrealdb-data` | 현재 루트의 선택형 `notebook`; 독립 LAB 이동 예정 | 별도 이동 작업에서 상태와 소비자를 확인 | 미실행 |
 | Crawl4AI | crawling API | 없음 | 2 / 4096 | 없음 | OPTIONAL; 소비자가 생기지 않으면 퇴역 검토 | 다음 검토까지 소비자가 없을 때 | 미실행 |
-| ComfyUI | GPU 이미지 생성 | 명시 선택 `ai-image` | 2 / 4096 | `comfyui-models` 등 7개 volume | HOME 제외(소유자 2026-11-09); GPU를 Ollama와 공유 | 이미지 생성 수요가 없을 때 | 중지 |
-| Pact Broker, SonarQube | contract·SAST | 이름 있는 소비자 없음 | 3.5 / 2816 | `sonarqube-*` volume, MNG PostgreSQL DB | Pact Broker OPTIONAL; SonarQube는 2026-11-04 LAB `labs/sonarqube/docker-compose.yml`로 이전 | 계약·SAST 소비자가 없을 때 | 미실행 |
+| ComfyUI | GPU 이미지 생성 | 명시 선택 `ai-image` | 2 / 4096 | `comfyui-models` 등 7개 volume | 현재 루트의 선택형 `ai-image`; 독립 LAB 이동 예정; GPU를 Ollama와 공유 | 별도 이동 작업에서 상태와 소비자를 확인 | 중지 |
+| Pact Broker, SonarQube | contract·SAST | 이름 있는 소비자 없음 | 3.5 / 2816 | `sonarqube-*` volume, MNG PostgreSQL DB | Pact Broker는 현재 루트의 선택형 `contract-testing`으로 독립 LAB 이동 예정; SonarQube는 2026-11-04 LAB `labs/sonarqube/docker-compose.yml`로 이전 | Pact Broker 이동 작업에서 상태와 소비자를 확인; SAST 소비자가 없으면 SonarQube LAB 미선택 | 미실행 |
 | 독립 `labs/*/docker-compose.yml` | HA·replica·backend·부하 실습 | 실습 목적별 | LAB별 렌더 | `LAB_DATA_DIR` 아래 LAB별 경로 | LAB; `lab.py`로만 실행 | 실습 목적이 없어지면 해당 LAB 퇴역 | `hy-home-lab-*` project 없음 |
 
 LAB 안의 exporter(`pg-*-exporter`, `valkey-cluster-exporter`, `lab-kafka-exporter`)는 LAB

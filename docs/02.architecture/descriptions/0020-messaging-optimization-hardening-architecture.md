@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Architecture Description"
-version: "1.3.2"
+version: "1.3.3"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "architecture"
 artifact_id: "AD-0020"
 parent_ids:
@@ -26,11 +26,10 @@ regression through CI baseline verification.
 
 ### System Boundary
 
-The messaging layer operates the Kafka broker data plane and the management
-UI/API plane separately. The management plane applies standard middleware at
-the Traefik TLS termination point, and the data plane keeps a service
-health-based dependency relationship within the `kafka_net` internal
-boundary.
+The HOME messaging data plane uses the internal `kafka_net`. Kafbat uses
+Traefik TLS and the gateway standard chain with native Keycloak OIDC.
+The standalone LAB has its own broker, Schema Registry and Connect
+interfaces on `lab_kafka_net`.
 
 - **Owns**:
   - Messaging management path routing/middleware contract
@@ -52,11 +51,15 @@ boundary.
 
 ### Context
 
-The layer consumes the `01-gateway` Traefik middleware chain, the `02-auth` SSO scheme and `06-observability` metrics/alerts; long-term retention/analytics is offloaded to the `04-data` layer.
+HOME uses the `01-gateway` middleware chain, `02-auth` Keycloak OIDC and
+`06-observability` metrics and alerts. Any downstream persistent store or
+analytics pipeline belongs to its consumer.
 
 ### Constraints
 
-Security requires TLS termination, SSO protection and a floating-tag prohibition; Kafka UI image versions are pinned; immediate multi-region/multi-cluster migration is a non-goal. A single operational contract is kept through standard scripts, runbook and policy documents.
+Security requires TLS and native OIDC on the HOME management route and
+pinned images. This architecture does not introduce a multi-region HOME
+topology. The linked policy and runbook own operational checks and recovery.
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
 
@@ -64,13 +67,11 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 
 ### Building Blocks
 
-- Kafka:
-  - `messaging` profile: `kafka-1`, `kafbat-ui`, `kafka-exporter`, `kafka-init`
-  - Separate LAB `labs/kafka-cluster/docker-compose.yml` (not promoted): `lab-kafka-1/2/3`, `lab-kafka-exporter`, `lab-kafka-init`; no HOME state is shared
-- Gateway Path:
-  - Client -> Traefik(`websecure`) -> middleware chain -> management endpoints
-- Internal Path:
-  - service-to-service traffic over `kafka_net`
+- HOME `messaging` selects `kafka-1`, `kafbat-ui`, `kafka-exporter` and
+  `kafka-init`. Kafbat is the gateway management route.
+- The separate `lab-kafka` profile declares three LAB brokers, exporter,
+  init, Schema Registry and Connect. Its CDC endpoints stay on the LAB
+  network and carry no configured source connector.
 
 ### Runtime and Deployment
 
@@ -79,17 +80,20 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 - **Key Entities / Flows**:
   - Kafka topics (event/log streams)
 - **Storage Strategy**:
-  - state data separation based on `${DEFAULT_MESSAGE_BROKER_DIR}`
+  - HOME broker state uses `${DEFAULT_MESSAGE_BROKER_DIR}`; LAB broker
+    state uses `${LAB_DATA_DIR}`.
 - **Data Boundaries**:
-  - long-term retention/analytics is offloaded to the `04-data` layer
+  - Broker topic state stays in its project. Consumers own downstream
+    retention and processing.
 
 #### Deployment View
 
 - **Runtime / Platform**:
   - Docker Compose + `infra/common-optimizations.yml`
 - **Deployment Model**:
-  - `messaging` profile: Kafka `kafka-1` single broker with the selected schema/connect/rest/admin configuration
-  - Traefik TLS termination + middleware policy
+  - The root `messaging-broker` and `messaging-admin` profiles select narrower
+    HOME subsets. HOME declares neither the former REST proxy nor CDC services.
+  - The independent LAB starts from `labs/kafka-cluster/docker-compose.yml`.
 - **Verification**: the registered `infrastructure-hardening` gate in
   `.github/workflow-contract.yml` checks the tracked messaging configuration.
 
@@ -97,18 +101,23 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 
 ### Contracts
 
-- Management path: Client -> Traefik(`websecure`) -> middleware chain -> management endpoints.
-- Internal path: service-to-service traffic over `kafka_net`.
+- HOME management path: browser → Traefik (`websecure`) → Kafbat → Keycloak OIDC.
+- Containers use the internal broker listeners on `kafka_net` in HOME or
+  `lab_kafka_net` in the LAB. The HOME broker also joins `obs_net` and
+  publishes its PLAINTEXT EXTERNAL listener and JMX exporter on loopback.
+  LAB Schema Registry and Connect have no HOME gateway route.
 
 ### Failure Boundaries
 
-The data plane keeps a service health-based dependency relationship within the `kafka_net` internal boundary; availability is kept through healthcheck dependency and a rolling recovery procedure owned by the linked runbook above. Catalog-based readiness for DLQ/reprocessing/quorum queue expansion is recorded under Quality Attributes.
+Healthchecks order dependent starts. The single HOME broker provides no broker
+redundancy. The linked runbook owns recovery and its separate evidence.
 
 ## Decisions
 
 ### Decision Links
 
 - **ADR**: [ADR-0052 Kafka as the only messaging broker](../decisions/0052-kafka-only-messaging-broker.md)
+- **ADR**: [ADR-0062 HOME and LAB placement](../decisions/0062-home-lab-membership.md)
 
 ### Quality and Risks
 
@@ -116,11 +125,10 @@ The data plane keeps a service health-based dependency relationship within the `
 
 - **Performance**: burst traffic control and transient-failure absorption
   through the gateway standard chain
-- **Security**: TLS termination + SSO protection + floating-tag prohibition
-- **Reliability**: availability kept through healthcheck dependency and a
-  rolling recovery procedure
-- **Scalability**: catalog-based readiness for DLQ/reprocessing/quorum queue
-  expansion
+- **Security**: TLS and native OIDC on Kafbat, LAB-internal CDC endpoints and
+  pinned images.
+- **Reliability**: health-gated dependencies and explicit state boundaries.
+  Authentication, failover and restore require separate runtime evidence.
 - **Observability**: linkage of compose health + exporter metrics + CI
   evidence
 - **Operability**: a single operational contract kept through standard

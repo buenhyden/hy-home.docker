@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Stack Health Runbook"
-version: "1.5.4"
+version: "1.5.5"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "RUN-0024"
 parent_ids:
@@ -104,8 +104,8 @@ bucket에는 그 copy에서 나온 `hyhome-migration/<bucket>.cutover` marker가
 있다. 그 뒤 source에서 MinIO를 제거했다. 2026-09-25에 SPEC-0182
 W5는 데이터 디렉터리 `${DEFAULT_DATA_DIR}/minio/data-1`, volume
 `hy-home-infra_minio-data`, 격리된 MinIO credential 파일, `quay.io/minio/minio`
-image를 폐기했고 이로써 S07의 MinIO rollback 경로는 끝났다. 이 bucket들의
-유일한 copy는 SeaweedFS에 있다.
+image를 폐기했고 이로써 S07의 MinIO rollback 경로는 끝났다. 현재 복구에 사용할
+수 있는 백업은 아래 범위와 해당 snapshot의 manifest를 따로 확인한다.
 
 #### Backup (daily, RUN-0021)
 
@@ -121,6 +121,10 @@ SIGKILL로 종료된 run(예: unit의 stop timeout)은 vacuum이 꺼진 채로 �
 `seaweedfs-master`에서 `hyhome-seaweedfs.sh shell`을 통해
 `volume.vacuum.enable`을 실행한다.
 
+[HOME 백업 정책](../../policies/10-platform-and-backup/0021-backup-and-restore.md)에 따라
+`loki-bucket`과 `tempo-bucket` collection의 volume file은 state snapshot에서 제외된다.
+Filer metadata가 복원되더라도 제외된 object 이력은 돌아오지 않는다.
+
 #### Restore (isolated first)
 
 1. Restic snapshot의 `data/seaweedfs/{volume,master}`와
@@ -130,8 +134,9 @@ SIGKILL로 종료된 run(예: unit의 stop timeout)은 vacuum이 꺼진 채로 �
 3. export를 `seaweedfs-master`로 복사하고 `hyhome-seaweedfs.sh shell`을 통해
    `fs.meta.load`를 실행한 뒤 `volume.fsck`를 실행한다. backup의 Restic
    window 동안 변경된 객체는 누락될 수 있다(POL-0024).
-4. client를 전환하기 전에 S3를 통해 모든 bucket의 객체를 읽어 manifest와
-   count/byte를 비교한다.
+4. client를 전환하기 전에 승인된 복구 범위에 포함된 bucket의 객체를 S3로 읽어
+   manifest와 count/byte를 비교한다. 제외된 telemetry 이력은 별도로 기록하고
+   Loki와 Tempo가 새 데이터를 수집하는지 확인한다.
 
 ### Stop Conditions
 
@@ -141,7 +146,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 ### Service Checks
 
-rehearsal은 anonymous 및 wrong-credential 요청의 거부, filer와 volume HTTP의 JWT 요구, gRPC의 client certificate 요구, consumer S3 API, restart 후 persistence, 빈 store로의 backup과 restore를 확인한다. client를 전환하기 전에 S3로 모든 bucket의 객체를 읽어 manifest와 count/byte를 비교한다.
+rehearsal은 anonymous 및 wrong-credential 요청의 거부, filer와 volume HTTP의 JWT 요구, gRPC의 client certificate 요구, consumer S3 API, restart 후 persistence, 빈 store로의 backup과 restore를 확인한다. 실제 복구 검증은 Restore 단계의 manifest와 제외 범위를 따른다.
 
 ### Evidence
 

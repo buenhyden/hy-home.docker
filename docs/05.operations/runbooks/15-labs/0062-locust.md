@@ -1,10 +1,10 @@
 ---
 title: "Locust Recovery Runbook"
-version: "1.3.4"
+version: "1.3.5"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "RUN-0062"
 parent_ids:
@@ -22,7 +22,7 @@ next_review_at: "2027-05-13"
 Locust LAB 실행 중 target 상태가 나빠지거나 worker 연결이 끊길 때 부하를 멈추고 진단하는 절차다.
 시나리오 파일 복구와 승인된 upgrade canary도 다룬다.
 
-test 중 target health가 저하되거나, worker 연결이 끊기거나, master UI가 실패하거나,
+test 중 target health가 저하되거나, worker 연결이 끊기거나, headless master가 실패하거나,
 scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 canary가 필요할 때
 사용한다.
 
@@ -41,9 +41,10 @@ scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 c
 
 ### Authority and Access
 
-모든 command는 저장소 루트에서 독립 LAB Compose file을 지정한다.
-아래 공개 명령은 `labs/.env.example`와 명시한 합성 경로만 사용한다. 실제 승인된
-실행 값은 승인된 실행 도구가 주입하며 문서에 비공개 env 파일 경로를 적지 않는다.
+저장소 루트에서 실행한다. 정적 render는 `labs/.env.example`와 합성 경로만 사용한다.
+실제 진단·정지는 승인된 Docker context, `hy-home-lab-locust` project와 실행 당시
+입력을 확인한 뒤에만 한다. `LAB_ENV_FILE`은 그 실행에 사용한 LAB 환경 파일 경로다.
+필요한 환경 입력과 경로는 승인된 실행 도구가 주입하며 값은 증거에 남기지 않는다.
 
 ### Safety Checks
 
@@ -65,43 +66,47 @@ dependency upgrade 전에 isolated run에서 scenario syntax를 validate하고, 
 
 1. target, users, spawn rate, duration, worker count, scenario digest, 그리고 처음
    실패한 target SLI를 기록한다. cookie, token, response body는 수집하지 않는다.
-2. 진단 전에 load를 중지한다. `lab.py run`으로 시작한 실행이면 그 제어기에 SIGTERM
-   (`Ctrl-C`)을 보낸다. 제어기가 master를 grace 기간 동안 멈추고 project를 내린다.
-   제어기가 이미 죽었으면 `python3 scripts/operations/lab.py down locust`를 쓴다. 아래
-   Compose 명령은 제어기 없이 시작한 경우에만 쓴다.
+2. 진단 전에 load를 중지한다. `lab.py run`으로 시작한 실행이면 제어기에 종료 신호
+   (대화형 터미널에서는 `Ctrl-C`)를 보낸다. 제어기가 master를 grace 기간 동안 멈추고 project를 내린다.
+   제어기가 이미 종료됐다면 `python3 scripts/operations/lab.py --env-file "$LAB_ENV_FILE" down locust`를 쓴다.
+   아래 Compose 명령은 제어기 없이 시작했고 대상 service와 project identity를 확인한 경우에만 쓴다.
 
    ```bash
-   LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result \
-   docker compose -f labs/locust/docker-compose.yml --env-file labs/.env.example --profile lab-locust stop lab-locust-worker lab-locust-master
+   docker compose --project-name hy-home-lab-locust --env-file "$LAB_ENV_FILE" -f labs/locust/docker-compose.yml --profile lab-locust stop lab-locust-master lab-locust-worker
    ```
 
-3. bounded status와 로그를 캡처한다.
+3. 실제 project의 bounded status와 남아 있는 컨테이너의 로그를 확인한다.
 
    ```bash
-   LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result \
-   docker compose -f labs/locust/docker-compose.yml --env-file labs/.env.example --profile lab-locust ps lab-locust-master lab-locust-worker
-   LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result \
-   docker compose -f labs/locust/docker-compose.yml --env-file labs/.env.example --profile lab-locust logs --tail=200 lab-locust-master lab-locust-worker
+   docker compose --project-name hy-home-lab-locust --env-file "$LAB_ENV_FILE" -f labs/locust/docker-compose.yml --profile lab-locust ps -a lab-locust-master lab-locust-worker
+   docker compose --project-name hy-home-lab-locust --env-file "$LAB_ENV_FILE" -f labs/locust/docker-compose.yml --profile lab-locust logs --tail=200 lab-locust-master lab-locust-worker
    ```
 
-4. `docker compose -f labs/locust/docker-compose.yml --env-file labs/.env.example config --quiet`로 확인한다. worker를 재생성하기
-   전에 master health failure를 점검한다. target SLI가 회복되지 않았으면 Locust를
-   중지 상태로 두고 target owner에게 escalation한다.
-5. master가 healthy이고 재시작이 승인되면 master를 먼저 시작하고 worker를 시작한다.
+4. 합성 입력으로 현재 source를 렌더링한다. master와 worker의 실패 원인을 실제 기록에서
+   점검한다. target SLI가 회복되지 않았으면 Locust를 중지한 채 target owner에게 보고한다.
 
    ```bash
    LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result \
-   docker compose -f labs/locust/docker-compose.yml --env-file labs/.env.example --profile lab-locust up -d lab-locust-master
-   LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result \
-   docker compose -f labs/locust/docker-compose.yml --env-file labs/.env.example --profile lab-locust up -d lab-locust-worker
+   docker compose --env-file labs/.env.example -f labs/locust/docker-compose.yml --profile lab-locust config --quiet
+   ```
+
+5. 대상과 새 canary가 승인되면 기존 실행과 다른 `LAB_CANARY_ENV_FILE`을 사용한다.
+   이 파일에는 검토된 scenario, 비어 있는 새 result directory, 승인된 최소 users·spawn rate·run time·
+   worker 수를 설정한다. 실행 환경에서 해당 설정을 덮어쓰는 상속 변수를 제거한다.
+   같은 canary 입력으로 render가 성공하고 대상과 한도가 승인값과 일치할 때만 새 제어기 실행을 시작한다.
+   목적·lease·deadline은 각 승인값이다.
+
+   ```bash
+   docker compose --project-name hy-home-lab-locust --env-file "$LAB_CANARY_ENV_FILE" -f labs/locust/docker-compose.yml --profile lab-locust config --quiet &&
+     python3 scripts/operations/lab.py --env-file "$LAB_CANARY_ENV_FILE" run locust --purpose "$LAB_PURPOSE" --lease "$LAB_LEASE" --deadline "$LAB_DEADLINE"
    ```
 
 6. scenario 복구 시에는 두 service를 모두 중지한 상태로 두고, 현재 bind-backed scenario
    디렉터리를 protected quarantine path로 복사하고, 검토된 파일을 별도 디렉터리로
    복원하고, hash를 비교한 뒤에만 active file을 교체한다. 캡처된 credential이나 raw
    personal data는 절대 복원하지 않는다.
-7. upgrade 시에는 검토된 Dockerfile에서 rebuild하고, master 하나와 worker 하나를
-   시작하여 별도로 승인된 소규모 canary를 실행한다. worker 등록에 실패하거나 통계가
+7. upgrade 시에는 검토된 Dockerfile에서 rebuild하고, 승인된 worker 수로 5단계의
+   소규모 canary를 실행한다. worker 등록에 실패하거나 통계가
    벌어지면 image/build 변경을 롤백한다. 시도 사이에는 Locust master와 worker를 중지 상태로 유지한다. 대상 애플리케이션을
    임의로 중지하지 않는다.
 
@@ -131,7 +136,7 @@ target SLI가 회복되지 않았으면 Locust를 중지 상태로 두고 target
 
 ### Service Checks
 
-- Master UI health가 성공하고 예상 worker count가 등록된다.
+- Headless master의 TCP healthcheck가 성공하고 예상 worker count가 등록된다.
 - 별도로 승인된 canary가 지정된 target SLI 범위 내에 머문다.
 - 최종 full run은 명시적으로 승인되었거나 Locust가 중지 상태로 남아 있다.
 - scenario/result restore와 upgrade rehearsal은 Task가 protected path, command,

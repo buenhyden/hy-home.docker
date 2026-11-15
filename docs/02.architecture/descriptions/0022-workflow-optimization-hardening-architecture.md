@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Architecture Description"
-version: "1.2.4"
+version: "1.2.5"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "architecture"
 artifact_id: "AD-0022"
 parent_ids:
@@ -30,8 +30,9 @@ The workflow tier operates with two execution planes.
 - Airflow (code-first orchestration)
 - n8n (low-code automation)
 
-The management plane of both systems sits behind the Traefik TLS boundary and
-the standard middleware; Airflow and n8n authenticate users natively.
+Both systems use Traefik TLS and the gateway standard chain. Airflow's UI
+uses Keycloak Auth Manager, n8n uses its own login, and the optional Flower
+UI uses ForwardAuth.
 
 - **Owns**:
   - Workflow management path security contract
@@ -90,6 +91,7 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 - **Runtime / Platform**: Docker Compose (`infra/07-workflow/*`)
 - **Deployment Model**:
   - Airflow distributed components; `${AIRFLOW_VALKEY_HOST:-mng-valkey}` resolves to the shared `mng-valkey`
+  - Flower is selected separately by `airflow-flower`; `workflow` does not select it
   - n8n queue mode + external runner; `${N8N_VALKEY_HOST:-mng-valkey}` resolves to the shared `mng-valkey`
 - **Verification**: the registered `infrastructure-hardening` gate in
   `.github/workflow-contract.yml` and Compose validation
@@ -110,6 +112,7 @@ Health-based boot order reduces initial failure/restart bursts, and worker/task-
 ### Decision Links
 
 - **ADR**: [ADR-0059 Native OIDC for Open WebUI and the Airflow UI](../decisions/0059-native-oidc-open-webui-and-airflow.md)
+- **ADR**: [ADR-0062 optional Flower activation](../decisions/0062-home-lab-membership.md)
 
 ### Quality and Risks
 

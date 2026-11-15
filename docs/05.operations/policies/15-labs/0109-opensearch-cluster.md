@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Cluster LAB Operations Policy"
-version: "0.1.2"
+version: "0.1.3"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "POL-0109"
 parent_ids:
@@ -36,7 +36,10 @@ LAB 전용 `opensearch-cluster` profile과 project `hy-home-lab-opensearch`에 �
 
 ### Exclusions
 
-HOME 단일 node를 대체하거나 승격하는 것은 승인하지 않는다. 승격은 [POL-0107](0107-lab-promotion.md)을 따르는 별도 Task다.
+[ADR-0062](../../../02.architecture/decisions/0062-home-lab-membership.md#decision)는 HOME 단일
+node의 별도 퇴역과 독립 검색 LAB을 결정했다. LAB의 `replace-same` manifest는 교체 검토용
+후보이며 승인 근거로 쓰지 않는다. HOME 대체는 변경된 구조 결정의 승인과
+[POL-0107](0107-lab-promotion.md)의 별도 Task를 요구한다.
 
 ## Rules
 

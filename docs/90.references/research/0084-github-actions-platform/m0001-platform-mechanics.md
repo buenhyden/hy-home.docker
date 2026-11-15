@@ -1,6 +1,6 @@
 ---
 title: "Reference: GitHub Actions Platform Mechanics"
-version: "0.2.1"
+version: "0.2.2"
 type: "reference/research"
 status: "draft"
 owner: "@buenhyden"
@@ -25,12 +25,12 @@ uses. That leaves the platform's own rules — how tokens are scoped, how trust
 crosses a fork boundary, how a cache can become an execution channel, what a
 ruleset can and cannot be read from — documented nowhere.
 
-This reference covers the platform mechanics. It deliberately does not
-re-inventory the repository's workflows, jobs, or pinned actions; those live in
-`automation, pipeline, and workflow` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `automation-pipeline-workflow` leaf) and are
-not duplicated here. The one repository-facing section below records which
-platform capabilities are _not_ adopted, which is the complement of that
-inventory rather than a copy of it.
+This reference covers platform mechanics. The tracked workflows and workflow
+contract in Repository Role describe current declarations.
+[RES-0002-m0004](../0002-agentic-engineering-research-pack/m0004-automation-pipeline-workflow.md)
+contains the related automation research and dated workflow inventory. The
+repository-facing findings below record the capabilities absent at the
+revisions examined.
 
 Every external claim here was retrieved on **2026-08-10**. GitHub Actions
 documentation is mutable guidance under continuous revision, and during this
@@ -452,33 +452,23 @@ The two are complementary rather than alternative: actionlint catches workflows
 that will not behave as written, zizmor catches workflows that behave exactly as
 written and should not.
 
-An earlier account described both checks on the routes below. The 2026-09-05
-revalidation records the later aggregate workflow, with `validation-changed`
-for pull requests and `validation-full` for pushes and manual dispatch.
-The earlier account identified zizmor as the `zizmor` job in
-`ci-quality.yml`, uploading SARIF; there is no zizmor configuration file, so the
-default persona applies. Note the version gap: the figures above are for
-v1.29.0, while `ci_gate_adapters.py:1010` pins `zizmor==1.28.0`, so the audit
-count in force here is whatever 1.28.0 shipped rather than the 40 above. actionlint runs as a pre-commit hook:
-`.pre-commit-config.yaml` pins `rhysd/actionlint` at `rev: v1.7.12` scoped to
-`^\.github/workflows/.*\.(yml|yaml)$`, and `run-ci-precommit.sh` — the
-entrypoint of `leaf.pre-commit` under the required-quality root
-`ci.pre-commit` — executes `pre-commit run --all-files` skipping
-`public-validation-changed` and `public-validation-full`. Both therefore run on
-every push and pull request to `main` in that account. For the current routes,
-read the [quality workflow](../../../../.github/workflows/ci-quality.yml) and
-[execution policy](../../../../.agents/governance/quality-standards.md#4-execution-boundary).
-The tracked workflow separates PR candidate QA and main-push security
-observation. The PR style controller selects the authenticated changed paths.
-The dated finding alone cannot establish a current hosted run.
+The earlier account recorded the dedicated `zizmor` job and a
+`zizmor==1.28.0` pin, while the upstream audit count above described v1.29.0.
+The 2026-09-05 aggregate workflow used `validation-changed` for PRs and
+`validation-full` for pushes and manual dispatch. That account also recorded
+an all-files pre-commit route. Its 2026-09-08 correction traces the removal of
+the `eslint-nextjs` hook to `1c620dd07` and the recursion-prevention skips
+for the two `public-validation-*` hooks to `3989da584` on 2026-09-03.
+These are dated workflow observations.
 
-Corrected 2026-09-08: the sentence above named `eslint-nextjs` as the skip.
-That hook id left `.pre-commit-config.yaml` in `1c620dd07`, and `3989da584`
-replaced the skip with the two gate-owned `public-validation-*` hooks on
-2026-09-03, two days before this module's `observed_at`. The skip is what stops
-`run-ci-gate.py` and `pre-commit` from re-entering each other, not a way to
-avoid running ESLint twice; ESLint has no pre-commit hook here and reaches CI
-only through `leaf.frontend-lint`.
+The tracked [quality workflow](../../../../.github/workflows/ci-quality.yml)
+and [execution policy](../../../../.agents/governance/quality-standards.md#4-execution-boundary)
+separate commit checks, PR candidates and main-push security. The actionlint
+hook is scoped to workflow YAML in `.pre-commit-config.yaml`. The style
+controller's `local-staged` mode examines the staged index. Its `pr-merge`
+mode validates the authenticated PR candidate's changed paths on an isolated
+checkout and rejects `SKIP`. A push to `main` has a separate zizmor SARIF
+route. These declarations establish no hosted execution result.
 
 Worth noting against the pinning guidance above: the actionlint hook is pinned
 by tag, not by commit SHA. `.pre-commit-config.yaml` is a different mechanism
@@ -487,12 +477,9 @@ unchanged, but the mutable-tag exposure is the same in kind.
 
 #### Platform Capability Adoption in This Repository
 
-This is the complement of the tracked inventory in
-`automation, pipeline, and workflow` (retiring 2026-07-05 pack, cited without a path because pre-deletion gate 4 admits no clickable link; `automation-pipeline-workflow` leaf), which
-records what the repository _does_ declare. This table is therefore strictly
-negative: it records only capabilities the repository does **not** use. What it
-does use is not restated here. Derived at `4122cecf` by scanning
-`.github/workflows/`.
+This table complements the dated automation inventory linked in Overview.
+It records only capabilities absent at `4122cecf`, as observed by scanning
+`.github/workflows/` at that revision.
 
 | Capability                           | Evidence of non-use                                                                               |
 | ------------------------------------ | ------------------------------------------------------------------------------------------------- |

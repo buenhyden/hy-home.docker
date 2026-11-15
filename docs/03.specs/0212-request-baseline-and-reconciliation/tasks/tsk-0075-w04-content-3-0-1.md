@@ -1,6 +1,6 @@
 ---
 title: "W04 Content 3.0.1 Task"
-version: "0.1.0"
+version: "0.1.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -32,6 +32,9 @@ boundaries. Read-only preflight found a clean local `0013721db`, local and
 remote main at `17bbde05a`, and only Renovate PRs 1047 and 1048 open.
 [TSK-0068](tsk-0068-w01-contract-3-0-1.md) retains the accepted prerequisite.
 [TSK-0074](tsk-0074-w04-lifecycle-3-0-1.md) supplies local draft-boundary evidence.
+The direct continuation request retains W136 and criterion 131, using
+the clean local `ddf416bdf` on `codex/w04-content`. Read-only remote
+inspection again found main at `17bbde05a` and open PRs 1047 and 1048.
 
 ## Execution Log
 
@@ -105,6 +108,61 @@ product release process. No Stage 99 template or product source changed.
 | SPEC-0212-TSK-0075 | draft | ready | #inputs-and-authority |
 | SPEC-0212-TSK-0075 | ready | in-progress | #design-before-implementation |
 
+#### Continuation design
+
+D15, D01 and D03 at 3.0.1 still govern this slice. The prior change retained
+the accepted contract and passed local document and catalog checks, but
+route and dependency descriptions that consume the moved services can
+still report the former topology. Verify the unchanged baseline again with
+the catalog and commit diff, then independently compare remaining prose
+against tracked configuration and approved direction by document family.
+Correct corroborated discrepancies in the description or operating
+procedure that owns each claim. Preserve historical decision text and
+keep each implementation gap visible with its actual owner. Replace
+individual claims in place to keep identifiers, links and reader contracts
+stable. Revert each bounded change to recover its previous wording.
+Use focused metadata, command-path, synthetic configuration and link
+checks on the affected surfaces. Leave claims that require external or
+live observations explicitly open.
+
+#### Continuation findings
+
+- Stage 01 reviewed the verification methods of 18 Requirement packages
+  against current Spec citations and selected acceptance authorities.
+  REQ-0004, REQ-0011, REQ-0012, REQ-0024 and REQ-0027 now distinguish the
+  required observations from source review, migration or candidate evidence,
+  with the existing requirement and acceptance roles preserved.
+- Stage 02 compared 17 bounded scopes and corrected eight Descriptions.
+  Kafka, Open WebUI and other optional services now distinguish the current
+  topology, route controls, state ownership and approved later changes.
+  The descriptions point to the current ADR-0062 decisions. Keep ADR-0059
+  as the accepted historical decision text under the Stage 02 authoring
+  rules and use ADR-0062 for the later affected deployment choices.
+- Stage 05 reviewed 13 selected Guide and Policy scopes and recorded
+  68 review entries across 57 Runbook, index and incident paths. A source
+  scan over 98 runbook and incident documents resolved 176 literal
+  standalone Compose selectors in the 52 documents with comparable input.
+  This slice corrected 18 Stage 05 paths, including three navigation indexes.
+  Candidate promotion manifests for Kafka and OpenSearch carry no approval
+  to replace a HOME service. LAB commands name the complete Compose target
+  and use the environment file for that operation. Open WebUI HOME
+  retirement identifies the old container by project and service before a
+  write. Locust diagnosis identifies the original lease while its new canary
+  requires separately reviewed inputs, a fresh result path and a deadline.
+  The storage runbooks distinguish excluded Loki and Tempo object history
+  from recovery with a separately acquired, consistent state copy.
+- Stage 90 compared bounded prose in 28 files and corrected two members.
+  Product release evidence routes through existing owners. The GitHub
+  Actions account retains the dated historical cadence and names current
+  staged, PR candidate and main-push routes separately.
+
+The continuation inventory keeps the 404 tracked paths, prior coverage and
+new scoped records together. It records 390 partial authored paths, 10
+reviewed for their stated scopes, and four generated instruction files.
+Source, shell and synthetic configuration checks leave actual service
+operation and user acceptance open. The accepted W01 contract, product
+publishing path and W08-MEMORY handoff are retained.
+
 ### Blockers and Decisions
 
 Read-only review covers the selected local branch. Live service operation,
@@ -138,6 +196,20 @@ recoverable.
 | Document metadata | 131 | W136 | check-document-metadata.py check-changed | First 36 changed files from 0013721db | PASS | Zero findings and zero overrides, 273.41 s | required | - |
 | Focused metadata follow-up | 131 | W136 | check-document-metadata.py check-changed --changed-path | REQ-0003, REQ-0023 and TSK-0075 from 0013721db before recording results | PASS | Three files selected, zero findings and zero overrides, 250.87 s | required | - |
 | Gate selection | 131 | W136 | run-ci-gate.py --profile changed --explain and --local-only --explain | Candidate scope and gate definitions | PASS | Selection observed. These invocations execute no gate leaves. | optional | - |
+| Resume baseline | 131 | W136 | check-operations-catalog.py and git diff HEAD^ HEAD --check | Clean ddf416bdf, local and read-only GitHub state observed | PASS | Catalog exit 0 in 21.55 s, unchanged commit and base | required | - |
+| Resume requirement readback | 131 | W136 | compare typed frontmatter, child requirements and traceability | Five changed requirements against ddf416bdf | PASS | Status, identity, substantive Requirements and downstream links preserved, 0.10 s | required | - |
+| Resume Kafka LAB | 131 | W136 | docker compose config | Kafka LAB, lab-kafka profile, Compose 5.6.1, synthetic data root and cluster ID plus missing-ID input | PASS | Seven services, internal network, no published ports, missing ID rejected, render 0.51 s | required | - |
+| Resume OpenSearch LAB | 131 | W136 | docker compose config --services | Standalone OpenSearch LAB, Compose 5.6.1, synthetic LAB inputs | PASS | Four services; no startup | required | - |
+| Resume Locust LAB | 131 | W136 | docker compose config | Locust LAB, lab-locust profile, synthetic scenario and result roots plus missing-path input | PASS | Headless master, terminal job label, no published ports, absent path rejected, render 0.13 s | required | - |
+| Resume corpus lifecycle | 131 | W136 | check-document-corpus-lifecycle.py --base-ref ddf416bdf | Continuation candidate, no lifecycle transition | PASS | Zero lifecycle and active occupancy findings, 159.52 s | required | - |
+| Resume corpus alignment | 131 | W136 | check-document-links.py --mode alignment | Continuation candidate before late prose and evidence rows | PASS | 877 documents, 8,593 links, zero failures or warnings, 82.71 s | required | - |
+| Resume operations catalog | 131 | W136 | check-operations-catalog.py | Continuation catalog and routing changes | PASS | Exit 0, 28.17 s | required | - |
+| Resume runbook paths | 131 | W136 | check_commands and bash -n on changed fences | Nine changed runbook and index paths before Locust was added | PASS | Zero path findings, six changed Bash blocks, 7.93 s | required | - |
+| Resume metadata | 131 | W136 | check-document-metadata.py --mode check-changed --base-ref ddf416bdf | 33 changed paths before the Locust runbook was added | PASS | Zero violations and overrides, 260.13 s | required | - |
+| Resume late documents | 131 | W136 | registered frontmatter, body, language and link checks | AD-0002, AD-0020, RES-0084-m0001 and initial RUN-0062 continuation text | PASS | Four contracts, 38 links and zero findings, 2.54 s | required | - |
+| Resume Locust canary input | 131 | W136 | scoped body, command and synthetic Compose checks | Final RUN-0062 with separate original and canary inputs | PASS | Five Bash blocks, six links, no path findings; synthetic rendered bounds and fresh result bind in 0.123 s | required | - |
+| Resume inventory | 131 | W136 | tracked inventory and per-file scopes | 404 tracked and 33 changed corpus paths against ddf416bdf | PASS | Exact path sets and 116 declared Guide services verified | required | - |
+| Resume independent review | 131 | W136 | requirements and high-impact diff readback | 34-path continuation from ddf416bdf, selected route, procedure, authority and source changes | PASS | CI cadence, LAB OIDC diagram and separate Locust canary input corrected and re-reviewed | required | - |
 
 ### Resolution Links
 
@@ -153,6 +225,12 @@ The Compose result used `docker compose --env-file` with a temporary file,
 and an otherwise empty environment except PATH. Only the rendered
 configuration was read. The documented host backup and restore procedures
 were not run.
+
+On continuation, the MarkdownIt comparison used the same 404 tracked paths
+at `ddf416bdf` and the 33-document corpus update, alternating three timed
+parses per input with file reads excluded. The medians were 3.158 seconds
+and 3.271 seconds. This records local measurement variation and tree parsing
+cost only.
 
 ## Acceptance Decision
 
@@ -175,6 +253,9 @@ separate evidence. Owner acceptance remains pending.
 For W136 and criterion 131, the same logical change as this Task corrects
 35 documents across the four stages listed in Claim Review. The
 catalog, linked readers and affected runbook command paths were checked.
+The continuation from `ddf416bdf` corrects 33 corpus documents and records
+the added checks above. Each affected stage retains authority for its own
+claims.
 The criterion decision remains pending and the remaining obligations are
 listed above.
 

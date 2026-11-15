@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Architecture Description"
-version: "1.1.2"
+version: "1.1.3"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "architecture"
 artifact_id: "AD-0021"
 parent_ids:
@@ -25,10 +25,10 @@ expansion strategy from an architecture perspective.
 
 ### System Boundary
 
-The observability layer operates the data plane (collection/storage) and the
-management plane (UI/API) separately. The management plane applies the
-standard middleware+SSO chain at the Traefik TLS termination point, and the
-data plane is kept over `obs_net` internal communication.
+The observability layer separates collection and storage from management
+UI and API routes. Traefik terminates TLS for management routes, which use
+the gateway chain and route-specific authentication. Internal service flows
+use `obs_net`.
 
 - **Owns**:
   - Observability service routing/authentication boundary contract
@@ -64,11 +64,14 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 - Storage/Query Plane:
   - Prometheus, Loki, Tempo, Pyroscope
 - Control/Presentation Plane:
-  - Grafana, Gatus, Alertmanager, Pushgateway, Alloy UI, cAdvisor route, Pyroscope route
+  - Grafana, Gatus, Dozzle, Alertmanager, Pushgateway, Alloy UI, cAdvisor route, Pyroscope route
 - Exporters:
   - node-exporter, cAdvisor, dcgm-exporter
 - Gateway Path:
-  - Client -> Traefik(`websecure`) -> `gateway-standard-chain` + `sso-errors`/`sso-auth` -> target service; Grafana and Gatus routes use `gateway-standard-chain` only, and the Prometheus API route uses `prometheus-api-auth`
+  - Traefik `websecure` applies `gateway-standard-chain` to management routes.
+    Grafana, Gatus and Dozzle use native Keycloak OIDC. Dozzle additionally
+    applies its admin IP allowlist. The Prometheus API applies
+    `prometheus-api-auth`, and other browser routes use ForwardAuth.
 - Internal Path:
   - OTLP/log/trace traffic over `obs_net`
 
@@ -98,7 +101,9 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 
 ### Contracts
 
-- Gateway path: Client -> Traefik(`websecure`) -> `gateway-standard-chain` + `sso-errors`/`sso-auth` -> target service; Grafana and Gatus routes use `gateway-standard-chain` only, and the Prometheus API route uses `prometheus-api-auth`.
+- Gateway path: apply the route-specific authentication listed under Building
+  Blocks. Native OIDC and Prometheus API authentication do not use the
+  browser ForwardAuth chain.
 - Internal path: OTLP/log/trace traffic over `obs_net`.
 
 ### Failure Boundaries

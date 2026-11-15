@@ -1,10 +1,10 @@
 ---
 title: "Communication Tier (10-communication) Requirements"
-version: "1.3.1"
+version: "1.3.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-16"
 layer: "requirements"
 artifact_id: "REQ-0011"
 created: "2026-03-26"
@@ -100,7 +100,16 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 ### Verification Method
 
-Configuration conditions (REQ-0011-FR-0001, REQ-0011-FR-0002 and the bindings in REQ-0011-FR-0004 and REQ-0011-FR-0005) are judged by reviewing the rendered sandbox and mail server configuration and the published ports. Behavior conditions need runtime observations: a captured test message listed and found by search (REQ-0011-FR-0003) and an unauthenticated request redirected to SSO (REQ-0011-FR-0005). External delivery success, TLS version and DNS deliverability are judged by separate runtime evidence at promotion, which the Spec that performs the promotion records. SPEC-0262 cites REQ-0011, and its Task evidence rows record the results it produces. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence and accepts the requirement once every condition is judged met.
+Review the rendered configurations for service selection, isolation, listener
+settings and published ports. Record containment and relay refusal with
+authorized synthetic messages in the applicable isolated environments
+(REQ-0011-FR-0001 and REQ-0011-FR-0002). Record capture and search, the TLS
+behavior of the named listeners, and the unauthenticated sandbox request
+redirected to SSO for REQ-0011-FR-0003 through REQ-0011-FR-0005. External
+delivery success, TLS version and DNS deliverability at promotion require
+separate runtime evidence. SPEC-0262 lists this requirement as a parent.
+Record each result in its applicable Task. @buenhyden judges the conditions
+and accepts the requirement once they are met.
 
 ## Traceability
 

@@ -1,10 +1,10 @@
 ---
 title: "독립 LAB 문서 가이드"
-version: "0.3.3"
+version: "0.3.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-16"
 layer: "operations"
 ---
 
@@ -41,8 +41,8 @@ layer: "operations"
 | [dbt Usage Guide](0090-dbt.md) | `GDE-0090` | 독립 LAB `labs/dbt/docker-compose.yml`의 command-line 변환 작업이다. HOME dev-pg는 필수 LAB 입력 endpoint로만 지정하며 승인 전에는 렌더링 전용이다. |
 | [Lakehouse Usage Guide](0094-lakehouse.md) | `GDE-0094` | 독립 LAB `labs/lakehouse/docker-compose.yml`의 Iceberg 엔진(Spark·Trino·Flink·Great Expectations)과 table bucket 작업이다. HOME SeaweedFS S3·REST catalog는 필수 LAB 입력 endpoint로만 지정한다. |
 | [Superset Usage Guide](0097-superset.md) | `GDE-0097` | 독립 LAB `labs/superset/docker-compose.yml`의 BI 웹 애플리케이션이다. gateway route 없이 loopback port로 게시하며 HOME mng-pg와 Keycloak은 LAB 입력으로만 찾는다. |
-| [Kafka Cluster LAB Usage Guide](0108-kafka-cluster.md) | `GDE-0108` | 독립 LAB `labs/kafka-cluster/docker-compose.yml`의 세 broker KRaft cluster다. HOME 단일 broker를 같은 형태로 대체하는 승격 계획을 갖는다. |
-| [OpenSearch Cluster LAB Usage Guide](0109-opensearch-cluster.md) | `GDE-0109` | 독립 LAB `labs/opensearch-cluster/docker-compose.yml`의 세 node cluster와 Dashboards다. HOME 단일 node를 같은 형태로 대체하는 승격 계획을 갖는다. |
+| [Kafka Cluster LAB Usage Guide](0108-kafka-cluster.md) | `GDE-0108` | 독립 LAB의 세 broker KRaft cluster와 Schema Registry·Connect 사용 전제다. HOME 단일 broker는 유지한다. |
+| [OpenSearch Cluster LAB Usage Guide](0109-opensearch-cluster.md) | `GDE-0109` | 독립 LAB의 세 node cluster와 Dashboards 사용 전제다. HOME 단일 node의 별도 퇴역이 예정되어 있다. |
 
 ### Classification
 

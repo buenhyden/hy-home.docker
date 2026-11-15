@@ -1,10 +1,10 @@
 ---
 title: "Kafka Cluster LAB Operations Policy"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "POL-0108"
 parent_ids:
@@ -36,7 +36,10 @@ LAB 전용 `lab-kafka` profile과 project `hy-home-lab-kafka`에 적용된다.
 
 ### Exclusions
 
-HOME 단일 broker를 대체하거나 승격하는 것은 승인하지 않는다. 승격은 [POL-0107](0107-lab-promotion.md)을 따르는 별도 Task다.
+[ADR-0062의 Kafka CDC 개정](../../../02.architecture/decisions/0062-home-lab-membership.md#amendment-of-2026-11-10-kafka-cdc-kafka-connect-and-schema-registry)은
+HOME 단일 broker를 유지한다. LAB의 `replace-same` manifest는 교체 검토용 후보이며 승인 근거로
+쓰지 않는다. HOME 교체는 변경된 구조 결정의 승인과 [POL-0107](0107-lab-promotion.md)의 별도
+Task를 요구한다.
 
 ## Rules
 

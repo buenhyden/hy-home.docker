@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.6.4"
+version: "1.6.5"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -320,7 +320,7 @@ cleanup_status=removed
 
 Restic의 `restore <reviewed-snapshot-id> --target <owned-scratch>`로 승인된 include만 추출한다. state export는 `/src/state/exports`, host repository의 `.env`·secret은 `/src/host` 아래다. hash·mode·UID와 원래 application recovery point를 확인하고 검토된 파일만 별도 승인으로 복사한다. scratch도 secret artifact이며0600 파일과 제한된 디렉터리 권한을 유지한다.
 
-SeaweedFS는 같은 state snapshot의 `/src/state/volumes/data/seaweedfs`와 `/src/state/exports/seaweedfs-filer.meta`를 함께 복원한다. `loki-bucket`·`tempo-bucket` collection의 volume file은 snapshot에 없으므로(SPEC-0228) 복원 뒤 Loki와 Tempo는 빈 상태에서 다시 수집한다. [RUN-0024](../05-databases-and-storage/0024-seaweedfs.md)의 빈 filer store, volume/master tree, `fs.meta.load` 계약을 따른다. restore 실패·identity 충돌·include 부재는 중단하며 자동 cleanup하지 않는다.
+SeaweedFS는 같은 state snapshot의 `/src/state/volumes/data/seaweedfs`와 `/src/state/exports/seaweedfs-filer.meta`를 함께 복원한다. `loki-bucket`·`tempo-bucket` collection의 volume file은 snapshot에 없으므로(SPEC-0228) 손실된 object 이력은 이 복원에서 돌아오지 않는다. Loki와 Tempo가 새 telemetry를 수집하는지 별도로 확인한다. [RUN-0024](../05-databases-and-storage/0024-seaweedfs.md)의 빈 filer store, volume/master tree, `fs.meta.load` 계약을 따른다. restore 실패·identity 충돌·include 부재는 중단하며 자동 cleanup하지 않는다.
 
 #### 7. Delete old snapshots (approval: irreversible)
 

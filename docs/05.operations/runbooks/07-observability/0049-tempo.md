@@ -1,10 +1,10 @@
 ---
 title: "Tempo Readiness and Recovery Runbook"
-version: "1.0.7"
+version: "1.0.8"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "RUN-0049"
 parent_ids:
@@ -174,7 +174,10 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 이 격리 구성과 해당 subject의 backup 계약을 검토하기 전까지 계획은 NOT_RUN으로
 유지한다. 임시 project에 운영 volume을 연결하거나 credential을 복사하지 않는다.
 
-상태: **계획됨, 미실행**. Tempo bucket/WAL 복구에 성공했다고 주장하지 않는다.
+상태: **계획됨, 미실행**. 이 계획은 별도 승인으로 일관된 bucket과 WAL 상태를
+확보한 경우에만 적용한다. [HOME 백업 정책](../../policies/10-platform-and-backup/0021-backup-and-restore.md)은
+`tempo-bucket` collection을 일일 Restic snapshot에서 제외한다. 손실된 trace 이력은
+그 snapshot에서 복원할 수 없으며 서비스 복구 뒤 새 trace를 수집한다.
 
 1. image/config digest, block/WAL 시간 범위, tenant/trace 기준값, bucket 목록, local-state identity와 checksum을 기록한다. Alloy/producer의 trace 입력을 일시 중단하고, 일관된 `tempo-bucket` snapshot과 정지 상태의 `tempo-data` 복사본을 함께 확보하도록 조율한다.
 2. test credential을 사용하고 운영 route가 없는 별도 project/network의 새 bucket/prefix와 local path에 복구한다.
