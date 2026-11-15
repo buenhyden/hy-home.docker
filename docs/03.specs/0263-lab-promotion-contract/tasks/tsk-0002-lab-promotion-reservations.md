@@ -1,10 +1,10 @@
 ---
 title: "LAB Promotion Reservations Task"
-version: "0.3.3"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0263-TSK-0002"
 parent_ids:
@@ -266,11 +266,15 @@ None: nothing was recorded here before this Task moved to the common form.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 8 | pending | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18, E19, E20, E21, E22, E23, E24, E25, E26, E27, E28, E29, E30, E31 | - | @buenhyden |
+| 8 | not-required | E3, E4, E5, E6, E7, E8, E9, E10, E11, E12, E14, E16, E17, E18, E19, E20, E21, E22, E23, E24, E25, E26, E27, E28, E29, E30, E31 | Not required: owner @buenhyden withdrew this criterion on 2026-11-15 (SPEC-0212 TSK-0070), because the owner decided on 2026-11-06 that no LAB is promoted. E21, E24 and E27 stay recorded as readiness measurements | @buenhyden |
 
 ### Remaining Conditions
 
 #### Review and Completion
+
+On 2026-11-15 the owner withdrew criterion 8 as not-required, citing the
+2026-11-06 decision that no LAB is promoted (SPEC-0212 TSK-0070). The Task
+stays `in-progress` until the owner closes it; nothing is deleted.
 
 The owner approved Spec 0.3.0. W7 is implemented. Criterion 8 waits for owner
 acceptance.
