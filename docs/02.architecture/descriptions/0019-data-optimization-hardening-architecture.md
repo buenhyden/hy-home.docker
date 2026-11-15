@@ -1,10 +1,10 @@
 ---
 title: "Data Optimization and Hardening Architecture"
-version: "1.2.3"
+version: "1.2.4"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-15"
 layer: "architecture"
 artifact_id: "AD-0019"
 parent_ids:
@@ -120,7 +120,7 @@ Each component keeps its own configuration and volume, giving a per-service volu
 
 ### Currentness and Lineage
 
-- [SPEC-0004](0004-data-architecture.md)
+- [AD-0004 Data Tier (04-data) Architecture Description](0004-data-architecture.md)
 
 The description reflects the current tree at its `updated` date and history lives in Git.
 

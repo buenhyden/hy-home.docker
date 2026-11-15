@@ -1,8 +1,8 @@
 ---
 title: "README and Agent Guide Split Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-15"
 layer: "specs"
@@ -62,6 +62,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0251-PLAN-0001 | draft | approved | #current-contract-decision |
 | SPEC-0251-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0251-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
+| SPEC-0251-TSK-0001 | in-progress | completed | #criterion-decisions |
 
 #### Decisions
 
@@ -78,6 +79,10 @@ progress under the approved parents. Hosted CI has not run.
   reading the folder guide, and no folder `CLAUDE.md` pointer is added. Codex
   documents a root-to-working-directory merge of `AGENTS.md`, not observed
   here.
+  Correction 2026-11-15: the "no folder `CLAUDE.md` pointer" statement is
+  superseded; each folder `AGENTS.md` now has a generated `CLAUDE.md` import shim
+  (for example `docs/03.specs/CLAUDE.md`) that the provider surface renderer
+  writes. The original sentence stays as history.
 - SPEC-0251 follows SPEC-0250, which #725 merged; after the coordinator's
   rebases onto main c5ec612ff and then cb7c324d3 (with #727) the Spec
   high-water is 251 and the index lists both.
@@ -196,6 +201,8 @@ None: nothing was recorded here before this Task moved to the common form.
 | E28 | 4 | W4 | validation-suites | CI routing and surface ownership, revision fd8de6704 | PASS | 92 tests OK | required | - |
 | E29 | 2, 3 | W3 | document-entrypoint | `check-document-links.py --mode entrypoint`, origin/main 705310723 | PASS | `failures=0 warnings=0`, exit 0 | required | E5, E17, E25 |
 | E30 | 2, 3 | W3 | document-commands | `check-document-links.py --mode commands`, origin/main 705310723 | PASS | `failures=0 warnings=0`, exit 0 | required | E18 |
+| E31 | 4 | W4 | independent-review | 2026-11-15 independent re-review of the delivered change: `docs/03.specs/AGENTS.md:66-70` and `:64`; `docs/02.architecture/AGENTS.md:69-79`; bootstrap step 4 and precedence item 3; `documentation-protocol.md:349-352`; `github-governance.md:223-224`; `.github/labeler.yml:72` `"**/AGENTS.md"`; `spec.md:74-79` | PASS | Criteria 1 to 4 MET; every fix the Task describes is in the repository; follow-up fixes made in this change: Decisions correction for the folder `CLAUDE.md` shims and `scripts/README.md` agent-directed text rephrased for humans (rule stays in `scripts/AGENTS.md`) | required | E23, E24 |
+| E32 | 4 | W4 | hosted-ci | PR #728, merge 4adeb3d378371ac5904353c5e40048406f474393, read-only `gh pr view` 2026-11-15 | PASS | 7 SUCCESS, 1 SKIPPED, none failing | required | E16 |
 
 ### Resolution Links
 
@@ -207,17 +214,14 @@ None: nothing was recorded here before this Task moved to the common form.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | - | - | @buenhyden |
-| 2 | pending | - | - | @buenhyden |
-| 3 | pending | - | - | @buenhyden |
-| 4 | pending | - | - | @buenhyden |
+| 1 | accepted | E1, E2, E14 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent re-review | SPEC-0251 TSK-0001 |
+| 2 | accepted | E3, E4, E22, E29, E30 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent re-review | SPEC-0251 TSK-0001 |
+| 3 | accepted | E4, E29, E30 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent re-review | SPEC-0251 TSK-0001 |
+| 4 | accepted | E6, E7, E8, E26, E27, E28, E31, E32 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent re-review | SPEC-0251 TSK-0001 |
 
 ### Remaining Conditions
 
-Local checks are recorded above. Independent review 1 and re-review 2 requested
-changes (E23, E24); both sets are addressed on this branch and await
-re-review. Hosted CI on PR #728 is not observed here, and no criterion is
-accepted yet.
+All four criteria are accepted and the Task is completed. Reviews 1 and 2 requested changes (E23, E24); the 2026-11-15 re-review passed (E31). Hosted CI for the merged PR #728 is E32. The earlier merge receipt below is kept as dated history.
 
 #### Merge receipt 2026-11-10
 

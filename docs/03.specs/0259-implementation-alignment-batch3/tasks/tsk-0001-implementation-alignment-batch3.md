@@ -1,8 +1,8 @@
 ---
 title: "Implementation Alignment Batch 3 Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-15"
 layer: "specs"
@@ -56,6 +56,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0259-PLAN-0001 | draft | approved | #current-contract-decision |
 | SPEC-0259-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0259-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
+| SPEC-0259-TSK-0001 | in-progress | completed | #criterion-decisions |
 
 #### Decisions
 
@@ -79,6 +80,8 @@ progress under the approved parents. Hosted CI has not run.
   its own text that it is a draft recording the audit scope, so AD-0031 and
   AD-0032 (parent REQ-0027) and every Stage 05 document under AD-0031 stay
   draft.
+  Update 2026-11-15: POL/GDE/RUN-0086, -0087 and -0100 are now active; the
+  statement above is kept as the history of this change.
 
 #### Promoted (draft to active, minor version bump, 2026-11-04)
 
@@ -97,6 +100,7 @@ runbook 0098, plus ADR-0038 (accepted). 30 Stage 05 documents in total.
 
 - Left draft because of the parent chain (REQ-0027 draft): REQ-0027, AD-0031,
   AD-0032, POL/GDE/RUN-0087, POL/GDE/RUN-0086, POL/GDE/RUN-0100.
+  Update 2026-11-15: 0086, 0087 and 0100 are now active.
   GDE-0100 is also edited by open PR #736 and is untouched here.
 - Decision needed from the owner: approve REQ-0027 (its scope text calls it a
   draft and backup/restore, OpenBao bootstrap and resource acceptance are not
@@ -127,6 +131,11 @@ None: nothing was recorded here before this Task moved to the common form.
 | E9 | 4 | W4 | corpus-lifecycle | `check-document-corpus-lifecycle.py --base-ref origin/main`, same tree | PASS | lifecycle zero, occupancy zero | required | E5 |
 | E10 | 4 | W4 | metadata-active | `check-active`, same tree | PASS | selected 533, zero violations | required | - |
 | E11 | 4 | W4 | operations-and-links | `check-operations-catalog.py`; links `alignment`, `navigation`, `language`, `traceability`, `entrypoint`, same tree | PASS | catalog PASS; every link mode PASS, 879 documents, 8113 links, zero failures | required | - |
+| E12 | 1 | W1 | independent-review | 2026-11-15 independent acceptance review of SPEC-0259 criterion 1 | FAIL | Criterion 1 NOT_MET: ADR-0007:102 and ADR-0008:90 Traceability labels still named deleted Spec paths while linking to Architecture Descriptions | required | - |
+| E13 | 2 | W2 | independent-review | 2026-11-15 independent acceptance review of SPEC-0259 criterion 2 | FAIL | Important: runbook 0105:146 stated without qualification that the HOME server has no audit mount, contradicting lines 69-70 | required | - |
+| E14 | 1 | W1 | independent-review | ADR-0007, ADR-0008 and AD-0019 Traceability lines after the fix | PASS | ADR-0007 and ADR-0008 lines relabelled `Architecture Description: [AD-#### title]`; AD-0019 `[SPEC-0004]` now `AD-0004` with its title; criterion 1 fixed by this change | required | E12 |
+| E15 | 2 | W2 | independent-review | runbook 0105 line 146 after the fix | PASS | sentence now relative to the recorded 2026-10-22 REPOSITORY_REPORTED state and claims no live fact; fixed by this change | required | E13 |
+| E16 | 4 | W4 | hosted-ci | PR #738, merge 1f8adb89b71834331bad68fd7e078b59ab0786f1, read-only `gh pr view` 2026-11-15 | PASS | 8 SUCCESS, 2 SKIPPED, none failing | required | E7 |
 
 ### Resolution Links
 
@@ -138,15 +147,14 @@ None: nothing was recorded here before this Task moved to the common form.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | - | - | @buenhyden |
-| 2 | pending | - | - | @buenhyden |
-| 3 | pending | - | - | @buenhyden |
-| 4 | pending | - | - | @buenhyden |
+| 1 | accepted | E1, E12, E14 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent re-review | SPEC-0259 TSK-0001 |
+| 2 | accepted | E2, E13, E15 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent re-review | SPEC-0259 TSK-0001 |
+| 3 | accepted | E3, E10 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent re-review | SPEC-0259 TSK-0001 |
+| 4 | accepted | E6, E8, E9, E10, E11, E16 | Owner @buenhyden accepted on 2026-11-15 in this chat, after the independent re-review | SPEC-0259 TSK-0001 |
 
 ### Remaining Conditions
 
-Local checks are recorded above. Independent review and hosted CI have not
-run, and no criterion is accepted yet.
+All four criteria are accepted and the Task is completed. The 2026-11-15 independent review found criterion 1 NOT_MET (E12) and an Important runbook claim (E13); the fixes are verified in E14 and E15. Hosted CI for the merged PR #738 is E16. The earlier merge receipt below is kept as dated history.
 
 #### Merge receipt 2026-11-10
 

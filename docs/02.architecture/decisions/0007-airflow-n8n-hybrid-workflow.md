@@ -1,10 +1,10 @@
 ---
 title: "Airflow & n8n Hybrid Workflow Strategy"
-version: "1.1.4"
+version: "1.1.5"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "architecture"
 artifact_id: "ADR-0007"
 parent_ids:
@@ -99,4 +99,3 @@ The confirming evidence for this decision is limited to the Architecture Descrip
 
 - **PRD**: [008-workflow.md](../../01.requirements/0008-workflow.md)
 - **Architecture Description**: [0007-workflow-architecture.md](../descriptions/0007-workflow-architecture.md)
-- **Spec**: [008-workflow/spec.md](../descriptions/0007-workflow-architecture.md)

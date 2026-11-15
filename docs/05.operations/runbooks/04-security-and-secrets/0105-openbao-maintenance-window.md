@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Maintenance Window"
-version: "0.4.2"
+version: "0.4.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-15"
 layer: "operations"
 artifact_id: "RUN-0105"
 parent_ids:
@@ -143,7 +143,7 @@ P06 확대는 실제 HOME cold boot·5단계 custody 기록(SPEC-0242)·복구 g
 4. 그 token이 일반 secret을 읽지 못하고 갱신되는지 확인한 뒤, 쓰기를 멈춘 상태에서 새 업그레이드 전 snapshot을 만든다(backup 실행 승인).
 5. BKP-003·R2 자격 증명·BKP-002·Cloudflare 계정 접근의 off-host 보관 기록이 유효한지 확인한다(owner 확인). 유효 조건은 [POL-0085 위험 비례 재조정](../../policies/04-security-and-secrets/0085-openbao.md#existing-custody-decision-and-missing-closure)의 변경 사건 없음과 반기 확인 기한이다. 유효한 기록이 없으면 미실행이며, P01은 계속 차단된다. 배치와 확인은 아래 [1인 관리자 custody 절차](#1인-관리자-custody-절차)를 따른다.
 6. 새 attempt 식별자로 빈 대상에 의미 있는 restore를 하고 canary 읽기와 renderer 재인증을 확인한다(독립 READY 검토 후 사용자 승인). 이전 attempt 04의 도구는 추적되지 않았다. 지금은 추적되는 `protected-semantic-restore.py`가 있고, SPEC-0243이 합성 자원에서 전체 `perform()`을 native로 리허설했다. HOME의 실제 restore와 canary는 아직 실행되지 않았다.
-7. audit 용량을 측정하고 logrotate를 등록한다(sudo가 필요한 host 변경 승인). 규칙과 drop-in은 2026-10-15에 설치됐다. 현재 HOME server에는 audit mount가 없으므로 용량 측정은 8단계 업그레이드 window로 미룬다.
+7. audit 용량을 측정하고 logrotate를 등록한다(sudo가 필요한 host 변경 승인). 규칙과 drop-in은 2026-10-15에 설치됐다. 기록된 상태(위 2026-10-22 window의 REPOSITORY_REPORTED 적용)와 별개로 audit mount의 현재 존재는 이 문서가 확인하지 않았으므로, 용량 측정은 8단계 업그레이드 window로 미룬다.
 8. maintenance window 안에서 server 업그레이드, 지정 운영자의 수동 unseal, wrapped 재발급을 포함한 Agent 업그레이드를 진행한다(승인된 runtime 변경 의도의 새 검토).
 9. HOME cold boot를 한다(별도 승인).
 10. 현재 버전 인증과 consumer 읽기를 위한 consumer와 ACL을 고른다(P06 담당자 선택).
