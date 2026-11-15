@@ -2149,10 +2149,10 @@ class DocumentRegistryTests(unittest.TestCase):
             "docs/01.requirements/0012-laboratory.md",
             "docs/02.architecture/descriptions/0011-laboratory-architecture.md",
             "docs/02.architecture/decisions/0050-openbao-as-secrets-manager.md",
-            "docs/03.specs/0256-legacy-document-status-ban/spec.md",
-            "docs/03.specs/0256-legacy-document-status-ban/plan.md",
-            "docs/03.specs/0256-legacy-document-status-ban/tasks/"
-            "tsk-0001-legacy-document-status-ban.md",
+            "docs/03.specs/0212-request-baseline-and-reconciliation/spec.md",
+            "docs/03.specs/0212-request-baseline-and-reconciliation/plan.md",
+            "docs/03.specs/0212-request-baseline-and-reconciliation/tasks/"
+            "tsk-0065-w06-git-ci-release.md",
         ):
             source = (ROOT / relative).read_text(encoding="utf-8")
             for status in ("deprecated", "superseded", "retired", "archived"):
@@ -2178,7 +2178,7 @@ class DocumentRegistryTests(unittest.TestCase):
         profiles = build_registry_profiles(load_registry())
         for relative in (
             "docs/01.requirements/0012-laboratory.md",
-            "docs/03.specs/0256-legacy-document-status-ban/spec.md",
+            "docs/03.specs/0212-request-baseline-and-reconciliation/spec.md",
         ):
             source = (ROOT / relative).read_text(encoding="utf-8")
             for key in ("supersedes", "superseded_by"):

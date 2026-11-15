@@ -1,10 +1,10 @@
 ---
 title: "Authority Parents and Criterion Acceptance"
-version: "1.0.3"
+version: "1.0.4"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "architecture"
 artifact_id: "ADR-0048"
 parent_ids:
@@ -131,5 +131,5 @@ completed archive", "the preserved copy") no longer applies. A ready package is
 deleted once its removal is approved, and its number is reserved.
 
 The `superseded` Spec and Plan status named in decision 1 and decision 4 no
-longer exists: SPEC-0256 removed it from the Stage 01 to 03 lifecycles. The
+longer exists: SPEC-0256 (retired; version history) removed it from the Stage 01 to 03 lifecycles. The
 decision body above is unchanged.

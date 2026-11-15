@@ -1,6 +1,6 @@
 ---
 title: "Document Retention and Retirement Requirements"
-version: "3.1.1"
+version: "3.1.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
@@ -180,6 +180,7 @@ Each condition is judged by running the registered metadata, lifecycle, link and
 - [ADR-0048 Authority parents and criterion acceptance](../02.architecture/decisions/0048-authority-parents-and-criterion-acceptance.md)
 - ADR-0031, ADR-0033, ADR-0035, and ADR-0036 are superseded historical decisions.
 - SPEC-0257 and SPEC-0261 (retired; version history) delivered the second implementation-alignment corrections of paths, links, Registry exceptions and secret names, and the REQ-0027 approval with the promotion of its dependent documents.
+- SPEC-0256 (retired; version history) removed the legacy statuses and lineage keys from the Stage 01 to 03 lifecycles and profiles, the archive profiles and templates, and ADR-0011.
 - SPEC-0248, SPEC-0249, SPEC-0250 and SPEC-0260 (retired; version history)
   delivered the archive-check removal, the Stage 98 deletion, the completed
   package deletion and the proof-source change. SPEC-0249 retired three

@@ -1,6 +1,6 @@
 ---
 title: "명세 패키지"
-version: "1.3.16"
+version: "1.3.17"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -54,9 +54,7 @@ package 하나가 직접 하위 디렉터리 하나입니다. 디렉터리 이�
 | SPEC-0244 | [Native memory 통제 검증](./0244-native-memory-controlled-verification/) | Claude native memory effective-state와 hook delivery를 설정·메뉴·영수증별로 분리해 통제 검증 |
 | SPEC-0245 | [Observability CA 실행](./0245-observability-ca-execution/) | Prometheus·Gatus의 백업·격리 복원 검증 후 순차 CA 재생성과 rollback 경계 |
 | SPEC-0251 | [README와 AGENTS.md 분리](./0251-readme-and-agents-guide-split/) | README는 사람, 폴더 AGENTS.md는 AI agent를 대상으로 나누고, AGENTS.md를 둘 폴더의 규칙과 9개 폴더 guide를 정합니다 |
-| SPEC-0254 | [Agent guide 후속 정리](./0254-agent-guide-follow-ups/) | infra README의 개별 stage 링크를 정리하고, 폴더 guide 변경이 agent-governance suite를 고르게 하며, guide type을 `common/agent-guide`로 바꾸고 guide를 사용 상태로 전환합니다 |
 | SPEC-0255 | [구현 정합성 수정](./0255-implementation-alignment-fixes/) | 감사에서 확인된 문서와 구현의 차이 중 열린 branch 밖의 항목을 고칩니다: AD-0026 network, 삭제된 Spec을 현재 소유자로 가리키는 문구, 운영 문서의 secret 이름과 database 목록 |
-| SPEC-0256 | [Legacy 문서 상태 금지](./0256-legacy-document-status-ban/) | Stage 01~03 lifecycle에서 legacy 상태와 lineage key를 없애고, ADR-0011을 요약·삭제하며, archive scaffolding을 정리함 |
 | SPEC-0259 | [구현 정합성 수정 3차](./0259-implementation-alignment-batch3/) | 삭제된 Spec 경로를 라벨로 쓰는 Stage 02 링크, OpenBao audit 서술, 구현과 일치하는 Stage 05 문서의 승격을 다룹니다 |
 | SPEC-0262 | [분석 서비스 LAB 이전](./0262-analytics-labs-migration/) | Lakehouse, dbt, Superset, JupyterLab, SonarQube, Stalwart를 root Compose에서 독립 LAB entrypoint로 옮기고, 참조와 Stage 05 문서를 `15-labs`로 정리함 |
 | SPEC-0263 | [LAB 이전 계약](./0263-lab-promotion-contract/) | LAB의 표준 구조, 이전 명세, LAB secret 복사본, infra·운영 문서 이동 규칙, 이전 전 자원 공존 점검과 세 가지 이전 절차를 정함 |
