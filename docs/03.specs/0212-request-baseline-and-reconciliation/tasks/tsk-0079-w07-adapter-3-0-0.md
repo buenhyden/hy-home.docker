@@ -1,6 +1,6 @@
 ---
 title: "W07 Native Provider Adapter Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -144,6 +144,53 @@ this exact temporary path for writing was allowed. The installed
 CLI role and protected paths require their own tests. The authored Codex
 adapter now records this distinction without changing any role or permission.
 
+#### Trusted launch checks at abf8d6b9b
+
+The direct resume request asks for an existing trusted Claude session and
+an enforced read-only Codex reviewer path. Use the normal launchers in the
+same workspace. Retain the prior local source verification because the
+dispatcher, Registry and hook bindings are unchanged. An inconclusive
+startup or sandbox constructor failure leaves the dependent trial open.
+Record the witnesses in this Task and the authored Codex adapter.
+
+No Claude CLI process was visible with this workspace as its working
+directory. A normal interactive Claude Code 2.1.325 startup used the
+existing profile and a private terminal with no keystrokes or model prompt.
+It emitted a filesystem permission error and produced no registered
+SessionStart result during the bounded observation. The existing-profile
+`claude --init-only` probe, with structured output and no MCP connections,
+returned zero and reported a read-only filesystem error. It emitted no
+hook lifecycle result. Neither observation verified the profile's trust.
+
+The initial nested Codex launcher saw a socket directory prerequisite
+error, and both `bwrap` mount preflights failed at namespace creation.
+A separately approved host preflight using a read-only root mount and
+network namespace exited zero. The initial command still passed
+`linux` as a subcommand. The installed help showed that
+`codex sandbox` now takes command arguments directly.
+
+Using the installed Codex CLI 0.169.0 with `sandbox_mode = "read-only"`
+on the approved host route, the synthetic read passed and the write-mode
+open returned `EROFS`. A second run used a disposable named profile
+extending `:read-only` with networking disabled and an explicit read deny
+for a synthetic protected directory. The launcher used
+`--include-managed-config`. It again allowed the
+ordinary read, rejected the write-open with `EROFS`, and rejected the
+protected read with `EACCES`. Both commands exited zero with their
+expected outcomes and left the ordinary file unchanged. The scratch
+profiles and fixtures were removed. The named CLI profile also read the
+current workspace HEAD through Git while repeating both denials.
+The provider adapter records this route and the separate managed desktop
+reviewer failure.
+
+An approved Claude interactive preflight under a read-only root with
+networking disabled and a disposable output path also returned no hook
+result during the bounded observation. Resume Claude delivery and decision
+checks in an operator-provided trusted session for this workspace.
+Continue managed desktop reviewer validation when the launcher provides
+an effective role restriction. Provider settings, credentials and host
+permissions were left intact.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -186,6 +233,10 @@ project trust before it can supply the missing delivery evidence.
 | Codex CLI native sandbox probe | 135 | W140 | read-only launcher and synthetic write-open | Codex 0.169.0 CLI and app-server | NOT_RUN | Server permission request timed out and launcher did not reach the target | required | - |
 | Codex desktop reviewer write-open | 135 | W140 | normal reviewer shell open of a synthetic file | Managed desktop code-reviewer and disposable temporary path | FAIL | Write-mode open succeeded without an override, fixture content untouched | required | - |
 | Resume evidence review | 135 | W140 | independent document diff and witness scope | TSK-0079 and authored Codex adapter against e2c307bcc | PASS | Review distinguished write-mode open from a file mutation and CLI role isolation | optional | - |
+| Existing-profile Claude startup | 135 | W140 | native interactive startup and init-only delivery preflight | Claude 2.1.325, abf8d6b9b workspace, no model prompt | NOT_RUN | Read-only filesystem error observed and no hook lifecycle result | required | - |
+| Nested Codex namespace preflight | 135 | W140 | native read-only launcher and bubblewrap namespace preflight | Codex 0.169.0, abf8d6b9b workspace, nested runtime | ERROR | Launcher stopped at socket directory check and both bubblewrap preflights denied namespace creation | optional | - |
+| Codex native CLI read-only control | 135 | W140 | read-only launcher and synthetic write-open | Installed Codex 0.169.0 and approved host launch | PASS | CLI allowed the ordinary read and denied write-open with EROFS | required | Codex CLI native sandbox probe |
+| Codex native CLI protected read control | 135 | W140 | explicit deny profile with managed config enabled | Installed Codex 0.169.0 and synthetic protected directory | PASS | Workspace HEAD and ordinary read allowed, write-open EROFS, protected read EACCES | required | - |
 
 ### Resolution Links
 
