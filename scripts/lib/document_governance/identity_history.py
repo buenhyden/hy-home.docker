@@ -71,8 +71,10 @@ IDENTITY_PREFIX_SPACES = (
     ("DATA-", "data", "docs/90.references/"),
     ("MIG-", "migration", "docs/98.archive/"),
 )
+# The lookbehind rejects an ID glued to another by a hyphen, such as the
+# history text "REQ-0026-REQ-0010-FR-0011", which issued no REQ-0010 child.
 INTERNAL_REQUIREMENT_PATTERN = re.compile(
-    r"(?i)\b(?:"
+    r"(?i)(?<![-\w])(?:"
     r"REQ-[0-9]{4}-(?:FR|NFR|IF)-[0-9]{4}|"
     r"PRD-[0-9]{4}-(?:R|AC|FR|NFR)-?[0-9]{4}|"
     r"SRS-[0-9]{4}-R[0-9]{4}|IFR-[0-9]{4}-R[0-9]{4}"
