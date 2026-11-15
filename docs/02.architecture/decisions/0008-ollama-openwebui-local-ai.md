@@ -1,10 +1,10 @@
 ---
 title: "Ollama and Open WebUI for Local AI Infrastructure"
-version: "1.0.3"
+version: "1.0.4"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "architecture"
 artifact_id: "ADR-0008"
 parent_ids:
@@ -87,4 +87,3 @@ The confirming evidence for this decision is limited to the Architecture Descrip
 
 - **PRD**: [009-ai.md](../../01.requirements/0009-ai.md)
 - **Architecture Description**: [0008-ai-architecture.md](../descriptions/0008-ai-architecture.md)
-- **Spec**: [009-ai/spec.md](../descriptions/0008-ai-architecture.md)
