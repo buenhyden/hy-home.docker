@@ -1,10 +1,10 @@
 ---
 title: "Retire the Supabase LAB Task"
-version: "0.2.1"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0263-TSK-0003"
 parent_ids:
@@ -179,6 +179,12 @@ None: nothing was recorded here before this Task moved to the common form.
 | 3 | pending | E4, E6, E7, E8, E9, E12, E14, E15, E16, E17, E18, E19, E20 | every required row now passes; owner acceptance pending | @buenhyden |
 
 ### Remaining Conditions
+
+On 2026-11-15 the owner accepted this Task, but criterion 3 cannot be
+recorded as accepted: it is shared with TSK-0001, whose supabase check rows
+E6, E12, E68 and E58 can never pass now that this Task removed the LAB
+(TSK-0001 E70). Criterion 3 stays pending until the owner decides how to
+close it.
 
 W8 is implemented on the uncommitted tree. The non-PASS rows have two causes,
 neither a W8 defect: deleted files stay in the Git index until the controller

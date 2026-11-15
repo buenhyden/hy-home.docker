@@ -1,10 +1,10 @@
 ---
 title: "Implementation Alignment Fixes Task"
-version: "0.1.2"
+version: "0.2.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0255-TSK-0001"
 parent_ids:
@@ -58,6 +58,7 @@ progress under the approved parents. Hosted CI has not run.
 | SPEC-0255-PLAN-0001 | draft | approved | #current-contract-decision |
 | SPEC-0255-TSK-0001 | draft | ready | #current-readiness-and-execution |
 | SPEC-0255-TSK-0001 | ready | in-progress | #current-readiness-and-execution |
+| SPEC-0255-TSK-0001 | in-progress | completed | #criterion-decisions |
 
 #### Decisions
 
@@ -187,6 +188,11 @@ None: nothing was recorded here before this Task moved to the common form.
 | E9 | 4 | W4 | metadata-active | `check-active`, same tree | PASS | selected 497, zero violations | required | - |
 | E10 | 4 | W4 | corpus-lifecycle | `check-document-corpus-lifecycle.py`, same tree | PASS | lifecycle zero, occupancy zero | required | - |
 | E11 | 4 | W4 | operations-and-links | `check-operations-catalog.py`; links `alignment`, `navigation`, `language`, `traceability`, same tree | PASS | operations catalog PASS; every link mode PASS | required | - |
+| E12 | 4 | W4 | hosted-ci | PR #732 hosted checks, read from `gh pr view` on 2026-11-10 (Merge receipt 2026-11-10); merge `b56fd4480` | PASS | every completed check SUCCESS, the rest SKIPPED, none failing | required | E7 |
+| E13 | 1 | W1 | network coverage | Root `docker-compose.yml` and `infra/**` Compose networks (external ones excluded) against AD-0026 1.9.0 at `8f2d5aecc` plus this change | PASS | 53 defined: 40 listed by name, 13 through the `<service>_ingress_net` row, 0 missing; the three root networks without an explicit subnet are recorded as a gap in AD-0026 | required | - |
+| E14 | 1 | W1 | links alignment | `check-document-links.py --mode alignment`, same tree | PASS | failures 0 | required | - |
+| E15 | 2 | W2 | deleted-Spec pointers | Search of Stage 01, 02, 05 and 90, `.agents/`, `infra/` and `scripts/` for each retired Spec number (262 in `reserved_history`) next to owns, records, defines or governs, same tree | PASS | ADR-0037 amended in place at the owner's direction (past tense for SPEC-0179); the remaining hits are Stage 90 quotations and ADR-0037 supersession lineage, which state no current rule | required | - |
+| E16 | 2 | W2 | metadata-changed | `check-changed --base-ref origin/main`, same tree | PASS | selected 13, zero violations | required | - |
 
 ### Resolution Links
 
@@ -198,15 +204,17 @@ None: nothing was recorded here before this Task moved to the common form.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 1 | pending | - | - | @buenhyden |
-| 2 | pending | - | - | @buenhyden |
-| 3 | pending | - | - | @buenhyden |
-| 4 | pending | - | - | @buenhyden |
+| 1 | accepted | E13, E14 | Owner @buenhyden accepted on 2026-11-15 (SPEC-0212 TSK-0070) | @buenhyden |
+| 2 | accepted | E15, E16 | Owner @buenhyden accepted on 2026-11-15 (SPEC-0212 TSK-0070) | @buenhyden |
+| 3 | accepted | E1, E2 | Owner @buenhyden accepted on 2026-11-15 (SPEC-0212 TSK-0070) | @buenhyden |
+| 4 | accepted | E4, E5, E6, E8, E9, E10, E11, E12 | Owner @buenhyden accepted on 2026-11-15 (SPEC-0212 TSK-0070) | @buenhyden |
 
 ### Remaining Conditions
 
-Local checks are recorded above. Independent review and hosted CI have not
-run, and no criterion is accepted yet.
+On 2026-11-15 the owner accepted criteria 1 to 4. E12 resolves E7 from the
+recorded merge receipt; E13 to E16 add the criterion 1 and 2 evidence, after
+AD-0026 gained its four missing networks and ADR-0037 was amended. The
+explicit-subnet gap of three root networks stays recorded in AD-0026.
 
 #### Merge receipt 2026-11-10
 

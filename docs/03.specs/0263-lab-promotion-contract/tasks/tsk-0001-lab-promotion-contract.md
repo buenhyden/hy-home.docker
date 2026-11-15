@@ -1,6 +1,6 @@
 ---
 title: "LAB Promotion Contract Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -480,6 +480,7 @@ None: nothing was recorded here before this Task moved to the common form.
 | E67 | 4 | W5 | RED test | `test_reserve_matches_policy` at `961b5d475` | PASS | OK | required | E27 |
 | E68 | 3 | W3 | `lab.py check supabase` render-only | the E6 inputs (`labs/.env.example`, `.env.example`, empty scratch `LAB_DATA_DIR`, synthetic budgets) at `961b5d475` | FAIL | exit 3; the only problems are the ten untracked seed files (`db/*.sql`, `api/kong.yml`, `pooler/pooler.exs`, `logs/vector.yml`) | required | - |
 | E69 | 6 | W5 | HOME render of the cluster LABs | `docker compose --env-file labs/.env -f labs/<name>/docker-compose.yml config -q` for kafka-cluster and opensearch-cluster, after the owner set `LAB_KAFKA_CLUSTER_ID` and the host budget, at `339a6d7be` | PASS | both exit 0; `lab.py check` reports no cluster ID or certificate problem, only the budget and the one-LAB limit for this pair | required | E35 |
+| E70 | 3 | W3 | `lab.py check supabase` render-only | `python3 scripts/operations/lab.py check supabase` at `8f2d5aecc`, after TSK-0003 removed the supabase LAB | NOT_APPLICABLE | `lab.py: unknown LAB 'supabase'`, exit 2; the target no longer exists, so E6, E12, E68 and E58 can never pass and stay unresolved | required | - |
 
 ### Resolution Links
 
@@ -499,6 +500,11 @@ None: nothing was recorded here before this Task moved to the common form.
 | 7 | pending | E1, E38, E40, E42, E43, E44, E45, E46, E55, E56, E57, E59 | open: E39 (example inputs empty by owner decision), E47 (local CI gate, Python 3.14.8) | @buenhyden |
 
 ### Remaining Conditions
+
+On 2026-11-15 E70 showed the supabase LAB check cannot run any more, so its
+required rows E6, E12, E68 and E58 stay unresolved and criterion 3 cannot be
+accepted; only an owner decision can close it (SDLC: only `not-required`
+closes a criterion without PASS).
 
 On 2026-11-15 the owner withdrew criterion 5 as not-required, citing the
 2026-11-06 decision that no LAB is promoted (SPEC-0212 TSK-0070). Criterion
