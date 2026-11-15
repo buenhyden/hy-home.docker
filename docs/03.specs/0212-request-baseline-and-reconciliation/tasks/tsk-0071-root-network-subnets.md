@@ -1,6 +1,6 @@
 ---
 title: "Root Network Subnets Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -72,6 +72,17 @@ The two contract tests now expect the explicit subnets, and
 in `update-ledger.json` (0 image rows; review, scan and acceptance fields
 untouched).
 
+#### Runtime apply
+
+Before applying, no host route or Docker network used 10.250.47.0/24 to
+10.250.49.0/24, the three networks had the four planned members, and
+`n8n-worker` had logged no activity for 30 minutes. A first attempt passed the
+profile flags as one shell word, so Compose rejected both `stop` commands and
+`docker network rm` refused while the containers were attached; nothing
+changed. The rerun with the flags written out applied the change. During the
+apply, consumers of `ollama`, `dev-pg` and `mailpit` lost them for about two
+minutes; no volume was touched.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -96,6 +107,8 @@ The runtime step runs only after the review passes and the change merges.
 | Independent review | 127 | W132 | independent-review | `iac-reviewer`, read-only, commit `3ebaef3ef` | PASS | No HIGH; subnets collide with nothing and nothing depends on the old addresses; MEDIUM: stop `n8n-worker` with a 60 s grace after confirming no running execution; LOW: GDE-0077 now lists the three ranges | required | - |
 | Hosted candidate first run | 127 | W132 | remote-candidate | PR 1042 at the first head, run 43716166319 | FAIL | `candidate-core` failed: `test_service_wiring_contracts` and `test_n8n_outbox_contract` pinned the old network definitions, and the SEC01 ledger still held the old `docker-compose.yml` hash; `candidate-documents` PASS | required | - |
 | Runtime apply | 127 | W132 | runtime-recreate | Recreate the three networks and their four containers from merged `main` | NOT_RUN | waits for review and merge | required | - |
+| Hosted candidate final | 127 | W132 | remote-candidate | PR 1042 at `778a53534`, run 43717341955 | PASS | `candidate-core` 14 min 42 s, `candidate-documents` 3 min 3 s, `candidate-quality` success; merged as `feabde558` | required | Hosted candidate first run |
+| Runtime apply live | 127 | W132 | runtime-recreate | From `main` `feabde558` at 22:22 KST: `stop -t 60 n8n-worker`; `stop ollama mailpit dev-pg`; `docker network rm` of the three networks; `up -d --no-deps --no-build --force-recreate` of the four services with their four profiles | PASS | `n8n_ollama_net` 10.250.47.0/24 (ollama .2, n8n-worker .3), `opsflow_capture_net` 10.250.48.0/24 (mailpit .2, n8n-worker .3), `opsflow_notifier_db_net` 10.250.49.0/24 (dev-pg .2, n8n-worker .3), all internal; the four containers healthy after 80 s; task broker ready on 10.250.23.2 and `n8n-task-runner-worker` reconnected at 13:25:49 UTC | required | Runtime apply |
 
 ### Resolution Links
 
@@ -107,14 +120,11 @@ Subnet RED is resolved by Subnet GREEN.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 127 | pending | Subnet GREEN, Compose render, Compose controls | Awaiting review, the runtime apply and owner acceptance | SPEC-0212 TSK-0071 |
+| 127 | pending | Subnet GREEN, Compose render, Compose controls, Independent review, Hosted candidate final, Runtime apply live | Awaiting owner acceptance | SPEC-0212 TSK-0071 |
 
 ### Remaining Conditions
 
-Merge, the runtime apply (after confirming no running n8n execution, no
-host route in `10.250.47.0/24` to `10.250.49.0/24`, and the same four
-members; `n8n-worker` stopped with a 60 s grace) with a read-back of each
-network's subnet and the four containers' health, and owner acceptance.
+Owner acceptance of criterion 127. Merge and the live apply are done.
 
 ## Handoff
 
