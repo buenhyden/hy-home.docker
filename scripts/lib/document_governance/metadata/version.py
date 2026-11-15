@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import json
 import pathlib
-import re
 import tomllib
 from collections.abc import Mapping
 
 from scripts.lib.document_governance import semver
+from scripts.lib.document_governance.frontmatter import (
+    FrontmatterError,
+    frontmatter_record_from_text,
+)
 from scripts.lib.document_governance.metadata.lifecycle import (
     _metadata_at_ref,
     _text_at_ref,
@@ -18,21 +21,27 @@ from scripts.lib.document_governance.metadata.profile import Finding, Record, _f
 # Lifecycle state and review dates are independent of the content version
 # (documentation protocol, Version objects): an edit confined to them is no
 # content change.
-_LIFECYCLE_KEY = re.compile(r"(?:status|updated|reviewed_at|next_review_at):")
+_LIFECYCLE_KEYS = frozenset({"status", "updated", "reviewed_at", "next_review_at"})
 
 
-def _without_lifecycle_keys(text: str) -> str:
-    lines = text.splitlines(keepends=True)
-    if not lines or lines[0].rstrip() != "---":
-        return text
-    kept, in_frontmatter = [lines[0]], True
-    for line in lines[1:]:
-        if in_frontmatter and line.rstrip() == "---":
-            in_frontmatter = False
-        elif in_frontmatter and _LIFECYCLE_KEY.match(line):
-            continue
-        kept.append(line)
-    return "".join(kept)
+def _typed_value(value: object) -> object:
+    if isinstance(value, Mapping):
+        return {key: _typed_value(item) for key, item in value.items()}
+    if isinstance(value, tuple):
+        return tuple(map(_typed_value, value))
+    if isinstance(value, frozenset):
+        return frozenset(map(_typed_value, value))
+    # YAML scalars such as 1 and 1.0 can compare equal in Python.
+    return type(value), value
+
+
+def _versioned_content(path: pathlib.Path, text: str) -> tuple[dict[str, object], str]:
+    document = frontmatter_record_from_text(path, text)
+    return {
+        key: _typed_value(value)
+        for key, value in document.metadata.items()
+        if key not in _LIFECYCLE_KEYS
+    }, document.body
 
 
 def _content_changed(root: pathlib.Path, record: Record, base_ref: str) -> bool:
@@ -41,9 +50,14 @@ def _content_changed(root: pathlib.Path, record: Record, base_ref: str) -> bool:
         head_text = (root / record.path).read_text(encoding="utf-8")
     except (OSError, UnicodeError):
         return False  # An unreadable body is reported by the body checks.
-    return base_text is None or _without_lifecycle_keys(
-        base_text
-    ) != _without_lifecycle_keys(head_text)
+    if base_text is None or base_text == head_text:
+        return base_text is None
+    try:
+        return _versioned_content(record.path, base_text) != _versioned_content(
+            record.path, head_text
+        )
+    except FrontmatterError:
+        return True  # The raw text changed and the parser reports its own finding.
 
 
 def version_change_findings(

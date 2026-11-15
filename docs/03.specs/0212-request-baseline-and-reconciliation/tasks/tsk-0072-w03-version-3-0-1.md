@@ -1,6 +1,6 @@
 ---
 title: "W03 Version 3.0.1 Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -113,6 +113,36 @@ Review the cases against the policy. Reuse the existing numeric
 precedence checker and keep its output, schema and product domain.
 Reverting this source unit restores the former policy text.
 
+#### Resumed lifecycle-only comparison
+
+At `427ca60f0`, D02 3.0.1 and the Version objects policy exempt
+lifecycle-only edits. The frontmatter reader accepts quoted keys and
+multiline scalar values. The version checker strips whole lines by
+their literal prefix, so it can still ask for a version increase when
+only a lifecycle field changes in one of those forms.
+
+Reuse the validated frontmatter parser to compare the non-lifecycle
+mapping and the full Markdown body. Preserve scalar types at every
+depth, including the integer type used by cancellation criteria.
+Ignore frontmatter serialization differences that preserve its
+parsed values and types. Leave malformed YAML to
+its existing diagnostics and compare raw content if parsing fails.
+Keep the existing version diagnostics, same-path merge base and
+product comparison. Test the changed path through a committed fixture
+with lifecycle-only and substantive edits. Revert the source unit to
+restore the former comparison.
+
+For 500 lifecycle-only fixture comparisons, the median of five local
+runs was 0.02398 seconds before and 0.61511 seconds after. Both runs
+supplied the same merge-base text in memory, so this measures parsing
+and file reading without Git subprocess time.
+
+The expanded metadata reference run was interrupted. The first
+focused rerun used a wrong module path for the Registry tests. The
+corrected selection includes the version checks, the two relevant
+CLI integration cases, Registry and projection checks, product version
+checks, and release regression.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -154,6 +184,13 @@ retains the older comparison grammar at the historical boundary.
 | Version recheck | 128 | W133 | version-regression | test_semver, metadata VersionChangeTests, the Registry syntax pair, the TemplateDefinition binding pair and test_release on efdf08f92 | PASS | 53 tests, exit 0 | required | - |
 | Fixture recheck | 128 | W133 | version-fixtures | Bundled values in Python, five schema rules and Node plus the Registry at 17bbde05a | PASS | 24 cases per reader and no historical Registry violations, exit 0 | required | - |
 | Policy alignment checks | 128 | W133 | policy-alignment | Governance contract, document link alignment and change metadata for the policy and this Task | PASS | Governance and links had no failures. Metadata selected 2 and reported 0 violations in 224.48 seconds | required | - |
+| Resumed version baseline | 128 | W133 | version-regression | Prior focused version selection at 427ca60f0 | PASS | 53 tests, exit 0 | required | - |
+| Lifecycle serialization RED | 128 | W133 | lifecycle-version | Quoted key and multiline scalar in the same-path committed fixture | FAIL | Both lifecycle-only changes reported version-unchanged, exit 1 | required | - |
+| Nested type RED | 128 | W133 | lifecycle-version | Cancellation criterion switches from integer to float under the initial parser comparison | ERROR | Expected version-unchanged was absent, exit 1 | required | - |
+| Lifecycle comparison GREEN | 128 | W133 | lifecycle-version | Corrected focused selection with typed nested comparison, CLI checks and product regression | PASS | 64 tests in 7.568 seconds, exit 0 | required | Lifecycle serialization RED, Nested type RED |
+| Resumed changed metadata | 128 | W133 | metadata | check-document-metadata.py --mode check-changed --base-ref HEAD with this Task selected, before the nested type correction | PASS | Base 427ca60f0, 1 document and 0 violations, exit 0 | required | - |
+| Lifecycle review finding | 128 | W133 | lifecycle-version-review | Initial structured comparison | FAIL | Python equality could equate an integer and float in nested metadata | required | - |
+| Lifecycle review resolution | 128 | W133 | lifecycle-version-review | Recursive scalar type preservation and committed fixture | PASS | Independent reviewer approved the fix | required | Lifecycle review finding |
 
 ### Resolution Links
 

@@ -634,6 +634,34 @@ class VersionChangeTests(unittest.TestCase):
         (finding,) = self.findings("0.2.0", "0.1.0", artifact_type="template-source")
         self.assertEqual("version-downgrade", finding.code)
 
+    def test_lifecycle_edits_use_parsed_frontmatter_keys(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            path = root / self.DOC
+            path.parent.mkdir(parents=True, exist_ok=True)
+            base = '---\nversion: "1.2.0"\n"status": "draft"\nowner: "@a"\n---\n# Fixture\n'
+            path.write_text(base, encoding="utf-8")
+            self.assertEqual(0, git(root, "add", ".").returncode)
+            self.assertEqual(0, git(root, "commit", "-qm", "base").returncode)
+
+            for status in ('"status": "approved"', "status: >-\n  approved"):
+                for owner, expected in (("@a", []), ("@b", ["version-unchanged"])):
+                    with self.subTest(status=status, owner=owner):
+                        head = base.replace('"status": "draft"', status).replace(
+                            "@a", owner
+                        )
+                        path.write_text(head, encoding="utf-8")
+                        record = Record(
+                            self.DOC, metadata._parse_frontmatter_text(head), "x"
+                        )
+                        findings = version_module.version_change_findings(
+                            root, {self.DOC.as_posix(): record}, "HEAD"
+                        )
+                        self.assertEqual(
+                            expected, [finding.code for finding in findings]
+                        )
+
     def test_new_document_or_missing_or_malformed_version_is_not_compared(
         self,
     ) -> None:
@@ -642,6 +670,16 @@ class VersionChangeTests(unittest.TestCase):
         self.assertEqual([], self.findings("1.2.0", None))  # head has no version
         self.assertEqual([], self.findings("v1.2.0", "1.0.0"))
         self.assertEqual([], self.findings("1.2.0", "1.1"))
+
+    def test_a_nested_frontmatter_type_change_is_a_content_change(self) -> None:
+        (finding,) = self.findings(
+            "1.2.0",
+            "1.2.0",
+            head_body=self.BASE_BODY,
+            base_extra={"cancellation": {"criteria_disposition": [{"criterion": 1}]}},
+            head_extra={"cancellation": {"criteria_disposition": [{"criterion": 1.0}]}},
+        )
+        self.assertEqual("version-unchanged", finding.code)
 
     def test_q07_numbering_is_not_a_version(self) -> None:
         # A renumbered artifact id or input label never counts as a version.
