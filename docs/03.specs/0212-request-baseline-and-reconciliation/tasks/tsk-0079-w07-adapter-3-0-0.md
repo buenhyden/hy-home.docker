@@ -1,6 +1,6 @@
 ---
 title: "W07 Native Provider Adapter Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -191,6 +191,50 @@ Continue managed desktop reviewer validation when the launcher provides
 an effective role restriction. Provider settings, credentials and host
 permissions were left intact.
 
+#### Trusted Claude session checks at f05d4e805
+
+The direct resume request runs in an existing interactive Claude Code
+session in this workspace with its current permission mode. Project
+settings, the dispatcher and hook bindings are unchanged from the prior
+verification. The session observed hook delivery and exercised the
+PreToolUse brief guard with Claude's native Edit tool on two gitignored
+synthetic `*.tmp` fixtures at the workspace root. No secret file, raw
+session log, user setting or managed setting was opened or changed.
+
+Hook results. Project SessionStart delivered the `hy-home.docker project
+context` text from `scripts/hooks/agent-event-hook.sh`. Project
+UserPromptSubmit delivered the request brief notice and recorded request
+state that `request_brief status` returned for this session. A brief bound
+this Task and `w07-synthetic-in.tmp` as allowed edits and listed
+`w07-synthetic-out.tmp` as out of scope. Project PreToolUse allowed the
+in-scope Edit. It denied the out-of-scope Edit with `This action exceeds
+the bound request brief scope.` and Claude reported the tool as not run.
+On edits to this Task, project PreToolUse also returned the stage
+document and template warnings and the folder guide reminder as
+additional context. The ECC GateGuard plugin hook separately asked for
+first-touch facts before the project hook decided. Those plugin prompts
+are not project hook results.
+
+File state. The in-scope fixture changed from SHA-256 `711f1a1d…f798`
+(`v0`) to `3a531e49…b45b` (`v1`) with a new modification time. The
+out-of-scope fixture kept SHA-256 `8de8965a…2010`, its 34-byte size, its
+`v0` content and its original modification time. Both fixtures were
+removed after recording.
+
+Project Stop then blocked the first stop attempt, named this Task as an
+uncommitted path and continued the turn. The continuation records no
+acceptance and grants no commit permission.
+
+The session report contained no visible PostToolUse result, so its
+execution remains unverified. PreCompact and the silent second Stop
+also lack a reported result. The unsupported-output control case,
+reviewer role boundaries, worker dispatch, and capture or memory
+delivery remain unverified on this Claude path.
+
+The Claude session reported a metadata check selecting 92 documents,
+zero violations and exit 0 on its Task edit. Alignment and command-link
+checks were still running when that report was sent.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -223,26 +267,37 @@ project trust before it can supply the missing delivery evidence.
 | Updated Task metadata and lifecycle | 135 | W140 | document metadata check-changed and corpus lifecycle | W140 Stage 03 paths against fbac0fde1 with explicit transitions | PASS | Three selected documents and corpus lifecycle report zero violations, exit 0 | required | Initial Task metadata and lifecycle |
 | Authored source and navigation | 135 | W140 | ShellCheck, bash -n, Ruff, document links alignment and commands, graphify update | W140 source and local navigation | PASS | Checks exit 0, navigation rebuilt from AST, optional SQL and HCL extraction dependencies absent | optional | - |
 | Codex desktop scope | 135 | W140 | live UserPromptSubmit and PreToolUse | Active managed desktop session, W140 exact paths | PASS | In-scope Task patch applied and inert out-of-scope README patch denied | required | - |
-| Claude native delivery | 135 | W140 | isolated init-only and trusted delivery acceptance | Claude 2.1.325, projected project settings | NOT_RUN | Project hook found, trust or permission notice, no hook execution evidence | required | - |
+| Claude native delivery | 135 | W140 | native Claude SessionStart delivery | Claude 2.1.325, isolated init-only and projected project settings | NOT_RUN | Project hook found, trust or permission notice, no hook execution evidence | required | - |
 | Native malformed output | 135 | W140 | native unsupported-pretool-output control case | Both provider runtimes | NOT_RUN | No disposable trusted runtime with the control input observed | required | - |
 | Native reviewer boundaries | 135 | W140 | shell write and sensitive path denial | Both provider review roles | NOT_RUN | Effective role permission and denial have no witness | required | - |
 | Native cross-provider integration | 135 | W140 | capture, memory and worker dispatch witness | Both provider runtimes | NOT_RUN | Capture and memory are W08 dependencies and native dispatch needs an authorized worker fixture | required | - |
 | Resume focused verification | 135 | W140 | focused unittest, governance contract all, renderer and manifest | e2c307bcc and installed clients | PASS | 31 tests, zero projection drift, all four commands exit 0 | required | - |
 | Installed Codex discovery probe | 135 | W140 | app-server hooks/list discovery | Codex CLI 0.169.0 with an isolated temporary profile | PASS | Native protocol responded and reported zero project hooks in that profile | optional | - |
-| Resume Claude native delivery | 135 | W140 | isolated init-only and trusted delivery acceptance | Claude 2.1.325 and stream-json in a disposable profile | NOT_RUN | Hook found in startup trace, trust or permission notice, no hook result | required | - |
+| Resume Claude native delivery | 135 | W140 | native Claude SessionStart delivery | Claude 2.1.325, isolated init-only and stream-json in a disposable profile | NOT_RUN | Hook found in startup trace, trust or permission notice, no hook result | required | - |
 | Codex CLI native sandbox probe | 135 | W140 | read-only launcher and synthetic write-open | Codex 0.169.0 CLI and app-server | NOT_RUN | Server permission request timed out and launcher did not reach the target | required | - |
 | Codex desktop reviewer write-open | 135 | W140 | normal reviewer shell open of a synthetic file | Managed desktop code-reviewer and disposable temporary path | FAIL | Write-mode open succeeded without an override, fixture content untouched | required | - |
 | Resume evidence review | 135 | W140 | independent document diff and witness scope | TSK-0079 and authored Codex adapter against e2c307bcc | PASS | Review distinguished write-mode open from a file mutation and CLI role isolation | optional | - |
-| Existing-profile Claude startup | 135 | W140 | native interactive startup and init-only delivery preflight | Claude 2.1.325, abf8d6b9b workspace, no model prompt | NOT_RUN | Read-only filesystem error observed and no hook lifecycle result | required | - |
+| Existing-profile Claude startup | 135 | W140 | native Claude SessionStart delivery | Claude 2.1.325, abf8d6b9b workspace, interactive startup and init-only preflight, no model prompt | NOT_RUN | Read-only filesystem error observed and no hook lifecycle result | required | - |
 | Nested Codex namespace preflight | 135 | W140 | native read-only launcher and bubblewrap namespace preflight | Codex 0.169.0, abf8d6b9b workspace, nested runtime | ERROR | Launcher stopped at socket directory check and both bubblewrap preflights denied namespace creation | optional | - |
 | Codex native CLI read-only control | 135 | W140 | read-only launcher and synthetic write-open | Installed Codex 0.169.0 and approved host launch | PASS | CLI allowed the ordinary read and denied write-open with EROFS | required | Codex CLI native sandbox probe |
 | Codex native CLI protected read control | 135 | W140 | explicit deny profile with managed config enabled | Installed Codex 0.169.0 and synthetic protected directory | PASS | Workspace HEAD and ordinary read allowed, write-open EROFS, protected read EACCES | required | - |
+| Trusted Claude SessionStart | 135 | W140 | native Claude SessionStart delivery | Reported interactive Claude session, f05d4e805, project settings | PASS | Project context delivered to the session | required | Claude native delivery, Resume Claude native delivery, Existing-profile Claude startup |
+| Trusted Claude UserPromptSubmit | 135 | W140 | native Claude UserPromptSubmit delivery | Reported interactive Claude session, f05d4e805, project settings | PASS | Project brief notice delivered and request state readable | required | - |
+| Trusted Claude in-scope allow | 135 | W140 | native Edit under a bound brief | Gitignored synthetic in-scope fixture, f05d4e805 | PASS | Native Edit proceeded under existing permissions and digest changed v0 to v1 | required | - |
+| Trusted Claude out-of-scope deny | 135 | W140 | native Edit outside the bound brief | Gitignored synthetic out-of-scope fixture, f05d4e805 | PASS | Hook denied before execution, digest, size and mtime unchanged | required | - |
+| Trusted Claude Stop continuation | 135 | W140 | live Stop with an uncommitted Task change | Same session, f05d4e805 | PASS | Project Stop blocked the first stop, named the uncommitted Task path and continued the turn | required | - |
+| Trusted Claude PostToolUse | 135 | W140 | native PostToolUse witness | Same session | NOT_RUN | No visible output that confirms the hook ran | required | - |
+| Trusted Claude PreCompact | 135 | W140 | native PreCompact witness | Same session | NOT_RUN | No hook result reported | required | - |
+| Trusted Claude Stop retry | 135 | W140 | silent native Stop retry witness | Same session after the blocking Stop | NOT_RUN | Second stop expected and its result remains unreported | required | - |
+| Reported Claude Task metadata | 135 | W140 | document metadata | Claude-authored Task snapshot before reconciliation | PASS | Session reported 92 documents selected, zero violations and exit 0 | optional | - |
 
 ### Resolution Links
 
 The focused command suite resolves the length regression. The lifecycle
-table resolves the authoring check failure. Those checks supply no native
-evidence for the remaining observations.
+table resolves the authoring check failure. The trusted interactive
+SessionStart witness resolves the earlier missing Claude startup delivery
+evidence for criterion 135. The isolated startup observations retain their
+original outcomes.
 
 ## Acceptance Decision
 
@@ -250,14 +305,18 @@ evidence for the remaining observations.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 135 | pending | - | Owner decision after verification | @buenhyden |
+| 135 | pending | Trusted Claude SessionStart, Trusted Claude UserPromptSubmit, Trusted Claude in-scope allow, Trusted Claude out-of-scope deny, Trusted Claude Stop continuation | Required lifecycle and permission evidence remains open | @buenhyden |
 
 ### Remaining Conditions
 
-Trusted Claude hook delivery and allow or deny decisions remain open.
-The Codex desktop pass covers the observed route. Unsupported-output
-behavior, native reviewer isolation, worker dispatch and automatic
-capture and memory evidence remain open. W08-CAPTURE owns the protected
+A trusted Claude session observed SessionStart and UserPromptSubmit
+delivery and a PreToolUse allow and deny on the native Edit route only.
+A blocking Stop continuation was also observed. Claude PostToolUse,
+PreCompact and the silent Stop retry remain unverified.
+The Codex desktop hook pass covers the observed edit route. Its separate
+reviewer write-open failure remains unresolved. Unsupported-output
+behavior, the remaining native reviewer boundaries, worker dispatch and
+automatic capture and memory evidence remain open. W08-CAPTURE owns the protected
 collector and null or delayed transcript reconciliation. Owner acceptance
 depends on the required observations.
 
