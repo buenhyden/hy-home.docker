@@ -128,9 +128,20 @@ class RequestBriefTests(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stderr)
         return brief
 
+    def check_dispatch(
+        self, record: dict, *paths: str
+    ) -> subprocess.CompletedProcess[str]:
+        return self.cli(
+            "check",
+            "dispatch",
+            record["request_revision"],
+            str(record["revision"]),
+            *paths,
+        )
+
     def test_clear_brief_checks_exact_paths_and_dispatch_scope(self) -> None:
         self.assertIsNone(self.guard("unrelated.txt"))
-        self.enroll()
+        brief = self.enroll()
         self.assertEqual(
             {
                 "request_ref",
@@ -146,9 +157,26 @@ class RequestBriefTests(unittest.TestCase):
         self.assertIsNone(self.guard())
         self.assertIsNotNone(self.guard("example.txt", "unrelated.txt"))
         self.assertIsNotNone(self.guard("example.txt", agent_id="worker-a"))
-        self.assertEqual(0, self.cli("check", "dispatch", "second.txt").returncode)
-        self.assertNotEqual(0, self.cli("check", "dispatch", "example.txt").returncode)
+        self.assertEqual(0, self.check_dispatch(brief, "second.txt").returncode)
+        self.assertNotEqual(0, self.check_dispatch(brief, "example.txt").returncode)
         self.assertFalse((self.root / "second.txt").exists())
+
+    def test_dispatch_requires_the_prepared_request_and_brief_revisions(self) -> None:
+        first = self.enroll()
+        self.assertEqual(2, self.cli("check", "dispatch", "second.txt").returncode)
+        self.assertEqual(0, self.check_dispatch(first, "second.txt").returncode)
+        rebound = self.record(revision=2)
+        self.assertEqual(0, self.cli("bind", payload=rebound).returncode)
+        stale = self.check_dispatch(first, "second.txt")
+        self.assertEqual(1, stale.returncode)
+        self.assertIn("Prepared handoff revisions are stale", stale.stderr)
+        self.assertEqual(0, self.check_dispatch(rebound, "second.txt").returncode)
+
+        next_request = self.enroll(revision=2)
+        stale = self.check_dispatch(rebound, "second.txt")
+        self.assertEqual(1, stale.returncode)
+        self.assertIn("Prepared handoff revisions are stale", stale.stderr)
+        self.assertEqual(0, self.check_dispatch(next_request, "second.txt").returncode)
 
     def test_correction_rejects_stale_reply_even_when_prompt_text_repeats(self) -> None:
         former = self.enroll()
@@ -176,8 +204,21 @@ class RequestBriefTests(unittest.TestCase):
                 previous = self.record()
                 self.assertEqual(0, self.cli("bind", payload=previous).returncode)
 
+    def test_worker_events_cannot_replace_or_invalidate_the_parent_request(
+        self,
+    ) -> None:
+        parent = self.enroll()
+        worker = {**self.event, "agent_id": "worker-a", "prompt": "Worker input"}
+        self.assertEqual("", request_brief.observe_request(self.root, worker))
+        request_brief.invalidate_request(
+            self.root, {**worker, "hook_event_name": "SessionStart", "source": "resume"}
+        )
+        self.assertEqual(parent["request_revision"], self.current()["request_revision"])
+        self.assertEqual(0, self.check_dispatch(parent, "second.txt").returncode)
+        self.assertIsNotNone(self.guard("example.txt", agent_id="worker-a"))
+
     def test_questions_hold_only_their_affected_actions(self) -> None:
-        self.enroll(
+        held = self.enroll(
             state="needs-clarification",
             unresolved_questions=[
                 {
@@ -188,17 +229,18 @@ class RequestBriefTests(unittest.TestCase):
             ],
         )
         self.assertIsNone(self.guard("example.txt"))
-        self.assertNotEqual(0, self.cli("check", "dispatch", "second.txt").returncode)
+        self.assertNotEqual(0, self.check_dispatch(held, "second.txt").returncode)
         request_brief.observe_request(
             self.root, {**self.event, "prompt": "Use the fixture recipient"}
         )
-        self.assertEqual(0, self.cli("bind", payload=self.record()).returncode)
-        self.assertEqual(0, self.cli("check", "dispatch", "second.txt").returncode)
+        ready = self.record()
+        self.assertEqual(0, self.cli("bind", payload=ready).returncode)
+        self.assertEqual(0, self.check_dispatch(ready, "second.txt").returncode)
 
     def test_material_input_and_git_baseline_movement_block_edits(self) -> None:
         input_path = self.root / "policy.md"
         digest = hashlib.sha256(input_path.read_bytes()).hexdigest()
-        self.enroll(material_inputs={"policy.md": digest})
+        brief = self.enroll(material_inputs={"policy.md": digest})
         self.assertIsNone(self.guard("example.txt"))
         input_path.unlink()
         self.assertIsNotNone(self.guard("example.txt"))
@@ -207,7 +249,7 @@ class RequestBriefTests(unittest.TestCase):
         self.git("add", "policy.md")
         self.git("commit", "-qm", "test: Change exact input")
         self.assertIsNotNone(self.guard("example.txt"))
-        check = self.cli("check", "dispatch", "second.txt")
+        check = self.check_dispatch(brief, "second.txt")
         self.assertNotEqual(0, check.returncode)
 
     def test_invalid_metadata_or_scope_cannot_enroll(self) -> None:
@@ -237,9 +279,9 @@ class RequestBriefTests(unittest.TestCase):
             "external:opaque",
         ):
             with self.subTest(authority=authority):
-                self.enroll(authority_ref=authority)
+                brief = self.enroll(authority_ref=authority)
                 self.assertIsNotNone(self.guard("example.txt"))
-                result = self.cli("check", "dispatch", "second.txt")
+                result = self.check_dispatch(brief, "second.txt")
                 self.assertNotEqual(0, result.returncode)
                 self.assertIn("no locally corroborated native request", result.stderr)
 

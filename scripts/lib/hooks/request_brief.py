@@ -20,8 +20,10 @@ CONTRACT_VERSION = "3.0.1"
 MAX_BYTES = 1024 * 1024
 MAX_MATERIAL_INPUTS = 32
 SESSION = re.compile(r"[A-Za-z0-9._-]{1,256}")
+REQUEST_REVISION = re.compile(r"[0-9a-f]{32}")
 SHA256 = re.compile(r"[0-9a-f]{64}")
 MISSING_BRIEF = "Request brief unavailable. Refresh and bind the current scope."
+USAGE = "Use status SESSION, bind SESSION, or check SESSION dispatch REQUEST_REVISION BRIEF_REVISION PATH..."
 BINDING_FIELDS = {
     "request_ref",
     "request_digest",
@@ -306,7 +308,7 @@ def _prior_authority(
 
 def observe_request(root: Path, data: dict) -> str:
     """Record the native prompt fingerprint, without retaining the prompt."""
-    if data.get("hook_event_name") != "UserPromptSubmit":
+    if data.get("agent_id") or data.get("hook_event_name") != "UserPromptSubmit":
         return ""
     root = root.resolve()
     session = data.get("session_id")
@@ -350,7 +352,7 @@ def _request(root: Path, state: dict) -> dict[str, str]:
         or request.keys() != BINDING_FIELDS
         or not all(_nonempty(value) for value in request.values())
         or request["workspace_id"] != str(root)
-        or not re.fullmatch(r"[0-9a-f]{32}", request["request_revision"])
+        or not REQUEST_REVISION.fullmatch(request["request_revision"])
         or request["request_ref"] != f"native-request:{request['request_revision']}"
         or not SHA256.fullmatch(request["request_digest"])
     ):
@@ -366,7 +368,7 @@ def _current(root: Path, state: dict, directory: int, name: str) -> dict[str, st
 
 def invalidate_request(root: Path, data: dict) -> None:
     """Rotate freshness on resume/compact without retaining scope or approval."""
-    if data.get("source") not in {"compact", "resume"}:
+    if data.get("agent_id") or data.get("source") not in {"compact", "resume"}:
         return
     root = root.resolve()
     try:
@@ -573,7 +575,13 @@ def _validate_brief(
 
 
 def _check_scope(
-    root: Path, state: dict, actions: set[str], directory: int, name: str
+    root: Path,
+    state: dict,
+    actions: set[str],
+    directory: int,
+    name: str,
+    *,
+    prepared_revisions: tuple[str, str] | None = None,
 ) -> None:
     current = _current(root, state, directory, name)
     brief = state.get("brief")
@@ -581,11 +589,20 @@ def _check_scope(
         not isinstance(brief, dict)
         or brief.get("state") not in ("ready", "needs-clarification")
         or state["request"] != current
+        or type(brief.get("revision")) is not int
+        or brief["revision"] < 1
         or not _strings(brief.get("allowed"))
         or not _strings(brief.get("held"))
         or not isinstance(brief.get("inputs"), dict)
     ):
         raise BriefError(MISSING_BRIEF)
+    if prepared_revisions is not None and prepared_revisions != (
+        current["request_revision"],
+        str(brief["revision"]),
+    ):
+        raise BriefError(
+            "Prepared handoff revisions are stale. Reconcile the envelope."
+        )
     prior = _retained_authority(state, current)
     reference = brief.get("native_reference")
     if reference != current["request_ref"] and (
@@ -633,20 +650,20 @@ def guard_edits(root: Path, data: dict, edits: tuple[str, ...]) -> str | None:
 def main(argv: list[str] | None = None) -> int:
     arguments = sys.argv[1:] if argv is None else argv
     if len(arguments) < 2:
-        print(
-            "Use status SESSION, bind SESSION, or check SESSION dispatch PATH...",
-            file=sys.stderr,
-        )
+        print(USAGE, file=sys.stderr)
         return 2
     command, session, *extra = arguments
     if not (
         (command in {"status", "bind"} and not extra)
-        or (command == "check" and len(extra) >= 2 and extra[0] == "dispatch")
-    ):
-        print(
-            "Use status SESSION, bind SESSION, or check SESSION dispatch PATH...",
-            file=sys.stderr,
+        or (
+            command == "check"
+            and len(extra) >= 4
+            and extra[0] == "dispatch"
+            and REQUEST_REVISION.fullmatch(extra[1])
+            and re.fullmatch(r"[1-9][0-9]*", extra[2])
         )
+    ):
+        print(USAGE, file=sys.stderr)
         return 2
     try:
         record = (
@@ -703,7 +720,7 @@ def main(argv: list[str] | None = None) -> int:
             else:
                 if not enrolled:
                     raise BriefError(MISSING_BRIEF)
-                paths = {_path(root, path) for path in extra[1:]}
+                paths = {_path(root, path) for path in extra[3:]}
                 _check_scope(
                     root,
                     state,
@@ -714,6 +731,7 @@ def main(argv: list[str] | None = None) -> int:
                     },
                     directory,
                     name,
+                    prepared_revisions=(extra[1], extra[2]),
                 )
                 print("Brief consistency checked. Native permission is still required.")
     except BriefError as error:

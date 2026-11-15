@@ -1,6 +1,6 @@
 ---
 title: "Agentic Engineering Policy"
-version: "2.1.0"
+version: "3.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -130,15 +130,22 @@ authorization without a redundant user question when scope is still clear.
 
 #### Delegation Contract
 
-For a registered brief, immediately before preparing a delegated change run
-`python3 -m scripts.lib.hooks.request_brief check SESSION dispatch PATH` with
-every path owned by the worker and include the request binding and exact scope
-in the envelope. A failed check stops the affected handoff. The command checks
-consistency only. The shared pre-tool hook checks recognized exact file
-edits in enrolled sessions, including file-backed Task state changes. Unenrolled sessions,
-unrecognized writes, native dispatch and provider-internal task transitions
-have no such interception. Report that coverage gap and use the actual
-controller and provider authorization boundary.
+For a registered brief, include the session, prepared request revision, brief
+revision and exact owned paths in the worker envelope. Before dispatch and
+before a delegated writer acts or resumes, pass those same values to:
+
+```bash
+python3 -m scripts.lib.hooks.request_brief check SESSION dispatch REQUEST_REVISION BRIEF_REVISION PATH
+```
+
+Supply every owned path after the two revisions. A failed check stops the
+affected handoff or write until the supervisor reconciles the envelope with
+current authority. A fresh status lookup alone cannot refresh the prepared
+revisions. The command checks consistency only. The shared pre-tool hook
+checks recognized exact file edits in enrolled sessions, including file-backed
+Task state changes. Unenrolled sessions, unrecognized writes, native dispatch
+and provider-internal task transitions have no such interception. Report that
+coverage gap and use the actual controller and provider authorization boundary.
 
 Delegate only to a role declared in `.agents/roles/` and mapped by the provider
 registry. Each envelope names the role and primary responsibility, exact owned

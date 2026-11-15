@@ -1,10 +1,10 @@
 ---
 title: "Codex Provider Adapter"
-version: "1.6.1"
+version: "1.6.2"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-16"
 runtime: "codex"
 ---
 
@@ -99,12 +99,15 @@ own: project trust and hook enablement. Observed on 2026-10-13 with codex-cli
 `apply_patch` triggers PostToolUse and its `additionalContext` reaches the
 model. A command run through `tools.exec_command` inside `exec`, or any other
 runtime file API, is not parsed, so shell-command and edit policy do not see
-it; that is an accepted residual. Not observed: a PreToolUse denial of
-`apply_patch`, and delivery under
-another trust or enablement state; record those as unverified until directly
-observed within separate authorization. Codex's sandbox cannot start on this
-host, as the [environment constraints](../.agents/governance/environment-constraints.md#1-hard-constraints)
-record.
+it; that is an accepted residual. On 2026-11-16 the active managed desktop
+session delivered the request brief observation and denied a literal
+`apply_patch` nested in `exec` outside the registered scope. An in-scope Task
+edit proceeded in the same session. This was a desktop observation. The
+installed CLI version is recorded separately from the desktop runtime.
+Direct `apply_patch`, other trust or enablement states, and the native
+resume or compact path remain unobserved for this brief guard.
+The [environment constraints](../.agents/governance/environment-constraints.md#1-hard-constraints)
+record the separate host CLI sandbox limitation.
 Respect the active sandbox and approval boundary; do not mutate user-global or
 ignored local configuration or install global skill copies.
 

@@ -400,7 +400,14 @@ class DispatcherDeliveryTests(IsolatedState):
         independent = self.scoped_edit(provider, session, "scripts/README.md")
         self.assert_edit_denied(provider, affected, True)
         self.assert_edit_denied(provider, independent, False)
-        dispatch = self.brief_command("check", session, "dispatch", "scripts/README.md")
+        dispatch = self.brief_command(
+            "check",
+            session,
+            "dispatch",
+            record["request_revision"],
+            str(record["revision"]),
+            "scripts/README.md",
+        )
         self.assertEqual(0, dispatch.returncode, dispatch.stderr)
         self.prompt(provider, session, "Yes, update the test guide.")
         self.assert_edit_denied(provider, affected, True)
