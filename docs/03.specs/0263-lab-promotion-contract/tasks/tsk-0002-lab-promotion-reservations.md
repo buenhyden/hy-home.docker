@@ -1,8 +1,8 @@
 ---
 title: "LAB Promotion Reservations Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-15"
 layer: "specs"
@@ -60,6 +60,7 @@ version 0.3.0 on 2026-11-06 ("승인").
 | SPEC-0263 | in-review | approved | #current-contract-decision |
 | SPEC-0263-TSK-0002 | draft | ready | #review-and-completion |
 | SPEC-0263-TSK-0002 | ready | in-progress | #review-and-completion |
+| SPEC-0263-TSK-0002 | in-progress | completed | #criterion-decisions |
 
 #### W7 implementation
 
@@ -273,8 +274,8 @@ None: nothing was recorded here before this Task moved to the common form.
 #### Review and Completion
 
 On 2026-11-15 the owner withdrew criterion 8 as not-required, citing the
-2026-11-06 decision that no LAB is promoted (SPEC-0212 TSK-0070). The Task
-stays `in-progress` until the owner closes it; nothing is deleted.
+2026-11-06 decision that no LAB is promoted (SPEC-0212 TSK-0070). The owner
+closed the Task on 2026-11-15; nothing is deleted.
 
 The owner approved Spec 0.3.0. W7 is implemented. Criterion 8 waits for owner
 acceptance.
