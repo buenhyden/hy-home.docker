@@ -545,7 +545,10 @@ Open owner items:
   present in the git-ignored `labs/.env` (key names checked, values not read);
 - `labs/.env` `LAB_KAFKA_CLUSTER_ID` and `LAB_OPENSEARCH_CERT_DIR` (E35);
 - SMTP01 removing COMM-003;
-- retiring the unused `secrets/db/mng-pg/supabase_password.txt`.
+- retiring the unused `secrets/db/mng-pg/supabase_password.txt`: closed on
+  2026-11-15. The owner approved its deletion, and the file was already
+  absent (`test -e` false; the owner's `rm` reported no such file), so nothing
+  was deleted. No tracked file references it.
 
 ## Handoff
 
