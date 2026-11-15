@@ -854,6 +854,45 @@ _HEADING_LINE = re.compile(r"^ {0,3}(#{2,6})[ \t]+(.+?)[ \t]*#*[ \t]*$")
 # A section whose whole body is one of these says nothing; the common form
 # requires a stated reason instead (for example "None: no consumer exists").
 _PLACEHOLDER_BODY = re.compile(r"^(?:todo|tbd|n/?a|-)\.?$", re.IGNORECASE)
+_SECTION_COMMENT = re.compile(r"<!--(?:-?>|.*?(?:-->|\Z))", re.DOTALL)
+_SECTION_MARKDOWN = MarkdownIt("commonmark")
+
+
+def _section_is_placeholder(source: str) -> bool:
+    candidate = _SECTION_COMMENT.sub("", source).strip()
+    if not any(
+        _PLACEHOLDER_BODY.fullmatch(line.strip()) for line in candidate.splitlines()
+    ):
+        return False
+    visible: list[str] = []
+    for block in _SECTION_MARKDOWN.parse(source):
+        if block.type == "inline":
+            parts = []
+            for token in block.children or ():
+                if token.type == "text":
+                    parts.append(token.content)
+                elif token.type in {"softbreak", "hardbreak"}:
+                    parts.append("\n")
+                elif token.type != "html_inline" or not token.content.startswith(
+                    "<!--"
+                ):
+                    return False
+            content = "".join(parts).strip()
+            nested = block.level > 1
+        elif block.type == "html_block":
+            content = _SECTION_COMMENT.sub("", block.content).strip()
+            nested = block.level > 0
+        elif block.tag in {"p", "blockquote", "ul", "ol", "li"}:
+            continue
+        else:
+            return False
+        if content:
+            if nested:
+                return False
+            visible.append(content)
+    return _PLACEHOLDER_BODY.fullmatch("\n".join(visible)) is not None or (
+        not visible and candidate == "-"
+    )
 
 
 def _registered_subsection_findings(
@@ -866,9 +905,9 @@ def _registered_subsection_findings(
     required = profile.get("required_subsections") or {}
     optional = profile.get("optional_subsections") or {}
     children: dict[str, list[str]] = collections.defaultdict(list)
-    bodies: list[tuple[str, list[str]]] = []
+    sections: list[tuple[int, str]] = []
     parent: str | None = None
-    for _, line, heading in _markdown_form_lines(text):
+    for index, _, heading in _markdown_form_lines(text):
         if heading is not None:
             level, title = heading
             if level == 2:
@@ -876,10 +915,7 @@ def _registered_subsection_findings(
             elif level == 3 and parent is not None:
                 children[parent].append(title)
             if level >= 2:
-                bodies.append((f"{'#' * level} {title}", []))
-            continue
-        if bodies and line.strip() and not line.strip().startswith("<!--"):
-            bodies[-1][1].append(line.strip())
+                sections.append((index, f"{'#' * level} {title}"))
     findings: list[Finding] = []
     for section in sorted(set(required) | set(optional)):
         declared = [name for name in required.get(section, ()) if isinstance(name, str)]
@@ -926,8 +962,11 @@ def _registered_subsection_findings(
                     + ", ".join(declared),
                 )
             )
-    for heading, lines in bodies:
-        if len(lines) == 1 and _PLACEHOLDER_BODY.match(lines[0]):
+    lines = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    ends = [index for index, _ in sections[1:]] + [len(lines)]
+    for (start, heading), end in zip(sections, ends, strict=False):
+        # The heading scan hides examples. They still count as section content.
+        if _section_is_placeholder("\n".join(lines[start + 1 : end])):
             findings.append(
                 _finding(
                     record,

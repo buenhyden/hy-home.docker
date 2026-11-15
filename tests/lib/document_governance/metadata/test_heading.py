@@ -2293,6 +2293,32 @@ class SubsectionContractTests(unittest.TestCase):
         optional = self.VALID.replace("## Beta", "### Extra\n\nOptional.\n\n## Beta")
         self.assertEqual([], self.codes(optional))
 
+    def test_comments_do_not_make_an_optional_placeholder_substantive(self) -> None:
+        for body in (
+            "N/A <!-- author note -->",
+            "<!-- author note --> TODO",
+            "TBD <!-- a note\ncontinues here -->",
+            "- <!-- author note -->",
+            "N/A\n\n<!-- unclosed block comment",
+            "N/A\n\n> <!-- note inside a quote -->",
+            "N/A\n\n- <!-- note inside a bullet -->",
+        ):
+            with self.subTest(body=body):
+                text = self.VALID.replace("## Beta", f"### Extra\n\n{body}\n\n## Beta")
+                self.assertIn("body-section-placeholder", self.codes(text))
+
+    def test_optional_section_keeps_visible_explanation_and_examples(self) -> None:
+        for body in (
+            "<!-- note --> No rollback applies because the check is read-only.",
+            "N/A\n\n```text\n### Example\nactual output\n```",
+            "N/A\n\n> This command only reads service state.",
+            "N/A <!-- looks like an inline comment\n\nVisible text -->",
+            "    N/A",
+        ):
+            with self.subTest(body=body):
+                text = self.VALID.replace("## Beta", f"### Extra\n\n{body}\n\n## Beta")
+                self.assertEqual([], self.codes(text))
+
     def test_subsection_violations_are_reported(self) -> None:
         cases = {
             "body-subheading-missing": self.VALID.replace("### Second\n\nTwo.\n\n", ""),
