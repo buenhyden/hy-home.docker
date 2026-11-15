@@ -64,6 +64,14 @@ Read-only `docker network inspect` on 2026-11-15:
 | `hy-home-infra_opsflow_capture_net` | 172.30.0.0/16 | `n8n-worker`, `mailpit` |
 | `hy-home-infra_opsflow_notifier_db_net` | 172.18.0.0/16 | `n8n-worker`, `dev-pg` |
 
+#### Consumers fixed after the first hosted run
+
+The author's local checks missed three consumers of the root Compose file.
+The two contract tests now expect the explicit subnets, and
+`ledger_rebind --write` re-bound only the `docker-compose.yml` include hash
+in `update-ledger.json` (0 image rows; review, scan and acceptance fields
+untouched).
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -86,6 +94,7 @@ The runtime step runs only after the review passes and the change merges.
 | Compose render | 127 | W132 | compose-config | `docker compose config -q`, same tree | PASS | exit 0 | required | - |
 | Compose controls | 127 | W132 | compose-policy | `check-template-security-baseline.sh`; `check-conftest-policy.sh --mode corpus`, same tree | PASS | findings 0; 45 of 45 policy tests | required | - |
 | Independent review | 127 | W132 | independent-review | `iac-reviewer`, read-only, commit `3ebaef3ef` | PASS | No HIGH; subnets collide with nothing and nothing depends on the old addresses; MEDIUM: stop `n8n-worker` with a 60 s grace after confirming no running execution; LOW: GDE-0077 now lists the three ranges | required | - |
+| Hosted candidate first run | 127 | W132 | remote-candidate | PR 1042 at the first head, run 43716166319 | FAIL | `candidate-core` failed: `test_service_wiring_contracts` and `test_n8n_outbox_contract` pinned the old network definitions, and the SEC01 ledger still held the old `docker-compose.yml` hash; `candidate-documents` PASS | required | - |
 | Runtime apply | 127 | W132 | runtime-recreate | Recreate the three networks and their four containers from merged `main` | NOT_RUN | waits for review and merge | required | - |
 
 ### Resolution Links
