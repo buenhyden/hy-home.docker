@@ -95,6 +95,22 @@ the policy file; a policy with none is enforced by review only.
 | `task-checklists.md` | 1.5.1 | Scope, evidence and completion checks | 1 (`metadata/profile.py`) | Review mostly |
 | `workflows.md` | 1.5.0 | Workflow order and review by risk | 0 | Review only (Q08 adds no gate) |
 
+#### Role inventory
+
+Each canonical role under `.agents/roles/` is the only authored source. The
+renderer writes its Claude and Codex projections, and renderer parity
+(drift 0) shows no projection is authored on its own, so native settings are
+not a second policy owner. Whether a read-only role is restricted at runtime
+is a native observation that stays with W07-ADAPTER (TSK-0066 D-08).
+
+| Role | Permission profile | Claude projection | Codex projection |
+| --- | --- | --- | --- |
+| `ci-cd-engineer`, `doc-writer`, `hook-developer`, `incident-responder`, `infra-implementer`, `qa-engineer`, `skill-creator` | `workspace-write` | Yes | Yes |
+| `code-reviewer`, `drift-detector`, `eval-engineer`, `iac-reviewer`, `rules-engineer`, `security-auditor`, `workflow-supervisor` | `read-only` (Claude: restricted tools, `permissionMode: plan`) | Yes | Yes |
+
+The executors' canonical register is `scripts/manifest.yaml`, checked by
+`check-script-manifest.py` (KEEP_VERIFIED, PASS in TSK-0068).
+
 #### Fit and violation cases
 
 | Rule | Fit case | Violation case | Where |
