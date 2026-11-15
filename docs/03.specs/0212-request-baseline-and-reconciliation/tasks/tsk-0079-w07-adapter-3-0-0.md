@@ -1,6 +1,6 @@
 ---
 title: "W07 Native Provider Adapter Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -235,6 +235,22 @@ The Claude session reported a metadata check selecting 92 documents,
 zero violations and exit 0 on its Task edit. Alignment and command-link
 checks were still running when that report was sent.
 
+#### Claude PostToolUse follow-up at b3cff1273
+
+The later trusted-session report observed the project dispatcher and its
+child process after a native Edit to the only synthetic file in the bound
+scope. The file changed from `v1` to `v2` and its reported SHA-256 prefix
+changed from `2d27fbdf` to `81db67b6`. The process monitor saw the
+PostToolUse invocation at 07:42:26.041 and both processes had ended by
+07:42:26.103. It did not capture either exit status. The fixture change
+confirms the Edit outcome. Process completion confirms hook delivery
+but leaves the hook success result open.
+
+The report included a Stop closing reminder and the terminal's completed
+turn indicator. It contained no preceding block paired with that Stop in
+the same turn. PreCompact was planned and no invocation or completion was
+reported for it.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -286,9 +302,10 @@ project trust before it can supply the missing delivery evidence.
 | Trusted Claude in-scope allow | 135 | W140 | native Edit under a bound brief | Gitignored synthetic in-scope fixture, f05d4e805 | PASS | Native Edit proceeded under existing permissions and digest changed v0 to v1 | required | - |
 | Trusted Claude out-of-scope deny | 135 | W140 | native Edit outside the bound brief | Gitignored synthetic out-of-scope fixture, f05d4e805 | PASS | Hook denied before execution, digest, size and mtime unchanged | required | - |
 | Trusted Claude Stop continuation | 135 | W140 | live Stop with an uncommitted Task change | Same session, f05d4e805 | PASS | Project Stop blocked the first stop, named the uncommitted Task path and continued the turn | required | - |
-| Trusted Claude PostToolUse | 135 | W140 | native PostToolUse witness | Same session | NOT_RUN | No visible output that confirms the hook ran | required | - |
-| Trusted Claude PreCompact | 135 | W140 | native PreCompact witness | Same session | NOT_RUN | No hook result reported | required | - |
-| Trusted Claude Stop retry | 135 | W140 | silent native Stop retry witness | Same session after the blocking Stop | NOT_RUN | Second stop expected and its result remains unreported | required | - |
+| Trusted Claude PostToolUse process delivery | 135 | W140 | native PostToolUse invocation and process completion | Reported trusted Claude session, b3cff1273, native Edit of a scoped synthetic file | PASS | Dispatcher and child observed, both ended, fixture changed from v1 to v2 | optional | - |
+| Trusted Claude PostToolUse exit status | 135 | W140 | native PostToolUse exit-status witness | Same process-monitor run | NOT_RUN | Monitor did not observe an exit code | required | - |
+| Trusted Claude PreCompact | 135 | W140 | native PreCompact witness | Reported trusted Claude session | NOT_RUN | Planned trigger only, no invocation or completion reported | required | - |
+| Trusted Claude Stop retry | 135 | W140 | silent native Stop retry witness | Reported trusted Claude session | NOT_RUN | Closing reminder and turn end observed, no same-turn block and retry pair reported | required | - |
 | Reported Claude Task metadata | 135 | W140 | document metadata | Claude-authored Task snapshot before reconciliation | PASS | Session reported 92 documents selected, zero violations and exit 0 | optional | - |
 
 ### Resolution Links
@@ -311,8 +328,9 @@ original outcomes.
 
 A trusted Claude session observed SessionStart and UserPromptSubmit
 delivery and a PreToolUse allow and deny on the native Edit route only.
-A blocking Stop continuation was also observed. Claude PostToolUse,
-PreCompact and the silent Stop retry remain unverified.
+A blocking Stop continuation was also observed. The later report verifies
+PostToolUse invocation and process completion. Its exit status, PreCompact
+and the silent Stop retry remain unverified.
 The Codex desktop hook pass covers the observed edit route. Its separate
 reviewer write-open failure remains unresolved. Unsupported-output
 behavior, the remaining native reviewer boundaries, worker dispatch and
