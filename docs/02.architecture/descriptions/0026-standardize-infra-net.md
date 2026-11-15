@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "1.8.2"
+version: "1.9.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-15"
 layer: "architecture"
 artifact_id: "AD-0026"
 parent_ids:
@@ -73,7 +73,7 @@ networks beside it, then it left the services and the root.
 | `dev_data_net` | 10.250.15.0/24 | `dev-pg`, `dev-valkey`, their exporters and provision jobs, Kafka Connect, RedisInsight | development client → dev PostgreSQL/Valkey |
 | `experience_ingress_net` | 10.250.16.0/24, internal | Traefik and Storybook | gateway → Storybook only |
 | `redisinsight_ingress_net` | 10.250.18.0/24, internal, isolated, dynamic from .128/25 | Traefik and RedisInsight (fixed .3) | gateway → RedisInsight only; no host address |
-| `<service>_ingress_net` (16) | 10.250.24.0/24–10.250.40.0/24, internal, isolated, dynamic from .128/25 | Traefik and one SSO-only backend each (SPEC-0266, ADR-0061) | gateway → that backend only |
+| `<service>_ingress_net` (14) | 10.250.24.0/24–10.250.40.0/24, internal, isolated, dynamic from .128/25 | Traefik and one SSO-only backend each (SPEC-0266, ADR-0061) | gateway → that backend only |
 | `seaweedfs_s3_metrics_net` | 10.250.41.0/24, internal, isolated, dynamic from .128/25 | `seaweedfs-s3` (metrics listener bound to fixed .2), Prometheus, Alloy | metrics/pprof scrape of `seaweedfs-s3:9327`; reaches no master/volume/filer API |
 | `oauth2_proxy_metrics_net` | 10.250.43.0/24, internal, isolated, dynamic from .128/25 | OAuth2 Proxy (metrics listener bound to fixed .2, alias `oauth2-proxy-metrics`) and Prometheus | metrics scrape of 44180 only (SPEC-0267) |
 | `keycloak_management_net` | 10.250.44.0/24, internal, isolated, dynamic from .128/25 | Keycloak (management listener bound to fixed .2, alias `keycloak-management`), Prometheus and Gatus | health and metrics on 9000 only (SPEC-0267) |
@@ -93,6 +93,17 @@ networks beside it, then it left the services and the root.
 | `crawl4ai_outbound_net` | leaf-owned | `crawl4ai-egress` | gateway → public addresses on ports 80/443 only; non-global and IPv6 addresses refused |
 | `comfyui_egress_net` | 10.250.42.0/24, non-internal, dynamic from .128/25 | ComfyUI, only while the maintenance overlay `docker-compose.egress.yml` is attached | model and custom-node downloads; no other container joins it (SPEC-0268) |
 | `restic_offsite_net` | leaf-owned | `restic-offsite` | backup egress to Cloudflare R2 only (ADR-0056) |
+| `n8n_ollama_net` | root-defined, internal, no explicit subnet | `n8n-worker` and `ollama` | worker → Ollama model API only |
+| `opsflow_notifier_db_net` | root-defined, internal, no explicit subnet | `n8n-worker` and `dev-pg` | notifier → its development database only |
+| `opsflow_capture_net` | root-defined, internal, no explicit subnet | `n8n-worker` and `mailpit` | notifier SMTP → Mailpit capture only |
+| `crawl4ai_host_net` | leaf-owned bridge | `crawl4ai-loopback` | loopback forwarder publishing `127.0.0.1:11235` to Crawl4AI over `crawl4ai_net` |
+
+The three root-defined networks above take an address from Docker's pool
+because Compose gives them no `ipam` subnet, which departs from the explicit
+subnet rule in the System Boundary. That is a recorded gap, not a choice:
+fixing it changes runtime networks and needs its own approved change. Sample
+projects under `examples/` declare their own networks and are outside this
+description.
 
 Services with no container peer (Renovate, OpenTofu) use the project default
 network. WireMock also uses it until a named consumer exists;

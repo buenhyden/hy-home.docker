@@ -1,10 +1,10 @@
 ---
 title: "Package Waiting, Cancellation and Archive Reassessment"
-version: "1.0.7"
+version: "1.0.8"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "architecture"
 artifact_id: "ADR-0037"
 parent_ids:
@@ -141,7 +141,7 @@ Each rejected option is rejected for the reason stated in its entry above: retai
 
 ### Follow-up
 
-SPEC-0179 owns implementation and local verification. Its lifecycle must still follow
+SPEC-0179, now retired, owned implementation and local verification. Its lifecycle followed
 registered integration edges; the adoption approval does not fabricate intervening
 commits or authorize remote integration. A real unit disposition remains a separate
 scoped operation after recoverability and consumer checks.
@@ -149,9 +149,14 @@ scoped operation after recoverability and consumer checks.
 #### Compliance
 
 Policy owns meaning; Registry owns shapes and generation boundaries; validators own
-executable judgments. SPEC-0179 records actual RED/GREEN, snapshot, metadata, corpus,
+executable judgments. SPEC-0179 recorded actual RED/GREEN, snapshot, metadata, corpus,
 link and independent review evidence, with S01–S16 and V01–V40 scope and limitations.
 This accepted decision is not itself a test result or per-unit removal authorization.
+
+Amended in place on 2026-11-15 at the owner's direction (SPEC-0255
+TSK-0001, criterion 2): SPEC-0179 is retired, so the two sentences above
+now say it owned and recorded these, in the past tense. The decision does not
+change.
 
 ## Traceability
 

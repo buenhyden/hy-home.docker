@@ -1,10 +1,10 @@
 ---
 title: "Retire the Supabase LAB Task"
-version: "0.2.1"
+version: "0.4.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-15"
 layer: "specs"
 artifact_id: "SPEC-0263-TSK-0003"
 parent_ids:
@@ -60,6 +60,7 @@ Background records the removal. The owner approved the draft on 2026-11-06
 | SPEC-0263 | in-review | approved | #spec-amendment-approval |
 | SPEC-0263-TSK-0003 | draft | ready | #w8-implementation |
 | SPEC-0263-TSK-0003 | ready | in-progress | #w8-implementation |
+| SPEC-0263-TSK-0003 | in-progress | completed | #criterion-decisions |
 
 #### W8 implementation
 
@@ -176,9 +177,15 @@ None: nothing was recorded here before this Task moved to the common form.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 3 | pending | E4, E6, E7, E8, E9, E12, E14, E15, E16, E17, E18, E19, E20 | every required row now passes; owner acceptance pending | @buenhyden |
+| 3 | not-required | E4, E6, E7, E8, E9, E12, E14, E15, E16, E17, E18, E19, E20 | Not required: owner @buenhyden decided on 2026-11-15 (SPEC-0212 TSK-0070). This Task's retirement rows all pass, but the criterion is shared with TSK-0001, whose `lab.py check supabase` rows E6, E12, E68 and E58 can never pass after the LAB's removal (TSK-0001 E70) | @buenhyden |
 
 ### Remaining Conditions
+
+On 2026-11-15 the owner accepted this Task, but criterion 3 cannot be
+recorded as accepted: it is shared with TSK-0001, whose supabase check rows
+E6, E12, E68 and E58 can never pass now that this Task removed the LAB
+(TSK-0001 E70). The owner then
+recorded criterion 3 as not-required on the same day, and this Task closes.
 
 W8 is implemented on the uncommitted tree. The non-PASS rows have two causes,
 neither a W8 defect: deleted files stay in the Git index until the controller
