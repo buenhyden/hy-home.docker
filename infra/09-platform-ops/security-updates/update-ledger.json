@@ -121,11 +121,11 @@
     },
     {
       "path": "infra/04-data/mng-db/docker-compose.yml",
-      "sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c"
+      "sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa"
     },
     {
       "path": "infra/04-data/neo4j/docker-compose.yml",
-      "sha256": "4e5f6d533d69c6c16a3f0d8101862283593a7ad2e38e249129c40826ca107e3f"
+      "sha256": "7671f96b120fb5ac044041f44c4f4e8ad3e950bf971adecc8ba9ef8e57f901cb"
     },
     {
       "path": "infra/04-data/opensearch/docker-compose.yml",
@@ -149,7 +149,7 @@
     },
     {
       "path": "infra/06-observability/docker-compose.yml",
-      "sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40"
+      "sha256": "f2c5c300be5d82c9a49a131be22d40012ce07a14d72272092bb4e7d6f084299b"
     },
     {
       "path": "infra/06-observability/dozzle/docker-compose.yml",
@@ -169,11 +169,11 @@
     },
     {
       "path": "infra/08-ai/crawl4ai/docker-compose.yml",
-      "sha256": "108419655d79dc78f3e6c753f59b2167dbdf545b56658c90bc28cd2062528b2a"
+      "sha256": "9e1353a80ba6f142b42143861d0fce549aa76724aff60f75d4f26b6bdc9cd3a8"
     },
     {
       "path": "infra/08-ai/mlflow/docker-compose.yml",
-      "sha256": "86ad626fa0d6f303c2c66324b26fcaa6b0803a8500e72cf39264d0865adccbaa"
+      "sha256": "5034f7cea43c89b7a1a7366087b2011cecc56faa3104e3330700573c6eda87f4"
     },
     {
       "path": "infra/08-ai/ollama/docker-compose.yml",
@@ -197,7 +197,7 @@
     },
     {
       "path": "infra/09-platform-ops/restic/docker-compose.yml",
-      "sha256": "3d7152b089f9233d15cde7af8a9cf3b4d6d70ddac907711e7bd10f67fad0c1b6"
+      "sha256": "591db3f9586fac7921d587df698e60d08b4cdf2a76ddac662ba4c5155998c8fc"
     },
     {
       "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
@@ -217,7 +217,7 @@
     },
     {
       "path": "infra/11-quality/pact-broker/docker-compose.yml",
-      "sha256": "db657224717328f9d72d71bf070352fde4a291d545044be6ff20079e0d85f61d"
+      "sha256": "2082ae28c2fbca4b7b03bbca364054119cb7efcaa987bbbfd31f4f1ab4a233e9"
     },
     {
       "path": "infra/11-quality/wiremock/docker-compose.yml",
@@ -2354,7 +2354,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo prometheus/alertmanager --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T11:20:38+00:00",
-      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+      "source_input_sha256": "f2c5c300be5d82c9a49a131be22d40012ce07a14d72272092bb4e7d6f084299b",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -2627,7 +2627,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-10T11:20:38+00:00",
-      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+      "source_input_sha256": "f2c5c300be5d82c9a49a131be22d40012ce07a14d72272092bb4e7d6f084299b",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/alloy:v1.21.3@sha256:8ab871206bd2d8f89277f53abffee5f452a293980788d52f85fa183a87a505a4",
@@ -2811,7 +2811,7 @@
       "service": "backup-sqlite-export",
       "scope": "root",
       "compose_file": "infra/09-platform-ops/restic/docker-compose.yml",
-      "current_declared": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+      "current_declared": "python:3.15.2-alpine@sha256:0f9552bb28711333da16915ec146f5e6bb44a7fdac9ced15dc17c2e0206346dd",
       "profiles_declared": [
         "backup"
       ],
@@ -2843,8 +2843,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T14:39:40+09:00",
-        "next_validation_due": "2026-11-17T14:39:40+09:00",
+        "discovered_at": "2026-11-16T00:17:34+09:00",
+        "next_validation_due": "2026-11-23T00:17:34+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -2863,8 +2863,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
-      "source_input_sha256": "3d7152b089f9233d15cde7af8a9cf3b4d6d70ddac907711e7bd10f67fad0c1b6",
+      "source_refreshed_at": "2026-11-16T00:17:34+09:00",
+      "source_input_sha256": "591db3f9586fac7921d587df698e60d08b4cdf2a76ddac662ba4c5155998c8fc",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -2938,14 +2938,14 @@
         },
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
-      "target_source_image": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+      "target_source_image": "python:3.15.2-alpine@sha256:0f9552bb28711333da16915ec146f5e6bb44a7fdac9ced15dc17c2e0206346dd",
       "target_build_materials": [],
       "target_declared_digest": "UNKNOWN",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
         "source_version": "3.15.2",
-        "source_image": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+        "source_image": "python:3.15.2-alpine@sha256:0f9552bb28711333da16915ec146f5e6bb44a7fdac9ced15dc17c2e0206346dd",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
@@ -3131,7 +3131,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+      "source_input_sha256": "f2c5c300be5d82c9a49a131be22d40012ce07a14d72272092bb4e7d6f084299b",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "ghcr.io/google/cadvisor:v0.60.6",
@@ -3917,7 +3917,7 @@
       "upstream_reported_tag": "v0.9.5",
       "next_fact_command": "gh release view --repo unclecode/crawl4ai --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "108419655d79dc78f3e6c753f59b2167dbdf545b56658c90bc28cd2062528b2a",
+      "source_input_sha256": "9e1353a80ba6f142b42143861d0fce549aa76724aff60f75d4f26b6bdc9cd3a8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -4196,7 +4196,7 @@
       "service": "crawl4ai-egress",
       "scope": "root",
       "compose_file": "infra/08-ai/crawl4ai/docker-compose.yml",
-      "current_declared": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+      "current_declared": "python:3.15.2-alpine@sha256:0f9552bb28711333da16915ec146f5e6bb44a7fdac9ced15dc17c2e0206346dd",
       "profiles_declared": [
         "crawl4ai"
       ],
@@ -4242,8 +4242,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T14:39:40+09:00",
-        "next_validation_due": "2026-11-17T14:39:40+09:00",
+        "discovered_at": "2026-11-16T00:17:34+09:00",
+        "next_validation_due": "2026-11-23T00:17:34+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -4266,8 +4266,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
-      "source_input_sha256": "108419655d79dc78f3e6c753f59b2167dbdf545b56658c90bc28cd2062528b2a",
+      "source_refreshed_at": "2026-11-16T00:17:34+09:00",
+      "source_input_sha256": "9e1353a80ba6f142b42143861d0fce549aa76724aff60f75d4f26b6bdc9cd3a8",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -4341,14 +4341,14 @@
         },
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
-      "target_source_image": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+      "target_source_image": "python:3.15.2-alpine@sha256:0f9552bb28711333da16915ec146f5e6bb44a7fdac9ced15dc17c2e0206346dd",
       "target_build_materials": [],
       "target_declared_digest": "UNKNOWN",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
         "source_version": "3.15.2",
-        "source_image": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+        "source_image": "python:3.15.2-alpine@sha256:0f9552bb28711333da16915ec146f5e6bb44a7fdac9ced15dc17c2e0206346dd",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
@@ -4469,7 +4469,7 @@
       "service": "crawl4ai-loopback",
       "scope": "root",
       "compose_file": "infra/08-ai/crawl4ai/docker-compose.yml",
-      "current_declared": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+      "current_declared": "python:3.15.2-alpine@sha256:0f9552bb28711333da16915ec146f5e6bb44a7fdac9ced15dc17c2e0206346dd",
       "profiles_declared": [
         "crawl4ai"
       ],
@@ -4501,8 +4501,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T14:39:40+09:00",
-        "next_validation_due": "2026-11-17T14:39:40+09:00",
+        "discovered_at": "2026-11-16T00:17:34+09:00",
+        "next_validation_due": "2026-11-23T00:17:34+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit; no runtime state is held by the forwarder.",
@@ -4514,20 +4514,20 @@
       "effective_current_digest_type": "NOT_OBSERVED",
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "BLOCKED: no release lookup or artifact inspection has been run for this service",
-      "source_refreshed_at": "2026-11-10T14:39:40+09:00",
-      "source_input_sha256": "108419655d79dc78f3e6c753f59b2167dbdf545b56658c90bc28cd2062528b2a",
+      "source_refreshed_at": "2026-11-16T00:17:34+09:00",
+      "source_input_sha256": "9e1353a80ba6f142b42143861d0fce549aa76724aff60f75d4f26b6bdc9cd3a8",
       "runtime_observed_at": null,
       "runtime_refresh": "NOT_RUN",
       "official_supplier_lookup_refs": [],
       "supplier_lookup_blocker": "No supplier lookup has been recorded for this service; the shared image pin is not a verified release observation.",
       "official_supplier_observation_scope": "NONE; existing vendor observations of other rows do not verify this service.",
       "target_declared_digest": "UNKNOWN",
-      "target_source_image": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+      "target_source_image": "python:3.15.2-alpine@sha256:0f9552bb28711333da16915ec146f5e6bb44a7fdac9ced15dc17c2e0206346dd",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
         "source_version": "3.15.2",
-        "source_image": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+        "source_image": "python:3.15.2-alpine@sha256:0f9552bb28711333da16915ec146f5e6bb44a7fdac9ced15dc17c2e0206346dd",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
@@ -4712,7 +4712,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo NVIDIA/dcgm-exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T07:19:46+09:00",
-      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+      "source_input_sha256": "f2c5c300be5d82c9a49a131be22d40012ce07a14d72272092bb4e7d6f084299b",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -7793,7 +7793,7 @@
       "upstream_reported_tag": "v5.37.0",
       "next_fact_command": "gh release view --repo TwiN/gatus --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+      "source_input_sha256": "f2c5c300be5d82c9a49a131be22d40012ce07a14d72272092bb4e7d6f084299b",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -8453,7 +8453,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo grafana/grafana --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T11:20:38+00:00",
-      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+      "source_input_sha256": "f2c5c300be5d82c9a49a131be22d40012ce07a14d72272092bb4e7d6f084299b",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/grafana:13.3.0@sha256:488984b716c0862639f91a698adbe2862677a5a07bad42da5f03f3030883b205",
@@ -8745,7 +8745,7 @@
       "service": "grafana-db-provision",
       "scope": "root",
       "compose_file": "infra/06-observability/docker-compose.yml",
-      "current_declared": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+      "current_declared": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
       "profiles_declared": [
         "obs",
         "obs-core",
@@ -8794,8 +8794,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T12:48:10+09:00",
-        "next_validation_due": "2026-11-17T12:48:10+09:00",
+        "discovered_at": "2026-11-16T00:17:34+09:00",
+        "next_validation_due": "2026-11-23T00:17:34+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -8818,8 +8818,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+      "source_refreshed_at": "2026-11-16T00:17:34+09:00",
+      "source_input_sha256": "f2c5c300be5d82c9a49a131be22d40012ce07a14d72272092bb4e7d6f084299b",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -8880,12 +8880,12 @@
       },
       "target_declared_digest": "UNKNOWN",
       "upstream_reported_tag": "UNKNOWN",
-      "target_source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+      "target_source_image": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
         "source_version": "18.6",
-        "source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+        "source_image": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
@@ -10993,7 +10993,7 @@
       "upstream_reported_tag": "v3.7.8",
       "next_fact_command": "gh release view --repo grafana/loki --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+      "source_input_sha256": "f2c5c300be5d82c9a49a131be22d40012ce07a14d72272092bb4e7d6f084299b",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -11588,7 +11588,7 @@
       "upstream_reported_tag": "v3.17.0",
       "next_fact_command": "gh release view --repo mlflow/mlflow --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00",
-      "source_input_sha256": "86ad626fa0d6f303c2c66324b26fcaa6b0803a8500e72cf39264d0865adccbaa",
+      "source_input_sha256": "5034f7cea43c89b7a1a7366087b2011cecc56faa3104e3330700573c6eda87f4",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -11820,7 +11820,7 @@
       "service": "mlflow-db-provision",
       "scope": "root",
       "compose_file": "infra/08-ai/mlflow/docker-compose.yml",
-      "current_declared": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+      "current_declared": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
       "profiles_declared": [
         "mlops",
         "data-science"
@@ -11854,8 +11854,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T12:48:10+09:00",
-        "next_validation_due": "2026-11-17T12:48:10+09:00",
+        "discovered_at": "2026-11-16T00:17:34+09:00",
+        "next_validation_due": "2026-11-23T00:17:34+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -11874,8 +11874,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "86ad626fa0d6f303c2c66324b26fcaa6b0803a8500e72cf39264d0865adccbaa",
+      "source_refreshed_at": "2026-11-16T00:17:34+09:00",
+      "source_input_sha256": "5034f7cea43c89b7a1a7366087b2011cecc56faa3104e3330700573c6eda87f4",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -11936,12 +11936,12 @@
       },
       "target_declared_digest": "UNKNOWN",
       "upstream_reported_tag": "UNKNOWN",
-      "target_source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+      "target_source_image": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
         "source_version": "18.6",
-        "source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+        "source_image": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
@@ -12148,7 +12148,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
+      "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -12437,7 +12437,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
+      "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -12637,7 +12637,7 @@
       "service": "mng-pg-init",
       "scope": "root",
       "compose_file": "infra/04-data/mng-db/docker-compose.yml",
-      "current_declared": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+      "current_declared": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
       "profiles_declared": [
         "mng",
         "core",
@@ -12691,8 +12691,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T12:48:10+09:00",
-        "next_validation_due": "2026-11-17T12:48:10+09:00",
+        "discovered_at": "2026-11-16T00:17:34+09:00",
+        "next_validation_due": "2026-11-23T00:17:34+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -12715,8 +12715,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
+      "source_refreshed_at": "2026-11-16T00:17:34+09:00",
+      "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -12777,12 +12777,12 @@
       },
       "target_declared_digest": "UNKNOWN",
       "upstream_reported_tag": "UNKNOWN",
-      "target_source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+      "target_source_image": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
         "source_version": "18.6",
-        "source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+        "source_image": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
@@ -12905,7 +12905,7 @@
       "service": "mng-pg-monitor-provision",
       "scope": "root",
       "compose_file": "infra/04-data/mng-db/docker-compose.yml",
-      "current_declared": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+      "current_declared": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
       "profiles_declared": [
         "mng",
         "core",
@@ -12959,8 +12959,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T12:48:10+09:00",
-        "next_validation_due": "2026-11-17T12:48:10+09:00",
+        "discovered_at": "2026-11-16T00:17:34+09:00",
+        "next_validation_due": "2026-11-23T00:17:34+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -12983,8 +12983,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
+      "source_refreshed_at": "2026-11-16T00:17:34+09:00",
+      "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -13045,12 +13045,12 @@
       },
       "target_declared_digest": "UNKNOWN",
       "upstream_reported_tag": "UNKNOWN",
-      "target_source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+      "target_source_image": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
         "source_version": "18.6",
-        "source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+        "source_image": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
@@ -13253,7 +13253,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo valkey-io/valkey --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T03:08:02+00:00",
-      "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
+      "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -13651,7 +13651,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo oliver006/redis_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T06:36:12+09:00",
-      "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
+      "source_input_sha256": "81c76d91e7ed61846a896fc73f029e6a54986ce3fa35791eac9279c31cae4eaa",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "oliver006/redis_exporter:v1.96.0-alpine@sha256:eb537c034777c1925754575676716246ab380e762b8b9aa761634fb6a23a6957",
@@ -15684,7 +15684,7 @@
       "service": "neo4j",
       "scope": "root",
       "compose_file": "infra/04-data/neo4j/docker-compose.yml",
-      "current_declared": "neo4j:5.26.33-community@sha256:ec10d705830a340c7438e125cb5c4f90522b85369d877c9a581c3de5974ab3d6",
+      "current_declared": "neo4j:5.26.33-community@sha256:577eb43120e8688e62e753e962c47d30044ecaa95147ee5386c29f226b878008",
       "profiles_declared": [
         "graph"
       ],
@@ -15717,8 +15717,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T11:19:50+00:00",
-        "next_validation_due": "2026-11-17T11:19:50+00:00",
+        "discovered_at": "2026-11-16T00:17:34+09:00",
+        "next_validation_due": "2026-11-23T00:17:34+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -15737,8 +15737,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-10T11:19:50+00:00",
-      "source_input_sha256": "4e5f6d533d69c6c16a3f0d8101862283593a7ad2e38e249129c40826ca107e3f",
+      "source_refreshed_at": "2026-11-16T00:17:34+09:00",
+      "source_input_sha256": "7671f96b120fb5ac044041f44c4f4e8ad3e950bf971adecc8ba9ef8e57f901cb",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -15807,14 +15807,14 @@
         },
         "meaning": "Previous candidate metadata preserved. It does not bind the current target version/source; associated historical Native/build receipts are not promoted."
       },
-      "target_source_image": "neo4j:5.26.33-community@sha256:ec10d705830a340c7438e125cb5c4f90522b85369d877c9a581c3de5974ab3d6",
+      "target_source_image": "neo4j:5.26.33-community@sha256:577eb43120e8688e62e753e962c47d30044ecaa95147ee5386c29f226b878008",
       "target_build_materials": [],
       "target_declared_digest": "UNKNOWN",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
         "source_version": "5.26.33",
-        "source_image": "neo4j:5.26.33-community@sha256:ec10d705830a340c7438e125cb5c4f90522b85369d877c9a581c3de5974ab3d6",
+        "source_image": "neo4j:5.26.33-community@sha256:577eb43120e8688e62e753e962c47d30044ecaa95147ee5386c29f226b878008",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
@@ -16006,7 +16006,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo prometheus/node_exporter --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+      "source_input_sha256": "f2c5c300be5d82c9a49a131be22d40012ce07a14d72272092bb4e7d6f084299b",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -19754,7 +19754,7 @@
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
       "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "db657224717328f9d72d71bf070352fde4a291d545044be6ff20079e0d85f61d",
+      "source_input_sha256": "2082ae28c2fbca4b7b03bbca364054119cb7efcaa987bbbfd31f4f1ab4a233e9",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -19958,7 +19958,7 @@
       "service": "pact-broker-db-provision",
       "scope": "root",
       "compose_file": "infra/11-quality/pact-broker/docker-compose.yml",
-      "current_declared": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+      "current_declared": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
       "profiles_declared": [
         "contract-testing"
       ],
@@ -19991,8 +19991,8 @@
       "disposition": "BLOCKED",
       "blocker": {
         "owner": "SEC01",
-        "discovered_at": "2026-11-10T12:48:10+09:00",
-        "next_validation_due": "2026-11-17T12:48:10+09:00",
+        "discovered_at": "2026-11-16T00:17:34+09:00",
+        "next_validation_due": "2026-11-23T00:17:34+09:00",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
         "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
         "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
@@ -20011,8 +20011,8 @@
         "--format",
         "{{json (index .Image \"linux/amd64\").Config.Labels}}"
       ],
-      "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "db657224717328f9d72d71bf070352fde4a291d545044be6ff20079e0d85f61d",
+      "source_refreshed_at": "2026-11-16T00:17:34+09:00",
+      "source_input_sha256": "2082ae28c2fbca4b7b03bbca364054119cb7efcaa987bbbfd31f4f1ab4a233e9",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -20073,12 +20073,12 @@
       },
       "target_declared_digest": "UNKNOWN",
       "upstream_reported_tag": "UNKNOWN",
-      "target_source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+      "target_source_image": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
       "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
       "current_target_artifact_binding": {
         "source_version": "18.6",
-        "source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+        "source_image": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
         "status": "UNBOUND_CURRENT_TARGET",
         "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it; do not reuse historical artifact, build or native results."
       },
@@ -20282,7 +20282,7 @@
       "upstream_reported_tag": "v3.15.1",
       "next_fact_command": "Run the owner steps in SPEC-0204-TSK-0021: approved pull, offline scan, promtool checks, HOME recreation.",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+      "source_input_sha256": "f2c5c300be5d82c9a49a131be22d40012ce07a14d72272092bb4e7d6f084299b",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "prom/prometheus:v3.15.1",
@@ -20559,7 +20559,7 @@
       "effective_current_digest_type": "RepoDigest/config image ID metadata only; index vs platform target unresolved unless separately recorded.",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-10T11:20:38+00:00",
-      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+      "source_input_sha256": "f2c5c300be5d82c9a49a131be22d40012ce07a14d72272092bb4e7d6f084299b",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "prom/pushgateway:v1.11.5@sha256:bf6442633f6129d3e3f9861fa14c77bc012d74b33a1dd213d7b458b89ce3cc5d",
@@ -20816,7 +20816,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "Run independent supply-chain, compatibility, recovery and bounded deployment gates from SPEC-0204 TSK-0009.",
       "source_refreshed_at": "2026-11-10T11:20:38+00:00",
-      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+      "source_input_sha256": "f2c5c300be5d82c9a49a131be22d40012ce07a14d72272092bb4e7d6f084299b",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "target_source_image": "grafana/pyroscope:2.4.3@sha256:bf667534cd403320573063894e3faba20a5a5d1bfb92eddaecfabeb2446c502b",
@@ -22183,7 +22183,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo restic/restic --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "3d7152b089f9233d15cde7af8a9cf3b4d6d70ddac907711e7bd10f67fad0c1b6",
+      "source_input_sha256": "591db3f9586fac7921d587df698e60d08b4cdf2a76ddac662ba4c5155998c8fc",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -22422,7 +22422,7 @@
       "upstream_reported_tag": "UNKNOWN",
       "next_fact_command": "gh release view --repo restic/restic --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-10T12:48:10+09:00",
-      "source_input_sha256": "3d7152b089f9233d15cde7af8a9cf3b4d6d70ddac907711e7bd10f67fad0c1b6",
+      "source_input_sha256": "591db3f9586fac7921d587df698e60d08b4cdf2a76ddac662ba4c5155998c8fc",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: initial observed running facts preserved, no new native/host success asserted",
       "official_supplier_lookup_refs": [
@@ -26047,7 +26047,7 @@
       "upstream_reported_tag": "v3.1.0",
       "next_fact_command": "gh release view --repo grafana/tempo --json tagName,publishedAt,isPrerelease,url",
       "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00",
-      "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+      "source_input_sha256": "f2c5c300be5d82c9a49a131be22d40012ce07a14d72272092bb4e7d6f084299b",
       "runtime_observed_at": "2026-10-10T10:23:40.053333+00:00",
       "runtime_refresh": "NOT_RUN: prior running observations retained; current SOURCE does not prove HOME rollout",
       "target_source_image": "hy/tempo:3.1.0-seaweedfs",
@@ -49906,6 +49906,645 @@
       ],
       "previous_service_source_bindings": [],
       "meaning": "1 root Compose inputs changed after their rows were last bound. Declared image and build fields are unchanged, so only include hashes and the source_input_sha256 of 0 rows were re-bound; their source_refreshed_at is unchanged. No vendor lookup, signature, SBOM, scan, native, deployment or recovery acceptance."
+    },
+    {
+      "source_revision": "17bbde05a182d18ad5154f5cd84c68cbc6820c57",
+      "refreshed_at": "2026-11-16T00:17:34+09:00",
+      "revision_scope": "Renovate-proposed image pins and Compose file hash re-binding",
+      "input_manifest_sha256": "833a57d27e724c42b280db574e9e36415ecd5527ba98a5f90f5c3ebb2d17016c",
+      "previous_include_inputs": [
+        {
+          "path": "docker-compose.yml",
+          "sha256": "a7fbfb7ae3f5a0d76a6073e29d0e3685c66ecf5369b02f7d8237480857e6d231"
+        },
+        {
+          "path": "infra/01-gateway/traefik/docker-compose.yml",
+          "sha256": "ecf57a91638710534e3e5753c37844c9bf588218d1775a4ec2f2a119b8351b74"
+        },
+        {
+          "path": "infra/02-auth/keycloak/docker-compose.yml",
+          "sha256": "fa6b2233051993c7efce65d3f131815aca8f60a39eda2c0dfb46db79187dd5fd"
+        },
+        {
+          "path": "infra/02-auth/oauth2-proxy/docker-compose.yml",
+          "sha256": "05327ffc1418b1126aaf7816c7b36520444dfdf2a4d14bbe41b51dcd3eb984c1"
+        },
+        {
+          "path": "infra/03-security/openbao/docker-compose.yml",
+          "sha256": "2eebc0dd7031e5bdd44898dd4fc9d12fb3206d6d18e537a7342dd4f3403f6ae5"
+        },
+        {
+          "path": "infra/04-data/dev-db/docker-compose.yml",
+          "sha256": "7db0a93e09771314c268674332dcb69ef827c7cbb0d18e6bc090a50fecfbe4f9"
+        },
+        {
+          "path": "infra/04-data/mng-db/docker-compose.yml",
+          "sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c"
+        },
+        {
+          "path": "infra/04-data/neo4j/docker-compose.yml",
+          "sha256": "4e5f6d533d69c6c16a3f0d8101862283593a7ad2e38e249129c40826ca107e3f"
+        },
+        {
+          "path": "infra/04-data/opensearch/docker-compose.yml",
+          "sha256": "f5ff8a8581e719a3b8398ed24503f6ac92c97b7bca8480fc800f78406eff7889"
+        },
+        {
+          "path": "infra/04-data/qdrant/docker-compose.yml",
+          "sha256": "845e763088b0a2e2d8ea50f3b6820bf2cb0f6aa90f47914090b094446c94eaaf"
+        },
+        {
+          "path": "infra/04-data/redisinsight/docker-compose.yml",
+          "sha256": "4153f7c3a67b6e214228a3ac36f04c6571a135a3a27da18079d89acf20cda013"
+        },
+        {
+          "path": "infra/04-data/seaweedfs/docker-compose.yml",
+          "sha256": "cc205e952b85cb165aaf2f6e39cbd074c27463b9ff98670021bc0794f7ae93c1"
+        },
+        {
+          "path": "infra/05-messaging/kafka/docker-compose.yml",
+          "sha256": "2543bd0d9568551da05292ee57432e07c97b33752a1cf1dc2f990b2b9bf87adb"
+        },
+        {
+          "path": "infra/06-observability/docker-compose.yml",
+          "sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40"
+        },
+        {
+          "path": "infra/06-observability/dozzle/docker-compose.yml",
+          "sha256": "730376018a06e11c9e772f8c6664b4fa08cd5a00ff998d4d56d2d1505902d222"
+        },
+        {
+          "path": "infra/07-workflow/airflow/docker-compose.yml",
+          "sha256": "ff7c35b497678f093ac23533aaf684ae7a324f4d8ebff442bc9850d55e069504"
+        },
+        {
+          "path": "infra/07-workflow/n8n/docker-compose.yml",
+          "sha256": "0d2e4eebeaf8fb968a765e45cedecdb8cede865724678178c4e38d8ec0fcd3c0"
+        },
+        {
+          "path": "infra/08-ai/comfyui/docker-compose.yml",
+          "sha256": "c567ca166971331217a51b42e86990c45881d6a24ae9be26e0563040bf9d26fe"
+        },
+        {
+          "path": "infra/08-ai/crawl4ai/docker-compose.yml",
+          "sha256": "108419655d79dc78f3e6c753f59b2167dbdf545b56658c90bc28cd2062528b2a"
+        },
+        {
+          "path": "infra/08-ai/mlflow/docker-compose.yml",
+          "sha256": "86ad626fa0d6f303c2c66324b26fcaa6b0803a8500e72cf39264d0865adccbaa"
+        },
+        {
+          "path": "infra/08-ai/ollama/docker-compose.yml",
+          "sha256": "5d3b5e0871ce26f8e6a175373349ff4a93fc47f66b7ab0a315b02a8082e61737"
+        },
+        {
+          "path": "infra/08-ai/open-notebook/docker-compose.yml",
+          "sha256": "9b103c904679a7f03c6659876740d5321efd1324f995c8fc55cdc6a59edd531d"
+        },
+        {
+          "path": "infra/09-platform-ops/opentofu/docker-compose.yml",
+          "sha256": "77fa8a1e3c27afc8069613a3a0ccfcdd0f8ae6f9d34e310a334e0ce93bc50540"
+        },
+        {
+          "path": "infra/09-platform-ops/registry/docker-compose.yml",
+          "sha256": "749491abfa4f1c8f3945f857f78866f30d238e8fbe1dfca845caaa0333f899fa"
+        },
+        {
+          "path": "infra/09-platform-ops/renovate/docker-compose.yml",
+          "sha256": "7e4b083f8539adc3c6731a75099fd5f5dd3843b7f3e95a8fbfbc1d8dcb36dd09"
+        },
+        {
+          "path": "infra/09-platform-ops/restic/docker-compose.yml",
+          "sha256": "3d7152b089f9233d15cde7af8a9cf3b4d6d70ddac907711e7bd10f67fad0c1b6"
+        },
+        {
+          "path": "infra/09-platform-ops/terrakube/docker-compose.yml",
+          "sha256": "5cdefe62075abc6fd69e2c2e84d6557fbea08b0f9e918e059f7100dab3bfe604"
+        },
+        {
+          "path": "infra/11-quality/conftest/docker-compose.yml",
+          "sha256": "e4f83ff4965bd09fe580bf0651b7e81ced7924e31336e59d19e4e65d2e0c7da7"
+        },
+        {
+          "path": "infra/11-quality/k6/docker-compose.yml",
+          "sha256": "584467f60174af21142d3e0fd071436db13fa6e28196e6b40d6b9fd63d8d3757"
+        },
+        {
+          "path": "infra/11-quality/mailpit/docker-compose.yml",
+          "sha256": "5d1548c68964caca256b3b0401f35e503d809969cf7667b37a0704c7718cb2a2"
+        },
+        {
+          "path": "infra/11-quality/pact-broker/docker-compose.yml",
+          "sha256": "db657224717328f9d72d71bf070352fde4a291d545044be6ff20079e0d85f61d"
+        },
+        {
+          "path": "infra/11-quality/wiremock/docker-compose.yml",
+          "sha256": "2db0e30ac05c10278f8d949a45cc5fdc208c54cc901cb4f6154b6775e2999445"
+        },
+        {
+          "path": "infra/13-experience/storybook/docker-compose.yml",
+          "sha256": "9f5c79508bcb5d3366a22ca0492266982b5a944845e834c4bc60687de8e62be7"
+        }
+      ],
+      "changed_inputs": [
+        "infra/04-data/mng-db/docker-compose.yml",
+        "infra/04-data/neo4j/docker-compose.yml",
+        "infra/06-observability/docker-compose.yml",
+        "infra/08-ai/crawl4ai/docker-compose.yml",
+        "infra/08-ai/mlflow/docker-compose.yml",
+        "infra/09-platform-ops/restic/docker-compose.yml",
+        "infra/11-quality/pact-broker/docker-compose.yml"
+      ],
+      "previous_service_source_bindings": [
+        {
+          "service": "alertmanager",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-10T11:20:38+00:00"
+        },
+        {
+          "service": "alloy",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-10T11:20:38+00:00"
+        },
+        {
+          "service": "backup-sqlite-export",
+          "source_input_sha256": "3d7152b089f9233d15cde7af8a9cf3b4d6d70ddac907711e7bd10f67fad0c1b6",
+          "source_refreshed_at": "2026-11-10T14:39:40+09:00"
+        },
+        {
+          "service": "cadvisor",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "crawl4ai",
+          "source_input_sha256": "108419655d79dc78f3e6c753f59b2167dbdf545b56658c90bc28cd2062528b2a",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "crawl4ai-egress",
+          "source_input_sha256": "108419655d79dc78f3e6c753f59b2167dbdf545b56658c90bc28cd2062528b2a",
+          "source_refreshed_at": "2026-11-10T14:39:40+09:00"
+        },
+        {
+          "service": "crawl4ai-loopback",
+          "source_input_sha256": "108419655d79dc78f3e6c753f59b2167dbdf545b56658c90bc28cd2062528b2a",
+          "source_refreshed_at": "2026-11-10T14:39:40+09:00"
+        },
+        {
+          "service": "dcgm-exporter",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-10T07:19:46+09:00"
+        },
+        {
+          "service": "gatus",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "grafana",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-10T11:20:38+00:00"
+        },
+        {
+          "service": "grafana-db-provision",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "loki",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "mlflow",
+          "source_input_sha256": "86ad626fa0d6f303c2c66324b26fcaa6b0803a8500e72cf39264d0865adccbaa",
+          "source_refreshed_at": "2026-10-26T11:02:25.455867+00:00"
+        },
+        {
+          "service": "mlflow-db-provision",
+          "source_input_sha256": "86ad626fa0d6f303c2c66324b26fcaa6b0803a8500e72cf39264d0865adccbaa",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "mng-pg",
+          "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "mng-pg-exporter",
+          "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "mng-pg-init",
+          "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "mng-pg-monitor-provision",
+          "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "mng-valkey",
+          "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
+          "source_refreshed_at": "2026-11-10T03:08:02+00:00"
+        },
+        {
+          "service": "mng-valkey-exporter",
+          "source_input_sha256": "bff2f31684f3897d28a716cde1828e903f5b4b7f50c9d196949e4cf22b5fe73c",
+          "source_refreshed_at": "2026-11-10T06:36:12+09:00"
+        },
+        {
+          "service": "neo4j",
+          "source_input_sha256": "4e5f6d533d69c6c16a3f0d8101862283593a7ad2e38e249129c40826ca107e3f",
+          "source_refreshed_at": "2026-11-10T11:19:50+00:00"
+        },
+        {
+          "service": "node-exporter",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "pact-broker",
+          "source_input_sha256": "db657224717328f9d72d71bf070352fde4a291d545044be6ff20079e0d85f61d",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "pact-broker-db-provision",
+          "source_input_sha256": "db657224717328f9d72d71bf070352fde4a291d545044be6ff20079e0d85f61d",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "prometheus",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        },
+        {
+          "service": "pushgateway",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-10T11:20:38+00:00"
+        },
+        {
+          "service": "pyroscope",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-10T11:20:38+00:00"
+        },
+        {
+          "service": "restic",
+          "source_input_sha256": "3d7152b089f9233d15cde7af8a9cf3b4d6d70ddac907711e7bd10f67fad0c1b6",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "restic-offsite",
+          "source_input_sha256": "3d7152b089f9233d15cde7af8a9cf3b4d6d70ddac907711e7bd10f67fad0c1b6",
+          "source_refreshed_at": "2026-11-10T12:48:10+09:00"
+        },
+        {
+          "service": "tempo",
+          "source_input_sha256": "e6f8afab0bd69bca0c655b7edeb5c2c537a63c7188f40d7ed8a1cfc10a370f40",
+          "source_refreshed_at": "2026-11-02T21:55:04.932454+00:00"
+        }
+      ],
+      "meaning": "9 rows now declare a Renovate-proposed image (a full name:tag@sha256 reference of the same repository). The digest was not verified against a registry and the signature and provenance were not verified: their target digests are UNKNOWN, review, scan and acceptance fields are NOT_RUN and the previous values are kept in previous_service_images. Include hashes and the source_input_sha256 of 30 rows were re-bound. No vendor lookup, SBOM, scan, native, deployment or recovery acceptance.",
+      "updated_services": [
+        "backup-sqlite-export",
+        "crawl4ai-egress",
+        "crawl4ai-loopback",
+        "grafana-db-provision",
+        "mlflow-db-provision",
+        "mng-pg-init",
+        "mng-pg-monitor-provision",
+        "neo4j",
+        "pact-broker-db-provision"
+      ],
+      "previous_service_images": [
+        {
+          "service": "backup-sqlite-export",
+          "current_declared": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+          "proposed_declared": "python:3.15.2-alpine@sha256:0f9552bb28711333da16915ec146f5e6bb44a7fdac9ced15dc17c2e0206346dd",
+          "previous_fields": {
+            "target_version": "3.15.2",
+            "target_source_image": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T14:39:40+09:00",
+              "next_validation_due": "2026-11-17T14:39:40+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T14:39:40+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "crawl4ai-egress",
+          "current_declared": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+          "proposed_declared": "python:3.15.2-alpine@sha256:0f9552bb28711333da16915ec146f5e6bb44a7fdac9ced15dc17c2e0206346dd",
+          "previous_fields": {
+            "target_version": "3.15.2",
+            "target_source_image": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T14:39:40+09:00",
+              "next_validation_due": "2026-11-17T14:39:40+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T14:39:40+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "crawl4ai-loopback",
+          "current_declared": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+          "proposed_declared": "python:3.15.2-alpine@sha256:0f9552bb28711333da16915ec146f5e6bb44a7fdac9ced15dc17c2e0206346dd",
+          "previous_fields": {
+            "target_version": "3.15.2",
+            "target_source_image": "python:3.15.2-alpine@sha256:a0f2e268f2ce8f3709611a90054ec6a8ae31f6251f5896b8648b9bb99835e30a",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T14:39:40+09:00",
+              "next_validation_due": "2026-11-17T14:39:40+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit; no runtime state is held by the forwarder.",
+              "service_owner_role": "Existing crawl4ai service owner"
+            },
+            "source_refreshed_at": "2026-11-10T14:39:40+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "grafana-db-provision",
+          "current_declared": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "proposed_declared": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
+          "previous_fields": {
+            "target_version": "18.6",
+            "target_source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T12:48:10+09:00",
+              "next_validation_due": "2026-11-17T12:48:10+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T12:48:10+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "mlflow-db-provision",
+          "current_declared": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "proposed_declared": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
+          "previous_fields": {
+            "target_version": "18.6",
+            "target_source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T12:48:10+09:00",
+              "next_validation_due": "2026-11-17T12:48:10+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T12:48:10+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "mng-pg-init",
+          "current_declared": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "proposed_declared": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
+          "previous_fields": {
+            "target_version": "18.6",
+            "target_source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T12:48:10+09:00",
+              "next_validation_due": "2026-11-17T12:48:10+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T12:48:10+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "mng-pg-monitor-provision",
+          "current_declared": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "proposed_declared": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
+          "previous_fields": {
+            "target_version": "18.6",
+            "target_source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T12:48:10+09:00",
+              "next_validation_due": "2026-11-17T12:48:10+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T12:48:10+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "neo4j",
+          "current_declared": "neo4j:5.26.33-community@sha256:ec10d705830a340c7438e125cb5c4f90522b85369d877c9a581c3de5974ab3d6",
+          "proposed_declared": "neo4j:5.26.33-community@sha256:577eb43120e8688e62e753e962c47d30044ecaa95147ee5386c29f226b878008",
+          "previous_fields": {
+            "target_version": "5.26.33",
+            "target_source_image": "neo4j:5.26.33-community@sha256:ec10d705830a340c7438e125cb5c4f90522b85369d877c9a581c3de5974ab3d6",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T11:19:50+00:00",
+              "next_validation_due": "2026-11-17T11:19:50+00:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T11:19:50+00:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        },
+        {
+          "service": "pact-broker-db-provision",
+          "current_declared": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+          "proposed_declared": "postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b",
+          "previous_fields": {
+            "target_version": "18.6",
+            "target_source_image": "postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395",
+            "target_digest_evidence": "UNKNOWN: Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "candidate_evidence_scope": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+            "disposition": "BLOCKED",
+            "blocker": {
+              "owner": "SEC01",
+              "discovered_at": "2026-11-10T12:48:10+09:00",
+              "next_validation_due": "2026-11-17T12:48:10+09:00",
+              "reason": "Renovate-proposed pin: the digest was not verified against a registry and no publisher signature, provenance, SBOM, scan, compatibility, native, deployment or recovery result exists for it.",
+              "exit_condition": "Verify the registry index, platform and config digests, the publisher signature and provenance, a scan, compatibility and recovery for this exact pin, or revert it.",
+              "rollback_boundary": "Source rollback is a logical revert of the reviewed unit. Runtime state/schema rollback needs the exact service owner backup/restore contract; never delete shared state or assume a tag downgrade reverses migration.",
+              "service_owner_role": "Existing service owner named by current_public_assessment"
+            },
+            "source_refreshed_at": "2026-11-10T12:48:10+09:00",
+            "target_index_digest": "UNKNOWN",
+            "target_manifest_digest": "UNKNOWN",
+            "target_config_digest": "UNKNOWN",
+            "target_declared_digest": "UNKNOWN",
+            "platform": "UNKNOWN",
+            "applicability": "UNKNOWN",
+            "upstream_reported_tag": "UNKNOWN",
+            "signature": "NOT_RUN",
+            "sbom_scan": "NOT_RUN",
+            "compatibility": "NOT_RUN",
+            "backup": "NOT_RUN",
+            "rollback": "NOT_RUN",
+            "native_test": "NOT_RUN",
+            "deployment": "NOT_RUN"
+          }
+        }
+      ]
     }
   ],
   "delivery_preconditions": {
