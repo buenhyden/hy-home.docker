@@ -524,6 +524,27 @@ class TemplateDefinitionTests(unittest.TestCase):
         )
         self.assertEqual([("Parent", None, "| Real | Header |")], tables)
 
+    def test_template_outline_refuses_an_invalid_table_delimiter(self) -> None:
+        from scripts.lib.document_governance.template_definition import (
+            _template_outline,
+        )
+
+        for rows in ("", "| :--- |\n", "| --- | invalid |\n", "| \u00a0--- | --- |\n"):
+            with self.subTest(rows=rows):
+                with self.assertRaisesRegex(RegistryError, "table delimiter"):
+                    _template_outline(f"## Parent\n\n| Left | Right |\n{rows}")
+
+    def test_template_outline_accepts_delimiter_without_outer_pipes(self) -> None:
+        from scripts.lib.document_governance.template_definition import (
+            _template_outline,
+        )
+
+        guidance, tables = _template_outline(
+            "## Parent\n\n| Left | Right |\n:--- | ---:\n| a | b |\n"
+        )
+        self.assertEqual({("Parent", None): ""}, guidance)
+        self.assertEqual([("Parent", None, "| Left | Right |")], tables)
+
     def test_a_registry_without_the_pin_fails_for_a_common_form_role(self) -> None:
         raw = copy.deepcopy(dict(load_registry_document()))
         del raw["common"]["common_form_contract"]

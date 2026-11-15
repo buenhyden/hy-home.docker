@@ -2414,6 +2414,21 @@ class RegisteredTableContractTests(unittest.TestCase):
         body = self._mutate("postmortem", self.ROW, self.ROW + "extra | ")
         self.assertIn("table-row-width", self._table_codes("postmortem", body))
 
+    def test_registered_table_requires_a_matching_markdown_delimiter(self) -> None:
+        for delimiter, expected in (
+            ("", ["table-delimiter-invalid"]),
+            ("| --- | --- | --- |\n", ["table-delimiter-invalid"]),
+            ("| invalid | --- | --- | --- |\n", ["table-delimiter-invalid"]),
+            ("| \u00a0--- | --- | --- | --- |\n", ["table-delimiter-invalid"]),
+            ("| :--- | ---: | :---: | --- |\n", []),
+            (":--- | ---: | :---: | ---\n", []),
+        ):
+            with self.subTest(delimiter=delimiter):
+                body = self._mutate(
+                    "postmortem", "| --- | --- | --- | --- |\n", delimiter
+                )
+                self.assertEqual(expected, self._table_codes("postmortem", body))
+
     def test_a_disallowed_cell_value_is_rejected(self) -> None:
         for cell in ("", "TBD", "{{TRACKING_ID}}"):
             with self.subTest(cell=cell):

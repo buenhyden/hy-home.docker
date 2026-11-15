@@ -1552,6 +1552,16 @@ _TABLES_CHECKED_ELSEWHERE = frozenset(
 )
 _TABLE_PLACEHOLDER = re.compile(r"^(TODO|TBD)$|\{\{.*\}\}", re.IGNORECASE)
 _TABLE_CELL_SPLIT = re.compile(r"(?<!\\)\|")
+_TABLE_MARKDOWN = MarkdownIt("commonmark").enable("table")
+
+
+def _table_delimiter_matches(header: str, delimiter: str) -> bool:
+    """Check the alignment row of a registered pipe table."""
+
+    return any(
+        block.type == "table_open" and block.level == 0
+        for block in _TABLE_MARKDOWN.parse(f"{header}\n{delimiter}")
+    )
 
 
 def _registered_table_findings(
@@ -1613,6 +1623,15 @@ def _registered_table_findings(
                 )
             )
             return
+        if len(rows) < 2 or not _table_delimiter_matches(rows[0], rows[1]):
+            findings.append(
+                _finding(
+                    record,
+                    "table-delimiter-invalid",
+                    f"table under {h2}/{h3 or '-'} needs a delimiter matching its header",
+                )
+            )
+            return
         for row in cells[2:]:
             if len(row) != len(header):
                 findings.append(
@@ -1633,7 +1652,9 @@ def _registered_table_findings(
                 )
 
     for _, line, heading in _markdown_form_lines(text):
-        if line.lstrip().startswith("|"):
+        if line.lstrip().startswith("|") or (
+            len(block) == 1 and _table_delimiter_matches(block[0], line)
+        ):
             block.append(line)
             continue
         check(block)

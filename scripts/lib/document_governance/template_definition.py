@@ -17,6 +17,7 @@ from collections.abc import Mapping, Sequence
 
 from scripts.lib.document_governance.metadata.heading import (
     _markdown_form_lines,
+    _table_delimiter_matches,
 )
 from scripts.lib.document_governance.registry import (
     MAX_SCHEMA_BYTES,
@@ -111,7 +112,11 @@ def _template_outline(
     h2: str | None = None
     h3: str | None = None
     previous = ""
-    for _, raw, heading in _markdown_form_lines(text):
+    delimiter_index = -1
+    lines = _markdown_form_lines(text)
+    for index, raw, heading in lines:
+        if index == delimiter_index:
+            continue
         line = raw.strip()
         if heading is not None and heading[0] in (2, 3):
             level, title = heading
@@ -134,7 +139,14 @@ def _template_outline(
             continue
         if line.startswith("|"):
             if not previous.startswith("|"):
+                if index + 1 == len(lines) or not _table_delimiter_matches(
+                    raw, lines[index + 1][1]
+                ):
+                    raise RegistryError(
+                        f"invalid table delimiter under {h2}/{h3 or '-'}"
+                    )
                 headers.append((h2, h3, line))
+                delimiter_index = index + 1
         elif not line.startswith("#"):
             bodies[(h2, h3)].append(_guidance_line(line))
         previous = line
