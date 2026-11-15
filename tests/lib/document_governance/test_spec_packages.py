@@ -3676,7 +3676,11 @@ Narrative after the registered table.
         path.write_text(json.dumps(raw, indent=2) + "\n", encoding="utf-8")
         space = raw["identity_spaces"]["spec"]
         reserved = space["reserved_history"][0]
-        free = space["high_water"]
+        free = max(
+            n
+            for n in range(1, space["high_water"] + 1)
+            if n not in space["reserved_history"]
+        )
 
         def package(number: int):
             spec = pathlib.PurePosixPath(f"docs/03.specs/{number:04d}-x/spec.md")
