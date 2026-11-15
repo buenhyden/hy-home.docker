@@ -322,6 +322,17 @@ class SsoOnlyIngressContractTests(unittest.TestCase):
             for other, second in subnets[index + 1 :]:
                 self.assertFalse(subnet.overlaps(second), f"{name} and {other}")
 
+    def test_every_root_network_declares_an_explicit_subnet(self) -> None:
+        # AD-0026: the root owns its networks' explicit subnets so Docker's
+        # pool never assigns one first; leaf-owned networks are exempt.
+        root = yaml.safe_load((ROOT / "docker-compose.yml").read_text())
+        for name, network in root["networks"].items():
+            if isinstance(network, dict) and network.get("external"):
+                continue
+            with self.subTest(network=name):
+                blocks = ((network or {}).get("ipam") or {}).get("config") or []
+                self.assertTrue(any(b.get("subnet") for b in blocks), name)
+
 
 # Secondary listeners bound to one address on a consumer-only network
 # (SPEC-0267). Each row: service, network, fixed address, alias, consumers.
