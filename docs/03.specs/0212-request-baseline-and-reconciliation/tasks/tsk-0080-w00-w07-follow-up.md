@@ -1,6 +1,6 @@
 ---
 title: "W00 to W07 Follow-up Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -123,6 +123,47 @@ S05, S14, S20, S22 and S31 entries were rechecked for 4.2.0. This
 request fetched no web source again. Those sources shape the designs,
 not observations on this host.
 
+#### W00-DELTA resume delta
+
+The W00-DELTA request on 2026-11-16 read D00, D15, D17 and D25 at
+`4891b5d73`, the merge of PR 1051. The worktree root is the Git top
+level with a local `.git` common directory and one worktree. HEAD, index
+and `origin/main` agreed with no local change, on an ext4 root mount.
+PRs 1049, 1050 and 1051 are the merged baseline. Open PRs 1047 and 1048
+are dependency updates outside this scope. This workspace has no
+authority over the other three repositories, so their PRs stay package
+observations.
+
+The 4.2.0 attachment report for this repository was read in full at its
+stated base `ffc3247ce`. It is a static proposal. Its facts were
+rechecked against the current tree.
+
+| Attachment fact | Current finding | Disposition |
+| --- | --- | --- |
+| Stage 90 navigation still presents the retired Wiki | The docs tree comment listed LLM Wiki, standards and roadmaps, unlike the Stage 90 owner | CHANGE, corrected in `docs/README.md` |
+| Stage 99 says two schemas while three exist | Two schemas validate the Registry and frontmatter; the third is the TemplateDefinition output contract | KEEP_VERIFIED, wording accurate |
+| Empty `.gitmodules` may be removable | Zero bytes and no gitlink, but the workflow contract and a routing test name it | KEEP, consumers exist |
+| `_workspace/` tracks seven README files | Seven tracked README files | KEEP_VERIFIED |
+| Required checks, Compose and recovery unobserved | Hosted aggregates are observed for PRs 1050 and 1051 only | UNVERIFIED beyond those runs |
+
+Retirement counts differ in framing only. The generator wrote two tracked
+outputs, and the retired Wiki also linked a separate repository map.
+
+| Requirement | Disposition | Basis |
+| --- | --- | --- |
+| R01 read the inputs directly and update conflicting rules | CHANGE for the one confirmed navigation conflict | Attachment table above |
+| R02 keep fitting merged contracts and act only on new differences | KEEP_VERIFIED | No other fact differs from the merged sources |
+| R03 compare latest branches, PRs and source | KEEP_VERIFIED for this repository | Other repositories need their own workspace |
+| R12 keep fitting implementation and add only domain differences | KEEP_VERIFIED | No domain code changed |
+| Closed questions stay out of standing gates | KEEP_VERIFIED | Q01, Q03 and Q10 appear only as current decision provenance |
+| D-11 daily memory snapshot | UNVERIFIED | W08-MEMORY owns it |
+
+This pass listed the attachment, package requirement sets and named
+navigation owners, read the cited sections and executed only the checks
+recorded below. It made no new native observation. D17 capability rungs
+for the remaining events stay with RUNTIME-CLOSE. The package marks
+S03, S04, S10, S21 and S24 as carried from 4.1.0.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -158,6 +199,8 @@ Runtime and owner-only outcomes retain their evidence requirements.
 | PR 1050 integration | 136 | W141 | authenticated PR, check and main run read-back | PR 1050 head `ac4c12310`, merge `ffc3247ce`, run 43788622362 | PASS | Merged 2026-11-16, candidate core, documents, quality, routing, CodeQL and GitGuardian passed, main-security passed on the merge | required | - |
 | Resume snapshot | 136 | W141 | 4.2.0 package `plan_resume.py` and `validate_package.py` | Docker profile with actual head `ffc3247ce` | PASS | Snapshot matched HEAD, eleven prompts listed as no-replay, package structure passed; no authorization or runtime result | required | - |
 | Obligation linkage | 136 | W141 | package `plan_evidence.py` and Task Remaining Conditions read-back | Docker profile, Tasks 0072–0080 at `99c87b809` | PASS | Ten open obligations, zero closure declarations, each mapped to one owner; one stale TSK-0073 sentence reconciled | required | - |
+| W00 delta baseline | 136 | W141 | Git root, index, worktree, mount and PR read-back | `4891b5d73`, PRs 1047–1051 | PASS | One clean worktree matching `origin/main`; three merged baseline PRs and two out-of-scope dependency PRs | required | - |
+| Attachment fact recheck | 136 | W141 | tracked-file, history and consumer read-back | 4.2.0 Docker attachment report against `4891b5d73` | PASS | Five facts classified; one navigation conflict corrected, `.gitmodules` consumers found, generator outputs traced to two | required | - |
 
 ### Resolution Links
 
