@@ -53,7 +53,7 @@ jobs:
           read -r python_sha256 _ < <(/usr/bin/sha256sum -- "$python_path")
           test -n "$ImageOS" && test -n "$ImageVersion" && test -n "$RUNNER_ARCH"
           test "$("$git_path" rev-parse --verify 'HEAD^{commit}')" = "$GITHUB_SHA"
-          mapfile -t parents < <("$git_path" cat-file commit "$GITHUB_SHA" | sed -n 's/^parent \([0-9a-f]\{40\}\)$/\1/p')
+          mapfile -t parents < <("$git_path" cat-file commit "$GITHUB_SHA" | /usr/bin/sed -n '/^$/q; s/^parent \([0-9a-f]\{40\}\)$/\1/p')
           test "${#parents[@]}" -eq 2
           {
             printf 'event-name=%s\n' "$GITHUB_EVENT_NAME"
@@ -254,7 +254,7 @@ jobs:
           read -r python_sha256 _ < <(/usr/bin/sha256sum -- "$python_path")
           test -n "$ImageOS" && test -n "$ImageVersion" && test -n "$RUNNER_ARCH"
           test "$("$git_path" rev-parse --verify 'HEAD^{commit}')" = "$GITHUB_SHA"
-          mapfile -t parents < <("$git_path" cat-file commit "$GITHUB_SHA" | sed -n 's/^parent \([0-9a-f]\{40\}\)$/\1/p')
+          mapfile -t parents < <("$git_path" cat-file commit "$GITHUB_SHA" | /usr/bin/sed -n '/^$/q; s/^parent \([0-9a-f]\{40\}\)$/\1/p')
           test "${#parents[@]}" -eq 2
           {
             printf 'event-name=%s\n' "$GITHUB_EVENT_NAME"

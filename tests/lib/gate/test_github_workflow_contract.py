@@ -522,6 +522,69 @@ class GithubWorkflowContractTests(unittest.TestCase):
         self.assertNotIn("workflow_dispatch", quality_contract["triggers"])
         self.assertEqual(REQUIRED_CI_JOBS, set(quality_contract["jobs"]))
 
+    def test_candidate_merge_parents_ignore_commit_message(self) -> None:
+        jobs = next(
+            item
+            for item in self.module.load_workflows(ROOT)
+            if item.path == ".github/workflows/ci-quality.yml"
+        ).data["jobs"]
+        with tempfile.TemporaryDirectory() as directory:
+            git = "/usr/bin/git"
+            environment = {
+                "GIT_CONFIG_GLOBAL": os.devnull,
+                "GIT_CONFIG_NOSYSTEM": "1",
+                "GIT_AUTHOR_NAME": "Fixture",
+                "GIT_AUTHOR_EMAIL": "fixture@example.invalid",
+                "GIT_COMMITTER_NAME": "Fixture",
+                "GIT_COMMITTER_EMAIL": "fixture@example.invalid",
+                "git_path": git,
+                "TRUSTED_GIT_PATH": git,
+            }
+
+            def run(*command: str, payload: str | None = None) -> str:
+                return subprocess.run(
+                    command,
+                    cwd=directory,
+                    env=environment,
+                    input=payload,
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                ).stdout.strip()
+
+            run(git, "init", "--quiet", "--object-format=sha1")
+            tree = run(git, "mktree", payload="")
+            base = run(git, "commit-tree", tree, "-m", "Base")
+            head = run(git, "commit-tree", tree, "-p", base, "-m", "Head")
+            merge = run(
+                git,
+                "commit-tree",
+                tree,
+                "-p",
+                base,
+                "-p",
+                head,
+                payload=f"Merge candidate\n\nExample parent line:\nparent {base}\n",
+            )
+            for job_id in AGGREGATE_NEEDS:
+                with self.subTest(job_id=job_id):
+                    extraction = next(
+                        line
+                        for step in jobs[job_id]["steps"]
+                        for line in step.get("run", "").splitlines()
+                        if line.startswith("mapfile -t parents ")
+                    )
+                    result = run(
+                        "/usr/bin/bash",
+                        "-euc",
+                        "GITHUB_SHA=$1\n"
+                        + extraction
+                        + '\nprintf "%s\\n" "${parents[@]}"',
+                        "bash",
+                        merge,
+                    )
+                    self.assertEqual([base, head], result.splitlines())
+
     def test_quality_workflow_concurrency_separates_event_types(self) -> None:
         expected_group = "${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}"
         workflow = next(

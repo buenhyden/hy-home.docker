@@ -2621,11 +2621,68 @@ Narrative after the registered table.
                     module.acceptance_criterion_numbers(body, "Acceptance Criteria"),
                 )
 
+    def test_acceptance_criteria_use_registered_atx_headings(self) -> None:
+        module = _spec_packages_module()
+        body = (
+            "  ##\tAcceptance Criteria ##\n\n1. Actual.\n\n"
+            "  ##\tOther ##\n\n9. Outside.\n"
+        )
+        self.assertEqual(
+            (1,), module.acceptance_criterion_numbers(body, "Acceptance Criteria")
+        )
+
+    def test_acceptance_criteria_keep_literal_comment_openers_visible(self) -> None:
+        module = _spec_packages_module()
+        for example in (
+            "The literal `<!--` starts a comment.\n",
+            "The literal \\<!-- starts a comment.\n",
+            "A multiline span starts `here\nand contains <!--`.\n",
+            "Literal `<!--` next to a real <!-- comment -->.\n",
+        ):
+            with self.subTest(example=example):
+                body = f"{example}\n## Acceptance Criteria\n\n1. Actual.\n"
+                self.assertEqual(
+                    (1,),
+                    module.acceptance_criterion_numbers(body, "Acceptance Criteria"),
+                )
+
+    def test_acceptance_criteria_keep_malformed_comment_openers_hidden(self) -> None:
+        module = _spec_packages_module()
+        for example in (
+            "A literal `<!--` and a real <!-- opener.\n",
+            "An unmatched ` next to a real <!-- opener.\n",
+            "An escaped backslash \\\\<!-- does not protect the opener.\n",
+        ):
+            with self.subTest(example=example):
+                body = f"{example}\n## Acceptance Criteria\n\n1. Hidden.\n"
+                with self.assertRaises(module.SpecPackageError):
+                    module.acceptance_criterion_numbers(body, "Acceptance Criteria")
+
+    def test_nested_image_opener_only_has_a_local_source_offset(self) -> None:
+        module = _spec_packages_module()
+        body = "abc <!-- malformed ![xx `<!--`](photo.png)\n"
+        self.assertEqual(["abc  "], module._completion_visible_lines(body))
+
+    def test_execution_item_detection_uses_visible_atx_headings(self) -> None:
+        module = _spec_packages_module()
+        for example in (
+            "```md\n### Execution Items\n```\n",
+            "<div>\n#### Execution Items\n</div>\n",
+            "<!--\n### Execution Items\n-->\n",
+        ):
+            with self.subTest(example=example):
+                self.assertFalse(module._has_execution_items(example))
+        self.assertTrue(
+            module._has_execution_items(
+                '---\ntitle: "Literal <!--"\n---\n\n  ####\tExecution Items ####\n'
+            )
+        )
+
     def test_common_key_resolves_the_legacy_h2_or_the_common_form_h3(self) -> None:
         module = _spec_packages_module()
         legacy = "## Work Breakdown\n1. W1: Old.\n## Verification Plan\nx\n"
         common = (
-            "## Implementation Strategy\n### Work Breakdown\n1. W1: New.\n"
+            "## Implementation Strategy ##\n###\tWork Breakdown ###\n1. W1: New.\n"
             "#### Detail\nkept\n### Change and Rollback\nx\n## Risks\ny\n"
         )
         self.assertEqual(
@@ -2637,7 +2694,7 @@ Narrative after the registered table.
         )
         for broken in (
             legacy + common,
-            common.replace("### Work Breakdown", "### Work Plan"),
+            common.replace("Work Breakdown", "Work Plan"),
             common + "## Implementation Strategy\n### Work Breakdown\n2. W2.\n",
             common.replace("### Change", "### Work Breakdown\n### Change"),
             "## Overview\n### Work Breakdown\n1. W1: Wrong parent.\n",

@@ -1,6 +1,6 @@
 ---
 title: "W04 Content 3.0.1 Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -162,6 +162,23 @@ reviewed for their stated scopes, and four generated instruction files.
 Source, shell and synthetic configuration checks leave actual service
 operation and user acceptance open. The accepted W01 contract, product
 publishing path and W08-MEMORY handoff are retained.
+
+#### Merged baseline reference follow-up
+
+D15 and D01 3.0.1 govern the two selected current reference sections.
+The RES-0002 role index lists publication as a peer of the five current
+Operations roles. The RES-0084 timing table delays its historical date
+until after entries that read as current. Keep the historical source
+values in place and align the index and labels with the current owner.
+Use the local link and metadata checks and report the selected scope.
+Revert the two in-place reference corrections to undo this unit.
+
+Listed all 54 Stage 01 and Stage 90 tracked paths. Read the QA and
+authority clauses of REQ-0010, REQ-0024, REQ-0025 and REQ-0026 and the
+Stage 01 index lifecycle guidance. Compared the active coverage table
+in RES-0002 with its role and workflow members, and the RES-0084
+dated findings with the tracked actions workflow. Other parts of the
+404-path corpus retain their earlier partial or generated classification.
 
 ### Blockers and Decisions
 

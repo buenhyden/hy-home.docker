@@ -391,6 +391,10 @@ class RegisteredSectionContractTests(unittest.TestCase):
         required = tuple(
             self.registry.profiles[profile_id].get("required_sections", ())
         )
+        if profile_id == "governance-vocabulary":
+            return (ROOT / self.representatives[profile_id]).read_text(
+                encoding="utf-8"
+            ), required
         subsections = (
             self.registry.profiles[profile_id].get("required_subsections") or {}
         )
@@ -421,6 +425,23 @@ class RegisteredSectionContractTests(unittest.TestCase):
             with self.subTest(profile=profile_id):
                 body, _ = self._conforming_body(profile_id)
                 self.assertEqual([], self._findings(profile_id, body))
+
+    def test_canonical_glossary_rejects_a_renamed_or_shadowed_common_term(self) -> None:
+        profile = "governance-vocabulary"
+        body, _ = self._conforming_body(profile)
+        changes = (
+            ("| TERM-KEEP | Keep |", "| TERM-KEEP | Retain |", "vocabulary-term-name"),
+            (
+                "## Local Extensions\n",
+                "## Local Extensions\n\nTERM-ACCEPTANCE is narrowed here.\n",
+                "vocabulary-local-shadow",
+            ),
+        )
+        for previous, replacement, finding in changes:
+            with self.subTest(finding=finding):
+                modified = body.replace(previous, replacement, 1)
+                self.assertNotEqual(body, modified)
+                self.assertIn(finding, self._findings(profile, modified))
 
     def test_a_missing_required_section_is_reported(self) -> None:
         for profile_id in sorted(self.representatives):
