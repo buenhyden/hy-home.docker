@@ -106,12 +106,18 @@ def _tracked_markdown(
             if (
                 path.as_posix() in TARGET_MARKDOWN_FILES
                 or path.as_posix().startswith(TARGET_MARKDOWN_PREFIXES)
-                or _registry_frontmatter_target(path.as_posix())
                 or (
+                    # Like infra/ READMEs, Registry-owned paths outside the
+                    # fixed roots come only from a Git-tracked listing.
                     result is not None
                     and result.returncode == 0
-                    and path.as_posix().startswith("infra/")
-                    and path.name == "README.md"
+                    and (
+                        (
+                            path.as_posix().startswith("infra/")
+                            and path.name == "README.md"
+                        )
+                        or _registry_frontmatter_target(path.as_posix())
+                    )
                 )
             )
             and (root / path).is_file()

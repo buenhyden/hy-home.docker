@@ -138,6 +138,27 @@ class RegisteredReadmeSelectionTests(unittest.TestCase):
             records = collect_records_at_ref(root, profiles, "HEAD")
         self.assertEqual(set(routes), {r.path.as_posix() for r in records})
 
+    def test_tracked_registry_paths_are_collected_without_selection(self):
+        from scripts.lib.document_governance.metadata.lifecycle import collect_records
+        from scripts.lib.document_governance.metadata.profile import (
+            build_registry_profiles,
+        )
+        from scripts.lib.document_governance.registry import load_registry
+
+        profiles = build_registry_profiles(load_registry(PROFILES))
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            git = ["git", "-C", str(root), "-c", "user.name=t", "-c", "user.email=t@t"]
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            for route in ("scripts/README.md", "scripts/notes.md"):
+                path = root / route
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("# fixture\n", encoding="utf-8")
+            subprocess.run([*git, "add", "."], check=True)
+            subprocess.run([*git, "commit", "-q", "-m", "fixture"], check=True)
+            records = collect_records(root, profiles)
+        self.assertEqual({"scripts/README.md"}, {r.path.as_posix() for r in records})
+
     def test_generated_provenance_keeps_the_registry_profile(self):
         from scripts.lib.document_governance.metadata.lifecycle import (
             _record_from_text,
