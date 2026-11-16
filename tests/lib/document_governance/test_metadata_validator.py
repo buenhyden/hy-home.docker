@@ -52,6 +52,22 @@ class LabDocumentSelectionTests(unittest.TestCase):
                         {"package-readme"}, {r.artifact_type for r in records}
                     )
 
+    def test_lab_selection_does_not_accept_parent_traversal(self):
+        from scripts.lib.document_governance.metadata.profile import (
+            _normalized_target_path,
+        )
+
+        for path in (
+            "../labs/README.md",
+            "labs/../README.md",
+            "/labs/README.md",
+            "labs\\README.md",
+        ):
+            with self.subTest(path=path):
+                self.assertIsNone(_normalized_target_path(path))
+
+
+class RegisteredReadmeSelectionTests(unittest.TestCase):
     def test_registered_root_and_docs_readmes_are_collected(self):
         from scripts.lib.document_governance.metadata.lifecycle import collect_records
         from scripts.lib.document_governance.metadata.profile import (
@@ -78,20 +94,6 @@ class LabDocumentSelectionTests(unittest.TestCase):
                 {"repository-readme", "documentation-readme"},
                 {r.artifact_type for r in records},
             )
-
-    def test_lab_selection_does_not_accept_parent_traversal(self):
-        from scripts.lib.document_governance.metadata.profile import (
-            _normalized_target_path,
-        )
-
-        for path in (
-            "../labs/README.md",
-            "labs/../README.md",
-            "/labs/README.md",
-            "labs\\README.md",
-        ):
-            with self.subTest(path=path):
-                self.assertIsNone(_normalized_target_path(path))
 
 
 class FourDigitDocumentIdentityTests(unittest.TestCase):

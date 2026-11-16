@@ -1313,6 +1313,7 @@ def collect_records_at_ref(
             ".agents",
             ".claude/provider.md",
             ".codex/provider.md",
+            "README.md",
         ],
         operation="base Markdown discovery",
     )
