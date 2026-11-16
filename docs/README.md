@@ -1,10 +1,10 @@
 ---
 title: "Documentation Space"
-version: "1.3.2"
+version: "1.3.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-16"
 ---
 
 # docs
@@ -51,7 +51,7 @@ docs/
 ├── 02.architecture/            # 아키텍처 설명과 결정 기록
 ├── 03.specs/                   # Spec Package: spec, plan, tasks, contracts 동거
 ├── 05.operations/              # 운영 가이드, 정책, 런북, 사고 기록
-├── 90.references/              # 느리게 변하는 참고 지식, 표준, 학습 로드맵, LLM Wiki
+├── 90.references/              # 외부 조사·감사·참고 데이터의 보조 증거
 ├── 98.archive/                 # 처분 체계 설명만 담음(기록 없음)
 ├── 99.templates/               # stage 문서 작성을 위한 표준 템플릿
 └── README.md                   # 이 파일
