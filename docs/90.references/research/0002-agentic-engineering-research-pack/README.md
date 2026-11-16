@@ -1,10 +1,10 @@
 ---
 title: "Agentic Engineering Research Pack"
-version: "2.5.0"
+version: "2.5.1"
 type: "reference/research-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-16"
 layer: "references"
 artifact_id: "RES-0002"
 parent_ids:
@@ -29,7 +29,7 @@ observed_at: "2026-09-05"
 | --- | --- |
 | `repository_baseline` | `f30b168e2fbb0959e4a31749935568fd5b3942f1`; 2026-09-27 fetch한 `origin/main`과 일치 |
 | `external_sources_checked_at` | 2026-09-27; 원문별 실제 확인 기록은 멤버의 source/claim 표 |
-| `document_updated_at` | 2026-11-06 (멤버별 `Revalidated 2026-11-06` 주석으로 저장소 경로·수치 재검증; 원래 관측값은 유지) |
+| 저장소 경로·수치 재검증 | 2026-11-06 (멤버별 `Revalidated 2026-11-06` 주석, 원래 관측값은 유지) |
 | `historical_workspace_observation` | 기존 관측의 원래 날짜·커밋·범위 유지; frontmatter `observed_at`은 2026-09-05 역사 관측 |
 | 내부 적용 상태 | `Not assessed in this run` |
 
@@ -141,7 +141,7 @@ SPEC-0158의 보호 대상과 기존 식별자를 유지한다. 고유 관측·�
 | C | Agent catalog·모델·비용 | [m0003](m0003-ai-agent-catalogs.md#current-external-research), [m0002](m0002-agent-model-selection.md#current-external-research), [m0013](m0013-provider-model-landscape.md#current-external-research) | 형식/배포/변환/license/pinning/권한/평가; 작업별 effort/fallback/지연/token/context/compaction/cache/rate/동시성/예산 |
 | D | 기억·LLM Wiki·handoff | [m0011](m0011-memory-hierarchy.md#current-external-research), [m0009](m0009-llm-wiki-system.md#current-external-research), [m0012](m0012-provider-implementation-comparison.md#current-external-research) | 단기/장기/영역별 기억과 승인 증거; 승격/검색/요약/만료/삭제/오염; ingest/query/lint/RAG/llms.txt 차이; 최소 handoff |
 | E | SDD·SDLC·개발 문서 | [m0018](m0018-spec-driven-sdlc.md#current-external-research), [m0016](m0016-sdlc-document-roles.md#current-external-research), [m0006](m0006-document-metadata-lifecycle.md#current-external-research) | PRD/Requirement/SPEC/PLAN/TASK/ADR 책임/입출력/소유/검토/수명주기/내용/관계/변경/분할/보존; 요구→수용과 작업→운영 |
-| F | 운영 문서 | [m0016](m0016-sdlc-document-roles.md#current-external-research) | Guide/Incident/Postmortem/Policy/Release/Runbook 독자/목적/트리거/소유/필수항목/상태/검토/개정/보존/관계; 안전 중단/복구/action 추적 |
+| F | 운영 문서 | [m0016](m0016-sdlc-document-roles.md#current-external-research) | Guide/Incident/Postmortem/Policy/Runbook 독자/목적/트리거/소유/필수항목/상태/검토/개정/보존/관계 및 안전 중단/복구/후속 조치 추적. 제품 발행 절차와 실제 발행 증거의 구분. |
 | G | 문서화·탐색 | [m0007](m0007-documentation-architecture.md#current-external-research), [m0006](m0006-document-metadata-lifecycle.md#current-external-research) | Diátaxis 독자 필요, C4 수준/동적/배포, arc42 품질/위험, ADR 결정/supersession, README 역할과 중복 방지 |
 | H | Compose·Infrastructure | [m0005](m0005-docker-compose-infrastructure.md#current-external-research), [m0021](m0021-local-docker-service-consolidation.md#current-external-research) | 사양/CLI/include/merge/extends/profile/interpolation/project/dependency/health/network/ports/volume/config/secret/resources/stop/restart/provenance; TLS/DNS/관측/복구/업데이트/license/중복/부담 |
 | I | CI/CD·Actions | [m0004](m0004-automation-pipeline-workflow.md#current-external-research) | test/build/package/publish/deploy/promotion/rollback; workflow/job/step/event/filter/reuse/matrix/concurrency/cache/artifact/required checks/environment/OIDC/pinning/untrusted PR/runner |

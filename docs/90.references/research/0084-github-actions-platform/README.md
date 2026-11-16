@@ -1,6 +1,6 @@
 ---
 title: "Reference: GitHub Actions Platform Mechanics"
-version: "2.3.1"
+version: "2.3.2"
 type: "reference/research-pack"
 status: "published"
 owner: "@buenhyden"
@@ -125,23 +125,24 @@ Hosted, remote-control-plane 증거는 여기 남습니다.
 
 ## Findings
 
+아래 표는 2026-09-05의 관측입니다.
+
 | Category | Member | Repository state | Evidence depth | Priority |
 | --- | --- | --- | --- | --- |
 | Permissions, OIDC, reusable actions/workflows, untrusted input, supply chain, execution, rulesets, runners, and static analysis | [Platform mechanics](m0001-platform-mechanics.md) | workflow 여섯 개; CI aggregate job 두 개; full-SHA action pin; least-privilege 권한 | Configured, Repository-enforced, Hosted-executed | High |
 | Required status checks | [Platform mechanics](m0001-platform-mechanics.md) | `strict=true`; `validation-changed`와 `validation-full`이 app ID 15368에 결합됨 | 2026-09-05에 Remote-verified | High |
-| CD, OIDC, environment, deployment, release | [Platform mechanics](m0001-platform-mechanics.md) | 정확한 live target이나 현재 publication route 없음 | Unverified / 채택되지 않음 | target이 생기면 High |
+| CD, OIDC, environment, deployment, release | [Platform mechanics](m0001-platform-mechanics.md) | 당시 확인된 운영 대상이나 발행 경로 없음 | Unverified / 채택되지 않음 | target이 생기면 High |
 
 이전 package revision 대비 가장 큰 변화는 구조적입니다: 세부 분석이
 구성원으로 옮겨졌습니다. 가장 큰 증거 변화는 Hosted aggregate job과
-remote required-check 대체가 이제 관찰되었다는 점이며, deployment와
-release는 여전히 증거 경계 밖에 있습니다.
+remote required-check 대체를 관측했다는 점입니다. 해당 관측 범위에는 실제
+배포 및 제품 발행 실행이 포함되지 않았습니다.
 
 Revalidated 2026-11-06: `.github/workflows/`에는 이제 workflow 다섯 개
 (`ci-quality.yml`, `greetings.yml`, `pr-labeler.yml`, `publish-release.yml`,
-`stale.yml`)가 있고, `ci-quality.yml`의 aggregate job은 `candidate-quality`와
-`main-security`입니다(`.github/workflows/ci-quality.yml:18`, `:185`). `main`
+`stale.yml`)가 있습니다. `ci-quality.yml`은 PR 후보 집계 검사 `candidate-quality`와
+`main` 푸시 보안 검사 `main-security`를 분리합니다. `main`
 required check는 2026-10-07에 비워졌고 2026-10-16부터 App 15368의
 `candidate-quality` 하나입니다(`.github/rulesets/main-protection.md:53`, `:88`).
-`publish-release.yml`이 release publication route를 추가했습니다
-(`.github/workflows/publish-release.yml:19`). 위 표의 2026-09-05 값은 날짜가 있는
-관찰로 보존합니다.
+`publish-release.yml`은 `main`에서 준비된 제품 버전을 수동으로 발행하는 경로를
+정의합니다. 이 설정 관측은 발행이나 배포 실행을 검증하지 않습니다.
