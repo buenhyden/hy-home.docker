@@ -12,8 +12,9 @@ import selectors
 import stat
 import subprocess
 import time
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from types import MappingProxyType
+from typing import TYPE_CHECKING
 
 from scripts.lib.document_governance import registry as registry_module
 from scripts.lib.document_governance.frontmatter import (
@@ -30,6 +31,10 @@ from scripts.lib.document_governance.registry import (
     validate_registry,
     validate_registry_at_revision,
 )
+
+if TYPE_CHECKING:
+    from markdown_it import MarkdownIt
+    from markdown_it.rules_inline import StateInline
 
 MAX_SPEC_FILE_BYTES = 4 * 1024 * 1024
 MAX_SPEC_PACKAGES = 256
@@ -764,14 +769,82 @@ def _validate_execution_states(
         )
 
 
+_COMMENT_OPENER = re.compile("<!--")
+
+
+@functools.cache
+def _literal_comment_parser() -> MarkdownIt:
+    from markdown_it import MarkdownIt
+    from markdown_it.rules_inline import backtick, escape
+
+    def remember(
+        rule: Callable[[StateInline, bool], bool], state: StateInline, silent: bool
+    ) -> bool:
+        start, count = state.pos, len(state.tokens)
+        matched = rule(state, silent)
+        # Image descriptions tokenize a substring with the same environment.
+        if (
+            matched
+            and not silent
+            and len(state.tokens) > count
+            and state.src is state.env["literal_comment_source"]
+        ):
+            token = state.tokens[-1]
+            offsets = state.env["literal_comment_openers"]
+            if token.type == "code_inline":
+                offsets.update(
+                    match.start()
+                    for match in _COMMENT_OPENER.finditer(state.src, start, state.pos)
+                )
+            elif token.markup == r"\<" and state.src.startswith("<!--", start + 1):
+                offsets.add(start + 1)
+        return matched
+
+    parser = MarkdownIt("commonmark")
+    parser.inline.ruler.at("backticks", functools.partial(remember, backtick))
+    parser.inline.ruler.at("escape", functools.partial(remember, escape))
+    return parser
+
+
+def _literal_comment_openers(body: str, lines: Sequence[str]) -> set[tuple[int, int]]:
+    """Locate raw comment openers that the inline lexer consumed as literals."""
+    protected: set[tuple[int, int]] = set()
+    if "<!--" not in body or ("`" not in body and r"\<!--" not in body):
+        return protected
+    parser = _literal_comment_parser()
+    env = {}
+    blocks = parser.block.parse(body, parser, env, []) or ()
+    for block in blocks:
+        if block.type != "inline" or block.map is None or "<!--" not in block.content:
+            continue
+        offsets: set[int] = set()
+        env["literal_comment_source"] = block.content
+        env["literal_comment_openers"] = offsets
+        parser.inline.parse(block.content, parser, env, [])
+        start = 0
+        for index, inline_line in enumerate(block.content.split("\n"), block.map[0]):
+            if "<!--" in inline_line:
+                # Block prefixes and trailing spaces can differ from the raw line.
+                raw = list(_COMMENT_OPENER.finditer(lines[index]))
+                inline = list(_COMMENT_OPENER.finditer(inline_line))
+                if len(raw) == len(inline):
+                    protected.update(
+                        (index, source.start())
+                        for source, token in zip(raw, inline, strict=True)
+                        if start + token.start() in offsets
+                    )
+            start += len(inline_line) + 1
+    return protected
+
+
 def _completion_line_states(
-    lines: Sequence[str],
+    lines: Sequence[str], *, literal_openers: set[tuple[int, int]] | None = None
 ) -> list[tuple[str, str | None]]:
     """Pair each line with its visible text; a fenced line has none."""
     states: list[tuple[str, str | None]] = []
     fence: str | None = None
     comment = False
-    for line in lines:
+    for index, line in enumerate(lines):
         if fence is not None:
             if re.fullmatch(
                 rf" {{0,3}}{re.escape(fence[0])}{{{len(fence)},}}[ \t]*", line
@@ -785,15 +858,19 @@ def _completion_line_states(
             states.append((line, None))
             continue
         parts: list[str] = []
+        column = 0
         for token in re.split(r"(<!--|--!?>)", line):
             if comment:
                 if re.fullmatch(r"--!?>", token):
                     comment = False
-            elif token == "<!--":
+            elif token == "<!--" and (
+                literal_openers is None or (index, column) not in literal_openers
+            ):
                 comment = True
                 parts.append(" ")
             else:
                 parts.append(token)
+            column += len(token)
         states.append((line, "".join(parts)))
     return states
 
@@ -802,15 +879,24 @@ def _completion_visible_lines(body: str) -> list[str]:
     """Keep completion evidence inside the shared Markdown form boundary."""
     from scripts.lib.document_governance.metadata.heading import _markdown_form_lines
 
-    lines = body.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    normalized = body.replace("\r\n", "\n").replace("\r", "\n")
+    lines = normalized.split("\n")
     if not lines[-1]:
         lines.pop()
     form_lines = _markdown_form_lines(body)
-    # Hidden HTML can contain a comment boundary that affects later lines.
-    return [
-        (visible or "") if form_lines[index][1] else ""
-        for index, (_, visible) in enumerate(_completion_line_states(lines))
-    ]
+    # Scan comments before the mask: hidden HTML can affect later lines.
+    # Use the same canonical heading as the metadata form reader.
+    result: list[str] = []
+    states = _completion_line_states(
+        lines, literal_openers=_literal_comment_openers(normalized, lines)
+    )
+    for index, (_, visible) in enumerate(states):
+        _, source, heading = form_lines[index]
+        if visible and heading is not None:
+            level, title = heading
+            visible = f"{'#' * level} {title}"
+        result.append((visible or "") if source else "")
+    return result
 
 
 # A Registry ``common`` heading value names its legacy H2. A document in the
@@ -897,10 +983,12 @@ def _child_blocks(
 
 
 def _has_execution_items(text: str) -> bool:
-    """Say whether a document declares Execution Items at either heading level."""
-    return any(
-        line in {"### Execution Items", "#### Execution Items"}
-        for line in text.splitlines()
+    """Find a visible Execution Items heading without opening historical schemas."""
+    from scripts.lib.document_governance.metadata.heading import _markdown_form_lines
+
+    return "Execution Items" in text and any(
+        heading in {(3, "Execution Items"), (4, "Execution Items")}
+        for _, _, heading in _markdown_form_lines(text)
     )
 
 
