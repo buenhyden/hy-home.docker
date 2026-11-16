@@ -23,6 +23,7 @@ from scripts.lib.document_governance.metadata.profile import (
     Finding,
     ProfileError,
     Record,
+    _registry_frontmatter_target,
 )
 from scripts.lib.document_governance.registry import DocumentRegistry
 from scripts.lib.document_governance.spec_packages import (
@@ -105,6 +106,7 @@ def _tracked_markdown(
             if (
                 path.as_posix() in TARGET_MARKDOWN_FILES
                 or path.as_posix().startswith(TARGET_MARKDOWN_PREFIXES)
+                or _registry_frontmatter_target(path.as_posix())
                 or (
                     result is not None
                     and result.returncode == 0

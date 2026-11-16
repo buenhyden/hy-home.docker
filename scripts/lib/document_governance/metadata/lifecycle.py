@@ -33,8 +33,6 @@ from scripts.lib.document_governance.metadata.identity import (
     _tracked_markdown,
 )
 from scripts.lib.document_governance.metadata.profile import (
-    TARGET_MARKDOWN_FILES,
-    TARGET_MARKDOWN_PREFIXES,
     TYPED_EXAMPLE_FIXTURE_PARENT_IDS,
     TYPED_EXAMPLE_FIXTURE_PATH,
     TYPED_EXAMPLE_FIXTURE_STATUS,
@@ -1161,19 +1159,27 @@ def _record_from_text(
         parse_error_code = "native-skill-envelope-invalid"
     inferred_type = infer_artifact_type(relative_path, profiles)
     registry = profiles.get("_registry") if isinstance(profiles, Mapping) else None
-    registered_package_readme = bool(
-        inferred_type in {"data", "audit", "research"}
-        and isinstance(registry, DocumentRegistry)
+    registered_profile = (
+        registry.profiles.get(inferred_type)
+        if isinstance(registry, DocumentRegistry)
         and classify_registered_path(relative_path.as_posix(), registry)
         == inferred_type
+        else None
     )
-    # Only an exact Registry-classified Data package README retains Data
-    # ownership; generated_by is provenance there. Every other generated
-    # Markdown artifact, including README envelopes, keeps the generated
-    # classification used before the Stage 90 transition.
+    # generated_by is provenance where the exact Registry profile is a Data,
+    # Audit or Research package README or declares generated_by itself, as the
+    # provider runtime READMEs do. Other generated Markdown stays generated.
+    keeps_registered_profile = isinstance(registered_profile, Mapping) and (
+        inferred_type in {"data", "audit", "research"}
+        or "generated_by"
+        in (
+            *registered_profile.get("required_frontmatter", ()),
+            *registered_profile.get("optional_frontmatter", ()),
+        )
+    )
     artifact_type = (
         "generated"
-        if "generated_by" in values and not registered_package_readme
+        if "generated_by" in values and not keeps_registered_profile
         else inferred_type
     )
     return Record(
@@ -1306,29 +1312,18 @@ def collect_records_at_ref(
             "-z",
             "--name-only",
             base_ref,
-            "--",
-            "docs",
-            "archive",
-            "infra",
-            ".agents",
-            ".claude/provider.md",
-            ".codex/provider.md",
-            "README.md",
         ],
         operation="base Markdown discovery",
     )
     if result.returncode != 0:
         raise ProfileError(f"cannot enumerate Markdown records at base ref: {base_ref}")
+    # The same selector as the working tree, so a registered path outside the
+    # fixed roots (labs/, tests/fixtures/, scripts/README.md) is compared too.
     paths = sorted(
         {
             path
             for path in _decode_git_paths(result.stdout, "base Markdown discovery")
-            if path.as_posix().endswith(".md")
-            and (
-                path.as_posix() in TARGET_MARKDOWN_FILES
-                or path.as_posix().startswith(TARGET_MARKDOWN_PREFIXES)
-                or (path.as_posix().startswith("infra/") and path.name == "README.md")
-            )
+            if _normalized_target_path(path.as_posix()) is not None
             and path.as_posix() not in excluded
         },
         key=lambda path: path.as_posix(),

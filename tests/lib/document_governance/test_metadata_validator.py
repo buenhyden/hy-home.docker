@@ -95,6 +95,73 @@ class RegisteredReadmeSelectionTests(unittest.TestCase):
                 {r.artifact_type for r in records},
             )
 
+    def test_registry_frontmatter_profiles_are_selected(self):
+        from scripts.lib.document_governance.metadata.profile import (
+            _normalized_target_path,
+        )
+
+        for path in (
+            "scripts/README.md",
+            "tests/README.md",
+            "projects/README.md",
+            "infra/AGENTS.md",
+            ".github/repository-surface.md",
+        ):
+            with self.subTest(path=path):
+                self.assertEqual(pathlib.Path(path), _normalized_target_path(path))
+        # _workspace stays outside the metadata inventory (reference.py rule).
+        for path in ("_workspace/README.md", "scripts/notes.md"):
+            with self.subTest(path=path):
+                self.assertIsNone(_normalized_target_path(path))
+
+    def test_base_ref_collects_registered_paths_outside_fixed_roots(self):
+        from scripts.lib.document_governance.metadata.lifecycle import (
+            collect_records_at_ref,
+        )
+        from scripts.lib.document_governance.metadata.profile import (
+            build_registry_profiles,
+        )
+        from scripts.lib.document_governance.registry import load_registry
+
+        profiles = build_registry_profiles(load_registry(PROFILES))
+        routes = ("labs/README.md", "tests/fixtures/README.md", "scripts/README.md")
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            git = ["git", "-C", str(root), "-c", "user.name=t", "-c", "user.email=t@t"]
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            for route in (*routes, "scripts/notes.md"):
+                path = root / route
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text("# fixture\n", encoding="utf-8")
+            subprocess.run([*git, "add", "."], check=True)
+            subprocess.run([*git, "commit", "-q", "-m", "fixture"], check=True)
+            records = collect_records_at_ref(root, profiles, "HEAD")
+        self.assertEqual(set(routes), {r.path.as_posix() for r in records})
+
+    def test_generated_provenance_keeps_the_registry_profile(self):
+        from scripts.lib.document_governance.metadata.lifecycle import (
+            _record_from_text,
+        )
+        from scripts.lib.document_governance.metadata.profile import (
+            build_registry_profiles,
+        )
+        from scripts.lib.document_governance.registry import load_registry
+
+        profiles = build_registry_profiles(load_registry(PROFILES))
+        text = (
+            '---\ntitle: "Route"\ntype: "common/readme"\nstatus: "active"\n'
+            'generated_by: "scripts/operations/provider_surface_renderer.py"\n'
+            "---\n# Route\n"
+        )
+        registered = _record_from_text(
+            pathlib.Path(".claude/README.md"), text, profiles=profiles
+        )
+        unregistered = _record_from_text(
+            pathlib.Path("notes/out.md"), text, profiles=profiles
+        )
+        self.assertEqual("runtime-governance-readme", registered.artifact_type)
+        self.assertEqual("generated", unregistered.artifact_type)
+
 
 class FourDigitDocumentIdentityTests(unittest.TestCase):
     def test_full_repository_contracts_reaches_active_record_validation(self) -> None:
