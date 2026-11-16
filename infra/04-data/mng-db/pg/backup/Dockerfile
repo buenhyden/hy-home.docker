@@ -1,7 +1,7 @@
 # The management PostgreSQL server with pgBackRest installed in the same image,
 # so archive_command runs the real binary, config and repository as the server's
 # own postgres user (UID/GID 70). Keep the base identical to the plain image.
-FROM postgres:18.6-alpine@sha256:123b17998ccaf47e53b502e8c6a1e79afd8f579c6f3eec83c563da026f957395
+FROM postgres:18.6-alpine@sha256:9ba53c7d41ea093baf5c1ba635ba5434c4f979880527d49bb7d9237d3193085b
 
 # Alpine packages pgBackRest; the package release is pinned for reproducibility.
 RUN apk add --no-cache pgbackrest=2.58.0-r0 \
