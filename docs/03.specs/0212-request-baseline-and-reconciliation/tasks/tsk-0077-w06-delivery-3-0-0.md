@@ -1,6 +1,6 @@
 ---
 title: "W06 Delivery 3.0.0 Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -124,6 +124,17 @@ change. The paired predecessor modeled its original YAML import. Neither
 sample wrote execution evidence. Checkout, queue, setup and installation time
 are outside the interval, so no hosted critical path is estimated.
 
+#### Candidate model repair for PR 1049
+
+The owner separately authorized delivery of this Spec Package. The first
+hosted attempt at `3282d1e47` selected the document shard successfully
+in run 43776564841. The core job failed because the public runner model
+test's exact job inventory omitted the registered `candidate-routing`
+job. The focused test reproduced the same assertion locally. Add the
+routing job to the expected inventory. Keep the exact inventory check
+and the existing checks for the executing shards and aggregate. The
+workflow and its enforcement remain unchanged.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -177,6 +188,8 @@ endpoint returned no applicable rules. This is a read-only observation.
 | Resume routing timing | 133 | W138 | interleaved subprocess comparison | Seven synthetic merge pairs per outcome | PASS | Planner timings and excluded costs recorded above | optional | - |
 | Resume protection read-back | 133 | W138 | read-only GitHub API | Current main and qa-control | PASS | candidate-quality App 15368, strict; environment lacks a custom branch policy | optional | - |
 | Resume independent route review | 133 | W138 | implementation review against a6729e578 | Routing, aggregate, trust and performance | PASS | Local change approved; hosted comparison and independent trust remain open | required | - |
+| Hosted public candidate model | 133 | W138 | public candidate job model test | PR 1049 at 3282d1e47, run 43776564841 | FAIL | candidate-core reproduced the omitted candidate-routing job in the exact inventory assertion | required | - |
+| Corrected public candidate model | 133 | W138 | public candidate job model test | Corrected job inventory for PR 1049 | PASS | Local public model and ownership suites passed 16 tests, exit 0 | required | Hosted public candidate model |
 
 ### Resolution Links
 
@@ -194,8 +207,10 @@ hosted timing and adoption of the independent verifier.
 
 ### Remaining Conditions
 
-Owner acceptance remains pending. The actual W138 hosted results, timing
-comparison and independent remote enforcement adoption are unobserved.
+Owner acceptance remains pending. The selected hosted route was observed
+in PR 1049. The corrected candidate needs hosted verification. A paired
+hosted timing comparison and independent remote enforcement adoption are
+still open.
 
 ## Handoff
 

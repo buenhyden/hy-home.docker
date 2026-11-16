@@ -106,6 +106,7 @@ class PublicSuiteModelTests(unittest.TestCase):
                 "candidate-core",
                 "candidate-documents",
                 "candidate-quality",
+                "candidate-routing",
                 "main-security",
             },
             set(jobs),
