@@ -1199,9 +1199,8 @@ def _default_registry() -> DocumentRegistry | None:
 def _registry_frontmatter_target(normalized: str) -> bool:
     """True when a Registry profile that requires frontmatter owns this path."""
 
-    # The workspace inventory rule in reference.py keeps _workspace/ out.
     registry = _default_registry()
-    if registry is None or normalized.startswith("_workspace/"):
+    if registry is None:
         return False
     profile = registry.profiles.get(classify_registered_path(normalized, registry))
     return (

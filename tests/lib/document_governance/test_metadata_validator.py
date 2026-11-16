@@ -106,11 +106,12 @@ class RegisteredReadmeSelectionTests(unittest.TestCase):
             "projects/README.md",
             "infra/AGENTS.md",
             ".github/repository-surface.md",
+            "_workspace/README.md",
+            "_workspace/repo-support/README.md",
         ):
             with self.subTest(path=path):
                 self.assertEqual(pathlib.Path(path), _normalized_target_path(path))
-        # _workspace stays outside the metadata inventory (reference.py rule).
-        for path in ("_workspace/README.md", "scripts/notes.md"):
+        for path in ("_workspace/diagnostics/notes.md", "scripts/notes.md"):
             with self.subTest(path=path):
                 self.assertIsNone(_normalized_target_path(path))
 

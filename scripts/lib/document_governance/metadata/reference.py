@@ -348,9 +348,11 @@ def _generation_task_body_baseline(
 
 
 def _workspace_inventory_findings() -> list[Finding]:
+    # Only the Registry-owned _workspace READMEs are metadata targets; the
+    # staging tree itself never becomes an inferred inventory root.
     if (
         any(prefix.startswith("_workspace/") for prefix in TARGET_MARKDOWN_PREFIXES)
-        or _normalized_target_path("_workspace/README.md") is not None
+        or _normalized_target_path("_workspace/diagnostics/notes.md") is not None
     ):
         return [
             Finding(
