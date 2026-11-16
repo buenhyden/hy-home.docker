@@ -49,13 +49,23 @@ class HistoricalBlobBatchTests(unittest.TestCase):
                     encoding="utf-8",
                 )
             git("add", ".")
+            (root / paths[0]).write_bytes(
+                (root / paths[0]).read_bytes().replace(b"\n", b"\r\n")
+            )
+            git("add", paths[0])
             git("commit", "-qm", "fixture")
             expected = {
                 path: git("show", f"HEAD:{path}").decode("utf-8") for path in paths
             }
+            raw_blobs = {}
             self.assertEqual(
                 expected,
-                lifecycle_module._read_markdown_texts_at_ref(root, paths, "HEAD"),
+                lifecycle_module._read_markdown_texts_at_ref(
+                    root, paths, "HEAD", raw_blobs=raw_blobs
+                ),
+            )
+            self.assertEqual(
+                {p: text.encode("utf-8") for p, text in expected.items()}, raw_blobs
             )
             self.assertEqual(
                 {"docs/a[1].md": expected["docs/a[1].md"]},
@@ -98,12 +108,43 @@ class HistoricalBlobBatchTests(unittest.TestCase):
             (root / "docs/large.md").write_text(large, encoding="utf-8")
             git("add", ".")
             git("commit", "-qm", "oversized fixture")
+            raw_blobs = {}
             self.assertEqual(
                 {"docs/large.md": large},
                 lifecycle_module._read_markdown_texts_at_ref(
-                    root, ("docs/large.md",), "HEAD"
+                    root, ("docs/large.md",), "HEAD", raw_blobs=raw_blobs
                 ),
             )
+            self.assertEqual({}, raw_blobs)
+
+    def test_shared_current_records_keep_each_selection(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            tracked = "docs/01.requirements/0001-tracked.md"
+            selected = "docs/01.requirements/0002-selected.md"
+            other = "docs/01.requirements/0003-native.md"
+            for name in (tracked, selected, other):
+                write_doc(root / name, {"version": "1.0.0"})
+            self.assertEqual(0, git(root, "add", tracked).returncode)
+            outer = lifecycle_module.collect_records(
+                root, {}, selected_paths=(selected,)
+            )
+            with mock.patch.object(
+                lifecycle_module,
+                "_record_from_text",
+                wraps=lifecycle_module._record_from_text,
+            ) as parse:
+                native = lifecycle_module.collect_records(
+                    root,
+                    {},
+                    selected_paths=(other,),
+                    current_records={r.path.as_posix(): r for r in outer},
+                )
+            self.assertEqual([tracked, other], [r.path.as_posix() for r in native])
+            self.assertIs(outer[0], native[0])
+            self.assertEqual(pathlib.Path(other), parse.call_args.args[0])
+            self.assertEqual(1, parse.call_count)
 
 
 class TransitionOverrideEvidencePathTests(unittest.TestCase):
@@ -513,6 +554,52 @@ class VersionChangeTests(unittest.TestCase):
     DOC = pathlib.Path("docs/90.references/research/0001-x/note.md")
     BASE_BODY = "# Fixture\n"
 
+    def test_exact_base_text_avoids_individual_git_reads(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            name = self.DOC.as_posix()
+            values = {"version": "1.2.0"}
+            (root / self.DOC).parent.mkdir(parents=True)
+            (root / self.DOC).write_bytes(
+                b'---\r\nversion: "1.2.0"\r\n---\r\n# Fixture\r\n'
+            )
+            self.assertEqual(0, git(root, "add", name).returncode)
+            self.assertEqual(0, git(root, "commit", "-qm", "base").returncode)
+            base_ref = git(root, "rev-parse", "HEAD").stdout.strip()
+            base_texts = {}
+            lifecycle_module.collect_records_at_ref(
+                root, {}, base_ref, texts_by_path=base_texts
+            )
+            with (
+                mock.patch.object(
+                    lifecycle_module, "resolve_git_provenance"
+                ) as git_read,
+                mock.patch.object(version_module, "_text_at_ref") as version_read,
+            ):
+                (root / self.DOC).write_bytes(base_texts[name].encode("utf-8"))
+                self.assertEqual(
+                    [],
+                    version_module.version_change_findings(
+                        root,
+                        {name: Record(self.DOC, values, "x")},
+                        base_ref,
+                        base_texts=base_texts,
+                    ),
+                )
+                (root / self.DOC).write_bytes(
+                    base_texts[name].replace("# Fixture", "# Different").encode("utf-8")
+                )
+                findings = version_module.version_change_findings(
+                    root,
+                    {name: Record(self.DOC, values, "x")},
+                    base_ref,
+                    base_texts=base_texts,
+                )
+            self.assertEqual(["version-unchanged"], [f.code for f in findings])
+            git_read.assert_not_called()
+            version_read.assert_not_called()
+
     def findings(
         self,
         base: str | None,
@@ -548,9 +635,7 @@ class VersionChangeTests(unittest.TestCase):
     def test_lower_precedence_is_a_downgrade(self) -> None:
         for base, head in (
             ("1.2.0", "1.1.9"),
-            ("1.2.0", "1.2.0-rc.1"),
             ("1.10.0", "1.9.0"),
-            ("1.0.0-rc.1", "1.0.0-beta.11"),
         ):
             with self.subTest(base=base, head=head):
                 (finding,) = self.findings(base, head)
@@ -559,34 +644,28 @@ class VersionChangeTests(unittest.TestCase):
                 self.assertEqual("error", finding.severity)
 
     def test_changed_content_with_the_same_precedence_is_unchanged(self) -> None:
-        for base, head in (("1.2.0", "1.2.0"), ("1.2.0", "1.2.0+build.2")):
-            with self.subTest(base=base, head=head):
-                (finding,) = self.findings(base, head)
-                self.assertEqual("version-unchanged", finding.code)
-                self.assertEqual(self.DOC.as_posix(), finding.path)
-                self.assertEqual("error", finding.severity)
+        (finding,) = self.findings("1.2.0", "1.2.0")
+        self.assertEqual("version-unchanged", finding.code)
+        self.assertEqual(self.DOC.as_posix(), finding.path)
+        self.assertEqual("error", finding.severity)
 
     def test_raised_precedence_passes(self) -> None:
-        for base, head in (
-            ("1.2.0", "1.10.0"),
-            ("1.2.0", "1.2.1-rc.1"),
-            ("1.0.0-rc.1", "1.0.0"),
+        self.assertEqual([], self.findings("1.2.0", "1.10.0"))
+
+    def test_non_numeric_document_versions_only_get_schema_diagnostics(self) -> None:
+        for invalid in ("1.0.0-rc.1", "1.2.0+build.2", "1.0.0\n", "１.0.0", 1):
+            with self.subTest(invalid=invalid):
+                self.assertEqual([], self.findings("1.2.0", invalid))
+
+    def test_historical_semver_base_keeps_comparison_precedence(self) -> None:
+        for base, head, code in (
+            ("2.0.0-rc.1", "1.0.0", "version-downgrade"),
+            ("1.2.0+build.2", "1.2.0", "version-unchanged"),
+            ("1.2.0-rc.1", "1.2.0", None),
         ):
             with self.subTest(base=base, head=head):
-                self.assertEqual([], self.findings(base, head))
-
-    def test_old_and_new_producer_against_old_and_new_consumer(self) -> None:
-        old, new = "1.2.0", "1.3.0-rc.1+build.7"
-        expected = {
-            (old, old): "version-unchanged",
-            (old, new): None,
-            (new, old): "version-downgrade",
-            (new, new): "version-unchanged",
-        }
-        for (base, head), code in expected.items():
-            with self.subTest(base=base, head=head):
                 self.assertEqual(
-                    [] if code is None else [code],
+                    [code] if code else [],
                     [finding.code for finding in self.findings(base, head)],
                 )
 
@@ -642,6 +721,34 @@ class VersionChangeTests(unittest.TestCase):
         (finding,) = self.findings("0.2.0", "0.1.0", artifact_type="template-source")
         self.assertEqual("version-downgrade", finding.code)
 
+    def test_lifecycle_edits_use_parsed_frontmatter_keys(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            init_git(root)
+            path = root / self.DOC
+            path.parent.mkdir(parents=True, exist_ok=True)
+            base = '---\nversion: "1.2.0"\n"status": "draft"\nowner: "@a"\n---\n# Fixture\n'
+            path.write_text(base, encoding="utf-8")
+            self.assertEqual(0, git(root, "add", ".").returncode)
+            self.assertEqual(0, git(root, "commit", "-qm", "base").returncode)
+
+            for status in ('"status": "approved"', "status: >-\n  approved"):
+                for owner, expected in (("@a", []), ("@b", ["version-unchanged"])):
+                    with self.subTest(status=status, owner=owner):
+                        head = base.replace('"status": "draft"', status).replace(
+                            "@a", owner
+                        )
+                        path.write_text(head, encoding="utf-8")
+                        record = Record(
+                            self.DOC, metadata._parse_frontmatter_text(head), "x"
+                        )
+                        findings = version_module.version_change_findings(
+                            root, {self.DOC.as_posix(): record}, "HEAD"
+                        )
+                        self.assertEqual(
+                            expected, [finding.code for finding in findings]
+                        )
+
     def test_new_document_or_missing_or_malformed_version_is_not_compared(
         self,
     ) -> None:
@@ -650,6 +757,16 @@ class VersionChangeTests(unittest.TestCase):
         self.assertEqual([], self.findings("1.2.0", None))  # head has no version
         self.assertEqual([], self.findings("v1.2.0", "1.0.0"))
         self.assertEqual([], self.findings("1.2.0", "1.1"))
+
+    def test_a_nested_frontmatter_type_change_is_a_content_change(self) -> None:
+        (finding,) = self.findings(
+            "1.2.0",
+            "1.2.0",
+            head_body=self.BASE_BODY,
+            base_extra={"cancellation": {"criteria_disposition": [{"criterion": 1}]}},
+            head_extra={"cancellation": {"criteria_disposition": [{"criterion": 1.0}]}},
+        )
+        self.assertEqual("version-unchanged", finding.code)
 
     def test_q07_numbering_is_not_a_version(self) -> None:
         # A renumbered artifact id or input label never counts as a version.

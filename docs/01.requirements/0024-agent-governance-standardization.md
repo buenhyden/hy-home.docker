@@ -1,10 +1,10 @@
 ---
 title: "Agent Governance Standardization Requirements"
-version: "1.8.4"
+version: "1.8.5"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 layer: "requirements"
 artifact_id: "REQ-0024"
 created: "2026-06-01"
@@ -167,7 +167,8 @@ This package covers the governance model, canonical ownership, provider adapters
   Architecture, active Spec and current Task.
 - **REQ-0024-FR-0006**: Spec and Plan states express approval authority, while
   Task and item states express execution. Executing Tasks have approved
-  parents; cancelled or superseded parents have no active children.
+  parents. A cancelled Spec requires a terminal Plan and terminal Tasks
+  under the registered lifecycle.
 - **REQ-0024-FR-0007**: The current authority does not use deleted execution
   ledgers as input, and no completion check requires a branch SHA pin, a corpus
   snapshot or a parallel handoff ledger.

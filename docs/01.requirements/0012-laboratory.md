@@ -1,10 +1,10 @@
 ---
 title: "Administration and Experimentation Requirements"
-version: "1.5.1"
+version: "1.5.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-16"
 layer: "requirements"
 artifact_id: "REQ-0012"
 created: "2026-03-26"
@@ -105,7 +105,13 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 ### Verification Method
 
-Each condition is judged by reviewing the operations catalog guides, the root composition validation and the LAB isolation check it names; a rendering result is not evidence of a running service, so live behavior needs a runtime observation. SPEC-0262 cites REQ-0012; its Task evidence rows record each result. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+Review the catalog guides, the named root selections and the standalone LAB
+isolation checks. Use SPEC-0262 Task evidence for the migration or rendering
+results it records. Verify each running access control in an authorized
+observation of the named target. Record a promotion's reservation-based
+readiness result and owner approval in its applicable Task under the
+SPEC-0263 contract. @buenhyden judges the conditions and accepts the
+requirement once they are met.
 
 ## Traceability
 

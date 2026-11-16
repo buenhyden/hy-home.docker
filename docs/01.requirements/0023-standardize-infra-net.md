@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Segmentation Requirements"
-version: "1.4.2"
+version: "1.4.3"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-16"
 layer: "requirements"
 artifact_id: "REQ-0023"
 created: "2026-04-01"
@@ -95,7 +95,13 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 ### Verification Method
 
-Each condition is judged by reviewing the rendered root composition, as the criteria state; the recorded exceptions in REQ-0023-FR-0004 are excluded from that judgment. SPEC-0255 cites REQ-0023 in its body only; its Task evidence rows record the review result. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+Use the rendered root composition to check declared membership, addresses and
+bindings. For REQ-0023-FR-0004, record refusal of a connection from outside
+the named network in a separately authorized isolated check for the applicable
+listener. The recorded exceptions remain excluded. Static evidence leaves
+that runtime claim open. SPEC-0255 cites REQ-0023-FR-0002 for the egress
+isolation exception. Record each observation in the applicable Task.
+@buenhyden judges the conditions and accepts the requirement when they are met.
 
 ## Traceability
 

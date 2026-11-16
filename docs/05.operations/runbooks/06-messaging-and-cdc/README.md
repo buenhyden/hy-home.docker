@@ -1,10 +1,10 @@
 ---
 title: "메시징과 CDC 런북"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-16"
 layer: "operations"
 ---
 
@@ -28,8 +28,10 @@ layer: "operations"
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
-| [Kafka Runbook](0036-kafka.md) | `RUN-0036` | 이 런북은 Kafka family의 정적 진단, CDC connector 수명주기, 계획된 백업·복제 캡처, 격리 복원 절차를 다룬다. 정상 대상은 단일 broker이고, 다중 broker LAB은 별도 실행 계약을 따른다. |
+| [Kafka Runbook](0036-kafka.md) | `RUN-0036` | HOME 단일 broker의 정적 진단과 계획된 백업·복제 캡처·격리 복원을 다룬다. |
 | [05-Messaging Optimization Hardening Runbook](0037-messaging-optimization-hardening.md) | `RUN-0037` | 이 런북은 Kafka family hardening baseline을 컨테이너를 시작하지 않고 정적으로 점검하는 절차를 다룬다. |
+
+독립 Kafka LAB과 그 Schema Registry·Connect는 [RUN-0108](../15-labs/0108-kafka-cluster.md)을 따른다.
 
 ### Classification
 

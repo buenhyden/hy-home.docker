@@ -12,6 +12,7 @@ from pathlib import Path, PurePosixPath
 from unittest import mock
 
 from scripts.lib.hooks import folder_guides
+from scripts.lib.hooks.request_brief import BINDING_FIELDS
 
 ROOT = Path(__file__).resolve().parents[3]
 EVENT_HOOK = ROOT / "scripts/hooks/agent-event-hook.sh"
@@ -205,9 +206,20 @@ class DispatcherDeliveryTests(IsolatedState):
         }
         if provider:
             env["HY_HOME_HOOK_PROVIDER"] = provider
+        command = ["bash", str(EVENT_HOOK), event]
+        if provider == "codex":
+            env["CODEX_PROJECT_DIR"] = str(ROOT)
+        if provider == "claude":
+            adapter = {
+                "UserPromptSubmit": "user-prompt-submit.sh",
+                "SessionStart": "session-start.sh",
+                "PreCompact": "pre-compact.sh",
+                "PreToolUse": "docker-compose-pre.sh",
+            }[event]
+            command = ["bash", str(ROOT / ".claude/hooks" / adapter)]
         result = subprocess.run(
-            ["bash", str(EVENT_HOOK), event],
-            input=json.dumps(payload),
+            command,
+            input=json.dumps({"hook_event_name": event, "cwd": str(ROOT), **payload}),
             capture_output=True,
             text=True,
             cwd=ROOT,
@@ -226,6 +238,209 @@ class DispatcherDeliveryTests(IsolatedState):
             tool_name="apply_patch",
             tool_input={"command": self.PATCH.format(path=path)},
         )
+
+    def test_prompt_submit_supplies_a_request_revision_without_prompt_text(
+        self,
+    ) -> None:
+        prompt = "Move one explicitly named file."
+        for provider in ("claude", "codex"):
+            with self.subTest(provider=provider):
+                session = f"test-{uuid.uuid4().hex}"
+                output = self.run_hook(
+                    "UserPromptSubmit",
+                    {"session_id": session, "prompt": prompt},
+                    provider=provider,
+                )
+                context = json.loads(output)["hookSpecificOutput"]["additionalContext"]
+                self.assertIn(f"request_brief status {session}", context)
+                self.assertNotIn(prompt, context)
+                status = self.brief_command("status", session)
+                self.assertEqual(0, status.returncode, status.stderr)
+                self.assertIn("request_revision", json.loads(status.stdout))
+
+    def brief_command(
+        self, *args: str, record: dict[str, object] | None = None
+    ) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            ["/usr/bin/python3", "-m", "scripts.lib.hooks.request_brief", *args],
+            input=json.dumps(record) if record is not None else "",
+            capture_output=True,
+            text=True,
+            cwd=ROOT,
+            env={"PATH": "/usr/bin:/bin", "XDG_STATE_HOME": self.state_home},
+            timeout=5,
+            check=False,
+        )
+
+    def prompt(self, provider: str, session: str, text: str) -> None:
+        self.run_hook(
+            "UserPromptSubmit",
+            {"session_id": session, "prompt": text},
+            provider=provider,
+        )
+
+    def brief_record(self, session: str) -> dict[str, object]:
+        status = self.brief_command("status", session)
+        self.assertEqual(0, status.returncode, status.stderr)
+        binding = json.loads(status.stdout)
+        return {
+            **{key: binding[key] for key in BINDING_FIELDS},
+            "contract_version": "3.0.1",
+            "brief_id": "fixture-brief",
+            "revision": 1,
+            "goal": "Update two named guides",
+            "in_scope": ["scripts/README.md", "tests/README.md"],
+            "out_of_scope": ["scripts/manifest.yaml"],
+            "constraints": ["Keep changes local"],
+            "acceptance_criteria": ["Check the changed guides"],
+            "known_facts": [],
+            "assumptions": [],
+            "unresolved_questions": [],
+            "risk": "low",
+            "authority_ref": binding["request_ref"],
+            "allowed_mutations": [
+                "edit:scripts/README.md",
+                "edit:tests/README.md",
+                "dispatch:scripts/README.md",
+            ],
+            "expected_checks": ["Review the guide diff"],
+            "material_inputs": {},
+            "state": "ready",
+        }
+
+    def assert_edit_denied(
+        self, provider: str, payload: dict[str, object], denied: bool
+    ) -> None:
+        output = self.run_hook("PreToolUse", payload, provider=provider)
+        result = json.loads(output)["hookSpecificOutput"] if output else {}
+        self.assertEqual(denied, result.get("permissionDecision") == "deny", result)
+        self.assertNotEqual("allow", result.get("permissionDecision"))
+
+    def scoped_edit(self, provider: str, session: str, path: str) -> dict[str, object]:
+        if provider == "codex":
+            return self.codex_patch(session, path)
+        return self.payload(
+            session, tool_name="Write", tool_input={"file_path": str(ROOT / path)}
+        )
+
+    def test_enrolled_edit_scope_is_checked_on_both_provider_adapters(self) -> None:
+        for provider in ("claude", "codex"):
+            with self.subTest(provider=provider):
+                session = f"test-{uuid.uuid4().hex}"
+                self.prompt(provider, session, "Update the two guides.")
+                record = self.brief_record(session)
+                saved = self.brief_command("bind", session, record=record)
+                self.assertEqual(0, saved.returncode, saved.stderr)
+
+                inside = self.scoped_edit(provider, session, "scripts/README.md")
+                outside = self.scoped_edit(provider, session, "scripts/manifest.yaml")
+                self.assert_edit_denied(provider, inside, False)
+                self.assert_edit_denied(provider, outside, True)
+                if provider == "codex":
+                    patch = self.PATCH.format(path="scripts/manifest.yaml")
+                    nested = self.payload(
+                        session,
+                        tool_name="exec",
+                        tool_input={
+                            "code": f"await tools.apply_patch({json.dumps(patch)})"
+                        },
+                    )
+                    self.assert_edit_denied(provider, nested, True)
+                else:
+                    self.assert_edit_denied(
+                        provider, {**inside, "agent_id": "worker"}, False
+                    )
+                    worker = self.scoped_edit(provider, session, "tests/README.md")
+                    self.assert_edit_denied(
+                        provider,
+                        {**worker, "agent_id": "worker"},
+                        True,
+                    )
+                self.prompt(provider, session, "Cancel the guide work.")
+                self.assertNotEqual(
+                    0, self.brief_command("bind", session, record=record).returncode
+                )
+                self.assert_edit_denied(provider, inside, True)
+
+    def test_questions_and_context_changes_hold_only_prepared_work(self) -> None:
+        for provider in ("claude", "codex"):
+            with self.subTest(provider=provider):
+                self.check_question_transitions(provider)
+
+    def test_large_user_prompt_invalidates_an_enrolled_brief(self) -> None:
+        session = f"test-{uuid.uuid4().hex}"
+        self.prompt("codex", session, "Update the named guide.")
+        record = self.brief_record(session)
+        bound = self.brief_command("bind", session, record=record)
+        self.assertEqual(0, bound.returncode, bound.stderr)
+        self.prompt("codex", session, "Cancel the prior change. " + "x" * 140_000)
+        current = self.brief_record(session)
+        self.assertNotEqual(record["request_revision"], current["request_revision"])
+        self.assert_edit_denied(
+            "codex", self.codex_patch(session, "scripts/README.md"), True
+        )
+
+    def check_question_transitions(self, provider: str) -> None:
+        session = f"test-{uuid.uuid4().hex}"
+        self.prompt(provider, session, "Review the two guides.")
+        record = {
+            **self.brief_record(session),
+            "state": "needs-clarification",
+            "unresolved_questions": [
+                {
+                    "question": "Does the test guide move too?",
+                    "affected_actions": ["edit:tests/README.md"],
+                    "recommendation": "Keep the test guide until confirmed.",
+                }
+            ],
+        }
+        saved = self.brief_command("bind", session, record=record)
+        self.assertEqual(0, saved.returncode, saved.stderr)
+        affected = self.scoped_edit(provider, session, "tests/README.md")
+        independent = self.scoped_edit(provider, session, "scripts/README.md")
+        self.assert_edit_denied(provider, affected, True)
+        self.assert_edit_denied(provider, independent, False)
+        dispatch = self.brief_command(
+            "check",
+            session,
+            "dispatch",
+            record["request_revision"],
+            str(record["revision"]),
+            "scripts/README.md",
+        )
+        self.assertEqual(0, dispatch.returncode, dispatch.stderr)
+        self.prompt(provider, session, "Yes, update the test guide.")
+        self.assert_edit_denied(provider, affected, True)
+        ready = self.brief_command("bind", session, record=self.brief_record(session))
+        self.assertEqual(0, ready.returncode, ready.stderr)
+        self.assert_edit_denied(provider, affected, False)
+        authority_ref = self.brief_record(session)["authority_ref"]
+        sequences = (
+            (("PreCompact", {}), ("SessionStart", {"source": "compact"})),
+            (("SessionStart", {"source": "resume"}),),
+        )
+        for events in sequences:
+            with self.subTest(events=events):
+                for event, details in events:
+                    self.run_hook(
+                        event, {"session_id": session, **details}, provider=provider
+                    )
+                    self.assert_edit_denied(provider, independent, True)
+                status = self.brief_command("status", session)
+                self.assertEqual(0, status.returncode, status.stderr)
+                self.assertEqual(
+                    authority_ref, json.loads(status.stdout).get("prior_authority_ref")
+                )
+                fresh = self.brief_command(
+                    "bind",
+                    session,
+                    record={
+                        **self.brief_record(session),
+                        "authority_ref": authority_ref,
+                    },
+                )
+                self.assertEqual(0, fresh.returncode, fresh.stderr)
+                self.assert_edit_denied(provider, independent, False)
 
     def test_codex_receives_the_guide_once_and_again_after_compaction(self) -> None:
         session = f"test-{uuid.uuid4().hex}"

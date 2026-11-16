@@ -1,10 +1,10 @@
 ---
 title: "AI Infrastructure Architecture Description"
-version: "1.2.2"
+version: "1.2.3"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "architecture"
 artifact_id: "AD-0008"
 parent_ids:
@@ -26,22 +26,23 @@ separate authorization.
 
 ### System Boundary
 
-- **Owns:** Ollama inference and its model store; Open WebUI chat and RAG;
+- **Owns:** HOME Ollama inference and its model store;
   ComfyUI and its declared workflow mounts; Open Notebook with its nested
   SurrealDB; MLflow tracking and its feature-owned PostgreSQL provisioning;
   Crawl4AI with its separate egress gateway.
 - **Consumes:** GPUs through the NVIDIA Container Toolkit; `mng-pg` and
   SeaweedFS for MLflow metadata and artifacts; Keycloak for SSO; shared Qdrant
   only for consumers explicitly configured for it.
-- **Does not own:** the Qdrant instance (`04-data`), the monitoring collectors
-  (`06-observability`), or Jupyter notebooks (Analytics LAB).
+- **Does not own:** the independent Open WebUI LAB, the Qdrant instance
+  (`04-data`), the monitoring collectors (`06-observability`), or Jupyter
+  notebooks (Analytics LAB).
 - **Non-goals:** multi-node GPU clusters and model training environments.
 
 ## Context and Constraints
 
 ### Context
 
-Users reach Open WebUI, ComfyUI, Open Notebook and MLflow through the gateway. The tier consumes GPUs through the NVIDIA Container Toolkit, `mng-pg` and SeaweedFS for MLflow, Keycloak for SSO, and Qdrant only for explicitly configured consumers. Crawl4AI reaches the internet only through `crawl4ai-egress`.
+The root Compose declares gateway routes for ComfyUI, Open Notebook and MLflow when their optional profiles are selected. The tier consumes GPUs through the NVIDIA Container Toolkit, `mng-pg` and SeaweedFS for MLflow, Keycloak for SSO, and Qdrant only for explicitly configured consumers. Crawl4AI reaches the internet only through `crawl4ai-egress`. The independent Open WebUI LAB requires a separately approved and reachable Ollama endpoint.
 
 ### Constraints
 
@@ -54,8 +55,8 @@ Local inference uses NVIDIA GPUs, and provider or API egress needs separate auth
 1. **Inference:** `ollama` controls the model store and the GPU (NVIDIA device
    reservation) and serves an OpenAI-compatible API; `ollama-exporter` exports
    its metrics.
-2. **Interaction:** `open-webui` runs chat and RAG (embed, search, augment).
-   `VECTOR_DB` is unset, so vectors stay in its local Chroma store, not Qdrant.
+2. **LAB neighbor:** [Open WebUI](0013-open-webui-architecture.md) evaluates
+   chat and RAG with its own local vector store and isolated data root.
 3. **Image:** `comfyui` uses `gpus: all`.
 4. **Knowledge and experiments:** `open_notebook` with `surrealdb`; `mlflow`
    with `mlflow-db-provision`.
@@ -76,13 +77,13 @@ registered or working.
 #### Runtime View
 
 ```text
-User prompt -> Open WebUI (RAG context) -> Ollama (inference) -> streamed response
+Authorized caller -> approved Ollama endpoint (inference or embedding) -> response
 ```
 
 - The Compose declaration owns the Ollama model-store mount at
   `${DEFAULT_AI_MODEL_DIR}/ollama`; no successful model-store recovery is
   asserted.
-- Open WebUI SQLite, uploads and local Chroma live in its data volume.
+- The isolated LAB owns Open WebUI state and its access and deployment conditions.
 - ComfyUI mounts its `models`, `custom_nodes`, `input`, `output` and `user`
   volumes at `/root/ComfyUI/<dir>`, where the image runs; the data moved there
   on 2026-11-08. Its Hugging Face and Torch caches mount separately under
@@ -92,9 +93,9 @@ User prompt -> Open WebUI (RAG context) -> Ollama (inference) -> streamed respon
 
 #### Deployment View
 
-`ai` selects Ollama with its exporter, Open WebUI, ComfyUI and Qdrant;
-`ai-llm` selects Ollama, Open WebUI and Qdrant; `ollama` selects Ollama and
-its exporter; `ai-image` selects ComfyUI. These are HOME. `notebook` (Open
+`ai` and `ai-llm` select the HOME Ollama, its exporter and Qdrant. `ollama` selects
+Ollama and its exporter. `ai-image` explicitly selects the optional root ComfyUI.
+Its standalone LAB placement remains planned. `notebook` (Open
 Notebook and SurrealDB, SurrealDB also by `surrealdb`), `mlops` and
 `data-science` (MLflow) and `crawl4ai` are optional capability profiles; `ai`
 does not select them. Compose resource declarations are source limits, not
@@ -104,7 +105,7 @@ measured shared-GPU headroom.
 
 ### Contracts
 
-Ollama serves an OpenAI-compatible API that consumers use instead of touching model weights or the GPU driver. Open WebUI uses native OIDC; Ollama, ComfyUI and the MLflow browser route use ForwardAuth; Open Notebook uses password-file authentication with an admin IP allow list.
+Ollama serves an OpenAI-compatible API that consumers use instead of touching model weights or the GPU driver. The Open WebUI LAB declares native OIDC. Ollama, ComfyUI and the MLflow browser route use ForwardAuth. Open Notebook uses password-file authentication with an admin IP allow list.
 
 ### Failure Boundaries
 
@@ -114,7 +115,8 @@ MLflow's SDK path is not authenticated like its browser route (see Risks below).
 
 ### Decision Links
 
-- [ADR-0008 Ollama and Open WebUI local AI](../decisions/0008-ollama-openwebui-local-ai.md)
+- [ADR-0008 original local AI decision](../decisions/0008-ollama-openwebui-local-ai.md)
+- [ADR-0062 current HOME and LAB membership](../decisions/0062-home-lab-membership.md)
 
 ### Quality and Risks
 
@@ -122,7 +124,7 @@ MLflow's SDK path is not authenticated like its browser route (see Risks below).
 
 - **Performance:** CUDA acceleration and quantization are workload choices; no
   measured latency or shared-GPU capacity is established.
-- **Security:** Open WebUI uses native OIDC; Ollama, ComfyUI and the MLflow
+- **Security:** The Open WebUI LAB declares native OIDC. Ollama, ComfyUI and the MLflow
   browser route use ForwardAuth; Open Notebook uses password-file
   authentication with an admin IP allow list. Crawl4AI egress and loopback
   publications keep their explicit boundaries.
@@ -137,7 +139,8 @@ MLflow's SDK path is not authenticated like its browser route (see Risks below).
 
 - MLflow's SDK path on `edge_net`, `ai_net`, `mng_data_net` and `object_net`
   is not authenticated like its browser route.
-- `ai` and `ai-llm` start Qdrant although Open WebUI does not use it.
+- `ai` and `ai-llm` select Qdrant. Treat use by any given consumer as a
+  separate configuration and runtime question.
 
 ## Traceability
 

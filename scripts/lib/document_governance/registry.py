@@ -1750,34 +1750,53 @@ def _frontmatter_format_checker() -> FormatChecker:
     return checker
 
 
+class FrontmatterValidator:
+    """Reuse one bounded schema snapshot only within a validator invocation."""
+
+    def __init__(self, schema_path: pathlib.Path = DEFAULT_FRONTMATTER_SCHEMA) -> None:
+        self._schema_path = schema_path
+
+    @functools.cached_property
+    def _validator(self) -> Draft202012Validator | str:
+        try:
+            schema = _parse_json(self._schema_path, MAX_SCHEMA_BYTES)
+        except RegistryError as error:
+            return str(error)
+        if not isinstance(schema, Mapping):
+            return "frontmatter schema is not a mapping"
+        try:
+            Draft202012Validator.check_schema(schema)
+        except SchemaError:
+            return "frontmatter schema is not valid Draft 2020-12"
+        return Draft202012Validator(
+            schema, format_checker=_frontmatter_format_checker()
+        )
+
+    def __call__(self, values: Mapping[str, object]) -> tuple[RegistryFinding, ...]:
+        validator = self._validator
+        if isinstance(validator, str):
+            raise RegistryError(validator)
+        normalized = _json_schema_value(values)
+        return tuple(
+            RegistryFinding(
+                "frontmatter-schema-invalid",
+                ".".join(map(str, error.path)) or "$",
+                error.message,
+            )
+            for error in sorted(
+                validator.iter_errors(normalized),
+                key=lambda item: tuple(map(str, item.path)),
+            )
+        )
+
+
 def validate_frontmatter(
     values: Mapping[str, object],
     schema_path: pathlib.Path = DEFAULT_FRONTMATTER_SCHEMA,
 ) -> tuple[RegistryFinding, ...]:
-    """Validate one parsed frontmatter mapping against the bounded Stage 99 schema."""
+    """Validate one mapping, rereading the bounded schema for standalone calls."""
 
-    schema = _parse_json(schema_path, MAX_SCHEMA_BYTES)
-    if not isinstance(schema, Mapping):
-        raise RegistryError("frontmatter schema is not a mapping")
-    try:
-        Draft202012Validator.check_schema(schema)
-    except SchemaError as error:
-        raise RegistryError("frontmatter schema is not valid Draft 2020-12") from error
-    validator = Draft202012Validator(
-        schema, format_checker=_frontmatter_format_checker()
-    )
-    normalized = _json_schema_value(values)
-    return tuple(
-        RegistryFinding(
-            "frontmatter-schema-invalid",
-            ".".join(map(str, error.path)) or "$",
-            error.message,
-        )
-        for error in sorted(
-            validator.iter_errors(normalized),
-            key=lambda item: tuple(map(str, item.path)),
-        )
-    )
+    return FrontmatterValidator(schema_path)(values)
 
 
 def normalize_profile_frontmatter(

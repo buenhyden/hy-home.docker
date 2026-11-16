@@ -3,11 +3,11 @@ name: "execution-plan-agent"
 description: "Use when an approved specification needs an executable plan mapping acceptance criteria to exact files, ordered work, risks, and checks."
 metadata:
   title: "execution-plan-agent"
-  version: "1.2.1"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-16"
   function_id: "execution-plan-agent"
   scope: "agentic"
   owner_agent: "workflow-supervisor"
@@ -32,9 +32,14 @@ Interfaces, authority or completion criteria that cannot be made concrete are ou
 
 ### Steps
 
-1. Map every acceptance criterion to exact files, implementation steps, tests, and task evidence without claiming prospective results.
-2. Order work by dependency and reversibility, isolating protected or runtime changes into separately approved tasks.
-3. Define RED/GREEN checks, review gates, commit boundaries, and terminal completion criteria.
+1. Reconcile read-only discovery with the latest request using the
+   [request brief](../../governance/agentic.md#request-brief). For a registered
+   brief, consume the same request binding, exact paths, affected questions
+   and acceptance criteria in the Plan and worker envelope.
+2. Map every acceptance criterion to exact files, implementation steps,
+   tests and task evidence without claiming prospective results.
+3. Order work by dependency and reversibility, isolating protected or runtime changes into separately approved tasks.
+4. Define RED/GREEN checks, review gates, commit boundaries, and terminal completion criteria.
 
 #### Gates
 

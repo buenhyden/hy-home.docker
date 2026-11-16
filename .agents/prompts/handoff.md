@@ -1,10 +1,10 @@
 ---
 title: "Handoff Prompt"
-version: "0.3.1"
+version: "1.0.0"
 type: "governance/prompt"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-16"
 created: "2026-09-06"
 ---
 
@@ -12,10 +12,11 @@ created: "2026-09-06"
 
 ## Purpose
 
-Produce a handoff that lets the next session resume from tracked files and Git
-state alone. The receiving session may be a different provider, a different
-model, or the same agent after a context reset. The handoff exists so that
-resuming never requires the previous conversation.
+Produce a handoff that lets the next session reconstruct its working state
+from tracked files and Git. The receiving session may be a different provider,
+a different model, or the same agent after a context reset. The controller
+resolves current authorization through
+[Approval Boundaries](../governance/approval-boundaries.md#authorization-source-and-records).
 
 ## Inputs
 
@@ -29,18 +30,22 @@ resuming never requires the previous conversation.
   implied.
 - The approval scope recorded in the Task's `Inputs and Authority`.
 - The governing Spec's `Acceptance Contract` and the Plan's work-unit labels.
-- Repository and worktree identities, relevant owned-file digests, the current
-  non-revoked approval source and scope, exclusive writer, partial-result state,
+- Repository and worktree identities, relevant owned-file digests, request
+  identity and revision when supplied by the trusted origin, authorization
+  source, scope and current applicability, exclusive writer, partial-result state,
   declared applicable request, token, time, concurrency, and retry ceilings;
   shared-budget identity and remaining allocation; unsupported fields recorded
   as unknown; and knowledge validity.
 
-The receiver re-reads Git and the Task. On a repository, worktree, HEAD, digest,
-approval, writer, partial-result, budget, or knowledge-validity mismatch, refuse
-mutation and additional spending, record the mismatch and required reconciliation,
-and return to `workflow-supervisor`. A digest is resume evidence, not a standing
-completion SHA gate. Stop and request the missing input if the Task, branch, or
-approval scope cannot be identified.
+The receiver re-reads Git, the Task and the applicable trusted request. For a
+repository, worktree, HEAD, digest, writer, partial-result, budget or
+knowledge-validity mismatch, reconcile the dependent work. For a changed
+request, resolve whether the latest authority still covers the target, scope
+and conditions. Keep using the approval if it still applies. If a material
+mismatch or unresolved applicability prevents continuation, stop dependent
+mutation and additional spending, record the missing binding, and return to
+`workflow-supervisor`. A digest records resume evidence. Ask for missing input
+only when it is needed for the dependent work.
 
 ## Instructions
 
@@ -76,7 +81,8 @@ A single block with exactly these labeled parts, in this order:
    owned-file digests, working-tree state, and which Plan work unit is next.
 3. **Purpose** — the objective in one sentence, taken from the Spec.
 4. **Approved scope** — what the current authorization does and does not cover,
-   copied from the Task, including its source and current non-revoked state; its
+   including the request identity and revision supplied by the trusted origin
+   or recorded as unknown, the authorization source and applicability, and its
    declared applicable request, token, time, concurrency, and retry ceilings;
    shared-budget identity and remaining allocation; and unsupported fields
    recorded as unknown, not inferred.

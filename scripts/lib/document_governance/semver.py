@@ -9,10 +9,12 @@ Precedence ignores build metadata and puts a prerelease below its release.
 from __future__ import annotations
 
 import re
+from decimal import Decimal
 
+_NUMERIC_CORE = r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)"
+NUMERIC_VERSION = re.compile(_NUMERIC_CORE)
 SEMVER = re.compile(
-    r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)"
-    r"(?:-((?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)"
+    _NUMERIC_CORE + r"(?:-((?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)"
     r"(?:\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))?"
     r"(?:\+([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?"
 )
@@ -40,17 +42,30 @@ def is_semver(version: object) -> bool:
     return isinstance(version, str) and SEMVER.fullmatch(version) is not None
 
 
+def is_numeric_version(version: object) -> bool:
+    return isinstance(version, str) and NUMERIC_VERSION.fullmatch(version) is not None
+
+
+def _decimal_integer(digits: str) -> int:
+    try:
+        return int(digits)
+    except ValueError:
+        # The regex already proved the digits valid. Decimal avoids the string limit.
+        return int(Decimal(digits))
+
+
 def parse_semver(version: object) -> tuple[tuple[int, ...], tuple[object, ...] | None]:
     """Return (core, prerelease) for SemVer precedence; build is dropped."""
     match = SEMVER.fullmatch(version) if isinstance(version, str) else None
     if match is None:
         raise SemVerError("not a complete SemVer 2.0 version without v prefix")
-    core = tuple(int(part) for part in match.groups()[:3])
+    core = tuple(_decimal_integer(part) for part in match.groups()[:3])
     pre = match.group(4)
     if pre is None:
         return core, None
     return core, tuple(
-        (0, int(part)) if part.isdigit() else (1, part) for part in pre.split(".")
+        (0, _decimal_integer(part)) if part.isdigit() else (1, part)
+        for part in pre.split(".")
     )
 
 

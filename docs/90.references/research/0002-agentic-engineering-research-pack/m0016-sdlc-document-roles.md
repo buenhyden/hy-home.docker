@@ -1,10 +1,10 @@
 ---
 title: "Reference: SDLC Document Roles"
-version: "1.3.0"
+version: "1.3.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-16"
 layer: "references"
 artifact_id: "RES-0002-m0016"
 parent_ids:
@@ -71,7 +71,6 @@ Minimum content/state/review choices below are **recommendations**, informed by 
 | Incident | Responders/stakeholders; actual qualifying event/change | Named incident lead; severity/impact/affected scope, timezone timestamps, observations, uncertain hypotheses, roles/actions/results/current status/next action/handoff | Event investigating/mitigating/resolved independent of document approval; corrections preserve prior evidence; retain per incident/privacy policy | Applicable Runbook used, evidence, paired Postmortem and corrective-work owner |
 | Postmortem | Owners/reviewers/future maintainers; stabilized event meets agreed criteria | One accountable owner + contributors; impact/timeline/trigger/confirmed causes/contributors, response/detection lessons, owned preventive/mitigative actions | Review causal claims/action plan; publication is not action completion; retain reviewed record and track closure separately | Incident, Requirement/ADR/SPEC/Policy/Runbook corrections and tasks/issues with verification |
 | Policy | Operators/automation/auditors; approved obligation/exception changes | Approver/domain owner; scope, obligations/prohibitions/rationale, accountable owner, enforcement/evidence, exceptions/review/expiry conditions | Approve changes and exception scope; review governing change/risk, retain accepted history | Guide explains; Runbook executes permitted procedure; Task/audit records enforcement |
-| Release evidence | Users/operators/audit consumers; actual release event | Release owner; exact artifact/version/commit, changes/known issues, actual checks/approval, target/time/rollout outcome, recovery if performed | Separate notes/readiness/package/publish/deployment; retain observed event/unavailable evidence; independent file only if approved audit need | CHANGELOG summarizes; tag/build identifies; Task records execution; Runbook owns reusable steps |
 | Runbook | Authorized operators/responders; repeatable operation/recovery | Ops owner + service/security reviewer; trigger/target/blast radius, prerequisites/permissions/approval, ordered steps, expected signals, success, safe stop, compatible rollback/recovery/escalation/evidence handoff | Review relevant environment/dependency changes; record last validated target/time/limits; expiry prompts review, not automatic execution/deletion | Policy constrains; Guide contextualizes; Incident/Task records one execution |
 
 ### Procedure, incident and release evidence boundaries
@@ -80,7 +79,16 @@ Recommendation: risky runbook steps need preconditions, bounded target, expected
 
 Incident records distinguish observed impact, estimates and hypotheses, with timezone timeline and leadership handoffs. Postmortems review contributing conditions without blame. Corrective actions need owner, priority, due date, tracking identity and measurable end state; owner-selected review cadence tracks overdue work. Publication alone does not close actions. These detailed fields are recommendations; Google examples do not impose its own priority policy on this workspace.
 
-GitHub releases package tag-based iterations with notes/assets, and tag/release dates can differ. Readiness, packaging/publication, rollout and runtime acceptance need separate facts (C-m0016-06–07). No independent Release profile is required by this research. Local operations, deployment and framework adoption are **Not assessed in this run**; [m0006](m0006-document-metadata-lifecycle.md) owns lifecycle/date semantics and [m0007](m0007-documentation-architecture.md) reader/framework composition.
+GitHub releases package tag-based iterations with notes/assets, and tag/release
+dates can differ. Readiness, packaging/publication, rollout and runtime
+acceptance need separate facts (C-m0016-06–07). For this repository, the
+[release evidence boundary](../../../../.agents/governance/documentation-protocol.md#release-evidence-boundary)
+routes reusable procedure to the Runbook, execution evidence to the current
+Task, and observed publication facts to the CHANGELOG, tag, GitHub Release
+and CI evidence. Local operations, deployment and framework adoption are
+**Not assessed in this run**. See [m0006](m0006-document-metadata-lifecycle.md)
+for lifecycle and dates and [m0007](m0007-documentation-architecture.md)
+for reader modes and framework composition.
 
 ### Purpose
 

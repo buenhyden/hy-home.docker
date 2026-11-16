@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.68.0"
+version: "1.75.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -244,6 +244,22 @@ same day adds criterion 124 and W129 in TSK-0068, and its gap audit adds
 criterion 125 and W130 in TSK-0069. The W02-DISPOSITION run of the same day
 adds criterion 126 and W131 in TSK-0070. The owner's approval of the same day
 adds criterion 127 and W132 in TSK-0071 for the root network subnets.
+The 3.0.1 W03-FORMS request adds criterion 128 and W133 in TSK-0072 for
+the W03-VERSION prerequisite, then criterion 129 and W134 in TSK-0073 for
+the remaining authoring form and reader differences in this workspace.
+The direct W04-LIFECYCLE 3.0.1 request adds criterion 130 and W135 in
+TSK-0074 for the approved draft boundary and remaining lifecycle checks.
+The direct W04-CONTENT 3.0.1 request adds criterion 131 and W136 in
+TSK-0075 for staged document claims and their implementation evidence.
+The direct W05-GATES 3.0.0 request adds criterion 132 and W137 in
+TSK-0076 for unique quality guarantees, closed evidence selection and
+measured document feedback.
+The direct W06-DELIVERY 3.0.0 request adds criterion 133 and W138 in
+TSK-0077 for exact Git delivery inputs and measured stage costs.
+The direct W07-BRIEF 3.0.0 request adds criterion 134 and W139 in
+TSK-0078 for request-bound understanding and scope checks.
+The direct W07-ADAPTER 3.0.0 request adds criterion 135 and W140 in
+TSK-0079 for native hook compatibility and evidence boundaries.
 
 ### Owning Requirements
 
@@ -1034,6 +1050,48 @@ target, backup, recovery boundary, and action-specific authorization.
      explicit subnet, which a contract test enforces, records them in
      AD-0026, and applies them by recreating only the three affected
      networks and their four containers, with each subnet read back.
+128. TSK-0072 makes the Registry and TemplateDefinition expose separate
+     contract identity and numeric version. Current document values use
+     the numeric profile, historical comparisons preserve their documented
+     precedence, and product releases retain full SemVer.
+129. After the W03-VERSION functionality is proven, TSK-0073 checks the
+     3.0.1 role purposes against the current forms and implements demonstrated
+     gaps. Authored forms and template projections distinguish real sections
+     and tables from Markdown examples. Focused checks cover conditional
+     content, relations, native formats and the retired Release document role.
+130. TSK-0074 verifies the settled draft boundary and closes demonstrated
+     lifecycle gaps. Draft authoring and scoped checks remain available.
+     Execution and acceptance use their applicable authority and evidence.
+     Effective authored documents reject unresolved author markers, and
+     structural checks do not issue approval.
+131. TSK-0075 inventories the current Stage 01, 02, 05 and 90 documents,
+     records actual read and evidence coverage per file, corrects demonstrated
+     claim mismatches in the owning documents, and retains any unmet
+     requirement with its implementation owner. Isolated command checks
+     support only the exercised behavior. Unread claims and unobserved
+     live operations stay explicit.
+132. TSK-0076 identifies the actual event, candidate, check and result
+     consumers. A small authored document change avoids unrelated validator
+     regressions. Shared immutable inputs reduce measured corpus cost while
+     keeping the document and security findings. Missing, stale or invalid
+     required execution evidence cannot close a hosted check.
+133. TSK-0077 binds installed Git checks and hosted selection to their
+     actual staged, ref and merge candidate inputs. A changed path in the
+     authenticated merge result stays selectable even if the PR head names
+     another path. Retain the required aggregate, tool isolation controls
+     and distinct main security evidence, with hosted observations scoped
+     to the inputs actually exercised.
+134. TSK-0078 binds the execution brief to the current request, workspace,
+     baseline and exact actions. Material changes invalidate dependent work.
+     Clear authorized work needs no repeated confirmation. Brief records
+     and draft references confer no execution authority. Provider limits
+     remain visible alongside observed consumption.
+135. TSK-0079 preserves the provider's lifecycle decisions on long event
+     payloads. Each registered event uses its supported interface. Both
+     providers need native delivery, allow and deny observations, including
+     unsupported output handling and reviewer permission boundaries.
+     The Task tracks the real briefing and dispatch entry points and the
+     separate capture and shared memory integration.
 
 ### Evidence Requirements
 

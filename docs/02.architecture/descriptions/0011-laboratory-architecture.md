@@ -1,10 +1,10 @@
 ---
 title: "Administration and Experimentation Architecture Description"
-version: "1.3.3"
+version: "1.3.4"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "architecture"
 artifact_id: "AD-0011"
 parent_ids:
@@ -74,7 +74,13 @@ narrow profile must not grant another tool's target or API access.
 
 #### Deployment View
 
-The root project includes four package leaves across three tiers and six service identities. `admin` selects Dozzle and RedisInsight; `admin-logs`/`admin-data` select each separately. `notebook` selects Open Notebook and nested SurrealDB, `surrealdb` only that DB. `mlops` and `data-science` select MLflow and its provisioner. JupyterLab is not in the root project: it is the standalone `labs/jupyterlab` LAB, which is not promoted (SPEC-0263 `promotion.yaml` records `kind: undecided`). Dozzle is a separate Observability leaf, not an entry in the aggregate Compose file.
+`admin` selects Dozzle and RedisInsight; `admin-logs`/`admin-data` select each
+separately. Dozzle has its own Observability Compose leaf, included by the
+root. `notebook` selects Open Notebook and nested SurrealDB in the root
+project, and `surrealdb` selects only the database. ADR-0062 plans moving both
+to a standalone LAB. `mlops` and `data-science` select MLflow and its
+provisioner. JupyterLab is the standalone `labs/jupyterlab` LAB; its promotion
+record has `kind: undecided`.
 
 ## Interfaces
 
@@ -92,7 +98,7 @@ Runtime flows are independent: selecting one narrow profile must not grant anoth
 
 ### Decision Links
 
-No current ADR governs this tier.
+- [ADR-0062 HOME Membership and Planned LABs](../decisions/0062-home-lab-membership.md)
 
 ### Quality and Risks
 

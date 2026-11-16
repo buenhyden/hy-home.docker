@@ -1,10 +1,10 @@
 ---
 title: "WARNING: manual pre-commit execution"
-version: "1.1.3"
+version: "1.1.4"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-16"
 action: "warn"
 enabled: true
 event: "bash"
@@ -38,10 +38,10 @@ None.
 
 ### Requirements
 
-Agents never run `pre-commit run` directly. The admitted
-scoped route immediately before local commit is
-`scripts/validation/run-ci-precommit.sh --mode local-staged`; server PR checks
-use its authenticated `--mode pr-merge` route.
+Agents never run `pre-commit run` directly. Use the observed installed hooks
+for an ordinary commit. When installed delivery is unconfirmed or diagnosis is
+needed, use `scripts/validation/run-ci-precommit.sh --mode local-staged`. Server
+PR checks use the authenticated `--mode pr-merge` route.
 
 **Project pre-commit policy:**
 
@@ -58,8 +58,7 @@ use its authenticated `--mode pr-merge` route.
 pre-commit run --all-files
 pre-commit run --files myfile.py
 
-# Check the reviewed index immediately before an ordinary commit.
-scripts/validation/run-ci-precommit.sh --mode local-staged
+# Let the installed hooks check the reviewed index and message.
 git commit -m "feat(scope): My change"
 ```
 

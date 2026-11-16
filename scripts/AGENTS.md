@@ -1,10 +1,10 @@
 ---
 title: "Scripts Agent Guide"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-16"
 ---
 
 # Scripts Agent Guide
@@ -78,7 +78,6 @@ next owner named there. Human-facing and related documents:
 - `python3 scripts/validation/check-script-manifest.py`
 - `python3 scripts/operations/provider_surface_renderer.py --check`
 - `python3 scripts/validation/check-agent-governance-contract.py`
-- `bash scripts/validation/run-ci-precommit.sh --mode local-staged`
 
 ### Evidence and Limits
 
@@ -90,9 +89,12 @@ delivery, remote enforcement or owner acceptance.
 
 ### Protected Actions
 
-- Never run `pre-commit run` directly. Use
-  `scripts/validation/run-ci-precommit.sh --mode local-staged` before a commit.
-  An all-files run follows the
+- Let the installed hooks check the reviewed index and message on an ordinary
+  commit when their delivery has been confirmed. If delivery is unconfirmed or
+  a diagnosis is needed, use
+  `scripts/validation/run-ci-precommit.sh --mode local-staged` for the reviewed
+  index, then commit normally. Never run `pre-commit run` directly.
+- An all-files run follows the
   [execution boundary](../.agents/governance/quality-standards.md#4-execution-boundary)
   and its `scripts/validation/run-agent-precommit-all-files.sh` route.
 - Generated provider surfaces under `.claude/` and `.codex/`, and each folder

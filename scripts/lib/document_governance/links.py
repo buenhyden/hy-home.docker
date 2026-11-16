@@ -16,6 +16,8 @@ from collections.abc import Iterable, Mapping
 from html.parser import HTMLParser
 from types import MappingProxyType
 
+from markdown_it import MarkdownIt
+
 from scripts.lib.document_governance.frontmatter import (
     FrontmatterError,
     frontmatter_record_from_text,
@@ -27,6 +29,7 @@ from scripts.lib.document_governance.operations_catalog import (
 )
 from scripts.lib.document_governance.registry import (
     FALLBACK_PROFILE_IDS,
+    DocumentRegistry,
     classify_path,
     load_registry,
 )
@@ -93,6 +96,7 @@ class DocumentLink:
     absolute: bool = False
     outside_repository: bool = False
     label: str = ""
+    title: str | None = None
 
     @property
     def decoded_target(self) -> str:
@@ -130,6 +134,7 @@ class DocumentGraph:
     nodes: tuple[DocumentNode, ...]
     links: tuple[DocumentLink, ...]
     input_findings: tuple[LinkFinding, ...] = ()
+    registry: DocumentRegistry | None = None
 
 
 @dataclasses.dataclass(frozen=True, order=True)
@@ -307,23 +312,27 @@ def _without_inline_code(line: str) -> str:
     return "".join(rendered)
 
 
-def _markdown_destinations(line: str) -> Iterable[tuple[str, str, int, int]]:
+def _markdown_destinations(
+    line: str,
+) -> Iterable[tuple[str, str, int, int, str | None]]:
     """Yield labeled destinations with angle and nested-parenthesis support."""
 
-    def consume_tail(text: str, cursor: int) -> int | None:
+    def consume_tail(text: str, cursor: int) -> tuple[int, str | None] | None:
         while cursor < len(text) and text[cursor].isspace():
             cursor += 1
         if cursor < len(text) and text[cursor] == ")":
-            return cursor + 1
+            return cursor + 1, None
         if cursor >= len(text) or text[cursor] not in "\"'(":
             return None
         delimiter = ")" if text[cursor] == "(" else text[cursor]
+        title_start = cursor + 1
         cursor += 1
         while cursor < len(text):
             if text[cursor] == "\\":
                 cursor += 2
                 continue
             if text[cursor] == delimiter:
+                title = text[title_start:cursor]
                 cursor += 1
                 break
             cursor += 1
@@ -332,7 +341,7 @@ def _markdown_destinations(line: str) -> Iterable[tuple[str, str, int, int]]:
         while cursor < len(text) and text[cursor].isspace():
             cursor += 1
         if cursor < len(text) and text[cursor] == ")":
-            return cursor + 1
+            return cursor + 1, title
         return None
 
     text = _without_inline_code(line)
@@ -350,14 +359,16 @@ def _markdown_destinations(line: str) -> Iterable[tuple[str, str, int, int]]:
             closing = text.find(">", cursor + 1)
             if closing < 0:
                 return
-            end = consume_tail(text, closing + 1)
-            if end is None:
+            tail = consume_tail(text, closing + 1)
+            if tail is None:
                 return
+            end, title = tail
             yield (
                 opening.group("label"),
                 text[cursor + 1 : closing],
                 opening.start(),
                 end,
+                title,
             )
             position = end
             continue
@@ -376,17 +387,25 @@ def _markdown_destinations(line: str) -> Iterable[tuple[str, str, int, int]]:
                             destination.split(maxsplit=1)[0],
                             opening.start(),
                             cursor + 1,
+                            None,
                         )
                     position = cursor + 1
                     break
                 depth -= 1
             elif character.isspace() and depth == 0:
                 destination = text[start:cursor]
-                end = consume_tail(text, cursor)
-                if end is None:
+                tail = consume_tail(text, cursor)
+                if tail is None:
                     return
+                end, title = tail
                 if destination:
-                    yield opening.group("label"), destination, opening.start(), end
+                    yield (
+                        opening.group("label"),
+                        destination,
+                        opening.start(),
+                        end,
+                        title,
+                    )
                 position = end
                 break
             cursor += 1
@@ -484,7 +503,7 @@ def _continued_html_lines(
                 continue
             if any(
                 begin <= start < finish
-                for _, _, begin, finish in _markdown_destinations(line)
+                for _, _, begin, finish, _ in _markdown_destinations(line)
             ):
                 continue
             _, quote, complete = _html_tag_end(line, start + 1)
@@ -499,7 +518,7 @@ def _continued_html_lines(
 
 def _link_destinations(
     lines: Iterable[tuple[int, str]],
-) -> Iterable[tuple[int, str, str]]:
+) -> Iterable[tuple[int, str, str, str | None]]:
     """Share destination syntax without changing which lines each mode reads."""
 
     lines = tuple(
@@ -507,22 +526,25 @@ def _link_destinations(
             (number, _without_inline_code(line)) for number, line in lines
         )
     )
-    references: dict[str, str] = {}
+    references: dict[str, tuple[str, str | None]] = {}
     for _, line in lines:
         definition = _REFERENCE_DEFINITION.match(line)
         if definition is not None:
             key = " ".join(definition[1].casefold().split())
-            references.setdefault(key, definition[2])
+            typed = _TITLED_DEFINITION.fullmatch(line)
+            references.setdefault(
+                key, (definition[2], _markdown_title(typed) if typed else None)
+            )
     for line_no, line in lines:
         if _REFERENCE_DEFINITION.match(line):
             continue
         tags = tuple(_html_tag_spans(line))
-        destinations: list[tuple[int, str, str]] = []
+        destinations: list[tuple[int, str, str, str | None]] = []
         newlines = tuple(index for index, char in enumerate(line) if char == "\n")
         spans = list(tags)
         inline_spans: list[tuple[int, int]] = []
         tag_index = 0
-        for label, raw, start, end in _markdown_destinations(line):
+        for label, raw, start, end, title in _markdown_destinations(line):
             while tag_index < len(tags) and tags[tag_index][1] <= start:
                 tag_index += 1
             if (
@@ -530,7 +552,7 @@ def _link_destinations(
                 and tags[tag_index][0] <= start < tags[tag_index][1]
             ):
                 continue
-            destinations.append((start, label, raw))
+            destinations.append((start, label, raw, title))
             spans.append((start, end))
             inline_spans.append((start, end))
         inline_index = 0
@@ -550,7 +572,7 @@ def _link_destinations(
             if not line[tag_start:tag_end].endswith(">"):
                 continue
             destinations.extend(
-                (tag_start, "", value)
+                (tag_start, "", value, None)
                 for value in _html_href_values(line[tag_start:tag_end])
             )
         masked = list(line)
@@ -562,14 +584,17 @@ def _link_destinations(
                 continue
             key = " ".join((use[2] or use[1]).casefold().split())
             if key in references:
-                destinations.append((use.start(), use[1], references[key]))
+                raw, title = references[key]
+                destinations.append((use.start(), use[1], raw, title))
         for match in _WIKI_LINK.finditer(remaining):
             if _is_escaped(remaining, match.start()):
                 continue
             target, separator, label = match[1].partition("|")
-            destinations.append((match.start(), label if separator else target, target))
-        for offset, label, raw in destinations:
-            yield line_no + bisect.bisect_left(newlines, offset), label, raw
+            destinations.append(
+                (match.start(), label if separator else target, target, None)
+            )
+        for offset, label, raw, title in destinations:
+            yield line_no + bisect.bisect_left(newlines, offset), label, raw, title
 
 
 def parse_local_markdown_links(
@@ -579,24 +604,60 @@ def parse_local_markdown_links(
     """Parse normalized local links from supplied Markdown without filesystem I/O."""
 
     links: list[DocumentLink] = []
-    for line_no, label, raw in _link_destinations(_unfenced_lines(text)):
-        resolved = _normalized_target(source, raw)
-        if resolved is None:
-            continue
-        target, fragment, absolute, outside = resolved
-        links.append(
-            DocumentLink(
-                source=source,
-                target=target,
-                raw_target=raw,
-                fragment=fragment,
-                line=line_no,
-                absolute=absolute,
-                outside_repository=outside,
-                label=label,
-            )
-        )
+    for line_no, label, raw, title in _link_destinations(_unfenced_lines(text)):
+        link = _local_link(source, line_no, raw, title, label=label)
+        if link is not None:
+            links.append(link)
     return tuple(links)
+
+
+def _local_link(
+    source: pathlib.PurePosixPath,
+    line: int,
+    raw: str,
+    title: str | None,
+    *,
+    label: str = "",
+) -> DocumentLink | None:
+    resolved = _normalized_target(source, raw)
+    if resolved is None:
+        return None
+    target, fragment, absolute, outside = resolved
+    return DocumentLink(
+        source=source,
+        target=target,
+        raw_target=raw,
+        fragment=fragment,
+        line=line,
+        absolute=absolute,
+        outside_repository=outside,
+        label=label,
+        title=title,
+    )
+
+
+def _links_with_commonmark(graph: DocumentGraph) -> Iterable[DocumentLink]:
+    """Retain legacy edges and supplement them with wrapped links and shortcuts."""
+    yield from graph.links
+    existing = {(link.source, link.decoded_target, link.title) for link in graph.links}
+    parser = MarkdownIt("commonmark")
+    for node in graph.nodes:
+        if "[" not in node.text:
+            continue
+        for block in parser.parse(node.text):
+            if block.map is None:
+                continue
+            for token in block.children or ():
+                if token.type != "link_open" or (raw := token.attrGet("href")) is None:
+                    continue
+                link = _local_link(
+                    node.path, block.map[0] + 1, raw, token.attrGet("title")
+                )
+                if (
+                    link is not None
+                    and (link.source, link.decoded_target, link.title) not in existing
+                ):
+                    yield link
 
 
 def _strict_relative_path(
@@ -632,8 +693,10 @@ def build_document_graph(
     paths: Iterable[pathlib.Path],
     *,
     repo_root: pathlib.Path,
+    excluded_statuses: frozenset[str] = frozenset(),
+    registry: DocumentRegistry | None = None,
 ) -> DocumentGraph:
-    """Read the supplied Markdown paths once and build a sorted local graph."""
+    """Read each path once, admitting documents by their parsed status."""
 
     root = repo_root.absolute()
     nodes: list[DocumentNode] = []
@@ -719,6 +782,9 @@ def build_document_graph(
                     error.code,
                 )
             )
+        routing_status = metadata.get("status")
+        if isinstance(routing_status, str) and routing_status in excluded_statuses:
+            continue
         nodes.append(DocumentNode(relative, text, metadata, _headings(text)))
         links.extend(parse_local_markdown_links(relative, text))
     return DocumentGraph(
@@ -736,6 +802,7 @@ def build_document_graph(
             )
         ),
         tuple(sorted(set(input_findings))),
+        registry,
     )
 
 
@@ -831,6 +898,7 @@ def _historical_operations_target(
     graph: DocumentGraph,
     nodes: Mapping[pathlib.PurePosixPath, DocumentNode],
     link: DocumentLink,
+    registry: DocumentRegistry,
 ) -> pathlib.PurePosixPath | None:
     """Resolve one moved role document for immutable historical sources only."""
 
@@ -841,7 +909,7 @@ def _historical_operations_target(
         ("operation/postmortem", "published"): "postmortem",
         ("sdlc/task", "completed"): "task",
     }.get((node.metadata.get("type"), node.metadata.get("status")))
-    if source_profile is None or classify_path(link.source) != source_profile:
+    if source_profile is None or classify_path(link.source, registry) != source_profile:
         return None
     matched = _LEGACY_FLAT_OPERATION_ROLE.fullmatch(link.target.as_posix())
     if matched is None:
@@ -854,7 +922,7 @@ def _historical_operations_target(
         for path in nodes
         if path.parent.parent == role_root
         and path.name == matched.group("name")
-        and classify_path(path) == profile
+        and classify_path(path, registry) == profile
         and _regular_target(graph, path)[0] is not None
     ]
     return candidates[0] if len(candidates) == 1 else None
@@ -931,9 +999,10 @@ def _declared_historical_rows(text: str) -> frozenset[int]:
 class _HistoricalEvidenceLinks:
     """Invocation-local immutable Git observations for missing marked links."""
 
-    def __init__(self, graph: DocumentGraph, nodes):
+    def __init__(self, graph: DocumentGraph, nodes, registry: DocumentRegistry):
         self.graph = graph
         self.nodes = nodes
+        self.registry = registry
         self.rows = {}
         self.observations = {}
         self.origins = {}
@@ -941,7 +1010,7 @@ class _HistoricalEvidenceLinks:
         self.targets = {}
 
     def _admitted_source(self, node):
-        profile = classify_path(node.path)
+        profile = classify_path(node.path, self.registry)
         source_type = {
             "research-member": "reference/research",
             "research": "reference/research-pack",
@@ -1083,7 +1152,8 @@ class _HistoricalEvidenceLinks:
                     elif (
                         link.fragment
                         and link.target.suffix == ".md"
-                        and classify_path(link.target) in {None, *FALLBACK_PROFILE_IDS}
+                        and classify_path(link.target, self.registry)
+                        in {None, *FALLBACK_PROFILE_IDS}
                     ):
                         code = "historical-evidence-target-unadmitted"
                     elif link.fragment:
@@ -1136,11 +1206,13 @@ def _reserved_spec_numbers(registry) -> frozenset[int]:
     return frozenset(space.reserved_history) if space is not None else frozenset()
 
 
-def _is_terminal_task(node: DocumentNode, registry) -> bool:
+def _is_terminal_task(
+    node: DocumentNode, registry, path_registry: DocumentRegistry | None = None
+) -> bool:
     """A Task by its Registry path profile whose own or row-derived status is
     terminal under the checked root's Registry; never without that Registry."""
 
-    if registry is None or classify_path(node.path.as_posix()) != "task":
+    if registry is None or classify_path(node.path, path_registry) != "task":
         return False
     terminal = frozenset(registry.lifecycle_terminal_statuses.get("task", ()))
     status = node.metadata.get("status")
@@ -1216,6 +1288,10 @@ _TITLED_DEFINITION = re.compile(
 _COMMIT_PINNED_URL = re.compile(r"^https://\S+/[0-9a-f]{40}(?:[/#?]|$)")
 
 
+def _markdown_title(match: re.Match[str]) -> str:
+    return next(match[name] for name in ("dq", "sq", "pq") if match[name] is not None)
+
+
 def _paragraphs(text: str) -> Iterable[tuple[int, str]]:
     """Yield each unfenced paragraph with its first line number."""
 
@@ -1238,11 +1314,7 @@ def _link_type_findings(block: str) -> Iterable[tuple[str, str]]:
     for match in matches:
         if _is_escaped(match.string, match.start()):
             continue
-        title = next(
-            value
-            for value in (match["dq"], match["sq"], match["pq"])
-            if value is not None
-        )
+        title = _markdown_title(match)
         if title not in LINK_TYPES:
             yield "link-type-unknown", title
         elif title == "evidence" and not _COMMIT_PINNED_URL.match(match["dest"]):
@@ -1266,11 +1338,7 @@ def _non_consuming_titles(node: DocumentNode) -> collections.Counter[str]:
             for match in pattern.finditer(block):
                 if _is_escaped(match.string, match.start()):
                     continue
-                title = next(
-                    value
-                    for value in (match["dq"], match["sq"], match["pq"])
-                    if value is not None
-                )
+                title = _markdown_title(match)
                 if title in LINK_TYPES - {"normative"}:
                     counts[match["dest"]] += 1
     return counts
@@ -1340,6 +1408,36 @@ def relation_lookup(
     }
 
 
+def inbound_link_lookup(
+    graph: DocumentGraph,
+    target: pathlib.PurePosixPath,
+    registry: DocumentRegistry,
+) -> dict[str, tuple[str, ...]]:
+    """Group present local references, including links with no known title."""
+    declared = registry.common["link_types"]
+    if not isinstance(declared, Mapping):
+        raise ValueError("Registry link_types must be a mapping")
+    by_type: dict[str, set[str]] = {name: set() for name in declared}
+    by_type["untitled"] = set()
+    document_paths = {node.path for node in graph.nodes}
+
+    def record(
+        source: pathlib.PurePosixPath, linked: pathlib.PurePosixPath, title: str | None
+    ) -> None:
+        if source != target and (
+            linked == target
+            or (linked not in document_paths and linked / "README.md" == target)
+        ):
+            by_type.get(title or "untitled", by_type["untitled"]).add(source.as_posix())
+
+    for link in _links_with_commonmark(graph):
+        record(link.source, link.target, link.title)
+    return {
+        f"inbound_{name}": tuple(sorted(paths))
+        for name, paths in sorted(by_type.items())
+    }
+
+
 def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
     """Validate current local links, anchors, and old templates.
 
@@ -1351,12 +1449,13 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
 
     findings: list[LinkFinding] = list(graph.input_findings)
     nodes = _node_map(graph)
-    evidence_links = _HistoricalEvidenceLinks(graph, nodes)
+    path_registry = graph.registry or load_registry()
+    evidence_links = _HistoricalEvidenceLinks(graph, nodes, path_registry)
     root_registry = None
     registry_loaded = False
     reserved: dict[str, frozenset[int]] = {}
     terminal_tasks: dict[pathlib.PurePosixPath, bool] = {}
-    for link in graph.links:
+    for link in _links_with_commonmark(graph):
         if link.absolute:
             findings.append(_finding(link, "absolute-local-link", link.raw_target))
             continue
@@ -1368,7 +1467,9 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
         resolved_target = link.target
         target_path, target_error = _regular_target(graph, resolved_target)
         if target_path is None and target_error == "missing-link-target":
-            historical_target = _historical_operations_target(graph, nodes, link)
+            historical_target = _historical_operations_target(
+                graph, nodes, link, path_registry
+            )
             if historical_target is not None:
                 resolved_target = historical_target
                 target_path, target_error = _regular_target(graph, resolved_target)
@@ -1383,11 +1484,13 @@ def check_alignment(graph: DocumentGraph) -> list[LinkFinding]:
                 if source is not None:
                     if not registry_loaded:
                         registry_loaded = True
-                        root_registry = _checked_root_registry(graph.repo_root)
+                        root_registry = graph.registry or _checked_root_registry(
+                            graph.repo_root
+                        )
                         reserved = _reserved_package_numbers(root_registry)
                     if link.source not in terminal_tasks:
                         terminal_tasks[link.source] = _is_terminal_task(
-                            source, root_registry
+                            source, root_registry, path_registry
                         )
                     if terminal_tasks[link.source] and _links_into_retired_package(
                         link, reserved
@@ -1561,13 +1664,13 @@ def check_entrypoint(graph: DocumentGraph) -> list[LinkFinding]:
         lines = tuple(_unfenced_lines(node.text, include_fenced=True))
         destinations = list(_link_destinations(lines))
         destinations.extend(
-            (number, "", match[1])
+            (number, "", match[1], None)
             for number, text in lines
             for match in re.finditer(
                 r"<((?:https?|file)://[^<>\s]+)>", _without_inline_code(text), re.I
             )
         )
-        for line, _, raw in destinations:
+        for line, _, raw, _ in destinations:
             target = _entrypoint_target(graph, node.path, raw)
             if target is not None and _STAGE_DIRECTORY.match(target.as_posix()):
                 findings.append(
@@ -1791,7 +1894,7 @@ def check_language(graph: DocumentGraph) -> list[LinkFinding]:
     Stage 98 record or a generated adapter, is not judged.
     """
 
-    registry = load_registry()
+    registry = graph.registry or load_registry()
     findings: list[LinkFinding] = list(graph.input_findings)
     for node in graph.nodes:
         profile_id = classify_path(node.path.as_posix(), registry)
@@ -1896,13 +1999,13 @@ def check_commands(graph: DocumentGraph) -> list[LinkFinding]:
 
     root = graph.repo_root
     surfaces = {entry.name for entry in root.iterdir()} if root.is_dir() else set()
-    registry = load_registry()
+    registry = graph.registry or load_registry()
     terminal_task_statuses = registry.lifecycle_terminal_statuses["task"]
     findings: list[LinkFinding] = []
     for node in graph.nodes:
         # The Registry path profile, not a self-declared `type`, makes a Task.
         if (
-            classify_path(node.path.as_posix()) == "task"
+            classify_path(node.path.as_posix(), registry) == "task"
             and _task_status(node, registry) in terminal_task_statuses
         ):
             continue

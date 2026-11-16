@@ -120,7 +120,7 @@ run_pr_merge() {
   (
     cd "$checkout"
     pre-commit run --config "$scratch/pre-commit-check.yaml" \
-      --from-ref "$PR_BASE_SHA" --to-ref "$PR_HEAD_SHA" --show-diff-on-failure
+      --from-ref "$merge_base" --to-ref "$merge_sha" --show-diff-on-failure
   )
   local child_exit=$?
   set -e

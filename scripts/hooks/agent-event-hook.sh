@@ -11,13 +11,13 @@ cd "$PROJECT_DIR"
 
 if [[ -z "$EVENT" ]]; then
   EVENT="$(
-    HOOK_INPUT="$INPUT" python3 - <<'PY'
+    python3 - 3<<<"$INPUT" <<'PY'
 import json
-import os
 
 try:
-    data = json.loads(os.environ.get("HOOK_INPUT", "") or "{}")
-except Exception:
+    with open(3, encoding="utf-8") as stream:
+        data = json.load(stream)
+except ValueError:
     data = {}
 
 print(data.get("hook_event_name", "") if isinstance(data, dict) else "")
@@ -26,19 +26,20 @@ PY
 fi
 
 session_start() {
-  HOOK_INPUT="$INPUT" python3 - "$PROJECT_DIR" "$HOOK_PAYLOAD_MODULE" <<'PY'
+  python3 - "$PROJECT_DIR" "$HOOK_PAYLOAD_MODULE" 3<<<"$INPUT" <<'PY'
 import json
-import os
 import pathlib
 import subprocess
 import sys
 
 project = pathlib.Path(sys.argv[1])
 try:
-    payload = json.loads(os.environ.get("HOOK_INPUT", "") or "{}")
-except Exception:
+    with open(3, encoding="utf-8") as stream:
+        payload = json.load(stream)
+except ValueError:
     payload = {}
 source = payload.get("source", "") if isinstance(payload, dict) else ""
+source = source if isinstance(source, str) else ""
 try:
     sys.path.insert(0, str(pathlib.Path(sys.argv[2]).resolve().parents[3]))
     import scripts.lib.hooks.folder_guides as folder_guides
@@ -85,12 +86,26 @@ Key rules:
 - Run the relevant focused checks at the planned delivery boundary.
 """
 
-if source == "compact":
-    message += """
-Context was just compacted:
-- Re-read the active Stage 03 Task before continuing; it, not memory, holds progress.
-- Preserve tracked, staged, and untracked state; do not hide unrelated work.
-"""
+if source != "startup":
+    message += (
+        "\nRe-read the active Stage 03 Task and the latest trusted request before "
+        "continuing work carried over from an earlier context. Reconcile the "
+        "repository, worktree, branch, HEAD and relevant digests, applicable request "
+        "identity and revision, authorized operation, target, scope and conditions, "
+        "any withdrawal or cancellation, and the exclusive writer and partial-result "
+        "state. If authority is unavailable, stale or mismatched, stop dependent work "
+        "and additional spending. Preserve tracked, staged, and untracked state and "
+        "keep unrelated work visible.\n"
+    )
+    if source in {"compact", "resume"} and isinstance(payload, dict):
+        from scripts.lib.hooks.request_brief import invalidate_request
+
+        invalidate_request(project, payload)
+        message += (
+            "\nReconcile any registered execution brief before the next covered "
+            "edit or delegated write. Read the current binding with "
+            "`python3 -m scripts.lib.hooks.request_brief status SESSION`.\n"
+        )
 
 try:
     if source in folder_guides.RESTART_SOURCES:
@@ -149,6 +164,16 @@ if not isinstance(tool_input, dict):
     tool_input = {}
 
 paths = list(dict.fromkeys(path for path, _ in edits))
+
+if paths and data.get("session_id"):
+    try:
+        from scripts.lib.hooks.request_brief import guard_edits
+
+        reason = guard_edits(project, data, tuple(paths))
+    except Exception:
+        deny_policy_failure("Request brief check could not run for the observed edit.")
+    if reason:
+        deny_policy_failure(reason)
 
 system_messages = []
 additional_context = []
@@ -332,7 +357,7 @@ print(json.dumps({"hookSpecificOutput": {"hookEventName": "PostToolUse",
     "additionalContext": "Post-edit validation failed; fix before committing:\n" + report}}))'
 }
 
-session_end() {
+stop_reminder() {
   python3 - "$PROJECT_DIR" <<'PY' || true
 import json
 import pathlib
@@ -370,13 +395,13 @@ PY
 }
 
 stop_retry_active() {
-  HOOK_INPUT="$INPUT" python3 - <<'PY'
+  python3 - 3<<<"$INPUT" <<'PY'
 import json
-import os
 
 try:
-    payload = json.loads(os.environ.get("HOOK_INPUT", "") or "{}")
-except (TypeError, ValueError):
+    with open(3, encoding="utf-8") as stream:
+        payload = json.load(stream)
+except ValueError:
     payload = {}
 raise SystemExit(0 if isinstance(payload, dict) and payload.get("stop_hook_active") is True else 1)
 PY
@@ -477,26 +502,33 @@ stop() {
   fi
 
   if logical_commit_stop_gate "$git_status"; then
-    session_end
+    stop_reminder
   fi
   return 0
 }
 
 user_prompt_submit() {
-  HOOK_INPUT="$INPUT" python3 - "$PROJECT_DIR" <<'PY'
+  python3 - "$PROJECT_DIR" "$HOOK_PAYLOAD_MODULE" 3<<<"$INPUT" <<'PY'
 import json
-import os
 import pathlib
 import sys
 
 project = sys.argv[1]
-raw = os.environ.get("HOOK_INPUT", "")
+with open(3, encoding="utf-8") as payload_file:
+    raw = payload_file.read()
 
 try:
     data = json.loads(raw) if raw.strip() else {}
 except Exception:
     data = {}
 
+if not isinstance(data, dict):
+    data = {}
+
+sys.path.insert(0, str(pathlib.Path(sys.argv[2]).resolve().parents[3]))
+from scripts.lib.hooks.request_brief import observe_request
+
+binding_context = observe_request(pathlib.Path(project), data)
 prompt = str(data.get("prompt", "")).lower()
 
 # Routing owns keywords only. The skill id derives the canonical path and the
@@ -641,10 +673,12 @@ matched = [
     if any(keyword in prompt for keyword in keywords)
 ]
 
-if not matched:
+if not matched and not binding_context:
     sys.exit(0)
 
-lines = ["Canonical agent function routes that may apply to this prompt:"]
+lines = [binding_context] if binding_context else []
+if matched:
+    lines.append("Canonical agent function routes that may apply to this prompt:")
 for skill_id in matched:
     entry = f"  - **{skill_id}** (`.agents/skills/{skill_id}/SKILL.md`)"
     summary = canonical_summary(skill_id)
@@ -660,13 +694,23 @@ PY
 }
 
 pre_compact() {
-  python3 - "$PROJECT_DIR" <<'PY' || true
+  python3 - "$PROJECT_DIR" "$HOOK_PAYLOAD_MODULE" 3<<<"$INPUT" <<'PY' || true
 import json
 import pathlib
 import subprocess
 import sys
 
 project = pathlib.Path(sys.argv[1])
+sys.path.insert(0, str(pathlib.Path(sys.argv[2]).resolve().parents[3]))
+from scripts.lib.hooks.request_brief import invalidate_request
+
+try:
+    with open(3, encoding="utf-8") as payload_file:
+        payload = json.load(payload_file)
+except ValueError:
+    payload = {}
+if isinstance(payload, dict):
+    invalidate_request(project, {**payload, "source": "compact"})
 
 def run(cmd, fallback="unknown", timeout=3):
     try:
@@ -708,9 +752,6 @@ PreToolUse)
   ;;
 PostToolUse)
   post_tool_use
-  ;;
-SessionEnd)
-  session_end
   ;;
 Stop)
   stop

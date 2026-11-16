@@ -1,10 +1,10 @@
 ---
 title: "Document Lifecycle Governance Architecture"
-version: "3.0.7"
+version: "3.0.8"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 layer: "architecture"
 artifact_id: "AD-0030"
 parent_ids:
@@ -92,11 +92,16 @@ Stage 01 to 03 documents use no deprecated, superseded, retired, or archived
 status; a replaced document is summarized into its owner and deleted. The occupancy branch reads per-profile terminal sets from Registry;
 standalone documents retain their existing per-document rule.
 
-Cancellation uses one pure judgment for occupancy and package validation. It
-requires reason, approver, actual approval date, and a list of criterion
-reassignments or withdrawal reasons. Reassignment stays in the package, cannot
-point to itself or another cancelled Task, and never waives completion coverage.
-An empty list records that no acceptance criterion was assigned.
+Cancellation uses one structural judgment for occupancy and package validation.
+The current Task shape requires `reason`, `authorization_ref`, and
+`criteria_disposition`. Each disposition names a criterion and either a
+`successor` or a `withdrawal_ref`. Reassignment stays in the package and cannot
+point to the same Task or another cancelled Task. The criterion keeps its
+completion obligations. An empty list records that no acceptance criterion
+was assigned. The reader checks that approval references
+resolve to unique same-Task headings with supported source labels. The current
+trusted approval is resolved through
+[Approval Boundaries](../../../.agents/governance/approval-boundaries.md#authorization-source-and-records).
 
 Retirement summarizes the removed record's still-current substance into its
 Stage 01 or Stage 02 owner's Traceability and deletes the original in the same
@@ -123,7 +128,11 @@ retain their own authorization and execution evidence requirements.
 
 ### Failure Boundaries
 
-Unsafe traversal, missing approval, and a missing, symlinked, unreadable or invalid Registry yield findings instead of exemptions. Exceeding a resource limit is a diagnostic, never an automatic retention action. A missing source object or insufficient history prevents recovering a removed body, and that limit is explicit.
+Unsafe traversal, unresolved required approval references, unsupported source
+labels, and a missing, symlinked, unreadable or invalid Registry yield findings.
+Exceeding a resource limit is a diagnostic. A missing source object or
+insufficient history prevents recovering a removed body, and the checker
+reports that limit.
 
 ## Decisions
 
@@ -138,8 +147,8 @@ Unsafe traversal, missing approval, and a missing, symlinked, unreadable or inva
 
 #### Quality Attributes
 
-- Fail closed: unsafe traversal, missing approval, and a missing, symlinked,
-  unreadable, or invalid Registry yield findings instead of exemptions.
+- Fail closed: unsafe traversal, invalid recorded approval references and
+  a missing, symlinked, unreadable or invalid Registry yield findings.
 - Derived: membership and current judgments come from the Registry and the
   selected tree rather than fixed counts or invented digest ledgers.
 - Bounded: Git reads, directory enumeration, and file data have resource limits;

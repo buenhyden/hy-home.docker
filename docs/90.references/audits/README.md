@@ -1,10 +1,10 @@
 ---
 title: "Audit Packages"
-version: "2.0.5"
+version: "2.0.6"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-16"
 layer: "references"
 created: "2026-07-02"
 ---
@@ -30,8 +30,9 @@ SPEC-0158이 이 범주를 은퇴시켰습니다. 현재 tree가 Stage 90 packag
 정의합니다: package는 README가 존재하고 자신의 Stage 99 profile을 만족할 때
 존재합니다. package는 필요한 의미를 canonical owner로 옮기고 모든 inbound consumer를
 갱신하고 이 README의 package 목록에서 제거하는 같은 변경에서 제거되어 은퇴합니다.
-archive ledger가 membership을 결정하지 않으므로 package를 은퇴시키는
-작업은 더 이상 Stage 99 개정이 아닙니다.
+현재 tree가 membership을 결정합니다. 은퇴하는 package의 번호는
+[은퇴 전제 조건](../../../.agents/governance/documentation-protocol.md#retirement-preconditions)에 따라
+같은 변경에서 Stage 99 Registry의 `reserved_history`에 추가합니다.
 
 Stage 99 identity는 여전히 한 번만 소비됩니다. 은퇴한 package의 `AUD-`
 번호는 `identity-history-regression`이 재발급을 금지하므로 다시 사용하지
@@ -79,7 +80,7 @@ Traceability를 보존합니다.
 
 ### Transition and Exit
 
-package는 모든 inbound consumer를 갱신하고 이 README의 package 목록에서 제거하는 같은 변경에서 은퇴합니다.
+같은 변경에서 inbound consumer와 목록을 갱신하고 은퇴 번호를 예약합니다.
 
 ## Related Documents
 

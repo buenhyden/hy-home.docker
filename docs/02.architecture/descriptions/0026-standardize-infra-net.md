@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "1.10.0"
+version: "1.10.1"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 layer: "architecture"
 artifact_id: "AD-0026"
 parent_ids:
@@ -64,13 +64,13 @@ networks beside it, then it left the services and the root.
 | `object_net` | 10.250.3.0/24 | `seaweedfs-s3`, Loki, Tempo, MLflow, Terrakube, bucket jobs | S3 client → object store; Iceberg client → REST catalog 8181 |
 | `seaweed_internal` | 10.250.4.0/24, internal | SeaweedFS master, volume, filer, S3 | storage-internal only |
 | `obs_net` | 10.250.5.0/24 | Prometheus, Alloy, Loki, Tempo, Pyroscope, Grafana, Alertmanager, Pushgateway, exporters, every scrape target, k6 | scrape, push, datasource queries |
-| `kafka_net` | 10.250.6.0/24 | brokers, Schema Registry, Connect, REST Proxy, kafbat UI, exporter, init | broker clients |
+| `kafka_net` | 10.250.6.0/24 | `kafka-1`, `kafka-init`, `kafka-exporter`, `kafbat-ui` | broker clients |
 | `secrets_net` | 10.250.7.0/24 | OpenBao and its agent | agent → secret store |
-| `ai_net` | 10.250.8.0/24 | Ollama, its exporter, Open WebUI, Qdrant, Open Notebook, SurrealDB, MLflow | AI clients → model, vector and tracking backends |
+| `ai_net` | 10.250.8.0/24 | Ollama, its exporter, Qdrant, Open Notebook, SurrealDB, MLflow | AI clients → model, vector and tracking backends |
 | `airflow_net`, `n8n_net`, `terrakube_net` | 10.250.10.0/24, 10.250.11.0/24, 10.250.13.0/24 | the application's own services and private stores | application-internal |
 | `mail_net` | 10.250.14.0/24 | Mailpit; no other root service joins it | SMTP capture on Mailpit 1025 |
 | `quality_otlp_net` | 10.250.17.0/24, internal | Alloy and the per-run k6 metrics relays that `metrics_relay.py` attaches | relay → authenticated Alloy OTLP receiver 4319 (SPEC-0214) |
-| `dev_data_net` | 10.250.15.0/24 | `dev-pg`, `dev-valkey`, their exporters and provision jobs, Kafka Connect, RedisInsight | development client → dev PostgreSQL/Valkey |
+| `dev_data_net` | 10.250.15.0/24 | `dev-pg`, `dev-valkey`, their exporters and provision jobs, RedisInsight | development client → dev PostgreSQL/Valkey |
 | `experience_ingress_net` | 10.250.16.0/24, internal | Traefik and Storybook | gateway → Storybook only |
 | `redisinsight_ingress_net` | 10.250.18.0/24, internal, isolated, dynamic from .128/25 | Traefik and RedisInsight (fixed .3) | gateway → RedisInsight only; no host address |
 | `<service>_ingress_net` (14) | 10.250.24.0/24–10.250.40.0/24, internal, isolated, dynamic from .128/25 | Traefik and one SSO-only backend each (SPEC-0266, ADR-0061) | gateway → that backend only |
@@ -101,6 +101,9 @@ networks beside it, then it left the services and the root.
 Every network the root defines carries an explicit subnet, which a Compose
 contract test checks. Sample projects under `examples/` declare their own
 networks and are outside this description.
+
+Open WebUI and the Kafka CDC companions use their own LAB Compose projects
+without attachment to these HOME networks.
 
 Services with no container peer (Renovate, OpenTofu) use the project default
 network. WireMock also uses it until a named consumer exists;
@@ -158,6 +161,7 @@ Internal and isolated networks keep a flow from reaching any other member, and a
 ### Decision Links
 
 - [ADR-0055 Segmented per-flow networks](../decisions/0055-segmented-per-flow-networks.md)
+- [ADR-0062 current HOME and LAB membership](../decisions/0062-home-lab-membership.md)
 
 ### Quality and Risks
 

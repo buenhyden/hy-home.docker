@@ -31,6 +31,15 @@ class ParseAndPrecedenceTests(unittest.TestCase):
         self.assertEqual(0, semver.compare_semver("1.2.3-rc.1+a", "1.2.3-rc.1+b"))
         self.assertEqual(-1, semver.compare_semver("1.2.3-rc.1+z", "1.2.3-rc.2+a"))
 
+    def test_precedence_accepts_core_and_prerelease_beyond_the_int_string_limit(
+        self,
+    ) -> None:
+        lower = "9" * 5000
+        higher = "1" + "0" * 5000
+        self.assertTrue(semver.is_numeric_version(f"{lower}.0.0"))
+        self.assertEqual(-1, semver.compare_semver(f"{lower}.0.0", f"{higher}.0.0"))
+        self.assertEqual(-1, semver.compare_semver(f"1.0.0-{lower}", f"1.0.0-{higher}"))
+
     def test_malformed_and_non_string_versions_are_refused(self) -> None:
         for bad in (
             "v1.2.3",

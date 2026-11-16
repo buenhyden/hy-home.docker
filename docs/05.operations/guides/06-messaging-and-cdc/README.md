@@ -1,10 +1,10 @@
 ---
 title: "메시징과 CDC 가이드"
-version: "0.1.1"
+version: "0.1.2"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-16"
 layer: "operations"
 ---
 
@@ -28,7 +28,7 @@ layer: "operations"
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
-| [Kafka Usage Guide](0036-kafka.md) | `GDE-0036` | 이 가이드는 OPTIONAL 이벤트 스트리밍 기능인 Kafka family의 구성, 프로파일, 접근 경계를 설명한다. 정상 root는 단일 KRaft broker와 Schema Registry, Connect, REST Proxy, Kafbat UI, |
+| [Kafka Usage Guide](0036-kafka.md) | `GDE-0036` | 루트의 선택형 단일 KRaft broker, Kafbat 관리 UI, exporter와 init을 안내한다. Schema Registry와 Connect는 별도 LAB 구성에 속한다. |
 | [05-Messaging Optimization Hardening Usage Guide](0037-messaging-optimization-hardening.md) | `GDE-0037` | 이 가이드는 05-messaging 계층의 hardening 점검 범위를 설명한다. 현재 messaging surface는 Kafka 전용이며 OPTIONAL이다. |
 
 ### Classification

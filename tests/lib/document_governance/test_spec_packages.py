@@ -2585,6 +2585,42 @@ Narrative after the registered table.
             ),
         )
 
+    def test_acceptance_criteria_read_only_markdown_outside_raw_html(self) -> None:
+        module = _spec_packages_module()
+        body = "## Acceptance Criteria\n\n<div>\n90. Example.\n</div>\n\n1. Actual.\n"
+        self.assertEqual(
+            (1,), module.acceptance_criterion_numbers(body, "Acceptance Criteria")
+        )
+        with self.assertRaises(module.SpecPackageError):
+            module.acceptance_criterion_numbers(
+                "<div>\n## Acceptance Criteria\n90. Example.\n</div>\n",
+                "Acceptance Criteria",
+            )
+
+    def test_common_section_ignores_duplicate_heading_inside_raw_html(self) -> None:
+        module = _spec_packages_module()
+        body = (
+            "## Acceptance Decision\n\n"
+            "<div>\n### Criterion Decisions\n</div>\n\n"
+            "### Criterion Decisions\n\nOwner decision goes here.\n"
+        )
+        section, level = module._contract_span(body, "Criterion Acceptance")
+        self.assertEqual(3, level)
+        self.assertIn("Owner decision goes here.", section)
+
+    def test_acceptance_criteria_keep_comment_boundaries_across_raw_html(self) -> None:
+        module = _spec_packages_module()
+        for example in (
+            "<div>\n<!--\n</div>\n\n90. Hidden.\n-->\n",
+            "Intro <!--\n<div>\n-->\n</div>\n\n",
+        ):
+            with self.subTest(example=example):
+                body = f"## Acceptance Criteria\n\n{example}1. Actual.\n"
+                self.assertEqual(
+                    (1,),
+                    module.acceptance_criterion_numbers(body, "Acceptance Criteria"),
+                )
+
     def test_common_key_resolves_the_legacy_h2_or_the_common_form_h3(self) -> None:
         module = _spec_packages_module()
         legacy = "## Work Breakdown\n1. W1: Old.\n## Verification Plan\nx\n"
@@ -6002,7 +6038,15 @@ def _handoff_task(
 class AcceptanceDecisionTests(unittest.TestCase):
     """H-W04-1: acceptance under sdlc.md 1.9.0 and the cited-evidence rules."""
 
-    def findings(self, tasks, *, plan=_TWO_UNIT_PLAN, before=(), before_plan=None):
+    def findings(
+        self,
+        tasks,
+        *,
+        spec=_generation6.SPEC,
+        plan=_TWO_UNIT_PLAN,
+        before=(),
+        before_plan=None,
+    ):
         spec_packages = _spec_packages_module()
         registry = load_current_registry()
 
@@ -6011,7 +6055,7 @@ class AcceptanceDecisionTests(unittest.TestCase):
                 pathlib.Path(_HANDOFF_ROOT),
                 "0001",
                 "example",
-                _generation6.SPEC,
+                spec,
                 members_plan,
                 tuple(members),
                 (),
@@ -6019,7 +6063,7 @@ class AcceptanceDecisionTests(unittest.TestCase):
             )
 
         evidence = spec_packages._v6_evidence_contract(
-            _generation6.SPEC, plan, tuple(tasks), registry
+            spec, plan, tuple(tasks), registry
         )
         return spec_packages._acceptance_findings(
             (package(before, before_plan or plan),) if before else (),
@@ -6027,6 +6071,37 @@ class AcceptanceDecisionTests(unittest.TestCase):
             registry,
             registry,
         )
+
+    def test_draft_package_cannot_record_a_fresh_acceptance(self) -> None:
+        task = _handoff_task(
+            _evidence_row("One", "1", "W1") + _evidence_row("Two", "1, 2", "W2"),
+            _decision_row("1", "One") + _decision_row("2", "Two"),
+            status="draft",
+        )
+        self.assertEqual((), self.findings((task,)))
+        draft = {
+            "spec": dataclasses.replace(_generation6.SPEC, status="draft"),
+            "plan": dataclasses.replace(_TWO_UNIT_PLAN, status="draft"),
+        }
+        findings = self.findings((task,), **draft)
+        self.assertEqual(
+            {"acceptance-without-approved-parents"}, {f.code for f in findings}
+        )
+        self.assertEqual((), self.findings((task,), before=(task,), **draft))
+        disposed = dataclasses.replace(
+            task,
+            body=task.body.replace(
+                _decision_row("1", "One"),
+                _decision_row("1", "-", "not-required"),
+            ),
+        )
+        self.assertNotEqual(disposed.body, task.body)
+        self.assertEqual((), self.findings((disposed,)))
+        for before in ((), (task,)):
+            with self.subTest(new=not before):
+                findings = self.findings((disposed,), before=before, **draft)
+                self.assertTrue(any("criterion 1" in f.message for f in findings))
+        self.assertEqual((), self.findings((disposed,), before=(disposed,), **draft))
 
     def test_accepted_needs_a_pass_for_every_assigned_pair(self) -> None:
         for second, expected in (
@@ -6174,6 +6249,42 @@ class AcceptanceDecisionTests(unittest.TestCase):
             supported, body=supported.body.replace("receipt", "other receipt")
         )
         self.assertEqual((), self.findings((relocated,), before=(supported,)))
+
+    def test_changed_cited_input_needs_approved_parents(self) -> None:
+        cited = _evidence_row("One", "1", "W1")
+        uncited = _evidence_row("Extra", "1", "W1")
+        task = _handoff_task(
+            cited + _evidence_row("Two", "1, 2", "W2") + uncited,
+            _decision_row("1", "One") + _decision_row("2", "Two"),
+            status="blocked",
+        )
+        review = {
+            "spec": dataclasses.replace(_generation6.SPEC, status="in-review"),
+            "plan": dataclasses.replace(_TWO_UNIT_PLAN, status="in-review"),
+        }
+        for original, correction in (
+            (cited, cited.replace("receipt", "updated receipt location")),
+            (uncited, uncited.replace("candidate A", "candidate B")),
+        ):
+            with self.subTest(row=original):
+                retained = dataclasses.replace(
+                    task, body=task.body.replace(original, correction)
+                )
+                self.assertEqual(
+                    (), self.findings((retained,), before=(task,), **review)
+                )
+
+        changed = dataclasses.replace(
+            task,
+            body=task.body.replace(cited, cited.replace("candidate A", "candidate B")),
+        )
+        self.assertEqual((), self.findings((changed,), before=(task,)))
+        findings = self.findings((changed,), before=(task,), **review)
+        self.assertEqual(
+            [("acceptance-without-approved-parents", task.path.as_posix())],
+            [(finding.code, finding.path) for finding in findings],
+        )
+        self.assertIn("criterion 1", findings[0].message)
 
     def test_a_work_unit_newly_assigned_to_the_criterion_needs_its_pass(self) -> None:
         # W2 carries only criterion 2 in the base Plan, then criterion 1 as well.
@@ -6428,6 +6539,65 @@ class ParentAuthorityBranchTests(unittest.TestCase):
                 ):
                     self.authority(spec, "cancelled")
         self.authority("cancelled", "cancelled")
+
+    def test_new_task_or_item_closure_needs_approved_parents(self) -> None:
+        module = _spec_packages_module()
+        registry = load_current_registry()
+        for status, items in (
+            ("completed", ()),
+            (
+                "blocked",
+                (
+                    ("A", "W1", "First", "@owner", "completed", "-"),
+                    ("B", "W2", "Second", "@owner", "blocked", "Waiting"),
+                ),
+            ),
+        ):
+            with self.subTest(status=status):
+                task = _handoff_task("", None, status=status, items=items)
+                edges = (
+                    (("ready", "in-progress"), ("in-progress", "completed"))
+                    if status == "completed"
+                    else (("ready", "blocked"),)
+                )
+                event_rows = "".join(
+                    f"| {task.artifact_id} | {before} | {after} | #execution |\n"
+                    for before, after in (("draft", "ready"), *edges)
+                )
+                task = dataclasses.replace(
+                    task,
+                    body=task.body
+                    + (
+                        "\n## Work Log\n\n### Execution\n\nResult recorded.\n\n"
+                        "### Lifecycle Events\n\n| Artifact | From | To | Evidence |\n"
+                        "| --- | --- | --- | --- |\n" + event_rows
+                    ),
+                )
+                package = module.SpecPackage(
+                    pathlib.Path(_HANDOFF_ROOT),
+                    "0001",
+                    "example",
+                    dataclasses.replace(_generation6.SPEC, status="draft"),
+                    dataclasses.replace(_TWO_UNIT_PLAN, status="draft"),
+                    (task,),
+                    (),
+                )
+                approved = dataclasses.replace(
+                    package, spec=_generation6.SPEC, plan=_TWO_UNIT_PLAN
+                )
+                empty = dataclasses.replace(package, tasks=())
+                empty_approved = dataclasses.replace(approved, tasks=())
+
+                def codes(base, candidate):
+                    findings, _ = module._validate_task_lifecycle_events(
+                        (base,), (candidate,), registry
+                    )
+                    return {finding.code for finding in findings}
+
+                code = "completion-without-approved-parents"
+                self.assertEqual({code}, codes(empty, package))
+                self.assertEqual(set(), codes(package, package))
+                self.assertEqual(set(), codes(empty_approved, approved))
 
     def test_a_cancelled_spec_needs_a_cancelled_plan_and_terminal_tasks(self) -> None:
         spec_packages = _spec_packages_module()

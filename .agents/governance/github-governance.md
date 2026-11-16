@@ -1,10 +1,10 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.10.0"
+version: "1.10.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 ---
 
 # GitHub Governance Policy
@@ -242,11 +242,13 @@ change impact and immutable Action provenance. The generic focused checker
 compares workflow definitions to that one typed source instead of maintaining
 another copied job/action census.
 
-The PR candidate invokes `changed` in shard jobs, each selecting its own
-leaves, with read-only permissions and validated base/head context. One
-aggregate job named `candidate-quality`, the required check, needs every shard
-and fails unless each one succeeded, so a skipped, cancelled or missing shard
-never reads as a pass. No feature-push, title-edit or main full-profile rerun
+The PR candidate invokes `changed` in shard jobs with read-only permissions
+and validated merge, base and head context. Routing uses the same selector
+to start the document shard only when it has leaves, while core starts
+independently. The required `candidate-quality` aggregate needs routing and
+every shard. It accepts a skipped document shard only after successful routing
+explicitly selects no leaves and the shard supplies no execution output. A
+missing, failed, cancelled or contradictory result fails the aggregate. No feature-push, title-edit or main full-profile rerun
 is registered: with merge commits only and strict up-to-date protection, the
 merged tree is the tree the candidate checked, and pull request titles never
 become commit subjects. The separate main security job writes only its SARIF result. Release

@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "5.1.0"
+version: "7.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 ---
 
 # Documentation Protocol
@@ -209,12 +209,8 @@ its hosted CI route is not wired yet. Existing links are not retyped by this rul
    carries the `family/kind` document role, so a reader learns a document's
    family without resolving its path. `title` never repeats the artifact
    identity, because the identity is already a field. A new document starts its
-   `version` at `0.1.0`; approval of its first stable contract promotes it to
-   `1.0.0`. Patch, minor, and major increments communicate compatible correction,
-   compatible meaning growth, and incompatible contract change respectively.
-   Below `1.0.0` a breaking or feature change raises the minor and a
-   compatible correction the patch; `1.0.0` marks the owner's explicit
-   approval of a stable contract, never a renumbering. A changed document's
+   `version` at `0.1.0`. Choose the increment under
+   [Version objects](#version-objects). A changed document's
    `version` has higher numeric precedence than the same path at the merge
    base: `check-document-metadata.py --mode check-changed` reports
    `version-unchanged` for equal precedence and `version-downgrade` for lower
@@ -492,13 +488,40 @@ and the Compatibility surface is what its consumers depend on, so a change
 there decides the increment. A product version rises only with its own
 product's change; a documentation change raises no other object's version.
 
+For a versioned document or contract, review the proposed change against the
+prior valid producers and consumers. Include required keys, sections, table
+columns, relations, lifecycle states, meaning, diagnostics and output shape
+when they are part of the contract.
+
+- **MAJOR** when a prior valid producer or consumer breaks. Reset MINOR and
+  PATCH to zero. Moving all consumers together still requires a MAJOR increase
+  if the old interface breaks.
+- **MINOR** for a compatible addition. Reset PATCH to zero.
+- **PATCH** for a correction that preserves the consumer contract.
+
+The same rules apply to `0.x` versions. Apply them to the proposed
+content before submitting that revision for approval. Record the owner's
+approval of that revision through the document's lifecycle. An
+approval limited to lifecycle metadata keeps the content version.
+
+Record the affected consumer and the compatibility evidence in the current
+Task. An accepted contract change receives its own revision. A new
+observation follows the document content rule, and a lifecycle-only edit
+follows the lifecycle exception.
+
+The numeric grammar is authored in `semver.py`. The standalone Stage 99
+schemas mirror it for schema consumers. The Registry regression checks
+the copies against the Python grammar, including rejection of a final newline.
+
 | Object ID | Version field | Current value | Rule | Canonical source | Producer | Consumers | Compatibility surface | Deploy unit |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `document-content` | frontmatter `version` | per document | Numeric value; the rule above, checked by `check-document-metadata.py --mode check-changed` | The document's own frontmatter | The document's writer | `contracts/document-frontmatter.schema.json`, metadata validator | The keys, sections, tables, states and link directions its profile's consumers read | The document |
 | `new-document-start` | Registry `common.template_initial_version` | `0.1.0` | Numeric value | `docs/99.templates/registry.json` | Stage 99 owner | Profile schema, template checks | The first version a new document carries | The Registry |
-| `common-form-contract` | Registry `common.common_form_contract` | `COMMON-DOC-FORM-1/1.0.0` | Contract ID, `/`, numeric version, as the shared contract writes it | `docs/99.templates/registry.json` | Stage 99 owner, adopting the shared contract | `template_definition.py` | The common H1, H2 and H3 form and the empty-section rule | The shared contract, adopted per workspace |
+| `common-form-contract` | Registry `common.common_form_contract.contract_version` | `1.0.0` | Numeric version; `contract_id` holds `COMMON-DOC-FORM-1` separately | `docs/99.templates/registry.json` | Stage 99 owner, adopting the shared contract | `template_definition.py` | The common H1, H2 and H3 form and the empty-section rule | The shared contract, adopted per workspace |
+| `legacy-form-contract` | Registry `common.contract_version` | `1.0.0` | Numeric version; `common.contract_id` holds the existing legacy identity | `docs/99.templates/registry.json` | Stage 99 owner | `template_definition.py` | The legacy form for roles without common subsections | The Registry |
+| `template-definition-projection` | Stage 99 projection schema | `2.0.0` | Major change for the split output fields | `docs/99.templates/contracts/template-definition.schema.json` | Stage 99 owner | `template_definition.py`, body validator | The projected role definition, including the identity and version fields | Stage 99 template definitions |
 | `vocabulary-contract` | Registry `common.vocabulary_contract.version` | `3.0.1` | Numeric value; the first adoption, from package label `v14.5`, is 1.0.0, by the owner's decision recorded in SPEC-0212 TSK-0064; the owner approved adopting the shared 3.0.1 on 2026-11-15 (SPEC-0212 TSK-0068), and `source_label` names the adopted source | `docs/99.templates/registry.json` | Glossary owner | Glossary `Contract Version` column, `vocabulary_contract_findings` | The common Term IDs, names, order and meanings | The shared contract, adopted per workspace |
-| `registry-serialization` | Registry `schema_version` | `1` | The Registry Schema Version, kept an integer by the same decision because its only consumer, the profile schema, pins `const: 1`; a breaking structure change raises it | `docs/99.templates/registry.json` | Stage 99 owner | Profile schema, `registry.py` | The JSON structure the profile schema and `registry.py` read | The Registry |
+| `registry-serialization` | Registry `schema_version` | `2` | Integer format epoch; the profile schema pins the current epoch and Git revisions use their committed schema | `docs/99.templates/registry.json` | Stage 99 owner | Profile schema, `registry.py` | The JSON structure the profile schema and `registry.py` read | The Registry |
 | `product-release` | release version, tagged as `v` plus the version, and CHANGELOG | per release | SemVer, checked by `scripts/operations/release.py` against the published releases and tags; the `v` belongs to the tag, not the value; no backport | `CHANGELOG.md` dated heading, then the tag | The release workflow, through `release.py` | Release Runbook and the release workflow | The repository's published release | One tagged release |
 | `product-opsflow-smtp` | `version` in `package.json` | `0.1.0` | SemVer value, checked by `check-document-metadata.py --mode check-changed`; `package-lock.json` mirrors it | `infra/07-workflow/n8n/workloads/manifest-outbox-notifier/nodes/OpsflowSmtp/package.json` | The node package's maintainer | npm, `package-lock.json` | The n8n node's parameters, credentials and outputs | The n8n community node package |
 | `product-hermes-publisher` | `version` in `pyproject.toml` | `1.0.0` | SemVer value, checked by `check-document-metadata.py --mode check-changed` | `infra/07-workflow/n8n/workloads/hermes-blog-ingestion/pyproject.toml` | The workload's maintainer | The Python build backend; installation reads only `requirements.lock` | The publisher's command line and the payloads it reads and writes | The hermes-blog-ingestion workload |

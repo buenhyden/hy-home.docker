@@ -1,10 +1,10 @@
 ---
 title: "Software Development Lifecycle"
-version: "1.11.0"
+version: "2.0.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 ---
 
 # Software Development Lifecycle
@@ -125,6 +125,25 @@ completion follows the Task's criteria, evidence and acceptance. An unrelated
 draft never blocks independent work. The Spec Package reader enforces the
 Task rule above; for other families this rule is enforced by review, not by
 a check.
+
+Before execution or resumption, the controller uses
+[Approval Boundaries](approval-boundaries.md#authorization-source-and-records)
+to check that the latest trusted authorization covers the applicable request
+revision, target, scope and conditions. Reconcile any material change,
+expiration or withdrawal before continuing dependent work. An unchanged
+authorized scope uses its existing approval.
+
+A new Task or item completion or a new `accepted` or `not-required` criterion
+disposition in a Spec Package needs approved Spec and Plan parents.
+A later review of a parent preserves already
+recorded dispositions. Authorized draft preparation records its own result
+in the Task that owns that work, with no change to the draft's authority.
+
+An authored document entering or retaining `approved`, `active` or
+`accepted` status must resolve explicit TODO and TBD author markers in visible
+prose. Draft and review authoring, registered copy templates and illustrative
+code or quotes keep their own validation boundaries. The metadata body
+validator checks the authored content. Approval and execution remain separate.
 
 Execution state has one owner. A single-mode Task keeps one frontmatter
 `status`. A multi-item Task has an `Execution Items` table under Work Performed

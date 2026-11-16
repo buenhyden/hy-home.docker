@@ -1,10 +1,10 @@
 ---
 title: "Messaging Tier (05-messaging) Requirements"
-version: "1.3.1"
+version: "1.3.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-16"
 layer: "requirements"
 artifact_id: "REQ-0006"
 created: "2026-03-26"
@@ -18,10 +18,10 @@ created: "2026-03-26"
 
 Direct calls between components do not scale and risk data loss and reduced
 availability. The messaging tier (`05-messaging`) of `hy-home.docker` lowers
-that coupling with event streaming on Apache Kafka: a broker, schema
-management, a connector boundary, an HTTP access path and metrics. Streaming
-SQL processing on top of Kafka is an optional capability of the lakehouse LAB
-(SPEC-0262), not of this tier.
+that coupling with event streaming on Apache Kafka. The HOME placement provides
+the broker, authenticated web administration and metrics. The separate Kafka
+LAB owns schema management and the connector boundary. Streaming SQL on Kafka
+belongs to the optional lakehouse LAB (SPEC-0262).
 
 ### Stakeholders
 
@@ -38,14 +38,17 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 ### In Scope
 
-- A single Kafka broker in KRaft mode with replication factor 1,
-  schema management, the connector boundary, the HTTP access path, the
-  management UI, and broker and consumer metrics.
+- HOME: a single Kafka broker in KRaft mode with replication factor 1,
+  topic initialization, authenticated HTTP management and broker and consumer
+  metrics.
+- Kafka LAB: the separate three-broker topology, schema management and the
+  connector boundary.
 
 ### Constraints and Exclusions
 
-- **Owned elsewhere**: The three-broker training topology is the
-  `kafka-cluster` LAB.
+- **Approved placement**: The `kafka-cluster` LAB hosts the training topology,
+  Schema Registry and Kafka Connect. The broker REST proxy was removed from
+  HOME under [ADR-0062](../02.architecture/decisions/0062-home-lab-membership.md).
 - **Out of Scope**: Producer and consumer logic inside individual services,
   and external cloud messaging services.
 - **Non-goals**: Permanent data storage, which the data tier owns.
@@ -85,17 +88,23 @@ RabbitMQ broker is implemented, and is not reused.
 - **REQ-0006-FR-0001**: The root model declares exactly one KRaft broker with
   replication factor 1 and renders without error when the messaging profile is
   selected; the three-broker topology renders only as its own LAB project.
-- **REQ-0006-FR-0003**: Schema management and the connector service render
-  with their secrets and health checks when their profiles are selected.
+- **REQ-0006-FR-0003**: The isolated Kafka LAB renders schema management and
+  the connector service with health checks and its own broker dependencies.
+  A source connector requires separate approved inputs and execution evidence.
 - **REQ-0006-FR-0004**: The management UI requires a login through the
   platform's OIDC identity provider.
-- **REQ-0006-FR-0005**: The HTTP access path and the exporter render, and the
-  broker and consumer metrics are declared as observability scrape targets.
-  Live scrape success is claimed only with runtime evidence.
+- **REQ-0006-FR-0005**: The HOME HTTP management route and exporter render,
+  and observability declares broker and consumer metrics scrape targets.
+  Live access and scrape success require separate runtime evidence.
 
 ### Verification Method
 
-Each condition is judged by reviewing the rendered Compose configuration for the broker, schema, UI and metrics declarations it names, and live scrape success is judged by a runtime observation. No current Spec Package cites REQ-0006; a Spec that implements it records the evidence in its Task. The evidence is the rendered-configuration review and the scrape observation, recorded in that Task. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+Review the selected HOME and LAB Compose configurations separately for the
+broker, schema, UI and metrics declarations. Record live authentication,
+connector execution and scrape observations separately in the implementing
+Task. The owner named in the frontmatter, @buenhyden, judges each condition
+from the applicable evidence and accepts the requirement once every condition
+is met.
 
 ## Traceability
 

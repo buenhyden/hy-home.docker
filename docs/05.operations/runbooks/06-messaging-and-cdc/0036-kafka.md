@@ -1,10 +1,10 @@
 ---
 title: "Kafka Runbook"
-version: "1.4.3"
+version: "1.4.4"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "RUN-0036"
 parent_ids:
@@ -19,16 +19,16 @@ next_review_at: "2027-05-13"
 
 ### Trigger and Outcome
 
-이 런북은 Kafka family의 정적 진단, CDC connector 수명주기, 계획된 백업·복제 캡처, 격리 복원 절차를 다룬다. 정상 대상은 단일 broker이고, 다중 broker LAB은 별도 실행 계약을 따른다.
+이 런북은 HOME 단일 Kafka broker의 정적 진단과 계획된 백업·복제 캡처·격리 복원을 다룬다. 독립 LAB의 Schema Registry와 Connect는 LAB 런북을 따른다.
 
 - Kafka family source나 profile 변경의 정적 진단이 필요할 때
 - `KafkaBrokerDown`, `KafkaConsumersGroupLag`, `KafkaTopicUnderReplicatedPartition` 경보가 발생했을 때
-- CDC connector 등록·재동기화나 승인된 백업·격리 복원을 계획할 때
+- 승인된 백업·격리 복원을 계획할 때
 
 ### Scope
 
-- Runtime source: [Kafka Compose](../../../../infra/05-messaging/kafka/docker-compose.yml)
-  및 [Connect image Dockerfile](../../../../labs/kafka-cluster/connect/Dockerfile).
+- HOME 선언은 [Kafka Compose](../../../../infra/05-messaging/kafka/docker-compose.yml)에 있다.
+- LAB 진단과 HOME의 이전 Connect·Schema Registry 퇴역은 [RUN-0108](../15-labs/0108-kafka-cluster.md)을 따른다.
 - Artifact: `RUN-0036`; parent guide: `GDE-0036`.
 - 날짜가 기록된 verification record가 실행 사실을 명시하지 않는 한 절차는 계획 상태다.
 
@@ -56,24 +56,25 @@ next_review_at: "2027-05-13"
 ```bash
 docker compose --env-file .env.example --profile messaging config --quiet
 docker compose --env-file .env.example --profile messaging config --services
-docker compose --env-file .env.example --profile cdc config --quiet
-LAB_DATA_DIR=/tmp/hyhome-lab-kafka-synthetic LAB_KAFKA_CLUSTER_ID=MkU3OEVBNTcwNTJENDM2Qk docker compose --env-file labs/.env.example -f labs/kafka-cluster/docker-compose.yml --profile lab-kafka config --quiet
 ```
 
-`messaging`이 선택하는 정상 서비스 7개(`debezium-db-provision`은 `cdc`에서만 선택)와 LAB 서비스 5개의 분리, 별도 cluster ID·broker volume·network,
-정상 `kafka_net`과 LAB `lab_kafka_net`, health check, Kafbat native OIDC
-secret/config, PLAINTEXT 경계를 확인한다. 정상 `kafka-init`은 RF1이며
-LAB `lab-kafka-init`은 세 broker에 RF3이다. 정적 render는 실제 준비 상태를
-증명하지 않는다.
+`messaging`은 `kafka-1`, `kafbat-ui`, `kafka-exporter`, `kafka-init`을 선택한다.
+`kafka_net`, health check, Kafbat native OIDC secret/config와 PLAINTEXT 경계를
+확인한다. `kafka-init`의 토픽 복제 계수는 1이다. 정적 render는 실제 준비 상태를
+증명하지 않는다. LAB의 일곱 서비스와 독립 project는 RUN-0108의 Static check를 따른다.
 
-#### CDC connector lifecycle
+#### CDC source boundary
 
-1. 전제조건: `dev-platform-provision`과 `debezium-db-provision`이 각각 `0`으로 종료되고, `dev-pg/platform_dev`의 `wal_level=logical`, 권한·publication·heartbeat 범위를 별도 검증한다. Connect의 secret provider와 PostgreSQL plugin 준비 상태도 확인한다.
-2. 새 connector JSON은 `dev-pg/platform_dev`, `hyhome_platform_publication`, `hyhome_platform_slot`, topic prefix `hyhome.platform`을 선언한다. 기존 `mng-pg/app_db`의 slot·publication·topic·offset을 재사용하지 않는다. 등록과 snapshot은 승인된 runtime 변경이며 현재 NOT_RUN이다.
-3. 승인된 등록 이후 `GET /connectors/<approved-name>/status`에서 connector/task `RUNNING`, snapshot 완료, 승인된 테스트 변경의 `hyhome.platform.*` topic 도착을 각각 확인한다. JSON 파일 존재나 등록 성공만으로 CDC PASS라고 기록하지 않는다.
-4. `dev-pg`의 `pg_replication_slots`에서 `hyhome_platform_slot`의 `active`, `wal_status`, `confirmed_flush_lsn` 지연과 WAL 디스크 여유를 확인한다. `wal_status=lost`이면 snapshot/offset 복구 계획 없이 slot만 재생성하지 않는다.
-5. maintenance pause 중에도 slot이 WAL을 유지한다. 재동기화에는 downstream 경계, 새 snapshot, 중복 처리와 rollback을 함께 승인받는다. secret rotation도 별도 승인과 소비자 재시작 검증이 필요하다.
-6. 격리 시험은 `HYHOME_CDC_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.CdcStreamRehearsalTests`로 한다. 내부 network에 합성 데이터만 쓰는 dev-pg·Kafka·Schema Registry·Connect를 띄우고 다음을 확인한다. 추적 중인 provisioning SQL과 connector JSON이 그대로 동작하는지, Properties 특수문자와 비ASCII가 든 비밀번호로 인증하는지, snapshot과 stream 행이 Avro로 decode되는지, 열 추가가 schema version 2가 되는지, worker 재시작 뒤 중복 snapshot 없이 offset에서 이어지는지, heartbeat가 행을 쓰고 slot을 전진시키는지. topic은 partition 3개라 순서는 key 단위로만 보장된다. 2026-10-08에 통과했다(약 260초).
+[ADR-0062의 Kafka CDC 개정](../../../02.architecture/decisions/0062-home-lab-membership.md#amendment-of-2026-11-10-kafka-cdc-kafka-connect-and-schema-registry)으로
+HOME에서 `cdc` profile, `debezium-db-provision`, connector sample, 기능 SQL과 secret renderer를 제거했다.
+LAB에는 Registry와 Connect가 있지만 connector, source DB, credential이 선언되어 있지 않다.
+실제 CDC가 필요하면 별도 승인 범위에서 source·publication·slot·topic·offset·credential·rollback을
+정의하고 등록, 연결, snapshot, stream, WAL 유지와 정리 경계를 검증한다. 예전 HOME 위치나 운영 slot을
+그대로 재사용하지 않는다.
+
+2026-10-08의 합성 CDC rehearsal은 이전 토폴로지의 snapshot·stream Avro decode,
+schema version 변경, 재시작 후 offset 재개와 heartbeat를 약 260초에 검증했다(SPEC-0204-TSK-0005 W15).
+해당 테스트와 입력은 현재 HOME에서 제거되었다. 이 기록은 현재 HOME 또는 LAB connector 준비 증거가 아니다.
 
 #### Planned backup or replication capture
 
@@ -85,9 +86,10 @@ LAB `lab-kafka-init`은 세 broker에 RF3이다. 정적 render는 실제 준비 
 3. 승인된 메커니즘을 사용해 사용자 topic record를 별도의 호환 Kafka
    target으로 복제/재생한다. partition별 source와 target의 end offset을
    검증하고, 데이터 format이 지원하는 경우 개수/checksum을 기록한다.
-4. serialized 데이터가 요구하는 schema subject, version, ID를 보존하는 공식
+4. schema 의존 데이터가 범위에 있으면 해당 Registry를 별도 식별한다. serialized 데이터가 요구하는
+   schema subject, version, ID를 보존하는 공식
    호환 절차로 Schema Registry 이력을 마이그레이션한다.
-5. secret 없이 Connect connector 정의를 export하고 호환되는 지원 방법으로
+5. connector가 승인 범위에 포함되면 secret 없이 Connect connector 정의를 export하고 호환되는 지원 방법으로
    config/offset/status 상태를 보존한다. 각 외부 시스템을 어떻게 조정할지
    기록한다.
 6. manifest와 export된 데이터를 별도의 암호화된 destination에서 보호한다.
@@ -97,17 +99,15 @@ LAB `lab-kafka-init`은 세 broker에 RF3이다. 정적 render는 실제 준비 
 
 1. 호환 버전에서 새 cluster identity를 가진 network-isolated Kafka target을
    준비한다. 외부 producer, consumer, connector는 차단된 상태로 유지한다.
-2. topic configuration과 partition 개수를 재생성한다. 여기 의존하는 record를
-   로드하기 전에 schema/ID를 복원한다.
+2. topic configuration과 partition 개수를 재생성한다. schema에 의존하는 record는
+   승인 범위의 schema/ID 복원 뒤에 로드한다.
 3. topic record를 재생/복제하고 모든 partition의 예상 end offset, 샘플
    key/value/checksum, retention 동작을 검증한다.
 4. consumer offset을 복원하거나 의도적으로 재배치하며, replay나 건너뛴
-   범위를 문서화한다. 보호된 custody에서 가져온 credential로 connector
-   정의를 재생성한다. offset/status 상태를 검증하는 동안 connector는 일시
-   중지 상태로 유지한다.
-5. disposable producer/consumer schema-호환 테스트를 실행한다. connector는
-   격리된 test endpoint에 대해서만 재개하고 idempotency/reconciliation을
-   검증한다.
+   범위를 문서화한다. connector 복원이 승인 범위에 있으면 보호된 custody에서 가져온
+   credential로 정의를 재생성한다. offset/status 검증 중에는 connector를 중지한다.
+5. disposable producer/consumer로 적용되는 schema 호환성을 확인한다. 범위에 포함된
+   connector는 격리된 test endpoint에 대해서만 재개하고 idempotency/reconciliation을 검증한다.
 6. 관측된 recovery point, 소요 시간, gap을 기록한다. 별도 cutover task가
    source 쓰기를 fence하고, 최종 delta를 캡처하고, client를 전환하고,
    rollback을 보존한다. live KRaft cluster ID를 재사용하지 않는다.
@@ -127,9 +127,9 @@ replication slot을 소비하게 되기 때문이다. rehearsal stack은 제거�
 
 #### Execution and stop boundary
 
-정상 대상은 replication factor 1의 단일 broker `kafka-1`이며 broker 장애 내성이 없다: `debezium-db-provision`, `kafbat-ui`, `kafka-1`, `kafka-connect`, `kafka-exporter`, `kafka-init`, `schema-registry`. 독립 LAB 대상: `lab-kafka-1/2/3`, `lab-kafka-exporter`, `lab-kafka-init`(실행 계약은 [Kafka LAB 안내](../../../../labs/kafka-cluster/README.md)). 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
+HOME의 replication factor 1 토픽에는 broker 장애 내성이 없다. 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
 
-기동/정지는 [GDE-0099](../../guides/01-common/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
+기동/정지는 [GDE-0099](../../guides/01-common/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 재기동한다. 토픽을 생성하는 `kafka-init`은 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
 
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 

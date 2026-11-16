@@ -1,10 +1,10 @@
 ---
 title: "Data Tier (04-data) Architecture Description"
-version: "1.3.2"
+version: "1.3.3"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "architecture"
 artifact_id: "AD-0004"
 parent_ids:
@@ -86,13 +86,17 @@ in management databases. No automatic ingestion pipeline exists.
 The root Compose includes every `infra/04-data` package; profiles select them:
 `mng-db` by `mng`, `core`, `dev` and `local` (`mng-pg` also by `mlops`,
 `data-science`, `contract-testing` and `bi`); `dev-db` by `dev-data`,
-`analytics-engineering`, `cdc` and `quality-results`; `seaweedfs` by
+`analytics-engineering` and `quality-results`; `seaweedfs` by
 `seaweedfs`, `storage`, the observability storage profiles, `mlops`,
 `data-science` and `lakehouse`; `qdrant` by `ai`, `ai-llm` and `qdrant`;
 `neo4j` by `graph`; `opensearch` by `opensearch`; `redisinsight` by `admin`
 and `admin-data`. LAB entrypoints are separate projects, excluded even from
 root `--profile '*'`, with their own network, state and credential contracts.
 POL-0078 owns the profile vocabulary.
+
+The root still declares Neo4j and single-node OpenSearch as optional packages.
+ADR-0062 records the planned Neo4j LAB move and single-node OpenSearch
+retirement. The existing OpenSearch cluster LAB is a separate project.
 
 ## Interfaces
 

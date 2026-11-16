@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Guide"
-version: "0.4.2"
+version: "0.4.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "GDE-0081"
 parent_ids:
@@ -22,7 +22,8 @@ next_review_at: "2027-05-13"
 
 ### Outcome
 
-ComfyUI는 `ai`와 `ai-image`가 선택하는 상시 실행 HOME 이미지 워크플로 UI이다.
+ComfyUI는 현재 루트 Compose에서 `ai-image`로 선택하는 이미지 워크플로 UI이다.
+HOME 기본 선택에는 포함되지 않으며 별도 LAB 이동은 아직 적용되지 않았다.
 root Compose가 [해당 구현](../../../../infra/08-ai/comfyui/docker-compose.yml)을
 포함하며 이 서비스는 Traefik을 거쳐 도달한다. 기본 Compose는 host port를
 게시하지 않고, loopback 포트는 유지보수 overlay에서만 생긴다. `gateway-standard-chain@file,sso-errors@file,sso-auth@file`이 공개

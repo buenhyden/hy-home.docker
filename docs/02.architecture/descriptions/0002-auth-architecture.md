@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Architecture Description"
-version: "1.6.4"
+version: "1.6.5"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "architecture"
 artifact_id: "AD-0002"
 parent_ids:
@@ -46,7 +46,11 @@ its hardening substance is owned by ADR-0017.
 
 ### Context
 
-Browsers reach Keycloak-backed services through `01-gateway` (Traefik). Keycloak stores state in `mng-pg` and OAuth2 Proxy sessions live in `mng-valkey` (`04-data`), as the diagram under Building Blocks shows.
+Browsers reach HOME's Keycloak-backed services through `01-gateway` (Traefik).
+Keycloak stores state in `mng-pg` and OAuth2 Proxy sessions live in
+`mng-valkey` (`04-data`), as the diagram under Building Blocks shows.
+The standalone Open WebUI LAB reaches Keycloak through its configured issuer
+and has its own browser entrypoint.
 
 ### Constraints
 
@@ -78,13 +82,17 @@ graph TD
 ```
 
 - **ForwardAuth** (`gateway-standard-chain@file,sso-errors@file,sso-auth@file`):
-  Flower, n8n, Prometheus, Loki, Tempo, Alloy, Alertmanager, Pushgateway,
-  Pyroscope, cAdvisor, Qdrant, RedisInsight, ComfyUI, Ollama, MLflow, Schema
-  Registry, Kafka Connect, Terrakube and the Mailpit UI.
-- **Native OIDC** (`gateway-standard-chain@file` only, application performs
+  Flower, Prometheus, Loki, Tempo, Alloy, Alertmanager, Pushgateway,
+  Pyroscope, cAdvisor, Qdrant, RedisInsight, ComfyUI, Ollama, MLflow,
+  Terrakube and the Mailpit UI. Some routes add an allowlist.
+- **HOME native OIDC** (`gateway-standard-chain@file` only, application performs
   OIDC with Keycloak): Airflow (`KeycloakAuthManager` with Authorization
-  Services), Kafbat UI, Open WebUI, Grafana, Gatus and OpenBao. Dozzle also uses
+  Services), Kafbat UI, Grafana, Gatus and OpenBao. Dozzle also uses
   native OIDC behind an admin IP allow list.
+- **Application login:** n8n uses the gateway standard chain and its own login.
+- **Standalone LAB:** Open WebUI uses native Keycloak OIDC with no Traefik
+  route. Schema Registry and Kafka Connect have LAB-internal HTTP endpoints
+  without HOME ForwardAuth.
 
 OpenBao maps the Keycloak group `/openbao-admins` to its OIDC role
 `home-admin`, which issues a token under the `hy-home-operator` policy.
@@ -95,9 +103,10 @@ Keycloak groups and OpenBao roles and policies are separate objects.
 #### Runtime View
 
 ```text
-ForwardAuth:  Browser -> Traefik -> /oauth2/auth check -> Traefik -> service
-              (login when needed: Browser <-> OAuth2 Proxy <-> Keycloak; session cookie)
-Native OIDC:  Browser -> Traefik -> application -> Keycloak
+HOME ForwardAuth:  Browser -> Traefik -> /oauth2/auth check -> Traefik -> service
+                   (login when needed: Browser <-> OAuth2 Proxy <-> Keycloak; session cookie)
+HOME native OIDC:  Browser -> Traefik -> application -> Keycloak
+LAB native OIDC:   Browser -> LAB host binding -> Open WebUI -> Keycloak
 ```
 
 Keycloak realm, user and session metadata are stored in `mng-pg`; OAuth2 Proxy
@@ -119,7 +128,10 @@ ForwardAuth services use the `/oauth2/auth` check through `gateway-standard-chai
 
 ### Failure Boundaries
 
-Keycloak and `mng-pg` are single instances, so an outage blocks every login path, and a route that loses its middleware label is exposed without ForwardAuth (see Risks below). Keycloak, Valkey and PostgreSQL health are checked separately from each application's login flow.
+An outage of Keycloak or its single `mng-pg` instance blocks new logins
+that depend on Keycloak. A ForwardAuth route that loses its middleware label
+loses that gateway protection. Keycloak, Valkey and PostgreSQL health are
+checked separately from each application's login flow.
 
 ## Decisions
 
@@ -128,6 +140,7 @@ Keycloak and `mng-pg` are single instances, so an outage blocks every login path
 - [ADR-0002 Keycloak and OAuth2 Proxy choice](../decisions/0002-keycloak-oauth2-proxy-choice.md)
 - [ADR-0017 Runtime hardening and fail-closed](../decisions/0017-auth-hardening-runtime-and-fail-closed.md)
 - [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md)
+- [ADR-0062 Open WebUI and Kafka CDC LAB moves](../decisions/0062-home-lab-membership.md)
 
 ### Quality and Risks
 
@@ -143,8 +156,9 @@ Keycloak and `mng-pg` are single instances, so an outage blocks every login path
 
 #### Risks
 
-Keycloak and `mng-pg` are single instances; an outage blocks every login path.
-A route that loses its middleware label is exposed without ForwardAuth.
+Keycloak and `mng-pg` are single-instance dependencies for Keycloak-backed
+login. A ForwardAuth route loses its gateway protection if its middleware
+label is removed.
 
 ## Traceability
 

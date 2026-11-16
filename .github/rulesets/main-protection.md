@@ -161,12 +161,12 @@ settings by itself.
 
 ## Required Status Checks
 
-The source target is `candidate-quality` alone. It is the aggregate PR job:
-it needs the `candidate-core` and `candidate-documents` shard jobs, which run
-the selected changed validation, and fails unless each one succeeded, so a
-skipped, cancelled or missing shard is not a pass. Individual leaves and shard
-jobs are not separate contexts, so the required check name did not change
-when the candidate was split into shards.
+The source target is `candidate-quality` alone. The aggregate requires
+successful routing and core results. The documents job must succeed when
+routing selected it. When routing explicitly found no document shard leaves,
+the aggregate requires a skipped job with no execution output. A missing,
+cancelled or contradictory result fails the aggregate. Individual routing,
+shard and leaf results are not separate required contexts.
 There is no feature-push QA, title-edit validation, or main full-profile repeat.
 Main security/SARIF uses merged input and a different trust purpose; it is not
 candidate acceptance. Manual SemVer publication is a separate approved action.

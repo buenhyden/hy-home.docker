@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Cluster LAB Usage Guide"
-version: "0.1.2"
+version: "0.1.3"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "GDE-0109"
 parent_ids:
@@ -31,7 +31,7 @@ next_review_at: "2027-05-13"
 
 대상 독자: 운영자, 개발자, AI Agent.
 
-목적: OpenSearch LAB의 구성, 인증서·secret·network 경계, 정적 검증과 승격 계획을 현재 Compose와
+목적: OpenSearch LAB의 구성, 인증서·secret·network 경계와 정적 검증을 현재 Compose와
 맞춰 이해한다. HOME 단일 node는 [GDE-0019](../05-databases-and-storage/0019-opensearch.md)가 다룬다.
 
 ### Boundaries
@@ -110,11 +110,12 @@ LAB_DATA_DIR=/tmp/synthetic-lab-data LAB_SECRET_DIR=/tmp/synthetic-lab-secrets L
 
 #### Promotion
 
-[promotion manifest](../../../../labs/opensearch-cluster/promotion.yaml)는 `replace-same`이며 목적지는
-`infra/04-data/opensearch/`, profile `opensearch`이다. HOME `opensearch`와 `opensearch-dashboards`를
-은퇴시킨다. LAB secret 사본 LAB-012부터 LAB-015는 승격되지 않고, 서비스는
-`secrets/data/opensearch/`의 `infra` secret을 쓴다. 문서 목적지는 `05-databases-and-storage` 역할
-폴더다. 승격 절차는 [RUN-0107](../../runbooks/15-labs/0107-lab-promotion.md)이 소유한다.
+[ADR-0062](../../../02.architecture/decisions/0062-home-lab-membership.md#decision)는 검색 실험을
+이 LAB에 두고 HOME 단일 node의 별도 퇴역을 결정했다. 현행 root에는 선택형 단일 node와
+Dashboards가 남아 있다. [promotion manifest](../../../../labs/opensearch-cluster/promotion.yaml)의
+`replace-same`은 HOME 대체 검토용 후보이며 실행 승인을 담지 않는다. HOME 대체를 다시
+검토하려면 현행 구조 결정의 변경을 승인받고 [POL-0107](../../policies/15-labs/0107-lab-promotion.md)의
+별도 Task 절차를 따른다. LAB secret 사본 LAB-012부터 LAB-015는 LAB에 남는다.
 
 ### Exceptions
 

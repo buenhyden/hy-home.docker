@@ -49,6 +49,7 @@ from scripts.lib.document_governance.operations_catalog import (
 )
 from scripts.lib.document_governance.registry import (
     DocumentRegistry,
+    FrontmatterValidator,
     RegistryError,
     _declares_provider_binding,
     document_type,
@@ -64,6 +65,7 @@ from scripts.lib.document_governance.registry import (
 def _validate_template_source(
     record: Record,
     profiles: dict[str, object],
+    frontmatter_validator: FrontmatterValidator | None = None,
 ) -> list[Finding] | None:
     template_roles = profiles.get("template_roles", {})
     if not isinstance(template_roles, dict):
@@ -128,7 +130,7 @@ def _validate_template_source(
             )
         return sorted(set(findings))
     try:
-        schema_findings = validate_frontmatter(
+        schema_findings = (frontmatter_validator or validate_frontmatter)(
             resolve_template_placeholders(record.metadata)
         )
     except RegistryError:
@@ -350,17 +352,54 @@ def _strip_inline_code_spans(text: str) -> str:
 
 
 def extract_markdown_headings(text: str) -> tuple[list[str], list[str]]:
-    """Return canonical H1 and H2 headings outside fenced code blocks."""
+    """Return canonical top-level ATX H1 and H2 headings."""
 
     h1: list[str] = []
     h2: list[str] = []
-    for line in _markdown_unfenced_lines(text):
-        match = re.match(r"^ {0,3}(#{1,2})[ \t]+(.+?)[ \t]*#*[ \t]*$", line)
-        if not match:
-            continue
-        heading = f"{match.group(1)} {match.group(2).rstrip()}"
-        (h1 if len(match.group(1)) == 1 else h2).append(heading)
+    for _, _, heading in _markdown_form_lines(text):
+        if heading is not None and heading[0] in (1, 2):
+            level, title = heading
+            (h1 if level == 1 else h2).append(f"{'#' * level} {title}")
     return h1, h2
+
+
+@functools.lru_cache(maxsize=8)
+def _markdown_form_lines(
+    text: str,
+) -> tuple[tuple[int, str, tuple[int, str] | None], ...]:
+    """Map source lines to real headings and exclude blocks used as examples."""
+
+    normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+    lines = normalized.split("\n")
+    tokens = MarkdownIt("commonmark").parse(normalized)
+    headings: dict[int, tuple[int, str]] = {}
+    hidden: set[int] = set()
+    for index, token in enumerate(tokens):
+        if token.map is None:
+            continue
+        start, end = token.map
+        if (
+            token.type == "heading_open"
+            and token.level == 0
+            and token.markup.startswith("#")
+        ):
+            title = tokens[index + 1].content
+            if title:
+                headings[start] = (len(token.markup), title)
+        elif token.type in {"fence", "code_block", "blockquote_open"}:
+            hidden.update(range(start, end))
+        elif token.type in {"bullet_list_open", "ordered_list_open"}:
+            hidden.update(
+                line
+                for line in range(start, end)
+                if lines[line].lstrip().startswith("|")
+            )
+        elif token.type == "html_block" and end > start + 1:
+            hidden.update(range(start, end))
+    return tuple(
+        (index, "" if index in hidden else line, headings.get(index))
+        for index, line in enumerate(lines)
+    )
 
 
 def _body_target_scan_text(text: str) -> str:
@@ -368,6 +407,12 @@ def _body_target_scan_text(text: str) -> str:
 
 
 AUTHOR_PROMPT = re.compile(r"<!--\s*Author prompt:(?:[\s\S]*?-->|[\s\S]*$)")
+_UNRESOLVED_PROSE = re.compile(
+    r"^\s*(?:todo|tbd)(?:[ \t]*:|[ \t]*[.!]?[ \t]*$)"
+    r"|:[ \t]*(?:todo|tbd)[ \t]*[.!]?[ \t]*$",
+    re.IGNORECASE,
+)
+_HTML_BREAK = re.compile(r"<br(?:[ \t]|/?>)", re.IGNORECASE)
 
 
 def _authored_body_target(record: Record, profiles: dict[str, object]) -> bool:
@@ -398,6 +443,31 @@ def _authored_residue_scan_text(text: str) -> str:
     )
 
 
+def _has_unresolved_prose(text: str) -> bool:
+    quotes = 0
+    for block in _SECTION_MARKDOWN.parse(text):
+        if block.type == "blockquote_open":
+            quotes += 1
+        elif block.type == "blockquote_close":
+            quotes -= 1
+        elif block.type == "inline" and not quotes:
+            visible: list[str] = []
+            for token in block.children or ():
+                if token.type == "text":
+                    visible.append(token.content)
+                elif token.type in {"softbreak", "hardbreak"} or (
+                    token.type == "html_inline" and _HTML_BREAK.match(token.content)
+                ):
+                    visible.append("\n")
+                elif token.type in {"code_inline", "image"}:
+                    visible.append(" ")
+            if any(
+                _UNRESOLVED_PROSE.search(line) for line in "".join(visible).splitlines()
+            ):
+                return True
+    return False
+
+
 def _authored_residue_findings(record: Record, text: str) -> list[Finding]:
     scan_text = _authored_residue_scan_text(text)
     findings = []
@@ -415,6 +485,16 @@ def _authored_residue_findings(record: Record, text: str) -> list[Finding]:
                 record,
                 "template-body-token-in-target",
                 "authored document retains an unresolved Markdown body token",
+            )
+        )
+    if record.metadata.get("status") in ("approved", "active", "accepted") and (
+        _has_unresolved_prose(text)
+    ):
+        findings.append(
+            _finding(
+                record,
+                "effective-body-placeholder",
+                "effective authored prose retains an unresolved TODO or TBD marker",
             )
         )
     return findings
@@ -817,6 +897,45 @@ _HEADING_LINE = re.compile(r"^ {0,3}(#{2,6})[ \t]+(.+?)[ \t]*#*[ \t]*$")
 # A section whose whole body is one of these says nothing; the common form
 # requires a stated reason instead (for example "None: no consumer exists").
 _PLACEHOLDER_BODY = re.compile(r"^(?:todo|tbd|n/?a|-)\.?$", re.IGNORECASE)
+_SECTION_COMMENT = re.compile(r"<!--(?:-?>|.*?(?:-->|\Z))", re.DOTALL)
+_SECTION_MARKDOWN = MarkdownIt("commonmark")
+
+
+def _section_is_placeholder(source: str) -> bool:
+    candidate = _SECTION_COMMENT.sub("", source).strip()
+    if not any(
+        _PLACEHOLDER_BODY.fullmatch(line.strip()) for line in candidate.splitlines()
+    ):
+        return False
+    visible: list[str] = []
+    for block in _SECTION_MARKDOWN.parse(source):
+        if block.type == "inline":
+            parts = []
+            for token in block.children or ():
+                if token.type == "text":
+                    parts.append(token.content)
+                elif token.type in {"softbreak", "hardbreak"}:
+                    parts.append("\n")
+                elif token.type != "html_inline" or not token.content.startswith(
+                    "<!--"
+                ):
+                    return False
+            content = "".join(parts).strip()
+            nested = block.level > 1
+        elif block.type == "html_block":
+            content = _SECTION_COMMENT.sub("", block.content).strip()
+            nested = block.level > 0
+        elif block.tag in {"p", "blockquote", "ul", "ol", "li"}:
+            continue
+        else:
+            return False
+        if content:
+            if nested:
+                return False
+            visible.append(content)
+    return _PLACEHOLDER_BODY.fullmatch("\n".join(visible)) is not None or (
+        not visible and candidate == "-"
+    )
 
 
 def _registered_subsection_findings(
@@ -829,20 +948,17 @@ def _registered_subsection_findings(
     required = profile.get("required_subsections") or {}
     optional = profile.get("optional_subsections") or {}
     children: dict[str, list[str]] = collections.defaultdict(list)
-    bodies: list[tuple[str, list[str]]] = []
+    sections: list[tuple[int, str]] = []
     parent: str | None = None
-    for line in _markdown_unfenced_lines(text):
-        match = _HEADING_LINE.match(line)
-        if match:
-            level, title = len(match.group(1)), match.group(2).rstrip()
+    for index, _, heading in _markdown_form_lines(text):
+        if heading is not None:
+            level, title = heading
             if level == 2:
                 parent = title
             elif level == 3 and parent is not None:
                 children[parent].append(title)
-            bodies.append((f"{'#' * level} {title}", []))
-            continue
-        if bodies and line.strip() and not line.strip().startswith("<!--"):
-            bodies[-1][1].append(line.strip())
+            if level >= 2:
+                sections.append((index, f"{'#' * level} {title}"))
     findings: list[Finding] = []
     for section in sorted(set(required) | set(optional)):
         declared = [name for name in required.get(section, ()) if isinstance(name, str)]
@@ -889,8 +1005,11 @@ def _registered_subsection_findings(
                     + ", ".join(declared),
                 )
             )
-    for heading, lines in bodies:
-        if len(lines) == 1 and _PLACEHOLDER_BODY.match(lines[0]):
+    lines = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    ends = [index for index, _ in sections[1:]] + [len(lines)]
+    for (start, heading), end in zip(sections, ends, strict=False):
+        # The heading scan hides examples. They still count as section content.
+        if _section_is_placeholder("\n".join(lines[start + 1 : end])):
             findings.append(
                 _finding(
                     record,
@@ -922,7 +1041,14 @@ def _empty_section_findings(record: Record, text: str) -> list[Finding]:
     fence_character: str | None = None
     fence_length = 0
     in_comment = False
-    for line in text.splitlines():
+    headings = {
+        index: heading
+        for index, _, heading in _markdown_form_lines(text)
+        if heading is not None and heading[0] >= 2
+    }
+    for index, line in enumerate(
+        text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    ):
         if fence_character is not None:
             if re.match(
                 rf"^ {{0,3}}{re.escape(fence_character)}{{{fence_length},}}[ \t]*$",
@@ -945,9 +1071,8 @@ def _empty_section_findings(record: Record, text: str) -> list[Finding]:
             fence_length = len(opening.group(1))
             mark_content()
             continue
-        match = _HEADING_LINE.match(line)
-        if match:
-            sections.append((len(match.group(1)), match.group(2).rstrip(), False))
+        if index in headings:
+            sections.append((*headings[index], False))
             continue
         while stripped.startswith("<!--"):
             if "-->" not in stripped:
@@ -1473,11 +1598,9 @@ def _registered_readme_documents_findings(
     in_documents = False
     free_tables = False
     in_table = False
-    for line in _markdown_unfenced_lines(text):
-        heading = re.match(r"^ {0,3}(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$", line)
-        if heading:
-            level = len(heading.group(1))
-            name = heading.group(2).rstrip()
+    for _, line, heading in _markdown_form_lines(text):
+        if heading is not None:
+            level, name = heading
             if level <= 3:
                 in_documents = level == 3 and name in README_DOCUMENTS_HEADINGS
                 # Directories and Current Items may hold the author's own
@@ -1511,6 +1634,16 @@ _TABLES_CHECKED_ELSEWHERE = frozenset(
 )
 _TABLE_PLACEHOLDER = re.compile(r"^(TODO|TBD)$|\{\{.*\}\}", re.IGNORECASE)
 _TABLE_CELL_SPLIT = re.compile(r"(?<!\\)\|")
+_TABLE_MARKDOWN = MarkdownIt("commonmark").enable("table")
+
+
+def _table_delimiter_matches(header: str, delimiter: str) -> bool:
+    """Check the alignment row of a registered pipe table."""
+
+    return any(
+        block.type == "table_open" and block.level == 0
+        for block in _TABLE_MARKDOWN.parse(f"{header}\n{delimiter}")
+    )
 
 
 def _registered_table_findings(
@@ -1572,6 +1705,15 @@ def _registered_table_findings(
                 )
             )
             return
+        if len(rows) < 2 or not _table_delimiter_matches(rows[0], rows[1]):
+            findings.append(
+                _finding(
+                    record,
+                    "table-delimiter-invalid",
+                    f"table under {h2}/{h3 or '-'} needs a delimiter matching its header",
+                )
+            )
+            return
         for row in cells[2:]:
             if len(row) != len(header):
                 findings.append(
@@ -1591,18 +1733,21 @@ def _registered_table_findings(
                     )
                 )
 
-    for line in [*_markdown_unfenced_lines(text), ""]:
-        if line.lstrip().startswith("|"):
+    for _, line, heading in _markdown_form_lines(text):
+        if line.lstrip().startswith("|") or (
+            len(block) == 1 and _table_delimiter_matches(block[0], line)
+        ):
             block.append(line)
             continue
         check(block)
         block = []
-        heading = re.match(r"^ {0,3}(#{1,3})[ \t]+(.+?)[ \t]*#*[ \t]*$", line)
-        if heading:
-            if len(heading.group(1)) == 2:
-                h2, h3 = heading.group(2), None
-            elif len(heading.group(1)) == 3:
-                h3 = heading.group(2)
+        if heading is not None:
+            level, title = heading
+            if level == 2:
+                h2, h3 = title, None
+            elif level == 3:
+                h3 = title
+    check(block)
     return findings
 
 

@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Architecture Description"
-version: "1.1.2"
+version: "1.1.3"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "architecture"
 artifact_id: "AD-0013"
 parent_ids:
@@ -18,19 +18,17 @@ created: "2026-03-27"
 
 ### Purpose and Readers
 
-Open WebUI is the HOME chat interface and retrieval-augmented generation (RAG)
-orchestrator for the AI tier. It sits between end users and the local Ollama
-inference API. Its obligations are owned by
+Open WebUI is an independent LAB for evaluating chat and retrieval-augmented
+generation (RAG) with a local Ollama endpoint. Its obligations are owned by
 [REQ-0013](../../01.requirements/0013-ai-open-webui.md).
 
 ### System Boundary
 
 - **Owns:** the web UI and backend, RAG orchestration, and user, chat, upload
   and vector-store data under `/app/backend/data`.
-- **Consumes:** the Ollama API at `http://ollama:${OLLAMA_PORT:-11434}` for
-  inference and for embeddings (`RAG_EMBEDDING_ENGINE: ollama`), and native
-  Keycloak OIDC through the `home-openwebui` client behind Traefik's standard
-  gateway chain.
+- **Consumes:** an approved, reachable Ollama endpoint for inference and
+  embeddings (`RAG_EMBEDDING_ENGINE: ollama`), and native Keycloak OIDC
+  through the `home-openwebui` client and Keycloak gateway name.
 - **Does not own:** model weights (Ollama) or any Qdrant collection. Compose
   sets no external vector database, so RAG vectors use the application's
   built-in store in its data volume.
@@ -40,7 +38,7 @@ inference API. Its obligations are owned by
 
 ### Context
 
-End users reach Open WebUI through Traefik; it calls the Ollama API for inference and embeddings and authenticates users against Keycloak OIDC.
+The LAB publishes the UI on its own bind address. It uses the operator's approved Ollama endpoint and reaches the identity provider through the Keycloak gateway name. Successful browser access and authentication require a suitable LAB origin and separate runtime evidence.
 
 ### Constraints
 
@@ -50,12 +48,10 @@ The service is stateful on local storage; horizontal scaling would first need an
 
 ### Building Blocks
 
-The `open-webui` service (`infra/08-ai/open-webui/docker-compose.yml`, tier
-label `ai`) joins `edge_net` and `ai_net`. Traefik serves `chat.${DEFAULT_URL}`
-over TLS with `gateway-standard-chain@file`; it does not apply `sso-auth@file`,
-because Open WebUI authenticates users itself through OIDC. The OIDC client
-secret comes from a Docker secret or the OpenBao Agent output mounted read-only
-under `/run/openbao/open-webui`.
+[`labs/open-webui/docker-compose.yml`](../../../labs/open-webui/docker-compose.yml)
+defines the `open-webui` service on `lab_open_webui_net` alone. It declares no
+gateway route or HOME network attachment. Its native OIDC entrypoint reads the
+LAB-only Compose secret. The retained HOME OpenBao Agent output has no LAB bind.
 
 ### Runtime and Deployment
 
@@ -67,40 +63,48 @@ under `/run/openbao/open-webui`.
 
 #### Deployment View
 
-Open WebUI is a HOME service selected by the `ai` and `ai-llm` profiles. It
-starts after Ollama reports healthy, and its health endpoint is `/health` on
-container port `${OLLAMA_WEBUI_PORT:-8080}`. The image is the CUDA build pinned
-in Compose; Compose reserves no GPU for this service. Data persists in the
-`${DEFAULT_AI_MODEL_DIR}/open-webui` bind volume.
+The independent `lab-open-webui` profile defines `/health` on container port
+`8080`. Its host publication defaults to `127.0.0.1:18095`. It uses the CUDA
+image pinned in Compose without a GPU reservation. The LAB data bind at
+`${LAB_DATA_DIR}/open-webui/data` holds SQLite, uploads, vectors and the
+session key. Root Compose excludes the LAB. HOME promotion stays undecided,
+and retirement of earlier HOME state requires separate approval under RUN-0057.
 
 ## Interfaces
 
 ### Contracts
 
-- Ollama API at `http://ollama:${OLLAMA_PORT:-11434}` for inference and embeddings (`RAG_EMBEDDING_ENGINE: ollama`).
-- Traefik serves `chat.${DEFAULT_URL}` over TLS with `gateway-standard-chain@file`; native Keycloak OIDC through the `home-openwebui` client.
-- Health endpoint `/health` on container port `${OLLAMA_WEBUI_PORT:-8080}`.
+- `LAB_OPEN_WEBUI_OLLAMA_BASE_URL` selects the approved local inference and
+  embedding endpoint.
+- The native Keycloak OIDC configuration uses PKCE S256 and a LAB-only
+  client secret. The declared callback still uses the prior gateway origin.
+  LAB login requires a registered redirect for an approved HTTPS origin.
+- `/health` on container port `8080` reports application health.
 
 ### Failure Boundaries
 
-Open WebUI depends on a healthy Ollama service and starts after Ollama reports healthy. Chat state and RAG vectors share one data volume, so a write-stopped capture of that volume restores both.
+A missing or unreachable model endpoint blocks chat and embedding acceptance.
+Compose does not order Ollama startup across project boundaries. Chat state and
+RAG vectors share one data volume. A write-stopped capture and a verified
+isolated restore are separate steps under RUN-0057.
 
 ## Decisions
 
 ### Decision Links
 
-- [ADR-0059 Native OIDC for Open WebUI and the Airflow UI](../decisions/0059-native-oidc-open-webui-and-airflow.md)
+- [ADR-0059 native OIDC decision](../decisions/0059-native-oidc-open-webui-and-airflow.md)
+- [ADR-0062 current placement](../decisions/0062-home-lab-membership.md)
 
 ### Quality and Risks
 
 #### Quality Attributes
 
-- **Security:** native Keycloak OIDC; Compose disables password login, signup,
-  email merge and OAuth role/group management, and the gateway supplies TLS and
-  the standard chain.
+- **Security:** native Keycloak OIDC with password login, signup, email merge
+  and OAuth role/group management disabled. LAB login depends on approval of
+  the secure origin described above.
 - **Reliability:** depends on a healthy Ollama service.
-- **Recoverability:** chat state and RAG vectors share one data volume, so a
-  write-stopped capture of that volume restores both.
+- **Recoverability:** preserve the full LAB data root and the corresponding
+  credential custody. HOME Restic does not cover LAB state.
 
 #### Risks
 
@@ -116,6 +120,7 @@ Open WebUI depends on a healthy Ollama service and starts after Ollama reports h
 ### Currentness and Lineage
 
 - [AD-0008 AI infrastructure](0008-ai-architecture.md)
+- [RUN-0057 LAB operation and separately approved HOME retirement](../../05.operations/runbooks/15-labs/0057-open-webui.md)
 
 #### Evolution
 

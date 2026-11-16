@@ -1,10 +1,10 @@
 ---
 title: "Security Tier (03-security) Requirements"
-version: "1.4.0"
+version: "1.4.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-16"
 layer: "requirements"
 artifact_id: "REQ-0003"
 created: "2026-03-26"
@@ -130,7 +130,14 @@ concepts; they are not a certification claim.
 
 ### Verification Method
 
-Each condition is judged by reviewing the rendered output, the positive and negative checks, the audit log and the measures it names, using synthetic inputs and no real credentials. SPEC-0245 lists REQ-0003 as a parent and SPEC-0212 cites it in its body; their Task evidence rows record each result. Thresholds the criteria leave open are set by the operator or consumer owner before measurement. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+Use synthetic inputs for rendered-output and positive and negative control
+checks. Deployed audit rotation, the exact approved snapshot rehearsal and
+consumer latency need their respective operator-authorized observations.
+Keep credentials out of all evidence records and leave an unobserved
+condition open. SPEC-0245 lists REQ-0003 as a parent and SPEC-0212 cites it in
+its body. Record each result in the applicable Task. The operator or
+consumer owner sets any unspecified threshold before measurement.
+@buenhyden judges the conditions and accepts the requirement when they are met.
 
 ## Traceability
 

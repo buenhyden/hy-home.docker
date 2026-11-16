@@ -1,4 +1,4 @@
-"""Project Registry template roles onto the approved TemplateDefinition v14.5.
+"""Project Registry template roles onto TemplateDefinition.
 
 A `template_roles` entry holds only the authored fields the Registry has no
 other source for. Everything else is derived here from the bound profile, the
@@ -16,8 +16,8 @@ import tomllib
 from collections.abc import Mapping, Sequence
 
 from scripts.lib.document_governance.metadata.heading import (
-    _HEADING_LINE,
-    _markdown_unfenced_lines,
+    _markdown_form_lines,
+    _table_delimiter_matches,
 )
 from scripts.lib.document_governance.registry import (
     MAX_SCHEMA_BYTES,
@@ -28,10 +28,6 @@ from scripts.lib.document_governance.registry import (
     _parse_json,
 )
 
-# A role has moved to the common form when its profile declares
-# `required_subsections`; every other role keeps the Registry
-# `common.contract_id`. The common form's revision is the Registry's
-# `common.common_form_contract`, never a value held here.
 # COMMON-DOC-FORM-1 gives an H2 one empty rule and an H3 none; heading.py
 # enforces it at every level, treating an HTML comment as no content.
 _EMPTY_SECTION_RULE = (
@@ -116,18 +112,25 @@ def _template_outline(
     h2: str | None = None
     h3: str | None = None
     previous = ""
-    for raw in _markdown_unfenced_lines(text):
+    delimiter_index = -1
+    lines = _markdown_form_lines(text)
+    for index, raw, heading in lines:
+        if index == delimiter_index:
+            continue
         line = raw.strip()
-        match = _HEADING_LINE.match(raw)
-        if match and len(match.group(1)) in (2, 3):
-            if len(match.group(1)) == 2:
-                h2, h3 = match.group(2), None
+        if heading is not None and heading[0] in (2, 3):
+            level, title = heading
+            if level == 2:
+                h2, h3 = title, None
             elif h2 is not None:
-                h3 = match.group(2)
+                h3 = title
+            else:
+                continue
             bodies.setdefault((h2, h3), [])  # type: ignore[arg-type]
             previous = ""
             continue
         if not line:
+            previous = ""
             continue
         if h2 is None:
             prompt = _AUTHOR_PROMPT.match(line)
@@ -136,7 +139,14 @@ def _template_outline(
             continue
         if line.startswith("|"):
             if not previous.startswith("|"):
+                if index + 1 == len(lines) or not _table_delimiter_matches(
+                    raw, lines[index + 1][1]
+                ):
+                    raise RegistryError(
+                        f"invalid table delimiter under {h2}/{h3 or '-'}"
+                    )
                 headers.append((h2, h3, line))
+                delimiter_index = index + 1
         elif not line.startswith("#"):
             bodies[(h2, h3)].append(_guidance_line(line))
         previous = line
@@ -603,18 +613,15 @@ def template_definition(
             f"{', '.join(registry.lifecycle_terminal_statuses.get(lifecycle_id, ())) or 'none'}"
         )
     language = profile.get("language")
-    if profile.get("required_subsections"):
-        contract_version = common.get("common_form_contract")
-        if not contract_version:
-            raise RegistryError(
-                f"{template_id} uses the common form but the Registry "
-                "common.common_form_contract names no revision"
-            )
-    else:
-        contract_version = common.get("contract_id")
+    binding = (
+        _entry(common, "common_form_contract", "common")
+        if profile.get("required_subsections")
+        else common
+    )
     return {
         "template_id": template_id,
-        "contract_version": str(contract_version),
+        "contract_id": binding["contract_id"],
+        "contract_version": binding["contract_version"],
         "role": template_id,
         "purpose": role["purpose"],
         "responsibility": role["responsibility"],

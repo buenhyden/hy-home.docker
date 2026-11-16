@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Requirements"
-version: "1.1.1"
+version: "1.1.2"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 layer: "requirements"
 artifact_id: "REQ-0027"
 created: "2026-09-19"
@@ -147,7 +147,13 @@ needed.
 
 ### Verification Method
 
-Each condition is judged by running the checks against the latest main, with actual results recorded separately from unverified items and any non-PASS result recorded as such. The Spec Packages that list REQ-0027 as a parent, such as SPEC-0204, SPEC-0212 and SPEC-0218, record the results in their Task evidence rows. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+Run the current-main checks required by REQ-0027-NFR-0004. Identify the
+exact revision and target in each applicable Task. Record pre-merge
+candidate checks and approved deployment observations against the inputs
+they actually examined. Keep those results distinct from the latest-main
+record, and state every non-PASS result and unverified condition.
+SPEC-0204, SPEC-0212 and SPEC-0218 list this requirement as a parent.
+@buenhyden judges the conditions and accepts the requirement once they are met.
 
 ## Traceability
 

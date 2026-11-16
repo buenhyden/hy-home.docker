@@ -1,10 +1,10 @@
 ---
 title: "Codex Provider Adapter"
-version: "1.6.1"
+version: "1.6.4"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-11"
+updated: "2026-11-16"
 runtime: "codex"
 ---
 
@@ -74,12 +74,11 @@ hook does not run.
 
 ## Limitations
 
-- On this host Codex's `bubblewrap` sandbox cannot start (`bwrap: loopback:
-  Failed RTM_NEWADDR: Operation not permitted`), so a Codex session or role in
-  `workspace-write` cannot write files. This records the limit only and grants
-  no sandbox relaxation: per [approval boundaries](../.agents/governance/approval-boundaries.md),
-  only an operator acting through its trusted channel may run Codex with a
-  relaxed sandbox, and the repository neither authenticates nor relaxes it.
+- A nested launcher in the managed shell failed to create a Bubblewrap
+  namespace. In a separately approved host launch, installed Codex CLI
+  0.169.0 enforced read-only access through `codex sandbox`. The
+  [approval boundaries](../.agents/governance/approval-boundaries.md)
+  govern the host launch and its scope.
 - No `approval_policy` is tracked in `.codex/config.toml`, so Codex keeps its
   default approval mode. Edits inside the current request's scope are already
   authorized under approval boundaries; Claude's counterpart is
@@ -99,12 +98,23 @@ own: project trust and hook enablement. Observed on 2026-10-13 with codex-cli
 `apply_patch` triggers PostToolUse and its `additionalContext` reaches the
 model. A command run through `tools.exec_command` inside `exec`, or any other
 runtime file API, is not parsed, so shell-command and edit policy do not see
-it; that is an accepted residual. Not observed: a PreToolUse denial of
-`apply_patch`, and delivery under
-another trust or enablement state; record those as unverified until directly
-observed within separate authorization. Codex's sandbox cannot start on this
-host, as the [environment constraints](../.agents/governance/environment-constraints.md#1-hard-constraints)
-record.
+it; that is an accepted residual. On 2026-11-16 the active managed desktop
+session delivered the request brief observation and denied a literal
+`apply_patch` nested in `exec` outside the registered scope. An in-scope Task
+edit proceeded in the same session. This was a desktop observation. The
+installed CLI version is recorded separately from the desktop runtime.
+Direct `apply_patch`, other trust or enablement states, and the native
+resume or compact path remain unobserved for this brief guard.
+The project role projects `sandbox_mode = "read-only"`. In the managed
+desktop collaboration route, a session invoked as `code-reviewer` could
+open a disposable `/tmp` file for writing through its normal shell tool.
+The review left the file intact. The separate approved CLI shell test
+allowed an ordinary read and refused write-open with `EROFS`. A disposable
+profile extending `:read-only` and denying reads to a synthetic protected
+directory also refused its file read with `EACCES`. The launcher used
+`--include-managed-config`. These observations cover the tested CLI launch
+and synthetic paths. The managed desktop reviewer remains a separate
+execution route.
 Respect the active sandbox and approval boundary; do not mutate user-global or
 ignored local configuration or install global skill copies.
 

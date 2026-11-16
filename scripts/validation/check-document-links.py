@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import dataclasses
 import json
 import pathlib
 import posixpath
@@ -14,13 +13,11 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from scripts.lib.document_governance.frontmatter import (  # noqa: E402
-    FrontmatterError,
-    parse_frontmatter_text,
-)
 from scripts.lib.document_governance.links import (  # noqa: E402
     MODE_HANDLERS,
+    DocumentGraph,
     build_document_graph,
+    inbound_link_lookup,
     relation_lookup,
     removed_template_mention_total,
     run_mode,
@@ -28,10 +25,10 @@ from scripts.lib.document_governance.links import (  # noqa: E402
 )
 from scripts.lib.document_governance.operations_catalog import (  # noqa: E402
     OperationsAuthorityError,
-    read_bounded_regular,
     tracked_paths,
 )
 from scripts.lib.document_governance.registry import (  # noqa: E402
+    DEFAULT_REGISTRY,
     DocumentRegistry,
     load_registry,
 )
@@ -55,53 +52,26 @@ SUPPORT_DOCS = (
 NON_ROUTING_STATUSES = frozenset({"superseded", "retired"})
 
 
-def _routing_status(
-    root: pathlib.Path, path: pathlib.Path, registry: DocumentRegistry | None = None
-) -> bool:
-    """True when the document claims to be a current route."""
-    try:
-        text = read_bounded_regular(
-            root, path.relative_to(root), max_bytes=4 * 1024 * 1024
-        ).decode("utf-8")
-    except (OSError, OperationsAuthorityError, UnicodeError):
-        # Keep unsafe inputs visible so the graph reports its input finding.
-        return True
-    try:
-        status = parse_frontmatter_text(text).get("status")
-    except FrontmatterError:
-        return True
-    return not isinstance(status, str) or status not in NON_ROUTING_STATUSES
-
-
-def _path_sets(
-    root: pathlib.Path,
-) -> tuple[tuple[pathlib.Path, ...], tuple[pathlib.Path, ...]]:
-    """Select current paths and their historical superset in one pass."""
-
-    registry_path = root / "docs/99.templates/registry.json"
-    registry = load_registry(registry_path) if registry_path.exists() else None
+def _paths(root: pathlib.Path) -> list[pathlib.Path]:
+    """Select tracked inputs and named support files, including unsafe links."""
     candidates = {
         root / relative.as_posix()
         for relative in tracked_paths(root)
         if relative.suffix == ".md"
     }
     candidates.update(root / relative for relative in SUPPORT_DOCS)
-    current: list[pathlib.Path] = []
-    historical: list[pathlib.Path] = []
-    for path in sorted(candidates):
-        if not (path.is_file() or path.is_symlink()):
-            continue
-        if _routing_status(root, path, registry):
-            current.append(path)
-            historical.append(path)
-    return tuple(current), tuple(historical)
+    return [path for path in sorted(candidates) if path.is_file() or path.is_symlink()]
 
 
-def _paths(
-    root: pathlib.Path, *, include_historical: bool = False
-) -> list[pathlib.Path]:
-    current, historical = _path_sets(root)
-    return list(historical if include_historical else current)
+def _current_graph(
+    root: pathlib.Path, registry: DocumentRegistry | None = None
+) -> DocumentGraph:
+    return build_document_graph(
+        _paths(root),
+        repo_root=root,
+        excluded_statuses=NON_ROUTING_STATUSES,
+        registry=registry,
+    )
 
 
 def _parser() -> argparse.ArgumentParser:
@@ -112,7 +82,7 @@ def _parser() -> argparse.ArgumentParser:
     mode.add_argument(
         "--impact",
         type=pathlib.PurePosixPath,
-        help="report one document's derived reverse relations; fails on nothing it finds",
+        help="report derived reverse relations and inbound references by link type",
     )
     return parser
 
@@ -129,18 +99,22 @@ def _print_impact(root: pathlib.Path, target: pathlib.PurePosixPath) -> int:
             pass
     target = pathlib.PurePosixPath(posixpath.normpath(target.as_posix()))
     try:
-        current_paths, _ = _path_sets(root)
-        graph = build_document_graph(current_paths, repo_root=root)
+        registry_path = root / "docs/99.templates/registry.json"
+        registry = load_registry(
+            registry_path if registry_path.exists() else DEFAULT_REGISTRY
+        )
+        graph = _current_graph(root, registry)
+        if target not in {node.path for node in graph.nodes}:
+            print(f"impact: {target} is not a current document", file=sys.stderr)
+            return 2
+        inbound = inbound_link_lookup(graph, target, registry)
     except (OSError, ValueError, TypeError, KeyError, OperationsAuthorityError):
         print(
             "document-link-input-invalid: bounded document or Registry input is invalid",
             file=sys.stderr,
         )
         return 1
-    if target not in {node.path for node in graph.nodes}:
-        print(f"impact: {target} is not a current document", file=sys.stderr)
-        return 2
-    for name, paths in relation_lookup(graph, target).items():
+    for name, paths in (*relation_lookup(graph, target).items(), *inbound.items()):
         print(f"{name}: {len(paths)}")
         for path in paths:
             print(f"  {path}")
@@ -154,46 +128,10 @@ def main(argv: list[str] | None = None) -> int:
         return _print_impact(root, args.impact)
     try:
         modes = tuple(MODE_HANDLERS) if args.mode == "all" else (args.mode,)
-        current_paths, alignment_paths = _path_sets(root)
-        graph = build_document_graph(current_paths, repo_root=root)
-        if "alignment" in modes:
-            current_path_set = set(current_paths)
-            historical_graph = build_document_graph(
-                tuple(path for path in alignment_paths if path not in current_path_set),
-                repo_root=root,
-            )
-            alignment_graph = dataclasses.replace(
-                graph,
-                nodes=tuple(
-                    sorted(
-                        graph.nodes + historical_graph.nodes,
-                        key=lambda item: item.path.as_posix(),
-                    )
-                ),
-                links=tuple(
-                    sorted(
-                        graph.links + historical_graph.links,
-                        key=lambda item: (
-                            item.source.as_posix(),
-                            item.line,
-                            item.target.as_posix(),
-                            item.raw_target,
-                        ),
-                    )
-                ),
-                input_findings=tuple(
-                    sorted(set(graph.input_findings + historical_graph.input_findings))
-                ),
-            )
-        else:
-            alignment_graph = graph
-        findings = tuple(
-            finding
-            for mode in modes
-            for finding in run_mode(
-                mode, alignment_graph if mode == "alignment" else graph
-            )
-        )
+        registry_path = root / "docs/99.templates/registry.json"
+        registry = load_registry(registry_path) if registry_path.exists() else None
+        graph = _current_graph(root, registry)
+        findings = tuple(finding for mode in modes for finding in run_mode(mode, graph))
     except (OSError, ValueError, TypeError, KeyError, OperationsAuthorityError):
         print(
             "document-link-input-invalid: bounded document or Registry input is invalid",
@@ -214,7 +152,7 @@ def main(argv: list[str] | None = None) -> int:
         f"mode={args.mode} documents={len(graph.nodes)} links={len(graph.links)} "
         f"catalog_pairs_total={traceability_pair_total(graph)} "
         f"removed_template_mentions_total={removed_template_mention_total(graph)} "
-        f"failures={failures} warnings={warnings} historical_documents={len(alignment_graph.nodes) - len(graph.nodes)}"
+        f"failures={failures} warnings={warnings} historical_documents=0"
     )
     if failures:
         return 1

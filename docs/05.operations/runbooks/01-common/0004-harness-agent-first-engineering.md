@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Runbook"
-version: "1.4.2"
+version: "1.4.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "RUN-0004"
 parent_ids:
@@ -81,10 +81,12 @@ next_review_at: "2027-05-13"
 
    ```bash
    python3 scripts/validation/run-ci-gate.py --profile changed --explain
+   python3 scripts/validation/run-ci-gate.py --profile changed --local-only --explain
    ```
 
-   변경된 JSON/shell의 등록된 read-only style과 문서 content 검사는 원격
-   후보가 소유한다. 모든 shell을 따로 순회하거나 같은 링크 검사를 반복하지 않는다.
+   원격 후보는 등록된 문서 content와 변경 style 검사를 수행한다. 링크, 문서 library와
+   모의 실행 회귀는 [검증 정책](../../../../.agents/governance/quality-standards.md#4-execution-boundary)의
+   로컬 전용 범위를 따른다. 변경 폴더와 검증 목적에 맞는 검사만 실행하고 동일 입력의 링크 결과를 재사용한다.
 
 4. hook quoting/parsing 자체를 변경했고 해당 수동 관측이 Task에 선택·승인된 경우에만 아래 simulation을 수행한다. 일반 문서 변경에는 적용하지 않는다.
 

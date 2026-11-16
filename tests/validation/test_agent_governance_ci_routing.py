@@ -312,9 +312,15 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
                 self.assertEqual(0, first.returncode, first.stderr)
                 self.assertIn("Session ending", first.stdout)
                 retry = self._run_stop(
-                    repo, provider, payload={"stop_hook_active": True}
+                    repo,
+                    provider,
+                    payload={
+                        "stop_hook_active": True,
+                        "last_assistant_message": "x" * 140_000,
+                    },
                 )
                 self.assertEqual(0, retry.returncode, retry.stderr)
+                self.assertEqual("", retry.stderr)
                 self.assertNotIn("Session ending", retry.stdout)
                 self.assertEqual("", retry.stdout)
                 self.assertFalse((repo / ".gate-calls").exists())
@@ -3013,38 +3019,73 @@ class HookOutputAndMainPushTests(unittest.TestCase):
 
     def test_task_update_reminders_are_conditional_on_repository_work(self) -> None:
         for provider in ("claude", "codex"):
-            for event in ("SessionEnd", "PreCompact"):
-                with self.subTest(provider=provider, event=event):
+            with self.subTest(provider=provider):
+                result = self._event(
+                    "PreCompact", {"work_kind": "read_only"}, provider=provider
+                )
+                self.assertEqual(0, result.returncode, result.stderr)
+                message = json.loads(result.stdout)["systemMessage"]
+                self.assertIn(
+                    "If this session changed the repository and an active "
+                    "co-located Stage 03 Task exists",
+                    message,
+                )
+                self.assertNotIn("Update the active co-located Stage 03 Task", message)
+
+    def test_claude_session_end_has_no_discarded_reminder(self) -> None:
+        settings = json.loads((ROOT / ".claude/settings.json").read_text())
+        self.assertNotIn("SessionEnd", settings["hooks"])
+        result = self._event("SessionEnd", {})
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual("", result.stdout)
+
+    def test_session_start_emits_provider_shaped_context(self) -> None:
+        for provider in ("claude", "codex"):
+            for source in ("startup", "compact", "resume", "unrecognized", []):
+                with self.subTest(provider=provider, source=source):
                     result = self._event(
-                        event,
-                        {"work_kind": "read_only"},
-                        provider=provider,
+                        "SessionStart", {"source": source}, provider=provider
                     )
                     self.assertEqual(0, result.returncode, result.stderr)
-                    message = json.loads(result.stdout)["systemMessage"]
-                    self.assertIn(
-                        "If this session changed the repository and an active "
-                        "co-located Stage 03 Task exists",
-                        message,
-                    )
-                    self.assertNotIn(
-                        "Update the active co-located Stage 03 Task",
-                        message,
-                    )
+                    output = json.loads(result.stdout)
+                    self.assertNotIn("systemMessage", output)
+                    specific = output["hookSpecificOutput"]
+                    self.assertEqual("SessionStart", specific["hookEventName"])
+                    context = specific["additionalContext"]
+                    self.assertIn("`CLAUDE.md`", context)
+                    for reminder in (
+                        "Re-read the active Stage 03 Task and the latest trusted request",
+                        "repository, worktree, branch, HEAD and relevant digests",
+                        "applicable request identity and revision",
+                        "authorized operation, target, scope and conditions",
+                        "withdrawal or cancellation",
+                        "exclusive writer and partial-result state",
+                        "stop dependent work",
+                    ):
+                        self.assertEqual(
+                            source != "startup", reminder in context, reminder
+                        )
 
-    def test_session_start_context_reaches_the_model(self) -> None:
-        for source in ("startup", "compact"):
-            with self.subTest(source=source):
-                result = self._event("SessionStart", {"source": source})
+    def test_session_start_autodetection_accepts_large_native_input(self) -> None:
+        for event, provider in (("", "codex"), ("SessionStart", "claude")):
+            with self.subTest(provider=provider):
+                result = self._event(
+                    event,
+                    {
+                        "hook_event_name": "SessionStart",
+                        "source": "resume",
+                        "transcript_path": None,
+                        "extra_context": "x" * 140_000,
+                    },
+                    provider=provider,
+                )
                 self.assertEqual(0, result.returncode, result.stderr)
-                output = json.loads(result.stdout)
-                self.assertNotIn("systemMessage", output)
-                specific = output["hookSpecificOutput"]
+                self.assertEqual("", result.stderr)
+                specific = json.loads(result.stdout)["hookSpecificOutput"]
                 self.assertEqual("SessionStart", specific["hookEventName"])
-                self.assertIn("`CLAUDE.md`", specific["additionalContext"])
-                self.assertEqual(
-                    source == "compact",
-                    "Context was just compacted" in specific["additionalContext"],
+                self.assertIn(
+                    "Reconcile any registered execution brief",
+                    specific["additionalContext"],
                 )
 
     def test_pre_tool_guidance_reaches_the_model(self) -> None:

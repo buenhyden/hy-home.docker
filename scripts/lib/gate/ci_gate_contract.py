@@ -12,14 +12,10 @@ import subprocess
 import sys
 from collections.abc import Mapping
 
-import yaml
-
 if __package__ in {None, ""}:
     _BOOTSTRAP_ROOT = pathlib.Path(__file__).resolve().parents[3]
     if str(_BOOTSTRAP_ROOT) not in sys.path:
         sys.path.insert(0, str(_BOOTSTRAP_ROOT))
-
-from scripts.lib.document_governance.frontmatter import safe_load_unique
 
 _CONTRACT_PATH = pathlib.PurePosixPath(".github/workflow-contract.yml")
 _MAX_CONTRACT_BYTES = 1024 * 1024
@@ -85,6 +81,7 @@ _OPTIONAL_CHANGED_ROOT_GATE_IDS = (
     "ci.opsflow-smtp-node-package",
     "ci.storybook-coverage",
     "ci.zizmor",
+    "leaf.compose-baseline-regressions",
     "leaf.local-document-corpus-lifecycle-tests",
     "leaf.local-document-metadata-tests",
     "leaf.document-governance-library-regressions",
@@ -231,6 +228,9 @@ class ManifestContractError(ValueError):
 
 def load_manifest_document(path: pathlib.Path) -> object:
     """Read the manifest through one bounded, no-follow YAML boundary."""
+    import yaml
+
+    from scripts.lib.document_governance.frontmatter import safe_load_unique
 
     def snapshot(value: os.stat_result) -> tuple[int, ...]:
         return (
@@ -1149,14 +1149,7 @@ def select_public_suites(
         )
     if profile == "full":
         return contract.suite_names
-    if any(not _valid_changed_path(path) for path in changed_paths):
-        raise GateContractError(
-            "ci-gate-changed-path",
-            "changed_paths",
-            "changed paths must be canonical repository-relative paths",
-        )
-    if _has_unmapped_changed_path(contract, changed_paths):
-        return contract.suite_names
+    _require_mapped_paths(contract, changed_paths)
     selected = set(contract.changed_fallback_suites)
     for rule in contract.changed_rules:
         if any(
@@ -1191,14 +1184,7 @@ def public_root_gate_ids(
     )
     if changed_paths is None:
         return roots
-    if any(not _valid_changed_path(path) for path in changed_paths):
-        raise GateContractError(
-            "ci-gate-changed-path",
-            "changed_paths",
-            "changed paths must be canonical repository-relative paths",
-        )
-    if _has_unmapped_changed_path(contract, changed_paths):
-        return roots
+    _require_mapped_paths(contract, changed_paths)
     selected_optional_roots = {
         gate_id
         for rule in contract.changed_root_rules
@@ -1217,17 +1203,26 @@ def public_root_gate_ids(
     )
 
 
-def _has_unmapped_changed_path(
+def _require_mapped_paths(
     contract: PublicGateContract, changed_paths: tuple[str, ...]
-) -> bool:
-    return any(
-        not any(
+) -> None:
+    for path in changed_paths:
+        if not _valid_changed_path(path):
+            raise GateContractError(
+                "ci-gate-changed-path",
+                "changed_paths",
+                "changed paths must be canonical repository-relative paths",
+            )
+        if not any(
             _matches_changed_prefix(path, prefix)
             for rule in contract.changed_rules
             for prefix in rule.prefixes
-        )
-        for path in changed_paths
-    )
+        ):
+            raise GateContractError(
+                "ci-gate-changed-path-unmapped",
+                path,
+                "unmapped changed path requires an explicit selector route",
+            )
 
 
 def _valid_changed_prefix(value: str) -> bool:

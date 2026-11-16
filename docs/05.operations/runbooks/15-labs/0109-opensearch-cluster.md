@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Cluster LAB Runbook"
-version: "0.1.2"
+version: "0.1.3"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "RUN-0109"
 parent_ids:
@@ -82,7 +82,13 @@ python3 scripts/operations/lab.py down opensearch-cluster
 
 #### Diagnosis
 
-1. `docker compose -p hy-home-lab-opensearch ps`로 세 node와 Dashboards의 health를 본다.
+1. 활성 lease와 승인된 Docker context에서 세 node와 Dashboards의 상태를 확인한다.
+   `LAB_ENV_FILE`은 그 lease를 시작할 때 사용한 LAB 환경 파일의 경로다.
+
+   ```bash
+   docker compose --project-name hy-home-lab-opensearch --env-file "$LAB_ENV_FILE" -f labs/opensearch-cluster/docker-compose.yml --profile opensearch-cluster ps
+   ```
+
 2. node가 unhealthy이면 log에서 인증서 subject·CA 불일치, `nodes_dn` 거부, memory lock, disk
    watermark, bind 디렉터리 권한(uid 1000)을 찾는다. log 원문은 evidence에 붙이지 않는다.
 3. Dashboards가 unhealthy이면 세 node가 healthy인지, `rootCA.pem` mount와 dashboard secret이 있는지

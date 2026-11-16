@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import datetime
 import json
 import os
@@ -672,6 +673,19 @@ class RegisteredSectionContractTests(unittest.TestCase):
             self._findings("repository-readme", candidate),
         )
 
+    def test_commented_heading_cannot_move_a_readme_path_table(self) -> None:
+        body, _ = self._conforming_body("repository-readme")
+        candidate = body.replace(
+            "### Directories\n\n",
+            "### Directories\n\n<!-- Example\n### Other\n-->\n\n"
+            "| Purpose | Path |\n| --- | --- |\n| a | b |\n\n",
+            1,
+        )
+        self.assertIn(
+            "readme-documents-header-invalid",
+            self._findings("repository-readme", candidate),
+        )
+
     def test_readme_current_items_checks_only_path_column_tables(self) -> None:
         body, _ = self._conforming_body("readme")
         for header, reported in (
@@ -896,6 +910,60 @@ class TemplateAndAuthoredResidueTests(unittest.TestCase):
                         }
                         & {item.code for item in findings}
                     )
+
+    def test_prose_placeholders_cannot_enter_approved_spec(self) -> None:
+        markers = (
+            "TODO",
+            "- **TODO:** Confirm the implementation.",
+            "Deployment target: **TBD**.",
+            "**TO**DO: Confirm scope.",
+            "TO<!-- reviewer note -->DO: Name the exact target.",
+            "Target owner: T**B**D.",
+        )
+        for status in ("draft", "in-review", "approved"):
+            record = dataclasses.replace(
+                self.spec_record,
+                metadata={**self.spec_record.metadata, "status": status},
+            )
+            for marker in markers:
+                with self.subTest(status=status, marker=marker):
+                    findings = heading_module.validate_body_contract(
+                        record, self.spec_text + f"\n\n{marker}\n", self.profiles, False
+                    )
+                    codes = {item.code for item in findings}
+                    self.assertEqual(
+                        status == "approved", "effective-body-placeholder" in codes
+                    )
+
+    def test_effective_prose_keeps_examples_and_future_work(self) -> None:
+        text = self.spec_text + (
+            "\n\n<!-- TODO: Hidden example. -->\n\n"
+            "```markdown\nTODO: Fenced example.\n```\n\n"
+            "> - TODO: Quoted example.\n\n"
+            "    TODO: Indented example.\n\n"
+            "`TODO:` is the rule's example marker.\n\n"
+            "TO<br>DO: These are separate visible lines.\n\n"
+            "The dependent pull request is TBD.\n\n"
+            "The chosen deployment target is the read-only test host.\n"
+        )
+        findings = heading_module.validate_body_contract(
+            self.spec_record, text, self.profiles, False
+        )
+        self.assertNotIn("effective-body-placeholder", {item.code for item in findings})
+
+    def test_active_policy_rejects_unresolved_prose(self) -> None:
+        path = pathlib.Path(".agents/governance/documentation-protocol.md")
+        text = (ROOT / path).read_text(encoding="utf-8")
+        record = metadata.Record(
+            path,
+            parse_frontmatter_text(text),
+            classify_path(path.as_posix(), self.profiles["_registry"]),
+            frontmatter_present=True,
+        )
+        findings = heading_module.validate_body_contract(
+            record, text + "\n\nSource owner: TBD.\n", self.profiles, False
+        )
+        self.assertIn("effective-body-placeholder", {item.code for item in findings})
 
     def test_current_non_sdlc_authored_document_rejects_residue(self) -> None:
         path = pathlib.Path(".agents/governance/documentation-protocol.md")
@@ -2280,6 +2348,32 @@ class SubsectionContractTests(unittest.TestCase):
         optional = self.VALID.replace("## Beta", "### Extra\n\nOptional.\n\n## Beta")
         self.assertEqual([], self.codes(optional))
 
+    def test_comments_do_not_make_an_optional_placeholder_substantive(self) -> None:
+        for body in (
+            "N/A <!-- author note -->",
+            "<!-- author note --> TODO",
+            "TBD <!-- a note\ncontinues here -->",
+            "- <!-- author note -->",
+            "N/A\n\n<!-- unclosed block comment",
+            "N/A\n\n> <!-- note inside a quote -->",
+            "N/A\n\n- <!-- note inside a bullet -->",
+        ):
+            with self.subTest(body=body):
+                text = self.VALID.replace("## Beta", f"### Extra\n\n{body}\n\n## Beta")
+                self.assertIn("body-section-placeholder", self.codes(text))
+
+    def test_optional_section_keeps_visible_explanation_and_examples(self) -> None:
+        for body in (
+            "<!-- note --> No rollback applies because the check is read-only.",
+            "N/A\n\n```text\n### Example\nactual output\n```",
+            "N/A\n\n> This command only reads service state.",
+            "N/A <!-- looks like an inline comment\n\nVisible text -->",
+            "    N/A",
+        ):
+            with self.subTest(body=body):
+                text = self.VALID.replace("## Beta", f"### Extra\n\n{body}\n\n## Beta")
+                self.assertEqual([], self.codes(text))
+
     def test_subsection_violations_are_reported(self) -> None:
         cases = {
             "body-subheading-missing": self.VALID.replace("### Second\n\nTwo.\n\n", ""),
@@ -2302,6 +2396,28 @@ class SubsectionContractTests(unittest.TestCase):
     def test_fenced_subheading_does_not_count(self) -> None:
         fenced = self.VALID.replace("### Second\n\nTwo.", "```text\n### Second\n```")
         self.assertIn("body-subheading-missing", self.codes(fenced))
+
+    def test_commented_headings_cannot_supply_or_duplicate_sections(self) -> None:
+        hidden = self.VALID.replace(
+            "### Second\n\nTwo.", "<!-- example\n### Second\nTwo.\n-->"
+        )
+        self.assertIn("body-subheading-missing", self.codes(hidden))
+        hidden_parent = self.VALID.replace(
+            "## Beta\n\nThree.", "<!-- example\n## Beta\nThree.\n-->"
+        )
+        self.assertIn("body-heading-missing", self.codes(hidden_parent))
+        self.assertEqual(
+            [], self.codes(self.VALID + "\n<!-- example\n## Beta\n### First\n-->\n")
+        )
+
+    def test_a_quoted_or_list_nested_example_does_not_supply_an_h3(self) -> None:
+        for example in (
+            "> ### Second\n> Two.",
+            "- Example\n\n  ### Second\n\n  Two.",
+        ):
+            with self.subTest(example=example):
+                text = self.VALID.replace("### Second\n\nTwo.", example)
+                self.assertIn("body-subheading-missing", self.codes(text))
 
 
 class RegisteredTableContractTests(unittest.TestCase):
@@ -2378,6 +2494,21 @@ class RegisteredTableContractTests(unittest.TestCase):
     def test_a_row_of_the_wrong_width_is_rejected(self) -> None:
         body = self._mutate("postmortem", self.ROW, self.ROW + "extra | ")
         self.assertIn("table-row-width", self._table_codes("postmortem", body))
+
+    def test_registered_table_requires_a_matching_markdown_delimiter(self) -> None:
+        for delimiter, expected in (
+            ("", ["table-delimiter-invalid"]),
+            ("| --- | --- | --- |\n", ["table-delimiter-invalid"]),
+            ("| invalid | --- | --- | --- |\n", ["table-delimiter-invalid"]),
+            ("| \u00a0--- | --- | --- | --- |\n", ["table-delimiter-invalid"]),
+            ("| :--- | ---: | :---: | --- |\n", []),
+            (":--- | ---: | :---: | ---\n", []),
+        ):
+            with self.subTest(delimiter=delimiter):
+                body = self._mutate(
+                    "postmortem", "| --- | --- | --- | --- |\n", delimiter
+                )
+                self.assertEqual(expected, self._table_codes("postmortem", body))
 
     def test_a_disallowed_cell_value_is_rejected(self) -> None:
         for cell in ("", "TBD", "{{TRACKING_ID}}"):

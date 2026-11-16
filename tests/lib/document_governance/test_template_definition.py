@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import copy
-import hashlib
 import importlib
 import json
 import pathlib
@@ -105,12 +104,18 @@ class TemplateDefinitionTests(unittest.TestCase):
     def _profile(self, role: str):
         return self.registry.profiles[self.registry.template_roles[role]["profiles"][0]]
 
-    def test_vendored_schema_is_the_approved_bytes(self) -> None:
-        digest = hashlib.sha256(SCHEMA_PATH.read_bytes()).hexdigest()
-        self.assertTrue(digest.startswith("e490cf402419"), digest)
+    def test_schema_rejects_a_combined_contract_version(self) -> None:
+        definition = dict(self.definitions["sdlc/task"])
+        definition["contract_version"] = "COMMON-DOC-FORM-1/1.0.0"
+        del definition["contract_id"]
+        errors = _errors(definition)
+        self.assertIn(": required", errors)
+        self.assertIn("contract_version: pattern", errors)
 
     def test_every_definition_validates_against_the_schema(self) -> None:
-        self.assertEqual(39, len(self.definitions))
+        Draft202012Validator.check_schema(
+            json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+        )
         for role, definition in self.definitions.items():
             with self.subTest(role=role):
                 self.assertEqual([], _errors(definition))
@@ -463,28 +468,87 @@ class TemplateDefinitionTests(unittest.TestCase):
         roles = self._common_form_roles(self.registry)
         self.assertTrue(roles)
         for role in roles:
-            self.assertEqual(pinned, self.definitions[role]["contract_version"])
+            self.assertEqual(
+                pinned["contract_id"], self.definitions[role]["contract_id"]
+            )
+            self.assertEqual(
+                pinned["contract_version"], self.definitions[role]["contract_version"]
+            )
         raw = copy.deepcopy(dict(load_registry_document()))
-        raw["common"]["common_form_contract"] = "COMMON-DOC-FORM-1/9.9.9"
+        raw["common"]["common_form_contract"]["contract_version"] = "9.9.9"
         moved = _registry_from_document(raw, pathlib.PurePosixPath("registry.json"))
         for role in roles:
             with self.subTest(role=role):
                 self.assertEqual(
-                    "COMMON-DOC-FORM-1/9.9.9",
+                    "9.9.9",
                     template_definition(moved, role)["contract_version"],
                 )
         legacy = next(role for role in moved.template_roles if role not in set(roles))
         self.assertEqual(
             moved.common["contract_id"],
+            template_definition(moved, legacy)["contract_id"],
+        )
+        self.assertEqual(
+            moved.common["contract_version"],
             template_definition(moved, legacy)["contract_version"],
         )
+
+    def test_template_outline_ignores_commented_headings_and_tables(self) -> None:
+        from scripts.lib.document_governance.template_definition import (
+            _template_outline,
+        )
+
+        guidance, tables = _template_outline(
+            "## Parent\n\n### Child\n\nWrite the reason.\n\n"
+            "<!-- An example\n## Fake\n| False header |\n-->\n\n"
+            "Write the result.\n"
+        )
+        self.assertEqual(
+            {
+                ("Parent", None): "",
+                ("Parent", "Child"): "Write the reason. Write the result.",
+            },
+            guidance,
+        )
+        self.assertEqual([], tables)
+
+    def test_template_outline_ignores_list_nested_tables(self) -> None:
+        from scripts.lib.document_governance.template_definition import (
+            _template_outline,
+        )
+
+        _, tables = _template_outline(
+            "## Parent\n\n- Example\n\n  | False | Header |\n"
+            "  | --- | --- |\n  | a | b |\n\n"
+            "| Real | Header |\n| --- | --- |\n| c | d |\n"
+        )
+        self.assertEqual([("Parent", None, "| Real | Header |")], tables)
+
+    def test_template_outline_refuses_an_invalid_table_delimiter(self) -> None:
+        from scripts.lib.document_governance.template_definition import (
+            _template_outline,
+        )
+
+        for rows in ("", "| :--- |\n", "| --- | invalid |\n", "| \u00a0--- | --- |\n"):
+            with self.subTest(rows=rows):
+                with self.assertRaisesRegex(RegistryError, "table delimiter"):
+                    _template_outline(f"## Parent\n\n| Left | Right |\n{rows}")
+
+    def test_template_outline_accepts_delimiter_without_outer_pipes(self) -> None:
+        from scripts.lib.document_governance.template_definition import (
+            _template_outline,
+        )
+
+        guidance, tables = _template_outline(
+            "## Parent\n\n| Left | Right |\n:--- | ---:\n| a | b |\n"
+        )
+        self.assertEqual({("Parent", None): ""}, guidance)
+        self.assertEqual([("Parent", None, "| Left | Right |")], tables)
 
     def test_a_registry_without_the_pin_fails_for_a_common_form_role(self) -> None:
         raw = copy.deepcopy(dict(load_registry_document()))
         del raw["common"]["common_form_contract"]
-        # A Registry from before the pin still validates; only the consumer
-        # that needs the revision refuses to guess it.
-        self.assertEqual([], [f.code for f in validate_registry(raw)])
+        self.assertIn("schema-invalid", {f.code for f in validate_registry(raw)})
         bare = _registry_from_document(raw, pathlib.PurePosixPath("registry.json"))
         role = self._common_form_roles(bare)[0]
         with self.assertRaisesRegex(RegistryError, "common_form_contract"):
@@ -497,6 +561,8 @@ class TemplateDefinitionTests(unittest.TestCase):
             "COMMON-DOC-FORM-1/1.0",
             "COMMON-DOC-FORM-1 1.0.0",
             1,
+            {"contract_id": "COMMON-DOC-FORM-1", "contract_version": "1.0.0\n"},
+            {"contract_id": "COMMON-DOC-FORM-1", "contract_version": "1.0.0-rc.1"},
         ):
             raw = copy.deepcopy(dict(load_registry_document()))
             raw["common"]["common_form_contract"] = value

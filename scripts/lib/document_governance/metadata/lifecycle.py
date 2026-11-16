@@ -69,6 +69,7 @@ from scripts.lib.document_governance.operations_catalog import (
 )
 from scripts.lib.document_governance.registry import (
     DocumentRegistry,
+    FrontmatterValidator,
     RegistryError,
     document_type,
     preserved_origin_path,
@@ -166,6 +167,7 @@ def validate_record(
     actual_lifecycle_normalizations: Set[tuple[str, str, str]] | None = None,
     actual_lifecycle_normalization_sources: Mapping[str, str] | None = None,
     unchanged_generation_statuses: Mapping[str, str] | None = None,
+    frontmatter_validator: FrontmatterValidator | None = None,
 ) -> list[Finding]:
     """Validate one record against its typed profile and the global manifest."""
 
@@ -194,11 +196,15 @@ def validate_record(
             _finding(record, f"frontmatter-{parse_code}", record.parse_error)
         )
         return findings
-    template_findings = _validate_template_source(record, profiles)
+    template_findings = _validate_template_source(
+        record, profiles, frontmatter_validator
+    )
     if template_findings is not None:
         return template_findings
     try:
-        schema_findings = validate_frontmatter(record.metadata)
+        schema_findings = (frontmatter_validator or validate_frontmatter)(
+            record.metadata
+        )
     except RegistryError:
         findings.append(
             _finding(
@@ -925,22 +931,26 @@ def _metadata_at_ref(
     path: pathlib.Path,
     base_ref: str | None,
     profiles: Mapping[str, object] | None = None,
+    *,
+    known_text: str | None = None,
 ) -> dict[str, object] | None:
     if not base_ref:
         return None
-    if not resolve_git_provenance(path, base_ref, repo_root=root).is_regular_blob:
-        return None
-    result = _run_git(
-        root,
-        ["show", f"{base_ref}:{path.as_posix()}"],
-        operation="prior metadata discovery",
-        text=True,
-    )
-    if result.returncode != 0:
-        return None
+    if known_text is None:
+        if not resolve_git_provenance(path, base_ref, repo_root=root).is_regular_blob:
+            return None
+        result = _run_git(
+            root,
+            ["show", f"{base_ref}:{path.as_posix()}"],
+            operation="prior metadata discovery",
+            text=True,
+        )
+        if result.returncode != 0:
+            return None
+        known_text = result.stdout
     try:
         return _normalized_document_values(
-            path, _parse_frontmatter_text(result.stdout), profiles
+            path, _parse_frontmatter_text(known_text), profiles
         )
     except (FrontmatterError, RegistryError):
         return None
@@ -1178,7 +1188,11 @@ def _record_from_text(
 
 
 def _read_markdown_texts_at_ref(
-    root: pathlib.Path, paths: Sequence[str], ref: str
+    root: pathlib.Path,
+    paths: Sequence[str],
+    ref: str,
+    *,
+    raw_blobs: dict[str, bytes] | None = None,
 ) -> dict[str, str]:
     """Read exact regular blobs with bounded batches; omit missing paths."""
     if not paths:
@@ -1262,6 +1276,8 @@ def _read_markdown_texts_at_ref(
                 texts[path] = payload.decode("utf-8")
             except UnicodeError as error:
                 raise ProfileError("historical Markdown blob is not UTF-8") from error
+            if raw_blobs is not None:
+                raw_blobs[path] = payload
             cursor += 1
         if cursor != len(shown.stdout):
             raise ProfileError(
@@ -1275,6 +1291,8 @@ def collect_records_at_ref(
     root: pathlib.Path,
     profiles: dict[str, object],
     base_ref: str,
+    *,
+    texts_by_path: dict[str, str] | None = None,
 ) -> list[Record]:
     """Collect and parse the exact target Markdown corpus stored at a Git ref."""
 
@@ -1328,6 +1346,12 @@ def collect_records_at_ref(
                 relative_path, texts[relative_path.as_posix()], profiles=profiles
             )
         )
+    if texts_by_path is not None:
+        # Historical body reads used Git's text mode, which normalizes CRLF and CR.
+        texts_by_path.update(
+            (path, text.replace("\r\n", "\n").replace("\r", "\n"))
+            for path, text in texts.items()
+        )
     return records
 
 
@@ -1336,6 +1360,8 @@ def collect_selected_records_at_ref(
     profiles: dict[str, object],
     selected_paths: Sequence[str],
     ref: str,
+    *,
+    raw_blobs: dict[str, bytes] | None = None,
 ) -> dict[str, Record]:
     """Collect selected records that exist at a ref without scanning its full corpus."""
 
@@ -1346,7 +1372,7 @@ def collect_selected_records_at_ref(
             if (path := _normalized_target_path(value)) is not None
         }
     )
-    texts = _read_markdown_texts_at_ref(root, paths, ref)
+    texts = _read_markdown_texts_at_ref(root, paths, ref, raw_blobs=raw_blobs)
     return {
         path: _record_from_text(pathlib.Path(path), text, profiles=profiles)
         for path, text in texts.items()
@@ -1360,8 +1386,10 @@ def collect_records(
     selected_paths: Sequence[str] = (),
     previous_records: Mapping[str, Record] | None = None,
     require_git: bool = False,
+    *,
+    current_records: Mapping[str, Record] | None = None,
 ) -> list[Record]:
-    """Collect tracked records plus selected existing new paths, excluding deletions."""
+    """Collect this selection, reusing records with the same predecessor input."""
 
     common, _ = _profile_mapping(profiles)
     excluded = set(common.get("inventory_excludes", []))
@@ -1377,6 +1405,11 @@ def collect_records(
         absolute_path = root / relative_path
         if not absolute_path.is_file():
             continue
+        if current_records is not None:
+            known = current_records.get(relative_path.as_posix())
+            if known is not None:
+                records.append(known)
+                continue
         try:
             text = read_bounded_regular(
                 root, relative_path, max_bytes=4 * 1024 * 1024

@@ -1,10 +1,10 @@
 ---
 title: "Kafka Cluster LAB Usage Guide"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "GDE-0108"
 parent_ids:
@@ -34,7 +34,7 @@ include하지 않는다. 세 broker가 한 host를 공유하므로 host 장애 �
 
 대상 독자: 운영자, 개발자, AI Agent.
 
-목적: Kafka LAB의 구성, 격리 경계, 정적 검증과 승격 계획을 현재 Compose와 맞춰 이해한다. HOME의
+목적: Kafka LAB의 구성, 격리 경계와 정적 검증을 현재 Compose와 맞춰 이해한다. HOME의
 단일 broker는 [GDE-0036](../06-messaging-and-cdc/0036-kafka.md)이 다룬다.
 
 ### Boundaries
@@ -111,10 +111,12 @@ LAB_DATA_DIR=/tmp/hyhome-lab-kafka-synthetic LAB_KAFKA_CLUSTER_ID=MkU3OEVBNTcwNT
 
 #### Promotion
 
-[promotion manifest](../../../../labs/kafka-cluster/promotion.yaml)는 `replace-same`이며 목적지는
-`infra/05-messaging/kafka/`, profile `messaging`이다. HOME `kafka-1`, `kafka-exporter`,
-`kafka-init`을 은퇴시킨다. 문서 목적지는 `06-messaging-and-cdc` 역할 폴더다. 승격 절차는
-[RUN-0107](../../runbooks/15-labs/0107-lab-promotion.md)이 소유한다.
+[ADR-0062의 Kafka CDC 개정](../../../02.architecture/decisions/0062-home-lab-membership.md#amendment-of-2026-11-10-kafka-cdc-kafka-connect-and-schema-registry)은
+HOME 단일 broker와 초기화·exporter·UI를 유지하고 Schema Registry와 Connect를 이 LAB으로 옮긴
+결정이다. [promotion manifest](../../../../labs/kafka-cluster/promotion.yaml)는 HOME broker 교체를
+검토하기 위한 `replace-same` 후보이며 실행 승인을 담지 않는다. HOME 교체를 다시 검토하려면
+현행 구조 결정의 변경을 승인받고 [POL-0107](../../policies/15-labs/0107-lab-promotion.md)의
+별도 Task 절차를 따른다.
 
 ### Exceptions
 

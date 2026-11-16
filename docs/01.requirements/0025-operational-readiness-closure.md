@@ -1,10 +1,10 @@
 ---
 title: "Operational Readiness Closure Requirements"
-version: "1.3.0"
+version: "1.3.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-16"
 layer: "requirements"
 artifact_id: "REQ-0025"
 created: "2026-07-19"
@@ -138,7 +138,15 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 ### Verification Method
 
-Each condition is judged by running the focused tests and the registered full profile, and the evidence names only the scope actually verified. No current Spec Package cites REQ-0025; a Spec that implements it records the evidence in its Task. The evidence is the command, scope, result, cleanup and review, recorded in that Task. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
+Select registered checks that exercise the condition and follow the execution
+scope in [Quality Standards](../../.agents/governance/quality-standards.md#4-execution-boundary).
+Run the full profile when the applicable verification scope calls for it.
+[SPEC-0212](../03.specs/0212-request-baseline-and-reconciliation/spec.md#acceptance-criteria)
+criterion 114 covers the mapping of requirements to acceptance conditions.
+The implementing Task records the command, scope, result, cleanup and review
+for the work it actually verifies. The owner named in the frontmatter,
+@buenhyden, judges each condition from that evidence and accepts the
+requirement once every condition is met.
 
 ## Traceability
 

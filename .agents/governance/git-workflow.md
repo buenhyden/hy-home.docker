@@ -1,10 +1,10 @@
 ---
 title: "Git Workflow Governance"
-version: "1.8.0"
+version: "1.8.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 ---
 
 # Git Workflow Governance
@@ -50,7 +50,8 @@ Use Conventional Commits with explicit scopes where possible.
   is the sole executable authority for the allowed types, message grammar,
   and header length. Its interactive type choices explain each type; this
   policy governs commit usage and workflow.
-- Validate a draft with
+- If commit-msg delivery is unconfirmed or diagnosis is needed, validate
+  the draft with
   `cz check --message-length-limit 75 --message "feat(auth): Add login guard"`
   before starting the commit. Observe whether a `commit-msg` hook is actually
   installed; the configuration alone is not enforcement evidence. The remote
@@ -174,13 +175,13 @@ rows are enforcement.
 
 | Cell | Trigger and input | Action |
 | --- | --- | --- |
-| Commit before | `run-ci-precommit.sh --mode local-staged` on the index tree | Run: the agent route before a commit |
+| Commit before | `run-ci-precommit.sh --mode local-staged` on the index tree | Run only if installed delivery is unconfirmed or diagnosis is needed |
 | Commit during | Installed `pre-commit` hook on the index; `commit-msg` hook on the message file | Run: blocks the commit |
 | Commit after | No `post-commit` hook | Not applicable: nothing could block |
 | Push before | Installed native `pre-push` guard on the pushed refs | Run: refuses any `refs/heads/main` update and nothing else; it runs no QA, because the pull request candidate owns it |
 | Push during | GitHub branch protection on `main` | Observe: the server accepts or refuses |
 | Push after | Git has no `post-push` hook; the `push` event on `main` runs `main-security` | Observe: security audit of the merged input |
-| PR before | No hook. The agent runs `python3 scripts/validation/run-ci-gate.py --profile changed` (inspect with `--explain`) and the local candidate preflight (`scripts/validation/check-candidate-preflight.sh`) on the final source, then fills every section of `.github/PULL_REQUEST_TEMPLATE.md` | Observe: a local, advisory route; opening a PR is a separate remote write, and no gate reads the PR body |
+| PR before | No hook. The agent runs `python3 scripts/validation/run-ci-gate.py --profile changed` (inspect with `--explain`) on the final source, including the local candidate preflight when selected, then fills every section of `.github/PULL_REQUEST_TEMPLATE.md` | Observe: a local, advisory route; opening a PR is a separate remote write, and no gate reads the PR body |
 | PR during | `pull_request` `opened`, `synchronize` or `reopened`; candidate shard jobs and the `candidate-quality` aggregate | Run: required check on the merge candidate |
 | PR after | Gate evidence artifacts per shard | Observe: each artifact is bound to its run |
 | Merge before | Branch protection: strict up to date, required `candidate-quality`, resolved conversations | Run (server): blocks the merge |

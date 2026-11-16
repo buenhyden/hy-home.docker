@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Runbook"
-version: "1.2.2"
+version: "1.2.3"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "RUN-0057"
 parent_ids:
@@ -79,11 +79,15 @@ LAB 기동·점검과 데이터 보존, HOME 퇴역 단계는 다음 순서를 �
 
 ```bash
 python3 scripts/operations/lab.py check open-webui
-docker logs --tail 200 open-webui
 ```
 
-활성 lease 안에서는 같은 LAB project(`labs/open-webui/docker-compose.yml`, profile `lab-open-webui`, 운영자
-`labs/.env`)로 `exec open-webui curl -f http://localhost:8080/health`를 실행한다.
+활성 lease와 승인된 Docker context에서 LAB project를 명시해 진단한다. `LAB_ENV_FILE`은
+그 lease를 시작할 때 사용한 LAB 환경 파일의 경로다.
+
+```bash
+docker compose --project-name hy-home-lab-open-webui --env-file "$LAB_ENV_FILE" -f labs/open-webui/docker-compose.yml --profile lab-open-webui logs --tail 200 open-webui
+docker compose --project-name hy-home-lab-open-webui --env-file "$LAB_ENV_FILE" -f labs/open-webui/docker-compose.yml --profile lab-open-webui exec -T open-webui curl -f http://localhost:8080/health
+```
 
 health는 로그인·RAG의 증거가 아니다. 승인된 lease 안에서 Keycloak 로그인, 모델 목록, 통제된 RAG 질의를
 따로 확인한다. entrypoint는 secret이 비었거나 두 줄 이상이거나 CA 파일이 없으면 기동을 멈춘다.
@@ -96,13 +100,22 @@ LAB data root는 HOME Restic 범위 밖이다. 보존할 실험 data가 있으�
 
 #### HOME retirement steps
 
-이 source 이동은 실행 중인 HOME 컨테이너와 volume을 바꾸지 않았다. 아래 단계는 순서대로, 각각 별도 승인
-아래에서만 실행한다.
+이 source 이동 당시 HOME 컨테이너와 volume은 퇴역 대기였다. 현재 host 상태는 별도 승인으로 확인한다.
+LAB도 같은 `open-webui` 컨테이너 이름을 사용한다. 정지·제거 전 승인된 Docker context에서 HOME
+project와 service label이 모두 맞는 컨테이너를 찾고 ID를 확인한다.
 
-1. **최종 backup**: 쓰기를 멈추고 HOME `open-webui`를 정지한 뒤 `${DEFAULT_AI_MODEL_DIR}/open-webui`의
-   SQLite·upload·`.webui_secret_key`를 일관 backup한다. HOME Restic은 이 경로를 더 이상 포함하지 않는다.
-2. **컨테이너 제거**: root include에서 빠졌으므로 `docker compose`가 아닌 정확한 이름으로 정지·제거한다
-   (`docker stop open-webui`, `docker rm open-webui`). 이미지(약 16.5 GB) 제거도 별도 승인이다.
+```bash
+docker ps -aq --no-trunc --filter 'label=com.docker.compose.project=hy-home-infra' --filter 'label=com.docker.compose.service=open-webui' --filter 'name=^/open-webui$'
+```
+
+결과가 정확히 하나일 때만 그 ID를 아래 단계의 `HOME_OPEN_WEBUI_ID`로 사용한다. 이름만 같거나 label이
+없거나 후보가 없으면 중단한다. 아래 단계는 순서대로, 각각 별도 승인 아래에서만 실행한다.
+
+1. **최종 backup**: 쓰기를 멈추고 `docker stop "$HOME_OPEN_WEBUI_ID"`로 HOME 컨테이너를 정지한 뒤
+   `${DEFAULT_AI_MODEL_DIR}/open-webui`의 SQLite·upload·`.webui_secret_key`를 일관 backup한다.
+   HOME Restic은 이 경로를 더 이상 포함하지 않는다.
+2. **컨테이너 제거**: root include에서 빠졌으므로, 앞에서 정지한 HOME ID를 재확인한 뒤
+   `docker rm "$HOME_OPEN_WEBUI_ID"`를 실행한다. 이미지 제거도 별도 승인이다.
 3. **volume 처리**: `hy-home-infra_open-webui`를 LAB data root로 이전할지, 보관할지, 삭제할지 소유자가
    정한다. 이전은 data를 `${LAB_DATA_DIR}/open-webui/data`로 복사하고 원본 checksum을 남긴다. 삭제는 되돌릴 수 없다.
 4. **Keycloak client**: `home-openwebui` client를 LAB용으로 유지하며 LAB origin redirect를 등록할지,
@@ -138,8 +151,8 @@ LAB data root는 HOME Restic 범위 밖이다. 보존할 실험 data가 있으�
 ### Rollback
 
 - LAB 문제는 `lab.py down open-webui`로 정지하고 data root를 보존한다.
-- HOME으로 되돌리려면 [POL-0107](../../policies/15-labs/0107-lab-promotion.md) 승격 절차를 따른다. 퇴역
-  단계 2 이전이라면 HOME 컨테이너는 아직 남아 있다.
+- HOME으로 되돌리려면 [POL-0107](../../policies/15-labs/0107-lab-promotion.md) 승격 절차를 따른다. 복구 후보인
+  기존 HOME 컨테이너가 있는지는 HOME retirement steps의 project·service·ID 확인을 사용한다.
 - 격리 복원 rehearsal은 계획만 있고 실행되지 않았다. 복원 성공을 주장하지 않는다.
 
 ### Escalation

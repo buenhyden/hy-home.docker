@@ -39,6 +39,7 @@ from scripts.lib.document_governance.registry import (
     validate_frontmatter,
     validate_registry,
 )
+from scripts.lib.document_governance.semver import NUMERIC_VERSION
 from scripts.lib.document_governance.taxonomy import validate_stable_identity
 
 
@@ -1265,25 +1266,28 @@ class DocumentRegistryTests(unittest.TestCase):
         frontmatter = json.loads(
             (contracts / "document-frontmatter.schema.json").read_text(encoding="utf-8")
         )
+        definition = json.loads(
+            (contracts / "template-definition.schema.json").read_text(encoding="utf-8")
+        )
         common = profile["properties"]["common"]["properties"]
         patterns = {
-            frontmatter["properties"]["version"]["pattern"].removeprefix("^"),
-            common["template_initial_version"]["pattern"].removeprefix("^"),
-            common["vocabulary_contract"]["properties"]["version"][
-                "pattern"
-            ].removeprefix("^"),
-            common["common_form_contract"]["pattern"].split("/", 1)[1],
+            frontmatter["properties"]["version"]["pattern"],
+            common["template_initial_version"]["pattern"],
+            common["vocabulary_contract"]["properties"]["version"]["pattern"],
+            common["contract_version"]["pattern"],
+            definition["properties"]["contract_version"]["pattern"],
         }
-        self.assertEqual(1, len(patterns), patterns)
+        self.assertEqual({rf"^{NUMERIC_VERSION.pattern}$(?!\n)"}, patterns)
         # Q03: document and contract versions are three ASCII integers only;
         # prerelease and build extensions belong to product versions.
-        pattern = re.compile("^" + patterns.pop())
+        pattern = re.compile(patterns.pop())
         for value in ("0.1.0", "1.10.0", "10.0.12"):
             self.assertIsNotNone(pattern.fullmatch(value), value)
         for value in (
             "1.0.0-rc.1",
             "1.0.0+build.7",
             "01.0.0",
+            "x1.0.0",
             "1.0",
             "1.0.0\n",
             " 1.0.0",

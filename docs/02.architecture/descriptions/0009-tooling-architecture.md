@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Software Verification Architecture Description"
-version: "2.5.2"
+version: "2.5.3"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "architecture"
 artifact_id: "AD-0009"
 parent_ids:
@@ -51,10 +51,11 @@ Only services that need it use the data tier, and each tool uses its own databas
 
 ### Building Blocks
 
-- **Management services** keep central state while their profile is selected:
-  the Terrakube API and UI, Pact Broker and Registry.
-- **Execution services** run per job: the Terrakube executor, OpenTofu,
-  Renovate, Restic, k6, Conftest and WireMock.
+- **Profile-selected services:** the Terrakube API, UI and executor, Pact
+  Broker, Registry, WireMock and Mailpit. WireMock serves requests while its
+  profile is active.
+- **Job tools:** OpenTofu, Renovate, Restic, k6 and Conftest run for named
+  operations.
 
 Directories under `infra/09-platform-ops/` without a Compose file
 (`project-registration`, `resource-optimization`, `security-updates`,
@@ -84,8 +85,10 @@ API, UI and executor; `dependency-update` selects Renovate; `backup` selects
 Restic, `restic-offsite` and the SQLite export job; `testing` selects k6;
 `contract-testing` selects Pact Broker and its provisioning job; `api-mock`
 selects WireMock; `policy-check` selects Conftest; `dev`, `local` and
-`mail-dev` select Mailpit. Registry is HOME; the other capabilities are not
-activated implicitly.
+`mail-dev` select Mailpit. Terrakube, Pact Broker and WireMock are optional root
+packages. Their standalone LAB moves are planned in ADR-0062. Registry and
+Mailpit remain in root Compose. Membership in the root project does not
+indicate which profiles are active.
 
 ## Interfaces
 

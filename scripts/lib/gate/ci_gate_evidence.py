@@ -1083,7 +1083,9 @@ class EvidenceStore:
         }
         self._replace_result(replacement)
 
-    def finalize(self, *, blocked_reason: str) -> dict[str, str]:
+    def finalize(
+        self, *, blocked_reason: str, require_pass: bool = False
+    ) -> dict[str, str]:
         reason = _validate_reason(blocked_reason, "blocked_reason")
         document = self._current_result()
         statuses = {row["status"] for row in document["rows"]}
@@ -1091,6 +1093,8 @@ class EvidenceStore:
             raise EvidenceError("cannot finalize while a gate is STARTED")
         if not statuses <= _CLOSED_STATUSES:
             raise EvidenceError("execution result contains an unknown status")
+        if require_pass and statuses != {"PASS"}:
+            raise EvidenceError("each required gate must record PASS")
         replacement = {
             **document,
             "complete": True,

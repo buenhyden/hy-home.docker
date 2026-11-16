@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.68.0"
+version: "1.75.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -182,6 +182,20 @@ delivery. W127 in TSK-0066 runs the 3.0.1 W00-DELTA baseline and verdicts. W128 
 TSK-0067 closes the gaps its audit found. W129 in TSK-0068 runs the 3.0.1
 W01-CONTRACT. W130 in TSK-0069 closes the gaps its audit found. W131 in TSK-0070 runs the
 3.0.1 W02-DISPOSITION. W132 in TSK-0071 gives the root networks explicit subnets.
+W133 in TSK-0072 closes the W03-VERSION prerequisite for W134 in TSK-0073,
+which implements the remaining 3.0.1 W03-FORMS differences.
+W135 in TSK-0074 uses the verified W03-FORMS functionality to check the
+3.0.1 draft authority boundary and close demonstrated lifecycle gaps.
+W136 in TSK-0075 uses the accepted W01 contract to reconcile current
+document claims against local source and observed evidence.
+W137 in TSK-0076 uses the accepted W00 delta to measure and improve
+quality feedback and preserve distinct candidate guarantees.
+W138 in TSK-0077 uses verified W05 implementation evidence to bind delivery
+checks to the actual candidate and remove avoidable setup.
+W139 in TSK-0078 uses the accepted W01 contract to bind an execution brief
+to observed request inputs, edit scope and the delegation preflight.
+W140 in TSK-0079 uses the accepted W01 contract to check native hook
+bindings, fix demonstrated event discrepancies, and account for runtime gaps.
 
 W109–W110 record the supply-chain evidence that TSK-0047 handed off for
 criteria 86 and 89, in TSK-0052. The 2026-11-10 owner decision opens the Task;
@@ -363,6 +377,14 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W130 | 125 | Audit TSK-0068; policy inventory; restrict document and contract versions to X.X.X (Q03); fit and violation cases; latency | W129 | TSK-0069 | RED and GREEN schema tests, active metadata check, independent review |
 | W131 | 126 | Classify every open Task; record the owner's per-item withdrawals; fix status lag; confirm closed audit questions stay inactive; list cutover targets without changing them | W130 | TSK-0070 | Source review, lifecycle and metadata checks, read-only remote inventory |
 | W132 | 127 | Explicit subnets for `n8n_ollama_net`, `opsflow_capture_net` and `opsflow_notifier_db_net`; contract test; AD-0026; recreate only those networks and their four containers | W131 | TSK-0071 | RED and GREEN contract test, Compose render and policy checks, independent IaC review, runtime read-back |
+| W133 | 128 | Split contract identity and version in the Registry and its projection; check document numeric and historical version boundaries | W130 | TSK-0072 | RED and GREEN version and projection tests, version fixtures, historical Registry check, independent review |
+| W134 | 129 | Compare the role purposes and close demonstrated document structure gaps | W133 | TSK-0073 | RED and GREEN form tests, corpus checks, independent review |
+| W135 | 130 | Preserve draft authoring and verify the authority, lifecycle and relation boundaries; reject explicit prose placeholders in effective documents | W134 | TSK-0074 | Focused authoring and lifecycle tests, relation checks, corpus checks, independent review |
+| W136 | 131 | Record the Stage 01, 02, 05 and 90 denominator and actual semantic coverage; correct demonstrated mismatches with their sources and preserve implementation obligations | W129 | TSK-0075 | Claim readback, focused synthetic command checks, affected metadata and links, corpus lifecycle, review of high-risk claims |
+| W137 | 132 | Trace delivery and local feedback, preserve unique checks, share immutable inputs, and fail closed on missing or changed required execution | W128 | TSK-0076 | Paired local timing, selection and evidence fixtures, document regressions, independent review |
+| W138 | 133 | Verify installed Git routes, select cumulative PR and final merge paths, align style scope, and avoid unnecessary checkout history where possible | W137 | TSK-0077 | Trace2, real Git fixtures, workflow projection and independent review |
+| W139 | 134 | Bind a brief to the request, compare exact actions and stop stale dependent work | W129 | TSK-0078 | Provider-shaped hook fixtures, explicit delegation preflight and independent review |
+| W140 | 135 | Preserve native event behavior and account for runtime evidence | W129 | TSK-0079 | Hook command regressions, provider parity, native observations and independent review |
 
 #### Current v30 continuation and delivery
 
@@ -671,9 +693,10 @@ axis, not Evidence `Result` values; no lower level implies a higher one. A
 local changed no-op or `full --explain` selection is not hosted required-check
 coverage. A missing live target is recorded as an Evidence `NOT_RUN` row.
 
-After independent review, validate the Conventional Commit message and run
-`scripts/validation/run-ci-precommit.sh --mode local-staged` on the exact
-staged set. Read actual branch protection and PR checks. Push this request's
+After independent review, stage the exact set and let the installed
+pre-commit and commit-msg hooks check it on the ordinary commit. Use the
+manual staged or message check for unconfirmed hook delivery or diagnosis
+only. Read actual branch protection and PR checks. Push this request's
 branch, create its PR and attach it; merge only when its current review/check
 conditions are satisfied. Record hosted results separately from local results.
 
@@ -764,6 +787,21 @@ pinning, CI shards, immutable releases), `.agents/governance/agentic.md`
 `.github/workflows/ci-quality.yml` (shards and aggregate) and `.cz.toml`. The
 handoff condition is the merge of each pull request; TSK-0065's Promotion
 Receipt records each target.
+
+W135 promotes the effective-document and request binding rules to the existing
+SDLC, delegation and handoff owners, with the Task template and SessionStart
+hook as consumers. The document validator and impact query keep their current
+entrypoints. TSK-0074 records the focused checks and authorization boundary.
+
+W136 promotes proven corrections to the affected requirement, architecture,
+operations and research owners. TSK-0075 records the evidence and unread scope.
+W137 promotes performance and evidence boundary corrections to the existing
+document and candidate gate owners. TSK-0076 records the measured limits.
+W138 promotes exact candidate selection and checkout rules in the delivery
+runner and workflow. TSK-0077 records native, fixture and hosted boundaries.
+
+- [W06 delivery](tasks/tsk-0077-w06-delivery-3-0-0.md)
+- [W05 quality gates](tasks/tsk-0076-w05-gates-3-0-0.md)
 
 - [Master workspace reconciliation](tasks/tsk-0053-master-workspace-reconciliation.md)
 - [v14.7 W00 intake](tasks/tsk-0059-w00-v14-7-intake.md)

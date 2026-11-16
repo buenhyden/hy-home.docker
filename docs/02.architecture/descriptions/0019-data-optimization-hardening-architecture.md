@@ -1,10 +1,10 @@
 ---
 title: "Data Optimization and Hardening Architecture"
-version: "1.2.4"
+version: "1.2.5"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 layer: "architecture"
 artifact_id: "AD-0019"
 parent_ids:
@@ -71,9 +71,10 @@ common optimization, secret, healthcheck, and network contract in Compose.
 #### Runtime View
 
 Services connect explicitly through SQL, Redis/Valkey, S3-compatible, search,
-vector, and graph protocols. Persistent state keeps a per-service volume
-boundary under `${DEFAULT_DATA_DIR}`, and credentials are injected through
-the Compose secret contract.
+vector, and graph protocols. Compose declares the state path of each service.
+Management PostgreSQL and Valkey use `${DEFAULT_MANAGEMENT_DIR}`; development
+PostgreSQL and Valkey use `${DEFAULT_DATA_DIR}`. The Compose secret contract
+supplies credentials.
 
 #### Deployment View
 
@@ -92,7 +93,9 @@ Services connect through SQL, Redis/Valkey, S3-compatible, search, vector, and g
 
 ### Failure Boundaries
 
-Each component keeps its own configuration and volume, giving a per-service volume boundary under `${DEFAULT_DATA_DIR}`; reliability rests on healthchecks and a per-engine recovery procedure owned by the linked [Data hardening runbook](../../05.operations/runbooks/05-databases-and-storage/0030-data-optimization-hardening.md).
+Separate volume paths delimit service state. The [Data hardening runbook](../../05.operations/runbooks/05-databases-and-storage/0030-data-optimization-hardening.md)
+owns per-engine recovery. Healthchecks and volume definitions do not establish
+restorability.
 
 ## Decisions
 

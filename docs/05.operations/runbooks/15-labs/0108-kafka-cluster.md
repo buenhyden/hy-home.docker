@@ -1,10 +1,10 @@
 ---
 title: "Kafka Cluster LAB Runbook"
-version: "0.2.2"
+version: "0.2.3"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "RUN-0108"
 parent_ids:
@@ -80,7 +80,13 @@ python3 scripts/operations/lab.py down kafka-cluster
 
 #### Diagnosis
 
-1. `docker compose -p hy-home-lab-kafka ps`로 세 broker의 health를 본다.
+1. 활성 lease와 승인된 Docker context에서 LAB project를 지정해 세 broker와 companion의 상태를 확인한다.
+   `LAB_ENV_FILE`은 그 lease를 시작할 때 사용한 LAB 환경 파일의 경로다.
+
+   ```bash
+   docker compose --project-name hy-home-lab-kafka --env-file "$LAB_ENV_FILE" -f labs/kafka-cluster/docker-compose.yml --profile lab-kafka ps
+   ```
+
 2. broker가 unhealthy이면 그 broker log에서 cluster ID 불일치, data 디렉터리 권한, quorum 연결
    실패를 찾는다. log 원문은 evidence에 붙이지 않는다.
 3. `lab-kafka-init`이 실패하면 세 broker가 healthy인지 먼저 확인한다. init은 `--if-not-exists`이므로
@@ -92,13 +98,17 @@ python3 scripts/operations/lab.py down kafka-cluster
 
 #### HOME retirement of Schema Registry and Connect (owner approval required)
 
-ADR-0062 개정(2026-11-10)은 소스만 옮긴다. HOME에는 `kafka-connect`, `schema-registry` 컨테이너, `kafka-connect-data`
-volume, 두 Traefik router와 Debezium 비밀번호 파일(`secrets/db/dev-pg/debezium_password.txt`)이 남아 있다.
-owner가 승인한 뒤에만 다음 순서를 따른다.
+ADR-0062 개정(2026-11-10)은 HOME에서 LAB으로 소스만 옮겼다. 당시 HOME의 `kafka-connect`,
+`schema-registry` 컨테이너와 `kafka-connect-data` volume은 퇴역 대기였다.
+같은 날 PG-025와 Debezium 비밀번호 파일은 소비자 제거 후 별도로 퇴역했다(SPEC-0212-TSK-0048).
+현재 컨테이너·volume·router의 존재는 확인되지 않았다. 별도 승인으로 Docker context와 HOME project
+`hy-home-infra`의 대상 service label·컨테이너 ID, volume과 router 소유 및 보존 결정을 확인한다.
+LAB project나 소유가 불명확한 후보에는 작업하지 않는다. 확인한 대상에만 다음 순서를 적용한다.
 
 1. 변경이 반영된 `kafbat-ui`와 `prometheus`를 재생성해 제거된 schema registry·Connect 설정과 scrape를 내린다.
-2. `kafka-connect`, `schema-registry` 컨테이너를 정지하고 제거한다. HOME `kafka-1`, `kafka-init`, `kafka-exporter`는 건드리지 않는다.
-3. `kafka-connect-data` volume과 Debezium 비밀번호 파일은 보존 여부를 결정한 뒤에만 정리한다. 삭제는 별도 승인이 필요하다.
+2. HOME의 `kafka-connect`와 `schema-registry`에서 확인된 ID만 정지·제거한다.
+   HOME `kafka-1`, `kafka-init`, `kafka-exporter`는 건드리지 않는다.
+3. `kafka-connect-data` volume은 보존 여부를 결정한 뒤에만 정리한다. 삭제는 별도 승인이 필요하다.
 4. 잔여 network `kafka_connect_ingress_net`, `schema_registry_ingress_net`과 Keycloak/DNS 항목을 정리한다.
 
 #### Planned backup and isolated restore

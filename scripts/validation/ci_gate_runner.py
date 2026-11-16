@@ -1458,7 +1458,7 @@ def execute_execution_plan(
                     return int(result)
             if store is not None:
                 try:
-                    store.finalize(blocked_reason="blocked_by_prior")
+                    store.finalize(blocked_reason="blocked_by_prior", require_pass=True)
                 except EvidenceError as error:
                     raise _evidence_error(error) from error
             return 0
@@ -1490,11 +1490,21 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--profile", required=True)
     parser.add_argument("--explain", action="store_true")
     parser.add_argument("--requirements", action="store_true")
+    parser.add_argument("--routing", action="store_true")
     parser.add_argument("--local-only", action="store_true")
     parser.add_argument("--crosswalk", action="store_true")
     parser.add_argument("--job")
     try:
         arguments = parser.parse_args(argv)
+        if arguments.routing and (
+            arguments.profile != "changed"
+            or arguments.job != "candidate-documents"
+            or arguments.crosswalk
+            or arguments.explain
+            or arguments.local_only
+            or arguments.requirements
+        ):
+            parser.error("--routing requires only the changed document job selection")
         root_value = os.environ.get("HYHOME_CI_GATE_ROOT")
         root = (
             pathlib.Path(root_value)
@@ -1503,6 +1513,12 @@ def main(argv: list[str] | None = None) -> int:
         )
         execution_environment = _authenticated_execution_environment(root, os.environ)
         context = derive_execution_context(execution_environment)
+        if arguments.routing and context is not ExecutionContext.PULL_REQUEST:
+            raise GateContractError(
+                "ci-gate-routing-context",
+                "routing",
+                "job routing requires an authenticated pull-request context",
+            )
         document = load_contract_document(root)
         registry = parse_gate_registry(
             document,
@@ -1571,6 +1587,9 @@ def main(argv: list[str] | None = None) -> int:
         full_plan = plan
         if arguments.job:
             plan = select_job_plan(plan, public_contract, arguments.job)
+        if arguments.routing:
+            print("selected=true" if plan else "selected=false")
+            return 0
         if arguments.local_only:
             plan = build_local_only_validation_plan(
                 plan,
@@ -1641,8 +1660,21 @@ def main(argv: list[str] | None = None) -> int:
             print("selected=true")
             return 0
         if arguments.job and not plan:
-            print(f"{arguments.job}: no selected gate", file=sys.stderr)
-            return 0
+            raise GateContractError(
+                "ci-gate-empty-job-plan",
+                arguments.job,
+                "job execution requires the selected prerequisite plan",
+            )
+        if (
+            arguments.job
+            and context is ExecutionContext.PULL_REQUEST
+            and not execution_environment.get("CI_GATE_EVIDENCE_DIR")
+        ):
+            raise GateContractError(
+                "ci-gate-required-job-evidence",
+                arguments.job,
+                "hosted job execution requires prerequisite evidence",
+            )
         if context is ExecutionContext.LOCAL and (
             mismatch := local_toolchain_mismatch(root)
         ):
@@ -1758,6 +1790,20 @@ def collect_changed_paths(
                 "the pull-request comparison base is unavailable",
             )
         commands = ((git_executable, "diff", *name_status, f"{base}...{head}"),)
+        if environ.get("GITHUB_ACTIONS") == "true":
+            merge = environ.get("GITHUB_SHA", "")
+            if (
+                not _FULL_SHA.fullmatch(merge)
+                or merge in {"0" * 40, base, head}
+                or merge != environ.get("TRUSTED_MERGE_SHA")
+            ):
+                raise GateContractError(
+                    "ci-gate-changed-paths",
+                    "git",
+                    "the authenticated pull-request merge is unavailable",
+                )
+            # Base-side changes can move a contribution to another candidate path.
+            commands = (*commands, (git_executable, "diff", *name_status, base, merge))
     elif event == "push":
         base = environ.get("PUSH_BEFORE_SHA", "")
         if not _FULL_SHA.fullmatch(base):

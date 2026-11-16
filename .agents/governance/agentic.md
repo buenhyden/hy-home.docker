@@ -1,10 +1,10 @@
 ---
 title: "Agentic Engineering Policy"
-version: "1.9.1"
+version: "3.0.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-16"
 ---
 
 # Agentic Engineering Policy
@@ -90,7 +90,62 @@ None: this document states no exclusion.
   rewriting them. Adding any of these needs an approved Spec that names its
   command, permission, inputs, and output.
 
+#### Request Brief
+
+After read-only discovery, state the goal, scope, acceptance checks and
+material assumptions of the current request. Ask about a material ambiguity
+only when its answer is needed for the affected action. Clear local work may
+proceed within its existing authorization without a separate reply.
+
+Register the brief when the native binding is available for planned
+scoped edits or a mutating handoff. Use
+`python3 -m scripts.lib.hooks.request_brief status SESSION` from the workspace
+root to obtain the binding that the prompt hook observed. Author a redacted
+BriefRecord 3.0.1 with that binding, a brief ID and revision, goal, scope and
+non-goals, constraints, acceptance criteria, sourced facts, assumptions,
+questions, risk and expected checks. Record bounded tracked files that
+materially informed the decision in `material_inputs` with their observed
+SHA-256 digests. Omit unrelated files and private local data. The
+[validator](../../scripts/lib/hooks/request_brief.py) owns the input shape.
+Scope uses exact workspace-relative paths. Allowed mutations use `edit:PATH`
+and `dispatch:PATH`. Record the affected actions, alternatives and reason for
+a material question within its question and recommendation fields. Use
+`ready` when nothing is held or `needs-clarification` when actions are held.
+Keep `authority_ref` separate from request identity. Use null when no authority
+source is identified. The local adapter can match the current native source
+or the preceding correlated reference within its previous action scope and
+unchanged inputs. If status includes `prior_authority_ref`, first confirm that
+the underlying approval still applies. Other references can be recorded for
+planning. They leave the adapter's mutation check unsatisfied. Send the
+record on stdin to `python3 -m scripts.lib.hooks.request_brief bind SESSION`.
+The native event supplies the session identifier. Keep progress in the Task
+and treat the private hook binding as transient consistency state.
+
+The binding never grants permission. Resolve current authorization through
+[Approval Boundaries](approval-boundaries.md#authorization-source-and-records).
+A draft, a memory entry or a self-declared authority reference supplies no
+execution authority. A new user turn or resumed or compacted context requires
+reconciling an enrolled brief before the next covered action. Reuse current
+authorization without a redundant user question when scope is still clear.
+
 #### Delegation Contract
+
+For a registered brief, include the session, prepared request revision, brief
+revision and exact owned paths in the worker envelope. Before dispatch and
+before a delegated writer acts or resumes, pass those same values to:
+
+```bash
+python3 -m scripts.lib.hooks.request_brief check SESSION dispatch REQUEST_REVISION BRIEF_REVISION PATH
+```
+
+Supply every owned path after the two revisions. A failed check stops the
+affected handoff or write until the supervisor reconciles the envelope with
+current authority. A fresh status lookup alone cannot refresh the prepared
+revisions. The command checks consistency only. The shared pre-tool hook
+checks recognized exact file edits in enrolled sessions, including file-backed
+Task state changes. Unenrolled sessions, unrecognized writes, native dispatch
+and provider-internal task transitions have no such interception. Report that
+coverage gap and use the actual controller and provider authorization boundary.
 
 Delegate only to a role declared in `.agents/roles/` and mapped by the provider
 registry. Each envelope names the role and primary responsibility, exact owned
@@ -99,10 +154,14 @@ and external-action boundaries, shared-worktree non-reversion rule, and required
 return evidence.
 
 Workers report `working`, `blocked`, or `done`. A delegation or resumption
-envelope records Task-declared applicable request, token, time, concurrency,
-and retry ceilings, the shared-budget identity and remaining allocation, and the
-authorization source and scope. Those fields are structural records, not
-authentication; their validity is resolved through approval boundaries.
+envelope records the applicable request identity and revision as supplied by
+the trusted origin or as unknown, authorization source, scope and current
+applicability, Task-declared request, token, time, concurrency and retry
+ceilings, and the shared-budget identity and remaining allocation. These are
+structural records. The controller resolves authority itself through
+[Approval Boundaries](approval-boundaries.md#authorization-source-and-records)
+on dispatch and resumption. A material mismatch or unresolved authority stops
+dependent mutation and additional spending until the controller reconciles it.
 Unsupported fields are recorded unknown. It refuses an unapproved fallback,
 extra spend, or silent resume. A retry after a failed check stays within the
 [workflows.md](workflows.md) bound. Every agent loop has five exits: success, failure, no progress,

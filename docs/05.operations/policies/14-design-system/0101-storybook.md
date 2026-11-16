@@ -1,10 +1,10 @@
 ---
 title: "Shared Storybook Operations Policy"
-version: "1.1.4"
+version: "1.1.5"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-16"
 layer: "operations"
 artifact_id: "POL-0101"
 parent_ids:
@@ -26,7 +26,7 @@ MCP다. 소비자는 hy-home.docker가 아닌 다른 워크스페이스다. 코�
 
 ### Authority
 
-- Artifact: `POL-0101`. 역사적 source/static 완료 근거: `SPEC-0206`. 아키텍처 맥락 `AD-0031`은 draft 상태다.
+- Artifact: `POL-0101`. 역사적 source/static 완료 근거: `SPEC-0206`. 승인된 [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md)이 아키텍처를 소유하며 HOME 배포 승인과 실행 증거는 별도로 기록한다.
 - Runtime declaration: [Storybook Compose](../../../../infra/13-experience/storybook/docker-compose.yml).
 
 ## Scope

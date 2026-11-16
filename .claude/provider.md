@@ -1,10 +1,10 @@
 ---
 title: "Claude Provider Adapter"
-version: "1.7.2"
+version: "1.7.3"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-16"
 runtime: "claude"
 ---
 
@@ -74,6 +74,10 @@ projection of either, and their absence under `.claude/` is not a defect.
   `.agents/` files are never generated, quarantined, or overwritten as outputs.
 - Native memory is off through `autoMemoryEnabled: false` in
   `.claude/settings.json`; no `.claude/agents/*.md` sets `memory:`.
+- The closing reminder is returned from `Stop`. Claude discards JSON output
+  from `SessionEnd`, so this repository registers no reminder there. The
+  `Stop` decision asks Claude to continue the turn. It does not record
+  implementation acceptance or grant permission.
 
 ## Limitations
 
