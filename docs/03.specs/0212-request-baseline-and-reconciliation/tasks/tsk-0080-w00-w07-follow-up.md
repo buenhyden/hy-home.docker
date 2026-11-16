@@ -96,6 +96,33 @@ integration, not a decision on criteria 128–136.
 No TARGETED_CHANGE was found. The package tools ran read-only and
 authorize nothing.
 
+The continued review compared every pending record with the merged
+evidence. TSK-0073 still said the reader correction awaited its own
+candidate run. The PR 1050 candidate-documents job ran those suites, so
+TSK-0073 now records that run. This was a RECONCILE_RECORD only.
+Criterion 129 acceptance is unchanged.
+
+The package lists ten Docker evidence obligations. Each one is open and
+has a single receiving owner. None of them blocks unrelated work.
+
+| Obligation | Evidence kind still needed | Receiving owner |
+| --- | --- | --- |
+| Common form core matches actual consumers | source | T99-CONFORMANCE |
+| Request change and withdrawal reach native dispatch and resume | native | RUNTIME-CLOSE, TSK-0078 |
+| Reviewer write and sensitive-read denial | native | RUNTIME-CLOSE, TSK-0079 |
+| Both providers read and update one current memory revision | native | W08-MEMORY |
+| Capture, gap recovery, scheduled analysis and promotion | local execution | W08-ANALYSIS |
+| Forecast recorded before start and scored after | local execution | W10-FORECAST |
+| Worker dependency, resource, cancellation and integration | local execution | W10-PARALLEL |
+| Selected QA keeps required checks at lower matched cost | hosted | W05-GATES, TSK-0076 |
+| Stage 01, 02, 05 and 90 prose matches current requirements | source | W04-CONTENT, TSK-0075 |
+| Final disposition targets and authority | owner decision | Q07-CUTOVER |
+
+The package carries S02, S06, S07, S26 and S27 from 4.1.0, and its
+S05, S14, S20, S22 and S31 entries were rechecked for 4.2.0. This
+request fetched no web source again. Those sources shape the designs,
+not observations on this host.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -130,6 +157,7 @@ Runtime and owner-only outcomes retain their evidence requirements.
 | Independent source review | 136 | W141 | exact changed-reader and workflow diff | Baseline 2cfeeac734 and source blobs 5cd1b060e, 082f641b7 and ee3f98126 | PASS | Vocabulary ownership, hidden evidence and nested coordinates, authenticated header capture, and scoped documentation checked | required | - |
 | PR 1050 integration | 136 | W141 | authenticated PR, check and main run read-back | PR 1050 head `ac4c12310`, merge `ffc3247ce`, run 43788622362 | PASS | Merged 2026-11-16, candidate core, documents, quality, routing, CodeQL and GitGuardian passed, main-security passed on the merge | required | - |
 | Resume snapshot | 136 | W141 | 4.2.0 package `plan_resume.py` and `validate_package.py` | Docker profile with actual head `ffc3247ce` | PASS | Snapshot matched HEAD, eleven prompts listed as no-replay, package structure passed; no authorization or runtime result | required | - |
+| Obligation linkage | 136 | W141 | package `plan_evidence.py` and Task Remaining Conditions read-back | Docker profile, Tasks 0072–0080 at `99c87b809` | PASS | Ten open obligations, zero closure declarations, each mapped to one owner; one stale TSK-0073 sentence reconciled | required | - |
 
 ### Resolution Links
 
