@@ -1,6 +1,6 @@
 ---
 title: "W06 Delivery 3.0.0 Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -34,6 +34,15 @@ evidence. No hosted execution or repository setting change is authorized.
 ## Execution Log
 
 ### Work Performed
+
+#### Merged baseline candidate header follow-up
+
+D04, D05 and D17 3.0.1 govern W138. At `2cfeeac734` routing already
+reads only the commit header, but the core and document jobs also count
+parent-shaped lines from the commit message. Apply the same header bound
+to both consumers and preserve the exact parent count and comparison.
+Exercise the captured workflow with a valid merge and ordinary prose.
+Revert the two captures and their regression as one unit if needed.
 
 #### Design before implementation
 
@@ -190,6 +199,7 @@ endpoint returned no applicable rules. This is a read-only observation.
 | Resume independent route review | 133 | W138 | implementation review against a6729e578 | Routing, aggregate, trust and performance | PASS | Local change approved; hosted comparison and independent trust remain open | required | - |
 | Hosted public candidate model | 133 | W138 | public candidate job model test | PR 1049 at 3282d1e47, run 43776564841 | FAIL | candidate-core reproduced the omitted candidate-routing job in the exact inventory assertion | required | - |
 | Corrected public candidate model | 133 | W138 | public candidate job model test | Corrected job inventory for PR 1049 | PASS | Local public model and ownership suites passed 16 tests, exit 0 | required | Hosted public candidate model |
+| Hosted selected route and main security | 133 | W138 | actual PR and main Actions run | PR 1049 at 75e1c3079, run 43778700250; merged main at 2cfeeac734, run 43780546570 | PASS | Route 12 s, selected documents 805 s, core 952 s, required aggregate 5 s and main security 32 s | required | Hosted continuation |
 
 ### Resolution Links
 
@@ -208,9 +218,10 @@ hosted timing and adoption of the independent verifier.
 ### Remaining Conditions
 
 Owner acceptance remains pending. The selected hosted route was observed
-in PR 1049. The corrected candidate needs hosted verification. A paired
-hosted timing comparison and independent remote enforcement adoption are
-still open.
+in PR 1049 and the corrected candidate passed. A paired hosted timing
+comparison, the hosted no-document route and independent remote
+enforcement adoption are still open. The separate `main-security` job
+passed on the actual merge commit.
 
 ## Handoff
 
