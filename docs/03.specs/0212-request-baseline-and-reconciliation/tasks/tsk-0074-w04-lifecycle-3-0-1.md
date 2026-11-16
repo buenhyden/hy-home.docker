@@ -1,10 +1,10 @@
 ---
 title: "W04 Lifecycle 3.0.1 Task"
-version: "0.1.2"
+version: "0.2.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0074"
 parent_ids:
@@ -118,12 +118,36 @@ is deleted. Keep ambiguous prose relations with their existing reviewers.
 These extensions can be reverted by reverting their individual source and
 regression test changes.
 
+#### W04-LIFECYCLE 4.2.0 recheck
+
+The 2026-11-17 W04-LIFECYCLE request read D03, D15, D26, D27 and D28 of
+the 4.2.0 package at `fdb92cd82`. D03 adds cost and misreading rules and a
+4.1.0 source-and-form section. D15 adds rules against re-running completed
+document currency work. No Docker attachment item targets W04-LIFECYCLE.
+No source was rechecked externally; the package states the carried status of
+S03 to S07.
+
+| Requirement | Disposition | Basis |
+| --- | --- | --- |
+| R16 draft authoring allowed, no draft-only implementation, operation or completion | KEEP_VERIFIED | The effective-prose, fresh-closure and cited-input boundaries above hold on the current source |
+| A proposed ADR does not block a separately authorized change; a merge does not accept an ADR | KEEP_VERIFIED | The SDLC state axes record approval, execution, acceptance and merge separately, and no reader or hook rejects work from a `proposed` string |
+| Execution authority bound to the request revision | KEEP_VERIFIED | The request brief binding, SessionStart reassessment and handoff revision binding above hold |
+| U21 typed relations, derived inbound references | KEEP_VERIFIED | RelationLookupTests pass on the current shared reader |
+| D15 no repeated corpus audit and no permanent check for closed question IDs | KEEP_VERIFIED | Only the structural parent refusal for OPEN IDs remains, as W02 recorded |
+| U20 and U32 semantic currency and per-Task source links | Not W04-LIFECYCLE | W04-CONTENT owns the corpus reading |
+
+The W03-FORMS change merged as `fdb92cd82` widens metadata discovery and
+base-ref collection, which these readers share. The focused baseline still
+passes on that source. No source change is needed. Native action checks
+remain with RUNTIME-CLOSE.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0074 | draft | ready | #inputs-and-authority |
 | SPEC-0212-TSK-0074 | ready | in-progress | #design-before-implementation |
+| SPEC-0212-TSK-0074 | in-progress | completed | #criterion-decisions |
 
 #### Reused boundaries and read scope
 
@@ -214,6 +238,7 @@ Separate open dispositions still belong to the owners that Task identifies.
 | Cited input review | 130 | W135 | independent-review | Evidence Input comparison and regression against c53828d95 | PASS | Independent approval of the current and historical row formats and both parent-state branches | required | - |
 | Continuation Task metadata | 130 | W135 | document-metadata | check-document-metadata.py --mode check-changed --base-ref c53828d95 scoped to TSK-0074 | PASS | 1 selected, 0 violations, exit 0 | required | - |
 | Continuation staged checks | 130 | W135 | local-precommit | run-ci-precommit.sh --mode local-staged on the reviewed three-file candidate | PASS | Applicable checks passed, exit 0 | required | - |
+| 4.2.0 lifecycle recheck | 130 | W135 | lifecycle-regression | AcceptanceDecisionTests, ParentAuthorityBranchTests, TemplateAndAuthoredResidueTests, RelationLookupTests and HookOutputAndMainPushTests on the W03-FORMS candidate later merged as `fdb92cd82` | PASS | 56 tests in 78.588 seconds, exit 0 | required | - |
 
 ### Resolution Links
 
@@ -230,9 +255,10 @@ Policy and provider-native evidence are separate from these local runs.
 
 ### Remaining Conditions
 
-Hosted candidate validation, live provider delivery, trusted-origin runtime
-authorization, operational changes and criterion acceptance each require
-their own evidence. No external action was performed to obtain them.
+None for W135. The owner accepted criterion 130 on 2026-11-16 and every
+non-PASS row has a resolving row. Live provider delivery, trusted-origin
+runtime authorization and operational changes stay with RUNTIME-CLOSE and
+need their own evidence.
 
 ## Handoff
 
@@ -247,4 +273,4 @@ which consumers were exercised. No runtime depends on the intake package.
 
 ### Next Owner
 
-The implementer owns local checks for W135. The owner decides criterion 130.
+None for W135. RUNTIME-CLOSE owns the native action checks.
