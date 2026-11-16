@@ -854,9 +854,15 @@ class DocumentRegistryTests(unittest.TestCase):
             self.assertEqual(
                 [], lifecycle.collect_records_at_ref(ROOT, profiles, "a" * 40)
             )
-        arguments = run.call_args.args[1]
-        for path in (".agents", ".claude/provider.md", ".codex/provider.md"):
-            self.assertIn(path, arguments)
+        # The listing is not narrowed by a pathspec; the shared selector admits
+        # the hidden roots from the full tree.
+        self.assertNotIn("--", run.call_args.args[1])
+        for path in (
+            ".agents/governance/bootstrap.md",
+            ".claude/provider.md",
+            ".codex/provider.md",
+        ):
+            self.assertIsNotNone(lifecycle._normalized_target_path(path))
 
     def test_governance_relocation_requires_matching_baseline_identity(self) -> None:
         from scripts.lib.document_governance.metadata import lifecycle

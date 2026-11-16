@@ -7,6 +7,7 @@ import collections
 import dataclasses
 import datetime as dt
 import fnmatch
+import functools
 import os
 import pathlib
 import re
@@ -1187,6 +1188,26 @@ def _registry_path_glob(pattern: str) -> str:
     )
 
 
+@functools.lru_cache(maxsize=1)
+def _default_registry() -> DocumentRegistry | None:
+    try:
+        return load_registry()
+    except RegistryError:
+        return None
+
+
+def _registry_frontmatter_target(normalized: str) -> bool:
+    """True when a Registry profile that requires frontmatter owns this path."""
+
+    registry = _default_registry()
+    if registry is None:
+        return False
+    profile = registry.profiles.get(classify_registered_path(normalized, registry))
+    return (
+        isinstance(profile, Mapping) and profile.get("frontmatter_policy") == "required"
+    )
+
+
 def _normalized_target_path(path_text: str) -> pathlib.Path | None:
     if not path_text.endswith(".md") or "\\" in path_text:
         return None
@@ -1199,6 +1220,7 @@ def _normalized_target_path(path_text: str) -> pathlib.Path | None:
         not runtime_readme
         and normalized not in TARGET_MARKDOWN_FILES
         and not normalized.startswith(TARGET_MARKDOWN_PREFIXES)
+        and not _registry_frontmatter_target(normalized)
     ):
         return None
     return pathlib.Path(normalized)
