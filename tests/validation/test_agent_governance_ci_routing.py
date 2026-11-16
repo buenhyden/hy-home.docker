@@ -3490,7 +3490,7 @@ class HookOutputAndMainPushTests(unittest.TestCase):
         settings = json.loads((ROOT / ".claude/settings.json").read_text())
         self.assertIs(settings["autoMemoryEnabled"], False)
 
-    def test_claude_settings_deny_secret_reads_and_main_pushes(self) -> None:
+    def test_claude_settings_deny_protected_operations(self) -> None:
         permissions = json.loads((ROOT / ".claude/settings.json").read_text())[
             "permissions"
         ]
@@ -3510,6 +3510,10 @@ class HookOutputAndMainPushTests(unittest.TestCase):
             "Edit(//**/.env)",
             "Bash(git push * main)",
             "Bash(git push *:refs/heads/main)",
+            "Bash(docker system prune:*)",
+            "Bash(docker compose down:*)",
+            "Bash(docker volume rm:*)",
+            "Bash(rm -rf:*)",
         ):
             self.assertIn(rule, permissions["deny"])
         self.assertFalse(

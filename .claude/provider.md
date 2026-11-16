@@ -1,6 +1,6 @@
 ---
 title: "Claude Provider Adapter"
-version: "1.7.3"
+version: "1.7.4"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
@@ -60,8 +60,13 @@ projection of either, and their absence under `.claude/` is not a defect.
   Code documentation (2.1.295 or later) a hook that then times out denies the
   tool, which has not been observed. The `permissions.deny` rules are native
   extra protection, not Registry translations: they back the
-  [secret boundary](../.agents/governance/approval-boundaries.md#authorization-source-and-records)
-  and the [no-direct-push rule](../.agents/governance/github-governance.md#1-repository-protection-contract).
+  [secret boundary](../.agents/governance/approval-boundaries.md#authorization-source-and-records),
+  the [no-direct-push rule](../.agents/governance/github-governance.md#1-repository-protection-contract),
+  and, for `docker system prune`, `docker compose down`, `docker volume rm`
+  and `rm -rf`, the exact-target rule for live mutation and deletion in
+  [approval boundaries](../.agents/governance/approval-boundaries.md#authorization-source-and-records),
+  the [runtime mutation protocol](../.agents/governance/environment-constraints.md#21-approved-runtime-mutation-protocol)
+  and the [pruning constraint](../.agents/governance/environment-constraints.md#2-infrastructure-constraints).
 - This `provider.md` is an authored input. `.claude/README.md` and
   `.claude/CLAUDE.md` are generated pointers and never renderer inputs. Each
   folder `CLAUDE.md` beside a folder `AGENTS.md` is a generated import shim

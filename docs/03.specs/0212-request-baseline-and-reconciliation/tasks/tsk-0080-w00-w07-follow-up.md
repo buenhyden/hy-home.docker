@@ -1,6 +1,6 @@
 ---
 title: "W00 to W07 Follow-up Task"
-version: "0.4.1"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -197,6 +197,39 @@ The obligation table now carries the next check D25 requires for each
 row. PR 1051 and PR 1052 merged with main-security passing on
 `4891b5d73` and `c7a36a6fe`.
 
+#### W01-CONTRACT resume delta
+
+The W01-CONTRACT request on 2026-11-16 read D00, D01, D03, D15, D24,
+D26 and D28 at `c07826f39`. W01 completed with the 3.0.1 package in
+TSK-0068 and TSK-0069. The 4.2.0 package still carries
+`repository-vocabulary` 3.0.1, so the vocabulary is not re-adopted.
+
+| Requirement | Disposition | Basis |
+| --- | --- | --- |
+| Seven-column glossary and term meanings | KEEP_VERIFIED | 43 IDs, terms, Korean labels and header match; definitions differ only by the English body contract |
+| Closed questions out of current terms | KEEP_VERIFIED | Q01 and Q10 in TERM-REMOVAL come from the contract text and remain confirmed decisions |
+| Q08 review by risk without repeated low-risk approval | KEEP_VERIFIED | `workflows.md` Review Risk names both classes and the author check |
+| Normative keywords from S27 | KEEP_VERIFIED | RFC 8174 rechecked this request; the glossary clause matches and governance uses no undefined capital keyword |
+| Native settings never become a second policy source | CHANGE | Four destructive deny rules had no stated owner in the Claude adapter |
+| D24 common form core and D26 W/P/R/C/A/I/T | Not W01 | T99-CONFORMANCE and SDLC-STRUCTURE own them |
+
+The Claude adapter now attributes `docker system prune`,
+`docker compose down`, `docker volume rm` and `rm -rf` to the exact-target
+rule in approval boundaries, the runtime mutation protocol and the
+pruning constraint. The renamed settings test asserts all four, so
+removing one fails. The Codex configuration states no deny rule. These
+rules are configured native protection; their enforcement in a live
+session was not observed here.
+
+Independent review approved the attribution. It also found three Claude
+settings with no stated owner: `deniedMcpServers`, the read-only
+`permissions.allow` entries and `autoMode`. Their purpose is not
+recorded in any policy, so no owner is inferred. They remain UNVERIFIED
+for W07-ADAPTER.
+
+The package marks S02, S03, S04, S06, S07, S37 and S27 as carried from
+4.1.0, and S05 and S39 as rechecked. This request rechecked S27 directly.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -239,6 +272,9 @@ Runtime and owner-only outcomes retain their evidence requirements.
 | Delivery hosted read-back | 136 | W141 | main run job read-back | Runs 43857448356 and 43860712682 | PASS | main-security passed on `4891b5d73` and `c7a36a6fe` | required | - |
 | Selector review | 136 | W141 | independent review of the selector change | Commit `4153e1b29` against `c7a36a6fe` | FAIL | CHANGES_REQUIRED: exact-set test in `test_taxonomy` would fail; root README absent from base-ref discovery; test class misnamed | required | - |
 | Selector review resolution | 136 | W141 | independent review of the selector change | Same findings with the expected set, base-ref path and new test class | PASS | Metadata validator and taxonomy modules ran 20 tests OK; Ruff clean; corpus lifecycle zero violations | required | Selector review |
+| W01 contract comparison | 136 | W141 | vocabulary, review policy and native settings read-back | 4.2.0 vocabulary 3.0.1 against `.agents/knowledge/glossary.md`, `workflows.md`, `.claude/settings.json` at `c07826f39` | PASS | 43 rows aligned; Q08 present; four deny rules lacked a stated owner | required | - |
+| Deny rule attribution | 136 | W141 | settings test, provider renderer and governance contract | Attributed adapter text and four added assertions | PASS | 93 routing tests OK, renderer drift 0, governance contract 0 failures, changed metadata clean | required | - |
+| Deny attribution review | 136 | W141 | independent review of the adapter and settings test | Adapter text and four assertions against `c07826f39` | PASS | APPROVE; runtime protocol link and test name applied; three unowned settings recorded for W07-ADAPTER | required | - |
 
 ### Resolution Links
 
