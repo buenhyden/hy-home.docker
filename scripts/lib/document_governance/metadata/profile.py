@@ -234,6 +234,8 @@ TARGET_MARKDOWN_FILES = frozenset(
     {
         ".claude/provider.md",
         ".codex/provider.md",
+        "README.md",
+        "docs/README.md",
         "tests/fixtures/README.md",
         "tests/fixtures/document_governance/README.md",
         "tests/fixtures/document_governance/operations-moves/README.md",
