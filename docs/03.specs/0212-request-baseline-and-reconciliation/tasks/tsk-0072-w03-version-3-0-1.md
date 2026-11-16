@@ -1,10 +1,10 @@
 ---
 title: "W03 Version 3.0.1 Task"
-version: "0.1.4"
+version: "0.2.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0072"
 parent_ids:
@@ -143,12 +143,33 @@ corrected selection includes the version checks, the two relevant
 CLI integration cases, Registry and projection checks, product version
 checks, and release regression.
 
+#### W03-VERSION 4.2.0 recheck
+
+The 2026-11-17 W03-VERSION request read D02 and D27 of the 4.2.0 package
+at `615d46546`. Since 3.0.1, D02 adds a follow-up rule and a 4.1.0
+boundary section. The 24 version fixtures are byte-identical to 3.0.1.
+The Docker attachment item D-W03 is a path plan owned by DOC-PATH-PLAN
+for the final cutover, so it adds no version action.
+
+| D02 rule | Disposition | Basis |
+| --- | --- | --- |
+| Numeric three-part fullmatch, rejecting space, newline, leading zero, suffix and non-ASCII digits | KEEP_VERIFIED | Python fullmatch, five schema patterns and Node agree on all 24 fixtures |
+| Integer precedence, including long components | KEEP_VERIFIED | 1.9.0 is below 1.10.0 and a 5,000-digit core compares without error |
+| Separate `contract_id` and `contract_version` | KEEP_VERIFIED | The Registry, TemplateDefinition schema and glossary keep them apart; a package label and a combined value are rejected |
+| Product tags, external labels and integer counters keep their own domains | KEEP_VERIFIED | Product parsing passes its release tests; the Hermes submit contract stays an integer |
+| MAJOR, MINOR and PATCH by consumer compatibility | KEEP_VERIFIED | The documentation protocol Version objects rules from the earlier runs still apply |
+
+`lifecycle.py` changed three times after `427ca60f0`, for input reuse and
+root README discovery. The focused version selection still passes on the
+current source. No source change is needed.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0072 | draft | ready | #inputs-and-authority |
 | SPEC-0212-TSK-0072 | ready | in-progress | #design-and-compatibility |
+| SPEC-0212-TSK-0072 | in-progress | completed | #criterion-decisions |
 
 ### Blockers and Decisions
 
@@ -191,6 +212,8 @@ retains the older comparison grammar at the historical boundary.
 | Resumed changed metadata | 128 | W133 | metadata | check-document-metadata.py --mode check-changed --base-ref HEAD with this Task selected, before the nested type correction | PASS | Base 427ca60f0, 1 document and 0 violations, exit 0 | required | - |
 | Lifecycle review finding | 128 | W133 | lifecycle-version-review | Initial structured comparison | FAIL | Python equality could equate an integer and float in nested metadata | required | - |
 | Lifecycle review resolution | 128 | W133 | lifecycle-version-review | Recursive scalar type preservation and committed fixture | PASS | Independent reviewer approved the fix | required | Lifecycle review finding |
+| 4.2.0 fixture recheck | 128 | W133 | version-fixtures | 4.2.0 bundled values through Python fullmatch, five schema patterns and Node RegExp at `615d46546` | PASS | 24 cases per reader, 1.9.0 below 1.10.0, 5,000-digit core ordered, exit 0 | required | - |
+| 4.2.0 version regression | 128 | W133 | version-regression | test_semver, metadata version and product classes, five Registry and two TemplateDefinition version tests, test_release at `615d46546` | PASS | 66 tests in 6.437 seconds, exit 0 | required | - |
 
 ### Resolution Links
 
@@ -207,7 +230,8 @@ component failures.
 
 ### Remaining Conditions
 
-Record the owner's acceptance separately from the prerequisite checks.
+None. The owner accepted criterion 128 on 2026-11-16 and every non-PASS
+row has a resolving row, so W133 is complete.
 
 ## Handoff
 
@@ -219,5 +243,4 @@ inputs consumed by W134.
 
 ### Next Owner
 
-The current implementer owns verification for W133. The owner decides
-acceptance of criterion 128.
+None for W133. A later version change is owned by the Task that makes it.
