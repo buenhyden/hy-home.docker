@@ -1,6 +1,6 @@
 ---
 title: "W06 Delivery 3.0.0 Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -213,7 +213,7 @@ hosted timing and adoption of the independent verifier.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 133 | pending | - | Owner decision after verification | @buenhyden |
+| 133 | pending | - | Owner @buenhyden chose per-criterion acceptance on 2026-11-16 in this chat; held by unresolved required rows Independent scope review | @buenhyden |
 
 ### Remaining Conditions
 

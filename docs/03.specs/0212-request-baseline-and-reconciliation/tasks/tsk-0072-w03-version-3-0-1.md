@@ -1,6 +1,6 @@
 ---
 title: "W03 Version 3.0.1 Task"
-version: "0.1.3"
+version: "0.1.4"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -203,7 +203,7 @@ component failures.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 128 | pending | - | Owner decision after evidence is available | @buenhyden |
+| 128 | accepted | Resumed version baseline, Lifecycle comparison GREEN, Lifecycle review resolution | Owner @buenhyden accepted on 2026-11-16 in this chat | @buenhyden |
 
 ### Remaining Conditions
 

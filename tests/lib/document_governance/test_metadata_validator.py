@@ -67,6 +67,35 @@ class LabDocumentSelectionTests(unittest.TestCase):
                 self.assertIsNone(_normalized_target_path(path))
 
 
+class RegisteredReadmeSelectionTests(unittest.TestCase):
+    def test_registered_root_and_docs_readmes_are_collected(self):
+        from scripts.lib.document_governance.metadata.lifecycle import collect_records
+        from scripts.lib.document_governance.metadata.profile import (
+            build_registry_profiles,
+        )
+        from scripts.lib.document_governance.registry import load_registry
+
+        profiles = build_registry_profiles(load_registry(PROFILES))
+        routes = ("README.md", "docs/README.md")
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            subprocess.run(["git", "init", "-q", str(root)], check=True)
+            for route in routes:
+                path = root / route
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(
+                    '---\ntitle: "README fixture"\ntype: "common/readme"\n'
+                    'status: "active"\nowner: "@fixture"\n---\n# README fixture\n',
+                    encoding="utf-8",
+                )
+            records = collect_records(root, profiles, selected_paths=routes)
+            self.assertEqual(set(routes), {r.path.as_posix() for r in records})
+            self.assertEqual(
+                {"repository-readme", "documentation-readme"},
+                {r.artifact_type for r in records},
+            )
+
+
 class FourDigitDocumentIdentityTests(unittest.TestCase):
     def test_full_repository_contracts_reaches_active_record_validation(self) -> None:
         from scripts.lib.document_governance import metadata_validator as metadata

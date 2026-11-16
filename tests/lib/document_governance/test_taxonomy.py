@@ -163,8 +163,9 @@ class ActiveStageScopeTests(unittest.TestCase):
             "tests/fixtures/document_governance/operations-moves/README.md",
             "tests/fixtures/opsflow-acceptance/README.md",
         }
+        registered_readmes = {"README.md", "docs/README.md"}
         self.assertEqual(
-            native_provider_files | fixture_readmes,
+            native_provider_files | fixture_readmes | registered_readmes,
             set(TARGET_MARKDOWN_FILES),
         )
         self.assertEqual(

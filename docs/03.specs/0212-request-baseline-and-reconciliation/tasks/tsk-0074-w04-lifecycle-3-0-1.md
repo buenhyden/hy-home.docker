@@ -1,6 +1,6 @@
 ---
 title: "W04 Lifecycle 3.0.1 Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -226,7 +226,7 @@ Policy and provider-native evidence are separate from these local runs.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 130 | pending | - | Owner decision after verification is available | @buenhyden |
+| 130 | accepted | Cited input GREEN, Cited input review, Continuation governance | Owner @buenhyden accepted on 2026-11-16 in this chat; native action checks stay with RUNTIME-CLOSE | @buenhyden |
 
 ### Remaining Conditions
 

@@ -1,6 +1,6 @@
 ---
 title: "W00 to W07 Follow-up Task"
-version: "0.3.0"
+version: "0.4.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -105,18 +105,18 @@ Criterion 129 acceptance is unchanged.
 The package lists ten Docker evidence obligations. Each one is open and
 has a single receiving owner. None of them blocks unrelated work.
 
-| Obligation | Evidence kind still needed | Receiving owner |
-| --- | --- | --- |
-| Common form core matches actual consumers | source | T99-CONFORMANCE |
-| Request change and withdrawal reach native dispatch and resume | native | RUNTIME-CLOSE, TSK-0078 |
-| Reviewer write and sensitive-read denial | native | RUNTIME-CLOSE, TSK-0079 |
-| Both providers read and update one current memory revision | native | W08-MEMORY |
-| Capture, gap recovery, scheduled analysis and promotion | local execution | W08-ANALYSIS |
-| Forecast recorded before start and scored after | local execution | W10-FORECAST |
-| Worker dependency, resource, cancellation and integration | local execution | W10-PARALLEL |
-| Selected QA keeps required checks at lower matched cost | hosted | W05-GATES, TSK-0076 |
-| Stage 01, 02, 05 and 90 prose matches current requirements | source | W04-CONTENT, TSK-0075 |
-| Final disposition targets and authority | owner decision | Q07-CUTOVER |
+| Obligation | Evidence kind still needed | Receiving owner | Next check |
+| --- | --- | --- | --- |
+| Common form core matches actual consumers | source | T99-CONFORMANCE | Compare the form inventory, rendered Markdown and consumer exports |
+| Request change and withdrawal reach native dispatch and resume | native | RUNTIME-CLOSE, TSK-0078 | Negative change, withdrawal and partial-question cases on the current client |
+| Reviewer write and sensitive-read denial | native | RUNTIME-CLOSE, TSK-0079 | Read positive control and write denial in the same child, separated from setup errors |
+| Both providers read and update one current memory revision | native | W08-MEMORY | Claude write, Codex update and Claude read with race and withdrawal cases |
+| Capture, gap recovery, scheduled analysis and promotion | local execution | W08-ANALYSIS | Partial, duplicate, restart, schedule and cancellation runs on the approved path |
+| Forecast recorded before start and scored after | local execution | W10-FORECAST | Freeze before start, separate wait and cancellation, report score and N |
+| Worker dependency, resource, cancellation and integration | local execution | W10-PARALLEL | Two independent tasks with contention, stale fencing and cancellation before integration |
+| Selected QA keeps required checks at lower matched cost | hosted | W05-GATES, TSK-0076 | Same-input owned runs comparing selection, wait, setup, leaves and retries |
+| Stage 01, 02, 05 and 90 prose matches current requirements | source | W04-CONTENT, TSK-0075 | Read the remaining documents against requirement, design, code and consumer links |
+| Final disposition targets and authority | owner decision | Q07-CUTOVER | Exact refs, data and external copies with approval after all obligations close |
 
 The package carries S02, S06, S07, S26 and S27 from 4.1.0, and its
 S05, S14, S20, S22 and S31 entries were rechecked for 4.2.0. This
@@ -164,6 +164,39 @@ recorded below. It made no new native observation. D17 capability rungs
 for the remaining events stay with RUNTIME-CLOSE. The package marks
 S03, S04, S10, S21 and S24 as carried from 4.1.0.
 
+#### Registered README metadata selection
+
+The continued R00 and W00 review checked why the changed-document
+metadata run selected only one of two changed files. Discovery used a
+fixed path list that omitted `README.md` and `docs/README.md`. Both have
+Registry profiles with required frontmatter. A probe that removed the
+`version` key from `docs/README.md` passed both metadata modes. That
+requirement conflict is a TARGETED_CHANGE in the shared selector, the
+same fix commit `88d449dce` made for LAB documents.
+
+The selector now lists both files, and a selection test proves it. Both
+current documents pass unchanged. `.claude/README.md` also has a README
+profile, but a generated-output profile claims the same path and the
+provider renderer owns it. Selecting it raised three findings, so it is
+left out. Its overlapping profiles remain UNVERIFIED for W03-FORMS.
+
+Independent review required three corrections: an exact selector test,
+root `README.md` in base-ref discovery, and a separate test class. All
+three are applied. The review also listed registered paths that the
+fixed list still omits, such as `scripts/README.md`, `tests/README.md`,
+`projects/README.md` and folder `AGENTS.md` files outside `.agents/`.
+Deriving discovery from the Registry is the root fix. W03-FORMS receives
+it, with `labs/` and `tests/fixtures/` base-ref discovery.
+
+The owner chose per-criterion acceptance on 2026-11-16. Criteria 128
+to 132 and 136 are accepted with their residuals kept as conditions of
+the receiving work. Criteria 133, 134 and 135 stay pending because
+required FAIL or NOT_RUN rows in their own Tasks remain unresolved.
+
+The obligation table now carries the next check D25 requires for each
+row. PR 1051 and PR 1052 merged with main-security passing on
+`4891b5d73` and `c7a36a6fe`.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -201,6 +234,11 @@ Runtime and owner-only outcomes retain their evidence requirements.
 | Obligation linkage | 136 | W141 | package `plan_evidence.py` and Task Remaining Conditions read-back | Docker profile, Tasks 0072–0080 at `99c87b809` | PASS | Ten open obligations, zero closure declarations, each mapped to one owner; one stale TSK-0073 sentence reconciled | required | - |
 | W00 delta baseline | 136 | W141 | Git root, index, worktree, mount and PR read-back | `4891b5d73`, PRs 1047–1051 | PASS | One clean worktree matching `origin/main`; three merged baseline PRs and two out-of-scope dependency PRs | required | - |
 | Attachment fact recheck | 136 | W141 | tracked-file, history and consumer read-back | 4.2.0 Docker attachment report against `4891b5d73` | PASS | Five facts classified; one navigation conflict corrected, `.gitmodules` consumers found, generator outputs traced to two | required | - |
+| README selection RED | 136 | W141 | metadata selection probe and focused test | `c7a36a6fe` with `version` removed from `docs/README.md`; new selection test | FAIL | Both metadata modes selected zero files and passed; the test found neither README collected | required | - |
+| README selection GREEN | 136 | W141 | metadata selection probe and focused test | Selector listing `README.md` and `docs/README.md` | PASS | Test module 12 passed; probe now reports the missing `version`; active metadata clean on the current corpus | required | README selection RED |
+| Delivery hosted read-back | 136 | W141 | main run job read-back | Runs 43857448356 and 43860712682 | PASS | main-security passed on `4891b5d73` and `c7a36a6fe` | required | - |
+| Selector review | 136 | W141 | independent review of the selector change | Commit `4153e1b29` against `c7a36a6fe` | FAIL | CHANGES_REQUIRED: exact-set test in `test_taxonomy` would fail; root README absent from base-ref discovery; test class misnamed | required | - |
+| Selector review resolution | 136 | W141 | independent review of the selector change | Same findings with the expected set, base-ref path and new test class | PASS | Metadata validator and taxonomy modules ran 20 tests OK; Ruff clean; corpus lifecycle zero violations | required | Selector review |
 
 ### Resolution Links
 
@@ -215,7 +253,7 @@ Task migration keeps its raw evidence scanner.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 136 | pending | Merged baseline, Glossary GREEN, Markdown GREEN, Literal comment GREEN, Git header GREEN, Reference authorship, Prior hosted observations, Prior native brief witness | Owner decision follows the candidate gate and open evidence review | @buenhyden |
+| 136 | accepted | Merged baseline, Glossary GREEN, Markdown GREEN, Literal comment GREEN, Git header GREEN, Reference authorship, Prior hosted observations, Prior native brief witness, README selection GREEN, Delivery hosted read-back | Owner @buenhyden accepted on 2026-11-16 in this chat; residuals stay with their receiving owners | @buenhyden |
 
 ### Remaining Conditions
 
