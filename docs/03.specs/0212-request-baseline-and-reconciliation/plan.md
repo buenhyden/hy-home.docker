@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.75.0"
+version: "1.76.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -385,6 +385,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W138 | 133 | Verify installed Git routes, select cumulative PR and final merge paths, align style scope, and avoid unnecessary checkout history where possible | W137 | TSK-0077 | Trace2, real Git fixtures, workflow projection and independent review |
 | W139 | 134 | Bind a brief to the request, compare exact actions and stop stale dependent work | W129 | TSK-0078 | Provider-shaped hook fixtures, explicit delegation preflight and independent review |
 | W140 | 135 | Preserve native event behavior and account for runtime evidence | W129 | TSK-0079 | Hook command regressions, provider parity, native observations and independent review |
+| W141 | 136 | Reconcile W00–W07 sources, outcomes and open requirements, and repair reproduced mismatches | W128, W129, W131, W133, W134, W135, W136, W137, W138, W139, W140 | TSK-0080 | Per-prompt findings, RED/GREEN checks, authenticated existing candidate evidence, independent review and candidate gate |
 
 #### Current v30 continuation and delivery
 

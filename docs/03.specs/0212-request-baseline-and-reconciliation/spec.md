@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.75.0"
+version: "1.76.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -1092,6 +1092,11 @@ target, backup, recovery boundary, and action-specific authorization.
      unsupported output handling and reviewer permission boundaries.
      The Task tracks the real briefing and dispatch entry points and the
      separate capture and shared memory integration.
+136. TSK-0080 compares the eleven W00–W07 prompts in the current workspace
+     against the merged implementation, Task decisions and actual evidence.
+     Correct reproduced mismatches in their current owners, distinguish
+     observation from acceptance, and assign unresolved requirements to
+     their receiving Task and the evidence still needed.
 
 ### Evidence Requirements
 
