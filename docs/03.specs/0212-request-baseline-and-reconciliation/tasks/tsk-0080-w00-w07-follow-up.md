@@ -1,10 +1,10 @@
 ---
 title: "W00 to W07 Follow-up Task"
-version: "0.5.0"
+version: "0.6.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0080"
 parent_ids:
@@ -230,6 +230,39 @@ for W07-ADAPTER.
 The package marks S02, S03, S04, S06, S07, S37 and S27 as carried from
 4.1.0, and S05 and S39 as rechecked. This request rechecked S27 directly.
 
+#### W02-DISPOSITION resume delta
+
+The W02-DISPOSITION request on 2026-11-17 read D00, D14, D15, D27 and D28
+and the requirements U22, U23 and R13 at `53a1ce17c`. W02 completed in
+TSK-0070 with criterion 126 accepted. The Docker attachment item D-W02 is a
+design-only choice owned by SDLC-STRUCTURE, so it adds no W02 action. No
+source was rechecked externally; the package states the carried status of
+S03 to S07, S25, S27 and S28.
+
+| Requirement | Disposition | Basis |
+| --- | --- | --- |
+| U22 open obligations stay with one owner or end by a per-item withdrawal | KEEP_VERIFIED, status reading updated | 38 non-terminal Tasks remain. Since TSK-0070, SPEC-0212 TSK-0047 and TSK-0055, SPEC-0255 TSK-0001 and SPEC-0263 TSK-0002 and TSK-0003 reached `completed` with accepted or owner-decided not-required criteria. TSK-0072 to TSK-0080 were added. None conflicts with Q01 to Q10 or Q-DRAFT, and no withdrawal is made here |
+| U23 and R13 closed audit IDs stay inactive | KEEP_VERIFIED | OPEN-01 to OPEN-14 appear only in the Historical Audit ID local extension of the glossary and in the test that refuses them as document parents (`test_lifecycle.py:313`). No check, prompt or policy outputs them as blocking or awaiting an answer |
+| Retired packages and one-off material | KEEP_VERIFIED | No script, test, workflow or template reads a retired Spec. The OpenBao consumer migration and material retirement tools serve open SPEC-0204 TSK-0014 and TSK-0007, so they stay |
+| No runtime dependency on the package path | KEEP_VERIFIED | No tracked code reads a `workspace_governance_*` package. The packages now sit directly under `_workspace/` instead of `_workspace/governance/`; terminal Tasks keep the earlier path as provenance |
+| Final cutover targets | Refreshed, not run | Table below |
+| D27 path plan and D14 renumbering | Not W02 | DOC-PATH-PLAN and Q07-CUTOVER own them |
+
+The read-only refresh on 2026-11-17 replaces the TSK-0070 snapshot. Nothing
+was deleted. Q07-CUTOVER confirms each target, permission and concurrent
+writer before acting.
+
+| Target | Observed | Note |
+| --- | --- | --- |
+| Remote branches | 8: `main`, `dev`, four merged request branches, two Renovate branches | `dev` at `2cfeeac73` is contained in `main`. Branch deletion needs explicit authority, so the TSK-0070 note that feature branches go on merge no longer holds |
+| Tags and releases | 1 and 1 | Unchanged |
+| Actions artifacts and caches | 1,143 and 192 | Deletable through the API |
+| Pull request refs | up to #1054 | Reported as a residue |
+| Forks | 0, repository public | Outside clones are a residue |
+| Local worktrees | 1 | `main` only |
+| Spec packages | 8 open | SPEC-0255 has no non-terminal Task; closing it is the owner's decision before renumbering (Q02) |
+| `_workspace/` | `diagnostics/`, `repo-support/` and the 3.0.1, 4.0.0, 4.1.0 and 4.2.0 packages | User inputs, removed only after acceptance with approval |
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -275,6 +308,8 @@ Runtime and owner-only outcomes retain their evidence requirements.
 | W01 contract comparison | 136 | W141 | vocabulary, review policy and native settings read-back | 4.2.0 vocabulary 3.0.1 against `.agents/knowledge/glossary.md`, `workflows.md`, `.claude/settings.json` at `c07826f39` | PASS | 43 rows aligned; Q08 present; four deny rules lacked a stated owner | required | - |
 | Deny rule attribution | 136 | W141 | settings test, provider renderer and governance contract | Attributed adapter text and four added assertions | PASS | 93 routing tests OK, renderer drift 0, governance contract 0 failures, changed metadata clean | required | - |
 | Deny attribution review | 136 | W141 | independent review of the adapter and settings test | Adapter text and four assertions against `c07826f39` | PASS | APPROVE; runtime protocol link and test name applied; three unowned settings recorded for W07-ADAPTER | required | - |
+| W02 obligation recheck | 136 | W141 | open Task status, closed audit ID and retired consumer read-back | Every Spec and Task frontmatter, Criterion Decisions of the Tasks closed since TSK-0070, tracked sources at `53a1ce17c` | PASS | 38 non-terminal Tasks, no conflict with confirmed decisions, closed IDs inactive, no retired-package consumer | required | - |
+| Cutover target refresh | 136 | W141 | read-only remote observation | `git ls-remote`, `gh release list`, Actions artifact and cache counts, repository metadata on 2026-11-17 | PASS | Eight branches, one tag, one release, 1,143 artifacts, 192 caches, no fork | required | - |
 
 ### Resolution Links
 
