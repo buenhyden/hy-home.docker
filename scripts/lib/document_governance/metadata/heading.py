@@ -56,6 +56,7 @@ from scripts.lib.document_governance.registry import (
     resolve_template_placeholders,
     validate_frontmatter,
     validate_profile_values,
+    vocabulary_contract_findings,
 )
 from scripts.lib.document_governance.registry import (
     classify_path as classify_registered_path,
@@ -1791,6 +1792,11 @@ def validate_body_contract(
             section_findings.extend(
                 _registered_table_findings(record, text, record.artifact_type, registry)
             )
+            if registered_profile == "governance-vocabulary":
+                section_findings.extend(
+                    _finding(record, finding.code, finding.message)
+                    for finding in vocabulary_contract_findings(registry.common, text)
+                )
             declared = profile.get("language")
             # The message carries no ratio: it is the deficit identity, so an
             # edit to a body already in the wrong language is not "introduced".
