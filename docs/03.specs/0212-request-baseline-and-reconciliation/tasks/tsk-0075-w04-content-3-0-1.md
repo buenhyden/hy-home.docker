@@ -1,6 +1,6 @@
 ---
 title: "W04 Content 3.0.1 Task"
-version: "0.1.2"
+version: "0.1.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -255,7 +255,7 @@ cost only.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 131 | pending | - | Owner decision after review and verification | @buenhyden |
+| 131 | accepted | Resume inventory, Resume metadata, Resume independent review | Owner @buenhyden accepted on 2026-11-16 in this chat; the unread prose review stays a W04-CONTENT condition | @buenhyden |
 
 ### Remaining Conditions
 

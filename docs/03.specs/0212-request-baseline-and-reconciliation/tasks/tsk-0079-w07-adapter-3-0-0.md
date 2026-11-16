@@ -1,6 +1,6 @@
 ---
 title: "W07 Native Provider Adapter Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -366,7 +366,7 @@ Edit resolves the missing project PostToolUse exit-status witness.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 135 | pending | Trusted Claude SessionStart, Trusted Claude UserPromptSubmit, Trusted Claude in-scope allow, Trusted Claude out-of-scope deny, Trusted Claude Stop continuation, Trusted Claude manual PreCompact completion, Trusted Claude project Stop retry completion, Trusted Claude project PostToolUse exit | Required lifecycle and permission evidence remains open | @buenhyden |
+| 135 | pending | Trusted Claude SessionStart, Trusted Claude UserPromptSubmit, Trusted Claude in-scope allow, Trusted Claude out-of-scope deny, Trusted Claude Stop continuation, Trusted Claude manual PreCompact completion, Trusted Claude project Stop retry completion, Trusted Claude project PostToolUse exit | Owner @buenhyden chose per-criterion acceptance on 2026-11-16 in this chat; held by unresolved required rows Native malformed output, Native reviewer boundaries, Native cross-provider integration and Codex desktop reviewer write-open | @buenhyden |
 
 ### Remaining Conditions
 

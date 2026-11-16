@@ -1,6 +1,6 @@
 ---
 title: "W00 to W07 Follow-up Task"
-version: "0.4.0"
+version: "0.4.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -180,6 +180,19 @@ profile, but a generated-output profile claims the same path and the
 provider renderer owns it. Selecting it raised three findings, so it is
 left out. Its overlapping profiles remain UNVERIFIED for W03-FORMS.
 
+Independent review required three corrections: an exact selector test,
+root `README.md` in base-ref discovery, and a separate test class. All
+three are applied. The review also listed registered paths that the
+fixed list still omits, such as `scripts/README.md`, `tests/README.md`,
+`projects/README.md` and folder `AGENTS.md` files outside `.agents/`.
+Deriving discovery from the Registry is the root fix. W03-FORMS receives
+it, with `labs/` and `tests/fixtures/` base-ref discovery.
+
+The owner chose per-criterion acceptance on 2026-11-16. Criteria 128
+to 132 and 136 are accepted with their residuals kept as conditions of
+the receiving work. Criteria 133, 134 and 135 stay pending because
+required FAIL or NOT_RUN rows in their own Tasks remain unresolved.
+
 The obligation table now carries the next check D25 requires for each
 row. PR 1051 and PR 1052 merged with main-security passing on
 `4891b5d73` and `c7a36a6fe`.
@@ -222,8 +235,10 @@ Runtime and owner-only outcomes retain their evidence requirements.
 | W00 delta baseline | 136 | W141 | Git root, index, worktree, mount and PR read-back | `4891b5d73`, PRs 1047–1051 | PASS | One clean worktree matching `origin/main`; three merged baseline PRs and two out-of-scope dependency PRs | required | - |
 | Attachment fact recheck | 136 | W141 | tracked-file, history and consumer read-back | 4.2.0 Docker attachment report against `4891b5d73` | PASS | Five facts classified; one navigation conflict corrected, `.gitmodules` consumers found, generator outputs traced to two | required | - |
 | README selection RED | 136 | W141 | metadata selection probe and focused test | `c7a36a6fe` with `version` removed from `docs/README.md`; new selection test | FAIL | Both metadata modes selected zero files and passed; the test found neither README collected | required | - |
-| README selection GREEN | 136 | W141 | focused test, both metadata modes and corpus lifecycle | Selector listing `README.md` and `docs/README.md` | PASS | Test module 12 passed; probe now reports the missing `version`; active metadata clean on the current corpus | required | README selection RED |
+| README selection GREEN | 136 | W141 | metadata selection probe and focused test | Selector listing `README.md` and `docs/README.md` | PASS | Test module 12 passed; probe now reports the missing `version`; active metadata clean on the current corpus | required | README selection RED |
 | Delivery hosted read-back | 136 | W141 | main run job read-back | Runs 43857448356 and 43860712682 | PASS | main-security passed on `4891b5d73` and `c7a36a6fe` | required | - |
+| Selector review | 136 | W141 | independent review of the selector change | Commit `4153e1b29` against `c7a36a6fe` | FAIL | CHANGES_REQUIRED: exact-set test in `test_taxonomy` would fail; root README absent from base-ref discovery; test class misnamed | required | - |
+| Selector review resolution | 136 | W141 | independent review of the selector change | Same findings with the expected set, base-ref path and new test class | PASS | Metadata validator and taxonomy modules ran 20 tests OK; Ruff clean; corpus lifecycle zero violations | required | Selector review |
 
 ### Resolution Links
 
@@ -238,7 +253,7 @@ Task migration keeps its raw evidence scanner.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 136 | pending | Merged baseline, Glossary GREEN, Markdown GREEN, Literal comment GREEN, Git header GREEN, Reference authorship, Prior hosted observations, Prior native brief witness | Owner decision follows the candidate gate and open evidence review | @buenhyden |
+| 136 | accepted | Merged baseline, Glossary GREEN, Markdown GREEN, Literal comment GREEN, Git header GREEN, Reference authorship, Prior hosted observations, Prior native brief witness, README selection GREEN, Delivery hosted read-back | Owner @buenhyden accepted on 2026-11-16 in this chat; residuals stay with their receiving owners | @buenhyden |
 
 ### Remaining Conditions
 
