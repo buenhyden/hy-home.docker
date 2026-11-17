@@ -1,0 +1,4896 @@
+{
+  "contract_id": "workspace-document-role-design",
+  "contract_version": "4.0.0",
+  "status": "DESIGN_PROPOSAL_NOT_WORKSPACE_ADOPTION",
+  "rule": "공통 core는 동일한 의미·section ID·영어 heading·표 열·타입·상태·관계·검증 보장을 사용한다. 로컬 경로·owner 값·본문 언어·네이티브 문법은 분리된 바인딩이다. 제목만 같거나 정규화만 같다고 양식 통일로 판정하지 않는다. 이 설계 채택은 각 워크스페이스의 실제 적용·인수와 별도다.",
+  "roles": [
+    {
+      "role": "requirement",
+      "purpose": "필요·목표·검증 가능한 요구",
+      "non_goals": "다른 역할의 상태·정책 정본 대체",
+      "sections": [
+        {
+          "section_id": "requirement.intent",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "목적",
+          "order": 1,
+          "required_when": "always",
+          "content_rule": "사용자 문제·필요·가치",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "requirement.intent.1",
+              "level": 3,
+              "parent_id": "requirement.intent",
+              "title_en": "Problem and Outcome",
+              "title_ko": "Problem and Outcome",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "사용자 문제·필요·가치 중 Problem and Outcome에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "requirement.intent.2",
+              "level": 3,
+              "parent_id": "requirement.intent",
+              "title_en": "Stakeholders",
+              "title_ko": "Stakeholders",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "사용자 문제·필요·가치 중 Stakeholders에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Overview"
+        },
+        {
+          "section_id": "requirement.scope",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "범위",
+          "order": 2,
+          "required_when": "always",
+          "content_rule": "적용·제외·제약",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "requirement.scope.1",
+              "level": 3,
+              "parent_id": "requirement.scope",
+              "title_en": "In Scope",
+              "title_ko": "In Scope",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "적용·제외·제약 중 In Scope에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "requirement.scope.2",
+              "level": 3,
+              "parent_id": "requirement.scope",
+              "title_en": "Constraints and Exclusions",
+              "title_ko": "Constraints and Exclusions",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "적용·제외·제약 중 Constraints and Exclusions에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Scope"
+        },
+        {
+          "section_id": "requirement.requirements",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "요구사항",
+          "order": 3,
+          "required_when": "always",
+          "content_rule": "기능·품질·수용조건",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "requirement.requirements.1",
+              "level": 3,
+              "parent_id": "requirement.requirements",
+              "title_en": "Functional Requirements",
+              "title_ko": "Functional Requirements",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "기능·품질·수용조건 중 Functional Requirements에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "requirement.requirements.2",
+              "level": 3,
+              "parent_id": "requirement.requirements",
+              "title_en": "Quality Requirements",
+              "title_ko": "Quality Requirements",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "기능·품질·수용조건 중 Quality Requirements에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Requirements"
+        },
+        {
+          "section_id": "requirement.relations",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "관계",
+          "order": 4,
+          "required_when": "always",
+          "content_rule": "현재 설계로 이어지는 관계; 실행상태 복제 금지",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "requirement.relations.1",
+              "level": 3,
+              "parent_id": "requirement.relations",
+              "title_en": "Sources",
+              "title_ko": "Sources",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "현재 설계로 이어지는 관계; 실행상태 복제 금지 중 Sources에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "requirement.relations.2",
+              "level": 3,
+              "parent_id": "requirement.relations",
+              "title_en": "Verification Links",
+              "title_ko": "Verification Links",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "현재 설계로 이어지는 관계; 실행상태 복제 금지 중 Verification Links에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Traceability"
+        }
+      ],
+      "metadata_policy": {
+        "envelope": "frontmatter",
+        "fields": [
+          {
+            "key": "title",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "문서 목적을 나타내는 제목"
+          },
+          {
+            "key": "version",
+            "value_type": "document-semver",
+            "required_when": "always",
+            "meaning": "ASCII 숫자 세 요소 판본"
+          },
+          {
+            "key": "type",
+            "value_type": "role-binding",
+            "required_when": "always",
+            "meaning": "역할과 정확하게 대응하는 문서 타입"
+          },
+          {
+            "key": "owner",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "현재 의미 소유자"
+          },
+          {
+            "key": "updated",
+            "value_type": "date",
+            "required_when": "always",
+            "meaning": "실제 문서 변경일"
+          },
+          {
+            "key": "status",
+            "value_type": "role-state",
+            "required_when": "always",
+            "meaning": "역할에 따른 상태; 실행 승인이나 인수를 대체하지 않음"
+          }
+        ],
+        "extension_rule": "선택 native 문법은 공급자 검증, domain field는 이름공간과 소유자·실제 소비자를 갖는 별도 모듈",
+        "document_version_pattern": "(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"
+      },
+      "tables": [
+        {
+          "table_id": "requirement.requirements",
+          "section_id": "requirement.requirements",
+          "required_when": "always",
+          "columns": [
+            {
+              "key": "requirement_id",
+              "label": "Requirement ID",
+              "value_type": "identifier",
+              "meaning": "요구 식별자",
+              "required": true
+            },
+            {
+              "key": "statement",
+              "label": "Statement",
+              "value_type": "string",
+              "meaning": "필요한 동작·품질",
+              "required": true
+            },
+            {
+              "key": "rationale",
+              "label": "Rationale",
+              "value_type": "string",
+              "meaning": "필요 이유",
+              "required": true
+            },
+            {
+              "key": "acceptance",
+              "label": "Acceptance",
+              "value_type": "string",
+              "meaning": "판정 가능한 조건",
+              "required": true
+            },
+            {
+              "key": "priority",
+              "label": "Priority",
+              "value_type": "enum",
+              "meaning": "must/should/could",
+              "required": true,
+              "allowed_values": [
+                "must",
+                "should",
+                "could"
+              ]
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        },
+        {
+          "table_id": "requirement.quality",
+          "section_id": "requirement.requirements",
+          "required_when": "quality_requirement",
+          "columns": [
+            {
+              "key": "requirement_id",
+              "label": "Requirement ID",
+              "value_type": "identifier",
+              "meaning": "품질 요구",
+              "required": true
+            },
+            {
+              "key": "attribute",
+              "label": "Attribute",
+              "value_type": "string",
+              "meaning": "품질 특성",
+              "required": true
+            },
+            {
+              "key": "measure",
+              "label": "Measure",
+              "value_type": "string",
+              "meaning": "측정 정의",
+              "required": true
+            },
+            {
+              "key": "unit",
+              "label": "Unit",
+              "value_type": "string",
+              "meaning": "단위",
+              "required": true
+            },
+            {
+              "key": "environment",
+              "label": "Environment",
+              "value_type": "string",
+              "meaning": "측정 환경",
+              "required": true
+            },
+            {
+              "key": "criterion",
+              "label": "Criterion",
+              "value_type": "string",
+              "meaning": "사용자 목적에 맞는 수용값",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        }
+      ],
+      "language": {
+        "headings": "en",
+        "body": "로컬 승인 언어 계약; 본문 언어가 core heading·column을 바꾸지 않음"
+      },
+      "status": "DESIGN_PROPOSAL_NOT_ADOPTED",
+      "relationships": {
+        "authored_direction": "consumer-to-direct-owner",
+        "reverse_links": "derived",
+        "missing_target": "unresolved-not-pass",
+        "deletion": "transfer-current-meaning-before-removal"
+      },
+      "lifecycle": {
+        "axis": "document-purpose",
+        "draft_rule": "authoring-allowed-not-execution-authority",
+        "transition_authority": "explicit-scoped-authority",
+        "acceptance_rule": "required-evidence-and-authorized-acceptance-separate"
+      },
+      "rules": [
+        "single-meaning-owner",
+        "no-synthetic-evidence",
+        "no-release-document-role",
+        "no-package-path-runtime-dependency"
+      ]
+    },
+    {
+      "role": "architecture",
+      "purpose": "목표 구조와 현재 적용 상태",
+      "non_goals": "다른 역할의 상태·정책 정본 대체",
+      "sections": [
+        {
+          "section_id": "architecture.context",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "문맥과 경계",
+          "order": 1,
+          "required_when": "always",
+          "content_rule": "외부 시스템·책임·제약",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "architecture.context.1",
+              "level": 3,
+              "parent_id": "architecture.context",
+              "title_en": "System Boundary",
+              "title_ko": "System Boundary",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "외부 시스템·책임·제약 중 System Boundary에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "architecture.context.2",
+              "level": 3,
+              "parent_id": "architecture.context",
+              "title_en": "Constraints",
+              "title_ko": "Constraints",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "외부 시스템·책임·제약 중 Constraints에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Context and Boundaries"
+        },
+        {
+          "section_id": "architecture.structure",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "구조",
+          "order": 2,
+          "required_when": "always",
+          "content_rule": "컴포넌트·인터페이스·데이터",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "architecture.structure.1",
+              "level": 3,
+              "parent_id": "architecture.structure",
+              "title_en": "Building Blocks",
+              "title_ko": "Building Blocks",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "컴포넌트·인터페이스·데이터 중 Building Blocks에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "architecture.structure.2",
+              "level": 3,
+              "parent_id": "architecture.structure",
+              "title_en": "Interfaces",
+              "title_ko": "Interfaces",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "컴포넌트·인터페이스·데이터 중 Interfaces에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Structure"
+        },
+        {
+          "section_id": "architecture.behavior",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "동작",
+          "order": 3,
+          "required_when": "always",
+          "content_rule": "정상·실패·권한·운영",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "architecture.behavior.1",
+              "level": 3,
+              "parent_id": "architecture.behavior",
+              "title_en": "Normal Flow",
+              "title_ko": "Normal Flow",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "정상·실패·권한·운영 중 Normal Flow에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "architecture.behavior.2",
+              "level": 3,
+              "parent_id": "architecture.behavior",
+              "title_en": "Failure and Recovery",
+              "title_ko": "Failure and Recovery",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "정상·실패·권한·운영 중 Failure and Recovery에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Runtime Behavior"
+        },
+        {
+          "section_id": "architecture.quality",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "품질",
+          "order": 4,
+          "required_when": "always",
+          "content_rule": "품질 시나리오와 검증",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "architecture.quality.1",
+              "level": 3,
+              "parent_id": "architecture.quality",
+              "title_en": "Scenarios",
+              "title_ko": "Scenarios",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "품질 시나리오와 검증 중 Scenarios에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "architecture.quality.2",
+              "level": 3,
+              "parent_id": "architecture.quality",
+              "title_en": "Trade-offs",
+              "title_ko": "Trade-offs",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "품질 시나리오와 검증 중 Trade-offs에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Quality Scenarios"
+        },
+        {
+          "section_id": "architecture.decisions",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "결정과 적용",
+          "order": 5,
+          "required_when": "always",
+          "content_rule": "대안·선택 근거·현재 적용 차이",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "architecture.decisions.1",
+              "level": 3,
+              "parent_id": "architecture.decisions",
+              "title_en": "Decisions",
+              "title_ko": "Decisions",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "대안·선택 근거·현재 적용 차이 중 Decisions에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "architecture.decisions.2",
+              "level": 3,
+              "parent_id": "architecture.decisions",
+              "title_en": "Adoption Boundaries",
+              "title_ko": "Adoption Boundaries",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "대안·선택 근거·현재 적용 차이 중 Adoption Boundaries에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Decisions and Adoption"
+        }
+      ],
+      "metadata_policy": {
+        "envelope": "frontmatter",
+        "fields": [
+          {
+            "key": "title",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "문서 목적을 나타내는 제목"
+          },
+          {
+            "key": "version",
+            "value_type": "document-semver",
+            "required_when": "always",
+            "meaning": "ASCII 숫자 세 요소 판본"
+          },
+          {
+            "key": "type",
+            "value_type": "role-binding",
+            "required_when": "always",
+            "meaning": "역할과 정확하게 대응하는 문서 타입"
+          },
+          {
+            "key": "owner",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "현재 의미 소유자"
+          },
+          {
+            "key": "updated",
+            "value_type": "date",
+            "required_when": "always",
+            "meaning": "실제 문서 변경일"
+          },
+          {
+            "key": "status",
+            "value_type": "role-state",
+            "required_when": "always",
+            "meaning": "역할에 따른 상태; 실행 승인이나 인수를 대체하지 않음"
+          }
+        ],
+        "extension_rule": "선택 native 문법은 공급자 검증, domain field는 이름공간과 소유자·실제 소비자를 갖는 별도 모듈",
+        "document_version_pattern": "(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"
+      },
+      "tables": [
+        {
+          "table_id": "architecture.interface",
+          "section_id": "architecture.structure",
+          "required_when": "external_interface",
+          "columns": [
+            {
+              "key": "interface",
+              "label": "Interface",
+              "value_type": "identifier",
+              "meaning": "경계",
+              "required": true
+            },
+            {
+              "key": "producer",
+              "label": "Producer",
+              "value_type": "string",
+              "meaning": "생산자",
+              "required": true
+            },
+            {
+              "key": "consumer",
+              "label": "Consumer",
+              "value_type": "string",
+              "meaning": "소비자",
+              "required": true
+            },
+            {
+              "key": "contract",
+              "label": "Contract",
+              "value_type": "reference",
+              "meaning": "입출력 의미",
+              "required": true
+            },
+            {
+              "key": "failure",
+              "label": "Failure",
+              "value_type": "string",
+              "meaning": "실패 처리",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        }
+      ],
+      "language": {
+        "headings": "en",
+        "body": "로컬 승인 언어 계약; 본문 언어가 core heading·column을 바꾸지 않음"
+      },
+      "status": "DESIGN_PROPOSAL_NOT_ADOPTED",
+      "relationships": {
+        "authored_direction": "consumer-to-direct-owner",
+        "reverse_links": "derived",
+        "missing_target": "unresolved-not-pass",
+        "deletion": "transfer-current-meaning-before-removal"
+      },
+      "lifecycle": {
+        "axis": "document-purpose",
+        "draft_rule": "authoring-allowed-not-execution-authority",
+        "transition_authority": "explicit-scoped-authority",
+        "acceptance_rule": "required-evidence-and-authorized-acceptance-separate"
+      },
+      "rules": [
+        "single-meaning-owner",
+        "no-synthetic-evidence",
+        "no-release-document-role",
+        "no-package-path-runtime-dependency"
+      ]
+    },
+    {
+      "role": "decision",
+      "purpose": "중요 설계 선택의 이유",
+      "non_goals": "다른 역할의 상태·정책 정본 대체",
+      "sections": [
+        {
+          "section_id": "decision.context",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "문제와 조건",
+          "order": 1,
+          "required_when": "always",
+          "content_rule": "결정할 문제와 실제 제약",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "decision.context.1",
+              "level": 3,
+              "parent_id": "decision.context",
+              "title_en": "Problem and Drivers",
+              "title_ko": "Problem and Drivers",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "결정할 문제와 실제 제약 중 Problem and Drivers에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "decision.context.2",
+              "level": 3,
+              "parent_id": "decision.context",
+              "title_en": "Decision Scope",
+              "title_ko": "Decision Scope",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "결정할 문제와 실제 제약 중 Decision Scope에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Context"
+        },
+        {
+          "section_id": "decision.options",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "대안",
+          "order": 2,
+          "required_when": "always",
+          "content_rule": "실현 가능한 선택·비용·위험",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "decision.options.1",
+              "level": 3,
+              "parent_id": "decision.options",
+              "title_en": "Considered Options",
+              "title_ko": "Considered Options",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "실현 가능한 선택·비용·위험 중 Considered Options에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "decision.options.2",
+              "level": 3,
+              "parent_id": "decision.options",
+              "title_en": "Trade-offs",
+              "title_ko": "Trade-offs",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "실현 가능한 선택·비용·위험 중 Trade-offs에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Options"
+        },
+        {
+          "section_id": "decision.decision",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "결정",
+          "order": 3,
+          "required_when": "always",
+          "content_rule": "선택과 근거·효력 범위",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "decision.decision.1",
+              "level": 3,
+              "parent_id": "decision.decision",
+              "title_en": "Chosen Option",
+              "title_ko": "Chosen Option",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "선택과 근거·효력 범위 중 Chosen Option에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "decision.decision.2",
+              "level": 3,
+              "parent_id": "decision.decision",
+              "title_en": "Authority and Effect",
+              "title_ko": "Authority and Effect",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "선택과 근거·효력 범위 중 Authority and Effect에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Decision"
+        },
+        {
+          "section_id": "decision.consequences",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "영향",
+          "order": 4,
+          "required_when": "always",
+          "content_rule": "소비자·실패·재검토 조건",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "decision.consequences.1",
+              "level": 3,
+              "parent_id": "decision.consequences",
+              "title_en": "Impacts",
+              "title_ko": "Impacts",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "소비자·실패·재검토 조건 중 Impacts에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "decision.consequences.2",
+              "level": 3,
+              "parent_id": "decision.consequences",
+              "title_en": "Follow-up",
+              "title_ko": "Follow-up",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "소비자·실패·재검토 조건 중 Follow-up에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Consequences"
+        }
+      ],
+      "metadata_policy": {
+        "envelope": "frontmatter",
+        "fields": [
+          {
+            "key": "title",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "문서 목적을 나타내는 제목"
+          },
+          {
+            "key": "version",
+            "value_type": "document-semver",
+            "required_when": "always",
+            "meaning": "ASCII 숫자 세 요소 판본"
+          },
+          {
+            "key": "type",
+            "value_type": "role-binding",
+            "required_when": "always",
+            "meaning": "역할과 정확하게 대응하는 문서 타입"
+          },
+          {
+            "key": "owner",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "현재 의미 소유자"
+          },
+          {
+            "key": "updated",
+            "value_type": "date",
+            "required_when": "always",
+            "meaning": "실제 문서 변경일"
+          },
+          {
+            "key": "status",
+            "value_type": "role-state",
+            "required_when": "always",
+            "meaning": "역할에 따른 상태; 실행 승인이나 인수를 대체하지 않음"
+          }
+        ],
+        "extension_rule": "선택 native 문법은 공급자 검증, domain field는 이름공간과 소유자·실제 소비자를 갖는 별도 모듈",
+        "document_version_pattern": "(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"
+      },
+      "tables": [
+        {
+          "table_id": "decision.options",
+          "section_id": "decision.options",
+          "required_when": "always",
+          "columns": [
+            {
+              "key": "option",
+              "label": "Option",
+              "value_type": "string",
+              "meaning": "대안",
+              "required": true
+            },
+            {
+              "key": "benefit",
+              "label": "Benefit",
+              "value_type": "string",
+              "meaning": "장점",
+              "required": true
+            },
+            {
+              "key": "cost",
+              "label": "Cost and Risk",
+              "value_type": "string",
+              "meaning": "비용과 위험",
+              "required": true
+            },
+            {
+              "key": "reason",
+              "label": "Reason",
+              "value_type": "string",
+              "meaning": "선택·배제 근거",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        }
+      ],
+      "language": {
+        "headings": "en",
+        "body": "로컬 승인 언어 계약; 본문 언어가 core heading·column을 바꾸지 않음"
+      },
+      "status": "DESIGN_PROPOSAL_NOT_ADOPTED",
+      "relationships": {
+        "authored_direction": "consumer-to-direct-owner",
+        "reverse_links": "derived",
+        "missing_target": "unresolved-not-pass",
+        "deletion": "transfer-current-meaning-before-removal"
+      },
+      "lifecycle": {
+        "axis": "document-purpose",
+        "draft_rule": "authoring-allowed-not-execution-authority",
+        "transition_authority": "explicit-scoped-authority",
+        "acceptance_rule": "required-evidence-and-authorized-acceptance-separate"
+      },
+      "rules": [
+        "single-meaning-owner",
+        "no-synthetic-evidence",
+        "no-release-document-role",
+        "no-package-path-runtime-dependency"
+      ]
+    },
+    {
+      "role": "spec",
+      "purpose": "범위 있는 변경의 관측 가능한 계약",
+      "non_goals": "다른 역할의 상태·정책 정본 대체",
+      "sections": [
+        {
+          "section_id": "spec.intent",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "변경 목적",
+          "order": 1,
+          "required_when": "always",
+          "content_rule": "부모 요구와 가치",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "spec.intent.1",
+              "level": 3,
+              "parent_id": "spec.intent",
+              "title_en": "Goal",
+              "title_ko": "Goal",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "부모 요구와 가치 중 Goal에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "spec.intent.2",
+              "level": 3,
+              "parent_id": "spec.intent",
+              "title_en": "Consumers",
+              "title_ko": "Consumers",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "부모 요구와 가치 중 Consumers에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Overview"
+        },
+        {
+          "section_id": "spec.scope",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "범위",
+          "order": 2,
+          "required_when": "always",
+          "content_rule": "대상·제외·허용 권한",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "spec.scope.1",
+              "level": 3,
+              "parent_id": "spec.scope",
+              "title_en": "In Scope",
+              "title_ko": "In Scope",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "대상·제외·허용 권한 중 In Scope에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "spec.scope.2",
+              "level": 3,
+              "parent_id": "spec.scope",
+              "title_en": "Out of Scope",
+              "title_ko": "Out of Scope",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "대상·제외·허용 권한 중 Out of Scope에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Scope"
+        },
+        {
+          "section_id": "spec.behavior",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "동작 계약",
+          "order": 3,
+          "required_when": "always",
+          "content_rule": "정상·경계·실패·취소",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "spec.behavior.1",
+              "level": 3,
+              "parent_id": "spec.behavior",
+              "title_en": "Inputs and Outputs",
+              "title_ko": "Inputs and Outputs",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "정상·경계·실패·취소 중 Inputs and Outputs에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "spec.behavior.2",
+              "level": 3,
+              "parent_id": "spec.behavior",
+              "title_en": "Failure Behavior",
+              "title_ko": "Failure Behavior",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "정상·경계·실패·취소 중 Failure Behavior에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Behavior Contract"
+        },
+        {
+          "section_id": "spec.acceptance",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "수용 조건",
+          "order": 4,
+          "required_when": "always",
+          "content_rule": "실제 판정 가능한 기준과 필요한 증거",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "spec.acceptance.1",
+              "level": 3,
+              "parent_id": "spec.acceptance",
+              "title_en": "Criteria",
+              "title_ko": "Criteria",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "실제 판정 가능한 기준과 필요한 증거 중 Criteria에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "spec.acceptance.2",
+              "level": 3,
+              "parent_id": "spec.acceptance",
+              "title_en": "Verification Strategy",
+              "title_ko": "Verification Strategy",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "실제 판정 가능한 기준과 필요한 증거 중 Verification Strategy에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Acceptance Criteria"
+        }
+      ],
+      "metadata_policy": {
+        "envelope": "frontmatter",
+        "fields": [
+          {
+            "key": "title",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "문서 목적을 나타내는 제목"
+          },
+          {
+            "key": "version",
+            "value_type": "document-semver",
+            "required_when": "always",
+            "meaning": "ASCII 숫자 세 요소 판본"
+          },
+          {
+            "key": "type",
+            "value_type": "role-binding",
+            "required_when": "always",
+            "meaning": "역할과 정확하게 대응하는 문서 타입"
+          },
+          {
+            "key": "owner",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "현재 의미 소유자"
+          },
+          {
+            "key": "updated",
+            "value_type": "date",
+            "required_when": "always",
+            "meaning": "실제 문서 변경일"
+          },
+          {
+            "key": "status",
+            "value_type": "role-state",
+            "required_when": "always",
+            "meaning": "역할에 따른 상태; 실행 승인이나 인수를 대체하지 않음"
+          }
+        ],
+        "extension_rule": "선택 native 문법은 공급자 검증, domain field는 이름공간과 소유자·실제 소비자를 갖는 별도 모듈",
+        "document_version_pattern": "(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"
+      },
+      "tables": [
+        {
+          "table_id": "spec.checks",
+          "section_id": "spec.acceptance",
+          "required_when": "always",
+          "columns": [
+            {
+              "key": "check_id",
+              "label": "Check ID",
+              "value_type": "identifier",
+              "meaning": "고유 검사",
+              "required": true
+            },
+            {
+              "key": "guarantee",
+              "label": "Guarantee",
+              "value_type": "string",
+              "meaning": "검사의 고유 보장",
+              "required": true
+            },
+            {
+              "key": "input",
+              "label": "Input",
+              "value_type": "string",
+              "meaning": "필요 입력",
+              "required": true
+            },
+            {
+              "key": "trust",
+              "label": "Trust Boundary",
+              "value_type": "string",
+              "meaning": "검사 신뢰 경계",
+              "required": true
+            },
+            {
+              "key": "required_when",
+              "label": "Required When",
+              "value_type": "condition",
+              "meaning": "선택 조건",
+              "required": true
+            },
+            {
+              "key": "evidence",
+              "label": "Evidence",
+              "value_type": "string",
+              "meaning": "생성해야 할 증거 유형",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        }
+      ],
+      "language": {
+        "headings": "en",
+        "body": "로컬 승인 언어 계약; 본문 언어가 core heading·column을 바꾸지 않음"
+      },
+      "status": "DESIGN_PROPOSAL_NOT_ADOPTED",
+      "relationships": {
+        "authored_direction": "consumer-to-direct-owner",
+        "reverse_links": "derived",
+        "missing_target": "unresolved-not-pass",
+        "deletion": "transfer-current-meaning-before-removal"
+      },
+      "lifecycle": {
+        "axis": "document-purpose",
+        "draft_rule": "authoring-allowed-not-execution-authority",
+        "transition_authority": "explicit-scoped-authority",
+        "acceptance_rule": "required-evidence-and-authorized-acceptance-separate"
+      },
+      "rules": [
+        "single-meaning-owner",
+        "no-synthetic-evidence",
+        "no-release-document-role",
+        "no-package-path-runtime-dependency"
+      ]
+    },
+    {
+      "role": "plan",
+      "purpose": "실행 전략과 의존성",
+      "non_goals": "다른 역할의 상태·정책 정본 대체",
+      "sections": [
+        {
+          "section_id": "plan.intent",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "목표와 전제",
+          "order": 1,
+          "required_when": "always",
+          "content_rule": "부모 Spec와 가정",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "plan.intent.1",
+              "level": 3,
+              "parent_id": "plan.intent",
+              "title_en": "Outcome",
+              "title_ko": "Outcome",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "부모 Spec와 가정 중 Outcome에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "plan.intent.2",
+              "level": 3,
+              "parent_id": "plan.intent",
+              "title_en": "Constraints",
+              "title_ko": "Constraints",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "부모 Spec와 가정 중 Constraints에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Overview"
+        },
+        {
+          "section_id": "plan.dependencies",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "의존성",
+          "order": 2,
+          "required_when": "always",
+          "content_rule": "입력·자원·권한·선행",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "plan.dependencies.1",
+              "level": 3,
+              "parent_id": "plan.dependencies",
+              "title_en": "Prerequisites",
+              "title_ko": "Prerequisites",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "입력·자원·권한·선행 중 Prerequisites에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "plan.dependencies.2",
+              "level": 3,
+              "parent_id": "plan.dependencies",
+              "title_en": "Shared Resources",
+              "title_ko": "Shared Resources",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "입력·자원·권한·선행 중 Shared Resources에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Dependencies"
+        },
+        {
+          "section_id": "plan.work",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "작업 분해",
+          "order": 3,
+          "required_when": "always",
+          "content_rule": "산출물·수정범위·DAG·통합책임",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "plan.work.1",
+              "level": 3,
+              "parent_id": "plan.work",
+              "title_en": "Work Units",
+              "title_ko": "Work Units",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "산출물·수정범위·DAG·통합책임 중 Work Units에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "plan.work.2",
+              "level": 3,
+              "parent_id": "plan.work",
+              "title_en": "Dependency Edges",
+              "title_ko": "Dependency Edges",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "산출물·수정범위·DAG·통합책임 중 Dependency Edges에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Work Breakdown"
+        },
+        {
+          "section_id": "plan.verification",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "검증 계획",
+          "order": 4,
+          "required_when": "always",
+          "content_rule": "입력·단계·고유보장·실패 처리",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "plan.verification.1",
+              "level": 3,
+              "parent_id": "plan.verification",
+              "title_en": "Selected Checks",
+              "title_ko": "Selected Checks",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "입력·단계·고유보장·실패 처리 중 Selected Checks에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "plan.verification.2",
+              "level": 3,
+              "parent_id": "plan.verification",
+              "title_en": "Evidence Plan",
+              "title_ko": "Evidence Plan",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "입력·단계·고유보장·실패 처리 중 Evidence Plan에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Verification Plan"
+        },
+        {
+          "section_id": "plan.promotion",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "지속 의미 반영",
+          "order": 5,
+          "required_when": "always",
+          "content_rule": "현재 장기 문서 소유자와 반영 조건",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "plan.promotion.1",
+              "level": 3,
+              "parent_id": "plan.promotion",
+              "title_en": "Durable Owners",
+              "title_ko": "Durable Owners",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "현재 장기 문서 소유자와 반영 조건 중 Durable Owners에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "plan.promotion.2",
+              "level": 3,
+              "parent_id": "plan.promotion",
+              "title_en": "Consumer Updates",
+              "title_ko": "Consumer Updates",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "현재 장기 문서 소유자와 반영 조건 중 Consumer Updates에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Promotion Map"
+        }
+      ],
+      "metadata_policy": {
+        "envelope": "frontmatter",
+        "fields": [
+          {
+            "key": "title",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "문서 목적을 나타내는 제목"
+          },
+          {
+            "key": "version",
+            "value_type": "document-semver",
+            "required_when": "always",
+            "meaning": "ASCII 숫자 세 요소 판본"
+          },
+          {
+            "key": "type",
+            "value_type": "role-binding",
+            "required_when": "always",
+            "meaning": "역할과 정확하게 대응하는 문서 타입"
+          },
+          {
+            "key": "owner",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "현재 의미 소유자"
+          },
+          {
+            "key": "updated",
+            "value_type": "date",
+            "required_when": "always",
+            "meaning": "실제 문서 변경일"
+          },
+          {
+            "key": "status",
+            "value_type": "role-state",
+            "required_when": "always",
+            "meaning": "역할에 따른 상태; 실행 승인이나 인수를 대체하지 않음"
+          }
+        ],
+        "extension_rule": "선택 native 문법은 공급자 검증, domain field는 이름공간과 소유자·실제 소비자를 갖는 별도 모듈",
+        "document_version_pattern": "(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"
+      },
+      "tables": [
+        {
+          "table_id": "plan.work_units",
+          "section_id": "plan.work",
+          "required_when": "always",
+          "columns": [
+            {
+              "key": "work_unit",
+              "label": "Work Unit",
+              "value_type": "identifier",
+              "meaning": "실행 단위",
+              "required": true
+            },
+            {
+              "key": "outcome",
+              "label": "Outcome",
+              "value_type": "string",
+              "meaning": "산출·고유 보장",
+              "required": true
+            },
+            {
+              "key": "depends_on",
+              "label": "Depends On",
+              "value_type": "reference-list",
+              "meaning": "선행 단위",
+              "required": true
+            },
+            {
+              "key": "owner",
+              "label": "Owner",
+              "value_type": "string",
+              "meaning": "실행 소유자",
+              "required": true
+            },
+            {
+              "key": "write_scope",
+              "label": "Write Scope",
+              "value_type": "path-list",
+              "meaning": "허용 수정 범위",
+              "required": true
+            },
+            {
+              "key": "acceptance",
+              "label": "Acceptance",
+              "value_type": "reference-list",
+              "meaning": "상위 기준",
+              "required": true
+            },
+            {
+              "key": "checks",
+              "label": "Checks",
+              "value_type": "reference-list",
+              "meaning": "선택된 검증",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        },
+        {
+          "table_id": "plan.checks",
+          "section_id": "plan.verification",
+          "required_when": "always",
+          "columns": [
+            {
+              "key": "check_id",
+              "label": "Check ID",
+              "value_type": "identifier",
+              "meaning": "고유 검사",
+              "required": true
+            },
+            {
+              "key": "guarantee",
+              "label": "Guarantee",
+              "value_type": "string",
+              "meaning": "검사의 고유 보장",
+              "required": true
+            },
+            {
+              "key": "input",
+              "label": "Input",
+              "value_type": "string",
+              "meaning": "필요 입력",
+              "required": true
+            },
+            {
+              "key": "trust",
+              "label": "Trust Boundary",
+              "value_type": "string",
+              "meaning": "검사 신뢰 경계",
+              "required": true
+            },
+            {
+              "key": "required_when",
+              "label": "Required When",
+              "value_type": "condition",
+              "meaning": "선택 조건",
+              "required": true
+            },
+            {
+              "key": "evidence",
+              "label": "Evidence",
+              "value_type": "string",
+              "meaning": "생성해야 할 증거 유형",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        }
+      ],
+      "language": {
+        "headings": "en",
+        "body": "로컬 승인 언어 계약; 본문 언어가 core heading·column을 바꾸지 않음"
+      },
+      "status": "DESIGN_PROPOSAL_NOT_ADOPTED",
+      "relationships": {
+        "authored_direction": "consumer-to-direct-owner",
+        "reverse_links": "derived",
+        "missing_target": "unresolved-not-pass",
+        "deletion": "transfer-current-meaning-before-removal"
+      },
+      "lifecycle": {
+        "axis": "document-purpose",
+        "draft_rule": "authoring-allowed-not-execution-authority",
+        "transition_authority": "explicit-scoped-authority",
+        "acceptance_rule": "required-evidence-and-authorized-acceptance-separate"
+      },
+      "rules": [
+        "single-meaning-owner",
+        "no-synthetic-evidence",
+        "no-release-document-role",
+        "no-package-path-runtime-dependency"
+      ]
+    },
+    {
+      "role": "task",
+      "purpose": "실제 실행·차단·검증·인수의 단일 작성 원본",
+      "non_goals": "다른 역할의 상태·정책 정본 대체",
+      "sections": [
+        {
+          "section_id": "task.scope",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "범위와 설계",
+          "order": 1,
+          "required_when": "always",
+          "content_rule": "작업 목표·제외·참조 설계·선택 이유",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "task.scope.1",
+              "level": 3,
+              "parent_id": "task.scope",
+              "title_en": "Objective and Parent",
+              "title_ko": "Objective and Parent",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "작업 목표·제외·참조 설계·선택 이유 중 Objective and Parent에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "task.scope.2",
+              "level": 3,
+              "parent_id": "task.scope",
+              "title_en": "Inputs and Authority",
+              "title_ko": "Inputs and Authority",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "작업 목표·제외·참조 설계·선택 이유 중 Inputs and Authority에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Scope"
+        },
+        {
+          "section_id": "task.work",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "실행",
+          "order": 2,
+          "required_when": "always",
+          "content_rule": "실제 명령·입력·변경·차단",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "task.work.1",
+              "level": 3,
+              "parent_id": "task.work",
+              "title_en": "Work Performed",
+              "title_ko": "Work Performed",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "실제 명령·입력·변경·차단 중 Work Performed에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "task.work.2",
+              "level": 3,
+              "parent_id": "task.work",
+              "title_en": "Blockers and Decisions",
+              "title_ko": "Blockers and Decisions",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "실제 명령·입력·변경·차단 중 Blockers and Decisions에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Execution Log"
+        },
+        {
+          "section_id": "task.evidence",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "검증 근거",
+          "order": 3,
+          "required_when": "always",
+          "content_rule": "검사·입력·결과·미실행·해소",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "task.evidence.1",
+              "level": 3,
+              "parent_id": "task.evidence",
+              "title_en": "Results",
+              "title_ko": "Results",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "검사·입력·결과·미실행·해소 중 Results에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "task.evidence.2",
+              "level": 3,
+              "parent_id": "task.evidence",
+              "title_en": "Resolution Links",
+              "title_ko": "Resolution Links",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "검사·입력·결과·미실행·해소 중 Resolution Links에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Verification Evidence"
+        },
+        {
+          "section_id": "task.acceptance",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "인수",
+          "order": 4,
+          "required_when": "always",
+          "content_rule": "기준별 판단자·결정·미완료",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "task.acceptance.1",
+              "level": 3,
+              "parent_id": "task.acceptance",
+              "title_en": "Criterion Decisions",
+              "title_ko": "Criterion Decisions",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "기준별 판단자·결정·미완료 중 Criterion Decisions에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "task.acceptance.2",
+              "level": 3,
+              "parent_id": "task.acceptance",
+              "title_en": "Remaining Conditions",
+              "title_ko": "Remaining Conditions",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "기준별 판단자·결정·미완료 중 Remaining Conditions에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Acceptance Decision"
+        },
+        {
+          "section_id": "task.handoff",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "인계와 정리",
+          "order": 5,
+          "required_when": "always",
+          "content_rule": "현재 소비자 반영·잔여·일회성 제거",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "task.handoff.1",
+              "level": 3,
+              "parent_id": "task.handoff",
+              "title_en": "Promotion Receipt",
+              "title_ko": "Promotion Receipt",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "현재 소비자 반영·잔여·일회성 제거 중 Promotion Receipt에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "task.handoff.2",
+              "level": 3,
+              "parent_id": "task.handoff",
+              "title_en": "Next Owner",
+              "title_ko": "Next Owner",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "현재 소비자 반영·잔여·일회성 제거 중 Next Owner에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Handoff"
+        }
+      ],
+      "metadata_policy": {
+        "envelope": "frontmatter",
+        "fields": [
+          {
+            "key": "title",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "문서 목적을 나타내는 제목"
+          },
+          {
+            "key": "version",
+            "value_type": "document-semver",
+            "required_when": "always",
+            "meaning": "ASCII 숫자 세 요소 판본"
+          },
+          {
+            "key": "type",
+            "value_type": "role-binding",
+            "required_when": "always",
+            "meaning": "역할과 정확하게 대응하는 문서 타입"
+          },
+          {
+            "key": "owner",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "현재 의미 소유자"
+          },
+          {
+            "key": "updated",
+            "value_type": "date",
+            "required_when": "always",
+            "meaning": "실제 문서 변경일"
+          },
+          {
+            "key": "status",
+            "value_type": "role-state",
+            "required_when": "single_task",
+            "meaning": "역할에 따른 상태; 실행 승인이나 인수를 대체하지 않음"
+          }
+        ],
+        "extension_rule": "선택 native 문법은 공급자 검증, domain field는 이름공간과 소유자·실제 소비자를 갖는 별도 모듈",
+        "document_version_pattern": "(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"
+      },
+      "tables": [
+        {
+          "table_id": "task.work_items",
+          "section_id": "task.work",
+          "required_when": "multiple_items",
+          "columns": [
+            {
+              "key": "item",
+              "label": "Item",
+              "value_type": "identifier",
+              "meaning": "독립 추적 항목",
+              "required": true
+            },
+            {
+              "key": "work_unit",
+              "label": "Work Unit",
+              "value_type": "reference",
+              "meaning": "Plan 작업 단위",
+              "required": true
+            },
+            {
+              "key": "owner",
+              "label": "Owner",
+              "value_type": "string",
+              "meaning": "항목 소유자",
+              "required": true
+            },
+            {
+              "key": "status",
+              "label": "Status",
+              "value_type": "enum",
+              "meaning": "draft/ready/in-progress/blocked/completed/cancelled",
+              "required": true,
+              "allowed_values": [
+                "draft",
+                "ready",
+                "in-progress",
+                "blocked",
+                "completed",
+                "cancelled"
+              ]
+            },
+            {
+              "key": "blocker",
+              "label": "Blocker",
+              "value_type": "reference-or-none",
+              "meaning": "차단 원인과 재개 조건",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        },
+        {
+          "table_id": "task.evidence",
+          "section_id": "task.evidence",
+          "required_when": "always",
+          "columns": [
+            {
+              "key": "evidence_id",
+              "label": "Evidence ID",
+              "value_type": "identifier",
+              "meaning": "관측의 고유 ID",
+              "required": true
+            },
+            {
+              "key": "criteria",
+              "label": "Criteria",
+              "value_type": "reference-list",
+              "meaning": "소유 Spec 기준",
+              "required": true
+            },
+            {
+              "key": "work_unit",
+              "label": "Work Unit",
+              "value_type": "reference",
+              "meaning": "Plan 작업 단위",
+              "required": true
+            },
+            {
+              "key": "method",
+              "label": "Method",
+              "value_type": "enum",
+              "meaning": "automated/review/observation",
+              "required": true,
+              "allowed_values": [
+                "automated",
+                "review",
+                "observation"
+              ]
+            },
+            {
+              "key": "input",
+              "label": "Input",
+              "value_type": "reference",
+              "meaning": "검사한 바이트·환경의 식별",
+              "required": true
+            },
+            {
+              "key": "tool_config",
+              "label": "Tool and Config",
+              "value_type": "reference-or-none",
+              "meaning": "실제 도구·설정 식별",
+              "required": true
+            },
+            {
+              "key": "command",
+              "label": "Command",
+              "value_type": "string-or-none",
+              "meaning": "실제 실행 또는 관측 방법",
+              "required": true
+            },
+            {
+              "key": "exit",
+              "label": "Exit",
+              "value_type": "integer-or-none",
+              "meaning": "실행 종료코드; 미실행을 0으로 쓰지 않음",
+              "required": true
+            },
+            {
+              "key": "result",
+              "label": "Result",
+              "value_type": "enum",
+              "meaning": "PASS/FAIL/ERROR/NOT_RUN/CANCELLED/DEFER/NOT_APPLICABLE",
+              "required": true,
+              "allowed_values": [
+                "PASS",
+                "FAIL",
+                "ERROR",
+                "NOT_RUN",
+                "CANCELLED",
+                "DEFER",
+                "NOT_APPLICABLE"
+              ]
+            },
+            {
+              "key": "location",
+              "label": "Location",
+              "value_type": "reference-or-none",
+              "meaning": "비밀 없는 실제 근거 위치",
+              "required": true
+            },
+            {
+              "key": "required",
+              "label": "Required",
+              "value_type": "boolean",
+              "meaning": "true/false; 승인 여부가 아님",
+              "required": true,
+              "allowed_values": [
+                true,
+                false
+              ]
+            },
+            {
+              "key": "resolves",
+              "label": "Resolves",
+              "value_type": "reference-list",
+              "meaning": "같은 의무의 이전 관측을 명시적으로 해소",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        },
+        {
+          "table_id": "task.acceptance",
+          "section_id": "task.acceptance",
+          "required_when": "owns_acceptance",
+          "columns": [
+            {
+              "key": "criterion",
+              "label": "Criterion",
+              "value_type": "reference",
+              "meaning": "기준의 단일 결정 소유",
+              "required": true
+            },
+            {
+              "key": "intent",
+              "label": "Intent",
+              "value_type": "enum",
+              "meaning": "accept/reject/not-required/undecided",
+              "required": true,
+              "allowed_values": [
+                "accept",
+                "reject",
+                "not-required",
+                "undecided"
+              ]
+            },
+            {
+              "key": "acceptance",
+              "label": "Acceptance",
+              "value_type": "enum",
+              "meaning": "pending/accepted/rejected/not-required",
+              "required": true,
+              "allowed_values": [
+                "pending",
+                "accepted",
+                "rejected",
+                "not-required"
+              ]
+            },
+            {
+              "key": "evidence",
+              "label": "Evidence",
+              "value_type": "reference-list",
+              "meaning": "해당 기준의 실제 관측",
+              "required": true
+            },
+            {
+              "key": "decision",
+              "label": "Decision",
+              "value_type": "reference-or-none",
+              "meaning": "범위와 효력 있는 판정 근거",
+              "required": true
+            },
+            {
+              "key": "accepted_by",
+              "label": "Accepted By",
+              "value_type": "string-or-none",
+              "meaning": "실제 판단자; 문자열 자체는 인증 아님",
+              "required": true
+            },
+            {
+              "key": "current_owner",
+              "label": "Current Owner",
+              "value_type": "string",
+              "meaning": "남은 책임자",
+              "required": true
+            },
+            {
+              "key": "reassigned_to",
+              "label": "Reassigned To",
+              "value_type": "reference-or-none",
+              "meaning": "허용된 의무 이전 대상",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        }
+      ],
+      "language": {
+        "headings": "en",
+        "body": "로컬 승인 언어 계약; 본문 언어가 core heading·column을 바꾸지 않음"
+      },
+      "status": "DESIGN_PROPOSAL_NOT_ADOPTED",
+      "relationships": {
+        "authored_direction": "consumer-to-direct-owner",
+        "reverse_links": "derived",
+        "missing_target": "unresolved-not-pass",
+        "deletion": "transfer-current-meaning-before-removal"
+      },
+      "lifecycle": {
+        "axis": "execution",
+        "draft_rule": "authoring-allowed-not-execution-authority",
+        "transition_authority": "explicit-scoped-authority",
+        "acceptance_rule": "required-evidence-and-authorized-acceptance-separate"
+      },
+      "rules": [
+        "single-meaning-owner",
+        "no-synthetic-evidence",
+        "no-release-document-role",
+        "no-package-path-runtime-dependency"
+      ]
+    },
+    {
+      "role": "guide",
+      "purpose": "사용자의 반복 가능한 사용법",
+      "non_goals": "다른 역할의 상태·정책 정본 대체",
+      "sections": [
+        {
+          "section_id": "guide.purpose",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "목적과 적용",
+          "order": 1,
+          "required_when": "always",
+          "content_rule": "누가 무엇을 위해 사용",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "guide.purpose.1",
+              "level": 3,
+              "parent_id": "guide.purpose",
+              "title_en": "Audience",
+              "title_ko": "Audience",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "누가 무엇을 위해 사용 중 Audience에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "guide.purpose.2",
+              "level": 3,
+              "parent_id": "guide.purpose",
+              "title_en": "Outcome",
+              "title_ko": "Outcome",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "누가 무엇을 위해 사용 중 Outcome에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Purpose"
+        },
+        {
+          "section_id": "guide.prerequisites",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "준비",
+          "order": 2,
+          "required_when": "always",
+          "content_rule": "환경·권한·입력",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "guide.prerequisites.1",
+              "level": 3,
+              "parent_id": "guide.prerequisites",
+              "title_en": "Environment",
+              "title_ko": "Environment",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "환경·권한·입력 중 Environment에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "guide.prerequisites.2",
+              "level": 3,
+              "parent_id": "guide.prerequisites",
+              "title_en": "Authority",
+              "title_ko": "Authority",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "환경·권한·입력 중 Authority에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Prerequisites"
+        },
+        {
+          "section_id": "guide.steps",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "수행",
+          "order": 3,
+          "required_when": "always",
+          "content_rule": "실제 확인한 절차",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "guide.steps.1",
+              "level": 3,
+              "parent_id": "guide.steps",
+              "title_en": "Steps",
+              "title_ko": "Steps",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "실제 확인한 절차 중 Steps에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "guide.steps.2",
+              "level": 3,
+              "parent_id": "guide.steps",
+              "title_en": "Expected Results",
+              "title_ko": "Expected Results",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "실제 확인한 절차 중 Expected Results에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Procedure"
+        },
+        {
+          "section_id": "guide.troubleshoot",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "문제 해결",
+          "order": 4,
+          "required_when": "always",
+          "content_rule": "실패·안전중단·다음 소유자",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "guide.troubleshoot.1",
+              "level": 3,
+              "parent_id": "guide.troubleshoot",
+              "title_en": "Symptoms",
+              "title_ko": "Symptoms",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "실패·안전중단·다음 소유자 중 Symptoms에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "guide.troubleshoot.2",
+              "level": 3,
+              "parent_id": "guide.troubleshoot",
+              "title_en": "Next Action",
+              "title_ko": "Next Action",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "실패·안전중단·다음 소유자 중 Next Action에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Troubleshooting"
+        }
+      ],
+      "metadata_policy": {
+        "envelope": "frontmatter",
+        "fields": [
+          {
+            "key": "title",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "문서 목적을 나타내는 제목"
+          },
+          {
+            "key": "version",
+            "value_type": "document-semver",
+            "required_when": "always",
+            "meaning": "ASCII 숫자 세 요소 판본"
+          },
+          {
+            "key": "type",
+            "value_type": "role-binding",
+            "required_when": "always",
+            "meaning": "역할과 정확하게 대응하는 문서 타입"
+          },
+          {
+            "key": "owner",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "현재 의미 소유자"
+          },
+          {
+            "key": "updated",
+            "value_type": "date",
+            "required_when": "always",
+            "meaning": "실제 문서 변경일"
+          },
+          {
+            "key": "status",
+            "value_type": "role-state",
+            "required_when": "always",
+            "meaning": "역할에 따른 상태; 실행 승인이나 인수를 대체하지 않음"
+          }
+        ],
+        "extension_rule": "선택 native 문법은 공급자 검증, domain field는 이름공간과 소유자·실제 소비자를 갖는 별도 모듈",
+        "document_version_pattern": "(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"
+      },
+      "tables": [
+        {
+          "table_id": "guide.steps",
+          "section_id": "guide.steps",
+          "required_when": "ordered_procedure",
+          "columns": [
+            {
+              "key": "step",
+              "label": "Step",
+              "value_type": "integer",
+              "meaning": "순서",
+              "required": true
+            },
+            {
+              "key": "action",
+              "label": "Action",
+              "value_type": "string",
+              "meaning": "허용 작업",
+              "required": true
+            },
+            {
+              "key": "expected",
+              "label": "Expected Result",
+              "value_type": "string",
+              "meaning": "관측할 결과",
+              "required": true
+            },
+            {
+              "key": "on_failure",
+              "label": "On Failure",
+              "value_type": "string",
+              "meaning": "중단·다음 책임자",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        }
+      ],
+      "language": {
+        "headings": "en",
+        "body": "로컬 승인 언어 계약; 본문 언어가 core heading·column을 바꾸지 않음"
+      },
+      "status": "DESIGN_PROPOSAL_NOT_ADOPTED",
+      "relationships": {
+        "authored_direction": "consumer-to-direct-owner",
+        "reverse_links": "derived",
+        "missing_target": "unresolved-not-pass",
+        "deletion": "transfer-current-meaning-before-removal"
+      },
+      "lifecycle": {
+        "axis": "document-purpose",
+        "draft_rule": "authoring-allowed-not-execution-authority",
+        "transition_authority": "explicit-scoped-authority",
+        "acceptance_rule": "required-evidence-and-authorized-acceptance-separate"
+      },
+      "rules": [
+        "single-meaning-owner",
+        "no-synthetic-evidence",
+        "no-release-document-role",
+        "no-package-path-runtime-dependency"
+      ]
+    },
+    {
+      "role": "runbook",
+      "purpose": "운영자의 조건부 실행과 대응",
+      "non_goals": "다른 역할의 상태·정책 정본 대체",
+      "sections": [
+        {
+          "section_id": "runbook.trigger",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "적용과 신호",
+          "order": 1,
+          "required_when": "always",
+          "content_rule": "언제 누가 사용할지",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "runbook.trigger.1",
+              "level": 3,
+              "parent_id": "runbook.trigger",
+              "title_en": "Trigger",
+              "title_ko": "Trigger",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "언제 누가 사용할지 중 Trigger에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "runbook.trigger.2",
+              "level": 3,
+              "parent_id": "runbook.trigger",
+              "title_en": "Targets",
+              "title_ko": "Targets",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "언제 누가 사용할지 중 Targets에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Trigger and Scope"
+        },
+        {
+          "section_id": "runbook.preflight",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "사전 확인",
+          "order": 2,
+          "required_when": "always",
+          "content_rule": "대상·권한·상태·비밀취급",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "runbook.preflight.1",
+              "level": 3,
+              "parent_id": "runbook.preflight",
+              "title_en": "Authority",
+              "title_ko": "Authority",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "대상·권한·상태·비밀취급 중 Authority에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "runbook.preflight.2",
+              "level": 3,
+              "parent_id": "runbook.preflight",
+              "title_en": "Environment",
+              "title_ko": "Environment",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "대상·권한·상태·비밀취급 중 Environment에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Preflight"
+        },
+        {
+          "section_id": "runbook.procedure",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "조치",
+          "order": 3,
+          "required_when": "always",
+          "content_rule": "정상·오류·취소·선택자원",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "runbook.procedure.1",
+              "level": 3,
+              "parent_id": "runbook.procedure",
+              "title_en": "Steps",
+              "title_ko": "Steps",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "정상·오류·취소·선택자원 중 Steps에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "runbook.procedure.2",
+              "level": 3,
+              "parent_id": "runbook.procedure",
+              "title_en": "Stop Conditions",
+              "title_ko": "Stop Conditions",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "정상·오류·취소·선택자원 중 Stop Conditions에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Procedure"
+        },
+        {
+          "section_id": "runbook.verification",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "결과 확인",
+          "order": 4,
+          "required_when": "always",
+          "content_rule": "실제 관측·미실행 구분",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "runbook.verification.1",
+              "level": 3,
+              "parent_id": "runbook.verification",
+              "title_en": "Expected Results",
+              "title_ko": "Expected Results",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "실제 관측·미실행 구분 중 Expected Results에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "runbook.verification.2",
+              "level": 3,
+              "parent_id": "runbook.verification",
+              "title_en": "Unverified Conditions",
+              "title_ko": "Unverified Conditions",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "실제 관측·미실행 구분 중 Unverified Conditions에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Verification"
+        },
+        {
+          "section_id": "runbook.escalation",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "에스컬레이션",
+          "order": 5,
+          "required_when": "always",
+          "content_rule": "실패·영향확대·정리",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "runbook.escalation.1",
+              "level": 3,
+              "parent_id": "runbook.escalation",
+              "title_en": "Next Owner",
+              "title_ko": "Next Owner",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "실패·영향확대·정리 중 Next Owner에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "runbook.escalation.2",
+              "level": 3,
+              "parent_id": "runbook.escalation",
+              "title_en": "Recovery or Forward Repair",
+              "title_ko": "Recovery or Forward Repair",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "실패·영향확대·정리 중 Recovery or Forward Repair에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Escalation"
+        }
+      ],
+      "metadata_policy": {
+        "envelope": "frontmatter",
+        "fields": [
+          {
+            "key": "title",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "문서 목적을 나타내는 제목"
+          },
+          {
+            "key": "version",
+            "value_type": "document-semver",
+            "required_when": "always",
+            "meaning": "ASCII 숫자 세 요소 판본"
+          },
+          {
+            "key": "type",
+            "value_type": "role-binding",
+            "required_when": "always",
+            "meaning": "역할과 정확하게 대응하는 문서 타입"
+          },
+          {
+            "key": "owner",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "현재 의미 소유자"
+          },
+          {
+            "key": "updated",
+            "value_type": "date",
+            "required_when": "always",
+            "meaning": "실제 문서 변경일"
+          },
+          {
+            "key": "status",
+            "value_type": "role-state",
+            "required_when": "always",
+            "meaning": "역할에 따른 상태; 실행 승인이나 인수를 대체하지 않음"
+          }
+        ],
+        "extension_rule": "선택 native 문법은 공급자 검증, domain field는 이름공간과 소유자·실제 소비자를 갖는 별도 모듈",
+        "document_version_pattern": "(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"
+      },
+      "tables": [
+        {
+          "table_id": "runbook.steps",
+          "section_id": "runbook.procedure",
+          "required_when": "always",
+          "columns": [
+            {
+              "key": "step",
+              "label": "Step",
+              "value_type": "integer",
+              "meaning": "순서",
+              "required": true
+            },
+            {
+              "key": "action",
+              "label": "Action",
+              "value_type": "string",
+              "meaning": "허용 작업",
+              "required": true
+            },
+            {
+              "key": "expected",
+              "label": "Expected Result",
+              "value_type": "string",
+              "meaning": "관측할 결과",
+              "required": true
+            },
+            {
+              "key": "on_failure",
+              "label": "On Failure",
+              "value_type": "string",
+              "meaning": "중단·다음 책임자",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        }
+      ],
+      "language": {
+        "headings": "en",
+        "body": "로컬 승인 언어 계약; 본문 언어가 core heading·column을 바꾸지 않음"
+      },
+      "status": "DESIGN_PROPOSAL_NOT_ADOPTED",
+      "relationships": {
+        "authored_direction": "consumer-to-direct-owner",
+        "reverse_links": "derived",
+        "missing_target": "unresolved-not-pass",
+        "deletion": "transfer-current-meaning-before-removal"
+      },
+      "lifecycle": {
+        "axis": "document-purpose",
+        "draft_rule": "authoring-allowed-not-execution-authority",
+        "transition_authority": "explicit-scoped-authority",
+        "acceptance_rule": "required-evidence-and-authorized-acceptance-separate"
+      },
+      "rules": [
+        "single-meaning-owner",
+        "no-synthetic-evidence",
+        "no-release-document-role",
+        "no-package-path-runtime-dependency"
+      ]
+    },
+    {
+      "role": "policy",
+      "purpose": "공통 조건·의무·예외·책임",
+      "non_goals": "다른 역할의 상태·정책 정본 대체",
+      "sections": [
+        {
+          "section_id": "policy.purpose",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "목적과 범위",
+          "order": 1,
+          "required_when": "always",
+          "content_rule": "필요한 보장·대상·제외",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "policy.purpose.1",
+              "level": 3,
+              "parent_id": "policy.purpose",
+              "title_en": "Objective",
+              "title_ko": "Objective",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "필요한 보장·대상·제외 중 Objective에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "policy.purpose.2",
+              "level": 3,
+              "parent_id": "policy.purpose",
+              "title_en": "Applies To",
+              "title_ko": "Applies To",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "필요한 보장·대상·제외 중 Applies To에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Purpose and Scope"
+        },
+        {
+          "section_id": "policy.rules",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "규칙",
+          "order": 2,
+          "required_when": "always",
+          "content_rule": "조건·의무·근거·예외",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "policy.rules.1",
+              "level": 3,
+              "parent_id": "policy.rules",
+              "title_en": "Requirements",
+              "title_ko": "Requirements",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "조건·의무·근거·예외 중 Requirements에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "policy.rules.2",
+              "level": 3,
+              "parent_id": "policy.rules",
+              "title_en": "Exceptions",
+              "title_ko": "Exceptions",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "조건·의무·근거·예외 중 Exceptions에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Rules"
+        },
+        {
+          "section_id": "policy.enforcement",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "강제와 관측",
+          "order": 3,
+          "required_when": "always",
+          "content_rule": "실제 메커니즘과 미강제 부분",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "policy.enforcement.1",
+              "level": 3,
+              "parent_id": "policy.enforcement",
+              "title_en": "Mechanisms",
+              "title_ko": "Mechanisms",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "실제 메커니즘과 미강제 부분 중 Mechanisms에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "policy.enforcement.2",
+              "level": 3,
+              "parent_id": "policy.enforcement",
+              "title_en": "Limits",
+              "title_ko": "Limits",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "실제 메커니즘과 미강제 부분 중 Limits에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Enforcement"
+        },
+        {
+          "section_id": "policy.ownership",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "소유와 변경",
+          "order": 4,
+          "required_when": "always",
+          "content_rule": "결정·검토·개정 책임",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "policy.ownership.1",
+              "level": 3,
+              "parent_id": "policy.ownership",
+              "title_en": "Owner",
+              "title_ko": "Owner",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "결정·검토·개정 책임 중 Owner에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "policy.ownership.2",
+              "level": 3,
+              "parent_id": "policy.ownership",
+              "title_en": "Review Triggers",
+              "title_ko": "Review Triggers",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "결정·검토·개정 책임 중 Review Triggers에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Ownership"
+        }
+      ],
+      "metadata_policy": {
+        "envelope": "frontmatter",
+        "fields": [
+          {
+            "key": "title",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "문서 목적을 나타내는 제목"
+          },
+          {
+            "key": "version",
+            "value_type": "document-semver",
+            "required_when": "always",
+            "meaning": "ASCII 숫자 세 요소 판본"
+          },
+          {
+            "key": "type",
+            "value_type": "role-binding",
+            "required_when": "always",
+            "meaning": "역할과 정확하게 대응하는 문서 타입"
+          },
+          {
+            "key": "owner",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "현재 의미 소유자"
+          },
+          {
+            "key": "updated",
+            "value_type": "date",
+            "required_when": "always",
+            "meaning": "실제 문서 변경일"
+          },
+          {
+            "key": "status",
+            "value_type": "role-state",
+            "required_when": "always",
+            "meaning": "역할에 따른 상태; 실행 승인이나 인수를 대체하지 않음"
+          }
+        ],
+        "extension_rule": "선택 native 문법은 공급자 검증, domain field는 이름공간과 소유자·실제 소비자를 갖는 별도 모듈",
+        "document_version_pattern": "(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"
+      },
+      "tables": [
+        {
+          "table_id": "policy.rules",
+          "section_id": "policy.rules",
+          "required_when": "always",
+          "columns": [
+            {
+              "key": "rule_id",
+              "label": "Rule ID",
+              "value_type": "identifier",
+              "meaning": "현재 정책 규칙",
+              "required": true
+            },
+            {
+              "key": "condition",
+              "label": "Condition",
+              "value_type": "condition",
+              "meaning": "적용 조건",
+              "required": true
+            },
+            {
+              "key": "requirement",
+              "label": "Requirement",
+              "value_type": "string",
+              "meaning": "허용·필수·금지",
+              "required": true
+            },
+            {
+              "key": "enforcement",
+              "label": "Enforcement",
+              "value_type": "reference-or-none",
+              "meaning": "실제 강제 지점 또는 수동",
+              "required": true
+            },
+            {
+              "key": "evidence",
+              "label": "Evidence",
+              "value_type": "reference-or-none",
+              "meaning": "보장 확인 방법",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        }
+      ],
+      "language": {
+        "headings": "en",
+        "body": "로컬 승인 언어 계약; 본문 언어가 core heading·column을 바꾸지 않음"
+      },
+      "status": "DESIGN_PROPOSAL_NOT_ADOPTED",
+      "relationships": {
+        "authored_direction": "consumer-to-direct-owner",
+        "reverse_links": "derived",
+        "missing_target": "unresolved-not-pass",
+        "deletion": "transfer-current-meaning-before-removal"
+      },
+      "lifecycle": {
+        "axis": "document-purpose",
+        "draft_rule": "authoring-allowed-not-execution-authority",
+        "transition_authority": "explicit-scoped-authority",
+        "acceptance_rule": "required-evidence-and-authorized-acceptance-separate"
+      },
+      "rules": [
+        "single-meaning-owner",
+        "no-synthetic-evidence",
+        "no-release-document-role",
+        "no-package-path-runtime-dependency"
+      ]
+    },
+    {
+      "role": "incident",
+      "purpose": "현재 운영 사건의 사실과 대응",
+      "non_goals": "다른 역할의 상태·정책 정본 대체",
+      "sections": [
+        {
+          "section_id": "incident.impact",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "영향",
+          "order": 1,
+          "required_when": "always",
+          "content_rule": "대상·시점·확인된 영향",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "incident.impact.1",
+              "level": 3,
+              "parent_id": "incident.impact",
+              "title_en": "Affected Users",
+              "title_ko": "Affected Users",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "대상·시점·확인된 영향 중 Affected Users에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "incident.impact.2",
+              "level": 3,
+              "parent_id": "incident.impact",
+              "title_en": "Observed Scope",
+              "title_ko": "Observed Scope",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "대상·시점·확인된 영향 중 Observed Scope에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Impact"
+        },
+        {
+          "section_id": "incident.response",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "조치",
+          "order": 2,
+          "required_when": "always",
+          "content_rule": "실제 수행과 결과",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "incident.response.1",
+              "level": 3,
+              "parent_id": "incident.response",
+              "title_en": "Timeline",
+              "title_ko": "Timeline",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "실제 수행과 결과 중 Timeline에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "incident.response.2",
+              "level": 3,
+              "parent_id": "incident.response",
+              "title_en": "Actions",
+              "title_ko": "Actions",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "실제 수행과 결과 중 Actions에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Response"
+        },
+        {
+          "section_id": "incident.resolution",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "해결·잔여",
+          "order": 3,
+          "required_when": "always",
+          "content_rule": "복구 관측·현재 위험·담당",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "incident.resolution.1",
+              "level": 3,
+              "parent_id": "incident.resolution",
+              "title_en": "Verified State",
+              "title_ko": "Verified State",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "복구 관측·현재 위험·담당 중 Verified State에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "incident.resolution.2",
+              "level": 3,
+              "parent_id": "incident.resolution",
+              "title_en": "Remaining Work",
+              "title_ko": "Remaining Work",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "복구 관측·현재 위험·담당 중 Remaining Work에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Resolution"
+        }
+      ],
+      "metadata_policy": {
+        "envelope": "frontmatter",
+        "fields": [
+          {
+            "key": "title",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "문서 목적을 나타내는 제목"
+          },
+          {
+            "key": "version",
+            "value_type": "document-semver",
+            "required_when": "always",
+            "meaning": "ASCII 숫자 세 요소 판본"
+          },
+          {
+            "key": "type",
+            "value_type": "role-binding",
+            "required_when": "always",
+            "meaning": "역할과 정확하게 대응하는 문서 타입"
+          },
+          {
+            "key": "owner",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "현재 의미 소유자"
+          },
+          {
+            "key": "updated",
+            "value_type": "date",
+            "required_when": "always",
+            "meaning": "실제 문서 변경일"
+          },
+          {
+            "key": "status",
+            "value_type": "role-state",
+            "required_when": "always",
+            "meaning": "역할에 따른 상태; 실행 승인이나 인수를 대체하지 않음"
+          }
+        ],
+        "extension_rule": "선택 native 문법은 공급자 검증, domain field는 이름공간과 소유자·실제 소비자를 갖는 별도 모듈",
+        "document_version_pattern": "(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"
+      },
+      "tables": [
+        {
+          "table_id": "incident.actions",
+          "section_id": "incident.response",
+          "required_when": "always",
+          "columns": [
+            {
+              "key": "action",
+              "label": "Action",
+              "value_type": "string",
+              "meaning": "해야 할 일",
+              "required": true
+            },
+            {
+              "key": "owner",
+              "label": "Owner",
+              "value_type": "string",
+              "meaning": "소유자",
+              "required": true
+            },
+            {
+              "key": "condition",
+              "label": "Condition",
+              "value_type": "string",
+              "meaning": "실행·완료 조건",
+              "required": true
+            },
+            {
+              "key": "evidence",
+              "label": "Evidence",
+              "value_type": "reference-or-none",
+              "meaning": "실제 근거",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        }
+      ],
+      "language": {
+        "headings": "en",
+        "body": "로컬 승인 언어 계약; 본문 언어가 core heading·column을 바꾸지 않음"
+      },
+      "status": "DESIGN_PROPOSAL_NOT_ADOPTED",
+      "relationships": {
+        "authored_direction": "consumer-to-direct-owner",
+        "reverse_links": "derived",
+        "missing_target": "unresolved-not-pass",
+        "deletion": "transfer-current-meaning-before-removal"
+      },
+      "lifecycle": {
+        "axis": "document-purpose",
+        "draft_rule": "authoring-allowed-not-execution-authority",
+        "transition_authority": "explicit-scoped-authority",
+        "acceptance_rule": "required-evidence-and-authorized-acceptance-separate"
+      },
+      "rules": [
+        "single-meaning-owner",
+        "no-synthetic-evidence",
+        "no-release-document-role",
+        "no-package-path-runtime-dependency"
+      ]
+    },
+    {
+      "role": "postmortem",
+      "purpose": "현재 사건에서 재발 방지로 이어지는 분석",
+      "non_goals": "다른 역할의 상태·정책 정본 대체",
+      "sections": [
+        {
+          "section_id": "postmortem.facts",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "사실",
+          "order": 1,
+          "required_when": "always",
+          "content_rule": "발생·영향·관측",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "postmortem.facts.1",
+              "level": 3,
+              "parent_id": "postmortem.facts",
+              "title_en": "Timeline",
+              "title_ko": "Timeline",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "발생·영향·관측 중 Timeline에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "postmortem.facts.2",
+              "level": 3,
+              "parent_id": "postmortem.facts",
+              "title_en": "Impact",
+              "title_ko": "Impact",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "발생·영향·관측 중 Impact에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Facts"
+        },
+        {
+          "section_id": "postmortem.causes",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "원인",
+          "order": 2,
+          "required_when": "always",
+          "content_rule": "검증한 원인·불확실성",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "postmortem.causes.1",
+              "level": 3,
+              "parent_id": "postmortem.causes",
+              "title_en": "Contributing Factors",
+              "title_ko": "Contributing Factors",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "검증한 원인·불확실성 중 Contributing Factors에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "postmortem.causes.2",
+              "level": 3,
+              "parent_id": "postmortem.causes",
+              "title_en": "Uncertainty",
+              "title_ko": "Uncertainty",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "검증한 원인·불확실성 중 Uncertainty에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Causes"
+        },
+        {
+          "section_id": "postmortem.actions",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "재발 방지",
+          "order": 3,
+          "required_when": "always",
+          "content_rule": "효과를 판정할 조치·소유자",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "postmortem.actions.1",
+              "level": 3,
+              "parent_id": "postmortem.actions",
+              "title_en": "Prevention",
+              "title_ko": "Prevention",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "효과를 판정할 조치·소유자 중 Prevention에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "postmortem.actions.2",
+              "level": 3,
+              "parent_id": "postmortem.actions",
+              "title_en": "Owners and Checks",
+              "title_ko": "Owners and Checks",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "효과를 판정할 조치·소유자 중 Owners and Checks에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Actions"
+        }
+      ],
+      "metadata_policy": {
+        "envelope": "frontmatter",
+        "fields": [
+          {
+            "key": "title",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "문서 목적을 나타내는 제목"
+          },
+          {
+            "key": "version",
+            "value_type": "document-semver",
+            "required_when": "always",
+            "meaning": "ASCII 숫자 세 요소 판본"
+          },
+          {
+            "key": "type",
+            "value_type": "role-binding",
+            "required_when": "always",
+            "meaning": "역할과 정확하게 대응하는 문서 타입"
+          },
+          {
+            "key": "owner",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "현재 의미 소유자"
+          },
+          {
+            "key": "updated",
+            "value_type": "date",
+            "required_when": "always",
+            "meaning": "실제 문서 변경일"
+          },
+          {
+            "key": "status",
+            "value_type": "role-state",
+            "required_when": "always",
+            "meaning": "역할에 따른 상태; 실행 승인이나 인수를 대체하지 않음"
+          }
+        ],
+        "extension_rule": "선택 native 문법은 공급자 검증, domain field는 이름공간과 소유자·실제 소비자를 갖는 별도 모듈",
+        "document_version_pattern": "(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"
+      },
+      "tables": [
+        {
+          "table_id": "postmortem.actions",
+          "section_id": "postmortem.actions",
+          "required_when": "always",
+          "columns": [
+            {
+              "key": "action",
+              "label": "Action",
+              "value_type": "string",
+              "meaning": "해야 할 일",
+              "required": true
+            },
+            {
+              "key": "owner",
+              "label": "Owner",
+              "value_type": "string",
+              "meaning": "소유자",
+              "required": true
+            },
+            {
+              "key": "condition",
+              "label": "Condition",
+              "value_type": "string",
+              "meaning": "실행·완료 조건",
+              "required": true
+            },
+            {
+              "key": "evidence",
+              "label": "Evidence",
+              "value_type": "reference-or-none",
+              "meaning": "실제 근거",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        }
+      ],
+      "language": {
+        "headings": "en",
+        "body": "로컬 승인 언어 계약; 본문 언어가 core heading·column을 바꾸지 않음"
+      },
+      "status": "DESIGN_PROPOSAL_NOT_ADOPTED",
+      "relationships": {
+        "authored_direction": "consumer-to-direct-owner",
+        "reverse_links": "derived",
+        "missing_target": "unresolved-not-pass",
+        "deletion": "transfer-current-meaning-before-removal"
+      },
+      "lifecycle": {
+        "axis": "document-purpose",
+        "draft_rule": "authoring-allowed-not-execution-authority",
+        "transition_authority": "explicit-scoped-authority",
+        "acceptance_rule": "required-evidence-and-authorized-acceptance-separate"
+      },
+      "rules": [
+        "single-meaning-owner",
+        "no-synthetic-evidence",
+        "no-release-document-role",
+        "no-package-path-runtime-dependency"
+      ]
+    },
+    {
+      "role": "research",
+      "purpose": "외부 근거의 적용 가능한 의미",
+      "non_goals": "다른 역할의 상태·정책 정본 대체",
+      "sections": [
+        {
+          "section_id": "research.question",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "질문과 범위",
+          "order": 1,
+          "required_when": "always",
+          "content_rule": "해결할 실제 설계 문제",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "research.question.1",
+              "level": 3,
+              "parent_id": "research.question",
+              "title_en": "Question",
+              "title_ko": "Question",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "해결할 실제 설계 문제 중 Question에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "research.question.2",
+              "level": 3,
+              "parent_id": "research.question",
+              "title_en": "Scope",
+              "title_ko": "Scope",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "해결할 실제 설계 문제 중 Scope에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Question and Scope"
+        },
+        {
+          "section_id": "research.sources",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "출처",
+          "order": 2,
+          "required_when": "always",
+          "content_rule": "판본·날짜·관련 설명",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "research.sources.1",
+              "level": 3,
+              "parent_id": "research.sources",
+              "title_en": "Primary Sources",
+              "title_ko": "Primary Sources",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "판본·날짜·관련 설명 중 Primary Sources에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "research.sources.2",
+              "level": 3,
+              "parent_id": "research.sources",
+              "title_en": "Versions and Dates",
+              "title_ko": "Versions and Dates",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "판본·날짜·관련 설명 중 Versions and Dates에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Sources"
+        },
+        {
+          "section_id": "research.analysis",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "분석",
+          "order": 3,
+          "required_when": "always",
+          "content_rule": "대안·조건·현황과 차이",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "research.analysis.1",
+              "level": 3,
+              "parent_id": "research.analysis",
+              "title_en": "Findings",
+              "title_ko": "Findings",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "대안·조건·현황과 차이 중 Findings에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "research.analysis.2",
+              "level": 3,
+              "parent_id": "research.analysis",
+              "title_en": "Alternatives",
+              "title_ko": "Alternatives",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "대안·조건·현황과 차이 중 Alternatives에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Analysis"
+        },
+        {
+          "section_id": "research.application",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "적용과 한계",
+          "order": 4,
+          "required_when": "always",
+          "content_rule": "변경 대상·비채택·수용 시험",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "research.application.1",
+              "level": 3,
+              "parent_id": "research.application",
+              "title_en": "Design Implications",
+              "title_ko": "Design Implications",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "변경 대상·비채택·수용 시험 중 Design Implications에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "research.application.2",
+              "level": 3,
+              "parent_id": "research.application",
+              "title_en": "Unverified Conditions",
+              "title_ko": "Unverified Conditions",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "변경 대상·비채택·수용 시험 중 Unverified Conditions에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Application and Limits"
+        }
+      ],
+      "metadata_policy": {
+        "envelope": "frontmatter",
+        "fields": [
+          {
+            "key": "title",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "문서 목적을 나타내는 제목"
+          },
+          {
+            "key": "version",
+            "value_type": "document-semver",
+            "required_when": "always",
+            "meaning": "ASCII 숫자 세 요소 판본"
+          },
+          {
+            "key": "type",
+            "value_type": "role-binding",
+            "required_when": "always",
+            "meaning": "역할과 정확하게 대응하는 문서 타입"
+          },
+          {
+            "key": "owner",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "현재 의미 소유자"
+          },
+          {
+            "key": "updated",
+            "value_type": "date",
+            "required_when": "always",
+            "meaning": "실제 문서 변경일"
+          },
+          {
+            "key": "status",
+            "value_type": "role-state",
+            "required_when": "always",
+            "meaning": "역할에 따른 상태; 실행 승인이나 인수를 대체하지 않음"
+          }
+        ],
+        "extension_rule": "선택 native 문법은 공급자 검증, domain field는 이름공간과 소유자·실제 소비자를 갖는 별도 모듈",
+        "document_version_pattern": "(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"
+      },
+      "tables": [
+        {
+          "table_id": "research.sources",
+          "section_id": "research.sources",
+          "required_when": "always",
+          "columns": [
+            {
+              "key": "source_id",
+              "label": "Source ID",
+              "value_type": "identifier",
+              "meaning": "출처",
+              "required": true
+            },
+            {
+              "key": "url",
+              "label": "Source",
+              "value_type": "reference",
+              "meaning": "원문 위치",
+              "required": true
+            },
+            {
+              "key": "version",
+              "label": "Version",
+              "value_type": "string-or-none",
+              "meaning": "실제 판본; 문서 판본과 타입 분리",
+              "required": true
+            },
+            {
+              "key": "checked",
+              "label": "Checked At",
+              "value_type": "timestamp",
+              "meaning": "직접 확인한 때",
+              "required": true
+            },
+            {
+              "key": "finding",
+              "label": "Finding",
+              "value_type": "string",
+              "meaning": "출처가 실제로 지지하는 내용",
+              "required": true
+            },
+            {
+              "key": "application",
+              "label": "Application",
+              "value_type": "string",
+              "meaning": "선택한 적용",
+              "required": true
+            },
+            {
+              "key": "limits",
+              "label": "Limits",
+              "value_type": "string",
+              "meaning": "적용 한계·미확인",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        }
+      ],
+      "language": {
+        "headings": "en",
+        "body": "로컬 승인 언어 계약; 본문 언어가 core heading·column을 바꾸지 않음"
+      },
+      "status": "DESIGN_PROPOSAL_NOT_ADOPTED",
+      "relationships": {
+        "authored_direction": "consumer-to-direct-owner",
+        "reverse_links": "derived",
+        "missing_target": "unresolved-not-pass",
+        "deletion": "transfer-current-meaning-before-removal"
+      },
+      "lifecycle": {
+        "axis": "document-purpose",
+        "draft_rule": "authoring-allowed-not-execution-authority",
+        "transition_authority": "explicit-scoped-authority",
+        "acceptance_rule": "required-evidence-and-authorized-acceptance-separate"
+      },
+      "rules": [
+        "single-meaning-owner",
+        "no-synthetic-evidence",
+        "no-release-document-role",
+        "no-package-path-runtime-dependency"
+      ]
+    },
+    {
+      "role": "audit",
+      "purpose": "주장과 증거 사이 차이",
+      "non_goals": "다른 역할의 상태·정책 정본 대체",
+      "sections": [
+        {
+          "section_id": "audit.scope",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "범위",
+          "order": 1,
+          "required_when": "always",
+          "content_rule": "실제 읽은·실행한 경계",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "audit.scope.1",
+              "level": 3,
+              "parent_id": "audit.scope",
+              "title_en": "Subject",
+              "title_ko": "Subject",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "실제 읽은·실행한 경계 중 Subject에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "audit.scope.2",
+              "level": 3,
+              "parent_id": "audit.scope",
+              "title_en": "Read Coverage",
+              "title_ko": "Read Coverage",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "실제 읽은·실행한 경계 중 Read Coverage에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Scope"
+        },
+        {
+          "section_id": "audit.findings",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "발견",
+          "order": 2,
+          "required_when": "always",
+          "content_rule": "주장·증거·차이·영향",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "audit.findings.1",
+              "level": 3,
+              "parent_id": "audit.findings",
+              "title_en": "Evidence",
+              "title_ko": "Evidence",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "주장·증거·차이·영향 중 Evidence에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "audit.findings.2",
+              "level": 3,
+              "parent_id": "audit.findings",
+              "title_en": "Conflicts and Gaps",
+              "title_ko": "Conflicts and Gaps",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "주장·증거·차이·영향 중 Conflicts and Gaps에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Findings"
+        },
+        {
+          "section_id": "audit.actions",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "조치",
+          "order": 3,
+          "required_when": "always",
+          "content_rule": "현재 업무와 소유자·수용",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "audit.actions.1",
+              "level": 3,
+              "parent_id": "audit.actions",
+              "title_en": "Owners",
+              "title_ko": "Owners",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "현재 업무와 소유자·수용 중 Owners에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "audit.actions.2",
+              "level": 3,
+              "parent_id": "audit.actions",
+              "title_en": "Acceptance Conditions",
+              "title_ko": "Acceptance Conditions",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "현재 업무와 소유자·수용 중 Acceptance Conditions에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Actions"
+        }
+      ],
+      "metadata_policy": {
+        "envelope": "frontmatter",
+        "fields": [
+          {
+            "key": "title",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "문서 목적을 나타내는 제목"
+          },
+          {
+            "key": "version",
+            "value_type": "document-semver",
+            "required_when": "always",
+            "meaning": "ASCII 숫자 세 요소 판본"
+          },
+          {
+            "key": "type",
+            "value_type": "role-binding",
+            "required_when": "always",
+            "meaning": "역할과 정확하게 대응하는 문서 타입"
+          },
+          {
+            "key": "owner",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "현재 의미 소유자"
+          },
+          {
+            "key": "updated",
+            "value_type": "date",
+            "required_when": "always",
+            "meaning": "실제 문서 변경일"
+          },
+          {
+            "key": "status",
+            "value_type": "role-state",
+            "required_when": "always",
+            "meaning": "역할에 따른 상태; 실행 승인이나 인수를 대체하지 않음"
+          }
+        ],
+        "extension_rule": "선택 native 문법은 공급자 검증, domain field는 이름공간과 소유자·실제 소비자를 갖는 별도 모듈",
+        "document_version_pattern": "(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"
+      },
+      "tables": [
+        {
+          "table_id": "audit.findings",
+          "section_id": "audit.findings",
+          "required_when": "always",
+          "columns": [
+            {
+              "key": "finding_id",
+              "label": "Finding ID",
+              "value_type": "identifier",
+              "meaning": "발견",
+              "required": true
+            },
+            {
+              "key": "requirement",
+              "label": "Requirement",
+              "value_type": "reference",
+              "meaning": "현재 의무",
+              "required": true
+            },
+            {
+              "key": "evidence",
+              "label": "Evidence",
+              "value_type": "reference-list",
+              "meaning": "직접 확인 범위",
+              "required": true
+            },
+            {
+              "key": "classification",
+              "label": "Classification",
+              "value_type": "enum",
+              "meaning": "confirmed/gap/conflict/unverified/not-applicable",
+              "required": true,
+              "allowed_values": [
+                "confirmed",
+                "gap",
+                "conflict",
+                "unverified",
+                "not-applicable"
+              ]
+            },
+            {
+              "key": "action",
+              "label": "Action",
+              "value_type": "string",
+              "meaning": "구체 수정",
+              "required": true
+            },
+            {
+              "key": "owner",
+              "label": "Owner",
+              "value_type": "string",
+              "meaning": "담당",
+              "required": true
+            },
+            {
+              "key": "acceptance",
+              "label": "Acceptance",
+              "value_type": "string",
+              "meaning": "닫히는 조건",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        }
+      ],
+      "language": {
+        "headings": "en",
+        "body": "로컬 승인 언어 계약; 본문 언어가 core heading·column을 바꾸지 않음"
+      },
+      "status": "DESIGN_PROPOSAL_NOT_ADOPTED",
+      "relationships": {
+        "authored_direction": "consumer-to-direct-owner",
+        "reverse_links": "derived",
+        "missing_target": "unresolved-not-pass",
+        "deletion": "transfer-current-meaning-before-removal"
+      },
+      "lifecycle": {
+        "axis": "document-purpose",
+        "draft_rule": "authoring-allowed-not-execution-authority",
+        "transition_authority": "explicit-scoped-authority",
+        "acceptance_rule": "required-evidence-and-authorized-acceptance-separate"
+      },
+      "rules": [
+        "single-meaning-owner",
+        "no-synthetic-evidence",
+        "no-release-document-role",
+        "no-package-path-runtime-dependency"
+      ]
+    },
+    {
+      "role": "data-reference",
+      "purpose": "생성 자료의 입력·출처·해석",
+      "non_goals": "다른 역할의 상태·정책 정본 대체",
+      "sections": [
+        {
+          "section_id": "data-reference.purpose",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "목적",
+          "order": 1,
+          "required_when": "always",
+          "content_rule": "자료의 사용처·비권위 경계",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "data-reference.purpose.1",
+              "level": 3,
+              "parent_id": "data-reference.purpose",
+              "title_en": "Consumers",
+              "title_ko": "Consumers",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "자료의 사용처·비권위 경계 중 Consumers에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "data-reference.purpose.2",
+              "level": 3,
+              "parent_id": "data-reference.purpose",
+              "title_en": "Boundaries",
+              "title_ko": "Boundaries",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "자료의 사용처·비권위 경계 중 Boundaries에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Purpose"
+        },
+        {
+          "section_id": "data-reference.provenance",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "생성 근거",
+          "order": 2,
+          "required_when": "always",
+          "content_rule": "입력·판본·시점·생성기",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "data-reference.provenance.1",
+              "level": 3,
+              "parent_id": "data-reference.provenance",
+              "title_en": "Collection",
+              "title_ko": "Collection",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "입력·판본·시점·생성기 중 Collection에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "data-reference.provenance.2",
+              "level": 3,
+              "parent_id": "data-reference.provenance",
+              "title_en": "Versions and Dates",
+              "title_ko": "Versions and Dates",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "입력·판본·시점·생성기 중 Versions and Dates에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Provenance"
+        },
+        {
+          "section_id": "data-reference.interpretation",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "해석",
+          "order": 3,
+          "required_when": "always",
+          "content_rule": "범위·제약·갱신·오류",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "data-reference.interpretation.1",
+              "level": 3,
+              "parent_id": "data-reference.interpretation",
+              "title_en": "Schema and Units",
+              "title_ko": "Schema and Units",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "범위·제약·갱신·오류 중 Schema and Units에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "data-reference.interpretation.2",
+              "level": 3,
+              "parent_id": "data-reference.interpretation",
+              "title_en": "Limits",
+              "title_ko": "Limits",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "범위·제약·갱신·오류 중 Limits에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Interpretation"
+        }
+      ],
+      "metadata_policy": {
+        "envelope": "frontmatter",
+        "fields": [
+          {
+            "key": "title",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "문서 목적을 나타내는 제목"
+          },
+          {
+            "key": "version",
+            "value_type": "document-semver",
+            "required_when": "always",
+            "meaning": "ASCII 숫자 세 요소 판본"
+          },
+          {
+            "key": "type",
+            "value_type": "role-binding",
+            "required_when": "always",
+            "meaning": "역할과 정확하게 대응하는 문서 타입"
+          },
+          {
+            "key": "owner",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "현재 의미 소유자"
+          },
+          {
+            "key": "updated",
+            "value_type": "date",
+            "required_when": "always",
+            "meaning": "실제 문서 변경일"
+          },
+          {
+            "key": "status",
+            "value_type": "role-state",
+            "required_when": "always",
+            "meaning": "역할에 따른 상태; 실행 승인이나 인수를 대체하지 않음"
+          }
+        ],
+        "extension_rule": "선택 native 문법은 공급자 검증, domain field는 이름공간과 소유자·실제 소비자를 갖는 별도 모듈",
+        "document_version_pattern": "(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"
+      },
+      "tables": [
+        {
+          "table_id": "data-reference.schema",
+          "section_id": "data-reference.interpretation",
+          "required_when": "always",
+          "columns": [
+            {
+              "key": "field",
+              "label": "Field",
+              "value_type": "identifier",
+              "meaning": "데이터 필드",
+              "required": true
+            },
+            {
+              "key": "type",
+              "label": "Type",
+              "value_type": "string",
+              "meaning": "값의 타입",
+              "required": true
+            },
+            {
+              "key": "unit",
+              "label": "Unit",
+              "value_type": "string-or-none",
+              "meaning": "단위",
+              "required": true
+            },
+            {
+              "key": "meaning",
+              "label": "Meaning",
+              "value_type": "string",
+              "meaning": "의미",
+              "required": true
+            },
+            {
+              "key": "limitations",
+              "label": "Limits",
+              "value_type": "string",
+              "meaning": "정밀도·결측·비용",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        }
+      ],
+      "language": {
+        "headings": "en",
+        "body": "로컬 승인 언어 계약; 본문 언어가 core heading·column을 바꾸지 않음"
+      },
+      "status": "DESIGN_PROPOSAL_NOT_ADOPTED",
+      "relationships": {
+        "authored_direction": "consumer-to-direct-owner",
+        "reverse_links": "derived",
+        "missing_target": "unresolved-not-pass",
+        "deletion": "transfer-current-meaning-before-removal"
+      },
+      "lifecycle": {
+        "axis": "document-purpose",
+        "draft_rule": "authoring-allowed-not-execution-authority",
+        "transition_authority": "explicit-scoped-authority",
+        "acceptance_rule": "required-evidence-and-authorized-acceptance-separate"
+      },
+      "rules": [
+        "single-meaning-owner",
+        "no-synthetic-evidence",
+        "no-release-document-role",
+        "no-package-path-runtime-dependency"
+      ]
+    },
+    {
+      "role": "root-readme",
+      "purpose": "사람의 진입·사용·탐색",
+      "non_goals": "다른 역할의 상태·정책 정본 대체",
+      "sections": [
+        {
+          "section_id": "root-readme.purpose",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "목적",
+          "order": 1,
+          "required_when": "always",
+          "content_rule": "워크스페이스 역할·준비",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "root-readme.purpose.1",
+              "level": 3,
+              "parent_id": "root-readme.purpose",
+              "title_en": "Audience",
+              "title_ko": "Audience",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "워크스페이스 역할·준비 중 Audience에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "root-readme.purpose.2",
+              "level": 3,
+              "parent_id": "root-readme.purpose",
+              "title_en": "Outcome",
+              "title_ko": "Outcome",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "워크스페이스 역할·준비 중 Outcome에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Purpose"
+        },
+        {
+          "section_id": "root-readme.start",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "시작",
+          "order": 2,
+          "required_when": "always",
+          "content_rule": "사용 순서·환경 점검",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "root-readme.start.1",
+              "level": 3,
+              "parent_id": "root-readme.start",
+              "title_en": "Prerequisites",
+              "title_ko": "Prerequisites",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "사용 순서·환경 점검 중 Prerequisites에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "root-readme.start.2",
+              "level": 3,
+              "parent_id": "root-readme.start",
+              "title_en": "First Use",
+              "title_ko": "First Use",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "사용 순서·환경 점검 중 First Use에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Getting Started"
+        },
+        {
+          "section_id": "root-readme.map",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "구성",
+          "order": 3,
+          "required_when": "always",
+          "content_rule": "현재 디렉터리 역할",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "root-readme.map.1",
+              "level": 3,
+              "parent_id": "root-readme.map",
+              "title_en": "Current Paths",
+              "title_ko": "Current Paths",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "현재 디렉터리 역할 중 Current Paths에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "root-readme.map.2",
+              "level": 3,
+              "parent_id": "root-readme.map",
+              "title_en": "Owners",
+              "title_ko": "Owners",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "현재 디렉터리 역할 중 Owners에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Repository Map"
+        },
+        {
+          "section_id": "root-readme.support",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "도움",
+          "order": 4,
+          "required_when": "always",
+          "content_rule": "운영·문제 해결 경로",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "root-readme.support.1",
+              "level": 3,
+              "parent_id": "root-readme.support",
+              "title_en": "Help",
+              "title_ko": "Help",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "운영·문제 해결 경로 중 Help에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "root-readme.support.2",
+              "level": 3,
+              "parent_id": "root-readme.support",
+              "title_en": "Related Documentation",
+              "title_ko": "Related Documentation",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "운영·문제 해결 경로 중 Related Documentation에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Support"
+        }
+      ],
+      "metadata_policy": {
+        "envelope": "frontmatter",
+        "fields": [
+          {
+            "key": "title",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "문서 목적을 나타내는 제목"
+          },
+          {
+            "key": "version",
+            "value_type": "document-semver",
+            "required_when": "always",
+            "meaning": "ASCII 숫자 세 요소 판본"
+          },
+          {
+            "key": "type",
+            "value_type": "role-binding",
+            "required_when": "always",
+            "meaning": "역할과 정확하게 대응하는 문서 타입"
+          },
+          {
+            "key": "owner",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "현재 의미 소유자"
+          },
+          {
+            "key": "updated",
+            "value_type": "date",
+            "required_when": "always",
+            "meaning": "실제 문서 변경일"
+          },
+          {
+            "key": "status",
+            "value_type": "role-state",
+            "required_when": "always",
+            "meaning": "역할에 따른 상태; 실행 승인이나 인수를 대체하지 않음"
+          }
+        ],
+        "extension_rule": "선택 native 문법은 공급자 검증, domain field는 이름공간과 소유자·실제 소비자를 갖는 별도 모듈",
+        "document_version_pattern": "(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"
+      },
+      "tables": [
+        {
+          "table_id": "root-readme.paths",
+          "section_id": "root-readme.map",
+          "required_when": "always",
+          "columns": [
+            {
+              "key": "path",
+              "label": "Path",
+              "value_type": "path",
+              "meaning": "정규 위치",
+              "required": true
+            },
+            {
+              "key": "purpose",
+              "label": "Purpose",
+              "value_type": "string",
+              "meaning": "독자가 찾을 내용",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        }
+      ],
+      "language": {
+        "headings": "en",
+        "body": "로컬 승인 언어 계약; 본문 언어가 core heading·column을 바꾸지 않음"
+      },
+      "status": "DESIGN_PROPOSAL_NOT_ADOPTED",
+      "relationships": {
+        "authored_direction": "consumer-to-direct-owner",
+        "reverse_links": "derived",
+        "missing_target": "unresolved-not-pass",
+        "deletion": "transfer-current-meaning-before-removal"
+      },
+      "lifecycle": {
+        "axis": "document-purpose",
+        "draft_rule": "authoring-allowed-not-execution-authority",
+        "transition_authority": "explicit-scoped-authority",
+        "acceptance_rule": "required-evidence-and-authorized-acceptance-separate"
+      },
+      "rules": [
+        "single-meaning-owner",
+        "no-synthetic-evidence",
+        "no-release-document-role",
+        "no-package-path-runtime-dependency"
+      ]
+    },
+    {
+      "role": "stage-readme",
+      "purpose": "단계의 소유 내용·현재 탐색",
+      "non_goals": "다른 역할의 상태·정책 정본 대체",
+      "sections": [
+        {
+          "section_id": "stage-readme.scope",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "책임",
+          "order": 1,
+          "required_when": "always",
+          "content_rule": "포함·제외와 역할",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "stage-readme.scope.1",
+              "level": 3,
+              "parent_id": "stage-readme.scope",
+              "title_en": "Purpose",
+              "title_ko": "Purpose",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "포함·제외와 역할 중 Purpose에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "stage-readme.scope.2",
+              "level": 3,
+              "parent_id": "stage-readme.scope",
+              "title_en": "Excluded Responsibilities",
+              "title_ko": "Excluded Responsibilities",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "포함·제외와 역할 중 Excluded Responsibilities에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Responsibility"
+        },
+        {
+          "section_id": "stage-readme.contents",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "현재 내용",
+          "order": 2,
+          "required_when": "always",
+          "content_rule": "현행 문서 탐색·생성 규칙",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "stage-readme.contents.1",
+              "level": 3,
+              "parent_id": "stage-readme.contents",
+              "title_en": "Paths",
+              "title_ko": "Paths",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "현행 문서 탐색·생성 규칙 중 Paths에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "stage-readme.contents.2",
+              "level": 3,
+              "parent_id": "stage-readme.contents",
+              "title_en": "Owners",
+              "title_ko": "Owners",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "현행 문서 탐색·생성 규칙 중 Owners에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Current Contents"
+        },
+        {
+          "section_id": "stage-readme.use",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "사용",
+          "order": 3,
+          "required_when": "always",
+          "content_rule": "다음 단계와 소비자",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "stage-readme.use.1",
+              "level": 3,
+              "parent_id": "stage-readme.use",
+              "title_en": "Entry Points",
+              "title_ko": "Entry Points",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "다음 단계와 소비자 중 Entry Points에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "stage-readme.use.2",
+              "level": 3,
+              "parent_id": "stage-readme.use",
+              "title_en": "Checks",
+              "title_ko": "Checks",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "다음 단계와 소비자 중 Checks에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Usage"
+        }
+      ],
+      "metadata_policy": {
+        "envelope": "frontmatter",
+        "fields": [
+          {
+            "key": "title",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "문서 목적을 나타내는 제목"
+          },
+          {
+            "key": "version",
+            "value_type": "document-semver",
+            "required_when": "always",
+            "meaning": "ASCII 숫자 세 요소 판본"
+          },
+          {
+            "key": "type",
+            "value_type": "role-binding",
+            "required_when": "always",
+            "meaning": "역할과 정확하게 대응하는 문서 타입"
+          },
+          {
+            "key": "owner",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "현재 의미 소유자"
+          },
+          {
+            "key": "updated",
+            "value_type": "date",
+            "required_when": "always",
+            "meaning": "실제 문서 변경일"
+          },
+          {
+            "key": "status",
+            "value_type": "role-state",
+            "required_when": "always",
+            "meaning": "역할에 따른 상태; 실행 승인이나 인수를 대체하지 않음"
+          }
+        ],
+        "extension_rule": "선택 native 문법은 공급자 검증, domain field는 이름공간과 소유자·실제 소비자를 갖는 별도 모듈",
+        "document_version_pattern": "(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"
+      },
+      "tables": [
+        {
+          "table_id": "stage-readme.paths",
+          "section_id": "stage-readme.contents",
+          "required_when": "always",
+          "columns": [
+            {
+              "key": "path",
+              "label": "Path",
+              "value_type": "path",
+              "meaning": "정규 위치",
+              "required": true
+            },
+            {
+              "key": "purpose",
+              "label": "Purpose",
+              "value_type": "string",
+              "meaning": "독자가 찾을 내용",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        }
+      ],
+      "language": {
+        "headings": "en",
+        "body": "로컬 승인 언어 계약; 본문 언어가 core heading·column을 바꾸지 않음"
+      },
+      "status": "DESIGN_PROPOSAL_NOT_ADOPTED",
+      "relationships": {
+        "authored_direction": "consumer-to-direct-owner",
+        "reverse_links": "derived",
+        "missing_target": "unresolved-not-pass",
+        "deletion": "transfer-current-meaning-before-removal"
+      },
+      "lifecycle": {
+        "axis": "document-purpose",
+        "draft_rule": "authoring-allowed-not-execution-authority",
+        "transition_authority": "explicit-scoped-authority",
+        "acceptance_rule": "required-evidence-and-authorized-acceptance-separate"
+      },
+      "rules": [
+        "single-meaning-owner",
+        "no-synthetic-evidence",
+        "no-release-document-role",
+        "no-package-path-runtime-dependency"
+      ]
+    },
+    {
+      "role": "service-readme",
+      "purpose": "선택 서비스 사용과 경계",
+      "non_goals": "다른 역할의 상태·정책 정본 대체",
+      "sections": [
+        {
+          "section_id": "service-readme.service",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "서비스",
+          "order": 1,
+          "required_when": "always",
+          "content_rule": "구성·데이터·연결",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "service-readme.service.1",
+              "level": 3,
+              "parent_id": "service-readme.service",
+              "title_en": "Purpose",
+              "title_ko": "Purpose",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "구성·데이터·연결 중 Purpose에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "service-readme.service.2",
+              "level": 3,
+              "parent_id": "service-readme.service",
+              "title_en": "Interfaces",
+              "title_ko": "Interfaces",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "구성·데이터·연결 중 Interfaces에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Service"
+        },
+        {
+          "section_id": "service-readme.use",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "실행",
+          "order": 2,
+          "required_when": "always",
+          "content_rule": "선택 실행·권한·입력",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "service-readme.use.1",
+              "level": 3,
+              "parent_id": "service-readme.use",
+              "title_en": "Prerequisites",
+              "title_ko": "Prerequisites",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "선택 실행·권한·입력 중 Prerequisites에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "service-readme.use.2",
+              "level": 3,
+              "parent_id": "service-readme.use",
+              "title_en": "Selected Start",
+              "title_ko": "Selected Start",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "선택 실행·권한·입력 중 Selected Start에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Usage"
+        },
+        {
+          "section_id": "service-readme.checks",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "확인",
+          "order": 3,
+          "required_when": "always",
+          "content_rule": "health·종료·실패·운영 링크",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "service-readme.checks.1",
+              "level": 3,
+              "parent_id": "service-readme.checks",
+              "title_en": "Readiness",
+              "title_ko": "Readiness",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "health·종료·실패·운영 링크 중 Readiness에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "service-readme.checks.2",
+              "level": 3,
+              "parent_id": "service-readme.checks",
+              "title_en": "Failure Handling",
+              "title_ko": "Failure Handling",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "health·종료·실패·운영 링크 중 Failure Handling에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Checks"
+        }
+      ],
+      "metadata_policy": {
+        "envelope": "frontmatter",
+        "fields": [
+          {
+            "key": "title",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "문서 목적을 나타내는 제목"
+          },
+          {
+            "key": "version",
+            "value_type": "document-semver",
+            "required_when": "always",
+            "meaning": "ASCII 숫자 세 요소 판본"
+          },
+          {
+            "key": "type",
+            "value_type": "role-binding",
+            "required_when": "always",
+            "meaning": "역할과 정확하게 대응하는 문서 타입"
+          },
+          {
+            "key": "owner",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "현재 의미 소유자"
+          },
+          {
+            "key": "updated",
+            "value_type": "date",
+            "required_when": "always",
+            "meaning": "실제 문서 변경일"
+          },
+          {
+            "key": "status",
+            "value_type": "role-state",
+            "required_when": "always",
+            "meaning": "역할에 따른 상태; 실행 승인이나 인수를 대체하지 않음"
+          }
+        ],
+        "extension_rule": "선택 native 문법은 공급자 검증, domain field는 이름공간과 소유자·실제 소비자를 갖는 별도 모듈",
+        "document_version_pattern": "(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"
+      },
+      "tables": [
+        {
+          "table_id": "service-readme.interface",
+          "section_id": "service-readme.service",
+          "required_when": "external_interface",
+          "columns": [
+            {
+              "key": "interface",
+              "label": "Interface",
+              "value_type": "identifier",
+              "meaning": "경계",
+              "required": true
+            },
+            {
+              "key": "producer",
+              "label": "Producer",
+              "value_type": "string",
+              "meaning": "생산자",
+              "required": true
+            },
+            {
+              "key": "consumer",
+              "label": "Consumer",
+              "value_type": "string",
+              "meaning": "소비자",
+              "required": true
+            },
+            {
+              "key": "contract",
+              "label": "Contract",
+              "value_type": "reference",
+              "meaning": "입출력 의미",
+              "required": true
+            },
+            {
+              "key": "failure",
+              "label": "Failure",
+              "value_type": "string",
+              "meaning": "실패 처리",
+              "required": true
+            }
+          ],
+          "empty_policy": "발생하지 않은 관측·승인을 만들지 않음. 정의에는 열만 두며 실제 행은 발생 또는 적용 때 작성"
+        }
+      ],
+      "language": {
+        "headings": "en",
+        "body": "로컬 승인 언어 계약; 본문 언어가 core heading·column을 바꾸지 않음"
+      },
+      "status": "DESIGN_PROPOSAL_NOT_ADOPTED",
+      "relationships": {
+        "authored_direction": "consumer-to-direct-owner",
+        "reverse_links": "derived",
+        "missing_target": "unresolved-not-pass",
+        "deletion": "transfer-current-meaning-before-removal"
+      },
+      "lifecycle": {
+        "axis": "document-purpose",
+        "draft_rule": "authoring-allowed-not-execution-authority",
+        "transition_authority": "explicit-scoped-authority",
+        "acceptance_rule": "required-evidence-and-authorized-acceptance-separate"
+      },
+      "rules": [
+        "single-meaning-owner",
+        "no-synthetic-evidence",
+        "no-release-document-role",
+        "no-package-path-runtime-dependency"
+      ]
+    },
+    {
+      "role": "agent-instructions",
+      "purpose": "허용 범위의 도구 독립 실행 규칙",
+      "non_goals": "다른 역할의 상태·정책 정본 대체",
+      "sections": [
+        {
+          "section_id": "agent-instructions.scope",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "실행 범위",
+          "order": 1,
+          "required_when": "always",
+          "content_rule": "작업 경로·우선권·허용 행동",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "agent-instructions.scope.1",
+              "level": 3,
+              "parent_id": "agent-instructions.scope",
+              "title_en": "Allowed Scope",
+              "title_ko": "Allowed Scope",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "작업 경로·우선권·허용 행동 중 Allowed Scope에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "agent-instructions.scope.2",
+              "level": 3,
+              "parent_id": "agent-instructions.scope",
+              "title_en": "Instruction Precedence",
+              "title_ko": "Instruction Precedence",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "작업 경로·우선권·허용 행동 중 Instruction Precedence에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Scope"
+        },
+        {
+          "section_id": "agent-instructions.workflow",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "절차",
+          "order": 2,
+          "required_when": "always",
+          "content_rule": "필요 정책·계획·브리핑",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "agent-instructions.workflow.1",
+              "level": 3,
+              "parent_id": "agent-instructions.workflow",
+              "title_en": "Intake",
+              "title_ko": "Intake",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "필요 정책·계획·브리핑 중 Intake에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "agent-instructions.workflow.2",
+              "level": 3,
+              "parent_id": "agent-instructions.workflow",
+              "title_en": "Execution",
+              "title_ko": "Execution",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "필요 정책·계획·브리핑 중 Execution에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Workflow"
+        },
+        {
+          "section_id": "agent-instructions.limits",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "제한",
+          "order": 3,
+          "required_when": "always",
+          "content_rule": "권한·실패·중단",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "agent-instructions.limits.1",
+              "level": 3,
+              "parent_id": "agent-instructions.limits",
+              "title_en": "Authority",
+              "title_ko": "Authority",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "권한·실패·중단 중 Authority에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "agent-instructions.limits.2",
+              "level": 3,
+              "parent_id": "agent-instructions.limits",
+              "title_en": "Secrets and External Effects",
+              "title_ko": "Secrets and External Effects",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "권한·실패·중단 중 Secrets and External Effects에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Boundaries"
+        },
+        {
+          "section_id": "agent-instructions.verification",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "완료",
+          "order": 4,
+          "required_when": "always",
+          "content_rule": "관련 검사와 보고",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "agent-instructions.verification.1",
+              "level": 3,
+              "parent_id": "agent-instructions.verification",
+              "title_en": "Checks",
+              "title_ko": "Checks",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "관련 검사와 보고 중 Checks에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "agent-instructions.verification.2",
+              "level": 3,
+              "parent_id": "agent-instructions.verification",
+              "title_en": "Reporting",
+              "title_ko": "Reporting",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "관련 검사와 보고 중 Reporting에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Verification"
+        }
+      ],
+      "metadata_policy": {
+        "envelope": "native",
+        "fields": [],
+        "extension_rule": "선택 native 문법은 공급자 검증, domain field는 이름공간과 소유자·실제 소비자를 갖는 별도 모듈",
+        "document_version_pattern": "(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"
+      },
+      "tables": [],
+      "language": {
+        "headings": "en",
+        "body": "로컬 승인 언어 계약; 본문 언어가 core heading·column을 바꾸지 않음"
+      },
+      "status": "DESIGN_PROPOSAL_NOT_ADOPTED",
+      "relationships": {
+        "authored_direction": "consumer-to-direct-owner",
+        "reverse_links": "derived",
+        "missing_target": "unresolved-not-pass",
+        "deletion": "transfer-current-meaning-before-removal"
+      },
+      "lifecycle": {
+        "axis": "document-purpose",
+        "draft_rule": "authoring-allowed-not-execution-authority",
+        "transition_authority": "explicit-scoped-authority",
+        "acceptance_rule": "required-evidence-and-authorized-acceptance-separate"
+      },
+      "rules": [
+        "single-meaning-owner",
+        "no-synthetic-evidence",
+        "no-release-document-role",
+        "no-package-path-runtime-dependency"
+      ]
+    },
+    {
+      "role": "skill",
+      "purpose": "반복 가능한 호출형 절차",
+      "non_goals": "다른 역할의 상태·정책 정본 대체",
+      "sections": [
+        {
+          "section_id": "skill.trigger",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "적용",
+          "order": 1,
+          "required_when": "always",
+          "content_rule": "언제 사용·비적용",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "skill.trigger.1",
+              "level": 3,
+              "parent_id": "skill.trigger",
+              "title_en": "When to Use",
+              "title_ko": "When to Use",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "언제 사용·비적용 중 When to Use에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "skill.trigger.2",
+              "level": 3,
+              "parent_id": "skill.trigger",
+              "title_en": "When Not to Use",
+              "title_ko": "When Not to Use",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "언제 사용·비적용 중 When Not to Use에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Trigger"
+        },
+        {
+          "section_id": "skill.procedure",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "절차",
+          "order": 2,
+          "required_when": "always",
+          "content_rule": "입력·단계·실패 처리",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "skill.procedure.1",
+              "level": 3,
+              "parent_id": "skill.procedure",
+              "title_en": "Steps",
+              "title_ko": "Steps",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "입력·단계·실패 처리 중 Steps에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "skill.procedure.2",
+              "level": 3,
+              "parent_id": "skill.procedure",
+              "title_en": "Failure Handling",
+              "title_ko": "Failure Handling",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "입력·단계·실패 처리 중 Failure Handling에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Procedure"
+        },
+        {
+          "section_id": "skill.output",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "산출물",
+          "order": 3,
+          "required_when": "always",
+          "content_rule": "반환과 소유자",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "skill.output.1",
+              "level": 3,
+              "parent_id": "skill.output",
+              "title_en": "Artifacts",
+              "title_ko": "Artifacts",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "반환과 소유자 중 Artifacts에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "skill.output.2",
+              "level": 3,
+              "parent_id": "skill.output",
+              "title_en": "Handoff",
+              "title_ko": "Handoff",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "반환과 소유자 중 Handoff에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Outputs"
+        },
+        {
+          "section_id": "skill.verification",
+          "level": 2,
+          "parent_id": null,
+          "title_ko": "검증",
+          "order": 4,
+          "required_when": "always",
+          "content_rule": "정상·오류의 관측",
+          "prohibited_content": "다른 문서의 실행상태·승인을 복제하거나 미관측 동작을 완료로 서술하지 않음",
+          "empty_policy": "필수 핵심은 구체 내용으로 작성한다. 조건부 소절은 해당할 때만 렌더링하며 빈 placeholder를 완료 문서에 남기지 않는다.",
+          "subsections": [
+            {
+              "section_id": "skill.verification.1",
+              "level": 3,
+              "parent_id": "skill.verification",
+              "title_en": "Checks",
+              "title_ko": "Checks",
+              "order": 1,
+              "required_when": "always",
+              "content_rule": "정상·오류의 관측 중 Checks에 해당하는 사실·규칙만 기록"
+            },
+            {
+              "section_id": "skill.verification.2",
+              "level": 3,
+              "parent_id": "skill.verification",
+              "title_en": "Limits",
+              "title_ko": "Limits",
+              "order": 2,
+              "required_when": "always",
+              "content_rule": "정상·오류의 관측 중 Limits에 해당하는 사실·규칙만 기록"
+            }
+          ],
+          "title_en": "Verification"
+        }
+      ],
+      "metadata_policy": {
+        "envelope": "native",
+        "fields": [
+          {
+            "key": "name",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "네이티브 발견 이름"
+          },
+          {
+            "key": "description",
+            "value_type": "string",
+            "required_when": "always",
+            "meaning": "언제 무엇을 하는지"
+          }
+        ],
+        "extension_rule": "선택 native 문법은 공급자 검증, domain field는 이름공간과 소유자·실제 소비자를 갖는 별도 모듈",
+        "document_version_pattern": "(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)"
+      },
+      "tables": [],
+      "language": {
+        "headings": "en",
+        "body": "로컬 승인 언어 계약; 본문 언어가 core heading·column을 바꾸지 않음"
+      },
+      "status": "DESIGN_PROPOSAL_NOT_ADOPTED",
+      "relationships": {
+        "authored_direction": "consumer-to-direct-owner",
+        "reverse_links": "derived",
+        "missing_target": "unresolved-not-pass",
+        "deletion": "transfer-current-meaning-before-removal"
+      },
+      "lifecycle": {
+        "axis": "document-purpose",
+        "draft_rule": "authoring-allowed-not-execution-authority",
+        "transition_authority": "explicit-scoped-authority",
+        "acceptance_rule": "required-evidence-and-authorized-acceptance-separate"
+      },
+      "rules": [
+        "single-meaning-owner",
+        "no-synthetic-evidence",
+        "no-release-document-role",
+        "no-package-path-runtime-dependency"
+      ]
+    }
+  ],
+  "binding_rule": "기존 계약은 관측 입력이다. 목적·실제 소비자·권한·비용과 외부 근거로 채택할 목표를 결정한 후 재사용·차이 변경한다. 미등록 실제 양식은 새 설계 항목으로 분류하고 지우거나 native 예외로 위장하지 않는다."
+}

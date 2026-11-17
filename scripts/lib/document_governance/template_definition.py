@@ -613,11 +613,12 @@ def template_definition(
             f"{', '.join(registry.lifecycle_terminal_statuses.get(lifecycle_id, ())) or 'none'}"
         )
     language = profile.get("language")
-    binding = (
-        _entry(common, "common_form_contract", "common")
-        if profile.get("required_subsections")
-        else common
-    )
+    if role.get("core_role"):
+        binding = _entry(common, "role_design_contract", "common")
+    elif profile.get("required_subsections"):
+        binding = _entry(common, "common_form_contract", "common")
+    else:
+        binding = common
     return {
         "template_id": template_id,
         "contract_id": binding["contract_id"],
@@ -643,3 +644,166 @@ def template_definition(
         "migration": _plain(role["migration"]),
         "extensions": _extensions(profile_id, profile, common),
     }
+
+
+def _core_required(item: Mapping[str, object]) -> bool:
+    return item.get("required_when") == "always"
+
+
+def role_design_findings(
+    core_roles: Mapping[str, Mapping[str, object]],
+    bindings: Mapping[str, str],
+    definitions: Mapping[str, Mapping[str, object]],
+) -> list[tuple[str, str, str]]:
+    """Compare bound TemplateDefinition projections with their core roles.
+
+    A role conforms only when its H2 and H3 titles, their order and
+    requiredness, and every table's section, column labels and column
+    requiredness equal the core. Same titles with other tables do not pass.
+    """
+
+    findings: list[tuple[str, str, str]] = []
+    for template_id, core_name in sorted(bindings.items()):
+        core = core_roles.get(core_name)
+        if core is None:
+            findings.append(
+                ("role-design-unknown-role", template_id, f"no core role {core_name}")
+            )
+            continue
+        definition = definitions[template_id]
+        headings = definition["headings"]
+        actual = [
+            (
+                h2["title"],
+                h2["requiredness"] == "required",
+                [
+                    (h3["title"], h3["requiredness"] == "required")
+                    for h3 in h2["children"]
+                ],
+            )
+            for h2 in headings  # type: ignore[union-attr]
+        ]
+        expected = [
+            (
+                section["title_en"],
+                _core_required(section),
+                [
+                    (sub["title_en"], _core_required(sub))
+                    for sub in section["subsections"]  # type: ignore[union-attr]
+                ],
+            )
+            for section in core["sections"]  # type: ignore[union-attr]
+        ]
+        if actual != expected:
+            findings.append(
+                (
+                    "role-design-heading-mismatch",
+                    template_id,
+                    f"H2/H3 titles or requiredness differ from core role {core_name}",
+                )
+            )
+        titles: dict[str, str] = {}
+        for h2 in headings:  # type: ignore[union-attr]
+            titles[str(h2["section_id"])] = str(h2["title"])
+            for h3 in h2["children"]:
+                titles[str(h3["section_id"])] = f"{h2['title']}/{h3['title']}"
+        core_titles: dict[str, str] = {}
+        for section in core["sections"]:  # type: ignore[union-attr]
+            core_titles[str(section["section_id"])] = str(section["title_en"])
+            for sub in section["subsections"]:  # type: ignore[union-attr]
+                core_titles[str(sub["section_id"])] = (
+                    f"{section['title_en']}/{sub['title_en']}"
+                )
+        actual_tables = sorted(
+            (
+                titles.get(str(table["section"]), ""),
+                [(str(c["key"]), bool(c["required"])) for c in table["columns"]],
+            )
+            for table in definition["tables"]  # type: ignore[union-attr]
+        )
+        expected_tables = sorted(
+            (
+                core_titles.get(str(table["section_id"]), ""),
+                [(str(c["label"]), bool(c["required"])) for c in table["columns"]],
+            )
+            for table in core["tables"]  # type: ignore[union-attr]
+        )
+        if actual_tables != expected_tables:
+            findings.append(
+                (
+                    "role-design-table-mismatch",
+                    template_id,
+                    f"tables differ from core role {core_name}",
+                )
+            )
+    return findings
+
+
+_CORE_EXCEPTION_KINDS = frozenset({"pending-migration", "domain", "native"})
+
+
+def role_design_contract_findings(
+    registry: DocumentRegistry, *, root: pathlib.Path = ROOT
+) -> list[tuple[str, str, str]]:
+    """Check the Registry's pinned role design core and every role's binding."""
+
+    import hashlib
+
+    from jsonschema import Draft202012Validator
+
+    contract = registry.common.get("role_design_contract")
+    if not isinstance(contract, Mapping):
+        return [("role-design-contract-missing", "common", "")]
+    source = str(contract["source_path"])
+    try:
+        raw = (root / source).read_bytes()
+        schema = json.loads((root / str(contract["schema_path"])).read_bytes())
+    except (OSError, ValueError) as error:
+        return [("role-design-source-unreadable", source, str(error))]
+    if hashlib.sha256(raw).hexdigest() != contract["source_sha256"]:
+        return [("role-design-source-changed", source, "sha256 differs from Registry")]
+    core = json.loads(raw)
+    findings = [
+        ("role-design-source-invalid", source, error.message)
+        for error in Draft202012Validator(schema).iter_errors(core)
+    ]
+    if (core.get("contract_id"), core.get("contract_version")) != (
+        contract["contract_id"],
+        contract["contract_version"],
+    ):
+        findings.append(("role-design-identity", source, "id or version differs"))
+    if findings:
+        return findings
+    core_roles = {str(role["role"]): role for role in core["roles"]}
+    bindings: dict[str, str] = {}
+    named: set[str] = set()
+    for template_id, role in registry.template_roles.items():
+        bound = role.get("core_role")
+        exception = role.get("core_exception")
+        if bool(bound) == bool(exception):
+            findings.append(
+                (
+                    "role-design-unclassified",
+                    template_id,
+                    "declare exactly one of core_role or core_exception",
+                )
+            )
+            continue
+        if bound:
+            bindings[template_id] = str(bound)
+            named.add(str(bound))
+        else:
+            kind = exception.get("kind")  # type: ignore[union-attr]
+            if kind not in _CORE_EXCEPTION_KINDS or not exception.get("reason"):  # type: ignore[union-attr]
+                findings.append(
+                    ("role-design-exception-invalid", template_id, str(kind))
+                )
+            if exception.get("core_role"):  # type: ignore[union-attr]
+                named.add(str(exception["core_role"]))  # type: ignore[index]
+    for missing in sorted(set(core_roles) - named):
+        findings.append(("role-design-core-unmapped", missing, "no template role"))
+    definitions = {
+        template_id: template_definition(registry, template_id, root=root)
+        for template_id in bindings
+    }
+    return findings + role_design_findings(core_roles, bindings, definitions)

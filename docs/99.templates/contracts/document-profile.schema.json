@@ -211,7 +211,10 @@
           "$comment": "The adopted common section form identity and revision. TemplateDefinition reads this record for each role that declares required_subsections.",
           "type": "object",
           "additionalProperties": false,
-          "required": ["contract_id", "contract_version"],
+          "required": [
+            "contract_id",
+            "contract_version"
+          ],
           "properties": {
             "contract_id": {
               "type": "string",
@@ -1041,13 +1044,47 @@
             "type": "string",
             "minLength": 1
           }
+        },
+        "role_design_contract": {
+          "$comment": "The adopted shared document role design core: identity, numeric version, tracked source and schema paths and the source SHA-256. A template role that declares core_role is checked against it.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "contract_id",
+            "contract_version",
+            "source_path",
+            "schema_path",
+            "source_sha256"
+          ],
+          "properties": {
+            "contract_id": {
+              "type": "string",
+              "minLength": 1
+            },
+            "contract_version": {
+              "$ref": "#/properties/common/properties/contract_version"
+            },
+            "source_path": {
+              "type": "string",
+              "pattern": "^docs/99\\.templates/contracts/[a-z0-9-]+\\.json$(?!\\n)"
+            },
+            "schema_path": {
+              "type": "string",
+              "pattern": "^docs/99\\.templates/contracts/[a-z0-9-]+\\.schema\\.json$(?!\\n)"
+            },
+            "source_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$(?!\\n)"
+            }
+          }
         }
       },
       "required": [
         "frozen_transition_fields",
         "template_initial_version",
         "contract_version",
-        "common_form_contract"
+        "common_form_contract",
+        "role_design_contract"
       ],
       "allOf": [
         {
@@ -1585,6 +1622,37 @@
           "additionalProperties": {
             "type": "string",
             "minLength": 1
+          }
+        },
+        "core_role": {
+          "$comment": "The core role this form conforms to; checked against common.role_design_contract.",
+          "type": "string",
+          "minLength": 1
+        },
+        "core_exception": {
+          "$comment": "Why the form has no core_role yet or at all: pending-migration names its target core role; domain and native forms have no core role.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "kind",
+            "reason"
+          ],
+          "properties": {
+            "kind": {
+              "enum": [
+                "pending-migration",
+                "domain",
+                "native"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "core_role": {
+              "type": "string",
+              "minLength": 1
+            }
           }
         }
       }

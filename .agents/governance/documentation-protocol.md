@@ -1,10 +1,10 @@
 ---
 title: "Documentation Protocol"
-version: "7.0.0"
+version: "7.1.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 ---
 
 # Documentation Protocol
@@ -518,6 +518,7 @@ the copies against the Python grammar, including rejection of a final newline.
 | `document-content` | frontmatter `version` | per document | Numeric value; the rule above, checked by `check-document-metadata.py --mode check-changed` | The document's own frontmatter | The document's writer | `contracts/document-frontmatter.schema.json`, metadata validator | The keys, sections, tables, states and link directions its profile's consumers read | The document |
 | `new-document-start` | Registry `common.template_initial_version` | `0.1.0` | Numeric value | `docs/99.templates/registry.json` | Stage 99 owner | Profile schema, template checks | The first version a new document carries | The Registry |
 | `common-form-contract` | Registry `common.common_form_contract.contract_version` | `1.0.0` | Numeric version; `contract_id` holds `COMMON-DOC-FORM-1` separately | `docs/99.templates/registry.json` | Stage 99 owner, adopting the shared contract | `template_definition.py` | The common H1, H2 and H3 form and the empty-section rule | The shared contract, adopted per workspace |
+| `role-design-contract` | Registry `common.role_design_contract.contract_version` | `4.0.0` | Numeric version; `contract_id` holds `workspace-document-role-design` and `source_sha256` pins the tracked core | `docs/99.templates/contracts/document-role-design.json` | Stage 99 owner, adopting the shared core on the owner's decision of 2026-11-17 | `template_definition.py`, `check-document-metadata.py --mode check-contracts` | The H2, H3, requiredness and table columns of each template role that declares `core_role` | The shared core, adopted per workspace |
 | `legacy-form-contract` | Registry `common.contract_version` | `1.0.0` | Numeric version; `common.contract_id` holds the existing legacy identity | `docs/99.templates/registry.json` | Stage 99 owner | `template_definition.py` | The legacy form for roles without common subsections | The Registry |
 | `template-definition-projection` | Stage 99 projection schema | `2.0.0` | Major change for the split output fields | `docs/99.templates/contracts/template-definition.schema.json` | Stage 99 owner | `template_definition.py`, body validator | The projected role definition, including the identity and version fields | Stage 99 template definitions |
 | `vocabulary-contract` | Registry `common.vocabulary_contract.version` | `3.0.1` | Numeric value; the first adoption, from package label `v14.5`, is 1.0.0, by the owner's decision recorded in SPEC-0212 TSK-0064; the owner approved adopting the shared 3.0.1 on 2026-11-15 (SPEC-0212 TSK-0068), and `source_label` names the adopted source | `docs/99.templates/registry.json` | Glossary owner | Glossary `Contract Version` column, `vocabulary_contract_findings` | The common Term IDs, names, order and meanings | The shared contract, adopted per workspace |

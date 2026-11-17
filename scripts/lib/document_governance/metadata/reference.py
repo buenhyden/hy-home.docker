@@ -347,6 +347,25 @@ def _generation_task_body_baseline(
     )
 
 
+def _role_design_findings(
+    root: pathlib.Path, profiles: Mapping[str, object]
+) -> list[Finding]:
+    """Check the pinned role design core and every template role's binding."""
+
+    from scripts.lib.document_governance.template_definition import (
+        role_design_contract_findings,
+    )
+
+    registry = profiles["_registry"]
+    assert isinstance(registry, DocumentRegistry)
+    return [
+        Finding(location, code, message)
+        for code, location, message in role_design_contract_findings(
+            registry, root=root
+        )
+    ]
+
+
 def _workspace_inventory_findings() -> list[Finding]:
     # Only the Registry-owned _workspace READMEs are metadata targets; the
     # staging tree itself never becomes an inferred inventory root.
@@ -657,6 +676,8 @@ def _validate_repository_contracts(
             )
 
     findings.extend(_workspace_inventory_findings())
+    if registry_native:
+        findings.extend(_role_design_findings(root, profiles))
 
     readme_registry = profiles.get("_registry") if registry_native else None
     for path in tracked_markdown:

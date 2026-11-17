@@ -1,10 +1,10 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.8.0"
+version: "2.9.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "templates"
 ---
 
@@ -83,12 +83,19 @@ docs/99.templates/
 | [`contracts/document-profile.schema.json`](./contracts/document-profile.schema.json) | machine | registry shape |
 | [`contracts/document-frontmatter.schema.json`](./contracts/document-frontmatter.schema.json) | machine | typed frontmatter value shape |
 | [`contracts/template-definition.schema.json`](./contracts/template-definition.schema.json) | machine | TemplateDefinition 출력 계약 2.0.0. `scripts/lib/document_governance/template_definition.py`가 각 `template_roles` 항목을 이 형식으로 투영합니다 |
+| [`contracts/document-role-design.json`](./contracts/document-role-design.json) | machine | 공통 문서 역할 설계 core `workspace-document-role-design`. 거버넌스 패키지 원본과 같은 바이트이며 판본과 SHA-256은 Registry `common.role_design_contract`가 고정합니다 |
+| [`contracts/document-role-design.schema.json`](./contracts/document-role-design.schema.json) | machine | 위 core의 구조 schema |
 | [`templates/`](./templates/) | copy source | profile-referenced authoring forms |
 
 TemplateDefinition의 `contract_id`는 적용 양식을 식별하고
 `contract_version`은 그 양식의 숫자 판본을 나타냅니다. Profile이
 `required_subsections`를 선언하면 Registry의 `common.common_form_contract`에서
 두 값을 읽습니다. 다른 profile은 `common`의 식별자와 판본을 사용합니다.
+`core_role`을 선언한 template role은 `common.role_design_contract`의 값을
+쓰고, `check-document-metadata.py --mode check-contracts`가 그 H2, H3,
+필수 여부와 표 열을 core 역할과 비교합니다. 나머지 template role은
+`core_exception`으로 이관 대기, 도메인 전용, native 전용 중 하나와 사유를
+선언합니다.
 이 출력 형식 변경으로 Registry 직렬화 판본은 2가 됩니다. 과거 Registry 검증은
 해당 Git 판본의 스키마를 사용합니다.
 
