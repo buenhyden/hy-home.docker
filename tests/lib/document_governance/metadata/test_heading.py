@@ -588,6 +588,16 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("### Configuration", "body-subheading-forbidden"),
                 ("### Validation", "body-subheading-forbidden"),
             ),
+            "research-member": (
+                ("## Overview", "body-heading-forbidden"),
+                ("## Scope and Method", "body-heading-forbidden"),
+                ("## Findings", "body-heading-forbidden"),
+                ("## Limitations", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+                ("### Dated Observations", "body-subheading-forbidden"),
+                ("### Reproducible Method", "body-subheading-forbidden"),
+                ("### Unobserved Facts", "body-subheading-forbidden"),
+            ),
             "adr": (
                 ("## Decision Drivers", "body-heading-forbidden"),
                 ("## Options", "body-heading-forbidden"),
@@ -627,18 +637,13 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 )
 
     def test_every_sectioned_profile_declares_order_and_content(self) -> None:
-        # Stage 90 research members are preserved as written, empty parents too.
-        order_only = {"research-member"}
         for profile_id, profile in sorted(self.registry.profiles.items()):
             # A generated body is checked by its declared producer instead.
             if not profile.get("required_sections") or profile_id == "generated":
                 continue
             with self.subTest(profile=profile_id):
                 self.assertTrue(profile.get("ordered_sections"))
-                self.assertEqual(
-                    profile_id not in order_only,
-                    bool(profile.get("nonempty_sections")),
-                )
+                self.assertTrue(profile.get("nonempty_sections"))
 
     def test_swapped_or_empty_sections_are_reported(self) -> None:
         for profile_id in sorted(self.representatives):
