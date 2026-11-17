@@ -1,10 +1,10 @@
 ---
 title: "System Operations Guide"
-version: "0.3.5"
+version: "0.4.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0099"
 parent_ids:
@@ -16,6 +16,10 @@ next_review_at: "2027-05-13"
 # System Operations Guide
 
 ## Purpose
+
+### Audience
+
+한 호스트에서 HOME 서비스와 개발 작업을 함께 운영하는 사람이 요청 경로, 공통 의존성, 장애 영향을 확인하고 다음 절차를 찾을 때 읽는다.
 
 ### Outcome
 
@@ -32,7 +36,7 @@ next_review_at: "2027-05-13"
 고른 뒤 subject 행의 세 역할을 따라간다. 서비스가 여러 개 묶인 subject의
 초기화·exporter·worker도 같은 소유 문서에서 확인한다.
 
-### Boundaries
+#### Boundaries
 
 - [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md): 시스템 구조와 단일 호스트 한계.
 - [REQ-0027](../../../01.requirements/0027-home-development-host.md): 운영 문서·검증·복구 요구.
@@ -80,13 +84,15 @@ workflow의 실제 관리 DB·broker 연결도 각 선언에서 확인한다. �
 재부팅 뒤에는 [RUN-0098](../../runbooks/01-common/0098-cold-start-and-reboot.md)의 단계별 확인을
 사용하며, 이전 날짜의 리허설을 현재 상태의 증거로 대신하지 않는다.
 
-### Permissions
+### Authority
 
 이 가이드는 실행 권한을 부여하지 않는다. OpenBao unseal·인증, 파괴적 복구 승인은 각 Runbook이 소유한다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 요청·데이터 경로와 티어 책임은 아래에 정리한다.
 
@@ -178,13 +184,11 @@ object 저장 경로와 [lakehouse LAB](../15-labs/0094-lakehouse.md)의 기반�
 | 12 Analytics | `infra/12-analytics`에는 Compose 서비스가 없다. [Lakehouse](../15-labs/0094-lakehouse.md), [Superset](../15-labs/0097-superset.md), [dbt](../15-labs/0090-dbt.md), [JupyterLab](../15-labs/0089-jupyterlab.md)(모두 `labs/`의 독립 LAB) | 공유 객체·catalog·관리 DB와 명시적 분석 작업; 선택이 전체 파이프라인 기동을 뜻하지 않음 |
 | 13 Experience | [Storybook](../14-design-system/0101-storybook.md): design system 미리보기 | `experience_ingress_net`의 gateway route; 다른 앱 상태와 무관 |
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 별도 예외 절을 두지 않으며, 한계와 경계는 Environment와 Actions의 해당 본문과 Troubleshooting에 함께 적혀 있다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 | 운영 필요 | 공통 소유자와 점검 범위 | 확인되지 않았을 때의 경계 |
 | --- | --- | --- |
@@ -200,7 +204,9 @@ object 저장 경로와 [lakehouse LAB](../15-labs/0094-lakehouse.md)의 기반�
 비공개 resolved path를 넣지 않는다. 읽지 않았거나 실행하지 않은 항목은 `NOT_RUN`으로
 남긴다. source와 공식 문서 비교는 정적 근거이며 현재 운영·복구 결과가 아니다.
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 여러 서비스가 함께 실패하면 위 Expected Result 표에서 공통 소유자를 찾고, 관찰과 분기는
 [RUN-0099](../../runbooks/01-common/0099-system-operations.md)로 넘긴다.
@@ -211,3 +217,7 @@ object 저장 경로와 [lakehouse LAB](../15-labs/0094-lakehouse.md)의 기반�
 관찰 → 분기 → 서비스 절차 흐름을 사용한다. 예정된 재부팅은 RUN-0098,
 백업과 복원은 RUN-0021, 업데이트는 RUN-0086에서 시작한다. 인증·data·network
 변경이나 파괴적 복구는 대상, 승인, 중단 조건을 해당 절차에서 다시 확인한다.
+
+### Next Action
+
+여러 서비스가 함께 실패하거나 원인이 여러 티어에 걸치면 [RUN-0099](../../runbooks/01-common/0099-system-operations.md)의 관찰, 분기, 서비스 절차 흐름으로 넘긴다. 예정된 재부팅은 RUN-0098, 백업과 복원은 RUN-0021, 업데이트는 RUN-0086에서 시작한다.

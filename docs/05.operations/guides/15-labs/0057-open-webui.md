@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI Usage Guide"
-version: "1.2.3"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0057"
 parent_ids:
@@ -20,6 +20,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+Open WebUI LAB을 준비하거나 실험하는 AI engineer와 운영자가 LAB 경계, 필수 입력, 명령의 부작용과 정상 점검 방법을 찾을 때 읽는다.
+
 ### Outcome
 
 Open WebUI는 root Compose에서 분리된 독립 LAB `labs/open-webui/docker-compose.yml`의 채팅·RAG 웹
@@ -29,8 +33,6 @@ SearXNG가, RAG는 Qdrant와 n8n이 맡는다. 이 LAB은 Open WebUI 자체를 �
 
 Open WebUI LAB을 준비하거나 실험하는 AI engineer와 운영자를 위한 문서다. LAB 경계, 필수 입력,
 명령의 부작용과 정상 점검 방법을 찾는 것이 목표다.
-
-### Boundaries
 
 #### Traceability
 
@@ -80,13 +82,13 @@ Open WebUI LAB을 준비하거나 실험하는 AI engineer와 운영자를 위�
   1060을 쓸 수 없고 GPU 예약도 없다. embedding은 Ollama가 처리한다. `ENABLE_OPENAI_API=false`를 유지하고 Docker socket과 terminal server는
   연결하지 않는다(SPEC-0226, 은퇴).
 
-### Permissions
+### Authority
 
 `LAB config` 렌더링만 승인 없이 안전하다. 그 외 명령은 활성 lease, 승인된 Ollama endpoint와 LAB secret(`lab_open_webui_oidc_client_secret`)이 필요하고 LAB 사본 준비와 정리는 별도 승인 단계다.
 
 ## Procedure
 
-### Actions
+### Steps
 
 #### Commands and side effects
 
@@ -113,18 +115,18 @@ HOME 컨테이너 `open-webui`와 volume `hy-home-infra_open-webui`(`${DEFAULT_A
 source 이동으로 바뀌지 않는다. 정지·제거, LAB data root로의 data 이전 또는 삭제, Keycloak client와 DNS
 정리는 각각 별도 승인 단계이며 순서는 [runbook](../../runbooks/15-labs/0057-open-webui.md#home-retirement-steps)이 소유한다.
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`
 - `python3 scripts/operations/lab.py check open-webui`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - **렌더링 거부**: 필수 `LAB_OPEN_WEBUI_*` 입력이 비어 있다.
 - **Ollama 연결 실패**: `LAB_OPEN_WEBUI_OLLAMA_BASE_URL`이 LAB network에서 도달 불가하다.
@@ -134,3 +136,7 @@ source 이동으로 바뀌지 않는다. 정지·제거, LAB data root로의 dat
 #### Runbook Handoff
 
 LAB 기동, 로그인 실패, data 복구와 HOME 퇴역 절차는 [runbook](../../runbooks/15-labs/0057-open-webui.md)을 따른다.
+
+### Next Action
+
+증상이 계속되면 [RUN-0057](../../runbooks/15-labs/0057-open-webui.md)를 따른다. LAB 기동, 로그인 실패, data 복구와 HOME 퇴역 절차는 이 runbook이 소유한다.

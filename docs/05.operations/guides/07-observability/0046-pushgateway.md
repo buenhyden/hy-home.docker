@@ -1,6 +1,6 @@
 ---
 title: "Pushgateway Usage Guide"
-version: "1.1.3"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -20,13 +20,17 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+단기 실행/배치 작업의 metric을 Pushgateway로 보내거나 관리하는 개발자, 운영자, agent 튜닝 담당자.
+
 ### Outcome
 
 이 문서는 Pushgateway의 역할과 기본 사용법을 설명한다. Pushgateway는 Prometheus pull 모델이 직접 적용되기 어려운 단기 실행·배치 작업의 metric을 일시적으로 받아 두는 버퍼다. 장기 실행 서비스의 일반 metric 수집 경로로 쓰지 않는다.
 
 대상 독자는 개발자, 운영자, agent 튜닝 담당자다. Pushgateway의 역할과 동작 방식을 이해하고, 배치 작업에서 메트릭을 올바르게 전송하고 관리하는 방법을 익히는 것이 목표다.
 
-### Boundaries
+#### Boundaries
 
 - Declared parent: [Pushgateway Operations Policy](../../policies/07-observability/0046-pushgateway.md) (`POL-0046`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
@@ -47,13 +51,15 @@ next_review_at: "2027-05-13"
 - 작업이 `obs_net` 또는 Pushgateway에 도달할 수 있는 네트워크 경로에 있어야 한다.
 - Prometheus에 의존하는 dashboard나 alert를 만들기 전에 Pushgateway scrape job이 추가되었는지 확인한다. 현재 선택 config(`PROMETHEUS_CONFIG_FILE`, 기본 `prometheus.dev.yml`)와 `prometheus.yml` 모두 해당 job이 없다.
 
-### Permissions
+### Authority
 
 Pushgateway에는 Docker Secret이 없다. Prometheus scrape job 추가는 별도 승인 작업이며, 종료된 group 정리는 RUN-0046이 소유한다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 정상 사용과 확인 절차는 아래 항목을 따른다.
 
@@ -106,13 +112,11 @@ Prometheus dashboard나 alert가 Pushgateway metric에 의존하기 전에 scrap
 - **수명 주기·복구**: backup 대상은 gateway memory가 아니라 producer 정의와 metric 계약이다. restart/rebuild 후 producer는 현재 유효한 metric만 다시 push한다. 오래된 관찰 결과를 재전송하지 않는다. upgrade할 때 API/label 호환성을 확인한다.
 - **공식 문서·license**: 공식 [Prometheus Pushgateway 저장소](https://github.com/prometheus/pushgateway)를 따른다. Pushgateway에는 Apache-2.0 license가 적용된다.
 
-### Exceptions
+#### Exceptions
 
 Prometheus scrape job 부재와 persistence 부재의 한계는 Actions의 `Prometheus scrape 연동 확인`, `메트릭 삭제`, `Source-backed operating contract`에 기술되어 있다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 확인 항목과 기대 결과는 아래와 같다.
 
@@ -122,7 +126,9 @@ Prometheus scrape job 부재와 persistence 부재의 한계는 Actions의 `Prom
 - `curl -I http://pushgateway:9091/-/ready`
 - `rg -n 'job_name: "pushgateway"|pushgateway:9091|honor_labels' infra/06-observability/prometheus/config/` (현재 출력 없음: scrape job 미구현)
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - **Stale metrics**: Pushgateway는 마지막 값을 유지한다. 실패한 배치가 metric을 갱신하지 못하면 오래된 성공 값이 계속 보일 수 있다.
 - **Label collision**: 여러 worker가 같은 `job`만 사용하면 metric group이 덮어써질 수 있다. worker 구분이 필요할 때만 안정적인 `instance` label을 추가한다.
@@ -136,3 +142,7 @@ Prometheus scrape job 부재와 persistence 부재의 한계는 Actions의 `Prom
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/07-observability/0046-pushgateway.md)
 - [Recovery runbook](../../runbooks/07-observability/0046-pushgateway.md)
+
+### Next Action
+
+증상이 계속되거나 점검 결과가 기대와 다르면 [RUN-0046](../../runbooks/07-observability/0046-pushgateway.md)의 진단, 재시작, rollback, escalation 기준을 따른다. Prometheus scrape job 추가는 별도 승인 작업이다.

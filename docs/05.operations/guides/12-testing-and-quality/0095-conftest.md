@@ -1,10 +1,10 @@
 ---
 title: "Conftest Usage Guide"
-version: "1.1.3"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0095"
 parent_ids:
@@ -20,6 +20,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+인프라 소스(Compose, Dockerfile)에 Conftest 정책 검사를 실행하는 개발자와 운영자가 검사 범위, 규칙, 실패 신호를 해석할 때 읽는다.
+
 ### Outcome
 
 Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트다. 실행
@@ -27,8 +31,6 @@ Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트�
 평가하므로, 시작 전에 잘못된 선언을 잡아낸다.
 
 인프라 소스에 정책 검사를 실행하는 개발자와 운영자를 위한 문서다. 검사 범위와 규칙을 이해하고 실패 신호를 해석하는 것이 목표다.
-
-### Boundaries
 
 #### Traceability
 
@@ -60,13 +62,13 @@ Conftest는 `policy-check`로 선택되는 OPTIONAL 일회성 정책 테스트�
   기본 `all`은 분리된 실행 범위이며 `deny`는 실패, `warn`은 출력만 한다.
   임시 공개 파생 입력은 읽기 전용이며 종료 시 정리된다.
 
-### Permissions
+### Authority
 
 별도 접근 권한이 필요 없다. 실행 container는 `secrets/`, `.env`, Docker socket을 mount하지 않는다(Environment).
 
 ## Procedure
 
-### Actions
+### Steps
 
 #### Rules
 
@@ -101,20 +103,20 @@ wrapper 필요 오류로 종료하고 raw fallback은 없다. 직접 job `verify
 앞 단계가 실패하면 뒤 단계는 실행되지 않으므로 세 요약을 항상 기대하지 않는다.
 네트워크 없음·읽기 전용·사용자 제한을 갖춘 선언된 Compose 작업만 사용한다.
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - CI는 `operations` suite의 `local.template-security-baseline` 아래
   `leaf.conftest-policy`(`check-conftest-policy.sh --mode corpus`)로 corpus 검사를
   실행한다. `leaf.conftest-policy-tests`(`--mode verify`)는 local 전용 gate다.
 - `HYHOME_COMPOSE_PROFILES=policy-check bash scripts/validation/validate-docker-compose.sh`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 실패 단계(`verify`, Compose corpus, Dockerfile corpus)와 첫 `FAIL` 줄로 원인을 나누고
 수정 절차는 [runbook](../../runbooks/12-testing-and-quality/0095-conftest.md)을 따른다.
@@ -122,3 +124,7 @@ wrapper 필요 오류로 종료하고 raw fallback은 없다. 직접 job `verify
 #### Runbook Handoff
 
 job이 실패하면 [runbook](../../runbooks/12-testing-and-quality/0095-conftest.md)을 사용한다.
+
+### Next Action
+
+job이 실패하면 [runbook](../../runbooks/12-testing-and-quality/0095-conftest.md)을 따른다. 실패 단계와 첫 `FAIL` 줄을 함께 기록한다.

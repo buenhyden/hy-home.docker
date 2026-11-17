@@ -1,6 +1,6 @@
 ---
 title: "Tempo Usage Guide"
-version: "1.0.10"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -20,6 +20,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+Tempo compose service, OTLP receiver, SeaweedFS storage, retention, metrics generator 경계를 확인하고 Grafana에서 TraceQL, span metrics, service graph를 보는 백엔드 개발자, SRE, 운영자, AI agent.
+
 ### Outcome
 
 이 가이드는 `06-observability` 계층의 Tempo 사용 맥락과 설정 확인 방법을 설명한다. Tempo는 Alloy가 전달한 OTLP trace를 수집하고, SeaweedFS S3 backend의 `tempo-bucket`에 저장하며, `metrics_generator`를 통해 span metrics와 service graphs를 Prometheus remote write endpoint로 전송한다.
@@ -30,7 +34,7 @@ next_review_at: "2027-05-13"
 - Grafana에서 TraceQL, span metrics, service graph를 확인하는 진입점을 찾는다.
 - 복구, restart, WAL 증상 분류, storage 장애 대응은 runbook으로 넘긴다.
 
-### Boundaries
+#### Boundaries
 
 - Declared parent: [Tempo Operations Policy](../../policies/07-observability/0049-tempo.md) (`POL-0049`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
@@ -51,13 +55,21 @@ next_review_at: "2027-05-13"
 - [SeaweedFS](../../../../infra/04-data/seaweedfs/README.md)에 `tempo-bucket`이 준비되어 있어야 한다.
 - [Grafana](0041-grafana.md)에 Tempo datasource URL `http://tempo:3200`이 provisioning되어 있어야 한다.
 
-### Permissions
+### Authority
 
 - Docker Secret value는 열람하지 않는다. `seaweedfs_s3_tempo_secret_key` secret ID와 file reference만 문서화한다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Compose service, Tempo config, Alloy exporter 경계를 `RUN-0049` 절차의 `rg` 명령으로 확인 | 문서에 기록 없음 | metrics_generator/Prometheus remote write 점검과 장애 대응은 `RUN-0049`로 넘긴다 |
+| 2 | Grafana `Explore`에서 `Tempo` datasource를 선택하고 `TraceQL`로 trace 조회 | 문서에 기록 없음 | metrics_generator/Prometheus remote write 점검과 장애 대응은 `RUN-0049`로 넘긴다 |
+| 3 | service graph와 span metrics가 비어 있으면 Tempo `metrics_generator`와 Prometheus remote write 상태를 runbook 기준으로 점검 | 문서에 기록 없음 | metrics_generator/Prometheus remote write 점검과 장애 대응은 `RUN-0049`로 넘긴다 |
+
+#### Actions
 
 정상 사용과 확인 절차는 아래 항목을 따른다.
 
@@ -81,7 +93,7 @@ next_review_at: "2027-05-13"
 - **Lifecycle**: trace intake를 quiesce하고, SeaweedFS owner와 함께 `tempo-bucket`의 consistent backup을 조율하며, local WAL/temp state/config를 같은 recovery point에 보존한다. 지원되는 version으로 upgrade하고 WAL replay와 historical/new trace를 검증한다.
 - **Upstream/license**: 공식 [object storage architecture](https://grafana.com/docs/tempo/latest/reference-tempo-architecture/object-storage/)와 [recommended versions](https://grafana.com/docs/tempo/latest/set-up-for-tracing/setup-tempo/recommended-versions/) 가이드를 따른다. Tempo는 AGPL-3.0 라이선스다.
 
-### Exceptions
+#### Exceptions
 
 예외와 제한 사항은 아래 항목에 정리한다.
 
@@ -89,16 +101,16 @@ next_review_at: "2027-05-13"
 
 보존 기간([POL-0048](../../policies/07-observability/0048-telemetry-retention.md)의 block 24h, compacted block 1h)이 현재 설정에서 입증되지 않은 gap과 Tempo HTTP `3200`의 승인된 LAN 게시 예외는 정책이 소유한다. [Retention enforcement gap](../../policies/07-observability/0049-tempo.md#retention-enforcement-gap)과 [Approved LAN integration boundary](../../policies/07-observability/0049-tempo.md#approved-lan-integration-boundary)를 따른다. 사람은 보호된 hostname을 쓰고, 기계 검증은 [GDE-0096](../10-platform-and-backup/0096-k8s-integration.md)을 따른다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `docker compose --profile obs ps tempo`
 - `docker logs --tail=100 tempo`
 - `docker exec tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready`
 - `rg -n 'bucket: tempo-bucket|url: http://prometheus:9090/api/v1/write' infra/06-observability/tempo/config/tempo.yaml`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - **Instrumentation 누락**: trace propagation이 끊기면 전체 요청 흐름을 볼 수 없다. 애플리케이션 공통 라이브러리나 middleware의 context 전달을 확인한다.
 - **Storage assumption**: Tempo는 SeaweedFS S3 backend와 local WAL을 함께 사용한다. WAL 삭제나 bucket 변경은 guide 범위가 아니라 runbook escalation 대상이다.
@@ -112,3 +124,7 @@ next_review_at: "2027-05-13"
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/07-observability/0049-tempo.md)
 - [Recovery runbook](../../runbooks/07-observability/0049-tempo.md)
+
+### Next Action
+
+증상이 계속되거나 점검 결과가 기대와 다르면 [RUN-0049](../../runbooks/07-observability/0049-tempo.md)의 진단, 재시작, rollback, escalation 기준을 따른다. WAL 삭제나 bucket 변경은 이 가이드 범위가 아니라 runbook escalation 대상이다.

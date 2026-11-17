@@ -1,10 +1,10 @@
 ---
 title: "01-Gateway Traefik Usage Guide"
-version: "1.2.3"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0013"
 parent_ids:
@@ -19,6 +19,10 @@ next_review_at: "2027-05-13"
 # 01-Gateway Traefik Usage Guide
 
 ## Purpose
+
+### Audience
+
+Infra/DevOps 엔지니어, 운영자, 기여자가 Traefik dashboard 라우터 하드닝과 `gateway-standard-chain` 구성요소 및 적용 범위를 이해하고 적용할 때 읽는다.
 
 ### Outcome
 
@@ -36,7 +40,7 @@ next_review_at: "2027-05-13"
 - `scripts/hardening/check-all-hardening.sh 01-gateway` 실행 가능
 - root `core` profile compose validation 실행 가능
 
-### Boundaries
+#### Boundaries
 
 - Declared parent: [01-Gateway Traefik Operations Policy](../../policies/02-gateway-and-networking/0013-traefik.md) (`POL-0013`)
 - Governing authority: [Gateway Tier Architecture Description](../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
@@ -57,13 +61,15 @@ next_review_at: "2027-05-13"
 
 구현 소스는 [infra/01-gateway/traefik/docker-compose.yml](../../../../infra/01-gateway/traefik/docker-compose.yml)이다.
 
-### Permissions
+### Authority
 
 Docker Secret `traefik_basicauth_password`, `traefik_opensearch_basicauth_password`, `traefik_prometheus_api_htpasswd`를 참조하며 값은 문서에 남기지 않는다. healthcheck는 승인된 root stack이 실행 중일 때만 쓴다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 정상 사용 절차는 아래 항목에 정리한다.
 
@@ -113,13 +119,11 @@ metrics는 host에 게시하지 않으며, OTLP는 `tempo:4317`로 전달한다.
 backend 성공을 보장하지 않는다. directory mount `/dynamic`은 file watch 대상이고,
 정적 단일 파일 변경은 [POL-0006 적용 통제](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)를 따른다.
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 별도 예외 절을 두지 않으며, 한계와 경계는 Environment와 Actions의 해당 본문과 Troubleshooting에 함께 적혀 있다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 1. 미들웨어 파일 `infra/01-gateway/traefik/dynamic/middleware.yml`에서 `req-rate-limit`, `req-retry`, `req-circuit-breaker`, `gateway-standard-chain` 블록과 실제 chain 멤버십을 따로 확인한다.
 2. 라우터 라벨(`infra/01-gateway/traefik/docker-compose.yml`)에서 dashboard 라우터에 `dashboard-auth@file,gateway-standard-chain@file`이 적용됐는지 확인한다.
@@ -129,7 +133,9 @@ backend 성공을 보장하지 않는다. directory mount `/dynamic`은 file wat
 - `bash scripts/hardening/check-all-hardening.sh 01-gateway`
 - `docker compose exec traefik traefik healthcheck --ping`은 승인된 root stack이 실행 중일 때만 사용한다.
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - `gateway-standard-chain` 이름 오타는 middleware resolve 실패로 이어진다.
 - dashboard middleware의 순서나 구분자(`,`) 오류를 확인한다.
@@ -138,3 +144,7 @@ backend 성공을 보장하지 않는다. directory mount `/dynamic`은 file wat
 #### Runbook Handoff
 
 장애 대응, 구성·private 인증서 복구, upgrade 수용 검증, prior-image rollback과 escalation은 [Runbook](../../runbooks/02-gateway-and-networking/0013-traefik.md#rollback-or-recovery)이 소유한다. 공통 변경 흐름은 [RUN-0086](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md), 여러 서비스 장애는 [RUN-0099](../../runbooks/01-common/0099-system-operations.md)로 연결한다.
+
+### Next Action
+
+장애 대응, 구성·private 인증서 복구, upgrade 수용 검증, prior-image rollback, escalation은 [Runbook](../../runbooks/02-gateway-and-networking/0013-traefik.md#rollback-or-recovery)이 소유한다.

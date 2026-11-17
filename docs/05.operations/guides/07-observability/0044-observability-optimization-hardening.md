@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Usage Guide"
-version: "1.0.9"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0044"
 parent_ids:
@@ -20,6 +20,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+`06-observability` 계층의 최적화/하드닝 변경을 적용하는 SRE, 플랫폼 운영자, DevOps 엔지니어, 관측성 유지보수자.
+
 ### Outcome
 
 이 문서는 `06-observability` 계층의 최적화/하드닝 항목을 운영자/개발자가 재현 가능하게 적용하기 위한 가이드다. gateway 체인+SSO 정렬, health 기반 의존성, 커스텀 이미지 하드닝, CI 검증 절차를 제공한다.
@@ -30,7 +34,7 @@ next_review_at: "2027-05-13"
 - 초기 기동 안정성과 회귀 차단 능력을 강화한다.
 - 카탈로그 기반 확장(샘플링/retention/pipeline module) 준비 상태를 확보한다.
 
-### Boundaries
+#### Boundaries
 
 - Declared parent: [Observability Optimization Hardening Policy](../../policies/07-observability/0044-observability-optimization-hardening.md) (`POL-0044`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
@@ -49,13 +53,24 @@ next_review_at: "2027-05-13"
 - Docker / Docker Compose 실행 환경
 - Traefik `gateway-standard-chain`과 프록시 `sso-*` middleware, Grafana·Gatus의 Keycloak 네이티브 client 준비
 
-### Permissions
+### Authority
 
 - `infra/06-observability` 및 `scripts/` 수정 권한
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 변경 전 정적 상태 점검: `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh` 실행 (service-local은 임시 validation overlay 병행) | 문서에 기록 없음 | 점검 결과가 기대와 다르면 `RUN-0044`로 넘긴다 |
+| 2 | Gateway/SSO 경계 정렬: `grafana`/`gatus`는 `gateway-standard-chain@file`, 프록시 보호 서비스는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file` 확인 | 문서에 기록 없음 | 점검 결과가 기대와 다르면 `RUN-0044`로 넘긴다 |
+| 3 | 의존성/헬스 보강: Alloy/Grafana의 `service_healthy`와 `required: false` 경계 확인, cAdvisor `/healthz`와 Prometheus scrape 결과 구분 | 문서에 기록 없음 | 점검 결과가 기대와 다르면 `RUN-0044`로 넘긴다 |
+| 4 | 커스텀 이미지 하드닝: Loki/Tempo Dockerfile의 non-root user와 entrypoint 확인, `S3_SECRET_KEY_FILE` 선검증 확인 | 문서에 기록 없음 | 변경 실행은 `RUN-0044`로 넘긴다 |
+| 5 | 자동 검증 및 CI 반영: `bash scripts/hardening/check-all-hardening.sh 06-observability` 실행, `.github/workflow-contract.yml`의 `leaf.infrastructure-hardening` gate 등록 확인 | 문서에 기록 없음 | 점검 결과가 기대와 다르면 `RUN-0044`로 넘긴다 |
+| 6 | 문서 추적성 동기화: PRD~Procedure optimization-hardening 문서 링크 점검 | 문서에 기록 없음 | 점검 결과가 기대와 다르면 `RUN-0044`로 넘긴다 |
+
+#### Actions
 
 일반 순서는 다음과 같다.
 
@@ -86,7 +101,7 @@ next_review_at: "2027-05-13"
 - **백업·복구**: 추적 중인 Compose로 다시 구성하며 service state 복구는 필요하지 않다. dashboard/rule은 해당 exporter 밖에서 보존하고 변경 전 target/series 기준값을 기록한다.
 - **공식 문서·license**: [node_exporter](https://github.com/prometheus/node_exporter)와 [cAdvisor](https://github.com/google/cadvisor)의 upstream release/security 지침을 따른다. 두 도구 모두 Apache-2.0 license가 적용된다.
 
-### Exceptions
+#### Exceptions
 
 예외와 제한 사항은 아래 항목에 정리한다.
 
@@ -102,15 +117,15 @@ next_review_at: "2027-05-13"
 - custom 이미지에 root 실행 경로를 재도입하는 실수
 - 하드닝 스크립트/README 인덱스를 함께 갱신하지 않는 실수
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
 - Service-local compose 검증은 root network/secret context 또는 임시 overlay 포함
 - `bash scripts/hardening/check-all-hardening.sh 06-observability`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 위 점검 결과가 기대와 다르면 증상별 진단, 재시작과 rollback은 [RUN-0044](../../runbooks/07-observability/0044-observability-optimization-hardening.md)으로 넘긴다.
 
@@ -121,3 +136,7 @@ next_review_at: "2027-05-13"
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/07-observability/0044-observability-optimization-hardening.md)
 - [Recovery runbook](../../runbooks/07-observability/0044-observability-optimization-hardening.md)
+
+### Next Action
+
+증상이 계속되거나 점검 결과가 기대와 다르면 [RUN-0044](../../runbooks/07-observability/0044-observability-optimization-hardening.md)의 진단, 재시작, rollback, escalation 기준을 따른다.

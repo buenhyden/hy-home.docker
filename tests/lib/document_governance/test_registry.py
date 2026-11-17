@@ -1349,7 +1349,8 @@ class DocumentRegistryTests(unittest.TestCase):
         guide = registry.profiles["guide"]
         self.assertNotIn("Runbook Handoff", guide["optional_sections"])
         self.assertIn("Procedure", guide["required_sections"])
-        self.assertIn("Troubleshooting", guide["required_subsections"]["Verification"])
+        self.assertIn("Troubleshooting", guide["required_sections"])
+        self.assertIn("Next Action", guide["required_subsections"]["Troubleshooting"])
 
     def test_conditional_frontmatter_contract_rejects_unknown_status_or_key(
         self,

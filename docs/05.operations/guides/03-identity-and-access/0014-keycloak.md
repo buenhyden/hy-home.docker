@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Keycloak Usage Guide"
-version: "1.4.2"
+version: "1.5.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0014"
 parent_ids:
@@ -20,6 +20,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+Infra/DevOps 엔지니어, 운영자, 기여자가 Keycloak 운영 구성, OIDC 발급자 계약, 로그인·로그아웃·token/session 장애 진단 기준을 확인할 때 읽는다.
+
 ### Outcome
 
 이 문서는 `02-auth`의 Keycloak 운영 구성과 OIDC 발급자 계약을 설명한다. Keycloak의 lifecycle class는 **HOME**이다. DB/관리자 시크릿 주입, hostname/proxy header, health endpoint, OAuth2 Proxy 및 native OIDC client 정합성을 구분한다. 이 문서의 구성값은 tracked source 기준이며, 이 문서의 2026-09-19 확인 범위에서 실측된 것은 OpenBao native OIDC였다. 이후 다른 앱의 날짜별 검증은 [인증 통합 Guide](0079-application-auth-integration.md)가 연결하며, 이번 감사는 로그인 실측을 반복하지 않았다. Keycloak/OAuth2 Proxy 전체 SSO 플로우는 별도 런북 증거가 필요하다.
@@ -30,7 +34,7 @@ next_review_at: "2027-05-13"
 - OAuth2 Proxy ForwardAuth와 application native OIDC client를 혼동하지 않는다.
 - 로그인, 로그아웃, token/session 장애의 진단 기준을 공식 Keycloak 동작과 tracked config에 맞춘다.
 
-### Boundaries
+#### Boundaries
 
 - Declared parent: [02-Auth Keycloak Operations Policy](../../policies/03-identity-and-access/0014-keycloak.md) (`POL-0014`)
 - Governing authority: [02-Auth Architecture Description](../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
@@ -113,13 +117,15 @@ HTTP/cache histogram과 사용자 event metrics, Alloy OTLP tracing도 선언되
 확인했다. release pin은 [Compose](../../../../infra/02-auth/keycloak/docker-compose.yml)가
 소유하며 현재 실행 버전·provider 호환성·로그인은 다시 측정하지 않았다.
 
-### Permissions
+### Authority
 
 초기 관리자는 `KEYCLOAK_ADMIN_USER`와 `KEYCLOAK_ADMIN_PASSWORD_FILE`(기본 Docker Secret `keycloak_admin_password`)을, DB는 `keycloak_db_password` secret을 쓴다. client secret은 비밀 정보로 문서에 남기지 않는다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 정상 사용 절차는 아래 항목에 정리한다.
 
@@ -131,13 +137,11 @@ HTTP/cache histogram과 사용자 event metrics, Alloy OTLP tracing도 선언되
 - `gateway SSO`: Traefik/OAuth2 Proxy가 app의 HTTP 진입점을 보호한다. app이 forwarded header를 신뢰하거나 자체 OIDC 연동을 갖춘 경우가 아니라면 app의 native role까지 부여하지는 않는다.
 - `native OIDC`: application이 Keycloak에 대해 직접 token을 검증하고 claim을 자체 role에 연결한다. OpenBao native OIDC는 별도로 검증했으며, 그 증거를 모든 app에 일반화하지 않는다.
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 별도 예외 절을 두지 않으며, 한계와 경계는 Environment와 Actions의 해당 본문과 Troubleshooting에 함께 적혀 있다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 1. Compose 설정 확인
    - `template-infra-high` 적용 여부 확인
@@ -159,7 +163,9 @@ HTTP/cache histogram과 사용자 event metrics, Alloy OTLP tracing도 선언되
    - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
    - `bash scripts/hardening/check-all-hardening.sh 02-auth`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 증상과 진단은 아래 항목에 정리한다.
 
@@ -182,3 +188,7 @@ realm export는 세션·event 등 전체 상태와 시점 일관성을 보장하
 [Runbook](../../runbooks/03-identity-and-access/0014-keycloak.md#rollback-or-recovery)이 소유한다.
 [POL-0021](../../policies/10-platform-and-backup/0021-backup-and-restore.md)의 Keycloak 파일 보존과 DB
 백업 기준을 함께 적용하며 기존 2026-09-20 미실행 복구 한계는 그대로다.
+
+### Next Action
+
+반복 실행 절차, 장애 대응, rollback, escalation은 [recovery runbook](../../runbooks/03-identity-and-access/0014-keycloak.md)을 따른다. 업그레이드·격리 migration·이전 DB와 이미지의 짝 복구는 해당 Runbook의 rollback 절이 소유한다.

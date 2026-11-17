@@ -1,10 +1,10 @@
 ---
 title: "Kafka Cluster LAB Usage Guide"
-version: "0.2.3"
+version: "0.3.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0108"
 parent_ids:
@@ -26,6 +26,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+세 broker KRaft cluster LAB의 구성, 격리 경계와 정적 검증을 이해하려는 운영자, 개발자, AI Agent가 읽는다.
+
 ### Outcome
 
 [`labs/kafka-cluster/docker-compose.yml`](../../../../labs/kafka-cluster/docker-compose.yml)은
@@ -36,8 +40,6 @@ include하지 않는다. 세 broker가 한 host를 공유하므로 host 장애 �
 
 목적: Kafka LAB의 구성, 격리 경계와 정적 검증을 현재 Compose와 맞춰 이해한다. HOME의
 단일 broker는 [GDE-0036](../06-messaging-and-cdc/0036-kafka.md)이 다룬다.
-
-### Boundaries
 
 #### Traceability
 
@@ -83,13 +85,13 @@ include하지 않는다. 세 broker가 한 host를 공유하므로 host 장애 �
   connector 예시, 복제 role provisioning SQL과 secret renderer는 제거했으며 Git 이력이 보존한다.
   Connect 상태(`_connect-*` topic)는 broker에 있고 별도 data volume이 없다.
 
-### Permissions
+### Authority
 
 이 LAB은 host port, HOME `kafka_net`, secret을 연결하지 않으며 connector 등록은 운영자 승인 단계다.
 
 ## Procedure
 
-### Actions
+### Steps
 
 #### Operator input
 
@@ -118,18 +120,18 @@ HOME 단일 broker와 초기화·exporter·UI를 유지하고 Schema Registry와
 현행 구조 결정의 변경을 승인받고 [POL-0107](../../policies/15-labs/0107-lab-promotion.md)의
 별도 Task 절차를 따른다.
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 정확한 profile, 세 data 경로의 분리, internal network, 서로 다른 cluster ID와 limit을 render로
 확인한다. 정적 통과는 configuration 증거일 뿐이다.
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - render가 `set a unique LAB KRaft cluster ID`로 실패하면 `LAB_KAFKA_CLUSTER_ID`가 없다.
 - render가 `set isolated LAB data root`로 실패하면 `LAB_DATA_DIR`이 없다.
@@ -138,3 +140,7 @@ HOME 단일 broker와 초기화·exporter·UI를 유지하고 Schema Registry와
 #### Runbook Handoff
 
 정적 점검, 기동·정지와 복구 계획은 [RUN-0108](../../runbooks/15-labs/0108-kafka-cluster.md)을 따른다.
+
+### Next Action
+
+증상이 계속되면 [RUN-0108](../../runbooks/15-labs/0108-kafka-cluster.md)를 따른다. broker가 healthy가 되지 않으면 이 runbook의 진단으로 넘긴다.

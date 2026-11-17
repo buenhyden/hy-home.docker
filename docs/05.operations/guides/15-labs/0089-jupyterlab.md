@@ -1,10 +1,10 @@
 ---
 title: "JupyterLab Usage Guide"
-version: "1.1.3"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0089"
 parent_ids:
@@ -20,6 +20,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+JupyterLab LAB을 쓰는 노트북 사용자와 운영자가 접근 경로, 작업 파일 보존, MLflow 연동의 현재 한계를 이해하고 점검할 때 읽는다.
+
 ### Outcome
 
 JupyterLab은 root Compose에서 분리된 독립 LAB `labs/jupyterlab/docker-compose.yml`의 single-user notebook
@@ -27,8 +31,6 @@ server이며 LAB profile `jupyterlab`으로 선택된다(SPEC-0262). root `data-
 MLflow와 그 provisioner만 선택하고 JupyterLab을 선택하지 않는다.
 
 JupyterLab LAB을 쓰는 노트북 사용자와 운영자를 위한 문서다. 접근 경로, 작업 파일 보존, MLflow 연동의 현재 한계를 이해하고 정상 사용과 점검 방법을 찾는 것이 목표다.
-
-### Boundaries
 
 #### Traceability
 
@@ -65,13 +67,13 @@ JupyterLab LAB을 쓰는 노트북 사용자와 운영자를 위한 문서다. �
   mount되고 group은 `LAB_SECRETS_GID`다. 값은 복사되지 않았으므로 운영자가 token의 LAB 사본을
   별도 승인 아래 준비해야 한다(미결정 항목).
 
-### Permissions
+### Authority
 
 server에는 `jupyter_token` secret(LAB 전용 `lab_jupyterlab_<purpose>`)이 필요하고 그 LAB 사본 준비는 별도 승인 대상이다. `LAB_HOST_BIND_IP`를 loopback 밖으로 바꾸려면 별도 보안 검토가 필요하다.
 
 ## Procedure
 
-### Actions
+### Steps
 
 #### Access paths and isolation
 
@@ -111,26 +113,28 @@ Dockerfile의 base 날짜와 직접 library pin은 정확한 Lab·Server·Python
 transitive dependency를 증명하지 않는다. 새 build와 rollback 전에 resolved 이미지·
 의존성을 확인한다.
 
-### Exceptions
-
 #### 소스 검토의 한계
 
 여기서 설명한 네트워크와 port는 선언상 경로다. 실제 peer 연결·인터넷 공개·사용자 인증·
 복구 성공을 이번 문서 작업에서 시험하지 않았다. 현재 선언의 제한을 해소하는 구현 변경은
 별도 승인·보안 검토·검증이 필요하다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `docker compose --env-file labs/.env -f labs/jupyterlab/docker-compose.yml --profile jupyterlab config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 - 승인된 런타임 검사에서 token 없는 요청과 잘못된 token의 거부를 각각 확인한다. health의
   `/api` 응답은 인증·kernel 증거가 아니다.
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 #### Runbook Handoff
 
 token, 시작, kernel, restore 문제에는
 [runbook](../../runbooks/15-labs/0089-jupyterlab.md)을 사용한다.
+
+### Next Action
+
+증상이 계속되면 [RUN-0089](../../runbooks/15-labs/0089-jupyterlab.md)를 따른다. token, 시작, kernel, restore 문제를 다룬다.

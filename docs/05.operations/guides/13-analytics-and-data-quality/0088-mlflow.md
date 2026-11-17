@@ -1,10 +1,10 @@
 ---
 title: "MLflow Usage Guide"
-version: "1.0.9"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0088"
 parent_ids:
@@ -21,14 +21,16 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+MLflow tracking server를 쓰는 MLOps·데이터 과학 운영자가 선택 방법, 인증 경계, artifact 처리 방식을 확인할 때 읽는다.
+
 ### Outcome
 
 MLflow는 `mlops` 또는 `data-science`가 선택하는 OPTIONAL experiment tracking
 server이다. HOME 선택에 들어 있지 않으며, 추가하려면 별도로 활성화를 결정해야 한다.
 
 MLflow tracking server를 쓰는 MLOps·데이터 과학 운영자를 위한 문서다. 선택 방법, 인증 경계, artifact 처리 방식을 이해하고 정상 사용과 점검 방법을 찾는 것이 목표다.
-
-### Boundaries
 
 #### Traceability
 
@@ -63,13 +65,13 @@ MLflow tracking server를 쓰는 MLOps·데이터 과학 운영자를 위한 문
 - 공유 `mng-pg-init` job은 더 이상 MLflow object를 생성하지 않고 MLflow
   secret도 읽지 않으므로 `core`/`mng`/`dev`/`local`은 이것들 없이 시작한다.
 
-### Permissions
+### Authority
 
 별도 접근 승인은 기록하지 않는다. job 재활성화에는 측정한 메모리 예산과 승인이 필요하고(Actions), 인증·권한 변경은 owner 승인과 보안 검토가 필요하다(Exceptions).
 
 ## Procedure
 
-### Actions
+### Steps
 
 #### Sizing
 
@@ -100,8 +102,6 @@ SSO 없이 route를 열지 않는다.
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/13-analytics-and-data-quality/0088-mlflow.md)의 `Tracking 데이터와 변경 전 검토` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-### Exceptions
-
 #### 소스 검토의 한계
 
 여기서 설명한 네트워크는 선언상 연결 가능한 경로다. 실제 peer 연결·인터넷 공개·
@@ -121,15 +121,15 @@ health는 DB 복구·artifact round-trip·사용자 인가를 증명하지 않�
 자동 복구하지 않는다. 빌드의 직접 라이브러리 pin은 모든 transitive dependency를
 고정하지 않으며 서버와 helper의 버전·자원 설정은 각 Compose/build 원본이 소유한다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `HYHOME_COMPOSE_PROFILES="mlops data-science" bash scripts/validation/validate-docker-compose.sh`
 - `python3 -m unittest tests.validation.test_compose_baseline_gates`
 - `docker compose --profile core --profile mlops ps mlflow mlflow-db-provision`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - `mlflow`가 시작하지 않으면 `mlflow-db-provision`과 `seaweedfs-buckets` 종료 코드를 먼저 본다. 서버는 두 작업이 성공해야 시작한다.
 - 직접 SDK 요청이 거부되면 Host header가 `MLFLOW_ALLOWED_HOSTS`와 일치하는지 확인한다.
@@ -139,3 +139,7 @@ health는 DB 복구·artifact round-trip·사용자 인가를 증명하지 않�
 
 provisioning 실패, credential 회전, restore, upgrade에는
 [runbook](../../runbooks/13-analytics-and-data-quality/0088-mlflow.md)을 사용한다.
+
+### Next Action
+
+provisioning 실패, credential 회전, restore, upgrade는 [runbook](../../runbooks/13-analytics-and-data-quality/0088-mlflow.md)을 따른다. 인증·권한 변경은 owner 승인과 보안 검토가 필요하다.

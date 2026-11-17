@@ -1,10 +1,10 @@
 ---
 title: "Admin and Experiment Tools Hardening Usage Guide"
-version: "1.3.2"
+version: "1.4.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0074"
 parent_ids:
@@ -16,6 +16,10 @@ next_review_at: "2027-05-13"
 # Admin and Experiment Tools Hardening Usage Guide
 
 ## Purpose
+
+### Audience
+
+Platform SRE, DevOps Engineer, Security Reviewer가 관리·실험 도구(dozzle, redisinsight, open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 적용할 때 읽는다.
 
 ### Outcome
 
@@ -32,7 +36,7 @@ open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가�
 - open-notebook UI route를 승인된 allowlist+large-body+앱 비밀번호 경계로 보호하고 secret-file 주입을 유지한다.
 - 하드닝 회귀를 script와 CI로 일찍 막는다.
 
-### Boundaries
+#### Boundaries
 
 - 상위 문서: [Admin and Experiment Tools Hardening Operations Policy](../../policies/10-platform-and-backup/0074-laboratory-optimization-hardening.md) (`POL-0074`)
 - 설계 근거: [Administration and Experimentation Architecture Description](../../../02.architecture/descriptions/0011-laboratory-architecture.md) (`AD-0011`)
@@ -52,17 +56,17 @@ open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가�
 - Docker와 Docker Compose 실행 환경
 - Traefik middleware(`gateway-standard-chain`, `sso-errors`, `sso-auth`) 준비
 
-### Permissions
+### Authority
 
 - 변경 대상 Data·Observability·AI·Analytics 패키지의 수정 권한
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md)의 `Steps` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
-
-### Exceptions
 
 #### 흔한 실수
 
@@ -72,16 +76,16 @@ open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가�
 - 문서 링크와 README 인덱스 동기화를 빠뜨린다.
 - service-local standalone compose render를 root readiness 증거로 오해한다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `bash scripts/hardening/check-all-hardening.sh 04-data 06-observability 08-ai 12-analytics`
 - `HYHOME_COMPOSE_PROFILES=admin,notebook bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 scripts/validation/check-document-links.py --mode traceability`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 위 Expected Result가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md)의 절차로 진단한다.
 
@@ -90,3 +94,7 @@ open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가�
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md)을 따른다.
 
 - [Recovery runbook](../../runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md)
+
+### Next Action
+
+증상이 계속되면 [recovery runbook](../../runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md)(`RUN-0074`)의 진단, rollback, escalation 기준을 따른다.

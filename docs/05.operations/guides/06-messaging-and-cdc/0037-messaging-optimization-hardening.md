@@ -1,6 +1,6 @@
 ---
 title: "05-Messaging Optimization Hardening Usage Guide"
-version: "1.2.3"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -17,13 +17,17 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+Kafka family 구성을 바꾸고 그 hardening 상태를 검증하는 운영자. 정적 확인이 증명하는 것과 증명하지 못하는 것을 구분할 때 읽는다.
+
 ### Outcome
 
 이 가이드는 05-messaging 계층의 hardening 점검 범위를 설명한다. 현재 messaging surface는 Kafka 전용이며 OPTIONAL이다.
 
 대상 독자는 Kafka family 구성을 바꾸고 그 hardening 상태를 검증하는 운영자다. 목표는 정적 확인으로 무엇을 증명하고 무엇을 증명하지 못하는지 구분하는 것이다. 정확한 명령은 [RUN-0037](../../runbooks/06-messaging-and-cdc/0037-messaging-optimization-hardening.md#steps)이 소유한다.
 
-### Boundaries
+#### Boundaries
 
 - Artifact: `GDE-0037`; 거버넌스 정책: `POL-0037`.
 - Runtime authority: `infra/05-messaging/kafka/docker-compose.yml`(root include)과 `scripts/hardening/check-all-hardening.sh`.
@@ -41,13 +45,15 @@ root-rendered Kafka family, Kafbat native OIDC, persistence, health, 리소스,
 네트워크 exposure를 검증한다. PLAINTEXT broker listener가 안전하다거나 동일
 host의 세 LAB broker(`labs/kafka-cluster`)가 host 가용성을 제공한다고 주장하지 않는다.
 
-### Permissions
+### Authority
 
 secret은 `kafbat_client_secret` 이름으로만 다룬다. TLS/SASL, credential 회전, topic 변경, 서비스 재시작 같은 runtime 보안 검증에는 별도로 승인된 테스트가 필요하다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 정상 사용과 확인 절차는 아래 항목을 따른다.
 
@@ -77,19 +83,23 @@ static 성공은 runtime health, 인증 흐름, 성능, 데이터 내구성, res
 TLS/SASL, credential 회전, topic 변경, 서비스 재시작 같은 runtime 보안
 작업에는 명시된 계획과 rollback이 필요하다.
 
-### Exceptions
+#### Exceptions
 
 static 검사가 증명하지 않는 항목(host 가용성, TLS/SASL 등)은 Actions의 `Source-backed checks`에 기술되어 있다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - root `messaging` render, LAB `lab-kafka` render, `bash scripts/hardening/check-all-hardening.sh 05-messaging`. 명령 순서는 RUN-0037이 소유한다.
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - render 실패: root network·secret·`extends` 템플릿 누락 여부를 root에서 같은 profile로 재현한다. LAB render는 `LAB_DATA_DIR`와 `LAB_KAFKA_CLUSTER_ID`가 필요하다.
 - `check-all-hardening.sh 05-messaging` 실패: 보고된 service의 leaf Compose나 공유 템플릿을 고치고 [RUN-0037](../../runbooks/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)을 따른다. runtime 장애는 [RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md)으로 넘긴다.
 
 - [Domain catalog](../../README.md)
+
+### Next Action
+
+hardening 확인 실패는 [RUN-0037](../../runbooks/06-messaging-and-cdc/0037-messaging-optimization-hardening.md)을 따르고, runtime 장애는 [RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md)으로 넘긴다.

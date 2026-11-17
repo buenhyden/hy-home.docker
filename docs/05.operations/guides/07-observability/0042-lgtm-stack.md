@@ -1,10 +1,10 @@
 ---
 title: "LGTM Stack Usage Guide"
-version: "1.1.2"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0042"
 created: "2026-03-25"
@@ -14,6 +14,10 @@ next_review_at: "2027-05-13"
 # LGTM Stack Usage Guide
 
 ## Purpose
+
+### Audience
+
+개발자, 운영자, SRE, AI Agent. `06-observability` tier의 service role, data path, storage 경계를 파악하고 Grafana 탐색 시 확인할 datasource와 backend를 연결할 때 읽는다.
 
 ### Outcome
 
@@ -25,7 +29,7 @@ next_review_at: "2027-05-13"
 - Grafana에서 metrics/logs/traces/profiles/alerts를 탐색할 때 어떤 datasource와 backend를 확인해야 하는지 연결한다.
 - 개별 서비스 장애 대응은 service별 runbook으로 넘긴다.
 
-### Boundaries
+#### Boundaries
 
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 - Subject peers: 없음. 번호 `0042`를 공유하는 Policy나 Runbook은 없다.
@@ -48,14 +52,24 @@ next_review_at: "2027-05-13"
 
 - Secret 값은 문서, 로그, task evidence에 기록하지 않는다.
 
-### Permissions
+### Authority
 
 - `infra/06-observability/docker-compose.yml`과 service README를 읽을 수 있는 권한.
 - Grafana UI `https://grafana.${DEFAULT_URL}` 접근 권한.
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Tier service inventory를 Common Checks의 첫 `rg` 명령으로 확인한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 2 | Data path를 기준으로 각 component 역할을 확인한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 3 | Grafana datasource wiring을 Common Checks의 명령으로 확인한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 4 | Storage와 retention boundary를 `rg`로 확인한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 5 | 서비스별 문서로 이동한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+
+#### Actions
 
 일반 순서는 다음과 같다.
 
@@ -98,7 +112,7 @@ next_review_at: "2027-05-13"
    - Gatus: availability probe
    - Dozzle: admin 로그 조회
 
-### Exceptions
+#### Exceptions
 
 예외와 제한 사항은 아래 항목에 정리한다.
 
@@ -110,9 +124,7 @@ next_review_at: "2027-05-13"
 - **Secret evidence**: SeaweedFS, Grafana, Alertmanager, Prometheus secret 값은 기록하지 않는다.
 - **Runbook scope**: 이 stack guide는 복구 절차가 아니다. 장애 대응은 service별 runbook을 따른다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 확인 항목과 기대 결과는 아래와 같다.
 
@@ -123,7 +135,9 @@ next_review_at: "2027-05-13"
 - `rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml`
 - `bash scripts/validation/validate-docker-compose.sh`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 위 점검 결과가 기대와 다르면 증상별 진단, 재시작과 rollback은 [RUN-0045](../../runbooks/07-observability/0045-prometheus.md)으로 넘긴다.
 
@@ -133,3 +147,7 @@ stack 전체를 다루는 runbook은 없다. 반복 실행 절차와 장애 대�
 
 - [Operations index](../../README.md)
 - [Runbook index](../../README.md)
+
+### Next Action
+
+stack 전체를 다루는 runbook은 없다. 서비스별 runbook(Prometheus [RUN-0045](../../runbooks/07-observability/0045-prometheus.md) 등)을 따른다.

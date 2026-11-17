@@ -1,10 +1,10 @@
 ---
 title: "Shared Storybook Usage Guide"
-version: "1.2.7"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0101"
 parent_ids:
@@ -21,13 +21,15 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+공유 Storybook과 문서 MCP를 운영하거나 다른 워크스페이스에서 소비하는 운영자와 개발자가 빌드, 접근 경로, 소비 워크스페이스 설정과 점검을 수행할 때 읽는다.
+
 ### Outcome
 
 공유 Storybook은 `projects/storybook/nextjs`의 UI story와 문서를 읽기 전용 정적 origin(`storybook`)과 문서 MCP(`storybook-mcp`)로 제공하는 선택형 `experience` 서비스다. HOME 기본 선택에는 포함되지 않는다.
 
 공유 Storybook과 문서 MCP를 운영하거나 다른 워크스페이스에서 소비하는 운영자와 개발자를 위한 문서다. 빌드, 접근 경로, 소비 워크스페이스 설정과 점검 방법을 이해하는 것이 목표다.
-
-### Boundaries
 
 #### Traceability
 
@@ -80,13 +82,28 @@ HTML이 200으로 오지 않는다. 브라우저 탐색은 302를 따라 Keycloa
 Keycloak을 쓰는 격리 rehearsal(`HYHOME_STORYBOOK_REHEARSAL=1`)이 검사한다.
 HOME DNS/TLS와 실제 관리자 세션은 별도 관찰 대상이다.
 
-### Permissions
+### Authority
 
 브라우저와 문서 MCP 모두 Keycloak `/admins` 그룹이 필요하다. Keycloak scope와 client 생성은 RUN-0014 절차와 별도 승인을 따른다. 클라이언트 기기의 CA 신뢰와 hosts 수정에는 sudo 또는 관리자 권한이 필요하다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Keycloak 준비(운영자): `hy-home.realm`에 client scope `storybook-mcp`를 만든다 | Audience mapper와 `groups` Group Membership mapper가 설정된 optional scope | 문서에 기록 없음 |
+| 2 | Keycloak 준비(운영자): client `storybook-mcp-client`를 public client로 만든다 | Standard flow와 PKCE `S256`, 두 redirect URI, optional scope `storybook-mcp`가 설정된 client | 문서에 기록 없음 |
+| 3 | Keycloak 준비(운영자): 읽기 권한을 `/admins` 그룹으로 둔다 | `/admins` 그룹이 읽기 권한을 가진다 | 다른 검토자 그룹은 POL-0101 예외 절차를 따른다 |
+| 4 | 소비 워크스페이스 연결 확인: 클라이언트 기기에서 `/.well-known/oauth-protected-resource/mcp`를 확인한다 | 200과 `"resource": "https://storybook-mcp.hy.home.arpa/mcp"` | 이름 해석이나 인증서 오류면 클라이언트 기기 조건부터 맞춘다 |
+| 5 | 소비 워크스페이스 연결 확인: project 설정을 넣고 Claude Code는 `/mcp`, Codex는 `codex mcp login hyhome_storybook`으로 `/admins` 계정 로그인한다 | 브라우저 로그인 완료 | 4단계 결과 해석의 redirect URI와 callback 항목을 따른다 |
+| 6 | 소비 워크스페이스 연결 확인: `docs-list`를 호출하고 `docs-show`로 문서 하나를 연다 | 문서 목록이 오고 문서 하나가 열린다 | 7단계의 결과 해석을 따른다 |
+| 7 | 소비 워크스페이스 연결 확인: 결과를 읽는다 | 문서에 기록 없음 | 401은 `storybook-mcp` scope 요청 확인, 403 `insufficient_scope`는 `/admins` 그룹 확인, 그 밖의 오류는 해당 항목의 조치를 따른다 |
+| 8 | 소비 워크스페이스 연결 확인: 확인한 날짜, 워크스페이스, 클라이언트 종류와 결과만 해당 Spec Task에 남긴다 | 결과(성공, 401, 403)가 Task에 기록된다 | 문서에 기록 없음 |
+| 9 | Claude Design 전달: Claude Design에서 동기화된 토큰과 컴포넌트로 화면을 설계한다 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 10 | Claude Design 전달: 결과를 Claude Code로 hand off하고 `packages/ui`를 바꾼다 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 11 | Claude Design 전달: 상태별 story와 play 함수로 동작을 고정하고 `npm run coverage`를 실행한다 | 상호작용/a11y 시험 통과 | 문서에 기록 없음 |
+| 12 | Claude Design 전달: PR 검토와 병합 후 image를 그 커밋으로 다시 빌드하고 bundle을 다시 내보낸다 | 문서에 기록 없음 | 문서에 기록 없음 |
 
 #### 코드 재사용과 문서
 
@@ -325,13 +342,11 @@ bundle은 `projects/storybook/nextjs/design-export.allowlist.json`이 이름 붙
 계정 권한의 증거가 아니다. 공무원 학습·언어 앱의 미승인 기획을 이 Storybook의
 업무 화면이나 음성 원본으로 추가하지 않는다.
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 저장소 root에서 공개 예제 환경으로 선택형 서비스 선언만 정적 확인한다.
 
@@ -345,7 +360,9 @@ Claude Design 계정 연동을 증명하지 않는다. image와 격리 인증 �
 [RUN-0101](../../runbooks/14-design-system/0101-storybook.md)의 `storybook_image.py`와 rehearsal이 맡는다. 해당 증거와 승인 경계는
 [RUN-0101](../../runbooks/14-design-system/0101-storybook.md)과 승인된 운영 Task에서 구분한다.
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - 브라우저가 Storybook 내용 대신 Keycloak으로 302를 받으면 정상이다. 로그인 뒤 403이면 계정이 `/admins` 그룹에 없다.
 - 문서 MCP의 401·403·redirect URI·metadata discovery 오류는 위 [소비 워크스페이스 연결 확인](#소비-워크스페이스-연결-확인)의 결과 해석을 따른다.
@@ -357,3 +374,7 @@ Claude Design 계정 연동을 증명하지 않는다. image와 격리 인증 �
 [RUN-0101](../../runbooks/14-design-system/0101-storybook.md)을 따른다. 운영 follow-up 소유자는
 GDE/POL/RUN-0101이며 trigger는 HOME route 활성화, 검토자 그룹 승인, 원격 MCP
 OIDC 승인, 외부 디자인 계정 사용 승인 또는 DNS/TLS 관찰 요청이다.
+
+### Next Action
+
+증상이 계속되면 [RUN-0101](../../runbooks/14-design-system/0101-storybook.md)의 이미지 빌드, 격리 HTTP 검사, HOME 실행 사전 점검과 rollback 순서를 따른다. 운영 follow-up 소유자는 GDE/POL/RUN-0101이며, Keycloak scope와 client 변경은 RUN-0014 절차와 별도 승인을 따른다.

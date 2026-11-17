@@ -1,6 +1,6 @@
 ---
 title: "CouchDB Usage Guide"
-version: "2.1.7"
+version: "2.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -17,6 +17,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+3노드 CouchDB LAB의 HTTP API, cluster-init job, secret 기반 설정을 사용하고 점검하는 운영자, 개발자, AI Agent가 읽는다.
+
 ### Outcome
 
 이 문서는 [CouchDB Compose 구현](../../../../labs/couchdb/docker-compose.yml)의 3노드 클러스터 사용 기준을 설명한다. `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`는 정확히 `couchdb` profile과 선언된 network에서 동작한다. frozen classification은 `LAB`이며 세 노드는 한 Docker host에 있으므로 host-level HA가 아니다.
@@ -24,8 +28,6 @@ next_review_at: "2027-05-13"
 대상 독자: 운영자, 개발자, AI Agent.
 
 목적: CouchDB HTTP API, cluster-init job, 독립 LAB network, Docker Secret 기반 admin/cookie 설정을 현재 compose 이름과 맞춰 사용할 수 있게 한다.
-
-### Boundaries
 
 #### Traceability
 
@@ -64,13 +66,13 @@ next_review_at: "2027-05-13"
 | Backup·upgrade | replication을 우선한다. file backup은 쓰기를 멈춘 일관된 상태에서 생성해야 한다. 격리된 restore evidence를 확보한 후에만 upstream upgrade 순서를 따른다. |
 | License·edition | Apache CouchDB source에는 Apache-2.0이 적용되며 상용 clustering 기능을 가정하지 않는다. |
 
-### Permissions
+### Authority
 
 secret은 `lab_couchdb_password`와 `lab_couchdb_cookie`이며 승인된 credential custody와 비공개 실제 TTY가 필요하다. 상태 점검은 별도 승인 후 client의 native password prompt로 수행한다.
 
 ## Procedure
 
-### Actions
+### Steps
 
 #### Identity-specific behavior
 
@@ -95,19 +97,19 @@ couchdb-1/2/3 는 각각 NODENAME/IP/bind data 가 다르며 common cookie/admin
 
 별도 승인 후 상태 점검은 LAB Compose 렌더링, 클러스터/init job 상태, `couchdb-1` 내부 client의 native password prompt를 통한 `_up` 및 `_membership` 확인으로 구성된다. 현재 독립 network는 HOME Traefik과 연결되지 않으므로 label의 route와 sticky cookie는 동작 경로가 아니다. 직접 host port publish도 없다. 실행 가능한 명령 순서와 기대 결과는 [CouchDB runbook](../../runbooks/15-labs/0026-couchdb.md#steps)을 따른다.
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/couchdb/docker-compose.yml --profile couchdb config --quiet`
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/couchdb/docker-compose.yml logs couchdb-cluster-init`
 - `_membership` 확인은 [CouchDB runbook의 private TTY/native-prompt 절차](../../runbooks/15-labs/0026-couchdb.md#steps)를 따른다. Password를 URL·argv·환경 변수·history·로그에 넣지 않으며 custody/TTY가 없으면 중단한다.
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - 서비스명은 `couchdb-1`, `couchdb-2`, `couchdb-3`이다. 예전 node-style 이름을 현재 서비스명처럼 사용하지 않는다.
 - Erlang cookie는 legacy shared-secret env var가 아니라 `/run/secrets/lab_couchdb_cookie`에서 읽어 `ERL_FLAGS`에 주입된다.
@@ -117,3 +119,7 @@ couchdb-1/2/3 는 각각 NODENAME/IP/bind data 가 다르며 common cookie/admin
 #### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [CouchDB runbook](../../runbooks/15-labs/0026-couchdb.md)을 따른다.
+
+### Next Action
+
+증상이 계속되면 [RUN-0026](../../runbooks/15-labs/0026-couchdb.md)를 따른다. 클러스터 init이 반복 실패하면 재조인 절차를 임의로 실행하기 전에 runbook evidence를 남긴다.

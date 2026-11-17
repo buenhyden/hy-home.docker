@@ -1,10 +1,10 @@
 ---
 title: "Ollama Usage Guide"
-version: "2.0.11"
+version: "2.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0056"
 parent_ids:
@@ -20,6 +20,10 @@ next_review_at: "2027-05-13"
 # Ollama Usage Guide
 
 ## Purpose
+
+### Audience
+
+Ollama 모델 운용, API/CLI/exporter 점검, HOME 소비자(Open Notebook 등) 연동 준비를 맡는 AI Engineer, 개발자, 운영자, agent 튜닝 담당자.
 
 ### Outcome
 
@@ -38,7 +42,7 @@ next_review_at: "2027-05-13"
 - API/CLI/관측(Exporter) 경로를 일관된 방식으로 점검한다.
 - Open Notebook 등 HOME 소비자 연동 전에 필요한 추론 계층 준비 상태를 확보한다.
 
-### Boundaries
+#### Boundaries
 
 - Declared parent: [Ollama Operations Policy](../../policies/09-ai-and-search/0056-ollama.md) (`POL-0056`)
 - Governing authority: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
@@ -65,13 +69,21 @@ next_review_at: "2027-05-13"
   - Host API: `127.0.0.1:${OLLAMA_HOST_PORT:-11434}`; container API: `ollama:${OLLAMA_PORT:-11434}`
   - Exporter: `OLLAMA_EXPORTER_PORT`는 연결한 Compose와 공개 `.env.example`이 소유한다. 내부 지표 listener이며 모델 추론을 중계하지 않는다.
 
-### Permissions
+### Authority
 
 모델 변경(`ollama pull` 등)은 Ollama Operations Policy가 요구하는 승인된 local/dev rehearsal 뒤에만 실행한다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | HOME 소비자(Open Notebook 등)가 `http://ollama:${OLLAMA_PORT:-11434}`를 가리키는지 확인 | 문서에 기록 없음 | 모델 미노출 시 `ollama` health/log를 먼저 확인하고 `RUN-0056`로 넘긴다 |
+| 2 | 소비자 화면이나 API에서 모델 목록이 정상 조회되는지 확인 | 모델 목록이 정상 조회된다 | 모델 미노출 시 `ollama` health/log를 먼저 확인하고 `RUN-0056`로 넘긴다 |
+| 3 | 모델이 보이지 않으면 `ollama` health/log를 먼저 확인 | 문서에 기록 없음 | `RUN-0056`으로 넘긴다 |
+
+#### Actions
 
 정상 사용과 확인 절차는 아래 항목을 따른다.
 
@@ -170,7 +182,7 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 
 모델 blob은 백업하지 않는다. 대신 `models/manifests`와 `models/manifests-v2`를 restic state set으로 백업해 모델별 digest 목록을 남긴다. 잃어버린 뒤에는 모델을 이름으로 다시 받고, 받은 digest를 복원한 manifest와 비교한다. upstream tag가 바뀌었으면 여기서 드러난다. 격리 시험에서는 manifest 목록만으로 같은 5개 모델과 digest가 보였다. 다시 받는 과정 자체는 시험하지 않았다. `gemma4:e2b-mlx`는 MLX 형식이라 이 CUDA 호스트에서 쓰이지 않는다.
 
-### Exceptions
+#### Exceptions
 
 예외와 제한 사항은 아래 항목에 정리한다.
 
@@ -178,9 +190,7 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 
 `ollama`/`ollama-exporter`는 `ai`/`ai-llm`/`ollama`가 선택하는 HOME이다. 모델·추론은 Ollama가 소유하고 병렬·loaded-model·queue 설정은 context 크기와 공유 GPU 메모리와 함께 평가한다. 한도는 실측 여유가 아니며 과부하 요청은 실패할 수 있다. Exporter는 Ollama health 뒤 내부 model 목록·실행 모델·VRAM metric을 제공한다. Model volume, Docker Secret, 사용자 route나 독립 복구 상태는 없고 추론 proxy 또는 token throughput 증거도 아니다. Maintainer tag는 확인했으나 버전 일치 소스는 확보하지 못했으므로 Compose·maintainer 설명을 넘는 동작을 단정하지 않는다. Upgrade에는 metric 호환성과 제한된 추론 검증이 필요하다. 모델 삭제·download·driver 변경은 기존 승인·출처 및 [GPU 복구](../../runbooks/09-ai-and-search/0055-gpu-recovery.md) 경계를 따른다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - 직접 API는 호스트 loopback에서만 접근한다. HOME 소비자와 exporter는 `ollama` 서비스 DNS로 통신하며, 원격 접근은 인증된 gateway 경로를 사용한다. 기존 LAN 직접 API 소비자는 설정 적용 전에 전환해야 한다.
 
@@ -188,7 +198,9 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 - `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`
 - Runtime approval 후 `ai` profile을 선택한 상태에서 `docker compose exec ollama ollama list`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - **GPU 미인식**: 컨테이너는 실행되지만 CPU 추론으로 강등됨.
 - **VRAM OOM**: 대형 모델 동시 로드 시 응답 실패/지연.
@@ -202,3 +214,7 @@ docker compose exec ollama-exporter sh -lc 'wget -q -O- "http://localhost:${OLLA
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/09-ai-and-search/0056-ollama.md)
 - [Recovery runbook](../../runbooks/09-ai-and-search/0056-ollama.md)
+
+### Next Action
+
+증상이 계속되거나 점검 결과가 기대와 다르면 [RUN-0056](../../runbooks/09-ai-and-search/0056-ollama.md)의 진단, 재시작, rollback, escalation 기준을 따른다. GPU 유지보수는 [RUN-0055](../../runbooks/09-ai-and-search/0055-gpu-recovery.md)가 맡는다.

@@ -1,10 +1,10 @@
 ---
 title: "Dozzle Usage Guide"
-version: "1.2.2"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0072"
 parent_ids:
@@ -20,13 +20,17 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+컨테이너 로그를 조회하거나 Dozzle 구성을 바꾸는 운영자.
+
 ### Outcome
 
 이 가이드는 OPTIONAL admin 로그 뷰어 Dozzle의 구성, 인증 경계, 일반 사용 방법을 설명한다. `admin`과 `admin-logs` profile에서만 선택된다.
 
 대상 독자는 컨테이너 로그를 조회하거나 Dozzle 구성을 바꾸는 운영자다. 목표는 Dozzle이 로그 아카이브가 아니라는 점, Docker socket과 OIDC 경계가 어디에 있는지 이해하고 안전하게 조회하는 것이다. 장애와 복구 절차는 [RUN-0072](../../runbooks/07-observability/0072-dozzle.md)가 소유한다.
 
-### Boundaries
+#### Boundaries
 
 - [Policy](../../policies/07-observability/0072-dozzle.md) (`POL-0072`)
 - [Runbook](../../runbooks/07-observability/0072-dozzle.md) (`RUN-0072`)
@@ -65,13 +69,15 @@ Dozzle은 `admin`과 `admin-logs` 하위의 OPTIONAL admin 로그 뷰어이다. 
 - `/data`는 설정을 영속화한다. CA 파일은 issuer 신뢰를 지원한다. health 명령은
   OIDC, socket 인가, 로그 커버리지가 아니라 Dozzle 프로세스 health만 증명한다.
 
-### Permissions
+### Authority
 
 Dozzle은 Keycloak 네이티브 OIDC(`dozzle_client_secret`, 선택 시 `DOZZLE_CLIENT_SECRET_FILE`)와 `dozzle-admin-ip`/`ADMIN_UI_ALLOWED_CIDRS` 허용목록 뒤에 있다. 승인된 사용·설정 복구·업그레이드는 RUN-0072를 따르고 TLS/OIDC secret 변경은 공통 인증 소유자와 조정한다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 정상 사용과 확인 절차는 아래 항목을 따른다.
 
@@ -83,18 +89,18 @@ Dozzle은 Keycloak 네이티브 OIDC(`dozzle_client_secret`, 선택 시 `DOZZLE_
 socket 준비는 따로 확인한다. 자원 상한은 선언된 템플릿을 따르며 로그 지연과 CPU·메모리
 증가를 함께 관찰한다. TLS/OIDC secret 변경은 공통 인증 소유자와 조정한다.
 
-### Exceptions
+#### Exceptions
 
 Docker socket 위험(`:ro`여도 API 메서드를 제한하지 않음)과 socket proxy 미선언은 Environment의 `현재 구현과 위험`에 기술되어 있다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `docker compose --profile admin-logs config --quiet`
 - `bash scripts/hardening/check-all-hardening.sh 06-observability`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 위 점검 결과가 기대와 다르면 증상별 진단, 재시작과 rollback은 [RUN-0072](../../runbooks/07-observability/0072-dozzle.md)으로 넘긴다.
 
@@ -102,3 +108,7 @@ Docker socket 위험(`:ro`여도 API 메서드를 제한하지 않음)과 socket
 
 OIDC, socket, 로그 스트림, 설정, 업그레이드 복구에는
 [runbook](../../runbooks/07-observability/0072-dozzle.md)을 사용한다. 사용·설정 보존·업그레이드 순서는 런북의 `Settings recovery and upgrade`와 `승인된 사용` 절차를 따르며, 데이터와 권한 경계는 [정책](../../policies/07-observability/0072-dozzle.md)을 유지한다.
+
+### Next Action
+
+증상이 계속되거나 점검 결과가 기대와 다르면 [RUN-0072](../../runbooks/07-observability/0072-dozzle.md)의 진단, 재시작, rollback, escalation 기준을 따른다. OIDC, socket, 로그 스트림, 설정, 업그레이드 복구도 같은 runbook을 쓰며, TLS/OIDC secret 변경은 공통 인증 소유자와 조정한다.

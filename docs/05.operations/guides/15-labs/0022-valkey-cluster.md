@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster Usage Guide"
-version: "2.0.5"
+version: "2.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0022"
 parent_ids:
@@ -17,6 +17,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+LAB 전용 six-node Valkey Cluster의 구성, 노출, 영속성, 백업·복원 경계를 이해하려는 운영자, 개발자, AI Agent가 읽는다.
+
 ### Outcome
 
 이 가이드는 선택적 six-node Valkey Cluster 실습을 설명한다. 모든 node가 Docker host 하나를 공유하므로 M0021은 모든 service를 **LAB**으로 분류한다. 이 cluster는 HOME workflow broker가 아니며 독립 LAB에서만 실행된다.
@@ -24,8 +28,6 @@ next_review_at: "2027-05-13"
 대상 독자: 운영자, 개발자, AI Agent.
 
 목적: LAB 전용 six-node Valkey Cluster의 구성, 노출, 영속성, 백업·복원 경계를 현재 Compose와 맞춰 이해한다. HOME의 Airflow와 n8n은 이 cluster가 아니라 `mng-valkey`를 사용한다.
-
-### Boundaries
 
 #### Traceability
 
@@ -58,13 +60,13 @@ node-local cluster identity이다. resource limit과 health check는 공유
 Compose template에서 오며 선택하기 전에 렌더링된 LAB configuration에서
 점검해야 한다.
 
-### Permissions
+### Authority
 
 profile 시작·test key 쓰기·membership 변경·node 중지는 별도로 승인된 task가 필요하다. secret은 `lab_valkey_password`와 승인된 `labs/.env`다.
 
 ## Procedure
 
-### Actions
+### Steps
 
 #### Identity-specific behavior
 
@@ -124,8 +126,6 @@ BSD 3-Clause license를 사용하며, client와 image는 자체 license를 유�
 - [Valkey security](https://valkey.io/topics/security/)
 - [Valkey license](https://github.com/valkey-io/valkey/blob/unstable/COPYING)
 
-### Exceptions
-
 #### Backup, restore and upgrade boundary
 
 [RUN-0022](../../runbooks/15-labs/0022-valkey-cluster.md)를 사용한다. 사용 가능한
@@ -140,14 +140,18 @@ link를 검증하고, cutover 전에 key count/application read를 비교한다.
 upgrade는 release note, client 호환성, rollback을 포함한 별도 계획을
 따른다. 이 가이드는 in-place major jump를 승인하지 않는다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 정확한 LAB profile, service, health/resource control, writable-state
 ownership, secret reference, exposure, engine별 recovery boundary를 확인한다.
 static pass는 configuration 증거일 뿐이다. runtime과 restore는 별개로 남는다.
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 증상별 진단과 복구 절차는 Boundaries의 Related Documents에 연결된 runbook을 따른다.
+
+### Next Action
+
+증상이 계속되면 [RUN-0022](../../runbooks/15-labs/0022-valkey-cluster.md)를 따른다. 증상별 진단과 복구 절차는 이 runbook이 소유한다.

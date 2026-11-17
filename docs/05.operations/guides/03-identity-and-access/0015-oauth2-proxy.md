@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Usage Guide"
-version: "1.4.2"
+version: "1.5.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0015"
 parent_ids:
@@ -19,6 +19,10 @@ next_review_at: "2027-05-13"
 # 02-Auth OAuth2 Proxy Usage Guide
 
 ## Purpose
+
+### Audience
+
+Infra/DevOps 엔지니어, 운영자, 기여자가 OAuth2 Proxy를 Traefik `ForwardAuth` 표준으로 운영하고 신규 서비스의 gateway SSO를 연동할 때 읽는다.
 
 ### Outcome
 
@@ -40,7 +44,7 @@ next_review_at: "2027-05-13"
   `Dockerfile`/`docker-entrypoint.sh` 대안 모두 `mng_valkey_password`를 사용한다.
   이미지 선택은 기존 `OAUTH2_PROXY_DOCKERFILE` 구성에 따른다.
 
-### Boundaries
+#### Boundaries
 
 - Declared parent: [02-Auth OAuth2 Proxy Operations Policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md) (`POL-0015`)
 - Governing authority: [02-Auth Architecture Description](../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
@@ -122,13 +126,15 @@ Proxy의 cfg와 CA는 읽기 전용, 세션은 외부 Valkey가 소유한다. Pr
 | Client secret 파일 | `OAUTH2_PROXY_CLIENT_SECRET_FILE`, 기본 `/run/secrets/oauth2_proxy_client_secret`; OpenBao 소비 시 `/run/openbao/oauth2-proxy` 아래 Agent 출력(미지정 시 원복). `${DEFAULT_SECURITY_DIR}/openbao/out/oauth2-proxy`가 없으면 기동하지 않음 | compose 환경 설정/volume |
 | Metrics | `OAUTH2_PROXY_METRICS_ADDRESS=10.250.43.2:44180`(`oauth2_proxy_metrics_net`의 고정 주소), route 없음 | compose 환경 설정 |
 
-### Permissions
+### Authority
 
 SSO route는 Keycloak `/admins` group 구성원만 통과한다. client ID는 `OAUTH2_PROXY_CLIENT_ID`, client secret은 `OAUTH2_PROXY_CLIENT_SECRET_FILE`(기본 `/run/secrets/oauth2_proxy_client_secret`), 저장소 password는 `OAUTH2_PROXY_REDIS_PASSWORD`로 전달하며 값은 문서에 남기지 않는다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 cookie·session 구분은 아래에 정리한다.
 
@@ -138,7 +144,7 @@ OAuth2 Proxy는 browser cookie로 사용자를 추적한다. `session_store_type
 
 The tracked config requests `openid email profile offline_access groups`, uses PKCE `S256`, passes authorization/access-token headers, and enables `set_xauthrequest`. Proxy 자체의 헤더 생성과 실제 전달은 다르다. 현재 Traefik `sso-auth`는 사용자·이메일·preferred username만 전달하며 Authorization/access token은 전달하지 않는다. gateway SSO는 앱 RBAC를 대신하지 않는다.
 
-### Exceptions
+#### Exceptions
 
 특수 사례와 한계는 아래 항목에 정리한다.
 
@@ -146,9 +152,7 @@ The tracked config requests `openid email profile offline_access groups`, uses P
 
 공식 OAuth2 Proxy endpoint 문서에 따르면 `/oauth2/sign_out`은 OAuth2 Proxy cookie만 삭제한다. 사용자는 여전히 Keycloak에 로그인된 상태일 수 있으며 즉시 다시 로그인될 수도 있다. Keycloak SSO logout에는 허용된 `rd` 목적지와 일치하는 whitelist 설정을 사용하여 provider end-session endpoint로 redirect하는 과정이 필요하다. 현재 추적되는 설정은 `OAUTH2_PROXY_WHITELIST_DOMAINS=.${DEFAULT_URL}`을 지정하지만, 모든 서비스의 logout 버튼이 Keycloak end-session redirect를 호출한다는 증거는 아니다. 현재 logout이 Keycloak SSO까지 종료한다고 일괄적으로 주장하지 않는다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 1. Compose 런타임 계약 확인
    - `template-infra-readonly-med` 사용
@@ -166,7 +170,9 @@ The tracked config requests `openid email profile offline_access groups`, uses P
    - `bash scripts/hardening/check-all-hardening.sh 02-auth`
    - `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 증상과 진단은 아래 항목에 정리한다.
 
@@ -190,3 +196,7 @@ Valkey 세션과 cookie/client/저장소 자격 증명은 서로 다른 복구 �
 세션 손실은 업무 DB 복구 대신 명시적 재로그인이 기본이며, 기존 2026-09-20 미실행
 복구 한계는 [Runbook](../../runbooks/03-identity-and-access/0015-oauth2-proxy.md#rollback-or-recovery)에 남긴다.
 이미지 변경·PKCE·logout·session 만료 검증과 helper 기동/중지는 같은 Runbook이 소유한다.
+
+### Next Action
+
+반복 실행 절차, 장애 대응, rollback, escalation은 [recovery runbook](../../runbooks/03-identity-and-access/0015-oauth2-proxy.md)을 따른다. 이미지 변경, PKCE, logout, session 만료 검증과 helper 기동/중지도 같은 Runbook이 소유한다.

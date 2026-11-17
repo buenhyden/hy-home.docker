@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Cluster LAB Usage Guide"
-version: "0.1.3"
+version: "0.2.0"
 type: "operation/guide"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0109"
 parent_ids:
@@ -23,6 +23,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+세 node OpenSearch cluster와 Dashboards LAB의 구성, 인증서·secret·network 경계와 정적 검증을 이해하려는 운영자, 개발자, AI Agent가 읽는다.
+
 ### Outcome
 
 [`labs/opensearch-cluster/docker-compose.yml`](../../../../labs/opensearch-cluster/docker-compose.yml)은
@@ -33,8 +37,6 @@ next_review_at: "2027-05-13"
 
 목적: OpenSearch LAB의 구성, 인증서·secret·network 경계와 정적 검증을 현재 Compose와
 맞춰 이해한다. HOME 단일 node는 [GDE-0019](../05-databases-and-storage/0019-opensearch.md)가 다룬다.
-
-### Boundaries
 
 #### Traceability
 
@@ -80,13 +82,13 @@ next_review_at: "2027-05-13"
   [공통 template](../../../../infra/common-optimizations.yml)이 소유한다.
 - host disk가 OpenSearch high watermark(90%)를 넘으면 security index를 배치하지 못한다.
 
-### Permissions
+### Authority
 
 실제 secret·인증서는 문서에 적지 않으며 합성 경로로만 render한다. LAB secret 사본 LAB-012부터 LAB-015는 승격되지 않았다.
 
 ## Procedure
 
-### Actions
+### Steps
 
 #### Operator input
 
@@ -117,18 +119,18 @@ Dashboards가 남아 있다. [promotion manifest](../../../../labs/opensearch-cl
 검토하려면 현행 구조 결정의 변경을 승인받고 [POL-0107](../../policies/15-labs/0107-lab-promotion.md)의
 별도 Task 절차를 따른다. LAB secret 사본 LAB-012부터 LAB-015는 LAB에 남는다.
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 profile, 네 data 경로, internal network, 읽기 전용 인증서 mount, secret 경로가
 `secrets/labs/opensearch-cluster/` 아래인지 render로 확인한다. 정적 통과는 configuration 증거일 뿐이다.
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - render가 `set isolated LAB certificate directory`로 실패하면 `LAB_OPENSEARCH_CERT_DIR`가 없다.
 - node가 서로를 거부하면 인증서 subject와 `nodes_dn`을 확인한다.
@@ -137,3 +139,7 @@ profile, 네 data 경로, internal network, 읽기 전용 인증서 mount, secre
 #### Runbook Handoff
 
 정적 점검, 기동·정지, 진단과 복구 계획은 [RUN-0109](../../runbooks/15-labs/0109-opensearch-cluster.md)를 따른다.
+
+### Next Action
+
+증상이 계속되면 [RUN-0109](../../runbooks/15-labs/0109-opensearch-cluster.md)를 따른다. 진단과 복구 계획도 이 runbook이 맡는다.

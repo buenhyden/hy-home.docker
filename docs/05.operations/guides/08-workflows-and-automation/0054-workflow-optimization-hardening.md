@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Usage Guide"
-version: "1.1.9"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0054"
 parent_ids:
@@ -16,6 +16,10 @@ next_review_at: "2027-05-13"
 # 07-Workflow Optimization Hardening Usage Guide
 
 ## Purpose
+
+### Audience
+
+`07-workflow` 계층의 최적화/하드닝 변경을 적용하는 SRE/플랫폼 운영자, DevOps 엔지니어, workflow 유지보수자.
 
 ### Outcome
 
@@ -34,7 +38,7 @@ next_review_at: "2027-05-13"
 - workflow 하드닝 회귀를 script/CI로 조기 차단한다.
 - 카탈로그 확장 항목의 운영 기준(Airflow/n8n)을 문서화한다.
 
-### Boundaries
+#### Boundaries
 
 - Declared parent: [07-Workflow Optimization Hardening Operations Policy](../../policies/08-workflows-and-automation/0054-workflow-optimization-hardening.md) (`POL-0054`)
 - Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
@@ -53,13 +57,24 @@ next_review_at: "2027-05-13"
 - Docker / Docker Compose 실행 환경
 - Traefik middleware(`gateway-standard-chain`, `sso-errors`, `sso-auth`) 준비
 
-### Permissions
+### Authority
 
 - `infra/07-workflow` 수정 권한
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 정적 구성 점검: Common Checks의 Compose 검증 실행 (service-local compose는 root network/secrets context 없이 단독 `config` 대상으로 쓰지 않음) | 문서에 기록 없음 | 변경과 복구는 `RUN-0054`로 넘긴다 |
+| 2 | Gateway/SSO 경계 정렬: Airflow는 `gateway-standard-chain@file`과 native Keycloak SSO, Flower는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`, n8n은 `gateway-standard-chain@file`만 사용하도록 확인 | 문서에 기록 없음 | 변경/복구는 `RUN-0054`로 넘긴다 |
+| 3 | Health 기반 의존성 강화: shared `mng-valkey` broker dependency 경계 문서화, n8n worker/task-runner healthcheck와 task-runner dependency gating 확인 | 문서에 기록 없음 | 변경과 복구는 `RUN-0054`로 넘긴다 |
+| 4 | n8n 이미지 하드닝 확인: custom image 사용, 선택된 Dockerfile의 `USER`와 entrypoint guard 확인 | 문서에 기록 없음 | 변경과 복구는 `RUN-0054`로 넘긴다 |
+| 5 | 기준선 검증 실행: hardening, template, traceability 검사 | 문서에 기록 없음 | 변경과 복구는 `RUN-0054`로 넘긴다 |
+| 6 | 카탈로그 확장 운영 기준 반영: Airflow DAG quality gate/worker autoscale, n8n Git backup/OpenBao credential 기준을 정책 문서에 반영하고 미구현 workflow service 문서를 active operations chain에서 제거 | 문서에 기록 없음 | 변경과 복구는 `RUN-0054`로 넘긴다 |
+
+#### Actions
 
 정상 사용과 확인 절차는 아래 항목을 따른다.
 
@@ -83,7 +98,7 @@ next_review_at: "2027-05-13"
    - n8n workflow Git backup/OpenBao credential 기준을 정책 문서에 반영한다.
    - 미구현 workflow service 문서는 active operations chain에서 제거한다.
 
-### Exceptions
+#### Exceptions
 
 예외와 제한 사항은 아래 항목에 정리한다.
 
@@ -91,9 +106,7 @@ next_review_at: "2027-05-13"
 
 정적 게이트의 한계는 [정책의 Static gate boundary](../../policies/08-workflows-and-automation/0054-workflow-optimization-hardening.md#static-gate-boundary)를 따른다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 확인 항목과 기대 결과는 아래와 같다.
 
@@ -105,7 +118,9 @@ next_review_at: "2027-05-13"
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 scripts/validation/check-document-links.py --mode traceability`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - 일부 라우터에만 SSO 체인을 적용하는 실수
 - worker/task-runner healthcheck 없이 startup 불안정을 방치하는 실수
@@ -119,3 +134,7 @@ next_review_at: "2027-05-13"
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/08-workflows-and-automation/0054-workflow-optimization-hardening.md)
 - [Recovery runbook](../../runbooks/08-workflows-and-automation/0054-workflow-optimization-hardening.md)
+
+### Next Action
+
+증상이 계속되거나 점검 결과가 기대와 다르면 [RUN-0054](../../runbooks/08-workflows-and-automation/0054-workflow-optimization-hardening.md)의 진단, 재시작, rollback, escalation 기준을 따른다.

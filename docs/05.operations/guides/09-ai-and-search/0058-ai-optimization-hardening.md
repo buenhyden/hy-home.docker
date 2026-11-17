@@ -1,10 +1,10 @@
 ---
 title: "08-AI Optimization Hardening Usage Guide"
-version: "1.0.6"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0058"
 parent_ids:
@@ -16,6 +16,10 @@ next_review_at: "2027-05-13"
 # 08-AI Optimization Hardening Usage Guide
 
 ## Purpose
+
+### Audience
+
+`08-ai` 계층의 최적화/하드닝 변경을 적용하는 SRE/Platform Operator, DevOps Engineer, AI Platform Owner.
 
 ### Outcome
 
@@ -35,7 +39,7 @@ next_review_at: "2027-05-13"
 - AI 하드닝 회귀를 script/CI로 조기 차단한다.
 - 카탈로그 확장 항목(모델 승격/접근 분리/로그 정책)을 운영 기준으로 반영한다.
 
-### Boundaries
+#### Boundaries
 
 - Declared parent: [08-AI Optimization Hardening Operations Policy](../../policies/09-ai-and-search/0058-ai-optimization-hardening.md) (`POL-0058`)
 - Governing authority: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
@@ -55,13 +59,23 @@ next_review_at: "2027-05-13"
 - Docker / Docker Compose 실행 환경
 - Traefik middleware(`gateway-standard-chain`, `sso-errors`, `sso-auth`) 준비
 
-### Permissions
+### Authority
 
 - `infra/08-ai` 수정 권한
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | `bash scripts/hardening/check-all-hardening.sh 08-ai`와 `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`로 정적 구성을 점검한다. | Expected Results의 Common Checks가 통과한다. | 문서에 기록 없음 |
+| 2 | Ollama proxy route가 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`을 유지하는지, Open WebUI LAB에 route가 없고 `LAB_HOST_BIND_IP` 게시와 `home-openwebui` native OIDC 설정이 있는지 확인한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 3 | `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE` 상한을 확인/조정한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 4 | LAB Compose가 `template-stateful-med`와 `lab_open_webui_net`만 사용하는지 확인한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 5 | `ollama-exporter`가 `ollama` `service_healthy`에 의존하고 metrics healthcheck가 `http://localhost:${OLLAMA_EXPORTER_PORT:-8000}/metrics`를 확인하는지 점검한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 6 | `bash scripts/validation/check-template-security-baseline.sh`와 `python3 scripts/validation/check-document-links.py --mode traceability`로 기준선을 검증한다. | Expected Results의 Common Checks가 통과한다. | 문서에 기록 없음 |
+| 7 | 카탈로그 확장 운영 기준(모델 승격 절차, Open WebUI 모델 접근 권한 분리, 대화 로그 보존/마스킹)을 tasks/operations에 반영한다. | 문서에 기록 없음 | 문서에 기록 없음 |
 
 #### 사용 절차
 
@@ -90,15 +104,11 @@ next_review_at: "2027-05-13"
    - Open WebUI 모델 접근 권한 분리 기준을 반영한다.
    - 대화 로그 보존/마스킹 정책을 반영한다.
 
-### Exceptions
-
 #### Control evidence boundary
 
 AI hardening은 일부 소스 문자열만 검사하며 GPU 여유, 사용자별 모델 권한, chat 보존·삭제, password 거부와 추론 성공을 증명하지 않는다. 모델 승격, 역할·환경별 접근 분리, 대화 masking/retention 요구는 유지한다. 소스에는 자동 chat retention과 완성된 모델 접근 분리를 입증할 설정이 부족하다. @buenhyden의 별도 통제·구현 변경과 검증 전에는 준수를 주장하지 않는다. 근거를 채우려고 비공개 대화를 로그에 남기지 않는다. ComfyUI 영속성과 Crawl4AI 격리는 각 Runbook의 통제를 따른다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 #### Common Checks
 
@@ -107,7 +117,9 @@ AI hardening은 일부 소스 문자열만 검사하며 GPU 여유, 사용자별
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 scripts/validation/check-document-links.py --mode traceability`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - Open WebUI LAB에 gateway route를 다시 붙이거나 Ollama에서 proxy auth를 누락하는 실수
 - Ollama 상한 없이 고동시성 부하를 허용해 GPU OOM을 유발하는 실수
@@ -119,3 +131,7 @@ AI hardening은 일부 소스 문자열만 검사하며 GPU 여유, 사용자별
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [recovery runbook](../../runbooks/09-ai-and-search/0058-ai-optimization-hardening.md)을 따른다.
 
 - [Recovery runbook](../../runbooks/09-ai-and-search/0058-ai-optimization-hardening.md)
+
+### Next Action
+
+증상이 계속되면 [recovery runbook](../../runbooks/09-ai-and-search/0058-ai-optimization-hardening.md)의 장애 대응, rollback, escalation 기준을 따른다. 소스에 없는 chat retention과 모델 접근 분리는 `@buenhyden`의 별도 통제·구현 변경과 검증이 필요하다.

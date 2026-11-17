@@ -1,6 +1,6 @@
 ---
 title: "Prometheus Usage Guide"
-version: "1.6.3"
+version: "1.7.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -22,6 +22,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+Prometheus compose service, scrape config, alert rule, TSDB 경계를 확인하거나 새 scrape target과 alert rule을 검토하는 운영자, SRE, 개발자, AI agent.
+
 ### Outcome
 
 이 가이드는 `06-observability` 계층의 Prometheus 사용 맥락과 설정 확인 방법을 설명한다. Prometheus는 `PROMETHEUS_CONFIG_FILE`이 고른 config(Compose 기본값 `prometheus.dev.yml`, 같은 내용의 `prometheus.yml`)를 `/etc/prometheus/prometheus.yml`로 마운트해 그 scrape job을 기준으로 metrics를 수집하고, `config/alert_rules/`의 rule files를 평가하며, `prometheus-data` TSDB volume에 데이터를 저장한다.
@@ -32,7 +36,7 @@ next_review_at: "2027-05-13"
 - 새 scrape target이나 alert rule을 검토할 때 확인할 파일과 검증 명령을 찾는다.
 - 반복 실행, reload, restart, TSDB 증상 분류는 연결된 runbook으로 넘긴다.
 
-### Boundaries
+#### Boundaries
 
 - Declared parent: [Prometheus Operations Policy](../../policies/07-observability/0045-prometheus.md) (`POL-0045`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
@@ -46,13 +50,22 @@ next_review_at: "2027-05-13"
 
 실행 환경은 `obs` profile의 `prometheus` container와 `infra/06-observability/prometheus/config/` 아래 config다.
 
-### Permissions
+### Authority
 
 Repository checkout과 `infra/06-observability/docker-compose.yml`, `infra/06-observability/prometheus/config/` 아래 config를 읽을 권한이 필요하다. 실행 중인 서비스를 볼 때는 `obs` profile과 `prometheus` container에 대한 읽기 전용 점검 권한이면 충분하다. Docker Secret 값은 열람하지 않고, 문서에는 secret ID와 file reference만 적는다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Compose service 경계, scrape job, rule file 경계를 Common Checks의 명령으로 확인 | 문서에 기록 없음 | reload, restart, scrape 장애, TSDB 증상은 `RUN-0045`로 넘긴다 |
+| 2 | config나 rule을 바꾸기 전후에 `promtool`로 검증 (명령은 `RUN-0045` 절차가 소유) | 문서에 기록 없음 | 검증하지 않은 rule은 reload 시 evaluation failure로 이어질 수 있다; 복구는 `RUN-0045`로 넘긴다 |
+| 3 | Prometheus UI `Targets` page나 API로 target 상태 확인 (route `https://prometheus.${DEFAULT_URL}`, 내부 health `http://localhost:9090/-/healthy`) | 문서에 기록 없음 | reload, restart, scrape 장애, TSDB 증상은 `RUN-0045`로 넘긴다 |
+| 4 | reload, restart, scrape 장애 대응, TSDB 증상 분류가 필요하면 runbook으로 이동 | 문서에 기록 없음 | reload, restart, scrape 장애, TSDB 증상은 `RUN-0045`로 넘긴다 |
+
+#### Actions
 
 정상 사용과 확인 절차는 아래 항목을 따른다.
 
@@ -227,7 +240,7 @@ Keycloak application listener와 다르며, 기본값이 `9000`이라는 선언�
 - **Lifecycle**: `--web.enable-lifecycle`과 remote-write receiver는 활성화되어 있지만 `--web.enable-admin-api`는 아니다. 따라서 online snapshot endpoint를 처방하지 않는다. 승인된 stopped consistent copy/storage snapshot을 사용하거나 admin-API design을 별도로 승인하고 검증한다. TSDB 호환성을 검토하며 upgrade하고 WAL replay, query, rule, alert, remote-write를 검증한다.
 - **Upstream/license**: 공식 [Prometheus storage and backup](https://prometheus.io/docs/prometheus/latest/storage/) 가이드를 따른다. Prometheus는 Apache-2.0 라이선스다.
 
-### Exceptions
+#### Exceptions
 
 예외와 제한 사항은 아래 항목에 정리한다.
 
@@ -239,9 +252,7 @@ Keycloak application listener와 다르며, 기본값이 `9000`이라는 선언�
 
 `PROMETHEUS_CONFIG_FILE`이 마운트 파일을 선택하며 Compose 기본값은 `prometheus.dev.yml`이다. 두 tracked config의 job은 현재 동일하다. Retention flag가 없어 선언 버전의 15d 기본값이 적용되며 무기한 보존을 약속하지 않는다. Admin snapshot API는 비활성 상태다. 일관된 정지 TSDB 백업은 [RUN-0045](../../runbooks/07-observability/0045-prometheus.md)와 백업 소유자 절차를 따른다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 확인 항목과 기대 결과는 아래와 같다.
 
@@ -255,7 +266,9 @@ Keycloak application listener와 다르며, 기본값이 `9000`이라는 선언�
 
 Rule glob은 container 안의 shell이 확장해야 한다. Config 검사는 참조된 credential file도 읽으므로 staged `openbao_token`이 준비되지 않으면 멈출 수 있다. 이때 rule 문법 증거는 container 안의 rule 검사로 따로 얻는다.
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - Prometheus restart 명령에서 profile과 compose file을 생략하면 다른 project context에서 실행될 수 있다. 운영 절차는 runbook의 profile 포함 명령을 따른다.
 - High-cardinality label을 추가하면 TSDB memory와 query cost가 커진다. label 추가는 policy의 cardinality review 대상이다.
@@ -269,3 +282,7 @@ Rule glob은 container 안의 shell이 확장해야 한다. Config 검사는 참
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/07-observability/0045-prometheus.md)
 - [Recovery runbook](../../runbooks/07-observability/0045-prometheus.md)
+
+### Next Action
+
+증상이 계속되거나 점검 결과가 기대와 다르면 [RUN-0045](../../runbooks/07-observability/0045-prometheus.md)의 진단, 재시작, rollback, escalation 기준을 따른다. 이 가이드는 복구, WAL/TSDB 조치, rollback 판단을 직접 다루지 않는다.

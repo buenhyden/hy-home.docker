@@ -1,10 +1,10 @@
 ---
 title: "Edge Routing Stack Operations"
-version: "1.4.2"
+version: "1.5.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0012"
 created: "2026-07-06"
@@ -14,6 +14,10 @@ next_review_at: "2027-05-13"
 # Edge Routing Stack Operations
 
 ## Purpose
+
+### Audience
+
+Infrastructure Operator, Backend Developer, Contributor가 `01-gateway` 티어의 Traefik edge router 초기 설정을 검증할 때 읽는다.
 
 ### Outcome
 
@@ -28,7 +32,7 @@ next_review_at: "2027-05-13"
 - 승인된 secret owner가 준비한 기존 credential과 참조가 있어야 한다. 생성·회전은 이 Guide의 검증 절차에 포함하지 않는다.
 - `DEFAULT_CERT_DIR`(`.env.example` 기본값 `${DEFAULT_DOCKER_PROJECT_PATH}/secrets/certs`)에 `cert.pem`, `key.pem`, `rootCA.pem`이 있어야 한다.
 
-### Boundaries
+#### Boundaries
 
 - Governing authority: [Gateway Tier Architecture Description](../../../02.architecture/descriptions/0001-gateway-architecture.md) (`AD-0001`)
 - Subject peers: none — `0012` 번호를 공유하는 Policy나 Runbook이 없다.
@@ -44,13 +48,21 @@ next_review_at: "2027-05-13"
 
 root [docker-compose.yml](../../../../docker-compose.yml)은 `infra/01-gateway/traefik/docker-compose.yml`을 include하고 flow-scoped network와 external network contract를 선언한다. Traefik은 `${HOST_LAN_BIND_IP}`의 80/443을 게시하며 OAuth2 Proxy·Keycloak 인증 경로를 ForwardAuth로 참조한다.
 
-### Permissions
+### Authority
 
 승인된 secret owner가 준비한 기존 credential과 참조가 필요하며 생성·회전은 이 Guide에 포함하지 않는다. `DEFAULT_CERT_DIR`의 `cert.pem`, `key.pem`, `rootCA.pem`이 있어야 하고, runtime 증거는 승인 후에만 확인한다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | `Configure Traefik`: `infra/01-gateway/traefik/config/traefik.yml`을 검토한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 2 | `Configure Traefik`: `infra/01-gateway/traefik/dynamic/`의 dynamic configuration(`middleware.yml`, `tls.yaml`, `blog-export.yml`, `hermes.yml`, `hermes-webhook.yml`)이 존재하는지 확인한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 3 | `Configure Traefik`: `tls.yaml`이 container 경로 `/certs/cert.pem`, `/certs/key.pem`을 기본 인증서로, `/openbao-ca/ca.pem`을 `openbao-tls` serversTransport CA로 가리키는지 확인한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+
+#### Actions
 
 정상 사용 절차는 아래 항목에 정리한다.
 
@@ -60,13 +72,11 @@ root [docker-compose.yml](../../../../docker-compose.yml)은 `infra/01-gateway/t
 2. `infra/01-gateway/traefik/dynamic/`의 dynamic configuration(`middleware.yml`, `tls.yaml`, `blog-export.yml`, `hermes.yml`, `hermes-webhook.yml`)이 존재하는지 확인한다.
 3. `tls.yaml`이 container 경로 `/certs/cert.pem`, `/certs/key.pem`을 기본 인증서로, `/openbao-ca/ca.pem`을 `openbao-tls` serversTransport CA로 가리키는지 확인한다.
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 별도 예외 절을 두지 않으며, 한계와 경계는 Environment와 Actions의 해당 본문과 Troubleshooting에 함께 적혀 있다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 network를 임의로 만들지 않고 root validator와 하드닝 검사로 static 증거를 얻는다.
 
@@ -81,7 +91,9 @@ runtime start/stop/reload action은 이 가이드의 범위가 아니다. Traefi
 명시되어 있다. 정적 검증만으로 이 한계가 해소되거나 인증·복구가 성공한 것은 아니다.
 시스템 영향과 profile 공통 의미는 [System Guide](../01-common/0099-system-operations.md)를 따른다.
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - **Cert Name Mismatch**: `DEFAULT_CERT_DIR`에 `cert.pem`, `key.pem`, `rootCA.pem` 파일명이 정확히 있는지 확인한다. bind는 `create_host_path: false`라 파일이 없으면 기동이 실패한다.
 - **Port Conflicts**: 호스트에서 port 80과 443을 사용할 수 있어야 한다.
@@ -91,3 +103,7 @@ runtime start/stop/reload action은 이 가이드의 범위가 아니다. Traefi
 #### Runbook Handoff
 
 runtime recovery는 [Traefik runbook](../../runbooks/02-gateway-and-networking/0013-traefik.md)이 처리한다.
+
+### Next Action
+
+runtime recovery는 [Traefik runbook](../../runbooks/02-gateway-and-networking/0013-traefik.md)으로 넘긴다.
