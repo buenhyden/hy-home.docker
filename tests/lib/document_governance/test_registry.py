@@ -209,6 +209,42 @@ class DocumentRegistryTests(unittest.TestCase):
             {finding.code for finding in validate_registry(historical)},
         )
 
+    def test_generation_8_places_new_packages_and_keeps_the_recorded_form(
+        self,
+    ) -> None:
+        raw = json.loads(DEFAULT_REGISTRY.read_text(encoding="utf-8"))
+        common = raw["common"]
+        self.assertEqual(8, common["lifecycle_generation"])
+        packages = common["package_generations"]
+        self.assertEqual(7, packages["recorded_generation"])
+        self.assertEqual(271, packages["first_package"])
+        self.assertEqual({"spec", "plan", "task"}, set(packages["recorded_sections"]))
+        self.assertEqual((), validate_registry(raw))
+
+        def broken(change) -> set[str]:
+            candidate = json.loads(json.dumps(raw))
+            change(candidate["common"])
+            return {finding.code for finding in validate_registry(candidate)}
+
+        def missing(common) -> None:
+            del common["package_generations"]
+
+        def other_recorded(common) -> None:
+            common["package_generations"]["recorded_generation"] = 6
+
+        def short_columns(common) -> None:
+            common["package_generations"]["core_columns"]["evidence_columns"].pop()
+
+        def wrong_recorded_form(common) -> None:
+            common["package_generations"]["recorded_sections"]["plan"][
+                "required_sections"
+            ].remove("Risks")
+
+        # The recorded generation 7 form is pinned like the common columns.
+        for change in (missing, other_recorded, short_columns, wrong_recorded_form):
+            with self.subTest(change=change.__name__):
+                self.assertIn("common-contract-invalid", broken(change))
+
     def test_additional_operation_patterns_preserve_flat_route_and_reject_overlap(
         self,
     ) -> None:

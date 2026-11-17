@@ -444,11 +444,11 @@ class TemplateDefinitionTests(unittest.TestCase):
             ):
                 load_registry(path)
         raw = copy.deepcopy(dict(load_registry_document()))
-        del raw["common"]["table_column_definitions"]["Resolves"]
+        del raw["common"]["table_column_definitions"]["Purpose"]
         registry = _registry_from_document(raw, pathlib.PurePosixPath("registry.json"))
         # An unbound role reads its columns from the dictionary.
-        with self.assertRaisesRegex(RegistryError, "Resolves"):
-            template_definition(registry, "sdlc/task")
+        with self.assertRaisesRegex(RegistryError, "Purpose"):
+            template_definition(registry, "common/readme")
 
     def _common_form_roles(self, registry) -> list[str]:
         return [
@@ -812,6 +812,9 @@ class RoleDesignConformanceTests(unittest.TestCase):
             ("governance/provider-index", "stage-readme"),
         ):
             self.assertEqual(core_role, bound.get(template_id), template_id)
+        self.assertEqual("spec", bound.get("sdlc/spec"))
+        self.assertEqual("plan", bound.get("sdlc/plan"))
+        self.assertEqual("task", bound.get("sdlc/task"))
         self.assertEqual([], role_design_contract_findings(self.registry))
 
     def test_a_runbook_steps_table_reads_the_core_columns(self) -> None:

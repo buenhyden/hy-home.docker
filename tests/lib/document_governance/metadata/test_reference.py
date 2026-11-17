@@ -710,9 +710,9 @@ Exercise one controlled in-progress Task.
 
 ## Work Breakdown
 
-| Work Unit | Criteria | Work | Dependencies | Task | Verification |
-| --- | --- | --- | --- | --- | --- |
-| W1 | 1 | Validate detached Evidence. | None | TSK-0001 | Metadata contracts. |
+| Work Unit | Outcome | Depends On | Owner | Write Scope | Acceptance | Checks |
+| --- | --- | --- | --- | --- | --- | --- |
+| W1 | Validate detached Evidence. | None | TSK-0001 | docs/03.specs | 1 | Metadata contracts. |
 
 ## Verification Plan
 
@@ -786,9 +786,9 @@ No blocker or decision is recorded.
 
 ### Results
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Baseline | 1 | W1 | Fixture control | synthetic | NOT_RUN | This Task | required | - |
+| Evidence ID | Criteria | Work Unit | Method | Input | Tool and Config | Command | Exit | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Baseline | 1 | W1 | observation | synthetic | - | Fixture control | - | NOT_RUN | This Task | true | - |
 
 ### Resolution Links
 
@@ -798,9 +798,9 @@ No resolution is recorded.
 
 ### Criterion Decisions
 
-| Criterion | Acceptance | Evidence | Decision | Current Owner |
-| --- | --- | --- | --- | --- |
-| 1 | pending | - | - | [Spec](../spec.md) |
+| Criterion | Intent | Acceptance | Evidence | Decision | Accepted By | Current Owner | Reassigned To |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | undecided | pending | - | - | - | [Spec](../spec.md) | - |
 
 ### Remaining Conditions
 
@@ -952,8 +952,8 @@ This synthetic fixture names no next owner.
                 source.replace(
                     marker,
                     "\nDetached evidence fragment.\n\n"
-                    "| Hidden failure | 1 | W1 | Source check | fixture | FAIL | "
-                    "detached | required | - |\n" + marker,
+                    "| Hidden failure | 1 | W1 | automated | fixture | - | "
+                    "Source check | 1 | FAIL | detached | true | - |\n" + marker,
                     1,
                 ),
                 encoding="utf-8",

@@ -33,6 +33,14 @@ from tests.lib.document_governance.metadata._support import (
 )
 from tests.lib.gate.subprocess_support import gate_root_pass_fds
 
+# A Spec Package from lifecycle generation 8 follows the core Spec, Plan and
+# Task forms; every tracked package keeps its recorded generation 7 form.
+GENERATION_8_PATHS = {
+    "spec": "docs/03.specs/0271-fixture/spec.md",
+    "plan": "docs/03.specs/0271-fixture/plan.md",
+    "task": "docs/03.specs/0271-fixture/tasks/tsk-0001-fixture.md",
+}
+
 
 class CurrentBodyContractTests(unittest.TestCase):
     @classmethod
@@ -44,8 +52,8 @@ class CurrentBodyContractTests(unittest.TestCase):
             "requirements-package": "Overview|Scope|Requirements|Traceability",
             "architecture-description": "Context and Boundaries|Structure|Runtime Behavior|Quality Scenarios|Decisions and Adoption",
             "adr": "Context|Options|Decision|Consequences",
-            "spec": "Overview|Scope|Behavior Contract|Acceptance Criteria|References",
-            "plan": "Overview|Dependencies|Implementation Strategy|Verification Plan|Risks|Promotion Map",
+            "spec": "Overview|Scope|Behavior Contract|Acceptance Criteria",
+            "plan": "Overview|Dependencies|Work Breakdown|Verification Plan|Promotion Map",
             "task": "Scope|Execution Log|Verification Evidence|Acceptance Decision|Handoff",
             "guide": "Purpose|Prerequisites|Procedure|Troubleshooting",
             "policy": "Purpose and Scope|Rules|Enforcement|Ownership",
@@ -120,8 +128,8 @@ class CurrentBodyContractTests(unittest.TestCase):
                 )
             )
         ).replace(
-            "### Failure and Edge Cases\n\nFixture content.",
-            "### Failure and Edge Cases\n\n#### Observable rejection\n\n"
+            "### Failure Behavior\n\nFixture content.",
+            "### Failure Behavior\n\n#### Observable rejection\n\n"
             "Reject invalid input.",
         )
         record = self.requirement_record()
@@ -385,6 +393,10 @@ class RegisteredSectionContractTests(unittest.TestCase):
             if profile_id not in found:
                 assert classify_path(path, cls.registry) == profile_id, path
                 found[profile_id] = pathlib.Path(path)
+        # Tracked Spec Packages keep their recorded generation 7 form; the core
+        # form the spec, plan and task profiles declare governs generation 8.
+        for profile_id, path in GENERATION_8_PATHS.items():
+            found[profile_id] = pathlib.Path(path)
         return found
 
     def _findings(self, profile_id: str, body: str) -> list[str]:
@@ -520,13 +532,17 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Contracts", "body-heading-forbidden"),
                 ("## Failure Conditions", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
-                ("### Out of Scope", "body-subheading-forbidden"),
+                ("## References", "body-heading-forbidden"),
+                ("### Intent", "body-subheading-forbidden"),
+                ("### Owning Requirements", "body-subheading-forbidden"),
             ),
             "plan": (
                 ("## Scope", "body-heading-forbidden"),
-                ("## Work Breakdown", "body-heading-forbidden"),
+                ("## Implementation Strategy", "body-heading-forbidden"),
+                ("## Risks", "body-heading-forbidden"),
                 ("## Risks and Recovery", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
+                ("### Goal and Boundary", "body-subheading-forbidden"),
                 ("### Risks and Rollback", "body-subheading-forbidden"),
             ),
             "task": (
@@ -850,6 +866,73 @@ class RegisteredSectionContractTests(unittest.TestCase):
                             1,
                         )
                     self.assertIn(code, self._findings(profile_id, old))
+
+    def test_a_recorded_package_keeps_its_recorded_form(self) -> None:
+        """A package numbered before generation 8 keeps its recorded form,
+        and a generation 8 package may not use it."""
+
+        from scripts.lib.document_governance.registry import recorded_package_profile
+
+        recorded_paths = {
+            "spec": "docs/03.specs/0212-fixture/spec.md",
+            "plan": "docs/03.specs/0212-fixture/plan.md",
+            "task": "docs/03.specs/0212-fixture/tasks/tsk-0001-fixture.md",
+        }
+        for profile_id, path in recorded_paths.items():
+            recorded = recorded_package_profile(
+                self.registry.common,
+                profile_id,
+                self.registry.profiles[profile_id],
+                path,
+            )
+            self.assertIsNotNone(recorded)
+            required = tuple(recorded["required_sections"])
+            subsections = recorded["required_subsections"]
+            body = (
+                "# Fixture\n\n"
+                + "\n\n".join(
+                    f"## {name}\n\n"
+                    + "\n\n".join(
+                        f"### {child}\n\nFixture content."
+                        for child in subsections[name]
+                    )
+                    for name in required
+                )
+                + "\n"
+            )
+            core, _ = self._conforming_body(profile_id)
+            with self.subTest(profile=profile_id):
+                self.assertEqual([], self._findings_at(profile_id, path, body))
+                if profile_id != "task":
+                    self.assertNotEqual([], self._findings_at(profile_id, path, core))
+                    self.assertNotEqual(
+                        [],
+                        self._findings_at(
+                            profile_id, GENERATION_8_PATHS[profile_id], body
+                        ),
+                    )
+        self.assertIsNone(
+            recorded_package_profile(
+                self.registry.common,
+                "spec",
+                self.registry.profiles["spec"],
+                GENERATION_8_PATHS["spec"],
+            )
+        )
+
+    def _findings_at(self, profile_id: str, path: str, body: str) -> list[str]:
+        record = metadata.Record(
+            pathlib.Path(path),
+            {"artifact_type": profile_id, "status": "active"},
+            profile_id,
+            frontmatter_present=True,
+        )
+        return [
+            item.code
+            for item in heading_module.validate_body_contract(
+                record, body, self.profiles, True
+            )
+        ]
 
     def test_a_repeated_section_is_reported(self) -> None:
         for profile_id in sorted(self.representatives):

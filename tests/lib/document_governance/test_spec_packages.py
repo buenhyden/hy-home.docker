@@ -6893,5 +6893,258 @@ Owner @owner.
         self.assertEqual(2, len(findings("cancelled")))
 
 
+_CORE_PLAN_TABLE = (
+    "## Work Breakdown\n\n### Work Units\n\n"
+    "| Work Unit | Outcome | Depends On | Owner | Write Scope | Acceptance | Checks |\n"
+    "| --- | --- | --- | --- | --- | --- | --- |\n"
+    "| W1 | First | None | TSK-0001 | docs/ | 1 | C1 |\n"
+    "| W2 | Second | W1 | TSK-0001 | docs/ | 2 | C1 |\n"
+    "\n### Dependency Edges\n\nW2 follows W1.\n"
+)
+_CORE_EVIDENCE_HEADER = (
+    "## Verification Evidence\n\n### Results\n\n"
+    "| Evidence ID | Criteria | Work Unit | Method | Input | Tool and Config "
+    "| Command | Exit | Result | Location | Required | Resolves |\n"
+    "| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n"
+)
+_CORE_DECISION_HEADER = (
+    "\n## Acceptance Decision\n\n### Criterion Decisions\n\n"
+    "| Criterion | Intent | Acceptance | Evidence | Decision | Accepted By "
+    "| Current Owner | Reassigned To |\n"
+    "| --- | --- | --- | --- | --- | --- | --- | --- |\n"
+)
+
+
+def _core_evidence_row(
+    name: str,
+    criteria: str,
+    unit: str,
+    result: str = "PASS",
+    *,
+    method: str = "automated",
+    exit_code: str = "0",
+    required: str = "true",
+    resolves: str = "-",
+    command: str = "unit run",
+) -> str:
+    return (
+        f"| {name} | {criteria} | {unit} | {method} | candidate A | python 3 "
+        f"| {command} | {exit_code} | {result} | receipt | {required} | {resolves} |\n"
+    )
+
+
+def _core_decision_row(criterion: str, evidence: str, intent: str = "accept") -> str:
+    return (
+        f"| {criterion} | {intent} | accepted | {evidence} | reviewed | owner "
+        "| [Owner](../spec.md) | - |\n"
+    )
+
+
+class CorePackageGenerationTests(unittest.TestCase):
+    """W147: a package of lifecycle generation 8 reads the core Spec, Plan and
+    Task tables; a package numbered before it keeps its recorded generation."""
+
+    CORE = pathlib.PurePosixPath("docs/03.specs/0271-example")
+    RECORDED = pathlib.PurePosixPath("docs/03.specs/0001-example")
+
+    def documents(self, root, plan_body, task_body):
+        module = _spec_packages_module()
+        number = root.name[:4]
+        spec = module.SpecDocument(
+            root / "spec.md",
+            "spec",
+            f"SPEC-{number}",
+            "approved",
+            ("REQ-0001",),
+            "## Acceptance Criteria\n\n### Criteria\n\n1. First.\n2. Second.\n",
+        )
+        plan = module.SpecDocument(
+            root / "plan.md",
+            "plan",
+            f"SPEC-{number}-PLAN-0001",
+            "approved",
+            (f"SPEC-{number}",),
+            plan_body,
+        )
+        task = module.SpecDocument(
+            root / "tasks/tsk-0001-work.md",
+            "task",
+            f"SPEC-{number}-TSK-0001",
+            "in-progress",
+            (f"SPEC-{number}-PLAN-0001",),
+            task_body,
+        )
+        return spec, plan, task
+
+    def evidence(self, root, plan_body, task_body):
+        spec, plan, task = self.documents(root, plan_body, task_body)
+        return _spec_packages_module()._v6_evidence_contract(
+            spec, plan, (task,), load_current_registry()
+        )
+
+    @staticmethod
+    def core_task(rows: str | None = None, decisions: str | None = None) -> str:
+        return (
+            _CORE_EVIDENCE_HEADER
+            + (
+                rows
+                if rows is not None
+                else _core_evidence_row("One", "1", "W1")
+                + _core_evidence_row("Two", "2", "W2")
+            )
+            + _CORE_DECISION_HEADER
+            + (
+                decisions
+                if decisions is not None
+                else _core_decision_row("1", "One") + _core_decision_row("2", "Two")
+            )
+        )
+
+    def test_the_registry_places_new_packages_in_generation_8(self) -> None:
+        from scripts.lib.document_governance.registry import (
+            corpus_generation,
+            package_generation,
+        )
+
+        common = load_current_registry().common
+        self.assertEqual(8, common["lifecycle_generation"])
+        self.assertEqual(7, corpus_generation(common))
+        self.assertEqual(8, package_generation(common, self.CORE / "plan.md"))
+        self.assertEqual(
+            7,
+            package_generation(
+                common,
+                "docs/03.specs/0212-request-baseline-and-reconciliation/tasks/x.md",
+            ),
+        )
+        self.assertEqual(7, package_generation(common, self.RECORDED / "spec.md"))
+        # A Registry before generation 8 has one generation for every package.
+        earlier = {**common, "lifecycle_generation": 6}
+        self.assertEqual(6, package_generation(earlier, self.CORE / "plan.md"))
+
+    def test_a_generation_8_package_reads_the_core_tables(self) -> None:
+        evidence = self.evidence(self.CORE, _CORE_PLAN_TABLE, self.core_task())
+        self.assertEqual({("1", "W1"), ("2", "W2")}, set(evidence.pass_pairs))
+        self.assertEqual({"1": "accepted", "2": "accepted"}, dict(evidence.acceptance))
+
+    def test_a_recorded_package_keeps_its_recorded_tables(self) -> None:
+        recorded_task = (
+            _EVIDENCE_HEADER
+            + _evidence_row("One", "1", "W1")
+            + _evidence_row("Two", "2", "W2")
+            + _DECISION_HEADER
+            + _decision_row("1", "One")
+            + _decision_row("2", "Two")
+        )
+        evidence = self.evidence(self.RECORDED, _generation6.PLAN.body, recorded_task)
+        self.assertEqual({("1", "W1"), ("2", "W2")}, set(evidence.pass_pairs))
+        error = _spec_packages_module().SpecPackageError
+        with self.assertRaises(error):
+            self.evidence(self.RECORDED, _CORE_PLAN_TABLE, self.core_task())
+        with self.assertRaises(error):
+            self.evidence(self.CORE, _generation6.PLAN.body, recorded_task)
+        with self.assertRaises(error):
+            self.evidence(self.CORE, _CORE_PLAN_TABLE, recorded_task)
+
+    def test_a_core_cell_outside_its_core_values_is_rejected(self) -> None:
+        error = _spec_packages_module().SpecPackageError
+        two = _core_evidence_row("Two", "2", "W2")
+        for label, rows, decisions in (
+            (
+                "method",
+                _core_evidence_row("One", "1", "W1", method="manual") + two,
+                None,
+            ),
+            (
+                "exit",
+                _core_evidence_row("One", "1", "W1", exit_code="zero") + two,
+                None,
+            ),
+            (
+                "required",
+                _core_evidence_row("One", "1", "W1", required="yes") + two,
+                None,
+            ),
+            (
+                "intent",
+                None,
+                _core_decision_row("1", "One", intent="maybe")
+                + _core_decision_row("2", "Two"),
+            ),
+        ):
+            with self.subTest(column=label):
+                with self.assertRaises(error):
+                    self.evidence(
+                        self.CORE, _CORE_PLAN_TABLE, self.core_task(rows, decisions)
+                    )
+
+    def test_core_required_and_command_keep_the_recorded_meaning(self) -> None:
+        # Required false is optional, so its NOT_RUN leaves nothing open;
+        # Resolves needs the same Command and Work Unit, as it needed the Check.
+        optional = (
+            _core_evidence_row(
+                "Skip", "1", "W1", "NOT_RUN", exit_code="-", required="false"
+            )
+            + _core_evidence_row("One", "1", "W1")
+            + _core_evidence_row("Two", "2", "W2")
+        )
+        evidence = self.evidence(self.CORE, _CORE_PLAN_TABLE, self.core_task(optional))
+        self.assertEqual(frozenset(), evidence.unresolved_failures)
+        failed = _core_evidence_row("Bad", "1", "W1", "FAIL", exit_code="1")
+        for command, raises in (("unit run", False), ("other run", True)):
+            rows = (
+                failed
+                + _core_evidence_row("One", "1", "W1", resolves="Bad", command=command)
+                + _core_evidence_row("Two", "2", "W2")
+            )
+            with self.subTest(command=command):
+                if raises:
+                    with self.assertRaises(_spec_packages_module().SpecPackageError):
+                        self.evidence(self.CORE, _CORE_PLAN_TABLE, self.core_task(rows))
+                else:
+                    self.evidence(self.CORE, _CORE_PLAN_TABLE, self.core_task(rows))
+
+    def test_core_execution_items_read_the_core_columns(self) -> None:
+        body = (
+            "## Execution Log\n\n### Work Performed\n\n#### Execution Items\n\n"
+            "| Item | Work Unit | Owner | Status | Blocker |\n"
+            "| --- | --- | --- | --- | --- |\n"
+            "| First | W1 | owner | completed | - |\n"
+            "| Second | W2 | owner | in-progress | - |\n"
+        )
+        module = _spec_packages_module()
+        rows = module._execution_item_rows(
+            body, load_current_registry(), self.CORE / "tasks/tsk-0001-work.md"
+        )
+        self.assertEqual(
+            [("First", "W1", "completed"), ("Second", "W2", "in-progress")],
+            [(row[0], row[1], row[4]) for row in rows],
+        )
+        with self.assertRaises(module.SpecPackageError):
+            module._execution_item_rows(
+                body, load_current_registry(), self.RECORDED / "tasks/tsk-0001-x.md"
+            )
+
+    def test_a_core_plan_promotion_map_reaches_the_receipt(self) -> None:
+        module = _spec_packages_module()
+        spec, plan, task = self.documents(
+            self.CORE,
+            _CORE_PLAN_TABLE + "\n## Promotion Map\n\n### Durable Owners\n\n"
+            "`docs/05.operations/guides/x.md` holds it.\n\n"
+            "### Consumer Updates\n\nNone.\n",
+            "## Handoff\n\n### Promotion Receipt\n\nNothing yet.\n",
+        )
+        package = module.SpecPackage(
+            pathlib.Path(self.CORE), "0271", "example", spec, plan, (task,), ()
+        )
+        self.assertEqual(
+            (
+                "Promotion Map target docs/05.operations/guides/x.md appears "
+                "in no Promotion Receipt",
+            ),
+            module._promotion_findings(package),
+        )
+
+
 if __name__ == "__main__":
     unittest.main()
