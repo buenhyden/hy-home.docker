@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -154,6 +154,41 @@ placement finding, because the document check follows the template's H3;
 W143's later parts meet this first. The pinned core is cached per process,
 which the contracts check bypasses by re-reading.
 
+#### W143 runbooks
+
+W143 part one merged as `8a09edb3c`. The runbook template and profile now
+carry the core sections, the Rollback condition is dropped because the core
+requires every H3, and `operation/runbook` is bound. A one-time script moved
+all 78 runbooks section by section and refused any unmapped content; a check
+compared every non-heading line before and after and found none lost or
+added. An old H3 title stays as an H4 only where several old sections merge
+into one core H3. 36 links in 30 guides and policies pointed at the old
+`#actions` anchor and now point at `#steps`.
+
+Each runbook gained a steps table under Procedure/Steps and an Unverified
+Conditions text, written from that runbook only. Six writing agents drafted
+them; 856 rows in all, and 448 Expected Result cells say the document records
+nothing to observe. A second script regenerated each moved runbook from the
+base and confirmed that nothing beyond the table and that text changed. One
+table named `@buenhyden` where the release runbook names the repository owner
+or the operator on duty; it now uses the runbook's words. The request-brief
+hook drops its binding whenever a new event reaches the session, so parallel
+agents lost it mid-run; the rest were drafted to the scratchpad and applied
+here after one bind, and one agent wrote with a script instead of the editor.
+
+An agent wrote a draft through an unquoted shell heredoc, and a backticked
+`docker compose --profile mail-dev restart mailpit` in the draft text ran.
+The `mailpit` container restarted at 2026-11-17T03:22:54Z without approval;
+it came back healthy with no restart loop. Whether captured messages survived
+was not checked, and nothing else ran.
+
+14 runbooks keep 21 reference tables of their own under Procedure/Steps, such
+as alert maps and exit codes. The core keeps an existing real form rather
+than deleting or disguising it, and a table that reuses core labels with other
+columns must not pass, so a table sharing no label with its section's core
+table is now the document's own table. One sharing a label must be the core
+table exactly, and the core table stays required.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -195,6 +230,15 @@ current documents, and those changes need the same per-group review.
 | Review fix template version | 137 | W143 | document-corpus | check-contracts after the template prompt change | FAIL | `invalid-template-version`: the prompt edit had bumped the template version, which must stay the registered initial version; reverted | required | - |
 | Review fix corpus | 137 | W143 | document-corpus | check-active, check-contracts, check-changed against `origin/main`, check-operations-catalog, link alignment and governance contract | PASS | 589 selected and 0 violations; 0 contract violations; 6 changed and 0 violations; catalog, alignment and governance PASS | required | Review fix template version |
 | Incident re-review | 137 | W143 | independent-review | The fix range against the first review | PASS | APPROVE; five minor notes, of which the two Task wordings, these rows and the template Evidence prompt are applied; the Condition notes stay for later role groups | required | Incident review |
+| Runbook form RED | 137 | W143 | role-design-binding | Bound runbook role and core steps columns at `57e28c54a` | FAIL | Role unbound and columns from `COMMON-DOC-FORM-1`, exit 1 | required | - |
+| Runbook form GREEN | 137 | W143 | role-design-binding | test_template_definition with the runbook template and profile on the core and two old literals updated | PASS | 44 tests, exit 0 | required | Runbook form RED |
+| Runbook move fidelity | 137 | W143 | document-move | 78 runbooks moved by the section script; non-heading lines before and after, then each runbook regenerated from base against the authored result | PASS | 0 lines lost or added; 0 runbooks changed beyond the table and Unverified Conditions; 856 rows, every row 4 cells and numbered | required | - |
+| Runbook reference tables | 137 | W143 | document-corpus | check-changed against `origin/main` after authoring | FAIL | 14 `table-header-invalid`: 21 reference tables under Procedure/Steps read as the core steps table | required | - |
+| Reference table RED | 137 | W143 | table-ownership | A reference table sharing no core label beside the incident Actions table | FAIL | `table-header-invalid`, exit 1 | required | - |
+| Reference table GREEN | 137 | W143 | table-ownership | Same test, and a table sharing a core label with other columns | PASS | metadata.test_heading 115 tests, exit 0 | required | Reference table RED |
+| Runbook regression | 137 | W143 | document-governance-regression | test_registry, test_template_definition, test_operations_catalog, metadata heading, reference and lifecycle, test_metadata_validator, test_taxonomy and test_spec_packages before the table change | FAIL | 707 tests, 2 failures: two runbook literals in metadata.test_heading named the old form | required | - |
+| Runbook regression rerun | 137 | W143 | document-governance-regression | metadata.test_heading with the core literals and the table change; no other module changed after the full run | PASS | 115 tests, exit 0 | required | Runbook regression |
+| Runbook corpus | 137 | W143 | document-corpus | check-active, check-contracts, check-changed against `origin/main`, check-operations-catalog, link alignment and markdownlint of 109 changed files | PASS | 589 selected and 0 violations; 0 contract violations; 115 changed and 0 violations; catalog and alignment PASS; 0 lint issues | required | Runbook reference tables |
 
 ### Resolution Links
 
