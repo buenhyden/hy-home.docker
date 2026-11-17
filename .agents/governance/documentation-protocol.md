@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "7.4.0"
+version: "7.5.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
