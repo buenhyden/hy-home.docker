@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.12.0"
+version: "0.13.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -412,6 +412,29 @@ uneven tier tables, a stale reader comment, missing audit and data old-form
 cases, a renamed report heading and cells beyond their README; each is
 corrected, and the re-review approved.
 
+#### W147 Spec, Plan and Task generation 8
+
+The Spec, Plan and Task forms move to the core spec, plan and task roles
+through lifecycle generation 8, which only new packages adopt. The Registry
+sets `lifecycle_generation` to 8 and records, in `package_generations`, the
+recorded generation 7, the first generation 8 package number 271 (the Spec
+high-water mark plus one), the recorded sections and the map from recorded to
+core columns; `registry.py` pins all of them. Migration proofs, historical
+admission and base comparisons still read generation 7, so no package is
+migrated, a member of an earlier package keeps its recorded sections, and
+terminal Tasks keep their recorded bodies. A generation 8 package's Work
+Units, Evidence, Criterion Decisions and Execution Items tables are read with
+the core headers, their cells are checked against the core values and the rows
+are projected onto the recorded columns. Method and Command together take the
+place of Check, so a resolving row needs the same Method, Command and Work
+Unit; Exit is `-` for a check that did not run; DEFER stays outside the local
+result domain; a failed generation 8 observation keeps every core cell. The
+SDLC policy, glossary, documentation protocol and template README describe the
+generation. An independent review found that a failed observation's core-only
+cells could change unseen, that the first package and column map were not
+pinned, missing failing tests and wording gaps; each is corrected, and the
+re-review approved.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -549,6 +572,14 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | READMEs hosted candidate | 137 | W145 | hosted-candidate | PR 1070 at `ec69b65fb` | FAIL | candidate-core: an npm ECONNRESET while installing the markdownlint hook, after every repository check passed; candidate-documents: test_references failed because the moved Preservation Declaration under an H4 was read to the end of the README, past its baseline commit hashes | required | - |
 | READMEs declaration RED | 137 | W145 | protected-research-declaration | tests.lib.document_governance.test_references at `ec69b65fb` | FAIL | 21 tests, 1 failure: test_declaration_pins_no_count_hash_or_commit matched a commit hash | required | - |
 | READMEs declaration GREEN | 137 | W145 | protected-research-declaration | Same module after the reader ends the section at its own heading level | PASS | 21 tests, exit 0 | required | READMEs declaration RED |
+| READMEs hosted candidate rerun | 137 | W145 | hosted-candidate | PR 1070 checks at `9c6338656`, after the declaration reader fix | PASS | candidate-core, candidate-documents, candidate-quality, candidate-routing, CodeQL and GitGuardian pass; merged as `c3ab1e7c3` | required | READMEs hosted candidate |
+| Package generation RED | 137 | W147 | role-design-binding | CorePackageGenerationTests, test_registry, RoleDesignConformanceTests and metadata.test_heading at the test-only commit `b604a5635` on `82cf41b9d` | FAIL | 313 tests, 13 failures and 5 errors: no corpus_generation helper, lifecycle generation 7, spec unbound, core plan headers rejected | required | - |
+| Package generation first regression | 137 | W147 | document-governance-regression | The ten governance modules, test_script_manifest, test_relations, test_generation7, test_generation6 and test_language at `6d4e1d406`, before the review fixes | PASS | 852 tests in 1734 seconds, exit 0 | required | - |
+| Package generation corpus | 137 | W147 | document-corpus | check-changed, check-contracts, link alignment and navigation, corpus lifecycle, governance contract, renderer and markdownlint at `6d4e1d406`; check-changed against `origin/main` `a3fbbbd1c` at `70421ccf0` after the rebase | PASS | 6 then 7 changed and 0 violations; contracts and lifecycle 0; alignment, navigation, governance contract and renderer PASS; 0 lint issues | required | - |
+| Package generation review | 137 | W147 | independent-review | Commits `b604a5635`, `49ded0d29` and `6d4e1d406` | FAIL | CHANGES_REQUIRED: a failed observation's core-only cells could change unseen, first package and column map unpinned, rules without failing tests, and six minor findings | required | - |
+| Package generation review fix RED | 137 | W147 | role-design-binding | The new generation 8 tests from the review fixes, run by the drafting agent in a scratch clone before the implementation | FAIL | 11 tests, 7 failures and 1 error | required | - |
+| Package generation review fix GREEN | 137 | W147 | role-design-binding | The same tests after the implementation, in the drafting agent's scratch clone; then its 14-module regression | PASS | 12 tests OK; 848 tests OK, exit 0 | required | Package generation review fix RED |
+| Package generation re-review | 137 | W147 | independent-review | Fix range `6d4e1d406..a0cf7b95c` against the package generation review | PASS | APPROVE; all nine findings closed | required | Package generation review |
 
 ### Resolution Links
 
@@ -558,7 +589,7 @@ regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
 Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Policy review approval, Policy re-review approval, Policy hosted candidate
 rerun, Governance form GREEN, Governance regression, Governance old-form GREEN, Governance re-review, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
-rows, References form GREEN and References re-review resolve their W144 rows, Agent instructions form GREEN and Agent instructions re-review resolve their W145 rows, and SDLC forms GREEN, SDLC forms aligned header GREEN, SDLC forms hosted candidate rerun and SDLC forms re-review approval resolve their W146 rows, and READMEs re-review and READMEs declaration GREEN resolve their W145 README rows. The comparison baseline stays
+rows, References form GREEN and References re-review resolve their W144 rows, Agent instructions form GREEN and Agent instructions re-review resolve their W145 rows, and SDLC forms GREEN, SDLC forms aligned header GREEN, SDLC forms hosted candidate rerun and SDLC forms re-review approval resolve their W146 rows, READMEs re-review, READMEs declaration GREEN and READMEs hosted candidate rerun resolve their W145 README rows, and Package generation re-review and Package generation review fix GREEN resolve their W147 rows.
 open until every role group conforms.
 
 ## Acceptance Decision
