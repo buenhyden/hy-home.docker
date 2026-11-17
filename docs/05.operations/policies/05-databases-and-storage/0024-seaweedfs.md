@@ -1,6 +1,6 @@
 ---
 title: "SeaweedFS Operations Policy"
-version: "1.8.4"
+version: "1.9.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -15,20 +15,18 @@ next_review_at: "2027-05-13"
 
 # SeaweedFS Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 이 정책은 현재 소스 구성을 데이터 보호, 보안, 리소스, 생명주기와 독립적으로 검증 가능한
 운영 통제에 묶는다.
 
-### Authority
+#### Authority
 
 - Runtime source: [SeaweedFS Compose](../../../../infra/04-data/seaweedfs/docker-compose.yml).
 - Artifact: `POL-0024`; parent: `AD-0004`.
 - Runtime 권한은 연결된 Compose/소스 파일에 남아 있으며, 정확한 pin도 그곳에 있다.
-
-## Scope
 
 ### Applies To
 
@@ -39,13 +37,26 @@ S3 consumer를 선택하는 모든 profile(`storage`, `obs`, `logs`, `tracing`,
 선택하고, `seaweedfs-table-bucket`은 SPEC-0262에서 독립 LAB `labs/lakehouse/docker-compose.yml`로 옮겨졌다. Terrakube(`iac`, HOME이 제외하는 자동화
 profile)는 `storage`와 함께 동작한다.
 
-### Exclusions
+#### Exclusions
 
 애플리케이션 인증 연동은 이 정책이 아니라 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)가 정한다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0024-R1 | 영속 세트 | 필수: Master(`-mdir=/data`), volume(`-dir=/data`), filer 내장 leveldb2(`/data/filerldb2`)가 각각 `${DEFAULT_DATA_DIR}/seaweedfs` 아래 bind volume을 갖고 rehearsal이 파일의 실제 위치를 확인한다 | `tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests` | rehearsal 결과 |
+| POL-0024-R2 | S3 identity | 필수: `seaweedfs-s3`는 secret으로 구성된 명시적 identity로만 시작하고 anonymous를 정의하지 않으며 각 consumer는 `config/s3-identities.conf`에 자기 bucket 범위의 identity를 갖고 admin을 쓰지 않으며 bucket은 `seaweedfs-buckets`가 생성한다 | `tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests` | rehearsal의 identity 거부 확인 |
+| POL-0024-R3 | Volume/filer HTTP | 필수: 읽기/쓰기 모두 STRG-008/STRG-009로 서명된 JWT를 요구하고 master와 filer에는 Traefik route를 두지 않는다 | `tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests` | rehearsal의 JWT 거부 확인 |
+| POL-0024-R4 | 내부 전송 | 필수: 모든 gRPC port는 SeaweedFS 전용 CA로 mutual TLS를 쓰고 master/volume/filer는 `seaweed_internal`과 `seaweedfs_metrics_net`(internal)에만 둔다 | `tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests` | rehearsal의 mTLS 거부 확인 |
+| POL-0024-R5 | 노출면 | 필수: Lance listener와 내장 IAM API를 끄고 Iceberg REST catalog는 `object_net`에서만 접근 가능하며 route/host port를 두지 않는다(현재 구현 미준수) | none | none |
+| POL-0024-R6 | Metrics | 필수: `seaweedfs-s3` metrics(`9327`)는 게시/route 없이 `seaweedfs_s3_metrics_net`의 고정 주소(`-metricsIp=10.250.41.2`)에만 바인딩하고 master/volume/filer metrics는 `seaweedfs_metrics_net`으로 Prometheus가 수집한다 | `alert_rules.local.datastores.yml`의 `SeaweedFSS3Down`/`SeaweedFSNodeMetricsDown`/`SeaweedFSDataDiskLow` | Prometheus job `seaweedfs-s3`/`seaweedfs-master`/`seaweedfs-volume`/`seaweedfs-filer` |
+| POL-0024-R7 | 용량 | 필수: data disk 여유 공간이 20 GiB 아래면 volume server가 쓰기를 중단하고(`-minFreeSpace`) replication은 `000`이다 | none | none |
+| POL-0024-R8 | 백업 | 필수: 일일 orchestrator(RUN-0021)가 vacuum을 멈추고 `fs.meta.save`로 filer metadata를 저장한 뒤 Restic이 volume/master tree를 읽고 종료 시 vacuum을 재활성화하며 일일 30일/주간 90일 보관, RPO 24시간/RTO 8시간을 목표로 한다 | RUN-0021 | 암호화된 Restic state repository(POL-0021) |
+| POL-0024-R9 | 복원 | 필수: 동일 버전의 빈 대상으로 복원하고 filer store를 비운 뒤 `fs.meta.load`를 실행하고 S3 읽기를 확인하며 HOME cutover/삭제/state 재사용은 별도 승인이 필요하다 | isolated rehearsal | RUN-0024 steps |
+| POL-0024-R10 | 변경 시 | 필수: Image 갱신에는 공식 release/license 검토와 통과한 `SeaweedfsRehearsalTests` 실행이 필요하고 identity/key/certificate 교체는 모든 구성 요소를 재시작하며 승인이 필요하고 새 consumer identity는 해당 consumer의 cutover와 같은 change에서 추가한다 | `tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests` | rehearsal 통과 기록 |
 
 - **영속 세트.** Master(`-mdir=/data`), volume(`-dir=/data`)과 filer의 내장
   leveldb2 store(`/data/filerldb2`)는 각각 `${DEFAULT_DATA_DIR}/seaweedfs` 아래
@@ -119,31 +130,45 @@ change에서 추가한다.
 
 적용 identity: `seaweedfs-buckets`, `seaweedfs-filer`, `seaweedfs-master`, `seaweedfs-s3`, `seaweedfs-volume`. `seaweedfs-table-bucket`은 [POL-0094](../15-labs/0094-lakehouse.md)가 적용된다. 문서의 정적 검증과 runtime 운영 승인을 분리한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+FUSE mount는 별도 승인이 필요하다. 예외는 runtime mutation, plaintext secret,
+raw active storage 복사, 동일 host 가용성 주장을 허용하지 않는다.
+
+#### Approval and Review
+
+Profile, image, volume, credential, consumer, retention 또는 upstream
+lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다.
+
+## Enforcement
+
+### Mechanisms
 
 `docker compose --env-file .env.example --profile seaweedfs config --quiet`로 root 구성을 정적 검증하고, 승인된 disposable rehearsal(`tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests`, [RUN-0024](../../runbooks/05-databases-and-storage/0024-seaweedfs.md#steps))으로 identity·JWT·mTLS 거부를 확인한 뒤, 승격이나 cutover
 전에 application 수준 acceptance를 갖춘 isolated compatible restore를
 요구한다. 검증되지 않은 runtime 속성은 명시적으로 기록한다.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+정책이 명명한 검사는 `config --quiet` 정적 검증과 disposable rehearsal(`SeaweedfsRehearsalTests`)이며 다음은 기계적으로 강제되지 않는다.
 
-FUSE mount는 별도 승인이 필요하다. 예외는 runtime mutation, plaintext secret,
-raw active storage 복사, 동일 host 가용성 주장을 허용하지 않는다.
-
-### Approval and Review
-
-Profile, image, volume, credential, consumer, retention 또는 upstream
-lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다.
+- Iceberg REST catalog의 `object_net` 한정은 현재 구현 미준수다. `seaweedfs-s3`의 Iceberg listener가 `0.0.0.0:8181`로 edge_net/seaweed_internal/object_net에서 모두 도달 가능하며, 별도 source 변경과 network별 부정 접근 검증이 필요하고 예외는 승인되지 않았다.
+- `/data` mount만으로는 영속 경로를 증명하지 못하며 rehearsal이 파일의 실제 위치를 확인해야 한다.
+- 복원 시 `volume.fsck` 확인, RPO 24시간/RTO 8시간 목표는 isolated rehearsal이 HOME 타이밍이 아니라 방법만 증명하며 HOME cutover/삭제/state 재사용은 별도 승인이 필요하다.
+- 승격이나 cutover 전의 application 수준 acceptance를 갖춘 isolated compatible restore는 요구 사항이며 검증되지 않은 runtime 속성은 명시적으로 기록한다.
+- LAB의 S3/catalog 게시, FUSE mount, Identity/key/certificate 교체는 소유자의 별도 승인 대상이다.
+- 알림 규칙(`SeaweedFSS3Down` 등)의 mountpoint 고정은 `DEFAULT_MOUNT_VOLUME_PATH` 이동 시 수동 갱신이 필요하다.
+- 연 1회 이상 검토와 변경 후 검토는 수동이다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다.
 
-### Change and Adoption
+### Review Triggers
 
 - [Domain catalog](../../README.md)
 - [Runbook](../../runbooks/05-databases-and-storage/0024-seaweedfs.md)

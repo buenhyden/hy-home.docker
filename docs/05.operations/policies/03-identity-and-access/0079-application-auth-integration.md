@@ -1,10 +1,10 @@
 ---
 title: "Application Authentication Integration Policy"
-version: "0.9.4"
+version: "0.10.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0079"
 parent_ids:
@@ -15,19 +15,17 @@ next_review_at: "2027-05-13"
 
 # Application Authentication Integration Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 이 정책은 Keycloak을 중앙 IdP로 사용하면서 OAuth2 Proxy ForwardAuth와
 application-native OIDC를 선택·운영하는 기준을 정의한다.
 
-### Authority
+#### Authority
 
 - Parent: [ADR-0038](../../../02.architecture/decisions/0038-selective-native-oidc-for-native-auth-apps.md)
 - Architecture: [AD-0002](../../../02.architecture/descriptions/0002-auth-architecture.md)
-
-## Scope
 
 ### Applies To
 
@@ -40,13 +38,36 @@ application-native OIDC를 선택·운영하는 기준을 정의한다.
 - 신규 OIDC-capable internal applications
 - Open WebUI/Gatus native 연동과 Task 0004에서 보류한 Terrakube 후보
 
-### Exclusions
+#### Exclusions
 
 Keycloak과 OAuth2 Proxy 서비스 자체의 운영 통제는 [POL-0014](0014-keycloak.md)와 [POL-0015](0015-oauth2-proxy.md)가 다룬다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0079-R1 | 항상 | 필수: 모든 사용자 authentication identity source는 Keycloak을 기준으로 한다 | 수동 | none |
+| POL-0079-R2 | 서비스 onboarding | 필수: `Gateway ForwardAuth` 또는 `Application-native OIDC` 중 하나를 주 인증 경로로 명시한다 | 수동 | GDE-0079 Route Authentication Matrix |
+| POL-0079-R3 | HOME Native OIDC 서비스 | 필수: Airflow, Dozzle, Grafana, Kafbat UI, OpenBao, Gatus를 native OIDC로 두고 Superset/Open WebUI는 gateway route 없는 독립 LAB이며 JupyterLab/SonarQube/Stalwart LAB에는 ForwardAuth를 적용하지 않는다 | GDE-0079 서비스별 정적 검증 | none |
+| POL-0079-R4 | Airflow/Grafana/Kafbat/OpenBao/Gatus/Dozzle router | 필수: 앞의 다섯은 `gateway-standard-chain@file`만 사용하고 Dozzle은 `dozzle-admin-ip@docker` IP allowlist를 더하며 SSO chain은 쓰지 않는다 | GDE-0079 서비스별 정적 검증 | none |
+| POL-0079-R5 | Flower 등 ForwardAuth 대상/n8n | 필수: 승인된 `sso-errors@file,sso-auth@file` chain을 유지하고 n8n은 자체 로그인과 `gateway-standard-chain@file`만 쓴다 | GDE-0079 서비스별 정적 검증 | owner 결정 2026-11-09 |
+| POL-0079-R6 | OAuth2 Proxy | 필수: `allowed_groups = ["/admins"]`로 Keycloak `/admins` 그룹만 통과시키며 그룹 확대는 owner 승인이 필요하다 | 수동 | owner 승인 기록 |
+| POL-0079-R7 | 모든 Traefik HTTP router | 필수: SSO chain을 쓰거나 guide의 Route Authentication Matrix에 대체 인증을 명시하고 인증 없는 route와 TCP route를 두지 않는다(Grafana 정적 예외만 범위 제한) | `RouteAuthContractTests` | GDE-0079 Route Authentication Matrix |
+| POL-0079-R8 | Terrakube ForwardAuth 제거 | 필수: 서비스별 acceptance evidence가 기록된 뒤에만 제거하며 같은 범위의 재승인은 요구하지 않는다(Open WebUI/Gatus는 Task 0004 acceptance evidence 뒤 완료) | 수동 | Task 0004 acceptance evidence |
+| POL-0079-R9 | OIDC client secret | 필수: Compose 기반은 Docker Secret 또는 OpenBao Agent 출력 파일(`/run/openbao/...`)로 주입하고 OpenBao native OIDC secret은 승인된 절차로 auth backend에 저장하며 비밀값을 공개 설정에 넣지 않는다 | 추가 검증: Compose client secret의 Docker Secret/OpenBao Agent 출력 mapping | none |
+| POL-0079-R10 | 문서/incident/PR/task evidence | 금지: token/refresh token/id token 원문을 기록한다 | 수동 | none |
+| POL-0079-R11 | local mkcert CA | 필수: 기존 public CA trust를 보존한 상태로 추가한다 | none | none |
+| POL-0079-R12 | Airflow provider update | 필수: Keycloak permission migration 요구사항을 확인한다 | 추가 검증: Airflow provider/Authorization Services bootstrap 상태 | none |
+| POL-0079-R13 | Kafbat RBAC | 필수: `clusters`는 configured cluster name과 일치해야 한다 | none | none |
+| POL-0079-R14 | Open WebUI | 필수: 가입을 비활성화하고 OAuth role/group 자동 관리를 끄며 이메일 병합은 검증된 단일 기존 관리자 연결에 한정한다 | none | none |
+| POL-0079-R15 | 미기동 Terrakube | 필수: 명시적 API audience 검증과 실행 검증 전까지 완료로 보지 않는다 | 수동 | none |
+| POL-0079-R16 | Native OIDC 서비스 | 금지: OAuth2 Proxy ForwardAuth를 동시에 기본 인증으로 적용한다 | GDE-0079 서비스별 정적 검증 | none |
+| POL-0079-R17 | 항상 | 금지: `rootCA-key.pem` 배포/공유 | none | none |
+| POL-0079-R18 | 항상 | 금지: secret/token 원문 기록 | 수동 | none |
+| POL-0079-R19 | 항상 | 금지: 과거 OAuth callback URL 또는 authorization code 재사용 | none | none |
+| POL-0079-R20 | Airflow | 금지: Keycloak access token을 Airflow internal JWT로 취급한다 | none | none |
 
 #### Required
 
@@ -93,23 +114,9 @@ Keycloak과 OAuth2 Proxy 서비스 자체의 운영 통제는 [POL-0014](0014-ke
 공통 Secret 보존·runtime 변경 승인은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md)과
 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)을 적용한다.
 
-### Enforcement
+### Exceptions
 
-정적 검증: [GDE-0079](../../guides/03-identity-and-access/0079-application-auth-integration.md#서비스별-정적-검증)의
-profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
-
-추가 검증:
-
-- Airflow/Grafana/Kafbat/OpenBao/Gatus router = gateway-only, Dozzle = gateway + IP allowlist; Gatus는 외부 metrics 제외
-- ForwardAuth 대상 서비스 = SSO chain 유지
-- Keycloak client redirect URI/public URL 정합
-- Compose client secret의 Docker Secret 또는 OpenBao Agent 출력 mapping
-- OpenBao auth-backend OIDC client/role/policy 설정은 [OpenBao runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)의 비밀값 없는 점검 절차로 확인
-- Airflow provider/Authorization Services bootstrap 상태
-
-## Exceptions
-
-### Exception Conditions
+#### Exception Conditions
 
 긴급한 auth 우회는 적용 범위, 시작/종료 조건, rollback, evidence를 incident/task에
 기록한 경우에만 허용한다. Native OIDC 앱에 임시 ForwardAuth를 적용하려면
@@ -131,7 +138,7 @@ RBAC, 다른 경로, 다른 host 또는 다른 method로 넓어지지 않는다.
 [Guide의 source 한계](../../guides/03-identity-and-access/0079-application-auth-integration.md)에
 기록한다.
 
-### Approval and Review
+#### Approval and Review
 
 - Keycloak update
 - OAuth2 Proxy update
@@ -140,13 +147,41 @@ RBAC, 다른 경로, 다른 host 또는 다른 method로 넓어지지 않는다.
 - 신규 Native OIDC 서비스 승인
 - 분기별 인증 연동 검토
 
+## Enforcement
+
+### Mechanisms
+
+정적 검증: [GDE-0079](../../guides/03-identity-and-access/0079-application-auth-integration.md#서비스별-정적-검증)의
+profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
+
+추가 검증:
+
+- Airflow/Grafana/Kafbat/OpenBao/Gatus router = gateway-only, Dozzle = gateway + IP allowlist; Gatus는 외부 metrics 제외
+- ForwardAuth 대상 서비스 = SSO chain 유지
+- Keycloak client redirect URI/public URL 정합
+- Compose client secret의 Docker Secret 또는 OpenBao Agent 출력 mapping
+- OpenBao auth-backend OIDC client/role/policy 설정은 [OpenBao runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)의 비밀값 없는 점검 절차로 확인
+- Airflow provider/Authorization Services bootstrap 상태
+
+### Limits
+
+정책이 명명한 검증은 GDE-0079의 서비스별 정적 검증(profile별 Compose 검증과 tier hardening)과 아래 추가 검증 항목이며 다음은 기계적으로 강제되지 않는다.
+
+- `RouteAuthContractTests` 외에는 규칙별로 이름 붙은 스크립트가 없고 추가 검증 목록은 점검 항목으로만 나열된다.
+- Grafana 정적 예외의 정적 계약은 Grafana 접근/로그인/권한/backend 호출의 운영 검증이 아니며, 이 문서 변경만으로 source와 테스트가 수정되거나 통과했다고 주장하지 않는다. 이 예외는 2026-12-02 재검토 대상이다.
+- 미기동 Terrakube는 명시적 API audience 검증과 실행 검증 전까지 완료로 보지 않으며 서비스별 acceptance evidence가 없는 상태다.
+- Superset LAB origin의 redirect 등록은 소유자 승인 전까지 미결정이다.
+- OAuth2 Proxy `/admins` 그룹 확대 승인, token 원문 비기록, mkcert CA trust 보존, Airflow provider 업데이트 시 permission migration 확인, Open WebUI 가입 비활성화는 수동 검토에 의존한다.
+- OpenBao auth-backend OIDC 설정은 비밀값 없는 Runbook 점검 절차로만 확인된다.
+- 긴급 auth 우회의 범위/조건/rollback/evidence 기록은 incident/task 수동 기록이다.
+
 ## Ownership
 
-### Responsibilities
+### Owner
 
 운영 책임자는 @buenhyden이다.
 
-### Change and Adoption
+### Review Triggers
 
 - Child: [GDE-0079](../../guides/03-identity-and-access/0079-application-auth-integration.md)
 

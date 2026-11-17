@@ -1,10 +1,10 @@
 ---
 title: "Shared Storybook Operations Policy"
-version: "1.1.5"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0101"
 parent_ids:
@@ -15,7 +15,7 @@ next_review_at: "2027-05-13"
 
 # Shared Storybook Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
@@ -24,12 +24,10 @@ next_review_at: "2027-05-13"
 MCP다. 소비자는 hy-home.docker가 아닌 다른 워크스페이스다. 코드 재사용은 별도 패키지
 계약이 소유한다.
 
-### Authority
+#### Authority
 
 - Artifact: `POL-0101`. 역사적 source/static 완료 근거: `SPEC-0206`. 승인된 [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md)이 아키텍처를 소유하며 HOME 배포 승인과 실행 증거는 별도로 기록한다.
 - Runtime declaration: [Storybook Compose](../../../../infra/13-experience/storybook/docker-compose.yml).
-
-## Scope
 
 ### Applies To
 
@@ -37,13 +35,24 @@ MCP다. 소비자는 hy-home.docker가 아닌 다른 워크스페이스다. 코�
 `storybook-mcp` 서비스, Traefik 경로, 정적 자산, image revision, 디자인 도구 전달과
 운영 검증에 적용한다. SPEC-0206은 source/static completion의 역사적 근거이며, 운영 승인과 반복 절차는 이 Stage 05 subject가 소유한다.
 
-### Exclusions
+#### Exclusions
 
 프로젝트 업무 앱은 포함하지 않는다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0101-R1 | 서비스 후보 선택 | 필수: `experience` profile을 명시적으로 선택할 때만 서비스 후보가 되며 HOME 선택에 포함하지 않고 profile 선택은 기동 승인이 아니다 | `experience`/HOME profile 정적 render 비교 | none |
+| POL-0101-R2 | 정적 origin 접근 | 필수: origin은 `internal: true` 전용 `experience_ingress_net`에만 연결하고 Traefik 미들웨어 순서(`req-rate-limit@file`, `gateway-standard-chain@file`, `sso-auth@file`)와 `/admins` 제한을 유지하며 비인증 요청은 302/401로 거절하고 `no-store`와 `frame-ancestors 'self'` CSP를 둔다 | 정적 render의 router/middleware/network/port 비교 / 합성 격리 실행(비인증 asset 거절, cache, CSP) | none |
+| POL-0101-R3 | 정적 빌드 | 필수: 공개 UI 문서만 포함하고 `.env`, secret, 운영 URL/로그, 사용자 데이터, 비합성 화면은 build context·layer·manifest·asset에 넣지 않는다 | none | none |
+| POL-0101-R4 | origin 컨테이너 | 필수: 비특권 사용자, 읽기 전용 root filesystem, tmpfs, 최소 권한, 자원 제한, healthcheck를 사용한다 | 정적 render(health/resource/read-only 계약 비교) | none |
+| POL-0101-R5 | 컴포넌트 배포 | 금지: 정적 URL/manifest를 컴포넌트 코드 배포 경로로 보지 않으며 라이선스 등록 전 공개 npm 배포를 승인하지 않는다 | 수동 | none |
+| POL-0101-R6 | image 빌드 | 필수: 마지막 소스 변경 커밋에서 `git archive`한 context로만 빌드하고 `hy-home/storybook:<commit>`/`hy-home/storybook-mcp:<commit>`을 고정하며 OCI revision label·`revision.json`·hash가 일치하고 registry 배포본은 SBOM과 provenance를 가진다 | none | none |
+| POL-0101-R7 | 원격 문서 MCP | 필수: `docs-list`/`docs-show`/`docs-show-story`만 제공하고 Keycloak issuer·audience·유효기간·RS256·`/admins`를 모두 확인한 bearer token만 받으며 cookie ForwardAuth 재사용과 비인증 공개 route를 금지한다 | none | none |
+| POL-0101-R8 | 디자인 도구 전달 | 필수: 승인된 UI 코드·토큰·합성 화면만 제공하고 Claude Design `/design-sync`는 `design-export.allowlist.json`의 커밋된 파일 bundle 안에서만 실행한다 | `design-export.allowlist.json` allowlist | none |
 
 - `experience` profile을 명시적으로 선택할 때만 서비스 후보가 된다. HOME 선택에는
   포함하지 않으며, 이 문서와 profile 선택은 기동 승인이 아니다.
@@ -86,7 +95,24 @@ MCP다. 소비자는 hy-home.docker가 아닌 다른 워크스페이스다. 코�
   실행하고 저장소에서 직접 실행하지 않는다. 외부 저장소 전체, 내부 URL, 환경 파일,
   cookie, 사용자 데이터는 전송 대상이 아니다.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+현재 `/admins` 외 검토자 그룹은 없다. Keycloak의 `storybook-mcp-client`와
+`storybook-mcp` scope 생성, HOME에서의 `experience` 기동, DNS/TLS 관찰, reviewer
+group 추가와 외부 design account 사용은 담당자 @buenhyden의 별도 운영 승인 뒤에
+수행하는 follow-up trigger다. 정적 origin의 관리자 제한을
+완화하는 예외는 이 정책에 포함되지 않는다.
+
+#### Approval and Review
+
+Storybook image, Compose route/profile, OAuth2 Proxy 허용 그룹, manifest, package export,
+MCP 도구 또는 디자인 공유 범위를 변경할 때 검토한다.
+
+## Enforcement
+
+### Mechanisms
 
 `experience`와 HOME profile을 각각 정적 render하여 서비스 선택, router,
 middleware, network, port, health, resource와 read-only 계약을 비교한다. 합성
@@ -95,28 +121,23 @@ middleware, network, port, health, resource와 read-only 계약을 비교한다.
 관리자 세션은 운영 실행 승인 후에만 관찰한다. 로컬 MCP 성공을 원격 MCP의
 인증 성공으로 기록하지 않는다.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+다음은 정책이 이름 있는 검사나 실행 증거를 보이지 않는 부분이다.
 
-현재 `/admins` 외 검토자 그룹은 없다. Keycloak의 `storybook-mcp-client`와
-`storybook-mcp` scope 생성, HOME에서의 `experience` 기동, DNS/TLS 관찰, reviewer
-group 추가와 외부 design account 사용은 담당자 @buenhyden의 별도 운영 승인 뒤에
-수행하는 follow-up trigger다. 정적 origin의 관리자 제한을
-완화하는 예외는 이 정책에 포함되지 않는다.
-
-### Approval and Review
-
-Storybook image, Compose route/profile, OAuth2 Proxy 허용 그룹, manifest, package export,
-MCP 도구 또는 디자인 공유 범위를 변경할 때 검토한다.
+- 실제 HOME DNS/TLS/OIDC와 관리자 세션은 운영 실행 승인 후에만 관찰하며 승인 전에는 미관찰이다.
+- 로컬 MCP 성공을 원격 MCP의 인증 성공으로 기록하지 않으며 원격 MCP 인증 규칙에는 이름 있는 검사가 없다.
+- origin에는 peer 인증이 없어 Docker daemon 권한을 가진 운영자가 전용망에 다른 container를 붙일 수 있는 신뢰 경계가 남는다.
+- 정적 빌드 내용, image 커밋 고정/SBOM/provenance, 공개 npm 배포 금지는 이름 있는 검사 없이 검토에 의존한다.
+- Keycloak client/scope 생성, HOME `experience` 기동, reviewer group 추가, 외부 design account 사용은 별도 운영 승인 전까지 수행되지 않는다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
 
-### Change and Adoption
+### Review Triggers
 
 - [Shared Storybook guide](../../guides/14-design-system/0101-storybook.md)
 - [Shared Storybook runbook](../../runbooks/14-design-system/0101-storybook.md)

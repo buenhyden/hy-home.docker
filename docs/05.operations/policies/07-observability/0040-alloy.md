@@ -1,6 +1,6 @@
 ---
 title: "Alloy Operations Policy"
-version: "1.1.7"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -15,19 +15,17 @@ next_review_at: "2027-05-13"
 
 # Alloy Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 이 정책은 Grafana Alloy collector의 telemetry ingestion, discovery, relabeling, exporter, route, health, 설정 경계를 정의한다. 사용 흐름은 [GDE-0040](../../guides/07-observability/0040-alloy.md)이, 장애 대응 절차는 [RUN-0040](../../runbooks/07-observability/0040-alloy.md)이 맡는다.
 
-### Authority
+#### Authority
 
 - Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 
 - [Runtime image declarations](../../../../infra/06-observability/docker-compose.yml)
-
-## Scope
 
 ### Applies To
 
@@ -36,13 +34,40 @@ next_review_at: "2027-05-13"
 - **Systems**: compose service `alloy`, container `alloy`, image [Compose image declaration](../../../../infra/06-observability/docker-compose.yml), 설정 `infra/06-observability/alloy/config/config.alloy`(기본 pipeline)와 `config.home.alloy`(기본 pipeline에 품질 metric 수신기 추가), secret `quality_otlp_token`, volume `alloy-data`, Docker socket/container log 읽기 전용 mount
 - **Environments**: 로컬, 개발, 홈랩 운영
 
-### Exclusions
+#### Exclusions
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0040-R1 | 항상 | 필수: 설정은 `ALLOY_CONFIG_FILE`이 선택하는 tracked `config.alloy`/`config.home.alloy`에서 관리, 두 파일 각각 검증 | [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks) / [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#steps) | none |
+| POL-0040-R2 | 항상 | 필수: `template-infra-med`, tmpfs `/tmp`/`/run`, 읽기 전용 config/Docker socket mount, 영속 `alloy-data` volume 유지 | [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks) / [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#steps) | none |
+| POL-0040-R3 | 항상 | 필수: OTLP 입력은 gRPC `4317`/HTTP `4318`, trace만 수신 | [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks) / [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#steps) | none |
+| POL-0040-R4 | `config.home.alloy` 품질 metric 수신 시 | 필수: HTTP `4319`와 bearer token secret `quality_otlp_token`, host publish 금지, 허용 label만 유지 | [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks) / [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#steps) | none |
+| POL-0040-R5 | 항상 | 필수: run별 relay는 internal `quality_otlp_net`으로만 `alloy:4319`에 접근, 수신기 host/다른 tier 노출 금지, 해당 망에는 Alloy와 relay만 | [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks) / [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#steps) | none |
+| POL-0040-R6 | 항상 | 필수: UI/health는 `${ALLOY_PORT:-12345}`와 `/-/healthy`, route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file` 유지 | [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks) / [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#steps) | none |
+| POL-0040-R7 | 항상 | 필수: Docker discovery는 Compose project `hy-home-infra` label target만, network 이름 matching으로 대체 금지 | [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks) / [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#steps) | none |
+| POL-0040-R8 | 항상 | 필수: Docker log label `service_name`/`container_name`/`compose_project`/`env`/`scope`, observability infra는 `scope=infra` | [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks) / [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#steps) | none |
+| POL-0040-R9 | 항상 | 필수: 로그는 `loki.source.docker`에서 `loki.write.local_loki`(`http://loki:3100/loki/api/v1/push`)로 전달 | [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks) / [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#steps) | none |
+| POL-0040-R10 | 항상 | 필수: Alloy 자체 metric은 Prometheus job `alloy` 한 곳에서 scrape, 중복 self remote-write 금지 | [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks) / [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#steps) | none |
+| POL-0040-R11 | 항상 | 필수: trace pipeline `otelcol.receiver.otlp` → `otelcol.processor.batch` → `otelcol.exporter.otlp.tempo`(`tempo:4317`) 유지 | [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks) / [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#steps) | none |
+| POL-0040-R12 | 항상 | 필수: Pyroscope forwarding은 `pyroscope.write.local_pyroscope`(`http://pyroscope:4040`), Go/SeaweedFS scrape source 유지, 변경은 config/evidence 변경으로 처리 | [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks) / [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#steps) | none |
+| POL-0040-R13 | 항상 | 필수: node-exporter는 host network, Alloy는 `extra_hosts`의 `node-exporter:10.250.5.1`로 pprof 대상 이름 유지 | [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks) / [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#steps) | none |
+| POL-0040-R14 | 새 application instrumentation 시 | 허용: OTLP 우선 사용 | none | none |
+| POL-0040-R15 | 새 Docker relabel rule/exporter 추가 시 | 허용: guide/runbook 영향과 downstream backend readiness를 함께 검증 | none | none |
+| POL-0040-R16 | 항상 | 허용: Alloy UI로 pipeline graph 확인, 변경 승인 기준은 git diff와 로컬 검증 evidence | none | git diff / 로컬 검증 evidence |
+| POL-0040-R17 | 항상 | 금지: Docker socket/container log mount를 read-write로 변경 | none | none |
+| POL-0040-R18 | 항상 | 금지: high-cardinality 또는 secret 값을 label로 승격 | none | none |
+| POL-0040-R19 | 항상 | 금지: 승인 없이 OTLP port/exporter endpoint/route middleware/Docker discovery filter/image version을 runtime에서 변경 | none | none |
+| POL-0040-R20 | 항상 | 금지: profile source 미연결 상태에서 profiling ingestion이 active라고 선언 | none | none |
+| POL-0040-R21 | 항상 | 필수: HOME 유지, socket 읽기 전용, 선언된 network/gateway 경계 보존 | [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks) / [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#steps) | none |
+| POL-0040-R22 | 항상 | 필수: 설정이 영속 기준, 사용 component를 확인한 상태만 백업, 전송 중 telemetry의 정확한 복구 약속 금지 | none | none |
+| POL-0040-R23 | upgrade 전 | 필수: 대상 버전 config/허용 손실/각 backend 전달 검증, writer만으로 profile 수집 증명 금지 | none | none |
+| POL-0040-R24 | 제거 시 | 필수: producer 이전, 관측 공백 승인, route/port 폐쇄, WAL/checkpoint 처리 확인 | none | none |
 
 - 설정은 `ALLOY_CONFIG_FILE`이 선택하는 tracked `config.alloy` 또는 `config.home.alloy`에서 관리한다. 두 지원 파일을 각각 검증한다.
 - 서비스는 `template-infra-med`, image [Compose image declaration](../../../../infra/06-observability/docker-compose.yml), tmpfs `/tmp`와 `/run`, 읽기 전용 config mount, 읽기 전용 Docker container/socket mount, 영속 `alloy-data` volume을 유지한다.
@@ -78,29 +103,40 @@ next_review_at: "2027-05-13"
 - Upgrade 전에 대상 버전 config, 허용 손실, 각 backend 전달을 검증한다. writer만으로 profile 수집을 증명하지 않는다.
 - 제거에는 producer 이전, 관측 공백 승인, route/port 폐쇄, 확인된 WAL/checkpoint 처리가 필요하다.
 
-### Enforcement
+### Exceptions
 
-- Compose 경계, pipeline 경계, 품질 metric 수신기 확인 명령은 [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks)와 [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#steps)가 소유한다.
-- Repository contracts: 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
-
-## Exceptions
-
-### Exception Conditions
+#### Exception Conditions
 
 pipeline, exporter, Docker discovery, route, mount 예외는 사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다. 장애 대응 중 임시 조치가 필요하면 [RUN-0040](../../runbooks/07-observability/0040-alloy.md)에서 최소 조치와 rollback evidence를 기록한다.
 
-### Approval and Review
+#### Approval and Review
 
 - Alloy image, config, Docker discovery, relabel rule, exporter endpoint, mount 경로, OTLP port, route, healthcheck가 바뀔 때 검토한다.
 - 정기 검토는 분기마다 한다.
 
+## Enforcement
+
+### Mechanisms
+
+- Compose 경계, pipeline 경계, 품질 metric 수신기 확인 명령은 [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks)와 [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#steps)가 소유한다.
+- Repository contracts: 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
+
+### Limits
+
+확인 명령은 GDE-0040/RUN-0040이 소유하며 정책 본문은 개별 명령을 지정하지 않는다. 아래 항목은 정책상 기계적으로 강제되지 않는다.
+
+- 정책 본문에 이름 붙은 검사 명령이 없고 확인 명령 소유를 guide/runbook에 위임하며, 원격 PR `changed` 검사가 repository contract로 언급될 뿐이다.
+- 금지 행위(read-write 변경, label 승격, runtime 변경, 미연결 profiling 선언)는 승인 절차에 의존한다.
+- Upgrade 전 검증, 백업, 제거 절차에는 이름 붙은 자동 검사가 없다.
+- 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
+
 ## Ownership
 
-### Responsibilities
+### Owner
 
 책임 소유자는 **@buenhyden**이다. 예외와 통제 변경에는 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Change and Adoption
+### Review Triggers
 
 - Subject peers: [Guide](../../guides/07-observability/0040-alloy.md) (`GDE-0040`), [Runbook](../../runbooks/07-observability/0040-alloy.md) (`RUN-0040`)
 

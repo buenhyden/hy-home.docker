@@ -1,10 +1,10 @@
 ---
 title: "08-AI Optimization Hardening Operations Policy"
-version: "1.0.6"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0058"
 parent_ids:
@@ -15,19 +15,17 @@ next_review_at: "2027-05-13"
 
 # 08-AI Optimization Hardening Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 이 문서는 `08-ai` 계층의 최적화/하드닝 운영 정책을 정의한다. gateway 경계 보안, Ollama GPU 보호, Open WebUI LAB 경계, 모델 승격/접근 통제/로그 보존 정책을 통제한다.
 
-### Authority
+#### Authority
 
 - Declared parent: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
 
 - 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
-
-## Scope
 
 ### Applies To
 
@@ -38,13 +36,31 @@ next_review_at: "2027-05-13"
 - **Systems**: Ollama, Ollama Exporter, Open WebUI
 - **Environments**: 로컬·개발·검증 및 운영 환경에 준하는 환경
 
-### Exclusions
+#### Exclusions
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0058-R1 | 항상 | 필수: Ollama public route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`을 유지하고 Open WebUI는 gateway route 없이 `LAB_HOST_BIND_IP`에만 게시하며 Keycloak OIDC를 유지한다 | `check-all-hardening.sh 08-ai` / CI `infrastructure-hardening` | hardening 검사 결과 |
+| POL-0058-R2 | 항상 | 필수: Ollama는 `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE` 상한을 유지한다 | `check-all-hardening.sh 08-ai` | hardening 검사 결과 |
+| POL-0058-R3 | 항상 | 필수: Open WebUI는 `template-stateful-med`를 사용한다 | `check-all-hardening.sh 08-ai` | hardening 검사 결과 |
+| POL-0058-R4 | 항상 | 필수: `ollama-exporter`는 `ollama` health 의존성과 metrics healthcheck를 유지한다 | `check-all-hardening.sh 08-ai` | hardening 검사 결과 |
+| POL-0058-R5 | AI 변경 시 | 필수: `check-all-hardening.sh 08-ai` 및 CI `infrastructure-hardening`을 통과한다 | `check-all-hardening.sh 08-ai` / CI `infrastructure-hardening` | 정적 검사와 hardening 검사 결과 |
+| POL-0058-R6 | 모델 승격 시 | 필수: 실험/검증/운영 단계와 승인 기록을 포함한다 | 수동 | 승인 기록 |
+| POL-0058-R7 | 항상 | 필수: Open WebUI 모델 접근 권한을 역할/환경 단위로 분리한다 | 수동 | none |
+| POL-0058-R8 | 항상 | 필수: 대화 로그의 보존 기간/마스킹 기준을 명시하고 비식별화 정책을 준수한다 | 수동 | none |
+| POL-0058-R9 | 항상 | 필수: optimization-hardening 문서(PRD~Procedure) 링크를 유지한다 | 수동 | none |
+| POL-0058-R10 | 항상 | 허용: 운영 지표 기반 Ollama 상한값의 점진적 튜닝 | 수동 | none |
+| POL-0058-R11 | 항상 | 허용: 모델 승격 기준 강화(품질/안전/eval) | 수동 | none |
+| POL-0058-R12 | 항상 | 허용: 로그 보존/마스킹 정책의 보수적 강화 | 수동 | none |
+| POL-0058-R13 | 항상 | 금지: 무승인 SSO/middleware 완화 | 수동 / `check-all-hardening.sh 08-ai` | 승인 기록 |
+| POL-0058-R14 | 항상 | 금지: 모델 승격 절차를 생략한 배포 | 수동 | 승인 기록 |
+| POL-0058-R15 | 항상 | 금지: 민감 대화 로그의 무마스킹 저장 | 수동 | none |
 
 - **Required**:
   - Ollama public route는
@@ -83,33 +99,45 @@ next_review_at: "2027-05-13"
 
 AI hardening은 일부 소스 문자열만 검사하며 GPU 여유, 사용자별 모델 권한, chat 보존·삭제, password 거부와 추론 성공을 증명하지 않는다. 모델 승격, 역할·환경별 접근 분리, 대화 masking/retention 요구는 유지한다. 소스에는 자동 chat retention과 완성된 모델 접근 분리를 입증할 설정이 부족하다. @buenhyden의 별도 통제·구현 변경과 검증 전에는 준수를 주장하지 않는다. 근거를 채우려고 비공개 대화를 로그에 남기지 않는다. ComfyUI 영속성과 Crawl4AI 격리는 각 Runbook의 통제를 따른다.
 
-### Enforcement
+### Exceptions
 
-점검 명령은 [가이드의 Common Checks](../../guides/09-ai-and-search/0058-ai-optimization-hardening.md#common-checks)를 따른다. 정적 검사와 hardening 검사 결과를 변경 증거로 남긴다.
-
-통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
-
-## Exceptions
-
-### Exception Conditions
+#### Exception Conditions
 
 - 장애 대응으로 일시 완화가 필요할 경우 승인 기록과 종료 시점이 필수다.
 - 예외 종료 후 동일 릴리스 내 원상복구 및 재검증을 수행한다.
 
-### Approval and Review
+#### Approval and Review
 
 - 월 1회 정기 검토
 - AI 이미지/모델 정책/인증 정책 변경 시 수시 검토
 
 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다.
 
+## Enforcement
+
+### Mechanisms
+
+점검 명령은 [가이드의 Common Checks](../../guides/09-ai-and-search/0058-ai-optimization-hardening.md#common-checks)를 따른다. 정적 검사와 hardening 검사 결과를 변경 증거로 남긴다.
+
+통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
+
+### Limits
+
+hardening 검사는 일부 소스 문자열만 확인하며 정책이 직접 아래 한계를 밝힌다.
+
+- GPU 여유, 사용자별 모델 권한, chat 보존·삭제, password 거부, 추론 성공은 hardening 검사로 증명되지 않는다.
+- 소스에 자동 chat retention과 완성된 모델 접근 분리를 입증할 설정이 부족하여 @buenhyden의 별도 통제·구현 변경과 검증 전에는 준수를 주장하지 않는다.
+- 모델 승격 절차, 로그 마스킹/비식별화는 승인 기록과 수동 검토에 의존한다.
+- Catalog Expansion Approval Gates 항목은 문서화 조건이며 이를 점검하는 검사 이름이 없다.
+- ComfyUI 영속성과 Crawl4AI 격리는 각 Runbook의 통제를 따른다.
+
 ## Ownership
 
-### Responsibilities
+### Owner
 
 책임 소유자는 **@buenhyden**이다.
 
-### Change and Adoption
+### Review Triggers
 
 - Subject peers: [Guide](../../guides/09-ai-and-search/0058-ai-optimization-hardening.md) (`GDE-0058`), [Runbook](../../runbooks/09-ai-and-search/0058-ai-optimization-hardening.md) (`RUN-0058`)
 

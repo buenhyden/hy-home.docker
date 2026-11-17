@@ -1,10 +1,10 @@
 ---
 title: "Terrakube Operations Policy"
-version: "1.1.6"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0069"
 parent_ids:
@@ -15,7 +15,7 @@ next_review_at: "2027-05-13"
 
 # Terrakube Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
@@ -23,26 +23,36 @@ Terrakube는 명시적인 `iac` 컨트롤 플레인이다. Apache-2.0 프로젝�
 이 단일 호스트 배포의 지원, SLA, 엔터프라이즈 기능, HA를 보장하지는
 않는다.
 
-### Authority
+#### Authority
 
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 - [Terrakube Compose 소스](../../../../infra/09-platform-ops/terrakube/docker-compose.yml)
-
-## Scope
 
 ### Applies To
 
 API/UI/executor 활성화, 네이티브/gateway 인증, Docker 소켓 및 provider 권한,
 PostgreSQL/SeaweedFS/Valkey 데이터, 협조된 복구, 업그레이드, 제거.
 
-### Exclusions
+#### Exclusions
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0069-R1 | 활성화 시 | 필수: `iac`에서는 이름이 지정된 세 Terrakube 서비스만 시작하고 HOME/tooling에서는 제외한다 | none | none |
+| POL-0069-R2 | 항상 | 필수: gateway 미들웨어와 애플리케이션 OIDC 동작을 모두 검증하며 환경 변수 레이블만으로 OIDC/그룹 권한을 주장하지 않는다 | 로그인/권한 부여 end-to-end 검증 | none |
+| POL-0069-R3 | plan/apply 시 | 필수: repository/ref, workspace, 계정, 예상 리소스, 승인자를 명시하고 apply/destroy는 별도 승인을 받는다 | 승인 절차 / 검토된 non-applying plan | 승인 기록 |
+| POL-0069-R4 | 항상 | 필수: 선언된 시크릿 파일만 사용하고 로그/스크린샷/Task/지원 번들에 시크릿/상태/plan 출력을 포함하지 않는다 | 수동 | none |
+| POL-0069-R5 | 항상 | 필수: PostgreSQL 메타데이터와 SeaweedFS `tfstate`를 공동 권위로 보고 보존 정책에 일관된 복구 지점을 포함한다 | 수동 | none |
+| POL-0069-R6 | 백업/복구 시 | 필수: 스케줄링/실행을 정지하고 PostgreSQL과 SeaweedFS를 일관되게 캡처하며 외부 실행 비활성화 상태로 리허설한다 | 수동 | none |
+| POL-0069-R7 | 항상 | 금지: 컨테이너 재시작을 HA나 재해 복구로 묘사한다 | 수동 | none |
+| POL-0069-R8 | 업그레이드 시 | 필수: 복원된 사본에서 마이그레이션을 테스트하고 API/UI/executor를 호환 세트로 함께 이동한다 | 수동 | none |
+| POL-0069-R9 | 제거 시 | 필수: 후속 시스템이 소유하기 전까지 workspace/run/상태/출력/VCS 매핑/복구 보관을 유지한다 | 수동 | none |
 
 - **Activation:** `iac`에서는 이름이 지정된 세 가지 Terrakube 서비스만 시작하고
   정확한 의존성은 별도로 선택한다. HOME/tooling에서는 제외한다.
@@ -71,32 +81,44 @@ PostgreSQL/SeaweedFS/Valkey 데이터, 협조된 복구, 업그레이드, 제거
 
 현재 gateway 통제를 유지하고 로그인·health 성공을 실행 가능 증거로 기록하지 않는다. 인증 경로 제한의 세부 내용은 [Guide](../../guides/10-platform-and-backup/0069-terrakube.md#현재-실행-경로의-제한)를 따른다.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+예외는 provider/apply 승인, Docker 소켓 검토, 시크릿 취급, 협조된 백업을
+우회할 수 없다. 만료 시점과 복구 담당자를 기록한다.
+
+#### Approval and Review
+
+각 릴리스, 인증 변경, 저장소/백엔드 변경, Docker 소켓 권한 변경 전에
+검토한다.
+
+## Enforcement
+
+### Mechanisms
 
 정적 Compose와 컴포넌트 헬스는 부분적인 신호다. 엔드투엔드 증거에는
 로그인/권한 부여, DB/객체 접근 가능성, executor 등록, 그리고 검토된
 비적용(non-applying) plan이 필요하다. 복구는 리허설하기 전까지 검증되지
 않은 상태로 남는다.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+정책은 정적 Compose와 헬스를 부분 신호로만 인정하며 아래 항목은 입증되지 않았거나 수동에 의존한다.
 
-예외는 provider/apply 승인, Docker 소켓 검토, 시크릿 취급, 협조된 백업을
-우회할 수 없다. 만료 시점과 복구 담당자를 기록한다.
-
-### Approval and Review
-
-각 릴리스, 인증 변경, 저장소/백엔드 변경, Docker 소켓 권한 변경 전에
-검토한다.
+- 엔드투엔드 증거(로그인/권한 부여, DB/객체 접근, executor 등록, 검토된 non-applying plan)가 필요하며 전용 명령은 지정되어 있지 않다.
+- 복구는 리허설하기 전까지 검증되지 않은 상태로 남는다.
+- 현재 실행 경로 제한으로 로그인/health 성공을 실행 가능 증거로 기록하지 않는다.
+- 단일 호스트 단일 replica DEV 배포로 HA/재해 복구는 제공되지 않는다.
+- apply/destroy 승인, 시크릿 취급, 협조된 백업은 수동 승인과 검토에 의존한다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
-### Change and Adoption
+### Review Triggers
 
 - [가이드](../../guides/10-platform-and-backup/0069-terrakube.md) (`GDE-0069`)
 - [런북](../../runbooks/10-platform-and-backup/0069-terrakube.md) (`RUN-0069`)

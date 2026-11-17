@@ -1,10 +1,10 @@
 ---
 title: "Management Database Operations Policy"
-version: "1.0.9"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0028"
 parent_ids:
@@ -15,19 +15,17 @@ next_review_at: "2027-05-13"
 
 # Management Database Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 이 정책은 현재 소스 구성을 데이터 보호, 보안, 리소스, 생명주기와 독립적으로 검증 가능한
 운영 통제에 묶는다.
 
-### Authority
+#### Authority
 
 - Artifact: `POL-0028`; parent: `AD-0004`.
 - Runtime 권한은 연결된 Compose/소스 파일에 남아 있으며, 정확한 pin도 그곳에 있다.
-
-## Scope
 
 ### Applies To
 
@@ -35,13 +33,24 @@ next_review_at: "2027-05-13"
 role, broker, credential 변경은 consumer를 인지하는 유지보수와 rollback을
 요구한다.
 
-### Exclusions
+#### Exclusions
 
 애플리케이션 인증 연동은 이 정책이 아니라 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)가 정한다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0028-R1 | `mng-db` 서비스 운영 시 | 필수: `mng`/`core`/`dev`/`local` 중 하나와 root project로 운영, Leaf Compose 단독 실행 금지 | `docker compose --env-file .env.example --profile mng config --quiet` / `tests/validation/test_compose_baseline_gates.py` | none |
+| POL-0028-R2 | 항상 | 필수: PostgreSQL/Valkey 별도 bind-backed volume, `mng_data_net`, health check, secret 파일, 공유 리소스 제한 보존 | `docker compose --env-file .env.example --profile mng config --quiet` / `tests/validation/test_compose_baseline_gates.py` | none |
+| POL-0028-R3 | 항상 | 필수: `mng_postgres_password` 등 credential을 Docker secret으로 유지, dump/evidence에 plaintext 금지 | none | none |
+| POL-0028-R4 | `mng-pg-init` 재실행 시 | 필수: restore가 아닌 idempotent provisioning으로 취급, 재실행 전 role/database 목록 검토, optional-capability secret 읽기/DDL 금지 | none | none |
+| POL-0028-R5 | Init SQL이 psql 변수를 읽을 때 | 필수: 모든 psql 변수를 실행자가 전달 | `tests/validation/test_compose_baseline_gates.py` contract test | none |
+| POL-0028-R6 | 지표 수집 시 | 필수: `mng_pg_monitor`/`mngmonitor`만 사용, MNG exporter에 관리자 비밀 금지 | none | none |
+| POL-0028-R7 | Replication slot 정리 시 | 금지: `POL-0036` CDC 재동기화 승인 없이 slot 삭제 | none | none |
+| POL-0028-R8 | 항상 | 필수: Valkey를 폐기 가능한 cache가 아닌 workflow broker state로 취급 | none | none |
 
 - `mng`, `core`, `dev`, `local` 중 하나와 함께 root project를 통해 운영한다(PostgreSQL 쪽은 `mlops`, `data-science`, `contract-testing`, `bi`가 의존성 closure로도 선택한다).
   Leaf Compose 파일을 독립적으로 실행하지 않는다.
@@ -93,32 +102,43 @@ cutover나 data 교체는 별도 승인이 필요하다.
 
 적용 identity: `mng-pg`, `mng-pg-exporter`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-valkey`, `mng-valkey-exporter`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-### Enforcement
+### Exceptions
 
-`docker compose --env-file .env.example --profile mng config --quiet`와 `tests/validation/test_compose_baseline_gates.py` contract test로 root 구성을 정적 검증한 뒤, 승격이나 cutover
-전에 application 수준 acceptance를 갖춘 isolated compatible restore를
-요구한다. 검증되지 않은 runtime 속성은 명시적으로 기록한다.
-
-## Exceptions
-
-### Exception Conditions
+#### Exception Conditions
 
 Workflow queue state에는 cache-only 예외가 적용되지 않는다. 예외는 runtime
 mutation, plaintext secret, raw active storage 복사, 동일 host 가용성 주장을
 허용하지 않는다.
 
-### Approval and Review
+#### Approval and Review
 
 Profile, image, volume, credential, consumer, retention 또는 upstream
 lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다.
 
+## Enforcement
+
+### Mechanisms
+
+`docker compose --env-file .env.example --profile mng config --quiet`와 `tests/validation/test_compose_baseline_gates.py` contract test로 root 구성을 정적 검증한 뒤, 승격이나 cutover
+전에 application 수준 acceptance를 갖춘 isolated compatible restore를
+요구한다. 검증되지 않은 runtime 속성은 명시적으로 기록한다.
+
+### Limits
+
+이 정책의 통제는 root 구성의 정적 검증이 중심이며, 아래 항목은 정책이 스스로 기계적 검증이 없다고 밝힌 부분이다.
+
+- 계획된 RPO 24시간/RTO 4시간을 증명하는 HOME rehearsal이 없다.
+- 현 RUN-0021 automation은 physical pgBackRest/WAL+globals와 RDB만 제공하며, database별 logical/AOF capture와 앱 quiescence는 별도 구현/승인 작업이다.
+- Secret 보관, replication slot 보호, `mng-pg-init` 재실행 검토, 지표 수집 role 제한에는 이름 붙은 자동 검사가 없다.
+- 검증되지 않은 runtime 속성은 명시적으로 기록해야 하며, 승격/cutover 전 isolated restore와 application 수준 acceptance는 별도 승인 후 수행한다.
+
 ## Ownership
 
-### Responsibilities
+### Owner
 
 @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다.
 
-### Change and Adoption
+### Review Triggers
 
 - [Domain catalog](../../README.md)
 - [Runbook](../../runbooks/05-databases-and-storage/0028-management-database.md)

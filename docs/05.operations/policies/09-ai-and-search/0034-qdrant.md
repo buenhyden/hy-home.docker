@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Operations Policy"
-version: "1.2.7"
+version: "1.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0034"
 parent_ids:
@@ -15,19 +15,17 @@ next_review_at: "2027-05-13"
 
 # Qdrant Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 이 정책은 root-active `HOME` Qdrant 운영 기준을 정의한다. 기준은 [Qdrant Compose 구현](../../../../infra/04-data/qdrant/docker-compose.yml)의 단일 service, exact `ai`/`ai-llm`/`qdrant` profiles, `ai_net`, API key secret, SSO 뒤의 REST route와 `/readyz` healthcheck다.
 
-### Authority
+#### Authority
 
 - Declared parent: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
 
 - [Infra README](../../../../infra/04-data/qdrant/README.md)
-
-## Scope
 
 ### Applies To
 
@@ -39,13 +37,28 @@ next_review_at: "2027-05-13"
 - `QDRANT__STORAGE__SNAPSHOTS_PATH=/qdrant/storage/snapshots`
 - `docs/05.operations` 아래에 연결된 guide와 runbook
 
-### Exclusions
+#### Exclusions
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0034-R1 | 항상 | 필수: 문서는 Qdrant를 cluster가 아니라 단일 unprivileged service로 설명한다 | guide/runbook/infra README와 정책 비교 | none |
+| POL-0034-R2 | 모든 Qdrant client | 필수: key를 secret file에서 읽고 Compose environment 값, logs, evidence에 나타나지 않게 한다 | 수동 | none |
+| POL-0034-R3 | 외부 접근 가이드 | 필수: 선언된 SSO REST route 안에 머물고 host port publishing이나 gRPC route를 암시하지 않는다 | guide/runbook/infra README와 정책 비교 / `docker compose --profile qdrant config --quiet` / 문서 비교 | none |
+| POL-0034-R4 | persistence 표현 | 필수: `qdrant-data:/qdrant/storage:rw`와 `/qdrant/storage/snapshots`와 일치시킨다 | `docker compose --profile qdrant config --quiet` / 문서 비교 | config 렌더링 결과 |
+| POL-0034-R5 | 백업 inventory | 필수: snapshot identifier, engine minor version, aliases, vector counts/config, checksum, retention, restore evidence를 기록하고 snapshot file을 디스크에서 보호한다 | 수동 | backup inventory / restore evidence |
+| POL-0034-R6 | restore rehearsal | 필수: 동일/다음 minor의 새 isolated target을 쓰고 target collection이 없어야 하며 snapshot 크기 약 2배의 여유 디스크를 둔다 | 수동 (runbook) | restore evidence |
+| POL-0034-R7 | promotion 전 | 필수: aliases, collection config/status, point counts, representative searches를 검증하고 upgrade/removal에는 restore-tested snapshot과 capacity review를 둔다 | 수동 (runbook) | restore-tested snapshot / capacity review |
+| POL-0034-R8 | 읽기 전용 점검 | 허용: `/readyz`, `/collections`(secret file key), compose config rendering, service logs, evidence용 `docker compose ps` | none | none |
+| POL-0034-R9 | 문서 전용 수정 | 허용: image tag, profile, route, healthcheck, volume 설명을 compose와 일치시킨다 | `docker compose --profile qdrant config --quiet` / 문서 비교 / `check-document-links.py --mode all` | 검사 결과 |
+| POL-0034-R10 | 항상 | 금지: 별도 owner 승인과 검증된 runbook evidence 없이 collection delete, snapshot restore, volume replacement, cluster repair, data mutation 단계를 승인된 정책으로 제시한다 | 수동 | owner 승인 / runbook evidence |
+| POL-0034-R11 | 항상 | 금지: API key를 제거하거나 key 없이 Qdrant를 호출하는 client를 추가한다 | 수동 | none |
+| POL-0034-R12 | lifecycle 경계 | 필수: 정적 검증과 runtime 운영 승인을 분리하고 변경 시 정책과 guide/runbook을 함께 검토하며 소유 artifact/복구 지점/expiry가 불명확하면 삭제/재생성을 중단한다 | 수동 (POL-0006 / POL-0021 / POL-0079 위임) | none |
 
 - **Required**: 문서는 Qdrant를 cluster가 아니라 단일 unprivileged service로 설명해야 한다.
 - **Required**: 모든 Qdrant client는 secret file에서 key를 읽어야 하며 key가 Compose environment 값, logs, evidence에 절대 나타나서는 안 된다.
@@ -63,30 +76,41 @@ next_review_at: "2027-05-13"
 
 적용 identity: `qdrant`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+N/A - 현재 승인된 예외 없음.
+
+#### Approval and Review
+
+- Qdrant compose image/profile/secret/route/snapshot-path 변경 시 검토한다.
+- Stage 05 운영 문서 audit 주기 동안 검토한다.
+
+## Enforcement
+
+### Mechanisms
 
 - compose 변경 후 이 정책을 [Qdrant guide](../../guides/09-ai-and-search/0034-qdrant.md), [Qdrant runbook](../../runbooks/09-ai-and-search/0034-qdrant.md), [infra README](../../../../infra/04-data/qdrant/README.md)와 비교한다.
 - service-name, image, route, secret, healthcheck, volume 문서 갱신을 승인하기 전에 `docker compose --profile qdrant config --quiet`를 실행한다.
 - 정책이나 연결된 운영 문서 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+이 정책의 이름 붙은 검사는 문서 비교, `docker compose --profile qdrant config --quiet`, `check-document-links.py --mode all` 세 가지이며 모두 정적 문서 검증이다.
 
-N/A - 현재 승인된 예외 없음.
-
-### Approval and Review
-
-- Qdrant compose image/profile/secret/route/snapshot-path 변경 시 검토한다.
-- Stage 05 운영 문서 audit 주기 동안 검토한다.
+- 세 검사는 runtime 운영 승인이나 실제 backup/restore를 증명하지 않는다.
+- secret/key 취급, 백업 inventory, restore rehearsal, promotion 검증, 변경 금지 단계는 수동 검토와 runbook 증거에 의존하며 지정된 검사가 없다.
+- 현재 승인된 예외는 없다.
+- 새 예외는 기존 Exceptions에 없는 한 승인된 것으로 간주하지 않는다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 이 정책의 소유자는 frontmatter `owner`에 기록된 @buenhyden이다.
 
-### Change and Adoption
+### Review Triggers
 
 - Subject peers: [Guide](../../guides/09-ai-and-search/0034-qdrant.md) (`GDE-0034`), [Runbook](../../runbooks/09-ai-and-search/0034-qdrant.md) (`RUN-0034`)
 

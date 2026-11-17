@@ -1,6 +1,6 @@
 ---
 title: "Kafka Operations Policy"
-version: "2.1.4"
+version: "2.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
@@ -15,13 +15,13 @@ next_review_at: "2027-05-13"
 
 # Kafka Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 이 정책은 현재 소스 구성을 data protection, security, resource, lifecycle 측면에서 독립적으로 검증 가능한 operator control에 결합한다.
 
-### Authority
+#### Authority
 
 - Runtime source: [Kafka Compose](../../../../infra/05-messaging/kafka/docker-compose.yml),
   [LAB Compose](../../../../labs/kafka-cluster/docker-compose.yml), [LAB 설명](../../../../labs/kafka-cluster/README.md),
@@ -30,15 +30,13 @@ next_review_at: "2027-05-13"
 - Runtime authority는 연결된 Compose/source file에 남는다; exact pin은
   그곳에 유지된다.
 
-## Scope
-
 ### Applies To
 
 Kafka-family 서비스는 OPTIONAL로 유지된다. 활성화 전에 이름이 지정된
 producer/consumer와 승인된 capacity, retention, security, recovery 계획이
 필요하다.
 
-### Exclusions
+#### Exclusions
 
 제거된 broker family에 대한 control은 현재 구현에 적용되지
 않는다.
@@ -46,6 +44,19 @@ producer/consumer와 승인된 capacity, retention, security, recovery 계획이
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0036-R1 | 항상 | 필수: 정상 Kafka는 root `messaging` 계열 profile로만 선택, 세 broker LAB은 root에 include하지 않는 별도 project/cluster ID/data directory | [RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md#steps)의 root `messaging` render / LAB render | none |
+| POL-0036-R2 | 항상 | 필수: broker volume 구분, `kafka_net`/health check/공유 리소스 제한 유지 | [RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md#steps)의 root `messaging` render / LAB render | none |
+| POL-0036-R3 | 항상 | 금지: PLAINTEXT listener에서 transport confidentiality/client authentication 주장; external/JMX exporter host 포트는 `127.0.0.1`에만 게시, TLS/SASL은 별도 architectural change | [RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md#steps)의 root `messaging` render / LAB render | none |
+| POL-0036-R4 | 항상 | 필수: Kafbat은 native OIDC/RBAC, local CA trust, `kafbat_client_secret` 유지, 표준 gateway chain만 사용, forwarding-header 인증 대체 금지 | none | none |
+| POL-0036-R5 | topic/partition/retention/offset/connector 변경 시 | 필수: 명시적 change scope와 rollback | none | none |
+| POL-0036-R6 | 항상 | 필수: 정상 `kafka-init` topic은 replication factor 1, `lab-kafka-init`은 factor 3(healthy LAB broker 3개), 서로의 cluster ID/offset/data directory에 적용 금지 | none | none |
+| POL-0036-R7 | 항상 | 금지: HOME에 CDC 서비스/`cdc` profile/Debezium credential/provisioning job 두기, Kafbat의 schema registry/Connect 설정 (LAB으로 이동, ADR-0062 개정) | none | 2026-11-10 owner 결정 |
+| POL-0036-R8 | LAB connector 변경 시 | 필수: connector와 source database를 명시한 승인 (등록/재구성/새 snapshot mode/삭제) | none | none |
+| POL-0036-R9 | HOME에서 CDC 재사용 시 | 필수: POL-0107 승격 또는 새 결정, 새 원천의 slot/publication/topic 생성, 이전 slot/`kafka-connect-data` 상태 재사용 금지 | none | none |
+| POL-0036-R10 | 항상 | 필수: slot/connector offset은 recovery state, 삭제/reset은 승인/downstream 계획/새 snapshot이 필요한 destructive resync, 원천 DB 연결 시 `max_slot_wal_keep_size` 대비 slot lag 모니터링 | none | none |
 
 - 정상 Kafka는 root의 `messaging` 계열 profile로만 선택한다. 세 broker
   topology는 root에 include하지 않는 `labs/kafka-cluster/docker-compose.yml`의 독립 LAB이며,
@@ -112,32 +123,43 @@ notes, client support를 검토한다. rollback과 현재 recovery artifact를
 
 적용 identity: 정상 `kafbat-ui`, `kafka-1`, `kafka-exporter`, `kafka-init`; LAB `lab-kafka-1..3`, `lab-kafka-exporter`, `lab-kafka-init`, `lab-schema-registry`, `lab-kafka-connect`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-### Enforcement
+### Exceptions
 
-[RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md#steps)의 root `messaging` render와 LAB render로 static 구성을 검증한 다음, promotion이나
-cutover 전에 application-level acceptance를 갖춘 isolated compatible
-restore를 요구한다. 검증되지 않은 runtime property는 명시적으로 기록한다.
-
-## Exceptions
-
-### Exception Conditions
+#### Exception Conditions
 
 optional stack은 없을 수 있다; listener-security exception이 암시되지
 않는다. exception은 runtime mutation, plaintext secret, raw active storage
 copy, same-host availability 주장을 승인하지 않는다.
 
-### Approval and Review
+#### Approval and Review
 
 profile, image, volume, credential, consumer, retention, upstream
 lifecycle 변경 후 검토하며, 보관 중에는 최소 연 1회 검토한다.
 
+## Enforcement
+
+### Mechanisms
+
+[RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md#steps)의 root `messaging` render와 LAB render로 static 구성을 검증한 다음, promotion이나
+cutover 전에 application-level acceptance를 갖춘 isolated compatible
+restore를 요구한다. 검증되지 않은 runtime property는 명시적으로 기록한다.
+
+### Limits
+
+정책이 지정한 정적 검증은 root `messaging` render와 LAB render이며, 아래 항목은 정책상 기계적으로 강제되지 않는다.
+
+- 현재 broker/controller/host listener는 PLAINTEXT이며 TLS/SASL은 미구현 gap이다.
+- 계획된 RPO 24시간/RTO 8시간은 검증되지 않았고, restore rehearsal(schema compatibility, end offset, record count/checksum, consumer position, LAB connector pause/resume)은 별도 수행 전까지 증거가 없다.
+- 검증되지 않은 runtime property는 명시적으로 기록하며, 승격/cutover 전 isolated restore와 application 수준 acceptance는 별도 요구다.
+- Kafbat OIDC/RBAC, topic 변경 scope, connector 승인, slot lag 모니터링에는 이름 붙은 자동 검사가 없다.
+
 ## Ownership
 
-### Responsibilities
+### Owner
 
 이 정책의 소유자는 frontmatter `owner`에 기록된 @buenhyden이다.
 
-### Change and Adoption
+### Review Triggers
 
 - [Domain catalog](../../README.md)
 - [Kafka operations](https://kafka.apache.org/documentation/#operations)

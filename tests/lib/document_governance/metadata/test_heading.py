@@ -48,7 +48,7 @@ class CurrentBodyContractTests(unittest.TestCase):
             "plan": "Overview|Dependencies|Implementation Strategy|Verification Plan|Risks|Promotion Map",
             "task": "Scope|Execution Log|Verification Evidence|Acceptance Decision|Handoff",
             "guide": "Purpose|Prerequisites|Procedure|Troubleshooting",
-            "policy": "Purpose|Scope|Rules|Exceptions|Ownership",
+            "policy": "Purpose and Scope|Rules|Enforcement|Ownership",
             "runbook": "Trigger and Scope|Preflight|Procedure|Verification|Escalation",
             "repository-readme": "Purpose|Repository Map|Getting Started|References",
             "runtime-governance-readme": "Purpose|Repository Map|Getting Started|References",

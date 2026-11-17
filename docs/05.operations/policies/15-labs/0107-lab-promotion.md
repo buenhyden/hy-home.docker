@@ -1,10 +1,10 @@
 ---
 title: "LAB Promotion Policy"
-version: "0.2.7"
+version: "0.3.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0107"
 parent_ids:
@@ -15,7 +15,7 @@ next_review_at: "2027-05-13"
 
 # LAB Promotion Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
@@ -25,7 +25,7 @@ next_review_at: "2027-05-13"
 운영 통제로 옮긴 것이다. 실행 절차는
 [RUN-0107](../../runbooks/15-labs/0107-lab-promotion.md)이 소유한다.
 
-### Authority
+#### Authority
 
 - Contract: [SPEC-0263](../../../03.specs/0263-lab-promotion-contract/spec.md) section 1–5.
 - Implementation: `scripts/operations/lab.py`의 `check`, `readiness`, `budget`,
@@ -33,20 +33,31 @@ next_review_at: "2027-05-13"
   resource template.
 - Artifact: `POL-0107`; parent: `AD-0026`.
 
-## Scope
-
 ### Applies To
 
 추적된 `labs/*/promotion.yaml`이 등록하는 각 LAB에 적용한다. 이 초안은 증거를 준비할 때
 참고한다. 실제 승격은 별도 Task가 소유하며 해당 대상에 대한 owner 승인과 운영 window가 필요하다.
 
-### Exclusions
+#### Exclusions
 
 컨테이너 기동·정지·재생성, live data 이동과 OpenBao KV 변경은 이 정책의 승인 범위가 아니다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0107-R1 | LAB 폴더 구성 시 | 필수: 모든 LAB은 `labs/<name>/` 폴더 하나이며 진입점 `docker-compose.yml`/`README.md`/`promotion.yaml`/build source가 함께 있고 `hy-home-lab-` Compose project/LAB network/`LAB_*` 입력/`LAB_DATA_DIR` 데이터/`lab.py check` 격리를 유지한다 | `lab.py check <name>` / `tests/validation/test_lab_isolation.py` / `tests/validation/test_lab_layout.py` | 검사/테스트 결과 |
+| POL-0107-R2 | 항상 | 필수: `labs/<name>/promotion.yaml`에 `kind`/`target`/`replaces`/`integrations`/`secrets`/`documents`/`resources`(선택 `host`)를 선언하고 알 수 없는 `kind`/`infra/<tier>/` 밖 `target`/catalog 행 없는 secret/렌더와 다른 `resources`를 문제로 보고한다 | `python3 scripts/operations/lab.py check` | 검사 보고 |
+| POL-0107-R3 | 항상 | 필수: LAB secret은 `secrets/labs/<name>/` 사본이며 catalog 행(`LAB-*`)과 registry placeholder 행을 갖고 HOME secret 경로를 읽지 않으며 승격 때 LAB 값은 승격하지 않고 사본/catalog 행을 은퇴시키며 `secrets/SENSITIVE_ENV_VARS.md.example`은 owner가 손으로 편집한다 | `lab.py check`(secret 경로) | 검사 보고 / catalog 행 |
+| POL-0107-R4 | 항상 | 금지: 어떤 LAB도 Docker socket(`/var/run/docker.sock` 및 다른 이름의 `.sock` source)을 읽기 전용 여부와 무관하게 bind한다 | `lab.py check` | 검사 보고 |
+| POL-0107-R5 | 승격 시 | 필수: LAB source를 목적지 규칙(compose/README/자산/Guide-Runbook/secret 은퇴/`promotion.yaml` 삭제)에 따라 옮기고 파일/문서/secret/catalog 행의 LAB 사본을 남기지 않는다 | 수동 | 승격 Task 기록 |
+| POL-0107-R6 | 승격 전 | 필수: `lab.py readiness <name>`의 다섯 기준(Manifest 경로/은퇴 서비스/Tier/Composition/Resources)이 모두 `PASS`일 때만 승격하며 측정하지 못한 값은 `NOT_RUN`으로 fail-closed한다 | `lab.py readiness <name>` | readiness 보고서 |
+| POL-0107-R7 | reservation 선언 시 | 필수: 공유 resource template과 limit을 직접 쓰는 HOME/LAB 서비스는 `deploy.resources.reservations.cpus`/`.memory`를 선언하고 크기는 `docker stats` 3개 이상 표본 peak x 1.5(CPU 0.05/memory 32 MiB 단위)이며 미측정은 limit과 같다 | `tests/validation/test_lab_controller.py`의 `test_shared_templates_declare_reservations` | SPEC-0263-TSK-0002 Measurements |
+| POL-0107-R8 | 승격 Task 진행 시 | 필수: Tier/Linux/Composition 하위 검사는 owner 판단으로 각 승격 Task가 checklist로 기록한다 | 수동(`OWNER_JUDGMENT`) | 승격 Task checklist |
+| POL-0107-R9 | 항상 | 필수: 호스트 reserve는 CPUs 2/Memory 4096 MiB/Disk 10 percent이며 `lab.py`의 `PROMOTION_RESERVE`가 표와 같아야 한다 | `tests/validation/test_lab_controller.py`의 `test_reserve_matches_policy` | 테스트 결과 |
+| POL-0107-R10 | 항상 | 필수: 외부 workload allowance는 CPUs 2/MiB 6144이며 `lab.py`의 `PROMOTION_EXTERNAL_ALLOWANCE`가 표와 같아야 한다 | `tests/validation/test_lab_controller.py`의 `test_allowance_matches_policy` | 테스트 결과 |
 
 #### Standard layout
 
@@ -192,19 +203,7 @@ container 수와 관계없이 resource 합에 한 번 더한다. 2026-11-06 k3d 
 | Allowance CPUs | 2 |
 | Allowance MiB | 6144 |
 
-### Enforcement
-
-- `python3 scripts/operations/lab.py check <name>`가 layout, manifest, secret 경로를 검증한다.
-- `tests/validation/test_lab_controller.py`의 `test_reserve_matches_policy`와
-  `test_allowance_matches_policy`가 위 reserve·allowance 표와 `PROMOTION_RESERVE`,
-  `PROMOTION_EXTERNAL_ALLOWANCE`의 일치를 검증한다. `test_shared_templates_declare_reservations`가
-  모든 공유 template의 reservation이 limit 이하인지 검증한다.
-- `tests/validation/test_lab_isolation.py`와 `tests/validation/test_lab_layout.py`가 격리와
-  layout을 검증한다.
-
-## Exceptions
-
-### Exception Conditions
+### Exceptions
 
 #### Current HOME resource state
 
@@ -228,18 +227,41 @@ render가 없는 Compose project(따로 띄운 HOME stack, 외부 Compose stack)
 allowance로 세지 않고 `NOT_RUN`이다. Compose label이 없는 container(k3d 등)만 allowance로
 센다(2026-11-06 owner 결정).
 
-### Approval and Review
+#### Approval and Review
 
 reserve, allowance, reservation 값, host 사양, readiness 규칙 또는 LAB 목록이 바뀔 때와 승격
 Task를 열기 전마다 검토한다.
 
+## Enforcement
+
+### Mechanisms
+
+- `python3 scripts/operations/lab.py check <name>`가 layout, manifest, secret 경로를 검증한다.
+- `tests/validation/test_lab_controller.py`의 `test_reserve_matches_policy`와
+  `test_allowance_matches_policy`가 위 reserve·allowance 표와 `PROMOTION_RESERVE`,
+  `PROMOTION_EXTERNAL_ALLOWANCE`의 일치를 검증한다. `test_shared_templates_declare_reservations`가
+  모든 공유 template의 reservation이 limit 이하인지 검증한다.
+- `tests/validation/test_lab_isolation.py`와 `tests/validation/test_lab_layout.py`가 격리와
+  layout을 검증한다.
+
+### Limits
+
+Mechanisms는 `lab.py check`와 세 검증 테스트를 이름 붙이며, 아래 항목은 기계적으로 강제되지 않는다.
+
+- Owner check items(Tier/Linux/Composition)는 `OWNER_JUDGMENT`로 보고되며 측정값도 차단도 아니고 승격 Task의 owner checklist에 의존한다.
+- 측정하지 못한 readiness 값은 `NOT_RUN`이며 통과가 아니다.
+- `postgresql-ha`는 측정 전이라 resources `FAIL`이며 승격 전 부하 측정이 필요하다.
+- Docker는 CPU reservation을 강제하지 않고 memory reservation은 soft limit이다.
+- secret 파일 복사/이동과 `SENSITIVE_ENV_VARS.md.example` 편집은 owner의 수동 작업이다.
+- `ollama` 4G reservation은 owner가 승인한 sizing 규칙 예외다.
+
 ## Ownership
 
-### Responsibilities
+### Owner
 
 이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
 
-### Change and Adoption
+### Review Triggers
 
 - [LAB promotion runbook](../../runbooks/15-labs/0107-lab-promotion.md)
 - [LAB README](../../../../labs/README.md)

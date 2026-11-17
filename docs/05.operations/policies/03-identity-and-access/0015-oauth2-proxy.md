@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Operations Policy"
-version: "1.2.3"
+version: "1.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0015"
 parent_ids:
@@ -15,17 +15,15 @@ next_review_at: "2027-05-13"
 
 # 02-Auth OAuth2 Proxy Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 이 문서는 `02-auth` OAuth2 Proxy 운영 정책을 정의한다. 시크릿 주입 경로, 세션/쿠키 표준, fail-closed 및 degraded-mode 운영 통제를 명시한다.
 
-### Authority
+#### Authority
 
 - Declared parent: [02-Auth Architecture Description](../../../02.architecture/descriptions/0002-auth-architecture.md) (`AD-0002`)
-
-## Scope
 
 ### Applies To
 
@@ -39,13 +37,33 @@ next_review_at: "2027-05-13"
 - **Systems**: OAuth2 Proxy ForwardAuth gateway
 - **Environments**: Local, Dev, Stage, Production-like
 
-### Exclusions
+#### Exclusions
 
 Keycloak realm/client 운영은 [POL-0014](0014-keycloak.md)가 다룬다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0015-R1 | 항상 | 필수: `check-all-hardening.sh 02-auth` 실패 0건을 유지한다 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | 점검 출력 |
+| POL-0015-R2 | 로그인 루프/콜백 실패 급증/`/ping` 실패 지속 | 필수: 런북 절차를 수행한다 | 수동 | RUN-0015 |
+| POL-0015-R3 | 항상 | 필수: 서비스는 `template-infra-readonly-med`를 사용한다 | `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` | none |
+| POL-0015-R4 | 비밀 주입 | 필수: 세션 저장소 password는 엔트리포인트가 `/run/secrets` 파일에서 주입하고 client/cookie secret은 cfg의 `*_secret_file`로 읽으며 값을 환경 변수 리터럴로 두지 않는다 | none | none |
+| POL-0015-R5 | SSO route 통과 | 필수: Keycloak group `/admins`(`allowed_groups`)로 제한하고 `trusted_ips`는 두지 않으며 `trusted_proxy_ips`는 Traefik `edge_net` 주소로 한정한다 | none | none |
+| POL-0015-R6 | 세션 저장소 | 필수: 공유 `mng-valkey`를 쓰고 `OAUTH2_PROXY_VALKEY_HOST`가 `mng-valkey`를 가리키며 이미지 entrypoint가 읽는 세션 시크릿도 일치해야 한다 | none | none |
+| POL-0015-R7 | 이미지 실행 계정 | 필수: non-root여야 한다(`dev.Dockerfile`은 `oauth2proxy`, `Dockerfile`은 UID 100/GID 101) | none | none |
+| POL-0015-R8 | 세션 정책 | 필수: `cookie_secure=true`, `cookie_httponly=true`, `cookie_samesite=lax`, `cookie_refresh=1h`, `cookie_expire=12h`를 유지한다 | none | none |
+| POL-0015-R9 | 항상 | 필수: 기본 운영 모드는 fail-closed다 | none | none |
+| POL-0015-R10 | 운영 승인 하 | 허용: degraded-mode를 제한적으로 수행하며 원복 절차는 필수다 | 수동 | 승인자 기록과 종료 조건 |
+| POL-0015-R11 | 환경별 도메인 | 허용: 도메인 변수(`DEFAULT_URL`)를 조정한다 | none | none |
+| POL-0015-R12 | 항상 | 금지: fail-open 상시 운영 | none | none |
+| POL-0015-R13 | 항상 | 금지: 시크릿을 Compose/문서에 평문으로 저장 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | none |
+| POL-0015-R14 | Credential 노출 경계 | 금지: full `docker inspect`, `docker top`/process `ps`, `/proc/*/cmdline`/`environ`, 원문 `.State.Health.Log`를 기록하며 서비스명/image identity/health 상태/재시작 횟수/시각만 사용한다 | 수동 | none |
+| POL-0015-R15 | 세션 손실/Valkey | 필수: Valkey AOF를 백업 대용으로 보지 않고 재로그인 영향을 고지하며 공유 `mng-valkey`를 Proxy 복구만을 위해 비우거나 삭제하지 않는다 | 수동 | none |
+| POL-0015-R16 | secret 회전 | 필수: 각 secret 소유자가 관리하며 회전 시 모든 활성 session 무효화 여부를 명시한다 | 수동 | none |
+| POL-0015-R17 | store 손실/upgrade | 필수: fail-closed와 재인증을 우선하고 cookie 보안을 약화하지 않으며 격리된 OIDC/PKCE/ForwardAuth/logout test 후에만 upgrade하고 이전 image 선언과 session 무효화 계획을 기록한다 | 수동 | none |
 
 - **필수**:
   - `check-all-hardening.sh 02-auth` 실패 0건을 유지해야 한다.
@@ -102,35 +120,47 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
 - 격리된 OIDC/PKCE/ForwardAuth/logout test 후에만 upgrade한다.
   이전 image 선언을 보존하고 session 무효화 계획을 기록한다.
 
-### Enforcement
+### Exceptions
 
-- `bash scripts/hardening/check-all-hardening.sh 02-auth`
-- `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
-- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
-- Runtime-only: `docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`(기본 `OAUTH2_PROXY_PORT` 기준)
-
-## Exceptions
-
-### Exception Conditions
+#### Exception Conditions
 
 - OIDC 공급자 장애가 장기화될 때 한시적 degraded-mode 허용 가능.
 - 단, 승인자 기록과 종료 조건(원복 기준)을 사전에 명시해야 한다.
 
-### Approval and Review
+#### Approval and Review
 
 - 월 1회 정기 점검
 - OAuth2 Proxy/Keycloak 버전 변경 시 수시 점검
 
 - OOM·반복 재시작·인증 실패 증가 또는 이미지·노출·mount 변경 시 정기 주기를 기다리지 않고 검토한다.
 
+## Enforcement
+
+### Mechanisms
+
+- `bash scripts/hardening/check-all-hardening.sh 02-auth`
+- `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh`
+- `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`
+- Runtime-only: `docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`(기본 `OAUTH2_PROXY_PORT` 기준)
+
+### Limits
+
+정책이 명명한 검사는 hardening 점검과 `auth`/`core` profile 정적 렌더링이며 다음은 기계적으로 강제되지 않는다.
+
+- `/ping` runtime 점검은 runtime-only이며 승인된 실행 환경에서만 가능하다.
+- 로그인 루프/콜백 실패/`/ping` 실패 시 런북 수행, 세션 저장소 연결, `allowed_groups`/`trusted_proxy_ips` 제한, cookie 정책 유지, non-root 실행 계정에는 hardening 외 명명된 전용 검사가 없다.
+- Credential 노출 경계(full `docker inspect`, `docker top`, `/proc/*/cmdline`, 원문 `.State.Health.Log` 기록 금지)는 수동 준수이며 정책은 실제 유출을 관찰하지 않았다고만 밝힌다.
+- Degraded-mode의 승인자 기록과 원복 기준, secret 회전 시 session 무효화 명시, upgrade 전 격리 테스트는 수동 절차다.
+- 월 1회 정기 점검과 수시 점검에는 명명된 자동 검사가 없다.
+
 ## Ownership
 
-### Responsibilities
+### Owner
 
 운영 책임자는 @buenhyden이다. 변경·재시작·credential 작업의 대상과 영향, 승인,
 종료 조건을 기록하며 예외는 위험·만료·원복 책임까지 명시한다.
 
-### Change and Adoption
+### Review Triggers
 
 - Subject peers: [Guide](../../guides/03-identity-and-access/0015-oauth2-proxy.md) (`GDE-0015`), [Runbook](../../runbooks/03-identity-and-access/0015-oauth2-proxy.md) (`RUN-0015`)
 

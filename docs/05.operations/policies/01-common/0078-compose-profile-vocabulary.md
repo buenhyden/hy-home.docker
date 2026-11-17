@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.19.3"
+version: "1.20.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0078"
 created: "2026-09-04"
@@ -13,7 +13,7 @@ next_review_at: "2027-05-13"
 
 # Compose Profile Vocabulary Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
@@ -21,7 +21,7 @@ next_review_at: "2027-05-13"
 profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 보안 격리를 제공하지
 않는다. 서비스 수는 구현에서 계산하며 본문에 고정하지 않는다.
 
-### Authority
+#### Authority
 
 - [Workspace catalog](../../README.md)
 - [Independent LAB entrypoints](../../../../labs/postgresql-ha/README.md)
@@ -30,8 +30,6 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 - Original enablement decision: SPEC-0156 (retired)
 - Sibling resolution: SPEC-0171 (retired)
 - `nginx` profile와 `infra/01-gateway/nginx`는 2026-11-10 소유자 결정으로 퇴역했다. 근거와 기록은 SPEC-0212 TSK-0048에 있다.
-
-## Scope
 
 ### Applies To
 
@@ -125,13 +123,36 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `workflow-airflow` | capability | Airflow 스케줄링·worker·초기화 | `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `airflow-statsd-exporter` | No | initialization: airflow-init | current |
 | `workflow-n8n` | capability | n8n 자동화와 worker·task runner·Assistant 웹 검색 | `n8n`, `n8n-worker`, `n8n-task-runner-worker`, `searxng` | No | normal service startup | current |
 
-### Exclusions
+#### Exclusions
 
 독립 LAB entrypoint는 root의 profile 선택 대상이 아니다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0078-R1 | 정상 root와 각 LAB의 모든 서비스 | 필수: 명시적 profile을 가지며 새 이름은 같은 변경에서 표에 추가하고 마지막 소비자 은퇴 시 제거하고 이름 중복/누락/유령 행과 닫히지 않는 필수 `depends_on` 폐포를 허용하지 않는다 | `python3 scripts/validation/check-operations-catalog.py` / `bash scripts/validation/validate-docker-compose.sh` | 검사 출력 |
+| POL-0078-R2 | 서비스 profile 소속 | 허용: 한 서비스가 여러 profile에 속하고 선택형 대안 종속성에 `required: false`를 쓰되 앱 endpoint 설정과 일치해야 한다 | `bash scripts/validation/validate-docker-compose.sh` | none |
+| POL-0078-R3 | HOME 기동/상시 기동 | 금지: 검증되지 않은 broad profile을 HOME 기동 명령으로 쓰거나 부수 효과 있는 update/IaC/load-test 작업을 상시 기동하거나 LAB 파일을 root에서 include하거나 LAB profile을 HOME 이름 선택에 넣는 것 | `python3 scripts/validation/check-operations-catalog.py` / `tests/validation/test_lab_isolation.py` | none |
+| POL-0078-R4 | 선택형 root overlay | 필수: `x-hyhome-overlay: {version: 1, base: ...}`에서 version은 정수 1, base는 저장소 상대 추적 일반 파일이며 root include 집합의 유효한 Compose 원본이고 절대 경로/경로 탈출/symlink를 허용하지 않는다 | `bash scripts/validation/validate-docker-compose.sh` | none |
+| POL-0078-R5 | 선택형 root overlay | 필수: overlay 자신은 root include에 들어가지 않고 `services`는 비어 있지 않으며 모든 서비스 이름이 base 안에 있어야 하고 새 서비스나 서비스별 `profiles` 재정의는 거부한다 | `bash scripts/validation/validate-docker-compose.sh` | none |
+| POL-0078-R6 | `base: docker-compose.yml` overlay | 필수: network-only override로 각 서비스는 비어 있지 않은 `networks` key 하나만 `network-name: {}` 형식으로 가지며 새 internal network 하나 이상에 연결하고 image/build/privileged/command/volumes/ports/secrets/`!reset`/`!override` 등 다른 field는 금지한다 | `bash scripts/validation/validate-docker-compose.sh` | none |
+| POL-0078-R7 | root-base overlay의 새 top-level network | 허용: 기존에 없는 새 이름의 network를 `internal: true`만으로 선언하되 모든 새 network는 서비스에서 참조해야 하며 `external`/`name`/`driver`/`driver_opts`/`ipam`과 기존 network 수정은 금지한다 | `bash scripts/validation/validate-docker-compose.sh` | none |
+| POL-0078-R8 | 위 좁은 경우 외 | 금지: top-level network/volume/secret/config 선언, `include`, 독립 project 선언을 추가하며 서비스 변경과 `x-` extension만 허용한다 | `bash scripts/validation/validate-docker-compose.sh` | none |
+| POL-0078-R9 | overlay 적용 시 | 필수: 검토한 root와 overlay를 순서대로 명시한 `-f` 조합에서 기존 서비스 profile을 상속하고 overlay만으로 기동하지 않으며 실제 조합의 선택/렌더링 검증은 별도로 수행한다 | 수동 | none |
+| POL-0078-R10 | overlay marker 오류 | 필수: marker의 형식/버전/base/서비스 경계가 잘못되면 fail-closed로 보고하고 선택형 면제로 처리하거나 무시하지 않는다 | `bash scripts/validation/validate-docker-compose.sh` | none |
+| POL-0078-R11 | HOME overlay 적용 | 금지: 어떤 overlay도 root `.env`의 `COMPOSE_FILE`로 적용하지 않으며 HOME `COMPOSE_FILE`은 `docker-compose.yml` 하나이거나 미설정이고 상시 변경은 base Compose에 둔다 | `scripts/lib/ops/compose_start.py`가 `compose_file_overlay_forbidden`으로 거부 | none |
+| POL-0078-R12 | 일시적 overlay | 필수: 해당 Runbook 절차 안에서 명시적 `-f docker-compose.yml -f <overlay>`로만 적용하고 절차 후 base만으로 서비스를 재생성하며 실행 프로세스의 `COMPOSE_FILE` 환경 변수는 근거가 아니다 | 수동 | RUN-0098 overlay 적용 점검 절차 |
+| POL-0078-R13 | selector 실행 | 필수: `.env`의 `COMPOSE_FILE`이 `docker-compose.yml` 외 값이면 값을 출력하지 않고 fail-closed로 거부한다 | `scripts/lib/ops/compose_start.py` | `compose_file_overlay_forbidden` |
+| POL-0078-R14 | `x-hyhome-overlay` marker 파일 | 필수: marker를 가진 추적 파일은 한 변경으로 표와 `infra/compose-overlays.json`에 함께 등록한다 | `tests/validation/test_compose_overlay_register.py` | `infra/compose-overlays.json` |
+| POL-0078-R15 | overlay 필수 입력 | 필수: 이름만 쓰며 값은 문서/로그/`.env.example`에 쓰지 않고 overlay 적용 전에 준비한다 | 수동 | none |
+| POL-0078-R16 | 항상 | 필수: profile은 서비스 선택일 뿐 보안 경계가 아님을 전제하고 LAB은 root `--profile '*'`나 서비스 이름 지정으로 선택되지 않는다 | `tests/validation/test_lab_isolation.py` | none |
+| POL-0078-R17 | LAB 기동/종료 | 필수: `python3 scripts/operations/lab.py`만 사용하고 `up`은 목적과 `LAB_MAX_LEASE_MINUTES` 이하 lease를 요구하며 container/network/host port/data 경로 충돌과 HOME data 경로 중첩을 거부한다 | `python3 scripts/operations/lab.py` | lab ledger |
+| POL-0078-R18 | LAB `up` 예산 검사 | 필수: 실행 중 container와 선택 LAB의 reservation 합계에 POL-0107 외부 workload allowance를 더해 `LAB_HOST_BUDGET_CPUS`/`LAB_HOST_BUDGET_MEMORY_MIB`와 비교하고 `LAB_MAX_CONCURRENT`(기본 1)를 제한하며 빈 값/비숫자와 합산 불가 서비스는 거부 사유로 보고한다 | `python3 scripts/operations/lab.py` | 거부 사유 보고 |
+| POL-0078-R19 | LAB 종료/삭제 | 필수: `down`은 그 LAB project만 `-v` 없이 정지하고 data/volume 삭제는 ledger(`${LAB_DATA_DIR}/.ledger/<lab>.json`)에 기록된 경로만 별도 승인 후 수행하며 `docker volume prune`/`system prune`은 사용하지 않고 만료 lease는 `lab.py reap`이 정지한다 | `python3 scripts/operations/lab.py` | ledger 기록 |
+| POL-0078-R20 | LAB/대량 작업/GPU 이미지 생성 | 필수: AI/workflow HOME 상주 결정을 유지하고 LAB, lakehouse/analytics 대량 작업, GPU 이미지 생성은 예산 검사와 별도 승인으로 켠다 | `python3 scripts/operations/lab.py` / 수동 | 현재 Task 기록 |
 
 `Default? = No`는 직접 service target, CLI profile, `COMPOSE_PROFILES` 활성화가
 없는 기동에서는 자동 선택되지 않는다는 뜻이다. 직접 지정한 service는 profile을
@@ -377,7 +398,23 @@ exporter는 퇴역했다(SPEC-0215).
 이 표는 서비스를 삭제하지 않는다. 퇴역은 소비자 부재를 다시 확인한 별도 변경에서
 source·문서·secret을 함께 제거한다.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+정상 root profile은 같은 daemon, network, disk, GPU를 공유할 수 있다. 여러
+노드는 물리
+고가용성을 증명하지 않는다. 알려진 조합 제약을 숨기기 위해 검증을 우회하지
+않으며 승인된 예외는 이유·범위·복구·종료 조건을 current Task에 기록한다.
+
+#### Approval and Review
+
+- **Cadence**: profile 또는 서비스 선언을 변경할 때.
+- **Trigger**: 서비스 추가·은퇴, topology·host port·작업 부수 효과 변경.
+
+## Enforcement
+
+### Mechanisms
 
 ```bash
 bash scripts/validation/validate-docker-compose.sh
@@ -407,27 +444,26 @@ category와 필수 dependency 폐포를 검사한다.
 보장하지 않는다. 예를 들어 Grafana DB provisioning 선택과 실제 앱 사용 준비는
 [Grafana Guide](../../guides/07-observability/0041-grafana.md)에서 확인한다.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+정책은 정적 렌더링/표 일치 검사를 명명하며 다음은 기계적으로 강제되지 않는다.
 
-정상 root profile은 같은 daemon, network, disk, GPU를 공유할 수 있다. 여러
-노드는 물리
-고가용성을 증명하지 않는다. 알려진 조합 제약을 숨기기 위해 검증을 우회하지
-않으며 승인된 예외는 이유·범위·복구·종료 조건을 current Task에 기록한다.
-
-### Approval and Review
-
-- **Cadence**: profile 또는 서비스 선언을 변경할 때.
-- **Trigger**: 서비스 추가·은퇴, topology·host port·작업 부수 효과 변경.
+- 선택 closure 성공은 optional dependency의 앱 endpoint나 provisioning 완료를 보장하지 않고, config 성공은 무인 재기동이나 live readiness를 증명하지 않는다.
+- Overlay 분류 성공만으로 공급자 이미지, 설치 dependency, DB/S3 grant, private 파일 전달, DEV/HOME 실행/복구가 검증되지 않으며 실제 `-f` 조합의 선택/렌더링 검증은 별도로 수행한다.
+- OpenBao bootstrap/unseal/Agent 인증, DB 초기화, 실제 자원 측정, backup/restore는 별도 준비 조건이다.
+- Companion 목록(Producer별 Exporter 포함)과 `up=1` 이후의 `redis_up`/`pg_up`, 업무 실행, Grafana query 확인은 Runbook의 수동 확인에 의존한다.
+- LAB 예산 reservation은 측정 전에는 limit과 같은 선언값이며 실측이 아니고, GPU 동시 사용은 DCGM VRAM 여유를 확인한 수동 결정이다.
+- `Optional service disposition` 표의 비용/host 관찰은 2026-10-08 시점 값이며 현재 상태를 보장하지 않고, 퇴역은 별도 변경에서만 이루어진다.
+- `HYHOME_COMPOSE_PROFILES` override로 검사 범위가 바뀌면 실제 범위를 수동으로 기록해야 한다.
+- 마지막 소비자 은퇴 시 표 행 제거와 검토는 변경 시점 수동 검토다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 - **Owner**: @buenhyden. Infra/DevOps 역할은 책임 설명이다.
 
-### Change and Adoption
+### Review Triggers
 
 - [Infrastructure optimization governance](0006-infrastructure-optimization-governance.md)
 - [Developer environment](../../guides/10-platform-and-backup/0002-developer-environment.md)

@@ -1,10 +1,10 @@
 ---
 title: "PostgreSQL Cluster Operations Policy"
-version: "2.1.7"
+version: "2.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0031"
 parent_ids:
@@ -15,17 +15,15 @@ next_review_at: "2027-05-13"
 
 # PostgreSQL Cluster Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 이 정책은 `hy-home.docker`의 독립 LAB인 PostgreSQL HA 실습 cluster 운영 기준을 정의한다. 세 node가 한 host를 공유하므로 host HA가 아니며 HOME·DEV PostgreSQL은 단일 node다. 기준은 현재 tracked compose의 etcd 3노드 [quay.io/coreos/etcd image declaration](../../../../labs/postgresql-ha/docker-compose.yml) tag, HAProxy [haproxy image declaration](../../../../labs/postgresql-ha/docker-compose.yml), Spilo/Patroni [ghcr.io/zalando/spilo-17 image declaration](../../../../labs/postgresql-ha/docker-compose.yml), init job [postgres image declaration](../../../../labs/postgresql-ha/docker-compose.yml), postgres exporters [prometheuscommunity/postgres-exporter image declaration](../../../../labs/postgresql-ha/docker-compose.yml), Docker Secret 기반 credential 구성이다.
 
-### Authority
+#### Authority
 
 - Declared parent: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-
-## Scope
 
 ### Applies To
 
@@ -38,13 +36,26 @@ next_review_at: "2027-05-13"
 - `lab_pg_haproxy_stats_password`, `lab_pg_superuser_password`, `lab_pg_replication_password`, `lab_pg_exporter_password`, `lab_pg_service_password`
 - Linked guide and runbook under `docs/05.operations`
 
-### Exclusions
+#### Exclusions
 
 root include와 `core` surface는 이 정책의 대상이 아니다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0031-R1 | 문서 작성/변경 시 | 필수: cluster를 `postgres-ha` profile 아래에서만 해석되는 독립 `labs/postgresql-ha/docker-compose.yml`로 식별하고 root include/`core` surface로 기술하지 않는다 | `docker compose ... --profile postgres-ha config --quiet` / `python3 scripts/validation/check-document-links.py --mode all` / guide-runbook-LAB 설명 비교 | Compose 렌더/링크 검사 결과 |
+| POL-0031-R2 | 연결 가이드 작성 시 | 필수: application 연결은 `pg-0`/`pg-1`/`pg-2` 직접이 아니라 `pg-router`의 write/read endpoint를 쓴다 | `docker compose ... --profile postgres-ha config --quiet` / `python3 scripts/validation/check-document-links.py --mode all` / guide-runbook-LAB 설명 비교 | 비교 결과 |
+| POL-0031-R3 | credential 가이드 작성 시 | 필수: Docker Secret mount와 secret-aware entrypoint를 참조하며 secret 값을 문서/evidence에 복사하지 않는다 | `docker compose ... --profile postgres-ha config --quiet` / `python3 scripts/validation/check-document-links.py --mode all` / guide-runbook-LAB 설명 비교 | 비교 결과 |
+| POL-0031-R4 | 항상 | 필수: HAProxy stats는 `127.0.0.1:${LAB_PG_HAPROXY_STATS_HOST_PORT:-37000}` loopback로만 게시하고 HOME Traefik label을 두지 않으며 `lab_pg_haproxy_stats_password`로 인증한다 | `docker compose ... --profile postgres-ha config --quiet` / `python3 scripts/validation/check-document-links.py --mode all` / guide-runbook-LAB 설명 비교 | Compose 렌더 결과 |
+| POL-0031-R5 | 서비스/init 가이드 작성 시 | 필수: `pg-cluster-init`을 `init_users_dbs.sql`로 exporter role/service role/service database를 동기화하는 compose job으로 기술한다 | `docker compose ... --profile postgres-ha config --quiet` / `python3 scripts/validation/check-document-links.py --mode all` / guide-runbook-LAB 설명 비교 | 비교 결과 |
+| POL-0031-R6 | logical backup 시 | 필수: globals/role/privilege와 범위 내 모든 database schema/data dump, extension/ownership evidence, version, checksum, retention, 검증된 restore 기록을 포함하고 password는 별도 secret으로 둔다 | 수동 | restore 기록 |
+| POL-0031-R7 | restore rehearsal 시 | 필수: 빈 isolated 호환 cluster에서 database 이전에 globals를 복원하고 owner/ACL/extension/sequence/data를 검증하며 `pg-router`로 test하고 Patroni/etcd state는 재구축한다 | 수동 | restore 기록 |
+| POL-0031-R8 | upgrade/removal 전 | 필수: 용량, WAL/dump 공간, 호환성, rollback evidence를 검토하고 physical restore를 즉석 구성하지 않으며 HA 복원 구현/독립 검토가 없으므로 운영 복원은 중단한다 | 수동 | rollback evidence |
+| POL-0031-R9 | evidence 수집/문서 수정 시 | 허용: read-only `patronictl list`/`pg_isready`/HAProxy config 검증/compose config 렌더/로그/exporter metrics 확인과 compose에 맞추는 문서 전용 수정 | `docker compose ... --profile postgres-ha config --quiet` / `python3 scripts/validation/check-document-links.py --mode all` / guide-runbook-LAB 설명 비교 | Compose 렌더 결과 |
+| POL-0031-R10 | 항상 | 금지: owner 승인/runbook evidence 없는 DCS 삭제/강제 bootstrap/leadership mutation/restore/volume 교체/credential rotation/database mutation 제시, 구현 evidence 없이 WAL archiving/일일 backup/DR drill을 활성 통제로 주장 | 수동 | none |
 
 - **Required**: 문서는 cluster를 정확한 `postgres-ha` profile 아래에서만
   서비스가 해석되는 독립 `labs/postgresql-ha/docker-compose.yml` Compose로 식별해야 하며 root include 또는 `core` surface의 일부로 기술해서는 안 된다.
@@ -83,7 +94,21 @@ root include와 `core` surface는 이 정책의 대상이 아니다.
 
 적용 identity: `etcd-1`, `etcd-2`, `etcd-3`, `pg-0`, `pg-0-exporter`, `pg-1`, `pg-1-exporter`, `pg-2`, `pg-2-exporter`, `pg-cluster-init`, `pg-router`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+N/A - 현재 승인된 예외 없음.
+
+#### Approval and Review
+
+- PostgreSQL cluster compose image/profile/secret/port/network/init/exporter
+  변경 시 검토한다.
+- Stage 05 운영 문서 audit 주기 동안 검토한다.
+
+## Enforcement
+
+### Mechanisms
 
 - Compose 변경 후 이 정책을
   [PostgreSQL cluster guide](../../guides/15-labs/0031-postgresql-cluster.md),
@@ -94,25 +119,22 @@ root include와 `core` surface는 이 정책의 대상이 아니다.
   `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/postgresql-ha/docker-compose.yml --profile postgres-ha config --quiet`를 실행한다.
 - 정책이나 연결된 운영 문서 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+Compose 렌더와 문서 링크 검사, 연결 문서 비교만 Mechanisms에 있고 아래 항목은 기계적으로 강제되지 않는다.
 
-N/A - 현재 승인된 예외 없음.
-
-### Approval and Review
-
-- PostgreSQL cluster compose image/profile/secret/port/network/init/exporter
-  변경 시 검토한다.
-- Stage 05 운영 문서 audit 주기 동안 검토한다.
+- 실제 HA 복원 구현과 독립 검토가 없어 운영 복원은 중단 상태이며 복원 증거가 없다.
+- WAL archiving, 일일 backup, DR drill은 추적된 구현 evidence가 없어 활성 통제로 주장할 수 없다.
+- logical backup 구성, restore rehearsal, upgrade/removal 검토는 수동 검토에 의존한다.
+- 정책에 승인된 예외는 없다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
 
-### Change and Adoption
+### Review Triggers
 
 - Subject peers: [Guide](../../guides/15-labs/0031-postgresql-cluster.md) (`GDE-0031`), [Runbook](../../runbooks/15-labs/0031-postgresql-cluster.md) (`RUN-0031`)
 - [PostgreSQL pg_dumpall reference](https://www.postgresql.org/docs/18/app-pg-dumpall.html)

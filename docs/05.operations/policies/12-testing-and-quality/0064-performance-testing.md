@@ -1,10 +1,10 @@
 ---
 title: "Performance Testing Operations Policy"
-version: "1.1.5"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0064"
 parent_ids:
@@ -15,7 +15,7 @@ next_review_at: "2027-05-13"
 
 # Performance Testing Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
@@ -27,12 +27,10 @@ next_review_at: "2027-05-13"
 - **가용성 보존**: 테스트 중 임계 시스템(Gateway, Identity)의 다운타임을 방지해야 함.
 - **데이터 보존**: 테스트 결과 지표와 evidence를 벤치마킹 자산으로 안전하게 보관해야 함.
 
-### Authority
+#### Authority
 
 - 상위 문서: [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - 실행 버전의 원본은 Compose/Dockerfile 선언이며, [파생 버전 목록](../../../../infra/tech-stack.versions.json)은 변경 누락 검증에 사용한다.
-
-## Scope
 
 ### Applies To
 
@@ -44,13 +42,25 @@ next_review_at: "2027-05-13"
 
 적용 대상 역할은 Operator, Performance Engineer, Infrastructure Admin이다.
 
-### Exclusions
+#### Exclusions
 
 공개 API와 관리 endpoint는 성능 시험 대상에서 제외하며, k6·WireMock·Locust 서비스별 통제는 POL-0061, POL-0092, Locust 정책이 소유한다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0064-R1 | 항상 | 금지: 비밀 값과 자격 증명 덤프를 어떤 실행에서도 기록하지 않는다(서비스별 정책의 통제 위에 공통 경계만 더한다) | none | none |
+| POL-0064-R2 | 실제 트래픽 생성 전 | 필수: 대상 서비스 소유자와 `@buenhyden`이 정확한 origin·네트워크, 요청률·지속 시간·자원 상한·중단 조건을 승인하고 공개 API와 관리 endpoint는 제외한다 | 수동 | none |
+| POL-0064-R3 | 부하 시험 시 | 필수: 테스트 대상뿐 아니라 공유 자원(DB, 네트워크 대역폭) 부하를 고려한다 | 수동 | none |
+| POL-0064-R4 | k6/Locust 실행 | 필수: k6는 `quality_run.py`가 검증한 전용 internal network와 단일 WireMock peer에서만, 지표는 run별 relay로 `quality_otlp_net`에만 보내고 Locust는 별도 LAB Compose 프로젝트·네트워크에서만 실행한다 | `quality_run.py` 검증 | none |
+| POL-0064-R5 | 데이터베이스 대상 | 필수: 가능하면 운영 DB가 아닌 복제본/테스트 전용 환경을 대상으로 한다 | 수동 | none |
+| POL-0064-R6 | 공식 결과 기록 | 필수: run_id·attempt·project_id·시나리오/fixture revision·도구 이미지·target origin·부하 모델·종료 코드·원본 checksum을 연결하고 실행 상태·판정·증거 완전성·적재 상태를 각각 기록하며 0표본·중단·부분 flush를 통과로 바꾸지 않는다 | none | 연결된 run 기록 |
+| POL-0064-R7 | 결과 보존 | 필수: 원본과 보고서는 제한된 객체 범위에 두고 `perf_db`에는 정규화 결과·권한·객체 참조만 두며 URL query·Authorization·cookie·개인정보는 생성 단계부터 제외한다 | none | none |
+| POL-0064-R8 | 접근 제어 | 필수: k6에 Traefik route·게시 port를 두지 않고 Locust UI를 공개하지 않으며 WireMock admin API를 공용 경로로 노출하지 않고 `perf_db` 프로젝트별 reader/writer/verdict 권한은 SQL에서 검사한다 | `perf_db` SQL 권한 검사 | none |
+| POL-0064-R9 | 테스트 자료 적재 | 필수: 합성·비식별 fixture를 쓰고 같은 artifact checksum의 재적재만 멱등 허용하며 같은 run_id·attempt에 다른 내용이면 충돌로 거절한다 | 적재 시 checksum 충돌 거절 | none |
 
 아래 기준은 k6·WireMock·Locust 서비스별 정책(POL-0061, POL-0092, Locust 정책)이 소유한
 통제 위에 성능 시험 공통 경계만 더한다. 비밀 값과 자격 증명 덤프는 어떤 실행에서도
@@ -78,29 +88,41 @@ next_review_at: "2027-05-13"
 - **접근 제어**: k6에는 Traefik route와 게시 port가 없다. Locust LAB는 headless 기본 계약이며 UI를 공개하지 않는다. WireMock admin API는 인증이 없으므로 공용 경로로 노출하지 않고 내부 peer 접근도 통제한다. `perf_db`의 프로젝트별 reader/writer/verdict 권한은 SQL에서 검사한다.
 - **데이터 무결성**: 테스트 자료는 합성·비식별 fixture로 분리한다. 같은 artifact checksum의 재적재만 멱등적으로 허용하며 같은 run_id·attempt에 다른 내용이 오면 충돌로 거절한다. 성공 적재는 성능 시험 통과를 뜻하지 않는다.
 
-### Enforcement
+### Exceptions
 
-- 정책이나 연결된 운영 문서를 변경하면 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))로 검증한다.
-- 실행·운영 링크를 바꾸면 `python3 scripts/validation/check-document-links.py --mode traceability`로 검증한다.
-
-## Exceptions
-
-### Exception Conditions
+#### Exception Conditions
 
 현재 승인된 예외는 없다. 예외가 필요하면 대상, 위험, 만료 조건, 소유자를 기록하고 target owner와 `@buenhyden`의 승인을 받는다.
 
-### Approval and Review
+#### Approval and Review
 
 - 중요한 운영 변경 전에는 같은 주제의 가이드·런북 및 연결된 구현 설정과 함께 정책을 검토한다.
 - 연결된 서비스 설정, 아키텍처 또는 런북 동작이 바뀔 때 검토한다.
 
+## Enforcement
+
+### Mechanisms
+
+- 정책이나 연결된 운영 문서를 변경하면 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))로 검증한다.
+- 실행·운영 링크를 바꾸면 `python3 scripts/validation/check-document-links.py --mode traceability`로 검증한다.
+
+### Limits
+
+다음은 정책이 이름 있는 검사를 보이지 않거나 증거로 인정하지 않는 부분이다.
+
+- 정책 자체의 기계 검사는 원격 PR public `changed` 검사와 `check-document-links.py --mode traceability`뿐이며 문서/링크만 검증한다.
+- 대상 승인, 공유 자원 영향 고려, DB 복제본 사용은 이름 있는 검사 없이 소유자 승인과 검토에 의존한다.
+- 프로필·네트워크 구분만으로는 호스트 자원이나 물리 장애가 격리되지 않는다.
+- 성공 적재는 성능 시험 통과를 뜻하지 않으며 보존·삭제 기간과 백업 주기는 승인된 프로젝트 계약에 맡기고 이 정책은 단정하지 않는다.
+- 현재 승인된 예외는 없다.
+
 ## Ownership
 
-### Responsibilities
+### Owner
 
 이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
 
-### Change and Adoption
+### Review Triggers
 
 - 동일 주제 문서: [Guide](../../guides/12-testing-and-quality/0064-performance-testing.md) (`GDE-0064`), [Runbook](../../runbooks/12-testing-and-quality/0064-performance-testing.md) (`RUN-0064`)
 - [Operations index](../../README.md)

@@ -1,10 +1,10 @@
 ---
 title: "Tempo Operations Policy"
-version: "1.2.2"
+version: "1.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0049"
 parent_ids:
@@ -15,7 +15,7 @@ next_review_at: "2027-05-13"
 
 # Tempo Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
@@ -24,13 +24,11 @@ storage, block retention, metrics generator, secret boundary, protected route를
 정의한다. 사용 흐름은 Tempo guide가, 장애 대응 절차는 Tempo runbook이
 담당한다.
 
-### Authority
+#### Authority
 
 - Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 
 - Runtime pins: Compose/Dockerfile 선언이 authoritative하며, [derived Compose image projection](../../../../infra/tech-stack.versions.json)이 drift 검증을 제공한다.
-
-## Scope
 
 ### Applies To
 
@@ -40,13 +38,34 @@ storage, block retention, metrics generator, secret boundary, protected route를
 - **Systems**: compose service `tempo`, container `tempo`, image [hy/tempo image declaration](../../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/tempo/config/tempo.yaml`, volume `tempo-data`, SeaweedFS bucket `tempo-bucket`
 - **Environments**: 로컬·개발·홈랩 운영
 
-### Exclusions
+#### Exclusions
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0049-R1 | 항상 | 필수: `template-stateful-high`, 고정 `hy/tempo` image, user `10001:10001`, read-only config mount, persistent `tempo-data` volume을 유지한다 | Compose `rg` 점검 (`infra/06-observability/docker-compose.yml`) | `rg` 출력 |
+| POL-0049-R2 | 항상 | 필수: custom Tempo image는 upstream, non-root user `10001:10001`, `/docker-entrypoint.sh` secret guard를 유지한다 | Custom image secret guard `rg` 점검 | `rg` 출력 |
+| POL-0049-R3 | 항상 | 필수: OTLP receiver는 internal gRPC `4317`과 HTTP `4318`을 유지한다 | 수동 | none |
+| POL-0049-R4 | 항상 | 필수: HTTP/query/health는 `${TEMPO_PORT:-3200}`와 `/ready` healthcheck 기준이다 | Compose `rg` 점검 (`infra/06-observability/docker-compose.yml`) (`TEMPO_PORT`) | `rg` 출력 |
+| POL-0049-R5 | 항상 | 필수: SeaweedFS S3 backend, bucket `tempo-bucket`, endpoint `seaweedfs-s3:8333`, `insecure: true`를 사용한다 | Tempo config `rg` 점검 (`tempo.yaml`) | `rg` 출력 |
+| POL-0049-R6 | 항상 | 필수: `S3_ACCESS_KEY`는 environment reference로, `S3_SECRET_KEY`는 Docker Secret `seaweedfs_s3_tempo_secret_key`로만 주입한다 | Compose `rg` 점검 (`infra/06-observability/docker-compose.yml`) / Tempo config `rg` 점검 (`tempo.yaml`) | `rg` 출력 |
+| POL-0049-R7 | 항상 | 필수: block retention 값은 POL-0048을 기준으로 한다 | 수동 (POL-0048 Tempo 필수값 점검) | 구현 결함 기록 |
+| POL-0049-R8 | 항상 | 필수: metrics generator는 `span-metrics`/`service-graphs`와 Prometheus remote_write를 유지하고 processor 이름만으로 capability를 검증하지 않는다 | Tempo config `rg` 점검 (`tempo.yaml`) | `rg` 출력 |
+| POL-0049-R9 | 항상 | 필수: route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`을 유지한다 | Compose `rg` 점검 (`infra/06-observability/docker-compose.yml`) (`tempo.middlewares`) | `rg` 출력 |
+| POL-0049-R10 | Development/debug | 허용: sampling 또는 log-level 변경은 plan/task evidence와 rollback note가 있을 때만 한다 | 수동 | plan/task evidence / rollback note |
+| POL-0049-R11 | 장기 분석 필요 시 | 허용: retention policy와 SeaweedFS owning policy/runbook을 함께 갱신한다 | 수동 | none |
+| POL-0049-R12 | 항상 | 금지: PII, password, token, credential 값을 trace attributes에 기록한다 | 수동 | none |
+| POL-0049-R13 | 항상 | 금지: secret guard 없이 SeaweedFS-backed Tempo image나 entrypoint를 변경한다 | Custom image secret guard `rg` 점검 | `rg` 출력 |
+| POL-0049-R14 | 항상 | 금지: 승인 없이 bucket, retention, processors, remote_write endpoint, route middleware, image version을 runtime에서 변경한다 | 수동 | none |
+| POL-0049-R15 | lifecycle/data | 필수: HOME 유지, bucket/WAL/config/credential을 하나의 recovery set으로 취급, ingestion 중지 후 캡처, isolated rehearsal, 제거는 명시적 승인 | 수동 | `RUN-0049` runbook |
+| POL-0049-R16 | retention 검증 | 필수: 일치한 `rg`를 retention 검증으로 간주하지 않고 누락을 통제 실패로 기록하며 Tempo 2 `compactor` 블록을 복사하지 않는다 | 수동 | none |
+| POL-0049-R17 | LAN 통합 예외 `3200` | 필수: 예외는 지정 cluster 통합과 설정된 LAN 인터페이스로 한정하고 재바인딩/인증 추가/노출 확대는 별도 승인 변경으로 한다 | 수동 (POL-0096 소유) | owner 승인 기록(SPEC-0188) |
+| POL-0049-R18 | gRPC `9095` listener | 필수: 노출 수용(2026-11-12)을 유지하되 분산 모드 전환, 외부 gRPC 소비자 추가, 인증 도입 때 다시 검토한다 | 수동 | owner 수용 기록 |
 
 - **Required**:
   - Tempo service는 `template-stateful-high`, image
@@ -100,7 +119,24 @@ Traefik hostname에는 TLS/SSO middleware를 유지한다. 별도로 [POL-0096](
 
 Tempo gRPC `9095`은 listen address를 지정하지 않아 모든 인터페이스에 인증 없이 bind하며 `tempo_ingress_net`, `obs_net`, `object_net`의 peer가 접근할 수 있다. 단일 바이너리 구성에서 이 포트는 Tempo 자신의 내부 호출에만 쓰이고 선언된 외부 소비자는 없다. 같은 서비스의 HTTP 포트도 인증이 없으므로 노출 수준이 같다. owner가 2026-11-12 이 노출을 수용했다. 이 listener는 REQ-0023-FR-0004가 다루는 metrics·관리·profiling·broker listener가 아니다. 분산 모드 전환, 외부 gRPC 소비자 추가, 인증 도입 때 다시 검토한다.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+- Retention, bucket, sampling, remote_write, route, secret reference 예외는
+  사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
+- 장애 대응 중 임시 조치가 필요하면 Tempo runbook에서 최소 조치와 rollback
+  evidence를 기록한다.
+
+#### Approval and Review
+
+- Tempo image, config, retention, SeaweedFS bucket, metrics generator,
+  remote_write, route, secret reference, OTLP receiver가 변경될 때 검토한다.
+- 정기 검토는 quarterly cadence로 수행한다.
+
+## Enforcement
+
+### Mechanisms
 
 - Compose service boundary:
   `rg -n 'service: template-stateful-high|image: hy/tempo:|user: .10001:10001.|tempo-data|TEMPO_PORT|seaweedfs_s3_tempo_secret_key|tempo.middlewares' infra/06-observability/docker-compose.yml`
@@ -111,28 +147,24 @@ Tempo gRPC `9095`은 listen address를 지정하지 않아 모든 인터페이�
 - Repository contracts:
   원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+이 정책은 Compose/config/Dockerfile 문자열 점검과 원격 PR `changed` 검사로 일부만 강제한다.
 
-- Retention, bucket, sampling, remote_write, route, secret reference 예외는
-  사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
-- 장애 대응 중 임시 조치가 필요하면 Tempo runbook에서 최소 조치와 rollback
-  evidence를 기록한다.
-
-### Approval and Review
-
-- Tempo image, config, retention, SeaweedFS bucket, metrics generator,
-  remote_write, route, secret reference, OTLP receiver가 변경될 때 검토한다.
-- 정기 검토는 quarterly cadence로 수행한다.
+- 설정에 24h 블록 보존이 없고 선언 기본값은 336h/1h라 retention 준수는 입증되지 않으며 `rg` 일치를 retention 검증으로 보지 않는다.
+- 소스 검증은 실제 삭제나 trace 복원 증거가 아니다.
+- OTLP endpoint, trace attribute의 PII/secret 금지, 승인 없는 runtime 변경 금지는 지정된 검사가 없다.
+- `3200` LAN 게시는 gateway 인증과 서비스 TLS가 없고 비공개 override, bind 성공, routing/firewall과 실제 도달성은 관찰되지 않았다.
+- gRPC `9095`는 인증 없이 모든 인터페이스에 bind하며 owner 수용에 의존한다.
+- 복구는 runbook 절차에 의존하고 object-store owner가 bucket backup/restore를 수행한다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Change and Adoption
+### Review Triggers
 
 - Subject peers: [Guide](../../guides/07-observability/0049-tempo.md) (`GDE-0049`), [Runbook](../../runbooks/07-observability/0049-tempo.md) (`RUN-0049`)
 

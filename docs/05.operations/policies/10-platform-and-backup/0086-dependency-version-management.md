@@ -1,10 +1,10 @@
 ---
 title: "Dependency Version Management Policy"
-version: "0.5.2"
+version: "0.6.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0086"
 parent_ids:
@@ -15,34 +15,45 @@ next_review_at: "2027-05-13"
 
 # Dependency Version Management Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 인프라 버전 변경은 하나의 HOME/DEV 호스트에서 검토 가능하고 재현 가능해야 한다. 버전
 업데이트가 배포나 데이터 마이그레이션을 승인하지는 않는다.
 
-### Authority
+#### Authority
 
 - [Home/Dev architecture](../../../02.architecture/descriptions/0031-home-development-host.md) (`AD-0031`)
 
 - [Runtime version projection](../../../../infra/tech-stack.versions.json)
 - [Repository Renovate policy](../../../../renovate.json5)
 
-## Scope
-
 ### Applies To
 
 Compose, Dockerfile 및 인라인 빌드 소스, derived registry, Renovate, 현재
 구현/운영 문서의 런타임 버전 참조.
 
-### Exclusions
+#### Exclusions
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0086-R1 | 버전 변경 표면별 | 필수: 표의 표면별 update owner(Renovate/수동/synchronization script/검토)와 검토 방식을 따른다 | synchronization `--check`(registry drift gate) / workflow-contract 테스트(CI toolchain) | 소스 pin 검토 / gate 증거 |
+| POL-0086-R2 | 정기 patch/minor 업데이트 | 필수: 7일 soak window를 따르고 timestamp 없는 registry도 Monday 일정·수동 검토를 유지하며 보안 경고는 명시적 검토 후 fast path로 처리한다(infra automerge 금지, allowedCommands 확대 금지) | 공식 strict validator(저장소/전역 모드) | validator 결과 |
+| POL-0086-R3 | 항상 | 필수: Renovate를 유일한 버전 updater로 유지하고(Dependabot version updates 폐지) manager 범위가 같은 파일을 겹쳐 소유하지 않게 한다 | none | none |
+| POL-0086-R4 | 컨테이너 이미지 업데이트 | 필수: `pinDigests`로 모든 이미지를 `tag@sha256:<digest>`로 고정하고 `pinDigest`/`digest`를 각각 한 PR로 묶는다(digest 임의 생성 금지) | SEC01 ledger(tag-only 대상 거부) | ledger 재결합 결과 |
+| POL-0086-R5 | 이미지 업데이트 PR | 필수: tier별 그룹 규칙(상태 비저장 tier 한 PR, 데이터·메시징·airflow·keycloak·n8n은 이미지당 PR)을 따른다 | none | none |
+| POL-0086-R6 | 보류 대상 | 금지: `nvidia/cuda` 13, `surrealdb/surrealdb` 3.x, TypeScript 7 이상, n8n core/runners/`n8n-workflow` 자동 갱신을 허용하지 않는다 | `renovate.json5` 보류 규칙 | `renovate.json5` 설명 |
+| POL-0086-R7 | 업데이트 제안 시 | 필수: `minimumReleaseAge` 7일, `prConcurrentLimit` 5, `prHourlyLimit` 2를 유지하고 major는 Dashboard 승인 후에만 제안하며 automerge하지 않고 "create all"을 쓰지 않는다 | `renovate.json5` | none |
+| POL-0086-R8 | 일정과 커밋 | 필수: 월요일 00–05시(KST) 일정 창과 커밋 제목 대소문자 보존(`commitMessageLowerCase: never`)을 유지한다 | `renovate.json5` | none |
+| POL-0086-R9 | PR마다 | 필수: `postUpgradeTasks`로 `sync-tech-stack-versions.sh --write`와 `sync-update-ledger.sh --write`를 실행해 SEC01 ledger를 재결합하고 ledger/registry를 손으로 고치지 않는다 | `sync-update-ledger.sh`(종료 코드 2로 거부) | ledger 행(BLOCKED/UNKNOWN/NOT_RUN) |
+| POL-0086-R10 | 이미지 변경 머지 후 | 금지: 머지된 이미지 변경을 HOME에 자동 적용하거나 머지를 적용·검증 증거로 삼지 않는다(recreate는 별도 승인) | 수동 | none |
 
 | Surface | Update owner | Authority and review |
 | --- | --- | --- |
@@ -114,7 +125,23 @@ updater나 manager 범위가 같은 파일을 겹쳐 소유하게 만들지 않�
 PR 처리 규칙(rebase 방법, 한 번에 하나씩 머지, 수동 close 금지)은 영문 거버넌스인
 `github-governance.md` 3절이 소유하고, 실행 순서는 [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)이 소유한다.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+변경 가능한 이미지 예외는 owner, reason, risk, review cadence, exit condition과 함께
+`infra/image-tag-policy.exceptions.json`에 둔다. 서술식 예외로는 source-image
+검증을 면제할 수 없다. 예외를 제거하기 전에 이미지 호환성을 검토한다. 태그 변경이
+GPU나 데이터 형식 호환성의 증거가 되지는 않는다.
+
+#### Approval and Review
+
+매월, 그리고 manager 범위, 소스 parser, 이미지 예외, major 업데이트가 변경될 때
+검토한다.
+
+## Enforcement
+
+### Mechanisms
 
 기존 synchronization `--check`가 registry drift gate다. 추가, 제거, 중복 저장소와
 소스/분류 drift를 거부한다. write 모드는 derived 항목을 원자적으로 재조정한다. Compose,
@@ -128,27 +155,23 @@ PR 처리 규칙(rebase 방법, 한 번에 하나씩 머지, 수동 close 금지
 cadence·exit condition이 빠진 항목은 실패한다. local build 서비스의 Compose `image` 이름은 제외하고
 그 Dockerfile의 `FROM`을 본다.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+다음은 정책이 기계적 강제를 보이지 않거나 증거로 인정하지 않는 부분이다.
 
-변경 가능한 이미지 예외는 owner, reason, risk, review cadence, exit condition과 함께
-`infra/image-tag-policy.exceptions.json`에 둔다. 서술식 예외로는 source-image
-검증을 면제할 수 없다. 예외를 제거하기 전에 이미지 호환성을 검토한다. 태그 변경이
-GPU나 데이터 형식 호환성의 증거가 되지는 않는다.
-
-### Approval and Review
-
-매월, 그리고 manager 범위, 소스 parser, 이미지 예외, major 업데이트가 변경될 때
-검토한다.
+- 이미지 예외 검사(`ImageTagPolicyTests`)와 synchronization `--check`는 registry·예외 drift만 거부하며 런타임 health나 backup/restore의 증거가 아니다.
+- 설명형 문서, pre-commit hook revision, OpenTofu provider/module은 사람 검토에 의존하며 이름 있는 자동 검사가 없다.
+- 단일 updater 유지와 manager 범위 비중복, tier 그룹 규칙은 이름 있는 검사 없이 검토에 의존한다.
+- 머지는 적용·검증 증거가 아니며 적용(recreate)은 별도 승인이 필요하다.
+- fast path는 컨테이너 이미지 CVE 스캐닝이나 설치된 이미지의 취약점 범위를 확립하지 않는다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
-### Change and Adoption
+### Review Triggers
 
 - [Guide](../../guides/10-platform-and-backup/0086-dependency-version-management.md), [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)
 

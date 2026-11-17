@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Policy"
-version: "0.11.2"
+version: "0.12.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0085"
 parent_ids:
@@ -15,13 +15,13 @@ next_review_at: "2027-05-13"
 
 # OpenBao Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 HOME secret control plane이다. 레거시 Vault는 2026-09-25 폐기되었으므로 현재 마이그레이션·복구 소스로 취급하지 않는다.
 
-### Authority
+#### Authority
 
 - Governing architecture: [AD-0003](../../../02.architecture/descriptions/0003-security-architecture.md)
 - OpenBao 공식 TCP listener 파라미터: <https://openbao.org/docs/configuration/listener/tcp/>
@@ -30,20 +30,37 @@ HOME secret control plane이다. 레거시 Vault는 2026-09-25 폐기되었으�
 - unauthenticated generate-root를 다루는 OpenBao 공식 deprecation note: <https://openbao.org/community/deprecation/unauthed-generate-root/>
 - authenticated root generation을 다루는 OpenBao 공식 release notes: <https://openbao.org/community/release-notes/2-6-0/>
 
-## Scope
-
 ### Applies To
 
 `infra/03-security/openbao`와 `core / dev / local / security / secrets` 프로필 아래의 서비스
 `openbao openbao-agent`.
 
-### Exclusions
+#### Exclusions
 
 폐기된 레거시 Vault는 이 정책의 대상이 아니다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0085-R1 | 항상 | 필수: unseal/recovery 자료를 오프라인으로 유지하고 token/role_id/secret_id/렌더링된 파일을 로깅하지 않으며 서버 health는 unsealed만 허용하고 Agent health만으로 secret 전달을 증명하지 않으며 기존 Docker Secret은 Agent 출력으로 자동 대체되지 않는다 | Compose/profile 검증 / Runbook RUN-0085 | none |
+| POL-0085-R2 | 사람의 일반 관리 작업 | 필수: Keycloak backend OpenBao native OIDC로 발급된 non-root 토큰(group `/openbao-admins`, role `home-admin`, client `home-openbao`, policy `hy-home-operator`)을 쓰고 policy TTL은 유한하며 Gateway SSO는 native OIDC 인가를 대체하지 않는다 | 수동 | RUN-0085 비밀값 없는 점검 |
+| POL-0085-R3 | Prometheus metrics | 필수: 전용 service token으로 `sys/metrics`에 인증하고 유일한 policy는 `infra/03-security/openbao/config/policies/prometheus.hcl`(`read`만)이며 토큰은 수동 발급해 `secrets/security/openbao/openbao_token.txt`에 저장하고 Prometheus만 마운트하고 유한한 만료 전에 회전하며 인증 없는 metrics/root/operator/renderer 토큰 재사용은 금지한다 | none | 추적되는 `prometheus.hcl` |
+| POL-0085-R4 | policy 적용/토큰 발급·폐기/파일 작성/Prometheus 재생성 | 필수: 별도로 승인된 유지보수 기록이 필요한 실제 credential/runtime 변경으로 다룬다 | 수동 | 승인된 유지보수 기록 |
+| POL-0085-R5 | hy-home.k8s 클러스터 | 필수: `kubernetes` auth로 External Secrets service account(`external-secrets`, namespace `external-secrets`, audience `vault`)만 role `eso-read-platform`로 로그인하고 정확한 KV v2 data/metadata 5개 경로만 읽으며 wildcard/list/create/update/delete/sudo는 부여하지 않고 bootstrap 토큰은 `k8s-bootstrap` role(orphan, 2시간 TTL)에서만 나온다 | none | 추적 ACL `eso-read-platform.hcl` |
+| POL-0085-R6 | Root 토큰 | 필수: bootstrap/break-glass/유지보수 window 임시 root 용도로만 쓰고 human OIDC 로그인 성공, 기대한 non-root policy, AppRole renderer의 9개 소비자 KV data/metadata 읽기, root recovery 방법 문서화가 같은 유지보수 기록에서 검증되기 전에는 마지막 root를 폐기하지 않고 이후 폐기와 거부 결과를 기록한다 | 수동 | 유지보수 기록 / renderer ACL `renderer.hcl` |
+| POL-0085-R7 | root 재생성/generate-root | 필수: 인증된 `/sys/generate-root-token`을 쓰고 Agent read-only 토큰을 승격하지 않으며 인증 없는 `/sys/generate-root/*`는 임시 loopback listener의 명시 승인된 break-glass로만 재활성화하고 동일 데이터 볼륨/seal을 유지하고 native OIDC 검증 즉시 제거하고 복구 root 폐기로 끝낸다 | 수동 | 예외 승인 기록 |
+| POL-0085-R8 | 영속성/한도/제거 | 필수: 공통 자원 상한은 POL-0006, 버전 변경은 POL-0086, state retention/암호화/복구는 POL-0021을 적용하고 renderer는 ACL 선언 9개 KV data와 metadata만 read하며 Raft upgrade 전 backup과 독립 stateful recovery 계약 검토가 필요하고 서비스/Agent 제거는 `down -v`로 대체하지 않는다 | none | none |
+| POL-0085-R9 | 유지보수 window의 token 취급 | 필수: share/root/operator token을 숨김 입력, stdin, 보호된 FD, tmpfs 0600 파일, 명령 하나에만 붙는 환경 변수로만 다루고 명령 인자/셸 기록/화면 출력/token helper에 두지 않는다 | 수동 | RUN-0105 |
+| POL-0085-R10 | window의 임시 root | 필수: window 끝이나 중단 때 폐기하고 sealed라 폐기할 수 없으면 custody 파일을 모두 지우며 다음 window가 W1 직후 이전 root를 찾아 폐기한다 | 수동 | RUN-0105 |
+| POL-0085-R11 | unsealed인데 새 OIDC 로그인 실패 | 필수: root와 custody를 지우지 않고 OIDC 접근부터 복구하며 남긴 root는 최대 재부팅이나 다음 window까지만 owner가 tmpfs에 보관하고 기한 날짜를 값 없이 기록한다 | 수동 | RUN-0105 기록 |
+| POL-0085-R12 | window에서 쓴 operator token | 필수: 폐기하고 값이나 accessor를 기록하지 않으며 sealed라 폐기할 수 없는 token은 OIDC 최대 TTL(4시간) 안에 만료됨을 기록한다 | 수동 | RUN-0105 기록 |
+| POL-0085-R13 | P01 Native Trust and Audit Gate | 필수: 내부 native TLS와 검증된 CA/SAN을 쓰고 wrapping SecretID의 creation path/짧은 TTL/1회 사용과 role fetch/render version을 검증하며 config-owned HMAC file audit를 유지하고 Agent에 Docker socket을 주지 않으며 audit 비활성화나 무제한 restart로 실패를 숨기지 않는다 | 수동 | RUN-0105 / host logrotate 규칙 `/etc/logrotate.d/openbao` |
+| POL-0085-R14 | 미사용 SecretID 만료 결함(GHSA-7m59-mp95-w6ph) | 필수: TTL/wrapping/1회 사용 선언으로 해결됐다고 간주하지 않고 수정 버전 검증과 HOME gate 전에는 배포/P06 확대를 보류하며 미사용 발급의 명시적 폐기와 거부를 별도로 확인한다 | none | RUN-0105 Current candidate and preserved residual |
+| POL-0085-R15 | 새 renderer issuance | 필수: `schema_version: 2` journal과 `issuance_id`를 쓰고 `issuance_id`와 legacy `nonce`를 일치시키며 journal/anchor/accessor metadata가 정확히 같은 경우만 정합화하고 cross-version/alias 불일치/복수 accessor는 accessor 폐기 전에 차단하며 실제 입력 확정 전 HOME 적용을 금지한다 | none | none |
+| POL-0085-R16 | P02 공개 catalog | 필수: catalog와 schema를 단일 원천으로 두고 값/hash/token/KV payload를 넣지 않으며 destination plan 기본값은 `BLOCKED_P01`이고 `DEPLOYED`는 delivered lane이 `CONFIRMED`인 `IMPLEMENT` 항목에만 허용하며 CLI 입력은 네 추적 공개 파일로 한정한다 | none | none |
 
 unseal/recovery 자료는 오프라인으로 유지한다. token, role_id, secret_id 또는 렌더링된
 파일을 절대 로깅하지 않는다. 현재 서버 health는 unsealed 상태만 허용한다. Agent
@@ -207,14 +224,9 @@ single-link README 및 no-follow 조건을 충족한 `.agent-work/p02-views`의 
 별도로 확인한다. staging 일치·비활성 profile·traffic zero·source search zero를 실제
 consumer zero 또는 운영 수용 증거로 보고하지 않는다.
 
-### Enforcement
+### Exceptions
 
-Compose/profile 검증과 [runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)이 별도의 정적/런타임 증거를
-제공한다. 예상치 못한 서비스, 마운트, 인증, readiness 상태가 보이면 중단한다.
-
-## Exceptions
-
-### Exception Conditions
+#### Exception Conditions
 
 owner @buenhyden은 모든 편차 전에 범위, 위험, 만료, 종료 조건을 기록해야 한다. 정적
 설정은 실제 backup이나 recovery의 증거가 아니다.
@@ -293,17 +305,37 @@ swap은 기록 전부터 있던 조건이며, window 전에 기록해 window의 
 | 남겨 둔 W2 custody | W2가 INDETERMINATE로 끝나면 snapshot 전용 token(최대 720시간)이 tmpfs에 남고, 다음 window의 W2·W3는 BLOCKED다 | 검토된 W2 복구 절차 |
 | 만료 없는 renderer token | SecretID가 1회용이라 renderer AppRole은 24시간 periodic token을 준다(2026-10-21 owner 수용, 지금 HOME과 같은 방식). Agent가 갱신하는 한 만료가 없어, sink token을 복사한 쪽도 계속 갱신할 수 있다. 권한은 renderer ACL의 9개 소비자 KV 읽기다. 수용은 Keycloak·Grafana 2개 경로 범위였고, 9개로 확대된 범위는 owner가 다시 수용하지 않아 결정 대기다. sink는 0600이며 sink는 0600이며, 갱신이 멈추면 24시간 안에 만료된다. W5 재발급은 이전 Agent token을 폐기하지 않는다 | W5에서 이전 Agent token을 폐기하는 검토된 절차, 또는 재인증 없이 유지되는 유한 수명 |
 
-### Approval and Review
+#### Approval and Review
 
 매월, 그리고 이미지, persistence, 인증, 노출이 변경되기 전에 검토한다.
 
+## Enforcement
+
+### Mechanisms
+
+Compose/profile 검증과 [runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)이 별도의 정적/런타임 증거를
+제공한다. 예상치 못한 서비스, 마운트, 인증, readiness 상태가 보이면 중단한다.
+
+### Limits
+
+정책은 정적 증거와 runtime 증거의 분리를 반복해서 밝히며, 다음은 기계적으로 강제되지 않는다.
+
+- 정책이 명명한 메커니즘은 Compose/profile 검증과 Runbook이며 개별 규칙마다 명명된 전용 검사는 거의 없다. 추적되는 policy/Compose/scrape 설정은 소스 계약만 증명한다.
+- 정적 설정은 실제 backup이나 recovery의 증거가 아니다. Agent health만으로는 새 인증/출력 갱신과 secret 전달을 증명하지 못하고 health 응답은 audit 증거가 아니다.
+- k8s auth의 실제 설치된 정책/role과 경로 밖 거부, 실제 filesystem 용량/audit rotation/보존/실패 알림의 HOME 검증은 별도 수행이 필요하며 source나 문자열 하드닝 통과로 증명하지 않는다. audit 파일 정체 경보는 아직 없다.
+- GHSA-7m59-mp95-w6ph(미사용 SecretID 만료 결함)는 수정 버전 검증과 HOME gate 전까지 배포/P06 확대가 보류된 상태다.
+- Versioned issuance와 P02 catalog 통제는 HOME의 credential/custody/snapshot/recovery 수용을 증명하지 않으며 실제 입력이 확정될 때까지 HOME 적용이 금지된다. destination plan 기본값은 `BLOCKED_P01`이다.
+- 분리 custody는 기존 명시적 예외로 닫히지 않았다(share 3개가 한 파일에 보관, 단일 주체가 threshold 충족 가능). R2 원격 복구는 아직 미실행이며 반기 R2 복원 확인(2027-05-11 검토)에 의존한다.
+- SEC01 image 수용과 유지보수 window 잔여 위험(UID 100 공유, 암호화 안 된 swap, sealed 정리, 남겨 둔 W2 custody, 만료 없는 renderer token)은 승인된 만료일(2026-12-15 등)까지만 받아들인 미해결 위험이며, 9개로 확대된 renderer token 범위는 owner 재수용이 결정 대기다.
+- 월 1회 검토와 변경 전 검토는 수동이다.
+
 ## Ownership
 
-### Responsibilities
+### Owner
 
 정책 소유자는 @buenhyden이다.
 
-### Change and Adoption
+### Review Triggers
 
 - [Guide](../../guides/04-security-and-secrets/0085-openbao.md), [Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)
 

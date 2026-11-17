@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Operations Policy"
-version: "1.6.5"
+version: "1.7.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0045"
 parent_ids:
@@ -15,7 +15,7 @@ next_review_at: "2027-05-13"
 
 # Prometheus Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
@@ -24,13 +24,11 @@ persistence, lifecycle reload, secret file reference, protected access에
 대한 Prometheus control을 정의한다. 순서가 있는 recovery나 reload
 procedure는 해당 runbook에 있다.
 
-### Authority
+#### Authority
 
 - Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 
 - [Runtime image declarations](../../../../infra/06-observability/docker-compose.yml)
-
-## Scope
 
 ### Applies To
 
@@ -40,13 +38,39 @@ alert-rule surface에 적용된다.
 - **Systems**: compose service `prometheus`, container `prometheus`, image [Compose image declaration](../../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/prometheus/config/prometheus.dev.yml`(Compose 기본 `PROMETHEUS_CONFIG_FILE`)와 같은 내용의 `prometheus.yml`, rules directory `infra/06-observability/prometheus/config/alert_rules`, volume `prometheus-data`
 - **Environments**: 로컬·개발·홈랩 운영
 
-### Exclusions
+#### Exclusions
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0045-R1 | 항상 | 필수: `template-stateful-high`, 고정 image, tmpfs, read-only config/rules mount, `start.sh` entrypoint, persistent `prometheus-data` volume을 유지한다 | Compose `rg` 점검 (`infra/06-observability/docker-compose.yml`) | `rg` 출력 |
+| POL-0045-R2 | 항상 | 필수: runtime command의 `--config.file`, `--storage.tsdb.path`, `--web.enable-lifecycle`, `--web.enable-remote-write-receiver`를 유지한다 | Compose `rg` 점검 (`infra/06-observability/docker-compose.yml`) | `rg` 출력 |
+| POL-0045-R3 | `PROMETHEUS_DEV_DATA_EXPECTED` 설정 | 필수: 값은 `on` 또는 `off`여야 하며 아니면 Prometheus가 시작하지 않고 datastore job은 `db_scope`/`db_engine`/`expected_state` label을 유지한다 | 시작 시 값 검증(SPEC-0224) | none |
+| POL-0045-R4 | 항상 | 필수: global `scrape_interval: 30s`/`evaluation_interval: 30s`를 기준으로 하고 service-specific interval은 검토한 값으로 유지한다 | Prometheus config `rg` 점검 | `rg` 출력 |
+| POL-0045-R5 | scrape job 관리 | 필수: `prometheus.yml`과 `prometheus.dev.yml`을 같은 내용으로 관리하고 모든 target에 `cluster="hy-home"`/`namespace="hy-home"` 라벨을 둔다(SPEC-0193) | 수동 | none |
+| POL-0045-R6 | alert/recording rule 로드 | 필수: 지정된 `alert_rules.*.yml`/`recording_rules*.yml` 경로에서 로드한다 | Prometheus config `rg` 점검 | `rg` 출력 |
+| POL-0045-R7 | alert rule 작성 | 필수: `expr`, 해당 시 `for`, `labels.severity`, `annotations`, 서비스 runbook을 가리키는 `annotations.runbook_url`을 포함하고 on-demand job은 `up == 0`으로 알리지 않는다 | 수동 / `promtool` 검사(SPEC-0204-TSK-0021에서 `NOT_RUN`) | none |
+| POL-0045-R8 | scrape secret | 필수: `opensearch_exporter_password`, `openbao_token`, `qdrant_read_only_api_key`는 Docker Secret file reference로만 쓰고 값을 문서/로그/evidence에 쓰지 않으며 승인 전 기존 private value를 삭제하지 않는다 | Compose `rg` 점검 (`infra/06-observability/docker-compose.yml`) (secret 참조) | none |
+| POL-0045-R9 | `SEC-002` / `openbao_token` | 필수: 수동 least-privilege OpenBao `prometheus`-policy credential contract로 취급하고 source 선언을 발급/로드/UP target의 증거로 쓰지 않는다 | 수동 | none |
+| POL-0045-R10 | 항상 | 필수: Prometheus route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`을 유지한다 | Compose `rg` 점검 (`infra/06-observability/docker-compose.yml`) (`prometheus.middlewares`) | `rg` 출력 |
+| POL-0045-R11 | `prometheus-api` route | 필수: Prometheus host의 Basic `Authorization` header를 가진 `/api/v1/` 요청만 `prometheus-api-auth@file` 뒤에서 허용하고 UI/admin API는 SSO 뒤/비활성으로 두며 `OBS-013`/`INFRA-007`/OpenBao entry를 함께 회전한다 | 수동 | none |
+| POL-0045-R12 | TSDB retention 변경 | 필수: retention policy, volume impact review, plan/task evidence와 함께 진행한다 | 수동 | plan/task evidence |
+| POL-0045-R13 | target 추가 | 허용: 도달 가능한 안정적 metrics endpoint와 일치하는 alerting 또는 no-alert rationale이 있으면 scrape target을 추가한다 | 수동 | none |
+| POL-0045-R14 | dashboard/rule impact review 후 | 허용: expensive PromQL을 recording rule로 옮긴다 | 수동 | none |
+| POL-0045-R15 | config/rule validation 후 | 허용: lifecycle reload를 사용한다 | 수동 | `RUN-0045` runbook |
+| POL-0045-R16 | 항상 | 금지: architectural 승인과 capacity evidence 없이 `10s` 미만의 scrape interval | 수동 | none |
+| POL-0045-R17 | 항상 | 금지: cardinality review 없는 high-cardinality label 추가 | 수동 | none |
+| POL-0045-R18 | 항상 | 금지: git-managed `prometheus.yml`/`alert_rules`를 우회하는 UI/API 전용 변경 | 수동 | none |
+| POL-0045-R19 | 항상 | 금지: 문서/evidence에 secret 값, bearer token, rendered secret content를 기록한다 | 수동 | none |
+| POL-0045-R20 | `prometheus-api` route 존재 시 | 금지: route를 Basic-authenticated `/api/v1/` 이상으로 확장, `--web.enable-admin-api` 활성화, 인증되지 않은 host port 게시 | 수동 | none |
+| POL-0045-R21 | 항상 | 금지: compose/config와 retention policy가 뒷받침하지 않는 retention 동작을 선언한다 | 수동 | none |
+| POL-0045-R22 | lifecycle/data | 필수: HOME 유지, 승인된 consistent stopped copy로만 백업, isolated TSDB에서 rehearse, 자원/retention 변경은 측정 근거와 rollback threshold, 제거는 승인 | 수동 | `RUN-0045` runbook |
+| POL-0045-R23 | host/GPU exporter | 필수: node-exporter는 읽기 전용 권한과 `10.250.5.1:9100`에만 listen, dcgm-exporter는 SYS_ADMIN 추가나 image/HTTP 응답만으로 호환성을 추정하지 않는다 | 수동 | `RUN-0055` GPU runbook / HTTP probe와 Prometheus target 별도 확인 |
 
 - **Required**:
   - Prometheus service는 `template-stateful-high`, image
@@ -149,18 +173,9 @@ alert-rule surface에 적용된다.
 
 보존 기간은 [GDE-0045](../../guides/07-observability/0045-prometheus.md#host-and-gpu-exporter-boundary)가 설명하는 기본값을 따르며 무기한 보존을 약속하지 않는다. 일관된 정지 TSDB 백업은 [RUN-0045](../../runbooks/07-observability/0045-prometheus.md)와 백업 소유자 절차를 따른다.
 
-### Enforcement
+### Exceptions
 
-- Compose service boundary:
-  `rg -n 'service: template-stateful-high|image: prom/prometheus:|--web.enable-lifecycle|--web.enable-remote-write-receiver|prometheus-data|opensearch_exporter_password|openbao_token|prometheus.middlewares' infra/06-observability/docker-compose.yml`
-- Prometheus config:
-  `rg -n 'scrape_interval: 30s|evaluation_interval: 30s|rule_files:|alert_rules.local|recording_rules|password_file: "/run/secrets/opensearch_exporter_password"|bearer_token_file: /run/secrets/openbao_token' infra/06-observability/prometheus/config/prometheus.yml`
-- Repository contracts:
-  원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
-
-## Exceptions
-
-### Exception Conditions
+#### Exception Conditions
 
 - Scrape interval, retention, secret reference, route, rule-loading
   예외는 사용자 승인과 관련 plan/task evidence가 있을 때만 허용한다.
@@ -183,19 +198,41 @@ GO-2026-6608과 GO-2026-6609는 Traefik 인증 뒤에, 그리고 Docker network 
 offline scan, 독립 applicability 검토, `promtool` 검사, HOME 재생성과 rollback은 아직 `NOT_RUN`이고
 SPEC-0204-TSK-0021이 owner 단계로 기록한다.
 
-### Approval and Review
+#### Approval and Review
 
 - Prometheus image, runtime flags, scrape jobs, alert rules, recording rules,
   secret references, route, retention, mounted paths가 변경될 때 검토한다.
 - 정기 검토는 quarterly cadence로 수행한다.
 
+## Enforcement
+
+### Mechanisms
+
+- Compose service boundary:
+  `rg -n 'service: template-stateful-high|image: prom/prometheus:|--web.enable-lifecycle|--web.enable-remote-write-receiver|prometheus-data|opensearch_exporter_password|openbao_token|prometheus.middlewares' infra/06-observability/docker-compose.yml`
+- Prometheus config:
+  `rg -n 'scrape_interval: 30s|evaluation_interval: 30s|rule_files:|alert_rules.local|recording_rules|password_file: "/run/secrets/opensearch_exporter_password"|bearer_token_file: /run/secrets/openbao_token' infra/06-observability/prometheus/config/prometheus.yml`
+- Repository contracts:
+  원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
+
+### Limits
+
+이 정책은 Compose/config 문자열 점검과 원격 PR `changed` 검사 외에는 대부분 수동 검토에 의존한다.
+
+- `rg` 점검은 문자열 존재만 확인하며 secret 발급, container 로드, UP scrape target, driver 호환성은 증명하지 않는다.
+- alert rule 필드, 라벨 일관성, 두 config 동일성, `prometheus-api` 범위, scrape interval/cardinality 제한은 지정된 기계 검사가 없다.
+- `PROMETHEUS_DEV_DATA_EXPECTED` 검증 외에 secret 값 기록 금지와 secret 삭제 금지는 수동 규율이다.
+- 새 image의 pull, offline scan, 독립 applicability 검토, `promtool` 검사, HOME 재생성과 rollback은 `NOT_RUN`이며 SPEC-0204-TSK-0021이 owner 단계로 기록한다.
+- 이전 image 수용(SEC01)은 대체되었고 publisher 서명 확인은 열린 증거다.
+- dcgm-exporter는 Compose healthcheck가 없다.
+
 ## Ownership
 
-### Responsibilities
+### Owner
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Change and Adoption
+### Review Triggers
 
 - Subject peers: [Guide](../../guides/07-observability/0045-prometheus.md) (`GDE-0045`), [Runbook](../../runbooks/07-observability/0045-prometheus.md) (`RUN-0045`)
 

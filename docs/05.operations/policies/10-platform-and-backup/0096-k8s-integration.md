@@ -1,10 +1,10 @@
 ---
 title: "hy-home.k8s Integration Operations Policy"
-version: "1.6.2"
+version: "1.7.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0096"
 parent_ids:
@@ -15,7 +15,7 @@ next_review_at: "2027-05-13"
 
 # hy-home.k8s Integration Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
@@ -23,7 +23,7 @@ hy-home.k8s 클러스터는 host 주소상의 고정된 엔드포인트 집합�
 OpenBao 인증 경로를 사용한다. 이 정책은 그 집합과 인증 방식, 두 저장소 사이를
 오가는 자격 증명의 처리 방식을 고정한다.
 
-### Authority
+#### Authority
 
 - [OpenBao 정책](../04-security-and-secrets/0085-openbao.md)
 
@@ -31,20 +31,28 @@ OpenBao 인증 경로를 사용한다. 이 정책은 그 집합과 인증 방식
 - [OpenBao operator policy](../../../../infra/03-security/openbao/config/policies/operator.hcl)
 - [Prometheus policy](../07-observability/0045-prometheus.md)
 
-## Scope
-
 ### Applies To
 
 클러스터가 호출할 수 있는 엔드포인트, OpenBao Kubernetes 인증과 bootstrap
 토큰, Prometheus HTTP API 자격 증명, 저장소 경계를 넘는 값 전달.
 
-### Exclusions
+#### Exclusions
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0096-R1 | 클러스터 접근 | 필수: 클러스터는 승인된 `HOST_LAN_BIND_IP`(기본 `192.168.0.13`)로만 도달하고 Compose 서비스를 k3d 네트워크에 다시 참여시키거나 고정 주소를 예약하지 않는다 | none | none |
+| POL-0096-R2 | OpenBao ESO 접근 | 필수: ESO role은 audience `vault`로 `external-secrets/external-secrets`에만 바인딩하고 HCL의 다섯 항목 data/metadata만 읽게 하며 `secret/platform/*` wildcard를 금지한다 | Hardening(두 k8s OpenBao 정책 읽기 전용·wildcard 없음 고정) | 런북의 role/config 확인 |
+| POL-0096-R3 | bootstrap 토큰 발급 | 필수: `k8s-bootstrap` 토큰 role에서만, orphan·정책 `k8s-bootstrap`·최대 2시간 수명으로 발급하고 `secret/data/platform/argocd`만 읽게 하며 더 오래 사는 토큰은 즉시 폐기한다 | 런북 확인(정확한 정책·orphan·TTL, 허용 읽기 전후 금지 읽기 403) | 런북 확인 결과 |
+| POL-0096-R4 | operator 권한 | 필수: OIDC operator는 `auth/kubernetes/config`, bootstrap 토큰 발급, 세 KV 경로 쓰기에 한정하고 그 외 초기 쓰기는 승인된 임시 root 세션으로 하며 root 전용으로 확대 해석하지 않는다 | Hardening(operator 정책 고정) | none |
+| POL-0096-R5 | Prometheus·Grafana 접근 | 필수: Prometheus는 Basic Auth(`INFRA-007`)로 `/api/v1/`만 도달 가능하고 자격 증명은 `secret/platform/prometheus-api`로만 받으며 `OBS-013`/`INFRA-007`과 함께 회전한다(host 포트 미게시, Grafana 포트·익명 접근 없음) | Hardening(Prometheus API 라우트·middleware·`usersFile` 고정) / 런북(잘못된 Basic 401, 유효한 Basic 200, SSO 302) | 런북 확인 결과 |
+| POL-0096-R6 | LAN 게시 엔드포인트 | 필수: Loki `3100`, Tempo `3200`, `mng-valkey` `26379`, `alloy` `4317`/`4318`는 `HOST_LAN_BIND_IP`에만 게시하고 나머지 host 포트는 `127.0.0.1`에만 게시한다(범위 축소는 엔드포인트 추가 수준의 검토) | 수동 | SPEC-0267 owner 수용 기록(2026-11-07) |
+| POL-0096-R7 | 저장소 경계를 넘는 값 전달 | 금지: chat·issue·명령줄 인자·로그로 값을 넘기지 않고 파일/보호된 채널만 쓰며 증거에는 이름·boolean·비밀이 아닌 필드만 기록한다 | none | none |
 
 - 클러스터는 승인된 `HOST_LAN_BIND_IP`(기본값 `192.168.0.13`)를 통해 이 스택에 도달한다. 어떤 Compose
   서비스도 다시 k3d 네트워크에 참여하지 않으며, 클러스터를 위해 고정 주소를
@@ -89,7 +97,21 @@ OpenBao 인증 경로를 사용한다. 이 정책은 그 집합과 인증 방식
 절차는 `BLOCKED`로 중단한다. 명령 실패만으로 인증 거절·폐기 성공을 판정하지
 않으며 transport/서버 상태/구문 오류는 `INDETERMINATE`로 처리한다.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+없음. 새 엔드포인트, 다른 인증 방식, 더 긴 토큰 수명은 이 정책과 가이드의
+contract 표에 대한 검토된 변경이 필요하다.
+
+#### Approval and Review
+
+책임 소유자는 @buenhyden이다. consumer를 추가하는 모든 hy-home.k8s 변경 시, OpenBao나 Traefik 업그레이드
+시, 자격 증명이 회전할 때마다 검토한다.
+
+## Enforcement
+
+### Mechanisms
 
 - Hardening이 Prometheus API 라우트, 그 middleware, `usersFile`을 고정하고
   두 k8s OpenBao 정책을 읽기 전용이며 wildcard 없는 상태로 유지한다.
@@ -100,25 +122,23 @@ OpenBao 인증 경로를 사용한다. 이 정책은 그 집합과 인증 방식
 - 클러스터 재구축 뒤 CA 갱신 이후의 새 ESO 인증과 소비자별 기능 결과를 확인한다.
   Tempo 3200 조회/API와 Alloy 4317/4318 trace 수집을 구분한다.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+정책이 보여 주는 기계적 강제의 한계는 다음과 같다.
 
-없음. 새 엔드포인트, 다른 인증 방식, 더 긴 토큰 수명은 이 정책과 가이드의
-contract 표에 대한 검토된 변경이 필요하다.
-
-### Approval and Review
-
-책임 소유자는 @buenhyden이다. consumer를 추가하는 모든 hy-home.k8s 변경 시, OpenBao나 Traefik 업그레이드
-시, 자격 증명이 회전할 때마다 검토한다.
+- 호스트 LAN 주소 접근, 저장소 경계 값 전달, operator 권한의 확대 해석 금지는 이름 있는 검사 없이 검토에 의존한다.
+- Loki/Tempo/Alloy의 gateway 인증 없는 LAN 노출은 owner가 수용한 위험이며 LAB 변경이나 정책 변경 때 다시 검토한다.
+- 현재 source의 회전 결함이 있으면 `OBS-013`/`INFRA-007`/OpenBao 값 일관성과 새 값 증명을 만들지 못하는 절차는 `BLOCKED`로 중단한다.
+- 명령 실패만으로 인증 거절·폐기 성공을 판정하지 않으며 transport/서버 상태/구문 오류는 `INDETERMINATE`다.
+- 클러스터 재구축 뒤 새 ESO 인증과 소비자별 기능 결과는 별도로 확인해야 하며 root/bootstrap 로컬 파일 삭제는 서버 token 폐기가 아니다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
-### Change and Adoption
+### Review Triggers
 
 - [가이드](../../guides/10-platform-and-backup/0096-k8s-integration.md) (`GDE-0096`)
 - [런북](../../runbooks/10-platform-and-backup/0096-k8s-integration.md) (`RUN-0096`)

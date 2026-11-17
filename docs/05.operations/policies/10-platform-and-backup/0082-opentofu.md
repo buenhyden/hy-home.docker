@@ -1,10 +1,10 @@
 ---
 title: "OpenTofu Policy"
-version: "1.0.2"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0082"
 parent_ids:
@@ -15,34 +15,43 @@ next_review_at: "2027-05-13"
 
 # OpenTofu Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 OpenTofu는 명시적인 `iac` job이다. 정적 선택과 검증은 provider 계정을 읽거나
 원격 인프라를 변경할 권한을 결코 뜻하지 않는다.
 
-### Authority
+#### Authority
 
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
 
 - [OpenTofu Compose 소스](../../../../infra/09-platform-ops/opentofu/docker-compose.yml)
 - [파생 Compose 이미지 projection](../../../../infra/tech-stack.versions.json)
 
-## Scope
-
 ### Applies To
 
 로컬 이미지 빌드, `/workspace`, 마운트된 클라우드 자격 증명, 백엔드 상태,
 lock, plan, provider 작업, 업그레이드, 서비스 폐기.
 
-### Exclusions
+#### Exclusions
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0082-R1 | 활성화 시 | 필수: `iac` 아래에서 명명된 `opentofu` job을 호출하고 HOME이나 일반 tooling 시작에는 포함하지 않는다 | none | none |
+| POL-0082-R2 | 항상 | 필수: 계정/workspace/백엔드/예상 리소스/허용 명령 클래스를 식별하며 plan 권한이 apply/destroy/import/상태 변경/force-unlock 승인을 뜻하지 않는다 | 수동 | 승인 기록 |
+| POL-0082-R3 | 항상 | 필수: 마운트된 AWS/Azure 디렉터리를 민감 권한으로 보고 workspace에 자격 증명을 추가하거나 값을 캡처하지 않는다 | 수동 | none |
+| POL-0082-R4 | 항상 | 필수: 상태와 저장된 plan을 Git/stdout 증거/공유 로그에서 제외하고 백업은 모드 `0600`과 별도 보존 소유자로 보호한다 | 수동 | none |
+| POL-0082-R5 | 항상 | 필수: 백엔드 잠금을 보존하고 force-unlock은 lock 미소유 증명과 기록된 lock ID에 한정한다 | 수동 | 기록된 lock ID |
+| POL-0082-R6 | 상태 변경/업그레이드 전 | 필수: 로컬/원격 상태를 식별하고 보호된 스냅샷을 만들며 격리 상태에서 복구를 리허설한다 | 수동 | none |
+| POL-0082-R7 | 업그레이드 시 | 필수: 중간 노트를 검토하고 provider/백엔드 호환성을 검증하며 런타임 소스 변경 전 적용되지 않은 plan을 비교한다 | 수동 / 비적용 plan 비교 | none |
+| POL-0082-R8 | 제거 시 | 필수: 후속 시스템이 생길 때까지 workspace/백엔드 상태/자격 증명/소유권 기록을 보존한다 | 수동 | none |
 
 - **Activation:** `iac` 아래에서 루트 프로젝트의 명명된 `opentofu` job을
   호출한다. HOME이나 일반 tooling 시작에는 절대 포함하지 않는다.
@@ -78,31 +87,43 @@ lock, plan, provider 작업, 업그레이드, 서비스 폐기.
 - CLI 교체와 실제 remote resource 변경을 별도 검토한다. `apply`, `destroy`, state rewrite와 force-unlock은 정확한 대상 승인을 요구한다.
 - 새로운 Terraform 서비스나 병렬 updater를 만들지 않는다. 호환성 때문에 기존 CLI가 필요하면 담당자, 대상 workspace, 지원 종료 조건과 검증 계획을 기록하며 private state 공개는 허용하지 않는다.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+별도의 변경 승인, 상태 보호, 또는 lock 소유권을 우회하는 예외는 없다. 범위,
+만료, 복구 아티팩트, 종료 조건을 기록한다.
+
+#### Approval and Review
+
+모든 provider/백엔드/런타임 업그레이드 전, 그리고 자격 증명 마운트, 네트워크
+접근, 또는 workspace 소유권이 변경될 때마다 검토한다.
+
+## Enforcement
+
+### Mechanisms
 
 정적 Compose 점검은 선택만 증명한다. 런타임 증거는 버전, init/validate,
 plan, apply, apply 이후 결과를 구분한다. 실행되지 않은 상태 복구와 업그레이드
 리허설은 공백으로 남는다.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+정책은 정적 Compose 점검이 선택만 증명한다고 밝히며 아래 항목은 기계적으로 강제되지 않는다.
 
-별도의 변경 승인, 상태 보호, 또는 lock 소유권을 우회하는 예외는 없다. 범위,
-만료, 복구 아티팩트, 종료 조건을 기록한다.
-
-### Approval and Review
-
-모든 provider/백엔드/런타임 업그레이드 전, 그리고 자격 증명 마운트, 네트워크
-접근, 또는 workspace 소유권이 변경될 때마다 검토한다.
+- 전용 검사 이름이 지정되어 있지 않아 모든 규칙은 수동 검토와 승인에 의존한다.
+- 실행되지 않은 상태 복구와 업그레이드 리허설은 공백(`NOT_RUN`)으로 남는다.
+- 런타임 증거는 버전, init/validate, plan, apply, apply 이후 결과를 구분해야 한다.
+- 정확한 바이너리 태그 외의 distro 패키지와 provider 선택은 완전히 고정된 빌드가 아니다.
+- Terraform 이관의 호환성 검증과 정확한 대상 승인은 수동에 의존한다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
-### Change and Adoption
+### Review Triggers
 
 - [가이드](../../guides/10-platform-and-backup/0082-opentofu.md) (`GDE-0082`)
 - [런북](../../runbooks/10-platform-and-backup/0082-opentofu.md) (`RUN-0082`)

@@ -1,10 +1,10 @@
 ---
 title: "CouchDB Operations Policy"
-version: "2.1.6"
+version: "2.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0026"
 parent_ids:
@@ -15,17 +15,15 @@ next_review_at: "2027-05-13"
 
 # CouchDB Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 이 정책은 `hy-home.docker`의 선택 NoSQL 서비스인 CouchDB 3노드 클러스터 운영 기준을 정의한다. 기준은 현재 tracked compose의 [couchdb image declaration](../../../../labs/couchdb/docker-compose.yml), [curlimages/curl image declaration](../../../../labs/couchdb/docker-compose.yml), `couchdb-cluster-init`, loopback 단일 host port, Docker Secret 기반 admin password와 Erlang cookie 구성이다.
 
-### Authority
+#### Authority
 
 - Declared parent: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
-
-## Scope
 
 ### Applies To
 
@@ -36,13 +34,27 @@ next_review_at: "2027-05-13"
 - HOME Traefik label과 gateway 연결 없음; `couchdb-1`만 loopback host port 게시
 - Linked guide and runbook under `docs/05.operations`
 
-### Exclusions
+#### Exclusions
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0026-R1 | 문서 작성/변경 시 | 필수: 문서는 현재 서비스 이름 `couchdb-1`/`couchdb-2`/`couchdb-3`/`couchdb-cluster-init`을 사용한다 | `docker compose ... --profile couchdb config --quiet` / `python3 scripts/validation/check-document-links.py --mode all` / guide-runbook-LAB 설명 비교 | Compose 렌더/링크 검사 결과 |
+| POL-0026-R2 | cookie 가이드 작성 시 | 필수: Cluster cookie 가이드는 `/run/secrets/lab_couchdb_cookie`를 참조하며 레거시 shared-secret 환경 변수는 통제가 아니다 | `docker compose ... --profile couchdb config --quiet` / `python3 scripts/validation/check-document-links.py --mode all` / guide-runbook-LAB 설명 비교 | 비교 결과 |
+| POL-0026-R3 | health/membership 확인 시 | 필수: container-local client의 native password prompt와 비공개 TTY를 쓰고 password를 URL/argv/환경 변수/history/로그/화면에 노출하지 않으며 확보 못하면 중단한다 | 수동 | none |
+| POL-0026-R4 | 항상 | 필수: LAB 접근은 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_COUCHDB_HOST_PORT:-35984}` loopback port뿐이며 HOME Traefik label/domain route를 추가하지 않는다 | `docker compose ... --profile couchdb config --quiet` / `python3 scripts/validation/check-document-links.py --mode all` / guide-runbook-LAB 설명 비교 | Compose 렌더 결과 |
+| POL-0026-R5 | 항상 | 필수: 모든 서비스는 정확한 `couchdb` profile을 쓰며 동일 host 세 node를 host-level HA로 표현하지 않는다 | `docker compose ... --profile couchdb config --quiet` / `python3 scripts/validation/check-document-links.py --mode all` / guide-runbook-LAB 설명 비교 | Compose 렌더 결과 |
+| POL-0026-R6 | 복구 세트 구성 시 | 필수: 복구 세트에 database/shard 또는 replication target, system database, `_dbs` metadata, security 객체, 구성, membership, cookie 보관, checksum, retention, 검증된 restore 기록을 포함한다 | 수동 | restore 기록 |
+| POL-0026-R7 | restore rehearsal 시 | 필수: 호환 version/topology의 새 isolated cluster를 쓰고 replication을 우선하며 파일 restore는 upstream 순서(index 먼저)를 따르고 live 파일은 복사하지 않는다 | 수동 | restore 기록 |
+| POL-0026-R8 | retention/upgrade 시 | 필수: 용량과 compaction 여유를 retention 변경 전에 검토하고 upgrade는 upstream 순서와 restore-tested backup을 요구한다 | 수동 | restore-tested backup |
+| POL-0026-R9 | removal 시 | 필수: consumer shutdown 확인, expiry/owner가 있는 보관 evidence, node/volume 삭제 전 별도 승인을 요구한다 | 수동 | 보관된 replication/file backup evidence |
+| POL-0026-R10 | evidence 수집 시 | 허용: read-only `_up`/`_membership`/`_scheduler/docs`/로그 확인과 3-node cluster-init/loopback-only를 보존하는 문서 전용 수정 | 수동 | none |
+| POL-0026-R11 | 항상 | 금지: 현재 evidence와 runbook escalation 없는 수동 node rejoin/compaction/cluster surgery 가이드 제시, 정책/evidence 안의 secret 값/credential dump/Erlang cookie 자료 | 수동 | none |
 
 - **Required**: 문서는 현재 서비스 이름인 `couchdb-1`, `couchdb-2`, `couchdb-3`,
   `couchdb-cluster-init`을 사용해야 한다.
@@ -79,7 +91,20 @@ next_review_at: "2027-05-13"
 
 적용 identity: `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+N/A - 현재 승인된 예외 없음.
+
+#### Approval and Review
+
+- CouchDB compose image/profile/secret/Traefik/cluster-init 변경 시 검토한다.
+- Stage 05 운영 문서 audit 주기 동안 검토한다.
+
+## Enforcement
+
+### Mechanisms
 
 - Compose 변경 후 이 정책을 [CouchDB guide](../../guides/15-labs/0026-couchdb.md),
   [CouchDB runbook](../../runbooks/15-labs/0026-couchdb.md),
@@ -88,24 +113,21 @@ next_review_at: "2027-05-13"
   `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/couchdb/docker-compose.yml --profile couchdb config --quiet`를 실행한다.
 - 정책이나 연결된 운영 문서 갱신 후 `python3 scripts/validation/check-document-links.py --mode all`을 실행한다.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+Compose 렌더와 문서 링크 검사, 연결 문서 비교만 Mechanisms에 있고 아래 항목은 기계적으로 강제되지 않는다.
 
-N/A - 현재 승인된 예외 없음.
-
-### Approval and Review
-
-- CouchDB compose image/profile/secret/Traefik/cluster-init 변경 시 검토한다.
-- Stage 05 운영 문서 audit 주기 동안 검토한다.
+- credential 입력(native prompt/TTY), 복구 세트 구성, restore rehearsal, 용량/compaction 검토, removal 승인은 수동 검토에 의존한다.
+- restore-tested backup과 expiry/owner가 있는 evidence는 이름 붙은 자동 검사가 없다.
+- 정책에 승인된 예외는 없다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
 
-### Change and Adoption
+### Review Triggers
 
 - Subject peers: [Guide](../../guides/15-labs/0026-couchdb.md) (`GDE-0026`), [Runbook](../../runbooks/15-labs/0026-couchdb.md) (`RUN-0026`)
 - [CouchDB backup guidance](https://docs.couchdb.org/en/stable/maintenance/backups.html)

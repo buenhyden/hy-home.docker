@@ -1,10 +1,10 @@
 ---
 title: "Pact Broker Operations Policy"
-version: "1.0.6"
+version: "1.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0093"
 parent_ids:
@@ -15,31 +15,39 @@ next_review_at: "2027-05-13"
 
 # Pact Broker Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 브로커의 검증 결과가 어떤 버전을 배포할 수 있는지 정하므로, 누가 publish와
 verify를 할 수 있는지, 그리고 어디까지 도달할 수 있는지가 통제 대상이다.
 
-### Authority
+#### Authority
 
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md)
 - [Pact Broker Compose source](../../../../infra/11-quality/pact-broker/docker-compose.yml)
-
-## Scope
 
 ### Applies To
 
 프로비저닝, 인증, 노출, 자격 증명, 데이터 보존 및 제거.
 
-### Exclusions
+#### Exclusions
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0093-R1 | Pact Broker 선택 시 | 필수: `contract-testing`을 통해서만 선택하고 HOME에는 추가하지 않는다 | 정적 렌더링 | none |
+| POL-0093-R2 | 프로비저닝 | 필수: `mng-pg-init`이 아닌 feature SQL에 두고 role은 `NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS`이며 자기 DB만 소유하고 job은 관리자 권한·타 소유 role/DB를 거부한다 | 프로비저닝 계약 테스트 | none |
+| POL-0093-R3 | 인증 | 필수: Basic auth를 유지하고 `PACT_BROKER_ALLOW_PUBLIC_READ`를 `false`로 두며 heartbeat만 공개한다 | 격리 실행(자격 증명 없이 401, heartbeat 공개, publish/read-back) | none |
+| POL-0093-R4 | 노출 | 필수: host 포트를 `127.0.0.1`에만 publish하고 loopback 밖 라우트는 TLS와 SSO/토큰 인증을 추가한 검토된 변경 후에만 연다 | 정적 렌더링 | none |
+| POL-0093-R5 | 자격 증명 | 필수: 자격 증명은 Docker secrets에서 받고 Compose `environment`·argv·로그·publish된 pact에 나타나지 않게 하며 pact는 합성 예시만 담는다 | 격리 실행(Compose 설정·argv·로그 비밀 노출 확인) | none |
+| POL-0093-R6 | analytics | 필수: analytics ping을 비활성으로 유지한다 | none | none |
+| POL-0093-R7 | 링크 생성 | 필수: `PACT_BROKER_BASE_URL`을 설정하지 않고 Host 기반 링크를 안전한 접근 경계로 해석하지 않으며 새 라우트 전에 base URL·인증·TLS 경계를 검토한다 | 수동 | none |
 
 - `contract-testing`를 통해서만 선택한다. HOME에는 절대 추가하지 않는다.
 - 프로비저닝은 `mng-pg-init`이 아니라 feature SQL에 둔다. 역할(role)은
@@ -66,31 +74,42 @@ Compose literal·argv·로그·pact에 비밀 값을 남기는 것은 금지된�
 DB 보존·복원·삭제는 영향을 받는 소유자를 확인하고 승인한다. raw 환경 조회를 검증
 방법으로 사용하지 않는다.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+없음. 읽기 전용인 두 번째 자격 증명은 consumer가 필요로 할 때만 추가한다.
+
+#### Approval and Review
+
+브로커 major 업그레이드, 새 publishing 파이프라인, loopback을 넘어서는 노출이
+제안될 때마다 검토한다.
+
+## Enforcement
+
+### Mechanisms
 
 정적 렌더링과 프로비저닝 계약 테스트, 그리고 자격 증명 없이 401이 나오는지,
 heartbeat가 공개되는지, 자격 증명으로 publish와 read-back이 되는지, 컨테이너가
 non-root이고 읽기 전용인지, Compose 설정·argv·로그에 비밀 값이 노출되지 않는지를 확인하는
 격리된 실행.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+다음은 정책이 이름 있는 검사를 보이지 않는 부분이다.
 
-없음. 읽기 전용인 두 번째 자격 증명은 consumer가 필요로 할 때만 추가한다.
-
-### Approval and Review
-
-브로커 major 업그레이드, 새 publishing 파이프라인, loopback을 넘어서는 노출이
-제안될 때마다 검토한다.
+- analytics ping 비활성, `PACT_BROKER_BASE_URL` 미설정, 링크 경계 검토는 이름 있는 검사 없이 검토에 의존한다.
+- 새 network consumer와 DB 보존·복원·삭제는 영향받는 소유자 확인과 승인에 의존하며 raw 환경 조회는 검증 방법으로 쓰지 않는다.
+- Host 기반 링크는 안전한 접근 경계를 보장하지 않으며 호스트 loopback과 management-data peer 경로가 함께 있다.
+- 읽기 전용 두 번째 자격 증명은 consumer가 필요할 때만 추가한다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
 
-### Change and Adoption
+### Review Triggers
 
 - [가이드](../../guides/12-testing-and-quality/0093-pact-broker.md) (`GDE-0093`)
 - [런북](../../runbooks/12-testing-and-quality/0093-pact-broker.md) (`RUN-0093`)

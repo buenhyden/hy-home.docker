@@ -1,10 +1,10 @@
 ---
 title: "Conftest Operations Policy"
-version: "1.1.3"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0095"
 parent_ids:
@@ -15,7 +15,7 @@ next_review_at: "2027-05-13"
 
 # Conftest Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
@@ -23,24 +23,32 @@ next_review_at: "2027-05-13"
 baseline의 실행 가능한 부분집합이다. 이 정책은 새 통제를 정의하지 않으며, 규칙을
 추가할 때도 각 규칙은 다른 정책이 이미 소유한 통제를 그대로 다시 적은 것이어야 한다.
 
-### Authority
+#### Authority
 
 - [Compose profile vocabulary](../01-common/0078-compose-profile-vocabulary.md)
 - [Conftest Compose source](../../../../infra/11-quality/conftest/docker-compose.yml)
-
-## Scope
 
 ### Applies To
 
 규칙, 그 allowlist, job의 접근 범위, 실패의 해결 방식.
 
-### Exclusions
+#### Exclusions
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0095-R1 | 규칙 추가/병합 | 필수: 모든 규칙은 같은 디렉터리에 unit test를 두고 job은 소스 테스트 전에 `conftest verify`를 실행하며 실패·통과 케이스가 모두 없는 규칙은 병합하지 않는다 | `check-conftest-policy.sh --mode verify` / `leaf.conftest-policy-tests`(local 전용) | verify 통과 출력 |
+| POL-0095-R2 | allowlist 변경 | 필수: allowlist 항목은 정책 파일에 서비스명과 이유를 명시하고 검토된 변경으로만 늘린다 | 수동 | none |
+| POL-0095-R3 | 새 `deny` 추가 | 필수: 병합 전에 현재 소스에서 통과해야 하며 소스가 충족할 수 없는 규칙은 `warn`으로 시작한다 | `check-conftest-policy.sh --mode corpus` | corpus 통과(deny 없음) |
+| POL-0095-R4 | job 실행 | 필수: 공개 `infra/`·`labs/`와 wrapper 파생 입력만 읽기 전용으로 마운트하고 네트워크 없이 non-root로 실행하며 `secrets/`, `.env`, Docker socket, 호스트 root·Git·scripts는 마운트하지 않는다 | none | none |
+| POL-0095-R5 | corpus 선정 | 필수: corpus 권위는 canonical Git 추적 소스 목록이고 무시된 산출물은 읽지 않으며 미추적 소스 후보는 Docker 전에 실패하고 wrapper는 POL-0078로 검증한 overlay의 원본 base profile만 보충한다 | wrapper의 Docker 전 실패 검사 | none |
+| POL-0095-R6 | `corpus`/기본 `all` 실행 | 필수: wrapper의 완전한 두 소스 목록과 digest가 없거나 잘못되면 실패하고 raw fallback을 두지 않으며 원본·기존 권한을 바꾸지 않고 임시 입력만 종료 후 정리한다 | wrapper 목록·digest 검증 | none |
+| POL-0095-R7 | `deny` 발동 시 | 필수: 규칙이 아니라 선언을 고친다 | `leaf.conftest-policy`(`--mode corpus`, CI) | CI corpus 결과 |
 
 - 모든 규칙은 같은 디렉터리에 unit test를 가지며, job은 소스를 테스트하기
   전에 `conftest verify`를 실행한다. 등록된 `verify`·`corpus` lane은 분리되며
@@ -69,7 +77,20 @@ baseline의 실행 가능한 부분집합이다. 이 정책은 새 통제를 정
 준수 판정이 아니다. 새 규칙의 단계적 warn 도입 조건은 기존 강제 통제를 약화할
 허가가 아니며 정책 단위 테스트·검토된 예외 근거를 유지한다.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+정책 파일의 allowlist를 넘어서는 예외는 없다.
+
+#### Approval and Review
+
+컨테이너 baseline 통제가 바뀔 때, Conftest 또는 OPA major 업그레이드 시,
+allowlist 항목이 추가될 때마다 검토한다.
+
+## Enforcement
+
+### Mechanisms
 
 `bash scripts/validation/check-conftest-policy.sh --mode verify`(정책 unit test)가
 통과하고, 각 규칙의 unit test가 실패 케이스를 실제로 거부해야 한다.
@@ -77,24 +98,22 @@ baseline의 실행 가능한 부분집합이다. 이 정책은 새 통제를 정
 끝나야 한다. CI는 `leaf.conftest-policy`(`--mode corpus`)를 실행하고,
 `leaf.conftest-policy-tests`(`--mode verify`)는 local 전용이다.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+다음은 정책이 이름 있는 검사의 범위를 제한하는 부분이다.
 
-정책 파일의 allowlist를 넘어서는 예외는 없다.
-
-### Approval and Review
-
-컨테이너 baseline 통제가 바뀔 때, Conftest 또는 OPA major 업그레이드 시,
-allowlist 항목이 추가될 때마다 검토한다.
+- 이 도구의 PASS는 전체 인프라 보안 준수 판정이 아니며 inline Dockerfile과 최종 Compose·실행 상태의 통제는 별도로 요구된다.
+- `leaf.conftest-policy-tests`(`--mode verify`)는 local 전용이고 CI는 `leaf.conftest-policy`(`--mode corpus`)만 실행한다.
+- allowlist 확대와 마운트 제한은 이름 있는 검사 없이 검토에 의존한다.
+- 새 규칙의 단계적 `warn` 도입은 기존 강제 통제를 약화할 허가가 아니다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
 
-### Change and Adoption
+### Review Triggers
 
 - [가이드](../../guides/12-testing-and-quality/0095-conftest.md) (`GDE-0095`)
 - [런북](../../runbooks/12-testing-and-quality/0095-conftest.md) (`RUN-0095`)

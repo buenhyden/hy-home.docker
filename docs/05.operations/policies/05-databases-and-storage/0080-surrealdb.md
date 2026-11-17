@@ -1,10 +1,10 @@
 ---
 title: "SurrealDB Policy"
-version: "0.3.2"
+version: "0.4.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0080"
 parent_ids:
@@ -15,18 +15,16 @@ next_review_at: "2027-05-13"
 
 # SurrealDB Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 이 정책은 `08-ai` 티어 내에서 Open Notebook이 사용하는 `OPTIONAL`
 단일 서비스 SurrealDB 배포를 다룬다.
 
-### Authority
+#### Authority
 
 - 상위 아키텍처: [AD-0011](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
-
-## Scope
 
 ### Applies To
 
@@ -36,13 +34,25 @@ next_review_at: "2027-05-13"
 - `surreal_db_password`와 root/namespace/database 인증 범위
 - 연결된 가이드와 런북
 
-### Exclusions
+#### Exclusions
 
 이 정책은 단일 서비스 `surrealdb` 배포만 다루며 Open Notebook 애플리케이션 서비스는 대상에 포함하지 않는다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0080-R1 | 항상 | 필수: 호스트 게시 없음과 `ai_net` 경계 유지, 새 게시/확대는 별도 승인된 네트워크 변경 | `docker compose --profile surrealdb config --quiet` | none |
+| POL-0080-R2 | 항상 | 금지: Open Notebook이 공식 검증하기 전 SurrealDB v3 이상 메이저 업그레이드(v2 고정) | none | none |
+| POL-0080-R3 | 항상 | 필수: 자격 증명은 Docker Secret, 문서/증거에 비밀번호/자격 증명 URL/원본 레코드/토큰 금지 | 서비스/프로필/마운트/시크릿 사실을 guide/runbook/infra README와 비교 | none |
+| POL-0080-R4 | 백업 시 | 필수: 버전/namespace/database/인증 레벨/범위/옵션/체크섬/위치/보존/격리 복구 결과 식별 | none | 백업 식별 정보 기록 |
+| POL-0080-R5 | 복구 시 | 필수: 새 isolated 호환 대상과 승인된 자격 증명, import 전 선택한 v2의 옵션/인증 범위/스키마 근거 확인 | none | none |
+| POL-0080-R6 | import 실패 시 | 필수: 실패 대상 격리 보존/재사용 금지, 재시도는 빈 대상, 이전 대상 삭제는 별도 승인, namespace/테이블/스키마/권한/레코드 수/대표 읽기 검증 | none | none |
+| POL-0080-R7 | 업그레이드/제거 시 | 필수: upstream 저장 형식 순서, restore-tested export, 용량 검토, 롤백 지점, 승인; 제거는 보존 export 증거와 소비자 종료 확인 | none | 보존된 export 증거 |
+| POL-0080-R8 | 항상 | 허용: Compose 렌더링, 서비스 상태, 준비 상태, 마스킹된 인증 메타데이터 점검 | `docker compose --profile surrealdb config --quiet` | none |
+| POL-0080-R9 | 항상 | 금지: 비밀번호 파일 변경으로 준비 상태 수정, live `/mydata` 복사, 부분 import 대상 재사용, 미실행 리허설을 테스트된 복구로 제시 | none | none |
 
 - **Required**: 현재 호스트 게시 없음과 `ai_net` 애플리케이션 경계를 유지한다.
   새 호스트 게시나 더 넓은 접근은 별도 승인된 네트워크 변경이 필요하다.
@@ -69,32 +79,42 @@ next_review_at: "2027-05-13"
   라이브 `/mydata`를 복사하는 것, 부분적으로 import된 대상을 재사용하는 것,
   또는 실행되지 않은 리허설을 테스트된 복구로 제시하는 것.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+소유자 `@buenhyden`은 편차 전에 범위, 위험, 만료, 종료 조건, 백업 식별자,
+롤백 증거를 기록해야 한다.
+
+#### Approval and Review
+
+매월, 그리고 이미지, 저장 형식, 영속성, 인증, namespace/database, 노출,
+업그레이드, 제거 변경 전에 검토한다.
+
+## Enforcement
+
+### Mechanisms
 
 - `docker compose --profile surrealdb config --quiet`
 - 서비스/프로필/마운트/시크릿 사실을 연결된 가이드, 런북, infra README와
   비교한다.
 - `python3 scripts/validation/check-document-links.py --mode all`를 실행한다.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+정책이 지정한 검사는 compose render, 문서 비교, 문서 링크 검사뿐이며 아래 항목은 기계적으로 강제되지 않는다.
 
-소유자 `@buenhyden`은 편차 전에 범위, 위험, 만료, 종료 조건, 백업 식별자,
-롤백 증거를 기록해야 한다.
-
-### Approval and Review
-
-매월, 그리고 이미지, 저장 형식, 영속성, 인증, namespace/database, 노출,
-업그레이드, 제거 변경 전에 검토한다.
+- 백업 식별, isolated 복구, import 실패 처리, 업그레이드/제거 증거에는 이름 붙은 자동 검사가 없다.
+- v3 이상 업그레이드 금지, 비밀번호 파일 변경 금지, live `/mydata` 복사 금지는 승인 절차에 의존한다.
+- 문서와 서비스/프로필/마운트/시크릿 사실의 일치는 사람이 비교하는 검토에 의존한다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 정책 소유자는 @buenhyden이다.
 
-### Change and Adoption
+### Review Triggers
 
 - 대상 동위 문서: [가이드](../../guides/05-databases-and-storage/0080-surrealdb.md), [런북](../../runbooks/05-databases-and-storage/0080-surrealdb.md)
 

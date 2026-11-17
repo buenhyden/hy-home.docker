@@ -1,10 +1,10 @@
 ---
 title: "Locust Operations Policy"
-version: "1.3.4"
+version: "1.4.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0062"
 parent_ids:
@@ -15,7 +15,7 @@ next_review_at: "2027-05-13"
 
 # Locust Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
@@ -24,12 +24,10 @@ Locust는 독립 LAB capability다. HOME root나 broad tooling startup에는
 않은 load, credential capture, 오해를 부르는 performance evidence를
 막는다.
 
-### Authority
+#### Authority
 
 - [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
 - [Locust LAB Compose](../../../../labs/locust/docker-compose.yml)
-
-## Scope
 
 ### Applies To
 
@@ -37,13 +35,25 @@ Locust는 독립 LAB capability다. HOME root나 broad tooling startup에는
 bind-backed scenario/result 디렉터리, target authorization, result handling,
 scaling, image upgrade.
 
-### Exclusions
+#### Exclusions
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0062-R1 | run 시작 시 | 필수: `labs/locust/docker-compose.yml` entrypoint와 `lab-locust` profile만 선택하고 target owner/duration/user-spawn limit/worker count/abort SLI/stop owner를 기록하며 각 테스트 대상/부하 한도/시간대를 공통 성능 정책에 따라 승인한다 | 수동 / 정적 Compose와 hardening check(설정만) | run 기록 |
+| POL-0062-R2 | 항상 | 필수: target credential은 승인된 secret channel을 쓰고 `locustfile.py`/Compose/log/raw result에 내장하지 않는다 | hardening check(설정만) | none |
+| POL-0062-R3 | 항상 | 필수: scenario는 `LAB_LOCUST_SCENARIO_DIR`, result는 fresh `LAB_LOCUST_RESULT_DIR`에 두고 sanitized 집계만 소유 Task/incident 아래 보관하며 필요 없으면 payload/identifier를 보관하지 않는다 | 수동 | 소유 Task/incident의 sanitized 집계 |
+| POL-0062-R4 | 항상 | 필수: worker scaling은 명시적이며 승인된 test로 제한하고 run 후 worker/master를 중지하며 host 재시작 후 load를 재생하는 restart 동작을 추가하지 않는다 | 수동 | 최종 stopped state |
+| POL-0062-R5 | run 실행 시 | 필수: 실행은 `lab.py run`의 `--deadline`(lease 안) 안에서 끝내고 결과 판정에 제어기 `outcome`/종료 코드와 CSV를 함께 쓰며 master 종료 코드 0만으로 완료로 보지 않는다 | `lab.py run --deadline` 제어기 | `outcome`/종료 코드/CSV |
+| POL-0062-R6 | 결과 보관 시 | 필수: 결과는 LAB result directory 파일로 남기고 `perf_db` 적재는 named consumer가 생길 때 별도 offline adapter로만 추가하며 중복값/누적과 구간 통계/percentile 비가산성/누락·취소 run을 구분한다 | 수동 | LAB result directory 파일 |
+| POL-0062-R7 | backup 시 | 필수: test 중지 동안에만 scenario/result 디렉터리를 복사하고 tracked scenario는 Git에서 복원하며 untracked result recovery는 overwrite 전에 별도 디렉터리에서 rehearse한다 | 수동 | none |
+| POL-0062-R8 | upgrade 시 | 필수: Locust/Python dependency release note를 검토하고 tracked Dockerfile에서 rebuild하며 작은 승인된 canary를 먼저 실행한다 | 수동 | canary 실행 기록 |
+| POL-0062-R9 | removal 시 | 필수: scenario ownership/보관 evidence/모든 consumer가 해결된 후에만 service를 제거하고 host 디렉터리 삭제는 별도 destructive action이다 | 수동 | 보관된 evidence |
 
 - **Activation:** `labs/locust/docker-compose.yml` entrypoint와 `lab-locust` profile만 선택하고 Locust LAB service를
   명시한다. 모든 run은 target owner, duration, user/spawn limit, worker
@@ -79,31 +89,43 @@ scaling, image upgrade.
 현재 master와 worker는 독립 LAB entrypoint에 있으며 정상 root service가 아니다. 승인 없는
 부하 재생 금지 기준은 유지한다. 운영자는 종료 상태와 result path를 확인해야 한다. 책임자는 `@buenhyden`이다.
 
-### Enforcement
+### Exceptions
 
-Static Compose와 hardening check는 configuration만 증명한다. Runtime
-evidence는 worker registration, target SLI, sanitized result, 최종
-stopped state를 포함해야 한다.
-
-## Exceptions
-
-### Exception Conditions
+#### Exception Conditions
 
 모든 편차는 target, blast radius, expiry, stop condition, recovery
 owner를 명시해야 한다. exception은 target authorization이나 secret
 handling을 면제할 수 없다.
 
-### Approval and Review
+#### Approval and Review
 
 프로필·Dockerfile 의존성·시나리오 저장소·대상 네트워크·확장 동작이 바뀔 때 검토한다.
 
+## Enforcement
+
+### Mechanisms
+
+Static Compose와 hardening check는 configuration만 증명한다. Runtime
+evidence는 worker registration, target SLI, sanitized result, 최종
+stopped state를 포함해야 한다.
+
+### Limits
+
+정적 Compose와 hardening check는 configuration만 증명하며, 아래 항목은 기계적으로 강제되지 않는다.
+
+- 이 정책은 요구사항별 이름 붙은 검사를 지정하지 않는다.
+- runtime evidence(worker registration, target SLI, sanitized result, 최종 stopped state)는 실행 시 기록에 의존한다.
+- master 종료 코드 0은 상한/취소로 멈춘 run에도 나오므로 완료 증거가 아니다.
+- `perf_db` 적재는 현재 없으며 named consumer가 생길 때만 별도 adapter로 추가된다.
+- backup/upgrade/removal 절차는 수동 검토에 의존한다.
+
 ## Ownership
 
-### Responsibilities
+### Owner
 
 이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
 
-### Change and Adoption
+### Review Triggers
 
 - [Guide](../../guides/15-labs/0062-locust.md) (`GDE-0062`)
 - [Runbook](../../runbooks/15-labs/0062-locust.md) (`RUN-0062`)

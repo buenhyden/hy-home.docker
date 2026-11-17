@@ -1,10 +1,10 @@
 ---
 title: "Kafka Cluster LAB Operations Policy"
-version: "0.2.3"
+version: "0.3.0"
 type: "operation/policy"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0108"
 parent_ids:
@@ -15,26 +15,24 @@ next_review_at: "2027-05-13"
 
 # Kafka Cluster LAB Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 이 정책은 `labs/kafka-cluster/docker-compose.yml`의 LAB 전용 세 broker KRaft cluster를 격리, 데이터,
 자원과 승격 통제에 묶는다.
 
-### Authority
+#### Authority
 
 - Runtime source: [Kafka LAB Compose](../../../../labs/kafka-cluster/docker-compose.yml).
 - Artifact: `POL-0108`; parent: `AD-0026`.
 - Version projection: [tech-stack versions](../../../../infra/tech-stack.versions.json)는 Compose에서 파생된 drift 증거이며 정확한 pin은 Compose가 소유한다.
 
-## Scope
-
 ### Applies To
 
 LAB 전용 `lab-kafka` profile과 project `hy-home-lab-kafka`에 적용된다.
 
-### Exclusions
+#### Exclusions
 
 [ADR-0062의 Kafka CDC 개정](../../../02.architecture/decisions/0062-home-lab-membership.md#amendment-of-2026-11-10-kafka-cdc-kafka-connect-and-schema-registry)은
 HOME 단일 broker를 유지한다. LAB의 `replace-same` manifest는 교체 검토용 후보이며 승인 근거로
@@ -44,6 +42,17 @@ Task를 요구한다.
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0108-R1 | 항상 | 필수: 독립 Compose project와 정확한 `lab-kafka` profile로만 선택하고 root include에 넣지 않는다 | `lab.py check kafka-cluster` / RUN-0108 정적 render | 검사/render 결과 |
+| POL-0108-R2 | 항상 | 필수: `LAB_KAFKA_CLUSTER_ID`는 HOME `KAFKA_CLUSTER_ID`와 달라야 하고 HOME cluster의 metadata/offset/broker 디렉터리를 재사용하지 않는다 | `lab.py check kafka-cluster` | 검사 결과(HOME 입력 runtime은 `NOT_RUN`) |
+| POL-0108-R3 | 항상 | 필수: 세 broker data를 `${LAB_DATA_DIR}/kafka/{1,2,3}`에 분리하고 HOME `${DEFAULT_MESSAGE_BROKER_DIR}`를 가리키지 않는다 | `lab.py check kafka-cluster` / RUN-0108 정적 render | 검사/render 결과 |
+| POL-0108-R4 | 항상 | 필수: `lab_kafka_net`은 internal로 유지하고 host port/HOME `kafka_net`/Traefik route를 추가하지 않으며 PLAINTEXT이므로 LAB network 밖으로 열지 않는다 | `lab.py check kafka-cluster` / RUN-0108 정적 render | 검사/render 결과 |
+| POL-0108-R5 | 항상 | 필수: `lab-schema-registry`/`lab-kafka-connect`는 `lab_kafka_net` 안에만 두고 gateway route/host port/Docker secret/connector 정의/원천 DB 자격 증명을 선언하지 않으며 connector 등록과 credential 도입은 별도 승인과 LAB 전용 secret 행이 필요하다 | `lab.py check kafka-cluster` / RUN-0108 정적 render | 검사/render 결과 |
+| POL-0108-R6 | 항상 | 필수: 선언된 limit/healthcheck/replication factor 3/`min.insync.replicas` 2를 유지하고 host 가용성을 주장하지 않는다 | RUN-0108 정적 render | render 결과 |
+| POL-0108-R7 | 기동/정지 시 | 필수: 기동/정지는 `scripts/operations/lab.py`만 쓰고 `down -v`와 volume prune을 쓰지 않는다 | none | none |
+| POL-0108-R8 | 데이터 보존/삭제 시 | 필수: POL-0021과 별도 승인을 따르고 LAB 데이터를 HOME 데이터와 섞지 않는다 | none | none |
 
 - 독립 Compose project와 정확한 `lab-kafka` profile로만 선택한다. root include에는 넣지 않는다.
 - `LAB_KAFKA_CLUSTER_ID`는 HOME `KAFKA_CLUSTER_ID`와 달라야 한다. HOME cluster의 metadata, offset,
@@ -61,30 +70,41 @@ Task를 요구한다.
 - 데이터 보존과 삭제는 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)과 별도 승인을
   따른다. 이 LAB 데이터는 HOME 데이터와 섞지 않는다.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+명명된 실험이 없을 때 LAB은 정지 상태로 둘 수 있다. 예외는 runtime 변경, HOME 데이터 재사용, host
+노출을 승인하지 않는다.
+
+#### Approval and Review
+
+image, profile, network, 데이터 경로, 승격 manifest가 바뀔 때와 승격 Task를 열기 전에 검토한다.
+
+## Enforcement
+
+### Mechanisms
 
 [RUN-0108](../../runbooks/15-labs/0108-kafka-cluster.md)의 정적 render와 `lab.py check kafka-cluster`로
 검증한다. HOME 입력의 render와 runtime은 `NOT_RUN`이다. 2026-11-05 controller 보고에 따르면
 `labs/.env`에 `LAB_KAFKA_CLUSTER_ID`가 없으며, agent는 그 파일을 읽지 않았다.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+RUN-0108의 정적 render와 `lab.py check kafka-cluster`가 이름 붙은 검사이며, 아래 항목은 기계적으로 강제되지 않는다.
 
-명명된 실험이 없을 때 LAB은 정지 상태로 둘 수 있다. 예외는 runtime 변경, HOME 데이터 재사용, host
-노출을 승인하지 않는다.
-
-### Approval and Review
-
-image, profile, network, 데이터 경로, 승격 manifest가 바뀔 때와 승격 Task를 열기 전에 검토한다.
+- HOME 입력의 render와 runtime은 `NOT_RUN`이다.
+- 2026-11-05 controller 보고에 따르면 `labs/.env`에 `LAB_KAFKA_CLUSTER_ID`가 없으며 agent는 그 파일을 읽지 않았다.
+- PLAINTEXT(인증/TLS 없음)이며 host 가용성은 주장할 수 없다.
+- connector 등록, credential 도입, 데이터 보존/삭제는 별도 승인과 POL-0021에 의존한다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
 
-### Change and Adoption
+### Review Triggers
 
 - [Kafka LAB guide](../../guides/15-labs/0108-kafka-cluster.md)
 - [Kafka LAB runbook](../../runbooks/15-labs/0108-kafka-cluster.md)

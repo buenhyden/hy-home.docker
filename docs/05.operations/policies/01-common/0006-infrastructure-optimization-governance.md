@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "2.1.5"
+version: "2.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0006"
 created: "2026-06-04"
@@ -12,18 +12,16 @@ next_review_at: "2027-05-13"
 ---
 # Infrastructure Optimization Governance Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 이 정책은 root Compose가 include하는 정상 서비스와 `labs/*/docker-compose.yml`에서 독립 실행하는 LAB 서비스의 공통 운영 통제와 개선 백로그를 소유한다. 현재 `infra/`의 13개 티어(`01-gateway`~`13-experience`)를 포함하며 directory 수를 service identity나 activation 범위로 대신하지 않는다.
 범위는 Docker Compose 기반 운영 표준(가용성, 보안, 관측성, 복구 용이성)이며, 실행 절차는 해당 서비스 Runbook과 공통 RUN-0086에서 관리한다.
 
-### Authority
+#### Authority
 
 없음: 이 정책 본문에는 구현 권한 문서가 연결되어 있지 않다.
-
-## Scope
 
 ### Applies To
 
@@ -33,13 +31,28 @@ next_review_at: "2027-05-13"
 - **Systems**: root에 include된 정상 Compose service identity와 별도 `labs/*/docker-compose.yml` entrypoint의 LAB identity. 정상 binding은 Guide와 operations catalog가 소유하고 LAB 목록은 각 독립 Compose가 소유한다.
 - **Environments**: Local, Dev, Stage, Production-like
 
-### Exclusions
+#### Exclusions
 
 - 비대상: 기능 설계 변경, 애플리케이션 비즈니스 로직 변경
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0006-R1 | 모든 장기 실행 서비스 | 필수: `healthcheck`, `restart`, `no-new-privileges`, 자원 제한(`cpus`/`memory`)을 기본 적용한다 | `bash scripts/validation/validate-docker-compose.sh` / `bash scripts/validation/check-template-security-baseline.sh` | none |
+| POL-0006-R2 | 민감정보 주입 시 | 필수: 환경변수 직접 주입 대신 Docker Secrets 또는 OpenBao 경유 주입을 기본으로 한다 | `bash scripts/validation/check-template-security-baseline.sh` | none |
+| POL-0006-R3 | 서비스 운영 문서 | 필수: 서비스별 Guide와 Runbook을 상호 링크로 동기화한다 | `python3 scripts/validation/check-document-links.py --mode traceability` | none |
+| POL-0006-R4 | 서비스 성격(상태저장/배치/실험성) | 허용: 성격에 따른 예외를 설정한다 | 수동 | none |
+| POL-0006-R5 | 티어 확장 시 | 허용: 티어별 확장(AI 게이트웨이, 메시징 DLQ, 관측성 장기보관 스토리지)을 한다 | none | none |
+| POL-0006-R6 | 운영 서비스 이미지/설정 변경 | 금지: 무검증/무중단 정책 없는 이미지/설정 변경 | none | none |
+| POL-0006-R7 | 포트/이미지 태그 | 금지: 근거 없는 외부 포트 노출과 `latest` 태그 관행 | none | none |
+| POL-0006-R8 | 항상 | 필수: Compose/Dockerfile 선언이 runtime pin을 소유하고 `infra/tech-stack.versions.json`은 Compose image 파생 projection으로 둔다 | Compose-image drift 검사(파생 projection) | none |
+| POL-0006-R9 | 정상 서비스 또는 LAB 서비스 추가 | 필수: root include, POL-0078 profile membership, 환경/secret 계약, image projection, README와 Guide/Policy/Runbook(LAB은 독립 Compose, README, `promotion.yaml`, `labs/.env.example`)을 함께 갱신한다 | 수동 | none |
+| POL-0006-R10 | profile/LAB 분리 | 필수: HOME profile membership과 LAB 분리 vocabulary는 POL-0078을 따르며 root include 제외는 container 정지나 데이터 삭제가 아니다 | none | none |
+| POL-0006-R11 | 단일 파일 bind config 수정으로 inode 교체 | 필수: 승인된 해당 service 재생성을 하고 `restart`로 대신하지 않으며 mount를 directory로 바꾸지 않는다 | 수동 | RUN-0086 |
+| POL-0006-R12 | 모든 live apply 직후 | 필수: 기대 config mount가 빠짐없이 일치해야 하며 `UNREADABLE`/행0/누락 coverage/query 실패나 exit0만으로 통과시키지 않고 `secrets/` 값은 읽거나 출력하지 않는다 | RUN-0086 coverage와 결과 분기 | RUN-0086 hash 검사 결과 |
 
 - **Required**:
   - 모든 장기 실행 서비스에 `healthcheck`, `restart`, `no-new-privileges`, 자원 제한(`cpus`/`memory`)을 기본 적용
@@ -242,7 +255,21 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
 - [Locust LAB](../../../../labs/locust/README.md): 분산 실행 토폴로지와 테스트 데이터 초기화/정리 루틴 표준화
   ([OPER](../../guides/15-labs/0062-locust.md), [RUN](../../runbooks/15-labs/0062-locust.md))
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+- 승인된 실험성 service에는 대상·이유·risk·owner·종료 조건을 갖춘 제한적 예외만 허용 가능. 예전 `11-laboratory` directory membership은 현재 예외 승인이 아니다.
+  단, 외부 노출 시 최소 인증/접근제어(SSO 또는 IP 제한)와 자원 상한은 필수로 승인한다.
+
+#### Approval and Review
+
+- 월 1회 정기 검토
+- 신규 서비스 추가/중요 버전업/보안 이슈 발생 시 수시 검토
+
+## Enforcement
+
+### Mechanisms
 
 - Compose 정적 점검: `bash scripts/validation/validate-docker-compose.sh`
 - 템플릿/보안 기준선 점검: `bash scripts/validation/check-template-security-baseline.sh`
@@ -257,25 +284,25 @@ Compose 정적 검증도 임시 파일 생성과 기존 입력 읽기가 있을 
 [RUN-0086](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md#static-configuration-validation)의
 공개/sanitized 입력 경계를 따른다. check PASS는 필수 통제의 전체 runtime 증명이 아니다.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+정책은 정적 점검만 명명하며 다음은 기계적으로 강제되지 않는다.
 
-- 승인된 실험성 service에는 대상·이유·risk·owner·종료 조건을 갖춘 제한적 예외만 허용 가능. 예전 `11-laboratory` directory membership은 현재 예외 승인이 아니다.
-  단, 외부 노출 시 최소 인증/접근제어(SSO 또는 IP 제한)와 자원 상한은 필수로 승인한다.
-
-### Approval and Review
-
-- 월 1회 정기 검토
-- 신규 서비스 추가/중요 버전업/보안 이슈 발생 시 수시 검토
+- check PASS는 필수 통제의 전체 runtime 증명이 아니다.
+- `healthcheck`/`restart`/`security_opt`/`secrets`/`limits` 유무의 정기 스캔은 "예시"로만 적혀 있고 명명된 스크립트가 없다.
+- 서비스별 Guide/Runbook 상호 링크 동기화와 새 서비스 추가 시 갱신 항목은 수동 검토에 의존한다.
+- 2026 Q2/Q3 roadmap 항목은 완료 evidence가 없어 Unclosed/Planned 상태이며, tier별 개선 백로그는 미구현 제안이다.
+- 단일 파일 config mount의 live apply 후 hash 검증은 RUN-0086의 승인된 실행에 의존하며 `UNREADABLE`, 행0, 누락 coverage, query 실패는 완료 증거가 아니다.
+- 월 1회 정기 검토와 수시 검토에 명명된 자동 검사는 없다.
+- 미충족 통제는 별도 구현 변경으로 해결한다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 책임 소유자는 @buenhyden이며 미충족 통제는 별도 구현 변경으로 해결한다.
 
-### Change and Adoption
+### Review Triggers
 
 - 같은 번호 `0006`의 Guide/Runbook은 없다.
 

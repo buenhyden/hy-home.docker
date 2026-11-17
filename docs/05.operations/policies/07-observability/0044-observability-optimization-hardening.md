@@ -1,10 +1,10 @@
 ---
 title: "Observability Optimization Hardening Policy"
-version: "1.2.2"
+version: "1.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0044"
 parent_ids:
@@ -15,19 +15,17 @@ next_review_at: "2027-05-13"
 
 # Observability Optimization Hardening Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 이 문서는 `06-observability` 계층의 최적화/하드닝 운영 정책을 정의한다. 게이트웨이 경계 보안, health 기반 의존성, 커스텀 이미지 런타임 하드닝, CI 기준선 검증, 카탈로그 확장 승인 조건을 통제한다.
 
-### Authority
+#### Authority
 
 - Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 
 - 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
-
-## Scope
 
 ### Applies To
 
@@ -41,13 +39,37 @@ next_review_at: "2027-05-13"
 - **Systems**: Prometheus, Alertmanager, Grafana, Loki, Tempo, Alloy, Pushgateway, Pyroscope, cAdvisor
 - **Environments**: 로컬·개발·홈랩 운영과 운영 환경에 준하는 검증
 
-### Exclusions
+#### Exclusions
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0044-R1 | 관측성 라우터 `grafana`/`gatus` | 필수: native OIDC 라우터는 `gateway-standard-chain@file`만 적용하고 application login/role mapping을 유지한다 | `check-all-hardening.sh 06-observability` / `infrastructure-hardening` CI 게이트 | 검사 출력 |
+| POL-0044-R2 | proxy 보호 관측성 라우터 | 필수: `gateway-standard-chain@file,sso-errors@file,sso-auth@file`을 유지한다 | `check-all-hardening.sh 06-observability` / `infrastructure-hardening` CI 게이트 | 검사 출력 |
+| POL-0044-R3 | 핵심 백엔드 `depends_on` | 필수: `service_healthy`를 우선 사용한다 | `check-all-hardening.sh 06-observability` / `validate-docker-compose.sh` | 검사 출력 |
+| POL-0044-R4 | host observer(cAdvisor) | 필수: healthcheck를 가진다 | `check-all-hardening.sh 06-observability` | 검사 출력 |
+| POL-0044-R5 | Pyroscope를 `obs` 또는 `profiling` profile로 선택할 때 | 필수: route, service port, persistent volume, healthcheck 기준을 동일하게 유지한다 | `check-all-hardening.sh 06-observability` / `HYHOME_COMPOSE_PROFILES=obs` compose 검증 | 검사 출력 |
+| POL-0044-R6 | Loki/Tempo 커스텀 이미지 | 필수: non-root 실행을 강제한다 | `check-all-hardening.sh 06-observability` (일부 파일만 검사) | 검사 출력 |
+| POL-0044-R7 | Loki/Tempo entrypoint | 필수: secret 파일 존재를 선검증한다 | `check-all-hardening.sh 06-observability` (일부 문자열만 검사) | 검사 출력 |
+| POL-0044-R8 | 관측성 변경 | 필수: `infrastructure-hardening` CI 게이트를 통과한다 | `infrastructure-hardening` CI 게이트 | CI 게이트 결과 |
+| POL-0044-R9 | 관측성 변경 | 필수: `check-template-security-baseline.sh`, `check-document-links.py --mode traceability`, 관련 compose validation 결과를 함께 확인한다 | `check-template-security-baseline.sh` / `check-document-links.py --mode traceability` / `validate-docker-compose.sh` | 각 검사 결과 |
+| POL-0044-R10 | log/trace/profile retention 변경 | 필수: retention policy와 서비스별 policy/runbook에 함께 반영한다 | 수동 | 변경 문서 검토 |
+| POL-0044-R11 | 대량 scrape 실패, trace/log ingestion 지연 급증, 관리경로 인증 실패 급증 | 필수: runbook handoff 조건으로 취급한다 | 수동 | `RUN-0044` runbook |
+| POL-0044-R12 | 문서(PRD~Procedure) | 필수: optimization-hardening 링크를 유지한다 | `check-document-links.py --mode traceability` | traceability 검사 결과 |
+| POL-0044-R13 | 확장 시 | 허용: 카탈로그 기반 단계 확장(샘플링/retention/pipeline module) | 수동 | 승인 조건 문서화 |
+| POL-0044-R14 | 운영상 필요할 때 | 허용: profile 기반 선택 기동 | `validate-docker-compose.sh` | compose 검증 결과 |
+| POL-0044-R15 | 항상 | 금지: 무검증 라우터 middleware 변경 | `check-all-hardening.sh` / `infrastructure-hardening` CI 게이트 | 검사 출력 |
+| POL-0044-R16 | 항상 | 금지: root 실행 커스텀 이미지 재도입 | `check-all-hardening.sh 06-observability` | 검사 출력 |
+| POL-0044-R17 | 항상 | 금지: secret guard가 없는 Loki/Tempo object storage 연결 | `check-all-hardening.sh 06-observability` | 검사 출력 |
+| POL-0044-R18 | 항상 | 금지: 정책 미연계 확장 실행 | 수동 | none |
+| POL-0044-R19 | 카탈로그 확장(Prometheus/Loki/Tempo/Alloy) | 필수: 승인 조건(scrape budget, remote_write 절차, cardinality/sampling 가드레일, retention/compaction 연동, 온보딩 템플릿, 모듈 경계)을 충족한다 | 수동 | none |
+| POL-0044-R20 | exporter 운영 | 필수: HOME 분류 유지, host PID/privileged/device 마운트 확대 시 보안 검토, node-exporter는 `obs_net` gateway 주소에만 listen, cAdvisor는 보호 route 유지 | 수동 보안 검토 | none |
+| POL-0044-R21 | exporter 자원/cardinality 변경 또는 제거 | 필수: scrape/host 영향 측정, 제거 시 rule/dashboard 의존성 검토와 관측 공백 승인을 받는다 | 수동 | none |
 
 - **Required**:
   - Native OIDC routers `grafana`/`gatus`는
@@ -103,7 +125,21 @@ cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는
 
 관측 hardening 함수는 일부 문자열·파일만 검사하며 모든 Dockerfile, retention 시행, 인증 거부, 전달, host 호환성이나 용량을 증명하지 않는다. Loki/Tempo LAN 접근은 POL-0096의 기존 예외이고 retention 결함은 POL-0048에 남는다. Grafana/Gatus native 인증에 일괄 proxy SSO를 붙이지 않는다. 검사 통과만으로 통제를 완료하거나 privileged 권한 확대를 승인하지 않는다.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+- 긴급 장애 대응 시 일시적으로 인증 경계 완화가 필요할 수 있다.
+- 단, 동일 릴리스 내 원상 복구 및 검증 증적 확보가 필수다.
+
+#### Approval and Review
+
+- 월 1회 정기 검토
+- 관측성 주요 버전 변경/보안 이슈 발생 시 수시 검토
+
+## Enforcement
+
+### Mechanisms
 
 - `bash scripts/hardening/check-all-hardening.sh 06-observability`
 - `bash scripts/validation/check-template-security-baseline.sh`
@@ -111,25 +147,24 @@ cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는
 - `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`
 - Service-local compose 검증은 root network/secret context 또는 임시 overlay 포함
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+이 정책은 일부 규칙만 이름 붙은 검사로 강제하며 나머지는 수동 검토에 의존한다.
 
-- 긴급 장애 대응 시 일시적으로 인증 경계 완화가 필요할 수 있다.
-- 단, 동일 릴리스 내 원상 복구 및 검증 증적 확보가 필수다.
-
-### Approval and Review
-
-- 월 1회 정기 검토
-- 관측성 주요 버전 변경/보안 이슈 발생 시 수시 검토
+- 관측 hardening 함수는 일부 문자열·파일만 검사하므로 모든 Dockerfile, retention 시행, 인증 거부, 전달, host 호환성, 용량은 기계적으로 증명되지 않는다.
+- retention 반영, runbook handoff, 카탈로그 확장 승인 조건, exporter 보안 검토와 관측 공백 승인은 수동 검토이며 지정된 검사가 없다.
+- 정책 미연계 확장 금지는 지정된 검사나 증거가 없다.
+- cAdvisor healthcheck는 process 응답만 확인하므로 Prometheus target과 container series는 따로 검증해야 한다.
+- 검사 통과만으로 통제 완료나 privileged 권한 확대 승인으로 보지 않는다.
+- Loki/Tempo LAN 접근은 POL-0096 예외이며 retention 결함은 POL-0048에 남는다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Change and Adoption
+### Review Triggers
 
 - Subject peers: [Guide](../../guides/07-observability/0044-observability-optimization-hardening.md) (`GDE-0044`), [Runbook](../../runbooks/07-observability/0044-observability-optimization-hardening.md) (`RUN-0044`)
 

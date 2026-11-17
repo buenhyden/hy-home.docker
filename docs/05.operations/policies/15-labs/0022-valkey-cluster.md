@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster Operations Policy"
-version: "2.0.4"
+version: "2.1.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0022"
 parent_ids:
@@ -15,31 +15,38 @@ next_review_at: "2027-05-13"
 
 # Valkey Cluster Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 이 정책은 현재 source 구성을 데이터 보호, 보안, 자원, 수명주기 통제와 독립적으로 검증 가능한 운영 통제에 묶는다. 대상은 `labs/valkey-cluster/docker-compose.yml`의 LAB 전용 Valkey Cluster이다.
 
-### Authority
+#### Authority
 
 - Runtime source: [Valkey Cluster Compose](../../../../labs/valkey-cluster/docker-compose.yml).
 - Artifact: `POL-0022`; parent: `AD-0004`.
 - Runtime authority는 연결된 Compose/source 파일에 남는다; 정확한 pin도 그 파일에 있다.
 
-## Scope
-
 ### Applies To
 
 이 policy는 LAB 전용 `valkey-cluster` profile에 적용된다.
 
-### Exclusions
+#### Exclusions
 
 HOME으로 promotion하거나 `mng-valkey`를 대체하는 것은 승인하지 않는다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0022-R1 | LAB `valkey-cluster` stack 선택 시 | 필수: `labs/valkey-cluster/docker-compose.yml` 독립 Compose project와 정확한 `valkey-cluster` profile로만 선택하고 root include에 넣지 않는다 | 독립 LAB configuration 검증 / scoped static policy check | static policy check 결과 |
+| POL-0022-R2 | 항상 | 필수: 여섯 개 data volume을 분리 유지하고 두 node가 한 디렉터리를 가리키거나 recovery target에서 live `nodes.conf` identity를 재사용하지 않는다 | none | none |
+| POL-0022-R3 | 항상 | 필수: `lab_valkey_password`를 Docker secret custody에 유지하고 Compose/Markdown/shell history/evidence에 값을 두지 않는다 | none | none |
+| POL-0022-R4 | 항상 | 필수: LAB host client port(기본 17379-17384)는 `127.0.0.1`에만 게시하고 cluster-bus port는 게시하지 않는다(TLS 미선언) | 독립 LAB configuration 검증 | static policy check 결과 |
+| POL-0022-R5 | 활성화 전 | 필수: client/dataset/retention/capacity hypothesis를 기록한다(한 host의 세 replica는 host availability가 아님) | 수동 | none |
+| POL-0022-R6 | 항상 | 필수: 공유 health check/resource limit/`lab_valkey_core_net`/`lab_valkey_obs_net` boundary를 보존한다 | 독립 LAB configuration 검증 | static policy check 결과 |
 
 - `labs/valkey-cluster/docker-compose.yml` 독립 Compose project와 정확한 `valkey-cluster` profile로만 stack을 선택한다. root include에는 넣지 않는다.
 - 여섯 개 data volume을 모두 분리해서 유지한다. 두 node가 한 디렉터리를
@@ -82,32 +89,44 @@ backup, isolated restore evidence, rollback artifact가 필요하다. Membership
 
 적용 identity: `valkey-cluster-exporter`, `valkey-cluster-init`, `valkey-node-0`, `valkey-node-1`, `valkey-node-2`, `valkey-node-3`, `valkey-node-4`, `valkey-node-5`. 문서의 정적 검증과 runtime 운영 승인을 분리한다. @buenhyden이 named consumer·target·중단 영향·보존 기간과 예외를 소유한다. service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 이 Policy와 linked Guide/Runbook을 함께 검토한다. engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 적용되는 [POL-0079](../03-identity-and-access/0079-application-auth-integration.md)를, source 반영·재기동은 [POL-0006](../01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary), 보존·삭제는 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 적용 통제를 따른다. exporter와 stateless job 자체에는 database restore가 없지만 설정·credential와 그 작업이 변경하는 upstream state는 제외되지 않는다. 소유 artifact·복구 지점·expiry가 불명확하면 삭제/재생성을 중단한다. 기존 Exceptions 외의 새 예외는 승인된 것으로 간주하지 않는다.
 
-### Enforcement
+### Exceptions
 
-독립 LAB configuration과 scoped static policy check를 검증한 다음, promotion
-또는 cutover 전에 application-level acceptance를 갖춘 isolated compatible
-restore를 요구한다. 미검증 runtime 속성은 명시적으로 기록한다.
-
-## Exceptions
-
-### Exception Conditions
+#### Exception Conditions
 
 명명된 cluster client가 없을 때 LAB cluster는 부재할 수 있다. Exception은
 runtime mutation, plaintext secret, active storage의 raw 복사, 또는
 same-host availability 주장을 승인하지 않는다.
 
-### Approval and Review
+#### Approval and Review
 
 profile, image, volume, credential, consumer, retention, 또는 upstream
 lifecycle 변경 이후, 그리고 보존되는 동안 최소 연 1회 검토한다.
 
+## Enforcement
+
+### Mechanisms
+
+독립 LAB configuration과 scoped static policy check를 검증한 다음, promotion
+또는 cutover 전에 application-level acceptance를 갖춘 isolated compatible
+restore를 요구한다. 미검증 runtime 속성은 명시적으로 기록한다.
+
+### Limits
+
+이 정책은 정적 검증과 runtime 검증을 분리하며, 아래 항목은 기계적으로 강제되지 않는다.
+
+- 각 요구사항에 개별로 이름 붙은 검사는 없고, 독립 LAB configuration과 scoped static policy check만 Mechanisms에 있다.
+- RPO 24시간/RTO 8시간은 isolated rehearsal 전까지 미검증 상태다.
+- 미검증 runtime 속성은 명시적으로 기록해야 하며 자동 검사는 없다.
+- promotion/cutover 전 isolated restore와 application-level acceptance는 수행 기록에 의존한다.
+- client/dataset/retention/capacity hypothesis 기록과 연 1회 검토는 수동 검토에 의존한다.
+
 ## Ownership
 
-### Responsibilities
+### Owner
 
 이 정책의 소유자는 frontmatter의 `owner`인 `@buenhyden`이다.
 
-### Change and Adoption
+### Review Triggers
 
 - [Domain catalog](../../README.md)
 - [Valkey persistence](https://valkey.io/topics/persistence/)

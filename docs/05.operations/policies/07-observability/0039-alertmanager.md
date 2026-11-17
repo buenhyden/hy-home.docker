@@ -1,10 +1,10 @@
 ---
 title: "Alertmanager Operations Policy"
-version: "1.1.5"
+version: "1.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0039"
 parent_ids:
@@ -15,7 +15,7 @@ next_review_at: "2027-05-13"
 
 # Alertmanager Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
@@ -23,13 +23,11 @@ next_review_at: "2027-05-13"
 receiver, silence, secret boundary를 정의한다. 사용 흐름은 Alertmanager
 guide가, 장애 대응 절차는 Alertmanager runbook이 담당한다.
 
-### Authority
+#### Authority
 
 - Declared parent: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
 
 - 런타임 고정값은 Compose/Dockerfile 선언이 소유하며 [파생 이미지 목록](../../../../infra/tech-stack.versions.json)은 드리프트 검증에 사용한다.
-
-## Scope
 
 ### Applies To
 
@@ -39,13 +37,35 @@ guide가, 장애 대응 절차는 Alertmanager runbook이 담당한다.
 - **Systems**: compose service `alertmanager`, container `alertmanager`, image [prom/alertmanager image declaration](../../../../infra/06-observability/docker-compose.yml), config `infra/06-observability/alertmanager/config/config.yml`, volume `alertmanager-data`
 - **Environments**: 로컬·개발·홈랩 운영
 
-### Exclusions
+#### Exclusions
 
 없음: 이 정책 본문에는 명시된 제외 대상이 없다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0039-R1 | 항상 | 필수: alert grouping은 `alertname`/`job`/`domain`/`severity` label 기준 | Alert routing config `rg` 검사 (`infra/06-observability/alertmanager/config/config.yml`) | none |
+| POL-0039-R2 | 항상 | 필수: default routing `group_wait: 30s`/`group_interval: 5m`/`repeat_interval: 4h`/receiver `team-notifications-slack` 유지 | Alert routing config `rg` 검사 (`infra/06-observability/alertmanager/config/config.yml`) | none |
+| POL-0039-R3 | 항상 | 필수: `severity="critical"` route는 receiver `critical-notifications`와 `repeat_interval: 1h` 유지 | Alert routing config `rg` 검사 (`infra/06-observability/alertmanager/config/config.yml`) | none |
+| POL-0039-R4 | 항상 | 필수: active receiver는 Slack `#notification`/`#critical-alerts` 기준 | none | none |
+| POL-0039-R5 | `email_configs`가 commented일 때 | 필수: SMTP placeholder와 `smtp_username`/`smtp_password` secret 유지, email delivery를 active control로 선언 금지 | Alert routing config `rg` 검사 (`infra/06-observability/alertmanager/config/config.yml`) | none |
+| POL-0039-R6 | 항상 | 필수: `smtp_username`/`smtp_password`/`slack_webhook`은 Docker Secret으로만 주입, entrypoint에서 rendered `/tmp/config.yml`로 변환 | Compose service boundary `rg` 검사 (`infra/06-observability/docker-compose.yml`) | none |
+| POL-0039-R7 | 항상 | 필수: critical이 같은 alert의 warning을 억제, `InstanceDown`이 app/datastore/messaging alert를 억제하는 현재 inhibition 규칙 준수 | none | none |
+| POL-0039-R8 | 항상 | 필수: route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file` middleware chain 유지 | Compose service boundary `rg` 검사 (`infra/06-observability/docker-compose.yml`) | none |
+| POL-0039-R9 | planned maintenance silence 시 | 필수: 종료 시각과 사유 포함 | none | none |
+| POL-0039-R10 | receiver/grouping/inhibition/silence 변경 시 | 허용: plan/task evidence와 config diff를 함께 남기고 변경 | none | plan/task evidence / config diff |
+| POL-0039-R11 | email delivery 활성화 시 | 허용: `email_configs`를 실제 receiver로 전환하고 SMTP secret/rendering 검증을 같은 변경 단위에 포함 | none | none |
+| POL-0039-R12 | 항상 | 금지: Slack webhook/SMTP username/password/rendered config secret 값을 문서/로그/task evidence에 기록 | none | none |
+| POL-0039-R13 | `email_configs`가 inactive일 때 | 금지: critical 알림의 email delivery 보장 선언 | Alert routing config `rg` 검사 (`infra/06-observability/alertmanager/config/config.yml`) | none |
+| POL-0039-R14 | 항상 | 금지: 승인 없이 route/receiver/inhibition/secret rendering/protected middleware/image version을 runtime에서 변경 | none | none |
+| POL-0039-R15 | 항상 | 금지: expiry 없는 무기한 silence 생성 | none | none |
+| POL-0039-R16 | 항상 | 필수: HOME 유지, gateway 인증/secret-file 렌더링/최소 수신자 권한/증거 비식별화 | Compose service boundary `rg` 검사 (`infra/06-observability/docker-compose.yml`) | none |
+| POL-0039-R17 | upgrade 전 | 필수: 템플릿/matching secret과 정지된 `alertmanager-data`의 일관 copy/snapshot 보존, 통지 상태 live-copy 금지 | none | none |
+| POL-0039-R18 | 항상 | 필수: 격리 storage와 시험 수신자로 설정/silence/inhibition/grouping/notification log/시험 전달 검증 | none | none |
+| POL-0039-R19 | 제거 시 | 필수: Prometheus routing 이전, 수신자 폐기, silence 증거 보존, 데이터 삭제 승인 | none | none |
 
 - **Required**:
   - Alert grouping은 `alertname`, `job`, `domain`, `severity` label을
@@ -93,7 +113,24 @@ guide가, 장애 대응 절차는 Alertmanager runbook이 담당한다.
 
 Compose 진입 스크립트는 SMTP/Slack 시크릿을 요구하지만 Slack 수신자만 활성화되어 있다. SMTP 치환자가 이메일 전송을 활성화하지 않는다. Raw `sed` 치환은 임의 시크릿의 구분자·앰퍼샌드·역슬래시·줄바꿈을 안전하게 인코딩하지 못한다. 이는 렌더러 결함이며 원격 셸 실행의 관찰 증거는 아니다. 시크릿이나 렌더링된 YAML을 출력하거나 자격 증명을 약화·변형하지 않는다. 비노출 방식으로 호환성을 확인할 수 없으면 시작·회전을 중단하고 @buenhyden에게 별도 렌더러 수정을 요청한다. Readiness는 통지·grouping/inhibition 성공을 증명하지 않으므로 승인된 시험 수신자와 제한된 알림으로 따로 검증한다.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+- 보안 사고 또는 대규모 장애 대응 중 임시 route/receiver 조정이 필요하면
+  사용자 승인, runbook evidence, rollback evidence를 남긴다.
+- Emergency notification noise suppression은 incident commander 또는 owning
+  operator가 만료 시각을 지정한 경우에만 허용한다.
+
+#### Approval and Review
+
+- Alertmanager image, route tree, receiver, inhibition rule, secret reference,
+  middleware, healthcheck가 변경될 때 검토한다.
+- 정기 검토는 분기마다 수행한다.
+
+## Enforcement
+
+### Mechanisms
 
 - Compose service boundary:
   `rg -n 'service: template-stateful-low|image: prom/alertmanager:|smtp_username|smtp_password|slack_webhook|alertmanager.middlewares|/-/ready' infra/06-observability/docker-compose.yml`
@@ -102,28 +139,22 @@ Compose 진입 스크립트는 SMTP/Slack 시크릿을 요구하지만 Slack 수
 - Repository contracts:
   원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+정책이 지정한 자동 검사는 Compose/설정 `rg` 패턴과 원격 PR `changed` 검사뿐이며, 아래 항목은 기계적으로 강제되지 않는다.
 
-- 보안 사고 또는 대규모 장애 대응 중 임시 route/receiver 조정이 필요하면
-  사용자 승인, runbook evidence, rollback evidence를 남긴다.
-- Emergency notification noise suppression은 incident commander 또는 owning
-  operator가 만료 시각을 지정한 경우에만 허용한다.
-
-### Approval and Review
-
-- Alertmanager image, route tree, receiver, inhibition rule, secret reference,
-  middleware, healthcheck가 변경될 때 검토한다.
-- 정기 검토는 분기마다 수행한다.
+- `rg` 패턴은 문자열 존재만 확인하며 receiver 전달, grouping/inhibition 동작, 통지 성공을 증명하지 않는다. Readiness도 이를 증명하지 않아 승인된 시험 수신자와 제한된 알림으로 따로 검증해야 한다.
+- 알려진 렌더러 결함: Compose 진입 스크립트의 raw `sed` 치환은 임의 시크릿의 구분자/앰퍼샌드/역슬래시/줄바꿈을 안전하게 인코딩하지 못한다. 비노출 방식으로 호환성을 확인할 수 없으면 시작/회전을 중단하고 @buenhyden에게 별도 수정을 요청한다.
+- Email delivery는 `email_configs`가 주석 상태라 active control이 아니다.
+- Secret 값 기록 금지, silence expiry, runtime 변경 승인, upgrade 전 snapshot, 제거 절차에는 이름 붙은 자동 검사가 없다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 책임 소유자는 **@buenhyden**이다. 예외·통제 변경에는 기존 범위별 승인 기록이 필요하며 문서 수정은 승인 근거가 아니다. 통제 실패나 복구 증거 누락은 수용을 중단하고 정제된 증거로 에스컬레이션한다.
 
-### Change and Adoption
+### Review Triggers
 
 - Subject peers: [Guide](../../guides/07-observability/0039-alertmanager.md) (`GDE-0039`), [Runbook](../../runbooks/07-observability/0039-alertmanager.md) (`RUN-0039`)
 
