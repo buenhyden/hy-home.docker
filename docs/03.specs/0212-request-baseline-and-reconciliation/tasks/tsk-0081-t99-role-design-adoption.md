@@ -81,7 +81,9 @@ different tables fail, and so does an extra or missing table. The core
 assigns all 22 of its tables to an H2, so a table may sit in any H3 of that
 H2. Not compared: a table's own condition, which the projection does not
 carry, and the core's numeric order fields, which the array order already
-expresses. Every core H2 and H3 in 4.0.0 is required, and so is every
+expresses. The core is 196,063 bytes, 74.8% of the 262,144-byte read
+limit it shares with the Stage 99 schemas. Each pinned file is read once to
+hash it and once to parse it. Every core H2 and H3 in 4.0.0 is required, and so is every
 column. The core assigns different value types to the same
 column label in different roles, so the global column dictionary cannot
 carry them. W143, which binds the first role, makes a bound role read its
@@ -125,13 +127,15 @@ current documents, and those changes need the same per-group review.
 | Conformance GREEN | 137 | W142 | role-design-conformance | test_template_definition with the pinned core and classified roles | PASS | 35 tests, exit 0 | required | Conformance RED |
 | Contract wiring | 137 | W142 | document-contracts | check-document-metadata.py --mode check-contracts, then with one byte appended to the core | PASS | 0 violations; the changed core gave `role-design-source-changed`, exit 1; restored | required | - |
 | Foundation review | 137 | W142 | independent-review | Commits `c1541ea86` and `9019594c7` | FAIL | CHANGES_REQUIRED: H2-owned tables rejected inside their H3, Stage 99 checks unrecorded, schema unpinned, failure paths and exception rules incomplete | required | - |
-| Conformance review fixes | 137 | W142 | role-design-conformance | RoleDesignConformanceTests with H3 placement, extra and missing tables, H3 requiredness, unknown and unmapped roles, schema-held exception shape and identity | PASS | 13 tests, exit 0 | required | - |
-| Foundation regression | 137 | W142 | document-governance-regression | test_registry, test_template_definition, metadata.test_heading, metadata.test_reference, test_metadata_validator and test_taxonomy on the fixed candidate | PASS | 374 tests in 363.184 seconds, exit 0 | required | - |
-| Foundation corpus | 137 | W142 | document-corpus | check-active, check-contracts, corpus lifecycle, link alignment and governance contract on the fixed candidate | PASS | 589 selected and 0 violations; 0 contract, lifecycle and governance findings; alignment PASS | required | - |
+| Conformance review fixes | 137 | W142 | role-design-conformance | RoleDesignConformanceTests at `3e30b52ce` with H3 placement, extra and missing tables, H3 requiredness, unknown and unmapped roles, schema-held exception shape and identity | PASS | 13 tests, exit 0 | required | - |
+| Foundation regression | 137 | W142 | document-governance-regression | test_registry, test_template_definition, metadata.test_heading, metadata.test_reference, test_metadata_validator and test_taxonomy at `3e30b52ce` | PASS | 374 tests in 363.184 seconds, exit 0 | required | - |
+| Foundation corpus | 137 | W142 | document-corpus | check-active, check-contracts, corpus lifecycle, link alignment and governance contract at `3e30b52ce` | PASS | 589 selected and 0 violations; 0 contract, lifecycle and governance findings; alignment PASS | required | - |
+| Foundation re-review | 137 | W142 | independent-review | Commits `3e30b52ce` and `f958da1ef` against the first review | PASS | APPROVE; six minor notes, of which the schema-hash test, the two document mentions, these revisions and the duplicate test are applied | required | Foundation review |
 
 ### Resolution Links
 
-Conformance GREEN resolves Conformance RED. The comparison baseline stays
+Conformance GREEN resolves Conformance RED, and Foundation re-review resolves
+Foundation review. The comparison baseline stays
 open until every role group conforms.
 
 ## Acceptance Decision

@@ -84,7 +84,7 @@ docs/99.templates/
 | [`contracts/document-frontmatter.schema.json`](./contracts/document-frontmatter.schema.json) | machine | typed frontmatter value shape |
 | [`contracts/template-definition.schema.json`](./contracts/template-definition.schema.json) | machine | TemplateDefinition 출력 계약 2.0.0. `scripts/lib/document_governance/template_definition.py`가 각 `template_roles` 항목을 이 형식으로 투영합니다 |
 | [`contracts/document-role-design.json`](./contracts/document-role-design.json) | machine | 공통 문서 역할 설계 core `workspace-document-role-design`. 거버넌스 패키지 원본과 같은 바이트이며 판본과 SHA-256은 Registry `common.role_design_contract`가 고정합니다 |
-| [`contracts/document-role-design.schema.json`](./contracts/document-role-design.schema.json) | machine | 위 core의 구조 schema |
+| [`contracts/document-role-design.schema.json`](./contracts/document-role-design.schema.json) | machine | 위 core의 구조 schema. Registry가 이 파일도 SHA-256으로 고정합니다 |
 | [`templates/`](./templates/) | copy source | profile-referenced authoring forms |
 
 TemplateDefinition의 `contract_id`는 적용 양식을 식별하고
