@@ -112,7 +112,7 @@ A provider-owned runtime projection is exempt from the metadata envelope. Operat
 | DOCUMENTATION-PROTOCOL-R77 | Stage 03 package | Required: keep it to a bounded change; a package describing a steady state belongs to and is retired to the owning Stage 02 Description and Stage 05 subjects | none | none |
 | DOCUMENTATION-PROTOCOL-R78 | Stage 01 requirement | Required: keep it solution-independent; an implementation contract (specific middleware chain, container flag, volume path or script) belongs to the Stage 03 Spec or Stage 05 policy | none | none |
 | DOCUMENTATION-PROTOCOL-R79 | Always | Required: update cross-links in the same logical change | none | none |
-| DOCUMENTATION-PROTOCOL-R80 | Recording execution evidence | Required: record it in the co-located Stage 03 Task | none | none |
+| DOCUMENTATION-PROTOCOL-R80 | Recording execution evidence | Required: record it in the co-located Stage 03 Task | none | Task record |
 | DOCUMENTATION-PROTOCOL-R81 | Optional lifecycle event | Allowed: record it only for an observed direct registered edge with same-Task evidence | none | none |
 | DOCUMENTATION-PROTOCOL-R82 | Plan or Task whose Registry profile requires a parent | Required: a Plan has one Spec parent and a Task one Plan parent | none | none |
 | DOCUMENTATION-PROTOCOL-R83 | Structural records | Forbidden: treating them as authenticating approval, review or execution | none | none |
@@ -182,7 +182,7 @@ A provider-owned runtime projection is exempt from the metadata envelope. Operat
 | DOCUMENTATION-PROTOCOL-R147 | Runbook | Required: state trigger, prerequisites, approval and safety boundaries, blast radius, ordered actions, expected signals, verification, recovery, escalation and evidence handoff in its registered sections | none | none |
 | DOCUMENTATION-PROTOCOL-R148 | Runbook | Forbidden: copying a past execution result into a reusable instruction | none | none |
 | DOCUMENTATION-PROTOCOL-R149 | Change to the service, pin, command or procedure a Guide, Operations Policy or Runbook describes | Required: update the document in the same change | none | none |
-| DOCUMENTATION-PROTOCOL-R150 | Guide, Operations Policy or Runbook | Required: carry `next_review_at` at most 180 days after `updated`; a passed date makes it stale until a `reviewed_at` on or after it | none | none |
+| DOCUMENTATION-PROTOCOL-R150 | Guide, Operations Policy or Runbook | Required: carry `next_review_at` at most 180 days after `updated`; a passed date makes it stale until a `reviewed_at` on or after it; a missing date or one beyond the interval is rejected | none | none |
 | DOCUMENTATION-PROTOCOL-R151 | README or Architecture Description | Forbidden: carrying a review date | none | none |
 | DOCUMENTATION-PROTOCOL-R152 | Architecture Description | Required: record authority only (`draft`, `in-review`, `approved`) and stay current by event with its parent Requirement and Spec | none | none |
 | DOCUMENTATION-PROTOCOL-R153 | Incident | Required: record observed impact, severity, affected service, coordination, timeline, hypotheses, mitigation and the next responsible action | none | none |
@@ -214,7 +214,7 @@ A provider-owned runtime projection is exempt from the metadata envelope. Operat
 | DOCUMENTATION-PROTOCOL-R179 | Proposed revision | Required: apply the increment rules before submitting it for approval | none | none |
 | DOCUMENTATION-PROTOCOL-R180 | Owner approves a revision | Required: record the approval through the document's lifecycle | none | none |
 | DOCUMENTATION-PROTOCOL-R181 | Approval limited to lifecycle metadata | Required: keep the content version | none | none |
-| DOCUMENTATION-PROTOCOL-R182 | Versioned change | Required: record the affected consumer and compatibility evidence in the current Task | none | none |
+| DOCUMENTATION-PROTOCOL-R182 | Versioned change | Required: record the affected consumer and compatibility evidence in the current Task | none | Task record |
 | DOCUMENTATION-PROTOCOL-R183 | Accepted contract change | Required: give it its own revision | none | none |
 | DOCUMENTATION-PROTOCOL-R184 | New observation or lifecycle-only edit | Required: a new observation follows the document content rule and a lifecycle-only edit the lifecycle exception | none | none |
 | DOCUMENTATION-PROTOCOL-R185 | Numeric version grammar | Required: author it in `semver.py`; the standalone Stage 99 schemas mirror it | the Registry regression checks the copies against the Python grammar | none |
@@ -286,7 +286,7 @@ A provider-owned runtime projection is exempt from the metadata envelope. Operat
 | DOCUMENTATION-PROTOCOL-R251 | Body stored through Git LFS or a submodule | Required: recover it as its payload or submodule commit, not its pointer or gitlink; an unrecoverable payload or submodule commit blocks the removal | manual | none |
 | DOCUMENTATION-PROTOCOL-R252 | Retiring a package | Forbidden: retiring because it is old, a count was exceeded or nothing currently links to it | none | none |
 | DOCUMENTATION-PROTOCOL-R253 | Missing inbound links | Required: investigate them as a defect, not as permission to delete | none | none |
-| DOCUMENTATION-PROTOCOL-R254 | Retiring a package or standalone document | Required: record the summary map and consumer cutover in the current Task | none | none |
+| DOCUMENTATION-PROTOCOL-R254 | Retiring a package or standalone document | Required: record the summary map and consumer cutover in the current Task | none | Task record |
 | DOCUMENTATION-PROTOCOL-R255 | Age | Allowed: trigger a disposition review, never a deletion | none | none |
 | DOCUMENTATION-PROTOCOL-R256 | Capability implemented in this workspace | Required: keep one Stage 01 Requirement owner for its obligation and one Stage 02 Description or ADR owner for its structure and durable decision | none | none |
 | DOCUMENTATION-PROTOCOL-R257 | Retiring a Stage 03 package | Required: move the implemented outcome to those owners before retirement, never removing that coverage | none | none |

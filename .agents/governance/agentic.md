@@ -86,7 +86,7 @@ None: this document states no exclusion.
 | AGENTIC-R49 | Status includes `prior_authority_ref` | Required: first confirm that the underlying approval still applies | none | none |
 | AGENTIC-R50 | Another authority reference | Allowed: record it for planning; it leaves the adapter's mutation check unsatisfied | none | none |
 | AGENTIC-R51 | Registering a brief | Required: send the record on stdin to `python3 -m scripts.lib.hooks.request_brief bind SESSION` | none | none |
-| AGENTIC-R52 | Always | Required: keep progress in the Task | none | none |
+| AGENTIC-R52 | Always | Required: keep progress in the Task | none | Task record |
 | AGENTIC-R53 | Always | Required: treat the private hook binding as transient consistency state | none | none |
 | AGENTIC-R54 | Always | Forbidden: treating the binding as granting permission | none | none |
 | AGENTIC-R55 | Always | Required: resolve current authorization through Approval Boundaries | none | none |

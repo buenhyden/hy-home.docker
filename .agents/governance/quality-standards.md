@@ -49,7 +49,7 @@ None: this document states no exclusion.
 | QUALITY-STANDARDS-R14 | Container hardening where compatible | Required: non-root runtime, `no-new-privileges`, minimal capabilities, read-only static config mounts and secret injection by file rather than image layer or plaintext environment value | manual unless an existing validator or hook enforces the specific field | none |
 | QUALITY-STANDARDS-R15 | Network hardening | Required: isolate traffic on intended networks | none | none |
 | QUALITY-STANDARDS-R16 | Network hardening | Required: enforce TLS at ingress boundaries | none | none |
-| QUALITY-STANDARDS-R17 | npm vulnerability audit | Required: no npm risk acceptance is active | CI contract rejects an `npm_audit_acceptance` record | none |
+| QUALITY-STANDARDS-R17 | npm vulnerability audit | Forbidden: an active npm risk acceptance | CI contract rejects an `npm_audit_acceptance` record | none |
 | QUALITY-STANDARDS-R18 | npm vulnerability audit | Required: `leaf.dependency-vulnerability-audit` is the strict `npm audit --audit-level=high` run | none | none |
 | QUALITY-STANDARDS-R19 | A new npm acceptance | Required: a reviewed policy amendment naming the advisory, locked chain, owner approval and an expiry no more than 30 days after approval, with negative fixtures | none | none |
 | QUALITY-STANDARDS-R20 | Always | Forbidden: treating an acceptance as a vulnerability fix or a branch protection bypass | none | none |
@@ -97,7 +97,7 @@ None: this document states no exclusion.
 | QUALITY-STANDARDS-R62 | Deleting a check | Forbidden: using age, filenames, test counts or failing results alone as deletion criteria | none | none |
 | QUALITY-STANDARDS-R63 | A removed check | Required: has a disposition and any continuing owner | none | none |
 | QUALITY-STANDARDS-R64 | Failed required checks | Required: remain failures until repaired or deliberately retired under the approved contract | none | none |
-| QUALITY-STANDARDS-R65 | Implementation contradicts its canonical rule | Required: record the conflict, the decision and the change order in the current Task | none | none |
+| QUALITY-STANDARDS-R65 | Implementation contradicts its canonical rule | Required: record the conflict, the decision and the change order in the current Task | none | Task record |
 | QUALITY-STANDARDS-R66 | Implementation contradicts its canonical rule | Required: change the producer, reader, schema, current guidance and tests in one logical change | none | none |
 | QUALITY-STANDARDS-R67 | Implementation contradicts its canonical rule | Forbidden: making the check pass by editing only its test expectation or by only relaxing the rule | none | none |
 | QUALITY-STANDARDS-R68 | Always | Forbidden: adopting an unapproved test constant as policy | none | none |
@@ -165,7 +165,7 @@ None: this document states no exclusion.
 | QUALITY-STANDARDS-R130 | Always | Forbidden: interchanging staged, PR merge and main/security inputs | none | none |
 | QUALITY-STANDARDS-R131 | Within one invocation | Allowed: share parsed immutable Git input | none | none |
 | QUALITY-STANDARDS-R132 | Changed inputs or runs | Forbidden: caching working-tree bytes and acceptance | none | none |
-| QUALITY-STANDARDS-R133 | Before required execution | Required: Task planning records selected tools, available execution permissions, numeric budget or UNKNOWN, timeout and failure owner | none | none |
+| QUALITY-STANDARDS-R133 | Before required execution | Required: Task planning records selected tools, available execution permissions, numeric budget or UNKNOWN, timeout and failure owner | none | Task record |
 | QUALITY-STANDARDS-R134 | Missing prerequisites | Required: block that lane | none | none |
 | QUALITY-STANDARDS-R135 | A small document-only plan | Forbidden: unrelated tools blocking it | none | none |
 | QUALITY-STANDARDS-R136 | Always | Required: preserve bounded process, pipe and descendant cleanup | none | none |

@@ -307,7 +307,7 @@ Only the commit grammar rows and the merge-subject exemption name a check, and d
 - Deleting or rewriting a historical ref (R73) rests on the owner's approval for that ref.
 - Agent completion commit discipline (R76-R81) names no check.
 - The policy states that client hooks, including the `commit-msg` hook named for the grammar rows, can be bypassed with `--no-verify`.
-- Statements under Enforcement / Mechanisms are outside this table and are not restated here.
+- Rules stated under Enforcement / Mechanisms are outside this table.
 
 ## Ownership
 
