@@ -62,13 +62,13 @@ Optional profiles, network/secret boundaries, loopback-only interfaces and the s
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| Flink stream/batch SQL and Iceberg catalog | Flink (`lab-lakehouse`) | Analytics users; Kafka input selected separately | SeaweedFS Iceberg catalog; [Data architecture](0004-data-architecture.md) | Flink checkpoints are preserved; the description records no other failure handling for this interface. |
+| Flink stream/batch SQL and Iceberg catalog | Flink (`lab-lakehouse`) | Iceberg tables on SeaweedFS | SeaweedFS Iceberg catalog; [Data architecture](0004-data-architecture.md) | The description records no failure handling for this interface. |
 | Spark batch and Iceberg table maintenance | Spark (`lab-lakehouse`) | Iceberg tables on SeaweedFS | SeaweedFS Iceberg catalog; [Data architecture](0004-data-architecture.md) | The description records no failure handling for this interface. |
-| Trino SQL over the Iceberg catalog | Trino (`lab-lakehouse`) | Great Expectations, Superset and analysts | SeaweedFS Iceberg catalog; loopback-only interface | The description records no failure handling for this interface. |
-| Superset BI | Superset (`lab-superset`) | Analysts | Keycloak OIDC and `mng-pg` metadata with a configured Trino datasource | Superset metadata is preserved; the description records no other failure handling for this interface. |
-| dbt PostgreSQL transformations | PostgreSQL (`04-data`) | dbt (`lab-dbt`) | Feature-owned grants and schema | The description records no failure handling for this interface. |
-| JupyterLab kernels and optional MLflow SDK | JupyterLab (`jupyterlab`) | Analysts | Token-protected kernels | The description records no failure handling for this interface. |
-| Approved LAB endpoint inputs to HOME stores | HOME stores (`04-data`) | Analytics LAB entrypoints | [LAB sources](../../../labs/README.md) | The description records no failure handling for this interface. |
+| Trino SQL over the Iceberg catalog | Trino (`lab-lakehouse`) | Great Expectations and Superset | SeaweedFS Iceberg catalog | The description records no failure handling for this interface. |
+| Superset BI | Superset (`lab-superset`) | Data engineers and analysts | Keycloak OIDC | The description records no failure handling for this interface. |
+| dbt PostgreSQL transformations | PostgreSQL | dbt (`lab-dbt`) | Feature-owned grants and schema | The description records no failure handling for this interface. |
+| JupyterLab kernels and optional MLflow SDK | JupyterLab (`jupyterlab`) | The description names no consumer for this interface. | Token-protected kernels | The description records no failure handling for this interface. |
+| Approved LAB endpoint inputs to HOME stores | HOME stores | LAB packages | [LAB sources](../../../labs/README.md) | The description records no failure handling for this interface. |
 
 The Building Blocks table lists each package's interface: Flink stream/batch SQL and Iceberg catalog, Spark Iceberg maintenance, Trino SQL over the SeaweedFS Iceberg catalog, Great Expectations checks through Trino, Superset with Keycloak OIDC and a Trino datasource, dbt over PostgreSQL, and JupyterLab with optional MLflow SDK access.
 

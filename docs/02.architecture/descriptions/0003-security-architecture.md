@@ -77,11 +77,11 @@ rendering, a protected snapshot and denial tests exist.
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
 | Native Keycloak OIDC for humans | Keycloak | OpenBao | Human OIDC group claims mapped to policies under `config/policies/` | Access fails closed on auth failure. |
-| AppRole authentication | OpenBao | `openbao-agent` | `infra/03-security/openbao/config/agent.hcl` | Access fails closed on auth or seal failure; an OpenBao outage stops new renders until it is unsealed. |
-| Agent-rendered secret files | `openbao-agent` | Consumer tiers | Approved templates written to the declared output volume | An OpenBao outage stops new renders until it is unsealed. |
-| `/agent/v1/metrics` listener | `openbao-agent` | Metrics scraper | The description links no contract for this interface. | The description records no failure handling for this interface. |
-| Raft snapshot API `sys/storage/raft/snapshot` | OpenBao | Protected operator custody | Policy `backup-snapshot.hcl` | Recovery restores authenticated Raft snapshots on isolated new storage; recovered root tokens must be rechecked. |
-| `openbao` scrape job | OpenBao | Prometheus | `infra/06-observability/prometheus/config/prometheus.dev.yml` | The description records no failure handling for this interface; scrape success is not asserted. |
+| AppRole authentication | OpenBao | `openbao-agent` | `infra/03-security/openbao/config/agent.hcl` | Access fails closed on auth or seal failure. |
+| Agent-rendered secret files | `openbao-agent` | Consumer tiers | Approved templates in `infra/03-security/openbao/config/agent.hcl` written to the declared output volume | An OpenBao outage stops new renders until it is unsealed. |
+| `/agent/v1/metrics` listener | `openbao-agent` | The description names no consumer for this interface. | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| Raft snapshot API `sys/storage/raft/snapshot` | OpenBao | Protected operator custody | Policy `backup-snapshot.hcl` | The description records no failure handling for this interface. |
+| `openbao` scrape job | OpenBao | Prometheus | `infra/06-observability/prometheus/config/prometheus.dev.yml` | The description records no failure handling for this interface. |
 | Traefik UI route | OpenBao | Traefik | `gateway-standard-chain@file` | The description records no failure handling for this interface. |
 
 `openbao-agent` serves only `/agent/v1/metrics` on its own listener. Snapshots use the authenticated Raft API (`sys/storage/raft/snapshot`, policy `backup-snapshot.hcl`); human OIDC group claims map to policies under `config/policies/`; Prometheus declares an `openbao` scrape job.

@@ -82,7 +82,7 @@ The core PostgreSQL in `04-data` and the observability tier are available.
 
 ### Quality Requirements
 
-This package declares no quality requirement.
+This package declares no quality requirement and records no reason why none applies.
 
 ## Traceability
 

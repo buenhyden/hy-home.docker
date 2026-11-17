@@ -63,12 +63,12 @@ Directories under `infra/09-platform-ops/` without a Compose file
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| Terrakube API, UI and executor routes | Terrakube | Browsers and clients through Traefik | ForwardAuth chain with Keycloak (`02-auth`) | The description records no failure handling for this interface. |
-| Mailpit UI route | Mailpit | Browsers through Traefik | ForwardAuth chain with Keycloak (`02-auth`) | The description records no failure handling for this interface. |
-| Registry loopback publication | Registry | Local host clients | `127.0.0.1:${REGISTRY_PORT:-5000}` with no gateway route | The description records no failure handling for this interface. |
+| Terrakube API, UI and executor routes | Terrakube | The description names no consumer for this interface. | ForwardAuth chain with Keycloak (`02-auth`) | The description records no failure handling for this interface. |
+| Mailpit UI route | Mailpit | The description names no consumer for this interface. | ForwardAuth chain with Keycloak (`02-auth`) | The description records no failure handling for this interface. |
+| Registry loopback publication | Registry | The description names no consumer for this interface. | `127.0.0.1:${REGISTRY_PORT:-5000}` with no gateway route | The description records no failure handling for this interface. |
 | k6 per-run OTLP | k6 | Authenticated Alloy receiver, then Prometheus (`06-observability`) | OTLP | The description records no failure handling for this interface. |
 | Terrakube state S3 backend | SeaweedFS (`04-data`) | Terrakube | The description links no contract for this interface. | A host failure breaks continuity because SeaweedFS and PostgreSQL share one host. |
-| `mng-pg` databases | `mng-pg` (`04-data`) | Terrakube metadata and Pact Broker | [Pact Broker operations](../../05.operations/guides/12-testing-and-quality/0093-pact-broker.md) | A host failure breaks continuity because SeaweedFS and PostgreSQL share one host. |
+| `mng-pg` databases | `mng-pg` (`04-data`) | Terrakube metadata and Pact Broker | The description links no contract for this interface. | A host failure breaks continuity because SeaweedFS and PostgreSQL share one host. |
 
 The Terrakube API, UI and executor routes and the Mailpit UI use the ForwardAuth chain; Registry has no gateway route and publishes only on `127.0.0.1:${REGISTRY_PORT:-5000}`. k6 sends per-run OTLP to an authenticated Alloy receiver, and Terrakube state uses the SeaweedFS S3 backend.
 

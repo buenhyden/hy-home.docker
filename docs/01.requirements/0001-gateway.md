@@ -68,10 +68,10 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 | Requirement ID | Statement | Rationale | Acceptance | Priority |
 | --- | --- | --- | --- | --- |
-| REQ-0001-FR-0001 | Plain HTTP requests are permanently redirected to HTTPS. | The gateway is the single entry point that terminates TLS so that no service manages its own TLS front door. | An HTTP request to any external host receives a permanent redirect to the HTTPS URL; every external route is served over TLS. | must |
-| REQ-0001-FR-0002 | The gateway discovers a service that declares a route and activates it without a manual gateway configuration edit; a service that declares no route stays unexposed. | Without the gateway, exposure needs manual configuration; a service developer exposes a service safely by declaring a route, and nothing is exposed by default. | A newly started service that declares a route is reachable within 60 seconds without editing gateway configuration, and a service without a declared route is not reachable. | must |
-| REQ-0001-FR-0003 | The gateway terminates external TLS with the operator-provided certificate and accepts no protocol version below TLS 1.2. | The gateway terminates TLS so that each service need not carry its own TLS settings; the operator provides the certificate and key. | A TLS 1.0 or 1.1 handshake is refused, and a TLS 1.2 or 1.3 handshake presents the operator-provided certificate. | must |
-| REQ-0001-FR-0004 | The gateway offers a reusable single sign-on access-control step, backed by the Auth tier, that a route can require. | A shared access-control chain spares each service its own authentication front door and lets a security auditor check which routes require which access control. | A route that requires single sign-on sends an unauthenticated browser to the sign-in flow and admits the request only after a valid session. | must |
+| REQ-0001-FR-0001 | Plain HTTP requests must be permanently redirected to HTTPS. | The gateway is the single entry point that terminates TLS so that no service manages its own TLS front door. | An HTTP request to any external host receives a permanent redirect to the HTTPS URL; every external route is served over TLS. | must |
+| REQ-0001-FR-0002 | The gateway must discover a service that declares a route and activate that route without a manual gateway configuration edit; a service that declares no route must stay unexposed. | Without the gateway, exposure needs manual configuration; a service developer exposes a service safely by declaring a route, and nothing is exposed by default. | A newly started service that declares a route is reachable within 60 seconds without editing gateway configuration, and a service without a declared route is not reachable. | must |
+| REQ-0001-FR-0003 | The gateway must terminate external TLS with the operator-provided certificate and must not accept a protocol version below TLS 1.2. | The gateway terminates TLS so that each service need not carry its own TLS settings; the operator provides the certificate and key. | A TLS 1.0 or 1.1 handshake is refused, and a TLS 1.2 or 1.3 handshake presents the operator-provided certificate. | must |
+| REQ-0001-FR-0004 | The gateway must offer a reusable single sign-on access-control step, backed by the Auth tier, that a route can require. | A shared access-control chain spares each service its own authentication front door and lets a security auditor check which routes require which access control. | A route that requires single sign-on sends an unauthenticated browser to the sign-in flow and admits the request only after a valid session. | must |
 
 ### Functional Requirements
 
@@ -88,7 +88,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 ### Quality Requirements
 
-This package declares no quality requirement; its four functional requirements carry the gateway's acceptance conditions.
+This package declares no quality requirement and records no reason why none applies.
 
 ## Traceability
 

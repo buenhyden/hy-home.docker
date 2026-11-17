@@ -68,11 +68,11 @@ target engine backups stay with the engine's Data package. Restic stays in
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| `mng-db` identities | `mng-db` (`mng-pg`, `mng-valkey`) | Auth, Workflow, Tooling and Observability (Grafana); MLflow and Pact Broker for their own databases | Approved explicit databases, roles and Valkey ACLs provisioned by infra | `mng-pg` loss affects Auth, Workflow, Tooling and Grafana together; recovery follows each engine's supported backup and restore process and POL-0021. |
+| `mng-db` identities | `mng-db` (`mng-pg`, `mng-valkey`) | Auth, Workflow, Tooling and Observability (Grafana); MLflow and Pact Broker for their own databases | The description links no contract for this interface. | `mng-pg` loss affects Auth, Workflow, Tooling and Grafana together; recovery follows each engine's supported backup and restore process and POL-0021. |
 | Qdrant vector persistence | `qdrant` | AI consumers configured for it | The description links no contract for this interface. | Recovery follows each engine's supported backup and restore process and POL-0021. |
 | SeaweedFS S3 storage | `seaweedfs` | Observability, AI and the analytics LABs, each with its own storage identity | The description links no contract for this interface. | Recovery follows each engine's supported backup and restore process and POL-0021. |
-| SeaweedFS Iceberg REST catalog | `seaweedfs` | `labs/lakehouse` Flink, Spark and Trino entrypoints | Iceberg REST catalog; [Analytics architecture](0012-data-analytics-architecture.md) | The description records no failure handling for this interface. |
-| Development PostgreSQL business fixture | `dev-db` | `labs/dbt` | [Development database policy](../../05.operations/policies/05-databases-and-storage/0100-development-database.md) | The description records no failure handling for this interface. |
+| SeaweedFS Iceberg REST catalog | `seaweedfs` | `labs/lakehouse` Flink, Spark and Trino entrypoints | Iceberg REST catalog | The description records no failure handling for this interface. |
+| Development PostgreSQL business fixture | `dev-db` | `labs/dbt` | The description links no contract for this interface. | The description records no failure handling for this interface. |
 
 Consumers use declared `mng-db` identities, Qdrant, SeaweedFS storage identities and the SeaweedFS Iceberg catalog. Infra provisions only approved explicit databases, roles and Valkey ACLs.
 

@@ -75,13 +75,13 @@ registered or working.
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
 | Ollama OpenAI-compatible API | `ollama` | Authorized callers and configured consumers | OpenAI-compatible API behind ForwardAuth | The description records no failure handling for this interface. |
-| Ollama metrics | `ollama-exporter` | `06-observability` | The description links no contract for this interface. | The description records no failure handling for this interface. |
-| ComfyUI browser route | `comfyui` | Browsers through Traefik | ForwardAuth | The description records no failure handling for this interface. |
-| Open Notebook browser route | `open_notebook` | Browsers through Traefik | Password-file authentication with an admin IP allow list | Recovery coordinates app data, SurrealDB and its encryption key. |
-| MLflow browser route and SDK path | `mlflow` | Browsers through Traefik and SDK clients on `edge_net`, `ai_net`, `mng_data_net` and `object_net` | ForwardAuth for the browser route only | The SDK path is not authenticated like the browser route; recovery coordinates `mng-pg` metadata with SeaweedFS artifacts. |
+| Ollama metrics | `ollama-exporter` | The description names no consumer for this interface. | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| ComfyUI gateway route | `comfyui` | The description names no consumer for this interface. | ForwardAuth | The description records no failure handling for this interface. |
+| Open Notebook gateway route | `open_notebook` | The description names no consumer for this interface. | Password-file authentication with an admin IP allow list | The description records no failure handling for this interface. |
+| MLflow browser route and SDK path | `mlflow` | The description names no consumer for this interface. | ForwardAuth for the browser route only | The description records no failure handling for this interface. |
 | Crawl4AI internet egress | `crawl4ai-egress` | `crawl4ai` | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | GPU access | NVIDIA Container Toolkit | `ollama` and `comfyui` | NVIDIA device reservation and `gpus: all` | The description records no failure handling for this interface. |
-| Keycloak SSO | Keycloak (`02-auth`) | `08-ai` routes and the Open WebUI LAB | [Open WebUI](0013-open-webui-architecture.md) declares native OIDC | The description records no failure handling for this interface. |
+| Keycloak SSO | Keycloak (`02-auth`) | The description names no consumer for this interface. | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | Qdrant vector store | Qdrant (`04-data`) | Consumers explicitly configured for it | The description links no contract for this interface. | The description records no failure handling for this interface. |
 
 Ollama serves an OpenAI-compatible API that consumers use instead of touching model weights or the GPU driver. The Open WebUI LAB declares native OIDC. Ollama, ComfyUI and the MLflow browser route use ForwardAuth. Open Notebook uses password-file authentication with an admin IP allow list.

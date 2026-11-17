@@ -62,7 +62,7 @@ recovery guidance without owning the architectural decision.
 | --- | --- | --- | --- | --- |
 | Compose readiness lane | `scripts/operations/check-compose-core-readiness.sh` and `scripts/lib/ops/compose-core-readiness.sh` | Local delivery lane and the current Task | `tests/validation/test_compose_core_readiness.py` | A failure does not skip required verification and exits non-zero with the owned cleanup result. |
 | Supply-chain verified digest | `scripts/security/verify-sample-service-supply-chain.sh` and `scripts/validation/check-supply-chain-policy.py` | Local delivery lane | `tests/lib/supply_chain/test_supply_chain_policy.py` | A digest mismatch fails closed. |
-| Local delivery rehearsal | `scripts/operations/rehearse-sample-service-delivery.sh` | The current Task | `tests/validation/test_sample_service_delivery_rehearsal.py` | Automatic cleanup and promotion act only on an identity the lane allocated itself; configuration rollback is distinct from data recovery. |
+| Local delivery rehearsal | `scripts/operations/rehearse-sample-service-delivery.sh` | The current Task | `tests/validation/test_sample_service_delivery_rehearsal.py` | A failure does not skip required verification and exits non-zero with the owned cleanup result. |
 | Shared sample artifact | `examples/sample-web-service/` | Supply-chain and local delivery lanes | `examples/sample-web-service/` | The description records no failure handling for this interface. |
 
 - Each wrapper follows the `preflight → allocate → execute → verify → summarize → cleanup` order.

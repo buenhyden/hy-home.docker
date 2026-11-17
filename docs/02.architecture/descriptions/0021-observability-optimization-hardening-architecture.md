@@ -77,10 +77,10 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| Gateway management routes (Traefik `websecure`) | Grafana, Gatus, Dozzle, Alertmanager, Pushgateway, Alloy UI, cAdvisor route and Pyroscope route | Browser clients | `gateway-standard-chain` with route-specific authentication: native Keycloak OIDC, Dozzle admin IP allowlist or ForwardAuth | The description records no failure handling for this interface. |
-| Prometheus API route | Prometheus | API clients through Traefik | `prometheus-api-auth` | The description records no failure handling for this interface. |
-| Internal OTLP/log/trace path on `obs_net` | Instrumented services and exporters | Observability storage and query plane | The description links no contract for this interface. | The data plane is kept over `obs_net` internal communication with `service_healthy` dependency ordering. |
-| SSO | `02-auth` Keycloak | Observability management routes | Keycloak-based SSO | The description records no failure handling for this interface. |
+| Gateway management routes (Traefik `websecure`) | Grafana, Gatus, Dozzle, Alertmanager, Pushgateway, Alloy UI, cAdvisor route and Pyroscope route | Clients | `gateway-standard-chain` with route-specific authentication: native Keycloak OIDC, Dozzle admin IP allowlist or ForwardAuth | The description records no failure handling for this interface. |
+| Prometheus API route | Prometheus | Clients through Traefik | `prometheus-api-auth` | The description records no failure handling for this interface. |
+| Internal OTLP/log/trace path on `obs_net` | The description names no producer for this interface. | The description names no consumer for this interface. | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| SSO | `02-auth` Keycloak | The observability layer | Keycloak-based SSO | The description records no failure handling for this interface. |
 | Object storage | `04-data` SeaweedFS | Loki and Tempo | The description links no contract for this interface. | The description records no failure handling for this interface. |
 
 - Gateway path: apply the route-specific authentication listed under Building

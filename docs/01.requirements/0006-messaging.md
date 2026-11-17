@@ -90,7 +90,7 @@ RabbitMQ broker is implemented, and is not reused.
 
 ### Quality Requirements
 
-This package declares no quality requirement.
+This package declares no quality requirement and records no reason why none applies.
 
 ## Traceability
 

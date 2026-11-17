@@ -87,11 +87,11 @@ The independent 07/08 product-planning tracks grant no runtime resource authorit
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| Project registration for external workspaces | Infrastructure (`infra/09-platform-ops/project-registration`) | External Project-Template-derived workspaces | [registration contract](../../../infra/09-platform-ops/project-registration/README.md) | Metadata approval does not deploy or issue secrets. |
-| Development database and Valkey ACL | DEV TimescaleDB Community PostgreSQL and Valkey (`dev-data`) | Project workspaces | [development database policy](../../05.operations/policies/05-databases-and-storage/0100-development-database.md) | Deployment requires isolated backup and restore evidence for the affected data. |
-| Shared gateway ingress | Traefik | Users reaching HOME services | The description links no contract for this interface. | The description records no failure handling for this interface. |
-| Secret delivery | OpenBao rendered outputs and Docker Secret bootstrap | HOME applications | The description links no contract for this interface. | A migration must verify consumer mounts and permissions before claiming automatic rotation or complete secret delivery. |
-| Compose profile selection | Root Compose and service profiles | Operators deploying HOME and DEV services | [POL-0078](../../05.operations/policies/01-common/0078-compose-profile-vocabulary.md) | Unattended startup excludes cluster variants, legacy selectors and update/IaC jobs. |
+| Project registration for external workspaces | Infrastructure (`infra/09-platform-ops/project-registration`) | External Project-Template-derived workspaces | [registration contract](../../../infra/09-platform-ops/project-registration/README.md) | The description records no failure handling for this interface. |
+| Development database and Valkey ACL | DEV TimescaleDB Community PostgreSQL and Valkey (`dev-data`) | Projects | [development database policy](../../05.operations/policies/05-databases-and-storage/0100-development-database.md) | The description records no failure handling for this interface. |
+| Shared gateway ingress | Traefik | User (Runtime View diagram) | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| Secret delivery | OpenBao rendered outputs and Docker Secret bootstrap | AI and workflow applications | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| Compose profile selection | Root Compose and service profiles | The description names no consumer for this interface. | [POL-0078](../../05.operations/policies/01-common/0078-compose-profile-vocabulary.md) | The description records no failure handling for this interface. |
 
 - The [registration contract](../../../infra/09-platform-ops/project-registration/README.md) and [development database policy](../../05.operations/policies/05-databases-and-storage/0100-development-database.md) own the current interfaces for external workspaces.
 - Projects use explicit database/role and Valkey ACL contracts rather than the legacy `app_db`.

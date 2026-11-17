@@ -67,7 +67,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 | REQ-0013-FR-0001 | Support multi-model selection from the local model runtime (Ollama). | Users need one visual interface for chat with local models instead of CLI knowledge or fragmented tools. | The interface lists the models served by the local model runtime at the approved local endpoint. | must |
 | REQ-0013-FR-0002 | Provide a RAG engine that embeds documents through the local model runtime and keeps vectors in a store owned by Open WebUI. | Users, including the AI engineer, need to query their own PDF or text documents through retrieval-augmented generation (RAG). | A standard PDF is indexed in under 5 seconds with GPU acceleration, claimed only with separate benchmark evidence, and is retrieved as context for a query. | must |
 | REQ-0013-FR-0003 | Persist chat history, document metadata and the vector index across restarts. | The package names persistent history as a need, and RAG vectors share the interface's own data store with chat history, so losing it loses both. | History and indexed documents remain after the service is recreated. | must |
-| REQ-0013-FR-0004 | Authenticate every user through the shared identity provider (Keycloak) with password login and self sign-up disabled, limit LAB access to its approved isolated boundary, and serve any approved HOME promotion only through the gateway with TLS. | Users need a secure interface, and the operator must ensure only identity-provider users reach it. | The login page offers only the identity-provider login, LAB access stays within its approved bind boundary and secure login origin, and a promoted HOME interface has no host publication outside its TLS gateway. | must |
+| REQ-0013-FR-0004 | Authenticate every user through the shared identity provider (Keycloak) with password login and self sign-up disabled. Limit LAB access to its approved isolated boundary. Serve any approved HOME promotion only through the gateway with TLS. | Users need a secure interface, and the operator must ensure only identity-provider users reach it. | The login page offers only the identity-provider login, LAB access stays within its approved bind boundary and secure login origin, and a promoted HOME interface has no host publication outside its TLS gateway. | must |
 
 ### Functional Requirements
 
@@ -84,7 +84,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 ### Quality Requirements
 
-This package declares no quality requirement.
+This package declares no quality requirement and records no reason why none applies.
 
 ## Traceability
 

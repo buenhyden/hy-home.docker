@@ -73,11 +73,11 @@ login require an actual runtime check.
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| `ollama.${DEFAULT_URL}` route (Traefik `websecure`) | HOME Ollama | Clients through the gateway | `gateway-standard-chain`, `sso-errors` and `sso-auth` in `infra/08-ai/ollama/docker-compose.yml` | The Ollama concurrency and queue ceiling bounds GPU load; the linked operations owners govern recovery. |
-| Open WebUI LAB bind | Open WebUI | LAB users | [`labs/open-webui/docker-compose.yml`](../../../labs/open-webui/docker-compose.yml) with native Keycloak OIDC | Losing the Open WebUI data bind loses the embedded RAG index and application state. |
+| `ollama.${DEFAULT_URL}` route (Traefik `websecure`) | HOME Ollama | The description names no consumer for this interface. | `gateway-standard-chain`, `sso-errors` and `sso-auth` in `infra/08-ai/ollama/docker-compose.yml` | The description records no failure handling for this interface. |
+| Open WebUI LAB bind | Open WebUI | The description names no consumer for this interface. | [`labs/open-webui/docker-compose.yml`](../../../labs/open-webui/docker-compose.yml) with native Keycloak OIDC | The description records no failure handling for this interface. |
 | `LAB_OPEN_WEBUI_OLLAMA_BASE_URL` generation and embedding endpoint | Approved, reachable Ollama endpoint | Open WebUI | The description links no contract for this interface. | LAB health checks do not order startup across projects; verify access to the approved Ollama endpoint before accepting chat or embedding. |
-| SSO and identity | `02-auth` ForwardAuth middleware and Keycloak OIDC | HOME Ollama route and Open WebUI | [ADR-0059](../decisions/0059-native-oidc-open-webui-and-airflow.md) | The description records no failure handling for this interface. |
-| Metrics | `ollama-exporter` | Observability consumers | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| SSO and identity | `02-auth` ForwardAuth middleware and Keycloak OIDC | HOME Ollama route and Open WebUI | `sso-errors` and `sso-auth` in `infra/08-ai/ollama/docker-compose.yml` for HOME Ollama; [ADR-0059](../decisions/0059-native-oidc-open-webui-and-airflow.md) for Open WebUI native Keycloak OIDC | The description records no failure handling for this interface. |
+| Metrics | `ollama-exporter` | The description names no consumer for this interface. | The description links no contract for this interface. | The description records no failure handling for this interface. |
 
 - Traefik `websecure` routes `ollama.${DEFAULT_URL}` per the Ingress item in
   Building Blocks. Open WebUI uses its independent LAB bind.

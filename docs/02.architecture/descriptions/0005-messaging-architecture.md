@@ -66,8 +66,8 @@ inputs and operation.
 | --- | --- | --- | --- | --- |
 | Kafka broker `kafka-1` on `kafka_net` | `kafka-1` | Producers and consumers | PLAINTEXT listeners (`KAFKA_LISTENER_SECURITY_PROTOCOL_MAP`); [Kafka Compose](../../../infra/05-messaging/kafka/docker-compose.yml) | Replication factor 1 gives no broker redundancy; recovery prefers producer replay or approved replication into a fresh isolated cluster. |
 | Kafbat UI management route | `kafbat-ui` | Browsers through Traefik `gateway-standard-chain@file` | Native `auth.type: OAUTH2` with Keycloak `groups` mapped to `/admins` and `/users`; [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md) | The description records no failure handling for this interface. |
-| JMX and Kafka Exporter metrics | `kafka-1` and `kafka-exporter` | `06-observability` | Metrics without record payloads or secrets | The description records no failure handling for this interface; scrape is confirmed separately. |
-| LAB Schema Registry and Kafka Connect HTTP | `lab-schema-registry` and `lab-kafka-connect` | Clients inside `lab_kafka_net` | [Kafka LAB Compose](../../../labs/kafka-cluster/docker-compose.yml) | LAB recovery accounts for schema subjects and the Connect configuration, offset and status topics in its brokers. |
+| JMX and Kafka Exporter metrics | `kafka-1` and `kafka-exporter` | `06-observability` | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| LAB Schema Registry and Kafka Connect HTTP | `lab-schema-registry` and `lab-kafka-connect` | The description names no consumer for this interface. | [Kafka LAB Compose](../../../labs/kafka-cluster/docker-compose.yml) | LAB recovery accounts for schema subjects and the Connect configuration, offset and status topics in its brokers. |
 
 HOME services use `kafka_net`. Kafbat exposes management through native OIDC
 and role mapping. JMX and Kafka Exporter expose metrics without record payloads

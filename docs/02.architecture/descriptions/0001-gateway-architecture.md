@@ -63,7 +63,7 @@ the seven-day Traefik router metrics showed every live route on Traefik.
 | `web` (80) and `websecure` (443) entrypoints | Traefik | Internet clients over HTTPS | `config/traefik.yml` static config and Docker labels with the file-provided middleware under `dynamic/` | A Traefik outage affects every routed UI; the description records no other failure handling for this interface. |
 | `metrics` (8082) entrypoint | Traefik | Prometheus | Prometheus metrics with router and service labels | The description records no failure handling for this interface. |
 | OTLP traces to `tempo:4317` | Traefik | Tempo | OTLP | The description records no failure handling for this interface. |
-| Docker socket (read-only) discovery | Docker engine | Traefik | Docker labels on service containers | The Docker provider adds and removes routes as containers change health and state. |
+| Docker socket (read-only) discovery | The description names no producer for this interface. | Traefik | Docker labels | The Docker provider adds and removes routes as containers change health and state. |
 | ForwardAuth call | OAuth2 Proxy | Traefik | File-provided ForwardAuth middleware under `dynamic/` | The description records no failure handling for this interface. |
 | Local certificate files | Local certificate mounts | Traefik | TLS configuration loaded by the file provider from `dynamic/` | The description records no failure handling for this interface. |
 

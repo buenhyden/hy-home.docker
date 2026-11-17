@@ -57,9 +57,9 @@ services.
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| AppRole authentication and token sink | OpenBao | OpenBao Agent | Token state at `/openbao/agent/token` | The recovery procedure is owned by the [OpenBao runbook](../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md). |
-| Rendered output | OpenBao Agent | Consuming services | `/openbao/out/<service>/`, bind-mounted from `${DEFAULT_SECURITY_DIR}/openbao/out` | Health and rendering results must be checkable without exposing the secret value; recovery follows the [OpenBao runbook](../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md). |
-| External TLS termination and routing | Traefik (gateway) | External clients | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| AppRole authentication and token sink | The description names no producer for this interface. | OpenBao Agent | Token state at `/openbao/agent/token` | The description records no failure handling for this interface. |
+| Rendered output | OpenBao Agent | Consuming services | `/openbao/out/<service>/`, bind-mounted from `${DEFAULT_SECURITY_DIR}/openbao/out` | The description records no failure handling for this interface. |
+| External TLS termination and routing | Traefik (gateway) | The description names no consumer for this interface. | The description links no contract for this interface. | The description records no failure handling for this interface. |
 
 - OpenBao Agent authenticates with AppRole and keeps token state at `/openbao/agent/token`.
 - Rendered output is published under `/openbao/out/<service>/`, bind-mounted from `${DEFAULT_SECURITY_DIR}/openbao/out`, for consuming services.

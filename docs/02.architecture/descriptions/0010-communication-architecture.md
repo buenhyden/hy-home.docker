@@ -56,11 +56,11 @@ the operator-selected storage configuration under its persistent mount.
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| Mailpit SMTP (loopback) | Development applications | Mailpit | The description links no contract for this interface. | Mailpit recovery preserves SQLite with its WAL or uses the official dump/ingest path. |
+| Mailpit SMTP (loopback) | Development applications | Mailpit | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | Mailpit UI (loopback and Traefik route) | Mailpit | Browsers | The description links no contract for this interface. | The description records no failure handling for this interface. |
-| Stalwart SMTP25, submission587 and implicit-TLS IMAP993 | Stalwart | Mail clients on the LAB network `hy-home-lab-stalwart` | `config/plan.ndjson` listener set with relay denial | Relay denial is reconciled from `config/plan.ndjson` by `stalwart-config`. |
-| Stalwart HTTP8080 management UI | Stalwart | Operators on `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_STALWART_HOST_PORT:-18093}` | The description links no contract for this interface. | The description records no failure handling for this interface. |
-| Stalwart external delivery | Stalwart | Internet mail recipients | DNS/SPF/DKIM/DMARC and TLS promotion acceptance | External delivery requires separate promotion approval; recovery restores with outbound delivery disabled. |
+| Stalwart SMTP25, submission587 and implicit-TLS IMAP993 | Stalwart | Mail clients | `config/plan.ndjson` listener set with relay denial | The description records no failure handling for this interface. |
+| Stalwart HTTP8080 management UI | Stalwart | The description names no consumer for this interface. | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| Stalwart external delivery | Stalwart | Internet | DNS/SPF/DKIM/DMARC and TLS promotion acceptance | The description records no failure handling for this interface. |
 
 - Mailpit: SMTP and UI ports published on loopback, plus a Traefik UI route.
 - Stalwart: internal SMTP25/submission587 and implicit-TLS IMAP993 listeners on the LAB network `hy-home-lab-stalwart`; HTTP8080 published on `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_STALWART_HOST_PORT:-18093}`; no gateway route.

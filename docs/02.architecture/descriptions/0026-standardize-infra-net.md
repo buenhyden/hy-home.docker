@@ -112,16 +112,16 @@ that network is then its trust boundary, and the consumer gets a scoped network.
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| Gateway to backend over `edge_net` and per-backend ingress networks | Routed backends | Traefik | [ADR-0055 Segmented per-flow networks](../decisions/0055-segmented-per-flow-networks.md) | Internal and isolated networks keep a flow from reaching any other member. |
-| Metrics scrape over `obs_net` and consumer-only metrics networks | Scrape targets and fixed `.2` metrics listeners | Prometheus and Alloy | SPEC-0267 | A listener without its own authentication binds only to its consumer-only network, so no other network reaches it. |
+| Gateway to backend over `edge_net` and per-backend ingress networks | Routed backends | Traefik | SPEC-0266 and ADR-0061 for the per-backend `<service>_ingress_net` networks | The description records no failure handling for this interface. |
+| Metrics scrape over `obs_net` and consumer-only metrics networks | Scrape targets and fixed `.2` metrics listeners | Prometheus and Alloy | SPEC-0267 for the consumer-only metrics networks | The description records no failure handling for this interface. |
 | Authenticated Alloy OTLP receiver 4319 on `quality_otlp_net` | Alloy | Per-run k6 metrics relays attached by `metrics_relay.py` | SPEC-0214 | The description records no failure handling for this interface. |
-| Docker internal DNS discovery | Docker internal DNS | Compose services | The description links no contract for this interface. | A multi-homed server listens on `0.0.0.0`, never on the address its own name resolves to. |
+| Docker internal DNS discovery | Docker internal DNS | Services | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | Restic offsite egress on `restic_offsite_net` | `restic-offsite` | Cloudflare R2 | ADR-0056 | The description records no failure handling for this interface. |
-| Crawl4AI public egress on `crawl4ai_outbound_net` | `crawl4ai-egress` | Public addresses on ports 80/443 | REQ-0023-FR-0002 named egress-isolation exception | Non-global and IPv6 addresses are refused. |
+| Crawl4AI public egress on `crawl4ai_outbound_net` | `crawl4ai-egress` | Public addresses on ports 80/443 | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | SearXNG public search on `n8n_search_outbound_net` | `searxng` | Public search engines | The description links no contract for this interface. | The description records no failure handling for this interface. |
-| n8n sandbox internet egress on `n8n_sandbox_outbound_net` | `n8n-sandbox-runner-1` and its sandboxes | Internet | The description links no contract for this interface. | The runner's built-in egress rules block sandbox traffic to private, link-local and loopback ranges. |
-| ComfyUI download egress on `comfyui_egress_net` | ComfyUI with `docker-compose.egress.yml` attached | Model and custom-node download sources | SPEC-0268 | The description records no failure handling for this interface. |
-| Crawl4AI loopback forwarder `127.0.0.1:11235` | `crawl4ai-loopback` | Host-local clients | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| n8n sandbox internet egress on `n8n_sandbox_outbound_net` | `n8n-sandbox-runner-1` and its sandboxes | Internet | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| ComfyUI download egress on `comfyui_egress_net` | ComfyUI with `docker-compose.egress.yml` attached | The description names no consumer for this interface. | SPEC-0268 | The description records no failure handling for this interface. |
+| Crawl4AI loopback forwarder `127.0.0.1:11235` | `crawl4ai-loopback` | The description names no consumer for this interface. | The description links no contract for this interface. | The description records no failure handling for this interface. |
 
 - Each network in the Networks table names its subnet, members and flow.
 - Services resolve names through Docker DNS and use static addresses only where tracked Compose declares them.

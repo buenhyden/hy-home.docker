@@ -77,9 +77,9 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
 | Ingress path (Traefik `websecure` to workflow routers) | Airflow and n8n UIs | Clients | `01-gateway` gateway standard chain; Airflow uses Keycloak Auth Manager, n8n its own login | The description records no failure handling for this interface. |
-| Optional Flower UI | Airflow Flower (`airflow-flower` profile) | Clients | `02-auth` SSO middleware via ForwardAuth | The description records no failure handling for this interface. |
-| PostgreSQL metadata | `04-data` management PostgreSQL | Airflow and n8n | The description links no contract for this interface. | Health-based boot order reduces initial failure and restart bursts. |
-| Valkey queue/broker | Shared `mng-valkey` via `${AIRFLOW_VALKEY_HOST:-mng-valkey}` and `${N8N_VALKEY_HOST:-mng-valkey}` | Airflow distributed components and n8n queue mode | The description links no contract for this interface. | Worker and task-runner healthcheck and dependency gating strengthen stability. |
+| Optional Flower UI | Airflow Flower (`airflow-flower` profile) | The description names no consumer for this interface. | `02-auth` SSO middleware via ForwardAuth | The description records no failure handling for this interface. |
+| PostgreSQL metadata | `04-data` management PostgreSQL | Airflow and n8n | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| Valkey queue/broker | Shared `mng-valkey` via `${AIRFLOW_VALKEY_HOST:-mng-valkey}` and `${N8N_VALKEY_HOST:-mng-valkey}` | Airflow distributed components and n8n queue mode | The description links no contract for this interface. | The description records no failure handling for this interface. |
 
 - Ingress path: Client -> Traefik(websecure) -> workflow routers -> Airflow/n8n UI.
 - Data/control dependencies: PostgreSQL (metadata), Valkey (queue/broker), SSO middleware.

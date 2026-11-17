@@ -60,16 +60,16 @@ datasource. Traefik sends its own traces straight to Tempo.
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| Docker log collection | Docker containers | Alloy, forwarding to Loki | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| Docker log collection | The description names no producer for this interface. | Alloy, forwarding to Loki | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | OTLP trace receiver | Applications | Alloy, forwarding to Tempo | OTLP | The description records no failure handling for this interface. |
-| Traefik traces | Traefik | Tempo | OTLP | The description records no failure handling for this interface. |
+| Traefik traces | Traefik | Tempo | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | Authenticated Alloy quality-metrics receiver | k6 | Alloy, forwarding by Prometheus remote write | `config.home.alloy` | The description records no failure handling for this interface. |
 | Prometheus scrapes on `obs_net` | cAdvisor, exporters, services and Alloy self-metrics | Prometheus | The description links no contract for this interface. | The description records no failure handling for this interface. |
-| pprof scrape targets | Declared Alloy pprof targets | Pyroscope | The description links no contract for this interface. | The description records no failure handling for this interface; collection success is not verified. |
+| pprof scrape targets | Declared Alloy pprof targets | Pyroscope | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | S3 object storage on `object_net` | SeaweedFS (`04-data`) | Loki (`loki-bucket`) and Tempo (`tempo-bucket`) | [ADR-0053 Observability object storage on SeaweedFS](../decisions/0053-observability-storage-on-seaweedfs.md) | Bucket history is excluded from HOME Restic state; lost history is outside backup recovery and services collect new data. |
 | Keycloak OIDC | Keycloak (`02-auth`) | Grafana, Gatus and Dozzle | OIDC | The description records no failure handling for this interface. |
 | Grafana state store | `mng-pg` (`04-data`) | Grafana | The description links no contract for this interface. | The description records no failure handling for this interface. |
-| Prometheus API route on `edge_net` | Prometheus | API clients through Traefik | `prometheus-api-auth@file` | The description records no failure handling for this interface. |
+| Prometheus API route | Prometheus | The description names no consumer for this interface. | `prometheus-api-auth@file` | The description records no failure handling for this interface. |
 
 Scrapes and datasource queries use `obs_net`, object storage uses `object_net`, and UI routes use `edge_net`. The Alloy receiver is authenticated; the Prometheus API route uses `prometheus-api-auth@file`.
 

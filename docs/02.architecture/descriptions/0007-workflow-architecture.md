@@ -66,11 +66,11 @@ The tier is owner-confirmed always-on HOME orchestration. Airflow authenticates 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
 | Airflow API server browser route | `airflow-apiserver` | Browsers through Traefik `gateway-standard-chain@file` | `KeycloakAuthManager` with the Keycloak `home-airflow` client and Authorization Services; [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md) | The description records no failure handling for this interface. |
-| Flower browser route | `flower` | Browsers through the Traefik ForwardAuth chain | ForwardAuth through OAuth2 Proxy (`02-auth`) | The description records no failure handling for this interface. |
-| n8n browser route | `n8n` | Browsers through Traefik `gateway-standard-chain@file` | n8n's own login | The description records no failure handling for this interface. |
+| Flower browser route | `flower` | Browsers through the Traefik ForwardAuth chain | ForwardAuth | The description records no failure handling for this interface. |
+| n8n browser route | `n8n` | Browsers through Traefik `gateway-standard-chain@file` | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | Celery and queue broker | `mng-valkey` (`04-data`) | Airflow (`CeleryExecutor`) and n8n queue mode (`EXECUTIONS_MODE: queue`) | The description links no contract for this interface. | A `mng-valkey` outage stops queued work in both engines; the queue is not a recovery record. |
-| Workflow metadata store | `mng-pg` (`04-data`) | Airflow and n8n | The description links no contract for this interface. | PostgreSQL metadata and the application encryption key are the durable recovery authority. |
-| Metrics and logs | `airflow-statsd-exporter`, Flower and workflow services | Prometheus and Loki (`06-observability`) | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| Workflow metadata store | `mng-pg` (`04-data`) | Airflow | The description links no contract for this interface. | PostgreSQL metadata and the application encryption key are the durable recovery authority. |
+| Metrics and logs | `airflow-statsd-exporter` and Flower | Prometheus and Loki (`06-observability`) | The description links no contract for this interface. | The description records no failure handling for this interface. |
 
 Airflow uses `CeleryExecutor` and a Keycloak `home-airflow` client with Authorization Services; its internal JWT is separate from the Keycloak access token. Flower routes through ForwardAuth, and n8n runs in queue mode with its own login.
 

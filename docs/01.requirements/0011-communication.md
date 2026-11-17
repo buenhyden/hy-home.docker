@@ -70,8 +70,8 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 | REQ-0011-FR-0001 | Provide a development SMTP capture service (Mailpit) that keeps every received message inside the platform. | A development environment can send real mail by mistake; a developer checks mail in the sandbox UI instead of a real inbox. | No message leaves the development environment; the sandbox publishes its ports only on the local host. | must |
 | REQ-0011-FR-0002 | Provide an IMAP/SMTP/JMAP mail server (Stalwart) as an optional, isolated experiment capability that rejects relaying and serves no HOME container until a separately approved requirement adds a delivery path. | Mail sending is fragmented; an admin evaluates the mail server, and production delivery is a promotion requirement, not a current runtime claim. | The mail server renders on its own, selects no HOME service, joins only its isolated network, and its applied configuration rejects relaying. | must |
 | REQ-0011-FR-0003 | Support UI viewing and search of captured mail. | A developer checks mail sent during development in the sandbox UI instead of a real inbox. | A captured test message is listed and found by search in the sandbox UI. | must |
-| REQ-0011-FR-0004 | Mail retrieval and every browser access that leaves the host use an encrypted channel; the experimental admin interface stays on the LAB host address (loopback by default), and public submission over TLS is a promotion requirement. | A security officer requires encrypted mail channels. | IMAP is offered only with implicit TLS and the sandbox UI route is served over gateway TLS; external delivery success, TLS version and DNS deliverability are verified as separate evidence at promotion. | must |
-| REQ-0011-FR-0005 | The sandbox UI requires the shared SSO (Keycloak); the experimental mail server's admin interface is reachable only from the local host and uses its own administrator credential until a promotion adds SSO. | A security officer requires authenticated administration, and the sandbox accepts any SMTP credential, so it must stay unreachable from outside the host and its peers. | An unauthenticated request to the sandbox UI route is redirected to SSO, and the mail server admin port is bound only to the LAB host address. | must |
+| REQ-0011-FR-0004 | Mail retrieval and every browser access that leaves the host must use an encrypted channel. The experimental admin interface stays on the LAB host address (loopback by default), and public submission over TLS is a promotion requirement. | A security officer requires encrypted mail channels. | IMAP is offered only with implicit TLS and the sandbox UI route is served over gateway TLS; external delivery success, TLS version and DNS deliverability are verified as separate evidence at promotion. | must |
+| REQ-0011-FR-0005 | The sandbox UI requires the shared SSO (Keycloak). The experimental mail server's admin interface is reachable only from the local host and uses its own administrator credential until a promotion adds SSO. | A security officer requires authenticated administration, and the sandbox accepts any SMTP credential, so it must stay unreachable from outside the host and its peers. | An unauthenticated request to the sandbox UI route is redirected to SSO, and the mail server admin port is bound only to the LAB host address. | must |
 
 ### Functional Requirements
 
@@ -90,7 +90,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 ### Quality Requirements
 
-This package declares no quality requirement.
+This package declares no quality requirement and records no reason why none applies.
 
 ## Traceability
 

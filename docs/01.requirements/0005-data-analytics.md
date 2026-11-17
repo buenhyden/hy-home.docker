@@ -88,7 +88,7 @@ needs without naming an engine.
 
 ### Quality Requirements
 
-This package declares no quality requirement.
+This package declares no quality requirement and records no reason why none applies.
 
 ## Traceability
 

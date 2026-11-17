@@ -90,10 +90,10 @@ meaning without creating another language or policy authority.
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| Bootstrap entry (root shim to shared policy and provider adapter) | Root `AGENTS.md`/`CLAUDE.md`, `.agents/governance/` and `.claude/provider.md` or `.codex/provider.md` | Claude and Codex agents | [canonical agent governance bootstrap](../../../.agents/governance/bootstrap.md) | An adapter cannot relax the shared approval boundary. |
-| Provider Registry translation facts | Provider Registry | Provider surface renderer and generated native adapters | `.agents/governance/providers/registry.yaml` | Provider sync and governance tests check projection freshness. |
-| Stage 99 Registry document contract | Stage 99 Registry | Validators and suites | [Stage 99 Registry](../../99.templates/registry.json) | The description records no failure handling for this interface. |
-| Canonical `SKILL.md` and native skill adapters | `.agents/skills/` | Claude (`disable-model-invocation: true`) and Codex (`allow_implicit_invocation: false`) | The canonical `SKILL.md` uses `name`, `description` and `metadata`. | Discovery is neither an approval nor observed runtime acceptance; explicit invocation is required. |
+| Bootstrap entry (root shim to shared policy and provider adapter) | Root `AGENTS.md`/`CLAUDE.md`, `.agents/governance/` and `.claude/provider.md` or `.codex/provider.md` | Claude and Codex | [canonical agent governance bootstrap](../../../.agents/governance/bootstrap.md) | The description records no failure handling for this interface. |
+| Provider Registry translation facts | Provider Registry | Generated native adapters | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| Stage 99 Registry document contract | Stage 99 Registry | The description names no consumer for this interface. | [Stage 99 Registry](../../99.templates/registry.json) | The description records no failure handling for this interface. |
+| Canonical `SKILL.md` and native skill adapters | `.agents/skills/` | Claude (`disable-model-invocation: true`) and Codex (`allow_implicit_invocation: false`) | The canonical `SKILL.md` with `name`, `description` and `metadata` | The description records no failure handling for this interface. |
 | Shared memory store | `scripts/operations/agent_memory.py` | Claude and Codex | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | Task handoff and resumption | Current Task and reviewed Git diff | Controller resuming work | [Approval Boundaries](../../../.agents/governance/approval-boundaries.md#authorization-source-and-records) | A material mismatch stops dependent work until it is reconciled. |
 

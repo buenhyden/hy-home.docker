@@ -102,11 +102,11 @@ Keycloak groups and OpenBao roles and policies are separate objects.
 | --- | --- | --- | --- | --- |
 | ForwardAuth `/oauth2/auth` check | OAuth2 Proxy | Traefik (`01-gateway`) for ForwardAuth-protected services | `gateway-standard-chain@file,sso-errors@file,sso-auth@file` | Access is fail-closed; a route that loses its middleware label loses that gateway protection. |
 | OIDC to Keycloak | Keycloak | OAuth2 Proxy and native-OIDC applications (Airflow, Kafbat UI, Grafana, Gatus, OpenBao, Dozzle, Open WebUI) | OIDC; [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md) | A Keycloak outage blocks new logins that depend on Keycloak; health is checked separately from each application's login flow. |
-| OpenBao OIDC role mapping | Keycloak group `/openbao-admins` | OpenBao OIDC role `home-admin` | Token under the `hy-home-operator` policy | The description records no failure handling for this interface. |
-| HTTPS routing | `01-gateway` (Traefik) | `02-auth` services | `gateway-standard-chain@file` | The description records no failure handling for this interface. |
+| OpenBao OIDC role mapping | Keycloak group `/openbao-admins` | OpenBao OIDC role `home-admin` | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| HTTPS routing | `01-gateway` (Traefik) | `02-auth` services | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | Keycloak state store | `mng-pg` (`04-data`) | Keycloak | The description links no contract for this interface. | An outage of the single `mng-pg` instance blocks new logins that depend on Keycloak. |
 | OAuth2 Proxy session store | `mng-valkey` (`04-data`) | OAuth2 Proxy | The description links no contract for this interface. | Valkey health is checked separately from each application's login flow. |
-| Compose-injected secrets | Compose secrets | Keycloak and OAuth2 Proxy | Files under `/run/secrets` | The description records no failure handling for this interface. |
+| Compose-injected secrets | Compose secrets | The description names no consumer for this interface. | Files under `/run/secrets` | The description records no failure handling for this interface. |
 
 ForwardAuth services use the `/oauth2/auth` check through `gateway-standard-chain@file,sso-errors@file,sso-auth@file`; native-OIDC applications talk OIDC to Keycloak directly and receive no injected `Authorization` header. OpenBao maps the Keycloak group `/openbao-admins` to its OIDC role `home-admin`.
 

@@ -65,7 +65,7 @@ flowchart LR
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| `storybook.${DEFAULT_URL}` static origin | `storybook` on `experience_ingress_net` | Administrators through Traefik | `req-rate-limit`, `gateway-standard-chain` and `sso-auth`; [Storybook policy](../../05.operations/policies/14-design-system/0101-storybook.md) | A missing image fails the start because of `pull_policy: never`. |
+| `storybook.${DEFAULT_URL}` static origin | `storybook` on `experience_ingress_net` | Administrators through Traefik | `req-rate-limit`, `gateway-standard-chain` and `sso-auth`; [Storybook policy](../../05.operations/policies/14-design-system/0101-storybook.md) | The description records no failure handling for this interface. |
 | `storybook-mcp` `/mcp` and protected-resource metadata path | `storybook-mcp` on `edge_net` | Other workspaces with Keycloak bearer tokens from the `/admins` group | [Storybook policy](../../05.operations/policies/14-design-system/0101-storybook.md) | The MCP rejects a token with the wrong signature, issuer, audience, lifetime or group. |
 | Keycloak token verification | Keycloak | `storybook-mcp` | The description links no contract for this interface. | The description records no failure handling for this interface. |
 

@@ -55,10 +55,10 @@ LAB-only Compose secret. The retained HOME OpenBao Agent output has no LAB bind.
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| Ollama inference and embedding endpoint | Approved Ollama endpoint | `open-webui` | `LAB_OPEN_WEBUI_OLLAMA_BASE_URL` with `RAG_EMBEDDING_ENGINE: ollama` | A missing or unreachable model endpoint blocks chat and embedding acceptance; Compose does not order Ollama startup across project boundaries. |
-| Native Keycloak OIDC | Keycloak through the Keycloak gateway name | `open-webui` (`home-openwebui` client) | PKCE S256 with a LAB-only client secret; [ADR-0059 native OIDC decision](../decisions/0059-native-oidc-open-webui-and-airflow.md) | LAB login requires a registered redirect for an approved HTTPS origin; the declared callback still uses the prior gateway origin. |
+| Ollama inference and embedding endpoint | Approved Ollama endpoint | `open-webui` | `LAB_OPEN_WEBUI_OLLAMA_BASE_URL` with `RAG_EMBEDDING_ENGINE: ollama` | A missing or unreachable model endpoint blocks chat and embedding acceptance. |
+| Native Keycloak OIDC | Keycloak through the Keycloak gateway name | `open-webui` (`home-openwebui` client) | PKCE S256 with a LAB-only client secret; [ADR-0059 native OIDC decision](../decisions/0059-native-oidc-open-webui-and-airflow.md) | The description records no failure handling for this interface. |
 | Web UI host publication | `open-webui` | Browsers on the LAB bind address (default `127.0.0.1:18095`) | [`labs/open-webui/docker-compose.yml`](../../../labs/open-webui/docker-compose.yml) | The description records no failure handling for this interface. |
-| `/health` on container port `8080` | `open-webui` | Health checks | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| `/health` on container port `8080` | `open-webui` | The description names no consumer for this interface. | The description links no contract for this interface. | The description records no failure handling for this interface. |
 
 - `LAB_OPEN_WEBUI_OLLAMA_BASE_URL` selects the approved local inference and
   embedding endpoint.

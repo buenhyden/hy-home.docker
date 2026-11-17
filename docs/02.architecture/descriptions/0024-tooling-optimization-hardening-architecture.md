@@ -70,12 +70,12 @@ Every routed tooling UI passes the gateway chain and SSO, and the registry stays
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| Terrakube API, UI and executor routes (Traefik `websecure`) | Terrakube | Clients through the gateway | `gateway-standard-chain`, `sso-errors` and `sso-auth` (`infra/09-platform-ops/terrakube/docker-compose.yml:65,101,183`) | The description records no failure handling for this interface. |
-| Mailpit UI route (Traefik `websecure`) | Mailpit | Clients through the gateway | `gateway-standard-chain`, `sso-errors` and `sso-auth` (`infra/11-quality/mailpit/docker-compose.yml:53`) | The description records no failure handling for this interface. |
-| Registry loopback publication | Image registry | Host-local clients | `infra/09-platform-ops/registry/docker-compose.yml:29` | The loopback publication is acceptable only while the host itself is trusted. |
-| Management PostgreSQL and Valkey on `mng_data_net` | `04-data` management PostgreSQL and Valkey | Terrakube and tooling services | The description links no contract for this interface. | Healthchecks and the Compose contract order startup. |
-| SeaweedFS on `object_net` | `04-data` SeaweedFS | Terrakube | The description links no contract for this interface. | Healthchecks and the Compose contract order startup. |
-| SSO middleware | `02-auth` Keycloak | Routed tooling UIs | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| Terrakube API, UI and executor routes (Traefik `websecure`) | Terrakube | The description names no consumer for this interface. | `gateway-standard-chain`, `sso-errors` and `sso-auth` (`infra/09-platform-ops/terrakube/docker-compose.yml:65,101,183`) | The description records no failure handling for this interface. |
+| Mailpit UI route (Traefik `websecure`) | Mailpit | The description names no consumer for this interface. | `gateway-standard-chain`, `sso-errors` and `sso-auth` (`infra/11-quality/mailpit/docker-compose.yml:53`) | The description records no failure handling for this interface. |
+| Registry loopback publication | Image registry | The description names no consumer for this interface. | `infra/09-platform-ops/registry/docker-compose.yml:29` | The description records no failure handling for this interface. |
+| Management PostgreSQL and Valkey on `mng_data_net` | `04-data` management PostgreSQL and Valkey | The `09-platform-ops` and `11-quality` tooling; Terrakube keeps metadata in management PostgreSQL | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| SeaweedFS on `object_net` | `04-data` SeaweedFS | Terrakube | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| SSO middleware | `02-auth` SSO middleware and Keycloak | Routed tooling UIs | The description links no contract for this interface. | The description records no failure handling for this interface. |
 
 - Traefik `websecure` routes the Terrakube API, UI and executor and the Mailpit UI through `gateway-standard-chain`, `sso-errors` and `sso-auth`, per the Ingress item in Building Blocks.
 - The registry has no Traefik route and publishes only on loopback.
