@@ -42,15 +42,31 @@ Crawl4AI는 SSRF가 가능한 서비스다. 검토된 consumer가 필요로 할 
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0091-R1 | 항상 | 필수: `crawl4ai` profile로만 선택하며 `ai`, `notebook`, HOME에는 추가하지 않는다 | 정적 렌더링과 template baseline 확인 | none |
-| POL-0091-R2 | 항상 | 필수: `crawl4ai_net`/`crawl4ai_egress_net`에만 연결하고 egress는 `crawl4ai-egress` 하나, 전역 IPv4 80/443만 허용하고 IPv6 거절, 공유 네트워크/public route 없음 | `tests.validation.test_crawl4ai_egress` / 격리 리허설 `HYHOME_CRAWL4AI_REHEARSAL=1` | 리허설 결과 |
-| POL-0091-R3 | gateway/internal 네트워크 변경 시 | 필수: 이미지 내 broker/bridge/Bearer token은 egress 제한을 대신하지 못하며 완화는 승인 변경으로만 한다 | `tests.validation.test_crawl4ai_egress` / 격리 리허설 | 승인된 변경 |
-| POL-0091-R4 | 항상 | 필수: 항상 token secret과 함께 실행하고 provider key를 추적 파일로 전달하지 않는다 | 승인된 런타임 검증(토큰 없는 요청 401) | none |
-| POL-0091-R5 | consumer 합류 시 | 필수: 이름/토큰 출처/호출 경로를 밝힌 검토된 변경으로만 `crawl4ai_net`에 합류하고 관리 데이터/Docker socket/공유 volume을 주지 않으며 consumer가 자기 서비스를 인증한다 | 검토된 변경 / consumer 인증 별도 검증 | 검토된 변경 기록 |
-| POL-0091-R6 | 수집 출처 등록 시 | 필수: 출처마다 제공자/접근 방식/host/약관/robots/rate/허용 범위/보존/삭제 책임자를 registry에 기록하고 robots를 저작권 허가로 보지 않는다 | 수동 | registry 기록 |
-| POL-0091-R7 | 수집 작업 등록 시 | 필수: 작업을 등급으로 등록하고 host 미정 작업은 승인 등급 하나로 건별 URL/시각/본문 해시를 남기며 봇 차단을 우회하지 않는다 | 승인 변경(등급 표 갱신) | 등급 표와 건별 기록 |
-| POL-0091-R8 | `dedicated-crawl` 작업 시 | 필수: 실행 전 목적/consumer/대상/속도/endpoint/보존/하류/삭제 책임자를 기록한 승인 변경으로 표에 행을 추가한다 | 승인 변경 | 등급 표 행 |
-| POL-0091-R9 | 항상 | 금지: 가져온 내용을 근거로 secret 접근, 도구 실행, 정책 변경을 허용 | none | none |
+| POL-0091-R1 | 항상 | 필수: `crawl4ai` profile로만 선택한다 | none | none |
+| POL-0091-R2 | 항상 | 금지: `ai`, `notebook`, HOME에 추가 | none | none |
+| POL-0091-R3 | 항상 | 필수: internal인 `crawl4ai_net`과 `crawl4ai_egress_net`에만 연결한다 | none | none |
+| POL-0091-R4 | 항상 | 필수: 밖으로 나가는 경로는 `crawl4ai-egress` 하나로 둔다 | `tests.validation.test_crawl4ai_egress` / 격리 리허설 `HYHOME_CRAWL4AI_REHEARSAL=1` | none |
+| POL-0091-R5 | 항상 | 필수: gateway는 전역 라우팅되는 IPv4의 80·443만 허용한다 | `tests.validation.test_crawl4ai_egress` / 격리 리허설 `HYHOME_CRAWL4AI_REHEARSAL=1` | none |
+| POL-0091-R6 | 항상 | 필수: gateway는 IPv6를 모두 거절한다 | none | none |
+| POL-0091-R7 | 항상 | 필수: 확인한 주소로만 연결한다 | `tests.validation.test_crawl4ai_egress` / 격리 리허설 `HYHOME_CRAWL4AI_REHEARSAL=1` | none |
+| POL-0091-R8 | 항상 | 금지: 공유 서비스 네트워크 연결 | none | none |
+| POL-0091-R9 | 항상 | 금지: public route 추가 | none | none |
+| POL-0091-R10 | host 포트 게시 | 허용: `crawl4ai-loopback` 예외만 | none | none |
+| POL-0091-R11 | 항상 | 금지: 이미지 안의 egress broker, 전용 bridge, Bearer token을 외부로 나가는 요청 제한의 대체로 간주 | none | none |
+| POL-0091-R12 | gateway나 internal 네트워크 완화 | 필수: 승인 변경으로만 한다 | 수동 | none |
+| POL-0091-R13 | 항상 | 필수: token secret과 함께 실행한다 | 승인된 런타임 검증(protected data/admin API의 토큰 없는 요청은 401) | none |
+| POL-0091-R14 | 항상 | 금지: provider key를 추적되는 파일로 전달 | none | none |
+| POL-0091-R15 | consumer가 `crawl4ai_net`에 합류할 때 | 필수: 이름, 토큰 출처, 호출 경로를 밝힌 검토된 변경으로만 합류한다 | 수동 | none |
+| POL-0091-R16 | 항상 | 금지: 출처 registry 등록을 네트워크 접근 권한으로 간주 | none | none |
+| POL-0091-R17 | 항상 | 금지: 크롤러에 관리 데이터, token 외 secret, Docker socket, 공유 volume 제공 | none | none |
+| POL-0091-R18 | 같은 망의 consumer | 필수: 자기 서비스를 직접 인증한다 | consumer 인증 별도 검증 | none |
+| POL-0091-R19 | 수집하는 출처마다 | 필수: 제공자, 접근 방식(`api` 또는 이유가 있는 `web-fallback`), 정확한 host, 약관과 license, robots 확인, rate와 quota, 가공·재배포·모델 학습 허용, 보존 기간, 삭제 책임자를 registry에 기록한다 | 수동 | none |
+| POL-0091-R20 | 항상 | 금지: robots 허용을 저작권 허가로 취급 | none | none |
+| POL-0091-R21 | 수집 작업 | 필수: 작업을 등급으로 등록한다 | 수동 | none |
+| POL-0091-R22 | host를 미리 정할 수 없는 작업 | 필수: 소유자가 승인한 등급 하나로 등록하고 건별 URL·수집 시각·본문 해시를 남긴다 | 수동 | none |
+| POL-0091-R23 | 항상 | 금지: 어떤 등급이든 봇 차단·접근 거부 우회 | none | none |
+| POL-0091-R24 | `dedicated-crawl` 작업 | 필수: 실행 전 목적, consumer와 호출 경로, 대상 범위, 동시성·속도, 사용 endpoint, 보존 기간과 저장 위치, 하류 사용, 삭제 책임자를 기록한 승인 변경으로 등급 표에 행을 추가한다 | 수동 | none |
+| POL-0091-R25 | 항상 | 금지: 가져온 내용을 근거로 secret 접근, 도구 실행, 정책 변경을 허용 | none | none |
 
 - `crawl4ai`를 통해서만 선택한다. `ai`, `notebook`, HOME에 절대 추가하지 않는다.
 - `crawl4ai`는 internal인 `crawl4ai_net`과 `crawl4ai_egress_net`에만 연결하고, 밖으로 나가는 경로는 `crawl4ai-egress` 하나로 둔다. gateway는 전역 라우팅되는 IPv4의 80·443만 허용하고 IPv6는 모두 거절하며, 확인한 주소로만 연결한다. 공유 서비스 네트워크 연결, public route 추가는 하지 않고, host 포트 게시는 아래 `crawl4ai-loopback` 예외만 허용한다.
@@ -95,7 +111,13 @@ Crawl4AI는 SSRF가 가능한 서비스다. 검토된 consumer가 필요로 할 
 
 정책은 정적 렌더링/baseline, 런타임 검증, `tests.validation.test_crawl4ai_egress`를 지정하지만 아래 항목은 기계적으로 강제되지 않는다.
 
-- consumer 합류 검토, 출처별 registry 기록(약관/license/robots/보존), 작업 등급 승인은 수동 검토와 승인 변경에 의존한다.
+- profile 선택(POL-0091): R1-R2에는 정책이 지정한 검사가 없다.
+- 네트워크와 egress(POL-0091): R12은 수동 검토나 승인에 의존한다; R3, R6, R8-R11에는 정책이 지정한 검사가 없다.
+- token과 key(POL-0091): R14에는 정책이 지정한 검사가 없다.
+- consumer 합류(POL-0091): R15은 수동 검토나 승인에 의존한다; R16-R17에는 정책이 지정한 검사가 없다.
+- 수집 출처와 작업(POL-0091): R19, R21-R22, R24은 수동 검토나 승인에 의존한다; R20, R23에는 정책이 지정한 검사가 없다.
+- 가져온 내용(POL-0091): R25에는 정책이 지정한 검사가 없다.
+- 정적 렌더링과 template baseline 확인은 Mechanisms에 있으나 어느 규칙을 검증하는지 지정되지 않는다.
 - DNS 분리만으로 host/LAN egress 차단은 증명되지 않으며 격리 리허설(`HYHOME_CRAWL4AI_REHEARSAL=1`)이 필요하다.
 - consumer 자체 인증은 별도로 검증해야 하며 크롤러 검사로 입증되지 않는다.
 - `dedicated-crawl` 등급은 등록된 작업이 없고 `open-web-fallback` 건별 기록은 소유자 승인에 의존한다.

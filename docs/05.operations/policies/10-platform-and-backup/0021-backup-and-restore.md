@@ -79,14 +79,51 @@ report가 달리 입증하기 전까지 모든 restore는 계획된 절차로 �
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0021-R1 | 항상 | 필수: destination은 source volume 밖의 다른 physical disk에 두고 offsite는 R2 repository 하나로 복사하며 10 GB 상한을 지킨다 | orchestrator의 같은 filesystem repository 거부 / 업로드 9 GB 초과 시 run 실패 / 물리 매핑은 수동 | RUN-0021 R2 설정과 첫 copy 성공 기록 |
-| POL-0021-R2 | 항상 | 필수: SSD repository 크기를 `BACKUP_STATE_MAX_GIB`(8 GiB) 예산 안에 두고 초과 시 run 실패와 Restic 단계 skip, snapshot 자동 삭제 금지 | pgBackRest/export 이후 크기 검사 | run 실패 경보 |
-| POL-0021-R3 | 항상 | 필수: BKP-001/002와 R2 secret BKP-003~005는 host 밖 offline 사본을 두고 OpenBao에는 두지 않는다 | 수동 | none |
-| POL-0021-R4 | 항상 | 필수: backup scheduler는 host의 `hyhome-backup.timer` 하나뿐이며 snapshot 삭제 `forget-prune`는 별도 승인 manual procedure다 | 수동 / 별도 승인 | 승인 기록 |
-| POL-0021-R5 | 항상 | 필수: engine 지원 export/snapshot 방식을 쓰고 active storage의 raw 복사본은 승인된 backup artifact로 보지 않는다 | 수동 | GDE-0024 rehearsal(SeaweedFS) |
-| POL-0021-R6 | 항상 | 필수: service/version/timestamp/scope/count/size/hash를 담은 manifest를 기록한다 | none | manifest 기록 |
-| POL-0021-R7 | 항상 | 금지: password, unseal material, dump, workflow credential, secret-rendered output을 Git이나 evidence tree에 둔다 | 수동 | none |
-| POL-0021-R8 | destructive recovery/cutover/cleanup/rotation/live 변경 시 | 필수: 별도로 승인된 task가 필요하며 이 정책은 이를 승인하지 않는다 | 별도 승인 task | 승인된 Task |
+| POL-0021-R1 | 항상 | 필수: 전체 export·백업·검증 성공을 유효 복구 세트의 조건으로 한다 | none | none |
+| POL-0021-R2 | 실패 처리 | 필수: 종료 1·성공 timestamp 부재를 실패로 유지한다 | none | none |
+| POL-0021-R3 | 항상 | 금지: snapshot 존재를 성공으로 승격 | none | none |
+| POL-0021-R4 | 항상 | 필수: destination은 source volume 밖에 둔다 | orchestrator가 자신의 source와 같은 filesystem에 있거나 그 안에 있는 repository를 거부 | none |
+| POL-0021-R5 | 항상 | 필수: destination은 다른 physical disk에 둔다(물리 매핑 검증은 별도 필수) | 수동 | none |
+| POL-0021-R6 | 항상 | 필수: `BACKUP_STATE_REPO_DIR`(system SSD)에는 data-disk state의 복사본을, `BACKUP_HOST_REPO_DIR`(data disk)에는 `secrets/`와 `.env`의 복사본을 둔다 | none | none |
+| POL-0021-R7 | 로컬 backup과 check 성공 후 | 필수: `restic-offsite`가 두 Restic repository의 snapshot을 state set 안의 pgBackRest repository까지 포함해 bucket lock이 걸린 Cloudflare R2 repository 하나로 복사한다 | none | RUN-0021의 R2 설정과 첫 copy 성공 |
+| POL-0021-R8 | 항상 | 필수: R2 repository는 10 GB를 절대 넘지 않는다 | none | none |
+| POL-0021-R9 | 올린 뒤 저장 byte가 9 GB를 넘을 수 있을 때 | 필수: 업로드를 거부하고 run을 실패시킨다 | 업로드 거부와 run 실패 | none |
+| POL-0021-R10 | 원격 보존 | 필수: owner가 매달 `forget-prune`(최근 30일 전부와 월 1개씩 12개월)을 실행한다 | 수동 | none |
+| POL-0021-R11 | 같은 계정의 다른 R2 사용 | 필수: 상한이 이 repository의 파일만 세므로 따로 확인한다(RUN-0021 8.2, 8.5, 8.6) | 수동 | none |
+| POL-0021-R12 | SSD repository 예산 | 필수: SSD repository 크기를 `BACKUP_STATE_MAX_GIB`(8 GiB) 예산 안에 둔다 | none | none |
+| POL-0021-R13 | pgBackRest와 export 이후 검사에서 예산 초과 | 필수: run을 실패시키고 해당 Restic 단계를 건너뛴다 | pgBackRest와 export 이후 크기 검사 | none |
+| POL-0021-R14 | 항상 | 금지: 예산을 맞추려고 snapshot 자동 삭제 | none | none |
+| POL-0021-R15 | 항상 | 필수: Backup key BKP-001과 BKP-002, R2 secret BKP-003~005는 이 host 밖에 offline 사본을 둔다 | 수동 | none |
+| POL-0021-R16 | 항상 | 금지: BKP-001/002와 BKP-003~005를 OpenBao에 둠 | none | none |
+| POL-0021-R17 | 항상 | 필수: backup을 소유하는 scheduler는 host의 `hyhome-backup.timer` 하나뿐이다 | none | none |
+| POL-0021-R18 | 항상 | 금지: Airflow와 다른 scheduler가 backup 실행 | none | none |
+| POL-0021-R19 | Snapshot 삭제 | 필수: `forget-prune`는 별도 승인을 받는 manual procedure로 한다 | 수동 | none |
+| POL-0021-R20 | 항상 | 필수: engine이 지원하는 export 또는 snapshot method를 사용한다 | none | none |
+| POL-0021-R21 | 항상 | 금지: active PostgreSQL, SQLite, Valkey, SeaweedFS, Qdrant, Loki, Tempo storage의 raw 복사본을 승인된 backup artifact로 취급 | none | none |
+| POL-0021-R22 | SeaweedFS volume tree를 live로 읽을 때 | 허용: needle이 append-only이고 vacuum이 일시 중지되며 filer metadata가 먼저 export될 때만 한다 | none | none |
+| POL-0021-R23 | 항상 | 필수: service, engine/source version, timestamp, scope, 의미 있는 경우 object/file count, byte size, cryptographic hash를 담은 manifest를 기록한다 | none | none |
+| POL-0021-R24 | 항상 | 금지: password, unseal material, database dump, workflow credential, secret-rendered agent output을 Git이나 generic evidence tree에 둠 | none | none |
+| POL-0021-R25 | Destructive recovery, cutover, cleanup, credential rotation, live service 변경 | 필수: 별도로 승인된 task를 갖춘다 | 수동 | none |
+| POL-0021-R26 | 항상 | 금지: 이 policy를 destructive recovery, cutover, cleanup, credential rotation, live service 변경의 승인으로 사용 | none | none |
+| POL-0021-R27 | 개발 pgBackRest 편입 | 필수: 기존 state set과 예산·실패 경보를 재사용한다 | none | none |
+| POL-0021-R28 | 항상 | 필수: `dev-pgbackrest/`를 read-only source로 두며 관리 stanza/key/PGDATA와 독립으로 유지한다 | none | none |
+| POL-0021-R29 | 개발 backup/check 실패·서버 중단·export 실패 | 금지: 전체 성공 timestamp 기록 | none | none |
+| POL-0021-R30 | 항상 | 금지: 부분 snapshot/copy를 복구 PASS로 간주 | none | none |
+| POL-0021-R31 | 연속 WAL archive | 필수: `dev` stanza가 먼저 만들어진 뒤에만 켠다 | none | none |
+| POL-0021-R32 | 보존 정책 축소, offsite 쓰기, 실제 cutover restore | 필수: 별도 구체적 승인을 받는다 | 수동 | none |
+| POL-0021-R33 | 항상 | 금지: Restic이 `security/vault`를 포함 | none | none |
+| POL-0021-R34 | `${DEFAULT_REGISTRY_DIR}` 복구 | 필수: Restic이 아니라 다시 pull하거나 다시 빌드하여 복구한다 | none | none |
+| POL-0021-R35 | 재빌드 예외 | 필수: 기록된 source evidence를 갖춘다 | none | none |
+| POL-0021-R36 | Rehearsal | 필수: isolated target, 호환되는 engine version, disposable credential을 사용한다 | none | 날짜가 기록된 rehearsal report |
+| POL-0021-R37 | Rehearsal | 필수: application-level read/write를 증명한다 | none | 날짜가 기록된 rehearsal report |
+| POL-0021-R38 | Rehearsal | 필수: planning RTO 대비 경과 시간을 기록하고 관찰된 recovery point를 명시한다 | none | 날짜가 기록된 rehearsal report |
+| POL-0021-R39 | Rehearsal 이후 | 필수: test copy를 폐기하거나 안전하게 보관한다 | none | none |
+| POL-0021-R40 | Production 교체 | 필수: rollback을 갖춘 별도로 승인된 cutover로 한다 | 수동 | none |
+| POL-0021-R41 | 항상 | 필수: 문서의 정적 검증과 runtime 운영 승인을 분리한다 | none | none |
+| POL-0021-R42 | service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 | 필수: 이 Policy와 linked Guide/Runbook을 함께 검토한다 | none | none |
+| POL-0021-R43 | 항상 | 필수: engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 `POL-0079`를, source 반영·재기동은 `POL-0006`을, 보존·삭제는 `POL-0021`의 적용 통제를 따른다 | none | none |
+| POL-0021-R44 | 소유 artifact·복구 지점·expiry가 불명확할 때 | 필수: 삭제/재생성을 중단한다 | none | none |
+| POL-0021-R45 | 항상 | 금지: 기존 Exceptions 외의 새 예외를 승인된 것으로 간주 | none | none |
 
 전체 export·백업·검증 성공이 유효 복구 세트의 필수 조건이다. 현재 `restic_ok`는 Restic backup/check만 gate하므로 앞선 pgBackRest/globals/Valkey/SQLite/SeaweedFS 실패에도 partial snapshot/copy가 생길 수 있다. 종료1·성공 timestamp 부재를 실패로 유지하고 snapshot 존재로 승격하지 않는다. 자동 skip 강화는 별도 구현 사항이다. `archive_timeout`의 5분은 segment 전환 설정이며 성공 archive RPO 보장이 아니다.
 
@@ -206,15 +243,21 @@ restore를 요구한다. 미검증 runtime 속성은 명시적으로 기록한�
 
 ### Limits
 
-정책은 정적 정책 검사와 격리 restore 수용을 요구하지만 현재 상태에 대해 아래 항목은 입증되지 않았거나 수동에 의존한다.
+정책은 정적 정책 검사와 격리 restore 수용을 요구하지만 규칙별로 지정하지 않으며, 현재 상태에 대해 아래 항목은 입증되지 않았거나 수동에 의존한다.
 
+- 유효 복구 세트(POL-0021): R1-R3에는 정책이 지정한 검사가 없다.
+- repository와 offsite(POL-0021): R5, R10-R11은 수동 검토나 승인에 의존한다; R6-R8, R12, R14에는 정책이 지정한 검사가 없다.
+- key와 scheduler(POL-0021): R15, R19은 수동 검토나 승인에 의존한다; R16-R18에는 정책이 지정한 검사가 없다.
+- backup 방식과 기록(POL-0021): R25은 수동 검토나 승인에 의존한다; R20-R24, R26에는 정책이 지정한 검사가 없다.
+- 개발 backup chain(POL-0021): R32은 수동 검토나 승인에 의존한다; R27-R31, R33-R35에는 정책이 지정한 검사가 없다.
+- restore 수용과 lifecycle(POL-0021): R40은 수동 검토나 승인에 의존한다; R36-R39, R41-R45에는 정책이 지정한 검사가 없다.
 - 날짜가 기록된 rehearsal report가 입증하기 전까지 모든 restore는 계획된 절차이며 recoverability는 미검증이다.
 - `restic_ok`는 Restic backup/check만 gate하므로 앞선 단계 실패에도 partial snapshot/copy가 생길 수 있고 자동 skip 강화는 별도 구현 사항이다.
 - 서로 다른 filesystem이 같은 physical disk일 수 있어 물리 매핑 검증은 별도 필수이며 이 정책은 검사를 지정하지 않는다.
 - 오프사이트 복사와 원격 RPO 하루는 계획 목표이며 R2 설정과 첫 copy 성공 전에는 offsite recovery가 제공되지 않는다.
 - SSD repository 크기 예산은 실행 중 quota가 아니어서 후속 쓰기로 초과할 수 있다.
 - `archive_timeout` 5분은 성공 archive RPO를 보장하지 않는다.
-- 미검증 runtime 속성은 명시적으로 기록해야 하며 Destructive recovery/cutover 등은 별도 승인이 필요하다.
+- 미검증 runtime 속성은 명시적으로 기록해야 한다.
 
 ## Ownership
 

@@ -47,19 +47,26 @@ next_review_at: "2027-05-13"
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0063-R1 | 항상 | 필수: Terrakube 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`을 적용한다 | `check-all-hardening.sh 09-platform-ops 11-quality` | hardening 검사 결과 |
-| POL-0063-R2 | 항상 | 필수: SonarQube LAB은 gateway route 없이 `LAB_HOST_BIND_IP` bind의 loopback port만 게시한다 | `check-all-hardening.sh 09-platform-ops 11-quality` | hardening 검사 결과 |
-| POL-0063-R3 | 항상 | 필수: tooling 서비스는 root Compose가 정의한 선언된 network bridge에 연결한다 | `check-all-hardening.sh 09-platform-ops 11-quality` / 루트 Compose 문맥 검증 | hardening 검사 결과 |
-| POL-0063-R4 | 항상 | 필수: Locust LAB worker healthcheck를 유지한다 | `check-all-hardening.sh 09-platform-ops 11-quality` | hardening 검사 결과 |
-| POL-0063-R5 | 항상 | 필수: k6 volume 계약(`k6-data:/scripts:ro`)을 유지한다 | `check-all-hardening.sh 09-platform-ops 11-quality` | hardening 검사 결과 |
-| POL-0063-R6 | tooling 변경 시 | 필수: `check-all-hardening.sh 09-platform-ops 11-quality` 및 CI `infrastructure-hardening`을 통과한다 | `check-all-hardening.sh 09-platform-ops 11-quality` / CI `infrastructure-hardening` / 원격 PR public `changed` 검사 | hardening 검사 결과 |
-| POL-0063-R7 | 항상 | 필수: optimization-hardening 문서(PRD~Procedure) 링크를 유지한다 | `python3 scripts/validation/check-document-links.py --mode traceability` | traceability 검사 결과 |
-| POL-0063-R8 | 항상 | 허용: 카탈로그 확장 항목의 단계적 도입 작업 | 수동 | none |
+| POL-0063-R1 | 항상 | 필수: Terrakube 공개 라우터에 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다 | none | none |
+| POL-0063-R2 | 항상 | 필수: SonarQube LAB(`labs/sonarqube/docker-compose.yml`)은 gateway route 없이 `LAB_HOST_BIND_IP` bind의 loopback port만 게시한다 | none | none |
+| POL-0063-R3 | 항상 | 필수: tooling 서비스는 root Compose가 정의한 선언된 network bridge에 연결한다 | 루트 Compose 네트워크 문맥 검증 | none |
+| POL-0063-R4 | 항상 | 필수: `labs/locust/docker-compose.yml`의 Locust LAB worker healthcheck를 유지한다 | none | none |
+| POL-0063-R5 | 항상 | 필수: k6 volume 계약(`k6-data:/scripts:ro`)을 유지한다 | none | none |
+| POL-0063-R6 | tooling 변경 시 | 필수: `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality` 및 CI `infrastructure-hardening`을 통과한다 | `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality` / CI `infrastructure-hardening` | none |
+| POL-0063-R7 | 항상 | 필수: optimization-hardening 문서(PRD~Procedure) 링크를 유지한다 | none | none |
+| POL-0063-R8 | 항상 | 허용: 카탈로그 확장 항목을 단계적으로 도입하는 설계/운영 작업 | 수동 | none |
 | POL-0063-R9 | 항상 | 허용: 성능/품질/보안 기준의 보수적 강화 | 수동 | none |
-| POL-0063-R10 | 항상 | 금지: 무승인 SSO/middleware 완화 | 수동 / `check-all-hardening.sh 09-platform-ops 11-quality` | 승인 기록 |
-| POL-0063-R11 | 항상 | 금지: 검증 게이트 우회 배포 | CI `infrastructure-hardening` / 원격 PR public `changed` 검사 | none |
-| POL-0063-R12 | 항상 | 금지: 감사/보존 정책 없이 확장 항목의 운영 전환 | 수동 | none |
-| POL-0063-R13 | 카탈로그 확장 항목 도입 시 | 필수: opentofu/terrakube/registry/sonarqube/k6·Locust/renovate별 승인 조건을 갖춘다 | 수동 | none |
+| POL-0063-R10 | 항상 | 금지: 무승인 SSO/middleware 완화 | 수동 | none |
+| POL-0063-R11 | 항상 | 금지: 검증 게이트 우회 배포 | 수동 | none |
+| POL-0063-R12 | 항상 | 금지: 감사/보존 정책 없이 확장 항목 운영 전환 | 수동 | none |
+| POL-0063-R13 | opentofu 카탈로그 항목 도입 시 | 필수: plan/apply 승인 게이트 문서화, state 잠금/백업 정책 및 drift 자동 탐지 절차 정의 | none | none |
+| POL-0063-R14 | terrakube 카탈로그 항목 도입 시 | 필수: workspace 분리 전략 문서화, 실행 권한 모델/RBAC 및 감사로그 연계 정의 | none | none |
+| POL-0063-R15 | registry 카탈로그 항목 도입 시 | 필수: cosign 서명/검증 정책 정의, 취약점 스캔 실패 차단 정책 및 예외 절차 정의 | none | none |
+| POL-0063-R16 | sonarqube 카탈로그 항목 도입 시 | 필수: 품질게이트 임계값 재정의, 브랜치 정책과 보안 룰셋 분리 운영 | none | none |
+| POL-0063-R17 | k6/Locust LAB 카탈로그 항목 도입 시 | 필수: 회귀 baseline 저장/비교 및 시나리오 태그 표준화, 분산 실행 토폴로지와 데이터 초기화/정리 루틴 문서화 | none | none |
+| POL-0063-R18 | renovate 카탈로그 항목 도입 시 | 필수: `dependency-update` 작업 범위(`hyhome-renovate.timer` 주간 기본 실행과 온디맨드 실행)와 최소 token 권한을 유지하고 self-host `allowedCommands` 허용 목록과 변경 PR 검증을 확인한다 | 수동 | none |
+| POL-0063-R19 | 항상 | 필수: 일반 변경·예외 절차는 공통 운영 정책(`0006-infrastructure-optimization-governance.md`)을 따른다 | none | none |
+| POL-0063-R20 | Terrakube cookie ForwardAuth와 CLI/executor 비호환이 남아 있는 동안 | 필수: gateway 통제를 유지하면서 실행 활성화를 차단하고 `@buenhyden`에게 보고한다 | none | none |
 
 - **Required**:
   - Terrakube 공개 라우터는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 적용한다.
@@ -129,12 +136,17 @@ next_review_at: "2027-05-13"
 
 ### Limits
 
-정책은 hardening 검사, template baseline, traceability, PR 검사를 지정하지만 아래 항목은 기계적으로 강제되지 않는다.
+아래 규칙은 규칙과 직접 연결된 검사가 정책에 없거나 수동 검토에 의존한다.
 
-- Catalog Expansion Approval Gates는 추가 운영 전환의 승인 조건이며 구현 완료 목록이 아니고 이를 점검하는 검사가 지정되어 있지 않다.
-- Terrakube의 cookie ForwardAuth와 CLI/executor 비호환은 별도 구현 검토 대상으로 실행 활성화가 차단된다.
-- 허용/금지 항목과 renovate의 token 권한/`allowedCommands` 확인은 수동 검토에 의존한다.
-- 개별 서비스 파일만으로는 실행 구성을 판정할 수 없어 root Compose 문맥 검증이 필요하다.
+- 라우팅·네트워크: 지정된 검사 없음: `POL-0063-R1`, `POL-0063-R2`
+- 부하 도구: 지정된 검사 없음: `POL-0063-R4`, `POL-0063-R5`
+- 문서 링크: 지정된 검사 없음: `POL-0063-R7`
+- 허용/금지: 수동 검토/승인에 의존: `POL-0063-R8`, `POL-0063-R9`, `POL-0063-R10`, `POL-0063-R11`, `POL-0063-R12`
+- 확장 승인 조건: 수동 검토/승인에 의존: `POL-0063-R18` / 지정된 검사 없음: `POL-0063-R13`, `POL-0063-R14`, `POL-0063-R15`, `POL-0063-R16`, `POL-0063-R17`
+- 변경 절차: 지정된 검사 없음: `POL-0063-R19`, `POL-0063-R20`
+- Catalog Expansion Approval Gates는 추가 운영 전환의 승인 조건이며 이를 점검하는 검사가 지정되어 있지 않다.
+- 정책은 hardening 검사, template baseline, traceability, PR 검사를 나열하지만 개별 규칙에 연결하지 않는다.
+- 개별 서비스 파일만으로는 실행 구성을 판정할 수 없다.
 - 월 1회 정기 검토는 자동 점검이 없다.
 
 ## Ownership

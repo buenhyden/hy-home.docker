@@ -44,11 +44,15 @@ Terraform Compose runtime은 제거되었다. 기존 workspace 이관은 [Terraf
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0060-R1 | IaC 변경 시 | 필수: PR review, plan evidence, apply approval, state backend boundary 기록을 거친다 | 원격 PR public `changed` 검사 / 수동 | PR review와 plan/task evidence |
-| POL-0060-R2 | 항상 | 필수: OpenTofu helper는 `$HOME/.aws`, `$HOME/.azure` read-only mount와 `workspace/` scope를 벗어나지 않는다 | `bash scripts/hardening/check-all-hardening.sh 09-platform-ops` | hardening 검사 결과 |
-| POL-0060-R3 | 항상 | 필수: Terrakube secret은 Docker Secret 이름만 문서화하고 값은 노출하지 않는다 | 수동 | none |
-| POL-0060-R4 | 항상 | 허용: 문서/검증 절차의 in-place 보강, state/backend 정책 강화, approval gate 추가 | 수동 | none |
-| POL-0060-R5 | 항상 | 금지: secret 값 노출, 승인 없는 apply, Docker socket 권한 확대, 정책과 절차의 중복 SSoT 생성 | 수동 / hardening 검사 | 승인 기록 |
+| POL-0060-R1 | IaC 변경 시 | 필수: PR review, plan evidence, apply approval, state backend boundary 기록을 거친다 | 수동 | none |
+| POL-0060-R2 | 항상 | 필수: OpenTofu helper는 `$HOME/.aws`, `$HOME/.azure` read-only mount와 `workspace/` scope 안에 머문다 | 수동 | none |
+| POL-0060-R3 | 항상 | 필수: Terrakube secret material은 Docker Secret names만 문서화한다 | 수동 | none |
+| POL-0060-R4 | 항상 | 금지: Terrakube secret 값 노출 | 수동 | none |
+| POL-0060-R5 | 항상 | 허용: 문서/검증 절차의 in-place 보강, state/backend 정책의 보수적 강화, approval gate 추가 | none | none |
+| POL-0060-R6 | 항상 | 금지: 승인 없는 apply | 수동 | none |
+| POL-0060-R7 | 항상 | 금지: Docker socket 권한 확대 | none | none |
+| POL-0060-R8 | 항상 | 금지: 정책과 절차의 중복 SSoT 생성 | 수동 | none |
+| POL-0060-R9 | Terrakube 실행 경로 제한이 해소되기 전 | 금지: 브라우저 로그인이나 정적 검증으로 IaC 실행이 가능하다고 승인 | none | none |
 
 - **Required**: IaC 변경은 PR review, plan evidence, apply approval, state backend boundary 기록을 거친다.
 - **Required**: OpenTofu helper는 `$HOME/.aws`, `$HOME/.azure` read-only mount와 `workspace/` scope를 벗어나지 않는다.
@@ -85,12 +89,13 @@ socket 권한과 외부 도구 선택은 OpenTofu의 읽기 전용 cloud credent
 
 ### Limits
 
-정책은 hardening 검사와 PR 검사를 지정하지만 아래 항목은 기계적으로 강제되지 않는다.
+아래 규칙은 지정된 검사 없이 승인과 수동 검토에 의존한다.
 
-- PR review, plan evidence, apply approval, state backend boundary 기록은 승인 절차에 의존하며 전용 검사가 없다.
-- 마운트 범위, Docker Secret 비노출, 문서 중복 SSoT 금지는 수동 검토에 의존한다.
-- guide/runbook과 compose service names 일치는 검토로 확인한다.
-- Terrakube 실행 경로 제한이 해소되기 전에는 브라우저 로그인이나 정적 검증으로 IaC 실행 가능을 승인하지 않는다.
+- 변경 절차: 수동 검토/승인에 의존: `POL-0060-R1`, `POL-0060-R6` / 지정된 검사 없음: `POL-0060-R9`
+- 마운트와 secret: 수동 검토/승인에 의존: `POL-0060-R2`, `POL-0060-R3`, `POL-0060-R4`, `POL-0060-R8` / 지정된 검사 없음: `POL-0060-R7`
+- 허용 작업: 지정된 검사 없음: `POL-0060-R5`
+- 정책이 지정한 hardening 검사와 원격 PR `changed` 검사를 특정 규칙에 연결하는 문장은 없다.
+- guide/runbook과 compose service names 일치는 검토로만 확인한다.
 
 ## Ownership
 

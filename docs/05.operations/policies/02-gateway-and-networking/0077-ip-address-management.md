@@ -44,14 +44,17 @@ repository가 root Compose에서 소유하지 않는 network는 이 정책의 �
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0077-R1 | 서비스 network 연결 | 필수: 실제로 사용하는 peer가 있는 network에만 연결하고 peer가 없으면 프로젝트 기본 network를 쓴다 | `python3 -m unittest tests.validation.test_compose_baseline_gates.NetworkSegmentationContractTests` | none |
-| POL-0077-R2 | 다른 곳이 그 주소를 신뢰할 때 | 필수: 고정 주소를 부여하고 사유를 Compose 주석에 남긴다 | `rg -n "ipv4_address:" infra docker-compose.yml`(후보 목록) | Compose 주석 |
-| POL-0077-R3 | 고정 주소 부여 시 | 필수: 해당 network의 dynamic range 밖에 둔다 | 수동 | none |
-| POL-0077-R4 | 새 flow 발생 | 허용: 해당 network membership을 추가한다 | `bash scripts/validation/validate-docker-compose.sh` | none |
-| POL-0077-R5 | 대부분의 서비스 | 허용: 주소를 지정하지 않고 dynamic 주소를 받는다 | none | none |
-| POL-0077-R6 | 같은 network 안 | 금지: 중복된 고정 주소를 두며 적용 전에 선언과 승인된 runtime 주소를 대조한다 | `rg -n "ipv4_address:" infra docker-compose.yml` / 수동 | RUN-0077 값 없는 scoped 주소 출력 |
-| POL-0077-R7 | 항상 | 금지: 사용하지 않는 peer를 위한 network 연결 | `python3 -m unittest tests.validation.test_compose_baseline_gates.NetworkSegmentationContractTests` | none |
-| POL-0077-R8 | 항상 | 금지: 외부망 주소와의 브릿징 설정 수동 수정 | none | none |
+| POL-0077-R1 | 서비스 network 연결 | 필수: 실제로 사용하는 peer가 있는 network에만 연결한다 | none | none |
+| POL-0077-R2 | peer가 없을 때 | 필수: 프로젝트 기본 network를 쓴다 | none | none |
+| POL-0077-R3 | 새 flow 발생 | 허용: 해당 network membership을 추가한다 | none | none |
+| POL-0077-R4 | 사용하지 않는 peer | 금지: 그 peer를 위한 network 연결 | none | none |
+| POL-0077-R5 | 고정 주소 부여 | 필수: 다른 곳이 그 주소를 신뢰할 때만 부여한다 | none | none |
+| POL-0077-R6 | 고정 주소 부여 | 필수: 사유를 Compose 주석에 남긴다 | none | none |
+| POL-0077-R7 | 고정 주소 | 필수: 해당 network의 dynamic range 밖에 둔다 | none | none |
+| POL-0077-R8 | 대부분의 서비스 | 허용: 주소를 지정하지 않고 dynamic 주소를 받는다 | none | none |
+| POL-0077-R9 | 같은 network 안 | 금지: 중복된 고정 주소 | none | none |
+| POL-0077-R10 | 고정 주소 적용 전 | 필수: 선언과 승인된 runtime 주소를 대조한다 | RUN-0077의 값 없는 scoped 주소 출력(승인된 runtime에서만) | none |
+| POL-0077-R11 | 외부망 주소 | 금지: 브릿징 설정을 수동 수정한다 | none | none |
 
 - **필수**:
   - 서비스는 실제로 사용하는 peer가 있는 network에만 연결한다. peer가 없으면
@@ -99,13 +102,11 @@ repository가 root Compose에서 소유하지 않는 network는 이 정책의 �
 
 ### Limits
 
-정책이 스스로 밝힌 한계는 다음과 같다.
+이 정책은 아래 규칙에 대해 명명된 자동 검사를 연결하지 않거나 수동 검토에 맡긴다.
 
-- 현재 Compose validator의 명시적 충돌 검사는 host port이며 static-IP 유일성을 전부 검증하지 않는다. 이 한계는 중복 금지 통제를 면제하지 않는다.
-- `rg`는 후보 목록일 뿐이며 subnet, dynamic pool, network별 중복은 별도로 수동 검토한다.
-- 고정 주소 사유의 Compose 주석, dynamic range 밖 배치, peer 없는 network 연결 금지, 외부망 브릿징 수동 수정 금지에는 명명된 전용 검사가 없다.
-- 선언과 runtime 주소의 대조는 승인된 runtime에서 RUN-0077의 값 없는 scoped 출력으로만 가능하다.
-- AD-0026 Networks 표와 Compose 파일 사이의 월 1회 점검은 수동이다.
+- network 연결: 명명된 검사 없음 R1~R4 (`POL-0077-` 접두)
+- 고정 주소: 명명된 검사 없음 R5~R9, R11 (`POL-0077-` 접두)
+- 현재 Compose validator의 명시적 충돌 검사는 host port이며 static-IP 유일성을 전부 검증하지 않는다. `rg`는 후보 목록일 뿐이며 subnet/dynamic pool/network별 중복은 별도로 검토한다. 이 한계는 중복 금지 통제를 면제하지 않는다(95~97행).
 
 ## Ownership
 

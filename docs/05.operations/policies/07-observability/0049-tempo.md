@@ -48,24 +48,39 @@ storage, block retention, metrics generator, secret boundary, protected route를
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0049-R1 | 항상 | 필수: `template-stateful-high`, 고정 `hy/tempo` image, user `10001:10001`, read-only config mount, persistent `tempo-data` volume을 유지한다 | Compose `rg` 점검 (`infra/06-observability/docker-compose.yml`) | `rg` 출력 |
-| POL-0049-R2 | 항상 | 필수: custom Tempo image는 upstream, non-root user `10001:10001`, `/docker-entrypoint.sh` secret guard를 유지한다 | Custom image secret guard `rg` 점검 | `rg` 출력 |
-| POL-0049-R3 | 항상 | 필수: OTLP receiver는 internal gRPC `4317`과 HTTP `4318`을 유지한다 | 수동 | none |
-| POL-0049-R4 | 항상 | 필수: HTTP/query/health는 `${TEMPO_PORT:-3200}`와 `/ready` healthcheck 기준이다 | Compose `rg` 점검 (`infra/06-observability/docker-compose.yml`) (`TEMPO_PORT`) | `rg` 출력 |
-| POL-0049-R5 | 항상 | 필수: SeaweedFS S3 backend, bucket `tempo-bucket`, endpoint `seaweedfs-s3:8333`, `insecure: true`를 사용한다 | Tempo config `rg` 점검 (`tempo.yaml`) | `rg` 출력 |
-| POL-0049-R6 | 항상 | 필수: `S3_ACCESS_KEY`는 environment reference로, `S3_SECRET_KEY`는 Docker Secret `seaweedfs_s3_tempo_secret_key`로만 주입한다 | Compose `rg` 점검 (`infra/06-observability/docker-compose.yml`) / Tempo config `rg` 점검 (`tempo.yaml`) | `rg` 출력 |
-| POL-0049-R7 | 항상 | 필수: block retention 값은 POL-0048을 기준으로 한다 | 수동 (POL-0048 Tempo 필수값 점검) | 구현 결함 기록 |
-| POL-0049-R8 | 항상 | 필수: metrics generator는 `span-metrics`/`service-graphs`와 Prometheus remote_write를 유지하고 processor 이름만으로 capability를 검증하지 않는다 | Tempo config `rg` 점검 (`tempo.yaml`) | `rg` 출력 |
-| POL-0049-R9 | 항상 | 필수: route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`을 유지한다 | Compose `rg` 점검 (`infra/06-observability/docker-compose.yml`) (`tempo.middlewares`) | `rg` 출력 |
-| POL-0049-R10 | Development/debug | 허용: sampling 또는 log-level 변경은 plan/task evidence와 rollback note가 있을 때만 한다 | 수동 | plan/task evidence / rollback note |
-| POL-0049-R11 | 장기 분석 필요 시 | 허용: retention policy와 SeaweedFS owning policy/runbook을 함께 갱신한다 | 수동 | none |
-| POL-0049-R12 | 항상 | 금지: PII, password, token, credential 값을 trace attributes에 기록한다 | 수동 | none |
-| POL-0049-R13 | 항상 | 금지: secret guard 없이 SeaweedFS-backed Tempo image나 entrypoint를 변경한다 | Custom image secret guard `rg` 점검 | `rg` 출력 |
-| POL-0049-R14 | 항상 | 금지: 승인 없이 bucket, retention, processors, remote_write endpoint, route middleware, image version을 runtime에서 변경한다 | 수동 | none |
-| POL-0049-R15 | lifecycle/data | 필수: HOME 유지, bucket/WAL/config/credential을 하나의 recovery set으로 취급, ingestion 중지 후 캡처, isolated rehearsal, 제거는 명시적 승인 | 수동 | `RUN-0049` runbook |
-| POL-0049-R16 | retention 검증 | 필수: 일치한 `rg`를 retention 검증으로 간주하지 않고 누락을 통제 실패로 기록하며 Tempo 2 `compactor` 블록을 복사하지 않는다 | 수동 | none |
-| POL-0049-R17 | LAN 통합 예외 `3200` | 필수: 예외는 지정 cluster 통합과 설정된 LAN 인터페이스로 한정하고 재바인딩/인증 추가/노출 확대는 별도 승인 변경으로 한다 | 수동 (POL-0096 소유) | owner 승인 기록(SPEC-0188) |
-| POL-0049-R18 | gRPC `9095` listener | 필수: 노출 수용(2026-11-12)을 유지하되 분산 모드 전환, 외부 gRPC 소비자 추가, 인증 도입 때 다시 검토한다 | 수동 | owner 수용 기록 |
+| POL-0049-R1 | 항상 | 필수: `template-stateful-high`, `hy/tempo` image 선언, user `10001:10001`, read-only config mount, persistent `tempo-data` volume 유지 | none | none |
+| POL-0049-R2 | 항상 | 필수: custom Tempo image는 upstream, non-root user `10001:10001`, `/docker-entrypoint.sh` secret guard 유지 | none | none |
+| POL-0049-R3 | 항상 | 필수: OTLP receiver는 internal gRPC `4317`/HTTP `4318` endpoint 유지 | none | none |
+| POL-0049-R4 | 항상 | 필수: HTTP/query/health surface는 `${TEMPO_PORT:-3200}`와 `/ready` healthcheck 기준 | none | none |
+| POL-0049-R5 | 항상 | 필수: trace storage는 SeaweedFS S3 backend, bucket `tempo-bucket`, endpoint `seaweedfs-s3:8333`, `insecure: true` 사용 | none | none |
+| POL-0049-R6 | 항상 | 필수: `S3_ACCESS_KEY`는 environment reference로, `S3_SECRET_KEY`는 Docker Secret `seaweedfs_s3_tempo_secret_key`로만 주입 | none | none |
+| POL-0049-R7 | 항상 | 필수: block retention 값은 [POL-0048](0048-telemetry-retention.md) 기준 | none | none |
+| POL-0049-R8 | 항상 | 필수: metrics generator는 `span-metrics`/`service-graphs` processors와 Prometheus `http://prometheus:9090/api/v1/write` remote_write 유지 | none | none |
+| POL-0049-R9 | 항상 | 필수: Tempo 3 TraceQL metrics를 이전 `local_blocks` processor 요구와 구분 | none | none |
+| POL-0049-R10 | 항상 | 금지: 검색/Drilldown capability를 processor 이름만으로 검증 | none | none |
+| POL-0049-R11 | 항상 | 필수: route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file` middleware chain 유지 | none | none |
+| POL-0049-R12 | Development/debug 상황의 sampling 또는 log-level 변경 | 허용: plan/task evidence와 rollback note가 있을 때만 변경 | 수동 | plan/task evidence / rollback note |
+| POL-0049-R13 | 장기 분석이 필요할 때 | 필수: retention policy와 SeaweedFS owning policy/runbook을 함께 갱신 | none | none |
+| POL-0049-R14 | 항상 | 금지: PII/password/token/credential 값을 trace attributes에 기록 | none | none |
+| POL-0049-R15 | 항상 | 금지: secret guard 없이 SeaweedFS-backed Tempo image나 entrypoint 변경 | none | none |
+| POL-0049-R16 | 항상 | 금지: 승인 없이 bucket/retention/metrics generator processors/remote_write endpoint/route middleware/image version을 runtime에서 변경 | 수동 | none |
+| POL-0049-R17 | 항상 | 필수: Tempo를 HOME으로 유지 | none | none |
+| POL-0049-R18 | `tracing`을 빼는 대상으로 전환할 때 | 필수: Tempo를 명시적으로 중지 | none | none |
+| POL-0049-R19 | 항상 | 필수: `tempo-bucket`/local WAL/temp state/config/대응 SeaweedFS credential을 하나의 조율된 recovery set으로 취급 | none | none |
+| POL-0049-R20 | bucket backup/restore 시 | 필수: object-store owner가 수행 | none | none |
+| POL-0049-R21 | consistency 캡처 전 | 필수: OTLP ingestion 중지 | none | none |
+| POL-0049-R22 | 항상 | 필수: isolated bucket/path로 rehearse하고 WAL replay/historical·new trace query/metrics-generator 동작/Alloy·Grafana integration 검증 | none | none |
+| POL-0049-R23 | 제거 시 | 필수: producer/exporter migration, retention 결정, credential/route 정리, object나 local data 삭제 전 명시적 승인 | 수동 | none |
+| POL-0049-R24 | 항상 | 금지: Bucket/receiver에 일치한 `rg`를 retention 검증으로 간주 | none | none |
+| POL-0049-R25 | retention 설정 누락 시 | 필수: 별도로 확인하고 누락을 통제 실패로 기록 | 수동 | none |
+| POL-0049-R26 | 항상 | 필수: 버전에 맞는 별도 구현 수정으로 retention 결함 해소 | none | none |
+| POL-0049-R27 | 항상 | 금지: Tempo 3 설정에 Tempo 2의 `compactor` 블록 복사 | none | none |
+| POL-0049-R28 | 항상 | 필수: Traefik hostname에는 TLS/SSO middleware 유지 | none | none |
+| POL-0049-R29 | Tempo HTTP `3200` LAN 게시 예외 | 필수: 예외는 지정 cluster 통합 목적과 설정된 LAN 인터페이스로 한정 | 수동 | none |
+| POL-0049-R30 | Tempo HTTP `3200` LAN 게시 예외 | 필수: 사람은 보호된 hostname을, 기계 검증은 GDE-0096을 따름 | none | none |
+| POL-0049-R31 | Tempo HTTP `3200` LAN 게시 예외 | 필수: 실제 log/trace payload 대신 상태와 시험 ID만 기록 | none | 상태와 시험 ID |
+| POL-0049-R32 | 재바인딩/제거/인증·TLS 추가/노출 확대 시 | 필수: 통합 소유자와 조정한 별도 승인 변경으로 수행 | 수동 | none |
+| POL-0049-R33 | 분산 모드 전환/외부 gRPC 소비자 추가/인증 도입 시 | 필수: gRPC `9095` listener 노출 수용(2026-11-12)을 다시 검토 | 수동 | none |
 
 - **Required**:
   - Tempo service는 `template-stateful-high`, image
@@ -149,14 +164,23 @@ Tempo gRPC `9095`은 listen address를 지정하지 않아 모든 인터페이�
 
 ### Limits
 
-이 정책은 Compose/config/Dockerfile 문자열 점검과 원격 PR `changed` 검사로 일부만 강제한다.
+정책 본문이 이름 붙인 검사로 강제하는 규칙은 일부이며 아래 항목은 기계적으로 강제되지 않는다.
 
-- 설정에 24h 블록 보존이 없고 선언 기본값은 336h/1h라 retention 준수는 입증되지 않으며 `rg` 일치를 retention 검증으로 보지 않는다.
-- 소스 검증은 실제 삭제나 trace 복원 증거가 아니다.
-- OTLP endpoint, trace attribute의 PII/secret 금지, 승인 없는 runtime 변경 금지는 지정된 검사가 없다.
-- `3200` LAN 게시는 gateway 인증과 서비스 TLS가 없고 비공개 override, bind 성공, routing/firewall과 실제 도달성은 관찰되지 않았다.
-- gRPC `9095`는 인증 없이 모든 인터페이스에 bind하며 owner 수용에 의존한다.
-- 복구는 runbook 절차에 의존하고 object-store owner가 bucket backup/restore를 수행한다.
+- 서비스/설정 경계: `POL-0049-R1`, `POL-0049-R2`, `POL-0049-R3`, `POL-0049-R4`, `POL-0049-R5`, `POL-0049-R8`, `POL-0049-R9`, `POL-0049-R10`, `POL-0049-R11`는 이름 붙은 검사가 지정되지 않았다.
+- secret: `POL-0049-R6`는 이름 붙은 검사가 지정되지 않았다.
+- retention: `POL-0049-R7`, `POL-0049-R24`, `POL-0049-R26`, `POL-0049-R27`는 이름 붙은 검사가 지정되지 않았다.
+- 변경 절차: `POL-0049-R12`는 승인/검토 등 수동 절차에 의존한다.
+- 변경 절차: `POL-0049-R13`는 이름 붙은 검사가 지정되지 않았다.
+- 금지 행위: `POL-0049-R14`, `POL-0049-R15`는 이름 붙은 검사가 지정되지 않았다.
+- 금지 행위: `POL-0049-R16`는 승인/검토 등 수동 절차에 의존한다.
+- 수명주기/데이터: `POL-0049-R17`, `POL-0049-R18`, `POL-0049-R19`, `POL-0049-R20`, `POL-0049-R21`, `POL-0049-R22`는 이름 붙은 검사가 지정되지 않았다.
+- 수명주기/데이터: `POL-0049-R23`는 승인/검토 등 수동 절차에 의존한다.
+- retention: `POL-0049-R25`는 승인/검토 등 수동 절차에 의존한다.
+- LAN 통합 예외: `POL-0049-R28`, `POL-0049-R30`, `POL-0049-R31`는 이름 붙은 검사가 지정되지 않았다.
+- LAN 통합 예외: `POL-0049-R29`, `POL-0049-R32`는 승인/검토 등 수동 절차에 의존한다.
+- gRPC 노출: `POL-0049-R33`는 승인/검토 등 수동 절차에 의존한다.
+- 설정에 24h 블록 보존이 없고 선언 기본값은 336h/1h라 retention 준수는 입증되지 않으며 소스 검증은 실제 삭제나 trace 복원 증거가 아니다.
+- `3200` LAN 게시는 gateway 인증과 서비스 TLS가 없고 비공개 override, bind 성공, routing/firewall과 실제 도달성은 관찰되지 않았다. gRPC `9095`는 인증 없이 모든 인터페이스에 bind하며 owner 수용에 의존한다.
 
 ## Ownership
 

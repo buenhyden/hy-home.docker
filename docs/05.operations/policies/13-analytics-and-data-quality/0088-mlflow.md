@@ -43,13 +43,23 @@ MLflow tracking server의 활성화, 데이터베이스와 artifact 프로비저
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0088-R1 | MLflow 선택 시 | 필수: `mlops` 또는 `data-science`를 통해서만 선택하고 명시적 결정 없이는 HOME이나 운영 명령에 추가하지 않는다 | 정적 profile 렌더링 | none |
-| POL-0088-R2 | 프로비저닝 | 필수: MLflow SQL은 feature provisioning 파일에 두고 공유 `mng-pg-init` job은 MLflow secret을 읽거나 DDL을 실행하지 않는다 | provisioning 계약 테스트 | none |
-| POL-0088-R3 | DB role | 필수: role은 `LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS`이며 administrator나 타 role 소유 DB 인수를 거부한다 | provisioning 계약 테스트 / 일회성 PostgreSQL 리허설 | none |
-| POL-0088-R4 | SeaweedFS 접근 | 필수: bucket-scoped SeaweedFS identity만 쓰고 admin credential이나 다른 consumer identity를 주지 않는다 | 런타임 검증(MLflow SeaweedFS user의 타 bucket 거부) | none |
-| POL-0088-R5 | credential 전달 | 필수: argv나 backend URI를 거치지 않고 환경 변수로만 프로세스에 전달한다 | none | none |
-| POL-0088-R6 | route 인증 | 필수: route에서 gateway SSO를 유지하며 OIDC plugin/`basic-auth` 채택은 별도 검토된 변경이다 | 런타임 검증(세션 없는 요청 거부/redirect, 인가 거부 403) | none |
-| POL-0088-R7 | 업그레이드 전 | 필수: DB와 bucket을 함께 백업하고 격리 환경에서 restore를 검증한다 | 런타임 검증(restore 리허설) | none |
+| POL-0088-R1 | MLflow 선택 시 | 필수: `mlops` 또는 `data-science`를 통해서만 선택한다 | none | none |
+| POL-0088-R2 | 항상 | 금지: 명시적 결정 없이 HOME이나 현재 운영 명령에 추가 | none | none |
+| POL-0088-R3 | 항상 | 필수: MLflow SQL은 feature provisioning 파일에 둔다 | none | none |
+| POL-0088-R4 | 항상 | 금지: 공유 `mng-pg-init` job이 MLflow secret을 읽음 | none | none |
+| POL-0088-R5 | 항상 | 금지: 공유 `mng-pg-init` job이 MLflow DDL 실행 | none | none |
+| POL-0088-R6 | 항상 | 필수: MLflow 데이터베이스 role은 `LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS`로 한다 | none | none |
+| POL-0088-R7 | provisioning 시 | 필수: administrator role과 다른 role이 소유한 데이터베이스의 인수를 거부한다 | none | none |
+| POL-0088-R8 | 항상 | 필수: 서버는 bucket-scoped SeaweedFS identity만 사용한다 | 런타임 검증(MLflow SeaweedFS user의 다른 bucket 거부) | none |
+| POL-0088-R9 | 항상 | 금지: MLflow나 SDK에 SeaweedFS admin credential이나 다른 consumer의 identity 제공 | none | none |
+| POL-0088-R10 | 항상 | 필수: credential은 argv나 backend URI를 거치지 않고 환경 변수로만 프로세스에 전달한다 | none | none |
+| POL-0088-R11 | 항상 | 필수: route에서 gateway SSO를 유지한다 | 런타임 검증(세션 없는 gateway 요청의 거부/로그인 redirect와 인가 거부 403 유지) | none |
+| POL-0088-R12 | 커뮤니티 OIDC plugin이나 `basic-auth` 채택 시 | 필수: UI·API·SDK 수용이 필요한 별도의 검토된 변경으로 다룬다 | 수동 | none |
+| POL-0088-R13 | 업그레이드 전 | 필수: 데이터베이스와 bucket을 함께 백업한다 | none | none |
+| POL-0088-R14 | 업그레이드 전 | 필수: 격리 환경에서 restore를 검증한다 | 런타임 검증(restore 리허설) | none |
+| POL-0088-R15 | artifact 정리 시 | 필수: 참조·보존·복구본을 확인하고 별도로 승인한다 | 수동 | none |
+| POL-0088-R16 | 항상 | 금지: `--allowed-hosts`나 gateway `/admins` 검사로 직접 peer 경로의 권한 통제가 완료되었다고 주장 | none | none |
+| POL-0088-R17 | 기존 DB migration 시 | 필수: 서버 재시작과 별도 변경으로 다룬다 | none | none |
 
 - `mlops` 또는 `data-science`를 통해서만 선택한다. 명시적 결정 없이는 HOME이나 현재
   운영 명령에 절대 추가하지 않는다.
@@ -99,13 +109,20 @@ round-trip한다, MLflow SeaweedFS user가 다른 bucket에서 거부된다, res
 
 ### Limits
 
-다음은 정책이 이름 있는 검사나 보증을 인정하지 않는 부분이다.
+다음 규칙은 정책이 이름 있는 자동 검사를 연결하지 않았다.
 
-- `edge_net`, `ai_net`, `mng_data_net`, `object_net`의 직접 SDK 접근에는 동등한 네이티브 사용자 인증이 없으며 승인될 때까지 받아들이고 기록한 gap이지 보증이 아니다.
-- `--allowed-hosts`나 gateway `/admins` 검사로 직접 peer 경로의 권한 통제가 완료되었다고 주장하지 않는다.
-- run 삭제는 metadata soft-delete이며 bucket 공간 회수를 보장하지 않고 artifact 정리는 별도 승인에 의존한다.
-- credential 전달 방식은 이름 있는 검사 없이 검토에 의존한다.
-- 정적 렌더링과 계약 테스트는 런타임 검증을 대신하지 않으며 런타임 검증의 실행 여부는 정책에 기록되어 있지 않다.
+- 이름 있는 검사 없음(선택): `POL-0088-R1`, `POL-0088-R2`
+- 이름 있는 검사 없음(프로비저닝): `POL-0088-R3`, `POL-0088-R4`, `POL-0088-R5`
+- 이름 있는 검사 없음(DB role): `POL-0088-R6`, `POL-0088-R7`
+- 이름 있는 검사 없음(SeaweedFS): `POL-0088-R9`
+- 이름 있는 검사 없음(credential): `POL-0088-R10`
+- 이름 있는 검사 없음(업그레이드): `POL-0088-R13`
+- 이름 있는 검사 없음(삭제·권한): `POL-0088-R16`, `POL-0088-R17`
+- 수동 검토·승인에 의존(route): `POL-0088-R12`
+- 수동 검토·승인에 의존(삭제·권한): `POL-0088-R15`
+- 정책이 스스로 밝힌 한계: `edge_net`, `ai_net`, `mng_data_net`, `object_net`의 직접 SDK 접근에는 동등한 네이티브 사용자 인증이 선언되지 않았으며 승인될 때까지 받아들이고 기록한 gap이지 보증이 아니다.
+- run 삭제는 metadata soft-delete이며 bucket의 저장 공간 회수를 보장하지 않는다.
+- Mechanisms의 정적 profile 렌더링, provisioning 계약 테스트, 일회성 PostgreSQL 리허설은 어느 규칙에 대응하는지 정책이 연결하지 않았다.
 
 ## Ownership
 

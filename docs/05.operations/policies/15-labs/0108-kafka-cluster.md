@@ -45,14 +45,24 @@ Task를 요구한다.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0108-R1 | 항상 | 필수: 독립 Compose project와 정확한 `lab-kafka` profile로만 선택하고 root include에 넣지 않는다 | `lab.py check kafka-cluster` / RUN-0108 정적 render | 검사/render 결과 |
-| POL-0108-R2 | 항상 | 필수: `LAB_KAFKA_CLUSTER_ID`는 HOME `KAFKA_CLUSTER_ID`와 달라야 하고 HOME cluster의 metadata/offset/broker 디렉터리를 재사용하지 않는다 | `lab.py check kafka-cluster` | 검사 결과(HOME 입력 runtime은 `NOT_RUN`) |
-| POL-0108-R3 | 항상 | 필수: 세 broker data를 `${LAB_DATA_DIR}/kafka/{1,2,3}`에 분리하고 HOME `${DEFAULT_MESSAGE_BROKER_DIR}`를 가리키지 않는다 | `lab.py check kafka-cluster` / RUN-0108 정적 render | 검사/render 결과 |
-| POL-0108-R4 | 항상 | 필수: `lab_kafka_net`은 internal로 유지하고 host port/HOME `kafka_net`/Traefik route를 추가하지 않으며 PLAINTEXT이므로 LAB network 밖으로 열지 않는다 | `lab.py check kafka-cluster` / RUN-0108 정적 render | 검사/render 결과 |
-| POL-0108-R5 | 항상 | 필수: `lab-schema-registry`/`lab-kafka-connect`는 `lab_kafka_net` 안에만 두고 gateway route/host port/Docker secret/connector 정의/원천 DB 자격 증명을 선언하지 않으며 connector 등록과 credential 도입은 별도 승인과 LAB 전용 secret 행이 필요하다 | `lab.py check kafka-cluster` / RUN-0108 정적 render | 검사/render 결과 |
-| POL-0108-R6 | 항상 | 필수: 선언된 limit/healthcheck/replication factor 3/`min.insync.replicas` 2를 유지하고 host 가용성을 주장하지 않는다 | RUN-0108 정적 render | render 결과 |
-| POL-0108-R7 | 기동/정지 시 | 필수: 기동/정지는 `scripts/operations/lab.py`만 쓰고 `down -v`와 volume prune을 쓰지 않는다 | none | none |
-| POL-0108-R8 | 데이터 보존/삭제 시 | 필수: POL-0021과 별도 승인을 따르고 LAB 데이터를 HOME 데이터와 섞지 않는다 | none | none |
+| POL-0108-R1 | 항상 | 필수: 독립 Compose project와 정확한 `lab-kafka` profile로만 선택한다 | none | none |
+| POL-0108-R2 | 항상 | 금지: root include | none | none |
+| POL-0108-R3 | 항상 | 필수: `LAB_KAFKA_CLUSTER_ID`는 HOME `KAFKA_CLUSTER_ID`와 달라야 한다 | none | none |
+| POL-0108-R4 | 항상 | 금지: HOME cluster의 metadata, offset, broker 디렉터리 재사용 | none | none |
+| POL-0108-R5 | 항상 | 필수: 세 broker data는 `${LAB_DATA_DIR}/kafka/{1,2,3}`에 분리해 유지한다 | none | none |
+| POL-0108-R6 | 항상 | 금지: HOME `${DEFAULT_MESSAGE_BROKER_DIR}`를 가리킴 | none | none |
+| POL-0108-R7 | 항상 | 필수: `lab_kafka_net`은 internal로 유지한다 | none | none |
+| POL-0108-R8 | 항상 | 금지: host port, HOME `kafka_net`, Traefik route 추가 | none | none |
+| POL-0108-R9 | 항상 | 금지: PLAINTEXT 상태(인증/TLS 없음)에서 LAB network 밖으로 개방 | none | none |
+| POL-0108-R10 | 항상 | 필수: `lab-schema-registry`와 `lab-kafka-connect`는 같은 `lab_kafka_net` 안에만 둔다 | none | none |
+| POL-0108-R11 | 항상 | 금지: 두 서비스에 gateway route, host port, Docker secret, connector 정의, 원천 DB 자격 증명 선언 | none | none |
+| POL-0108-R12 | connector 등록과 credential 도입 시 | 필수: 별도 승인과 LAB 전용 secret 행을 갖춘다 | 수동 | none |
+| POL-0108-R13 | 항상 | 필수: 선언된 limit, healthcheck, replication factor 3, `min.insync.replicas` 2를 유지한다 | none | none |
+| POL-0108-R14 | 항상 | 금지: host 가용성 주장(세 broker가 한 host에 있음) | none | none |
+| POL-0108-R15 | 기동/정지 시 | 필수: `scripts/operations/lab.py`만 쓴다 | none | none |
+| POL-0108-R16 | 항상 | 금지: `down -v`와 volume prune | none | none |
+| POL-0108-R17 | 데이터 보존/삭제 시 | 필수: `POL-0021`과 별도 승인을 따른다 | 수동 | none |
+| POL-0108-R18 | 항상 | 금지: LAB 데이터를 HOME 데이터와 혼합 | none | none |
 
 - 독립 Compose project와 정확한 `lab-kafka` profile로만 선택한다. root include에는 넣지 않는다.
 - `LAB_KAFKA_CLUSTER_ID`는 HOME `KAFKA_CLUSTER_ID`와 달라야 한다. HOME cluster의 metadata, offset,
@@ -91,12 +101,15 @@ image, profile, network, 데이터 경로, 승격 manifest가 바뀔 때와 승�
 
 ### Limits
 
-RUN-0108의 정적 render와 `lab.py check kafka-cluster`가 이름 붙은 검사이며, 아래 항목은 기계적으로 강제되지 않는다.
+정책은 `RUN-0108`의 정적 render와 `lab.py check kafka-cluster`를 개별 규칙과 연결하지 않으며, 아래 규칙은 승인/검토에 의존하거나 강제 수단이 없다.
 
-- HOME 입력의 render와 runtime은 `NOT_RUN`이다.
-- 2026-11-05 controller 보고에 따르면 `labs/.env`에 `LAB_KAFKA_CLUSTER_ID`가 없으며 agent는 그 파일을 읽지 않았다.
+- 격리: 강제 수단 없음 `POL-0108-R1`~`R2`
+- cluster/data: 강제 수단 없음 `POL-0108-R3`~`R6`
+- network: 강제 수단 없음 `POL-0108-R7`~`R9`
+- schema-registry/connect: 수동 검토 `POL-0108-R12`; 강제 수단 없음 `POL-0108-R10`~`R11`
+- 운영: 수동 검토 `POL-0108-R17`; 강제 수단 없음 `POL-0108-R13`~`R16`, `POL-0108-R18`
+- HOME 입력의 render와 runtime은 `NOT_RUN`이며 `labs/.env`에 `LAB_KAFKA_CLUSTER_ID`가 없다는 controller 보고가 있다.
 - PLAINTEXT(인증/TLS 없음)이며 host 가용성은 주장할 수 없다.
-- connector 등록, credential 도입, 데이터 보존/삭제는 별도 승인과 POL-0021에 의존한다.
 
 ## Ownership
 

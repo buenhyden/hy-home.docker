@@ -42,13 +42,27 @@ journal을 기록하고, load override 모드는 journal을 기록하지 않는�
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0092-R1 | 모드 선택 | 필수: 기능 모드는 `api-mock`만 선택하고 부하 모드는 root Compose와 `wiremock.load.yml` override로 같은 `api-mock`을 선택하며 두 모드를 동시에 선택하거나 HOME·도메인 profile에 추가하지 않는다 | 각 모드 Compose 렌더링 / 운영 catalog 검사 | none |
-| POL-0092-R2 | 노출 경계 | 필수: 기능 모드 host 포트는 `127.0.0.1`에만 게시하고 Traefik route를 추가하지 않으며 부하 모드는 포트 미게시와 `--admin-api-require-https`를 유지한다 | Compose 렌더링 / 격리 실행의 host port 없음 확인 | none |
-| POL-0092-R3 | 네트워크 admin 권한 | 필수: 기능 모드의 기본 네트워크 컨테이너는 admin 권한을 가지며 부하 모드에 named consumer를 추가하면 별도 제한 네트워크와 HTTPS listener 부재를 확인한다 | 수동 | none |
-| POL-0092-R4 | stub 관리 | 필수: 추적되는 mapping만 지속 stub으로 쓰고 stub body는 합성 데이터로 하며 운영 response·credential·토큰·개인 데이터를 쓰지 않는다 | 추적되는 stub 확인 | none |
-| POL-0092-R5 | recording/proxying | 금지: 실제 upstream 대상 recording/proxying(admin API로 막히지는 않음) | read-only mount는 recording 저장만 차단 | none |
-| POL-0092-R6 | request journal | 필수: 기능 모드 journal을 제한된 상태로 유지하고 각 실행 전 reset하며 부하 모드는 `--no-request-journal`을 유지하고 journal을 성능 증거로 쓰지 않는다 | 격리 실행에서 bounded journal/reset / `--no-request-journal` 확인 | none |
-| POL-0092-R7 | 소유권과 자원 | 필수: 기능 모드 journal 개수 한도와 컨테이너 자원 제한을 유지하고 mapping·이미지 변경은 합성 canary와 rollback 원본을 확보한 뒤 적용한다 | Compose 렌더링 / non-root user / read-only root filesystem 확인 | none |
+| POL-0092-R1 | 기능 모드 선택 시 | 필수: `api-mock`만 선택한다 | none | none |
+| POL-0092-R2 | 부하 모드 선택 시 | 필수: root Compose와 `wiremock.load.yml` override를 함께 사용해 같은 `api-mock`을 선택한다 | none | none |
+| POL-0092-R3 | 항상 | 금지: 기능 모드와 부하 모드의 동시 선택 | none | none |
+| POL-0092-R4 | 항상 | 금지: HOME·도메인 profile에 추가 | none | none |
+| POL-0092-R5 | 기능 모드 | 필수: host 포트는 `127.0.0.1`에만 게시한다 | none | none |
+| POL-0092-R6 | 항상 | 금지: Traefik route 추가 | none | none |
+| POL-0092-R7 | 부하 모드 | 필수: host port를 게시하지 않는다 | 격리된 실행에서 host port 없음 확인 | none |
+| POL-0092-R8 | 부하 모드 | 필수: `--admin-api-require-https`로 HTTP admin을 거부한다 | none | none |
+| POL-0092-R9 | HTTPS listener 추가 시 | 필수: 인증·노출을 검토한 별도 변경으로 추가한다 | 수동 | none |
+| POL-0092-R10 | 부하 모드에 named consumer 추가 시 | 필수: 별도 제한 네트워크와 HTTPS listener 부재를 확인한다 | 수동 | none |
+| POL-0092-R11 | 항상 | 필수: 추적되는 mapping만 지속적인 stub으로 쓴다 | none | none |
+| POL-0092-R12 | 항상 | 필수: stub body는 합성 데이터로 한다 | none | none |
+| POL-0092-R13 | 항상 | 금지: 캡처된 운영 response·credential·토큰·개인 데이터 사용 | none | none |
+| POL-0092-R14 | 항상 | 금지: 실제 upstream 대상 recording이나 proxying | read-only mount(recording 저장만 차단, admin API의 recording 시작/`proxyBaseUrl` stub 생성은 차단하지 않음) | none |
+| POL-0092-R15 | 기능 모드 | 필수: request journal을 제한된 상태로 유지한다 | 격리된 실행에서 bounded journal/reset 확인 | none |
+| POL-0092-R16 | 기능 모드 | 필수: 각 승인된 실행 전에 journal을 reset한다 | 격리된 실행에서 bounded journal/reset 확인 | none |
+| POL-0092-R17 | 부하 모드 | 필수: `--no-request-journal`을 유지한다 | 격리된 실행에서 `--no-request-journal` 확인 | none |
+| POL-0092-R18 | 항상 | 금지: journal reset이나 조회를 성능 증거로 사용 | none | none |
+| POL-0092-R19 | 기능 모드 | 필수: journal 개수 한도와 컨테이너 자원 제한을 유지한다 | none | none |
+| POL-0092-R20 | 항상 | 금지: 민감한 요청을 보존 근거로 복제 | none | none |
+| POL-0092-R21 | mapping·이미지 변경 시 | 필수: 합성 canary와 검토된 rollback 원본을 확보하고 적용한다 | 수동 | none |
 
 - 기능 모드는 `api-mock`만 선택한다. 부하 모드는 root Compose와
   `wiremock.load.yml` override를 함께 사용해 같은 `api-mock`을 선택한다.
@@ -99,12 +113,19 @@ host port 없음과 `--no-request-journal`을 격리된 실행에서 별도로 �
 
 ### Limits
 
-다음은 정책이 이름 있는 검사의 한계를 밝히는 부분이다.
+다음 규칙은 정책이 이름 있는 자동 검사를 연결하지 않았다.
 
-- 실제 upstream recording/proxying 금지는 정책일 뿐이며 admin API로 recording을 시작하거나 `proxyBaseUrl` stub을 만드는 것은 기술적으로 막혀 있지 않다.
+- 이름 있는 검사 없음(모드 선택): `POL-0092-R1`, `POL-0092-R2`, `POL-0092-R3`, `POL-0092-R4`
+- 이름 있는 검사 없음(노출): `POL-0092-R5`, `POL-0092-R6`, `POL-0092-R8`
+- 이름 있는 검사 없음(stub): `POL-0092-R11`, `POL-0092-R12`, `POL-0092-R13`
+- 이름 있는 검사 없음(journal): `POL-0092-R18`
+- 이름 있는 검사 없음(자원): `POL-0092-R19`, `POL-0092-R20`
+- 수동 검토·승인에 의존(노출): `POL-0092-R9`
+- 수동 검토·승인에 의존(네트워크): `POL-0092-R10`
+- 수동 검토·승인에 의존(자원): `POL-0092-R21`
+- 정책이 스스로 밝힌 한계: 실제 upstream recording/proxying 금지는 정책이며 admin API로 recording을 시작하거나 `proxyBaseUrl` stub을 만드는 일은 기술적으로 막혀 있지 않다.
 - 기능 모드에서는 프로젝트 기본 네트워크의 컨테이너가 admin 권한을 가지며 stub에 보낸 요청의 테스트 credential은 실행 중 admin API로 읽을 수 있다.
-- 새 consumer와 HTTPS listener 추가는 검토된 변경에 의존하고 메모리 자료는 복구 약속 대상이 아니다.
-- mapping·이미지 변경의 canary와 rollback 확보는 이름 있는 검사 없이 검토에 의존한다.
+- 삭제·재시작으로 사라지는 메모리 자료는 복구 약속 대상이 아니다.
 
 ## Ownership
 

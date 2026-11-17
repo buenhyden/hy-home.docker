@@ -44,14 +44,31 @@ lock, plan, provider 작업, 업그레이드, 서비스 폐기.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0082-R1 | 활성화 시 | 필수: `iac` 아래에서 명명된 `opentofu` job을 호출하고 HOME이나 일반 tooling 시작에는 포함하지 않는다 | none | none |
-| POL-0082-R2 | 항상 | 필수: 계정/workspace/백엔드/예상 리소스/허용 명령 클래스를 식별하며 plan 권한이 apply/destroy/import/상태 변경/force-unlock 승인을 뜻하지 않는다 | 수동 | 승인 기록 |
-| POL-0082-R3 | 항상 | 필수: 마운트된 AWS/Azure 디렉터리를 민감 권한으로 보고 workspace에 자격 증명을 추가하거나 값을 캡처하지 않는다 | 수동 | none |
-| POL-0082-R4 | 항상 | 필수: 상태와 저장된 plan을 Git/stdout 증거/공유 로그에서 제외하고 백업은 모드 `0600`과 별도 보존 소유자로 보호한다 | 수동 | none |
-| POL-0082-R5 | 항상 | 필수: 백엔드 잠금을 보존하고 force-unlock은 lock 미소유 증명과 기록된 lock ID에 한정한다 | 수동 | 기록된 lock ID |
-| POL-0082-R6 | 상태 변경/업그레이드 전 | 필수: 로컬/원격 상태를 식별하고 보호된 스냅샷을 만들며 격리 상태에서 복구를 리허설한다 | 수동 | none |
-| POL-0082-R7 | 업그레이드 시 | 필수: 중간 노트를 검토하고 provider/백엔드 호환성을 검증하며 런타임 소스 변경 전 적용되지 않은 plan을 비교한다 | 수동 / 비적용 plan 비교 | none |
-| POL-0082-R8 | 제거 시 | 필수: 후속 시스템이 생길 때까지 workspace/백엔드 상태/자격 증명/소유권 기록을 보존한다 | 수동 | none |
+| POL-0082-R1 | 활성화 시 | 필수: `iac` 아래에서 루트 프로젝트의 명명된 `opentofu` job을 호출한다 | 수동 | none |
+| POL-0082-R2 | 항상 | 금지: HOME이나 일반 tooling 시작에 `opentofu` 포함 | 수동 | none |
+| POL-0082-R3 | 항상 | 필수: 계정, workspace, 백엔드, 예상 리소스, 허용된 명령 클래스를 식별한다 | 수동 | none |
+| POL-0082-R4 | 항상 | 금지: plan 권한을 apply, destroy, import, 상태 변경, force-unlock 승인으로 취급 | 수동 | none |
+| POL-0082-R5 | 항상 | 필수: 마운트된 AWS/Azure 디렉터리를 읽기 전용이어도 민감한 권한으로 취급한다 | 수동 | none |
+| POL-0082-R6 | 항상 | 금지: workspace에 자격 증명 추가 또는 값 캡처 | 수동 | none |
+| POL-0082-R7 | 항상 | 필수: 상태와 저장된 plan을 Git, stdout 증거, 공유 로그에서 제외한다 | 수동 | none |
+| POL-0082-R8 | 항상 | 필수: 백업은 모드 `0600`과 별도의 보존 소유자로 보호한다 | 수동 | none |
+| POL-0082-R9 | 항상 | 필수: 백엔드 잠금을 보존한다 | 수동 | none |
+| POL-0082-R10 | force-unlock 시 | 필수: 어떤 운영자나 자동화도 해당 lock을 소유하지 않는다는 증명을 갖추고 기록된 lock ID만 대상으로 한다 | 수동 | none |
+| POL-0082-R11 | 상태 변경/업그레이드 전 | 필수: 로컬 상태와 원격 상태를 식별하고 보호된 스냅샷을 만든다 | 수동 | none |
+| POL-0082-R12 | 상태 변경/업그레이드 전 | 필수: 격리된 상태에서 복구를 리허설한다 | 수동 | none |
+| POL-0082-R13 | 업그레이드 시 | 필수: 중간 노트를 검토하고 provider/백엔드 호환성을 검증한다 | 수동 | none |
+| POL-0082-R14 | 런타임 소스 변경 전 | 필수: 적용되지 않은 plan을 비교한다 | 수동 | none |
+| POL-0082-R15 | 제거 시 | 필수: 관리되는 모든 리소스에 후속 시스템이 생길 때까지 workspace, 백엔드 상태, 자격 증명, 소유권 기록을 보존한다 | 수동 | none |
+| POL-0082-R16 | 항상 | 금지: 컨테이너 제거로 인프라를 파괴 | 수동 | none |
+| POL-0082-R17 | 버전 조회·format/validate 시 | 필수: 선언된 마운트와 실행 영향을 확인한다 | 수동 | none |
+| POL-0082-R18 | 복구 시 | 필수: 사용한 이미지·provider lock 식별자를 보존한다 | 수동 | none |
+| POL-0082-R19 | Terraform workspace 이관 시 | 필수: 기존 state와 lock 정보를 보존하고 암호화된 복구본을 먼저 준비한다 | 수동 | none |
+| POL-0082-R20 | Terraform workspace 이관 시 | 필수: 복제 workspace에서 provider 및 backend 호환성을 검증하고 이관 대상별 Terrakube 실제 엔진을 확인한다 | 수동 | none |
+| POL-0082-R21 | Terraform workspace 이관 시 | 필수: CLI 교체와 실제 remote resource 변경을 별도 검토한다 | 수동 | none |
+| POL-0082-R22 | `apply`, `destroy`, state rewrite, force-unlock 시 | 필수: 정확한 대상 승인을 받는다 | 수동 | none |
+| POL-0082-R23 | 항상 | 금지: 새로운 Terraform 서비스나 병렬 updater 생성 | 수동 | none |
+| POL-0082-R24 | 호환성 때문에 기존 CLI가 필요할 때 | 필수: 담당자, 대상 workspace, 지원 종료 조건과 검증 계획을 기록한다 | 수동 | none |
+| POL-0082-R25 | 항상 | 금지: private state 공개 | 수동 | none |
 
 - **Activation:** `iac` 아래에서 루트 프로젝트의 명명된 `opentofu` job을
   호출한다. HOME이나 일반 tooling 시작에는 절대 포함하지 않는다.
@@ -109,13 +126,21 @@ plan, apply, apply 이후 결과를 구분한다. 실행되지 않은 상태 복
 
 ### Limits
 
-정책은 정적 Compose 점검이 선택만 증명한다고 밝히며 아래 항목은 기계적으로 강제되지 않는다.
+정책은 정적 Compose 점검이 선택만 증명한다고 밝히며 모든 규칙은 전용 검사 없이 수동 검토와 승인에 의존한다.
 
-- 전용 검사 이름이 지정되어 있지 않아 모든 규칙은 수동 검토와 승인에 의존한다.
+- 활성화: 수동 검토/승인에 의존: `POL-0082-R1`, `POL-0082-R2`
+- 권한: 수동 검토/승인에 의존: `POL-0082-R3`, `POL-0082-R4`
+- 자격 증명: 수동 검토/승인에 의존: `POL-0082-R5`, `POL-0082-R6`
+- 상태·plan: 수동 검토/승인에 의존: `POL-0082-R7`, `POL-0082-R8`
+- 잠금: 수동 검토/승인에 의존: `POL-0082-R9`, `POL-0082-R10`
+- 백업·복구: 수동 검토/승인에 의존: `POL-0082-R11`, `POL-0082-R12`
+- 업그레이드: 수동 검토/승인에 의존: `POL-0082-R13`, `POL-0082-R14`
+- 제거: 수동 검토/승인에 의존: `POL-0082-R15`, `POL-0082-R16`
+- 도구 범위: 수동 검토/승인에 의존: `POL-0082-R17`, `POL-0082-R18`
+- Terraform 이관: 수동 검토/승인에 의존: `POL-0082-R19`, `POL-0082-R20`, `POL-0082-R21`, `POL-0082-R22`, `POL-0082-R23`, `POL-0082-R24`, `POL-0082-R25`
 - 실행되지 않은 상태 복구와 업그레이드 리허설은 공백(`NOT_RUN`)으로 남는다.
 - 런타임 증거는 버전, init/validate, plan, apply, apply 이후 결과를 구분해야 한다.
 - 정확한 바이너리 태그 외의 distro 패키지와 provider 선택은 완전히 고정된 빌드가 아니다.
-- Terraform 이관의 호환성 검증과 정확한 대상 승인은 수동에 의존한다.
 
 ## Ownership
 

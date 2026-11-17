@@ -46,17 +46,42 @@ next_review_at: "2027-05-13"
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0019-R1 | 정상/LAB 활성화 | 필수: 정상은 `docker compose --profile opensearch config --quiet`, LAB는 `--env-file labs/.env.example -f labs/opensearch-cluster/docker-compose.yml --profile opensearch-cluster config --quiet`로 각각 정적 검증하고 LAB에 `LAB_SECRET_DIR`/`LAB_OPENSEARCH_CERT_DIR`를 준비하며 두 project의 선택과 실행 승인을 따로 기록한다 | `docker compose --profile opensearch config --quiet` / `docker compose --env-file labs/.env.example -f labs/opensearch-cluster/docker-compose.yml --profile opensearch-cluster config --quiet` | 현재 Task 기록 |
-| POL-0019-R2 | 보안 구성 | 필수: 정상 TLS/인증서/security plugin/secret-backed user/gateway middleware를 보존하고 LAB는 별도 CA/node 인증서/secret/내부 네트워크/기본 내부 인증만 쓰며 `.opendistro_security`를 유일한 security backup으로 snapshot하지 않고 검토된 security configuration을 별도 보존한다 | none | none |
-| POL-0019-R3 | 보존/백업 | 필수: ingest 전에 index/ISM retention을 정의하고 live data volume 밖에 repository를 등록하며 완료된 snapshot state를 요구하고 repository를 암호화/제한하고 격리된 restore를 rehearse한다 | none | none |
-| POL-0019-R4 | LAB 자원 | 필수: LAB 노드당 2 CPU/2 GiB, Dashboard, disk, JVM overhead를 재측정하지 않고 시작하지 않으며 Promotion에는 측정된 shard와 restore capacity가 필요하다 | 수동 | none |
-| POL-0019-R5 | source pin 변경 전 | 필수: 지원되는 version path, plugin/build 호환성, Dashboards 호환성, 인증서, snapshot restore를 검증하고 호환되지 않는 더 새로운 version이 기록한 index를 downgrade하지 않는다 | none | none |
-| POL-0019-R6 | 제거 시 | 필수: consumer와 index retention을 확인하고 검증된 snapshot과 security configuration을 보존한 뒤 primary/cluster data volume 삭제 전에 승인을 받는다 | 수동 | none |
-| POL-0019-R7 | OpenSearch API check | 필수: HTTPS와 secret-backed admin authentication을 사용한다 | none | none |
-| POL-0019-R8 | 작업 대상 지정 | 필수: 정상 작업은 root의 `opensearch`를, LAB 작업은 별도 project의 `opensearch-node1..3`과 `lab-opensearch-dashboards`를 명시적으로 대상으로 한다 | none | none |
-| POL-0019-R9 | 항상 | 필수: secret 값과 생성된 internal user material을 문서나 command history에 복사하지 않는다 | none | none |
-| POL-0019-R10 | LAB 정적 render | 허용: `-f labs/opensearch-cluster/docker-compose.yml --profile opensearch-cluster`를 명시한 정적 render이며 기동 허가가 아니다 | `docker compose --env-file labs/.env.example -f labs/opensearch-cluster/docker-compose.yml --profile opensearch-cluster config --quiet` | none |
-| POL-0019-R11 | 항상 | 금지: unauthenticated bulk load, HTTP-only health check, index/ISM evidence 없이 replica policy가 존재한다는 주장 | none | none |
+| POL-0019-R1 | 정상/LAB 활성화 | 필수: 정상은 `docker compose --profile opensearch config --quiet`, LAB는 `docker compose --env-file labs/.env.example -f labs/opensearch-cluster/docker-compose.yml --profile opensearch-cluster config --quiet`로 각각 정적 검증한다 | `docker compose --profile opensearch config --quiet` / `docker compose --env-file labs/.env.example -f labs/opensearch-cluster/docker-compose.yml --profile opensearch-cluster config --quiet` | none |
+| POL-0019-R2 | LAB 활성화 | 필수: 별도 `LAB_SECRET_DIR`와 `LAB_OPENSEARCH_CERT_DIR`를 준비한다 | none | none |
+| POL-0019-R3 | 정상/LAB 활성화 | 필수: 두 project의 선택과 실행 승인을 따로 기록한다 | none | none |
+| POL-0019-R4 | 정상 구성 | 필수: TLS/인증서/security plugin/secret-backed user/gateway middleware를 보존한다 | none | none |
+| POL-0019-R5 | LAB 구성 | 필수: 별도 CA/node 인증서와 secret/내부 네트워크/기본 내부 인증만 사용한다 | none | none |
+| POL-0019-R6 | LAB 구성 | 금지: LAB를 정상 gateway/OIDC 및 데이터에 연결 | none | none |
+| POL-0019-R7 | security backup | 금지: `.opendistro_security`를 유일한 security backup으로 snapshot | none | none |
+| POL-0019-R8 | security configuration | 필수: 검토된 security configuration을 별도로 보존하고 그 credential을 제한한다 | none | none |
+| POL-0019-R9 | ingest 전 | 필수: index/ISM retention을 정의한다 | none | none |
+| POL-0019-R10 | snapshot repository | 필수: live data volume 밖에 repository를 등록한다 | none | none |
+| POL-0019-R11 | snapshot | 필수: 완료된 snapshot state를 요구한다 | none | none |
+| POL-0019-R12 | snapshot repository | 필수: storage class에 맞게 repository를 암호화/제한한다 | none | none |
+| POL-0019-R13 | restore | 필수: 격리된 restore를 rehearse한다 | none | none |
+| POL-0019-R14 | LAB 시작 전 | 필수: LAB 노드당 2 CPU/2 GiB, Dashboard, disk, JVM overhead를 재측정한다 | none | none |
+| POL-0019-R15 | Promotion | 필수: 측정된 shard와 restore capacity를 갖춘다 | none | none |
+| POL-0019-R16 | source pin 변경 전 | 필수: 지원되는 version path/plugin·build 호환성/Dashboards 호환성/인증서/snapshot restore를 검증한다 | none | none |
+| POL-0019-R17 | 항상 | 금지: 더 새롭고 호환되지 않는 version이 기록한 index의 downgrade | none | none |
+| POL-0019-R18 | 제거 시 | 필수: consumer와 index retention을 확인한다 | none | none |
+| POL-0019-R19 | 제거 시 | 필수: 검증된 snapshot과 security configuration을 보존한다 | none | none |
+| POL-0019-R20 | primary/cluster data volume 삭제 전 | 필수: 승인을 받는다 | 수동 | none |
+| POL-0019-R21 | OpenSearch API check | 필수: HTTPS와 secret-backed admin authentication을 사용한다 | none | none |
+| POL-0019-R22 | 작업 대상 지정 | 필수: 정상 작업은 root의 `opensearch`를, LAB 작업은 별도 project의 `opensearch-node1..3`과 `lab-opensearch-dashboards`를 명시적으로 대상으로 한다 | none | none |
+| POL-0019-R23 | 항상 | 금지: secret 값과 생성된 internal user material을 문서나 command history에 복사 | none | none |
+| POL-0019-R24 | LAB 정적 render | 허용: `-f labs/opensearch-cluster/docker-compose.yml --profile opensearch-cluster`를 명시한 LAB 정적 render(기동 허가가 아니다) | none | none |
+| POL-0019-R25 | 항상 | 금지: unauthenticated bulk load | none | none |
+| POL-0019-R26 | 항상 | 금지: HTTP-only health check | none | none |
+| POL-0019-R27 | 항상 | 금지: index/ISM evidence 없이 replica policy가 존재한다고 주장 | none | none |
+| POL-0019-R28 | 적용 identity 변경/운영 | 필수: 문서의 정적 검증과 runtime 운영 승인을 분리한다 | none | none |
+| POL-0019-R29 | service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 | 필수: 이 Policy와 linked Guide/Runbook을 함께 검토한다 | 수동 | none |
+| POL-0019-R30 | engine secret/certificate | 필수: 이 subject의 credential 계약을 따른다 | none | none |
+| POL-0019-R31 | 앱 인증 연동 | 필수: 적용되는 `POL-0079`의 통제를 따른다 | none | none |
+| POL-0019-R32 | source 반영/재기동 | 필수: `POL-0006`의 적용 통제를 따른다 | none | none |
+| POL-0019-R33 | 보존/삭제 | 필수: `POL-0021`의 적용 통제를 따른다 | none | none |
+| POL-0019-R34 | exporter/stateless job | 필수: 설정·credential과 그 작업이 변경하는 upstream state를 통제 대상에서 제외하지 않고 포함한다 | none | none |
+| POL-0019-R35 | 소유 artifact·복구 지점·expiry가 불명확할 때 | 필수: 삭제/재생성을 중단한다 | none | none |
+| POL-0019-R36 | 항상 | 금지: 기존 Exceptions 외의 새 예외를 승인된 것으로 간주 | none | none |
 
 - **Activation**: 정상은 `docker compose --profile opensearch config --quiet`, LAB는 `docker compose --env-file labs/.env.example -f labs/opensearch-cluster/docker-compose.yml --profile opensearch-cluster config --quiet`로 각각 정적 검증합니다. LAB에는 별도 `LAB_SECRET_DIR` 및 `LAB_OPENSEARCH_CERT_DIR`가 필요합니다. 두 project의 선택과 실행 승인을 따로 기록합니다.
 - **Security**: 정상 TLS, 인증서, security plugin, secret-backed user, gateway middleware를 보존합니다. LAB는 별도 CA/node 인증서와 secret, 내부 네트워크, 기본 내부 인증만 사용하며 정상 gateway/OIDC 및 데이터를 연결하지 않습니다. `.opendistro_security`를 유일한 security backup으로 snapshot하지 않는다; 검토된 security configuration을 별도로 보존하고 그 credential을 제한한다.
@@ -99,13 +124,18 @@ custom Dockerfile의 OpenSearch 기본 이미지와 exporter plugin 선언 버�
 
 ### Limits
 
-정책이 명명한 검사는 파일 존재 확인, 두 project의 `config --quiet` 정적 검증, 원격 PR `changed` 검사이며 다음은 기계적으로 강제되지 않는다.
+이 정책은 아래 규칙에 명명된 자동 검사를 연결하지 않으며, 해당 규칙은 사전 검증·검토·승인 절차에 의존합니다.
 
-- custom Dockerfile의 OpenSearch 기본 이미지와 exporter plugin 선언 버전의 실제 빌드 호환성 및 LAB 인증서 검증은 아직 확인되지 않았고(미검증) runtime admission blocker로 남는다.
-- 소스나 문서의 변경과 정적 검증은 기동/중단/복구 승인을 부여하지 않으며 runtime 운영은 owner의 별도 실행 승인과 before/after health evidence가 필요하다.
-- Security/Retention and backup/Resources/Upgrade/Removal 요구는 사전 검증과 승인 절차에 의존하며 명명된 자동 검사가 없다.
-- index/ISM retention, snapshot repository 암호화와 격리 restore rehearsal의 실행 evidence는 정책에 명시되어 있지 않다.
-- 분기별 recovery evidence 검토와 변경 시 검토는 수동이다.
+- 활성화: 자동 검사 없음(none) `POL-0019-R2`, `POL-0019-R3`
+- 보안: 자동 검사 없음(none) `POL-0019-R4`, `POL-0019-R5`, `POL-0019-R6`, `POL-0019-R7`, `POL-0019-R8`
+- 보존/백업: 자동 검사 없음(none) `POL-0019-R9`, `POL-0019-R10`, `POL-0019-R11`, `POL-0019-R12`, `POL-0019-R13`
+- 자원: 자동 검사 없음(none) `POL-0019-R14`, `POL-0019-R15`
+- 업그레이드: 자동 검사 없음(none) `POL-0019-R16`, `POL-0019-R17`
+- 제거: 자동 검사 없음(none) `POL-0019-R18`, `POL-0019-R19`; 수동 검토/승인 `POL-0019-R20`
+- API/대상/secret: 자동 검사 없음(none) `POL-0019-R21`, `POL-0019-R22`, `POL-0019-R23`, `POL-0019-R24`
+- 금지 행위: 자동 검사 없음(none) `POL-0019-R25`, `POL-0019-R26`, `POL-0019-R27`
+- lifecycle: 자동 검사 없음(none) `POL-0019-R28`, `POL-0019-R30`, `POL-0019-R31`, `POL-0019-R32`, `POL-0019-R33`, `POL-0019-R34`, `POL-0019-R35`, `POL-0019-R36`; 수동 검토/승인 `POL-0019-R29`
+- 정책이 밝힌 공백: custom Dockerfile의 OpenSearch 기본 이미지와 exporter plugin 선언 버전의 실제 빌드 호환성 및 LAB 인증서 검증은 미검증이며 runtime admission blocker로 남는다.
 
 ## Ownership
 

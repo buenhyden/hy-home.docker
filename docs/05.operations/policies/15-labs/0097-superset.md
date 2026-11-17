@@ -43,12 +43,32 @@ Superset는 자체 로그인, 메타데이터 데이터베이스, lakehouse 데�
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0097-R1 | LAB 선택 시 | 필수: 독립 LAB `labs/superset/docker-compose.yml`의 `lab-superset` profile로만 선택하고 root include/HOME network 합류/HOME 이름 선택 추가를 금지한다 | LAB Compose 렌더링 / `tests.validation.test_lab_isolation` | 렌더/테스트 결과 |
-| POL-0097-R2 | 항상 | 필수: 로그인은 PKCE native Keycloak OIDC이며 OAuth2 Proxy ForwardAuth와 form 로그인은 없고 redirect URI는 owner 승인 Keycloak client 변경으로만 등록한다(미결정) | 예행연습(Keycloak 로그인 옵션, 익명 API `401`) | 예행연습 결과 |
-| POL-0097-R3 | self-registration/role 부여 시 | 필수: self-registration은 `Gamma`만 부여하고 Admin/데이터 role은 Admin이 명시된 Keycloak 사용자에게만 부여하며 누가 왜 부여했는지를 Task에 기록한다 | 수동 | Task 기록 |
-| POL-0097-R4 | 항상 | 필수: signing key/DB 비밀번호/client secret은 Docker secret 파일에서 가져오고 환경 변수/명령줄 인자/설정 평문 URI로 두지 않는다 | hardening 고정값 / 예행연습(컨테이너 환경 변수에 자격 증명 없음) | 예행연습 결과 |
-| POL-0097-R5 | 항상 | 필수: 메타데이터 DB는 `LAB_SUPERSET_DB_HOST`/`LAB_SUPERSET_DB_PORT` 입력으로만 연결하고 승인 전까지 mng-pg를 LAB network에 게시하지 않으며 app host port는 `LAB_HOST_BIND_IP`의 `LAB_SUPERSET_HOST_PORT`에만 허용한다 | LAB Compose 렌더링 / `tests.validation.test_lab_isolation` | 렌더/테스트 결과 |
-| POL-0097-R6 | 데이터 연결 추가 시 | 필수: UI에서 추가한 데이터 연결은 범위가 한정된 identity를 쓰고 관리자 로그인을 쓰지 않는다 | 예행연습(등록된 `lakehouse` 데이터베이스) | 예행연습 결과 |
+| POL-0097-R1 | 항상 | 필수: 독립 LAB `labs/superset/docker-compose.yml`의 `lab-superset` profile로만 선택한다 | none | none |
+| POL-0097-R2 | 항상 | 금지: root include, HOME network 합류, HOME 이름 선택 추가 | none | none |
+| POL-0097-R3 | 로그인 시 | 필수: PKCE를 사용하는 native Keycloak OIDC로 로그인한다 | none | none |
+| POL-0097-R4 | 항상 | 금지: form 로그인 제공 | none | none |
+| POL-0097-R5 | LAB loopback origin용 redirect URI 등록 시 | 필수: 소유자가 승인한 Keycloak client 변경으로만 등록한다 | 수동 | none |
+| POL-0097-R6 | self-registration 시 | 필수: `Gamma`만 부여한다 | none | none |
+| POL-0097-R7 | Admin/데이터 role 부여 시 | 필수: Admin이 이름이 명시된 Keycloak 사용자에게 부여한다 | 수동 | none |
+| POL-0097-R8 | Admin/데이터 role 부여 시 | 필수: 누가 왜 부여했는지를 Task에 기록한다 | 수동 | Task 기록 |
+| POL-0097-R9 | 항상 | 필수: signing key, 데이터베이스 비밀번호, client secret은 Docker secret 파일에서 가져온다 | none | none |
+| POL-0097-R10 | 항상 | 금지: signing key/데이터베이스 비밀번호/client secret을 환경 변수, 명령줄 인자, 설정 안의 평문 URI로 둠 | 예행연습(컨테이너 환경 변수에 자격 증명이 없음 확인) | none |
+| POL-0097-R11 | 항상 | 필수: 메타데이터 데이터베이스는 HOME `mng-pg`에서 feature-owned로 두고 LAB은 `LAB_SUPERSET_DB_HOST`/`LAB_SUPERSET_DB_PORT` 입력으로만 연결한다 | none | none |
+| POL-0097-R12 | 소유자가 LAB에서 도달 가능한 endpoint를 승인하기 전 | 금지: `mng-pg`를 LAB network에 임의로 게시 | 수동 | none |
+| POL-0097-R13 | 항상 | 필수: Superset app의 host port는 `LAB_HOST_BIND_IP`(기본 `127.0.0.1`)의 `LAB_SUPERSET_HOST_PORT`에만 허용한다 | none | none |
+| POL-0097-R14 | loopback 밖 bind 시 | 필수: 별도 보안 검토를 거친다 | 수동 | none |
+| POL-0097-R15 | UI에서 데이터 연결 추가 시 | 필수: 범위가 한정된 identity를 사용한다 | none | none |
+| POL-0097-R16 | UI에서 추가한 데이터 연결 시 | 금지: 관리자 로그인 사용 | none | none |
+| POL-0097-R17 | 항상 | 필수: 문서의 정적 검증과 runtime 운영 승인을 분리한다 | none | none |
+| POL-0097-R18 | 항상 | 필수: `@buenhyden`이 named consumer/target/중단 영향/보존 기간/예외를 소유한다 | none | none |
+| POL-0097-R19 | service image/profile/port/secret/mount, DDL/init, capacity 또는 backup 범위 변경 시 | 필수: 이 Policy와 linked Guide/Runbook을 함께 검토한다 | 수동 | none |
+| POL-0097-R20 | engine secret/certificate 적용 시 | 필수: 이 subject의 credential 계약을 따른다 | none | none |
+| POL-0097-R21 | 앱 인증 연동 시 | 필수: 적용되는 `POL-0079` 통제를 따른다 | none | none |
+| POL-0097-R22 | source 반영/재기동 시 | 필수: `POL-0006`의 적용 통제를 따른다 | none | none |
+| POL-0097-R23 | 보존/삭제 시 | 필수: `POL-0021`의 적용 통제를 따른다 | none | none |
+| POL-0097-R24 | exporter/stateless job 적용 시 | 필수: database restore가 없더라도 설정/credential과 그 작업이 변경하는 upstream state를 통제 범위에 포함한다 | none | none |
+| POL-0097-R25 | 소유 artifact/복구 지점/expiry가 불명확할 때 | 금지: 삭제/재생성 | none | none |
+| POL-0097-R26 | 항상 | 금지: 기존 Exceptions 외의 새 예외를 승인된 것으로 간주 | none | none |
 
 - 독립 LAB `labs/superset/docker-compose.yml`의 `lab-superset` profile로만 선택한다. root include, HOME network
   합류, HOME 이름 선택 추가를 금지한다.
@@ -97,12 +117,18 @@ Keycloak 로그인 옵션, 컨테이너 환경 변수에 자격 증명이 없음
 
 ### Limits
 
-LAB Compose 렌더링, `tests.validation.test_lab_isolation`, hardening 고정값, 예행연습이 Mechanisms이며, 아래 항목은 기계적으로 강제되지 않는다.
+정책은 LAB Compose 렌더링, `tests.validation.test_lab_isolation`, hardening 고정값, 예행연습 중 환경 변수 자격 증명 점검만 규칙(`POL-0097-R10`)과 연결하며, 아래 규칙은 승인/검토에 의존하거나 강제 수단이 없다.
 
+- 격리: 강제 수단 없음 `POL-0097-R1`~`R2`
+- 인증/role: 수동 검토 `POL-0097-R5`, `POL-0097-R7`~`R8`; 강제 수단 없음 `POL-0097-R3`~`R4`, `POL-0097-R6`
+- secret: 강제 수단 없음 `POL-0097-R9`
+- DB/노출: 수동 검토 `POL-0097-R12`, `POL-0097-R14`; 강제 수단 없음 `POL-0097-R11`, `POL-0097-R13`
+- 데이터 연결: 강제 수단 없음 `POL-0097-R15`~`R16`
+- 책임/수명주기 경계: 수동 검토 `POL-0097-R19`; 강제 수단 없음 `POL-0097-R17`~`R18`, `POL-0097-R20`~`R26`
 - Keycloak client redirect URI 등록과 `mng-pg` endpoint 승인은 미결정이다.
 - Admin/데이터 role 부여 기록은 Task에 의존하는 수동 항목이다.
-- 어떤 realm 사용자든 `Gamma`로 로그인할 수 있는 것은 owner가 유지하기로 한 예외다.
 - UI에서 추가한 데이터 연결의 범위 한정 identity 사용은 이름 붙은 검사가 없다.
+- 어떤 realm 사용자든 `Gamma`로 로그인할 수 있는 것은 owner가 유지하기로 한 예외다.
 
 ## Ownership
 

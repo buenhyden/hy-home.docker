@@ -48,27 +48,42 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0047-R1 | 항상 | 필수: `template-infra-med`, 고정 image, read-only config mount, persistent `pyroscope-data` volume을 유지한다 | Compose `rg` 점검 (`infra/06-observability/docker-compose.yml`) | `rg` 출력 |
-| POL-0047-R2 | 항상 | 필수: v2 metastore/raft state를 named volume `pyroscope-metastore`(`/data`)에 보관한다 | 수동 | none |
-| POL-0047-R3 | 항상 | 필수: runtime command `-config.file`과 `-config.expand-env=true`를 유지한다 | 수동 | none |
-| POL-0047-R4 | 항상 | 필수: HTTP/query/health는 `${PYROSCOPE_PORT:-4040}`와 `profilecli ready` healthcheck 기준이며 host port는 `127.0.0.1`에만 게시한다 | Compose `rg` 점검 (`infra/06-observability/docker-compose.yml`) | `rg` 출력 |
-| POL-0047-R5 | 항상 | 필수: local filesystem backend `storage.filesystem.dir: /var/lib/pyroscope`를 사용한다 | Pyroscope config `rg` 점검 (`pyroscope.yaml`) | `rg` 출력 |
-| POL-0047-R6 | 항상 | 필수: Compactor data directory `/var/lib/pyroscope/compactor`를 유지한다 | Pyroscope config `rg` 점검 (`pyroscope.yaml`) | `rg` 출력 |
-| POL-0047-R7 | 항상 | 필수: `reporting_enabled: false`를 유지한다 | Pyroscope config `rg` 점검 (`pyroscope.yaml`) | `rg` 출력 |
-| POL-0047-R8 | 항상 | 필수: `self_profiling.disable_push: true`와 `multitenancy_enabled: false`를 유지한다 | Pyroscope config `rg` 점검 (`pyroscope.yaml`) | `rg` 출력 |
-| POL-0047-R9 | 항상 | 필수: `ingestion_rate_mb: 16`, `ingestion_burst_size_mb: 32`, `max_label_name_length: 1024`, `max_label_value_length: 2048`, `max_label_names_per_series: 30`을 유지한다 | Pyroscope config `rg` 점검 (`pyroscope.yaml`) (일부 key만 점검) | `rg` 출력 |
-| POL-0047-R10 | 항상 | 필수: profile label에 높은 cardinality 값이나 secret을 쓰지 않는다 | 수동 | none |
-| POL-0047-R11 | 항상 | 필수: route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`을 유지한다 | Compose `rg` 점검 (`infra/06-observability/docker-compose.yml`) (`pyroscope.middlewares`) | `rg` 출력 |
-| POL-0047-R12 | 항상 | 필수: `limits.retention_period: 168h`를 유지하고 변경은 config/capacity 검증과 retention policy 갱신을 함께 한다 | 수동 (POL-0048) | config/capacity 검증 |
-| POL-0047-R13 | Alloy `pyroscope.scrape` | 필수: `scrape_interval = "60s"`와 block/mutex profile off를 유지하고 변경은 용량 근거를 둔다 | 수동 | 용량 근거 |
-| POL-0047-R14 | Development/debug | 허용: 임시 고빈도 profiling, CPU/storage 영향과 rollback note를 남긴다 | 수동 | rollback note |
-| POL-0047-R15 | profile source/Alloy forwarding 변경 | 허용: Pyroscope/Grafana datasource 확인과 함께 검증한다 | 수동 | datasource 확인 |
-| POL-0047-R16 | 항상 | 금지: PII, password, token, credential 값을 profile label/payload에 기록한다 | 수동 | none |
-| POL-0047-R17 | 항상 | 금지: request ID, user ID 같은 high-cardinality 값을 label로 승격한다 | 수동 | none |
-| POL-0047-R18 | 항상 | 금지: 승인 없이 route, storage backend, ingestion limits, image version, persistent volume, config path를 runtime에서 변경한다 | 수동 | none |
-| POL-0047-R19 | 운영 환경 | 금지: 근거 없이 high-overhead block/mutex profiling을 상시 활성화한다 | 수동 | none |
-| POL-0047-R20 | lifecycle/data | 필수: HOME 유지, snapshot 또는 중지 후 백업, 격리 스토리지 rehearsal, 제거 전 producer/Grafana 참조 정리, volume 삭제는 명시적 승인 | 수동 | `RUN-0047` runbook |
-| POL-0047-R21 | 수신 판정 | 필수: 선택 파일/target과 제한된 profile query로 수신을 확인하고 선언된 `profilecli ready` probe를 쓴다 | 수동 (profile query) | profile query 결과 |
+| POL-0047-R1 | 항상 | 필수: `template-infra-med`, image 선언, read-only config mount, persistent `pyroscope-data` volume 유지 | none | none |
+| POL-0047-R2 | 항상 | 필수: v2 metastore/raft state를 named volume `pyroscope-metastore`(`/data`)에 보관하고 mount 유지 | none | none |
+| POL-0047-R3 | 항상 | 필수: runtime command `-config.file=/etc/pyroscope/pyroscope.yaml`/`-config.expand-env=true` 유지 | none | none |
+| POL-0047-R4 | 항상 | 필수: HTTP/query/health는 `${PYROSCOPE_PORT:-4040}`와 `profilecli ready` healthcheck 기준 | none | none |
+| POL-0047-R5 | 항상 | 필수: host port는 `127.0.0.1`에만 게시 | none | none |
+| POL-0047-R6 | 항상 | 필수: storage backend는 local filesystem `storage.filesystem.dir: /var/lib/pyroscope` 사용 | none | none |
+| POL-0047-R7 | 항상 | 필수: Compactor data directory `/var/lib/pyroscope/compactor` 유지 | none | none |
+| POL-0047-R8 | 항상 | 필수: `reporting_enabled: false` 유지 | none | none |
+| POL-0047-R9 | 항상 | 필수: `self_profiling.disable_push: true`와 `multitenancy_enabled: false` 유지 | none | none |
+| POL-0047-R10 | 항상 | 필수: 입력 제한 `ingestion_rate_mb: 16`/`ingestion_burst_size_mb: 32`/`max_label_name_length: 1024`/`max_label_value_length: 2048`/`max_label_names_per_series: 30` 유지 | none | none |
+| POL-0047-R11 | 항상 | 금지: profile label에 cardinality가 높은 값이나 secret이 포함된 값 사용 | 수동 | none |
+| POL-0047-R12 | 항상 | 필수: route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file` middleware chain 유지 | none | none |
+| POL-0047-R13 | 항상 | 필수: `limits.retention_period: 168h`(7일) 유지 | none | none |
+| POL-0047-R14 | 보관 기간 변경 시 | 필수: config/capacity 검증과 retention policy 갱신을 함께 수행 | 수동 | none |
+| POL-0047-R15 | 항상 | 필수: Alloy `pyroscope.scrape`는 `scrape_interval = "60s"`와 block/mutex profile off 유지 | 수동 | none |
+| POL-0047-R16 | Alloy scrape 간격을 줄이거나 profile type을 켤 때 | 필수: 용량 근거 확보 | 수동 | 용량 근거 |
+| POL-0047-R17 | Development/debug 상황 | 허용: 임시 고빈도 profiling | none | none |
+| POL-0047-R18 | 임시 고빈도 profiling 시 | 필수: CPU/storage 영향과 rollback note 기록 | none | rollback note |
+| POL-0047-R19 | 새 profile source 또는 Alloy forwarding 변경 시 | 필수: Pyroscope/Grafana datasource 확인과 함께 검증 | none | none |
+| POL-0047-R20 | 항상 | 금지: PII/password/token/credential 값을 profile labels 또는 profile payload에 기록 | 수동 | none |
+| POL-0047-R21 | 항상 | 금지: request ID/user ID 같은 high-cardinality 값을 label로 승격 | 수동 | none |
+| POL-0047-R22 | 항상 | 금지: 승인 없이 route/storage backend/ingestion limits/image version/persistent volume/config path를 runtime에서 변경 | 수동 | none |
+| POL-0047-R23 | 운영 환경 | 금지: 근거 없이 high-overhead block/mutex profiling 상시 활성화 | 수동 | none |
+| POL-0047-R24 | 항상 | 필수: Pyroscope를 HOME으로 유지 | none | none |
+| POL-0047-R25 | `profiling`을 빼는 대상으로 전환할 때 | 필수: Pyroscope를 명시적으로 중지 | none | none |
+| POL-0047-R26 | 항상 | 필수: Gateway 인증과 로컬 filesystem 경계 유지 | none | none |
+| POL-0047-R27 | 항상 | 금지: profile source 없이 쓰기 대상만 설정한 것을 수집 증거로 취급 | none | none |
+| POL-0047-R28 | 항상 | 필수: 백업은 쓰기·서비스를 중지하거나 일관성을 검증한 snapshot으로만 수행 | none | none |
+| POL-0047-R29 | 항상 | 필수: 격리 스토리지에서 rehearsal을 수행하고 과거·신규 조회와 producer label 확인 | none | none |
+| POL-0047-R30 | 제거 전 | 필수: producer·Grafana 참조 정리, 보존 여부 결정, 경로 폐쇄 | none | none |
+| POL-0047-R31 | `pyroscope-data`/`pyroscope-metastore` 삭제 시 | 필수: 명시적 승인 | 수동 | none |
+| POL-0047-R32 | 수신 확인 시 | 필수: 선택 파일·target과 제한된 profile query로 수신 확인 | none | none |
+| POL-0047-R33 | 수신 확인 시 | 금지: writer/receiver readiness만으로 판정 | none | none |
+| POL-0047-R34 | probe 사용 시 | 필수: 선언된 `profilecli ready` probe 사용(wget 존재를 가정하지 않음) | none | none |
+| POL-0047-R35 | retention 기간 변경 시 | 필수: 별도 승인된 설정·용량 검토 | 수동 | none |
+| POL-0047-R36 | 항상 | 필수: Profile/config를 일관되게 보존하고 삭제는 POL-0048을 따름 | none | none |
 
 - **Required**:
   - Pyroscope service는 `template-infra-med`, image
@@ -149,12 +164,18 @@ storage, capacity boundary, label/cardinality, route, health 기준을 정의한
 
 ### Limits
 
-이 정책은 Compose와 `pyroscope.yaml` 문자열 점검 및 원격 PR `changed` 검사로 일부만 강제하며 나머지는 수동이다.
+정책 본문이 이름 붙인 검사로 강제하는 규칙은 일부이며 아래 항목은 기계적으로 강제되지 않는다.
 
-- config 점검은 일부 key만 확인하며 `-config.expand-env`, `pyroscope-metastore` mount, retention 168h, label 길이 한도는 이름 붙은 점검에 없다.
-- label cardinality, PII/secret 금지, Alloy scrape 간격, high-overhead profiling 금지는 수동 검토다.
-- writer/receiver readiness만으로는 수집을 증명하지 못하며 제한된 profile query가 필요하다.
-- 백업과 rehearsal은 runbook 절차에 의존하고 retention 삭제는 POL-0048을 따른다.
+- 서비스/설정 경계: `POL-0047-R1`, `POL-0047-R2`, `POL-0047-R3`, `POL-0047-R4`, `POL-0047-R5`, `POL-0047-R6`, `POL-0047-R7`, `POL-0047-R8`, `POL-0047-R9`, `POL-0047-R10`, `POL-0047-R12`는 이름 붙은 검사가 지정되지 않았다.
+- 금지 행위: `POL-0047-R11`, `POL-0047-R20`, `POL-0047-R21`, `POL-0047-R22`, `POL-0047-R23`는 승인/검토 등 수동 절차에 의존한다.
+- retention/capacity: `POL-0047-R13`, `POL-0047-R36`는 이름 붙은 검사가 지정되지 않았다.
+- retention/capacity: `POL-0047-R14`, `POL-0047-R15`, `POL-0047-R16`, `POL-0047-R35`는 승인/검토 등 수동 절차에 의존한다.
+- 변경 절차: `POL-0047-R17`, `POL-0047-R18`, `POL-0047-R19`는 이름 붙은 검사가 지정되지 않았다.
+- 수명주기/데이터: `POL-0047-R24`, `POL-0047-R25`, `POL-0047-R26`, `POL-0047-R28`, `POL-0047-R29`, `POL-0047-R30`는 이름 붙은 검사가 지정되지 않았다.
+- 수신 판정: `POL-0047-R27`, `POL-0047-R32`, `POL-0047-R33`, `POL-0047-R34`는 이름 붙은 검사가 지정되지 않았다.
+- 수명주기/데이터: `POL-0047-R31`는 승인/검토 등 수동 절차에 의존한다.
+- 정책은 config 점검이 일부 key만 확인하며 `-config.expand-env`, `pyroscope-metastore` mount, retention 168h, label 길이 한도는 이름 붙은 점검에 없다고 명시한다.
+- writer/receiver readiness만으로는 수집을 증명하지 못하며 백업과 rehearsal은 runbook 절차에 의존한다.
 
 ## Ownership
 

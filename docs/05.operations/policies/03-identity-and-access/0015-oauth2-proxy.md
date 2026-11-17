@@ -47,23 +47,46 @@ Keycloak realm/client 운영은 [POL-0014](0014-keycloak.md)가 다룬다.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0015-R1 | 항상 | 필수: `check-all-hardening.sh 02-auth` 실패 0건을 유지한다 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | 점검 출력 |
-| POL-0015-R2 | 로그인 루프/콜백 실패 급증/`/ping` 실패 지속 | 필수: 런북 절차를 수행한다 | 수동 | RUN-0015 |
-| POL-0015-R3 | 항상 | 필수: 서비스는 `template-infra-readonly-med`를 사용한다 | `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` | none |
-| POL-0015-R4 | 비밀 주입 | 필수: 세션 저장소 password는 엔트리포인트가 `/run/secrets` 파일에서 주입하고 client/cookie secret은 cfg의 `*_secret_file`로 읽으며 값을 환경 변수 리터럴로 두지 않는다 | none | none |
-| POL-0015-R5 | SSO route 통과 | 필수: Keycloak group `/admins`(`allowed_groups`)로 제한하고 `trusted_ips`는 두지 않으며 `trusted_proxy_ips`는 Traefik `edge_net` 주소로 한정한다 | none | none |
-| POL-0015-R6 | 세션 저장소 | 필수: 공유 `mng-valkey`를 쓰고 `OAUTH2_PROXY_VALKEY_HOST`가 `mng-valkey`를 가리키며 이미지 entrypoint가 읽는 세션 시크릿도 일치해야 한다 | none | none |
-| POL-0015-R7 | 이미지 실행 계정 | 필수: non-root여야 한다(`dev.Dockerfile`은 `oauth2proxy`, `Dockerfile`은 UID 100/GID 101) | none | none |
-| POL-0015-R8 | 세션 정책 | 필수: `cookie_secure=true`, `cookie_httponly=true`, `cookie_samesite=lax`, `cookie_refresh=1h`, `cookie_expire=12h`를 유지한다 | none | none |
-| POL-0015-R9 | 항상 | 필수: 기본 운영 모드는 fail-closed다 | none | none |
-| POL-0015-R10 | 운영 승인 하 | 허용: degraded-mode를 제한적으로 수행하며 원복 절차는 필수다 | 수동 | 승인자 기록과 종료 조건 |
-| POL-0015-R11 | 환경별 도메인 | 허용: 도메인 변수(`DEFAULT_URL`)를 조정한다 | none | none |
-| POL-0015-R12 | 항상 | 금지: fail-open 상시 운영 | none | none |
-| POL-0015-R13 | 항상 | 금지: 시크릿을 Compose/문서에 평문으로 저장 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | none |
-| POL-0015-R14 | Credential 노출 경계 | 금지: full `docker inspect`, `docker top`/process `ps`, `/proc/*/cmdline`/`environ`, 원문 `.State.Health.Log`를 기록하며 서비스명/image identity/health 상태/재시작 횟수/시각만 사용한다 | 수동 | none |
-| POL-0015-R15 | 세션 손실/Valkey | 필수: Valkey AOF를 백업 대용으로 보지 않고 재로그인 영향을 고지하며 공유 `mng-valkey`를 Proxy 복구만을 위해 비우거나 삭제하지 않는다 | 수동 | none |
-| POL-0015-R16 | secret 회전 | 필수: 각 secret 소유자가 관리하며 회전 시 모든 활성 session 무효화 여부를 명시한다 | 수동 | none |
-| POL-0015-R17 | store 손실/upgrade | 필수: fail-closed와 재인증을 우선하고 cookie 보안을 약화하지 않으며 격리된 OIDC/PKCE/ForwardAuth/logout test 후에만 upgrade하고 이전 image 선언과 session 무효화 계획을 기록한다 | 수동 | none |
+| POL-0015-R1 | 항상 | 필수: `check-all-hardening.sh 02-auth` 실패 0건을 유지한다 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | none |
+| POL-0015-R2 | 로그인 루프/콜백 실패 급증/`/ping` 실패 지속 시 | 필수: 런북 절차를 수행한다 | none | none |
+| POL-0015-R3 | 서비스 | 필수: `template-infra-readonly-med`를 사용한다 | none | none |
+| POL-0015-R4 | 세션 저장소 password | 필수: 엔트리포인트 스크립트가 `/run/secrets` 파일에서 주입한다 | none | none |
+| POL-0015-R5 | client/cookie secret | 필수: cfg의 `*_secret_file`로 읽는다 | none | none |
+| POL-0015-R6 | client secret | 허용: `OAUTH2_PROXY_CLIENT_SECRET_FILE`로 OpenBao Agent 출력(`/run/openbao/oauth2-proxy`)을 지정한다 | none | none |
+| POL-0015-R7 | secret 값 | 금지: 환경 변수 리터럴로 둔다 | none | none |
+| POL-0015-R8 | SSO route 통과 | 필수: Keycloak group `/admins`(`allowed_groups`)로 제한한다 | none | none |
+| POL-0015-R9 | 신뢰 IP 설정 | 금지: `trusted_ips`를 둔다 | none | none |
+| POL-0015-R10 | `trusted_proxy_ips` | 필수: Traefik `edge_net` 주소로 한정한다 | none | none |
+| POL-0015-R11 | 세션 저장소 | 필수: 공유 `mng-valkey`를 쓴다 | none | none |
+| POL-0015-R12 | 세션 저장소 | 금지: 앱별 전용 Valkey와 exporter를 둔다(ADR-0062 결정 10) | none | none |
+| POL-0015-R13 | `OAUTH2_PROXY_VALKEY_HOST` | 필수: `mng-valkey`를 가리킨다 | none | none |
+| POL-0015-R14 | 선택한 이미지의 entrypoint가 읽는 세션 시크릿 | 필수: 해당 저장소와 일치한다 | none | none |
+| POL-0015-R15 | 이미지 실행 계정 | 필수: non-root다(`dev.Dockerfile`은 `oauth2proxy`/`Dockerfile`은 UID 100·GID 101) | none | none |
+| POL-0015-R16 | 세션 정책 | 필수: `cookie_secure=true`/`cookie_httponly=true`/`cookie_samesite=lax`/`cookie_refresh=1h`/`cookie_expire=12h`를 유지한다 | none | none |
+| POL-0015-R17 | 기본 운영 모드 | 필수: fail-closed다 | none | none |
+| POL-0015-R18 | 운영 승인 하 | 허용: degraded-mode를 제한적으로 수행한다(원복 절차 필수) | 수동 | none |
+| POL-0015-R19 | 환경별 도메인 변수 | 허용: `DEFAULT_URL`을 조정한다 | none | none |
+| POL-0015-R20 | 상시 운영 | 금지: fail-open | none | none |
+| POL-0015-R21 | 시크릿 | 금지: Compose/문서에 평문으로 저장한다 | none | none |
+| POL-0015-R22 | Valkey AOF | 금지: 백업 대용으로 사용한다 | none | none |
+| POL-0015-R23 | 세션 손실 시 | 필수: 재로그인 영향을 고지한다 | none | none |
+| POL-0015-R24 | 공유 `mng-valkey` | 금지: Proxy 복구만을 위해 비우거나 삭제한다 | none | none |
+| POL-0015-R25 | credential 노출 경계 | 금지: full `docker inspect`/`docker top`/process `ps`/`/proc/*/cmdline`·`environ`/원문 `.State.Health.Log`를 기록한다 | none | none |
+| POL-0015-R26 | credential 노출 경계 | 필수: 서비스명/image identity/health 상태/재시작 횟수·시각처럼 허용된 필드만 사용한다 | none | none |
+| POL-0015-R27 | 공통 자원 상한과 mount 적용 | 필수: [POL-0006](../01-common/0006-infrastructure-optimization-governance.md)을 적용한다 | none | none |
+| POL-0015-R28 | profile/상호 배제 | 필수: [POL-0078](../01-common/0078-compose-profile-vocabulary.md)을 적용한다 | none | none |
+| POL-0015-R29 | image 변경과 검토 | 필수: [POL-0086](../10-platform-and-backup/0086-dependency-version-management.md)을 적용한다 | none | none |
+| POL-0015-R30 | 보존할 상태와 private credential | 필수: [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 접근/암호화/retention을 적용한다 | none | none |
+| POL-0015-R31 | 제거 전 | 필수: 소비자와 복구 입력을 확인한다 | none | none |
+| POL-0015-R32 | volume/인증서/secret 삭제 | 필수: 서비스 중지와 분리된 승인 대상으로 한다 | 수동 | none |
+| POL-0015-R33 | Cookie/client/Valkey credential 값 | 필수: 각각의 secret 소유자가 관리한다 | none | none |
+| POL-0015-R34 | credential 회전 | 필수: 모든 활성 session이 무효화되는지 명시한다 | 수동 | none |
+| POL-0015-R35 | Session-store 내용 | 금지: 영속 business-data backup 대상으로 삼는다 | none | none |
+| POL-0015-R36 | store 손실 후 | 필수: fail-closed와 재인증을 우선한다 | none | none |
+| POL-0015-R37 | store 손실 후 | 금지: session을 유지하기 위해 cookie 보안을 약화한다 | none | none |
+| POL-0015-R38 | upgrade | 필수: 격리된 OIDC/PKCE/ForwardAuth/logout test 후에만 수행한다 | none | none |
+| POL-0015-R39 | upgrade | 필수: 이전 image 선언을 보존한다 | none | none |
+| POL-0015-R40 | upgrade | 필수: session 무효화 계획을 기록한다 | none | none |
 
 - **필수**:
   - `check-all-hardening.sh 02-auth` 실패 0건을 유지해야 한다.
@@ -145,13 +168,15 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
 
 ### Limits
 
-정책이 명명한 검사는 hardening 점검과 `auth`/`core` profile 정적 렌더링이며 다음은 기계적으로 강제되지 않는다.
+이 정책은 아래 규칙에 대해 명명된 자동 검사를 연결하지 않거나 수동 검토에 맡긴다.
 
-- `/ping` runtime 점검은 runtime-only이며 승인된 실행 환경에서만 가능하다.
-- 로그인 루프/콜백 실패/`/ping` 실패 시 런북 수행, 세션 저장소 연결, `allowed_groups`/`trusted_proxy_ips` 제한, cookie 정책 유지, non-root 실행 계정에는 hardening 외 명명된 전용 검사가 없다.
-- Credential 노출 경계(full `docker inspect`, `docker top`, `/proc/*/cmdline`, 원문 `.State.Health.Log` 기록 금지)는 수동 준수이며 정책은 실제 유출을 관찰하지 않았다고만 밝힌다.
-- Degraded-mode의 승인자 기록과 원복 기준, secret 회전 시 session 무효화 명시, upgrade 전 격리 테스트는 수동 절차다.
-- 월 1회 정기 점검과 수시 점검에는 명명된 자동 검사가 없다.
+- hardening/대응: 명명된 검사 없음 R2 (`POL-0015-` 접두)
+- 서비스 구성: 명명된 검사 없음 R3~R17 (`POL-0015-` 접두)
+- 허용/금지: 명명된 검사 없음 R19~R21; 수동 검토 R18 (`POL-0015-` 접두)
+- 세션/credential 경계: 명명된 검사 없음 R22~R26 (`POL-0015-` 접두)
+- 공통 통제: 명명된 검사 없음 R27~R31; 수동 검토 R32 (`POL-0015-` 접두)
+- 세션/업그레이드: 명명된 검사 없음 R33, R35~R40; 수동 검토 R34 (`POL-0015-` 접두)
+- `/ping` runtime 점검(`docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`)은 runtime-only이며 어느 규칙을 검증하는지 본문이 연결하지 않는다(144행).
 
 ## Ownership
 

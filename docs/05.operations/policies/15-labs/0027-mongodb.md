@@ -45,16 +45,35 @@ next_review_at: "2027-05-13"
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0027-R1 | 문서 작성/변경 시 | 필수: 문서는 현재 replica set을 `mongo-init`으로 초기화된 두 data-bearing node와 하나의 arbiter로 기술한다 | `docker compose ... --profile mongodb config --quiet` / `python3 scripts/validation/check-document-links.py --mode all` / guide-runbook-LAB 설명 비교 | Compose 렌더/링크 검사 결과 |
-| POL-0027-R2 | replica set 이름 참조 시 | 필수: compose에 선언된 `MyReplicaSet`을 사용하며 문서화되지 않은 이름 통제는 허용하지 않는다 | `docker compose ... --profile mongodb config --quiet` / `python3 scripts/validation/check-document-links.py --mode all` / guide-runbook-LAB 설명 비교 | 비교 결과 |
-| POL-0027-R3 | password 가이드 작성 시 | 필수: Root와 Mongo Express password 가이드는 plaintext가 아니라 Docker Secret mount를 참조한다 | `docker compose ... --profile mongodb config --quiet` / `python3 scripts/validation/check-document-links.py --mode all` / guide-runbook-LAB 설명 비교 | 비교 결과 |
-| POL-0027-R4 | keyfile 가이드 작성 시 | 필수: `mongo-key-generator`가 생성하는 `mongo-key` bind volume(`${LAB_DATA_DIR}/mongodb/mongo-key`)을 참조한다 | `docker compose ... --profile mongodb config --quiet` / `python3 scripts/validation/check-document-links.py --mode all` / guide-runbook-LAB 설명 비교 | 비교 결과 |
-| POL-0027-R5 | 항상 | 필수: 여섯 서비스 모두 정확한 `mongodb` profile을 쓰며 동일 host topology를 host-level HA로 기술하지 않는다 | `docker compose ... --profile mongodb config --quiet` / `python3 scripts/validation/check-document-links.py --mode all` / guide-runbook-LAB 설명 비교 | Compose 렌더 결과 |
-| POL-0027-R6 | backup 시 | 필수: data-bearing member에 인증된 `mongodump --oplog`를 쓰고 모든 database/user/role/index/oplog metadata, 호환성, checksum, retention, restore evidence를 기록한다 | 수동 | restore evidence 기록 |
-| POL-0027-R7 | restore rehearsal 시 | 필수: 새 isolated 호환 replica set과 `mongorestore --oplogReplay`를 쓰고 password는 보호된 prompt/file로 제공하며 URI/evidence에 넣지 않는다 | 수동 | restore evidence 기록 |
-| POL-0027-R8 | upgrade/removal 시 | 필수: restore-tested backup, 용량 확인, 호환성 검토, 명시적 승인을 요구하고 arbiter를 data 복사본으로 취급하지 않는다 | 수동 | restore-tested backup |
-| POL-0027-R9 | evidence 수집/문서 수정 시 | 허용: read-only `rs.status()`/`rs.conf()`/로그/compose config 확인과 compose에 맞추는 문서 전용 수정(runtime pin은 Compose 소유) | `docker compose ... --profile mongodb config --quiet` / `python3 scripts/validation/check-document-links.py --mode all` / guide-runbook-LAB 설명 비교 | Compose 렌더 결과 |
-| POL-0027-R10 | 항상 | 금지: 별도 승인/검증된 runbook evidence 없는 파괴적 resync/data directory 삭제/강제 election/keyfile rotation/restore, `mongodb-arbiter`를 backup/data node로 취급, 미선언 host port 직접 노출 | 수동 | none |
+| POL-0027-R1 | 문서 작성/변경 시 | 필수: 현재 replica set을 `mongo-init`으로 초기화된 두 data-bearing node와 하나의 arbiter로 기술한다 | none | none |
+| POL-0027-R2 | replica set 이름 참조 시 | 필수: compose에 선언된 `MyReplicaSet`을 쓴다 | none | none |
+| POL-0027-R3 | replica set 이름을 통제할 때 | 금지: 문서화되지 않은 replica-set-name 통제 | none | none |
+| POL-0027-R4 | password 가이드 작성 시 | 필수: Root와 Mongo Express password 가이드는 plaintext 값이 아니라 Docker Secret mount를 참조한다 | none | none |
+| POL-0027-R5 | keyfile 가이드 작성 시 | 필수: `mongo-key-generator`가 생성하는 `mongo-key` bind volume(`${LAB_DATA_DIR}/mongodb/mongo-key`)을 참조한다 | none | none |
+| POL-0027-R6 | 항상 | 필수: 여섯 서비스 모두 정확한 `mongodb` profile을 쓴다 | none | none |
+| POL-0027-R7 | 동일 host topology 기술 시 | 금지: 동일 host topology를 host-level HA로 기술 | none | none |
+| POL-0027-R8 | backup 시 | 필수: data-bearing replica-set member에 인증된 `mongodump --oplog`를 쓰고 필요한 모든 database와 user/role, index, oplog metadata를 포함한다 | 수동 | none |
+| POL-0027-R9 | backup 시 | 필수: tool/server 호환성, checksum, retention, restore evidence를 기록한다 | 수동 | none |
+| POL-0027-R10 | restore rehearsal 시 | 필수: 새 isolated compatible replica set과 `mongorestore --oplogReplay`를 쓴다 | 수동 | none |
+| POL-0027-R11 | restore rehearsal 시 | 필수: password는 보호된 prompt/file 처리로 제공한다 | 수동 | none |
+| POL-0027-R12 | restore rehearsal 시 | 금지: password를 URI나 evidence에 포함 | 수동 | none |
+| POL-0027-R13 | upgrade/removal 시 | 필수: restore-tested backup, 용량 확인, 호환성 검토, 명시적 승인을 요구한다 | 수동 | none |
+| POL-0027-R14 | upgrade/removal 시 | 금지: arbiter를 data 복사본으로 취급 | 수동 | none |
+| POL-0027-R15 | evidence 수집 시 | 허용: read-only `rs.status()`, `rs.conf()`, 로그, compose config 확인 | none | none |
+| POL-0027-R16 | 문서 수정 시 | 허용: 서비스 이름, profile, 링크를 compose와 일치시키는 문서 전용 수정(runtime pin은 Compose 소유) | none | none |
+| POL-0027-R17 | 항상 | 금지: 별도 승인과 검증된 runbook evidence 없는 파괴적 resync, data directory 삭제, 강제 election, keyfile rotation, backup restore 단계 | 수동 | none |
+| POL-0027-R18 | 항상 | 금지: `mongodb-arbiter`를 backup/data node로 취급 | none | none |
+| POL-0027-R19 | 항상 | 금지: compose에 선언되지 않은 host port로 MongoDB를 직접 노출 | none | none |
+| POL-0027-R20 | 항상 | 필수: 문서의 정적 검증과 runtime 운영 승인을 분리한다 | none | none |
+| POL-0027-R21 | 항상 | 필수: `@buenhyden`이 named consumer/target/중단 영향/보존 기간/예외를 소유한다 | none | none |
+| POL-0027-R22 | service image/profile/port/secret/mount, DDL/init, capacity 또는 backup 범위 변경 시 | 필수: 이 Policy와 linked Guide/Runbook을 함께 검토한다 | 수동 | none |
+| POL-0027-R23 | engine secret/certificate 적용 시 | 필수: 이 subject의 credential 계약을 따른다 | none | none |
+| POL-0027-R24 | 앱 인증 연동 시 | 필수: 적용되는 `POL-0079` 통제를 따른다 | none | none |
+| POL-0027-R25 | source 반영/재기동 시 | 필수: `POL-0006`의 적용 통제를 따른다 | none | none |
+| POL-0027-R26 | 보존/삭제 시 | 필수: `POL-0021`의 적용 통제를 따른다 | none | none |
+| POL-0027-R27 | exporter/stateless job 적용 시 | 필수: database restore가 없더라도 설정/credential과 그 작업이 변경하는 upstream state를 통제 범위에 포함한다 | none | none |
+| POL-0027-R28 | 소유 artifact/복구 지점/expiry가 불명확할 때 | 금지: 삭제/재생성 | none | none |
+| POL-0027-R29 | 항상 | 금지: 기존 Exceptions 외의 새 예외를 승인된 것으로 간주 | none | none |
 
 - **Required**: 문서는 현재 replica set을 `mongo-init`으로 초기화된 두 개의
   data-bearing node와 하나의 arbiter로 기술해야 한다.
@@ -114,10 +133,16 @@ N/A - 현재 승인된 예외 없음.
 
 ### Limits
 
-Compose 렌더와 문서 링크 검사, 연결 문서 비교만 Mechanisms에 있고 아래 항목은 기계적으로 강제되지 않는다.
+아래 규칙은 이름 붙은 검사가 규칙에 연결되어 있지 않거나 승인/검토에 의존하며, 정책은 Compose 렌더, 문서 링크 검사, 연결 문서 비교를 개별 규칙과 연결하지 않는다.
 
-- 인증된 `mongodump --oplog` backup, `mongorestore --oplogReplay` rehearsal, upgrade/removal 승인은 수동 검토에 의존한다.
-- 파괴적 단계(resync, 강제 election, keyfile rotation 등)의 승인과 runbook evidence는 이름 붙은 자동 검사가 없다.
+- 문서 기술: 강제 수단 없음 `POL-0027-R1`~`R5`
+- 프로필/토폴로지: 강제 수단 없음 `POL-0027-R6`~`R7`
+- backup/restore: 수동 검토 `POL-0027-R8`~`R12`
+- upgrade/removal: 수동 검토 `POL-0027-R13`~`R14`
+- 허용 작업: 강제 수단 없음 `POL-0027-R15`~`R16`
+- 금지 작업: 수동 검토 `POL-0027-R17`; 강제 수단 없음 `POL-0027-R18`~`R19`
+- 책임/수명주기 경계: 수동 검토 `POL-0027-R22`; 강제 수단 없음 `POL-0027-R20`~`R21`, `POL-0027-R23`~`R29`
+- backup/restore/upgrade 절차와 파괴적 단계의 승인은 이름 붙은 자동 검사가 없고 수동 검토에 의존한다(정책 Limits 기준).
 - 정책에 승인된 예외는 없다.
 
 ## Ownership

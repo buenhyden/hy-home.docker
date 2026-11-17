@@ -42,13 +42,31 @@ Gatus는 native OIDC와 지속적인 probe history를 가진 HOME availability m
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0087-R1 | 항상 | 필수: host 포트를 게시하지 않고(`expose`만) non-root identity, read-only root filesystem, read-only config bind, 쓰기 가능한 `gatus-data` mount를 유지한다(현재 `read_only: false`로 미준수) | 정적 소스/catalog 검사 | 미준수 확인 2026-11-06 / owner 예외 또는 Compose 수정 필요 |
-| POL-0087-R2 | UI 접근 | 필수: native `home-gatus` OIDC와 `gateway-standard-chain@file`을 쓰고 `sso-auth@file`, local-password fallback, 넓은 subject allowlist를 추가하지 않으며 `/metrics`는 승인된 설계 없이 외부에 노출하지 않는다 | 정적 소스/catalog 검사 | owner 수용 기록(2026-11-07, SPEC-0267) |
-| POL-0087-R3 | Task 증거 | 금지: probe URL, response body, credential 자료, 원시 SQLite 데이터를 기록하며 probe 성공을 애플리케이션 수용으로 보지 않는다 | 수동 | none |
-| POL-0087-R4 | SQLite 교체/운영 | 필수: SQLite를 stateful로 취급해 조율된 backup과 격리된 restore 증명을 만들고 증상 해결을 위해 volume을 삭제하지 않는다 | 수동 | backup/restore 증명(런타임) |
-| POL-0087-R5 | 업그레이드 | 필수: Dockerfile 소스, upstream 릴리스/보안 노트, 라이선스, 로컬 hardening patch를 검토한 후에만 업그레이드하고 승인된 검사가 끝날 때까지 이전 이미지/설정을 유지한다 | 수동 | 로그인/health/probe 검사(런타임) |
-| POL-0087-R6 | lifecycle/data | 필수: HOME 유지, `gatus.db`를 live-copy하지 않고 격리 프로젝트에서 리허설하며 업그레이드/제거는 명시적 승인 | 수동 | none |
-| POL-0087-R7 | build 수용 | 필수: source commit/checksum/local patch/image digest를 갖추고 zero-fuzz, 정확한 subject, S256 PKCE, Secure/HttpOnly cookie, state/nonce, CA 검증을 유지한다 | 수동 | source commit/checksum/image digest |
+| POL-0087-R1 | 항상 | 금지: 직접 host 포트 게시(`expose: ${GATUS_PORT}`만 사용) | none | none |
+| POL-0087-R2 | 항상 | 필수: 설정된 non-root identity(`${GATUS_UID:-1000}:${GATUS_GID:-1000}`)/read-only root filesystem/read-only config bind/쓰기 가능한 `gatus-data` mount 유지(2026-11-06 확인: `read_only: false`로 미준수) | none | 미준수 확인 2026-11-06 |
+| POL-0087-R3 | read-only root filesystem 미준수 상태 | 필수: owner가 기한 있는 예외로 수용하거나 Compose를 `read_only: true`와 tmpfs로 고칠 때까지 열린 항목으로 유지 | 수동 | none |
+| POL-0087-R4 | UI 접근 | 필수: native `home-gatus` OIDC와 `gateway-standard-chain@file` 사용 | none | none |
+| POL-0087-R5 | UI 접근 | 금지: `sso-auth@file`/local-password fallback/넓은 subject allowlist 추가 | none | none |
+| POL-0087-R6 | 항상 | 필수: `/metrics`는 브라우저 route 밖에 둠 | none | none |
+| POL-0087-R7 | 승인된 모니터링 설계가 없을 때 | 금지: `/metrics` 외부 노출 | 수동 | none |
+| POL-0087-R8 | `oidc-hardening.patch`를 건드리는 Gatus 갱신 또는 upstream metrics 인증 도입 시 | 필수: `/metrics` 내부 무인증 노출 수용(owner 2026-11-07, SPEC-0267)을 다시 검토 | none | owner 수용 기록(2026-11-07, SPEC-0267) |
+| POL-0087-R9 | Task 증거 작성 시 | 금지: probe URL/response body/credential 자료/원시 SQLite 데이터 기록 | 수동 | none |
+| POL-0087-R10 | 항상 | 금지: probe 성공을 애플리케이션 수용으로 간주 | none | none |
+| POL-0087-R11 | SQLite 교체 전 | 필수: SQLite를 stateful로 취급해 조율된 일관된 backup과 격리된 restore 증명 확보 | none | backup/restore 증명(런타임) |
+| POL-0087-R12 | 항상 | 금지: probe나 로그인 증상 해결을 위해 volume 삭제 | none | none |
+| POL-0087-R13 | 업그레이드 전 | 필수: Dockerfile 소스/upstream 릴리스·보안 노트/라이선스/로컬 hardening patch 검토 | 수동 | none |
+| POL-0087-R14 | 업그레이드 시 | 필수: 승인된 로그인/health/probe 검사가 완료될 때까지 이전 이미지/설정 유지 | none | 로그인/health/probe 검사(런타임) |
+| POL-0087-R15 | 항상 | 필수: Gatus를 HOME으로 유지하고 native Keycloak OIDC/root-CA 검증/세션 제어/최소 권한 endpoint credential 요구 | none | none |
+| POL-0087-R16 | 항상 | 필수: SQLite/data/endpoint 설정/로컬 patch·이미지 identity/대응 OIDC secret을 recovery set으로 구성하고 쓰기 중단 또는 SQLite-native backup 사용 | none | none |
+| POL-0087-R17 | 항상 | 금지: `gatus.db` live-copy | 수동 | none |
+| POL-0087-R18 | 항상 | 필수: 테스트 route/credential을 쓰는 격리된 프로젝트에서 리허설하고 private response 데이터 노출 없이 schema/history/endpoint/OIDC/세션 동작/metrics 검증 | none | none |
+| POL-0087-R19 | 업그레이드/제거 시 | 필수: patch 호환성/endpoint-owner 조율/보존된 history 결정/client·route 폐기/명시적 데이터 삭제 승인 | 수동 | none |
+| POL-0087-R20 | build 수용 시 | 필수: source commit/checksum/local patch/생성 image digest 확보 | none | source commit/checksum/image digest |
+| POL-0087-R21 | 항상 | 금지: local tag만으로 패치 증명 | none | none |
+| POL-0087-R22 | 항상 | 필수: Zero-fuzz/대소문자를 구분하는 정확한 subject/S256 PKCE/Secure·HttpOnly 임시 cookie/state·nonce 검사/CA 검증 유지 | none | none |
+| POL-0087-R23 | 항상 | 필수: Public health/bootstrap/metrics와 보호 status API 구분 | none | none |
+| POL-0087-R24 | Source/auth/storage 예외와 종료 시점 | 필수: @buenhyden이 승인 | 수동 | none |
+| POL-0087-R25 | 항상 | 금지: 소스 문서 검사를 runtime 예외 부여로 간주 | none | none |
 
 - 직접 host 포트는 게시하지 않고(`expose: ${GATUS_PORT}`만), 설정된 non-root identity(`${GATUS_UID:-1000}:${GATUS_GID:-1000}`),
   read-only root filesystem, read-only config bind, 쓰기 가능한 `gatus-data` mount를 유지한다.
@@ -104,13 +122,23 @@ probe 커버리지, backup, restore는 별도로 승인된 target이 필요한 �
 
 ### Limits
 
-이 정책은 정적 소스와 catalog 검사가 선언만 검증한다고 명시하며 나머지는 별도 승인된 target의 런타임 증거에 맡긴다.
+정책 본문이 이름 붙인 검사로 강제하는 규칙은 일부이며 아래 항목은 기계적으로 강제되지 않는다.
 
-- 컨테이너 health, native 로그인, 세션 만료, probe 커버리지, backup, restore는 별도 target이 필요한 런타임 증거이며 이 문서에는 없다.
-- read-only root filesystem은 `template-stateful-low`가 `read_only: false`라 2026-11-06 기준 미준수이며 owner 예외나 Compose 수정 전까지 열려 있다.
-- `/metrics`는 내부 peer에게 인증 없이 열려 있으며 owner 수용(2026-11-07)에 의존하고 `oidc-hardening.patch` 변경이나 upstream 인증 도입 때 재검토한다.
-- 소스 문서 검사는 runtime 예외를 부여하지 않는다.
-- 증거 기록 금지, 업그레이드 검토, `gatus.db` live-copy 금지는 수동 규율이다.
+- Compose/보안 경계: `POL-0087-R1`, `POL-0087-R2`는 이름 붙은 검사가 지정되지 않았다.
+- Compose/보안 경계: `POL-0087-R3`는 승인/검토 등 수동 절차에 의존한다.
+- OIDC/metrics 경계: `POL-0087-R4`, `POL-0087-R5`, `POL-0087-R6`, `POL-0087-R8`는 이름 붙은 검사가 지정되지 않았다.
+- OIDC/metrics 경계: `POL-0087-R7`는 승인/검토 등 수동 절차에 의존한다.
+- 증거/수용: `POL-0087-R9`는 승인/검토 등 수동 절차에 의존한다.
+- 증거/수용: `POL-0087-R10`는 이름 붙은 검사가 지정되지 않았다.
+- 수명주기/데이터: `POL-0087-R11`, `POL-0087-R12`, `POL-0087-R15`, `POL-0087-R16`, `POL-0087-R18`는 이름 붙은 검사가 지정되지 않았다.
+- 업그레이드: `POL-0087-R13`는 승인/검토 등 수동 절차에 의존한다.
+- 업그레이드: `POL-0087-R14`는 이름 붙은 검사가 지정되지 않았다.
+- 수명주기/데이터: `POL-0087-R17`, `POL-0087-R19`는 승인/검토 등 수동 절차에 의존한다.
+- build 수용: `POL-0087-R20`, `POL-0087-R21`, `POL-0087-R22`, `POL-0087-R23`, `POL-0087-R25`는 이름 붙은 검사가 지정되지 않았다.
+- build 수용: `POL-0087-R24`는 승인/검토 등 수동 절차에 의존한다.
+- 정적 소스와 catalog 검사는 선언만 검증한다고 정책이 명시하며 컨테이너 health, native 로그인, 세션 만료, probe 커버리지, backup, restore는 별도 승인된 target의 런타임 증거가 필요하고 이 문서에는 없다.
+- read-only root filesystem은 `read_only: false`라 2026-11-06 기준 미준수이며 owner 예외나 Compose 수정 전까지 열려 있다.
+- `/metrics`는 내부 peer에게 인증 없이 열려 있으며 owner 수용(2026-11-07)에 의존한다.
 
 ## Ownership
 

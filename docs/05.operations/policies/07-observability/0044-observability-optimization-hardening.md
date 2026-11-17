@@ -49,27 +49,39 @@ next_review_at: "2027-05-13"
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0044-R1 | 관측성 라우터 `grafana`/`gatus` | 필수: native OIDC 라우터는 `gateway-standard-chain@file`만 적용하고 application login/role mapping을 유지한다 | `check-all-hardening.sh 06-observability` / `infrastructure-hardening` CI 게이트 | 검사 출력 |
-| POL-0044-R2 | proxy 보호 관측성 라우터 | 필수: `gateway-standard-chain@file,sso-errors@file,sso-auth@file`을 유지한다 | `check-all-hardening.sh 06-observability` / `infrastructure-hardening` CI 게이트 | 검사 출력 |
-| POL-0044-R3 | 핵심 백엔드 `depends_on` | 필수: `service_healthy`를 우선 사용한다 | `check-all-hardening.sh 06-observability` / `validate-docker-compose.sh` | 검사 출력 |
-| POL-0044-R4 | host observer(cAdvisor) | 필수: healthcheck를 가진다 | `check-all-hardening.sh 06-observability` | 검사 출력 |
-| POL-0044-R5 | Pyroscope를 `obs` 또는 `profiling` profile로 선택할 때 | 필수: route, service port, persistent volume, healthcheck 기준을 동일하게 유지한다 | `check-all-hardening.sh 06-observability` / `HYHOME_COMPOSE_PROFILES=obs` compose 검증 | 검사 출력 |
-| POL-0044-R6 | Loki/Tempo 커스텀 이미지 | 필수: non-root 실행을 강제한다 | `check-all-hardening.sh 06-observability` (일부 파일만 검사) | 검사 출력 |
-| POL-0044-R7 | Loki/Tempo entrypoint | 필수: secret 파일 존재를 선검증한다 | `check-all-hardening.sh 06-observability` (일부 문자열만 검사) | 검사 출력 |
-| POL-0044-R8 | 관측성 변경 | 필수: `infrastructure-hardening` CI 게이트를 통과한다 | `infrastructure-hardening` CI 게이트 | CI 게이트 결과 |
-| POL-0044-R9 | 관측성 변경 | 필수: `check-template-security-baseline.sh`, `check-document-links.py --mode traceability`, 관련 compose validation 결과를 함께 확인한다 | `check-template-security-baseline.sh` / `check-document-links.py --mode traceability` / `validate-docker-compose.sh` | 각 검사 결과 |
-| POL-0044-R10 | log/trace/profile retention 변경 | 필수: retention policy와 서비스별 policy/runbook에 함께 반영한다 | 수동 | 변경 문서 검토 |
-| POL-0044-R11 | 대량 scrape 실패, trace/log ingestion 지연 급증, 관리경로 인증 실패 급증 | 필수: runbook handoff 조건으로 취급한다 | 수동 | `RUN-0044` runbook |
-| POL-0044-R12 | 문서(PRD~Procedure) | 필수: optimization-hardening 링크를 유지한다 | `check-document-links.py --mode traceability` | traceability 검사 결과 |
-| POL-0044-R13 | 확장 시 | 허용: 카탈로그 기반 단계 확장(샘플링/retention/pipeline module) | 수동 | 승인 조건 문서화 |
-| POL-0044-R14 | 운영상 필요할 때 | 허용: profile 기반 선택 기동 | `validate-docker-compose.sh` | compose 검증 결과 |
-| POL-0044-R15 | 항상 | 금지: 무검증 라우터 middleware 변경 | `check-all-hardening.sh` / `infrastructure-hardening` CI 게이트 | 검사 출력 |
-| POL-0044-R16 | 항상 | 금지: root 실행 커스텀 이미지 재도입 | `check-all-hardening.sh 06-observability` | 검사 출력 |
-| POL-0044-R17 | 항상 | 금지: secret guard가 없는 Loki/Tempo object storage 연결 | `check-all-hardening.sh 06-observability` | 검사 출력 |
-| POL-0044-R18 | 항상 | 금지: 정책 미연계 확장 실행 | 수동 | none |
-| POL-0044-R19 | 카탈로그 확장(Prometheus/Loki/Tempo/Alloy) | 필수: 승인 조건(scrape budget, remote_write 절차, cardinality/sampling 가드레일, retention/compaction 연동, 온보딩 템플릿, 모듈 경계)을 충족한다 | 수동 | none |
-| POL-0044-R20 | exporter 운영 | 필수: HOME 분류 유지, host PID/privileged/device 마운트 확대 시 보안 검토, node-exporter는 `obs_net` gateway 주소에만 listen, cAdvisor는 보호 route 유지 | 수동 보안 검토 | none |
-| POL-0044-R21 | exporter 자원/cardinality 변경 또는 제거 | 필수: scrape/host 영향 측정, 제거 시 rule/dashboard 의존성 검토와 관측 공백 승인을 받는다 | 수동 | none |
+| POL-0044-R1 | 관측성 라우터 `grafana`/`gatus` | 필수: native OIDC 라우터는 `gateway-standard-chain@file`만 적용하고 application login/role mapping 유지 | none | none |
+| POL-0044-R2 | proxy 보호 관측성 라우터 | 필수: `gateway-standard-chain@file,sso-errors@file,sso-auth@file` 유지 | none | none |
+| POL-0044-R3 | 핵심 백엔드 `depends_on` | 필수: `service_healthy` 우선 사용 | none | none |
+| POL-0044-R4 | host observer(cAdvisor) | 필수: healthcheck 보유 | none | none |
+| POL-0044-R5 | Pyroscope를 `obs` 또는 `profiling` profile로 선택할 때 | 필수: route/service port/persistent volume/healthcheck 기준을 동일하게 유지 | none | none |
+| POL-0044-R6 | Loki/Tempo 커스텀 이미지 | 필수: non-root 실행 강제 | none | none |
+| POL-0044-R7 | Loki/Tempo entrypoint | 필수: secret 파일 존재를 선검증 | none | none |
+| POL-0044-R8 | 관측성 변경 | 필수: `infrastructure-hardening` CI 게이트 통과 | `infrastructure-hardening` CI 게이트 | none |
+| POL-0044-R9 | 관측성 변경 | 필수: `check-template-security-baseline.sh`/`check-document-links.py --mode traceability`/관련 compose validation 결과를 함께 확인 | `check-template-security-baseline.sh` / `check-document-links.py --mode traceability` / 관련 compose validation | 각 검사 결과 |
+| POL-0044-R10 | log/trace/profile retention 변경 | 필수: retention policy와 서비스별 policy/runbook에 함께 반영 | 수동 | none |
+| POL-0044-R11 | 대량 scrape 실패/trace·log ingestion 지연 급증/관리경로 인증 실패 급증 | 필수: runbook handoff 조건으로 취급 | 수동 | none |
+| POL-0044-R12 | 문서(PRD~Procedure) | 필수: optimization-hardening 링크 유지 | none | none |
+| POL-0044-R13 | 확장 시 | 허용: 카탈로그 기반 단계 확장(샘플링/retention/pipeline module) | 수동 | none |
+| POL-0044-R14 | 운영상 필요할 때 | 허용: profile 기반 선택 기동 | none | none |
+| POL-0044-R15 | 항상 | 금지: 무검증 라우터 middleware 변경 | none | none |
+| POL-0044-R16 | 항상 | 금지: root 실행 커스텀 이미지 재도입 | none | none |
+| POL-0044-R17 | 항상 | 금지: secret guard가 없는 Loki/Tempo object storage 연결 | none | none |
+| POL-0044-R18 | 항상 | 금지: 정책 미연계 확장 실행 | none | none |
+| POL-0044-R19 | Prometheus 카탈로그 확장 시 | 필수: scrape budget 및 rule evaluation 지연 예산 정의와 remote_write 계층화 운영 절차 준비 | 수동 | none |
+| POL-0044-R20 | Loki/Tempo 카탈로그 확장 시 | 필수: cardinality/sampling 가드레일 문서화와 retention/compaction 정책·복구 절차 연동 | 수동 | none |
+| POL-0044-R21 | Alloy 카탈로그 확장 시 | 필수: 신규 서비스 온보딩 템플릿 표준화와 파이프라인 모듈 경계/소유권 명시 | 수동 | none |
+| POL-0044-R22 | 항상 | 필수: 두 exporter의 HOME 분류 유지 | none | none |
+| POL-0044-R23 | host PID/privileged/device/host mount 확대 시 | 필수: 보안 검토 | 수동 | none |
+| POL-0044-R24 | 항상 | 필수: node-exporter는 route나 LAN 공개 포트 없이 `obs_net` gateway 주소에만 listen | none | none |
+| POL-0044-R25 | 항상 | 필수: cAdvisor는 보호 route 유지 | none | none |
+| POL-0044-R26 | 항상 | 금지: cAdvisor에 무관한 secret이나 writable host mount 추가 | none | none |
+| POL-0044-R27 | exporter 복구 시 | 필수: 추적 Compose로 복구한 뒤 target과 series 연속성 검증 | none | none |
+| POL-0044-R28 | exporter 자원/cardinality 변경 시 | 필수: scrape/host 영향 측정 | none | none |
+| POL-0044-R29 | exporter 제거 시 | 필수: rule/dashboard 의존성 검토와 관측 공백 승인 | 수동 | none |
+| POL-0044-R30 | 항상 | 필수: cAdvisor는 Disk metric 등 제외 collector, container label/cardinality, 보호 route 유지 | none | none |
+| POL-0044-R31 | 항상 | 필수: cAdvisor health(process 응답)와 별도로 Prometheus target과 예상 container series 검증 | none | none |
+| POL-0044-R32 | 항상 | 금지: Grafana/Gatus native 인증에 일괄 proxy SSO 적용 | none | none |
+| POL-0044-R33 | 항상 | 금지: 검사 통과만으로 통제 완료나 privileged 권한 확대 승인으로 간주 | none | none |
 
 - **Required**:
   - Native OIDC routers `grafana`/`gatus`는
@@ -149,14 +161,19 @@ cAdvisor는 읽기 전용 filesystem/device mount와 `/dev/kmsg`를 사용하는
 
 ### Limits
 
-이 정책은 일부 규칙만 이름 붙은 검사로 강제하며 나머지는 수동 검토에 의존한다.
+정책 본문이 이름 붙인 검사로 강제하는 규칙은 일부이며 아래 항목은 기계적으로 강제되지 않는다.
 
-- 관측 hardening 함수는 일부 문자열·파일만 검사하므로 모든 Dockerfile, retention 시행, 인증 거부, 전달, host 호환성, 용량은 기계적으로 증명되지 않는다.
-- retention 반영, runbook handoff, 카탈로그 확장 승인 조건, exporter 보안 검토와 관측 공백 승인은 수동 검토이며 지정된 검사가 없다.
-- 정책 미연계 확장 금지는 지정된 검사나 증거가 없다.
-- cAdvisor healthcheck는 process 응답만 확인하므로 Prometheus target과 container series는 따로 검증해야 한다.
-- 검사 통과만으로 통제 완료나 privileged 권한 확대 승인으로 보지 않는다.
-- Loki/Tempo LAN 접근은 POL-0096 예외이며 retention 결함은 POL-0048에 남는다.
+- 라우터/의존성 기준: `POL-0044-R1`, `POL-0044-R2`, `POL-0044-R3`, `POL-0044-R4`, `POL-0044-R5`는 이름 붙은 검사가 지정되지 않았다.
+- 이미지/entrypoint 기준: `POL-0044-R6`, `POL-0044-R7`는 이름 붙은 검사가 지정되지 않았다.
+- retention/운영 handoff: `POL-0044-R10`, `POL-0044-R11`는 승인/검토 등 수동 절차에 의존한다.
+- 문서 링크: `POL-0044-R12`는 이름 붙은 검사가 지정되지 않았다.
+- 카탈로그 확장: `POL-0044-R13`, `POL-0044-R19`, `POL-0044-R20`, `POL-0044-R21`는 승인/검토 등 수동 절차에 의존한다.
+- 카탈로그 확장: `POL-0044-R14`는 이름 붙은 검사가 지정되지 않았다.
+- 금지 행위: `POL-0044-R15`, `POL-0044-R16`, `POL-0044-R17`, `POL-0044-R18`, `POL-0044-R32`, `POL-0044-R33`는 이름 붙은 검사가 지정되지 않았다.
+- exporter 수명주기: `POL-0044-R22`, `POL-0044-R24`, `POL-0044-R25`, `POL-0044-R26`, `POL-0044-R27`, `POL-0044-R28`, `POL-0044-R30`, `POL-0044-R31`는 이름 붙은 검사가 지정되지 않았다.
+- exporter 수명주기: `POL-0044-R23`, `POL-0044-R29`는 승인/검토 등 수동 절차에 의존한다.
+- 관측 hardening 함수는 일부 문자열·파일만 검사하므로 모든 Dockerfile, retention 시행, 인증 거부, 전달, host 호환성, 용량은 기계적으로 증명되지 않는다고 정책이 명시한다.
+- 정책 미연계 확장 금지에는 지정된 검사나 증거가 없다.
 
 ## Ownership
 

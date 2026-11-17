@@ -43,14 +43,47 @@ role, broker, credential 변경은 consumer를 인지하는 유지보수와 roll
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0028-R1 | `mng-db` 서비스 운영 시 | 필수: `mng`/`core`/`dev`/`local` 중 하나와 root project로 운영, Leaf Compose 단독 실행 금지 | `docker compose --env-file .env.example --profile mng config --quiet` / `tests/validation/test_compose_baseline_gates.py` | none |
-| POL-0028-R2 | 항상 | 필수: PostgreSQL/Valkey 별도 bind-backed volume, `mng_data_net`, health check, secret 파일, 공유 리소스 제한 보존 | `docker compose --env-file .env.example --profile mng config --quiet` / `tests/validation/test_compose_baseline_gates.py` | none |
-| POL-0028-R3 | 항상 | 필수: `mng_postgres_password` 등 credential을 Docker secret으로 유지, dump/evidence에 plaintext 금지 | none | none |
-| POL-0028-R4 | `mng-pg-init` 재실행 시 | 필수: restore가 아닌 idempotent provisioning으로 취급, 재실행 전 role/database 목록 검토, optional-capability secret 읽기/DDL 금지 | none | none |
-| POL-0028-R5 | Init SQL이 psql 변수를 읽을 때 | 필수: 모든 psql 변수를 실행자가 전달 | `tests/validation/test_compose_baseline_gates.py` contract test | none |
-| POL-0028-R6 | 지표 수집 시 | 필수: `mng_pg_monitor`/`mngmonitor`만 사용, MNG exporter에 관리자 비밀 금지 | none | none |
-| POL-0028-R7 | Replication slot 정리 시 | 금지: `POL-0036` CDC 재동기화 승인 없이 slot 삭제 | none | none |
-| POL-0028-R8 | 항상 | 필수: Valkey를 폐기 가능한 cache가 아닌 workflow broker state로 취급 | none | none |
+| POL-0028-R1 | 운영 시 | 필수: `mng`/`core`/`dev`/`local` 중 하나와 함께 root project를 통해 운영한다 | none | none |
+| POL-0028-R2 | 항상 | 금지: Leaf Compose 파일의 독립 실행 | none | none |
+| POL-0028-R3 | 항상 | 필수: PostgreSQL과 Valkey를 별도의 bind-backed volume에 유지하고 `mng_data_net`/health check/secret 파일/공유 리소스 제한을 보존한다 | none | none |
+| POL-0028-R4 | 항상 | 필수: `mng_postgres_password`/`pgbackrest_cipher_pass`/`mng_valkey_password`/monitor·inspector credential/서비스 database credential을 Docker secret 보관에 유지한다 | none | none |
+| POL-0028-R5 | dump/evidence | 금지: dump와 evidence에 plaintext 값 포함 | none | none |
+| POL-0028-R6 | 항상 | 필수: `mng-pg-init`을 restore가 아니라 idempotent provisioning으로 취급한다 | none | none |
+| POL-0028-R7 | rerun 전 | 필수: 완전한 role/database 목록을 검토한다 | 수동 | none |
+| POL-0028-R8 | 항상 | 금지: optional-capability secret 읽기와 그 DDL 실행(feature provisioning job의 몫) | none | none |
+| POL-0028-R9 | feature provisioning job | 필수: administrator role 이름과 타 소유 database/schema를 거부한다 | none | none |
+| POL-0028-R10 | Init SQL | 필수: Init SQL이 읽는 모든 psql 변수를 실행자가 전달한다 | `tests/validation/test_compose_baseline_gates.py` contract test | none |
+| POL-0028-R11 | 지표 수집 | 필수: `mng_pg_monitor`(통계·설정 읽기 전용 role)와 `mngmonitor`(읽기 전용 ACL 사용자)만 쓴다 | none | none |
+| POL-0028-R12 | 항상 | 금지: MNG exporter에 관리자 비밀 제공 | none | none |
+| POL-0028-R13 | 공간 회수 시 | 금지: `POL-0036`의 CDC 재동기화 승인 없이 replication slot 삭제 | none | none |
+| POL-0028-R14 | 항상 | 필수: Valkey를 폐기 가능한 cache가 아니라 workflow broker state로 취급한다 | none | none |
+| POL-0028-R15 | 백업 | 필수: PostgreSQL globals와 현재 각 database를 logical tool로 별도의 암호화된 destination에 capture한다 | none | none |
+| POL-0028-R16 | 백업 | 필수: Valkey의 완전한 AOF 세트와 manifest, 그리고 문서화된 quiesced 시점의 RDB checkpoint를 capture한다 | none | none |
+| POL-0028-R17 | 보관 기간 | 필수: PostgreSQL 일일 세트 30일, 주간 세트 90일, Valkey broker 세트 일일 7일 보관한다 | none | none |
+| POL-0028-R18 | 목표 | 필수: RPO 24시간/RTO 4시간을 계획 목표로 한다 | none | none |
+| POL-0028-R19 | 항상 | 필수: 공유 resource-template 제한을 유지한다 | none | none |
+| POL-0028-R20 | removal/통합 | 필수: 모든 consumer/schema/credential/queue가 마이그레이션되고 rollback-tested 상태여야 한다 | none | none |
+| POL-0028-R21 | 복원 | 필수: 새 isolated compatible cluster에서 database 이전에 PostgreSQL globals를 복원한다 | none | none |
+| POL-0028-R22 | 복원 | 필수: 모든 dump를 신뢰할 수 없는 실행 가능 SQL로 취급하고 restore 권한을 제한한다 | none | none |
+| POL-0028-R23 | 복원 | 필수: role/schema/row count/지명된 consumer의 health를 검증한다 | none | none |
+| POL-0028-R24 | Valkey 복원 | 필수: workflow owner가 queue replay semantics를 승인한 뒤에만 복원한다 | 수동 | none |
+| POL-0028-R25 | production cutover/data 교체 | 필수: 별도 승인을 받는다 | 수동 | none |
+| POL-0028-R26 | 모든 pin 변경 | 필수: 공식 release note/extension·client 호환성/rollback을 검토한다 | 수동 | none |
+| POL-0028-R27 | PostgreSQL major upgrade | 필수: isolated logical restore/rehearsal을 수행한다 | none | none |
+| POL-0028-R28 | 항상 | 금지: `PGDATA` 직접 재사용 | none | none |
+| POL-0028-R29 | acceptance/rollback 만료 전 | 필수: 이전 volume을 보존한다 | none | none |
+| POL-0028-R30 | root 구성 검증 | 필수: root 구성을 정적 검증한다 | `docker compose --env-file .env.example --profile mng config --quiet` / `tests/validation/test_compose_baseline_gates.py` contract test | none |
+| POL-0028-R31 | 승격/cutover 전 | 필수: application 수준 acceptance를 갖춘 isolated compatible restore를 요구한다 | none | none |
+| POL-0028-R32 | 항상 | 필수: 검증되지 않은 runtime 속성을 명시적으로 기록한다 | none | none |
+| POL-0028-R33 | 적용 identity 변경/운영 | 필수: 문서의 정적 검증과 runtime 운영 승인을 분리한다 | none | none |
+| POL-0028-R34 | service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 | 필수: 이 Policy와 linked Guide/Runbook을 함께 검토한다 | 수동 | none |
+| POL-0028-R35 | engine secret/certificate | 필수: 이 subject의 credential 계약을 따른다 | none | none |
+| POL-0028-R36 | 앱 인증 연동 | 필수: 적용되는 `POL-0079`의 통제를 따른다 | none | none |
+| POL-0028-R37 | source 반영/재기동 | 필수: `POL-0006`의 적용 통제를 따른다 | none | none |
+| POL-0028-R38 | 보존/삭제 | 필수: `POL-0021`의 적용 통제를 따른다 | none | none |
+| POL-0028-R39 | exporter/stateless job | 필수: 설정·credential과 그 작업이 변경하는 upstream state를 통제 대상에서 제외하지 않고 포함한다 | none | none |
+| POL-0028-R40 | 소유 artifact·복구 지점·expiry가 불명확할 때 | 필수: 삭제/재생성을 중단한다 | none | none |
+| POL-0028-R41 | 항상 | 금지: 기존 Exceptions 외의 새 예외를 승인된 것으로 간주 | none | none |
 
 - `mng`, `core`, `dev`, `local` 중 하나와 함께 root project를 통해 운영한다(PostgreSQL 쪽은 `mlops`, `data-science`, `contract-testing`, `bi`가 의존성 closure로도 선택한다).
   Leaf Compose 파일을 독립적으로 실행하지 않는다.
@@ -125,12 +158,20 @@ lifecycle 변경 후, 그리고 보관되는 동안 최소 연 1회 검토한다
 
 ### Limits
 
-이 정책의 통제는 root 구성의 정적 검증이 중심이며, 아래 항목은 정책이 스스로 기계적 검증이 없다고 밝힌 부분이다.
+이 정책에서 이름 붙은 검사는 root `config --quiet`와 contract test(`Init SQL` psql 변수 전달 규칙)뿐이며, 아래 규칙은 자동 검사 없이 검토·승인에 의존합니다.
 
-- 계획된 RPO 24시간/RTO 4시간을 증명하는 HOME rehearsal이 없다.
-- 현 RUN-0021 automation은 physical pgBackRest/WAL+globals와 RDB만 제공하며, database별 logical/AOF capture와 앱 quiescence는 별도 구현/승인 작업이다.
-- Secret 보관, replication slot 보호, `mng-pg-init` 재실행 검토, 지표 수집 role 제한에는 이름 붙은 자동 검사가 없다.
-- 검증되지 않은 runtime 속성은 명시적으로 기록해야 하며, 승격/cutover 전 isolated restore와 application 수준 acceptance는 별도 승인 후 수행한다.
+- 운영 경로: 자동 검사 없음(none) `POL-0028-R1`, `POL-0028-R2`
+- 구성 보존: 자동 검사 없음(none) `POL-0028-R3`
+- secret: 자동 검사 없음(none) `POL-0028-R4`, `POL-0028-R5`
+- init: 자동 검사 없음(none) `POL-0028-R6`, `POL-0028-R8`, `POL-0028-R9`; 수동 검토/승인 `POL-0028-R7`
+- 지표 수집: 자동 검사 없음(none) `POL-0028-R11`, `POL-0028-R12`
+- slot/Valkey: 자동 검사 없음(none) `POL-0028-R13`, `POL-0028-R14`
+- 백업/복원: 자동 검사 없음(none) `POL-0028-R15`, `POL-0028-R16`, `POL-0028-R17`, `POL-0028-R18`, `POL-0028-R19`, `POL-0028-R20`, `POL-0028-R21`, `POL-0028-R22`, `POL-0028-R23`; 수동 검토/승인 `POL-0028-R24`, `POL-0028-R25`
+- 업그레이드: 자동 검사 없음(none) `POL-0028-R27`, `POL-0028-R28`, `POL-0028-R29`; 수동 검토/승인 `POL-0028-R26`
+- 검증: 자동 검사 없음(none) `POL-0028-R31`, `POL-0028-R32`
+- lifecycle: 자동 검사 없음(none) `POL-0028-R33`, `POL-0028-R35`, `POL-0028-R36`, `POL-0028-R37`, `POL-0028-R38`, `POL-0028-R39`, `POL-0028-R40`, `POL-0028-R41`; 수동 검토/승인 `POL-0028-R34`
+- 정책이 밝힌 공백: 계획된 RPO 24시간/RTO 4시간을 증명하는 HOME rehearsal이 없다.
+- 정책이 밝힌 공백: 현 RUN-0021 automation은 physical pgBackRest/WAL+globals와 RDB만 제공하며 database별 logical/AOF capture와 앱 quiescence는 별도 구현·승인 작업이다.
 
 ## Ownership
 

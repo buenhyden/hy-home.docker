@@ -47,18 +47,28 @@ next_review_at: "2027-05-13"
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0034-R1 | 항상 | 필수: 문서는 Qdrant를 cluster가 아니라 단일 unprivileged service로 설명한다 | guide/runbook/infra README와 정책 비교 | none |
-| POL-0034-R2 | 모든 Qdrant client | 필수: key를 secret file에서 읽고 Compose environment 값, logs, evidence에 나타나지 않게 한다 | 수동 | none |
-| POL-0034-R3 | 외부 접근 가이드 | 필수: 선언된 SSO REST route 안에 머물고 host port publishing이나 gRPC route를 암시하지 않는다 | guide/runbook/infra README와 정책 비교 / `docker compose --profile qdrant config --quiet` / 문서 비교 | none |
-| POL-0034-R4 | persistence 표현 | 필수: `qdrant-data:/qdrant/storage:rw`와 `/qdrant/storage/snapshots`와 일치시킨다 | `docker compose --profile qdrant config --quiet` / 문서 비교 | config 렌더링 결과 |
-| POL-0034-R5 | 백업 inventory | 필수: snapshot identifier, engine minor version, aliases, vector counts/config, checksum, retention, restore evidence를 기록하고 snapshot file을 디스크에서 보호한다 | 수동 | backup inventory / restore evidence |
-| POL-0034-R6 | restore rehearsal | 필수: 동일/다음 minor의 새 isolated target을 쓰고 target collection이 없어야 하며 snapshot 크기 약 2배의 여유 디스크를 둔다 | 수동 (runbook) | restore evidence |
-| POL-0034-R7 | promotion 전 | 필수: aliases, collection config/status, point counts, representative searches를 검증하고 upgrade/removal에는 restore-tested snapshot과 capacity review를 둔다 | 수동 (runbook) | restore-tested snapshot / capacity review |
-| POL-0034-R8 | 읽기 전용 점검 | 허용: `/readyz`, `/collections`(secret file key), compose config rendering, service logs, evidence용 `docker compose ps` | none | none |
-| POL-0034-R9 | 문서 전용 수정 | 허용: image tag, profile, route, healthcheck, volume 설명을 compose와 일치시킨다 | `docker compose --profile qdrant config --quiet` / 문서 비교 / `check-document-links.py --mode all` | 검사 결과 |
-| POL-0034-R10 | 항상 | 금지: 별도 owner 승인과 검증된 runbook evidence 없이 collection delete, snapshot restore, volume replacement, cluster repair, data mutation 단계를 승인된 정책으로 제시한다 | 수동 | owner 승인 / runbook evidence |
-| POL-0034-R11 | 항상 | 금지: API key를 제거하거나 key 없이 Qdrant를 호출하는 client를 추가한다 | 수동 | none |
-| POL-0034-R12 | lifecycle 경계 | 필수: 정적 검증과 runtime 운영 승인을 분리하고 변경 시 정책과 guide/runbook을 함께 검토하며 소유 artifact/복구 지점/expiry가 불명확하면 삭제/재생성을 중단한다 | 수동 (POL-0006 / POL-0021 / POL-0079 위임) | none |
+| POL-0034-R1 | 항상 | 필수: 문서는 Qdrant를 cluster가 아니라 단일 unprivileged service로 설명한다 | none | none |
+| POL-0034-R2 | 모든 Qdrant client | 필수: key를 secret file에서 읽는다 | 수동 | none |
+| POL-0034-R3 | 모든 Qdrant client | 금지: key를 Compose environment 값, logs, evidence에 노출 | 수동 | none |
+| POL-0034-R4 | 외부 접근 가이드 | 필수: 선언된 SSO REST route 안에 머문다 | none | none |
+| POL-0034-R5 | 외부 접근 가이드 | 금지: host port publishing이나 gRPC route를 암시 | none | none |
+| POL-0034-R6 | persistence와 snapshot-path 표현 | 필수: `qdrant-data:/qdrant/storage:rw`와 `/qdrant/storage/snapshots`와 일치시킨다 | 문서 비교 / `docker compose --profile qdrant config --quiet` | none |
+| POL-0034-R7 | 백업 inventory | 필수: collection이나 full-storage snapshot identifier, engine minor version, aliases, vector counts/config, checksum, retention, restore evidence를 기록한다 | 수동 | none |
+| POL-0034-R8 | 항상 | 필수: snapshot file을 디스크에서 보호한다 | 수동 | none |
+| POL-0034-R9 | restore rehearsal | 필수: 동일 minor 또는 다음 minor compatibility를 가진 새로운 isolated target을 사용한다 | 수동 | none |
+| POL-0034-R10 | restore rehearsal | 필수: 명시적으로 검토된 force action이 아니면 target collection이 없어야 한다 | 수동 | none |
+| POL-0034-R11 | restore rehearsal | 필수: snapshot 크기의 약 2배에 해당하는 여유 디스크를 둔다 | 수동 | none |
+| POL-0034-R12 | promotion 전 | 필수: aliases, collection config/status, point counts, representative searches를 검증한다 | 수동 | none |
+| POL-0034-R13 | upgrade/removal | 필수: restore-tested snapshot과 capacity review를 갖춘다 | 수동 | none |
+| POL-0034-R14 | 읽기 전용 점검 | 허용: read-only `/readyz`, `/collections`(secret file의 key 사용), compose config rendering, service logs, evidence 수집용 `docker compose ps` | none | none |
+| POL-0034-R15 | 문서 전용 수정 | 허용: image tag, profile, route, healthcheck, volume 설명을 compose와 일치시키는 수정 | 문서 비교 / `docker compose --profile qdrant config --quiet` / `check-document-links.py --mode all` | 검사 결과 |
+| POL-0034-R16 | 항상 | 금지: 별도 owner 승인과 검증된 runbook evidence 없이 collection delete, snapshot restore, volume replacement, cluster repair, data mutation 단계를 승인된 정책으로 제시 | 수동 | none |
+| POL-0034-R17 | 항상 | 금지: API key를 제거하거나 key 없이 Qdrant를 호출하는 client 추가 | 수동 | none |
+| POL-0034-R18 | 항상 | 필수: 문서의 정적 검증과 runtime 운영 승인을 분리한다 | none | none |
+| POL-0034-R19 | service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 | 필수: 이 Policy와 linked Guide/Runbook을 함께 검토한다 | none | none |
+| POL-0034-R20 | 항상 | 필수: engine secret/certificate는 이 subject의 credential 계약을, 앱 인증 연동은 `POL-0079`를, source 반영·재기동은 `POL-0006`을, 보존·삭제는 `POL-0021`의 적용 통제를 따른다 | none | none |
+| POL-0034-R21 | 소유 artifact·복구 지점·expiry가 불명확할 때 | 필수: 삭제/재생성을 중단한다 | none | none |
+| POL-0034-R22 | 항상 | 금지: 기존 Exceptions 외의 새 예외를 승인된 것으로 간주 | none | none |
 
 - **Required**: 문서는 Qdrant를 cluster가 아니라 단일 unprivileged service로 설명해야 한다.
 - **Required**: 모든 Qdrant client는 secret file에서 key를 읽어야 하며 key가 Compose environment 값, logs, evidence에 절대 나타나서는 안 된다.
@@ -97,12 +107,16 @@ N/A - 현재 승인된 예외 없음.
 
 ### Limits
 
-이 정책의 이름 붙은 검사는 문서 비교, `docker compose --profile qdrant config --quiet`, `check-document-links.py --mode all` 세 가지이며 모두 정적 문서 검증이다.
+이 정책의 이름 붙은 검사는 문서 비교, `docker compose --profile qdrant config --quiet`, `check-document-links.py --mode all` 세 가지이며 모두 정적 문서 검증이라 아래 규칙은 검사 없이 수동 검토나 runbook 증거에 의존한다.
 
+- 서비스 설명과 접근(POL-0034): R1, R4-R5에는 정책이 지정한 검사가 없다.
+- key 취급(POL-0034): R2-R3, R17은 수동 검토나 승인에 의존한다.
+- 백업과 복구(POL-0034): R7-R13은 수동 검토나 승인에 의존한다.
+- 허용 사항(POL-0034): R14에는 정책이 지정한 검사가 없다.
+- 승인 없는 변경(POL-0034): R16은 수동 검토나 승인에 의존한다.
+- lifecycle 경계(POL-0034): R18-R22에는 정책이 지정한 검사가 없다.
 - 세 검사는 runtime 운영 승인이나 실제 backup/restore를 증명하지 않는다.
 - secret/key 취급, 백업 inventory, restore rehearsal, promotion 검증, 변경 금지 단계는 수동 검토와 runbook 증거에 의존하며 지정된 검사가 없다.
-- 현재 승인된 예외는 없다.
-- 새 예외는 기존 Exceptions에 없는 한 승인된 것으로 간주하지 않는다.
 
 ## Ownership
 

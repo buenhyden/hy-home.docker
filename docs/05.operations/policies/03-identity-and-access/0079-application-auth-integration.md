@@ -48,26 +48,38 @@ Keycloak과 OAuth2 Proxy 서비스 자체의 운영 통제는 [POL-0014](0014-ke
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0079-R1 | 항상 | 필수: 모든 사용자 authentication identity source는 Keycloak을 기준으로 한다 | 수동 | none |
-| POL-0079-R2 | 서비스 onboarding | 필수: `Gateway ForwardAuth` 또는 `Application-native OIDC` 중 하나를 주 인증 경로로 명시한다 | 수동 | GDE-0079 Route Authentication Matrix |
-| POL-0079-R3 | HOME Native OIDC 서비스 | 필수: Airflow, Dozzle, Grafana, Kafbat UI, OpenBao, Gatus를 native OIDC로 두고 Superset/Open WebUI는 gateway route 없는 독립 LAB이며 JupyterLab/SonarQube/Stalwart LAB에는 ForwardAuth를 적용하지 않는다 | GDE-0079 서비스별 정적 검증 | none |
-| POL-0079-R4 | Airflow/Grafana/Kafbat/OpenBao/Gatus/Dozzle router | 필수: 앞의 다섯은 `gateway-standard-chain@file`만 사용하고 Dozzle은 `dozzle-admin-ip@docker` IP allowlist를 더하며 SSO chain은 쓰지 않는다 | GDE-0079 서비스별 정적 검증 | none |
-| POL-0079-R5 | Flower 등 ForwardAuth 대상/n8n | 필수: 승인된 `sso-errors@file,sso-auth@file` chain을 유지하고 n8n은 자체 로그인과 `gateway-standard-chain@file`만 쓴다 | GDE-0079 서비스별 정적 검증 | owner 결정 2026-11-09 |
-| POL-0079-R6 | OAuth2 Proxy | 필수: `allowed_groups = ["/admins"]`로 Keycloak `/admins` 그룹만 통과시키며 그룹 확대는 owner 승인이 필요하다 | 수동 | owner 승인 기록 |
-| POL-0079-R7 | 모든 Traefik HTTP router | 필수: SSO chain을 쓰거나 guide의 Route Authentication Matrix에 대체 인증을 명시하고 인증 없는 route와 TCP route를 두지 않는다(Grafana 정적 예외만 범위 제한) | `RouteAuthContractTests` | GDE-0079 Route Authentication Matrix |
-| POL-0079-R8 | Terrakube ForwardAuth 제거 | 필수: 서비스별 acceptance evidence가 기록된 뒤에만 제거하며 같은 범위의 재승인은 요구하지 않는다(Open WebUI/Gatus는 Task 0004 acceptance evidence 뒤 완료) | 수동 | Task 0004 acceptance evidence |
-| POL-0079-R9 | OIDC client secret | 필수: Compose 기반은 Docker Secret 또는 OpenBao Agent 출력 파일(`/run/openbao/...`)로 주입하고 OpenBao native OIDC secret은 승인된 절차로 auth backend에 저장하며 비밀값을 공개 설정에 넣지 않는다 | 추가 검증: Compose client secret의 Docker Secret/OpenBao Agent 출력 mapping | none |
-| POL-0079-R10 | 문서/incident/PR/task evidence | 금지: token/refresh token/id token 원문을 기록한다 | 수동 | none |
-| POL-0079-R11 | local mkcert CA | 필수: 기존 public CA trust를 보존한 상태로 추가한다 | none | none |
-| POL-0079-R12 | Airflow provider update | 필수: Keycloak permission migration 요구사항을 확인한다 | 추가 검증: Airflow provider/Authorization Services bootstrap 상태 | none |
-| POL-0079-R13 | Kafbat RBAC | 필수: `clusters`는 configured cluster name과 일치해야 한다 | none | none |
-| POL-0079-R14 | Open WebUI | 필수: 가입을 비활성화하고 OAuth role/group 자동 관리를 끄며 이메일 병합은 검증된 단일 기존 관리자 연결에 한정한다 | none | none |
-| POL-0079-R15 | 미기동 Terrakube | 필수: 명시적 API audience 검증과 실행 검증 전까지 완료로 보지 않는다 | 수동 | none |
-| POL-0079-R16 | Native OIDC 서비스 | 금지: OAuth2 Proxy ForwardAuth를 동시에 기본 인증으로 적용한다 | GDE-0079 서비스별 정적 검증 | none |
-| POL-0079-R17 | 항상 | 금지: `rootCA-key.pem` 배포/공유 | none | none |
-| POL-0079-R18 | 항상 | 금지: secret/token 원문 기록 | 수동 | none |
-| POL-0079-R19 | 항상 | 금지: 과거 OAuth callback URL 또는 authorization code 재사용 | none | none |
-| POL-0079-R20 | Airflow | 금지: Keycloak access token을 Airflow internal JWT로 취급한다 | none | none |
+| POL-0079-R1 | 항상 | 필수: 모든 사용자 authentication identity source는 Keycloak을 기준으로 한다 | none | none |
+| POL-0079-R2 | 서비스 onboarding | 필수: `Gateway ForwardAuth` 또는 `Application-native OIDC` 중 하나를 주 인증 경로로 명시한다 | none | none |
+| POL-0079-R3 | Superset LAB origin의 redirect 등록 | 금지: 소유자 승인 전에 등록한다 | none | none |
+| POL-0079-R4 | Airflow/Grafana/Kafbat UI/OpenBao/Gatus Traefik router | 필수: `gateway-standard-chain@file`만 사용한다 | 수동 | none |
+| POL-0079-R5 | Dozzle router | 필수: `gateway-standard-chain@file`에 `dozzle-admin-ip@docker` IP allowlist를 더한다 | 수동 | none |
+| POL-0079-R6 | Dozzle router | 금지: SSO chain을 쓴다 | 수동 | none |
+| POL-0079-R7 | Flower 등 ForwardAuth 대상 | 필수: 승인된 `sso-errors@file,sso-auth@file` chain을 유지한다 | 수동 | none |
+| POL-0079-R8 | n8n | 필수: 자체 로그인만 사용하고 `gateway-standard-chain@file`만 쓴다 | none | none |
+| POL-0079-R9 | OAuth2 Proxy | 필수: `allowed_groups = ["/admins"]`로 Keycloak `/admins` 그룹만 통과시킨다 | none | none |
+| POL-0079-R10 | `/admins` 그룹 확대 | 필수: owner 승인을 받는다 | 수동 | none |
+| POL-0079-R11 | 모든 Traefik HTTP router | 필수: SSO chain을 쓰거나 guide의 Route Authentication Matrix에 대체 인증을 명시한다 | `RouteAuthContractTests` | none |
+| POL-0079-R12 | 모든 route | 금지: 인증 없는 route와 TCP route를 둔다 | `RouteAuthContractTests` | none |
+| POL-0079-R13 | Exception Conditions에 기록한 Grafana 정적 예외 | 허용: 이 예외만 위 규칙의 범위를 제한한다 | none | none |
+| POL-0079-R14 | Terrakube ForwardAuth 제거 | 필수: 서비스별 acceptance evidence가 기록된 뒤에만 한다 | none | none |
+| POL-0079-R15 | 이미 승인된 단계별 전환 | 허용: 같은 범위의 재승인 없이 진행한다 | none | none |
+| POL-0079-R16 | Compose 기반 OIDC client secret | 필수: Docker Secret 또는 소비자 Compose가 선언한 OpenBao Agent 출력 파일(`/run/openbao/...`)로 주입한다 | 수동 | none |
+| POL-0079-R17 | OpenBao native OIDC secret | 필수: 승인된 절차로 auth backend에 저장한다 | [OpenBao runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)의 비밀값 없는 점검 절차 | none |
+| POL-0079-R18 | 비밀값 | 금지: 공개 설정에 넣는다 | none | none |
+| POL-0079-R19 | token/refresh token/id token 원문 | 금지: 문서/incident/PR/task evidence에 기록한다 | none | none |
+| POL-0079-R20 | local mkcert CA | 필수: 기존 public CA trust를 보존한 상태로 추가한다 | none | none |
+| POL-0079-R21 | Airflow provider update | 필수: Keycloak permission migration 요구사항을 확인한다 | none | none |
+| POL-0079-R22 | Kafbat RBAC `clusters` | 필수: configured cluster name과 일치한다 | none | none |
+| POL-0079-R23 | Open WebUI | 필수: 가입을 비활성화하고 OAuth role/group 자동 관리를 끈다 | none | none |
+| POL-0079-R24 | Open WebUI 이메일 병합 | 필수: 검증된 단일 기존 관리자 연결에 한정한다 | none | none |
+| POL-0079-R25 | Open WebUI 수용 검증 후 | 필수: 비활성화 상태를 유지한다 | none | none |
+| POL-0079-R26 | 미기동 Terrakube | 금지: 명시적 API audience 검증과 실행 검증 전에 완료로 본다 | none | none |
+| POL-0079-R27 | Native OIDC 서비스 | 금지: OAuth2 Proxy ForwardAuth를 동시에 기본 인증으로 적용한다 | none | none |
+| POL-0079-R28 | 항상 | 금지: `rootCA-key.pem` 배포/공유 | none | none |
+| POL-0079-R29 | 항상 | 금지: secret/token 원문 기록 | none | none |
+| POL-0079-R30 | 항상 | 금지: 과거 OAuth callback URL 또는 authorization code 재사용 | none | none |
+| POL-0079-R31 | Airflow | 금지: Keycloak access token을 Airflow internal JWT로 취급한다 | none | none |
+| POL-0079-R32 | 공통 Secret 보존/runtime 변경 승인 | 필수: [POL-0006](../01-common/0006-infrastructure-optimization-governance.md)과 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)을 적용한다 | none | none |
 
 #### Required
 
@@ -165,15 +177,17 @@ profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
 
 ### Limits
 
-정책이 명명한 검증은 GDE-0079의 서비스별 정적 검증(profile별 Compose 검증과 tier hardening)과 아래 추가 검증 항목이며 다음은 기계적으로 강제되지 않는다.
+이 정책은 아래 규칙에 대해 명명된 자동 검사를 연결하지 않거나 수동 검토에 맡긴다.
 
-- `RouteAuthContractTests` 외에는 규칙별로 이름 붙은 스크립트가 없고 추가 검증 목록은 점검 항목으로만 나열된다.
-- Grafana 정적 예외의 정적 계약은 Grafana 접근/로그인/권한/backend 호출의 운영 검증이 아니며, 이 문서 변경만으로 source와 테스트가 수정되거나 통과했다고 주장하지 않는다. 이 예외는 2026-12-02 재검토 대상이다.
-- 미기동 Terrakube는 명시적 API audience 검증과 실행 검증 전까지 완료로 보지 않으며 서비스별 acceptance evidence가 없는 상태다.
-- Superset LAB origin의 redirect 등록은 소유자 승인 전까지 미결정이다.
-- OAuth2 Proxy `/admins` 그룹 확대 승인, token 원문 비기록, mkcert CA trust 보존, Airflow provider 업데이트 시 permission migration 확인, Open WebUI 가입 비활성화는 수동 검토에 의존한다.
-- OpenBao auth-backend OIDC 설정은 비밀값 없는 Runbook 점검 절차로만 확인된다.
-- 긴급 auth 우회의 범위/조건/rollback/evidence 기록은 incident/task 수동 기록이다.
+- 인증 경로: 명명된 검사 없음 R1~R3 (`POL-0079-` 접두)
+- 라우터 체인: 명명된 검사 없음 R8, R9, R13~R15; 수동 검토 R10 (`POL-0079-` 접두)
+- secret/token: 명명된 검사 없음 R18~R20 (`POL-0079-` 접두)
+- 서비스별: 명명된 검사 없음 R21~R26 (`POL-0079-` 접두)
+- 금지 목록: 명명된 검사 없음 R27~R31 (`POL-0079-` 접두)
+- 공통 통제: 명명된 검사 없음 R32 (`POL-0079-` 접두)
+- 정책이 명명한 검증은 GDE-0079의 서비스별 정적 검증(profile별 Compose 검증과 tier hardening)과 추가 검증 목록이며 `RouteAuthContractTests` 외에는 규칙별로 이름 붙은 스크립트가 없다(154~164행).
+- Keycloak client redirect URI/public URL 정합, Airflow provider/Authorization Services bootstrap 상태는 추가 검증 목록에 있으나 어느 규칙에 대응하는지 본문이 연결하지 않는다(161, 164행).
+- POL-0079-R4, POL-0079-R5, POL-0079-R6, POL-0079-R7, POL-0079-R16: 수동 검증에 맡겨진다.
 
 ## Ownership
 

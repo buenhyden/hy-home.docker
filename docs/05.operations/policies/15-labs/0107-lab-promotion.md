@@ -48,16 +48,76 @@ next_review_at: "2027-05-13"
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0107-R1 | LAB 폴더 구성 시 | 필수: 모든 LAB은 `labs/<name>/` 폴더 하나이며 진입점 `docker-compose.yml`/`README.md`/`promotion.yaml`/build source가 함께 있고 `hy-home-lab-` Compose project/LAB network/`LAB_*` 입력/`LAB_DATA_DIR` 데이터/`lab.py check` 격리를 유지한다 | `lab.py check <name>` / `tests/validation/test_lab_isolation.py` / `tests/validation/test_lab_layout.py` | 검사/테스트 결과 |
-| POL-0107-R2 | 항상 | 필수: `labs/<name>/promotion.yaml`에 `kind`/`target`/`replaces`/`integrations`/`secrets`/`documents`/`resources`(선택 `host`)를 선언하고 알 수 없는 `kind`/`infra/<tier>/` 밖 `target`/catalog 행 없는 secret/렌더와 다른 `resources`를 문제로 보고한다 | `python3 scripts/operations/lab.py check` | 검사 보고 |
-| POL-0107-R3 | 항상 | 필수: LAB secret은 `secrets/labs/<name>/` 사본이며 catalog 행(`LAB-*`)과 registry placeholder 행을 갖고 HOME secret 경로를 읽지 않으며 승격 때 LAB 값은 승격하지 않고 사본/catalog 행을 은퇴시키며 `secrets/SENSITIVE_ENV_VARS.md.example`은 owner가 손으로 편집한다 | `lab.py check`(secret 경로) | 검사 보고 / catalog 행 |
-| POL-0107-R4 | 항상 | 금지: 어떤 LAB도 Docker socket(`/var/run/docker.sock` 및 다른 이름의 `.sock` source)을 읽기 전용 여부와 무관하게 bind한다 | `lab.py check` | 검사 보고 |
-| POL-0107-R5 | 승격 시 | 필수: LAB source를 목적지 규칙(compose/README/자산/Guide-Runbook/secret 은퇴/`promotion.yaml` 삭제)에 따라 옮기고 파일/문서/secret/catalog 행의 LAB 사본을 남기지 않는다 | 수동 | 승격 Task 기록 |
-| POL-0107-R6 | 승격 전 | 필수: `lab.py readiness <name>`의 다섯 기준(Manifest 경로/은퇴 서비스/Tier/Composition/Resources)이 모두 `PASS`일 때만 승격하며 측정하지 못한 값은 `NOT_RUN`으로 fail-closed한다 | `lab.py readiness <name>` | readiness 보고서 |
-| POL-0107-R7 | reservation 선언 시 | 필수: 공유 resource template과 limit을 직접 쓰는 HOME/LAB 서비스는 `deploy.resources.reservations.cpus`/`.memory`를 선언하고 크기는 `docker stats` 3개 이상 표본 peak x 1.5(CPU 0.05/memory 32 MiB 단위)이며 미측정은 limit과 같다 | `tests/validation/test_lab_controller.py`의 `test_shared_templates_declare_reservations` | SPEC-0263-TSK-0002 Measurements |
-| POL-0107-R8 | 승격 Task 진행 시 | 필수: Tier/Linux/Composition 하위 검사는 owner 판단으로 각 승격 Task가 checklist로 기록한다 | 수동(`OWNER_JUDGMENT`) | 승격 Task checklist |
-| POL-0107-R9 | 항상 | 필수: 호스트 reserve는 CPUs 2/Memory 4096 MiB/Disk 10 percent이며 `lab.py`의 `PROMOTION_RESERVE`가 표와 같아야 한다 | `tests/validation/test_lab_controller.py`의 `test_reserve_matches_policy` | 테스트 결과 |
-| POL-0107-R10 | 항상 | 필수: 외부 workload allowance는 CPUs 2/MiB 6144이며 `lab.py`의 `PROMOTION_EXTERNAL_ALLOWANCE`가 표와 같아야 한다 | `tests/validation/test_lab_controller.py`의 `test_allowance_matches_policy` | 테스트 결과 |
+| POL-0107-R1 | LAB 구성 시 | 필수: 모든 LAB은 `infra/<tier>/<service>/`와 같은 모양의 폴더 하나 `labs/<name>/`이다 | `python3 scripts/operations/lab.py check <name>` / `tests/validation/test_lab_layout.py` | none |
+| POL-0107-R2 | LAB 구성 시 | 필수: 폴더에 `docker-compose.yml`, infra 서비스 문서 기준을 따르는 `README.md`, `promotion.yaml`과 LAB이 쓰는 build source/mount 설정/helper/Grafana 대시보드를 둔다 | `python3 scripts/operations/lab.py check <name>` / `tests/validation/test_lab_layout.py` | none |
+| POL-0107-R3 | LAB 구성 시 | 필수: `labs/` root에는 `labs/README.md`와 공유 `labs/.env.example`만 둔다 | `python3 scripts/operations/lab.py check <name>` / `tests/validation/test_lab_layout.py` | none |
+| POL-0107-R4 | LAB 구성 시 | 필수: `hy-home-lab-`로 시작하는 자신의 Compose project, LAB network, `LAB_*` endpoint 입력, `LAB_DATA_DIR` 아래 데이터와 `lab.py check`의 격리를 유지한다 | `python3 scripts/operations/lab.py check <name>` / `tests/validation/test_lab_isolation.py` | none |
+| POL-0107-R5 | 승격 선언 시 | 필수: `labs/<name>/promotion.yaml`로 LAB이 어디로 어떻게 승격될지 선언한다 | `python3 scripts/operations/lab.py check <name>` | none |
+| POL-0107-R6 | manifest 작성 시 | 필수: `kind`는 `add`/`replace-same`/`replace-substitute`/`undecided` 중 하나다 | `python3 scripts/operations/lab.py check <name>` | none |
+| POL-0107-R7 | `kind`가 `undecided`일 때 | 필수: `target`을 두지 않는다(readiness 검사가 거부) | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R8 | manifest 작성 시 | 필수: `target`에 목적지 폴더 `infra/<tier>/<service>/`와 합류할 `POL-0078` profile을 선언한다 | `python3 scripts/operations/lab.py check <name>`(`infra/<tier>/` 밖의 `target` 보고) | none |
+| POL-0107-R9 | 두 대체 kind일 때 | 필수: `replaces`에 은퇴하는 HOME 서비스, 그 Compose 경로와 소비자를 선언한다 | none | none |
+| POL-0107-R10 | manifest 작성 시 | 필수: `integrations`에 필요한 infra 연동(gateway route, OIDC client, DB role과 provisioning, observability scrape/log, OpenBao secret 전달, 공유 network)과 그 infra 소유자를 선언한다 | none | none |
+| POL-0107-R11 | manifest 작성 시 | 필수: `secrets`에 LAB secret 사본마다 catalog 행과 infra 목적지 경로를 선언한다 | `python3 scripts/operations/lab.py check <name>`(catalog 행이 없는 secret 보고) | none |
+| POL-0107-R12 | manifest 작성 시 | 필수: `documents`에 Guide와 Runbook의 현재 `15-labs` 경로와 목적지 `docs/05.operations` 역할 폴더를 선언한다 | none | none |
+| POL-0107-R13 | manifest 작성 시 | 필수: `resources`에 서비스별 선언 limit(`cpus`, `memory_mib`)과 reservation(`reservations.cpus`, `reservations.memory_mib`), 데이터/image에 필요한 disk를 선언한다 | `python3 scripts/operations/lab.py check <name>`(렌더링된 limit 또는 reservation과 다른 `resources` 보고) | none |
+| POL-0107-R14 | Compose가 표현하지 못하는 요구가 있을 때 | 허용: 선택 `host`에 최소 Docker/Compose 버전과 kernel 기능을 선언 | none | none |
+| POL-0107-R15 | LAB 단계 | 필수: 모든 secret 파일은 `secrets/labs/<name>/` 아래 LAB 사본이다 | `python3 scripts/operations/lab.py check <name>` | none |
+| POL-0107-R16 | LAB secret 사본마다 | 필수: catalog 행(`LAB-*`, scope `lab`)과 공개 registry placeholder 행을 따로 갖는다 | `python3 scripts/operations/lab.py check <name>`(catalog 행이 없는 secret 보고) | none |
+| POL-0107-R17 | 항상 | 금지: LAB의 HOME secret 경로 읽기 | none | none |
+| POL-0107-R18 | HOME도 쓰는 값(예 SMTP)일 때 | 필수: HOME 값을 LAB 위치로 복사한다 | none | none |
+| POL-0107-R19 | LAB만 쓰는 값일 때 | 필수: LAB 위치로 옮긴다 | none | none |
+| POL-0107-R20 | secret 파일 복사/이동 시 | 필수: owner가 한다 | 수동 | none |
+| POL-0107-R21 | 승격 시 | 금지: LAB secret 값 승격 | none | none |
+| POL-0107-R22 | 승격 시 | 필수: 승격된 서비스는 manifest의 목적지 경로에서 infra secret을 받는다(새 값, 또는 대체 승격이면 secret 정책에 따라 rotate한 기존 HOME secret) | none | none |
+| POL-0107-R23 | 승격 시 | 필수: 각 LAB 사본과 그 catalog 행을 은퇴시키고 registry도 따라간다 | none | none |
+| POL-0107-R24 | 승격 시 | 필수: 목적지마다 새 `root` catalog 행을 만들거나 기존 행에 새 소비자를 더한다 | none | none |
+| POL-0107-R25 | 공개 registry 편집 시 | 필수: `secrets/SENSITIVE_ENV_VARS.md.example`은 catalog와 일치하도록 owner가 손으로 편집한다(생성 파일 아님) | 수동 | none |
+| POL-0107-R26 | 공개 registry 편집 시 | 필수: agent는 placeholder 편집안만 준비한다 | 수동 | none |
+| POL-0107-R27 | 항상 | 금지: 어떤 LAB도 Docker socket을 bind | `python3 scripts/operations/lab.py check <name>`(`/var/run/docker.sock`과 다른 이름의 `.sock` source를 읽기 전용 여부와 무관하게 거부) | none |
+| POL-0107-R28 | 승격 시 | 필수: `labs/<name>/docker-compose.yml`은 root가 include하는 `infra/<tier>/<service>/docker-compose.yml`로 가고 LAB 전용 입력은 infra 연동으로 바꾼다 | none | none |
+| POL-0107-R29 | 승격 시 | 필수: `labs/<name>/README.md`는 목적지 폴더의 서비스 README로 간다 | none | none |
+| POL-0107-R30 | 승격 시 | 필수: `labs/<name>/` 자산은 같은 상대 경로로 목적지 폴더에 간다 | none | none |
+| POL-0107-R31 | 승격 시 | 필수: `15-labs`의 Guide와 Runbook은 목적지 역할 폴더로 가며 artifact 식별자와 생성일을 유지한다 | none | none |
+| POL-0107-R32 | 승격 시 | 필수: `secrets/labs/<name>/*`는 은퇴하고 서비스는 manifest가 지정한 infra secret을 쓴다 | none | none |
+| POL-0107-R33 | 승격 시 | 필수: `promotion.yaml`은 삭제하고 그 사실을 승격 Task에 기록한다 | none | 승격 Task 기록 |
+| POL-0107-R34 | 목적지 tier 선택 시 | 필수: tier는 서비스 기능을 따른다 | none | none |
+| POL-0107-R35 | 운영 문서 배치 시 | 허용: 운영 문서는 서비스 domain을 따르며 tier 번호와 같을 필요가 없다 | none | none |
+| POL-0107-R36 | 승격 후 | 금지: 파일, 문서, secret, catalog 행의 LAB 사본 잔존 | none | none |
+| POL-0107-R37 | 승격 전 | 필수: `lab.py readiness <name>`으로 fail-closed 보고서를 만들고 측정하지 못한 값은 `NOT_RUN`(통과 아님)으로 둔다 | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R38 | 승격 시 | 필수: 다섯 기준이 모두 `PASS`일 때만 승격한다 | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R39 | manifest 경로 작성 시 | 필수: `documents.*`, `integrations[].owner`, `replaces[].compose_path`, `target.folder`는 repository 안의 상대 경로다 | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R40 | manifest 경로 작성 시 | 금지: 절대 경로와 `..` 탈출 | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R41 | 서비스 은퇴 시 | 필수: `replace-same`과 `replace-substitute`만 서비스를 은퇴시킨다 | none | none |
+| POL-0107-R42 | 서비스 은퇴 시 | 필수: 은퇴 서비스는 root `docker-compose.yml`이 include하는 `compose_path`에 선언되어 root render에 나타나야 하며 아니면 composition이 실패하고 아무것도 은퇴하지 않는다 | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R43 | 이미 있는 목적지 폴더일 때 | 필수: 은퇴 서비스가 독점할 때만 대체로 인정한다(은퇴 서비스가 폴더를 점유, 유지되는 서비스의 build/bind source가 폴더 안에 없음, 그 아래 `*compose*.y*ml`이 선언한 모든 서비스가 은퇴) | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R44 | 목적지 폴더 아래 Compose 파일을 읽을 수 없거나 symlink 디렉터리가 있거나 폴더가 repository 밖으로 풀릴 때 | 필수: 실패로 판정한다 | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R45 | composition 시 | 필수: port와 container 이름은 유지되는 서비스가 선언하지 않을 때만 뺀다 | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R46 | composition 시 | 금지: network와 데이터 경로 제외 | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R47 | resources 판정 시 | 필수: limit이 아니라 선언 reservation으로 판정한다 | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R48 | resources 판정 시 | 필수: 실행 중 container의 `com.docker.compose.project`/`com.docker.compose.service` label로 root 또는 실행 중 LAB render의 서비스를 찾아 reservation을 더하고, 후보 render의 reservation과 외부 workload allowance를 한 번 더하며, 실행 중인 은퇴 서비스를 뺀다 | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R49 | resources 판정 시 | 필수: 그 합이 측정된 host 용량에서 reserve를 뺀 예산 안에 있어야 한다 | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R50 | 알려진 project 밖의 container(k3d 등)일 때 | 필수: 개수와 관계없이 allowance로만 센다 | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R51 | render가 없는 실행 중 LAB project, render에 없는 서비스, reservation 또는 limit이 없는 서비스(후보 서비스 포함)일 때 | 필수: 합할 수 없어 `NOT_RUN`으로 판정한다 | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R52 | reservation이 limit보다 클 때 | 필수: `FAIL`로 판정한다 | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R53 | 알려진 합이 이미 예산을 넘을 때 | 필수: `NOT_RUN`이 있어도 `FAIL`로 판정한다 | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R54 | manifest 검증 시 | 필수: 0이거나 빠진 limit과 render와 다른 reservation을 거부한다 | `python3 scripts/operations/lab.py check <name>`(렌더링된 limit 또는 reservation과 다른 `resources` 보고) / `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R55 | disk 판정 시 | 필수: 데이터 root와 Docker data root의 여유에서 전체의 reserve 비율을 뺀 값이 `disk_gib`를 덮어야 한다 | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R56 | Owner 확인 항목 보고 시 | 필수: 세 하위 검사를 `OWNER_JUDGMENT`로 보이고 `owner_checks`에 나열한다(측정값도 차단도 아님) | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R57 | 기준/전체 결과 보고 시 | 필수: 기준과 전체 결과는 `PASS`/`FAIL`/`NOT_RUN`만 갖고 측정된 기준이 모두 `PASS`여야 `PASS`다 | `python3 scripts/operations/lab.py readiness <name>` | none |
+| POL-0107-R58 | 항상 | 필수: 공유 resource template과 limit을 직접 쓰는 모든 HOME/LAB 서비스는 `deploy.resources.reservations.cpus`와 `.memory`를 선언한다 | none | none |
+| POL-0107-R59 | 항상 | 필수: limit은 기존 short form(`cpus`, `mem_limit`)을 유지한다 | none | none |
+| POL-0107-R60 | 자체 `deploy` 블록(GPU device 등)이 있는 서비스일 때 | 필수: 기존 key를 지우지 않고 reservation을 합친다 | none | none |
+| POL-0107-R61 | reservation 크기 산정 시 | 필수: 실행 중 구성원의 `docker stats --no-stream` 표본 세 개 이상에서 구성원별 최대값을 잡는다 | none | none |
+| POL-0107-R62 | reservation 크기 산정 시 | 필수: anchor 안에서 가장 큰 값에 1.5를 곱해 CPU는 0.05, memory는 32 MiB 단위로 올린다 | none | none |
+| POL-0107-R63 | reservation 크기 산정 시 | 필수: 결과는 limit을 넘지 않는다 | `test_shared_templates_declare_reservations`(공유 template의 reservation이 limit 이하인지 검증) | none |
+| POL-0107-R64 | reservation 크기 산정 시 | 필수: 측정값의 하한은 0.05 CPU와 32 MiB다 | none | none |
+| POL-0107-R65 | 측정하지 않은 reservation일 때 | 필수: limit과 같게 둔다 | none | none |
+| POL-0107-R66 | 재측정 시 | 필수: reservation을 낮춘다 | none | none |
+| POL-0107-R67 | LAB reservation 측정 시 | 필수: 승인된 LAB lease 실행(`lab.py run`)에서 측정할 때까지 limit과 같게 둔다 | none | none |
+| POL-0107-R68 | 승격 Task 시 | 필수: 각 승격 Task가 owner의 판단(Tier/Linux/Composition)을 checklist로 기록한다 | 수동 | none |
+| POL-0107-R69 | 항상 | 필수: host reserve 표(CPUs 2, Memory MiB 4096, Disk percent 10)와 `lab.py`의 `PROMOTION_RESERVE`를 같게 둔다 | `tests/validation/test_lab_controller.py`의 `test_reserve_matches_policy` | none |
+| POL-0107-R70 | 항상 | 필수: external-workload allowance 표(Allowance CPUs 2, Allowance MiB 6144)와 `lab.py`의 `PROMOTION_EXTERNAL_ALLOWANCE`를 같게 둔다 | `tests/validation/test_lab_controller.py`의 `test_allowance_matches_policy` | none |
 
 #### Standard layout
 
@@ -246,14 +306,19 @@ Task를 열기 전마다 검토한다.
 
 ### Limits
 
-Mechanisms는 `lab.py check`와 세 검증 테스트를 이름 붙이며, 아래 항목은 기계적으로 강제되지 않는다.
+아래 규칙은 이름 붙은 검사가 규칙에 연결되어 있지 않거나 owner의 수동 작업에 의존한다.
 
+- promotion manifest: 강제 수단 없음 `POL-0107-R9`~`R10`, `POL-0107-R12`, `POL-0107-R14`
+- secret: 수동 검토 `POL-0107-R20`, `POL-0107-R25`~`R26`; 강제 수단 없음 `POL-0107-R17`~`R19`, `POL-0107-R21`~`R24`
+- 승격 목적지: 강제 수단 없음 `POL-0107-R28`~`R36`
+- readiness: 강제 수단 없음 `POL-0107-R41`
+- reservation: 강제 수단 없음 `POL-0107-R58`~`R62`, `POL-0107-R64`~`R67`
+- owner 확인 항목: 수동 검토 `POL-0107-R68`
 - Owner check items(Tier/Linux/Composition)는 `OWNER_JUDGMENT`로 보고되며 측정값도 차단도 아니고 승격 Task의 owner checklist에 의존한다.
 - 측정하지 못한 readiness 값은 `NOT_RUN`이며 통과가 아니다.
 - `postgresql-ha`는 측정 전이라 resources `FAIL`이며 승격 전 부하 측정이 필요하다.
 - Docker는 CPU reservation을 강제하지 않고 memory reservation은 soft limit이다.
 - secret 파일 복사/이동과 `SENSITIVE_ENV_VARS.md.example` 편집은 owner의 수동 작업이다.
-- `ollama` 4G reservation은 owner가 승인한 sizing 규칙 예외다.
 
 ## Ownership
 

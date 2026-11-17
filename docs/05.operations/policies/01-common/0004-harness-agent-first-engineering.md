@@ -63,18 +63,26 @@ role이 각자의 tier와 work profile을 소유한다. 이 문서는 운영 측
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0004-R1 | 항상 | 필수: Root 파일은 상세 policy를 `.agents/`와 runtime overlay에 위임한다(Thin root shims) | none | none |
-| POL-0004-R2 | 항상 | 필수: Native role adapter와 thin Claude skill pointer는 authored `.agents` source와 동기화를 유지하고 canonical 파일은 renderer output이 되지 않는다 | none | none |
-| POL-0004-R3 | 항상 | 필수: repository check는 catalog, model, scope import, protocol-reference parity만 증명하며 semantic parity로 간주하지 않는다 | 수동 | none |
-| POL-0004-R4 | 모델 선택 시 | 필수: role의 `work_profile`과 Provider Registry mapping을 따르고 현재 모델/계층/개수를 별도로 선언하지 않는다 | none | none |
-| POL-0004-R5 | 각 runtime agent | 필수: 정확히 하나의 primary scope를 import한다 | none | none |
-| POL-0004-R6 | Runtime hook | 필수: shell command substitution 부작용 없이 실제 payload shape를 파싱한다 | none | none |
-| POL-0004-R7 | Codex surface | 필수: Provider Registry가 native agent pattern을 선언하고 renderer가 role당 하나의 adapter를 hook configuration 옆에 작성한다 | none | none |
-| POL-0004-R8 | 새 stage 문서 | 필수: `docs/99.templates/`를 사용하고 parent README 파일을 갱신한다 | none | none |
-| POL-0004-R9 | Active runtime/governance 파일 | 금지: 외부 harness source label을 참조한다 | none | none |
-| POL-0004-R10 | Graphify 사용 시 | 필수: health가 clean할 때만 navigation aid로 쓰고 contaminated output은 advisory로 tracked source/canonical 문서와 대조한다 | `bash scripts/knowledge/report-graphify-health.sh` | `status=advisory` 보고 |
-| POL-0004-R11 | 적용 gate 실행 시 | 필수: 현재 선택 범위를 기록하고 범위 밖 remediation은 별도 승인한다 | 수동 | 현재 Task 기록 |
-| POL-0004-R12 | AI Agent 한도 | 필수: Agentic Engineering Policy와 Environment Constraints(Graphify)의 규칙을 따른다 | none | none |
+| POL-0004-R1 | Root 파일 | 필수: 상세 policy를 `.agents/`와 runtime overlay에 위임한다 | none | none |
+| POL-0004-R2 | Native role adapter와 thin Claude skill pointer | 필수: authored `.agents` source와 동기화 상태를 유지한다 | none | none |
+| POL-0004-R3 | canonical 파일 | 금지: renderer output으로 만든다 | none | none |
+| POL-0004-R4 | 모델 선택 | 필수: role의 `work_profile`과 Provider Registry의 provider mapping을 따른다 | none | none |
+| POL-0004-R5 | 항상 | 금지: 현재 모델/계층/개수를 이 문서에서 별도로 선언한다 | none | none |
+| POL-0004-R6 | 각 runtime agent | 필수: 정확히 하나의 primary scope를 import한다 | none | none |
+| POL-0004-R7 | Runtime hook | 필수: shell command substitution 부작용 없이 실제 payload shape를 파싱한다 | none | none |
+| POL-0004-R8 | Codex surface | 필수: Provider Registry가 native agent pattern을 선언하고 renderer가 role당 하나의 adapter를 hook configuration 옆에 작성한다 | none | none |
+| POL-0004-R9 | Codex surface 내용 결정 | 필수: 이 문서가 아니라 registry가 결정한다 | none | none |
+| POL-0004-R10 | 새 stage 문서 | 필수: `docs/99.templates/`를 사용한다 | none | none |
+| POL-0004-R11 | 새 stage 문서 | 필수: parent README 파일을 갱신한다 | none | none |
+| POL-0004-R12 | Active runtime/governance 파일 | 금지: 외부 harness source label 참조 | none | none |
+| POL-0004-R13 | Graphify 사용 시 | 필수: health가 clean할 때만 navigation aid로 쓴다 | none | none |
+| POL-0004-R14 | contaminated output | 필수: advisory로 두고 tracked source 및 canonical 문서와 대조 검증한다 | none | `status=advisory` 보고 |
+| POL-0004-R15 | 적용 gate 실행 시 | 필수: 현재 선택 범위를 기록한다 | none | none |
+| POL-0004-R16 | 범위 밖 remediation | 필수: 별도 승인을 받는다 | 수동 | none |
+| POL-0004-R17 | AI Agent 한도 | 필수: [Agentic Engineering Policy](../../../../.agents/governance/agentic.md#execution-rules)(Graphify는 [Environment Constraints](../../../../.agents/governance/environment-constraints.md#4-graphify))를 따른다 | none | none |
+| POL-0004-R18 | native 호출/복구 결과 기록 시 | 금지: 정적 source나 수동 비교를 native 호출/복구 성공으로 기록한다 | none | none |
+| POL-0004-R19 | Docker/실제 환경 접근 | 필수: 해당 Task의 승인 범위에서 실행한다 | none | none |
+| POL-0004-R20 | 미실행 항목 | 금지: 미실행을 성공으로 취급한다 | none | none |
 
 | 통제 | 요구사항 |
 | --- | --- |
@@ -124,14 +132,17 @@ Docker·실제 환경 접근은 해당 Task의 승인 범위에서 실행하며 
 
 ### Limits
 
-정책은 변경 영향에 맞춰 선택한 검사만 수행하며 다음은 기계적으로 강제되지 않는다.
+이 정책은 아래 규칙에 대해 명명된 자동 검사를 연결하지 않거나 수동 검토에 맡긴다.
 
-- repository check는 catalog, model, scope import, protocol-reference parity만 증명하고 모든 runtime 문서의 semantic parity는 증명하지 않는다.
-- 자동 답변 점수 QA와 완료 사건의 전용 증명은 현재 delivery gate가 아니다.
-- 정적 source나 수동 비교는 native 호출/복구 성공으로 기록하지 않으며, Docker/실제 환경 접근은 Task 승인 범위에서만 실행하고 미실행은 성공이 아니다.
-- `bash scripts/knowledge/report-graphify-health.sh`의 `status=advisory`는 신뢰도 하향 evidence이며 검증 실패가 아니다.
-- 완료 판정은 Task의 필수 증거와 독립 검토(수동)에 의존한다.
-- Hook safety, Template-first docs, Source-label prevention, Infra validation scope 규칙은 이 문서에 명명된 전용 검사가 없다.
+- Root shim/미러: 명명된 검사 없음 R1~R3 (`POL-0004-` 접두)
+- 모델/scope: 명명된 검사 없음 R4~R6 (`POL-0004-` 접두)
+- Hook/Codex: 명명된 검사 없음 R7~R9 (`POL-0004-` 접두)
+- 문서/source label: 명명된 검사 없음 R10~R12 (`POL-0004-` 접두)
+- Graphify/gate 범위: 명명된 검사 없음 R13~R15, R17; 수동 검토 R16 (`POL-0004-` 접두)
+- 증거 기록: 명명된 검사 없음 R18~R20 (`POL-0004-` 접두)
+- repository check는 catalog/model/scope import/protocol-reference parity만 증명하며 모든 runtime 문서의 semantic parity는 증명하지 않는다(83행).
+- 자동 답변 점수 QA와 완료 사건의 전용 증명은 현재 delivery gate가 아니다(94행).
+- `bash scripts/knowledge/report-graphify-health.sh`의 `status=advisory`는 신뢰도 하향 evidence이며 repository validation 실패가 아니다(105행).
 
 ## Ownership
 

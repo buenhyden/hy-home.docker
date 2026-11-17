@@ -48,18 +48,25 @@ backup 책임 경계를 다룬다.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0048-R1 | Prometheus metrics | 필수: local TSDB와 Prometheus policy의 retention/volume boundary를 따르며 external long-term storage는 선언되지 않았다 | 수동 (POL-0045 참조) | none |
-| POL-0048-R2 | Loki logs | 필수: `loki-config.yaml`의 `retention_enabled: true`와 `retention_period: 168h`를 기준으로 한다 | Loki retention config `rg` 점검 | `rg` 출력 |
-| POL-0048-R3 | Tempo traces | 필수: `block_retention: 24h`와 `compacted_block_retention: 1h`를 요구하며 현재 `tempo.yaml`에 없어 미준수다 | Tempo 필수값 `rg` 점검 (PASS 처리 금지) | 구현 결함 기록 / 실제 삭제 검증 필요 |
-| POL-0048-R4 | Pyroscope profiles | 필수: local filesystem backend와 `limits.retention_period: 168h`를 선언하고 capacity/storage usage를 계속 점검한다 | Pyroscope `rg` 점검 (`retention_period`) | `rg` 출력 / capacity 추이 |
-| POL-0048-R5 | Grafana dashboard backup | 필수: `grafana/dashboards/` JSON을 version-controlled source로 유지하고 LAB dashboard는 `labs/<name>/dashboards/`에서 따로 관리한다 | 수동 | none |
-| POL-0048-R6 | 항상 | 필수: High-cardinality label(user ID, IP, request ID 등)을 metrics/log label에 직접 추가하지 않는다 | 수동 | none |
-| POL-0048-R7 | SeaweedFS owning policy와 runbook evidence가 있을 때 | 허용: Loki/Tempo SeaweedFS snapshot 또는 replication을 검토한다 | 수동 (POL-0024) | runbook evidence |
-| POL-0048-R8 | 승인된 active Plan과 Task가 있을 때 | 허용: retention/resource/storage 변경을 수행한다 | 수동 | config diff, capacity impact, rollback evidence |
-| POL-0048-R9 | 항상 | 금지: 문서만 수정해 runtime retention이 변경된 것처럼 선언한다 | 수동 / 원격 PR `changed` 검사 | none |
-| POL-0048-R10 | 항상 | 금지: 구현되지 않은 external archive를 active control로 표기한다 | 수동 | none |
-| POL-0048-R11 | 항상 | 금지: secret 값, credential, token, certificate 원문을 문서/evidence에 기록한다 | 수동 | none |
-| POL-0048-R12 | Loki marker/Restic 제외/기본값 | 필수: 알려진 구현 결함(Loki marker 위치, Tempo 설정 누락)은 별도 구현 변경으로 닫고 Prometheus 15d 기본값을 관찰된 이력으로 단정하지 않는다 | 수동 | none |
+| POL-0048-R1 | Prometheus metrics | 필수: local TSDB와 Prometheus policy의 retention/volume boundary를 따름 | none | none |
+| POL-0048-R2 | Loki logs | 필수: `loki-config.yaml`의 `retention_enabled: true`와 `retention_period: 168h`를 기준으로 함 | Loki retention config `rg` 점검 | none |
+| POL-0048-R3 | Tempo traces | 필수: `block_retention: 24h`와 `compacted_block_retention: 1h` 요구(현재 `tempo.yaml`에 없어 미준수) | Tempo 필수값 `rg` 점검(현재 불일치이며 PASS로 처리하지 않음) | 구현 결함 기록 |
+| POL-0048-R4 | Tempo traces | 금지: 별도 승인된 구현 변경과 실제 삭제 검증 전에 retention compliant로 판정 | none | none |
+| POL-0048-R5 | Pyroscope profiles | 필수: local filesystem backend 사용과 `limits.retention_period: 168h` 선언 | Pyroscope 필수값 `rg` 점검(`retention_period: 168h`가 출력되어야 정상) | none |
+| POL-0048-R6 | Pyroscope profiles | 필수: capacity 추이와 storage usage를 계속 점검 | none | none |
+| POL-0048-R7 | Grafana dashboard backup | 필수: `grafana/dashboards/` JSON assets를 version-controlled source로 유지하고 LAB dashboard는 `labs/<name>/dashboards/`에서 따로 관리 | none | none |
+| POL-0048-R8 | 항상 | 금지: High-cardinality label(user ID/IP address/request ID 등)을 metrics/log label에 직접 추가 | none | none |
+| POL-0048-R9 | SeaweedFS owning policy(POL-0024)와 runbook evidence가 있을 때 | 허용: Loki/Tempo SeaweedFS snapshot 또는 replication 검토 | 수동 | none |
+| POL-0048-R10 | 관련 config diff/capacity impact/rollback evidence를 포함한 승인된 active Plan과 Task가 있을 때 | 허용: retention/resource/storage 변경 수행 | 수동 | none |
+| POL-0048-R11 | 항상 | 금지: 문서만 수정해서 runtime retention이 변경된 것처럼 선언 | none | none |
+| POL-0048-R12 | 항상 | 금지: 구현되지 않은 external archive를 active control로 표기 | none | none |
+| POL-0048-R13 | 항상 | 금지: secret 값/credential/token/certificate 원문을 정책 문서나 검증 evidence에 기록 | none | none |
+| POL-0048-R14 | 항상 | 필수: Loki 168h 요구와 지속적인 삭제 처리를 유지하고 marker 위치 결함은 별도 구현 변경으로 닫음 | none | none |
+| POL-0048-R15 | 항상 | 필수: 동일 컨테이너 재시작과 재생성의 상태 영향을 구분 | none | none |
+| POL-0048-R16 | 항상 | 필수: Loki/Tempo SeaweedFS collection(`loki-bucket`/`tempo-bucket`)을 Restic state set에서 제외(owner 2026-10-10, SPEC-0228) | none | none |
+| POL-0048-R17 | 항상 | 필수: 보존 기간은 백업이 아니라 각 서비스 설정으로 지킴 | none | none |
+| POL-0048-R18 | 항상 | 금지: Prometheus 15d 기본값을 실제 보존 이력을 관찰한 결과로 단정 | none | none |
+| POL-0048-R19 | 항상 | 금지: Pyroscope 삭제/Pushgateway 휘발 동작을 승인된 backup/archive로 취급 | none | none |
 
 - **Required**:
   - Prometheus metrics는 local TSDB와 Prometheus policy의 retention/volume
@@ -130,14 +137,14 @@ Prometheus는 시간·크기 override가 없어 선언 릴리스의 15d 기본�
 
 ### Limits
 
-이 정책은 보존 설정 문자열 점검만 이름 붙여 두며 실제 삭제 동작은 증명하지 않는다.
+정책 본문이 이름 붙인 검사로 강제하는 규칙은 일부이며 아래 항목은 기계적으로 강제되지 않는다.
 
-- Tempo 필수값(`block_retention`, `compacted_block_retention`)은 현재 `tempo.yaml`에 없어 미준수이며 PASS가 아니라 구현 결함이다. 별도 승인된 구현 변경과 실제 삭제 검증 전에는 준수로 판정하지 않는다.
-- Loki marker가 영속 `/loki` 밖의 `/tmp/loki/compactor`에 있어 재생성 시 사라질 수 있으며 이 결함은 열려 있다.
-- Prometheus의 15d 기본값은 관찰된 보존 이력이 아니다.
-- Pyroscope 삭제는 block 단위·유예 이후이고 backup/archive가 아니며 Pushgateway는 재시작 때 metric을 잃는다.
-- Loki/Tempo SeaweedFS collection은 Restic state set에서 제외되어 손실 시 복원하지 않는다.
-- 고 cardinality label 금지, dashboard 소스 유지, 문서 단독 선언 금지는 지정된 기계 검사가 없다.
+- 보존 기준: `POL-0048-R1`, `POL-0048-R4`, `POL-0048-R6`, `POL-0048-R7`는 이름 붙은 검사가 지정되지 않았다.
+- 금지 행위: `POL-0048-R8`, `POL-0048-R11`, `POL-0048-R12`, `POL-0048-R13`는 이름 붙은 검사가 지정되지 않았다.
+- 변경 절차: `POL-0048-R9`, `POL-0048-R10`는 승인/검토 등 수동 절차에 의존한다.
+- 구현/복구 결함: `POL-0048-R14`, `POL-0048-R15`, `POL-0048-R16`, `POL-0048-R17`, `POL-0048-R18`, `POL-0048-R19`는 이름 붙은 검사가 지정되지 않았다.
+- 정책은 보존 설정 문자열 점검만 이름 붙여 두며 실제 삭제 동작은 증명하지 않는다고 명시한다.
+- Tempo 필수값은 현재 `tempo.yaml`에 없어 미준수이며 PASS가 아니라 구현 결함이다. Loki marker 위치 결함도 열려 있다.
 
 ## Ownership
 

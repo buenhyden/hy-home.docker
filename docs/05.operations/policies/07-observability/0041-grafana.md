@@ -48,28 +48,45 @@ dashboard tree에 선언된 Grafana 운영 기준을 다룬다.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0041-R1 | 항상 | 필수: dashboard는 `infra/06-observability/grafana/dashboards/`의 JSON 파일로 관리 | Dashboard count `find` 검사 | none |
-| POL-0041-R2 | 항상 | 필수: dashboard provider는 `dashboards.yml`에서 `editable: false` 유지 | Provisioning boundary `rg` 검사 (`infra/06-observability/grafana/provisioning`) | none |
-| POL-0041-R3 | 항상 | 필수: datasource는 `datasource.yml`로 선언, dashboard 참조는 provisioned UID/변수와 일치 | Provisioning boundary `rg` 검사 (`infra/06-observability/grafana/provisioning`) | none |
-| POL-0041-R4 | 항상 | 필수: 서비스 대시보드는 벤더/mixin/grafana.com 대시보드를 우선, `description`에 출처와 revision/commit 기록, 없을 때만 로컬(SPEC-0193) | none | dashboard `description`의 출처/revision |
-| POL-0041-R5 | 항상 | 필수: 같은 소스/목적의 dashboard는 하나만, Grafana README Service Coverage 표가 모든 Compose 서비스의 메트릭 소스/대시보드를 기록 | 대시보드 계약 테스트(표와 파일 대조) | none |
-| POL-0041-R6 | 항상 | 금지: 이미 provision된 dashboard의 `uid` 변경; 교체 시 새 경로와 새 `uid` | none | none |
-| POL-0041-R7 | 항상 | 필수: PostgreSQL datasource는 `grafana_reader`(named table `SELECT`만, 읽기 전용 세션)로만 접속, 비밀번호는 Docker Secret file로만 | none | none |
-| POL-0041-R8 | 항상 | 필수: role mapping은 Keycloak groups `/admins`/`/editors`/`/viewers`와 `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH` 기준, catch-all `Viewer` 금지, strict mode | Compose service boundary `rg` 검사 (`infra/06-observability/docker-compose.yml`) | none |
-| POL-0041-R9 | 항상 | 필수: 익명 접근 비활성화, OAuth TLS는 로컬 root CA로 검증 | none | none |
-| POL-0041-R10 | 항상 | 필수: `grafana_admin_password`/`grafana_client_secret`은 Docker Secret file 또는 `*_FILE`이 가리키는 OpenBao Agent 출력 file reference로만 주입 | Compose service boundary `rg` 검사 (`infra/06-observability/docker-compose.yml`) | none |
-| POL-0041-R11 | 항상 | 필수: `template-stateful-med`, read-only provisioning/dashboard mount, 영속 `grafana-data` volume 유지 | Compose service boundary `rg` 검사 (`infra/06-observability/docker-compose.yml`) | none |
-| POL-0041-R12 | 항상 | 필수: route는 TLS와 `gateway-standard-chain@file` 유지, 인증/인가는 Grafana Generic OAuth/Keycloak이 소유, `sso-auth@file` 중복 금지 | Compose service boundary `rg` 검사 (`infra/06-observability/docker-compose.yml`) | none |
-| POL-0041-R13 | 항상 | 허용: 새 dashboard는 unique `uid`를 가진 JSON 파일로 추가 | none | none |
-| POL-0041-R14 | 새 datasource 추가 시 | 허용: provisioning YAML과 연결 dashboard 변경을 같은 evidence 단위로 검증 | none | none |
-| POL-0041-R15 | Development에서 UI 탐색한 변경 | 허용: JSON export와 review 후 git에 반영 | none | none |
-| POL-0041-R16 | 항상 | 금지: provisioned dashboard/datasource를 UI-only 변경으로 운영 기준에 반영 | none | none |
-| POL-0041-R17 | 항상 | 금지: `GRAFANA_ADMIN_USERNAME`/`grafana_admin_password`/`grafana_client_secret`/OAuth client secret 값을 문서/로그/task evidence에 기록 | none | none |
-| POL-0041-R18 | 항상 | 금지: 승인 없이 route/role mapping/secret reference/provisioning mount/provider lock/image version을 runtime에서 변경 | none | none |
-| POL-0041-R19 | 항상 | 필수: HOME 유지, native Keycloak OAuth/gateway/익명 거부/그룹별 역할/TLS 검증/secret-file 보존 | Compose service boundary `rg` 검사 (`infra/06-observability/docker-compose.yml`) | none |
-| POL-0041-R20 | 항상 | 필수: `grafana-data` SQLite/runtime, provisioning, plugin과 OAuth/admin secret을 한 복구 집합으로 취급, 쓰기 중단 또는 SQLite 일관 backup | none | none |
-| POL-0041-R21 | 항상 | 필수: production route 없는 격리 환경에서 schema/identity/team/dashboard/alert/datasource/OAuth/익명 거부 검증 | none | none |
-| POL-0041-R22 | plugin/image 변경 및 제거 시 | 필수: 호환성/rollback 근거; 제거에는 dashboard/alert export, client 폐기, route 폐쇄, audit 보존, 데이터 삭제 승인 | none | none |
+| POL-0041-R1 | 항상 | 필수: dashboard는 `infra/06-observability/grafana/dashboards/`의 JSON 파일로 관리 | none | none |
+| POL-0041-R2 | 항상 | 필수: dashboard provider는 `dashboards.yml`에서 `editable: false` 유지 | none | none |
+| POL-0041-R3 | 항상 | 필수: datasource는 `datasource.yml`로 선언하고 dashboard 참조는 provisioned UID 또는 datasource 변수와 일치 | none | none |
+| POL-0041-R4 | 서비스 대시보드 작성 시 | 필수: 방출 메트릭과 맞는 벤더/mixin/grafana.com 대시보드를 먼저 사용 | none | none |
+| POL-0041-R5 | 서비스 대시보드 작성 시 | 필수: 파일의 `description`에 출처와 revision 또는 commit 기록 | none | dashboard `description`의 출처/revision |
+| POL-0041-R6 | 맞는 벤더/mixin/grafana.com 대시보드가 없을 때 | 허용: 로컬 대시보드 사용(SPEC-0193) | none | none |
+| POL-0041-R7 | 항상 | 필수: 같은 소스를 같은 목적으로 그리는 대시보드는 하나만 유지 | none | none |
+| POL-0041-R8 | 항상 | 필수: Grafana README Service Coverage 표가 모든 Compose 서비스의 메트릭 소스와 대시보드를 기록 | 대시보드 계약 테스트(표와 파일 대조) | none |
+| POL-0041-R9 | 이미 provision된 dashboard | 금지: `uid` 변경 | none | none |
+| POL-0041-R10 | provision된 dashboard를 교체할 때 | 필수: 새 경로와 새 `uid` 사용 | none | none |
+| POL-0041-R11 | 항상 | 필수: PostgreSQL datasource는 `grafana_reader`(named table `SELECT`만, 읽기 전용 세션)로만 접속 | none | none |
+| POL-0041-R12 | 항상 | 필수: PostgreSQL datasource 비밀번호는 Docker Secret file로만 주입 | none | none |
+| POL-0041-R13 | 항상 | 필수: role mapping은 Keycloak groups `/admins`/`/editors`/`/viewers`와 `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH` 기준 | none | none |
+| POL-0041-R14 | 항상 | 금지: catch-all `Viewer` 설정 | none | none |
+| POL-0041-R15 | 항상 | 필수: strict mode로 지정 그룹 밖의 realm 사용자 거부 | none | none |
+| POL-0041-R16 | 항상 | 필수: 익명 접근 비활성화 | none | none |
+| POL-0041-R17 | 항상 | 필수: OAuth TLS는 로컬 root CA로 검증 | none | none |
+| POL-0041-R18 | 항상 | 필수: `grafana_admin_password`/`grafana_client_secret`은 Docker Secret file reference 또는 `GRAFANA_ADMIN_PASSWORD_FILE`/`GRAFANA_CLIENT_SECRET_FILE`이 가리키는 OpenBao Agent 출력(`/run/openbao/observability`) file reference로만 주입 | none | none |
+| POL-0041-R19 | 항상 | 필수: `template-stateful-med`, grafana/grafana image 선언, read-only provisioning/dashboard mount, 영속 `grafana-data` volume 유지 | none | none |
+| POL-0041-R20 | 항상 | 필수: Grafana route는 TLS와 `gateway-standard-chain@file` 유지, 인증/인가는 Grafana Generic OAuth와 Keycloak role mapping이 소유 | none | none |
+| POL-0041-R21 | 항상 | 금지: proxy `sso-auth@file` 중복 적용 | none | none |
+| POL-0041-R22 | 새 dashboard 추가 시 | 허용: unique `uid`를 가진 JSON 파일로 추가 | none | none |
+| POL-0041-R23 | 새 datasource 추가 시 | 필수: provisioning YAML과 연결 dashboard 변경을 같은 evidence 단위로 검증 | none | none |
+| POL-0041-R24 | Development에서 UI로 탐색한 dashboard 변경 | 필수: JSON export와 review 후 git에 반영 | none | none |
+| POL-0041-R25 | 항상 | 금지: provisioned dashboard 또는 datasource를 UI-only 변경으로 운영 기준에 반영 | none | none |
+| POL-0041-R26 | 항상 | 금지: `GRAFANA_ADMIN_USERNAME`/`grafana_admin_password`/`grafana_client_secret`/OAuth client secret 값을 문서/로그/task evidence에 기록 | none | none |
+| POL-0041-R27 | 항상 | 금지: 승인 없이 route/role mapping/secret reference/provisioning mount/dashboard provider lock/image version을 runtime에서 변경 | 수동 | none |
+| POL-0041-R28 | 항상 | 필수: Grafana를 HOME으로 유지하고 native Keycloak OAuth/gateway/익명 거부/그룹별 역할/TLS 검증/secret-file 보존 | none | none |
+| POL-0041-R29 | 항상 | 금지: 다른 서비스로 Grafana 외부 DB를 추정 | none | none |
+| POL-0041-R30 | 항상 | 필수: `grafana-data` SQLite/runtime, provisioning, plugin과 대응 OAuth/admin secret을 한 복구 집합으로 취급하고 쓰기 중단 또는 SQLite 일관 backup 수행 | none | none |
+| POL-0041-R31 | 항상 | 필수: production route 없는 격리 환경에서 schema/identity/team/dashboard/alert/datasource/OAuth/익명 거부 검증 | none | none |
+| POL-0041-R32 | plugin/image 변경 시 | 필수: 호환성/rollback 근거 확보 | none | none |
+| POL-0041-R33 | 제거 시 | 필수: dashboard/alert export, client 폐기, route 폐쇄, audit 보존, 데이터 삭제 승인 | 수동 | none |
+| POL-0041-R34 | 항상 | 필수: Native OAuth 요구 유지 | none | none |
+| POL-0041-R35 | 항상 | 금지: 임의 break-glass 예외 생성 | none | none |
+| POL-0041-R36 | SSO-only 요구가 완전히 시행되지 않을 때 | 필수: @buenhyden의 별도 수정 결정과 거부 검증 | 수동 | none |
+| POL-0041-R37 | `grafana-db-provision` 실행 후 | 필수: 애플리케이션 schema 준비 뒤 읽기 전용 query와 각 dashboard 확인 | none | none |
+| POL-0041-R38 | 항상 | 금지: `grafana-db-provision` 재실행을 단순 조회 진단으로 사용 | none | none |
+| POL-0041-R39 | DB/자격 증명 복구 시 | 필수: 관리 DB·시크릿 소유자가 복구하고 helper의 복구 자산은 추적 SQL/script | none | none |
 
 - **Required**:
   - Dashboards는 `infra/06-observability/grafana/dashboards/`의 JSON
@@ -164,12 +181,20 @@ Native OAuth 요구를 유지한다. `GF_AUTH_DISABLE_LOGIN_FORM`은 로그인 �
 
 ### Limits
 
-정책이 지정한 자동 검사는 Compose/provisioning `rg` 패턴, dashboard 개수 `find`, 대시보드 계약 테스트, 원격 PR `changed` 검사이며, 아래 항목은 기계적으로 강제되지 않는다.
+정책 본문이 이름 붙인 검사로 강제하는 규칙은 일부이며 아래 항목은 기계적으로 강제되지 않는다.
 
-- 알려진 구현 미준수: `GF_AUTH_DISABLE_LOGIN_FORM`은 로그인 폼만 숨기며 Basic API 인증을 끄지 않는다. 선언된 upstream은 Basic auth를 기본 활성화하고 Compose가 비활성화하지 않아 SSO-only 요구가 완전히 시행되지 않는다. 별도 수정 결정과 거부 검증이 @buenhyden에게 요구된다.
+- dashboard/datasource: `POL-0041-R1`, `POL-0041-R2`, `POL-0041-R3`, `POL-0041-R4`, `POL-0041-R5`, `POL-0041-R6`, `POL-0041-R7`, `POL-0041-R9`, `POL-0041-R10`, `POL-0041-R19`는 이름 붙은 검사가 지정되지 않았다.
+- 인증/secret: `POL-0041-R11`, `POL-0041-R12`, `POL-0041-R13`, `POL-0041-R14`, `POL-0041-R15`, `POL-0041-R16`, `POL-0041-R17`, `POL-0041-R18`, `POL-0041-R20`, `POL-0041-R21`, `POL-0041-R26`는 이름 붙은 검사가 지정되지 않았다.
+- 변경 절차: `POL-0041-R22`, `POL-0041-R23`, `POL-0041-R24`, `POL-0041-R25`는 이름 붙은 검사가 지정되지 않았다.
+- 변경 절차: `POL-0041-R27`는 승인/검토 등 수동 절차에 의존한다.
+- 수명주기/데이터: `POL-0041-R28`, `POL-0041-R29`, `POL-0041-R30`, `POL-0041-R31`, `POL-0041-R32`는 이름 붙은 검사가 지정되지 않았다.
+- 수명주기/데이터: `POL-0041-R33`는 승인/검토 등 수동 절차에 의존한다.
+- 인증 한계: `POL-0041-R34`, `POL-0041-R35`는 이름 붙은 검사가 지정되지 않았다.
+- 인증 한계: `POL-0041-R36`는 승인/검토 등 수동 절차에 의존한다.
+- db-provision: `POL-0041-R37`, `POL-0041-R38`, `POL-0041-R39`는 이름 붙은 검사가 지정되지 않았다.
+- 알려진 구현 미준수: `GF_AUTH_DISABLE_LOGIN_FORM`은 로그인 폼만 숨기며 선언된 upstream이 Basic auth를 기본 활성화하고 Compose가 비활성화하지 않아 SSO-only 요구가 완전히 시행되지 않는다.
 - `GF_AUTH_GENERIC_OAUTH_GRAFANA_ADMIN_ATTRIBUTE_PATH`는 선언 버전이 지원하지 않아 server-admin 부여 증거가 아니다.
-- `grafana-db-provision`은 없는 테이블을 건너뛰고도 성공 종료하며 HTTP health가 없으므로, 애플리케이션 schema 준비 뒤 읽기 전용 query와 각 dashboard를 따로 확인해야 한다.
-- 익명 거부, OAuth TLS 검증, 복구 집합 backup, 격리 환경 검증, 제거 절차, secret 값 기록 금지에는 이름 붙은 자동 검사가 없다.
+- `grafana-db-provision`은 없는 테이블을 건너뛰고도 성공 종료하며 HTTP health가 없다.
 
 ## Ownership
 

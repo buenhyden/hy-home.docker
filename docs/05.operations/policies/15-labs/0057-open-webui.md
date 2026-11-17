@@ -45,14 +45,26 @@ next_review_at: "2027-05-13"
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0057-R1 | 항상 | 필수: LAB은 root에 include하지 않고 HOME network에 합류하지 않으며 gateway route를 두지 않고 UI는 `LAB_HOST_BIND_IP`에만 게시하며 기동/종료는 `python3 scripts/operations/lab.py` lease 안에서만 한다 | `bash scripts/hardening/check-all-hardening.sh 08-ai` / `python3 scripts/operations/lab.py check open-webui` / lease 안 health 확인 | 변경 티켓(PR)/검증 로그/롤백 결과 |
-| POL-0057-R2 | 항상 | 필수: native Keycloak OIDC(`home-openwebui`, PKCE S256)만 쓰고 password login/signup/email merge/OAuth role-group 관리/trusted-header 인증은 끈다 | `bash scripts/hardening/check-all-hardening.sh 08-ai` / `python3 scripts/operations/lab.py check open-webui` / lease 안 health 확인 | 변경 티켓(PR)/검증 로그/롤백 결과 |
-| POL-0057-R3 | 항상 | 필수: OIDC client secret은 `LAB_SECRET_DIR` 아래 LAB 전용 파일(`LAB-037`)로만 받고 HOME secret 파일/OpenBao Agent 출력을 LAB에 bind하지 않는다 | `bash scripts/hardening/check-all-hardening.sh 08-ai` / `python3 scripts/operations/lab.py check open-webui` / lease 안 health 확인 | 변경 티켓(PR)/검증 로그/롤백 결과 |
-| POL-0057-R4 | 항상 | 필수: `ENABLE_OPENAI_API=false`를 유지하고 cloud 경로는 키/예산/데이터 계약 승인 후에만 연다 | `bash scripts/hardening/check-all-hardening.sh 08-ai` / `python3 scripts/operations/lab.py check open-webui` / lease 안 health 확인 | 변경 티켓(PR)/검증 로그/롤백 결과 |
-| POL-0057-R5 | 변경 시 | 필수: `LAB_OPEN_WEBUI_OLLAMA_BASE_URL`/`RAG_EMBEDDING_MODEL` 변경과 `VECTOR_DB` 도입은 사전 영향 검토와 재색인 계획이 필요하다 | 수동 | 변경 티켓(PR) |
-| POL-0057-R6 | lease 안 작업 시 | 허용: lease 안의 문서 업로드/재인덱싱/삭제와 승인된 범위의 모델 파라미터 조정 | 수동 | none |
-| POL-0057-R7 | 항상 | 금지: LAB을 root include/HOME profile로 선택, 승인 없는 SSO 우회/password-signup 활성화, HOME volume을 LAB data root로 지정하거나 승인 없이 HOME data 복사/삭제 | `bash scripts/hardening/check-all-hardening.sh 08-ai` / `python3 scripts/operations/lab.py check open-webui` / lease 안 health 확인 | 검증 로그 |
-| POL-0057-R8 | lifecycle 단계 | 필수: SQLite/upload/vector/session key와 OIDC secret을 한 복구 경계로 취급하고 보존이 필요한 data는 lease 종료 전 별도 승인으로 백업하며 HOME 퇴역은 단계별 별도 승인과 일관 backup이 선행하고 upgrade에는 복구 copy/migration 검토/rollback 근거가 필요하다 | 수동 | 변경 티켓(PR)/롤백 결과 |
+| POL-0057-R1 | 항상 | 금지: LAB의 root include, HOME network 합류, gateway route 설치 | none | none |
+| POL-0057-R2 | 항상 | 필수: UI는 `LAB_HOST_BIND_IP`에만 게시한다 | none | none |
+| POL-0057-R3 | 기동/종료 시 | 필수: `python3 scripts/operations/lab.py`의 lease 안에서만 기동/종료한다 | none | none |
+| POL-0057-R4 | 항상 | 필수: native Keycloak OIDC(`home-openwebui`, PKCE S256)만 쓴다 | none | none |
+| POL-0057-R5 | 항상 | 필수: password login, signup, email merge, OAuth role/group 관리, trusted-header 인증을 끈다 | none | none |
+| POL-0057-R6 | 항상 | 필수: OIDC client secret은 `LAB_SECRET_DIR` 아래 LAB 전용 파일(`LAB-037`)로만 받는다 | none | none |
+| POL-0057-R7 | 항상 | 금지: HOME secret 파일이나 OpenBao Agent 출력을 LAB에 bind | none | none |
+| POL-0057-R8 | 항상 | 필수: `ENABLE_OPENAI_API=false`를 유지한다 | none | none |
+| POL-0057-R9 | cloud 경로를 열 때 | 필수: 키/예산/데이터 계약 승인 후에만 연다 | 수동 | none |
+| POL-0057-R10 | `LAB_OPEN_WEBUI_OLLAMA_BASE_URL`/`RAG_EMBEDDING_MODEL` 변경 또는 `VECTOR_DB` 도입 시 | 필수: 사전 영향 검토와 재색인 계획을 갖춘다 | 수동 | none |
+| POL-0057-R11 | lease 안 작업 시 | 허용: 문서 업로드/재인덱싱/삭제와 승인된 범위의 모델 파라미터 조정 | none | none |
+| POL-0057-R12 | 항상 | 금지: LAB을 root include하거나 HOME profile로 선택 | none | none |
+| POL-0057-R13 | 승인이 없을 때 | 금지: SSO 우회, password/signup 경로 활성화 | 수동 | none |
+| POL-0057-R14 | 항상 | 금지: HOME volume을 LAB data root로 지정 | none | none |
+| POL-0057-R15 | 승인이 없을 때 | 금지: HOME data 복사/삭제 | 수동 | none |
+| POL-0057-R16 | 항상 | 필수: SQLite/upload/로컬 vector/session key와 맞는 OIDC secret을 한 복구 경계로 취급한다 | none | none |
+| POL-0057-R17 | 보존이 필요한 실험 data가 있을 때 | 필수: lease 종료 전에 별도 승인으로 백업한다 | 수동 | none |
+| POL-0057-R18 | HOME 퇴역 시 | 필수: 컨테이너 정지/제거, volume 이전/삭제, Keycloak client/redirect, DNS 정리를 각각 별도 승인 단계로 진행한다 | 수동 | none |
+| POL-0057-R19 | HOME 퇴역 시 | 필수: 쓰기를 멈춘 일관 backup을 선행한다 | 수동 | none |
+| POL-0057-R20 | upgrade 시 | 필수: 복구 가능한 copy, migration 검토, image identity, rollback 근거를 갖춘다 | 수동 | none |
 
 - **Required**:
   - LAB은 root에 include하지 않고 HOME network에 합류하지 않으며 gateway route를 두지 않는다. UI는
@@ -105,12 +117,15 @@ next_review_at: "2027-05-13"
 
 ### Limits
 
-배포 전 체크 세 가지가 이름 붙은 검사이며, 아래 항목은 기계적으로 강제되지 않는다.
+정책은 배포 전 체크와 운영 중 체크를 개별 규칙과 연결하지 않으므로 아래 규칙은 이름 붙은 검사로 강제되지 않으며, 일부는 승인/검토에 의존한다.
 
+- 격리/노출: 강제 수단 없음 `POL-0057-R1`~`R3`
+- 인증/secret: 강제 수단 없음 `POL-0057-R4`~`R7`
+- cloud/모델 구성: 수동 검토 `POL-0057-R9`~`R10`; 강제 수단 없음 `POL-0057-R8`
+- 허용/금지 작업: 수동 검토 `POL-0057-R13`, `POL-0057-R15`; 강제 수단 없음 `POL-0057-R11`~`R12`, `POL-0057-R14`
+- lifecycle/data: 수동 검토 `POL-0057-R17`~`R20`; 강제 수단 없음 `POL-0057-R16`
 - 운영 중 체크(인증 실패율, 5xx 비율, 인덱싱 실패율)는 모니터링 항목이며 이름 붙은 게이트나 임계값이 없다.
-- HOME 퇴역, upgrade 복구 copy, lease 종료 전 백업은 별도 승인 단계의 수동 검토에 의존한다.
-- cloud 경로 개방과 모델/임베딩 변경의 사전 영향 검토는 수동이다.
-- 분기별 정책 검토와 릴리스별 사전 검토도 수동이다.
+- 분기별 정책 검토와 릴리스별 사전 검토는 수동이다.
 
 ## Ownership
 

@@ -45,13 +45,23 @@ node의 별도 퇴역과 독립 검색 LAB을 결정했다. LAB의 `replace-same
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0109-R1 | 항상 | 필수: 독립 Compose project와 정확한 `opensearch-cluster` profile로만 선택하고 root include에 넣지 않는다 | `lab.py check opensearch-cluster` / RUN-0109 정적 render | 검사/render 결과 |
-| POL-0109-R2 | 항상 | 필수: secret은 `secrets/labs/opensearch-cluster/`의 LAB 사본(LAB-012부터 LAB-015)만 쓰고 HOME `secrets/data/opensearch/` 값을 읽거나 재사용하지 않으며 값을 Compose/Markdown/evidence에 두지 않는다 | `lab.py check opensearch-cluster` | 검사 결과(HOME 입력 runtime은 `NOT_RUN`) |
-| POL-0109-R3 | 항상 | 필수: `${LAB_OPENSEARCH_CERT_DIR}`의 LAB 전용 CA와 node 인증서를 읽기 전용으로 mount하고 Dashboards에는 `rootCA.pem`만 주며 node 개인키를 다른 서비스에 전달하지 않는다 | `lab.py check opensearch-cluster` / RUN-0109 정적 render | 검사/render 결과 |
-| POL-0109-R4 | 항상 | 필수: `lab_opensearch_core_net`은 internal로 유지하고 host port/Traefik route/HOME `edge_net`-`obs_net` 연결을 추가하지 않으며 인증은 내부 basic 인증만 쓴다 | `lab.py check opensearch-cluster` / RUN-0109 정적 render | 검사/render 결과 |
-| POL-0109-R5 | 항상 | 필수: 네 data 경로를 `${LAB_DATA_DIR}/opensearch-cluster/` 아래에 분리하고 선언된 limit/`pids_limit`/healthcheck를 유지하며 host 가용성을 주장하지 않는다 | RUN-0109 정적 render | render 결과 |
-| POL-0109-R6 | 기동/정지 시 | 필수: 기동/정지는 `scripts/operations/lab.py`만 쓰고 `down -v`와 volume prune을 쓰지 않는다 | none | none |
-| POL-0109-R7 | 데이터 보존/삭제 시 | 필수: POL-0021과 별도 승인을 따른다 | none | none |
+| POL-0109-R1 | 항상 | 필수: 독립 Compose project와 정확한 `opensearch-cluster` profile로만 선택한다 | none | none |
+| POL-0109-R2 | 항상 | 금지: root include | none | none |
+| POL-0109-R3 | 항상 | 필수: secret은 `secrets/labs/opensearch-cluster/`의 LAB 사본(`LAB-012`~`LAB-015`)만 쓴다 | none | none |
+| POL-0109-R4 | 항상 | 금지: HOME `secrets/data/opensearch/` 값을 읽거나 재사용 | none | none |
+| POL-0109-R5 | 항상 | 금지: secret 값을 Compose, Markdown, evidence에 둠 | none | none |
+| POL-0109-R6 | 인증서 mount 시 | 필수: `${LAB_OPENSEARCH_CERT_DIR}`의 LAB 전용 CA와 node 인증서를 읽기 전용으로 mount한다 | none | none |
+| POL-0109-R7 | Dashboards 구성 시 | 필수: `rootCA.pem`만 준다 | none | none |
+| POL-0109-R8 | 항상 | 금지: node 개인키를 다른 서비스에 전달 | none | none |
+| POL-0109-R9 | 항상 | 필수: `lab_opensearch_core_net`은 internal로 유지한다 | none | none |
+| POL-0109-R10 | 항상 | 금지: host port, Traefik route, HOME `edge_net`/`obs_net` 연결 추가 | none | none |
+| POL-0109-R11 | 항상 | 필수: 인증은 내부 basic 인증만 쓴다 | none | none |
+| POL-0109-R12 | 항상 | 필수: 네 data 경로를 `${LAB_DATA_DIR}/opensearch-cluster/` 아래에 분리해 유지한다 | none | none |
+| POL-0109-R13 | 항상 | 필수: 선언된 limit, `pids_limit`, healthcheck를 유지한다 | none | none |
+| POL-0109-R14 | 항상 | 금지: host 가용성 주장(세 node가 한 host에 있음) | none | none |
+| POL-0109-R15 | 기동/정지 시 | 필수: `scripts/operations/lab.py`만 쓴다 | none | none |
+| POL-0109-R16 | 항상 | 금지: `down -v`와 volume prune | none | none |
+| POL-0109-R17 | 데이터 보존/삭제 시 | 필수: `POL-0021`과 별도 승인을 따른다 | 수동 | none |
 
 - 독립 Compose project와 정확한 `opensearch-cluster` profile로만 선택한다. root include에는 넣지 않는다.
 - secret은 `secrets/labs/opensearch-cluster/`의 LAB 사본(LAB-012부터 LAB-015)만 쓴다. HOME
@@ -88,12 +98,15 @@ image, 인증서, secret, network, 데이터 경로, 승격 manifest가 바뀔 �
 
 ### Limits
 
-RUN-0109의 정적 render와 `lab.py check opensearch-cluster`가 이름 붙은 검사이며, 아래 항목은 기계적으로 강제되지 않는다.
+정책은 `RUN-0109`의 정적 render와 `lab.py check opensearch-cluster`를 개별 규칙과 연결하지 않으며, 아래 규칙은 승인/검토에 의존하거나 강제 수단이 없다.
 
-- 현재 HOME 입력의 render와 runtime은 `NOT_RUN`이다.
-- 2026-11-05 controller 보고에 따르면 `labs/.env`에 `LAB_OPENSEARCH_CERT_DIR`가 없으며 agent는 그 파일을 읽지 않았다.
+- 격리: 강제 수단 없음 `POL-0109-R1`~`R2`
+- secret/인증서: 강제 수단 없음 `POL-0109-R3`~`R8`
+- network: 강제 수단 없음 `POL-0109-R9`~`R11`
+- 운영: 수동 검토 `POL-0109-R17`; 강제 수단 없음 `POL-0109-R12`~`R16`
+- 현재 HOME 입력의 render와 runtime은 `NOT_RUN`이며 `labs/.env`에 `LAB_OPENSEARCH_CERT_DIR`가 없다는 controller 보고가 있다.
 - transport hostname 검증은 꺼져 있고 CA와 `nodes_dn` 검증으로 대신한다.
-- host 가용성은 주장할 수 없으며 데이터 보존/삭제는 별도 승인과 POL-0021에 의존한다.
+- host 가용성은 주장할 수 없다.
 
 ## Ownership
 

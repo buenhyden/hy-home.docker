@@ -42,12 +42,19 @@ Dozzle은 OPTIONAL 특권 관리자 뷰어다. 네이티브 OIDC와 CIDR 제한�
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0072-R1 | 항상 | 필수: `admin`/`admin-logs` profile만 사용하고 Dozzle을 HOME 밖에 유지한다 | 헬스/OIDC 검증 | 런타임 증거 |
-| POL-0072-R2 | 항상 | 필수: 네이티브 OIDC, 시크릿 파일 전달, TLS issuer 신뢰, 관리자 CIDR allowlist를 보존하고 역할/필터를 검증한다 | OIDC claim/역할, CIDR 거부 검증 | 런타임 증거(별도 target 필요) |
-| POL-0072-R3 | 항상 | 필수: `:ro` 소켓도 root 동등으로 취급하고 승인된 설계가 달리 정하지 않으면 shell/actions를 끈다 | 승인되지 않은 shell/actions 부재 검증 | 런타임 증거(별도 target 필요) |
-| POL-0072-R4 | 로그 처리 | 금지: Dozzle을 보존(retention) 용도로 사용하며 민감 로그에는 마스킹과 최소 접근을 적용한다 | 수동 | none |
-| POL-0072-R5 | `/data` 백업/복구 | 필수: 먼저 Dozzle을 중지하고 복구 테스트는 격리된/비프로덕션 Docker 엔드포인트를 사용한다 | 수동 | none |
-| POL-0072-R6 | 업그레이드/폐기 | 필수: 업그레이드 전 upstream 권고와 OIDC 동작을 검토하고 폐기 시 소켓 제거 후 OIDC 클라이언트/시크릿을 폐기한다 | 수동 | none |
+| POL-0072-R1 | 항상 | 필수: `admin`/`admin-logs` profile만 사용 | none | none |
+| POL-0072-R2 | 항상 | 필수: Dozzle을 HOME 밖에 유지 | none | none |
+| POL-0072-R3 | 항상 | 필수: 네이티브 OIDC/시크릿 파일 전달/TLS issuer 신뢰/관리자 CIDR allowlist 보존 | none | none |
+| POL-0072-R4 | 항상 | 필수: 역할/필터 검증(로그인만으로 최소 권한이 되지 않음) | none | none |
+| POL-0072-R5 | 항상 | 필수: `:ro`여도 소켓을 root와 동등한 것으로 취급 | none | none |
+| POL-0072-R6 | 승인된 요구사항과 소켓 제한 설계가 달리 정하지 않을 때 | 필수: shell/actions를 꺼진 상태로 유지 | none | none |
+| POL-0072-R7 | 항상 | 금지: Dozzle을 보존(retention) 용도로 사용 | none | none |
+| POL-0072-R8 | 자격 증명/개인 데이터/비공개 요청을 포함할 수 있는 로그 | 필수: 마스킹과 최소 접근 적용 | 수동 | none |
+| POL-0072-R9 | `/data` 백업/복구 전 | 필수: Dozzle 중지 | 수동 | none |
+| POL-0072-R10 | 복구 테스트 시 | 필수: 격리된/비프로덕션 Docker 엔드포인트 사용 | none | none |
+| POL-0072-R11 | 업그레이드 전 | 필수: upstream 권고와 OIDC 동작 검토 | 수동 | none |
+| POL-0072-R12 | 폐기 시 | 필수: 설정을 삭제하기 전에 소켓 제거 | 수동 | none |
+| POL-0072-R13 | 폐기 시 | 필수: OIDC 클라이언트/시크릿 폐기 | 수동 | none |
 
 - `admin`/`admin-logs`만 사용한다. Dozzle을 HOME 밖에 유지한다.
 - 네이티브 OIDC, 시크릿 파일 전달, TLS issuer 신뢰, 관리자 CIDR allowlist를
@@ -87,12 +94,14 @@ shell/actions의 부재를 검증한다. 런타임 증거는 별도로 남는다
 
 ### Limits
 
-이 정책은 모든 규칙의 검증을 런타임 증거에 맡기며 이름 붙은 검사 명령이나 스크립트가 없다.
+정책 본문이 이름 붙인 검사로 강제하는 규칙은 일부이며 아래 항목은 기계적으로 강제되지 않는다.
 
-- Mechanisms는 헬스, OIDC claim/역할, CIDR 거부, 컨테이너 가시성, shell/actions 부재를 검증한다고만 말하며 구체 check는 지정하지 않는다.
-- 런타임 증거는 별도로 남으며 이 문서에 기록되어 있지 않다.
-- 마스킹/최소 접근, 백업 전 중지, 업그레이드 검토와 폐기 순서는 수동 절차다.
-- 로그인만으로 최소 권한이 되지 않는다.
+- 노출/권한 통제: `POL-0072-R1`, `POL-0072-R2`, `POL-0072-R3`, `POL-0072-R4`, `POL-0072-R5`, `POL-0072-R6`는 이름 붙은 검사가 지정되지 않았다.
+- 로그 프라이버시: `POL-0072-R7`는 이름 붙은 검사가 지정되지 않았다.
+- 로그 프라이버시: `POL-0072-R8`는 승인/검토 등 수동 절차에 의존한다.
+- 수명주기: `POL-0072-R9`, `POL-0072-R11`, `POL-0072-R12`, `POL-0072-R13`는 승인/검토 등 수동 절차에 의존한다.
+- 수명주기: `POL-0072-R10`는 이름 붙은 검사가 지정되지 않았다.
+- 정책은 이름 붙은 검사 명령이나 스크립트를 지정하지 않으며 구체 check와 런타임 증거는 이 문서에 기록되어 있지 않다.
 
 ## Ownership
 

@@ -46,21 +46,33 @@ next_review_at: "2027-05-13"
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0058-R1 | 항상 | 필수: Ollama public route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`을 유지하고 Open WebUI는 gateway route 없이 `LAB_HOST_BIND_IP`에만 게시하며 Keycloak OIDC를 유지한다 | `check-all-hardening.sh 08-ai` / CI `infrastructure-hardening` | hardening 검사 결과 |
-| POL-0058-R2 | 항상 | 필수: Ollama는 `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE` 상한을 유지한다 | `check-all-hardening.sh 08-ai` | hardening 검사 결과 |
-| POL-0058-R3 | 항상 | 필수: Open WebUI는 `template-stateful-med`를 사용한다 | `check-all-hardening.sh 08-ai` | hardening 검사 결과 |
-| POL-0058-R4 | 항상 | 필수: `ollama-exporter`는 `ollama` health 의존성과 metrics healthcheck를 유지한다 | `check-all-hardening.sh 08-ai` | hardening 검사 결과 |
-| POL-0058-R5 | AI 변경 시 | 필수: `check-all-hardening.sh 08-ai` 및 CI `infrastructure-hardening`을 통과한다 | `check-all-hardening.sh 08-ai` / CI `infrastructure-hardening` | 정적 검사와 hardening 검사 결과 |
-| POL-0058-R6 | 모델 승격 시 | 필수: 실험/검증/운영 단계와 승인 기록을 포함한다 | 수동 | 승인 기록 |
-| POL-0058-R7 | 항상 | 필수: Open WebUI 모델 접근 권한을 역할/환경 단위로 분리한다 | 수동 | none |
-| POL-0058-R8 | 항상 | 필수: 대화 로그의 보존 기간/마스킹 기준을 명시하고 비식별화 정책을 준수한다 | 수동 | none |
-| POL-0058-R9 | 항상 | 필수: optimization-hardening 문서(PRD~Procedure) 링크를 유지한다 | 수동 | none |
-| POL-0058-R10 | 항상 | 허용: 운영 지표 기반 Ollama 상한값의 점진적 튜닝 | 수동 | none |
-| POL-0058-R11 | 항상 | 허용: 모델 승격 기준 강화(품질/안전/eval) | 수동 | none |
-| POL-0058-R12 | 항상 | 허용: 로그 보존/마스킹 정책의 보수적 강화 | 수동 | none |
-| POL-0058-R13 | 항상 | 금지: 무승인 SSO/middleware 완화 | 수동 / `check-all-hardening.sh 08-ai` | 승인 기록 |
-| POL-0058-R14 | 항상 | 금지: 모델 승격 절차를 생략한 배포 | 수동 | 승인 기록 |
-| POL-0058-R15 | 항상 | 금지: 민감 대화 로그의 무마스킹 저장 | 수동 | none |
+| POL-0058-R1 | 항상 | 필수: Ollama public route는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`을 유지한다 | none | none |
+| POL-0058-R2 | 항상 | 필수: Open WebUI는 gateway route 없는 독립 LAB이며 `LAB_HOST_BIND_IP`에만 게시한다 | none | none |
+| POL-0058-R3 | 항상 | 필수: Open WebUI는 native Keycloak OIDC를 유지한다 | none | none |
+| POL-0058-R4 | 항상 | 필수: Ollama는 `OLLAMA_NUM_PARALLEL`, `OLLAMA_MAX_LOADED_MODELS`, `OLLAMA_MAX_QUEUE` 상한을 유지한다 | none | none |
+| POL-0058-R5 | 항상 | 필수: Open WebUI는 `template-stateful-med`를 사용한다 | none | none |
+| POL-0058-R6 | 항상 | 필수: `ollama-exporter`는 `ollama` health 기반 의존성과 metrics healthcheck를 유지한다 | none | none |
+| POL-0058-R7 | AI 변경 | 필수: `check-all-hardening.sh 08-ai` 및 CI `infrastructure-hardening`을 통과한다 | `check-all-hardening.sh 08-ai` / CI `infrastructure-hardening` | 정적 검사와 hardening 검사 결과 |
+| POL-0058-R8 | 모델 승격 | 필수: 실험/검증/운영 단계와 승인 기록을 포함한다 | 수동 | 승인 기록 |
+| POL-0058-R9 | 항상 | 필수: Open WebUI 모델 접근 권한을 역할/환경 단위로 분리한다 | none | none |
+| POL-0058-R10 | 항상 | 필수: 대화 로그의 보존 기간/마스킹 기준을 명시한다 | 수동 | none |
+| POL-0058-R11 | 항상 | 필수: 비식별화 정책을 준수한다 | 수동 | none |
+| POL-0058-R12 | 항상 | 필수: optimization-hardening 문서(PRD~Procedure) 링크를 유지한다 | none | none |
+| POL-0058-R13 | 운영 지표 기반 | 허용: Ollama 상한값의 점진적 튜닝 | none | none |
+| POL-0058-R14 | 항상 | 허용: 모델 승격 기준 강화(품질/안전/eval 항목 추가) | none | none |
+| POL-0058-R15 | 항상 | 허용: 로그 보존/마스킹 정책의 보수적 강화 | none | none |
+| POL-0058-R16 | 항상 | 금지: 무승인 SSO/middleware 완화 | 수동 | none |
+| POL-0058-R17 | 항상 | 금지: 모델 승격 절차 생략 배포 | 수동 | 승인 기록 |
+| POL-0058-R18 | 항상 | 금지: 민감 대화 로그 무마스킹 저장 | 수동 | none |
+| POL-0058-R19 | Ollama 카탈로그 확장 | 필수: 모델 캐시/스토리지 정책을 문서화하고 운영 증적을 확보한다 | none | none |
+| POL-0058-R20 | GPU concurrency/queue 상한 변경 | 필수: 근거 지표를 첨부한다 | none | none |
+| POL-0058-R21 | 모델 승격(실험 -> 운영) | 필수: 체크리스트를 완료한다 | none | none |
+| POL-0058-R22 | Open WebUI 카탈로그 확장 | 필수: native OIDC 유지, gateway route 부재와 우회 금지를 확인한다 | none | none |
+| POL-0058-R23 | Open WebUI 카탈로그 확장 | 필수: 모델 접근 권한 분리 정책(역할/환경)을 문서화한다 | none | none |
+| POL-0058-R24 | Open WebUI 카탈로그 확장 | 필수: 대화 로그 보존 기간/마스킹 규칙/파기 절차를 문서화한다 | none | none |
+| POL-0058-R25 | 별도 통제·구현 변경과 검증 전 | 금지: 자동 chat retention과 모델 접근 분리의 준수 주장 | none | none |
+| POL-0058-R26 | 항상 | 금지: 근거를 채우려고 비공개 대화를 로그에 남김 | none | none |
+| POL-0058-R27 | ComfyUI 영속성과 Crawl4AI 격리 | 필수: 각 Runbook의 통제를 따른다 | none | none |
 
 - **Required**:
   - Ollama public route는
@@ -125,11 +137,18 @@ AI hardening은 일부 소스 문자열만 검사하며 GPU 여유, 사용자별
 
 hardening 검사는 일부 소스 문자열만 확인하며 정책이 직접 아래 한계를 밝힌다.
 
+- 인증과 노출(POL-0058): R1-R3에는 정책이 지정한 검사가 없다.
+- 구성 상한(POL-0058): R4-R6에는 정책이 지정한 검사가 없다.
+- 모델 승격과 접근(POL-0058): R8은 수동 검토나 승인에 의존한다; R9에는 정책이 지정한 검사가 없다.
+- 대화 로그(POL-0058): R10-R11은 수동 검토나 승인에 의존한다.
+- 문서 링크(POL-0058): R12에는 정책이 지정한 검사가 없다.
+- 허용 사항(POL-0058): R13-R15에는 정책이 지정한 검사가 없다.
+- 금지 사항(POL-0058): R16-R18은 수동 검토나 승인에 의존한다.
+- 카탈로그 확장 승인(POL-0058): R19-R24에는 정책이 지정한 검사가 없다.
+- 준수 주장(POL-0058): R25-R27에는 정책이 지정한 검사가 없다.
 - GPU 여유, 사용자별 모델 권한, chat 보존·삭제, password 거부, 추론 성공은 hardening 검사로 증명되지 않는다.
 - 소스에 자동 chat retention과 완성된 모델 접근 분리를 입증할 설정이 부족하여 @buenhyden의 별도 통제·구현 변경과 검증 전에는 준수를 주장하지 않는다.
-- 모델 승격 절차, 로그 마스킹/비식별화는 승인 기록과 수동 검토에 의존한다.
-- Catalog Expansion Approval Gates 항목은 문서화 조건이며 이를 점검하는 검사 이름이 없다.
-- ComfyUI 영속성과 Crawl4AI 격리는 각 Runbook의 통제를 따른다.
+- Mechanisms는 가이드 Common Checks에 위임되어 있고 표에 검사가 명시된 규칙 외에는 규칙별 검사가 지정되지 않는다.
 
 ## Ownership
 

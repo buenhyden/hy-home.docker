@@ -43,16 +43,31 @@ provider 자격 증명, 암호화 키가 하나의 복구 경계를 이룬다.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0073-R1 | 항상 | 필수: `notebook` profile로만 선택하고 `admin`은 이를 선택하지 않으며 HOME 밖에 둔다 | 수동 | none |
-| POL-0073-R2 | 항상 | 금지: upstream이 v3를 명시 지원·검증하기 전 SurrealDB v3 이상으로 업그레이드 | 수동 | none |
-| POL-0073-R3 | 항상 | 필수: CIDR allowlist와 API 호스트 포트 loopback 바인딩을 유지하고 앱 비밀번호와 SurrealDB 인증을 유지한다 | Mechanisms UI/앱 인증, API 경계 검증 | none |
-| POL-0073-R4 | 항상 | 필수: provider 키는 앱 암호화 저장소에 두고 `open_notebook_encryption_key`는 별도 보호하며 승인된 계획 없이 회전/분실하지 않는다 | Mechanisms 키 복호화 검증 | none |
-| POL-0073-R5 | 항상 | 필수: 노트북/소스/임베딩/채팅/provider 설정을 민감 정보로 취급하고 사용 전에 보존·내보내기 소유권을 정의한다 | 수동 | none |
-| POL-0073-R6 | 백업/복구 시 | 필수: SurrealDB 논리 백업과 `/app/data`, 소스 커밋, 보호된 키/자격 증명 보관을 함께 백업하고 provider egress 비활성화 상태로 리허설한다 | 수동 | none |
-| POL-0073-R7 | floating 이미지 승격 시 | 필수: 릴리스/보안 노트를 검토하고 마이그레이션과 자격 증명 복호화를 승격 전에 테스트한다 | 수동 / Mechanisms DB 준비, 키 복호화 검증 | none |
-| POL-0073-R8 | 제거 시 | 필수: 콘텐츠/provider 자격 증명을 내보내거나 폐기하고 DB와 앱 볼륨 삭제를 별개 파괴적 작업으로 다룬다 | 수동 | none |
-| POL-0073-R9 | 항상 | 금지: Ollama-mediated cloud/direct cloud를 별도 credential/목적/network/비용 계약 없이 자동 fallback이나 `OLLAMA_NO_CLOUD=1` 예외로 도입 | 수동 | none |
-| POL-0073-R10 | 항상 | 필수: 저장된 모델 등록은 제품 UI/API를 사용하며 환경 fallback/healthcheck/DB online으로 기능을 수용하지 않는다 | Mechanisms 저장 연결, embedding job, 재시작 후 보존 검증 | none |
+| POL-0073-R1 | 항상 | 필수: `notebook` profile로만 선택한다 | 수동 | none |
+| POL-0073-R2 | 항상 | 금지: `admin`이 이를 선택 | 수동 | none |
+| POL-0073-R3 | 항상 | 필수: HOME 밖에 유지한다 | none | none |
+| POL-0073-R4 | upstream이 v3를 명시 지원·검증하기 전 | 금지: SurrealDB v3 이상으로의 업그레이드 | 수동 | none |
+| POL-0073-R5 | 항상 | 필수: CIDR allowlist를 보존한다 | none | none |
+| POL-0073-R6 | 항상 | 필수: API 호스트 포트를 loopback에 바인딩된 상태로 유지한다 | Mechanisms의 API 경계 검증 | none |
+| POL-0073-R7 | 항상 | 필수: 애플리케이션 비밀번호와 SurrealDB 인증을 유지한다 | Mechanisms의 UI/앱 인증 검증 | none |
+| POL-0073-R8 | SSO 재도입 | 필수: 소유자 결정으로만 한다 | 수동 | none |
+| POL-0073-R9 | 항상 | 필수: provider 키는 앱의 암호화된 저장소에 보관한다 | none | none |
+| POL-0073-R10 | 항상 | 필수: `open_notebook_encryption_key`는 별도로 보호한다 | none | none |
+| POL-0073-R11 | 승인된 재암호화/내보내기 계획 없음 | 금지: `open_notebook_encryption_key` 회전 또는 분실 | 수동 | none |
+| POL-0073-R12 | 항상 | 필수: 노트북, 소스 문서, 임베딩, 채팅, provider 설정을 민감 정보로 취급한다 | none | none |
+| POL-0073-R13 | 사용 전 | 필수: 보존과 내보내기 소유권을 정의한다 | none | none |
+| POL-0073-R14 | 백업 | 필수: SurrealDB를 논리적으로 백업한다 | none | none |
+| POL-0073-R15 | 백업 | 필수: `/app/data`, 소스 커밋, 보호된 키/자격 증명 보관을 함께 백업한다 | none | none |
+| POL-0073-R16 | 리허설 | 필수: provider egress를 비활성화한 상태로 리허설한다 | none | none |
+| POL-0073-R17 | floating 이미지 승격 | 필수: 릴리스/보안 노트를 검토한다 | 수동 | none |
+| POL-0073-R18 | floating 이미지 승격 | 필수: 승격 전에 마이그레이션과 자격 증명 복호화를 테스트한다 | none | none |
+| POL-0073-R19 | 제거 전 | 필수: 콘텐츠/provider 자격 증명을 내보내거나 명시적으로 폐기한다 | none | none |
+| POL-0073-R20 | 제거 시 | 필수: 데이터베이스와 앱 볼륨 삭제를 별개의 파괴적 작업으로 다룬다 | none | none |
+| POL-0073-R21 | Ollama-mediated cloud와 direct cloud 도입 | 필수: 별도 credential, 허용 목적, network 및 비용 계약을 갖춘다 | 수동 | none |
+| POL-0073-R22 | 항상 | 금지: Ollama-mediated cloud/direct cloud를 자동 fallback이나 동일 instance의 `OLLAMA_NO_CLOUD=1` 예외로 도입 | 수동 | none |
+| POL-0073-R23 | 저장된 모델 등록 | 필수: 지원되는 product UI/API를 사용한다 | Mechanisms의 저장된 연결·terminal embedding job·재시작 후 보존 검증 | none |
+| POL-0073-R24 | 저장된 모델·provider·embedding 기능 수용 | 금지: 환경 fallback, healthcheck, DB online 또는 디렉터리 존재를 근거로 수용 | Mechanisms의 저장된 연결·terminal embedding job·재시작 후 보존 검증 | none |
+| POL-0073-R25 | 다른 credential과 충돌하는 동명 등록 | 필수: 등록을 보존하고 거부한다 | none | none |
 
 - `notebook`만 사용한다. `admin`은 이를 선택해서는 안 된다. HOME 밖에 유지한다.
 - Open Notebook upstream은 SurrealDB v2를 요구한다. upstream Open Notebook이
@@ -109,11 +124,16 @@ UI/앱 인증, API 경계, DB 준비 상태, 키 복호화, 하나의 합성 노
 
 정책은 검증 대상을 나열하지만 전용 검사 이름과 실행 증거를 지정하지 않으며 아래 항목은 수동 검토나 별도 승인에 의존한다.
 
-- profile 선택, SurrealDB v3 금지, provider 경로 제한은 검사 이름 없이 검토에 의존한다.
-- 백업/복구 리허설, 암호화 키 보호, 마이그레이션·자격 증명 복호화 테스트는 수행 기록 없이는 입증되지 않는다.
+- profile과 SurrealDB(POL-0073): R1-R2, R4은 수동 검토나 승인에 의존한다; R3에는 정책이 지정한 검사가 없다.
+- 접근 통제(POL-0073): R8은 수동 검토나 승인에 의존한다; R5에는 정책이 지정한 검사가 없다.
+- 키와 데이터 취급(POL-0073): R11은 수동 검토나 승인에 의존한다; R9-R10, R12-R13에는 정책이 지정한 검사가 없다.
+- 백업과 복구(POL-0073): R14-R16에는 정책이 지정한 검사가 없다.
+- 승격과 제거(POL-0073): R17은 수동 검토나 승인에 의존한다; R18-R20에는 정책이 지정한 검사가 없다.
+- provider 경로(POL-0073): R21-R22은 수동 검토나 승인에 의존한다.
+- 모델 등록(POL-0073): R25에는 정책이 지정한 검사가 없다.
 - Mechanisms는 UI/앱 인증, API 경계, DB 준비, 키 복호화, 합성 노트북 검증을 요구하나 명령이나 스크립트를 지정하지 않는다.
+- 백업/복구 리허설, 암호화 키 보호, 마이그레이션·자격 증명 복호화 테스트는 수행 기록 없이는 입증되지 않는다.
 - provider 접근은 별도 승인된 경우에만 검증되며, 모델 기능(저장 연결, embedding job, 재시작 후 보존)은 별도 검증이 필요하다.
-- 이미지 예외는 Laboratory Operator의 월간 검토에 의존한다.
 
 ## Ownership
 

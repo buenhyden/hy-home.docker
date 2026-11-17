@@ -42,12 +42,40 @@ next_review_at: "2027-05-13"
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0037-R1 | 정상 messaging 변경 시 | 필수: root Compose validity, explicit profile, health check, resource limit, persistence ownership, `kafka_net`, secret file, 실행 가능한 recovery owner 보존; LAB 변경은 별도 project/network/cluster ID/data directory 보존, root 미포함 | RUN-0037의 root render `config --quiet` / LAB render / `scripts/hardening/check-all-hardening.sh 05-messaging` | none |
-| POL-0037-R2 | 항상 | 금지: PLAINTEXT Kafka listener로 sensitive/untrusted traffic 전송; TLS/SASL은 architectural change와 client rollout 필요 | none | none |
-| POL-0037-R3 | 항상 | 필수: Kafbat은 OIDC/group RBAC native 인증, Docker secret, local CA read-only mount, 표준 gateway chain, forward-auth header trust 금지 | none | none |
-| POL-0037-R4 | 항상 | 필수: administrative endpoint와 host-published listener(`127.0.0.1`)는 trusted boundary 내 유지, evidence에서 token/client secret/record payload 생략 | none | none |
-| POL-0037-R5 | 항상 | 필수: 정상 broker topic/bootstrap과 Connect internal topic은 replication factor 1, factor 3은 `lab-kafka`만(healthy LAB broker 3개) | none | none |
-| POL-0037-R6 | 새 workload 정의 시 | 필수: retention/partition/replication/capacity/ownership/RPO/RTO/replay source 정의, recovery는 data/topic config/offset/schema/Connect state/KRaft identity 포함, promotion 전 isolated cluster rehearsal | none | none |
+| POL-0037-R1 | 정상 messaging 변경 | 필수: root Compose validity/explicit profile/health check/resource limit/persistence ownership/`kafka_net`/secret file/실행 가능한 recovery owner를 보존한다 | none | none |
+| POL-0037-R2 | `labs/kafka-cluster/docker-compose.yml` 변경 | 필수: 별도 LAB project/network/cluster ID/data directory를 보존한다 | none | none |
+| POL-0037-R3 | 항상 | 금지: LAB compose를 root에 포함 | none | none |
+| POL-0037-R4 | PLAINTEXT Kafka listener | 금지: sensitive하거나 untrusted된 traffic을 싣는 것 | none | none |
+| POL-0037-R5 | TLS/SASL 도입 | 필수: architectural change와 client rollout을 거친다 | none | none |
+| POL-0037-R6 | Kafbat | 필수: OIDC와 group RBAC로 native하게 인증한다 | none | none |
+| POL-0037-R7 | secret | 필수: Docker secret으로 유지한다 | none | none |
+| POL-0037-R8 | local CA | 필수: read-only로 마운트한다 | none | none |
+| POL-0037-R9 | Kafbat route | 필수: 표준 gateway chain을 사용한다 | none | none |
+| POL-0037-R10 | Kafbat route | 금지: forward-auth header trust | none | none |
+| POL-0037-R11 | administrative endpoint/host-published listener | 필수: 명시된 trusted boundary 안에 유지하고 host-published listener는 `127.0.0.1`에만 게시한다 | none | none |
+| POL-0037-R12 | evidence | 필수: token/client secret/record payload를 생략한다 | none | none |
+| POL-0037-R13 | 정상 broker | 필수: topic/bootstrap과 Connect internal topic의 replication factor를 1로 한다 | none | none |
+| POL-0037-R14 | replication factor 3 | 필수: `lab-kafka`만의 topic/bootstrap contract로 한정하고 healthy LAB broker 3개를 요구한다 | none | none |
+| POL-0037-R15 | same-host replication | 금지: host availability로 취급 | none | none |
+| POL-0037-R16 | 새 workload | 필수: retention/partition/replication/capacity/producer·consumer ownership/RPO·RTO/replay source를 정의한다 | none | none |
+| POL-0037-R17 | recovery | 필수: data/topic config/offset/schema/Connect state/KRaft identity를 포함한다 | none | none |
+| POL-0037-R18 | promotion 전 | 필수: isolated cluster에서 rehearse한다 | none | none |
+| POL-0037-R19 | 정상 `messaging` 검증 | 필수: RUN-0037의 exact root-profile `config --quiet` command로 검증한다 | RUN-0037의 exact root-profile `config --quiet` command | none |
+| POL-0037-R20 | LAB 검증 | 필수: `docker compose --env-file labs/.env.example -f labs/kafka-cluster/docker-compose.yml --profile lab-kafka config --quiet`로 별도 렌더링한다 | `docker compose --env-file labs/.env.example -f labs/kafka-cluster/docker-compose.yml --profile lab-kafka config --quiet` | none |
+| POL-0037-R21 | LAB 렌더링 후 | 필수: scoped `05-messaging` hardening script를 사용한다 | `bash scripts/hardening/check-all-hardening.sh 05-messaging` | none |
+| POL-0037-R22 | 항상 | 금지: static pass를 configuration evidence 이상(runtime 증거)으로 취급 | none | none |
+| POL-0037-R23 | runtime startup/OIDC login/load/failover | 필수: 명시적 승인과 기록된 rollback을 갖춘다 | 수동 | none |
+| POL-0037-R24 | promotion/cutover 전 | 필수: application-level acceptance를 갖춘 isolated compatible restore를 요구한다 | none | none |
+| POL-0037-R25 | 항상 | 필수: 검증되지 않은 runtime property를 명시적으로 기록한다 | none | none |
+| POL-0037-R26 | 적용 identity 변경/운영 | 필수: 문서의 정적 검증과 runtime 운영 승인을 분리한다 | none | none |
+| POL-0037-R27 | service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 | 필수: 이 Policy와 linked Guide/Runbook을 함께 검토한다 | 수동 | none |
+| POL-0037-R28 | engine secret/certificate | 필수: 이 subject의 credential 계약을 따른다 | none | none |
+| POL-0037-R29 | 앱 인증 연동 | 필수: 적용되는 `POL-0079`의 통제를 따른다 | none | none |
+| POL-0037-R30 | source 반영/재기동 | 필수: `POL-0006`의 적용 통제를 따른다 | none | none |
+| POL-0037-R31 | 보존/삭제 | 필수: `POL-0021`의 적용 통제를 따른다 | none | none |
+| POL-0037-R32 | exporter/stateless job | 필수: 설정·credential과 그 작업이 변경하는 upstream state를 통제 대상에서 제외하지 않고 포함한다 | none | none |
+| POL-0037-R33 | 소유 artifact·복구 지점·expiry가 불명확할 때 | 필수: 삭제/재생성을 중단한다 | none | none |
+| POL-0037-R34 | 항상 | 금지: 기존 Exceptions 외의 새 예외를 승인된 것으로 간주 | none | none |
 
 정상 messaging 변경은 root Compose validity, explicit profile, health check,
 resource limit, persistence ownership, `kafka_net`, secret file, 실행 가능한
@@ -115,12 +143,15 @@ restore를 요구한다. 검증되지 않은 runtime property는 명시적으로
 
 ### Limits
 
-정적 검증(root/LAB render와 `05-messaging` hardening script)은 이름이 있으나, 아래 항목은 정책상 기계적으로 강제되지 않는다.
+이 정책에서 이름 붙은 검사는 root/LAB render와 `05-messaging` hardening script뿐이며(검증 행에만 연결), 아래 규칙은 자동 검사 없이 검토·승인에 의존합니다.
 
-- Static pass는 configuration evidence일 뿐이다. Runtime startup, OIDC login, load, failover에는 명시적 승인과 기록된 rollback이 필요하며 이 정책에는 해당 증거가 없다.
-- PLAINTEXT listener는 문서화된 gap이다.
-- 검증되지 않은 runtime property는 명시적으로 기록하며, 승격/cutover 전 isolated restore와 application 수준 acceptance는 별도 요구다.
-- Kafbat 인증 구성, secret 처리, replication factor 구분, 새 workload 정의에는 이름 붙은 자동 검사가 없다.
+- 변경 보존: 자동 검사 없음(none) `POL-0037-R1`, `POL-0037-R2`, `POL-0037-R3`
+- 보안: 자동 검사 없음(none) `POL-0037-R4`, `POL-0037-R5`, `POL-0037-R6`, `POL-0037-R7`, `POL-0037-R8`, `POL-0037-R9`, `POL-0037-R10`, `POL-0037-R11`, `POL-0037-R12`, `POL-0037-R13`, `POL-0037-R14`
+- 복구: 자동 검사 없음(none) `POL-0037-R15`, `POL-0037-R16`, `POL-0037-R17`, `POL-0037-R18`
+- 검증: 자동 검사 없음(none) `POL-0037-R22`, `POL-0037-R24`, `POL-0037-R25`; 수동 검토/승인 `POL-0037-R23`
+- lifecycle: 자동 검사 없음(none) `POL-0037-R26`, `POL-0037-R28`, `POL-0037-R29`, `POL-0037-R30`, `POL-0037-R31`, `POL-0037-R32`, `POL-0037-R33`, `POL-0037-R34`; 수동 검토/승인 `POL-0037-R27`
+- 정책이 밝힌 공백: PLAINTEXT Kafka listener는 문서화된 gap이다.
+- 정책이 밝힌 공백: static pass는 configuration evidence일 뿐이며 runtime startup/OIDC login/load/failover 증거는 이 정책에 없다.
 
 ## Ownership
 

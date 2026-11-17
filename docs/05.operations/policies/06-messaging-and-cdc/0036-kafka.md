@@ -47,16 +47,56 @@ producer/consumer와 승인된 capacity, retention, security, recovery 계획이
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0036-R1 | 항상 | 필수: 정상 Kafka는 root `messaging` 계열 profile로만 선택, 세 broker LAB은 root에 include하지 않는 별도 project/cluster ID/data directory | [RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md#steps)의 root `messaging` render / LAB render | none |
-| POL-0036-R2 | 항상 | 필수: broker volume 구분, `kafka_net`/health check/공유 리소스 제한 유지 | [RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md#steps)의 root `messaging` render / LAB render | none |
-| POL-0036-R3 | 항상 | 금지: PLAINTEXT listener에서 transport confidentiality/client authentication 주장; external/JMX exporter host 포트는 `127.0.0.1`에만 게시, TLS/SASL은 별도 architectural change | [RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md#steps)의 root `messaging` render / LAB render | none |
-| POL-0036-R4 | 항상 | 필수: Kafbat은 native OIDC/RBAC, local CA trust, `kafbat_client_secret` 유지, 표준 gateway chain만 사용, forwarding-header 인증 대체 금지 | none | none |
-| POL-0036-R5 | topic/partition/retention/offset/connector 변경 시 | 필수: 명시적 change scope와 rollback | none | none |
-| POL-0036-R6 | 항상 | 필수: 정상 `kafka-init` topic은 replication factor 1, `lab-kafka-init`은 factor 3(healthy LAB broker 3개), 서로의 cluster ID/offset/data directory에 적용 금지 | none | none |
-| POL-0036-R7 | 항상 | 금지: HOME에 CDC 서비스/`cdc` profile/Debezium credential/provisioning job 두기, Kafbat의 schema registry/Connect 설정 (LAB으로 이동, ADR-0062 개정) | none | 2026-11-10 owner 결정 |
-| POL-0036-R8 | LAB connector 변경 시 | 필수: connector와 source database를 명시한 승인 (등록/재구성/새 snapshot mode/삭제) | none | none |
-| POL-0036-R9 | HOME에서 CDC 재사용 시 | 필수: POL-0107 승격 또는 새 결정, 새 원천의 slot/publication/topic 생성, 이전 slot/`kafka-connect-data` 상태 재사용 금지 | none | none |
-| POL-0036-R10 | 항상 | 필수: slot/connector offset은 recovery state, 삭제/reset은 승인/downstream 계획/새 snapshot이 필요한 destructive resync, 원천 DB 연결 시 `max_slot_wal_keep_size` 대비 slot lag 모니터링 | none | none |
+| POL-0036-R1 | 정상 Kafka 선택 | 필수: root의 `messaging` 계열 profile로만 선택한다 | none | none |
+| POL-0036-R2 | 세 broker topology | 금지: `labs/kafka-cluster/docker-compose.yml`을 root에 include | none | none |
+| POL-0036-R3 | LAB | 필수: 별도 project/cluster ID/data directory만 사용한다 | none | none |
+| POL-0036-R4 | 항상 | 필수: broker volume을 구분하고 `kafka_net`/health check/shared resource limit을 유지한다 | none | none |
+| POL-0036-R5 | 현재 broker/controller/host listener가 PLAINTEXT | 금지: transport confidentiality나 client authentication 주장 | none | none |
+| POL-0036-R6 | 항상 | 필수: external listener와 JMX exporter의 host 포트를 `127.0.0.1`에만 게시한다 | none | none |
+| POL-0036-R7 | sensitive workload 이전 | 필수: broker TLS/SASL을 별도 architectural change로 계획한다 | none | none |
+| POL-0036-R8 | Kafbat | 필수: native OIDC/RBAC/local CA trust/`kafbat_client_secret`을 유지한다 | none | none |
+| POL-0036-R9 | Kafbat route | 필수: 표준 gateway chain만 사용한다 | none | none |
+| POL-0036-R10 | 항상 | 금지: forwarding-header authentication으로 대체 | none | none |
+| POL-0036-R11 | topic 생성/삭제/partition 증가/retention 축소/consumer offset 이동/connector 변경 | 필수: 명시적인 change scope와 rollback을 갖춘다 | none | none |
+| POL-0036-R12 | 초기화 | 필수: 정상 `kafka-init` bootstrap topic은 replication factor 1, LAB `lab-kafka-init` topic은 replication factor 3(healthy LAB broker 3개 필요)으로 한다 | none | none |
+| POL-0036-R13 | 항상 | 금지: 두 초기화를 서로의 cluster ID/offset/data directory에 적용 | none | none |
+| POL-0036-R14 | 항상 | 금지: HOME에 CDC 서비스/`cdc` profile/Debezium credential/provisioning job 두기 | none | none |
+| POL-0036-R15 | 항상 | 금지: Kafbat에 schema registry와 Connect cluster 설정 | none | none |
+| POL-0036-R16 | LAB connector 등록/재구성/새 snapshot mode 재시작/삭제 | 필수: connector와 source database를 명시한 승인을 받는다 | 수동 | none |
+| POL-0036-R17 | 항상 | 금지: LAB에 원천 DB와 credential 선언 | none | none |
+| POL-0036-R18 | HOME에서 CDC 재사용 | 필수: POL-0107 승격 또는 새 결정을 거치고 새 원천의 slot/publication/topic을 새로 만든다 | none | none |
+| POL-0036-R19 | 항상 | 금지: 이전 `hyhome_platform_slot`이나 `kafka-connect-data`에 남은 상태 재사용 | none | none |
+| POL-0036-R20 | slot 삭제/offset reset | 금지: routine fix로 취급 | none | none |
+| POL-0036-R21 | slot 삭제/offset reset | 필수: 승인/downstream duplicate·gap 계획/새 snapshot을 갖춘다 | 수동 | none |
+| POL-0036-R22 | 원천 DB 연결 | 필수: `max_slot_wal_keep_size` 대비 slot lag를 모니터링한다 | none | none |
+| POL-0036-R23 | recovery scope | 필수: topic records/configuration/consumer offset/KRaft metadata를 포함한다 | none | none |
+| POL-0036-R24 | LAB에서 Schema Registry/Connect 사용 | 필수: schema history와 ID/Connect definition/internal config·offset·status topic도 같은 recovery 범위에 포함한다 | none | none |
+| POL-0036-R25 | recovery | 필수: 별도의 compatible target으로의 producer replay나 승인된 cross-cluster replication을 우선한다 | none | none |
+| POL-0036-R26 | 항상 | 금지: broker log 디렉터리의 raw live copy를 backup으로 취급 | none | none |
+| POL-0036-R27 | manifest/artifact | 필수: encrypted된 별도 destination에 저장한다 | none | none |
+| POL-0036-R28 | 선택된 workload | 필수: workload별 data retention과 RPO/RTO를 설정한다 | none | none |
+| POL-0036-R29 | recovery artifact | 필수: daily 30일/weekly 90일 retention을 계획한다 | none | none |
+| POL-0036-R30 | workload별 설정 전 | 필수: 계획 상한 RPO 24시간/RTO 8시간을 둔다(검증되지 않음) | none | none |
+| POL-0036-R31 | 항상 | 필수: shared resource-template limit을 유지한다 | none | none |
+| POL-0036-R32 | removal | 필수: producer/consumer/topic/schema/offset/connector inventory와 replay/restore 증거를 갖춘다 | none | none |
+| POL-0036-R33 | restore | 필수: isolation 환경에서 rehearse한다 | none | none |
+| POL-0036-R34 | restore rehearsal | 필수: schema compatibility/end offset/record count 또는 checksum/consumer position을 증명한다 | none | none |
+| POL-0036-R35 | LAB connector 존재 | 필수: paused-then-resumed 동작도 증명한다 | none | none |
+| POL-0036-R36 | pin 변경 전 | 필수: Apache Kafka protocol/storage compatibility/Confluent component compatibility와 license·edition terms/Kafbat release·security notes/client support를 검토한다 | 수동 | none |
+| POL-0036-R37 | pin 변경 전 | 필수: rollback과 현재 recovery artifact를 보존한다 | none | none |
+| POL-0036-R38 | 항상 | 금지: Cluster Linking이나 다른 commercial/edition-specific 기능이 사용 가능하다고 가정 | none | none |
+| POL-0036-R39 | static 구성 검증 | 필수: RUN-0036의 root `messaging` render와 LAB render로 검증한다 | RUN-0036 root `messaging` render/LAB render | none |
+| POL-0036-R40 | promotion/cutover 전 | 필수: application-level acceptance를 갖춘 isolated compatible restore를 요구한다 | none | none |
+| POL-0036-R41 | 항상 | 필수: 검증되지 않은 runtime property를 명시적으로 기록한다 | none | none |
+| POL-0036-R42 | 적용 identity 변경/운영 | 필수: 문서의 정적 검증과 runtime 운영 승인을 분리한다 | none | none |
+| POL-0036-R43 | service image/profile/port/secret/mount, DDL·init, capacity 또는 backup 범위 변경 시 | 필수: 이 Policy와 linked Guide/Runbook을 함께 검토한다 | 수동 | none |
+| POL-0036-R44 | engine secret/certificate | 필수: 이 subject의 credential 계약을 따른다 | none | none |
+| POL-0036-R45 | 앱 인증 연동 | 필수: 적용되는 `POL-0079`의 통제를 따른다 | none | none |
+| POL-0036-R46 | source 반영/재기동 | 필수: `POL-0006`의 적용 통제를 따른다 | none | none |
+| POL-0036-R47 | 보존/삭제 | 필수: `POL-0021`의 적용 통제를 따른다 | none | none |
+| POL-0036-R48 | exporter/stateless job | 필수: 설정·credential과 그 작업이 변경하는 upstream state를 통제 대상에서 제외하지 않고 포함한다 | none | none |
+| POL-0036-R49 | 소유 artifact·복구 지점·expiry가 불명확할 때 | 필수: 삭제/재생성을 중단한다 | none | none |
+| POL-0036-R50 | 항상 | 금지: 기존 Exceptions 외의 새 예외를 승인된 것으로 간주 | none | none |
 
 - 정상 Kafka는 root의 `messaging` 계열 profile로만 선택한다. 세 broker
   topology는 root에 include하지 않는 `labs/kafka-cluster/docker-compose.yml`의 독립 LAB이며,
@@ -146,12 +186,18 @@ restore를 요구한다. 검증되지 않은 runtime property는 명시적으로
 
 ### Limits
 
-정책이 지정한 정적 검증은 root `messaging` render와 LAB render이며, 아래 항목은 정책상 기계적으로 강제되지 않는다.
+이 정책에서 이름 붙은 검사는 root `messaging` render와 LAB render뿐이며(검증 행에만 연결), 아래 규칙은 자동 검사 없이 검토·승인에 의존합니다.
 
-- 현재 broker/controller/host listener는 PLAINTEXT이며 TLS/SASL은 미구현 gap이다.
-- 계획된 RPO 24시간/RTO 8시간은 검증되지 않았고, restore rehearsal(schema compatibility, end offset, record count/checksum, consumer position, LAB connector pause/resume)은 별도 수행 전까지 증거가 없다.
-- 검증되지 않은 runtime property는 명시적으로 기록하며, 승격/cutover 전 isolated restore와 application 수준 acceptance는 별도 요구다.
-- Kafbat OIDC/RBAC, topic 변경 scope, connector 승인, slot lag 모니터링에는 이름 붙은 자동 검사가 없다.
+- 선택/분리: 자동 검사 없음(none) `POL-0036-R1`, `POL-0036-R2`, `POL-0036-R3`, `POL-0036-R4`
+- listener/인증: 자동 검사 없음(none) `POL-0036-R5`, `POL-0036-R6`, `POL-0036-R7`, `POL-0036-R8`, `POL-0036-R9`, `POL-0036-R10`
+- 변경: 자동 검사 없음(none) `POL-0036-R11`, `POL-0036-R12`, `POL-0036-R13`
+- CDC: 자동 검사 없음(none) `POL-0036-R14`, `POL-0036-R15`, `POL-0036-R17`, `POL-0036-R18`, `POL-0036-R19`, `POL-0036-R20`, `POL-0036-R22`; 수동 검토/승인 `POL-0036-R16`, `POL-0036-R21`
+- 데이터 보호: 자동 검사 없음(none) `POL-0036-R23`, `POL-0036-R24`, `POL-0036-R25`, `POL-0036-R26`, `POL-0036-R27`, `POL-0036-R28`, `POL-0036-R29`, `POL-0036-R30`, `POL-0036-R31`, `POL-0036-R32`, `POL-0036-R33`, `POL-0036-R34`, `POL-0036-R35`
+- 업그레이드: 자동 검사 없음(none) `POL-0036-R37`, `POL-0036-R38`; 수동 검토/승인 `POL-0036-R36`
+- 검증: 자동 검사 없음(none) `POL-0036-R40`, `POL-0036-R41`
+- lifecycle: 자동 검사 없음(none) `POL-0036-R42`, `POL-0036-R44`, `POL-0036-R45`, `POL-0036-R46`, `POL-0036-R47`, `POL-0036-R48`, `POL-0036-R49`, `POL-0036-R50`; 수동 검토/승인 `POL-0036-R43`
+- 정책이 밝힌 공백: 현재 broker/controller/host listener는 PLAINTEXT이며 broker TLS/SASL은 별도 architectural change로 남은 미구현 gap이다.
+- 정책이 밝힌 공백: 계획 상한 RPO 24시간/RTO 8시간은 검증되지 않았다.
 
 ## Ownership
 

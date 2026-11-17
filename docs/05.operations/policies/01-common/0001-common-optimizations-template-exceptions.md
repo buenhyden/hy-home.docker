@@ -43,21 +43,40 @@ next_review_at: "2027-05-13"
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0001-R1 | 항상 | 필수: 예외 목록 SSoT는 `infra/common-optimizations.exceptions.json`(schema v2) 단일 파일이다 | `bash scripts/validation/check-template-security-baseline.sh` | none |
-| POL-0001-R2 | 검증기 실행 시 | 필수: `compose_controls.py`는 root 전 profile과 `labs/*/docker-compose.yml`을 렌더해 extends/merge 후 최종 control을 읽는다 | `scripts/validation/check-template-security-baseline.sh` gate 진입점 | none |
-| POL-0001-R3 | 항상 | 필수: registry `controls`에 등록된 control만 강제하고 미지원 항목은 별도 서비스 조사로 확인한다 | `python3 scripts/validation/compose_controls.py --report` / 수동 | `--report` 편차 출력 |
-| POL-0001-R4 | 모든 템플릿 | 필수: `cap_drop: ALL`을 적용하고 필요한 capability는 leaf `cap_add`와 정확한 예외로 남긴다 | `bash scripts/validation/check-template-security-baseline.sh` | 예외 레지스트리 항목 |
-| POL-0001-R5 | secret 또는 secrets 디렉터리 아래 파일을 읽는 leaf | 필수: `SECRETS_GID`는 해당 leaf만 선언하고 host group 소유 데이터 디렉터리 쓰기 서비스는 기록된 예외로만 유지한다 | `bash scripts/validation/check-template-security-baseline.sh` | 예외 레지스트리 항목 |
-| POL-0001-R6 | 항상 | 필수: `pids_limit`은 등급별 초기 예산(dev 128, low 256, med 512, high/DB 1024)을 따른다 | none | none |
-| POL-0001-R7 | 예외 등록 시 | 필수: 예외 한 건에 `scope`, `compose_file`, `service`, `control`, `allowed_value`와 `kind`, `owner`, `reason`, `impact`, `mitigation`, `verification`, `reviewed`, `review_by`, `release_condition`을 지정한다 | `bash scripts/validation/check-template-security-baseline.sh` | `infra/common-optimizations.exceptions.json` |
-| POL-0001-R8 | 예외 검사 시 | 필수: `reviewed`는 검사일보다 미래일 수 없고 `review_by`는 `reviewed` 이상 366일 이내이며 마감일이 지나면 실패한다 | `bash scripts/validation/check-template-security-baseline.sh` | 검증 실패/통과 출력 |
-| POL-0001-R9 | `infra/` Compose | 필수: `container_name`과 `hostname`은 서비스 이름과 같고 다른 `container_name`은 `naming_exceptions`에 `reason`과 등록한다 | `tests.validation.test_infra_tier_layout` | `naming_exceptions` 등록 |
-| POL-0001-R10 | `restart: "no"` job | 허용: healthcheck 없이 두며 lifecycle 사실이므로 예외로 등록하지 않는다 | none | none |
-| POL-0001-R11 | secret을 읽지 않는 서비스 | 허용: Docker secret을 요구하지 않는다(비적용) | none | none |
-| POL-0001-R12 | 예외 등록 시 | 금지: wildcard 서비스/파일/scope, 미등록 control, 중복 예외 | `bash scripts/validation/check-template-security-baseline.sh` | none |
-| POL-0001-R13 | 예외 등록 시 | 금지: 고아 예외, 퇴역 대상 예외, 실제 값과 다른 `allowed_value` | `bash scripts/validation/check-template-security-baseline.sh` | none |
-| POL-0001-R14 | 예외 등록 시 | 금지: root와 LAB의 같은 서비스 이름을 하나의 예외로 묶는 것 | `bash scripts/validation/check-template-security-baseline.sh` | none |
-| POL-0001-R15 | 배포 진행 시 | 금지: 문서와 레지스트리 간 불일치 상태로 배포를 진행한다 | `python3 scripts/validation/check-document-links.py --mode traceability` | none |
+| POL-0001-R1 | 항상 | 필수: 예외 목록 SSoT는 `infra/common-optimizations.exceptions.json`(schema v2) 단일 파일 | none | none |
+| POL-0001-R2 | 검증기 실행 시 | 필수: `scripts/validation/compose_controls.py`는 root를 모든 profile로, `labs/*/docker-compose.yml`을 각각 합성 입력으로 렌더하고 extends/merge 뒤 서비스의 최종 control을 읽는다 | none | none |
+| POL-0001-R3 | 항상 | 필수: registry의 `controls`에 등록된 control만 강제한다 | none | none |
+| POL-0001-R4 | `--report` 출력에 포함되지 않는 항목(`read_only`/UID/host namespace/Docker socket 권한) | 필수: 별도 서비스 조사로 확인한다 | 수동 | none |
+| POL-0001-R5 | 모든 템플릿 | 필수: `cap_drop: ALL`로 capability를 전부 버린다 | none | none |
+| POL-0001-R6 | 이미지가 capability를 필요로 할 때 | 필수: leaf가 `cap_add`로 더하고 정확한 예외로 남긴다 | none | none |
+| POL-0001-R7 | 항상 | 필수: `SECRETS_GID`는 secret 또는 secrets 디렉터리 아래 파일을 읽는 leaf만 선언한다 | none | none |
+| POL-0001-R8 | host group 소유 데이터 디렉터리에 쓰는 서비스 | 필수: 기록된 예외로만 이 group을 유지한다 | none | none |
+| POL-0001-R9 | 항상 | 필수: `pids_limit`은 등급별 초기 예산(dev 128/low 256/med 512/high·DB 1024)을 따른다 | none | none |
+| POL-0001-R10 | 예외 한 건 등록 시 | 필수: `scope`(`root` 또는 `lab:<이름>`)/`compose_file`/`service`/`control`/`allowed_value`를 정확히 지정한다 | none | none |
+| POL-0001-R11 | 예외 한 건 등록 시 | 필수: `kind`(`weakening` 또는 `compatibility`)/`owner`/`reason`/`impact`/`mitigation`/`verification`/`reviewed`/`review_by`/`release_condition`을 지정한다 | none | none |
+| POL-0001-R12 | 예외 검사 시 | 금지: `reviewed`를 검사일보다 미래일로 두는 것 | none | none |
+| POL-0001-R13 | 예외 검사 시 | 필수: `review_by`는 `reviewed` 이상이며 그로부터 366일 이내 | none | none |
+| POL-0001-R14 | 마감일이 지난 예외 | 필수: 검사에서 실패로 처리한다 | none | none |
+| POL-0001-R15 | 검토일 또는 마감일이 검사일과 같을 때 | 허용: 유효한 값으로 인정한다 | none | none |
+| POL-0001-R16 | 항상 | 필수: `reviewed`와 `review_by`는 ISO 날짜로 검사한다 | none | none |
+| POL-0001-R17 | `infra/` Compose | 필수: `container_name`과 `hostname`은 서비스 이름과 같다 | none | none |
+| POL-0001-R18 | `network_mode: host`로 실행하는 `node-exporter` | 허용: `hostname`을 선언하지 않는다 | none | none |
+| POL-0001-R19 | 서비스 이름과 다른 `container_name` | 필수: root 레지스트리의 `naming_exceptions`에 `container_name`과 `reason`으로 등록한다 | `tests.validation.test_infra_tier_layout` | none |
+| POL-0001-R20 | `restart: "no"`인 job | 허용: healthcheck 없이 둔다 | none | none |
+| POL-0001-R21 | `restart: "no"`인 job의 healthcheck 부재 | 금지: lifecycle 사실을 예외로 등록한다 | none | none |
+| POL-0001-R22 | secret을 읽지 않는 서비스 | 허용: Docker secret 없이 둔다(비적용) | none | none |
+| POL-0001-R23 | 예외 등록 시 | 금지: wildcard 서비스/파일/scope | none | none |
+| POL-0001-R24 | 예외 등록 시 | 금지: 미등록 control | none | none |
+| POL-0001-R25 | 예외 등록 시 | 금지: 중복 예외 | none | none |
+| POL-0001-R26 | 예외 등록 시 | 금지: 실제 서비스가 없는 예외(고아) | none | none |
+| POL-0001-R27 | 예외 등록 시 | 금지: 서비스가 이미 기준을 지키는 예외(퇴역 대상) | none | none |
+| POL-0001-R28 | 예외 등록 시 | 금지: 실제 값과 다른 `allowed_value` | none | none |
+| POL-0001-R29 | 예외 등록 시 | 금지: root와 LAB의 같은 서비스 이름을 하나의 예외로 묶는 것 | none | none |
+| POL-0001-R30 | 배포 시 | 금지: 문서와 레지스트리 간 불일치 상태로 배포 진행 | none | none |
+| POL-0001-R31 | 모델/프롬프트 변경 | 필수: [agentic governance](../../../../.agents/governance/agentic.md)가 소유하는 절차를 따른다 | none | none |
+| POL-0001-R32 | 문서 변경 후 | 필수: 관련 validation을 통과한다 | none | none |
+| POL-0001-R33 | 로그/트레이스 보존 | 필수: [task checklists](../../../../.agents/governance/task-checklists.md)를 따른다 | none | none |
+| POL-0001-R34 | secret 노출 또는 승인 없는 runtime 변경 징후 | 필수: 즉시 중단한다 | none | none |
 
 - **Required**:
   - 예외 목록 SSoT는 [infra/common-optimizations.exceptions.json](../../../../infra/common-optimizations.exceptions.json)(schema v2) 단일 파일이다.
@@ -130,13 +149,20 @@ runtime health, 실제 이미지의 capability 필요 여부, 자원 사용량�
 
 ### Limits
 
-검증기는 정적 선언만 검사하며 다음은 기계적으로 강제되지 않는다.
+이 정책은 아래 규칙에 대해 명명된 자동 검사를 연결하지 않거나 수동 검토에 맡긴다.
 
-- runtime health, 실제 이미지의 capability 필요 여부, 자원 사용량은 증명되지 않으며 `verification` 필드의 실행 기록·시험으로만 뒷받침된다.
-- `read_only`, UID, host namespace, Docker socket 권한은 `--report` 출력에 포함되지 않아 별도 서비스 조사(수동)로 확인한다.
-- `pids_limit` 등급별 값은 부하 측정 전 초기 예산이며 최적값이 아니다.
-- 월 1회 정기 검토와 신규 예외 추가/삭제 시 즉시 검토는 명명된 자동 검사가 없다.
-- 구현이 통제를 충족하지 못할 때의 별도 remediation은 수동 판단이다.
+- 예외 레지스트리: 명명된 검사 없음 R1 (`POL-0001-` 접두)
+- control 렌더/강제: 명명된 검사 없음 R2, R3; 수동 검토 R4 (`POL-0001-` 접두)
+- capability/secret group: 명명된 검사 없음 R5~R8 (`POL-0001-` 접두)
+- pids_limit: 명명된 검사 없음 R9 (`POL-0001-` 접두)
+- 예외 항목 필드: 명명된 검사 없음 R10, R11 (`POL-0001-` 접두)
+- 검토일/마감일: 명명된 검사 없음 R12~R16 (`POL-0001-` 접두)
+- 이름 규칙: 명명된 검사 없음 R17, R18 (`POL-0001-` 접두)
+- 비적용 사례: 명명된 검사 없음 R20~R22 (`POL-0001-` 접두)
+- 예외 등록 금지: 명명된 검사 없음 R23~R30 (`POL-0001-` 접두)
+- AI Agent Policy: 명명된 검사 없음 R31~R34 (`POL-0001-` 접두)
+- 검증기는 정적 선언만 검사하므로 runtime health, 실제 이미지의 capability 필요 여부, 자원 사용량은 증명되지 않으며 `verification` 필드에 적은 근거(실행 기록, 시험)로만 뒷받침된다(125~127행).
+- 구현이 통제를 충족하지 못할 때의 처리는 임의 예외 추가 없이 별도 remediation으로 남기는 수동 판단이다(128~129행).
 
 ## Ownership
 

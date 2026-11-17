@@ -44,12 +44,12 @@ next_review_at: "2027-05-13"
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0052-R1 | 모든 DAG | 필수: `ruff` 또는 `flake8` linting을 통과한다 | Airflow static/runtime check (Airflow Procedure 문서화) | check 결과 / Airflow metadata DB monthly audit |
-| POL-0052-R2 | 항상 | 필수: 특별히 필요한 경우가 아니면 `catchup=False`를 명시적으로 설정한다 | Airflow static/runtime check (Airflow Procedure 문서화) | check 결과 / Airflow metadata DB monthly audit |
-| POL-0052-R3 | DAG 작성 | 허용: TaskFlow API(`@dag`, `@task`)를 사용한다 | none | none |
-| POL-0052-R4 | secret mounting | 허용: `AIRFLOW__CORE__FERNET_KEY_CMD`(`cat /run/secrets/airflow_fernet_key`)를 사용한다 | none | none |
-| POL-0052-R5 | 항상 | 금지: hardcoded credential(대신 Airflow Connection을 사용한다) | Airflow static/runtime check (Airflow Procedure 문서화) | check 결과 / Airflow metadata DB monthly audit |
-| POL-0052-R6 | 항상 | 금지: task 밖의 top-level database connection | Airflow static/runtime check (Airflow Procedure 문서화) | check 결과 / Airflow metadata DB monthly audit |
+| POL-0052-R1 | 모든 DAG | 필수: `ruff` 또는 `flake8` linting을 통과한다 | none | none |
+| POL-0052-R2 | 특별히 필요한 경우가 아닐 때 | 필수: `catchup=False`를 명시적으로 설정한다 | none | none |
+| POL-0052-R3 | DAG 작성 | 허용: TaskFlow API(`@dag`, `@task`) 사용 | none | none |
+| POL-0052-R4 | secret mounting | 허용: `AIRFLOW__CORE__FERNET_KEY_CMD`(`cat /run/secrets/airflow_fernet_key`)를 통한 mounting | none | none |
+| POL-0052-R5 | 항상 | 금지: hardcoded credential(대신 Airflow Connection을 사용한다) | none | none |
+| POL-0052-R6 | 항상 | 금지: task 밖의 top-level database connection | none | none |
 
 - **Required**:
   - 모든 DAG는 `ruff` 또는 `flake8` linting을 통과해야 한다.
@@ -79,12 +79,13 @@ Compliance는 [Airflow Procedure](../../runbooks/08-workflows-and-automation/005
 
 ### Limits
 
-이 정책은 준수를 Airflow Procedure runbook의 static/runtime check와 Airflow metadata DB의 월간 감사로 확인한다고만 하며 규칙별 검사 명령을 지정하지 않는다.
+이 정책은 준수를 Airflow Procedure runbook의 static/runtime check와 Airflow metadata DB의 월간 감사로 확인한다고만 하며 어느 검사가 어느 규칙을 다루는지 지정하지 않는다.
 
+- DAG 코드 기준(POL-0052): R1-R2, R5-R6에는 정책이 지정한 검사가 없다.
+- 허용 사항(POL-0052): R3-R4에는 정책이 지정한 검사가 없다.
 - 어떤 check가 어떤 규칙을 다루는지는 이 문서에서 알 수 없다.
 - TaskFlow API와 Fernet key 주입 방식은 허용 사항으로만 적혀 있고 검증 수단이 없다.
 - 월간 감사의 실행 기록은 이 문서에 없다.
-- 예외는 사용자 승인과 plan/task evidence에 의존한다.
 
 ## Ownership
 

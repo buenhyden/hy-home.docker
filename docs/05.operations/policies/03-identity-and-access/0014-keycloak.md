@@ -44,20 +44,32 @@ OAuth2 Proxy ForwardAuth는 [POL-0015](0015-oauth2-proxy.md)가 다룬다.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0014-R1 | 항상 | 필수: `check-all-hardening.sh 02-auth` 실패 0건을 유지한다 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | 점검 출력 |
-| POL-0014-R2 | readiness 실패 지속/로그인 실패 급증/realm 설정 오류 | 필수: 런북 절차를 수행한다 | 수동 | RUN-0014 |
-| POL-0014-R3 | 항상 | 필수: Keycloak은 `template-infra-high`를 사용한다 | `HYHOME_COMPOSE_PROFILES=auth bash scripts/validation/validate-docker-compose.sh` | none |
-| POL-0014-R4 | 비밀 주입 | 필수: DB 비밀은 `/run/secrets/keycloak_db_password`에서, Admin 비밀은 `KEYCLOAK_ADMIN_PASSWORD_FILE`이 가리키는 파일에서 읽어 환경 변수로 주입한다 | none | none |
-| POL-0014-R5 | 항상 | 필수: readiness healthcheck(`/health/ready`)를 유지한다 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | none |
-| POL-0014-R6 | 디버그 출력 | 필수: 시크릿 길이/값 등 민감한 디버그 출력을 하지 않는다 | none | none |
-| POL-0014-R7 | 기동 안정화 | 허용: healthcheck 타이밍을 조정한다 | none | none |
-| POL-0014-R8 | 운영 승인 하 | 허용: realm/client 설정을 변경한다 | 수동 | none |
-| POL-0014-R9 | 항상 | 금지: 시크릿 평문 하드코딩 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | none |
-| POL-0014-R10 | 항상 | 금지: 인증 우회 목적 설정 변경 | none | none |
-| POL-0014-R11 | 백업 시 | 필수: `mng-pg`의 Keycloak database를 권위 백업으로 취급하고 realm export만으로 완전한 복구를 주장하지 않는다 | none | none |
-| POL-0014-R12 | 일관된 export 필요 시 | 필수: 공식 offline 절차에 따라 모든 Keycloak node를 중지하며 실행 중 export를 database backup 대체물로 쓰지 않는다 | none | none |
-| POL-0014-R13 | 백업 접근/비밀 보관 | 필수: 관리자 password, database password, client secret은 각 secret owner가 보관하고 값을 문서나 증거에 복사하지 않는다 | none | none |
-| POL-0014-R14 | upgrade 전 | 필수: 복구 가능한 database backup을 확인하고 격리 복제본에서 migration과 대표 OIDC 흐름을 검증하며 rollback에는 이전 image와 이전 database가 함께 필요하다 | 수동 | none |
+| POL-0014-R1 | 항상 | 필수: `check-all-hardening.sh 02-auth` 실패 0건을 유지한다 | `bash scripts/hardening/check-all-hardening.sh 02-auth` | none |
+| POL-0014-R2 | readiness 실패 지속/로그인 실패 급증/realm 설정 오류 시 | 필수: 런북 절차를 수행한다 | none | none |
+| POL-0014-R3 | Keycloak 서비스 | 필수: `template-infra-high`를 사용한다 | none | none |
+| POL-0014-R4 | DB 비밀 | 필수: `/run/secrets/keycloak_db_password`에서 읽어 환경 변수로 주입한다 | none | none |
+| POL-0014-R5 | Admin 비밀 | 필수: `KEYCLOAK_ADMIN_PASSWORD_FILE`이 가리키는 파일(기본 `/run/secrets/keycloak_admin_password`/OpenBao 소비 시 `/run/openbao/auth` 아래 Agent 출력)에서 읽어 환경 변수로 주입한다 | none | none |
+| POL-0014-R6 | readiness healthcheck | 필수: `/health/ready` healthcheck를 유지한다 | none | none |
+| POL-0014-R7 | 디버그 출력 | 금지: 시크릿 길이/값 등 민감한 디버그 출력 | none | none |
+| POL-0014-R8 | 기동 안정화 | 허용: healthcheck 타이밍 조정 | none | none |
+| POL-0014-R9 | 운영 승인 하 | 허용: realm/client 설정 변경 | 수동 | none |
+| POL-0014-R10 | 시크릿 | 금지: 평문 하드코딩 | none | none |
+| POL-0014-R11 | 설정 변경 | 금지: 인증 우회 목적 설정 변경 | none | none |
+| POL-0014-R12 | 공통 자원 상한과 mount 적용 | 필수: [POL-0006](../01-common/0006-infrastructure-optimization-governance.md)을 적용한다 | none | none |
+| POL-0014-R13 | profile/상호 배제 | 필수: [POL-0078](../01-common/0078-compose-profile-vocabulary.md)을 적용한다 | none | none |
+| POL-0014-R14 | image 변경과 검토 | 필수: [POL-0086](../10-platform-and-backup/0086-dependency-version-management.md)을 적용한다 | none | none |
+| POL-0014-R15 | 보존할 상태와 private credential | 필수: [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 접근/암호화/retention을 적용한다 | none | none |
+| POL-0014-R16 | 제거 전 | 필수: 소비자와 복구 입력을 확인한다 | none | none |
+| POL-0014-R17 | volume/인증서/secret 삭제 | 필수: 서비스 중지와 분리된 승인 대상으로 한다 | 수동 | none |
+| POL-0014-R18 | 항상 | 필수: `mng-pg`의 Keycloak database를 권위 백업으로 취급한다 | none | none |
+| POL-0014-R19 | 복구 범위 주장 | 금지: realm export만으로 사용자/세션/자격 증명/실행 중 변경의 완전한 복구를 주장한다 | none | none |
+| POL-0014-R20 | 일관된 export가 필요할 때 | 필수: 공식 offline 절차에 따라 모든 Keycloak node를 중지한다 | none | none |
+| POL-0014-R21 | 실행 중 export | 금지: database backup 대체물로 쓴다 | none | none |
+| POL-0014-R22 | 백업 접근/관리자 password/database password/client secret | 필수: 각 secret owner가 보관한다 | none | none |
+| POL-0014-R23 | 백업 접근/관리자 password/database password/client secret | 금지: 문서나 증거에 값을 복사한다 | none | none |
+| POL-0014-R24 | upgrade 전 | 필수: 복구 가능한 database backup을 확인한다 | none | none |
+| POL-0014-R25 | upgrade 전 | 필수: 격리 복제본에서 migration과 대표 OIDC 흐름을 검증한다 | none | none |
+| POL-0014-R26 | rollback | 필수: 이전 image와 이전 database를 함께 갖춘다 | none | none |
 
 - **필수**:
   - `check-all-hardening.sh 02-auth` 실패 0건을 유지해야 한다.
@@ -116,13 +128,14 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
 
 ### Limits
 
-정책이 명명한 검사는 hardening 점검과 `auth`/`core` profile 정적 렌더링뿐이며 다음은 기계적으로 강제되지 않는다.
+이 정책은 아래 규칙에 대해 명명된 자동 검사를 연결하지 않거나 수동 검토에 맡긴다.
 
-- readiness 실패, 로그인 실패 급증, realm 설정 오류 시의 런북 수행과 realm/client 변경 승인은 수동 판단이다.
-- 시크릿 주입 경로, 민감 디버그 출력 금지, 평문 하드코딩 금지, 인증 우회 설정 금지에는 명명된 전용 검사가 없다.
-- 백업/업그레이드 통제(DB 백업 확인, 격리 복제본 migration 검증, offline export, rollback 입력)는 검사 없이 수동 절차에 의존한다.
-- 긴급 장애 시 임시 설정 변경의 원복 계획과 변경 기록은 수동이다.
-- 월 1회 정기 점검과 수시 점검에는 명명된 자동 검사가 없다.
+- hardening/대응: 명명된 검사 없음 R2 (`POL-0014-` 접두)
+- 서비스 구성: 명명된 검사 없음 R3~R7 (`POL-0014-` 접두)
+- 허용/금지: 명명된 검사 없음 R8, R10, R11; 수동 검토 R9 (`POL-0014-` 접두)
+- 공통 통제: 명명된 검사 없음 R12~R16; 수동 검토 R17 (`POL-0014-` 접두)
+- 백업/업그레이드: 명명된 검사 없음 R18~R26 (`POL-0014-` 접두)
+- 명명된 검사는 hardening 점검과 `auth`/`core` profile 정적 렌더링뿐이다(113~115행).
 
 ## Ownership
 

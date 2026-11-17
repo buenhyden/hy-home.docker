@@ -42,13 +42,32 @@ baseline의 실행 가능한 부분집합이다. 이 정책은 새 통제를 정
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0095-R1 | 규칙 추가/병합 | 필수: 모든 규칙은 같은 디렉터리에 unit test를 두고 job은 소스 테스트 전에 `conftest verify`를 실행하며 실패·통과 케이스가 모두 없는 규칙은 병합하지 않는다 | `check-conftest-policy.sh --mode verify` / `leaf.conftest-policy-tests`(local 전용) | verify 통과 출력 |
-| POL-0095-R2 | allowlist 변경 | 필수: allowlist 항목은 정책 파일에 서비스명과 이유를 명시하고 검토된 변경으로만 늘린다 | 수동 | none |
-| POL-0095-R3 | 새 `deny` 추가 | 필수: 병합 전에 현재 소스에서 통과해야 하며 소스가 충족할 수 없는 규칙은 `warn`으로 시작한다 | `check-conftest-policy.sh --mode corpus` | corpus 통과(deny 없음) |
-| POL-0095-R4 | job 실행 | 필수: 공개 `infra/`·`labs/`와 wrapper 파생 입력만 읽기 전용으로 마운트하고 네트워크 없이 non-root로 실행하며 `secrets/`, `.env`, Docker socket, 호스트 root·Git·scripts는 마운트하지 않는다 | none | none |
-| POL-0095-R5 | corpus 선정 | 필수: corpus 권위는 canonical Git 추적 소스 목록이고 무시된 산출물은 읽지 않으며 미추적 소스 후보는 Docker 전에 실패하고 wrapper는 POL-0078로 검증한 overlay의 원본 base profile만 보충한다 | wrapper의 Docker 전 실패 검사 | none |
-| POL-0095-R6 | `corpus`/기본 `all` 실행 | 필수: wrapper의 완전한 두 소스 목록과 digest가 없거나 잘못되면 실패하고 raw fallback을 두지 않으며 원본·기존 권한을 바꾸지 않고 임시 입력만 종료 후 정리한다 | wrapper 목록·digest 검증 | none |
-| POL-0095-R7 | `deny` 발동 시 | 필수: 규칙이 아니라 선언을 고친다 | `leaf.conftest-policy`(`--mode corpus`, CI) | CI corpus 결과 |
+| POL-0095-R1 | 규칙 추가 시 | 필수: 모든 규칙은 같은 디렉터리에 unit test를 둔다 | `bash scripts/validation/check-conftest-policy.sh --mode verify`(`leaf.conftest-policy-tests`, local 전용) | none |
+| POL-0095-R2 | job 실행 시 | 필수: 소스를 테스트하기 전에 `conftest verify`를 실행한다 | `bash scripts/validation/check-conftest-policy.sh --mode verify`(`leaf.conftest-policy-tests`, local 전용) | none |
+| POL-0095-R3 | 항상 | 필수: 등록된 `verify`·`corpus` lane을 분리하고 기본 `all`은 두 단계를 순서대로 실행한다 | none | none |
+| POL-0095-R4 | 규칙 병합 시 | 금지: 실패·통과 케이스가 모두 없는 규칙의 병합 | none | none |
+| POL-0095-R5 | allowlist 항목 추가 시 | 필수: 정책 파일에 서비스명과 이유를 명시한다 | none | none |
+| POL-0095-R6 | allowlist 확대 시 | 필수: 검토된 변경으로만 늘린다 | 수동 | none |
+| POL-0095-R7 | 새 `deny` 병합 전 | 필수: 현재 소스에서 통과해야 한다 | `bash scripts/validation/check-conftest-policy.sh --mode corpus`(CI `leaf.conftest-policy`) | none |
+| POL-0095-R8 | 소스가 충족할 수 없는 규칙 | 필수: `warn`으로 시작한다 | none | none |
+| POL-0095-R9 | job 실행 시 | 필수: 공개 `infra/`·`labs/`와 wrapper가 준비한 공개 파생 입력만 읽기 전용으로 마운트한다 | none | none |
+| POL-0095-R10 | job 실행 시 | 필수: 네트워크 없이 non-root 사용자로 실행한다 | none | none |
+| POL-0095-R11 | 항상 | 금지: `secrets/`, `.env`, Docker socket, 호스트 root·Git·scripts 마운트 | none | none |
+| POL-0095-R12 | corpus 선정 시 | 필수: corpus 권위는 기존 canonical Git 추적 소스 목록이다 | none | none |
+| POL-0095-R13 | 항상 | 금지: 무시된 설치 산출물 읽기 | none | none |
+| POL-0095-R14 | 무시되지 않은 미추적 소스 후보가 있을 때 | 필수: Docker 실행 전에 실패한다 | none | none |
+| POL-0095-R15 | overlay 입력 보충 시 | 필수: POL-0078로 검증한 overlay의 원본 base profile만 정책 입력에 보충한다 | none | none |
+| POL-0095-R16 | 항상 | 금지: 이 보충을 실행용 Compose나 다른 정책 필드를 바꾸는 예외로 사용 | none | none |
+| POL-0095-R17 | `corpus`·기본 `all` 실행 시 | 필수: wrapper의 완전한 두 소스 목록과 digest를 요구하고 준비가 없거나 잘못되면 실패한다 | none | none |
+| POL-0095-R18 | 항상 | 금지: raw fallback | none | none |
+| POL-0095-R19 | 직접 job `verify` 실행 시 | 필수: 직접 job `verify`를 유지한다 | none | none |
+| POL-0095-R20 | 항상 | 금지: 원본·기존 권한 변경 | none | none |
+| POL-0095-R21 | 실행 종료 후 | 필수: 임시 입력을 정리한다 | none | none |
+| POL-0095-R22 | `deny` 발동 시 | 필수: 규칙이 아니라 선언을 고친다 | none | none |
+| POL-0095-R23 | 항상 | 필수: raw 파일 탐색으로 선택되지 않는 inline Dockerfile과 최종 Compose·실행 상태의 통제를 별도로 요구한다 | none | none |
+| POL-0095-R24 | 항상 | 금지: 이 도구의 PASS를 전체 인프라 보안 준수 판정으로 해석 | none | none |
+| POL-0095-R25 | 새 규칙의 단계적 `warn` 도입 시 | 금지: 도입 조건을 기존 강제 통제를 약화할 허가로 사용 | none | none |
+| POL-0095-R26 | 새 규칙의 단계적 `warn` 도입 시 | 필수: 정책 단위 테스트·검토된 예외 근거를 유지한다 | none | none |
 
 - 모든 규칙은 같은 디렉터리에 unit test를 가지며, job은 소스를 테스트하기
   전에 `conftest verify`를 실행한다. 등록된 `verify`·`corpus` lane은 분리되며
@@ -100,12 +119,19 @@ allowlist 항목이 추가될 때마다 검토한다.
 
 ### Limits
 
-다음은 정책이 이름 있는 검사의 범위를 제한하는 부분이다.
+다음 규칙은 정책이 이름 있는 자동 검사를 연결하지 않았다.
 
-- 이 도구의 PASS는 전체 인프라 보안 준수 판정이 아니며 inline Dockerfile과 최종 Compose·실행 상태의 통제는 별도로 요구된다.
+- 이름 있는 검사 없음(규칙 테스트): `POL-0095-R3`, `POL-0095-R4`
+- 이름 있는 검사 없음(allowlist): `POL-0095-R5`
+- 이름 있는 검사 없음(deny): `POL-0095-R8`
+- 이름 있는 검사 없음(마운트): `POL-0095-R9`, `POL-0095-R10`, `POL-0095-R11`
+- 이름 있는 검사 없음(corpus): `POL-0095-R12`, `POL-0095-R13`, `POL-0095-R14`, `POL-0095-R15`, `POL-0095-R16`
+- 이름 있는 검사 없음(wrapper): `POL-0095-R17`, `POL-0095-R18`, `POL-0095-R19`, `POL-0095-R20`, `POL-0095-R21`
+- 이름 있는 검사 없음(deny 대응): `POL-0095-R22`
+- 이름 있는 검사 없음(범위): `POL-0095-R23`, `POL-0095-R24`, `POL-0095-R25`, `POL-0095-R26`
+- 수동 검토·승인에 의존(allowlist): `POL-0095-R6`
+- 정책이 스스로 밝힌 한계: 이 도구의 PASS는 전체 인프라 보안 준수 판정이 아니며 inline Dockerfile과 최종 Compose·실행 상태의 통제는 별도로 요구된다.
 - `leaf.conftest-policy-tests`(`--mode verify`)는 local 전용이고 CI는 `leaf.conftest-policy`(`--mode corpus`)만 실행한다.
-- allowlist 확대와 마운트 제한은 이름 있는 검사 없이 검토에 의존한다.
-- 새 규칙의 단계적 `warn` 도입은 기존 강제 통제를 약화할 허가가 아니다.
 
 ## Ownership
 

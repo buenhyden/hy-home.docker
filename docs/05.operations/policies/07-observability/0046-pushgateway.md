@@ -44,20 +44,30 @@ next_review_at: "2027-05-13"
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0046-R1 | 항상 | 필수: `profiles: [obs, batch-metrics]`, `template-infra-readonly-low`, 고정 image, expose `${PUSHGATEWAY_PORT:-9091}`, `/-/ready` healthcheck, 보호 Traefik middleware chain을 유지한다 | Compose `rg` 점검 (`infra/06-observability/docker-compose.yml`) | `rg` 출력 |
-| POL-0046-R2 | push 사용 대상 | 필수: Prometheus가 직접 scrape할 수 없는 단기/배치/CI/CD 작업에만 사용한다 | API Audit (수동) | none |
-| POL-0046-R3 | 모든 push path | 필수: 안정적인 `job` label을 포함한다 | API Audit (수동) | none |
-| POL-0046-R4 | `instance` label 사용 | 필수: 안정적인 worker/node/bounded identity를 구분할 때만 쓰고 고유 request/user/unbounded build ID는 cleanup evidence가 없으면 쓰지 않는다 | API Audit (수동) | cleanup evidence |
-| POL-0046-R5 | push한 metric group | 필수: 작업 종료 후 삭제하거나 다음 실행에서 overwrite하고 1시간 이상 갱신되지 않은 `push_time_seconds` group은 stale 후보로 검토한다 | Stale Metric Check (scrape job이 존재하는 환경에서만) | stale group cleanup evidence |
-| POL-0046-R6 | dashboard/alert/SLO가 Pushgateway metric에 의존할 때 | 필수: 선택 config에 `job_name: "pushgateway"`, `pushgateway:9091` target, `honor_labels: true` 또는 동등한 label 보존이 있어야 한다(2026-11-06 기준 미구현) | Scrape Contract Check (`rg` on `prometheus/config/`) | match 없으면 gap 기록 후 별도 task |
-| POL-0046-R7 | 항상 | 필수: metric payload/label에 secret, token, credential, personal data를 넣지 않는다 | API Audit (수동) | none |
-| POL-0046-R8 | 직접 scrape가 어려운 network boundary 안쪽 | 허용: short-lived job metric push | 수동 | none |
-| POL-0046-R9 | 수동 디버깅 | 허용: 임시 push, 작업 종료 후 stale group cleanup evidence를 남긴다 | API Audit (수동) | cleanup evidence |
-| POL-0046-R10 | 승인된 prototype | 허용: 제한된 label set으로 짧게 검증한다 | 수동 | 승인 기록 |
-| POL-0046-R11 | 항상 | 금지: 장기 실행 서비스의 일반 metrics collection을 Pushgateway로 우회한다 | 수동 | none |
-| POL-0046-R12 | 항상 | 금지: 고 cardinality label, 상한 없는 식별자, secret을 포함한 label/payload 사용 | API Audit (수동) | none |
-| POL-0046-R13 | 항상 | 금지: 현재 Compose에 선언되지 않은 persistence/route relaxation/image change/scrape-job 동작을 구현 완료로 표현한다 | Documentation Check / Compose 점검 | none |
-| POL-0046-R14 | lifecycle/data | 필수: OPTIONAL 유지, grouping-key 소유권/stale 삭제/gateway 인증 요구, restart 시 metric 손실 승인, 제거 시 producer 이전과 route 폐쇄 | 수동 | `RUN-0046` runbook |
+| POL-0046-R1 | 항상 | 필수: Compose 서비스는 `profiles: [obs, batch-metrics]`/`template-infra-readonly-low`/image 선언/expose `${PUSHGATEWAY_PORT:-9091}`/`/-/ready` healthcheck/보호 Traefik middleware chain 유지 | none | none |
+| POL-0046-R2 | Pushgateway 사용 시 | 필수: Prometheus가 직접 scrape할 수 없는 단기 실행/배치/CI/CD 작업에만 사용 | 수동 | none |
+| POL-0046-R3 | 모든 push path | 필수: 안정적인 `job` label 포함 | none | none |
+| POL-0046-R4 | `instance` label 사용 시 | 필수: 안정적인 worker/node/bounded execution identity를 구분할 때만 사용 | 수동 | none |
+| POL-0046-R5 | 고유 request ID/user ID/unbounded build ID | 금지: cleanup evidence가 없는데 label로 사용 | 수동 | cleanup evidence |
+| POL-0046-R6 | push한 metric group | 필수: 작업 lifecycle 종료 후 삭제하거나 다음 실행에서 명확히 overwrite | Stale Metric Check(scrape job이 존재하는 환경에서만) | stale group cleanup evidence |
+| POL-0046-R7 | 1시간 이상 갱신되지 않은 `push_time_seconds` group | 필수: stale candidate로 검토 | Stale Metric Check(scrape job이 존재하는 환경에서만) | none |
+| POL-0046-R8 | dashboard/alert/SLO가 Pushgateway metric에 의존할 때 | 필수: 선택 config에 `job_name: "pushgateway"`/`pushgateway:9091` target/`honor_labels: true` 또는 동등한 label 보존 정책 구비(2026-11-06 기준 미구현) | Scrape Contract Check(`prometheus/config/`에 대한 `rg`) | match가 없으면 gap 기록 |
+| POL-0046-R9 | 항상 | 금지: 위 scrape 통제를 구현된 상태로 단정 | none | none |
+| POL-0046-R10 | 항상 | 필수: metric payload와 label에 secret/token/credential/personal data 불포함 | 수동 | none |
+| POL-0046-R11 | 직접 scrape가 어려운 network boundary 안쪽 | 허용: short-lived job metric push | none | none |
+| POL-0046-R12 | 수동 디버깅 목적 | 허용: 임시 push | none | none |
+| POL-0046-R13 | 수동 디버깅 목적 임시 push 후 | 필수: 작업 종료 후 stale group cleanup evidence 기록 | none | stale group cleanup evidence |
+| POL-0046-R14 | 별도 승인된 prototype | 허용: 제한된 label set으로 짧게 검증 | 수동 | none |
+| POL-0046-R15 | 항상 | 금지: 장기 실행 서비스의 일반 metrics collection을 Pushgateway로 우회 | none | none |
+| POL-0046-R16 | 항상 | 금지: cardinality가 높은 label/상한 없는 tenant·user·request·build 식별자/secret을 포함한 label·지표 payload 사용 | 수동 | none |
+| POL-0046-R17 | 항상 | 금지: 현재 Compose에 선언되지 않은 persistence option/route relaxation/image change/scrape-job behavior를 문서에서 구현 완료로 표현 | none | none |
+| POL-0046-R18 | 항상 | 필수: Pushgateway는 OPTIONAL 유지 | none | none |
+| POL-0046-R19 | 항상 | 금지: Batch 동안 시작하거나 기존 실행 컨테이너를 발견해도 HOME으로 재분류 | none | none |
+| POL-0046-R20 | 항상 | 필수: grouping-key 소유권/stale-series 삭제/gateway 인증/producer의 실제 관측 요구 | none | none |
+| POL-0046-R21 | 항상 | 금지: 영속 보존·정확한 복구 주장 | none | none |
+| POL-0046-R22 | upgrade/restart 시 | 필수: metric 손실을 승인하고 현재 관측의 제한된 재전송 준비 | 수동 | none |
+| POL-0046-R23 | 자원 변경 시 | 필수: series/cardinality 근거 확보 | none | none |
+| POL-0046-R24 | 제거 시 | 필수: producer 이전·중지, scrape 정리, stale group 삭제, route 폐쇄 | none | none |
 
 - **Required**:
   - Compose 서비스는 `profiles: [obs, batch-metrics]`, `template-infra-readonly-low`, image [prom/pushgateway image declaration](../../../../infra/06-observability/docker-compose.yml), expose `${PUSHGATEWAY_PORT:-9091}`, `/-/ready` healthcheck, and protected Traefik middleware chain을 유지해야 한다.
@@ -105,13 +115,19 @@ next_review_at: "2027-05-13"
 
 ### Limits
 
-이 정책은 Compose 문자열 점검 외에는 수동 감사에 의존한다.
+정책 본문이 이름 붙인 검사로 강제하는 규칙은 일부이며 아래 항목은 기계적으로 강제되지 않는다.
 
-- Prometheus scrape job이 2026-11-06 기준 두 config에 없어 Pushgateway 연동 통제는 미구현이며 구현으로 단정하지 않는다.
-- Stale Metric Check는 scrape job이 존재하는 환경에서만 가능하다.
-- label cardinality, secret/개인정보 payload, 사용 대상 제한은 API Audit 수동 확인이며 자동 검사가 없다.
-- cleanup 자동화와 영속 보존은 없으며 metric 휘발성을 전제로 한다.
-- Documentation Check는 guide/runbook이 policy control을 복제하지 않는지의 확인이며 runtime 상태를 증명하지 않는다.
+- Compose 경계: `POL-0046-R1`는 이름 붙은 검사가 지정되지 않았다.
+- push 사용 기준: `POL-0046-R2`, `POL-0046-R4`, `POL-0046-R5`, `POL-0046-R10`, `POL-0046-R14`는 승인/검토 등 수동 절차에 의존한다.
+- push 사용 기준: `POL-0046-R3`, `POL-0046-R11`, `POL-0046-R12`, `POL-0046-R13`는 이름 붙은 검사가 지정되지 않았다.
+- scrape 연동: `POL-0046-R9`는 이름 붙은 검사가 지정되지 않았다.
+- 금지 행위: `POL-0046-R15`, `POL-0046-R17`는 이름 붙은 검사가 지정되지 않았다.
+- 금지 행위: `POL-0046-R16`는 승인/검토 등 수동 절차에 의존한다.
+- 수명주기/데이터: `POL-0046-R18`, `POL-0046-R19`, `POL-0046-R20`, `POL-0046-R21`, `POL-0046-R23`, `POL-0046-R24`는 이름 붙은 검사가 지정되지 않았다.
+- 수명주기/데이터: `POL-0046-R22`는 승인/검토 등 수동 절차에 의존한다.
+- Prometheus scrape job이 2026-11-06 기준 두 config에 없어 Pushgateway 연동 통제는 미구현이며 구현으로 단정하지 않는다고 정책이 명시한다.
+- 정책은 label cardinality, secret/개인정보 payload, 사용 대상 제한을 API Audit의 수동 확인으로 보며 자동 검사가 없다고 명시한다.
+- cleanup 자동화와 영속 보존은 없으며 Stale Metric Check는 scrape job이 존재하는 환경에서만 가능하다.
 
 ## Ownership
 

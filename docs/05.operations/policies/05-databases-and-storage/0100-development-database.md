@@ -47,14 +47,29 @@ queue, 기존 PGDATA와 backup chain은 이 정책으로 변경하지 않는다.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0100-R1 | 항상 | 필수: `dev-data`와 목적별 profile만 새 개발 엔진 선택, HOME root profile/기존 `dev` selector 확대 금지 | `docker compose --env-file .env.example --profile dev-data config --quiet` / permission regression test | none |
-| POL-0100-R2 | 프로젝트 provision 시 | 필수: 승인된 manifest의 명시적 DB/role/ACL 이름만 수용, shell 문자열 조합/DB-number 격리/공유 runtime password/PUBLIC privilege 확대 금지 | `docker compose --env-file .env.example --profile dev-data config --quiet` / permission regression test | none |
-| POL-0100-R3 | 항상 | 필수: 프로젝트마다 NOLOGIN owner/migrator/runtime/reader 분리, default privilege/sequence/future object/`search_path` 검증 유지 | permission regression test | runtime task의 reader write/DDL rejection 증명 |
-| POL-0100-R4 | `quality-results` 사용 시 | 필수: `dev-perf-provision`은 공용 `perf_db` schema만 준비, `testing` profile과 분리, 프로젝트별 LOGIN/실트래픽은 별도 승인 | none | none |
-| POL-0100-R5 | 항상 | 필수: `dev-valkey`는 project ACL과 key prefix를 보안 경계로 사용, TTL/persistence/maxmemory/eviction 의미는 프로젝트 계약에 명시, queue `noeviction`과 cache LRU 혼합은 별도 sizing decision | none | none |
-| POL-0100-R6 | pgBackRest 선언 시 | 금지: source declaration을 backup/PITR 보장으로 간주; archive 활성화/retention/restore/storage 삭제/`app_db` migration은 별도 승인과 격리 검증 | none | none |
-| POL-0100-R7 | 지표 수집 시 | 필수: `dev_pg_monitor`/`devmonitor`만 사용, DEV exporter에 관리자 비밀 금지 | none | none |
-| POL-0100-R8 | 항상 | 필수: secret은 Docker secret reference로만 소비, 값/rendered private configuration/raw payload 기록 금지 | none | none |
+| POL-0100-R1 | 새 개발 엔진 선택 | 필수: `dev-data`와 목적별 `analytics-engineering`/`cdc`/`quality-results` profile만 사용한다 | none | none |
+| POL-0100-R2 | 항상 | 금지: HOME root profile 또는 기존 `dev` selector 확대 | none | none |
+| POL-0100-R3 | 프로젝트 provision | 필수: 승인된 manifest의 명시적 DB·role·ACL 이름만 수용한다 | none | none |
+| POL-0100-R4 | 항상 | 금지: shell 문자열 조합/DB-number 격리/공유 runtime password/PUBLIC privilege 확대 | none | none |
+| POL-0100-R5 | 프로젝트마다 | 필수: NOLOGIN owner/migrator/runtime/reader를 분리한다 | none | none |
+| POL-0100-R6 | 항상 | 금지: runtime에 DDL/소유권 부여 | none | none |
+| POL-0100-R7 | 항상 | 금지: reader에 write/DDL 부여 | none | none |
+| POL-0100-R8 | 항상 | 필수: default privilege/sequence/future object/`search_path` 검증을 함께 유지한다 | none | none |
+| POL-0100-R9 | `quality-results`의 `dev-perf-provision` | 필수: 공용 `perf_db` schema만 준비한다 | none | none |
+| POL-0100-R10 | 시험 | 필수: `testing` profile과 분리한다 | none | none |
+| POL-0100-R11 | 프로젝트별 LOGIN/실트래픽 | 필수: 별도 승인을 받는다 | 수동 | none |
+| POL-0100-R12 | `dev-valkey` | 필수: project ACL과 key prefix를 보안 경계로 사용한다 | none | none |
+| POL-0100-R13 | TTL/persistence/maxmemory/eviction | 필수: 업무 의미를 프로젝트 계약에서 명시한다 | none | none |
+| POL-0100-R14 | queue `noeviction`과 cache LRU를 같은 instance에 혼합하는 변경 | 필수: 별도 sizing decision을 거친다 | none | none |
+| POL-0100-R15 | pgBackRest source declaration | 금지: `archive_mode=on`/`dev` stanza/`${BACKUP_STATE_REPO_DIR}/dev-pgbackrest`/`dev_pgbackrest_cipher_pass` 선언을 backup/PITR 보장으로 취급 | none | none |
+| POL-0100-R16 | HOME archive 활성화(stanza 생성)/retention 변경/restore/storage 삭제/기존 `app_db` migration | 필수: 별도 승인과 격리 검증을 받는다 | 수동 | none |
+| POL-0100-R17 | 지표 수집 | 필수: `dev_pg_monitor`(통계·설정 읽기 전용 role)와 `devmonitor`(읽기 전용 ACL 사용자)만 쓴다 | none | none |
+| POL-0100-R18 | 항상 | 금지: DEV exporter에 관리자 비밀 제공 | none | none |
+| POL-0100-R19 | secret 소비 | 필수: Docker secret reference로만 소비한다 | none | none |
+| POL-0100-R20 | source evidence/문서 | 금지: 값/rendered private configuration/raw database payload 기록 | none | none |
+| POL-0100-R21 | source change | 필수: Compose render(`docker compose --env-file .env.example --profile dev-data config --quiet`)와 permission regression test를 통과한다 | `docker compose --env-file .env.example --profile dev-data config --quiet`/permission regression test | none |
+| POL-0100-R22 | fresh PGDATA/repeat provision/app A/B isolation/reader write·DDL rejection/Timescale behavior/Valkey ACL/backup·restore/CDC replay/external consumer switching | 필수: runtime task에서 별도로 증명한다 | none | none |
+| POL-0100-R23 | 항상 | 금지: 정적 통과나 격리 시험을 HOME deployment/운영 recovery/data migration 증거로 사용 | none | none |
 
 - `dev-data`와 목적별 `analytics-engineering`/`cdc`/`quality-results` profile만 새 개발 엔진을 선택한다.
   HOME root profile 또는 기존 `dev` selector를 확대하지 않는다.
@@ -100,12 +115,17 @@ SPEC-0202-TSK-0002는 합성 격리 엔진의 백업/복원과 일부 권한 거
 
 ### Limits
 
-정적 검증은 compose render와 permission regression test로 한정되며, 아래 항목은 정책이 runtime task에서 별도로 증명해야 한다고 밝힌 미검증 부분이다.
+이 정책에서 이름 붙은 검사는 Compose render와 permission regression test뿐이며(검증 행에만 연결), 아래 규칙은 자동 검사 없이 검토·승인에 의존합니다.
 
-- fresh PGDATA, repeat provision, app A/B isolation, reader write/DDL rejection, Timescale behavior, Valkey ACL, backup/restore, CDC replay, external consumer switching은 runtime task에서 별도 증명 전까지 `NOT_RUN` 성격이다.
-- SPEC-0202-TSK-0002는 합성 격리 엔진의 백업/복원과 일부 권한 거절만 증명한다. 정적 통과나 격리 시험은 HOME deployment, 운영 recovery, data migration 증거가 될 수 없다.
-- pgBackRest 선언은 backup/PITR 보장이 아니다.
-- Valkey 의미 정의, monitor role 제한, secret 소비 규칙에는 이름 붙은 자동 검사가 없다.
+- profile: 자동 검사 없음(none) `POL-0100-R1`, `POL-0100-R2`
+- provision: 자동 검사 없음(none) `POL-0100-R3`, `POL-0100-R4`, `POL-0100-R5`, `POL-0100-R6`, `POL-0100-R7`, `POL-0100-R8`
+- perf: 자동 검사 없음(none) `POL-0100-R9`, `POL-0100-R10`; 수동 검토/승인 `POL-0100-R11`
+- Valkey: 자동 검사 없음(none) `POL-0100-R12`, `POL-0100-R13`, `POL-0100-R14`
+- backup: 자동 검사 없음(none) `POL-0100-R15`; 수동 검토/승인 `POL-0100-R16`
+- 지표/secret: 자동 검사 없음(none) `POL-0100-R17`, `POL-0100-R18`, `POL-0100-R19`, `POL-0100-R20`
+- 검증: 자동 검사 없음(none) `POL-0100-R22`, `POL-0100-R23`
+- 정책이 밝힌 공백: fresh PGDATA/repeat provision/app A/B isolation/reader write·DDL rejection/Timescale behavior/Valkey ACL/backup·restore/CDC replay/external consumer switching은 runtime task에서 별도 증명 전까지 미검증이다.
+- 정책이 밝힌 공백: SPEC-0202-TSK-0002는 합성 격리 엔진의 백업/복원과 일부 권한 거절만 증명한다.
 
 ## Ownership
 

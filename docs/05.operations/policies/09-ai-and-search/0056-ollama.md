@@ -48,22 +48,29 @@ Ollama 추론 엔진 운영 전반:
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0056-R1 | 항상 | 필수: 호스트 직접 API 포트는 loopback에만 바인딩하고 원격은 인증된 gateway 경로를 사용한다 | Mechanisms 배포 전 `bash scripts/hardening/check-all-hardening.sh 08-ai` / 수동 | 배포 로그, hardening 검증 결과 |
-| POL-0056-R2 | 모델 변경 시 | 필수: 변경 전 승인된 local/dev rehearsal에서 성능과 안정성을 검증한다 | 수동 / `nvidia-smi`, `/api/tags`, 추론 smoke test | 배포 로그, 모델 태그 기록 |
-| POL-0056-R3 | 운영 모델 사용 시 | 필수: 검증된 태그/소스만 사용한다 | 수동 | 모델 태그 기록 |
-| POL-0056-R4 | 항상 | 필수: VRAM/메모리 사용량을 exporter와 대시보드로 상시 관측한다 | 운영 중 VRAM 과점유/지연/로드 실패율 모니터링 | none |
-| POL-0056-R5 | `ai` profile 기동 시 | 필수: runtime 승인 후에 기동한다 | 수동 / `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh` | 범위별 승인 기록 |
-| POL-0056-R6 | 항상 | 허용: 승인된 경량/양자화 모델 배포 | 수동 | 모델 태그 기록 |
-| POL-0056-R7 | 항상 | 허용: `keep_alive` 정책 기반 모델 언로드 최적화 | none | none |
-| POL-0056-R8 | 항상 | 금지: 인증 없는 Ollama API를 LAN/공용 인터페이스에 직접 게시 | Mechanisms 배포 전 `bash scripts/hardening/check-all-hardening.sh 08-ai` | hardening 검증 결과 |
-| POL-0056-R9 | 항상 | 금지: 승인 없는 대형 모델 상시 로드 | 수동 | none |
-| POL-0056-R10 | 항상 | 금지: 출처 불명/무검증 모델의 운영 반영 | 수동 | 모델 태그 기록 |
-| POL-0056-R11 | 운영 시간대 | 금지: 무단 리소스 상향 | 수동 | none |
-| POL-0056-R12 | 항상 | 필수: Ollama와 exporter를 HOME으로 유지하고 모델 추가/교체에 source/digest/model-card/license/자원/품질 근거를 요구한다 | 수동 | 모델 태그 기록 |
-| POL-0056-R13 | 항상 | 필수: 재현 가능한 artifact일 때만 blob을 재구축 자산으로 보고 아니면 model volume을 보존한다 | 수동 | none |
-| POL-0056-R14 | 업그레이드 시 | 필수: 전에 image/model digest와 GPU/driver 호환성을 기록하고 API/exporter/추론/WebUI를 검증한 뒤 수용한다 | 수동 / `/api/tags`, 추론 smoke test | 배포 로그, 롤백 결과 |
-| POL-0056-R15 | 동시성 확대 시 | 필수: 한도·예약을 여유 증거로 보지 않고 CPU/RAM/VRAM/latency/실패 측정 근거를 요구한다 | 수동 | none |
-| POL-0056-R16 | 제거 시 | 필수: 모델 보존 결정, 출처 export, client 중지, route 제거와 model volume 삭제 승인을 갖춘다 | 수동 | 범위별 승인 기록 |
+| POL-0056-R1 | 항상 | 필수: 호스트 직접 API 포트는 loopback에만 바인딩한다 | 수동 | none |
+| POL-0056-R2 | 컨테이너 소비자 | 필수: 컨테이너 소비자는 서비스 DNS를 사용한다 | none | none |
+| POL-0056-R3 | 원격 소비자 | 필수: 원격 소비자는 인증된 gateway 경로를 사용한다 | none | none |
+| POL-0056-R4 | 모델 변경 전 | 필수: 승인된 local/dev rehearsal에서 성능 및 안정성 검증을 수행한다 | 수동 | none |
+| POL-0056-R5 | 운영 모델 | 필수: 검증된 태그/소스만 사용한다 | 수동 | none |
+| POL-0056-R6 | 항상 | 필수: VRAM/메모리 사용량을 exporter 및 대시보드로 상시 관측한다 | 운영 중 VRAM 과점유/응답 지연/모델 로드 실패율 모니터링 | none |
+| POL-0056-R7 | `ai` profile로 AI 서비스 기동 | 필수: runtime 승인 후 기동한다 | 수동 | none |
+| POL-0056-R8 | 항상 | 허용: 승인된 경량/양자화 모델 배포 | 수동 | none |
+| POL-0056-R9 | 항상 | 허용: `keep_alive` 정책 기반 모델 언로드 최적화 | none | none |
+| POL-0056-R10 | 항상 | 금지: 인증 없는 Ollama API를 LAN/공용 인터페이스에 직접 게시하는 구성 | none | none |
+| POL-0056-R11 | 항상 | 금지: 승인 없는 대형 모델 상시 로드 | 수동 | none |
+| POL-0056-R12 | 항상 | 금지: 출처 불명/무검증 모델 운영 반영 | 수동 | none |
+| POL-0056-R13 | 운영 시간대 | 금지: 무단 리소스 상향 | 수동 | none |
+| POL-0056-R14 | 항상 | 필수: Ollama와 exporter를 HOME으로 유지한다 | none | none |
+| POL-0056-R15 | 모델 추가·교체 | 필수: source/digest/model-card·license, 자원 적합성과 대표 품질·안전 근거를 갖춘다 | 수동 | none |
+| POL-0056-R16 | blob 재구축 가능 여부 | 필수: 정확한 artifact를 재현할 수 있을 때만 blob을 재구축 가능 자산으로 보고 그렇지 않으면 model volume을 보존한다 | none | none |
+| POL-0056-R17 | Upgrade 전 | 필수: image/model digest와 GPU/driver 호환성을 기록하고 복구 가능한 모델 집합을 보존한다 | none | none |
+| POL-0056-R18 | Upgrade 수용 | 필수: API/exporter/대표 추론/WebUI 연동을 검증한 뒤 수용한다 | none | none |
+| POL-0056-R19 | 항상 | 금지: 한도·예약을 여유 증거로 해석 | none | none |
+| POL-0056-R20 | 동시성 확대 | 필수: 공유 GPU에서 CPU/RAM/VRAM·latency·실패를 측정한 근거를 갖춘다 | none | none |
+| POL-0056-R21 | 제거 시 | 필수: 모델 보존 결정, 출처 export, client 중지, route 제거와 model volume 삭제 승인을 갖춘다 | 수동 | none |
+| POL-0056-R22 | 항상 | 필수: 병렬·loaded-model·queue 설정을 context 크기와 공유 GPU 메모리와 함께 평가한다 | none | none |
+| POL-0056-R23 | 모델 삭제·download·driver 변경 | 필수: 기존 승인·출처 및 GPU 복구 경계를 따른다 | 수동 | none |
 
 - **Required**:
   - 호스트 직접 API 포트는 loopback에만 바인딩한다. 컨테이너 소비자는 서비스 DNS를, 원격 소비자는 인증된 gateway 경로를 사용한다.
@@ -125,11 +132,17 @@ Ollama 추론 엔진 운영 전반:
 
 ### Limits
 
-이 정책은 배포 전 검사 명령을 명시하지만 아래 항목은 기계적으로 강제되지 않는다.
+이 정책은 배포 전 검사 명령을 명시하지만 어느 규칙을 검증하는지 지정하지 않아 아래 항목은 기계적으로 강제되지 않는다.
 
-- loopback 바인딩, 승인된 rehearsal, 검증된 태그/소스, 모델 변경 검토는 전용 검사 없이 수동 검토에 의존한다.
+- 노출과 접근(POL-0056): R1은 수동 검토나 승인에 의존한다; R2-R3에는 정책이 지정한 검사가 없다.
+- 모델 변경 검증(POL-0056): R4-R5은 수동 검토나 승인에 의존한다.
+- 승인(POL-0056): R7은 수동 검토나 승인에 의존한다.
+- 허용 사항(POL-0056): R8은 수동 검토나 승인에 의존한다; R9에는 정책이 지정한 검사가 없다.
+- 금지 사항(POL-0056): R11-R13은 수동 검토나 승인에 의존한다; R10에는 정책이 지정한 검사가 없다.
+- 모델 lifecycle(POL-0056): R15, R21은 수동 검토나 승인에 의존한다; R14, R16-R20에는 정책이 지정한 검사가 없다.
+- 용량 경계(POL-0056): R23은 수동 검토나 승인에 의존한다; R22에는 정책이 지정한 검사가 없다.
+- 배포 전 `check-all-hardening.sh 08-ai`, `validate-docker-compose.sh`, `nvidia-smi`, `/api/tags`, 추론 smoke test는 Mechanisms에 나열될 뿐 규칙별로 지정되지 않는다.
 - VRAM/응답 지연/모델 로드 실패율 모니터링은 운영 중 관측이며 통과 기준이 되는 검사 이름이 없다.
-- `ai` profile 기동 전 runtime 승인, 예외 승인, 모델 삭제·download·driver 변경은 별도 승인 기록에 의존한다.
 - 동시성 확대와 한도 적정성은 측정 근거를 요구하나 이를 검사하는 자동 점검은 지정되어 있지 않다.
 - 분기·모델 변경별 검토는 정기 수동 검토이며 자동 점검이 없다.
 

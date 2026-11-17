@@ -45,15 +45,33 @@ scaling, image upgrade.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0062-R1 | run 시작 시 | 필수: `labs/locust/docker-compose.yml` entrypoint와 `lab-locust` profile만 선택하고 target owner/duration/user-spawn limit/worker count/abort SLI/stop owner를 기록하며 각 테스트 대상/부하 한도/시간대를 공통 성능 정책에 따라 승인한다 | 수동 / 정적 Compose와 hardening check(설정만) | run 기록 |
-| POL-0062-R2 | 항상 | 필수: target credential은 승인된 secret channel을 쓰고 `locustfile.py`/Compose/log/raw result에 내장하지 않는다 | hardening check(설정만) | none |
-| POL-0062-R3 | 항상 | 필수: scenario는 `LAB_LOCUST_SCENARIO_DIR`, result는 fresh `LAB_LOCUST_RESULT_DIR`에 두고 sanitized 집계만 소유 Task/incident 아래 보관하며 필요 없으면 payload/identifier를 보관하지 않는다 | 수동 | 소유 Task/incident의 sanitized 집계 |
-| POL-0062-R4 | 항상 | 필수: worker scaling은 명시적이며 승인된 test로 제한하고 run 후 worker/master를 중지하며 host 재시작 후 load를 재생하는 restart 동작을 추가하지 않는다 | 수동 | 최종 stopped state |
-| POL-0062-R5 | run 실행 시 | 필수: 실행은 `lab.py run`의 `--deadline`(lease 안) 안에서 끝내고 결과 판정에 제어기 `outcome`/종료 코드와 CSV를 함께 쓰며 master 종료 코드 0만으로 완료로 보지 않는다 | `lab.py run --deadline` 제어기 | `outcome`/종료 코드/CSV |
-| POL-0062-R6 | 결과 보관 시 | 필수: 결과는 LAB result directory 파일로 남기고 `perf_db` 적재는 named consumer가 생길 때 별도 offline adapter로만 추가하며 중복값/누적과 구간 통계/percentile 비가산성/누락·취소 run을 구분한다 | 수동 | LAB result directory 파일 |
-| POL-0062-R7 | backup 시 | 필수: test 중지 동안에만 scenario/result 디렉터리를 복사하고 tracked scenario는 Git에서 복원하며 untracked result recovery는 overwrite 전에 별도 디렉터리에서 rehearse한다 | 수동 | none |
-| POL-0062-R8 | upgrade 시 | 필수: Locust/Python dependency release note를 검토하고 tracked Dockerfile에서 rebuild하며 작은 승인된 canary를 먼저 실행한다 | 수동 | canary 실행 기록 |
-| POL-0062-R9 | removal 시 | 필수: scenario ownership/보관 evidence/모든 consumer가 해결된 후에만 service를 제거하고 host 디렉터리 삭제는 별도 destructive action이다 | 수동 | 보관된 evidence |
+| POL-0062-R1 | run 시작 시 | 필수: `labs/locust/docker-compose.yml` entrypoint와 `lab-locust` profile만 선택하고 Locust LAB service를 명시한다 | none | none |
+| POL-0062-R2 | run 시작 시 | 필수: target owner, duration, user/spawn limit, worker count, abort SLI, stop owner를 기록한다 | none | none |
+| POL-0062-R3 | 각 테스트 시 | 필수: 규모와 무관하게 정확한 대상/부하 한도/시간대를 공통 성능 정책(`POL-0064`)에 따라 승인한다 | 수동 | none |
+| POL-0062-R4 | 항상 | 필수: target credential은 승인된 secret channel을 쓴다 | none | none |
+| POL-0062-R5 | 항상 | 금지: target credential을 `locustfile.py`, Compose, log, 보관된 raw result에 내장 | none | none |
+| POL-0062-R6 | 항상 | 필수: scenario는 `LAB_LOCUST_SCENARIO_DIR`, result는 fresh `LAB_LOCUST_RESULT_DIR` host path에 둔다 | none | none |
+| POL-0062-R7 | 항상 | 필수: sanitized 집계는 소유 Task/incident 아래에 보관한다 | none | 소유 Task/incident의 sanitized 집계 |
+| POL-0062-R8 | 명시적 evidence 필요가 없을 때 | 금지: payload나 identifier 보관 | none | none |
+| POL-0062-R9 | worker scaling 시 | 필수: 명시적이며 승인된 test로 제한한다 | 수동 | none |
+| POL-0062-R10 | run 종료 후 | 필수: worker와 master를 중지한다 | none | 최종 stopped state |
+| POL-0062-R11 | 항상 | 금지: host 재시작 후 load를 재생하는 restart 동작 추가 | none | none |
+| POL-0062-R12 | run 실행 시 | 필수: 실행은 `lab.py run`의 `--deadline` 안에서 끝내며 deadline은 lease 안에 있어야 한다 | none | none |
+| POL-0062-R13 | 결과 판정 시 | 필수: 제어기의 `outcome`/종료 코드와 CSV를 함께 쓴다 | none | `outcome`/종료 코드/CSV |
+| POL-0062-R14 | 결과 판정 시 | 금지: master 종료 코드 0만으로 완료 판정 | none | none |
+| POL-0062-R15 | 결과 보관 시 | 필수: 결과는 LAB result directory의 파일로 남긴다 | none | none |
+| POL-0062-R16 | `perf_db` 적재 시 | 필수: 장기 비교를 소비할 named consumer가 생길 때 별도 offline adapter로만 추가한다 | none | none |
+| POL-0062-R17 | `perf_db` 적재 시 | 필수: master/worker 중복값, 누적과 구간 통계, percentile의 비가산성, 누락/취소 run을 구분한다 | none | none |
+| POL-0062-R18 | backup 시 | 필수: test가 중지된 동안에만 scenario/result 디렉터리를 복사한다 | 수동 | none |
+| POL-0062-R19 | tracked scenario 복구 시 | 필수: Git에서 복원한다 | 수동 | none |
+| POL-0062-R20 | untracked result 복구 시 | 필수: overwrite 전에 별도 디렉터리에서 rehearse한다 | 수동 | none |
+| POL-0062-R21 | upgrade 시 | 필수: Locust/Python dependency의 release note를 검토한다 | 수동 | none |
+| POL-0062-R22 | upgrade 시 | 필수: tracked Dockerfile에서 rebuild한다 | 수동 | none |
+| POL-0062-R23 | upgrade 시 | 필수: 정상 test envelope을 복원하기 전에 작은 승인된 canary를 실행한다 | 수동 | none |
+| POL-0062-R24 | removal 시 | 필수: scenario ownership, 보관된 evidence, 모든 consumer가 해결된 후에만 service를 제거한다 | 수동 | none |
+| POL-0062-R25 | removal 시 | 필수: host 디렉터리 삭제를 별도의 destructive action으로 취급한다 | 수동 | none |
+| POL-0062-R26 | 항상 | 금지: 승인 없는 부하 재생 | none | none |
+| POL-0062-R27 | run 종료 후 | 필수: 운영자는 종료 상태와 result path를 확인한다 | none | none |
 
 - **Activation:** `labs/locust/docker-compose.yml` entrypoint와 `lab-locust` profile만 선택하고 Locust LAB service를
   명시한다. 모든 run은 target owner, duration, user/spawn limit, worker
@@ -111,13 +129,18 @@ stopped state를 포함해야 한다.
 
 ### Limits
 
-정적 Compose와 hardening check는 configuration만 증명하며, 아래 항목은 기계적으로 강제되지 않는다.
+정책은 요구사항별 이름 붙은 검사를 지정하지 않으며(정적 Compose와 hardening check는 configuration만 증명), 아래 규칙은 승인/검토에 의존하거나 강제 수단이 없다.
 
-- 이 정책은 요구사항별 이름 붙은 검사를 지정하지 않는다.
+- run 시작: 수동 검토 `POL-0062-R3`; 강제 수단 없음 `POL-0062-R1`~`R2`
+- credential: 강제 수단 없음 `POL-0062-R4`~`R5`
+- 데이터/결과: 강제 수단 없음 `POL-0062-R6`~`R8`
+- 리소스/중지: 수동 검토 `POL-0062-R9`; 강제 수단 없음 `POL-0062-R10`~`R11`
+- 실행 판정: 강제 수단 없음 `POL-0062-R12`~`R14`
+- 결과 보관: 강제 수단 없음 `POL-0062-R15`~`R17`
+- backup/upgrade/removal: 수동 검토 `POL-0062-R18`~`R25`
+- 현재 구현 제한: 강제 수단 없음 `POL-0062-R26`~`R27`
 - runtime evidence(worker registration, target SLI, sanitized result, 최종 stopped state)는 실행 시 기록에 의존한다.
 - master 종료 코드 0은 상한/취소로 멈춘 run에도 나오므로 완료 증거가 아니다.
-- `perf_db` 적재는 현재 없으며 named consumer가 생길 때만 별도 adapter로 추가된다.
-- backup/upgrade/removal 절차는 수동 검토에 의존한다.
 
 ## Ownership
 

@@ -44,15 +44,25 @@ PostgreSQL/SeaweedFS/Valkey 데이터, 협조된 복구, 업그레이드, 제거
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POL-0069-R1 | 활성화 시 | 필수: `iac`에서는 이름이 지정된 세 Terrakube 서비스만 시작하고 HOME/tooling에서는 제외한다 | none | none |
-| POL-0069-R2 | 항상 | 필수: gateway 미들웨어와 애플리케이션 OIDC 동작을 모두 검증하며 환경 변수 레이블만으로 OIDC/그룹 권한을 주장하지 않는다 | 로그인/권한 부여 end-to-end 검증 | none |
-| POL-0069-R3 | plan/apply 시 | 필수: repository/ref, workspace, 계정, 예상 리소스, 승인자를 명시하고 apply/destroy는 별도 승인을 받는다 | 승인 절차 / 검토된 non-applying plan | 승인 기록 |
-| POL-0069-R4 | 항상 | 필수: 선언된 시크릿 파일만 사용하고 로그/스크린샷/Task/지원 번들에 시크릿/상태/plan 출력을 포함하지 않는다 | 수동 | none |
-| POL-0069-R5 | 항상 | 필수: PostgreSQL 메타데이터와 SeaweedFS `tfstate`를 공동 권위로 보고 보존 정책에 일관된 복구 지점을 포함한다 | 수동 | none |
-| POL-0069-R6 | 백업/복구 시 | 필수: 스케줄링/실행을 정지하고 PostgreSQL과 SeaweedFS를 일관되게 캡처하며 외부 실행 비활성화 상태로 리허설한다 | 수동 | none |
-| POL-0069-R7 | 항상 | 금지: 컨테이너 재시작을 HA나 재해 복구로 묘사한다 | 수동 | none |
-| POL-0069-R8 | 업그레이드 시 | 필수: 복원된 사본에서 마이그레이션을 테스트하고 API/UI/executor를 호환 세트로 함께 이동한다 | 수동 | none |
-| POL-0069-R9 | 제거 시 | 필수: 후속 시스템이 소유하기 전까지 workspace/run/상태/출력/VCS 매핑/복구 보관을 유지한다 | 수동 | none |
+| POL-0069-R1 | `iac` 활성화 시 | 필수: 이름이 지정된 세 Terrakube 서비스만 시작한다 | none | none |
+| POL-0069-R2 | 항상 | 금지: HOME/tooling에서 Terrakube 시작 | none | none |
+| POL-0069-R3 | 항상 | 필수: 추적 중인 gateway 미들웨어와 애플리케이션 OIDC 동작을 모두 검증한다 | 수동 | none |
+| POL-0069-R4 | 항상 | 금지: 환경 변수 레이블만으로 네이티브 OIDC나 그룹 권한 부여를 주장 | none | none |
+| POL-0069-R5 | plan과 apply 시 | 필수: 리포지토리/ref, workspace, 계정, 예상 리소스, 승인자를 명시한다 | none | none |
+| POL-0069-R6 | apply/destroy 시 | 필수: 별도 승인을 받는다 | 수동 | none |
+| POL-0069-R7 | 항상 | 필수: 선언된 시크릿 파일만 사용한다 | 수동 | none |
+| POL-0069-R8 | 항상 | 금지: 로그, 스크린샷, Task, 지원 번들에 시크릿/상태/plan 출력 포함 | 수동 | none |
+| POL-0069-R9 | 항상 | 필수: 보존 정책에 일관된 복구 지점을 포함한다 | none | none |
+| POL-0069-R10 | 백업/복구 시 | 필수: 스케줄링/실행을 정지하고 PostgreSQL과 SeaweedFS를 일관되게 캡처한다 | 수동 | none |
+| POL-0069-R11 | 백업/복구 시 | 필수: config/client/custody 메타데이터를 보존한다 | 수동 | none |
+| POL-0069-R12 | 복구 시 | 필수: 외부 실행을 비활성화한 상태로 리허설한다 | 수동 | none |
+| POL-0069-R13 | 항상 | 금지: 컨테이너 재시작을 HA나 재해 복구로 묘사 | none | none |
+| POL-0069-R14 | 업그레이드 시 | 필수: 복원된 사본에서 마이그레이션을 테스트한다 | none | none |
+| POL-0069-R15 | 업그레이드 시 | 필수: API/UI/executor를 호환 세트로 함께 이동한다 | none | none |
+| POL-0069-R16 | 호환되지 않는 다운그레이드 시 | 필수: 데이터베이스/상태 롤백을 동반한다 | none | none |
+| POL-0069-R17 | 제거 시 | 필수: 승인된 후속 시스템이 소유하기 전까지 workspace, run, 상태, 출력, VCS 매핑, 복구 보관을 유지한다 | none | none |
+| POL-0069-R18 | 항상 | 필수: 현재 gateway 통제를 유지한다 | none | none |
+| POL-0069-R19 | 항상 | 금지: 로그인·health 성공을 실행 가능 증거로 기록 | none | none |
 
 - **Activation:** `iac`에서는 이름이 지정된 세 가지 Terrakube 서비스만 시작하고
   정확한 의존성은 별도로 선택한다. HOME/tooling에서는 제외한다.
@@ -104,13 +114,22 @@ PostgreSQL/SeaweedFS/Valkey 데이터, 협조된 복구, 업그레이드, 제거
 
 ### Limits
 
-정책은 정적 Compose와 헬스를 부분 신호로만 인정하며 아래 항목은 입증되지 않았거나 수동에 의존한다.
+정책은 정적 Compose와 헬스를 부분 신호로만 인정하며 아래 규칙은 지정된 검사가 없거나 수동에 의존한다.
 
-- 엔드투엔드 증거(로그인/권한 부여, DB/객체 접근, executor 등록, 검토된 non-applying plan)가 필요하며 전용 명령은 지정되어 있지 않다.
+- 활성화: 지정된 검사 없음: `POL-0069-R1`, `POL-0069-R2`
+- 인증: 지정된 검사 없음: `POL-0069-R4`
+- 실행: 수동 검토/승인에 의존: `POL-0069-R6` / 지정된 검사 없음: `POL-0069-R5`
+- 시크릿: 수동 검토/승인에 의존: `POL-0069-R7`, `POL-0069-R8`
+- 데이터: 지정된 검사 없음: `POL-0069-R9`
+- 백업·복구: 수동 검토/승인에 의존: `POL-0069-R10`, `POL-0069-R11`, `POL-0069-R12`
+- 가용성: 지정된 검사 없음: `POL-0069-R13`
+- 업그레이드: 지정된 검사 없음: `POL-0069-R14`, `POL-0069-R15`, `POL-0069-R16`
+- 제거: 지정된 검사 없음: `POL-0069-R17`
+- 실행 경로 제한: 지정된 검사 없음: `POL-0069-R18`, `POL-0069-R19`
+- 엔드투엔드 증거(로그인/권한 부여, DB/객체 접근, executor 등록, 검토된 non-applying plan)에 대한 전용 명령은 지정되어 있지 않다.
 - 복구는 리허설하기 전까지 검증되지 않은 상태로 남는다.
-- 현재 실행 경로 제한으로 로그인/health 성공을 실행 가능 증거로 기록하지 않는다.
-- 단일 호스트 단일 replica DEV 배포로 HA/재해 복구는 제공되지 않는다.
-- apply/destroy 승인, 시크릿 취급, 협조된 백업은 수동 승인과 검토에 의존한다.
+- 단일 호스트 단일 replica DEV 배포이며 HA/재해 복구는 제공되지 않는다.
+- POL-0069-R3: 수동 검증에 맡겨진다.
 
 ## Ownership
 
