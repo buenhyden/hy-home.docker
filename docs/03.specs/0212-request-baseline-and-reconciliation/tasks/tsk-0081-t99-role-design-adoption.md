@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.10.0"
+version: "0.11.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -365,6 +365,30 @@ effects sat under Secrets and External Effects; both are corrected, and those
 actions now sit under Authority beside Stop and Escalate. Compared with `main`,
 the guides and skills lost no line except the one renamed section reference.
 
+#### W146 requirements, architecture and decisions
+
+The Requirement Package, Architecture Description and ADR forms move to the
+core requirement, architecture and decision roles, and the three roles are
+bound. All 18 Requirement Packages, 27 Architecture Descriptions and 30 ADRs
+move section by section. The owner directed an in-place amendment of the 30
+accepted ADRs for the move, and each records it in Follow-up with its decision
+text unchanged. Each package gains a requirements table whose Statement repeats
+its declaration exactly; the owner decided on 2026-11-17 that a declaration
+without a modal verb binds as `must`, and the protocol and template record that
+rule. Five packages gain a quality table; descriptions gain Trade-offs text and
+interface tables; ADRs gain options tables; each is written from the document,
+saying where it records nothing. A new check fails when the requirements table
+and the declarations name different IDs. The core architecture and decision
+forms have no Traceability section, so, following the prompt's rule that a
+requirement and a conflicting policy change together, a retirement summary now
+goes to the owner's lineage section: Traceability in a Requirement Package,
+Decisions and Adoption / Adoption Boundaries in an Architecture Description and
+Decision / Authority and Effect in an ADR; the protocol, glossary, REQ-0026,
+ADR-0051, AD-0030 and two READMEs say so. An independent review found prose
+still naming Traceability, Statements that differed from their declarations,
+interface cells beyond the document, PATCH bumps for contract changes and no
+Task record; each is corrected.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -478,6 +502,11 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Agent instructions review fix checks | 137 | W145 | document-corpus | check-changed, check-contracts, link alignment, governance contract, renderer, markdownlint, metadata.test_heading and test_template_definition after the fixes, then check-changed after the rebase on `3d53456da` raised the protocol to 7.4.0 | PASS | 36 changed and 0 violations; contracts 0; alignment, governance contract and renderer PASS; 0 lint issues; tests OK | required | - |
 | Agent instructions head checks | 137 | W145 | document-corpus | check-changed and check-contracts at `fc9ae1e02` against `origin/main` `3377e6ecb` | PASS | 37 changed and 0 violations; 0 contract violations | required | - |
 | Agent instructions re-review | 137 | W145 | independent-review | Fix range `f971dcf66..fc9ae1e02` against the agent instructions review | PASS | APPROVE; findings 1 to 7 fixed or accepted; two minor notes applied | required | Agent instructions review |
+| SDLC forms RED | 137 | W146 | role-design-binding | test_template_definition and metadata.test_heading from the W146 branch against `main` at `3377e6ecb` | FAIL | 163 tests, 16 failures: requirement unbound, old headings accepted, table-missing not expected | required | - |
+| SDLC forms move fidelity | 137 | W146 | document-move | 18 Requirement Packages, 27 Architecture Descriptions and 30 ADRs at `110e484d1` against `main` | PASS | 0 lines lost beyond 14 deliberate edits: lineage wording in REQ-0026, ADR-0051 and AD-0030 and five renamed section references; 995 lines added | required | - |
+| SDLC forms corpus | 137 | W146 | document-corpus | check-changed against `origin/main` `3377e6ecb`, check-contracts, link alignment and corpus lifecycle at `110e484d1`; navigation, governance contract, renderer and markdownlint at `88d473c69` | PASS | 85 changed and 0 violations; 0 contract and lifecycle violations; alignment, navigation, governance contract and renderer PASS; 0 lint issues | required | - |
+| SDLC forms first regression | 137 | W146 | document-governance-regression | The ten governance modules, test_script_manifest, test_requirements, test_relations, test_architecture and test_language at `88d473c69`, before the review fixes | PASS | 841 tests in 1724 seconds, exit 0 | required | - |
+| SDLC forms review | 137 | W146 | independent-review | Commits `88d473c69` and `712787db3` | FAIL | CHANGES_REQUIRED: prose still naming Traceability, Statements differing from declarations, inferred Priority, interface cells beyond the document, PATCH bumps for contract changes, no Task record | required | - |
 
 ### Resolution Links
 
