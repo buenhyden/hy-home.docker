@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.11.0"
+version: "0.12.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -389,6 +389,29 @@ still naming Traceability, Statements that differed from their declarations,
 interface cells beyond the document, PATCH bumps for contract changes and no
 Task record; each is corrected.
 
+#### W145 READMEs
+
+Every README form moves to the core stage, service or root README role, and
+the README roles are bound: the common, documentation, category and research,
+audit and data pack READMEs take the stage form, package READMEs the service
+form, and the repository and runtime READMEs the root form; the provider
+surface renderer writes the runtime READMEs in that form. The incident year
+README and the three governance index READMEs had no template role; each now
+has its own template role bound to the stage form, because a role carries one
+profile. All 216 current READMEs move section by section. Their path tables
+sit under the core path headings, and owners, help, audience and excluded
+responsibilities come from each README. The core renders a conditional section
+whenever it applies, so a README that states its own external interface,
+tier READMEs included, gains the service interface table written from its own
+text (302 rows in 101 READMEs), and a README that only delegates to its leaves
+gains none. Compared with its base, the READMEs changed 43 lines on purpose:
+25 prose references and 9 links to removed sections, 3 table headers, 2 lines
+naming the old path table and 4 lines that said no template existed. An
+independent review found stale template statements, a link into Stage 98,
+uneven tier tables, a stale reader comment, missing audit and data old-form
+cases, a renamed report heading and cells beyond their README; each is
+corrected, and the re-review approved.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -516,6 +539,12 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | SDLC forms aligned header GREEN | 137 | W146 | requirements-table | test_requirements after the header is matched by its cell labels, at `3ba5d78b4` | PASS | 29 tests, exit 0 | required | SDLC forms aligned header RED |
 | SDLC forms hosted candidate rerun | 137 | W146 | hosted-candidate | PR 1069 checks at `c01881150`, after the pending-role fixture fix | PASS | candidate-core, candidate-documents, candidate-quality, candidate-routing, CodeQL and GitGuardian pass | required | SDLC forms hosted candidate |
 | SDLC forms re-review approval | 137 | W146 | independent-review | Fix ranges `96112a806..0b55dc47b` and `0b55dc47b..c01881150` against the SDLC forms review and re-review | PASS | APPROVE at `c01881150`; findings 1 to 12 and the four re-review findings fixed; nit 5 kept as faithful to the declaration | required | SDLC forms re-review |
+| READMEs form RED | 137 | W145 | role-design-binding | test_template_definition and metadata.test_heading with only the README test changes, run by the drafting agent in a scratch clone of `82cf41b9d`, then the follow-up test changes on `424177119` | FAIL | 163 tests, 57 failures (stage-readme unbound, old headings accepted, path tables under the old headings); follow-up 28 tests, 29 subtest failures for the four index profiles | required | - |
+| READMEs move fidelity | 137 | W145 | document-move | 216 READMEs at the README branch head against `82cf41b9d`, non-heading lines changed and added | PASS | 43 deliberate changes: 25 prose references and 9 links to removed sections, 3 table headers, 2 lines naming the old path table, 4 lines that said no template existed; 1067 lines added | required | - |
+| READMEs first regression | 137 | W145 | document-governance-regression | The ten governance modules, test_script_manifest, test_language and test_lab_controller at `0357d8473`, before the review fixes | PASS | 889 tests in 1713 seconds, exit 0 | required | - |
+| READMEs review | 137 | W145 | independent-review | Commits `424177119`, `d1a3a62fd` and `0357d8473` | FAIL | CHANGES_REQUIRED: stale template statements, a link into Stage 98, uneven tier interface tables, and six minor findings | required | - |
+| READMEs re-review | 137 | W145 | independent-review | Fix range `0357d8473..2d2f52080` against the READMEs review | PASS | APPROVE; all nine findings fixed; the code-path template pointer in the three `.agents` READMEs accepted; two minor notes applied in `52f6d04c3` | required | READMEs review |
+| READMEs corpus | 137 | W145 | document-corpus | check-changed against `origin/main` `a3fbbbd1c`, check-contracts, link alignment and navigation, provider surface renderer and governance contract at `223821638`, after the rebase | PASS | 230 changed and 0 violations; 0 contract violations; alignment, navigation, renderer and governance contract PASS | required | - |
 
 ### Resolution Links
 
@@ -525,7 +554,7 @@ regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
 Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Policy review approval, Policy re-review approval, Policy hosted candidate
 rerun, Governance form GREEN, Governance regression, Governance old-form GREEN, Governance re-review, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
-rows, References form GREEN and References re-review resolve their W144 rows, Agent instructions form GREEN and Agent instructions re-review resolve their W145 rows, and SDLC forms GREEN, SDLC forms aligned header GREEN, SDLC forms hosted candidate rerun and SDLC forms re-review approval resolve their W146 rows. The comparison baseline stays
+rows, References form GREEN and References re-review resolve their W144 rows, Agent instructions form GREEN and Agent instructions re-review resolve their W145 rows, and SDLC forms GREEN, SDLC forms aligned header GREEN, SDLC forms hosted candidate rerun and SDLC forms re-review approval resolve their W146 rows, and READMEs re-review resolves its W145 README row. The comparison baseline stays
 open until every role group conforms.
 
 ## Acceptance Decision
