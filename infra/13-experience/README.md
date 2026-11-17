@@ -37,7 +37,7 @@ UI 개발자, 디자인 검토자와 인프라 운영자를 위한 인덱스다.
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| Storybook Traefik 라우트(`DEFAULT_URL`의 기존 공개 route 이름) | `storybook` static origin | 관리자 `/admins` 브라우저 | 라우트는 `sso-auth@file`을 거치고 `experience_ingress_net`이 Storybook과 Traefik만 연결하며 host port는 없다. | 이 README는 실패 처리를 기록하지 않는다. |
+| Storybook Traefik 라우트(`DEFAULT_URL`의 기존 공개 route 이름) | `storybook` static origin | 관리자 `/admins` 브라우저 | 라우트는 `sso-auth@file`을 거치고 `experience_ingress_net`이 Storybook과 Traefik만 연결하며 host port는 없다. | 운영과 복구는 RUN-0101 Storybook Runbook을 따른다. |
 
 #### Inputs and Outputs
 

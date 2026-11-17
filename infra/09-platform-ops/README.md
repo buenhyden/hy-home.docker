@@ -87,7 +87,7 @@ Registry와 SonarQube를 선택하는 기존 Compose 프로필이므로 이름�
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| Registry `127.0.0.1` 5000 포트 | Registry | 이 README는 소비자를 기록하지 않는다. | 이 README는 계약을 따로 기록하지 않는다. | 이 README는 실패 처리를 기록하지 않는다. |
+| Registry `127.0.0.1` 5000 포트 | Registry | 이 README는 소비자를 기록하지 않는다. | 이 README는 계약을 따로 기록하지 않는다. | Registry 복구는 Runbook Links의 Registry 런북(RUN-0065)을 따른다. |
 
 #### Inputs and Outputs
 
