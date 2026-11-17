@@ -5147,7 +5147,8 @@
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
-          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",

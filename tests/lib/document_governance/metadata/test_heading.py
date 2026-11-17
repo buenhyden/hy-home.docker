@@ -543,6 +543,14 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Traceability", "body-subheading-forbidden"),
             ),
+            "governance-policy": (
+                ("## Purpose", "body-heading-forbidden"),
+                ("## Scope", "body-heading-forbidden"),
+                ("## Exceptions", "body-heading-forbidden"),
+                ("### Authority", "body-subheading-forbidden"),
+                ("### Exclusions", "body-subheading-forbidden"),
+                ("### Responsibilities", "body-subheading-forbidden"),
+            ),
             "governance-skill": (
                 ("## Purpose", "body-heading-forbidden"),
                 ("## Inputs", "body-heading-forbidden"),
