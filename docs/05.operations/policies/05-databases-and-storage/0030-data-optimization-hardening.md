@@ -1,10 +1,10 @@
 ---
 title: "04-Data Optimization Hardening Operations Policy"
-version: "1.0.8"
+version: "1.0.9"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0030"
 parent_ids:
@@ -79,7 +79,7 @@ subject로 escalate한다. Data 삭제, volume 재사용, 파괴적 restore는 �
 
 ### Enforcement
 
-[RUN-0030](../../runbooks/05-databases-and-storage/0030-data-optimization-hardening.md#actions)의 root profile render와 `scripts/hardening/check-all-hardening.sh 04-data`로 static 통제를 검증한 뒤, 승격이나 cutover
+[RUN-0030](../../runbooks/05-databases-and-storage/0030-data-optimization-hardening.md#steps)의 root profile render와 `scripts/hardening/check-all-hardening.sh 04-data`로 static 통제를 검증한 뒤, 승격이나 cutover
 전에 application 수준 acceptance를 갖춘 isolated compatible restore를
 요구한다. 검증되지 않은 runtime 속성은 명시적으로 기록한다.
 

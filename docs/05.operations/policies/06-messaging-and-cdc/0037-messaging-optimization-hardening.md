@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Operations Policy"
-version: "2.1.2"
+version: "2.1.3"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0037"
 parent_ids:
@@ -74,7 +74,7 @@ offset, schema, Connect state, KRaft identity를 포함해야 하며, promotion
 
 #### Validation contract
 
-정상 `messaging`은 [RUN-0037](../../runbooks/06-messaging-and-cdc/0037-messaging-optimization-hardening.md#actions)의
+정상 `messaging`은 [RUN-0037](../../runbooks/06-messaging-and-cdc/0037-messaging-optimization-hardening.md#steps)의
 exact root-profile `config --quiet` command로 검증한다. LAB은
 `docker compose --env-file labs/.env.example -f labs/kafka-cluster/docker-compose.yml --profile lab-kafka config --quiet`로
 별도 렌더링한 뒤 scoped `05-messaging` hardening script를 사용한다. Static

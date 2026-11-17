@@ -1,10 +1,10 @@
 ---
 title: "Kafka Operations Policy"
-version: "2.1.3"
+version: "2.1.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0036"
 parent_ids:
@@ -114,7 +114,7 @@ notes, client support를 검토한다. rollback과 현재 recovery artifact를
 
 ### Enforcement
 
-[RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md#actions)의 root `messaging` render와 LAB render로 static 구성을 검증한 다음, promotion이나
+[RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md#steps)의 root `messaging` render와 LAB render로 static 구성을 검증한 다음, promotion이나
 cutover 전에 application-level acceptance를 갖춘 isolated compatible
 restore를 요구한다. 검증되지 않은 runtime property는 명시적으로 기록한다.
 

@@ -2261,11 +2261,11 @@
         "reviewed_at"
       ],
       "required_sections": [
-        "Purpose",
-        "Preconditions",
-        "Steps",
-        "Validation",
-        "Recovery"
+        "Trigger and Scope",
+        "Preflight",
+        "Procedure",
+        "Verification",
+        "Escalation"
       ],
       "optional_sections": [],
       "ordered_sections": true,
@@ -2306,29 +2306,25 @@
         "docs/05.operations/runbooks/15-labs/{number:4}-{slug}.md"
       ],
       "required_subsections": {
-        "Purpose": [
-          "Trigger and Outcome",
-          "Scope"
+        "Trigger and Scope": [
+          "Trigger",
+          "Targets"
         ],
-        "Preconditions": [
-          "Authority and Access",
-          "Safety Checks"
+        "Preflight": [
+          "Authority",
+          "Environment"
         ],
-        "Steps": [
-          "Actions",
+        "Procedure": [
+          "Steps",
           "Stop Conditions"
         ],
-        "Validation": [
-          "Service Checks",
-          "Evidence"
+        "Verification": [
+          "Expected Results",
+          "Unverified Conditions"
         ],
-        "Recovery": [
-          "Escalation"
-        ]
-      },
-      "optional_subsections": {
-        "Recovery": [
-          "Rollback"
+        "Escalation": [
+          "Next Owner",
+          "Recovery or Forward Repair"
         ]
       }
     },
@@ -5867,14 +5863,7 @@
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/runbook.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/runbook.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "conditional_units": {
-        "Rollback": "when running the procedure or the change alters state or outputs"
-      },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "runbook"
-      }
+      "core_role": "runbook"
     },
     "reference/audit": {
       "source": "docs/99.templates/templates/references/audit.template.md",

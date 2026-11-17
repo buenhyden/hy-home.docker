@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Stack Health Runbook"
-version: "1.5.5"
+version: "1.6.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0024"
 parent_ids:
@@ -15,16 +15,16 @@ next_review_at: "2027-05-13"
 
 # SeaweedFS Stack Health and Recovery Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 SeaweedFS 스택의 정적 진단, 경보 대응, 최초 활성화, 백업·격리 복구 절차를 다룬다.
 
 이 subject의 승인된 static diagnosis, backup 계획, isolated recovery에
 사용한다.
 
-### Scope
+### Targets
 
 - Runtime source: [SeaweedFS Compose](../../../../infra/04-data/seaweedfs/docker-compose.yml).
 - Artifact: `RUN-0024`; parent guide: `GDE-0024`.
@@ -34,9 +34,9 @@ SeaweedFS 스택의 정적 진단, 경보 대응, 최초 활성화, 백업·격�
 - [Policy](../../policies/05-databases-and-storage/0024-seaweedfs.md)
 - [SeaweedFS data backup](https://github.com/seaweedfs/seaweedfs/wiki/Data-Backup)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 live write, restore, cutover, cleanup, credential 변경은 별도로
 승인된 task가 필요하다.
@@ -45,13 +45,24 @@ live write, restore, cutover, cleanup, credential 변경은 별도로
 
 기동/정지는 [GDE-0099](../../guides/01-common/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
 
-### Safety Checks
+### Environment
 
 Actions의 첫 코드 블록에서 `config --quiet`는 렌더링만 검증하는 사전 점검이며, 그 아래 rehearsal은 별도 승인된 disposable runtime에서만 실행한다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | First activation: `gen-secrets.sh`로 STRG-008/009/010 생성하고 `.env`에 `SEAWEEDFS_S3_ADMIN_ACCESS_KEY` 설정 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | First activation: `gen-grpc-certs.sh`로 gRPC certificate 발급 | 기본 `secrets/certs/seaweedfs`에 발급되고 Compose mount 경로와 일치 | 불완전한 세트면 중단 |
+| 3 | First activation: data 디렉터리를 UID 1000으로 만든 뒤 `docker compose --profile seaweedfs up -d --wait` 실행 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 4 | First activation: admin identity로 disposable bucket 생성/삭제와 anonymous 요청 확인 | anonymous 보호 대상 요청이 403 반환 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 5 | Restore: Restic snapshot과 `seaweedfs-filer.meta` export를 동일 version의 빈 target에 복원 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 6 | Restore: 네 service를 시작하고 health 대기 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 7 | Restore: `fs.meta.load`와 `volume.fsck` 실행 | 문서에 기록 없음 | Restic window 동안 변경된 객체는 누락될 수 있음(POL-0024), 실패 target과 증거를 보존하고 escalation |
+| 8 | Restore: 복구 범위 bucket을 S3로 읽어 manifest와 count/byte 비교 | manifest와 count/byte 일치, 제외된 telemetry 이력은 별도 기록, Loki/Tempo 신규 수집 확인 | client 전환 전 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
 
 repository root에서 실행한다.
 
@@ -142,29 +153,40 @@ Filer metadata가 복원되더라도 제외된 object 이력은 돌아오지 않
 
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 rehearsal은 anonymous 및 wrong-credential 요청의 거부, filer와 volume HTTP의 JWT 요구, gRPC의 client certificate 요구, consumer S3 API, restart 후 persistence, 빈 store로의 backup과 restore를 확인한다. 실제 복구 검증은 Restore 단계의 manifest와 제외 범위를 따른다.
 
-### Evidence
+#### Evidence
 
 source revision/version, scope, timestamp, manifest/checksum 요약, command와
 exit status, validation 결과, 관찰된 recovery point/time, 모든 미검증
 gap을 기록한다. secret, raw payload, 비공개 resolved 경로는 제외한다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 runbook은 아래 항목을 아직 관측하지 않았다.
+
+- disposable runtime rehearsal: 별도 승인된 경우에만 실행하며 이 문서에는 실행 결과가 기록되어 있지 않다. `HYHOME_SEAWEEDFS_REHEARSAL=1`의 `SeaweedfsRehearsalTests` 통과 결과가 있으면 보호 요청 거부, JWT/client certificate 요구, persistence, backup/restore가 검증된다.
+- First activation: 승인된 task에서만 하는 live 변경이며 실행 결과가 기록되어 있지 않다. disposable bucket 생성/삭제와 anonymous 403 관측이 필요하다.
+- Backup(RUN-0021)과 Restore: 이 문서에는 실제 backup/restore 실행 기록이 없다. 격리 target에서 `fs.meta.load`, `volume.fsck`, manifest 대비 count/byte 비교 결과가 있으면 검증된다.
+- 알림 대응(`SeaweedFSS3Down`, `SeaweedFSNodeMetricsDown`, `SeaweedFSDataDiskLow`): 실제 알림 발생 시 대응한 기록이 없다. 해당 알림 시 `ps`/로그/network 확인 결과가 필요하다.
+
+## Escalation
+
+### Next Owner
+
+filer metadata 누락, topology mismatch, 고아 volume, checksum 실패, 보안
+노출, version 비호환이 있으면 중단한다. 동일 snapshot의 filer metadata
+export 없이 volume tree를 절대 복원하지 않는다.
+
+### Recovery or Forward Repair
 
 실패한 cutover는 write boundary를 검증한 뒤 client를 보존된 원본 store로
 되돌린다. coordinated artifact와 isolated target은 그대로 보존한다.
 cutover는 owner approval, 최종 consistency capture, application validation,
 보존된 rollback window를 거친 뒤에만 진행한다.
-
-### Escalation
-
-filer metadata 누락, topology mismatch, 고아 volume, checksum 실패, 보안
-노출, version 비호환이 있으면 중단한다. 동일 snapshot의 filer metadata
-export 없이 volume tree를 절대 복원하지 않는다.

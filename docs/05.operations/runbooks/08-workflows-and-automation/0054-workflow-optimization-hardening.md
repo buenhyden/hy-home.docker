@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Runbook"
-version: "1.1.9"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0054"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # 07-Workflow Optimization Hardening Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 `07-workflow` 하드닝 항목에서 발생하는 회귀를 즉시 복구하기 위한 실행 절차를 제공한다. gateway/SSO 체인 누락, health dependency 회귀, n8n image/entrypoint drift, CI 게이트 실패를 중심으로 점검/복구한다.
 
@@ -29,7 +29,7 @@ next_review_at: "2027-05-13"
 - Airflow worker/scheduler startup이 불안정할 때
 - n8n worker/task-runner 재시작 루프가 발생할 때
 
-### Scope
+### Targets
 
 - Declared parent: [07-Workflow Optimization Hardening Usage Guide](../../guides/08-workflows-and-automation/0054-workflow-optimization-hardening.md) (`GDE-0054`)
 - Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
@@ -41,9 +41,9 @@ next_review_at: "2027-05-13"
 - [Usage guide](../../guides/08-workflows-and-automation/0054-workflow-optimization-hardening.md)
 - [Operations policy](../../policies/08-workflows-and-automation/0054-workflow-optimization-hardening.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 승인·운영자·접근 조건은 아래 항목을 따른다.
 
@@ -53,7 +53,7 @@ next_review_at: "2027-05-13"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Safety Checks
+### Environment
 
 실행 전 확인할 점검은 아래 항목을 따른다.
 
@@ -63,9 +63,16 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - [ ] 최근 변경 커밋 및 영향 범위 확인
 - [ ] 운영 영향도(스케줄링, 자동화, 큐 지연) 평가
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 복구 단계: workflow compose 정적 구성 점검 (`validate-docker-compose.sh`를 `workflow`와 `workflow dev` profile로 실행) | workflow compose static validation 통과 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | 복구 단계: `check-all-hardening.sh 07-workflow`로 하드닝 기준 점검 | workflow hardening script 실패 0건 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 3 | 복구 단계: 증상별 복구 (middleware 회귀, Airflow startup race, n8n worker/task-runner 이상, n8n image drift) | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 4 | 복구 단계: 재검증 (hardening, template security baseline, traceability 검사) | optimization-hardening 문서 링크/README 인덱스 최신화 확인 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
 
 실행 절차는 아래 항목을 따른다.
 
@@ -100,15 +107,17 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 - [ ] workflow compose static validation 통과
 - [ ] workflow hardening script 실패 0건
 - [ ] optimization-hardening 문서 링크/README 인덱스 최신화 확인
 
-### Evidence
+#### Evidence
 
 증거 기록은 아래 항목을 따른다.
 
@@ -125,9 +134,22 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - 실행 명령·결과·시각과 운영자 또는 agent 조치를 기록한다.
 - 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태를 관련 Task/Incident에 남긴다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북에서 아직 관찰되었다고 기록되지 않은 항목과, 이를 확인할 관찰은 다음과 같다.
+
+- 증상별 복구(3단계): 이 문서에는 실행 결과가 기록되어 있지 않다. 복구 후 재검증 3종(hardening, template security baseline, traceability)이 통과해야 한다.
+- 정적 게이트가 증명하지 않는 범위: 문서가 POL-0054의 Static gate boundary로 넘긴다. 런타임 broker 인증 성공 등은 별도 관찰이 필요하다.
+- CI `infrastructure-hardening` 상태, 큐 지연, scheduler heartbeat: Signals로 나열되어 있으나 관찰 결과가 이 문서에 기록되어 있지 않다.
+- 문서 링크/README 인덱스 최신화: 수동 확인 항목이며 결과가 기록되어 있지 않다.
+
+## Escalation
+
+### Next Owner
+
+검증 실패, secret 노출 위험, 파괴적 변경 필요 또는 예상 절차와 다른 상태이면 중단하고 @buenhyden에게 넘긴다. 정제된 증거, 시도한 단계와 현재 rollback/recovery 상태를 함께 전달한다.
+
+### Recovery or Forward Repair
 
 - 이 Runbook에 기록된 복구·rollback 절차와 아래의 `Safe Rollback or Recovery Procedure` 하위 절차만 사용한다.
 - 설정 rollback rehearsal은 계획만 있으며 미실행 상태다. 상태 데이터 복구는 `RUN-0050`과 `RUN-0053`이 소유한다. 이 최적화 Runbook으로 DB·암호화 키·큐 복구를 입증하지 않는다.
@@ -142,7 +164,3 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
   - `.github/workflows/ci-quality.yml`
 - [ ] 롤백 후 정적 검증 재실행
 - [ ] 정책/가이드/태스크 문서 링크 재확인
-
-### Escalation
-
-검증 실패, secret 노출 위험, 파괴적 변경 필요 또는 예상 절차와 다른 상태이면 중단하고 @buenhyden에게 넘긴다. 정제된 증거, 시도한 단계와 현재 rollback/recovery 상태를 함께 전달한다.

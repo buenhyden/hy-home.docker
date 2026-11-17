@@ -49,7 +49,7 @@ class CurrentBodyContractTests(unittest.TestCase):
             "task": "Scope|Execution Log|Verification Evidence|Acceptance Decision|Handoff",
             "guide": "Purpose|Prerequisites|Procedure|Verification",
             "policy": "Purpose|Scope|Rules|Exceptions|Ownership",
-            "runbook": "Purpose|Preconditions|Steps|Validation|Recovery",
+            "runbook": "Trigger and Scope|Preflight|Procedure|Verification|Escalation",
             "repository-readme": "Purpose|Repository Map|Getting Started|References",
             "runtime-governance-readme": "Purpose|Repository Map|Getting Started|References",
             "readme": "Stage Responsibility|Contents|Workflow|Related Documents",
@@ -527,7 +527,7 @@ class RegisteredSectionContractTests(unittest.TestCase):
             ),
             "runbook": (
                 ("## Overview", "body-heading-forbidden"),
-                ("## Procedure", "body-heading-forbidden"),
+                ("## Steps", "body-heading-forbidden"),
                 ("## Failure and Recovery", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Rollback or Recovery", "body-subheading-forbidden"),

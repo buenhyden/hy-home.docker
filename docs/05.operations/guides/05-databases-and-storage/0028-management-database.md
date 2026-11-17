@@ -1,10 +1,10 @@
 ---
 title: "Management Database Usage Guide"
-version: "1.2.2"
+version: "1.2.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0028"
 parent_ids:
@@ -133,7 +133,7 @@ init은 PostgreSQL health 이후 role/database를 생성하고 exporter는 엔�
 
 #### Static preflight
 
-정적 점검 명령은 [RUN-0028 절차](../../runbooks/05-databases-and-storage/0028-management-database.md#actions)가
+정적 점검 명령은 [RUN-0028 절차](../../runbooks/05-databases-and-storage/0028-management-database.md#steps)가
 소유한다. 저장소 루트에서 실행하며, leaf 파일만 단독으로 렌더링하거나 기동하지 않는다.
 승인된 runtime task 없이 init을 재실행하거나, credential을 회전하거나, HOME
 데이터베이스를 조회하거나, broker queue를 변경하지 않는다.

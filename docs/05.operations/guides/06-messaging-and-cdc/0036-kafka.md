@@ -1,10 +1,10 @@
 ---
 title: "Kafka Usage Guide"
-version: "1.3.2"
+version: "1.3.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0036"
 parent_ids:
@@ -123,7 +123,7 @@ job은 low를 extend한다. 모든 장기 실행 서비스는 healthcheck를 선
 
 #### Static preflight and profile choice
 
-정적 render 명령은 [RUN-0036 절차](../../runbooks/06-messaging-and-cdc/0036-kafka.md#actions)가 소유한다. 정상 `kafka-init`은 RF1,
+정적 render 명령은 [RUN-0036 절차](../../runbooks/06-messaging-and-cdc/0036-kafka.md#steps)가 소유한다. 정상 `kafka-init`은 RF1,
 LAB `lab-kafka-init`은 RF3이다. LAB의 `LAB_KAFKA_CLUSTER_ID`는 정상
 `KAFKA_CLUSTER_ID`와 달라야 한다. 서비스 시작과 topic 생성은 별도 runtime
 승인 대상이다.

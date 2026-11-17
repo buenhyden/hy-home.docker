@@ -1,10 +1,10 @@
 ---
 title: "Renovate Guide"
-version: "0.5.3"
+version: "0.5.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0083"
 parent_ids:
@@ -81,12 +81,12 @@ policy, 원격 repository 상태, token owner가 authoritative하다.
 #### 일반적인 사용
 
 1. token이나 원격 변경 없이 repository와 global 설정을 확인한다.
-   명령은 [Renovate Runbook 절차](../../runbooks/10-platform-and-backup/0083-renovate.md#actions)의 1단계를 따른다.
+   명령은 [Renovate Runbook 절차](../../runbooks/10-platform-and-backup/0083-renovate.md#steps)의 1단계를 따른다.
 
 2. token repository scope, branch protection, dry-run 출력, 대상 repository를
    검토한다. validation은 token 권한을 증명하지 않는다.
 3. live run은 외부 write 행위이므로
-   [Renovate runbook](../../runbooks/10-platform-and-backup/0083-renovate.md#actions)에 있는 승인된
+   [Renovate runbook](../../runbooks/10-platform-and-backup/0083-renovate.md#steps)에 있는 승인된
    절차로만 실행한다.
 
 #### 복구와 업그레이드

@@ -1,10 +1,10 @@
 ---
 title: "Gatus Runbook"
-version: "0.3.3"
+version: "0.4.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0087"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # Gatus Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 Gatus(`gatus`)의 준비 상태 점검, 승인된 대상 배포, SQLite 백업·복구, native OIDC 운영을 다룬다.
 
@@ -27,7 +27,7 @@ next_review_at: "2027-05-13"
 
 Gatus 준비 상태, 프로브 결과 누락 또는 승인된 배포와 복구에 사용한다.
 
-### Scope
+### Targets
 
 - [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md)
 - Subject peers: [Guide](../../guides/07-observability/0087-gatus.md) (`GDE-0087`), [Policy](../../policies/07-observability/0087-gatus.md) (`POL-0087`)
@@ -39,9 +39,9 @@ Gatus 준비 상태, 프로브 결과 누락 또는 승인된 배포와 복구�
 - [운영 인덱스](../../README.md)
 - [공식 Gatus 설정, 저장소, 인증](https://github.com/TwiN/gatus)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 저장소 루트에서 작업한다.
 
@@ -51,7 +51,7 @@ Gatus 준비 상태, 프로브 결과 누락 또는 승인된 배포와 복구�
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Safety Checks
+### Environment
 
 런타임 변경 전에 설정 커밋, 실제 마운트된 데이터 경로,
 백업 대상을 기록한다.
@@ -74,9 +74,16 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
    컨테이너 헬스, UI 인증, 예상 프로브 이름을 별도로 검증한다. 예상치 못한
    마운트, 권한, 이미지 식별자를 발견하면 중단한다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Planned isolated restore rehearsal: 이미지/패치/설정 digest, DB 스키마/이력 개수, 엔드포인트 인벤토리, 체크섬 기록 후 Gatus 정지, `gatus-data` SQLite 일관 백업 | 문서에 기록 없음 | 격리와 backup 계약 검토 전에는 NOT_RUN으로 유지 |
+| 2 | Planned isolated restore rehearsal: 테스트 크리덴셜과 테스트 Keycloak 클라이언트로 프로덕션 경로 없는 별도 프로젝트/네트워크의 새 경로에 복원 | 문서에 기록 없음 | 격리와 backup 계약 검토 전에는 NOT_RUN으로 유지 |
+| 3 | Planned isolated restore rehearsal: 시작 후 마이그레이션/준비 상태, 이력 개수, 엔드포인트 상태, 네이티브 OIDC/root-CA 검증, 세션 만료, metrics 스크레이핑 검증 | 네이티브 OIDC/root-CA 검증, 세션 만료 동작, metrics 스크레이핑이 통과 | 격리와 backup 계약 검토 전에는 NOT_RUN으로 유지 |
+| 4 | Planned isolated restore rehearsal: 불일치 시 격리 프로젝트 중지, 로그/체크섬 보존, 손대지 않은 백업으로 복귀 | 문서에 기록 없음 | 프로덕션 상태/클라이언트/경로 교체는 별도 승인을 받음 |
 
 실행 절차는 아래 항목을 따른다.
 
@@ -135,21 +142,39 @@ Keycloak 로그아웃만으로는 로컬 세션이 폐기되었음을 증명하�
 
 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 네이티브 OIDC/root-CA 검증, 세션 만료 동작, metrics 스크레이핑이 통과해야 한다(`Planned isolated restore rehearsal` 3단계). 소스 검증만으로는 런타임 준비 상태나 복원된 이력을 입증하지
 못한다.
 
-### Evidence
+#### Evidence
 
 현재 Task에 날짜, 커밋, 서비스 이름, 종료 코드, 정제된 health/프로브 결과를
 기록한다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북에서 아직 관찰되었다고 기록되지 않은 항목과, 이를 확인할 관찰은 다음과 같다.
+
+- Planned isolated restore rehearsal: 상태가 "계획됨, 미실행"이며 NOT_RUN이다. Gatus SQLite 복원 성공은 주장하지 않는다. 격리 환경에서 이력 개수와 엔드포인트 상태가 검증되어야 한다.
+- 현재 runtime의 네이티브 OIDC 상태: 문서가 별도 관찰 없이 재확인되었다고 주장하지 않는다. allowed-subject 로그인과 denied/invalid-session 검사를 관찰해야 한다.
+- 쿠키 플래그와 1시간 세션 만료: 컨테이너 헬스와 별개로 검증해야 한다.
+- 애플리케이션 간 단일 로그아웃: 별도 관찰 테스트 없이는 주장하지 않는다.
+- 이후 승인된 롤아웃(이미지 롤백 보존, SQLite 백업, Gatus만 교체): 실행 결과가 이 문서에 기록되어 있지 않으며 현재 상태는 Task 0004에 속한다.
+
+## Escalation
+
+### Next Owner
+
+백업 누락, 인증 실패, 알 수 없는 데이터 경로 또는 파괴적 교체가 발생하면
+중단하고 @buenhyden에게 연락한다. 배포와 셧다운에는 구체적으로 승인된
+대상이 필요하다.
+
+### Recovery or Forward Repair
 
 일관된 SQLite 백업에는 조율된 스냅샷 또는 승인된 quiescence가 필요하다.
 실행 중인 데이터베이스 파일만 복사하면 WAL 상태가 누락될 수 있다. 승인된
@@ -157,9 +182,3 @@ Keycloak 로그아웃만으로는 로컬 세션이 폐기되었음을 증명하�
 격리된 저장소로 복원하고 프로덕션 데이터 교체를 승인하기 전에 이력과 새
 프로브를 검증한다. 설정과 이미지는 독립적으로 롤백하며, 문제 해결의 기본
 수단으로 볼륨을 삭제하지 않는다.
-
-### Escalation
-
-백업 누락, 인증 실패, 알 수 없는 데이터 경로 또는 파괴적 교체가 발생하면
-중단하고 @buenhyden에게 연락한다. 배포와 셧다운에는 구체적으로 승인된
-대상이 필요하다.

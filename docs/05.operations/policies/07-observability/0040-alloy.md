@@ -1,10 +1,10 @@
 ---
 title: "Alloy Operations Policy"
-version: "1.1.6"
+version: "1.1.7"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0040"
 parent_ids:
@@ -80,7 +80,7 @@ next_review_at: "2027-05-13"
 
 ### Enforcement
 
-- Compose 경계, pipeline 경계, 품질 metric 수신기 확인 명령은 [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks)와 [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#actions)가 소유한다.
+- Compose 경계, pipeline 경계, 품질 metric 수신기 확인 명령은 [GDE-0040 Common Checks](../../guides/07-observability/0040-alloy.md#common-checks)와 [RUN-0040 절차](../../runbooks/07-observability/0040-alloy.md#steps)가 소유한다.
 - Repository contracts: 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
 
 ## Exceptions

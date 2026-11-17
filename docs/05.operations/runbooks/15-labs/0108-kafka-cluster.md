@@ -1,10 +1,10 @@
 ---
 title: "Kafka Cluster LAB Runbook"
-version: "0.2.3"
+version: "0.3.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0108"
 parent_ids:
@@ -15,16 +15,16 @@ next_review_at: "2027-05-13"
 
 # Kafka Cluster LAB Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 Kafka LAB([`labs/kafka-cluster/docker-compose.yml`](../../../../labs/kafka-cluster/docker-compose.yml), project `hy-home-lab-kafka`)의 정적 점검,
 `lab.py` 기동·정지, broker 진단과 복구 계획을 다룬다.
 
 Kafka LAB의 정적 검증, 승인된 실험 기동, broker·topic 이상 진단, 승격 전 readiness 확인에 쓴다.
 
-### Scope
+### Targets
 
 - Runtime source: [Kafka LAB Compose](../../../../labs/kafka-cluster/docker-compose.yml).
 - Artifact: `RUN-0108`; parent guide: `GDE-0108`.
@@ -34,15 +34,15 @@ Kafka LAB의 정적 검증, 승인된 실험 기동, broker·topic 이상 진단
 - [LAB promotion runbook](0107-lab-promotion.md)
 - [Domain catalog](../../README.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 - 기동 전 Docker context, project 이름, network·volume, 가용 CPU·memory·disk, `${LAB_DATA_DIR}/kafka/`
   의 UID/GID와 정리 대상을 owner가 승인한다.
 - 이 런북의 모든 runtime 단계는 별도 승인이 필요하다. 이 문서 작성에서는 아무것도 실행하지 않았다.
 
-### Safety Checks
+### Environment
 
 - `labs/.env`에 `LAB_DATA_DIR`과 HOME과 다른 `LAB_KAFKA_CLUSTER_ID`가 있다. HOME 입력의
   render는 `NOT_RUN`이다. 2026-11-05 controller 보고에 따르면 `LAB_KAFKA_CLUSTER_ID`가 없다.
@@ -59,9 +59,26 @@ LAB_DATA_DIR=/tmp/hyhome-lab-kafka-synthetic LAB_KAFKA_CLUSTER_ID=MkU3OEVBNTcwNT
 일곱 서비스 `lab-kafka-1`, `lab-kafka-2`, `lab-kafka-3`, `lab-kafka-exporter`, `lab-kafka-init`,
 `lab-schema-registry`, `lab-kafka-connect`가 나와야 한다. 다르면 멈춘다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Start and stop: 승인된 경우에만 `lab.py check/up/down kafka-cluster` 실행 | 충돌과 limit 예산 검사 후 정리 대상을 ledger에 기록, `down`은 volume을 남김 | `down -v`와 volume prune은 쓰지 않음 |
+| 2 | Diagnosis: 활성 lease에서 LAB project를 지정해 세 broker와 companion 상태(`ps`) 확인 | 세 broker가 healthy | 중단하고 @buenhyden에게 보고 |
+| 3 | Diagnosis: broker unhealthy 시 log에서 cluster ID 불일치, data 디렉터리 권한, quorum 연결 실패 확인 | 문서에 기록 없음 | log 원문은 evidence에 붙이지 않음 |
+| 4 | Diagnosis: `lab-kafka-init` 실패 시 세 broker healthy 확인 후 재실행 | 문서에 기록 없음 | init은 `--if-not-exists`이므로 broker 회복 뒤 재실행 가능 |
+| 5 | Diagnosis: LAB network 안에서 `kafka-topics --describe`로 partition leader와 ISR 확인 | topic의 partition leader와 ISR이 확인됨 | 문서에 기록 없음 |
+| 6 | Diagnosis: `lab-schema-registry`/`lab-kafka-connect` unhealthy 시 세 broker healthy 확인 | 문서에 기록 없음 | broker 데이터를 지우지 않음 |
+| 7 | HOME retirement: 변경이 반영된 `kafbat-ui`와 `prometheus` 재생성 (owner 승인 필요) | 제거된 schema registry/Connect 설정과 scrape가 내려감 | LAB project나 소유가 불명확한 후보에는 작업하지 않음 |
+| 8 | HOME retirement: HOME `kafka-connect`와 `schema-registry`에서 확인된 ID만 정지/제거 | 문서에 기록 없음 | HOME `kafka-1`/`kafka-init`/`kafka-exporter`는 건드리지 않음 |
+| 9 | HOME retirement: `kafka-connect-data` volume은 보존 여부 결정 후에만 정리 | 문서에 기록 없음 | 삭제는 별도 승인 필요 |
+| 10 | HOME retirement: 잔여 network와 Keycloak/DNS 항목 정리 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 11 | Planned backup and isolated restore: 승인된 window에서 producer 정지 후 topic 목록/설정/partition/consumer offset 기록 | 문서에 기록 없음 | 데이터 소유가 불명확하면 멈추고 @buenhyden에게 보고 |
+| 12 | Planned backup and isolated restore: 승인된 replay 또는 replication으로 새 격리 cluster에 복원 | 문서에 기록 없음 | 기존 KRaft identity나 broker 디렉터리를 재사용하지 않음 |
+| 13 | Planned backup and isolated restore: topic별 record 수와 offset을 비교하고 Task에 기록 | 결과를 Task에 기록 | 문서에 기록 없음 |
+| 14 | Readiness: 승격 전 RUN-0107의 readiness 검사를 `kafka-cluster`로 실행 | 문서에 기록 없음 | RUN-0107에 따름 |
 
 기동·정지, 진단, HOME 퇴역, 복구 계획, readiness 확인은 다음과 같다.
 
@@ -128,25 +145,36 @@ LAB project나 소유가 불명확한 후보에는 작업하지 않는다. 확�
 
 render된 서비스가 Static check에 나열한 일곱 서비스와 다르면 멈춘다. HOME 경로가 render에 나타나거나 데이터 소유가 불명확하면 멈추고 @buenhyden에게 보고한다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 Static check render에 일곱 서비스가 나오고 세 broker가 healthy이며, topic의 partition leader와 ISR이 확인되어야 한다.
 
-### Evidence
+#### Evidence
 
 source revision, 실행한 명령과 종료 코드, broker health, topic·ISR 요약, 미검증 gap을 기록한다.
 secret, raw log와 rendered private 설정은 기록하지 않는다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 runbook이 아직 관찰하지 못한 항목은 다음과 같다. 문서는 복구 절차가 계획이며 실행된 적이 없다고 적고 있다.
 
-LAB은 HOME 소비자가 없으므로 `lab.py down kafka-cluster`로 멈추면 HOME에 영향이 없다. 데이터는
-`${LAB_DATA_DIR}/kafka/`에 남는다. 삭제는 별도 승인이다.
+- Planned backup and isolated restore: 이 문서에는 실행 결과가 기록되어 있지 않다. 격리 cluster에서 topic별 record 수와 offset 일치가 관찰되면 검증된다.
+- `lab.py up/down kafka-cluster`와 진단 명령(`ps`, `kafka-topics --describe`): 승인된 lease가 필요하며 실행 결과가 기록되어 있지 않다. 세 broker healthy와 partition leader/ISR이 관찰되면 검증된다.
+- HOME Schema Registry와 Connect 퇴역: owner 승인이 필요하며 문서는 현재 컨테이너, volume, router의 존재가 확인되지 않았다고 적고 있다. 별도 승인으로 대상 확인이 이뤄지면 검증된다.
+- readiness 검사: `kafka-cluster`에 대한 실행 결과가 기록되어 있지 않다.
 
-### Escalation
+## Escalation
+
+### Next Owner
 
 cluster ID가 HOME과 같거나, HOME 경로가 render에 나타나거나, 데이터 소유가 불명확하면 멈추고
 @buenhyden에게 보고한다.
+
+### Recovery or Forward Repair
+
+LAB은 HOME 소비자가 없으므로 `lab.py down kafka-cluster`로 멈추면 HOME에 영향이 없다. 데이터는
+`${LAB_DATA_DIR}/kafka/`에 남는다. 삭제는 별도 승인이다.

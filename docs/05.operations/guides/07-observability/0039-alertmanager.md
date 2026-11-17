@@ -1,10 +1,10 @@
 ---
 title: "Alertmanager Usage Guide"
-version: "1.0.7"
+version: "1.0.8"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0039"
 parent_ids:
@@ -57,7 +57,7 @@ next_review_at: "2027-05-13"
 
 ### Actions
 
-1. Compose service와 config template 경계는 [RUN-0039 절차](../../runbooks/07-observability/0039-alertmanager.md#actions)의 `rg` 명령으로 확인한다.
+1. Compose service와 config template 경계는 [RUN-0039 절차](../../runbooks/07-observability/0039-alertmanager.md#steps)의 `rg` 명령으로 확인한다.
 
 2. 현재 routing model을 이해한다.
 

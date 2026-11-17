@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Runbook"
-version: "0.17.2"
+version: "0.18.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0085"
 parent_ids:
@@ -15,15 +15,15 @@ next_review_at: "2027-05-13"
 
 # OpenBao Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 OpenBao(`openbao`, `openbao-agent`)의 상태 점검, 승인된 대상 기동·중지, initial bootstrap, 사람 로그인과 root 복구, break-glass, 복구를 다룬다. Renderer SecretID 전달은 [RUN-0103](0103-openbao-renderer-delivery.md), metrics credential은 [RUN-0104](0104-openbao-metrics-credential.md), 유지보수 window는 [RUN-0105](0105-openbao-maintenance-window.md), 소비자 이관과 secret catalog는 [RUN-0106](0106-openbao-consumer-catalog.md)이 소유한다. OpenBao는 재시작 뒤 owner가 직접 하는 수동 Shamir unseal이 필요하다. 이 문서의 어떤 단계도 unseal share를 대신 입력하거나 자동화하지 않는다.
 
 `openbao openbao-agent` readiness 점검과 승인된 대상 지정 배포 또는 복구에 사용한다.
 
-### Scope
+### Targets
 
 - 관장 architecture: [AD-0003](../../../02.architecture/descriptions/0003-security-architecture.md)
 - [Guide](../../guides/04-security-and-secrets/0085-openbao.md), [Policy](../../policies/04-security-and-secrets/0085-openbao.md), [Runbook](0085-openbao.md)
@@ -32,13 +32,13 @@ next_review_at: "2027-05-13"
 - [운영 인덱스](../../README.md)
 - [Upstream documentation](https://openbao.org/docs/agent-and-proxy/agent/)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 이 런북은 승인·접근 조건을 Actions의 각 절에 둔다. 승인된 unseal 관리자가 준비되지 않으면 시작/중지를 진행하지 않고(Start and Stop), secret을 다루는 host script는 owner가 검토·승인한 commit의 것만 실행하며 `XDG_RUNTIME_DIR`은 owner 전용 0700 tmpfs여야 한다(Reviewed Script Runner). host package hold는 owner가 수행하고(Host Package Upgrade), 임시 root는 승인된 세션에서만 사용한다(Human Login and Normal Root Recovery).
 
-### Safety Checks
+### Environment
 
 런타임 변경 전 시작 상태 확인은 다음과 같다.
 
@@ -48,9 +48,34 @@ next_review_at: "2027-05-13"
 루트에서 작업한다. 런타임 변경 전에 configuration commit, 이미지 source, 기존 데이터 위치,
 보호된 backup을 확인한다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Read-only Status Check: 기존 Compose validator로 선택한 profile 검증 | 비공개 렌더링 모델은 출력하지 않는다 | 예상치 못한 mount나 실패한 점검이면 중단하고 전체 stack으로 범위를 넓히지 않는다 |
+| 2 | Read-only Status Check: `docker compose exec -T openbao bao status` 실행 | 문서에 기록 없음 | 예상치 못한 mount나 실패한 점검이면 중단한다 |
+| 3 | Read-only Status Check: initialized/unsealed 상태와 destination 존재·권한을 내용 읽기 없이 확인 | 문서에 기록 없음 | AppRole provisioning과 unseal은 owner-controlled credential 절차가 필요하다 |
+| 4 | Read-only Status Check: 승인된 배포에서 서비스만 명시해 수동 initialization/unseal과 daemon readiness를 별도로 검증 | 문서에 기록 없음 | 예상치 못한 mount나 실패한 점검이면 중단하고 전체 stack으로 범위를 넓히지 않는다 |
+| 5 | Reviewed Script Runner: 검토·승인된 commit의 Git 객체에서 `p01_run`으로 script 실행 | blob을 tmpfs 파일로 꺼내 다시 hash해 tree의 blob ID와 같을 때만 `/usr/bin/bash`로 실행한다 | 그 commit에 script가 없으면 실행하지 않고 실패한다 |
+| 6 | Start and Stop: `openbao`와 `openbao-agent`의 승인된 시작·중지와 unseal 확인 | `bao status`의 exit 0은 unsealed, exit 2는 sealed이며 `Sealed false`를 확인한 뒤 Agent를 시작한다 | 승인된 unseal 관리자가 없거나 재생성 전후 Raft mount identity가 바뀌면 중단한다 |
+| 7 | Host Package Upgrade: 준비(`apt-get update`, 대상 package 확인, `owner-window.sh host-hold`) | 기대 출력은 hold된 세 package 이름이다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 8 | Host Package Upgrade: upgrade 뒤 `docker start openbao`로 server 재시작과 unseal | `Sealed false`를 확인한다 | container가 재생성되면 Raft mount identity 확인이 필요하므로 `up -d`는 쓰지 않는다 |
+| 9 | Host Package Upgrade: RUN-0103의 `agent-restart`로 Agent 재시작 | Agent는 새 SecretID가 있어야 인증된다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 10 | Host Package Upgrade: `owner-window.sh status`로 멈춘 container를 확인하고 의존 순서대로 시작 | 공유 DB가 healthy가 된 뒤 consumer를 시작하고 Crawl4AI는 egress gateway를 먼저 시작한다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 11 | Upgrade Backup and Removal: upgrade·backup·retention은 RUN-0086과 POL-0021 적용, 격리 restore는 계획으로만 취급 | 문서에 기록 없음 | artifact·custody·격리 target·승인·독립 검토가 없으면 복구는 BLOCKED이며 @buenhyden에게 반환한다 |
+| 12 | Human Login and Normal Root Recovery: OIDC로 role `home-admin` 로그인 | 결과 policy가 `default`와 `hy-home-operator`이며 `root`가 아니다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 13 | Human Login and Normal Root Recovery: quorum ceremony로 root generate attempt 시작과 share 2개 제공 | 문서에 기록 없음 | share나 OTP를 인자로 전달하지 않으며 OTP/nonce는 보호된 custody로 캡처한다 |
+| 14 | Human Login and Normal Root Recovery: 반환된 인코딩 token을 원본 OTP로 디코드 | 문서에 기록 없음 | 인코딩된 응답을 디코딩 전에 보존해 새 root token을 잃지 않는다 |
+| 15 | Human Login and Normal Root Recovery: root는 승인된 작업에만 사용하고 폐기 | 일반 OIDC 접근이 동작하고 폐기한 root의 lookup이 거부된다 | 마지막으로 남은 관리 경로를 일찍 폐기하지 않는다 |
+| 16 | Explicit Break-glass Recovery: 이미지 ID, cluster ID, mount 식별자 기록과 스냅샷 보존 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 17 | Explicit Break-glass Recovery: 임시 override로 `127.0.0.1:18200` loopback listener 추가 | 추가 port는 게시하지 않는다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 18 | Explicit Break-glass Recovery: OpenBao만 재생성해 unseal하고 레거시 generate-root API를 quorum과 함께 사용 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 19 | Explicit Break-glass Recovery: rescue token 저장, override 제거, 재생성과 재unseal | 보조 listener가 사라지고 일반 레거시 endpoint가 인증되지 않은 접근을 거부하며 mount/cluster 식별자가 일치한다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 20 | Explicit Break-glass Recovery: native OIDC client, group-bound role, operator policy 구성 | 문서에 기록 없음 | TLS 검사를 비활성화하지 않고 변경 전 Keycloak rollback 영수증을 기록한다 |
+| 21 | Explicit Break-glass Recovery: human OIDC 로그인과 non-root policy 확인, Agent 렌더링 재확인 | non-root policy이며 capability 거부와 스냅샷 읽기가 확인된다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 22 | Explicit Break-glass Recovery: 새 스냅샷 생성과 rescue root 폐기 | 폐기 뒤 거부됨을 검증한다 | human 승인이 실패하면 rescue custody를 보호하고 접근을 복구하며 loopback listener를 활성 상태로 두지 않는다 |
 
 #### Read-only Status Check
 
@@ -330,9 +355,11 @@ Kubernetes auth 방식, `eso-read-platform`과 `k8s-bootstrap` policy/role,
 
 예상치 못한 mount나 실패한 점검이 있으면 중단한다(Read-only Status Check). 승인된 unseal 관리자가 없거나 재생성 전후 Raft mount identity가 바뀌면 중단한다(Start and Stop). 정확한 policy 불일치 시 중단하고(Service Checks의 Exact policy validation), 안전한 진행이 불가능하면 중단하고 @buenhyden에게 연락한다(Escalation).
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 값을 출력하지 않는 확인 항목은 다음과 같다.
 
@@ -383,7 +410,7 @@ renderer 9개 소비자 KV data와 해당 metadata 경로 read와 사람 operato
 승인된 변경 후에는 exact binding과 경로 밖 read/list/write 거부를 비밀값 없는
 결과로 확인하며 불일치 시 중단한다.
 
-### Evidence
+#### Evidence
 
 증거 기록 기준은 다음과 같다.
 
@@ -393,9 +420,26 @@ renderer 9개 소비자 KV data와 해당 metadata 경로 read와 사람 operato
 Task에 기록한다. secret 값, 원본 환경, state, token 파일, 메시지/database 콘텐츠는 캡처하지
 않는다. 날짜가 기록된 런타임 결과와 recovery-custody 전달은 현재 Task에 속한다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북에서 아직 관측되지 않은 항목은 다음과 같다.
+
+- 시작·중지·재생성과 승인된 unseal: 런타임을 바꾸며 승인된 경우에만 수행한다. 이 문서에는 현재 실행 결과가 기록되어 있지 않다. `bao status`의 `Sealed false`와 `owner-window.sh status`로 검증한다.
+- Host package upgrade와 `host-hold`: sudo가 필요한 host 변경이며 이 문서에는 2026-10-28 장애 설명만 있고 이후 실행 결과는 기록되어 있지 않다. hold된 세 package 이름과 upgrade 뒤 `Sealed false`로 검증한다.
+- 격리 restore: 문서는 계획이지 검증된 실행 명령이 아니며 artifact·custody·격리 target이 없으면 BLOCKED라고 기록한다. 독립 검토된 격리 restore 결과로 검증한다.
+- 사람 OIDC 로그인과 root recovery ceremony: owner-controlled 절차이며 이 문서에는 실행 결과가 기록되어 있지 않다. non-root policy 확인과 폐기한 root의 lookup 거부로 검증한다.
+- Break-glass recovery: 확인된 lockout에서만 명시 승인으로 수행하며 이 문서에는 실행 결과가 기록되어 있지 않다. 보조 listener 제거와 mount/cluster 식별자 일치로 검증한다.
+- 정확한 전체 path set과 실제 설치 role: 정적 hardening이 증명하지 못한다고 문서에 기록되어 있다. exact binding과 경로 밖 read/list/write 거부 결과로 검증한다.
+- `renderer-expiry`: container log 보존 시작이 `<since>`보다 늦으면 빈 결과는 증거가 아니라고 문서에 기록되어 있다.
+
+## Escalation
+
+### Next Owner
+
+credential, 파괴적 스토리지 변경, remote 변경, 또는 backup 부재로 안전한 진행이 불가능하면
+중단하고 @buenhyden에게 연락한다.
+
+### Recovery or Forward Repair
 
 #### Rollback or Recovery
 
@@ -423,8 +467,3 @@ auth 방식, Agent 인증/렌더링, denial 테스트를 검증한다. 증거가
 token을 재확인하고 폐기한다. 임시 root가 폐기된 후 operator 신원으로 일상적인 backup을
 수행한다. 기존 Raft 데이터 위에 initialize하거나 스토리지를 제자리에서 다운그레이드하지
 않는다.
-
-### Escalation
-
-credential, 파괴적 스토리지 변경, remote 변경, 또는 backup 부재로 안전한 진행이 불가능하면
-중단하고 @buenhyden에게 연락한다.

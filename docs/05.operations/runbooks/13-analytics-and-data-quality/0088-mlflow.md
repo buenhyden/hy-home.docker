@@ -1,10 +1,10 @@
 ---
 title: "MLflow Recovery Runbook"
-version: "1.0.11"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0088"
 parent_ids:
@@ -15,16 +15,16 @@ next_review_at: "2027-05-13"
 
 # MLflow Recovery Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 MLflow tracking server의 프로비저닝 실패, 크리덴셜 회전, 복원, 업그레이드를 다루는 복구 런북이다.
 
 프로비저닝 작업 실패, 서버 시작 또는 헬스 실패, 크리덴셜 교체, 아티팩트 접근
 거부, 트래킹 저장소 복원 또는 업그레이드 시 사용한다.
 
-### Scope
+### Targets
 
 - [Guide](../../guides/13-analytics-and-data-quality/0088-mlflow.md) (`GDE-0088`)
 - [Policy](../../policies/13-analytics-and-data-quality/0088-mlflow.md) (`POL-0088`)
@@ -35,13 +35,13 @@ MLflow tracking server의 프로비저닝 실패, 크리덴셜 회전, 복원, �
 - [관리 데이터베이스 런북](../05-databases-and-storage/0028-management-database.md)
 - [SeaweedFS 런북](../05-databases-and-storage/0024-seaweedfs.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 변경 전 승인자와 중단 영향을 기록한다. Credential rotation은 시크릿·서비스·재시작을 명시한 승인을, Tracking DB schema upgrade는 소유자의 실행을, 격리 복원 증거는 owner의 실행과 승인을 요구한다.
 
-### Safety Checks
+### Environment
 
 변경 전 확인할 작업 선택과 복구 전제는 다음과 같다.
 
@@ -54,9 +54,30 @@ MLflow tracking server의 프로비저닝 실패, 크리덴셜 회전, 복원, �
 단일 파일 bind 재생성과 비밀 비노출 확인을 따른다. 재시작은 데이터 복원이나 자격 증명
 폐기 검증을 대신하지 않는다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | `config --quiet`/`ps -a mlflow mlflow-db-provision`/`logs --tail=100`으로 저장소 루트에서 검증하고 점검한다 | 문서에 기록 없음 | 다른 소유의 DB 거부, superuser 또는 SeaweedFS 관리자 크리덴셜 부여 요청, 게이트웨이 SSO 제거 요청은 중단 |
+| 2 | 작업과 실패 단계를 구분한다(helper의 `64`는 secret/이름 검증 실패 또는 readiness 대기 만료이며 psql 오류는 제한된 로그로 원인 확인) | 문서에 기록 없음 | 코드만으로 DB 변경 전 실패라고 단정하지 않음 |
+| 3 | 역할/비밀번호/database/grant의 적용 범위를 확인하고 승인 후 `mlflow-db-provision`과 `seaweedfs-buckets`를 `run --rm --no-deps`로 재실행한다 | 두 작업이 모두 `0`으로 끝난다 | `ON_ERROR_STOP`은 커밋된 문장을 되돌리지 않으므로 적용 범위 확인 후 재실행을 승인받음 |
+| 4 | 두 작업이 모두 `0`으로 끝난 뒤에만 서버를 시작하거나 재시작한다 | `mlflow`가 healthy이고 아티팩트 읽기 한 건이 성공한다 | 두 작업이 `0`이 아니면 서버를 시작하지 않음 |
+| 5 | Credential rotation 1: 시크릿, 서비스, 재시작을 명시한 승인을 받는다 | 문서에 기록 없음 | 승인 없이 수행하지 않음 |
+| 6 | Credential rotation 2: 등록된 시크릿 워크플로로 시크릿 파일을 교체한다 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 7 | Credential rotation 3: DB 비밀번호는 `mlflow-db-provision`을 재실행하고 `seaweedfs_s3_mlflow_secret_key`는 `seaweedfs-s3`를 재생성하며 다른 object consumer 영향과 중단 시간을 승인받는다 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 8 | Credential rotation 4: `mlflow`를 재생성하고 헬스와 아티팩트 읽기 한 건을 확인한다 | 헬스가 정상이고 아티팩트 읽기 한 건이 성공한다 | 이전 자격 증명 거부와 새 연결/artifact 조회를 각각 확인 |
+| 9 | Restore and upgrade 1: `mlflow`를 정지하고 `MLFLOW_DB_NAME`을 덤프하며 버킷을 미러링하고 소스 커밋/이미지/행 개수/객체 개수를 기록한다 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 10 | Restore and upgrade 2: 프로덕션 복원 전에 DB와 버킷을 격리 환경으로 복원하고 개수를 비교한다 | 복원된 개수가 일치한다 | 복원 개수 비교 실패는 중단(일치하는 버킷 없이 DB만 복원하면 유효하지 않은 artifact URI가 남음) |
+| 11 | Restore and upgrade 3: 기존 DB upgrade는 서버 시작과 분리해 `Tracking DB schema upgrade`를 따른다 | 문서에 기록 없음 | 새 서버 시작으로 대체하지 않음 |
+| 12 | Tracking DB schema upgrade 1 준비: Compose 함수 `c`와 새 이미지 `I`를 정하고 `mng-pg` healthy와 `mlflow` 정지를 확인한 뒤 `c build mlflow`를 실행한다 | 문서에 기록 없음 | `mlflow`가 실행 중이면 `c stop mlflow`로 먼저 멈춤 |
+| 13 | Tracking DB schema upgrade 2 현재 상태 기록: DB revision, `experiments`/`runs` 행 개수, 새 이미지가 요구하는 revision을 기록한다 | 두 revision이 같으면 upgrade가 필요 없다 | 문서에 기록 없음 |
+| 14 | Tracking DB schema upgrade 3 백업: 소유자 전용 경로에 custom-format dump를 만들고 목록과 checksum을 확인한다 | `pg_restore --list`의 `TABLE DATA` 개수와 sha256 checksum이 기록된다 | 백업 목록이 비었으면 서버를 시작하지 않고 멈춤 |
+| 15 | Tracking DB schema upgrade 4 격리 리허설: internal network의 임시 PostgreSQL에 dump를 복원하고 새 이미지 upgrade와 rollback을 시험한 뒤 만든 자원만 지운다 | upgrade 뒤 새 revision과 2단계와 같은 행 개수, rollback 뒤 이전 revision과 같은 행 개수 | 리허설 revision/개수가 다르면 서버를 시작하지 않고 멈춤 |
+| 16 | Tracking DB schema upgrade 5 HOME upgrade: 리허설 성공 시에만 `mlflow db upgrade`를 실행하고 2단계 첫 명령으로 확인한다 | revision이 새 revision이고 행 개수가 같다 | 0이 아닌 코드로 끝나면 서버를 시작하지 않고 멈추며 DB가 중간 상태일 수 있으므로 백업으로 rollback |
+| 17 | Tracking DB schema upgrade 6 시작과 확인: `c up -d --no-deps --dry-run mlflow`로 대상이 `mlflow`뿐임을 확인하고 시작한 뒤 healthy, `/health`, experiment 수를 확인한다 | `mlflow`가 healthy이고 `/health`가 응답하며 experiment 수가 2단계와 같다 | 대상이 `mlflow` 외에도 있으면 시작하지 않음 |
+| 18 | 격리 복원 증거: owner가 tracking DB는 RUN-0021 PITR clone으로, artifact는 읽기 전용 다운로드와 ETag/MD5 비교 스크립트로 확인한다 | `copy_rc=0`이고 `result=PASS`(객체 1개 이상, `objects_listed`/`objects_local`/`md5_match` 동일, `multipart_unchecked`와 `unsafe_keys`가 0) | `copy_rc`가 0이 아니면 FAIL이며 scratch가 비어 있지 않으면 `result=FAIL scratch_not_empty`로 중단 |
 
 1. 저장소 루트에서 검증하고 점검한다.
 
@@ -275,20 +296,36 @@ echo "elapsed_seconds=$(( $(date +%s) - start ))"
 크리덴셜 부여 요청, 복원 개수 비교 실패, 게이트웨이 SSO 제거 요청이 있으면
 중단한다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 두 작업(`mlflow-db-provision`, `seaweedfs-buckets`)이 `0`으로 끝난 뒤에만 서버를 시작하며, `mlflow`가 healthy이고 아티팩트 읽기 한 건이 성공해야 한다.
 
-### Evidence
+#### Evidence
 
 명령 종료, 작업 종료 코드, 이미지, 소스 커밋, 개수, 체크섬을 기록한다.
 비밀번호, 액세스 키, 아티팩트 내용은 절대 기록하지 않는다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 runbook이 아직 관찰된 적 없는 항목은 다음과 같다.
+
+- HOME DB의 backup/restore/upgrade: 문서가 HOME 복원과 업그레이드는 **미실행**이라고 밝힌다. 이 문서는 HOME DB dump를 격리된 임시 PostgreSQL에서 upgrade하고 새 서버로 조회한 리허설이 SEC01 Task에 기록되어 있다고 밝히며, 그 기록이 리허설의 근거이고 HOME 실행의 검증 근거는 아니다.
+- `mlflow-db-provision`/`seaweedfs-buckets` 재실행과 credential rotation: 승인이 필요한 변경이며 이 문서에는 실행 결과가 기록되어 있지 않다. 두 작업의 종료 코드 `0`, 헬스와 아티팩트 읽기 한 건, 이전 자격 증명 거부가 검증 근거가 된다.
+- 격리 복원 증거 스크립트: owner가 실행하는 절차이며 이 문서에는 실행 결과 값이 기록되어 있지 않다. `copy_rc=0`과 `result=PASS` 출력이 검증 근거가 된다.
+- artifact 복원: 문서는 이 절차가 SeaweedFS/Restic backup에서의 복원이 아니며 artifact RPO를 주장하지 않는다고 밝힌다.
+- 선언 버전의 동작 근거: W6 검토 근거를 인용하며 Dockerfile의 MLflow 버전이 바뀌면 근거를 다시 검토해야 한다.
+
+## Escalation
+
+### Next Owner
+
+책임자는 `@buenhyden`이다. 위 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
+
+### Recovery or Forward Repair
 
 설정 롤백은 Git에서 Compose 파일을 복원한다. 업그레이드가 실행한 데이터베이스
 마이그레이션은 업그레이드 이전 백업으로만 되돌릴 수 있으며 절차는 `Tracking DB schema
@@ -305,7 +342,3 @@ c stop mlflow
 docker exec mng-pg sh -c 'dropdb -U "$POSTGRES_USER" mlflow'
 docker exec -i mng-pg sh -c 'pg_restore -U "$POSTGRES_USER" -d postgres --create --exit-on-error' <"$B/mlflow.dump"
 ```
-
-### Escalation
-
-책임자는 `@buenhyden`이다. 위 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.

@@ -1,10 +1,10 @@
 ---
 title: "System Operations Diagnostic Runbook"
-version: "0.2.3"
+version: "0.3.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0099"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # System Operations Diagnostic Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 여러 앱의 접속·로그인·작업·저장이 함께 실패할 때 공유 의존성 후보를 좁히고 기존 서비스 Runbook으로 전달하는 읽기 전용 진단 절차를 제공한다.
 
@@ -27,7 +27,7 @@ next_review_at: "2027-05-13"
 예정된 재부팅 또는 재부팅 직후의 정해진 확인은
 [RUN-0098](0098-cold-start-and-reboot.md)이 소유한다.
 
-### Scope
+### Targets
 
 - [GDE-0099](../../guides/01-common/0099-system-operations.md): 사용자·데이터 경로와 공통 의존성.
 - [AD-0031](../../../02.architecture/descriptions/0031-home-development-host.md): 호스트 구조와 실패 영역.
@@ -36,9 +36,9 @@ next_review_at: "2027-05-13"
 - [전체 Runbook](../../../../README.md), [Operations](../../README.md)
 - [기동·재부팅](0098-cold-start-and-reboot.md), [백업·복구](../10-platform-and-backup/0021-backup-and-restore.md), [network](../02-gateway-and-networking/0077-ip-address-management.md), [버전 변경](../10-platform-and-backup/0086-dependency-version-management.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 운영 checkout과 실제 Docker context를 알고, 대상 daemon의 읽기 권한이 있는
 운영자가 저장소 루트에서 실행한다. 승인 범위가 문서·정적 검증뿐이면 아래
@@ -46,13 +46,20 @@ runtime 명령을 실행하지 않고 `NOT_RUN`으로 남긴다. 이 절차 자�
 unseal, credential 발급, 설정 변경, 복원, cleanup 또는 부하 생성을 승인하지
 않는다. 영향 범위는 관찰 대상뿐이며 앱 데이터와 인증정보는 읽거나 출력하지 않는다.
 
-### Safety Checks
+### Environment
 
 이 절차는 읽기 전용 진단이므로 별도 백업이나 사전 상태 변경을 요구하지 않으며, 대상 context와 읽기 권한 확인은 Authority and Access를 따른다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Confirm scope before diagnosis: 관찰 시각, 처음 실패한 기능, 영향 범위 기록과 `docker context show` / `docker ps -a` 확인 | context가 승인된 대상과 같고 root project 컨테이너 이름과 상태가 보인다 | context가 다르거나 알 수 없으면 멈추고 @buenhyden에게 확인한다. Docker API가 응답하지 않으면 host/daemon 범위로 전달한다 |
+| 2 | Compare the shared dependency boundary: `docker inspect`로 공유 의존성 상태 확인 | `state=running`, 선언된 healthcheck 통과, `oom=false` (`health=none`은 검사 성공이 아니다) | 목록에 없는 이름은 명령에서 제외하고 누락을 증거로 기록하며 해당 Guide/서비스 절차로 전달한다 |
+| 3 | Choose the next owner from the observed symptom: 증상 표에서 다음 owner Runbook 선택 | 문서에 기록 없음 | 증상별 표의 분기에 따라 host owner 또는 해당 서비스 Runbook으로 전달한다 |
+| 4 | Verify the handoff boundary: 인계 경계의 중단 조건과 복구 뒤 재확인 기준 확인 | 복구 뒤 원래 실패한 사용자 기능과 영향받은 공통 의존성을 다시 확인한다 | 조건이 불명확하거나 관찰이 절차의 기대값과 다르면 중단한다 |
 
 아래 네 단계를 순서대로 수행한다.
 
@@ -125,15 +132,17 @@ OpenBao의 `healthy`는 unseal만, Agent의 `healthy`는 token과 template 출�
 기대값과 다르면 중단한다. source에 없는 격리 환경·복구 도구·credential을
 만들어 절차를 맞추지 않는다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 별도 승인된 복구 뒤에는 원래 실패했던 사용자 기능과 영향받은 공통 의존성을
 다시 확인한다. 컨테이너 healthy만으로 종료하지 않으며, 확인하지 않은 기능과
 data integrity·복원 가능성은 미검증으로 남긴다.
 
-### Evidence
+#### Evidence
 
 현재 Task 또는 실제 사건의 [Incident](../../incidents/README.md)에 시각·시간대,
 source revision, 대상 context·선택의 확인 여부, 영향·정상 기능, 최소 상태 요약,
@@ -141,20 +150,28 @@ source revision, 대상 context·선택의 확인 여부, 영향·정상 기능,
 `PASS`/`FAIL`/`NOT_RUN`을 구분하고, 장애 원인 후보는 확정 사실과 분리한다.
 원문 로그, secret 값, 인증 헤더·cookie, 사용자 데이터, 비공개 경로는 첨부하지 않는다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북에서 아직 관측되지 않은 항목은 다음과 같다.
 
-읽기 전용 진단은 runtime 상태를 변경하지 않아 되돌릴 조치가 없다. 복구·rollback은
-위 표의 해당 서비스 Runbook과 승인된 Task가 소유한다. 공통 장애라는 이유로
-전체 Compose 재기동, volume 삭제, queue replay 또는 이전 이미지로의 DB
-다운그레이드를 선택하지 않는다. 검증된 격리 복원 경로가 없으면 복원 불가/미검증
-상태를 보존하고 별도 작업으로 넘긴다.
+- 복구 뒤 사용자 기능 재확인: 복구는 별도 승인 대상이며 이 문서에는 실행 결과가 기록되어 있지 않다. 원래 실패한 기능과 영향받은 공통 의존성의 재확인 결과로 검증한다.
+- 컨테이너 `healthy` 너머의 동작: data integrity와 복원 가능성은 미검증으로 남긴다고 문서에 기록되어 있다. 해당 서비스 Runbook의 검증 결과로 확인한다.
+- 증상 표의 분기 절차: 표는 승인된 상태 조회나 보고된 결과만 사용하며 새 로그인, API 호출, 쓰기를 실행하지 않는다. 이 문서에는 분기 실행 결과가 기록되어 있지 않다.
 
-### Escalation
+## Escalation
+
+### Next Owner
 
 Docker 대상 불명, 여러 HOME 기능의 지속 장애, 반복 OOM, 공유 저장소 쓰기 실패,
 인증 우회·secret 노출 징후, 필수 복원 증거 부재, 또는 승인된 절차와 실제 상태의
 불일치는 @buenhyden에게 전달한다. 새로운 팀이나 SLA를 가정하지 않는다.
 영향받은 기능, 관찰 시각, 마지막 변경, 공통 원인 후보, 해당 Runbook, 미검증
 항목과 필요한 승인만 전달하며 사건 기록은 기존 Incident 구조를 사용한다.
+
+### Recovery or Forward Repair
+
+읽기 전용 진단은 runtime 상태를 변경하지 않아 되돌릴 조치가 없다. 복구·rollback은
+위 표의 해당 서비스 Runbook과 승인된 Task가 소유한다. 공통 장애라는 이유로
+전체 Compose 재기동, volume 삭제, queue replay 또는 이전 이미지로의 DB
+다운그레이드를 선택하지 않는다. 검증된 격리 복원 경로가 없으면 복원 불가/미검증
+상태를 보존하고 별도 작업으로 넘긴다.

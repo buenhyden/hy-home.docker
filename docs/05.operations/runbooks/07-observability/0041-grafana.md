@@ -1,10 +1,10 @@
 ---
 title: "Grafana Provisioning and Access Recovery Runbook"
-version: "1.1.5"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0041"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # Grafana Provisioning and Access Recovery Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 Grafana readiness 실패, OAuth 로그인 반복, role mapping 불일치, datasource 쿼리 오류, dashboard provisioning 실패, trace-to-log 링크 회귀, 설정 회귀를 다룬다. Guide와 policy의 설명은 반복하지 않고, 실행 가능한 진단, 안전한 restart, evidence 수집, escalation 기준만 둔다.
 
@@ -31,7 +31,7 @@ next_review_at: "2027-05-13"
 - Provisioned dashboard JSON 또는 datasource YAML 변경 후 reload/restart와 검증이 필요할 때.
 - `GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`, secret reference, datasource UID, dashboard provider 또는 route 변경 후 rollback 가능성을 확인해야 할 때.
 
-### Scope
+### Targets
 
 > Scope: Grafana 준비 상태, OAuth 역할 매핑 진단, datasource·provisioning 증거, dashboard 다시 읽기, 재시작과 설정 rollback.
 
@@ -44,9 +44,9 @@ next_review_at: "2027-05-13"
 - [Usage guide](../../guides/07-observability/0041-grafana.md)
 - [Operations policy](../../policies/07-observability/0041-grafana.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 `grafana`의 선택 backend가 없으면 해당 datasource만 실패할 수 있다. `grafana-db-provision`은 DB grant를 변경하는 별도 일회성 작업이며 Grafana 기동 의존성이 아니다. 기존 dashboard 조회를 위해 이 작업을 실행하지 않는다. 승인된 최초 provision·schema 변경 때만 DB 소유자가 표·역할 준비와 secret 참조를 확인하며, 종료 코드와 실제 필요한 표의 읽기 권한을 함께 검증한다. Helper는 자체 영속 데이터·HTTP health·독립 복원 대상이 없고 권한 회수는 DB 소유자 절차로 넘긴다.
 
@@ -56,7 +56,7 @@ next_review_at: "2027-05-13"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Safety Checks
+### Environment
 
 시작 전 점검:
 
@@ -64,9 +64,28 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - [ ] 문제 유형을 readiness, OAuth/role mapping, datasource, dashboard provisioning, trace-to-log link, secret reference, config regression 중 하나로 분류한다.
 - [ ] `grafana_admin_password`, `grafana_client_secret`, OAuth client secret, rendered secret values는 기록하지 않는다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Diagnosis and restart: service 상태, 로그, healthcheck 캡처 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | Diagnosis and restart: Compose service boundary가 policy와 일치하는지 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 3 | Diagnosis and restart: OAuth / role mapping 실패 시 mapping과 endpoint 참조 확인 | 문서에 기록 없음 (secret이 든 줄은 redaction summary로 기록) | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 4 | Diagnosis and restart: datasource UID와 backend endpoint 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 5 | Diagnosis and restart: dashboard provider lock과 dashboard inventory 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 6 | Diagnosis and restart: dependent backend readiness 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 7 | Diagnosis and restart: config가 정책과 일치하는데 회복되지 않으면 Grafana 재시작 | `/api/health` 성공 | 중단하고 @buenhyden에게 escalation |
+| 8 | Diagnosis and restart: provisioning·dashboard bind 파일만 바뀐 경우 승인된 revision 복원 후 restart | 같은 bind에서 복원 내용을 기존 컨테이너가 읽음 / `/api/health` 성공 | Compose·image·secret bind 변경이면 중단하고 RUN-0086/RUN-0085 경계로 넘김 |
+| 9 | Diagnosis and restart: `data source not found` 재시작 반복 시 UID 충돌 확인 후 승인된 변경 뒤 재시작 | 문서에 기록 없음 | 승인 없이 항목을 추가/삭제하지 않고 중단하여 승인을 받음 |
+| 10 | Diagnosis and restart: dashboard `deprecatedInternalID` 충돌 시 `uid` 복원 또는 새 파일 경로로 이동 | provider가 옛 dashboard를 지우고 새 것을 만듦 | 문서에 기록 없음 |
+| 11 | Diagnosis and restart: SQL dashboard 인증 오류 시 승인 확보 후 `grafana-db-provision` 실행 | exit 0이 모든 dashboard 권한을 증명하지는 않음 | DB 소유자와 role/grant 변경 승인 없이는 실행하지 않고 중단 |
+| 12 | Diagnosis and restart: Datasource health API 이상 시 backend 상태와 plugin error를 분리해 proxy API로 확인 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 13 | Planned isolated restore rehearsal: image/plugin/schema와 object count 기록, Grafana 중지, `grafana-data` snapshot | 문서에 기록 없음 | 격리와 backup 계약 검토 전에는 NOT_RUN으로 유지 |
+| 14 | Planned isolated restore rehearsal: 별도 project/network에 test route와 test Keycloak client로 복원 | 문서에 기록 없음 | 격리와 backup 계약 검토 전에는 NOT_RUN으로 유지 |
+| 15 | Planned isolated restore rehearsal: 시작 후 SQLite migration, users, dashboards, alerts, plugins, datasource health, OAuth 검증 | anonymous request가 거부됨 | 격리와 backup 계약 검토 전에는 NOT_RUN으로 유지 |
+| 16 | Planned isolated restore rehearsal: 불일치 시 isolated project 중지, log/checksum 보존, untouched backup으로 복귀 | 문서에 기록 없음 | production 교체는 별도 승인을 받음 |
 
 실행 절차는 아래 항목을 따른다.
 
@@ -186,9 +205,11 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 - [ ] `docker compose --profile obs ps grafana`에서 `grafana` service가 running이다.
 - [ ] `docker exec grafana wget -q --spider http://localhost:3000/api/health`가 성공한다.
@@ -197,7 +218,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - [ ] OAuth role mapping이 여전히 `/admins`를 `Admin`으로, `/editors`를 `Editor`로, `/viewers`를 `Viewer`로 매핑하고 이 그룹들에 속하지 않은 사용자는 strict mapping으로 거부한다. `Admin`은 organization role이며 server-admin 승격 증거가 아니다.
 - [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
-### Evidence
+#### Evidence
 
 수집할 evidence는 다음과 같다.
 
@@ -214,16 +235,26 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - Datasource/dashboard 장애는 affected dashboard/panel, datasource UID, backend endpoint, redacted log excerpt, provisioning diff를 함께 기록한다.
 - Role mapping/secret/datasource UID/provider/route 변경 필요성이 보이면 approval state를 기록한다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북에서 아직 관찰되었다고 기록되지 않은 항목과, 이를 확인할 관찰은 다음과 같다.
+
+- Grafana 재시작과 provisioning·dashboard 파일 복원 후 restart(7, 8단계): 이 문서에는 실행 결과가 기록되어 있지 않다. `/api/health` 성공과 `grafana` service running으로 확인한다.
+- datasource UID 충돌 처리와 `grafana-db-provision` 실행(9, 11단계): 승인이 필요한 변경이며 실행 결과가 기록되어 있지 않다. 승인 상태와 job exit code, 대상 dashboard의 실제 조회 성공으로 확인한다.
+- Planned isolated restore rehearsal: 상태가 "계획됨, 미실행"이며 NOT_RUN이다. Grafana SQLite restore 성공 사례는 주장하지 않는다. 격리 환경에서 migration, users, dashboards, alerts, OAuth가 검증되어야 한다.
+- OAuth role mapping 동작: `/admins`, `/editors`, `/viewers` 매핑과 strict mapping 거부는 로그인 시 수동으로 관찰해야 한다.
+- Datasource health: Tempo와 Alertmanager는 proxy API(`/api/echo`, `/api/v2/status`) 응답으로 별도 확인해야 한다.
+
+## Escalation
+
+### Next Owner
+
+verification이 실패하거나, secret exposure risk가 보이거나, role mapping/secret/datasource/provider/route 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
+
+### Recovery or Forward Repair
 
 - Git-managed provisioning YAML, dashboard JSON, Compose env/secret reference 또는 datasource endpoint change가 원인이면 직전 Git diff 단위로 되돌리고 Grafana를 재시작한다.
 - Runtime restart는 `obs` profile compose 명령만 사용한다.
 - Role mapping, secret rotation, datasource UID migration, dashboard provider lock, protected middleware 또는 image version change는 이 런북의 안전 롤백 범위를 벗어난다.
 
 이 Runbook의 검증과 동일 bind-mounted provisioning·dashboard 파일 복원 후 재시작만 해당 분기에서 사용한다. Compose·image·secret bind 복원은 restart로 반영되지 않으므로 위의 RUN-0086/RUN-0085 승인된 재생성 경계로 넘긴다. Role mapping, secret rotation, datasource identity migration, dashboard provider lock, protected middleware 또는 image version 변경은 검증된 안전 복구 절차가 아니므로 Escalation으로 이동한다.
-
-### Escalation
-
-verification이 실패하거나, secret exposure risk가 보이거나, role mapping/secret/datasource/provider/route 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.

@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Runbook"
-version: "1.0.7"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0044"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # 06-Observability Optimization Hardening Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 `06-observability` hardening 회귀를 복구하는 실행 절차를 제공한다. Gateway/SSO middleware 누락, health dependency 회귀, custom image runtime hardening 누락, Pyroscope route availability 회귀, cAdvisor healthcheck 회귀, CI hardening baseline 실패를 중심으로 점검하고 복구한다.
 
@@ -32,7 +32,7 @@ next_review_at: "2027-05-13"
 - Pyroscope 또는 cAdvisor route/healthcheck availability가 회귀했을 때.
 - hardening script, Compose, Dockerfile 또는 operations docs 변경 후 rollback 가능성을 확인해야 할 때.
 
-### Scope
+### Targets
 
 > Scope: 관측 gateway·SSO middleware, Compose 상태 의존성, 커스텀 이미지 보안 강화, 검사, 재시작과 Git 기반 rollback 증거.
 
@@ -45,9 +45,9 @@ next_review_at: "2027-05-13"
 - [Usage guide](../../guides/07-observability/0044-observability-optimization-hardening.md)
 - [Operations policy](../../policies/07-observability/0044-observability-optimization-hardening.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 `cadvisor`는 host mount·device·privileged 접근의 승인을 먼저 확인한다. 기동 후 `/healthz`와 실제 container series를 별도로 확인한다. 중지·image 교체는 관측 공백을 만들지만 자체 애플리케이션 데이터 복원은 없다. node-exporter·DCGM 실행은 RUN-0045와 RUN-0055의 소유 경계를 따른다.
 
@@ -57,7 +57,7 @@ next_review_at: "2027-05-13"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Safety Checks
+### Environment
 
 시작 전 점검:
 
@@ -66,9 +66,23 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - [ ] telemetry collection, query, alerting, profiling, UI route 영향도를 평가한다.
 - [ ] Secret value, token 또는 credential payload는 기록하지 않는다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Diagnosis and restart: 정적 구성(Compose 검증)과 hardening baseline 캡처 | Service Checks의 compose 검증 통과, hardening 실패 0건 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | Diagnosis and restart: native 및 proxy gateway boundary 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 3 | Diagnosis and restart: health dependency와 healthcheck boundary 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 4 | Diagnosis and restart: custom image hardening boundary 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 5 | Diagnosis and restart: Pyroscope 및 cAdvisor route availability boundary 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 6 | Diagnosis and restart: 증상별 Git-managed rollback 후보 `git diff` 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 7 | Diagnosis and restart: hardening script·workflow 파일만 승인된 이전 revision으로 복원 후 정적 검증 | 검증 3종이 통과함 | Compose·Dockerfile·entrypoint 변경은 restart로 반영되지 않으므로 중단하고 @buenhyden 승인을 받음 |
+| 8 | Planned isolated recovery rehearsal: image, 마운트 권한, metric endpoint, target label, 의존 rule·dashboard 기준값 기록 | 문서에 기록 없음 | 격리와 backup 계약 검토 전에는 NOT_RUN으로 유지 |
+| 9 | Planned isolated recovery rehearsal: 격리 시험 호스트에서 추적되는 Compose로 exporter 재생성 | 문서에 기록 없음 | 격리와 backup 계약 검토 전에는 NOT_RUN으로 유지 |
+| 10 | Planned isolated recovery rehearsal: 상태, 시계열, label 연속성, cardinality, cAdvisor 경로, 쓰기 가능 마운트/secret 점검 | 문서에 기록 없음 | 격리와 backup 계약 검토 전에는 NOT_RUN으로 유지 |
+| 11 | Planned isolated recovery rehearsal: 불일치 시 격리 서비스 중지, 이미지·설정 되돌림 | 문서에 기록 없음 | 운영 권한이나 마운트 변경은 별도 보안 승인을 받음 |
 
 실행 절차는 아래 항목을 따른다.
 
@@ -143,9 +157,11 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 - [ ] `HYHOME_COMPOSE_PROFILES=obs bash scripts/validation/validate-docker-compose.sh`가 통과한다.
 - [ ] `bash scripts/hardening/check-all-hardening.sh 06-observability` 실패가 0건이다.
@@ -153,7 +169,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - [ ] Observability route middleware, health dependencies, custom image hardening, Pyroscope/cAdvisor availability checks가 현재 policy와 일치한다.
 - [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
-### Evidence
+#### Evidence
 
 수집할 evidence는 다음과 같다.
 
@@ -167,16 +183,25 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - Hardening 장애는 failed check name, affected service/router, before/after command output, relevant redacted diff, recovery/escalation state를 함께 기록한다.
 - Route/resource/secret/workflow/security policy 변경 필요성이 보이면 approval state를 기록한다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북에서 아직 관찰되었다고 기록되지 않은 항목과, 이를 확인할 관찰은 다음과 같다.
+
+- 승인된 이전 revision 복원 후 정적 검증(7단계): 이 문서에는 실행 결과가 기록되어 있지 않다. Compose 검증, hardening 검사, traceability 검사가 모두 통과해야 한다.
+- Planned isolated recovery rehearsal: 상태가 "계획됨·미실행"이며 NOT_RUN이다. 격리 시험 호스트에서 exporter 상태, label 연속성, 보호된 cAdvisor 경로가 확인되어야 한다.
+- Compose·Dockerfile·entrypoint 변경의 기존 컨테이너 반영: 문서는 source 복원이나 restart만으로 반영되지 않는다고 명시한다. 재생성 뒤 컨테이너 상태를 관찰해야 한다.
+- CI `infrastructure-hardening` 상태: Evidence에 수집 대상으로 나열되어 있으나 이 문서에는 결과가 기록되어 있지 않다.
+
+## Escalation
+
+### Next Owner
+
+verification이 실패하거나, secret exposure risk가 보이거나, route/resource/secret/workflow/security 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
+
+### Recovery or Forward Repair
 
 - Git-managed Compose, Dockerfile, entrypoint, hardening script, workflow 또는 operations doc change가 원인이면 직전 Git diff 단위로 되돌린다.
 - Runtime restart는 affected service의 documented runbook을 따른다.
 - Route/middleware policy, resource cap, secret reference, workflow gate 또는 runtime security relaxation은 이 런북의 안전 롤백 범위를 벗어난다.
 
 이 런북에 명시된 validation, evidence capture, Git-managed rollback만 사용한다. Route/middleware policy, resource cap, secret reference, workflow gate, runtime security relaxation 또는 external service 변경은 검증된 안전 복구 절차가 아니므로 Escalation으로 이동한다.
-
-### Escalation
-
-verification이 실패하거나, secret exposure risk가 보이거나, route/resource/secret/workflow/security 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.

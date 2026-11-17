@@ -1,10 +1,10 @@
 ---
 title: "Development Database Operations Policy"
-version: "0.2.3"
+version: "0.2.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0100"
 parent_ids:
@@ -67,7 +67,7 @@ queue, 기존 PGDATA와 backup chain은 이 정책으로 변경하지 않는다.
 
 ### Enforcement
 
-source change는 Compose render(`docker compose --env-file .env.example --profile dev-data config --quiet`)와 permission regression test를 통과해야 한다([RUN-0100](../../runbooks/05-databases-and-storage/0100-development-database.md#actions)). fresh PGDATA,
+source change는 Compose render(`docker compose --env-file .env.example --profile dev-data config --quiet`)와 permission regression test를 통과해야 한다([RUN-0100](../../runbooks/05-databases-and-storage/0100-development-database.md#steps)). fresh PGDATA,
 repeat provision, app A/B isolation, reader write/DDL rejection, Timescale behavior, Valkey ACL,
 backup/restore, CDC replay와 external consumer switching은 runtime task에서 별도로 증명한다.
 SPEC-0202-TSK-0002는 합성 격리 엔진의 백업/복원과 일부 권한 거절만 증명한다.

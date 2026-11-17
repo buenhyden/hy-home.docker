@@ -1,10 +1,10 @@
 ---
 title: "JupyterLab Recovery Runbook"
-version: "1.1.3"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0089"
 parent_ids:
@@ -15,16 +15,16 @@ next_review_at: "2027-05-13"
 
 # JupyterLab Recovery Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 JupyterLab의 시작 실패, 토큰 노출, 커널 정지, 작업 파일 손실, 이미지 업그레이드를 다루는 복구 런북이다.
 
 시작 실패, 토큰 노출, 멈춘 커널, 작업 파일 손실, 이미지 업그레이드 시
 사용한다.
 
-### Scope
+### Targets
 
 - [Guide](../../guides/15-labs/0089-jupyterlab.md) (`GDE-0089`)
 - [Policy](../../policies/15-labs/0089-jupyterlab.md) (`POL-0089`)
@@ -35,13 +35,13 @@ JupyterLab의 시작 실패, 토큰 노출, 커널 정지, 작업 파일 손실,
   [파생 버전 프로젝션](../../../../infra/tech-stack.versions.json)
 - [MLflow 런북](../13-analytics-and-data-quality/0088-mlflow.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 변경 전 정확한 서비스·데이터 경로·승인자·중단 영향을 기록한다. 토큰 교체는 등록된 시크릿 워크플로와 승인된 재생성으로 하고, 이전 notebook 재배치는 별도 승인 아래 수동으로 한다.
 
-### Safety Checks
+### Environment
 
 변경 전 확인할 작업 선택과 복구 전제는 다음과 같다.
 
@@ -54,9 +54,19 @@ JupyterLab의 시작 실패, 토큰 노출, 커널 정지, 작업 파일 손실,
 단일 파일 bind 재생성과 비밀 비노출 확인을 따른다. 재시작은 데이터 복원이나 자격 증명
 폐기 검증을 대신하지 않는다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | `config --quiet`, `ps -a jupyterlab`, `logs --tail=100 jupyterlab`로 점검 (기동/재시작은 `lab.py` lease 규칙) | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 escalation |
+| 2 | secret 누락/읽기 실패와 bind 오류(경로 부재/종류/권한) 구분, `${LAB_DATA_DIR}/jupyterlab/work` 승인된 경로와 소유권(UID 1000) 확인 | 문서에 기록 없음 | Docker가 임의 생성하도록 두지 않으며 이전 notebook 재배치는 별도 승인 후 수동 |
+| 3 | 토큰 노출 의심 시 서비스 정지, LAB 전용 token 파일 교체, 작업 디렉터리 검토, 승인된 재생성 | 이전 token과 기존 cookie 거부를 각각 검증 | 검증 전에는 회전 완료로 판정하지 않음 |
+| 4 | 멈춘 커널은 UI에서 재시작, 서버 자체가 응답하지 않을 때만 컨테이너 재시작 | 문서에 기록 없음 | 알 수 없는 코드 실행의 증거가 있으면 중단 |
+| 5 | Restore and upgrade: 서비스를 정지하고 작업 디렉터리를 복사 (소스 커밋과 파일 개수 기록) | 소스 커밋과 파일 개수 기록 | 중단하고 Stop Conditions에 따라 escalation |
+| 6 | Restore and upgrade: 실행 중인 디렉터리 교체 전 새 디렉터리로 복원하고 격리된 인스턴스 시작 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 escalation |
+| 7 | Restore and upgrade: 이미지 업그레이드 시 승인된 환경에서 재빌드하고 고정된 모든 라이브러리를 import하는 노트북 열기 | 노트북이 고정된 모든 라이브러리를 import함 | MLflow 기록 확인은 승인된 `LAB_JUPYTERLAB_MLFLOW_TRACKING_URI`가 있을 때만 수행 |
 
 1. 저장소 루트에서 점검한다. JupyterLab은 독립 LAB이다(SPEC-0262). `config`는 렌더링만 하며,
    기동·재시작은 `python3 scripts/operations/lab.py check|up|down jupyterlab`의 lease 규칙을 따른다.
@@ -101,20 +111,35 @@ client version을 server와 맞춘다.
 알 수 없는 코드 실행의 증거, JupyterHub 없이 다중 사용자 접근 요청, 토큰
 비활성화 요청이 있으면 중단한다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 토큰 교체 뒤에는 이전 token과 기존 cookie 거부를 각각 검증해야 회전 완료로 판정하며, 이미지 업그레이드는 고정된 모든 라이브러리를 import하는 노트북을 열어 확인한다.
 
-### Evidence
+#### Evidence
 
 종료 코드, 이미지 태그, 소스 커밋, 파일 개수를 기록한다. 토큰이나 노트북
 내용은 절대 기록하지 않는다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 runbook이 아직 관찰하지 못한 항목은 다음과 같다.
+
+- 점검 명령(`config`, `ps`, `logs`): 이 문서에는 실행 결과가 기록되어 있지 않다. 종료 코드와 이미지 태그, 소스 커밋이 관찰되면 검증된다.
+- 토큰 회전: 이전 token과 기존 cookie 거부를 각각 확인하기 전에는 회전 완료로 볼 수 없으며 실행 기록이 없다. 선택한 base의 cookie-secret 동작도 확인되지 않았다.
+- 작업 디렉터리 복원과 이미지 업그레이드: 실행 결과가 기록되어 있지 않다. 격리 인스턴스에서 노트북의 라이브러리 import가 관찰되면 검증된다.
+- MLflow 기록 확인: 승인된 `LAB_JUPYTERLAB_MLFLOW_TRACKING_URI`가 없으면 수행하지 않으며 SPEC-0262 미결정 항목이다.
+
+## Escalation
+
+### Next Owner
+
+책임자는 `@buenhyden`이다. 위 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
+
+### Recovery or Forward Repair
 
 설정은 검토된 Compose와 requirements로 복원하고, 보존된 이전 이미지 식별자를
 우선 확인한다. 재빌드가 원래 이미지와 같다는 보장은 없다. 사용자 데이터는 먼저
@@ -133,7 +158,3 @@ client version을 server와 맞춘다.
 > 출력 그대로 유지). 이후 테스트 노트북은 제거했다. 디렉터리에 사용자
 > 데이터가 없었으므로 실행 중인 서비스는 정지하지 않았다. 사용자 데이터가
 > 있는 경우 1단계가 요구하는 대로 먼저 정지한다.
-
-### Escalation
-
-책임자는 `@buenhyden`이다. 위 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.

@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Membership Runbook"
-version: "1.1.5"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0077"
 parent_ids:
@@ -15,16 +15,16 @@ next_review_at: "2027-05-13"
 
 # Compose Network Membership Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 Compose 서비스의 network membership과 고정 주소를 변경하거나 DNS/IP 충돌을 진단하는 절차다.
 
 신규 서비스의 peer 연결, 기존 membership·고정 주소 변경 또는 DNS/IP 충돌을
 검토할 때 사용한다.
 
-### Scope
+### Targets
 
 - 상위 Guide: [GDE-0077](../../guides/02-gateway-and-networking/0077-ip-address-management.md)
 - 구조: [AD-0026](../../../02.architecture/descriptions/0026-standardize-infra-net.md)
@@ -33,15 +33,15 @@ Compose 서비스의 network membership과 고정 주소를 변경하거나 DNS/
 - [Operations index](../../README.md)
 - [시스템 진단](../01-common/0099-system-operations.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 저장소 루트에서 정확한 Compose service·fragment·network·peer,
 선택 profile과 변경 이유를 기록한다. 공개 source 검토와 runtime 조회·변경은
 별도다. 승인된 Docker context와 기존 대상이 없으면 runtime 단계는 `NOT_RUN`이다.
 
-### Safety Checks
+### Environment
 
 변경 전에 선언과 대상을 읽기 전용으로 확인한다.
 
@@ -59,9 +59,14 @@ rg -n "ipv4_address:" infra docker-compose.yml
 trusted-proxy·`RI_APP_HOST`·egress gateway 같은 고정 주소 소비자를 함께 확인한다. target·peer·alias가 불명확하면
 수정하지 않고 @buenhyden에게 전달한다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 범위를 정한 source 변경과 검증: 승인된 fragment의 dictionary membership만 수정하고 `validate-docker-compose.sh`와 network 계약 unittest 실행 | 성공 종료와 실제 검사 범위를 기록한다 | 실패하면 적용을 중단한다 |
+| 2 | 승인된 실행 대상 관찰: `docker context show`, `docker inspect`, `docker network inspect`로 peer의 network 주소 확인 | 해당 peer의 선언된 network와 올바른 subnet 주소다 | 컨테이너가 없거나 DNS/주소가 다르면 원인을 기록하고 service Runbook으로 넘긴다 |
 
 #### 범위를 정한 source 변경과 검증
 
@@ -103,28 +108,38 @@ network connect/disconnect, 전체 restart나 network/volume 삭제를 실행하
 
 target·peer·alias가 불명확하면 수정하지 않고 @buenhyden에게 전달한다(Safety Checks의 선언과 대상 확인). 검증 명령이 실패하면 적용을 중단한다(Actions의 범위를 정한 source 변경과 검증).
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 해당 peer의 선언된 network membership과 subnet 주소, 검증 명령의 성공 종료를 확인한다.
 
-### Evidence
+#### Evidence
 
 시각·context·service/profile·source commit·변경 hunk·network별 주소 대조와 검사
 종료 상태를 기록한다. runtime 미실행은 명시한다. 원문 환경, 전체 inspect, secret,
 개인 path나 payload를 기록하지 않는다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북에서 아직 관측되지 않은 항목은 다음과 같다.
+
+- live reachability와 static-IP 전체 충돌: 문서는 검증 결과가 이 둘이 아니며 수정만으로 기존 컨테이너 network가 바뀌지 않는다고 기록한다. 실행 중인 peer의 network membership과 주소 대조로 검증한다.
+- 승인된 실행 대상 관찰: 이 문서에는 `docker inspect` 결과가 기록되어 있지 않으며 runtime 미실행은 명시하도록 되어 있다. 승인된 context에서의 주소 대조 결과로 검증한다.
+- 실제 반영: 소비자·중단·복구 계획의 승인이 필요하며 이 문서에는 실행 결과가 기록되어 있지 않다. 반영 뒤 membership과 기능을 다시 확인한 결과로 검증한다.
+
+## Escalation
+
+### Next Owner
+
+검증 실패, 잘못된 context, 알 수 없는 peer·주소 충돌, secret 노출 위험 또는 파괴적
+복구가 필요하면 멈추고 @buenhyden에게 대상·값 없는 증거·시도 단계·복구 상태를 전달한다.
+
+### Recovery or Forward Repair
 
 source 오류는 해당 Compose/network hunk만 이전 승인 상태로 복원하고 다시 검증한다.
 Git rollback은 실행 중인 membership을 복원하지 않는다. runtime이 별도 승인으로
 변경되었다면 그 서비스의 승인된 이전 구성 반영·검증 절차로 넘긴다. 삭제나 광범위한
 network 재생성이 필요하면 incident와 별도 복구 승인을 요구한다.
-
-### Escalation
-
-검증 실패, 잘못된 context, 알 수 없는 peer·주소 충돌, secret 노출 위험 또는 파괴적
-복구가 필요하면 멈추고 @buenhyden에게 대상·값 없는 증거·시도 단계·복구 상태를 전달한다.

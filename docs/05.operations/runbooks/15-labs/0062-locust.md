@@ -1,10 +1,10 @@
 ---
 title: "Locust Recovery Runbook"
-version: "1.3.5"
+version: "1.4.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0062"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # Locust Recovery Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 Locust LAB 실행 중 target 상태가 나빠지거나 worker 연결이 끊길 때 부하를 멈추고 진단하는 절차다.
 시나리오 파일 복구와 승인된 upgrade canary도 다룬다.
@@ -26,7 +26,7 @@ test 중 target health가 저하되거나, worker 연결이 끊기거나, headle
 scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 canary가 필요할 때
 사용한다.
 
-### Scope
+### Targets
 
 - [Guide](../../guides/15-labs/0062-locust.md) (`GDE-0062`)
 - [Policy](../../policies/15-labs/0062-locust.md) (`POL-0062`)
@@ -37,16 +37,16 @@ scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 c
 - [Locust distributed mode](https://docs.locust.io/en/stable/running-distributed.html)
 - [Operations index](../../README.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 저장소 루트에서 실행한다. 정적 render는 `labs/.env.example`와 합성 경로만 사용한다.
 실제 진단·정지는 승인된 Docker context, `hy-home-lab-locust` project와 실행 당시
 입력을 확인한 뒤에만 한다. `LAB_ENV_FILE`은 그 실행에 사용한 LAB 환경 파일 경로다.
 필요한 환경 입력과 경로는 승인된 실행 도구가 주입하며 값은 증거에 남기지 않는다.
 
-### Safety Checks
+### Environment
 
 읽기 전용 사전 점검은 Actions의 1단계(target·users·scenario digest 기록), 3단계(bounded status와 로그), 4단계(`config --quiet`와 master health failure 점검)이다. 시나리오 backup과 upgrade 전 점검은 다음과 같다.
 
@@ -60,9 +60,19 @@ dependency upgrade 전에 isolated run에서 scenario syntax를 validate하고, 
 승인된 canary를 실행한 뒤 worker registration과 aggregate metrics를 비교한다.
 이 documentation task에서는 backup, restore, load execution을 수행하지 않았다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | target, users, spawn rate, duration, worker count, scenario digest, 처음 실패한 target SLI 기록 | 문서에 기록 없음 | cookie/token/response body는 수집하지 않으며 예상 밖이면 중단 |
+| 2 | 진단 전 load 중지 (`lab.py run` 제어기에 종료 신호, 종료됐다면 `lab.py down locust`) | 제어기가 master를 grace 기간 동안 멈추고 project를 내림 | 대상 service와 project identity를 확인한 경우에만 Compose `stop` 사용 |
+| 3 | 실제 project의 bounded status와 남은 컨테이너 로그 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 target owner에게 escalation |
+| 4 | 합성 입력으로 현재 source를 렌더링하고 master/worker 실패 원인 점검 | `config --quiet`가 성공 | target SLI가 회복되지 않았으면 Locust를 중지한 채 target owner에게 보고 |
+| 5 | 승인된 canary를 별도 `LAB_CANARY_ENV_FILE`로 render 후 새 제어기 실행 시작 | render 성공, 대상과 한도가 승인값과 일치 | 일치하지 않으면 실행하지 않으며 중지 상태 유지 후 target owner에게 escalation |
+| 6 | scenario 복구: 두 service 중지 상태에서 scenario 디렉터리를 quarantine path로 복사, 검토된 파일 복원, hash 비교 후 교체 | hash 비교 일치 | credential이나 raw personal data는 복원하지 않으며 불일치 시 교체하지 않음 |
+| 7 | upgrade: 검토된 Dockerfile에서 rebuild 후 5단계의 소규모 canary 실행 | 문서에 기록 없음 | worker 등록 실패 또는 통계가 벌어지면 image/build 변경을 롤백하고 Locust를 중지 상태로 유지 |
 
 1. target, users, spawn rate, duration, worker count, scenario digest, 그리고 처음
    실패한 target SLI를 기록한다. cookie, token, response body는 수집하지 않는다.
@@ -132,9 +142,11 @@ python3 examples/operations/locust-telemetry/lifecycle.py \
 
 target SLI가 회복되지 않았으면 Locust를 중지 상태로 두고 target owner에게 escalation한다. worker 등록에 실패하거나 통계가 벌어지면 image/build 변경을 롤백하고, 시도 사이에는 Locust master와 worker를 중지 상태로 유지한다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 - Headless master의 TCP healthcheck가 성공하고 예상 worker count가 등록된다.
 - 별도로 승인된 canary가 지정된 target SLI 범위 내에 머문다.
@@ -142,23 +154,33 @@ target SLI가 회복되지 않았으면 Locust를 중지 상태로 두고 target
 - scenario/result restore와 upgrade rehearsal은 Task가 protected path, command,
   관찰된 결과를 기록할 때까지 **미실행** 상태로 남는다.
 
-### Evidence
+#### Evidence
 
 명령 종료·시각·설정 커밋·시나리오 digest·worker 수·정제된 집계·대상 SLI와 최종
 중지/실행 상태를 기록한다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 runbook이 아직 관찰하지 못한 항목은 다음과 같다. 문서는 일부 항목을 Task가 기록할 때까지 미실행 상태로 둔다고 적고 있다.
 
-Locust를 중지하고, 이전에 검토된 scenario/build를 격리된 상태로 복원한 뒤, static
-validation과 소규모 승인된 canary를 반복한다. 이 런북의 어떤 조치도 target service를
-롤백하거나 target data를 복구하지 않는다.
+- scenario/result restore와 upgrade rehearsal: 문서는 이 둘을 Task가 protected path, command, 관찰된 결과를 기록할 때까지 미실행 상태로 둔다고 적고 있다. 해당 기록이 관찰되면 검증된다.
+- 승인된 canary 실행: 새 제어기 실행은 대상과 canary 승인이 필요하며 이 문서에는 실행 결과가 기록되어 있지 않다. canary가 target SLI 범위 안에 머무는 것이 관찰되면 검증된다.
+- 최종 full run: 명시적 승인이 필요하며 그렇지 않으면 Locust가 중지 상태로 남아야 한다. 승인 기록 또는 중지 상태가 관찰되면 검증된다.
+- headless master TCP healthcheck와 예상 worker count 등록: 이 문서에는 실행 결과가 기록되어 있지 않다.
+- 격리 재현 harness(`lifecycle.py`): 실행 결과가 기록되어 있지 않다.
 
-### Escalation
+## Escalation
+
+### Next Owner
 
 책임자는 `@buenhyden`이다. 아래 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
 
 load 중지 후에도 target health가 회복되지 않거나, worker가 healthy master에 등록되지
 않거나, scenario provenance를 알 수 없거나, log/result에 secret이나 personal data가
 나타날 때 escalation한다.
+
+### Recovery or Forward Repair
+
+Locust를 중지하고, 이전에 검토된 scenario/build를 격리된 상태로 복원한 뒤, static
+validation과 소규모 승인된 canary를 반복한다. 이 런북의 어떤 조치도 target service를
+롤백하거나 target data를 복구하지 않는다.

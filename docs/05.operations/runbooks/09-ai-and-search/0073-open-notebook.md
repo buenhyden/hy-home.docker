@@ -1,10 +1,10 @@
 ---
 title: "Open Notebook Recovery Runbook"
-version: "1.1.6"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0073"
 parent_ids:
@@ -15,15 +15,15 @@ next_review_at: "2027-05-13"
 
 # Open Notebook Recovery Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 OPTIONAL Open Notebook(`open_notebook`, `surrealdb`, profile `notebook`)의 장애 진단, 백업·격리 복원, 업그레이드 절차를 다룬다. 데이터베이스와 앱 데이터, 암호화 키가 하나의 복구 세트다.
 
 앱 또는 DB readiness 실패, 읽을 수 없는 provider key, 사라진 노트북 콘텐츠, API 노출 우려, 백업·복원, 승인된 업그레이드가 있을 때 사용한다.
 
-### Scope
+### Targets
 
 - [Guide](../../guides/09-ai-and-search/0073-open-notebook.md) (`GDE-0073`)
 - [Policy](../../policies/09-ai-and-search/0073-open-notebook.md) (`POL-0073`)
@@ -33,15 +33,15 @@ next_review_at: "2027-05-13"
 - [SurrealDB export](https://surrealdb.com/docs/reference/cli/surrealdb-cli/commands/export)
 - [Open Notebook security](https://github.com/lfnovo/open-notebook/blob/main/docs/5-CONFIGURATION/security.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 책임자는 `@buenhyden`이다. 작업 전에 승인자와 작업 대상을 기록하고 승인된 모델/provider endpoint와 키만 구성한다. secret 값은 어떤 증거에도 기록하지 않는다.
 
 승인자와 작업 대상은 Safety Checks의 `작업 선택과 복구 전제`에서 기록하고, 승인된 모델/provider endpoint와 키 구성은 Actions의 `승인된 사용과 일관된 복구 세트`에 있다. 책임자 `@buenhyden`은 Escalation에 있으며 secret 값은 어떤 증거에도 기록하지 않는다.
 
-### Safety Checks
+### Environment
 
 작업 전 점검은 아래 항목에 따른다.
 
@@ -54,9 +54,24 @@ next_review_at: "2027-05-13"
 단일 파일 bind 재생성과 비밀 비노출 확인을 따른다. 재시작은 데이터 복원이나 자격 증명
 폐기 검증을 대신하지 않는다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 진단: 루트에서 compose config, ps, logs로 점검한다 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | 진단: 비밀번호, 암호화 키, DB 자격 증명, 데이터베이스, app-data, gateway/UI, API, provider 증상을 구분한다 | 문서에 기록 없음 | key 값이나 content를 출력하지 않고 중단 조건이면 @buenhyden에게 escalation |
+| 3 | 진단: provider key를 읽을 수 없으면 write를 중지하고 encryption-key secret identity/custody를 확인한다 | 문서에 기록 없음 | replacement key로 덮어쓰거나 다시 저장하지 않고 중단한다 |
+| 4 | 진단: database를 먼저 재시작하고 readiness를 확인한 뒤 app만 재시작한다 | `docker compose --profile notebook ps surrealdb open_notebook`로 두 서비스 상태를 확인한다 | content와 credential 점검이 통과할 때까지 provider/model egress를 비활성화 상태로 유지한다 |
+| 5 | 모델 등록 계약의 격리 점검: 승인된 격리 fixture에서 읽기 전용 `plan`/`verify`를 실행한다 | 문서에 기록 없음 | 충돌·부분 적용·중단이면 추가 `apply`를 중지하고 기존 등록을 읽기 전용으로 대조한다 |
+| 6 | 모델 등록 계약의 격리 점검: 승인과 정확한 소유 대상 검증 뒤에만 `--owned-isolated`와 receipt로 `apply`를 실행한다 | 문서에 기록 없음 | 추가 `apply`를 중지하고 승인된 격리 복구 절차로만 재개한다 |
+| 7 | Backup and isolated restore: app write를 차단하거나 `open_notebook`을 중지하고 SurrealQL로 export한다 | 문서에 기록 없음 | DB export 실패면 중단하고 @buenhyden에게 escalation |
+| 8 | Backup and isolated restore: writer를 중지하고 `/app/data`를 복사하며 checksum, source commit, receipt를 기록한다 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 9 | Backup and isolated restore: isolated SurrealDB로 import하고 app-data와 동일한 key를 private하게 제공한다 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 10 | Backup and isolated restore: notebook/source/settings count, 합성 notebook, credential 복호화 가능 여부를 확인하고 검토 후에만 promote한다 | 노트북·소스·설정 개수, 합성 노트북 하나, 자격 증명 복호화 가능 여부(boolean)를 확인한다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 11 | Upgrade: backup 반복, release/migration/security note 점검, 복원 copy에서 target image 테스트, content와 credential 복호화 확인을 한다 | content와 credential decryption이 확인된다 | target을 중지하고 이전 image와 두 data scope를 모두 복원한다 |
+| 12 | 승인된 사용과 일관된 복구 세트: config를 검증하고 DB를 app보다 먼저 시작하며 승인된 모델/provider endpoint와 키만 구성한다 | `docker compose --profile notebook ps surrealdb open_notebook`로 두 서비스 상태를 확인한다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
 
 절차는 아래 항목에 따른다.
 
@@ -156,24 +171,36 @@ v2로 유지하고 v3로 업그레이드하지 않는다.
 encryption key 누락·불일치, DB export 실패, 예기치 않은 API exposure, 민감한
 content 유출, migration error, 알 수 없는 provider 활동이 있으면 중단한다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 `docker compose --profile notebook ps surrealdb open_notebook`로 두 서비스 상태를 확인한다. 노트북·소스·설정 개수, 합성 노트북 하나, 자격 증명 복호화 가능 여부(boolean)를 확인한다.
 
-### Evidence
+#### Evidence
 
 종료 코드·source 커밋·export/app-data checksum·개수·인증/복호화 판정·API 경계와
 최종 상태를 기록한다. content나 secret 값은 절대 기록하지 않는다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북이 아직 관찰하지 못한 항목은 다음과 같다. 문서는 백업, 복원, provider 호출, 업그레이드를 실행하지 않았다고 기록하며, 모델 등록 예시를 실제로 실행한 수용 증거도 아니라고 밝힌다.
+
+- 모델 등록 `plan`/`verify`/`apply`(승인된 격리 fixture 필요): 격리 대상에서의 실행 결과와 receipt가 필요하다.
+- Backup and isolated restore: export/app-data checksum, count, 합성 notebook, 복호화 boolean 증거가 필요하다.
+- Upgrade와 실패 시 복원(승인 필요): 복원된 copy에서 target image의 content와 credential 복호화 확인이 필요하다.
+- DB 우선 재시작과 app 재시작: 재시작 뒤 두 서비스 상태 출력이 필요하다.
+- 인증된 UI/API 경계와 provider egress 비활성화 유지: 이 문서에는 관찰 결과가 기록되어 있지 않다.
+
+## Escalation
+
+### Next Owner
+
+책임자는 `@buenhyden`이다. 위 Stop Conditions의 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
+
+### Recovery or Forward Repair
 
 backup/restore와 upgrade rehearsal은 **계획되었으나 미실행** 상태이다.
 encryption key 손실은 database restore만으로는 복구되지 않는다.
-
-### Escalation
-
-책임자는 `@buenhyden`이다. 위 Stop Conditions의 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.

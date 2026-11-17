@@ -1,10 +1,10 @@
 ---
 title: "08-AI Optimization Hardening Runbook"
-version: "1.0.7"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0058"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # 08-AI Optimization Hardening Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 `08-ai` 하드닝 항목에서 발생하는 회귀를 즉시 복구하기 위한 실행 절차를 제공한다. gateway/SSO 체인 누락, Ollama concurrency 설정 누락, Open WebUI LAB 경계 드리프트, exporter health 계약 실패, CI 게이트 실패를 중심으로 점검/복구한다.
 
@@ -29,7 +29,7 @@ next_review_at: "2027-05-13"
 - Ollama GPU 과부하/OOM 또는 queue 적체가 반복될 때
 - exporter metrics 수집이 실패할 때
 
-### Scope
+### Targets
 
 - Declared parent: [08-AI Optimization Hardening Usage Guide](../../guides/09-ai-and-search/0058-ai-optimization-hardening.md) (`GDE-0058`)
 - Governing authority: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
@@ -41,9 +41,9 @@ next_review_at: "2027-05-13"
 - [Usage guide](../../guides/09-ai-and-search/0058-ai-optimization-hardening.md)
 - [Operations policy](../../policies/09-ai-and-search/0058-ai-optimization-hardening.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 승인과 실행 경계는 아래 항목에 따른다.
 
@@ -53,7 +53,7 @@ next_review_at: "2027-05-13"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Safety Checks
+### Environment
 
 작업 전 점검은 아래 항목에 따른다.
 
@@ -63,9 +63,17 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - [ ] 최근 변경 커밋 및 영향 범위 확인
 - [ ] 운영 영향도(응답 지연, 인증 실패, GPU 사용률 급등) 평가
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 복구 단계: 정적 구성 점검으로 hardening 스크립트와 `core ai` compose validation을 실행한다 | AI compose static validation 통과 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | 복구 단계: `check-all-hardening.sh 08-ai`로 하드닝 기준을 점검한다 | AI hardening script 실패 0건 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 3 | 복구 단계: middleware, Ollama 과부하, Open WebUI LAB drift, exporter metrics 증상별로 source 계약대로 복구한다 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 4 | 복구 단계: hardening, compose validation, template security baseline, traceability 링크 검사를 재실행한다 | optimization-hardening 문서 링크/README 인덱스 최신화를 확인한다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 5 | Agent Operations: 승인 후 모델 fallback과 자동 배포/승격 중지를 하고 hardening과 링크 검사를 재실행하며 CI 로그와 설정을 보존한다 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
 
 절차는 아래 항목에 따른다.
 
@@ -111,15 +119,17 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 검증 실패, secret 노출 위험, 파괴적 변경 필요, 예상 절차와 다른 상태는 Escalation에 기록한 중단 조건이다. Authority and Access의 `Execution Boundary`도 예상 밖 출력, backup 누락, dependency 실패, 승인되지 않은 부작용이면 중단하도록 한다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 - [ ] AI compose static validation 통과
 - [ ] AI hardening script 실패 0건
 - [ ] optimization-hardening 문서 링크/README 인덱스 최신화 확인
 
-### Evidence
+#### Evidence
 
 증거 기록은 아래 항목에 따른다.
 
@@ -140,9 +150,21 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - 실행 명령·결과·시각과 운영자 또는 agent 조치를 기록한다.
 - 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태를 관련 Task/Incident에 남긴다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북이 아직 관찰하지 못한 항목은 다음과 같다. 이 문서에는 아래 단계의 실행 결과가 기록되어 있지 않다.
+
+- 3단계 증상별 복구(middleware 재적용, Ollama 파라미터 복원, LAB drift, exporter 복구): 변경 후 hardening check 통과 결과가 필요하다.
+- Agent Operations의 모델 fallback과 AI 자동 배포/승격 중지(승인 필요): 승인 기록과 실행 결과가 필요하다.
+- 재검증 명령 4종: 실행 결과(종료 코드와 시각)가 필요하다.
+
+## Escalation
+
+### Next Owner
+
+검증 실패, secret 노출 위험, 파괴적 변경 필요 또는 예상 절차와 다른 상태이면 중단하고 @buenhyden에게 넘긴다. 정제된 증거, 시도한 단계와 현재 rollback/recovery 상태를 함께 전달한다.
+
+### Recovery or Forward Repair
 
 - 이 Runbook에 기록된 복구·rollback 절차와 아래의 `Safe Rollback or Recovery Procedure` 하위 절차만 사용한다.
 - 설정 rollback rehearsal은 계획만 있으며 미실행 상태다. 상태 데이터 복구는 `RUN-0056`, `RUN-0057`, `RUN-0081`이 소유한다. 이 최적화 Runbook으로 모델·SQLite·벡터·워크플로 복구를 입증하지 않는다.
@@ -157,7 +179,3 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
   - `.github/workflows/ci-quality.yml`
 - [ ] 롤백 후 정적 검증 재실행
 - [ ] 정책/가이드/태스크 문서 링크 재확인
-
-### Escalation
-
-검증 실패, secret 노출 위험, 파괴적 변경 필요 또는 예상 절차와 다른 상태이면 중단하고 @buenhyden에게 넘긴다. 정제된 증거, 시도한 단계와 현재 rollback/recovery 상태를 함께 전달한다.

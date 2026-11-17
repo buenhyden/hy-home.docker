@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Consumer Migration and Secret Catalog"
-version: "0.4.3"
+version: "0.5.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0106"
 parent_ids:
@@ -15,15 +15,15 @@ next_review_at: "2027-05-13"
 
 # OpenBao Consumer Migration and Secret Catalog
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 P06 소비자 이관 runtime의 운영 경계와 P02 공개 secret catalog 점검을 다룬다. 실제 소비자 전환 절차는 [consumer-migration README](../../../../infra/03-security/openbao/consumer-migration/README.md)가 소유한다.
 
 소비자를 OpenBao Agent 출력으로 옮기거나, secret catalog를 점검·렌더·생성 점검하거나, SMTP01의 COMM-003 중복 퇴역을 수행할 때 사용한다.
 
-### Scope
+### Targets
 
 - 공통 OpenBao 운영: [RUN-0085](0085-openbao.md)
 - [Implementation](../../../../infra/03-security/openbao/docker-compose.yml)과 [version projection](../../../../infra/tech-stack.versions.json)이 런타임 고정 버전을 소유한다.
@@ -32,9 +32,9 @@ next_review_at: "2027-05-13"
 
 - [운영 인덱스](../../README.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 저장소 루트에서 작업하고, 실제 copy·전환·삭제·회전은 P06 Task의 별도 입력·검토·수용을 거친다.
 
@@ -53,7 +53,7 @@ consumer 렌더·pilot·authority 전환·복구·삭제·회전의 새 실행�
 이 과거 수용은 일반 copy API의 실행이나 현재 운영 동등성 증거가 아닙니다. source/unit
 통과로 어느 실행 경계도 완료 처리하지 않습니다.
 
-### Safety Checks
+### Environment
 
 #### P06 Read-only Structure and SMTP Checks
 
@@ -81,9 +81,21 @@ python3 scripts/operations/secret-structure.py --root "$PWD" smtp-equality --rea
 권한과 복구 경계를 갖춘 다음 해당 소비자 소유자에게 인계한다. 소스 되돌리기는
 도구 코드만 되돌리며 실제 credential의 서버 유효성 복원을 뜻하지 않는다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | SMTP 전환 확인과 중복 퇴역: SMTP01의 root 단일 source, COMM-002/003 alias와 파일 소비 증거 확인 | 문서에 기록 없음 | 공용 username·host·account와 Alertmanager는 변경하지 않는다 |
+| 2 | SMTP 전환 확인과 중복 퇴역: 정확한 호스트 checkout에서 old path의 source, container mount, 정기 job, backup/restore, 외부 소비 확인 후 Task에 기록 | 문서에 기록 없음 | 비선택 profile이나 최근 무트래픽만으로 소비자 부재를 판단하지 않는다 |
+| 3 | SMTP 전환 확인과 중복 퇴역: `gen-secrets.sh --retire-supabase-smtp-check` 로컬 비교 | exit 0은 이미 퇴역, 1은 변경 대기, 2는 불안전/불일치이며 값·hash·길이는 출력하지 않는다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 4 | SMTP 전환 확인과 중복 퇴역: 총괄 수용 뒤 audit receipt로 `--retire-supabase-smtp --smtp-audit-proof` 적용 | receipt 자체는 권한을 발급하지 않으며 현재 SMTP01에서는 실행하지 않는다 | 두 quiescence 사실을 확인하지 못하면 apply를 실행하지 않는다 |
+| 5 | SMTP 전환 확인과 중복 퇴역: helper가 COMM-003 행과 중복 파일을 처리하고 재실행으로 확인 | idempotency와 활성 old source/path 참조 0을 확인한다 | 동시 변경·불일치·불명확한 mount는 거부하며 변경 이후 실패는 `unsafe_after_mutation`, `applied: true`, `completed: false`, exit 2로 보고한다 |
+| 6 | n8n Native Credential Handoff: owner가 발급자·정본·목적지, Credential ID, 갱신 경로, 이전 값 거부 조건, 독립 복원 경계를 지정 | 문서에 기록 없음 | 실제 발급·회전·외부 전송은 별도 대상별 승인과 복구 준비가 필요하며 즉시 전환은 가정하지 않는다 |
+| 7 | P02 Metadata Check: `secret-catalog.py --root "$PWD" check` 실행 | JSON `result`가 `P02_METADATA_VALID`이고 exit 0이다 | `P02_METADATA_BLOCKED`와 exit 2이면 중단한다 |
+| 8 | P02 Staging Views: 필요한 경우 `render`와 `check-views` 실행 | `render`는 `STAGING_RENDERED`와 파일명 목록, `check-views`는 `P02_VIEWS_MATCH`이며 exit 0이다 | `P02_VIEW_DRIFT`(exit 2)나 안전 검사 실패 `P02_METADATA_BLOCKED`이면 부분 결과를 소비하지 말고 원인을 검토한 뒤 다시 생성·검사한다 |
+| 9 | P02 Generation Refusal Probes: `check-generation COMM-002`와 `COMM-003`을 각각 실행 | 두 명령 모두 `P02_GENERATION_BLOCKED`, exit 2가 정상이다 | 성공하거나 예상 출력과 다르면 중단하고 P02 catalog 담당자와 검토한다 |
 
 #### SMTP 전환 확인과 중복 퇴역
 
@@ -263,24 +275,36 @@ path·P01 인증/복구·P03 신원·P04 DEV/S3 증거가 있어야 한다. 현�
 
 trusted 작성자와 입력의 쓰기 중단을 확인한 뒤에만 검사한다(Safety Checks의 P06 Read-only Structure and SMTP Checks). `P02_METADATA_BLOCKED`와 exit 2는 중단하고(Actions의 Metadata Check), 거절 probe가 성공하거나 예상 출력과 다르면 중단한다(Actions의 Generation Refusal Probes). catalog 점검이 실패하면 생성·전환을 멈춘다(Rollback). 안전한 진행이 불가능하면 중단하고 @buenhyden에게 연락한다(Escalation).
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 catalog 점검 결과는 `P02_METADATA_VALID`, staging을 만든 경우 `P02_VIEWS_MATCH`, 두 거절 probe의
 `P02_GENERATION_BLOCKED`(exit 2)여야 한다. 소비자 전환의 수용은 P06 Task가 따로 가진다.
 
-### Evidence
+#### Evidence
 
 catalog 점검의 상태 문자열(Service Checks)을 값 없이 Task에 기록한다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북에서 아직 관측되지 않은 항목은 다음과 같다.
 
-catalog 점검이 실패하면 생성·전환을 멈추고 원인을 고친 뒤 다시 점검한다. 소비자 전환의 rollback은 consumer-migration README의 `rollback` 절차를 따른다.
+- SMTP01 퇴역 적용(`--retire-supabase-smtp`): 문서는 준비·적용 명령, 현재 HOME 사실과 receipt 발급이 `NOT_RUN`이라고 기록한다. receipt 조건을 갖춘 적용과 재실행의 idempotency, 활성 old path 참조 0으로 검증한다.
+- 실제 backup/restore: 별도 Task 증거이며 이 문서에는 기록되어 있지 않다. source revert나 격리 SMTP 성공을 HOME 복구 PASS로 기록하지 않는다.
+- n8n Credential 갱신: 문서는 SMTP 회전이 실행되지 않았다고 기록하며 실제 발급·회전은 별도 승인이 필요하다. 지정한 Credential ID의 갱신 뒤 다음 Worker 실행의 소비로 검증한다.
+- P02 catalog check, staging, generation refusal probe: 이 문서에는 예상 출력만 있고 실행 결과는 기록되어 있지 않다. 각 명령의 JSON `result`와 exit code로 검증한다.
+- 실제 발급·수집·이관·delivery·reload·rotation·복구: 공개 staging만으로 수용하지 않으며 pilot에는 대상 ID·KV path·P01 인증/복구·P03 신원·P04 DEV/S3 증거가 필요하다. 현재 HOME/P06 hold를 유지한다.
 
-### Escalation
+## Escalation
+
+### Next Owner
 
 credential, 파괴적 스토리지 변경, remote 변경, 또는 backup 부재로 안전한 진행이 불가능하면
 중단하고 @buenhyden에게 연락한다.
+
+### Recovery or Forward Repair
+
+catalog 점검이 실패하면 생성·전환을 멈추고 원인을 고친 뒤 다시 점검한다. 소비자 전환의 rollback은 consumer-migration README의 `rollback` 절차를 따른다.

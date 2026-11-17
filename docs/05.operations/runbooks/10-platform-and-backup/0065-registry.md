@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry Runbook"
-version: "1.2.2"
+version: "1.3.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0065"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # Docker Registry Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 Registry(`registry` service)의 장애 진단, 일관된 백업·복원, 업그레이드, 별도로 승인된
 garbage collection 절차다.
@@ -25,7 +25,7 @@ garbage collection 절차다.
 `/v2/` failure, push/pull 또는 digest mismatch, storage exhaustion, consistent
 backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용한다.
 
-### Scope
+### Targets
 
 - [Guide](../../guides/10-platform-and-backup/0065-registry.md) (`GDE-0065`)
 - [Policy](../../policies/10-platform-and-backup/0065-registry.md) (`POL-0065`)
@@ -34,13 +34,13 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
 - [Registry deployment](https://distribution.github.io/distribution/about/deploying/)
 - [Garbage collection](https://distribution.github.io/distribution/about/garbage-collection/)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 작업 전에 승인자를 기록한다. 복원된 store 승격(data replacement)과 garbage collection은 명시적 승인이 있어야 하며, 책임자는 `@buenhyden`이다.
 
-### Safety Checks
+### Environment
 
 작업 전 점검은 아래 항목에 따른다.
 
@@ -53,9 +53,24 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
 단일 파일 bind 재생성과 비밀 비노출 확인을 따른다. 재시작은 데이터 복원이나 자격 증명
 폐기 검증을 대신하지 않는다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 저장소 루트에서 `registry` profile을 validate하고 bounded status를 캡처한다 | 문서에 기록 없음 | 실패 시 Stop Conditions에 따라 중단하고 @buenhyden에게 escalation |
+| 2 | `${DEFAULT_REGISTRY_DIR}`의 존재, filesystem, 여유 공간과 client의 trusted endpoint 도달을 확인한다 | 문서에 기록 없음 | firewall/client trust를 넓히지 않고 중단한다 |
+| 3 | digest mismatch가 발생하면 promotion을 중지하고 예상/관찰 digest를 기록한 뒤 알려진 source에서 pull한다 | 문서에 기록 없음 | evidence 위에 retag하거나 blob을 삭제하지 않고 중단한다 |
+| 4 | storage와 network 점검 후 `registry`만 재시작하고 `/v2/` 응답과 canary push/pull digest를 비교한다 | `registry`가 정상이고 `/v2/`가 응답하며 canary digest가 동일하다 | 실패 시 Stop Conditions에 따라 중단하고 @buenhyden에게 escalation |
+| 5 | Consistent backup and restore: push/pull을 차단하고 `registry`를 중지한다 | 문서에 기록 없음 | 실패 시 Stop Conditions에 따라 중단하고 @buenhyden에게 escalation |
+| 6 | Consistent backup and restore: `${DEFAULT_REGISTRY_DIR}` 전체를 snapshot/복사하고 checksum과 inventory를 기록한 뒤 source를 다시 시작한다 | source commit, snapshot/checksum, repository/tag/digest inventory가 기록된다 | backup 누락이면 중단한다 |
+| 7 | Consistent backup and restore: untrusted route가 없는 isolated Registry로 복원하고 API, catalog/tag count, 대표 digest pull을 확인한다 | API, catalog/tag count, 대표 집합의 digest pull이 확인된다 | 실패 시 Stop Conditions에 따라 중단하고 @buenhyden에게 escalation |
+| 8 | Consistent backup and restore: digest 검증과 명시적 data replacement 승인 후에만 복원된 store를 promote한다 | 문서에 기록 없음 | 승인 없는 deletion/replacement 요청이면 중단한다 |
+| 9 | 로컬 이미지 이관과 제거: 이미지를 `localhost:${REGISTRY_PORT:-5000}/<repository>:<tag>`로 태그하고 push한다 | 문서에 기록 없음 | 실패 시 Stop Conditions에 따라 중단하고 @buenhyden에게 escalation |
+| 10 | 로컬 이미지 이관과 제거: push된 참조를 digest로 pull하여 push 출력의 digest와 비교하고 Task에 기록한다 | repository, tag, digest, 출처 Dockerfile이 Task에 기록된다 | digest가 다르면 로컬 태그를 제거하지 않는다 |
+| 11 | 로컬 이미지 이관과 제거: 2단계 성공 후에만 로컬 태그를 제거한다 | 문서에 기록 없음 | 컨테이너가 사용하는 이미지는 제거하지 않는다 |
+| 12 | 로컬 이미지 이관과 제거: 다시 사용하려면 Registry 참조를 pull하여 재태깅하거나 Dockerfile에서 재빌드한다 | 문서에 기록 없음 | 실패 시 Stop Conditions에 따라 중단하고 @buenhyden에게 escalation |
 
 1. 저장소 루트에서 validate하고 bounded status를 캡처한다.
 
@@ -114,24 +129,36 @@ backup/restore, upgrade, 또는 별도로 승인된 garbage collection에 사용
 untrusted exposure, 알 수 없는 artifact provenance, backup 누락, digest mismatch,
 filesystem corruption, 승인 없는 deletion/GC 요청이 있으면 중단한다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 `docker compose --profile registry ps registry`가 정상이고 `/v2/`가 응답해야 한다. non-sensitive canary 하나를 push/pull한 뒤 digest를 비교한다.
 
-### Evidence
+#### Evidence
 
 exit, endpoint boundary, source commit, snapshot ID/checksum, count, 선택된
 digest, 최종 service state를 기록한다. credential이나 layer는 캡처하지 않는다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북이 아직 관찰하지 못한 항목은 다음과 같다. 이 문서에는 아래 단계의 실행 결과가 기록되어 있지 않다.
+
+- Consistent backup and restore(push/pull 차단과 `registry` 중지 포함): snapshot ID/checksum, catalog/tag count, 격리 복원 뒤 대표 digest pull 결과가 필요하다.
+- 복원된 store의 promote(명시적 data replacement 승인 필요): 승인 기록과 digest 검증 결과가 필요하다.
+- Garbage collection과 upgrade(destructive, 승인 필요): 백업 확보, dry-run, mark set 검토, 격리 복사본에서의 canary push/pull과 digest 동등성 관찰이 필요하다.
+- 로컬 이미지 이관과 제거: push된 digest와 pull한 digest의 비교 결과, 로컬 태그 제거 기록이 필요하다.
+- 재시작 후 `/v2/`와 canary push/pull digest 비교: 실행 결과가 필요하다.
+
+## Escalation
+
+### Next Owner
+
+책임자는 `@buenhyden`이다. 위 Stop Conditions의 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
+
+### Recovery or Forward Repair
 
 backup/restore, GC, upgrade rehearsal은 이 문서에서 **계획되었으나 미실행** 상태이다.
 Registry storage에 대한 복구 단계로 `rm`을 절대 사용하지 않는다.
-
-### Escalation
-
-책임자는 `@buenhyden`이다. 위 Stop Conditions의 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.

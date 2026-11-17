@@ -1,10 +1,10 @@
 ---
 title: "WireMock Recovery Runbook"
-version: "1.0.7"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0092"
 parent_ids:
@@ -15,16 +15,16 @@ next_review_at: "2027-05-13"
 
 # WireMock Recovery Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 WireMock의 모드 이상, 스텁 404, 매핑 로드 실패, 메모리 한계 도달을 다루는 런북이다.
 
 기능 또는 load 모드가 비정상이거나, 스텁이 예상된 위치에서 요청이 404를 반환하거나,
 매핑 파일이 로드에 실패하거나, 컨테이너가 메모리 제한에 도달했을 때 사용한다.
 
-### Scope
+### Targets
 
 - [Guide](../../guides/12-testing-and-quality/0092-wiremock.md) (`GDE-0092`)
 - [Policy](../../policies/12-testing-and-quality/0092-wiremock.md) (`POL-0092`)
@@ -33,9 +33,9 @@ WireMock의 모드 이상, 스텁 404, 매핑 로드 실패, 메모리 한계 �
 - [WireMock 패키지 README](../../../../infra/11-quality/wiremock/README.md)
 - [WireMock admin API](https://wiremock.org/docs/standalone/admin-api-reference/)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 mapping reset과 기동·재시작은 영향받는 테스트 소유자 승인을 확인한 뒤에만 실행하며, 메모리 제한 변경은 영향받는 테스트 소유자와 검토하고 승인한다.
 
@@ -49,15 +49,23 @@ reset 및 journal 조회 없이 새 Compose model로 시작한다. 실패하면 
 합성 요청으로 검증한 뒤 승인한다. journal은 복원하지 않으며 필요한 정제된 집계만
 보존한 후 컨테이너를 제거한다.
 
-### Safety Checks
+### Environment
 
 먼저 활성 mode를 확인한다. root의 `api-mock`은 기능 모드, root와 load
 override를 함께 지정한 `api-mock`은 journal 없는 부하 모드다. 두 mode를
 동시에 복구하지 않는다. 모든 명령은 저장소 루트에서 실행한다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 기능 모드는 `config --quiet`/`ps wiremock`/`logs --tail=100 wiremock`/`__admin/health`로, load 모드는 root와 override를 함께 지정한 `config --quiet`/`ps wiremock`로 상태를 확인한다 | 기능 모드는 `__admin/health` 응답이 정상이고, load 모드는 공개 stub health(`GET /hyhome/ping`)가 정상이며 HTTP admin이 403으로 거부된다 | admin API를 loopback 밖으로 공개하는 요청 등은 Stop Conditions에 따라 중단 |
+| 2 | 파싱에 실패한 매핑은 시작 로그에서 확인하고 `mappings/`의 JSON을 수정한 뒤 `__admin/mappings/reset`으로 다시 로드한다 | `__admin/mappings` 개수가 정상이다 | 문서에 기록 없음 |
+| 3 | 예상치 못한 404는 기능 모드에서만 요청을 스텁과 비교하며 승인된 비공개 진단에서 필요한 항목만 본다 | 근거에는 개수/매핑 식별자/정제된 불일치 원인만 남긴다 | 승인된 비공개 진단이 아니면 요청 본문/헤더를 보지 않음 |
+| 4 | `OOMKilled`는 단일 원인의 증거가 아니므로 journal 크기(기능 모드), 동시 요청, JVM과 컨테이너 한도를 확인한다 | 문서에 기록 없음 | 필요한 제한 변경은 테스트 소유자와 검토/승인하고 템플릿을 즉시 늘리지 않음 |
+| 5 | 매핑 변경·기동·재적용: `mappings/`에 합성 데이터 매핑을 추가한 뒤 서비스를 재시작하거나 `POST /__admin/mappings/reset`으로 다시 로드한다 | 추적된 매핑이 다시 로드된다(메모리상 매핑은 삭제됨) | 실제 응답/토큰/개인정보 포함 요청이나 실제 업스트림 녹화 활성화는 중단 |
 
 1. 기능 모드만 다음 loopback 상태 확인을 실행한다.
 
@@ -110,26 +118,37 @@ override를 함께 지정한 `api-mock`은 journal 없는 부하 모드다. 두 
 admin API를 loopback 밖으로 공개하거나, 실제 업스트림에 대한 녹화를
 활성화하거나, 캡처된 프로덕션 응답을 커밋하라는 요청이 있으면 중단한다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 기능 모드는 `__admin/health` 응답과 `__admin/mappings` 개수가 정상이어야 하고, load 모드는 host port 없이 공개 stub health(`GET /hyhome/ping`)가 정상이며 HTTP admin이 403으로 거부되어야 한다.
 
-### Evidence
+#### Evidence
 
 기능 모드는 health 응답, `__admin/mappings`의 매핑 개수, journal reset 종료 코드와
 소스 커밋을 기록한다. load 모드는 mode, no-journal/HTTP admin 거부 command, host port 없음, 공개 stub health와
 소스 커밋만 기록한다. journal의 요청 본문이나 헤더는 기록하지 않는다. 테스트가
 크리덴셜을 전송했을 수 있다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 runbook이 아직 관찰된 적 없는 항목은 다음과 같다.
+
+- 기능 모드와 load 모드 상태 확인: 이 문서에는 실행 결과가 기록되어 있지 않다. 기능 모드의 `__admin/health`와 매핑 개수, load 모드의 `GET /hyhome/ping` 정상과 HTTP admin 403 거부가 검증 근거가 된다.
+- 매핑 reset과 서비스 재시작/기동: 이 문서에는 실행 결과가 기록되어 있지 않다. journal reset 종료 코드와 `__admin/mappings` 매핑 개수가 검증 근거가 된다.
+- `OOMKilled` 대응과 제한 변경: 영향받는 테스트 소유자의 검토와 승인이 필요하며 이 문서에는 기록이 없다.
+- 요청 journal/unmatched 진단: 승인된 비공개 환경에서만 수행하며 이 문서에는 실행 결과가 기록되어 있지 않다.
+
+## Escalation
+
+### Next Owner
+
+책임자는 `@buenhyden`이다. 위 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
+
+### Recovery or Forward Repair
 
 서비스는 영속 상태를 갖지 않는다. 추적되는 이미지와 매핑에서 다시 만드는
 것이 완전한 복구이며 인메모리 스텁과 journal은 설계상 사라진다.
-
-### Escalation
-
-책임자는 `@buenhyden`이다. 위 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.

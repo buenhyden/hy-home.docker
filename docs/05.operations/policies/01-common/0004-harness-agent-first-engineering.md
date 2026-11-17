@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Operations Policy"
-version: "1.3.3"
+version: "1.3.4"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0004"
 parent_ids:
@@ -87,7 +87,7 @@ Docker·실제 환경 접근은 해당 Task의 승인 범위에서 실행하며 
 ### Enforcement
 
 변경 영향에 맞춰 quality policy와 canonical public plan이 선택한 검사만 수행한다.
-[Runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md#actions)은 승인된
+[Runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md#steps)은 승인된
 관측의 실행 경로를 안내하며 모든 변경에 전체 hook/runtime bundle을 요구하지 않는다.
 
 ## Exceptions

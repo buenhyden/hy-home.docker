@@ -1,10 +1,10 @@
 ---
 title: "Ollama Runbook"
-version: "1.0.13"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0056"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # Ollama Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 Ollama 추론 계층 장애에 대한 즉시 실행 절차를 제공한다. GPU 미인식, VRAM OOM, API 장애를 신속히 진단·복구하고 상위 HOME 소비자 영향도를 최소화한다.
 
@@ -32,7 +32,7 @@ next_review_at: "2027-05-13"
 - 모델 로드 시 VRAM OOM으로 추론 실패.
 - 소비자에서 모델 목록 미표시.
 
-### Scope
+### Targets
 
 - Declared parent: [Ollama Usage Guide](../../guides/09-ai-and-search/0056-ollama.md) (`GDE-0056`)
 - Governing authority: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
@@ -45,9 +45,9 @@ next_review_at: "2027-05-13"
 - [Operations policy](../../policies/09-ai-and-search/0056-ollama.md)
 - [Ollama release notes](https://github.com/ollama/ollama/releases)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 승인과 실행 경계는 아래 항목에 따른다.
 
@@ -57,7 +57,7 @@ next_review_at: "2027-05-13"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Safety Checks
+### Environment
 
 작업 전 점검은 아래 항목에 따른다.
 
@@ -72,9 +72,21 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - [ ] 최근 모델 변경/배포 이력 확인
 - [ ] HOME 소비자 영향 범위 확인
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Initial Health & API Check: 컨테이너, 로그, `/api/tags`를 확인한다 | `curl -f http://localhost:${OLLAMA_HOST_PORT:-11434}/api/tags` 성공 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | GPU Recognition Recovery: GPU 미인식이면 GPU Recovery runbook의 절차를 따른다 | `docker compose exec ollama nvidia-smi` 성공 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 3 | VRAM OOM Mitigation: `keep_alive: 0` 요청으로 상주 모델을 언로드하고 필요하면 승인 후 경량 모델로 전환한다 | 문서에 기록 없음 | OOM 반복이나 예상 밖 download면 중단하고 @buenhyden에게 escalation |
+| 4 | Model Integrity Check: `ollama list`로 운영 기준 모델 태그 존재를 확인한다 | 운영 기준 모델 태그가 존재한다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 5 | Consumer Dependency Recheck: HOME 소비자 컨테이너에서 Ollama `/api/tags` 접근을 확인한다 | HOME 소비자에서 모델 조회 성공 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 6 | Scoped Upgrade Check and Rollback: 승인된 변경에서 `ollama` 하나만 pull하고 재생성한다 | 재생성 뒤 version, health, 기존 digest, loopback 포트, GPU 요청, 네트워크, exporter, HOME 소비자 `/api/tags`를 확인한다 | 승인된 rollback 계획에 따라 변경 전 image tag/digest로 복원하고 볼륨과 모델은 삭제하지 않는다 |
+| 7 | Scoped Upgrade Check and Rollback: 새 image의 `cuda_v12` 경로와 GPU 선택 로그를 확인한다 | 로그에 `library=CUDA`, `name=CUDA0`, `cuda_v12`를 포함한 `libdirs`가 있다 | CPU fallback으로 보고 rollback한다 |
+| 8 | Model and exporter capacity boundary: 가이드의 용량 경계와 GPU 복구 경계를 따른다 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 9 | Agent Operations: 프롬프트 복원, 승인 후 경량 모델 전환, 문제 호출 경로 차단, smoke test 재실행, 로그 보존을 수행한다 | 기본 추론 요청(`/api/generate`) 성공 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
 
 절차는 아래 항목에 따른다.
 
@@ -165,16 +177,18 @@ docker logs ollama 2>&1 | grep 'msg="inference compute"'
 
 검증 실패, secret 노출 위험, 파괴적 변경 필요, 예상 절차와 다른 상태는 Escalation에 기록한 중단 조건이다. Authority and Access의 `Execution Boundary`도 예상 밖 출력, backup 누락, dependency 실패, 승인되지 않은 부작용이면 중단하도록 한다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 - [ ] `curl -f http://localhost:${OLLAMA_HOST_PORT:-11434}/api/tags` 성공
 - [ ] `docker compose exec ollama nvidia-smi` 성공
 - [ ] 기본 추론 요청(`/api/generate`) 성공
 - [ ] HOME 소비자에서 모델 조회 성공
 
-### Evidence
+#### Evidence
 
 증거 기록은 아래 항목에 따른다.
 
@@ -188,9 +202,22 @@ docker logs ollama 2>&1 | grep 'msg="inference compute"'
   - 복구 전후 지표 스냅샷
   - 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태는 관련 Task/Incident에 남긴다
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북이 아직 관찰하지 못한 항목은 다음과 같다. 문서는 rollback rehearsal과 인증된 브라우저 UI 검증이 아직 실행되지 않았다고 기록한다.
+
+- Scoped Upgrade의 rollback rehearsal: 승인된 계획으로 변경 전 image tag/digest 복원과 기존 모델 digest 유지를 관찰해야 한다.
+- 인증된 브라우저 UI 검증: 실행 결과가 기록되어 있지 않으며 별도 검증이 필요하다.
+- 업그레이드 후 GPU 선택(`library=CUDA`, `cuda_v12`): 새 image pin 적용 뒤 `inference compute` 로그 확인이 필요하다.
+- VRAM OOM 완화(`keep_alive: 0` 언로드)와 경량 모델 전환(승인 필요): 이 문서에는 실행 결과가 기록되어 있지 않다.
+
+## Escalation
+
+### Next Owner
+
+검증 실패, secret 노출 위험, 파괴적 변경 필요 또는 예상 절차와 다른 상태이면 중단하고 @buenhyden에게 넘긴다. 정제된 증거, 시도한 단계와 현재 rollback/recovery 상태를 함께 전달한다.
+
+### Recovery or Forward Repair
 
 - 이 Runbook에 기록된 복구·rollback 절차와 아래의 `Safe Rollback or Recovery Procedure` 하위 절차만 사용한다.
 - 아래 격리 복구 계획은 미실행 상태다. rehearsal 완료로 표시하기 전에 날짜가 있는 증거를 첨부한다.
@@ -212,7 +239,3 @@ docker logs ollama 2>&1 | grep 'msg="inference compute"'
 2. 공개 경로가 없는 별도 프로젝트와 격리 모델 경로에 복원한다. 모델 catalog(`models/manifests`, `manifests-v2`)는 restic state snapshot의 `/src/state/ollama-models/` 아래에서 복원한다. SPEC-0246 이전 snapshot에는 `/src/state/volumes/ai/ollama/models/` 아래에 있다. 재구축을 선택하면 모델을 이름으로 다시 받고, 받은 digest가 복원한 manifest와 같은지 확인한다. 다르면 upstream tag가 바뀐 것이므로 받지 않은 것으로 보고 승인을 받는다. 라이선스·checksum도 확인한다.
 3. 호환되는 GPU·runtime 설정으로 Ollama를 기동하고 `/api/tags`, 모델 digest, GPU 인식, 대표 추론 한 건, exporter 수집을 확인한다. 소비자는 격리 endpoint에 대해서만 시험한다.
 4. 불일치하면 격리 서비스를 중지하고 로그·checksum을 보존한 뒤 변경하지 않은 백업·원본 manifest로 돌아간다. 운영 volume이나 경로 교체에는 별도 변경 승인이 필요하다.
-
-### Escalation
-
-검증 실패, secret 노출 위험, 파괴적 변경 필요 또는 예상 절차와 다른 상태이면 중단하고 @buenhyden에게 넘긴다. 정제된 증거, 시도한 단계와 현재 rollback/recovery 상태를 함께 전달한다.

@@ -1,10 +1,10 @@
 ---
 title: "Prometheus Readiness and Recovery Runbook"
-version: "1.4.4"
+version: "1.5.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0045"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # Prometheus Readiness and Recovery Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 Prometheus 준비 상태, 설정·rule 검증, lifecycle reload, scrape target 진단, 재시작, TSDB 증상 보고를 다룬다. 장애, scrape target 실패, alert rule 평가 실패, reload, TSDB 손상 증상에 대응한다.
 
@@ -32,7 +32,7 @@ next_review_at: "2027-05-13"
 - 선택 config(`prometheus.dev.yml` 또는 `prometheus.yml`)나 `alert_rules/`를 바꾼 뒤 reload가 필요하다.
 - TSDB 손상, compaction 실패, WAL 관련 로그가 보인다.
 
-### Scope
+### Targets
 
 - Declared parent: [Prometheus Usage Guide](../../guides/07-observability/0045-prometheus.md) (`GDE-0045`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
@@ -44,9 +44,9 @@ next_review_at: "2027-05-13"
 - [Usage guide](../../guides/07-observability/0045-prometheus.md)
 - [Operations policy](../../policies/07-observability/0045-prometheus.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 승인·접근 조건은 아래 항목을 따른다.
 
@@ -56,7 +56,7 @@ next_review_at: "2027-05-13"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다.  Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Safety Checks
+### Environment
 
 시작 전에 다음을 확인한다.
 
@@ -68,9 +68,18 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 `prometheus`의 선택 config, rule 파일과 세 secret mount가 준비되어야 한다. `node-exporter`의 textfile host 경로는 자동 생성되지 않으며 `dcgm-exporter`는 호환되는 GPU runtime이 필요하다. DCGM에는 Compose healthcheck가 없으므로 수집 target과 지원 metric을 확인한다. 두 exporter는 자체 데이터 백업이나 별도 사용자 자격 증명 회전 대상이 아니다. exporter 교체·중지는 관측 공백과 label 연속성을 검토하고 Prometheus TSDB 복구와 구분한다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Diagnosis and reload: service 상태, 최근 로그, healthcheck 캡처 | `/-/healthy`가 healthy response를 반환 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | Diagnosis and reload: `promtool`로 config와 rule syntax 검증 | `promtool check config`와 `promtool check rules`가 성공 | `openbao_token` 미준비로 멈추면 그 전제를 별도 실패로 기록 |
+| 3 | Diagnosis and reload: Targets page와 target endpoint 직접 확인 | affected critical target이 `UP` | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 4 | Diagnosis and reload: 검증 통과 및 healthy 상태에서 lifecycle reload | Grafana dashboard에서 새 metrics timestamp가 갱신됨 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 5 | Diagnosis and reload: reload 후에도 unhealthy하면 `docker compose --profile obs restart prometheus` | `/-/healthy`가 healthy response를 반환 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 6 | Diagnosis and reload: TSDB/WAL 관련 로그가 보이면 삭제 없이 evidence 수집 | 문서에 기록 없음 | 데이터 삭제, WAL 제거, volume mutation이 필요해 보이면 즉시 중단하고 @buenhyden approval을 받음 |
 
 실행 절차는 아래 항목을 따른다.
 
@@ -176,9 +185,11 @@ MNG·DEV 고유 경보는 각 DB runbook이 다룬다.
 
 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 - [ ] `docker exec prometheus wget -qO- http://localhost:9090/-/healthy`가 healthy response를 반환한다.
 - [ ] Prometheus `Targets` page에서 affected critical target이 `UP`이다.
@@ -186,7 +197,7 @@ MNG·DEV 고유 경보는 각 DB runbook이 다룬다.
 - [ ] Grafana dashboard에서 새 metrics timestamp가 갱신된다.
 - [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
-### Evidence
+#### Evidence
 
 - 실행한 명령, timestamp, operator or agent action을 기록한다.
 - Secret values는 기록하지 않는다.
@@ -201,9 +212,23 @@ MNG·DEV 고유 경보는 각 DB runbook이 다룬다.
 - **Metrics**: `prometheus_rule_evaluation_failures_total`, `prometheus_tsdb_compactions_failed_total`, target `up`
 - **Evidence to Capture**: 실패한 job 이름과 target, 명령 출력 요약, reload·재시작 시각, 최종 복구 또는 보고 상태
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북에서 아직 관찰되었다고 기록되지 않은 항목과, 이를 확인할 관찰은 다음과 같다.
+
+- `up --plan` 실행: 대상 서비스를 재생성할 수 있어 별도 승인과 복구 준비가 필요하며, 이 문서에는 실행 결과가 기록되어 있지 않다. 승인 후 계획에 결속된 기대 설정 경로의 존재와 Prometheus 시작을 확인한다.
+- lifecycle reload와 restart(4, 5단계): 실행 결과가 기록되어 있지 않다. `/-/healthy` 응답과 Targets page의 `UP` 상태로 확인한다.
+- 정적 파일 성공의 live reload 및 알림 수신: 문서가 보장하지 않는다고 명시한다. 실제 reload 결과와 알림 수신을 별도로 관찰해야 한다.
+- TSDB corruption 복구: 검증된 복구 절차를 제공하지 않으며 별도 incident/task approval과 backup evidence가 필요하다.
+- `dcgm-exporter` GPU 상태: Compose healthcheck가 없다. GPU, DCGM metric, scrape 상태를 따로 관찰해야 한다.
+
+## Escalation
+
+### Next Owner
+
+verification이 실패하거나, secret exposure risk가 보이거나, destructive data change가 필요하거나, TSDB/WAL 조치가 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
+
+### Recovery or Forward Repair
 
 이 런북에 명시된 validation, reload, restart, Git으로 관리하는 config rollback만 사용한다. 데이터 손실 가능성이 있는 TSDB/WAL 조치는 검증된 안전 복구 절차가 아니므로 Escalation으로 넘긴다.
 
@@ -248,7 +273,3 @@ python3 scripts/operations/prometheus-isolated-restore.py \
 
 종료 코드 0은 PASS, 1은 FAIL, 2는 입력 거부다. 이 명령은 Alertmanager 전송과 rule health를
 확인하지 않으므로 3단계의 그 부분은 별도로 남는다.
-
-### Escalation
-
-verification이 실패하거나, secret exposure risk가 보이거나, destructive data change가 필요하거나, TSDB/WAL 조치가 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.

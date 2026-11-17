@@ -1,10 +1,10 @@
 ---
 title: "02-Auth OAuth2 Proxy Runbook"
-version: "1.3.3"
+version: "1.4.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0015"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # 02-Auth OAuth2 Proxy Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 OAuth2 Proxy 인증 루프, OIDC 장애, CA/issuer/callback 불일치, Redis/Valkey session 장애, logout 경계 혼동, readonly/tmpfs 관련 오류, 설정 검증 실패 상황에 대한 복구 절차를 정의한다.
 
@@ -35,7 +35,7 @@ next_review_at: "2027-05-13"
 - compose/config 변경 후 런타임 부팅 실패
 - Keycloak `/admins` group 사용자가 거부되거나 비허용 사용자가 통과할 때
 
-### Scope
+### Targets
 
 > Scope: OAuth2 Proxy ForwardAuth Recovery
 
@@ -54,9 +54,9 @@ next_review_at: "2027-05-13"
 - [Usage guide](../../guides/03-identity-and-access/0015-oauth2-proxy.md)
 - [Operations policy](../../policies/03-identity-and-access/0015-oauth2-proxy.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 승인 대상과 증거 처리 기준은 다음과 같다.
 
@@ -70,7 +70,7 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
 여러 앱 공통 장애는 [RUN-0099](../01-common/0099-system-operations.md), cold-start는
 [RUN-0098](../01-common/0098-cold-start-and-reboot.md)이 소유한다.
 
-### Safety Checks
+### Environment
 
 조치 전에 확인할 항목은 다음과 같다.
 
@@ -80,9 +80,22 @@ token, code, cookie, session ID, 사용자·비공개 주소를 증거에서 제
 - [ ] `bash scripts/hardening/check-all-hardening.sh 02-auth` 실행
 - [ ] Proxy의 정제된 인증/backend 오류 요약 오류 패턴 확인
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Diagnosis and recovery steps: 기본 진단(`/ping`, `/ready`, OIDC issuer, 정제된 로그) | `/ping`이 성공하고 issuer가 `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm`이다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | Diagnosis and recovery steps: issuer/CA/JWKS 대응 | root CA mount `/etc/ssl/certs/rootCA.pem`과 `ssl_insecure_skip_verify=false`이다 | CA 오류를 `ssl_insecure_skip_verify=true`로 우회하지 않는다 |
+| 3 | Diagnosis and recovery steps: callback/state/PKCE 대응 | `home-proxy-client`의 Valid Redirect URI가 `https://auth.${DEFAULT_URL}/oauth2/callback`이고 `code_challenge_method = "S256"`이 호환된다 | state/CSRF 오류이면 `cookie_domains`, `cookie_secure`, HTTPS 진입, browser stale cookie를 함께 확인한다 |
+| 4 | Diagnosis and recovery steps: session store 대응 | `/ready`는 Redis/Valkey 연결까지 확인한다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 5 | Diagnosis and recovery steps: logout 진단 | `/oauth2/sign_out`만 호출하면 OAuth2 Proxy cookie만 제거된다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 6 | Diagnosis and recovery steps: 로그인 루프 대응(cookie/whitelist/redirect 정합성, trusted proxy) | 문서에 기록 없음 | Forwarded header spoofing을 허용하는 경로가 있으면 중단하고 gateway boundary를 먼저 확인한다 |
+| 7 | Diagnosis and recovery steps: readonly/tmpfs 장애 복구 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 8 | Diagnosis and recovery steps: degraded-mode 절차(승인 필요) | 문서에 기록 없음 | 자동 fail-open 명령은 없으며 별도 승인 전에는 fail-closed를 유지하고 Keycloak 정상화 즉시 복귀한다 |
+| 9 | Diagnosis and recovery steps: config lint 실패 롤백 | 문서에 기록 없음 | Rollback or Recovery의 파일 복원 절차를 따른다 |
+| 10 | Lifecycle, helpers and change acceptance: 승인된 `oauth2-proxy` 대상 기동·중지 후 `/ping`, `/ready`, callback, 비허용 그룹 거부, logout 범위 확인 | `/ping`과 `/ready`, 로그인 callback, 비허용 그룹 거부, logout 범위를 각각 확인한다 | image가 없거나 build 선택이 불명확하면 RUN-0086의 별도 검토·build 절차로 넘기며 임의 build/pull하지 않는다 |
 
 #### Diagnosis and recovery steps
 
@@ -146,9 +159,11 @@ docker compose stop oauth2-proxy
 
 runtime을 변경하는 단계는 중단 조건이 확인된 별도 승인 뒤에만 수행한다(Authority and Access). 검증 실패, secret 노출 위험, 파괴적 data 변경 필요, 결과 불일치는 중단하고 에스컬레이션한다(Escalation).
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 수용 확인은 다음과 같다.
 
@@ -160,7 +175,7 @@ runtime을 변경하는 단계는 중단 조건이 확인된 별도 승인 뒤�
 - [ ] `/ready`가 session store 연결까지 성공
 - [ ] `/oauth2/sign_out`과 Keycloak end-session redirect의 효과를 구분해서 기록
 
-### Evidence
+#### Evidence
 
 관측 신호와 증거 기록은 다음과 같다.
 
@@ -195,9 +210,22 @@ runtime을 변경하는 단계는 중단 조건이 확인된 별도 승인 뒤�
 위 outage 관찰은 당시 공유 backend와 unauthenticated 요청만 다룬다. 현재 선언
 이미지에서 재실행한 결과도, 인증된 기존 세션의 fail-closed 검증도 아니다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북에서 아직 관측되지 않은 항목은 다음과 같다.
+
+- 대상 기동·중지와 cfg/CA/secret 변경 반영: 런타임을 바꾸며 승인된 대상에만 수행한다. 이 문서에는 현재 실행 결과가 기록되어 있지 않다. `/ping`, `/ready`, callback, 비허용 그룹 거부, logout 범위의 확인으로 검증한다.
+- degraded-mode 절차: 승인이 필요하며 현재 구현에 자동 전환 명령이 없고 이 문서에는 실행 결과가 기록되어 있지 않다.
+- 인증된 기존 세션의 outage 중 fail-closed: 2026-09-22 rehearsal에서 측정하지 않았다고 문서에 기록되어 있다. 현재 선언 이미지에서의 재실행 결과도 없다. 테스트 credential 없이는 검증할 수 없으며 승인된 인증 세션으로 outage를 재현해 검증한다.
+- Acceptance checks(`check-all-hardening.sh 02-auth`, `/ready`, 콜백, `sign_out`과 end-session 구분): 체크리스트이며 이 문서에는 통과 기록이 없다. 각 명령의 실행 결과로 검증한다.
+
+## Escalation
+
+### Next Owner
+
+검증 실패, secret 노출 위험, 파괴적인 data 변경 필요, 또는 예상한 절차 결과와 관찰 상태의 불일치가 나타나면 중단하고 @buenhyden에게 에스컬레이션한다. 수집한 evidence, 시도한 단계와 현재 rollback/recovery 상태를 포함한다. evidence가 local 운영자 환경을 벗어나기 전에 credential, authorization code, token, cookie, session identifier, 필요한 경우 private IP, 개인 account 정보를 가린다.
+
+### Recovery or Forward Repair
 
 #### Rollback or Recovery
 
@@ -225,7 +253,3 @@ Valkey session state를 잃었거나 호환되지 않으면 ForwardAuth를 fail-
 cookie/client secret을 노출하지 않는다. cookie secret이 바뀌었다면 이전 cookie를
 명시적으로 무효화하고 새 Keycloak login을 test한다. session-loss 복구와 upgrade
 rollback 경로는 계획된 절차이며 2026-09-20 문서 수정 때 실행하지 않았다.
-
-### Escalation
-
-검증 실패, secret 노출 위험, 파괴적인 data 변경 필요, 또는 예상한 절차 결과와 관찰 상태의 불일치가 나타나면 중단하고 @buenhyden에게 에스컬레이션한다. 수집한 evidence, 시도한 단계와 현재 rollback/recovery 상태를 포함한다. evidence가 local 운영자 환경을 벗어나기 전에 credential, authorization code, token, cookie, session identifier, 필요한 경우 private IP, 개인 account 정보를 가린다.

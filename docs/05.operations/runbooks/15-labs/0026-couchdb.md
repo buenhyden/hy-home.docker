@@ -1,10 +1,10 @@
 ---
 title: "CouchDB Cluster Triage Runbook"
-version: "2.0.5"
+version: "2.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0026"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # CouchDB Cluster Triage Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 범위: LAB 전용 CouchDB 3노드 cluster의 상태, cluster-init 결과, membership, 격리 network의 route 한계를 점검한다.
 
@@ -30,7 +30,7 @@ CouchDB cluster-init과 세 노드 health evidence를 수집하고, 현재 구�
 - LAB에 HOME Traefik label이 다시 생기지 않았는지 확인해야 할 때
 - NoSQL operations 문서와 현재 compose evidence를 함께 갱신해야 할 때
 
-### Scope
+### Targets
 
 대상: `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`.
 
@@ -49,15 +49,15 @@ CouchDB cluster-init과 세 노드 health evidence를 수집하고, 현재 구�
 - [Operations policy](../../policies/15-labs/0026-couchdb.md)
 - [Infra README](../../../../labs/couchdb/README.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 기동/정지는 [GDE-0099](../../guides/01-common/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
 
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
-### Safety Checks
+### Environment
 
 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
 
@@ -68,9 +68,24 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 - [ ] 서비스명은 `couchdb-1`, `couchdb-2`, `couchdb-3`, `couchdb-cluster-init`로만 기록한다.
 - [ ] 수동 재조인, compaction, shard 변경, cookie 교체가 필요한 경우 이 런북을 중단하고 에스컬레이션한다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | compose 렌더링 확인 | `config --quiet`가 성공 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | 컨테이너와 init job 상태(`ps`) 확인 | 세 노드가 running 또는 healthy 상태 | membership/init 이상 시 @buenhyden에게 escalation |
+| 3 | 각 노드와 init job 로그 확인 | `couchdb-cluster-init` 로그가 cluster setup completion 또는 idempotent success/failure evidence 제공 | cluster-init이 반복 실패하면 @buenhyden에게 escalation |
+| 4 | `couchdb-1` 내부 health endpoint(`/_up`) 확인 | `_up` 결과 요약 | prompt/권한/CA/endpoint가 없거나 인증 실패 시 중단하고 @buenhyden에게 escalation |
+| 5 | membership(`/_membership`) 확인 | `couchdb@couchdb-1.infra_net`, `couchdb@couchdb-2.infra_net`, `couchdb@couchdb-3.infra_net` 포함 | node 3개가 보이지 않으면 @buenhyden에게 escalation |
+| 6 | stopped 상태이고 데이터 작업이 불필요한 경우 compose로 재기동 | 문서에 기록 없음 | membership/quorum 확인과 node 1개 승인 전에는 STOP하고 @buenhyden에게 escalation |
+| 7 | Planned Isolated Restore Rehearsal: 사전 승인 후 source version, `/_membership`, `/_all_dbs`, shard placement, `_security`, document count, config 범위 기록 | admin password와 Erlang cookie 값은 제외하고 기록 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 8 | Planned Isolated Restore Rehearsal: database replication으로 fresh target에 복제 | completion/error state 기록 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 9 | Planned Isolated Restore Rehearsal: file backup 선택 시 source를 quiesce하고 config/metadata/shard/index 등을 checksum과 함께 보존 | checksum과 함께 보존 (running `.couch` 파일은 복사하지 않음) | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 10 | Planned Isolated Restore Rehearsal: production과 공유하지 않는 호환 버전의 빈 3-node target 준비 | 별도 test admin/cookie와 동일 node count/shard 가정 명시 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 11 | Planned Isolated Restore Rehearsal: file restore는 index files를 먼저 배치하고 ownership 검증 후 target만 시작 / replication은 security objects와 system database 범위 확인 | config/metadata/data ownership 검증 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 12 | Planned Isolated Restore Rehearsal: `/_up`, `/_membership`, `/_all_dbs`, shard map, document count, 대표 read, `_security`, replication scheduler 검증 | 문서에 기록 없음 | 불일치 시 target을 승격하지 않고 보존하며 삭제는 별도 승인 후 수행 |
 
 정적 검사는 `labs/.env.example`과 `labs/couchdb/docker-compose.yml`을 사용한다. 실제 점검은 승인된 Docker context·project·port·network·volume·용량·정리 범위를 확인하고, 비공개 `labs/.env`를 준비한 뒤 `LAB_ENV_FILE`을 그 파일로 설정해야 한다. 이번 소스 작업에서 컨테이너 실행과 복구는 `NOT_RUN`이다.
 
@@ -129,15 +144,17 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 
 수동 재조인, compaction, shard 변경, cookie 교체가 필요한 경우 이 런북을 중단하고 에스컬레이션한다. prompt/권한/CA/endpoint가 없거나 인증이 실패하면 중단한다. data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/couchdb/docker-compose.yml ps couchdb-1 couchdb-2 couchdb-3 couchdb-cluster-init`에서 세 노드가 running 또는 healthy 상태인지 확인한다.
 - `_membership` 결과에 `couchdb@couchdb-1.infra_net`, `couchdb@couchdb-2.infra_net`, `couchdb@couchdb-3.infra_net`가 포함되는지 확인한다.
 - `couchdb-cluster-init` 로그가 cluster setup completion 또는 idempotent success/failure evidence를 제공하는지 확인한다.
 
-### Evidence
+#### Evidence
 
 - 명령 이름, pass/fail 상태, service 상태, image tag, 민감 정보를 제거한 log와 membership 요약을 기록한다.
 - secret 값, cookie 값 또는 민감한 field를 포함한 인증된 HTTP 전체 출력은 기록하지 않는다.
@@ -149,15 +166,24 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 - **Health**: `/_up`, `/_membership`, `/_scheduler/docs`
 - **Route**: HOME Traefik label 없음; `couchdb-1` loopback port `${LAB_COUCHDB_HOST_PORT:-35984}`만 게시 (SPEC-0215)
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 runbook이 아직 관찰하지 못한 항목은 다음과 같다. 문서는 컨테이너 실행과 복구가 `NOT_RUN`이며 실제 cluster 상태와 인증도 `NOT_RUN`이라고 적고 있다.
+
+- `ps`/`logs`/`/_up`/`/_membership` 확인: 승인된 Docker context와 `labs/.env`가 필요하며 이 문서에는 실행 결과가 기록되어 있지 않다. 세 노드 healthy와 세 member identity가 관찰되면 검증된다.
+- 인증이 필요한 `/_up`과 `/_membership` 호출: 비공개 TTY prompt가 필요하며 실제 packaged prompt 동작은 확인되지 않았다. prompt 인증 성공이 관찰되면 검증된다.
+- Planned Isolated Restore Rehearsal: 이 문서에는 실행 결과가 기록되어 있지 않다. 격리 target에서 6단계 검증 항목의 일치가 관찰되면 검증된다.
+- 노드 재기동과 cluster-init 재실행: 승인된 named-target lifecycle이 필요하며 실행 기록이 없다.
+
+## Escalation
+
+### Next Owner
+
+membership에 예상한 node 3개가 나타나지 않거나, cluster-init이 반복 실패하거나, 외부 접근이 필요하거나, secret 노출 위험이 있거나, data 작업이 필요하면 저장소 소유자 @buenhyden에게 에스컬레이션한다. 민감 정보를 제거한 log, membership 요약, 렌더링된 compose evidence, service 상태와 시도한 단계를 포함한다.
+
+### Recovery or Forward Repair
 
 데이터 복구는 위 planned isolated rehearsal로만 검증한다. production cutover, membership 변경, cookie rotation은 별도 승인 사항이며 이 변경에서는 실행하지 않았다.
 
 1. 이 triage는 data daemon의 무조건 재기동이나 init 재실행을 승인하지 않는다. 위 source 한계와 named-target lifecycle 승인을 먼저 확인한다.
 2. 실패한 격리 cluster와 그 전용 storage를 보존하고, 정확한 소유 target의 삭제는 별도 승인 후 수행한다. source cluster와 tracked volumes는 변경하지 않는다.
-
-### Escalation
-
-membership에 예상한 node 3개가 나타나지 않거나, cluster-init이 반복 실패하거나, 외부 접근이 필요하거나, secret 노출 위험이 있거나, data 작업이 필요하면 저장소 소유자 @buenhyden에게 에스컬레이션한다. 민감 정보를 제거한 log, membership 요약, 렌더링된 compose evidence, service 상태와 시도한 단계를 포함한다.

@@ -1,10 +1,10 @@
 ---
 title: "Kafka Runbook"
-version: "1.4.4"
+version: "1.5.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0036"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # Kafka Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 HOME 단일 Kafka broker의 정적 진단과 계획된 백업·복제 캡처·격리 복원을 다룬다. 독립 LAB의 Schema Registry와 Connect는 LAB 런북을 따른다.
 
@@ -25,7 +25,7 @@ next_review_at: "2027-05-13"
 - `KafkaBrokerDown`, `KafkaConsumersGroupLag`, `KafkaTopicUnderReplicatedPartition` 경보가 발생했을 때
 - 승인된 백업·격리 복원을 계획할 때
 
-### Scope
+### Targets
 
 - HOME 선언은 [Kafka Compose](../../../../infra/05-messaging/kafka/docker-compose.yml)에 있다.
 - LAB 진단과 HOME의 이전 Connect·Schema Registry 퇴역은 [RUN-0108](../15-labs/0108-kafka-cluster.md)을 따른다.
@@ -37,19 +37,34 @@ next_review_at: "2027-05-13"
 - [Schema Registry migration](https://docs.confluent.io/platform/current/schema-registry/installation/migrate.html)
 - [Policy](../../policies/06-messaging-and-cdc/0036-kafka.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 실 쓰기, 복원, cutover, 정리, credential 변경은 별도 승인된 task가 필요하다.
 
-### Safety Checks
+### Environment
 
 백업·복제 캡처 전에 producer, consumer, schema, connector, retention, 수용 가능한 recovery point를 식별하고 변경을 일시 중지하거나 fence한다(`Planned backup or replication capture` 1단계). 운영 checkout의 repository root와 승인된 Docker context 확인은 Stop Conditions의 `Execution and stop boundary`에 있다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Planned backup or replication capture: producer/consumer/schema/connector/retention/recovery point 식별 및 변경 fence | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | Planned backup or replication capture: cluster ID/storage format/topic configuration/partition/high-water mark/consumer-group offset manifest export | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 3 | Planned backup or replication capture: 승인된 메커니즘으로 topic record를 별도 호환 Kafka target에 복제하고 end offset 검증 | partition별 source와 target end offset 일치, 지원 format은 개수/checksum 일치 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 4 | Planned backup or replication capture: 범위 내 Schema Registry 이력을 공식 호환 절차로 마이그레이션 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 5 | Planned backup or replication capture: 승인 범위의 connector 정의를 secret 없이 export하고 config/offset/status 보존 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 6 | Planned backup or replication capture: manifest와 export를 별도 암호화 destination에서 보호 | 문서에 기록 없음 | active broker log 디렉터리나 KRaft metadata를 부분 복사하지 않음 |
+| 7 | Planned isolated restore: 새 cluster identity의 network-isolated Kafka target 준비 | 문서에 기록 없음 | 외부 producer/consumer/connector는 차단 유지 |
+| 8 | Planned isolated restore: topic configuration과 partition 개수 재생성, schema 복원 후 로드 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 9 | Planned isolated restore: topic record 재생/복제 후 end offset/key/value/checksum/retention 검증 | 예상 end offset, 샘플 key/value/checksum, retention 동작 일치 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 10 | Planned isolated restore: consumer offset 복원 또는 재배치, connector 정의 재생성 | 문서에 기록 없음 | offset/status 검증 중 connector를 중지 |
+| 11 | Planned isolated restore: disposable producer/consumer로 schema 호환성 확인, 범위 connector는 격리 test endpoint에서만 재개 | 문서에 기록 없음 | live database 대상 Connect worker는 production replication slot을 소비하므로 실행하지 않음 |
+| 12 | Planned isolated restore: recovery point/소요 시간/gap 기록, 별도 cutover task에서 전환 | 관측된 recovery point, 소요 시간, gap 기록 | live KRaft cluster ID를 재사용하지 않음 |
 
 저장소 루트에서 실행한다.
 
@@ -133,13 +148,15 @@ HOME의 replication factor 1 토픽에는 broker 장애 내성이 없다. 운영
 
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 복제 검증은 partition별 source와 target end offset이 일치하고 지원되는 format의 개수/checksum이 맞아야 하며, `Planned isolated restore`의 key/value/checksum·retention 검증을 통과해야 한다.
 
-### Evidence
+#### Evidence
 
 source revision/version, 범위, timestamp, manifest/checksum 요약, 명령과 종료
 상태, 검증 결과, 관측된 recovery point/시간, 미검증 gap을 모두 기록한다.
@@ -147,17 +164,26 @@ secret, raw payload, private resolved path는 제외한다.
 
 운영 checkout 증거에는 결과·시간·target·source revision·종료 코드만 요약하고 raw log, rendered Compose, payload, credential URI는 붙이지 않는다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 runbook은 아래 항목을 아직 관측하지 않았다.
+
+- Planned backup/restore 4~6단계: 문서는 2026-09-22 rehearsal에서 1~3단계만 실행했고 4~6단계는 실행하지 않았다고 기록한다. 격리 환경에서 consumer offset, connector, cutover 결과 관측이 필요하다.
+- 현재 HOME 또는 LAB의 CDC connector 준비: 2026-10-08 합성 CDC rehearsal은 이전 토폴로지 기록이며 현재 준비 증거가 아니다. LAB에는 connector, source DB, credential이 선언되어 있지 않다.
+- 정적 render(`config --quiet`)는 실제 준비 상태를 증명하지 않는다. 실제 서비스 health 관측 결과가 이 문서에는 기록되어 있지 않다.
+- 별도 승인 범위의 실제 CDC(등록, snapshot, stream, WAL 유지와 정리): 이 문서에는 실행 결과가 기록되어 있지 않다.
+
+## Escalation
+
+### Next Owner
+
+schema-ID drift, partition 누락, offset gap, checksum mismatch, connector
+부작용, 호환되지 않는 storage/protocol format이 나타나거나 raw broker 디렉터리를
+수리하라는 압박이 있으면 중단한다. 위 2026-09-22 rehearsal 외의 백업이나 restore는 실행된 증거가 없다.
+
+### Recovery or Forward Repair
 
 cutover가 실패하면 offset/write-boundary 검증 이후 producer와 consumer를
 보존된 source cluster로 되돌리며, replay source와 target은 계속 보존된다.
 cutover는 owner 승인, 최종 consistency capture, 애플리케이션 검증, 보존된
 rollback window 이후에만 실행한다.
-
-### Escalation
-
-schema-ID drift, partition 누락, offset gap, checksum mismatch, connector
-부작용, 호환되지 않는 storage/protocol format이 나타나거나 raw broker 디렉터리를
-수리하라는 압박이 있으면 중단한다. 위 2026-09-22 rehearsal 외의 백업이나 restore는 실행된 증거가 없다.
