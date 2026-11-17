@@ -1,17 +1,17 @@
 ---
 title: "Wiki 준비 계약 목록"
-version: "0.2.3"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Wiki 준비 계약 목록
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 이 폴더는 P09의 일곱 준비 산출물로 연결되는 단일 계약 진입점입니다. 실제 앱, resource, credential, schedule 또는 blog-data write를 만들지 않습니다. 형식 schema와 pure helper의 semantic 결과는 분리되며, 어느 PASS도 원천 진위·권리·운영 readiness를 증명하지 않습니다.
 
@@ -33,23 +33,23 @@ updated: "2026-11-13"
 6. [미래 사용자 흐름·E2E 수용](../future-flows/README.md)
 7. [readiness matrix](../readiness/README.md)
 
-### Supported Environment
+### Interfaces
 
-기존 Python·jsonschema와 오프라인 JSON 문서를 사용합니다.
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 비밀값과 실제 환경 변수는 입력하지 않습니다.
 
-### Security Boundary
+#### Security Boundary
 
 없음: 이 디렉터리는 Markdown 문서와 합성 JSON만 두며 Compose 서비스·포트·네트워크·Docker Secret·접근 제어를 정의하지 않는다. 비밀값과 실제 환경 변수는 입력하지 않는다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+기존 Python·jsonschema와 오프라인 JSON 문서를 사용합니다.
+
+### Selected Start
 
 미래 consumer는 이 목록에서 책임 계약을 선택하고, 실제 resource 변경 전에 별도 수용 조건과 권한을 갖춰야 합니다.
 
@@ -61,16 +61,18 @@ helper는 `admission_idempotency_key`, `admission_sha256`, versioned receipt ent
 
 helper는 caller가 제공한 authoritative frontier만 검사합니다. atomic store completeness, source authenticity, authorization, 실제 delete/restore 또는 I/O는 `NOT_RUN`이며 미래 exact Task에서 검증합니다. 이 문단이 idempotency와 frontier의 유일한 계약 정의입니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 `../fixtures/expectations.json`은 각 fixture의 schema와 helper semantic 기대 결과를 분리합니다. 기존 generic registration schema와 validator는 test harness가 제공하는 parsed 입력으로만 사용합니다. 저장소 루트에서 활성화한 격리 venv에 `python -m pip install -r scripts/requirements.txt`를 실행한 뒤 `python -m unittest tests.lib.ops.test_wiki_preparation tests.validation.test_wiki_preparation_contracts -v`를 실행합니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 [준비 패키지](../README.md), [schema](../schemas/README.md), [fixture](../fixtures/README.md)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 실행되는 서비스가 아니므로 헬스체크·지표·로그가 없고, 이 패키지를 대상으로 하는 운영 런북도 `docs/05.operations/runbooks`에 없다. 계약 문서가 어긋나면 위 Checks의 단위 검사 실패로 드러나며, 복구는 Git 이력에서 해당 문서 변경을 되돌리는 것이다.

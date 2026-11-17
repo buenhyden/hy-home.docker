@@ -1,18 +1,18 @@
 ---
 title: "CouchDB LAB"
-version: "1.0.10"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
 # CouchDB LAB
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 이 문서는 root Compose에서 분리된 CouchDB LAB topology의 source 계약을
 설명한다. normal HOME 또는 development stack의 상태·network·secret을 공유하지
@@ -43,18 +43,9 @@ labs/couchdb/
 └── promotion.yaml          # SPEC-0263 승격 manifest
 ```
 
-### Supported Environment
+### Interfaces
 
-| Category | Source of truth | Boundary |
-| --- | --- | --- |
-| Compose | [docker-compose.yml](./docker-compose.yml) | 독립 LAB project |
-| State | `${LAB_DATA_DIR:?set isolated LAB data root}` bind | HOME 상태와 미공유 |
-| Secrets | `${LAB_SECRET_DIR:-../secrets/labs}` 아래 LAB 전용 reference | 값은 문서화하지 않음 |
-| Networks | LAB 전용 network declarations | root network와 미공유 |
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 3개 node의 상태는 `${LAB_DATA_DIR}/couchdb/data-{1..3}`에 두고 network는 `lab_couchdb_core_net`, `lab_couchdb_edge_net`을 사용한다. 환경 변수는 아래 표와 같다.
 
@@ -66,13 +57,22 @@ labs/couchdb/
 | `LAB_SECRET_DIR` | No | unset이면 `../secrets/labs` reference path 사용 |
 | LAB-specific port/network keys | No | Compose의 LAB default만 사용하며 root key와 공유하지 않음 |
 
-### Security Boundary
+#### Security Boundary
 
 secret은 `lab_couchdb_password`, `lab_couchdb_cookie`를 참조하며 값은 문서에 쓰지 않는다. `couchdb-1`만 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_COUCHDB_HOST_PORT:-35984}`에 게시하고 HOME Traefik label은 없다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+| Category | Source of truth | Boundary |
+| --- | --- | --- |
+| Compose | [docker-compose.yml](./docker-compose.yml) | 독립 LAB project |
+| State | `${LAB_DATA_DIR:?set isolated LAB data root}` bind | HOME 상태와 미공유 |
+| Secrets | `${LAB_SECRET_DIR:-../secrets/labs}` 아래 LAB 전용 reference | 값은 문서화하지 않음 |
+| Networks | LAB 전용 network declarations | root network와 미공유 |
+
+### Selected Start
 
 1. `LAB_DATA_DIR`과 LAB secret reference directory를 독립 경로로 지정한다.
 2. 실제 기동 없이 `LAB_DATA_DIR=/tmp/hyhome-couchdb-static docker compose --env-file labs/.env.example -f labs/couchdb/docker-compose.yml --profile '*' config --quiet`로 렌더링한다.
@@ -85,7 +85,9 @@ secret은 `lab_couchdb_password`, `lab_couchdb_cookie`를 참조하며 값은 �
 | --- | --- |
 | `LAB_DATA_DIR=/tmp/hyhome-couchdb-static docker compose --env-file labs/.env.example -f labs/couchdb/docker-compose.yml --profile '*' config --quiet` | LAB source render만 검증; 컨테이너를 만들지 않음 |
 
-### Checks
+## Checks
+
+### Readiness
 
 Classification은 `LAB`입니다. 이 topology는 독립 Compose project, LAB 전용
 network, secret reference, state path를 사용합니다. 같은 host의 여러 member는
@@ -98,15 +100,15 @@ cluster initializer의 curl 인증 및 JSON 본문은 격리된 `/tmp`의 0600 �
 cluster 결성은 격리 실행 전까지 검증되지 않았습니다. 재실행 시 cluster가 이미
 완료되어도 세 system DB의 존재를 다시 확인합니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - [Architecture index](../../docs/02.architecture/README.md)
 - [Operations index](../../docs/05.operations/README.md)
 - [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0026 couchdb, RUN-0107 lab-promotion
 
-### Observability and Recovery
+#### Observability and Recovery
 
 | Field | Evidence |
 | --- | --- |

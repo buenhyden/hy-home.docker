@@ -1,6 +1,6 @@
 ---
 title: "Architecture Descriptions"
-version: "1.3.3"
+version: "1.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -10,9 +10,11 @@ layer: "architecture"
 
 # Architecture Descriptions
 
-## Stage Responsibility
+## Responsibility
 
-### Purpose and Readers
+### Purpose
+
+#### Purpose and Readers
 
 `docs/02.architecture/descriptions`는 시스템 또는 관심사별 현재 아키텍처를
 설명한다. 각 문서는 이해관계자와 경계, 구성 요소, runtime과 배포 view,
@@ -25,16 +27,52 @@ layer: "architecture"
 - Developers
 - Operators
 
-### Inputs and Outputs
+#### Inputs and Outputs
 
 이 디렉터리는 현재 유효한 Description을 보유한다. Description은 구현
 계획이나 운영 절차를 소유하지 않고 실제로 연결된 Requirement Package, ADR, Spec과
 Operations 문서의 역할을 대체하지 않는다. 개수는 유지 기준이 아니므로 아래
 Current Inventory와 실제 파일 목록이 권위이다.
 
-## Contents
+### Excluded Responsibilities
 
-### Current Items
+Description은 구현 계획이나 운영 절차를 소유하지 않고, 실제로 연결된 Requirement Package, ADR, Spec과 Operations 문서의 역할을 대체하지 않는다.
+
+## Current Contents
+
+### Paths
+
+| Path | Purpose |
+| --- | --- |
+| [0001-gateway-architecture.md](./0001-gateway-architecture.md) | Gateway Tier Architecture Description |
+| [0002-auth-architecture.md](./0002-auth-architecture.md) | 02-Auth Architecture Description |
+| [0003-security-architecture.md](./0003-security-architecture.md) | Security Tier Architecture Description |
+| [0004-data-architecture.md](./0004-data-architecture.md) | Data Tier (04-data) Architecture Description |
+| [0005-messaging-architecture.md](./0005-messaging-architecture.md) | Messaging Architecture Description |
+| [0006-observability-architecture.md](./0006-observability-architecture.md) | Observability Architecture Description |
+| [0007-workflow-architecture.md](./0007-workflow-architecture.md) | Workflow Tier (07-workflow) Architecture Description |
+| [0008-ai-architecture.md](./0008-ai-architecture.md) | AI Infrastructure Architecture Description |
+| [0009-tooling-architecture.md](./0009-tooling-architecture.md) | Platform Operations and Software Verification Architecture Description |
+| [0010-communication-architecture.md](./0010-communication-architecture.md) | Communication Tier Architecture Description |
+| [0011-laboratory-architecture.md](./0011-laboratory-architecture.md) | Administration and Experimentation Architecture Description |
+| [0012-data-analytics-architecture.md](./0012-data-analytics-architecture.md) | Analytics Tier Architecture Description |
+| [0013-open-webui-architecture.md](./0013-open-webui-architecture.md) | Open WebUI Architecture Description |
+| [0018-security-optimization-hardening-architecture.md](./0018-security-optimization-hardening-architecture.md) | Security Optimization and Hardening Architecture |
+| [0019-data-optimization-hardening-architecture.md](./0019-data-optimization-hardening-architecture.md) | Data Optimization and Hardening Architecture |
+| [0020-messaging-optimization-hardening-architecture.md](./0020-messaging-optimization-hardening-architecture.md) | 05-Messaging Optimization Hardening Architecture Description |
+| [0021-observability-optimization-hardening-architecture.md](./0021-observability-optimization-hardening-architecture.md) | 06-Observability Optimization Hardening Architecture Description |
+| [0022-workflow-optimization-hardening-architecture.md](./0022-workflow-optimization-hardening-architecture.md) | 07-Workflow Optimization Hardening Architecture Description |
+| [0023-ai-optimization-hardening-architecture.md](./0023-ai-optimization-hardening-architecture.md) | 08-AI Optimization Hardening Architecture Description |
+| [0024-tooling-optimization-hardening-architecture.md](./0024-tooling-optimization-hardening-architecture.md) | Platform Operations and Quality Optimization Hardening Architecture Description |
+| [0025-laboratory-optimization-hardening-architecture.md](./0025-laboratory-optimization-hardening-architecture.md) | Admin and Experiment Tools Hardening Architecture Description |
+| [0026-standardize-infra-net.md](./0026-standardize-infra-net.md) | Compose Network Segmentation Architecture Description |
+| [0027-agent-governance-canonical-adapter.md](./0027-agent-governance-canonical-adapter.md) | Agent Governance Canonical Adapter Architecture |
+| [0028-operational-readiness-closure.md](./0028-operational-readiness-closure.md) | Operational Readiness Closure Architecture |
+| [0030-document-lifecycle-governance.md](./0030-document-lifecycle-governance.md) | Document Lifecycle Governance Architecture |
+| [0031-home-development-host.md](./0031-home-development-host.md) | Home and Development Host Architecture |
+| [0032-experience-architecture.md](./0032-experience-architecture.md) | Experience Tier Architecture Description |
+
+#### Current Items
 
 ```text
 docs/02.architecture/descriptions/
@@ -84,8 +122,6 @@ docs/02.architecture/descriptions/
 | [`AD-0031`](./0031-home-development-host.md) | Home and Development Host Architecture | `approved` |
 | [`AD-0032`](./0032-experience-architecture.md) | Experience Tier Architecture Description | `approved` |
 
-### Classification
-
 #### C4 and arc42 Placement
 
 C4와 arc42의 비례적 적용 원칙과 diagram 품질 기준은
@@ -96,9 +132,30 @@ C4와 arc42의 비례적 적용 원칙과 diagram 품질 기준은
 빈 framework section이나 병렬 문서를 만들지 않으며 선택·대안·근거는 ADR이
 소유한다.
 
-## Workflow
+### Owners
 
-### Create and Review
+이 README의 소유자는 frontmatter `owner`의 `@buenhyden`이다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않는다.
+
+## Usage
+
+### Entry Points
+
+#### Upstream and Downstream
+
+- [Architecture](../README.md)
+- [Product Requirements](../../01.requirements/README.md)
+- [Architecture Decisions](../decisions/README.md)
+- [Specifications](../../03.specs/README.md)
+- [Operations](../../05.operations/README.md)
+
+#### Policy and Templates
+
+- [에이전트 작업 규칙](../AGENTS.md)
+- [Architecture Description Template](../../99.templates/templates/architecture/description.template.md)
+- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [README 템플릿](../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
+
+### Checks
 
 #### Authoring Flow
 
@@ -118,23 +175,6 @@ C4와 arc42의 비례적 적용 원칙과 diagram 품질 기준은
 - 관련 결정과 구현 명세가 존재하면 typed link로 연결한다.
 - Description은 selection rationale나 실행 절차를 복제하지 않는다.
 
-### Transition and Exit
+#### Transition and Exit
 
 Architecture Description은 draft → in-review → approved로 전이하며 approved에서 in-review로 돌아갈 수 있다. 더 이상 현재 구조를 설명하지 않는 문서는 내용을 현재 소유자에 요약하고 삭제하며 번호를 Registry `reserved_history`에 추가한다.
-
-## Related Documents
-
-### Upstream and Downstream
-
-- [Architecture](../README.md)
-- [Product Requirements](../../01.requirements/README.md)
-- [Architecture Decisions](../decisions/README.md)
-- [Specifications](../../03.specs/README.md)
-- [Operations](../../05.operations/README.md)
-
-### Policy and Templates
-
-- [에이전트 작업 규칙](../AGENTS.md)
-- [Architecture Description Template](../../99.templates/templates/architecture/description.template.md)
-- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
-- [README 템플릿](../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

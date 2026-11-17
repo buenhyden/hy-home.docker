@@ -1,18 +1,18 @@
 ---
 title: "Synthetic fixture family"
-version: "0.2.2"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-10-11"
 ---
 
 # 합성 fixture
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 독립 CLI·schema consumer가 공유하는 비밀값 없는 고정 입력입니다.
 
@@ -33,36 +33,38 @@ created: "2026-10-11"
 - [opsflow-acceptance/](opsflow-acceptance/README.md): P10 게시·통지 seam의
   오프라인 합성 수용 입력.
 
-### Supported Environment
+### Interfaces
 
-기존 Python unit/contract 검증을 사용합니다.
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 각 하위 README와 owning Task가 합성 입력의 의미와 허용 경계를 설명합니다.
 
-### Security Boundary
+#### Security Boundary
 
 비밀값이 없는 고정 입력만 보관하며 운영 secret, dotenv, 인증자료, 원문 로그는 두지 않는다. 포트와 network 선언이 없다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+기존 Python unit/contract 검증을 사용합니다.
+
+### Selected Start
 
 각 consumer에 필요한 명명된 합성 입력만 선택합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 [검증 진입점](../README.md)의 현재 등록된 시험 owner를 사용합니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - [Test surface](../README.md)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 실행되는 서비스가 아니라 시험 입력이므로 관측·복구 대상이 없다. 변경은 Git에서 되돌린다.

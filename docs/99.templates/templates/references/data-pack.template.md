@@ -17,38 +17,46 @@ observed_at: "{{OBSERVED_AT}}"
 
 # {{TITLE}}
 
-## Overview
+## Responsibility
 
-{{PURPOSE}}
+### Purpose
 
-## Scope
+<!-- Author prompt: State the purpose and the schema of this data package. -->
 
-### Schema
+{{PURPOSE_AND_SCHEMA}}
 
-{{SCHEMA}}
+### Excluded Responsibilities
 
-### Limitations
+<!-- Author prompt: Name what this package does not cover and its limitations. -->
 
-{{LIMITATIONS}}
+{{EXCLUSIONS_AND_LIMITATIONS}}
 
-## Structure
+## Current Contents
 
-{{INVENTORY}}
+### Paths
+
+<!-- Author prompt: List each member that exists now, one Path and Purpose row per member. -->
+
+| Path | Purpose |
+| --- | --- |
+| {{DIRECT_CHILD_PATH}} | {{DATA_MEMBER_PURPOSE}} |
+
+### Owners
+
+<!-- Author prompt: Name the owner of this README and the owner of a listed document only where that document or this README states it; say so in a sentence when it records none. -->
+
+{{OWNERS}}
 
 ## Usage
 
-### Refresh
+### Entry Points
 
-{{REFRESH_PROCESS}}
+<!-- Author prompt: Name the consumers of this data and link the current authority documents. -->
 
-### Consumers
+{{CONSUMERS_AND_AUTHORITY_LINKS}}
 
-{{CONSUMERS}}
+### Checks
 
-### Sources
+<!-- Author prompt: State the provenance and the refresh process and its owner. -->
 
-{{PROVENANCE}}
-
-## Related Documents
-
-{{CURRENT_AUTHORITY_LINKS}}
+{{PROVENANCE_AND_REFRESH_PROCESS}}

@@ -1,10 +1,10 @@
 ---
 title: "Gateway Tier (01-gateway)"
-version: "1.1.6"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
@@ -12,9 +12,9 @@ created: "2025-11-12"
 
 > 라우팅, TLS, 보안을 조율하는 모든 트래픽의 단일 진입점입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -50,7 +50,19 @@ created: "2025-11-12"
 └── README.md        # 이 파일
 ```
 
-### Supported Environment
+### Interfaces
+
+#### Networking (Ports)
+
+정확한 포트 번호와 프로토콜은 각 서비스의 서비스 준비성 정보가 소유합니다: [traefik/](traefik/). Traefik은 HTTP/HTTPS 진입점과 메트릭 진입점을 게시합니다.
+
+#### Security Boundary
+
+없음: 이 디렉터리는 Compose 서비스나 secret 참조를 직접 선언하지 않으며, 하위 `traefik/`가 각자 선언한다.
+
+## Usage
+
+### Prerequisites
 
 #### Tech Stack
 
@@ -62,21 +74,7 @@ created: "2025-11-12"
 | Discovery  | Docker Provider                   | 컨테이너 자동 탐지 |
 | Security   | OAuth2 Proxy / Keycloak           | 통합 SSO 제공자   |
 
-## Interfaces
-
-### Inputs and Outputs
-
-#### Networking (Ports)
-
-정확한 포트 번호와 프로토콜은 각 서비스의 서비스 준비성 정보가 소유합니다: [traefik/](traefik/). Traefik은 HTTP/HTTPS 진입점과 메트릭 진입점을 게시합니다.
-
-### Security Boundary
-
-없음: 이 디렉터리는 Compose 서비스나 secret 참조를 직접 선언하지 않으며, 하위 `traefik/`가 각자 선언한다.
-
-## Development
-
-### Local Workflow
+### Selected Start
 
 #### Usage
 
@@ -85,13 +83,13 @@ created: "2025-11-12"
 3. 초기 배포 경계는 `docs/05.operations/README.md`의 subject `0012-edge-routing-stack`을 따릅니다.
 4. `HYHOME_COMPOSE_PROFILES=core bash scripts/validation/validate-docker-compose.sh`와 `bash scripts/hardening/check-all-hardening.sh 01-gateway`로 정적 준비성을 확인합니다. runtime 헬스 명령은 승인된 실행 중 스택에 대해서만 사용합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 없음: 이 디렉터리는 자체 테스트나 검증 스크립트를 두지 않으며, 하위 `traefik/`가 각자 둔다.
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -103,6 +101,6 @@ created: "2025-11-12"
 - 비상 런북 (`docs/05.operations/runbooks/README.md`)
 - [문서 인덱스](../../docs/README.md)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 이 디렉터리는 자체 헬스체크나 관측 대상을 선언하지 않으며, 하위 `traefik/`가 각자 선언한다.

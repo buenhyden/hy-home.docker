@@ -1,10 +1,10 @@
 ---
 title: "Workspace Engineering Main Baseline Assessment"
-version: "0.5.1"
+version: "0.6.0"
 type: "reference/research-pack"
 status: "in-review"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "references"
 artifact_id: "RES-0085"
 created: "2026-09-04"
@@ -13,7 +13,11 @@ observed_at: "2026-09-05"
 
 # Workspace Engineering Main Baseline Assessment
 
-## Overview
+## Responsibility
+
+### Purpose
+
+#### Overview
 
 `main@4c6d211129615eab372d720ebd209b6c27618c86` 평가에서 어떤 binding
 범위, 증거 경계, identity-recovery provenance를 보존해야 하는가?
@@ -29,7 +33,7 @@ publication lifecycle이 review를 거치는 동안 날짜가 있는 평가 enve
 GitHub Actions 주제 연구를 담습니다. 이 package는 identity-recovery tuple과
 관찰 경계를 보존합니다.
 
-## Scope
+#### Scope
 
 - 날짜가 있는 저장소 baseline: `buenhyden/hy-home.docker`
   `main@4c6d211129615eab372d720ebd209b6c27618c86`.
@@ -45,20 +49,7 @@ GitHub Actions 주제 연구를 담습니다. 이 package는 identity-recovery t
   그 형제 구성원에서 확인합니다. GitHub Actions mechanics는
   [RES-0084](../0084-github-actions-platform/README.md)에 남습니다.
 
-### Method
-
-1. 정확한 baseline SHA, 관찰 날짜, source request, 복구된 artifact
-   identity, 상호 Task decision을 보존합니다.
-2. question, 증거 모델, lifecycle, decision-route 기준으로 이 package의
-   question을 RES-0002-m0020과 비교합니다.
-3. 당시 통합 결정은 recovery carrier의 경로와 식별자를 보존하면서
-   workspace-baseline 종합을 RES-0002-m0020으로 옮겼습니다.
-4. 이 package에 날짜가 있는 증거를 보존하고 주제 연구는 관련 구성원에 연결합니다.
-5. `draft`에서 `review`로의 forward transition, identity recovery,
-   inbound link, 보호된 RES-0002 집합, 생성된 index 신선도를
-   검증합니다.
-
-### Limitations
+### Excluded Responsibilities
 
 - secret, credential 값, 개인 key, environment 값, raw log, shell
   history, 사용자 전역 provider 설정은 조회하지 않았습니다.
@@ -79,13 +70,21 @@ Revalidated 2026-11-06: AUD-0097은 2026-09-09에 은퇴했고 audit 범주에�
 현재 package가 없습니다(`docs/90.references/audits/README.md`). 위 AUD-0097
 언급은 날짜가 있는 관찰로 보존합니다.
 
-## Structure
+## Current Contents
+
+### Paths
 
 | Path | Purpose |
 | --- | --- |
 | [m0001-request-scope.md](m0001-request-scope.md) | RES-0085-m0001: 원래 binding request와 복구된 request identity |
 
+### Owners
+
+이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 member의 소유자는 이 README가 따로 기록하지 않습니다.
+
 ## Usage
+
+### Entry Points
 
 - 과거 workspace-baseline 종합은 RES-0002-m0020에서 확인합니다. 현재 구현은
   해당 소유자의 추적 소스로, 새 관찰은 범위가 승인된 Task의 증거로 확인합니다.
@@ -95,7 +94,7 @@ Revalidated 2026-11-06: AUD-0097은 2026-09-09에 은퇴했고 audit 범주에�
   보존합니다.
 - 현재 개선 사항은 소유 Requirement와 해당 Task에서 다룹니다.
 
-## Related Documents
+#### Related Documents
 
 - 과거 baseline 종합, 주제 구성원, 보존 선언:
   [RES-0002](../0002-agentic-engineering-research-pack/README.md)와
@@ -117,7 +116,22 @@ Revalidated 2026-11-06: AUD-0097은 2026-09-09에 은퇴했고 audit 범주에�
 - Package registry: [Research index](../README.md)와
   [Stage 99 Registry](../../../99.templates/registry.json).
 
-## Sources
+### Checks
+
+#### Method
+
+1. 정확한 baseline SHA, 관찰 날짜, source request, 복구된 artifact
+   identity, 상호 Task decision을 보존합니다.
+2. question, 증거 모델, lifecycle, decision-route 기준으로 이 package의
+   question을 RES-0002-m0020과 비교합니다.
+3. 당시 통합 결정은 recovery carrier의 경로와 식별자를 보존하면서
+   workspace-baseline 종합을 RES-0002-m0020으로 옮겼습니다.
+4. 이 package에 날짜가 있는 증거를 보존하고 주제 연구는 관련 구성원에 연결합니다.
+5. `draft`에서 `review`로의 forward transition, identity recovery,
+   inbound link, 보호된 RES-0002 집합, 생성된 index 신선도를
+   검증합니다.
+
+#### Sources
 
 - 저장소 baseline: Git commit
   `4c6d211129615eab372d720ebd209b6c27618c86`.
@@ -139,7 +153,7 @@ Revalidated 2026-11-06: AUD-0097은 2026-09-09에 은퇴했고 audit 범주에�
 - 세부 주제와 당시 baseline source는 대응하는 RES-0002 구성원과 RES-0084에서
   확인합니다.
 
-## Findings
+#### Findings
 
 | Evidence retained here | Dated result | Evidence depth | Current owner / disposition |
 | --- | --- | --- | --- |

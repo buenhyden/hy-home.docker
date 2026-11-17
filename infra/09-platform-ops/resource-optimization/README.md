@@ -1,18 +1,18 @@
 ---
 title: "Root resource optimization preparation"
-version: "1.1.2"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-10-11"
 ---
 
 # Root resource optimization preparation
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 P07 W10의 공개 측정 계약과 bounded 평가 자료입니다. 진행·검증 증거는
 현재 Task `SPEC-0218-TSK-0002`에 기록합니다.
@@ -53,23 +53,23 @@ source·배포 SHA와 digest의 일치 여부는 입력끼리 비교하며 실�
 | [measurement.schema.json](measurement.schema.json) | 공개 측정 입력 계약 |
 | [fixtures/README.md](fixtures/README.md) | 합성 입력과 예상 거부 결과 |
 
-### Supported Environment
+### Interfaces
 
-Python 평가기와 JSON Schema Draft 2020-12를 사용합니다. 기존 controls v2가 정책 소유자입니다.
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 CLI는 지정한 JSON 외에 이 디렉터리의 schema를 읽습니다. 실행 환경·Compose·secret 설정을 변경하지 않습니다.
 
-### Security Boundary
+#### Security Boundary
 
 입력은 지정한 공개 JSON 한 파일뿐이며 Docker, 네트워크, 실제 환경 파일, 로그, secret을 읽지 않고 자원·권한도 변경하지 않는다. 경로나 입력값은 오류에 출력하지 않는다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+Python 평가기와 JSON Schema Draft 2020-12를 사용합니다. 기존 controls v2가 정책 소유자입니다.
+
+### Selected Start
 
 저장소 루트에서 [CLI](../../../scripts/operations/root-resource-assessment.py)를 실행합니다.
 
@@ -113,7 +113,9 @@ Boolean, 비유한 값, 음수·중복 장치·잘못된 카운터와 유한 범
 동일 장치 번호의 재할당, 현재 배치·출처를 완전히 입증하지 않습니다. 해당 정보는
 미검증으로 남기며 새 현장 표본이나 담당자 인수를 이 소스 검사로 대신하지 않습니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 [합성 fixture](fixtures/README.md)는 unknown·idle 축소·식별 불일치·예산 모순의
 거부 동작을 검증합니다. 실제 관측은 대상 서비스·정확한 배포 이미지·플랫폼,
@@ -122,14 +124,14 @@ Boolean, 비유한 값, 음수·중복 장치·잘못된 카운터와 유한 범
 대표 업무 부하·백업/복구 계약 및 운영 시간 배정 이후 별도로 진행합니다.
 Wiki·학습 앱·LAB runtime은 이 준비 자료의 범위 밖입니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - [상위 platform operations](../README.md)
 - [controls v2 예외 registry](../../common-optimizations.exceptions.json)
 - [프로젝트 문서 진입점](../../../docs/README.md)에서 현재 Task와 기존 서비스 inventory의 소유 문서를 찾습니다.
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 상시 실행되는 서비스가 아니라 CLI 평가 자료이므로 헬스체크와 메트릭이 없다. 결과는 종료 코드 `0`(REVIEWABLE), `1`(BLOCKED), `2`(입력 거부)로 확인하고 변경은 Git에서 되돌린다.

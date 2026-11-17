@@ -1,18 +1,18 @@
 ---
 title: "OpenBao Consumer Migration Contracts"
-version: "0.1.17"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-10-11"
 ---
 
 # OpenBao 소비자 이관 공개 계약
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -53,16 +53,7 @@ created: "2026-10-11"
   확인), `cutover <서비스>`·`rollback <서비스>`(`.env`의 경로 변수 한 줄만 바꾸고 그 서비스를
   다시 만든 뒤 검사)를 실행합니다. 값·hash·길이는 출력하지 않습니다.
 
-### Supported Environment
-
-#### Tech Stack
-
-기존 Python과 `jsonschema` 검증기를 재사용합니다. 별도 Agent, catalog, 분류기,
-workflow 또는 운영 자원을 만들지 않습니다.
-
-## Interfaces
-
-### Inputs and Outputs
+### Interfaces
 
 #### Configuration
 
@@ -170,13 +161,20 @@ POST 시도가 있으면 전체 PARTIAL이며, 쓰기 시도 없이 정리만 �
 실행용 CLI와 P02 승인 연결이 없으므로 현재 W48은 source primitive까지의 부분 구현이며,
 실제 W50 pilot·전달·소비·복구·authority·폐기·회전은 미실행입니다.
 
-### Security Boundary
+#### Security Boundary
 
-없음: 이 폴더에는 Compose 서비스나 secret 정의가 없고 secret 값도 두지 않는다. 소비자별 secret 전환 경계는 Local Workflow의 전환 계획과 Controller-bound copy API 절이 기술한다.
+없음: 이 폴더에는 Compose 서비스나 secret 정의가 없고 secret 값도 두지 않는다. 소비자별 secret 전환 경계는 Selected Start의 전환 계획과 Controller-bound copy API 절이 기술한다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+#### Tech Stack
+
+기존 Python과 `jsonschema` 검증기를 재사용합니다. 별도 Agent, catalog, 분류기,
+workflow 또는 운영 자원을 만들지 않습니다.
+
+### Selected Start
 
 #### Usage
 
@@ -432,7 +430,9 @@ catalog에서 확정 lane이 있는 항목은 `gen-secrets`가 `keep-catalog-pro
   Keycloak 관리자 비밀번호 사본은 마지막에 지우거나 off-host custody로 옮기는 별도 결정이 필요합니다.
 - DB 비밀번호 등 Agent가 렌더링하지 않는 `./secrets` 파일은 이 계획의 대상이 아닙니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
@@ -452,9 +452,9 @@ python3 scripts/operations/openbao-consumer-migration.py --help
 Manifest·QA 등록은 현재 통합 소스를 재사용합니다. 공통 등록과 상위 README의 후속
 변경은 단일 통합 작성자가 소유합니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -467,6 +467,6 @@ Manifest·QA 등록은 현재 통합 소스를 재사용합니다. 공통 등록
 - [검증 시험 안내](../../../../tests/validation/README.md)
 - [OpenBao KV-v2 CAS·삭제·metadata 공식 계약](https://openbao.org/docs/secrets/kv/kv-v2/)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 이 폴더는 헬스체크를 선언하지 않는다. 소비 확인은 `verify-grafana-consumption.sh`, `verify-keycloak-consumption.sh`, `verify-oidc-client-secret.sh`, `verify-grafana-client-secret.sh`가 수행한다.

@@ -1,10 +1,10 @@
 ---
 title: "Auth Tier (02-auth)"
-version: "1.1.3"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
@@ -12,9 +12,9 @@ created: "2025-11-12"
 
 > ID/접근 관리, Gateway ForwardAuth, 애플리케이션 native OIDC 통합.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -55,22 +55,7 @@ ForwardAuth를 제공하며 Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao 같�
 └── README.md
 ```
 
-### Supported Environment
-
-#### Tech Stack
-
-| Category | Technology | Notes |
-| --- | --- | --- |
-| IAM | Keycloak | 중앙 OIDC/SAML IdP |
-| ForwardAuth | OAuth2 Proxy | Gateway 인증 |
-| Native OIDC | Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao | Keycloak 직접 client |
-| Database | PostgreSQL | Identity 영속성 |
-| Session | Valkey | OAuth2 Proxy 세션 |
-| Gateway | Traefik | TLS/라우팅/미들웨어 |
-
-## Interfaces
-
-### Inputs and Outputs
+### Interfaces
 
 #### Configuration
 
@@ -82,8 +67,6 @@ ForwardAuth를 제공하며 Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao 같�
 | `OAUTH2_PROXY_CLIENT_ID` | Yes | ForwardAuth client |
 | `KAFBAT_OAUTH_CLIENT_ID` | Yes | Kafbat Native OIDC client |
 | `AIRFLOW_KEYCLOAK_CLIENT_ID` | Yes | Airflow Native OIDC client |
-
-### Security Boundary
 
 #### Authentication Patterns
 
@@ -115,9 +98,22 @@ Browser -> Traefik -> Application -> Keycloak
 
 Native OIDC 서비스 앞에 OAuth2 Proxy ForwardAuth를 기본적으로 중복 적용하지 않는다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+#### Tech Stack
+
+| Category | Technology | Notes |
+| --- | --- | --- |
+| IAM | Keycloak | 중앙 OIDC/SAML IdP |
+| ForwardAuth | OAuth2 Proxy | Gateway 인증 |
+| Native OIDC | Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao | Keycloak 직접 client |
+| Database | PostgreSQL | Identity 영속성 |
+| Session | Valkey | OAuth2 Proxy 세션 |
+| Gateway | Traefik | TLS/라우팅/미들웨어 |
+
+### Selected Start
 
 #### Usage
 
@@ -135,7 +131,9 @@ Native OIDC 서비스 앞에 OAuth2 Proxy ForwardAuth를 기본적으로 중복 
 - Native OIDC client 변경은 해당 application login/RBAC에 영향.
 - secret rotation은 session/client 재로그인을 요구할 수 있다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Testing
 
@@ -151,9 +149,7 @@ docker compose --profile auth exec keycloak sh -c   'exec 3<>/dev/tcp/127.0.0.1/
 docker compose --profile auth exec oauth2-proxy   wget -qO- http://127.0.0.1:4180/ping
 ```
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -166,6 +162,6 @@ docker compose --profile auth exec oauth2-proxy   wget -qO- http://127.0.0.1:418
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [derived Compose 이미지 투영](../tech-stack.versions.json)은 drift 검증을 제공합니다.
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 이 디렉터리는 자체 헬스체크나 관측 대상을 선언하지 않으며, 하위 `keycloak/`, `oauth2-proxy/`가 각자 선언한다.

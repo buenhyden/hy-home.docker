@@ -105,7 +105,7 @@ class MetadataValidatorCompatibilityTests(unittest.TestCase):
         self.assertEqual("reference/audit-pack", values["type"])
         self.assertEqual("AUD-0023", values["artifact_id"])
         self.assertEqual("published", values["status"])
-        self.assertEqual("1.0.1", values["version"])
+        self.assertEqual("1.1.0", values["version"])
         self.assertEqual("2026-07-05", str(values["created"]))
         self.assertEqual("2026-09-06", str(values["observed_at"]))
         _, h2 = extract_markdown_headings(rendered)

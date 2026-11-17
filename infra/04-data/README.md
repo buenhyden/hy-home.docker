@@ -1,18 +1,18 @@
 ---
 title: "데이터 계층 (04-data)"
-version: "1.4.1"
+version: "1.5.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
 # 04 데이터
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -47,27 +47,25 @@ RedisInsight `/data`는 민감한 연결·설정 메타데이터를 보관합니
 `RI_ENCRYPTION_KEY`는 없으며 대상 데이터 백업과 별도로 복구합니다. Gateway·
 admin CIDR·SSO 경계를 유지하고 내부 네트워크 접근도 별도로 검토합니다.
 
-### Supported Environment
-
-#### Tech Stack
-
-PostgreSQL·Valkey·SeaweedFS·Qdrant와 선택형 데이터 엔진의 버전은 각 패키지 Compose 및 Dockerfile이 소유합니다.
-
-## Interfaces
-
-### Inputs and Outputs
+### Interfaces
 
 #### Configuration
 
 [루트 Compose](../../docker-compose.yml)의 include와 각 패키지의 profile·network·secret 선언을 함께 확인합니다.
 
-### Security Boundary
+#### Security Boundary
 
 없음: 이 디렉터리는 Compose 서비스나 secret 참조를 직접 선언하지 않으며, 하위 `dev-db/`, `mng-db/`, `neo4j/`, `opensearch/`, `qdrant/`, `redisinsight/`, `seaweedfs/`가 각자 선언한다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+#### Tech Stack
+
+PostgreSQL·Valkey·SeaweedFS·Qdrant와 선택형 데이터 엔진의 버전은 각 패키지 Compose 및 Dockerfile이 소유합니다.
+
+### Selected Start
 
 #### Usage
 
@@ -80,15 +78,15 @@ PostgreSQL·Valkey·SeaweedFS·Qdrant와 선택형 데이터 엔진의 버전은
 - runtime 버전은 각 Compose/Dockerfile 선언을 따릅니다. 서비스별 설정·secret
   참조·운영 문서는 정상 패키지 README에서 찾습니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
 `python3 scripts/validation/run-ci-gate.py --profile changed`는 변경 경로에 맞는 검증을 선택합니다. 실행 여부와 종료 코드는 해당 Task에 기록합니다.
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -98,6 +96,6 @@ PostgreSQL·Valkey·SeaweedFS·Qdrant와 선택형 데이터 엔진의 버전은
 - [문서 진입점](../../docs/README.md): Stage 05의 서비스 Guide·Policy·Runbook,
   백업 POL-0021 및 저장 공간 RUN-0035를 확인합니다.
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 이 디렉터리는 자체 헬스체크나 관측 대상을 선언하지 않으며, 하위 `dev-db/`, `mng-db/`, `neo4j/`, `opensearch/`, `qdrant/`, `redisinsight/`, `seaweedfs/`가 각자 선언한다.

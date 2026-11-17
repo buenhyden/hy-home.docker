@@ -1,18 +1,18 @@
 ---
 title: "Grafana Alloy Unified Collector"
-version: "1.1.1"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-01-12"
 ---
 
 # Grafana Alloy Unified Collector
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -54,21 +54,7 @@ alloy/
 └── README.md  # This file
 ```
 
-### Supported Environment
-
-#### Tech Stack
-
-런타임 이미지 고정 값은 [Compose](../docker-compose.yml)에 선언되어 있습니다. [버전 레지스트리](../../tech-stack.versions.json)는 정제된 프로젝션입니다.
-
-| Category  | Technology    | Runtime source | Notes                    |
-| :-------- | :------------ | :------ | :----------------------- |
-| Collector | Grafana Alloy | Compose에 선언됨 | 통합 에이전트            |
-| Protocol  | OTLP          | v1.x    | 표준 인터페이스       |
-| Runtime   | Docker        | Latest  | 컨테이너화된 배포 |
-
-## Interfaces
-
-### Inputs and Outputs
+### Interfaces
 
 #### Configuration
 
@@ -85,13 +71,25 @@ alloy/
 
 Hermes 설정(`monitoring.export.otlp`)의 endpoint를 `http://127.0.0.1:4320`으로 두고, `Authorization: Bearer <token>` header 값은 `secrets/observability/alloy/hermes_otlp_token.txt` 파일에서 읽습니다. 값은 문서나 설정에 쓰지 않습니다. `monitoring.gateway_health_export`도 같은 endpoint를 씁니다. Grafana의 `Applications/hermes-agent` 대시보드가 `{service_name=~"hermes-(agent|gateway)"}` 로그와 `service.name =~ "hermes-(agent|gateway)"` trace를 보여 줍니다.
 
-### Security Boundary
+#### Security Boundary
 
 Compose가 참조하는 secret은 `hermes_otlp_token`, `quality_otlp_token`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `${HOST_LAN_BIND_IP:-192.168.0.13}:${ALLOY_OTLP_GRPC_HOST_PORT:-4317}:${ALLOY_OTLP_GRPC_PORT:-4317}`, `${HOST_LAN_BIND_IP:-192.168.0.13}:${ALLOY_OTLP_HTTP_HOST_PORT:-4318}:${ALLOY_OTLP_HTTP_PORT:-4318}`, `127.0.0.1:${ALLOY_HERMES_OTLP_HOST_PORT:-4320}:4320`이다. (출처: `infra/06-observability/docker-compose.yml`의 `alloy` 서비스)
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+#### Tech Stack
+
+런타임 이미지 고정 값은 [Compose](../docker-compose.yml)에 선언되어 있습니다. [버전 레지스트리](../../tech-stack.versions.json)는 정제된 프로젝션입니다.
+
+| Category  | Technology    | Runtime source | Notes                    |
+| :-------- | :------------ | :------ | :----------------------- |
+| Collector | Grafana Alloy | Compose에 선언됨 | 통합 에이전트            |
+| Protocol  | OTLP          | v1.x    | 표준 인터페이스       |
+| Runtime   | Docker        | Latest  | 컨테이너화된 배포 |
+
+### Selected Start
 
 #### Usage
 
@@ -114,7 +112,9 @@ Compose가 참조하는 secret은 `hermes_otlp_token`, `quality_otlp_token`이�
 | `docker compose --profile obs restart alloy` | 저장소 루트에서 설정 변경 사항 적용 |
 | `docker compose --profile obs logs -f alloy` | 저장소 루트에서 수집기 로그 확인 |
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
@@ -123,9 +123,7 @@ Compose가 참조하는 secret은 `hermes_otlp_token`, `quality_otlp_token`이�
 - `config.alloy` 변경 후 `docker logs --tail=200 alloy`로 OTLP 파이프라인 상태를 확인합니다.
 - Loki/Tempo 전달, Prometheus의 Alloy scrape, 선언된 pprof 소스의 Pyroscope 전달을 각각 확인합니다. 추적 설정 `config/config.alloy`에 scrape 소스가 있어도 실제 수집 성공은 별도 관찰로 검증합니다.
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -133,8 +131,6 @@ Compose가 참조하는 secret은 `hermes_otlp_token`, `quality_otlp_token`이�
 - **Policy**: `docs/05.operations/policies/07-observability/0040-alloy.md`
 - **Runbooks**: `docs/05.operations/runbooks/07-observability/0040-alloy.md`
 - [Documentation index](../../../docs/README.md)
-
-### Observability and Recovery
 
 #### Troubleshooting
 

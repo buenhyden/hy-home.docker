@@ -1,18 +1,18 @@
 ---
 title: "PostgreSQL HA LAB 대시보드"
-version: "1.0.1"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-11-05"
 ---
 
 # PostgreSQL HA LAB 대시보드
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 이 LAB 전용 Grafana 대시보드 JSON과 그 출처를 보관합니다. HOME Grafana는
 `infra/06-observability/grafana/dashboards/`만 provisioning하므로 이 파일들은
@@ -32,38 +32,40 @@ Prometheus scrape·alert rule, LAB 관측 stack의 기동·연결은 범위 밖�
 - [etcd-cluster.json](etcd-cluster.json): UID `hyhome-etcd`, monitoring-mixins etcd/etcd.json (2026-09-24)
 - [haproxy-overview.json](haproxy-overview.json): UID `hyhome-haproxy`, grafana.com dashboard 12693 revision 14 (2026-04-11)
 
-### Supported Environment
+### Interfaces
 
-없음: 이 디렉터리는 Grafana 대시보드 JSON만 보관하므로 실행 환경이 없다. LAB 관측 연결 계약이 승인되면 그 LAB의 Grafana가 파일을 읽는다.
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 입력은 위 Structure 목록의 출처에서 가져온 대시보드 JSON이다. HOME Grafana provisioning 경로 `infra/06-observability/grafana/dashboards/`에는 연결되지 않는다.
 
-### Security Boundary
+#### Security Boundary
 
 이 디렉터리는 대시보드 JSON과 출처 기록만 소유하며 secret, 포트, network를 선언하지 않는다. HOME Grafana와 HOME Prometheus에서 분리되어 있다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+없음: 이 디렉터리는 Grafana 대시보드 JSON만 보관하므로 실행 환경이 없다. LAB 관측 연결 계약이 승인되면 그 LAB의 Grafana가 파일을 읽는다.
+
+### Selected Start
 
 LAB 관측을 연결하는 별도 계약이 승인되면 그 LAB의 Prometheus·Grafana가 이
 파일을 읽도록 구성합니다. HOME provisioning 경로로 옮기지 않습니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 없음: 이 디렉터리에는 실행 가능한 검증 명령이 없다. 파일의 UID와 출처는 Structure 목록이 기록한다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - [상위 LAB source](../README.md)
 - [Grafana README](../../../infra/06-observability/grafana/README.md)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: HOME Prometheus가 LAB 서비스를 수집하지 않으므로 이 대시보드로 관측되는 데이터가 아직 없다. LAB 운영은 [상위 LAB README](../README.md)와 [15-labs runbooks](../../../docs/05.operations/runbooks/15-labs/README.md)의 RUN-0031 PostgreSQL 클러스터 Runbook를 따른다.

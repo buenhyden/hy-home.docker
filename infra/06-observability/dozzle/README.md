@@ -1,10 +1,10 @@
 ---
 title: "Dozzle"
-version: "1.0.6"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-03-27"
 ---
 
@@ -12,9 +12,9 @@ created: "2026-03-27"
 
 > Docker 컨테이너 로그를 실시간으로 확인하는 뷰어입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -49,21 +49,7 @@ dozzle/
 └── README.md             # This file
 ```
 
-### Supported Environment
-
-#### Tech Stack
-
-런타임 이미지 고정 값은 [Compose](docker-compose.yml)에 선언되어 있습니다. [버전 레지스트리](../../tech-stack.versions.json)는 파생된 Compose 이미지 프로젝션입니다.
-
-| Category   | Technology   | Notes                     |
-| ---------- | ------------ | ------------------------- |
-| Image      | amir20/dozzle | Compose에 선언됨                 |
-| Interface  | Web UI       | 실시간 스트리밍       |
-| Monitoring | Docker Logs  | `/var/run/docker.sock`를 통해|
-
-## Interfaces
-
-### Inputs and Outputs
+### Interfaces
 
 #### Configuration
 
@@ -75,13 +61,25 @@ dozzle/
 | `DEFAULT_URL`          |      Yes | Traefik 라우팅을 위한 기본 URL       |
 | `DEFAULT_MANAGEMENT_DIR`|      Yes | 영속 데이터 저장 경로   |
 
-### Security Boundary
+#### Security Boundary
 
 Compose가 참조하는 secret은 `dozzle_client_secret`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/06-observability/dozzle/docker-compose.yml`의 `dozzle` 서비스)
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+#### Tech Stack
+
+런타임 이미지 고정 값은 [Compose](docker-compose.yml)에 선언되어 있습니다. [버전 레지스트리](../../tech-stack.versions.json)는 파생된 Compose 이미지 프로젝션입니다.
+
+| Category   | Technology   | Notes                     |
+| ---------- | ------------ | ------------------------- |
+| Image      | amir20/dozzle | Compose에 선언됨                 |
+| Interface  | Web UI       | 실시간 스트리밍       |
+| Monitoring | Docker Logs  | `/var/run/docker.sock`를 통해|
+
+### Selected Start
 
 #### Usage
 
@@ -90,7 +88,9 @@ Compose가 참조하는 secret은 `dozzle_client_secret`이며 값은 저장소�
 3. 운영 정책은 Dozzle policy (`docs/05.operations/policies/07-observability/0072-dozzle.md`)를 확인한다.
 4. 장애 조치 지침은 Dozzle runbook (`docs/05.operations/runbooks/07-observability/0072-dozzle.md`)를 따른다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
@@ -102,9 +102,7 @@ Compose가 참조하는 secret은 `dozzle_client_secret`이며 값은 저장소�
 Docker 소켓의 `:ro` 마운트는 Docker API 호출 권한을 읽기 전용으로 제한하지
 않습니다. 로그에 포함된 비밀 정보와 소켓 접근 권한은 운영 정책에 따라 보호합니다.
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -112,8 +110,6 @@ Docker 소켓의 `:ro` 마운트는 Docker API 호출 권한을 읽기 전용으
 - **Policy**: `docs/05.operations/policies/07-observability/0072-dozzle.md`
 - **Runbook**: `docs/05.operations/runbooks/07-observability/0072-dozzle.md`
 - [Documentation index](../../../docs/README.md)
-
-### Observability and Recovery
 
 #### Service Readiness
 

@@ -1,18 +1,18 @@
 ---
 title: "Kafka 메시징"
-version: "1.3.1"
+version: "1.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
 # Kafka
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -51,27 +51,25 @@ tmpfs로 렌더링하고 `kafbat_client_secret`을 읽으며 로컬 CA를 신뢰
 Traefik 라우트는 `gateway-standard-chain@file`을 사용하며 forwarding-auth
 체인은 이 라우트에 속하지 않습니다.
 
-### Supported Environment
+### Interfaces
+
+#### Configuration
+
+정상 `kafka_net`의 secret, 라우트, 포트 및 healthcheck 계약은 Purpose의 Structure와 Compose에 따릅니다.
+
+#### Security Boundary
+
+Compose가 참조하는 secret은 `kafbat_client_secret`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `127.0.0.1:${KAFKA_EXTERNAL_1_HOST_PORT:-9092}:${KAFKA_EXTERNAL_PORT:-9092}`, `127.0.0.1:${KAFKA_JMX_EXPORTER_1_HOST_PORT:-19404}:${KAFKA_JMX_EXPORTER_PORT:-9404}`이다. (출처: `infra/05-messaging/kafka/docker-compose.yml`의 `kafka-1`, `kafbat-ui`, `kafka-exporter`, `kafka-init` 서비스)
+
+## Usage
+
+### Prerequisites
 
 #### Tech Stack
 
 정상 Kafka 단일 브로커와 Kafbat·exporter 등의 이미지 선언은 [Compose](docker-compose.yml)가 소유합니다. Connect 이미지 빌드는 LAB의 [Dockerfile](../../../labs/kafka-cluster/connect/Dockerfile)이 소유합니다.
 
-## Interfaces
-
-### Inputs and Outputs
-
-#### Configuration
-
-정상 `kafka_net`의 secret, 라우트, 포트 및 healthcheck 계약은 Service Role의 Structure와 Compose에 따릅니다.
-
-### Security Boundary
-
-Compose가 참조하는 secret은 `kafbat_client_secret`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `127.0.0.1:${KAFKA_EXTERNAL_1_HOST_PORT:-9092}:${KAFKA_EXTERNAL_PORT:-9092}`, `127.0.0.1:${KAFKA_JMX_EXPORTER_1_HOST_PORT:-19404}:${KAFKA_JMX_EXPORTER_PORT:-9404}`이다. (출처: `infra/05-messaging/kafka/docker-compose.yml`의 `kafka-1`, `kafbat-ui`, `kafka-exporter`, `kafka-init` 서비스)
-
-## Development
-
-### Local Workflow
+### Selected Start
 
 #### Usage
 
@@ -83,15 +81,17 @@ docker compose --env-file .env.example --profile messaging config --services
 정상 `kafka-init`은 복제 계수 1로 토픽을 만듭니다. 위 명령은 정적 render이며
 서비스와 topic을 시작·생성하지 않습니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
-Local Workflow의 명령으로 정상 구성을 렌더합니다. 렌더 성공은 브로커 복구 성공을 증명하지 않습니다.
+Selected Start의 명령으로 정상 구성을 렌더합니다. 렌더 성공은 브로커 복구 성공을 증명하지 않습니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -106,7 +106,7 @@ Local Workflow의 명령으로 정상 구성을 렌더합니다. 렌더 성공�
 [Schema Registry migration](https://docs.confluent.io/platform/current/schema-registry/installation/migrate.html),
 [Kafbat RBAC](https://ui.docs.kafbat.io/configuration/rbac-role-based-access-control).
 
-### Observability and Recovery
+#### Observability and Recovery
 
 복구에는 토픽 record/config, 파티션, consumer offset, KRaft metadata가
 포함되어야 합니다. 승인된

@@ -1,17 +1,17 @@
 ---
 title: "n8n 독립 워크로드"
-version: "0.1.2"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # n8n 독립 워크로드
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -31,36 +31,38 @@ Airflow의 P04가 소유하며, 실제 import·예약·자격 증명 작업은 T
 - [Task Runner 예열](task-runner-warmup/README.md): Hermes 정기 실행 전에 JS runner를
   미리 띄우는 비활성 흐름입니다.
 
-### Supported Environment
+### Interfaces
 
-없음: 이 디렉터리는 소스, 비활성 workflow, 합성 fixture만 보관하며 `infra/07-workflow/n8n/docker-compose.yml`은 이 폴더를 참조하지 않는다.
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 없음: 이 디렉터리 자체는 포트나 API를 노출하지 않으며, 워크로드별 입출력은 `hermes-blog-ingestion/`, `manifest-outbox-notifier/`, `task-runner-warmup/` 각 README를 따른다.
 
-### Security Boundary
+#### Security Boundary
 
-없음: 이 디렉터리에는 secret 정의와 자격 증명 값이 없다. 실제 import·예약·자격 증명 작업은 Service Role의 Scope가 정한 대로 Task의 선행 조건을 따른다.
+없음: 이 디렉터리에는 secret 정의와 자격 증명 값이 없다. 실제 import·예약·자격 증명 작업은 Purpose의 Scope가 정한 대로 Task의 선행 조건을 따른다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+없음: 이 디렉터리는 소스, 비활성 workflow, 합성 fixture만 보관하며 `infra/07-workflow/n8n/docker-compose.yml`은 이 폴더를 참조하지 않는다.
+
+### Selected Start
 
 #### Usage
 
 각 워크로드 README에서 소스 검증 명령과 운영 대기 조건을 확인합니다.
 공통 이미지·Compose·네트워크·CI 등록은 총괄 통합 제안으로 전달합니다.
 
-### Checks
+## Checks
 
-없음: 이 디렉터리 자체의 검사는 없으며, 소스 검증 명령은 각 워크로드 README의 Local Workflow를 따른다.
+### Readiness
 
-## Operations
+없음: 이 디렉터리 자체의 검사는 없으며, 소스 검증 명령은 각 워크로드 README의 Selected Start를 따른다.
 
-### Runbook Links
+### Failure Handling
+
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -71,6 +73,6 @@ Airflow의 P04가 소유하며, 실제 import·예약·자격 증명 작업은 T
 - [기존 n8n](../README.md)
 - [Spec Package 탐색](../../../../docs/03.specs/README.md): 정본 Task는 SPEC-0204-TSK-0013입니다.
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 이 디렉터리의 workflow는 비활성이며 자체 헬스체크가 없다. 기존 n8n 서비스의 상태와 복구는 RUN-0053이 소유한다.

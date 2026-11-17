@@ -1,18 +1,18 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.5.1"
+version: "1.6.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-01-12"
 ---
 
 # Grafana 시각화와 대시보드
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -75,22 +75,7 @@ grafana/
 | Validation | [validate-docker-compose.sh](../../../scripts/validation/validate-docker-compose.sh), [run-ci-gate.py](../../../scripts/validation/run-ci-gate.py) (`python3 scripts/validation/run-ci-gate.py --profile changed`) |
 | Troubleshooting | 연결된 런북, compose 설정 렌더링, 서비스 로그, 헬스체크, 마스킹된 OAuth/데이터소스 근거로 시작합니다 |
 
-### Supported Environment
-
-#### Tech Stack
-
-Grafana 이미지와 데이터 소스 선언은 [Compose](../docker-compose.yml)와 이 패키지의 provisioning 설정이 소유합니다.
-
-선택된 패치 이미지의 tag·index·amd64 manifest와 config descriptor는 SEC01 증거에
-연결합니다. 이번 소스 준비는 OAuth strict role·CA 검증·anonymous 비활성화와
-datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAuth·datasource
-기능, backup·복원과 HOME 적용은 아직 검증하지 않았으며, 기존 이미지의 관측을
-새 후보의 성공으로 사용하지 않습니다. 실제 적용은 소유 Runbook의 대상·backup·
-재생성·복구 계약을 따릅니다.
-
-## Interfaces
-
-### Inputs and Outputs
+### Interfaces
 
 #### Configuration
 
@@ -287,13 +272,26 @@ project/run/attempt는 SQL literal escaping을 사용하고 결과는 500행으�
 | `Security/keycloak-troubleshooting` | `hyhome-keycloak-troubleshooting` | keycloak/keycloak-grafana-dashboard dashboards/keycloak-troubleshooting-dashboard.json @f819507c13 |
 | `Security/openbao` | `openbao` | grafana.com dashboard 23725 revision 1 (2025-07-15); job set to openbao |
 
-### Security Boundary
+#### Security Boundary
 
 Compose가 참조하는 secret은 `grafana_admin_password`, `grafana_client_secret`, `grafana_metrics_password`, `grafana_reader_password`, `mng_postgres_password`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/06-observability/docker-compose.yml`의 `grafana`, `grafana-db-provision` 서비스)
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+#### Tech Stack
+
+Grafana 이미지와 데이터 소스 선언은 [Compose](../docker-compose.yml)와 이 패키지의 provisioning 설정이 소유합니다.
+
+선택된 패치 이미지의 tag·index·amd64 manifest와 config descriptor는 SEC01 증거에
+연결합니다. 이번 소스 준비는 OAuth strict role·CA 검증·anonymous 비활성화와
+datasource/dashboard mount를 유지합니다. 새 이미지의 DB·plugin·OAuth·datasource
+기능, backup·복원과 HOME 적용은 아직 검증하지 않았으며, 기존 이미지의 관측을
+새 후보의 성공으로 사용하지 않습니다. 실제 적용은 소유 Runbook의 대상·backup·
+재생성·복구 계약을 따릅니다.
+
+### Selected Start
 
 #### Available Scripts
 
@@ -310,7 +308,9 @@ Compose가 참조하는 secret은 `grafana_admin_password`, `grafana_client_secr
 3. 관리자 비밀번호, OAuth 클라이언트 시크릿, 토큰, 렌더링된 시크릿 값은 문서, 로그, 태스크 근거, 커밋 메시지에 남기지 않습니다.
 4. 계획/태스크 근거와 롤백 기록 없이는 역할 매핑, 데이터소스 UID, 대시보드 프로바이더 잠금, 시크릿 참조, 이미지 버전, 라우트 미들웨어를 변경하지 않습니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
@@ -321,9 +321,7 @@ Compose가 참조하는 secret은 `grafana_admin_password`, `grafana_client_secr
 - `rg -n 'folder:|editable: false|path: /etc/grafana/dashboards' infra/06-observability/grafana/provisioning/dashboards/dashboards.yml`로 대시보드 프로비저닝을 확인합니다.
 - `find infra/06-observability/grafana/dashboards -type f -name '*.json' | wc -l`로 대시보드 보유 현황을 확인합니다.
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -335,8 +333,6 @@ Compose가 참조하는 secret은 `grafana_admin_password`, `grafana_client_secr
 - [Documentation index](../../../docs/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 검증을 제공합니다.
-
-### Observability and Recovery
 
 #### Troubleshooting
 

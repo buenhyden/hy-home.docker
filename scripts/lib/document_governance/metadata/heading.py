@@ -1562,8 +1562,11 @@ def _runtime_version_findings(
     return findings
 
 
-# H3 names that carry a README path table: Root form, Stage form, and the legacy name.
-README_DOCUMENTS_HEADINGS = frozenset({"Directories", "Current Items", "Documents"})
+# H3 names that carry a README path table: the core root and stage forms,
+# the common forms still used by unbound README profiles, and the legacy name.
+README_DOCUMENTS_HEADINGS = frozenset(
+    {"Current Paths", "Paths", "Directories", "Current Items", "Documents"}
+)
 
 
 def _is_path_module(columns: Sequence[str]) -> bool:
@@ -1604,10 +1607,10 @@ def _registered_readme_documents_findings(
             level, name = heading
             if level <= 3:
                 in_documents = level == 3 and name in README_DOCUMENTS_HEADINGS
-                # Directories and Current Items may hold the author's own
+                # Every name but Documents may hold the author's own
                 # tables; only a table with a Path column must use the
                 # registered columns. Documents is checked strictly.
-                free_tables = name in {"Directories", "Current Items"}
+                free_tables = name in README_DOCUMENTS_HEADINGS - {"Documents"}
             in_table = False
             continue
         is_row = line.strip().startswith("|")

@@ -1,18 +1,18 @@
 ---
 title: "Alertmanager Notification Routing"
-version: "1.0.6"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-01-12"
 ---
 
 # Alertmanager Notification Routing
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -49,18 +49,7 @@ alertmanager/
 └── README.md  # This file
 ```
 
-### Supported Environment
-
-#### Tech Stack
-
-| Category     | Technology   | Version | Notes                          |
-| :----------- | :----------- | :------ | :----------------------------- |
-| Alerting     | Alertmanager | declared version | Docker Secret로 렌더링되는 설정을 사용하는 단일 compose 서비스 |
-| Integrations | Slack / SMTP | -       | Webhook 및 SMTP 릴레이         |
-
-## Interfaces
-
-### Inputs and Outputs
+### Interfaces
 
 #### Configuration
 
@@ -72,13 +61,22 @@ alertmanager/
 | `smtp_username` | Yes | `__SMTP_USERNAME__`로 렌더링되는 SMTP 인증 사용자명 |
 | `smtp_password` | Yes | `__SMTP_PASSWORD__`로 렌더링되는 SMTP 인증 비밀번호 |
 
-### Security Boundary
+#### Security Boundary
 
 Compose가 참조하는 secret은 `slack_webhook`, `smtp_password`, `smtp_username`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/06-observability/docker-compose.yml`의 `alertmanager` 서비스)
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+#### Tech Stack
+
+| Category     | Technology   | Version | Notes                          |
+| :----------- | :----------- | :------ | :----------------------------- |
+| Alerting     | Alertmanager | declared version | Docker Secret로 렌더링되는 설정을 사용하는 단일 compose 서비스 |
+| Integrations | Slack / SMTP | -       | Webhook 및 SMTP 릴레이         |
+
+### Selected Start
 
 #### Usage
 
@@ -103,7 +101,9 @@ Compose가 참조하는 secret은 `slack_webhook`, `smtp_password`, `smtp_userna
 | `docker compose --profile obs restart alertmanager` | 저장소 루트에서 설정 변경 사항 적용 |
 | `docker compose --profile obs logs -f alertmanager` | 저장소 루트에서 Alertmanager 로그 확인 |
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
@@ -114,9 +114,7 @@ Compose가 참조하는 secret은 `slack_webhook`, `smtp_password`, `smtp_userna
 - `rg -n 'alertmanagers:|targets: \["alertmanager:9093"\]' infra/06-observability/prometheus/config/prometheus.yml`로 Prometheus 전달 여부를 확인합니다.
 - 테스트 알림을 발생시켜 예상한 Slack 채널에 도달하는지 보고 수신자 연결을 검증합니다.
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -126,8 +124,6 @@ Compose가 참조하는 secret은 `slack_webhook`, `smtp_password`, `smtp_userna
 - [Documentation index](../../../docs/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 검증에 쓰입니다.
-
-### Observability and Recovery
 
 #### Troubleshooting
 

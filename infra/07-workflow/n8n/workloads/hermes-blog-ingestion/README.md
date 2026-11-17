@@ -1,17 +1,17 @@
 ---
 title: "Hermes 수집 전송 소스"
-version: "0.5.6"
+version: "0.6.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Hermes 수집 전송 소스
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -64,13 +64,7 @@ Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 �
 - [install.py](install.py): 커밋 하나를 root 소유 불변 release로 설치합니다. `--role publisher`(기본, `/opt/hermes-publisher`)와 `--role attester`(`/opt/hermes-attester`, 서명·원본 수집 모듈 포함)가 있습니다.
 - [pyproject.toml](pyproject.toml), [requirements.lock](requirements.lock): 실행 의존성 선언과 hash 고정본입니다.
 
-### Supported Environment
-
-Python 패키지(`pyproject.toml`, `requirements.lock`)와 `install.py`, `deploy/`로 Hermes 호스트의 제한된 프로세스에 설치한다. Compose나 Dockerfile은 없다.
-
-## Interfaces
-
-### Inputs and Outputs
+### Interfaces
 
 #### P11 직접 수집·제출 인터페이스
 
@@ -388,8 +382,6 @@ Gateway는 [n8n Compose](../../docker-compose.yml)의 `blog-ingestion` 서비스
 만들어야 하며 없으면 시작이 실패합니다. Hermes 홈, Vault, Blog-data 체크아웃,
 Docker 소켓은 어느 컨테이너에도 연결하지 않습니다.
 
-### Security Boundary
-
 #### 생산자 인증
 
 생산자 신뢰 경계는 분리 서명 하나로 정합니다.
@@ -460,14 +452,18 @@ Companion 디렉터리는 생산자 계정만 쓸 수 있어야 합니다.
 이 변경 전에 서명 없이 저장된 증거는 서명을 덧붙이거나 덮어쓸 수 없어 계속
 막히며, 복구는 새 실행으로 다시 만드는 것입니다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+Python 패키지(`pyproject.toml`, `requirements.lock`)와 `install.py`, `deploy/`로 Hermes 호스트의 제한된 프로세스에 설치한다. Compose나 Dockerfile은 없다.
+
+### Selected Start
 
 #### Usage
 
 로컬 준비·상태 명령은 발행기 설명, 재현 가능한 시험 명령은 시험 설명을 봅니다.
-배포 단위는 제한된 호스트 프로세스이며 설치물은 Security Boundary의 "보호 설치"를 따릅니다.
+배포 단위는 제한된 호스트 프로세스이며 설치물은 Interfaces의 "보호 설치"를 따릅니다.
 운영 계정 생성, 설치, 서비스·예약 실행 등록은 아직 수행하지 않았습니다. `dispatch` 명령은 있으나 추적 키 저장소가 비어 있어
 세 작업은 실제 인증 입력이나 네트워크 요청 없이 `blocked`를 반환합니다.
 
@@ -491,7 +487,9 @@ Runner를 거쳐 가짜 Gateway의 `201`·합성 영속 수신을 확인했습�
 실제 인증 식별자를 넣지 않습니다. 실행 데이터 저장 제한은 관리자 접근이나
 실행 중 메모리까지 격리한다는 의미가 아닙니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Verification
 
@@ -508,9 +506,9 @@ Runner를 거쳐 가짜 Gateway의 `201`·합성 영속 수신을 확인했습�
 승인 키로 서명된 Companion이 모든 항목의 실제 수집 시각을 결속하기 전에는
 발행기 전송이나 재전송을 시작할 수 없습니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -521,8 +519,6 @@ Runner를 거쳐 가짜 Gateway의 `201`·합성 영속 수신을 확인했습�
 - [워크로드 목록](../README.md)
 - [작업 탐색](../../../../../docs/03.specs/README.md): `SPEC-0204-TSK-0022`가 정본입니다.
 - [운영 절차 탐색](../../../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md): `RUN-0053`의 소스 검증·복구 범위를 확인합니다.
-
-### Observability and Recovery
 
 #### 상태 대응과 관측
 

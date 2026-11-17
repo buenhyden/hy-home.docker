@@ -1,6 +1,6 @@
 ---
 title: "Architecture Decision Records"
-version: "1.7.6"
+version: "1.8.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -10,9 +10,11 @@ layer: "architecture"
 
 # Architecture Decision Records
 
-## Stage Responsibility
+## Responsibility
 
-### Purpose and Readers
+### Purpose
+
+#### Purpose and Readers
 
 `docs/02.architecture/decisions`는 중요한 아키텍처 선택의 맥락과 동인,
 고려한 대안, 선택, 근거, 결과, 확인 방법과 supersession을 보존한다.
@@ -24,16 +26,48 @@ ADR은 구현 명세나 운영 절차가 아니다.
 - Developers
 - Reviewers
 
-### Inputs and Outputs
+#### Inputs and Outputs
 
 이 디렉터리는 현재 유효한 ADR을 보유한다. 각 ADR은 하나의 material
 choice를 소유하고 실제 Architecture Description을 parent로 연결한다.
 개수는 유지 기준이 아니므로 아래 Current Inventory와 실제 파일 목록이
 권위이다.
 
-## Contents
+### Excluded Responsibilities
 
-### Current Items
+ADR은 구현 명세나 운영 절차가 아니므로 이 디렉터리는 그것을 소유하지 않는다.
+
+## Current Contents
+
+### Paths
+
+| Path | Purpose |
+| --- | --- |
+| [0028-local-isolated-readiness-evidence.md](./0028-local-isolated-readiness-evidence.md) | local-isolated readiness evidence 전략을 채택한 accepted decision |
+| [0032-canonical-agent-governance-home.md](./0032-canonical-agent-governance-home.md) | 공통 정본의 `.agents` 이전과 native 로딩 경계를 채택한 accepted decision |
+| [0034-canonical-knowledge-and-prompt-surfaces.md](./0034-canonical-knowledge-and-prompt-surfaces.md) | `.agents/knowledge/`와 `.agents/prompts/`를 canonical category로 도입하는 accepted decision |
+| [0037-package-disposition-wait-and-task-cancellation.md](./0037-package-disposition-wait-and-task-cancellation.md) | 모든 구성원이 terminal인 완료 package의 처분 대기와, 구조화된 취소 근거를 가진 cancelled Task, 현재 재평가·history-only 이용 가능성·새 포착의 정확 동일성을 채택한 accepted decision |
+| [0038-selective-native-oidc-for-native-auth-apps.md](./0038-selective-native-oidc-for-native-auth-apps.md) | Keycloak을 중앙 IdP로 유지하면서 Gateway ForwardAuth와 application-native OIDC를 서비스별로 선택하고 Airflow/Kafbat UI의 이중 인증을 금지하는 accepted decision |
+| [0042-openbao-unseal-method.md](./0042-openbao-unseal-method.md) | auto-unseal을 연기하고 수동 Shamir unseal을 유지하는 accepted decision |
+| [0044-readme-navigation-and-document-language.md](./0044-readme-navigation-and-document-language.md) | README navigation과 문서 언어를 워크스페이스 전체에서 하나의 강제 계약으로 통합하는 accepted decision |
+| [0046-capability-tiers-and-quality-boundary.md](./0046-capability-tiers-and-quality-boundary.md) | Quality 신설과 관리·연구 패키지의 기능별 tier 재배치를 정한 accepted decision |
+| [0047-dev-timescale-influx-retirement-and-load-tools.md](./0047-dev-timescale-influx-retirement-and-load-tools.md) | DEV TimescaleDB 결과 저장, InfluxDB 퇴역, k6 기본·Locust LAB 선택을 정한 accepted decision |
+| [0048-authority-parents-and-criterion-acceptance.md](./0048-authority-parents-and-criterion-acceptance.md) | Spec·Plan은 승인 권한만, Task는 실행 상태를, criterion마다 하나의 수용 판정을 두고 보관 검토 준비를 읽을 때 계산하는 accepted decision |
+| [0049-shared-agent-memory-store.md](./0049-shared-agent-memory-store.md) | Claude와 Codex가 main checkout의 SQLite 저장소 하나를 함께 쓰고 native memory를 끄는 accepted decision |
+| [0050-openbao-as-secrets-manager.md](./0050-openbao-as-secrets-manager.md) | OpenBao와 `openbao-agent`를 secrets manager로 채택하며 ADR-0003, ADR-0018을 supersede한 accepted decision |
+| [0051-summarize-and-delete-retirement.md](./0051-summarize-and-delete-retirement.md) | 은퇴 문서를 01·02 문서에 요약한 뒤 삭제하고 Git 이력을 기록으로 삼으며, 폐기 번호를 Registry `reserved_history`에 두는 accepted decision |
+| [0052-kafka-only-messaging-broker.md](./0052-kafka-only-messaging-broker.md) | KRaft 모드 Kafka를 유일한 messaging broker로 두고 RabbitMQ를 철회하는 accepted decision |
+| [0053-observability-storage-on-seaweedfs.md](./0053-observability-storage-on-seaweedfs.md) | LGTM stack과 Alloy를 유지하고 Loki·Tempo object store를 SeaweedFS S3로 두는 accepted decision |
+| [0054-mailpit-home-stalwart-lab.md](./0054-mailpit-home-stalwart-lab.md) | HOME SMTP trap은 Mailpit, Stalwart는 미승격 LAB으로 두는 accepted decision |
+| [0055-segmented-per-flow-networks.md](./0055-segmented-per-flow-networks.md) | `10.250.0.0/16` 안의 흐름별 `/24` 분리 network와 필요한 곳에만 고정 IP를 두는 accepted decision |
+| [0056-offsite-backup-target-and-size-cap.md](./0056-offsite-backup-target-and-size-cap.md) | Cloudflare R2 offsite 사본과 10 GB 상한 아래 9 GB upload 거부를 정한 accepted decision |
+| [0057-operations-role-and-domain-folders.md](./0057-operations-role-and-domain-folders.md) | Stage 05 문서를 `<role>/<NN-domain>/####-<slug>.md`에 두고 domain 폴더마다 README를 두는 accepted decision |
+| [0059-native-oidc-open-webui-and-airflow.md](./0059-native-oidc-open-webui-and-airflow.md) | Open WebUI와 Airflow UI를 ForwardAuth 없이 native OIDC로 두고 workflow·AI 하드닝을 잇는 accepted decision |
+| [0060-hermes-report-source-contract.md](./0060-hermes-report-source-contract.md) | Hermes `source_text`를 확정된 전체 일일 보고서 원문으로 두고 receipt 집합은 비공개 감사 기록으로 보존하는 accepted decision |
+| [0061-dedicated-ingress-for-sso-only-backends.md](./0061-dedicated-ingress-for-sso-only-backends.md) | `sso-auth`만으로 보호되는 Traefik backend를 공유 `edge_net`에서 빼고 Traefik만 함께 붙는 전용 내부 ingress 망에 두는 proposed decision |
+| [0062-home-lab-membership.md](./0062-home-lab-membership.md) | HOME 구성원을 root include로, LAB을 `labs/`로 나누는 ADR-0058 규칙을 유지하면서 comfyui·neo4j·open-notebook·pact-broker·wiremock·terrakube를 LAB으로 옮기고 단일 노드 opensearch 등을 퇴역시키는 accepted decision |
+
+#### Current Items
 
 ```text
 docs/02.architecture/decisions/
@@ -147,13 +181,34 @@ docs/02.architecture/decisions/
 - [`ADR-0062`](./0062-home-lab-membership.md):
   HOME 구성원을 root include로, LAB을 `labs/`로 나누는 ADR-0058 규칙을 유지하면서 comfyui·neo4j·open-notebook·pact-broker·wiremock·terrakube를 LAB으로 옮기고 단일 노드 opensearch 등을 퇴역시키는 accepted decision.
 
-### Classification
+#### Classification
 
 이 디렉터리의 문서는 모두 ADR 유형이며 `ADR-NNNN` 식별자를 쓴다. 삭제된 ADR의 본문은 비권위 이력으로 Git에만 남고, 삭제된 번호는 Registry `reserved_history`가 보관한다.
 
-## Workflow
+### Owners
 
-### Create and Review
+이 README의 소유자는 frontmatter `owner`의 `@buenhyden`이다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않는다.
+
+## Usage
+
+### Entry Points
+
+#### Upstream and Downstream
+
+- [Architecture](../README.md)
+- [Architecture Descriptions](../descriptions/README.md)
+- [Product Requirements](../../01.requirements/README.md)
+- [Specifications](../../03.specs/README.md)
+- [Operations](../../05.operations/README.md)
+
+#### Policy and Templates
+
+- [에이전트 작업 규칙](../AGENTS.md)
+- [ADR Template](../../99.templates/templates/architecture/decision.template.md)
+- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [README 템플릿](../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
+
+### Checks
 
 #### Authoring Flow
 
@@ -174,23 +229,6 @@ docs/02.architecture/decisions/
 - 구현 계약과 검증 기준은 관련 Spec, 운영 절차는 Stage 05에 둔다.
 - 결정 확인 근거가 없는 runtime 상태는 주장하지 않는다.
 
-### Transition and Exit
+#### Transition and Exit
 
 ADR는 `architecture-decision` 수명주기를 따라 proposed에서 accepted 또는 rejected로 전이하며 둘 다 종료 상태이다. 다른 ADR이 대체한 ADR은 남아야 할 내용을 대체 ADR에 두고 삭제하며 번호를 Registry `reserved_history`에 추가한다.
-
-## Related Documents
-
-### Upstream and Downstream
-
-- [Architecture](../README.md)
-- [Architecture Descriptions](../descriptions/README.md)
-- [Product Requirements](../../01.requirements/README.md)
-- [Specifications](../../03.specs/README.md)
-- [Operations](../../05.operations/README.md)
-
-### Policy and Templates
-
-- [에이전트 작업 규칙](../AGENTS.md)
-- [ADR Template](../../99.templates/templates/architecture/decision.template.md)
-- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
-- [README 템플릿](../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

@@ -1,10 +1,10 @@
 ---
 title: "Reference: GitHub Actions Platform Mechanics"
-version: "2.3.2"
+version: "2.4.0"
 type: "reference/research-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "references"
 artifact_id: "RES-0084"
 created: "2026-07-05"
@@ -13,7 +13,11 @@ observed_at: "2026-09-05"
 
 # Reference: GitHub Actions Platform Mechanics
 
-## Overview
+## Responsibility
+
+### Purpose
+
+#### Overview
 
 이 저장소에 중요한 GitHub Actions 보안, 실행, 권한, identity,
 supply-chain, runner, remote-enforcement mechanics는 무엇이며, 그 가운데
@@ -29,7 +33,7 @@ cross-package routing 아래에서 GitHub Actions 전문 증거를 소유합니�
 현재 cross-category 결론은 RES-0002를 통해 route되고, 세부 workflow,
 Hosted, remote-control-plane 증거는 여기 남습니다.
 
-## Scope
+#### Scope
 
 - 저장소 baseline: `buenhyden/hy-home.docker`
   `main@4c6d211129615eab372d720ebd209b6c27618c86`.
@@ -42,20 +46,7 @@ Hosted, remote-control-plane 증거는 여기 남습니다.
 - Stage 90은 증거와 implication을 기록합니다. Workflow/configuration
   권위는 `.github/`에, 실행 증거는 소유 Task에, remote 사실은 날짜가 있는
 
-### Method
-
-1. 600줄짜리 package README를 남기거나 경쟁하는 research package를
-   만드는 대신, 기존 platform 분석을 구성원으로 보존합니다.
-2. 현재 workflow YAML과 typed workflow 계약을 2026-09-05에 다시 연 공식
-   GitHub 문서와 비교합니다.
-3. 추적된 configuration을 remote 증거로 취급하지 않고 SPEC-0172의 정확한
-   Hosted 실행과 remote protection 증거를 사용합니다.
-4. claim을 Configured, Repository-enforced, Hosted-executed,
-   Remote-verified, Unverified로 분류합니다.
-5. 분리 이후 구성원 identity, 링크, 생성된 index 신선도, public 저장소
-   gate를 검증합니다.
-
-### Limitations
+### Excluded Responsibilities
 
 - Remote protection은 2026-09-05 read-back 시점에만 검증되었습니다;
   이후 상태는 다를 수 있습니다.
@@ -71,13 +62,21 @@ Hosted, remote-control-plane 증거는 여기 남습니다.
   [main protection record](../../../../.github/rulesets/main-protection.md)가
   현재 기록을 소유합니다.
 
-## Structure
+## Current Contents
+
+### Paths
 
 | Path | Purpose |
 | --- | --- |
 | [m0001-platform-mechanics.md](m0001-platform-mechanics.md) | RES-0084-m0001: workflow 권한, OIDC, supply chain, runner, ruleset의 claim 단위 platform 분석 |
 
+### Owners
+
+이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 member의 소유자는 이 README가 따로 기록하지 않습니다.
+
 ## Usage
+
+### Entry Points
 
 - 현재 required check와 그 rollback 기준은
   [main protection record](../../../../.github/rulesets/main-protection.md)가
@@ -89,7 +88,7 @@ Hosted, remote-control-plane 증거는 여기 남습니다.
 - 어떤 구현이든 Requirement → Architecture/ADR → Spec → Plan → Task →
   검증 → 독립 검토를 거쳐 route합니다.
 
-## Related Documents
+#### Related Documents
 
 - Member: [RES-0084-m0001](m0001-platform-mechanics.md).
 - Research index: [Research Packages](../README.md).
@@ -110,7 +109,22 @@ Hosted, remote-control-plane 증거는 여기 남습니다.
   [research-member template](../../../99.templates/templates/references/research.template.md),
   [Registry](../../../99.templates/registry.json).
 
-## Sources
+### Checks
+
+#### Method
+
+1. 600줄짜리 package README를 남기거나 경쟁하는 research package를
+   만드는 대신, 기존 platform 분석을 구성원으로 보존합니다.
+2. 현재 workflow YAML과 typed workflow 계약을 2026-09-05에 다시 연 공식
+   GitHub 문서와 비교합니다.
+3. 추적된 configuration을 remote 증거로 취급하지 않고 SPEC-0172의 정확한
+   Hosted 실행과 remote protection 증거를 사용합니다.
+4. claim을 Configured, Repository-enforced, Hosted-executed,
+   Remote-verified, Unverified로 분류합니다.
+5. 분리 이후 구성원 identity, 링크, 생성된 index 신선도, public 저장소
+   gate를 검증합니다.
+
+#### Sources
 
 - [GitHub ruleset status checks](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets).
 - [GitHub Actions secure use](https://docs.github.com/en/actions/reference/security/secure-use).
@@ -123,7 +137,7 @@ Hosted, remote-control-plane 증거는 여기 남습니다.
 
 세부 source inventory와 claim 단위 분석은 구성원이 소유합니다.
 
-## Findings
+#### Findings
 
 아래 표는 2026-09-05의 관측입니다.
 

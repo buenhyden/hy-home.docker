@@ -1,10 +1,10 @@
 ---
 title: "Neo4j"
-version: "1.0.6"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
@@ -12,9 +12,9 @@ created: "2025-11-12"
 
 > 연결된 데이터를 위한 native property-graph 데이터베이스입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -53,7 +53,19 @@ neo4j/
 └── README.md                              # 이 파일
 ```
 
-### Supported Environment
+### Interfaces
+
+#### Inputs and Outputs
+
+호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `edge_net`이다. (출처: `infra/04-data/neo4j/docker-compose.yml`의 `neo4j` 서비스)
+
+#### Security Boundary
+
+Compose가 참조하는 secret은 `neo4j_password`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/04-data/neo4j/docker-compose.yml`의 `neo4j` 서비스)
+
+## Usage
+
+### Prerequisites
 
 #### Tech Stack
 
@@ -64,19 +76,7 @@ neo4j/
 | Security   | Docker Secrets    | `neo4j_password`          |
 | Route      | Traefik HTTP      | `neo4j.${DEFAULT_URL}` -> `${NEO4J_HTTP_PORT:-7474}` |
 
-## Interfaces
-
-### Inputs and Outputs
-
-호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `edge_net`이다. (출처: `infra/04-data/neo4j/docker-compose.yml`의 `neo4j` 서비스)
-
-### Security Boundary
-
-Compose가 참조하는 secret은 `neo4j_password`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/04-data/neo4j/docker-compose.yml`의 `neo4j` 서비스)
-
-## Development
-
-### Local Workflow
+### Selected Start
 
 #### Usage
 
@@ -85,7 +85,9 @@ Compose가 참조하는 secret은 `neo4j_password`이며 값은 저장소에 두
 3. 자원 일관성을 위해 `docker-compose.yml`의 `template-stateful-med` 서비스 확장을 따릅니다.
 4. 컨테이너 로컬 `cypher-shell`이나 Traefik 뒤의 Neo4j Browser route로 연결을 확인합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
@@ -98,9 +100,7 @@ Enterprise online-backup이나 cluster 명령은 이 배포 범위 밖입니다.
 - Neo4j에 영향을 주는 README나 Compose 참조 변경 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - Neo4j 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -111,8 +111,6 @@ Enterprise online-backup이나 cluster 명령은 이 배포 범위 밖입니다.
 - [문서 인덱스](../../../docs/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [derived Compose 이미지 투영](../../tech-stack.versions.json)은 drift 검증을 제공합니다.
-
-### Observability and Recovery
 
 #### Service Readiness
 

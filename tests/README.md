@@ -1,10 +1,10 @@
 ---
 title: "Test Surface"
-version: "1.3.2"
+version: "1.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-02-21"
 ---
 
@@ -14,14 +14,7 @@ created: "2026-02-21"
 
 ## Purpose
 
-### Project Role
-
-`tests/`는 저장소 전역 테스트와 검증 자산을 두는 공간입니다. 주요 품질
-게이트는 `scripts/`와 GitHub Actions에 정의되어 있으며, 이 트리는
-`scripts/lib/<domain>/`의 library-unit 소유권과 validation/entrypoint 소유권을
-서로 분리합니다.
-
-#### Audience
+### Audience
 
 이 README의 주요 독자:
 
@@ -29,7 +22,14 @@ created: "2026-02-21"
 - QA Engineers
 - Operators
 
-### Boundaries
+### Outcome
+
+#### Project Role
+
+`tests/`는 저장소 전역 테스트와 검증 자산을 두는 공간입니다. 주요 품질
+게이트는 `scripts/`와 GitHub Actions에 정의되어 있으며, 이 트리는
+`scripts/lib/<domain>/`의 library-unit 소유권과 validation/entrypoint 소유권을
+서로 분리합니다.
 
 #### In Scope
 
@@ -44,36 +44,13 @@ created: "2026-02-21"
 - secret 값, credential, token, 인증서 원문
 - 하위 프로젝트의 package-local 테스트 설정
 
-## Repository Map
-
-### Directories
-
-```text
-tests/
-├── README.md  # This file
-├── fixtures/          # 독립 consumer가 공유하는 합성 고정 입력
-├── lib/<domain>/      # scripts/lib/<domain>/ library-unit 테스트
-├── validation/        # validation/entrypoint 및 실행-context 테스트
-└── requirements-integration.txt  # opt-in 통합 테스트 전용 의존성 (수동 갱신)
-```
-
-`tests/fixtures/`는 독립 consumer가 공유하는 비밀값 없는 고정 입력을 두며
-[README](fixtures/README.md)가 설명합니다. 그 밖의 픽스처는 `_fixtures.py` 형태의
-builder 모듈이며, 테스트가 필요한 최소 입력만 만들어 씁니다. 독립 consumer가
-읽어야 하거나 형식 재현이 복잡해 builder로 감당되지 않는 입력이 생길 때만
-`tests/fixtures/`에 추가합니다.
-
-### Canonical Entry Points
-
-하위 트리의 진입점은 [tests/lib](lib/README.md)와 [tests/validation](validation/README.md)입니다.
-
 ## Getting Started
 
 ### Prerequisites
 
 Python 3와 [scripts/README.md](../scripts/README.md)의 hash lock(`requirements-controller.lock`)을 설치한 venv가 필요합니다. `tests/validation/test_mng_pg_init_sql.py` opt-in 통합 테스트에는 Docker daemon과 `tests/requirements-integration.txt`의 의존성이 추가로 필요합니다.
 
-### First Verified Path
+### First Use
 
 1. 새 테스트 자산을 만들기 전에 같은 검증이 이미 `scripts/` 또는 하위 프로젝트 package script에 있는지 확인합니다.
 2. repository contract, doc traceability, Compose validation처럼 전역 검증에 가까운 항목은 [`../scripts/README.md`](../scripts/README.md)에 있는 기존 진입점을 우선 사용합니다.
@@ -127,16 +104,52 @@ PASS로 대체하지 않습니다. 정확한 mode·argv는 canonical `--explain`
 읽지 않습니다. 과거 사건의 문자열·수량·폐기 파일 부재만을 검사하는 fixture는
 현재 보장 이전과 caller 정리 후 폐기합니다.
 
-## References
+## Repository Map
 
-### Current Documentation
+### Current Paths
+
+| Path | Purpose |
+| --- | --- |
+| [fixtures/](fixtures/README.md) | 독립 consumer가 공유하는 합성 고정 입력 |
+| [lib/](lib/README.md) | scripts/lib/<domain>/ library-unit 테스트 |
+| [validation/](validation/README.md) | validation/entrypoint 및 실행-context 테스트 |
+| `requirements-integration.txt` | opt-in 통합 테스트 전용 의존성 (수동 갱신) |
+
+#### Directories
+
+```text
+tests/
+├── README.md  # This file
+├── fixtures/          # 독립 consumer가 공유하는 합성 고정 입력
+├── lib/<domain>/      # scripts/lib/<domain>/ library-unit 테스트
+├── validation/        # validation/entrypoint 및 실행-context 테스트
+└── requirements-integration.txt  # opt-in 통합 테스트 전용 의존성 (수동 갱신)
+```
+
+`tests/fixtures/`는 독립 consumer가 공유하는 비밀값 없는 고정 입력을 두며
+[README](fixtures/README.md)가 설명합니다. 그 밖의 픽스처는 `_fixtures.py` 형태의
+builder 모듈이며, 테스트가 필요한 최소 입력만 만들어 씁니다. 독립 consumer가
+읽어야 하거나 형식 재현이 복잡해 builder로 감당되지 않는 입력이 생길 때만
+`tests/fixtures/`에 추가합니다.
+
+#### Canonical Entry Points
+
+하위 트리의 진입점은 [tests/lib](lib/README.md)와 [tests/validation](validation/README.md)입니다.
+
+### Owners
+
+이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.
+
+## Support
+
+### Help
+
+이 문서는 별도의 문의·이슈 보고 경로를 기록하지 않습니다.
+
+### Related Documentation
 
 - [에이전트 작업 규칙](AGENTS.md)
 - [Root README](../README.md)
 - [Scripts README](../scripts/README.md)
 - [Documentation protocol](../.agents/governance/documentation-protocol.md)
 - [Task checklists](../.agents/governance/task-checklists.md)
-
-### Support and Ownership
-
-이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.

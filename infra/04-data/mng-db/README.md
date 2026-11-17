@@ -1,18 +1,18 @@
 ---
 title: "Management Database (mng-db)"
-version: "1.2.1"
+version: "1.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-12-03"
 ---
 
 # Management database
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -92,23 +92,23 @@ PostgreSQL은 루트 `POSTGRES_HOST_PORT` 키로 `127.0.0.1`에만 호스트 포
 argv가 아니라 psql 환경(`\getenv`)으로 전달합니다. 각 feature는 자신의 SQL과
 grant를 자신의 패키지에 둡니다. 그 외 엔진 설정은 Compose에 남아 있습니다.
 
-### Supported Environment
+### Interfaces
 
-런타임은 `infra/04-data/mng-db/docker-compose.yml`의 `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` 서비스로 정의되며, 이미지와 태그는 해당 Compose 선언이 소유한다. 활성화 프로파일은 `bi`, `contract-testing`, `core`, `data-science`, `dev`, `local`, `mlops`, `mng`이다.
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 호스트 게시 포트는 `${HOST_LAN_BIND_IP:-192.168.0.13}:${VALKEY_MNG_HOST_PORT:-26379}:${VALKEY_PORT:-6379}`, `127.0.0.1:${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}`이다. 연결 네트워크는 `mng_data_net`, `obs_net`이다. (출처: `infra/04-data/mng-db/docker-compose.yml`의 `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` 서비스)
 
-### Security Boundary
+#### Security Boundary
 
 Compose가 참조하는 secret은 `airflow_db_password`, `keycloak_db_password`, `mng_pg_monitor_password`, `mng_postgres_password`, `mng_valkey_inspector_password`, `mng_valkey_monitor_password`, `mng_valkey_n8n_password`, `mng_valkey_password`, `n8n_db_password`, `pgbackrest_cipher_pass`, `sonarqube_db_password`, `terrakube_db_password`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `${HOST_LAN_BIND_IP:-192.168.0.13}:${VALKEY_MNG_HOST_PORT:-26379}:${VALKEY_PORT:-6379}`, `127.0.0.1:${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}`이다. (출처: `infra/04-data/mng-db/docker-compose.yml`의 `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` 서비스)
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+런타임은 `infra/04-data/mng-db/docker-compose.yml`의 `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` 서비스로 정의되며, 이미지와 태그는 해당 Compose 선언이 소유한다. 활성화 프로파일은 `bi`, `contract-testing`, `core`, `data-science`, `dev`, `local`, `mlops`, `mng`이다.
+
+### Selected Start
 
 #### Usage
 
@@ -119,13 +119,15 @@ docker compose --env-file .env.example --profile mng config --services
 
 저장소 루트에서 실행하십시오. leaf 전용 Compose 명령은 사용하지 마십시오.
 
-### Checks
+## Checks
+
+### Readiness
 
 루트에서 `HYHOME_COMPOSE_PROFILES`를 지정해 `scripts/validation/validate-docker-compose.sh`로 구성을 검증한다. 개별 leaf Compose는 루트 network와 secret 선언에 의존하므로 leaf 단독으로 검증하지 않는다(`infra/README.md` 참조).
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -141,7 +143,7 @@ docker compose --env-file .env.example --profile mng config --services
 [Valkey persistence](https://valkey.io/topics/persistence/),
 [pgBackRest user guide](https://pgbackrest.org/user-guide.html).
 
-### Observability and Recovery
+#### Observability and Recovery
 
 PostgreSQL 복구는 pgBackRest(물리 백업, WAL archive, point-in-time
 restore)를 사용합니다. Valkey 복구는 RDB export를 사용합니다. 둘 다 호스트

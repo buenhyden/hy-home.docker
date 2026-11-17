@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight"
-version: "1.0.6"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-03-26"
 ---
 
@@ -12,9 +12,9 @@ created: "2026-03-26"
 
 > Redis 시각화, 분석, 관리 도구입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -66,23 +66,23 @@ labels:
   traefik.http.routers.redisinsight.middlewares: gateway-standard-chain@file,redisinsight-admin-ip@docker,sso-errors@file,sso-auth@file
 ```
 
-### Supported Environment
+### Interfaces
 
-런타임은 `infra/04-data/redisinsight/docker-compose.yml`의 `redisinsight` 서비스로 정의되며, 이미지와 태그는 해당 Compose 선언이 소유한다. 활성화 프로파일은 `admin`, `admin-data`이다.
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `dev_data_net`, `mng_data_net`, `redisinsight_ingress_net`이다. (출처: `infra/04-data/redisinsight/docker-compose.yml`의 `redisinsight` 서비스)
 
-### Security Boundary
+#### Security Boundary
 
 Compose가 참조하는 secret은 `dev_valkey_inspector_password`, `mng_valkey_inspector_password`, `redisinsight_encryption_key`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/04-data/redisinsight/docker-compose.yml`의 `redisinsight` 서비스)
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+런타임은 `infra/04-data/redisinsight/docker-compose.yml`의 `redisinsight` 서비스로 정의되며, 이미지와 태그는 해당 Compose 선언이 소유한다. 활성화 프로파일은 `admin`, `admin-data`이다.
+
+### Selected Start
 
 #### Usage
 
@@ -103,16 +103,16 @@ Compose가 참조하는 secret은 `dev_valkey_inspector_password`, `mng_valkey_i
 - `bash scripts/hardening/check-all-hardening.sh 04-data`: RedisInsight 라우트, 이미지, 네트워크 소속, 헬스체크를 검증합니다.
 - `docker logs --tail 100 redisinsight`: 서비스 실행 중 로그를 확인합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
 - RedisInsight에 영향을 주는 README나 Compose 참조 변경 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 서비스 문서와 운영 링크를 동기화하려면 `python3 scripts/validation/run-ci-gate.py --profile changed`를 실행합니다.
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -122,8 +122,6 @@ Compose가 참조하는 secret은 `dev_valkey_inspector_password`, `mng_valkey_i
 - [Documentation index](../../../docs/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
-
-### Observability and Recovery
 
 #### Service Readiness
 

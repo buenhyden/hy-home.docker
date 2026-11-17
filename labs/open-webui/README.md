@@ -1,10 +1,10 @@
 ---
 title: "Open WebUI"
-version: "1.2.1"
+version: "1.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
@@ -12,9 +12,9 @@ created: "2025-11-12"
 
 > Keycloak native OIDC를 사용하는 on-demand 로컬 LLM 채팅·RAG 웹 애플리케이션 LAB입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 Open WebUI는 독립 Compose project인 [Open WebUI LAB](docker-compose.yml)(`lab-open-webui` profile)입니다.
 2026-11-10 owner 결정(ADR-0062 개정)으로 HOME `08-ai`에서 옮겼습니다. root Compose에 포함되지 않고
@@ -53,13 +53,9 @@ labs/open-webui/
 └── README.md            # 이 파일
 ```
 
-### Supported Environment
+### Interfaces
 
-이미지는 [Compose](docker-compose.yml)가 digest로 고정한 Open WebUI 이미지이며 `lab-open-webui` profile의 독립 Compose project로 실행한다.
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 | 항목 | 값 |
 | --- | --- |
@@ -76,25 +72,31 @@ password login, signup, email merge, OAuth role/group 관리와 trusted-header �
 OpenAI 설정을 바꿀 때 저장된 행도 함께 바꿉니다. 등록된 redirect URI는 이전 gateway host 기준이므로 LAB
 origin 로그인에는 owner가 승인한 redirect 등록과 HTTPS origin이 필요합니다.
 
-### Security Boundary
+#### Security Boundary
 
 UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_OPEN_WEBUI_HOST_PORT:-18095}` -> 8080에만 게시하며 gateway route가 없고 HOME network에 연결되지 않는다. OIDC client secret은 `lab_open_webui_oidc_client_secret` 참조로만 전달한다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+이미지는 [Compose](docker-compose.yml)가 digest로 고정한 Open WebUI 이미지이며 `lab-open-webui` profile의 독립 Compose project로 실행한다.
+
+### Selected Start
 
 1. Usage guide(`docs/05.operations/guides/15-labs/0057-open-webui.md`)와 LAB 승격 정책을 읽습니다.
 2. `python3 scripts/operations/lab.py check open-webui`로 render와 충돌을 검사합니다.
 3. 실제 기동은 승인된 Ollama endpoint, LAB secret 사본과 lease가 있을 때만 `lab.py up`으로 합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 `python3 scripts/operations/lab.py check open-webui`로 render와 충돌을 검사하고 `bash scripts/hardening/check-all-hardening.sh 08-ai`로 native OIDC·no-route·bind 계약을 확인한다. 통과는 실제 기동의 증거가 아니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - [LAB 목록](../README.md)
 - Usage guide(`docs/05.operations/guides/15-labs/0057-open-webui.md`) (`GDE-0057`)
@@ -104,7 +106,7 @@ UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_OPEN_WEBUI_HOST_PORT:-18095}` -> 808
 - [문서 인덱스](../../docs/README.md)
 - [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0107 lab-promotion
 
-### Observability and Recovery
+#### Observability and Recovery
 
 - `bash scripts/hardening/check-all-hardening.sh 08-ai`가 이 LAB의 native OIDC·no-route·bind 계약을 검사합니다.
 - 필수 입력이 비면 render가 거부됩니다.

@@ -1,10 +1,10 @@
 ---
 title: "Airflow (07-workflow)"
-version: "1.3.1"
+version: "1.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
@@ -12,9 +12,9 @@ created: "2025-11-12"
 
 > Apache Airflow + CeleryExecutor + 네이티브 Keycloak Auth Manager입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -94,25 +94,11 @@ Airflow internal JWT:
 
 두 토큰은 별개입니다.
 
-### Supported Environment
+### Interfaces
 
-#### Tech Stack
-
-| Category | Technology | Version |
-| --- | --- | --- |
-| Airflow | Apache Airflow | declared version |
-| Keycloak Provider | apache-airflow-providers-keycloak | declared version |
-| Executor | CeleryExecutor | 분산 실행 |
-| Broker | Valkey | 공유/전용 |
-| DB | PostgreSQL | 관리용 DB |
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `airflow_net`, `dev_data_net`, `edge_net`, `flower_ingress_net`, `mng_data_net`, `object_net`, `obs_net`이다. (출처: `infra/07-workflow/airflow/docker-compose.yml`의 `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `flower`, `airflow-statsd-exporter` 서비스)
-
-### Security Boundary
 
 #### Keycloak Bootstrap
 
@@ -136,9 +122,21 @@ docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-all
 docker compose exec airflow-apiserver   airflow keycloak-auth-manager create-permissions     --username keycloak_admin     --user-realm master     --password
 ```
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+#### Tech Stack
+
+| Category | Technology | Version |
+| --- | --- | --- |
+| Airflow | Apache Airflow | declared version |
+| Keycloak Provider | apache-airflow-providers-keycloak | declared version |
+| Executor | CeleryExecutor | 분산 실행 |
+| Broker | Valkey | 공유/전용 |
+| DB | PostgreSQL | 관리용 DB |
+
+### Selected Start
 
 #### Usage
 
@@ -158,13 +156,15 @@ docker compose exec airflow-apiserver airflow db check
 docker compose exec airflow-apiserver airflow dags list
 ```
 
-### Checks
+## Checks
+
+### Readiness
 
 루트에서 `HYHOME_COMPOSE_PROFILES`를 지정해 `scripts/validation/validate-docker-compose.sh`로 구성을 검증한다. 개별 leaf Compose는 루트 network와 secret 선언에 의존하므로 leaf 단독으로 검증하지 않는다(`infra/README.md` 참조).
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -179,8 +179,6 @@ docker compose exec airflow-apiserver airflow dags list
 - [Incident 탐색](../../../docs/05.operations/incidents/2026/README.md)
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
-
-### Observability and Recovery
 
 #### Service Readiness
 

@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Code Quality"
-version: "1.1.2"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
@@ -14,9 +14,9 @@ created: "2025-11-12"
 
 > 지속적인 코드 품질 검사 및 보안 스캐닝 LAB입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 SonarQube는 정적 애플리케이션 보안 테스트(SAST)와 코드 품질 지표를 제공합니다.
 독립 Compose project인 [SonarQube LAB](docker-compose.yml)(`sast` profile)이며 root
@@ -58,7 +58,30 @@ labs/sonarqube/
 
 서비스 정의는 [labs/sonarqube/docker-compose.yml](docker-compose.yml)이 소유합니다.
 
-### Supported Environment
+### Interfaces
+
+#### Inputs and Outputs
+
+UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SONARQUBE_HOST_PORT:-18094}` -> 9000에 게시하고 승인된 외부 PostgreSQL endpoint(`LAB_SONARQUBE_DB_HOST`)와 연동한다. 환경 변수는 아래 표와 같다.
+
+#### Environment Variables
+
+| Variable | Required | Description |
+| :--- | :---: | :--- |
+| `LAB_SONARQUBE_DB_HOST` | Yes | 승인된 mng-pg endpoint host. 비어 있으면 render가 거부됩니다. |
+| `LAB_SONARQUBE_DB_PORT` | No | DB 포트(기본값: 5432). |
+| `LAB_SONARQUBE_DB_NAME` | No | 대상 데이터베이스 이름(기본값: sonarqube). |
+| `LAB_SONARQUBE_DB_USER` | No | 데이터베이스 사용자명(기본값: sonarqube). |
+| `LAB_SONARQUBE_HOST_PORT` | No | UI 호스트 포트(기본값: 18094). |
+| `LAB_DATA_DIR` | Yes | 격리된 LAB data root. |
+
+#### Security Boundary
+
+`lab_sonarqube_net`만 사용하며 HOME network와 Traefik route가 없다. secret은 `lab_sonarqube_db_password`(`/run/secrets/sonarqube_db_password`)만 참조하고 값은 문서에 쓰지 않는다.
+
+## Usage
+
+### Prerequisites
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
@@ -74,36 +97,13 @@ migration·plugin·OIDC·health 실행과 backup·복원은 아직 인수하지 
 DB/schema가 바뀐 경우에는 image tag 하향만으로 복구하지 않으며 소유자의 검증된
 backup·복원 절차가 필요합니다.
 
-## Interfaces
-
-### Inputs and Outputs
-
-UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SONARQUBE_HOST_PORT:-18094}` -> 9000에 게시하고 승인된 외부 PostgreSQL endpoint(`LAB_SONARQUBE_DB_HOST`)와 연동한다. 환경 변수는 아래 표와 같다.
-
-#### Environment Variables
-
-| Variable | Required | Description |
-| :--- | :---: | :--- |
-| `LAB_SONARQUBE_DB_HOST` | Yes | 승인된 mng-pg endpoint host. 비어 있으면 render가 거부됩니다. |
-| `LAB_SONARQUBE_DB_PORT` | No | DB 포트(기본값: 5432). |
-| `LAB_SONARQUBE_DB_NAME` | No | 대상 데이터베이스 이름(기본값: sonarqube). |
-| `LAB_SONARQUBE_DB_USER` | No | 데이터베이스 사용자명(기본값: sonarqube). |
-| `LAB_SONARQUBE_HOST_PORT` | No | UI 호스트 포트(기본값: 18094). |
-| `LAB_DATA_DIR` | Yes | 격리된 LAB data root. |
-
-### Security Boundary
-
-`lab_sonarqube_net`만 사용하며 HOME network와 Traefik route가 없다. secret은 `lab_sonarqube_db_password`(`/run/secrets/sonarqube_db_password`)만 참조하고 값은 문서에 쓰지 않는다.
-
-## Development
-
-### Local Workflow
+### Selected Start
 
 아래 `LAB`은 저장소 루트에서
 `docker compose --env-file labs/.env -f labs/sonarqube/docker-compose.yml --profile sast`입니다.
 `config`는 render만 합니다. 컨테이너를 시작하는 명령은
 `python3 scripts/operations/lab.py check|up|down sonarqube`의 lease 규칙
-([LAB 안내](../README.md#local-workflow))을 따릅니다.
+([LAB 안내](../README.md#selected-start))을 따릅니다.
 
 | Command | Description |
 | :--- | :--- |
@@ -119,14 +119,16 @@ UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SONARQUBE_HOST_PORT:-18094}` -> 9000
 
 런타임 고정 값은 Compose 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../infra/tech-stack.versions.json)으로 드리프트를 검증합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 - `docker compose --env-file labs/.env -f labs/sonarqube/docker-compose.yml --profile sast config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - **Guide**: SonarQube Guide (`docs/05.operations/guides/15-labs/0066-sonarqube.md`)
 - **Policy**: SonarQube Operations (`docs/05.operations/policies/15-labs/0066-sonarqube.md`)
@@ -135,7 +137,7 @@ UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SONARQUBE_HOST_PORT:-18094}` -> 9000
 - [Documentation index](../../docs/README.md)
 - [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0107 lab-promotion
 
-### Observability and Recovery
+#### Observability and Recovery
 
 - render가 거부되면 `LAB_SONARQUBE_DB_HOST`, `LAB_DATA_DIR`, LAB secret 파일 경로를 먼저 확인합니다.
 - 데이터베이스나 quality-gate 설정을 변경하기 전에 SonarQube 로그와 연결된 런북을 확인합니다.

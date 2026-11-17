@@ -1,10 +1,10 @@
 ---
 title: "Workspace Staging Surface"
-version: "1.4.3"
+version: "1.5.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-03-05"
 ---
 
@@ -12,7 +12,14 @@ created: "2026-03-05"
 
 ## Purpose
 
-### Project Role
+### Audience
+
+- evidence로 요약되기 전에 task가 만든 산출물을 검토하는 maintainer
+- agent scratch 출력이 저장소에 도달하지 않았는지 감사하는 사람
+
+### Outcome
+
+#### Project Role
 
 `_workspace`는 저장소 로컬 staging 공간입니다. 여기 두는 산출물은 저장소 작업이
 진행되는 동안 생성되고 단명하며 secret이 아닙니다. agent, 스크립트, migration이
@@ -22,12 +29,7 @@ created: "2026-03-05"
 이곳에는 authority가 하나도 없습니다. task가 끝난 뒤에도 남아야 하는 결과는
 canonical owner로 요약해 옮기고, staging 사본은 폐기합니다.
 
-#### Audience
-
-- evidence로 요약되기 전에 task가 만든 산출물을 검토하는 maintainer
-- agent scratch 출력이 저장소에 도달하지 않았는지 감사하는 사람
-
-### Boundaries
+#### Boundaries
 
 - 소유 대상: 아래 일곱 개의 tracked 계약 README, 그리고 스크립트가 쓰는
   ignore 대상 `diagnostics/`, `repo-support/` staging 트리
@@ -50,41 +52,13 @@ canonical owner로 요약해 옮기고, staging 사본은 폐기합니다.
 - 토큰이 포함된 명령 출력
 - secret 파일 전체 본문
 
-## Repository Map
-
-### Directories
-
-런타임 산출물은 `diagnostics/`와 `repo-support/` 아래에 두며 기본적으로 ignore됩니다.
-`diagnostics/`에는 secret과 raw log를 뺀 정제 결과만 둡니다. 생성된
-분석 요약, dry-run 미리보기, migration ledger, secret이나 raw 로그를 담지 않는
-subagent 인계 파일이 그 예입니다.
-
-| Path | Purpose |
-| :--- | :--- |
-| `README.md` | 추적됨: 이 계약 문서 |
-| `diagnostics/README.md` | 추적됨: 정제된 진단 결과 계약 |
-| `diagnostics/ci/README.md` | 추적됨: 원격 CI 진단 |
-| `diagnostics/validation/README.md` | 추적됨: 로컬 검사 진단 |
-| `repo-support/README.md` | 추적됨: staging 트리 계약 |
-| `repo-support/analysis/README.md` | 추적됨: 분석 요약 |
-| `repo-support/previews/README.md` | 추적됨: dry-run 미리보기 |
-| 그 밖의 `diagnostics/**`, `repo-support/**` | 추적되지 않음: task 도중 기록되는 ignore 대상 런타임 산출물 |
-
-여기에 쓰는 스크립트는 `repo-support/` 아래 하위 디렉터리 이름을
-각자 정해 씁니다. 예를 들어 `scripts/security/verify-sample-service-supply-chain.sh`와
-`scripts/operations/rehearse-sample-service-delivery.sh`가 있습니다.
-
-### Canonical Entry Points
-
-계약 문서는 [Diagnostics contract](./diagnostics/README.md)와 [Staging tree contract](./repo-support/README.md)입니다.
-
 ## Getting Started
 
 ### Prerequisites
 
 필요한 도구는 Git뿐입니다. Tracking Contract의 점검 명령은 `git check-ignore`와 `git ls-files`만 사용합니다.
 
-### First Verified Path
+### First Use
 
 1. 산출물을 `_workspace/repo-support/<task-slug>/` 아래에 씁니다 → 경로가
    ignore 대상이므로 `git status`가 깨끗하게 유지됩니다.
@@ -130,9 +104,47 @@ staging 계약을 벗어난 것입니다.
 던집니다. 이 테스트는 모든 게이트에서 실행되며 exit status로 둘을 실제로 구분합니다.
 이제 이 계약은 누군가 명령을 직접 입력해 기억하는 데 의존하지 않습니다.
 
-## References
+## Repository Map
 
-### Current Documentation
+### Current Paths
+
+#### Directories
+
+런타임 산출물은 `diagnostics/`와 `repo-support/` 아래에 두며 기본적으로 ignore됩니다.
+`diagnostics/`에는 secret과 raw log를 뺀 정제 결과만 둡니다. 생성된
+분석 요약, dry-run 미리보기, migration ledger, secret이나 raw 로그를 담지 않는
+subagent 인계 파일이 그 예입니다.
+
+| Path | Purpose |
+| :--- | :--- |
+| `README.md` | 추적됨: 이 계약 문서 |
+| `diagnostics/README.md` | 추적됨: 정제된 진단 결과 계약 |
+| `diagnostics/ci/README.md` | 추적됨: 원격 CI 진단 |
+| `diagnostics/validation/README.md` | 추적됨: 로컬 검사 진단 |
+| `repo-support/README.md` | 추적됨: staging 트리 계약 |
+| `repo-support/analysis/README.md` | 추적됨: 분석 요약 |
+| `repo-support/previews/README.md` | 추적됨: dry-run 미리보기 |
+| 그 밖의 `diagnostics/**`, `repo-support/**` | 추적되지 않음: task 도중 기록되는 ignore 대상 런타임 산출물 |
+
+여기에 쓰는 스크립트는 `repo-support/` 아래 하위 디렉터리 이름을
+각자 정해 씁니다. 예를 들어 `scripts/security/verify-sample-service-supply-chain.sh`와
+`scripts/operations/rehearse-sample-service-delivery.sh`가 있습니다.
+
+#### Canonical Entry Points
+
+계약 문서는 [Diagnostics contract](./diagnostics/README.md)와 [Staging tree contract](./repo-support/README.md)입니다.
+
+### Owners
+
+이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.
+
+## Support
+
+### Help
+
+이 문서는 별도의 문의·이슈 보고 경로를 기록하지 않습니다.
+
+### Related Documentation
 
 - [Diagnostics contract](./diagnostics/README.md)
 - [Staging tree contract](./repo-support/README.md)
@@ -140,7 +152,3 @@ staging 계약을 벗어난 것입니다.
 - [Environment constraints](../.agents/governance/environment-constraints.md)
 - [Task checklists](../.agents/governance/task-checklists.md)
 - [Repository README](../README.md)
-
-### Support and Ownership
-
-이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.

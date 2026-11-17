@@ -1,17 +1,17 @@
 ---
 title: "합성 허용·거부 fixture"
-version: "0.1.2"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # 합성 허용·거부 fixture
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 각 schema에 valid/invalid JSON 한 쌍을 둡니다. [expectations.json](expectations.json)은 schema 형식 결과와 helper semantic 결과를 별도로 기록합니다. invalid fixture는 의도적으로 schema-valid이면서 semantic-invalid이며, 검사 경계를 혼동하지 않습니다. artifact.synthetic.txt는 생성한 공개 합성 bytes이며 비밀이나 실제 문서가 아닙니다. example-project·endpoint·참조 ID·수치는 모두 합성입니다. fixture Task ID는 기존 generic schema 형식의 합성 입력이며 P09 Task 발급 사실이 아닙니다. 유효 fixture는 source 형식·정합만 증명합니다.
 
@@ -27,23 +27,23 @@ updated: "2026-11-13"
 
 [schema](../schemas/README.md), [기대 결과](expectations.json)
 
-### Supported Environment
+### Interfaces
 
-기존 Python·jsonschema와 오프라인 JSON 문서를 사용합니다.
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 비밀값과 실제 환경 변수는 입력하지 않습니다.
 
-### Security Boundary
+#### Security Boundary
 
 없음: 이 디렉터리는 Markdown 문서와 합성 JSON만 두며 Compose 서비스·포트·네트워크·Docker Secret·접근 제어를 정의하지 않는다. 비밀값과 실제 환경 변수는 입력하지 않는다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+기존 Python·jsonschema와 오프라인 JSON 문서를 사용합니다.
+
+### Selected Start
 
 총괄의 공통 계약 통합 후 해당 증거를 Task에 연결합니다.
 
@@ -66,16 +66,18 @@ P03은 이미 완료된 준비 패키지를 다음 여섯 가지 작은 오프�
 제공합니다. 각 행이 런타임 수용으로 바뀌려면 미래의 Wiki 담당 Task가 자체 제품 및
 종단 간 증거를 제공해야 합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 저장소 루트에서 활성화한 격리 venv에 `python -m pip install -r scripts/requirements.txt`를 실행한 뒤 `python -m unittest tests.lib.ops.test_wiki_preparation tests.validation.test_wiki_preparation_contracts -v`를 실행합니다. 시스템의 오래된 jsonschema는 검증 환경이 아닙니다. 단위검사는 native 실행 증거가 아닙니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 문서 체계는 저장소 docs README 진입점을 통해 확인합니다.
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 실행되는 서비스가 아니므로 헬스체크·지표·로그가 없고, 이 패키지를 대상으로 하는 운영 런북도 `docs/05.operations/runbooks`에 없다. 계약 문서가 어긋나면 위 Checks의 단위 검사 실패로 드러나며, 복구는 Git 이력에서 해당 문서 변경을 되돌리는 것이다.

@@ -1,18 +1,18 @@
 ---
 title: "메시징 계층 (05-messaging)"
-version: "1.1.6"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
 # 05 메시징
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -31,27 +31,25 @@ Kafka-family 이벤트 스트리밍 surface이며 두 번째 broker family는 �
 
 이 tier의 leaf 패키지는 [`kafka`](kafka/README.md) 하나입니다.
 
-### Supported Environment
-
-#### Tech Stack
-
-정상 Kafka와 주변 서비스의 이미지 선언은 [`kafka/`](kafka/README.md)가 소유합니다.
-
-## Interfaces
-
-### Inputs and Outputs
+### Interfaces
 
 #### Configuration
 
 루트 include는 정상 선택형 구성만 포함합니다.
 
-### Security Boundary
+#### Security Boundary
 
 없음: 이 디렉터리는 Compose 서비스나 secret 참조를 직접 선언하지 않으며, 하위 `kafka/`가 각자 선언한다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+#### Tech Stack
+
+정상 Kafka와 주변 서비스의 이미지 선언은 [`kafka/`](kafka/README.md)가 소유합니다.
+
+### Selected Start
 
 #### Usage
 
@@ -60,15 +58,15 @@ Kafka-family 이벤트 스트리밍 surface이며 두 번째 broker family는 �
 참고하십시오. 활성화 전에는 named producer/consumer, retention/capacity
 계획, plaintext-listener 위험 수용, 완전한 복구 계획이 필요합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
 정상 선택자를 Compose 렌더로 확인하고, 실제 기동 결과는 별도로 기록합니다.
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -77,6 +75,6 @@ Kafka-family 이벤트 스트리밍 surface이며 두 번째 broker family는 �
 `docs/05.operations/guides/06-messaging-and-cdc/0037-messaging-optimization-hardening.md`을
 찾으십시오.
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 이 디렉터리는 자체 헬스체크나 관측 대상을 선언하지 않으며, 하위 `kafka/`가 각자 선언한다.

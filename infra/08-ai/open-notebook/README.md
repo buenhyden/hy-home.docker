@@ -1,10 +1,10 @@
 ---
 title: "Open Notebook"
-version: "1.0.5"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-05-09"
 ---
 
@@ -12,9 +12,9 @@ created: "2026-05-09"
 
 > 로컬 지식 노트북이자 SurrealDB 기반 laboratory 서비스입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 Open Notebook은 로컬 지식 워크플로우를 위한 admin/laboratory 노트북 인터페이스를 제공합니다. 이 스택은 `open_notebook` 애플리케이션과 영속화 전용 `surrealdb` 데이터베이스 백엔드를 함께 실행하며 둘은 `ai_net`으로 상호 연결됩니다.
 
@@ -56,23 +56,9 @@ open-notebook/
 - [surrealdb/docker-entrypoint.sh](surrealdb/docker-entrypoint.sh)
 - [surrealdb/README.md](surrealdb/README.md)
 
-### Supported Environment
+### Interfaces
 
-런타임 이미지 고정 값은 [Compose](docker-compose.yml)와 참조된 Dockerfile에 선언되어 있습니다. [버전 레지스트리](../../tech-stack.versions.json)는 파생된 Compose 이미지 프로젝션입니다.
-
-| Component | Image / Source | Purpose |
-| --- | --- | --- |
-| `open_notebook` | [declared runtime image](../../tech-stack.versions.json) | 노트북 UI 및 API 런타임 |
-| `surrealdb` | [Dockerfile](surrealdb/Dockerfile) | 로컬 메타데이터 및 노트북 영속화(Open Notebook 호환을 위해 SurrealDB v2에 고정) |
-
-#### Image Tag Review
-
-- `infra/08-ai/open-notebook/docker-compose.yml`은 현재 [declared runtime image](../../tech-stack.versions.json)를 사용합니다. latest에 가까운 태그입니다.
-- 이 태그는 `infra/image-tag-policy.exceptions.json`에 등록되어 매월 Laboratory Operator가 검토합니다. 이후 승인된 작업이 안정 태그를 고정하거나 예외를 제거하지 않는 한 그대로 유지합니다.
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 `open_notebook`은 `127.0.0.1:${OPEN_NOTEBOOK_API_URL:-5055}`로 API를 게시하고 `surrealdb`는 `ai_net` 내부 `8000`을 `expose`만 합니다. 서비스·환경 변수·DB 호환 경계는 아래와 같습니다.
 
@@ -101,7 +87,7 @@ open-notebook/
 정확한 v2 patch 태그와 digest로 고정한 artifact에서 바이너리를 복사합니다. 선택된 Open Notebook 이미지와의 호환성·데이터 이전을 검증하고
 별도 변경 승인을 받기 전에는 v3 이상으로 업그레이드하지 않습니다.
 
-### Security Boundary
+#### Security Boundary
 
 UI는 Traefik 라우트로만 열리고 비밀은 Docker Secret `surreal_db_password`·`open_notebook_password`·`open_notebook_encryption_key`로 주입합니다. 세부는 아래와 같습니다.
 
@@ -116,9 +102,23 @@ Open Notebook은 `gateway-standard-chain@file`, `open-notebook-admin-ip@docker`,
 - `open_notebook_password`: 애플리케이션 수준 접근 제어에 사용되는 비밀번호입니다.
 - `open_notebook_encryption_key`: Open Notebook이 모델 API 키를 암호화·복호화하는 데 사용합니다. 이 키를 잃으면 저장된 자격 증명을 복구할 수 없습니다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+런타임 이미지 고정 값은 [Compose](docker-compose.yml)와 참조된 Dockerfile에 선언되어 있습니다. [버전 레지스트리](../../tech-stack.versions.json)는 파생된 Compose 이미지 프로젝션입니다.
+
+| Component | Image / Source | Purpose |
+| --- | --- | --- |
+| `open_notebook` | [declared runtime image](../../tech-stack.versions.json) | 노트북 UI 및 API 런타임 |
+| `surrealdb` | [Dockerfile](surrealdb/Dockerfile) | 로컬 메타데이터 및 노트북 영속화(Open Notebook 호환을 위해 SurrealDB v2에 고정) |
+
+#### Image Tag Review
+
+- `infra/08-ai/open-notebook/docker-compose.yml`은 현재 [declared runtime image](../../tech-stack.versions.json)를 사용합니다. latest에 가까운 태그입니다.
+- 이 태그는 `infra/image-tag-policy.exceptions.json`에 등록되어 매월 Laboratory Operator가 검토합니다. 이후 승인된 작업이 안정 태그를 고정하거나 예외를 제거하지 않는 한 그대로 유지합니다.
+
+### Selected Start
 
 1. `HYHOME_COMPOSE_PROFILES="notebook" bash scripts/validation/validate-docker-compose.sh`로 루트에서 활성화되는 laboratory 프로필을 검증합니다.
 2. `notebook` 프로필이 의도적으로 선택된 경우에만 시작합니다. `admin`은 더 이상 Open Notebook이나 SurrealDB를 선택하지 않습니다.
@@ -126,7 +126,9 @@ Open Notebook은 `gateway-standard-chain@file`, `open-notebook-admin-ip@docker`,
 4. floating 이미지 사용은 `infra/image-tag-policy.exceptions.json`을 통해 계속 검토합니다.
 5. 자격 증명의 원본은 Docker Secret으로 관리하며 평문 값을 커밋하지 않습니다. 현재 시작 스크립트는 일부 값을 런타임 프로세스 환경으로 내보내므로 환경 덤프를 증거로 수집하지 않습니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 - Compose 또는 설정 참조를 변경한 후에는 `bash scripts/hardening/check-all-hardening.sh 08-ai`를 실행합니다.
 - 루트에서 활성화되는 laboratory 프로필을 검증하려면 `HYHOME_COMPOSE_PROFILES="notebook" bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
@@ -134,9 +136,9 @@ Open Notebook은 `gateway-standard-chain@file`, `open-notebook-admin-ip@docker`,
 - 승인된 실행 환경에서 `docker compose --profile notebook logs --tail=200 open_notebook`으로 상태를 점검합니다. 로그나 `/app/data` 디렉터리 존재만으로 영속화·복구 성공을 입증하지는 못합니다.
 - `http://127.0.0.1:8000`은 SurrealDB 컨테이너 내부 헬스체크 대상입니다. 호스트 포트는 게시하지 않으며 이 응답이 애플리케이션 인증·쿼리 성공을 대신하지 않습니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - **Guide**: Open Notebook usage guide (`docs/05.operations/guides/09-ai-and-search/0073-open-notebook.md`)
 - **Policy**: Open Notebook operations policy (`docs/05.operations/policies/09-ai-and-search/0073-open-notebook.md`)
@@ -150,7 +152,7 @@ Open Notebook은 `gateway-standard-chain@file`, `open-notebook-admin-ip@docker`,
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
 
-### Observability and Recovery
+#### Observability and Recovery
 
 - Open Notebook, SurrealDB, 네트워크, 시크릿 참조를 확인하려면 하드닝 점검부터 시작합니다.
 - API URL, 암호화, 데이터베이스 설정을 변경하기 전에 Open Notebook과 SurrealDB 로그를 확인합니다.

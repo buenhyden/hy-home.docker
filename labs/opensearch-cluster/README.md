@@ -1,18 +1,18 @@
 ---
 title: "OpenSearch Cluster LAB"
-version: "0.1.7"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-10-03"
 ---
 
 # OpenSearch 3-node LAB
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 `labs/opensearch-cluster/docker-compose.yml`은 정상 root Compose가 include하지 않는 학습용
 OpenSearch 클러스터입니다. 이 파일 자체를 별도 Compose entrypoint로 사용하고
@@ -74,23 +74,23 @@ SPEC-0215 TSK-0002에서 HOME 호스트로 기동해 green, node 3개, Dashboard
 high watermark(90%)를 넘으면 보안 index를 배치하지 못하므로 디스크 여유를 먼저 확인합니다. 이 LAB의 데이터 보존과 삭제는 정상 HOME의
 데이터와 별도로 승인받아야 합니다.
 
-### Supported Environment
+### Interfaces
 
-OpenSearch node 3개와 Dashboards 1개가 Compose project `hy-home-lab-opensearch`의 `opensearch-cluster` profile로 실행되며 node는 저장소의 custom OpenSearch Dockerfile로 빌드한다. 정확한 image tag는 [Compose](docker-compose.yml)가 소유한다.
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 API 9200, 모니터링 9600, Dashboards 5601은 `lab_opensearch_core_net` 내부 expose만 하고 상태는 `${LAB_DATA_DIR}/opensearch-cluster/` 아래에 bind한다. 입력 경로는 `LAB_DATA_DIR`, `LAB_SECRET_DIR`, `LAB_OPENSEARCH_CERT_DIR`이다.
 
-### Security Boundary
+#### Security Boundary
 
 호스트 publish 포트와 Traefik 라우터가 없고 인증은 LAB 내부 basic 인증뿐이다. secret은 `${LAB_SECRET_DIR}/opensearch-cluster/`의 `lab_opensearch_admin_password` 등 LAB 전용 4개 참조이며 CA/node 인증서는 `${LAB_OPENSEARCH_CERT_DIR}`에서 읽기 전용으로 mount한다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+OpenSearch node 3개와 Dashboards 1개가 Compose project `hy-home-lab-opensearch`의 `opensearch-cluster` profile로 실행되며 node는 저장소의 custom OpenSearch Dockerfile로 빌드한다. 정확한 image tag는 [Compose](docker-compose.yml)가 소유한다.
+
+### Selected Start
 
 정적 검사는 저장소 루트에서 별도 LAB entrypoint를 대상으로 합니다. 아래
 절대 경로는 **정적 render용 합성 참조**이며 실제 비밀·인증서를 뜻하지 않습니다.
@@ -116,19 +116,21 @@ LAB_DATA_DIR=/tmp/synthetic-lab-data LAB_SECRET_DIR=/tmp/synthetic-lab-secrets L
 
 `lab.py up`은 `${LAB_DATA_DIR}` 아래 bind 디렉터리를 실행 사용자 소유로 만든다. 이 LAB의 데이터 프로세스는 uid 1000 (`opensearch`)로 쓰므로, 디렉터리 소유권이 맞지 않으면 기동이 실패할 수 있다. 실패하면 해당 LAB 경로만 그 uid로 소유권을 맞추고 HOME 경로는 건드리지 않는다.
 
-### Checks
+## Checks
 
-Local Workflow의 합성 경로 render 명령(`LAB_DATA_DIR`, `LAB_SECRET_DIR`, `LAB_OPENSEARCH_CERT_DIR` 지정)으로 정적 검사하며 값이 없으면 render가 실패한다. 통과는 기동·인증·복구의 증거가 아니다.
+### Readiness
 
-## Operations
+Selected Start의 합성 경로 render 명령(`LAB_DATA_DIR`, `LAB_SECRET_DIR`, `LAB_OPENSEARCH_CERT_DIR` 지정)으로 정적 검사하며 값이 없으면 render가 실패한다. 통과는 기동·인증·복구의 증거가 아니다.
 
-### Runbook Links
+### Failure Handling
+
+#### Runbook Links
 
 - [OpenSearch LAB Compose](docker-compose.yml)
 - [운영 가이드 목록](../../docs/05.operations/guides/README.md)
 - [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0109 opensearch-cluster, RUN-0107 lab-promotion
 - [05-databases-and-storage runbooks](../../docs/05.operations/runbooks/05-databases-and-storage/README.md): RUN-0019 opensearch
 
-### Observability and Recovery
+#### Observability and Recovery
 
 node와 Dashboards에 Compose healthcheck가 선언되어 있고 Docker secret을 curl 설정 stdin으로 전달한다. 복구는 [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md)의 RUN-0109 OpenSearch cluster LAB Runbook를 따른다.

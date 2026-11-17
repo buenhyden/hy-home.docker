@@ -1,10 +1,10 @@
 ---
 title: "분석 dbt 변환 작업"
-version: "1.2.1"
+version: "1.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-09-21"
 ---
 
@@ -12,9 +12,9 @@ created: "2026-09-21"
 
 > PostgreSQL 어댑터를 사용하는 커맨드라인 dbt Core LAB으로, 애플리케이션 데이터베이스를 전용 스키마로 변환합니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 dbt는 웹 서비스가 아니라 1회성 작업으로 실행되므로 라우트, OIDC 클라이언트,
 장기 실행 컨테이너가 없습니다. 독립 Compose project인 [dbt LAB](docker-compose.yml)
@@ -52,19 +52,9 @@ endpoint를 승인하기 전(미결정)까지는 render 검증만 합니다.
 
 서비스 정의(`dbt`, `dbt-db-provision`)는 [labs/dbt/docker-compose.yml](docker-compose.yml)이 소유합니다.
 
-### Supported Environment
+### Interfaces
 
-| Component | Source | Purpose |
-| --- | --- | --- |
-| `dbt` | [Dockerfile](Dockerfile) (dbt-core, dbt-postgres) | 변환 CLI |
-| `dbt-db-provision` | [Compose](docker-compose.yml), PostgreSQL 클라이언트 이미지 | 공유 [프로비저닝 러너](../../infra/04-data/mng-db/pg/provision/run-feature-provision.sh)를 통해 [dev-pg.sql](provisioning/dev-pg.sql)을 실행 |
-
-런타임 고정 값은 Compose/Dockerfile 선언이 소유하며
-[파생된 Compose 이미지 프로젝션](../../infra/tech-stack.versions.json)은 드리프트 검증을 제공합니다.
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 | Field | Value |
 | --- | --- |
@@ -78,19 +68,29 @@ endpoint를 승인하기 전(미결정)까지는 render 검증만 합니다.
 | Network | `lab_dbt_net`(`hy-home-lab-dbt`); HOME network 없음 |
 | Labels | `hy-home.tier: lab`, `traefik.enable: 'false'` |
 
-### Security Boundary
+#### Security Boundary
 
 secret은 `${LAB_SECRET_DIR}/dbt/`의 LAB 전용 `lab_dbt_db_password`와 프로비저닝 전용 `lab_dbt_dev_pg_admin_password`만 읽고 HOME 값 복사는 별도 승인 대상이다. 라우트와 OIDC 클라이언트가 없고 HOME network에 연결되지 않으며 호스트 포트를 게시하지 않는다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+| Component | Source | Purpose |
+| --- | --- | --- |
+| `dbt` | [Dockerfile](Dockerfile) (dbt-core, dbt-postgres) | 변환 CLI |
+| `dbt-db-provision` | [Compose](docker-compose.yml), PostgreSQL 클라이언트 이미지 | 공유 [프로비저닝 러너](../../infra/04-data/mng-db/pg/provision/run-feature-provision.sh)를 통해 [dev-pg.sql](provisioning/dev-pg.sql)을 실행 |
+
+런타임 고정 값은 Compose/Dockerfile 선언이 소유하며
+[파생된 Compose 이미지 프로젝션](../../infra/tech-stack.versions.json)은 드리프트 검증을 제공합니다.
+
+### Selected Start
 
 명령은 저장소 루트에서
 `docker compose --env-file labs/.env -f labs/dbt/docker-compose.yml --profile lab-dbt` 접두사로 실행합니다.
 `config`는 render만 하며, 컨테이너를 시작하는 명령은
 `python3 scripts/operations/lab.py check|up|down dbt`의 lease 규칙
-([LAB 안내](../README.md#local-workflow))을 따릅니다.
+([LAB 안내](../README.md#selected-start))을 따릅니다.
 
 1. 승인된 dev-pg endpoint와 HOME `dev-platform-provision`이 만든 `platform_dev` fixture를 확인합니다.
 2. `${LAB_SECRET_DIR}/dbt/db_password.txt`와 `dev_pg_admin_password.txt`를 별도 승인 아래 준비합니다.
@@ -99,7 +99,9 @@ secret은 `${LAB_SECRET_DIR}/dbt/`의 LAB 전용 `lab_dbt_db_password`와 프로
 5. 비즈니스 소스는 자체 `sources.yml`과 함께 `projects/models/`에 선언하고 권한은
    `provisioning/dev-pg.sql`에 유지합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 - `docker compose --env-file labs/.env -f labs/dbt/docker-compose.yml --profile lab-dbt config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
@@ -107,9 +109,9 @@ secret은 `${LAB_SECRET_DIR}/dbt/`의 LAB 전용 `lab_dbt_db_password`와 프로
 
 `dbt --version`이나 `debug` 성공은 어떤 모델이 실행되었다는 근거가 되지 않습니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - **Guide**: dbt usage guide (`docs/05.operations/guides/15-labs/0090-dbt.md`)
 - **Policy**: dbt operations policy (`docs/05.operations/policies/15-labs/0090-dbt.md`)
@@ -118,6 +120,6 @@ secret은 `${LAB_SECRET_DIR}/dbt/`의 LAB 전용 `lab_dbt_db_password`와 프로
 - [Documentation index](../../docs/README.md)
 - [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0107 lab-promotion
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 1회성 작업이라 장기 실행 컨테이너와 헬스체크가 없다. 실패는 명령 종료 코드로 확인하고 복구는 [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md)의 RUN-0090 dbt Runbook을 따른다.

@@ -1,10 +1,10 @@
 ---
 title: "AI Infrastructure Tier (08-ai)"
-version: "1.0.10"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
@@ -12,9 +12,9 @@ created: "2025-11-12"
 
 > 로컬 LLM 추론 엔진, RAG 인터페이스, 벡터 기반 인텔리전스입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 `08-ai` 티어는 플랫폼의 인공지능 역량을 제공하며 프라이버시를 보존하는 로컬 추론과 RAG(Retrieval-Augmented Generation)에 초점을 맞춥니다. NVIDIA GPU 가속을 활용해 Ollama로 대형 언어 모델(LLM)을 서비스합니다. Open WebUI는 2026-11-10 ADR-0062 개정으로 독립 LAB [`labs/open-webui/`](../../labs/open-webui/README.md)로 옮겼습니다.
 
@@ -60,7 +60,21 @@ created: "2025-11-12"
 | `ollama-exporter` | HTTP metrics | `ai`, `dev` | `ai_net` 내부에서 `${OLLAMA_EXPORTER_PORT}`로 노출됨 |
 | `comfyui` | HTTP | `ai`, `ai-image` | `comfyui.${DEFAULT_URL}`와 선언된 루프백 포트 |
 
-### Supported Environment
+### Interfaces
+
+#### Inputs and Outputs
+
+- **GPU Access**: 서비스는 NVIDIA GPU에 접근하도록 `reservations.devices`로 설정되어 있습니다.
+- **SSO**: `ollama.${DEFAULT_URL}`으로 접근하며 Keycloak 인증 미들웨어로 보호됩니다.
+- **Persistence**: 수 GB 다운로드가 반복되지 않도록 모델은 `${DEFAULT_AI_MODEL_DIR}/ollama`에 저장됩니다.
+
+#### Security Boundary
+
+`ollama`는 API를 `127.0.0.1:${OLLAMA_HOST_PORT}`로만 게시하고 Traefik 라우트는 `gateway-standard-chain`·`sso-errors`·`sso-auth` 미들웨어(Keycloak SSO)를 거칩니다. Ollama는 Docker Secret을 쓰지 않으며 `OLLAMA_NO_CLOUD=1`로 클라우드 모델과 로그인을 끕니다. Open Notebook·MLflow·Crawl4AI의 인증·비밀 경계는 각 서비스 README에 있습니다.
+
+## Usage
+
+### Prerequisites
 
 Ollama와 ComfyUI는 소유자가 확인한 상시 HOME 역량입니다. 런타임 이미지 고정 값은 각 서비스([Ollama](ollama/README.md), [ComfyUI](comfyui/README.md))의 Compose 파일에 선언되어 있습니다. [파생된 Compose 이미지 프로젝션](../tech-stack.versions.json)은 드리프트 확인용 뷰입니다.
 
@@ -70,21 +84,7 @@ Ollama와 ComfyUI는 소유자가 확인한 상시 HOME 역량입니다. 런타�
 | Acceleration | NVIDIA CUDA | NVIDIA Container Toolkit 필요 |
 | Vector store | Qdrant(`04-data`) | HOME RAG는 Qdrant와 n8n이 맡음 |
 
-## Interfaces
-
-### Inputs and Outputs
-
-- **GPU Access**: 서비스는 NVIDIA GPU에 접근하도록 `reservations.devices`로 설정되어 있습니다.
-- **SSO**: `ollama.${DEFAULT_URL}`으로 접근하며 Keycloak 인증 미들웨어로 보호됩니다.
-- **Persistence**: 수 GB 다운로드가 반복되지 않도록 모델은 `${DEFAULT_AI_MODEL_DIR}/ollama`에 저장됩니다.
-
-### Security Boundary
-
-`ollama`는 API를 `127.0.0.1:${OLLAMA_HOST_PORT}`로만 게시하고 Traefik 라우트는 `gateway-standard-chain`·`sso-errors`·`sso-auth` 미들웨어(Keycloak SSO)를 거칩니다. Ollama는 Docker Secret을 쓰지 않으며 `OLLAMA_NO_CLOUD=1`로 클라우드 모델과 로그인을 끕니다. Open Notebook·MLflow·Crawl4AI의 인증·비밀 경계는 각 서비스 README에 있습니다.
-
-## Development
-
-### Local Workflow
+### Selected Start
 
 공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../.agents/governance/documentation-protocol.md)을 따른다.
 
@@ -97,7 +97,9 @@ Ollama와 ComfyUI는 소유자가 확인한 상시 HOME 역량입니다. 런타�
 6. 동시 추론 중 OOM을 방지하기 위해 `ollama-exporter`로 VRAM 사용량을 모니터링합니다.
 7. RAG 작업에는 벡터화용 embedding 모델(`embeddinggemma-2:740m`)이 준비되어 있는지 확인합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 저장소 루트에서 `docker compose --profile ai config --quiet`로 정적 사전 점검을 하고, 아래 명령으로 GPU와 모델 상태를 확인합니다.
 
@@ -136,9 +138,9 @@ provider 자격 증명을 읽지 못할 수 있습니다. provider egress는 별
 보호하지 않습니다. 이 이동은 인증·학습·서빙 기능을 새로 구현하지 않습니다.
 운영 subject0073,0080,0088이 해당 통제와 복구를 소유합니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - [infra/README.md](../README.md)
 - Operations guides - 08-ai (`docs/05.operations/guides/README.md`)
@@ -152,6 +154,6 @@ provider 자격 증명을 읽지 못할 수 있습니다. provider egress는 별
 - MLflow 복구 런북 (`docs/05.operations/runbooks/13-analytics-and-data-quality/0088-mlflow.md`, RUN-0088)
 - [Documentation index](../../docs/README.md)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 `ollama`와 `ollama-exporter`에는 Compose 헬스체크가 있고 exporter가 `obs_net`으로 지표를 내보냅니다. GPU 장애, Ollama, ComfyUI 복구는 Runbook Links의 런북을 따릅니다.

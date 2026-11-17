@@ -50,16 +50,19 @@ class CurrentBodyContractTests(unittest.TestCase):
             "guide": "Purpose|Prerequisites|Procedure|Troubleshooting",
             "policy": "Purpose and Scope|Rules|Enforcement|Ownership",
             "runbook": "Trigger and Scope|Preflight|Procedure|Verification|Escalation",
-            "repository-readme": "Purpose|Repository Map|Getting Started|References",
-            "runtime-governance-readme": "Purpose|Repository Map|Getting Started|References",
-            "readme": "Stage Responsibility|Contents|Workflow|Related Documents",
-            "documentation-readme": "Stage Responsibility|Contents|Workflow|Related Documents",
-            "reference-category-readme": "Stage Responsibility|Contents|Workflow|Related Documents",
+            "repository-readme": "Purpose|Getting Started|Repository Map|Support",
+            "runtime-governance-readme": "Purpose|Getting Started|Repository Map|Support",
+            "readme": "Responsibility|Current Contents|Usage",
+            "documentation-readme": "Responsibility|Current Contents|Usage",
+            "reference-category-readme": "Responsibility|Current Contents|Usage",
+            "research": "Responsibility|Current Contents|Usage",
+            "audit": "Responsibility|Current Contents|Usage",
+            "data": "Responsibility|Current Contents|Usage",
             "incident-year-readme": "Stage Responsibility|Contents|Workflow|Related Documents",
             "governance-knowledge-index": "Stage Responsibility|Contents|Workflow|Related Documents",
             "governance-prompt-index": "Stage Responsibility|Contents|Workflow|Related Documents",
             "governance-provider-index": "Stage Responsibility|Contents|Workflow|Related Documents",
-            "package-readme": "Purpose|Interfaces|Development|Operations",
+            "package-readme": "Service|Usage|Checks",
             "incident": "Impact|Response|Resolution",
             "postmortem": "Facts|Causes|Actions",
             "governance-policy": "Purpose and Scope|Rules|Enforcement|Ownership",
@@ -608,6 +611,13 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Structure", "body-heading-forbidden"),
                 ("## Usage", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
+                ("## References", "body-heading-forbidden"),
+                ("### Project Role", "body-subheading-forbidden"),
+                ("### Boundaries", "body-subheading-forbidden"),
+                ("### Directories", "body-subheading-forbidden"),
+                ("### Canonical Entry Points", "body-subheading-forbidden"),
+                ("### First Verified Path", "body-subheading-forbidden"),
+                ("### Support and Ownership", "body-subheading-forbidden"),
             ),
             "runtime-governance-readme": (
                 ("## Overview", "body-heading-forbidden"),
@@ -615,22 +625,96 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Structure", "body-heading-forbidden"),
                 ("## Usage", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
+                ("## References", "body-heading-forbidden"),
+                ("### Project Role", "body-subheading-forbidden"),
+                ("### Boundaries", "body-subheading-forbidden"),
+                ("### Directories", "body-subheading-forbidden"),
+                ("### Canonical Entry Points", "body-subheading-forbidden"),
+                ("### First Verified Path", "body-subheading-forbidden"),
+                ("### Support and Ownership", "body-subheading-forbidden"),
             ),
             "readme": (
                 ("## Overview", "body-heading-forbidden"),
                 ("## Scope", "body-heading-forbidden"),
                 ("## Structure", "body-heading-forbidden"),
-                ("## Usage", "body-heading-forbidden"),
+                ("## Stage Responsibility", "body-heading-forbidden"),
+                ("## Contents", "body-heading-forbidden"),
+                ("## Workflow", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
                 ("### Audience", "body-subheading-forbidden"),
+                ("### Purpose and Readers", "body-subheading-forbidden"),
+                ("### Inputs and Outputs", "body-subheading-forbidden"),
+                ("### Current Items", "body-subheading-forbidden"),
+                ("### Classification", "body-subheading-forbidden"),
+                ("### Create and Review", "body-subheading-forbidden"),
+                ("### Transition and Exit", "body-subheading-forbidden"),
+                ("### Upstream and Downstream", "body-subheading-forbidden"),
+                ("### Policy and Templates", "body-subheading-forbidden"),
+            ),
+            "documentation-readme": (
+                ("## Overview", "body-heading-forbidden"),
+                ("## Scope", "body-heading-forbidden"),
+                ("## Structure", "body-heading-forbidden"),
+                ("## Stage Responsibility", "body-heading-forbidden"),
+                ("## Contents", "body-heading-forbidden"),
+                ("## Workflow", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+                ("### Audience", "body-subheading-forbidden"),
+                ("### Purpose and Readers", "body-subheading-forbidden"),
+                ("### Inputs and Outputs", "body-subheading-forbidden"),
+                ("### Current Items", "body-subheading-forbidden"),
+                ("### Classification", "body-subheading-forbidden"),
+                ("### Create and Review", "body-subheading-forbidden"),
+                ("### Transition and Exit", "body-subheading-forbidden"),
+                ("### Upstream and Downstream", "body-subheading-forbidden"),
+                ("### Policy and Templates", "body-subheading-forbidden"),
+            ),
+            "reference-category-readme": (
+                ("## Overview", "body-heading-forbidden"),
+                ("## Scope", "body-heading-forbidden"),
+                ("## Structure", "body-heading-forbidden"),
+                ("## Stage Responsibility", "body-heading-forbidden"),
+                ("## Contents", "body-heading-forbidden"),
+                ("## Workflow", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+                ("### Audience", "body-subheading-forbidden"),
+                ("### Purpose and Readers", "body-subheading-forbidden"),
+                ("### Inputs and Outputs", "body-subheading-forbidden"),
+                ("### Current Items", "body-subheading-forbidden"),
+                ("### Classification", "body-subheading-forbidden"),
+                ("### Create and Review", "body-subheading-forbidden"),
+                ("### Transition and Exit", "body-subheading-forbidden"),
+                ("### Upstream and Downstream", "body-subheading-forbidden"),
+                ("### Policy and Templates", "body-subheading-forbidden"),
+            ),
+            "research": (
+                ("## Overview", "body-heading-forbidden"),
+                ("## Scope", "body-heading-forbidden"),
+                ("## Structure", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+                ("## Sources", "body-heading-forbidden"),
+                ("## Findings", "body-heading-forbidden"),
+                ("## Limitations", "body-heading-forbidden"),
+                ("## Traceability", "body-heading-forbidden"),
             ),
             "package-readme": (
                 ("## Overview", "body-heading-forbidden"),
                 ("## Scope", "body-heading-forbidden"),
                 ("## Structure", "body-heading-forbidden"),
-                ("## Usage", "body-heading-forbidden"),
+                ("## Purpose", "body-heading-forbidden"),
+                ("## Interfaces", "body-heading-forbidden"),
+                ("## Development", "body-heading-forbidden"),
+                ("## Operations", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Configuration", "body-subheading-forbidden"),
                 ("### Validation", "body-subheading-forbidden"),
+                ("### Service Role", "body-subheading-forbidden"),
+                ("### Supported Environment", "body-subheading-forbidden"),
+                ("### Inputs and Outputs", "body-subheading-forbidden"),
+                ("### Security Boundary", "body-subheading-forbidden"),
+                ("### Local Workflow", "body-subheading-forbidden"),
+                ("### Runbook Links", "body-subheading-forbidden"),
+                ("### Observability and Recovery", "body-subheading-forbidden"),
             ),
             "research-member": (
                 ("## Overview", "body-heading-forbidden"),
@@ -737,8 +821,8 @@ class RegisteredSectionContractTests(unittest.TestCase):
     ) -> None:
         body, _ = self._conforming_body("repository-readme")
         bad = body.replace(
-            "### Directories\n\n",
-            "### Directories\n\n| Path | Status |\n| --- | --- |\n",
+            "### Current Paths\n\n",
+            "### Current Paths\n\n| Path | Status |\n| --- | --- |\n",
             1,
         )
         self.assertIn(
@@ -762,8 +846,8 @@ class RegisteredSectionContractTests(unittest.TestCase):
         ):
             with self.subTest(header=header):
                 candidate = body.replace(
-                    "### Directories\n\n",
-                    "### Directories\n\n" + header + table,
+                    "### Current Paths\n\n",
+                    "### Current Paths\n\n" + header + table,
                     1,
                 )
                 self.assertEqual(
@@ -777,7 +861,7 @@ class RegisteredSectionContractTests(unittest.TestCase):
         table = "| Path | Purpose |\n| --- | --- |\n| a | b |\n\n"
         bad = "#### Later\n\n| Purpose | Path |\n| --- | --- |\n| a | b |\n\n"
         candidate = body.replace(
-            "### Directories\n\n", "### Directories\n\n" + table + bad, 1
+            "### Current Paths\n\n", "### Current Paths\n\n" + table + bad, 1
         )
         self.assertIn(
             "readme-documents-header-invalid",
@@ -787,8 +871,8 @@ class RegisteredSectionContractTests(unittest.TestCase):
     def test_commented_heading_cannot_move_a_readme_path_table(self) -> None:
         body, _ = self._conforming_body("repository-readme")
         candidate = body.replace(
-            "### Directories\n\n",
-            "### Directories\n\n<!-- Example\n### Other\n-->\n\n"
+            "### Current Paths\n\n",
+            "### Current Paths\n\n<!-- Example\n### Other\n-->\n\n"
             "| Purpose | Path |\n| --- | --- |\n| a | b |\n\n",
             1,
         )
@@ -812,8 +896,8 @@ class RegisteredSectionContractTests(unittest.TestCase):
         ):
             with self.subTest(header=header):
                 candidate = body.replace(
-                    "### Current Items\n\n이 절은 예시 본문입니다.",
-                    f"### Current Items\n\n{header}\n| --- | --- |",
+                    "### Paths\n\n이 절은 예시 본문입니다.",
+                    f"### Paths\n\n{header}\n| --- | --- |",
                     1,
                 )
                 self.assertEqual(

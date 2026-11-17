@@ -1,10 +1,10 @@
 ---
 title: "Codex Runtime Route"
-version: "1.0.1"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 generated_by: "scripts/operations/provider_surface_renderer.py"
 ---
 
@@ -14,27 +14,15 @@ generated_by: "scripts/operations/provider_surface_renderer.py"
 
 ## Purpose
 
-### Project Role
+### Audience
+
+`.codex/` 디렉터리를 여는 독자가 대상입니다.
+
+### Outcome
 
 이 생성 어댑터는 `.codex/provider.md`로 안내합니다.
 
-### Boundaries
-
 이 디렉터리는 생성된 provider 어댑터를 담으며, 정책 정본은 담지 않습니다.
-
-## Repository Map
-
-### Directories
-
-정본 거버넌스는 연결된 원본에 남습니다.
-
-| Path | Purpose |
-| --- | --- |
-| `.codex/provider.md` | 이 어댑터의 정본 원본 |
-
-### Canonical Entry Points
-
-정본 진입점은 [`.codex/provider.md`](../.codex/provider.md)입니다.
 
 ## Getting Started
 
@@ -42,16 +30,32 @@ generated_by: "scripts/operations/provider_surface_renderer.py"
 
 이 어댑터를 사용하기 전에 연결된 원본을 읽습니다.
 
-### First Verified Path
+### First Use
 
 `python3 scripts/operations/provider_surface_renderer.py --check`로 이 생성물이 원본과 일치하는지 확인합니다.
 
-## References
+## Repository Map
 
-### Current Documentation
+### Current Paths
 
-- [`.codex/provider.md`](../.codex/provider.md)
+정본 거버넌스는 연결된 원본에 남습니다.
 
-### Support and Ownership
+| Path | Purpose |
+| --- | --- |
+| `.codex/provider.md` | 이 어댑터의 정본 원본 |
+
+정본 진입점은 [`.codex/provider.md`](../.codex/provider.md)입니다.
+
+### Owners
 
 이 문서는 `scripts/operations/provider_surface_renderer.py`가 생성하며 소유자는 `@buenhyden`입니다.
+
+## Support
+
+### Help
+
+이 문서는 별도의 문의 경로를 기록하지 않습니다. 내용은 연결된 원본이 소유합니다.
+
+### Related Documentation
+
+- [`.codex/provider.md`](../.codex/provider.md)

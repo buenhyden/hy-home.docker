@@ -1,18 +1,18 @@
 ---
 title: "Security Tier (03-security)"
-version: "1.0.6"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
 # Security Tier (03-security)
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -32,27 +32,25 @@ OpenBao 상시 서비스의 선언, Agent 출력 계약과 운영 문서 연결�
 | --- | --- |
 | [openbao/](openbao/README.md) | HOME canonical 서버와 Agent |
 
-### Supported Environment
-
-#### Tech Stack
-
-실행 이미지·profile·마운트의 원본은 [openbao/](openbao/)의 compose 선언이다. [Derived Compose image projection](../tech-stack.versions.json)은 선언 drift 검증을 제공한다.
-
-## Interfaces
-
-### Inputs and Outputs
+### Interfaces
 
 #### Configuration
 
 OpenBao는 `core`, `local`, `dev`, `security`, `secrets`에서 선택된다. `${DEFAULT_SECURITY_DIR}/openbao`와 보존된 `${DEFAULT_SECURITY_DIR}/vault` 경로를 공유하지 않는다. 외부 UI는 `openbao.${DEFAULT_URL}`이다.
 
-### Security Boundary
+#### Security Boundary
 
 없음: 이 디렉터리는 Compose 서비스나 secret 참조를 직접 선언하지 않으며, 하위 `openbao/`가 각자 선언한다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+#### Tech Stack
+
+실행 이미지·profile·마운트의 원본은 [openbao/](openbao/)의 compose 선언이다. [Derived Compose image projection](../tech-stack.versions.json)은 선언 drift 검증을 제공한다.
+
+### Selected Start
 
 #### Usage
 
@@ -64,7 +62,9 @@ OpenBao는 `core`, `local`, `dev`, `security`, `secrets`에서 선택된다. `${
 
 인증·템플릿·endpoint 변경은 소비자의 비밀 공급에 영향을 준다. 원본 데이터 삭제, 저장소 공유, 재초기화 또는 키 회전을 구성 정리와 함께 수행하지 않는다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Testing
 
@@ -75,9 +75,7 @@ docker compose --env-file .env.example --profile core config --services
 bash scripts/hardening/check-all-hardening.sh 03-security
 ```
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -85,6 +83,6 @@ bash scripts/hardening/check-all-hardening.sh 03-security
 - [OpenBao migration 제약](https://openbao.org/docs/next/guides/migration/).
 - [인프라 인덱스](../README.md).
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 이 디렉터리는 자체 헬스체크나 관측 대상을 선언하지 않으며, 하위 `openbao/`가 각자 선언한다.

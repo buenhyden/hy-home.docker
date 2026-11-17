@@ -1,18 +1,18 @@
 ---
 title: "09-platform-ops: Platform Operations Tier"
-version: "1.3.1"
+version: "1.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
 # 09-platform-ops: Platform Operations Tier
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 IaC·아티팩트 배포·의존성 유지보수·플랫폼 공통 백업을 소유합니다.
 소프트웨어·설정 검증은 [11 Quality](../11-quality/README.md)가 담당합니다.
@@ -83,23 +83,23 @@ Registry와 SonarQube를 선택하는 기존 Compose 프로필이므로 이름�
 └── README.md
 ```
 
-### Supported Environment
+### Interfaces
 
-런타임은 Compose 프로필 `tooling`·`registry`·`iac`·`dependency-update`·`backup`이 선택하는 각 하위 leaf의 Compose/Dockerfile 선언이 소유합니다. 이 tier 디렉터리 자체에는 런타임 정의가 없습니다.
+#### Inputs and Outputs
 
-## Interfaces
+이 tier 자체는 API·포트가 없고 입력은 위 Purpose 표의 프로필 선택입니다. Registry는 `127.0.0.1`의 5000 포트를 게시하고 Terrakube는 management PostgreSQL·SeaweedFS·Valkey에 의존합니다(Scope 참조).
 
-### Inputs and Outputs
-
-이 tier 자체는 API·포트가 없고 입력은 위 Service Role 표의 프로필 선택입니다. Registry는 `127.0.0.1`의 5000 포트를 게시하고 Terrakube는 management PostgreSQL·SeaweedFS·Valkey에 의존합니다(Scope 참조).
-
-### Security Boundary
+#### Security Boundary
 
 Registry는 TLS/인증을 추적하지 않으므로 사용 전에 노출 범위를 제한해야 합니다. Renovate는 Docker Secret 토큰을 쓰고 원격 브랜치/PR 생성에 명시적 승인이 필요하며, OpenTofu plan/apply도 별도 승인입니다. Restic은 `secrets/`와 `.env`까지 스냅샷합니다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+런타임은 Compose 프로필 `tooling`·`registry`·`iac`·`dependency-update`·`backup`이 선택하는 각 하위 leaf의 Compose/Dockerfile 선언이 소유합니다. 이 tier 디렉터리 자체에는 런타임 정의가 없습니다.
+
+### Selected Start
 
 [documentation index](../../docs/README.md)를 사용한 뒤, `docs/05.operations/README.md`
 아래의 정확한 Stage 05 대상(`0021`, `0065`, `0069`, `0082`, `0083`)을 확인합니다. 저장소 루트에서 실행합니다.
@@ -114,13 +114,15 @@ HYHOME_COMPOSE_PROFILES=iac bash scripts/validation/validate-docker-compose.sh
 소유하며 [tech-stack.versions.json](../tech-stack.versions.json)은 파생된
 이미지 프로젝션입니다.
 
-### Checks
+## Checks
 
-Local Workflow의 `check-all-hardening.sh 09-platform-ops`와 `HYHOME_COMPOSE_PROFILES=iac`의 `validate-docker-compose.sh`가 검사입니다. 정적 검증은 부하 테스트·IaC apply·백업/복구·원격 업데이트·서비스 준비 상태의 근거가 아닙니다.
+### Readiness
 
-## Operations
+Selected Start의 `check-all-hardening.sh 09-platform-ops`와 `HYHOME_COMPOSE_PROFILES=iac`의 `validate-docker-compose.sh`가 검사입니다. 정적 검증은 부하 테스트·IaC apply·백업/복구·원격 업데이트·서비스 준비 상태의 근거가 아닙니다.
 
-### Runbook Links
+### Failure Handling
+
+#### Runbook Links
 
 - [Documentation index](../../docs/README.md)
 - [Infrastructure index](../README.md)
@@ -131,6 +133,6 @@ Local Workflow의 `check-all-hardening.sh 09-platform-ops`와 `HYHOME_COMPOSE_PR
 - OpenTofu 런북 (`docs/05.operations/runbooks/10-platform-and-backup/0082-opentofu.md`)
 - Renovate 런북 (`docs/05.operations/runbooks/10-platform-and-backup/0083-renovate.md`)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 백업·복구, Registry, Terrakube, OpenTofu, Renovate 복구는 Runbook Links의 런북을 따릅니다. 이 tier README 자체에는 헬스체크·지표가 없습니다.

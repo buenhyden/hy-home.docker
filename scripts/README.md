@@ -1,10 +1,10 @@
 ---
 title: "Utilities and Automation Scripts"
-version: "1.5.10"
+version: "1.6.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 created: "2026-02-21"
 ---
 
@@ -14,11 +14,7 @@ created: "2026-02-21"
 
 ## Purpose
 
-### Project Role
-
-`scripts/` 디렉터리에는 빌드, 테스트, 환경 구성 등에 필요한 보조 스크립트와 자동화 도구가 있습니다.
-
-#### Audience
+### Audience
 
 이 README의 주요 독자:
 
@@ -26,7 +22,11 @@ created: "2026-02-21"
 - Developers
 - Documentation Writers
 
-### Boundaries
+### Outcome
+
+#### Project Role
+
+`scripts/` 디렉터리에는 빌드, 테스트, 환경 구성 등에 필요한 보조 스크립트와 자동화 도구가 있습니다.
 
 #### In Scope
 
@@ -41,102 +41,6 @@ created: "2026-02-21"
 - `docs/05.operations/`에 속하는 장문의 운영 절차
 - `graphify-out/` 아래의 생성된 Graphify 산출물
 - `infra/` 아래의 서비스별 Docker Compose 소스 파일
-
-## Repository Map
-
-### Directories
-
-```text
-scripts/
-├── validation/          # Compose, 저장소, 문서, 템플릿·최종 control, preflight 검증
-├── hardening/           # tier 인자를 받는 통합 하드닝 점검
-├── hooks/               # provider-neutral 훅 디스패처와 post-tool 검증
-├── knowledge/           # Graphify 참고용 유틸리티
-├── operations/          # 로컬 운영, 배포 rehearsal, 생성된 evidence 소유
-├── security/            # 로컬 supply-chain 검증과 생성된 요약 소유
-├── requirements.txt     # 저장소 검증 스크립트에 필요한 Python 모듈
-├── requirements-pre-commit.txt # 로컬 staged·서버 PR 공통 pre-commit 도구 pin
-├── requirements-controller.lock # CI controller의 universal hash lock
-├── lib/<domain>/        # import 전용 도메인 모듈; 공개 entrypoint 아님
-├── lib/hardening-lib.sh # tier 하드닝 점검의 공유 구현
-└── README.md            # 이 문서
-```
-
-#### Purpose Folder Implementation
-
-canonical script surface는 purpose-folder 경로입니다. docs, CI, hooks, pre-commit
-참조가 purpose-folder 경로로 이동한 뒤 루트 레벨 `scripts/*.sh` 중복 파일은
-제거했습니다. 승인된 향후 호환성 계획이 명시적으로 요구하지 않는 한 루트 중복
-wrapper를 다시 만들지 않습니다.
-
-`scripts/lib/<domain>/`은 import 전용 도메인 동작을 소유하며 공개 entrypoint를
-정의하지 않습니다. `scripts/validation/`, `scripts/security/`,
-`scripts/operations/` 같은 purpose 폴더가 entrypoint를 소유하고 도메인 로직을
-라이브러리 계층에 위임합니다. `tests/lib/<domain>/`은 라이브러리 책임의 기본 테스트 위치이고,
-`tests/validation/`은 CLI·entrypoint·실행 context와 여러 모듈을 함께 검증하는
-동작을 소유합니다. 실제 test owner와 API/fixture 사용 증명은 Script Manifest를
-따르며, 같은 보장을 위한 별도 mirror smoke를 추가하지 않습니다.
-
-하드닝 표면은 의도적으로 `scripts/hardening/check-all-hardening.sh` 하나로
-통합했습니다. tier별 wrapper entrypoint는 2026-05-17 정리에서
-제거했으므로 대신 tier 인자를 사용합니다.
-
-각 스크립트의 정확한 경로, 소유권, 테스트 evidence는
-[`scripts/manifest.yaml`](manifest.yaml)이 소유합니다. Canonical Entry Points의 Direct
-child 표는 각 entrypoint의 용도를 설명합니다.
-
-#### Active Surface Retention Rules
-
-다음 중 하나라도 해당하면 루트 `scripts/` 구현을 유지합니다:
-
-- GitHub Actions, pre-commit, Claude/Codex 훅, 루트 README 파일, 활성 spec, 활성
-  운영 문서, 또는 `infra/**/README.md`가 해당 스크립트를 참조하는 경우
-- 다른 구현 스크립트가 이를 라이브러리로 source하는 경우
-- 로컬 preflight 점검이나 로컬 secret 파일 생성처럼, 수동 작업의 유일한 canonical
-  entrypoint인 경우
-
-단순 중복 wrapper, 활성 문서에 이미 반영된 일회성 작업, 또는 승인된 호환성 계획
-없이 재도입된 삭제 entrypoint는 제거하거나 반려합니다. 완료된 요구사항,
-아키텍처 결정, 실행 evidence, 거버넌스 메모리, 생성된 참고 산출물 아래의 과거
-참조는 감사 근거로만 쓰며 그것만으로 스크립트를 유지하지는 않습니다.
-
-#### Hardening Tier Arguments
-
-선택한 tier 하나만 검사하려면 `bash scripts/hardening/check-all-hardening.sh <tier>`를
-사용합니다. 인자가 없으면 지원되는 모든 tier를 검사합니다.
-
-| Tier          | Accepted arguments                         |
-| :------------ | :----------------------------------------- |
-| Gateway       | `01-gateway`, `gateway`                    |
-| Auth          | `02-auth`, `auth`                          |
-| Security      | `03-security`, `security`                  |
-| Data          | `04-data`, `data`                          |
-| Messaging     | `05-messaging`, `messaging`                |
-| Observability | `06-observability`, `observability`, `obs` |
-| Workflow      | `07-workflow`, `workflow`                  |
-| AI            | `08-ai`, `ai`                              |
-| Platform Operations | `09-platform-ops`, `platform-ops`                    |
-| Communication | `10-communication`, `communication`, `comm` |
-| Quality       | `11-quality`, `quality`                   |
-| Analytics     | `12-analytics`, `analytics`               |
-| Experience    | `13-experience`, `experience`             |
-
-### Canonical Entry Points
-
-`[scripts/manifest.yaml](manifest.yaml)` is the canonical inventory for every
-script, consumer, lifecycle, and test record. This README indexes only the
-direct purpose folders so it does not duplicate that manifest.
-
-| Direct child | Purpose |
-| --- | --- |
-| [`validation/`](validation/) | Repository, document, compose, and gate entrypoints. |
-| [`hardening/`](hardening/) | Tiered hardening entrypoint. |
-| [`hooks/`](hooks/) | Provider-neutral event and post-tool hooks. |
-| [`knowledge/`](knowledge/) | Knowledge and Graphify reporting utilities. |
-| [`operations/`](operations/) | Local operational, rehearsal, renderer, and secret-generation entrypoints. |
-| [`security/`](security/) | Supply-chain and local security entrypoints. |
-| [`lib/`](lib/) | Import-only domain implementations behind public entrypoints. |
-| [`manifest.yaml`](manifest.yaml) | Complete script inventory and ownership source. |
 
 ## Getting Started
 
@@ -158,7 +62,7 @@ Linux x86-64의 Python 3.12와 3.14 조건을 함께 담습니다. 로컬 pre-co
 `bin`을 `PATH` 맨 앞에 둡니다. `gen-secrets.sh`가 `PATH`의 `python3`를
 호출하기 때문입니다.
 
-### First Verified Path
+### First Use
 
 Hermes v1 후보 JSON의 로컬 사전 검사는
 `python3 scripts/validation/check-hermes-candidate.py <candidate.json>`으로
@@ -444,8 +348,6 @@ bash scripts/operations/sync-tech-stack-versions.sh --write
 # Renovate post-upgrade 단계: 바뀐 Compose 이미지·n8n 입력에 SEC01 update ledger를 다시 묶습니다
 bash scripts/operations/sync-update-ledger.sh --write
 
-
-
 # 기존 PATH 우선순위를 유지한 채 선택적 QA/CI 도구를 명시적으로 추가합니다
 source scripts/operations/use-qa-ci-tools.sh
 
@@ -519,9 +421,115 @@ PYTHONPATH=. .venv/bin/python tests/validation/test_script_manifest.py
 절대 호출하지 않습니다. 현재 두 조건을 모두 선언한 행은 없으므로 이 모드는
 기본 점검 이상을 추가하지 않습니다.
 
-## References
+## Repository Map
 
-### Current Documentation
+### Current Paths
+
+#### Directories
+
+```text
+scripts/
+├── validation/          # Compose, 저장소, 문서, 템플릿·최종 control, preflight 검증
+├── hardening/           # tier 인자를 받는 통합 하드닝 점검
+├── hooks/               # provider-neutral 훅 디스패처와 post-tool 검증
+├── knowledge/           # Graphify 참고용 유틸리티
+├── operations/          # 로컬 운영, 배포 rehearsal, 생성된 evidence 소유
+├── security/            # 로컬 supply-chain 검증과 생성된 요약 소유
+├── requirements.txt     # 저장소 검증 스크립트에 필요한 Python 모듈
+├── requirements-pre-commit.txt # 로컬 staged·서버 PR 공통 pre-commit 도구 pin
+├── requirements-controller.lock # CI controller의 universal hash lock
+├── lib/<domain>/        # import 전용 도메인 모듈; 공개 entrypoint 아님
+├── lib/hardening-lib.sh # tier 하드닝 점검의 공유 구현
+└── README.md            # 이 문서
+```
+
+#### Purpose Folder Implementation
+
+canonical script surface는 purpose-folder 경로입니다. docs, CI, hooks, pre-commit
+참조가 purpose-folder 경로로 이동한 뒤 루트 레벨 `scripts/*.sh` 중복 파일은
+제거했습니다. 승인된 향후 호환성 계획이 명시적으로 요구하지 않는 한 루트 중복
+wrapper를 다시 만들지 않습니다.
+
+`scripts/lib/<domain>/`은 import 전용 도메인 동작을 소유하며 공개 entrypoint를
+정의하지 않습니다. `scripts/validation/`, `scripts/security/`,
+`scripts/operations/` 같은 purpose 폴더가 entrypoint를 소유하고 도메인 로직을
+라이브러리 계층에 위임합니다. `tests/lib/<domain>/`은 라이브러리 책임의 기본 테스트 위치이고,
+`tests/validation/`은 CLI·entrypoint·실행 context와 여러 모듈을 함께 검증하는
+동작을 소유합니다. 실제 test owner와 API/fixture 사용 증명은 Script Manifest를
+따르며, 같은 보장을 위한 별도 mirror smoke를 추가하지 않습니다.
+
+하드닝 표면은 의도적으로 `scripts/hardening/check-all-hardening.sh` 하나로
+통합했습니다. tier별 wrapper entrypoint는 2026-05-17 정리에서
+제거했으므로 대신 tier 인자를 사용합니다.
+
+각 스크립트의 정확한 경로, 소유권, 테스트 evidence는
+[`scripts/manifest.yaml`](manifest.yaml)이 소유합니다. Canonical Entry Points의 Path
+표는 각 entrypoint의 용도를 설명합니다.
+
+#### Active Surface Retention Rules
+
+다음 중 하나라도 해당하면 루트 `scripts/` 구현을 유지합니다:
+
+- GitHub Actions, pre-commit, Claude/Codex 훅, 루트 README 파일, 활성 spec, 활성
+  운영 문서, 또는 `infra/**/README.md`가 해당 스크립트를 참조하는 경우
+- 다른 구현 스크립트가 이를 라이브러리로 source하는 경우
+- 로컬 preflight 점검이나 로컬 secret 파일 생성처럼, 수동 작업의 유일한 canonical
+  entrypoint인 경우
+
+단순 중복 wrapper, 활성 문서에 이미 반영된 일회성 작업, 또는 승인된 호환성 계획
+없이 재도입된 삭제 entrypoint는 제거하거나 반려합니다. 완료된 요구사항,
+아키텍처 결정, 실행 evidence, 거버넌스 메모리, 생성된 참고 산출물 아래의 과거
+참조는 감사 근거로만 쓰며 그것만으로 스크립트를 유지하지는 않습니다.
+
+#### Hardening Tier Arguments
+
+선택한 tier 하나만 검사하려면 `bash scripts/hardening/check-all-hardening.sh <tier>`를
+사용합니다. 인자가 없으면 지원되는 모든 tier를 검사합니다.
+
+| Tier          | Accepted arguments                         |
+| :------------ | :----------------------------------------- |
+| Gateway       | `01-gateway`, `gateway`                    |
+| Auth          | `02-auth`, `auth`                          |
+| Security      | `03-security`, `security`                  |
+| Data          | `04-data`, `data`                          |
+| Messaging     | `05-messaging`, `messaging`                |
+| Observability | `06-observability`, `observability`, `obs` |
+| Workflow      | `07-workflow`, `workflow`                  |
+| AI            | `08-ai`, `ai`                              |
+| Platform Operations | `09-platform-ops`, `platform-ops`                    |
+| Communication | `10-communication`, `communication`, `comm` |
+| Quality       | `11-quality`, `quality`                   |
+| Analytics     | `12-analytics`, `analytics`               |
+| Experience    | `13-experience`, `experience`             |
+
+#### Canonical Entry Points
+
+`[scripts/manifest.yaml](manifest.yaml)` is the canonical inventory for every
+script, consumer, lifecycle, and test record. This README indexes only the
+direct purpose folders so it does not duplicate that manifest.
+
+| Path | Purpose |
+| --- | --- |
+| [`validation/`](validation/) | Repository, document, compose, and gate entrypoints. |
+| [`hardening/`](hardening/) | Tiered hardening entrypoint. |
+| [`hooks/`](hooks/) | Provider-neutral event and post-tool hooks. |
+| [`knowledge/`](knowledge/) | Knowledge and Graphify reporting utilities. |
+| [`operations/`](operations/) | Local operational, rehearsal, renderer, and secret-generation entrypoints. |
+| [`security/`](security/) | Supply-chain and local security entrypoints. |
+| [`lib/`](lib/) | Import-only domain implementations behind public entrypoints. |
+| [`manifest.yaml`](manifest.yaml) | Complete script inventory and ownership source. |
+
+### Owners
+
+이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.
+
+## Support
+
+### Help
+
+이 문서는 별도의 문의·이슈 보고 경로를 기록하지 않습니다.
+
+### Related Documentation
 
 - [에이전트 작업 규칙](AGENTS.md)
 - ⚙️ Operations Baseline (`docs/05.operations/README.md`)
@@ -534,7 +542,3 @@ PYTHONPATH=. .venv/bin/python tests/validation/test_script_manifest.py
 - [Documentation index](../docs/README.md)
 
 Note: QuickWin baseline exceptions are sourced from `infra/common-optimizations.exceptions.json`.
-
-### Support and Ownership
-
-이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.

@@ -1,6 +1,6 @@
 ---
 title: "Documentation Space"
-version: "1.3.4"
+version: "1.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -9,9 +9,11 @@ updated: "2026-11-17"
 
 # docs
 
-## Stage Responsibility
+## Responsibility
 
-### Purpose and Readers
+### Purpose
+
+#### Purpose and Readers
 
 `docs/`는 shared harness-engineering and agent-first engineering 목적에 맞춰 프로젝트의 요구사항, 아키텍처, 결정 사항, 기술 명세, 실행 증거, 운영 지식을 통합 관리하는 표준 공간입니다. 활성 문서는 허용된 taxonomy 안에서만 관리하며, 검증 스크립트가 이 계약을 강제합니다.
 
@@ -25,14 +27,14 @@ updated: "2026-11-17"
 - Operators
 - Documentation Writers
 
-### Inputs and Outputs
-
 #### In Scope
 
 - 공식 stage 문서 taxonomy와 작성 원칙
 - 문서 유형별 템플릿 매핑
 - 문서 추적성, 검증, README 작성 기준
 - Agent governance와 사람 대상 문서의 경계
+
+### Excluded Responsibilities
 
 #### Out of Scope
 
@@ -41,9 +43,21 @@ updated: "2026-11-17"
 - 임시 scratch 문서나 비표준 active stage 폴더
 - 개별 서비스의 상세 운영 절차 본문
 
-## Contents
+## Current Contents
 
-### Current Items
+### Paths
+
+| Path | Purpose |
+| --- | --- |
+| [01.requirements/](01.requirements/README.md) | 제품/시스템 요구사항 |
+| [02.architecture/](02.architecture/README.md) | 아키텍처 설명과 결정 기록 |
+| [03.specs/](03.specs/README.md) | Spec Package: spec, plan, tasks, contracts 동거 |
+| [05.operations/](05.operations/README.md) | 운영 가이드, 정책, 런북, 사고 기록 |
+| [90.references/](90.references/README.md) | 외부 조사·감사·참고 데이터의 보조 증거 |
+| [98.archive/](98.archive/README.md) | 처분 체계 설명만 담음(기록 없음) |
+| [99.templates/](99.templates/README.md) | stage 문서 작성을 위한 표준 템플릿 |
+
+#### Current Items
 
 ```text
 docs/
@@ -82,8 +96,6 @@ docs/
 이전 stage 경로의 이관 매핑은 Git 이력에서 찾습니다. 현재 경로와 작성 계약은
 Stage 99 Registry가 소유합니다.
 
-### Classification
-
 #### Documentation Contract
 
 [Stage 99](99.templates/README.md)가 모든 문서 profile, 경로, lifecycle,
@@ -117,9 +129,36 @@ advisory graph는 advisory로 남고 `.agents/governance/environment-constraints
 
 Stage 98은 현재 보존 기록을 담지 않으며, 삭제된 문서와 은퇴한 historical evidence는 비권위 기록이므로 현재 소유자 문서의 계보 절과 Git 이력에서 확인합니다.
 
-## Workflow
+### Owners
 
-### Create and Review
+이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않습니다.
+
+## Usage
+
+### Entry Points
+
+#### Upstream and Downstream
+
+- [01.requirements/README.md](01.requirements/README.md)
+- [02.architecture/README.md](02.architecture/README.md)
+- [03.specs/README.md](03.specs/README.md)
+- [05.operations/README.md](05.operations/README.md)
+- [90.references/README.md](90.references/README.md)
+- 98.archive/README.md
+- [../README.md](../README.md)
+- [../infra/README.md](../infra/README.md)
+- [../secrets/README.md](../secrets/README.md)
+- [../scripts/README.md](../scripts/README.md)
+
+#### Policy and Templates
+
+- [Agent governance README](../.agents/README.md)
+- [99.templates/README.md](99.templates/README.md)
+- [문서 작성 계약](../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [문서 언어 규칙](../.agents/governance/documentation-protocol.md#document-language): README 본문 언어
+- 양식 원본은 `99.templates/templates/common/readme-documentation.template.md`이며, 형식은 [Stage 99 Registry 계약](99.templates/README.md)의 `documentation-readme` profile이 소유합니다.
+
+### Checks
 
 #### Authoring Steps
 
@@ -170,31 +209,8 @@ python3 scripts/validation/check-document-links.py --mode traceability
 [workflow contract](../.github/workflow-contract.yml)가 소유합니다.
 `check-document-links.py --mode alignment`는 현재 문서의 링크와 anchor를 확인합니다.
 
-### Transition and Exit
+#### Transition and Exit
 
 - 문서를 없앨 때는 남아야 할 내용을 01·02 소유 문서의 계보 절에 요약하고,
   원본을 삭제하며, 폐기 번호를 Registry `reserved_history`에 추가합니다. 현재 문서는
   `98.archive/`로 링크하지 않습니다.
-
-## Related Documents
-
-### Upstream and Downstream
-
-- [01.requirements/README.md](01.requirements/README.md)
-- [02.architecture/README.md](02.architecture/README.md)
-- [03.specs/README.md](03.specs/README.md)
-- [05.operations/README.md](05.operations/README.md)
-- [90.references/README.md](90.references/README.md)
-- 98.archive/README.md
-- [../README.md](../README.md)
-- [../infra/README.md](../infra/README.md)
-- [../secrets/README.md](../secrets/README.md)
-- [../scripts/README.md](../scripts/README.md)
-
-### Policy and Templates
-
-- [Agent governance README](../.agents/README.md)
-- [99.templates/README.md](99.templates/README.md)
-- [문서 작성 계약](../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
-- [문서 언어 규칙](../.agents/governance/documentation-protocol.md#document-language): README 본문 언어
-- 양식 원본은 `99.templates/templates/common/readme-documentation.template.md`이며, 형식은 [Stage 99 Registry 계약](99.templates/README.md)의 `documentation-readme` profile이 소유합니다.

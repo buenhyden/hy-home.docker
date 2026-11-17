@@ -1,10 +1,10 @@
 ---
 title: "Flink (Iceberg)"
-version: "1.1.1"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-09-23"
 ---
 
@@ -14,9 +14,9 @@ created: "2026-09-23"
 
 > 승인된 Iceberg REST catalog의 table에 스트리밍/배치 SQL을 쓰는 lakehouse LAB의 on-demand Flink session cluster입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 Flink는 독립 Compose project인 [lakehouse LAB](../docker-compose.yml)
 (`lab-lakehouse` profile)의 stream processing engine입니다. JobManager 하나와
@@ -57,18 +57,9 @@ flink/
 
 서비스 정의(`flink-jobmanager`, `flink-taskmanager`)는 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유합니다.
 
-### Supported Environment
+### Interfaces
 
-| Category | Technology | Notes |
-| :--- | :--- | :--- |
-| **Engine** | Apache Flink(`Dockerfile`의 base image) | JobManager 1 CPU / 1.25 GiB, TaskManager 2 CPU / 2 GiB, slot 2개 |
-| **Table format** | Iceberg Flink runtime | Spark와 동일한 Iceberg 버전; SigV4 REST catalog, S3FileIO |
-| **Streaming source** | Kafka SQL connector | 승인된 Kafka endpoint 필요; HOME Kafka는 LAB network에 없음 |
-| **State** | File checkpoint | `${LAB_DATA_DIR}/lakehouse/flink/checkpoints`, 두 컨테이너가 공유 |
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 `127.0.0.1:${LAB_FLINK_HOST_PORT:-18091}` -> 8081에서 JobManager REST API/UI를 제공하고 `LAB_LAKEHOUSE_CATALOG_URI`, `LAB_LAKEHOUSE_S3_ENDPOINT` 입력을 읽으며 checkpoint는 `${LAB_DATA_DIR}/lakehouse/flink/checkpoints`에 기록한다. 환경 변수는 아래 표와 같다.
 
@@ -87,19 +78,28 @@ Secret은 `${LAB_SECRET_DIR}/lakehouse/s3_lakehouse_secret_key.txt`의 LAB 전�
 `lakehouse`입니다. HOME 값을 복사하려면 별도 승인이 필요합니다. Flink 설정은
 Compose의 `-D` 인자로 지정하며 이미지 설정 파일은 수정하지 않습니다.
 
-### Security Boundary
+#### Security Boundary
 
 호스트 게시는 loopback뿐이며 TLS, 인증, Traefik route는 구성되지 않는다. `lab_lakehouse_net`에만 연결되고 HOME network는 없다. secret은 `lab_lakehouse_s3_lakehouse_secret_key`(-> `seaweedfs_s3_lakehouse_secret_key`)만 사용하고 값은 문서에 쓰지 않는다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+| Category | Technology | Notes |
+| :--- | :--- | :--- |
+| **Engine** | Apache Flink(`Dockerfile`의 base image) | JobManager 1 CPU / 1.25 GiB, TaskManager 2 CPU / 2 GiB, slot 2개 |
+| **Table format** | Iceberg Flink runtime | Spark와 동일한 Iceberg 버전; SigV4 REST catalog, S3FileIO |
+| **Streaming source** | Kafka SQL connector | 승인된 Kafka endpoint 필요; HOME Kafka는 LAB network에 없음 |
+| **State** | File checkpoint | `${LAB_DATA_DIR}/lakehouse/flink/checkpoints`, 두 컨테이너가 공유 |
+
+### Selected Start
 
 아래 `LAB`은 저장소 루트에서
 `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse`입니다.
 `config`는 render만 합니다. 컨테이너를 시작하는 명령은
 `python3 scripts/operations/lab.py check|up|down lakehouse`의 lease 규칙
-([LAB 안내](../../README.md#local-workflow))을 따릅니다. 먼저 checkpoint 디렉터리를
+([LAB 안내](../../README.md#selected-start))을 따릅니다. 먼저 checkpoint 디렉터리를
 생성하십시오: `install -d -m 2770 -g "${LAB_SECRETS_GID:-1000}" "$LAB_DATA_DIR/lakehouse/flink/checkpoints"`.
 
 | Command | Description |
@@ -118,14 +118,16 @@ Compose의 `-D` 인자로 지정하며 이미지 설정 파일은 수정하지 �
 런타임 이미지 권한은 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유하며
 [derived Compose 이미지 투영](../../../infra/tech-stack.versions.json)은 drift 증거입니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 - `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/15-labs/0094-lakehouse.md`)
 - **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/15-labs/0094-lakehouse.md`)
@@ -133,7 +135,7 @@ Compose의 `-D` 인자로 지정하며 이미지 설정 파일은 수정하지 �
 - [LAB 탐색](../../README.md)
 - [문서 인덱스](../../../docs/README.md)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 - Exit `64`: `lakehouse` secret이 없거나 비어 있습니다.
 - `ClassNotFoundException: org.apache.hadoop.conf.Configuration`: 이미지에 Hadoop client jar가 없습니다.

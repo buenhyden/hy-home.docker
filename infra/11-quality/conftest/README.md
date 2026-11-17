@@ -1,10 +1,10 @@
 ---
 title: "Conftest"
-version: "1.0.4"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-09-23"
 ---
 
@@ -14,9 +14,9 @@ created: "2026-09-23"
 
 > `infra/` 하위 Compose 파일과 Dockerfile에 대한 온디맨드 **OPTIONAL** 정책 테스트(Open Policy Agent Rego)입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 Conftest는 `policy-check` profile로 선택되는 **OPTIONAL** one-shot 작업입니다.
 공개 `infra/`와 `labs/`를 읽기 전용으로 마운트하고 network 없이 실행합니다.
@@ -56,26 +56,26 @@ conftest/
     └── dockerfile_test.rego
 ```
 
-### Supported Environment
+### Interfaces
+
+#### Inputs and Outputs
+
+환경 변수나 시크릿이 없습니다.
+
+#### Security Boundary
+
+컨테이너는 `network_mode: none`으로 실행하며 `infra/`와 `labs/`를 읽기 전용으로 마운트한다. 환경 변수와 secret이 없고 시크릿과 `.env`는 검사 범위 밖이다.
+
+## Usage
+
+### Prerequisites
 
 | Category | Technology | Notes |
 | :--- | :--- | :--- |
 | **Tool** | Conftest (`openpolicyagent/conftest`) | Rego v1 정책 |
 | **Access** | 공개 `infra/`, `labs/`, 임시 파생 입력 읽기 전용 | 네트워크 없음, UID 1000, 읽기 전용 root |
 
-## Interfaces
-
-### Inputs and Outputs
-
-환경 변수나 시크릿이 없습니다.
-
-### Security Boundary
-
-컨테이너는 `network_mode: none`으로 실행하며 `infra/`와 `labs/`를 읽기 전용으로 마운트한다. 환경 변수와 secret이 없고 시크릿과 `.env`는 검사 범위 밖이다.
-
-## Development
-
-### Local Workflow
+### Selected Start
 
 | Command | Description |
 | :--- | :--- |
@@ -92,7 +92,9 @@ conftest/
 런타임 이미지와 프로필의 권위는 [docker-compose.yml](docker-compose.yml)에 있으며
 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 근거입니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 - CI: `leaf.conftest-policy`가 `scripts/validation/check-conftest-policy.sh`를 실행합니다.
 - `HYHOME_COMPOSE_PROFILES=policy-check bash scripts/validation/validate-docker-compose.sh`
@@ -106,16 +108,16 @@ conftest/
 직접 선언된 job의 `verify`는 사용할 수 있으나, 준비되지 않은 `corpus`·기본 실행은
 wrapper가 필요하다는 오류로 종료합니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - **Guide**: Conftest Usage Guide (`docs/05.operations/guides/12-testing-and-quality/0095-conftest.md`)
 - **Policy**: Conftest Operations Policy (`docs/05.operations/policies/12-testing-and-quality/0095-conftest.md`)
 - **Runbook**: Conftest Recovery Runbook (`docs/05.operations/runbooks/12-testing-and-quality/0095-conftest.md`)
 - [Documentation index](../../../docs/README.md)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 - `FAIL - <file> - <namespace> - …`는 선언과 규칙을 가리키므로 해당 선언을 수정합니다.
 - `verify`가 실패하면 규칙과 그 테스트가 서로 어긋난다는 뜻입니다.

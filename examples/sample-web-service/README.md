@@ -1,10 +1,10 @@
 ---
 title: "sample-web-service"
-version: "1.1.2"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # sample-web-service
@@ -15,9 +15,9 @@ updated: "2026-11-13"
 > 서비스를 시작할 때 이 폴더를 복사한 뒤, 이름, 이미지, 포트, 설정을 대상
 > 서비스에 맞게 바꿉니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -74,23 +74,23 @@ sample-web-service/
 | `.env.example`       | secret이 아닌 환경 변수 템플릿; `.env`로 복사해서 사용           |
 | `service.md`         | canonical Service 계약의 sample 전용 인스턴스                   |
 
-### Supported Environment
+### Interfaces
 
-런타임은 `examples/sample-web-service/docker-compose.yml`의 `web` 서비스로 정의되며, 이미지와 태그는 해당 Compose 선언이 소유한다.
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 호스트 게시 포트는 `${WEB_HOST_PORT:-8080}:8080`이다. 연결 네트워크는 `sample-internal`이다. (출처: `examples/sample-web-service/docker-compose.yml`의 `web` 서비스)
 
-### Security Boundary
+#### Security Boundary
 
 이 서비스 정의에는 `secrets` 참조가 없다. 호스트로 게시되는 포트는 `${WEB_HOST_PORT:-8080}:8080`이다. (출처: `examples/sample-web-service/docker-compose.yml`의 `web` 서비스)
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+런타임은 `examples/sample-web-service/docker-compose.yml`의 `web` 서비스로 정의되며, 이미지와 태그는 해당 Compose 선언이 소유한다.
+
+### Selected Start
 
 #### Usage
 
@@ -101,7 +101,9 @@ sample-web-service/
 4. 병렬 로컬 인스턴스가 필요하면 명시적인 project 이름을 선택합니다.
 5. 서비스를 사용하기 전에 Compose를 검증합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
@@ -110,9 +112,7 @@ sample-web-service/
 - `python3 -m unittest tests.validation.test_sample_service_delivery_rehearsal`는
   Docker 리소스를 시작하지 않고 로컬 delivery 계약을 검증합니다.
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -121,8 +121,6 @@ sample-web-service/
 - New-service onboarding guide (`docs/05.operations/guides/10-platform-and-backup/0008-new-service-onboarding.md`)
 - Release management runbook (`docs/05.operations/runbooks/10-platform-and-backup/0009-release-management.md`)
 - [Documentation index](../../docs/README.md)
-
-### Observability and Recovery
 
 #### Service Readiness
 

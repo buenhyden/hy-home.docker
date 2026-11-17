@@ -1,17 +1,17 @@
 ---
 title: "Independent Manifest Pipeline"
-version: "0.2.2"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Independent Manifest Pipeline
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -34,13 +34,7 @@ P05는 검토 후 고정한 SQL 버전·hash와 함수 계약을 소비합니다
 - [fixtures/](fixtures/README.md): 공개 합성 manifest와 값 없는 접속 예시.
 - Compose 변경은 [airflow Compose](../../docker-compose.yml)에 합쳐져 있고 별도 override는 없습니다.
 
-### Supported Environment
-
-별도 이미지는 없다. Airflow 기본 이미지와 `infra/07-workflow/airflow/docker-compose.yml`가 이 폴더의 DAG와 `workflow_lib`를 읽기 전용으로 mount해 실행한다.
-
-## Interfaces
-
-### Inputs and Outputs
+### Interfaces
 
 #### Configuration
 
@@ -54,7 +48,7 @@ overlay 규칙은 POL-0078이 소유하며 이 workload는 overlay를 쓰지 않
 `OPSFLOW_SECRET_DIR`에는 worker 전용 보호 디렉터리의 정확한 경로를 지정합니다. 기본 이미지를 그대로 쓰며
 n8n 변경은 없습니다.
 
-### Security Boundary
+#### Security Boundary
 
 Worker는 `pg.json`, `s3.json`과 TLS를 선택한 경우 같은 보호 폴더의
 `ca.pem`을 읽습니다. CA 전달(`workflow_lib/tls.py`)은 보호된 경로·소유자·권한·
@@ -82,9 +76,13 @@ Owner는 NOLOGIN이며 migrator만 명시적 SET ROLE 권한을 갖고 runtime�
 항목입니다. pool 한 slot 생성도 별도 실행 대상입니다. 기존 generic table-grant 계약을 이 workload에
 대입하거나 미지정 자격을 자동 발급하지 않습니다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+별도 이미지는 없다. Airflow 기본 이미지와 `infra/07-workflow/airflow/docker-compose.yml`가 이 폴더의 DAG와 `workflow_lib`를 읽기 전용으로 mount해 실행한다.
+
+### Selected Start
 
 #### Usage
 
@@ -93,7 +91,9 @@ Owner는 NOLOGIN이며 migrator만 명시적 SET ROLE 권한을 갖고 runtime�
 `tests.validation.test_opsflow_airflow_contract` unittest를 실행합니다.
 SDK double·driver double의 PASS는 실제 DAG import나 DEV 실행의 증거가 아닙니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
@@ -112,9 +112,9 @@ UNVERIFIED이고 recovery는 NOT_RUN/BLOCKED입니다. Task0018(`docs/03.specs/0
 별도로 기록합니다. 정제된 명령·결과만 공개하고 원시 payload·자격·운영 로그는
 남기지 않습니다. 직렬 lock·소유 자원·cleanup HOLD는 기존 fixture 경계를 따릅니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -128,7 +128,7 @@ UNVERIFIED이고 recovery는 NOT_RUN/BLOCKED입니다. Task0018(`docs/03.specs/0
 - [Task SDK](https://airflow.apache.org/docs/task-sdk/stable/api.html)
 - [Compose merge](https://docs.docker.com/reference/compose-file/merge/)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 PG/S3는 하나의 원자적 트랜잭션이 아니므로 DB 실패 후 객체는 unpublished로
 남고 같은 bytes를 readback한 뒤 재사용합니다. Orphan 삭제는 게시 장부와 별도

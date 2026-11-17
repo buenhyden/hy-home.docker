@@ -1,10 +1,10 @@
 ---
 title: "Traefik Dynamic Configuration"
-version: "1.0.10"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Traefik Dynamic Configuration
@@ -27,9 +27,9 @@ Traefik은 이 디렉터리의 설정을 재시작 없이 hot-reload합니다.
 
 ---
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -69,23 +69,23 @@ infra/01-gateway/traefik/dynamic/
 └── tls.yaml  # 구성 파일
 ```
 
-### Supported Environment
+### Interfaces
 
-파일 공급자용 동적 설정(`blog-export.yml`, `hermes-webhook.yml`, `hermes.yml`, `middleware.yml`, `tls.yaml`)만 두며 Compose와 Dockerfile은 없다. 상위 Compose가 이 폴더를 `/dynamic`에 읽기 전용으로 마운트한다.
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 라우터 호스트는 `blog-export.`, `n8n.`, `hermes.` 하위 도메인이며, 도메인 값은 `{{ env "DEFAULT_URL" }}`로 읽는다. 별도 포트는 열지 않는다.
 
-### Security Boundary
+#### Security Boundary
 
 `tls.yaml`은 `/certs/cert.pem`과 `/certs/key.pem` 경로만 참조하며 인증서 본문은 이 폴더에 없다. 보호 대상 라우터는 `middleware.yml`의 미들웨어와 `oauth2-proxy-svc` 서비스를 거친다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+파일 공급자용 동적 설정(`blog-export.yml`, `hermes-webhook.yml`, `hermes.yml`, `middleware.yml`, `tls.yaml`)만 두며 Compose와 Dockerfile은 없다. 상위 Compose가 이 폴더를 `/dynamic`에 읽기 전용으로 마운트한다.
+
+### Selected Start
 
 #### Usage
 
@@ -94,13 +94,13 @@ infra/01-gateway/traefik/dynamic/
 3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
 4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
 
-### Checks
+## Checks
+
+### Readiness
 
 없음: 이 폴더는 자체 테스트나 검증 스크립트를 두지 않는다. Traefik 파일 공급자가 로드 오류를 로그로 남기며, 로드 결과는 `traefik` 서비스 로그로 확인한다.
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -111,6 +111,6 @@ infra/01-gateway/traefik/dynamic/
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [curated 버전 투영](../../../tech-stack.versions.json)으로 drift를 검증합니다.
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 이 폴더는 자체 헬스체크를 선언하지 않는다. 라우터와 서비스 로드 상태는 상위 `traefik` 서비스의 헬스체크와 로그가 소유한다.

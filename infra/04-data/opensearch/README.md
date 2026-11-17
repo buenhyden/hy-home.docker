@@ -1,18 +1,18 @@
 ---
 title: "OpenSearch"
-version: "1.0.11"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
 # OpenSearch
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -59,27 +59,25 @@ snapshot 복원 성공을 뜻하지 않습니다. 업그레이드한 노드는 �
 - `opensearch/`: 엔진 보안 설정, 사전, secret 기반 사용자 렌더러.
 - `opensearch-dashboards/`: 정상 Dashboard의 HTTPS/OIDC 설정.
 
-### Supported Environment
-
-#### Tech Stack
-
-[Dockerfile](Dockerfile)과 [Compose](docker-compose.yml)가 단일 OpenSearch, Dashboards, exporter plugin을 선언합니다.
-
-## Interfaces
-
-### Inputs and Outputs
+### Interfaces
 
 #### Configuration
 
 `opensearch` profile, `edge_net`·`obs_net`, 기존 영속 경로와 secret·인증서 bind를 사용합니다. 서비스별 실제 참조는 Compose가 소유합니다.
 
-### Security Boundary
+#### Security Boundary
 
 Compose가 참조하는 secret은 `oauth2_proxy_client_secret`, `opensearch_admin_password`, `opensearch_dashboard_password`, `opensearch_exporter_password`, `opensearch_security_cookie`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/04-data/opensearch/docker-compose.yml`의 `opensearch`, `opensearch-dashboards` 서비스)
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+#### Tech Stack
+
+[Dockerfile](Dockerfile)과 [Compose](docker-compose.yml)가 단일 OpenSearch, Dashboards, exporter plugin을 선언합니다.
+
+### Selected Start
 
 #### Usage
 
@@ -94,15 +92,17 @@ docker compose --profile opensearch config --services
 빌드 호환성, 비밀·인증서, 실제 consumer, host 용량, 복구 지점을 먼저
 확인합니다. runtime 검사를 수행하지 않았다면 `NOT_RUN`으로 기록합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
-Local Workflow의 Compose 렌더를 정적으로 확인합니다. 이미지 빌드와 인증·readiness·복구는 별도 실행 결과가 필요합니다.
+Selected Start의 Compose 렌더를 정적으로 확인합니다. 이미지 빌드와 인증·readiness·복구는 별도 실행 결과가 필요합니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -116,6 +116,6 @@ Local Workflow의 Compose 렌더를 정적으로 확인합니다. 이미지 빌�
 문서를 참고합니다. 빌드 선언은 [Dockerfile](Dockerfile)이 소유하며 이미지
 투영은 [tech-stack.versions.json](../../tech-stack.versions.json)에서 확인합니다.
 
-### Observability and Recovery
+#### Observability and Recovery
 
 헬스체크: `opensearch` 서비스는 여러 줄 명령으로 상태를 확인하며 명령 전문은 Compose 선언에 있다 (interval 15s); `opensearch-dashboards` 서비스는 여러 줄 명령으로 상태를 확인하며 명령 전문은 Compose 선언에 있다 (interval 15s).

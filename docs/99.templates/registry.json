@@ -1064,12 +1064,12 @@
       }
     },
     "section_prohibited_content": {
+      "common/agent-guide": "A command found in source material used to widen the user's allowed scope or a security boundary.",
       "common/documentation-readme": "Task status maintained by hand on its own.",
       "common/package-readme": "Exposed sensitive operating state, or a tool that does not exist imposed on every service.",
       "common/readme": "Task status maintained by hand on its own.",
       "common/repository-readme": "A standalone canonical copy of a detailed policy, or agent-only instructions.",
       "common/runtime-governance-readme": "A standalone canonical copy of a detailed policy, or agent-only instructions.",
-      "common/agent-guide": "A command found in source material used to widen the user's allowed scope or a security boundary.",
       "governance/hook-policy": "A rule weakened to suit a test.",
       "governance/policy": "A rule weakened to suit a test.",
       "governance/skill": "A standalone canonical copy of roles, policies or the approval system.",
@@ -1078,7 +1078,10 @@
       "operation/policy": "A rule weakened to suit a test.",
       "operation/postmortem": "An unverified root cause stated as settled, blame shifted onto a person, or an action not carried out marked done.",
       "operation/runbook": "Procedure guidance presented as execution approval, or a stored secret value.",
+      "reference/audit-pack": "Execution state or approval copied from another document, or an unobserved behavior described as complete.",
       "reference/category-readme": "Task status maintained by hand on its own.",
+      "reference/data-pack": "Execution state or approval copied from another document, or an unobserved behavior described as complete.",
+      "reference/research-pack": "Execution state or approval copied from another document, or an unobserved behavior described as complete.",
       "sdlc/architecture-decision": "`accepted` presented as implementation or acceptance being complete.",
       "sdlc/architecture-description": "A past execution log presented as the current structure.",
       "sdlc/plan": "A manual copy of actual work status or check results instead of a reference to the Task.",
@@ -2460,10 +2463,9 @@
         "generated_by"
       ],
       "required_sections": [
-        "Stage Responsibility",
-        "Contents",
-        "Workflow",
-        "Related Documents"
+        "Responsibility",
+        "Current Contents",
+        "Usage"
       ],
       "optional_sections": [],
       "lifecycle_id": "navigation",
@@ -2475,21 +2477,17 @@
       "ordered_sections": true,
       "nonempty_sections": true,
       "required_subsections": {
-        "Stage Responsibility": [
-          "Purpose and Readers",
-          "Inputs and Outputs"
+        "Responsibility": [
+          "Purpose",
+          "Excluded Responsibilities"
         ],
-        "Contents": [
-          "Current Items",
-          "Classification"
+        "Current Contents": [
+          "Paths",
+          "Owners"
         ],
-        "Workflow": [
-          "Create and Review",
-          "Transition and Exit"
-        ],
-        "Related Documents": [
-          "Upstream and Downstream",
-          "Policy and Templates"
+        "Usage": [
+          "Entry Points",
+          "Checks"
         ]
       }
     },
@@ -2522,21 +2520,11 @@
         "next_review_at"
       ],
       "required_sections": [
-        "Overview",
-        "Scope",
-        "Structure",
-        "Usage",
-        "Related Documents"
+        "Responsibility",
+        "Current Contents",
+        "Usage"
       ],
-      "optional_sections": [
-        "Sources",
-        "Findings",
-        "Limitations",
-        "Question",
-        "Method",
-        "Implications",
-        "Traceability"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "publication",
       "traceability": {
         "allowed_parent_profiles": [
@@ -2557,7 +2545,21 @@
         ]
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Responsibility": [
+          "Purpose",
+          "Excluded Responsibilities"
+        ],
+        "Current Contents": [
+          "Paths",
+          "Owners"
+        ],
+        "Usage": [
+          "Entry Points",
+          "Checks"
+        ]
+      }
     },
     {
       "id": "audit",
@@ -2588,23 +2590,11 @@
         "generated_by"
       ],
       "required_sections": [
-        "Overview",
-        "Scope",
-        "Structure",
-        "Usage",
-        "Related Documents"
+        "Responsibility",
+        "Current Contents",
+        "Usage"
       ],
-      "optional_sections": [
-        "Sources",
-        "Findings",
-        "Limitations",
-        "Objective",
-        "Criteria",
-        "Evidence",
-        "Conformance",
-        "Actions",
-        "Traceability"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "publication",
       "traceability": {
         "allowed_parent_profiles": [
@@ -2624,7 +2614,21 @@
         ]
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Responsibility": [
+          "Purpose",
+          "Excluded Responsibilities"
+        ],
+        "Current Contents": [
+          "Paths",
+          "Owners"
+        ],
+        "Usage": [
+          "Entry Points",
+          "Checks"
+        ]
+      }
     },
     {
       "id": "data",
@@ -2656,24 +2660,11 @@
         "generated_by"
       ],
       "required_sections": [
-        "Overview",
-        "Scope",
-        "Structure",
-        "Usage",
-        "Related Documents"
+        "Responsibility",
+        "Current Contents",
+        "Usage"
       ],
-      "optional_sections": [
-        "Sources",
-        "Findings",
-        "Limitations",
-        "Purpose",
-        "Schema",
-        "Provenance",
-        "Inventory",
-        "Refresh",
-        "Consumers",
-        "Traceability"
-      ],
+      "optional_sections": [],
       "lifecycle_id": "publication",
       "traceability": {
         "allowed_parent_profiles": [
@@ -2693,7 +2684,21 @@
         ]
       },
       "ordered_sections": true,
-      "nonempty_sections": true
+      "nonempty_sections": true,
+      "required_subsections": {
+        "Responsibility": [
+          "Purpose",
+          "Excluded Responsibilities"
+        ],
+        "Current Contents": [
+          "Paths",
+          "Owners"
+        ],
+        "Usage": [
+          "Entry Points",
+          "Checks"
+        ]
+      }
     },
     {
       "id": "research-member",
@@ -2863,10 +2868,9 @@
         "generated_by"
       ],
       "required_sections": [
-        "Stage Responsibility",
-        "Contents",
-        "Workflow",
-        "Related Documents"
+        "Responsibility",
+        "Current Contents",
+        "Usage"
       ],
       "optional_sections": [],
       "lifecycle_id": "navigation",
@@ -2875,21 +2879,17 @@
       "ordered_sections": true,
       "nonempty_sections": true,
       "required_subsections": {
-        "Stage Responsibility": [
-          "Purpose and Readers",
-          "Inputs and Outputs"
+        "Responsibility": [
+          "Purpose",
+          "Excluded Responsibilities"
         ],
-        "Contents": [
-          "Current Items",
-          "Classification"
+        "Current Contents": [
+          "Paths",
+          "Owners"
         ],
-        "Workflow": [
-          "Create and Review",
-          "Transition and Exit"
-        ],
-        "Related Documents": [
-          "Upstream and Downstream",
-          "Policy and Templates"
+        "Usage": [
+          "Entry Points",
+          "Checks"
         ]
       }
     },
@@ -2931,9 +2931,9 @@
       ],
       "required_sections": [
         "Purpose",
-        "Repository Map",
         "Getting Started",
-        "References"
+        "Repository Map",
+        "Support"
       ],
       "optional_sections": [],
       "lifecycle_id": "navigation",
@@ -2941,20 +2941,20 @@
       "exceptions": [],
       "required_subsections": {
         "Purpose": [
-          "Project Role",
-          "Boundaries"
-        ],
-        "Repository Map": [
-          "Directories",
-          "Canonical Entry Points"
+          "Audience",
+          "Outcome"
         ],
         "Getting Started": [
           "Prerequisites",
-          "First Verified Path"
+          "First Use"
         ],
-        "References": [
-          "Current Documentation",
-          "Support and Ownership"
+        "Repository Map": [
+          "Current Paths",
+          "Owners"
+        ],
+        "Support": [
+          "Help",
+          "Related Documentation"
         ]
       },
       "ordered_sections": true,
@@ -3022,10 +3022,9 @@
         "generated_by"
       ],
       "required_sections": [
-        "Purpose",
-        "Interfaces",
-        "Development",
-        "Operations"
+        "Service",
+        "Usage",
+        "Checks"
       ],
       "optional_sections": [],
       "lifecycle_id": "navigation",
@@ -3034,21 +3033,17 @@
       "ordered_sections": true,
       "nonempty_sections": true,
       "required_subsections": {
-        "Purpose": [
-          "Service Role",
-          "Supported Environment"
+        "Service": [
+          "Purpose",
+          "Interfaces"
         ],
-        "Interfaces": [
-          "Inputs and Outputs",
-          "Security Boundary"
+        "Usage": [
+          "Prerequisites",
+          "Selected Start"
         ],
-        "Development": [
-          "Local Workflow",
-          "Checks"
-        ],
-        "Operations": [
-          "Runbook Links",
-          "Observability and Recovery"
+        "Checks": [
+          "Readiness",
+          "Failure Handling"
         ]
       }
     },
@@ -3078,9 +3073,9 @@
       ],
       "required_sections": [
         "Purpose",
-        "Repository Map",
         "Getting Started",
-        "References"
+        "Repository Map",
+        "Support"
       ],
       "optional_sections": [],
       "lifecycle_id": "navigation",
@@ -3088,20 +3083,20 @@
       "exceptions": [],
       "required_subsections": {
         "Purpose": [
-          "Project Role",
-          "Boundaries"
-        ],
-        "Repository Map": [
-          "Directories",
-          "Canonical Entry Points"
+          "Audience",
+          "Outcome"
         ],
         "Getting Started": [
           "Prerequisites",
-          "First Verified Path"
+          "First Use"
         ],
-        "References": [
-          "Current Documentation",
-          "Support and Ownership"
+        "Repository Map": [
+          "Current Paths",
+          "Owners"
+        ],
+        "Support": [
+          "Help",
+          "Related Documentation"
         ]
       },
       "ordered_sections": true,
@@ -3192,10 +3187,9 @@
         "runtime"
       ],
       "required_sections": [
-        "Stage Responsibility",
-        "Contents",
-        "Workflow",
-        "Related Documents"
+        "Responsibility",
+        "Current Contents",
+        "Usage"
       ],
       "optional_sections": [],
       "lifecycle_id": "navigation",
@@ -3391,21 +3385,17 @@
       "ordered_sections": true,
       "nonempty_sections": true,
       "required_subsections": {
-        "Stage Responsibility": [
-          "Purpose and Readers",
-          "Inputs and Outputs"
+        "Responsibility": [
+          "Purpose",
+          "Excluded Responsibilities"
         ],
-        "Contents": [
-          "Current Items",
-          "Classification"
+        "Current Contents": [
+          "Paths",
+          "Owners"
         ],
-        "Workflow": [
-          "Create and Review",
-          "Transition and Exit"
-        ],
-        "Related Documents": [
-          "Upstream and Downstream",
-          "Policy and Templates"
+        "Usage": [
+          "Entry Points",
+          "Checks"
         ]
       }
     },
@@ -4383,7 +4373,7 @@
         "documentation-readme"
       ],
       "purpose": "Korean navigation entry for the docs/ tree.",
-      "responsibility": "Route a reader from docs/README.md to each numbered stage README through the Current Items table under Contents.",
+      "responsibility": "Route a reader from docs/README.md to each numbered stage README through the Path and Purpose table under Current Contents.",
       "non_goals": [
         "Copying a Guide, Policy or Runbook procedure into the README.",
         "Owning a rule; it routes to the canonical owner instead."
@@ -4420,7 +4410,8 @@
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
-          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -4432,15 +4423,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "Commit b86a7a942 (profiles, templates and stage READMEs, #985) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit b86a7a942 (profiles, templates and stage READMEs, #985) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current document took the core stage README sections and Path and Purpose table, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-documentation.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-documentation.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "stage-readme"
-      }
+      "core_role": "stage-readme"
     },
     "common/package-readme": {
       "source": "docs/99.templates/templates/common/readme-package.template.md",
@@ -4499,15 +4486,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "Commit 44801eb20 (profile, template and service READMEs, #986) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit 44801eb20 (profile, template and service READMEs, #986) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every package README took the core service README sections, the template carries the conditional interface table, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-package.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-package.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "service-readme"
-      }
+      "core_role": "service-readme"
     },
     "common/readme": {
       "source": "docs/99.templates/templates/common/readme-stage.template.md",
@@ -4515,7 +4498,7 @@
         "readme"
       ],
       "purpose": "Korean README that navigates one stage or folder.",
-      "responsibility": "State the stage's responsibility, list what exists now in the Current Items table under Contents, and route readers through its workflow and related documents.",
+      "responsibility": "State the stage's responsibility, list what exists now in the Path and Purpose table under Current Contents, and route readers through its entry points and checks.",
       "non_goals": [
         "Copying a Guide, Policy or Runbook procedure into the README.",
         "Owning a rule; it routes to the canonical owner instead."
@@ -4532,7 +4515,7 @@
       ],
       "applicability": "Applies to every file the readme profile owns: docs/01.requirements/README.md, docs/02.architecture/README.md, docs/02.architecture/decisions/README.md, docs/02.architecture/descriptions/README.md and 56 more registered paths.",
       "relationships": [
-        "Lists the folder's current documents in the Current Items table (Path, Purpose, optional Owner)."
+        "Lists the folder's current documents in the Path and Purpose table under Current Contents."
       ],
       "consumer_paths": [
         "scripts/lib/document_governance/registry.py",
@@ -4570,15 +4553,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "Commit b86a7a942 (profiles, templates and stage READMEs, #985) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit b86a7a942 (profiles, templates and stage READMEs, #985) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current document took the core stage README sections and Path and Purpose table, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-stage.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-stage.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "stage-readme"
-      }
+      "core_role": "stage-readme"
     },
     "common/repository-readme": {
       "source": "docs/99.templates/templates/common/readme-repository.template.md",
@@ -4586,7 +4565,7 @@
         "repository-readme"
       ],
       "purpose": "Korean root README.md and the READMEs of top-level folders such as infra/, scripts/ and tests/.",
-      "responsibility": "State the project role and boundaries, map the directories and canonical entry points, and give the first verified path and current documentation.",
+      "responsibility": "Name the reader and the project role and boundaries, give the first verified path, map the current paths and owners, and route to help and current documentation.",
       "non_goals": [
         "Copying a Guide, Policy or Runbook procedure into the README.",
         "Owning a rule; it routes to the canonical owner instead."
@@ -4603,7 +4582,7 @@
       ],
       "applicability": "Applies to every file the repository-readme profile owns: README.md, .github/repository-surface.md, _workspace/README.md, .agents/evaluations/README.md and 9 more registered paths.",
       "relationships": [
-        "Routes to directories and stage READMEs through the Directories table under Repository Map, and to the root AGENTS.md and CLAUDE.md shims."
+        "Routes to directories and stage READMEs through the Path and Purpose table under Repository Map, and to the root AGENTS.md and CLAUDE.md shims."
       ],
       "consumer_paths": [
         "scripts/lib/document_governance/registry.py",
@@ -4638,15 +4617,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "Commit d712aee54 (profiles, templates and root READMEs, #983) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit d712aee54 (profiles, templates and root READMEs, #983) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current document took the core root README sections and Path and Purpose table, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-repository.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-repository.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "root-readme"
-      }
+      "core_role": "root-readme"
     },
     "common/runtime-governance-readme": {
       "source": "docs/99.templates/templates/common/readme-runtime-governance.template.md",
@@ -4654,7 +4629,7 @@
         "runtime-governance-readme"
       ],
       "purpose": "Generated pointer README for .claude/ and .codex/. The profile declares no language; documentation-protocol.md#document-language rule 1 makes every tracked README.md Korean.",
-      "responsibility": "Point a reader of a provider directory to its authored provider.md adapter in the root README form: Purpose, Repository Map, Getting Started, References.",
+      "responsibility": "Point a reader of a provider directory to its authored provider.md adapter in the root README form: Purpose, Getting Started, Repository Map, Support.",
       "non_goals": [
         "Defining provider policy; the adapter and .agents/governance own it.",
         "Being hand-edited; the renderer writes it."
@@ -4705,15 +4680,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "Commit d712aee54 (profiles, templates and root READMEs, #983) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit d712aee54 (profiles, templates and root READMEs, #983) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, the profile and the provider renderer took the core root README sections, the renderer regenerated both READMEs, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-runtime-governance.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-runtime-governance.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "root-readme"
-      }
+      "core_role": "root-readme"
     },
     "common/agent-guide": {
       "source": "docs/99.templates/templates/common/agent-guide.template.md",
@@ -5913,7 +5884,7 @@
         "audit"
       ],
       "purpose": "Korean README index of one Stage 90 audit package (AUD-####).",
-      "responsibility": "Describe the audit package's objective, criteria and members and route to them.",
+      "responsibility": "State the audit package's objective, list the members in the Path and Purpose table, and route to its criteria, evidence and actions.",
       "non_goals": [
         "Setting current policy."
       ],
@@ -5949,7 +5920,8 @@
         ],
         "negative": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
-          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected"
+          "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -5961,15 +5933,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "The role did not move to COMMON-DOC-FORM-1. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current document took the core stage README sections and Path and Purpose table, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/audit-pack.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/audit-pack.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "stage-readme"
-      }
+      "core_role": "stage-readme"
     },
     "reference/category-readme": {
       "source": "docs/99.templates/templates/common/readme-category.template.md",
@@ -5977,7 +5945,7 @@
         "reference-category-readme"
       ],
       "purpose": "Korean README of one Stage 90 category (research, audits, data).",
-      "responsibility": "State the Stage 90 category's responsibility and list its current packages in the Current Items table under Contents.",
+      "responsibility": "State the Stage 90 category's responsibility and list its current packages in the Path and Purpose table under Current Contents.",
       "non_goals": [
         "Copying a Guide, Policy or Runbook procedure into the README.",
         "Owning a rule; it routes to the canonical owner instead."
@@ -6015,7 +5983,8 @@
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
-          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -6027,15 +5996,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "Commit b86a7a942 (profiles, templates and stage READMEs, #985) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit b86a7a942 (profiles, templates and stage READMEs, #985) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current document took the core stage README sections and Path and Purpose table, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-category.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-category.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "stage-readme"
-      }
+      "core_role": "stage-readme"
     },
     "reference/data": {
       "source": "docs/99.templates/templates/references/data.template.md",
@@ -6102,7 +6067,7 @@
         "data"
       ],
       "purpose": "Korean README index of one Stage 90 data package (DATA-####).",
-      "responsibility": "Describe the data package's schema, provenance, consumers and refresh owner and route to its members.",
+      "responsibility": "State the data package's purpose and schema, list the members in the Path and Purpose table, and route to its consumers, provenance and refresh owner.",
       "non_goals": [
         "Setting current policy."
       ],
@@ -6142,7 +6107,8 @@
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
-          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -6154,15 +6120,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "The role did not move to COMMON-DOC-FORM-1. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current document took the core stage README sections and Path and Purpose table, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/data-pack.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/data-pack.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "stage-readme"
-      }
+      "core_role": "stage-readme"
     },
     "reference/research": {
       "source": "docs/99.templates/templates/references/research.template.md",
@@ -6234,7 +6196,7 @@
         "research"
       ],
       "purpose": "Korean README index of one Stage 90 research package (RES-####).",
-      "responsibility": "State the research question, method and implications and route to the members.",
+      "responsibility": "State the research question and scope, list the members in the Path and Purpose table, and route to its method, sources, findings and implications.",
       "non_goals": [
         "Setting current policy."
       ],
@@ -6274,7 +6236,8 @@
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
-          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -6286,15 +6249,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "The role did not move to COMMON-DOC-FORM-1. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current document took the core stage README sections and Path and Purpose table, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/research-pack.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/research-pack.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "stage-readme"
-      }
+      "core_role": "stage-readme"
     },
     "sdlc/architecture-decision": {
       "source": "docs/99.templates/templates/architecture/decision.template.md",

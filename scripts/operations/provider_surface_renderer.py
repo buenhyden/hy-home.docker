@@ -301,11 +301,11 @@ def _pointer(
         envelope = (
             "---\n"
             f'title: "{title}"\n'
-            'version: "1.0.1"\n'
+            'version: "1.1.0"\n'
             'type: "common/readme"\n'
             'status: "active"\n'
             'owner: "@buenhyden"\n'
-            'updated: "2026-11-13"\n'
+            'updated: "2026-11-17"\n'
             'generated_by: "scripts/operations/provider_surface_renderer.py"\n'
             "---\n\n"
         )
@@ -317,22 +317,25 @@ def _pointer(
     if is_readme:
         return (
             f"{envelope}{_marker(source)}\n\n# {title}\n\n"
-            f"## Purpose\n\n### Project Role\n\n{route_sentence}\n\n"
-            "### Boundaries\n\n이 디렉터리는 생성된 provider 어댑터를 담으며, 정책 정본은 담지 않습니다.\n\n"
-            "## Repository Map\n\n### Directories\n\n"
+            "## Purpose\n\n### Audience\n\n"
+            f"`{source.parent}/` 디렉터리를 여는 독자가 대상입니다.\n\n"
+            f"### Outcome\n\n{route_sentence}\n\n"
+            "이 디렉터리는 생성된 provider 어댑터를 담으며, 정책 정본은 담지 않습니다.\n\n"
+            "## Getting Started\n\n### Prerequisites\n\n"
+            "이 어댑터를 사용하기 전에 연결된 원본을 읽습니다.\n\n"
+            "### First Use\n\n"
+            "`python3 scripts/operations/provider_surface_renderer.py --check`로 이 생성물이 원본과 일치하는지 확인합니다.\n\n"
+            "## Repository Map\n\n### Current Paths\n\n"
             "정본 거버넌스는 연결된 원본에 남습니다.\n\n"
             "| Path | Purpose |\n| --- | --- |\n"
             f"| `{source}` | 이 어댑터의 정본 원본 |\n\n"
-            "### Canonical Entry Points\n\n"
             f"정본 진입점은 [`{source}`](../{source})입니다.\n\n"
-            "## Getting Started\n\n### Prerequisites\n\n"
-            "이 어댑터를 사용하기 전에 연결된 원본을 읽습니다.\n\n"
-            "### First Verified Path\n\n"
-            "`python3 scripts/operations/provider_surface_renderer.py --check`로 이 생성물이 원본과 일치하는지 확인합니다.\n\n"
-            "## References\n\n### Current Documentation\n\n"
-            f"- [`{source}`](../{source})\n\n"
-            "### Support and Ownership\n\n"
-            "이 문서는 `scripts/operations/provider_surface_renderer.py`가 생성하며 소유자는 `@buenhyden`입니다.\n"
+            "### Owners\n\n"
+            "이 문서는 `scripts/operations/provider_surface_renderer.py`가 생성하며 소유자는 `@buenhyden`입니다.\n\n"
+            "## Support\n\n### Help\n\n"
+            "이 문서는 별도의 문의 경로를 기록하지 않습니다. 내용은 연결된 원본이 소유합니다.\n\n"
+            "### Related Documentation\n\n"
+            f"- [`{source}`](../{source})\n"
         ).encode()
     return f"{envelope}{_marker(source)}\n\n# {title}\n\n{route_sentence}\n".encode()
 

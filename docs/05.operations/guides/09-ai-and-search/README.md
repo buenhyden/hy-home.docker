@@ -1,30 +1,46 @@
 ---
 title: "AI와 검색 가이드"
-version: "0.1.4"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "operations"
 ---
 
 # AI와 검색 가이드
 
-## Stage Responsibility
+## Responsibility
 
-### Purpose and Readers
+### Purpose
+
+#### Purpose and Readers
 
 AI와 검색의 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다.
 
-### Inputs and Outputs
+#### Inputs and Outputs
 
 이 폴더는 아래 문서의 가이드 역할만 소유한다. 구현과 운영 결과는 각 소유 문서와 Task에서 확인한다.
 
+### Excluded Responsibilities
+
 실행 권한, 비밀값 원문, 새로운 서비스와 빈 분류 문서는 포함하지 않는다.
 
-## Contents
+## Current Contents
 
-### Current Items
+### Paths
+
+| Path | Purpose |
+| --- | --- |
+| `0034-qdrant.md` | 이 문서는 root compose에 active include된 [Qdrant Compose 구현](../../../../infra/04-data/qdrant/docker-compose.yml)을 설명한다. |
+| `0056-ollama.md` | 루트 Compose의 Ollama 모델 운용, GPU 가속, 추론 API와 exporter 관측 경로를 안내한다. |
+| `0058-ai-optimization-hardening.md` | 이 문서는 `08-ai` 계층의 최적화/하드닝 변경을 운영자와 개발자가 재현 가능하게 적용하기 위한 가이드다. gateway 경계 보안, GPU concurrency 제어, stateful 템플릿 일관성, health 기반 검증 절차를 제공한다. |
+| `0059-rag-workflow.md` | 독립 LAB Open WebUI 안의 RAG 흐름을 설명한다. HOME RAG는 Qdrant와 n8n이 맡는다. |
+| `0073-open-notebook.md` | 현재 루트의 선택형 `notebook` 지식 워크스페이스와 SurrealDB 경계를 안내한다. 독립 LAB 이동은 예정 상태다. |
+| `0081-comfyui.md` | 현재 루트의 선택형 `ai-image` 워크플로 UI를 안내한다. 독립 LAB 이동은 예정 상태다. |
+| `0091-crawl4ai.md` | `crawl4ai`로 선택하는 크롤러의 접근 조건이다. Open Notebook 연동은 소스에서 주석 처리되어 있다. |
+
+#### Current Items
 
 | 문서 | 식별자 | 한 줄 역할 |
 | --- | --- | --- |
@@ -36,33 +52,37 @@ AI와 검색의 정상 구성과 사용 전제를 이해하고 필요한 통제�
 | [ComfyUI Guide](0081-comfyui.md) | `GDE-0081` | 현재 루트의 선택형 `ai-image` 워크플로 UI를 안내한다. 독립 LAB 이동은 예정 상태다. |
 | [Crawl4AI Usage Guide](0091-crawl4ai.md) | `GDE-0091` | `crawl4ai`로 선택하는 크롤러의 접근 조건이다. Open Notebook 연동은 소스에서 주석 처리되어 있다. |
 
-### Classification
+#### Classification
 
 이 폴더의 문서는 모두 가이드 역할이며 `GDE-NNNN` 식별자를 쓴다. 같은 subject의 다른 역할 문서는 있는 경우 같은 번호와 slug로 다른 역할 폴더에 있다.
 
-## Workflow
+### Owners
 
-### Create and Review
+작성·검토 책임은 `@buenhyden`에게 있다. 같은 통제나 절차의 정본을 복제하지 않는다.
+
+## Usage
+
+### Entry Points
+
+#### Upstream and Downstream
+
+- [상위 가이드 분류](../README.md)
+- [운영 문서](../../README.md)
+
+#### Policy and Templates
+
+- [문서 작성 계약](../../../../.agents/governance/documentation-protocol.md)
+- [README 템플릿](../../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
+
+### Checks
+
+#### Create and Review
 
 1. 식별자와 문서 제목으로 대상을 고른다.
 2. 정상 구성과 사용 전제를 이해하고 필요한 통제와 실행 절차로 연결한다.
 3. 변경 시 원래 식별자와 생성일을 보존하고 이 목록과 현재 링크를 함께 갱신한다.
 4. 문서 경로·메타데이터·링크·운영 카탈로그 검사와 소유 Task의 실제 검증 결과를 확인한다.
 
-작성·검토 책임은 `@buenhyden`에게 있다. 같은 통제나 절차의 정본을 복제하지 않는다.
-
-### Transition and Exit
+#### Transition and Exit
 
 문서는 `operational-policy` 수명주기(draft, in-review, active, deprecated, superseded, retired)를 따른다. superseded 또는 retired에 이른 문서는 [은퇴 전제 조건](../../../../.agents/governance/documentation-protocol.md#retirement-preconditions)을 모두 충족할 때에만 남아야 할 내용을 소유 문서에 요약한 뒤 삭제하고, 번호를 Registry `reserved_history`에 추가하며, 이 목록의 행과 링크를 같은 변경에서 제거한다.
-
-## Related Documents
-
-### Upstream and Downstream
-
-- [상위 가이드 분류](../README.md)
-- [운영 문서](../../README.md)
-
-### Policy and Templates
-
-- [문서 작성 계약](../../../../.agents/governance/documentation-protocol.md)
-- [README 템플릿](../../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

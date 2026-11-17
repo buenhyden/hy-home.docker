@@ -1,18 +1,18 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.2.26"
+version: "1.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
 # n8n 워크플로 자동화
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -84,7 +84,19 @@ n8n 환경은 고성능과 확장성을 위해 분산 모드로 구성된다:
 [워크플로와 자동화 런북 목록](../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md)의
 n8n Runbook 「선택형 공유 Valkey 계정과 Local Ollama」 절이 소유합니다.
 
-### Supported Environment
+### Interfaces
+
+#### Inputs and Outputs
+
+호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `blog_export_net`, `edge_net`, `mng_data_net`, `n8n_blog_ingest_net`, `n8n_net`, `n8n_ollama_net`, `n8n_sandbox_net`, `n8n_sandbox_outbound_net`, `n8n_sandbox_runner_net`, `n8n_search_net`, `n8n_search_outbound_net`, `n8n_worker_runner_net`, `obs_net`, `opsflow_capture_net`, `opsflow_notifier_db_net`이다. (출처: `infra/07-workflow/n8n/docker-compose.yml`의 `n8n`, `n8n-worker`, `n8n-task-runner-worker`, `searxng`, `n8n-sandbox-certs`, `n8n-sandbox-api`, `n8n-sandbox-runner-1`, `blog-ingestion` 서비스)
+
+#### Security Boundary
+
+Compose가 참조하는 secret은 `${N8N_VALKEY_SECRET:-mng_valkey_password}`, `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`, `n8n_sandbox_api_key`, `n8n_sandbox_runner_api_key`, `n8n_sandbox_runner_registration_token`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/07-workflow/n8n/docker-compose.yml`의 `n8n`, `n8n-worker`, `n8n-task-runner-worker`, `searxng`, `n8n-sandbox-certs`, `n8n-sandbox-api`, `n8n-sandbox-runner-1`, `blog-ingestion` 서비스)
+
+## Usage
+
+### Prerequisites
 
 #### Tech Stack
 
@@ -95,19 +107,7 @@ n8n Runbook 「선택형 공유 Valkey 계정과 Local Ollama」 절이 소유�
 | Queue Broker | Valkey (Redis 호환) | 선택은 `${N8N_VALKEY_HOST:-mng-valkey}`와 `${N8N_VALKEY_SECRET:-mng_valkey_password}`가 소유하며 공유 `mng-valkey`만 허용함 | Queue 오케스트레이션 |
 | Task Runner | n8nio/runners | declared version | 격리된 실행 환경 |
 
-## Interfaces
-
-### Inputs and Outputs
-
-호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `blog_export_net`, `edge_net`, `mng_data_net`, `n8n_blog_ingest_net`, `n8n_net`, `n8n_ollama_net`, `n8n_sandbox_net`, `n8n_sandbox_outbound_net`, `n8n_sandbox_runner_net`, `n8n_search_net`, `n8n_search_outbound_net`, `n8n_worker_runner_net`, `obs_net`, `opsflow_capture_net`, `opsflow_notifier_db_net`이다. (출처: `infra/07-workflow/n8n/docker-compose.yml`의 `n8n`, `n8n-worker`, `n8n-task-runner-worker`, `searxng`, `n8n-sandbox-certs`, `n8n-sandbox-api`, `n8n-sandbox-runner-1`, `blog-ingestion` 서비스)
-
-### Security Boundary
-
-Compose가 참조하는 secret은 `${N8N_VALKEY_SECRET:-mng_valkey_password}`, `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`, `n8n_sandbox_api_key`, `n8n_sandbox_runner_api_key`, `n8n_sandbox_runner_registration_token`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/07-workflow/n8n/docker-compose.yml`의 `n8n`, `n8n-worker`, `n8n-task-runner-worker`, `searxng`, `n8n-sandbox-certs`, `n8n-sandbox-api`, `n8n-sandbox-runner-1`, `blog-ingestion` 서비스)
-
-## Development
-
-### Local Workflow
+### Selected Start
 
 #### Usage
 
@@ -122,7 +122,9 @@ Compose가 참조하는 secret은 `${N8N_VALKEY_SECRET:-mng_valkey_password}`, `
 6. **Modularization**: 복잡한 로직은 `Sub-workflows`로 분리해 재사용성을 확보하십시오.
 7. **Credential Safety**: 모든 외부 인증 정보는 n8n 내부의 `Credentials` 시스템에 암호화되어 저장되어야 하며 `docker-compose.yml`의 시크릿(`secrets`)으로 안전하게 공급됩니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
@@ -197,9 +199,9 @@ P04 SQL을 소비하는 비활성 workflow·제한된 SMTP node·합성 시험�
 필요합니다. 실행·중단·정리 절차는 Runbook Links의 탐색점의 RUN-0053이 소유합니다.
 Airflow 게시 데이터의 실제 n8n 인계·combined E2E·HOME 복구는 미검증입니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -222,8 +224,6 @@ Airflow 게시 데이터의 실제 n8n 인계·combined E2E·HOME 복구는 미�
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
 
 Build source authority: [Dockerfile](Dockerfile), [dev.Dockerfile](dev.Dockerfile).
-
-### Observability and Recovery
 
 #### Service Readiness
 

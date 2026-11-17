@@ -1,18 +1,18 @@
 ---
 title: "SeaweedFS"
-version: "1.3.5"
+version: "1.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-12-06"
 ---
 
 # SeaweedFS
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -50,23 +50,23 @@ S3는 client용 `object_net`과 route용 `edge_net`에도 참여합니다. S3 �
 Prometheus·Alloy만 함께 붙는 `seaweedfs_s3_metrics_net`에서 scrape하며, 이 망은 master·volume·filer API에
 닿지 않습니다(SPEC-0266). 메트릭 listener는 `-metricsIp`로 이 망의 `10.250.41.2`에만 bind합니다(SPEC-0267).
 
-### Supported Environment
+### Interfaces
 
-런타임은 `infra/04-data/seaweedfs/docker-compose.yml`의 `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` 서비스로 정의되며, 이미지와 태그는 해당 Compose 선언이 소유한다. 활성화 프로파일은 `data-science`, `lakehouse`, `logs`, `mlops`, `obs`, `seaweedfs`, `storage`, `storage-seaweedfs`, `tracing`이다.
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `edge_net`, `object_net`, `seaweed_internal`, `seaweedfs_metrics_net`, `seaweedfs_s3_metrics_net`이다. (출처: `infra/04-data/seaweedfs/docker-compose.yml`의 `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` 서비스)
 
-### Security Boundary
+#### Security Boundary
 
 Compose가 참조하는 secret은 `seaweedfs_jwt_filer_key`, `seaweedfs_jwt_volume_key`, `seaweedfs_s3_admin_secret_key`, `seaweedfs_s3_lakehouse_secret_key`, `seaweedfs_s3_loki_secret_key`, `seaweedfs_s3_mlflow_secret_key`, `seaweedfs_s3_opsflow_worker_secret_key`, `seaweedfs_s3_tempo_secret_key`, `seaweedfs_s3_terrakube_secret_key`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/04-data/seaweedfs/docker-compose.yml`의 `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` 서비스)
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+런타임은 `infra/04-data/seaweedfs/docker-compose.yml`의 `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` 서비스로 정의되며, 이미지와 태그는 해당 Compose 선언이 소유한다. 활성화 프로파일은 `data-science`, `lakehouse`, `logs`, `mlops`, `obs`, `seaweedfs`, `storage`, `storage-seaweedfs`, `tracing`이다.
+
+### Selected Start
 
 #### Usage
 
@@ -76,13 +76,15 @@ HYHOME_SEAWEEDFS_REHEARSAL=1 python3 -m unittest \
   tests.validation.test_compose_baseline_gates.SeaweedfsRehearsalTests
 ```
 
-### Checks
+## Checks
+
+### Readiness
 
 루트에서 `HYHOME_COMPOSE_PROFILES`를 지정해 `scripts/validation/validate-docker-compose.sh`로 구성을 검증한다. 개별 leaf Compose는 루트 network와 secret 선언에 의존하므로 leaf 단독으로 검증하지 않는다(`infra/README.md` 참조).
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -96,7 +98,7 @@ HYHOME_SEAWEEDFS_REHEARSAL=1 python3 -m unittest \
 [security](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration),
 [license](https://github.com/seaweedfs/seaweedfs/blob/master/LICENSE).
 
-### Observability and Recovery
+#### Observability and Recovery
 
 최초 활성화, 백업, 복구는 RUN-0024를 따릅니다. 일일 백업은 filer metadata와
 volume/master 트리를 순서 있는 한 세트로 담습니다(RUN-0021).

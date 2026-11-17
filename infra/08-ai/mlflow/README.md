@@ -1,10 +1,10 @@
 ---
 title: "MLflow Tracking Server"
-version: "1.0.9"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-09-21"
 ---
 
@@ -12,9 +12,9 @@ created: "2026-09-21"
 
 > 관리 PostgreSQL과 전용 SeaweedFS 버킷을 기반으로 하는 실험 추적 및 모델 레지스트리입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 MLflow는 실행(run), 파라미터, 메트릭, 등록된 모델, 아티팩트를 기록합니다.
 추적 저장소는 `mng-pg`의 전용 데이터베이스에 있으며 아티팩트는
@@ -47,19 +47,9 @@ MLflow는 실행(run), 파라미터, 메트릭, 등록된 모델, 아티팩트�
 └── README.md
 ```
 
-### Supported Environment
+### Interfaces
 
-| Component | Source | Purpose |
-| --- | --- | --- |
-| `mlflow` | 공식 MLflow 이미지를 기반으로 한 [Dockerfile](Dockerfile) | 추적 서버 및 아티팩트 프록시 |
-| `mlflow-db-provision` | [Compose](docker-compose.yml), PostgreSQL client 이미지 | 공유 [provisioning runner](../../04-data/mng-db/pg/provision/run-feature-provision.sh)를 통해 [mng-pg.sql](provisioning/mng-pg.sql)을 실행 |
-
-런타임 고정 값은 Compose/Dockerfile 선언이 소유하며
-[파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 검증에 쓰입니다.
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 | Field | Value |
 | --- | --- |
@@ -79,13 +69,23 @@ SeaweedFS identity `mlflow`(액세스 키 ID `mlflow`)는 `mlflow-artifacts`만
 ([identities](../../04-data/seaweedfs/config/s3-identities.conf)),
 다른 버킷에는 접근할 수 없습니다.
 
-### Security Boundary
+#### Security Boundary
 
 `mlflow.${DEFAULT_URL}` 라우트는 `gateway-standard-chain`·`sso-errors`·`sso-auth`를 거치고 호스트 포트는 게시하지 않습니다. Docker Secret `mlflow_db_password`와 `seaweedfs_s3_mlflow_secret_key`(프로비저닝 작업은 `mng_postgres_password`도)를 읽으며 값은 `PGPASSWORD`·`AWS_SECRET_ACCESS_KEY`로만 전달됩니다. 허용 host 목록이 DNS 리바인딩을 막고, 브라우저 SSO는 내부망 직접 SDK 접근을 보호하지 않습니다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+| Component | Source | Purpose |
+| --- | --- | --- |
+| `mlflow` | 공식 MLflow 이미지를 기반으로 한 [Dockerfile](Dockerfile) | 추적 서버 및 아티팩트 프록시 |
+| `mlflow-db-provision` | [Compose](docker-compose.yml), PostgreSQL client 이미지 | 공유 [provisioning runner](../../04-data/mng-db/pg/provision/run-feature-provision.sh)를 통해 [mng-pg.sql](provisioning/mng-pg.sql)을 실행 |
+
+런타임 고정 값은 Compose/Dockerfile 선언이 소유하며
+[파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 검증에 쓰입니다.
+
+### Selected Start
 
 1. 프로필을 선택하기 전에 등록된 시크릿 워크플로우를 통해 `secrets/db/mng-pg/mlflow_password.txt`와
    `secrets/storage/seaweedfs/seaweedfs_s3_mlflow_secret_key.txt`가 존재하는지 확인합니다.
@@ -99,22 +99,24 @@ SeaweedFS identity `mlflow`(액세스 키 ID `mlflow`)는 `mlflow-artifacts`만
    런북은 [문서 인덱스](../../../docs/README.md)에서 찾습니다.
    노트북 클라이언트 고정 값은 서버와 같은 버전으로 맞춥니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 - `HYHOME_COMPOSE_PROFILES="mlops data-science" bash scripts/validation/validate-docker-compose.sh`
 - `python3 -m unittest tests.validation.test_compose_baseline_gates` (정적 프로비저닝 계약)
 - `HYHOME_PG_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests` (별도 실행 승인 및 일회용 PostgreSQL·Docker 필요)
 - `python3 scripts/validation/run-ci-gate.py --profile changed`
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - **Guide**: MLflow usage guide (`docs/05.operations/guides/13-analytics-and-data-quality/0088-mlflow.md`)
 - **Policy**: MLflow operations policy (`docs/05.operations/policies/13-analytics-and-data-quality/0088-mlflow.md`)
 - **Runbook**: MLflow recovery runbook (`docs/05.operations/runbooks/13-analytics-and-data-quality/0088-mlflow.md`)
 - [Documentation index](../../../docs/README.md)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 `mlflow`에는 Compose 헬스체크(`GET /health`)가 있으며 DB/버킷 쓰기 접근은 증명하지 않습니다. 복구와 추적 DB schema 업그레이드는 `docs/05.operations/runbooks/13-analytics-and-data-quality/0088-mlflow.md`(RUN-0088)를 따릅니다.

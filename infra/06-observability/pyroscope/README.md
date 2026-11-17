@@ -1,18 +1,18 @@
 ---
 title: "Pyroscope Continuous Profiling"
-version: "1.0.8"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-03-19"
 ---
 
 # Pyroscope Continuous Profiling
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -46,7 +46,23 @@ pyroscope/
 └── config/    # Main configuration file
 ```
 
-### Supported Environment
+### Interfaces
+
+#### Configuration
+
+- **Ingestion**: HTTP를 통한 Protobuf로 프로파일링 데이터를 수신합니다 (포트 4040).
+- **Storage**: 로컬 파일시스템 백엔드(`/var/lib/pyroscope`). 데이터는 Compose 볼륨 `pyroscope-data`/`pyroscope-metastore`가 호스트 폴더 `${DEFAULT_OBSERVABILITY_DIR}/pyroscope`·`pyroscope-metastore`(HDD)로 bind되어 있습니다. Docker named volume이 아니라 이미 호스트 폴더입니다.
+- **Retention**: `limits.retention_period: 168h`(7일). 2026-11-10 측정에서 30초 scrape 기준 하루 약 0.12 GB가 쌓였고(2026-10-16/17에 2.7 GB 급증이 있어 총 5.2 GB), 기본값 31일은 개인 PC HDD에 비해 길어서 7일로 줄였습니다. v2 저장소는 block 안의 모든 데이터가 기간을 넘기고 `cleanup_grace_period`(6h)가 지난 뒤 block 단위로 지우므로 용량은 적용 뒤 점진적으로 줄어듭니다(첫 정리 시점은 미검증). 근거: [Configuration parameters](https://grafana.com/docs/pyroscope/latest/configure-server/reference-configuration-parameters/)(핀된 Pyroscope 버전의 문서).
+- **Scrape cost**: Alloy는 60초 간격으로 가져오고 block/mutex profile을 끕니다(CPU·memory·goroutine만). 두 profile은 서비스가 sampling rate를 켠 경우(tempo, alloy, pyroscope, grafana)에만 값이 있어 가치가 낮습니다.
+- **Grafana**: 데이터소스 UID `Pyroscope`, Drilldown > Profiles 앱(`grafana-pyroscope-app`), `Observability/pyroscope` 대시보드(서비스별 시계열과 flamegraph). Tempo `tracesToProfiles`는 서비스 단위 시간창으로 연결됩니다(span ID 라벨이 없어 span 단위는 아님).
+
+#### Security Boundary
+
+이 서비스 정의에는 `secrets` 참조가 없다. 호스트로 게시되는 포트는 `127.0.0.1:${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}`이다. (출처: `infra/06-observability/docker-compose.yml`의 `pyroscope` 서비스)
+
+## Usage
+
+### Prerequisites
 
 #### Tech Stack
 
@@ -58,25 +74,7 @@ pyroscope/
 | Collector | [Grafana Alloy](../alloy/README.md) | Compose에 선언됨 | 프로파일 스크레이핑 및 재매핑 |
 | Visualization | [Grafana](../grafana/README.md) | Compose에 선언됨 | 통합 대시보드 |
 
-## Interfaces
-
-### Inputs and Outputs
-
-#### Configuration
-
-- **Ingestion**: HTTP를 통한 Protobuf로 프로파일링 데이터를 수신합니다 (포트 4040).
-- **Storage**: 로컬 파일시스템 백엔드(`/var/lib/pyroscope`). 데이터는 Compose 볼륨 `pyroscope-data`/`pyroscope-metastore`가 호스트 폴더 `${DEFAULT_OBSERVABILITY_DIR}/pyroscope`·`pyroscope-metastore`(HDD)로 bind되어 있습니다. Docker named volume이 아니라 이미 호스트 폴더입니다.
-- **Retention**: `limits.retention_period: 168h`(7일). 2026-11-10 측정에서 30초 scrape 기준 하루 약 0.12 GB가 쌓였고(2026-10-16/17에 2.7 GB 급증이 있어 총 5.2 GB), 기본값 31일은 개인 PC HDD에 비해 길어서 7일로 줄였습니다. v2 저장소는 block 안의 모든 데이터가 기간을 넘기고 `cleanup_grace_period`(6h)가 지난 뒤 block 단위로 지우므로 용량은 적용 뒤 점진적으로 줄어듭니다(첫 정리 시점은 미검증). 근거: [Configuration parameters](https://grafana.com/docs/pyroscope/latest/configure-server/reference-configuration-parameters/)(핀된 Pyroscope 버전의 문서).
-- **Scrape cost**: Alloy는 60초 간격으로 가져오고 block/mutex profile을 끕니다(CPU·memory·goroutine만). 두 profile은 서비스가 sampling rate를 켠 경우(tempo, alloy, pyroscope, grafana)에만 값이 있어 가치가 낮습니다.
-- **Grafana**: 데이터소스 UID `Pyroscope`, Drilldown > Profiles 앱(`grafana-pyroscope-app`), `Observability/pyroscope` 대시보드(서비스별 시계열과 flamegraph). Tempo `tracesToProfiles`는 서비스 단위 시간창으로 연결됩니다(span ID 라벨이 없어 span 단위는 아님).
-
-### Security Boundary
-
-이 서비스 정의에는 `secrets` 참조가 없다. 호스트로 게시되는 포트는 `127.0.0.1:${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}`이다. (출처: `infra/06-observability/docker-compose.yml`의 `pyroscope` 서비스)
-
-## Development
-
-### Local Workflow
+### Selected Start
 
 #### Available Scripts
 
@@ -93,7 +91,9 @@ pyroscope/
 2. **Resource Monitoring**: 프로파일링 수집은 CPU 사용량이 클 수 있으므로, 피크 부하 동안 `pyroscope` 컨테이너 통계를 모니터링합니다.
 3. **Traceability**: 재매핑 로직과 커스텀 레이블은 전용 시스템 가이드를 참고합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
@@ -103,9 +103,7 @@ pyroscope/
 - Alloy가 프로파일링 데이터를 전송한 후 Grafana Pyroscope 데이터소스에 프로파일이 나타나는지 확인합니다.
 - `docker compose exec -T pyroscope /usr/bin/profilecli ready --url=http://127.0.0.1:4040`로 Pyroscope 준비 상태를 확인합니다.
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -113,8 +111,6 @@ pyroscope/
 - Operations policy (`docs/05.operations/policies/07-observability/0047-pyroscope.md`)
 - Recovery runbook (`docs/05.operations/runbooks/07-observability/0047-pyroscope.md`)
 - [Documentation index](../../../docs/README.md)
-
-### Observability and Recovery
 
 #### Operational Status
 
