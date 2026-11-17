@@ -1,6 +1,6 @@
 ---
 title: "Software Development Lifecycle"
-version: "2.1.0"
+version: "2.2.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
@@ -163,6 +163,13 @@ affect the result, the environment and tool version. Check names what was
 proved: a document or contract check and a checker's own regression test are
 different Checks. A PASS on another revision supports acceptance only when that
 PASS row records why the same input and guarantee hold.
+In a lifecycle generation 8 package, Required is written `true` or `false`
+and read as `required` or `optional`, and Method and Command together take the
+place of Check, so a resolving row needs the same Method, Command and Work
+Unit. Exit records the exit code of a check that ran and is `-` for a result
+that ran nothing (`NOT_RUN`, `CANCELLED` or `NOT_APPLICABLE`), never 0. A new
+Task in an earlier package, such as 0212, keeps that package's recorded
+generation 7 form.
 
 Acceptance has one owner per criterion. A criterion the Plan assigns to at
 least one current, non-cancelled Task has exactly one Criterion Acceptance row
@@ -212,7 +219,7 @@ Plan and Task forms of the role design core, including its Evidence and
 Criterion Decisions columns. Every earlier package keeps the generation 7 form
 it was recorded in: its documents are not migrated, and a terminal Task keeps
 its recorded body. The readers project a generation 8 table onto the
-generation 7 columns, so the rules below read one shape for both.
+generation 7 columns, so the rules above read one shape for both.
 
 The Registry supplies the exact Evidence, Criterion Acceptance, Execution
 Items and Work Breakdown shapes, and its `common.section_forms` places each
