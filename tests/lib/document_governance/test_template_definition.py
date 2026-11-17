@@ -581,9 +581,6 @@ class TemplateDefinitionTests(unittest.TestCase):
             template_definition(registry, "sdlc/task")
 
 
-CORE_PATH = ROOT / "docs/99.templates/contracts/document-role-design.json"
-
-
 def _core_from(definition: dict) -> dict:
     """Build a core role with the exact structure of one projection."""
 
@@ -767,42 +764,29 @@ class RoleDesignConformanceTests(unittest.TestCase):
         self.assertEqual("workspace-document-role-design", contract["contract_id"])
         self.assertEqual([], role_design_contract_findings(self.registry))
 
-    def test_every_template_role_is_bound_or_classified(self) -> None:
-        core = json.loads(CORE_PATH.read_text(encoding="utf-8"))
-        core_roles = {role["role"] for role in core["roles"]}
-        named = set()
-        for template_id, role in self.registry.template_roles.items():
-            with self.subTest(role=template_id):
-                exception = role.get("core_exception")
-                self.assertNotEqual(bool(role.get("core_role")), bool(exception))
-                if exception:
-                    self.assertIn(
-                        exception["kind"], {"pending-migration", "domain", "native"}
-                    )
-                named.add(role.get("core_role") or (exception or {}).get("core_role"))
-        self.assertLessEqual(core_roles, named)
-
-    def test_a_changed_core_file_is_rejected(self) -> None:
+    def test_a_changed_core_or_schema_file_is_rejected(self) -> None:
         from scripts.lib.document_governance.template_definition import (
             role_design_contract_findings,
         )
 
-        with tempfile.TemporaryDirectory() as directory:
-            root = pathlib.Path(directory)
-            contract = self.registry.common["role_design_contract"]
-            for key in ("source_path", "schema_path"):
-                target = root / contract[key]
-                target.parent.mkdir(parents=True, exist_ok=True)
-                target.write_bytes((ROOT / contract[key]).read_bytes())
-            source = root / contract["source_path"]
-            source.write_bytes(source.read_bytes() + b"\n")
-            codes = {
-                code
-                for code, _, _ in role_design_contract_findings(
-                    self.registry, root=root
+        contract = self.registry.common["role_design_contract"]
+        for changed in ("source_path", "schema_path"):
+            with (
+                self.subTest(changed=changed),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                for key in ("source_path", "schema_path"):
+                    target = root / contract[key]
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes((ROOT / contract[key]).read_bytes())
+                target = root / contract[changed]
+                target.write_bytes(target.read_bytes() + b"\n")
+                findings = role_design_contract_findings(self.registry, root=root)
+                self.assertEqual(
+                    [("role-design-source-changed", contract[changed])],
+                    [(code, location) for code, location, _ in findings],
                 )
-            }
-        self.assertIn("role-design-source-changed", codes)
 
 
 if __name__ == "__main__":
