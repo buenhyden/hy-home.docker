@@ -545,6 +545,10 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | READMEs review | 137 | W145 | independent-review | Commits `424177119`, `d1a3a62fd` and `0357d8473` | FAIL | CHANGES_REQUIRED: stale template statements, a link into Stage 98, uneven tier interface tables, and six minor findings | required | - |
 | READMEs re-review | 137 | W145 | independent-review | Fix range `0357d8473..2d2f52080` against the READMEs review | PASS | APPROVE; all nine findings fixed; the code-path template pointer in the three `.agents` READMEs accepted; two minor notes applied in `52f6d04c3` | required | READMEs review |
 | READMEs corpus | 137 | W145 | document-corpus | check-changed against `origin/main` `a3fbbbd1c`, check-contracts, link alignment and navigation, provider surface renderer and governance contract at `223821638`, after the rebase | PASS | 230 changed and 0 violations; 0 contract violations; alignment, navigation, renderer and governance contract PASS | required | - |
+| READMEs regression | 137 | W145 | document-governance-regression | The ten governance modules, test_script_manifest, test_language and test_lab_controller at `223821638`, after the rebase | PASS | 889 tests in 1625 seconds, exit 0; test_references was not in this list | required | - |
+| READMEs hosted candidate | 137 | W145 | hosted-candidate | PR 1070 at `ec69b65fb` | FAIL | candidate-core: an npm ECONNRESET while installing the markdownlint hook, after every repository check passed; candidate-documents: test_references failed because the moved Preservation Declaration under an H4 was read to the end of the README, past its baseline commit hashes | required | - |
+| READMEs declaration RED | 137 | W145 | protected-research-declaration | tests.lib.document_governance.test_references at `ec69b65fb` | FAIL | 21 tests, 1 failure: test_declaration_pins_no_count_hash_or_commit matched a commit hash | required | - |
+| READMEs declaration GREEN | 137 | W145 | protected-research-declaration | Same module after the reader ends the section at its own heading level | PASS | 21 tests, exit 0 | required | READMEs declaration RED |
 
 ### Resolution Links
 
@@ -554,7 +558,7 @@ regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
 Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Policy review approval, Policy re-review approval, Policy hosted candidate
 rerun, Governance form GREEN, Governance regression, Governance old-form GREEN, Governance re-review, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
-rows, References form GREEN and References re-review resolve their W144 rows, Agent instructions form GREEN and Agent instructions re-review resolve their W145 rows, and SDLC forms GREEN, SDLC forms aligned header GREEN, SDLC forms hosted candidate rerun and SDLC forms re-review approval resolve their W146 rows, and READMEs re-review resolves its W145 README row. The comparison baseline stays
+rows, References form GREEN and References re-review resolve their W144 rows, Agent instructions form GREEN and Agent instructions re-review resolve their W145 rows, and SDLC forms GREEN, SDLC forms aligned header GREEN, SDLC forms hosted candidate rerun and SDLC forms re-review approval resolve their W146 rows, and READMEs re-review and READMEs declaration GREEN resolve their W145 README rows. The comparison baseline stays
 open until every role group conforms.
 
 ## Acceptance Decision
