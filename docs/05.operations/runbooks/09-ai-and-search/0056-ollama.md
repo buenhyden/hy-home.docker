@@ -221,7 +221,7 @@ docker logs ollama 2>&1 | grep 'msg="inference compute"'
 
 - 이 Runbook에 기록된 복구·rollback 절차와 아래의 `Safe Rollback or Recovery Procedure` 하위 절차만 사용한다.
 - 아래 격리 복구 계획은 미실행 상태다. rehearsal 완료로 표시하기 전에 날짜가 있는 증거를 첨부한다.
-- 관찰한 장애가 문서화된 절차와 다르면 변경을 중지하고 증거를 보존한 뒤 아래 Escalation 절에 따라 보고한다.
+- 관찰한 장애가 문서화된 절차와 다르면 변경을 중지하고 증거를 보존한 뒤 위 Next Owner에 따라 보고한다.
 
 #### Safe Rollback or Recovery Procedure
 

@@ -153,7 +153,7 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 - 이 Runbook에 기록된 복구·rollback 절차와 아래의 `Safe Rollback or Recovery Procedure` 하위 절차만 사용한다.
 - 설정 rollback rehearsal은 계획만 있으며 미실행 상태다. 상태 데이터 복구는 `RUN-0050`과 `RUN-0053`이 소유한다. 이 최적화 Runbook으로 DB·암호화 키·큐 복구를 입증하지 않는다.
-- 관찰한 장애가 문서화된 절차와 다르면 변경을 중지하고 증거를 보존한 뒤 아래 Escalation 절에 따라 보고한다.
+- 관찰한 장애가 문서화된 절차와 다르면 변경을 중지하고 증거를 보존한 뒤 위 Next Owner에 따라 보고한다.
 
 #### Safe Rollback or Recovery Procedure
 

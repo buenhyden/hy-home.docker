@@ -275,7 +275,7 @@ verification이 실패하거나, secret 노출 위험이 나타나거나, 파괴
 ### Recovery or Forward Repair
 
 - 이 runbook에 이미 문서화된 recovery/rollback 단계만 사용한다.
-- 관찰된 실패가 문서화된 단계와 일치하지 않으면 변경을 중단하고 evidence를 보존한 뒤 Escalation 절에 따라 escalation한다.
+- 관찰된 실패가 문서화된 단계와 일치하지 않으면 변경을 중단하고 evidence를 보존한 뒤 Next Owner에 따라 escalation한다.
 - 문서 실수는 영향받은 stage doc 또는 README hunk만 되돌린다.
 - runtime catalog drift는 canonical agent governance role, skill, provider registry에서 provider projection을 다시 생성한다.
 - Compose validation 실패는 관련 없는 파일을 편집하기 전에 변경된 Git-tracked `infra/**/{compose,docker-compose}*.{yml,yaml}` 파일을 먼저 점검한다.

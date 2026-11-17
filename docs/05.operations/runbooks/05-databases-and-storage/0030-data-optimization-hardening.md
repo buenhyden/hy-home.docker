@@ -43,7 +43,7 @@ data tier(`infra/04-data`)의 정적 hardening 점검 절차와 회귀 대응을
 
 ### Environment
 
-Actions 2번의 `config --quiet` 명령은 렌더링 검증이며, 완전히 치환된 configuration은 지속 evidence에 남기지 않는다(Actions 3번).
+Steps 2번의 `config --quiet` 명령은 렌더링 검증이며, 완전히 치환된 configuration은 지속 evidence에 남기지 않는다(Steps 3번).
 
 ## Procedure
 

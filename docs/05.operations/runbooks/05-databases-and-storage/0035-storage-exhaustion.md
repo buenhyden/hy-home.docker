@@ -52,7 +52,7 @@ log truncation, 또는 알 수 없는 경로의 정리를 승인하지 않는다
 
 ### Environment
 
-읽기 전용 용량/inode evidence 기록(Actions 2번)과 서비스의 최신 백업/복구 상태 확인(Actions 4번)이 조치 전 점검이다.
+읽기 전용 용량/inode evidence 기록(Steps 2번)과 서비스의 최신 백업/복구 상태 확인(Steps 4번)이 조치 전 점검이다.
 
 ## Procedure
 
