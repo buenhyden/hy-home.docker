@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.6.1"
+version: "0.6.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -235,6 +235,18 @@ here after one bind. Compared with the base, the guides lost no line and
 gained only that authored text and the three prose corrections. Every Next
 Action names a runbook or owner its guide states.
 
+#### W143 guide review fixes
+
+The independent review found 25 more prose lines that named a removed
+section; the first sweep missed them because it took a Korean particle as
+part of the word. They now name Steps, Outcome, Authority or Expected
+Results, and names that remain as a heading are kept. A k6 cell held the
+no-guard failure as the expected result, a Storybook cell pointed at the
+wrong row, and five cells held a constraint or a result the guide does not
+state; each now follows its guide. The Renovate Audience now names the
+reader its guide states. The old-form test now rejects the replaced guide
+headings.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -300,6 +312,8 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Guide empty titles | 137 | W143 | document-corpus | check-changed against `origin/main` after the drafts were applied | FAIL | 36 `body-section-empty`: old H3 titles kept as H4 with only H4 headings under them | required | - |
 | Guide regression | 137 | W143 | document-governance-regression | metadata.test_heading, test_template_definition and test_registry, then test_operations_catalog, then test_metadata_validator, metadata reference and lifecycle, test_spec_packages and test_taxonomy | PASS | 332 tests after the guide literal and one Registry test moved to the core sections; 136; 245; exit 0 | required | - |
 | Guide corpus | 137 | W143 | document-corpus | check-changed against `origin/main`, check-contracts, check-operations-catalog, link alignment and markdownlint after the empty titles were removed | PASS | 167 changed and 0 violations; 0 contract violations; catalog and alignment PASS; 0 lint issues | required | Guide empty titles |
+| Guide review | 137 | W143 | independent-review | Commits `efd26a4d3`, `da9fc935d` and `2bf4ba56c` | FAIL | CHANGES_REQUIRED: 25 prose lines still name removed sections, a k6 failure outcome as Expected Result, a Storybook row reference off by three, constraints in five cells | required | - |
+| Guide review corpus | 137 | W143 | document-corpus | metadata.test_heading with the replaced guide headings, check-changed against `origin/main` and link alignment after the fixes | PASS | 119 tests, exit 0; 80 changed and 0 violations; alignment PASS | required | - |
 
 ### Resolution Links
 
