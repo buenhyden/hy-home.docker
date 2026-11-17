@@ -30,7 +30,7 @@ updated: "{{UPDATED}}"
 
 ### Requirements
 
-<!-- Author prompt: List each rule in the table: Rule ID is a stable identifier within this policy, Condition when it applies, Requirement what is allowed, required or forbidden, Enforcement the actual check or "manual", and Evidence how the guarantee is confirmed or "none". Detail follows the table. -->
+<!-- Author prompt: List each rule in the table: Rule ID is a stable identifier within this policy, Condition when it applies, Requirement starting with "Required:", "Forbidden:" (the forbidden act, never a negated sentence) or "Allowed:", Enforcement a check only where the policy ties it to that rule, "manual" only where the policy says the rule rests on review, otherwise "none", and Evidence a record only where the policy says it confirms that rule, otherwise "none". One row per rule statement under Requirements and its subsections. Detail follows the table. -->
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
