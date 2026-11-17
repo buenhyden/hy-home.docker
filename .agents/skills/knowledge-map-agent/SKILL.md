@@ -3,11 +3,11 @@ name: "knowledge-map-agent"
 description: "Use when tracked documentation navigation needs canonical ownership, safe source coverage, and corroboration of advisory graph output against tracked source."
 metadata:
   title: "knowledge-map-agent"
-  version: "2.1.1"
+  version: "2.2.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "knowledge-map-agent"
   scope: "docs"
   owner_agent: "doc-writer"
@@ -15,7 +15,7 @@ metadata:
 
 # knowledge-map-agent
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -47,23 +47,31 @@ routing from a repository surface to its canonical owner.
 - The map introduces no parallel authority or confidential payload exposure.
 - An advisory graph claim is either corroborated against tracked source or left out.
 
-### Failure Handling
-
-Exclude unsafe or unverifiable paths, record the omission, and stop if provenance or source ownership cannot be established.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Tracked source boundary and canonical stage routing.
 - Existing curated indexes and ownership metadata.
 - Advisory graph output under `graphify-out/`, which is a hint rather than an
   authority and is only usable after corroboration against tracked source.
 
-### Outputs
+### Failure Handling
+
+Exclude unsafe or unverifiable paths, record the omission, and stop if provenance or source ownership cannot be established.
+
+## Outputs
+
+### Artifacts
 
 - A curated knowledge map that points to canonical sources and records which
   claims were corroborated against tracked source.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [Documentation writer](../../roles/doc-writer.md)
+- [Documentation scope](../../governance/documentation-protocol.md)
+- [Environment constraints](../../governance/environment-constraints.md)
 
 ## Verification
 
@@ -73,10 +81,7 @@ Exclude unsafe or unverifiable paths, record the omission, and stop if provenanc
 - `scripts/validation/check-document-links.py --mode alignment` passes for the changed map.
 - Each advisory graph claim is marked corroborated against tracked source, or it is left out.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [Documentation writer](../../roles/doc-writer.md)
-- [Documentation scope](../../governance/documentation-protocol.md)
-- [Environment constraints](../../governance/environment-constraints.md)
+An advisory graph claim proves nothing until it is corroborated against
+tracked source; an uncorroborated claim is left out.

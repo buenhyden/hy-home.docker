@@ -3,11 +3,11 @@ name: "security-audit"
 description: "Use when an exact change needs read-only analysis of trust boundaries, exposed inputs, privileges, dependencies, and plausible security findings. Reach for it when someone asks whether a change has a security problem, wants exposed inputs or privilege paths examined, or asks whether a new dependency is safe to take. Do NOT use it to exploit a finding, to call an external system, to read or rotate a secret, or to sign off a release; it describes a mechanism and its evidence and changes nothing."
 metadata:
   title: "security-audit"
-  version: "1.3.1"
+  version: "1.4.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "security-audit"
   scope: "security"
   owner_agent: "security-auditor"
@@ -15,7 +15,7 @@ metadata:
 
 # security-audit
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -41,24 +41,32 @@ The skill description states: "Do NOT use it to exploit a finding, to call an ex
 - Every finding cites exact evidence.
 - Secret values and prohibited sensitive payloads are absent from output.
 
-### Failure Handling
-
-Stop and redact on accidental sensitive-data exposure; escalate Critical risk or missing authorization without probing external systems.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Exact change boundary and security contract.
 - Threat model, dependency/workflow metadata, secret boundaries, and validation evidence.
 - `references/analysis-axes.md`, which this skill owns, for what to look at on
   each axis and the mistake that makes each one look finished too early.
 
-### Outputs
+### Failure Handling
+
+Stop and redact on accidental sensitive-data exposure; escalate Critical risk or missing authorization without probing external systems.
+
+## Outputs
+
+### Artifacts
 
 - A read-only analysis in the shape of `assets/findings.md`. Every axis gets a
   row even when it found nothing, and `not-assessable` is recorded as a result
   rather than as a pass.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [Security auditor](../../roles/security-auditor.md)
+- [Container threat modeling](../container-threat-modeling/SKILL.md)
+- [Security scope](../../governance/quality-standards.md)
 
 ## Verification
 
@@ -68,10 +76,7 @@ Stop and redact on accidental sensitive-data exposure; escalate Critical risk or
 - Every finding cites exact evidence, and `not-assessable` is recorded as a result, not a pass.
 - The output holds no secret value or prohibited sensitive payload.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [Security auditor](../../roles/security-auditor.md)
-- [Container threat modeling](../container-threat-modeling/SKILL.md)
-- [Security scope](../../governance/quality-standards.md)
+A result of `not-assessable` is not a pass, and the audit does not probe
+external systems.

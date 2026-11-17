@@ -3,11 +3,11 @@ name: "style-validation"
 description: "Use when changed authored files need scoped deterministic formatting, lint, syntax, and metadata checks while preserving generated ownership. Reach for it when someone says the files they just changed need a style or lint pass, asks which checks apply to a change, asks whether an all-files run is allowed, or wants to be sure a formatter has not rewritten a generated file. Do NOT use it to judge whether the code is correct, to review a design, or to decide whether a change should ship; those are review questions, not style ones."
 metadata:
   title: "style-validation"
-  version: "1.4.3"
+  version: "1.5.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-16"
+  updated: "2026-11-17"
   function_id: "style-validation"
   scope: "qa"
   owner_agent: "qa-engineer"
@@ -15,7 +15,7 @@ metadata:
 
 # style-validation
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -70,13 +70,7 @@ a scoped change is the scoped check, not the whole tree.
 - Formatting is deterministic and generated ownership is preserved.
 - Linting is scoped to relevant authored files and does not rely on blanket suppression.
 
-### Failure Handling
-
-Stop on unexpected paths, formatter oscillation, or conflicting style authorities. Do not invoke `pre-commit run` directly, and do not delete content to satisfy lint.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Changed authored files and style contract.
 - Existing formatters, linters, syntax checks, metadata validators, and exclusion rules.
@@ -86,9 +80,23 @@ Stop on unexpected paths, formatter oscillation, or conflicting style authoritie
   which this skill owns beside this file rather than at the repository root,
   for the bucket split the procedure above reads.
 
-### Outputs
+### Failure Handling
+
+Stop on unexpected paths, formatter oscillation, or conflicting style authorities. Do not invoke `pre-commit run` directly, and do not delete content to satisfy lint.
+
+## Outputs
+
+### Artifacts
 
 - Style-validation evidence and approved deterministic formatting changes.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [QA engineer](../../roles/qa-engineer.md)
+- [Task checklists](../../governance/task-checklists.md)
+- [Quality standards](../../governance/quality-standards.md)
 
 ## Verification
 
@@ -99,10 +107,6 @@ Stop on unexpected paths, formatter oscillation, or conflicting style authoritie
   the reviewed index.
 - Skipped and CI-only checks are listed, and no lint finding was silenced by deleting content or by a blanket suppression.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [QA engineer](../../roles/qa-engineer.md)
-- [Task checklists](../../governance/task-checklists.md)
-- [Quality standards](../../governance/quality-standards.md)
+The local run does not prove skipped or CI-only checks; the skill lists them.

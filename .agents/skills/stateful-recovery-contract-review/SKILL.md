@@ -3,11 +3,11 @@ name: "stateful-recovery-contract-review"
 description: "Use when an explicitly supplied sanitized stateful recovery contract needs read-only production readiness review or a bounded first isolated restoreability evidence-generation review before any recovery action."
 metadata:
   title: "stateful-recovery-contract-review"
-  version: "1.2.1"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "stateful-recovery-contract-review"
   scope: "infra"
   owner_agent: "iac-reviewer"
@@ -15,7 +15,7 @@ metadata:
 
 # stateful-recovery-contract-review
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -124,19 +124,7 @@ restore, service action, credential access, or secret inspection.
   requires a new review using the preserved redacted receipt and artifacts;
   neither the attempt ID nor its outcome may be relabeled.
 
-### Failure Handling
-
-Return `BLOCKED` with the exact missing or contradictory fields. In first-attempt
-mode, missing, mismatched, stale, or withdrawn trusted authorization or
-delegation blocks only the dependent attempt; do not request authorization again
-when the supplied current direct record or bounded delegation matches. Stop when
-the input includes credential payloads, secret values, unapproved live
-inspection, or instructions to execute recovery, and route those actions to the
-named human approval boundary.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - `mode`, restricted to the two values above; omission means
   `production_recovery_readiness`.
@@ -159,7 +147,19 @@ named human approval boundary.
   cryptographic tree identity when it is also bound to the repository and
   configuration filesystem identity, without publishing a secret content hash.
 
-### Outputs
+### Failure Handling
+
+Return `BLOCKED` with the exact missing or contradictory fields. In first-attempt
+mode, missing, mismatched, stale, or withdrawn trusted authorization or
+delegation blocks only the dependent attempt; do not request authorization again
+when the supplied current direct record or bounded delegation matches. Stop when
+the input includes credential payloads, secret values, unapproved live
+inspection, or instructions to execute recovery, and route those actions to the
+named human approval boundary.
+
+## Outputs
+
+### Artifacts
 
 - A read-only, mode-specific readiness verdict with supplied evidence and its
   source/observation time, missing or contradictory inputs, responsible owners,
@@ -171,6 +171,14 @@ named human approval boundary.
   partial completion. A dated actual receipt may be supplied to a later strict
   production-readiness review; the review itself never fabricates that receipt.
 
+### Handoff
+
+Owning role, policies and related documents:
+
+- [IaC reviewer](../../roles/iac-reviewer.md)
+- [Infrastructure cross-validation](../infra-cross-validate/SKILL.md)
+- [Approval boundaries](../../governance/approval-boundaries.md)
+
 ## Verification
 
 ### Checks
@@ -179,10 +187,7 @@ named human approval boundary.
 - The verdict is exactly one of `READY_FOR_SEPARATE_RECOVERY_APPROVAL`, `READY_FOR_SEPARATELY_AUTHORIZED_FIRST_ISOLATED_REHEARSAL`, or `BLOCKED`.
 - Execution-time checks stay `NOT_RUN_BY_DESIGN`, and the review never reports a restore as executed.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [IaC reviewer](../../roles/iac-reviewer.md)
-- [Infrastructure cross-validation](../infra-cross-validate/SKILL.md)
-- [Approval boundaries](../../governance/approval-boundaries.md)
+Execution-time checks stay `NOT_RUN_BY_DESIGN`, and the review never reports
+a restore as executed; a verdict is not recovery authorization.

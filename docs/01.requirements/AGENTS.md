@@ -1,17 +1,19 @@
 ---
 title: "Requirements Agent Guide"
-version: "0.3.1"
+version: "0.4.0"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-17"
 ---
 
 # Requirements Agent Guide
 
 ## Scope
 
-### Allowed Surface
+### Allowed Scope
+
+#### Allowed Surface
 
 Stage 01 holds Requirement Packages: the problem, stakeholder value, scope,
 functional and quality requirements (with solution-independent interface needs
@@ -22,14 +24,23 @@ to the owners that decide how. The human guide is [README.md](README.md).
 Every `docs/01.requirements/####-<slug>.md` Requirement Package and this
 folder's README.
 
-### Non-goals
+#### Non-goals
 
 Architecture, implementation contracts and operating procedures are out of
 scope; they belong to Stage 02, Stage 03 and Stage 05.
 
-## Required Policies
+### Instruction Precedence
 
-### Canonical Sources
+When this guide and the owner of a rule it summarizes disagree, the owner wins
+and this guide is corrected
+([documentation protocol](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd)).
+[Bootstrap](../../.agents/governance/bootstrap.md#authority-and-precedence)
+sets the full precedence order; a folder guide routes only and never overrides
+canonical governance or a Stage contract.
+
+## Workflow
+
+### Intake
 
 - Load order and authority: [bootstrap](../../.agents/governance/bootstrap.md).
 - Authoring, identity, language and retirement rules:
@@ -47,19 +58,9 @@ scope; they belong to Stage 02, Stage 03 and Stage 05.
 - Provider loading: [Claude adapter](../../.claude/provider.md),
   [Codex adapter](../../.codex/provider.md).
 
-### Local Obligations
+### Execution
 
-- Write child IDs in full (`REQ-####-FR-####`, `REQ-####-NFR-####`); no
-  `IF` child identity is issued. Never reuse a number or lower a high-water mark; a
-  retired package or child number goes into the Registry `reserved_history`.
-- Keep requirements solution-independent. A requirement that names a script,
-  container flag or volume path belongs to the Stage 03 Spec or Stage 05
-  policy that owns the implementation.
-- Write prose in English, per the profile `language`.
-
-## Workflow
-
-### Inspect and Change
+#### Inspect and Change
 
 - Create a package from the Requirement template
   [`requirement-package.template.md`](../99.templates/templates/requirements/requirement-package.template.md)
@@ -71,17 +72,40 @@ scope; they belong to Stage 02, Stage 03 and Stage 05.
 - Add a traceability link only when the linked Description, ADR, Spec or
   Operations document exists.
 
-### Handoff
+#### Local Obligations
 
-Record progress, decisions and evidence in the current Task, and leave the
-next owner named there. Human-facing and related documents:
+- Write child IDs in full (`REQ-####-FR-####`, `REQ-####-NFR-####`); no
+  `IF` child identity is issued. Never reuse a number or lower a high-water mark; a
+  retired package or child number goes into the Registry `reserved_history`.
+- Keep requirements solution-independent. A requirement that names a script,
+  container flag or volume path belongs to the Stage 03 Spec or Stage 05
+  policy that owns the implementation.
+- Write prose in English, per the profile `language`.
 
-- [Requirement Packages README](README.md)
-- [Requirement template](../99.templates/templates/requirements/requirement-package.template.md)
+## Boundaries
+
+### Authority
+
+#### Stop and Escalate
+
+Stop and report when this guide and its canonical owner disagree (the owner
+wins and this guide is corrected), when an action needs an approval that
+[approval boundaries](../../.agents/governance/approval-boundaries.md)
+has not granted, or when a required check fails.
+
+#### Protected Actions
+
+- Edit only with an authorizing request; Stage documents are read-only by
+  default.
+
+### Secrets and External Effects
+
+This guide adds no secret or external-effect rule;
+[approval boundaries](../../.agents/governance/approval-boundaries.md) owns both.
 
 ## Verification
 
-### Required Checks
+### Checks
 
 - `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main`
 - `python3 scripts/validation/check-document-links.py --mode alignment`
@@ -91,22 +115,18 @@ next owner named there. Human-facing and related documents:
 - `python3 scripts/validation/run-ci-gate.py --profile changed --explain` shows
   the selected checks without running them.
 
-### Evidence and Limits
+### Reporting
+
+#### Evidence and Limits
 
 Record each check's command, revision and exit in the current Task. These
 checks are static or local; they do not prove runtime state, native provider
 delivery, remote enforcement or owner acceptance.
 
-## Safety
+#### Handoff
 
-### Protected Actions
+Record progress, decisions and evidence in the current Task, and leave the
+next owner named there. Human-facing and related documents:
 
-- Edit only with an authorizing request; Stage documents are read-only by
-  default.
-
-### Stop and Escalate
-
-Stop and report when this guide and its canonical owner disagree (the owner
-wins and this guide is corrected), when an action needs an approval that
-[approval boundaries](../../.agents/governance/approval-boundaries.md)
-has not granted, or when a required check fails.
+- [Requirement Packages README](README.md)
+- [Requirement template](../99.templates/templates/requirements/requirement-package.template.md)

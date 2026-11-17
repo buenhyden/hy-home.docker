@@ -3,11 +3,11 @@ name: "requirements-to-design-agent"
 description: "Use when approved requirements need traceable architecture inputs, coverage analysis, alternatives, and explicit unresolved decision gaps."
 metadata:
   title: "requirements-to-design-agent"
-  version: "1.2.1"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "requirements-to-design-agent"
   scope: "architecture"
   owner_agent: "rules-engineer"
@@ -15,7 +15,7 @@ metadata:
 
 # requirements-to-design-agent
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -41,20 +41,28 @@ Unresolved product choices and ambiguous or conflicting requirements are outside
 - Every in-scope requirement has an architecture disposition.
 - Architecture does not cross approved system or authority boundaries silently.
 
-### Failure Handling
-
-Return ambiguous or conflicting requirements to Stage 01 with concrete questions; do not invent design authority.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Approved requirements and architecture constraints.
 - Quality attributes, current system boundaries, interfaces, and governing decisions.
 
-### Outputs
+### Failure Handling
+
+Return ambiguous or conflicting requirements to Stage 01 with concrete questions; do not invent design authority.
+
+## Outputs
+
+### Artifacts
 
 - Traceable design input with requirement coverage, boundaries, and decision needs.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [Rules engineer](../../roles/rules-engineer.md)
+- [ADR writing](../adr-writing/SKILL.md)
+- [Architecture scope](../../governance/stage-authoring-matrix.md)
 
 ## Verification
 
@@ -64,10 +72,6 @@ Return ambiguous or conflicting requirements to Stage 01 with concrete questions
 - Uncovered or contradictory requirements are listed rather than dropped.
 - No design input crosses an approved system or authority boundary without saying so.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [Rules engineer](../../roles/rules-engineer.md)
-- [ADR writing](../adr-writing/SKILL.md)
-- [Architecture scope](../../governance/stage-authoring-matrix.md)
+This skill records no limit on what its checks prove.

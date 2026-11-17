@@ -3,11 +3,11 @@ name: "test-authoring"
 description: "Use when a behavioral contract or reproducible defect needs a witnessed RED test, minimal correction, GREEN result, and regression coverage."
 metadata:
   title: "test-authoring"
-  version: "1.3.1"
+  version: "1.4.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "test-authoring"
   scope: "qa"
   owner_agent: "qa-engineer"
@@ -15,7 +15,7 @@ metadata:
 
 # test-authoring
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -41,6 +41,15 @@ None: this skill states no exclusion.
 - The test is witnessed failing for the intended reason before implementation.
 - Regression coverage includes the discovered boundary and keeps existing tests green.
 
+#### Inputs
+
+- Behavioral contract and failure reproduction.
+- Existing test framework, fixtures, environment boundary, and acceptance criteria.
+- The registered suites and how they are invoked, owned by the typed gate DAG in
+  `.github/workflow-contract.yml`. A suite run outside that contract can fail for
+  reasons the contract prevents, so a standalone invocation proves less than it
+  appears to.
+
 ### Failure Handling
 
 If the failure cannot be reproduced or the fixture is nondeterministic, stop and isolate the environment rather than weakening assertions.
@@ -51,20 +60,19 @@ import path, working directory, or a missing descriptor while the code under
 test is correct. Reproduce the failure the way the contract runs it, and if the
 two disagree, the disagreement is the finding.
 
-## Inputs and Outputs
+## Outputs
 
-### Inputs
-
-- Behavioral contract and failure reproduction.
-- Existing test framework, fixtures, environment boundary, and acceptance criteria.
-- The registered suites and how they are invoked, owned by the typed gate DAG in
-  `.github/workflow-contract.yml`. A suite run outside that contract can fail for
-  reasons the contract prevents, so a standalone invocation proves less than it
-  appears to.
-
-### Outputs
+### Artifacts
 
 - Deterministic tests and RED/GREEN/regression evidence.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [QA engineer](../../roles/qa-engineer.md)
+- [E2E testing](../e2e-testing/SKILL.md)
+- [QA scope](../../governance/quality-standards.md)
 
 ## Verification
 
@@ -74,10 +82,8 @@ two disagree, the disagreement is the finding.
 - The focused test then passes, and the affected suite stays green.
 - The Task records the exact commands and observed outcomes.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [QA engineer](../../roles/qa-engineer.md)
-- [E2E testing](../e2e-testing/SKILL.md)
-- [QA scope](../../governance/quality-standards.md)
+A suite run outside the typed gate DAG in `.github/workflow-contract.yml`
+proves less than it appears to; Failure Handling reproduces a failure the way
+that contract runs it.

@@ -3,11 +3,11 @@ name: "workspace-audit-revalidation"
 description: "Use when a dated audit needs criterion-level revalidation against current representative repository evidence and explicit uncertainty."
 metadata:
   title: "workspace-audit-revalidation"
-  version: "1.2.1"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "workspace-audit-revalidation"
   scope: "agentic"
   owner_agent: "eval-engineer"
@@ -15,7 +15,7 @@ metadata:
 
 # workspace-audit-revalidation
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -41,20 +41,28 @@ None: this skill states no exclusion.
 - Evidence is representative, source-bounded, and reproducible.
 - No criterion receives a pass from absent runtime or provider observation.
 
-### Failure Handling
-
-Return `needs_revalidation` when evidence, entitlement, cutoff, or calibration is insufficient; never infer completion from policy text alone.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Canonical audit and current repository evidence.
 - Criterion IDs, scorers, thresholds, source cutoff, and known forward dependencies.
 
-### Outputs
+### Failure Handling
+
+Return `needs_revalidation` when evidence, entitlement, cutoff, or calibration is insufficient; never infer completion from policy text alone.
+
+## Outputs
+
+### Artifacts
 
 - A calibrated revalidation with criterion-level evidence and explicit uncertainty.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [Evaluation engineer](../../roles/eval-engineer.md)
+- [Agent catalog contract](../../governance/providers/registry.yaml)
+- [Agentic scope](../../governance/agentic.md)
 
 ## Verification
 
@@ -64,10 +72,7 @@ Return `needs_revalidation` when evidence, entitlement, cutoff, or calibration i
 - No criterion passes on absent runtime or provider observation.
 - Changed statuses, unchanged gaps, and confidence are recorded without backdating.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [Evaluation engineer](../../roles/eval-engineer.md)
-- [Agent catalog contract](../../governance/providers/registry.yaml)
-- [Agentic scope](../../governance/agentic.md)
+Policy text alone does not prove completion, and no criterion passes on
+absent runtime or provider observation.

@@ -3,11 +3,11 @@ name: "execution-plan-agent"
 description: "Use when an approved specification needs an executable plan mapping acceptance criteria to exact files, ordered work, risks, and checks."
 metadata:
   title: "execution-plan-agent"
-  version: "1.3.0"
+  version: "1.4.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-16"
+  updated: "2026-11-17"
   function_id: "execution-plan-agent"
   scope: "agentic"
   owner_agent: "workflow-supervisor"
@@ -15,7 +15,7 @@ metadata:
 
 # execution-plan-agent
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -46,20 +46,28 @@ Interfaces, authority or completion criteria that cannot be made concrete are ou
 - File scope and ownership are explicit.
 - Verification commands prove each acceptance criterion and name skipped/CI-only gates.
 
-### Failure Handling
-
-Return to specification when interfaces, authority, or completion criteria cannot be made concrete; do not fill gaps with assumptions.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Approved specification and repository evidence.
 - File ownership, dependencies, risks, verification commands, and rollback boundaries.
 
-### Outputs
+### Failure Handling
+
+Return to specification when interfaces, authority, or completion criteria cannot be made concrete; do not fill gaps with assumptions.
+
+## Outputs
+
+### Artifacts
 
 - An executable Plan co-located at `docs/03.specs/####-<slug>/plan.md` with exact file map, sequence, risks, and verification ladder.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [Workflow supervisor](../../roles/workflow-supervisor.md)
+- [Task breakdown](../task-breakdown-agent/SKILL.md)
+- [Task checklists](../../governance/task-checklists.md)
 
 ## Verification
 
@@ -69,10 +77,6 @@ Return to specification when interfaces, authority, or completion criteria canno
 - `scripts/validation/check-document-metadata.py --mode check-changed` reports no violation for the Plan.
 - Skipped and CI-only gates are named in the Plan.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [Workflow supervisor](../../roles/workflow-supervisor.md)
-- [Task breakdown](../task-breakdown-agent/SKILL.md)
-- [Task checklists](../../governance/task-checklists.md)
+The local checks do not prove skipped or CI-only gates; the Plan names them.

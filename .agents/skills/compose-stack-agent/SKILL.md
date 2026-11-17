@@ -3,11 +3,11 @@ name: "compose-stack-agent"
 description: "Use when an approved Compose specification must become a minimal reversible configuration change with static validation."
 metadata:
   title: "compose-stack-agent"
-  version: "1.2.1"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "compose-stack-agent"
   scope: "infra"
   owner_agent: "infra-implementer"
@@ -15,7 +15,7 @@ metadata:
 
 # compose-stack-agent
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -41,20 +41,28 @@ None: this skill states no exclusion.
 - `docker compose config` or the repository wrapper succeeds.
 - Secret values never enter Compose files, logs, or evidence.
 
-### Failure Handling
-
-Stop on unresolved variables, missing secret files, invalid dependency order, or unapproved runtime impact and revert the logical change.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Approved Compose specification and current Compose tree.
 - Service dependencies, networks, volumes, secrets, health checks, and resource constraints.
 
-### Outputs
+### Failure Handling
+
+Stop on unresolved variables, missing secret files, invalid dependency order, or unapproved runtime impact and revert the logical change.
+
+## Outputs
+
+### Artifacts
 
 - A validated Compose change plus exact configuration and safety evidence.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [Infrastructure implementer](../../roles/infra-implementer.md)
+- [Docker Compose patterns](../docker-compose-patterns/SKILL.md)
+- [Infrastructure validation](../infra-validate/SKILL.md)
 
 ## Verification
 
@@ -64,10 +72,6 @@ Stop on unresolved variables, missing secret files, invalid dependency order, or
 - The rendered `docker compose config` delta matches the requested change and nothing else.
 - No secret value appears in the Compose files, the rendered output, or the evidence.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [Infrastructure implementer](../../roles/infra-implementer.md)
-- [Docker Compose patterns](../docker-compose-patterns/SKILL.md)
-- [Infrastructure validation](../infra-validate/SKILL.md)
+This skill records no limit on what its checks prove.

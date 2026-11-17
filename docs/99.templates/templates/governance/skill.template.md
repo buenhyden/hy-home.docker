@@ -18,7 +18,7 @@ metadata:
 
 # {{TITLE}}
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -34,21 +34,25 @@ metadata:
 
 ### Steps
 
-{{ORDERED_SINGLE_ACTION_STEPS}}
+<!-- Author prompt: List ordered single-action steps, then the required inputs the steps read. -->
+
+{{ORDERED_SINGLE_ACTION_STEPS_AND_REQUIRED_INPUTS}}
 
 ### Failure Handling
 
 {{STOP_CONDITIONS_AND_RECOVERY}}
 
-## Inputs and Outputs
+## Outputs
 
-### Inputs
-
-{{REQUIRED_INPUTS}}
-
-### Outputs
+### Artifacts
 
 {{PRODUCED_ARTIFACTS_AND_EVIDENCE}}
+
+### Handoff
+
+<!-- Author prompt: Say when the skill is complete, what is handed to whom, and link the owning role and policies. -->
+
+{{COMPLETION_HANDOFF_AND_OWNING_LINKS}}
 
 ## Verification
 
@@ -56,8 +60,8 @@ metadata:
 
 {{OBSERVABLE_SUCCESS_CONDITIONS}}
 
-### Completion and Handoff
+### Limits
 
-<!-- Author prompt: Say when the skill is complete, what is handed to whom, and link the owning role and policies. -->
+<!-- Author prompt: Name what the checks do not prove; write that the skill records no limit when it states none. -->
 
-{{COMPLETION_HANDOFF_AND_OWNING_LINKS}}
+{{WHAT_THE_CHECKS_DO_NOT_PROVE}}

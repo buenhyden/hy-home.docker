@@ -1,17 +1,19 @@
 ---
 title: "Specifications Agent Guide"
-version: "0.3.0"
+version: "0.4.0"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-17"
 ---
 
 # Specifications Agent Guide
 
 ## Scope
 
-### Allowed Surface
+### Allowed Scope
+
+#### Allowed Surface
 
 Stage 03 holds Spec Packages: a Spec contracts the change, a Plan sequences
 it, and Tasks record execution and evidence. This guide routes an agent that
@@ -20,14 +22,23 @@ creates or executes a package. The human guide is [README.md](README.md).
 `####-<slug>/spec.md`, `plan.md`, `tasks/tsk-####-<slug>.md`, `contracts/` and
 this folder's README.
 
-### Non-goals
+#### Non-goals
 
 Long-lived requirements, architecture and operating procedures belong to Stage
 01, Stage 02 and Stage 05.
 
-## Required Policies
+### Instruction Precedence
 
-### Canonical Sources
+When this guide and the owner of a rule it summarizes disagree, the owner wins
+and this guide is corrected
+([documentation protocol](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd)).
+[Bootstrap](../../.agents/governance/bootstrap.md#authority-and-precedence)
+sets the full precedence order; a folder guide routes only and never overrides
+canonical governance or a Stage contract.
+
+## Workflow
+
+### Intake
 
 - [Bootstrap](../../.agents/governance/bootstrap.md),
   [SDLC](../../.agents/governance/sdlc.md),
@@ -44,13 +55,9 @@ Long-lived requirements, architecture and operating procedures belong to Stage
 - Provider loading: [Claude adapter](../../.claude/provider.md),
   [Codex adapter](../../.codex/provider.md).
 
-### Local Obligations
+### Execution
 
-- Write prose in English, per the profile `language`.
-
-## Workflow
-
-### Inspect and Change
+#### Inspect and Change
 
 - Load the governing Spec, Plan and current Task before any repository change,
   and record progress, decisions and evidence in that Task.
@@ -70,39 +77,52 @@ Long-lived requirements, architecture and operating procedures belong to Stage
   and the [SDLC](../../.agents/governance/sdlc.md#sequence) readiness and
   approval sequence define it.
 
-### Handoff
+#### Local Obligations
 
-Record progress, decisions and evidence in the current Task, and leave the
-next owner named there. Human-facing and related documents:
+- Write prose in English, per the profile `language`.
 
-- [Specifications README](README.md)
-- [Task template](../99.templates/templates/specs/task.template.md)
+## Boundaries
+
+### Authority
+
+#### Stop and Escalate
+
+Stop and report when this guide and its canonical owner disagree (the owner
+wins and this guide is corrected), when an action needs an approval that
+[approval boundaries](../../.agents/governance/approval-boundaries.md)
+has not granted, or when a required check fails.
+
+#### Protected Actions
+
+- Never edit the body of a terminal Task. Record a later correction in the
+  current Task instead.
+
+### Secrets and External Effects
+
+This guide adds no secret or external-effect rule;
+[approval boundaries](../../.agents/governance/approval-boundaries.md) owns both.
 
 ## Verification
 
-### Required Checks
+### Checks
 
 - `python3 scripts/validation/check-document-corpus-lifecycle.py`
 - `python3 scripts/validation/check-document-metadata.py --mode check-changed --base-ref origin/main`
 - `python3 scripts/validation/check-document-links.py --mode alignment`
 - `python3 scripts/validation/check-document-links.py --mode commands`
 
-### Evidence and Limits
+### Reporting
+
+#### Evidence and Limits
 
 Record each check's command, revision and exit in the current Task. These
 checks are static or local; they do not prove runtime state, native provider
 delivery, remote enforcement or owner acceptance.
 
-## Safety
+#### Handoff
 
-### Protected Actions
+Record progress, decisions and evidence in the current Task, and leave the
+next owner named there. Human-facing and related documents:
 
-- Never edit the body of a terminal Task. Record a later correction in the
-  current Task instead.
-
-### Stop and Escalate
-
-Stop and report when this guide and its canonical owner disagree (the owner
-wins and this guide is corrected), when an action needs an approval that
-[approval boundaries](../../.agents/governance/approval-boundaries.md)
-has not granted, or when a required check fails.
+- [Specifications README](README.md)
+- [Task template](../99.templates/templates/specs/task.template.md)

@@ -3,11 +3,11 @@ name: "code-review-dimensions"
 description: "Use when a scoped diff needs evidence-backed correctness, security, maintainability, performance, and governance review with calibrated severity."
 metadata:
   title: "code-review-dimensions"
-  version: "1.2.1"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "code-review-dimensions"
   scope: "common"
   owner_agent: "code-reviewer"
@@ -15,7 +15,7 @@ metadata:
 
 # code-review-dimensions
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -41,20 +41,28 @@ None: this skill states no exclusion.
 - Every finding has a concrete evidence citation.
 - Severity is calibrated and does not inflate style preferences into blockers.
 
-### Failure Handling
-
-Mark unverifiable requirements explicitly and request the missing artifact; do not infer either pass or failure.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Exact diff or commit range.
 - Governing specification, risk boundaries, and implementation evidence.
 
-### Outputs
+### Failure Handling
+
+Mark unverifiable requirements explicitly and request the missing artifact; do not infer either pass or failure.
+
+## Outputs
+
+### Artifacts
 
 - A dimensioned review with evidence-backed findings and a bounded verdict.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [Code reviewer](../../roles/code-reviewer.md)
+- [Change review execution](../change-review-execution/SKILL.md)
+- [Common scope](../../governance/quality-standards.md)
 
 ## Verification
 
@@ -64,10 +72,7 @@ Mark unverifiable requirements explicitly and request the missing artifact; do n
 - A dimension the diff does not touch is stated as not assessed rather than passed.
 - The verdict is bounded to the reviewed diff and specification.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [Code reviewer](../../roles/code-reviewer.md)
-- [Change review execution](../change-review-execution/SKILL.md)
-- [Common scope](../../governance/quality-standards.md)
+The verdict covers only the reviewed diff and specification; a dimension
+the diff does not touch is not assessed.

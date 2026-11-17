@@ -3,11 +3,11 @@ name: "infra-cross-validate"
 description: "Use when a proposed infrastructure diff needs independent read-only cross-file review against architecture, operations, security, and rollback contracts."
 metadata:
   title: "infra-cross-validate"
-  version: "1.3.1"
+  version: "1.4.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "infra-cross-validate"
   scope: "infra"
   owner_agent: "iac-reviewer"
@@ -15,7 +15,7 @@ metadata:
 
 # infra-cross-validate
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -43,20 +43,29 @@ Applying the infrastructure change is outside this read-only review. Runtime-onl
 - Cross-file dependencies and declared behavior are mutually consistent.
 - A recovery-readiness verdict never authorizes or reports an operational restore.
 
-### Failure Handling
-
-Mark runtime-only questions for `drift-detector` and security-sensitive gaps for `security-auditor`; never infer live state from configuration. Keep recovery readiness blocked when its required contract facts are missing.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Proposed infrastructure diff and declared runtime contract.
 - Related architecture, operations, security, and rollback constraints.
 
-### Outputs
+### Failure Handling
+
+Mark runtime-only questions for `drift-detector` and security-sensitive gaps for `security-auditor`; never infer live state from configuration. Keep recovery readiness blocked when its required contract facts are missing.
+
+## Outputs
+
+### Artifacts
 
 - Cross-validation findings with exact file evidence, downstream observation needs, and any separate recovery-readiness verdict.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [IaC reviewer](../../roles/iac-reviewer.md)
+- [Drift detector](../../roles/drift-detector.md)
+- [Infrastructure validation](../infra-validate/SKILL.md)
+- [Stateful recovery contract review](../stateful-recovery-contract-review/SKILL.md)
 
 ## Verification
 
@@ -66,11 +75,8 @@ Mark runtime-only questions for `drift-detector` and security-sensitive gaps for
 - The review leaves the working tree unchanged and reports conflicts with exact file evidence.
 - Any recovery-readiness verdict is reported apart from, and never as, an executed restore.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [IaC reviewer](../../roles/iac-reviewer.md)
-- [Drift detector](../../roles/drift-detector.md)
-- [Infrastructure validation](../infra-validate/SKILL.md)
-- [Stateful recovery contract review](../stateful-recovery-contract-review/SKILL.md)
+The review reads configuration only and never infers live state from it;
+runtime-only questions go to `drift-detector`. A recovery-readiness verdict
+is not an executed restore.

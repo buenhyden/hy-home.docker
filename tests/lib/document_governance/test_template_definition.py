@@ -483,7 +483,11 @@ class TemplateDefinitionTests(unittest.TestCase):
                     "9.9.9",
                     template_definition(moved, role)["contract_version"],
                 )
-        legacy = next(role for role in moved.template_roles if role not in set(roles))
+        legacy = next(
+            role
+            for role, entry in moved.template_roles.items()
+            if role not in set(roles) and not entry.get("core_role")
+        )
         self.assertEqual(
             moved.common["contract_id"],
             template_definition(moved, legacy)["contract_id"],
@@ -774,6 +778,8 @@ class RoleDesignConformanceTests(unittest.TestCase):
         self.assertEqual("research", bound.get("reference/research"))
         self.assertEqual("audit", bound.get("reference/audit"))
         self.assertEqual("data-reference", bound.get("reference/data"))
+        self.assertEqual("agent-instructions", bound.get("common/agent-guide"))
+        self.assertEqual("skill", bound.get("governance/skill"))
         self.assertEqual([], role_design_contract_findings(self.registry))
 
     def test_a_runbook_steps_table_reads_the_core_columns(self) -> None:

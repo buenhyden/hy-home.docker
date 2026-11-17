@@ -3,11 +3,11 @@ name: "e2e-testing"
 description: "Use when approved acceptance criteria need reproducible end-to-end scenarios through public interfaces within an authorized runtime boundary."
 metadata:
   title: "e2e-testing"
-  version: "1.2.1"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "e2e-testing"
   scope: "qa"
   owner_agent: "qa-engineer"
@@ -15,7 +15,7 @@ metadata:
 
 # e2e-testing
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -41,20 +41,28 @@ None: this skill states no exclusion.
 - Fixtures and timing are deterministic enough for repeat execution.
 - Every reported defect includes a reproducible failure path.
 
-### Failure Handling
-
-Quarantine no test silently; isolate flaky environment dependencies and escalate with the smallest reproducible scenario.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Acceptance criteria and runnable system boundary.
 - Test data, environment assumptions, health endpoints, and cleanup requirements.
 
-### Outputs
+### Failure Handling
+
+Quarantine no test silently; isolate flaky environment dependencies and escalate with the smallest reproducible scenario.
+
+## Outputs
+
+### Artifacts
 
 - End-to-end evidence with scenario, expected/actual result, and reproduction details.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [QA engineer](../../roles/qa-engineer.md)
+- [Test authoring](../test-authoring/SKILL.md)
+- [QA scope](../../governance/quality-standards.md)
 
 ## Verification
 
@@ -64,10 +72,6 @@ Quarantine no test silently; isolate flaky environment dependencies and escalate
 - A failing scenario fails again on re-run before it is reported as a defect.
 - After correction, the focused suite passes and the evidence holds no secret or unsanitized output.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [QA engineer](../../roles/qa-engineer.md)
-- [Test authoring](../test-authoring/SKILL.md)
-- [QA scope](../../governance/quality-standards.md)
+This skill records no limit on what its checks prove.

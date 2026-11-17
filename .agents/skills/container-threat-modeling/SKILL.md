@@ -3,11 +3,11 @@ name: "container-threat-modeling"
 description: "Use when a container workload needs a read-only threat model of assets, trust boundaries, exploit paths, and owned mitigations."
 metadata:
   title: "container-threat-modeling"
-  version: "1.2.1"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "container-threat-modeling"
   scope: "security"
   owner_agent: "security-auditor"
@@ -15,7 +15,7 @@ metadata:
 
 # container-threat-modeling
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -41,20 +41,28 @@ None: this skill states no exclusion.
 - Every material asset and trust boundary is covered.
 - Each accepted mitigation has a canonical implementation or policy owner.
 
-### Failure Handling
-
-Record unknown boundaries and stop any claim of completeness when configuration or authority evidence is missing.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Trust boundaries and workload definition.
 - Compose/network/volume/secret metadata and exposed interfaces.
 
-### Outputs
+### Failure Handling
+
+Record unknown boundaries and stop any claim of completeness when configuration or authority evidence is missing.
+
+## Outputs
+
+### Artifacts
 
 - A container threat model with scoped threats, mitigations, owners, and residual risks.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [Security auditor](../../roles/security-auditor.md)
+- [Security audit](../security-audit/SKILL.md)
+- [Security scope](../../governance/quality-standards.md)
 
 ## Verification
 
@@ -64,10 +72,7 @@ Record unknown boundaries and stop any claim of completeness when configuration 
 - Every accepted mitigation names its canonical implementation or policy owner.
 - Residual risk that needs approval is listed with its owner.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [Security auditor](../../roles/security-auditor.md)
-- [Security audit](../security-audit/SKILL.md)
-- [Security scope](../../governance/quality-standards.md)
+The model claims no completeness where configuration or authority evidence
+is missing; an unknown boundary is recorded as unknown.

@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.9.0"
+version: "0.10.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -347,6 +347,24 @@ unrelated labels, a Question section without the member's question, Versions
 and Dates text wider than its table, and pointers left facing the wrong way;
 each is corrected from the member's own text.
 
+#### W145 agent instructions and skills
+
+The folder agent guide and canonical skill forms move to the core
+agent-instructions and skill roles, and both roles are bound. All 9 folder
+`AGENTS.md` guides and 24 skills move section by section. Each guide gains an
+Instruction Precedence text that says the owner of a summarized rule wins, as
+the documentation protocol states, and links the bootstrap precedence order;
+each skill gains a Limits text written from its own statements. Skill inputs
+sit under Procedure as an H4 after the gates, and canonical sources sit under
+Intake. Generated `CLAUDE.md` import shims and provider skill adapters name no
+section, so the provider surface renderer reports no drift. The drafts were
+applied in the main checkout. An independent review found that the first
+precedence sentence ranked every Intake source, provider adapters included,
+above the guide, and that protected actions which are not secrets or external
+effects sat under Secrets and External Effects; both are corrected, and those
+actions now sit under Authority beside Stop and Escalate. Compared with `main`,
+the guides and skills lost no line except the one renamed section reference.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -452,6 +470,14 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | References review | 137 | W144 | independent-review | Commits `aa4d100f5` and `9b1b7f37a` | FAIL | CHANGES_REQUIRED: a stale section name, unsupported sources-table cells, no Task record, and seven minor placement and wording findings | required | - |
 | References review fix checks | 137 | W144 | document-corpus | check-changed, link alignment and navigation, markdownlint, metadata.test_heading and metadata.test_reference after the fixes, rebased on `3d53456da` | PASS | 27 changed and 0 violations; alignment and navigation PASS; 0 lint issues; tests OK | required | - |
 | References re-review | 137 | W144 | independent-review | Fix commit `4752d897d` and the Task record against the references review, at `a0e205ecc` | PASS | APPROVE; I1 to I3 and M1 to M7 fixed; three minor notes applied | required | References review |
+| Agent instructions form RED | 137 | W145 | role-design-binding | test_template_definition and metadata.test_heading from the W145 agent instructions branch against `main` at `3d53456da` | FAIL | 163 tests, 9 failures: agent-instructions unbound, old guide and skill sections accepted, the two H2 orders still old | required | - |
+| Agent instructions form GREEN | 137 | W145 | role-design-binding | The ten governance modules, test_script_manifest and test_language at `3d7e8dd36` in a separate worktree | PASS | 789 tests in 1613 seconds, exit 0 | required | Agent instructions form RED |
+| Agent instructions move fidelity | 137 | W145 | document-move | 9 guides and 24 skills at `3d7e8dd36` against `main`, non-heading lines lost and added | PASS | 0 lines lost beyond one renamed section reference; 105 lines added | required | - |
+| Agent instructions corpus | 137 | W145 | document-corpus | check-changed against `origin/main`, check-contracts, link alignment and navigation, corpus lifecycle, governance contract, provider surface renderer and markdownlint at `cbac26d12` | PASS | 36 changed and 0 violations; contracts and lifecycle 0; alignment, navigation, governance contract and renderer PASS; 0 lint issues | required | - |
+| Agent instructions review | 137 | W145 | independent-review | Commit `cbac26d12` | FAIL | CHANGES_REQUIRED: the precedence sentence overstated Intake sources, authority rules sat under Secrets and External Effects, no Task record, four minor notes | required | - |
+| Agent instructions review fix checks | 137 | W145 | document-corpus | check-changed, check-contracts, link alignment, governance contract, renderer, markdownlint, metadata.test_heading and test_template_definition after the fixes, then check-changed after the rebase on `3d53456da` raised the protocol to 7.4.0 | PASS | 36 changed and 0 violations; contracts 0; alignment, governance contract and renderer PASS; 0 lint issues; tests OK | required | - |
+| Agent instructions head checks | 137 | W145 | document-corpus | check-changed and check-contracts at `fc9ae1e02` against `origin/main` `3377e6ecb` | PASS | 37 changed and 0 violations; 0 contract violations | required | - |
+| Agent instructions re-review | 137 | W145 | independent-review | Fix range `f971dcf66..fc9ae1e02` against the agent instructions review | PASS | APPROVE; findings 1 to 7 fixed or accepted; two minor notes applied | required | Agent instructions review |
 
 ### Resolution Links
 
@@ -461,7 +487,7 @@ regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
 Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Policy review approval, Policy re-review approval, Policy hosted candidate
 rerun, Governance form GREEN, Governance regression, Governance old-form GREEN, Governance re-review, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
-rows, and References form GREEN and References re-review resolve their W144 rows. The comparison baseline stays
+rows, References form GREEN and References re-review resolve their W144 rows, and Agent instructions form GREEN and Agent instructions re-review resolve their W145 rows. The comparison baseline stays
 open until every role group conforms.
 
 ## Acceptance Decision

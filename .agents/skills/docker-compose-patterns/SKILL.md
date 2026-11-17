@@ -3,11 +3,11 @@ name: "docker-compose-patterns"
 description: "Use when workload requirements need a Compose-native topology and configuration pattern consistent with repository constraints."
 metadata:
   title: "docker-compose-patterns"
-  version: "1.2.1"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "docker-compose-patterns"
   scope: "infra"
   owner_agent: "infra-implementer"
@@ -15,7 +15,7 @@ metadata:
 
 # docker-compose-patterns
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -41,20 +41,28 @@ A requirement that no Compose-native pattern meets is outside this skill; it esc
 - Selected YAML and Compose features are schema-valid.
 - The pattern matches repository naming, secret, network, and lifecycle rules.
 
-### Failure Handling
-
-Escalate to architecture design when no Compose-native pattern meets the requirement; do not simulate unsupported deployment guarantees.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Compose requirements and workspace conventions.
 - Service topology, statefulness, routing, health, resource, and secret constraints.
 
-### Outputs
+### Failure Handling
+
+Escalate to architecture design when no Compose-native pattern meets the requirement; do not simulate unsupported deployment guarantees.
+
+## Outputs
+
+### Artifacts
 
 - A Compose pattern selection with rationale and validation requirements.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [Infrastructure implementer](../../roles/infra-implementer.md)
+- [Compose stack function](../compose-stack-agent/SKILL.md)
+- [Infrastructure scope](../../governance/environment-constraints.md)
 
 ## Verification
 
@@ -64,10 +72,7 @@ Escalate to architecture design when no Compose-native pattern meets the require
 - The chosen pattern follows the repository naming, secret, network, and lifecycle rules, with any exception recorded.
 - Behavior that needs an orchestrator is labelled as not native to Compose.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [Infrastructure implementer](../../roles/infra-implementer.md)
-- [Compose stack function](../compose-stack-agent/SKILL.md)
-- [Infrastructure scope](../../governance/environment-constraints.md)
+The checks do not prove behavior that needs an orchestrator; that behavior
+is labelled as not native to Compose.
