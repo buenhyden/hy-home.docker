@@ -275,12 +275,15 @@ acknowledgement; no further runtime action is taken for it.
 | Disguise GREEN | 137 | W143 | table-ownership | Same tests after the change | PASS | metadata.test_heading 119 tests, exit 0 | required | Disguise RED |
 | Runbook review corpus | 137 | W143 | document-corpus | check-contracts, check-changed against `origin/main`, check-operations-catalog and link alignment after the fixes | PASS | 0 contract violations; 110 changed and 0 violations after one `runtime-version-literal` in new 0105 prose was reworded; catalog and alignment PASS | required | - |
 | Runbook re-review | 137 | W143 | independent-review | Fix range `4f9c142d1`, `7c27251f3` and `a86c266eb` against the review | FAIL | CHANGES_REQUIRED: four n8n no-send cells routed to a DB owner the runbook does not name there; two step references and six Escalation pointers stale | required | - |
+| Runbook review approval | 137 | W143 | independent-review | Fix commits `4f9c142d1`, `7c27251f3`, `a86c266eb`, `b49a8a11e` and `ca7e638ec` against the first review | PASS | APPROVE at `ca7e638ec`; every Important and Minor finding fixed | required | Runbook review |
+| Runbook re-review approval | 137 | W143 | independent-review | Fix commits `b49a8a11e` and `ca7e638ec` against the re-review | PASS | APPROVE at `ca7e638ec`; R1 to R4 fixed | required | Runbook re-review |
 
 ### Resolution Links
 
 Conformance GREEN resolves Conformance RED, and Foundation re-review resolves
 Foundation review. Runbook form GREEN, Reference table GREEN, Runbook
-regression rerun, Runbook corpus, Disguise GREEN, Incident regression rerun, Review fix GREEN, Review fix
+regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
+Runbook re-review approval, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
 rows. The comparison baseline stays
 open until every role group conforms.
