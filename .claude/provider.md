@@ -1,10 +1,10 @@
 ---
 title: "Claude Provider Adapter"
-version: "1.7.4"
+version: "1.7.5"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-18"
 runtime: "claude"
 ---
 
@@ -58,7 +58,10 @@ projection of either, and their absence under `.claude/` is not a defect.
   wrappers are authored, not rendered. The Registry PreToolUse binding's
   `on_failure: block` is written `"onFailure": "block"` here; per the Claude
   Code documentation (2.1.295 or later) a hook that then times out denies the
-  tool, which has not been observed. The `permissions.deny` rules are native
+  tool, which has not been observed. On Claude Code 2.1.327, a PreToolUse
+  hook that exited 1 under this key was refused ("blocking because onFailure
+  is \"block\""), while invalid JSON printed with exit 0 is not a failure
+  and the tool ran, so the dispatcher must print a well-formed decision. The `permissions.deny` rules are native
   extra protection, not Registry translations: they back the
   [secret boundary](../.agents/governance/approval-boundaries.md#authorization-source-and-records),
   the [no-direct-push rule](../.agents/governance/github-governance.md#1-repository-protection-contract),

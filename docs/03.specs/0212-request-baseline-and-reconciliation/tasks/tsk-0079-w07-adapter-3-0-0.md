@@ -1,6 +1,6 @@
 ---
 title: "W07 Native Provider Adapter Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -351,6 +351,17 @@ the repository's `onFailure: block` binding fails closed on invalid output is
 still unobserved. The reviewer cases show the configured tool set and a
 permission-rule refusal; they are not a sandbox test of a shell.
 
+At the owner's direction, a second headless run used the same synthetic
+project with the repository's hook form, `"timeout": 30` and
+`"onFailure": "block"`, and a fourth file whose hook exits 1. On Claude Code
+2.1.327 all four Writes reached the hook. No output and truncated JSON with
+exit 0 were created. Exit 1 was refused with "failed; blocking because
+onFailure is \"block\"" and the hook's stderr. The explicit deny was refused
+with its reason. One run, $0.23. The key therefore fails closed on a hook
+failure but does not cover invalid output on exit 0, which the dispatcher
+avoids by always printing a well-formed decision. `.claude/provider.md`
+now states this. Timeout behavior remains unobserved.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -416,6 +427,7 @@ project trust before it can supply the missing delivery evidence.
 | RUNTIME-CLOSE Claude reviewer | 135 | W140 | live subagent tool list and Read | `code-reviewer` subagent, synthetic public and `secrets/` files | PASS | No write or shell tool; positive read allowed; sensitive path refused by permission settings | required | - |
 | RUNTIME-CLOSE Claude malformed output | 135 | W140 | headless PreToolUse output control | Claude Code 2.1.327, synthetic project hook, three Writes | PASS | Invalid JSON let the Write run; explicit deny refused it; no output allowed it | required | - |
 | RUNTIME-CLOSE Codex sandbox | 135 | W140 | read-only exec write attempt | codex-cli 0.169.0, synthetic directory | NOT_RUN | Blocked by the account usage limit before any tool call; target not reached | required | - |
+| RUNTIME-CLOSE Claude onFailure | 135 | W140 | headless PreToolUse failure control | Claude Code 2.1.327, synthetic project hook with `onFailure: block`, four Writes | PASS | Exit 1 refused by onFailure; invalid JSON on exit 0 still ran; explicit deny refused; no output allowed | required | - |
 
 ### Resolution Links
 
@@ -446,9 +458,9 @@ whose project PostToolUse hook exited 0.
 The Codex desktop hook pass covers the observed edit route. Its separate
 reviewer write-open failure remains unresolved. RUNTIME-CLOSE observed the
 Claude reviewer boundaries, nested worker dispatch and malformed output.
-The Codex read-only sandbox run was blocked by the account usage limit, the
-`onFailure: block` effect on invalid output is unobserved, and automatic
-capture and memory evidence remain open. W08-CAPTURE owns the protected
+The Codex read-only sandbox run was blocked by the account usage limit.
+`onFailure: block` refused a failing hook but not invalid output on exit 0,
+and hook timeout, automatic capture and memory evidence remain open. W08-CAPTURE owns the protected
 collector and null or delayed transcript reconciliation. Owner acceptance
 depends on the required observations.
 
@@ -462,5 +474,5 @@ behavior. This Task records the execution and acceptance.
 ### Next Owner
 
 RUNTIME-CLOSE owns the Codex sandbox and reviewer cases after the usage
-limit resets and the `onFailure` case, and W08-CAPTURE the collector. The
-owner decides criterion 135.
+limit resets, and W08-CAPTURE the collector. The owner decides criterion
+135.
