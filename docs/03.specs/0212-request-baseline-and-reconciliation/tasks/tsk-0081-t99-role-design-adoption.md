@@ -363,13 +363,15 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Policy review | 137 | W143 | independent-review | Commits `b901796e3` and the TSK-0081 record | FAIL | CHANGES_REQUIRED: twelve inverted `금지:` rows, Enforcement cells naming checks the policy does not tie to the rule, rules under subsections missing | required | - |
 | Policy redraft verification | 137 | W143 | rule-table-verification | 77 redrafted tables through the verifying apply script, then check-changed, check-contracts, check-operations-catalog, link alignment and markdownlint | PASS | 2415 rows, 0 uncited, 0 negated `금지:`; 0 violations; catalog and alignment PASS; 0 lint issues | required | - |
 | Policy re-review | 137 | W143 | independent-review | Fix range `7e23e2acf` and `83fe20401` against the first review | FAIL | CHANGES_REQUIRED: I1 to I3 and M1 to M3 fixed; twenty Limits line citations point at shifted lines | required | - |
+| Policy review approval | 137 | W143 | independent-review | Fix commits `7e23e2acf`, `83fe20401`, `3bd9a044c` and `a92dec37c` against the first review | PASS | APPROVE at `a92dec37c`; I1 to I3 and M1 to M3 fixed | required | Policy review |
+| Policy re-review approval | 137 | W143 | independent-review | Fix commits `3bd9a044c` and `a92dec37c` against the re-review | PASS | APPROVE at `a92dec37c`; N1, N2 and N4 fixed, N3 left as wording | required | Policy re-review |
 
 ### Resolution Links
 
 Conformance GREEN resolves Conformance RED, and Foundation re-review resolves
 Foundation review. Runbook form GREEN, Reference table GREEN, Runbook
 regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
-Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Incident regression rerun, Review fix GREEN, Review fix
+Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Policy review approval, Policy re-review approval, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
 rows. The comparison baseline stays
 open until every role group conforms.
