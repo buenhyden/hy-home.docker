@@ -56,8 +56,8 @@ the operator-selected storage configuration under its persistent mount.
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| Mailpit SMTP (loopback) | Development applications | Mailpit | The description links no contract for this interface. | The description records no failure handling for this interface. |
-| Mailpit UI (loopback and Traefik route) | Mailpit | Browsers | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| Mailpit SMTP (loopback) | Development applications | Mailpit | The description links no contract for this interface. | The description records service-level recovery only: Mailpit recovery preserves SQLite with its WAL or uses the official dump/ingest path. |
+| Mailpit UI (loopback and Traefik route) | Mailpit | Browsers | The description links no contract for this interface. | The description records service-level recovery only: Mailpit recovery preserves SQLite with its WAL or uses the official dump/ingest path. |
 | Stalwart SMTP25, submission587 and implicit-TLS IMAP993 | Stalwart | Mail clients | `config/plan.ndjson` listener set with relay denial | The description records no failure handling for this interface. |
 | Stalwart HTTP8080 management UI | Stalwart | The description names no consumer for this interface. | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | Stalwart external delivery | Stalwart | Internet | DNS/SPF/DKIM/DMARC and TLS promotion acceptance | The description records no failure handling for this interface. |

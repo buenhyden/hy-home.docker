@@ -75,10 +75,10 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| HOME management path (Traefik `websecure` to Kafbat) | Kafbat (`kafbat-ui`) behind Traefik | Browser | `01-gateway` gateway standard chain with native Keycloak OIDC | The description records no failure handling for this interface. |
-| Internal broker listeners on `kafka_net` | HOME broker `kafka-1` | Containers | The description links no contract for this interface. | The description records no failure handling for this interface. |
-| PLAINTEXT EXTERNAL listener on loopback | HOME broker `kafka-1` | The description names no consumer for this interface. | The description links no contract for this interface. | The description records no failure handling for this interface. |
-| JMX exporter on loopback | HOME broker `kafka-1` | The description names no consumer for this interface. | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| HOME management path (Traefik `websecure` to Kafbat) | Kafbat (`kafbat-ui`) behind Traefik | Browser | `01-gateway` gateway standard chain with native Keycloak OIDC | The description records service-level recovery only: the linked runbook owns recovery and its separate evidence. |
+| Internal broker listeners on `kafka_net` | HOME broker `kafka-1` | Containers | The description links no contract for this interface. | The description records service-level recovery only: the linked runbook owns recovery and its separate evidence. |
+| PLAINTEXT EXTERNAL listener on loopback | HOME broker `kafka-1` | The description names no consumer for this interface. | The description links no contract for this interface. | The description records service-level recovery only: the linked runbook owns recovery and its separate evidence. |
+| JMX exporter on loopback | HOME broker `kafka-1` | The description names no consumer for this interface. | The description links no contract for this interface. | The description records service-level recovery only: the linked runbook owns recovery and its separate evidence. |
 | LAB broker, Schema Registry and Connect on `lab_kafka_net` | LAB brokers, Schema Registry and Connect (`lab-kafka` profile) | Containers | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | SSO scheme | `02-auth` Keycloak | Kafbat | Native Keycloak OIDC | The description records no failure handling for this interface. |
 

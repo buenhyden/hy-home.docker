@@ -70,7 +70,7 @@ flowchart LR
 | Redis/Valkey target connections | External Redis/Valkey targets | RedisInsight | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | Model and provider API requests | Approved model/provider APIs | Open Notebook | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | SurrealDB records | SurrealDB (`/mydata`) | Open Notebook | The description links no contract for this interface. | Open Notebook recovery requires app data, SurrealDB data and the matching encryption key at one recovery point. |
-| MLflow browser route and SDK access | MLflow | Browsers and SDK clients on the four declared networks | ForwardAuth for the browser route only | The description records no failure handling for this interface. |
+| MLflow browser route and SDK access | MLflow | Browsers and SDK clients on the four declared networks | ForwardAuth for the browser route only | The description records service-level recovery only: PostgreSQL metadata and SeaweedFS artifacts recover together. |
 | JupyterLab LAB bind address | JupyterLab | The description names no consumer for this interface. | The description links no contract for this interface. | The description records no failure handling for this interface. |
 
 - Gateway routes operators to Dozzle, RedisInsight and Open Notebook per the Building Blocks diagram; JupyterLab has no gateway route and is published only on the LAB bind address.
