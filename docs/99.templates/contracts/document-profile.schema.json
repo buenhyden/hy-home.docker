@@ -1046,7 +1046,7 @@
           }
         },
         "role_design_contract": {
-          "$comment": "The adopted shared document role design core: identity, numeric version, tracked source and schema paths and the source SHA-256. A template role that declares core_role is checked against it.",
+          "$comment": "The adopted shared document role design core: identity, numeric version, tracked source and schema paths and the SHA-256 of each. A template role that declares core_role is checked against it.",
           "type": "object",
           "additionalProperties": false,
           "required": [
@@ -1054,7 +1054,8 @@
             "contract_version",
             "source_path",
             "schema_path",
-            "source_sha256"
+            "source_sha256",
+            "schema_sha256"
           ],
           "properties": {
             "contract_id": {
@@ -1073,6 +1074,10 @@
               "pattern": "^docs/99\\.templates/contracts/[a-z0-9-]+\\.schema\\.json$(?!\\n)"
             },
             "source_sha256": {
+              "type": "string",
+              "pattern": "^[0-9a-f]{64}$(?!\\n)"
+            },
+            "schema_sha256": {
               "type": "string",
               "pattern": "^[0-9a-f]{64}$(?!\\n)"
             }
@@ -1653,9 +1658,58 @@
               "type": "string",
               "minLength": 1
             }
-          }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": {
+                  "kind": {
+                    "const": "pending-migration"
+                  }
+                }
+              },
+              "then": {
+                "required": [
+                  "core_role"
+                ]
+              },
+              "else": {
+                "not": {
+                  "required": [
+                    "core_role"
+                  ]
+                }
+              }
+            }
+          ]
         }
-      }
+      },
+      "allOf": [
+        {
+          "oneOf": [
+            {
+              "required": [
+                "core_role"
+              ],
+              "not": {
+                "required": [
+                  "core_exception"
+                ]
+              }
+            },
+            {
+              "required": [
+                "core_exception"
+              ],
+              "not": {
+                "required": [
+                  "core_role"
+                ]
+              }
+            }
+          ]
+        }
+      ]
     },
     "lifecycle": {
       "type": "object",
