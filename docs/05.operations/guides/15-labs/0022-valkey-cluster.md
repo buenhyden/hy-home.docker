@@ -1,10 +1,10 @@
 ---
 title: "Valkey Cluster Usage Guide"
-version: "2.1.0"
+version: "2.1.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 artifact_id: "GDE-0022"
 parent_ids:
@@ -150,7 +150,7 @@ static pass는 configuration 증거일 뿐이다. runtime과 restore는 별개�
 
 ### Symptoms
 
-증상별 진단과 복구 절차는 Outcome의 Related Documents에 연결된 runbook을 따른다.
+증상별 진단과 복구 절차는 Purpose 절 Outcome의 Related Documents에 연결된 runbook을 따른다.
 
 ### Next Action
 
