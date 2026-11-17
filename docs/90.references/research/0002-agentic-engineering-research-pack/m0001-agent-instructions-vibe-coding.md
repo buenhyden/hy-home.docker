@@ -1,10 +1,10 @@
 ---
 title: "Reference: Agent Instructions and Bounded Vibe Coding"
-version: "1.3.0"
+version: "1.4.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-17"
 layer: "references"
 artifact_id: "RES-0002-m0001"
 parent_ids:
@@ -17,17 +17,77 @@ review_cycle: "on-source-change"
 
 # Reference: Agent Instructions and Bounded Vibe Coding
 
-## Overview
+## Question and Scope
 
-### Overview
+### Question
 
-## Scope and Method
+How do supported agents discover and load repository instructions, and
+under which bounds may short, exploratory ("vibe") coding prompts be
+promoted into accepted work? The member owns instruction discovery and
+bounded exploratory coding for this research pack.
 
-### Current External Research
+### Scope
+
+The member covers Codex and Claude Code instruction discovery, the
+distinction between instruction, policy, role, procedure, tool and output
+style, and conditional guidance for exploratory prompts. It leaves
+permissions, sandbox, skills, hooks and session differences to
+[m0012](m0012-provider-implementation-comparison.md#native-capability-matrix)
+and loop implications to [m0010](m0010-loop-engineering.md#current-external-research);
+it is non-normative and does not authorize relocating policy.
+
+## Sources
+
+### Primary Sources
+
+#### Related Documents
+
+- [Research pack](README.md)
+- [Provider implementation comparison](./m0012-provider-implementation-comparison.md)
+- [Harness engineering](./m0008-harness-engineering.md)
+- [Loop engineering](./m0010-loop-engineering.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+
+- [Agentic Engineering Research Pack](README.md)
+
+#### Claims and Sources
+
+| Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0001-01 | Codex instruction discovery | [S-learn-chatgpt-com-agents-md](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance | Not displayed | 2026-09-27 | Codex CLI / Claude Code; version conditions above | Fact | Current documented behavior; installed version unexamined | Not assessed in this run |
+| C-m0001-02 | Claude native AGENTS loading | [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles | Not displayed; explicit version boundaries in text | 2026-09-27 | Codex CLI / Claude Code; version conditions above | Fact | Version/plugin/launch-path conditional | Not assessed in this run |
+| C-m0001-03 | Shared filenames differ in semantics | [S-learn-chatgpt-com-agents-md](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance; [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles | Not displayed / Not displayed; explicit version boundaries in text | 2026-09-27 | Codex CLI / Claude Code; version conditions above | Interpretation | Common semantics require separate acceptance evidence | Not assessed in this run |
+| C-m0001-04 | Bounded exploratory promotion | [S-anthropic-com-building-effective-agents](https://www.anthropic.com/engineering/building-effective-agents); When to use agents / Agents | 2024-12-19 | 2026-09-27 | Codex CLI / Claude Code; version conditions above | Recommendation | Only where scope and completion can be observed | Not assessed in this run |
+
+| Source ID | Original and detail location | Publication/revision date | Checked at | Product/channel/version and stability | Limitation |
+| --- | --- | --- | --- | --- | --- |
+| S-learn-chatgpt-com-agents-md | [Original](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance | Not displayed | 2026-09-27 | Codex CLI current mutable documentation; no installed version/stability guarantee checked | Legacy developer URL redirected; loading not exercised |
+| S-code-claude-com-memory | [Original](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles | Not displayed; explicit version boundaries in text | 2026-09-27 | Claude Code bundled plugin v2.1.277+, exceptions before v2.1.281; mutable docs | InstructionsLoaded/import behavior remains native; memory mechanics in m0012 |
+| S-anthropic-com-building-effective-agents | [Original](https://www.anthropic.com/engineering/building-effective-agents); When to use agents / Agents | 2024-12-19 | 2026-09-27 | Historical engineering design advice, not product support contract | Later landscape acknowledged; no local outcome established |
+
+### Versions and Dates
+
+The member was created 2026-08-23, carries `observed_at` 2026-09-05 and
+`reviewed_at` 2026-11-06, and records that the original external pages
+were opened on 2026-09-27. The table below lists each source with its
+version and check date.
+
+| Source ID | Source | Version | Checked At | Finding | Application | Limits |
+| --- | --- | --- | --- | --- | --- | --- |
+| S-learn-chatgpt-com-agents-md | [Original](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance | Codex CLI current mutable documentation; publication date not displayed; no installed version checked | 2026-09-27 | Codex assembles guidance once at run start: global override, then one AGENTS.md per directory root to cwd; 32 KiB default limit (C-m0001-01, C-m0001-03) | Informs instruction-discovery parity questions; internal adoption not assessed in this run | Legacy developer URL redirected; loading not exercised; installed version unexamined |
+| S-code-claude-com-memory | [Original](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles | Claude Code bundled plugin v2.1.277+, exceptions before v2.1.281; mutable docs; publication date not displayed | 2026-09-27 | Claude Code reads AGENTS.md through its bundled plugin when no CLAUDE.md variant exists; instruction text is context, not enforced configuration (C-m0001-02, C-m0001-03) | Informs instruction-discovery parity questions; internal adoption not assessed in this run | Version, plugin and launch-path conditional; InstructionsLoaded/import behavior remains native; memory mechanics in m0012 |
+| S-anthropic-com-building-effective-agents | [Original](https://www.anthropic.com/engineering/building-effective-agents); When to use agents / Agents | Published 2024-12-19; historical engineering design advice, not a product support contract | 2026-09-27 | Distinguishes prescribed workflows from dynamically directed agents; recommends simpler compositions, environmental feedback and stopping conditions (C-m0001-04) | Supports the bounded exploratory promotion recommendation; internal adoption not assessed in this run | Only where scope and completion can be observed; later landscape acknowledged; no local outcome established |
+
+## Analysis
+
+### Findings
+
+#### Current External Research
 
 This member owns instruction discovery and bounded exploratory coding. Original external pages were opened on **2026-09-27**; preserved `observed_at` and `reviewed_at` describe historical evidence. This research is non-normative. Internal adoption: **Not assessed in this run**. Unless an original explicitly states a maturity label, formal stable/preview/experimental status is **not stated**; current documentation is not a stability guarantee.
 
-### Instruction loading and authority
+#### Instruction loading and authority
 
 **C-m0001-01 — source fact.** Codex assembles guidance once at run start: global AGENTS.override.md before AGENTS.md, then one file per directory from project root to working directory, with more specific guidance later. The default combined project limit is 32 KiB. Linked Markdown still needs an explicit read. [Codex instruction guide](https://learn.chatgpt.com/docs/agent-configuration/agents-md) (S-learn-chatgpt-com-agents-md, discovery section).
 
@@ -35,7 +95,7 @@ This member owns instruction discovery and bounded exploratory coding. Original 
 
 **C-m0001-03 — interpretation.** A shared filename does not establish identical discovery, precedence or enforcement. A common map can point to the approved task, scope, durable owner and acceptance evidence; provider adapters must retain native loading and trust behavior. [m0012](m0012-provider-implementation-comparison.md#native-capability-matrix) owns permissions, sandbox, skills, hooks and session differences. Repeating a control in prose is not evidence that it is enforced.
 
-### Instruction authoring distinctions
+#### Instruction authoring distinctions
 
 **C-m0001-03 — non-normative authoring interpretation.** The following separates
 intent from enforcement using the loading/context limits of C-m0001-01–02. It is
@@ -66,24 +126,13 @@ state, then compare loaded guidance, effective permissions and output. A drift
 review compares each adapter's references and exceptions with the canonical
 owner; file copying or symlinking alone proves neither loading nor equivalence.
 
-### Conditional guidance for exploration
+#### Conditional guidance for exploration
 
 **C-m0001-04 — recommendation.** A short exploratory prompt suits a disposable sketch or reversible edit with observable acceptance. Before promotion, put intended behavior, constraints, allowed paths, a stop condition and a concrete check in the existing workflow. A natural-language attempt limit supplies review guidance, not a process kill switch. Ambiguous, cross-cutting or security-sensitive changes benefit from planning and independent evidence review.
 
 Anthropic distinguishes prescribed workflows from dynamically directed agents and recommends simpler compositions first, environmental feedback and stopping conditions. This is design advice, not a quality standard. [Building effective agents](https://www.anthropic.com/engineering/building-effective-agents) (S-anthropic-com-building-effective-agents; loop implications owned by [m0010](m0010-loop-engineering.md#current-external-research)). A concise instruction map saves repeated context but depends on reliable discovery; a large always-loaded policy increases conflict and context costs. This research does not authorize relocating policy.
 
-### Related Documents
-
-- [Research pack](README.md)
-- [Provider implementation comparison](./m0012-provider-implementation-comparison.md)
-- [Harness engineering](./m0008-harness-engineering.md)
-- [Loop engineering](./m0010-loop-engineering.md)
-- [Scope application matrix](./m0015-scope-application-matrix.md)
-- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
-
-## Findings
-
-### Historical Workspace Observations
+#### Historical Workspace Observations
 
 The complete earlier body is preserved at its original cutoff, including then-current external assertions and workspace observations. It is not current implementation authority; its dates are unchanged.
 
@@ -419,9 +468,26 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 
 > Revalidated 2026-11-06: `.claude/settings.local.json` is an ignored local file (`.gitignore:112`), not tracked state; `.claude/rules/` does not exist; Claude native surfaces are `.claude/agents/` (14), `.claude/skills/`, `.claude/hooks/` (7 wrappers), `.claude/output-styles/`, `.claude/settings.json`; Stage 00 `docs/00.agent-governance/` is retired; current policy lives in `.agents/governance/` (for example `.agents/governance/approval-boundaries.md`) and roles in `.agents/roles/` (14 roles). The dated values above are preserved as observed.
 
-## Limitations
+### Alternatives
 
-### Future Internal Checks
+The member compares one alternative: a concise instruction map saves
+repeated context but depends on reliable discovery, while a large
+always-loaded policy increases conflict and context costs. It records no
+other compared alternatives.
+
+## Application and Limits
+
+### Design Implications
+
+A shared instruction filename does not establish identical discovery,
+precedence or enforcement, so a common map points to the task, scope,
+owner and acceptance evidence while provider adapters keep native loading
+and trust behavior. Before promoting an exploratory change, the existing
+workflow should record intended behavior, constraints, allowed paths, a
+stop condition and a concrete check. Internal adoption is not assessed in
+this run, and this research does not authorize relocating policy.
+
+### Unverified Conditions
 
 Candidate surfaces do not assert implementation. These checks require a separate authorized task.
 
@@ -429,24 +495,3 @@ Candidate surfaces do not assert implementation. These checks require a separate
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | C-m0001-01–03 / discovery | Repository/directory/session; governance/instruction discovery | If parity is evaluated | AGENTS.md, canonical bootstrap, provider adapters | Which owners load automatically, explicitly or not at all, and are stack/coding constraints distinct from role/tool authority and output preferences? | Version, launch path, fixture tree, loading trace, canonical owner links and separate coding/style expectations | Approved disposable nested-directory fixture | Expected precedence/read observed; silent omission fails | Separate runtime authorization; no private/global-state export | rules-engineer / reviewer | Not assessed in this run |
 | C-m0001-04 / exploration | Task/Spec; implementation/quality/governance | If a draft is promoted | Existing Spec/Plan/Task and review prompts | Are scope, stop and behavior checks recorded? | Representative draft, check output, independent review | Document review then authorized reversible trial | Promotion requires observable acceptance; self-declaration fails | Implementation/runtime checks separately authorized | planner / code-reviewer | Not assessed in this run |
-
-## Sources
-
-### Claims and Sources
-
-| Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0001-01 | Codex instruction discovery | [S-learn-chatgpt-com-agents-md](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance | Not displayed | 2026-09-27 | Codex CLI / Claude Code; version conditions above | Fact | Current documented behavior; installed version unexamined | Not assessed in this run |
-| C-m0001-02 | Claude native AGENTS loading | [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles | Not displayed; explicit version boundaries in text | 2026-09-27 | Codex CLI / Claude Code; version conditions above | Fact | Version/plugin/launch-path conditional | Not assessed in this run |
-| C-m0001-03 | Shared filenames differ in semantics | [S-learn-chatgpt-com-agents-md](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance; [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles | Not displayed / Not displayed; explicit version boundaries in text | 2026-09-27 | Codex CLI / Claude Code; version conditions above | Interpretation | Common semantics require separate acceptance evidence | Not assessed in this run |
-| C-m0001-04 | Bounded exploratory promotion | [S-anthropic-com-building-effective-agents](https://www.anthropic.com/engineering/building-effective-agents); When to use agents / Agents | 2024-12-19 | 2026-09-27 | Codex CLI / Claude Code; version conditions above | Recommendation | Only where scope and completion can be observed | Not assessed in this run |
-
-| Source ID | Original and detail location | Publication/revision date | Checked at | Product/channel/version and stability | Limitation |
-| --- | --- | --- | --- | --- | --- |
-| S-learn-chatgpt-com-agents-md | [Original](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance | Not displayed | 2026-09-27 | Codex CLI current mutable documentation; no installed version/stability guarantee checked | Legacy developer URL redirected; loading not exercised |
-| S-code-claude-com-memory | [Original](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles | Not displayed; explicit version boundaries in text | 2026-09-27 | Claude Code bundled plugin v2.1.277+, exceptions before v2.1.281; mutable docs | InstructionsLoaded/import behavior remains native; memory mechanics in m0012 |
-| S-anthropic-com-building-effective-agents | [Original](https://www.anthropic.com/engineering/building-effective-agents); When to use agents / Agents | 2024-12-19 | 2026-09-27 | Historical engineering design advice, not product support contract | Later landscape acknowledged; no local outcome established |
-
-## Related Documents
-
-- [Agentic Engineering Research Pack](README.md)

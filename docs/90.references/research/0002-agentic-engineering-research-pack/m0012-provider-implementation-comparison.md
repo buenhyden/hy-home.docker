@@ -1,10 +1,10 @@
 ---
 title: "Reference: Claude and Codex Implementation Comparison"
-version: "1.3.0"
+version: "1.4.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-17"
 layer: "references"
 artifact_id: "RES-0002-m0012"
 parent_ids:
@@ -17,17 +17,134 @@ review_cycle: "on-source-change"
 
 # Reference: Claude and Codex Implementation Comparison
 
-## Overview
+## Question and Scope
 
-### Overview
+### Question
 
-## Scope and Method
+How do Claude Code and Codex implement the same semantic governance
+(instructions, trust and configuration, permissions and sandbox, MCP, skills,
+subagents, hooks, memory, compaction, planning, verification and handoff,
+editor and automation hosts, models and cost), and which native differences
+must an adapter retain instead of normalizing them into false parity?
 
-### Current External Research
+### Scope
+
+This member owns the dated Claude and Codex product comparison from
+originals opened on 2026-09-27: a native capability matrix, shared meanings
+with preserved exceptions, and the preserved historical workspace
+observations. Documentation does not prove an installed client, enabled
+feature, account entitlement or local adoption, and SDK behavior is not
+inferred from CLI or Desktop documentation. Instruction source metadata stays
+with m0001, model and config-reference metadata with m0013, and knowledge
+lifecycle with m0011.
+
+## Sources
+
+### Primary Sources
+
+#### Related Documents
+
+- [Research pack](README.md)
+- [Harness engineering](./m0008-harness-engineering.md)
+- [Loop engineering](./m0010-loop-engineering.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
+- Subagent protocol (retired path: `../../../00.agent-governance/subagent-protocol.md`)
+- SPEC-0158 preservation contract
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+
+- [Agentic Engineering Research Pack](README.md)
+
+#### Claims and Sources
+
+| Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0012-01 | Native instruction discovery | [S-learn-chatgpt-com-agents-md](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance; [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles | Not displayed / Not displayed; explicit version boundaries in text | 2026-09-27 | See exact product/version/environment in C-m0012-01 matrix row | Fact | Version/plugin/launch path conditional | Not assessed in this run |
+| C-m0012-02 | Trust/config precedence | [S-code-claude-com-settings](https://code.claude.com/docs/en/settings); scopes/precedence/managed controls; [S-code-claude-com-security](https://code.claude.com/docs/en/security); permission modes/project and MCP trust; [S-learn-chatgpt-com-config-basic](https://learn.chatgpt.com/docs/config-file/config-basic); Configuration precedence / trust | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-02 matrix row | Facts | Trust/OS/channel/requirements differ | Not assessed in this run |
+| C-m0012-03 | Permissions and sandbox | [S-code-claude-com-security](https://code.claude.com/docs/en/security); permission modes/project and MCP trust; [S-code-claude-com-sandboxing](https://code.claude.com/docs/en/sandboxing); FS/network isolation and platforms; [S-learn-chatgpt-com-sandboxing](https://learn.chatgpt.com/docs/sandboxing); OS mechanisms/modes/reviewer | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-03 matrix row | Facts | Trust/OS/channel/requirements differ | Not assessed in this run |
+| C-m0012-04 | MCP tool reach | [S-code-claude-com-mcp](https://code.claude.com/docs/en/mcp); connection/scope/trust; [S-learn-chatgpt-com-mcp](https://learn.chatgpt.com/docs/extend/mcp); transports/auth/setup; [S-code-claude-com-security](https://code.claude.com/docs/en/security); permission modes/project and MCP trust | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-04 matrix row | Facts | Trust/OS/channel/requirements differ | Not assessed in this run |
+| C-m0012-05 | Native skills | [S-code-claude-com-skills](https://code.claude.com/docs/en/skills); frontmatter/invocation/fork; [S-learn-chatgpt-com-build-skills](https://learn.chatgpt.com/docs/build-skills); discovery/progressive loading/openai.yaml | Not displayed; v2.1.196 restriction stated / Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-05 matrix row | Facts | Ignored fields/budgets/response exceptions | Not assessed in this run |
+| C-m0012-06 | Native subagents | [S-code-claude-com-sub-agents](https://code.claude.com/docs/en/sub-agents); frontmatter/plugin restrictions/maxTurns/memory; [S-learn-chatgpt-com-subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents); custom files/inheritance | Not displayed; maxTurns v2.1.246 boundary / Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-06 matrix row | Facts | Ignored fields/budgets/response exceptions | Not assessed in this run |
+| C-m0012-07 | Native hooks | [S-code-claude-com-hooks](https://code.claude.com/docs/en/hooks); handler types/Stop continuation state; [S-learn-chatgpt-com-hooks](https://learn.chatgpt.com/docs/hooks); trust/types/concurrency/Stop/PostToolUse | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-07 matrix row | Facts | Ignored fields/budgets/response exceptions | Not assessed in this run |
+| C-m0012-08 | Generated memory | [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles; [S-code-claude-com-sub-agents](https://code.claude.com/docs/en/sub-agents); frontmatter/plugin restrictions/maxTurns/memory; [S-learn-chatgpt-com-memories](https://learn.chatgpt.com/docs/customization/memories); local enablement/background generation/chat switches | Not displayed; explicit version boundaries in text / Not displayed; maxTurns v2.1.246 boundary / Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-08 matrix row | Facts | Generated context not durable authority | Not assessed in this run |
+| C-m0012-09 | Compaction | [S-code-claude-com-model-config](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction; [S-learn-chatgpt-com-config-reference](https://learn.chatgpt.com/docs/config-file/config-reference); effort/auto-compact threshold/scope; [S-learn-chatgpt-com-slash-commands](https://learn.chatgpt.com/docs/reference/slash-commands); /compact /plan /review /fork | Not displayed; version conditions in text / Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-09 matrix row | Facts | Generated context not durable authority | Not assessed in this run |
+| C-m0012-10 | Planning | [S-code-claude-com-common-workflows](https://code.claude.com/docs/en/common-workflows); planning/review recipes; [S-learn-chatgpt-com-slash-commands](https://learn.chatgpt.com/docs/reference/slash-commands); /compact /plan /review /fork | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-10 matrix row | Facts / common-goal interpretation | Concrete client and environment required | Not assessed in this run |
+| C-m0012-11 | Verification and handoff | [S-code-claude-com-common-workflows](https://code.claude.com/docs/en/common-workflows); planning/review recipes; [S-learn-chatgpt-com-slash-commands](https://learn.chatgpt.com/docs/reference/slash-commands); /compact /plan /review /fork | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-11 matrix row | Facts / common-goal interpretation | Concrete client and environment required | Not assessed in this run |
+| C-m0012-12 | Editor integration | [S-code-claude-com-vs-code](https://code.claude.com/docs/en/vs-code); requirements/bundled CLI/context/diffs; [S-learn-chatgpt-com-codex-ide](https://learn.chatgpt.com/docs/codex/ide); selected/open-file context and review | Not displayed; VS Code >=1.94 / Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-12 matrix row | Facts / common-goal interpretation | Concrete client and environment required | Not assessed in this run |
+| C-m0012-13 | Automation environments | [S-code-claude-com-scheduled-tasks](https://code.claude.com/docs/en/scheduled-tasks); cloud/Desktop/session/expiry; [S-learn-chatgpt-com-automations](https://learn.chatgpt.com/docs/automations); local desktop/web execution | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-13 matrix row | Facts / common-goal interpretation | Concrete client and environment required | Not assessed in this run |
+| C-m0012-14 | Models and costs | [S-code-claude-com-model-config](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction; [S-learn-chatgpt-com-models](https://learn.chatgpt.com/docs/models); recommendations/reasoning/retirements; [S-platform-claude-com-models-overview](https://platform.claude.com/docs/en/models/overview); latest-model table/IDs | Not displayed; version conditions in text / Not displayed; dated retirement notices / Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-14 matrix row | Routed facts | No account/billing inspection | Not assessed in this run |
+| C-m0012-15 | Common semantic contract | [S-learn-chatgpt-com-agents-md](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance; [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles; [S-learn-chatgpt-com-sandboxing](https://learn.chatgpt.com/docs/sandboxing); OS mechanisms/modes/reviewer | Not displayed / Not displayed; explicit version boundaries in text | 2026-09-27 | Cross-provider contract; target client/version must be chosen | Interpretation / recommendation | Adoption requires separately authorized evidence | Not assessed in this run |
+| C-m0012-16 | Adapter acceptance | [S-learn-chatgpt-com-agents-md](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance; [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles; [S-code-claude-com-hooks](https://code.claude.com/docs/en/hooks); handler types/Stop continuation state; [S-learn-chatgpt-com-hooks](https://learn.chatgpt.com/docs/hooks); trust/types/concurrency/Stop/PostToolUse | Not displayed / Not displayed; explicit version boundaries in text | 2026-09-27 | Cross-provider contract; target client/version must be chosen | Interpretation / recommendation | Adoption requires separately authorized evidence | Not assessed in this run |
+
+| Source ID | Original and detail location | Publication/revision date | Checked at | Product/channel/version and stability | Limitation |
+| --- | --- | --- | --- | --- | --- |
+| S-code-claude-com-settings | [Original](https://code.claude.com/docs/en/settings); scopes/precedence/managed controls | Not displayed | 2026-09-27 | Claude Code mutable native settings docs | Instruction loading is separate |
+| S-code-claude-com-security | [Original](https://code.claude.com/docs/en/security); permission modes/project and MCP trust | Not displayed | 2026-09-27 | Claude local/cloud/remote surfaces; current docs | Noninteractive trust differs; server security not attested |
+| S-code-claude-com-sandboxing | [Original](https://code.claude.com/docs/en/sandboxing); FS/network isolation and platforms | Not displayed | 2026-09-27 | Claude Bash sandbox; platform conditional | Not proof every integration is sandboxed |
+| S-code-claude-com-mcp | [Original](https://code.claude.com/docs/en/mcp); connection/scope/trust | Not displayed | 2026-09-27 | Claude MCP integration; server-specific | No authentication or server tested |
+| S-learn-chatgpt-com-config-basic | [Original](https://learn.chatgpt.com/docs/config-file/config-basic); Configuration precedence / trust | Not displayed | 2026-09-27 | Codex mutable local config; cloud-managed defaults | Requirements separate; global/private config untouched |
+| S-learn-chatgpt-com-sandboxing | [Original](https://learn.chatgpt.com/docs/sandboxing); OS mechanisms/modes/reviewer | Not displayed | 2026-09-27 | Codex Linux/WSL, macOS, Windows native sandbox | Auto-review does not widen sandbox |
+| S-learn-chatgpt-com-mcp | [Original](https://learn.chatgpt.com/docs/extend/mcp); transports/auth/setup | Not displayed | 2026-09-27 | Codex CLI/Desktop/IDE integration | No live server or authorization assessed |
+| S-code-claude-com-skills | [Original](https://code.claude.com/docs/en/skills); frontmatter/invocation/fork | Not displayed; v2.1.196 restriction stated | 2026-09-27 | Claude native skill discovery; extensions | disable-model-invocation affects preload/scheduling; not authority |
+| S-learn-chatgpt-com-build-skills | [Original](https://learn.chatgpt.com/docs/build-skills); discovery/progressive loading/openai.yaml | Not displayed | 2026-09-27 | Codex native loader; mutable docs | Metadata budget; equal names not merged |
+| S-code-claude-com-sub-agents | [Original](https://code.claude.com/docs/en/sub-agents); frontmatter/plugin restrictions/maxTurns/memory | Not displayed; maxTurns v2.1.246 boundary | 2026-09-27 | Claude native/custom/plugin agents; type/version conditional | Ignored plugin controls and resumable limit retained |
+| S-learn-chatgpt-com-subagents | [Original](https://learn.chatgpt.com/docs/agent-configuration/subagents); custom files/inheritance | Not displayed | 2026-09-27 | Codex current release enabled by default; TOML | Extra tokens/write conflicts; live overrides; client/flow-specific approval as matrix states |
+| S-code-claude-com-hooks | [Original](https://code.claude.com/docs/en/hooks); handler types/Stop continuation state | Not displayed | 2026-09-27 | Claude native hooks; custom handlers | Event response/async semantics native; no handler executed |
+| S-learn-chatgpt-com-hooks | [Original](https://learn.chatgpt.com/docs/hooks); trust/types/concurrency/Stop/PostToolUse | Not displayed | 2026-09-27 | Codex native scripts/MCP hooks; hash trust | Post-action effects irreversible; native response precedence |
+| S-learn-chatgpt-com-memories | [Original](https://learn.chatgpt.com/docs/customization/memories); local enablement/background generation/chat switches | Not displayed | 2026-09-27 | Local Codex opt-in; separate web memory | Eligible idle chats/quota; private state untouched |
+| S-learn-chatgpt-com-slash-commands | [Original](https://learn.chatgpt.com/docs/reference/slash-commands); /compact /plan /review /fork | Not displayed | 2026-09-27 | Current app composer; conditional availability | Not universal CLI/IDE command contract |
+| S-code-claude-com-common-workflows | [Original](https://code.claude.com/docs/en/common-workflows); planning/review recipes | Not displayed | 2026-09-27 | Claude current workflow guidance | Recipe not policy or acceptance proof |
+| S-code-claude-com-vs-code | [Original](https://code.claude.com/docs/en/vs-code); requirements/bundled CLI/context/diffs | Not displayed; VS Code >=1.94 | 2026-09-27 | Claude editor integration; client/OS conditional | No installed editor or shortcut test |
+| S-learn-chatgpt-com-codex-ide | [Original](https://learn.chatgpt.com/docs/codex/ide); selected/open-file context and review | Not displayed | 2026-09-27 | Codex VS Code-compatible; other IDEs distinct | No universal shortcut/terminal behavior |
+| S-code-claude-com-scheduled-tasks | [Original](https://code.claude.com/docs/en/scheduled-tasks); cloud/Desktop/session/expiry | Not displayed | 2026-09-27 | Claude scheduler environments; current docs | Availability/data reach/expiry distinct; no schedule created |
+| S-learn-chatgpt-com-automations | [Original](https://learn.chatgpt.com/docs/automations); local desktop/web execution | Not displayed | 2026-09-27 | Codex local app versus web automation | Host/project conditions; no web local continuity |
+
+### Versions and Dates
+
+The frontmatter records `created` 2026-08-23, `observed_at` 2026-09-05 and
+`reviewed_at` 2026-11-06; the vendor originals were opened on 2026-09-27.
+The table below lists each `S-` source opened on 2026-09-27 with its version
+and check date; the historical evidence tables keep their own earlier access
+dates.
+
+| Source ID | Source | Version | Checked At | Finding | Application | Limits |
+| --- | --- | --- | --- | --- | --- | --- |
+| S-code-claude-com-settings | [Original](https://code.claude.com/docs/en/settings); scopes/precedence/managed controls | Not displayed; Claude Code mutable native settings docs | 2026-09-27 | Claude settings use managed/user/project/local scopes with native precedence (C-m0012-02) | Trust/config matrix row C-m0012-02; internal adoption not assessed in this run | Instruction loading is separate |
+| S-code-claude-com-security | [Original](https://code.claude.com/docs/en/security); permission modes/project and MCP trust | Not displayed; current docs for Claude local/cloud/remote surfaces | 2026-09-27 | Permission modes and project and MCP trust (C-m0012-02, C-m0012-03, C-m0012-04) | Trust, permission/sandbox and MCP matrix rows; internal adoption not assessed in this run | Noninteractive trust differs; server security not attested |
+| S-code-claude-com-sandboxing | [Original](https://code.claude.com/docs/en/sandboxing); FS/network isolation and platforms | Not displayed; Claude Bash sandbox, platform conditional | 2026-09-27 | Claude Bash sandbox filesystem and network isolation by platform (C-m0012-03) | Permissions/sandbox matrix row C-m0012-03; internal adoption not assessed in this run | Not proof every integration is sandboxed |
+| S-code-claude-com-mcp | [Original](https://code.claude.com/docs/en/mcp); connection/scope/trust | Not displayed; Claude MCP integration, server-specific | 2026-09-27 | Claude scoped MCP server setup and trust (C-m0012-04) | Tools/MCP matrix row C-m0012-04; internal adoption not assessed in this run | No authentication or server tested |
+| S-learn-chatgpt-com-config-basic | [Original](https://learn.chatgpt.com/docs/config-file/config-basic); Configuration precedence / trust | Not displayed; Codex mutable local config with cloud-managed defaults | 2026-09-27 | Codex precedence layers and trust; untrusted projects skip project config, hooks and rules (C-m0012-02) | Trust/config matrix row C-m0012-02; internal adoption not assessed in this run | Requirements separate; global/private config untouched |
+| S-learn-chatgpt-com-sandboxing | [Original](https://learn.chatgpt.com/docs/sandboxing); OS mechanisms/modes/reviewer | Not displayed; Codex Linux/WSL, macOS, Windows native sandbox | 2026-09-27 | Codex OS sandbox modes and approval reviewer (C-m0012-03, C-m0012-15) | Permissions/sandbox row and common contract; internal adoption not assessed in this run | Auto-review does not widen sandbox |
+| S-learn-chatgpt-com-mcp | [Original](https://learn.chatgpt.com/docs/extend/mcp); transports/auth/setup | Not displayed; Codex CLI/Desktop/IDE integration | 2026-09-27 | Codex STDIO and Streamable HTTP transports with bearer or OAuth auth (C-m0012-04) | Tools/MCP matrix row C-m0012-04; internal adoption not assessed in this run | No live server or authorization assessed |
+| S-code-claude-com-skills | [Original](https://code.claude.com/docs/en/skills); frontmatter/invocation/fork | Not displayed; v2.1.196 restriction stated | 2026-09-27 | Claude SKILL.md invocation and fork controls (C-m0012-05) | Skills matrix row C-m0012-05; internal adoption not assessed in this run | disable-model-invocation affects preload/scheduling; not authority |
+| S-learn-chatgpt-com-build-skills | [Original](https://learn.chatgpt.com/docs/build-skills); discovery/progressive loading/openai.yaml | Not displayed; Codex native loader, mutable docs | 2026-09-27 | Codex SKILL.md discovery, progressive loading and optional openai.yaml (C-m0012-05) | Skills matrix row C-m0012-05; internal adoption not assessed in this run | Metadata budget; equal names not merged |
+| S-code-claude-com-sub-agents | [Original](https://code.claude.com/docs/en/sub-agents); frontmatter/plugin restrictions/maxTurns/memory | Not displayed; maxTurns v2.1.246 boundary | 2026-09-27 | Claude subagent frontmatter, plugin restrictions, maxTurns and memory (C-m0012-06, C-m0012-08) | Subagents and memory matrix rows; internal adoption not assessed in this run | Ignored plugin controls and resumable limit retained |
+| S-learn-chatgpt-com-subagents | [Original](https://learn.chatgpt.com/docs/agent-configuration/subagents); custom files/inheritance | Not displayed; Codex current release enabled by default, TOML | 2026-09-27 | Codex custom subagent TOML files and inheritance (C-m0012-06) | Subagents matrix row C-m0012-06; internal adoption not assessed in this run | Extra tokens/write conflicts; live overrides; client/flow-specific approval |
+| S-code-claude-com-hooks | [Original](https://code.claude.com/docs/en/hooks); handler types/Stop continuation state | Not displayed; Claude native hooks with custom handlers | 2026-09-27 | Claude hook handler types and Stop continuation state (C-m0012-07, C-m0012-16) | Hooks matrix row and adapter acceptance; internal adoption not assessed in this run | Event response/async semantics native; no handler executed |
+| S-learn-chatgpt-com-hooks | [Original](https://learn.chatgpt.com/docs/hooks); trust/types/concurrency/Stop/PostToolUse | Not displayed; Codex native scripts/MCP hooks with hash trust | 2026-09-27 | Codex hook trust, concurrency, Stop decisions and PostToolUse limits (C-m0012-07, C-m0012-16) | Hooks matrix row and adapter acceptance; internal adoption not assessed in this run | Post-action effects irreversible; native response precedence |
+| S-learn-chatgpt-com-memories | [Original](https://learn.chatgpt.com/docs/customization/memories); local enablement/background generation/chat switches | Not displayed; local Codex opt-in, separate web memory | 2026-09-27 | Codex local opt-in memory generated from eligible idle chats (C-m0012-08) | Memory matrix row C-m0012-08; internal adoption not assessed in this run | Eligible idle chats/quota; private state untouched |
+| S-learn-chatgpt-com-slash-commands | [Original](https://learn.chatgpt.com/docs/reference/slash-commands); /compact /plan /review /fork | Not displayed; current app composer, conditional availability | 2026-09-27 | Codex app /compact, /plan, /review and /fork commands (C-m0012-09, C-m0012-10, C-m0012-11) | Compaction, planning and verification/handoff rows; internal adoption not assessed in this run | Not universal CLI/IDE command contract |
+| S-code-claude-com-common-workflows | [Original](https://code.claude.com/docs/en/common-workflows); planning/review recipes | Not displayed; Claude current workflow guidance | 2026-09-27 | Claude planning and review workflow recipes (C-m0012-10, C-m0012-11) | Planning and verification/handoff rows; internal adoption not assessed in this run | Recipe not policy or acceptance proof |
+| S-code-claude-com-vs-code | [Original](https://code.claude.com/docs/en/vs-code); requirements/bundled CLI/context/diffs | Not displayed; VS Code >=1.94 | 2026-09-27 | Claude VS Code requirements, bundled CLI, context and diffs (C-m0012-12) | Editor/terminal matrix row C-m0012-12; internal adoption not assessed in this run | No installed editor or shortcut test |
+| S-learn-chatgpt-com-codex-ide | [Original](https://learn.chatgpt.com/docs/codex/ide); selected/open-file context and review | Not displayed; Codex VS Code-compatible, other IDEs distinct | 2026-09-27 | Codex IDE selected and open-file context and review (C-m0012-12) | Editor/terminal matrix row C-m0012-12; internal adoption not assessed in this run | No universal shortcut/terminal behavior |
+| S-code-claude-com-scheduled-tasks | [Original](https://code.claude.com/docs/en/scheduled-tasks); cloud/Desktop/session/expiry | Not displayed; Claude scheduler environments, current docs | 2026-09-27 | Claude cloud, Desktop and session scheduling with intervals and expiry (C-m0012-13) | Automation matrix row C-m0012-13; internal adoption not assessed in this run | Availability/data reach/expiry distinct; no schedule created |
+| S-learn-chatgpt-com-automations | [Original](https://learn.chatgpt.com/docs/automations); local desktop/web execution | Not displayed; Codex local app versus web automation | 2026-09-27 | Codex desktop local versus web automation execution (C-m0012-13) | Automation matrix row C-m0012-13; internal adoption not assessed in this run | Host/project conditions; no web local continuity |
+| S-learn-chatgpt-com-agents-md | [S-learn-chatgpt-com-agents-md](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance | Not displayed | 2026-09-27 | How Codex discovers AGENTS.md guidance (C-m0012-01, C-m0012-15, C-m0012-16) | Instructions matrix row, common contract and adapter acceptance; internal adoption not assessed in this run | Version/plugin/launch path conditional; source metadata owned by m0001 |
+| S-code-claude-com-memory | [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles | Not displayed; explicit version boundaries in text | 2026-09-27 | Claude AGENTS.md, instructionFiles and auto memory (C-m0012-01, C-m0012-08, C-m0012-15, C-m0012-16) | Instructions and memory rows, common contract; internal adoption not assessed in this run | Version/plugin/launch path conditional; source metadata owned by m0001 |
+| S-code-claude-com-model-config | [S-code-claude-com-model-config](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction | Not displayed; version conditions in text | 2026-09-27 | Claude per-model effort, caps and compaction budget (C-m0012-09, C-m0012-14) | Compaction and models/cost rows; internal adoption not assessed in this run | Generated context not durable authority; metadata owned by m0013 |
+| S-learn-chatgpt-com-config-reference | [S-learn-chatgpt-com-config-reference](https://learn.chatgpt.com/docs/config-file/config-reference); effort/auto-compact threshold/scope | Not displayed | 2026-09-27 | Codex effort and auto-compact threshold and scope (C-m0012-09) | Compaction matrix row C-m0012-09; internal adoption not assessed in this run | Generated context not durable authority; metadata owned by m0013 |
+| S-learn-chatgpt-com-models | [S-learn-chatgpt-com-models](https://learn.chatgpt.com/docs/models); recommendations/reasoning/retirements | Not displayed; dated retirement notices | 2026-09-27 | Codex product model recommendations, reasoning and retirements (C-m0012-14) | Models/cost matrix row C-m0012-14; internal adoption not assessed in this run | No account/billing inspection; metadata owned by m0013 |
+| S-platform-claude-com-models-overview | [S-platform-claude-com-models-overview](https://platform.claude.com/docs/en/models/overview); latest-model table/IDs | Not displayed | 2026-09-27 | Claude latest-model table and IDs (C-m0012-14) | Models/cost matrix row C-m0012-14; internal adoption not assessed in this run | No account/billing inspection; metadata owned by m0013 |
+
+## Analysis
+
+### Findings
+
+#### Current External Research
 
 This member owns the dated product comparison. Originals were opened on **2026-09-27**. Documentation does not prove an installed client, enabled feature, account entitlement or local adoption. Shared goals remain separate from native trust, response and session semantics. All internal adoption: **Not assessed in this run**.
 
-### Native Capability Matrix
+#### Native Capability Matrix
 
 Native means documented product mechanism; extension means plugin/skill/integration; custom means an unevaluated project procedure/controller. Support remains version, configuration, trust, platform, model and channel conditional. SDK behavior is not inferred from CLI/Desktop documentation.
 
@@ -48,9 +165,9 @@ Native means documented product mechanism; extension means plugin/skill/integrat
 | Automation — C-m0012-13 | Claude cloud/Desktop/session scheduling; [scheduled tasks](https://code.claude.com/docs/en/scheduled-tasks) | Codex desktop local versus web; [automations](https://learn.chatgpt.com/docs/automations) | Native scheduler; workflow custom | Claude fresh-clone cloud min1h; local/on min1m; open-session loop/7d recurring expiry. Codex local host/app availability; web no local folders | Approved trigger/data/budget/notification intent | Execution location, clone/worktree, lifecycle and expiry differ | Host-off/duplicate/expiry/notification fixture | Not assessed in this run |
 | Models/cost — C-m0012-14 | Claude model/effort and API catalogue; [model config](https://code.claude.com/docs/en/model-config) | Codex product model/effort versus API; [models](https://learn.chatgpt.com/docs/models) | Native controls; routing custom | Exact snapshot/limits in m0013; evaluation in m0002 | Measured quality/latency/total cost within scope | Aliases/defaults/fallbacks and API/subscription metering differ | Frozen accepted-outcome comparison | Not assessed in this run |
 
-### Shared meaning and preserved exceptions
+#### Shared meaning and preserved exceptions
 
-**C-m0012-02 — additional source fact.** Codex precedence is CLI/config override, trusted project layers, profile, user, cloud-managed defaults, system, built-ins. Enforced requirements remain separate constraints. Claude settings use managed/user/project/local scopes with native precedence; instructions are a separate discovery mechanism. Sources below describe settings; no effective local configuration was read.
+**C-m0012-02 — additional source fact.** Codex precedence is CLI/config override, trusted project layers, profile, user, cloud-managed defaults, system, built-ins. Enforced requirements remain separate constraints. Claude settings use managed/user/project/local scopes with native precedence; instructions are a separate discovery mechanism. Sources listed under Primary Sources describe settings; no effective local configuration was read.
 
 **C-m0012-07 — additional source fact.** Codex Stop decision:block requests continuation rather than rejecting the turn; any continue:false wins across matching Stop results. PostToolUse cannot undo side effects; invalid unsupported fields can fail the hook while the tool continues. Both products require event-specific response handling. No event-count parity is claimed.
 
@@ -60,20 +177,7 @@ Native means documented product mechanism; extension means plugin/skill/integrat
 
 Current originals correct historical blanket absence claims for Claude AGENTS, Codex default multi-agent, command-only hooks and universal effort enum. Failed guessed URLs or Markdown endpoints were not treated as missing capability. [m0001](m0001-agent-instructions-vibe-coding.md#claims-and-sources) owns instruction source metadata; [m0013](m0013-provider-model-landscape.md#claims-and-sources) owns model/config-reference metadata; [m0011](m0011-memory-hierarchy.md#current-external-research) owns knowledge lifecycle.
 
-### Related Documents
-
-- [Research pack](README.md)
-- [Harness engineering](./m0008-harness-engineering.md)
-- [Loop engineering](./m0010-loop-engineering.md)
-- [Workspace baseline](./m0020-workspace-baseline.md)
-- [Scope application matrix](./m0015-scope-application-matrix.md)
-- Subagent protocol (retired path: `../../../00.agent-governance/subagent-protocol.md`)
-- SPEC-0158 preservation contract
-- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
-
-## Findings
-
-### Historical Workspace Observations
+#### Historical Workspace Observations
 
 The complete earlier body is preserved at its original cutoff, including then-current external assertions and workspace observations. It is not current implementation authority; its dates are unchanged.
 
@@ -434,9 +538,30 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 
 > Revalidated 2026-11-06: `.claude/rules/` does not exist; Claude native surfaces are `.claude/agents/` (14), `.claude/skills/`, `.claude/hooks/` (7 wrappers), `.claude/output-styles/`, `.claude/settings.json`; roles are 14 (`.agents/roles/`), matching `.claude/agents/` 14. The dated values above are preserved as observed.
 
-## Limitations
+### Alternatives
 
-### Future Internal Checks
+C-m0012-16 names the alternatives when a common rule cannot be expressed
+natively: retain an explicit provider exception, use a smaller supported
+native subset, or use an evaluated wrapper, noting that custom code adds
+maintenance and failure modes. Copy, symlink, import and synchronization
+choices need drift and platform checks, not filename parity alone. The member
+compares no other alternatives.
+
+## Application and Limits
+
+### Design Implications
+
+A small common contract can cover discoverable owners, scoped action and tool
+reach, bounded delegation, evidence-backed progress and completion
+(C-m0012-15), while instruction loading, file schemas, settings precedence,
+trust, sandboxes, payloads, timeouts and memory stay provider-specific.
+Acceptance would require evaluating a concrete target (client/version, OS,
+local/cloud/editor, authentication channel and approved task) and testing
+loading, allow/deny, child failure, repeated hooks and compact/resume
+(C-m0012-16). Adoption requires separately authorized evidence; all internal
+adoption is Not assessed in this run.
+
+### Unverified Conditions
 
 Candidate surfaces do not assert implementation. These checks require a separate authorized task.
 
@@ -449,53 +574,3 @@ Candidate surfaces do not assert implementation. These checks require a separate
 | C-m0012-10–11 / acceptance | Task/Spec; quality/governance | If workflow integration proposed | Existing Spec/Plan/Task and review/handoff prompts | Do plan/check/recipient context preserve authority? | Representative plan, commands/results and recipient review | Document review then approved disposable trial | Acceptance based on evidence; fork/child is not approval | Implementation/runtime separately authorized | planner / reviewer | Not assessed in this run |
 | C-m0012-12–13 / hosts | Provider/tool + execution environment; implementation/quality/security | If editor/schedule requested | Target editor/terminal/scheduler | Do context/diff/trigger/host-off match surface? | OS/client version and context/host/expiry/duplicate results | Authorized target-host/synthetic scheduling fixtures | Expected reach/availability; no duplicate mutation | Extensions/schedules/notifications explicitly scoped | ci-cd-engineer / qa-engineer | Not assessed in this run |
 | C-m0012-14–16 / adapters | Provider/tool; governance/quality | If routing/parity adopted | Native adapters/roles and evaluation owners | Does adapter meet measured common contract with exceptions? | Exact IDs/channel/effort, cases, cost/failure/acceptance | Approved bounded trials and independent review | Quality/budget/authority met; exceptions explicit | Provider spend/input disclosure/config adoption separate | harness-optimizer / eval-engineer | Not assessed in this run |
-
-## Sources
-
-### Claims and Sources
-
-| Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0012-01 | Native instruction discovery | [S-learn-chatgpt-com-agents-md](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance; [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles | Not displayed / Not displayed; explicit version boundaries in text | 2026-09-27 | See exact product/version/environment in C-m0012-01 matrix row | Fact | Version/plugin/launch path conditional | Not assessed in this run |
-| C-m0012-02 | Trust/config precedence | [S-code-claude-com-settings](https://code.claude.com/docs/en/settings); scopes/precedence/managed controls; [S-code-claude-com-security](https://code.claude.com/docs/en/security); permission modes/project and MCP trust; [S-learn-chatgpt-com-config-basic](https://learn.chatgpt.com/docs/config-file/config-basic); Configuration precedence / trust | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-02 matrix row | Facts | Trust/OS/channel/requirements differ | Not assessed in this run |
-| C-m0012-03 | Permissions and sandbox | [S-code-claude-com-security](https://code.claude.com/docs/en/security); permission modes/project and MCP trust; [S-code-claude-com-sandboxing](https://code.claude.com/docs/en/sandboxing); FS/network isolation and platforms; [S-learn-chatgpt-com-sandboxing](https://learn.chatgpt.com/docs/sandboxing); OS mechanisms/modes/reviewer | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-03 matrix row | Facts | Trust/OS/channel/requirements differ | Not assessed in this run |
-| C-m0012-04 | MCP tool reach | [S-code-claude-com-mcp](https://code.claude.com/docs/en/mcp); connection/scope/trust; [S-learn-chatgpt-com-mcp](https://learn.chatgpt.com/docs/extend/mcp); transports/auth/setup; [S-code-claude-com-security](https://code.claude.com/docs/en/security); permission modes/project and MCP trust | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-04 matrix row | Facts | Trust/OS/channel/requirements differ | Not assessed in this run |
-| C-m0012-05 | Native skills | [S-code-claude-com-skills](https://code.claude.com/docs/en/skills); frontmatter/invocation/fork; [S-learn-chatgpt-com-build-skills](https://learn.chatgpt.com/docs/build-skills); discovery/progressive loading/openai.yaml | Not displayed; v2.1.196 restriction stated / Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-05 matrix row | Facts | Ignored fields/budgets/response exceptions | Not assessed in this run |
-| C-m0012-06 | Native subagents | [S-code-claude-com-sub-agents](https://code.claude.com/docs/en/sub-agents); frontmatter/plugin restrictions/maxTurns/memory; [S-learn-chatgpt-com-subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents); custom files/inheritance | Not displayed; maxTurns v2.1.246 boundary / Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-06 matrix row | Facts | Ignored fields/budgets/response exceptions | Not assessed in this run |
-| C-m0012-07 | Native hooks | [S-code-claude-com-hooks](https://code.claude.com/docs/en/hooks); handler types/Stop continuation state; [S-learn-chatgpt-com-hooks](https://learn.chatgpt.com/docs/hooks); trust/types/concurrency/Stop/PostToolUse | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-07 matrix row | Facts | Ignored fields/budgets/response exceptions | Not assessed in this run |
-| C-m0012-08 | Generated memory | [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles; [S-code-claude-com-sub-agents](https://code.claude.com/docs/en/sub-agents); frontmatter/plugin restrictions/maxTurns/memory; [S-learn-chatgpt-com-memories](https://learn.chatgpt.com/docs/customization/memories); local enablement/background generation/chat switches | Not displayed; explicit version boundaries in text / Not displayed; maxTurns v2.1.246 boundary / Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-08 matrix row | Facts | Generated context not durable authority | Not assessed in this run |
-| C-m0012-09 | Compaction | [S-code-claude-com-model-config](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction; [S-learn-chatgpt-com-config-reference](https://learn.chatgpt.com/docs/config-file/config-reference); effort/auto-compact threshold/scope; [S-learn-chatgpt-com-slash-commands](https://learn.chatgpt.com/docs/reference/slash-commands); /compact /plan /review /fork | Not displayed; version conditions in text / Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-09 matrix row | Facts | Generated context not durable authority | Not assessed in this run |
-| C-m0012-10 | Planning | [S-code-claude-com-common-workflows](https://code.claude.com/docs/en/common-workflows); planning/review recipes; [S-learn-chatgpt-com-slash-commands](https://learn.chatgpt.com/docs/reference/slash-commands); /compact /plan /review /fork | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-10 matrix row | Facts / common-goal interpretation | Concrete client and environment required | Not assessed in this run |
-| C-m0012-11 | Verification and handoff | [S-code-claude-com-common-workflows](https://code.claude.com/docs/en/common-workflows); planning/review recipes; [S-learn-chatgpt-com-slash-commands](https://learn.chatgpt.com/docs/reference/slash-commands); /compact /plan /review /fork | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-11 matrix row | Facts / common-goal interpretation | Concrete client and environment required | Not assessed in this run |
-| C-m0012-12 | Editor integration | [S-code-claude-com-vs-code](https://code.claude.com/docs/en/vs-code); requirements/bundled CLI/context/diffs; [S-learn-chatgpt-com-codex-ide](https://learn.chatgpt.com/docs/codex/ide); selected/open-file context and review | Not displayed; VS Code >=1.94 / Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-12 matrix row | Facts / common-goal interpretation | Concrete client and environment required | Not assessed in this run |
-| C-m0012-13 | Automation environments | [S-code-claude-com-scheduled-tasks](https://code.claude.com/docs/en/scheduled-tasks); cloud/Desktop/session/expiry; [S-learn-chatgpt-com-automations](https://learn.chatgpt.com/docs/automations); local desktop/web execution | Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-13 matrix row | Facts / common-goal interpretation | Concrete client and environment required | Not assessed in this run |
-| C-m0012-14 | Models and costs | [S-code-claude-com-model-config](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction; [S-learn-chatgpt-com-models](https://learn.chatgpt.com/docs/models); recommendations/reasoning/retirements; [S-platform-claude-com-models-overview](https://platform.claude.com/docs/en/models/overview); latest-model table/IDs | Not displayed; version conditions in text / Not displayed; dated retirement notices / Not displayed | 2026-09-27 | See exact product/version/environment in C-m0012-14 matrix row | Routed facts | No account/billing inspection | Not assessed in this run |
-| C-m0012-15 | Common semantic contract | [S-learn-chatgpt-com-agents-md](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance; [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles; [S-learn-chatgpt-com-sandboxing](https://learn.chatgpt.com/docs/sandboxing); OS mechanisms/modes/reviewer | Not displayed / Not displayed; explicit version boundaries in text | 2026-09-27 | Cross-provider contract; target client/version must be chosen | Interpretation / recommendation | Adoption requires separately authorized evidence | Not assessed in this run |
-| C-m0012-16 | Adapter acceptance | [S-learn-chatgpt-com-agents-md](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance; [S-code-claude-com-memory](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles; [S-code-claude-com-hooks](https://code.claude.com/docs/en/hooks); handler types/Stop continuation state; [S-learn-chatgpt-com-hooks](https://learn.chatgpt.com/docs/hooks); trust/types/concurrency/Stop/PostToolUse | Not displayed / Not displayed; explicit version boundaries in text | 2026-09-27 | Cross-provider contract; target client/version must be chosen | Interpretation / recommendation | Adoption requires separately authorized evidence | Not assessed in this run |
-
-| Source ID | Original and detail location | Publication/revision date | Checked at | Product/channel/version and stability | Limitation |
-| --- | --- | --- | --- | --- | --- |
-| S-code-claude-com-settings | [Original](https://code.claude.com/docs/en/settings); scopes/precedence/managed controls | Not displayed | 2026-09-27 | Claude Code mutable native settings docs | Instruction loading is separate |
-| S-code-claude-com-security | [Original](https://code.claude.com/docs/en/security); permission modes/project and MCP trust | Not displayed | 2026-09-27 | Claude local/cloud/remote surfaces; current docs | Noninteractive trust differs; server security not attested |
-| S-code-claude-com-sandboxing | [Original](https://code.claude.com/docs/en/sandboxing); FS/network isolation and platforms | Not displayed | 2026-09-27 | Claude Bash sandbox; platform conditional | Not proof every integration is sandboxed |
-| S-code-claude-com-mcp | [Original](https://code.claude.com/docs/en/mcp); connection/scope/trust | Not displayed | 2026-09-27 | Claude MCP integration; server-specific | No authentication or server tested |
-| S-learn-chatgpt-com-config-basic | [Original](https://learn.chatgpt.com/docs/config-file/config-basic); Configuration precedence / trust | Not displayed | 2026-09-27 | Codex mutable local config; cloud-managed defaults | Requirements separate; global/private config untouched |
-| S-learn-chatgpt-com-sandboxing | [Original](https://learn.chatgpt.com/docs/sandboxing); OS mechanisms/modes/reviewer | Not displayed | 2026-09-27 | Codex Linux/WSL, macOS, Windows native sandbox | Auto-review does not widen sandbox |
-| S-learn-chatgpt-com-mcp | [Original](https://learn.chatgpt.com/docs/extend/mcp); transports/auth/setup | Not displayed | 2026-09-27 | Codex CLI/Desktop/IDE integration | No live server or authorization assessed |
-| S-code-claude-com-skills | [Original](https://code.claude.com/docs/en/skills); frontmatter/invocation/fork | Not displayed; v2.1.196 restriction stated | 2026-09-27 | Claude native skill discovery; extensions | disable-model-invocation affects preload/scheduling; not authority |
-| S-learn-chatgpt-com-build-skills | [Original](https://learn.chatgpt.com/docs/build-skills); discovery/progressive loading/openai.yaml | Not displayed | 2026-09-27 | Codex native loader; mutable docs | Metadata budget; equal names not merged |
-| S-code-claude-com-sub-agents | [Original](https://code.claude.com/docs/en/sub-agents); frontmatter/plugin restrictions/maxTurns/memory | Not displayed; maxTurns v2.1.246 boundary | 2026-09-27 | Claude native/custom/plugin agents; type/version conditional | Ignored plugin controls and resumable limit retained |
-| S-learn-chatgpt-com-subagents | [Original](https://learn.chatgpt.com/docs/agent-configuration/subagents); custom files/inheritance | Not displayed | 2026-09-27 | Codex current release enabled by default; TOML | Extra tokens/write conflicts; live overrides; client/flow-specific approval as matrix states |
-| S-code-claude-com-hooks | [Original](https://code.claude.com/docs/en/hooks); handler types/Stop continuation state | Not displayed | 2026-09-27 | Claude native hooks; custom handlers | Event response/async semantics native; no handler executed |
-| S-learn-chatgpt-com-hooks | [Original](https://learn.chatgpt.com/docs/hooks); trust/types/concurrency/Stop/PostToolUse | Not displayed | 2026-09-27 | Codex native scripts/MCP hooks; hash trust | Post-action effects irreversible; native response precedence |
-| S-learn-chatgpt-com-memories | [Original](https://learn.chatgpt.com/docs/customization/memories); local enablement/background generation/chat switches | Not displayed | 2026-09-27 | Local Codex opt-in; separate web memory | Eligible idle chats/quota; private state untouched |
-| S-learn-chatgpt-com-slash-commands | [Original](https://learn.chatgpt.com/docs/reference/slash-commands); /compact /plan /review /fork | Not displayed | 2026-09-27 | Current app composer; conditional availability | Not universal CLI/IDE command contract |
-| S-code-claude-com-common-workflows | [Original](https://code.claude.com/docs/en/common-workflows); planning/review recipes | Not displayed | 2026-09-27 | Claude current workflow guidance | Recipe not policy or acceptance proof |
-| S-code-claude-com-vs-code | [Original](https://code.claude.com/docs/en/vs-code); requirements/bundled CLI/context/diffs | Not displayed; VS Code >=1.94 | 2026-09-27 | Claude editor integration; client/OS conditional | No installed editor or shortcut test |
-| S-learn-chatgpt-com-codex-ide | [Original](https://learn.chatgpt.com/docs/codex/ide); selected/open-file context and review | Not displayed | 2026-09-27 | Codex VS Code-compatible; other IDEs distinct | No universal shortcut/terminal behavior |
-| S-code-claude-com-scheduled-tasks | [Original](https://code.claude.com/docs/en/scheduled-tasks); cloud/Desktop/session/expiry | Not displayed | 2026-09-27 | Claude scheduler environments; current docs | Availability/data reach/expiry distinct; no schedule created |
-| S-learn-chatgpt-com-automations | [Original](https://learn.chatgpt.com/docs/automations); local desktop/web execution | Not displayed | 2026-09-27 | Codex local app versus web automation | Host/project conditions; no web local continuity |
-
-## Related Documents
-
-- [Agentic Engineering Research Pack](README.md)

@@ -1,10 +1,10 @@
 ---
 title: "Reference: Automation Pipeline and Workflow Topology"
-version: "1.3.0"
+version: "1.4.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-17"
 layer: "references"
 artifact_id: "RES-0002-m0004"
 parent_ids:
@@ -17,13 +17,133 @@ review_cycle: "on-source-change"
 
 # Reference: Automation Pipeline and Workflow Topology
 
-## Overview
+## Question and Scope
 
-### Overview
+### Question
 
-## Scope and Method
+Which automation mechanisms establish repeatable checks and controlled
+delivery without confusing actors, costs or authority? The member answers this
+for CI, delivery and deployment boundaries, GitHub Actions execution and state,
+local hook and editor actors, and automated review and test generation.
 
-### Current External Research
+### Scope
+
+The member covers external research on integration and delivery boundaries,
+GitHub Actions mechanisms, Git hooks, pre-commit, editor actions, provider
+lifecycle hooks, CI events, and Copilot review, billing and test generation.
+Internal implementation, account, hosted CI, protection and deployment status
+are not assessed in this run; historical workspace observations are preserved
+but not reassessed. Evidence, trust decisions, runner and PR threats, test
+controls and provider hook semantics are routed to the V&V, security, quality
+and provider-comparison members.
+
+## Sources
+
+### Primary Sources
+
+#### Related Documents
+
+- [Research pack](README.md)
+- [Verification and validation](./m0019-verification-validation.md)
+- [Quality, CI, and formatting](./m0014-quality-ci-formatting.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
+- [Harness engineering](./m0008-harness-engineering.md)
+- [Loop engineering](./m0010-loop-engineering.md)
+- [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
+- [GitHub governance](../../../../.agents/governance/github-governance.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+
+- [Agentic Engineering Research Pack](README.md)
+
+#### Claims and Sources
+
+Every linked source was opened on **2026-09-27**. `Not supplied` means no
+visible publication/update date; mutable documentation has no inferred release
+date. Feature state is the official label where given, otherwise documented.
+
+| Claim ID | Claim | Source ID / detailed location | Published/updated | Checked | Product/version/channel; state | Kind | Limit / recheck |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0004-01 | Delivery prepares tested releases; deployment removes explicit production approval. | S-aws-continuous-delivery; Overview, Delivery vs Deployment | Not supplied | 2026-09-27 | AWS practice guidance; no product channel | Fact | Terminology, not local delivery evidence. |
+| C-m0004-02 | Jobs, steps, needs, permissions, timeout and failure controls have separate keys. | S-github-workflow-syntax; corresponding keys | Not supplied | 2026-09-27 | Actions current docs; documented | Fact | Shell/platform semantics vary. |
+| C-m0004-03 | Branch/path filters combine; skipping a required workflow can leave pending checks; merge_group is separate. | S-github-workflow-syntax; on filters; S-github-workflow-events; merge_group | Not supplied | 2026-09-27 | Actions current docs; documented | Fact | Check settings live outside YAML. |
+| C-m0004-04 | Reusable workflows contain jobs; composite actions bundle steps; nested permission cannot increase. | S-github-reusing-configurations; comparison; S-github-reuse-workflows; nesting | Not supplied | 2026-09-27 | Actions current docs; documented | Fact | Secret forwarding must be considered explicitly. |
+| C-m0004-05 | Matrix fail-fast defaults true; max-parallel bounds jobs; queue:max and cancel-in-progress:true conflict. | S-github-job-variations; failure/parallelism; S-github-workflow-syntax; concurrency | Not supplied | 2026-09-27 | Actions current docs; documented | Fact | Capacity still constrains jobs. |
+| C-m0004-06 | Low-trust default-branch cache defaults read-only with explicit write-mode opt-out. | S-github-dependency-cache; restrictions/cache-mode; S-github-cache-mode-change | Change 2026-09-10; docs not supplied | 2026-09-27 | Actions github.com; released | Fact | Cache contents remain untrusted; verify enterprise parity. |
+| C-m0004-07 | Artifact download compares SHA256 digest and warns on mismatch. | S-github-workflow-artifacts; Validating artifacts | Not supplied | 2026-09-27 | Actions artifact tutorial; documented | Fact | Warning does not establish trusted identity/provenance. |
+| C-m0004-08 | Rulesets can require checks, expected App source and strict base freshness. | S-github-ruleset-rules; Require status checks | Not supplied | 2026-09-27 | GitHub rulesets; documented | Fact | Enforcement needs readback. |
+| C-m0004-09 | Environment rules delay secrets; only one listed reviewer must approve; plan restrictions apply. | S-github-manage-environments; reviewers/secrets | Not supplied | 2026-09-27 | GitHub environments; documented | Fact | Prevent-self-review/bypass settings are separate. |
+| C-m0004-10 | id-token:write enables requesting JWT, not other resource writes. | S-github-oidc; Required permission, subject examples | Not supplied | 2026-09-27 | GitHub OIDC; documented | Fact | Cloud trust needs its own evidence. |
+| C-m0004-11 | June cache restriction covers low-trust default-branch events. | S-github-read-only-cache-change; affected runs | 2026-06-26 | 2026-09-27 | github.com/Data Residency; released | Fact | September override qualifies historical default. |
+| C-m0004-12 | Checkout v7 blocks common fork patterns; old SHA pins do not inherit backports. | S-github-checkout-safety-change; scope/exclusions/editor note | 2026-06-18; note 2026-07-15 | 2026-09-27 | checkout v7 GA; backport enforcement July 20 | Fact | Custom git/gh fetching remains outside protection. |
+| C-m0004-13 | pre-commit/commit-msg can abort operations and can be bypassed by no-verify. | S-git-githooks; Description, named hooks, prepare-commit-msg | Manual last change 2.54.0, 2026-04-20 | 2026-09-27 | Git manual; documented | Fact | Bypass capability is not local permission. |
+| C-m0004-14 | Stages/filters/modified files control pre-commit outcomes. | S-precommit-documentation; stages, filtering, creating hooks, frozen revisions | Not supplied | 2026-09-27 | pre-commit project docs; documented | Fact | Bootstrap/network/local installs differ from CI. |
+| C-m0004-15 | Code Actions use language services/extensions; save modes explicit/always/never differ. | S-vscode-refactoring-source; Code Actions on save, Preview, Keyboard shortcuts | DateApproved 2026-09-16 | 2026-09-27 | VS Code docs main; documented; boolean values planned deprecated | Fact | Official web route later timed out; raw authored source opened. |
+| C-m0004-16 | Default review does not satisfy approvals; approval and cloud-agent handoff features are preview. | S-github-copilot-review; approvals, agentic capabilities, triggers | Not supplied | 2026-09-27 | Copilot github.com; named features public preview | Fact | No local setting/seat/review assessed. |
+| C-m0004-17 | Code review bills AI Credits plus Actions minutes; legacy annual rules differ. | S-github-copilot-pricing; review costs/legacy annual; S-github-copilot-billing-change | Change 2026-06-01; docs not supplied | 2026-09-27 | Copilot usage billing; released/mutable | Fact | No universal per-review price; recheck rates/plans. |
+| C-m0004-18 | Copilot can draft unit tests from code/context. | S-github-copilot-write-tests; generating/improving tests | Not supplied | 2026-09-27 | Copilot tutorial; illustrative | Fact | Output is not test sufficiency evidence. |
+| C-m0004-19 | Bound AI review/generation by attempt, time, cost and mutation authority. | C-m0004-16–18 and linked quality/V&V owners | 2026-09-27 analysis | 2026-09-27 | Conditional pack proposal | Recommendation | Separate adoption task required. |
+
+| Source ID | Opened source |
+| --- | --- |
+| S-aws-continuous-delivery | [AWS delivery](https://aws.amazon.com/devops/continuous-delivery/) |
+| S-github-workflow-syntax | [Workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) |
+| S-github-workflow-events | [Workflow events](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows) |
+| S-github-reusing-configurations | [Reuse/composite comparison](https://docs.github.com/en/actions/concepts/workflows-and-actions/reusing-workflow-configurations) |
+| S-github-reuse-workflows | [Reuse workflows](https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows) |
+| S-github-job-variations | [Job variations](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/run-job-variations) |
+| S-github-dependency-cache | [Dependency cache](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching) |
+| S-github-cache-mode-change | [September cache-mode](https://github.blog/changelog/2026-09-10-control-github-actions-cache-access-with-cache-mode/) |
+| S-github-read-only-cache-change | [June read-only cache](https://github.blog/changelog/2026-06-26-read-only-actions-cache-for-untrusted-triggers/) |
+| S-github-workflow-artifacts | [Artifacts](https://docs.github.com/en/actions/tutorials/store-and-share-data) |
+| S-github-ruleset-rules | [Rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets) |
+| S-github-manage-environments | [Environments](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments) |
+| S-github-oidc | [OIDC](https://docs.github.com/en/actions/reference/security/oidc) |
+| S-github-checkout-safety-change | [Checkout safety and corrected backport note](https://github.blog/changelog/2026-06-18-safer-pull_request_target-defaults-for-github-actions-checkout/) |
+| S-git-githooks | [Git hooks](https://git-scm.com/docs/githooks) |
+| S-precommit-documentation | [pre-commit](https://pre-commit.com/) |
+| S-vscode-refactoring-source | [Microsoft refactoring source](https://raw.githubusercontent.com/microsoft/vscode-docs/main/docs/editing/refactoring.md) |
+| S-github-copilot-review | [Copilot review](https://docs.github.com/en/copilot/concepts/agents/code-review) |
+| S-github-copilot-pricing | [Copilot pricing](https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing) |
+| S-github-copilot-billing-change | [June billing release](https://github.blog/changelog/2026-06-01-updates-to-github-copilot-billing-and-plans/) |
+| S-github-copilot-write-tests | [Copilot tests](https://docs.github.com/en/copilot/tutorials/write-tests) |
+
+### Versions and Dates
+
+The frontmatter records `created` 2026-08-23, `observed_at` 2026-09-05 and
+`reviewed_at` 2026-11-06, and the member states every linked source was opened
+on 2026-09-27. The table below lists each source with its version and check
+date.
+
+| Source ID | Source | Version | Checked At | Finding | Application | Limits |
+| --- | --- | --- | --- | --- | --- | --- |
+| S-aws-continuous-delivery | [AWS delivery](https://aws.amazon.com/devops/continuous-delivery/) | AWS practice guidance; no product channel; publication date not supplied | 2026-09-27 | Delivery prepares tested releases; deployment removes explicit production approval (C-m0004-01). | Separates CI, delivery and deployment terms; basis for starting with deterministic checks. | Terminology, not local delivery evidence. |
+| S-github-workflow-syntax | [Workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) | Actions current docs; documented; date not supplied | 2026-09-27 | Jobs, steps, needs, permissions, timeout and failure controls are separate keys; filters combine; queue:max conflicts with cancel-in-progress:true. | Workflow/job/step, event/path filter and matrix/concurrency rows of the Actions execution table (C-m0004-02, 03, 05). | Shell/platform semantics vary; check settings live outside YAML. |
+| S-github-workflow-events | [Workflow events](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows) | Actions current docs; documented; date not supplied | 2026-09-27 | merge_group is a separate event; skipping a required workflow can leave pending checks (C-m0004-03). | Keep required results producible, including merge queues when used. | Check settings live outside YAML. |
+| S-github-reusing-configurations | [Reuse/composite comparison](https://docs.github.com/en/actions/concepts/workflows-and-actions/reusing-workflow-configurations) | Actions current docs; documented; date not supplied | 2026-09-27 | Reusable workflows contain jobs; composite actions bundle steps (C-m0004-04). | Reusable workflow versus composite action choice in the Actions execution table. | Secret forwarding must be considered explicitly. |
+| S-github-reuse-workflows | [Reuse workflows](https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows) | Actions current docs; documented; date not supplied | 2026-09-27 | Nested reusable-workflow permission cannot increase (C-m0004-04). | Reusable workflow row; no one-consumer abstraction needed. | Secret forwarding must be considered explicitly. |
+| S-github-job-variations | [Job variations](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/run-job-variations) | Actions current docs; documented; date not supplied | 2026-09-27 | Matrix fail-fast defaults true; max-parallel bounds jobs (C-m0004-05). | Matrix/concurrency row: select supported combinations and bound parallel work. | Capacity still constrains jobs. |
+| S-github-dependency-cache | [Dependency cache](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching) | Actions github.com; released; docs date not supplied | 2026-09-27 | Low-trust default-branch cache defaults read-only with explicit write-mode opt-out (C-m0004-06). | Cache/artifact row: cache reproducible dependencies only. | Cache contents remain untrusted; verify enterprise parity. |
+| S-github-cache-mode-change | [September cache-mode](https://github.blog/changelog/2026-09-10-control-github-actions-cache-access-with-cache-mode/) | Changelog 2026-09-10; Actions github.com; released | 2026-09-27 | Write-capable cache-mode can opt out of the read-only default (C-m0004-06). | Qualifies older unlimited-cache descriptions in the cache guidance. | Cache contents remain untrusted; verify enterprise parity. |
+| S-github-read-only-cache-change | [June read-only cache](https://github.blog/changelog/2026-06-26-read-only-actions-cache-for-untrusted-triggers/) | Changelog 2026-06-26; github.com/Data Residency; released | 2026-09-27 | June cache restriction covers low-trust default-branch events (C-m0004-11). | Versioned improvement, not authorization to run untrusted code in a privileged job. | September override qualifies historical default. |
+| S-github-workflow-artifacts | [Artifacts](https://docs.github.com/en/actions/tutorials/store-and-share-data) | Actions artifact tutorial; documented; date not supplied | 2026-09-27 | Artifact download compares SHA256 digest and warns on mismatch (C-m0004-07). | Cache/artifact row: transport digest warnings are not trusted release verification. | Warning does not establish trusted identity/provenance. |
+| S-github-ruleset-rules | [Rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets) | GitHub rulesets; documented; date not supplied | 2026-09-27 | Rulesets can require checks, expected App source and strict base freshness (C-m0004-08). | Required checks/environment row: separate merge restrictions from release approval. | Enforcement needs readback. |
+| S-github-manage-environments | [Environments](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments) | GitHub environments; documented; date not supplied | 2026-09-27 | Environment rules delay secrets; only one listed reviewer must approve; plan restrictions apply (C-m0004-09). | Required checks/environment row: separate release approval and secret access. | Prevent-self-review/bypass settings are separate. |
+| S-github-oidc | [OIDC](https://docs.github.com/en/actions/reference/security/oidc) | GitHub OIDC; documented; date not supplied | 2026-09-27 | id-token:write enables requesting a JWT, not other resource writes (C-m0004-10). | OIDC/token row: minimize scopes and constrain cloud subject/audience. | Cloud trust needs its own evidence. |
+| S-github-checkout-safety-change | [Checkout safety and corrected backport note](https://github.blog/changelog/2026-06-18-safer-pull_request_target-defaults-for-github-actions-checkout/) | Changelog 2026-06-18, note 2026-07-15; checkout v7 GA; backport enforcement July 20 | 2026-09-27 | Checkout v7 blocks common fork patterns; old SHA pins do not inherit backports (C-m0004-12). | Safer fork defaults neither upgrade an old SHA nor protect every custom fetch path. | Custom git/gh fetching remains outside protection. |
+| S-git-githooks | [Git hooks](https://git-scm.com/docs/githooks) | Git manual; manual last change 2.54.0, 2026-04-20 | 2026-09-27 | pre-commit/commit-msg can abort operations and can be bypassed by no-verify (C-m0004-13). | Git hook actor row: can refuse operations but is bypassable; generated message is a draft. | Bypass capability is not local permission. |
+| S-precommit-documentation | [pre-commit](https://pre-commit.com/) | pre-commit project docs; documented; date not supplied | 2026-09-27 | Stages, filters and modified files control pre-commit outcomes (C-m0004-14). | pre-commit actor row: auto-fixes need diff review/rerun; pin reviewed code. | Bootstrap/network/local installs differ from CI. |
+| S-vscode-refactoring-source | [Microsoft refactoring source](https://raw.githubusercontent.com/microsoft/vscode-docs/main/docs/editing/refactoring.md) | VS Code docs main; DateApproved 2026-09-16; boolean values planned deprecated | 2026-09-27 | Code Actions use language services/extensions; save modes explicit/always/never differ (C-m0004-15). | Editor action actor row: preview/diff before acceptance. | Official web route later timed out; raw authored source opened. |
+| S-github-copilot-review | [Copilot review](https://docs.github.com/en/copilot/concepts/agents/code-review) | Copilot github.com; named features public preview; date not supplied | 2026-09-27 | Default review does not satisfy approvals; approval and cloud-agent handoff features are preview (C-m0004-16). | Begin with advisory review on a bounded diff; authorize approvals and edits separately. | No local setting/seat/review assessed. |
+| S-github-copilot-pricing | [Copilot pricing](https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing) | Copilot usage billing; released/mutable; docs date not supplied | 2026-09-27 | Code review bills AI Credits plus Actions minutes; legacy annual rules differ (C-m0004-17). | Cap model spend and runner minutes for automated review. | No universal per-review price; recheck rates/plans. |
+| S-github-copilot-billing-change | [June billing release](https://github.blog/changelog/2026-06-01-updates-to-github-copilot-billing-and-plans/) | Changelog 2026-06-01; released/mutable | 2026-09-27 | Billing now describes AI Credits plus Actions minutes (C-m0004-17). | Cap model spend and runner minutes for automated review. | No universal per-review price; recheck rates/plans. |
+| S-github-copilot-write-tests | [Copilot tests](https://docs.github.com/en/copilot/tutorials/write-tests) | Copilot tutorial; illustrative; date not supplied | 2026-09-27 | Copilot can draft unit tests from code/context (C-m0004-18). | Generation may draft tests; independent oracles and a failing case establish usefulness. | Output is not test sufficiency evidence. |
+
+## Analysis
+
+### Findings
+
+#### Current External Research
 
 Question: which automation mechanisms establish repeatable checks and controlled
 delivery without confusing actors, costs or authority? External sources were
@@ -31,7 +151,7 @@ checked on 2026-09-27. Repository baseline:
 `f30b168e2fbb0959e4a31749935568fd5b3942f1`. Internal implementation, account,
 hosted CI, protection and deployment status: **Not assessed in this run**.
 
-### Integration and delivery boundaries
+#### Integration and delivery boundaries
 
 AWS distinguishes preparing a tested release from automatic production
 deployment without explicit approval (C-m0004-01). This pack uses CI for
@@ -48,7 +168,7 @@ practical; rebuilding creates a new candidate. A tag, upload, green job and
 required check answer different questions. [V&V](m0019-verification-validation.md)
 owns evidence; [security](m0017-security-governance.md) owns trust decisions.
 
-### Actions execution and state
+#### Actions execution and state
 
 | Mechanism | Conditional design choice | Evidence and trade-off |
 | --- | --- | --- |
@@ -67,7 +187,7 @@ SHA nor protect every custom fetch path (C-m0004-11–12). These are versioned
 improvements, not authorization to run untrusted code in a privileged job.
 Runner/PR threats are owned by [m0017](m0017-security-governance.md).
 
-### Hooks and editor actors
+#### Hooks and editor actors
 
 | Actor | Execution and authority | Failure/mutation boundary |
 | --- | --- | --- |
@@ -83,7 +203,7 @@ named owner and check mode. Network-dependent review/test generation needs
 opt-in execution, timeouts and explicit failure, not hidden save/commit
 dependencies. Review auto-modifications before recording success.
 
-### Automated reviews and test generation
+#### Automated reviews and test generation
 
 Current Copilot documentation makes approvals and cloud-agent fix handoff
 public preview. Default review does not satisfy required approvals; opt-in
@@ -100,22 +220,7 @@ requirements/oracles and a demonstrated failing case establish usefulness.
 Measure accepted findings and defect detection, not comments/tests produced.
 [Quality](m0014-quality-ci-formatting.md) owns test controls.
 
-### Related Documents
-
-- [Research pack](README.md)
-- [Verification and validation](./m0019-verification-validation.md)
-- [Quality, CI, and formatting](./m0014-quality-ci-formatting.md)
-- [Workspace baseline](./m0020-workspace-baseline.md)
-- [Scope application matrix](./m0015-scope-application-matrix.md)
-- [Harness engineering](./m0008-harness-engineering.md)
-- [Loop engineering](./m0010-loop-engineering.md)
-- [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
-- [GitHub governance](../../../../.agents/governance/github-governance.md)
-- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
-
-## Findings
-
-### Historical workspace observations — not reassessed in this run
+#### Historical workspace observations — not reassessed in this run
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -659,9 +764,32 @@ Measure accepted findings and defect detection, not comments/tests produced.
 
 > Revalidated 2026-11-06: `.github/workflows/` holds 5 workflows (ci-quality, greetings, pr-labeler, publish-release, stale) and `.github/workflow-contract.yml` lists 5 workflows and 66 gate_nodes; `scripts/validation/github_workflow_contract.py` is replaced by `scripts/validation/check-github-workflow-contract.py`; `.github/actions/` does not exist. The dated values above are preserved as observed.
 
-## Limitations
+### Alternatives
 
-### Future Internal Checks
+The member compares mechanisms rather than products: reusable workflows
+(multi-job contracts) against composite actions (repeated step bundles), with
+different runner, log and secret boundaries; and Git hooks, pre-commit, editor
+actions, provider lifecycle hooks and CI events by execution authority and
+failure boundary. It also contrasts promoting the same verified digest with
+rebuilding, which creates a new candidate. It records no comparison of CI
+platforms other than GitHub Actions.
+
+## Application and Limits
+
+### Design Implications
+
+The member recommends beginning with deterministic checks and adding delivery
+automation only with artifact identity, target, consumer, acceptance signal,
+recovery condition and accountable approver. Synchronous hooks stay
+deterministic and short, and AI review starts advisory on a bounded diff, with
+comments, approvals, edits, commits, pushes and PR creation authorized
+separately and capped by files, attempts, time, spend and runner minutes. These
+are conditional pack proposals (C-m0004-19); adoption needs a separate task and
+the future internal checks listed below.
+
+### Unverified Conditions
+
+#### Future Internal Checks
 
 Surface candidates are historically named routes, not inspected implementation
 owners; new consumer/budget/editor surfaces below are hypothetical.
@@ -675,7 +803,7 @@ owners; new consumer/budget/editor surfaces below are hypothetical.
 | Hooks/editor/docs C-m0004-13–15 | user/repository/session; common/docs | Local automation selected | Historical pre-commit config; hypothetical editor/provider hooks | Who executes/mutates; are changes and failed runs re-reviewed? | Event contract, filters, versions, before/after diff | Metadata inspection and safe fixture | Pass: explicit actor/outcome/review; fail: bypass called enforcement | Executable hooks/extensions trusted code; global settings approval | DevEx/docs | Not assessed in this run |
 | AI review/tests C-m0004-16–19 | task/provider/CI; product/QA/security | Paid reviewer/generator selected | Hypothetical policy/budget/test-design record | Can approval/mutation escape authority; do tests catch independent defects? | Policy modes, budget, bounded attempts, failing case | Approved non-sensitive trial and independent review | Pass: stop bounds/meaningful oracle; fail: unlimited/self-confirming loop | Billing/comments/approvals/PRs each separately authorized | QA/product/security | Not assessed in this run |
 
-### Limitations and preservation decision
+#### Limitations and preservation decision
 
 Reopen sources after feature, billing, action, runner or trust-policy changes.
 No numerical limit is carried forward as timeless authority.
@@ -683,61 +811,3 @@ No numerical limit is carried forward as timeless authority.
 platform/hosted/remote observations. This member owns new external automation
 analysis; the quotation below preserves the complete predecessor body without
 reassessing apparently conflicting remote states observed at different times.
-
-## Sources
-
-### Claims and Sources
-
-Every linked source was opened on **2026-09-27**. `Not supplied` means no
-visible publication/update date; mutable documentation has no inferred release
-date. Feature state is the official label where given, otherwise documented.
-
-| Claim ID | Claim | Source ID / detailed location | Published/updated | Checked | Product/version/channel; state | Kind | Limit / recheck |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0004-01 | Delivery prepares tested releases; deployment removes explicit production approval. | S-aws-continuous-delivery; Overview, Delivery vs Deployment | Not supplied | 2026-09-27 | AWS practice guidance; no product channel | Fact | Terminology, not local delivery evidence. |
-| C-m0004-02 | Jobs, steps, needs, permissions, timeout and failure controls have separate keys. | S-github-workflow-syntax; corresponding keys | Not supplied | 2026-09-27 | Actions current docs; documented | Fact | Shell/platform semantics vary. |
-| C-m0004-03 | Branch/path filters combine; skipping a required workflow can leave pending checks; merge_group is separate. | S-github-workflow-syntax; on filters; S-github-workflow-events; merge_group | Not supplied | 2026-09-27 | Actions current docs; documented | Fact | Check settings live outside YAML. |
-| C-m0004-04 | Reusable workflows contain jobs; composite actions bundle steps; nested permission cannot increase. | S-github-reusing-configurations; comparison; S-github-reuse-workflows; nesting | Not supplied | 2026-09-27 | Actions current docs; documented | Fact | Secret forwarding must be considered explicitly. |
-| C-m0004-05 | Matrix fail-fast defaults true; max-parallel bounds jobs; queue:max and cancel-in-progress:true conflict. | S-github-job-variations; failure/parallelism; S-github-workflow-syntax; concurrency | Not supplied | 2026-09-27 | Actions current docs; documented | Fact | Capacity still constrains jobs. |
-| C-m0004-06 | Low-trust default-branch cache defaults read-only with explicit write-mode opt-out. | S-github-dependency-cache; restrictions/cache-mode; S-github-cache-mode-change | Change 2026-09-10; docs not supplied | 2026-09-27 | Actions github.com; released | Fact | Cache contents remain untrusted; verify enterprise parity. |
-| C-m0004-07 | Artifact download compares SHA256 digest and warns on mismatch. | S-github-workflow-artifacts; Validating artifacts | Not supplied | 2026-09-27 | Actions artifact tutorial; documented | Fact | Warning does not establish trusted identity/provenance. |
-| C-m0004-08 | Rulesets can require checks, expected App source and strict base freshness. | S-github-ruleset-rules; Require status checks | Not supplied | 2026-09-27 | GitHub rulesets; documented | Fact | Enforcement needs readback. |
-| C-m0004-09 | Environment rules delay secrets; only one listed reviewer must approve; plan restrictions apply. | S-github-manage-environments; reviewers/secrets | Not supplied | 2026-09-27 | GitHub environments; documented | Fact | Prevent-self-review/bypass settings are separate. |
-| C-m0004-10 | id-token:write enables requesting JWT, not other resource writes. | S-github-oidc; Required permission, subject examples | Not supplied | 2026-09-27 | GitHub OIDC; documented | Fact | Cloud trust needs its own evidence. |
-| C-m0004-11 | June cache restriction covers low-trust default-branch events. | S-github-read-only-cache-change; affected runs | 2026-06-26 | 2026-09-27 | github.com/Data Residency; released | Fact | September override qualifies historical default. |
-| C-m0004-12 | Checkout v7 blocks common fork patterns; old SHA pins do not inherit backports. | S-github-checkout-safety-change; scope/exclusions/editor note | 2026-06-18; note 2026-07-15 | 2026-09-27 | checkout v7 GA; backport enforcement July 20 | Fact | Custom git/gh fetching remains outside protection. |
-| C-m0004-13 | pre-commit/commit-msg can abort operations and can be bypassed by no-verify. | S-git-githooks; Description, named hooks, prepare-commit-msg | Manual last change 2.54.0, 2026-04-20 | 2026-09-27 | Git manual; documented | Fact | Bypass capability is not local permission. |
-| C-m0004-14 | Stages/filters/modified files control pre-commit outcomes. | S-precommit-documentation; stages, filtering, creating hooks, frozen revisions | Not supplied | 2026-09-27 | pre-commit project docs; documented | Fact | Bootstrap/network/local installs differ from CI. |
-| C-m0004-15 | Code Actions use language services/extensions; save modes explicit/always/never differ. | S-vscode-refactoring-source; Code Actions on save, Preview, Keyboard shortcuts | DateApproved 2026-09-16 | 2026-09-27 | VS Code docs main; documented; boolean values planned deprecated | Fact | Official web route later timed out; raw authored source opened. |
-| C-m0004-16 | Default review does not satisfy approvals; approval and cloud-agent handoff features are preview. | S-github-copilot-review; approvals, agentic capabilities, triggers | Not supplied | 2026-09-27 | Copilot github.com; named features public preview | Fact | No local setting/seat/review assessed. |
-| C-m0004-17 | Code review bills AI Credits plus Actions minutes; legacy annual rules differ. | S-github-copilot-pricing; review costs/legacy annual; S-github-copilot-billing-change | Change 2026-06-01; docs not supplied | 2026-09-27 | Copilot usage billing; released/mutable | Fact | No universal per-review price; recheck rates/plans. |
-| C-m0004-18 | Copilot can draft unit tests from code/context. | S-github-copilot-write-tests; generating/improving tests | Not supplied | 2026-09-27 | Copilot tutorial; illustrative | Fact | Output is not test sufficiency evidence. |
-| C-m0004-19 | Bound AI review/generation by attempt, time, cost and mutation authority. | C-m0004-16–18 and linked quality/V&V owners | 2026-09-27 analysis | 2026-09-27 | Conditional pack proposal | Recommendation | Separate adoption task required. |
-
-| Source ID | Opened source |
-| --- | --- |
-| S-aws-continuous-delivery | [AWS delivery](https://aws.amazon.com/devops/continuous-delivery/) |
-| S-github-workflow-syntax | [Workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) |
-| S-github-workflow-events | [Workflow events](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows) |
-| S-github-reusing-configurations | [Reuse/composite comparison](https://docs.github.com/en/actions/concepts/workflows-and-actions/reusing-workflow-configurations) |
-| S-github-reuse-workflows | [Reuse workflows](https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows) |
-| S-github-job-variations | [Job variations](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/run-job-variations) |
-| S-github-dependency-cache | [Dependency cache](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching) |
-| S-github-cache-mode-change | [September cache-mode](https://github.blog/changelog/2026-09-10-control-github-actions-cache-access-with-cache-mode/) |
-| S-github-read-only-cache-change | [June read-only cache](https://github.blog/changelog/2026-06-26-read-only-actions-cache-for-untrusted-triggers/) |
-| S-github-workflow-artifacts | [Artifacts](https://docs.github.com/en/actions/tutorials/store-and-share-data) |
-| S-github-ruleset-rules | [Rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets) |
-| S-github-manage-environments | [Environments](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments) |
-| S-github-oidc | [OIDC](https://docs.github.com/en/actions/reference/security/oidc) |
-| S-github-checkout-safety-change | [Checkout safety and corrected backport note](https://github.blog/changelog/2026-06-18-safer-pull_request_target-defaults-for-github-actions-checkout/) |
-| S-git-githooks | [Git hooks](https://git-scm.com/docs/githooks) |
-| S-precommit-documentation | [pre-commit](https://pre-commit.com/) |
-| S-vscode-refactoring-source | [Microsoft refactoring source](https://raw.githubusercontent.com/microsoft/vscode-docs/main/docs/editing/refactoring.md) |
-| S-github-copilot-review | [Copilot review](https://docs.github.com/en/copilot/concepts/agents/code-review) |
-| S-github-copilot-pricing | [Copilot pricing](https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing) |
-| S-github-copilot-billing-change | [June billing release](https://github.blog/changelog/2026-06-01-updates-to-github-copilot-billing-and-plans/) |
-| S-github-copilot-write-tests | [Copilot tests](https://docs.github.com/en/copilot/tutorials/write-tests) |
-
-## Related Documents
-
-- [Agentic Engineering Research Pack](README.md)

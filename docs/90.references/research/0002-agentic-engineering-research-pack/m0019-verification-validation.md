@@ -1,10 +1,10 @@
 ---
 title: "Reference: Verification and Validation System"
-version: "1.4.0"
+version: "1.5.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-17"
 layer: "references"
 artifact_id: "RES-0002-m0019"
 parent_ids:
@@ -17,13 +17,82 @@ review_cycle: "on-source-change"
 
 # Reference: Verification and Validation System
 
-## Overview
+## Question and Scope
 
-### Overview
+### Question
 
-## Scope and Method
+What evidence distinguishes conformance to a specification from suitability
+for intended use, and when should that evidence be repeated? The member
+answers this as advisory analysis; it creates neither a release gate nor
+authority to accept defects or residual risk.
 
-### Current External Research
+### Scope
+
+The member covers verification against specified requirements, validation
+for intended use, an acceptance evidence model, promotion, failure,
+residual risk and revalidation triggers, with historical workspace
+observations preserved. Test layers, automation and threat-specific checks
+belong to m0014, m0004 and m0017; licensed IEEE or ISO clause text, runtime
+execution, release approval and policy changes are out of scope.
+
+## Sources
+
+### Primary Sources
+
+#### Related Documents
+
+- [Research pack index](./README.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
+- [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
+- [SDLC document roles](./m0016-sdlc-document-roles.md)
+- [Document metadata lifecycle](./m0006-document-metadata-lifecycle.md)
+- [LLM Wiki system](./m0009-llm-wiki-system.md)
+- [Automation pipeline workflow](./m0004-automation-pipeline-workflow.md)
+- [Quality, CI, and formatting](./m0014-quality-ci-formatting.md)
+- [Docker Compose and infrastructure](./m0005-docker-compose-infrastructure.md)
+- [Security governance](./m0017-security-governance.md)
+- SPEC-0158 preservation contract
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+
+- [Agentic Engineering Research Pack](README.md)
+
+#### Claims and Sources
+
+All source URLs were opened on **2026-09-27**. No claim of current IEEE/ISO
+edition status is made from the preserved historical references.
+
+| Claim ID | Claim | Source ID / detailed location | Publication / update | Actual check | Product / version / channel / stability | Kind | Limits / recheck |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0019-01 | Verification checks specified requirements; validation checks stakeholder expectations/intended conditions. | S-nasa-product-realization; §§5.3 and 5.4, introductory discussion | Page date not supplied | 2026-09-27 | NASA Systems Engineering Handbook web guidance | Fact | NASA context; not a universal mandatory process or ISO definition. |
+| C-m0019-02 | Test, analysis, inspection and demonstration can support both questions. | S-nasa-product-realization; verification methods and validation methods | Page date not supplied | 2026-09-27 | NASA guidance | Fact | Method labels alone do not prove intended-use acceptance. |
+| C-m0019-03 | Verification records identify configuration/environment/results/discrepancies; affected checks repeat after corrections. | S-nasa-product-realization; §5.3 verification preparation/results/corrective action | Page date not supplied | 2026-09-27 | NASA guidance | Fact | Actual report scope and local correction policy remain unassessed. |
+| C-m0019-04 | NIST developer verification recommendations are minimum techniques, not complete software verification. | S-nist-developer-verification; abstract and publication details | Published 2021-10-06; landing page updated 2022-11-29 | 2026-09-27 | NISTIR 8397 publication guidance | Fact | No tool inventory, compliance or completeness inferred. |
+| C-m0019-05 | A ref-sensitive observation needs the relevant ref/checkout context as well as SHA. | Preserved 2026-09 historical observations below; C-m0019-03 | Historical dates retained; analysis 2026-09-27 | 2026-09-27 | Pack evidence interpretation | Interpretation | Historical behavior does not establish present validator behavior. |
+| C-m0019-06 | Use explicit entry/exit criteria, independent oracle, evidence limitations and decision owner. | C-m0019-01–04; m0014 quality model | 2026-09-27 analysis | 2026-09-27 | Conditional pack proposal | Recommendation | Artifact/risk-specific adoption required; no new policy applied. |
+| C-m0019-07 | Tie acceptance to candidate/artifact and repeat affected evidence after material change. | C-m0019-03,05; m0004 promotion model; m0017 risk model | 2026-09-27 analysis | 2026-09-27 | Conditional pack proposal | Recommendation | Equivalence and residual risk require named owner. |
+
+| Source ID | Opened source |
+| --- | --- |
+| S-nasa-product-realization | [NASA product realization, verification and validation](https://www.nasa.gov/reference/5-0-product-realization/) |
+| S-nist-developer-verification | [NIST guidelines on minimum developer verification](https://www.nist.gov/publications/guidelines-minimum-standards-developer-verification-software) |
+
+### Versions and Dates
+
+This member was created on 2026-08-23, observed on 2026-09-05 and reviewed
+on 2026-11-06; all source URLs were opened on 2026-09-27. The table below
+lists each registered source with its version and check date.
+
+| Source ID | Source | Version | Checked At | Finding | Application | Limits |
+| --- | --- | --- | --- | --- | --- | --- |
+| S-nasa-product-realization | [NASA product realization, verification and validation](https://www.nasa.gov/reference/5-0-product-realization/) | NASA Systems Engineering Handbook web guidance; page date not supplied | 2026-09-27 | Verification checks specified requirements and validation checks stakeholder expectations; methods serve both; records and repeat checks (C-m0019-01 to 03). | Basis for separating verification from validation and for the recommended acceptance evidence model. | NASA context; not a universal mandatory process or ISO definition; method labels do not prove intended-use acceptance. |
+| S-nist-developer-verification | [NIST guidelines on minimum developer verification](https://www.nist.gov/publications/guidelines-minimum-standards-developer-verification-software) | NISTIR 8397 publication guidance; published 2021-10-06; landing page updated 2022-11-29 | 2026-09-27 | NIST developer verification recommendations are minimum techniques, not complete software verification (C-m0019-04). | Supports bounding an evidence set by what was tested, where, and against which expectation. | No tool inventory, compliance or completeness inferred. |
+
+## Analysis
+
+### Findings
+
+#### Current External Research
 
 Question: what evidence distinguishes conformance to a specification from
 suitability for intended use, and when should that evidence be repeated?
@@ -34,7 +103,7 @@ owns test layers and metrics; [automation](m0004-automation-pipeline-workflow.md
 owns events, runners and promotion; [security](m0017-security-governance.md)
 owns threat-specific checks and residual-risk decisions.
 
-### Verification and validation
+#### Verification and validation
 
 NASA's product-realization guidance distinguishes verification against specified
 requirements from validation against stakeholder expectations and intended
@@ -58,7 +127,7 @@ verification techniques; its abstract explicitly does not claim complete
 software verification (C-m0019-04). **Interpretation:** an evidence set is bounded
 by what was tested, where, and against which expectation.
 
-### Acceptance evidence model
+#### Acceptance evidence model
 
 The following is this pack's **recommendation**, tailored later by the artifact
 and risk owner; it is not a newly enforced repository policy.
@@ -88,7 +157,7 @@ They do not establish the behavior of current validators or current refs
 (C-m0019-05). Future reproducibility checks should use declared fixtures and
 compare the intended canonical environment rather than altering live refs.
 
-### Promotion, failure and residual risk
+#### Promotion, failure and residual risk
 
 This paragraph is a **recommendation** shared with the actor model in m0004.
 Keep evidence tied to the artifact that is promoted; if a release rebuild
@@ -103,25 +172,7 @@ outside authorization. A research refresh can validate source/claim quality
 and reader navigation while leaving runtime, account, security and deployment
 questions unassessed. Those limitations are part of the result.
 
-### Related Documents
-
-- [Research pack index](./README.md)
-- [Workspace baseline](./m0020-workspace-baseline.md)
-- [Scope application matrix](./m0015-scope-application-matrix.md)
-- [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
-- [SDLC document roles](./m0016-sdlc-document-roles.md)
-- [Document metadata lifecycle](./m0006-document-metadata-lifecycle.md)
-- [LLM Wiki system](./m0009-llm-wiki-system.md)
-- [Automation pipeline workflow](./m0004-automation-pipeline-workflow.md)
-- [Quality, CI, and formatting](./m0014-quality-ci-formatting.md)
-- [Docker Compose and infrastructure](./m0005-docker-compose-infrastructure.md)
-- [Security governance](./m0017-security-governance.md)
-- SPEC-0158 preservation contract
-- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
-
-## Findings
-
-### Historical workspace observations — not reassessed in this run
+#### Historical workspace observations — not reassessed in this run
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -693,9 +744,24 @@ questions unassessed. Those limitations are part of the result.
 
 > Revalidated 2026-11-06: Stage 00 `docs/00.agent-governance/` is retired; current policy lives in `.agents/governance/` (for example `.agents/governance/approval-boundaries.md`) and roles in `.agents/roles/` (14 roles); `docs/00.agent-governance/contracts/agent-catalog.yaml` is retired; roles are `.agents/roles/*.md` (14) and provider facts are `.agents/governance/providers/registry.yaml`; `scripts/validation/check-repo-contracts.sh` and `docs/90.references/data/security/security-automation-readiness.md` are absent; `docs/99.templates/registry.json` now defines 44 profiles and 38 template roles; 5 workflows (old: 7). The dated values above are preserved as observed.
 
-## Limitations
+### Alternatives
 
-### Future Internal Checks
+This member compares no alternatives; it records verification and validation
+guidance and a recommended acceptance evidence model only.
+
+## Application and Limits
+
+### Design Implications
+
+The member recommends tying acceptance to the evaluated candidate, naming
+intended use, oracle, observer, evidence, date and residual-risk owner, and
+repeating affected evidence after material change. This is not a newly
+enforced policy: adoption is artifact- and risk-specific, and acting on a
+finding requires a separate Requirement-to-Task chain.
+
+### Unverified Conditions
+
+#### Future Internal Checks
 
 These are proposed evidence designs. Existing routes mentioned by historical
 observations are candidates, not newly inspected implementations.
@@ -709,7 +775,7 @@ observations are candidates, not newly inspected implementations.
 | Promotion/revalidation C-m0019-03,07 | artifact/CI/release; delivery | Candidate or context changes after checks | Historical build/publish candidates; hypothetical digest policy | Is promoted output the evaluated artifact and are affected checks repeated? | Digests, inputs, environment, changed evidence, equivalence rationale | Authorized fixture provenance comparison and change-impact review | Pass: identity/equivalence and affected evidence established; fail: stale green status authorizes changed output | No deploy/publish/credential use here | Release/QA | Not assessed in this run |
 | Limitations/residual risk C-m0019-04,06–07 | task/project; governance/security/product | Evidence incomplete or exception needed | Historical exceptions; hypothetical acceptance record | Who accepts which remaining risk, until when and on what evidence? | Omitted checks, discrepancy, rationale, compensations, expiry/owner | Scoped document review and risk-owner decision | Pass: bounded explicit decision; fail: silence or scanner pass equated with safety | Risk acceptance authority cannot be inferred from reviewer role | Product/security decision owner | Not assessed in this run |
 
-### Limitations and preservation decision
+#### Limitations and preservation decision
 
 This member’s source-research worker did not execute validators or tests, inspect
 live refs, approve release, or establish current compliance. Integrated document
@@ -717,29 +783,3 @@ QA evidence belongs to the execution Task. Historical command outcomes, reachabl
 denominators, review timing, IEEE/ISO references and baseline/candidate distinctions
 are retained verbatim with their original dates. Recheck current requirements
 and relevant primary-standard status before adopting a normative policy.
-
-## Sources
-
-### Claims and Sources
-
-All source URLs were opened on **2026-09-27**. No claim of current IEEE/ISO
-edition status is made from the preserved historical references.
-
-| Claim ID | Claim | Source ID / detailed location | Publication / update | Actual check | Product / version / channel / stability | Kind | Limits / recheck |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0019-01 | Verification checks specified requirements; validation checks stakeholder expectations/intended conditions. | S-nasa-product-realization; §§5.3 and 5.4, introductory discussion | Page date not supplied | 2026-09-27 | NASA Systems Engineering Handbook web guidance | Fact | NASA context; not a universal mandatory process or ISO definition. |
-| C-m0019-02 | Test, analysis, inspection and demonstration can support both questions. | S-nasa-product-realization; verification methods and validation methods | Page date not supplied | 2026-09-27 | NASA guidance | Fact | Method labels alone do not prove intended-use acceptance. |
-| C-m0019-03 | Verification records identify configuration/environment/results/discrepancies; affected checks repeat after corrections. | S-nasa-product-realization; §5.3 verification preparation/results/corrective action | Page date not supplied | 2026-09-27 | NASA guidance | Fact | Actual report scope and local correction policy remain unassessed. |
-| C-m0019-04 | NIST developer verification recommendations are minimum techniques, not complete software verification. | S-nist-developer-verification; abstract and publication details | Published 2021-10-06; landing page updated 2022-11-29 | 2026-09-27 | NISTIR 8397 publication guidance | Fact | No tool inventory, compliance or completeness inferred. |
-| C-m0019-05 | A ref-sensitive observation needs the relevant ref/checkout context as well as SHA. | Preserved 2026-09 historical observations below; C-m0019-03 | Historical dates retained; analysis 2026-09-27 | 2026-09-27 | Pack evidence interpretation | Interpretation | Historical behavior does not establish present validator behavior. |
-| C-m0019-06 | Use explicit entry/exit criteria, independent oracle, evidence limitations and decision owner. | C-m0019-01–04; m0014 quality model | 2026-09-27 analysis | 2026-09-27 | Conditional pack proposal | Recommendation | Artifact/risk-specific adoption required; no new policy applied. |
-| C-m0019-07 | Tie acceptance to candidate/artifact and repeat affected evidence after material change. | C-m0019-03,05; m0004 promotion model; m0017 risk model | 2026-09-27 analysis | 2026-09-27 | Conditional pack proposal | Recommendation | Equivalence and residual risk require named owner. |
-
-| Source ID | Opened source |
-| --- | --- |
-| S-nasa-product-realization | [NASA product realization, verification and validation](https://www.nasa.gov/reference/5-0-product-realization/) |
-| S-nist-developer-verification | [NIST guidelines on minimum developer verification](https://www.nist.gov/publications/guidelines-minimum-standards-developer-verification-software) |
-
-## Related Documents
-
-- [Agentic Engineering Research Pack](README.md)

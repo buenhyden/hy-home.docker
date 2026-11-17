@@ -17,44 +17,60 @@ created: "{{CREATED}}"
 
 # {{TITLE}}
 
-## Overview
+## Question and Scope
 
-{{OBSERVATION_PURPOSE}}
+### Question
 
-## Scope and Method
+<!-- Author prompt: State the design question this research answers. -->
 
-### Boundaries
+{{RESEARCH_QUESTION}}
 
-{{OBSERVED_BOUNDARIES}}
+### Scope
 
-### Reproducible Method
+<!-- Author prompt: Name what was read or run and what is out of scope. -->
 
-{{REPRODUCIBLE_METHOD}}
-
-## Findings
-
-### Dated Observations
-
-{{DATED_OBSERVATIONS_WITH_SOURCE_REFERENCES}}
-
-### Interpretation
-
-{{INTERPRETATION_OF_OBSERVATIONS}}
-
-## Limitations
-
-### Unobserved Facts
-
-{{UNOBSERVED_FACTS}}
-
-### Interpretation Limits
-
-{{INTERPRETATION_LIMITS}}
+{{OBSERVED_BOUNDARIES_AND_METHOD}}
 
 ## Sources
 
-{{SOURCE_PATHS_REVISIONS_AND_OBSERVATION_DATES}}
+### Primary Sources
 
-## Related Documents
+<!-- Author prompt: List the sources actually opened, with their location and the claims they support. -->
 
-{{PACKAGE_INDEX_LINK}}
+{{PRIMARY_SOURCES}}
+
+### Versions and Dates
+
+<!-- Author prompt: List each source in the table: Source ID a stable identifier within this member, Source its location, Version the source's own version or "none", Checked At when it was opened, Finding what it actually supports, Application the use chosen here, and Limits what stays unconfirmed. -->
+
+| Source ID | Source | Version | Checked At | Finding | Application | Limits |
+| --- | --- | --- | --- | --- | --- | --- |
+| {{SOURCE_ID}} | {{SOURCE}} | {{VERSION}} | {{CHECKED_AT}} | {{FINDING}} | {{APPLICATION}} | {{LIMITS}} |
+
+## Analysis
+
+### Findings
+
+<!-- Author prompt: Record the dated observations and their interpretation, each with its source. -->
+
+{{FINDINGS}}
+
+### Alternatives
+
+<!-- Author prompt: Compare the alternatives the sources support; say so when none was compared. -->
+
+{{ALTERNATIVES}}
+
+## Application and Limits
+
+### Design Implications
+
+<!-- Author prompt: Name what the findings change, what is not adopted and how acceptance would be tested. -->
+
+{{DESIGN_IMPLICATIONS}}
+
+### Unverified Conditions
+
+<!-- Author prompt: Name the facts not observed and the limits of the interpretation. -->
+
+{{UNVERIFIED_CONDITIONS}}

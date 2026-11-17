@@ -1,10 +1,10 @@
 ---
 title: "Reference: Quality, CI, and Formatting"
-version: "1.4.0"
+version: "1.5.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-17"
 layer: "references"
 artifact_id: "RES-0002-m0014"
 parent_ids:
@@ -17,13 +17,94 @@ review_cycle: "on-source-change"
 
 # Reference: Quality, CI, and Formatting
 
-## Overview
+## Question and Scope
 
-### Overview
+### Question
 
-## Scope and Method
+What does each quality control prove, where should it run, and how should
+failure, data and reproducibility be managed?
 
-### Current External Research
+### Scope
+
+The member covers formatting, lint and static analysis, syntax/schema/type,
+unit and regression, integration, contract, E2E, docs/link, security and
+coverage/mutation layers, plus fixtures, flakes, automation and generated
+tests, from sources checked on 2026-09-27 at document baseline
+`f30b168e2fbb0959e4a31749935568fd5b3942f1`. It selects no new tool, changes
+no threshold and asserts no current tool inventory, pass, coverage or
+compliance. Actors and events belong to m0004, acceptance to m0019, and
+threat and residual-risk decisions to m0017.
+
+## Sources
+
+### Primary Sources
+
+#### Related Documents
+
+- [Research pack](README.md)
+- [Verification and validation](./m0019-verification-validation.md)
+- [Automation pipeline and workflow topology](./m0004-automation-pipeline-workflow.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
+- [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
+- [Document metadata lifecycle](./m0006-document-metadata-lifecycle.md)
+- [GitHub governance](../../../../.agents/governance/github-governance.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+
+- [Agentic Engineering Research Pack](README.md)
+
+#### Claims and Sources
+
+All sources opened on **2026-09-27**. Mutable unversioned routes describe
+upstream capability only. `Not supplied` means no visible publication date.
+
+| Claim ID | Claim | Source ID / detailed location | Published/updated | Checked | Product/version/channel; state | Kind | Limit / recheck |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0014-01 | Prettier check and write differ; exit 1 means formatting mismatch, 2 tool problem. | S-prettier-cli; --write, --check, Exit codes | Not supplied | 2026-09-27 | Prettier current CLI docs; documented | Fact | No installed version/adoption inferred. |
+| C-m0014-02 | pre-commit filters/stages select checks; hooks must exit nonzero on failure or modify files. | S-precommit-documentation; stages, filtering, creating hooks | Not supplied | 2026-09-27 | pre-commit project docs; documented | Fact | Configuration/install does not prove execution. |
+| C-m0014-03 | NIST lists minimum verification techniques including static, structural, black-box, regression and fuzz methods. | S-nist-developer-verification; Abstract | Publication landing 2021-10-06; updated 2022-11-29 | 2026-09-27 | NISTIR 8397 guidance; final publication | Fact | Explicitly not the totality of verification; not universal acceptance. |
+| C-m0014-04 | Fixtures establish test context; contract tests do not establish provider side effects/business functionality. | S-pytest-fixtures; fixture role/cleanup; S-pact-contract-functional; scope distinctions | Not supplied | 2026-09-27 | pytest stable docs/Pact guidance; documented | Fact | Tool-specific model, not live-system proof. |
+| C-m0014-05 | Uncontrolled state causes flakes; Playwright labels failed-first/passed-retry as flaky. | S-pytest-flaky; root causes/quarantine; S-playwright-retries; test categories | Not supplied | 2026-09-27 | pytest stable/Playwright current; documented | Fact | Retry result must retain first failure. |
+| C-m0014-06 | Stryker score uses detected/valid; timeouts count detected, invalids excluded. | S-stryker-mutant-metrics; states, Metrics | Not supplied | 2026-09-27 | Mutation Testing Elements current; documented | Fact | Equivalent/operator/timeout choices limit score. |
+| C-m0014-07 | Vitest exposes four thresholds, per-file/glob rules and include/exclude controls. | S-vitest-coverage-config; thresholds, include/exclude | Not supplied | 2026-09-27 | Vitest current docs; documented | Fact | No local threshold or version observed. |
+| C-m0014-08 | Quality layers answer different questions and cannot substitute for intended-use acceptance. | C-m0014-01–07; m0019 definitions | 2026-09-27 analysis | 2026-09-27 | Pack analytical taxonomy | Interpretation | Tailor to artifact/risk, not an automatic checklist. |
+| C-m0014-09 | Bound flake quarantine and require independent oracles for generated tests. | C-m0014-04–07; m0004 AI generation | 2026-09-27 analysis | 2026-09-27 | Conditional pack proposal | Recommendation | Separate owner/adoption decision. |
+
+| Source ID | Opened source |
+| --- | --- |
+| S-prettier-cli | [Prettier CLI](https://prettier.io/docs/cli) |
+| S-precommit-documentation | [pre-commit docs](https://pre-commit.com/) |
+| S-nist-developer-verification | [NIST developer verification](https://www.nist.gov/publications/guidelines-minimum-standards-developer-verification-software) |
+| S-pytest-fixtures | [pytest fixtures](https://docs.pytest.org/en/stable/explanation/fixtures.html) |
+| S-pact-contract-functional | [Pact contract versus functional tests](https://docs.pact.io/consumer/contract_tests_not_functional_tests) |
+| S-pytest-flaky | [pytest flaky tests](https://docs.pytest.org/en/stable/explanation/flaky.html) |
+| S-playwright-retries | [Playwright retries](https://playwright.dev/docs/test-retries) |
+| S-stryker-mutant-metrics | [Stryker states and metrics](https://stryker-mutator.io/docs/mutation-testing-elements/mutant-states-and-metrics/) |
+| S-vitest-coverage-config | [Vitest coverage configuration](https://vitest.dev/config/coverage.html) |
+
+### Versions and Dates
+
+The frontmatter records `created` 2026-08-23, `observed_at` 2026-09-05 and
+`reviewed_at` 2026-11-06; all external sources were opened on 2026-09-27.
+The table below lists each source with its version and check date.
+
+| Source ID | Source | Version | Checked At | Finding | Application | Limits |
+| --- | --- | --- | --- | --- | --- | --- |
+| S-prettier-cli | [Prettier CLI](https://prettier.io/docs/cli) | Prettier current CLI docs; publication date not supplied | 2026-09-27 | Check and write differ; exit 1 means formatting mismatch, exit 2 a tool problem (C-m0014-01) | Formatting layer and CI check-mode recommendation; internal adoption not assessed in this run | No installed version/adoption inferred. |
+| S-precommit-documentation | [pre-commit docs](https://pre-commit.com/) | pre-commit project docs; publication date not supplied | 2026-09-27 | Filters and stages select checks; hooks must exit nonzero on failure or modify files (C-m0014-02) | Automation recommendation to review auto-fixes and pin revisions; internal adoption not assessed in this run | Configuration/install does not prove execution. |
+| S-nist-developer-verification | [NIST developer verification](https://www.nist.gov/publications/guidelines-minimum-standards-developer-verification-software) | NISTIR 8397 final; landing 2021-10-06, updated 2022-11-29 | 2026-09-27 | Minimum verification techniques incl. static, structural, black-box, regression and fuzz (C-m0014-03) | Basis of the quality control model; internal adoption not assessed in this run | Explicitly not the totality of verification; not universal acceptance. |
+| S-pytest-fixtures | [pytest fixtures](https://docs.pytest.org/en/stable/explanation/fixtures.html) | pytest stable docs; publication date not supplied | 2026-09-27 | Fixtures establish test context, with cleanup (C-m0014-04) | Fixture provenance and teardown recommendation; internal adoption not assessed in this run | Tool-specific model, not live-system proof. |
+| S-pact-contract-functional | [Pact contract versus functional tests](https://docs.pact.io/consumer/contract_tests_not_functional_tests) | Pact guidance; publication date not supplied | 2026-09-27 | Contract tests do not establish provider side effects or business functionality (C-m0014-04) | Contract layer limit in the quality control model; internal adoption not assessed in this run | Tool-specific model, not live-system proof. |
+| S-pytest-flaky | [pytest flaky tests](https://docs.pytest.org/en/stable/explanation/flaky.html) | pytest stable docs; publication date not supplied | 2026-09-27 | Uncontrolled state, order dependence and strict timing cause flakes; quarantine discussed (C-m0014-05) | Flake retention and bounded quarantine recommendation; internal adoption not assessed in this run | Retry result must retain first failure. |
+| S-playwright-retries | [Playwright retries](https://playwright.dev/docs/test-retries) | Playwright current docs; publication date not supplied | 2026-09-27 | Failed-first, passed-on-retry tests are labeled flaky (C-m0014-05) | Flake retention and bounded quarantine recommendation; internal adoption not assessed in this run | Retry result must retain first failure. |
+| S-stryker-mutant-metrics | [Stryker states and metrics](https://stryker-mutator.io/docs/mutation-testing-elements/mutant-states-and-metrics/) | Mutation Testing Elements current docs; publication date not supplied | 2026-09-27 | Score uses detected/valid; timeouts count as detected, invalid mutants excluded (C-m0014-06) | Focused mutation on high-risk paths, Stryker not required; internal adoption not assessed in this run | Equivalent/operator/timeout choices limit score. |
+| S-vitest-coverage-config | [Vitest coverage configuration](https://vitest.dev/config/coverage.html) | Vitest current docs; publication date not supplied | 2026-09-27 | Four thresholds, per-file/glob rules and include/exclude controls (C-m0014-07) | Coverage claims must state project, test set and denominator; internal adoption not assessed in this run | No local threshold or version observed. |
+
+## Analysis
+
+### Findings
+
+#### Current External Research
 
 Question: what does each quality control prove, where should it run, and how
 should failure, data and reproducibility be managed? External sources checked
@@ -34,7 +115,7 @@ tool nor changes a threshold. [Automation](m0004-automation-pipeline-workflow.md
 owns actors/events; [V&V](m0019-verification-validation.md) owns acceptance;
 [security](m0017-security-governance.md) owns threat and residual-risk decisions.
 
-### Quality control model
+#### Quality control model
 
 The table is this pack's synthesis of tool documentation and NIST minimum
 verification guidance, not a universal requirement to run every layer on every
@@ -61,7 +142,7 @@ security boundary or data-recovery change cannot be accepted solely on layout.
 Do not install another framework when the existing runner can express the
 necessary oracle.
 
-### Fixtures, flakes, mutation and coverage
+#### Fixtures, flakes, mutation and coverage
 
 Fixtures establish preconditions and reusable test data; safe teardown matters
 as much as setup. Synthetic and recorded fixtures should identify origin,
@@ -88,7 +169,7 @@ must state measured project, candidate, provider, test set and denominator.
 Thresholds are a risk-owner choice; neither an external tutorial nor the
 historical frontend number establishes current repository-wide coverage.
 
-### Automation, generated tests and review
+#### Automation, generated tests and review
 
 Prettier distinguishes check from rewriting and has distinct exit codes;
 pre-commit can modify inputs and filters which hooks run (C-m0014-01–02).
@@ -106,21 +187,7 @@ Verify that a failing process reaches the aggregate status; a helpful diagnostic
 step must not mask the original failure. Keep independent review tied to the
 candidate/diff and selected evidence, with absent checks stated explicitly.
 
-### Related Documents
-
-- [Research pack](README.md)
-- [Verification and validation](./m0019-verification-validation.md)
-- [Automation pipeline and workflow topology](./m0004-automation-pipeline-workflow.md)
-- [Workspace baseline](./m0020-workspace-baseline.md)
-- [Scope application matrix](./m0015-scope-application-matrix.md)
-- [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
-- [Document metadata lifecycle](./m0006-document-metadata-lifecycle.md)
-- [GitHub governance](../../../../.agents/governance/github-governance.md)
-- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
-
-## Findings
-
-### Historical workspace observations — not reassessed in this run
+#### Historical workspace observations — not reassessed in this run
 
 > Historical evidence (not current authority; source: Git history):
 >
@@ -629,9 +696,30 @@ candidate/diff and selected evidence, with absent checks stated explicitly.
 
 > Revalidated 2026-11-06: `.github/workflows/` holds 5 workflows (ci-quality, greetings, pr-labeler, publish-release, stale) and `.github/workflow-contract.yml` lists 5 workflows and 66 gate_nodes; `scripts/validation/github_workflow_contract.py` is replaced by `scripts/validation/check-github-workflow-contract.py`; `.github/actions/` does not exist. The dated values above are preserved as observed.
 
-## Limitations
+### Alternatives
 
-### Future Internal Checks
+This member compares no alternative tools or frameworks; it uses the cited
+tool documentation as examples, states that its mutation proposal does not
+require adopting Stryker, and advises against installing another framework
+when the existing runner can express the necessary oracle.
+
+## Application and Limits
+
+### Design Implications
+
+Use the cheapest meaningful control that catches the change's likely
+failure, then add risk-relevant integration or journey evidence; select
+check mode in CI, review local auto-fixes, retain first failures, bound
+quarantine with owner, reason and review deadline, and require independent
+oracles for generated tests (C-m0014-09). The preserved revalidations add
+that a new gate needs a named owner, deterministic input, failure semantics,
+false-positive policy and exact public-suite route, and that each quoted
+gate verdict states its commit and reachable-ref scope. Adoption is a
+separate owner decision.
+
+### Unverified Conditions
+
+#### Future Internal Checks
 
 Candidates are historically described routes or hypothetical test designs,
 not newly inspected files or proof of adoption.
@@ -645,45 +733,10 @@ not newly inspected files or proof of adoption.
 | Coverage/mutation C-m0014-06–07 | package/task; QA | Risk path and measured denominator identified | Historical coverage config; hypothetical mutation target | Are assertions sensitive to relevant defects rather than merely executing lines? | Include/exclude, four metrics, mutant states/equivalents | Focused coverage and approved mutation fixture | Pass: denominator explicit/relevant defect detected; fail: exclusions inflate claim or surviving critical mutant unexplained | Additional tool installation/resource use requires adoption approval | QA/code owner | Not assessed in this run |
 | Docs/security/review C-m0014-03,08–09 | repository/task; docs/security/governance | Claims or trust boundary changed | Registered docs gates, hypothetical review range | Are sources correct and review independence/evidence complete beyond format? | Link/source/metadata results, scanner target, reviewer range | Focused document checks and named independent review | Pass: supported claim and explicit uncertainty; fail: mechanically valid unsupported conclusion | Security scans separately scoped; no certification inference | Docs/security reviewer | Not assessed in this run |
 
-### Limitations and preservation decision
+#### Limitations and preservation decision
 
 No current tool inventory, pass, coverage, compliance or absence is asserted.
 Tutorials and tool metrics do not select local policy. Recheck after tool,
 oracle, denominator, environment or risk changes. Historical hook/test counts,
 html5lib findings, frontend thresholds and checkout-dependent verdicts remain
 exactly as dated in the preserved quotation; they are not new findings.
-
-## Sources
-
-### Claims and Sources
-
-All sources opened on **2026-09-27**. Mutable unversioned routes describe
-upstream capability only. `Not supplied` means no visible publication date.
-
-| Claim ID | Claim | Source ID / detailed location | Published/updated | Checked | Product/version/channel; state | Kind | Limit / recheck |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0014-01 | Prettier check and write differ; exit 1 means formatting mismatch, 2 tool problem. | S-prettier-cli; --write, --check, Exit codes | Not supplied | 2026-09-27 | Prettier current CLI docs; documented | Fact | No installed version/adoption inferred. |
-| C-m0014-02 | pre-commit filters/stages select checks; hooks must exit nonzero on failure or modify files. | S-precommit-documentation; stages, filtering, creating hooks | Not supplied | 2026-09-27 | pre-commit project docs; documented | Fact | Configuration/install does not prove execution. |
-| C-m0014-03 | NIST lists minimum verification techniques including static, structural, black-box, regression and fuzz methods. | S-nist-developer-verification; Abstract | Publication landing 2021-10-06; updated 2022-11-29 | 2026-09-27 | NISTIR 8397 guidance; final publication | Fact | Explicitly not the totality of verification; not universal acceptance. |
-| C-m0014-04 | Fixtures establish test context; contract tests do not establish provider side effects/business functionality. | S-pytest-fixtures; fixture role/cleanup; S-pact-contract-functional; scope distinctions | Not supplied | 2026-09-27 | pytest stable docs/Pact guidance; documented | Fact | Tool-specific model, not live-system proof. |
-| C-m0014-05 | Uncontrolled state causes flakes; Playwright labels failed-first/passed-retry as flaky. | S-pytest-flaky; root causes/quarantine; S-playwright-retries; test categories | Not supplied | 2026-09-27 | pytest stable/Playwright current; documented | Fact | Retry result must retain first failure. |
-| C-m0014-06 | Stryker score uses detected/valid; timeouts count detected, invalids excluded. | S-stryker-mutant-metrics; states, Metrics | Not supplied | 2026-09-27 | Mutation Testing Elements current; documented | Fact | Equivalent/operator/timeout choices limit score. |
-| C-m0014-07 | Vitest exposes four thresholds, per-file/glob rules and include/exclude controls. | S-vitest-coverage-config; thresholds, include/exclude | Not supplied | 2026-09-27 | Vitest current docs; documented | Fact | No local threshold or version observed. |
-| C-m0014-08 | Quality layers answer different questions and cannot substitute for intended-use acceptance. | C-m0014-01–07; m0019 definitions | 2026-09-27 analysis | 2026-09-27 | Pack analytical taxonomy | Interpretation | Tailor to artifact/risk, not an automatic checklist. |
-| C-m0014-09 | Bound flake quarantine and require independent oracles for generated tests. | C-m0014-04–07; m0004 AI generation | 2026-09-27 analysis | 2026-09-27 | Conditional pack proposal | Recommendation | Separate owner/adoption decision. |
-
-| Source ID | Opened source |
-| --- | --- |
-| S-prettier-cli | [Prettier CLI](https://prettier.io/docs/cli) |
-| S-precommit-documentation | [pre-commit docs](https://pre-commit.com/) |
-| S-nist-developer-verification | [NIST developer verification](https://www.nist.gov/publications/guidelines-minimum-standards-developer-verification-software) |
-| S-pytest-fixtures | [pytest fixtures](https://docs.pytest.org/en/stable/explanation/fixtures.html) |
-| S-pact-contract-functional | [Pact contract versus functional tests](https://docs.pact.io/consumer/contract_tests_not_functional_tests) |
-| S-pytest-flaky | [pytest flaky tests](https://docs.pytest.org/en/stable/explanation/flaky.html) |
-| S-playwright-retries | [Playwright retries](https://playwright.dev/docs/test-retries) |
-| S-stryker-mutant-metrics | [Stryker states and metrics](https://stryker-mutator.io/docs/mutation-testing-elements/mutant-states-and-metrics/) |
-| S-vitest-coverage-config | [Vitest coverage configuration](https://vitest.dev/config/coverage.html) |
-
-## Related Documents
-
-- [Agentic Engineering Research Pack](README.md)

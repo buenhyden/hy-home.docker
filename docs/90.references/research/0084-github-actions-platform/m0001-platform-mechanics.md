@@ -1,10 +1,10 @@
 ---
 title: "Reference: GitHub Actions Platform Mechanics"
-version: "0.2.2"
+version: "0.3.0"
 type: "reference/research"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "references"
 artifact_id: "RES-0084-m0001"
 parent_ids:
@@ -17,7 +17,9 @@ review_cycle: "on-source-change"
 
 # Reference: GitHub Actions Platform Mechanics
 
-## Overview
+## Question and Scope
+
+### Question
 
 GitHub Actions is the remote execution substrate this repository depends on,
 but the pack has so far described only the part of it the repository actually
@@ -39,9 +41,7 @@ the same day could not reproduce those failures, so they may have been
 transient rather than evidence of a completed docs-tree restructure. Either
 way, treat every figure as a point-in-time snapshot.
 
-## Scope and Method
-
-### Boundaries
+### Scope
 
 #### Purpose
 
@@ -89,15 +89,130 @@ or contract.
 - **Version-sensitive claim** means a figure tied to an action major version,
   runner image, or documented numeric limit. These drift fastest.
 
-### Reproducible Method
+#### Reproducible Method
 
 - **Owner**: Documentation maintainers
 - **Review Cadence**: Review when GitHub Actions guidance, action major versions, or tracked workflow adoption changes
 - **Update Trigger**: Re-retrieve every cited page and re-query action versions through the REST API; do not carry a version claim forward from a rendered page
 
-## Findings
+## Sources
 
-### Dated Observations
+### Primary Sources
+
+#### Source Rules
+
+- All external sources were retrieved on **2026-08-10** and are mutable
+  retrieval-time guidance unless marked otherwise. None carries a visible
+  last-updated date except the two `github.blog` changelog entries.
+- Action and tool versions were verified against the GitHub REST API, which is
+  authoritative, rather than against rendered documentation pages.
+- Quoted sentences are reproduced verbatim from the cited page. Claims that
+  could not be retrieved are listed under Unverified Conditions rather than
+  paraphrased.
+- `zizmor` and `actionlint` are third-party, independently versioned, and carry
+  no GitHub support commitment.
+- Repository adoption facts are derived from tracked workflow files at
+  `4122cecf`; no remote state was queried and no authenticated read-back was
+  performed.
+- No source listed here is adopted policy.
+
+- [Workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) - permissions keys, scope list, concurrency, `queue`
+- [Secure use reference](https://docs.github.com/en/actions/reference/security/secure-use) - SHA pinning, untrusted input, cache and runner hazards
+- [Security hardening guide](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions) - intermediate environment variable mitigation, secret handling
+- [Automatic token authentication](https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication) - least-privilege posture statement
+- [Actions settings for a repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository) - permissive and restricted defaults, action allowlisting
+- [OIDC concepts](https://docs.github.com/en/actions/concepts/security/openid-connect) - single-job token lifetime
+- [OIDC reference](https://docs.github.com/en/actions/reference/security/oidc) - issuer, claims, subject formats
+- [Reuse workflows](https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows) - `workflow_call`, `secrets: inherit`, nesting depth, permission flow
+- [Reusable workflows concepts](https://docs.github.com/en/actions/concepts/workflows-and-actions/reusable-workflows) - reusable workflow versus composite action comparison
+- [Events that trigger workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows) - `pull_request_target` context and warning
+- [Securely using pull_request_target](https://docs.github.com/en/actions/reference/security/securely-using-pull_request_target) - pwn-request patterns and the data-not-code rule
+- [Security Lab: untrusted input](https://securitylab.github.com/resources/github-actions-untrusted-input/) - substitution mechanism and attacker-controlled fields
+- [Security Lab: new patterns](https://securitylab.github.com/resources/github-actions-new-patterns-and-mitigations/) - `workflow_run`, artifact poisoning, `permissions: {}` caveat
+- [actions/checkout](https://github.com/actions/checkout) - default refusal of unsafe fork checkout and the `allow-unsafe-pr-checkout` opt-out
+- [Safer pull_request_target defaults for actions/checkout](https://github.blog/changelog/2026-06-18-safer-pull_request_target-defaults-for-github-actions-checkout/) - the flag naming rationale and the backport to every supported major version
+- [Artifact attestations concepts](https://docs.github.com/en/actions/concepts/security/artifact-attestations) - SLSA build levels, Sigstore trust roots
+- [Use artifact attestations](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations) - required permission set
+- [Immutable releases](https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases) - tag locking and resurrection protection
+- [Dependabot for actions](https://docs.github.com/en/code-security/dependabot/working-with-dependabot/keeping-your-actions-up-to-date-with-dependabot) - `github-actions` ecosystem configuration
+- [Dependency caching](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching) - key resolution, branch isolation, poisoning framing
+- [Read-only cache for untrusted triggers](https://github.blog/changelog/2026-06-26-read-only-actions-cache-for-untrusted-triggers/) - 2026-06-26 platform behavior change
+- [Run job variations](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/run-job-variations) - matrix `include`/`exclude` order, `max-parallel`
+- [Manage environments](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments) - reviewers, wait timers, deployment policies
+- [About rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) - aggregation, visibility, push rulesets
+- [Available rules for rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets) - required status checks and strict mode
+- [Repository rules REST API](https://docs.github.com/en/rest/repos/rules) - authenticated read-back endpoints
+- [GitHub-hosted runners](https://docs.github.com/en/actions/reference/runners/github-hosted-runners) - runner classes and public-repository availability
+- [Actions Runner Controller](https://docs.github.com/en/actions/concepts/runners/actions-runner-controller) - operator model and constraints
+- [Manage runner access](https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/manage-access) - runner group defaults
+- [Actions limits](https://docs.github.com/en/actions/reference/limits) - run, job, queue, matrix, re-run, and API-rate limits; six further limits in the table below it are cited to their own pages
+- [zizmor audits](https://docs.zizmor.sh/audits/) - third-party audit rule catalog
+- [actionlint](https://github.com/rhysd/actionlint) - third-party workflow linter check classes
+- [Tracked workflows](../../../../.github/workflows/ci-quality.yml) - repository adoption evidence entry point
+- [Typed workflow contract](../../../../.github/workflow-contract.yml) - registry that factors gate definitions
+
+#### Related Documents
+
+- [RES-0084 package](README.md)
+- [Agentic automation research](../0002-agentic-engineering-research-pack/m0004-automation-pipeline-workflow.md)
+- [Quality research](../0002-agentic-engineering-research-pack/m0014-quality-ci-formatting.md)
+- [Security research](../0002-agentic-engineering-research-pack/m0017-security-governance.md)
+- [Verification and validation](../0002-agentic-engineering-research-pack/m0019-verification-validation.md)
+- [Workflow contract](../../../../.github/workflow-contract.yml)
+- [CI workflow](../../../../.github/workflows/ci-quality.yml)
+- [Main protection record](../../../../.github/rulesets/main-protection.md)
+- Completed SPEC-0172 outcome (retired; Git history)
+- [GitHub governance](../../../../.agents/governance/github-governance.md)
+
+### Versions and Dates
+
+The frontmatter records `created` 2026-07-05, `observed_at` 2026-09-05 and
+`reviewed_at` 2026-11-06. Every external source was retrieved on 2026-08-10;
+four official pages were re-opened on 2026-09-05 and the tracked workflows
+were revalidated on 2026-11-06. The table below lists each source with its
+version and check date.
+
+| Source ID | Source | Version | Checked At | Finding | Application | Limits |
+| --- | --- | --- | --- | --- | --- | --- |
+| RES-0084-m0001-S1 | [Workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) | Mutable guidance; no visible last-updated date | 2026-08-10 | Permissions keys and the 16-scope list; omitted scopes become `none`; concurrency and `queue` | Permission and token model; execution control | Point-in-time snapshot; the scope list has grown and must not be copied from memory |
+| RES-0084-m0001-S2 | [Secure use reference](https://docs.github.com/en/actions/reference/security/secure-use) | Mutable guidance; no visible last-updated date | 2026-08-10 | Full-length commit SHA pinning is the only immutable-release use; untrusted input, cache and runner hazards | Supply chain hardening; runner models | Point-in-time snapshot; re-opened 2026-09-05 |
+| RES-0084-m0001-S3 | [Security hardening guide](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions) | Mutable guidance; no visible last-updated date | 2026-08-10 | Intermediate environment variable is the preferred mitigation for untrusted input; secret handling | Untrusted input and privileged triggers | Point-in-time snapshot |
+| RES-0084-m0001-S4 | [Automatic token authentication](https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication) | Mutable guidance; no visible last-updated date | 2026-08-10 | Least-privilege posture statement | Permission and token model | The page states no `GITHUB_TOKEN` lifetime; none is asserted |
+| RES-0084-m0001-S5 | [Actions settings for a repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository) | Mutable guidance; no visible last-updated date | 2026-08-10 | Permissive and restricted token defaults; four action allowlisting policies | Repository and organization defaults; allowlisting | A scope-by-scope defaults table could not be retrieved |
+| RES-0084-m0001-S6 | [OIDC concepts](https://docs.github.com/en/actions/concepts/security/openid-connect) | Mutable guidance; no visible last-updated date | 2026-08-10 | OIDC token is valid for a single job and cloud access tokens last only for the job | OIDC and keyless authentication | Cloud-provider trust configuration not retrieved |
+| RES-0084-m0001-S7 | [OIDC reference](https://docs.github.com/en/actions/reference/security/oidc) | Mutable guidance; no visible last-updated date | 2026-08-10 | `id-token: write` requirement, issuer, claim set and subject formats | OIDC and keyless authentication | Point-in-time snapshot; re-opened 2026-09-05; OIDC is not adopted here |
+| RES-0084-m0001-S8 | [Reuse workflows](https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows) | Mutable guidance; no visible last-updated date | 2026-08-10 | `workflow_call`, `secrets: inherit`, ten-level nesting cap, permissions only maintained or reduced | Reusable workflows and composite actions; limits table | Point-in-time snapshot; version-sensitive limit |
+| RES-0084-m0001-S9 | [Reusable workflows concepts](https://docs.github.com/en/actions/concepts/workflows-and-actions/reusable-workflows) | Mutable guidance; no visible last-updated date | 2026-08-10 | Official comparison of reusable workflows and composite actions | Condensed comparison table; composite-action nesting limit | Selection of five of nine table rows; the composite `permissions` point is an inference |
+| RES-0084-m0001-S10 | [Events that trigger workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows) | Mutable guidance; no visible last-updated date | 2026-08-10 | `pull_request_target` runs in the base default-branch context; explicit warning | Untrusted input and privileged triggers | Point-in-time snapshot |
+| RES-0084-m0001-S11 | [Securely using pull_request_target](https://docs.github.com/en/actions/reference/security/securely-using-pull_request_target) | Mutable guidance; no visible last-updated date | 2026-08-10 | Checked-out code must only be inspected as data; three pwn-request patterns | Untrusted input and privileged triggers | Point-in-time snapshot |
+| RES-0084-m0001-S12 | [Security Lab: untrusted input](https://securitylab.github.com/resources/github-actions-untrusted-input/) | Mutable guidance; no visible last-updated date | 2026-08-10 | Expressions are substituted before the shell runs; attacker-controlled context fields | Untrusted input and privileged triggers | Point-in-time snapshot |
+| RES-0084-m0001-S13 | [Security Lab: new patterns](https://securitylab.github.com/resources/github-actions-new-patterns-and-mitigations/) | Mutable guidance; no visible last-updated date | 2026-08-10 | `workflow_run` may grant write and secrets; artifact poisoning; `permissions: {}` alone can enable cache poisoning | Untrusted input; permission idiom boundary | Point-in-time snapshot |
+| RES-0084-m0001-S14 | [actions/checkout](https://github.com/actions/checkout) | v7.0.0 (2026-06-18), backported to v6.1.0, v5.1.0, v4.4.0, v3.7.0 and v2.8.0 (2026-07-20) | 2026-08-10 | Refuses unsafe fork checkout by default; `allow-unsafe-pr-checkout` opt-out | Untrusted input and privileged triggers | Repository pins by SHA without a version comment, so the effective major is not readable |
+| RES-0084-m0001-S15 | [Safer pull_request_target defaults for actions/checkout](https://github.blog/changelog/2026-06-18-safer-pull_request_target-defaults-for-github-actions-checkout/) | Changelog entry dated 2026-06-18 | 2026-08-10 | Flag naming rationale and the backport to every supported major version | Untrusted input and privileged triggers | Point-in-time snapshot |
+| RES-0084-m0001-S16 | [Artifact attestations concepts](https://docs.github.com/en/actions/concepts/security/artifact-attestations) | Mutable guidance; no visible last-updated date | 2026-08-10 | SLSA v1.0 Build Level 2 by default, Level 3 through reusable workflows; Sigstore trust roots | Supply chain hardening | Attestation is not adopted in this repository |
+| RES-0084-m0001-S17 | [Use artifact attestations](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations) | Mutable guidance; no visible last-updated date | 2026-08-10 | Required permission set for attestation | Supply chain hardening | Point-in-time snapshot |
+| RES-0084-m0001-S18 | [Immutable releases](https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases) | Mutable guidance; generally available | 2026-08-10 | Tag locked to a commit while the release exists; applies to future releases only; resurrection protection | Supply chain hardening | Point-in-time snapshot |
+| RES-0084-m0001-S19 | [Dependabot for actions](https://docs.github.com/en/code-security/dependabot/working-with-dependabot/keeping-your-actions-up-to-date-with-dependabot) | Mutable guidance; no visible last-updated date | 2026-08-10 | `github-actions` ecosystem keeps action and reusable-workflow references current | Supply chain hardening | Whether SHA pins are rewritten with their version comments is unverified |
+| RES-0084-m0001-S20 | [Dependency caching](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching) | Mutable guidance; no visible last-updated date | 2026-08-10 | Key resolution, branch isolation, unsigned caches as an execution channel; eviction and key length | Execution control; limits table | Point-in-time snapshot; version-sensitive limits |
+| RES-0084-m0001-S21 | [Read-only cache for untrusted triggers](https://github.blog/changelog/2026-06-26-read-only-actions-cache-for-untrusted-triggers/) | Changelog entry dated 2026-06-26 | 2026-08-10 | Read-only cache tokens for untrusted triggers; a blocked save logs a warning | Execution control | The seven named read-write triggers are not exhaustive; earlier guidance is partially superseded |
+| RES-0084-m0001-S22 | [Run job variations](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/run-job-variations) | Mutable guidance; no visible last-updated date | 2026-08-10 | Matrix `include`/`exclude` order and `max-parallel` | Execution control | The `fail-fast` default was not found and is not asserted |
+| RES-0084-m0001-S23 | [Manage environments](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments) | Mutable guidance; no visible last-updated date | 2026-08-10 | Up to 6 required reviewers, one approval suffices; wait timers; deployment policies | Environments, rulesets and remote enforcement; limits table | Environments are not adopted in this repository |
+| RES-0084-m0001-S24 | [About rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) | Mutable guidance; no visible last-updated date | 2026-08-10 | Rulesets aggregate, are visible to read access, and extend to tag and push rulesets | Environments, rulesets and remote enforcement; limits table | Ruleset status `evaluate` was not in the retrieved content |
+| RES-0084-m0001-S25 | [Available rules for rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets) | Mutable guidance; no visible last-updated date | 2026-08-10 | Required status checks, strict mode and an expected GitHub App source | Environments, rulesets and remote enforcement | Point-in-time snapshot; re-opened 2026-09-05 |
+| RES-0084-m0001-S26 | [Repository rules REST API](https://docs.github.com/en/rest/repos/rules) | Mutable guidance; no visible last-updated date | 2026-08-10 | Authenticated read-back endpoints; `bypass_actors` only for callers with write access | The read-back boundary for remote enforcement | No authenticated read-back was performed in this research |
+| RES-0084-m0001-S27 | [GitHub-hosted runners](https://docs.github.com/en/actions/reference/runners/github-hosted-runners) | Mutable guidance; no visible last-updated date | 2026-08-10 | Ephemeral clean VMs; standard runners free on public repositories; larger runners billed per minute | Runner models | Point-in-time snapshot |
+| RES-0084-m0001-S28 | [Actions Runner Controller](https://docs.github.com/en/actions/concepts/runners/actions-runner-controller) | Mutable guidance; no visible last-updated date | 2026-08-10 | Kubernetes operator over autoscaling runner scale sets with ephemeral runners; name and image constraints | Runner models | Point-in-time snapshot |
+| RES-0084-m0001-S29 | [Manage runner access](https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/manage-access) | Mutable guidance; no visible last-updated date | 2026-08-10 | Runner groups default to private-repository access only | Runner models | Point-in-time snapshot |
+| RES-0084-m0001-S30 | [Actions limits](https://docs.github.com/en/actions/reference/limits) | Mutable guidance; no visible last-updated date | 2026-08-10 | Run, job, queue, matrix, re-run and API-rate limits | Interpretation limits table | Version-sensitive; six further limits are cited to their own pages |
+| RES-0084-m0001-S31 | [zizmor audits](https://docs.zizmor.sh/audits/) | v1.29.0, published 2026-08-01; third-party | 2026-08-10 | 40 audit rules at v1.29.0 covering injection, cache poisoning, triggers, permissions and pinning | Third-party workflow static analysis | Rendered page tracks unreleased main and shows 41 audits; no GitHub support commitment |
+| RES-0084-m0001-S32 | [actionlint](https://github.com/rhysd/actionlint) | v1.7.12, published 2026-03-30; MIT; third-party | 2026-08-10 | Validates workflow syntax, expressions, action inputs, reusable-workflow wiring, `needs:` graphs and `run:` blocks | Third-party workflow static analysis; pre-commit hook scope | Security coverage is a sideline; the pre-commit hook is pinned by tag, not SHA |
+| RES-0084-m0001-S33 | [Tracked workflows](../../../../.github/workflows/ci-quality.yml) | Tracked at `4122cecf`; revalidated as five workflows | 2026-11-06 | Absent capabilities at `4122cecf`; current jobs `candidate-quality` and `main-security` | Platform capability adoption table and revalidations | No remote state queried; declarations establish no hosted execution result |
+| RES-0084-m0001-S34 | [Typed workflow contract](../../../../.github/workflow-contract.yml) | Tracked; six workflows at `main@4c6d2111` | 2026-09-05 | Registry that factors gate definitions | Typed registry for the tracked workflows in Repository Role | Tracked declaration; establishes no hosted execution result |
+| RES-0084-m0001-S35 | [Script injection](https://docs.github.com/en/actions/concepts/security/script-injections) | Mutable guidance; none recorded | 2026-09-05 | Re-opened as one of four official sources for the 2026-09-05 revalidation; the member ties no separate claim to it | Listed among the official sources re-opened for the 2026-09-05 revalidation | Not in the 2026-08-10 source list; point-in-time snapshot |
+
+## Analysis
+
+### Findings
 
 #### Permission and Token Model
 
@@ -477,7 +592,7 @@ unchanged, but the mutable-tag exposure is the same in kind.
 
 #### Platform Capability Adoption in This Repository
 
-This table complements the dated automation inventory linked in Overview.
+This table complements the dated automation inventory linked in Question.
 It records only capabilities absent at `4122cecf`, as observed by scanning
 `.github/workflows/` at that revision.
 
@@ -559,7 +674,18 @@ recommendation and 12-check rollback above are dated; the main protection
 record owns the current rollback state. The 2026-08-10 and 2026-09-05 values
 above are preserved as dated observations.
 
-### Interpretation
+### Alternatives
+
+The findings compare reusable workflows with composite actions, commit-SHA
+pinning with tag pinning, permissive with restricted token defaults,
+GitHub-hosted with self-hosted and Actions Runner Controller runners, and an
+intermediate environment variable with a JavaScript action for untrusted
+input. zizmor and actionlint are recorded as complementary rather than
+alternative tools.
+
+## Application and Limits
+
+### Design Implications
 
 #### Analysis
 
@@ -598,9 +724,9 @@ an authenticated API. A green workflow file proves intent and nothing more.
 - Keep citing rulesets as unverifiable from tracked files. That is a platform
   property, not a gap in local evidence.
 
-## Limitations
+### Unverified Conditions
 
-### Unobserved Facts
+#### Unobserved Facts
 
 - A scope-by-scope table of `GITHUB_TOKEN` defaults under permissive versus
   restricted could not be retrieved; four candidate URLs either 404ed or no
@@ -616,7 +742,7 @@ an authenticated API. A green workflow file proves intent and nothing more.
 - Ruleset enforcement status `evaluate` was not present in the retrieved
   content and is not asserted, though it exists on some plans.
 
-### Interpretation Limits
+#### Interpretation Limits
 
 Every figure retrieved 2026-08-10 and version-sensitive. Most come from the
 Actions limits reference, but six do not and are cited to their own pages
@@ -643,70 +769,3 @@ eviction and key length from dependency-caching.
 | Cache eviction                     | Entries unused for 7 days      |
 | Cache key maximum length           | 512 characters                 |
 | API rate, `GITHUB_TOKEN`           | 1,000 requests/hour/repository |
-
-## Sources
-
-### Source Rules
-
-- All external sources were retrieved on **2026-08-10** and are mutable
-  retrieval-time guidance unless marked otherwise. None carries a visible
-  last-updated date except the two `github.blog` changelog entries.
-- Action and tool versions were verified against the GitHub REST API, which is
-  authoritative, rather than against rendered documentation pages.
-- Quoted sentences are reproduced verbatim from the cited page. Claims that
-  could not be retrieved are listed under Potential Follow-up / Gap rather than
-  paraphrased.
-- `zizmor` and `actionlint` are third-party, independently versioned, and carry
-  no GitHub support commitment.
-- Repository adoption facts are derived from tracked workflow files at
-  `4122cecf`; no remote state was queried and no authenticated read-back was
-  performed.
-- No source listed here is adopted policy.
-
-- [Workflow syntax](https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax) - permissions keys, scope list, concurrency, `queue`
-- [Secure use reference](https://docs.github.com/en/actions/reference/security/secure-use) - SHA pinning, untrusted input, cache and runner hazards
-- [Security hardening guide](https://docs.github.com/en/actions/security-for-github-actions/security-guides/security-hardening-for-github-actions) - intermediate environment variable mitigation, secret handling
-- [Automatic token authentication](https://docs.github.com/en/actions/security-for-github-actions/security-guides/automatic-token-authentication) - least-privilege posture statement
-- [Actions settings for a repository](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository) - permissive and restricted defaults, action allowlisting
-- [OIDC concepts](https://docs.github.com/en/actions/concepts/security/openid-connect) - single-job token lifetime
-- [OIDC reference](https://docs.github.com/en/actions/reference/security/oidc) - issuer, claims, subject formats
-- [Reuse workflows](https://docs.github.com/en/actions/how-tos/reuse-automations/reuse-workflows) - `workflow_call`, `secrets: inherit`, nesting depth, permission flow
-- [Reusable workflows concepts](https://docs.github.com/en/actions/concepts/workflows-and-actions/reusable-workflows) - reusable workflow versus composite action comparison
-- [Events that trigger workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows) - `pull_request_target` context and warning
-- [Securely using pull_request_target](https://docs.github.com/en/actions/reference/security/securely-using-pull_request_target) - pwn-request patterns and the data-not-code rule
-- [Security Lab: untrusted input](https://securitylab.github.com/resources/github-actions-untrusted-input/) - substitution mechanism and attacker-controlled fields
-- [Security Lab: new patterns](https://securitylab.github.com/resources/github-actions-new-patterns-and-mitigations/) - `workflow_run`, artifact poisoning, `permissions: {}` caveat
-- [actions/checkout](https://github.com/actions/checkout) - default refusal of unsafe fork checkout and the `allow-unsafe-pr-checkout` opt-out
-- [Safer pull_request_target defaults for actions/checkout](https://github.blog/changelog/2026-06-18-safer-pull_request_target-defaults-for-github-actions-checkout/) - the flag naming rationale and the backport to every supported major version
-- [Artifact attestations concepts](https://docs.github.com/en/actions/concepts/security/artifact-attestations) - SLSA build levels, Sigstore trust roots
-- [Use artifact attestations](https://docs.github.com/en/actions/how-tos/secure-your-work/use-artifact-attestations/use-artifact-attestations) - required permission set
-- [Immutable releases](https://docs.github.com/en/code-security/concepts/supply-chain-security/immutable-releases) - tag locking and resurrection protection
-- [Dependabot for actions](https://docs.github.com/en/code-security/dependabot/working-with-dependabot/keeping-your-actions-up-to-date-with-dependabot) - `github-actions` ecosystem configuration
-- [Dependency caching](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching) - key resolution, branch isolation, poisoning framing
-- [Read-only cache for untrusted triggers](https://github.blog/changelog/2026-06-26-read-only-actions-cache-for-untrusted-triggers/) - 2026-06-26 platform behavior change
-- [Run job variations](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/run-job-variations) - matrix `include`/`exclude` order, `max-parallel`
-- [Manage environments](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments) - reviewers, wait timers, deployment policies
-- [About rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/about-rulesets) - aggregation, visibility, push rulesets
-- [Available rules for rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets/available-rules-for-rulesets) - required status checks and strict mode
-- [Repository rules REST API](https://docs.github.com/en/rest/repos/rules) - authenticated read-back endpoints
-- [GitHub-hosted runners](https://docs.github.com/en/actions/reference/runners/github-hosted-runners) - runner classes and public-repository availability
-- [Actions Runner Controller](https://docs.github.com/en/actions/concepts/runners/actions-runner-controller) - operator model and constraints
-- [Manage runner access](https://docs.github.com/en/actions/how-tos/manage-runners/self-hosted-runners/manage-access) - runner group defaults
-- [Actions limits](https://docs.github.com/en/actions/reference/limits) - run, job, queue, matrix, re-run, and API-rate limits; six further limits in the table below it are cited to their own pages
-- [zizmor audits](https://docs.zizmor.sh/audits/) - third-party audit rule catalog
-- [actionlint](https://github.com/rhysd/actionlint) - third-party workflow linter check classes
-- [Tracked workflows](../../../../.github/workflows/ci-quality.yml) - repository adoption evidence entry point
-- [Typed workflow contract](../../../../.github/workflow-contract.yml) - registry that factors gate definitions
-
-## Related Documents
-
-- [RES-0084 package](README.md)
-- [Agentic automation research](../0002-agentic-engineering-research-pack/m0004-automation-pipeline-workflow.md)
-- [Quality research](../0002-agentic-engineering-research-pack/m0014-quality-ci-formatting.md)
-- [Security research](../0002-agentic-engineering-research-pack/m0017-security-governance.md)
-- [Verification and validation](../0002-agentic-engineering-research-pack/m0019-verification-validation.md)
-- [Workflow contract](../../../../.github/workflow-contract.yml)
-- [CI workflow](../../../../.github/workflows/ci-quality.yml)
-- [Main protection record](../../../../.github/rulesets/main-protection.md)
-- Completed SPEC-0172 outcome (retired; Git history)
-- [GitHub governance](../../../../.agents/governance/github-governance.md)
