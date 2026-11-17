@@ -212,6 +212,12 @@ other labels, which the binding rule calls disguise, so it now fails as
 `table-core-empty`. The Registry migration text of the three bound roles now
 records their core move.
 
+The re-review found four n8n cells that sent the no-send steps to a DB owner
+the runbook names only for scenario 2; they now follow the runbook's general
+route to @buenhyden. Two step references to the removed Actions section and
+six pointers to an Escalation section below them now name Steps and the Next
+Owner above, and an open design note left the n8n Unverified Conditions.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -268,6 +274,7 @@ acknowledgement; no further runtime action is taken for it.
 | Disguise RED | 137 | W143 | table-ownership | A runbook reference table beside its emptied steps table, a reference table without the core table, and an unbound role's table with no shared label | FAIL | 1 failure: no `table-core-empty`; the other two already held | required | - |
 | Disguise GREEN | 137 | W143 | table-ownership | Same tests after the change | PASS | metadata.test_heading 119 tests, exit 0 | required | Disguise RED |
 | Runbook review corpus | 137 | W143 | document-corpus | check-contracts, check-changed against `origin/main`, check-operations-catalog and link alignment after the fixes | PASS | 0 contract violations; 110 changed and 0 violations after one `runtime-version-literal` in new 0105 prose was reworded; catalog and alignment PASS | required | - |
+| Runbook re-review | 137 | W143 | independent-review | Fix range `4f9c142d1`, `7c27251f3` and `a86c266eb` against the review | FAIL | CHANGES_REQUIRED: four n8n no-send cells routed to a DB owner the runbook does not name there; two step references and six Escalation pointers stale | required | - |
 
 ### Resolution Links
 
