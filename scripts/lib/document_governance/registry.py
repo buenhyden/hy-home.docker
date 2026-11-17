@@ -692,6 +692,43 @@ RECORDED_PACKAGE_SECTIONS: Mapping[str, Mapping[str, object]] = MappingProxyType
 )
 
 
+# The first generation 8 package and the core column each recorded column
+# reads, pinned like the recorded form. A recorded Check reads Method and
+# Command together, so two observations without a Command differ by Method.
+FIRST_GENERATION_8_PACKAGE = 271
+CORE_PACKAGE_COLUMNS: Mapping[str, object] = MappingProxyType(
+    {
+        "plan_columns": [
+            "Work Unit",
+            "Acceptance",
+            "Outcome",
+            "Depends On",
+            "Owner",
+            "Checks",
+        ],
+        "evidence_columns": [
+            "Evidence ID",
+            "Criteria",
+            "Work Unit",
+            ["Method", "Command"],
+            "Input",
+            "Result",
+            "Location",
+            "Required",
+            "Resolves",
+        ],
+        "criterion_acceptance_columns": [
+            "Criterion",
+            "Acceptance",
+            "Evidence",
+            "Decision",
+            "Current Owner",
+        ],
+        "execution_items": ["Item", "Work Unit", None, "Owner", "Status", "Blocker"],
+    }
+)
+
+
 def _recorded_forms(
     common: object, profile_id: object
 ) -> tuple[Mapping[str, object], ...]:
@@ -725,26 +762,19 @@ def _package_generation_findings(common: Mapping[str, object]) -> list[RegistryF
         findings.append(
             invalid(".recorded_sections", "the recorded generation 7 form is pinned")
         )
-    columns = placement.get("core_columns")
-    widths = {
-        "plan_columns": len(common.get("plan_columns") or ()),  # type: ignore[arg-type]
-        "evidence_columns": len(common.get("evidence_columns") or ()),  # type: ignore[arg-type]
-        "criterion_acceptance_columns": len(
-            common.get("criterion_acceptance_columns") or ()  # type: ignore[arg-type]
-        ),
-        "execution_items": len(
-            (common.get("execution_items") or {}).get("table_headers", ())  # type: ignore[union-attr]
-        ),
-    }
-    for key, width in widths.items():
-        value = columns.get(key) if isinstance(columns, Mapping) else None
-        if not isinstance(value, (list, tuple)) or len(value) != width:
-            findings.append(
-                invalid(
-                    f".core_columns.{key}",
-                    f"maps each of the {width} recorded columns to a core column",
-                )
+    if placement.get("first_package") != FIRST_GENERATION_8_PACKAGE:
+        findings.append(
+            invalid(
+                ".first_package",
+                f"generation 8 starts at package {FIRST_GENERATION_8_PACKAGE}",
             )
+        )
+    if placement.get("core_columns") != CORE_PACKAGE_COLUMNS:
+        findings.append(
+            invalid(
+                ".core_columns", "the core column of each recorded column is pinned"
+            )
+        )
     return findings
 
 

@@ -303,7 +303,11 @@ def validate_record(
     }
     required = set(raw_profile.get("required", []))
     optional = set(raw_profile.get("optional", []))
-    if _declares_execution_items(record, common):
+    if _declares_execution_items(
+        record,
+        common,
+        registry if isinstance(registry, DocumentRegistry) else None,
+    ):
         # A multi-item Task derives its status from its rows (SPEC-0231).
         required.discard("status")
         if "status" in record.metadata:
@@ -1545,7 +1549,11 @@ def load_transition_overrides(
     return overrides
 
 
-def _declares_execution_items(record: Record, common: Mapping[str, object]) -> bool:
+def _declares_execution_items(
+    record: Record,
+    common: Mapping[str, object],
+    registry: DocumentRegistry | None = None,
+) -> bool:
     contract = common.get("execution_items")
     if (
         record.artifact_type != "task"
@@ -1554,14 +1562,28 @@ def _declares_execution_items(record: Record, common: Mapping[str, object]) -> b
     ):
         return False
     headers = tuple(contract.get("table_headers", ()))
-    placement = common.get("package_generations")
-    if package_generation(common, record.path) == 8 and isinstance(placement, Mapping):
-        # A generation 8 Task writes the core Execution Items columns.
-        headers = tuple(
-            label
-            for label in placement["core_columns"]["execution_items"]
-            if label is not None
+    if package_generation(common, record.path) == 8:
+        # A generation 8 Task writes the core task.work_items columns; without
+        # the Registry to read them the table is not recognised, so the
+        # frontmatter status stays required.
+        if registry is None:
+            return False
+        from scripts.lib.document_governance.template_definition import (
+            core_role_definition,
         )
+
+        core = core_role_definition(registry, "sdlc/task")
+        table = next(
+            (
+                item
+                for item in (core or {}).get("tables", ())  # type: ignore[union-attr]
+                if item["table_id"] == "task.work_items"
+            ),
+            None,
+        )
+        if table is None:
+            return False
+        headers = tuple(str(column["label"]) for column in table["columns"])
     header = "| " + " | ".join(headers) + " |"
     subsection = str(contract.get("subsection"))
     markers = {"### " + subsection, "#### " + subsection}

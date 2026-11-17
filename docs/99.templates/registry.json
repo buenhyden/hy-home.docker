@@ -355,7 +355,10 @@
           "Evidence ID",
           "Criteria",
           "Work Unit",
-          "Command",
+          [
+            "Method",
+            "Command"
+          ],
           "Input",
           "Result",
           "Location",

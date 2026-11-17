@@ -501,6 +501,8 @@ _CORE_TABLES = {
     "execution_items": ("sdlc/task", "task.work_items"),
 }
 _RECORDED_VALUES = {("Required", "true"): "required", ("Required", "false"): "optional"}
+# A result that ran nothing has no exit code; 0 would claim a passing run.
+_NOT_RUN_RESULTS = frozenset({"NOT_RUN", "CANCELLED", "NOT_APPLICABLE"})
 _CORE_EXIT = re.compile(r"-|0|-?[1-9][0-9]*")
 
 
@@ -514,7 +516,10 @@ def _core_table_rows(
     key: str,
     *,
     strict_contiguity: bool = True,
+    raw: bool = False,
 ) -> tuple[tuple[str, ...], ...]:
+    """Read a generation 8 core table; ``raw`` keeps every core cell."""
+
     from scripts.lib.document_governance.template_definition import (
         core_role_definition,
     )
@@ -542,7 +547,12 @@ def _core_table_rows(
         raise SpecPackageError(f"core role has no table {table_id}")
     columns = table["columns"]
     headers = tuple(str(column["label"]) for column in columns)
-    if any(source is not None and source not in headers for source in sources):
+    if any(
+        label not in headers
+        for source in sources
+        if source is not None
+        for label in ([source] if isinstance(source, str) else source)
+    ):
         raise SpecPackageError(f"package_generations maps {key} to unknown columns")
     projected: list[tuple[str, ...]] = []
     for row in _registered_table_rows(
@@ -566,18 +576,20 @@ def _core_table_rows(
                 raise SpecPackageError(
                     f"core {table_id} {label} must be an integer or -"
                 )
-        if (
-            values.get("Result") in {"NOT_RUN", "CANCELLED"}
-            and values.get("Exit") != "-"
-        ):
+        if values.get("Result") in _NOT_RUN_RESULTS and values.get("Exit") != "-":
             raise SpecPackageError(
                 f"core {table_id} Exit must be - for a check that did not run"
             )
+        if raw:
+            projected.append(tuple(row))
+            continue
         projected.append(
             tuple(
                 "-"
                 if source is None
                 else _RECORDED_VALUES.get((source, values[source]), values[source])
+                if isinstance(source, str)
+                else " / ".join(values[label] for label in source)
                 for source in sources
             )
         )
@@ -1755,6 +1767,21 @@ def _v6_evidence_rows(
     if _is_generation_8(registry, task.path):
         return _core_table_rows(lines, registry, "evidence_columns")
     return _registered_table_rows(lines, headers, strict_contiguity=True)
+
+
+def _core_evidence_cells(
+    task: SpecDocument, registry: DocumentRegistry
+) -> tuple[tuple[str, ...], ...]:
+    """Every core Evidence cell of a generation 8 Task, in core order."""
+
+    return _core_table_rows(
+        _contract_section(
+            task.body, _registered_common_section(registry, "task_section")
+        ),
+        registry,
+        "evidence_columns",
+        raw=True,
+    )
 
 
 def _criterion_acceptance_rows(
@@ -5965,18 +5992,31 @@ def _failed_observation_findings(
             task = current_tasks.get(source.path)
             if task is None or source.status in {"completed", "cancelled"}:
                 continue  # Unit retention and terminal byte preservation own these cases.
+            if _is_generation_8(previous_registry, source.path) and _is_generation_8(
+                registry, task.path
+            ):
+                # Every core cell but Resolves is the observation; the
+                # projection would hide Method, Tool and Config and Exit.
+                read = _core_evidence_cells
+            else:
+                read = _v6_evidence_rows
             failed = tuple(
                 row
-                for row in _v6_evidence_rows(
-                    source, source.evidence_registry or previous_registry
-                )
-                if row[5] in {"FAIL", "ERROR"}
+                for row in read(source, source.evidence_registry or previous_registry)
+                if (row[8] if read is _core_evidence_cells else row[5])
+                in {"FAIL", "ERROR"}
             )
             if not failed:
                 continue
-            rows = _v6_evidence_rows(task, task.evidence_registry or registry)
+            rows = read(task, task.evidence_registry or registry)
             for row in failed:
-                observation_width = 8 if len(row) == 9 else 7
+                observation_width = (
+                    len(row) - 1
+                    if read is _core_evidence_cells
+                    else 8
+                    if len(row) == 9
+                    else 7
+                )
                 expected = row[:observation_width]
                 candidates = tuple(candidate[:observation_width] for candidate in rows)
                 if expected not in candidates:
