@@ -1,10 +1,10 @@
 ---
 title: "Environment Constraints"
-version: "1.11.0"
+version: "1.12.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 ---
 
 # Environment Constraints
@@ -130,7 +130,7 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R95 | Concurrent backups | Required: serialize them by an advisory lock on the source inode, check a clean snapshot and publish registered output atomically under capacity admission | none | none |
 | ENVIRONMENT-CONSTRAINTS-R96 | Capacity overrun | Forbidden: automatic deletion of an existing revision | none | none |
 | ENVIRONMENT-CONSTRAINTS-R97 | Shared allocation | Required: a separate ignored `.workspace-memory/capacity.sqlite3` ledger and stable `capacity.lock` govern a 1 GiB allocation covering its own storage, memory databases and journals, temporary copies, registered exports and memory-containing local Restic and R2 snapshots | none | none |
-| ENVIRONMENT-CONSTRAINTS-R98 | External snapshot location | Required: charge 64 MiB each | none | none |
+| ENVIRONMENT-CONSTRAINTS-R98 | External snapshot location | Required: charge the memory export size its snapshot listing reports, from 1 byte to 64 MiB, after reserving 64 MiB for a new snapshot; settlement never lowers a charge | none | none |
 | ENVIRONMENT-CONSTRAINTS-R99 | Compression and deduplication | Forbidden: creating presumed credits from them | none | none |
 | ENVIRONMENT-CONSTRAINTS-R100 | Shared allocation | Required: keep the existing body, metadata and individual database or copy limits | none | none |
 | ENVIRONMENT-CONSTRAINTS-R101 | Sanctioned growth entrypoint | Required: durably reserve capacity before I/O, then verify and settle the result | none | none |
@@ -347,8 +347,11 @@ This project has a graphify knowledge graph at `graphify-out/`.
   `capacity.lock` govern a 1 GiB (1,073,741,824-byte) shared allocation. The
   ledger includes its own storage, memory databases and journals, temporary
   copies, registered manual/daily exports, and memory-containing local
-  Restic and R2 snapshots. Each external snapshot location is charged 64 MiB;
-  compression and deduplication never create presumed credits. Existing
+  Restic and R2 snapshots. Each external snapshot location is charged the
+  memory export size its snapshot listing reports, from 1 byte to 64 MiB,
+  after a 64 MiB reservation for a new snapshot; settlement never lowers a
+  charge, and only a complete reconciliation recalculates one. Compression
+  and deduplication never create presumed credits. Existing
   body, metadata and individual database/copy limits still apply. This is
   conservative logical allocation, not measured physical storage or a quota.
 - Every sanctioned growth entrypoint durably reserves capacity before I/O,

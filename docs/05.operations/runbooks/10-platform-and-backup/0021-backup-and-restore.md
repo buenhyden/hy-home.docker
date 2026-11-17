@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.7.0"
+version: "1.8.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -423,7 +423,7 @@ orchestrator는 run이 실패해도 확인된 크기를 별도 파일
 `offsite copy to R2 failed` 또는 `offsite check of R2 failed`를 남기고 다른 단계의
 실패처럼 unit이 exit 1로 끝난다. 로컬 snapshot의 전체 export 포함 여부는 별도 확인한다. 로컬 Restic backup/check가 실패하면 `offsite copy skipped`다. 그러나 앞선 pgBackRest/globals/Valkey/SQLite/SeaweedFS 실패는 `restic_ok`를 내리지 않아 partial snapshot과 원격 copy가 진행될 수 있다. 이는 전체 복구 세트 성공이 아니며 unit exit1과 성공 timestamp 부재를 유지한다. 기존 shell producer에서 원격이
 초기화되지 않았거나 닿지 않으면 exit 65다. 예약 복사의 호스트 조정자가 반환한 exit 4는
-해당 예약 복사를 중단한다. 일일 unit의 공유 기억 export 용량 거부는 아래 예외를 따른다.
+해당 예약 복사를 중단한다. 일일 unit의 공유 기억 export 용량 거부도 run을 실패시킨다.
 일일 unit의 성공 timestamp와 공유 기억 파일 포함 여부는 따로 확인한다.
 
 R2 repository는 10 GB를 절대 넘지 않는다(owner 2026-10-20). `copy`와 `artifact`는
@@ -609,8 +609,9 @@ restore는 HOME/offsite custody를 대신하지 않는다.
 `.workspace-memory/capacity.sqlite3`와 `capacity.lock`이 1 GiB 논리 할당량을
 관리한다. 기억·원장 DB와 journal, 임시 복사본, 등록된 수동·일일 export,
 local Restic과 R2의 기억 포함 snapshot을 합산한다. 외부 snapshot은
-repository ID·snapshot ID·위치별로 64 MiB씩 보수적으로 계산한다. 압축이나
-중복 제거 절감은 차감하지 않는다. 파일시스템 hard quota나 Restic 실제 물리
+repository ID·snapshot ID·위치별로 그 snapshot에 든 기억 export 크기(최대 64 MiB)를
+계산하고, 새 snapshot 전에는 64 MiB를 예약한다. 압축이나 중복 제거 절감은
+차감하지 않는다. 파일시스템 hard quota나 Restic 실제 물리
 사용량이 아니며, 기존 로컬 repository·R2 물리 용량 보호도 계속 적용한다.
 
 처음 적용할 때는 소유자가 실제 backup 대상과 metadata 조회를 승인하고,
@@ -718,20 +719,26 @@ conflict를 보존하고 검사한 뒤 교체한다. DB/backup/임시 복사본�
 함께 적용한다. 원본 inode의 백업 잠금은 전체 용량 원장의 공통 잠금과 별개다.
 완료 후 재실행하는 것으로 불명 예약을 자동 해제하지 않는다.
 
-#### 일일 경로 임시 복원 (2026-11-11)
+#### 일일 경로와 snapshot 용량 계산
 
-1 GiB 용량 상한이 기존 snapshot마다 64 MiB를 보수적으로 계산해, 채택 후에도
-기존 60개 snapshot(state 30, offsite 30)만으로 약 3.9 GiB가 되어 매일의 backup이
-모두 거부됐다(`available_bytes` 0). 소유자 결정으로 매일 `backup.sh backup`과
-`offsite.sh copy`는 공유 기억 용량 원장을 거치지 않는다. SQLite export에는 용량 승인이
-계속 적용되며 offsite copy의 R2 바이트 제한도 따로 적용된다.
-`budget-backup`·`budget-copy`와 예약 경로는 사용할 수 있다. 일일 경로를 포함한
-용량 승인 요구의 미충족 부분은 [D-11 인계](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0067-w00-delta-gap-closure.md#new-items)의
-W08-MEMORY가 소유한다.
-같은 이유로 staging의 기억 export가 용량 거부(exit 4)로 끝나면 export만 버리고 경고를
-남기며 이 거부만으로 run을 실패 처리하지 않는다. 따라서 일일 unit이 성공해도 공유 기억의
-복구 가능성은 확인되지 않는다. 필요한 파일이 있는 마지막 snapshot과 그 날짜를 별도로 확인한다.
-다른 export 실패는 그대로 run을 실패시킨다.
+2026-11-11에는 1 GiB 용량 상한이 기존 snapshot마다 64 MiB를 계산해, 기존 60개
+snapshot(state 30, offsite 30)만으로 약 3.9 GiB가 되어 매일의 기억 export가 모두
+거부됐다(`available_bytes` 0). 2026-11-18부터 원장은 각 snapshot에 그 snapshot이 실제로
+담은 `/src/state/exports/agent-memory.sqlite3` 크기를 계산한다. 크기는 `restic ls`
+metadata에서 읽고 1 바이트 이상 64 MiB 이하만 받는다. 예약은 계속 snapshot마다 64 MiB로
+잡고, 정산은 기존 계산값을 낮출 수 없으며 전체 inventory의 `reconcile`만 다시 계산한다.
+
+일일 unit은 기억 export 전에
+`python3 scripts/operations/agent_memory.py capacity reconcile`로 원장을 현재 snapshot
+metadata에 맞춘다. reconcile 실패는 run을 실패로 기록하고 export는 계속 시도한다.
+staging의 기억 export가 용량 거부(exit 4)나 다른 이유로 끝나면 export를 버리고 run을
+실패시킨다. 따라서 일일 unit의 성공은 그 snapshot에 기억 export가 들어갔다는 뜻이다.
+
+매일 `backup.sh backup`과 `offsite.sh copy`가 만드는 snapshot 자체는 아직 용량 승인을
+거치지 않고 다음 reconcile에서 계산된다. `budget-backup`·`budget-copy`와 예약 경로는
+승인을 거친다. 일일 snapshot 생성의 용량 승인은
+[D-11 인계](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0067-w00-delta-gap-closure.md#new-items)의
+W08-MEMORY가 계속 소유한다.
 
 예약 경로로 local state snapshot을 만들 때는 원장을 채택한 뒤 호스트에서
 `python3 scripts/operations/agent_memory.py backup-run --target state`를 사용한다.
