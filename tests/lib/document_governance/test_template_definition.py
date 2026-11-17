@@ -444,11 +444,11 @@ class TemplateDefinitionTests(unittest.TestCase):
             ):
                 load_registry(path)
         raw = copy.deepcopy(dict(load_registry_document()))
-        del raw["common"]["table_column_definitions"]["Purpose"]
+        del raw["common"]["table_column_definitions"]["Definition"]
         registry = _registry_from_document(raw, pathlib.PurePosixPath("registry.json"))
-        # An unbound role reads its columns from the dictionary.
-        with self.assertRaisesRegex(RegistryError, "Purpose"):
-            template_definition(registry, "common/readme")
+        # An unbound (domain) role reads its columns from the dictionary.
+        with self.assertRaisesRegex(RegistryError, "Definition"):
+            template_definition(registry, "governance/vocabulary")
 
     def _common_form_roles(self, registry) -> list[str]:
         return [
@@ -621,21 +621,39 @@ def _core_from(definition: dict) -> dict:
 
 
 def _pending_role(raw: dict) -> str:
-    """A template role still awaiting its core move; bound roles cannot carry
-    the exception the fixtures below change."""
+    """A pending-migration template role whose core target no other role names,
+    so the fixtures below can change its exception. Once every role is bound,
+    the first such bound role is turned back into a pending one in this copy of
+    the Registry only."""
 
     roles = raw["template_roles"]
     targets = [
         role.get("core_role") or role.get("core_exception", {}).get("core_role")
         for role in roles.values()
     ]
-    # A target no other role names, so renaming it leaves that core role unmapped.
-    return next(
+    unique = [
         template_id
         for template_id, role in sorted(roles.items())
-        if role.get("core_exception", {}).get("kind") == "pending-migration"
-        and targets.count(role["core_exception"]["core_role"]) == 1
+        if targets.count(
+            role.get("core_role") or role.get("core_exception", {}).get("core_role")
+        )
+        == 1
+    ]
+    for template_id in unique:
+        if roles[template_id].get("core_exception", {}).get("kind") == (
+            "pending-migration"
+        ):
+            return template_id
+    template_id = next(
+        template_id for template_id in unique if roles[template_id].get("core_role")
     )
+    role = roles[template_id]
+    role["core_exception"] = {
+        "kind": "pending-migration",
+        "reason": "Fixture: a bound role returned to pending for this test",
+        "core_role": role.pop("core_role"),
+    }
+    return template_id
 
 
 class RoleDesignConformanceTests(unittest.TestCase):
