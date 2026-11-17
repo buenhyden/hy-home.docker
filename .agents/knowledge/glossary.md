@@ -1,6 +1,6 @@
 ---
 title: "Repository Vocabulary"
-version: "0.10.0"
+version: "0.11.0"
 type: "governance/vocabulary"
 status: "active"
 owner: "@buenhyden"
