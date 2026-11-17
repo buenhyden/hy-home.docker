@@ -314,13 +314,14 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Guide corpus | 137 | W143 | document-corpus | check-changed against `origin/main`, check-contracts, check-operations-catalog, link alignment and markdownlint after the empty titles were removed | PASS | 167 changed and 0 violations; 0 contract violations; catalog and alignment PASS; 0 lint issues | required | Guide empty titles |
 | Guide review | 137 | W143 | independent-review | Commits `efd26a4d3`, `da9fc935d` and `2bf4ba56c` | FAIL | CHANGES_REQUIRED: 25 prose lines still name removed sections, a k6 failure outcome as Expected Result, a Storybook row reference off by three, constraints in five cells | required | - |
 | Guide review corpus | 137 | W143 | document-corpus | metadata.test_heading with the replaced guide headings, check-changed against `origin/main` and link alignment after the fixes | PASS | 119 tests, exit 0; 80 changed and 0 violations; alignment PASS | required | - |
+| Guide review approval | 137 | W143 | independent-review | Fix commits `e8ae10439` and `f94a0d4de` against the guide review | PASS | APPROVE at `f94a0d4de`; I1 to I3 and the applied minors fixed, the rest accepted with reasons | required | Guide review |
 
 ### Resolution Links
 
 Conformance GREEN resolves Conformance RED, and Foundation re-review resolves
 Foundation review. Runbook form GREEN, Reference table GREEN, Runbook
 regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
-Runbook re-review approval, Guide form GREEN, Guide corpus, Incident regression rerun, Review fix GREEN, Review fix
+Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
 rows. The comparison baseline stays
 open until every role group conforms.
