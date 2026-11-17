@@ -1,10 +1,10 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.13.0"
+version: "1.14.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 ---
 
 # Agent Quality and Security Standards
@@ -150,12 +150,12 @@ None: this document states no exclusion.
 | QUALITY-STANDARDS-R115 | The index changes | Forbidden: reusing an earlier result | none | none |
 | QUALITY-STANDARDS-R116 | Always | Required: keep the effective secret guard and the user-global hooks | none | none |
 | QUALITY-STANDARDS-R117 | PR candidate | Required: run the same controller with `--mode pr-merge` on its authenticated merge input before accepting selected builds | none | none |
-| QUALITY-STANDARDS-R118 | Style controller modes | Required: run every hook on an isolated copy; a fixer without a check mode may change only that copy, which fails the run | none | none |
+| QUALITY-STANDARDS-R118 | Style controller modes | Required: run every hook on an isolated copy; a fixer without a check mode may change only that copy, which fails the run. In `pr-merge` mode a hook that pre-commit would skip because no changed file matches it is removed before environment installation, using pre-commit's own hook definitions, classifier and changed-file list | none | none |
 | QUALITY-STANDARDS-R119 | Always | Forbidden: replacing the server result with a local staged PASS | none | none |
 | QUALITY-STANDARDS-R120 | Build steps in the candidate | Required: consume the controller result rather than calling style twice | none | none |
 | QUALITY-STANDARDS-R121 | Future deployment | Required: successful server lint/format evidence for its exact promoted revision and configuration before deployment | none | none |
 | QUALITY-STANDARDS-R122 | Future deployment with changed inputs | Required: a new server check | none | none |
-| QUALITY-STANDARDS-R123 | Both style-controller modes | Required: use a hook's check mode where it has one, run every hook on an isolated copy and preserve source bytes | none | none |
+| QUALITY-STANDARDS-R123 | Both style-controller modes | Required: use a hook's check mode where it has one, run every hook that has input on an isolated copy and preserve source bytes | none | none |
 | QUALITY-STANDARDS-R124 | Always | Required: keep formatting and validation as separate purposes | none | none |
 | QUALITY-STANDARDS-R125 | Always | Forbidden: direct Agent `pre-commit run` | none | none |
 | QUALITY-STANDARDS-R126 | Controlled all-files wrapper | Allowed: use it as an explicitly approved authoring/maintenance lane | none | none |
@@ -470,7 +470,11 @@ main-push security remains a post-merge observation.
 - **Server final defense**: the PR candidate runs the same controller with
   `--mode pr-merge` on its authenticated merge input before accepting selected
   builds. As in local mode, every hook runs on an isolated copy and a fixer
-  without a check mode may change only that copy, which fails the run. Local
+  without a check mode may change only that copy, which fails the run. A hook
+  that pre-commit would skip because no changed file matches it is removed
+  first, with pre-commit's own hook definitions, classifier and changed-file
+  list, so its environment is never installed; a missing or different
+  pre-commit module fails the run. Local
   staged PASS cannot replace that server result. Build steps in
   the same candidate consume its result rather than calling style twice.
   A future deployment must require successful server lint/format evidence for
@@ -478,7 +482,7 @@ main-push security remains a post-merge observation.
   inputs require a new server check. The repository currently has no deployment
   workflow, so this rule supplies no deployment execution or acceptance.
 - **Validation**: both style-controller modes use a hook's check mode where it
-  has one, run every hook on an isolated copy, and preserve source bytes.
+  has one, run every hook that has input on an isolated copy, and preserve source bytes.
   Formatting and validation have separate purposes.
   Direct Agent `pre-commit run` is prohibited; the controlled all-files wrapper
   is an explicitly approved authoring/maintenance lane, never routine PR QA.

@@ -89,6 +89,71 @@ PY
 )" || die "registered pre-commit pin is invalid"
   actual="$(pre-commit --version)" || die "pre-commit version is unavailable"
   [[ "$actual" == "pre-commit $expected" ]] || die "pre-commit version does not match the registered pin"
+  registered_pre_commit_version="$expected"
+}
+
+# pre-commit installs every hook of the stage before it skips a hook whose
+# filters match no file. Remove exactly those hooks first, with pre-commit's own
+# hook definitions, classifier and changed-file list, so their environments are
+# never installed. Each remaining hook's outcome is unchanged.
+drop_hooks_without_changed_files() {
+  local from_ref="$1"
+  local to_ref="$2"
+  (
+    cd "$checkout"
+    python3 -P - "$scratch/pre-commit-check.yaml" "$from_ref" "$to_ref" \
+      "$registered_pre_commit_version" <<'PY'
+import sys
+
+import yaml
+
+config_path, from_ref, to_ref, registered = sys.argv[1:]
+try:
+    from pre_commit import constants
+    from pre_commit.clientlib import load_config
+    from pre_commit.commands.run import Classifier
+    from pre_commit.git import get_changed_files
+    from pre_commit.repository import all_hooks
+    from pre_commit.store import Store
+except ImportError as error:
+    raise SystemExit(f"registered pre-commit module is unavailable: {error}")
+if constants.VERSION != registered:
+    raise SystemExit("pre-commit module version does not match the registered pin")
+
+config = load_config(config_path)
+classifier = Classifier.from_config(
+    get_changed_files(from_ref, to_ref), config["files"], config["exclude"]
+)
+matched = set()
+unmatched = set()
+for hook in all_hooks(config, Store()):
+    key = (hook.src, hook.id)
+    if "pre-commit" not in hook.stages or hook.always_run:
+        matched.add(key)
+    elif any(True for _ in classifier.filenames_for_hook(hook)):
+        matched.add(key)
+    else:
+        unmatched.add(key)
+dropped = unmatched - matched
+
+with open(config_path, encoding="utf-8") as handle:
+    raw = yaml.safe_load(handle)
+repositories = []
+for repository in raw["repos"]:
+    hooks = [
+        hook
+        for hook in repository["hooks"]
+        if (repository["repo"], hook["id"]) not in dropped
+    ]
+    if hooks:
+        repositories.append({**repository, "hooks": hooks})
+with open(config_path, "w", encoding="utf-8") as handle:
+    yaml.safe_dump({**raw, "repos": repositories}, handle, sort_keys=False)
+if dropped:
+    names = ", ".join(sorted(hook_id for _, hook_id in dropped))
+    print(f"No changed file matches: {names}", file=sys.stderr)
+PY
+  ) || die "pre-commit module hook selection failed"
 }
 
 run_pr_merge() {
@@ -114,6 +179,7 @@ run_pr_merge() {
     "$checkout/.pre-commit-config.yaml" \
     "$checkout/.markdownlint-cli2.yaml"
   require_registered_pre_commit "$checkout"
+  drop_hooks_without_changed_files "$merge_base" "$merge_sha"
   snapshot_candidate_state before
 
   set +e
