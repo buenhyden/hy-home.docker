@@ -94,6 +94,5 @@ Owning role, policies and related documents:
 
 ### Limits
 
-Static checks do not prove runtime state. Runtime observation runs only
-within the approved scope, and CI-only and skipped results are reported
-apart from observed ones.
+Static checks do not prove runtime state, and path classification is not
+content scanning.

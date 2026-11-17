@@ -29,8 +29,9 @@ execution belongs to the Stage 03 Task.
 
 ### Instruction Precedence
 
-The canonical owners under Intake outrank this guide: when this guide and an
-owner disagree, the owner wins and this guide is corrected.
+When this guide and the owner of a rule it summarizes disagree, the owner wins
+and this guide is corrected
+([documentation protocol](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd)).
 [Bootstrap](../../.agents/governance/bootstrap.md#authority-and-precedence)
 sets the full precedence order; a folder guide routes only and never overrides
 canonical governance or a Stage contract.
@@ -77,15 +78,20 @@ canonical governance or a Stage contract.
 
 ### Authority
 
+#### Stop and Escalate
+
 Stop and report when this guide and its canonical owner disagree (the owner
 wins and this guide is corrected), when an action needs an approval that
 [approval boundaries](../../.agents/governance/approval-boundaries.md)
 has not granted, or when a required check fails.
 
-### Secrets and External Effects
+#### Protected Actions
 
 - Edit only with an authorizing request; Stage documents are read-only by
   default.
+
+### Secrets and External Effects
+
 - Never write a secret value; name a secret only by its file or reference.
 - A procedure step that changes live runtime, remote settings or stateful data
   is executed only under its own approval; documenting it grants none.

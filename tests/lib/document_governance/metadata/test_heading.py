@@ -575,6 +575,7 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("### Evidence and Limits", "body-subheading-forbidden"),
                 ("### Protected Actions", "body-subheading-forbidden"),
                 ("### Stop and Escalate", "body-subheading-forbidden"),
+                ("### Handoff", "body-subheading-forbidden"),
             ),
             "repository-readme": (
                 ("## Overview", "body-heading-forbidden"),

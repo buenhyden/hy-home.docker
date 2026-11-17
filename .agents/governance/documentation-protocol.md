@@ -615,8 +615,7 @@ each with the H3 sections the Registry declares. Intake names the `.agents/`
 policies, roles, skills, prompts and hook rules, and the `.claude/` and
 `.codex/` adapters and hooks that apply to the folder. Checks name only
 registered commands that exist. The guide routes and summarizes; it never
-copies a policy body, and
-when a summary and its owner disagree, the owner wins and the guide is
+copies a policy body, and when a summary and its owner disagree, the owner wins and the guide is
 corrected. Its rank and when an agent reads it are set by
 [bootstrap](bootstrap.md#authority-and-precedence); it grants no tool, path,
 permission or approval.

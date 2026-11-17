@@ -23,7 +23,7 @@ updated: "{{UPDATED}}"
 
 ### Instruction Precedence
 
-<!-- Author prompt: Say that the canonical owners under Intake outrank this guide and link the bootstrap precedence order; never add a rank of your own. -->
+<!-- Author prompt: Say that when this guide and the owner of a rule it summarizes disagree, the owner wins and the guide is corrected, and link the bootstrap precedence order; never add a rank of your own. -->
 
 {{INSTRUCTION_PRECEDENCE}}
 

@@ -29,8 +29,9 @@ Long-lived requirements, architecture and operating procedures belong to Stage
 
 ### Instruction Precedence
 
-The canonical owners under Intake outrank this guide: when this guide and an
-owner disagree, the owner wins and this guide is corrected.
+When this guide and the owner of a rule it summarizes disagree, the owner wins
+and this guide is corrected
+([documentation protocol](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd)).
 [Bootstrap](../../.agents/governance/bootstrap.md#authority-and-precedence)
 sets the full precedence order; a folder guide routes only and never overrides
 canonical governance or a Stage contract.
@@ -84,15 +85,22 @@ canonical governance or a Stage contract.
 
 ### Authority
 
+#### Stop and Escalate
+
 Stop and report when this guide and its canonical owner disagree (the owner
 wins and this guide is corrected), when an action needs an approval that
 [approval boundaries](../../.agents/governance/approval-boundaries.md)
 has not granted, or when a required check fails.
 
-### Secrets and External Effects
+#### Protected Actions
 
 - Never edit the body of a terminal Task. Record a later correction in the
   current Task instead.
+
+### Secrets and External Effects
+
+This guide adds no secret or external-effect rule;
+[approval boundaries](../../.agents/governance/approval-boundaries.md) owns both.
 
 ## Verification
 

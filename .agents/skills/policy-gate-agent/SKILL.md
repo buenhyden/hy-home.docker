@@ -86,4 +86,5 @@ Owning role, policies and related documents:
 
 ### Limits
 
-This skill records no limit on what its checks prove.
+A gate that is skipped, blocked or not run is reported as such, never as
+passed.
