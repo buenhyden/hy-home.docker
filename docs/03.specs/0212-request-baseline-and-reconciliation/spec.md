@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.76.0"
+version: "1.77.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -1097,6 +1097,13 @@ target, backup, recovery boundary, and action-specific authorization.
      Correct reproduced mismatches in their current owners, distinguish
      observation from acceptance, and assign unresolved requirements to
      their receiving Task and the evidence still needed.
+137. TSK-0081 adopts the shared document role design core
+     `workspace-document-role-design` 4.0.0 on the owner's decision of
+     2026-11-17. The Registry pins the tracked core by path and SHA-256.
+     Every template role either conforms to one core role in H2, H3,
+     requiredness and table columns, or declares why not. Roles move with
+     their Registry profile, template, readers and current documents;
+     terminal Tasks keep their recorded form.
 
 ### Evidence Requirements
 
