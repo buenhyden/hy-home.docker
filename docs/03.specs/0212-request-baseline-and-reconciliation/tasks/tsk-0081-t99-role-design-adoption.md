@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -121,13 +121,37 @@ removed from the column dictionary.
 
 The `inc-0002` incident and postmortem keep every recorded fact. The
 incident's decisions and mitigations become rows of its Actions table.
-Nobody who acted is recorded, so Owner says so. Only the three decisions
-keep their recorded Timeline steps. The postmortem's completion phrase
+Nobody who acted is recorded, so Owner says so. Condition names the
+Timeline step that performed the action: the three decisions keep their
+recorded steps, two mitigations cite the steps that record the same action
+(steps 5, 7 and 9), and four that the source never tied to a step say so.
+The postmortem's completion phrase
 becomes Condition and its Tracking ID with the check becomes Evidence. Five
 test literals that named the old sections now name the core ones. Two
 behaviour tests move to the forms that still use the old contract:
 the dictionary lookup to the Task evidence table, and the common form
 revision to roles without `core_role`.
+
+#### W143 review fixes
+
+The independent review of `1a8fadde6` and `df8b7e8d2` asked for three
+changes. The documentation protocol still required a published postmortem to
+keep its columns and to separate a root cause; it now names the core
+postmortem sections and lets only the binding change move a published table.
+The incident first said four mitigations had no recorded step although
+steps 5, 7 and 9 record them; their Condition now cites those steps. The
+closure check read the whole `## Actions` H2, so an owner named only in
+Prevention prose passed. Registry `incident_closure.corrective_section` now
+names `Owners and Checks`, which `section_forms` places under Actions, so only
+the table and its note count. The `## Overview` fallback matched a shape no
+form uses and is removed. A core table is now matched by its owning H2 as
+well as its labels.
+
+Two notes are kept for later work units. A document that puts a core table
+under another H3 of the same H2 reports `table-missing` rather than a
+placement finding, because the document check follows the template's H3;
+W143's later parts meet this first. The pinned core is cached per process,
+which the contracts check bypasses by re-reading.
 
 #### Lifecycle Events
 
