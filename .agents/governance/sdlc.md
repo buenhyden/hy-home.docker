@@ -1,10 +1,10 @@
 ---
 title: "Software Development Lifecycle"
-version: "2.0.0"
+version: "2.1.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 ---
 
 # Software Development Lifecycle
@@ -205,6 +205,14 @@ and the deleting Task records the approval and each package's criterion state.
 A cancelled Spec keeps no member there. A package leaves Stage 03 only under
 the [retirement preconditions](documentation-protocol.md#retirement-preconditions);
 version history keeps its body.
+
+Lifecycle generation 8 places each package by its number. A package numbered
+from the Registry `package_generations.first_package` on writes the Spec,
+Plan and Task forms of the role design core, including its Evidence and
+Criterion Decisions columns. Every earlier package keeps the generation 7 form
+it was recorded in: its documents are not migrated, and a terminal Task keeps
+its recorded body. The readers project a generation 8 table onto the
+generation 7 columns, so the rules below read one shape for both.
 
 The Registry supplies the exact Evidence, Criterion Acceptance, Execution
 Items and Work Breakdown shapes, and its `common.section_forms` places each

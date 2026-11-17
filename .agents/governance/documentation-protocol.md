@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "7.5.0"
+version: "7.6.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -396,9 +396,9 @@ check for each kind of writer, not for the relation as a whole.
 | --- | --- | --- | --- | --- |
 | Authority | `rel.authority` | Consumer to owner | Normative links | `check-document-links.py`: the link resolves |
 | Structural Ownership | `rel.structural-ownership` | Child to parent | `parent_ids` of a Plan, Task, data model contract, research or audit member, and postmortem | `check-document-metadata.py`: `parent_ids` are valid |
-| Constraint | `rel.constraint` | Change to constraint | `parent_ids` of a Requirements package, Architecture description, ADR and Spec; Spec `Owning Requirements` as prose | `check-document-metadata.py` for `parent_ids`; the prose is checked by review |
+| Constraint | `rel.constraint` | Change to constraint | `parent_ids` of a Requirements package, Architecture description, ADR and Spec; Spec `Owning Requirements`, or `Goal` from lifecycle generation 8, as prose | `check-document-metadata.py` for `parent_ids`; the prose is checked by review |
 | Traceability | `rel.traceability` | Record to source | Task `Results` rows and a Task's evidence links; `parent_ids` of research, audit, data, guide, runbook, operations policy, incident and generated documents | `check-document-corpus-lifecycle.py` for Evidence rows; `check-document-links.py` for links; `check-document-metadata.py` for `parent_ids` |
-| Promotion | `rel.promotion` | Plan to target owner | Plan `Durable Meaning` and `Owner and Receipt` | None: the reviewer applies the [SDLC](sdlc.md#sequence) promotion rule |
+| Promotion | `rel.promotion` | Plan to target owner | Plan `Durable Meaning` and `Owner and Receipt`, or `Durable Owners` and `Consumer Updates` from lifecycle generation 8 | None: the reviewer applies the [SDLC](sdlc.md#sequence) promotion rule |
 | Supersession | `rel.supersession` | Successor to predecessor | Frontmatter `supersedes`; ADR `Decision` / `Authority and Effect` under a `Supersession` heading | `check-document-metadata.py` for the key; the section is checked by review |
 | Change Impact | `rel.change-impact` | Owner to consumer | None: derived from Authority, Constraint and Structural Ownership | `check-document-links.py --impact` reports it; the reviewer decides which consumers change |
 

@@ -145,6 +145,10 @@ Registry `common.section_forms`가 선언하고 Registry 검사가 profile의 �
 Evidence` 아래 `Results`, `Criterion Acceptance`가 `Acceptance Decision` 아래
 `Criterion Decisions`, `Work Log`가 `Execution Log` 아래 `Work Performed`를
 가리킵니다.
+lifecycle generation 8부터는 Registry `package_generations.first_package` 이후
+번호의 새 package가 role design core의 Spec·Plan·Task 양식과 표를 씁니다. 그
+이전 package는 기록된 generation 7 양식(`package_generations.recorded_sections`)을
+그대로 유지하며 옮기지 않습니다.
 Lifecycle Events는 실제 직접 전이와 같은 Task의 evidence anchor만 기록하며
 승인 source를 인증하지 않습니다. 승인·검토·실행의 의미는
 [SDLC](../../.agents/governance/sdlc.md)가 소유합니다.
