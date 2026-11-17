@@ -227,7 +227,7 @@ Compose의 명시적 build args가 Dockerfile 기본값보다 우선하며 현�
 
 ### Stop Conditions
 
-runtime을 변경하는 단계는 중단 조건이 확인된 별도 승인 뒤에만 수행한다(Authority and Access). `invalid_scope` 또는 realm-role 404이면 중단한다(Actions의 Application authorization provisioning). 검증 실패, secret 노출 위험, 파괴적 data 변경 필요, 결과 불일치는 중단하고 에스컬레이션한다(Escalation).
+runtime을 변경하는 단계는 중단 조건이 확인된 별도 승인 뒤에만 수행한다(Authority). `invalid_scope` 또는 realm-role 404이면 중단한다(Steps의 Application authorization provisioning). 검증 실패, secret 노출 위험, 파괴적 data 변경 필요, 결과 불일치는 중단하고 에스컬레이션한다(Escalation).
 
 ## Verification
 

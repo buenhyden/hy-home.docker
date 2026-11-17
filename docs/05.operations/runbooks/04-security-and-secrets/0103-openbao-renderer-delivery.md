@@ -36,7 +36,7 @@ Agent 설정이 바뀌어 다시 시작해야 하거나, Agent가 재인증하�
 
 ### Authority
 
-승인된 issuer helper가 operator 전용 디렉터리에 설치돼 있어야 하고 현재 OIDC operator credential을 받을 수 있어야 한다. 해당 문장은 Safety Checks에 함께 있으며 credential 값은 기록하지 않는다. issuer/cleanup token role의 권한 범위는 Actions의 Issuer and Cleanup Token Roles에 있다.
+승인된 issuer helper가 operator 전용 디렉터리에 설치돼 있어야 하고 현재 OIDC operator credential을 받을 수 있어야 한다. 해당 문장은 Environment에 함께 있으며 credential 값은 기록하지 않는다. issuer/cleanup token role의 권한 범위는 Steps의 Issuer and Cleanup Token Roles에 있다.
 
 ### Environment
 
@@ -194,7 +194,7 @@ response wrapping을 사용한다. raw `-field=secret_id` 전달과 root UID로 
 
 ### Stop Conditions
 
-진행 중인 issuance journal이 있으면 이전 발급의 정합화만 하고, 불명확·복수 결과·sealed·권한 거부는 새 발급을 막는다(Safety Checks). v1/v2 혼합, alias 불일치, 복수 accessor가 있으면 어느 accessor도 폐기하지 않고 중단한다(Actions의 Journal v2 Contract). 안전한 진행이 불가능하면 중단하고 @buenhyden에게 연락한다(Escalation).
+진행 중인 issuance journal이 있으면 이전 발급의 정합화만 하고, 불명확·복수 결과·sealed·권한 거부는 새 발급을 막는다(Environment). v1/v2 혼합, alias 불일치, 복수 accessor가 있으면 어느 accessor도 폐기하지 않고 중단한다(Steps의 Journal v2 Contract). 안전한 진행이 불가능하면 중단하고 @buenhyden에게 연락한다(Escalation).
 
 ## Verification
 
@@ -206,7 +206,7 @@ response wrapping을 사용한다. raw `-field=secret_id` 전달과 root UID로 
 
 #### Evidence
 
-Service Checks의 확인 결과를 값 없이 Task에 기록한다. 전달이 실패하면 journal·completion witness·보호된 snapshot과 관리 인증을 보존한다(Rollback의 Failed Delivery).
+Service Checks의 확인 결과를 값 없이 Task에 기록한다. 전달이 실패하면 journal·completion witness·보호된 snapshot과 관리 인증을 보존한다(Recovery or Forward Repair의 Failed Delivery).
 
 ### Unverified Conditions
 

@@ -624,7 +624,7 @@ policy는 SPEC-0181부터 이 경로를 허용한다. `hy-home-operator` policy�
 
 `ROOT STILL VALID`, `secret/platform/*` 밖을 읽는 토큰, OpenBao 앞에 SSO나 허용목록을 두라는 요청, 인증 없이 Prometheus나 Grafana를 게시하라는 요청이 있으면 중단한다. 빈 파일이나 다른 context, `INDETERMINATE` 판정도 중단한다. Prometheus API 비밀번호 교체는 BLOCKED이며 해소 전 consumer/KV 변경을 중단한다.
 
-`ROOT STILL VALID`, `secret/platform/*` 밖을 읽는 토큰, OpenBao 앞에 SSO나 허용목록을 두라는 요청, 인증 없이 Prometheus나 Grafana를 게시하라는 요청은 Escalation에 기록한 중단 조건이다. 단계별 중단 판정(빈 파일이나 다른 context, `INDETERMINATE`, `LEAK` 등)은 Actions의 각 Phase에 있다.
+`ROOT STILL VALID`, `secret/platform/*` 밖을 읽는 토큰, OpenBao 앞에 SSO나 허용목록을 두라는 요청, 인증 없이 Prometheus나 Grafana를 게시하라는 요청은 Escalation에 기록한 중단 조건이다. 단계별 중단 판정(빈 파일이나 다른 context, `INDETERMINATE`, `LEAK` 등)은 Steps의 각 Phase에 있다.
 
 ## Verification
 
@@ -656,7 +656,7 @@ sample, 실제 up값을 별도로 확인한다. Loki 로그·trace 수집/조회
 
 #### Evidence
 
-Phase 8에 나열된 단계 출력, 소스 커밋, Trigger and Outcome에서 적용된 상황을
+Phase 8에 나열된 단계 출력, 소스 커밋, Trigger에서 적용된 상황을
 기록한다.
 
 ### Unverified Conditions

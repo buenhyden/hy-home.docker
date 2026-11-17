@@ -66,28 +66,28 @@ LAB의 `promotion.yaml`이 `undecided`가 아닌 kind를 선언하고 owner가 �
 | --- | --- | --- | --- |
 | 1 | Readiness run: `lab.py readiness <name> --report <path>`로 읽기 전용 readiness 검사 실행 | 종료 코드 0 (다섯 기준 `tier`/`composition`/`linux`/`docker`/`resources` 모두 `PASS`) | 종료 코드가 0이 아니면 승격을 멈추고 보고서와 종료 코드를 승격 Task에 기록 (`NOT_RUN`은 통과가 아님) |
 | 2 | add: 파일 이동 전 LAB 위치에서 readiness 검사 실행 | 종료 코드 0 | 0이 아니면 절차를 멈춤 |
-| 3 | add: 목적지 규칙에 따라 Compose/README/자산/Guide/Runbook을 `git mv`로 이동하고 상대 경로 조정 | 문서가 artifact 식별자와 생성일을 유지 | 문서에 기록 없음 |
+| 3 | add: 목적지 규칙에 따라 Compose/README/자산/Guide/Runbook을 `git mv`로 이동하고 상대 경로 조정 | 문서에 기록 없음 | 문서에 기록 없음 |
 | 4 | add: manifest의 `integrations`(gateway route, OIDC client, DB role, observability, OpenBao 전달, 공유 network) 연결 | 문서에 기록 없음 | 문서에 기록 없음 |
-| 5 | add: secret을 옮기지 않고 은퇴 (Secret retirement 따름) | 문서에 기록 없음 | 데이터/secret 소유가 불명확하면 멈추고 @buenhyden에게 보고 |
+| 5 | add: LAB secret 값은 승격하지 않고 은퇴시킨다 (Secret retirement 따름) | 문서에 기록 없음 | 데이터/secret 소유가 불명확하면 멈추고 @buenhyden에게 보고 |
 | 6 | add: root render와 관련 test 실행 | 문서에 기록 없음 | 문서에 기록 없음 |
 | 7 | add: 승인된 운영 window에서 서비스 시작 후 health와 사용자 기능 확인 | health와 사용자 기능이 확인됨 | 문서에 기록 없음 |
 | 8 | add: `promotion.yaml` 삭제 후 승격 Task에 기록 | 승격 Task에 기록 | 문서에 기록 없음 |
 | 9 | replace-same, Consumer inventory: `git grep`으로 은퇴 서비스의 이름/host/port/secret/network 참조 파일 탐색 | 문서에 기록 없음 | 문서에 기록 없음 |
 | 10 | replace-same, Consumer inventory: 소비자별 연결 방식/전환 순서/중단 허용 여부를 승격 Task에 표로 기록 | 승격 Task에 표 기록 | 문서에 기록 없음 |
 | 11 | replace-same, Data migration - Export: writer 정지 또는 일관성 지점 합의 후 엔진 공식 방식으로 export, 파일/크기/checksum manifest 기록 | export manifest 작성 | 문서에 기록 없음 |
-| 12 | replace-same, Data migration - Import: 새 서비스에 import (이전 서비스의 identity 파일은 재사용하지 않음) | 문서에 기록 없음 | 문서에 기록 없음 |
-| 13 | replace-same, Data migration - Verify: 객체 수/목록/표본 값/application read를 export manifest와 비교 | export manifest와 일치 | 불일치가 있으면 cutover하지 않음 |
-| 14 | replace-same, Cutover: inventory 순서대로 소비자 하나씩 전환하고 각 전환 뒤 기능 확인 | 소비자마다 전환 뒤 기능이 확인됨 | 문서에 기록 없음 |
-| 15 | replace-same, Cutover: 전환 중 이전 서비스와 데이터는 정지만 하고 삭제하지 않음 | 문서에 기록 없음 | 문서에 기록 없음 |
-| 16 | replace-same, Retirement: 새 서비스 검증과 rollback window 종료 후 은퇴 서비스를 Compose에서 제거 | 문서에 기록 없음 | 데이터 삭제는 별도 승인 |
+| 12 | replace-same, Data migration - Import: 새 서비스에 import | 문서에 기록 없음 | 문서에 기록 없음 |
+| 13 | replace-same, Data migration - Verify: 객체 수/목록/표본 값/application read를 export manifest와 비교 | export manifest와 일치 | 불일치가 있으면 cutover하지 않고 멈추며 @buenhyden에게 보고서와 실패 신호를 전달 |
+| 14 | replace-same, Cutover: inventory 순서대로 소비자 하나씩 전환하고 각 전환 뒤 기능 확인 | 소비자마다 전환 뒤 기능이 확인됨 | 소비자 전환이 실패하면 멈추고 @buenhyden에게 보고서와 실패 신호를 전달하며 Rollback(소비자를 이전 서비스로 되돌리고 보존한 데이터로 다시 시작)을 따름 |
+| 15 | replace-same, Cutover: 전환하는 동안 이전 서비스와 데이터를 정지 상태로 보존 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 16 | replace-same, Retirement: 새 서비스 검증과 rollback window 종료 후 은퇴 서비스를 Compose에서 제거 | 문서에 기록 없음 | 문서에 기록 없음 |
 | 17 | replace-substitute: 이전 제품 설정 키와 새 제품 대응 키/기본값 차이/대응 없는 키를 표로 작성 | 문서에 기록 없음 | 문서에 기록 없음 |
 | 18 | replace-substitute: 데이터 형식 대응과 변환 도구 결정, 손실 속성 명시 및 owner 승인 | owner 승인 | 문서에 기록 없음 |
 | 19 | replace-substitute: 소비자 측 protocol/client 차이와 필요한 변경을 inventory에 추가 | 문서에 기록 없음 | 문서에 기록 없음 |
-| 20 | replace-substitute: Data migration의 Verify를 변환 뒤 값으로 비교 | 변환 뒤 값이 일치 | 불일치가 있으면 cutover하지 않음 |
+| 20 | replace-substitute: Data migration의 Verify를 변환 뒤 값으로 비교 | 변환 뒤 값이 일치 | 불일치가 있으면 cutover하지 않고 멈추며 @buenhyden에게 보고서와 실패 신호를 전달 |
 | 21 | Secret retirement: agent가 `secret-catalog.json`에서 LAB 행 은퇴, 목적지 `root` 행 생성 또는 소비자 추가 | 문서에 기록 없음 | 문서에 기록 없음 |
-| 22 | Secret retirement: owner가 `SENSITIVE_ENV_VARS.md.example`을 catalog와 일치하도록 손으로 편집 | `load_catalog`가 catalog와 일치 | 문서에 기록 없음 |
+| 22 | Secret retirement: owner가 `SENSITIVE_ENV_VARS.md.example`을 catalog와 일치하도록 손으로 편집 | 문서에 기록 없음 | 문서에 기록 없음 |
 | 23 | Secret retirement: owner가 `gen-secrets.sh --sync-metadata-check` 확인 후 `--sync-metadata` 동기화 | 문서에 기록 없음 | 문서에 기록 없음 |
-| 24 | Secret retirement: `--sync-metadata-prune`은 private registry가 COMM-003을 갖는 동안 막힘 (RUN-0106 따름) | 문서에 기록 없음 | RUN-0106의 절차와 audit proof 입력을 따름 |
+| 24 | Secret retirement: `--sync-metadata-prune` 정리는 RUN-0106의 절차와 audit proof 입력에 따라 수행 (COMM-003은 SMTP01 은퇴만 제거) | 문서에 기록 없음 | private registry가 COMM-003을 갖는 동안 `--sync-metadata-prune`이 막히면 RUN-0106의 절차와 audit proof 입력을 따름 |
 | 25 | Secret retirement: `secret-catalog.py --root "$PWD" check`로 catalog 검사 | 문서에 기록 없음 | 문서에 기록 없음 |
 | 26 | Secret retirement: owner가 LAB 사본 파일 제거 | 문서에 기록 없음 | 문서에 기록 없음 |
 

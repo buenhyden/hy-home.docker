@@ -47,7 +47,7 @@ live write, restore, cutover, cleanup, credential 변경은 별도로
 
 ### Environment
 
-Actions의 첫 코드 블록에서 `config --quiet`는 렌더링만 검증하는 사전 점검이며, 그 아래 rehearsal은 별도 승인된 disposable runtime에서만 실행한다.
+Steps의 첫 코드 블록에서 `config --quiet`는 렌더링만 검증하는 사전 점검이며, 그 아래 rehearsal은 별도 승인된 disposable runtime에서만 실행한다.
 
 ## Procedure
 

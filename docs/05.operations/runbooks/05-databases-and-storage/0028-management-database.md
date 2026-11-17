@@ -46,7 +46,7 @@ management database의 정적 진단, 계획된 백업·격리 복구, monitor �
 
 ### Environment
 
-Actions의 첫 코드 블록에서 `config --quiet`와 `config --services`는 렌더링과 서비스 목록만 확인하며, 완전히 렌더링된 configuration은 출력하지 않는다.
+Steps의 첫 코드 블록에서 `config --quiet`와 `config --services`는 렌더링과 서비스 목록만 확인하며, 완전히 렌더링된 configuration은 출력하지 않는다.
 
 ## Procedure
 

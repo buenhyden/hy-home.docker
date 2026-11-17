@@ -228,7 +228,7 @@ QA가 아니다. 현재 [품질 정책](../../../../.agents/governance/quality-s
 
 ### Stop Conditions
 
-중단 조건은 두 곳에 있다. 관찰된 실패가 문서화된 단계와 일치하지 않으면 변경을 중단한다(Rollback), verification 실패·secret 노출 위험·파괴적 데이터 변경 필요·예상과 다른 상태는 작업을 중단하고 escalation한다(Escalation). private 접근이나 Docker 실행이 승인되지 않은 검사는 BLOCKED/NOT_RUN으로 남긴다(Safety Checks).
+중단 조건은 두 곳에 있다. 관찰된 실패가 문서화된 단계와 일치하지 않으면 변경을 중단한다(Recovery or Forward Repair), verification 실패·secret 노출 위험·파괴적 데이터 변경 필요·예상과 다른 상태는 작업을 중단하고 escalation한다(Escalation). private 접근이나 Docker 실행이 승인되지 않은 검사는 BLOCKED/NOT_RUN으로 남긴다(Environment).
 
 ## Verification
 

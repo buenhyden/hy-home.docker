@@ -46,7 +46,7 @@ next_review_at: "2027-05-13"
 
 `sync-tech-stack-versions.sh --dry-run`과 `--check`로 공개 source만 읽는 projection 검사를 먼저 수행한다.
 
-읽기 전용 점검은 Actions의 `Source and updater changes` 2단계(`sync-tech-stack-versions.sh --dry-run`과 `--check`)와 `Static configuration validation`에 있다.
+읽기 전용 점검은 Steps의 `Source and updater changes` 2단계(`sync-tech-stack-versions.sh --dry-run`과 `--check`)와 `Static configuration validation`에 있다.
 
 ## Procedure
 
@@ -195,7 +195,7 @@ exit0만으로 완료하지 않으며 기대 coverage와 unreadable0/diff0을 �
 
 소유권 중복, 미분류 source/manager, registry만의 pin 변경, credential 오류, 지원되지 않는 migration, backup/coverage 부재 또는 예상 밖 결과는 중단한다. parser/미분류 source 오류와 `UNREADABLE` 결과도 중단 사유다. gate를 우회하거나 force push하지 않는다.
 
-소유권 중복, 미분류 source/manager, registry만의 pin 변경, credential 오류, 지원되지 않는 migration, backup/coverage 부재 또는 예상 밖 결과는 Escalation에 기록한 중단 조건이다. parser/미분류 source 오류와 `UNREADABLE` 결과는 Actions의 해당 단계에서 중단 사유로 명시한다.
+소유권 중복, 미분류 source/manager, registry만의 pin 변경, credential 오류, 지원되지 않는 migration, backup/coverage 부재 또는 예상 밖 결과는 Escalation에 기록한 중단 조건이다. parser/미분류 source 오류와 `UNREADABLE` 결과는 Steps의 해당 단계에서 중단 사유로 명시한다.
 
 ## Verification
 

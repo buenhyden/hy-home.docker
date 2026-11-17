@@ -55,7 +55,7 @@ SemVer 게시나 장부 형식 PASS는 ROOT 운영 변경·HOME 배포 승인이
 
 시작 전에 `git status --short --branch`와 `git branch --show-current`로 branch와 작업 트리 상태를 확인하고, 정확한 base/candidate commit SHA와 `git diff --check` 결과를 확인한다.
 
-시작 상태 확인은 Actions의 1~2단계에 있다. `git status --short --branch`로 branch와 작업 트리 상태를, 정확한 base/candidate commit SHA와 `git diff --check` 결과를 확인한다.
+시작 상태 확인은 Steps의 1~2단계에 있다. `git status --short --branch`로 branch와 작업 트리 상태를, 정확한 base/candidate commit SHA와 `git diff --check` 결과를 확인한다.
 
 ## Procedure
 
@@ -290,7 +290,7 @@ helper는 전체 preflight 후 각 파일을 즉시 재검증한다. 부분 실�
 
 secret 노출 징후, 값 변경이 필요한 `.env` drift, 추적 문서로 입증할 수 없는 rollback 증거가 있으면 즉시 중단한다. release/tag 판단이 차단되거나 rollback 증거가 불완전하면 판단을 중단한다. Verdict pair가 하나라도 없거나 legacy, stale, mixed, substituted이면 class `10`에서 중단하며, local delivery cleanup의 ownership query가 누락되거나 ambiguous하면 broad cleanup 없이 class `60`으로 중단한다.
 
-대상별 중단 경계는 Actions의 `ROOT 인프라 image 후보와 승격` 표의 중단 경계 열에 있다.
+대상별 중단 경계는 Steps의 `ROOT 인프라 image 후보와 승격` 표의 중단 경계 열에 있다.
 
 ## Verification
 

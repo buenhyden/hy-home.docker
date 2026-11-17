@@ -96,7 +96,7 @@ LAB 전용 Valkey Cluster [RUN-0022](../15-labs/0022-valkey-cluster.md), 또는 
 
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
-state-path 충돌이 있으면 ownership이 입증될 때까지 변경을 중단하고, 데이터 손실이나 손상이 발생하면 쓰기를 중단한다(Actions의 Regression response).
+state-path 충돌이 있으면 ownership이 입증될 때까지 변경을 중단하고, 데이터 손실이나 손상이 발생하면 쓰기를 중단한다(Steps의 Regression response).
 
 ## Verification
 

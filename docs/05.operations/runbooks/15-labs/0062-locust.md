@@ -48,7 +48,7 @@ scenario file이 손상되거나, Locust image/dependency upgrade에 승인된 c
 
 ### Environment
 
-읽기 전용 사전 점검은 Actions의 1단계(target·users·scenario digest 기록), 3단계(bounded status와 로그), 4단계(`config --quiet`와 master health failure 점검)이다. 시나리오 backup과 upgrade 전 점검은 다음과 같다.
+읽기 전용 사전 점검은 Steps의 1단계(target·users·scenario digest 기록), 3단계(bounded status와 로그), 4단계(`config --quiet`와 master health failure 점검)이다. 시나리오 backup과 upgrade 전 점검은 다음과 같다.
 
 #### 시나리오 보존과 업그레이드
 

@@ -180,7 +180,7 @@ Host `nvidia-smi`, NVIDIA Container Toolkit 검사 실패, daemon 재시작 승�
 
 ### Recovery or Forward Repair
 
-위 Actions 절에 기록된 복구만 사용한다. 승인된 daemon 재시작 뒤에도 host GPU runtime이 실패하면 추가 변경을 멈추고 에스컬레이션한다.
+위 Steps 절에 기록된 복구만 사용한다. 승인된 daemon 재시작 뒤에도 host GPU runtime이 실패하면 추가 변경을 멈추고 에스컬레이션한다.
 
 #### Safe Rollback or Recovery Procedure
 

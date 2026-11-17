@@ -48,7 +48,7 @@ unseal, credential 발급, 설정 변경, 복원, cleanup 또는 부하 생성�
 
 ### Environment
 
-이 절차는 읽기 전용 진단이므로 별도 백업이나 사전 상태 변경을 요구하지 않으며, 대상 context와 읽기 권한 확인은 Authority and Access를 따른다.
+이 절차는 읽기 전용 진단이므로 별도 백업이나 사전 상태 변경을 요구하지 않으며, 대상 context와 읽기 권한 확인은 Authority를 따른다.
 
 ## Procedure
 

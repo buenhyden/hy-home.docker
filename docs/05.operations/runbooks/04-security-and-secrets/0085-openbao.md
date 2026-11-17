@@ -36,7 +36,7 @@ next_review_at: "2027-05-13"
 
 ### Authority
 
-이 런북은 승인·접근 조건을 Actions의 각 절에 둔다. 승인된 unseal 관리자가 준비되지 않으면 시작/중지를 진행하지 않고(Start and Stop), secret을 다루는 host script는 owner가 검토·승인한 commit의 것만 실행하며 `XDG_RUNTIME_DIR`은 owner 전용 0700 tmpfs여야 한다(Reviewed Script Runner). host package hold는 owner가 수행하고(Host Package Upgrade), 임시 root는 승인된 세션에서만 사용한다(Human Login and Normal Root Recovery).
+이 런북은 승인·접근 조건을 Steps의 각 절에 둔다. 승인된 unseal 관리자가 준비되지 않으면 시작/중지를 진행하지 않고(Start and Stop), secret을 다루는 host script는 owner가 검토·승인한 commit의 것만 실행하며 `XDG_RUNTIME_DIR`은 owner 전용 0700 tmpfs여야 한다(Reviewed Script Runner). host package hold는 owner가 수행하고(Host Package Upgrade), 임시 root는 승인된 세션에서만 사용한다(Human Login and Normal Root Recovery).
 
 ### Environment
 

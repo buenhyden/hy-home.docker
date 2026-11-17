@@ -273,7 +273,7 @@ path·P01 인증/복구·P03 신원·P04 DEV/S3 증거가 있어야 한다. 현�
 
 ### Stop Conditions
 
-trusted 작성자와 입력의 쓰기 중단을 확인한 뒤에만 검사한다(Safety Checks의 P06 Read-only Structure and SMTP Checks). `P02_METADATA_BLOCKED`와 exit 2는 중단하고(Actions의 Metadata Check), 거절 probe가 성공하거나 예상 출력과 다르면 중단한다(Actions의 Generation Refusal Probes). catalog 점검이 실패하면 생성·전환을 멈춘다(Rollback). 안전한 진행이 불가능하면 중단하고 @buenhyden에게 연락한다(Escalation).
+trusted 작성자와 입력의 쓰기 중단을 확인한 뒤에만 검사한다(Environment의 P06 Read-only Structure and SMTP Checks). `P02_METADATA_BLOCKED`와 exit 2는 중단하고(Steps의 Metadata Check), 거절 probe가 성공하거나 예상 출력과 다르면 중단한다(Steps의 Generation Refusal Probes). catalog 점검이 실패하면 생성·전환을 멈춘다(Recovery or Forward Repair). 안전한 진행이 불가능하면 중단하고 @buenhyden에게 연락한다(Escalation).
 
 ## Verification
 

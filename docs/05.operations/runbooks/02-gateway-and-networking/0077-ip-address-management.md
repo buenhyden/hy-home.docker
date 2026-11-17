@@ -106,7 +106,7 @@ network connect/disconnect, 전체 restart나 network/volume 삭제를 실행하
 
 ### Stop Conditions
 
-target·peer·alias가 불명확하면 수정하지 않고 @buenhyden에게 전달한다(Safety Checks의 선언과 대상 확인). 검증 명령이 실패하면 적용을 중단한다(Actions의 범위를 정한 source 변경과 검증).
+target·peer·alias가 불명확하면 수정하지 않고 @buenhyden에게 전달한다(Environment의 선언과 대상 확인). 검증 명령이 실패하면 적용을 중단한다(Steps의 범위를 정한 source 변경과 검증).
 
 ## Verification
 

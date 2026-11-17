@@ -157,7 +157,7 @@ docker compose stop oauth2-proxy
 
 ### Stop Conditions
 
-runtime을 변경하는 단계는 중단 조건이 확인된 별도 승인 뒤에만 수행한다(Authority and Access). 검증 실패, secret 노출 위험, 파괴적 data 변경 필요, 결과 불일치는 중단하고 에스컬레이션한다(Escalation).
+runtime을 변경하는 단계는 중단 조건이 확인된 별도 승인 뒤에만 수행한다(Authority). 검증 실패, secret 노출 위험, 파괴적 data 변경 필요, 결과 불일치는 중단하고 에스컬레이션한다(Escalation).
 
 ## Verification
 

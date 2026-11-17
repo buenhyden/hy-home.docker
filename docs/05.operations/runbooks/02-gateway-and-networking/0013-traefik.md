@@ -91,10 +91,10 @@ docker compose exec -T traefik traefik healthcheck --ping
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
-| 1 | Startup, shutdown and apply: 승인된 경우 `docker compose --profile core up -d --no-deps --no-build --pull never traefik`로 시작 | 80/443을 점유한다 | 새 설정 적용을 중단하고 Rollback으로 전달한다 |
+| 1 | Startup, shutdown and apply: 승인된 경우 `docker compose --profile core up -d --no-deps --no-build --pull never traefik`로 시작 | 80/443을 점유한다 | 새 설정 적용을 중단하고 Recovery or Forward Repair로 전달한다 |
 | 2 | Startup, shutdown and apply: 승인된 중지에만 `docker compose stop traefik` 실행 | 해당 route가 모두 중단된다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
-| 3 | Startup, shutdown and apply: `/dynamic` 변경은 실제 mount source 확인, 정적 단일 파일 변경은 `--force-recreate traefik`와 post-apply hash 검사 | 문서에 기록 없음 | 실패하면 새 설정 적용을 중단하고 Rollback으로 전달한다 |
-| 4 | Startup, shutdown and apply: healthy, dashboard BasicAuth, ForwardAuth/OIDC route, 내부 metrics를 별개로 확인 | healthcheck, dashboard BasicAuth 성공·거부, 대표 ForwardAuth와 native OIDC route, 내부 metrics 수집 | 새 설정 적용을 중단하고 Rollback으로 전달한다 |
+| 3 | Startup, shutdown and apply: `/dynamic` 변경은 실제 mount source 확인, 정적 단일 파일 변경은 `--force-recreate traefik`와 post-apply hash 검사 | 문서에 기록 없음 | 실패하면 새 설정 적용을 중단하고 Recovery or Forward Repair로 전달한다 |
+| 4 | Startup, shutdown and apply: healthy, dashboard BasicAuth, ForwardAuth/OIDC route, 내부 metrics를 별개로 확인 | healthcheck, dashboard BasicAuth 성공·거부, 대표 ForwardAuth와 native OIDC route, 내부 metrics 수집 | 새 설정 적용을 중단하고 Recovery or Forward Repair로 전달한다 |
 
 #### Startup, shutdown and apply
 
@@ -117,7 +117,7 @@ post-apply hash 검사를 수행한다. healthy, dashboard BasicAuth 성공·거
 
 ### Stop Conditions
 
-새 설정 적용이 실패하면 적용을 중단하고 Rollback으로 전달한다(Actions의 마지막 단락). canary/격리 route가 준비되지 않았으면 적용을 중단한다(Rollback의 2번).
+새 설정 적용이 실패하면 적용을 중단하고 Recovery or Forward Repair로 전달한다(Steps의 마지막 단락). canary/격리 route가 준비되지 않았으면 적용을 중단한다(Recovery or Forward Repair의 2번).
 
 ## Verification
 

@@ -52,7 +52,7 @@ service-local compose 단독 검증과 root compose context를 혼동하지 않�
 
 runtime 재시작은 이 런북 범위 밖이며 대상 service runbook과 사용자 승인을 따른다. 책임자는 `@buenhyden`이다.
 
-이 런북은 CI·로컬 하드닝 검사를 다루며 runtime 재시작은 범위 밖이므로 대상 service runbook과 사용자 승인을 따른다(Rollback). 책임자는 `@buenhyden`이다(Escalation).
+이 런북은 CI·로컬 하드닝 검사를 다루며 runtime 재시작은 범위 밖이므로 대상 service runbook과 사용자 승인을 따른다(Recovery or Forward Repair). 책임자는 `@buenhyden`이다(Escalation).
 
 ### Environment
 
@@ -112,7 +112,7 @@ runtime 재시작은 이 런북 범위 밖이며 대상 service runbook과 사�
 
 실행 환경·데이터·자격 증명 변경이 필요하면 중단한다. 한정된 복구 후에도 검사가 실패하거나 비밀 노출, 루트 Compose 문맥 복구 실패, 실행 환경 변경 필요성이 있으면 책임자에게 보고한다.
 
-실행 환경·데이터·자격 증명 변경이 필요하면 Rollback에서 중단하고 Escalation을 따른다. 한정된 복구 후에도 검사가 실패하거나 비밀 노출, 루트 Compose 문맥 복구 실패, 실행 환경 변경 필요성이 있으면 책임자에게 보고한다.
+실행 환경·데이터·자격 증명 변경이 필요하면 Recovery or Forward Repair에서 중단하고 Escalation을 따른다. 한정된 복구 후에도 검사가 실패하거나 비밀 노출, 루트 Compose 문맥 복구 실패, 실행 환경 변경 필요성이 있으면 책임자에게 보고한다.
 
 ## Verification
 

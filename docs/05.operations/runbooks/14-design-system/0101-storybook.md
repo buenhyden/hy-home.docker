@@ -42,7 +42,7 @@ HOME 배포·정지·재시작, DNS/TLS 수정, 검토자 권한 변경과 원�
 
 ### Environment
 
-정적 origin은 업무 데이터를 소유하지 않으므로 backup은 요구하지 않고, 읽기 전용 사전 점검은 Actions의 1~2단계(작업 revision 일치 확인과 정적 Compose 검증)에서 수행한다.
+정적 origin은 업무 데이터를 소유하지 않으므로 backup은 요구하지 않고, 읽기 전용 사전 점검은 Steps의 1~2단계(작업 revision 일치 확인과 정적 Compose 검증)에서 수행한다.
 
 ## Procedure
 

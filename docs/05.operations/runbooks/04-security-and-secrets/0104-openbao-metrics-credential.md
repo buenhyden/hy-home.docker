@@ -43,7 +43,7 @@ metrics token을 처음 발급하거나, 만료 전에 회전하거나, 이미 �
 
 ### Environment
 
-시작 상태 조건(OpenBao initialized/unsealed, 검토된 `prometheus.hcl`, 대기 중인 승인된 관리자, 현재 configuration 기준의 rollback)은 Actions의 Rotation Rules 1번에 있다.
+시작 상태 조건(OpenBao initialized/unsealed, 검토된 `prometheus.hcl`, 대기 중인 승인된 관리자, 현재 configuration 기준의 rollback)은 Steps의 Rotation Rules 1번에 있다.
 
 ## Procedure
 
@@ -191,7 +191,7 @@ credential이 필요하다. 발급에는 승인된 운영자 신원이 필요하
 
 ### Stop Conditions
 
-배포된 token 조회 결과가 custody와 다르면 custody가 오래된 것이므로 멈추고, 실패 시 exit 1로 멈추는 경우는 Actions의 Rotation Steps 실패 목록과 Rollback이 정한다. 또한 안전한 진행이 불가능하면 중단하고 @buenhyden에게 연락한다(Escalation).
+배포된 token 조회 결과가 custody와 다르면 custody가 오래된 것이므로 멈추고, 실패 시 exit 1로 멈추는 경우는 Steps의 Rotation Steps 실패 목록과 Rollback이 정한다. 또한 안전한 진행이 불가능하면 중단하고 @buenhyden에게 연락한다(Escalation).
 
 ## Verification
 
@@ -203,7 +203,7 @@ credential이 필요하다. 발급에는 승인된 운영자 신원이 필요하
 
 #### Evidence
 
-Service Checks의 확인 결과를 값 없이 Task에 기록한다. 회전은 custody를 새 accessor·만료일로 교체하고, 확인하지 못한 폐기나 custody 쓰기는 작업 디렉터리의 `new.unrevoked`, `old.unrevoked`, `custody.unwritten` 표시로 남는다(Actions의 Rotation Steps).
+Service Checks의 확인 결과를 값 없이 Task에 기록한다. 회전은 custody를 새 accessor·만료일로 교체하고, 확인하지 못한 폐기나 custody 쓰기는 작업 디렉터리의 `new.unrevoked`, `old.unrevoked`, `custody.unwritten` 표시로 남는다(Steps의 Rotation Steps).
 
 ### Unverified Conditions
 
