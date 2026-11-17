@@ -1,6 +1,6 @@
 ---
 title: "Repository Vocabulary"
-version: "0.9.1"
+version: "0.10.0"
 type: "governance/vocabulary"
 status: "active"
 owner: "@buenhyden"
@@ -99,7 +99,7 @@ enforced.
 | Historical Audit ID | A key such as OPEN-01 to OPEN-14 that names an item of an earlier audit. It is not a current state, file name or issue number | A currently open work item | This vocabulary; current verdicts live in the owning Task |
 | Registry file | The Registry is `docs/99.templates/registry.json` | A template | [Documentation protocol](../governance/documentation-protocol.md) |
 | Document Profile entry | A Registry entry binding a path pattern to a role's required frontmatter, sections, identity, lifecycle and template | Profile, gate sense | [Documentation protocol](../governance/documentation-protocol.md) |
-| Supersession lineage | Outside Stages 01 to 03, the newer document lists predecessors in `supersedes` and the older names its one successor in `superseded_by`; Stage 01 to 03 successors record the replaced substance in Traceability instead, and an ADR under a `Supersession` heading in `Authority and Effect` | A one-way mention | [Documentation protocol](../governance/documentation-protocol.md) |
+| Supersession lineage | Outside Stages 01 to 03, the newer document lists predecessors in `supersedes` and the older names its one successor in `superseded_by`; Stage 01 to 03 successors record the replaced substance in their lineage section instead: `Traceability` in a Requirement Package, `Adoption Boundaries` in an Architecture Description, and a `Supersession` heading in an ADR's `Authority and Effect` | A one-way mention | [Documentation protocol](../governance/documentation-protocol.md) |
 | Resolves row | In a Task Evidence table, a later required PASS row for a shared criterion, with the same Check and Work Unit, names the earlier non-PASS row in its `Resolves` column | Any newer PASS | [SDLC](../governance/sdlc.md#sequence) |
 | Spec Package | A directory holding one bounded change's `spec.md`, optional `plan.md`, and numbered Tasks | A long-lived requirement or design | [Documentation protocol](../governance/documentation-protocol.md) |
 | Lifecycle | The named status set and permitted transitions for a profile; `living` and `spec` differ | The SDLC stage or document stage | [Documentation protocol](../governance/documentation-protocol.md) |
@@ -138,7 +138,7 @@ enforced.
 | Structural Ownership | The `rel.structural-ownership` relation: a Plan, Task, data model contract, research or audit member, or postmortem names in `parent_ids` the document that structurally contains it | The frontmatter `owner`, which names a person | [Documentation protocol](../governance/documentation-protocol.md#link-types-and-document-relations) |
 | Constraint | The `rel.constraint` relation: a Requirements package, Architecture description, ADR or Spec names in `parent_ids` the document that constrains it | Structural Ownership | [Documentation protocol](../governance/documentation-protocol.md#link-types-and-document-relations) |
 | Change Impact | The `rel.change-impact` relation from an owner to its consumers, derived from Authority, Constraint and Structural Ownership when a document is removed or moved; no document records it | A hand-kept reverse-state table | [Documentation protocol](../governance/documentation-protocol.md#link-types-and-document-relations) |
-| Traceability heading | A Stage 01 to 03 section that holds a document's basis and supersession records | The `rel.traceability` relation, which a Task's evidence rows and links write | [Documentation protocol](../governance/documentation-protocol.md#link-types-and-document-relations) |
+| Traceability heading | The Requirement Package lineage section that holds its basis and supersession records; an Architecture Description holds them in `Decisions and Adoption` / `Adoption Boundaries` and an ADR in `Decision` / `Authority and Effect` | The `rel.traceability` relation, which a Task's evidence rows and links write | [Documentation protocol](../governance/documentation-protocol.md#link-types-and-document-relations) |
 | Promote (older Specs and labs) | In SPEC-0259 and SPEC-0261 (retired), moving a draft operations document to `active` after it matched the source; in SPEC-0263, moving a lab workload into the managed stack under its `promotion.yaml` and the lab promotion policy | The common Promotion term, which hands lasting meaning to its owner through a Plan | [SDLC](../governance/sdlc.md#sequence) |
 
 ## Maintenance

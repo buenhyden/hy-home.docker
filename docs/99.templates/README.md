@@ -1,6 +1,6 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.9.0"
+version: "2.9.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -270,8 +270,9 @@ active로 유지됩니다. `registry.json`이 모든 진입 상태, edge, termin
 자신이 아닌 유효한 Task여야 합니다. 취소는 완료 영수증의 PASS 의무를 면제하지
 않으며 template은 승인값을 미리 채우지 않습니다.
 
-문서를 은퇴시킬 때는 남아야 할 내용을 01·02 문서의 Traceability에 요약하고 원본을
-삭제한 뒤, 그 번호를 `reserved_history`에 추가합니다. Stage 98은 기록을 담지
+문서를 은퇴시킬 때는 남아야 할 내용을 01·02 소유 문서의 계보 절(Requirement
+Package의 `Traceability`, Architecture Description의 `Adoption Boundaries`, ADR의
+`Authority and Effect`)에 요약하고 원본을 삭제한 뒤, 그 번호를 `reserved_history`에 추가합니다. Stage 98은 기록을 담지
 않습니다.
 
 ## Related Documents

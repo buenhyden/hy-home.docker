@@ -116,8 +116,8 @@ stay.
   carried them; checks no longer read them.
 - Retirement needs one extra edit, the `reserved_history` entry, and checks fail
   without it.
-- Lineage moves into owner Traceability, so it is read where the current rule
-  lives.
+- Lineage moves into the owner's lineage section, so it is read where the
+  current rule lives.
 - Reversal restores the archive files and readers from version history; no
   outside state changes.
 
@@ -126,8 +126,8 @@ stay.
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
 options table under Trade-offs was derived from the options it records. In the same
-amendment, item 1 of the decision and the scope sentence name the owner's
-lineage section instead of Traceability, because the core architecture and
+amendment, item 1 of the decision, the scope sentence and the lineage impact
+under Impacts name the owner's lineage section instead of Traceability, because the core architecture and
 decision forms have no Traceability section; their meaning is unchanged.
 
 The owner decided on 2026-11-03 to accept this record. A new ADR must enter as

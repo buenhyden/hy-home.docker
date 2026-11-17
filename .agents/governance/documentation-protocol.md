@@ -401,9 +401,11 @@ check for each kind of writer, not for the relation as a whole.
 
 The frontmatter `owner` names an accountable person, not a related document,
 and historical and navigation links carry no relation; their link types above
-still govern them. A `Traceability` section heading in a Stage 01 to 03
-document holds that document's basis and supersession records; it is a
-section name, not the `rel.traceability` relation.
+still govern them. A Stage 01 or Stage 02 document holds its basis and
+supersession records in its lineage section: `Traceability` in a Requirement
+Package, `Decisions and Adoption` / `Adoption Boundaries` in an Architecture
+Description and `Decision` / `Authority and Effect` in an ADR. A
+`Traceability` heading is a section name, not the `rel.traceability` relation.
 
 Only the side the Writer column names records a relation, and no document
 keeps a manual reverse-state table. Reverse lookups, such as the children of a
@@ -659,7 +661,10 @@ evidence; surrounding instructions remain current and validated normally.
 - A Requirement Package combines PRD, SRS, and implementation-independent
   interface perspectives. An interface need is written as a functional
   requirement and a quality need under Quality Requirements; no separate
-  interface section or `IF` child identity is issued. A Description owns current structure; an ADR owns one
+  interface section or `IF` child identity is issued. Its requirements table
+  lists every declared FR and NFR once, with the declaration as its Statement.
+  A declaration in an approved Requirement Package that has no modal verb binds
+  as `must`; one written with `should` or `could` takes that priority. A Description owns current structure; an ADR owns one
   consequential choice. Preserve accepted decisions and use explicit
   supersession when the choice changes.
 - Use the Description core for architecture views: context and scope

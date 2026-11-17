@@ -39,7 +39,7 @@ created: "{{CREATED}}"
 
 ## Requirements
 
-<!-- Author prompt: List every FR and NFR in this table: Requirement ID is its full identity, Statement the needed behaviour or quality, Rationale why it is needed, Acceptance the judgeable condition, and Priority must, should or could. The declarations follow under their subsections; keep this table directly under Requirements so it is not read as a declaration. -->
+<!-- Author prompt: List every FR and NFR in this table: Requirement ID is its full identity, Statement the needed behaviour or quality, Rationale why it is needed, Acceptance the judgeable condition, and Priority must, should or could. Statement repeats the declaration. Priority follows its modal verb: a declaration without one binds as must in an approved package. The declarations follow under their subsections; keep this table directly under Requirements so it is not read as a declaration. -->
 
 | Requirement ID | Statement | Rationale | Acceptance | Priority |
 | --- | --- | --- | --- | --- |
