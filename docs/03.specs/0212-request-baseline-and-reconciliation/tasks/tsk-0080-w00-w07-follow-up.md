@@ -1,6 +1,6 @@
 ---
 title: "W00 to W07 Follow-up Task"
-version: "0.7.0"
+version: "0.7.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -309,6 +309,12 @@ into `main`, so every hosted candidate merges the current `main`, and
 restoring the pre-W05 code would mean reverting 31 commits under later T99
 changes. The local paired measurements in TSK-0076 remain the evidence for
 that change.
+
+This updates the 2026-11-16 rows above that list the hosted no-document
+route, W05 and W06 same-input timing and the independent remote verifier as
+open. The no-document route is observed and recorded in TSK-0077. Criteria
+132 and 133 are accepted. The independent remote verifier is not a
+requirement of criterion 133 and stays optional future work.
 
 #### Lifecycle Events
 
