@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Usage Guide"
-version: "1.2.3"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0063"
 parent_ids:
@@ -16,6 +16,10 @@ next_review_at: "2027-05-13"
 # Platform Operations and Quality Optimization Hardening Usage Guide
 
 ## Purpose
+
+### Audience
+
+`09-platform-ops`와 `11-quality`의 최적화·하드닝 변경을 적용하는 SRE/Platform Operator, DevOps Engineer, Platform Product Owner.
 
 ### Outcome
 
@@ -32,7 +36,7 @@ next_review_at: "2027-05-13"
 - 하드닝 회귀를 script와 CI로 일찍 막는다.
 - 카탈로그 확장 항목을 실행 가능한 로드맵으로 반영한다.
 
-### Boundaries
+#### Boundaries
 
 - 상위 문서: [Platform Operations and Quality Optimization Hardening Operations Policy](../../policies/10-platform-and-backup/0063-tooling-optimization-hardening.md) (`POL-0063`)
 - 설계 근거: [Platform Operations·Quality 아키텍처](../../../02.architecture/descriptions/0009-tooling-architecture.md) (`AD-0009`)
@@ -54,31 +58,33 @@ next_review_at: "2027-05-13"
 - Docker와 Docker Compose 실행 환경
 - Traefik middleware(`gateway-standard-chain`, `sso-errors`, `sso-auth`) 준비
 
-### Permissions
+### Authority
 
 - `infra/09-platform-ops`와 `infra/11-quality`의 수정 권한
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md)의 `Steps` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-### Exceptions
+#### Exceptions
 
 SonarQube는 SPEC-0262로 독립 LAB이 되어 gateway route 없이 loopback port만 게시하고, Syncthing runtime은 제거되어 현재 하드닝 기동 대상에 포함하지 않는다. 자세한 내용은 Outcome과 Boundaries에 있다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `bash scripts/hardening/check-all-hardening.sh 09-platform-ops 11-quality`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 scripts/validation/check-document-links.py --mode traceability`
 
-### Troubleshooting
+## Troubleshooting
 
-위 Expected Result가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md)의 절차로 진단한다.
+### Symptoms
+
+위 Expected Results가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md)의 절차로 진단한다.
 
 #### Runbook Handoff
 
@@ -92,3 +98,7 @@ SonarQube는 SPEC-0262로 독립 LAB이 되어 gateway route 없이 loopback por
 - service-local compose의 단독 config 실패를 root compose context와 구분하지 못한다.
 - 독립 LAB Locust worker의 health 상태를 root profile 검사로 오해한다.
 - k6 leaf에 없는 worker나 Traefik route를 문서에 적는다.
+
+### Next Action
+
+Expected Results가 실패하거나 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0063-tooling-optimization-hardening.md)의 절차로 진단한다. 장애 대응, rollback, escalation 기준도 이 Runbook을 따른다.

@@ -1,6 +1,6 @@
 ---
 title: "Kafka Usage Guide"
-version: "1.3.3"
+version: "1.4.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -23,13 +23,17 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+Kafka family를 켜거나 변경하는 운영자와 개발자. 서비스별 profile, 보호 범위, 복구 포함 범위를 확인할 때 읽는다.
+
 ### Outcome
 
 이 가이드는 OPTIONAL 이벤트 스트리밍 기능인 Kafka family의 구성, 프로파일, 접근 경계를 설명한다. 정상 root는 단일 KRaft broker와 Kafbat UI, exporter, init job을 정의한다. Schema Registry와 Debezium Connect(CDC)는 2026-11-10 owner 결정(ADR-0062 개정)으로 LAB `labs/kafka-cluster`로 옮겼고, 다중 broker 학습도 독립 LAB이다.
 
 대상 독자는 Kafka family를 켜거나 변경하는 운영자와 개발자다. 목표는 어떤 서비스가 어느 profile에서 선택되는지, 어디까지 보호되는지, 복구가 무엇을 포함하는지 확인하는 것이다. 실행 절차는 [RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md)이 소유한다.
 
-### Boundaries
+#### Boundaries
 
 - Artifact: `GDE-0036`; 상위 정책: `POL-0036`.
 - Runtime authority: `infra/05-messaging/kafka/docker-compose.yml`; CDC 경로는 `labs/kafka-cluster/docker-compose.yml`과
@@ -81,13 +85,15 @@ Kafbat은 자체 `auth.type: OAUTH2` 구성을 tmpfs에 렌더링하고,
 이 native-OIDC route에는 forwarding-auth gateway chain을 붙이면 안 된다.
 Kafbat은 schema registry와 Connect cluster를 설정하지 않으며 `kafka-1`에만 의존한다. HOME에는 Connect·Schema Registry route가 없다.
 
-### Permissions
+### Authority
 
 Kafbat UI는 Keycloak OIDC와 group 기반 RBAC로 접근이 제한되며 secret은 `kafbat_client_secret` 이름으로만 다룬다. CDC 등록, `dev-pg` slot 삭제, HOME에 남은 volume의 처리는 별도 승인 대상이다(Actions와 Troubleshooting에 기술).
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 정상 사용과 확인 절차는 아래 항목을 따른다.
 
@@ -151,7 +157,7 @@ LAB의 Connect worker에는 connector, 원천 DB, credential이 선언되어 있
 중단된 replication slot은 원천 DB의 WAL을 고정할 수 있으므로 원천을 연결하면 lag와 WAL 용량을 별도로 관측한다.
 HOME `dev-pg`는 `wal_level=logical`과 slot 한도 선언이 남아 있으나 현재 소비자가 없다.
 
-### Exceptions
+#### Exceptions
 
 예외와 제한 사항은 아래 항목에 정리한다.
 
@@ -162,15 +168,15 @@ Apache Kafka와 Kafbat은 Apache-2.0 프로젝트다. LAB의 Schema Registry와 
 필요하다. Cluster Linking이나 다른 edition 전용 기능은 선언하지도 가정하지도
 않는다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 정확한 root profile, service, health/resource 제어, writable-state 소유권,
 secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
 증거일 뿐이며, runtime과 restore는 별개로 남는다.
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - `kafka-1` unhealthy: healthcheck는 `kafka-broker-api-versions --bootstrap-server localhost:19092`다. 실행마다 JVM을 띄워(CPU 약 2.5초) 간격은 60초이고, 시작 중에만 5초다. `${DEFAULT_MESSAGE_BROKER_DIR}/kafka/dev-data` 권한과 `KAFKA_CLUSTER_ID` 일치를 먼저 확인한다.
 - `dev-pg` WAL 증가: 과거 Debezium slot(`hyhome_platform_slot`)이 생성된 적이 있다면 WAL을 고정할 수 있다. slot 삭제는 [POL-0036](../../policies/06-messaging-and-cdc/0036-kafka.md)의 재동기화 승인 대상이다.
@@ -193,3 +199,7 @@ artifact 및 rollback이 필요하다.
 
 - [Operations policy](../../policies/06-messaging-and-cdc/0036-kafka.md)
 - [Cluster recovery runbook](../../runbooks/06-messaging-and-cdc/0036-kafka.md)
+
+### Next Action
+
+Kafka 복구와 실행 절차는 [RUN-0036](../../runbooks/06-messaging-and-cdc/0036-kafka.md)을 따르고, slot 삭제는 [POL-0036](../../policies/06-messaging-and-cdc/0036-kafka.md)의 재동기화 승인 대상이다.

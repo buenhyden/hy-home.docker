@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Usage Guide"
-version: "1.2.2"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0047"
 parent_ids:
@@ -20,6 +20,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+Pyroscope 서비스, 설정, storage, ingestion limit, Grafana/Alloy 연동 경계를 확인하고 Grafana에서 flamegraph를 보는 개발자, SRE, 운영자, AI Agent.
+
 ### Outcome
 
 이 가이드는 `06-observability` 계층의 Pyroscope 사용 맥락과 설정 확인 방법을 설명한다. Pyroscope는 profile 데이터를 로컬 filesystem backend `/var/lib/pyroscope`에 저장하고, Grafana Pyroscope datasource와 Alloy `pyroscope.write` endpoint를 통해 flamegraph 분석 경로를 제공한다.
@@ -30,7 +34,7 @@ next_review_at: "2027-05-13"
 - Grafana에서 flamegraph, diff view, profile label을 확인하는 진입점을 안내한다.
 - 복구, restart, 용량 압박, storage 변경 판단은 [RUN-0047](../../runbooks/07-observability/0047-pyroscope.md)로 넘긴다.
 
-### Boundaries
+#### Boundaries
 
 - Declared parent: [Pyroscope Operations Policy](../../policies/07-observability/0047-pyroscope.md) (`POL-0047`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
@@ -50,13 +54,24 @@ next_review_at: "2027-05-13"
 - [Grafana](0041-grafana.md)에 Pyroscope datasource URL `http://pyroscope:4040`이 provisioning되어 있어야 한다.
 - Profile labels에는 request ID, user ID, token, credential 같은 high-cardinality 또는 secret-bearing 값을 넣지 않는다.
 
-### Permissions
+### Authority
 
 service Docker Secret은 없다. labeled test profile은 승인된 client에서만 ingest하고, 고빈도 profiling은 policy approval과 rollback note가 필요하다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Compose service boundary를 `rg` 명령으로 확인 | 문서에 기록 없음 | 점검 결과가 기대와 다르면 `RUN-0047`로 넘긴다 |
+| 2 | Pyroscope config의 storage, ingestion limit, privacy boundary를 `rg` 명령으로 확인 | 문서에 기록 없음 | 점검 결과가 기대와 다르면 `RUN-0047`로 넘긴다 |
+| 3 | Alloy와 Grafana가 Pyroscope endpoint를 가리키는지 `rg` 명령으로 확인 | 문서에 기록 없음 | 점검 결과가 기대와 다르면 `RUN-0047`로 넘긴다 |
+| 4 | Grafana에서 profile 조회: `Observability / Pyroscope` 대시보드, Drilldown > Profiles, Explore의 `Pyroscope` datasource 중 하나를 `service_name` 라벨로 구분해 사용 | 문서에 기록 없음 | 점검 결과가 기대와 다르면 `RUN-0047`로 넘긴다 |
+| 5 | Flamegraph에서 CPU hot path 또는 allocation-heavy path 확인 (전후 비교는 Drilldown의 diff view) | 문서에 기록 없음 | 점검 결과가 기대와 다르면 `RUN-0047`로 넘긴다 |
+| 6 | Tempo trace span 상세의 Profiles for this span으로 해당 서비스의 CPU profile을 span 시간 구간으로 열기 | 서비스 단위 시간창 비교가 열린다 (span 단위 연결은 현재 HOME에 없음) | 점검 결과가 기대와 다르면 `RUN-0047`로 넘긴다 |
+
+#### Actions
 
 일반 순서는 다음과 같다.
 
@@ -97,7 +112,7 @@ service Docker Secret은 없다. labeled test profile은 승인된 client에서�
 - **Lifecycle**: write를 중지하고 consistent stopped filesystem snapshot을 만든다. Config와 producer label을 보존한다. Storage-format 가이드에 따라 upgrade한 뒤 historical/new profile query와 producer 호환성을 검증한다.
 - **Upstream/license**: 공식 [storage](https://grafana.com/docs/pyroscope/latest/configure-server/storage/)와 [deployment modes](https://grafana.com/docs/pyroscope/latest/reference-pyroscope-v2-architecture/deployment-modes/) 가이드를 따른다. Pyroscope는 AGPL-3.0 라이선스다.
 
-### Exceptions
+#### Exceptions
 
 예외와 제한 사항은 아래 항목에 정리한다.
 
@@ -114,16 +129,16 @@ service Docker Secret은 없다. labeled test profile은 승인된 client에서�
 - **Coverage limit**: pprof를 내는 Go 서비스만 수집한다. Traefik은 `api.debug`가, OpenBao는 token이 필요해 켜지 않았다. n8n(Node)·Airflow·crawl4ai(Python)·Keycloak·Kafka(Java)는 SDK나 agent, 또는 권한이 큰 eBPF가 필요하여 수집하지 않는다. n8n의 `@pyroscope/nodejs` 계획은 아래 Open item에 둔다.
 - **Open item (n8n Node profiling)**: 단일 이미지 빌드(`infra/07-workflow/n8n/Dockerfile`)에 `@pyroscope/nodejs`(네이티브 `@datadog/pprof` 의존)를 해시 고정한 lockfile로 넣고, n8n과 Pyroscope 사이의 네트워크 경로(현재 없음)를 승인받은 뒤, env로 끌 수 있는 `NODE_OPTIONS=--require` 로더로 켜는 단계가 필요하다. musl/Node 호환 prebuild 확인, lockfile 생성(네트워크), 경로 승인이 선행되지 않아 구현하지 않았다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `docker compose --profile obs ps pyroscope`
 - `docker logs --tail=100 pyroscope`
 - `docker compose --profile profiling exec -T pyroscope /usr/bin/profilecli ready --url=http://127.0.0.1:${PYROSCOPE_PORT:-4040}`
 - `rg -n 'ingestion_rate_mb: 16|ingestion_burst_size_mb: 32|max_label_names_per_series: 30|backend: filesystem|dir: /var/lib/pyroscope|disable_push: true' infra/06-observability/pyroscope/config/pyroscope.yaml`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 위 점검 결과가 기대와 다르면 증상별 진단, 재시작과 rollback은 [RUN-0047](../../runbooks/07-observability/0047-pyroscope.md)으로 넘긴다.
 
@@ -134,3 +149,7 @@ service Docker Secret은 없다. labeled test profile은 승인된 client에서�
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/07-observability/0047-pyroscope.md)
 - [Recovery runbook](../../runbooks/07-observability/0047-pyroscope.md)
+
+### Next Action
+
+증상이 계속되거나 점검 결과가 기대와 다르면 [RUN-0047](../../runbooks/07-observability/0047-pyroscope.md)의 진단, 재시작, rollback, escalation 기준을 따른다. 복구, restart, 용량 압박, storage 변경 판단도 `RUN-0047` 대상이다.

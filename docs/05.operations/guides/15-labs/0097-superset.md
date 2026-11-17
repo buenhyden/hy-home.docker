@@ -1,10 +1,10 @@
 ---
 title: "Superset Usage Guide"
-version: "1.2.3"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0097"
 parent_ids:
@@ -22,6 +22,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+Superset으로 레이크하우스 데이터를 탐색하는 분석가와 운영자가 접근 방식과 명령의 부작용을 이해하고 정상 사용·점검 방법을 찾을 때 읽는다.
+
 ### Outcome
 
 Superset은 root Compose에서 분리된 독립 LAB `labs/superset/docker-compose.yml`의 BI 웹 애플리케이션이며 LAB
@@ -30,8 +34,6 @@ profile `lab-superset`으로 선택된다(SPEC-0262). Trino를 통해 레이크�
 이제 HOME mng-pg 기반만 선택하고 Superset을 선택하지 않는다.
 
 Superset으로 레이크하우스 데이터를 탐색하는 분석가와 운영자를 위한 문서다. 접근 방식과 명령의 부작용을 이해하고 정상 사용·점검 방법을 찾는 것이 목표다.
-
-### Boundaries
 
 #### Traceability
 
@@ -89,13 +91,13 @@ Superset으로 레이크하우스 데이터를 탐색하는 분석가와 운영�
   tmpfs를 둔 읽기 전용 루트다. UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SUPERSET_HOST_PORT:-18092}`에만
   게시된다.
 
-### Permissions
+### Authority
 
 secret은 LAB 전용 `lab_superset_<purpose>`이며 mng-pg 관리자·Superset DB 비밀번호, signing key, OIDC client secret의 LAB 사본은 별도 승인 아래 준비한다. 렌더링 외 명령은 활성 lease와 승인된 mng-pg endpoint가 필요하다.
 
 ## Procedure
 
-### Actions
+### Steps
 
 #### Identity-specific behavior
 
@@ -122,20 +124,24 @@ secret은 LAB 전용 `lab_superset_<purpose>`이며 mng-pg 관리자·Superset D
 | `LAB run --rm superset-init` | 마이그레이션과 역할 동기화 재실행(업그레이드 후) |
 | `LAB exec superset superset fab create-admin --username <keycloak username> …` | 해당 사용자의 첫 OIDC 로그인 전에 Admin 생성 |
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `docker compose --env-file labs/.env -f labs/superset/docker-compose.yml --profile lab-superset config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 - `HYHOME_PG_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests.test_6_superset_migrates_and_serves_on_its_own_database`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 #### Runbook Handoff
 
 최초 설정, 로그인 실패, 업그레이드는 [runbook](../../runbooks/15-labs/0097-superset.md)을 따른다.
+
+### Next Action
+
+증상이 계속되면 [RUN-0097](../../runbooks/15-labs/0097-superset.md)를 따른다. 최초 설정, 로그인 실패, 업그레이드를 다룬다.

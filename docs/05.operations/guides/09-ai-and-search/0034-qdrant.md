@@ -1,6 +1,6 @@
 ---
 title: "Qdrant Usage Guide"
-version: "1.2.10"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -20,6 +20,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+Qdrant를 vector storage로 사용하며 service name, route, protocol, persistence, snapshot path, API key를 compose와 맞춰 이해하려는 운영자, 개발자, AI Agent.
+
 ### Outcome
 
 이 문서는 root compose에 active include된 [Qdrant Compose 구현](../../../../infra/04-data/qdrant/docker-compose.yml)을 설명한다. 현재 구현은 frozen `HOME` 단일 `qdrant` 서비스, exact `ai`/`ai-llm`/`qdrant` profiles, `ai_net`·`edge_net`·`obs_net`, SSO 뒤의 REST route와 `/readyz` healthcheck를 사용한다. gRPC는 network 안의 `qdrant:6334`로만 쓴다.
@@ -28,7 +32,7 @@ next_review_at: "2027-05-13"
 
 목적: Qdrant를 vector storage로 사용할 때 현재 repository의 service name, route, protocol, persistence, snapshot path, API key를 compose와 맞춰 이해하도록 한다.
 
-### Boundaries
+#### Boundaries
 
 - Declared parent: [Qdrant Operations Policy](../../policies/09-ai-and-search/0034-qdrant.md) (`POL-0034`)
 - Governing authority: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
@@ -59,13 +63,15 @@ next_review_at: "2027-05-13"
 | Backup·upgrade | 약 2x의 disk 용량으로 같은 minor 또는 다음 minor 대상에 snapshot을 복구한다. 승격 전에 collection/alias/count를 검증한다. |
 | License·edition | Qdrant source에는 Apache-2.0이 적용된다. managed-cloud 기능은 이 self-hosted single-node 계약에 포함되지 않는다. |
 
-### Permissions
+### Authority
 
 API key는 `qdrant_api_key`(읽기 전용은 `qdrant_read_only_api_key`) secret에서 읽으며 값은 환경변수나 로그에 남기지 않는다. collection 생성·삭제 같은 mutation은 승인된 runbook에서 다룬다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 정상 사용과 확인 절차는 아래 항목을 따른다.
 
@@ -87,20 +93,20 @@ Qdrant는 API key를 환경 변수로만 읽으므로, Compose 시작 스크립�
 
 정상 운영 중 점검은 compose profile 렌더링, 서비스 상태, REST `/readyz` health route, API key 기반 read-only `/collections` inventory 확인으로 구성된다. `qdrant.${DEFAULT_URL}` 경로는 SSO 뒤에 있고 그 뒤에서도 API key가 필요하며, gRPC route는 없다. 컨테이너는 `ai_net`에서 `qdrant:6333`(REST)·`qdrant:6334`(gRPC)를 쓴다. 실행 가능한 명령 순서와 기대 결과는 [Qdrant runbook](../../runbooks/09-ai-and-search/0034-qdrant.md#steps)을 따른다.
 
-### Exceptions
+#### Exceptions
 
 readyz가 API key·collection 질의를 증명하지 않는 한계와 snapshot restore 호환성 제한은 Actions의 표와 Troubleshooting에 기술되어 있다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `docker compose --profile qdrant config --quiet`
 - `docker compose ps qdrant`
 - `docker compose exec qdrant bash -c 'exec 3<>/dev/tcp/127.0.0.1/6333; printf "GET /readyz HTTP/1.0\r\n\r\n" >&3; cat <&3'`
 - `docker compose exec qdrant bash -c 'exec 3<>/dev/tcp/127.0.0.1/6333; printf "GET /collections HTTP/1.0\r\napi-key: %s\r\n\r\n" "$(tr -d "\r\n" </run/secrets/qdrant_api_key)" >&3; cat <&3'`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - 현재 compose는 host port publish가 아니라 SSO 뒤의 Traefik REST route와 internal expose를 사용한다.
 - 새 클라이언트는 key를 secret file로 받아야 한다. 컨테이너 환경변수나 로그에 key 값을 남기지 않는다. Open WebUI는 HOME network 밖의 독립 LAB이라 Qdrant를 쓰지 않는다(`VECTOR_DB` 미설정, 로컬 저장소 사용).
@@ -114,3 +120,7 @@ readyz가 API key·collection 질의를 증명하지 않는 한계와 snapshot r
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/09-ai-and-search/0034-qdrant.md)
 - [Recovery runbook](../../runbooks/09-ai-and-search/0034-qdrant.md)
+
+### Next Action
+
+증상이 계속되거나 점검 결과가 기대와 다르면 [RUN-0034](../../runbooks/09-ai-and-search/0034-qdrant.md)의 진단, 재시작, rollback, escalation 기준을 따른다. collection 생성/삭제 같은 mutation과 snapshot restore는 승인된 runbook에서 다룬다.

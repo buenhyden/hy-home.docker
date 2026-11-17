@@ -1,6 +1,6 @@
 ---
 title: "Development Database Usage Guide"
-version: "0.3.4"
+version: "0.4.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -26,6 +26,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+미래 외부 프로젝트의 개발 DB를 준비하는 운영자와 프로젝트 소유자. `dev-db`의 구성 경계, 최소 권한 원칙, 정적 검사 방법, HOME 실행 전 승인 범위를 이해할 때 읽는다.
+
 ### Outcome
 
 `dev-db`는 미래 외부 프로젝트의 업무 데이터를 위한 선택형 개발 엔진이다.
@@ -37,7 +41,7 @@ next_review_at: "2027-05-13"
 `dev-db`의 구성 경계, 최소 권한 원칙, 정적 검사 방법과 HOME 실행 전에 필요한 승인
 범위를 이해하는 것이다.
 
-### Boundaries
+#### Boundaries
 
 - Artifact: `GDE-0100`; governing policy: `POL-0100`.
 - Source contract: `SPEC-0204`(SPEC-0202는 삭제된 역사적 근거); architecture context: `AD-0031`.
@@ -78,13 +82,15 @@ schema를 준비한다. 해당 job의 실행과 프로젝트별 결과 writer/re
 앱 provision이나 HOME cutover가 아니다. runtime과 reader는 schema/database owner가
 아니며 migration 계정도 아니다.
 
-### Permissions
+### Authority
 
 필요한 secret은 `dev_pg_platform_migrator_password`, `dev_pg_platform_runtime_password`, `dev_pg_platform_reader_password`와 `dev_pg_opsflow_{migrator,ingest,notifier,reader}_password`다. Opsflow 적용, credential 발급·회전, `quality-results` provision은 각각 별도 owner 승인 범위다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 정상 사용 절차는 아래 항목에 정리한다.
 
@@ -103,13 +109,11 @@ SPEC-0202-TSK-0002의 합성 격리 환경(당시 `archive_mode=off`)에서는 �
 WAL 연속 보관·PITR, 관리 DB 복구, HOME 서비스 기동·정지·재시작, 실제 데이터 이관,
 기존 자격 증명 회전은 실행하지 않았으며 별도 승인 범위다.
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 별도 예외 절을 두지 않으며, 한계와 경계는 Environment와 Actions의 해당 본문과 Troubleshooting에 함께 적혀 있다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 저장소 root에서 정적 Compose와 permission contract만 확인한다. 명령은
 [RUN-0100 절차](../../runbooks/05-databases-and-storage/0100-development-database.md#steps)가 소유한다. 이 검사는
@@ -124,7 +128,9 @@ RUN-0021의 순서대로 repository 최상위 디렉터리를 `70:70 0750`으로
 만든다. stanza 없이 시작하면 `archive_timeout`(300초)마다 archive가 실패하고, 보관되지 않은 WAL은 재활용되지 않으므로
 `pg_wal`이 data disk를 채울 때까지 자란다(`max_wal_size=2GB`는 이 증가를 막지 않는다).
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - `dev-pg` 디스크 증가·archive 실패 로그: `dev` stanza와 `${BACKUP_STATE_REPO_DIR}/dev-pgbackrest` 권한을 확인하고 [RUN-0100](../../runbooks/05-databases-and-storage/0100-development-database.md)과 RUN-0021로 넘긴다.
 - exporter `pg_up`/`redis_up`이 0: `dev-pg-monitor-provision` 종료 코드와 monitor secret을 확인한다.
@@ -134,3 +140,7 @@ RUN-0021의 순서대로 repository 최상위 디렉터리를 `70:70 0750`으로
 정적 소스 사전 검사와 HOME 실행 경계는 [RUN-0100](../../runbooks/05-databases-and-storage/0100-development-database.md)이
 소유한다. 합성 격리 검사 증거는 SPEC-0202-TSK-0002가 기록했다(삭제됨, 버전 이력). HOME 기동·실제 프로젝트
 provision·운영 백업/복원·이관·전환은 각각 `NOT_RUN`이며 별도 승인이 필요하다.
+
+### Next Action
+
+디스크 증가·archive 실패는 [RUN-0100](../../runbooks/05-databases-and-storage/0100-development-database.md)과 RUN-0021로 넘긴다. HOME 기동, 프로젝트 provision, 백업/복원, 이관, 전환은 별도 승인이 필요하다.

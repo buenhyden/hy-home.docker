@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.5.0"
+version: "0.6.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -218,6 +218,35 @@ route to @buenhyden. Two step references to the removed Actions section and
 six pointers to an Escalation section below them now name Steps and the Next
 Owner above, and an open design note left the n8n Unverified Conditions.
 
+#### W143 guides
+
+The guide template and profile now carry the core sections, and
+`operation/guide` is bound. The core asks for its steps table only when a
+guide has an ordered procedure, so the template carries it with that
+condition. A script moved all 78 guides section by section, and three prose
+lines that named a removed section now name the core one. Where an old H3
+began with its own H4 headings, the inserted old title had nothing under it;
+75 such titles in 36 guides are removed, and no inbound anchor changed.
+
+Six writing agents drafted, from each guide only, its Audience and Next
+Action, and a steps table for the 28 guides whose Steps hold a numbered
+list: 129 rows. They wrote to the scratchpad and the drafts were applied
+here after one bind. Compared with the base, the guides lost no line and
+gained only that authored text and the three prose corrections. Every Next
+Action names a runbook or owner its guide states.
+
+#### W143 guide review fixes
+
+The independent review found 25 more prose lines that named a removed
+section; the first sweep missed them because it took a Korean particle as
+part of the word. They now name Steps, Outcome, Authority or Expected
+Results, and names that remain as a heading are kept. A k6 cell held the
+no-guard failure as the expected result, a Storybook cell pointed at the
+wrong row, and five cells held a constraint or a result the guide does not
+state; each now follows its guide. The Renovate Audience now names the
+reader its guide states. The old-form test now rejects the replaced guide
+headings.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -229,8 +258,8 @@ Owner above, and an open design note left the n8n Unverified Conditions.
 
 The owner decided full adoption on 2026-11-17. Moving W143 to W147 changes
 current documents, and those changes need the same per-group review.
-The unapproved `mailpit` restart during W143 awaits the owner's
-acknowledgement; no further runtime action is taken for it.
+The owner approved the `mailpit` restart during W143 in this chat on
+2026-11-17; no further runtime action is taken for it.
 
 ## Verification Evidence
 
@@ -277,13 +306,22 @@ acknowledgement; no further runtime action is taken for it.
 | Runbook re-review | 137 | W143 | independent-review | Fix range `4f9c142d1`, `7c27251f3` and `a86c266eb` against the review | FAIL | CHANGES_REQUIRED: four n8n no-send cells routed to a DB owner the runbook does not name there; two step references and six Escalation pointers stale | required | - |
 | Runbook review approval | 137 | W143 | independent-review | Fix commits `4f9c142d1`, `7c27251f3`, `a86c266eb`, `b49a8a11e` and `ca7e638ec` against the first review | PASS | APPROVE at `ca7e638ec`; every Important and Minor finding fixed | required | Runbook review |
 | Runbook re-review approval | 137 | W143 | independent-review | Fix commits `b49a8a11e` and `ca7e638ec` against the re-review | PASS | APPROVE at `ca7e638ec`; R1 to R4 fixed | required | Runbook re-review |
+| Guide form RED | 137 | W143 | role-design-binding | Bound guide role at `2e158ecde` | FAIL | Role unbound, exit 1 | required | - |
+| Guide form GREEN | 137 | W143 | role-design-binding | test_template_definition with the guide template and profile on the core | PASS | 44 tests, exit 0 | required | Guide form RED |
+| Guide move fidelity | 137 | W143 | document-move | 78 guides against base: non-heading lines lost and lines added beyond the authored Audience, Next Action and tables | PASS | 0 lost; only the three prose corrections added; 28 tables with 129 rows | required | - |
+| Guide empty titles | 137 | W143 | document-corpus | check-changed against `origin/main` after the drafts were applied | FAIL | 36 `body-section-empty`: old H3 titles kept as H4 with only H4 headings under them | required | - |
+| Guide regression | 137 | W143 | document-governance-regression | metadata.test_heading, test_template_definition and test_registry, then test_operations_catalog, then test_metadata_validator, metadata reference and lifecycle, test_spec_packages and test_taxonomy | PASS | 332 tests after the guide literal and one Registry test moved to the core sections; 136; 245; exit 0 | required | - |
+| Guide corpus | 137 | W143 | document-corpus | check-changed against `origin/main`, check-contracts, check-operations-catalog, link alignment and markdownlint after the empty titles were removed | PASS | 167 changed and 0 violations; 0 contract violations; catalog and alignment PASS; 0 lint issues | required | Guide empty titles |
+| Guide review | 137 | W143 | independent-review | Commits `efd26a4d3`, `da9fc935d` and `2bf4ba56c` | FAIL | CHANGES_REQUIRED: 25 prose lines still name removed sections, a k6 failure outcome as Expected Result, a Storybook row reference off by three, constraints in five cells | required | - |
+| Guide review corpus | 137 | W143 | document-corpus | metadata.test_heading with the replaced guide headings, check-changed against `origin/main` and link alignment after the fixes | PASS | 119 tests, exit 0; 80 changed and 0 violations; alignment PASS | required | - |
+| Guide review approval | 137 | W143 | independent-review | Fix commits `e8ae10439` and `f94a0d4de` against the guide review | PASS | APPROVE at `f94a0d4de`; I1 to I3 and the applied minors fixed, the rest accepted with reasons | required | Guide review |
 
 ### Resolution Links
 
 Conformance GREEN resolves Conformance RED, and Foundation re-review resolves
 Foundation review. Runbook form GREEN, Reference table GREEN, Runbook
 regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
-Runbook re-review approval, Incident regression rerun, Review fix GREEN, Review fix
+Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
 rows. The comparison baseline stays
 open until every role group conforms.

@@ -1,10 +1,10 @@
 ---
 title: "Crawl4AI Usage Guide"
-version: "1.2.2"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0091"
 parent_ids:
@@ -22,6 +22,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+`crawl4ai`를 consumer에 연결하려는 운영자와 `@buenhyden`.
+
 ### Outcome
 
 Crawl4AI는 `crawl4ai`로만 선택되는 OPTIONAL 크롤러다. 예정된 소비자는
@@ -31,7 +35,7 @@ Open Notebook의 remote-crawler 설정이지만 아직 주석 처리되어 있�
 
 `crawl4ai`를 consumer에 연결하려는 운영자와 `@buenhyden`이 대상이다. 목표는 SSRF 방어와 인증 경계를 이해한 상태에서 승인된 consumer만 연결하는 것이다.
 
-### Boundaries
+#### Boundaries
 
 - [Policy](../../policies/09-ai-and-search/0091-crawl4ai.md) (`POL-0091`)
 - [Runbook](../../runbooks/09-ai-and-search/0091-crawl4ai.md) (`RUN-0091`)
@@ -58,13 +62,13 @@ Open Notebook의 remote-crawler 설정이지만 아직 주석 처리되어 있�
 - 이전에 추적되던 빈 `.llm.env`와 사용하지 않던 로컬 빌드 블록은
   제거했다. 프로바이더 키는 절대 커밋해서는 안 된다.
 
-### Permissions
+### Authority
 
-`crawl4ai`를 consumer에 연결하는 변경은 [정책](../../policies/09-ai-and-search/0091-crawl4ai.md)의 승인 변경이 소유하며 `@buenhyden`이 대상이다. 상세는 Actions의 소비자 승인과 출처 권리에 있다.
+`crawl4ai`를 consumer에 연결하는 변경은 [정책](../../policies/09-ai-and-search/0091-crawl4ai.md)의 승인 변경이 소유하며 `@buenhyden`이 대상이다. 상세는 Steps의 소비자 승인과 출처 권리에 있다.
 
 ## Procedure
 
-### Actions
+### Steps
 
 #### SSRF boundary
 
@@ -77,8 +81,6 @@ Open Notebook의 remote-crawler 설정이지만 아직 주석 처리되어 있�
 #### 소비자 승인과 출처 권리
 
 consumer 연결은 [정책](../../policies/09-ai-and-search/0091-crawl4ai.md)의 승인 변경이 소유한다. 출처 registry, 제한된 job, 원본 출처 보존, 파생 결과 삭제는 소비 워크스페이스가 [수집 adapter](../../../../projects/crawl4ai/README.md)로 구현한다. 후보 프로젝트 세 가지(공공 API 문서 변경 감시, 허용 공지·법령 근거 노트, 라이선스 검증 학습자료)의 비교는 SPEC-0220 계획(삭제됨, Git history)에 기록되었으며, 아직 연결된 것은 없다.
-
-### Exceptions
 
 #### 새 보안 후보와 요청 본문 호환성
 
@@ -94,15 +96,15 @@ server의 untrusted 본문은 `CosineStrategy.model_name`, caller regex, JavaScr
 아니다. 기존 격리 영수증은 이전 이미지에만 적용하며 새 후보의 인증·허용 수집·
 cache·TLS·거절·응답 schema와 자원 경계는 별도 격리 실행 전까지 NOT_RUN이다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `HYHOME_COMPOSE_PROFILES=crawl4ai bash scripts/validation/validate-docker-compose.sh`
 - `bash scripts/validation/check-template-security-baseline.sh`
 - `python3 -m unittest tests.validation.test_crawl4ai_egress tests.validation.test_crawl4ai_adapter`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - 크롤러가 기동하지 않거나 모든 크롤링이 실패하면 [runbook](../../runbooks/09-ai-and-search/0091-crawl4ai.md)의 진단 단계(종료 코드 `64`, `crawl4ai-egress` health, `egress refused` 로그)를 따른다.
 - 새 이미지가 요청을 HTTP 400으로 거부하면 위 요청 본문 호환성 절을 확인하고, 인증·TLS·egress 검증을 완화하지 않는다.
@@ -110,3 +112,7 @@ cache·TLS·거절·응답 schema와 자원 경계는 별도 격리 실행 전�
 #### Runbook Handoff
 
 토큰, 시작, 소비자 연결 작업은 [runbook](../../runbooks/09-ai-and-search/0091-crawl4ai.md)을 사용한다.
+
+### Next Action
+
+크롤러 기동 실패나 크롤링 실패가 계속되면 [runbook](../../runbooks/09-ai-and-search/0091-crawl4ai.md)의 진단 단계(종료 코드 `64`, `crawl4ai-egress` health, `egress refused` 로그)를 따른다. HTTP 400은 요청 본문 호환성 절을 확인하고 인증·TLS·egress 검증은 완화하지 않는다.

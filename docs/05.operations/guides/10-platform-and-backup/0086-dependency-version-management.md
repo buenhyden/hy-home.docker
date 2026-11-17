@@ -1,10 +1,10 @@
 ---
 title: "Dependency Version Management Guide"
-version: "0.4.2"
+version: "0.5.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0086"
 parent_ids:
@@ -17,6 +17,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+인프라 운영자, 저장소 유지보수자, 의존성 업데이트를 검토하는 agent가 버전을 바꾸기 전에 선언 소유자와 updater를 찾을 때 읽는다.
+
 ### Outcome
 
 이 가이드는 Compose 이미지, Dockerfile, 파생 버전 projection의 버전 선언을 어떻게 찾고 확인하는지 설명한다. 버전 변경은 선언 소유자를 먼저 찾은 뒤에 시작한다.
@@ -25,7 +29,7 @@ next_review_at: "2027-05-13"
 
 목표는 버전을 바꾸기 전에 원본 선언과 updater 소유자를 식별하고, 변경 후 필요한 검사를 빠뜨리지 않는 것이다.
 
-### Boundaries
+#### Boundaries
 
 - [Home/Dev architecture](../../../02.architecture/descriptions/0031-home-development-host.md) (`AD-0031`)
 - [Guide](0086-dependency-version-management.md), [Policy](../../policies/10-platform-and-backup/0086-dependency-version-management.md), [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)
@@ -53,23 +57,23 @@ Git으로 추적하는 `infra/**/{compose,docker-compose}*.{yml,yaml}` 서비스
 `runtime-version-exception: <category> — <reason>` 주석을 사용한다.
 문서 frontmatter version과 API/프로토콜 버전은 실행 이미지 pin이 아니다.
 
-### Permissions
+### Authority
 
 이 가이드는 별도의 권한 요구를 기록하지 않는다.
 
 ## Procedure
 
-### Actions
+### Steps
 
-버전 변경 전 선언 소유자를 찾는 기준은 Environment에, 점검 항목은 Verification의 Expected Result에 둔다.
+#### Actions
 
-### Exceptions
+버전 변경 전 선언 소유자를 찾는 기준은 Environment에, 점검 항목은 Procedure의 Expected Results에 둔다.
+
+#### Exceptions
 
 이 가이드는 Troubleshooting 외에 별도의 예외 사례를 기록하지 않는다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 변경 파일이 어떤 updater의 manager에 속하는지, 빌드 이미지와 로컬 이미지
 태그가 일치하는지, registry check 및 공식 Renovate strict validator가 통과하는지
@@ -77,11 +81,17 @@ Git으로 추적하는 `infra/**/{compose,docker-compose}*.{yml,yaml}` 서비스
 release는 무기한 대기하지 않도록 schedule과 수동 검토를 적용한다. Green
 registry check만으로 Dockerfile pin 검증을 대체하지 않는다.
 
-### Troubleshooting
+## Troubleshooting
 
-위 Expected Result가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)의 절차로 진단한다.
+### Symptoms
+
+위 Expected Results가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)의 절차로 진단한다.
 
 #### Runbook Handoff
 
 [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)이 검증 순서와 rollback을 소유하며 [Policy](../../policies/10-platform-and-backup/0086-dependency-version-management.md)가
 업데이트 소유권과 예외를 소유한다.
+
+### Next Action
+
+증상이 계속되면 [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)의 검증 순서와 rollback을 따른다. 업데이트 소유권과 예외는 [Policy](../../policies/10-platform-and-backup/0086-dependency-version-management.md)가 소유한다.

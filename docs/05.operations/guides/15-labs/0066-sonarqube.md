@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Usage Guide"
-version: "1.2.3"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0066"
 parent_ids:
@@ -20,6 +20,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+코드 분석을 실행하는 개발자와 SonarQube 서비스를 운영하는 담당자가 인증 경계와 데이터 위치를 이해하고 분석 토큰으로 스캐너를 안전하게 실행할 때 읽는다.
+
 ### Outcome
 
 SonarQube Community Build는 독립 LAB `labs/sonarqube/docker-compose.yml`(project `hy-home-lab-sonarqube`)의
@@ -29,8 +33,6 @@ SonarQube Community Build는 독립 LAB `labs/sonarqube/docker-compose.yml`(proj
 대상 독자는 코드 분석을 실행하는 개발자와 서비스를 운영하는 담당자다. 목표는 현재 구현의 인증 경계와
 데이터 위치를 이해하고, 분석 토큰으로 스캐너를 안전하게 실행하는 것이다. DB 복구와 업그레이드는
 [SonarQube Runbook](../../runbooks/15-labs/0066-sonarqube.md)이 맡는다.
-
-### Boundaries
 
 #### Traceability
 
@@ -58,13 +60,20 @@ SonarQube Community Build는 LAB profile `sast` 하위의 온디맨드 **LAB**
 범용 병합 품질 게이트를 정의하지 않는다. 분석 결과로 배포를 어떻게 게이팅할지는
 프로젝트/CI 소유자가 정한다.
 
-### Permissions
+### Authority
 
 DB 비밀번호는 LAB 전용 secret `lab_sonarqube_*`이며 HOME mng-pg `sonarqube` role 비밀번호의 LAB 사본 준비는 별도 승인 대상이다. 분석 토큰은 SonarQube에서 최소 권한의 만료 가능한 토큰으로 발급한다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 루트에서 `docker compose --env-file labs/.env -f labs/sonarqube/docker-compose.yml --profile sast config --quiet`로 렌더링만 검증하고 mng-pg endpoint와 role/DB 준비를 확인한다 | 부수 효과 없는 렌더링 | 문서에 기록 없음 |
+| 2 | `python3 scripts/operations/lab.py check/up/down sonarqube`의 목적/lease 규칙으로 기동하고 system health를 기다린 뒤 로그인과 권한을 확인한다 | system health 정상, 로그인과 권한 확인 | 문서에 기록 없음 |
+| 3 | 최소 권한의 만료 가능한 프로젝트/글로벌 분석 토큰을 사용한다 | 토큰이 shell history와 로그에 남지 않는다 | 문서에 기록 없음 |
+| 4 | 대상 프로젝트에 스캐너를 실행하고 프로젝트 키, 커밋, 품질 결과, task ID를 기록한다 | 토큰과 소스 콘텐츠 없이 결과가 기록된다 | 문서에 기록 없음 |
 
 #### 현재 구현과 흐름
 
@@ -107,8 +116,6 @@ DB 비밀번호는 LAB 전용 secret `lab_sonarqube_*`이며 HOME mng-pg `sonarq
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/15-labs/0066-sonarqube.md)의 `보존 대상과 사전 검토` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-### Exceptions
-
 #### 버전 적용 한계
 
 과거 Server 9.8/9.9 참고 링크는 현재 Community Build의 실행 절차를 보증하지 않는다. 업그레이드와 재인덱싱 복구 전 확인 사항은 [런북](../../runbooks/15-labs/0066-sonarqube.md)의 `버전 적용 한계`를 따른다.
@@ -120,17 +127,21 @@ LAB Compose는 다른 project의 PostgreSQL을 기다리는 의존성을 선언�
 바꾸는 작업은 같지 않다. 게시된 port 앞에 gateway SSO가 없으므로 SonarQube 로그인과 토큰이
 유일한 인증 경계다. `LAB_HOST_BIND_IP`를 loopback 밖으로 바꾸는 것은 별도 보안 검토 대상이다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `docker compose --env-file labs/.env -f labs/sonarqube/docker-compose.yml --profile sast config --quiet`
 - `docker compose --env-file labs/.env -f labs/sonarqube/docker-compose.yml --profile sast config --services`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 #### Runbook Handoff
 
 DB 장애, 인덱싱 복구, 분석 큐, 업그레이드에는 [runbook](../../runbooks/15-labs/0066-sonarqube.md)을
 사용한다.
+
+### Next Action
+
+증상이 계속되면 [RUN-0066](../../runbooks/15-labs/0066-sonarqube.md)를 따른다. DB 장애, 인덱싱 복구, 분석 큐, 업그레이드도 이 runbook을 사용한다.

@@ -1,10 +1,10 @@
 ---
 title: "Alloy Usage Guide"
-version: "1.2.2"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0040"
 parent_ids:
@@ -19,6 +19,10 @@ next_review_at: "2027-05-13"
 # Alloy Usage Guide
 
 ## Purpose
+
+### Audience
+
+개발자, 운영자, SRE, AI Agent. Alloy 서비스 경계, Docker discovery, relabel, OTLP 입력 경계와 로그·trace·profile의 전달 대상을 파악할 때 읽는다.
 
 ### Outcome
 
@@ -40,7 +44,7 @@ Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정
 
 복구, restart, endpoint 장애 대응, 설정 rollback은 [RUN-0040](../../runbooks/07-observability/0040-alloy.md)이 맡는다.
 
-### Boundaries
+#### Boundaries
 
 - Declared parent: [Alloy Operations Policy](../../policies/07-observability/0040-alloy.md) (`POL-0040`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
@@ -71,13 +75,15 @@ Alloy 자체 지표는 Prometheus job `alloy`가 직접 scrape한다. 두 설정
 
 `config.home.alloy`의 OTLP trace 수신 주석에 따르면 hy-home.k8s의 Istio가 `192.168.0.13:4317`로 보낸다. k3d OTLP 진입은 [POL-0096](../../policies/10-platform-and-backup/0096-k8s-integration.md)이 관장한다.
 
-### Permissions
+### Authority
 
 Docker socket 접근은 민감하며, Hermes 수신기는 `Authorization: Bearer` 인증을 쓴다. `ALLOY_CONFIG_FILE`로 선택하는 설정은 RUN-0040에서 승인한 것만 적용한다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 정상 사용과 확인 절차는 아래 항목을 따른다.
 
@@ -88,7 +94,7 @@ Docker socket 접근은 민감하며, Hermes 수신기는 `Authorization: Bearer
 - Pipeline debugging은 Alloy UI `https://alloy.${DEFAULT_URL}`에서 한다. **Graph View**에서 component 연결과 error state를, **Component Details**에서 target, receiver, exporter 상태를 본다.
 - 설정이나 collector health만으로 전달 성공을 판정하지 않는다. backend에서 실제 수신을 확인한다.
 
-### Exceptions
+#### Exceptions
 
 예외와 제한 사항은 아래 항목에 정리한다.
 
@@ -103,9 +109,7 @@ Docker socket 접근은 민감하며, Hermes 수신기는 `Authorization: Bearer
 - **수명 주기**: config와 component별로 검증된 state를 보존한다. 전송을 drain하거나 문서화된 전송 중 손실을 허용하고, 고정된 version을 하나씩 update한다. component 호환성을 검증한 뒤 log/trace/metric을 확인한다.
 - **공식 문서·license**: 공식 [Alloy 동작 방식](https://grafana.com/docs/alloy/latest/introduction/how-alloy-works/)과 [remote_write/WAL](https://grafana.com/docs/alloy/latest/reference/components/prometheus/prometheus.remote_write/) 문서를 따른다. Grafana Alloy에는 Apache-2.0 license가 적용된다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 확인 항목과 기대 결과는 아래와 같다.
 
@@ -118,7 +122,9 @@ Docker socket 접근은 민감하며, Hermes 수신기는 `Authorization: Bearer
 - 품질 metric 수신기: `rg -n 'quality_otlp_token|otelcol.auth.bearer|0.0.0.0:4319|labelkeep' infra/06-observability/alloy/config/config.home.alloy`
 - Hermes 수신기: `rg -n 'hermes_otlp_token|otelcol.receiver.otlp "hermes"|0.0.0.0:4320|ALLOY_HERMES_OTLP_HOST_PORT' infra/06-observability/alloy/config/config.home.alloy infra/06-observability/docker-compose.yml`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 주의할 점은 다음과 같다.
 
@@ -135,3 +141,7 @@ Docker socket 접근은 민감하며, Hermes 수신기는 `Authorization: Bearer
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/07-observability/0040-alloy.md)
 - [Recovery runbook](../../runbooks/07-observability/0040-alloy.md)
+
+### Next Action
+
+복구, restart, endpoint 장애 대응, 설정 rollback은 [RUN-0040](../../runbooks/07-observability/0040-alloy.md)을 따른다.

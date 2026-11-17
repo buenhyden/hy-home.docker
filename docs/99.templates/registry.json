@@ -2080,7 +2080,7 @@
         "Purpose",
         "Prerequisites",
         "Procedure",
-        "Verification"
+        "Troubleshooting"
       ],
       "optional_sections": [],
       "ordered_sections": true,
@@ -2121,20 +2121,20 @@
       ],
       "required_subsections": {
         "Purpose": [
-          "Outcome",
-          "Boundaries"
+          "Audience",
+          "Outcome"
         ],
         "Prerequisites": [
           "Environment",
-          "Permissions"
+          "Authority"
         ],
         "Procedure": [
-          "Actions",
-          "Exceptions"
+          "Steps",
+          "Expected Results"
         ],
-        "Verification": [
-          "Expected Result",
-          "Troubleshooting"
+        "Troubleshooting": [
+          "Symptoms",
+          "Next Action"
         ]
       }
     },
@@ -5582,15 +5582,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "Commit 089d4246d (profile) and c7ca7356e (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit 089d4246d (profile) and c7ca7356e (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every guide took the core sections, a guide with an ordered procedure gained the core steps table, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/guide.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/guide.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "guide"
-      }
+      "core_role": "guide"
     },
     "operation/incident": {
       "source": "docs/99.templates/templates/operations/incident.template.md",

@@ -1,10 +1,10 @@
 ---
 title: "Airflow Usage Guide"
-version: "1.2.2"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0050"
 parent_ids:
@@ -27,6 +27,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+Airflow(CeleryExecutor) 구조와 UI/모니터링 접근을 이해하려는 개발자(DAG 개발/통합), 서버 상태와 자원을 관리하는 운영자, 스케줄링 환경을 분석하는 AI agent.
+
 ### Outcome
 
 이 문서는 `hy-home.docker` 플랫폼의 Apache Airflow 시스템에 대한 가이드다. 현재 구현은 Airflow, `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `flower`, `airflow-statsd-exporter`를 기준으로 한다.
@@ -43,7 +47,7 @@ next_review_at: "2027-05-13"
 - 웹 UI 및 모니터링 도구 접근 방법 확인
 - 기본 개발 환경 설정 및 검증 절차 습득
 
-### Boundaries
+#### Boundaries
 
 - Declared parent: [Airflow Operations Policy](../../policies/08-workflows-and-automation/0050-airflow.md) (`POL-0050`)
 - Governing authority: [Workflow Tier (07-workflow) Architecture Description](../../../02.architecture/descriptions/0007-workflow-architecture.md) (`AD-0007`)
@@ -81,13 +85,15 @@ Build context는 저장소 root이고 linked Dockerfile·Compose args를 사용�
 
 Init 전에 소유자 절차로 host DAG/log/plugin/config의 runtime UID 권한, CA, DB/role과 broker를 준비한다. 공유 DB/broker readiness는 Compose가 보장하지 않는다. Keycloak permission bootstrap은 사용자 역할을 부여하지 않으므로 따로 확인한다. Airflow는 native SSO와 표준 gateway chain을 사용하고 proxy SSO 추가는 이중 인증이 된다. Flower는 proxy SSO를 유지한다.
 
-### Permissions
+### Authority
 
 - **Secrets**: `airflow_keycloak_client_secret`, `airflow_api_jwt_secret` 등 서비스 접근 권한
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 정상 사용과 확인 절차는 아래 항목을 따른다.
 
@@ -155,13 +161,11 @@ docker compose --profile workflow-airflow exec airflow-apiserver airflow dags li
 - **정상 사용·수명 주기**: 저장소 root에서 `docker compose --profile workflow config --quiet`를 사용한 뒤, 대상별 기동과 upgrade는 [RUN-0050](../../runbooks/08-workflows-and-automation/0050-airflow.md)을 따른다. workflow 전체를 시작하면 n8n과 migration을 수행할 수 있는 초기화도 실행될 수 있다. pause/drain, 일관된 DB/artifact/key backup, migration, canary와 재개 결정은 Runbook이 소유한다.
 - **공식 문서·license**: [Airflow database 설정](https://airflow.apache.org/docs/apache-airflow/stable/howto/set-up-database.html), [Connections/Fernet 지침](https://airflow.apache.org/docs/apache-airflow/stable/howto/connection.html), [권장 운영 방식](https://airflow.apache.org/docs/apache-airflow/stable/best-practices.html)을 따른다. Apache Airflow에는 Apache-2.0 license가 적용된다.
 
-### Exceptions
+#### Exceptions
 
 공유 DB/broker readiness를 Compose가 보장하지 않는 한계는 Environment의 `Service readiness and build selection`에 기술되어 있다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 확인 항목과 기대 결과는 아래와 같다.
 
@@ -171,7 +175,9 @@ docker compose --profile workflow-airflow exec airflow-apiserver airflow dags li
 - `bash scripts/hardening/check-all-hardening.sh 07-workflow`
 - Runtime이 실행 중이면 `docker compose --profile workflow-airflow exec airflow-apiserver airflow dags list`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - **Scheduler Heavy Load**: DAG 파일 내에서 DB 쿼리나 파일 시스템 접근을 직접 수행하면 스케줄러 성능이 저하됩니다.
 - **Worker Timeout**: 리소스 부족으로 워커가 종료되면 태스크가 `Queued` 상태로 멈출 수 있습니다.
@@ -184,3 +190,7 @@ docker compose --profile workflow-airflow exec airflow-apiserver airflow dags li
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/08-workflows-and-automation/0050-airflow.md)
 - [Recovery runbook](../../runbooks/08-workflows-and-automation/0050-airflow.md)
+
+### Next Action
+
+증상이 계속되거나 점검 결과가 기대와 다르면 [RUN-0050](../../runbooks/08-workflows-and-automation/0050-airflow.md)의 진단, 재시작, rollback, escalation 기준을 따른다. pause/drain, 일관된 백업, migration, canary와 재개 결정도 Runbook이 소유한다.

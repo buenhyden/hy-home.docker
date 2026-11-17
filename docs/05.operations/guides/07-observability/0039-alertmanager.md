@@ -1,6 +1,6 @@
 ---
 title: "Alertmanager Usage Guide"
-version: "1.0.8"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -20,6 +20,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+개발자, 운영자, SRE, AI Agent. Alertmanager의 route tree, receiver, inhibition, silence, secret 렌더링 경계를 파악할 때 읽는다.
+
 ### Outcome
 
 이 가이드는 `06-observability` 계층의 Alertmanager 사용 맥락과 설정 확인 방법을 설명한다. Alertmanager는 Prometheus가 보낸 알림을 grouping, deduplication, inhibition, silence, receiver routing으로 처리하고 Slack receiver로 전달한다. Compose는 `infra/06-observability/alertmanager/config/config.yml`을 `/etc/alertmanager/config.yml.template`로 마운트한 뒤 Docker Secret 값을 런타임 `/tmp/config.yml`에 렌더링한다.
@@ -30,7 +34,7 @@ next_review_at: "2027-05-13"
 - Prometheus 알림 전달, Grafana datasource, 보호된 route, 알림 receiver의 관계를 확인한다.
 - 장애 대응, restart, 설정 rollback, 알림 실패 분류는 [RUN-0039](../../runbooks/07-observability/0039-alertmanager.md)로 넘긴다.
 
-### Boundaries
+#### Boundaries
 
 - Declared parent: [Alertmanager Operations Policy](../../policies/07-observability/0039-alertmanager.md) (`POL-0039`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
@@ -47,7 +51,7 @@ next_review_at: "2027-05-13"
 
 - Prometheus `alertmanagers` target `alertmanager:9093`와 Grafana Alertmanager datasource가 현재 compose network에서 접근 가능해야 한다.
 
-### Permissions
+### Authority
 
 - `infra/06-observability/alertmanager/config/config.yml` route/receiver 구조를 읽을 수 있는 권한.
 - Docker Secret IDs `smtp_username`, `smtp_password`, `slack_webhook`가 준비되어 있어야 한다. Secret 값은 문서, 로그, task evidence에 기록하지 않는다.
@@ -55,7 +59,16 @@ next_review_at: "2027-05-13"
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | [RUN-0039 절차](../../runbooks/07-observability/0039-alertmanager.md#steps)의 `rg` 명령으로 Compose service와 config template 경계를 확인한다. | Expected Results의 `rg` 확인이 기대와 일치한다 | 기대와 다르면 `RUN-0039`으로 넘긴다 |
+| 2 | 현재 routing model(default/critical route, Slack receiver, email, inhibition)을 이해한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 3 | Prometheus `alertmanagers` target과 Grafana Alertmanager datasource 연결을 같은 `RUN-0039` 절차에서 확인한다. | 문서에 기록 없음 | 기대와 다르면 `RUN-0039`으로 넘긴다 |
+| 4 | Planned maintenance silence를 Alertmanager UI에서 만료 시각과 사유를 포함해 생성한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+
+#### Actions
 
 1. Compose service와 config template 경계는 [RUN-0039 절차](../../runbooks/07-observability/0039-alertmanager.md#steps)의 `rg` 명령으로 확인한다.
 
@@ -83,7 +96,7 @@ next_review_at: "2027-05-13"
 - **정상 사용·수명 주기**: 저장소 root에서 `docker compose --profile obs config --quiet`를 실행하고, 렌더링된 secret을 출력하지 않은 채 source config를 검증한다. receiver test 이후에만 시작하거나 reload한다. 정지 상태의 data volume과 source template, secret 참조를 함께 backup한다. 고정된 image를 한 번에 하나씩 upgrade하고 grouping, inhibition, silence 보존과 통제된 알림 전송을 검증한다.
 - **공식 문서·license**: 공식 [Alertmanager 설정 문서](https://prometheus.io/docs/alerting/latest/configuration/)를 따른다. Alertmanager에는 Apache-2.0 license가 적용된다.
 
-### Exceptions
+#### Exceptions
 
 예외와 제한 사항은 아래 항목에 정리한다.
 
@@ -98,16 +111,16 @@ next_review_at: "2027-05-13"
 - **Route drift**: `group_by`, `repeat_interval`, receiver name을 바꾸면 policy와 runbook evidence도 함께 갱신해야 한다.
 - **Direct access assumption**: 외부 UI 접근은 Traefik protected route와 SSO middleware를 통한다. 내부 compose network에서는 `alertmanager:9093`를 사용한다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `docker compose --profile obs ps alertmanager`
 - `docker logs --tail=100 alertmanager`
 - `rg -n 'route:|receivers:|inhibit_rules:|__SLACK_WEBHOOK_URL__|email_configs:' infra/06-observability/alertmanager/config/config.yml`
 - `rg -n 'alertmanagers:|targets: \["alertmanager:9093"\]' infra/06-observability/prometheus/config/prometheus.yml`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 위 점검 결과가 기대와 다르면 증상별 진단, 재시작과 rollback은 [RUN-0039](../../runbooks/07-observability/0039-alertmanager.md)으로 넘긴다.
 
@@ -118,3 +131,7 @@ next_review_at: "2027-05-13"
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/07-observability/0039-alertmanager.md)
 - [Recovery runbook](../../runbooks/07-observability/0039-alertmanager.md)
+
+### Next Action
+
+점검 결과가 기대와 다르면 증상별 진단, 재시작, rollback은 [RUN-0039](../../runbooks/07-observability/0039-alertmanager.md)으로 넘긴다. 렌더러 호환성을 확인할 수 없으면 시작·회전을 중단하고 @buenhyden에게 렌더러 수정을 요청한다.

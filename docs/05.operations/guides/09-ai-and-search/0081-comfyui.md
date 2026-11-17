@@ -1,10 +1,10 @@
 ---
 title: "ComfyUI Guide"
-version: "0.4.3"
+version: "0.5.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0081"
 parent_ids:
@@ -19,6 +19,10 @@ next_review_at: "2027-05-13"
 # ComfyUI Guide
 
 ## Purpose
+
+### Audience
+
+AI 이미지 워크플로를 쓰는 사용자와 이를 운영하는 `@buenhyden`.
 
 ### Outcome
 
@@ -38,7 +42,7 @@ drift 확인용 뷰일 뿐이다.
 
 AI 이미지 워크플로를 쓰는 사용자와 이를 운영하는 `@buenhyden`이 대상이다. 목표는 승인된 워크플로로 ComfyUI를 쓰고, 모델·custom node·사용자 데이터의 보존 경계를 알고 운영하는 것이다.
 
-### Boundaries
+#### Boundaries
 
 - Governing architecture: [AD-0008](../../../02.architecture/descriptions/0008-ai-architecture.md)
 - [Policy](../../policies/09-ai-and-search/0081-comfyui.md), [Runbook](../../runbooks/09-ai-and-search/0081-comfyui.md)
@@ -67,13 +71,13 @@ AI 이미지 워크플로를 쓰는 사용자와 이를 운영하는 `@buenhyden
 `gpus: all`과 linked Compose의 CPU/memory 설정은 선언된 소스 한도일 뿐 측정된 여유 자원이
 아니다. Ollama와의 공유 GPU 피크 동시성은 검증되지 않았다.
 
-### Permissions
+### Authority
 
 모델 교체는 출처와 checksum/라이선스 증거를 기록한 후에만, custom node 설치·업데이트는 검토 후에만 한다. 승인 게이트된 런타임 점검과 복구는 Runbook이 소유한다. registry/다운로드 토큰이 도입되면 secret 소유자 경계를 따른다.
 
 ## Procedure
 
-### Actions
+### Steps
 
 #### 일반적인 운영
 
@@ -104,15 +108,11 @@ UI에서 큐에 등록한다. `/system_stats` 응답이 성공해도 endpoint가
   [공식 저장소](https://github.com/Comfy-Org/ComfyUI)와
   [Manager 가이드](https://docs.comfy.org/manager/overview)를 사용한다.
 
-### Exceptions
-
 #### Active-image persistence stop condition
 
 활성 이미지의 영속성 중단 조건은 [정책의 Active-image persistence stop condition](../../policies/09-ai-and-search/0081-comfyui.md#active-image-persistence-stop-condition)이 소유한다. 해소되기 전에는 재생성, 이미지 업그레이드, cache/volume 정리, 완전한 백업 판정을 하지 않는다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - [Compose 소스](../../../../infra/08-ai/comfyui/docker-compose.yml)에서 profile,
   라우트, 마운트, 리소스, healthcheck를 점검한다.
@@ -121,7 +121,9 @@ UI에서 큐에 등록한다. `/system_stats` 응답이 성공해도 endpoint가
 - 영속 콘텐츠를 변경하기 전에 중앙 [백업 정책](../../policies/10-platform-and-backup/0021-backup-and-restore.md)을
   사용한다.
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - `/system_stats`가 실패하면 [runbook](../../runbooks/09-ai-and-search/0081-comfyui.md)의 진단 단계를 따른다. 응답이 와도 모델 로드나 workflow 안전을 증명하지 않는다.
 - 재생성·upgrade 전 활성 image 경로 불일치는 위 Active-image persistence stop condition을 따른다.
@@ -132,3 +134,7 @@ UI에서 큐에 등록한다. `/system_stats` 응답이 성공해도 endpoint가
 사용한다.
 
 - [Policy](../../policies/09-ai-and-search/0081-comfyui.md), [Runbook](../../runbooks/09-ai-and-search/0081-comfyui.md)
+
+### Next Action
+
+증상이 계속되면 [ComfyUI Runbook](../../runbooks/09-ai-and-search/0081-comfyui.md)의 승인 게이트된 진단과 복구를 따른다. 활성 이미지 경로 불일치는 정책의 Active-image persistence stop condition을 따른다.

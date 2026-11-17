@@ -1,6 +1,6 @@
 ---
 title: "04-Data Optimization Hardening Usage Guide"
-version: "1.0.10"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -17,6 +17,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+운영자, 개발자, AI Agent. data tier의 정적 hardening 확인이 증명하는 범위를 이해하고 root profile 렌더링과 점검 스크립트를 사용할 때 읽는다.
+
 ### Outcome
 
 이 subject는 data tier 전반의 static 제어를 검증한다: root profile 유효성,
@@ -28,7 +32,7 @@ next_review_at: "2027-05-13"
 
 목적: data tier의 정적 hardening 확인이 무엇을 증명하고 무엇을 증명하지 않는지 이해하고, root profile 렌더링과 점검 스크립트를 올바르게 사용한다.
 
-### Boundaries
+#### Boundaries
 
 - Artifact: `GDE-0030`; 거버넌스 정책: `POL-0030`.
 - Runtime authority: root `docker-compose.yml`과 `scripts/hardening/check-all-hardening.sh`.
@@ -60,13 +64,15 @@ profile 정합성, 고유한 writable volume, 선언된 네트워크, secret 파
 healthcheck, CPU/메모리 제한, 의도된 포트 게시, 엔진별 backup/restore
 소유자를 확인한다.
 
-### Permissions
+### Authority
 
 이 가이드는 service 활성화, 데이터 접근, cleanup, migration, tuning을 승인하지 않는다. leaf Compose source나 공유 템플릿 수정은 승인된 task 안에서만 한다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 정상 사용 절차는 아래 항목에 정리한다.
 
@@ -84,17 +90,21 @@ backup 완전성, 복구 시간, encryption at rest, 애플리케이션 호환�
 재실행하고 정확한 diff를 점검한다. 복구에는 엔진 runbook을 사용하며, 일반
 data-copy나 cleanup 명령을 적용하지 않는다.
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 별도 예외 절을 두지 않으며, 한계와 경계는 Environment와 Actions의 해당 본문과 Troubleshooting에 함께 적혀 있다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - 대표 profile(`mng`, `dev-data`, `seaweedfs`, `storage`, `opensearch`, `graph`, `admin-data`)의 root render와 `bash scripts/hardening/check-all-hardening.sh 04-data`. 명령 순서는 RUN-0030이 소유한다.
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - render 실패: 대부분 root가 소유하는 network, secret 또는 `extends` 템플릿 누락이다. leaf를 단독 렌더링하지 말고 root에서 같은 profile로 재현한다.
 - `check-all-hardening.sh 04-data` 실패: 보고된 service의 소유 leaf Compose나 공유 템플릿을 고친다. 데이터 손실·손상 증상은 엔진별 runbook으로 넘긴다([RUN-0030](../../runbooks/05-databases-and-storage/0030-data-optimization-hardening.md#regression-response)).
+
+### Next Action
+
+데이터 손실·손상 증상은 엔진별 runbook으로 넘기고, 회귀 대응은 [RUN-0030](../../runbooks/05-databases-and-storage/0030-data-optimization-hardening.md#regression-response)을 따른다.

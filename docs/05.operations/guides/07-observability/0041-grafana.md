@@ -1,10 +1,10 @@
 ---
 title: "Grafana Usage Guide"
-version: "1.2.2"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0041"
 parent_ids:
@@ -21,6 +21,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+개발자, 운영자, SRE, AI Agent. Grafana 서비스, provisioning, datasource UID, Keycloak role mapping, 보호된 route 경계를 파악하고 연결을 확인할 때 읽는다.
+
 ### Outcome
 
 이 가이드는 `06-observability` 계층의 Grafana 사용 맥락과 설정 확인 방법을 설명한다. Grafana는 [grafana/grafana image declaration](../../../../infra/06-observability/docker-compose.yml)으로 실행되는 visualization hub이며 provisioned datasources, provisioned dashboards, Keycloak OAuth role mapping, protected route를 통해 metrics, logs, traces, alerts, profiles를 한 화면에서 탐색한다.
@@ -32,7 +36,7 @@ next_review_at: "2027-05-13"
 - Grafana `/metrics`는 route된 포트 `3000`을 함께 쓰므로 basic auth(`GF_METRICS_BASIC_AUTH_USERNAME=prometheus`, 비밀번호는 `grafana_metrics_password` secret)를 요구하고, Prometheus `grafana` job은 `password_file`로 인증한다(SPEC-0267). pprof `6060`은 Alloy만 붙는 `grafana_pprof_net`의 `10.250.45.2`에만 bind한다.
 - 장애 대응, restart, provisioning rollback, SSO/datasource 분류는 [RUN-0041](../../runbooks/07-observability/0041-grafana.md)로 넘긴다.
 
-### Boundaries
+#### Boundaries
 
 - Declared parent: [Grafana Operations Policy](../../policies/07-observability/0041-grafana.md) (`POL-0041`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
@@ -48,7 +52,7 @@ next_review_at: "2027-05-13"
 
 - Keycloak groups `/admins`, `/editors`, `/viewers` role mapping(`GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH`) 정책을 변경하지 않는다.
 
-### Permissions
+### Authority
 
 - `infra/06-observability/grafana/provisioning`과 `infra/06-observability/grafana/dashboards`를 읽을 수 있는 권한.
 - Docker Secret IDs `grafana_admin_password`, `grafana_client_secret`(PostgreSQL datasource는 `grafana_reader_password`)가 준비되어 있어야 한다. Secret 값은 문서, 로그, task evidence에 기록하지 않는다.
@@ -56,7 +60,17 @@ next_review_at: "2027-05-13"
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Compose service boundary를 `rg`로 확인한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 2 | Datasource provisioning boundary를 `rg`로 확인한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 3 | Dashboard provisioning boundary를 `rg`와 `find`로 확인한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 4 | UI(`https://grafana.${DEFAULT_URL}`)에서 Prometheus, Loki, Tempo, Alertmanager, Pyroscope 탐색 경로를 확인한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 5 | Role mapping 기준(`/admins`, `/editors`, `/viewers`)을 확인한다. | `/admins`는 `Admin`, `/editors`는 `Editor`, `/viewers`는 `Viewer`이며 그 외 realm 사용자는 거부된다 | recreate 롤백은 이전 Compose 값과 recreate이며 Grafana 데이터는 초기화되지 않는다 |
+
+#### Actions
 
 일반 순서는 다음과 같다.
 
@@ -153,7 +167,7 @@ next_review_at: "2027-05-13"
 
 Airflow mixin은 `airflow_dagrun_*`, `airflow_pool_*` 같은 이름을 쓰는데, 기존 statsd mapping은 DAG 파일 이름을 메트릭 이름에 넣었다. mapping을 DAG, task, pool, 파일 이름을 라벨로 옮기도록 바꾸고, 알 수 없는 긴 이름은 버린다.
 
-### Exceptions
+#### Exceptions
 
 예외와 제한 사항은 아래 항목에 정리한다.
 
@@ -168,9 +182,7 @@ Airflow mixin은 `airflow_dagrun_*`, `airflow_pool_*` 같은 이름을 쓰는데
 - **Dashboard identity**: 이미 provision된 dashboard의 `uid`를 바꾸거나, 지운 파일과 같은 경로에 다른 `uid`의 파일을 두면 Grafana 13이 `deprecatedInternalID ... is already in use`로 저장을 거부한다. 기존 dashboard는 `uid`를 유지하고, 교체하는 dashboard는 새 경로에 둔다.
 - **Dashboard edit lock**: provider `editable: false`가 provisioned dashboard를 code-owned 상태로 유지한다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `docker compose --profile obs ps grafana`
 - `docker logs --tail=100 grafana`
@@ -178,7 +190,9 @@ Airflow mixin은 `airflow_dagrun_*`, `airflow_pool_*` 같은 이름을 쓰는데
 - `rg -n 'uid: Prometheus|uid: Loki|uid: Tempo|uid: alertmanager|type: grafana-pyroscope-datasource' infra/06-observability/grafana/provisioning/datasources/datasource.yml`
 - `python3 -m unittest tests.validation.test_compose_baseline_gates.ObservabilityDashboardContractTests`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 증상과 진단은 아래 항목을 따른다.
 
@@ -189,3 +203,7 @@ Airflow mixin은 `airflow_dagrun_*`, `airflow_pool_*` 같은 이름을 쓰는데
 - [Operations index](../../README.md)
 - [Operations policy](../../policies/07-observability/0041-grafana.md)
 - [Recovery runbook](../../runbooks/07-observability/0041-grafana.md)
+
+### Next Action
+
+장애 대응, restart, provisioning rollback, SSO/datasource 분류는 [RUN-0041](../../runbooks/07-observability/0041-grafana.md)로 넘긴다. 기존 datasource의 UID migration은 RUN-0041의 승인·backup 경계를 따른다.

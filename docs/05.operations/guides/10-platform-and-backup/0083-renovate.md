@@ -1,6 +1,6 @@
 ---
 title: "Renovate Guide"
-version: "0.5.4"
+version: "0.6.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -20,6 +20,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+의존성 갱신 PR을 승인하고 운영하는 담당자가 job 경계, 정적 검증과 systemd timer 동작을 확인할 때 읽는다.
+
 ### Outcome
 
 Renovate는 `infra/09-platform-ops/renovate/`의 `renovate` service로 실행하는 의존성 갱신 작업이다.
@@ -28,7 +32,7 @@ Renovate는 `infra/09-platform-ops/renovate/`의 `renovate` service로 실행하
 대상 독자는 의존성 갱신 PR을 승인하고 운영하는 담당자다. 목표는 job의 경계, 정적 검증 방법,
 systemd timer 동작을 확인하는 것이다. live run과 복구 절차는 [Renovate Runbook](../../runbooks/10-platform-and-backup/0083-renovate.md)이 맡는다.
 
-### Boundaries
+#### Boundaries
 
 - 설계 근거: [AD-0009](../../../02.architecture/descriptions/0009-tooling-architecture.md)
 - 동일 주제 문서: [Policy](../../policies/10-platform-and-backup/0083-renovate.md), [Runbook](../../runbooks/10-platform-and-backup/0083-renovate.md)
@@ -70,13 +74,19 @@ overlap을 관장한다. 이 package는 job 경계를 관장한다. `allowScript
 `package-lock.json`만 다시 쓰므로 이 제한과 충돌하지 않는다. cache는 다시 만들 수 있으며 Git
 policy, 원격 repository 상태, token owner가 authoritative하다.
 
-### Permissions
+### Authority
 
 `renovate_token` Docker Secret이 필요하며 값은 기록하지 않는다. 호스트 설치·timer 활성화·수동 실행·중지는 Runbook의 승인된 systemd 절차를 따르고, 승인된 live job만 원격 변경을 일으킨다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | token이나 원격 변경 없이 repository와 global 설정을 확인한다. 명령은 Renovate Runbook의 1단계를 따른다. | repository와 self-host 설정에 대한 strict validation이 통과한다. | 문서에 기록 없음 |
+| 2 | token repository scope, branch protection, dry-run 출력, 대상 repository를 검토한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 3 | live run은 Renovate Runbook의 승인된 절차로만 실행한다. | 생성된 모든 branch/PR이 sanitized 결과와 일치하고 merge가 일어나지 않았다. | 문서에 기록 없음 |
 
 #### 일반적인 사용
 
@@ -140,8 +150,6 @@ pre-flight check가 하나라도 실패하면 container를 만들기 전에 run�
 
 호스트 설치·timer 활성화·수동 실행·중지는 [런북](../../runbooks/10-platform-and-backup/0083-renovate.md)의 승인된 systemd 절차를 따른다.
 
-### Exceptions
-
 #### 작업 신호와 상태 경계
 
 작업에는 HTTP health가 없다. exit·정제된 실행 요약·생성된 PR을 함께 확인한다.
@@ -149,15 +157,19 @@ pre-flight check가 하나라도 실패하면 container를 만들기 전에 run�
 영역이다. 선언된 CPU·메모리 상한과 timeout 안에서 끝나는지 관찰하되 timeout을
 원격 변경의 자동 취소로 해석하지 않는다. 캐시 삭제는 repository나 PR을 복구하지 않는다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - repository와 self-host 설정에 대한 strict validation.
 - `bash scripts/operations/sync-tech-stack-versions.sh --check`.
 - 승인된 live job의 경우, sanitized 결과를 생성된 모든 branch/PR과 대조하고
   이 job 승인으로는 merge가 일어나지 않았는지 확인한다.
 
-### Troubleshooting
+## Troubleshooting
 
-위 Expected Result가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0083-renovate.md)의 절차로 진단한다.
+### Symptoms
+
+위 Expected Results가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0083-renovate.md)의 절차로 진단한다.
+
+### Next Action
+
+증상이 계속되면 [Renovate Runbook](../../runbooks/10-platform-and-backup/0083-renovate.md)의 절차를 따른다. 실패한 systemd run은 다음 시도 전에 사람이 log를 검토한다.

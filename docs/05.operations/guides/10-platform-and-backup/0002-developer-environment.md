@@ -1,10 +1,10 @@
 ---
 title: "Developer Environment Operations"
-version: "1.1.5"
+version: "1.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0002"
 created: "2026-06-04"
@@ -15,6 +15,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+로컬 개발 환경의 도구, 환경 파일, 인증서를 준비하는 개발자, 운영자, AI Agent.
+
 ### Outcome
 
 이 가이드는 로컬 개발 환경의 도구, 환경 파일, 인증서 설정과 검증 범위를 설명한다.
@@ -24,7 +28,7 @@ next_review_at: "2027-05-13"
 생기는 것은 아니다. [bootstrap](../../../../.agents/governance/bootstrap.md), 해당
 provider adapter와 현재 Task에서 승인 범위를 먼저 확인한다.
 
-### Boundaries
+#### Boundaries
 
 - 이 주제에는 같은 번호의 Policy/Runbook이 없다.
 - [환경·승인 경계](../../../../.agents/governance/environment-constraints.md)
@@ -53,7 +57,7 @@ provider adapter와 현재 Task에서 승인 범위를 먼저 확인한다.
 추가하지 않는다. 공유 설정에 개인 절대 경로를 넣지 않고 Claude hook 경로는
 `$CLAUDE_PROJECT_DIR`를 사용한다. 개인 설정 파일 자체는 공유하지 않는다.
 
-### Permissions
+### Authority
 
 runtime·비밀 작업은 도구 허용과 별개로 정확한 대상과 승인이
 필요하다. `mkcert -install`은 호스트 trust store를 바꾸고 인증서 재발급은 기존 소비자에
@@ -61,7 +65,7 @@ runtime·비밀 작업은 도구 허용과 별개로 정확한 대상과 승인�
 
 ## Procedure
 
-### Actions
+### Steps
 
 #### Environment and certificates
 
@@ -82,13 +86,11 @@ profile 입력을 채우고 기존 파일을 덮어쓰지 않는다. 키 비교�
 전달하고 CA private key는 복사하거나 출력하지 않는다. 기존 인증서를 보존한
 상태에서 [Traefik Runbook](../../runbooks/02-gateway-and-networking/0013-traefik.md)으로 교체·검증을 넘긴다.
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 Troubleshooting 외에 별도의 예외 사례를 기록하지 않는다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 저장소 README와 대상 package README에서 필요한 도구·입력을 확인한다.
 [RUN-0086의 공개 구성 검증](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md#static-configuration-validation)은
@@ -96,9 +98,11 @@ profile 입력을 채우고 기존 파일을 덮어쓰지 않는다. 키 비교�
 이 검사 성공은 실제 credential, host trust, 서비스 health나 복구 성공이 아니다.
 도구 또는 승인된 입력이 없으면 실패 원인과 `BLOCKED`/`NOT_RUN`을 기록한다.
 
-### Troubleshooting
+## Troubleshooting
 
-위 Expected Result가 실패하면 실패한 명령과 출력 요약을 값 없이 기록하고, 아래 Runbook Handoff가 지정한 소유 Runbook으로 넘긴다.
+### Symptoms
+
+위 Expected Results가 실패하면 실패한 명령과 출력 요약을 값 없이 기록하고, 아래 Runbook Handoff가 지정한 소유 Runbook으로 넘긴다.
 
 #### Runbook Handoff
 
@@ -107,3 +111,7 @@ profile 입력을 채우고 기존 파일을 덮어쓰지 않는다. 키 비교�
 [RUN-0086](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md), 인증서와 gateway는
 [RUN-0013](../../runbooks/02-gateway-and-networking/0013-traefik.md)이 소유한다. 알 수 없는 대상·권한·기존 값의
 변경이 필요하면 중단하고 @buenhyden에게 값 없는 증거로 전달한다.
+
+### Next Action
+
+증상이 계속되면 [하네스 Runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md), [RUN-0086](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md), [RUN-0013](../../runbooks/02-gateway-and-networking/0013-traefik.md) 중 소유 Runbook으로 넘긴다. 알 수 없는 대상·권한·기존 값의 변경이 필요하면 중단하고 `@buenhyden`에게 값 없는 증거로 전달한다.

@@ -1,10 +1,10 @@
 ---
 title: "Locust Usage Guide"
-version: "1.3.4"
+version: "1.4.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0062"
 parent_ids:
@@ -17,6 +17,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+Locust 실습 부하를 승인하고 실행하는 운영자와 target owner가 LAB 선택 방법, 실행 흐름, 종료 결과 해석 기준을 확인할 때 읽는다.
+
 ### Outcome
 
 Locust는 `labs/locust/docker-compose.yml`의 `lab-locust-master`와 `lab-locust-worker`로 구성된 독립 LAB 분산 부하 생성기다.
@@ -25,8 +29,6 @@ HOME root Compose와 `testing` profile에는 포함되지 않는다.
 대상 독자는 Locust 실습 부하를 승인하고 실행하는 운영자와 target owner다. 이 문서의 목표는
 LAB 선택 방법, 실행 흐름, 종료 결과 해석 기준을 확인하는 것이다. 중지와 복구 절차는
 [Locust Runbook](../../runbooks/15-labs/0062-locust.md)이 맡는다.
-
-### Boundaries
 
 #### Traceability
 
@@ -50,13 +52,21 @@ worker가 필요한 Python-based scenario 실습을 위해 유지된다. 정상 
 `testing` profile에는 포함되지 않으며, 독립 `labs/locust/docker-compose.yml` entrypoint만 사용한다. Test run은 지정된 target에 external effect를 주므로
 target-owner 승인, limit, stop condition이 필요하다.
 
-### Permissions
+### Authority
 
 부하 실행에는 target-owner 승인, limit, stop condition과 Runtime 승인이 필요하다. Credential은 승인된 secret channel에 보관하고 scenario file과 evidence에 남기지 않는다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 대상, 테스트 소유자, 최대 사용자 수, 생성 속도, 지속 시간, 중단 SLI, worker 수를 기록한다 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 2 | `LAB_LOCUST_SCENARIO_DIR`와 fresh `LAB_LOCUST_RESULT_DIR`을 준비하고 `docker compose -f labs/locust/docker-compose.yml --env-file labs/.env config --quiet`를 실행한다 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 3 | scenario directory의 `locustfile.py`와 fixture를 검토한다 | 정확히 그 effect를 승인받지 않았다면 production data를 수정할 수 없음을 확인한다 | 해당 effect를 승인받지 않았다면 진행하지 않는다 |
+| 4 | Runtime 승인 뒤 `python3 scripts/operations/lab.py run locust --purpose "<목적>" --lease <기간> --deadline <상한>`으로 실행한다 | 제어기가 master 종료를 기다리고 상한이나 SIGTERM에서 master를 멈춘 뒤 project를 내린다 | Target abort SLI를 넘으면 제어기에 SIGTERM을 보내 즉시 멈춘다 |
+| 5 | 설정 커밋, 시나리오 digest, 정제된 집계 결과, 최종 중지 상태를 보존한다 | 증거가 보존된다 | 문서에 기록 없음 |
 
 #### Implementation and data flow
 
@@ -125,25 +135,27 @@ SDK가 없으므로 `--otel`과 OTLP 전달은 지원하지 않는다.
 
 실행 순서와 실패·복구 판단은 [런북](../../runbooks/15-labs/0062-locust.md)의 `시나리오 보존과 업그레이드` 절차를 따른다. 데이터와 권한 경계는 해당 정책을 유지한다.
 
-### Exceptions
-
 #### 재시작과 보존 한계
 
 LAB 서비스는 job template을 사용하며 정상 root 재시작 정책을 상속하지 않는다. 테스트 종료 때 master와 worker를 명시적으로
 중지하고 결과 디렉터리와 worker 종료 상태를 확인해야 한다. 자체 데이터베이스·TLS 인증서 복구는 없고, 호스트의
 시나리오·결과와 대상 시스템의 상태는 서로 다른 소유자가 복구한다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result docker compose -f labs/locust/docker-compose.yml --env-file labs/.env.example --profile lab-locust config --quiet`
 - `LAB_LOCUST_SCENARIO_DIR=/tmp/hyhome-locust-scenario LAB_LOCUST_RESULT_DIR=/tmp/hyhome-locust-result docker compose -f labs/locust/docker-compose.yml --env-file labs/.env.example --profile lab-locust config --services`
 - `bash scripts/hardening/check-all-hardening.sh 11-quality`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 #### Runbook Handoff
 
 Load 중지, worker loss 진단, scenario file 복구, 승인된 upgrade canary 수행에는
 [runbook](../../runbooks/15-labs/0062-locust.md)을 사용한다.
+
+### Next Action
+
+증상이 계속되면 [RUN-0062](../../runbooks/15-labs/0062-locust.md)를 따른다. Load 중지, worker loss 진단, scenario file 복구, 승인된 upgrade canary 수행도 이 runbook을 사용한다.

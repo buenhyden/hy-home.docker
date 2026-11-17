@@ -1,10 +1,10 @@
 ---
 title: "Gatus Guide"
-version: "0.4.2"
+version: "0.5.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0087"
 parent_ids:
@@ -20,13 +20,17 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+observability와 availability probe를 운영하는 `@buenhyden`과 기여자.
+
 ### Outcome
 
 Gatus는 `obs`, `availability`, `dev`가 선택하는 상시 실행 HOME availability monitor이다. native Keycloak OIDC로 보호되는 status UI와 SQLite probe history를 제공한다.
 
 대상은 observability와 availability probe를 운영하는 @buenhyden과 기여자다. Gatus의 구성, 인증 경계, 상태 저장 방식을 이해하고, 승인이 필요한 진단·재시작·복구는 Runbook으로 넘기는 것이 목표다.
 
-### Boundaries
+#### Boundaries
 
 - [Policy](../../policies/07-observability/0087-gatus.md), [Runbook](../../runbooks/07-observability/0087-gatus.md)
 - [Gatus configuration reference](https://github.com/TwiN/gatus#configuration)
@@ -60,13 +64,15 @@ Linked Dockerfile은 고정 upstream commit archive와 checksum을 확인하고 
 
 Health·bootstrap/auth는 의도적으로 공개되고 status/history API는 native OIDC로 보호한다. Metrics는 내부에 열려 있지만 public router에서 제외된다. Wrapper는 비어 있지 않은 정확한 subject와 읽을 수 있는 secret/CA를 요구하고 CA bundle을 만든 뒤 Gatus를 실행한다. 선택 non-root UID/GID가 secret/data 소유권과 맞아야 한다. Health로 OIDC·probe 전달을 증명하지 않는다. Keycloak·gateway·CA/state·probe 대상마다 readiness를 확인하며 설정 한도는 실측 여유가 아니다.
 
-### Permissions
+### Authority
 
 UI와 status/history API는 Keycloak native OIDC로 보호되며 `gatus_oidc_client_secret`을 쓴다. 승인이 필요한 진단·재시작·복구는 RUN-0087로 넘기고, 응답 본문·credential·token은 evidence에 넣지 않는다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 정상 사용과 확인 절차는 아래 항목을 따른다.
 
@@ -112,20 +118,20 @@ SQLite backup에는 조율된 quiescence나 engine이 지원하는 consistent sn
   [Gatus repository/release](https://github.com/TwiN/gatus)를 따른다. Gatus는
   Apache-2.0 license이며 patch provenance를 보존한다.
 
-### Exceptions
+#### Exceptions
 
 health가 login이나 probe coverage를 증명하지 않는 한계와 upgrade 전 source·SQLite custody 검토는 Troubleshooting에 기술되어 있다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - [Observability Compose](../../../../infra/06-observability/docker-compose.yml)에서
   native OIDC, `/metrics` router 제외, healthcheck를 점검한다.
 - 승인된 upgrade 전에 source와 SQLite custody를 검토한다. health는 login이나
   probe coverage를 증명하지 않는다.
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 위 점검 결과가 기대와 다르면 증상별 진단, 재시작과 rollback은 [RUN-0087](../../runbooks/07-observability/0087-gatus.md)으로 넘긴다.
 
@@ -133,3 +139,7 @@ health가 login이나 probe coverage를 증명하지 않는 한계와 upgrade �
 
 승인 게이트가 걸린 진단, 재시작, recovery에는
 [Gatus Runbook](../../runbooks/07-observability/0087-gatus.md)을 사용한다.
+
+### Next Action
+
+증상이 계속되거나 점검 결과가 기대와 다르면 [RUN-0087](../../runbooks/07-observability/0087-gatus.md)의 진단, 재시작, rollback, escalation 기준을 따른다. 승인이 필요한 진단, 재시작, 복구가 대상이다.

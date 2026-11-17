@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Guide"
-version: "0.9.2"
+version: "0.10.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0085"
 parent_ids:
@@ -21,13 +21,17 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+OpenBao를 운영하거나 secret 소비 경로를 연결하는 보안·인프라 운영자가 구성, persistent input, 사람 관리자 접근, credential 경계를 이해할 때 읽는다.
+
 ### Outcome
 
 OpenBao는 HOME secret control plane이다. 레거시 Vault runtime/data는 2026-09-25 폐기된 역사적 대상이며 현재 migration/rollback 입력으로 사용할 수 없다.
 
 대상은 OpenBao를 운영하거나 secret 소비 경로를 연결하는 보안·인프라 운영자다. 구성과 persistent input, 사람 관리자 접근(Keycloak native OIDC), credential 경계를 이해하고, 실행 절차가 필요하면 Runbook으로 넘어가는 것이 목표다.
 
-### Boundaries
+#### Boundaries
 
 - Governing architecture: [AD-0003](../../../02.architecture/descriptions/0003-security-architecture.md)
 - [Guide](0085-openbao.md), [Policy](../../policies/04-security-and-secrets/0085-openbao.md), [Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)
@@ -58,13 +62,15 @@ Raft data, AppRole bootstrap material, 렌더링된 출력은 별도의 bind vol
 [version projection](../../../../infra/tech-stack.versions.json)이 runtime pin을
 관장한다.
 
-### Permissions
+### Authority
 
 사람 관리자는 Keycloak `/openbao-admins` 구성원으로 OIDC role `home-admin`을 거쳐 `hy-home-operator` policy를 받는다. Agent는 AppRole `role_id`/`secret_id`, `/sys/metrics`는 전용 token을 쓴다. OIDC·AppRole·Kubernetes auth 설치는 승인된 bootstrap 범위다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 정상 사용 절차는 아래 항목에 정리한다.
 
@@ -263,7 +269,7 @@ alias이다. 별도 값·KV entry나 재발급 대상이 아니며, 이 표시�
 검사할 수 있지만 실제 pilot은 발급된 대상 ID·KV path·ACL·delivery와 P01 인증·복구,
 P03 소비자 신원, P04 실제 DEV/S3 수용을 기다린다. opsflow ID나 ACL을 임의로 만들지 않는다.
 
-### Exceptions
+#### Exceptions
 
 server의 기존 bootstrap 기록은 threshold2, Shamir share3개다. 현재 custody의
 2026-09-22 단일 host 파일 예외와 단일 confidentiality/availability 위험은
@@ -274,15 +280,15 @@ server의 기존 bootstrap 기록은 threshold2, Shamir share3개다. 현재 cus
 기록되어 있다. snapshot 생성과 server 재시작/unseal은 검증되었으며, 격리된
 restore와 share의 오프라인 전달은 별도의 운영자 책임으로 남아 있다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 사용 전에 선택된 service, 선언된 mount, 공개된 interface, container 상태를
 확인한다. readiness와 data recovery는 runbook evidence를 수집하기 전까지
 검증되지 않은 상태다.
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 sealed(2) 지속, Agent 재인증 실패(`bao_agent_auth_failure`), unhealthy Agent, audit 쓰기 실패는 [Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)의 진단 절차로 넘긴다.
 
@@ -293,3 +299,7 @@ sealed(2) 지속, Agent 재인증 실패(`bao_agent_auth_failure`), unhealthy Ag
 metrics credential은 [RUN-0104](../../runbooks/04-security-and-secrets/0104-openbao-metrics-credential.md),
 유지보수 window는 [RUN-0105](../../runbooks/04-security-and-secrets/0105-openbao-maintenance-window.md),
 소비자 이관과 secret catalog는 [RUN-0106](../../runbooks/04-security-and-secrets/0106-openbao-consumer-catalog.md)이 관장한다. [Policy](../../policies/04-security-and-secrets/0085-openbao.md)가 control을 관장한다.
+
+### Next Action
+
+sealed(2) 지속, Agent 재인증 실패, unhealthy Agent, audit 쓰기 실패는 [Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)의 진단 절차로 넘긴다. Renderer SecretID 전달은 RUN-0103, metrics credential은 RUN-0104, 유지보수 window는 RUN-0105, 소비자 이관과 secret catalog는 RUN-0106이 관장한다.

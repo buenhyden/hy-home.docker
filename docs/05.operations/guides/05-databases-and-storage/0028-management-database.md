@@ -1,6 +1,6 @@
 ---
 title: "Management Database Usage Guide"
-version: "1.2.3"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -25,6 +25,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+management database를 사용하는 서비스 소유자와 운영자. 서비스 구성, 공유 의존성의 영향 범위, 지표 수집 구조, 백업·복구·업그레이드 경계를 파악할 때 읽는다.
+
 ### Outcome
 
 management database는 인증, 워크플로, 도구를 위한 6개 서비스(PG 엔진·init·monitor provision·exporter, Valkey 엔진·exporter)로 구성된 HOME
@@ -39,7 +43,7 @@ management database를 사용하는 서비스 소유자와 운영자를 위한 �
 구성, 공유 의존성의 영향 범위, 지표 수집 구조, 백업·복구·업그레이드 경계를 이해하고
 정적 검사로 구성을 확인하는 것이다.
 
-### Boundaries
+#### Boundaries
 
 - Artifact: `GDE-0028`; 거버넌스 정책: `POL-0028`.
 - Runtime authority: `infra/04-data/mng-db/docker-compose.yml`.
@@ -92,13 +96,15 @@ PostgreSQL은 `${DEFAULT_MANAGEMENT_DIR}/pg`의 `mng-pg-data`를 소유하고
 `192.168.0.13`)에 게시해 k3d Argo CD 캐시가 도달한다. healthcheck와 리소스
 제한은 공유 템플릿에서 온다.
 
-### Permissions
+### Authority
 
 필요한 secret은 `mng_postgres_password`, `mng_valkey_password`, `mng_valkey_monitor_password`, `mng_valkey_inspector_password`다. 승인된 runtime task 없이 init을 재실행하거나, credential을 회전하거나, HOME 데이터베이스를 조회하거나, broker queue를 변경하지 않는다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 정상 사용 절차는 아래 항목에 정리한다.
 
@@ -159,20 +165,24 @@ backup, rollback이 필요하다. 새 major PostgreSQL 이미지를 기존 `PGDA
 - [PostgreSQL license](https://www.postgresql.org/about/licence/)
 - [Valkey persistence](https://valkey.io/topics/persistence/)
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 별도 예외 절을 두지 않으며, 한계와 경계는 Environment와 Actions의 해당 본문과 Troubleshooting에 함께 적혀 있다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 정확한 root profile, service, health/resource 제어, writable-state 소유권,
 secret reference, exposure, 엔진별 복구 경계를 확인한다. static pass는 구성
 증거일 뿐이며, runtime과 restore는 별개로 남는다.
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - consumer DB 연결 실패: `mng-pg` healthcheck(`pg_isready`)와 `mng-pg-init` 종료 코드를 먼저 확인한다. init은 base 서비스 role/database만 만들고 feature DB는 각 feature job이 만든다.
 - Airflow/n8n queue 쓰기 오류: `maxmemory 128mb`·`noeviction` 한도에 도달했을 수 있다. key 삭제나 replay는 [RUN-0028](../../runbooks/05-databases-and-storage/0028-management-database.md)의 승인 경계를 따른다.
 - exporter `pg_up`/`redis_up`이 0: monitor provision job과 monitor 계정 secret을 확인한다.
+
+### Next Action
+
+증상이 계속되면 [RUN-0028](../../runbooks/05-databases-and-storage/0028-management-database.md)의 승인 경계와 복구 순서를 따른다.

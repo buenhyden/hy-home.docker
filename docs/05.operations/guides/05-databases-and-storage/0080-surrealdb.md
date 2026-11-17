@@ -1,10 +1,10 @@
 ---
 title: "SurrealDB Guide"
-version: "0.3.3"
+version: "0.4.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0080"
 parent_ids:
@@ -19,6 +19,10 @@ next_review_at: "2027-05-13"
 # SurrealDB Guide
 
 ## Purpose
+
+### Audience
+
+운영자, 개발자, AI Agent. Open Notebook용 SurrealDB의 profile, 노출, 영속성, 인증, 버전 제약(v2 전용), 복원 계약을 확인할 때 읽는다.
 
 ### Outcome
 
@@ -35,7 +39,7 @@ root 사용자 이름은 `SURREALDB_USERNAME` 환경 변수, 비밀번호는 `su
 목적: 라이브 복구 테스트를 주장하지 않으면서 현재 profile, 노출, 영속성, 인증,
 namespace/database 범위, 버전 제약(v2 전용), 복원 계약을 설명한다.
 
-### Boundaries
+#### Boundaries
 
 - 선언된 상위 문서: [SurrealDB Policy](../../policies/05-databases-and-storage/0080-surrealdb.md) (`POL-0080`)
 - 관장 아키텍처: [AD-0011](../../../02.architecture/descriptions/0011-laboratory-architecture.md)
@@ -69,13 +73,21 @@ namespace/database 범위, 버전 제약(v2 전용), 복원 계약을 설명한�
 | 백업 / 업그레이드 | 새로 호환되는 대상으로의 명시적 namespace/database export/import; 부분 import 대상은 격리 보존하고 재사용하지 않는다; v2 내에서 업스트림 스토리지 형식 순서를 따른다. |
 | 라이선스 / edition | SurrealDB 사용은 현재 공식 라이선스 조건을 준수해야 한다. 이 문서는 프로덕션이나 상업적 권리를 확장하지 않는다. |
 
-### Permissions
+### Authority
 
 root 사용자 이름은 `SURREALDB_USERNAME`, 비밀번호는 `surreal_db_password` Docker Secret이며 값은 출력하거나 복사하지 않는다. v3 변경, 기존 대상 삭제, export 사용은 별도 승인이 필요하다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 아래 Expected Results 명령으로 render, 서비스 상태, credential 없는 준비 상태를 확인한다. | render와 서비스 상태, 준비 상태 확인 | `RUN-0080`이 health triage를 소유한다 |
+| 2 | `ai_net`의 애플리케이션은 `ws://surrealdb:8000/rpc`로 연결한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 3 | 복구 인벤토리를 위해 모든 export를 엔진 버전, namespace, database, 인증 수준, 스키마/데이터 범위, checksum, 보존 기간, 격리된 복원 결과와 연결한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+
+#### Actions
 
 정상 사용 절차는 아래 항목에 정리한다.
 
@@ -89,12 +101,12 @@ root 사용자 이름은 `SURREALDB_USERNAME`, 비밀번호는 `surreal_db_passw
   이 배포는 v2를 유지한다. 선택한 Open Notebook 이미지와의 v3 호환성 근거를
   확보하고 별도로 승인받기 전에는 v3로 변경하지 않는다.
 
-1. 아래 Expected Result로 render, 서비스 상태, credential 없는 준비 상태를 확인한다.
+1. 아래 Expected Results로 render, 서비스 상태, credential 없는 준비 상태를 확인한다.
 2. `ai_net`의 애플리케이션은 `ws://surrealdb:8000/rpc`로 연결한다.
 3. 복구 인벤토리를 위해 모든 export를 엔진 버전, namespace, database, 인증 수준,
    스키마/데이터 범위, checksum, 보존 기간, 격리된 복원 결과와 연결한다.
 
-### Exceptions
+#### Exceptions
 
 특수 사례와 한계는 아래 항목에 정리한다.
 
@@ -105,15 +117,15 @@ root 사용자 이름은 `SURREALDB_USERNAME`, 비밀번호는 `surreal_db_passw
 다른 저장 엔진 이름을 복구 근거로 사용하지 않는다. base 이미지는 Dockerfile에서 v2 계열의 정확한 태그와 digest로 고정되어 있으며, 그 선언이 실행 버전의 권위다. 업그레이드·export/import 전에 그 선언과 저장 형식 근거를 확인하며, v3 전환 금지 정책은 유지한다. 상태·준비 명령은 실제
 컨테이너 접근이므로 정적 문서 검증과 구분한다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `docker compose --profile surrealdb config --quiet`
 - `docker compose --profile surrealdb ps surrealdb`
 - `docker compose --profile surrealdb exec -T surrealdb /usr/local/bin/surreal is-ready --endpoint http://127.0.0.1:8000`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - 준비 상태는 도달 가능성만 증명한다. 인증, namespace, database, 스키마, 영속성은
   검증하지 않는다.
@@ -134,3 +146,7 @@ root 사용자 이름은 `SURREALDB_USERNAME`, 비밀번호는 `surreal_db_passw
 [Runbook](../../runbooks/05-databases-and-storage/0080-surrealdb.md)이 health triage와 계획된 격리 export/import
 리허설을 소유한다. [Policy](../../policies/05-databases-and-storage/0080-surrealdb.md)가 백업, 인증, 보존,
 업그레이드, 제거 통제를 소유한다.
+
+### Next Action
+
+health triage와 격리 export/import 리허설은 [Runbook](../../runbooks/05-databases-and-storage/0080-surrealdb.md)이, 백업·인증·보존·업그레이드·제거 통제는 [Policy](../../policies/05-databases-and-storage/0080-surrealdb.md)가 소유한다. v3 변경과 기존 대상 삭제는 별도 승인이 필요하다.

@@ -20,17 +20,17 @@ next_review_at: "{{NEXT_REVIEW_AT}}"
 
 ## Purpose
 
+### Audience
+
+<!-- Author prompt: Name who reads this guide and for what task; use only readers the subject and its owners actually have. -->
+
+{{READERS_AND_THEIR_TASK}}
+
 ### Outcome
 
-<!-- Author prompt: State the reader, the goal and the primary tutorial, how-to, reference or explanation need. -->
+<!-- Author prompt: State the goal and the primary tutorial, how-to, reference or explanation need, what this guide covers and leaves out, and link the implementation, requirement and policy that own the subject. -->
 
-{{READER_GOAL_AND_OUTCOME}}
-
-### Boundaries
-
-<!-- Author prompt: Say what this guide covers and leaves out, and link the implementation, requirement and policy that own the subject. -->
-
-{{SCOPE_BOUNDARIES_AND_AUTHORITY_LINKS}}
+{{READER_GOAL_SCOPE_AND_AUTHORITY_LINKS}}
 
 ## Prerequisites
 
@@ -38,7 +38,7 @@ next_review_at: "{{NEXT_REVIEW_AT}}"
 
 {{IMPLEMENTATION_ENVIRONMENT_AND_CONCEPTS}}
 
-### Permissions
+### Authority
 
 <!-- Author prompt: Name the access, approvals and secret names (never values) the reader needs; write "none" when nothing is required. -->
 
@@ -46,28 +46,34 @@ next_review_at: "{{NEXT_REVIEW_AT}}"
 
 ## Procedure
 
-### Actions
+### Steps
 
 <!-- Author prompt: For a service subject, cover only applicable fields; omit nonapplicable fields without filler. Identify the actual implementation and Compose ownership, service profiles and HOME/DEV/OPTIONAL/LAB classification, network and exposure, data and persistence, dependencies, environment and secret names (never values), resources, security and authentication, normal use, backup prerequisites and recovery, upgrade and migration, observable readiness, and official sources. For a non-service workspace subject, keep only the fields its implementation actually has. Route executable maintenance and recovery to the Runbook; do not duplicate its commands. -->
 
 <!-- Author prompt: Compose/Dockerfile declarations own runtime image tags and dependency pins; the machine-readable registry is a derived projection. Link the implementation authority; do not copy exact patch versions into narrative inventories. A necessary compatibility, advisory, workaround, migration or history literal requires a same-line comment `runtime-version-exception: migration — explain the concrete migration boundary` with the applicable category and a concrete reason. Document frontmatter versions are independent. -->
 
-<!-- Author prompt: State the reader goal and primary tutorial, how-to, reference or explanation need. -->
+<!-- Author prompt: When the procedure is an ordered sequence, list it in this table: Step is its number, Action the permitted action, Expected Result what to observe, and On Failure where to stop and who takes over. Otherwise delete the table. Special cases and limits follow the table. -->
 
-{{NORMAL_USE_AND_ACTIONS}}
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| {{STEP}} | {{ACTION}} | {{EXPECTED_RESULT}} | {{ON_FAILURE}} |
 
-### Exceptions
+{{NORMAL_USE_ACTIONS_SPECIAL_CASES_AND_LIMITS}}
 
-{{SPECIAL_CASES_AND_LIMITS}}
-
-## Verification
-
-### Expected Result
+### Expected Results
 
 {{COMMON_CHECKS_AND_EXPECTED_RESULT}}
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 <!-- Author prompt: Give symptoms and diagnosis; when an actual runbook owns executable steps, link it without copying commands. -->
 
-{{SYMPTOMS_DIAGNOSIS_AND_RUNBOOK_HANDOFF}}
+{{SYMPTOMS_AND_DIAGNOSIS}}
+
+### Next Action
+
+<!-- Author prompt: Name where the reader goes next when the symptom persists: the runbook, owner or escalation the subject actually has. -->
+
+{{RUNBOOK_OWNER_OR_ESCALATION}}

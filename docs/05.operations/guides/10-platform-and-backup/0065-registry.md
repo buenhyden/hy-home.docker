@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry Usage Guide"
-version: "1.2.9"
+version: "1.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0065"
 parent_ids:
@@ -20,6 +20,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+HOME OCI 이미지 저장소에 이미지를 push·pull하고 저장소를 유지하는 운영자.
+
 ### Outcome
 
 Registry는 `infra/09-platform-ops/registry/`의 `registry` service로 운영하는 HOME OCI 이미지 저장소다.
@@ -29,7 +33,7 @@ Registry는 `infra/09-platform-ops/registry/`의 `registry` service로 운영하
 이해하고, 일반 사용과 백업·업그레이드 경계를 확인하는 것이다. 실행 절차는
 [Registry Runbook](../../runbooks/10-platform-and-backup/0065-registry.md)이 맡는다.
 
-### Boundaries
+#### Boundaries
 
 - [Policy](../../policies/10-platform-and-backup/0065-registry.md) (`POL-0065`)
 - [Runbook](../../runbooks/10-platform-and-backup/0065-registry.md) (`RUN-0065`)
@@ -72,13 +76,20 @@ push된 매니페스트와 blob을 `${DEFAULT_REGISTRY_DIR}`에 저장한다. �
 - bind 기반의 `/var/lib/registry`가 권위 있는 파일시스템 스토리지다. 삭제 기능은
   활성화되어 있지 않으며 garbage collection은 정상적인 정리 절차가 아니다.
 
-### Permissions
+### Authority
 
-push 전에 endpoint가 승인된 신뢰 네트워크로 한정되어 있는지 확인해야 하며, garbage collection은 별도 승인이 필요하다. 상세는 Actions의 일반적인 사용과 Runbook Handoff에 있다.
+push 전에 endpoint가 승인된 신뢰 네트워크로 한정되어 있는지 확인해야 하며, garbage collection은 별도 승인이 필요하다. 상세는 Steps의 일반적인 사용과 Runbook Handoff에 있다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 루트에서 `docker compose --profile registry config --quiet`로 검증한다. | 명령이 성공한다. | 문서에 기록 없음 |
+| 2 | push 전에 endpoint가 승인된 신뢰 네트워크로 한정되어 있는지 확인한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 3 | 불변 release/digest 정책에 따라 태그를 지정해 push하고 digest로 pull하여 매니페스트 digest를 검증한다. | 매니페스트 digest가 검증되고 repository, tag, digest, 출처 권한이 기록된다. | 문서에 기록 없음 |
+| 4 | 파일시스템과 digest 인벤토리를 하나의 백업 단위로 다룬다. | 문서에 기록 없음 | 문서에 기록 없음 |
 
 #### 일반적인 사용
 
@@ -105,23 +116,27 @@ push 전에 endpoint가 승인된 신뢰 네트워크로 한정되어 있는지 
 네트워크와 listener 선언을 기준으로 확인한다. 파일시스템 사용량·쓰기 오류·digest
 불일치를 함께 확인하며 `/v2/` 성공만으로 용량이나 복구 가능성을 판정하지 않는다.
 
-### Exceptions
+#### Exceptions
 
 레지스트리 삭제·garbage collection은 정상 정리 절차가 아니며, health 성공은 용량·내구성·클라이언트 신뢰를 증명하지 않는다(Environment).
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `docker compose --profile registry config --quiet`
 - `docker compose --profile registry config --services`
 - `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`
 
-### Troubleshooting
+## Troubleshooting
 
-위 Expected Result가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0065-registry.md)의 절차로 진단한다.
+### Symptoms
+
+위 Expected Results가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0065-registry.md)의 절차로 진단한다.
 
 #### Runbook Handoff
 
 push/pull 실패, 스토리지 복구, 계획된 업그레이드, 별도로 승인된 garbage collection에는
 [runbook](../../runbooks/10-platform-and-backup/0065-registry.md)을 사용한다.
+
+### Next Action
+
+push/pull 실패, 스토리지 복구, 계획된 업그레이드, 별도로 승인된 garbage collection은 [runbook](../../runbooks/10-platform-and-backup/0065-registry.md)을 따른다.

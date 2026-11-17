@@ -1,6 +1,6 @@
 ---
 title: "MongoDB Usage Guide"
-version: "2.2.6"
+version: "2.3.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -17,6 +17,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+MongoDB replica set LAB의 서비스명, keyfile volume, init job, Mongo Express 접속 경계를 사용하고 점검하는 운영자, 개발자, AI Agent가 읽는다.
+
 ### Outcome
 
 이 문서는 [MongoDB Compose 구현](../../../../labs/mongodb/docker-compose.yml)의 replica set 사용 기준을 설명한다. 일곱 서비스는 모두 정확히 `mongodb` profile과 선언된 network에서 동작한다. frozen classification은 `LAB`이고 두 data-bearing member와 arbiter가 한 host에 있으므로 host-level HA가 아니다.
@@ -24,8 +28,6 @@ next_review_at: "2027-05-13"
 대상 독자: 운영자, 개발자, AI Agent.
 
 목적: MongoDB replica set의 서비스명, keyfile volume, init job, Mongo Express 접속 경계를 현재 compose와 맞춰 사용하도록 한다.
-
-### Boundaries
 
 #### Traceability
 
@@ -64,13 +66,18 @@ next_review_at: "2027-05-13"
 | Backup·upgrade | `mongodump --oplog`와 격리된 `--oplogReplay`를 사용한다. upgrade/제거 전에 tool/server 호환성과 restore evidence가 필요하다. |
 | License·edition | MongoDB Community에는 SSPL 조건이 적용된다. 이 topology는 Enterprise backup이나 관리 기능을 제공한다고 주장하지 않는다. |
 
-### Permissions
+### Authority
 
 secret은 `lab_mongodb_root_password`와 `lab_mongo_express_basicauth_password`이며 점검은 client의 native password prompt로 수행한다. 값은 문서에 적지 않는다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 애플리케이션 연결 문자열에 내부 서비스명 `mongodb-rep1`/`mongodb-rep2`와 `replicaSet=MyReplicaSet`을 사용한다 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 2 | 관리 UI `mongo-express`에 `127.0.0.1:${LAB_MONGO_EXPRESS_HOST_PORT:-38081}`로 접속하고 `ME_CONFIG_BASICAUTH=true`를 확인한다 | basic auth가 켜진 loopback 접속 | 문서에 기록 없음 |
 
 #### Identity-specific behavior
 
@@ -105,19 +112,19 @@ rep1/rep2 는 data member, arbiter 는 투표만 담당하며 data backup 이 �
 
 2. 관리 UI `mongo-express`는 독립 LAB network에만 있다. HOME Traefik route는 없고 `127.0.0.1:${LAB_MONGO_EXPRESS_HOST_PORT:-38081}`가 유일한 접속 경로다. `ME_CONFIG_BASICAUTH=true`로 basic auth가 켜져 있어야 하며(mongo-express 1.x는 이 값 없이 자격 증명을 무시한다).
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/mongodb/docker-compose.yml --profile mongodb config --quiet`
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/mongodb/docker-compose.yml logs mongo-init`
 - `rs.status()` 확인은 [MongoDB runbook의 private TTY/native-prompt 절차](../../runbooks/15-labs/0027-mongodb.md#steps)를 따른다. 승인된 custody/실제 TTY가 없으면 중단하고 password를 URL·argv·환경 변수·history·로그에 넣지 않는다.
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - `mongodb-arbiter`는 투표 전용 구성원이다. 데이터 보관 노드로 설명하거나 백업 대상으로 취급하지 않는다.
 - keyfile은 `mongo-key-generator`가 `mongo-key` bind volume에 생성한다. repository 경로의 `configdb/` 디렉터리를 전제로 하지 않는다.
@@ -127,3 +134,7 @@ rep1/rep2 는 data member, arbiter 는 투표만 담당하며 data backup 이 �
 #### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [MongoDB runbook](../../runbooks/15-labs/0027-mongodb.md)을 따른다.
+
+### Next Action
+
+증상이 계속되면 [RUN-0027](../../runbooks/15-labs/0027-mongodb.md)를 따른다. 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 이 runbook이 소유한다.

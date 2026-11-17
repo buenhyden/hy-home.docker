@@ -1,10 +1,10 @@
 ---
 title: "Pact Broker Usage Guide"
-version: "1.0.6"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0093"
 parent_ids:
@@ -21,6 +21,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+계약 테스트의 pact를 게시하고 검증하는 개발자와 운영자가 게시·검증 흐름과 준비 상태를 확인할 때 읽는다.
+
 ### Outcome
 
 Pact Broker는 `contract-testing`으로 선택되는 OPTIONAL 계약 저장소다.
@@ -29,8 +33,6 @@ Pact Broker는 `contract-testing`으로 선택되는 OPTIONAL 계약 저장소�
 프로바이더와 스텁을 비교 검증하지 않는 WireMock을 보완한다.
 
 계약 테스트를 게시하고 검증하는 개발자와 운영자를 위한 문서다. pact 게시·검증 흐름과 준비 상태 확인 방법을 이해하는 것이 목표다.
-
-### Boundaries
 
 #### Traceability
 
@@ -67,13 +69,13 @@ Pact Broker는 `contract-testing`으로 선택되는 OPTIONAL 계약 저장소�
   Traefik 라우트나 OIDC 클라이언트는 없다.
 - `PACT_DO_NOT_TRACK`은 이미지의 분석 핑을 비활성화한다.
 
-### Permissions
+### Authority
 
-자격 증명은 `pact_broker_basic_auth_password` 시크릿(값은 문서에 적지 않음)이며 클라이언트 환경 변수 `PACT_BROKER_PASSWORD`로 전달한다. 서비스 엔트리포인트가 secret을 프로세스 환경변수로 전달하는 방식은 Environment와 Actions에 적혀 있다.
+자격 증명은 `pact_broker_basic_auth_password` 시크릿(값은 문서에 적지 않음)이며 클라이언트 환경 변수 `PACT_BROKER_PASSWORD`로 전달한다. 서비스 엔트리포인트가 secret을 프로세스 환경변수로 전달하는 방식은 Environment와 Steps에 적혀 있다.
 
 ## Procedure
 
-### Actions
+### Steps
 
 #### Publishing and verifying
 
@@ -99,18 +101,18 @@ secret은 Compose에 값으로 적히지 않지만 서비스 엔트리포인트�
 이를 확인하려고 환경 전체를 출력하지 않는다. 데이터베이스가 권위 있는 영속 상태이며
 이미지·인증 변경과 삭제 전에 검증 이력·pact 보존 및 공유 DB 영향을 검토한다.
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `HYHOME_COMPOSE_PROFILES=contract-testing bash scripts/validation/validate-docker-compose.sh`
 - `python3 -m unittest tests.validation.test_compose_baseline_gates`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 프로비저닝 helper 실패, broker unhealthy, 401, 자격 증명 교체의 진단과 복구는
 [runbook](../../runbooks/12-testing-and-quality/0093-pact-broker.md)이 소유한다.
@@ -119,3 +121,7 @@ secret은 Compose에 값으로 적히지 않지만 서비스 엔트리포인트�
 
 프로비저닝 실패, 비정상 브로커, 인증 오류, 자격 증명 교체는
 [runbook](../../runbooks/12-testing-and-quality/0093-pact-broker.md)을 사용한다.
+
+### Next Action
+
+프로비저닝 helper 실패, broker unhealthy, 401, 자격 증명 교체는 [runbook](../../runbooks/12-testing-and-quality/0093-pact-broker.md)을 따른다.

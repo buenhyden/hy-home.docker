@@ -1,6 +1,6 @@
 ---
 title: "PostgreSQL Cluster Usage Guide"
-version: "2.1.8"
+version: "2.2.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -17,6 +17,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+etcd/Patroni/HAProxy 기반 PostgreSQL cluster LAB에 연결하고 일반 점검을 수행하는 운영자, 개발자, AI Agent가 읽는다.
+
 ### Outcome
 
 이 문서는 [PostgreSQL cluster Compose 구현](../../../../labs/postgresql-ha/docker-compose.yml)의 etcd/Patroni/HAProxy stack을 설명한다. 열한 서비스는 모두 exact `postgres-ha` profile에서 동작한다. frozen classification은 `LAB`이고 모든 members가 한 Docker host에 있으므로 host-level HA나 off-host disaster recovery를 제공하지 않는다.
@@ -24,8 +28,6 @@ next_review_at: "2027-05-13"
 대상 독자: 운영자, 개발자, AI Agent.
 
 목적: 관계형 데이터베이스 연결과 일반 점검을 현재 compose의 service name, host port, secret mount, init job, exporter 경계와 맞춰 수행하도록 한다.
-
-### Boundaries
 
 #### Traceability
 
@@ -63,13 +65,19 @@ next_review_at: "2027-05-13"
 | Backup·upgrade | globals와 database별 logical dump를 보존한다. upgrade/제거 전에 새 DCS/cluster에 복구한다(HA globals/ACL/router 복원은 미구현). |
 | License·edition | PostgreSQL에는 PostgreSQL License가 적용된다. Spilo, Patroni, etcd, HAProxy와 exporter는 각각 별도 license가 적용되는 의존성이다. |
 
-### Permissions
+### Authority
 
 secret은 `/run/secrets/lab_pg_*`(예: `lab_pg_exporter_password`)에서 container 내부로만 읽고 문서나 로그에 남기지 않는다. DCS destructive recovery와 leadership mutation은 승인된 runbook/escalation 영역이다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 애플리케이션 연결을 `pg-router`의 write/read/stats endpoint 기준으로 구성한다 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 2 | `pg-cluster-init`가 `init_users_dbs.sql`로 exporter role, service role, service database를 동기화하게 한다 | `pg-router` write endpoint 준비 뒤 role과 database가 동기화된다 | 문서에 기록 없음 |
+| 3 | `pg-0-exporter`, `pg-1-exporter`, `pg-2-exporter`로 metrics를 확인한다 | 각 node의 metrics가 `${POSTGRES_EXPORTER_PORT:-9187}`에 expose된다 | 문서에 기록 없음 |
 
 #### Identity-specific behavior
 
@@ -113,20 +121,20 @@ etcd의 3 member는 각각 ID/URL/data가 다르고 Spilo의 3 member는 각각 
 
 3. Exporter는 `pg-0-exporter`, `pg-1-exporter`, `pg-2-exporter`가 각 node와 `lab_pg_exporter_password` secret을 기준으로 `${POSTGRES_EXPORTER_PORT:-9187}`에 metrics를 expose한다.
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `LAB_DATA_DIR=/tmp docker compose --env-file labs/.env.example -f labs/postgresql-ha/docker-compose.yml --profile postgres-ha config --quiet`
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha/docker-compose.yml ps etcd-1 etcd-2 etcd-3 pg-router pg-0 pg-1 pg-2`
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha/docker-compose.yml exec pg-0 patronictl -c /home/postgres/postgres.yml list`
 - `docker compose --env-file "$LAB_ENV_FILE" -f labs/postgresql-ha/docker-compose.yml logs --tail=120 pg-router pg-cluster-init`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - root의 `core` 또는 전체 profile render에는 `labs/postgresql-ha/docker-compose.yml`이 포함되지 않는다.
 - 직접 PostgreSQL node에 application traffic을 붙이면 failover 라우팅이 보장되지 않는다. 일반 연결 문서는 `pg-router`를 기준으로 한다.
@@ -137,3 +145,7 @@ etcd의 3 member는 각각 ID/URL/data가 다르고 Spilo의 3 member는 각각 
 #### Runbook Handoff
 
 반복 실행 절차, 장애 대응, rollback 또는 escalation 기준은 [PostgreSQL cluster runbook](../../runbooks/15-labs/0031-postgresql-cluster.md)을 따른다.
+
+### Next Action
+
+증상이 계속되면 [RUN-0031](../../runbooks/15-labs/0031-postgresql-cluster.md)를 따른다. DCS destructive recovery와 leadership mutation은 승인된 runbook/escalation 영역이다.

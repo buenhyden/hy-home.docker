@@ -1,10 +1,10 @@
 ---
 title: "hy-home.k8s Integration Usage Guide"
-version: "1.5.2"
+version: "1.6.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0096"
 parent_ids:
@@ -17,6 +17,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+hy-home.k8s 클러스터를 이 스택과 연결하는 운영자가 클러스터가 기대하는 계약을 이해하고 일상 점검을 할 때 읽는다.
+
 ### Outcome
 
 hy-home.k8s 저장소는 같은 호스트에서 k3d 클러스터(`hyhome`)를 실행한다.
@@ -28,7 +32,7 @@ k3d 제거 이후로는 어떤 Compose 서비스도 이와 Docker 네트워크�
 
 hy-home.k8s 클러스터를 이 스택과 연결하는 운영자를 위한 문서다. 클러스터가 이 쪽에 기대는 계약을 이해하고 일상 점검 방법을 찾는 것이 목표다.
 
-### Boundaries
+#### Boundaries
 
 - [Policy](../../policies/10-platform-and-backup/0096-k8s-integration.md) (`POL-0096`)
 - [Runbook](../../runbooks/10-platform-and-backup/0096-k8s-integration.md) (`RUN-0096`)
@@ -63,13 +67,13 @@ Kiali는 대신 Viewer 토큰을 사용). `config.home.alloy`는 `4317`/`4318`�
 없다. 네이티브 k3s NodePort로 가는 인증 없는 catch-all은 지난 7일간
 요청이 없어 2026-09-24에 제거했다.
 
-### Permissions
+### Authority
 
-필요한 자격 증명은 OpenBao `secret/platform/prometheus-api`와 `secret/platform/grafana-api`, ESO 역할 `eso-read-platform`, `.env`의 `PROMETHEUS_API_USERNAME`이며 값은 기록하지 않는다. Expected Result의 점검은 실행 승인이 있는 환경에서만 수행한다.
+필요한 자격 증명은 OpenBao `secret/platform/prometheus-api`와 `secret/platform/grafana-api`, ESO 역할 `eso-read-platform`, `.env`의 `PROMETHEUS_API_USERNAME`이며 값은 기록하지 않는다. Expected Results의 점검은 실행 승인이 있는 환경에서만 수행한다.
 
 ## Procedure
 
-### Actions
+### Steps
 
 #### hy-home.k8s가 이 쪽에 요구하는 것
 
@@ -101,13 +105,11 @@ Prometheus API는 `/api/v1/`과 `Authorization: Basic …`이 함께 있을 때 
 라우트를 선택한다. 잘못된 Basic은 401, 유효한 Basic은 200이며 header 없는 요청과
 UI는 현재 SSO redirect 302 경로다. TLS·DNS 실패 000을 인증 거절로 세지 않는다.
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 Troubleshooting 외에 별도의 예외 사례를 기록하지 않는다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 아래 점검은 실행 승인이 있는 환경에서만 수행한다. metadata check는 private
 registry와 `.env` 값을 읽으며 hardening/Compose 검증은 임시 입력을 만들 수 있다.
@@ -117,7 +119,9 @@ registry와 `.env` 값을 읽으며 hardening/Compose 검증은 임시 입력을
 - `bash scripts/hardening/check-all-hardening.sh` (라우트, 정책, 미들웨어 고정)
 - `docker network inspect k3d-hyhome --format '{{range .Containers}}{{.Name}} {{end}}'`는 `k3d-hyhome-*` 컨테이너만 나열
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - 단일 파일 Docker secret은 컨테이너가 생성될 때의 inode를 유지한다.
   시크릿 파일을 재생성했다면 그 소비자도 재생성해야 한다
@@ -139,3 +143,7 @@ registry와 `.env` 값을 읽으며 hardening/Compose 검증은 임시 입력을
 [runbook](../../runbooks/10-platform-and-backup/0096-k8s-integration.md)을 따른다.
 
 - [OpenBao runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)
+
+### Next Action
+
+최초 설정, 클러스터 재구축, 자격 증명 교체는 [runbook](../../runbooks/10-platform-and-backup/0096-k8s-integration.md)을 따른다. OpenBao 관련 문제는 [OpenBao runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)을 참고한다.

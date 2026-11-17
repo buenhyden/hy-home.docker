@@ -1,6 +1,6 @@
 ---
 title: "Application Authentication Integration Guide"
-version: "0.11.3"
+version: "0.12.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -17,6 +17,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+인프라/DevOps 엔지니어, 운영자, 플랫폼 개발자, AI Agent가 Keycloak, OAuth2 Proxy, Traefik, Kafbat UI, Airflow를 중복 인증 없이 연결하고 서비스별 authorization model을 유지할 때 읽는다.
+
 ### Outcome
 
 Keycloak, OAuth2 Proxy, Traefik, Kafbat UI, Airflow를 중복 인증 없이 연결하고
@@ -28,7 +32,7 @@ Keycloak, OAuth2 Proxy, Traefik, Kafbat UI, Airflow를 중복 인증 없이 연�
 - Keycloak application client 설정을 일관되게 유지한다.
 - Kafbat/Airflow RBAC와 OpenBao policy를 gateway auth와 충돌시키지 않는다.
 
-### Boundaries
+#### Boundaries
 
 - Parent: [POL-0079](../../policies/03-identity-and-access/0079-application-auth-integration.md)
 - Decision: [ADR-0038](../../../02.architecture/decisions/0038-selective-native-oidc-for-native-auth-apps.md)
@@ -66,13 +70,23 @@ OpenBao는 이 서버를 이용하는 서로 다른 클라이언트다. 로그�
 [OIDC Core](https://openid.net/specs/openid-connect-core-1_0.html),
 Keycloak의 endpoint 역할은 [공식 OIDC 안내](https://www.keycloak.org/securing-apps/oidc-layers)를 따른다.
 
-### Permissions
+### Authority
 
 SSO route는 Keycloak `/admins` 구성원만 통과한다. OAuth2 Proxy client ID는 `OAUTH2_PROXY_CLIENT_ID`, Airflow JWT는 `AIRFLOW__API_AUTH__JWT_SECRET` secret을 쓴다. client secret은 Docker Secret 또는 승인된 secret store로만 전달한다. owner 행 검증에는 로그인된 브라우저나 Keycloak 관리자 접근이 필요하다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | `Authorization Code와 검증 경계`: 클라이언트가 discovery의 issuer·authorization endpoint·token endpoint·JWKS를 확인한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 2 | `Authorization Code와 검증 경계`: 브라우저는 등록된 client와 callback으로 인증을 시작한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 3 | `Authorization Code와 검증 경계`: callback의 `state`를 시작한 브라우저 세션과 대조하고 code를 서버에서 교환한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 4 | `Authorization Code와 검증 경계`: 클라이언트는 서명·issuer·대상 audience·만료와 요청한 nonce를 검증한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+| 5 | `Authorization Code와 검증 경계`: 그룹·역할 claim을 앱 정책으로 변환한 뒤 앱 세션을 발급한다. | 문서에 기록 없음 | 문서에 기록 없음 |
+
+#### Actions
 
 정상 사용 절차는 아래 항목에 정리한다.
 
@@ -415,7 +429,7 @@ TLS 검사를 끄지 않는다). owner 행에는 로그인된 browser나 Keycloa
 당시 대기 중이던 owner 행을 포함한 각 행의 결과는 삭제된
 SPEC-0182 Task 0003에 기록되었고 Git history에 남아 있다.
 
-### Exceptions
+#### Exceptions
 
 특수 사례와 한계는 아래 항목에 정리한다.
 
@@ -468,9 +482,7 @@ token을 재사용 가능하게 노출했고 SonarQube·Terrakube 같은 자체 
 port로 직접 접근 가능하면 신뢰 헤더 방식의 보호가 성립한다고 볼 수 없다.
 Traefik dynamic directory는 file watch 대상이다. 실제 실행 컨테이너의 mount source 변경이 적용 경계이며 Git merge만으로 배포를 단정하지 않는다. Proxy 단일 설정 파일은 POL-0006의 재생성·hash 확인을 따른다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 각 application이 문서화된 ForwardAuth 또는 native OIDC 경로를 사용하는지, client ID가 provision된 Keycloak metadata와 일치하는지, 인가되지 않은 접근이 거부되는지 확인한다. client secret이나 token을 출력하지 않는다. container health만으로 role 인가를 입증할 수 없다.
 
@@ -500,7 +512,9 @@ docker compose exec -T airflow-apiserver airflow db check
 docker compose exec -T airflow-apiserver airflow dags list
 ```
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 로그인 루프·callback 거부·권한 403 패턴은 아래 Airflow 장애 패턴과 서비스별 Runbook을 따른다.
 
@@ -551,3 +565,7 @@ old callback URL을 재사용하지 않고 `/auth/login`에서 새 flow를 시�
 
 `/ui/auth/me` 등은 200인데 Pool/DAG/Asset만 403이면 authentication이 아니라
 Keycloak resource authorization 문제다.
+
+### Next Action
+
+로그인 루프·callback 거부·권한 403은 서비스별 Runbook으로 넘긴다: [Keycloak](../../runbooks/03-identity-and-access/0014-keycloak.md), [OAuth2 Proxy](../../runbooks/03-identity-and-access/0015-oauth2-proxy.md), [Kafka/Kafbat](../../runbooks/06-messaging-and-cdc/0036-kafka.md), [Airflow](../../runbooks/08-workflows-and-automation/0050-airflow.md).

@@ -1,10 +1,10 @@
 ---
 title: "RedisInsight Usage Guide"
-version: "1.4.4"
+version: "1.5.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0076"
 parent_ids:
@@ -20,6 +20,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+DEV/MNG Valkey의 키와 상태를 읽기 전용으로 조회하는 관리자. 사전 등록된 inspector 연결로 안전하게 조회하고 설정과 암호화 경계를 이해할 때 읽는다.
+
 ### Outcome
 
 RedisInsight는 `admin`과 `admin-data` 하위의 OPTIONAL admin UI이다. Redis/Valkey
@@ -30,7 +34,7 @@ history, 로그를 영속화한다.
 DEV/MNG Valkey의 키와 상태를 읽기 전용으로 조회하는 관리자를 위한 문서다. 목표는
 사전 등록된 inspector 연결로 안전하게 조회하고, 설정과 암호화 경계를 이해하는 것이다.
 
-### Boundaries
+#### Boundaries
 
 - [Policy](../../policies/05-databases-and-storage/0076-redisinsight.md) (`POL-0076`)
 - [Runbook](../../runbooks/05-databases-and-storage/0076-redisinsight.md) (`RUN-0076`)
@@ -66,13 +70,15 @@ DEV/MNG Valkey의 키와 상태를 읽기 전용으로 조회하는 관리자를
 - 업스트림은 RedisInsight를 SSPL 라이선스로 명시하며 해당 약관 동의를 요구한다.
   이 저장소는 다른 edition/라이선스를 주장하지 않는다.
 
-### Permissions
+### Authority
 
 저장된 연결 비밀번호는 `RI_ENCRYPTION_KEY`(`secrets/data/redisinsight/encryption_key.txt`)로 암호화하고, 사전 등록 연결의 inspector password는 `secrets/db/*/inspector_password.txt`에서 `start.sh`가 읽는다. gateway 경로에는 admin CIDR(`ADMIN_UI_ALLOWED_CIDRS`)과 OAuth2 Proxy ForwardAuth가 적용된다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 정상 사용 절차는 아래 항목에 정리한다.
 
@@ -102,7 +108,7 @@ RedisInsight는 시작할 때마다 아래 두 연결을 다시 만든다. 목�
 - 비밀번호는 secret 파일에서 `start.sh`가 읽어 환경으로만 넘기며 문서, 채팅, 로그,
   스크린샷에 남기지 않는다.
 
-### Exceptions
+#### Exceptions
 
 특수 사례와 한계는 아래 항목에 정리한다.
 
@@ -114,16 +120,16 @@ RedisInsight는 시작할 때마다 아래 두 연결을 다시 만든다. 목�
 Valkey와 gateway 준비를 각각 확인한다. 기동 직후 첫 DB 요청은 시작 시 외부 조회가
 끝나기 전까지 25초 요청 제한을 넘을 수 있으므로, 한 번 실패하면 다시 시도한다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `docker compose --profile admin-data config --quiet`
 - `bash scripts/hardening/check-all-hardening.sh 04-data`
 - `HYHOME_REDISINSIGHT_REHEARSAL=1 python3 -m unittest tests.validation.test_redisinsight_rehearsal`
   (격리 망에서 접속·거부·중단·회전을 시험한다)
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - DB 연결 실패: 대상 Valkey 컨테이너 안에서 inspector secret으로 `PING`이 `PONG`을
   돌려주는지 확인하고, `ACL LOG`의 `username`으로 어떤 사용자로 시도했는지 본다.
@@ -134,3 +140,7 @@ Valkey와 gateway 준비를 각각 확인한다. 기동 직후 첫 DB 요청은 
 
 인증, 설정, credential, 대상, 업그레이드 복구에는
 [runbook](../../runbooks/05-databases-and-storage/0076-redisinsight.md)을 사용한다.
+
+### Next Action
+
+인증, 설정, credential, 대상, 업그레이드 복구와 gateway 403/로그인 반복은 [Runbook](../../runbooks/05-databases-and-storage/0076-redisinsight.md)으로 넘긴다.

@@ -1,6 +1,6 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.7.3"
+version: "1.8.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -24,6 +24,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+SeaweedFS S3를 쓰는 서비스 소유자와 운영자가 consumer별 bucket과 identity, 네트워크·보안 경계, 지표와 경보, 백업·복구 방향을 이해할 때 읽는다.
+
 ### Outcome
 
 SeaweedFS는 S3 object store이며 SPEC-0180 S07에서 MinIO를 대체했다.
@@ -35,7 +39,7 @@ SeaweedFS S3를 쓰는 서비스 소유자와 운영자를 위한 문서다. 목
 identity, 네트워크·보안 경계, 지표와 경보, 백업·복구 방향을 이해하고 정적 검사와
 rehearsal로 구성을 확인하는 것이다.
 
-### Boundaries
+#### Boundaries
 
 - Artifact: `GDE-0024`; governing policy: `POL-0024`.
 - Runtime authority: `infra/04-data/seaweedfs/docker-compose.yml`.
@@ -82,13 +86,15 @@ network의 다른 구성원은 Prometheus뿐이며 Prometheus는 SeaweedFS 신�
 target down 5분)과 `SeaweedFSDataDiskLow`(node-exporter 기준 data-disk
 filesystem free 15% 미만 10분).
 
-### Permissions
+### Authority
 
 필요한 secret은 `seaweedfs_jwt_volume_key`, `seaweedfs_jwt_filer_key`, `seaweedfs_s3_admin_secret_key`와 `SEAWEEDFS_S3_ADMIN_ACCESS_KEY`다. 값은 문서에 남기지 않으며, LAB S3 endpoint 게시는 소유자 승인 전에는 실행하지 않는다.
 
 ## Procedure
 
-### Actions
+### Steps
+
+#### Actions
 
 정상 사용 절차는 아래 항목에 정리한다.
 
@@ -180,21 +186,25 @@ SeaweedFS의 license는 Apache-2.0이다.
 - [SeaweedFS security configuration](https://github.com/seaweedfs/seaweedfs/wiki/Security-Configuration)
 - [SeaweedFS repository and license](https://github.com/seaweedfs/seaweedfs)
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 별도 예외 절을 두지 않으며, 한계와 경계는 Environment와 Actions의 해당 본문과 Troubleshooting에 함께 적혀 있다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 정확한 root profile, service, health/resource control, writable-state
 ownership, secret reference, exposure, engine별 recovery boundary를
 확인한다. static pass는 configuration 증거일 뿐이다. runtime과 restore는
 별개로 남는다.
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 - consumer가 bucket을 찾지 못함: `seaweedfs-buckets` job의 종료 코드를 확인한다. job은 `seaweedfs-s3` healthy 이후에만 실행된다.
 - 서비스가 시작 직후 종료: `hyhome-seaweedfs.sh`는 JWT secret, `${DEFAULT_CERT_DIR}/seaweedfs` 인증서 또는 `SEAWEEDFS_S3_ADMIN_ACCESS_KEY`가 없으면 시작을 거부한다.
 - write 거부: volume의 `-minFreeSpace=20GiB` 한계와 `SeaweedFSDataDiskLow` 경보를 확인하고 [RUN-0035](../../runbooks/05-databases-and-storage/0035-storage-exhaustion.md)로 넘긴다.
+
+### Next Action
+
+write 거부는 [RUN-0035](../../runbooks/05-databases-and-storage/0035-storage-exhaustion.md)로 넘긴다. 그 밖의 상태 확인과 복구는 [Health and recovery runbook](../../runbooks/05-databases-and-storage/0024-seaweedfs.md)을 따른다.

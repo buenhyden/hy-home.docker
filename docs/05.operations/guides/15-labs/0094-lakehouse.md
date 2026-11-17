@@ -1,6 +1,6 @@
 ---
 title: "Lakehouse Usage Guide"
-version: "1.5.4"
+version: "1.6.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
@@ -25,6 +25,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+레이크하우스(Iceberg, Spark, Trino, Flink, Great Expectations)를 사용하는 데이터 엔지니어와 운영자가 LAB 경계와 각 엔진의 역할, 명령의 부작용을 이해하고 점검할 때 읽는다.
+
 ### Outcome
 
 레이크하우스는 root Compose에서 분리된 독립 LAB이며 `labs/lakehouse/docker-compose.yml`의 `lab-lakehouse`
@@ -35,8 +39,6 @@ Apache Iceberg이며 SeaweedFS 내장 Iceberg REST 카탈로그가 관리한다.
 테이블 포맷이다.
 
 레이크하우스(Iceberg, Spark, Trino, Flink, Great Expectations)를 사용하는 데이터 엔지니어와 운영자를 위한 문서다. LAB 경계, 각 엔진의 역할과 명령의 부작용을 이해하고 안전하게 사용·점검하는 것이 목표다.
-
-### Boundaries
 
 #### Traceability
 
@@ -102,13 +104,13 @@ Apache Iceberg이며 SeaweedFS 내장 Iceberg REST 카탈로그가 관리한다.
   목록을 표시하고, `validate`는 expectation 실패 시 `1`, 검사할 수 없을
   때 `2`로 종료한다.
 
-### Permissions
+### Authority
 
 secret은 LAB 전용 `lab_lakehouse_<purpose>`이며 SeaweedFS admin·`lakehouse` key의 LAB 사본은 별도 승인 아래 준비한다. 실행은 활성 lease 안에서 승인된 S3·카탈로그 endpoint가 있을 때만 한다.
 
 ## Procedure
 
-### Actions
+### Steps
 
 #### Identity-specific behavior
 
@@ -156,8 +158,6 @@ secret은 LAB 전용 `lab_lakehouse_<purpose>`이며 SeaweedFS admin·`lakehouse
 | `LAB exec flink-jobmanager /opt/flink/bin/flink cancel <job_id>` | job 중지; 이전 체크포인트에서 커밋된 데이터는 유지 |
 | `LAB run --rm --no-deps great-expectations validate [SUITE...]` | Trino를 통해 테이블을 읽음; expectation 실패 시 `1`로 종료 |
 
-### Exceptions
-
 #### LAB boundary
 
 - **Project.** `hy-home-lab-lakehouse` project의 `lab_lakehouse_net` 하나만 사용한다.
@@ -179,17 +179,21 @@ secret은 LAB 전용 `lab_lakehouse_<purpose>`이며 SeaweedFS admin·`lakehouse
   target에 mount되고 group은 `LAB_SECRETS_GID`다. 값은 복사되지 않았으므로 운영자가 SeaweedFS
   admin·`lakehouse` key의 LAB 사본을 별도 승인 아래 준비해야 한다(미결정 항목).
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 - `python3 scripts/validation/check-operations-catalog.py`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 #### Runbook Handoff
 
 카탈로그 오류, 접근 거부, job 실패, 테이블 복구는
 [runbook](../../runbooks/15-labs/0094-lakehouse.md)을 사용한다.
+
+### Next Action
+
+증상이 계속되면 [RUN-0094](../../runbooks/15-labs/0094-lakehouse.md)를 따른다. 카탈로그 오류, 접근 거부, job 실패, 테이블 복구를 다룬다.

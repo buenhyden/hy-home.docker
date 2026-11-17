@@ -1,10 +1,10 @@
 ---
 title: "WireMock Usage Guide"
-version: "1.0.7"
+version: "1.1.0"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0092"
 parent_ids:
@@ -20,6 +20,10 @@ next_review_at: "2027-05-13"
 
 ## Purpose
 
+### Audience
+
+외부 HTTP 의존성을 WireMock 스텁으로 대체해 테스트하는 개발자와 운영자가 스텁 추가, 보존, 점검 방법을 찾을 때 읽는다.
+
 ### Outcome
 
 WireMock은 기능 검사와 mock 자체 부하 측정에 공통 `api-mock` profile로
@@ -28,8 +32,6 @@ WireMock은 기능 검사와 mock 자체 부하 측정에 공통 `api-mock` prof
 보유하지 않고 웹 UI도 없어 라우트나 OIDC 클라이언트는 없고 필요하지도 않다.
 
 외부 HTTP 의존성을 스텁으로 대체해 테스트하는 개발자와 운영자를 위한 문서다. 스텁 추가와 보존 방식을 이해하고 정상 사용과 점검 방법을 찾는 것이 목표다.
-
-### Boundaries
 
 #### Traceability
 
@@ -70,13 +72,13 @@ WireMock은 기능 검사와 mock 자체 부하 측정에 공통 `api-mock` prof
   확인한다. 부하 모드의 무저널 응답 시간은 application performance가 아니라 mock
   performance로 표시한다.
 
-### Permissions
+### Authority
 
 기능 모드의 `/__admin` API는 인증이 없으므로 접근 범위를 제한하며, 실행은 승인된 기능 테스트에서만 한다(Environment 기준).
 
 ## Procedure
 
-### Actions
+### Steps
 
 #### Adding a stub
 
@@ -92,19 +94,19 @@ WireMock은 외부 대상과의 실제 계약 검증을 대신하지 않는다. 
 사라진다. HTTP 인증서·DB 복원은 적용되지 않지만 노출·요청 데이터 보존 통제는
 유지한다.
 
-### Exceptions
+#### Exceptions
 
 이 가이드는 Troubleshooting에 적은 내용 외의 예외를 따로 기록하지 않는다.
 
-## Verification
-
-### Expected Result
+### Expected Results
 
 - `HYHOME_COMPOSE_PROFILES=api-mock bash scripts/validation/validate-docker-compose.sh`
 - `docker compose --env-file .env.example -f docker-compose.yml -f infra/11-quality/wiremock/wiremock.load.yml --profile api-mock config --quiet`
 - `python3 scripts/validation/check-operations-catalog.py`
 
-### Troubleshooting
+## Troubleshooting
+
+### Symptoms
 
 먼저 활성 모드를 확인한다. 예상치 못한 404, 매핑 로드 실패, `OOMKilled`의 진단과 복구는
 [runbook](../../runbooks/12-testing-and-quality/0092-wiremock.md)이 소유한다.
@@ -113,3 +115,7 @@ WireMock은 외부 대상과의 실제 계약 검증을 대신하지 않는다. 
 
 서비스가 비정상이거나 스텁이 일치하지 않거나 메모리 한도에 도달하면
 [runbook](../../runbooks/12-testing-and-quality/0092-wiremock.md)을 사용한다.
+
+### Next Action
+
+서비스가 비정상이거나 스텁이 일치하지 않거나 메모리 한도에 도달하면 [runbook](../../runbooks/12-testing-and-quality/0092-wiremock.md)을 따른다.
