@@ -1,15 +1,15 @@
 ---
 title: "WARNING: non-Conventional Commit message"
-version: "1.0.7"
+version: "1.0.8"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-18"
 action: "warn"
 enabled: true
 event: "bash"
 name: "warn-conventional-commit"
-pattern: "git\\s+commit\\s+(?!.*--amend|.*-C[\\s=]).*-m\\s+(\"|\\')(?!(build|chore|ci|deps|docs|feat|fix|perf|refactor|release|revert|style|test)(\\([^)]*\\))?!?:[ \\t]|Merge\\s|Revert\\s|Initial commit)"
+pattern: "git\\s+commit(?!.*--amend|.*-C[\\s=])(?:(?!\\s-[A-Za-z]*m\\s).)*\\s-[A-Za-z]*m\\s+(\"|\\')(?!(build|chore|ci|deps|docs|feat|fix|perf|refactor|release|revert|style|test)(\\([^)]*\\))?!?:[ \\t]|Merge\\s|Revert\\s|Initial commit)"
 ---
 
 # WARNING: non-Conventional Commit message
