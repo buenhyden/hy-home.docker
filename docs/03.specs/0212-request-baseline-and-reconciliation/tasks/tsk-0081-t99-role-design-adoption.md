@@ -507,6 +507,8 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | SDLC forms corpus | 137 | W146 | document-corpus | check-changed against `origin/main` `3377e6ecb`, check-contracts, link alignment and corpus lifecycle at `110e484d1`; navigation, governance contract, renderer and markdownlint at `88d473c69` | PASS | 85 changed and 0 violations; 0 contract and lifecycle violations; alignment, navigation, governance contract and renderer PASS; 0 lint issues | required | - |
 | SDLC forms first regression | 137 | W146 | document-governance-regression | The ten governance modules, test_script_manifest, test_requirements, test_relations, test_architecture and test_language at `88d473c69`, before the review fixes | PASS | 841 tests in 1724 seconds, exit 0 | required | - |
 | SDLC forms review | 137 | W146 | independent-review | Commits `88d473c69` and `712787db3` | FAIL | CHANGES_REQUIRED: prose still naming Traceability, Statements differing from declarations, inferred Priority, interface cells beyond the document, PATCH bumps for contract changes, no Task record | required | - |
+| SDLC forms GREEN | 137 | W146 | role-design-binding | The ten governance modules, test_script_manifest, test_requirements, test_relations, test_architecture and test_language at `110e484d1`, after the review fixes | PASS | 842 tests in 1819 seconds, exit 0 | required | SDLC forms RED |
+| SDLC forms review fix checks | 137 | W146 | document-corpus | check-changed against `origin/main` `1b51e0b04` after the rebase raised the protocol to 7.5.0 | PASS | 86 changed and 0 violations | required | - |
 
 ### Resolution Links
 
@@ -516,7 +518,7 @@ regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
 Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Policy review approval, Policy re-review approval, Policy hosted candidate
 rerun, Governance form GREEN, Governance regression, Governance old-form GREEN, Governance re-review, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
-rows, References form GREEN and References re-review resolve their W144 rows, and Agent instructions form GREEN and Agent instructions re-review resolve their W145 rows. The comparison baseline stays
+rows, References form GREEN and References re-review resolve their W144 rows, Agent instructions form GREEN and Agent instructions re-review resolve their W145 rows, and SDLC forms GREEN resolves its W146 row. The comparison baseline stays
 open until every role group conforms.
 
 ## Acceptance Decision
