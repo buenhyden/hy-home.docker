@@ -1,17 +1,17 @@
 ---
 title: "Owned OpenBao Build"
-version: "0.2.1"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Owned OpenBao build
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -53,18 +53,12 @@ v3.24 main/community APKINDEX 기준으로 다시 고정했습니다. source, Go
 - [owned_image_oci.py](owned_image_oci.py): 검증된 공개 runtime export를 결정론적 OCI archive로 포장합니다.
 - [build-owned-image.py](../scripts/build-owned-image.py): plan, 두 번의 build, 비교와 receipt 생성을 제한된 단계로 실행합니다.
 
-### Supported Environment
+### Interfaces
 
-#### Tech Stack
-
-선택된 [build-inputs.json](build-inputs.json)이 이 owned build의 고정 build input과
-결과 version/tag의 권위입니다. [Dockerfile](Dockerfile)은 실제 runtime 조립 recipe이며,
-[공유 버전 레지스트리](../../../../infra/tech-stack.versions.json)는 Compose와 build
-source에서 파생된 투영으로서 이 build packet이나 배포 manifest를 대신하지 않습니다.
-
-## Interfaces
-
-### Inputs and Outputs
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `materials/` 디렉터리와 `materials.json` SHA (`--materials-directory`, `--materials-sha256`) | `scripts/operations/prepare-openbao-materials.py` | `build-owned-image.py`의 `--phase plan`과 `--phase build` | materials.json SHA와 일곱 source 파일의 packet SHA를 명시해 plan을 실행하고 build는 같은 입력으로 두 번 compile한다. | 실패·OOM·cleanup 실패는 FAIL이며 receipt를 덮어쓰지 않고 새 directory로만 재시도한다. |
+| OCI archive와 `hy-home/openbao:<tag>@sha256:<manifest>` | `owned_image_oci.py` | Docker(`--pull=never`로 조회 및 실행) | packet/material/patch hash를 OCI label로 연결한 결정론적 단일 layer OCI archive이다. | 두 binary SHA와 OCI config/layer/manifest가 모두 같아야 재현성 PASS이다. |
 
 #### Configuration
 
@@ -101,13 +95,22 @@ Packet/material/patch hash는 OCI label로 연결됩니다. OCI archive를
 Docker에 load한 뒤 `hy-home/openbao:<tag>@sha256:<manifest>`를 `--pull=never`로
 조회 및 실행하여 고정 reference가 작동하는지 확인해야 합니다.
 
-### Security Boundary
+#### Security Boundary
 
 없음: 이 폴더에는 Compose 서비스나 secret 정의가 없고 `Dockerfile`, `build-inputs.json`, `go-modules.patch`, `owned_image_oci.py`만 두며 secret 값은 저장소에 두지 않는다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+#### Tech Stack
+
+선택된 [build-inputs.json](build-inputs.json)이 이 owned build의 고정 build input과
+결과 version/tag의 권위입니다. [Dockerfile](Dockerfile)은 실제 runtime 조립 recipe이며,
+[공유 버전 레지스트리](../../../../infra/tech-stack.versions.json)는 Compose와 build
+source에서 파생된 투영으로서 이 build packet이나 배포 manifest를 대신하지 않습니다.
+
+### Selected Start
 
 #### Usage
 
@@ -150,7 +153,9 @@ Docker에 load한 뒤 `hy-home/openbao:<tag>@sha256:<manifest>`를 `--pull=never
    `recipe_sha256`(Dockerfile의 SHA-256)을 다시 계산한 뒤, packet SHA(`current_packet` 규칙)를 계산하여
    `build-owned-image.py --phase plan`이 FAIL 없이 끝나는지 확인합니다. 그 뒤에만 `--phase build`를 승인된 창에서 실행합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
@@ -160,9 +165,9 @@ Docker에 load한 뒤 `hy-home/openbao:<tag>@sha256:<manifest>`를 `--pull=never
 P01 격리 rehearsal은 build 이후 해당 기존 gate에서 별도로 검증합니다.
 이 README와 build 성공만으로 runtime 수용을 선언하지 않습니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -174,6 +179,6 @@ P01 격리 rehearsal은 build 이후 해당 기존 gate에서 별도로 검증�
 - [Shared runtime version projection](../../../../infra/tech-stack.versions.json)
 - [Owned image contract tests](../../../../tests/validation/test_openbao_owned_image_contract.py)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 이 폴더는 이미지 빌드 입력이며 헬스체크를 선언하지 않는다. 실행 서비스는 상위 `openbao/docker-compose.yml`이 선언한다.

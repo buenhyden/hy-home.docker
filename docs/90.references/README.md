@@ -1,33 +1,47 @@
 ---
 title: "References"
-version: "1.0.6"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "references"
 ---
 
 # References
 
-## Stage Responsibility
+## Responsibility
 
-### Purpose and Readers
+### Purpose
+
+#### Purpose and Readers
 
 `docs/90.references/`는 세 가지 package 범주로 보조 증거를 저장합니다. 활성
 lifecycle stage가 사실을 평가하도록 돕지만 공통 Agent 거버넌스
 정책, Stage 01 요구사항, Stage 02 아키텍처, Stage 03 명세, Stage 05 운영을
 대체하지 않습니다.
 
-### Inputs and Outputs
+#### Inputs and Outputs
 
 - `research/`: 외부 증거와 출처 기반 분석(`RES-####`).
 - `audits/`: 특정 시점의 gap과 conformance 평가(`AUD-####`).
 - `data/`: 저장소 인벤토리와 구조화된 참고 데이터(`DATA-####`).
 
-## Contents
+### Excluded Responsibilities
 
-### Current Items
+Stage 90은 공통 Agent 거버넌스 정책과 Stage 01 요구사항, Stage 02 아키텍처, Stage 03 명세, Stage 05 운영을 대체하지 않습니다. 실행 가능한 OpenAPI, GraphQL, Proto 계약은 해당 Stage 03 Spec Package에 남습니다.
+
+## Current Contents
+
+### Paths
+
+| Path | Purpose |
+| --- | --- |
+| [research/](research/README.md) | 외부 증거와 출처 기반 분석(`RES-####`) |
+| [audits/](audits/README.md) | 특정 시점의 gap과 conformance 평가(`AUD-####`) |
+| [data/](data/README.md) | 저장소 인벤토리와 구조화된 참고 데이터(`DATA-####`) |
+
+#### Current Items
 
 ```text
 docs/90.references/
@@ -46,8 +60,6 @@ package는 `generated_by` provenance를 유지합니다.
 - [Research packages](./research/README.md)
 - [Audit packages](./audits/README.md)
 - [Data packages](./data/README.md)
-
-### Classification
 
 #### Authority Boundary
 
@@ -74,26 +86,19 @@ reference는 독자의 필요를 설명할 뿐이며 이것만으로 문서가 S
 - 날짜는 package 이름이 아니라 frontmatter에 저장합니다.
 - 인용, 외부 관찰 날짜, 한계를 보존합니다.
 
-## Workflow
+### Owners
 
-### Create and Review
+이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않습니다.
 
-1. 파일 형식이 아니라 목적으로 증거 범주를 선택합니다.
-2. 매핑된 Stage 99 템플릿을 복사하고 다음 등록 안정 ID를 발급합니다.
-3. Traceability에 활성 owner를 연결하고 규범적 지시는 그곳에 둡니다.
-4. metadata, 링크, reference-package, generator 신선도 검증을 실행합니다.
+## Usage
 
-### Transition and Exit
+### Entry Points
 
-research·audit·data package는 `publication` 수명주기(draft, in-review, published, superseded, retired)를 따르며, 은퇴한 package는 남아야 할 의미를 현재 owner에 옮긴 뒤 삭제하고 번호를 Registry `reserved_history`에 추가합니다.
-
-## Related Documents
-
-### Upstream and Downstream
+#### Upstream and Downstream
 
 이 stage는 [audits](audits/README.md), [data](data/README.md), [research](research/README.md) 세 범주 README로 이어지며, Stage 90 package는 현재 consumer가 존재하는 동안만 현재성을 유지합니다.
 
-### Policy and Templates
+#### Policy and Templates
 
 - [에이전트 작업 규칙](AGENTS.md)
 - [Documentation protocol](../../.agents/governance/documentation-protocol.md)
@@ -103,3 +108,16 @@ research·audit·data package는 `publication` 수명주기(draft, in-review, pu
 - [Audit template](../99.templates/templates/references/audit-pack.template.md)
 - [Data template](../99.templates/templates/references/data-pack.template.md)
 - [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
+
+### Checks
+
+#### Create and Review
+
+1. 파일 형식이 아니라 목적으로 증거 범주를 선택합니다.
+2. 매핑된 Stage 99 템플릿을 복사하고 다음 등록 안정 ID를 발급합니다.
+3. Traceability에 활성 owner를 연결하고 규범적 지시는 그곳에 둡니다.
+4. metadata, 링크, reference-package, generator 신선도 검증을 실행합니다.
+
+#### Transition and Exit
+
+research·audit·data package는 `publication` 수명주기(draft, in-review, published, superseded, retired)를 따르며, 은퇴한 package는 남아야 할 의미를 현재 owner에 옮긴 뒤 삭제하고 번호를 Registry `reserved_history`에 추가합니다.

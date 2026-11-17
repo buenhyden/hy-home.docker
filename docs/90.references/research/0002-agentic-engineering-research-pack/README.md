@@ -1,6 +1,6 @@
 ---
 title: "Agentic Engineering Research Pack"
-version: "2.5.2"
+version: "2.6.0"
 type: "reference/research-pack"
 status: "published"
 owner: "@buenhyden"
@@ -15,15 +15,15 @@ observed_at: "2026-09-05"
 
 # Agentic Engineering Research Pack
 
-## Overview
+## Responsibility
 
-### Overview
+### Purpose
+
+#### Overview
 
 에이전트 엔지니어링(harness, loop, instruction, 모델 선택, 기억, SDD·SDLC 문서, Compose·인프라, CI/CD, 품질, 보안)에 관한 외부 근거와 과거 워크스페이스 관측을 멤버 m0001–m0021로 묶은 비규범 연구 묶음이다. 현재 규칙은 [거버넌스](../../../../.agents/README.md)와 해당 Stage 문서가 소유한다.
 
-## Scope
-
-### Scope
+#### Scope
 
 | 구분 | 이번 기록 |
 | --- | --- |
@@ -38,9 +38,31 @@ observed_at: "2026-09-05"
 실제 계정·비용, 환경변수·비밀값·원시 로그 조사는 제외했다. 연구를 근거로 한
 설정·정책 변경, 배포·재시작·push·PR·merge도 수행 범위가 아니다.
 
-## Structure
+#### Question
 
-### Structure
+공식 외부 자료에 근거해 agent engineering, SDLC, 문서화, Compose, CI/CD,
+품질과 보안의 선택지를 어떻게 구분하고, 후속 내부 조사에 필요한 질문과
+수용 증거를 어떻게 준비할 것인가?
+
+이번 결과는 비규범적 연구다. 상세 주장은 기존 멤버 한 곳이 소유하며 이
+README는 범위, 통합 결정, 탐색과 추적성을 제공한다.
+
+### Excluded Responsibilities
+
+- 워크스페이스 구현·운영·계정·보안 상태는 새로 평가하지 않았다. 내부 적용
+  상태는 모두 `Not assessed in this run`이다.
+- 공식 문서도 변한다. 버전·채널·과금·지원 범위는 채택 전에 재확인한다.
+  과거 자료와 이번 가변 문서를 동일한 관측으로 취급하지 않는다.
+- 역사 자료의 생성·검증 명령과 count는 실행 지시가 아니다. 폐기된 로컬
+  LLM Wiki를 복원하거나 생성기를 실행하지 않는다.
+- 문서 검증은 서비스 health, 복구, 성능, 공급자 이용 권한 또는 remote
+  enforcement를 증명하지 않는다. 실제 결과와 미실행 사유는 Task에서 구분한다.
+
+## Current Contents
+
+### Paths
+
+#### Structure
 
 | Path | Purpose |
 | --- | --- |
@@ -66,18 +88,68 @@ observed_at: "2026-09-05"
 | [`m0020-workspace-baseline.md`](m0020-workspace-baseline.md) | Agentic Engineering Workspace Baseline |
 | [`m0021-local-docker-service-consolidation.md`](m0021-local-docker-service-consolidation.md) | Local Docker Service Consolidation |
 
+#### Request Coverage and Member Navigation
+
+이번 요청 A–L의 다대일 매핑이다. 모든 현재 내부 적용 상태는
+`Not assessed in this run`이다. 상세 분석과 비교는 대표 절이 소유한다.
+
+| 요청 | 주제 | 대표 멤버 | 세부 범위 |
+| --- | --- | --- | --- |
+| A | Harness와 bounded loop | [m0008](m0008-harness-engineering.md#current-external-research), [m0010](m0010-loop-engineering.md#current-external-research) | instruction/tools/environment/sandbox/context/memory/skill/orchestration/관측/평가/복구; goal/state/plan/act/observe/verify/review/stop/handoff, budget/retry/checkpoint/멱등성/병렬 충돌 |
+| B | 공통 거버넌스와 instruction | [m0001](m0001-agent-instructions-vibe-coding.md#current-external-research), [m0012](m0012-provider-implementation-comparison.md#current-external-research) | 정책/역할/절차/도구/스타일, 계층/충돌/명시적 로딩/신뢰, 스택/coding standard, 공통 원본/native adapter |
+| C | Agent catalog·모델·비용 | [m0003](m0003-ai-agent-catalogs.md#current-external-research), [m0002](m0002-agent-model-selection.md#current-external-research), [m0013](m0013-provider-model-landscape.md#current-external-research) | 형식/배포/변환/license/pinning/권한/평가; 작업별 effort/fallback/지연/token/context/compaction/cache/rate/동시성/예산 |
+| D | 기억·LLM Wiki·handoff | [m0011](m0011-memory-hierarchy.md#current-external-research), [m0009](m0009-llm-wiki-system.md#current-external-research), [m0012](m0012-provider-implementation-comparison.md#current-external-research) | 단기/장기/영역별 기억과 승인 증거; 승격/검색/요약/만료/삭제/오염; ingest/query/lint/RAG/llms.txt 차이; 최소 handoff |
+| E | SDD·SDLC·개발 문서 | [m0018](m0018-spec-driven-sdlc.md#findings), [m0016](m0016-sdlc-document-roles.md#findings), [m0006](m0006-document-metadata-lifecycle.md#findings) | PRD/Requirement/SPEC/PLAN/TASK/ADR 책임/입출력/소유/검토/수명주기/내용/관계/변경/분할/보존; 요구→수용과 작업→운영 |
+| F | 운영 문서 | [m0016](m0016-sdlc-document-roles.md#findings) | Guide/Incident/Postmortem/Policy/Runbook 독자/목적/트리거/소유/필수항목/상태/검토/개정/보존/관계 및 안전 중단/복구/후속 조치 추적. 제품 발행 절차와 실제 발행 증거의 구분. |
+| G | 문서화·탐색 | [m0007](m0007-documentation-architecture.md#findings), [m0006](m0006-document-metadata-lifecycle.md#findings) | Diátaxis 독자 필요, C4 수준/동적/배포, arc42 품질/위험, ADR 결정/supersession, README 역할과 중복 방지 |
+| H | Compose·Infrastructure | [m0005](m0005-docker-compose-infrastructure.md#current-external-research), [m0021](m0021-local-docker-service-consolidation.md#current-external-research) | 사양/CLI/include/merge/extends/profile/interpolation/project/dependency/health/network/ports/volume/config/secret/resources/stop/restart/provenance; TLS/DNS/관측/복구/업데이트/license/중복/부담 |
+| I | CI/CD·Actions | [m0004](m0004-automation-pipeline-workflow.md#current-external-research) | test/build/package/publish/deploy/promotion/rollback; workflow/job/step/event/filter/reuse/matrix/concurrency/cache/artifact/required checks/environment/OIDC/pinning/untrusted PR/runner |
+| J | QA·Verification/Validation | [m0014](m0014-quality-ci-formatting.md#current-external-research), [m0019](m0019-verification-validation.md#current-external-research) | format/lint/syntax/schema/static/unit/integration/contract/E2E/문서/보안/flaky/fixture/mutation/coverage; 적합성과 의도한 사용/수용/독립 검토 |
+| K | Security | [m0017](m0017-security-governance.md#current-external-research) | SSDF/공급망/SBOM/provenance/signature/취약점/least privilege/sandbox/secret/pinning/예외/위험/감사; agent/MCP/plugin/hook/injection/유출/기억 오염/socket/mount/privileged/network/runner |
+| L | Editor·hooks·project tracking | [m0004](m0004-automation-pipeline-workflow.md#current-external-research), [m0014](m0014-quality-ci-formatting.md#current-external-research), [m0018](m0018-spec-driven-sdlc.md#alternatives) | provider/Git/editor/CI 주체; commit message/inline edit/documentation/test hook/재검토/우회/network; GitHub/Linear/Jira/Markdown hierarchy/deps/roadmap/workflow/automation/권한/Git/API/MCP/export/부담 |
+
+적용 수준과 관심 영역의 교차 매핑, 후보 표면의 확인 여부, 후속 질문의 증거·검사
+방법·합격/실패·권한·소유 역할은 [m0015](m0015-scope-application-matrix.md#future-internal-checks)가
+통합 안내한다. [m0020](m0020-workspace-baseline.md)은 과거 내부 baseline의 보존 위치다.
+
+### Owners
+
+이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 member의 소유자는 이 README가 따로 기록하지 않습니다.
+
 ## Usage
 
-### Question
+### Entry Points
 
-공식 외부 자료에 근거해 agent engineering, SDLC, 문서화, Compose, CI/CD,
-품질과 보안의 선택지를 어떻게 구분하고, 후속 내부 조사에 필요한 질문과
-수용 증거를 어떻게 준비할 것인가?
+#### Implications
 
-이번 결과는 비규범적 연구다. 상세 주장은 기존 멤버 한 곳이 소유하며 이
-README는 범위, 통합 결정, 탐색과 추적성을 제공한다.
+작은 local-first 작업 공간에서는 기존 문서·작업 기록·native 기능으로 필요를
+충족하는지 먼저 평가한다. 새로운 wrapper, tracker, 기억 시스템, agent catalog는
+수용 시나리오·권한 경계·유지비용이 분명할 때 후보가 된다. 비용 절감률이나
+안전성 향상은 측정 없이 주장하지 않는다.
 
-### Method
+후속 내부 조사는 m0015의 질문을 출발점으로 별도 승인된 범위에서 수행한다.
+복구 시험, 실제 provider 호출, 계정·권한 read-back, 서비스 변경은 권한과 격리
+조건을 먼저 정해야 한다. 이번 연구는 그 실행을 승인하지 않는다.
+
+#### Traceability
+
+연구는 비규범적 근거다. 실제 채택과 변경은 [거버넌스](../../../../.agents/README.md),
+[SDLC](../../../../.agents/governance/sdlc.md) 및 해당 Requirement·Architecture·Spec·운영
+소유자가 결정한다. 이번 문서 갱신 증거는
+SPEC-0185 Task에만 기록한다.
+기존 `parent_ids`는 구조적 관계를 유지하며 새 인용을 부모로 추가하지 않았다.
+
+보존 자료: [RES-0084](../0084-github-actions-platform/README.md),
+[RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md),
+[RES-0096](../0096-archive-disposition-consistency/README.md).
+문서 계약: [Registry](../../../99.templates/registry.json),
+[pack template](../../../99.templates/templates/references/research-pack.template.md),
+[member template](../../../99.templates/templates/references/research.template.md).
+탐색: [연구 인덱스](../README.md).
+
+### Checks
+
+#### Method
 
 질문, 증거 모델, 수명주기/관측 시점, 활용 목적이 모두 같을 때 현재 설명을
 동일 주장으로 통합한다. 외부 제품 사양과 과거 내부 실행 결과는 합치지 않는다.
@@ -100,7 +172,7 @@ README는 범위, 통합 결정, 탐색과 추적성을 제공한다.
 사실/해석/권고, 한계·충돌·재확인 조건을 붙인다. 제품 지원과 계정 entitlement,
 API 요금과 구독 CLI quota를 구분한다. 찾지 못한 기능은 미지원으로 추론하지 않는다.
 
-### Preservation Declaration
+#### Preservation Declaration
 
 SPEC-0158의 보호 대상과 기존 식별자를 유지한다. 고유 관측·출처·승인 이력은
 삭제하지 않으며 역사 구역은 당시 의미로만 읽는다. 기존 보호 집합을 바꾸지 않고
@@ -129,31 +201,7 @@ SPEC-0158의 보호 대상과 기존 식별자를 유지한다. 고유 관측·�
 - `m0020-workspace-baseline.md`
 - `m0021-local-docker-service-consolidation.md`
 
-### Request Coverage and Member Navigation
-
-이번 요청 A–L의 다대일 매핑이다. 모든 현재 내부 적용 상태는
-`Not assessed in this run`이다. 상세 분석과 비교는 대표 절이 소유한다.
-
-| 요청 | 주제 | 대표 멤버 | 세부 범위 |
-| --- | --- | --- | --- |
-| A | Harness와 bounded loop | [m0008](m0008-harness-engineering.md#current-external-research), [m0010](m0010-loop-engineering.md#current-external-research) | instruction/tools/environment/sandbox/context/memory/skill/orchestration/관측/평가/복구; goal/state/plan/act/observe/verify/review/stop/handoff, budget/retry/checkpoint/멱등성/병렬 충돌 |
-| B | 공통 거버넌스와 instruction | [m0001](m0001-agent-instructions-vibe-coding.md#current-external-research), [m0012](m0012-provider-implementation-comparison.md#current-external-research) | 정책/역할/절차/도구/스타일, 계층/충돌/명시적 로딩/신뢰, 스택/coding standard, 공통 원본/native adapter |
-| C | Agent catalog·모델·비용 | [m0003](m0003-ai-agent-catalogs.md#current-external-research), [m0002](m0002-agent-model-selection.md#current-external-research), [m0013](m0013-provider-model-landscape.md#current-external-research) | 형식/배포/변환/license/pinning/권한/평가; 작업별 effort/fallback/지연/token/context/compaction/cache/rate/동시성/예산 |
-| D | 기억·LLM Wiki·handoff | [m0011](m0011-memory-hierarchy.md#current-external-research), [m0009](m0009-llm-wiki-system.md#current-external-research), [m0012](m0012-provider-implementation-comparison.md#current-external-research) | 단기/장기/영역별 기억과 승인 증거; 승격/검색/요약/만료/삭제/오염; ingest/query/lint/RAG/llms.txt 차이; 최소 handoff |
-| E | SDD·SDLC·개발 문서 | [m0018](m0018-spec-driven-sdlc.md#findings), [m0016](m0016-sdlc-document-roles.md#findings), [m0006](m0006-document-metadata-lifecycle.md#findings) | PRD/Requirement/SPEC/PLAN/TASK/ADR 책임/입출력/소유/검토/수명주기/내용/관계/변경/분할/보존; 요구→수용과 작업→운영 |
-| F | 운영 문서 | [m0016](m0016-sdlc-document-roles.md#findings) | Guide/Incident/Postmortem/Policy/Runbook 독자/목적/트리거/소유/필수항목/상태/검토/개정/보존/관계 및 안전 중단/복구/후속 조치 추적. 제품 발행 절차와 실제 발행 증거의 구분. |
-| G | 문서화·탐색 | [m0007](m0007-documentation-architecture.md#findings), [m0006](m0006-document-metadata-lifecycle.md#findings) | Diátaxis 독자 필요, C4 수준/동적/배포, arc42 품질/위험, ADR 결정/supersession, README 역할과 중복 방지 |
-| H | Compose·Infrastructure | [m0005](m0005-docker-compose-infrastructure.md#current-external-research), [m0021](m0021-local-docker-service-consolidation.md#current-external-research) | 사양/CLI/include/merge/extends/profile/interpolation/project/dependency/health/network/ports/volume/config/secret/resources/stop/restart/provenance; TLS/DNS/관측/복구/업데이트/license/중복/부담 |
-| I | CI/CD·Actions | [m0004](m0004-automation-pipeline-workflow.md#current-external-research) | test/build/package/publish/deploy/promotion/rollback; workflow/job/step/event/filter/reuse/matrix/concurrency/cache/artifact/required checks/environment/OIDC/pinning/untrusted PR/runner |
-| J | QA·Verification/Validation | [m0014](m0014-quality-ci-formatting.md#current-external-research), [m0019](m0019-verification-validation.md#current-external-research) | format/lint/syntax/schema/static/unit/integration/contract/E2E/문서/보안/flaky/fixture/mutation/coverage; 적합성과 의도한 사용/수용/독립 검토 |
-| K | Security | [m0017](m0017-security-governance.md#current-external-research) | SSDF/공급망/SBOM/provenance/signature/취약점/least privilege/sandbox/secret/pinning/예외/위험/감사; agent/MCP/plugin/hook/injection/유출/기억 오염/socket/mount/privileged/network/runner |
-| L | Editor·hooks·project tracking | [m0004](m0004-automation-pipeline-workflow.md#current-external-research), [m0014](m0014-quality-ci-formatting.md#current-external-research), [m0018](m0018-spec-driven-sdlc.md#alternatives) | provider/Git/editor/CI 주체; commit message/inline edit/documentation/test hook/재검토/우회/network; GitHub/Linear/Jira/Markdown hierarchy/deps/roadmap/workflow/automation/권한/Git/API/MCP/export/부담 |
-
-적용 수준과 관심 영역의 교차 매핑, 후보 표면의 확인 여부, 후속 질문의 증거·검사
-방법·합격/실패·권한·소유 역할은 [m0015](m0015-scope-application-matrix.md#future-internal-checks)가
-통합 안내한다. [m0020](m0020-workspace-baseline.md)은 과거 내부 baseline의 보존 위치다.
-
-### Synthesis
+#### Synthesis
 
 instruction과 역할 설명은 권한이나 sandbox enforcement의 증거가 아니다.
 외부 제품 지원, 계정 이용 권한, 로컬 채택과 실행 결과도 별개의 주장이다.
@@ -161,7 +209,7 @@ instruction과 역할 설명은 권한이나 sandbox enforcement의 증거가 �
 서로 대체할 수 없는 증거다. 이는 연결된 멤버들의 출처를 종합한 연구자의
 해석이며 새 정책이나 내부 평가 결과가 아니다.
 
-### Historical workspace observations — not reassessed in this refresh
+#### Historical workspace observations — not reassessed in this refresh
 
 아래 기록은 이전 관찰의 한국어 보존본입니다. 현재 주장이나 새 승인으로 읽지 않으며, 현재 외부 연구는 위의 갱신된 member 탐색을 따릅니다.
 
@@ -618,7 +666,7 @@ owner로 만듭니다.
   취급합니다; 현재 생성된 LLM Wiki 신선도는 오직 등록된 generator와
   check만이 결정합니다.
 
-### Sources
+#### Sources
 
 원문별 상세 절·확인일·제품 범위는 멤버의 `Claims and Sources`에서 직접 확인한다.
 공급자·모델은 [m0012](m0012-provider-implementation-comparison.md#claims-and-sources)와
@@ -632,43 +680,3 @@ owner로 만듭니다.
 
 역사 인용을 이번 확인 날짜로 다시 지정하지 않았다. 접근 불가, 발행일 미표시,
 draft/preview와 문서 간 차이는 해당 주장 옆에 한계로 남긴다.
-
-### Implications
-
-작은 local-first 작업 공간에서는 기존 문서·작업 기록·native 기능으로 필요를
-충족하는지 먼저 평가한다. 새로운 wrapper, tracker, 기억 시스템, agent catalog는
-수용 시나리오·권한 경계·유지비용이 분명할 때 후보가 된다. 비용 절감률이나
-안전성 향상은 측정 없이 주장하지 않는다.
-
-후속 내부 조사는 m0015의 질문을 출발점으로 별도 승인된 범위에서 수행한다.
-복구 시험, 실제 provider 호출, 계정·권한 read-back, 서비스 변경은 권한과 격리
-조건을 먼저 정해야 한다. 이번 연구는 그 실행을 승인하지 않는다.
-
-### Limitations
-
-- 워크스페이스 구현·운영·계정·보안 상태는 새로 평가하지 않았다. 내부 적용
-  상태는 모두 `Not assessed in this run`이다.
-- 공식 문서도 변한다. 버전·채널·과금·지원 범위는 채택 전에 재확인한다.
-  과거 자료와 이번 가변 문서를 동일한 관측으로 취급하지 않는다.
-- 역사 자료의 생성·검증 명령과 count는 실행 지시가 아니다. 폐기된 로컬
-  LLM Wiki를 복원하거나 생성기를 실행하지 않는다.
-- 문서 검증은 서비스 health, 복구, 성능, 공급자 이용 권한 또는 remote
-  enforcement를 증명하지 않는다. 실제 결과와 미실행 사유는 Task에서 구분한다.
-
-## Related Documents
-
-### Traceability
-
-연구는 비규범적 근거다. 실제 채택과 변경은 [거버넌스](../../../../.agents/README.md),
-[SDLC](../../../../.agents/governance/sdlc.md) 및 해당 Requirement·Architecture·Spec·운영
-소유자가 결정한다. 이번 문서 갱신 증거는
-SPEC-0185 Task에만 기록한다.
-기존 `parent_ids`는 구조적 관계를 유지하며 새 인용을 부모로 추가하지 않았다.
-
-보존 자료: [RES-0084](../0084-github-actions-platform/README.md),
-[RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md),
-[RES-0096](../0096-archive-disposition-consistency/README.md).
-문서 계약: [Registry](../../../99.templates/registry.json),
-[pack template](../../../99.templates/templates/references/research-pack.template.md),
-[member template](../../../99.templates/templates/references/research.template.md).
-탐색: [연구 인덱스](../README.md).

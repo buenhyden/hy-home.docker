@@ -1,10 +1,10 @@
 ---
 title: "Great Expectations (lakehouse data quality)"
-version: "1.1.1"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-09-23"
 ---
 
@@ -14,9 +14,9 @@ created: "2026-09-23"
 
 > 추적된 suite를 기준으로 Trino를 통해 Iceberg table을 검사하는 lakehouse LAB의 on-demand 데이터 품질 job입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 Great Expectations(GX Core)는 독립 Compose project인 [lakehouse LAB](../docker-compose.yml)
 (`lab-lakehouse` profile)의 one-shot 작업입니다. HOME network에 연결되지 않고
@@ -58,17 +58,15 @@ great-expectations/
 
 서비스 정의는 [labs/lakehouse/docker-compose.yml](../docker-compose.yml)이 소유합니다.
 
-### Supported Environment
+### Interfaces
 
-| Category | Technology | Notes |
-| :--- | :--- | :--- |
-| **Engine** | GX Core(버전은 `requirements.txt`) | ephemeral context, project 파일 없음 |
-| **Data source** | Trino SQLAlchemy dialect | `trino://great-expectations@trino:8080/lakehouse` |
-| **Runtime** | Python(`Dockerfile`의 base image) | UID 1000, 1 CPU, 512 MiB, read-only root |
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `trino://great-expectations@trino:8080/lakehouse` | `trino`(catalog `lakehouse`) | `great-expectations` | `GX_TRINO_URL` SQLAlchemy URL로 table을 읽기만 하며 Trino에는 인증이 없다. | `TABLE_NOT_FOUND`나 Trino 오류면 exit `2`로 원인을 stderr에 출력한다. |
+| `suites/*.json` | 이 폴더(추적 suite) | `great-expectations`(`/opt/hyhome/suites` 읽기 전용) | `name`, `<schema>.<table>` 형식의 `table`, GX expectation 목록을 담으며 raw SQL 인자는 코드처럼 리뷰한다. | 파일이 없으면 `no suite '<name>'`, 형식 오류는 exit `2`이다. |
+| `hyhome-gx.py` (`list`, `validate [SUITE...]`) | `great-expectations` job | 이 README는 소비자를 기록하지 않는다. | 기본은 suite 목록 출력이며 출력은 expectation 결과(`success`)와 종료 코드이다. | exit `1`은 expectation 실패, `2`는 검사 불가이다. |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 입력은 `suites/` 아래 추적된 JSON suite와 Trino SQL data source이며, 출력은 expectation 결과(`success`)와 종료 코드이다. suite는 table을 읽기만 한다. 환경 변수는 아래 표와 같다.
 
@@ -93,19 +91,27 @@ great-expectations/
 
 Secret 없음: Trino에 인증이 없습니다.
 
-### Security Boundary
+#### Security Boundary
 
 `lab_lakehouse_net`만 사용하고 호스트 포트와 secret 참조가 없으며 HOME network에 연결되지 않는다. 일부 expectation 인자가 raw SQL이므로 suite는 코드처럼 검토한다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+| Category | Technology | Notes |
+| :--- | :--- | :--- |
+| **Engine** | GX Core(버전은 `requirements.txt`) | ephemeral context, project 파일 없음 |
+| **Data source** | Trino SQLAlchemy dialect | `trino://great-expectations@trino:8080/lakehouse` |
+| **Runtime** | Python(`Dockerfile`의 base image) | UID 1000, 1 CPU, 512 MiB, read-only root |
+
+### Selected Start
 
 아래 `LAB`은 저장소 루트에서
 `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse`입니다.
 `config`는 render만 합니다. job 실행은
 `python3 scripts/operations/lab.py check|up|down lakehouse`의 lease 규칙
-([LAB 안내](../../README.md#local-workflow))을 따릅니다. `--no-deps`는 table-bucket
+([LAB 안내](../../README.md#selected-start))을 따릅니다. `--no-deps`는 table-bucket
 provisioning과 Trino가 이미 준비된 경우에만 씁니다.
 
 | Command | Description |
@@ -141,14 +147,16 @@ suite·SQL asset API가 후보 릴리스 소스에 존재한다.
 격리 rehearsal과 정확한 suite·의존성·결과 기준을 검증한다. 업무 데이터 변경이나
 외부 workspace 생성은 수행하지 않는다.
 
-### Checks
+## Checks
+
+### Readiness
 
 - `docker compose --env-file labs/.env -f labs/lakehouse/docker-compose.yml --profile lab-lakehouse config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - **Guide**: Lakehouse Usage Guide (`docs/05.operations/guides/15-labs/0094-lakehouse.md`)
 - **Policy**: Lakehouse Operations Policy (`docs/05.operations/policies/15-labs/0094-lakehouse.md`)
@@ -156,7 +164,7 @@ suite·SQL asset API가 후보 릴리스 소스에 존재한다.
 - [LAB 탐색](../../README.md)
 - [문서 인덱스](../../../docs/README.md)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 - `no suite '<name>'`: `suites/<name>.json` 파일이 없습니다.
 - Trino의 `TABLE_NOT_FOUND`: suite의 `table`이 `lakehouse` catalog에 존재하지 않습니다.

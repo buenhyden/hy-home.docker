@@ -1,17 +1,17 @@
 ---
 title: "OpenTofu Implementation"
-version: "0.2.2"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # OpenTofu
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 운영자가 트리거하는 인프라 CLI입니다. 인라인 Dockerfile이 도구 이미지의
 소스이며 워크스페이스와 자격 증명 마운트는 실제 원격 변경 능력을 부여합니다.
@@ -33,13 +33,9 @@ Lifecycle: **DEV job**. 루트 Compose가 이 정의를 include하며 명시적 
 
 - [docker-compose.yml](docker-compose.yml)
 
-### Supported Environment
+### Interfaces
 
-런타임 고정 값은 [Compose](docker-compose.yml)와 그 참조 빌드 소스에 속합니다. [버전 레지스트리](../../../infra/tech-stack.versions.json)는 파생된 Compose 이미지 프로젝션이며 배포 매니페스트가 아닙니다.
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 | Service | Profiles | Networks | Host ports | Secret references |
 | --- | --- | --- | --- | --- |
@@ -51,13 +47,17 @@ Compose의 서비스 바인드 마운트를 참고합니다. 최상위 명명된
 
 환경 변수 키 이름과 기본값은 Compose와 [공개 환경 변수 예시](../../../.env.example)에 선언되어 있습니다. Compose의 마운트 권한과 헬스체크 명령은 구현을 설명할 뿐이며, 설정 검사를 통과했다고 해서 런타임 준비 상태가 증명되는 것은 아닙니다. 비공개 환경 변수 값, 자격 증명 파일, 원본 렌더링된 설정은 출력하지 않습니다.
 
-### Security Boundary
+#### Security Boundary
 
 호스트 포트를 게시하지 않고 Compose Secret도 부여하지 않지만, 워크스페이스와 읽기 전용 provider 자격 증명 마운트가 실제 원격 변경 능력을 줍니다. 네트워크는 project default이며 변경은 별도 검토·승인 대상입니다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+런타임 고정 값은 [Compose](docker-compose.yml)와 그 참조 빌드 소스에 속합니다. [버전 레지스트리](../../../infra/tech-stack.versions.json)는 파생된 Compose 이미지 프로젝션이며 배포 매니페스트가 아닙니다.
+
+### Selected Start
 
 Compose, 빌드 소스, 공개 환경 변수 키, 시크릿 참조를 일관되게 유지합니다. 게이트웨이 인증, 영속화, 리소스 예산, 버전 예외를 변경하기 전에 검토합니다. 여기에 명령을 중복 기록하지 말고 기존 운영 주제(operations subject)를 업데이트합니다.
 
@@ -79,13 +79,15 @@ CLI 및 계획 차이를 검증하고, 정확한 state·lockfile·provider 버�
 새 버전 apply 이후
 이미지만 되돌리면 복구된다고 간주하지 않는다.
 
-### Checks
+## Checks
+
+### Readiness
 
 저장소 루트에서 문서화된 프로필을 선택하고 `scripts/validation/validate-docker-compose.sh`를 사용합니다. 대상별 런타임 확인과 승인 후 복구는 소유 운영 Runbook을 사용합니다. 마운트 누락, 예상치 못한 노출, 초기화 실패 시에는 중지합니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - [Infrastructure index](../../../infra/README.md)
 - [Documentation index](../../../docs/README.md)
@@ -93,6 +95,6 @@ CLI 및 계획 차이를 검증하고, 정확한 state·lockfile·provider 버�
 
 - Runbook: `docs/05.operations/runbooks/10-platform-and-backup/0082-opentofu.md`(RUN-0082)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 `opentofu`는 `iac` 프로필의 운영자 트리거 CLI job이며 Compose 헬스체크가 선언되어 있지 않습니다. 복구와 backend·state 복원은 `docs/05.operations/runbooks/10-platform-and-backup/0082-opentofu.md`(RUN-0082)를 따르고, 새 버전 apply 뒤 이미지만 되돌리는 것은 복구로 보지 않습니다.

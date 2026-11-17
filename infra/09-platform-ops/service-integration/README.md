@@ -1,18 +1,18 @@
 ---
 title: "서비스 연결 포트 계약"
-version: "0.1.3"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-10-11"
 ---
 
 # 서비스 연결·포트 계약
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 포트 선언을 listener, 내부 DNS, 호스트 publication, Traefik backend로 나눠
 검토하는 비밀값 없는 출력 계약입니다. 서비스 등록표는 기존
@@ -36,14 +36,13 @@ schema에서 모두 unknown이며, 차후 정확한 대상과 별도 관측 계�
 - [port-inventory.py](../../../scripts/operations/port-inventory.py): 값이 제거된 JSON만 출력하는 CLI.
 - [합성 fixture](../../../tests/fixtures/port-contract/README.md): handwritten 허용/거부 예와 DEV/MNG 입력.
 
-### Supported Environment
+### Interfaces
 
-기존 Python·PyYAML·jsonschema와 Docker Compose `config`를 재사용합니다.
-이미지 pull, 서비스 기동, secret 발급 또는 저장소 이동을 수행하지 않습니다.
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| 포트 계약 JSON 출력(`port-contract.schema.json`) | CLI `scripts/operations/port-inventory.py` | 서비스 소비자, ingress·네트워크 연결 검토 담당자 | listener·내부 DNS·호스트 publication·Traefik backend를 분리한 값 없는 JSON이며 알 수 없는 필드를 거부한다 | `protocol`·`mode`·`scheme`의 미해결 표현식은 거부하고 DNS 조합 4,096개, endpoint 합 16,384개 한도를 생성 전에 적용한다 |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 listener는 관측이 없으므로 unknown입니다. 내부 DNS는 network의 논리 key와
 실제 선언 이름을 분리하고 서비스 이름·alias 위치·포트/프로토콜을 보존합니다.
@@ -71,13 +70,18 @@ Traefik `scheme`은 `http`/`https`/`h2c` 또는 누락·null을 받습니다. �
 raw Compose render와 stderr를 포함하지 않습니다. 허용된 포트 metadata에도
 개인 식별자가 들어갈 수 있으므로 검토한 공개 입력만 사용합니다.
 
-### Security Boundary
+#### Security Boundary
 
 출력은 비밀값이 없는 JSON이며 dotenv·환경 치환·Docker를 실행하지 않는다. 이미지 pull, 서비스 기동, secret 발급을 수행하지 않고 listener, TLS, 인증, ACL 성공은 증명하지 않는다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+기존 Python·PyYAML·jsonschema와 Docker Compose `config`를 재사용합니다.
+이미지 pull, 서비스 기동, secret 발급 또는 저장소 이동을 수행하지 않습니다.
+
+### Selected Start
 
 ```sh
 python3 scripts/operations/port-inventory.py
@@ -100,7 +104,9 @@ raw 렌더는 반환하거나 저장하지 않습니다. override의 실제 Comp
 운영 문서 정합, P01/P02의 최종 secret/ACL/reload, SEC01의 이미지
 보안 수용, P04/P05의 실제 worker, CLN01의 폐기 판단을 대신하지 않습니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 ```sh
 python3 -m unittest tests.lib.ops.test_port_inventory tests.validation.test_port_contract
@@ -115,15 +121,15 @@ python3 -m unittest tests.lib.ops.test_port_inventory tests.validation.test_port
 stderr는 수집 중 각각 1 MiB로 제한하고 stderr는 폐기합니다. 문서 전체의 DNS·host·backend
 endpoint 합도 생성 전에 16,384개로 제한합니다. 이 한도는 서비스 수 상수가 아닙니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - [문서 진입점](../../../docs/README.md): owning Task `SPEC-0204-TSK-0011`과
   기존 m0021 `current-service-inventory`의 문서 소유 경계를 참조합니다.
 - [Docker 포트 선언](https://docs.docker.com/reference/compose-file/services/#ports)
 - [Traefik Docker backend](https://doc.traefik.io/traefik/reference/dynamic-configuration/docker/)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 선언을 읽는 정적 CLI라 관측·복구 대상 런타임이 없다. 실제 시험 결과와 SHA는 owning Task `SPEC-0204-TSK-0011`이 소유하며 변경은 Git에서 되돌린다.

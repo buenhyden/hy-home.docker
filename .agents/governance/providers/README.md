@@ -1,31 +1,39 @@
 ---
 title: "Provider Adapters"
-version: "1.1.2"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Provider Adapters
 
-## Stage Responsibility
+## Responsibility
 
-### Purpose and Readers
+### Purpose
+
+#### Purpose and Readers
 
 Provider adapter는 agent governance policy, role, skill을 runtime syntax로
 번역합니다. 공유 동작을 소유하지 않습니다.
 
-### Inputs and Outputs
+#### Inputs and Outputs
 
 Claude와 Codex만 지원됩니다. `registry.yaml`은 provider identity, work-profile
 model 선택, permission translation, projection path, semantic event, hook
 command에 대한 machine authority입니다. workflow, approval, retry, evidence,
 stop, document-profile 규칙은 소유하지 않습니다.
 
-## Contents
+### Excluded Responsibilities
 
-### Current Items
+Provider adapter는 공유 동작을 소유하지 않으며, `registry.yaml`은 workflow, approval, retry, evidence, stop, document-profile 규칙을 소유하지 않습니다.
+
+## Current Contents
+
+### Paths
+
+#### Current Items
 
 | Path | Purpose |
 | --- | --- |
@@ -34,13 +42,32 @@ stop, document-profile 규칙은 소유하지 않습니다.
 - [Claude provider](../../../.claude/provider.md) — Claude의 authored loading 방식과 runtime 동작.
 - [Codex provider](../../../.codex/provider.md) — Codex의 authored loading 방식과 runtime 동작.
 
-### Classification
+#### Classification
 
 이 폴더의 정본은 `registry.yaml` 하나입니다. provider별 authored 문서(`.claude/provider.md`, `.codex/provider.md`)는 loading과 syntax 차이만 소유하며 공유 정책을 소유하지 않습니다.
 
-## Workflow
+### Owners
 
-### Create and Review
+이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않습니다.
+
+## Usage
+
+### Entry Points
+
+#### Upstream and Downstream
+
+- [Bootstrap policy](../bootstrap.md)
+- [Provider capability matrix](../provider-capability-matrix.md)
+
+#### Policy and Templates
+
+- [Governance hub](../../README.md)
+- [문서 작성 계약](../documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- README 템플릿 `docs/99.templates/templates/governance/provider-index.template.md`: 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다.
+
+### Checks
+
+#### Create and Review
 
 provider-neutral 동작은 agent governance policy, role, skill source에서
 변경합니다. provider fact는 `.agents/governance/providers/registry.yaml`에서
@@ -57,19 +84,6 @@ cleanup 단계에서 그 정확한 quarantine 파일만 제거한 뒤 `--write`�
 `--check`를 다시 실행합니다. 대기 중인 cleanup은 실패한 `--check` 상태이며
 convergence로 보고해서는 안 됩니다.
 
-### Transition and Exit
+#### Transition and Exit
 
 이 README는 `navigation` 수명주기의 `active` 상태만 가지며 다른 상태로 전이하지 않습니다. 목록 항목을 추가·이동·삭제할 때 이 문서를 함께 갱신하고, 삭제한 항목의 이력은 Git이 기록합니다.
-
-## Related Documents
-
-### Upstream and Downstream
-
-- [Bootstrap policy](../bootstrap.md)
-- [Provider capability matrix](../provider-capability-matrix.md)
-
-### Policy and Templates
-
-- [Governance hub](../../README.md)
-- [문서 작성 계약](../documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
-- 전용 템플릿 없음: Registry의 `governance-provider-index` profile(`docs/99.templates/registry.json`)이 형식을 소유합니다.

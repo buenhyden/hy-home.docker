@@ -1,10 +1,10 @@
 ---
 title: "Operations"
-version: "2.2.5"
+version: "2.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "operations"
 ---
 
@@ -14,9 +14,11 @@ layer: "operations"
 
 > 현재 워크스페이스를 안전하게 운영하는 사람이 역할(이해, 통제, 실행, 사건)로 문서를 찾는 Stage 05 인덱스
 
-## Stage Responsibility
+## Responsibility
 
-### Purpose and Readers
+### Purpose
+
+#### Purpose and Readers
 
 `docs/05.operations/`는 이 워크스페이스를 운영하는 사람을 위한 계층이다.
 먼저 무엇이 필요한지로 찾는다. 맥락과 전제를 이해하려면 Guide, 허용 여부와
@@ -32,8 +34,6 @@ Runbook, 실제 사건의 사실과 원인 분석은 Incident와 Postmortem이�
 - SREs
 - 보안 담당자
 
-### Inputs and Outputs
-
 #### In Scope
 
 - 서비스와 작업 공간의 정상 운영 맥락, 전제, 공통 점검 (Guide)
@@ -43,6 +43,8 @@ Runbook, 실제 사건의 사실과 원인 분석은 Incident와 Postmortem이�
 - 실제 사고의 사실 기록과, 해결된 사건의 원인 분석과 재발 방지 (Incident, Postmortem)
 - 배포 결과는 Task, `CHANGELOG.md`, Git tag와 관련 Runbook evidence로 추적한다.
 
+### Excluded Responsibilities
+
 #### Out of Scope
 
 - 요구사항 정의 (`docs/01.requirements/`)
@@ -51,11 +53,13 @@ Runbook, 실제 사건의 사실과 원인 분석은 Incident와 Postmortem이�
 - 에이전트 실행 규칙 (`.agents/`)
 - secret, credential, token, 인증서 원문
 
-## Contents
+## Current Contents
 
-### Current Items
+### Paths
 
-| Route | Purpose |
+#### Current Items
+
+| Path | Purpose |
 | --- | --- |
 | [Guides](./guides/README.md) | 정상 운영 이해와 전제 |
 | [Policies](./policies/README.md) | 허용·금지, 승인, 보안, 예외, 검토 |
@@ -83,8 +87,6 @@ Runbook, 실제 사건의 사실과 원인 분석은 Incident와 Postmortem이�
 같은 slug는 역할 디렉터리를 넘어 같은 subject를 가리킨다. 도메인은 각 역할 아래의 의미 기반 폴더다. `01`–`15` 접두사는 기존 분류 이름을 유지한 탐색 순서다. LAB 문서는 각 역할의 `15-labs/`에 있고,
 서비스 구현을 소유하는 저장소 루트 `labs/`와 구분한다.
 
-### Classification
-
 #### Artifact Boundaries
 
 - Guide는 정상 운영 맥락과 이해를 소유하고 실행 절차는 같은 slug의
@@ -106,9 +108,32 @@ Runbook, 실제 사건의 사실과 원인 분석은 Incident와 Postmortem이�
 CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성공을 주장하지 않는다.
 별도 Release 문서 프로필은 도입하지 않는다.
 
-## Workflow
+### Owners
 
-### Create and Review
+이 README의 소유자는 frontmatter `owner`의 `@buenhyden`이다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않는다.
+
+## Usage
+
+### Entry Points
+
+#### Upstream and Downstream
+
+- [Docs index](../README.md)
+- [Requirements](../01.requirements/README.md)
+- [Architecture](../02.architecture/README.md)
+- [Specs, Plans, and Tasks](../03.specs/README.md)
+
+#### Policy and Templates
+
+- [에이전트 작업 규칙](AGENTS.md)
+- [Template catalog](../99.templates/templates/README.md)
+- [Documentation protocol](../../.agents/governance/documentation-protocol.md)
+- [Stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md)
+- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
+
+### Checks
+
+#### Create and Review
 
 1. 필요한 역할의 인덱스([Guides](./guides/README.md),
    [Policies](./policies/README.md), [Runbooks](./runbooks/README.md))에서
@@ -136,23 +161,6 @@ CI 링크는 관찰된 사실의 근거이며 로컬 검증만으로 배포 성�
 - 과거 경로와 실행 이력은 Git 이력에서 찾으며 현재 Operations 권한으로
   사용하지 않는다.
 
-### Transition and Exit
+#### Transition and Exit
 
 Guide·Policy·Runbook은 `operational-policy` 수명주기(draft, in-review, active, deprecated, superseded, retired)를 따르고, Incident는 open → investigating → mitigated 또는 resolved 순으로 전이하고 resolved에서만 closed로 닫히며(mitigated에서는 investigating 또는 resolved로, resolved에서는 investigating으로 돌아갈 수 있고 closed가 종료 상태), Postmortem은 draft → in-review → published로 전이하며 published가 종료 상태이다. superseded 또는 retired에 이른 Guide·Policy·Runbook은 [은퇴 전제 조건](../../.agents/governance/documentation-protocol.md#retirement-preconditions)을 모두 충족할 때에만 남아야 할 내용을 소유 문서에 요약한 뒤 삭제하고 번호를 Registry `reserved_history`에 추가하며 해당 역할 인덱스와 inbound link를 같은 변경에서 갱신한다.
-
-## Related Documents
-
-### Upstream and Downstream
-
-- [Docs index](../README.md)
-- [Requirements](../01.requirements/README.md)
-- [Architecture](../02.architecture/README.md)
-- [Specs, Plans, and Tasks](../03.specs/README.md)
-
-### Policy and Templates
-
-- [에이전트 작업 규칙](AGENTS.md)
-- [Template catalog](../99.templates/templates/README.md)
-- [Documentation protocol](../../.agents/governance/documentation-protocol.md)
-- [Stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md)
-- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

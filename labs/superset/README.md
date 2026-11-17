@@ -1,10 +1,10 @@
 ---
 title: "Superset"
-version: "1.1.1"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-09-23"
 ---
 
@@ -14,9 +14,9 @@ created: "2026-09-23"
 
 > Keycloak native OIDC를 사용하는 on-demand BI 웹 애플리케이션 LAB입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 Superset은 독립 Compose project인 [Superset LAB](docker-compose.yml)(`lab-superset`
 profile)입니다. root Compose에 포함되지 않고 HOME network에 연결되지 않으며 Traefik
@@ -68,18 +68,16 @@ labs/superset/
 서비스 정의(`superset-db-provision`, `superset-init`, `superset`)는
 [labs/superset/docker-compose.yml](docker-compose.yml)이 소유합니다.
 
-### Supported Environment
+### Interfaces
 
-| Category | Technology | Notes |
-| :--- | :--- | :--- |
-| **Application** | Apache Superset(`Dockerfile`의 base image) | gunicorn 프로세스 1개, 1 CPU, 1 GiB, read-only root |
-| **Metadata** | `LAB_SUPERSET_DB_HOST`의 PostgreSQL | database와 role `superset` |
-| **Login** | Flask-AppBuilder를 통한 Keycloak OIDC | PKCE S256; 등록 role `Gamma` |
-| **Data** | Trino SQLAlchemy dialect | `lakehouse` catalog(별도 lakehouse LAB) |
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| UI `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SUPERSET_HOST_PORT:-18092}` -> 8088 | `superset` | Data analysts, Operators | Traefik route 없이 게시되며 Keycloak OIDC로 로그인하고 첫 사용자는 `Gamma`이다 | healthcheck `curl -fsS http://localhost:8088/health`이며 활성 lease 안에서 `/health`와 init 로그 확인 후 runbook을 따른다 |
+| Keycloak native OIDC 로그인(client `home-superset`) | Keycloak(`LAB_SUPERSET_DEFAULT_URL` gateway) | `superset` | PKCE S256 OIDC이며 `LAB_SUPERSET_CA_FILE`의 HOME root CA로 Keycloak을 호출한다 | redirect URI 또는 client secret 불일치로 로그인 오류가 나면 RUN-0097을 따른다 |
+| Metadata DB `LAB_SUPERSET_DB_HOST` | mng-pg | `superset`, `superset-db-provision` | feature 소유 database와 role `superset`이며 기본 포트 5432이다 | `LAB_SUPERSET_DB_HOST`가 비어 있으면 render가 거부된다 |
+| Trino database `trino://superset@trino:8080/lakehouse` | 별도 lakehouse LAB의 Trino | `superset-init`이 등록한 `superset` | Trino SQLAlchemy dialect로 `lakehouse` catalog를 질의한다 | `trino` host에 도달할 수 없어 현재 선언으로는 Superset LAB에서 Trino 질의가 되지 않는다 |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SUPERSET_HOST_PORT:-18092}` -> 8088에 게시하고 Keycloak OIDC로 로그인하며 `lakehouse` Trino database를 등록한다. 환경 변수는 아래 표와 같다.
 
@@ -102,19 +100,28 @@ Secrets는 `${LAB_SECRET_DIR}/superset/`의 LAB 전용 파일이며 원래 이�
 provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_password`.
 `superset_config.py`가 읽습니다. HOME 값을 복사하려면 별도 승인이 필요합니다.
 
-### Security Boundary
+#### Security Boundary
 
 `lab_superset_net`만 사용하며 HOME network와 Traefik route가 없다. secret은 `lab_superset_secret_key`, `lab_superset_db_password`, `lab_superset_oidc_client_secret`, 프로비저닝 전용 `lab_superset_mng_postgres_password`이며 값은 문서에 쓰지 않는다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+| Category | Technology | Notes |
+| :--- | :--- | :--- |
+| **Application** | Apache Superset(`Dockerfile`의 base image) | gunicorn 프로세스 1개, 1 CPU, 1 GiB, read-only root |
+| **Metadata** | `LAB_SUPERSET_DB_HOST`의 PostgreSQL | database와 role `superset` |
+| **Login** | Flask-AppBuilder를 통한 Keycloak OIDC | PKCE S256; 등록 role `Gamma` |
+| **Data** | Trino SQLAlchemy dialect | `lakehouse` catalog(별도 lakehouse LAB) |
+
+### Selected Start
 
 아래 `LAB`은 저장소 루트에서
 `docker compose --env-file labs/.env -f labs/superset/docker-compose.yml --profile lab-superset`입니다.
 `config`는 render만 합니다. 컨테이너를 시작하는 명령은
 `python3 scripts/operations/lab.py check|up|down superset`의 lease 규칙
-([LAB 안내](../README.md#local-workflow))을 따르며, 최초 설정은 RUN-0097을 따릅니다.
+([LAB 안내](../README.md#selected-start))을 따르며, 최초 설정은 RUN-0097을 따릅니다.
 
 | Command | Description |
 | :--- | :--- |
@@ -131,15 +138,17 @@ provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_passwo
 런타임 이미지 권한은 [labs/superset/docker-compose.yml](docker-compose.yml)이 소유하며
 [derived Compose 이미지 투영](../../infra/tech-stack.versions.json)은 drift 증거입니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 - `docker compose --env-file labs/.env -f labs/superset/docker-compose.yml --profile lab-superset config --quiet`
 - `python3 -m unittest tests.validation.test_lab_isolation`
 - `HYHOME_PG_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_baseline_gates.FeatureProvisioningRehearsalTests.test_6_superset_migrates_and_serves_on_its_own_database`
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - **Guide**: Superset Usage Guide (`docs/05.operations/guides/15-labs/0097-superset.md`)
 - **Policy**: Superset Operations Policy (`docs/05.operations/policies/15-labs/0097-superset.md`)
@@ -148,7 +157,7 @@ provisioning 전용 `lab_superset_mng_postgres_password` -> `mng_postgres_passwo
 - [문서 인덱스](../../docs/README.md)
 - [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0107 lab-promotion
 
-### Observability and Recovery
+#### Observability and Recovery
 
 - `superset: secret … must be one non-empty line`: named secret 파일이 비어 있거나 여러 줄입니다.
 - Keycloak 이후 로그인 오류: redirect URI 또는 client secret 불일치; RUN-0097을 따르십시오.

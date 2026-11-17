@@ -796,6 +796,22 @@ class RoleDesignConformanceTests(unittest.TestCase):
         self.assertEqual("requirement", bound.get("sdlc/requirement"))
         self.assertEqual("architecture", bound.get("sdlc/architecture-description"))
         self.assertEqual("decision", bound.get("sdlc/architecture-decision"))
+        for template_id, core_role in (
+            ("common/readme", "stage-readme"),
+            ("common/documentation-readme", "stage-readme"),
+            ("reference/category-readme", "stage-readme"),
+            ("reference/research-pack", "stage-readme"),
+            ("reference/audit-pack", "stage-readme"),
+            ("reference/data-pack", "stage-readme"),
+            ("common/package-readme", "service-readme"),
+            ("common/repository-readme", "root-readme"),
+            ("common/runtime-governance-readme", "root-readme"),
+            ("common/incident-year-readme", "stage-readme"),
+            ("governance/knowledge-index", "stage-readme"),
+            ("governance/prompt-index", "stage-readme"),
+            ("governance/provider-index", "stage-readme"),
+        ):
+            self.assertEqual(core_role, bound.get(template_id), template_id)
         self.assertEqual([], role_design_contract_findings(self.registry))
 
     def test_a_runbook_steps_table_reads_the_core_columns(self) -> None:

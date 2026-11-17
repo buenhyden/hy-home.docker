@@ -1,10 +1,10 @@
 ---
 title: "Workflow Tier (07-workflow)"
-version: "1.3.1"
+version: "1.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
@@ -12,9 +12,9 @@ created: "2025-11-12"
 
 > Airflow의 code-first 오케스트레이션과 n8n의 low-code 자동화입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -61,7 +61,28 @@ created: "2025-11-12"
 | `n8n` | HTTP | `workflow` | OAuth2 Proxy ForwardAuth |
 | `n8n-worker` | internal | `workflow` | internal |
 
-### Supported Environment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `airflow-apiserver` HTTP | `airflow-apiserver` | 이 README는 소비자를 기록하지 않는다. | `workflow` profile에서 Native Keycloak Auth Manager로 인증한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `flower` HTTP | `flower` | 이 README는 소비자를 기록하지 않는다. | `airflow-flower`(opt-in) profile에서 OAuth2 Proxy ForwardAuth로 인증한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `n8n` HTTP | `n8n` | 이 README는 소비자를 기록하지 않는다. | `workflow` profile에서 OAuth2 Proxy ForwardAuth로 인증한다. | 이 README는 실패 처리를 기록하지 않는다. |
+
+#### Configuration
+
+- Airflow/n8n DB: `mng-pg`
+- 기본 브로커: `mng-valkey`
+- Airflow UI 인증: Keycloak 직접 연동
+- Flower/n8n UI 인증: ForwardAuth
+
+#### Security Boundary
+
+없음: 이 디렉터리는 Compose 서비스나 secret 참조를 직접 선언하지 않으며, 하위 `airflow/`, `n8n/`가 각자 선언한다.
+
+## Usage
+
+### Prerequisites
 
 #### Tech Stack
 
@@ -72,24 +93,7 @@ created: "2025-11-12"
 | Broker | Valkey | shared/dedicated |
 | Database | PostgreSQL | `mng-pg` |
 
-## Interfaces
-
-### Inputs and Outputs
-
-#### Configuration
-
-- Airflow/n8n DB: `mng-pg`
-- 기본 브로커: `mng-valkey`
-- Airflow UI 인증: Keycloak 직접 연동
-- Flower/n8n UI 인증: ForwardAuth
-
-### Security Boundary
-
-없음: 이 디렉터리는 Compose 서비스나 secret 참조를 직접 선언하지 않으며, 하위 `airflow/`, `n8n/`가 각자 선언한다.
-
-## Development
-
-### Local Workflow
+### Selected Start
 
 #### Usage
 
@@ -117,7 +121,9 @@ created: "2025-11-12"
 
 안정적인 문서 진입점은 [docs/README.md](../../docs/README.md)이며 정확한 Stage 05 대상은 `docs/05.operations/guides/08-workflows-and-automation/0050-airflow.md`의 `GDE/POL/RUN-0050`과 `docs/05.operations/guides/08-workflows-and-automation/0053-n8n.md`의 `GDE/POL/RUN-0053`입니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Testing
 
@@ -126,9 +132,7 @@ HYHOME_COMPOSE_PROFILES='workflow dev' bash scripts/validation/validate-docker-c
 bash scripts/hardening/check-all-hardening.sh 07-workflow
 ```
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -140,6 +144,6 @@ bash scripts/hardening/check-all-hardening.sh 07-workflow
 
 워크플로우 서비스는 소유자가 확인한 상시 HOME 역량입니다. 런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../tech-stack.versions.json)으로 드리프트를 검증합니다.
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 이 디렉터리는 자체 헬스체크나 관측 대상을 선언하지 않으며, 하위 `airflow/`, `n8n/`가 각자 선언한다.

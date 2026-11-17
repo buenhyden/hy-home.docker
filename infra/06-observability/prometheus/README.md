@@ -1,18 +1,18 @@
 ---
 title: "Prometheus"
-version: "1.1.2"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-01-12"
 ---
 
 # Prometheus
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -57,7 +57,25 @@ infra/06-observability/prometheus/
   경고가 납니다.
 - **Storage**: 영속 TSDB 볼륨. 명시적 보존 플래그는 Compose에 선언되어 있지 않습니다.
 
-### Supported Environment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `https://prometheus.${DEFAULT_URL}` | `prometheus` | 이 README는 소비자를 기록하지 않는다. | Traefik을 경유하는 Prometheus 인터페이스이며 호스트 게시 포트는 없다. | 이 README는 실패 처리를 기록하지 않는다. |
+| 스크레이프 대상(`config/prometheus.yml`) | `obs_net`에서 접근 가능한 대상 서비스 | `prometheus` | `scrape_configs`에 정의되며 전역 간격은 `30s`이다. | 스크레이프 오류 시 설정을 검증하고 대상 엔드포인트가 Prometheus 컨테이너에서 접근 가능한지 확인한다. |
+| file-SD 대상(`/etc/prometheus/targets/`) | `scripts/start.sh` | `prometheus` | `PROMETHEUS_DEV_DATA_EXPECTED`(`on`/`off`)로 DEV 대상을 렌더링하고 OpenBao·Keycloak 대상을 원자적으로 교체한다. | 그 밖의 값이나 잘못된 포트면 기존 대상 파일을 보존한 채 시작을 거부한다. |
+
+#### Inputs and Outputs
+
+호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `keycloak_management_net`, `oauth2_proxy_metrics_net`, `obs_net`, `prometheus_ingress_net`, `seaweedfs_metrics_net`, `seaweedfs_s3_metrics_net`, `traefik_metrics_net`이다. (출처: `infra/06-observability/docker-compose.yml`의 `prometheus` 서비스)
+
+#### Security Boundary
+
+Compose가 참조하는 secret은 `grafana_metrics_password`, `openbao_token`, `opensearch_exporter_password`, `qdrant_read_only_api_key`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/06-observability/docker-compose.yml`의 `prometheus` 서비스)
+
+## Usage
+
+### Prerequisites
 
 #### Tech Stack
 
@@ -69,19 +87,7 @@ infra/06-observability/prometheus/
 | Configuration | YAML 기반 | 정적 구성 및 파일 기반 서비스 디스커버리 |
 | Tooling | promtool | 설정/규칙 검증 |
 
-## Interfaces
-
-### Inputs and Outputs
-
-호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `keycloak_management_net`, `oauth2_proxy_metrics_net`, `obs_net`, `prometheus_ingress_net`, `seaweedfs_metrics_net`, `seaweedfs_s3_metrics_net`, `traefik_metrics_net`이다. (출처: `infra/06-observability/docker-compose.yml`의 `prometheus` 서비스)
-
-### Security Boundary
-
-Compose가 참조하는 secret은 `grafana_metrics_password`, `openbao_token`, `opensearch_exporter_password`, `qdrant_read_only_api_key`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/06-observability/docker-compose.yml`의 `prometheus` 서비스)
-
-## Development
-
-### Local Workflow
+### Selected Start
 
 #### Management Guide
 
@@ -115,7 +121,9 @@ Prometheus runbook(`docs/05.operations/runbooks/07-observability/0045-prometheus
 3. **Scrape Settings**: 전역 간격은 `30s`이며 Prometheus의 `15s`나 cAdvisor의 `1m`처럼 서비스별 재정의는 의도적으로 유지해야 합니다.
 4. **Networking**: 스크레이프 대상은 `obs_net`에서 접근 가능해야 합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
@@ -126,9 +134,7 @@ Prometheus runbook(`docs/05.operations/runbooks/07-observability/0045-prometheus
 - `prometheus.yml` 변경 후 Prometheus UI의 Targets 페이지에서 스크레이프 대상이 UP 상태인지 확인합니다.
 - 설정이나 규칙 변경 후 `docker logs --tail=200 prometheus`로 알림 규칙이 정상적으로 로드되었는지 확인합니다.
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -138,8 +144,6 @@ Prometheus runbook(`docs/05.operations/runbooks/07-observability/0045-prometheus
 - Prometheus operations policy (`docs/05.operations/policies/07-observability/0045-prometheus.md`)
 - Prometheus recovery runbook (`docs/05.operations/runbooks/07-observability/0045-prometheus.md`)
 - [Documentation index](../../../docs/README.md)
-
-### Observability and Recovery
 
 #### Troubleshooting
 

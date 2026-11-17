@@ -1,17 +1,17 @@
 ---
 title: "Hermes 로컬 발행기"
-version: "0.2.1"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Hermes 로컬 발행기
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -66,13 +66,15 @@ no-follow 읽기와 제한된 기준 경로·SHA-256을 검사합니다. 검증�
 - [gateway_transport.py](gateway_transport.py): 조건을 확인한 동일 요청 재전송을 선택적으로 연결합니다.
 - [\_\_init\_\_.py](__init__.py): 패키지 진입점입니다.
 
-### Supported Environment
+### Interfaces
 
-없음: Compose나 Dockerfile 없이 파일 20개(`__init__.py`, `attestation.py`, `attester.py`, `candidates.py`, `cli.py`, `delivery.py`, `evidence.py`, `files.py`, `gateway_adapter.py`, `gateway_receipt.py`, `gateway_transport.py`, `http_transport.py`, `outbox.py`, `policy.py`, `private_records.py`, `producer-keys.json`, `source_check.py`, `source_collection.py`, `source_fetch.py`, `trust.py`)만 포함한다. 실행은 상위 `hermes-blog-ingestion/README.md`의 보호 설치 release venv에서 `python -I -m publisher.cli`로 한다.
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `stage` 대기함(저장소 밖 전용 경로) | `python -I -m publisher.cli stage` | `dispatch`와 전송 처리기 `process_one` | 내보내기·원본·아이디어 기준 경로와 검증기 다이제스트를 받아 디렉터리 0700, 파일 0600 대기함에 보존한다 | 거부나 충돌이 있으면 종료 코드 1이며 후보 1,000개 또는 파일 8 MiB·합계 32 MiB 초과 시 명시적으로 실패한다 |
+| `dispatch` relay endpoint 전송 | `python -I -m publisher.cli dispatch` | 고정 relay endpoint(Gateway) | `이름: 값` 인증 헤더 파일과 고정 계약 요청을 endpoint SHA-256과 함께 대기함에 결속하며 HTTP 시간 제한은 45초이다 | 신뢰 판정 실패는 `blocked`, 401·403·409는 `failed`, 5xx·응답 유실은 `uncertain`이며 `--allow-replay` 없이 재전송하지 않는다 |
+| `attest` POST `/v1/ingestions/{report-id}/attestations` | `python -I -m publisher.cli attest`(별도 서명 계정) | 고정 Gateway 주소의 Blog-data Attestation | `dispatch`와 같은 신뢰 판정을 통과한 같은 요청 바이트로 Blog-data Attestation을 한 번 POST한다 | 결과는 `attested`·`rejected`·`retry`(429·5xx·통신 실패)·`blocked`이며 `attested`만 종료 코드 0이다 |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 `stage`에는 내보내기·원본·아이디어 기준 경로, 검토된 검증기 경로와 다이제스트,
 전용 대기함 경로를 모두 지정합니다. 실제 대상은 연결된 운영 절차에서
@@ -97,7 +99,7 @@ no-follow 읽기와 제한된 기준 경로·SHA-256을 검사합니다. 검증�
 파일별 8 MiB, 한 후보의 합계 32 MiB로 읽기를 제한합니다.
 일괄 처리는 후보별로 보존하므로 뒤의 실패가 앞의 성공을 취소하지 않습니다.
 
-### Security Boundary
+#### Security Boundary
 
 `dispatch`는 대기함, 고정 relay endpoint, `이름: 값` 한 줄의 인증 헤더 파일을
 받습니다. 인증 파일은 실행 계정 소유이고 그룹·기타 권한이 없어야 하며 인자·
@@ -129,9 +131,13 @@ Gateway 주소의 `/v1/ingestions/{report-id}/attestations`에 한 번 POST합�
 실패), `blocked`(신뢰 실패)이며 `attested`만 종료 코드 0입니다. 절차는
 [워크로드 설명](../README.md#attestation과-resource-export)을 따릅니다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+없음: Compose나 Dockerfile 없이 파일 20개(`__init__.py`, `attestation.py`, `attester.py`, `candidates.py`, `cli.py`, `delivery.py`, `evidence.py`, `files.py`, `gateway_adapter.py`, `gateway_receipt.py`, `gateway_transport.py`, `http_transport.py`, `outbox.py`, `policy.py`, `private_records.py`, `producer-keys.json`, `source_check.py`, `source_collection.py`, `source_fetch.py`, `trust.py`)만 포함한다. 실행은 상위 `hermes-blog-ingestion/README.md`의 보호 설치 release venv에서 `python -I -m publisher.cli`로 한다.
+
+### Selected Start
 
 #### Usage
 
@@ -149,7 +155,9 @@ python3 -m publisher.cli dispatch --help
 `<release>/venv/bin/python -I -m publisher.cli <명령>`처럼 합니다.
 `verify-install`은 런타임 보호와 키 저장소 해석만 확인하고 키 개수를 출력합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Verification
 
@@ -190,9 +198,9 @@ Gateway 전달은 검증되지 않았습니다. PR #695 병합 시점의 전체 
 151건이었습니다. 생산자 인증을 추가한 현재 소스의 수치는 `SPEC-0204-TSK-0022`의
 최신 기록을 따르며, 운영 n8n·Gateway 전달과 Windows 수신은 포함하지 않습니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -203,6 +211,6 @@ Gateway 전달은 검증되지 않았습니다. PR #695 병합 시점의 전체 
 - [수집 전송 소스](../README.md)
 - [시험](../tests/README.md)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 이 폴더는 헬스체크를 선언하지 않는다. 대기함 상태는 `python3 -m publisher.cli status`가 상태별 건수로 보고하며, `uncertain` 항목은 `--allow-replay` 없이 다시 보내지 않는다.

@@ -1,18 +1,18 @@
 ---
 title: "Valkey Cluster LAB 설정"
-version: "0.1.1"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-10-12"
 ---
 
 # Valkey Cluster LAB 설정
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 Valkey node가 읽는 비밀값 없는 설정 source를 보관합니다. service 정의는 상위 [docker-compose.yml](../docker-compose.yml)에 있으며 실제 실행·비밀값·데이터를
 이 문서나 source 이동으로 변경하지 않습니다.
@@ -30,39 +30,45 @@ LAB source 관리자와 정적 검토자입니다.
 
 - [valkey.conf](valkey.conf): LAB node의 기존 설정입니다.
 
-### Supported Environment
+### Interfaces
 
-없음: 이 디렉터리는 실행 환경이 없는 source 조각이다. 소비하는 Compose와 런타임 버전은 상위 LAB이 소유한다.
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `valkey.conf` | 이 디렉터리 | LAB Valkey node | LAB node의 비밀값 없는 기존 설정이다. | 실행과 복구는 RUN-0022 Valkey Cluster Runbook을 따른다. |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 상위 LAB Compose와 wrapper의 기존 변수·secret reference·volume·network 계약을
 보존합니다. 비밀값이나 실제 `.env`를 이 디렉터리에 저장하지 않습니다.
 
-### Security Boundary
+#### Security Boundary
 
 이 디렉터리에는 비밀값과 실제 `.env`를 저장하지 않으며 포트 게시와 network 선언이 없다. 비밀은 상위 LAB Compose의 secret reference로만 전달된다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+없음: 이 디렉터리는 실행 환경이 없는 source 조각이다. 소비하는 Compose와 런타임 버전은 상위 LAB이 소유한다.
+
+### Selected Start
 
 source와 소비하는 Compose를 함께 검토하며 실행 entrypoint는 상위 LAB 안내를
 따릅니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 정적 구성 검사는 source 경로와 참조만 검증합니다. runtime 성공이나 복구를
 입증하지 않습니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - [상위 LAB source](../README.md)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 이 디렉터리는 전용 런북이 없는 설정 조각이며 상위 LAB의 런북을 따른다. 실행과 복구는 [상위 LAB README](../README.md)와 [15-labs runbooks](../../../docs/05.operations/runbooks/15-labs/README.md)의 RUN-0022 Valkey Cluster Runbook를 따른다.

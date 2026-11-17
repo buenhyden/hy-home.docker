@@ -1,17 +1,17 @@
 ---
 title: "성능 시험 결과 데이터베이스"
-version: "0.1.1"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # 성능 시험 결과 데이터베이스
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -43,18 +43,14 @@ reader, verdict 역할은 명시적 manifest로 등록되며 모두 `NOLOGIN` gr
 - [`register.py`](register.py)는 프로젝트 manifest를 검증하고 등록 SQL만 출력합니다.
 - [`project.example.json`](project.example.json)은 비밀값 없는 schema v1 예제입니다.
 
-### Supported Environment
+### Interfaces
 
-#### Tech Stack
-
-상위 개발 PostgreSQL [Dockerfile](../Dockerfile)과
-[Compose](../../docker-compose.yml)에 선언된 이미지에서 PostgreSQL RLS, role
-membership, JSONB와 core SHA-256 함수를 사용합니다. 별도 데이터베이스 이미지나
-Python 의존성을 추가하지 않습니다.
-
-## Interfaces
-
-### Inputs and Outputs
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `quality.import_payload` | `perf_db`의 `quality` schema | 외부 프로젝트 importer | 한 transaction에서 schema v1 envelope와 `payload_sha256` 제외 canonical UTF-8 bytes를 받아 DB가 SHA-256을 다시 검사한다. | `exact_replay`에서는 기존 행을 변경하지 않고 `inserted`일 때만 자식 행을 적재한다. |
+| `quality.run_results` view | `perf_db`의 `quality` schema | 프로젝트 reader 역할 | `security_invoker` view라 조회자의 RLS가 그대로 적용되며 reader는 같은 프로젝트만 조회한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| 프로젝트 등록 manifest(`register.py`) | `register.py` | `perf_db` migration 적용 후 등록 SQL을 실행하는 admin | `schema_version`, `project_id`, `roles.reader`, `roles.writer`, `roles.verdict`만 허용하고 credential 없는 등록 SQL만 출력한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `dev-perf-provision` one-shot job(`quality-results` profile) | `infra/04-data/dev-db/docker-compose.yml`의 `dev-perf-provision` | 결과 적재가 필요한 시험 실행(`testing` profile과 함께 선택) | admin secret을 프로세스 환경으로만 전달하고 `pg_try_advisory_lock`을 bootstrap 종료까지 유지한다. | 동시 job은 exit 75로 종료되며 재실행이 필요하다. |
 
 #### Configuration
 
@@ -75,13 +71,22 @@ INSERT만 받습니다. UPDATE, DELETE, 소유권, `BYPASSRLS`는 부여하지 �
 bootstrap 종료까지 유지합니다. 동시 job은 exit 75로 종료되며 재실행이
 필요합니다.
 
-### Security Boundary
+#### Security Boundary
 
 Compose가 참조하는 secret은 `dev_pg_admin_password`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/04-data/dev-db/docker-compose.yml`의 `dev-perf-provision` 서비스)
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+#### Tech Stack
+
+상위 개발 PostgreSQL [Dockerfile](../Dockerfile)과
+[Compose](../../docker-compose.yml)에 선언된 이미지에서 PostgreSQL RLS, role
+membership, JSONB와 core SHA-256 함수를 사용합니다. 별도 데이터베이스 이미지나
+Python 의존성을 추가하지 않습니다.
+
+### Selected Start
 
 #### Usage
 
@@ -94,7 +99,9 @@ canonical UTF-8 bytes를 전달합니다. DB가 JSON 동등성과 SHA-256을 다
 `inserted`일 때만 자식 행을 적재하고 `exact_replay`에서는 기존 행을 변경하지
 않습니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
@@ -109,9 +116,9 @@ python3 infra/04-data/dev-db/pg/perf/register.py \
 실제 SQL 권한 검사는 고유 project, network, volume과 합성 비밀값을 사용하는
 승인된 격리 PostgreSQL에서 수행해야 합니다. HOME 적용 결과로 해석하지 않습니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -122,6 +129,6 @@ python3 infra/04-data/dev-db/pg/perf/register.py \
 [문서 진입점](../../../../../docs/README.md)에서 SPEC-0203과 개발 데이터 운영
 문서를 확인하십시오.
 
-### Observability and Recovery
+#### Observability and Recovery
 
 `infra/04-data/dev-db/docker-compose.yml`의 `dev-perf-provision` 서비스에 `healthcheck` 선언이 없다.

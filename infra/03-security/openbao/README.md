@@ -1,17 +1,17 @@
 ---
 title: "OpenBao Implementation"
-version: "0.1.13"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # OpenBao
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -48,15 +48,13 @@ Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 pr
 - [소비자 이관 계약](consumer-migration/README.md): 값 없는 wave·receipt schema와
   합성 검증 경로입니다. 실제 pilot·복구·삭제·회전은 별도 수용 증거가 필요합니다.
 
-### Supported Environment
+### Interfaces
 
-#### Tech Stack
-
-런타임 고정 값은 [Compose](docker-compose.yml)와 그것이 참조하는 build 소스에 속합니다. [버전 레지스트리](../../../infra/tech-stack.versions.json)는 파생된 Compose 이미지 투영이며 배포 매니페스트가 아닙니다.
-
-## Interfaces
-
-### Inputs and Outputs
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| 내부 API endpoint `https://openbao:${OPENBAO_PORT:-8200}` | `openbao` | Agent, metrics, Gatus, Traefik | 같은 port와 검증된 CA로 TLS 연결하며 SAN `DNS:openbao`와 `IP:127.0.0.1`을 요구한다 | healthcheck `bao status`(interval 15s)로 확인하고 복구는 RUN-0085를 따른다 |
+| Agent 렌더링 출력 `openbao-agent-out` (`${DEFAULT_SECURITY_DIR}/openbao/out`) | `openbao-agent` | 이 README는 소비자를 기록하지 않는다. | `agent.hcl`의 template별 `destination`·`perms`로 파일을 렌더링한다 | symlink나 `/openbao/out/` 밖 경로가 있으면 Agent를 시작하지 않으며 healthcheck는 `health-agent.sh`(interval 30s)이다 |
+| 공개 secret catalog `secret-catalog.json` | OpenBao 패키지(`secret-catalog.json`과 schema) | catalog CLI `scripts/operations/secret-catalog.py` | 값 없는 공개 분류·보존·미결정 mapping이며 `render`는 `.agent-work/p02-views`에 네 파일만 쓴다 | `COMM-002`와 `COMM-003`의 재생성을 거부하며 실제 명령과 중단 조건은 `RUN-0085`가 소유한다 |
 
 #### Configuration
 
@@ -154,27 +152,35 @@ canonical `COMM-002`와 source-retired alias `COMM-003`의 재생성을 거부�
 alias는 별도 credential 또는 KV 대상을 만들지 않으며 실제 파일 폐기는 SMTP01 소관입니다.
 공개 catalog와 합성 검사 통과는 HOME 인증·소비·이관·rotation·복구를 증명하지 않습니다.
 
-### Security Boundary
+#### Security Boundary
 
 이 서비스 정의에는 `secrets` 참조가 없다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/03-security/openbao/docker-compose.yml`의 `openbao`, `openbao-agent` 서비스)
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+#### Tech Stack
+
+런타임 고정 값은 [Compose](docker-compose.yml)와 그것이 참조하는 build 소스에 속합니다. [버전 레지스트리](../../../infra/tech-stack.versions.json)는 파생된 Compose 이미지 투영이며 배포 매니페스트가 아닙니다.
+
+### Selected Start
 
 #### Usage
 
 Compose, build 소스, 공개 환경 키, secret 참조를 일관되게 유지하십시오. 변경 전에 gateway 인증, 지속성, 리소스 예산, 버전 예외를 검토하십시오. 여기에 명령을 중복 작성하지 말고 기존 운영 subject를 갱신하십시오.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
 저장소 루트에서 문서화된 profile을 선택해 `scripts/validation/validate-docker-compose.sh`를 사용하십시오. 대상 runtime 확인과 승인 후 복구는 소유 운영 Runbook을 사용하십시오. 누락된 마운트, 예기치 않은 노출, 초기화 실패 시 중단하십시오.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -190,6 +196,6 @@ Compose, build 소스, 공개 환경 키, secret 참조를 일관되게 유지�
 - [문서 인덱스](../../../docs/README.md)
 - [공개 secret 계약](../../../secrets/README.md)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 헬스체크: `openbao` 서비스는 `bao status >/dev/null 2>&1` (interval 15s); `openbao-agent` 서비스는 `/bin/sh /openbao/scripts/health-agent.sh` (interval 30s).

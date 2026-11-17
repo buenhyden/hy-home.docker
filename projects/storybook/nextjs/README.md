@@ -1,18 +1,18 @@
 ---
 title: "Storybook Next.js Workspace"
-version: "1.2.1"
+version: "1.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-02-01"
 ---
 
 # Storybook Next.js Workspace
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 이 작업공간은 공유 Storybook 정적 자산, 내부 UI 패키지와 로컬 문서 MCP의 소스입니다. Next.js 예제 앱은 Storybook 정적 origin과 별도이며 운영 배포 대상이 아닙니다.
 
@@ -28,13 +28,17 @@ Storybook story, 검토된 `Button`·`AsyncState` 패키지와 디자인 토큰,
 
 `src/stories/`는 공유 컴포넌트의 상태별 story와 상호작용·접근성 검증, `packages/ui/`는 코드 소비 계약, `.storybook/`은 manifest 설정, `mcp/`는 로컬 문서 서버와 revision 기록, `Dockerfile`과 `nginx.conf`는 정적 origin을 소유합니다.
 
-### Supported Environment
+### Interfaces
 
-npm lockfile이 Next.js, React, Storybook, TypeScript와 MCP 패키지 버전을 소유합니다. Node 빌더와 비특권 NGINX 이미지 참조는 `Dockerfile`이 소유합니다.
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `storybook-static/`, `manifests/components.json`, `manifests/docs.json`, `revision.json` | `npm run build-storybook` | 문서 MCP 서버(`mcp/server.ts`) | `revision.json`은 소스 커밋(또는 `uncommitted`)과 두 manifest의 SHA-256을 기록한다. | MCP는 읽기 전에 manifest를 `revision.json`의 SHA-256과 대조한다. |
+| 로컬 MCP `127.0.0.1:7613/mcp` | `npm run mcp:docs`(`mcp/server.ts`) | 이 README는 소비자를 기록하지 않는다. | `docs-list`, `docs-show`, `docs-show-story`만 등록하며 인증 없이 loopback만 받는다. | 이 README는 실패 처리를 기록하지 않는다. |
+| 원격 MCP(`STORYBOOK_MCP_RESOURCE`) | Dockerfile `mcp` target | 이 README는 소비자를 기록하지 않는다. | RS256 서명·issuer·audience·만료·그룹을 확인한 bearer token만 받고 `/.well-known/oauth-protected-resource/mcp`를 제공한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| 정적 origin 내부 `8080` | `Dockerfile`과 `nginx.conf`의 정적 origin | 이 README는 소비자를 기록하지 않는다. | 정적 파일만 제공하며 host 80/443을 열지 않는다. | 실행 중인 origin의 복구는 RUN-0101 Storybook Runbook을 따른다. |
+| `@hy-home/storybook-ui` 패키지 | `packages/ui/` | 패키지 소비자 | 공유 UI 패키지 README의 타입·CSS·peer 계약을 따른다. | 이 README는 실패 처리를 기록하지 않는다. |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 `npm ci` 후 `npm run build-storybook`은 `storybook-static/`과 `manifests/components.json`, `manifests/docs.json`, `revision.json`을 생성합니다. `STORYBOOK_SOURCE_REVISION`을 전달하면 revision 파일이 소스 커밋을 기록합니다. 전달하지 않으면 `uncommitted`로 표시합니다. revision 파일은 두 manifest의 SHA-256을 기록하며 로컬 MCP가 읽기 전 대조합니다.
 
@@ -47,17 +51,23 @@ npm lockfile이 Next.js, React, Storybook, TypeScript와 MCP 패키지 버전을
 
 Docker build context는 이 폴더입니다. `.dockerignore`가 환경 파일, secret, 의존성 캐시와 산출물을 제외합니다. origin은 내부 8080 포트에서 정적 파일만 제공하며 host 80/443을 열지 않습니다. 실제 자원 한도, 읽기 전용 root filesystem과 tmpfs는 Compose 서비스 정의가 소유합니다.
 
-### Security Boundary
+#### Security Boundary
 
 로컬 `npm run mcp:docs`는 `127.0.0.1:7613/mcp`에서 인증 없이 loopback만 받고, 원격 모드는 `STORYBOOK_MCP_RESOURCE`, `STORYBOOK_MCP_ISSUER` 같은 입력을 줄 때만 모든 주소에서 듣는다. `.dockerignore`가 환경 파일, secret, 의존성 캐시와 산출물을 Docker build context에서 제외한다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+npm lockfile이 Next.js, React, Storybook, TypeScript와 MCP 패키지 버전을 소유합니다. Node 빌더와 비특권 NGINX 이미지 참조는 `Dockerfile`이 소유합니다.
+
+### Selected Start
 
 컴포넌트 구현은 `packages/ui/`에서 변경합니다. story는 Storybook docgen을 위해 해당 원본을 직접 import하고, 생성 manifest와 외부 소비 계약은 `@hy-home/storybook-ui` 패키지를 사용합니다. 토큰 값은 `packages/ui/src/styles.css`의 CSS 변수가 정의합니다. create-storybook 예제(Header, Page, Configure)는 공유 UI가 아니므로 제거했고 manifest에는 검토된 컴포넌트만 남습니다. 패키지 소비자는 [공유 UI 패키지](packages/ui/README.md)의 타입·CSS·peer 계약을 따릅니다. 공개 레지스트리 배포에는 별도 라이선스와 승인이 필요합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 ```sh
 npm ci
@@ -75,14 +85,14 @@ npm run build:mcp
 
 TypeScript는 6.0.3에 고정합니다. 2026-10-09 기준 7.0.2와 7.1 nightly는 JavaScript compiler API를 제공하지 않아 `typescript-eslint`(지원 범위 6.1 미만)가 lint를 거부하고, Next.js는 `experimental.useTypeScriptCli: true`가 있어야 동작합니다. Storybook 빌드·docgen·story 시험과 MCP는 그 설정에서 7.x로 통과했습니다. 7.x 전환은 `typescript-eslint`가 7.x를 지원하는 릴리스를 낸 뒤 이 설정과 함께 진행합니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - [상위 Storybook 작업공간](../README.md)
 - [문서 인덱스](../../../docs/README.md)
 - [14-design-system runbooks](../../../docs/05.operations/runbooks/14-design-system/README.md): RUN-0101 storybook
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 소스 트리라 직접 관측 대상이 없다. 실행 중인 origin의 운영과 복구는 [14-design-system runbooks](../../../docs/05.operations/runbooks/14-design-system/README.md)의 RUN-0101 Storybook Runbook을 따른다.

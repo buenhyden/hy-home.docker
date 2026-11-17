@@ -1,17 +1,17 @@
 ---
 title: "Manifest Publication SQL"
-version: "0.4.1"
+version: "0.5.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Manifest Publication SQL
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -37,13 +37,15 @@ Ingest는 게시 함수, notifier는 claim/ack/no-send retry/unknown, reader는 
 - [007_notification_recovery.sql](007_notification_recovery.sql): version 5 개별 no-send 재처리와 복원 sending 격리.
 - [008_checks.sql](008_checks.sql): version 5 receipt·shape·관리 함수 ACL의 읽기 전용 검사.
 
-### Supported Environment
+### Interfaces
 
-없음: 이 폴더는 Compose나 Dockerfile 없이 `001_opsflow.sql`부터 `008_checks.sql`까지 8개 SQL 파일만 포함하며, 총괄이 검토한 빈 격리 대상에서 정해진 순서로 적용한다.
-
-## Interfaces
-
-### Inputs and Outputs
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `publish_manifest` | 이 폴더의 publication SQL | Ingest | source, run ID, raw SHA256, captured_at, records JSONB, artifact key를 받아 published, historical, replayed를 돌려준다. | 같은 source의 다른 입력과 UTC 업무일 충돌은 거부되며 commit 전 실패는 transaction rollback으로 끝난다. |
+| `claim_notification`·`ack_notification`·`retry_not_sent_notification`·`unknown_notification` | 이 폴더의 publication SQL | notifier | 10분 lease의 claim 필드와 lease_token을 주고 ack는 SMTP acceptance만 기록한다. | 만료·stale token은 거부되고 다섯 번 claim 후 dead이며 격리 기록 실패 시 sending을 유지한다. |
+| `published_documents`·`delivery_status` view | 이 폴더의 publication SQL | reader | reader SELECT로 승인된 현재 문서와 제한된 통지 장부를 읽고 `data_version`을 포함한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `reconcile_notification`·`requeue_dead_notification`·`quarantine_restored_notification` | 이 폴더의 publication SQL | `SET ROLE opsflow_owner`한 `opsflow_migrator` session | id와 attempt, request UUID, 승인·장벽 증거 SHA256을 받아 boolean을 돌려준다. | 다른 인수·경합·동일 attempt 중복 승인은 거부되며 실패하면 polling을 멈추고 근거를 보존한다. |
+| `migration_sha256` psql 변수 | 호출자 | migration과 검사 SQL | 적용할 migration 파일의 SHA256을 각 실행에 제공한다. | receipt나 fingerprint가 다르면 전체 transaction을 중단하고 재적용은 항상 거부한다. |
 
 #### P05 source interface
 
@@ -163,8 +165,6 @@ attempt·reconciliation·audit·accepted/unknown 상태를 함께 보존하고 �
 실패하면 polling을 멈춘 채 근거를 보존합니다. source revert는 실행된 schema rollback이
 아니며 기존 장부/행을 삭제해 되돌리지 않습니다.
 
-### Security Boundary
-
 #### Migration boundary
 
 기존 provisioner가 `opsflow_owner` NOLOGIN, 별도 `opsflow_migrator` LOGIN과
@@ -209,9 +209,13 @@ outbox를 보존한 채, 검토된 backup을 별도의 빈 workload 복구 대�
 재검증합니다. 운영 데이터가 있는 대상에서 version 2 index나 장부 행을 임의로
 제거하지 않으며 MNG DB reset, 공유 volume 삭제, 전체 stack restart를 하지 않습니다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+없음: 이 폴더는 Compose나 Dockerfile 없이 `001_opsflow.sql`부터 `008_checks.sql`까지 8개 SQL 파일만 포함하며, 총괄이 검토한 빈 격리 대상에서 정해진 순서로 적용한다.
+
+### Selected Start
 
 #### Usage
 
@@ -239,13 +243,15 @@ JSON 배열로 기록합니다. 명시적인 빈 ACL은 기본 ACL로 바꾸지 
 구조 필드는 기존 signature에 그대로 남습니다. 이 수정 전 draft의 실패도 수용된
 receipt가 아니며 기존 receipt를 자동 보정하지 않습니다.
 
-### Checks
+## Checks
 
-읽기 전용 검사 SQL(`002_checks.sql`, `006_checks.sql`, `008_checks.sql`)이 receipt, shape와 ACL을 검증한다. 적용 순서는 Local Workflow의 version별 절차를 따른다.
+### Readiness
 
-## Operations
+읽기 전용 검사 SQL(`002_checks.sql`, `006_checks.sql`, `008_checks.sql`)이 receipt, shape와 ACL을 검증한다. 적용 순서는 Selected Start의 version별 절차를 따른다.
 
-### Runbook Links
+### Failure Handling
+
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -256,6 +262,6 @@ receipt가 아니며 기존 receipt를 자동 보정하지 않습니다.
 - [배치](../README.md)
 - [Library](../workflow_lib/README.md)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 이 폴더는 헬스체크를 선언하지 않는다. 적용 결과는 migration 뒤 읽기 전용 검사 SQL로 확인한다.

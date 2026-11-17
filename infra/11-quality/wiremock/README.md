@@ -1,10 +1,10 @@
 ---
 title: "WireMock HTTP 모의 서비스"
-version: "1.1.1"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-09-23"
 ---
 
@@ -12,9 +12,9 @@ created: "2026-09-23"
 
 # WireMock HTTP 모의 서비스
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 WireMock은 개발·계약 검사에서 외부 HTTP 의존성을 합성 응답으로 대체한다.
 기능 모드는 제한된 요청 저널을 사용하고, 부하 모드는 요청 저널을 비활성화한다.
@@ -51,18 +51,16 @@ wiremock/
 └── README.md
 ~~~
 
-### Supported Environment
+### Interfaces
 
-| Category | Technology | Notes |
-| --- | --- | --- |
-| Runtime | WireMock standalone 이미지 | 실제 tag는 [Compose](docker-compose.yml)가 소유 |
-| Function mode | **wiremock**, **api-mock** | bounded request journal |
-| Load mode | **wiremock**, **api-mock** + load override | override가 request journal과 host port를 제거 |
-| Storage | 읽기 전용 bind mount | 영속 writable state 없음 |
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| 기능 모드 `127.0.0.1:${WIREMOCK_HOST_PORT:-18088}` | `wiremock`(기능 모드) | 개발·계약 검사 | 추적 mapping의 합성 응답을 제공하며 요청 저널은 최대 1,000개이고 admin API에는 인증이 없다. | 복구와 장애 대응은 RUN-0092 WireMock Runbook을 따른다. |
+| 부하 모드 `wiremock:8080` | `wiremock`(load override 적용) | project-default network의 peer | host port 없이 `--no-request-journal`로 실행하며 HTTP admin 요청은 403으로 거부한다. | journal API 오류를 empty journal로 바꾸거나 성공으로 판정하지 않는다. |
+| `DELETE /__admin/requests` | `wiremock` admin API | 기능 검사 시작 전 초기화 단계 | 요청 저널을 초기화한다. | load 모드의 admin 403 응답을 빈 요청 저널로 해석하지 않는다. |
+| `mappings/`, `__files/` fixture | 추적된 저장소 파일 | `wiremock` | 합성 데이터만 읽기 전용으로 제공하며 변경은 파일 검토 후 컨테이너 재생성으로 반영한다. | 이 README는 실패 처리를 기록하지 않는다. |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 기능 모드는 **127.0.0.1:${WIREMOCK_HOST_PORT:-18088}**에만 게시한다. 부하
 모드는 host port를 reset하고 project-default network의 peer만
@@ -86,13 +84,22 @@ stub은 재시작 시 사라지며 권위 있는 fixture가 아니다.
 | --- | ---: | --- |
 | **WIREMOCK_HOST_PORT** | No | 기능 모드 loopback 포트; 기본값 18088 |
 
-### Security Boundary
+#### Security Boundary
 
 기능 모드는 `127.0.0.1:${WIREMOCK_HOST_PORT:-18088}`에만 게시하며 admin API에는 인증이 없다. 부하 모드는 host port를 제거하고 project-default network의 peer만 접근하게 하며, Compose에는 secret 참조가 없고 fixture는 합성 데이터만 쓴다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+| Category | Technology | Notes |
+| --- | --- | --- |
+| Runtime | WireMock standalone 이미지 | 실제 tag는 [Compose](docker-compose.yml)가 소유 |
+| Function mode | **wiremock**, **api-mock** | bounded request journal |
+| Load mode | **wiremock**, **api-mock** + load override | override가 request journal과 host port를 제거 |
+| Storage | 읽기 전용 bind mount | 영속 writable state 없음 |
+
+### Selected Start
 
 1. 합성 데이터만 **mappings/**와 **__files/**에 추가한다.
 2. 기능 판정은 root Compose, mock 자체 부하 측정은 root와 load override를 함께 사용한다.
@@ -100,7 +107,9 @@ stub은 재시작 시 사라지며 권위 있는 fixture가 아니다.
 4. load 모드에서 journal API 오류를 empty journal로 변환하거나 성공으로 판정하지 않는다.
 5. 변경 후 두 모드를 각각 render하고 focused 테스트를 실행한다.
 
-### Checks
+## Checks
+
+### Readiness
 
 ~~~bash
 docker compose --env-file .env.example --profile api-mock config --quiet
@@ -117,9 +126,9 @@ DELETE reset 뒤 count 0을 확인했다. load 모드는 같은 stub GET 200과
 추가한 별도 격리 검사에서는 stub GET 200과 **GET /__admin/health** HTTP 403을
 확인했다. 두 결과는 격리 실행 증거이며 HOME 배포나 실제 target 결과가 아니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - [문서 진입점](../../../docs/README.md) (`GDE-0092`, `POL-0092`, `RUN-0092`)
 - [품질 tier](../README.md)
@@ -127,6 +136,6 @@ DELETE reset 뒤 count 0을 확인했다. load 모드는 같은 stub GET 200과
 - [WireMock request journal configuration](https://wiremock.org/docs/configuration/#request-journal)
 - [12-testing-and-quality runbooks](../../../docs/05.operations/runbooks/12-testing-and-quality/README.md): RUN-0092 wiremock
 
-### Observability and Recovery
+#### Observability and Recovery
 
 Compose에 헬스체크가 선언되어 있으며 복구와 장애 대응은 [12-testing-and-quality runbooks](../../../docs/05.operations/runbooks/12-testing-and-quality/README.md)의 RUN-0092 WireMock Runbook을 따른다.

@@ -1,19 +1,21 @@
 ---
 title: "Data Packages"
-version: "2.1.4"
+version: "2.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "references"
 created: "2026-07-02"
 ---
 
 # Data Packages
 
-## Stage Responsibility
+## Responsibility
 
-### Purpose and Readers
+### Purpose
+
+#### Purpose and Readers
 
 저장소 인벤토리, 생성된 navigation 산출물, 구조화된 데이터셋, 용어집,
 안정적인 참고 사실입니다.
@@ -21,7 +23,7 @@ created: "2026-07-02"
 Stage 90 authority boundary와 package lifecycle 규칙은
 [References index](../README.md)와 Stage 99 Registry가 정의합니다.
 
-### Inputs and Outputs
+#### Inputs and Outputs
 
 이 README는 현재 data package 경로와 은퇴한 package의 번호 기록을 안내합니다. dataset의
 사실과 consumer 관계는 해당 package와 canonical consumer가 소유합니다.
@@ -32,9 +34,15 @@ Stage 99 profile을 만족할 때 존재합니다. 필요한 의미를 canonical
 그 번호를 Registry `reserved_history`에 추가하는 같은 변경에서 제거되어
 은퇴합니다. 은퇴한 `DATA-` 번호는 다시 발급하지 않습니다.
 
-## Contents
+### Excluded Responsibilities
 
-### Current Items
+dataset의 사실과 consumer 관계는 이 README가 아니라 해당 package와 canonical consumer가 소유합니다.
+
+## Current Contents
+
+### Paths
+
+#### Current Items
 
 현재 package는 없습니다.
 
@@ -53,30 +61,36 @@ DATA-0067은 Migration 0003의 복구 비교가 마지막 consumer였습니다. 
 이곳의 새 package는 만들기 전에 현재 consumer가 먼저 지정되어야 하며,
 만든 뒤에 지정해서는 안 됩니다.
 
-### Classification
+#### Classification
 
 열세 개 package가 2026-09-10에, DATA-0096이 2026-11-14에 은퇴해 현재 tree에는 없으며, 은퇴한 `DATA-` 번호는 Registry `reserved_history`가 보관하고 본문은 Git 이력에만 있는 비권위 기록입니다.
 
-## Workflow
+### Owners
 
-### Create and Review
+이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않습니다.
+
+## Usage
+
+### Entry Points
+
+#### Upstream and Downstream
+
+- [References index](../README.md)
+
+#### Policy and Templates
+
+- [Stage 99 Registry](../../99.templates/registry.json)
+- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [README 템플릿](../../99.templates/templates/common/readme-category.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
+
+### Checks
+
+#### Create and Review
 
 package는 `data/####-<slug>/` 아래에만 만들고, 대응하는 Stage 99
 템플릿을 사용합니다. 관찰 날짜, 인용, provenance, 활성 owner
 Traceability를 보존합니다.
 
-### Transition and Exit
+#### Transition and Exit
 
 package는 필요한 의미를 canonical owner로 옮기고 모든 inbound consumer를 갱신하며 이 README의 표에서 행을 제거하고 번호를 Registry `reserved_history`에 추가하는 같은 변경에서 은퇴합니다. 은퇴한 `DATA-` 번호는 다시 발급하지 않습니다.
-
-## Related Documents
-
-### Upstream and Downstream
-
-- [References index](../README.md)
-
-### Policy and Templates
-
-- [Stage 99 Registry](../../99.templates/registry.json)
-- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
-- [README 템플릿](../../99.templates/templates/common/readme-category.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

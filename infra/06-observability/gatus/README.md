@@ -1,17 +1,17 @@
 ---
 title: "Gatus Implementation"
-version: "0.3.2"
+version: "0.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Gatus
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -34,15 +34,18 @@ Lifecycle: **HOME**. 운영 통제와 복구는 [documentation index](../../../d
 
 [Compose](../docker-compose.yml)가 서비스, 마운트, 네트워크 권한, 엔트리포인트를 소유합니다.
 
-### Supported Environment
+### Interfaces
 
-#### Tech Stack
-
-업스트림 빌드 고정 값은 [Dockerfile](Dockerfile)에, 런타임 설정은 [Compose](../docker-compose.yml)에 속합니다. [버전 레지스트리](../../../infra/tech-stack.versions.json)는 정제된 프로젝션이며 배포 매니페스트가 아닙니다.
-
-## Interfaces
-
-### Inputs and Outputs
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `/`, `/endpoints/*`, `/suites/*`, 정적 자산 | `gatus` | 이 README는 소비자를 기록하지 않는다. | Public bootstrap 경계로 네이티브 세션 전에 SPA와 로그인 화면을 로드한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `/oidc/login`, `/authorization-code/callback` | `gatus` | Keycloak OIDC(기밀 클라이언트 `home-gatus`) | authorization-code 플로우이며 정확한 콜백은 `https://status.<domain>/authorization-code/callback`이다. | 시크릿·subject·도메인·CA 입력값이 없으면 엔트리포인트가 fail-closed로 동작한다. |
+| `/api/v1/config` | `gatus` | 이 README는 소비자를 기록하지 않는다. | Public minimal bootstrap으로 `oidc`·`authenticated` 플래그와 UI 공지를 반환한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `/health` | `gatus` | 컨테이너 헬스체크 | Public minimal probe이며 응답에는 헬스 상태만 포함된다. | 헬스체크 `wget -qO- http://127.0.0.1:${GATUS_PORT}/health` 실패 시 `exit 1`(interval 30s). |
+| `/metrics` | `gatus` | Prometheus | Internal network only이며 Traefik 라우터는 이 경로를 제외한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| 모니터링 데이터 라우트(상태, 배지, 가동 시간, 응답 시간 이력) | `gatus` | 이 README는 소비자를 기록하지 않는다. | Native OIDC session 경계로 동일한 세션 미들웨어를 사용한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `POST /api/v1/endpoints/:key/external` | `gatus` | 머신 수집 | Per-endpoint bearer token 경계를 독립적으로 유지한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| 내부 상태 probe 대상 | Keycloak(`${KEYCLOAK_MANAGEMENT_PORT:-9000}`), OAuth2 Proxy(`${OAUTH2_PROXY_PORT:-4180}`), 관리 PostgreSQL·Valkey | `gatus` | DNS·전송·프로세스 준비 증거이며 로그인이나 데이터 기능 완료를 대신하지 않는다. | 이 README는 실패 처리를 기록하지 않는다. |
 
 #### Configuration
 
@@ -91,13 +94,19 @@ Alpine 선택과 Go 버전은 유지했으므로 compiler·base 이미지 보안
 `NOT_RUN`입니다. 기존 custom image tag가 같아도 새 이미지가 빌드되거나
 수용된 증거는 아니며, 상태가 바뀐 뒤 tag만 되돌려 복구할 수 있다고 가정하지 않습니다.
 
-### Security Boundary
+#### Security Boundary
 
 Compose가 참조하는 secret은 `gatus_oidc_client_secret`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/06-observability/docker-compose.yml`의 `gatus` 서비스)
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+#### Tech Stack
+
+업스트림 빌드 고정 값은 [Dockerfile](Dockerfile)에, 런타임 설정은 [Compose](../docker-compose.yml)에 속합니다. [버전 레지스트리](../../../infra/tech-stack.versions.json)는 정제된 프로젝션이며 배포 매니페스트가 아닙니다.
+
+### Selected Start
 
 #### Usage
 
@@ -113,7 +122,9 @@ Compose가 참조하는 secret은 `gatus_oidc_client_secret`이며 값은 저장
 - 안정적인 진입점은 [docs/README.md](../../../docs/README.md)입니다. 정확한 Stage 05 경로: `docs/05.operations/guides/07-observability/0087-gatus.md`; ID: `GDE-0087`, `POL-0087`, `RUN-0087`.
 - 해당 런북의 계획된 격리 복구 절차를 따릅니다. 날짜가 명시된 근거가 없는 한 아직 실행되지 않은 것으로 간주하며 이 README에서 운영 중인 상태를 변경하지 않습니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
@@ -123,15 +134,13 @@ Compose가 참조하는 secret은 `gatus_oidc_client_secret`이며 값은 저장
 사용합니다. 설정 검증만으로는 네이티브 로그인, 로그아웃, 거부, 세션 만료,
 모니터링 이력 복구를 증명하지 못합니다.
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
 - [Infrastructure index](../../../infra/README.md)
 - [Documentation index](../../../docs/README.md)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 헬스체크: `gatus` 서비스는 `wget -qO- http://127.0.0.1:${GATUS_PORT}/health >/dev/null 2>&1 || exit 1` (interval 30s).

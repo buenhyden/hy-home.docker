@@ -1,10 +1,10 @@
 ---
 title: "Library Tests"
-version: "1.1.3"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-09-27"
 ---
 
@@ -12,40 +12,25 @@ created: "2026-09-27"
 
 ## Purpose
 
-### Project Role
+### Audience
+
+- Developers
+- QA Engineers
+
+### Outcome
+
+#### Project Role
 
 `tests/lib/<domain>/`은 `scripts/lib/<domain>/`의 주 책임을 그대로 따라가는
 library-unit 테스트 공간입니다. library 도메인마다 짝이 되는 테스트
 디렉터리가 하나씩 있고, 여러 도메인에 걸친 검증과 entrypoint 동작은
 `tests/validation/`이 맡습니다.
 
-#### Audience
-
-- Developers
-- QA Engineers
-
-### Boundaries
+#### Boundaries
 
 - 포함: `scripts/lib/<domain>/` 모듈의 동작 테스트.
 - 제외: CLI 파싱, 렌더링, 실행 context 라우팅, 여러 도메인을 묶는 gate
   실행. 이들은 `tests/validation/`이 소유합니다.
-
-## Repository Map
-
-### Directories
-
-직접 하위 디렉터리는 `scripts/lib/`의 도메인 이름과 같습니다. 도메인과
-테스트 파일의 정확한 대응은 [Script Manifest](../../scripts/manifest.yaml)의
-`tests` 항목이 소유합니다.
-
-`hooks/test_agent_memory.py`는 기존 공유 memory engine과
-`ops/memory_sources.py`의 provenance 경계를 합성 SQLite/Git worktree로 검증합니다.
-schema 1 보존, current 재사용, 재시도/conflict, 용량 경쟁, 재연결 page 상한과
-동시 backup/restore를 포함하며 실제 private DB/native memory는 사용하지 않습니다.
-
-### Canonical Entry Points
-
-여러 도메인과 entrypoint를 함께 검증하는 테스트의 진입점은 [tests/validation](../validation/README.md)입니다.
 
 ## Getting Started
 
@@ -53,7 +38,7 @@ schema 1 보존, current 재사용, 재시도/conflict, 용량 경쟁, 재연결
 
 Python 3와 [scripts/README.md](../../scripts/README.md)의 hash lock(`requirements-controller.lock`)을 설치한 venv가 필요합니다.
 
-### First Verified Path
+### First Use
 
 1. 유지하는 library 동작에는 추적되고 등록된 테스트 소유자가 있어야 합니다.
    `tests/lib/<domain>/`이 기본 위치이며, 여러 모듈이나 entrypoint를 함께
@@ -67,13 +52,36 @@ Python 3와 [scripts/README.md](../../scripts/README.md)의 hash lock(`requireme
 3. 등록된 suite는 정확한 dotted module 이름으로 실행되므로, 모듈 경로를
    바꾸면 등록 이름도 함께 바꿉니다.
 
-## References
+## Repository Map
 
-### Current Documentation
+### Current Paths
+
+#### Directories
+
+직접 하위 디렉터리는 `scripts/lib/`의 도메인 이름과 같습니다. 도메인과
+테스트 파일의 정확한 대응은 [Script Manifest](../../scripts/manifest.yaml)의
+`tests` 항목이 소유합니다.
+
+`hooks/test_agent_memory.py`는 기존 공유 memory engine과
+`ops/memory_sources.py`의 provenance 경계를 합성 SQLite/Git worktree로 검증합니다.
+schema 1 보존, current 재사용, 재시도/conflict, 용량 경쟁, 재연결 page 상한과
+동시 backup/restore를 포함하며 실제 private DB/native memory는 사용하지 않습니다.
+
+#### Canonical Entry Points
+
+여러 도메인과 entrypoint를 함께 검증하는 테스트의 진입점은 [tests/validation](../validation/README.md)입니다.
+
+### Owners
+
+이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.
+
+## Support
+
+### Help
+
+이 문서는 별도의 문의·이슈 보고 경로를 기록하지 않습니다.
+
+### Related Documentation
 
 - [Test Surface](../README.md)
 - [Validation contract tests](../validation/README.md)
-
-### Support and Ownership
-
-이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.

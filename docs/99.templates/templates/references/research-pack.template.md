@@ -17,42 +17,46 @@ observed_at: "{{OBSERVED_AT}}"
 
 # {{TITLE}}
 
-## Overview
+## Responsibility
 
-{{RESEARCH_QUESTION}}
+### Purpose
 
-## Scope
+<!-- Author prompt: State the research question and the scope of this package. -->
 
-{{SCOPE}}
+{{RESEARCH_QUESTION_AND_SCOPE}}
 
-### Method
+### Excluded Responsibilities
 
-{{METHOD}}
+<!-- Author prompt: Name what this package does not cover and its limitations. -->
 
-### Limitations
+{{EXCLUSIONS_AND_LIMITATIONS}}
 
-{{LIMITATIONS}}
+## Current Contents
 
-## Structure
+### Paths
+
+<!-- Author prompt: List each member that exists now, one Path and Purpose row per member. -->
 
 | Path | Purpose |
 | --- | --- |
 | {{DIRECT_CHILD_PATH}} | {{RESEARCH_MEMBER_PURPOSE}} |
 
+### Owners
+
+<!-- Author prompt: Name the owner of this README and the owner of a listed document only where that document or this README states it; say so in a sentence when it records none. -->
+
+{{OWNERS}}
+
 ## Usage
 
-### Implications
+### Entry Points
 
-{{IMPLICATIONS}}
+<!-- Author prompt: Link the current authority documents and state the implications for them. -->
 
-### Sources
+{{IMPLICATIONS_AND_AUTHORITY_LINKS}}
 
-{{PRIMARY_SOURCES}}
+### Checks
 
-### Findings
+<!-- Author prompt: State the method, the primary sources and the findings that support this package. -->
 
-{{FINDINGS}}
-
-## Related Documents
-
-{{CURRENT_AUTHORITY_LINKS}}
+{{METHOD_SOURCES_AND_FINDINGS}}

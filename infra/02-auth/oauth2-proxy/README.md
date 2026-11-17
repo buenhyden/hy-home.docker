@@ -1,10 +1,10 @@
 ---
 title: "OAuth2 Proxy"
-version: "1.1.8"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-29"
 ---
 
@@ -12,9 +12,9 @@ created: "2025-11-29"
 
 > 승인된 애플리케이션 native OIDC를 사용하지 않는 서비스를 위한 OIDC ForwardAuth 게이트웨이입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -59,7 +59,24 @@ oauth2-proxy/
 └── README.md
 ```
 
-### Supported Environment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| ForwardAuth listener `0.0.0.0:${OAUTH2_PROXY_PORT:-4180}` | `oauth2-proxy` | Traefik ForwardAuth middleware(Flower, n8n 등 자체 OIDC가 없는 서비스 앞단) | Keycloak issuer `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm`의 OIDC client `home-proxy-client`로 인증하고 세션은 공유 `mng-valkey`에 둔다 | Troubleshooting에서 issuer/redirect/cookie domain, Valkey 연결, ForwardAuth middleware route를 점검하고 OAuth2 Proxy 런북을 따른다 |
+| Health endpoint `/ping` | `oauth2-proxy` | healthcheck와 운영자 readiness 확인 | ForwardAuth와 같은 `OAUTH2_PROXY_PORT` 포트에서 HTTP GET으로 응답한다 | 이 README는 실패 처리를 기록하지 않는다. |
+
+#### Inputs and Outputs
+
+호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `edge_net`, `mng_data_net`, `oauth2_proxy_metrics_net`, `obs_net`이다. (출처: `infra/02-auth/oauth2-proxy/docker-compose.yml`의 `oauth2-proxy` 서비스)
+
+#### Security Boundary
+
+Compose가 참조하는 secret은 `mng_valkey_password`, `oauth2_proxy_client_secret`, `oauth2_proxy_cookie_secret`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/02-auth/oauth2-proxy/docker-compose.yml`의 `oauth2-proxy` 서비스)
+
+## Usage
+
+### Prerequisites
 
 #### Tech Stack
 
@@ -70,19 +87,7 @@ oauth2-proxy/
 | Protocol | OIDC | Keycloak |
 | Gateway | Traefik | ForwardAuth 호출자 |
 
-## Interfaces
-
-### Inputs and Outputs
-
-호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `edge_net`, `mng_data_net`, `oauth2_proxy_metrics_net`, `obs_net`이다. (출처: `infra/02-auth/oauth2-proxy/docker-compose.yml`의 `oauth2-proxy` 서비스)
-
-### Security Boundary
-
-Compose가 참조하는 secret은 `mng_valkey_password`, `oauth2_proxy_client_secret`, `oauth2_proxy_cookie_secret`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/02-auth/oauth2-proxy/docker-compose.yml`의 `oauth2-proxy` 서비스)
-
-## Development
-
-### Local Workflow
+### Selected Start
 
 #### Usage
 
@@ -130,7 +135,9 @@ Native OIDC app에는 `sso-auth@file`/`sso-errors@file`을 중복 적용하지 �
 - `oauth2_proxy_client_secret`
 - 공유 Valkey secret (`mng_valkey_password`, 기본·대안 이미지 공통)
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Testing
 
@@ -140,9 +147,7 @@ bash scripts/hardening/check-all-hardening.sh 02-auth
 docker compose --profile auth exec oauth2-proxy sh -c 'wget -qO- "http://127.0.0.1:$OAUTH2_PROXY_PORT/ping"'
 ```
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -155,8 +160,6 @@ docker compose --profile auth exec oauth2-proxy sh -c 'wget -qO- "http://127.0.0
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [curated 버전 투영](../../tech-stack.versions.json)은 drift 검증을 제공합니다.
 
 빌드 소스 권한: [Dockerfile](Dockerfile), [dev.Dockerfile](dev.Dockerfile).
-
-### Observability and Recovery
 
 #### Service Readiness
 

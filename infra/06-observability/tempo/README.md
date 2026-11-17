@@ -1,10 +1,10 @@
 ---
 title: "Tempo Distributed Tracing"
-version: "1.0.12"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-01-12"
 ---
 
@@ -12,9 +12,9 @@ created: "2026-01-12"
 
 관련 구성요소의 현재 선언은 [버전 레지스트리](../../tech-stack.versions.json)가 가리키는 Compose 원본에서 확인합니다. 로컬 빌드의 기준 이미지는 [Dockerfile](Dockerfile)에서 확인합니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -50,7 +50,29 @@ tempo/
 └── Dockerfile          # Custom Tempo image build
 ```
 
-### Supported Environment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| OTLP gRPC `4317`·HTTP `4318` | `tempo` | Grafana Alloy의 Tempo exporter | OTLP 트레이스 데이터를 수집한다. | OTLP 수집 오류 시 포트 바인딩과 Alloy exporter 엔드포인트를 확인한다. |
+| `${HOST_LAN_BIND_IP:-192.168.0.13}:${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}` | `tempo` | Grafana Tempo 데이터소스 | TraceQL 트레이스 쿼리를 제공한다. | 트레이스 쿼리 오류 시 Grafana 데이터소스 URL과 Tempo 네트워크 주소의 일치를 확인한다. |
+| Traefik 라우터(`traefik.http.routers.tempo.*`) | `tempo` | Traefik(`tempo_ingress_net`) | `traefik.http.services.tempo.loadbalancer.server.port` 라벨로 백엔드 포트를 지정한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `/ready`(`http://localhost:${TEMPO_PORT:-3200}/ready`) | `tempo` | 컨테이너 헬스체크 | Tempo 준비 상태를 HTTP로 응답한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| SeaweedFS 버킷 `tempo-bucket` | SeaweedFS(S3 호환 오브젝트 스토어) | `tempo` | 트레이스 블록을 S3로 저장하며 secret `seaweedfs_s3_tempo_secret_key`를 참조한다. | 수집 공백 시 버킷 가용성을 확인하고 버킷·WAL 변경 전에는 중지하고 런북 에스컬레이션을 따른다. |
+
+#### Configuration
+
+- **Ingestion**: gRPC(4317)와 HTTP(4318)를 통한 OTLP를 지원합니다.
+- **Persistence**: SeaweedFS의 버킷 `tempo-bucket`.
+- **WAL**: write-ahead 로깅에 로컬 디스크를 사용합니다(`/var/tempo/wal`).
+
+#### Security Boundary
+
+Compose가 참조하는 secret은 `seaweedfs_s3_tempo_secret_key`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `${HOST_LAN_BIND_IP:-192.168.0.13}:${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}`이다. (출처: `infra/06-observability/docker-compose.yml`의 `tempo` 서비스)
+
+## Usage
+
+### Prerequisites
 
 #### Tech Stack
 
@@ -62,23 +84,7 @@ tempo/
 | Storage | [SeaweedFS](../../04-data/seaweedfs/README.md) | [Compose](../../04-data/seaweedfs/docker-compose.yml) | S3 호환 오브젝트 스토어 |
 | Ingestion | [Grafana Alloy](../alloy/README.md) | Compose에 선언됨 | OTLP 수신 및 전달 |
 
-## Interfaces
-
-### Inputs and Outputs
-
-#### Configuration
-
-- **Ingestion**: gRPC(4317)와 HTTP(4318)를 통한 OTLP를 지원합니다.
-- **Persistence**: SeaweedFS의 버킷 `tempo-bucket`.
-- **WAL**: write-ahead 로깅에 로컬 디스크를 사용합니다(`/var/tempo/wal`).
-
-### Security Boundary
-
-Compose가 참조하는 secret은 `seaweedfs_s3_tempo_secret_key`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `${HOST_LAN_BIND_IP:-192.168.0.13}:${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}`이다. (출처: `infra/06-observability/docker-compose.yml`의 `tempo` 서비스)
-
-## Development
-
-### Local Workflow
+### Selected Start
 
 #### Available Scripts
 
@@ -113,7 +119,9 @@ vParquet4로 명시한다. 이는 이전 쓰기 형식을 보존하며 최신 �
 검증된 백업과 지정된 빈 복원 경로에서 읽기 호환성을 먼저 확인하고, 운영 데이터에
 대한 일괄 변환·삭제 없이 변경한다. vParquet5 전환은 별도 검증과 명시적 변경으로 남긴다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
@@ -123,9 +131,7 @@ vParquet4로 명시한다. 이는 이전 쓰기 형식을 보존하며 최신 �
 - Grafana Tempo 데이터소스에 트레이스가 나타나는지 보고 Alloy에서 OTLP 엔드포인트에 접근할 수 있는지 확인합니다.
 - `docker exec tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready`로 Tempo 준비 상태를 확인합니다.
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -133,8 +139,6 @@ vParquet4로 명시한다. 이는 이전 쓰기 형식을 보존하며 최신 �
 - Operations policy (`docs/05.operations/policies/07-observability/0049-tempo.md`)
 - Recovery runbook (`docs/05.operations/runbooks/07-observability/0049-tempo.md`)
 - [Documentation index](../../../docs/README.md)
-
-### Observability and Recovery
 
 #### Operational Status
 

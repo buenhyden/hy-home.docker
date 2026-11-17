@@ -1,17 +1,17 @@
 ---
 title: "Airflow Workloads"
-version: "0.1.1"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Airflow Workloads
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -27,36 +27,38 @@ updated: "2026-11-13"
 
 - [manifest-pipeline/](manifest-pipeline/README.md): DEV 매니페스트 배치.
 
-### Supported Environment
+### Interfaces
 
-없음: 이 디렉터리는 Compose나 Dockerfile 없이 소스만 두며, 실행은 `infra/07-workflow/airflow/docker-compose.yml`의 Airflow 서비스가 `manifest-pipeline/`의 DAG와 `workflow_lib`를 읽기 전용으로 mount해 수행한다.
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 없음: 이 디렉터리 자체는 포트나 API를 노출하지 않으며, 입출력 계약은 `manifest-pipeline/README.md`가 기술한다.
 
-### Security Boundary
+#### Security Boundary
 
 없음: 이 디렉터리 자체에는 secret 정의가 없으며, worker 전용 `OPSFLOW_SECRET_DIR` 경계는 `manifest-pipeline/README.md`의 Security Boundary가 기술한다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+없음: 이 디렉터리는 Compose나 Dockerfile 없이 소스만 두며, 실행은 `infra/07-workflow/airflow/docker-compose.yml`의 Airflow 서비스가 `manifest-pipeline/`의 DAG와 `workflow_lib`를 읽기 전용으로 mount해 수행한다.
+
+### Selected Start
 
 #### Usage
 
 선택 workload의 README와 현재 Task를 읽고 합성시험부터 수행합니다.
 실제 대상·권한·복구 경계가 확정되기 전에는 서비스를 시작하지 않습니다.
 
-### Checks
+## Checks
 
-없음: 이 디렉터리 자체의 검사는 없으며, 소스 검증은 `manifest-pipeline/README.md`의 Local Workflow를 따른다.
+### Readiness
 
-## Operations
+없음: 이 디렉터리 자체의 검사는 없으며, 소스 검증은 `manifest-pipeline/README.md`의 Selected Start를 따른다.
 
-### Runbook Links
+### Failure Handling
+
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -67,6 +69,6 @@ updated: "2026-11-13"
 - [Airflow](../README.md)
 - [문서 탐색](../../../../docs/README.md)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 이 디렉터리는 헬스체크나 관측 대상을 선언하지 않으며, 상태와 복구는 Airflow 서비스와 RUN-0050이 소유한다.

@@ -1,18 +1,18 @@
 ---
 title: "Cassandra LAB"
-version: "1.0.6"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
 # Cassandra LAB
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 이 문서는 root Compose에서 분리된 Cassandra LAB topology의 source 계약을
 설명한다. normal HOME 또는 development stack의 상태·network·secret을 공유하지
@@ -52,18 +52,13 @@ HOME Grafana는 `infra/06-observability/grafana/dashboards/`만 provisioning하�
 않습니다. LAB 관측을 연결하는 별도 계약이 승인되면 그 LAB의 Prometheus·Grafana가
 이 파일을 읽도록 구성하며, HOME provisioning 경로로 옮기지 않습니다.
 
-### Supported Environment
+### Interfaces
 
-| Category | Source of truth | Boundary |
-| --- | --- | --- |
-| Compose | [docker-compose.yml](./docker-compose.yml) | 독립 LAB project |
-| State | `${LAB_DATA_DIR:?set isolated LAB data root}/cassandra/node1`을 `/var/lib/cassandra`에 mount | HOME 상태와 미공유 |
-| Authentication | 공식 Cassandra 이미지 기본값; LAB 내부망 외 노출 없음 | 비밀번호 인증 미구성 |
-| Networks | LAB 전용 network declarations | root network와 미공유 |
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `cassandra-node1`의 `lab_cassandra_core_net` 내부 expose | `cassandra-node1` | 이 README는 소비자를 기록하지 않는다. | host port를 게시하지 않으며 비밀번호 인증은 구성되지 않았다. | Compose healthcheck 선언만 있고 runtime 결과는 미검증이며 RUN-0025를 따른다. |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 환경 변수 `LAB_DATA_DIR`이 가리키는 `${LAB_DATA_DIR}/cassandra/node1`을 `/var/lib/cassandra`에 mount하고 network는 `lab_cassandra_core_net`만 사용한다. 환경 변수는 아래 표와 같다.
 
@@ -74,13 +69,22 @@ HOME Grafana는 `infra/06-observability/grafana/dashboards/`만 provisioning하�
 | `LAB_DATA_DIR` | Yes for bind-backed LAB state | isolated LAB data root; unset이면 fail fast |
 | LAB-specific port/network keys | No | Compose의 LAB default만 사용하며 root key와 공유하지 않음 |
 
-### Security Boundary
+#### Security Boundary
 
 secret 참조는 없고 host port를 게시하지 않으며 LAB network 내부 expose만 선언한다. 비밀번호 인증은 구성되지 않았다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+| Category | Source of truth | Boundary |
+| --- | --- | --- |
+| Compose | [docker-compose.yml](./docker-compose.yml) | 독립 LAB project |
+| State | `${LAB_DATA_DIR:?set isolated LAB data root}/cassandra/node1`을 `/var/lib/cassandra`에 mount | HOME 상태와 미공유 |
+| Authentication | 공식 Cassandra 이미지 기본값; LAB 내부망 외 노출 없음 | 비밀번호 인증 미구성 |
+| Networks | LAB 전용 network declarations | root network와 미공유 |
+
+### Selected Start
 
 1. `LAB_DATA_DIR`을 독립 상태 경로로 지정한다.
 2. 실제 기동 없이 `LAB_DATA_DIR=/tmp/hyhome-cassandra-static docker compose --env-file labs/.env.example -f labs/cassandra/docker-compose.yml --profile '*' config --quiet`로 렌더링한다.
@@ -93,7 +97,9 @@ secret 참조는 없고 host port를 게시하지 않으며 LAB network 내부 e
 | --- | --- |
 | `LAB_DATA_DIR=/tmp/hyhome-cassandra-static docker compose --env-file labs/.env.example -f labs/cassandra/docker-compose.yml --profile '*' config --quiet` | LAB source render만 검증; 컨테이너를 만들지 않음 |
 
-### Checks
+## Checks
+
+### Readiness
 
 Classification은 `LAB`입니다. 이 topology는 독립 Compose project, LAB 전용
 network와 state path를 사용합니다. 같은 host의 여러 member는
@@ -107,15 +113,15 @@ host-level HA를 증명하지 않습니다. 정적 render 통과는 실행·인�
 인증이 필요한 소비자가 생기면 공식 이미지 설정 파일과 계정 provisioning을
 별도 승인된 LAB Task에서 추가해야 합니다. 실제 기동·데이터 권한은 미검증입니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - [Architecture index](../../docs/02.architecture/README.md)
 - [Operations index](../../docs/05.operations/README.md)
 - [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0025 cassandra, RUN-0107 lab-promotion
 
-### Observability and Recovery
+#### Observability and Recovery
 
 | Field | Evidence |
 | --- | --- |

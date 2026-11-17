@@ -1,17 +1,17 @@
 ---
 title: "Hermes 수집 전송 소스"
-version: "0.5.6"
+version: "0.6.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Hermes 수집 전송 소스
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -64,13 +64,17 @@ Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 �
 - [install.py](install.py): 커밋 하나를 root 소유 불변 release로 설치합니다. `--role publisher`(기본, `/opt/hermes-publisher`)와 `--role attester`(`/opt/hermes-attester`, 서명·원본 수집 모듈 포함)가 있습니다.
 - [pyproject.toml](pyproject.toml), [requirements.lock](requirements.lock): 실행 의존성 선언과 hash 고정본입니다.
 
-### Supported Environment
+### Interfaces
 
-Python 패키지(`pyproject.toml`, `requirements.lock`)와 `install.py`, `deploy/`로 Hermes 호스트의 제한된 프로세스에 설치한다. Compose나 Dockerfile은 없다.
-
-## Interfaces
-
-### Inputs and Outputs
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `collect_research_source({item_id, source_url})` | Hermes 플러그인 | Hermes 에이전트 | 허용된 scheduler 실행에서 `receipt_id`, `source_url`, `fetched_at`, `body_sha256`, `collection_call_id`, `normalized_text`를 반환한다. | 실행 식별자가 없으면 네트워크 호출 전에 거부하고 같은 item의 다른 URL은 충돌로 거부한다. |
+| `submit_research_report` (도구 계약 v3) | Hermes 플러그인 | Hermes 에이전트 | `payload`, `report_path`, 선택 `source_receipts`만 받고 보고서를 먼저 저장한 뒤 Webhook에 제출한다. | 경로·크기·UTF-8·길이 위반은 `BLOCKED`로 거부하고 전송 실패는 같은 바이트로 최대 3회 재시도한다. |
+| n8n Webhook `POST /webhook/hermes-blog-ingestion` | Traefik 정확한 경로와 n8n | Hermes `submit_research_report`와 복구용 Publisher `dispatch` | `X-Hermes-Ingest-Token` headerAuth, 출발지 `192.168.0.13/32`, 본문 1 MiB, 분당 6회로 제한한다. | 재시도는 제출자만 하며 400·401·403·409·413·422는 다시 보내지 않고 404는 흐름 미게시 상태다. |
+| Gateway `http://blog-ingestion:8787/v1/ingestions` | `blog-ingestion` Gateway | `n8n-worker` | `n8n_blog_ingest_net` 평문 HTTP와 `Authorization: Bearer` 수집 전용 Token을 쓰고 200·201 영속 수신을 반환한다. | 영속 수신 증거를 확인하기 전에는 성공을 반환하지 않으며 흐름에는 재시도가 없다. |
+| Attestation `POST /v1/ingestions/{id}/attestations`와 `GET /v1/attestation-queue` | `blog-ingestion` Gateway | `hermes-attester` 계정의 `attest-queue` | `blog-data-attestation/2` Ed25519 서명을 `attest`+`read` Token으로 제출한다. | 일시 실패는 6시간까지 재시도하고 409 `REPORT_QUARANTINED`는 건너뛰며 `rejected`가 있으면 종료 코드 1이다. |
+| Export 조회·ACK `https://blog-export.<DEFAULT_URL>` | `blog-ingestion` Gateway (`blog_export_net`) | Windows B 수신기 `scripts/ops/receive-hermes-exports.mjs` | Resource Export 2.0을 `export_read`·`export_ack` Bearer 토큰과 출발지 `<BLOG_EXPORT_RECEIVER_IP>/32`로 제공한다. | 수신기는 1.0 Manifest를 `UNSAFE_MANIFEST`로 거부하고 ACK 409는 `conflict`로 기록한다. |
+| `~/backups/metrics/hermes_research.prom` | Hermes 플러그인 | node-exporter textfile collector | 실행마다 원자 교체되는 0644 파일이며 label 값은 고정 enum뿐이다. | 지표 실패는 도구 결과를 바꾸지 않고 디렉터리가 없으면 쓰지 않는다. |
 
 #### P11 직접 수집·제출 인터페이스
 
@@ -388,8 +392,6 @@ Gateway는 [n8n Compose](../../docker-compose.yml)의 `blog-ingestion` 서비스
 만들어야 하며 없으면 시작이 실패합니다. Hermes 홈, Vault, Blog-data 체크아웃,
 Docker 소켓은 어느 컨테이너에도 연결하지 않습니다.
 
-### Security Boundary
-
 #### 생산자 인증
 
 생산자 신뢰 경계는 분리 서명 하나로 정합니다.
@@ -460,14 +462,18 @@ Companion 디렉터리는 생산자 계정만 쓸 수 있어야 합니다.
 이 변경 전에 서명 없이 저장된 증거는 서명을 덧붙이거나 덮어쓸 수 없어 계속
 막히며, 복구는 새 실행으로 다시 만드는 것입니다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+Python 패키지(`pyproject.toml`, `requirements.lock`)와 `install.py`, `deploy/`로 Hermes 호스트의 제한된 프로세스에 설치한다. Compose나 Dockerfile은 없다.
+
+### Selected Start
 
 #### Usage
 
 로컬 준비·상태 명령은 발행기 설명, 재현 가능한 시험 명령은 시험 설명을 봅니다.
-배포 단위는 제한된 호스트 프로세스이며 설치물은 Security Boundary의 "보호 설치"를 따릅니다.
+배포 단위는 제한된 호스트 프로세스이며 설치물은 Interfaces의 "보호 설치"를 따릅니다.
 운영 계정 생성, 설치, 서비스·예약 실행 등록은 아직 수행하지 않았습니다. `dispatch` 명령은 있으나 추적 키 저장소가 비어 있어
 세 작업은 실제 인증 입력이나 네트워크 요청 없이 `blocked`를 반환합니다.
 
@@ -491,7 +497,9 @@ Runner를 거쳐 가짜 Gateway의 `201`·합성 영속 수신을 확인했습�
 실제 인증 식별자를 넣지 않습니다. 실행 데이터 저장 제한은 관리자 접근이나
 실행 중 메모리까지 격리한다는 의미가 아닙니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Verification
 
@@ -508,9 +516,9 @@ Runner를 거쳐 가짜 Gateway의 `201`·합성 영속 수신을 확인했습�
 승인 키로 서명된 Companion이 모든 항목의 실제 수집 시각을 결속하기 전에는
 발행기 전송이나 재전송을 시작할 수 없습니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -521,8 +529,6 @@ Runner를 거쳐 가짜 Gateway의 `201`·합성 영속 수신을 확인했습�
 - [워크로드 목록](../README.md)
 - [작업 탐색](../../../../../docs/03.specs/README.md): `SPEC-0204-TSK-0022`가 정본입니다.
 - [운영 절차 탐색](../../../../../docs/05.operations/runbooks/08-workflows-and-automation/README.md): `RUN-0053`의 소스 검증·복구 범위를 확인합니다.
-
-### Observability and Recovery
 
 #### 상태 대응과 관측
 

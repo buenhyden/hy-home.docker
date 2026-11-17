@@ -1,17 +1,17 @@
 ---
 title: "외부 프로젝트 인프라 등록 계약"
-version: "0.1.3"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # 외부 프로젝트 인프라 등록 계약
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 외부 `Project-Template` 파생 프로젝트가 사용할 인프라 자원과 접속 위치를
 비밀값 없이 기록하는 메타데이터 계약입니다. 등록 문서의 통과는 자원 생성,
@@ -39,14 +39,13 @@ include하지 않습니다. 실제 프로젝트 ID와 자원 범위가 승인되
 - [`wiki-preparation/`](wiki-preparation/README.md): 실제 앱·자원 생성 없이
   미래 LLM Wiki의 합성 계약, fixture와 수용 기준을 준비하는 패키지.
 
-### Supported Environment
+### Interfaces
 
-Python 표준 라이브러리와 저장소의 기존 `jsonschema` 의존성만 사용합니다.
-Compose 서비스나 이미지를 추가하지 않습니다.
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| 프로젝트 등록 문서 (`schema.json`) | 외부 `Project-Template` 파생 저장소 | `check-project-registration.py` 검증기와 인프라 담당자 | 알 수 없는 필드를 거부하며 `endpoints`·DB·S3·OIDC 등 자원과 `secret_refs` 이름만 기록한다. | `--allow-secret-ref`로 명시하지 않은 이름은 거부되며 실패는 Checks 명령 출력으로 확인한다. |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 `schema_version`, `interface_version`, `project_id`, `environment`, 세 Git SHA
 (`infra_ref`, `template_ref`, `project_ref`), 접속 위치별 구조화된 `endpoints`,
@@ -79,20 +78,27 @@ ACL 생성기가 `:<key>` 패턴을 붙입니다. `default`와 `devadmin`은 ACL
 않습니다. quota의 실제 허용 상한과 경로 접근 권한은 후속 프로젝트별 승인이
 결정합니다.
 
-### Security Boundary
+#### Security Boundary
 
 이 계약은 포트·서비스를 만들지 않지만 접속 경계를 제한합니다. `endpoints`는 `same_daemon`·`host`·`external` 위치별로 scheme·host·port·path만 받고 `external`은 `https`·`rediss`와 DNS FQDN만 허용하며 DB endpoint는 거절합니다. 기본 Docker `host`·`none`·`bridge` 네트워크는 프로젝트 경계로 등록하지 않습니다. 비밀은 값이 아닌 이름(`secret_refs`)으로만 기록하며, 검증기는 허용 이름 목록이 기본적으로 비어 있어 `--allow-secret-ref`로 명시한 이름만 받습니다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+Python 표준 라이브러리와 저장소의 기존 `jsonschema` 의존성만 사용합니다.
+Compose 서비스나 이미지를 추가하지 않습니다.
+
+### Selected Start
 
 실제 프로젝트가 승인되면 외부 저장소가 소비용 manifest를 작성합니다. 인프라
 담당자는 해당 Task에서 참조 이름과 자원 범위를 확인하고, 이 schema와 검증기를
 실행합니다. 이후의 provision·비밀 발급·HOME 변경은 각각 승인된 작업으로
 진행합니다. 필드를 바꾸면 schema, 검증기, 합성 검사를 같은 변경에서 갱신합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 저장소 루트에서 합성 계약 검사를 실행합니다.
 
@@ -107,14 +113,14 @@ python3 scripts/validation/check-script-manifest.py
 별도의 비밀 검사와 사람 검토가 필요합니다. 정적 통과는 route, OIDC, DB,
 Valkey, S3, 검색, 관측의 접근 권한이나 실제 연결을 증명하지 않습니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 [문서 진입점](../../../docs/README.md)에서 현재 소유 경계의 AD-0031과
 DB 권한의 POL-0100을 참조하십시오. 등록 필드의 기계 계약은
 이 패키지의 [schema](schema.json)가 소유합니다.
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 실행되는 서비스가 아니라 헬스체크·지표·로그가 없고 이 계약을 대상으로 하는 운영 런북도 `docs/05.operations/runbooks`에 없습니다. 검증기·합성 검사 실패는 Checks 명령의 출력으로 확인하며, 복구는 Git 이력에서 문서·schema 변경을 되돌리는 것입니다.

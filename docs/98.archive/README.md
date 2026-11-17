@@ -1,18 +1,20 @@
 ---
 title: "98.archive"
-version: "3.0.4"
+version: "3.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "archive"
 ---
 
 # 98.archive
 
-## Stage Responsibility
+## Responsibility
 
-### Purpose and Readers
+### Purpose
+
+#### Purpose and Readers
 
 Stage 98은 활성 스테이지를 떠난 문서의 처분 체계를 정의합니다. 현재 이 스테이지는
 보존 기록을 담지 않으며, 이 `README.md`만 남아 있습니다.
@@ -30,16 +32,21 @@ Stage 98은 활성 스테이지를 떠난 문서의 처분 체계를 정의합�
 운영자, 리뷰어, AI agent가 "이 문서는 왜 사라졌는가"를 조회할 때 사용합니다. 답은
 요약을 받은 현재 소유자 문서와 Git 이력에 있습니다.
 
-### Inputs and Outputs
+#### Inputs and Outputs
 
 - 소유: Stage 98의 처분 분류와 폴더 체계 설명
-- 비소유: 처분 정책, 경로와 profile 계약, 폐기 번호 목록
 - Stage 98에 대한 검사는 corpus lifecycle의 occupancy 검사 하나뿐이며, README가 아닌
   tracked 파일이 있으면 실패합니다. 이 README는 다른 README와 같은 문서 검사를 받습니다.
 
-## Contents
+### Excluded Responsibilities
 
-### Current Items
+- 비소유: 처분 정책, 경로와 profile 계약, 폐기 번호 목록
+
+## Current Contents
+
+### Paths
+
+#### Current Items
 
 | Path | Purpose |
 | --- | --- |
@@ -62,31 +69,37 @@ template은 없습니다. 기록이 없으므로 각 폴더는 지금 존재하�
 └── README.md
 ```
 
-### Classification
+#### Classification
 
 Stage 98은 현재 보존 기록을 담지 않으며 활성 문서가 아닙니다. 삭제된 문서의 본문은 이 stage가 아니라 Git 이력이 보관합니다.
 
-## Workflow
+### Owners
 
-### Create and Review
+이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않습니다.
+
+## Usage
+
+### Entry Points
+
+#### Upstream and Downstream
+
+- [REQ-0026 문서 보존 및 은퇴](../01.requirements/0026-document-retention-and-retirement.md)
+
+#### Policy and Templates
+
+- [문서 보존 및 은퇴 정책](../../.agents/governance/documentation-protocol.md)
+- [AD-0030 문서 Lifecycle 거버넌스](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
+- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
+
+### Checks
+
+#### Create and Review
 
 1. 문서를 없애는 변경은 먼저 그 내용을 현재 소유자 문서에 요약합니다.
 2. 원본 문서는 삭제합니다. 이 스테이지로 옮겨 보존하지 않습니다.
 3. 폐기된 artifact 번호는 Registry의 `reserved_history`에 추가합니다.
 4. 삭제된 본문이 필요하면 Git 이력에서 복구합니다.
 
-### Transition and Exit
+#### Transition and Exit
 
 활성 stage에서 문서를 없앨 때는 내용을 현재 소유자 문서에 요약하고 원본을 삭제하며, 삭제된 본문은 Git 이력이 기록하고 폐기된 번호는 Registry `reserved_history`가 보관합니다.
-
-## Related Documents
-
-### Upstream and Downstream
-
-- [REQ-0026 문서 보존 및 은퇴](../01.requirements/0026-document-retention-and-retirement.md)
-
-### Policy and Templates
-
-- [문서 보존 및 은퇴 정책](../../.agents/governance/documentation-protocol.md)
-- [AD-0030 문서 Lifecycle 거버넌스](../02.architecture/descriptions/0030-document-lifecycle-governance.md)
-- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

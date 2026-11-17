@@ -1,18 +1,20 @@
 ---
 title: "운영 정책"
-version: "0.2.8"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "operations"
 ---
 
 # 운영 정책
 
-## Stage Responsibility
+## Responsibility
 
-### Purpose and Readers
+### Purpose
+
+#### Purpose and Readers
 
 Policy는 허용·금지, 권한, 예외와 검토 기준을 소유한다. 이 인덱스는 현재 목적별 폴더의 README로 연결한다. 명령 순서는 같은 subject의 Runbook이, 에이전트 실행 규칙은 `.agents/`가 소유한다.
 
@@ -23,17 +25,22 @@ Policy는 허용·금지, 권한, 예외와 검토 기준을 소유한다. 이 �
 - SREs
 - 보안 담당자
 
-### Inputs and Outputs
+#### Inputs and Outputs
 
 - 포함: 아래 15개 목적별 폴더의 현재 문서와 폴더 README.
 - 각 폴더에서 subject 번호·slug와 문서 역할로 대상을 찾는다. 같은 subject는
   Guide·Policy·Runbook에서 같은 번호와 slug를 사용한다.
+
+### Excluded Responsibilities
+
 - LAB는 문서 형식·경로·설명만 포함한다. LAB runtime·서비스 설정·이미지·비밀값·
   데이터의 변경이나 실행을 이 인덱스가 승인하지 않는다.
 
-## Contents
+## Current Contents
 
-### Current Items
+### Paths
+
+#### Current Items
 
 현재 문서는 아래 표의 `01-common/`부터 `15-labs/`까지 실제 번호 폴더에 있다.
 폴더 README가 개별 문서 목록을 소유하고 서비스별 적용 조건·다른 역할·구현 원본을
@@ -124,13 +131,33 @@ AI와 검색 문서는 `09-ai-and-search/`에 있습니다.
 | [디자인 시스템](14-design-system/README.md) | 컴포넌트 정본, 디자인 산출물과 문서 접근 기준을 찾는다. |
 | [독립 LAB 문서](15-labs/README.md) | 기존 LAB 승인·격리·정리 기준을 찾으며 이번 범위는 문서에 한정한다. |
 
-### Classification
+#### Classification
 
 분류는 `01-common/`부터 `15-labs/`까지 15개 번호 폴더이며 이 인덱스는 Policy 역할만 소유한다. 같은 subject의 다른 역할 문서는 있는 경우 같은 번호와 slug로 다른 역할 인덱스에 있다.
 
-## Workflow
+### Owners
 
-### Create and Review
+이 README의 소유자는 frontmatter `owner`의 `@buenhyden`이다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않는다.
+
+## Usage
+
+### Entry Points
+
+#### Upstream and Downstream
+
+- [Operations](../README.md)
+- [Guides](../guides/README.md)
+- [Runbooks](../runbooks/README.md)
+- [Incidents](../incidents/README.md)
+
+#### Policy and Templates
+
+- [Documentation protocol](../../../.agents/governance/documentation-protocol.md#role-specific-authoring)
+- [README 템플릿](../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
+
+### Checks
+
+#### Create and Review
 
 1. 새 Policy는 [Policy template](../../99.templates/templates/operations/policy.template.md)으로 시작한다.
 2. 새 subject 번호는 subject마다 하나를 발급하고, 그 subject의 역할 문서가 같은 번호와 slug를 쓴다.
@@ -139,20 +166,6 @@ AI와 검색 문서는 `09-ai-and-search/`에 있습니다.
    서비스 연결이 없는 공통·작업 공간 subject는 필요한 역할만 두고 빈 문서를 만들지 않는다.
    공통 통제·절차는 소유 문서로 연결하고 서비스별 적용 조건과 차이를 각 역할에 남긴다.
 
-### Transition and Exit
+#### Transition and Exit
 
 문서는 `operational-policy` 수명주기(draft, in-review, active, deprecated, superseded, retired)를 따른다. superseded 또는 retired에 이른 문서는 [은퇴 전제 조건](../../../.agents/governance/documentation-protocol.md#retirement-preconditions)을 모두 충족할 때에만 남아야 할 내용을 소유 문서에 요약한 뒤 삭제하고, 번호를 Registry `reserved_history`에 추가하며, 이 목록의 행과 링크를 같은 변경에서 제거한다. 검증기는 모든 구성원이 정확히 한 번 연결되었는지 확인한다.
-
-## Related Documents
-
-### Upstream and Downstream
-
-- [Operations](../README.md)
-- [Guides](../guides/README.md)
-- [Runbooks](../runbooks/README.md)
-- [Incidents](../incidents/README.md)
-
-### Policy and Templates
-
-- [Documentation protocol](../../../.agents/governance/documentation-protocol.md#role-specific-authoring)
-- [README 템플릿](../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

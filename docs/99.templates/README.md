@@ -1,6 +1,6 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.9.1"
+version: "2.10.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -10,9 +10,11 @@ layer: "templates"
 
 # Stage 99 Document Contracts and Templates
 
-## Stage Responsibility
+## Responsibility
 
-### Purpose and Readers
+### Purpose
+
+#### Purpose and Readers
 
 Stage 99는 문서 경로, profile, identifier, section, lifecycle 상태와 전이,
 traceability 형태, 복사용 template의 유일한 권위입니다. machine authority는
@@ -24,7 +26,7 @@ registry와 문서 frontmatter를 검증합니다. 사람과 AI agent를 위한 
 이전 계약은 Git history로 복구할 수 있으나, 현재 작성이나 검증 입력이
 아닙니다.
 
-### Inputs and Outputs
+#### Inputs and Outputs
 
 Stage 99가 소유하는 것:
 
@@ -39,41 +41,6 @@ Stage 99가 소유하는 것:
 - 재사용 가능한 Markdown과 실행 가능한 interface-contract template;
 - 정확한 Stage 03 package-index와 contract-payload 파일명 및 media type;
 - 네 자리 Operations subject route 형태.
-
-Stage 99는 agent 행동, 제품 사실, 아키텍처 결정, 구현 증거, 운영 정책,
-reference finding을 소유하지 않습니다.
-
-## Contents
-
-### Current Items
-
-| Path | Purpose |
-| --- | --- |
-| [registry.json](registry.json) | 문서 profile과 lifecycle machine 권위 |
-| [contracts/](contracts/) | Registry와 frontmatter 값 schema |
-| [templates/](templates/) | 등록된 복사용 작성 source |
-
-```text
-docs/99.templates/
-├── README.md
-├── registry.json
-├── contracts/
-│   ├── document-frontmatter.schema.json
-│   ├── document-profile.schema.json
-│   └── template-definition.schema.json
-└── templates/
-    ├── governance/
-    ├── runtime/
-    ├── requirements/
-    ├── architecture/
-    ├── specs/
-    │   └── contracts/
-    ├── operations/
-    ├── references/
-    └── common/
-```
-
-### Classification
 
 #### Authority Model
 
@@ -112,6 +79,43 @@ Markdown에도 적용됩니다. `absent`는 Markdown frontmatter를 쓰지 않�
 fallback을 뜻하며 현재 작성 대상이 아닙니다. Stage 01~03 lifecycle은
 `deprecated`, `superseded`, `retired`, `archived` 상태를 두지 않습니다.
 대체되거나 철회된 문서는 현재 owner에 요약한 뒤 삭제하고 번호를 예약합니다.
+
+### Excluded Responsibilities
+
+Stage 99는 agent 행동, 제품 사실, 아키텍처 결정, 구현 증거, 운영 정책,
+reference finding을 소유하지 않습니다.
+
+## Current Contents
+
+### Paths
+
+#### Current Items
+
+| Path | Purpose |
+| --- | --- |
+| [registry.json](registry.json) | 문서 profile과 lifecycle machine 권위 |
+| [contracts/](contracts/) | Registry와 frontmatter 값 schema |
+| [templates/](templates/) | 등록된 복사용 작성 source |
+
+```text
+docs/99.templates/
+├── README.md
+├── registry.json
+├── contracts/
+│   ├── document-frontmatter.schema.json
+│   ├── document-profile.schema.json
+│   └── template-definition.schema.json
+└── templates/
+    ├── governance/
+    ├── runtime/
+    ├── requirements/
+    ├── architecture/
+    ├── specs/
+    │   └── contracts/
+    ├── operations/
+    ├── references/
+    └── common/
+```
 
 #### Common Role Forms
 
@@ -217,9 +221,29 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
   180일 이내여야 합니다.
   terminal 상태에는 나가는 전이가 없습니다.
 
-## Workflow
+### Owners
 
-### Create and Review
+이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않습니다.
+
+## Usage
+
+### Entry Points
+
+#### Upstream and Downstream
+
+[docs 색인](../README.md)이 stage 전체의 진입점이며, Stage 99는 다른 stage 문서의 profile, 경로, 식별자, template을 등록합니다.
+
+#### Policy and Templates
+
+- [에이전트 작업 규칙](AGENTS.md)
+- [Template catalog](./templates/README.md)
+- [Canonical agent governance home ADR](../02.architecture/decisions/0032-canonical-agent-governance-home.md)
+- [문서 작성 계약](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [README 템플릿](templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
+
+### Checks
+
+#### Create and Review
 
 1. 등록된 profile과 template 역할을 선택합니다.
 2. 선언된 `type` 계약을 바꾸지 않고 등록된 source를 복사합니다.
@@ -250,7 +274,7 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
 - `DESIGN.md`는 root UI/design-system 권위로 남으며 Stage 03 design
   artifact가 아닙니다.
 
-### Transition and Exit
+#### Transition and Exit
 
 의미적 흐름은 profile마다 다릅니다: Requirement는 검토 후 승인하고, ADR은
 수락하거나 거부합니다. Spec과 Plan은 계약·계획의 승인 권한만 나타내며,
@@ -274,17 +298,3 @@ active로 유지됩니다. `registry.json`이 모든 진입 상태, edge, termin
 Package의 `Traceability`, Architecture Description의 `Adoption Boundaries`, ADR의
 `Authority and Effect`)에 요약하고 원본을 삭제한 뒤, 그 번호를 `reserved_history`에 추가합니다. Stage 98은 기록을 담지
 않습니다.
-
-## Related Documents
-
-### Upstream and Downstream
-
-[docs 색인](../README.md)이 stage 전체의 진입점이며, Stage 99는 다른 stage 문서의 profile, 경로, 식별자, template을 등록합니다.
-
-### Policy and Templates
-
-- [에이전트 작업 규칙](AGENTS.md)
-- [Template catalog](./templates/README.md)
-- [Canonical agent governance home ADR](../02.architecture/decisions/0032-canonical-agent-governance-home.md)
-- [문서 작성 계약](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
-- [README 템플릿](templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

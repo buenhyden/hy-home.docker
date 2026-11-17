@@ -1,10 +1,10 @@
 ---
 title: "Agent Evaluation Evidence"
-version: "1.4.2"
+version: "1.5.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-09-03"
 ---
 
@@ -12,19 +12,19 @@ created: "2026-09-03"
 
 ## Purpose
 
-### Project Role
+### Audience
+
+- 승인된 비교 평가를 설계하고 수행하는 담당자
+- 출력, 채점 근거와 미검증 범위를 검토하는 reviewer
+
+### Outcome
+
+#### Project Role
 
 같은 작업을 Skill 없이 실행한 결과와 Skill을 명시적으로 호출한 결과를 비교하는
 증거 영역입니다. 작업 정의, 두 출력 원문, 채점과 집계의 관계를 보존하여 활성
 하네스가 선택된 사례에서 더 나은 결과를 내는지 확인합니다. 런타임 동작과 활성
 Skill 구성원 계약은 각각의 원본 소유 문서에서 확인합니다.
-
-#### Audience
-
-- 승인된 비교 평가를 설계하고 수행하는 담당자
-- 출력, 채점 근거와 미검증 범위를 검토하는 reviewer
-
-### Boundaries
 
 #### In Scope
 
@@ -64,9 +64,28 @@ Provider Registry는 현재 이 README만 canonical entry로 등록합니다. �
 분류와 등록은 해당 변경 계약에서 함께 수행하고, 실행 파일은 script manifest의
 실제 소비자와 함께 등록합니다. 이 안내는 새로운 실행 파일이나 Skill을 설치하지 않습니다.
 
+## Getting Started
+
+### Prerequisites
+
+없음: 이 README는 실행 하네스나 채점 자동화를 제공하지 않으며, 비교 평가의 도구·모델·권한·예산은 실행 전에 개별 Task에서 선택합니다.
+
+### First Use
+
+이 README에는 현행 문서 profile, frontmatter와 링크 검사를 적용합니다. 새 증거와
+작성 틀은 Stage 99에 한정된 평가 증거 profile과 binding을 등록한 뒤 작성합니다.
+그 분류는 점수 정확성이나 실행 완료를 증명하지 않습니다. 실제 비교·채점·검토는
+출력 원문과 실행 증거를 대조하며 별도의 Task가 수용을 기록합니다.
+
 ## Repository Map
 
-### Directories
+### Current Paths
+
+| Path | Purpose |
+| --- | --- |
+| [README.md](README.md) | Skill 비교 평가 증거 영역의 역할과 작성·보존 안내 |
+
+#### Directories
 
 현재 이 범주에는 이 README만 있습니다. 아래는 새 평가 주기에서 등록할 증거의
 구조이며, 해당 파일이나 평가가 이미 존재한다는 목록이 아닙니다.
@@ -86,29 +105,24 @@ Provider Registry는 현재 이 README만 canonical entry로 등록합니다. �
 시행 수, 권한과 예산은 실행 전에 개별 Task에서 선택합니다. 현재 이 README는
 실행 하네스나 채점 자동화를 제공하지 않습니다.
 
-### Canonical Entry Points
+#### Canonical Entry Points
 
 수정 전에 위 Local Constraints와 [평가 실행 정책](../governance/agentic.md#evaluation-evidence)
 에서 소유자와 실행 경계를 확인합니다. 현재 구성원은 [Provider Registry](../governance/providers/registry.yaml)의
 등록과 [canonical Skill 소유 규칙](../README.md#inputs-and-outputs)에 따라 실제 `skills/<skill_id>/SKILL.md`에서 확인합니다. [Provider model evaluation](../skills/provider-model-evaluation/SKILL.md)은
 공식 출처와 native schema 비교의 별도 절차이며 Skill 출력 비교 평가를 대신하지 않습니다.
 
-## Getting Started
+### Owners
 
-### Prerequisites
+이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.
 
-없음: 이 README는 실행 하네스나 채점 자동화를 제공하지 않으며, 비교 평가의 도구·모델·권한·예산은 실행 전에 개별 Task에서 선택합니다.
+## Support
 
-### First Verified Path
+### Help
 
-이 README에는 현행 문서 profile, frontmatter와 링크 검사를 적용합니다. 새 증거와
-작성 틀은 Stage 99에 한정된 평가 증거 profile과 binding을 등록한 뒤 작성합니다.
-그 분류는 점수 정확성이나 실행 완료를 증명하지 않습니다. 실제 비교·채점·검토는
-출력 원문과 실행 증거를 대조하며 별도의 Task가 수용을 기록합니다.
+이 문서는 별도의 문의·이슈 보고 경로를 기록하지 않습니다.
 
-## References
-
-### Current Documentation
+### Related Documentation
 
 - [Agent execution and evaluation policy](../governance/agentic.md)
 - [Quality policy](../governance/quality-standards.md)
@@ -117,7 +131,3 @@ Provider Registry는 현재 이 README만 canonical entry로 등록합니다. �
 - [Provider model evaluation](../skills/provider-model-evaluation/SKILL.md)
 - [Script manifest](../../scripts/manifest.yaml)
 - [Root README](../../README.md)
-
-### Support and Ownership
-
-이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.

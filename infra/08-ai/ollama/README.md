@@ -1,18 +1,18 @@
 ---
 title: "Ollama Inference Engine"
-version: "1.0.6"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
 # Ollama Inference Engine
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 이 경로는 `hy-home.docker` 플랫폼의 핵심 추론 엔진인 Ollama 구성을 담당한다. NVIDIA GPU 가속으로 Llama 3, Mistral 등의 오픈소스 LLM을 로컬에서 효율적으로 구동하며 지표 수집을 위한 Exporter를 포함한다.
 
@@ -43,13 +43,15 @@ ollama/
 └── README.md           # 이 파일 (인프라 진입점)
 ```
 
-### Supported Environment
+### Interfaces
 
-Compose가 선언한 `ollama/ollama` 이미지를 NVIDIA GPU에서 실행하며 `OLLAMA_LLM_LIBRARY=cuda_v12`로 모델 라이브러리 탐색을 한정합니다. 이미지 태그·digest는 `docker-compose.yml`이 소유하고, 모델은 호스트 바인드 마운트 `${OLLAMA_MODEL_DIR:-${DEFAULT_AI_MODEL_DIR}/ollama}`에 저장됩니다.
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Ollama API `127.0.0.1:${OLLAMA_HOST_PORT}:${OLLAMA_PORT}` (`ai_net`, `ollama_ingress_net`, `n8n_ollama_net`) | `ollama` | 이 README는 소비자를 기록하지 않는다. | `/api/tags`, `/api/generate` 등 추론 API를 제공하며 `OLLAMA_NO_CLOUD=1`이다. | API 오류 시 `docker logs --tail=200 ollama`와 포트 바인딩을 확인한다. |
+| Traefik 라우터 `ollama` | `ollama` | 이 README는 소비자를 기록하지 않는다. | `gateway-standard-chain`·`sso-errors`·`sso-auth`를 거친다. | Compose 헬스체크가 선언되어 있다. |
+| exporter 지표 `${OLLAMA_EXPORTER_PORT:-8000}` (`ai_net`, `obs_net`) | `ollama-exporter` | 이 README는 소비자를 기록하지 않는다. | 지표 수집 포트로 노출한다. | Compose 헬스체크가 선언되어 있다. |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 `ollama`는 `ai_net`·`ollama_ingress_net`·`n8n_ollama_net`에 붙어 API를 제공하고, `ollama-exporter`는 `ai_net`·`obs_net`에서 `${OLLAMA_EXPORTER_PORT:-8000}`으로 지표를 노출합니다. 환경 변수는 아래와 같습니다.
 
@@ -62,19 +64,25 @@ Compose가 선언한 `ollama/ollama` 이미지를 NVIDIA GPU에서 실행하며 
 | `OLLAMA_PORT` | No | 11434 | API 포트 |
 | `OLLAMA_EXPORTER_PORT` | No | `.env.example`에서 8000 | exporter 지표 수집 포트; 설정하지 않으면 compose의 기본값은 `8000`입니다 |
 
-### Security Boundary
+#### Security Boundary
 
 API는 `127.0.0.1:${OLLAMA_HOST_PORT}:${OLLAMA_PORT}`로만 호스트에 게시되고 Traefik 라우터는 `gateway-standard-chain`·`sso-errors`·`sso-auth`를 거칩니다. Docker Secret은 선언되지 않으며 `OLLAMA_NO_CLOUD=1`로 ollama.com 클라우드 모델과 로그인을 끕니다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+Compose가 선언한 `ollama/ollama` 이미지를 NVIDIA GPU에서 실행하며 `OLLAMA_LLM_LIBRARY=cuda_v12`로 모델 라이브러리 탐색을 한정합니다. 이미지 태그·digest는 `docker-compose.yml`이 소유하고, 모델은 호스트 바인드 마운트 `${OLLAMA_MODEL_DIR:-${DEFAULT_AI_MODEL_DIR}/ollama}`에 저장됩니다.
+
+### Selected Start
 
 1. 상위 사용 가이드인 Ollama usage guide (`docs/05.operations/guides/09-ai-and-search/0056-ollama.md`)를 먼저 읽는다.
 2. 리소스 예약 및 모델 거버넌스는 Ollama operations policy (`docs/05.operations/policies/09-ai-and-search/0056-ollama.md`)를 따른다.
 3. 장애 발생 시 Ollama recovery runbook (`docs/05.operations/runbooks/09-ai-and-search/0056-ollama.md`)에 따라 복구한다.
 
-### Checks
+## Checks
+
+### Readiness
 
 - Ollama에 영향을 주는 README나 Compose 참조 변경 후에는 `bash scripts/hardening/check-all-hardening.sh 08-ai`를 실행합니다.
 - 현재 루트에서 활성화된 프로필 범위를 확인하려면 `HYHOME_COMPOSE_PROFILES="core ai" bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
@@ -95,9 +103,9 @@ curl "http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate" -d '{
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - **Guide**: Ollama usage guide (`docs/05.operations/guides/09-ai-and-search/0056-ollama.md`)
 - **Policy**: Ollama operations policy (`docs/05.operations/policies/09-ai-and-search/0056-ollama.md`)
@@ -105,7 +113,7 @@ curl "http://localhost:${OLLAMA_HOST_PORT:-11434}/api/generate" -d '{
 - **GPU recovery runbook**: `docs/05.operations/runbooks/09-ai-and-search/0055-gpu-recovery.md`
 - [Documentation index](../../../docs/README.md)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 - AI compose 계약을 확인하려면 `bash scripts/hardening/check-all-hardening.sh 08-ai`로 시작합니다.
 - 이 서비스 로컬 compose 파일을 독립 설정 검사로 실행하지 않습니다. 루트 네트워크 컨텍스트에 의존합니다.

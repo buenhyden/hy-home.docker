@@ -1,17 +1,17 @@
 ---
 title: "독립 매니페스트 outbox 통지"
-version: "0.2.2"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # 독립 매니페스트 outbox 통지
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 DEV 매니페스트 게시 outbox에서 한 건을 claim하고 제한된 Mailpit에 캡처하는
 n8n 소비자입니다. 공개 workflow는 비활성을 유지합니다. SPEC-0204의 C19/C22는
@@ -41,13 +41,15 @@ native 인계 전 설치하거나 운영 워크플로우로 취급하지 않습�
 - [fixtures](fixtures/README.md): 입력·실패·개인정보 경계의 합성 사례입니다.
 - [nodes](nodes/README.md): 이 소비자만 허용하는 SMTP node입니다.
 
-### Supported Environment
+### Interfaces
 
-n8n main·worker(queue mode), 같은 custom node artifact와 encryption key, 개발 Mailpit 캡처, dev-pg의 P04 outbox를 전제로 합니다. 이 디렉터리에는 Compose 서비스 정의가 없으며 정확한 이미지·버전은 n8n 워크로드의 Compose 선언이 소유합니다.
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| DEV 매니페스트 게시 outbox claim | dev-pg의 P04 outbox | `n8n-worker`의 이 n8n 소비자 (`opsflow_notifier_db_net`) | [소비자 계약](outbox-contract.json)에 따라 여섯 claim 필드를 조회하며 `lease_until`은 UTC millisecond 문자열이다. | lease가 25초 이하로 남거나 누락·만료되면 전송 전에 취소한다. |
+| Mailpit SMTP 캡처 전송 | `n8n-worker` | 개발 Mailpit (`opsflow_capture_net`) | 정상 수락은 `accepted_by_smtp`이며 외부 배달 증거가 아니고 exactly-once를 보장하지 않는다. | ack 유실·SMTP 응답 유실·node 오류는 unknown으로 격리하며 자동으로 다시 보내지 않는다. |
+| Mailpit UI/API (8025) | Mailpit | `n8n-worker` | `opsflow_capture_net`으로 닿으며 capture 전용이고 외부 전달이 없다. | 이 README는 실패 처리를 기록하지 않는다. |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 공개 JSON의 credential ID는 placeholder입니다. 운영자가 확인한 공식 n8n
 UI/API 경로로 private import 사본에 연결하며, 값이나 lease token을 Git·출력에
@@ -66,13 +68,17 @@ worker를 Stalwart 공유 `mail_net`과 `dev_data_net`에 연결하지 않습니
 유지됩니다. 이 source topology만으로 실제 peer 거부나 native SMTP capture를
 증명하지 않습니다.
 
-### Security Boundary
+#### Security Boundary
 
 공개 JSON은 `active:false`와 credential placeholder만 두며 값·pinData·lease token을 Git·출력에 남기지 않습니다. `n8n-worker`는 내부 `opsflow_capture_net`(Mailpit)과 `opsflow_notifier_db_net`(dev-pg)에만 추가로 연결되고 Stalwart 공유 `mail_net`과 `dev_data_net`에는 연결되지 않습니다. runtime notifier DB 역할은 검토된 notifier 함수 EXECUTE만 갖고 dead 복구 관리 함수 권한은 없습니다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+n8n main·worker(queue mode), 같은 custom node artifact와 encryption key, 개발 Mailpit 캡처, dev-pg의 P04 outbox를 전제로 합니다. 이 디렉터리에는 Compose 서비스 정의가 없으며 정확한 이미지·버전은 n8n 워크로드의 Compose 선언이 소유합니다.
+
+### Selected Start
 
 저장소 루트에서 전용 Python·Node 시험을 실행합니다. 정확한 생성·build 명령은
 하위 README에 있습니다. 공개 JSON에는 credential 값·pinData가 없고 성공·오류·수동
@@ -95,7 +101,9 @@ DB와 worker의 실제 시계 오차가 5초 이내이고 DB timeout/cancellatio
 exactly-once 보장이 아닙니다. Unknown은 SQL owner의 capture/증거 대조 후에만 해제하며,
 정확한 함수·권한·독립 복원 조건은 P04 SQL README를 따릅니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 합성 시험과 owned loopback STARTTLS 시험은 실제 n8n Worker·DB·Mailpit native 실행과
 구분합니다. 신규 실행 결과·독립 검토·실행 환경·잔여는 Task0044에 기록하며,
@@ -109,15 +117,15 @@ metadata DB와 같은 encryption key의 일관된 복원, 진행 중 전송의 �
 상태와 다음 claim 결과를 각각 대조합니다. SQL-only dump/restore를 전체 서비스 복원으로
 승격하지 않습니다. 실행하지 않은 운영·원격 CI·최종 P12 인수는 NOT_RUN입니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - [워크로드 목록](../README.md)
 - [Spec Package 탐색](../../../../../docs/03.specs/README.md): 과거 수용은 SPEC-0204-TSK-0013, 현재 P05 보완은 SPEC-0212-TSK-0044가 소유합니다.
 - n8n Runbook: `docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md`(RUN-0053)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 dead 복구는 SQL007의 `requeue_dead_notification(id,attempt,request_id,evidence_sha256)`만
 사용합니다. 현재 attempt의 no-send 증거와 개별 승인마다 한 번의 추가 claim을 허용하고

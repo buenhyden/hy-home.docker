@@ -1,18 +1,18 @@
 ---
 title: "Pushgateway"
-version: "1.0.7"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-01-12"
 ---
 
 # Pushgateway
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -45,7 +45,28 @@ pushgateway/
 └── README.md           # This file
 ```
 
-### Supported Environment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `http://pushgateway:9091/metrics/job/<job>` push API | 임시·배치 작업(CI/CD, 배치 스크립트) | `pushgateway` 서비스 | 표준 Prometheus Pushgateway API에 HTTP POST/PUT으로 메트릭을 푸시하며 TTL과 영속화가 없다. | 푸시 오류는 URL 형식과 네트워크 연결을 확인하고 재시작으로 잃은 메트릭은 다시 push한다. |
+| `https://pushgateway.${DEFAULT_URL}` route | Traefik | 이 README는 소비자를 기록하지 않는다. | 보호된 Traefik route이며 Traefik이 SSL 종료와 라우팅을 맡는다. | 이 README는 실패 처리를 기록하지 않는다. |
+| Prometheus scrape 대상 | `pushgateway` 서비스 | Prometheus | `prometheus.yml`에 일치하는 스크레이프 잡이 있을 때만 scrape된다. | 스크레이프 잡이 없으면 다운이 아니라 구현 공백으로 기록하고 RUN-0046을 따른다. |
+
+#### Configuration
+
+- **Ingestion**: 표준 Prometheus Pushgateway API (포트 9091).
+- **Exposure**: 보호된 Traefik 라우트를 통해 `https://pushgateway.${DEFAULT_URL}`로 접근 가능합니다.
+- **Network**: `obs_net`에 통합되어 있습니다.
+- **Persistence**: 현재 Compose 서비스에는 Pushgateway 영속화 옵션이 선언되어 있지 않습니다.
+
+#### Security Boundary
+
+이 서비스 정의에는 `secrets` 참조가 없다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/06-observability/docker-compose.yml`의 `pushgateway` 서비스)
+
+## Usage
+
+### Prerequisites
 
 #### Tech Stack
 
@@ -57,24 +78,7 @@ pushgateway/
 | Ingress | [Traefik](../../01-gateway/README.md) | Compose에 선언됨 | SSL 종료 및 라우팅 |
 | Scraper | [Prometheus](../prometheus/README.md) | Compose에 선언됨 | 예상되는 scrape-to-pull 브리지. 푸시된 메트릭에 의존하기 전에 스크레이프 잡을 확인해야 합니다 |
 
-## Interfaces
-
-### Inputs and Outputs
-
-#### Configuration
-
-- **Ingestion**: 표준 Prometheus Pushgateway API (포트 9091).
-- **Exposure**: 보호된 Traefik 라우트를 통해 `https://pushgateway.${DEFAULT_URL}`로 접근 가능합니다.
-- **Network**: `obs_net`에 통합되어 있습니다.
-- **Persistence**: 현재 Compose 서비스에는 Pushgateway 영속화 옵션이 선언되어 있지 않습니다.
-
-### Security Boundary
-
-이 서비스 정의에는 `secrets` 참조가 없다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/06-observability/docker-compose.yml`의 `pushgateway` 서비스)
-
-## Development
-
-### Local Workflow
+### Selected Start
 
 #### Usage Instructions
 
@@ -103,7 +107,9 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 2. **Maintenance**: 갱신되지 않은 오래된 메트릭이 있는지 주기적으로 확인합니다.
 3. **Traceability**: 정리 로직과 근거 수집은 전용 가이드와 런북을 참고합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
@@ -112,9 +118,7 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 - `docker logs --tail=200 pushgateway`를 확인하고 푸시된 메트릭이 Pushgateway UI에 나타나는지 확인하여 메트릭 푸시를 검증합니다.
 - Prometheus 대시보드나 알림에 의존하기 전에 `infra/06-observability/prometheus/config/prometheus.yml`에 Pushgateway 스크레이프 잡이 존재하고 Prometheus Targets 페이지에서 대상이 UP 상태인지 확인합니다.
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -122,8 +126,6 @@ echo "some_metric 42" | curl --data-binary @- http://pushgateway:9091/metrics/jo
 - Operations policy (`docs/05.operations/policies/07-observability/0046-pushgateway.md`)
 - Recovery runbook (`docs/05.operations/runbooks/07-observability/0046-pushgateway.md`)
 - [Documentation index](../../../docs/README.md)
-
-### Observability and Recovery
 
 #### Operational Status
 

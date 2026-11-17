@@ -1,17 +1,17 @@
 ---
 title: "Manifest Pipeline Library"
-version: "0.2.1"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Manifest Pipeline Library
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -28,23 +28,29 @@ S3 readback·불량 입력 격리·PG 게시를 소유합니다. 다른 DB·객�
 - [adapters.py](adapters.py): 보호 JSON·S3·parameterized PostgreSQL.
 - [tls.py](tls.py): 보호된 CA 검증과 쓰기 금지한 메모리 사본의 수명 관리.
 
-### Supported Environment
+### Interfaces
 
-Airflow의 apiserver, scheduler, dag-processor, triggerer, worker가 `workflow_lib/`를 `infra/07-workflow/airflow/docker-compose.yml`에서 읽기 전용으로 mount해 import한다. 이 폴더에는 Compose나 Dockerfile이 없다.
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `manifest.py`·`adapters.py`·`tls.py` Python 모듈 | 이 `workflow_lib/` 폴더 | DAG와 이를 읽기 전용 mount로 import하는 Airflow apiserver·scheduler·dag-processor·triggerer·worker | 정상 반환값은 `run_id`, `data_version`, `status`, `records`이며 검증과 S3 readback 뒤에만 SQL 게시를 호출한다. | 실패한 입력은 DB 결과와 outbox를 만들지 않으며 상태는 RUN-0050이 소유한다. |
+| `/run/opsflow`의 `pg.json`, `s3.json`, `ca.pem` | 이 README는 생산자를 기록하지 않는다. | `adapters.py`, `tls.py` | 고정 경로를 확인한 뒤 읽고 `ca.pem`은 `tls.py`가 검증해 전달한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `manifest-quarantine/<source>/<business_date>/<sha256>.json` S3 객체 | `Store.put_quarantine(key, body, reason)` | 이 README는 소비자를 기록하지 않는다. | 1MiB 이하 원본을 `application/json`과 메타데이터 `reason`, `data-version`으로 조건부 보존한다. | 기존 객체와 다르거나 보존에 실패하면 게시를 중단한다. |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 DAG가 호출하는 Python 모듈(`manifest.py`, `adapters.py`, `tls.py`)이며 자체 포트는 없다. `adapters.py`가 `/run/opsflow`의 `pg.json`, `s3.json`을 읽고 `tls.py`가 `ca.pem`을 다룬다.
 
-### Security Boundary
+#### Security Boundary
 
 `/run/opsflow`의 `pg.json`, `s3.json`은 고정 경로를 확인한 뒤 읽고, `ca.pem`은 `tls.py`가 검증해 전달한다. 값은 이 폴더에 두지 않는다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+Airflow의 apiserver, scheduler, dag-processor, triggerer, worker가 `workflow_lib/`를 `infra/07-workflow/airflow/docker-compose.yml`에서 읽기 전용으로 mount해 import한다. 이 폴더에는 Compose나 Dockerfile이 없다.
+
+### Selected Start
 
 #### Usage
 
@@ -63,13 +69,15 @@ Content-Type은 key 확장자와 같은 `application/json`이며(SeaweedFS는 `.
 기존 원본 digest이고 run ID 계산은 유지합니다. 검증과 S3 readback 뒤에만 SQL
 게시를 호출하며, 실패한 입력은 DB 결과와 outbox를 만들지 않습니다.
 
-### Checks
+## Checks
 
-없음: 이 폴더 자체의 검사 명령은 없으며, 검증은 상위 `manifest-pipeline/README.md`의 Local Workflow가 지정한 unittest를 따른다.
+### Readiness
 
-## Operations
+없음: 이 폴더 자체의 검사 명령은 없으며, 검증은 상위 `manifest-pipeline/README.md`의 Selected Start가 지정한 unittest를 따른다.
 
-### Runbook Links
+### Failure Handling
+
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -80,6 +88,6 @@ Content-Type은 key 확장자와 같은 `application/json`이며(SeaweedFS는 `.
 - [배치](../README.md)
 - [예시](../fixtures/README.md)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 이 폴더는 라이브러리이며 헬스체크나 관측 대상을 선언하지 않는다. 상태는 Airflow 서비스와 RUN-0050이 소유한다.

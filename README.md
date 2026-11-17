@@ -1,10 +1,10 @@
 ---
 title: "hy-home.docker"
-version: "1.4.4"
+version: "1.5.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
@@ -14,13 +14,7 @@ created: "2025-11-12"
 
 ## Purpose
 
-### Project Role
-
-`hy-home.docker`는 shared harness-engineering and agent-first engineering workspace 저장소입니다. 홈 서버와 개인 개발 인프라를 Docker Compose 중심으로 표준화하고 그 위에 요구사항, 설계, 계획, 작업, 운영 지식을 단계별 문서 체계로 연결합니다. 루트 [`docker-compose.yml`](./docker-compose.yml)은 Git으로 추적하는 `infra/**/{compose,docker-compose}*.{yml,yaml}` 파일을 `include`로 통합해 단일 진입점 역할을 합니다.
-
-이 저장소의 핵심 목적은 세 가지입니다. 인프라 구성을 계층별로 분리해 서비스 추가와 변경 영향을 명확히 하고 문서와 실행 대상을 연결해 추적성과 검증 가능성을 확보합니다. 여기에 AI Agent와 사람이 동일한 규칙 아래에서 안전하게 협업할 수 있도록 진입 규칙과 작업 범위를 명확히 유지합니다. 이 README는 사람을 위한 안내이며, agent의 작업 규칙은 [`AGENTS.md`](./AGENTS.md)에서 시작합니다.
-
-#### Audience
+### Audience
 
 이 README의 주요 독자:
 
@@ -28,7 +22,13 @@ created: "2025-11-12"
 - 개발자 및 서비스 소비자
 - 문서 작성자
 
-### Boundaries
+### Outcome
+
+#### Project Role
+
+`hy-home.docker`는 shared harness-engineering and agent-first engineering workspace 저장소입니다. 홈 서버와 개인 개발 인프라를 Docker Compose 중심으로 표준화하고 그 위에 요구사항, 설계, 계획, 작업, 운영 지식을 단계별 문서 체계로 연결합니다. 루트 [`docker-compose.yml`](./docker-compose.yml)은 Git으로 추적하는 `infra/**/{compose,docker-compose}*.{yml,yaml}` 파일을 `include`로 통합해 단일 진입점 역할을 합니다.
+
+이 저장소의 핵심 목적은 세 가지입니다. 인프라 구성을 계층별로 분리해 서비스 추가와 변경 영향을 명확히 하고 문서와 실행 대상을 연결해 추적성과 검증 가능성을 확보합니다. 여기에 AI Agent와 사람이 동일한 규칙 아래에서 안전하게 협업할 수 있도록 진입 규칙과 작업 범위를 명확히 유지합니다. 이 README는 사람을 위한 안내이며, agent의 작업 규칙은 [`AGENTS.md`](./AGENTS.md)에서 시작합니다.
 
 #### In Scope
 
@@ -68,81 +68,6 @@ created: "2025-11-12"
 
 일반 작업 흐름은 요구사항 → 아키텍처 → 명세 → 실행 → 운영 순서입니다. 참고 문서는 active stage를 대체하지 않고, 템플릿은 새 문서 작성 전에 target 위치와 상대 링크를 다시 계산하는 기준으로만 사용합니다.
 
-## Repository Map
-
-### Directories
-
-#### Documents
-
-| Path | Purpose |
-| --- | --- |
-| [.agents/](.agents/) | 공유 Agent 거버넌스 |
-| [docs/](docs/) | 공식 단계 문서 탐색 |
-| [infra/](infra/) | Compose 계층과 서비스 |
-| [scripts/](scripts/) | 검증과 자동화 진입점 |
-| [tests/](tests/) | 검증 회귀 테스트 |
-| [projects/](projects/) | 보조 프로젝트 |
-| [secrets/](secrets/) | 값을 제외한 secret 구조 |
-| [docker-compose.yml](docker-compose.yml) | 통합 Compose 선언 |
-| [AGENTS.md](AGENTS.md) | Codex 진입 shim |
-| [CLAUDE.md](CLAUDE.md) | Claude 진입 shim |
-| [llms.txt](llms.txt) | LLM 탐색 진입점 |
-
-```text
-hy-home.docker/
-├── .agents/              # 공통 Agent 거버넌스, 역할, 호출 절차
-├── docs/                 # 01~05, 90, 98, 99 공식 문서 체계
-├── infra/                # 계층별 Docker Compose 서비스 정의
-├── scripts/              # 사전 점검, 검증, 자동화 스크립트
-├── secrets/              # Docker secrets 및 민감 정보 매핑
-├── projects/             # 보조 프로젝트 및 예제 작업 공간
-├── tests/                # 테스트 관련 문서와 자산
-├── docker-compose.yml    # 통합 Compose 진입점
-├── llms.txt              # LLM용 repo-local 탐색 진입점
-├── .env.example          # 환경 변수 예시
-├── AGENTS.md             # Agent 진입 규칙
-└── README.md             # 이 문서
-```
-
-#### Tech Stack
-
-| Category | Technology | Notes |
-| --- | --- | --- |
-| Orchestration | Docker Compose | 루트 `include` 기반 통합 실행 |
-| Infrastructure | 계층형 Compose 스택 | `infra/01`~`infra/11` 서비스 정의 |
-| Documentation | Markdown + stage-based docs | `docs/01`~`docs/05`, `docs/90`, `docs/98`, `docs/99` |
-| Automation | Bash scripts | 사전 점검, 검증, 하드닝, 추적성 검사 |
-| CI / Quality | GitHub Actions + pre-commit + zizmor | 문서/보안/품질 게이트 자동화 |
-| Version Drift Gate | [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json) | Compose image 선언에서 파생한 기계 판독 projection의 drift 검사. 런타임 pin 원본은 Compose/Dockerfile 선언 |
-
-#### Current Infrastructure Snapshot
-
-인프라 규모는 문서 상수로 고정하지 않고, 항상 아래 명령과 소유 문서에서 재현합니다.
-
-- Compose 파일 수와 root `include` 수: `git ls-files 'infra/**/*compose*.yml' 'infra/**/*compose*.yaml'`
-- 활성화되는 서비스 목록과 HOME/DEV/OPTIONAL/LAB/MIGRATE 분류 근거: [`infra/README.md`](./infra/README.md)의 Compose Inventory Snapshot
-- 루트 `docker-compose.yml`의 secret 선언과 등록된 secret file path: [`secrets/README.md`](./secrets/README.md)
-- tracked README 파일 수: `git ls-files '*README.md' | wc -l`
-- README 최신화 기준: `docs/99.templates/templates/common/readme-repository.template.md`의 공통 구조와 경로별 snippet
-
-위 항목의 모든 수치는 추적 트리와 명령 실행에서 재현할 수 있어야 합니다. `secrets/`의 값과 인증서 파일은 추적 대상이 아니므로 개수를 기록하지 않습니다. 추적되지 않는 로컬 상태는 저장소가 재현할 수 없고, 기록하면 검증 없이 낡습니다.
-
-### Canonical Entry Points
-
-#### 문서·인프라·CI 진입 목록
-
-- [`docs/`](./docs/README.md) - 요구사항, 아키텍처, 명세, 실행, 운영 지식까지 포함하는 공식 문서 체계
-- `docs/05.operations` - 사용 가이드, 운영 정책, 런북, 사고 기록을 분리해 관리하는 운영 지식 베이스
-- `docs/90.references` - Docker, 학습 로드맵 등 느리게 변하는 참고 지식
-- [`AGENTS.md`](./AGENTS.md) - 에이전트 작업 규칙의 진입 shim
-- [`llms.txt`](./llms.txt) - LLM 에이전트용 repo-local 탐색 진입점
-- [`infra/`](./infra) - `01-gateway`부터 `11-laboratory`까지 계층별 서비스 정의
-- [`scripts/`](./scripts) - 사전 점검, Compose 검증, 하드닝/추적성 검사 스크립트
-- [`secrets/`](./secrets) - Docker secrets 파일 구조와 민감 정보 관리 기준
-- [`projects/`](./projects) - 보조 앱, 스토리북, MCP 관련 프로젝트 공간
-- [`.github/workflows/ci-quality.yml`](.github/workflows/ci-quality.yml) - repository contract, Git flow, Compose, 하드닝, pre-commit, 보안 검사를 수행하는 CI 정의
-- `docs/90.references/data` - Docker image/version drift의 관찰 시점이 명시된 참고 자료
-
 ## Getting Started
 
 ### Prerequisites
@@ -153,7 +78,7 @@ hy-home.docker/
 - `.env.example`를 기반으로 한 로컬 `.env`
 - `secrets/` 아래의 필수 secret 파일과 인증서 파일
 
-### First Verified Path
+### First Use
 
 1. 이 저장소에서 작업을 시작할 때는 먼저 [`AGENTS.md`](./AGENTS.md), [`docs/README.md`](./docs/README.md), [`infra/README.md`](./infra/README.md)를 읽어 전체 구조를 파악합니다.
 2. 새 서비스를 추가할 때는 `infra/<tier>/<service>/` 패턴을 따르고, 루트 [`docker-compose.yml`](./docker-compose.yml)의 `include` 및 관련 문서를 함께 검토합니다.
@@ -277,9 +202,90 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 
 새 문서 작업은 항상 해당 stage README에서 시작하고, 생성된 문서의 `## Related Documents` 링크는 템플릿 파일 위치가 아니라 복사된 target 문서 위치 기준으로 다시 계산합니다.
 
-## References
+## Repository Map
 
-### Current Documentation
+### Current Paths
+
+#### Documents
+
+| Path | Purpose |
+| --- | --- |
+| [.agents/](.agents/) | 공유 Agent 거버넌스 |
+| [docs/](docs/) | 공식 단계 문서 탐색 |
+| [infra/](infra/) | Compose 계층과 서비스 |
+| [scripts/](scripts/) | 검증과 자동화 진입점 |
+| [tests/](tests/) | 검증 회귀 테스트 |
+| [projects/](projects/) | 보조 프로젝트 |
+| [secrets/](secrets/) | 값을 제외한 secret 구조 |
+| [docker-compose.yml](docker-compose.yml) | 통합 Compose 선언 |
+| [AGENTS.md](AGENTS.md) | Codex 진입 shim |
+| [CLAUDE.md](CLAUDE.md) | Claude 진입 shim |
+| [llms.txt](llms.txt) | LLM 탐색 진입점 |
+
+```text
+hy-home.docker/
+├── .agents/              # 공통 Agent 거버넌스, 역할, 호출 절차
+├── docs/                 # 01~05, 90, 98, 99 공식 문서 체계
+├── infra/                # 계층별 Docker Compose 서비스 정의
+├── scripts/              # 사전 점검, 검증, 자동화 스크립트
+├── secrets/              # Docker secrets 및 민감 정보 매핑
+├── projects/             # 보조 프로젝트 및 예제 작업 공간
+├── tests/                # 테스트 관련 문서와 자산
+├── docker-compose.yml    # 통합 Compose 진입점
+├── llms.txt              # LLM용 repo-local 탐색 진입점
+├── .env.example          # 환경 변수 예시
+├── AGENTS.md             # Agent 진입 규칙
+└── README.md             # 이 문서
+```
+
+#### Tech Stack
+
+| Category | Technology | Notes |
+| --- | --- | --- |
+| Orchestration | Docker Compose | 루트 `include` 기반 통합 실행 |
+| Infrastructure | 계층형 Compose 스택 | `infra/01`~`infra/11` 서비스 정의 |
+| Documentation | Markdown + stage-based docs | `docs/01`~`docs/05`, `docs/90`, `docs/98`, `docs/99` |
+| Automation | Bash scripts | 사전 점검, 검증, 하드닝, 추적성 검사 |
+| CI / Quality | GitHub Actions + pre-commit + zizmor | 문서/보안/품질 게이트 자동화 |
+| Version Drift Gate | [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json) | Compose image 선언에서 파생한 기계 판독 projection의 drift 검사. 런타임 pin 원본은 Compose/Dockerfile 선언 |
+
+#### Current Infrastructure Snapshot
+
+인프라 규모는 문서 상수로 고정하지 않고, 항상 아래 명령과 소유 문서에서 재현합니다.
+
+- Compose 파일 수와 root `include` 수: `git ls-files 'infra/**/*compose*.yml' 'infra/**/*compose*.yaml'`
+- 활성화되는 서비스 목록과 HOME/DEV/OPTIONAL/LAB/MIGRATE 분류 근거: [`infra/README.md`](./infra/README.md)의 Compose Inventory Snapshot
+- 루트 `docker-compose.yml`의 secret 선언과 등록된 secret file path: [`secrets/README.md`](./secrets/README.md)
+- tracked README 파일 수: `git ls-files '*README.md' | wc -l`
+- README 최신화 기준: `docs/99.templates/templates/common/readme-repository.template.md`의 공통 구조와 경로별 snippet
+
+위 항목의 모든 수치는 추적 트리와 명령 실행에서 재현할 수 있어야 합니다. `secrets/`의 값과 인증서 파일은 추적 대상이 아니므로 개수를 기록하지 않습니다. 추적되지 않는 로컬 상태는 저장소가 재현할 수 없고, 기록하면 검증 없이 낡습니다.
+
+#### 문서·인프라·CI 진입 목록
+
+- [`docs/`](./docs/README.md) - 요구사항, 아키텍처, 명세, 실행, 운영 지식까지 포함하는 공식 문서 체계
+- `docs/05.operations` - 사용 가이드, 운영 정책, 런북, 사고 기록을 분리해 관리하는 운영 지식 베이스
+- `docs/90.references` - Docker, 학습 로드맵 등 느리게 변하는 참고 지식
+- [`AGENTS.md`](./AGENTS.md) - 에이전트 작업 규칙의 진입 shim
+- [`llms.txt`](./llms.txt) - LLM 에이전트용 repo-local 탐색 진입점
+- [`infra/`](./infra) - `01-gateway`부터 `11-laboratory`까지 계층별 서비스 정의
+- [`scripts/`](./scripts) - 사전 점검, Compose 검증, 하드닝/추적성 검사 스크립트
+- [`secrets/`](./secrets) - Docker secrets 파일 구조와 민감 정보 관리 기준
+- [`projects/`](./projects) - 보조 앱, 스토리북, MCP 관련 프로젝트 공간
+- [`.github/workflows/ci-quality.yml`](.github/workflows/ci-quality.yml) - repository contract, Git flow, Compose, 하드닝, pre-commit, 보안 검사를 수행하는 CI 정의
+- `docs/90.references/data` - Docker image/version drift의 관찰 시점이 명시된 참고 자료
+
+### Owners
+
+유지 책임은 Help에 적힌 대로 frontmatter `owner`인 `@buenhyden`에게 있습니다.
+
+## Support
+
+### Help
+
+오류 보고는 [bug_report.yml](.github/ISSUE_TEMPLATE/bug_report.yml), 기능 요청은 [feature_request.yml](.github/ISSUE_TEMPLATE/feature_request.yml) 이슈 양식으로, 취약점 보고는 [SECURITY.md](.github/SECURITY.md)의 경로로 합니다. 이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.
+
+### Related Documentation
 
 - [`docs/README.md`](./docs/README.md)
 - [`.agents/README.md`](.agents/README.md)
@@ -296,7 +302,3 @@ Workflow의 외부 `uses:`는 full commit SHA로 고정하고, 직접 작성한 
 - [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json)
 - [`scripts/README.md`](./scripts/README.md)
 - [`secrets/README.md`](./secrets/README.md)
-
-### Support and Ownership
-
-오류 보고는 [bug_report.yml](.github/ISSUE_TEMPLATE/bug_report.yml), 기능 요청은 [feature_request.yml](.github/ISSUE_TEMPLATE/feature_request.yml) 이슈 양식으로, 취약점 보고는 [SECURITY.md](.github/SECURITY.md)의 경로로 합니다. 이 문서의 유지 책임은 frontmatter의 `owner`인 `@buenhyden`에게 있습니다.

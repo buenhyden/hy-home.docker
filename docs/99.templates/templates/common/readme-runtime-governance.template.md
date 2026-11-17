@@ -15,27 +15,15 @@ updated: "{{UPDATED}}"
 
 ## Purpose
 
-### Project Role
+### Audience
+
+{{AUDIENCE}}
+
+### Outcome
 
 {{ROUTE_STATEMENT}}
 
-### Boundaries
-
 {{SCOPE}}
-
-## Repository Map
-
-### Directories
-
-{{DIRECTORY_PURPOSE}}
-
-| Path | Purpose |
-| --- | --- |
-| {{DIRECT_CHILD_PATH}} | {{DIRECT_CHILD_PURPOSE}} |
-
-### Canonical Entry Points
-
-{{CANONICAL_SOURCES}}
 
 ## Getting Started
 
@@ -43,16 +31,32 @@ updated: "{{UPDATED}}"
 
 {{PREREQUISITES}}
 
-### First Verified Path
+### First Use
 
 {{USAGE}}
 
-## References
+## Repository Map
 
-### Current Documentation
+### Current Paths
+
+{{DIRECTORY_PURPOSE}}
+
+| Path | Purpose |
+| --- | --- |
+| {{DIRECT_CHILD_PATH}} | {{DIRECT_CHILD_PURPOSE}} |
+
+{{CANONICAL_SOURCES}}
+
+### Owners
+
+{{OWNERS}}
+
+## Support
+
+### Help
+
+{{SUPPORT}}
+
+### Related Documentation
 
 {{CURRENT_DOCUMENTATION}}
-
-### Support and Ownership
-
-{{SUPPORT_AND_OWNERSHIP}}

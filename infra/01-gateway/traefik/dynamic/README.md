@@ -1,10 +1,10 @@
 ---
 title: "Traefik Dynamic Configuration"
-version: "1.0.10"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Traefik Dynamic Configuration
@@ -27,9 +27,9 @@ Traefik은 이 디렉터리의 설정을 재시작 없이 hot-reload합니다.
 
 ---
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -69,23 +69,31 @@ infra/01-gateway/traefik/dynamic/
 └── tls.yaml  # 구성 파일
 ```
 
-### Supported Environment
+### Interfaces
 
-파일 공급자용 동적 설정(`blog-export.yml`, `hermes-webhook.yml`, `hermes.yml`, `middleware.yml`, `tls.yaml`)만 두며 Compose와 Dockerfile은 없다. 상위 Compose가 이 폴더를 `/dynamic`에 읽기 전용으로 마운트한다.
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `hermes.<DEFAULT_URL>` (`hermes.yml`) | host systemd unit으로 도는 Hermes Agent dashboard | 이 README는 소비자를 기록하지 않는다. | edge_net gateway IP로 연결하며 dashboard 자체 OIDC 인증을 쓰고 Traefik 인증 middleware를 겹치지 않는다. | 변수가 비면 해당 router가 비활성화되어 요청을 받지 않는다. |
+| `POST /webhook/hermes-blog-ingestion` (`hermes-webhook.yml`) | Hermes 호스트 | n8n | 출발지 `<HOST_LAN_BIND_IP>/32`, 본문 1 MiB, 분당 6회, n8n 헤더 인증의 정확한 경로만 받는다. | 대소문자가 다른 Hermes 요청은 어느 router에도 맞지 않아 404이며 변수가 비면 router가 비활성화된다. |
+| `blog-export.<DEFAULT_URL>` (`blog-export.yml`) | Windows B(`<BLOG_EXPORT_RECEIVER_IP>/32`)의 Export 조회·ACK와 서버 A 호스트의 Attestation | Blog-data Gateway | 허용 출발지의 Export 조회·ACK와 Attestation 경로만 Blog-data Gateway로 보낸다. | 다른 경로는 404이며 변수가 비면 해당 router가 비활성화된다. |
+| `sso-auth`·`dashboard-auth` 미들웨어 (`middleware.yml`) | 이 폴더의 `middleware.yml` | 보호 대상 라우터 | `sso-auth`는 ForwardAuth, `dashboard-auth`는 BasicAuth이며 보호 라우터는 `oauth2-proxy-svc` 서비스를 거친다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `/dynamic` 동적 설정 마운트 | 이 폴더의 동적 설정 파일 | Traefik 파일 공급자 | 상위 Compose가 이 폴더를 `/dynamic`에 읽기 전용으로 마운트하고 Traefik이 재시작 없이 hot-reload한다. | 파일 공급자가 로드 오류를 로그로 남기며 `traefik` 서비스 로그와 헬스체크로 확인한다. |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 라우터 호스트는 `blog-export.`, `n8n.`, `hermes.` 하위 도메인이며, 도메인 값은 `{{ env "DEFAULT_URL" }}`로 읽는다. 별도 포트는 열지 않는다.
 
-### Security Boundary
+#### Security Boundary
 
 `tls.yaml`은 `/certs/cert.pem`과 `/certs/key.pem` 경로만 참조하며 인증서 본문은 이 폴더에 없다. 보호 대상 라우터는 `middleware.yml`의 미들웨어와 `oauth2-proxy-svc` 서비스를 거친다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+파일 공급자용 동적 설정(`blog-export.yml`, `hermes-webhook.yml`, `hermes.yml`, `middleware.yml`, `tls.yaml`)만 두며 Compose와 Dockerfile은 없다. 상위 Compose가 이 폴더를 `/dynamic`에 읽기 전용으로 마운트한다.
+
+### Selected Start
 
 #### Usage
 
@@ -94,13 +102,13 @@ infra/01-gateway/traefik/dynamic/
 3. 변경 후 상위 README와 관련 stage 문서의 링크를 함께 확인한다.
 4. secret 값, token, 인증서 원문은 문서에 쓰지 않는다.
 
-### Checks
+## Checks
+
+### Readiness
 
 없음: 이 폴더는 자체 테스트나 검증 스크립트를 두지 않는다. Traefik 파일 공급자가 로드 오류를 로그로 남기며, 로드 결과는 `traefik` 서비스 로그로 확인한다.
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -111,6 +119,6 @@ infra/01-gateway/traefik/dynamic/
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하며 [curated 버전 투영](../../../tech-stack.versions.json)으로 drift를 검증합니다.
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 이 폴더는 자체 헬스체크를 선언하지 않는다. 라우터와 서비스 로드 상태는 상위 `traefik` 서비스의 헬스체크와 로그가 소유한다.

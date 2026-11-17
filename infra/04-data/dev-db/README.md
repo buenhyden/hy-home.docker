@@ -1,18 +1,18 @@
 ---
 title: "개발 데이터베이스 (dev-db)"
-version: "0.1.3"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-10-02"
 ---
 
 # 개발 데이터베이스
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -39,27 +39,32 @@ created: "2026-10-02"
 소유합니다. [`valkey/`](valkey/)는 설정, ACL 생성, 시작 스크립트를 소유합니다.
 엔진별 입력·출력·검증 상태는 각 하위 README에서 확인합니다.
 
-### Supported Environment
+### Interfaces
 
-#### Tech Stack
-
-TimescaleDB Community 기반 PostgreSQL과 Valkey의 단일 개발 인스턴스를 정의합니다. 이미지와 확장 선언은 [`pg/`](pg/) 및 [`valkey/`](valkey/)가 소유합니다.
-
-## Interfaces
-
-### Inputs and Outputs
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `127.0.0.1:${DEV_PG_HOST_PORT:-25433}:5432` (`dev-pg`) | `dev-pg` | 승인된 프로젝트 명세로 등록한 외부 프로젝트 DB·계정 | `dev_data_net`과 notifier용 내부 `opsflow_notifier_db_net`에서 PostgreSQL 접속을 받는다. | `pg_isready` 헬스체크(interval 15s)를 쓰며 복구는 RUN-0100을 따른다. |
+| `dev-valkey` 6379 | `dev-valkey` | 이 README는 소비자를 기록하지 않는다. | `dev_data_net`에서 ACL 사용자로 인증해 접속한다. | `valkey-cli ping` PONG 헬스체크(interval 15s)를 쓴다. |
+| `dev-pg-exporter` `http://localhost:9187/metrics` | `dev-pg-exporter` | Prometheus `dev-pg-exporter` job | 읽기 전용 `dev_pg_monitor` role로만 접속해 통계·설정·WAL 디렉터리를 조회한다. | `wget` metrics 헬스체크(interval 15s)를 쓴다. |
+| `dev-valkey-exporter` `http://localhost:9121/metrics` | `dev-valkey-exporter` | Prometheus `dev-valkey-exporter` job | `PING`·`INFO`·로그 길이만 읽는 `devmonitor` ACL 사용자로 접속한다. | `wget` metrics 헬스체크(interval 30s)를 쓴다. |
 
 #### Configuration
 
 [`docker-compose.yml`](docker-compose.yml)의 `dev-data` profile, `dev_data_net`(dev-pg는 notifier용 내부 `opsflow_notifier_db_net`도 추가로 사용), 별도 데이터 경로와 Docker secret 참조를 사용합니다. 프로젝트별 DB·ACL은 승인된 명시적 명세로만 등록합니다.
 
-### Security Boundary
+#### Security Boundary
 
 Compose가 참조하는 secret은 `dev_pg_admin_password`, `dev_pg_monitor_password`, `dev_pg_opsflow_ingest_password`, `dev_pg_opsflow_migrator_password`, `dev_pg_opsflow_notifier_password`, `dev_pg_opsflow_reader_password`, `dev_pg_platform_migrator_password`, `dev_pg_platform_reader_password`, `dev_pg_platform_runtime_password`, `dev_pgbackrest_cipher_pass`, `dev_valkey_admin_password`, `dev_valkey_inspector_password`, `dev_valkey_monitor_password`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `127.0.0.1:${DEV_PG_HOST_PORT:-25433}:5432`이다. (출처: `infra/04-data/dev-db/docker-compose.yml`의 `dev-pg`, `dev-platform-provision`, `dev-perf-provision`, `dev-pg-monitor-provision`, `dev-pg-exporter`, `dev-valkey`, `dev-valkey-exporter` 서비스)
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+#### Tech Stack
+
+TimescaleDB Community 기반 PostgreSQL과 Valkey의 단일 개발 인스턴스를 정의합니다. 이미지와 확장 선언은 [`pg/`](pg/) 및 [`valkey/`](valkey/)가 소유합니다.
+
+### Selected Start
 
 #### Usage
 
@@ -70,15 +75,17 @@ docker compose --env-file .env.example --profile dev-data config --quiet
 python3 -m unittest tests.validation.test_dev_pg_provision tests.validation.test_dev_valkey_acl
 ```
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
-Local Workflow의 정적 명령은 Compose 렌더와 provision·ACL 입력 검증을 확인합니다. 실제 엔진 동작은 별도의 격리 실행 증거로 기록합니다.
+Selected Start의 정적 명령은 Compose 렌더와 provision·ACL 입력 검증을 확인합니다. 실제 엔진 동작은 별도의 격리 실행 증거로 기록합니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -91,6 +98,6 @@ GDE-0100·POL-0100·RUN-0100을 참조하십시오. 엔진 세부 사항은
 [PostgreSQL README](pg/README.md) 및 [Valkey README](valkey/README.md)를
 참조하십시오.
 
-### Observability and Recovery
+#### Observability and Recovery
 
 헬스체크: `dev-pg` 서비스는 `pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d postgres` (interval 15s); `dev-pg-exporter` 서비스는 `wget -qO- http://localhost:9187/metrics > /dev/null 2>&1 || exit 1` (interval 15s); `dev-valkey` 서비스는 `REDISCLI_AUTH=$$(tr -d "\n" </run/secrets/dev_valkey_admin_password) valkey-cli --user devadmin -h 127.0.0.1 -p 6379 ping | grep -qx PONG` (interval 15s); `dev-valkey-exporter` 서비스는 `wget -qO- http://localhost:9121/metrics > /dev/null 2>&1 || exit 1` (interval 30s).

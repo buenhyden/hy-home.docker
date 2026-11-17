@@ -1,10 +1,10 @@
 ---
 title: "Terrakube IaC Automation Platform"
-version: "1.0.7"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
@@ -14,9 +14,9 @@ created: "2025-11-12"
 
 > Terraform 오케스트레이션, 원격 상태, 프라이빗 레지스트리 서비스 스택입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 `infra/09-platform-ops/terrakube/`는 중앙 집중식 Terraform 워크플로우를 위한 Terrakube 서비스 스택을 정의합니다. 이 스택은 Compose에 선언된 Terrakube 이미지를 사용하는 API, UI, executor 서비스를 포함합니다. 신원 확인은 Keycloak과 통합해 처리하고 메타데이터는 관리용 PostgreSQL 서비스에 저장하며 Terraform 상태에는 SeaweedFS 호환 S3 스토리지를 사용합니다.
 
@@ -52,7 +52,25 @@ terrakube/
 └── README.md           # This file
 ```
 
-### Supported Environment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `https://terrakube-api.${DEFAULT_URL}` (`/swagger-ui.html` 포함) | `terrakube-api` | Terraform CLI, API 토큰 호출, `terrakube-executor` | Keycloak `hy-home.realm` issuer로 인증하며 호스트 `ports` 게시는 없다. | API 라우트 ForwardAuth가 이 소비자들을 차단하므로 `iac` 활성화 전에 별도 승인으로 해결해야 한다. |
+| `https://terrakube-ui.${DEFAULT_URL}` | `terrakube-ui` | 이 README는 소비자를 기록하지 않는다. | 웹 관리 UI이며 Keycloak `hy-home.realm` issuer로 인증한다. | Compose 헬스체크가 선언되어 있으며 복구는 Terrakube 런북을 따른다. |
+| SeaweedFS S3 버킷 `tfstate` | SeaweedFS | Terrakube 스택 | Terraform 상태와 출력을 저장하며 secret `seaweedfs_s3_terrakube_secret_key`를 쓴다. | 이 README는 실패 처리를 기록하지 않는다. |
+
+#### Inputs and Outputs
+
+API는 `https://terrakube-api.${DEFAULT_URL}`, UI는 `https://terrakube-ui.${DEFAULT_URL}`로 Traefik을 통해 라우팅되며 인증은 Keycloak `hy-home.realm` issuer를 사용한다. API, UI, executor는 PostgreSQL, SeaweedFS, Valkey, Keycloak 가정에 의존한다.
+
+#### Security Boundary
+
+Docker secret `terrakube_db_password`, `terrakube_valkey_password`, `terrakube_pat_secret`, `terrakube_internal_secret`을 사용하며 값은 문서에 쓰지 않는다. 외부 접근은 Traefik 라우팅의 `terrakube-api`와 `terrakube-ui` 호스트명으로만 열린다. Compose에는 호스트 `ports` 게시가 선언되어 있지 않다.
+
+## Usage
+
+### Prerequisites
 
 | Component | Image / Source | Role |
 | --- | --- | --- |
@@ -63,19 +81,7 @@ terrakube/
 | State storage | SeaweedFS S3 버킷 `tfstate` | Terraform 상태와 출력 저장 |
 | Identity | Keycloak / DEX 검증 | SSO 통합 |
 
-## Interfaces
-
-### Inputs and Outputs
-
-API는 `https://terrakube-api.${DEFAULT_URL}`, UI는 `https://terrakube-ui.${DEFAULT_URL}`로 Traefik을 통해 라우팅되며 인증은 Keycloak `hy-home.realm` issuer를 사용한다. API, UI, executor는 PostgreSQL, SeaweedFS, Valkey, Keycloak 가정에 의존한다.
-
-### Security Boundary
-
-Docker secret `terrakube_db_password`, `terrakube_valkey_password`, `terrakube_pat_secret`, `terrakube_internal_secret`을 사용하며 값은 문서에 쓰지 않는다. 외부 접근은 Traefik 라우팅의 `terrakube-api`와 `terrakube-ui` 호스트명으로만 열린다. Compose에는 호스트 `ports` 게시가 선언되어 있지 않다.
-
-## Development
-
-### Local Workflow
+### Selected Start
 
 1. Terrakube를 변경하기 전에 상위 [`../README.md`](../README.md)와 이 서비스의 Compose 파일을 읽습니다.
 2. 시크릿 자료는 Docker secrets에 유지하고 시크릿 이름과 용도만 문서화합니다.
@@ -90,7 +96,9 @@ Docker secret `terrakube_db_password`, `terrakube_valkey_password`, `terrakube_p
 - UI: `https://terrakube-ui.${DEFAULT_URL}`
 - API docs: `https://terrakube-api.${DEFAULT_URL}/swagger-ui.html`
 
-### Checks
+## Checks
+
+### Readiness
 
 - Compose나 설정 참조를 변경한 후에는 `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`을 실행합니다.
 - 문서를 준비 완료로 표시하기 전에 `python3 scripts/validation/run-ci-gate.py --profile changed`를 실행합니다.
@@ -99,9 +107,9 @@ Docker secret `terrakube_db_password`, `terrakube_valkey_password`, `terrakube_p
 - Keycloak 클라이언트 설정이 Terrakube의 인증 설정과 일치하는지 확인하여 OIDC 인증을 검증합니다.
 - API와 UI는 여전히 OAuth2 Proxy 클라이언트 ID를 재사용하며 API 라우트의 ForwardAuth가 Terraform CLI, API 토큰 호출, 공개 URL로 API를 호출하는 `terrakube-executor`를 차단합니다. `iac` 활성화 전에 별도 변경 검토·승인으로 다음을 해결해야 합니다: 전용 공개 클라이언트 `home-terrakube`, API 라우트에서 ForwardAuth 제거(또는 executor용 내부 API URL), executor 라우트의 SSO 여부 결정, 실제 audience/RBAC 확인(GDE-0079).
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - [Platform Operations tier README](../README.md)
 - Terrakube guide (`docs/05.operations/guides/10-platform-and-backup/0069-terrakube.md`)
@@ -112,7 +120,7 @@ Docker secret `terrakube_db_password`, `terrakube_valkey_password`, `terrakube_p
 
 런타임 고정 값은 Compose/Dockerfile 선언이 소유하고 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)으로 드리프트를 검증합니다.
 
-### Observability and Recovery
+#### Observability and Recovery
 
 | Field | Evidence |
 | --- | --- |

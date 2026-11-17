@@ -1,18 +1,18 @@
 ---
 title: "개발 PostgreSQL"
-version: "0.2.1"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-10-02"
 ---
 
 # 개발 PostgreSQL
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -39,15 +39,13 @@ created: "2026-10-02"
 
 `platform_dev`은 승인된 시간 이력 테이블을 만들지 않습니다. 업무 migration은 외부 프로젝트 소유이며 UTC/단위/정밀도/NULL/중복/지연 도착, partition 차원을 포함한 유일키, chunk·index·continuous aggregate·refresh·raw retention과 백필/삭제 승인을 명시해야 합니다. 개발 DB 세부 운영 계약은 [운영 가이드 목록](../../../../docs/05.operations/guides/README.md)에서 확인합니다. 승인된 프로젝트 계약 전에는 hypertable과 retention 정책을 추가하지 않습니다.
 
-### Supported Environment
+### Interfaces
 
-#### Tech Stack
-
-[Dockerfile](Dockerfile)이 TimescaleDB Community 기반 PostgreSQL 이미지와 pgBackRest 패키지를 선언합니다. 실제 호환성은 이미지 빌드와 격리 복원으로 확인해야 합니다.
-
-## Interfaces
-
-### Inputs and Outputs
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `dev-pg:5432` endpoint(호스트 `127.0.0.1:${DEV_PG_HOST_PORT:-25433}:5432`) | `dev-pg` | `platform_dev`의 `platform_migrator`·`platform_runtime`·`platform_reader` 역할과 `dev-pg-exporter` | `dev_data_net`의 PostgreSQL이며 runtime과 reader는 DDL 권한이 없다. | `pg_isready` healthcheck(15s)와 RUN-0100 런북을 따른다. |
+| `dev-pg-exporter` 지표 `http://localhost:9187/metrics` | `dev-pg-exporter` | 이 README는 소비자를 기록하지 않는다. | `dev_pg_monitor` role로 `postgres` DB에만 접속해 통계·설정 지표를 노출한다. | `wget` healthcheck(15s)를 쓰며 규칙에 맞지 않는 비밀은 role 변경 전 거부한다. |
+| `provision/project.py` 프로젝트 JSON 입력 | 이 README는 생산자를 기록하지 않는다. | `dev-platform-provision`의 `provision/project.py` | JSON schema v1과 `environment=development`만 받고 값은 실행 시 `/run/secrets/`에서 읽는다. | comment가 맞지 않는 기존 DB는 자동 인수하지 않고 소유자 검토가 필요하다. |
 
 #### Configuration
 
@@ -72,27 +70,35 @@ PUBLIC template1이나 새 DB를 통해 접근할 수 있으면 NOLOGIN 상태�
 접근을 추가하지 않습니다. 기존 활성 role의 권한 변경·세션 종료는 별도 운영 조정 대상입니다. 복원 순서는 globals/roles,
 검토된 cluster ACL, 프로젝트 DB 복원과 실제 역할별 거부 시험입니다.
 
-### Security Boundary
+#### Security Boundary
 
 Compose가 참조하는 secret은 `dev_pg_admin_password`, `dev_pg_monitor_password`, `dev_pgbackrest_cipher_pass`이며, 이 폴더를 마운트하는 `dev-platform-provision`은 `dev_pg_platform_migrator_password`, `dev_pg_platform_runtime_password`, `dev_pg_platform_reader_password`, `dev_pg_opsflow_migrator_password`, `dev_pg_opsflow_ingest_password`, `dev_pg_opsflow_notifier_password`, `dev_pg_opsflow_reader_password`를 추가로 쓰고, `dev-perf-provision`은 위 목록의 `dev_pg_admin_password`만 쓴다. 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `127.0.0.1:${DEV_PG_HOST_PORT:-25433}:5432`이다. (출처: `infra/04-data/dev-db/docker-compose.yml`의 `dev-pg`, `dev-pg-monitor-provision`, `dev-pg-exporter`, `dev-platform-provision`, `dev-perf-provision` 서비스)
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+#### Tech Stack
+
+[Dockerfile](Dockerfile)이 TimescaleDB Community 기반 PostgreSQL 이미지와 pgBackRest 패키지를 선언합니다. 실제 호환성은 이미지 빌드와 격리 복원으로 확인해야 합니다.
+
+### Selected Start
 
 #### Usage
 
 정적 확인: `python3 -m unittest tests.validation.test_dev_pg_provision` 및 `python3 infra/04-data/dev-db/pg/provision/project.py infra/04-data/dev-db/pg/provision/platform.json --validate-only`. 백업 운영 절차는 Stage 05의 기존 백업 정책·런북 소유자가 별도로 갱신합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
 `python3 -m unittest tests.validation.test_dev_pg_provision`과 `project.py --validate-only`를 저장소 루트에서 실행합니다. 이미지·권한·복구의 실제 결과는 Task에 별도로 기록합니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -103,6 +109,6 @@ Compose가 참조하는 secret은 `dev_pg_admin_password`, `dev_pg_monitor_passw
 [문서 진입점](../../../../docs/README.md)에서 현재 개발 DB 계약의
 POL-0100·RUN-0100과 백업·복구 RUN-0021을 참조하십시오.
 
-### Observability and Recovery
+#### Observability and Recovery
 
 헬스체크: `dev-pg` 서비스는 `pg_isready -h 127.0.0.1 -U "$$POSTGRES_USER" -d postgres` (interval 15s); `dev-pg-exporter` 서비스는 `wget -qO- http://localhost:9187/metrics > /dev/null 2>&1 || exit 1` (interval 15s).

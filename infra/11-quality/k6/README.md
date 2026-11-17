@@ -1,10 +1,10 @@
 ---
 title: "k6 성능 시험 인프라"
-version: "1.6.2"
+version: "1.7.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-03-26"
 ---
 
@@ -14,9 +14,9 @@ created: "2026-03-26"
 
 > `hy-home.docker`의 k6 실행 전 검증과 결과 증거 계약입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 이 패키지는 k6 manifest 검증, 기존 Traefik을 재사용하는 합성 HTTP 경로 경계, 격리 실행, 중단 증거, 결과 확정과 적재 봉투 생성을 제공합니다. 실제 앱 부하는 별도 승인과 target 계약이 필요합니다.
 
@@ -67,16 +67,19 @@ k6/
 bind mount에 둡니다. 결과는 `DEFAULT_TOOLING_DIR/k6-results`에서 실행별 새
 디렉터리를 사용합니다. 기존 디렉터리를 재사용하거나 결과를 덮어쓰지 않습니다.
 
-### Supported Environment
+### Interfaces
 
-- k6 실행 이미지는 [Dockerfile](Dockerfile)이 소유합니다.
-- 결과 계약 CLI는 Python 표준 라이브러리만 사용합니다.
-- 종료 후 계약은 `perf_db` importer로 전달합니다. 실시간 Prometheus remote
-  write는 승인된 격리 adapter가 없어 현재 구성에서 제거했습니다.
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `hyhome.quality-run/v2` manifest | 이 README는 생산자를 기록하지 않는다. | `quality_run.py` | v1 필드에 `telemetry`(`none` 또는 `otlp`)를 더하며 run_id·target·CIDR·예산 등을 모두 요구한다. | 알 수 없는 필드, 중복 key, telemetry의 endpoint·자격 증명, 범위 밖 값은 거부한다. |
+| `DEFAULT_TOOLING_DIR/k6` 시나리오 스크립트 | 외부 프로젝트 | k6 executor | 읽기 전용 bind mount이며 SHA-256을 대조한 scenario snapshot만 연결한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `DEFAULT_TOOLING_DIR/k6-results` 실행별 결과 디렉터리 | `quality_run.py` `prepare`·`run`·`finalize` | `prepare-import` | 실행별 새 디렉터리에 `manifest.json`, raw points, `checksums.json`, `final.json`을 배타적으로 만든다. | 0 sample, 잘린 JSON, 중단 결과는 통과가 아니며 unsafe 원본은 `incomplete`와 import 거절이다. |
+| `metrics-ingress` OTLP relay(`quality_otlp_net`) | k6(`--out opentelemetry`)와 run별 relay | HOME Alloy | relay가 resource 속성을 지우고 같은 run identity를 붙이며 relay만 bearer token을 가진다. | 실행 종료·취소·timeout 때 relay를 지우고 남은 container는 `quality_run.py cleanup --run-id`로 지운다. |
+| `quality.import_payload(jsonb, bytea)` | `import-db` | perf_db | 표준 `PG*` 환경과 `psql`로 한 문장만 호출하며 DB가 payload hash를 다시 검증한다. | DB 장애는 새 receipt에 `failed`로 기록하고 원본을 유지한다. |
+| `s3://` object_ref 업로드(`(project_id, run_id, attempt, sha256, name)`) | `object_store.py` | 승인된 object endpoint | 조건부 생성으로 덮어쓰지 않고 업로드 후 크기·SHA256을 다시 확인한 뒤 receipt를 쓴다. | 원본과 다른 동일 identity는 충돌이며 실제 SeaweedFS 업로드·복원은 `NOT_RUN`이다. |
+| 기존 Traefik 정확한 Path 라우터 | k6 runner | Traefik 뒤 WireMock backend | 정확한 Path 목록 외에는 upstream으로 전달하지 않으며 k6 argv는 `--max-redirects 0`이다. | guard가 없으면 `path_confinement_unavailable`로 거절한다. |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 입력은 `DEFAULT_TOOLING_DIR/k6`의 읽기 전용 시나리오 스크립트와 `hyhome.quality-run/v2` manifest이고, 출력은 `DEFAULT_TOOLING_DIR/k6-results` 아래 실행별 새 디렉터리의 결과 증거이다. 필요한 환경 변수 키는 아래 표와 같다.
 
@@ -220,13 +223,20 @@ receipt 없는 로컬 적재의 object_ref는 `null`이며, 이미 적재된 ide
 호환성과 실비밀을 사용하는 업로드·복원은 `NOT_RUN`입니다. 합성 client 시험은 실제
 서버의 지원 증거가 아니며 관리자 identity를 runner/importer에 재사용하지 않습니다.
 
-### Security Boundary
+#### Security Boundary
 
 결과 디렉터리를 재사용하거나 덮어쓰지 않고 시나리오는 읽기 전용으로 마운트한다. 실제 앱 target과 트래픽은 별도 승인 없이는 `BLOCKED`이며, telemetry에는 endpoint·자격 증명·속성을 넣지 않는다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+- k6 실행 이미지는 [Dockerfile](Dockerfile)이 소유합니다.
+- 결과 계약 CLI는 Python 표준 라이브러리만 사용합니다.
+- 종료 후 계약은 `perf_db` importer로 전달합니다. 실시간 Prometheus remote
+  write는 승인된 격리 adapter가 없어 현재 구성에서 제거했습니다.
+
+### Selected Start
 
 | 명령                                                       | 설명                             |
 | ---------------------------------------------------------- | -------------------------------- |
@@ -261,7 +271,9 @@ Compose의 `version` inventory 명령·읽기 전용 scenario mount·restart 제
 보존하고 서로 다른 버전의 통계/출력 차이를 비교한다. manifest의 `tool_image`는
 별도 승인된 정확한 digest 입력이며 Dockerfile 변경으로 기존 run을 재실행하지 않는다.
 
-### Checks
+## Checks
+
+### Readiness
 
 - k6에 영향을 주는 README나 Compose 참조 변경 후에는 `bash scripts/hardening/check-all-hardening.sh 11-quality`을 실행합니다.
 - 서비스 문서와 운영 링크를 동기화하려면 `python3 scripts/validation/run-ci-gate.py --profile changed`를 실행합니다.
@@ -269,9 +281,9 @@ Compose의 `version` inventory 명령·읽기 전용 scenario mount·restart 제
 - `python3 -m unittest tests.validation.test_k6_results -v`로 manifest,
   threshold/exit, 0 sample, 잘린/비정상 숫자, 중단, replay 충돌 계약을 검사합니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - **Guide**: k6 Performance Testing Guide (`docs/05.operations/guides/12-testing-and-quality/0061-k6.md`)
 - **Policy**: k6 operations policy (`docs/05.operations/policies/12-testing-and-quality/0061-k6.md`)
@@ -279,7 +291,7 @@ Compose의 `version` inventory 명령·읽기 전용 scenario mount·restart 제
 - [Documentation index](../../../docs/README.md)
 - [12-testing-and-quality runbooks](../../../docs/05.operations/runbooks/12-testing-and-quality/README.md): RUN-0061 k6, RUN-0064 performance-testing
 
-### Observability and Recovery
+#### Observability and Recovery
 
 - k6 네트워크, 볼륨, 지표 싱크 참조가 계속 선언되어 있는지 hardening 점검으로 먼저 확인합니다.
 - 테스트 스크립트나 지표 대상을 변경하기 전에 k6 실행 출력과 연결된 런북을 확인합니다.

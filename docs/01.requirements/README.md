@@ -1,18 +1,20 @@
 ---
 title: "Requirement Packages"
-version: "1.1.9"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "requirements"
 ---
 
 # Requirement Packages
 
-## Stage Responsibility
+## Responsibility
 
-### Purpose and Readers
+### Purpose
+
+#### Purpose and Readers
 
 `docs/01.requirements`는 제품의 문제, 이해관계자 가치, 범위, 요구사항과
 수용 기준을 하나의 Requirement Package로 관리한다. 구현 구조는 Stage 02와
@@ -24,21 +26,44 @@ Stage 03, 실행 증거는 Stage 03 Spec Package의 현재 Task, 운영 절차�
 - System Architects
 - Developers
 
-### Inputs and Outputs
+#### Inputs and Outputs
 
 이 디렉터리는 현재 Requirement Package를 관리한다. 각 패키지는
 functional, quality(non-functional) 요구사항을 같은 경계에서 관리하고,
 solution-independent interface 요구는 functional 요구사항으로 쓴다. 별도 역할 문서를 병렬로 만들지 않는다. 아래 색인은 현재 패키지를
 안내하며, 패키지가 추가·변경·삭제되면 같은 변경에서 갱신한다.
 
+### Excluded Responsibilities
+
 Requirement Package는 문제와 이해관계자, 요구사항, 수용 기준, 제약,
 위험과 추적성을 소유한다. 아키텍처 구조, 선택의 근거, 구현 계약과 운영
 절차는 소유하지 않는다. 실행 가능한 OpenAPI, GraphQL, Proto payload는
 관련 Stage 03 Spec package가 소유한다.
 
-## Contents
+## Current Contents
 
-### Current Items
+### Paths
+
+| Path | Purpose |
+| --- | --- |
+| [0001-gateway.md](0001-gateway.md) | Gateway Tier (01-gateway) Requirements |
+| [0002-auth.md](0002-auth.md) | 02-Auth Requirements |
+| [0003-security.md](0003-security.md) | Security Tier (03-security) Requirements |
+| [0004-data.md](0004-data.md) | Data Tier (04-data) Requirements |
+| [0005-data-analytics.md](0005-data-analytics.md) | Analytics Services Requirements |
+| [0006-messaging.md](0006-messaging.md) | Messaging Tier (05-messaging) Requirements |
+| [0007-observability.md](0007-observability.md) | Observability Tier Requirements |
+| [0008-workflow.md](0008-workflow.md) | Workflow Tier (07-workflow) Requirements |
+| [0009-ai.md](0009-ai.md) | AI Infrastructure Tier (08-ai) Requirements |
+| [0010-tooling.md](0010-tooling.md) | Platform Operations and Software Verification Requirements |
+| [0011-communication.md](0011-communication.md) | Communication Tier (10-communication) Requirements |
+| [0012-laboratory.md](0012-laboratory.md) | Administration and Experimentation Requirements |
+| [0013-ai-open-webui.md](0013-ai-open-webui.md) | Open WebUI Requirements |
+| [0023-standardize-infra-net.md](0023-standardize-infra-net.md) | Compose Network Segmentation Requirements |
+| [0024-agent-governance-standardization.md](0024-agent-governance-standardization.md) | Agent Governance Standardization Requirements |
+| [0025-operational-readiness-closure.md](0025-operational-readiness-closure.md) | Operational Readiness Closure Requirements |
+| [0026-document-retention-and-retirement.md](0026-document-retention-and-retirement.md) | Document Retention and Retirement Requirements |
+| [0027-home-development-host.md](0027-home-development-host.md) | Home and Development Host Requirements |
 
 #### Package Index
 
@@ -82,8 +107,6 @@ docs/01.requirements/
 반드시 `REQ-####-FR-####` 또는 `REQ-####-NFR-####` 전체 형태를 사용한다. 발급된 번호는 재사용하거나
 high-water를 낮추지 않는다.
 
-### Classification
-
 #### PRD, SRS, and Interface Perspectives
 
 Requirement Package 하나가 PRD의 문제·사용자 가치·범위, SRS의 functional·
@@ -94,9 +117,29 @@ non-functional 요구사항과 수용 기준, solution-independent interface 요
 profile이나 병렬 문서로 만들지 않는다. 실행 가능한 interface payload는
 Stage 03 Spec의 contract가 소유한다.
 
-## Workflow
+### Owners
 
-### Create and Review
+이 README의 소유자는 frontmatter `owner`의 `@buenhyden`이다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않는다.
+
+## Usage
+
+### Entry Points
+
+#### Upstream and Downstream
+
+- [Architecture](../02.architecture/README.md)
+- [Architecture Descriptions](../02.architecture/descriptions/README.md)
+- [Architecture Decisions](../02.architecture/decisions/README.md)
+- [Specifications](../03.specs/README.md)
+- [Operations](../05.operations/README.md)
+
+#### Policy and Templates
+
+- [에이전트 작업 규칙](AGENTS.md)
+- [문서 작성 계약](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
+
+### Checks
 
 #### Authoring Flow
 
@@ -120,22 +163,6 @@ Stage 03 Spec의 contract가 소유한다.
 - solution-independent interface 의미만 Stage 01에 두고 실행 가능한 계약은
   Stage 03에 둔다.
 
-### Transition and Exit
+#### Transition and Exit
 
 Requirement Package는 draft → in-review → approved로 전이하며 approved에서 in-review로 돌아갈 수 있다. 삭제된 package의 번호는 Registry `reserved_history`가 보관하며, Stage 01 번호 공백은 그 번호가 예약된 경우에만 정당하다. 패키지를 추가·변경·삭제하면 같은 변경에서 이 README를 갱신한다.
-
-## Related Documents
-
-### Upstream and Downstream
-
-- [Architecture](../02.architecture/README.md)
-- [Architecture Descriptions](../02.architecture/descriptions/README.md)
-- [Architecture Decisions](../02.architecture/decisions/README.md)
-- [Specifications](../03.specs/README.md)
-- [Operations](../05.operations/README.md)
-
-### Policy and Templates
-
-- [에이전트 작업 규칙](AGENTS.md)
-- [문서 작성 계약](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
-- [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다

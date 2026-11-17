@@ -1,10 +1,10 @@
 ---
 title: "Keycloak IAM"
-version: "1.1.7"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
@@ -14,9 +14,9 @@ created: "2025-11-12"
 
 > `hy-home.docker`의 중앙 ID/접근 관리 제공자입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -57,13 +57,14 @@ keycloak/
 └── README.md
 ```
 
-### Supported Environment
+### Interfaces
 
-런타임은 `infra/02-auth/keycloak/docker-compose.yml`의 `keycloak` 서비스로 정의되며, 이미지와 태그는 해당 Compose 선언이 소유한다. 활성화 프로파일은 `auth`, `core`, `dev`, `local`이다.
-
-## Interfaces
-
-### Inputs and Outputs
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| 공개 호스트 `keycloak.${DEFAULT_URL}`(앱 `${KEYCLOAK_PORT:-8080}`) | `keycloak` | OAuth2 Proxy(`home-proxy-client`), Kafbat UI(`home-kafbat`), Airflow(`home-airflow`) | Traefik TLS 뒤 공개 HTTP로 canonical realm `hy-home.realm`의 OIDC/SAML token을 발행한다. | redirect/issuer mismatch를 확인하고 token/secret raw value는 출력하지 않는다. |
+| management `${KEYCLOAK_MANAGEMENT_PORT:-9000}/health/ready` | `keycloak` | Prometheus·Gatus와 container healthcheck | `keycloak_management_net`의 `10.250.44.2`(alias `keycloak-management`)에만 bind하는 readiness endpoint다. | DB/readiness를 먼저 확인하고 UP 확인 뒤 의존 서비스를 검증한다. |
+| Airflow Authorization Services | `keycloak` | Airflow(`home-airflow`) | realm role `Viewer`·`User`·`Op`·`Admin`·`SuperAdmin`과 scope `GET`~`LIST`를 제공한다. | `invalid_scope`는 Authorization bootstrap을 확인하고 provider 업그레이드 뒤 `create-permissions`를 다시 실행한다. |
+| `groups` claim | `keycloak` | Kafbat UI | Kafbat은 `groups` claim의 `/admins`, `/users` 매핑을 사용한다. | Kafbat RBAC mismatch는 `groups` claim과 cluster name을 확인한다. |
 
 #### Application Client Matrix
 
@@ -86,8 +87,6 @@ keycloak/
 - `KC_BOOTSTRAP_ADMIN_PASSWORD`는 관리자가 없을 때만 적용됩니다. 파일 경로를 바꿔도 실제 관리자
   비밀번호는 바뀌지 않으며, 전환·되돌리기 절차는
   [OpenBao 소비자 이관 안내](../../03-security/openbao/consumer-migration/README.md)를 따릅니다.
-
-### Security Boundary
 
 #### Airflow Authorization Contract
 
@@ -124,9 +123,13 @@ Kafbat은 Keycloak `groups` claim을 사용합니다.
 - `/admins`
 - `/users`
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+런타임은 `infra/02-auth/keycloak/docker-compose.yml`의 `keycloak` 서비스로 정의되며, 이미지와 태그는 해당 Compose 선언이 소유한다. 활성화 프로파일은 `auth`, `core`, `dev`, `local`이다.
+
+### Selected Start
 
 #### Usage
 
@@ -137,7 +140,9 @@ Kafbat은 Keycloak `groups` claim을 사용합니다.
 5. ForwardAuth/Native OIDC 목적을 client별로 구분합니다.
 6. realm/client/role 변경 후 해당 application login/RBAC을 검증합니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
@@ -154,9 +159,7 @@ bash scripts/hardening/check-all-hardening.sh 02-auth
 - Airflow authorization resource/scope
 - Kafbat groups claim
 
-## Operations
-
-### Runbook Links
+### Failure Handling
 
 #### Related Documents
 
@@ -165,8 +168,6 @@ bash scripts/hardening/check-all-hardening.sh 02-auth
 - **Runbook**: `docs/05.operations/runbooks/03-identity-and-access/0014-keycloak.md`
 - **Integration**: `docs/05.operations/guides/03-identity-and-access/0079-application-auth-integration.md`
 - [문서 인덱스](../../../docs/README.md)
-
-### Observability and Recovery
 
 #### Service Readiness
 

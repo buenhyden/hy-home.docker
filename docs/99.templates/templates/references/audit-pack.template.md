@@ -17,46 +17,46 @@ observed_at: "{{OBSERVED_AT}}"
 
 # {{TITLE}}
 
-## Overview
+## Responsibility
 
-{{OBJECTIVE}}
+### Purpose
 
-## Scope
+<!-- Author prompt: State the audit objective and the scope of this package. -->
 
-{{SCOPE}}
+{{OBJECTIVE_AND_SCOPE}}
 
-### Criteria
+### Excluded Responsibilities
 
-{{CRITERIA}}
+<!-- Author prompt: Name what this audit does not cover and its limitations. -->
 
-### Limitations
+{{EXCLUSIONS_AND_LIMITATIONS}}
 
-{{LIMITATIONS}}
+## Current Contents
 
-## Structure
+### Paths
+
+<!-- Author prompt: List each member that exists now, one Path and Purpose row per member. -->
 
 | Path | Purpose |
 | --- | --- |
 | {{DIRECT_CHILD_PATH}} | {{AUDIT_MEMBER_PURPOSE}} |
 
+### Owners
+
+<!-- Author prompt: Name the owner of this README and the owner of a listed document only where that document or this README states it; say so in a sentence when it records none. -->
+
+{{OWNERS}}
+
 ## Usage
 
-### Evidence
+### Entry Points
 
-{{EVIDENCE}}
+<!-- Author prompt: Link the current authority documents and the actions this audit assigns. -->
 
-### Conformance
+{{ACTIONS_AND_AUTHORITY_LINKS}}
 
-{{CONFORMANCE}}
+### Checks
 
-### Actions
+<!-- Author prompt: State the criteria, the evidence and the conformance result. -->
 
-{{ACTIONS}}
-
-### Findings
-
-{{FINDINGS}}
-
-## Related Documents
-
-{{CURRENT_AUTHORITY_LINKS}}
+{{CRITERIA_EVIDENCE_AND_CONFORMANCE}}

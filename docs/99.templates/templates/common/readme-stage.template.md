@@ -13,60 +13,48 @@ layer: "{{LAYER}}"
 
 # {{TITLE}}
 
-## Stage Responsibility
+## Responsibility
 
-### Purpose and Readers
+### Purpose
 
-<!-- Author prompt: State what this stage or folder is for and who reads it; separate fact from assumption and link the real owner. -->
+<!-- Author prompt: State what this stage or folder is for, who reads it, and what information it owns and lets flow in or out; separate fact from assumption and link the real owner. Do not manage Task status here. -->
 
-{{PURPOSE_AND_READERS}}
+{{PURPOSE_READERS_AND_OWNED_INFORMATION}}
 
-### Inputs and Outputs
+### Excluded Responsibilities
 
-<!-- Author prompt: Say what information this folder owns and what flows in or out; name what it does not own. Do not manage Task status here. -->
+<!-- Author prompt: Name what this folder does not own and link the owner of each excluded concern; write the reason when nothing is excluded. -->
 
-{{OWNED_INFORMATION_AND_FLOW_CONDITIONS}}
+{{EXCLUDED_RESPONSIBILITIES_AND_OWNERS}}
 
-## Contents
+## Current Contents
 
-### Current Items
+### Paths
 
-<!-- Author prompt: List only documents or open changes that exist now. A table with a Path column must use the registered columns (Path, Purpose, optional Owner); a table without a Path column is free. -->
+<!-- Author prompt: List only documents or open changes that exist now, one Path and Purpose row per direct child. A document's own table without a Path column may follow; then name the subtypes, the canonical sources and the boundary to non-authoritative records. -->
 
 | Path | Purpose |
 | --- | --- |
 | {{DIRECT_CHILD_PATH}} | {{DIRECT_CHILD_PURPOSE}} |
 
-### Classification
-
-<!-- Author prompt: Name the subtypes, the canonical sources, and the boundary to non-authoritative records. Write the reason when none apply. -->
-
 {{SUBTYPES_AUTHORITY_AND_RECORD_BOUNDARY}}
 
-## Workflow
+### Owners
 
-### Create and Review
+<!-- Author prompt: Name the owner of this README and the owner of a listed document only where that document or this README states it; say so in a sentence when it records none. -->
 
-<!-- Author prompt: Name the template, the review and approval path, and the checks to run before changing this folder. -->
+{{OWNERS}}
 
-{{TEMPLATE_REVIEW_AND_APPROVAL_PATH}}
+## Usage
 
-### Transition and Exit
+### Entry Points
 
-<!-- Author prompt: State status transitions, promotion, and where an item goes when it leaves; write the reason when there is no transition. -->
+<!-- Author prompt: Link the requirement, design, task and operations documents that feed or consume this folder, the governing policy, and the template that shapes this document. -->
 
-{{STATE_TRANSITIONS_PROMOTION_AND_DISPOSITION}}
+{{UPSTREAM_DOWNSTREAM_POLICY_AND_TEMPLATE_LINKS}}
 
-## Related Documents
+### Checks
 
-### Upstream and Downstream
+<!-- Author prompt: Name the template, the review and approval path and the checks to run before changing this folder, and state status transitions, promotion and where an item goes when it leaves; write the reason when there is no transition. -->
 
-<!-- Author prompt: Link the requirement, design, task and operations documents that feed or consume this folder; write the reason when there are none. -->
-
-{{REQUIREMENT_DESIGN_TASK_AND_OPERATION_LINKS}}
-
-### Policy and Templates
-
-<!-- Author prompt: Link the governing policy and the template that shapes this document. -->
-
-{{GOVERNING_POLICY_AND_TEMPLATE_LINKS}}
+{{REVIEW_CHECKS_TRANSITIONS_AND_EXIT}}

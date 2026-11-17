@@ -1,10 +1,10 @@
 ---
 title: "Locust 분산 부하 LAB"
-version: "0.3.2"
+version: "0.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-10-03"
 ---
 
@@ -12,9 +12,9 @@ created: "2026-10-03"
 
 # Locust 분산 부하 LAB
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 이 문서는 root Compose에서 분리된 Locust master/worker LAB 계약을 설명한다.
 독립 project, network, scenario volume과 result volume을 사용하며 HOME 상태나
@@ -62,21 +62,15 @@ labs/locust/
 컨테이너의 메트릭과 로그를 수집하지 않는다. Locust의 관측 연결은 별도 계약과 실제 검증을
 마친 뒤 구성한다.
 
-### Supported Environment
+### Interfaces
 
-| Category | Contract |
-| --- | --- |
-| Project | **hy-home-lab-locust** |
-| Services | **lab-locust-master**, **lab-locust-worker** |
-| Profile | **lab-locust** |
-| Network | LAB 전용 **lab_locust_net**; HOME network 미참여 |
-| Scenario | **LAB_LOCUST_SCENARIO_DIR** → **/mnt/locust/scenario:ro** |
-| Results | **LAB_LOCUST_RESULT_DIR** → **/mnt/locust/results:rw**; master만 mount |
-| Host exposure | 없음 |
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Scenario `LAB_LOCUST_SCENARIO_DIR` -> `/mnt/locust/scenario:ro` | 외부 프로젝트(검토된 `locustfile.py`) | `lab-locust-master`, `lab-locust-worker` | 검토된 locustfile.py가 있는 read-only source이며 각 scenario는 client timeout을 명시해야 한다 | 이 README는 실패 처리를 기록하지 않는다. |
+| Results `LAB_LOCUST_RESULT_DIR` -> `/mnt/locust/results:rw` | `lab-locust-master` | 운영자(실행 결과 판정) | 실행별 빈 디렉터리에 CSV summary와 시간대별 full-history aggregate를 쓴다 | master 종료 코드와 CSV가 모두 있어야 판정하며 상한 124, 취소 130으로 끝나고 RUN-0062를 따른다 |
+| Master TCP `5557` | `lab-locust-master` | `lab-locust-worker` | LAB 전용 `lab_locust_net`에서 master가 `LAB_LOCUST_EXPECT_WORKERS`개 worker 접속을 기다린다 | 대기 상한 안에 worker가 부족하면 부하 없이 non-zero로 종료하며 master readiness는 TCP 5557을 확인한다 |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 | Variable | Required | Description |
 | --- | ---: | --- |
@@ -98,13 +92,25 @@ client timeout을 명시해야 한다. master readiness는 이미지에 있는 P
 별도 `pgrep` 실행 파일의 설치를 가정하지 않는다. 사용하는 client가 OpenTelemetry를 직접 지원하지
 않으면 Locust request event에서 별도 계측하는 계약을 외부 프로젝트가 소유한다.
 
-### Security Boundary
+#### Security Boundary
 
 Compose에 선언된 호스트 게시와 secret 참조가 없고 독립 project network와 scenario·result volume만 쓴다. scenario는 읽기 전용으로 mount하며 실제 target traffic은 승인된 제한 안에서만 생성한다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+| Category | Contract |
+| --- | --- |
+| Project | **hy-home-lab-locust** |
+| Services | **lab-locust-master**, **lab-locust-worker** |
+| Profile | **lab-locust** |
+| Network | LAB 전용 **lab_locust_net**; HOME network 미참여 |
+| Scenario | **LAB_LOCUST_SCENARIO_DIR** → **/mnt/locust/scenario:ro** |
+| Results | **LAB_LOCUST_RESULT_DIR** → **/mnt/locust/results:rw**; master만 mount |
+| Host exposure | 없음 |
+
+### Selected Start
 
 1. Docker context, project, target origin, network, volume, CPU/RAM/디스크와 정확한
    정리 대상을 먼저 기록한다.
@@ -115,7 +121,9 @@ Compose에 선언된 호스트 게시와 secret 참조가 없고 독립 project 
 5. 정리는 이 LAB가 소유한 project와 경로만 대상으로 하며 **down -v**와 volume
    prune을 사용하지 않는다.
 
-### Checks
+## Checks
+
+### Readiness
 
 실제 컨테이너를 만들지 않는 정적 render 예시:
 
@@ -138,15 +146,15 @@ client와 실제 외부 프로젝트의 timeout 지원까지 검증한 것으로
 같은 디렉터리의 `lifecycle.py`는 `lab.py`의 감독 아래에서 완료·종료 코드 전달·상한·
 취소·master 비정상 종료·worker 탈락을 재현한다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - [LAB 탐색](../README.md)
 - [운영 문서 색인](../../docs/05.operations/README.md) — `GDE-0062`, `POL-0062`, `RUN-0062`
 - [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0062 locust, RUN-0107 lab-promotion
 - [12-testing-and-quality runbooks](../../docs/05.operations/runbooks/12-testing-and-quality/README.md): RUN-0064 performance-testing
 
-### Observability and Recovery
+#### Observability and Recovery
 
 master와 worker 모두 Compose 헬스체크를 선언한다. 결과는 새 result directory의 CSV summary로 확인하고 복구는 [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md)의 RUN-0062 Locust Runbook를 따른다.

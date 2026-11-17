@@ -1,17 +1,17 @@
 ---
 title: "Restic Backup Jobs"
-version: "1.3.1"
+version: "1.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Restic Backup Jobs
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 HOME 상태를 서로 다른 물리 디스크에 있는 두 개의 암호화된 Restic 저장소로
 스냅샷하고, 두 저장소를 오프사이트의 Cloudflare R2 저장소 하나로 복사하는
@@ -44,16 +44,15 @@ restic/
 └── systemd/               # hyhome-backup.service and .timer
 ```
 
-### Supported Environment
+### Interfaces
 
-Restic과 Python 이미지는 [`docker-compose.yml`](docker-compose.yml)에 고정되어
-있으며 pgBackRest는
-[`mng-pg` 이미지](../../04-data/mng-db/pg/backup/Dockerfile)에
-고정되어 있습니다.
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| 로컬 Restic 저장소 `/repo/state`, `/repo/host` (`BACKUP_STATE_REPO_DIR`, `BACKUP_HOST_REPO_DIR`) | `restic` | `restic-offsite` (읽기 전용 `DAC_READ_SEARCH`) | `restic_password`로 암호화된 두 저장소이며 `create_host_path: false`를 사용한다. | 같은 파일시스템이면 종료 코드 64, 잠금 사용 중이면 75, `BACKUP_STATE_MAX_GIB` 이상이면 Restic 단계를 실패 처리한다. |
+| R2 저장소 `s3:https://<BACKUP_OFFSITE_R2_ACCOUNT_ID>.r2.cloudflarestorage.com/<BACKUP_OFFSITE_R2_BUCKET>` | `restic-offsite` (`restic_offsite_net`) | Cloudflare R2 오프사이트 저장소 | `restic copy --no-lock --from-repo`로 복사하며 R2 키는 환경 변수로만 넘긴다. | 원격이 9 GB를 넘을 수 있으면 exit 66으로 끝나고 실패하면 unit도 실패한다. |
+| 지표 `hyhome_backup_offsite_repo_bytes` | 호스트 오케스트레이터 `bin/hyhome-backup.sh` | 이 README는 소비자를 기록하지 않는다. | `copy`가 남긴 원격 저장 byte 수를 기록한다. | run이 실패해도 기록하며 복구는 RUN-0021을 따른다. |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 - 프로필 `backup` (분류는 automation이며 HOME이 아님). `restic`은 기본값이
   `snapshots`이므로 `up`을 실행해도 아무것도 바뀌지 않습니다.
@@ -118,13 +117,20 @@ Restic과 Python 이미지는 [`docker-compose.yml`](docker-compose.yml)에 고�
   같은 파일 tree라는 이유만으로 서로 다른 snapshot을 합산에서 빼지 않습니다.
   실제 디스크·R2 용량 보호는 위의 기존 제한을 계속 사용합니다.
 
-### Security Boundary
+#### Security Boundary
 
 `restic`은 `network_mode: none`과 읽기 전용 소스 마운트로 실행하고, 외부 네트워크는 `restic-offsite`(`restic_offsite_net`)만 가진다. 사용하는 secret은 `restic_password`, `restic_offsite_password`, `r2_access_key_id`, `r2_secret_access_key`이며 R2 키는 출력하지 않는다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+Restic과 Python 이미지는 [`docker-compose.yml`](docker-compose.yml)에 고정되어
+있으며 pgBackRest는
+[`mng-pg` 이미지](../../04-data/mng-db/pg/backup/Dockerfile)에
+고정되어 있습니다.
+
+### Selected Start
 
 새 소스를 추가할 때는 먼저 일관된 방식을 결정합니다. 파일 안전 트리는
 allowlist 한 줄을 추가하고, live 엔진은 `bin/hyhome-backup.sh`에 내보내기
@@ -139,7 +145,9 @@ allowlist 한 줄을 추가하고, live 엔진은 `bin/hyhome-backup.sh`에 내�
 그대로 유지하며, 활성화·catch-up 실행·수동 백업은 별도 승인 대상입니다.
 이 저장소 변경은 설치된 unit 갱신이나 실제 백업 성공을 뜻하지 않습니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 ```bash
 python3 -m unittest tests.validation.test_compose_baseline_gates.BackupContractTests
@@ -147,9 +155,9 @@ HYHOME_BACKUP_REHEARSAL=1 python3 -m unittest tests.validation.test_compose_base
 systemd-analyze verify infra/09-platform-ops/restic/systemd/hyhome-backup.service infra/09-platform-ops/restic/systemd/hyhome-backup.timer
 ```
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 [documentation entry point](../../../docs/README.md)를 통해 Stage 05 대상
 `04-data/0021-backup-and-restore`(GDE/POL/RUN-0021)로 이동합니다. 오프사이트
@@ -157,6 +165,6 @@ systemd-analyze verify infra/09-platform-ops/restic/systemd/hyhome-backup.servic
 
 - [10-platform-and-backup runbooks](../../../docs/05.operations/runbooks/10-platform-and-backup/README.md): RUN-0021 backup-and-restore
 
-### Observability and Recovery
+#### Observability and Recovery
 
 오케스트레이터는 run이 실패해도 `hyhome_backup_offsite_repo_bytes`를 기록하고, 저장소가 소스와 같은 파일시스템이면 종료 코드 64, 잠금 사용 중이면 75, 원격 용량 초과 위험이면 66으로 중단한다. 복구 절차는 [10-platform-and-backup runbooks](../../../docs/05.operations/runbooks/10-platform-and-backup/README.md)의 RUN-0021 백업·복구 Runbook을 따른다.

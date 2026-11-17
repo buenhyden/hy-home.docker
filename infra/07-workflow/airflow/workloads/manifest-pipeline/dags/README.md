@@ -1,17 +1,17 @@
 ---
 title: "Manifest Pipeline DAG"
-version: "0.2.1"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Manifest Pipeline DAG
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -26,23 +26,27 @@ updated: "2026-11-13"
 
 - [source_manifest_ingest.py](source_manifest_ingest.py): 검증·보관·게시 한 task.
 
-### Supported Environment
+### Interfaces
 
-Airflow의 apiserver, scheduler, dag-processor, triggerer, worker가 `source_manifest_ingest.py`를 `infra/07-workflow/airflow/docker-compose.yml`에서 읽기 전용으로 mount해 실행한다. 이 폴더에는 Compose나 Dockerfile이 없다.
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| S3 매니페스트 -> DEV PostgreSQL 게시 | `source_manifest_ingest.py` DAG(Airflow worker) | DEV PostgreSQL | worker의 `/run/opsflow/s3.json`·`pg.json`으로 접속하며 XCom에는 run ID·data_version·status·행수만 전달한다. | timeout과 bounded retry를 선언하고 예외는 고정된 실패 코드로 제한한다. |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 이 DAG는 worker의 `/run/opsflow/s3.json`과 `/run/opsflow/pg.json`을 읽어 S3의 매니페스트를 검증하고 DEV PostgreSQL에 게시한다. 자체 포트는 열지 않는다.
 
-### Security Boundary
+#### Security Boundary
 
 접속 정보는 worker에만 mount되는 `/run/opsflow`의 `s3.json`, `pg.json`이며 값은 이 폴더에 두지 않는다. 경계 상세는 상위 `manifest-pipeline/README.md`의 Security Boundary를 따른다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+Airflow의 apiserver, scheduler, dag-processor, triggerer, worker가 `source_manifest_ingest.py`를 `infra/07-workflow/airflow/docker-compose.yml`에서 읽기 전용으로 mount해 실행한다. 이 폴더에는 Compose나 Dockerfile이 없다.
+
+### Selected Start
 
 #### Usage
 
@@ -50,13 +54,15 @@ Airflow의 apiserver, scheduler, dag-processor, triggerer, worker가 `source_man
 XCom에는 run ID·원본 SHA-256인 data_version·status·행수만 전달합니다.
 원본 payload·객체 메타데이터·자격은 전달하지 않으며 예외는 고정된 실패 코드로 제한합니다.
 
-### Checks
+## Checks
 
-없음: 이 폴더 자체의 검사 명령은 없으며, DAG 검증은 상위 `manifest-pipeline/README.md`의 Local Workflow가 지정한 unittest를 따른다.
+### Readiness
 
-## Operations
+없음: 이 폴더 자체의 검사 명령은 없으며, DAG 검증은 상위 `manifest-pipeline/README.md`의 Selected Start가 지정한 unittest를 따른다.
 
-### Runbook Links
+### Failure Handling
+
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -67,6 +73,6 @@ XCom에는 run ID·원본 SHA-256인 data_version·status·행수만 전달합�
 - [배치](../README.md)
 - [Library](../workflow_lib/README.md)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 없음: 이 폴더는 헬스체크를 선언하지 않는다. DAG는 수동·paused 상태이며 실행 상태는 Airflow 서비스와 RUN-0050이 소유한다.

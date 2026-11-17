@@ -1562,8 +1562,9 @@ def _runtime_version_findings(
     return findings
 
 
-# H3 names that carry a README path table: Root form, Stage form, and the legacy name.
-README_DOCUMENTS_HEADINGS = frozenset({"Directories", "Current Items", "Documents"})
+# H3 names that carry a README path table: Current Paths in the core root
+# README form, Paths in the core stage README form.
+README_DOCUMENTS_HEADINGS = frozenset({"Current Paths", "Paths"})
 
 
 def _is_path_module(columns: Sequence[str]) -> bool:
@@ -1576,7 +1577,7 @@ def _registered_readme_documents_findings(
     profile: Mapping[str, object],
     common: Mapping[str, object],
 ) -> list[Finding]:
-    """Validate a README path table (### Documents, or ### Directories in the common form) against its Registry columns."""
+    """Validate each Path-column table under a README's ### Current Paths or ### Paths against its Registry columns."""
 
     document_type = profile.get("type")
     if not isinstance(document_type, str) or not (
@@ -1597,17 +1598,12 @@ def _registered_readme_documents_findings(
     allowed = {tuple(required), (*required, *optional)}
     findings: list[Finding] = []
     in_documents = False
-    free_tables = False
     in_table = False
     for _, line, heading in _markdown_form_lines(text):
         if heading is not None:
             level, name = heading
             if level <= 3:
                 in_documents = level == 3 and name in README_DOCUMENTS_HEADINGS
-                # Directories and Current Items may hold the author's own
-                # tables; only a table with a Path column must use the
-                # registered columns. Documents is checked strictly.
-                free_tables = name in {"Directories", "Current Items"}
             in_table = False
             continue
         is_row = line.strip().startswith("|")
@@ -1616,7 +1612,9 @@ def _registered_readme_documents_findings(
         if not in_documents or not header:
             continue
         columns = tuple(cell.strip() for cell in line.strip().strip("|").split("|"))
-        if columns in allowed or (free_tables and not _is_path_module(columns)):
+        # The section may hold the author's own tables; only a table with a
+        # Path column must use the registered columns.
+        if columns in allowed or not _is_path_module(columns):
             continue
         findings.append(
             _finding(

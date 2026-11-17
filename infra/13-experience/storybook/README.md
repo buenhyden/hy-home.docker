@@ -1,18 +1,18 @@
 ---
 title: "공유 Storybook 정적 origin"
-version: "1.1.1"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-10-03"
 ---
 
 # 공유 Storybook 정적 origin과 원격 문서 MCP
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 `storybook` 서비스는 검토된 공유 UI story와 문서의 빌드 결과를 내부 8080
 포트에서 읽기 전용으로 제공한다. Traefik의 HTTPS 브라우저 route는 기존
@@ -38,18 +38,15 @@ storybook/
 └── README.md          # 이 패키지 계약
 ```
 
-### Supported Environment
+### Interfaces
 
-| Category | Technology | Notes |
-| --- | --- | --- |
-| 이미지 | `hy-home/storybook:<source-SHA>` | [Compose](docker-compose.yml)의 SHA tag가 소유; `pull_policy: never` |
-| 서버 | 비특권 정적 NGINX | [Dockerfile](../../../projects/storybook/nextjs/Dockerfile)과 설정 소유 |
-| MCP 이미지 | `hy-home/storybook-mcp:<source-SHA>` | 정적 image와 같은 커밋; `pull_policy: never` |
-| 인증 | 정적 origin은 Traefik `sso-auth@file`; MCP는 서버의 bearer 검증 | 비인증 브라우저는 Keycloak으로 302, JSON 요청은 401; MCP는 401/403 |
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `storybook.${DEFAULT_URL}` HTTPS 브라우저 route | `storybook`(내부 8080, `experience_ingress_net`) | 브라우저 사용자(Traefik 경유) | 읽기 전용 정적 빌드 결과를 OAuth2 Proxy의 Keycloak `/admins` 판정 뒤에서 제공한다. | 비인증 브라우저는 Keycloak으로 302, JSON 요청은 401이며 RUN-0101을 따른다. |
+| `storybook-mcp.${DEFAULT_URL}` `/mcp`·`/.well-known/oauth-protected-resource` | `storybook-mcp` | 다른 워크스페이스의 Codex·Claude Code | 같은 빌드 manifest를 문서 tool로 제공하며 Keycloak bearer token의 issuer·audience·만료·서명·`/admins`를 확인한다. | MCP는 401/403을 돌려주며 health는 보호 자원 metadata 응답을 확인한다. |
+| `https://keycloak.${DEFAULT_URL}` discovery와 JWKS | Keycloak | `storybook-mcp` | `edge_net`에서 host root CA로 discovery와 JWKS를 가져온다. | 이 README는 실패 처리를 기록하지 않는다. |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 root [Compose](../../../docker-compose.yml)가 leaf를 include한다. 유일한 선택
 profile은 `experience`이며 HOME에는 없다. `storybook`은 `internal: true`
@@ -80,19 +77,30 @@ metadata 응답을 확인한다. DNS/TLS와
 실제 브라우저 동작은 운영 실행 승인 전까지 미확인이다. Docker daemon
 권한으로 전용망에 다른 container를 붙일 수 있는 운영자 신뢰 경계는 남는다.
 
-### Security Boundary
+#### Security Boundary
 
 `storybook`은 `internal: true` 전용 `experience_ingress_net`에만 연결되고 Traefik만 이 망과 `edge_net`에 붙는다. 브라우저 route는 OAuth2 Proxy의 Keycloak `/admins` 판정을 거치며 내부 8080은 expose만 하고 호스트에 게시하지 않는다. Compose에 선언된 secret은 없다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+| Category | Technology | Notes |
+| --- | --- | --- |
+| 이미지 | `hy-home/storybook:<source-SHA>` | [Compose](docker-compose.yml)의 SHA tag가 소유; `pull_policy: never` |
+| 서버 | 비특권 정적 NGINX | [Dockerfile](../../../projects/storybook/nextjs/Dockerfile)과 설정 소유 |
+| MCP 이미지 | `hy-home/storybook-mcp:<source-SHA>` | 정적 image와 같은 커밋; `pull_policy: never` |
+| 인증 | 정적 origin은 Traefik `sso-auth@file`; MCP는 서버의 bearer 검증 | 비인증 브라우저는 Keycloak으로 302, JSON 요청은 401; MCP는 401/403 |
+
+### Selected Start
 
 1. `python3 scripts/operations/storybook_image.py verify`로 두 image의 커밋, OCI label, revision과 manifest hash를 대조한다.
 2. `experience` 선택과 HOME 미선택, 전용망의 두 서비스 연결, 관리자 ForwardAuth를 검토한다.
 3. 변경 후 정적 검사와 승인된 격리 검사를 수행하고 결과를 승인된 운영 Task와 RUN-0101 evidence handoff에 기록한다.
 
-### Checks
+## Checks
+
+### Readiness
 
 ```bash
 docker compose --env-file .env.example --profile experience config --quiet
@@ -103,15 +111,15 @@ python3 scripts/validation/check-operations-catalog.py
 정적 검증과 격리 image 검사는 HOME 배포의 증거가 아니다. 실행 전 Docker context,
 project, port, network, volume, resource와 정리 범위를 확인한다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - [13 경험 자산](../README.md)
 - [인프라 인덱스](../../README.md)
 - [문서 진입점](../../../docs/README.md)에서 GDE-0101, POL-0101, RUN-0101 확인
 - [14-design-system runbooks](../../../docs/05.operations/runbooks/14-design-system/README.md): RUN-0101 storybook
 
-### Observability and Recovery
+#### Observability and Recovery
 
 두 서비스 모두 `wget` 기반 Compose 헬스체크를 선언한다. 복구와 장애 대응은 [14-design-system runbooks](../../../docs/05.operations/runbooks/14-design-system/README.md)의 RUN-0101 Storybook Runbook을 따른다.

@@ -1,10 +1,10 @@
 ---
 title: "Docker Registry"
-version: "1.0.7"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-03-19"
 ---
 
@@ -14,9 +14,9 @@ created: "2026-03-19"
 
 > **HOME** OCI 이미지 저장소이며 호스트 엔드포인트는 loopback 전용 인증되지 않은 HTTP입니다.
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 이 서비스는 승인된 신뢰 네트워크에서 비민감 OCI 이미지를 저장·배포하는 **HOME** Registry입니다. 현재 Compose는 호스트 포트 `${REGISTRY_PORT:-5000}`을 `127.0.0.1`에만 게시하며, Registry TLS·인증·Traefik route를 선언하지 않습니다. 같은 network의 컨테이너는 `registry:5000`에 인증 없이 접근할 수 있습니다.
 
@@ -49,17 +49,15 @@ registry/
 └── docker-compose.yml # Service definition
 ```
 
-### Supported Environment
+### Interfaces
 
-| Category | Technology | Notes |
-| :--- | :--- | :--- |
-| **Service** | Distribution ([current exact pin](./docker-compose.yml)) | Registry HTTP API v2를 통한 이미지 배포; 정확한 tag와 digest는 Compose가 소유하며 후속 업데이트 전에 현재 digest를 rollback identity로 보존 |
-| **Port** | `127.0.0.1:${REGISTRY_PORT:-5000}` → `5000` | Loopback 전용 호스트 게시 |
-| **Storage** | Bind Mount | `${DEFAULT_REGISTRY_DIR}` |
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Registry HTTP API v2 `127.0.0.1:${REGISTRY_PORT:-5000}` -> `5000` | `registry` | 승인된 신뢰 네트워크의 호스트 클라이언트(Operators, CI/CD Developers) | 인증·TLS 없는 HTTP로 비민감 OCI 이미지를 저장·배포하며 데이터는 `${DEFAULT_REGISTRY_DIR}`에 둔다 | Compose 헬스체크가 선언되어 있으며 Registry Runbook을 따른다 |
+| 내부 `registry:5000` | `registry` | 같은 network(`obs_net`)의 컨테이너 | 인증 없이 접근할 수 있는 Registry HTTP API이다 | 이 README는 실패 처리를 기록하지 않는다. |
+| 내부 debug/metrics 포트 `5001` | `registry` | 이 README는 소비자를 기록하지 않는다. | 호스트에 게시하지 않는 내부 debug/metrics 수신 포트이다 | 이 README는 실패 처리를 기록하지 않는다. |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 호스트 `127.0.0.1:${REGISTRY_PORT:-5000}`가 컨테이너 5000의 Registry HTTP API v2로 연결되고, 이미지 데이터는 `${DEFAULT_REGISTRY_DIR}` bind mount에 저장된다. 필요한 환경 변수 키는 아래 표와 같다.
 
@@ -70,13 +68,21 @@ registry/
 | `REGISTRY_PORT` | No | Loopback 호스트 포트(기본값: 5000); 컨테이너는 항상 5000에서 수신합니다. |
 | `DEFAULT_REGISTRY_DIR` | Yes | 이미지 영속화를 위한 로컬 경로. |
 
-### Security Boundary
+#### Security Boundary
 
 호스트 게시는 loopback뿐이며 TLS와 인증이 없다. 내부 debug/metrics 포트 `5001`은 호스트에 게시하지 않고, 선언된 secret 참조는 없다. 비민감 이미지만 저장한다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+| Category | Technology | Notes |
+| :--- | :--- | :--- |
+| **Service** | Distribution ([current exact pin](./docker-compose.yml)) | Registry HTTP API v2를 통한 이미지 배포; 정확한 tag와 digest는 Compose가 소유하며 후속 업데이트 전에 현재 digest를 rollback identity로 보존 |
+| **Port** | `127.0.0.1:${REGISTRY_PORT:-5000}` → `5000` | Loopback 전용 호스트 게시 |
+| **Storage** | Bind Mount | `${DEFAULT_REGISTRY_DIR}` |
+
+### Selected Start
 
 저장소 루트에서 다음 읽기 전용 확인 명령을 실행합니다. Registry를 시작하거나 변경하려면 런타임 승인이 필요합니다.
 
@@ -95,21 +101,23 @@ registry/
 런타임 이미지와 프로필의 권위는 [docker-compose.yml](docker-compose.yml)에 있으며
 [파생된 Compose 이미지 프로젝션](../../tech-stack.versions.json)은 드리프트 근거입니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 - Registry에 영향을 주는 README나 Compose 참조 변경 후에는 `bash scripts/hardening/check-all-hardening.sh 09-platform-ops`을 실행합니다.
 - Registry 문서를 준비 완료로 표시하기 전에 `python3 scripts/validation/run-ci-gate.py --profile changed`를 실행합니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - **Guide**: Registry Guide (`docs/05.operations/guides/10-platform-and-backup/0065-registry.md`)
 - **Policy**: Registry Operations (`docs/05.operations/policies/10-platform-and-backup/0065-registry.md`)
 - **Runbook**: Registry Runbook (`docs/05.operations/runbooks/10-platform-and-backup/0065-registry.md`)
 - [Documentation index](../../../docs/README.md)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 - registry 네트워크, 볼륨, 레이블 참조가 계속 선언되어 있는지 hardening 점검으로 먼저 확인합니다.
 - 저장소나 접근 설정을 변경하기 전에 registry 로그와 연결된 런북을 확인합니다.

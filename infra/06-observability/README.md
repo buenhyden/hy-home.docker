@@ -1,18 +1,18 @@
 ---
 title: "Observability Tier (06-observability)"
-version: "1.0.17"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
 # Observability Tier (06-observability)
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -62,7 +62,33 @@ created: "2025-11-12"
 └── README.md
 ```
 
-### Supported Environment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `${HOST_LAN_BIND_IP:-192.168.0.13}:${ALLOY_OTLP_GRPC_HOST_PORT:-4317}` OTLP gRPC | `alloy` 서비스 | 하위 서비스들의 텔레메트리 전송 | 텔레메트리(OTLP)의 기본 진입점은 항상 Alloy이다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `${HOST_LAN_BIND_IP:-192.168.0.13}:${ALLOY_OTLP_HTTP_HOST_PORT:-4318}` OTLP HTTP | `alloy` 서비스 | 하위 서비스들의 텔레메트리 전송 | 텔레메트리(OTLP)의 기본 진입점은 항상 Alloy이다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `127.0.0.1:${ALLOY_HERMES_OTLP_HOST_PORT:-4320}` Hermes OTLP | `alloy` 서비스 | 이 README는 소비자를 기록하지 않는다. | loopback에만 게시된다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `${HOST_LAN_BIND_IP:-192.168.0.13}:${LOKI_HOST_PORT:-3100}` Loki | `loki` 서비스 | 이 README는 소비자를 기록하지 않는다. | 로그 집계이며 SeaweedFS 버킷 `loki-bucket`을 S3 호환 저장소로 쓴다. | SeaweedFS S3 버킷 상태를 모니터링하고 데이터 경로 장애는 관측성 런북을 따른다. |
+| `${HOST_LAN_BIND_IP:-192.168.0.13}:${TEMPO_HOST_PORT:-3200}` Tempo | `tempo` 서비스 | 이 README는 소비자를 기록하지 않는다. | 분산 트레이싱이며 SeaweedFS 버킷 `tempo-bucket`을 S3 호환 저장소로 쓴다. | SeaweedFS S3 버킷 상태를 모니터링하고 데이터 경로 장애는 관측성 런북을 따른다. |
+| `127.0.0.1:${PYROSCOPE_HOST_PORT:-4040}` Pyroscope | `pyroscope` 서비스 | 이 README는 소비자를 기록하지 않는다. | 연속 프로파일링 서비스이며 loopback에만 게시된다. | Compose 헬스체크가 선언되어 있고 장애는 관측성 런북을 따른다. |
+| Grafana `/metrics` | `grafana` 서비스 | `prometheus` 서비스 | basic auth를 요구하며 Prometheus는 `grafana_metrics_password`로 scrape한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| node-exporter `10.250.5.1:9100` | `node-exporter` 서비스 | 이 README는 소비자를 기록하지 않는다. | host network namespace의 `obs_net` gateway 주소로 수집한다. | 이 README는 실패 처리를 기록하지 않는다. |
+
+#### Configuration
+
+- **Persistence**: Loki와 Tempo는 SeaweedFS(`04-data`)를 S3 호환 오브젝트 스토어로 사용하고 Prometheus와 Pyroscope는 로컬 바인드 기반 볼륨을 사용합니다.
+- **Auth**: Grafana는 OAuth2 SSO용으로 Keycloak(`02-auth`)과 통합되어 있습니다.
+- **OpenBao metrics**: Prometheus 소스 설정은 전용 `openbao_token` Docker Secret과 OpenBao `prometheus` 정책만 선언합니다. 시크릿 계약은 스테이징 상태로 아직 프로비저닝되지 않았습니다. 과거에 관측된 "Vault 다운/OpenBao 미로드" 상태는 현재 소스 준비 상태와 별개입니다. 추적된 소스 변경만으로는 실행 중인 Prometheus가 해당 잡을 로드했는지, 대상이 정상인지 증명되지 않습니다.
+- **Networking**: 텔레메트리 트래픽은 주로 `obs_net`을 통해 흐릅니다. 예외로 SeaweedFS master·volume·filer는 전용 internal `seaweedfs_metrics_net`으로, node-exporter는 host network namespace의 `obs_net` gateway 주소(`10.250.5.1:9100`)로 수집합니다.
+
+#### Security Boundary
+
+Compose가 참조하는 secret은 `gatus_oidc_client_secret`, `grafana_admin_password`, `grafana_client_secret`, `grafana_metrics_password`, `grafana_reader_password`, `hermes_otlp_token`, `mng_postgres_password`, `openbao_token`, `opensearch_exporter_password`, `qdrant_read_only_api_key`, `quality_otlp_token`, `seaweedfs_s3_loki_secret_key`, `seaweedfs_s3_tempo_secret_key`, `slack_webhook`, `smtp_password`, `smtp_username`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `${HOST_LAN_BIND_IP:-192.168.0.13}:${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}`, `${HOST_LAN_BIND_IP:-192.168.0.13}:${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}`, `${HOST_LAN_BIND_IP:-192.168.0.13}:${ALLOY_OTLP_GRPC_HOST_PORT:-4317}:${ALLOY_OTLP_GRPC_PORT:-4317}`, `${HOST_LAN_BIND_IP:-192.168.0.13}:${ALLOY_OTLP_HTTP_HOST_PORT:-4318}:${ALLOY_OTLP_HTTP_PORT:-4318}`, `127.0.0.1:${ALLOY_HERMES_OTLP_HOST_PORT:-4320}:4320`, `127.0.0.1:${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}`이다. (출처: `infra/06-observability/docker-compose.yml`의 `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `grafana-db-provision`, `node-exporter`, `cadvisor`, `gatus`, `pyroscope`, `alertmanager`, `pushgateway`, `dcgm-exporter` 서비스)
+
+## Usage
+
+### Prerequisites
 
 #### Tech Stack
 
@@ -81,24 +107,7 @@ created: "2025-11-12"
 | 컨테이너 메트릭 | cAdvisor                | Compose에 선언됨                   |
 | 가용성 모니터링 | Gatus                   | Compose에 선언됨                   |
 
-## Interfaces
-
-### Inputs and Outputs
-
-#### Configuration
-
-- **Persistence**: Loki와 Tempo는 SeaweedFS(`04-data`)를 S3 호환 오브젝트 스토어로 사용하고 Prometheus와 Pyroscope는 로컬 바인드 기반 볼륨을 사용합니다.
-- **Auth**: Grafana는 OAuth2 SSO용으로 Keycloak(`02-auth`)과 통합되어 있습니다.
-- **OpenBao metrics**: Prometheus 소스 설정은 전용 `openbao_token` Docker Secret과 OpenBao `prometheus` 정책만 선언합니다. 시크릿 계약은 스테이징 상태로 아직 프로비저닝되지 않았습니다. 과거에 관측된 "Vault 다운/OpenBao 미로드" 상태는 현재 소스 준비 상태와 별개입니다. 추적된 소스 변경만으로는 실행 중인 Prometheus가 해당 잡을 로드했는지, 대상이 정상인지 증명되지 않습니다.
-- **Networking**: 텔레메트리 트래픽은 주로 `obs_net`을 통해 흐릅니다. 예외로 SeaweedFS master·volume·filer는 전용 internal `seaweedfs_metrics_net`으로, node-exporter는 host network namespace의 `obs_net` gateway 주소(`10.250.5.1:9100`)로 수집합니다.
-
-### Security Boundary
-
-Compose가 참조하는 secret은 `gatus_oidc_client_secret`, `grafana_admin_password`, `grafana_client_secret`, `grafana_metrics_password`, `grafana_reader_password`, `hermes_otlp_token`, `mng_postgres_password`, `openbao_token`, `opensearch_exporter_password`, `qdrant_read_only_api_key`, `quality_otlp_token`, `seaweedfs_s3_loki_secret_key`, `seaweedfs_s3_tempo_secret_key`, `slack_webhook`, `smtp_password`, `smtp_username`이며 값은 저장소에 두지 않는다. 호스트로 게시되는 포트는 `${HOST_LAN_BIND_IP:-192.168.0.13}:${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}`, `${HOST_LAN_BIND_IP:-192.168.0.13}:${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}`, `${HOST_LAN_BIND_IP:-192.168.0.13}:${ALLOY_OTLP_GRPC_HOST_PORT:-4317}:${ALLOY_OTLP_GRPC_PORT:-4317}`, `${HOST_LAN_BIND_IP:-192.168.0.13}:${ALLOY_OTLP_HTTP_HOST_PORT:-4318}:${ALLOY_OTLP_HTTP_PORT:-4318}`, `127.0.0.1:${ALLOY_HERMES_OTLP_HOST_PORT:-4320}:4320`, `127.0.0.1:${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}`이다. (출처: `infra/06-observability/docker-compose.yml`의 `prometheus`, `loki`, `tempo`, `alloy`, `grafana`, `grafana-db-provision`, `node-exporter`, `cadvisor`, `gatus`, `pyroscope`, `alertmanager`, `pushgateway`, `dcgm-exporter` 서비스)
-
-## Development
-
-### Local Workflow
+### Selected Start
 
 #### Usage
 
@@ -119,7 +128,9 @@ Compose가 참조하는 secret은 `gatus_oidc_client_secret`, `grafana_admin_pas
 - Alloy OTLP 엔드포인트를 변경하면 모든 하위 서비스의 텔레메트리가 중단됩니다.
 - Grafana 플러그인을 업데이트하면 대시보드를 수동으로 마이그레이션해야 할 수 있습니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Testing
 
@@ -136,9 +147,9 @@ docker exec alloy alloy run --test /etc/alloy/config.alloy
 - 옵저버빌리티 스택에 영향을 주는 README 또는 Compose 참조 변경 후에는 `bash scripts/validation/validate-docker-compose.sh`를 실행합니다.
 - 옵저버빌리티 문서를 준비 완료로 표시하기 전에 `bash scripts/hardening/check-all-hardening.sh`를 실행합니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - [관측성 Runbook 목록](../../docs/05.operations/runbooks/07-observability/README.md)
 
@@ -148,8 +159,6 @@ docker exec alloy alloy run --test /etc/alloy/config.alloy
 - [02-auth](../02-auth/README.md) - SSO용 Keycloak.
 - [01-gateway](../01-gateway/README.md) - UI로 라우팅하는 Traefik.
 - [Documentation index](../../docs/README.md)
-
-### Observability and Recovery
 
 #### Service Readiness
 

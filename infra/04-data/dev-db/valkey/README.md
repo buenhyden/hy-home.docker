@@ -1,18 +1,18 @@
 ---
 title: "개발 Valkey"
-version: "0.1.1"
+version: "0.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-10-02"
 ---
 
 # 개발 Valkey
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 #### Overview
 
@@ -61,21 +61,19 @@ ACL 생성 스크립트를 소유하며 서비스 선언은 [상위 Compose](../
 않습니다. 메모리 한도에 도달하면 쓰기를 거절합니다. 큐의 `noeviction`과
 캐시의 LRU가 동시에 필요하면 별도 크기의 캐시 인스턴스를 승인받아야 합니다.
 
-### Supported Environment
+### Interfaces
 
-#### Tech Stack
-
-[상위 Compose](../docker-compose.yml)가 Valkey 이미지를 선언하고, [`config/`](config/)와 [`scripts/`](scripts/)가 ACL·시작 절차를 소유합니다.
-
-## Interfaces
-
-### Inputs and Outputs
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `dev-valkey` `dev_data_net` 6379 | `dev-valkey` | 프로젝트 ACL 계정, 지표 수집 `devmonitor`, RedisInsight 조회 `devinspector` | 호스트 포트 미게시, `default off`와 named-user ACL; 프로젝트 계정은 `key_prefix:*`와 DB 0만 접근한다. | 메모리 한도에 도달하면 쓰기를 거절하며 `valkey-cli ping` healthcheck(15s)를 쓴다. |
+| `config/projects.tsv`와 `DEV_VALKEY_PROJECT_SECRETS_DIR` | 이 README는 생산자를 기록하지 않는다. | `scripts/render-acl.sh` | 승인된 행은 `project_id`·`acl_user`·`key_prefix`·`secret_filename` 네 필드를 명시한다. | 누락·형식 오류·중복·symlink·여러 줄의 비밀값은 기동을 거절한다. |
+| `dev-valkey-exporter` 지표 `http://localhost:9121/metrics` | `dev-valkey-exporter` | 이 README는 소비자를 기록하지 않는다. | `devmonitor` 계정으로 `PING`·`INFO` 등 허용 명령만 써서 지표를 낸다. | `wget` healthcheck(30s)를 쓴다. |
 
 #### Configuration
 
 `dev_data_net`과 별도 `/data` bind 경로를 사용합니다. 관리자 비밀은 Docker secret으로, 프로젝트 ACL은 승인된 `projects.tsv`와 별도 비밀 디렉터리로 공급합니다.
 
-### Security Boundary
+#### Security Boundary
 
 Valkey protected mode는 named-user ACL을 가진 원격 Compose peer의 인증 전 요청을 차단할 수 있어 끕니다. 서비스는 `dev_data_net`에만 expose하고 host port를 게시하지 않으며 `default off`와 필수 named-user ACL로 접근을 제한합니다. 격리 실행에서는 같은 network의 peer에서 `AUTH <user> <password>`/PING, 다른 prefix 접근 거절, 익명 접근 거절을 함께 확인해야 합니다.
 
@@ -84,9 +82,15 @@ Valkey protected mode는 named-user ACL을 가진 원격 Compose peer의 인증 
 보조 명령 경계이며 DB 번호 자체는 프로젝트 격리 수단이 아닙니다. 이 ACL의
 2026-10-03 합성 A/B 프로젝트의 prefix·관리 명령·DB1 접근 거절을 격리 엔진에서 확인했습니다. HOME 실행은 `NOT_RUN`입니다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+#### Tech Stack
+
+[상위 Compose](../docker-compose.yml)가 Valkey 이미지를 선언하고, [`config/`](config/)와 [`scripts/`](scripts/)가 ACL·시작 절차를 소유합니다.
+
+### Selected Start
 
 #### Usage
 
@@ -101,15 +105,17 @@ python3 -m unittest tests/validation/test_dev_valkey_acl.py
 소유권을 맞춰야 합니다. 이미지 기본 UID/GID는 실제 이미지 검사로 확인해야 합니다.
 격리 기동과 ACL 동작은 별도 Task에서 확인했고, HOME 기동·백업·복구는 `NOT_RUN`입니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 #### Validation
 
-Local Workflow의 단위 검사는 ACL 생성 입력을 확인합니다. 실제 인증·prefix 거절·영속성은 격리 실행 결과를 따로 기록합니다.
+Selected Start의 단위 검사는 ACL 생성 입력을 확인합니다. 실제 인증·prefix 거절·영속성은 격리 실행 결과를 따로 기록합니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 이 서비스의 런북은 다음과 같다.
 
@@ -123,6 +129,6 @@ Local Workflow의 단위 검사는 ACL 생성 입력을 확인합니다. 실제 
 문서를 찾습니다. 공식 [Valkey ACL](https://valkey.io/topics/acl/) 및
 [지속성](https://valkey.io/topics/persistence/) 문서를 참고합니다.
 
-### Observability and Recovery
+#### Observability and Recovery
 
 헬스체크: `dev-valkey` 서비스는 `REDISCLI_AUTH=$$(tr -d "\n" </run/secrets/dev_valkey_admin_password) valkey-cli --user devadmin -h 127.0.0.1 -p 6379 ping | grep -qx PONG` (interval 15s); `dev-valkey-exporter` 서비스는 `wget -qO- http://localhost:9121/metrics > /dev/null 2>&1 || exit 1` (interval 30s).

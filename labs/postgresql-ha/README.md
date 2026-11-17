@@ -1,18 +1,18 @@
 ---
 title: "PostgreSQL HA LAB"
-version: "1.0.7"
+version: "1.1.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2025-11-12"
 ---
 
 # PostgreSQL HA LAB
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 이 문서는 root Compose에서 분리된 PostgreSQL HA LAB topology의 source 계약을
 설명한다. normal HOME 또는 development stack의 상태·network·secret을 공유하지
@@ -57,18 +57,13 @@ HOME Grafana는 `infra/06-observability/grafana/dashboards/`만 provisioning하�
 않습니다. LAB 관측을 연결하는 별도 계약이 승인되면 그 LAB의 Prometheus·Grafana가
 이 파일을 읽도록 구성하며, HOME provisioning 경로로 옮기지 않습니다.
 
-### Supported Environment
+### Interfaces
 
-| Category | Source of truth | Boundary |
-| --- | --- | --- |
-| Compose | [docker-compose.yml](./docker-compose.yml) | 독립 LAB project |
-| State | `${LAB_DATA_DIR:?set isolated LAB data root}` bind | HOME 상태와 미공유 |
-| Secrets | `${LAB_SECRET_DIR:-../secrets/labs}` 아래 LAB 전용 reference | 값은 문서화하지 않음 |
-| Networks | LAB 전용 network declarations | root network와 미공유 |
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| LAB 호스트 노출 `${LAB_HOST_BIND_IP}`와 `LAB_PG_*_HOST_PORT` | `hy-home-lab-postgresql-ha` LAB 서비스 (`pg-router` 등) | 이 README는 소비자를 기록하지 않는다. | LAB 전용 network·secret reference를 쓰며 root key와 공유하지 않는다. | Compose healthcheck 선언뿐 런타임 결과는 미검증이며 `LAB_DATA_DIR` 미설정은 fail fast다. |
 
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 상태는 `${LAB_DATA_DIR}/postgresql-ha/` 아래에 bind하고 network는 `lab_pg_core_net`, `lab_pg_edge_net`, `lab_pg_obs_net`을 사용한다. 환경 변수는 아래 표와 같다.
 
@@ -80,13 +75,22 @@ HOME Grafana는 `infra/06-observability/grafana/dashboards/`만 provisioning하�
 | `LAB_SECRET_DIR` | No | unset이면 `../secrets/labs` reference path 사용 |
 | LAB-specific port/network keys | No | Compose의 LAB default만 사용하며 root key와 공유하지 않음 |
 
-### Security Boundary
+#### Security Boundary
 
 secret은 `lab_pg_haproxy_stats_password`, `lab_pg_superuser_password`, `lab_pg_replication_password`, `lab_pg_exporter_password`, `lab_pg_service_password`를 참조하며 값은 문서에 쓰지 않는다. 호스트 노출은 `${LAB_HOST_BIND_IP}`와 `LAB_PG_*_HOST_PORT`만 사용한다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+| Category | Source of truth | Boundary |
+| --- | --- | --- |
+| Compose | [docker-compose.yml](./docker-compose.yml) | 독립 LAB project |
+| State | `${LAB_DATA_DIR:?set isolated LAB data root}` bind | HOME 상태와 미공유 |
+| Secrets | `${LAB_SECRET_DIR:-../secrets/labs}` 아래 LAB 전용 reference | 값은 문서화하지 않음 |
+| Networks | LAB 전용 network declarations | root network와 미공유 |
+
+### Selected Start
 
 1. `LAB_DATA_DIR`과 LAB secret reference directory를 독립 경로로 지정한다.
 2. 실제 기동 없이 `LAB_DATA_DIR=/tmp/hyhome-postgresql-ha-static docker compose --env-file labs/.env.example -f labs/postgresql-ha/docker-compose.yml --profile '*' config --quiet`로 렌더링한다.
@@ -99,7 +103,9 @@ secret은 `lab_pg_haproxy_stats_password`, `lab_pg_superuser_password`, `lab_pg_
 | --- | --- |
 | `LAB_DATA_DIR=/tmp/hyhome-postgresql-ha-static docker compose --env-file labs/.env.example -f labs/postgresql-ha/docker-compose.yml --profile '*' config --quiet` | LAB source render만 검증; 컨테이너를 만들지 않음 |
 
-### Checks
+## Checks
+
+### Readiness
 
 Classification은 `LAB`입니다. 이 topology는 독립 Compose project, LAB 전용
 network, secret reference, state path를 사용합니다. 같은 host의 여러 member는
@@ -111,15 +117,15 @@ PostgreSQL init job은 비밀번호를 `psql` 인자가 아닌 `/tmp` tmpfs의
 HAProxy stats password는 설정 문자를 검증하고 `/tmp`에 렌더합니다.
 실제 권한과 bootstrap 결과는 격리 실행 전까지 검증되지 않았습니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - [Architecture index](../../docs/02.architecture/README.md)
 - [Operations index](../../docs/05.operations/README.md)
 - [15-labs runbooks](../../docs/05.operations/runbooks/15-labs/README.md): RUN-0031 postgresql-cluster, RUN-0107 lab-promotion
 
-### Observability and Recovery
+#### Observability and Recovery
 
 | Field | Evidence |
 | --- | --- |

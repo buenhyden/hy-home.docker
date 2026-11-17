@@ -1,17 +1,17 @@
 ---
 title: "Opsflow SMTP 개발 캡처 노드"
-version: "0.2.3"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Opsflow SMTP 개발 캡처 노드
 
-## Purpose
+## Service
 
-### Service Role
+### Purpose
 
 native `smtp` credential API로 개발 Mailpit 캡처 설정만 확인하고
 `n8n-nodes-opsflow.opsflowSmtp` version 1의 단일 통지를 구현합니다.
@@ -34,39 +34,15 @@ P05 작성자, SEC01·P03·P02 담당자와 독립 검토자입니다.
 - [package.json](package.json), [lock](package-lock.json), [tsconfig](tsconfig.json): 재현 build 입력.
 - [tests](tests/README.md): 합성 경계와 owned loopback STARTTLS 시험.
 
-### Supported Environment
+### Interfaces
 
-선택 upstream n8n commit
-`bb72d756104542adb549b6966a57e21459bd52a2`(현재 pin의 stable release tag)의
-[workflow package](https://github.com/n8n-io/n8n/blob/bb72d756104542adb549b6966a57e21459bd52a2/packages/workflow/package.json)
-API와 동일한 `n8n-workflow` package pin을 개발·peer metadata에 둡니다.
-서비스 버전과 package 버전은 서로 다릅니다. 검증된 compiler·Nodemailer pin은
-package/lock에만 선언합니다. `npm ci --ignore-scripts`는 dependency lifecycle을 실행하지 않습니다.
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| n8n node type `n8n-nodes-opsflow.opsflowSmtp` version 1 | 이 OpsflowSmtp 패키지 | builder가 만든 비활성 workflow | native parameter `claim`에 object expression을 받고 출력은 `{run_id,state}`뿐이다. | 상태는 `accepted_by_smtp`, `uncertain`, `cancelled`이며 uncertain·ack 유실은 workflow가 SQL004 unknown으로 격리한다. |
+| `mailpit:1025` SMTP | OpsflowSmtp node | 개발 Mailpit 캡처 | `notifier@opsflow.invalid` → `manifest@opsflow.invalid` 고정이며 `mailpit-plain-v1` 또는 STARTTLS 필수 `mailpit-starttls-auth-v1` profile을 쓴다. | 연결 3초·socket 5초·send 15초 제한 후 실패는 `uncertain`이며 소유 socket을 직접 destroy한다. |
+| native `smtp` credential | 공식 UI/API 경로로 관리하는 private import artifact | `OpsflowSmtp.node.ts` | host·port·secure·disableStartTls·user·password·hostName의 닫힌 허용 집합이다. | 인증 profile의 user/password는 256/4096바이트를 넘거나 제어문자가 있으면 거부한다. |
 
-개발용 workflow API dependency의 Axios advisory를
-[공식 수정 release](https://github.com/axios/axios/releases/tag/v1.20.0)의 <!-- runtime-version-exception: advisory — immutable upstream remediation evidence; package and lock own the dependency pin -->
-package-scoped override로 수정합니다. API package 자체를 downgrade하지 않습니다.
-이 수정은 설치된 n8n 이미지의 dependency를 바꾸지 않으며 그 수용은 SEC01 담당입니다.
-
-Nodemailer의 주소 parser 보안 수정은 검토된
-[공식 수정 release](https://github.com/nodemailer/nodemailer/releases/tag/v10.1.4)의 <!-- runtime-version-exception: advisory — immutable upstream remediation evidence; package and lock own the dependency pin -->
-정확한 package/lock pin으로 반영합니다. 고정 발신·수신·envelope와 기존 socket 수명은
-유지합니다. 공개 dependency 감사에서 Nodemailer 항목은 제거됐습니다.
-
-개발용으로 설치된 `n8n-workflow` → expression runtime → Zod 경로의
-[Zod advisory](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)에는 Zod 3 수정판이
-없고, `n8n-workflow`는 Zod 4에서 로드되지 않습니다. 따라서 이 dev 트리는 Zod override를
-두지 않고 `n8n-workflow`가 요구하는 Zod 3 계열을 설치합니다. build·coverage 시험은 통과하지만
-`npm audit` 전체 감사는 이 경로의 high 3건을 보고하고 production 감사는 0건입니다.
-예외나 수용은 기록하지 않습니다(소유자가 기한부 수용을 철회했습니다). 배포물이 아닌 dev 트리이므로 CI 게이트는 소유자 결정(2026-11-09)에 따라 production 감사만 실행합니다. API package는
-downgrade하지 않습니다. 배포 패키지는 `node_modules`를 포함하지 않고, `n8n-workflow`는 n8n
-호스트가 제공하는 정확한 peer 의존성입니다. 설치된 n8n 이미지의 Zod와 실제 실행 환경의
-영향은 이 dev 트리와 무관하며 SEC01 담당으로 미확인입니다. 이 결과는 설치 이미지·실제 송신·
-전체 보안 수용의 PASS가 아닙니다.
-
-## Interfaces
-
-### Inputs and Outputs
+#### Inputs and Outputs
 
 두 capture profile 모두 `mailpit:1025`와 합성
 `notifier@opsflow.invalid` → `manifest@opsflow.invalid`로 고정됩니다.
@@ -112,13 +88,43 @@ socket을 소유하여 취소·deadline·최종 정리 시 직접 destroy합니�
 [공식 transport 소스](https://github.com/nodemailer/nodemailer/blob/v10.1.4/src/smtp-transport/index.ts)를 <!-- runtime-version-exception: compatibility — immutable upstream protocol evidence; package and lock own the dependency pin -->
 기준으로 실제 라이브러리와 in-memory SMTP byte 시험을 수행합니다.
 
-### Security Boundary
+#### Security Boundary
 
 credential은 host·port·secure·disableStartTls·user·password·hostName의 닫힌 허용 집합이고 임의 endpoint·CC/BCC·첨부·파일/URL 읽기·header·Code credential 접근을 제공하지 않습니다. lease token은 검증에만 쓰며 mail·출력·오류에 넣지 않고, 실제 credential ID는 private import artifact에서만 해결합니다. `NODE_EXTRA_CA_CERTS`로만 합성 CA를 제공합니다.
 
-## Development
+## Usage
 
-### Local Workflow
+### Prerequisites
+
+선택 upstream n8n commit
+`bb72d756104542adb549b6966a57e21459bd52a2`(현재 pin의 stable release tag)의
+[workflow package](https://github.com/n8n-io/n8n/blob/bb72d756104542adb549b6966a57e21459bd52a2/packages/workflow/package.json)
+API와 동일한 `n8n-workflow` package pin을 개발·peer metadata에 둡니다.
+서비스 버전과 package 버전은 서로 다릅니다. 검증된 compiler·Nodemailer pin은
+package/lock에만 선언합니다. `npm ci --ignore-scripts`는 dependency lifecycle을 실행하지 않습니다.
+
+개발용 workflow API dependency의 Axios advisory를
+[공식 수정 release](https://github.com/axios/axios/releases/tag/v1.20.0)의 <!-- runtime-version-exception: advisory — immutable upstream remediation evidence; package and lock own the dependency pin -->
+package-scoped override로 수정합니다. API package 자체를 downgrade하지 않습니다.
+이 수정은 설치된 n8n 이미지의 dependency를 바꾸지 않으며 그 수용은 SEC01 담당입니다.
+
+Nodemailer의 주소 parser 보안 수정은 검토된
+[공식 수정 release](https://github.com/nodemailer/nodemailer/releases/tag/v10.1.4)의 <!-- runtime-version-exception: advisory — immutable upstream remediation evidence; package and lock own the dependency pin -->
+정확한 package/lock pin으로 반영합니다. 고정 발신·수신·envelope와 기존 socket 수명은
+유지합니다. 공개 dependency 감사에서 Nodemailer 항목은 제거됐습니다.
+
+개발용으로 설치된 `n8n-workflow` → expression runtime → Zod 경로의
+[Zod advisory](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5)에는 Zod 3 수정판이
+없고, `n8n-workflow`는 Zod 4에서 로드되지 않습니다. 따라서 이 dev 트리는 Zod override를
+두지 않고 `n8n-workflow`가 요구하는 Zod 3 계열을 설치합니다. build·coverage 시험은 통과하지만
+`npm audit` 전체 감사는 이 경로의 high 3건을 보고하고 production 감사는 0건입니다.
+예외나 수용은 기록하지 않습니다(소유자가 기한부 수용을 철회했습니다). 배포물이 아닌 dev 트리이므로 CI 게이트는 소유자 결정(2026-11-09)에 따라 production 감사만 실행합니다. API package는
+downgrade하지 않습니다. 배포 패키지는 `node_modules`를 포함하지 않고, `n8n-workflow`는 n8n
+호스트가 제공하는 정확한 peer 의존성입니다. 설치된 n8n 이미지의 Zod와 실제 실행 환경의
+영향은 이 dev 트리와 무관하며 SEC01 담당으로 미확인입니다. 이 결과는 설치 이미지·실제 송신·
+전체 보안 수용의 PASS가 아닙니다.
+
+### Selected Start
 
 builder가 비활성 workflow에서 이 node type을 참조합니다. 아래 Checks의 build는 패키지를
 생성할 뿐 실행 서비스에 설치하거나 mail을 보내지 않습니다. shared Dockerfile·mount·
@@ -134,7 +140,9 @@ Workflow는 uncertain·ack 유실을 SQL004 unknown으로 격리하며 자동 �
 실제 clock skew/DB timeout과 중단 후 재개는 별도 native acceptance이며 시간 확인만으로
 분산 fencing 또는 exactly-once를 보장하지 않습니다.
 
-### Checks
+## Checks
+
+### Readiness
 
 이 패키지 디렉터리에서 실행합니다.
 
@@ -151,9 +159,9 @@ coverage gate는 compiled production source의 line·branch·function을 각각 
 선택 이미지의 loader registration·credential binding·동일 main/worker artifact는
 native 시험 전 별도로 입증해야 합니다.
 
-## Operations
+### Failure Handling
 
-### Runbook Links
+#### Runbook Links
 
 - [노드 탐색](../README.md)
 - [시험](tests/README.md)
@@ -161,6 +169,6 @@ native 시험 전 별도로 입증해야 합니다.
 - [native SMTP credential 소스](https://github.com/n8n-io/n8n/blob/34ab9c7bf3d0c6d2ec3422e12e0b970aea5717c7/packages/nodes-base/credentials/Smtp.credentials.ts)
 - [upstream EmailSend 소스](https://github.com/n8n-io/n8n/blob/34ab9c7bf3d0c6d2ec3422e12e0b970aea5717c7/packages/nodes-base/nodes/EmailSend/v2/send.operation.ts)
 
-### Observability and Recovery
+#### Observability and Recovery
 
 출력은 `{run_id,state}`뿐이며 상태는 `accepted_by_smtp`, `uncertain`, `cancelled`입니다. 연결·greeting 3초, socket 5초, 전체 send 15초 제한과 소유 socket 직접 destroy로 정리하며, uncertain·ack 유실은 workflow가 SQL004 unknown으로 격리합니다. 복구 절차는 [상위 workload README](../../README.md)와 RUN-0053(`docs/05.operations/runbooks/08-workflows-and-automation/0053-n8n.md`)을 따릅니다.
