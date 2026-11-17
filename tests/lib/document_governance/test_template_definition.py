@@ -581,5 +581,213 @@ class TemplateDefinitionTests(unittest.TestCase):
             template_definition(registry, "sdlc/task")
 
 
+def _core_from(definition: dict) -> dict:
+    """Build a core role with the exact structure of one projection."""
+
+    def required(item: dict) -> str:
+        return "always" if item["requiredness"] == "required" else "when applicable"
+
+    sections = []
+    for h2 in definition["headings"]:
+        subsections = [
+            {
+                "section_id": h3["section_id"],
+                "title_en": h3["title"],
+                "required_when": required(h3),
+            }
+            for h3 in h2["children"]
+        ]
+        sections.append(
+            {
+                "section_id": h2["section_id"],
+                "title_en": h2["title"],
+                "required_when": required(h2),
+                "subsections": subsections,
+            }
+        )
+    tables = [
+        {
+            "table_id": table["name"],
+            "section_id": table["section"],
+            "columns": [
+                {"label": column["key"], "required": column["required"]}
+                for column in table["columns"]
+            ],
+        }
+        for table in definition["tables"]
+    ]
+    return {"role": "fixture", "sections": sections, "tables": tables}
+
+
+class RoleDesignConformanceTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        from scripts.lib.document_governance.template_definition import (
+            role_design_findings,
+        )
+
+        cls.findings = staticmethod(role_design_findings)
+        cls.registry = load_registry()
+        cls.task = template_definition(cls.registry, "sdlc/task")
+
+    def _codes(self, core_role: dict, definition: dict) -> set[str]:
+        return {
+            code
+            for code, _, _ in self.findings(
+                {"fixture": core_role},
+                {"sdlc/task": "fixture"},
+                {"sdlc/task": definition},
+            )
+        }
+
+    def test_an_identical_projection_conforms(self) -> None:
+        self.assertEqual(set(), self._codes(_core_from(self.task), self.task))
+
+    def test_same_titles_with_a_different_table_do_not_conform(self) -> None:
+        core = _core_from(self.task)
+        core["tables"][0]["columns"][3]["label"] = "Method"
+        self.assertIn("role-design-table-mismatch", self._codes(core, self.task))
+
+    def test_a_different_subsection_does_not_conform(self) -> None:
+        core = _core_from(self.task)
+        core["sections"][0]["subsections"][0]["title_en"] = "Problem"
+        self.assertIn("role-design-heading-mismatch", self._codes(core, self.task))
+
+    def test_requiredness_is_part_of_the_core(self) -> None:
+        core = _core_from(self.task)
+        core["sections"][1]["required_when"] = "when applicable"
+        self.assertIn("role-design-heading-mismatch", self._codes(core, self.task))
+
+    def test_a_table_may_sit_in_an_h3_of_its_core_owned_h2(self) -> None:
+        core = _core_from(self.task)
+        owner = next(
+            h2["section_id"]
+            for h2 in self.task["headings"]
+            if any(
+                h3["section_id"] == self.task["tables"][0]["section"]
+                for h3 in h2["children"]
+            )
+        )
+        core["tables"][0]["section_id"] = owner
+        self.assertEqual(set(), self._codes(core, self.task))
+
+    def test_an_extra_or_missing_table_does_not_conform(self) -> None:
+        extra = _core_from(self.task)
+        extra["tables"].append(copy.deepcopy(extra["tables"][0]))
+        missing = _core_from(self.task)
+        missing["tables"].pop()
+        for core in (extra, missing):
+            with self.subTest(tables=len(core["tables"])):
+                self.assertIn(
+                    "role-design-table-mismatch", self._codes(core, self.task)
+                )
+
+    def test_h3_requiredness_is_part_of_the_core(self) -> None:
+        core = _core_from(self.task)
+        core["sections"][0]["subsections"][0]["required_when"] = "when applicable"
+        self.assertIn("role-design-heading-mismatch", self._codes(core, self.task))
+
+    def _registry_with(self, edit) -> object:
+        raw = json.loads(
+            (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")
+        )
+        edit(raw)
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / "registry.json"
+            path.write_text(json.dumps(raw), encoding="utf-8")
+            return load_registry(path)
+
+    def test_an_unknown_or_unmapped_core_role_is_reported(self) -> None:
+        from scripts.lib.document_governance.template_definition import (
+            role_design_contract_findings,
+        )
+
+        def rename(raw: dict) -> None:
+            exception = raw["template_roles"]["sdlc/architecture-decision"][
+                "core_exception"
+            ]
+            exception["core_role"] = "no-such-role"
+
+        codes = {
+            code
+            for code, _, _ in role_design_contract_findings(self._registry_with(rename))
+        }
+        self.assertEqual(
+            {"role-design-unknown-role", "role-design-core-unmapped"}, codes
+        )
+
+    def test_the_schema_owns_the_exception_shape(self) -> None:
+        from scripts.lib.document_governance.registry import validate_registry
+
+        raw = json.loads(
+            (ROOT / "docs/99.templates/registry.json").read_text(encoding="utf-8")
+        )
+        cases = {
+            "pending without a core role": lambda role: role["core_exception"].pop(
+                "core_role"
+            ),
+            "domain with a core role": lambda role: role["core_exception"].update(
+                kind="domain"
+            ),
+            "both fields": lambda role: role.update(core_role="decision"),
+            "neither field": lambda role: role.pop("core_exception"),
+        }
+        for name, edit in cases.items():
+            with self.subTest(case=name):
+                changed = copy.deepcopy(raw)
+                edit(changed["template_roles"]["sdlc/architecture-decision"])
+                self.assertIn(
+                    "schema-invalid",
+                    {finding.code for finding in validate_registry(changed)},
+                )
+
+    def test_a_different_core_identity_is_rejected(self) -> None:
+        from scripts.lib.document_governance.template_definition import (
+            role_design_contract_findings,
+        )
+
+        def bump(raw: dict) -> None:
+            raw["common"]["role_design_contract"]["contract_version"] = "4.0.1"
+
+        codes = {
+            code
+            for code, _, _ in role_design_contract_findings(self._registry_with(bump))
+        }
+        self.assertEqual({"role-design-identity"}, codes)
+
+    def test_the_registry_pins_the_tracked_core(self) -> None:
+        from scripts.lib.document_governance.template_definition import (
+            role_design_contract_findings,
+        )
+
+        contract = self.registry.common["role_design_contract"]
+        self.assertEqual("workspace-document-role-design", contract["contract_id"])
+        self.assertEqual([], role_design_contract_findings(self.registry))
+
+    def test_a_changed_core_or_schema_file_is_rejected(self) -> None:
+        from scripts.lib.document_governance.template_definition import (
+            role_design_contract_findings,
+        )
+
+        contract = self.registry.common["role_design_contract"]
+        for changed in ("source_path", "schema_path"):
+            with (
+                self.subTest(changed=changed),
+                tempfile.TemporaryDirectory() as directory,
+            ):
+                root = pathlib.Path(directory)
+                for key in ("source_path", "schema_path"):
+                    target = root / contract[key]
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes((ROOT / contract[key]).read_bytes())
+                target = root / contract[changed]
+                target.write_bytes(target.read_bytes() + b"\n")
+                findings = role_design_contract_findings(self.registry, root=root)
+                self.assertEqual(
+                    [("role-design-source-changed", contract[changed])],
+                    [(code, location) for code, location, _ in findings],
+                )
+
+
 if __name__ == "__main__":
     unittest.main()

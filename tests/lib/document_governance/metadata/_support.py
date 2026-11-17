@@ -89,6 +89,10 @@ def copy_registry_contract_fixture(root: pathlib.Path) -> pathlib.Path:
         pathlib.Path("docs/99.templates/contracts/document-profile.schema.json"),
         pathlib.Path("docs/99.templates/contracts/document-frontmatter.schema.json"),
         *(pathlib.Path(role["source"]) for role in values["template_roles"].values()),
+        *(
+            pathlib.Path(values["common"]["role_design_contract"][key])
+            for key in ("source_path", "schema_path")
+        ),
     }
     for relative_path in sorted(relative_paths):
         target = root / relative_path

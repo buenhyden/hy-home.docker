@@ -1,0 +1,398 @@
+{
+  "type": "object",
+  "properties": {
+    "contract_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "contract_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "status": {
+      "const": "DESIGN_PROPOSAL_NOT_WORKSPACE_ADOPTION"
+    },
+    "rule": {
+      "type": "string",
+      "minLength": 1
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "pattern": "^[a-z][a-z0-9._-]*$"
+          },
+          "purpose": {
+            "type": "string",
+            "minLength": 1
+          },
+          "non_goals": {
+            "type": "string",
+            "minLength": 1
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "section_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "level": {
+                  "const": 2
+                },
+                "parent_id": {
+                  "type": "null"
+                },
+                "title_ko": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "order": {
+                  "type": "integer",
+                  "minimum": 1
+                },
+                "required_when": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "content_rule": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "prohibited_content": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "empty_policy": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "subsections": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "section_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "level": {
+                        "const": 3
+                      },
+                      "parent_id": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "title_en": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "title_ko": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "order": {
+                        "type": "integer",
+                        "minimum": 1
+                      },
+                      "required_when": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "content_rule": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    },
+                    "required": [
+                      "section_id",
+                      "level",
+                      "parent_id",
+                      "title_en",
+                      "title_ko",
+                      "order",
+                      "required_when",
+                      "content_rule"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "title_en": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "section_id",
+                "level",
+                "parent_id",
+                "title_ko",
+                "order",
+                "required_when",
+                "content_rule",
+                "prohibited_content",
+                "empty_policy",
+                "subsections",
+                "title_en"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "metadata_policy": {
+            "type": "object",
+            "properties": {
+              "envelope": {
+                "enum": [
+                  "native",
+                  "frontmatter"
+                ]
+              },
+              "fields": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "value_type": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "required_when": {
+                      "type": "string",
+                      "minLength": 1
+                    },
+                    "meaning": {
+                      "type": "string",
+                      "minLength": 1
+                    }
+                  },
+                  "required": [
+                    "key",
+                    "value_type",
+                    "required_when",
+                    "meaning"
+                  ],
+                  "additionalProperties": false
+                }
+              },
+              "extension_rule": {
+                "type": "string",
+                "minLength": 1
+              },
+              "document_version_pattern": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "envelope",
+              "fields",
+              "extension_rule",
+              "document_version_pattern"
+            ],
+            "additionalProperties": false
+          },
+          "tables": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "table_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "section_id": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "required_when": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "columns": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "key": {
+                        "type": "string",
+                        "pattern": "^[a-z][a-z0-9._-]*$"
+                      },
+                      "label": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "value_type": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "meaning": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "required": {
+                        "type": "boolean"
+                      },
+                      "allowed_values": {
+                        "type": "array",
+                        "minItems": 1,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": [
+                            "string",
+                            "boolean",
+                            "integer",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
+                    "required": [
+                      "key",
+                      "label",
+                      "value_type",
+                      "meaning",
+                      "required"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "empty_policy": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "table_id",
+                "section_id",
+                "required_when",
+                "columns",
+                "empty_policy"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "language": {
+            "type": "object",
+            "properties": {
+              "headings": {
+                "const": "en"
+              },
+              "body": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "headings",
+              "body"
+            ],
+            "additionalProperties": false
+          },
+          "status": {
+            "const": "DESIGN_PROPOSAL_NOT_ADOPTED"
+          },
+          "relationships": {
+            "type": "object",
+            "properties": {
+              "authored_direction": {
+                "type": "string",
+                "minLength": 1
+              },
+              "reverse_links": {
+                "type": "string",
+                "minLength": 1
+              },
+              "missing_target": {
+                "type": "string",
+                "minLength": 1
+              },
+              "deletion": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "authored_direction",
+              "reverse_links",
+              "missing_target",
+              "deletion"
+            ],
+            "additionalProperties": false
+          },
+          "lifecycle": {
+            "type": "object",
+            "properties": {
+              "axis": {
+                "type": "string",
+                "minLength": 1
+              },
+              "draft_rule": {
+                "type": "string",
+                "minLength": 1
+              },
+              "transition_authority": {
+                "type": "string",
+                "minLength": 1
+              },
+              "acceptance_rule": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "required": [
+              "axis",
+              "draft_rule",
+              "transition_authority",
+              "acceptance_rule"
+            ],
+            "additionalProperties": false
+          },
+          "rules": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required": [
+          "role",
+          "purpose",
+          "non_goals",
+          "sections",
+          "metadata_policy",
+          "tables",
+          "language",
+          "status",
+          "relationships",
+          "lifecycle",
+          "rules"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "binding_rule": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": [
+    "contract_id",
+    "contract_version",
+    "status",
+    "rule",
+    "roles",
+    "binding_rule"
+  ],
+  "additionalProperties": false,
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

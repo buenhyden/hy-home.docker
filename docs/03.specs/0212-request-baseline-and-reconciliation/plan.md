@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.76.0"
+version: "1.77.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "specs"
 artifact_id: "SPEC-0212-PLAN-0001"
 parent_ids:
@@ -386,6 +386,12 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W139 | 134 | Bind a brief to the request, compare exact actions and stop stale dependent work | W129 | TSK-0078 | Provider-shaped hook fixtures, explicit delegation preflight and independent review |
 | W140 | 135 | Preserve native event behavior and account for runtime evidence | W129 | TSK-0079 | Hook command regressions, provider parity, native observations and independent review |
 | W141 | 136 | Reconcile W00–W07 sources, outcomes and open requirements, and repair reproduced mismatches | W128, W129, W131, W133, W134, W135, W136, W137, W138, W139, W140 | TSK-0080 | Per-prompt findings, RED/GREEN checks, authenticated existing candidate evidence, independent review and candidate gate |
+| W142 | 137 | Track the 4.0.0 core and its schema, pin them in the Registry, bind or classify every template role, and check bound roles in `check-contracts` | W134 | TSK-0081 | RED and GREEN conformance tests, contracts and active metadata, independent review |
+| W143 | 137 | Move the guide, runbook, operations and governance policy, incident and postmortem forms and their current documents to the core | W142 | TSK-0081 | Conformance, active metadata and links on the moved documents |
+| W144 | 137 | Move the research, audit and data reference forms and their current documents to the core | W142 | TSK-0081 | Conformance, active metadata and links on the moved documents |
+| W145 | 137 | Move the root, stage and service README, agent instruction and skill forms and their current documents to the core | W142 | TSK-0081 | Conformance, active metadata, provider renderer and links |
+| W146 | 137 | Move the requirement, architecture and decision forms and their current documents to the core | W142 | TSK-0081 | Conformance, active metadata, lifecycle and links |
+| W147 | 137 | Move the Spec, Plan and Task forms to the core through a new lifecycle generation for new packages; keep terminal Tasks in their recorded form | W142 | TSK-0081 | Lifecycle generation tests, conformance and corpus lifecycle |
 
 #### Current v30 continuation and delivery
 

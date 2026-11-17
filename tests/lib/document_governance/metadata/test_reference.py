@@ -454,6 +454,9 @@ class RepositoryContractIntegrationTests(unittest.TestCase):
                     reference_module, "_allocation_findings", return_value=[]
                 ),
                 mock.patch.object(
+                    reference_module, "_role_design_findings", return_value=[]
+                ),
+                mock.patch.object(
                     reference_module, "_changed_paths", return_value=set()
                 ),
                 mock.patch.object(

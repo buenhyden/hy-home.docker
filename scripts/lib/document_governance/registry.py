@@ -51,7 +51,15 @@ TEMPLATE_DEFINITION_FIELDS = (
 # `conditional_units` is optional: it names the top-level units of a
 # heading-less template that are examples or conditional rather than required.
 TEMPLATE_ROLE_KEYS = frozenset(
-    {"source", "profiles", "conditional_units", *TEMPLATE_DEFINITION_FIELDS}
+    {
+        "source",
+        "profiles",
+        "conditional_units",
+        # One of these binds the form to the role design core or says why not.
+        "core_role",
+        "core_exception",
+        *TEMPLATE_DEFINITION_FIELDS,
+    }
 )
 FALLBACK_PROFILE_IDS = frozenset({"unsupported"})
 # Preserved records live only under this prefix. A record is kept as it was

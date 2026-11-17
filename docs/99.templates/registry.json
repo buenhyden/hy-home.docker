@@ -1486,6 +1486,14 @@
           "term": "Design Fitness"
         }
       ]
+    },
+    "role_design_contract": {
+      "contract_id": "workspace-document-role-design",
+      "contract_version": "4.0.0",
+      "source_path": "docs/99.templates/contracts/document-role-design.json",
+      "schema_path": "docs/99.templates/contracts/document-role-design.schema.json",
+      "source_sha256": "3ac2806ec2db8b9f7cd320faa1b5bfe36675624555e63269783be8cdc2039a0e",
+      "schema_sha256": "a07b2f24bc9980bab04895128e4ddf3339a2d719485a6f48f49e7ba26e227ad2"
     }
   },
   "profiles": [
@@ -4454,6 +4462,11 @@
         "meaning_map": "Commit b86a7a942 (profiles, templates and stage READMEs, #985) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-documentation.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-documentation.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "stage-readme"
       }
     },
     "common/package-readme": {
@@ -4516,6 +4529,11 @@
         "meaning_map": "Commit 44801eb20 (profile, template and service READMEs, #986) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-package.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-package.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "service-readme"
       }
     },
     "common/readme": {
@@ -4582,6 +4600,11 @@
         "meaning_map": "Commit b86a7a942 (profiles, templates and stage READMEs, #985) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-stage.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-stage.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "stage-readme"
       }
     },
     "common/repository-readme": {
@@ -4645,6 +4668,11 @@
         "meaning_map": "Commit d712aee54 (profiles, templates and root READMEs, #983) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-repository.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-repository.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "root-readme"
       }
     },
     "common/runtime-governance-readme": {
@@ -4707,6 +4735,11 @@
         "meaning_map": "Commit d712aee54 (profiles, templates and root READMEs, #983) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-runtime-governance.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-runtime-governance.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "root-readme"
       }
     },
     "common/agent-guide": {
@@ -4771,6 +4804,11 @@
         "meaning_map": "Commit 4bb4add1f (folder agent guides) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/agent-guide.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/agent-guide.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "agent-instructions"
       }
     },
     "governance/claude-agent": {
@@ -4827,6 +4865,10 @@
         "meaning_map": "The template has no Markdown sections; its definition describes the file's own top-level units. Adding this TemplateDefinition changed no key, unit or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/runtime/claude-agent.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/runtime/claude-agent.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "native",
+        "reason": "A Claude native agent envelope rendered from a canonical role"
       }
     },
     "governance/codex-agent": {
@@ -4882,6 +4924,10 @@
         "meaning_map": "The template has no Markdown sections; its definition describes the file's own top-level units. Adding this TemplateDefinition changed no key, unit or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/runtime/codex-agent.template.toml and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/runtime/codex-agent.template.toml; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "native",
+        "reason": "A Codex native agent TOML envelope rendered from a canonical role"
       }
     },
     "governance/hook-policy": {
@@ -4947,6 +4993,10 @@
         "meaning_map": "Commit b939b2994 (profiles) and 7b48b923a (governance rules, #980) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/rule.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/rule.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "domain",
+        "reason": "A hook rule whose frontmatter the hook engine reads"
       }
     },
     "governance/knowledge": {
@@ -5008,6 +5058,10 @@
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/knowledge.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/knowledge.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "domain",
+        "reason": "A routing knowledge member; the core has no knowledge role"
       }
     },
     "governance/vocabulary": {
@@ -5074,6 +5128,10 @@
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/vocabulary.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/vocabulary.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "domain",
+        "reason": "The repository-vocabulary contract owns its form"
       }
     },
     "governance/policy": {
@@ -5141,6 +5199,11 @@
         "meaning_map": "Commit b939b2994 (profiles) and 7b48b923a (governance policies, #980) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/control.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/control.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "policy"
       }
     },
     "governance/prompt": {
@@ -5204,6 +5267,10 @@
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/prompt.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/prompt.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "domain",
+        "reason": "A reusable agent prompt; the core has no prompt role"
       }
     },
     "governance/provider": {
@@ -5266,6 +5333,10 @@
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/provider.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/provider.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "domain",
+        "reason": "A provider adapter; the core has no adapter role"
       }
     },
     "governance/role": {
@@ -5331,6 +5402,10 @@
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/role.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/role.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "domain",
+        "reason": "An agent role contract; the core has no agent role"
       }
     },
     "governance/sdlc": {
@@ -5395,6 +5470,10 @@
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/contract.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/contract.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "domain",
+        "reason": "The SDLC contract; the core has no lifecycle contract role"
       }
     },
     "governance/skill": {
@@ -5461,6 +5540,11 @@
         "meaning_map": "Commit b83c5a11e (profile) and f7f37d495 (the 24 skills, #981) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/skill.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/skill.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "skill"
       }
     },
     "operation/guide": {
@@ -5528,6 +5612,11 @@
         "meaning_map": "Commit 089d4246d (profile) and c7ca7356e (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/guide.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/guide.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "guide"
       }
     },
     "operation/incident": {
@@ -5594,6 +5683,11 @@
         "meaning_map": "Commit ffeee0e7f moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/incident.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/incident.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "incident"
       }
     },
     "operation/policy": {
@@ -5662,6 +5756,11 @@
         "meaning_map": "Commit b939b2994 (profiles) and 9cd965911 (documents, #980) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/policy.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/policy.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "policy"
       }
     },
     "operation/postmortem": {
@@ -5726,6 +5825,11 @@
         "meaning_map": "Commit ffeee0e7f moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/postmortem.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/postmortem.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "postmortem"
       }
     },
     "operation/runbook": {
@@ -5796,6 +5900,11 @@
       },
       "conditional_units": {
         "Rollback": "when running the procedure or the change alters state or outputs"
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "runbook"
       }
     },
     "reference/audit": {
@@ -5855,6 +5964,11 @@
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/audit.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/audit.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "audit"
       }
     },
     "reference/audit-pack": {
@@ -5914,6 +6028,11 @@
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/audit-pack.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/audit-pack.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "stage-readme"
       }
     },
     "reference/category-readme": {
@@ -5975,6 +6094,11 @@
         "meaning_map": "Commit b86a7a942 (profiles, templates and stage READMEs, #985) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/readme-category.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/readme-category.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "stage-readme"
       }
     },
     "reference/data": {
@@ -6033,6 +6157,11 @@
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/data.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/data.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "data-reference"
       }
     },
     "reference/data-pack": {
@@ -6096,6 +6225,11 @@
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/data-pack.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/data-pack.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "stage-readme"
       }
     },
     "reference/research": {
@@ -6158,6 +6292,11 @@
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/research.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/research.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "research"
       }
     },
     "reference/research-pack": {
@@ -6221,6 +6360,11 @@
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/research-pack.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/research-pack.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "stage-readme"
       }
     },
     "sdlc/architecture-decision": {
@@ -6288,6 +6432,11 @@
       },
       "conditional_units": {
         "Supersession": "when an actual predecessor or successor decision exists, or the change supersedes one"
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "decision"
       }
     },
     "sdlc/architecture-description": {
@@ -6351,6 +6500,11 @@
         "meaning_map": "Commit e3beaa9cd (profile) and 5dd0ce150 (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/architecture/description.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/architecture/description.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "architecture"
       }
     },
     "sdlc/data-model": {
@@ -6408,6 +6562,10 @@
         "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/contracts/data-model.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/contracts/data-model.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "domain",
+        "reason": "A data model contract inside a Spec Package"
       }
     },
     "sdlc/graphql": {
@@ -6465,6 +6623,10 @@
       },
       "conditional_units": {
         "type __OBJECT_TYPE__": "example object type returned by the template query; replace it with the contract's own types."
+      },
+      "core_exception": {
+        "kind": "native",
+        "reason": "GraphQL schema syntax"
       }
     },
     "sdlc/openapi": {
@@ -6523,6 +6685,10 @@
       "conditional_units": {
         "paths": "OpenAPI 3.1 needs at least one of paths, components or webhooks; keep paths when the API exposes operations.",
         "components": "OpenAPI 3.1 needs at least one of paths, components or webhooks; keep components when operations share schemas."
+      },
+      "core_exception": {
+        "kind": "native",
+        "reason": "OpenAPI document syntax"
       }
     },
     "sdlc/plan": {
@@ -6587,6 +6753,11 @@
         "meaning_map": "Commit dd8fe8a5b (profile) and d18403ccc (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/plan.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/plan.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "plan"
       }
     },
     "sdlc/proto": {
@@ -6645,6 +6816,10 @@
       "conditional_units": {
         "message HealthRequest": "example request message of the template Health rpc; replace it with the service's own messages.",
         "message HealthResponse": "example response message of the template Health rpc; replace it with the service's own messages."
+      },
+      "core_exception": {
+        "kind": "native",
+        "reason": "Protocol Buffers syntax"
       }
     },
     "sdlc/requirement": {
@@ -6712,6 +6887,11 @@
       },
       "conditional_units": {
         "Quality Requirements": "when a quality requirement applies"
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "requirement"
       }
     },
     "sdlc/spec": {
@@ -6776,6 +6956,11 @@
         "meaning_map": "Commit 78475f8df moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/spec.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/spec.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "spec"
       }
     },
     "sdlc/task": {
@@ -6846,6 +7031,11 @@
         "meaning_map": "Commit 6e16c0c4d (profile) and ae4df1873 (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/task.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/task.template.md; load_registry and test_template_definition re-check the reverted Registry."
+      },
+      "core_exception": {
+        "kind": "pending-migration",
+        "reason": "Bound after its form, consumers and current documents move to the core",
+        "core_role": "task"
       }
     }
   },
