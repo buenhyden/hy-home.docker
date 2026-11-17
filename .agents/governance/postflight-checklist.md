@@ -33,15 +33,11 @@ None: this document states no exclusion.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| POSTFLIGHT-CHECKLIST-R1 | Completion of any change | Required: record completion evidence in the co-located Stage 03 Task | none | Stage 03 Task |
-| POSTFLIGHT-CHECKLIST-R2 | Completion of any change | Required: treat Git history as the recovery boundary | none | none |
-| POSTFLIGHT-CHECKLIST-R3 | Completion of any change | Forbidden: creating a second handoff or progress authority | none | none |
-| POSTFLIGHT-CHECKLIST-R4 | An approved all-files gate | Required: record only the concise result and hook-managed fallout | none | Concise result and hook-managed fallout in the Task |
-| POSTFLIGHT-CHECKLIST-R5 | An approved all-files gate | Required: leave direct pre-commit prohibition and wrapper conditions to `quality-standards.md#4-execution-boundary` | none | none |
-| POSTFLIGHT-CHECKLIST-R6 | Always | Required: treat `task-checklists.md` as the completion authority | none | none |
-| POSTFLIGHT-CHECKLIST-R7 | Always | Required: apply only validators mapped to the changed canonical source and protected surface | none | none |
-| POSTFLIGHT-CHECKLIST-R8 | Provider projections | Required: run the agent governance contract and renderer check | agent governance contract and renderer check | none |
-| POSTFLIGHT-CHECKLIST-R9 | Provider projections | Required: use write mode only through the registered renderer | none | none |
+| POSTFLIGHT-CHECKLIST-R1 | Completion of a change | Required: record completion evidence in the co-located Stage 03 Task | none | co-located Stage 03 Task |
+| POSTFLIGHT-CHECKLIST-R2 | Completion of a change | Required: treat Git history as the recovery boundary | none | none |
+| POSTFLIGHT-CHECKLIST-R3 | Always | Forbidden: creating a second handoff or progress authority | none | none |
+| POSTFLIGHT-CHECKLIST-R4 | Approved all-files gate | Required: leave direct pre-commit prohibition and every wrapper condition to `quality-standards.md#4-execution-boundary` | none | none |
+| POSTFLIGHT-CHECKLIST-R5 | Approved all-files gate | Required: postflight records only the concise result and hook-managed fallout | none | none |
 
 Completion evidence belongs in the co-located Stage 03 Task. Git history is the
 recovery boundary. Do not create a second handoff or progress authority.
@@ -73,12 +69,11 @@ the registered renderer.
 
 ### Limits
 
-Postflight routes to other checks and names few of its own:
+Postflight routes to other owners and ties no check to any rule in Requirements.
 
-- Evidence placement and the ban on a second handoff or progress authority (R1-R3): no check is named.
-- Selection of validators (R6-R7) rests on agent judgment; `task-checklists.md` is the completion authority.
-- All-files gate recording and wrapper conditions (R4-R5): wrapper conditions live in `quality-standards.md#4-execution-boundary`; no check is tied to the recording rule.
-- Registered-renderer-only write mode (R9): no check is named.
+- Evidence placement and handoff authority (R1-R3): no check is named.
+- All-files gate (R4-R5): no check is named.
+- Rules stated under Enforcement (Mechanisms) are outside this table.
 
 ## Ownership
 

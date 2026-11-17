@@ -33,12 +33,14 @@ None: this document states no exclusion.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| PERSONA-R1 | Before repository mutation | Required: resolve exactly one canonical `agent_id` from `.agents/roles/` and use its scope, permission profile, work profile and skill IDs | none | none |
-| PERSONA-R2 | Before repository mutation | Forbidden: inventing a provider-local identity | none | none |
-| PERSONA-R3 | Always | Forbidden: provider-native adapters owning names, permissions or model policy | none | none |
-| PERSONA-R4 | No role matches or multiple roles conflict | Required: stop and route the ambiguity to `workflow-supervisor` | none | none |
-| PERSONA-R5 | Multi-role work | Required: keep one supervising owner | none | none |
-| PERSONA-R6 | High-risk multi-role work | Required: separate implementation from independent review | none | none |
+| PERSONA-R1 | Before repository mutation | Required: resolve exactly one canonical `agent_id` from `.agents/roles/` | none | none |
+| PERSONA-R2 | Before repository mutation | Required: use the resolved role's scope, permission profile, work profile and skill IDs | none | none |
+| PERSONA-R3 | Before repository mutation | Forbidden: inventing a provider-local identity | none | none |
+| PERSONA-R4 | Always | Required: provider-native adapters preserve role intent | none | none |
+| PERSONA-R5 | Always | Forbidden: provider-native adapters owning names, permissions or model policy | none | none |
+| PERSONA-R6 | No role matches or multiple roles conflict | Required: stop and route the ambiguity to `workflow-supervisor` | none | none |
+| PERSONA-R7 | Multi-role work | Required: keep one supervising owner | none | none |
+| PERSONA-R8 | High-risk multi-role work | Required: separate implementation from independent review | none | none |
 
 Before mutation, resolve exactly one canonical `agent_id` from `.agents/roles/`. Use its
 scope, permission profile, work profile, and skill IDs without inventing a
@@ -69,9 +71,9 @@ None: this document states no separate check.
 
 This policy states no separate check, so none of its rules is mechanically enforced:
 
-- Role identity: R1-R3.
-- Ambiguity routing: R4.
-- Multi-role ownership: R5-R6.
+- Role identity and adapter limits: R1-R5.
+- Ambiguity routing: R6.
+- Multi-role ownership and review separation: R7-R8.
 
 ## Ownership
 

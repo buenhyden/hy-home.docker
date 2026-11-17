@@ -35,15 +35,30 @@ None: this document states no exclusion.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| PROVIDER-CAPABILITY-MATRIX-R1 | Always | Required: keep each authority namespace to what it owns (governance/roles/skills, Stage 99 Registry, Provider Registry, authored `provider.md`, generated native files) | none | none |
-| PROVIDER-CAPABILITY-MATRIX-R2 | Always | Required: map each capability (role intent, procedures, explicit invocation, model and effort, permissions, semantic events) to its canonical owner and adapters | none | none |
-| PROVIDER-CAPABILITY-MATRIX-R3 | Native skill frontmatter | Required: use `name`, `description` and nested governance `metadata` | none | none |
-| PROVIDER-CAPABILITY-MATRIX-R4 | Native skills | Required: folder, name and stable function identity agree | none | none |
-| PROVIDER-CAPABILITY-MATRIX-R5 | Always | Forbidden: treating discovery as invocation or approval | none | none |
-| PROVIDER-CAPABILITY-MATRIX-R6 | Always | Forbidden: a skill adding tool grants or installers | none | none |
-| PROVIDER-CAPABILITY-MATRIX-R7 | Always | Required: keep `.agents/` as the authored canonical source home, separate from generated native roots | none | none |
-| PROVIDER-CAPABILITY-MATRIX-R8 | Unknown or unsafe entries | Required: fail closed and preserve them for review | none | none |
-| PROVIDER-CAPABILITY-MATRIX-R9 | Always | Forbidden: deleting or quarantining canonical files as stale projections | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R1 | `.agents/governance`, roles and skills | Required: own shared behavior, workflow, approval, role separation and reusable procedures | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R2 | `.agents/governance`, roles and skills | Forbidden: owning provider syntax or document profiles | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R3 | Stage 99 Registry | Required: own document paths, profiles, identifiers, lifecycle values and template mappings | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R4 | Stage 99 Registry | Forbidden: owning agent workflow or provider runtime translation | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R5 | Provider Registry | Required: own provider identities, projection routes, model/permission translations, semantic events and hook commands | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R6 | Provider Registry | Forbidden: owning shared workflow, retry, evidence or stop policy | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R7 | Authored native `provider.md` | Required: own provider loading and syntax differences | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R8 | Authored native `provider.md` | Forbidden: owning shared governance or model policy | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R9 | Generated native files and runtime controls | Required: hold provider configuration consuming the owners above | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R10 | Generated native files and runtime controls | Forbidden: holding independent shared authority | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R11 | Role intent | Required: owned by `.agents/roles/*.md`, adapted by `.claude/agents/*.md` and `.codex/agents/*.toml` | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R12 | Procedures | Required: owned by `.agents/skills/*/SKILL.md`, adapted by thin generated `.claude/skills/*/SKILL.md` and Codex canonical native skill discovery and explicit reads | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R13 | Explicit invocation | Required: owned by skill-local control and shared approval, adapted by Claude `disable-model-invocation: true` and Codex `agents/openai.yaml` `policy.allow_implicit_invocation: false` | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R14 | Model and effort | Required: owned by the Provider Registry, adapted by native model and effort (Claude) and native model and reasoning (Codex) | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R15 | Permissions | Required: owned by the role plus the Provider Registry, adapted by Claude permission mode and Codex sandbox mode | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R16 | Semantic events | Required: owned by the Registry plus native hook config, adapted by the Claude and Codex adapters | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R17 | Native skill frontmatter | Required: use `name`, `description` and nested governance `metadata` | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R18 | Native skills | Required: folder, name and stable function identity agree | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R19 | Skill discovery | Forbidden: treating discovery as invocation or approval | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R20 | Skills | Forbidden: a skill adding tool grants or installers | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R21 | Always | Required: keep `.agents/` as the authored canonical source home, separate from generated native roots | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R22 | Unknown or unsafe entries | Required: fail closed | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R23 | Unknown or unsafe entries | Required: preserve them for review | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R24 | Canonical files | Forbidden: deleting or quarantining them as stale projections | none | none |
 
 #### Authority Namespaces
 
@@ -97,15 +112,14 @@ version and action ID.
 
 ### Limits
 
-The policy names no check for its rules, so they rest on review and provider behavior:
+The policy names no check for any rule in Requirements.
 
-- Authority namespaces: R1.
-- Capability ownership: R2.
-- Native skills: R3-R6.
-- Canonical source: R7-R9.
-- Provider-native files may narrow behavior only to actual capabilities; this rests on review.
-- Configured sources and events prove tracked configuration only, not live events or picker results.
-- Runtime acceptance, account or subscription limits and editor action versions need direct observation.
+- Authority namespaces (R1-R10): no check is named.
+- Capability ownership (R11-R16): no check is named.
+- Native skills (R17-R20): no check is named.
+- Canonical source (R21-R24): no check is named.
+- Enforcement gap: a configured event or discoverable source proves tracked configuration only, and runtime acceptance and account or subscription limits stay unknown until directly observed.
+- Rules stated under Enforcement (Mechanisms) are outside this table.
 
 ## Ownership
 

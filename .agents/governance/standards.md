@@ -33,18 +33,18 @@ None: this document states no exclusion.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| STANDARDS-R1 | Always | Required: use only the canonical load order in `.agents/governance/bootstrap.md#canonical-load-order` | none | none |
+| STANDARDS-R1 | Always | Required: use only the canonical order in `.agents/governance/bootstrap.md#canonical-load-order` | none | none |
 | STANDARDS-R2 | Always | Required: avoid duplicated instructions across root shims and rule files | none | none |
-| STANDARDS-R3 | Always | Required: follow document language from `.agents/governance/documentation-protocol.md#document-language` | none | none |
-| STANDARDS-R4 | Always | Required: conversational responses follow the user's active language preference under `.agents/governance/output-style.md` | none | none |
-| STANDARDS-R5 | Before, during, and after work | Required: use checklists from `.agents/governance/task-checklists.md` | none | none |
+| STANDARDS-R3 | Document language | Required: follow its owner, `.agents/governance/documentation-protocol.md#document-language` | none | none |
+| STANDARDS-R4 | Conversational responses | Required: follow the user's active language preference under `.agents/governance/output-style.md` | none | none |
+| STANDARDS-R5 | Before, during and after work | Required: use checklists from `.agents/governance/task-checklists.md` | none | none |
 | STANDARDS-R6 | Creating new stage docs | Required: use templates from `docs/99.templates/` | none | none |
-| STANDARDS-R7 | Always | Required: prefer small isolated changes with explicit verification evidence | none | Explicit verification evidence |
+| STANDARDS-R7 | Always | Required: prefer small, isolated changes with explicit verification evidence | none | none |
 | STANDARDS-R8 | Editable scope | Required: remove stale commands and dead links immediately | none | none |
-| STANDARDS-R9 | GitHub repository/PR/CI matters | Required: follow `.agents/governance/github-governance.md` | none | none |
-| STANDARDS-R10 | Implementation work | Required: treat `docs/01` to `docs/99` as project SSoT | none | none |
+| STANDARDS-R9 | GitHub repository, PR and CI matters | Required: follow `.agents/governance/github-governance.md` for branch protection, PR completion gate, GitHub Actions security baseline and the local instruction authority boundary | none | none |
+| STANDARDS-R10 | Always | Required: treat `docs/01` to `docs/99` as project SSoT | none | none |
 | STANDARDS-R11 | Implementation work | Forbidden: bypassing `docs/01.requirements` and `docs/03.specs` | none | none |
-| STANDARDS-R12 | Stage artifacts | Required: keep reciprocal traceability across Requirement Package/Architecture Description/ADR/Spec/Plan/Task/Guide/Policy/Runbook artifacts | none | none |
+| STANDARDS-R12 | Always | Required: keep reciprocal traceability across Requirement Package, Architecture Description, ADR, Spec, Plan, Task, Guide, Policy and Runbook artifacts | none | none |
 
 #### 1. Token Optimization and Lazy Loading
 
@@ -101,11 +101,15 @@ None: this document states no separate check.
 
 ### Limits
 
-The policy states no separate check (`Mechanisms` is `None`), so every rule rests on review and on the policies it points to:
+The policy states no separate check (`Mechanisms` is `None`), so no rule in Requirements names a check.
 
-- Load order, duplication, language, checklist use, templates, small changes, and stale-link removal (R1-R8): no validator is named.
-- GitHub, CI, and PR standards (R9) are delegated to `github-governance.md`; their enforcement is not shown here.
-- Stage-gate compliance and reciprocal traceability (R10-R12): no check is named.
+- Token optimization (R1-R2): no check is named.
+- Language (R3-R4): no check is named.
+- Execution discipline (R5-R8): no check is named.
+- GitHub standards (R9): no check is named.
+- Stage-gate compliance (R10-R12): no check is named.
+- GitHub, CI and PR standards (R9) are delegated to `github-governance.md`; their enforcement is not stated here.
+- Rules stated under Enforcement (Mechanisms) are outside this table.
 
 ## Ownership
 

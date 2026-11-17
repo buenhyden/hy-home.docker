@@ -33,17 +33,20 @@ None: this document states no exclusion.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| TASK-CHECKLISTS-R1 | Before editing repository state | Required: confirm the approved objective/editable paths/protected surfaces/exclusions | none | none |
-| TASK-CHECKLISTS-R2 | Before editing repository state | Required: load applicable Requirement/Architecture/Spec/Plan/Task/policy/skill sources | none | none |
-| TASK-CHECKLISTS-R3 | Before editing repository state | Required: bind high-risk policy/runtime/CI/template/secret/remote/model/provider changes to explicit approval/validation/recovery | none | none |
+| TASK-CHECKLISTS-R1 | Before editing repository state | Required: confirm the approved objective, editable paths, protected surfaces and exclusions | none | none |
+| TASK-CHECKLISTS-R2 | Before editing repository state | Required: load applicable Requirement, Architecture, Spec, Plan, Task, policy and skill sources | none | none |
+| TASK-CHECKLISTS-R3 | Before editing repository state | Required: bind high-risk policy, runtime, CI, template, secret, remote, model and provider changes to explicit approval, validation and recovery | none | none |
 | TASK-CHECKLISTS-R4 | Before editing repository state | Required: define acceptance checks | none | none |
 | TASK-CHECKLISTS-R5 | Before editing repository state | Required: inspect the shared worktree | none | none |
 | TASK-CHECKLISTS-R6 | During work | Required: keep changes traceable to the approved Plan Task | none | none |
 | TASK-CHECKLISTS-R7 | During work | Required: keep canonical sources separate from generated provider projections | none | none |
-| TASK-CHECKLISTS-R8 | During work | Required: preserve secrets and private state and record metadata only | none | none |
-| TASK-CHECKLISTS-R9 | During work | Required: update affected links and eliminate conflicting active guidance | none | none |
-| TASK-CHECKLISTS-R10 | During work | Required: record actual evidence in the Task, not in a second progress or handoff document | none | Evidence recorded in the Task |
-| TASK-CHECKLISTS-R11 | During work | Required: stop on missing authority/destructive ambiguity/unexpected scope | none | none |
+| TASK-CHECKLISTS-R8 | During work | Required: preserve secrets and private state | none | none |
+| TASK-CHECKLISTS-R9 | Secrets and private state | Required: record metadata only | none | none |
+| TASK-CHECKLISTS-R10 | During work | Required: update affected links | none | none |
+| TASK-CHECKLISTS-R11 | During work | Required: eliminate conflicting active guidance | none | none |
+| TASK-CHECKLISTS-R12 | During work | Required: record actual evidence in the Task | none | the Task |
+| TASK-CHECKLISTS-R13 | During work | Forbidden: recording evidence in a second progress or handoff document | none | none |
+| TASK-CHECKLISTS-R14 | Missing authority, destructive ambiguity or unexpected scope | Required: stop | none | none |
 
 #### Before Editing
 
@@ -100,9 +103,11 @@ None: no exception exists to approve.
 
 ### Limits
 
-Checklist rules in Requirements are completed by the agent and confirmed through Task records; no automated check is attached to them:
+No check, script or review is tied to any rule in Requirements.
 
-- Before Editing and During Work (R1-R11): no check or script is named.
+- Before Editing (R1-R5): no check is named.
+- During Work (R6-R14): no check is named.
+- Rules stated under Enforcement (Mechanisms) are outside this table.
 
 ## Ownership
 
