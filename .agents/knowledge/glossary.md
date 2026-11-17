@@ -1,6 +1,6 @@
 ---
 title: "Repository Vocabulary"
-version: "0.10.0"
+version: "0.11.0"
 type: "governance/vocabulary"
 status: "active"
 owner: "@buenhyden"
@@ -100,7 +100,7 @@ enforced.
 | Registry file | The Registry is `docs/99.templates/registry.json` | A template | [Documentation protocol](../governance/documentation-protocol.md) |
 | Document Profile entry | A Registry entry binding a path pattern to a role's required frontmatter, sections, identity, lifecycle and template | Profile, gate sense | [Documentation protocol](../governance/documentation-protocol.md) |
 | Supersession lineage | Outside Stages 01 to 03, the newer document lists predecessors in `supersedes` and the older names its one successor in `superseded_by`; Stage 01 to 03 successors record the replaced substance in their lineage section instead: `Traceability` in a Requirement Package, `Adoption Boundaries` in an Architecture Description, and a `Supersession` heading in an ADR's `Authority and Effect` | A one-way mention | [Documentation protocol](../governance/documentation-protocol.md) |
-| Resolves row | In a Task Evidence table, a later required PASS row for a shared criterion, with the same Check and Work Unit, names the earlier non-PASS row in its `Resolves` column | Any newer PASS | [SDLC](../governance/sdlc.md#sequence) |
+| Resolves row | In a Task Evidence table, a later required PASS row for a shared criterion, with the same Check (Method and Command from lifecycle generation 8) and Work Unit, names the earlier non-PASS row in its `Resolves` column | Any newer PASS | [SDLC](../governance/sdlc.md#sequence) |
 | Spec Package | A directory holding one bounded change's `spec.md`, optional `plan.md`, and numbered Tasks | A long-lived requirement or design | [Documentation protocol](../governance/documentation-protocol.md) |
 | Lifecycle | The named status set and permitted transitions for a profile; `living` and `spec` differ | The SDLC stage or document stage | [Documentation protocol](../governance/documentation-protocol.md) |
 | Identity space | The monotonic allocator for an artifact prefix; an issued number is never reused | A display order | [Documentation protocol](../governance/documentation-protocol.md) |

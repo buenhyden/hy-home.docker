@@ -196,6 +196,74 @@ def document_type(profile_id: str) -> str:
     return _registered_types()[profile_id]
 
 
+# Lifecycle generation 8 places each Spec Package by its number. A package
+# numbered from `common.package_generations.first_package` on is generation 8
+# and follows the core Spec, Plan and Task forms; every earlier package keeps
+# the generation 7 form it was recorded in, so none of them migrates.
+_PACKAGE_MEMBER = re.compile(r"(?:^|/)docs/03\.specs/([0-9]{4})-[^/]+/")
+PACKAGE_FORM_PROFILES = ("spec", "plan", "task")
+
+
+def corpus_generation(common: Mapping[str, object]) -> object:
+    """Return the generation the recorded Spec Packages follow.
+
+    Generation 8 changes no recorded package, so the migration and historical
+    admission machinery keeps reading generation 7 from a generation 8
+    Registry. Any other Registry answers with its own counter.
+    """
+
+    generation = common.get("lifecycle_generation")
+    placement = common.get("package_generations")
+    if generation == 8 and isinstance(placement, Mapping):
+        return placement.get("recorded_generation")
+    return generation
+
+
+def package_generation(
+    common: Mapping[str, object], path: str | os.PathLike[str]
+) -> object:
+    """Return the lifecycle generation of the package that holds a path."""
+
+    placement = common.get("package_generations")
+    match = _PACKAGE_MEMBER.search(pathlib.PurePath(path).as_posix())
+    if (
+        common.get("lifecycle_generation") == 8
+        and isinstance(placement, Mapping)
+        and match is not None
+        and int(match.group(1)) >= int(placement.get("first_package", 0))  # type: ignore[arg-type]
+    ):
+        return 8
+    return corpus_generation(common)
+
+
+def recorded_package_profile(
+    common: Mapping[str, object],
+    profile_id: str,
+    profile: Mapping[str, object],
+    path: str | os.PathLike[str],
+) -> Mapping[str, object] | None:
+    """Return the recorded form a Spec Package member keeps, if it keeps one.
+
+    The profile declares the core form of generation 8; a member of an
+    earlier package is read with the sections its generation recorded.
+    """
+
+    placement = common.get("package_generations")
+    if (
+        profile_id not in PACKAGE_FORM_PROFILES
+        or not isinstance(placement, Mapping)
+        or common.get("lifecycle_generation") != 8
+        or _PACKAGE_MEMBER.search(pathlib.PurePath(path).as_posix()) is None
+        or package_generation(common, path) == 8
+    ):
+        return None
+    recorded = placement.get("recorded_sections")
+    form = recorded.get(profile_id) if isinstance(recorded, Mapping) else None
+    if not isinstance(form, Mapping):
+        return None
+    return MappingProxyType({**profile, **form})
+
+
 def _declares_provider_binding(profile: Mapping[str, object]) -> bool:
     """A provider runtime owns this surface, so the document type system defers."""
 
@@ -539,8 +607,9 @@ def _relation_contract_findings(
         "section": {
             f"{profile.get('id')}:{section}/{subsection}"
             for profile in profiles
+            for form in (profile, *_recorded_forms(common, profile.get("id")))
             for field in ("required_subsections", "optional_subsections")
-            for section, children in (profile.get(field) or {}).items()
+            for section, children in (form.get(field) or {}).items()
             for subsection in children
         },
         "derived": set(ids),
@@ -561,6 +630,151 @@ def _relation_contract_findings(
             invalid(location, f"owner {relation['owner']} is not a file")
         if not set(relation.get("retained_reverse_fields", ())) <= keys:
             invalid(location, "a retained reverse field must be a frontmatter key")
+    return findings
+
+
+# The generation 7 Spec, Plan and Task sections that every package numbered
+# before generation 8 keeps. They are pinned here as the common columns are,
+# so the recorded form cannot drift while the profiles carry the core form.
+RECORDED_PACKAGE_SECTIONS: Mapping[str, Mapping[str, object]] = MappingProxyType(
+    {
+        "spec": {
+            "required_sections": [
+                "Overview",
+                "Scope",
+                "Behavior Contract",
+                "Acceptance Criteria",
+                "References",
+            ],
+            "required_subsections": {
+                "Overview": ["Intent", "Owning Requirements"],
+                "Scope": ["In Scope", "Non-goals"],
+                "Behavior Contract": ["Normal Behavior", "Failure and Edge Cases"],
+                "Acceptance Criteria": ["Criteria", "Evidence Requirements"],
+                "References": ["Normative and Evidence", "Historical and Navigation"],
+            },
+        },
+        "plan": {
+            "required_sections": [
+                "Overview",
+                "Dependencies",
+                "Implementation Strategy",
+                "Verification Plan",
+                "Risks",
+                "Promotion Map",
+            ],
+            "required_subsections": {
+                "Overview": ["Goal and Boundary", "Assumptions"],
+                "Dependencies": ["Prerequisites", "Dependency Order"],
+                "Implementation Strategy": ["Work Breakdown", "Change and Rollback"],
+                "Verification Plan": ["Verification Matrix", "Stage Placement"],
+                "Risks": ["Risks and Mitigations", "Escalation"],
+                "Promotion Map": ["Durable Meaning", "Owner and Receipt"],
+            },
+        },
+        "task": {
+            "required_sections": [
+                "Scope",
+                "Execution Log",
+                "Verification Evidence",
+                "Acceptance Decision",
+                "Handoff",
+            ],
+            "required_subsections": {
+                "Scope": ["Objective and Parent", "Inputs and Authority"],
+                "Execution Log": ["Work Performed", "Blockers and Decisions"],
+                "Verification Evidence": ["Results", "Resolution Links"],
+                "Acceptance Decision": ["Criterion Decisions", "Remaining Conditions"],
+                "Handoff": ["Promotion Receipt", "Next Owner"],
+            },
+        },
+    }
+)
+
+
+# The first generation 8 package and the core column each recorded column
+# reads, pinned like the recorded form. A recorded Check reads Method and
+# Command together, so two observations without a Command differ by Method.
+FIRST_GENERATION_8_PACKAGE = 271
+CORE_PACKAGE_COLUMNS: Mapping[str, object] = MappingProxyType(
+    {
+        "plan_columns": [
+            "Work Unit",
+            "Acceptance",
+            "Outcome",
+            "Depends On",
+            "Owner",
+            "Checks",
+        ],
+        "evidence_columns": [
+            "Evidence ID",
+            "Criteria",
+            "Work Unit",
+            ["Method", "Command"],
+            "Input",
+            "Result",
+            "Location",
+            "Required",
+            "Resolves",
+        ],
+        "criterion_acceptance_columns": [
+            "Criterion",
+            "Acceptance",
+            "Evidence",
+            "Decision",
+            "Current Owner",
+        ],
+        "execution_items": ["Item", "Work Unit", None, "Owner", "Status", "Blocker"],
+    }
+)
+
+
+def _recorded_forms(
+    common: object, profile_id: object
+) -> tuple[Mapping[str, object], ...]:
+    placement = (
+        common.get("package_generations") if isinstance(common, Mapping) else None
+    )
+    recorded = (
+        placement.get("recorded_sections") if isinstance(placement, Mapping) else None
+    )
+    form = recorded.get(profile_id) if isinstance(recorded, Mapping) else None
+    return (form,) if isinstance(form, Mapping) else ()
+
+
+def _package_generation_findings(common: Mapping[str, object]) -> list[RegistryFinding]:
+    """Generation 8 places packages by number and keeps the recorded form."""
+
+    def invalid(key: str, message: str) -> RegistryFinding:
+        return RegistryFinding(
+            "common-contract-invalid", f"common.package_generations{key}", message
+        )
+
+    placement = common.get("package_generations")
+    if not isinstance(placement, Mapping):
+        return [invalid("", "generation 8 requires package_generations")]
+    findings: list[RegistryFinding] = []
+    if placement.get("recorded_generation") != 7:
+        findings.append(
+            invalid(".recorded_generation", "generation 8 records generation 7")
+        )
+    if placement.get("recorded_sections") != RECORDED_PACKAGE_SECTIONS:
+        findings.append(
+            invalid(".recorded_sections", "the recorded generation 7 form is pinned")
+        )
+    if placement.get("first_package") != FIRST_GENERATION_8_PACKAGE:
+        findings.append(
+            invalid(
+                ".first_package",
+                f"generation 8 starts at package {FIRST_GENERATION_8_PACKAGE}",
+            )
+        )
+    if placement.get("core_columns") != CORE_PACKAGE_COLUMNS:
+        findings.append(
+            invalid(
+                ".core_columns", "the core column of each recorded column is pinned"
+            )
+        )
     return findings
 
 
@@ -614,9 +828,18 @@ def _validate_section_forms(
             continue
         profile = profiles.get(form.get("profile"), {})
         section, subsection = form.get("section"), form.get("subsection")
-        children = (profile.get("required_subsections") or {}).get(section, ())
-        if section not in profile.get("required_sections", ()) or (
-            subsection not in children if subsection is not None else section != heading
+        # A heading value binds a section of the current form or, for a Spec
+        # Package profile, of the recorded form its earlier packages keep.
+        candidates = [profile, *_recorded_forms(common, form.get("profile"))]
+        if not any(
+            section in candidate.get("required_sections", ())
+            and (
+                subsection
+                in (candidate.get("required_subsections") or {}).get(section, ())
+                if subsection is not None
+                else section == heading
+            )
+            for candidate in candidates
         ):
             findings.append(
                 RegistryFinding(
@@ -892,7 +1115,7 @@ def validate_registry(
     generation = (
         common.get("lifecycle_generation") if isinstance(common, Mapping) else None
     )
-    if generation in {5, 6, 7}:
+    if generation in {5, 6, 7, 8}:
         exact_common = {
             "contract_id": "SDLC-COMMON-v4" if generation == 5 else "SDLC-COMMON-v5",
             "spec_section": "Acceptance Criteria",
@@ -938,7 +1161,7 @@ def validate_registry(
                 "Evidence",
                 "Decision",
             )
-        if generation == 7:
+        if generation in {7, 8}:
             exact_common.update(
                 contract_id="SDLC-COMMON-r10-local-v1",
                 result_domain=(
@@ -981,6 +1204,8 @@ def validate_registry(
                         f"generation {generation} requires the canonical {key}",
                     )
                 )
+    if generation == 8:
+        findings.extend(_package_generation_findings(common))
     # A historical Registry is checked against its own committed schema, which
     # predates the relation contract; require it only where the schema has it.
     if "document_relations" in schema.get("properties", {}).get("common", {}).get(

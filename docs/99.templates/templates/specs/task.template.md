@@ -16,9 +16,8 @@ created: "{{CREATED}}"
 <!-- Author prompt: Write body prose in English; keep headings, paths, identifiers, and commands unchanged. -->
 <!-- Author prompt: Before setting status to cancelled, supply cancellation frontmatter with a nonempty reason, an actual authorization_ref, and criteria_disposition entries containing an integer criterion plus exactly one successor Task identity or approved withdrawal_ref. A successor is another non-cancelled Task in the same package. authorization_ref and withdrawal_ref use unambiguous same-Task heading anchors to actual structural evidence; those records do not authenticate or grant approval. An empty criteria_disposition list states that this Task held no criterion; it does not close any Spec criterion. Never seed or infer cancellation approval. -->
 <!-- Author prompt: Keep the Evidence header, separator, and every data row in one contiguous pipe-table block. Narrative may appear before or after that block; put other pipe tables outside the Results subsection. -->
-<!-- Author prompt: Evidence records observations only. Required is required or optional. Result is PASS, FAIL, ERROR, NOT_RUN, CANCELLED or NOT_APPLICABLE; every required non-PASS observation remains open until an equivalent PASS explicitly resolves it. Name each row uniquely. In Resolves, write `-` or the names of earlier non-PASS rows with the same Check and Work Unit in this Task that this PASS row resolves for a shared criterion. Input names the revision or candidate examined and, where they affect the result, the environment and tool version; a checker's own regression test and a document or contract check are different Checks. -->
-<!-- Author prompt: The Criterion Decisions table holds one row for each Spec criterion this Task owns. A criterion the Plan assigns to a current, non-cancelled Task has exactly one row, in one such Task; a criterion whose assigned Tasks are all historical or cancelled has none. Acceptance is pending, accepted, rejected or not-required; accepted needs a PASS for every criterion/Work Unit pair the Plan assigns to a current, non-cancelled Task, cites at least one PASS row for that criterion, cites a non-PASS row only when a later row resolves it, and leaves no unresolved required observation; not-required and rejected need a Decision. Current Owner names the durable owner or a reasoned N/A disposition. The Evidence cell is `-` or names of this Task's Evidence rows. Put no other pipe table in the Criterion Decisions subsection. -->
-<!-- Author prompt: For several independently tracked items, add an `#### Execution Items` table under Work Performed with `Item | Work Unit | Scope | Owner | Status | Blocker` and at least two rows, and remove the frontmatter `status`; each row then owns its status, each Work Unit belongs to one item, and a blocked or cancelled item names its Blocker. -->
+<!-- Author prompt: Evidence records observations only. Evidence ID names the row uniquely. Method is automated, review or observation. Input names the revision or candidate examined; Tool and Config the tool, version and configuration, or `-`. Command is the command run or the observation method, or `-`; Exit is the command's exit code, or `-` when nothing ran, never 0 for a check that did not run. Result is PASS, FAIL, ERROR, NOT_RUN, CANCELLED or NOT_APPLICABLE. Required is true or false and is not an approval; every required non-PASS observation remains open until an equivalent PASS explicitly resolves it. In Resolves, write `-` or the IDs of earlier non-PASS rows with the same Command and Work Unit in this Task that this PASS row resolves for a shared criterion. A checker's own regression test and a document or contract check are different Commands. -->
+<!-- Author prompt: The Criterion Decisions table holds one row for each Spec criterion this Task owns. A criterion the Plan assigns to a current, non-cancelled Task has exactly one row, in one such Task; a criterion whose assigned Tasks are all historical or cancelled has none. Intent is accept, reject, not-required or undecided. Acceptance is pending, accepted, rejected or not-required; accepted needs a PASS for every criterion/Work Unit pair the Plan assigns to a current, non-cancelled Task, cites at least one PASS row for that criterion, cites a non-PASS row only when a later row resolves it, and leaves no unresolved required observation; not-required and rejected need a Decision. Accepted By names who actually judged, or `-`; the name does not authenticate anyone. Current Owner names the durable owner or a reasoned N/A disposition, and Reassigned To the permitted new owner of the obligation, or `-`. The Evidence cell is `-` or Evidence IDs of this Task. Put no other pipe table in the Criterion Decisions subsection. -->
 
 # {{TITLE}}
 
@@ -42,6 +41,14 @@ created: "{{CREATED}}"
 
 {{WORK_PERFORMED}}
 
+#### Execution Items
+
+<!-- Author prompt: Keep this table only for several independently tracked items, with at least two rows, and then remove the frontmatter `status`; each row owns its status, each Work Unit belongs to one item, and a blocked or cancelled item names its Blocker. A Task with one status removes this heading and table. -->
+
+| Item | Work Unit | Owner | Status | Blocker |
+| --- | --- | --- | --- | --- |
+| {{ITEM}} | {{ITEM_WORK_UNIT}} | {{ITEM_OWNER}} | {{ITEM_STATUS}} | {{BLOCKER}} |
+
 ### Blockers and Decisions
 
 {{BLOCKERS_DEFERRALS_AND_RULINGS}}
@@ -50,9 +57,9 @@ created: "{{CREATED}}"
 
 ### Results
 
-| Evidence | Criteria | Work Unit | Check | Input | Result | Location | Required | Resolves |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| {{EVIDENCE}} | {{CRITERIA}} | {{WORK_UNIT}} | {{CHECK}} | {{INPUT}} | {{RESULT}} | {{LOCATION}} | {{REQUIRED}} | {{RESOLVES}} |
+| Evidence ID | Criteria | Work Unit | Method | Input | Tool and Config | Command | Exit | Result | Location | Required | Resolves |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| {{EVIDENCE_ID}} | {{CRITERIA}} | {{WORK_UNIT}} | {{METHOD}} | {{INPUT}} | {{TOOL_AND_CONFIG}} | {{COMMAND}} | {{EXIT}} | {{RESULT}} | {{LOCATION}} | {{REQUIRED}} | {{RESOLVES}} |
 
 ### Resolution Links
 
@@ -62,9 +69,9 @@ created: "{{CREATED}}"
 
 ### Criterion Decisions
 
-| Criterion | Acceptance | Evidence | Decision | Current Owner |
-| --- | --- | --- | --- | --- |
-| {{CRITERION}} | {{ACCEPTANCE}} | {{ACCEPTANCE_EVIDENCE}} | {{DECISION}} | {{CURRENT_OWNER}} |
+| Criterion | Intent | Acceptance | Evidence | Decision | Accepted By | Current Owner | Reassigned To |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| {{CRITERION}} | {{INTENT}} | {{ACCEPTANCE}} | {{ACCEPTANCE_EVIDENCE}} | {{DECISION}} | {{ACCEPTED_BY}} | {{CURRENT_OWNER}} | {{REASSIGNED_TO}} |
 
 ### Remaining Conditions
 
@@ -74,7 +81,7 @@ created: "{{CREATED}}"
 
 ### Promotion Receipt
 
-<!-- Author prompt: For each acceptance criterion, name the Plan work unit, the Task result, the durable document and the commit that changed it, the consumer update and check that show it, the criterion's Criterion Acceptance row and any residual with its owner, or why no durable update is needed. -->
+<!-- Author prompt: For each acceptance criterion, name the Plan work unit, the Task result, the durable document and the commit that changed it, the consumer update and check that show it, the criterion's Criterion Decisions row and any residual with its owner, or why no durable update is needed. -->
 
 {{PROMOTION_TARGET_AND_RECEIPT}}
 

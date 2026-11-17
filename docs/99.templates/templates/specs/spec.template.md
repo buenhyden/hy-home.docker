@@ -20,15 +20,17 @@ created: "{{CREATED}}"
 
 ## Overview
 
-### Intent
+### Goal
 
-{{INTENT_AND_USER_VALUE}}
+<!-- Author prompt: State the change and its value, and name the Requirement IDs and Architecture or ADR constraints this Spec makes concrete; list them in frontmatter `parent_ids` when the Registry requires it. -->
 
-### Owning Requirements
+{{GOAL_PARENT_REQUIREMENTS_AND_VALUE}}
 
-<!-- Author prompt: Name the Requirement IDs and Architecture or ADR constraints this Spec makes concrete; list them in frontmatter `parent_ids` when the Registry requires it. -->
+### Consumers
 
-{{OWNING_REQUIREMENTS_AND_CONSTRAINTS}}
+<!-- Author prompt: Name the people, documents, scripts and services that read or act on this contract. -->
+
+{{CONSUMERS}}
 
 ## Scope
 
@@ -36,17 +38,21 @@ created: "{{CREATED}}"
 
 {{IN_SCOPE}}
 
-### Non-goals
+### Out of Scope
 
-{{NON_GOALS_AND_WITHHELD_AUTHORITY}}
+<!-- Author prompt: Name what this Spec excludes and the authority it withholds. -->
+
+{{OUT_OF_SCOPE_AND_WITHHELD_AUTHORITY}}
 
 ## Behavior Contract
 
-### Normal Behavior
+### Inputs and Outputs
+
+<!-- Author prompt: State the preconditions, inputs, outputs and invariants of normal behavior. -->
 
 {{PRECONDITIONS_INPUTS_OUTPUTS_AND_INVARIANTS}}
 
-### Failure and Edge Cases
+### Failure Behavior
 
 <!-- Author prompt: State violations, boundaries, cancellation, observable failures, recovery and the points where work stops for a human. -->
 
@@ -61,20 +67,12 @@ created: "{{CREATED}}"
 
 {{ACCEPTANCE_CRITERIA}}
 
-### Evidence Requirements
+### Verification Strategy
 
-<!-- Author prompt: Use bullets, never a numbered list: every numbered line in this H2 is read as a criterion. Name the observation, the verification method and who judges. -->
+<!-- Author prompt: Use bullets or the table, never a numbered list: every numbered line in this H2 is read as a criterion. List each check the criteria need: Check ID is a stable identifier in this Spec, Guarantee what only that check proves, Input what it reads, Trust Boundary what it does not prove, Required When the condition that selects it, and Evidence the kind of observation it must produce. -->
 
-{{EVIDENCE_REQUIREMENTS}}
+| Check ID | Guarantee | Input | Trust Boundary | Required When | Evidence |
+| --- | --- | --- | --- | --- | --- |
+| {{CHECK_ID}} | {{GUARANTEE}} | {{INPUT}} | {{TRUST_BOUNDARY}} | {{REQUIRED_WHEN}} | {{EVIDENCE}} |
 
-## References
-
-### Normative and Evidence
-
-{{CURRENT_REQUIREMENTS_DESIGN_POLICY_AND_EVIDENCE_LINKS}}
-
-### Historical and Navigation
-
-<!-- Author prompt: Mark historical links as non-authoritative; navigation links only help readers find related documents. -->
-
-{{HISTORICAL_AND_NAVIGATION_LINKS}}
+{{VERIFICATION_STRATEGY}}

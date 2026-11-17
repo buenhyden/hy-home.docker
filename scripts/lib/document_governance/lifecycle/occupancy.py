@@ -11,6 +11,7 @@ from typing import Any
 from scripts.lib.document_governance.registry import (
     DocumentRegistry,
     classify_path,
+    corpus_generation,
     load_registry,
     path_matches_pattern,
 )
@@ -166,7 +167,7 @@ def validate_active_stage_occupancy(
                 continue
             if kind == "task" and status == "cancelled":
                 try:
-                    generation = int(registry.common.get("lifecycle_generation", 4))
+                    generation = int(corpus_generation(registry.common) or 4)
                     heading = (
                         str(registry.common["spec_section"])
                         if generation >= 5

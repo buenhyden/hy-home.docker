@@ -85,6 +85,8 @@ class DocumentRelationContractTests(unittest.TestCase):
             {
                 "plan:Promotion Map/Durable Meaning",
                 "plan:Promotion Map/Owner and Receipt",
+                "plan:Promotion Map/Durable Owners",
+                "plan:Promotion Map/Consumer Updates",
             },
             refs("promotion"),
         )
