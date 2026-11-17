@@ -254,6 +254,7 @@ SPEC-0204-TSK-0021이 owner 단계로 기록한다.
 - scrape/rule 설정: `POL-0045-R4`, `POL-0045-R5`, `POL-0045-R6`, `POL-0045-R7`, `POL-0045-R8`, `POL-0045-R9`, `POL-0045-R10`, `POL-0045-R11`, `POL-0045-R12`, `POL-0045-R13`는 이름 붙은 검사가 지정되지 않았다.
 - secret: `POL-0045-R14`, `POL-0045-R16`, `POL-0045-R18`, `POL-0045-R19`는 이름 붙은 검사가 지정되지 않았다.
 - secret: `POL-0045-R15`, `POL-0045-R17`, `POL-0045-R31`는 승인/검토 등 수동 절차에 의존한다.
+- Mechanisms의 `rg` 패턴은 `template-stateful-high`, `prometheus-data`, secret 이름, `scrape_interval: 30s`, `rule_files` 같은 값이 있는지만 찾으며, 위 규칙의 준수를 강제하지 않는다.
 - route/API 접근: `POL-0045-R20`, `POL-0045-R21`, `POL-0045-R22`, `POL-0045-R23`, `POL-0045-R32`, `POL-0045-R33`, `POL-0045-R34`는 이름 붙은 검사가 지정되지 않았다.
 - retention: `POL-0045-R24`는 승인/검토 등 수동 절차에 의존한다.
 - 변경 절차: `POL-0045-R25`, `POL-0045-R26`, `POL-0045-R27`는 이름 붙은 검사가 지정되지 않았다.

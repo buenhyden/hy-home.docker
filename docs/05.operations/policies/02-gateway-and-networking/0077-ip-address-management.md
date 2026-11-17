@@ -106,7 +106,7 @@ repository가 root Compose에서 소유하지 않는 network는 이 정책의 �
 
 - network 연결: 명명된 검사 없음 R1~R4 (`POL-0077-` 접두)
 - 고정 주소: 명명된 검사 없음 R5~R9, R11 (`POL-0077-` 접두)
-- 현재 Compose validator의 명시적 충돌 검사는 host port이며 static-IP 유일성을 전부 검증하지 않는다. `rg`는 후보 목록일 뿐이며 subnet/dynamic pool/network별 중복은 별도로 검토한다. 이 한계는 중복 금지 통제를 면제하지 않는다(95~97행).
+- 현재 Compose validator의 명시적 충돌 검사는 host port이며 static-IP 유일성을 전부 검증하지 않는다. `rg`는 후보 목록일 뿐이며 subnet/dynamic pool/network별 중복은 별도로 검토한다. 이 한계는 중복 금지 통제를 면제하지 않는다.
 
 ## Ownership
 

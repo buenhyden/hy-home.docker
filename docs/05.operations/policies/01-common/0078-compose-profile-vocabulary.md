@@ -136,11 +136,11 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | POL-0078-R1 | `Default?` 선택 의미 확인 시 | 필수: [시스템 Guide](../../guides/01-common/0099-system-operations.md#selection-and-readiness)의 선택 의미를 따른다 | none | none |
 | POL-0078-R2 | 추가 부수 효과 열 | 금지: 실행 승인을 대신하는 것으로 사용한다 | none | none |
 | POL-0078-R3 | `MIGRATE` lifecycle | 필수: 승인된 전환 작업에만 사용한다 | none | none |
-| POL-0078-R4 | 정상 root와 각 LAB의 모든 서비스 | 필수: 명시적 profile을 가진다 | none | none |
+| POL-0078-R4 | 정상 root와 각 LAB의 모든 서비스 | 필수: 명시적 profile을 가진다 | `python3 scripts/validation/check-operations-catalog.py` | none |
 | POL-0078-R5 | 새 profile 이름 | 필수: 같은 변경에서 표에 추가한다 | none | none |
 | POL-0078-R6 | 마지막 소비자 은퇴 | 필수: 표에서 이름을 제거한다 | none | none |
-| POL-0078-R7 | profile 표 | 금지: 이름 중복/누락/유령 행 | none | none |
-| POL-0078-R8 | 필수 `depends_on` | 필수: 선택 안에서 폐포가 닫힌다 | none | none |
+| POL-0078-R7 | profile 표 | 금지: 이름 중복/누락/유령 행 | `python3 scripts/validation/check-operations-catalog.py` | none |
+| POL-0078-R8 | 필수 `depends_on` | 필수: 선택 안에서 폐포가 닫힌다 | `python3 scripts/validation/check-operations-catalog.py` | none |
 | POL-0078-R9 | 서비스 profile 소속 | 허용: 한 서비스가 여러 profile에 속한다 | none | none |
 | POL-0078-R10 | 선택형 대안 종속성 | 허용: `required: false`를 쓴다 | none | none |
 | POL-0078-R11 | `required: false` 사용 시 | 필수: 앱의 실제 endpoint 설정과 일치한다 | none | none |
@@ -574,10 +574,9 @@ category와 필수 dependency 폐포를 검사한다.
 - 선택 제약: 명명된 검사 없음 R75~R79, R82~R86, R88~R100, R102~R110; 수동 검토 R80, R81, R87, R101 (`POL-0078-` 접두)
 - LAB 수명/예산: 명명된 검사 없음 R112, R122~R124, R126~R128; 수동 검토 R120, R121, R125, R129 (`POL-0078-` 접두)
 - 서비스 disposition: 명명된 검사 없음 R131~R134, R136; 수동 검토 R135 (`POL-0078-` 접두)
-- 선택 closure 성공은 optional dependency의 앱 endpoint나 provisioning 완료를 보장하지 않고 config 성공은 무인 재기동이나 live readiness를 증명하지 않는다(233~234, 443~445행).
-- Overlay 분류 성공만으로 공급자 이미지/설치 dependency/DB/S3 grant/private 파일 전달/DEV·HOME 실행·복구가 검증되지는 않는다(208~210행).
-- 2026-10-08 host 관찰과 비용은 그 시점 값이며 현재 상태를 보장하지 않는다(359~362행).
-- POL-0078-R4, POL-0078-R7, POL-0078-R8: 정책이 이 규칙에 묶은 검사를 명시하지 않는다.
+- 선택 closure 성공은 optional dependency의 앱 endpoint나 provisioning 완료를 보장하지 않고 config 성공은 무인 재기동이나 live readiness를 증명하지 않는다.
+- Overlay 분류 성공만으로 공급자 이미지/설치 dependency/DB/S3 grant/private 파일 전달/DEV·HOME 실행·복구가 검증되지는 않는다.
+- 2026-10-08 host 관찰과 비용은 그 시점 값이며 현재 상태를 보장하지 않는다.
 
 ## Ownership
 

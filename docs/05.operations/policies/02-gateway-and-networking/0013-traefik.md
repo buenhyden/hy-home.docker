@@ -177,8 +177,8 @@ SPEC-0204-TSK-0021이 owner 단계로 기록한다.
 - Rate-limit 근거: 명명된 검사 없음 R23, R24 (`POL-0013-` 접두)
 - 공통 통제: 명명된 검사 없음 R25~R29; 수동 검토 R30 (`POL-0013-` 접두)
 - 복구/업그레이드: 명명된 검사 없음 R31~R33 (`POL-0013-` 접두)
-- 명명된 검사는 hardening 점검과 core profile 정적 렌더링뿐이며 `docker compose exec traefik traefik healthcheck --ping` 같은 runtime health evidence는 승인된 root stack이 실행 중일 때만 유효하다(150, 154행).
-- 현재 고정 image의 pull, offline scan, 독립 applicability 검토, config 부팅, HOME 재생성과 rollback은 `NOT_RUN`이며 publisher 서명 확인은 하지 않았다(134~135, 127~128행).
+- 명명된 검사는 hardening 점검과 core profile 정적 렌더링뿐이며 `docker compose exec traefik traefik healthcheck --ping` 같은 runtime health evidence는 승인된 root stack이 실행 중일 때만 유효하다.
+- 현재 고정 image의 pull, offline scan, 독립 applicability 검토, config 부팅, HOME 재생성과 rollback은 `NOT_RUN`이며 publisher 서명 확인은 하지 않았다.
 
 ## Ownership
 

@@ -323,9 +323,9 @@ Compose 정적 검증도 임시 파일 생성과 기존 입력 읽기가 있을 
 - config 적용: 명명된 검사 없음 R22, R23, R27, R28; 수동 검토 R21 (`POL-0006-` 접두)
 - AI Agent Policy: 명명된 검사 없음 R29~R32 (`POL-0006-` 접두)
 - 로드맵/백로그: 명명된 검사 없음 R33~R39, R41; 수동 검토 R40, R42 (`POL-0006-` 접두)
-- check PASS는 필수 통제의 전체 runtime 증명이 아니다(272행).
-- Mechanisms가 명명한 `bash scripts/validation/validate-docker-compose.sh`와 `bash scripts/validation/check-template-security-baseline.sh`는 정적 점검이며 위 규칙 중 어느 것을 검증하는지 본문이 연결하지 않는다(261~262행).
-- `healthcheck`/`restart`/`security_opt`/`secrets`/`limits` 유무의 정기 스캔은 예시로만 적혀 있다(265~266행).
+- check PASS는 필수 통제의 전체 runtime 증명이 아니다.
+- Mechanisms가 명명한 `bash scripts/validation/validate-docker-compose.sh`와 `bash scripts/validation/check-template-security-baseline.sh`는 정적 점검이며 위 규칙 중 어느 것을 검증하는지 본문이 연결하지 않는다.
+- `healthcheck`/`restart`/`security_opt`/`secrets`/`limits` 유무의 정기 스캔은 예시로만 적혀 있다.
 - POL-0006-R3: 정책이 이 규칙에 묶은 검사를 명시하지 않는다.
 
 ## Ownership

@@ -176,7 +176,7 @@ volume·인증서·secret 삭제는 서비스 중지와 분리된 승인 대상�
 - 세션/credential 경계: 명명된 검사 없음 R22~R26 (`POL-0015-` 접두)
 - 공통 통제: 명명된 검사 없음 R27~R31; 수동 검토 R32 (`POL-0015-` 접두)
 - 세션/업그레이드: 명명된 검사 없음 R33, R35~R40; 수동 검토 R34 (`POL-0015-` 접두)
-- `/ping` runtime 점검(`docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`)은 runtime-only이며 어느 규칙을 검증하는지 본문이 연결하지 않는다(144행).
+- `/ping` runtime 점검(`docker compose --profile auth exec oauth2-proxy wget -qO- http://127.0.0.1:4180/ping`)은 runtime-only이며 어느 규칙을 검증하는지 본문이 연결하지 않는다.
 
 ## Ownership
 

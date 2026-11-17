@@ -425,8 +425,8 @@ Compose/profile 검증과 [runbook](../../runbooks/04-security-and-secrets/0085-
 - P01 통제: 명명된 검사 없음 R68~R85 (`POL-0085-` 접두)
 - issuance 통제: 명명된 검사 없음 R86~R92 (`POL-0085-` 접두)
 - P02 catalog: 명명된 검사 없음 R93~R99, R101~R111; 수동 검토 R100 (`POL-0085-` 접두)
-- 개별 규칙마다 명명된 전용 검사는 거의 없다. 정책이 명명한 메커니즘은 Compose/profile 검증과 Runbook이며 별도의 정적/런타임 증거를 제공할 뿐 위 규칙 중 어느 것을 검증하는지 본문이 연결하지 않는다(316~317행).
-- 정적 설정은 실제 backup이나 recovery의 증거가 아니다(231~232행).
+- 개별 규칙마다 명명된 전용 검사는 거의 없다. 정책이 명명한 메커니즘은 Compose/profile 검증과 Runbook이며 별도의 정적/런타임 증거를 제공할 뿐 위 규칙 중 어느 것을 검증하는지 본문이 연결하지 않는다.
+- 정적 설정은 실제 backup이나 recovery의 증거가 아니다.
 
 ## Ownership
 

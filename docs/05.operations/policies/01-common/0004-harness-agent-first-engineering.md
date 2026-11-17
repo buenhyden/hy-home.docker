@@ -140,9 +140,9 @@ Docker·실제 환경 접근은 해당 Task의 승인 범위에서 실행하며 
 - 문서/source label: 명명된 검사 없음 R10~R12 (`POL-0004-` 접두)
 - Graphify/gate 범위: 명명된 검사 없음 R13~R15, R17; 수동 검토 R16 (`POL-0004-` 접두)
 - 증거 기록: 명명된 검사 없음 R18~R20 (`POL-0004-` 접두)
-- repository check는 catalog/model/scope import/protocol-reference parity만 증명하며 모든 runtime 문서의 semantic parity는 증명하지 않는다(83행).
-- 자동 답변 점수 QA와 완료 사건의 전용 증명은 현재 delivery gate가 아니다(94행).
-- `bash scripts/knowledge/report-graphify-health.sh`의 `status=advisory`는 신뢰도 하향 evidence이며 repository validation 실패가 아니다(105행).
+- repository check는 catalog/model/scope import/protocol-reference parity만 증명하며 모든 runtime 문서의 semantic parity는 증명하지 않는다.
+- 자동 답변 점수 QA와 완료 사건의 전용 증명은 현재 delivery gate가 아니다.
+- `bash scripts/knowledge/report-graphify-health.sh`의 `status=advisory`는 신뢰도 하향 evidence이며 repository validation 실패가 아니다.
 
 ## Ownership
 

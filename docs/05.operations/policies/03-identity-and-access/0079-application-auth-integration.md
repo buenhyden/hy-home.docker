@@ -185,8 +185,8 @@ profile별 Compose 검증과 tier hardening 명령이 모두 통과한다.
 - 서비스별: 명명된 검사 없음 R21~R26 (`POL-0079-` 접두)
 - 금지 목록: 명명된 검사 없음 R27~R31 (`POL-0079-` 접두)
 - 공통 통제: 명명된 검사 없음 R32 (`POL-0079-` 접두)
-- 정책이 명명한 검증은 GDE-0079의 서비스별 정적 검증(profile별 Compose 검증과 tier hardening)과 추가 검증 목록이며 `RouteAuthContractTests` 외에는 규칙별로 이름 붙은 스크립트가 없다(154~164행).
-- Keycloak client redirect URI/public URL 정합, Airflow provider/Authorization Services bootstrap 상태는 추가 검증 목록에 있으나 어느 규칙에 대응하는지 본문이 연결하지 않는다(161, 164행).
+- 정책이 명명한 검증은 GDE-0079의 서비스별 정적 검증(profile별 Compose 검증과 tier hardening)과 추가 검증 목록이며 `RouteAuthContractTests` 외에는 규칙별로 이름 붙은 스크립트가 없다.
+- Keycloak client redirect URI/public URL 정합, Airflow provider/Authorization Services bootstrap 상태는 추가 검증 목록에 있으나 어느 규칙에 대응하는지 본문이 연결하지 않는다.
 - POL-0079-R4, POL-0079-R5, POL-0079-R6, POL-0079-R7, POL-0079-R16: 수동 검증에 맡겨진다.
 
 ## Ownership
