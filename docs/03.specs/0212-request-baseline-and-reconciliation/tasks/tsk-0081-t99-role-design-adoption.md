@@ -63,10 +63,12 @@ policies.
 
 The adopted core stays one file: the package source and its schema are
 copied byte for byte to `docs/99.templates/contracts/`. The Registry pins
-them in `common.role_design_contract` by path and SHA-256, as it pins the
+both in `common.role_design_contract` by path and SHA-256, as it pins the
 glossary for the vocabulary contract. A template role declares either
 `core_role` or `core_exception`. An exception is `pending-migration` with
-its target core role, `domain` or `native`, each with a reason. 26 roles are
+its target core role, `domain` or `native`, each with a reason. The profile
+schema holds that shape: exactly one of the two fields, a core role on a
+pending exception and none on a domain or native one. 26 roles are
 pending, 8 are domain forms and 5 are native syntax. TemplateDefinition reports
 the role design contract only for a bound role, so an unmoved role keeps
 reporting `COMMON-DOC-FORM-1` or the legacy contract it actually follows.
@@ -75,12 +77,24 @@ reporting `COMMON-DOC-FORM-1` or the legacy contract it actually follows.
 schema, the identity and every bound role. A bound role conforms when its
 H2 and H3 titles, their order and requiredness, and each table's section,
 column labels and column requiredness equal the core. Matching titles with
-different tables fail. The core assigns different value types to the same
+different tables fail, and so does an extra or missing table. The core
+assigns all 22 of its tables to an H2, so a table may sit in any H3 of that
+H2. Not compared: a table's own condition, which the projection does not
+carry, and the core's numeric order fields, which the array order already
+expresses. Every core H2 and H3 in 4.0.0 is required, and so is every
+column. The core assigns different value types to the same
 column label in different roles, so the global column dictionary cannot
 carry them. W143, which binds the first role, makes a bound role read its
 column types from the core. W142 binds no role. Rejected: copying the
 core into Registry profiles, which would leave two owners, and binding all
 roles at once, which would report an unmoved form under the new contract.
+
+Two classifications are decisions. The governance policy form moves to the
+core policy role with the operations policy form in W143. The provider
+runtime READMEs are Markdown READMEs that the provider renderer writes, so
+they move to the core root README role in W145 through that renderer, not by
+hand. The data model contract stays a domain form: it describes entities in
+a Spec Package, not a Stage 90 data reference.
 
 Each later work unit moves one role group in one change: the Registry
 profile, the template, the readers and the current documents. The role then
@@ -110,6 +124,10 @@ current documents, and those changes need the same per-group review.
 | Conformance RED | 137 | W142 | role-design-conformance | RoleDesignConformanceTests before the implementation | ERROR | `role_design_findings` did not exist, exit 1 | required | - |
 | Conformance GREEN | 137 | W142 | role-design-conformance | test_template_definition with the pinned core and classified roles | PASS | 35 tests, exit 0 | required | Conformance RED |
 | Contract wiring | 137 | W142 | document-contracts | check-document-metadata.py --mode check-contracts, then with one byte appended to the core | PASS | 0 violations; the changed core gave `role-design-source-changed`, exit 1; restored | required | - |
+| Foundation review | 137 | W142 | independent-review | Commits `c1541ea86` and `9019594c7` | FAIL | CHANGES_REQUIRED: H2-owned tables rejected inside their H3, Stage 99 checks unrecorded, schema unpinned, failure paths and exception rules incomplete | required | - |
+| Conformance review fixes | 137 | W142 | role-design-conformance | RoleDesignConformanceTests with H3 placement, extra and missing tables, H3 requiredness, unknown and unmapped roles, schema-held exception shape and identity | PASS | 13 tests, exit 0 | required | - |
+| Foundation regression | 137 | W142 | document-governance-regression | test_registry, test_template_definition, metadata.test_heading, metadata.test_reference, test_metadata_validator and test_taxonomy on the fixed candidate | PASS | 374 tests in 363.184 seconds, exit 0 | required | - |
+| Foundation corpus | 137 | W142 | document-corpus | check-active, check-contracts, corpus lifecycle, link alignment and governance contract on the fixed candidate | PASS | 589 selected and 0 violations; 0 contract, lifecycle and governance findings; alignment PASS | required | - |
 
 ### Resolution Links
 
