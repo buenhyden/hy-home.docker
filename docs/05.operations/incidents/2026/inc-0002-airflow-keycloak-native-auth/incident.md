@@ -1,6 +1,6 @@
 ---
 title: "Airflow Keycloak Native Authentication Migration Incident"
-version: "0.4.0"
+version: "0.4.1"
 type: "operation/incident"
 status: "resolved"
 owner: "@buenhyden"
@@ -73,20 +73,22 @@ DAG run은 기록되어 있지 않다.
 
 ### Actions
 
-조치를 수행한 사람은 기록되어 있지 않다. 결정 세 건은 기록된 Timeline 단계를
-따르고, 나머지 완화 조치는 수행 단계가 기록되어 있지 않다.
+조치를 수행한 사람은 기록되어 있지 않다. Condition은 조치를 수행한 Timeline
+단계다. 원문은 결정 세 건만 단계와 연결했고, 같은 내용의 Timeline 단계가 있는
+완화 조치는 그 단계를 적었다. 원문이 어느 단계와도 연결하지 않은 조치는 그렇게
+적는다.
 
 | Action | Owner | Condition | Evidence |
 | --- | --- | --- | --- |
-| Airflow router에서 OAuth2 Proxy ForwardAuth를 제거하고 Native Keycloak Auth Manager로 전환 | 기록 없음 | 4단계 결정 | `ADR-0038`이 앱별 선택 기준을 소유한다 |
-| provider 0.8.2의 global Admin permission 문제를 해소하려고 0.9.0으로 upgrade | 기록 없음 | 12단계 결정 | none |
-| 남은 Pool/DAG/Asset 403을 로그인 문제가 아닌 resource authorization 문제로 분리 | 기록 없음 | 15단계 결정 | none |
-| shared Airflow file ownership/runtime UID 정렬 | 기록 없음 | 완화 조치, 단계 기록 없음 | none |
-| `airflow db migrate`, `airflow db check` | 기록 없음 | 완화 조치, 단계 기록 없음 | none |
-| `airflow_api_jwt_secret` 고정 | 기록 없음 | 완화 조치, 단계 기록 없음 | none |
-| Keycloak realm roles와 Authorization Services bootstrap | 기록 없음 | 완화 조치, 단계 기록 없음 | none |
-| non-team `create-permissions` 재적용 | 기록 없음 | 완화 조치, 단계 기록 없음 | none |
-| stale callback/session 제거 | 기록 없음 | 완화 조치, 단계 기록 없음 | none |
+| Airflow router에서 OAuth2 Proxy ForwardAuth를 제거하고 Native Keycloak Auth Manager로 전환 | 기록 없음 | Timeline 4단계 결정 | `ADR-0038`이 앱별 선택 기준을 소유한다 |
+| provider 0.8.2의 global Admin permission 문제를 해소하려고 0.9.0으로 upgrade | 기록 없음 | Timeline 12단계 결정 | none |
+| 남은 Pool/DAG/Asset 403을 로그인 문제가 아닌 resource authorization 문제로 분리 | 기록 없음 | Timeline 15단계 결정 | none |
+| shared Airflow file ownership/runtime UID 정렬 | 기록 없음 | 원문이 단계와 연결하지 않음 | none |
+| `airflow db migrate`, `airflow db check` | 기록 없음 | 원문이 단계와 연결하지 않음 | none |
+| `airflow_api_jwt_secret` 고정 | 기록 없음 | Timeline 5단계 | none |
+| Keycloak realm roles와 Authorization Services bootstrap | 기록 없음 | Timeline 7단계와 9단계 | none |
+| non-team `create-permissions` 재적용 | 기록 없음 | 원문이 단계와 연결하지 않음 | none |
+| stale callback/session 제거 | 기록 없음 | 원문이 단계와 연결하지 않음 | none |
 
 ## Resolution
 
@@ -118,7 +120,8 @@ access log, 경로와 상태 코드만 기록):
 ### Remaining Work
 
 후속 조치의 owner·tracking ID·검증과 상태는 [postmortem](postmortem.md)이
-추적한다. 이 incident에서 기록한 조치는 다음과 같다.
+추적하며, postmortem 기준으로 열린 조치는 없다. 이 incident에서 기록한 조치는
+다음과 같다.
 
 1. `RUN-0050`에 auth troubleshooting 시나리오 추가.
 2. `POL/GDE-0079`로 auth integration SSoT 신설.

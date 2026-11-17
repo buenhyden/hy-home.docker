@@ -516,11 +516,17 @@ def _tables(
             raise RegistryError(f"table under unregistered section: {h2}")
         if core is not None:
             # A bound role's columns, types and requiredness are the core's.
+            owners = {
+                str(item["section_id"]): str(h2_section["title_en"])
+                for h2_section in core["sections"]  # type: ignore[union-attr]
+                for item in (h2_section, *h2_section.get("subsections", ()))
+            }
             match = next(
                 (
                     table
                     for table in core["tables"]  # type: ignore[union-attr]
                     if [column["label"] for column in table["columns"]] == cells
+                    and owners.get(str(table["section_id"])) == h2
                 ),
                 None,
             )

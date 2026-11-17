@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "7.1.0"
+version: "7.2.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -441,12 +441,16 @@ evidence; surrounding instructions remain current and validated normally.
   severity and service details in the body unless the Registry declares a
   metadata field. Distinguish observation from unconfirmed cause. Use ISO 8601
   timestamps with explicit UTC offset consistently throughout the packet.
-- A Postmortem follows stabilization and separates confirmed root cause,
-  contributing factors, detection/response, and learning from the incident's
-  factual record. Use blameless language. Corrective actions identify an owner,
-  a tracking ID or link, and a verification condition, with no imposed
-  completion deadline; link their execution owner instead of leaving untracked
-  checkboxes. A published postmortem keeps the columns it was written with.
+- A Postmortem follows stabilization and, in the core postmortem role's
+  Facts, Causes and Actions sections, separates the confirmed causes and the
+  conditions that allowed them, what stays uncertain, detection/response, and
+  learning from the incident's factual record. Use blameless language. Each
+  corrective action in the Owners and Checks table names an owner, a completion
+  condition, and evidence that carries its tracking ID or link and its check,
+  with no imposed completion deadline; link their execution owner instead of
+  leaving untracked checkboxes. A published postmortem keeps its recorded facts
+  and rows; only the change that binds its role to the core moves them to the
+  core columns.
 - Research records source-backed claims and limitations; Audit records criteria
   and dated observations; Data records schema, provenance, consumers, and
   refresh ownership. State evidence limitations and freshness triggers where

@@ -787,6 +787,31 @@ class RoleDesignConformanceTests(unittest.TestCase):
             ],
         )
 
+    def test_a_core_table_under_another_h2_is_rejected(self) -> None:
+        role = self.registry.template_roles["operation/postmortem"]
+        contract = self.registry.common["role_design_contract"]
+        source = ROOT / str(role["source"])
+        text = source.read_text(encoding="utf-8")
+        table = "\n".join(line for line in text.split("\n") if line.startswith("|"))
+        moved = text.replace(table + "\n", "").replace(
+            "### Contributing Factors\n",
+            "### Contributing Factors\n\n" + table + "\n",
+            1,
+        )
+        self.assertNotEqual(text, moved)
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            for relative in (
+                str(contract["source_path"]),
+                str(role["source"]),
+                "docs/99.templates/contracts/document-frontmatter.schema.json",
+            ):
+                (root / relative).parent.mkdir(parents=True, exist_ok=True)
+                (root / relative).write_bytes((ROOT / relative).read_bytes())
+            (root / str(role["source"])).write_text(moved, encoding="utf-8")
+            with self.assertRaisesRegex(RegistryError, "not in the core role"):
+                template_definition(self.registry, "operation/postmortem", root=root)
+
     def test_the_registry_pins_the_tracked_core(self) -> None:
         from scripts.lib.document_governance.template_definition import (
             role_design_contract_findings,

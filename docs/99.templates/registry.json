@@ -431,7 +431,7 @@
     "incident_closure": {
       "incident_status": "resolved",
       "postmortem_status": "published",
-      "corrective_section": "Actions"
+      "corrective_section": "Owners and Checks"
     },
     "section_forms": {
       "Acceptance Criteria": {
@@ -458,9 +458,10 @@
         "section": "Execution Log",
         "subsection": "Work Performed"
       },
-      "Actions": {
+      "Owners and Checks": {
         "profile": "postmortem",
-        "section": "Actions"
+        "section": "Actions",
+        "subsection": "Owners and Checks"
       }
     },
     "frontmatter_key_definitions": {

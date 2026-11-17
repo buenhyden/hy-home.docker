@@ -2477,10 +2477,12 @@ class RegisteredTableContractTests(unittest.TestCase):
     TARGETS: ClassVar[dict[str, str]] = {
         "postmortem": "docs/05.operations/incidents/2026/inc-0002-airflow-keycloak-native-auth/postmortem.md",
         "governance-vocabulary": ".agents/knowledge/glossary.md",
+        "incident": "docs/05.operations/incidents/2026/inc-0002-airflow-keycloak-native-auth/incident.md",
     }
     HEADERS: ClassVar[dict[str, str]] = {
         "postmortem": "| Action | Owner | Condition | Evidence |",
         "governance-vocabulary": "| Term | Definition | Not to Confuse | Policy Owner |",
+        "incident": "| Action | Owner | Condition | Evidence |",
     }
     ROW = "| @buenhyden | 완료 | "
 
@@ -2530,6 +2532,7 @@ class RegisteredTableContractTests(unittest.TestCase):
         swapped = {
             "postmortem": "| Owner | Action | Condition | Evidence |",
             "governance-vocabulary": "| Definition | Term | Not to Confuse | Policy Owner |",
+            "incident": "| Owner | Action | Condition | Evidence |",
         }
         for profile_id, header in self.HEADERS.items():
             with self.subTest(profile=profile_id):
@@ -2546,6 +2549,27 @@ class RegisteredTableContractTests(unittest.TestCase):
             end += 1
         body = "\n".join([*lines[:start], "No action table.", *lines[end:]])
         self.assertIn("table-missing", self._table_codes("postmortem", body))
+
+    def test_a_missing_incident_core_table_is_rejected(self) -> None:
+        body = self._body("incident")
+        lines = body.split("\n")
+        start = lines.index(self.HEADERS["incident"])
+        end = start
+        while end < len(lines) and lines[end].startswith("|"):
+            end += 1
+        body = "\n".join([*lines[:start], "No action table.", *lines[end:]])
+        self.assertIn("table-missing", self._table_codes("incident", body))
+
+    def test_a_core_table_with_only_its_header_is_accepted(self) -> None:
+        for role in ("incident", "postmortem"):
+            with self.subTest(role=role):
+                lines = self._body(role).split("\n")
+                start = lines.index(self.HEADERS[role]) + 2
+                end = start
+                while end < len(lines) and lines[end].startswith("|"):
+                    end += 1
+                body = "\n".join([*lines[:start], *lines[end:]])
+                self.assertEqual([], self._table_codes(role, body))
 
     def test_a_row_of_the_wrong_width_is_rejected(self) -> None:
         body = self._mutate("postmortem", self.ROW, self.ROW + "extra | ")
