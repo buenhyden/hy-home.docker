@@ -1654,13 +1654,25 @@ def _registered_table_findings(
     order and cell values; the TemplateDefinition `tables` are the contract."""
 
     from scripts.lib.document_governance.template_definition import (
+        core_role_definition,
         template_definition,
     )
 
     declared: dict[tuple[str, str | None], list[dict[str, object]]] = {}
+    # A bound role must show every table its core role always requires;
+    # the rows stay empty until something actually happened.
+    required_tables: set[str] = set()
+    found_tables: set[str] = set()
     for role, definition in registry.template_roles.items():
         if profile_id not in definition.get("profiles", ()):
             continue
+        core = core_role_definition(registry, role)
+        if core is not None:
+            required_tables.update(
+                str(table["table_id"])
+                for table in core["tables"]  # type: ignore[union-attr]
+                if table.get("required_when") == "always"
+            )
         spec = template_definition(registry, role)
         titles: dict[str, tuple[str, str | None]] = {}
         for heading in spec["headings"]:  # type: ignore[union-attr]
@@ -1695,6 +1707,7 @@ def _registered_table_findings(
                 str(column["key"]) for column in table["columns"] if column["required"]
             ]
             if header in (required, columns):
+                found_tables.add(str(table["name"]))
                 break
         else:
             findings.append(
@@ -1749,6 +1762,10 @@ def _registered_table_findings(
             elif level == 3:
                 h3 = title
     check(block)
+    findings.extend(
+        _finding(record, "table-missing", f"the core table {name} is missing")
+        for name in sorted(required_tables - found_tables)
+    )
     return findings
 
 

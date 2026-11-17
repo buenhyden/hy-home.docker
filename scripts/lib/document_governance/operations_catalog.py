@@ -2061,30 +2061,12 @@ def _incident_closure_findings(
 
 
 def _corrective_action_section(body: str, heading: str, section_reader) -> str:
-    """Read one substantive current or migrated corrective-action section."""
+    """Read the one substantive corrective-action section the Registry names."""
 
-    core = section_reader(body, heading)
-    if any(line.strip() for line in core):
-        return "\n".join(core)
-    overview = section_reader(body, "Overview")
-    marker = "### " + heading
-    starts = [index for index, line in enumerate(overview) if line == marker]
-    candidates: list[str] = []
-    for start in starts:
-        end = next(
-            (
-                index
-                for index in range(start + 1, len(overview))
-                if overview[index].startswith("### ")
-            ),
-            len(overview),
-        )
-        candidate = "\n".join(overview[start + 1 : end]).strip()
-        if candidate:
-            candidates.append(candidate)
-    if len(candidates) != 1:
+    section = "\n".join(section_reader(body, heading)).strip()
+    if not section:
         raise ValueError("corrective actions require one substantive section")
-    return candidates[0]
+    return section
 
 
 def _index_member_links(text: str) -> Counter[str]:

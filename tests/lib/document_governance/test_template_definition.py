@@ -449,16 +449,18 @@ class TemplateDefinitionTests(unittest.TestCase):
             ):
                 load_registry(path)
         raw = copy.deepcopy(dict(load_registry_document()))
-        del raw["common"]["table_column_definitions"]["Tracking ID"]
+        del raw["common"]["table_column_definitions"]["Resolves"]
         registry = _registry_from_document(raw, pathlib.PurePosixPath("registry.json"))
-        with self.assertRaisesRegex(RegistryError, "Tracking ID"):
-            template_definition(registry, "operation/postmortem")
+        # An unbound role reads its columns from the dictionary.
+        with self.assertRaisesRegex(RegistryError, "Resolves"):
+            template_definition(registry, "sdlc/task")
 
     def _common_form_roles(self, registry) -> list[str]:
         return [
             role
             for role, entry in registry.template_roles.items()
             if registry.profiles[entry["profiles"][0]].get("required_subsections")
+            and not entry.get("core_role")
         ]
 
     def test_the_common_form_revision_is_read_from_the_registry(self) -> None:
@@ -754,6 +756,61 @@ class RoleDesignConformanceTests(unittest.TestCase):
             for code, _, _ in role_design_contract_findings(self._registry_with(bump))
         }
         self.assertEqual({"role-design-identity"}, codes)
+
+    def test_the_incident_and_postmortem_forms_are_bound_and_conform(self) -> None:
+        from scripts.lib.document_governance.template_definition import (
+            role_design_contract_findings,
+        )
+
+        bound = {
+            template_id: role.get("core_role")
+            for template_id, role in self.registry.template_roles.items()
+            if role.get("core_role")
+        }
+        self.assertEqual("incident", bound.get("operation/incident"))
+        self.assertEqual("postmortem", bound.get("operation/postmortem"))
+        self.assertEqual([], role_design_contract_findings(self.registry))
+
+    def test_a_bound_table_reads_its_columns_from_the_core(self) -> None:
+        definition = template_definition(self.registry, "operation/postmortem")
+        self.assertEqual("workspace-document-role-design", definition["contract_id"])
+        self.assertEqual(
+            [
+                ("Action", "string"),
+                ("Owner", "string"),
+                ("Condition", "string"),
+                ("Evidence", "reference-or-none"),
+            ],
+            [
+                (column["key"], column["data_type"])
+                for column in definition["tables"][0]["columns"]
+            ],
+        )
+
+    def test_a_core_table_under_another_h2_is_rejected(self) -> None:
+        role = self.registry.template_roles["operation/postmortem"]
+        contract = self.registry.common["role_design_contract"]
+        source = ROOT / str(role["source"])
+        text = source.read_text(encoding="utf-8")
+        table = "\n".join(line for line in text.split("\n") if line.startswith("|"))
+        moved = text.replace(table + "\n", "").replace(
+            "### Contributing Factors\n",
+            "### Contributing Factors\n\n" + table + "\n",
+            1,
+        )
+        self.assertNotEqual(text, moved)
+        with tempfile.TemporaryDirectory() as directory:
+            root = pathlib.Path(directory)
+            for relative in (
+                str(contract["source_path"]),
+                str(role["source"]),
+                "docs/99.templates/contracts/document-frontmatter.schema.json",
+            ):
+                (root / relative).parent.mkdir(parents=True, exist_ok=True)
+                (root / relative).write_bytes((ROOT / relative).read_bytes())
+            (root / str(role["source"])).write_text(moved, encoding="utf-8")
+            with self.assertRaisesRegex(RegistryError, "not in the core role"):
+                template_definition(self.registry, "operation/postmortem", root=root)
 
     def test_the_registry_pins_the_tracked_core(self) -> None:
         from scripts.lib.document_governance.template_definition import (

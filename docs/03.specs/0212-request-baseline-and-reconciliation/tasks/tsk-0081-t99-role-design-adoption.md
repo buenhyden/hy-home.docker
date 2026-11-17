@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.1.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -103,6 +103,57 @@ profile, the template, the readers and the current documents. The role then
 switches from `core_exception` to `core_role`. Reverting a work unit
 restores its form and exception together.
 
+#### W143 incident and postmortem
+
+W142 merged as `ea786fb86`. W143 starts with the two incident forms because
+each has one current document. A bound role now reads its table columns,
+value types and requiredness from its core table, and the template must
+use a core table's exact columns. The core says a table's rows are written
+only when something happens, so a bound document must show every table
+header its core role always requires and may have no rows; a missing header
+is `table-missing`.
+
+The incident and postmortem templates and profiles now carry the core H2
+and H3 titles, and both template roles switch to `core_role`. The
+corrective-action binding for incident closure follows the postmortem's new
+`Actions` section; the review fixes below narrow it to `Owners and Checks`. The `Tracking ID` column lost its last template and is
+removed from the column dictionary.
+
+The `inc-0002` incident and postmortem keep every recorded fact. The
+incident's decisions and mitigations become rows of its Actions table.
+Nobody who acted is recorded, so Owner says so. Condition names the
+Timeline step that performed the action: the three decisions keep their
+recorded steps, two mitigations cite the steps that record the same action
+(steps 5, 7 and 9), and four that the source never tied to a step say so.
+The postmortem's completion phrase
+becomes Condition and its Tracking ID with the check becomes Evidence. Five
+test literals that named the old sections now name the core ones. Two
+behaviour tests move to the forms that still use the old contract:
+the dictionary lookup to the Task evidence table, and the common form
+revision to roles without `core_role`.
+
+#### W143 review fixes
+
+The independent review of `1a8fadde6` and `df8b7e8d2` asked for three
+changes. The documentation protocol still required a published postmortem to
+keep its columns and to separate a root cause; it now names the core
+postmortem sections and lets only the binding change move a published table.
+The incident first said none of the six mitigations had a recorded step,
+although steps 5, 7 and 9 record two of them; their Condition now cites those steps. The
+closure check read the whole `## Actions` H2, so an owner named only in
+Prevention prose passed. Registry `incident_closure.corrective_section` now
+names `Owners and Checks`, which `section_forms` places under Actions, so only
+the table and its note count. The `## Overview` fallback matched a shape no
+form uses and is removed. The postmortem template prompt now asks Evidence
+for the tracking record and its check, as the protocol does. A core table is now matched by its owning H2 as
+well as its labels.
+
+Two notes are kept for later work units. A document that puts a core table
+under another H3 of the same H2 reports `table-missing` rather than a
+placement finding, because the document check follows the template's H3;
+W143's later parts meet this first. The pinned core is cached per process,
+which the contracts check bypasses by re-reading.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -131,11 +182,26 @@ current documents, and those changes need the same per-group review.
 | Foundation regression | 137 | W142 | document-governance-regression | test_registry, test_template_definition, metadata.test_heading, metadata.test_reference, test_metadata_validator and test_taxonomy at `3e30b52ce` | PASS | 374 tests in 363.184 seconds, exit 0 | required | - |
 | Foundation corpus | 137 | W142 | document-corpus | check-active, check-contracts, corpus lifecycle, link alignment and governance contract at `3e30b52ce` | PASS | 589 selected and 0 violations; 0 contract, lifecycle and governance findings; alignment PASS | required | - |
 | Foundation re-review | 137 | W142 | independent-review | Commits `3e30b52ce` and `f958da1ef` against the first review | PASS | APPROVE; six minor notes, of which the schema-hash test, the two document mentions, these revisions and the duplicate test are applied | required | Foundation review |
+| Incident form RED | 137 | W143 | role-design-binding | Bound-role, core column and missing-table tests at `ea786fb86` | FAIL | Neither role bound, columns from `COMMON-DOC-FORM-1`, no `table-missing`, exit 1 | required | - |
+| Incident form GREEN | 137 | W143 | role-design-binding | Same tests with incident and postmortem bound, on the tree committed as `1a8fadde6` | PASS | test_template_definition and RegisteredTableContractTests passed, exit 0 | required | Incident form RED |
+| Incident regression | 137 | W143 | document-governance-regression | test_registry, test_template_definition, metadata heading, reference and lifecycle, test_metadata_validator, test_taxonomy and test_operations_catalog, on the tree committed as `1a8fadde6` | FAIL | 552 tests, 2 failures: the conforming-body fixture lacked the incident and postmortem table headers | required | - |
+| Incident regression rerun | 137 | W143 | document-governance-regression | metadata.test_heading with the fixture adding each bound role's table header; no other module changed after the full run | PASS | 111 tests, exit 0 | required | Incident regression |
+| Incident corpus | 137 | W143 | document-corpus | check-active, check-contracts, check-operations-catalog, corpus lifecycle and link alignment at `1a8fadde6` | PASS | 589 selected and 0 violations; contracts, catalog, lifecycle and alignment pass | required | - |
+| Incident review | 137 | W143 | independent-review | Commits `1a8fadde6` and `df8b7e8d2` | FAIL | CHANGES_REQUIRED: the protocol still fixed published postmortem columns, the incident misstated two mitigations' steps, and closure read the whole Actions H2 | required | - |
+| Review fix RED | 137 | W143 | closure-scope | Prevention-only owner, Registry closure key, core table under another H2, incident table-missing and header-only tests at `df8b7e8d2` | FAIL | 329 tests: 3 failures, and 2 test-helper errors corrected before the H2 test failed with no RegistryError | required | - |
+| Review fix GREEN | 137 | W143 | closure-scope | test_template_definition, RegisteredTableContractTests, test_registry and test_operations_catalog on the tree committed as `fc69f689b` | PASS | 357 tests, exit 0 | required | Review fix RED |
+| Review fix regression | 137 | W143 | document-governance-regression | metadata heading, reference and lifecycle, test_metadata_validator, test_taxonomy and test_spec_packages on the tree committed as `fc69f689b` | FAIL | 358 tests, 1 failure: test_common_form_paths_come_from_the_registry did not list the new Owners and Checks path | required | - |
+| Review fix regression rerun | 137 | W143 | document-governance-regression | That test with the new path, and test_template_definition; no other module changed after the full run | PASS | 44 tests, exit 0 | required | Review fix regression |
+| Review fix template version | 137 | W143 | document-corpus | check-contracts after the template prompt change | FAIL | `invalid-template-version`: the prompt edit had bumped the template version, which must stay the registered initial version; reverted | required | - |
+| Review fix corpus | 137 | W143 | document-corpus | check-active, check-contracts, check-changed against `origin/main`, check-operations-catalog, link alignment and governance contract | PASS | 589 selected and 0 violations; 0 contract violations; 6 changed and 0 violations; catalog, alignment and governance PASS | required | Review fix template version |
+| Incident re-review | 137 | W143 | independent-review | The fix range against the first review | PASS | APPROVE; five minor notes, of which the two Task wordings, these rows and the template Evidence prompt are applied; the Condition notes stay for later role groups | required | Incident review |
 
 ### Resolution Links
 
 Conformance GREEN resolves Conformance RED, and Foundation re-review resolves
-Foundation review. The comparison baseline stays
+Foundation review. Incident regression rerun, Review fix GREEN, Review fix
+regression rerun, Review fix corpus and Incident re-review resolve their W143
+rows. The comparison baseline stays
 open until every role group conforms.
 
 ## Acceptance Decision

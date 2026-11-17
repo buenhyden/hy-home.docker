@@ -19,58 +19,42 @@ occurred_at: "{{OCCURRED_AT}}"
 
 # {{TITLE}}
 
-## Summary
-
-### Event
-
-{{EVENT}}
-
-### Current Status
-
-<!-- Author prompt: Derive any current lifecycle label from frontmatter status. Describe observations with their actual timestamp and timezone; do not maintain a second independent current-state value or invent precision. -->
-
-{{CURRENT_STATUS}}
-
 ## Impact
 
 ### Affected Users
 
 {{AFFECTED_USERS}}
 
-### Severity and Duration
+### Observed Scope
 
-{{SEVERITY_AND_DURATION}}
+<!-- Author prompt: Record the affected targets and when the impact was observed, with actual timestamps and their timezone. Derive any current lifecycle label from frontmatter status; do not keep a second current-state value or invent precision. -->
 
-## Timeline
+{{OBSERVED_SCOPE}}
 
-### Events
+## Response
+
+### Timeline
 
 <!-- Author prompt: Record factual events with ISO 8601 timestamps and explicit UTC offsets; distinguish hypotheses. -->
 
-{{EVENTS}}
+{{TIMELINE}}
 
-### Decisions
+### Actions
 
-{{DECISIONS}}
+<!-- Author prompt: Add one row per action actually taken and keep the table without rows until one is. Owner names who acted or says it is unrecorded; Evidence names a record or `none`. -->
+
+| Action | Owner | Condition | Evidence |
+| --- | --- | --- | --- |
+| {{ACTION}} | {{ACTION_OWNER}} | {{CONDITION}} | {{EVIDENCE}} |
 
 ## Resolution
 
-### Mitigation
+### Verified State
 
-{{MITIGATION}}
+{{VERIFIED_STATE}}
 
-### Recovery Verification
-
-{{RECOVERY_VERIFICATION}}
-
-## Evidence
-
-### Evidence Sources
-
-{{EVIDENCE_SOURCES}}
-
-### Follow-up Owners
+### Remaining Work
 
 <!-- Author prompt: Record tracked next actions and their owners; move causal analysis and durable follow-up to the postmortem after stabilization. -->
 
-{{FOLLOW_UP_OWNERS}}
+{{REMAINING_WORK}}

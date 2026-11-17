@@ -431,7 +431,7 @@
     "incident_closure": {
       "incident_status": "resolved",
       "postmortem_status": "published",
-      "corrective_section": "Corrective Actions"
+      "corrective_section": "Owners and Checks"
     },
     "section_forms": {
       "Acceptance Criteria": {
@@ -458,9 +458,10 @@
         "section": "Execution Log",
         "subsection": "Work Performed"
       },
-      "Corrective Actions": {
+      "Owners and Checks": {
         "profile": "postmortem",
-        "section": "Corrective Actions"
+        "section": "Actions",
+        "subsection": "Owners and Checks"
       }
     },
     "frontmatter_key_definitions": {
@@ -1027,10 +1028,6 @@
       },
       "Action": {
         "meaning": "One corrective action.",
-        "data_type": "string"
-      },
-      "Tracking ID": {
-        "meaning": "Issue or document identity that tracks the action.",
         "data_type": "string"
       }
     },
@@ -2368,33 +2365,23 @@
         ]
       },
       "required_sections": [
-        "Summary",
         "Impact",
-        "Timeline",
-        "Resolution",
-        "Evidence"
+        "Response",
+        "Resolution"
       ],
       "optional_sections": [],
       "required_subsections": {
-        "Summary": [
-          "Event",
-          "Current Status"
-        ],
         "Impact": [
           "Affected Users",
-          "Severity and Duration"
+          "Observed Scope"
         ],
-        "Timeline": [
-          "Events",
-          "Decisions"
+        "Response": [
+          "Timeline",
+          "Actions"
         ],
         "Resolution": [
-          "Mitigation",
-          "Recovery Verification"
-        ],
-        "Evidence": [
-          "Evidence Sources",
-          "Follow-up Owners"
+          "Verified State",
+          "Remaining Work"
         ]
       },
       "lifecycle_id": "incident",
@@ -2442,33 +2429,23 @@
         "reviewed_at"
       ],
       "required_sections": [
-        "Summary",
-        "Root Cause",
-        "Impact",
-        "Corrective Actions",
-        "Evidence"
+        "Facts",
+        "Causes",
+        "Actions"
       ],
       "optional_sections": [],
       "required_subsections": {
-        "Summary": [
-          "Incident Reference",
-          "Review Scope"
+        "Facts": [
+          "Timeline",
+          "Impact"
         ],
-        "Root Cause": [
-          "Causal Analysis",
-          "Contributing Factors"
+        "Causes": [
+          "Contributing Factors",
+          "Uncertainty"
         ],
-        "Impact": [
-          "Observed Impact",
-          "Detection and Response"
-        ],
-        "Corrective Actions": [
-          "Actions",
-          "Verification"
-        ],
-        "Evidence": [
-          "Source Records",
-          "Review Decision"
+        "Actions": [
+          "Prevention",
+          "Owners and Checks"
         ]
       },
       "lifecycle_id": "postmortem",
@@ -5684,11 +5661,7 @@
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/incident.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/incident.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "incident"
-      }
+      "core_role": "incident"
     },
     "operation/policy": {
       "source": "docs/99.templates/templates/operations/policy.template.md",
@@ -5826,11 +5799,7 @@
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/postmortem.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/postmortem.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "postmortem"
-      }
+      "core_role": "postmortem"
     },
     "operation/runbook": {
       "source": "docs/99.templates/templates/operations/runbook.template.md",

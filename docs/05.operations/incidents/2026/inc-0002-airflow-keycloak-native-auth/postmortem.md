@@ -1,10 +1,10 @@
 ---
 title: "Airflow Keycloak Native Authentication Migration Postmortem"
-version: "1.1.0"
+version: "1.2.1"
 type: "operation/postmortem"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "inc-2026-0002-PM"
 parent_ids:
@@ -15,17 +15,15 @@ reviewed_at: "2026-09-27"
 
 # Airflow Keycloak Native Authentication Migration Postmortem
 
-## Summary
+## Facts
 
-### Incident Reference
+### Timeline
 
 [inc-2026-0002](incident.md). Airflow 3.3.1을 OAuth2 Proxy ForwardAuth에서
 native Keycloak Auth Manager로 옮기는 과정에서 API server 기동 실패, UI/API
 `500`/`403`, 반복 재로그인이 이어졌다. 2026-09-26 owner의 Admin 세션에서
 Pool, DAG, Asset, HITL이 모두 `200`으로 확인되어 incident를 resolved로
 닫았다.
-
-### Review Scope
 
 2026-09-18T15:43:32+09:00 발생부터 2026-09-26 확인까지의 인증 전환 과정과
 그 후속 조치를 검토했다. 시간순 기록은 다음과 같다.
@@ -40,9 +38,19 @@ Pool, DAG, Asset, HITL이 모두 `200`으로 확인되어 incident를 resolved�
 - 2026-09-26T22:02:37+09:00–22:03:08+09:00: owner Admin 세션의 요청 111건
   중 `403` 0건. Pool, DAG, Asset, HITL 경로 모두 `200`.
 
-## Root Cause
+### Impact
 
-### Causal Analysis
+- Airflow API server 초기 기동 실패
+- UI/API `500`/`403`, DAG/Pool/Asset 화면 일부 접근 불가
+- Keycloak과 Airflow 양쪽의 반복 재로그인과 진단 작업
+
+API server 기동 실패와 UI 오류로 발견했다. 단계별 대응은 incident의
+Response에 있다. 최종 확인은 owner 로그인 세션의 Traefik access log에서
+경로와 상태 코드만 읽어 수행했고, token·cookie는 읽지 않았다.
+
+## Causes
+
+### Contributing Factors
 
 기록된 원인은 여러 겹이다.
 
@@ -53,60 +61,21 @@ Pool, DAG, Asset, HITL이 모두 `200`으로 확인되어 incident를 resolved�
 - provider 0.8.2의 global Admin permission이 `UNANIMOUS` 전략이어서 Admin
   사용자에게도 resource 접근이 거부됐다.
 
-Pool/DAG/Asset `403`을 마지막으로 해소한 조치가 provider 0.9.0 upgrade인지
-`create-permissions` 재적용인지는 기록되어 있지 않다.
-
-### Contributing Factors
+이를 가능하게 한 조건은 다음과 같다.
 
 - ForwardAuth 경로를 native OIDC 앱에도 기본으로 적용하던 구성
 - provider 업그레이드 절차에 permission 재적용 단계가 없었음
 - 인증된 resource 접근을 확인하는 검증 경로가 없어 403 해소 여부를 늦게 확인
 
-## Impact
+### Uncertainty
 
-### Observed Impact
+Pool/DAG/Asset `403`을 마지막으로 해소한 조치가 provider 0.9.0 upgrade인지
+`create-permissions` 재적용인지는 기록되어 있지 않다. 사용자 수, 중단 시간,
+누락된 DAG run도 기록되어 있지 않다.
 
-- Airflow API server 초기 기동 실패
-- UI/API `500`/`403`, DAG/Pool/Asset 화면 일부 접근 불가
-- Keycloak과 Airflow 양쪽의 반복 재로그인과 진단 작업
+## Actions
 
-사용자 수, 중단 시간, 누락된 DAG run은 기록되어 있지 않다.
-
-### Detection and Response
-
-API server 기동 실패와 UI 오류로 발견했다. 단계별 대응은 incident의
-Timeline과 Mitigation에 있다. 최종 확인은 owner 로그인 세션의 Traefik
-access log에서 경로와 상태 코드만 읽어 수행했고, token·cookie는 읽지 않았다.
-
-## Corrective Actions
-
-### Actions
-
-| Action | Owner | Tracking ID | Verification |
-| --- | --- | --- | --- |
-| RUN-0050에 auth troubleshooting 시나리오 추가 | @buenhyden | RUN-0050 | 완료. 시나리오 0 "Keycloak 인증 또는 TLS 실패" 존재 |
-| auth integration SSoT 신설 | @buenhyden | POL-0079, GDE-0079 | 완료. 두 문서 존재 |
-| selective native OIDC 결정 기록 | @buenhyden | ADR-0038 | 완료. ADR 존재 |
-| hardening의 stale Airflow ForwardAuth assertion 수정 | @buenhyden | `check-all-hardening.sh` | 완료. Airflow double-auth middleware를 금지하는 `check_not_contains` 존재 |
-| Kafbat/workflow 문서의 stale SSO 문구 수정 | @buenhyden | GDE-0036, Airflow README | 완료. 두 문서가 native OIDC와 ForwardAuth 미적용을 기술 |
-| provider 변경 시 permission 재적용을 checklist에 포함 | @buenhyden | RUN-0050 Checklist | 2026-09-26 완료. provider 변경 시 `create-permissions`와 Pool/DAG/Asset/HITL 확인 항목 존재 |
-| 노출된 live token/session 폐기 | @buenhyden | RUN-0014, RUN-0050 | 2026-09-27 완료. owner가 유지 결정을 바꿔 폐기를 지시했다. Keycloak `home-airflow` session은 온라인·offline 모두 0건이라 삭제할 대상이 없었다(SSO idle 1800초, access token 300초). `airflow_api_jwt_secret`을 2026-09-27T07:58:02+09:00에 교체하고 Airflow 5개 서비스를 재생성했다. 다섯 컨테이너가 새 secret을 읽고, 다른 key로 서명한 JWT는 `InvalidSignatureError`로 거부된다. client secret은 노출 기록이 없어 교체하지 않았다 |
-
-### Verification
-
-표의 Verification 열이 조치별 확인 근거다. 표의 모든 조치는 완료로 기록되어
-있으며 열린 조치는 없다. 마지막 검토일은 `reviewed_at`(2026-09-27)이다.
-
-## Evidence
-
-### Source Records
-
-- Incident: [inc-2026-0002](incident.md)
-- Runbooks: [RUN-0050](../../../runbooks/08-workflows-and-automation/0050-airflow.md), [RUN-0014](../../../runbooks/03-identity-and-access/0014-keycloak.md)
-- Policy and Guide: [POL-0079](../../../policies/03-identity-and-access/0079-application-auth-integration.md), [GDE-0079](../../../guides/03-identity-and-access/0079-application-auth-integration.md)
-- Decision: [ADR-0038](../../../../02.architecture/decisions/0038-selective-native-oidc-for-native-auth-apps.md)
-
-### Review Decision
+### Prevention
 
 2026-09-27 검토로 published 상태가 됐다. 검토에서 남긴 교훈은 다음과 같다.
 
@@ -115,5 +84,27 @@ access log에서 경로와 상태 코드만 읽어 수행했고, token·cookie�
 - provider의 permission 모델이 바뀌면 로그인 성공이 resource 권한을
   보장하지 않는다. 로그인 후 resource 화면까지 확인해야 한다.
 
+### Owners and Checks
+
+| Action | Owner | Condition | Evidence |
+| --- | --- | --- | --- |
+| RUN-0050에 auth troubleshooting 시나리오 추가 | @buenhyden | 완료 | RUN-0050. 시나리오 0 "Keycloak 인증 또는 TLS 실패" 존재 |
+| auth integration SSoT 신설 | @buenhyden | 완료 | POL-0079, GDE-0079. 두 문서 존재 |
+| selective native OIDC 결정 기록 | @buenhyden | 완료 | ADR-0038. ADR 존재 |
+| hardening의 stale Airflow ForwardAuth assertion 수정 | @buenhyden | 완료 | `check-all-hardening.sh`. Airflow double-auth middleware를 금지하는 `check_not_contains` 존재 |
+| Kafbat/workflow 문서의 stale SSO 문구 수정 | @buenhyden | 완료 | GDE-0036, Airflow README. 두 문서가 native OIDC와 ForwardAuth 미적용을 기술 |
+| provider 변경 시 permission 재적용을 checklist에 포함 | @buenhyden | 2026-09-26 완료 | RUN-0050 Checklist. provider 변경 시 `create-permissions`와 Pool/DAG/Asset/HITL 확인 항목 존재 |
+| 노출된 live token/session 폐기 | @buenhyden | 2026-09-27 완료 | RUN-0014, RUN-0050. owner가 유지 결정을 바꿔 폐기를 지시했다. Keycloak `home-airflow` session은 온라인·offline 모두 0건이라 삭제할 대상이 없었다(SSO idle 1800초, access token 300초). `airflow_api_jwt_secret`을 2026-09-27T07:58:02+09:00에 교체하고 Airflow 5개 서비스를 재생성했다. 다섯 컨테이너가 새 secret을 읽고, 다른 key로 서명한 JWT는 `InvalidSignatureError`로 거부된다. client secret은 노출 기록이 없어 교체하지 않았다 |
+
+표의 모든 조치는 완료로 기록되어 있으며 열린 조치는 없다. 마지막 검토일은
+`reviewed_at`(2026-09-27)이다. 근거 기록은 다음과 같다.
+
+- Incident: [inc-2026-0002](incident.md)
+- Runbooks: [RUN-0050](../../../runbooks/08-workflows-and-automation/0050-airflow.md), [RUN-0014](../../../runbooks/03-identity-and-access/0014-keycloak.md)
+- Policy and Guide: [POL-0079](../../../policies/03-identity-and-access/0079-application-auth-integration.md), [GDE-0079](../../../guides/03-identity-and-access/0079-application-auth-integration.md)
+- Decision: [ADR-0038](../../../../02.architecture/decisions/0038-selective-native-oidc-for-native-auth-apps.md)
+
 2026-11-12 owner 결정에 따라 본문을 공통 양식 `COMMON-DOC-FORM-1`의 절로
-옮겼다. 기록된 사실과 조치 표는 바뀌지 않았다.
+옮겼고, 2026-11-17 owner 결정에 따라 다시 공통 역할 설계 core의 postmortem
+절로 옮겼다. 기록된 사실은 바뀌지 않았다. 조치 표의 완료 상태는 Condition
+열로, Tracking ID와 확인 내용은 Evidence 열로 옮겼다.
