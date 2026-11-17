@@ -51,6 +51,8 @@ threat and residual-risk decisions to m0017.
 - [GitHub governance](../../../../.agents/governance/github-governance.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
+- [Agentic Engineering Research Pack](README.md)
+
 #### Claims and Sources
 
 All sources opened on **2026-09-27**. Mutable unversioned routes describe
@@ -79,8 +81,6 @@ upstream capability only. `Not supplied` means no visible publication date.
 | S-playwright-retries | [Playwright retries](https://playwright.dev/docs/test-retries) |
 | S-stryker-mutant-metrics | [Stryker states and metrics](https://stryker-mutator.io/docs/mutation-testing-elements/mutant-states-and-metrics/) |
 | S-vitest-coverage-config | [Vitest coverage configuration](https://vitest.dev/config/coverage.html) |
-
-- [Agentic Engineering Research Pack](README.md)
 
 ### Versions and Dates
 

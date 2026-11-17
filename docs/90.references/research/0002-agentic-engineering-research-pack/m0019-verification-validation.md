@@ -55,6 +55,8 @@ execution, release approval and policy changes are out of scope.
 - SPEC-0158 preservation contract
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
+- [Agentic Engineering Research Pack](README.md)
+
 #### Claims and Sources
 
 All source URLs were opened on **2026-09-27**. No claim of current IEEE/ISO
@@ -74,8 +76,6 @@ edition status is made from the preserved historical references.
 | --- | --- |
 | S-nasa-product-realization | [NASA product realization, verification and validation](https://www.nasa.gov/reference/5-0-product-realization/) |
 | S-nist-developer-verification | [NIST guidelines on minimum developer verification](https://www.nist.gov/publications/guidelines-minimum-standards-developer-verification-software) |
-
-- [Agentic Engineering Research Pack](README.md)
 
 ### Versions and Dates
 

@@ -107,7 +107,7 @@ or contract.
 - Action and tool versions were verified against the GitHub REST API, which is
   authoritative, rather than against rendered documentation pages.
 - Quoted sentences are reproduced verbatim from the cited page. Claims that
-  could not be retrieved are listed under Potential Follow-up / Gap rather than
+  could not be retrieved are listed under Unverified Conditions rather than
   paraphrased.
 - `zizmor` and `actionlint` are third-party, independently versioned, and carry
   no GitHub support commitment.
@@ -150,6 +150,8 @@ or contract.
 - [actionlint](https://github.com/rhysd/actionlint) - third-party workflow linter check classes
 - [Tracked workflows](../../../../.github/workflows/ci-quality.yml) - repository adoption evidence entry point
 - [Typed workflow contract](../../../../.github/workflow-contract.yml) - registry that factors gate definitions
+
+#### Related Documents
 
 - [RES-0084 package](README.md)
 - [Agentic automation research](../0002-agentic-engineering-research-pack/m0004-automation-pipeline-workflow.md)
@@ -206,6 +208,7 @@ version and check date.
 | RES-0084-m0001-S32 | [actionlint](https://github.com/rhysd/actionlint) | v1.7.12, published 2026-03-30; MIT; third-party | 2026-08-10 | Validates workflow syntax, expressions, action inputs, reusable-workflow wiring, `needs:` graphs and `run:` blocks | Third-party workflow static analysis; pre-commit hook scope | Security coverage is a sideline; the pre-commit hook is pinned by tag, not SHA |
 | RES-0084-m0001-S33 | [Tracked workflows](../../../../.github/workflows/ci-quality.yml) | Tracked at `4122cecf`; revalidated as five workflows | 2026-11-06 | Absent capabilities at `4122cecf`; current jobs `candidate-quality` and `main-security` | Platform capability adoption table and revalidations | No remote state queried; declarations establish no hosted execution result |
 | RES-0084-m0001-S34 | [Typed workflow contract](../../../../.github/workflow-contract.yml) | Tracked; six workflows at `main@4c6d2111` | 2026-09-05 | Registry that factors gate definitions | Typed registry for the tracked workflows in Repository Role | Tracked declaration; establishes no hosted execution result |
+| RES-0084-m0001-S35 | [Script injection](https://docs.github.com/en/actions/concepts/security/script-injections) | Mutable guidance; none recorded | 2026-09-05 | Re-opened as one of four official sources for the 2026-09-05 revalidation; the member ties no separate claim to it | Untrusted input row of the 2026-09-05 revalidation | Not in the 2026-08-10 source list; point-in-time snapshot |
 
 ## Analysis
 
@@ -589,7 +592,7 @@ unchanged, but the mutable-tag exposure is the same in kind.
 
 #### Platform Capability Adoption in This Repository
 
-This table complements the dated automation inventory linked in Overview.
+This table complements the dated automation inventory linked in Question.
 It records only capabilities absent at `4122cecf`, as observed by scanning
 `.github/workflows/` at that revision.
 

@@ -142,6 +142,8 @@ review_cycle: "on-source-change"
 - [Scope application matrix](./m0015-scope-application-matrix.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
+- [Agentic Engineering Research Pack](README.md)
+
 #### Claims and Sources
 
 Originals below were opened on 2026-09-27. Not stated means no publication/update date was visible in the substantive page. Crawler dates, copyright and event dates are not substituted. Mutable product documentation is not account entitlement or runtime evidence. These source/claim IDs are internal research labels.
@@ -189,8 +191,6 @@ Originals below were opened on 2026-09-27. Not stated means no publication/updat
 > | [Scope application matrix](./m0015-scope-application-matrix.md)                                                                                    | 2026-08-08                | Workspace tracked draft           | Fourteen-scope applicability and catalog reachability.                                                                                           |
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                                  | 2026-08-08                | Workspace tracked stale/advisory  | Built from `f8a72211`; not used as proof.                                                                                                        |
 >
-
-- [Agentic Engineering Research Pack](README.md)
 
 ### Versions and Dates
 

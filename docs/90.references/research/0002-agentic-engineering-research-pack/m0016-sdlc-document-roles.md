@@ -106,6 +106,8 @@ review_cycle: "on-source-change"
 - [Workspace baseline](./m0020-workspace-baseline.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
+- [Agentic Engineering Research Pack](README.md)
+
 #### Claims and Sources
 
 Originals below were opened on 2026-09-27. Not stated means no publication/update date was visible in the substantive page. Crawler dates, copyright and event dates are not substituted. Mutable product documentation is not account entitlement or runtime evidence. These source/claim IDs are internal research labels.
@@ -157,8 +159,6 @@ Originals below were opened on 2026-09-27. Not stated means no publication/updat
 > | Spec-contracts templates (retired path: `../../../99.templates/templates/spec-contracts/`)                                                    | 2026-08-14 | Workspace tracked            | Directory listing confirming eight registered focused-contract template files.                             |
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                    | 2026-08-08 | Workspace stale/advisory     | Built from `f8a72211`; role relationships corroborated against current tracked owners.                     |
 >
-
-- [Agentic Engineering Research Pack](README.md)
 
 ### Versions and Dates
 

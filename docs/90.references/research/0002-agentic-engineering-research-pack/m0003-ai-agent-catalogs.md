@@ -47,6 +47,8 @@ member creates no new role or registry.
 - [Scope application matrix](./m0015-scope-application-matrix.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
+- [Agentic Engineering Research Pack](README.md)
+
 #### Claims and Sources
 
 | Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
@@ -64,8 +66,6 @@ member creates no new role or registry.
 | S-raw-githubusercontent-com-agency-codex | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/integrations/codex/README.md); conversion details/install destination | Not displayed | 2026-09-27 | Same pin; third-party Codex exporter | Installed compatibility unexamined |
 | S-raw-githubusercontent-com-agency-converter | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/scripts/convert.sh); convert_codex, opened lines 158–177 | Not displayed | 2026-09-27 | Same pin; shell source | No execution or generated result verified |
 | S-raw-githubusercontent-com-agency-license | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/LICENSE); copyright, permission and disclaimer | Copyright 2025; publication absent | 2026-09-27 | MIT at pin; not provider endorsement | Downstream provenance/suitability unverified |
-
-- [Agentic Engineering Research Pack](README.md)
 
 ### Versions and Dates
 

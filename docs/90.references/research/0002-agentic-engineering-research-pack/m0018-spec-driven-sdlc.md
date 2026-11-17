@@ -21,6 +21,9 @@ review_cycle: "on-source-change"
 
 ### Question
 
+This member states no research question of its own; the preserved
+historical overview below records the lifecycle position it examines.
+
 > Historical evidence (not current authority; source: Git history):
 >
 > Spec-driven development in this workspace is a traceable engineering lifecycle,
@@ -113,6 +116,8 @@ review_cycle: "on-source-change"
 - [Scope application matrix](./m0015-scope-application-matrix.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
+- [Agentic Engineering Research Pack](README.md)
+
 #### Claims and Sources
 
 Originals below were opened on 2026-09-27. Not stated means no publication/update date was visible in the substantive page. Crawler dates, copyright and event dates are not substituted. Mutable product documentation is not account entitlement or runtime evidence. These source/claim IDs are internal research labels.
@@ -196,14 +201,13 @@ Originals below were opened on 2026-09-27. Not stated means no publication/updat
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                                              | 2026-08-08 | Workspace stale/advisory     | Built from `f8a72211`; all used claims corroborated against current tracked sources.                                                                     |
 >
 
-- [Agentic Engineering Research Pack](README.md)
-
 ### Versions and Dates
 
 The frontmatter records `created` 2026-08-23, `observed_at` 2026-09-05 and
 `reviewed_at` 2026-11-06, and the member states that the source originals were
-opened on 2026-09-27. The table below lists each source with its version and
-check date.
+opened on 2026-09-27. The table below lists each `S-` source opened on
+2026-09-27 with its version and check date; the historical evidence tables
+keep their own earlier access dates.
 
 | Source ID | Source | Version | Checked At | Finding | Application | Limits |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -280,7 +284,7 @@ A later synthetic pilot should demonstrate IDs, requirement/test links, blockers
 
 #### Freshness and uncertainty
 
-Current Spec Kit/MCP sources are mutable and no fresh immutable SHA was obtained. Historical pins/flows remain intact. Failed old/guessed URLs are not removal evidence: successful detailed routes below replaced guesses for GitHub managing-your-project, Spec Kit command/evolution and Atlassian MCP/dependencies. Jira export page contains old Data Center instructions beside a discontinuation note; it is not a migration runbook. Standards full text/catalog status was not freshly verified here, so existing limits remain historical. Reopen pricing/tier/API/MCP/permission/export claims before a consequential integration decision.
+Current Spec Kit/MCP sources are mutable and no fresh immutable SHA was obtained. Historical pins/flows remain intact. Failed old/guessed URLs are not removal evidence: successful detailed routes listed under Primary Sources replaced guesses for GitHub managing-your-project, Spec Kit command/evolution and Atlassian MCP/dependencies. Jira export page contains old Data Center instructions beside a discontinuation note; it is not a migration runbook. Standards full text/catalog status was not freshly verified here, so existing limits remain historical. Reopen pricing/tier/API/MCP/permission/export claims before a consequential integration decision.
 
 #### Working definition
 
@@ -535,7 +539,7 @@ The table compares public documentation, **not accounts, subscriptions or local 
 | Export/portability | Plain text/Git; unrecorded chat not recovered | View TSV; API for fuller record; not complete issue/history backup | Supported CSV/API/Markdown/PDF; no team CSV; assess relation/comment/attachment fidelity | Backup fields/comments/media/configuration; excludes flows/app data/access settings; separate flow export; Cloud/Data Center differ |
 | Cost/admin | No extra tracker subscription; manual review/navigation cost remains | Free exists; paid controls/automation consumption need review | Free $0, unlimited members, 2 teams/250 issues; Basic $10 and Business $16 per user/month yearly-billed view | Free up to 10 Jira users/2 GB with control limits; advanced paid features; paid numeric quote not verified |
 
-Claims C-m0018-05–14 route each product dimension to its own primary pages below. List prices were checked 2026-09-27 and are not invoice, tax, currency conversion, renewal or account entitlement. Linear credits/add-ons are separate. GitHub paid rendering included promotion/first-12-month wording; no unconditional paid price is asserted. Jira pricing yielded no usable body. A fresh user-count/currency/billing-term quote is required before purchase. Compare subscription plus administration, permission review, integration/conflicts, backup/export and migration effort; no time/cost savings were measured.
+Claims C-m0018-05–14 route each product dimension to its own primary pages listed under Primary Sources. List prices were checked 2026-09-27 and are not invoice, tax, currency conversion, renewal or account entitlement. Linear credits/add-ons are separate. GitHub paid rendering included promotion/first-12-month wording; no unconditional paid price is asserted. Jira pricing yielded no usable body. A fresh user-count/currency/billing-term quote is required before purchase. Compare subscription plus administration, permission review, integration/conflicts, backup/export and migration effort; no time/cost savings were measured.
 
 ## Application and Limits
 

@@ -54,6 +54,8 @@ and provider-comparison members.
 - [GitHub governance](../../../../.agents/governance/github-governance.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
+- [Agentic Engineering Research Pack](README.md)
+
 #### Claims and Sources
 
 Every linked source was opened on **2026-09-27**. `Not supplied` means no
@@ -105,8 +107,6 @@ date. Feature state is the official label where given, otherwise documented.
 | S-github-copilot-pricing | [Copilot pricing](https://docs.github.com/en/copilot/reference/copilot-billing/models-and-pricing) |
 | S-github-copilot-billing-change | [June billing release](https://github.blog/changelog/2026-06-01-updates-to-github-copilot-billing-and-plans/) |
 | S-github-copilot-write-tests | [Copilot tests](https://docs.github.com/en/copilot/tutorials/write-tests) |
-
-- [Agentic Engineering Research Pack](README.md)
 
 ### Versions and Dates
 

@@ -53,6 +53,8 @@ evidence belong to m0004, m0014 and m0019.
 - SPEC-0158 preservation contract
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
+- [Agentic Engineering Research Pack](README.md)
+
 #### Claims and Sources
 
 All source URLs below were opened on **2026-09-27**. Unversioned product
@@ -95,8 +97,6 @@ is not inferred from a crawl timestamp.
 | S-mcp-security-2025-11-25 | [MCP 2025-11-25 security guide](https://modelcontextprotocol.io/docs/2025-11-25/tutorials/security/security_best_practices) |
 | S-docker-bind-mounts | [Docker bind mounts](https://docs.docker.com/engine/storage/bind-mounts/); current Engine docs, publication date not supplied; checked 2026-09-27; recursive read-only kernel/version constraints retained |
 | S-docker-engine-security | [Docker Engine security](https://docs.docker.com/engine/security/) |
-
-- [Agentic Engineering Research Pack](README.md)
 
 ### Versions and Dates
 

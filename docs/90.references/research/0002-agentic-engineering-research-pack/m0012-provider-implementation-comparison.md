@@ -53,6 +53,8 @@ lifecycle with m0011.
 - SPEC-0158 preservation contract
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
+- [Agentic Engineering Research Pack](README.md)
+
 #### Claims and Sources
 
 | Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
@@ -97,13 +99,13 @@ lifecycle with m0011.
 | S-code-claude-com-scheduled-tasks | [Original](https://code.claude.com/docs/en/scheduled-tasks); cloud/Desktop/session/expiry | Not displayed | 2026-09-27 | Claude scheduler environments; current docs | Availability/data reach/expiry distinct; no schedule created |
 | S-learn-chatgpt-com-automations | [Original](https://learn.chatgpt.com/docs/automations); local desktop/web execution | Not displayed | 2026-09-27 | Codex local app versus web automation | Host/project conditions; no web local continuity |
 
-- [Agentic Engineering Research Pack](README.md)
-
 ### Versions and Dates
 
 The frontmatter records `created` 2026-08-23, `observed_at` 2026-09-05 and
 `reviewed_at` 2026-11-06; the vendor originals were opened on 2026-09-27.
-The table below lists each source with its version and check date.
+The table below lists each `S-` source opened on 2026-09-27 with its version
+and check date; the historical evidence tables keep their own earlier access
+dates.
 
 | Source ID | Source | Version | Checked At | Finding | Application | Limits |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -165,7 +167,7 @@ Native means documented product mechanism; extension means plugin/skill/integrat
 
 #### Shared meaning and preserved exceptions
 
-**C-m0012-02 — additional source fact.** Codex precedence is CLI/config override, trusted project layers, profile, user, cloud-managed defaults, system, built-ins. Enforced requirements remain separate constraints. Claude settings use managed/user/project/local scopes with native precedence; instructions are a separate discovery mechanism. Sources below describe settings; no effective local configuration was read.
+**C-m0012-02 — additional source fact.** Codex precedence is CLI/config override, trusted project layers, profile, user, cloud-managed defaults, system, built-ins. Enforced requirements remain separate constraints. Claude settings use managed/user/project/local scopes with native precedence; instructions are a separate discovery mechanism. Sources listed under Primary Sources describe settings; no effective local configuration was read.
 
 **C-m0012-07 — additional source fact.** Codex Stop decision:block requests continuation rather than rejecting the turn; any continue:false wins across matching Stop results. PostToolUse cannot undo side effects; invalid unsupported fields can fail the hook while the tool continues. Both products require event-specific response handling. No event-count parity is claimed.
 

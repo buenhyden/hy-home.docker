@@ -48,6 +48,8 @@ values remain historical evidence.
 - SPEC-0158 preservation contract
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
+- [Agentic Engineering Research Pack](README.md)
+
 #### Claims and Sources
 
 | Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
@@ -59,8 +61,6 @@ values remain historical evidence.
 | C-m0010-05 | Evidence-based continuation | [S-anthropic-com-building-effective-agents](https://www.anthropic.com/engineering/building-effective-agents); When to use agents / Agents; [S-anthropic-com-effective-harnesses-long-running-agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents); initializer/coding-agent and artifacts | 2024-12-19 / 2025-11-26 | 2026-09-27 | Native client/environment or working design; see source owner | Recommendation | Separately approved bounded task | Not assessed in this run |
 
 Native originals were opened 2026-09-27; publication dates are not displayed. Version limits are explicit in m0012. No unverified academic success statistic, current event count or historical retry value becomes a product guarantee.
-
-- [Agentic Engineering Research Pack](README.md)
 
 ### Versions and Dates
 

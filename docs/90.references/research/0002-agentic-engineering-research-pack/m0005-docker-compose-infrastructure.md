@@ -21,6 +21,8 @@ review_cycle: "on-source-change"
 
 ### Question
 
+What Compose semantics and operating evidence should a Linux home/development server distinguish before a future infrastructure decision?
+
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -144,6 +146,8 @@ review_cycle: "on-source-change"
 
 - [Research pack navigation](README.md)
 
+- [Agentic Engineering Research Pack](README.md)
+
 #### Claims and Sources
 
 | Claim ID | Claim | Source ID / detailed section | Published / modified | Actually checked | Product / version / channel | Fact / interpretation / recommendation | Limits, conflicts and recheck trigger |
@@ -219,28 +223,27 @@ review_cycle: "on-source-change"
 > | Direct `rg` re-scan of `infra/**/docker-compose*.yml` for `image:`, `restart:`, `deploy:`, `mem_limit:`, `cpus:`, `healthcheck:`                | 2026-08-14                | Workspace tracked                 | 137 image declarations / 82 distinct, 0 literal `:latest`, 1 untagged (registered); restart values limited to `unless-stopped` (45) and `'no'` (13); only 2 files declare `deploy.resources`.                                                                                             |
 >
 
-- [Agentic Engineering Research Pack](README.md)
-
 ### Versions and Dates
 
 The frontmatter records `created` 2026-08-23, `observed_at` 2026-09-05 and
 `reviewed_at` 2026-11-06, and the member states its external sources were
-checked on 2026-09-27. The table below lists each source with its version and
-check date.
+checked on 2026-09-27. The table below lists each `S-` source checked on
+2026-09-27 with its version and check date; the historical evidence tables
+keep their own earlier access dates.
 
 | Source ID | Source | Version | Checked At | Finding | Application | Limits |
 | --- | --- | --- | --- | --- | --- | --- |
 | S-docker-compose-spec | [Specification: optional attributes](https://github.com/compose-spec/compose-spec/blob/main/spec.md#requirements-and-optional-attributes) | Mutable main; specification, no commit pin obtained | 2026-09-27 | Implementation support differs across platforms (C-m0005-01). | Record actual CLI/Engine/platform and required features in a future acceptance packet. | No local version measured; recheck target CLI/platform; main opened without revision pin. |
 | S-docker-compose-release | [Compose v5.5.1 release](https://github.com/docker/compose/releases/tag/v5.5.1) | Official tagged release v5.5.1; timestamp not reliably extracted | 2026-09-27 | Upstream release page exposes v5.5.1 (C-m0005-01). | External release evidence, not a measurement of this host. | No local version measured; recheck target CLI/platform. |
-| S-docker-compose-version-name | [Obsolete version field](https://docs.docker.com/reference/compose-file/version-and-name/) | Mutable official reference; publication date not stated | 2026-09-27 | Top-level version is obsolete and does not pin a parser schema (C-m0005-01). | Model, composition and version support section. | No local version measured; recheck target CLI/platform. |
-| S-docker-compose-include | [Include: short/long syntax](https://docs.docker.com/reference/compose-file/include/) | Requires Compose 2.20.0+; mutable reference | 2026-09-27 | Included projects keep their own path base; name conflicts are detected rather than merged (C-m0005-02). | include row of the composition mechanism table. | Test the selected model later. |
-| S-docker-compose-merge | [Merge: exceptions/reset/replace](https://docs.docker.com/reference/compose-file/merge/) | !override requires 2.24.4+; mutable reference | 2026-09-27 | Maps merge, sequences generally append; !reset clears and !override replaces (C-m0005-02). | Ordered -f merge row of the composition mechanism table. | Test the selected model later. |
-| S-docker-compose-extends | [Extends: relative paths](https://docs.docker.com/compose/how-tos/multiple-compose-files/extends/) | Mutable reference; stack deploy differs | 2026-09-27 | Referenced service is not instantiated; base paths are converted (C-m0005-02). | extends row: inspect the resulting model instead of assuming include semantics. | Extends path wording is context-dependent; test selected model later. |
-| S-docker-compose-profiles | [Profiles: target/dependencies](https://docs.docker.com/compose/how-tos/profiles/#auto-starting-profiles-and-dependency-resolution) | Mutable reference; publication date not stated | 2026-09-27 | Explicit target activates the service and eligible dependencies, not all profile peers (C-m0005-02). | Profiles row: selection is not an authorization boundary. | Test the selected model later. |
+| S-docker-compose-version-name | [Obsolete version field](https://docs.docker.com/reference/compose-file/version-and-name/) | Mutable official reference; publication date not stated | 2026-09-27 | Top-level version is obsolete and does not pin a parser schema (C-m0005-01). | Treat top-level version as obsolete; it does not pin a parser schema. | No local version measured; recheck target CLI/platform. |
+| S-docker-compose-include | [Include: short/long syntax](https://docs.docker.com/reference/compose-file/include/) | Requires Compose 2.20.0+; mutable reference | 2026-09-27 | Included projects keep their own path base; name conflicts are detected rather than merged (C-m0005-02). | Use include for independently maintained models, each with its own path base. | Test the selected model later. |
+| S-docker-compose-merge | [Merge: exceptions/reset/replace](https://docs.docker.com/reference/compose-file/merge/) | !override requires 2.24.4+; mutable reference | 2026-09-27 | Maps merge, sequences generally append; !reset clears and !override replaces (C-m0005-02). | Use ordered -f merge to override one application. | Test the selected model later. |
+| S-docker-compose-extends | [Extends: relative paths](https://docs.docker.com/compose/how-tos/multiple-compose-files/extends/) | Mutable reference; stack deploy differs | 2026-09-27 | Referenced service is not instantiated; base paths are converted (C-m0005-02). | Use extends to reuse service fields and inspect the resulting model instead of assuming include semantics. | Extends path wording is context-dependent; test selected model later. |
+| S-docker-compose-profiles | [Profiles: target/dependencies](https://docs.docker.com/compose/how-tos/profiles/#auto-starting-profiles-and-dependency-resolution) | Mutable reference; publication date not stated | 2026-09-27 | Explicit target activates the service and eligible dependencies, not all profile peers (C-m0005-02). | Use profiles for optional capability selection; selection is not an authorization boundary. | Test the selected model later. |
 | S-docker-compose-interpolation | [Interpolation: source precedence](https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/#ways-to-set-variables-with-interpolation) | Mutable reference; publication date not stated | 2026-09-27 | Interpolation precedence is shell, explicit --env-file, then project-directory .env (C-m0005-03). | Separates model interpolation from container environment. | Synthetic inputs only; no private .env opened. |
 | S-docker-compose-env-precedence | [Container environment precedence](https://docs.docker.com/compose/how-tos/environment-variables/envvars-precedence/) | Mutable reference; publication date not stated | 2026-09-27 | Container precedence runs from run -e through env_file and environment to image ENV (C-m0005-03). | Host variables are not passed without mapping. | Synthetic inputs only; no private .env opened. |
 | S-docker-compose-project-name | [Project naming precedence](https://docs.docker.com/compose/how-tos/project-name/#set-a-project-name) | Mutable reference; publication date not stated | 2026-09-27 | Project naming prioritizes -p, COMPOSE_PROJECT_NAME, top-level name, then directory (C-m0005-03). | Explicit external names and host bindings need separate collision review. | Synthetic inputs only; no private .env opened. |
-| S-docker-compose-services | [Services: dependencies/health/resources/stop](https://docs.docker.com/reference/compose-file/services/) | depends_on.restart 2.17.0+, required 2.20.0+; mutable reference | 2026-09-27 | Dependency order, service_healthy and stop_grace_period are distinct controls (C-m0005-04, 06). | Runtime, state and trust section: startup, readiness and recovery are different signals. | Probe quality remains target-specific; no resource enforcement measured. |
+| S-docker-compose-services | [Services: dependencies/health/resources/stop](https://docs.docker.com/reference/compose-file/services/) | depends_on.restart 2.17.0+, required 2.20.0+; mutable reference | 2026-09-27 | Dependency order, service_healthy and stop_grace_period are distinct controls (C-m0005-04, 06). | Treat dependency order, service_healthy, job completion and crash recovery as different signals. | Probe quality remains target-specific; no resource enforcement measured. |
 | S-docker-compose-startup | [Startup and shutdown order](https://docs.docker.com/compose/how-tos/startup-order/) | Mutable reference; publication date not stated | 2026-09-27 | Startup, readiness and runtime recovery differ (C-m0005-04). | Probe success does not establish a usable workflow. | Probe quality remains target-specific. |
 | S-docker-compose-networks | [Networks: internal/external](https://docs.docker.com/reference/compose-file/networks/) | Mutable reference; publication date not stated | 2026-09-27 | internal and external networks serve different purposes (C-m0005-05). | Network attachment is distinct from host publication. | No exposure, encryption or grant enforcement assessed. |
 | S-docker-port-publishing | [Host port binding and localhost caveat](https://docs.docker.com/engine/network/port-publishing/) | Mutable Engine reference; localhost caveat before Engine 28.0.0 | 2026-09-27 | Omitted host addresses can bind broadly (C-m0005-05). | Localhost binding alone does not prove peer authorization or firewall behavior. | No exposure, encryption or grant enforcement assessed. |
@@ -252,12 +255,12 @@ check date.
 | S-docker-resource-constraints | [Linux resource constraints](https://docs.docker.com/engine/containers/resource_constraints/) | Mutable Engine reference; runtime/platform support matters | 2026-09-27 | A reservation is not a hard ceiling (C-m0005-06). | Limits and reservations require runtime evidence. | No resource enforcement, utilization or data integrity measured. |
 | S-docker-container-restart | [Container restart policies](https://docs.docker.com/engine/containers/start-containers-automatically/) | Mutable Engine reference; publication date not stated | 2026-09-27 | Container restart policy covers runtime recovery distinct from dependency restart (C-m0005-04). | depends_on.restart is not runtime crash recovery. | Probe quality remains target-specific. |
 | S-docker-container-stop | [Stop signals/timeouts](https://docs.docker.com/reference/cli/docker/container/stop/) | Mutable Engine CLI reference; publication date not stated | 2026-09-27 | Stop timeout can cause SIGKILL and incomplete writes (C-m0005-06). | Stop signal and grace period must fit the application. | No resource enforcement, utilization or data integrity measured. |
-| S-docker-compose-config | [Compose config model/options](https://docs.docker.com/reference/cli/docker/compose/config/) | Mutable CLI reference; publication date not stated | 2026-09-27 | Static config shows the selected CLI parses/renders the selected model (C-m0005-09). | Static config layer of the evidence table, separate from runtime acceptance. | No backup/restore/runtime observed. |
+| S-docker-compose-config | [Compose config model/options](https://docs.docker.com/reference/cli/docker/compose/config/) | Mutable CLI reference; publication date not stated | 2026-09-27 | Static config shows the selected CLI parses/renders the selected model (C-m0005-09). | A static config result supports only that the selected CLI parses and renders the model; runtime support is accepted separately. | No backup/restore/runtime observed. |
 | S-docker-image-pinning | [Build guidance: pin image versions](https://docs.docker.com/build/building/best-practices/#pin-base-image-versions) | Mutable guidance; old develop URL redirects here | 2026-09-27 | Digest pins select exact content but need deliberate updates (C-m0005-07). | Pin identity kept distinct from provenance; supply chain detailed in m0017. | No digest/signature/scan verified. |
 | S-docker-build-provenance | [Provenance: mode/version](https://docs.docker.com/build/metadata/attestations/slsa-provenance/) | BuildKit mode=min and schema v0.2 defaults; v1 optional | 2026-09-27 | Provenance mode/schema choices matter (C-m0005-07). | Tags, SBOMs, signatures, provenance and scans answer different questions. | No digest/signature/scan verified. |
 | S-docker-volume-recovery | [Volume backup/restore mechanics](https://docs.docker.com/engine/storage/volumes/#back-up-restore-or-migrate-data-volumes) | Mutable generic tar example; not database consistency proof | 2026-09-27 | Tar example demonstrates volume mechanics, not running-database consistency (C-m0005-09). | Recovery design names RPO, RTO and application-consistent data. | No backup/restore/runtime observed. |
 | S-nist-contingency-800-34 | [NIST contingency: 3.2/3.5/4.4](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-34r1.pdf) | Final May 2010, updated 2010-11-11; corrected edition confirmed | 2026-09-27 | Supports contingency planning and testing (C-m0005-09). | Used proportionately; not an automatic home-server obligation. | Federal guidance; no backup/restore/runtime observed. |
-| S-google-sre-monitoring | [SRE: signals and black/white-box monitoring](https://sre.google/sre-book/monitoring-distributed-systems/) | Published book chapter; page revision date not stated; experiential guidance | 2026-09-27 | Latency, traffic, errors and saturation are monitoring signals (C-m0005-09). | Use a small set of actionable user checks plus golden signals where useful. | No runtime observed. |
+| S-google-sre-monitoring | [SRE: signals and black/white-box monitoring](https://sre.google/sre-book/monitoring-distributed-systems/) | Published book chapter; page revision date not stated; experiential guidance | 2026-09-27 | Latency, traffic, errors and saturation are monitoring signals (C-m0005-09). | Use a small set of actionable user checks plus latency, traffic, errors and saturation where useful. | No runtime observed. |
 | S-rfc-tls-9846 | [TLS 1.3: relationship to RFC 8446](https://www.rfc-editor.org/rfc/rfc9846.html#section-1.2) | July 2026; Proposed Standard / Standards Track; obsoletes RFC 8446 | 2026-09-27 | RFC 9846 specifies TLS 1.3 and obsoletes RFC 8446 (C-m0005-08). | Channel security does not prove application authorization. | Later RFC updates/errata and target behavior need recheck. |
 | S-rfc-acme-8555 | [ACME: section 8 challenges](https://www.rfc-editor.org/rfc/rfc8555.html#section-8) | March 2019; Standards Track; later updates/errata possible | 2026-09-27 | ACME challenges prove domain control under protocol conditions (C-m0005-08). | Key custody, renewal and DNS dependency recovery need operational evidence. | Later RFC updates/errata and target behavior need recheck. |
 | S-rfc-dns-1034 | [DNS: section 3.6 resource records](https://www.rfc-editor.org/rfc/rfc1034.html#section-3.6) | November 1987; foundational DNS RFC with later updates | 2026-09-27 | DNS resource records and caching/TTLs affect cutover (C-m0005-08). | Name DNS owners before adding daemons. | Later RFC updates/errata and target behavior need recheck. |
@@ -268,8 +271,6 @@ check date.
 ### Findings
 
 #### Current External Research
-
-What Compose semantics and operating evidence should a Linux home/development server distinguish before a future infrastructure decision?
 
 Repository baseline: `f30b168e2fbb0959e4a31749935568fd5b3942f1`. External sources checked and document updated: 2026-09-27. This refresh is external-only, non-normative research. Internal application, runtime, account and security status: **Not assessed in this run**. Adoption requires the existing owner and an authorized change; historical observations below retain their original dates and scope.
 
@@ -917,4 +918,4 @@ No infrastructure configuration, service inventory, runtime, secrets, backup or
 account was inspected. Source pages are mutable; feature minima are not a complete
 compatibility matrix. Upstream specification main was opened without a revision
 pin. Recheck on CLI/Engine/platform, source or data-schema changes and before
-adoption. Historical measurements below are not new acceptance evidence.
+adoption. Historical measurements in this member are not new acceptance evidence.

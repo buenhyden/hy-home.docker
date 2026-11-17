@@ -151,6 +151,8 @@ separate approved package and canonical ownership decision.
 
 - [Research pack navigation](README.md)
 
+- [Agentic Engineering Research Pack](README.md)
+
 #### Claims and Sources
 
 | Source ID | Original actually opened and detailed section | Publication / revision / status | Checked |
@@ -190,8 +192,6 @@ separate approved package and canonical ownership decision.
 > | Maintenance policy (retired path: `../../../05.operations/policies/00-workspace/llm-wiki-maintenance.md`)                                    | 2026-08-08 | Workspace tracked                | Refresh triggers, exclusions, exception, and no-hook boundary.                                                                                                        |
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                   | 2026-08-08 | Workspace tracked stale/advisory | Built from `f8a72211`; corroborated against direct sources and excluded from generator evidence.                                                                      |
 >
-
-- [Agentic Engineering Research Pack](README.md)
 
 ### Versions and Dates
 

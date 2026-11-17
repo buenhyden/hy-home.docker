@@ -24,14 +24,14 @@ evidence boundaries, and recovered request identity for the dated RES-0085
 assessment. Historical workspace-baseline conclusions are consolidated into
 RES-0002-m0020; GitHub Actions platform findings remain in RES-0084.
 
-### Scope
-
 #### Research Questions
 
 - Which repository revision is the baseline for this dated assessment?
 - Which evidence classes may support repository, Hosted, runtime, provider, and
   remote-control-plane claims?
 - Which observations remain outside the approved or accessible boundary?
+
+### Scope
 
 #### Purpose
 
@@ -99,6 +99,8 @@ present (`tests/lib/document_governance/test_references.py`,
 - [Registry](../../../99.templates/registry.json) and the
   [research member template](../../../99.templates/templates/references/research.template.md).
 - Completed SPEC-0172 outcome.
+
+#### Related Documents
 
 - [Dated baseline assessment package](README.md)
 - [Historical workspace baseline synthesis](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)

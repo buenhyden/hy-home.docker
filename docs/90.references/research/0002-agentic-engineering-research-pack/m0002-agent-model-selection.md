@@ -50,6 +50,8 @@ config or cost log was inspected.
 - SPEC-0158 preservation contract
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
+- [Agentic Engineering Research Pack](README.md)
+
 #### Claims and Sources
 
 | Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
@@ -62,22 +64,21 @@ config or cost log was inspected.
 
 Source tables in [m0013](m0013-provider-model-landscape.md#claims-and-sources) and [m0012](m0012-provider-implementation-comparison.md#claims-and-sources) record originals opened 2026-09-27, absent publication dates and version/channel limits. No entitlement, live call, routing config or cost log was inspected.
 
-- [Agentic Engineering Research Pack](README.md)
-
 ### Versions and Dates
 
 The member was created 2026-08-23, carries `observed_at` 2026-09-05 and
 `reviewed_at` 2026-11-06, and records that the originals were opened on
-2026-09-27. The table below lists each source with its version and check
-date.
+2026-09-27. The table below lists each `S-` source opened on 2026-09-27
+with its version and check date; the historical evidence tables keep their
+own earlier access dates.
 
 | Source ID | Source | Version | Checked At | Finding | Application | Limits |
 | --- | --- | --- | --- | --- | --- | --- |
 | S-learn-chatgpt-com-models | [S-learn-chatgpt-com-models](https://learn.chatgpt.com/docs/models); recommendations/reasoning/retirements | Not displayed; dated retirement notices | 2026-09-27 | Codex guidance positions Astra for demanding reasoning, Sol for complex coding and Luna for focused volume, subject to availability (C-m0002-01 to C-m0002-03) | Candidate inference and task-aware routing recommendations; internal adoption not assessed in this run | No comparative performance result; target availability unexamined; requires representative accepted outcomes |
 | S-platform-claude-com-models-overview | [S-platform-claude-com-models-overview](https://platform.claude.com/docs/en/models/overview); latest-model table/IDs | Not displayed | 2026-09-27 | Claude publishes its own model positioning and defaults; these suggest candidates, not a cross-provider ranking (C-m0002-01 to C-m0002-03) | Candidate inference and task-aware routing recommendations; internal adoption not assessed in this run | No comparative performance result; target availability unexamined; requires representative accepted outcomes |
 | S-learn-chatgpt-com-subagents | [S-learn-chatgpt-com-subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents); custom files/inheritance | Not displayed | 2026-09-27 | Codex subagents consume extra tokens, inherit the parent sandbox, live overrides and permission policy; unsurfaced approvals fail back to the parent (C-m0002-04, C-m0002-05) | Delegation-inherits-limits fact and bounded fallback recommendation; internal adoption not assessed in this run | Installed behavior not examined; native details owned by m0012 |
-| S-code-claude-com-model-config | [S-code-claude-com-model-config](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction | Not displayed; claim C-m0002-05 notes version conditions in text | 2026-09-27 | Supports C-m0002-05: raising effort, changing models and adding agents solve different problems | Diagnosed bounded fallback recommendation; internal adoption not assessed in this run | Diagnosis, budget and permission prerequisites |
-| S-learn-chatgpt-com-config-reference | [S-learn-chatgpt-com-config-reference](https://learn.chatgpt.com/docs/config-file/config-reference); effort/auto-compact threshold/scope | Not displayed; claim C-m0002-05 notes version conditions in text | 2026-09-27 | Supports C-m0002-05: reproducible evaluation records effective IDs, channel and effort, not only an alias | Diagnosed bounded fallback recommendation; internal adoption not assessed in this run | Diagnosis, budget and permission prerequisites |
+| S-code-claude-com-model-config | [S-code-claude-com-model-config](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction | Not displayed; claim C-m0002-05 notes version conditions in text | 2026-09-27 | Cited jointly for C-m0002-05 (effort/caps/ultracode/compaction) | Diagnosed bounded fallback recommendation; internal adoption not assessed in this run | Diagnosis, budget and permission prerequisites |
+| S-learn-chatgpt-com-config-reference | [S-learn-chatgpt-com-config-reference](https://learn.chatgpt.com/docs/config-file/config-reference); effort/auto-compact threshold/scope | Not displayed; claim C-m0002-05 notes version conditions in text | 2026-09-27 | Cited jointly for C-m0002-05 (effort/auto-compact threshold/scope) | Diagnosed bounded fallback recommendation; internal adoption not assessed in this run | Diagnosis, budget and permission prerequisites |
 
 ## Analysis
 

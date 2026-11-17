@@ -49,6 +49,8 @@ m0002, and overall bounds and checkpoints by m0010.
 - [Scope application matrix](./m0015-scope-application-matrix.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
+- [Agentic Engineering Research Pack](README.md)
+
 #### Claims and Sources
 
 | Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
@@ -74,8 +76,6 @@ m0002, and overall bounds and checkpoints by m0010.
 | S-code-claude-com-costs | [Original](https://code.claude.com/docs/en/costs); /usage and organization access setups | Not displayed | 2026-09-27 | Claude API versus subscription/provider metering | No usage/entitlement/private logs inspected |
 | S-developers-openai-com-api-rate-limits | [Original](https://developers.openai.com/api/docs/guides/rate-limits); How limits work / Retrying with exponential backoff | Not displayed | 2026-09-27 | OpenAI API metrics and SDK-version-dependent retry | No account tier/limit checked; application and SDK bounds distinct |
 | S-platform-claude-com-api-rate-limits | [Original](https://platform.claude.com/docs/en/api/rate-limits); Rate limits / Cache-aware ITPM / Spend cap | Not displayed | 2026-09-27 | Claude Messages API and organization/workspace limits | Most-model cache exception; not subscription quota |
-
-- [Agentic Engineering Research Pack](README.md)
 
 ### Versions and Dates
 

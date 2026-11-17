@@ -48,6 +48,8 @@ historical, not refreshed measurements.
 - SPEC-0158 preservation contract
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
+- [Agentic Engineering Research Pack](README.md)
+
 #### Claims and Sources
 
 | Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
@@ -62,8 +64,6 @@ historical, not refreshed measurements.
 | --- | --- | --- | --- | --- | --- |
 | S-openai-com-harness-engineering | [Original](https://openai.com/index/harness-engineering/); repository system of record and agent legibility | 2026-02-11 | 2026-09-27 | OpenAI engineering case study; not stable API specification | Blank-repository experiment; productivity not generalized |
 | S-anthropic-com-effective-harnesses-long-running-agents | [Original](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents); initializer/coding-agent and artifacts | 2025-11-26 | 2026-09-27 | Anthropic engineering experiment; historical design evidence | No requirement for new local progress files |
-
-- [Agentic Engineering Research Pack](README.md)
 
 ### Versions and Dates
 

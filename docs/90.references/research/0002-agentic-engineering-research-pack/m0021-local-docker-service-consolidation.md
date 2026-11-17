@@ -113,6 +113,8 @@ marked as historical evidence, not a newly checked product or license catalogue.
 - [Root Compose](../../../../docker-compose.yml)
 - [Infrastructure validation skill](../../../../.agents/skills/infra-validate/SKILL.md)
 
+- [Agentic Engineering Research Pack](README.md)
+
 #### Claims and Sources
 
 | Source ID | Original actually opened and detailed section | Publication / revision / status | Checked |
@@ -137,8 +139,6 @@ marked as historical evidence, not a newly checked product or license catalogue.
 > `infra/README.md`, Stage 05 operation documents, and the local Docker container
 > listing observed on the same date.
 >
-
-- [Agentic Engineering Research Pack](README.md)
 
 ### Versions and Dates
 

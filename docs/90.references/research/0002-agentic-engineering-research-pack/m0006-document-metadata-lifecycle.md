@@ -124,6 +124,8 @@ How can metadata make a document identifiable, reviewable and recoverable withou
 - [Workspace baseline](./m0020-workspace-baseline.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
+- [Agentic Engineering Research Pack](README.md)
+
 #### Claims and Sources
 
 Originals below were opened on 2026-09-27. Not stated means no publication/update date was visible in the substantive page. Crawler dates, copyright and event dates are not substituted. Mutable product documentation is not account entitlement or runtime evidence. These source/claim IDs are internal research labels.
@@ -160,8 +162,6 @@ Originals below were opened on 2026-09-27. Not stated means no publication/updat
 > | [Metadata checker](../../../../scripts/validation/check-document-metadata.py)                                                  | 2026-08-14 | Workspace tracked executable | 5,630-line script re-read directly; confirmed 4 `--mode` values and the `--transition-override-file` schema/mode-binding. |
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                    | 2026-08-08 | Workspace stale/advisory     | Built from `f8a72211`; no uncorroborated graph inference used.                                                            |
 >
-
-- [Agentic Engineering Research Pack](README.md)
 
 ### Versions and Dates
 

@@ -49,6 +49,8 @@ it is non-normative and does not authorize relocating policy.
 - [Scope application matrix](./m0015-scope-application-matrix.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
+- [Agentic Engineering Research Pack](README.md)
+
 #### Claims and Sources
 
 | Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
@@ -63,8 +65,6 @@ it is non-normative and does not authorize relocating policy.
 | S-learn-chatgpt-com-agents-md | [Original](https://learn.chatgpt.com/docs/agent-configuration/agents-md); How Codex discovers guidance | Not displayed | 2026-09-27 | Codex CLI current mutable documentation; no installed version/stability guarantee checked | Legacy developer URL redirected; loading not exercised |
 | S-code-claude-com-memory | [Original](https://code.claude.com/docs/en/memory); AGENTS.md and instructionFiles | Not displayed; explicit version boundaries in text | 2026-09-27 | Claude Code bundled plugin v2.1.277+, exceptions before v2.1.281; mutable docs | InstructionsLoaded/import behavior remains native; memory mechanics in m0012 |
 | S-anthropic-com-building-effective-agents | [Original](https://www.anthropic.com/engineering/building-effective-agents); When to use agents / Agents | 2024-12-19 | 2026-09-27 | Historical engineering design advice, not product support contract | Later landscape acknowledged; no local outcome established |
-
-- [Agentic Engineering Research Pack](README.md)
 
 ### Versions and Dates
 

@@ -119,6 +119,8 @@ review_cycle: "on-source-change"
 
 - [Research pack navigation](README.md)
 
+- [Agentic Engineering Research Pack](README.md)
+
 #### Claims and Sources
 
 | Source ID | Original actually opened and detailed section | Publication / revision / status | Checked |
@@ -159,8 +161,6 @@ review_cycle: "on-source-change"
 > | [Memory in the Age of AI Agents: a Survey (paper list)](https://github.com/Shichun-Liu/Agent-Memory-Paper-List) | 2026-08-14                | External mutable         | Curated paper index; source for the 5-mechanism-family comparison, not adopted as policy.                                          |
 > | [A Survey of Context Engineering for Large Language Models](https://arxiv.org/pdf/2507.13334)                   | 2026-08-14                | External fixed           | Versioned arXiv preprint; source of the temporal-scope/substrate/control-policy taxonomy used for comparison.                      |
 >
-
-- [Agentic Engineering Research Pack](README.md)
 
 ### Versions and Dates
 

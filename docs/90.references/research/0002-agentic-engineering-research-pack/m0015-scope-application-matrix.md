@@ -151,25 +151,6 @@ separate approved internal assessment.
 
 ### Primary Sources
 
-#### Related Documents
-
-- [Research pack](README.md)
-- [Current scope and future-check routing](m0015-scope-application-matrix.md#future-internal-checks)
-- [Preserved baseline and future assessment boundary](m0020-workspace-baseline.md#future-internal-checks)
-- [Verification and validation](m0019-verification-validation.md)
-- Refresh Spec
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> - [Workspace baseline](./m0020-workspace-baseline.md)
-> - [Verification and validation](./m0019-verification-validation.md)
-> - SPEC-0158 preservation contract
-> - Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)
-> - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
-> - [Agent governance hub](../../../../.agents/README.md)
-> - [Research category router](../README.md)
-
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
 >
@@ -197,6 +178,25 @@ separate approved internal assessment.
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                            | 2026-08-08 | Tracked stale/advisory | Built from `f8a72211`; corroborated and not used as current proof.                                                                                                                                                                  |
 > | Predecessor scope matrix, retiring 2026-07-05 pack                                                     | 2026-08-14 | Historical retained    | Read for structural comparison only; its dispositions were re-derived rather than carried forward. Cited without a path because pre-deletion gate 4 admits no clickable link and the canonical router surface carries no allowlist. |
 >
+
+#### Related Documents
+
+- [Research pack](README.md)
+- [Current scope and future-check routing](m0015-scope-application-matrix.md#future-internal-checks)
+- [Preserved baseline and future assessment boundary](m0020-workspace-baseline.md#future-internal-checks)
+- [Verification and validation](m0019-verification-validation.md)
+- Refresh Spec
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> - [Workspace baseline](./m0020-workspace-baseline.md)
+> - [Verification and validation](./m0019-verification-validation.md)
+> - SPEC-0158 preservation contract
+> - Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)
+> - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+> - [Agent governance hub](../../../../.agents/README.md)
+> - [Research category router](../README.md)
 
 - [Agentic Engineering Research Pack](README.md)
 
