@@ -104,7 +104,7 @@ A provider-owned runtime projection is exempt from the metadata envelope. Operat
 | DOCUMENTATION-PROTOCOL-R69 | Native skill discovery | Forbidden: treating native discovery as changing policy ownership or role permissions | none | none |
 | DOCUMENTATION-PROTOCOL-R70 | Stage 01 to 03 profile | Forbidden: carrying `supersedes` or `superseded_by` | none | none |
 | DOCUMENTATION-PROTOCOL-R71 | Stage 01 to 03 profile | Required: statuses follow the SDLC | none | none |
-| DOCUMENTATION-PROTOCOL-R72 | Stage 01 to 03 successor | Required: record the replaced substance in its Traceability and delete the predecessor with its number reserved | none | none |
+| DOCUMENTATION-PROTOCOL-R72 | Stage 01 to 03 successor | Required: record the replaced substance in its lineage section and delete the predecessor with its number reserved | none | none |
 | DOCUMENTATION-PROTOCOL-R73 | Other profiles | Required: keep multiple predecessors in `supersedes` and one reciprocal successor in `superseded_by` | none | none |
 | DOCUMENTATION-PROTOCOL-R74 | Registry-required root | Required: record `parent_ids: []` as root identity, not optional placeholder metadata | none | none |
 | DOCUMENTATION-PROTOCOL-R75 | Titling a Stage 03 Spec | Required: title it `<Subject> Specification` naming what the change contracts | none | none |
@@ -165,9 +165,12 @@ A provider-owned runtime projection is exempt from the metadata envelope. Operat
 | DOCUMENTATION-PROTOCOL-R130 | Product difference from the common form | Required: record it as an Exception under quality standards with approved condition, scope, reason, end or review condition and verification | none | none |
 | DOCUMENTATION-PROTOCOL-R131 | Requirement Package | Required: write an interface need as a functional requirement and a quality need under Quality Requirements | none | none |
 | DOCUMENTATION-PROTOCOL-R132 | Requirement Package | Forbidden: issuing a separate interface section or `IF` child identity | none | none |
+| DOCUMENTATION-PROTOCOL-R258 | Requirement Package | Required: list every declared FR and NFR once in the requirements table, with the declaration as its Statement | none | none |
+| DOCUMENTATION-PROTOCOL-R259 | Declaration in an approved Requirement Package without a modal verb | Required: bind it as `must` | none | none |
+| DOCUMENTATION-PROTOCOL-R260 | Declaration written with `should` or `could` | Required: give it that priority | none | none |
 | DOCUMENTATION-PROTOCOL-R133 | Architecture authority | Required: a Description owns current structure and an ADR owns one consequential choice | none | none |
 | DOCUMENTATION-PROTOCOL-R134 | Decision changes | Required: preserve accepted decisions and use explicit supersession | none | none |
-| DOCUMENTATION-PROTOCOL-R135 | Architecture views | Required: use the Description core (`Scope`, `Structure`, `Runtime and Deployment`, `Quality and Risks`) | none | none |
+| DOCUMENTATION-PROTOCOL-R135 | Architecture views | Required: use the Description core (`Context and Boundaries`, `Structure`, `Runtime Behavior`, `Quality Scenarios`) | none | none |
 | DOCUMENTATION-PROTOCOL-R136 | Architecture views | Allowed: add registered optional content only when it helps the reader | none | none |
 | DOCUMENTATION-PROTOCOL-R137 | Architecture views | Forbidden: imposing an empty full architecture framework | none | none |
 | DOCUMENTATION-PROTOCOL-R138 | System-level Description | Required: consider system context and container diagrams; use dynamic diagrams for interactions and deployment diagrams for environment topology | none | none |
@@ -277,7 +280,7 @@ A provider-owned runtime projection is exempt from the metadata envelope. Operat
 | DOCUMENTATION-PROTOCOL-R242 | No Stage 03 package remains | Allowed: Stage 03 is empty | none | none |
 | DOCUMENTATION-PROTOCOL-R243 | Retiring a package or standalone document | Required: its profile/status pair is eligible in `archive_retention.disposition_entry_statuses`, or it is an ADR or Description whose replacement carrying its summary lands in the same change | none | none |
 | DOCUMENTATION-PROTOCOL-R244 | Lifecycle terminality or disposition eligibility | Forbidden: treating either as granting an automatic removal | none | none |
-| DOCUMENTATION-PROTOCOL-R245 | Retiring a package or standalone document | Required: write every still-current obligation, decision, structure or procedure to its canonical owner and summarize lineage in that owner's Traceability | none | none |
+| DOCUMENTATION-PROTOCOL-R245 | Retiring a package or standalone document | Required: write every still-current obligation, decision, structure or procedure to its canonical owner and summarize lineage in that owner's lineage section (Traceability, Adoption Boundaries or Authority and Effect) | none | none |
 | DOCUMENTATION-PROTOCOL-R246 | Retiring a package or standalone document | Required: update every inbound consumer in the same logical change | none | none |
 | DOCUMENTATION-PROTOCOL-R247 | Retiring a package or standalone document | Required: add its artifact number to the identity space `reserved_history` in the same change | none | none |
 | DOCUMENTATION-PROTOCOL-R248 | Retiring a package or standalone document | Required: the removing change records in a surviving Task the last commit and path carrying each removed body and that the commit is reachable from `main` | manual | none |
@@ -664,7 +667,8 @@ evidence; surrounding instructions remain current and validated normally.
   interface section or `IF` child identity is issued. Its requirements table
   lists every declared FR and NFR once, with the declaration as its Statement.
   A declaration in an approved Requirement Package that has no modal verb binds
-  as `must`; one written with `should` or `could` takes that priority. A Description owns current structure; an ADR owns one
+  as `must`; one written with `should` or `could` takes that priority. A
+  Description owns current structure; an ADR owns one
   consequential choice. Preserve accepted decisions and use explicit
   supersession when the choice changes.
 - Use the Description core for architecture views: context and scope
@@ -951,7 +955,9 @@ Retire a package or a standalone document only when all of these hold.
    removal.
 2. Every still-current obligation, decision, structure, or procedure it owns is
    written to its canonical agent governance, 01, 02, or 05 owner, and its
-   lineage is summarized in that owner's lineage section: Traceability in a Requirement Package, Decisions and Adoption / Adoption Boundaries in an Architecture Description, and Decision / Authority and Effect in an ADR.
+   lineage is summarized in that owner's lineage section: Traceability in a
+   Requirement Package, Decisions and Adoption / Adoption Boundaries in an
+   Architecture Description, and Decision / Authority and Effect in an ADR.
 3. Every inbound consumer is updated in the same logical change.
 4. Its artifact number is added to the Registry `reserved_history` of its
    identity space in the same change.
@@ -1010,7 +1016,7 @@ Named checks cover the rules whose Enforcement names one; the other rules name n
 - Authoring: no named check (R46-R60, R63-R83, R85-R86).
 - Language: no named check (R88-R94).
 - Folder guides: no named check (R100-R102, R104-R111, R113-R122).
-- Roles: no named check (R124-R162).
+- Roles: no named check (R124-R162, R258-R260).
 - Versions: no named check (R163-R165, R167-R168, R173, R175-R184, R186).
 - Release: no named check (R187-R191, R194-R195).
 - Frameworks: no named check (R196-R203).
