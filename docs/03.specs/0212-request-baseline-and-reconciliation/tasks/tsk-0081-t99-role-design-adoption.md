@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.8.0"
+version: "0.9.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -328,6 +328,25 @@ statements describe behaviour rather than rules. The provider capability
 Limits names a gap the policy states, which does not contradict its next
 bullet.
 
+#### W144 research, audit and data references
+
+The research, audit and data reference forms move to the core research, audit
+and data-reference roles: the Registry profiles and templates carry the core
+sections, the research sources table, the audit findings table and the data
+schema table, and the three roles are bound. All 23 research members move
+section by section; no audit or data member exists. Writing agents drafted,
+from each member only, its Versions and Dates text, its core sources table
+(266 rows, by the member's own source IDs where it has them) and text for
+required sections the member left empty, saying where it records nothing. The
+drafts were applied in the main checkout, because a request brief cannot be
+bound in an agent worktree. Compared with `main`, the members and the 0002
+pack README lost no line; the 17 changed lines are anchor repoints and
+corrected section names. An independent review found a stale section name,
+sources-table cells the member does not support, Related Documents links under
+unrelated labels, a Question section without the member's question, Versions
+and Dates text wider than its table, and pointers left facing the wrong way;
+each is corrected from the member's own text.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -426,6 +445,12 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Governance review corpus | 137 | W143 | document-corpus | check-changed against `origin/main`, check-contracts, governance contract, provider surface renderer, link alignment and markdownlint at `bde3d458c` | PASS | 18 changed and 0 violations; 0 contract violations; governance contract, renderer and alignment PASS; 0 lint issues | required | - |
 | Governance re-review | 137 | W143 | independent-review | Fix commits `c19cb34fe`, `fbb211eeb`, `bde3d458c` and `9c4093232` against the governance review | PASS | APPROVE at `9c4093232`; I1 to I3 and M1 to M4 fixed; seven minor notes, four applied | required | Governance review |
 | Governance review regression | 137 | W143 | document-governance-regression | The ten governance modules and test_script_manifest at `9c4093232` in a separate worktree, with the exit code read directly; the later commits change only table cells and this record | PASS | 782 tests in 2490 seconds, exit 0 | required | - |
+| References form RED | 137 | W144 | role-design-binding | test_template_definition and metadata.test_heading with only the W144 test changes, at `aa4d100f5` on `82cf41b9d` | FAIL | 163 tests, 2 failures and 8 errors: research unbound and no research-member representative | required | - |
+| References form GREEN | 137 | W144 | role-design-binding | The ten governance modules, test_script_manifest, test_links and test_language at `9b1b7f37a` in a separate worktree | PASS | 917 tests in 1847 seconds, exit 0 | required | References form RED |
+| References move fidelity | 137 | W144 | document-move | The 23 members and the 0002 pack README against `main`, non-heading lines lost and added | PASS | 0 lines lost beyond the 17 deliberate edits: 13 anchor repoints and 4 corrected section names or directions; 733 lines added | required | - |
+| References corpus | 137 | W144 | document-corpus | check-changed against `origin/main`, check-contracts, link alignment, corpus lifecycle and markdownlint at `9b1b7f37a` | PASS | 27 changed and 0 violations; 0 contract and lifecycle violations; alignment PASS; 0 lint issues | required | - |
+| References review | 137 | W144 | independent-review | Commits `aa4d100f5` and `9b1b7f37a` | FAIL | CHANGES_REQUIRED: a stale section name, unsupported sources-table cells, no Task record, and seven minor placement and wording findings | required | - |
+| References review fix checks | 137 | W144 | document-corpus | check-changed, link alignment and navigation, markdownlint, metadata.test_heading and metadata.test_reference after the fixes, rebased on `3d53456da` | PASS | 27 changed and 0 violations; alignment and navigation PASS; 0 lint issues; tests OK | required | - |
 
 ### Resolution Links
 
@@ -433,7 +458,7 @@ Conformance GREEN resolves Conformance RED, and Foundation re-review resolves
 Foundation review. Runbook form GREEN, Reference table GREEN, Runbook
 regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
 Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Policy review approval, Policy re-review approval, Policy hosted candidate
-rerun, Governance form GREEN, Governance regression, Governance old-form GREEN, Governance re-review, Incident regression rerun, Review fix GREEN, Review fix
+rerun, Governance form GREEN, Governance regression, Governance old-form GREEN, Governance re-review, References form GREEN, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
 rows. The comparison baseline stays
 open until every role group conforms.
