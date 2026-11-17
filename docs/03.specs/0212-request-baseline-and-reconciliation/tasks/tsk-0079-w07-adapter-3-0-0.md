@@ -1,10 +1,10 @@
 ---
 title: "W07 Native Provider Adapter Task"
-version: "0.1.6"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-18"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0079"
 parent_ids:
@@ -289,6 +289,48 @@ route, `2026-11-15T23:35:01.179Z PostToolUse:Edit exit=0`. This records
 the project hook process's exit status. The internal validator's
 outcome requires separate evidence.
 
+#### W07-ADAPTER 4.2.0 recheck
+
+The 2026-11-18 W07-ADAPTER request read D17, D08 and D07 of the 4.2.0
+package at `94f551cb6`. D17 adds the separation of preparation failure from
+target denial, the meaning of a reached boundary, and the rule to keep both
+the official text and the installed observation when they differ. D08 adds
+the brief rules that TSK-0078 rechecked. D07 adds capture and scheduled
+analysis rules owned by W08-CAPTURE and W08-ANALYSIS. No attachment
+disposition targets W07-ADAPTER; D-A03 assigns projection checks to
+RUNTIME-CLOSE. No external source was rechecked.
+
+Since `ffc3247ce` the dispatcher, hook wrappers, Provider Registry bindings
+and settings are unchanged. `.claude/provider.md` gained only the owner
+attribution of four deny rules, and the renderer change concerns README
+forms. Renderer drift is zero and the governance contract passes. The
+installed CLIs report Claude Code 2.1.326 and codex-cli 0.169.0. The
+adapter keeps the documented `onFailure` translation and states that a
+timeout denial has not been observed, as D17 requires.
+
+This continued Claude session observed the project hooks on the Bash route,
+beyond the earlier Edit route evidence:
+
+| Observation | Route | Result |
+| --- | --- | --- |
+| `hookify.block-direct-main-push` | PreToolUse Bash | Denied `git push origin --delete` and an explicit `:refs/heads/` deletion run from `main`; the deletions then used the GitHub API. The rule over-approximates a branch deletion from `main` as a main push; this is recorded, not changed |
+| `hookify.warn-pre-commit-manual` | PreToolUse Bash | Warning delivered as context for a command that only contained the text `pre-commit run` |
+| `hookify.warn-conventional-commit` | PreToolUse Bash | Warning delivered for a valid subject followed by a second `-m` body, a false positive |
+| `code-reviewer` subagent | Native role tools | The reviewer reported having no Bash and used Read and Grep only; this shows its configured tool set, not a tested shell or sensitive-path denial |
+
+The commit warning pattern took the last `-m` through a greedy `.*`, so any
+body paragraph after a valid subject warned, and it missed a combined flag
+such as `-am`. The rule now reads only the first message flag, including
+combined short flags. The regression first failed on two valid commands and
+one invalid `-am` command, then passed. In this session the native hook then
+warned for an `echo` of `git commit -m "unknown: Subject" -m "docs: Body"` and
+stayed silent for `git commit -q -am "fix(ci): Subject" -m "Body paragraph."`.
+
+Unsupported pre-tool output, the reviewer shell and sensitive-path denials,
+worker dispatch, the Codex desktop reviewer write-open failure, and capture
+and memory integration remain unobserved here. RUNTIME-CLOSE owns the native
+matrix and W08-CAPTURE owns the collector.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -348,6 +390,9 @@ project trust before it can supply the missing delivery evidence.
 | Trusted Claude Stop retry | 135 | W140 | silent native Stop retry witness | Reported trusted Claude session | NOT_RUN | Closing reminder and turn end observed, no same-turn block and retry pair reported | required | - |
 | Trusted Claude project Stop retry completion | 135 | W140 | silent native Stop retry witness | Trusted Claude hook diagnostics and reported first block, 62426a1d2 | PASS | Same-turn project retry exited 0 with no further project block response | required | Trusted Claude Stop retry |
 | Reported Claude Task metadata | 135 | W140 | document metadata | Claude-authored Task snapshot before reconciliation | PASS | Session reported 92 documents selected, zero violations and exit 0 | optional | - |
+| 4.2.0 commit warning RED | 135 | W140 | commit contract translation test | Two valid multi-message commands and one invalid `-am` command at `94f551cb6` | FAIL | Two false warnings and one missed warning | required | - |
+| 4.2.0 commit warning GREEN | 135 | W140 | commit contract translation test | First-message-flag pattern | PASS | All cases pass; adapter and governance routing modules pass, renderer drift zero, governance contract clean | required | 4.2.0 commit warning RED |
+| 4.2.0 native Bash hook route | 135 | W140 | live PreToolUse Bash in this Claude session | Main push denial, two warnings and the corrected commit pattern | PASS | Deny and warn delivered on the Bash route; corrected pattern warned on the invalid probe and stayed silent on the valid one | optional | - |
 
 ### Resolution Links
 
@@ -391,4 +436,5 @@ behavior. This Task records the execution and acceptance.
 
 ### Next Owner
 
-The implementer owns W140. The owner decides criterion 135.
+RUNTIME-CLOSE owns the remaining native matrix and W08-CAPTURE the
+collector. The owner decides criterion 135.
