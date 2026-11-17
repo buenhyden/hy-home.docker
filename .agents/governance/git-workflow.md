@@ -1,37 +1,43 @@
 ---
 title: "Git Workflow Governance"
-version: "1.8.1"
+version: "1.9.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 ---
 
 # Git Workflow Governance
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 This rule defines the mandatory git workflow for all contributors and agents.
 
-### Authority
+#### Authority
 
 This policy is the canonical owner of local Git authoring, branch integration, commits, review, and remote delivery boundaries under [bootstrap precedence](bootstrap.md#authority-and-precedence).
-
-## Scope
 
 ### Applies To
 
 Local Git authoring, branch integration, commits, review, and remote delivery boundaries.
 
-### Exclusions
+#### Exclusions
 
 None: this document states no exclusion.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| GIT-WORKFLOW-R1 | Every commit | Required: use Conventional Commits per `.cz.toml` (types, grammar, header length); capitalized description without trailing period; one-block body; trailers last | `.cz.toml` / `cz check --message-length-limit 75` / installed `commit-msg` hook / remote contributor commit-range check | Hook observation or `cz check` output |
+| GIT-WORKFLOW-R2 | Creating a branch or worktree | Required: use `main` as protected baseline and `<type>/<short-description>` branches; worktrees under `.worktrees/<branch>`; never stash, reset, discard or force-commit uncommitted user work | Installed `pre-push` guard refuses `refs/heads/main` updates / branch protection on `main` / manual for naming | none |
+| GIT-WORKFLOW-R3 | Opening or updating a PR | Required: self-review, run focused checks and document-link validation, keep one Spec Package per PR with atomic commits, and request review only after checks pass | `python3 scripts/validation/run-ci-gate.py --profile changed` / `candidate-quality` required check / manual | Task record of link validation input and result |
+| GIT-WORKFLOW-R4 | Always | Required: use `fix` with regression evidence and `refactor` only for behavior-preserving changes; Forbidden: pushing a tag independently; release tags are `v` plus strict SemVer | `.cz.toml` `tag_format` for release tags; manual for `fix` and `refactor` use | none |
+| GIT-WORKFLOW-R5 | Repository-modifying agent work | Required: create logical Conventional Commits after verification and before declaring done; stage only owned files; Forbidden: committing against user instruction, incomplete work, missing checks or secrets | manual | Report of reason and remaining state when not committed |
 
 #### 1. Commit Standards
 
@@ -159,7 +165,19 @@ automatic enforcement from configuration alone.
   would include secrets or unrelated changes. In that case, report the reason and
   remaining state.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+#### Approval and Review
+
+None: no exception exists to approve.
+
+## Enforcement
+
+### Mechanisms
 
 #### 6. Enforcement
 
@@ -201,23 +219,24 @@ list.
 SDLC phases and document Stages are separate axes from these cells, and the
 current Task records each binding's evidence.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+Only the commit grammar and the server-side rows are mechanically enforced; the remaining rules rest on review or agent discipline.
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-### Approval and Review
-
-None: no exception exists to approve.
+- Client hooks can be bypassed with `--no-verify`; only the server rows are enforcement.
+- Whether a `commit-msg` hook is installed must be observed; configuration alone is not enforcement evidence.
+- The branch naming, worktree, and new-branch-start rules name no check.
+- Pull request protocol steps (self-review, link validation, Spec-per-PR, atomic commits, review feedback) rest on review; no gate reads the PR body.
+- Operational best practices (fix/refactor evidence, release tags, changelog) rest on review and owner approval for historical refs.
+- Agent completion commit discipline rests on agent judgment and user instruction.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Change and Adoption
+### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 

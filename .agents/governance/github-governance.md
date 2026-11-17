@@ -1,38 +1,51 @@
 ---
 title: "GitHub Governance Policy"
-version: "1.10.1"
+version: "1.11.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 ---
 
 # GitHub Governance Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 Normative policy baseline aligning agent behavior with GitHub repository operations.
 A stricter rule in another canonical governance owner prevails over this document.
 
-### Authority
+#### Authority
 
 This policy is the canonical owner of repository protection, pull requests, hosted workflows, and remote actions under [bootstrap precedence](bootstrap.md#authority-and-precedence).
-
-## Scope
 
 ### Applies To
 
 Repository protection, pull requests, hosted workflows, and separately authorized remote actions.
 
-### Exclusions
+#### Exclusions
 
 None: this document states no exclusion.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| GITHUB-GOVERNANCE-R1 | Always | Required: treat `main` as protected (no direct or force pushes, no bypassed checks), report remote enforcement as blocked or unverified until authenticated read-back, and read CODEOWNERS review enforcement state rather than assume it | manual (remote protection per `.github/rulesets/main-protection.md`) | Authenticated read-back recorded in `.github/rulesets/main-protection.md` |
+| GITHUB-GOVERNANCE-R2 | Pull request and review work | Required: PR complete only with required checks passing, required reviews approved and no unresolved `blocker`; Forbidden: self-approval or bypassing required reviewers; Required: list touched CODEOWNERS paths; remote Issue/tag/release mutation needs approval naming exact target | `candidate-quality` check; owner acceptance and fresh-context diff review per `../prompts/diff-review.md` | Task Criterion Acceptance |
+| GITHUB-GOVERNANCE-R3 | Merge or branch lifecycle work | Required: deliver every change to `main` through a pull request; Required: delete a branch only when change is reachable, worktree clean and deletion requested; Forbidden: rewriting a named recovery commit or modifying another agent's in-progress branch; Forbidden: merging Draft/WIP PRs; Renovate PRs updated by Renovate only | manual (branch protection requires up-to-date branches) | none |
+| GITHUB-GOVERNANCE-R4 | Workflow authoring or review | Required: least-privilege `GITHUB_TOKEN`, actions pinned to a full commit SHA, no secrets in logs, no untrusted input into `$GITHUB_ENV`/`$GITHUB_OUTPUT`/`run:`, pinned and reviewed external reusable workflows; Allowed: OIDC preferred over long-lived secrets (flag as `medium`) | `scripts/lib/gate/github_workflow_contract.py` rejects unregistered Actions and runtimes other than `node24` or `composite`; `sha_pinning_required` repository setting; `blocker` findings in review | `.github/workflow-contract.yml` manifest |
+| GITHUB-GOVERNANCE-R5 | Choosing local or remote checks | Required: local explicit formatting, focused RED/GREEN, message validation and read-only diagnostics; remote PR owns aggregate candidate QA once; main security/SARIF is a distinct observation; manual release producer runs only on named version and trusted main revision | `candidate-quality` PR workflow; shared execution boundary in `quality-standards.md` | none |
+| GITHUB-GOVERNANCE-R6 | User approves remote GitHub mutation | Required: bind to concrete repository and surface; Required: record approval source, target, command class, before/after state and rollback; Forbidden: bypassing required checks, weakening protection or exposing secrets unless the user names that action and target | manual | Task evidence fields |
+| GITHUB-GOVERNANCE-R7 | Tracked workflow file authored | Forbidden: dispatching, enabling remotely or changing checks/rulesets/protection/environments/deployments/releases until the user names the repository and remote surface; Allowed: authoring and validating locally and pushing with the request's branch and PR | manual | none |
+| GITHUB-GOVERNANCE-R8 | PR-related evidence recording | Required: use the shared change-type verification matrix; record local results apart from hosted run IDs/head commits/conclusions/reviews/protection; Required: report missing or unrun checks as blocked/skipped/unverified; Forbidden: CI-only citation when a cheap local check exists | shared change-type verification matrix in `quality-standards.md` | Task record of local and hosted results |
+| GITHUB-GOVERNANCE-R9 | Change to a QA definition | Required: tie the owner's actual acceptance to the diff and revision and record the trusted base definition source and revision in the Task; Forbidden: treating a candidate's own workflow success as proof of an unchanged or approved QA definition; Forbidden: `pull_request_target` runs of candidate code or implicit App/credential creation | manual | Task record of trusted base source and revision |
+| GITHUB-GOVERNANCE-R10 | Always | Required: take instruction authority from repo-local assets only (root shims, `.agents/`, folder guides, authored adapters); Forbidden: adopting a GitHub-native instruction hierarchy until governance explicitly adopts it | none | none |
+| GITHUB-GOVERNANCE-R11 | CI/CD job identity or required context changes | Required: update workflow-contract, workflow YAML and tracked protection target together, then observe remote state separately; Forbidden: administrative bypass when source and remote state differ; `candidate-quality` aggregate fails on missing, failed, cancelled or contradictory results | `.github/workflow-contract.yml` with the focused checker; required `candidate-quality` aggregate | Separate remote-state observation |
+| GITHUB-GOVERNANCE-R12 | Issue intake and Project questions | Required: Issue forms collect intake while Specs keep AC/contracts and Tasks keep commands, results, acceptance and authorization; Forbidden: adding an App/PAT just to mirror Task state | manual | none |
 
 #### 1. Repository Protection Contract
 
@@ -284,7 +297,19 @@ just to mirror Task state. See
 - <https://docs.github.com/en/actions/how-tos/monitor-workflows>
 - <https://github.com/zizmorcore/zizmor/releases/tag/v1.28.0>
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+#### Approval and Review
+
+None: no exception exists to approve.
+
+## Enforcement
+
+### Mechanisms
 
 #### 7. Completion Gate (GitHub-Specific)
 
@@ -298,23 +323,25 @@ Before an agent declares any PR-related task complete, it must confirm:
 
 If any gate is unmet, the task status is "blocked" not "done."
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+The policy names checks for workflow pinning, PR completion and the completion gate, but most rules rest on review, approval or remote state it does not control.
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-### Approval and Review
-
-None: no exception exists to approve.
+- Remote branch protection and rulesets are not applied by tracked files; state stays `unverified` until authenticated read-back, and "no exceptions" is agent behavior even where GitHub does not enforce it.
+- CODEOWNERS review gating depends on whether remote protection enables `require_code_owner_reviews`.
+- Review of a one-developer repository rests on the five-part risk handling and owner acceptance; one person's review is never two approvals.
+- Branch deletion, history rewrite, Renovate handling and Issue/Project rules name no check.
+- Remote mutations, workflow dispatch and QA definition changes rest on user approval and Task evidence.
+- QA definition trust cannot be enforced remotely without a separately approved verification definition and protection settings read back; a local revision observes none of it.
+- Local instruction authority names no check.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Change and Adoption
+### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 

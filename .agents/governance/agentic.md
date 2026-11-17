@@ -1,15 +1,15 @@
 ---
 title: "Agentic Engineering Policy"
-version: "3.0.0"
+version: "3.1.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 ---
 
 # Agentic Engineering Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
@@ -17,23 +17,29 @@ Agent governance defines auditable, provider-neutral AI-agent execution. Canonic
 roles live in `.agents/roles/`, reusable procedures live in `.agents/skills/`, and provider
 selection and permission mappings live in `.agents/governance/providers/registry.yaml`.
 
-### Authority
+#### Authority
 
 This policy is the canonical owner of provider-neutral agent execution, delegation, capability intake, and Task evidence under [bootstrap precedence](bootstrap.md#authority-and-precedence).
-
-## Scope
 
 ### Applies To
 
 Provider-neutral agent execution, delegation, capability intake, and Task evidence.
 
-### Exclusions
+#### Exclusions
 
 None: this document states no exclusion.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| AGENTIC-R1 | Always | Required: keep evidence-first execution with one primary owner and bounded delegation; the shared PostToolUse hook validates without rewriting (`scripts/hooks/post-tool-validate.sh`), and commands/results/skips are recorded in the Task | `scripts/hooks/post-tool-validate.sh` (PostToolUse validation only) / manual | Task record |
+| AGENTIC-R2 | Planned scoped edits or a mutating handoff | Required: state the request brief after discovery and register a BriefRecord 3.0.1 when the native binding is available; the binding never grants permission | `scripts/lib/hooks/request_brief.py` (`status` / `bind`) / shared pre-tool hook on recognized exact edits in enrolled sessions | Task record |
+| AGENTIC-R3 | A registered brief is delegated | Required: pass the session and revisions with owned paths through `request_brief check ... dispatch` before dispatch and before a delegated writer acts or resumes; workers report `working`/`blocked`/`done` | `python3 -m scripts.lib.hooks.request_brief check SESSION dispatch REQUEST_REVISION BRIEF_REVISION PATH` (consistency only) | Delegation envelope and Task record |
+| AGENTIC-R4 | Taking in an external agent catalog, prompt collection or role library | Required: follow gap, pinned upstream, offline inspection, merge-first order; Forbidden: upstream auto-update, user-global install, running an upstream installer | manual (approved Spec Package / independent review) | Decision and evidence in the current Task |
+| AGENTIC-R5 | Always | Required: follow discovery, applicability, approved execution, focused verification, independent review, completion evidence; failed verification returns to implementation | none | none |
 
 #### Execution Rules
 
@@ -207,7 +213,19 @@ stops at approval. Retry bounds come from [workflows.md](workflows.md); provider
 controls come from the provider registry. Neither may be replaced by
 prompt-local policy.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+#### Approval and Review
+
+None: no exception exists to approve.
+
+## Enforcement
+
+### Mechanisms
 
 #### Evaluation Evidence
 
@@ -236,23 +254,24 @@ Evaluation scores do not authorize publication, provider calls or remote writes.
 Execution and acceptance stay in the Task; aggregate scores are not a second
 progress ledger.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+The policy names few mechanical checks for its execution rules; the following rest on review, owner approval, or native behavior.
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-### Approval and Review
-
-None: no exception exists to approve.
+- Execution rules (single owner, delegation limits, skill invocation, Task recording, no paid model API, adapters) name no check beyond the PostToolUse hook and review.
+- The request brief binding never grants permission; coverage is limited to recognized exact file edits in enrolled sessions.
+- Unenrolled sessions, unrecognized writes, native dispatch and provider-internal task transitions have no interception.
+- Hard enforcement of budgets, RPM, TPM or price is not inferred; only a supported native observation can show it.
+- External capability intake rests on an approved Spec Package, independent review and the Task decision record.
+- Evaluation evidence rests on the owning Task and the receiving controller; a receipt cannot authenticate its own approval.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Change and Adoption
+### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 

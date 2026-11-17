@@ -1,37 +1,39 @@
 ---
 title: "Stage Authoring Matrix"
-version: "1.3.3"
+version: "1.4.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Stage Authoring Matrix
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 Map each stage to its layer, canonical owner, and completion evidence.
 
-### Authority
+#### Authority
 
 This policy is the canonical owner of the stage ownership and document type family map under [bootstrap precedence](bootstrap.md#authority-and-precedence).
-
-## Scope
 
 ### Applies To
 
 Current stage roles, document families, canonical ownership, and verification routes.
 
-### Exclusions
+#### Exclusions
 
 Shared README profiles, native envelopes, and scoped registry/schema/template reads keep the exceptions the documentation protocol registers.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| STAGE-AUTHORING-MATRIX-R1 | Authoring or classifying a document by stage or type | Required: give every document a `type` as a `family/kind` pair whose family names the owning authority (`governance`, `sdlc`, `operation`, `reference`, `common`) and keep the stage-to-layer-to-owner map; Stage 98 uses `common/readme` | Stage 99 registry/schema tests | Per-stage completion evidence (contract/renderer parity/Task for governance; registry/schema tests for 99) |
 
 | Stage | `layer` | Purpose | Canonical owner | Completion evidence |
 | --- | --- | --- | --- | --- |
@@ -90,29 +92,40 @@ observed evidence and never authenticates an approval source. The Registry owns
 document-family state vocabulary, direct parent cardinality, result and review
 table shapes, and lifecycle generation; the SDLC owns their execution meaning.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+#### Approval and Review
+
+None: no exception exists to approve.
+
+## Enforcement
+
+### Mechanisms
 
 The canonical home contains only registered canonical category sources.
 Unknown or unsafe entries fail closed and are preserved for review; they are not
 stale generated files eligible for automatic deletion.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+The policy names registry/schema tests for Stage 99 and renderer parity for agent governance, but most of the map rests on review:
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-### Approval and Review
-
-None: no exception exists to approve.
+- Stage ownership, `layer` values, and document type families are stated without a named check here; the Stage 99 profile and registry/schema tests are the only named route.
+- Discovery, instruction loading, invocation, and runtime acceptance of provider surfaces are separate and not proven by this policy.
+- Unknown or unsafe canonical-home entries fail closed and are preserved for review, so their disposition is manual.
+- Stage 03 approval and Task evidence rest on review; the Task never authenticates an approval source.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Change and Adoption
+### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 

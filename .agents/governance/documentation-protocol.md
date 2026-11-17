@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "7.2.0"
+version: "7.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -9,29 +9,47 @@ updated: "2026-11-17"
 
 # Documentation Protocol
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 Keep one document authority per role and preserve truthful provenance throughout authoring and retirement.
 
-### Authority
+#### Authority
 
 This policy is the canonical owner of document authority, authoring, and retirement under [bootstrap precedence](bootstrap.md#authority-and-precedence).
-
-## Scope
 
 ### Applies To
 
 Current authored documents, registered machine inputs, and retained historical units.
 
-### Exclusions
+#### Exclusions
 
 A provider-owned runtime projection is exempt from the metadata envelope. Operator-created files under `secrets/` and the body of a terminal Task at a registered Task path are outside the fenced-path check of `check-document-links.py`.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| DOCUMENTATION-PROTOCOL-R1 | Always | Required: treat the Stage 99 registry as the only machine authority for paths, profiles, required sections, lifecycle values and identifier relations; governance owns authoring behavior and `scripts/` owns validation | none | none |
+| DOCUMENTATION-PROTOCOL-R2 | Creating or changing a document in a stage | Required: keep each stage to its owned content (01 requirements, 02 architecture, 03 change contract, 05 operations, 90 evidence, 98 README only, 99 templates) / Forbidden: parallel PRD, SRS, design, test, release, progress or handoff authorities; root `DESIGN.md` stays UI authority only | none | none |
+| DOCUMENTATION-PROTOCOL-R3 | Document outside `docs/` | Forbidden: link to or depend on individual numbered-stage documents for current agent instructions / Required: state the rule in its canonical owner and route through a README; machine reads of Stage 99 data are narrow validation reads | `leaf.docs-traceability` via the `entrypoint` mode of `check-document-links.py`; review for authority dependence | `check-document-links.py` findings |
+| DOCUMENTATION-PROTOCOL-R4 | Any link in a governed document | Required: give each link one of four types (`normative`, `evidence`, `historical`, `navigation`), pointing forward only; evidence links are commit-pinned `https://` URLs; sort inbound consumers by type before deleting or moving a document; record relations only on the Writer side | `check-document-links.py` (resolution and `--mode alignment` for titles and pinned evidence); `check-document-metadata.py` for `parent_ids` and `supersedes`; Registry validator; manual review for type choice | Check output; `check-document-links.py --impact <path>` report |
+| DOCUMENTATION-PROTOCOL-R5 | Creating, moving, naming or editing a document | Required: follow Authoring Rules 1 to 15 (registry profile, numbered slugs, canonical ID links, frontmatter envelope and order, version increase, Task evidence, runnable fenced command paths, cross-links in the same change) | `check-document-metadata.py --mode check-changed` for version; `check-document-links.py --mode commands` via `leaf.docs-traceability`; Registry checks; review for version increment | Check output; co-located Stage 03 Task |
+| DOCUMENTATION-PROTOCOL-R6 | Authoring prose in a document | Required: write prose in the language the Registry profile sets (README Korean; folder `AGENTS.md` English; other `docs/05.operations/` Korean; other `docs/` English; non-README `.agents/` and provider documents English); structure tokens keep original form | `language` mode of `check-document-links.py`; metadata body contract for changed documents | Check output |
+| DOCUMENTATION-PROTOCOL-R7 | A README directory | Required: a folder router links only direct child directories or their `README.md`; a collection README indexes its direct files | `navigation` mode of `check-document-links.py` | Check output |
+| DOCUMENTATION-PROTOCOL-R8 | A folder with a README or `AGENTS.md` | Required: write README for people and `AGENTS.md` for agents without repeating each other; carry `AGENTS.md` only where the Registry `folder-agent-guide` lists it, with its generated `CLAUDE.md` shim / Forbidden: copying policy bodies into a guide or agent instructions into a README / Required: historical quotations use the explicit evidence blockquote or table marker | A test keeps tracked guides equal to the Registry list; `provider_surface_renderer.py` writes and checks the shim; review for the rest | Test and renderer check output |
+| DOCUMENTATION-PROTOCOL-R9 | Authoring a role document | Required: use the core form for the role (`COMMON-DOC-FORM-1` sections), moving a role in one change covering all its documents; follow the per-role content rules; keep `next_review_at` within 180 days of `updated` for a Guide, Operations Policy or Runbook | Registry `required_sections` and `required_subsections` checked by the validator for order; missing or over-interval `next_review_at` rejected; review for content rules | Validator output |
+| DOCUMENTATION-PROTOCOL-R10 | Changing a versioned document or contract | Required: give a changed object a version of higher precedence than its base using the one SemVer parser; choose MAJOR, MINOR or PATCH by consumer compatibility; record the affected consumer and compatibility evidence in the current Task | `check-document-metadata.py --mode check-changed`; `scripts/lib/document_governance/semver.py`; `scripts/operations/release.py` for releases; review for increment | Check output; current Task |
+| DOCUMENTATION-PROTOCOL-R11 | Release readiness or deployment evidence | Required: keep release facts with the Release Runbook, the current Task, CHANGELOG, tag and CI result / Forbidden: registering a Release Record profile, template or generator under any name | Registry validator rejects release-named profiles and roles; generator checked by review | Validator output; current Task |
+| DOCUMENTATION-PROTOCOL-R12 | Adopting an external framework | Allowed: use Spec Kit, Diataxis, C4, ADR, arc42 and Google SRE as informing sources at the stated adoption level / Forbidden: replacing stage taxonomy or machine contracts with them | none | none |
+| DOCUMENTATION-PROTOCOL-R13 | A documentation gap is found | Required: route it to its owner by gap type (governance, knowledge, prompts, Stage 01 to 03, 05, 90, 99), and for a protected or ambiguous change stop mutation and bind approval, scope and recovery in a Task first | manual | Task record |
+| DOCUMENTATION-PROTOCOL-R14 | Retiring or retaining a development document | Required: retire by summarizing still-current meaning to its owner and deleting the file, using the Registry `reserved_history`; retain while it owns current content; Forbidden: retirement by age or count / Forbidden: current documents linking into `docs/98.archive/` or naming a retired identity in `parent_ids`, `supersedes` or `superseded_by` | Registry allocation check rejects dropping a reserved number; link alignment and metadata checks | Registry `reserved_history`; check output |
+| DOCUMENTATION-PROTOCOL-R15 | Disposing of a package or document by status | Required: apply the profile lifecycle first and the completion checklist before removal; delete a Stage 03 package only when ready for removal review and approved; keep a package with a non-terminal Task; cancelled Tasks record `reason`, `authorization_ref` and `criteria_disposition`; Forbidden: retiring Incident and Postmortem records | Registry validator rejects unreachable disposition statuses and any status on Incident or Postmortem profiles; SDLC readiness and batch approval | Task record; validator output |
+| DOCUMENTATION-PROTOCOL-R16 | Retiring a package or standalone document | Required: all five preconditions hold (eligible profile/status in `archive_retention.disposition_entry_statuses`, meaning moved to its owner, inbound consumers updated, number added to `reserved_history`, last commit and path recorded in a surviving Task and reachable from `main`) / Forbidden: retiring for age, count or missing inbound links | manual for the Task record of the last commit and path (stated as not a gate); Registry for `reserved_history` | Surviving Task record with summary map and consumer cutover |
+| DOCUMENTATION-PROTOCOL-R17 | Retiring a Stage 03 package or implementing a capability | Required: keep one Stage 01 Requirement owner and one Stage 02 Description or ADR owner per capability, and move the package outcome to them before retirement | none | none |
 
 #### Authority
 
@@ -716,7 +734,19 @@ structure and durable decision. Retiring a Stage 03 package never removes that
 coverage: the package's implemented outcome moves to those owners before the
 package is retired.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+#### Approval and Review
+
+None: no exception exists to approve.
+
+## Enforcement
+
+### Mechanisms
 
 - `python scripts/validation/check-document-metadata.py --mode check-active`
 - `python scripts/validation/check-document-links.py --mode all` (links, entry
@@ -724,23 +754,27 @@ package is retired.
 - Stage checks selected by the
   [change-type verification matrix](quality-standards.md#5-change-type-verification-matrix).
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+Named checks cover metadata, links, entry points, fenced command paths, navigation, language and the Registry validator; the rest rests on review, owner approval or manual records.
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-### Approval and Review
-
-None: no exception exists to approve.
+- Link type choice (Normative versus Navigation for an untitled link, and whether the author chose the right type) is a review; the link checker runs in the local profile and its hosted CI route is not wired yet.
+- Authority dependence of outside-docs text on stage documents is not inferred by `check-document-links.py`; it is reviewed separately.
+- The Promotion relation has no check; the reviewer applies the SDLC promotion rule. The Spec `Owning Requirements` prose and the ADR `Supersession` section are checked by review.
+- Which version increment a change needs is left to review; only equal or lower precedence is checked, and Registry rows other than the product version have no gate that compares a changed value.
+- The language check is a heuristic: it cannot judge meaning and does not judge text too short to measure.
+- Whether a README or folder `AGENTS.md` carries agent-directed content, and the Role-Specific Authoring content rules (reader need, diagrams, postmortem actions, incident wording), name no check beyond the profile body validation and are left to review.
+- A Release Record generator is checked by review.
+- Retirement preconditions 2 to 5, including the record of the last commit and path carrying each removed body, are a manual record, not a gate; Implementation coverage names no check.
+- Hook, provider and runtime behavior are outside this policy; any separately authorized operation follows Approval boundaries.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Change and Adoption
+### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 

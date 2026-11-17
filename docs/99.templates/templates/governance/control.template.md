@@ -12,54 +12,58 @@ updated: "{{UPDATED}}"
 
 # {{TITLE}}
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
-{{CONTROL_PURPOSE}}
+<!-- Author prompt: State the control's purpose and link the bootstrap policy and the owning policy that give it authority. -->
 
-### Authority
-
-{{BOOTSTRAP_AND_OWNING_POLICY_LINKS}}
-
-## Scope
+{{CONTROL_PURPOSE_AND_AUTHORITY_LINKS}}
 
 ### Applies To
 
-{{SURFACES_AND_ACTORS_UNDER_CONTROL}}
+<!-- Author prompt: Name the surfaces and actors under this control and those outside it. -->
 
-### Exclusions
-
-{{SURFACES_AND_ACTORS_OUTSIDE_THIS_CONTROL}}
+{{SURFACES_ACTORS_AND_EXCLUSIONS}}
 
 ## Rules
 
 ### Requirements
 
+<!-- Author prompt: List each rule in the table: Rule ID is a stable identifier within this policy, Condition when it applies, Requirement what is allowed, required or forbidden, Enforcement the actual check or "manual", and Evidence how the guarantee is confirmed or "none". Detail follows the table. -->
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| {{RULE_ID}} | {{CONDITION}} | {{REQUIREMENT}} | {{ENFORCEMENT}} | {{EVIDENCE}} |
+
 {{REQUIRED_AND_PROHIBITED_BEHAVIOR}}
 
-### Enforcement
+### Exceptions
+
+<!-- Author prompt: Name the scoped exceptions and the authorization boundary that approves them; write "None" when there is none. -->
+
+{{SCOPED_EXCEPTIONS_AND_AUTHORIZATION}}
+
+## Enforcement
+
+### Mechanisms
 
 <!-- Author prompt: Name the scoped checks, their expected signals, and the limits of what that evidence proves. -->
 
 {{CHECKS_SIGNALS_AND_EVIDENCE_LIMITS}}
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+<!-- Author prompt: Name what is not mechanically enforced: rules that rest on review, provider behavior, or no check at all. -->
 
-{{SCOPED_EXCEPTIONS}}
-
-### Approval and Review
-
-{{AUTHORIZATION_BOUNDARIES}}
+{{UNENFORCED_PARTS}}
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 {{OWNER_AND_ENFORCING_ROLES}}
 
-### Change and Adoption
+### Review Triggers
 
-{{HOW_THIS_POLICY_CHANGES_AND_RELATED_DOCUMENTS}}
+{{WHEN_AND_HOW_THIS_POLICY_CHANGES_AND_RELATED_DOCUMENTS}}

@@ -1,37 +1,51 @@
 ---
 title: "Agent Quality and Security Standards"
-version: "1.12.2"
+version: "1.13.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 ---
 
 # Agent Quality and Security Standards
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 Universal quality gate for agent-driven changes in this repository.
 
-### Authority
+#### Authority
 
 This policy is the canonical owner of change-specific verification, security, reliability, and quality routing under [bootstrap precedence](bootstrap.md#authority-and-precedence).
-
-## Scope
 
 ### Applies To
 
 Change-specific verification, security, reliability, generated freshness, and local or hosted quality routing.
 
-### Exclusions
+#### Exclusions
 
 None: this document states no exclusion.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| QUALITY-STANDARDS-R1 | Documentation quality grading | Required: grade documentation A-F by the rubric and the Actionability/Conciseness/Accuracy dimensions; hardcoded secrets or broken governance links grade F | none | none |
+| QUALITY-STANDARDS-R2 | Infrastructure and security changes | Required: no plaintext credentials; Docker secrets and/or OpenBao-backed flow; Keycloak auth; least-privilege defaults; restricted networks and TLS at ingress; container hardening where compatible | manual review unless an existing validator or hook enforces the specific field | none |
+| QUALITY-STANDARDS-R3 | npm vulnerability audit | Forbidden: any active npm risk acceptance; `leaf.dependency-vulnerability-audit` stays strict `npm audit --audit-level=high`; a new acceptance needs a reviewed policy amendment with owner approval and expiry within 30 days | `leaf.dependency-vulnerability-audit` / CI contract rejects an `npm_audit_acceptance` record | none |
+| QUALITY-STANDARDS-R4 | Recurring QA and test changes | Required: QA proves current contracts only; behavior changes need failure reproduction and regression evidence; retire one-time QA by the stated order; contradictions fixed in producer/reader/schema/guidance/tests together | manifest contract rejects mutation/missing consumers/unsafe paths/invalid imports for companion libraries; Stage 98 corpus lifecycle occupancy check; otherwise none | Current Task record of conflict/decision/change order; actual test results |
+| QUALITY-STANDARDS-R5 | Verification execution | Required: authoring, local, candidate, hook, server, validation and prerequisite lanes follow the stated boundaries; never use SKIP, fake CI variables or `--no-verify`; no direct Agent `pre-commit run` | `scripts/validation/run-ci-gate.py` / `scripts/validation/run-ci-precommit.sh --mode local-staged` / `check-document-links.py --mode all` / installed pre-commit and commit-msg hooks / `--mode pr-merge` | Task evidence with input, tools, budget and actual local or hosted result |
+| QUALITY-STANDARDS-R6 | Verification at each Git boundary | Required: run the automatic owner at each boundary and record the distinct evidence per the delivery phase matrix | per-boundary owners in the matrix (installed hooks, local-staged controller, selected local-only leaves, PR candidate job, main-push observation) | Evidence per matrix row (exact index/config, base/head/merge, hosted result, merged SHA) |
+| QUALITY-STANDARDS-R7 | Workflow and language routing | Required: follow `bootstrap.md#canonical-load-order`, `workflows.md`, the document language and README navigation rules, and resolve write permission through `approval-boundaries.md` | none | none |
+| QUALITY-STANDARDS-R8 | Completion | Required: use only `task-checklists.md#before-completion`; PR completion stays with the Completion Gate in `github-governance.md` | `task-checklists.md#before-completion` / Completion Gate in `github-governance.md` | none |
+| QUALITY-STANDARDS-R9 | Generated artifacts | Required: regenerate generated artifacts as a QA step; never hand-edit one to pass a check; refresh the knowledge graph with `graphify update .` when the CLI is available and report a skip | none | none |
+| QUALITY-STANDARDS-R10 | Local or hosted QA runs | Required: use `run-ci-gate.py --profile changed --explain` to render the plan; a local result is never hosted proof; record missing tools and unexecuted checks; toolchain must match hosted | `ci-gate-local-toolchain` check / `scripts/validation/check-github-workflow-contract.py` / `leaf.local-tech-stack-version-drift` / `repo-contracts` gate / registered metadata validator | Recorded results, missing tools and unexecuted checks |
+| QUALITY-STANDARDS-R11 | Explicit full audit | Required: record context, tools, budget or UNKNOWN and approval before running `full`; no unconditional full run after selected verification | manual | Recorded context/tools/budget/approval |
+| QUALITY-STANDARDS-R12 | Gate and fixture ownership | Required: a gate owns one current invariant; every workflow-contract leaf names a resolving `rule_owner`; retain negative cases for authorization, ownership, symlinks and fail-closed execution | `scripts/validation/check-github-workflow-contract.py` / `run-ci-gate.py --crosswalk` (shows `UNOWNED`) | workflow contract result / crosswalk output |
+| QUALITY-STANDARDS-R13 | Formatting and linting | Required: read-only checkers at commit time; one formatting owner per file scope; pinned settings (`ruff.toml`); `files` selector per registered tool; no second tool over an owned file type; corpus reformat in its own commit | `.pre-commit-config.yaml` hooks / Ruff format `--check` / markdownlint `fix: false` / `ruff check` | Review of the fix diff; unchanged second formatting pass |
 
 #### 1. Documentation Quality Rubric
 
@@ -460,7 +474,19 @@ and no separate formatting tool is added.
 - Adopting or changing a formatter reformats the corpus once, in its own
   commit, after every check that the reformatting would break is fixed.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+#### Approval and Review
+
+None: no exception exists to approve.
+
+## Enforcement
+
+### Mechanisms
 
 #### 5. Change-Type Verification Matrix
 
@@ -484,23 +510,25 @@ proves arbitrary agent prose or provider performance. Missing required evidence
 remains FAIL, BLOCKED, NOT_RUN or unverified as applicable. Independent review
 reads the exact diff, contract and actual results; the current Task owns it.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+Most rules here are routed to named checks, but the policy itself shows these are not mechanically enforced:
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-### Approval and Review
-
-None: no exception exists to approve.
+- Documentation grading, the security baseline and container hardening are manual review expectations unless an existing validator or hook enforces the specific field.
+- Workflow and language routing, completion routing and generated-artifact regeneration name no check of their own.
+- The explicit full audit rests on recorded approval.
+- Reliability rules about QA scope, retirement and conflict handling rest on review and the current Task, apart from the manifest contract and Stage 98 occupancy check.
+- Deployment checks are not executed: the repository has no deployment workflow.
+- Native provider, hosted CodeQL and external security settings are separate observations and need approved mutation and authenticated read-back.
+- Installed Git hook delivery is observed, not proven by tracked configuration.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Change and Adoption
+### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 

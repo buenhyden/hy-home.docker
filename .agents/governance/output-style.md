@@ -1,15 +1,15 @@
 ---
 title: "Output Style"
-version: "1.2.3"
+version: "1.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Output Style
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
@@ -18,23 +18,27 @@ repository evidence, and distinguish verified facts from assumptions. Long-work
 updates are concise. Final reports include changed scope, validation, residual
 risks, and blockers without copying sensitive output.
 
-### Authority
+#### Authority
 
 This policy is the canonical owner of agent outcome, findings, procedure, and completion-report style under [bootstrap precedence](bootstrap.md#authority-and-precedence).
-
-## Scope
 
 ### Applies To
 
 Conversational outcomes, findings, procedures, and completion reports from supported agents.
 
-### Exclusions
+#### Exclusions
 
 None: this document states no exclusion.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| OUTPUT-STYLE-R1 | Conversational responses | Required: follow the user's active language; artifact language is routed through the documentation protocol and no provider surface may set either rule | none | none |
+| OUTPUT-STYLE-R2 | Reporting a finding or review issue | Required: state claim plus evidence cited by repository path and line, one severity from `blocker`/`high`/`medium`/`low`, explicit assumptions and tradeoffs; `BLOCK`/`WARN` are not severities | manual | none |
+| OUTPUT-STYLE-R3 | Writing an instruction or procedure | Required: active voice, one action and one expected result per step, runnable commands, non-executable snippets marked explicitly | manual | none |
 
 #### Language
 
@@ -59,7 +63,19 @@ Write an instruction in the active voice with one action per step and one
 expected result. Keep a command runnable as written; mark a non-executable
 snippet explicitly.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+#### Approval and Review
+
+None: no exception exists to approve.
+
+## Enforcement
+
+### Mechanisms
 
 #### Completion Reporting
 
@@ -77,23 +93,21 @@ another.
 Provider-native presentation may adapt rendering but may not change governance
 authority, language routing, or acceptance criteria.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+No check is named for these style rules; they rest on review and agent adherence.
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-### Approval and Review
-
-None: no exception exists to approve.
+- Language routing, finding format, severity tags and procedure style name no script or gate.
+- Faithful completion reporting rests on review; completion obligations themselves belong to the task checklists.
+- Provider-native presentation limits depend on provider rendering behavior.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Change and Adoption
+### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 

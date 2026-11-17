@@ -1,15 +1,15 @@
 ---
 title: "Provider Capability Matrix"
-version: "1.2.3"
+version: "1.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Provider Capability Matrix
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
@@ -17,23 +17,25 @@ Canonical agent governance supports exactly Claude and Codex. Capability
 documentation separates provider support, repository adoption, and observed
 runtime acceptance.
 
-### Authority
+#### Authority
 
 This policy is the canonical owner of the provider capability matrix and authority namespaces under [bootstrap precedence](bootstrap.md#authority-and-precedence).
-
-## Scope
 
 ### Applies To
 
 Canonical ownership, provider adapters, tracked configuration, and observed runtime capabilities.
 
-### Exclusions
+#### Exclusions
 
 None: this document states no exclusion.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| PROVIDER-CAPABILITY-MATRIX-R1 | Always | Required: keep the authority namespaces and capability owners separate; native skill name, folder and function identity agree; discovery is not invocation or approval; `.agents/` stays the authored source, unknown or unsafe entries fail closed and canonical files are never deleted as stale projections | none | none |
 
 #### Authority Namespaces
 
@@ -62,7 +64,19 @@ not invocation or approval. No skill adds tool grants or installers.
 roots. Unknown or unsafe entries fail closed and are preserved for review;
 canonical files are never deleted or quarantined as stale projections.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+#### Approval and Review
+
+None: no exception exists to approve.
+
+## Enforcement
+
+### Mechanisms
 
 Provider-native files may narrow behavior to actual capabilities. They cannot
 invent shared policy, roles, skills, approvals, or unsupported parity. A documented capability, configured source, observed runtime result, and
@@ -73,23 +87,22 @@ limits remain unknown until directly observed. Git hooks, provider hooks, editor
 actions, and CI are separate surfaces; an editor action requires its observed
 version and action ID.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+The policy names no check for its rules, so they rest on review and provider behavior:
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-### Approval and Review
-
-None: no exception exists to approve.
+- Namespace separation and capability ownership have no named validator in this policy.
+- Provider-native files may narrow behavior only to actual capabilities; this rests on review.
+- Configured sources and events prove tracked configuration only, not live events or picker results.
+- Runtime acceptance, account or subscription limits and editor action versions need direct observation.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Change and Adoption
+### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 

@@ -220,21 +220,18 @@ class TemplateMetadataTests(unittest.TestCase):
             [],
             section_codes(
                 body_with_headings(
-                    "## Purpose",
+                    "## Purpose and Scope",
                     "### Objective",
-                    "### Authority",
-                    "## Scope",
                     "### Applies To",
-                    "### Exclusions",
                     "## Rules",
                     "### Requirements",
-                    "### Enforcement",
-                    "## Exceptions",
-                    "### Exception Conditions",
-                    "### Approval and Review",
+                    "### Exceptions",
+                    "## Enforcement",
+                    "### Mechanisms",
+                    "### Limits",
                     "## Ownership",
-                    "### Responsibilities",
-                    "### Change and Adoption",
+                    "### Owner",
+                    "### Review Triggers",
                 )
             ),
         )
@@ -242,18 +239,15 @@ class TemplateMetadataTests(unittest.TestCase):
             "body-heading-missing",
             section_codes(
                 body_with_headings(
-                    "## Purpose",
+                    "## Purpose and Scope",
                     "### Objective",
-                    "### Authority",
-                    "## Scope",
                     "### Applies To",
-                    "### Exclusions",
                     "## Rules",
                     "### Requirements",
-                    "### Enforcement",
-                    "## Exceptions",
-                    "### Exception Conditions",
-                    "### Approval and Review",
+                    "### Exceptions",
+                    "## Enforcement",
+                    "### Mechanisms",
+                    "### Limits",
                 )
             ),
         )

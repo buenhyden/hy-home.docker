@@ -62,7 +62,7 @@ class CurrentBodyContractTests(unittest.TestCase):
             "package-readme": "Purpose|Interfaces|Development|Operations",
             "incident": "Impact|Response|Resolution",
             "postmortem": "Facts|Causes|Actions",
-            "governance-policy": "Purpose|Scope|Rules|Exceptions|Ownership",
+            "governance-policy": "Purpose and Scope|Rules|Enforcement|Ownership",
             "governance-hook-policy": "Purpose|Scope|Rules|Exceptions|Ownership",
             "governance-skill": "Purpose and Trigger|Procedure|Inputs and Outputs|Verification",
         }

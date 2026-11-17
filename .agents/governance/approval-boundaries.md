@@ -1,38 +1,40 @@
 ---
 title: "Approval Boundaries"
-version: "1.5.1"
+version: "1.6.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Approval Boundaries
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 Approval is bound to a named surface, operation, evidence route, and recovery.
 It never expands through delegation or provider handoff.
 
-### Authority
+#### Authority
 
 This policy is the canonical owner of approval of protected operations and surfaces under [bootstrap precedence](bootstrap.md#authority-and-precedence).
-
-## Scope
 
 ### Applies To
 
 Actors, owned surfaces, protected operations, and their current trusted authorization sources.
 
-### Exclusions
+#### Exclusions
 
 None: this document states no exclusion.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| APPROVAL-BOUNDARIES-R1 | Any protected operation, protected surface, or approval record | Required: bind approval to the named actor/operation/subject/scope/recovery from the current trusted channel; never print or commit secret values; read secrets only with separate explicit approval; act on exact targets named by the request; the owner `@buenhyden` approves shared contracts; preserve other workers' state and stop if ownership is unproven; allow only `doc-writer` and Task-authorized documentation edits | manual | Task structural record / protected-surface evidence per Protected Surfaces table |
 
 #### Authorization Source and Records
 
@@ -132,7 +134,19 @@ redaction boundary are defined by
   even when it routes or reviews writable work.
 - Policy changes require `rules-engineer` review.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+A current trusted user or native provider authorization permits only its stated operation and scope. The Authorization Source and Records rules above determine that boundary.
+
+#### Approval and Review
+
+Policy changes require rules-engineer review (Documentation Write Permission); a shared contract needs the owner approval in Core Rules.
+
+## Enforcement
+
+### Mechanisms
 
 **Protected Surfaces**
 
@@ -146,23 +160,23 @@ redaction boundary are defined by
 | `.agents/**` | canonical contract, links, and Task evidence | restore approved authored sources; never treat them as generated cleanup |
 | `docs/99.templates/**` | registry/schema validation and Task evidence | revert logical commit |
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+The protected-surface table names required evidence per surface, but the rules themselves rest mostly on controller judgment, owner approval, and review:
 
-A current trusted user or native provider authorization permits only its stated operation and scope. The Authorization Source and Records rules above determine that boundary.
-
-### Approval and Review
-
-Policy changes require rules-engineer review (Documentation Write Permission); a shared contract needs the owner approval in Core Rules.
+- Authorization origin is not authenticated: repository tools do not verify the account identity behind a user message or native permission origin, and a Task record is structural evidence only.
+- Secret handling, live mutation, remote writes, credential operations, and destructive recovery wait for exact-target approval; no automated check is named for them.
+- A shared contract across the four workspace repositories becomes active only by the owner `@buenhyden` approval; each repository records adoption in its own Task by hand.
+- Shared-worktree safeguards (scratch ownership, digest mismatch, staged-path reconciliation, rerun after a concurrency incident) name no script.
+- Policy changes depend on `rules-engineer` review; role read-only status follows canonical role frontmatter without a check named here.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Change and Adoption
+### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 

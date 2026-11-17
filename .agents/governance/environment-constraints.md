@@ -1,37 +1,45 @@
 ---
 title: "Environment Constraints"
-version: "1.10.2"
+version: "1.11.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Environment Constraints
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 Detailed execution boundaries, verification rules, Graphify behaviors, and shared agent memory rules for the `hy-home.docker` workspace.
 
-### Authority
+#### Authority
 
 This policy is the canonical owner of execution boundaries, verification, Graphify, and shared agent memory under [bootstrap precedence](bootstrap.md#authority-and-precedence).
-
-## Scope
 
 ### Applies To
 
 Local repository work, infrastructure execution, secrets handling, verification environment, and the shared agent memory store.
 
-### Exclusions
+#### Exclusions
 
 None: this document states no exclusion.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| ENVIRONMENT-CONSTRAINTS-R1 | Always | Required: keep `_workspace` as ignored staging holding only runtime artifacts under `_workspace/diagnostics/` or `_workspace/repo-support/`, free of dumps/logs/auth/tokens/credentials/keys/history/secrets; Required: resolve protected-operation authority through approval boundaries; Forbidden: `docker ps` or live probing at session bootstrap; Forbidden: loading dumps/logs/auth/secrets as comparison input; recording a provider sandbox failure grants no relaxation | none | none |
+| ENVIRONMENT-CONSTRAINTS-R2 | Infrastructure, Dockerfile, Compose or pruning work | Required: Compose-network-only traffic with no direct external exposure except authorized gateways; Required: named volumes `<service>-<data>`; Required: `no-new-privileges: true` and credentials via Docker Secrets or `secrets/` mounts; Required: manual review of container builds and Compose changes; Forbidden: `docker system prune` without explicit user consent | manual (build/Compose review unless a repository validator already enforces the rule); `bash scripts/validation/validate-docker-compose.sh` for infra changes (Verification) | none |
+| ENVIRONMENT-CONSTRAINTS-R3 | User approves live runtime or Docker mutation | Required: bind a concrete target before changing service state and record target, action/approval source, pre-check, rollback, post-check and skip reason; approval without a concrete target authorizes planning and validation only | manual | Task evidence fields |
+| ENVIRONMENT-CONSTRAINTS-R4 | User separately approves a concrete secret operation | Required: keep secret values non-output, limit evidence to counts/IDs/paths/key names/metadata/status, and record redaction boundary, validation command and rollback for value reads/writes/rotations; Forbidden: committing, printing, summarizing or quoting secret values | manual | Task evidence (redaction boundary, validation command, rollback path) |
+| ENVIRONMENT-CONSTRAINTS-R5 | Architecture or codebase answers; after modifying code files | Required: read `graphify-out/GRAPH_REPORT.md`, treat Graphify as advisory when corpus health is unclean, corroborate against tracked sources, run `graphify update .` when available else report the skip; Forbidden: passing `--force` to override a refusal, which is recorded with both node counts | manual | Reported skip or recorded refusal with node counts |
+| ENVIRONMENT-CONSTRAINTS-R6 | Shared agent memory use | Required: use `.workspace-memory/memory.sqlite3` through `scripts/operations/agent_memory.py` with expected revisions, source pins, logical limits, capacity ledger admission and no secrets in records; Forbidden: treating a record as Task status/approval/instruction, deleting records by age, or shell writes to the store | `scripts/operations/agent_memory.py` refuses stale revisions, over-limit growth and unreserved capacity; edit hooks refuse Edit/Write to the store | CLI diagnostics (`stored=false`, `usage`, `capacity status`) |
+| ENVIRONMENT-CONSTRAINTS-R7 | Provider surface regeneration | Allowed: `--write` once only after an approved canonical agent governance or Provider Registry change; Required: ordinary postflight and CI use `python3 scripts/operations/provider_surface_renderer.py --check`; Forbidden: hooks or validation implicitly regenerating; a quarantine is a nonzero cleanup handoff | `python3 scripts/operations/provider_surface_renderer.py --check` | none |
 
 #### 1. Hard Constraints
 
@@ -262,7 +270,19 @@ This project has a graphify knowledge graph at `graphify-out/`.
   the exact-path procedure in `.agents/governance/providers/README.md`
   before rerunning write and check.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+Approved secrets work follows the scoped, redacted protocol in [Approved secrets work](#22-approved-secrets-work-protocol). Runtime and destructive operations wait for their exact target under [Approval boundaries](approval-boundaries.md).
+
+#### Approval and Review
+
+Separately authorized operations follow the [Approval boundaries](approval-boundaries.md) policy.
+
+## Enforcement
+
+### Mechanisms
 
 #### 3. Verification
 
@@ -274,23 +294,25 @@ This project has a graphify knowledge graph at `graphify-out/`.
   authorize direct invocation, ignored/outside writes, or a sandbox bypass.
 - Run the completion checklist in `.agents/governance/task-checklists.md` before declaring done.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+The rules are mostly review- and approval-bound; named checks cover only part of them.
 
-Approved secrets work follows the scoped, redacted protocol in [Approved secrets work](#22-approved-secrets-work-protocol). Runtime and destructive operations wait for their exact target under [Approval boundaries](approval-boundaries.md).
-
-### Approval and Review
-
-Separately authorized operations follow the [Approval boundaries](approval-boundaries.md) policy.
+- Container build and Compose review rest on manual review unless a repository validator already enforces the rule.
+- Runtime mutation and secrets work rest on user approval and Task evidence; the Task fields do not authenticate an approval.
+- Graphify use is advisory and rests on the agent reading corpus health and corroborating against tracked sources.
+- A shell write or removal on the shared memory store is a rule violation that no tool prevents; the edit hooks cover only Edit and Write.
+- Secrets in memory records rest on the writer's care; the CLI does not scan bodies and exports and backups are plaintext.
+- Memory capacity limits are logical, not filesystem quotas, and a producer-bound admission is not authentication against an operator who controls Docker or the files.
+- Provider sandbox failure recording, networking, volume naming and the `no-new-privileges` rule name no check in this policy.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Change and Adoption
+### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 

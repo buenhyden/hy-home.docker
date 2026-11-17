@@ -1,37 +1,40 @@
 ---
 title: "Task Checklists"
-version: "1.5.1"
+version: "1.6.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Task Checklists
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 Check scope, implementation evidence, and completion before changing repository state.
 
-### Authority
+#### Authority
 
 This policy is the canonical owner of the task checklists for editing, work, and completion under [bootstrap precedence](bootstrap.md#authority-and-precedence).
-
-## Scope
 
 ### Applies To
 
 Approved repository edits, ongoing implementation, and completion evidence.
 
-### Exclusions
+#### Exclusions
 
 None: this document states no exclusion.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| TASK-CHECKLISTS-R1 | Before editing repository state | Required: confirm objective/editable paths/protected surfaces/exclusions, load applicable Requirement/Architecture/Spec/Plan/Task/policy/skill sources, bind high-risk changes to explicit approval/validation/recovery, define acceptance checks and inspect the shared worktree | manual | none |
+| TASK-CHECKLISTS-R2 | During work | Required: keep changes traceable to the approved Plan Task, separate canonical sources from generated projections, record metadata only for secrets, update links, record actual evidence in the Task, and stop on missing authority/destructive ambiguity/unexpected scope | manual | Evidence recorded in the Task |
 
 #### Before Editing
 
@@ -50,7 +53,19 @@ None: this document states no exclusion.
 - [ ] Record actual evidence in the Task, not a second progress or handoff document.
 - [ ] Stop on missing authority, destructive ambiguity, or unexpected scope.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+#### Approval and Review
+
+None: no exception exists to approve.
+
+## Enforcement
+
+### Mechanisms
 
 #### Before Completion
 
@@ -74,23 +89,22 @@ None: this document states no exclusion.
       missing history or unsupported checkout conversion without claiming success.
 - [ ] Create logical Conventional Commits after the review findings are resolved.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+Checklist items are completed by the agent and confirmed through Task records; no automated check is attached to the Before Editing and During Work items:
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-### Approval and Review
-
-None: no exception exists to approve.
+- Before Editing and During Work items rest on agent judgment and review; no check or script is named for them.
+- The Before Completion items delegate to `quality-standards.md#4-execution-boundary`, `sdlc.md#sequence`, and `documentation-protocol.md#retirement-preconditions`, whose checks are not shown here.
+- Renderer freshness is the only mechanical proof named (byte-for-byte via the registered renderer).
+- High-risk changes depend on explicit approval, and review findings must be resolved by hand before commits.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Change and Adoption
+### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
