@@ -1,10 +1,10 @@
 ---
 title: "Data Optimization and Hardening Architecture"
-version: "1.2.5"
+version: "1.3.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "AD-0019"
 parent_ids:
@@ -14,14 +14,7 @@ created: "2026-03-28"
 
 # Data Optimization and Hardening Architecture
 
-## Overview
-
-### Purpose and Readers
-
-This document describes the relational, cache, object storage, search, and
-graph/vector service structure of `infra/04-data/`. The
-maintainer and operator manage the common Compose contract and the per-engine
-lifecycle/recovery procedure separately.
+## Context and Boundaries
 
 ### System Boundary
 
@@ -34,9 +27,14 @@ lifecycle/recovery procedure separately.
 - Product business schema/query and cloud migration are outside this
   architecture.
 
-## Context and Constraints
+#### Purpose and Readers
 
-### Context
+This document describes the relational, cache, object storage, search, and
+graph/vector service structure of `infra/04-data/`. The
+maintainer and operator manage the common Compose contract and the per-engine
+lifecycle/recovery procedure separately.
+
+#### Context
 
 Gateway routing, `03-security` secret supply, and `06-observability` telemetry collection come from their own layers.
 
@@ -46,7 +44,7 @@ Each engine combines the common optimization, secret, healthcheck, and network c
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
 
-## Current Structure
+## Structure
 
 ### Building Blocks
 
@@ -66,7 +64,25 @@ promoted.
 Each component keeps its own configuration and volume, and combines the
 common optimization, secret, healthcheck, and network contract in Compose.
 
-### Runtime and Deployment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| SQL (PostgreSQL in `dev-db` and `mng-db`) | PostgreSQL in `dev-db` and `mng-db` | Services that connect to the data tier | The description links no contract for this interface. | Per-engine recovery is owned by the [Data hardening runbook](../../05.operations/runbooks/05-databases-and-storage/0030-data-optimization-hardening.md); healthchecks do not establish restorability. |
+| Redis/Valkey protocol | Valkey in `dev-db` and `mng-db` | Services that connect to the data tier | The description links no contract for this interface. | Per-engine recovery is owned by the [Data hardening runbook](../../05.operations/runbooks/05-databases-and-storage/0030-data-optimization-hardening.md); healthchecks do not establish restorability. |
+| S3-compatible object storage | SeaweedFS | Services that connect to the data tier | The description links no contract for this interface. | Per-engine recovery is owned by the [Data hardening runbook](../../05.operations/runbooks/05-databases-and-storage/0030-data-optimization-hardening.md); healthchecks do not establish restorability. |
+| Search protocol | OpenSearch | Services that connect to the data tier | The description links no contract for this interface. | Per-engine recovery is owned by the [Data hardening runbook](../../05.operations/runbooks/05-databases-and-storage/0030-data-optimization-hardening.md); healthchecks do not establish restorability. |
+| Vector protocol | Qdrant | Services that connect to the data tier | The description links no contract for this interface. | Per-engine recovery is owned by the [Data hardening runbook](../../05.operations/runbooks/05-databases-and-storage/0030-data-optimization-hardening.md); healthchecks do not establish restorability. |
+| Graph protocol | Neo4j | Services that connect to the data tier | The description links no contract for this interface. | Per-engine recovery is owned by the [Data hardening runbook](../../05.operations/runbooks/05-databases-and-storage/0030-data-optimization-hardening.md); healthchecks do not establish restorability. |
+| Compose secret credential supply | `03-security` layer | Data tier engines | Compose secret contract | The description records no failure handling for this interface. |
+| Gateway routing | Gateway layer | Data tier services | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| Telemetry collection | Data tier services and exporters | `06-observability` layer | The description links no contract for this interface. | The description records no failure handling for this interface. |
+
+Services connect through SQL, Redis/Valkey, S3-compatible, search, vector, and graph protocols, with credentials injected through the Compose secret contract (see Runtime View).
+
+## Runtime Behavior
+
+### Normal Flow
 
 #### Runtime View
 
@@ -85,25 +101,15 @@ automation, and failover drills are not treated as implemented for every
 engine today, and are introduced only through a separately approved current
 Requirement and ADR.
 
-## Interfaces
-
-### Contracts
-
-Services connect through SQL, Redis/Valkey, S3-compatible, search, vector, and graph protocols, with credentials injected through the Compose secret contract (see Runtime View).
-
-### Failure Boundaries
+### Failure and Recovery
 
 Separate volume paths delimit service state. The [Data hardening runbook](../../05.operations/runbooks/05-databases-and-storage/0030-data-optimization-hardening.md)
 owns per-engine recovery. Healthchecks and volume definitions do not establish
 restorability.
 
-## Decisions
+## Quality Scenarios
 
-### Decision Links
-
-- [ADR-0062](../decisions/0062-home-lab-membership.md)
-
-### Quality and Risks
+### Scenarios
 
 #### Quality Attributes
 
@@ -115,13 +121,32 @@ restorability.
 - **Operability**: the static gate, capability Spec, and Operations subject
   must describe the same topology and failure boundary.
 
-## Traceability
+### Trade-offs
 
-### Requirement Mapping
+- The tier keeps one common Compose contract (optimization, secret, healthcheck
+  and network) for every engine and accepts that additional HA, lifecycle
+  automation and failover drills are not implemented for every engine; each
+  needs a separately approved current Requirement and ADR (Constraints,
+  Deployment View).
+- Healthchecks and volume definitions give start ordering and state
+  separation but do not establish restorability; per-engine recovery stays in
+  the Data hardening runbook (Failure and Recovery).
+- Scalability is bounded by the common Compose boundary: an approved
+  per-engine expansion must fit it without breaking it (Quality Attributes).
+
+## Decisions and Adoption
+
+### Decisions
+
+- [ADR-0062](../decisions/0062-home-lab-membership.md)
+
+### Adoption Boundaries
+
+#### Requirement Mapping
 
 - [REQ-0004](../../01.requirements/0004-data.md)
 
-### Currentness and Lineage
+#### Currentness and Lineage
 
 - [AD-0004 Data Tier (04-data) Architecture Description](0004-data-architecture.md)
 

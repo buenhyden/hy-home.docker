@@ -1,10 +1,10 @@
 ---
 title: "Observability Object Storage on SeaweedFS"
-version: "0.2.1"
+version: "0.3.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0053"
 parent_ids:
@@ -32,12 +32,46 @@ Compose.
 - Object storage should be the shared S3 service the platform already runs,
   not a second one.
 
+#### Sources
+
+Evidence is the current repository configuration; no runtime state is
+claimed.
+
+- [REQ-0007 Observability](../../01.requirements/0007-observability.md)
+- [AD-0006 Observability architecture](../descriptions/0006-observability-architecture.md)
+- [ADR-0021 Observability hardening](0021-observability-hardening-and-ha-expansion-strategy.md)
+
 ### Decision Scope
 
 This decision covers the observability tier (06-observability): the LGTM
 stack, the Alloy collector and the object storage backend of Loki and Tempo.
 ELK is not excluded for a specialized search need, which is evaluated on its
 own; commercial SaaS migration is out of scope.
+
+## Options
+
+### Considered Options
+
+- ELK stack: rejected; high memory and storage footprint and weak tracing
+  integration.
+- Vanilla OpenTelemetry Collector: rejected; weaker discovery and integration
+  with Loki and Prometheus than Alloy.
+- A dedicated MinIO for Loki and Tempo: rejected; it duplicates the shared
+  SeaweedFS S3 service.
+- LGTM with Alloy on the shared SeaweedFS S3: selected.
+
+### Trade-offs
+
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| ELK stack | The ADR records no benefit for this option. | High memory and storage footprint and weak tracing integration. | Rejected; high memory and storage footprint and weak tracing integration. |
+| Vanilla OpenTelemetry Collector | The ADR records no benefit for this option. | Weaker discovery and integration with Loki and Prometheus than Alloy. | Rejected; weaker discovery and integration with Loki and Prometheus than Alloy. |
+| A dedicated MinIO for Loki and Tempo | The ADR records no benefit for this option. | It duplicates the shared SeaweedFS S3 service. | Rejected; it duplicates the shared SeaweedFS S3 service. |
+| LGTM with Alloy on the shared SeaweedFS S3 | One Grafana UI for every signal, one collector to manage, and object storage reuses the shared SeaweedFS service and its operations documents. | Loki and Tempo depend on SeaweedFS availability, so a SeaweedFS outage stops log and trace ingestion; Alloy's configuration language must be learned. | Selected; metrics, logs and traces must correlate in one UI, one collector should replace per-signal agents, and object storage should be the shared S3 service the platform already runs. |
+
+- Trade-off: Loki and Tempo depend on SeaweedFS availability; a SeaweedFS
+  outage stops log and trace ingestion.
+- Trade-off: Alloy's configuration language must be learned.
 
 ## Decision
 
@@ -57,23 +91,15 @@ own; commercial SaaS migration is out of scope.
 Decided by the owner, @buenhyden; status `accepted`. No separate approval
 record is linked. Effective from 2026-11-06.
 
-## Alternatives
+#### Supersession
 
-### Considered Options
-
-- ELK stack: rejected; high memory and storage footprint and weak tracing
-  integration.
-- Vanilla OpenTelemetry Collector: rejected; weaker discovery and integration
-  with Loki and Prometheus than Alloy.
-- A dedicated MinIO for Loki and Tempo: rejected; it duplicates the shared
-  SeaweedFS S3 service.
-- LGTM with Alloy on the shared SeaweedFS S3: selected.
-
-### Trade-offs
-
-- Trade-off: Loki and Tempo depend on SeaweedFS availability; a SeaweedFS
-  outage stops log and trace ingestion.
-- Trade-off: Alloy's configuration language must be learned.
+This record replaces ADR-0006, deleted in the same change (ADR-0051); ADR-0006
+is historical and non-authoritative. ADR-0006
+adopted the LGTM stack and Grafana Alloy, rejecting the ELK stack (heavy
+memory and storage, weak tracing integration) and a vanilla OpenTelemetry
+Collector (weaker Grafana ecosystem integration), and chose an S3 (MinIO)
+backend for Loki and Tempo. The LGTM and Alloy decisions carry forward
+unchanged; the backend is now SeaweedFS.
 
 ## Consequences
 
@@ -85,30 +111,14 @@ record is linked. Effective from 2026-11-06.
 
 ### Follow-up
 
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
 None.
 
 #### Compliance
 
 `scripts/hardening/check-all-hardening.sh 06-observability` and the CI
 `infrastructure-hardening` job guard the tier.
-
-## Traceability
-
-### Sources
-
-Evidence is the current repository configuration; no runtime state is
-claimed.
-
-- [REQ-0007 Observability](../../01.requirements/0007-observability.md)
-- [AD-0006 Observability architecture](../descriptions/0006-observability-architecture.md)
-- [ADR-0021 Observability hardening](0021-observability-hardening-and-ha-expansion-strategy.md)
-
-### Supersession
-
-This record replaces ADR-0006, deleted in the same change (ADR-0051); ADR-0006
-is historical and non-authoritative. ADR-0006
-adopted the LGTM stack and Grafana Alloy, rejecting the ELK stack (heavy
-memory and storage, weak tracing integration) and a vanilla OpenTelemetry
-Collector (weaker Grafana ecosystem integration), and chose an S3 (MinIO)
-backend for Loki and Tempo. The LGTM and Alloy decisions carry forward
-unchanged; the backend is now SeaweedFS.

@@ -39,6 +39,18 @@ created: "{{CREATED}}"
 
 ## Requirements
 
+<!-- Author prompt: List every FR and NFR in this table: Requirement ID is its full identity, Statement the needed behaviour or quality, Rationale why it is needed, Acceptance the judgeable condition, and Priority must, should or could. The declarations follow under their subsections; keep this table directly under Requirements so it is not read as a declaration. -->
+
+| Requirement ID | Statement | Rationale | Acceptance | Priority |
+| --- | --- | --- | --- | --- |
+| {{REQUIREMENT_ID}} | {{STATEMENT}} | {{RATIONALE}} | {{ACCEPTANCE}} | {{PRIORITY}} |
+
+<!-- Author prompt: When a quality requirement applies, measure each NFR in this table: Attribute is the quality characteristic, Measure the measurement definition, Unit its unit, Environment where it is measured, and Criterion the accepted value. Otherwise delete the table. -->
+
+| Requirement ID | Attribute | Measure | Unit | Environment | Criterion |
+| --- | --- | --- | --- | --- | --- |
+| {{QUALITY_REQUIREMENT_ID}} | {{ATTRIBUTE}} | {{MEASURE}} | {{UNIT}} | {{ENVIRONMENT}} | {{CRITERION}} |
+
 ### Functional Requirements
 
 <!-- Author prompt: Give each requirement its rationale and priority. Write an interface need as a functional requirement; no IF identity is issued. -->
@@ -47,30 +59,20 @@ created: "{{CREATED}}"
 
 ### Quality Requirements
 
-<!-- Author prompt: Include this section only when a quality requirement applies; otherwise delete it. -->
+<!-- Author prompt: Declare each quality requirement here; when none applies, say so and why. -->
 
 - **REQ-####-NFR-#### — {{QUALITY_CHARACTERISTIC}}**: {{QUALITY_REQUIREMENT}}; measure: {{MEASURE_UNIT_ENVIRONMENT_AND_ACCEPTANCE}}
 
-## Acceptance Criteria
-
-### Acceptance Conditions
-
-{{ACCEPTANCE_CONDITIONS}}
-
-### Verification Method
-
-<!-- Author prompt: Name how each condition is judged, the evidence it needs and who decides. -->
-
-{{VERIFICATION_METHOD}}
-
 ## Traceability
 
-### Source and Constraints
+### Sources
+
+<!-- Author prompt: Name the sources and governing constraints this package rests on. -->
 
 {{SOURCES_AND_GOVERNING_CONSTRAINTS}}
 
-### Downstream Links
+### Verification Links
 
-<!-- Author prompt: Link only existing architecture, Spec and verification documents. -->
+<!-- Author prompt: State each acceptance condition, how it is judged, the evidence it needs and who decides, and link only existing architecture, Spec and verification documents. -->
 
-{{ARCHITECTURE_SPEC_AND_VERIFICATION_LINKS}}
+{{ACCEPTANCE_VERIFICATION_AND_DOWNSTREAM_LINKS}}

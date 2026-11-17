@@ -1,10 +1,10 @@
 ---
 title: "05-Messaging Optimization Hardening Architecture Description"
-version: "1.3.3"
+version: "1.4.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "AD-0020"
 parent_ids:
@@ -14,15 +14,7 @@ created: "2026-03-28"
 
 # 05-Messaging Optimization Hardening Architecture Description
 
-## Overview
-
-### Purpose and Readers
-
-This document defines the optimization/hardening reference architecture of
-the `05-messaging` layer. It describes the structure that aligns the
-currently implemented Kafka management traffic path with the gateway
-standard chain and the authentication boundary, and blocks operational
-regression through CI baseline verification.
+## Context and Boundaries
 
 ### System Boundary
 
@@ -47,9 +39,15 @@ interfaces on `lab_kafka_net`.
   - Immediate multi-region/multi-cluster migration
   - App-level reprocessing code implementation
 
-## Context and Constraints
+#### Purpose and Readers
 
-### Context
+This document defines the optimization/hardening reference architecture of
+the `05-messaging` layer. It describes the structure that aligns the
+currently implemented Kafka management traffic path with the gateway
+standard chain and the authentication boundary, and blocks operational
+regression through CI baseline verification.
+
+#### Context
 
 HOME uses the `01-gateway` middleware chain, `02-auth` Keycloak OIDC and
 `06-observability` metrics and alerts. Any downstream persistent store or
@@ -63,7 +61,7 @@ topology. The linked policy and runbook own operational checks and recovery.
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
 
-## Current Structure
+## Structure
 
 ### Building Blocks
 
@@ -73,7 +71,26 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
   init, Schema Registry and Connect. Its CDC endpoints stay on the LAB
   network and carry no configured source connector.
 
-### Runtime and Deployment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| HOME management path (Traefik `websecure` to Kafbat) | Kafbat (`kafbat-ui`) behind Traefik | Browser users | `01-gateway` gateway standard chain with native Keycloak OIDC | The linked [Messaging optimization hardening runbook](../../05.operations/runbooks/06-messaging-and-cdc/0037-messaging-optimization-hardening.md) owns recovery. |
+| Internal broker listeners on `kafka_net` | HOME broker `kafka-1` | HOME containers | The description links no contract for this interface. | Healthchecks order dependent starts; the single HOME broker provides no redundancy and the linked runbook owns recovery. |
+| PLAINTEXT EXTERNAL listener on loopback | HOME broker `kafka-1` | Loopback clients on the host | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| JMX exporter on loopback and `obs_net` | HOME broker `kafka-1` | `06-observability` metrics and alerts | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| LAB broker, Schema Registry and Connect on `lab_kafka_net` | `lab-kafka` profile from `labs/kafka-cluster/docker-compose.yml` | LAB containers | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| SSO scheme | `02-auth` Keycloak | Kafbat | Native Keycloak OIDC | The description records no failure handling for this interface. |
+
+- HOME management path: browser → Traefik (`websecure`) → Kafbat → Keycloak OIDC.
+- Containers use the internal broker listeners on `kafka_net` in HOME or
+  `lab_kafka_net` in the LAB. The HOME broker also joins `obs_net` and
+  publishes its PLAINTEXT EXTERNAL listener and JMX exporter on loopback.
+  LAB Schema Registry and Connect have no HOME gateway route.
+
+## Runtime Behavior
+
+### Normal Flow
 
 #### Runtime View
 
@@ -97,29 +114,14 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 - **Verification**: the registered `infrastructure-hardening` gate in
   `.github/workflow-contract.yml` checks the tracked messaging configuration.
 
-## Interfaces
-
-### Contracts
-
-- HOME management path: browser → Traefik (`websecure`) → Kafbat → Keycloak OIDC.
-- Containers use the internal broker listeners on `kafka_net` in HOME or
-  `lab_kafka_net` in the LAB. The HOME broker also joins `obs_net` and
-  publishes its PLAINTEXT EXTERNAL listener and JMX exporter on loopback.
-  LAB Schema Registry and Connect have no HOME gateway route.
-
-### Failure Boundaries
+### Failure and Recovery
 
 Healthchecks order dependent starts. The single HOME broker provides no broker
 redundancy. The linked runbook owns recovery and its separate evidence.
 
-## Decisions
+## Quality Scenarios
 
-### Decision Links
-
-- **ADR**: [ADR-0052 Kafka as the only messaging broker](../decisions/0052-kafka-only-messaging-broker.md)
-- **ADR**: [ADR-0062 HOME and LAB placement](../decisions/0062-home-lab-membership.md)
-
-### Quality and Risks
+### Scenarios
 
 #### Quality Attributes
 
@@ -134,13 +136,35 @@ redundancy. The linked runbook owns recovery and its separate evidence.
 - **Operability**: a single operational contract kept through standard
   scripts + runbook + policy documents
 
-## Traceability
+### Trade-offs
 
-### Requirement Mapping
+- HOME runs a single broker and accepts that it provides no broker redundancy;
+  the linked runbook owns recovery and its separate evidence (Failure and
+  Recovery).
+- The architecture does not introduce a multi-region HOME topology, and
+  multi-region or multi-cluster migration is a non-goal (Constraints, System
+  Boundary).
+- Health-gated dependencies and explicit state boundaries are kept, while
+  authentication, failover and restore still require separate runtime
+  evidence (Quality Attributes).
+- LAB Schema Registry and Connect stay on `lab_kafka_net` without a HOME
+  gateway route, and their CDC endpoints carry no configured source connector
+  (Building Blocks, Interfaces).
+
+## Decisions and Adoption
+
+### Decisions
+
+- **ADR**: [ADR-0052 Kafka as the only messaging broker](../decisions/0052-kafka-only-messaging-broker.md)
+- **ADR**: [ADR-0062 HOME and LAB placement](../decisions/0062-home-lab-membership.md)
+
+### Adoption Boundaries
+
+#### Requirement Mapping
 
 - **Requirement**: [REQ-0006 Messaging](../../01.requirements/0006-messaging.md)
 
-### Currentness and Lineage
+#### Currentness and Lineage
 
 The description reflects the current tree at its `updated` date and history lives in Git.
 

@@ -1,10 +1,10 @@
 ---
 title: "Shared Agent Memory Store"
-version: "1.0.2"
+version: "1.1.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0049"
 parent_ids:
@@ -30,9 +30,38 @@ One store for every worktree and provider. No silent lost update. No claim of
 a limit or a concurrency guarantee the host cannot keep. Memory never becomes
 a second owner of Task state or governance rules.
 
+#### Sources
+
+- [AD-0027](../descriptions/0027-agent-governance-canonical-adapter.md)
+- [ADR-0032](0032-canonical-agent-governance-home.md)
+- [REQ-0024](../../01.requirements/0024-agent-governance-standardization.md)
+- SPEC-0236
+
 ### Decision Scope
 
 This decision covers the memory store shared by Claude Code and Codex for this repository and all of its worktrees. Memory is context only and never becomes a second owner of Task state or governance rules.
+
+## Options
+
+### Considered Options
+
+- Keep separate native memories: rejected; knowledge stays split by provider.
+- A store per worktree: rejected; a removed worktree loses its memory.
+- WAL with a single-writer rule: rejected; nothing enforces one writer, and
+  two providers writing is the purpose.
+- A remote database: rejected; it adds a service for a local, small store.
+
+### Trade-offs
+
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| Keep separate native memories | The ADR records no benefit for this option. | Knowledge stays split by provider. | Rejected; knowledge stays split by provider. |
+| A store per worktree | The ADR records no benefit for this option. | A removed worktree loses its memory. | Rejected; a removed worktree loses its memory. |
+| WAL with a single-writer rule | The ADR records no benefit for this option. | Nothing enforces one writer, and two providers writing is the purpose. | Rejected; nothing enforces one writer, and two providers writing is the purpose. |
+| A remote database | The ADR records no benefit for this option. | It adds a service for a local, small store. | Rejected; it adds a service for a local, small store. |
+| One shared SQLite store `.workspace-memory/memory.sqlite3` written only through `scripts/operations/agent_memory.py`, with native provider memory off (chosen) | Both providers read and write the same records through one CLI, and a removed worktree keeps them. | The store is not in Git, so its backup is a runbook step and Restic coverage is deferred; native memory written before this decision stops loading unless copied into the store. | Chosen; it gives one store for every worktree and provider with no silent lost update, using a rollback journal because the host's SQLite lacks the WAL-reset fix. |
+
+Each rejected option is rejected for the reason stated in its entry above: separate native memories keep knowledge split by provider, a per-worktree store loses memory with a removed worktree, WAL with a single-writer rule has no enforced writer, and a remote database adds a service for a local, small store.
 
 ## Decision
 
@@ -57,19 +86,11 @@ This decision covers the memory store shared by Claude Code and Codex for this r
 
 Decided by the owner, @buenhyden, who decided on 2026-10-13 to accept it; status `accepted`, set in change #450 (`40f194e99`) as the Follow-up records. Effective from 2026-10-13.
 
-## Alternatives
+#### Supersession
 
-### Considered Options
-
-- Keep separate native memories: rejected; knowledge stays split by provider.
-- A store per worktree: rejected; a removed worktree loses its memory.
-- WAL with a single-writer rule: rejected; nothing enforces one writer, and
-  two providers writing is the purpose.
-- A remote database: rejected; it adds a service for a local, small store.
-
-### Trade-offs
-
-Each rejected option is rejected for the reason stated in its entry above: separate native memories keep knowledge split by provider, a per-worktree store loses memory with a removed worktree, WAL with a single-writer rule has no enforced writer, and a remote database adds a service for a local, small store.
+This narrows ADR-0032's rule against creating memory or `.codex/config.toml`
+for these two items only. The rest of that rule, on plugins, servers and
+extra common directories, stays in force.
 
 ## Consequences
 
@@ -82,6 +103,11 @@ loading unless it is copied into the store.
 
 ### Follow-up
 
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
 Proposed on 2026-10-13 from the owner's decisions. SPEC-0236 implements and
 verifies it. The owner decided on 2026-10-13 to accept it ("Accept both", for
 ADR-0048 and ADR-0049). A new ADR must enter the repository as `proposed`, so
@@ -93,18 +119,3 @@ the status changed to `accepted` in the first change after SPEC-0236 merged
 The `environment-constraints.md` section 5 policy owns the rules. The memory
 CLI tests and the edit hook tests check the store contract; live two-provider
 acceptance is separate evidence.
-
-## Traceability
-
-### Sources
-
-- [AD-0027](../descriptions/0027-agent-governance-canonical-adapter.md)
-- [ADR-0032](0032-canonical-agent-governance-home.md)
-- [REQ-0024](../../01.requirements/0024-agent-governance-standardization.md)
-- SPEC-0236
-
-### Supersession
-
-This narrows ADR-0032's rule against creating memory or `.codex/config.toml`
-for these two items only. The rest of that rule, on plugins, servers and
-extra common directories, stays in force.

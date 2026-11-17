@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Architecture"
-version: "0.5.5"
+version: "0.6.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "AD-0031"
 parent_ids:
@@ -14,15 +14,7 @@ created: "2026-09-19"
 
 # Home and Development Host Architecture
 
-## Overview
-
-### Purpose and Readers
-
-One Linux server shares HOME service and development experiments. The user
-also designated AI and workflow as always-on HOME capabilities. The goal is
-to keep the service within the scope where one operator can explain state
-and the recovery path. An optional capability with no confirmed real
-consumer does not push its always-on startup cost onto HOME.
+## Context and Boundaries
 
 ### System Boundary
 
@@ -38,9 +30,15 @@ prove complete network isolation.
 Storage and Redis administration packages are flat under `04-data`; processing, data quality, BI, dbt and JupyterLab are standalone LAB entrypoints under `labs/` (SPEC-0262). Software verification and development mail capture belong to `11-quality`; platform tools remain in `09-platform-ops`. Dozzle belongs to Observability; Open Notebook/SurrealDB and MLflow belong to AI. This is source organization only and does
 not change HOME selection or the root Compose project (ADR-0062).
 
-## Context and Constraints
+#### Purpose and Readers
 
-### Context
+One Linux server shares HOME service and development experiments. The user
+also designated AI and workflow as always-on HOME capabilities. The goal is
+to keep the service within the scope where one operator can explain state
+and the recovery path. An optional capability with no confirmed real
+consumer does not push its always-on startup cost onto HOME.
+
+#### Context
 
 The operator and development experiments share one Linux server. Traefik fronts the HOME services, external Project-Template-derived workspaces register through the project-registration contract, and the Mermaid diagram in the Runtime View shows the user, gateway, identity, application, state, object, GPU and observability flows.
 
@@ -48,7 +46,7 @@ The operator and development experiments share one Linux server. Traefik fronts 
 
 Profiles are not a security isolation boundary and share the same Docker daemon failure, and the shared Compose network is an existing trust boundary, not proven isolation. Root Compose never includes external application source, no secret values belong in diagrams or evidence, and runtime pins come from Compose and Dockerfile declarations.
 
-## Current Structure
+## Structure
 
 ### Building Blocks
 
@@ -85,7 +83,23 @@ and [development database policy](../../05.operations/policies/05-databases-and-
 own the current interfaces; metadata approval does not deploy or issue secrets.
 The independent 07/08 product-planning tracks grant no runtime resource authority.
 
-### Runtime and Deployment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Project registration for external workspaces | Infrastructure (`infra/09-platform-ops/project-registration`) | External Project-Template-derived workspaces | [registration contract](../../../infra/09-platform-ops/project-registration/README.md) | Metadata approval does not deploy or issue secrets. |
+| Development database and Valkey ACL | DEV TimescaleDB Community PostgreSQL and Valkey (`dev-data`) | Project workspaces | [development database policy](../../05.operations/policies/05-databases-and-storage/0100-development-database.md) | Deployment requires isolated backup and restore evidence for the affected data. |
+| Shared gateway ingress | Traefik | Users reaching HOME services | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| Secret delivery | OpenBao rendered outputs and Docker Secret bootstrap | HOME applications | The description links no contract for this interface. | A migration must verify consumer mounts and permissions before claiming automatic rotation or complete secret delivery. |
+| Compose profile selection | Root Compose and service profiles | Operators deploying HOME and DEV services | [POL-0078](../../05.operations/policies/01-common/0078-compose-profile-vocabulary.md) | Unattended startup excludes cluster variants, legacy selectors and update/IaC jobs. |
+
+- The [registration contract](../../../infra/09-platform-ops/project-registration/README.md) and [development database policy](../../05.operations/policies/05-databases-and-storage/0100-development-database.md) own the current interfaces for external workspaces.
+- Projects use explicit database/role and Valkey ACL contracts rather than the legacy `app_db`.
+- [POL-0078](../../05.operations/policies/01-common/0078-compose-profile-vocabulary.md) owns the profile vocabulary.
+
+## Runtime Behavior
+
+### Normal Flow
 
 #### Runtime View
 
@@ -121,15 +135,7 @@ instead of repeating patch pins without context.
 Renovate is the sole dependency updater: it owns the enabled infrastructure managers and
 npm for Storybook and the OpsflowSmtp node. Dependabot version updates are retired.
 
-## Interfaces
-
-### Contracts
-
-- The [registration contract](../../../infra/09-platform-ops/project-registration/README.md) and [development database policy](../../05.operations/policies/05-databases-and-storage/0100-development-database.md) own the current interfaces for external workspaces.
-- Projects use explicit database/role and Valkey ACL contracts rather than the legacy `app_db`.
-- [POL-0078](../../05.operations/policies/01-common/0078-compose-profile-vocabulary.md) owns the profile vocabulary.
-
-### Failure Boundaries
+### Failure and Recovery
 
 Single-host power, storage, Docker daemon and GPU failure affect multiple HOME
 capabilities. Git configuration rollback cannot undo database migrations.
@@ -138,13 +144,9 @@ jobs. Deployment requires isolated backup and restore evidence for the affected
 data. The dated [MLflow recovery receipt](../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0008-infra-audit-execution.md#c19-row-resolutions-2026-10-28 "navigation")
 covers the named MLflow target on 2026-10-28.
 
-## Decisions
+## Quality Scenarios
 
-### Decision Links
-
-- [ADR-0062](../decisions/0062-home-lab-membership.md)
-
-### Quality and Risks
+### Scenarios
 
 #### Quality Attributes
 
@@ -166,14 +168,39 @@ capabilities. Existing shared networks and host-level capabilities limit isolati
 Current backup/restore, OpenBao bootstrap and resource acceptance are not yet
 proven by this redesign. Keep these as deployment prerequisites, not PASS claims.
 
-## Traceability
+### Trade-offs
 
-### Requirement Mapping
+- HOME service and development experiments share one Linux server, so
+  single-host power, storage, Docker daemon and GPU failure affect multiple
+  HOME capabilities (Purpose and Readers, Risks).
+- Profiles select activation but are not a security isolation boundary; the
+  shared Compose network remains an existing trust boundary, not proven
+  isolation (System Boundary, Constraints).
+- HOME application availability is retained by limiting simultaneous GPU
+  jobs; container memory caps do not prove workload fit or prevent host
+  contention (Quality Attributes).
+- An optional capability with no confirmed real consumer does not push its
+  always-on startup cost onto HOME (Purpose and Readers).
+- Single-node object storage makes no single-host HA claim, and Git
+  configuration rollback cannot undo database migrations (Building Blocks,
+  Failure and Recovery).
+- Remaining host publications and shared network grants are documented as
+  residual risk (Quality Attributes).
+
+## Decisions and Adoption
+
+### Decisions
+
+- [ADR-0062](../decisions/0062-home-lab-membership.md)
+
+### Adoption Boundaries
+
+#### Requirement Mapping
 
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 - [SPEC-0262 Analytics LAB migration](../../03.specs/0262-analytics-labs-migration/spec.md)
 
-### Currentness and Lineage
+#### Currentness and Lineage
 
 - SPEC-0180 and SPEC-0265 (retired; version history; ADR-0060 holds the Hermes report source contract)
 - [Service disposition research](../../90.references/research/0002-agentic-engineering-research-pack/m0021-local-docker-service-consolidation.md)

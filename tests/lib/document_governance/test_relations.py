@@ -80,7 +80,7 @@ class DocumentRelationContractTests(unittest.TestCase):
         self.assertIn("plan:parent_ids", refs("structural_ownership"))
         self.assertIn("task:parent_ids", refs("structural_ownership"))
         self.assertIn("spec:parent_ids", refs("constraint"))
-        self.assertIn("adr:Traceability/Supersession", refs("supersession"))
+        self.assertIn("adr:Decision/Authority and Effect", refs("supersession"))
         self.assertEqual(
             {
                 "plan:Promotion Map/Durable Meaning",

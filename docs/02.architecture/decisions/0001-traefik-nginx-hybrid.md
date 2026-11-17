@@ -1,10 +1,10 @@
 ---
 title: "Traefik & Nginx Hybrid Gateway Architecture"
-version: "1.2.1"
+version: "1.3.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0001"
 parent_ids:
@@ -24,12 +24,43 @@ This document is the architecture decision record for the decision to use a hybr
 - Traefik is very strong at Docker Label based automatic service discovery (Dynamic Discovery), but configuring fine-grained, Nginx-level path control can be somewhat cumbersome.
 - Nginx, on the other hand, supports elaborate configuration, but upstream management in a dynamically changing Docker virtual IP environment is manual or needs a separate solution.
 
+#### Sources
+
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked below, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+
+- **PRD**: [../../01.requirements/0001-gateway.md](../../01.requirements/0001-gateway.md)
+- **Architecture Description**: [../descriptions/0001-gateway-architecture.md](../descriptions/0001-gateway-architecture.md)
+
 ### Decision Scope
 
 Explicit non-goals:
 
 - Placing Nginx in front of every internal service (avoids unnecessary hop growth).
 - Exposing Nginx directly as the external edge.
+
+## Options
+
+### Considered Options
+
+#### Alternative 1: Traefik Only
+
+- Good: The architecture becomes simpler and there are fewer management points.
+- Bad: Implementing Keycloak's redirect loop issue or MinIO's special header handling with Traefik middleware alone is relatively complex, with few proven cases.
+
+#### Alternative 2: Nginx Only (with Nginx Proxy Manager, etc.)
+
+- Good: Configuration is very powerful and familiar.
+- Bad: With plain Nginx, detecting dynamic changes in Docker containers needs an extra tool such as `jwilder/nginx-proxy`, or manual management.
+
+### Trade-offs
+
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| Alternative 1: Traefik Only | The architecture becomes simpler and there are fewer management points. | Implementing Keycloak's redirect loop issue or MinIO's special header handling with Traefik middleware alone is relatively complex, with few proven cases. | Not chosen because Keycloak and MinIO path and header handling is relatively complex with Traefik middleware alone. |
+| Alternative 2: Nginx Only (with Nginx Proxy Manager, etc.) | Configuration is very powerful and familiar. | With plain Nginx, detecting dynamic changes in Docker containers needs an extra tool such as `jwilder/nginx-proxy`, or manual management. | Not chosen because detecting dynamic Docker container changes needs an extra tool or manual management. |
+| Traefik v3 as Primary Edge Router with an Nginx Alpine leaf as Secondary Path Proxy | New services route with only Docker Labels, a stable Nginx configuration serves tricky proxy needs such as Keycloak, and an integrated dashboard gives visibility. | One extra network hop for certain services (Traefik -> Nginx) and the burden of managing two proxy configuration syntaxes. | The ADR states no separate reason; its drivers weigh Traefik's Docker Label discovery against Nginx's fine-grained path control. Amended 2026-11-10: the owner retired the Nginx leaf, so Traefik is now the only gateway. |
+
+Traefik only was not chosen because Keycloak and MinIO path and header handling is relatively complex with Traefik middleware alone. Nginx only was not chosen because detecting dynamic Docker container changes needs an extra tool or manual management.
 
 ## Decision
 
@@ -65,24 +96,6 @@ Explicit non-goals:
 
 Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked. Effective from 2026-03-26. The 2026-11-10 amendment above is recorded as an owner decision in the text.
 
-## Alternatives
-
-### Considered Options
-
-#### Alternative 1: Traefik Only
-
-- Good: The architecture becomes simpler and there are fewer management points.
-- Bad: Implementing Keycloak's redirect loop issue or MinIO's special header handling with Traefik middleware alone is relatively complex, with few proven cases.
-
-#### Alternative 2: Nginx Only (with Nginx Proxy Manager, etc.)
-
-- Good: Configuration is very powerful and familiar.
-- Bad: With plain Nginx, detecting dynamic changes in Docker containers needs an extra tool such as `jwilder/nginx-proxy`, or manual management.
-
-### Trade-offs
-
-Traefik only was not chosen because Keycloak and MinIO path and header handling is relatively complex with Traefik middleware alone. Nginx only was not chosen because detecting dynamic Docker container changes needs an extra tool or manual management.
-
 ## Consequences
 
 ### Impacts
@@ -97,13 +110,9 @@ Traefik only was not chosen because Keycloak and MinIO path and header handling 
 
 ### Follow-up
 
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
 No follow-up work is recorded in this decision.
-
-## Traceability
-
-### Sources
-
-The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked below, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
-
-- **PRD**: [../../01.requirements/0001-gateway.md](../../01.requirements/0001-gateway.md)
-- **Architecture Description**: [../descriptions/0001-gateway-architecture.md](../descriptions/0001-gateway-architecture.md)

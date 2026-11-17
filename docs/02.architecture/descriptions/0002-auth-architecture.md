@@ -1,10 +1,10 @@
 ---
 title: "02-Auth Architecture Description"
-version: "1.6.5"
+version: "1.7.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "AD-0002"
 parent_ids:
@@ -14,17 +14,7 @@ created: "2026-03-26"
 
 # 02-Auth Architecture Description
 
-## Overview
-
-### Purpose and Readers
-
-`02-auth` centers on Keycloak, the central identity provider, and OAuth2 Proxy,
-the gateway authentication layer. Services with their own OIDC and RBAC connect
-to Keycloak directly; services without it use OAuth2 Proxy ForwardAuth. The
-principles are one identity source (Keycloak), OIDC as the protocol, selective
-enforcement per service, no ForwardAuth in front of a native-OIDC service by
-default, fail-closed access, and file-based secrets. Stakeholders are the
-platform, DevOps and security owners.
+## Context and Boundaries
 
 ### System Boundary
 
@@ -42,9 +32,17 @@ platform, DevOps and security owners.
 AD-0014, the former auth hardening description, is retired into this document;
 its hardening substance is owned by ADR-0017.
 
-## Context and Constraints
+#### Purpose and Readers
 
-### Context
+`02-auth` centers on Keycloak, the central identity provider, and OAuth2 Proxy,
+the gateway authentication layer. Services with their own OIDC and RBAC connect
+to Keycloak directly; services without it use OAuth2 Proxy ForwardAuth. The
+principles are one identity source (Keycloak), OIDC as the protocol, selective
+enforcement per service, no ForwardAuth in front of a native-OIDC service by
+default, fail-closed access, and file-based secrets. Stakeholders are the
+platform, DevOps and security owners.
+
+#### Context
 
 Browsers reach HOME's Keycloak-backed services through `01-gateway` (Traefik).
 Keycloak stores state in `mng-pg` and OAuth2 Proxy sessions live in
@@ -56,7 +54,7 @@ and has its own browser entrypoint.
 
 Access is fail-closed with one identity source (Keycloak), OIDC as the protocol, and file-based secrets read from `/run/secrets`. No ForwardAuth sits in front of a native-OIDC service by default, and a fail-open default is a non-goal.
 
-## Current Structure
+## Structure
 
 ### Building Blocks
 
@@ -98,7 +96,23 @@ OpenBao maps the Keycloak group `/openbao-admins` to its OIDC role
 `home-admin`, which issues a token under the `hy-home-operator` policy.
 Keycloak groups and OpenBao roles and policies are separate objects.
 
-### Runtime and Deployment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| ForwardAuth `/oauth2/auth` check | OAuth2 Proxy | Traefik (`01-gateway`) for ForwardAuth-protected services | `gateway-standard-chain@file,sso-errors@file,sso-auth@file` | Access is fail-closed; a route that loses its middleware label loses that gateway protection. |
+| OIDC to Keycloak | Keycloak | OAuth2 Proxy and native-OIDC applications (Airflow, Kafbat UI, Grafana, Gatus, OpenBao, Dozzle, Open WebUI) | OIDC; [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md) | A Keycloak outage blocks new logins that depend on Keycloak; health is checked separately from each application's login flow. |
+| OpenBao OIDC role mapping | Keycloak group `/openbao-admins` | OpenBao OIDC role `home-admin` | Token under the `hy-home-operator` policy | The description records no failure handling for this interface. |
+| HTTPS routing | `01-gateway` (Traefik) | `02-auth` services | `gateway-standard-chain@file` | The description records no failure handling for this interface. |
+| Keycloak state store | `mng-pg` (`04-data`) | Keycloak | The description links no contract for this interface. | An outage of the single `mng-pg` instance blocks new logins that depend on Keycloak. |
+| OAuth2 Proxy session store | `mng-valkey` (`04-data`) | OAuth2 Proxy | The description links no contract for this interface. | Valkey health is checked separately from each application's login flow. |
+| Compose-injected secrets | Compose secrets | Keycloak and OAuth2 Proxy | Files under `/run/secrets` | The description records no failure handling for this interface. |
+
+ForwardAuth services use the `/oauth2/auth` check through `gateway-standard-chain@file,sso-errors@file,sso-auth@file`; native-OIDC applications talk OIDC to Keycloak directly and receive no injected `Authorization` header. OpenBao maps the Keycloak group `/openbao-admins` to its OIDC role `home-admin`.
+
+## Runtime Behavior
+
+### Normal Flow
 
 #### Runtime View
 
@@ -120,29 +134,16 @@ the OpenBao auth backend and is not in Compose files or documents.
 (`infra/02-auth/oauth2-proxy/`) are selected by `core`, `auth`, `dev` and
 `local`. Its session store is the shared `mng-valkey`.
 
-## Interfaces
-
-### Contracts
-
-ForwardAuth services use the `/oauth2/auth` check through `gateway-standard-chain@file,sso-errors@file,sso-auth@file`; native-OIDC applications talk OIDC to Keycloak directly and receive no injected `Authorization` header. OpenBao maps the Keycloak group `/openbao-admins` to its OIDC role `home-admin`.
-
-### Failure Boundaries
+### Failure and Recovery
 
 An outage of Keycloak or its single `mng-pg` instance blocks new logins
 that depend on Keycloak. A ForwardAuth route that loses its middleware label
 loses that gateway protection. Keycloak, Valkey and PostgreSQL health are
 checked separately from each application's login flow.
 
-## Decisions
+## Quality Scenarios
 
-### Decision Links
-
-- [ADR-0002 Keycloak and OAuth2 Proxy choice](../decisions/0002-keycloak-oauth2-proxy-choice.md)
-- [ADR-0017 Runtime hardening and fail-closed](../decisions/0017-auth-hardening-runtime-and-fail-closed.md)
-- [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md)
-- [ADR-0062 Open WebUI and Kafka CDC LAB moves](../decisions/0062-home-lab-membership.md)
-
-### Quality and Risks
+### Scenarios
 
 #### Quality Attributes
 
@@ -160,13 +161,33 @@ Keycloak and `mng-pg` are single-instance dependencies for Keycloak-backed
 login. A ForwardAuth route loses its gateway protection if its middleware
 label is removed.
 
-## Traceability
+### Trade-offs
 
-### Requirement Mapping
+- Keycloak and `mng-pg` are single-instance dependencies for Keycloak-backed
+  login; an outage blocks new logins that depend on Keycloak (Risks, Failure
+  and Recovery).
+- Enforcement is selective per service rather than one middleware for every
+  service, and no ForwardAuth sits in front of a native-OIDC service by
+  default (Constraints); the accepted cost is that a ForwardAuth route loses
+  its gateway protection if its middleware label is removed (Risks).
+- Access is fail-closed; a fail-open default is a non-goal (Constraints).
+
+## Decisions and Adoption
+
+### Decisions
+
+- [ADR-0002 Keycloak and OAuth2 Proxy choice](../decisions/0002-keycloak-oauth2-proxy-choice.md)
+- [ADR-0017 Runtime hardening and fail-closed](../decisions/0017-auth-hardening-runtime-and-fail-closed.md)
+- [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md)
+- [ADR-0062 Open WebUI and Kafka CDC LAB moves](../decisions/0062-home-lab-membership.md)
+
+### Adoption Boundaries
+
+#### Requirement Mapping
 
 - [REQ-0002 Auth requirements](../../01.requirements/0002-auth.md)
 
-### Currentness and Lineage
+#### Currentness and Lineage
 
 Moving a service between patterns follows ADR-0038 and the application
 authentication guide.

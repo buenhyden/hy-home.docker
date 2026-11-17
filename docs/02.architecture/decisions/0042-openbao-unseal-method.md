@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Unseal Method"
-version: "0.2.7"
+version: "0.3.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0042"
 parent_ids:
@@ -82,40 +82,31 @@ The current sequence after a reboot or OpenBao restart is as follows.
 - The effect on the W11 cold start runbook and the Agent SecretID delivery
   method.
 
+#### Sources
+
+- Parent: [AD-0003 Security Architecture](../descriptions/0003-security-architecture.md)
+- Spec: SPEC-0182 criterion 10 and 11,
+  Plan W10/W11,
+  Task 0003
+- Exposure correction: SPEC-0240 (superseded; number reserved in the Registry, body in version history), SPEC-0242
+- Earlier deferral: ADR-0018, superseded by [ADR-0050](0050-openbao-as-secrets-manager.md)
+- Runbook: [RUN-0085](../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
+- Runtime sources: [OpenBao Compose](../../../infra/03-security/openbao/docker-compose.yml),
+  [Agent configuration](../../../infra/03-security/openbao/config/agent.hcl)
+
+#### Official references
+
+- [OpenBao seal configuration (2.6.x)](https://openbao.org/docs/2.6.x/configuration/seal/)
+- [Static Key seal](https://openbao.org/docs/configuration/seal/static/)
+- [Transit seal](https://openbao.org/docs/configuration/seal/transit/)
+- [PKCS#11 seal (2.6.x)](https://openbao.org/docs/2.6.x/configuration/seal/pkcs11/)
+- [AWS KMS seal](https://openbao.org/docs/configuration/seal/awskms/)
+
 ### Decision Scope
 
 This decision covers the unseal method of the single-node OpenBao Raft described above, which currently uses the default Shamir seal. It affects the W11 cold start runbook and the Agent SecretID delivery method.
 
-## Decision
-
-### Chosen Option
-
-**(e) Defer, keep (a) manual Shamir unseal** (owner decision, 2026-09-25). The
-owner is @buenhyden. Whichever of the following triggers comes first opens a
-new ADR that supersedes this decision.
-
-- An unplanned reboot or power outage leaves OpenBao sealed for over 24 hours
-  while the owner is unavailable.
-- hy-home.k8s or another service comes to require OpenBao immediately after
-  boot.
-- ADR-0041 selects a cloud provider (Cloudflare R2 was chosen, but R2 has no
-  KMS, so this trigger fires when a provider that offers a KMS is chosen).
-- OpenBao 2.7 upgrade (when the seal method shifts to a plugin).
-
-Rationale:
-
-- Auto-unseal alone does not give an unattended reboot. The Agent needs a
-  single-use SecretID issued by the owner at every restart, so the owner is
-  already part of the reboot procedure regardless.
-- A same-host key (d) widens the key-exposure surface with no security gain.
-  Another device (b) or cloud (c) creates a new availability dependency. At
-  the current scale, this cost outweighs the benefit.
-
-### Authority and Effect
-
-Decided by the owner, @buenhyden (owner decision, 2026-09-25); status `accepted`. No separate approval record is linked. Effective from 2026-09-25.
-
-## Alternatives
+## Options
 
 ### Considered Options
 
@@ -203,7 +194,44 @@ Candidate triggers:
 
 ### Trade-offs
 
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| (a) Keep manual Shamir unseal (current) | No change; the seal key is not in container config or environment, and there is no external dependency. | The owner is needed at every reboot and OpenBao restart, and with all three shares in one file the benefit of split custody is already lost. | Kept in force by the chosen option (e), which defers any change. |
+| (b) Transit auto-unseal from a second OpenBao/Vault | Unattended reboot without a cloud account, with the key outside this host. | The second server has its own unseal problem and, if down, this server cannot start; token management, TLS and a network path are newly needed. | Not chosen because another device creates a new availability dependency whose cost outweighs the benefit at the current scale. |
+| (c) Cloud KMS auto-unseal | The key is outside the host with KMS audit logs, at around $1/month (list-price estimate), and cutting off KMS access on host theft prevents data from being opened. | OpenBao cannot start without internet or KMS, anyone holding the host can unseal while it is alive, and new cloud credentials and egress are needed. | Not chosen because the cloud creates a new availability dependency whose cost outweighs the benefit at the current scale. |
+| (d) Static Key or PKCS#11 seal (same host) | Unattended reboot with no external dependency. | Seal protection effectively reduces to file permissions, the key is mounted into the container, and it requires a seal transition (`-migrate`) and a recovery key scheme change. | Not chosen because a same-host key widens the key-exposure surface with no security gain. |
+| (e) Defer (record owner and trigger) | Keeps (a) with no new dependency while recording an owner and review triggers. | No unattended reboot; the owner still performs the unseal step, as in (a). | Chosen because auto-unseal alone does not give an unattended reboot: the Agent needs an owner-issued single-use SecretID at every restart. |
+
 The Good and Bad entries of each option above record its benefits and costs. Option (e) was chosen because auto-unseal alone does not give an unattended reboot, a same-host key (d) widens the key-exposure surface with no security gain, and another device (b) or cloud (c) creates a new availability dependency whose cost outweighs the benefit at the current scale.
+
+## Decision
+
+### Chosen Option
+
+**(e) Defer, keep (a) manual Shamir unseal** (owner decision, 2026-09-25). The
+owner is @buenhyden. Whichever of the following triggers comes first opens a
+new ADR that supersedes this decision.
+
+- An unplanned reboot or power outage leaves OpenBao sealed for over 24 hours
+  while the owner is unavailable.
+- hy-home.k8s or another service comes to require OpenBao immediately after
+  boot.
+- ADR-0041 selects a cloud provider (Cloudflare R2 was chosen, but R2 has no
+  KMS, so this trigger fires when a provider that offers a KMS is chosen).
+- OpenBao 2.7 upgrade (when the seal method shifts to a plugin).
+
+Rationale:
+
+- Auto-unseal alone does not give an unattended reboot. The Agent needs a
+  single-use SecretID issued by the owner at every restart, so the owner is
+  already part of the reboot procedure regardless.
+- A same-host key (d) widens the key-exposure surface with no security gain.
+  Another device (b) or cloud (c) creates a new availability dependency. At
+  the current scale, this cost outweighs the benefit.
+
+### Authority and Effect
+
+Decided by the owner, @buenhyden (owner decision, 2026-09-25); status `accepted`. No separate approval record is linked. Effective from 2026-09-25.
 
 ## Consequences
 
@@ -229,27 +257,10 @@ The Good and Bad entries of each option above record its benefits and costs. Opt
 
 ### Follow-up
 
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
 - The W11 runbook records the unseal method actually in use at decision time.
 - If deferred, record the owner and trigger in Task 0003's Deferred Items.
-
-## Traceability
-
-### Sources
-
-- Parent: [AD-0003 Security Architecture](../descriptions/0003-security-architecture.md)
-- Spec: SPEC-0182 criterion 10 and 11,
-  Plan W10/W11,
-  Task 0003
-- Exposure correction: SPEC-0240 (superseded; number reserved in the Registry, body in version history), SPEC-0242
-- Earlier deferral: ADR-0018, superseded by [ADR-0050](0050-openbao-as-secrets-manager.md)
-- Runbook: [RUN-0085](../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md)
-- Runtime sources: [OpenBao Compose](../../../infra/03-security/openbao/docker-compose.yml),
-  [Agent configuration](../../../infra/03-security/openbao/config/agent.hcl)
-
-#### Official references
-
-- [OpenBao seal configuration (2.6.x)](https://openbao.org/docs/2.6.x/configuration/seal/)
-- [Static Key seal](https://openbao.org/docs/configuration/seal/static/)
-- [Transit seal](https://openbao.org/docs/configuration/seal/transit/)
-- [PKCS#11 seal (2.6.x)](https://openbao.org/docs/2.6.x/configuration/seal/pkcs11/)
-- [AWS KMS seal](https://openbao.org/docs/configuration/seal/awskms/)

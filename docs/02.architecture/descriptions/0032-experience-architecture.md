@@ -1,10 +1,10 @@
 ---
 title: "Experience Tier Architecture Description"
-version: "0.2.3"
+version: "0.3.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "AD-0032"
 parent_ids:
@@ -14,15 +14,7 @@ created: "2026-10-29"
 
 # Experience Tier Architecture Description
 
-## Overview
-
-### Purpose and Readers
-
-The `13-experience` tier owns the shared Storybook delivery: a static
-documentation origin and a remote docs MCP, both built from one commit of
-`projects/storybook/nextjs`. Stakeholders are UI developers, design reviewers
-and infrastructure operators. The tier is optional and outside the default HOME
-selection.
+## Context and Boundaries
 
 ### System Boundary
 
@@ -40,9 +32,15 @@ selection.
   `projects/storybook/nextjs`; this tier owns no business application, and
   Compose validation proves no running service, login or HOME activation.
 
-## Context and Constraints
+#### Purpose and Readers
 
-### Context
+The `13-experience` tier owns the shared Storybook delivery: a static
+documentation origin and a remote docs MCP, both built from one commit of
+`projects/storybook/nextjs`. Stakeholders are UI developers, design reviewers
+and infrastructure operators. The tier is optional and outside the default HOME
+selection.
+
+#### Context
 
 UI developers and design reviewers reach Storybook through Traefik with `sso-auth`, while other workspaces call `storybook-mcp` with a Keycloak bearer token. The tier depends on Keycloak and the `projects/storybook/nextjs` build.
 
@@ -50,7 +48,7 @@ UI developers and design reviewers reach Storybook through Traefik with `sso-aut
 
 The tier is optional and outside the default HOME selection. Both images are pinned to one commit, the static origin serves only administrators, the MCP authorizes by token alone, and static validation infers no runtime, TLS or browser result.
 
-## Current Structure
+## Structure
 
 ### Building Blocks
 
@@ -63,7 +61,21 @@ flowchart LR
   MCP --> Keycloak
 ```
 
-### Runtime and Deployment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `storybook.${DEFAULT_URL}` static origin | `storybook` on `experience_ingress_net` | Administrators through Traefik | `req-rate-limit`, `gateway-standard-chain` and `sso-auth`; [Storybook policy](../../05.operations/policies/14-design-system/0101-storybook.md) | A missing image fails the start because of `pull_policy: never`. |
+| `storybook-mcp` `/mcp` and protected-resource metadata path | `storybook-mcp` on `edge_net` | Other workspaces with Keycloak bearer tokens from the `/admins` group | [Storybook policy](../../05.operations/policies/14-design-system/0101-storybook.md) | The MCP rejects a token with the wrong signature, issuer, audience, lifetime or group. |
+| Keycloak token verification | Keycloak | `storybook-mcp` | The description links no contract for this interface. | The description records no failure handling for this interface. |
+
+- `storybook.${DEFAULT_URL}` is served through `req-rate-limit`, `gateway-standard-chain` and `sso-auth`.
+- `storybook-mcp` serves `docs-list`, `docs-show` and `docs-show-story` on `/mcp` and the protected-resource metadata path, for Keycloak bearer tokens from the `/admins` group.
+- Both services use the `experience` profile.
+
+## Runtime Behavior
+
+### Normal Flow
 
 #### Runtime View
 
@@ -79,25 +91,13 @@ Both images are pinned to the same commit with `pull_policy: never`, so a
 missing image fails the start. The `experience` profile is selected only on
 request.
 
-## Interfaces
-
-### Contracts
-
-- `storybook.${DEFAULT_URL}` is served through `req-rate-limit`, `gateway-standard-chain` and `sso-auth`.
-- `storybook-mcp` serves `docs-list`, `docs-show` and `docs-show-story` on `/mcp` and the protected-resource metadata path, for Keycloak bearer tokens from the `/admins` group.
-- Both services use the `experience` profile.
-
-### Failure Boundaries
+### Failure and Recovery
 
 Both images use `pull_policy: never`, so a missing image fails the start. The MCP rejects a token with the wrong signature, issuer, audience, lifetime or group, and no cookie-based `sso-auth` applies to the MCP.
 
-## Decisions
+## Quality Scenarios
 
-### Decision Links
-
-No ADR is linked to this description. POL-0101 and its operations documents, linked under Currentness and Lineage, define the contracts.
-
-### Quality and Risks
+### Scenarios
 
 #### Quality Attributes
 
@@ -110,13 +110,30 @@ infers no runtime, TLS or browser result.
 A build whose commit differs between the two images, or a token accepted for
 another audience, would break the contracts that POL-0101 defines.
 
-## Traceability
+### Trade-offs
 
-### Requirement Mapping
+- Both images are pinned to one commit with `pull_policy: never`, which makes
+  delivery reproducible but means a missing image fails the start (Deployment
+  View, Failure and Recovery).
+- The MCP authorizes by token alone, without cookie-based `sso-auth`; a token
+  accepted for another audience would break the POL-0101 contracts (Quality
+  Attributes, Risks).
+- The tier is optional and outside the default HOME selection, and static
+  validation infers no runtime, TLS or browser result (Constraints).
+
+## Decisions and Adoption
+
+### Decisions
+
+No ADR is linked to this description. POL-0101 and its operations documents, linked under Currentness and Lineage, define the contracts.
+
+### Adoption Boundaries
+
+#### Requirement Mapping
 
 - [REQ-0027](../../01.requirements/0027-home-development-host.md)
 
-### Currentness and Lineage
+#### Currentness and Lineage
 
 - SPEC-0219 (retired; version history)
 - [Storybook guide](../../05.operations/guides/14-design-system/0101-storybook.md)

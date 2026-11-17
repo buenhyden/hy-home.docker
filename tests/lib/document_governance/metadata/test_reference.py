@@ -1002,7 +1002,7 @@ This synthetic fixture names no next owner.
             ),
             (
                 "heading",
-                "## Acceptance Criteria",
+                "## Traceability",
                 "## Verification Contract",
                 "template-section-missing",
             ),

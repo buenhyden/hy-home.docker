@@ -396,7 +396,7 @@ check for each kind of writer, not for the relation as a whole.
 | Constraint | `rel.constraint` | Change to constraint | `parent_ids` of a Requirements package, Architecture description, ADR and Spec; Spec `Owning Requirements` as prose | `check-document-metadata.py` for `parent_ids`; the prose is checked by review |
 | Traceability | `rel.traceability` | Record to source | Task `Results` rows and a Task's evidence links; `parent_ids` of research, audit, data, guide, runbook, operations policy, incident and generated documents | `check-document-corpus-lifecycle.py` for Evidence rows; `check-document-links.py` for links; `check-document-metadata.py` for `parent_ids` |
 | Promotion | `rel.promotion` | Plan to target owner | Plan `Durable Meaning` and `Owner and Receipt` | None: the reviewer applies the [SDLC](sdlc.md#sequence) promotion rule |
-| Supersession | `rel.supersession` | Successor to predecessor | Frontmatter `supersedes`; ADR `Traceability` / `Supersession` | `check-document-metadata.py` for the key; the section is checked by review |
+| Supersession | `rel.supersession` | Successor to predecessor | Frontmatter `supersedes`; ADR `Decision` / `Authority and Effect` under a `Supersession` heading | `check-document-metadata.py` for the key; the section is checked by review |
 | Change Impact | `rel.change-impact` | Owner to consumer | None: derived from Authority, Constraint and Structural Ownership | `check-document-links.py --impact` reports it; the reviewer decides which consumers change |
 
 The frontmatter `owner` names an accountable person, not a related document,
@@ -663,10 +663,11 @@ evidence; surrounding instructions remain current and validated normally.
   consequential choice. Preserve accepted decisions and use explicit
   supersession when the choice changes.
 - Use the Description core for architecture views: context and scope
-  in `Scope`, building blocks in `Structure`, runtime interaction and topology
-  in `Runtime and Deployment`, and quality scenarios and risks in
-  `Quality and Risks`. Add registered optional content only when it helps the
-  reader; do not impose an empty full architecture framework.
+  in `Context and Boundaries`, building blocks and interfaces in `Structure`,
+  runtime interaction and topology in `Runtime Behavior`, and quality
+  scenarios and trade-offs in `Quality Scenarios`. Add registered optional
+  content only when it helps the reader; do not impose an empty full
+  architecture framework.
 - Consider system context and container diagrams for system-level Descriptions.
   Use component detail only when useful, dynamic diagrams for interactions, and
   deployment diagrams for environment topology. A diagram identifies its title,

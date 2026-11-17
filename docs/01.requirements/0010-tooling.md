@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Software Verification Requirements"
-version: "2.3.1"
+version: "2.4.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-17"
 layer: "requirements"
 artifact_id: "REQ-0010"
 created: "2026-03-26"
@@ -72,6 +72,15 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 ## Requirements
 
+| Requirement ID | Statement | Rationale | Acceptance | Priority |
+| --- | --- | --- | --- | --- |
+| REQ-0010-FR-0001 | Provide an infrastructure-as-code command-line helper for execution and state management, plus a centralized orchestration service (Terrakube) whose browser and API routes require the shared SSO. | Manual infrastructure changes are hard to track; a DevOps engineer manages infrastructure through IaC and has every plan reviewed before it is applied. | Every tracked infrastructure change is applied through the IaC helper or the orchestration service, and an unauthenticated request to an orchestration route is redirected to SSO. | must |
+| REQ-0010-FR-0002 | Provide multi-language static code analysis with quality gate enforcement (SonarQube) as an optional, isolated experiment capability that reaches the shared management database only through an operator-approved endpoint and is reachable only on the LAB host address (loopback by default) until promoted. | Fragmented code quality checks leave stability unverified; a developer sees bugs, vulnerabilities and code smells for each change. | The static analysis capability renders on its own, selects no always-on HOME service, refuses to start without an approved database endpoint and publishes nothing beyond the LAB host address (loopback by default). | must |
+| REQ-0010-FR-0003 | Provide k6 as the default load tool; Locust is an optional, isolated experiment capability for Python or protocol comparisons, not part of the always-on HOME set. | Fragmented performance checks leave stability unverified; a QA or performance engineer runs load scenarios with k6 to find bottlenecks. | The default load tool reports its pinned version from the root composition, and the alternative load tool renders only outside it. | must |
+| REQ-0010-FR-0004 | Provide a single-node private image registry for internal service deployment, reachable only from the local host. | A developer shares images through the internal registry. | The registry accepts a push and pull from the local host and publishes no port on a non-loopback address. | must |
+| REQ-0010-FR-0006 | Propose dependency and image updates automatically for review, and take scheduled encrypted backups with both a local and an offsite copy. | The toolset removes manual work; preserving the single host's storage alone is not backup or host-failure recovery. | The update tool opens reviewable change requests and applies nothing itself, and a backup run leaves an encrypted snapshot in the local and the offsite repository. | must |
+| REQ-0010-FR-0007 | Provide shared verification tools: API mocking, consumer contract testing through a contract broker, and policy checks over tracked configuration. | Fragmented checks leave the platform's stability unverified; the goal is a supporting toolset that gives data for engineering decisions. | The mock server, the contract broker and the policy checker each render in the quality tier, and the policy check runs as a registered CI gate. | must |
+
 ### Functional Requirements
 
 - **REQ-0010-FR-0001**: Provide an infrastructure-as-code command-line helper
@@ -94,9 +103,20 @@ The owner, @buenhyden, writes, reviews and accepts this package.
   consumer contract testing through a contract broker, and policy checks over
   tracked configuration.
 
-## Acceptance Criteria
+### Quality Requirements
 
-### Acceptance Conditions
+This package declares no quality requirement; its acceptance criteria are verification targets, not evidence that they are met on the current host.
+
+## Traceability
+
+### Sources
+
+This package records the owner's requirements for the tooling tier; no upstream
+document governs it.
+
+### Verification Links
+
+#### Acceptance Conditions
 
 - **REQ-0010-FR-0001**: Every tracked infrastructure change is applied through
   the IaC helper or the orchestration service, and an unauthenticated request
@@ -116,18 +136,11 @@ The owner, @buenhyden, writes, reviews and accepts this package.
   checker each render in the quality tier, and the policy check runs as a
   registered CI gate.
 
-### Verification Method
+#### Verification Method
 
 Render and policy conditions (REQ-0010-FR-0003, REQ-0010-FR-0007, the rendering, HOME selection and port bindings in REQ-0010-FR-0002, and the port binding in REQ-0010-FR-0004) are judged by reviewing the rendered root composition, the isolated LAB compositions and the registered CI policy gate. The change-path conditions (infrastructure changes applied only through the IaC helper or the orchestration service in REQ-0010-FR-0001, and an update tool that opens change requests and applies nothing in REQ-0010-FR-0006) are judged by reviewing the tracked configuration of those tools and the change history they produce. Behavior conditions need runtime observations: the SSO redirect of REQ-0010-FR-0001, the refusal to start without an approved database endpoint in REQ-0010-FR-0002, the registry push and pull in REQ-0010-FR-0004, and the encrypted local and offsite snapshot in REQ-0010-FR-0006. The criteria are verification targets, not evidence that they are met on the current host. SPEC-0262 cites REQ-0010, and its Task evidence rows record the results it produces; a later Spec records any runtime observation it makes in its own Task. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence and accepts the requirement once every condition is judged met.
 
-## Traceability
-
-### Source and Constraints
-
-This package records the owner's requirements for the tooling tier; no upstream
-document governs it.
-
-### Downstream Links
+#### Downstream Links
 
 - **Architecture Description**: [0009-tooling-architecture.md](../02.architecture/descriptions/0009-tooling-architecture.md)
 - **Spec**: [SPEC-0262 LAB migration](../03.specs/0262-analytics-labs-migration/spec.md)

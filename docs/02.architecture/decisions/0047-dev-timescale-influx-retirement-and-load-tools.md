@@ -1,10 +1,10 @@
 ---
 title: "DEV Timescale, InfluxDB Retirement and Load Tools"
-version: "0.2.2"
+version: "0.3.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0047"
 parent_ids:
@@ -34,9 +34,43 @@ duplicate raw results across stores. Keep normal startup free of lab topology.
 Removal must be complete in source while data disposal stays a separate,
 verified operation.
 
+#### Sources
+
+- [AD-0004](../descriptions/0004-data-architecture.md)
+- [AD-0031](../descriptions/0031-home-development-host.md)
+- [ADR-0062](0062-home-lab-membership.md)
+- [SPEC-0212](../../03.specs/0212-request-baseline-and-reconciliation/spec.md)
+
 ### Decision Scope
 
 This decision covers the DEV TimescaleDB time-series and test-result store, the retirement of InfluxDB from every active surface, the default load tool, and the placement of HA/replica topologies. It affects ADR-0045's Data tier list, REQ-0005, AD-0004/AD-0012, POL-0078 and the InfluxDB guide, policy and runbook.
+
+## Options
+
+### Considered Options
+
+- Keep InfluxDB as an optional service: rejected; the request retires it and
+  it would remain a second time-series owner.
+- QuestDB, ClickHouse or VictoriaMetrics: deferred to LAB comparison when a
+  measured bottleneck appears; none has a current consumer.
+- TimescaleDB on MNG: rejected; no MNG consumer needs it.
+- Locust as default: rejected for now; k6 already owns the result contract.
+  The choice is reopened if Python protocol needs dominate.
+- Root profiles for HA services: rejected; explicit service targeting
+  activates a profiled service, so a profile cannot keep lab services out.
+
+### Trade-offs
+
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| Keep InfluxDB as an optional service | The ADR records no benefit for this option. | It would remain a second time-series owner. | Rejected; the request retires InfluxDB and it would remain a second time-series owner. |
+| QuestDB, ClickHouse or VictoriaMetrics | The ADR records no benefit for this option. | None has a current consumer. | Deferred to LAB comparison when a measured bottleneck appears; none has a current consumer. |
+| TimescaleDB on MNG | The ADR records no benefit for this option. | No MNG consumer needs it. | Rejected; no MNG consumer needs it, and MNG PostgreSQL stays plain PostgreSQL for service metadata. |
+| Locust as default | The ADR records no benefit for this option. | k6 already owns the result contract. | Rejected for now; k6 already owns the result contract. The choice is reopened if Python protocol needs dominate. |
+| Root profiles for HA services | The ADR records no benefit for this option. | Explicit service targeting activates a profiled service, so a profile cannot keep lab services out. | Rejected; a profile is a selector, not an isolation boundary. |
+| DEV TimescaleDB for time-series and `perf_db` results, InfluxDB retired, k6 default, HA/replica topologies in standalone LAB files (chosen) | Reuses running engines and contracts, keeps one owner per data role, and keeps normal startup free of lab topology. | A DEV-only engine shares CPU and I/O between projects; real data export, purge and HOME container removal stay `NOT_RUN` until a confirmed target and recovery path exist. | Chosen; it answers the request for one time-series and test-result store, removal of every active InfluxDB surface, a single default load tool and HA/replica services kept out of normal startup. |
+
+Each option's reason for rejection or deferral is stated in its entry above. The chosen decisions reuse running engines and contracts, keep one owner per data role, and keep normal startup free of lab topology.
 
 ## Decision
 
@@ -63,24 +97,6 @@ This decision covers the DEV TimescaleDB time-series and test-result store, the 
 
 Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked. Effective from 2026-10-07, the date the Follow-up records for acceptance.
 
-## Alternatives
-
-### Considered Options
-
-- Keep InfluxDB as an optional service: rejected; the request retires it and
-  it would remain a second time-series owner.
-- QuestDB, ClickHouse or VictoriaMetrics: deferred to LAB comparison when a
-  measured bottleneck appears; none has a current consumer.
-- TimescaleDB on MNG: rejected; no MNG consumer needs it.
-- Locust as default: rejected for now; k6 already owns the result contract.
-  The choice is reopened if Python protocol needs dominate.
-- Root profiles for HA services: rejected; explicit service targeting
-  activates a profiled service, so a profile cannot keep lab services out.
-
-### Trade-offs
-
-Each option's reason for rejection or deferral is stated in its entry above. The chosen decisions reuse running engines and contracts, keep one owner per data role, and keep normal startup free of lab topology.
-
 ## Consequences
 
 ### Impacts
@@ -94,6 +110,11 @@ interference, never by moving load to MNG.
 
 ### Follow-up
 
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
 Accepted on 2026-10-07 with SPEC-0213, which implements decisions 1-3 and
 retires InfluxDB. Decisions 4 and 5 describe the current source (k6 default,
 Locust and HA topologies in standalone LAB files); the live load metric path
@@ -106,12 +127,3 @@ The retirement package proves an empty active reference set outside history,
 a root model without `influxdb`, and passing replacement regressions. The
 LAB package proves no LAB key or network in the root `--profile '*'` model
 and a standalone render for each LAB file.
-
-## Traceability
-
-### Sources
-
-- [AD-0004](../descriptions/0004-data-architecture.md)
-- [AD-0031](../descriptions/0031-home-development-host.md)
-- [ADR-0062](0062-home-lab-membership.md)
-- [SPEC-0212](../../03.specs/0212-request-baseline-and-reconciliation/spec.md)

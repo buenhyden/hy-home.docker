@@ -1,10 +1,10 @@
 ---
 title: "Observability Architecture Description"
-version: "1.1.3"
+version: "1.2.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "AD-0006"
 parent_ids:
@@ -14,15 +14,7 @@ created: "2026-03-26"
 
 # Observability Architecture Description
 
-## Overview
-
-### Purpose and Readers
-
-`06-observability` collects, stores and shows platform telemetry so incidents
-can be correlated across logs, metrics, traces and profiles. It runs Loki,
-Grafana, Tempo and Prometheus with Grafana Alloy, Alertmanager, Pushgateway,
-cAdvisor, node-exporter, Gatus, Pyroscope and a DCGM GPU exporter,
-fully self-hosted.
+## Context and Boundaries
 
 ### System Boundary
 
@@ -37,9 +29,15 @@ fully self-hosted.
   statistics.
 - **Non-goals:** dependence on external cloud monitoring vendors.
 
-## Context and Constraints
+#### Purpose and Readers
 
-### Context
+`06-observability` collects, stores and shows platform telemetry so incidents
+can be correlated across logs, metrics, traces and profiles. It runs Loki,
+Grafana, Tempo and Prometheus with Grafana Alloy, Alertmanager, Pushgateway,
+cAdvisor, node-exporter, Gatus, Pyroscope and a DCGM GPU exporter,
+fully self-hosted.
+
+#### Context
 
 Alloy collects Docker logs, OTLP traces and pprof targets; Prometheus scrapes exporters and services; Traefik sends traces straight to Tempo; k6 sends OTLP to an authenticated Alloy receiver. Loki and Tempo store objects in SeaweedFS (`04-data`), and Grafana, Gatus and Dozzle use Keycloak OIDC (`02-auth`).
 
@@ -47,7 +45,7 @@ Alloy collects Docker logs, OTLP traces and pprof targets; Prometheus scrapes ex
 
 The stack is fully self-hosted with no dependence on external cloud monitoring vendors. Prometheus keeps a local TSDB as the durable authority, and approved Kubernetes LAN ingress and query exceptions stay under POL-0096.
 
-## Current Structure
+## Structure
 
 ### Building Blocks
 
@@ -58,7 +56,26 @@ to Tempo, and declares pprof scrape targets for Pyroscope. Prometheus scrapes
 exporters, services and Alloy self-metrics directly. Grafana queries each
 datasource. Traefik sends its own traces straight to Tempo.
 
-### Runtime and Deployment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Docker log collection | Docker containers | Alloy, forwarding to Loki | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| OTLP trace receiver | Applications | Alloy, forwarding to Tempo | OTLP | The description records no failure handling for this interface. |
+| Traefik traces | Traefik | Tempo | OTLP | The description records no failure handling for this interface. |
+| Authenticated Alloy quality-metrics receiver | k6 | Alloy, forwarding by Prometheus remote write | `config.home.alloy` | The description records no failure handling for this interface. |
+| Prometheus scrapes on `obs_net` | cAdvisor, exporters, services and Alloy self-metrics | Prometheus | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| pprof scrape targets | Declared Alloy pprof targets | Pyroscope | The description links no contract for this interface. | The description records no failure handling for this interface; collection success is not verified. |
+| S3 object storage on `object_net` | SeaweedFS (`04-data`) | Loki (`loki-bucket`) and Tempo (`tempo-bucket`) | [ADR-0053 Observability object storage on SeaweedFS](../decisions/0053-observability-storage-on-seaweedfs.md) | Bucket history is excluded from HOME Restic state; lost history is outside backup recovery and services collect new data. |
+| Keycloak OIDC | Keycloak (`02-auth`) | Grafana, Gatus and Dozzle | OIDC | The description records no failure handling for this interface. |
+| Grafana state store | `mng-pg` (`04-data`) | Grafana | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| Prometheus API route on `edge_net` | Prometheus | API clients through Traefik | `prometheus-api-auth@file` | The description records no failure handling for this interface. |
+
+Scrapes and datasource queries use `obs_net`, object storage uses `object_net`, and UI routes use `edge_net`. The Alloy receiver is authenticated; the Prometheus API route uses `prometheus-api-auth@file`.
+
+## Runtime Behavior
+
+### Normal Flow
 
 #### Runtime View
 
@@ -90,26 +107,16 @@ node-exporter, cAdvisor, Gatus, Alertmanager and `dcgm-exporter` are HOME;
 Pushgateway is OPTIONAL. Starting a HOME profile does not stop an already
 running optional container.
 
-## Interfaces
-
-### Contracts
-
-Scrapes and datasource queries use `obs_net`, object storage uses `object_net`, and UI routes use `edge_net`. The Alloy receiver is authenticated; the Prometheus API route uses `prometheus-api-auth@file`.
-
-### Failure Boundaries
+### Failure and Recovery
 
 The HOME Restic state set excludes SeaweedFS `loki-bucket` and `tempo-bucket`
 volume files. Lost object history is outside HOME backup recovery, and the
 services collect new data. The [backup policy](../../05.operations/policies/10-platform-and-backup/0021-backup-and-restore.md)
 owns the recovery boundary. The open Tempo retention gap is recorded below.
 
-## Decisions
+## Quality Scenarios
 
-### Decision Links
-
-- [ADR-0053 Observability object storage on SeaweedFS](../decisions/0053-observability-storage-on-seaweedfs.md)
-
-### Quality and Risks
+### Scenarios
 
 #### Quality Attributes
 
@@ -117,7 +124,7 @@ owns the recovery boundary. The open Tempo retention gap is recorded below.
 - **Security:** Grafana, Gatus and Dozzle use native Keycloak OIDC; the other
   UIs use ForwardAuth; the Prometheus API route uses `prometheus-api-auth@file`.
 - **Reliability:** the current snapshot boundary for Loki and Tempo is stated
-  under Failure Boundaries. SeaweedFS use alone provides no evidence of recovery
+  under Failure and Recovery. SeaweedFS use alone provides no evidence of recovery
   for the excluded telemetry history.
 - **Scalability:** the Prometheus local TSDB is the durable authority; the
   enabled remote-write receiver does not imply an external long-term store.
@@ -128,13 +135,33 @@ owns the recovery boundary. The open Tempo retention gap is recorded below.
 The Tempo policy targets 24h retention, but `tempo/config/tempo.yaml` sets no
 `block_retention`, so the version default (336h) applies. This gap is open.
 
-## Traceability
+### Trade-offs
 
-### Requirement Mapping
+- The stack is fully self-hosted with no dependence on external cloud
+  monitoring vendors (Constraints).
+- Prometheus keeps a local TSDB as the durable authority; the enabled
+  remote-write receiver does not imply an external long-term store, and a
+  long-term metrics store needs a Stage 03 change (Quality Attributes,
+  Evolution).
+- The HOME Restic state set excludes SeaweedFS `loki-bucket` and
+  `tempo-bucket` volume files; the accepted cost is that lost object history is
+  outside HOME backup recovery and the services collect new data (Failure and
+  Recovery).
+- The Tempo retention gap (policy 24h, version default 336h) is open (Risks).
+
+## Decisions and Adoption
+
+### Decisions
+
+- [ADR-0053 Observability object storage on SeaweedFS](../decisions/0053-observability-storage-on-seaweedfs.md)
+
+### Adoption Boundaries
+
+#### Requirement Mapping
 
 - [REQ-0007 Observability requirements](../../01.requirements/0007-observability.md)
 
-### Currentness and Lineage
+#### Currentness and Lineage
 
 - [Derived Compose image projection](../../../infra/tech-stack.versions.json)
 

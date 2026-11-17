@@ -190,13 +190,10 @@ class TemplateDefinitionTests(unittest.TestCase):
                     self.assertLessEqual(set(h3), {c["title"] for c in children})
 
     def test_conditional_subsections_carry_the_contract_condition(self) -> None:
-        # COMMON-DOC-FORM-1 1.0.0 marks exactly these H3s conditional.
-        expected = {
-            ("sdlc/requirement", "Quality Requirements"): "when a quality "
-            "requirement applies",
-            ("sdlc/architecture-decision", "Supersession"): "when an actual "
-            "predecessor or successor decision exists, or the change supersedes one",
-        }
+        # COMMON-DOC-FORM-1 1.0.0 marked the requirement Quality Requirements
+        # and the ADR Supersession H3s conditional; both roles moved to the
+        # role design core, where every H3 is required, so none is left.
+        expected: dict[tuple[str, str], str] = {}
         found = {}
         for role, definition in self.definitions.items():
             for heading in definition["headings"]:
@@ -623,6 +620,17 @@ def _core_from(definition: dict) -> dict:
     return {"role": "fixture", "sections": sections, "tables": tables}
 
 
+def _pending_role(raw: dict) -> str:
+    """A template role still awaiting its core move; bound roles cannot carry
+    the exception the fixtures below change."""
+
+    return next(
+        template_id
+        for template_id, role in sorted(raw["template_roles"].items())
+        if role.get("core_exception", {}).get("kind") == "pending-migration"
+    )
+
+
 class RoleDesignConformanceTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
@@ -707,9 +715,7 @@ class RoleDesignConformanceTests(unittest.TestCase):
         )
 
         def rename(raw: dict) -> None:
-            exception = raw["template_roles"]["sdlc/architecture-decision"][
-                "core_exception"
-            ]
+            exception = raw["template_roles"][_pending_role(raw)]["core_exception"]
             exception["core_role"] = "no-such-role"
 
         codes = {
@@ -739,7 +745,7 @@ class RoleDesignConformanceTests(unittest.TestCase):
         for name, edit in cases.items():
             with self.subTest(case=name):
                 changed = copy.deepcopy(raw)
-                edit(changed["template_roles"]["sdlc/architecture-decision"])
+                edit(changed["template_roles"][_pending_role(changed)])
                 self.assertIn(
                     "schema-invalid",
                     {finding.code for finding in validate_registry(changed)},
@@ -780,6 +786,9 @@ class RoleDesignConformanceTests(unittest.TestCase):
         self.assertEqual("data-reference", bound.get("reference/data"))
         self.assertEqual("agent-instructions", bound.get("common/agent-guide"))
         self.assertEqual("skill", bound.get("governance/skill"))
+        self.assertEqual("requirement", bound.get("sdlc/requirement"))
+        self.assertEqual("architecture", bound.get("sdlc/architecture-description"))
+        self.assertEqual("decision", bound.get("sdlc/architecture-decision"))
         self.assertEqual([], role_design_contract_findings(self.registry))
 
     def test_a_runbook_steps_table_reads_the_core_columns(self) -> None:

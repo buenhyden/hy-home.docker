@@ -1,10 +1,10 @@
 ---
 title: "HOME Membership and Planned LABs"
-version: "0.5.1"
+version: "0.6.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0062"
 parent_ids:
@@ -76,12 +76,69 @@ Drivers:
 - LABs give optional stacks an explicit, isolated home; promotion back to HOME
   stays possible through POL-0107.
 
+#### Sources
+
+Evidence is the owner decisions of 2026-11-09 and 2026-11-10, the root Compose includes, `labs/`, and
+`scripts/hardening/check-all-hardening.sh`. No runtime state is claimed.
+
+- [AD-0004 Data architecture](../descriptions/0004-data-architecture.md)
+- [AD-0009 Platform operations and verification](../descriptions/0009-tooling-architecture.md)
+- [AD-0011 Administration and experimentation](../descriptions/0011-laboratory-architecture.md)
+- [AD-0012 Data analytics](../descriptions/0012-data-analytics-architecture.md)
+- [AD-0019 Data hardening](../descriptions/0019-data-optimization-hardening-architecture.md)
+- [AD-0024 Platform operations and quality hardening](../descriptions/0024-tooling-optimization-hardening-architecture.md)
+- [AD-0025 Admin and experiment tools hardening](../descriptions/0025-laboratory-optimization-hardening-architecture.md)
+- [REQ-0005 Data analytics](../../01.requirements/0005-data-analytics.md)
+- [ADR-0047 DEV TimescaleDB and load tools](0047-dev-timescale-influx-retirement-and-load-tools.md)
+- [POL-0094 Lakehouse](../../05.operations/policies/15-labs/0094-lakehouse.md)
+- [POL-0107 LAB promotion](../../05.operations/policies/15-labs/0107-lab-promotion.md)
+- [RUN-0057 Open WebUI LAB and HOME retirement](../../05.operations/runbooks/15-labs/0057-open-webui.md)
+
 ### Decision Scope
 
 This decision covers which services belong to HOME (the root Compose includes)
 and which are LABs under `labs/<name>/`, by tier, and the planned moves listed
 above. Runtime retirement of a moved service is left to separately approved
 steps.
+
+## Options
+
+### Considered Options
+
+- Keep heavy and alternative services as opt-in profiles inside HOME tiers:
+  rejected; profiles share the root project, data root and networks, so an
+  experiment can change HOME.
+- One ADR per tier restating HOME and LAB membership: rejected; the rule is the
+  same for every tier and would be repeated nine times.
+- Keep ADR-0058 as is: rejected; idle members keep their cost in hardening,
+  secrets and update ledgers.
+- Delete the idle services outright: rejected for the standalone ones; the
+  owner wants them available as LABs.
+- Move every stopped service, including job-style tools: rejected; opentofu,
+  renovate, conftest, k6 and restic are jobs, not idle services, and the
+  provisioners are sidecars of HOME services.
+- One boundary rule, HOME by root include and LAB by `labs/`, with tier
+  capability ownership, promotion by policy and the membership changes
+  below: selected.
+
+### Trade-offs
+
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| Keep heavy and alternative services as opt-in profiles inside HOME tiers | The ADR records no benefit for this option. | Profiles share the root project, data root and networks, so an experiment can change HOME. | Rejected; profiles share the root project, data root and networks, so an experiment can change HOME. |
+| One ADR per tier restating HOME and LAB membership | The ADR records no benefit for this option. | The rule is the same for every tier and would be repeated nine times. | Rejected; the rule is the same for every tier and would be repeated nine times. |
+| Keep ADR-0058 as is | The ADR records no benefit for this option. | Idle members keep their cost in hardening, secrets and update ledgers. | Rejected; idle members keep their cost in hardening, secrets and update ledgers. |
+| Delete the idle services outright | The ADR records no benefit for this option. | The owner would lose the standalone services the owner wants available as LABs. | Rejected for the standalone ones; the owner wants them available as LABs. |
+| Move every stopped service, including job-style tools | The ADR records no benefit for this option. | It would move opentofu, renovate, conftest, k6 and restic, which are jobs rather than idle services, and the provisioners, which are sidecars of HOME services. | Rejected; opentofu, renovate, conftest, k6 and restic are jobs, not idle services, and the provisioners are sidecars of HOME services. |
+| One boundary rule, HOME by root include and LAB by `labs/`, with tier capability ownership, promotion by policy and the membership changes | HOME's surface is the root include list, experiments cannot reach HOME data or profiles by accident, and HOME carries fewer idle members. | An analytics or clustered workload needs a LAB start or promotion before use, each move touches many surfaces so it is one change per move, and LAB hardening checks in tier functions must follow each move. | Selected; HOME should contain only services that run every day, and LABs give optional stacks an explicit, isolated home with promotion through POL-0107. |
+
+- Negative: an analytics or clustered workload needs a LAB start or a promotion
+  before use.
+- Negative: each move touches POL-0078 profiles, Traefik routes, the OpenBao
+  secret catalog, security-update ledgers, docs, dashboards and scrapes, and
+  pinning tests, so it is one change per move.
+- Negative: hardening checks for LAB sources still run in tier functions,
+  which must follow each move.
 
 ## Decision
 
@@ -156,35 +213,78 @@ Decided by the owner, @buenhyden; status `accepted`. The owner decided on
 the owner amended it on 2026-11-10 (open-webui, Kafka CDC, Airflow Flower). No
 separate approval record is linked. Effective from 2026-11-09.
 
-## Alternatives
+#### Supersession
 
-### Considered Options
+This record replaces ADR-0058 and, through it, six earlier ADRs; ADR-0058 is
+deleted in the same change (ADR-0051). Each one's still-valid decisions carry
+forward below.
 
-- Keep heavy and alternative services as opt-in profiles inside HOME tiers:
-  rejected; profiles share the root project, data root and networks, so an
-  experiment can change HOME.
-- One ADR per tier restating HOME and LAB membership: rejected; the rule is the
-  same for every tier and would be repeated nine times.
-- Keep ADR-0058 as is: rejected; idle members keep their cost in hardening,
-  secrets and update ledgers.
-- Delete the idle services outright: rejected for the standalone ones; the
-  owner wants them available as LABs.
-- Move every stopped service, including job-style tools: rejected; opentofu,
-  renovate, conftest, k6 and restic are jobs, not idle services, and the
-  provisioners are sidecars of HOME services.
-- One boundary rule, HOME by root include and LAB by `labs/`, with tier
-  capability ownership, promotion by policy and the membership changes
-  below: selected.
+- ADR-0058 (HOME Tiers versus LABs, accepted 2026-11-06) defined HOME as the
+  root Compose includes and a LAB as a `labs/<name>/` package promoted only by
+  POL-0107, with capability ownership per tier, the analytics engine choice,
+  admin-UI boundaries and hardening checks that move with a service. It
+  rejected profiles inside HOME tiers (they share the root project, data root
+  and networks), and one ADR per tier (the rule would repeat nine times). It
+  selected one boundary rule, root include for HOME and `labs/` for LAB. Its
+  consequences: a small readable HOME, experiments isolated from HOME data, a
+  LAB start or promotion before use, and tier hardening functions that follow
+  each move. Its HOME member table listed neo4j, opensearch, comfyui,
+  open-notebook, terrakube, pact-broker and wiremock, which this record
+  changes. It did not name kafka-rest-proxy or the per-app Valkey trios.
 
-### Trade-offs
-
-- Negative: an analytics or clustered workload needs a LAB start or a promotion
-  before use.
-- Negative: each move touches POL-0078 profiles, Traefik routes, the OpenBao
-  secret catalog, security-update ledgers, docs, dashboards and scrapes, and
-  pinning tests, so it is one change per move.
-- Negative: hardening checks for LAB sources still run in tier functions,
-  which must follow each move.
+- ADR-0009 selected the tooling stack: OpenTofu with Terrakube for IaC,
+  SonarQube for code quality, k6 as the default load tool with Locust as an
+  optional LAB (after ADR-0047), an OCI Distribution registry, and the
+  withdrawal of Syncthing; admin UIs behind gateway and SSO, not assumed for CLI
+  or registry protocols; persistence not counted as backup. It named no
+  rejected candidates. SonarQube is now a LAB.
+- ADR-0024 ordered the tooling hardening: the gateway and SSO chain on the
+  SonarQube and Terrakube routers, an explicit `infra_net` boundary, a
+  locust-worker healthcheck, k6 volume alignment, and the
+  `check-all-hardening.sh 09-platform-ops 11-quality` gate, with OpenTofu drift
+  detection, Terrakube audit, registry signing, a SonarQube quality gate and
+  k6/Locust standardization in phases. Locust and SonarQube are now LABs, and
+  `infra_net` is replaced by segmented networks
+  ([ADR-0055](0055-segmented-per-flow-networks.md)).
+- ADR-0025 ordered the laboratory hardening: no direct host ports for admin
+  dashboards, `gateway-standard-chain + ipAllowList + sso-errors + sso-auth` on
+  every laboratory router, a read-only Docker socket for Dozzle, an
+  allowlist, large-body and SSO boundary for Open Notebook with Docker Secret
+  credentials, the `check-all-hardening.sh 04-data 06-observability 08-ai`
+  gate, and phased dashboard expiry, Dozzle scope, admin session and
+  RedisInsight audit policies. The laboratory tier no longer exists; Dozzle
+  and Open Notebook do not use `sso-auth` (native OIDC and an application
+  password instead).
+- ADR-0039 replaced ADR-0015's specialized engines after the lakehouse
+  acceptance of 2026-09-24: OpenSearch for log and search, Flink for SQL stream
+  processing between Kafka and Iceberg, Trino for SQL over Iceberg on
+  SeaweedFS, no ksqlDB or StarRocks, time series handed to DEV TimescaleDB by
+  ADR-0047. It rejected keeping ksqlDB and StarRocks beside Flink and Trino, and
+  Spark alone. The engines now run in the lakehouse LAB (`lab-lakehouse`
+  profile, checkpoints under `${LAB_DATA_DIR}`), not in a `lakehouse` HOME
+  profile.
+- ADR-0040 replaced ADR-0019's 04-data hardening: Compose contracts protected
+  by `check-all-hardening.sh 04-data` and CI, new services adding their own
+  checks, HA, lifecycle and recovery drills through approved procedures, and the
+  `template-stateful-*` / `template-infra-*` inheritance model. It rejected an
+  all-at-once HA expansion and documentation-only changes. Its items for
+  supabase healthchecks, the `valkey-cluster-exporter` secret path and a
+  SeaweedFS expose-token check no longer match: supabase was a LAB removed by
+  owner decision on 2026-11-06, the Valkey cluster is a LAB with its own
+  `lab_valkey_password`, and the gate has no expose-token check.
+- ADR-0045 (SPEC-0197) split storage from processing: Data kept the stores,
+  Analytics took Flink, Spark, Trino, Great Expectations, Superset and dbt,
+  SeaweedFS stayed shared, dbt stayed on PostgreSQL, and tier numbering is a
+  namespace, not start order or isolation. It rejected keeping eight Data
+  categories and flattening all seventeen packages. Its Data list included
+  supabase, the PostgreSQL and Valkey clusters, Cassandra, CouchDB and MongoDB;
+  the others are LABs now (supabase was removed on 2026-11-06), and Analytics
+  has no HOME member.
+- [ADR-0046](0046-capability-tiers-and-quality-boundary.md) stays accepted and is not replaced: a
+  completed Task links to it, and a completed Task body cannot change (owner
+  decision, 2026-11-06). Its capability tiers still hold. Where it placed
+  Locust and SonarQube in Quality, Stalwart in Communication and JupyterLab in
+  Analytics, this record governs: those four are LABs now.
 
 ## Consequences
 
@@ -197,6 +297,11 @@ separate approval record is linked. Effective from 2026-11-09.
 - Reversibility: a LAB returns to HOME through POL-0107.
 
 ### Follow-up
+
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
 
 One change per move (comfyui, neo4j, open-notebook with surrealdb,
 pact-broker, wiremock, terrakube), plus the opensearch retirement and the
@@ -279,96 +384,3 @@ container is left for a separately approved retirement step.
 The root include list, `labs/<name>/promotion.yaml`, POL-0107 and
 `check-all-hardening.sh` enforce the boundary; `tests/validation/test_infra_tier_layout.py`
 fails on a renamed or retired tier.
-
-## Traceability
-
-### Sources
-
-Evidence is the owner decisions of 2026-11-09 and 2026-11-10, the root Compose includes, `labs/`, and
-`scripts/hardening/check-all-hardening.sh`. No runtime state is claimed.
-
-- [AD-0004 Data architecture](../descriptions/0004-data-architecture.md)
-- [AD-0009 Platform operations and verification](../descriptions/0009-tooling-architecture.md)
-- [AD-0011 Administration and experimentation](../descriptions/0011-laboratory-architecture.md)
-- [AD-0012 Data analytics](../descriptions/0012-data-analytics-architecture.md)
-- [AD-0019 Data hardening](../descriptions/0019-data-optimization-hardening-architecture.md)
-- [AD-0024 Platform operations and quality hardening](../descriptions/0024-tooling-optimization-hardening-architecture.md)
-- [AD-0025 Admin and experiment tools hardening](../descriptions/0025-laboratory-optimization-hardening-architecture.md)
-- [REQ-0005 Data analytics](../../01.requirements/0005-data-analytics.md)
-- [ADR-0047 DEV TimescaleDB and load tools](0047-dev-timescale-influx-retirement-and-load-tools.md)
-- [POL-0094 Lakehouse](../../05.operations/policies/15-labs/0094-lakehouse.md)
-- [POL-0107 LAB promotion](../../05.operations/policies/15-labs/0107-lab-promotion.md)
-- [RUN-0057 Open WebUI LAB and HOME retirement](../../05.operations/runbooks/15-labs/0057-open-webui.md)
-
-### Supersession
-
-This record replaces ADR-0058 and, through it, six earlier ADRs; ADR-0058 is
-deleted in the same change (ADR-0051). Each one's still-valid decisions carry
-forward below.
-
-- ADR-0058 (HOME Tiers versus LABs, accepted 2026-11-06) defined HOME as the
-  root Compose includes and a LAB as a `labs/<name>/` package promoted only by
-  POL-0107, with capability ownership per tier, the analytics engine choice,
-  admin-UI boundaries and hardening checks that move with a service. It
-  rejected profiles inside HOME tiers (they share the root project, data root
-  and networks), and one ADR per tier (the rule would repeat nine times). It
-  selected one boundary rule, root include for HOME and `labs/` for LAB. Its
-  consequences: a small readable HOME, experiments isolated from HOME data, a
-  LAB start or promotion before use, and tier hardening functions that follow
-  each move. Its HOME member table listed neo4j, opensearch, comfyui,
-  open-notebook, terrakube, pact-broker and wiremock, which this record
-  changes. It did not name kafka-rest-proxy or the per-app Valkey trios.
-
-- ADR-0009 selected the tooling stack: OpenTofu with Terrakube for IaC,
-  SonarQube for code quality, k6 as the default load tool with Locust as an
-  optional LAB (after ADR-0047), an OCI Distribution registry, and the
-  withdrawal of Syncthing; admin UIs behind gateway and SSO, not assumed for CLI
-  or registry protocols; persistence not counted as backup. It named no
-  rejected candidates. SonarQube is now a LAB.
-- ADR-0024 ordered the tooling hardening: the gateway and SSO chain on the
-  SonarQube and Terrakube routers, an explicit `infra_net` boundary, a
-  locust-worker healthcheck, k6 volume alignment, and the
-  `check-all-hardening.sh 09-platform-ops 11-quality` gate, with OpenTofu drift
-  detection, Terrakube audit, registry signing, a SonarQube quality gate and
-  k6/Locust standardization in phases. Locust and SonarQube are now LABs, and
-  `infra_net` is replaced by segmented networks
-  ([ADR-0055](0055-segmented-per-flow-networks.md)).
-- ADR-0025 ordered the laboratory hardening: no direct host ports for admin
-  dashboards, `gateway-standard-chain + ipAllowList + sso-errors + sso-auth` on
-  every laboratory router, a read-only Docker socket for Dozzle, an
-  allowlist, large-body and SSO boundary for Open Notebook with Docker Secret
-  credentials, the `check-all-hardening.sh 04-data 06-observability 08-ai`
-  gate, and phased dashboard expiry, Dozzle scope, admin session and
-  RedisInsight audit policies. The laboratory tier no longer exists; Dozzle
-  and Open Notebook do not use `sso-auth` (native OIDC and an application
-  password instead).
-- ADR-0039 replaced ADR-0015's specialized engines after the lakehouse
-  acceptance of 2026-09-24: OpenSearch for log and search, Flink for SQL stream
-  processing between Kafka and Iceberg, Trino for SQL over Iceberg on
-  SeaweedFS, no ksqlDB or StarRocks, time series handed to DEV TimescaleDB by
-  ADR-0047. It rejected keeping ksqlDB and StarRocks beside Flink and Trino, and
-  Spark alone. The engines now run in the lakehouse LAB (`lab-lakehouse`
-  profile, checkpoints under `${LAB_DATA_DIR}`), not in a `lakehouse` HOME
-  profile.
-- ADR-0040 replaced ADR-0019's 04-data hardening: Compose contracts protected
-  by `check-all-hardening.sh 04-data` and CI, new services adding their own
-  checks, HA, lifecycle and recovery drills through approved procedures, and the
-  `template-stateful-*` / `template-infra-*` inheritance model. It rejected an
-  all-at-once HA expansion and documentation-only changes. Its items for
-  supabase healthchecks, the `valkey-cluster-exporter` secret path and a
-  SeaweedFS expose-token check no longer match: supabase was a LAB removed by
-  owner decision on 2026-11-06, the Valkey cluster is a LAB with its own
-  `lab_valkey_password`, and the gate has no expose-token check.
-- ADR-0045 (SPEC-0197) split storage from processing: Data kept the stores,
-  Analytics took Flink, Spark, Trino, Great Expectations, Superset and dbt,
-  SeaweedFS stayed shared, dbt stayed on PostgreSQL, and tier numbering is a
-  namespace, not start order or isolation. It rejected keeping eight Data
-  categories and flattening all seventeen packages. Its Data list included
-  supabase, the PostgreSQL and Valkey clusters, Cassandra, CouchDB and MongoDB;
-  the others are LABs now (supabase was removed on 2026-11-06), and Analytics
-  has no HOME member.
-- [ADR-0046](0046-capability-tiers-and-quality-boundary.md) stays accepted and is not replaced: a
-  completed Task links to it, and a completed Task body cannot change (owner
-  decision, 2026-11-06). Its capability tiers still hold. Where it placed
-  Locust and SonarQube in Quality, Stalwart in Communication and JupyterLab in
-  Analytics, this record governs: those four are LABs now.

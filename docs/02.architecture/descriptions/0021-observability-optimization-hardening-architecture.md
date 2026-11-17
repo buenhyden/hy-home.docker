@@ -1,10 +1,10 @@
 ---
 title: "06-Observability Optimization Hardening Architecture Description"
-version: "1.1.3"
+version: "1.2.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "AD-0021"
 parent_ids:
@@ -14,14 +14,7 @@ created: "2026-03-28"
 
 # 06-Observability Optimization Hardening Architecture Description
 
-## Overview
-
-### Purpose and Readers
-
-This document defines the optimization/hardening reference architecture of
-the `06-observability` layer. It organizes the gateway boundary security,
-health-based dependency, custom image runtime hardening, and catalog-based
-expansion strategy from an architecture perspective.
+## Context and Boundaries
 
 ### System Boundary
 
@@ -45,9 +38,14 @@ use `obs_net`.
   - Immediate multi-cluster/multi-region observability adoption
   - Full redesign of the sampling policy
 
-## Context and Constraints
+#### Purpose and Readers
 
-### Context
+This document defines the optimization/hardening reference architecture of
+the `06-observability` layer. It organizes the gateway boundary security,
+health-based dependency, custom image runtime hardening, and catalog-based
+expansion strategy from an architecture perspective.
+
+#### Context
 
 The layer consumes the `01-gateway` Traefik middleware chain, `02-auth` Keycloak-based SSO and `04-data` SeaweedFS object storage; clients reach management routes through Traefik.
 
@@ -57,7 +55,7 @@ Security requires TLS termination, SSO or application authentication per route, 
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
 
-## Current Structure
+## Structure
 
 ### Building Blocks
 
@@ -75,7 +73,24 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 - Internal Path:
   - OTLP/log/trace traffic over `obs_net`
 
-### Runtime and Deployment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Gateway management routes (Traefik `websecure`) | Grafana, Gatus, Dozzle, Alertmanager, Pushgateway, Alloy UI, cAdvisor route and Pyroscope route | Browser clients | `gateway-standard-chain` with route-specific authentication: native Keycloak OIDC, Dozzle admin IP allowlist or ForwardAuth | The description records no failure handling for this interface. |
+| Prometheus API route | Prometheus | API clients through Traefik | `prometheus-api-auth` | The description records no failure handling for this interface. |
+| Internal OTLP/log/trace path on `obs_net` | Instrumented services and exporters | Observability storage and query plane | The description links no contract for this interface. | The data plane is kept over `obs_net` internal communication with `service_healthy` dependency ordering. |
+| SSO | `02-auth` Keycloak | Observability management routes | Keycloak-based SSO | The description records no failure handling for this interface. |
+| Object storage | `04-data` SeaweedFS | Loki and Tempo | The description links no contract for this interface. | The description records no failure handling for this interface. |
+
+- Gateway path: apply the route-specific authentication listed under Building
+  Blocks. Native OIDC and Prometheus API authentication do not use the
+  browser ForwardAuth chain.
+- Internal path: OTLP/log/trace traffic over `obs_net`.
+
+## Runtime Behavior
+
+### Normal Flow
 
 #### Runtime View
 
@@ -97,26 +112,13 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 - **Verification**:
   - the registered `infrastructure-hardening` gate in `.github/workflow-contract.yml`
 
-## Interfaces
+### Failure and Recovery
 
-### Contracts
+The data plane is kept over `obs_net` internal communication, and boot stability is improved through `service_healthy` dependency. The description records no failure boundary beyond the linked operations documents under Interfaces.
 
-- Gateway path: apply the route-specific authentication listed under Building
-  Blocks. Native OIDC and Prometheus API authentication do not use the
-  browser ForwardAuth chain.
-- Internal path: OTLP/log/trace traffic over `obs_net`.
+## Quality Scenarios
 
-### Failure Boundaries
-
-The data plane is kept over `obs_net` internal communication, and boot stability is improved through `service_healthy` dependency. The description records no failure boundary beyond the linked operations documents under Contracts.
-
-## Decisions
-
-### Decision Links
-
-- **ADR**: [ADR-0021 Observability hardening and HA expansion](../decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
-
-### Quality and Risks
+### Scenarios
 
 #### Quality Attributes
 
@@ -131,13 +133,31 @@ The data plane is kept over `obs_net` internal communication, and boot stability
 - **Operability**: script-based regression blocking + standard runbook
   procedure
 
-## Traceability
+### Trade-offs
 
-### Requirement Mapping
+- The layer runs a single-node observability core with only optional
+  horizontal expansion; multi-cluster or multi-region adoption is a non-goal
+  (Deployment View, System Boundary).
+- A full sampling-policy redesign is a non-goal, and long-term retention is
+  left to the operations layer rather than this architecture (Constraints,
+  Data Boundaries).
+- Boot stability comes from `service_healthy` dependency ordering, and the
+  description records no failure boundary beyond the linked operations
+  documents (Failure and Recovery).
+
+## Decisions and Adoption
+
+### Decisions
+
+- **ADR**: [ADR-0021 Observability hardening and HA expansion](../decisions/0021-observability-hardening-and-ha-expansion-strategy.md)
+
+### Adoption Boundaries
+
+#### Requirement Mapping
 
 - **Requirement**: [REQ-0007 Observability](../../01.requirements/0007-observability.md)
 
-### Currentness and Lineage
+#### Currentness and Lineage
 
 - **Tier Architecture Description**: [AD-0006 Observability Architecture Description](0006-observability-architecture.md)
 - **Guide**: [Observability optimization hardening guide](../../05.operations/guides/07-observability/0044-observability-optimization-hardening.md)

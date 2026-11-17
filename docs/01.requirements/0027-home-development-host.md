@@ -1,10 +1,10 @@
 ---
 title: "Home and Development Host Requirements"
-version: "1.1.2"
+version: "1.2.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "requirements"
 artifact_id: "REQ-0027"
 created: "2026-09-19"
@@ -59,6 +59,29 @@ needed.
 
 ## Requirements
 
+| Requirement ID | Statement | Rationale | Acceptance | Priority |
+| --- | --- | --- | --- | --- |
+| REQ-0027-FR-0001 | Every current service must be classified as HOME, DEV, OPTIONAL, LAB, REMOVE or MIGRATE, describing its consumers, data, resources and reason for retention. | One operator must be able to explain each service's necessity, access path, status and recovery method. | The classification of every service, with its consumers, data, resources and retention reason, can be confirmed in code and documentation. | must |
+| REQ-0027-FR-0002 | HOME must provide AI/workflow and required dependent features at all times, while development, experimentation and update work must be explicitly opted in. | A HOME user must be able to use the access/authentication foundation and AI/workflow features at all times, and a developer must know the impact of selected features on HOME availability. | HOME's required features and dependencies can be confirmed in code and documentation, and development, experimentation and update work start only when explicitly selected. | must |
+| REQ-0027-FR-0003 | The service selection vocabulary and dependency relationships must match the actual running configuration and describe mutually exclusive combinations and side effects. | A developer must be able to select the development and experiment features they need and know the impact on HOME availability. | Missing entries and conflicts in the profile vocabulary and dependencies against the running configuration are checked automatically, and actual results are recorded. | must |
+| REQ-0027-FR-0004 | Each retained service must have documentation for implementation discovery, normal use, operating rules and failure recovery. | One operator must be able to explain each service's necessity, access path, status and recovery method. | Current documents for each retained service link to the implementation and authoritative basis and provide the required operations and recovery procedures. | must |
+| REQ-0027-FR-0005 | Public configuration and secret metadata must correspond to current consumers, and local sync must preserve existing values and unknown user entries. | An operator must align configuration without exposing values. | Missing entries and conflicts in configuration and secret metadata are checked automatically with actual results recorded, and local sync is verified to preserve existing values and unknown user entries. | must |
+| REQ-0027-FR-0006 | The implementation declaration owns the exact running version, and each dependency area must have only one owner for update proposals. | The package aims to remove inconsistencies in version-update rules. | Missing entries and conflicts in version ownership are checked automatically with actual results recorded, and each dependency area has one update-proposal owner. | must |
+| REQ-0027-FR-0007 | Before deployment, present the concrete target, preconditions, verification and recovery procedure, and execute only approved changes. | Authoring documents and implementation does not imply approval to deploy real services or change data, and an operator must verify state and recoverability before and after a change. | Deployment executes only after concrete approval of a presented target, preconditions, verification and recovery procedure. | must |
+| REQ-0027-FR-0008 | Approved execution verification must separate startup, status, authentication, persistence, resource, backup and recovery results into actual evidence versus unverified items. | Always-on availability is not a verification result, so real resource measurement and recovery rehearsal are needed. | A reviewable change history, verification results, residual risk and incomplete execution verification are provided, with each of startup, status, authentication, persistence, resource, backup and recovery results marked verified or unverified. | must |
+| REQ-0027-FR-0009 | The optional `experience` profile must serve shared Storybook documentation and a read-only docs MCP only to authenticated administrators, both built from one source commit, and must stay outside the default HOME selection. | This package records no rationale for this requirement. | The `experience` profile is outside the default HOME selection, its Storybook documentation and docs MCP reach only authenticated administrators, and both are built from one source commit. | must |
+| REQ-0027-NFR-0001 | Passwords, tokens, keys and local secret values must not appear in output, reports, model context or version control. | An operator must align configuration without exposing values. | Scans of tracked files and reports find no secret value, and local sync verifies exposure prevention. | must |
+| REQ-0027-NFR-0002 | Distinguish configuration restore from data restore, and do not claim recoverability from an unverified backup. | An operator must verify state and recoverability before and after a change, and recovery rehearsal is needed on the shared host. | Each recoverability claim cites a verified restore, with configuration restore and data restore reported separately. | must |
+| REQ-0027-NFR-0003 | Documentation must not duplicate ownership of the implementation's exact patch version, and any needed exception must state its reason and basis. | The package aims to remove inconsistencies between implementation, operations documentation, configuration and version-update rules. | Each exact version has one owning declaration, and any exception states its reason and basis. | must |
+| REQ-0027-NFR-0004 | Verification must run against the latest main, and unexecuted, failed or blocked results must not be recorded as success. | This package records no rationale for this requirement. | Every non-PASS result is recorded as such, from a run against the latest main. | must |
+
+| Requirement ID | Attribute | Measure | Unit | Environment | Criterion |
+| --- | --- | --- | --- | --- | --- |
+| REQ-0027-NFR-0001 | Confidentiality | Scans of tracked files and reports find no secret value. | The package records no unit for this measure. | Tracked files and reports. | No secret value found by the scans, and local sync verifies exposure prevention. |
+| REQ-0027-NFR-0002 | Recoverability | Each recoverability claim cites a verified restore. | The package records no unit for this measure. | The package records no measurement environment. | Each recoverability claim cites a verified restore, with configuration and data restore reported separately. |
+| REQ-0027-NFR-0003 | Maintainability | Each exact version has one owning declaration. | The package records no unit for this measure. | The package records no measurement environment. | Each exact version has one owning declaration, and any exception states its reason and basis. |
+| REQ-0027-NFR-0004 | Verifiability | Every non-PASS result is recorded as such. | The package records no unit for this measure. | A run against the latest main. | Every unexecuted, failed or blocked result is recorded as non-PASS, never as success. |
+
 ### Functional Requirements
 
 - **REQ-0027-FR-0001**: Every current service must be classified as HOME,
@@ -105,9 +128,15 @@ needed.
   latest main, and unexecuted, failed, or blocked results must not be
   recorded as success; measure: every non-PASS result is recorded as such.
 
-## Acceptance Criteria
+## Traceability
 
-### Acceptance Conditions
+### Sources
+
+No upstream policy or ADR is cited; the origin is the user's audit and redesign request stated in the Overview.
+
+### Verification Links
+
+#### Acceptance Conditions
 
 - **REQ-0027-FR-0001**: The classification of every service, with its
   consumers, data, resources and retention reason, can be confirmed in code and
@@ -145,7 +174,7 @@ needed.
 - **REQ-0027-NFR-0004**: Every non-PASS result is recorded as such, from a run
   against the latest main.
 
-### Verification Method
+#### Verification Method
 
 Run the current-main checks required by REQ-0027-NFR-0004. Identify the
 exact revision and target in each applicable Task. Record pre-merge
@@ -155,13 +184,7 @@ record, and state every non-PASS result and unverified condition.
 SPEC-0204, SPEC-0212 and SPEC-0218 list this requirement as a parent.
 @buenhyden judges the conditions and accepts the requirement once they are met.
 
-## Traceability
-
-### Source and Constraints
-
-No upstream policy or ADR is cited; the origin is the user's audit and redesign request stated in the Overview.
-
-### Downstream Links
+#### Downstream Links
 
 - [Home and Development Host Architecture](../02.architecture/descriptions/0031-home-development-host.md)
 - SPEC-0261 (retired; version history) approved this Requirement and promoted its dependent documents.

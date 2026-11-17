@@ -1,10 +1,10 @@
 ---
 title: "Choice of Spilo/Patroni for PostgreSQL HA"
-version: "1.1.2"
+version: "1.2.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0004"
 parent_ids:
@@ -23,12 +23,43 @@ This document is the architecture decision record for adopting a Patroni and Etc
 - Need automated failover and replication-lag monitoring.
 - Need flexible cluster configuration and operational convenience in a container environment.
 
+#### Sources
+
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked below, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+
+- **PRD**: [../../01.requirements/0004-data.md](../../01.requirements/0004-data.md)
+- **Architecture Description**: [../descriptions/0004-data-architecture.md](../descriptions/0004-data-architecture.md)
+
 ### Decision Scope
 
 Explicit non-goals:
 
 - Database sharding (out of scope for this ADR).
 - Application-level data migration strategy.
+
+## Options
+
+### Considered Options
+
+#### Vanilla PostgreSQL with Replication
+
+- Good: simple configuration and low resource consumption.
+- Bad: needs manual failover and replication-lag monitoring is difficult.
+
+#### Postgres Operator (K8s)
+
+- Good: highly automated in a Kubernetes environment.
+- Bad: introduces significant overhead since the current environment is Docker Compose based.
+
+### Trade-offs
+
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| Vanilla PostgreSQL with Replication | Simple configuration and low resource consumption. | Needs manual failover, and replication-lag monitoring is difficult. | Not chosen because it needs manual failover and makes replication-lag monitoring difficult. |
+| Postgres Operator (K8s) | Highly automated in a Kubernetes environment. | Introduces significant overhead since the current environment is Docker Compose based. | Not chosen because it adds significant overhead in the current Docker Compose based environment. |
+| Spilo (Zalando's PostgreSQL + Patroni) with Etcd | Minimizes data loss and increases uptime on failure with automated failover; Patroni with Etcd gives stable leader election. | Increased resource consumption from the 3-node configuration and complex routing through HAProxy (pg-router); per SPEC-0215 it runs only in the standalone LAB on one host, so it is not host HA. | Selected to meet the drivers of preventing a data-tier SPOF, automated failover and replication-lag monitoring, and flexible cluster configuration in a container environment. |
+
+Vanilla replication was not chosen because it needs manual failover and makes replication-lag monitoring difficult. The Postgres Operator was not chosen because it adds significant overhead in the current Docker Compose based environment.
 
 ## Decision
 
@@ -48,24 +79,6 @@ exercises replication and failover but is not host HA.
 
 Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked. Effective from 2026-03-26.
 
-## Alternatives
-
-### Considered Options
-
-#### Vanilla PostgreSQL with Replication
-
-- Good: simple configuration and low resource consumption.
-- Bad: needs manual failover and replication-lag monitoring is difficult.
-
-#### Postgres Operator (K8s)
-
-- Good: highly automated in a Kubernetes environment.
-- Bad: introduces significant overhead since the current environment is Docker Compose based.
-
-### Trade-offs
-
-Vanilla replication was not chosen because it needs manual failover and makes replication-lag monitoring difficult. The Postgres Operator was not chosen because it adds significant overhead in the current Docker Compose based environment.
-
 ## Consequences
 
 ### Impacts
@@ -75,13 +88,9 @@ Vanilla replication was not chosen because it needs manual failover and makes re
 
 ### Follow-up
 
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
 No follow-up work is recorded in this decision.
-
-## Traceability
-
-### Sources
-
-The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked below, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
-
-- **PRD**: [../../01.requirements/0004-data.md](../../01.requirements/0004-data.md)
-- **Architecture Description**: [../descriptions/0004-data-architecture.md](../descriptions/0004-data-architecture.md)

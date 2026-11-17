@@ -1,10 +1,10 @@
 ---
 title: "Agent Governance Canonical Adapter Architecture"
-version: "1.6.8"
+version: "1.7.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "AD-0027"
 parent_ids:
@@ -14,19 +14,7 @@ created: "2026-06-01"
 
 # Agent Governance Canonical Adapter Architecture
 
-## Overview
-
-### Purpose and Readers
-
-Policy, provider translation, document shape and execution evidence have
-separate canonical owners. Both providers read the same repository-owned
-instructions through their native adapters and share one memory store through
-`scripts/operations/agent_memory.py`; native Claude memory is off.
-Even when several AI providers modify the same repository, policy, roles,
-skills, SDLC, and approval boundaries must stay single. The maintainer
-reviews the norm in `.agents/`, the agent consumes the same norm through the
-provider adapter in native runtime form, and the reviewer independently
-verifies projection drift.
+## Context and Boundaries
 
 ### System Boundary
 
@@ -56,9 +44,19 @@ verifies projection drift.
   the current Task owns execution and acceptance. New evidence requires bounded
   Stage 99 classification; representative scores grant no runtime authority.
 
-## Context and Constraints
+#### Purpose and Readers
 
-### Context
+Policy, provider translation, document shape and execution evidence have
+separate canonical owners. Both providers read the same repository-owned
+instructions through their native adapters and share one memory store through
+`scripts/operations/agent_memory.py`; native Claude memory is off.
+Even when several AI providers modify the same repository, policy, roles,
+skills, SDLC, and approval boundaries must stay single. The maintainer
+reviews the norm in `.agents/`, the agent consumes the same norm through the
+provider adapter in native runtime form, and the reviewer independently
+verifies projection drift.
+
+#### Context
 
 The maintainer reviews the norm in `.agents/`, the agent consumes it through the provider adapter in native runtime form, and the reviewer verifies projection drift. Claude and Codex read the same repository-owned instructions and share one memory store through `scripts/operations/agent_memory.py`.
 
@@ -66,7 +64,7 @@ The maintainer reviews the norm in `.agents/`, the agent consumes it through the
 
 Policy, roles, skills, SDLC and approval boundaries must stay single even when several AI providers modify the same repository. The canonical `.agents/` sources are never generated output, native Claude memory is off, and user-global configuration, credentials and deployment state are outside this architecture.
 
-## Current Structure
+## Structure
 
 ### Building Blocks
 
@@ -88,7 +86,24 @@ Governance, role, skill, knowledge and prompt documents are English and every
 the documentation protocol owns the rule. Native adapters consume the same
 meaning without creating another language or policy authority.
 
-### Runtime and Deployment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Bootstrap entry (root shim to shared policy and provider adapter) | Root `AGENTS.md`/`CLAUDE.md`, `.agents/governance/` and `.claude/provider.md` or `.codex/provider.md` | Claude and Codex agents | [canonical agent governance bootstrap](../../../.agents/governance/bootstrap.md) | An adapter cannot relax the shared approval boundary. |
+| Provider Registry translation facts | Provider Registry | Provider surface renderer and generated native adapters | `.agents/governance/providers/registry.yaml` | Provider sync and governance tests check projection freshness. |
+| Stage 99 Registry document contract | Stage 99 Registry | Validators and suites | [Stage 99 Registry](../../99.templates/registry.json) | The description records no failure handling for this interface. |
+| Canonical `SKILL.md` and native skill adapters | `.agents/skills/` | Claude (`disable-model-invocation: true`) and Codex (`allow_implicit_invocation: false`) | The canonical `SKILL.md` uses `name`, `description` and `metadata`. | Discovery is neither an approval nor observed runtime acceptance; explicit invocation is required. |
+| Shared memory store | `scripts/operations/agent_memory.py` | Claude and Codex | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| Task handoff and resumption | Current Task and reviewed Git diff | Controller resuming work | [Approval Boundaries](../../../.agents/governance/approval-boundaries.md#authorization-source-and-records) | A material mismatch stops dependent work until it is reconciled. |
+
+- Bootstrap moves from the root shim to the shared policy and the matching provider adapter, per the Runtime View.
+- The Provider Registry carries provider identity and translation facts, and the Stage 99 Registry carries document shape and lifecycle.
+- The canonical `SKILL.md` uses `name`, `description` and `metadata`, and native adapters require explicit invocation.
+
+## Runtime Behavior
+
+### Normal Flow
 
 #### Runtime View
 
@@ -116,26 +131,13 @@ validation scripts. Provider sync and governance tests check projection
 freshness. A document or adapter change alone does not require Docker
 runtime, a remote service, or secret mutation.
 
-## Interfaces
-
-### Contracts
-
-- Bootstrap moves from the root shim to the shared policy and the matching provider adapter, per the Runtime View.
-- The Provider Registry carries provider identity and translation facts, and the Stage 99 Registry carries document shape and lifecycle.
-- The canonical `SKILL.md` uses `name`, `description` and `metadata`, and native adapters require explicit invocation.
-
-### Failure Boundaries
+### Failure and Recovery
 
 This description records no failure boundary beyond its Risks: static renderer parity proves tracked configuration only, and a provider runtime change can alter the loading behavior that an authored adapter describes. An adapter cannot relax the shared approval boundary.
 
-## Decisions
+## Quality Scenarios
 
-### Decision Links
-
-- [ADR-0032 Canonical Agent Governance Home](../decisions/0032-canonical-agent-governance-home.md)
-- [ADR-0034 Canonical Knowledge and Prompt Surfaces](../decisions/0034-canonical-knowledge-and-prompt-surfaces.md)
-
-### Quality and Risks
+### Scenarios
 
 #### Quality Attributes
 
@@ -157,13 +159,33 @@ This description records no failure boundary beyond its Risks: static renderer p
 - A provider runtime change can alter loading behavior that the authored
   adapter describes.
 
-## Traceability
+### Trade-offs
 
-### Requirement Mapping
+- Keeping one canonical `.agents/` source with generated native adapters
+  gives single ownership and deterministic projection, but static renderer
+  parity proves tracked configuration only; native invocation, hook trust and
+  runtime acceptance need direct evidence (Quality Attributes, Risks).
+- Authored provider adapters describe native loading, so a provider runtime
+  change can alter loading behavior that the adapter describes (Risks).
+- Explicit invocation is required for skills, and discovery is neither an
+  approval nor observed runtime acceptance (Runtime View).
+- Recoverability relies on Git diff and history instead of separate snapshots
+  or SHA pins (Quality Attributes).
+
+## Decisions and Adoption
+
+### Decisions
+
+- [ADR-0032 Canonical Agent Governance Home](../decisions/0032-canonical-agent-governance-home.md)
+- [ADR-0034 Canonical Knowledge and Prompt Surfaces](../decisions/0034-canonical-knowledge-and-prompt-surfaces.md)
+
+### Adoption Boundaries
+
+#### Requirement Mapping
 
 - [REQ-0024 Agent Governance Standardization](../../01.requirements/0024-agent-governance-standardization.md)
 
-### Currentness and Lineage
+#### Currentness and Lineage
 
 - [canonical agent governance bootstrap](../../../.agents/governance/bootstrap.md)
 - [Stage 99 Registry](../../99.templates/registry.json)

@@ -1,10 +1,10 @@
 ---
 title: "Architecture Descriptions"
-version: "1.3.2"
+version: "1.3.3"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "architecture"
 ---
 
@@ -90,9 +90,9 @@ docs/02.architecture/descriptions/
 
 C4와 arc42의 비례적 적용 원칙과 diagram 품질 기준은
 [공통 Agent 거버넌스 작성 정책](../../../.agents/governance/documentation-protocol.md#role-specific-authoring)이
-소유한다. 템플릿의 `Overview`, `Scope`, `Structure`의 `Architecture`,
-`Runtime and Deployment`의 `Runtime View`와 `Deployment View`, `Quality and
-Risks`의 `Quality Attributes`, `Risks`, `Evolution`에 해당 내용을 배치한다.
+소유한다. 템플릿의 `Context and Boundaries`, `Structure`의 `Building Blocks`와
+`Interfaces`, `Runtime Behavior`의 `Normal Flow`와 `Failure and Recovery`,
+`Quality Scenarios`의 `Scenarios`와 `Trade-offs`에 해당 내용을 배치한다.
 빈 framework section이나 병렬 문서를 만들지 않으며 선택·대안·근거는 ADR이
 소유한다.
 

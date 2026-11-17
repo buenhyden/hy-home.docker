@@ -1,10 +1,10 @@
 ---
 title: "Security Tier Architecture Description"
-version: "2.2.2"
+version: "2.3.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "AD-0003"
 parent_ids:
@@ -14,16 +14,7 @@ created: "2026-03-26"
 
 # Security Tier Architecture Description
 
-## Overview
-
-### Purpose and Readers
-
-`03-security` owns machine-secret storage and rendering. OpenBao plus
-`openbao-agent` is the HOME implementation; Vault and `vault-agent` were
-removed in SPEC-0180 S08. Security operators own seal and unseal custody,
-policy, authentication methods, snapshots and migration; consumer tiers own the
-least-privilege paths they request. Bootstrap, recovery and backup custody stay
-independent of OpenBao so services can be restored without it.
+## Context and Boundaries
 
 ### System Boundary
 
@@ -42,9 +33,16 @@ independent of OpenBao so services can be restored without it.
 - **Non-goals:** automatic credential generation, a completed Vault-to-OpenBao
   data migration, and multi-node Raft HA.
 
-## Context and Constraints
+#### Purpose and Readers
 
-### Context
+`03-security` owns machine-secret storage and rendering. OpenBao plus
+`openbao-agent` is the HOME implementation; Vault and `vault-agent` were
+removed in SPEC-0180 S08. Security operators own seal and unseal custody,
+policy, authentication methods, snapshots and migration; consumer tiers own the
+least-privilege paths they request. Bootstrap, recovery and backup custody stay
+independent of OpenBao so services can be restored without it.
+
+#### Context
 
 Humans authenticate to OpenBao through native Keycloak OIDC; `openbao-agent` authenticates by AppRole and renders secret files that consumer tiers read. Traefik serves the UI route on `gateway-standard-chain@file`.
 
@@ -52,7 +50,7 @@ Humans authenticate to OpenBao through native Keycloak OIDC; `openbao-agent` aut
 
 Credentials (root tokens, unseal shares, AppRole RoleID and SecretID, Agent tokens, the OIDC client secret and rendered values) stay outside Git and evidence. Access fails closed on auth, seal or CA failure, and TLS validation is never disabled. Multi-node Raft HA and automatic credential generation are non-goals.
 
-## Current Structure
+## Structure
 
 ### Building Blocks
 
@@ -74,7 +72,23 @@ approved templates to the declared output volume. Its own listener serves only
 roots are revoked only after a working non-root administrative path, Agent
 rendering, a protected snapshot and denial tests exist.
 
-### Runtime and Deployment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Native Keycloak OIDC for humans | Keycloak | OpenBao | Human OIDC group claims mapped to policies under `config/policies/` | Access fails closed on auth failure. |
+| AppRole authentication | OpenBao | `openbao-agent` | `infra/03-security/openbao/config/agent.hcl` | Access fails closed on auth or seal failure; an OpenBao outage stops new renders until it is unsealed. |
+| Agent-rendered secret files | `openbao-agent` | Consumer tiers | Approved templates written to the declared output volume | An OpenBao outage stops new renders until it is unsealed. |
+| `/agent/v1/metrics` listener | `openbao-agent` | Metrics scraper | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| Raft snapshot API `sys/storage/raft/snapshot` | OpenBao | Protected operator custody | Policy `backup-snapshot.hcl` | Recovery restores authenticated Raft snapshots on isolated new storage; recovered root tokens must be rechecked. |
+| `openbao` scrape job | OpenBao | Prometheus | `infra/06-observability/prometheus/config/prometheus.dev.yml` | The description records no failure handling for this interface; scrape success is not asserted. |
+| Traefik UI route | OpenBao | Traefik | `gateway-standard-chain@file` | The description records no failure handling for this interface. |
+
+`openbao-agent` serves only `/agent/v1/metrics` on its own listener. Snapshots use the authenticated Raft API (`sys/storage/raft/snapshot`, policy `backup-snapshot.hcl`); human OIDC group claims map to policies under `config/policies/`; Prometheus declares an `openbao` scrape job.
+
+## Runtime Behavior
+
+### Normal Flow
 
 #### Runtime View
 
@@ -99,23 +113,13 @@ stays out of service and never shares storage with OpenBao. Prometheus declares
 an `openbao` scrape job (`infra/06-observability/prometheus/config/prometheus.dev.yml`);
 scrape success is not asserted here.
 
-## Interfaces
-
-### Contracts
-
-`openbao-agent` serves only `/agent/v1/metrics` on its own listener. Snapshots use the authenticated Raft API (`sys/storage/raft/snapshot`, policy `backup-snapshot.hcl`); human OIDC group claims map to policies under `config/policies/`; Prometheus declares an `openbao` scrape job.
-
-### Failure Boundaries
+### Failure and Recovery
 
 Single-node Raft is not HA: an OpenBao outage stops new renders until it is unsealed, and a sealed restart needs independent unseal custody (see Risks below). Recovery uses authenticated Raft snapshots restored on isolated storage; unseal shares never enter a snapshot.
 
-## Decisions
+## Quality Scenarios
 
-### Decision Links
-
-- [ADR-0050 OpenBao as secrets manager](../decisions/0050-openbao-as-secrets-manager.md)
-
-### Quality and Risks
+### Scenarios
 
 #### Quality Attributes
 
@@ -137,13 +141,33 @@ Single-node Raft is not HA: an OpenBao outage stops new renders until it is unse
 Single-node Raft is not HA: an OpenBao outage stops new renders until it is
 unsealed. A sealed restart needs the independent unseal custody.
 
-## Traceability
+### Trade-offs
 
-### Requirement Mapping
+- OpenBao runs single-node integrated Raft and multi-node Raft HA is a
+  non-goal (Constraints); the accepted cost is that an OpenBao outage stops
+  new renders until it is unsealed and a sealed restart needs the independent
+  unseal custody (Risks).
+- Bootstrap, recovery and backup custody stay independent of OpenBao so
+  services can be restored without it (Purpose and Readers); unseal shares
+  follow a separate path and never enter a snapshot.
+- Access fails closed on auth, seal or CA failure rather than degrading
+  (Quality Attributes).
+- Cluster expansion needs a separate design with failure-domain evidence
+  (Evolution).
+
+## Decisions and Adoption
+
+### Decisions
+
+- [ADR-0050 OpenBao as secrets manager](../decisions/0050-openbao-as-secrets-manager.md)
+
+### Adoption Boundaries
+
+#### Requirement Mapping
 
 - [REQ-0003 Security requirements](../../01.requirements/0003-security.md)
 
-### Currentness and Lineage
+#### Currentness and Lineage
 
 - [OpenBao custody policy](../../05.operations/policies/04-security-and-secrets/0085-openbao.md)
 - [OpenBao operations](../../05.operations/guides/04-security-and-secrets/0085-openbao.md)

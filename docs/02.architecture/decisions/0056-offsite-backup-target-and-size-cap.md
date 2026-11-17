@@ -1,10 +1,10 @@
 ---
 title: "Offsite Backup Target with an Enforced Size Cap"
-version: "0.2.1"
+version: "0.3.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0056"
 parent_ids:
@@ -52,12 +52,61 @@ Drivers:
 - The remote copy must not be deletable by ransomware or mistake.
 - The remote repository must never pass the owner's 10 GB ceiling.
 
+#### Sources
+
+Size evidence was the `repository sizes` line of the `hyhome-backup.service`
+journal (429 to 777 MiB, 2026-09-23 to 25). No runtime state is claimed.
+
+- [AD-0004 Data architecture](../descriptions/0004-data-architecture.md)
+- [POL-0021 Backup and restore](../../05.operations/policies/10-platform-and-backup/0021-backup-and-restore.md)
+- [RUN-0021 Backup and restore](../../05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md)
+- [Offsite entrypoint](../../../infra/09-platform-ops/restic/offsite.sh)
+- [ADR-0042 OpenBao unseal method](0042-openbao-unseal-method.md)
+- [Restic repositories](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html)
+
 ### Decision Scope
 
 This decision covers the offsite copy of the local Restic and pgBackRest
 repositories: the remote target, its size cap, its credentials and its egress
 boundary. WAL-level remote RPO through `repo2-type=s3` is left to a new
 decision.
+
+## Options
+
+### Considered Options
+
+Costs are order-of-magnitude list-price estimates from 2026-09-25.
+
+| Option | Monthly cost | Host-loss coverage | Burden | New secrets |
+| --- | --- | --- | --- | --- |
+| (a) Second local disk or USB rotation | One-time disk | Weak unless the rotated disk is kept elsewhere | Manual rotation | None |
+| (b) S3-compatible cloud | About $0 to $7 | Covered | Unattended timer | 1 to 2 keys |
+| (c) SFTP or rest-server on a peer device | Peer device | Covered if remote | Peer maintenance and VPN | SSH key or account |
+| (d) Defer | $0 | None | None | None |
+
+### Trade-offs
+
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| (a) Second local disk or USB rotation | One-time disk cost and no new secrets. | Weak host-loss coverage unless the rotated disk is kept elsewhere, and rotation is manual. | Rejected; the attached disk shares host incidents, and rotation lapses. |
+| (b) S3-compatible cloud | About $0 to $7 monthly, covers host loss, and runs on an unattended timer; Cloudflare R2 has a free tier up to 10 GB, free egress and a bucket-scoped token. | Needs 1 to 2 keys; uploads stop at the cap until the owner prunes, a leaked BKP-002 plus R2 access exposes every secret, and the R2 account is a new single point of failure. | Selected as Cloudflare R2; Backblaze B2 was viable, while Wasabi (1 TB minimum billing) and S3 Glacier Instant Retrieval (retrieval fees on `check` and `prune`) were rejected for a small repository. |
+| (c) SFTP or rest-server on a peer device | Covers host loss if the peer is remote. | Needs a peer device, peer maintenance and VPN, and an SSH key or account. | Rejected; depends on a peer's availability, trust and a new network path. |
+| (d) Defer | No cost, burden or new secrets. | No host-loss coverage. | Rejected; leaves total loss on host loss. |
+
+- (a) rejected: the attached disk shares host incidents, and rotation lapses.
+- (c) rejected: depends on a peer's availability, trust and a new network path.
+- (d) rejected: leaves total loss on host loss.
+- (b) selected, Cloudflare R2: free tier up to 10 GB, free egress, a
+  bucket-scoped token. Backblaze B2 was viable; Wasabi (1 TB minimum billing)
+  and S3 Glacier Instant Retrieval (retrieval fees on `check` and `prune`)
+  were rejected for a small repository.
+- Trade-off: when the cap is reached, uploads stop until the owner prunes; the
+  remote copy then ages.
+- Trade-off: the remote copy carries all of `secrets/` and SEC-003 under
+  BKP-002; a leaked BKP-002 plus R2 access exposes every secret, so BKP-002's
+  offline storage matters more.
+- Trade-off: the R2 account is a new single point of failure for the offsite
+  copy.
 
 ## Decision
 
@@ -85,70 +134,7 @@ Decided by the owner, @buenhyden; status `accepted`. The owner ruled the 10 GB
 ceiling on 2026-10-20; no separate approval record is linked. Effective from
 2026-11-06.
 
-## Alternatives
-
-### Considered Options
-
-Costs are order-of-magnitude list-price estimates from 2026-09-25.
-
-| Option | Monthly cost | Host-loss coverage | Burden | New secrets |
-| --- | --- | --- | --- | --- |
-| (a) Second local disk or USB rotation | One-time disk | Weak unless the rotated disk is kept elsewhere | Manual rotation | None |
-| (b) S3-compatible cloud | About $0 to $7 | Covered | Unattended timer | 1 to 2 keys |
-| (c) SFTP or rest-server on a peer device | Peer device | Covered if remote | Peer maintenance and VPN | SSH key or account |
-| (d) Defer | $0 | None | None | None |
-
-### Trade-offs
-
-- (a) rejected: the attached disk shares host incidents, and rotation lapses.
-- (c) rejected: depends on a peer's availability, trust and a new network path.
-- (d) rejected: leaves total loss on host loss.
-- (b) selected, Cloudflare R2: free tier up to 10 GB, free egress, a
-  bucket-scoped token. Backblaze B2 was viable; Wasabi (1 TB minimum billing)
-  and S3 Glacier Instant Retrieval (retrieval fees on `check` and `prune`)
-  were rejected for a small repository.
-- Trade-off: when the cap is reached, uploads stop until the owner prunes; the
-  remote copy then ages.
-- Trade-off: the remote copy carries all of `secrets/` and SEC-003 under
-  BKP-002; a leaked BKP-002 plus R2 access exposes every secret, so BKP-002's
-  offline storage matters more.
-- Trade-off: the R2 account is a new single point of failure for the offsite
-  copy.
-
-## Consequences
-
-### Impacts
-
-- Positive: host loss no longer loses every copy.
-- Positive: the size cap keeps the copy inside the free tier and fails closed.
-
-### Follow-up
-
-If a cloud KMS is later chosen for OpenBao unseal
-([ADR-0042](0042-openbao-unseal-method.md)), decide whether it shares the R2
-provider account.
-
-#### Compliance
-
-`offsite.sh`, `hyhome-backup.sh` and the Compose baseline tests enforce the cap,
-the egress boundary and the no-delete daily run. POL-0021 control 1 records the
-remote copy and its RPO; RUN-0021 holds the host-loss recovery order.
-
-## Traceability
-
-### Sources
-
-Size evidence was the `repository sizes` line of the `hyhome-backup.service`
-journal (429 to 777 MiB, 2026-09-23 to 25). No runtime state is claimed.
-
-- [AD-0004 Data architecture](../descriptions/0004-data-architecture.md)
-- [POL-0021 Backup and restore](../../05.operations/policies/10-platform-and-backup/0021-backup-and-restore.md)
-- [RUN-0021 Backup and restore](../../05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md)
-- [Offsite entrypoint](../../../infra/09-platform-ops/restic/offsite.sh)
-- [ADR-0042 OpenBao unseal method](0042-openbao-unseal-method.md)
-- [Restic repositories](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html)
-
-### Supersession
+#### Supersession
 
 This record replaces ADR-0041, deleted in the same change (ADR-0051); ADR-0041
 is historical and non-authoritative. ADR-0041,
@@ -162,3 +148,27 @@ required a bucket lock, a bucket-scoped token and a manual remote
 OpenBao. It sized the copy against a 5 GiB cap that "fits inside the free tier
 (10 GB)". Every decision carries forward; the cap is now the enforced 9 GB
 upload limit under the owner's 10 GB ceiling.
+
+## Consequences
+
+### Impacts
+
+- Positive: host loss no longer loses every copy.
+- Positive: the size cap keeps the copy inside the free tier and fails closed.
+
+### Follow-up
+
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
+If a cloud KMS is later chosen for OpenBao unseal
+([ADR-0042](0042-openbao-unseal-method.md)), decide whether it shares the R2
+provider account.
+
+#### Compliance
+
+`offsite.sh`, `hyhome-backup.sh` and the Compose baseline tests enforce the cap,
+the egress boundary and the no-delete daily run. POL-0021 control 1 records the
+remote copy and its RPO; RUN-0021 holds the host-loss recovery order.

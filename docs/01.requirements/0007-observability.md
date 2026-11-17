@@ -1,10 +1,10 @@
 ---
 title: "Observability Tier Requirements"
-version: "1.2.1"
+version: "1.3.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-17"
 layer: "requirements"
 artifact_id: "REQ-0007"
 created: "2026-03-26"
@@ -60,6 +60,15 @@ collector or the metrics server can read.
 
 ## Requirements
 
+| Requirement ID | Statement | Rationale | Acceptance | Priority |
+| --- | --- | --- | --- | --- |
+| REQ-0007-FR-0001 | Collect and store time-series metrics from every monitored service. | Fragmented metrics, logs and traces slow root-cause analysis; DevOps and SRE watch availability and resource use of every container on one dashboard. | Every target declared in the current scrape configuration renders without omission; runtime verification confirms the expected targets are up. | must |
+| REQ-0007-FR-0002 | Aggregate logs from distributed services centrally and persist them to object storage. | Fragmented logs slow root-cause analysis; an application developer checks error logs after a deployment. | Log storage is configured against the object storage bucket scoped to logs. | must |
+| REQ-0007-FR-0003 | Collect distributed traces between services and persist them to object storage. | An application developer correlates a transaction's trace with its logs by request ID. | Trace storage is configured against the object storage bucket scoped to traces. | must |
+| REQ-0007-FR-0004 | Use one unified collector to receive and forward OTLP telemetry. | The tier gives one view of every service by integrating its backends with Grafana Alloy. | The collector declares OTLP receivers and forwards to the log, trace and metric backends. | must |
+| REQ-0007-FR-0005 | Control dashboard access through the platform's OIDC identity provider. | This package records no rationale for this requirement. | Dashboard login goes only through the identity provider; the local login form and local sign-up are disabled. | must |
+| REQ-0007-FR-0006 | Route alerts to a team notification channel. | DevOps and SRE are alerted when a threshold is exceeded. | Chat notification receivers and their secrets render; email delivery is not configured yet, and delivery within 60 seconds is claimed only with separate runtime rehearsal evidence. | must |
+
 ### Functional Requirements
 
 - **REQ-0007-FR-0001**: Collect and store time-series metrics from every monitored service.
@@ -69,9 +78,20 @@ collector or the metrics server can read.
 - **REQ-0007-FR-0005**: Control dashboard access through the platform's OIDC identity provider.
 - **REQ-0007-FR-0006**: Route alerts to a team notification channel.
 
-## Acceptance Criteria
+### Quality Requirements
 
-### Acceptance Conditions
+This package declares no quality requirement.
+
+## Traceability
+
+### Sources
+
+This package records the owner's requirements for the observability tier; no upstream
+document governs it.
+
+### Verification Links
+
+#### Acceptance Conditions
 
 - **REQ-0007-FR-0001**: Every target declared in the current scrape
   configuration renders without omission; runtime verification confirms the
@@ -88,18 +108,11 @@ collector or the metrics server can read.
   render; email delivery is not configured yet. Delivery within 60 seconds is claimed only with separate
   runtime rehearsal evidence.
 
-### Verification Method
+#### Verification Method
 
 Each condition is judged by reviewing the rendered configuration for the scrape, storage, collector, login and alert settings, while target availability and the 60-second alert delivery are judged by a runtime observation. No current Spec Package cites REQ-0007; a Spec that implements it records the evidence in its Task. The evidence is the review result and the observed timings, recorded in that Task. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
 
-## Traceability
-
-### Source and Constraints
-
-This package records the owner's requirements for the observability tier; no upstream
-document governs it.
-
-### Downstream Links
+#### Downstream Links
 
 - **Architecture Description**: [Observability architecture](../02.architecture/descriptions/0006-observability-architecture.md)
 - **ADR**: [ADR-0053 Observability Object Storage on SeaweedFS](../02.architecture/decisions/0053-observability-storage-on-seaweedfs.md)

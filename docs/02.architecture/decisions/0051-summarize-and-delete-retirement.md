@@ -1,10 +1,10 @@
 ---
 title: "Summarize-and-Delete Retirement"
-version: "0.2.2"
+version: "0.3.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0051"
 parent_ids:
@@ -36,9 +36,42 @@ preservation model has no records left to govern.
 - The record of a removal must live in one place that current checks already
   read.
 
+#### Sources
+
+- [REQ-0026 Document retention and retirement](../../01.requirements/0026-document-retention-and-retirement.md)
+- [AD-0030 Document lifecycle governance](../descriptions/0030-document-lifecycle-governance.md)
+- [ADR-0037 Package waiting and Task cancellation](0037-package-disposition-wait-and-task-cancellation.md)
+- SPEC-0249 Stage 98 archive deletion (retired; version history)
+- [Documentation protocol](../../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)
+
 ### Decision Scope
 
 This decision covers how a document that leaves an active stage is retired: Stage 98 (`docs/98.archive/`) holds no records, and retired numbers are kept in the Registry. It affects Stage 01 and Stage 02 Traceability, Stage 03 removals and the checks that read Stage 98.
+
+## Options
+
+### Considered Options
+
+- Keep the Stage 98 preservation model with its catalog and Tombstones:
+  rejected; it duplicates version history, and its checks failed unrelated
+  changes.
+- Delete the archive and read retired lineage from pinned version history at
+  check time: rejected; it makes every gate depend on history depth and recovery
+  pins.
+- Move the full archive metadata into the Registry: rejected; it keeps the
+  preservation bookkeeping under a different name.
+- Summarize, delete, and keep only retired numbers in the Registry: selected.
+
+### Trade-offs
+
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| Keep the Stage 98 preservation model with its catalog and Tombstones | The ADR records no benefit for this option. | It duplicates version history, and its checks failed unrelated changes. | Rejected; it duplicates version history, and its checks failed unrelated changes. |
+| Delete the archive and read retired lineage from pinned version history at check time | The ADR records no benefit for this option. | It makes every gate depend on history depth and recovery pins. | Rejected; it makes every gate depend on history depth and recovery pins. |
+| Move the full archive metadata into the Registry | The ADR records no benefit for this option. | It keeps the preservation bookkeeping under a different name. | Rejected; it keeps the preservation bookkeeping under a different name. |
+| Summarize, delete, and keep only retired numbers in the Registry | Keeps retirement traceable without a second copy of every removed body, and lineage is read in owner Traceability where the current rule lives. | Retirement needs one extra edit, the `reserved_history` entry, and checks fail without it; removed bodies are recovered only from version history. | Selected; the preservation model has no records left to govern after SPEC-0248 stopped every gate from validating Stage 98 and the user directed the archive files be deleted. |
+
+Each rejected alternative is rejected for the reason stated in its entry above: duplication of version history, dependence on history depth and recovery pins, or preservation bookkeeping under a different name. The selected option keeps retirement traceable without a second copy of every removed body.
 
 ## Decision
 
@@ -64,23 +97,16 @@ This decision covers how a document that leaves an active stage is retired: Stag
 
 Decided by the owner, @buenhyden, who decided on 2026-11-03 to accept this record; status `accepted`, set in change #723 as the Follow-up records. Effective from 2026-11-03.
 
-## Alternatives
+#### Supersession
 
-### Considered Options
-
-- Keep the Stage 98 preservation model with its catalog and Tombstones:
-  rejected; it duplicates version history, and its checks failed unrelated
-  changes.
-- Delete the archive and read retired lineage from pinned version history at
-  check time: rejected; it makes every gate depend on history depth and recovery
-  pins.
-- Move the full archive metadata into the Registry: rejected; it keeps the
-  preservation bookkeeping under a different name.
-- Summarize, delete, and keep only retired numbers in the Registry: selected.
-
-### Trade-offs
-
-Each rejected alternative is rejected for the reason stated in its entry above: duplication of version history, dependence on history depth and recovery pins, or preservation bookkeeping under a different name. The selected option keeps retirement traceable without a second copy of every removed body.
+This decision supersedes ADR-0037 decision items 4 to 10 and the last sentence
+of its decision 1 ("Whole-package disposition still requires approval and
+preserves every member"). ADR-0048 already replaced the rest of decision 1,
+so decision 1 is fully replaced. ADR-0037 decisions 2 and 3, covering Task
+cancellation and terminality, are not changed by this record; ADR-0048 already
+replaced their completion-receipt clauses. It also supersedes the archive and
+preservation wording of ADR-0048 decision 4; the readiness conditions there
+stay.
 
 ## Consequences
 
@@ -97,6 +123,11 @@ Each rejected alternative is rejected for the reason stated in its entry above: 
 
 ### Follow-up
 
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
 The owner decided on 2026-11-03 to accept this record. A new ADR must enter as
 `proposed`, so the status changed to `accepted` in the first change after
 SPEC-0249 merged (#723), as ADR-0049 did. Completed Spec packages in Stage 03 are retired
@@ -107,24 +138,3 @@ under it in the next phase.
 `check-document-corpus-lifecycle.py` enforces the empty Stage 98 and the
 reserved-number rule for Stage 03; the Requirement loader enforces it for Stage
 01; allocation-transition checks reject dropping a reserved number.
-
-## Traceability
-
-### Sources
-
-- [REQ-0026 Document retention and retirement](../../01.requirements/0026-document-retention-and-retirement.md)
-- [AD-0030 Document lifecycle governance](../descriptions/0030-document-lifecycle-governance.md)
-- [ADR-0037 Package waiting and Task cancellation](0037-package-disposition-wait-and-task-cancellation.md)
-- SPEC-0249 Stage 98 archive deletion (retired; version history)
-- [Documentation protocol](../../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)
-
-### Supersession
-
-This decision supersedes ADR-0037 decision items 4 to 10 and the last sentence
-of its decision 1 ("Whole-package disposition still requires approval and
-preserves every member"). ADR-0048 already replaced the rest of decision 1,
-so decision 1 is fully replaced. ADR-0037 decisions 2 and 3, covering Task
-cancellation and terminality, are not changed by this record; ADR-0048 already
-replaced their completion-receipt clauses. It also supersedes the archive and
-preservation wording of ADR-0048 decision 4; the readiness conditions there
-stay.

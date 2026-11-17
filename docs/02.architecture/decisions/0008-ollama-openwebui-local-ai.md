@@ -1,10 +1,10 @@
 ---
 title: "Ollama and Open WebUI for Local AI Infrastructure"
-version: "1.0.4"
+version: "1.1.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0008"
 parent_ids:
@@ -21,6 +21,13 @@ This document records the decision to select Ollama and Open WebUI as the core t
 
 To provide intelligent services within the project, an LLM inference engine and a user interface that can use it are needed. In addition, RAG (Retrieval-Augmented Generation) is essential for generating answers based on internal documents. Commercial APIs (OpenAI, etc.) were excluded due to cost and security concerns, and various open-source alternatives capable of local operation were reviewed.
 
+#### Sources
+
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked below, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+
+- **PRD**: [009-ai.md](../../01.requirements/0009-ai.md)
+- **Architecture Description**: [0008-ai-architecture.md](../descriptions/0008-ai-architecture.md)
+
 ### Decision Scope
 
 Explicit non-goals:
@@ -28,19 +35,7 @@ Explicit non-goals:
 - Building a large-scale serving optimization environment such as vLLM or Text Generation Inference (TGI) (extreme resource consumption and many management points).
 - Direct replacement development of cloud-only model APIs.
 
-## Decision
-
-### Chosen Option
-
-- **Inference engine**: adopt `Ollama`. (Go-based fast execution, easy model deployment, strong GPU acceleration support)
-- **UI/RAG**: adopt `Open WebUI`. (UI convenience, built-in Qdrant-integrated RAG support, OpenAI API spec compatibility)
-- **Accelerator**: keep a dedicated technical GPU pass-through via the NVIDIA Docker runtime.
-
-### Authority and Effect
-
-Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked. Effective from 2026-03-26.
-
-## Alternatives
+## Options
 
 ### Considered Options
 
@@ -56,7 +51,25 @@ Decided by the owner, @buenhyden; status `accepted`. No separate approval record
 
 ### Trade-offs
 
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| vLLM | Excellent throughput performance, enabling highly efficient serving. | Configuration is complex, VRAM usage stays consistently high, and model management is more cumbersome than Ollama. | Not chosen because configuration is complex, VRAM usage stays high, and model management is more cumbersome than Ollama. |
+| LocalAI | Broadly supports various models (audio, image, etc.). | Less optimized for performance than Ollama, and deployment configuration is relatively heavy. | Not chosen because it is less optimized than Ollama and its deployment configuration is relatively heavy. |
+| `Ollama` inference engine with `Open WebUI` for UI/RAG and NVIDIA Docker runtime GPU pass-through | Fast Go-based execution, easy model deployment and GPU acceleration, built-in Qdrant RAG and OpenAI API compatibility; works without external network, with no API token cost and no data leakage path. | Dependency on the host OS's GPU driver and kernel version, and local models have performance and context-length limits compared to commercial models. | Local resource use, data privacy and RAG extensibility were the top considerations; commercial APIs were excluded due to cost and security concerns. |
+
 vLLM was not chosen because configuration is complex, VRAM usage stays high, and model management is more cumbersome than Ollama. LocalAI was not chosen because it is less optimized for performance than Ollama and its deployment configuration is relatively heavy.
+
+## Decision
+
+### Chosen Option
+
+- **Inference engine**: adopt `Ollama`. (Go-based fast execution, easy model deployment, strong GPU acceleration support)
+- **UI/RAG**: adopt `Open WebUI`. (UI convenience, built-in Qdrant-integrated RAG support, OpenAI API spec compatibility)
+- **Accelerator**: keep a dedicated technical GPU pass-through via the NVIDIA Docker runtime.
+
+### Authority and Effect
+
+Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked. Effective from 2026-03-26.
 
 ## Consequences
 
@@ -77,13 +90,9 @@ vLLM was not chosen because configuration is complex, VRAM usage stays high, and
 
 ### Follow-up
 
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
 No follow-up work is recorded in this decision.
-
-## Traceability
-
-### Sources
-
-The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked below, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
-
-- **PRD**: [009-ai.md](../../01.requirements/0009-ai.md)
-- **Architecture Description**: [0008-ai-architecture.md](../descriptions/0008-ai-architecture.md)

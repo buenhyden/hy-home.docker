@@ -37,11 +37,7 @@ def _package_text(
         f"- **REQ-{number}-FR-0003**: The package provides behavior three.\n"
         f"- **REQ-{number}-FR-0004**: The package provides behavior four."
     )
-    quality = (
-        ""
-        if not non_functional
-        else f"### Quality Requirements\n\n{non_functional}\n\n"
-    )
+    quality = non_functional or "The fixture declares no quality requirement."
     return f"""---
 title: Fixture Requirement Package
 type: sdlc/requirement
@@ -77,27 +73,28 @@ No constraint or exclusion applies to this fixture.
 
 ## Requirements
 
+| Requirement ID | Statement | Rationale | Acceptance | Priority |
+| --- | --- | --- | --- | --- |
+
 ### Functional Requirements
 
 {functional}
 
-{quality}## Acceptance Criteria
+### Quality Requirements
 
-### Acceptance Conditions
-
-- The declared requirements are independently verifiable.
-
-### Verification Method
-
-Each condition is judged from the evidence of the Spec that cites it.
+{quality}
 
 ## Traceability
 
-### Source and Constraints
+### Sources
 
 - The fixture has no upstream source.
 
-### Downstream Links
+### Verification Links
+
+- The declared requirements are independently verifiable.
+
+Each condition is judged from the evidence of the Spec that cites it.
 
 - Architecture and Spec links are added when their packages exist.
 """
@@ -306,8 +303,8 @@ class RequirementPackageTests(unittest.TestCase):
             for label, section in retired.items():
                 with self.subTest(section=label):
                     text = _package_text().replace(
-                        "## Acceptance Criteria\n",
-                        section + "## Acceptance Criteria\n",
+                        "## Traceability\n",
+                        section + "## Traceability\n",
                         1,
                     )
                     self.assertIn(section, text)

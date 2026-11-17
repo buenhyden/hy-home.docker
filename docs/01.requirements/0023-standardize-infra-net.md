@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Segmentation Requirements"
-version: "1.4.3"
+version: "1.5.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "requirements"
 artifact_id: "REQ-0023"
 created: "2026-04-01"
@@ -56,6 +56,13 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 ## Requirements
 
+| Requirement ID | Statement | Rationale | Acceptance | Priority |
+| --- | --- | --- | --- | --- |
+| REQ-0023-FR-0001 | Every active service connects only to networks with peers it actually uses, and uses the composition's default network when it has no peer. | All services once shared one `infra_net` mesh, which made inter-service communication hard to reason about and troubleshoot; the infrastructure engineer needs each service limited to the peers it uses. | In the rendered root composition, each service's networks match its declared traffic flow. | must |
+| REQ-0023-FR-0002 | Each repository-owned network declares a `10.250.x.0/24` subnet in the root composition; the one named exception is `crawl4ai_egress_net` (`10.250.200.0/29`), a leaf-owned internal egress network declared in its own service file. | Some services had an ambiguous subnet, and the DevOps engineer needs a standard network and a predictable address block when adding a service. | Each repository-owned network's address setting is its declared `10.250.x.0/24` block, or, for the named exception, the subnet its service file declares. | must |
+| REQ-0023-FR-0003 | No service connects to the `k3d-hyhome` network. | The operator needs removed external integrations kept off every service; k3d integration was removed by owner decision on 2026-09-23. | No service in the rendered root composition lists `k3d-hyhome`. | must |
+| REQ-0023-FR-0004 | A secondary listener without its own authentication (metrics, management, profiling or broker) accepts connections only from its declared consumers on an internal network only they share; the recorded exceptions are the Registry debug listener `:5001` and the SeaweedFS metrics on `9324` to `9326`, owned by @buenhyden. | The infrastructure engineer needs each service limited to the peers it actually uses, so inter-service communication is clear and troubleshootable. | Each such listener binds to a fixed address on an internal network whose members are only the listener's service and its declared consumers, and a peer outside that network is refused; the recorded exceptions are excluded. | must |
+
 ### Functional Requirements
 
 - **REQ-0023-FR-0001**: Every active service connects only to networks with
@@ -77,9 +84,19 @@ The owner, @buenhyden, writes, reviews and accepts this package.
   `:5001`, reachable by every `obs_net` peer, and the SeaweedFS master, volume
   and filer metrics on `9324` to `9326`, reachable by `seaweed_internal` peers.
 
-## Acceptance Criteria
+### Quality Requirements
 
-### Acceptance Conditions
+This package declares no quality requirement.
+
+## Traceability
+
+### Sources
+
+This package records the owner's requirements for standardized infrastructure networks; no upstream document governs it.
+
+### Verification Links
+
+#### Acceptance Conditions
 
 - **REQ-0023-FR-0001**: In the rendered root composition, each service's
   networks match its declared traffic flow.
@@ -93,7 +110,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
   listener's service and its declared consumers, and a peer outside that
   network is refused. The recorded exceptions are excluded.
 
-### Verification Method
+#### Verification Method
 
 Use the rendered root composition to check declared membership, addresses and
 bindings. For REQ-0023-FR-0004, record refusal of a connection from outside
@@ -103,13 +120,7 @@ that runtime claim open. SPEC-0255 cites REQ-0023-FR-0002 for the egress
 isolation exception. Record each observation in the applicable Task.
 @buenhyden judges the conditions and accepts the requirement when they are met.
 
-## Traceability
-
-### Source and Constraints
-
-This package records the owner's requirements for standardized infrastructure networks; no upstream document governs it.
-
-### Downstream Links
+#### Downstream Links
 
 - **Architecture Description**: [Compose network segmentation](../02.architecture/descriptions/0026-standardize-infra-net.md)
 - **ADR**: [ADR-0055 Segmented Per-Flow Networks](../02.architecture/decisions/0055-segmented-per-flow-networks.md)

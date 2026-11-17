@@ -1,10 +1,10 @@
 ---
 title: "Messaging Tier (05-messaging) Requirements"
-version: "1.3.2"
+version: "1.4.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "requirements"
 artifact_id: "REQ-0006"
 created: "2026-03-26"
@@ -71,6 +71,13 @@ data on dedicated persistent storage.
 
 ## Requirements
 
+| Requirement ID | Statement | Rationale | Acceptance | Priority |
+| --- | --- | --- | --- | --- |
+| REQ-0006-FR-0001 | Provide an Apache Kafka event streaming broker in KRaft mode, with multi-broker training kept in a separate LAB. | Direct calls between components do not scale and risk data loss and reduced availability; event streaming on Kafka lowers that coupling. | The root model declares exactly one KRaft broker with replication factor 1 and renders without error with the messaging profile; the three-broker topology renders only as its own LAB project. | must |
+| REQ-0006-FR-0003 | Provide schema management for Avro and JSON events and a connector boundary for moving data between Kafka and external systems. | Data engineers use schema management and connectors as the pipeline input boundary and validate event formats. | The isolated Kafka LAB renders schema management and the connector service with health checks and its own broker dependencies; a source connector requires separate approved inputs and execution evidence. | must |
+| REQ-0006-FR-0004 | Provide a web-based management UI for the Kafka cluster. | The HOME placement provides authenticated web administration; SREs manage broker availability, retention and recovery. | The management UI requires a login through the platform's OIDC identity provider. | must |
+| REQ-0006-FR-0005 | Provide an HTTP access path and a metrics collection boundary for the broker and its consumers. | The HOME placement provides authenticated HTTP management and broker and consumer metrics. | The HOME HTTP management route and exporter render, and observability declares broker and consumer metrics scrape targets; live access and scrape success require separate runtime evidence. | must |
+
 ### Functional Requirements
 
 - **REQ-0006-FR-0001**: Provide an Apache Kafka event streaming broker in KRaft mode, with multi-broker training kept in a separate LAB.
@@ -81,9 +88,20 @@ data on dedicated persistent storage.
 FR number 0002 (AMQP 0-9-1 task queue on RabbitMQ) is retired because no
 RabbitMQ broker is implemented, and is not reused.
 
-## Acceptance Criteria
+### Quality Requirements
 
-### Acceptance Conditions
+This package declares no quality requirement.
+
+## Traceability
+
+### Sources
+
+This package records the owner's requirements for the messaging tier; no upstream
+document governs it.
+
+### Verification Links
+
+#### Acceptance Conditions
 
 - **REQ-0006-FR-0001**: The root model declares exactly one KRaft broker with
   replication factor 1 and renders without error when the messaging profile is
@@ -97,7 +115,7 @@ RabbitMQ broker is implemented, and is not reused.
   and observability declares broker and consumer metrics scrape targets.
   Live access and scrape success require separate runtime evidence.
 
-### Verification Method
+#### Verification Method
 
 Review the selected HOME and LAB Compose configurations separately for the
 broker, schema, UI and metrics declarations. Record live authentication,
@@ -106,14 +124,7 @@ Task. The owner named in the frontmatter, @buenhyden, judges each condition
 from the applicable evidence and accepts the requirement once every condition
 is met.
 
-## Traceability
-
-### Source and Constraints
-
-This package records the owner's requirements for the messaging tier; no upstream
-document governs it.
-
-### Downstream Links
+#### Downstream Links
 
 - **Architecture Description**: [Messaging architecture](../02.architecture/descriptions/0005-messaging-architecture.md)
 - **ADR**: [ADR-0052 Kafka as the Only Messaging Broker](../02.architecture/decisions/0052-kafka-only-messaging-broker.md) (historical; RabbitMQ is not implemented)

@@ -1,10 +1,10 @@
 ---
 title: "08-AI Optimization Hardening Architecture Description"
-version: "1.1.3"
+version: "1.2.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "AD-0023"
 parent_ids:
@@ -14,16 +14,7 @@ created: "2026-03-28"
 
 # 08-AI Optimization Hardening Architecture Description
 
-## Overview
-
-### Purpose and Readers
-
-This Description records the hardening scope for HOME Ollama, the local LLM
-inference and embedding engine, and the independent Open WebUI LAB. It covers
-their distinct access and identity boundaries, GPU concurrency limits,
-stateful storage and the shared hardening gate.
-Requirement owners, implementers and operators share these concerns; the tier
-structure itself is in [AD-0008](0008-ai-architecture.md).
+## Context and Boundaries
 
 ### System Boundary
 
@@ -39,9 +30,16 @@ structure itself is in [AD-0008](0008-ai-architecture.md).
 - **Non-goals**: a distributed GPU scheduler and parallel external LLM
   providers.
 
-## Context and Constraints
+#### Purpose and Readers
 
-### Context
+This Description records the hardening scope for HOME Ollama, the local LLM
+inference and embedding engine, and the independent Open WebUI LAB. It covers
+their distinct access and identity boundaries, GPU concurrency limits,
+stateful storage and the shared hardening gate.
+Requirement owners, implementers and operators share these concerns; the tier
+structure itself is in [AD-0008](0008-ai-architecture.md).
+
+#### Context
 
 The HOME Ollama route uses Traefik `websecure`. Open WebUI uses a separate
 LAB bind, native Keycloak OIDC, and an approved, reachable Ollama endpoint
@@ -56,7 +54,7 @@ redirect. The Ollama concurrency and queue defaults below bound GPU load.
 Static hardening evidence covers configuration, while service health and
 login require an actual runtime check.
 
-## Current Structure
+## Structure
 
 ### Building Blocks
 
@@ -71,7 +69,24 @@ login require an actual runtime check.
 - **Control**: the gateway and identity middleware, the hardening script and
   CI job, and the Operations guide, policy and runbook.
 
-### Runtime and Deployment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `ollama.${DEFAULT_URL}` route (Traefik `websecure`) | HOME Ollama | Clients through the gateway | `gateway-standard-chain`, `sso-errors` and `sso-auth` in `infra/08-ai/ollama/docker-compose.yml` | The Ollama concurrency and queue ceiling bounds GPU load; the linked operations owners govern recovery. |
+| Open WebUI LAB bind | Open WebUI | LAB users | [`labs/open-webui/docker-compose.yml`](../../../labs/open-webui/docker-compose.yml) with native Keycloak OIDC | Losing the Open WebUI data bind loses the embedded RAG index and application state. |
+| `LAB_OPEN_WEBUI_OLLAMA_BASE_URL` generation and embedding endpoint | Approved, reachable Ollama endpoint | Open WebUI | The description links no contract for this interface. | LAB health checks do not order startup across projects; verify access to the approved Ollama endpoint before accepting chat or embedding. |
+| SSO and identity | `02-auth` ForwardAuth middleware and Keycloak OIDC | HOME Ollama route and Open WebUI | [ADR-0059](../decisions/0059-native-oidc-open-webui-and-airflow.md) | The description records no failure handling for this interface. |
+| Metrics | `ollama-exporter` | Observability consumers | The description links no contract for this interface. | The description records no failure handling for this interface. |
+
+- Traefik `websecure` routes `ollama.${DEFAULT_URL}` per the Ingress item in
+  Building Blocks. Open WebUI uses its independent LAB bind.
+- Open WebUI uses `LAB_OPEN_WEBUI_OLLAMA_BASE_URL` for generation and embedding.
+- Ollama concurrency and queue limits are set in `infra/08-ai/ollama/docker-compose.yml:42-44`.
+
+## Runtime Behavior
+
+### Normal Flow
 
 #### Runtime View
 
@@ -95,16 +110,7 @@ login require an actual runtime check.
   `infrastructure-hardening` job. These are static checks; they prove no
   running service or login.
 
-## Interfaces
-
-### Contracts
-
-- Traefik `websecure` routes `ollama.${DEFAULT_URL}` per the Ingress item in
-  Building Blocks. Open WebUI uses its independent LAB bind.
-- Open WebUI uses `LAB_OPEN_WEBUI_OLLAMA_BASE_URL` for generation and embedding.
-- Ollama concurrency and queue limits are set in `infra/08-ai/ollama/docker-compose.yml:42-44`.
-
-### Failure Boundaries
+### Failure and Recovery
 
 LAB health checks do not order startup across projects. Verify access to the
 approved Ollama endpoint before accepting chat or embedding. The Ollama
@@ -112,14 +118,9 @@ concurrency and queue ceiling bounds GPU load. Losing the Open WebUI data bind
 loses the embedded RAG index and application state. The operations owners
 linked under Currentness and Lineage govern change and recovery.
 
-## Decisions
+## Quality Scenarios
 
-### Decision Links
-
-- **Identity decision**: [ADR-0059](../decisions/0059-native-oidc-open-webui-and-airflow.md)
-- **Current placement**: [ADR-0062](../decisions/0062-home-lab-membership.md)
-
-### Quality and Risks
+### Scenarios
 
 #### Quality Attributes
 
@@ -138,13 +139,34 @@ linked under Currentness and Lineage govern change and recovery.
 - The embedded vector store shares the Open WebUI volume; losing it loses the
   RAG index along with the application state.
 
-## Traceability
+### Trade-offs
 
-### Requirement Mapping
+- The Ollama concurrency and queue ceiling (`OLLAMA_NUM_PARALLEL=2`,
+  `OLLAMA_MAX_LOADED_MODELS=1`, `OLLAMA_MAX_QUEUE=16`) bounds GPU load; a
+  distributed GPU scheduler is a non-goal (Runtime View, System Boundary).
+- Open WebUI relies on its own OIDC configuration rather than gateway
+  ForwardAuth, so a change to that configuration changes its access boundary
+  (Risks).
+- Open WebUI sets no external vector database; the embedded store shares its
+  data volume, so losing that bind loses the RAG index with the application
+  state (Risks, Failure and Recovery).
+- Static hardening evidence covers configuration only; service health and
+  login require an actual runtime check (Constraints).
+
+## Decisions and Adoption
+
+### Decisions
+
+- **Identity decision**: [ADR-0059](../decisions/0059-native-oidc-open-webui-and-airflow.md)
+- **Current placement**: [ADR-0062](../decisions/0062-home-lab-membership.md)
+
+### Adoption Boundaries
+
+#### Requirement Mapping
 
 - **PRD**: [REQ-0009](../../01.requirements/0009-ai.md)
 
-### Currentness and Lineage
+#### Currentness and Lineage
 
 - **Tier Architecture Description**: [AD-0008 AI Infrastructure Architecture Description](0008-ai-architecture.md)
 - **Open WebUI Architecture Description**: [AD-0013](0013-open-webui-architecture.md)

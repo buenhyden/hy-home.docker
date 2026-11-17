@@ -18,29 +18,19 @@ created: "{{CREATED}}"
 
 # {{TITLE}}
 
-## Overview
-
-### Purpose and Readers
-
-{{PURPOSE_AND_READERS}}
+## Context and Boundaries
 
 ### System Boundary
 
-{{SYSTEM_VERSION_AND_ENVIRONMENT_BOUNDARY}}
+<!-- Author prompt: State the purpose and readers, the system, version and environment boundary, and the external actors, neighbouring systems and data flows across it. -->
 
-## Context and Constraints
-
-### Context
-
-<!-- Author prompt: Name the external actors, neighbouring systems and data flows across the boundary. -->
-
-{{EXTERNAL_ACTORS_SYSTEMS_AND_DATA_FLOWS}}
+{{PURPOSE_BOUNDARY_ACTORS_AND_DATA_FLOWS}}
 
 ### Constraints
 
 {{REQUIREMENT_QUALITY_TECHNICAL_AND_SECURITY_CONSTRAINTS}}
 
-## Current Structure
+## Structure
 
 ### Building Blocks
 
@@ -48,38 +38,46 @@ created: "{{CREATED}}"
 
 {{COMPONENTS_RESPONSIBILITIES_AND_OWNERS}}
 
-### Runtime and Deployment
+### Interfaces
 
-{{RUNTIME_DEPLOYMENT_AND_ENVIRONMENT_DIFFERENCES}}
+<!-- Author prompt: When the structure has an external interface, list it in this table: Interface is the boundary, Producer and Consumer its two sides, Contract a link to its input and output meaning, and Failure how a failure is handled. Otherwise delete the table. -->
 
-## Interfaces
-
-### Contracts
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| {{INTERFACE}} | {{PRODUCER}} | {{CONSUMER}} | {{CONTRACT}} | {{FAILURE}} |
 
 {{INPUTS_OUTPUTS_CALLS_SCHEMAS_AND_COMPATIBILITY}}
 
-### Failure Boundaries
+## Runtime Behavior
+
+### Normal Flow
+
+{{RUNTIME_DEPLOYMENT_AND_ENVIRONMENT_DIFFERENCES}}
+
+### Failure and Recovery
 
 {{FAILURE_RETRY_ISOLATION_AND_RECOVERY_BOUNDARIES}}
 
-## Decisions
+## Quality Scenarios
 
-### Decision Links
-
-{{EFFECTIVE_ADRS_AND_REASONS}}
-
-### Quality and Risks
+### Scenarios
 
 {{QUALITY_SCENARIOS_RISKS_AND_OWNERS}}
 
-## Traceability
+### Trade-offs
 
-### Requirement Mapping
+<!-- Author prompt: Name the quality trade-offs the structure accepts and what each one costs. -->
 
-{{REQUIREMENT_AND_DESIGN_CONSTRAINT_LINKS}}
+{{QUALITY_TRADE_OFFS}}
 
-### Currentness and Lineage
+## Decisions and Adoption
 
-<!-- Author prompt: State what is current, what it replaced and where history lives; historical links are non-authoritative. -->
+### Decisions
 
-{{CURRENT_VERSION_REPLACEMENTS_AND_HISTORY}}
+{{EFFECTIVE_ADRS_AND_REASONS}}
+
+### Adoption Boundaries
+
+<!-- Author prompt: Map the requirements and design constraints this structure meets, and state what is current, what it replaced and where history lives; historical links are non-authoritative. -->
+
+{{REQUIREMENT_MAPPING_CURRENTNESS_AND_LINEAGE}}
