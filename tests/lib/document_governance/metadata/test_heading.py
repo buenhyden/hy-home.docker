@@ -523,7 +523,12 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Overview", "body-heading-forbidden"),
                 ("## Usage", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
+                ("## Verification", "body-heading-forbidden"),
                 ("### Common Checks", "body-subheading-forbidden"),
+                ("### Boundaries", "body-subheading-forbidden"),
+                ("### Permissions", "body-subheading-forbidden"),
+                ("### Actions", "body-subheading-forbidden"),
+                ("### Expected Result", "body-subheading-forbidden"),
             ),
             "runbook": (
                 ("## Overview", "body-heading-forbidden"),

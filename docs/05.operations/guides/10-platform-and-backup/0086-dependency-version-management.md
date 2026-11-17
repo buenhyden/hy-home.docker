@@ -85,7 +85,7 @@ registry check만으로 Dockerfile pin 검증을 대체하지 않는다.
 
 ### Symptoms
 
-위 Expected Result가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)의 절차로 진단한다.
+위 Expected Results가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md)의 절차로 진단한다.
 
 #### Runbook Handoff
 

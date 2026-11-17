@@ -22,7 +22,7 @@ next_review_at: "2027-05-13"
 
 ### Audience
 
-HOME 호스트에서 self-hosted Renovate one-shot 작업과 주간 systemd timer를 운영하는 운영자와 저장소 유지보수자가 읽는다.
+의존성 갱신 PR을 승인하고 운영하는 담당자가 job 경계, 정적 검증과 systemd timer 동작을 확인할 때 읽는다.
 
 ### Outcome
 
@@ -168,7 +168,7 @@ pre-flight check가 하나라도 실패하면 container를 만들기 전에 run�
 
 ### Symptoms
 
-위 Expected Result가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0083-renovate.md)의 절차로 진단한다.
+위 Expected Results가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0083-renovate.md)의 절차로 진단한다.
 
 ### Next Action
 

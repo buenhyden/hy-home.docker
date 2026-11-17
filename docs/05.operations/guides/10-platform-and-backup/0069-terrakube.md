@@ -140,7 +140,7 @@ Secret은 `terrakube_db_password`, `seaweedfs_s3_terrakube_secret_key`, `terraku
 
 ### Symptoms
 
-위 Expected Result가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0069-terrakube.md)의 절차로 진단한다.
+위 Expected Results가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0069-terrakube.md)의 절차로 진단한다.
 
 #### Runbook Handoff
 

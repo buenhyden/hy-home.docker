@@ -64,7 +64,7 @@ target-owner 승인, limit, stop condition이 필요하다.
 | --- | --- | --- | --- |
 | 1 | 대상, 테스트 소유자, 최대 사용자 수, 생성 속도, 지속 시간, 중단 SLI, worker 수를 기록한다 | 문서에 기록 없음 | 문서에 기록 없음 |
 | 2 | `LAB_LOCUST_SCENARIO_DIR`와 fresh `LAB_LOCUST_RESULT_DIR`을 준비하고 `docker compose -f labs/locust/docker-compose.yml --env-file labs/.env config --quiet`를 실행한다 | 문서에 기록 없음 | 문서에 기록 없음 |
-| 3 | scenario directory의 `locustfile.py`와 fixture를 검토한다 | production data를 수정할 수 없음을 확인한다 | 해당 effect를 승인받지 않았다면 진행하지 않는다 |
+| 3 | scenario directory의 `locustfile.py`와 fixture를 검토한다 | 정확히 그 effect를 승인받지 않았다면 production data를 수정할 수 없음을 확인한다 | 해당 effect를 승인받지 않았다면 진행하지 않는다 |
 | 4 | Runtime 승인 뒤 `python3 scripts/operations/lab.py run locust --purpose "<목적>" --lease <기간> --deadline <상한>`으로 실행한다 | 제어기가 master 종료를 기다리고 상한이나 SIGTERM에서 master를 멈춘 뒤 project를 내린다 | Target abort SLI를 넘으면 제어기에 SIGTERM을 보내 즉시 멈춘다 |
 | 5 | 설정 커밋, 시나리오 digest, 정제된 집계 결과, 최종 중지 상태를 보존한다 | 증거가 보존된다 | 문서에 기록 없음 |
 

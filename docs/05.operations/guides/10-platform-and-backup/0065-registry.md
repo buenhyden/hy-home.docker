@@ -78,7 +78,7 @@ push된 매니페스트와 blob을 `${DEFAULT_REGISTRY_DIR}`에 저장한다. �
 
 ### Authority
 
-push 전에 endpoint가 승인된 신뢰 네트워크로 한정되어 있는지 확인해야 하며, garbage collection은 별도 승인이 필요하다. 상세는 Actions의 일반적인 사용과 Runbook Handoff에 있다.
+push 전에 endpoint가 승인된 신뢰 네트워크로 한정되어 있는지 확인해야 하며, garbage collection은 별도 승인이 필요하다. 상세는 Steps의 일반적인 사용과 Runbook Handoff에 있다.
 
 ## Procedure
 
@@ -87,7 +87,7 @@ push 전에 endpoint가 승인된 신뢰 네트워크로 한정되어 있는지 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
 | 1 | 루트에서 `docker compose --profile registry config --quiet`로 검증한다. | 명령이 성공한다. | 문서에 기록 없음 |
-| 2 | push 전에 endpoint가 승인된 신뢰 네트워크로 한정되어 있는지 확인한다. | 문서에 기록 없음 | TLS와 접근 제어가 구현되고 테스트되기 전까지 민감하거나 독점적인 아티팩트를 저장하지 않는다. |
+| 2 | push 전에 endpoint가 승인된 신뢰 네트워크로 한정되어 있는지 확인한다. | 문서에 기록 없음 | 문서에 기록 없음 |
 | 3 | 불변 release/digest 정책에 따라 태그를 지정해 push하고 digest로 pull하여 매니페스트 digest를 검증한다. | 매니페스트 digest가 검증되고 repository, tag, digest, 출처 권한이 기록된다. | 문서에 기록 없음 |
 | 4 | 파일시스템과 digest 인벤토리를 하나의 백업 단위로 다룬다. | 문서에 기록 없음 | 문서에 기록 없음 |
 
@@ -130,7 +130,7 @@ push 전에 endpoint가 승인된 신뢰 네트워크로 한정되어 있는지 
 
 ### Symptoms
 
-위 Expected Result가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0065-registry.md)의 절차로 진단한다.
+위 Expected Results가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0065-registry.md)의 절차로 진단한다.
 
 #### Runbook Handoff
 

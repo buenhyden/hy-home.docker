@@ -115,7 +115,7 @@ registry와 `.env` 값을 프로세스 내부에서 읽되 출력하지 않고 �
 
 ### Symptoms
 
-위 Expected Result가 실패하면 누락·추가된 키 이름만 기록하고(값은 기록하지 않는다), 아래 Runbook Handoff가 지정한 서비스 Runbook으로 넘긴다.
+위 Expected Results가 실패하면 누락·추가된 키 이름만 기록하고(값은 기록하지 않는다), 아래 Runbook Handoff가 지정한 서비스 Runbook으로 넘긴다.
 
 #### Runbook Handoff
 

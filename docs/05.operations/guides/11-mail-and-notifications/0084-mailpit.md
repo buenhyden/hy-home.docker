@@ -71,7 +71,7 @@ port는 `127.0.0.1`에 바인딩되고, UI는 Traefik을 통해서도 라우팅�
 
 ### Authority
 
-UI 접근은 gateway SSO 경로를 거치며, 직접 loopback UI와 peer listener에는 네이티브 UI 인증이 없다. 합성 또는 승인된 test mail만 전송하고 책임자 `@buenhyden`이 경계를 확인한다. 상세는 Actions와 Exceptions에 있다.
+UI 접근은 gateway SSO 경로를 거치며, 직접 loopback UI와 peer listener에는 네이티브 UI 인증이 없다. 합성 또는 승인된 test mail만 전송하고 책임자 `@buenhyden`이 경계를 확인한다. 상세는 Steps에 있다.
 
 ## Procedure
 
@@ -79,7 +79,7 @@ UI 접근은 gateway SSO 경로를 거치며, 직접 loopback UI와 peer listene
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
-| 1 | root에서 `docker compose --profile mail-dev config --quiet`로 validate한다. | 오류 없이 종료한다. | 문서에 기록 없음 |
+| 1 | root에서 `docker compose --profile mail-dev config --quiet`로 validate한다. | 문서에 기록 없음 | 문서에 기록 없음 |
 | 2 | 개발용 application이 `edge_net` 또는 `mail_net`의 `mailpit:${MAILPIT_SMTP_PORT:-1025}`로 전송하도록 설정한다. host tool은 loopback host port를 사용한다. | 문서에 기록 없음 | 문서에 기록 없음 |
 | 3 | 합성 또는 승인된 test mail만 전송한다. | 문서에 기록 없음 | 문서에 기록 없음 |
 | 4 | gateway 인증 경로 또는 승인된 loopback/peer 경로의 제한된 조회로 capture를 확인한 뒤 retention policy에 따라 test data를 삭제/만료시킨다. | 문서에 기록 없음 | 문서에 기록 없음 |

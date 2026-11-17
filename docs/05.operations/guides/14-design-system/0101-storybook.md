@@ -94,9 +94,9 @@ HOME DNS/TLS와 실제 관리자 세션은 별도 관찰 대상이다.
 | --- | --- | --- | --- |
 | 1 | Keycloak 준비(운영자): `hy-home.realm`에 client scope `storybook-mcp`를 만든다 | Audience mapper와 `groups` Group Membership mapper가 설정된 optional scope | 문서에 기록 없음 |
 | 2 | Keycloak 준비(운영자): client `storybook-mcp-client`를 public client로 만든다 | Standard flow와 PKCE `S256`, 두 redirect URI, optional scope `storybook-mcp`가 설정된 client | 문서에 기록 없음 |
-| 3 | Keycloak 준비(운영자): 읽기 권한을 `/admins` 그룹으로 둔다 | `/admins` 그룹이 읽기 권한을 가진다 | 다른 검토자 그룹은 POL-0101 예외 절차를 따른다 |
+| 3 | Keycloak 준비(운영자): 읽기 권한을 `/admins` 그룹으로 둔다 | `/admins` 그룹이 읽기 권한을 가진다 | 문서에 기록 없음 |
 | 4 | 소비 워크스페이스 연결 확인: 클라이언트 기기에서 `/.well-known/oauth-protected-resource/mcp`를 확인한다 | 200과 `"resource": "https://storybook-mcp.hy.home.arpa/mcp"` | 이름 해석이나 인증서 오류면 클라이언트 기기 조건부터 맞춘다 |
-| 5 | 소비 워크스페이스 연결 확인: project 설정을 넣고 Claude Code는 `/mcp`, Codex는 `codex mcp login hyhome_storybook`으로 `/admins` 계정 로그인한다 | 브라우저 로그인 완료 | 4단계 결과 해석의 redirect URI와 callback 항목을 따른다 |
+| 5 | 소비 워크스페이스 연결 확인: project 설정을 넣고 Claude Code는 `/mcp`, Codex는 `codex mcp login hyhome_storybook`으로 `/admins` 계정 로그인한다 | 브라우저 로그인 완료 | 7단계 결과 해석의 redirect URI와 callback 항목을 따른다 |
 | 6 | 소비 워크스페이스 연결 확인: `docs-list`를 호출하고 `docs-show`로 문서 하나를 연다 | 문서 목록이 오고 문서 하나가 열린다 | 7단계의 결과 해석을 따른다 |
 | 7 | 소비 워크스페이스 연결 확인: 결과를 읽는다 | 문서에 기록 없음 | 401은 `storybook-mcp` scope 요청 확인, 403 `insufficient_scope`는 `/admins` 그룹 확인, 그 밖의 오류는 해당 항목의 조치를 따른다 |
 | 8 | 소비 워크스페이스 연결 확인: 확인한 날짜, 워크스페이스, 클라이언트 종류와 결과만 해당 Spec Task에 남긴다 | 결과(성공, 401, 403)가 Task에 기록된다 | 문서에 기록 없음 |

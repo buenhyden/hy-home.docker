@@ -102,7 +102,7 @@ profile 입력을 채우고 기존 파일을 덮어쓰지 않는다. 키 비교�
 
 ### Symptoms
 
-위 Expected Result가 실패하면 실패한 명령과 출력 요약을 값 없이 기록하고, 아래 Runbook Handoff가 지정한 소유 Runbook으로 넘긴다.
+위 Expected Results가 실패하면 실패한 명령과 출력 요약을 값 없이 기록하고, 아래 Runbook Handoff가 지정한 소유 Runbook으로 넘긴다.
 
 #### Runbook Handoff
 

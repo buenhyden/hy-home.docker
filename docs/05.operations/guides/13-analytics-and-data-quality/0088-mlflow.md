@@ -67,7 +67,7 @@ MLflow tracking server를 쓰는 MLOps·데이터 과학 운영자를 위한 문
 
 ### Authority
 
-별도 접근 승인은 기록하지 않는다. job 재활성화에는 측정한 메모리 예산과 승인이 필요하고(Actions), 인증·권한 변경은 owner 승인과 보안 검토가 필요하다(Exceptions).
+별도 접근 승인은 기록하지 않는다. job 재활성화에는 측정한 메모리 예산과 승인이 필요하고(Steps), 인증·권한 변경은 owner 승인과 보안 검토가 필요하다(Steps).
 
 ## Procedure
 

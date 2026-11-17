@@ -83,7 +83,7 @@ root 사용자 이름은 `SURREALDB_USERNAME`, 비밀번호는 `surreal_db_passw
 
 | Step | Action | Expected Result | On Failure |
 | --- | --- | --- | --- |
-| 1 | 아래 Expected Result 명령으로 render, 서비스 상태, credential 없는 준비 상태를 확인한다. | render와 서비스 상태, 준비 상태 확인(준비 상태는 도달 가능성만 증명한다) | `RUN-0080`이 health triage를 소유한다 |
+| 1 | 아래 Expected Results 명령으로 render, 서비스 상태, credential 없는 준비 상태를 확인한다. | render와 서비스 상태, 준비 상태 확인 | `RUN-0080`이 health triage를 소유한다 |
 | 2 | `ai_net`의 애플리케이션은 `ws://surrealdb:8000/rpc`로 연결한다. | 문서에 기록 없음 | 문서에 기록 없음 |
 | 3 | 복구 인벤토리를 위해 모든 export를 엔진 버전, namespace, database, 인증 수준, 스키마/데이터 범위, checksum, 보존 기간, 격리된 복원 결과와 연결한다. | 문서에 기록 없음 | 문서에 기록 없음 |
 
@@ -101,7 +101,7 @@ root 사용자 이름은 `SURREALDB_USERNAME`, 비밀번호는 `surreal_db_passw
   이 배포는 v2를 유지한다. 선택한 Open Notebook 이미지와의 v3 호환성 근거를
   확보하고 별도로 승인받기 전에는 v3로 변경하지 않는다.
 
-1. 아래 Expected Result로 render, 서비스 상태, credential 없는 준비 상태를 확인한다.
+1. 아래 Expected Results로 render, 서비스 상태, credential 없는 준비 상태를 확인한다.
 2. `ai_net`의 애플리케이션은 `ws://surrealdb:8000/rpc`로 연결한다.
 3. 복구 인벤토리를 위해 모든 export를 엔진 버전, namespace, database, 인증 수준,
    스키마/데이터 범위, checksum, 보존 기간, 격리된 복원 결과와 연결한다.

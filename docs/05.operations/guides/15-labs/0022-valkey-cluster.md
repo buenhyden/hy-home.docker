@@ -150,7 +150,7 @@ static pass는 configuration 증거일 뿐이다. runtime과 restore는 별개�
 
 ### Symptoms
 
-증상별 진단과 복구 절차는 Boundaries의 Related Documents에 연결된 runbook을 따른다.
+증상별 진단과 복구 절차는 Outcome의 Related Documents에 연결된 runbook을 따른다.
 
 ### Next Action
 

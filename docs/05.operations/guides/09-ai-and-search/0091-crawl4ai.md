@@ -64,7 +64,7 @@ Open Notebook의 remote-crawler 설정이지만 아직 주석 처리되어 있�
 
 ### Authority
 
-`crawl4ai`를 consumer에 연결하는 변경은 [정책](../../policies/09-ai-and-search/0091-crawl4ai.md)의 승인 변경이 소유하며 `@buenhyden`이 대상이다. 상세는 Actions의 소비자 승인과 출처 권리에 있다.
+`crawl4ai`를 consumer에 연결하는 변경은 [정책](../../policies/09-ai-and-search/0091-crawl4ai.md)의 승인 변경이 소유하며 `@buenhyden`이 대상이다. 상세는 Steps의 소비자 승인과 출처 권리에 있다.
 
 ## Procedure
 

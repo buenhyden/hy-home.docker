@@ -115,7 +115,7 @@ state 변경 작업과 IaC apply는 정확한 별도 승인이 필요하며, 실
 
 #### Exceptions
 
-`force-unlock`은 writer 부재를 증명한 자신의 lock에만 쓰며, Terraform 이관은 엔진·provider·state 호환을 대상별로 확인해야 한다(Actions).
+`force-unlock`은 writer 부재를 증명한 자신의 lock에만 쓰며, Terraform 이관은 엔진·provider·state 호환을 대상별로 확인해야 한다(Steps).
 
 ### Expected Results
 
@@ -127,7 +127,7 @@ state 변경 작업과 IaC apply는 정확한 별도 승인이 필요하며, 실
 
 ### Symptoms
 
-위 Expected Result가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0082-opentofu.md)의 절차로 진단한다.
+위 Expected Results가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0082-opentofu.md)의 절차로 진단한다.
 
 #### Runbook Handoff
 

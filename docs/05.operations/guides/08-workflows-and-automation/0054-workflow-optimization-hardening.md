@@ -81,7 +81,7 @@ next_review_at: "2027-05-13"
 #### 사용 절차
 
 1. 정적 구성 점검
-   - 아래 `Expected Result`의 Compose 검증을 실행한다.
+   - 아래 `Expected Results`의 Compose 검증을 실행한다.
    - service-local compose 파일은 root network/secrets context 없이 단독 `config` 대상으로 쓰지 않는다.
 2. Gateway/SSO 경계 정렬
    - Airflow는 `gateway-standard-chain@file`과 native Keycloak SSO를 사용한다. Flower는 `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 사용하고 n8n은 자체 로그인만 쓰므로 `gateway-standard-chain@file`만 사용한다(owner 결정 2026-11-09). 변경·복구는 RUN-0054로 넘긴다.
@@ -92,7 +92,7 @@ next_review_at: "2027-05-13"
    - compose가 custom image([hyhome/n8n image declaration](../../../../infra/07-workflow/n8n/docker-compose.yml))를 사용하도록 확인한다.
    - Compose가 선택한 dev.Dockerfile(`USER node`) 또는 Dockerfile(`USER 1000`)와 각각의 entrypoint guard를 확인한다. 두 entrypoint는 같은 내용이며 지원 broker 조합(host·username·secret·DB)과 선택된 secret 파일을 검사한다; [n8n Guide](0053-n8n.md#build-readiness-and-runner-boundary)를 따른다.
 5. 기준선 검증 실행
-   - 아래 `Expected Result`의 hardening·template·traceability 검사를 실행한다.
+   - 아래 `Expected Results`의 hardening·template·traceability 검사를 실행한다.
 6. 카탈로그 확장 운영 기준 반영
    - Airflow DAG quality gate와 worker autoscale 기준을 정책 문서에 반영한다.
    - n8n workflow Git backup/OpenBao credential 기준을 정책 문서에 반영한다.

@@ -87,7 +87,7 @@ open-notebook, mlflow, jupyterlab)의 최적화·하드닝 변경을 재현 가�
 
 ### Symptoms
 
-위 Expected Result가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md)의 절차로 진단한다.
+위 Expected Results가 실패하거나 서비스 동작이 기대와 다르면 증상과 출력 요약을 기록하고 [Runbook](../../runbooks/10-platform-and-backup/0074-laboratory-optimization-hardening.md)의 절차로 진단한다.
 
 #### Runbook Handoff
 

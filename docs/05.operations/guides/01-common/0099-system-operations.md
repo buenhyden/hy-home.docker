@@ -208,7 +208,7 @@ object 저장 경로와 [lakehouse LAB](../15-labs/0094-lakehouse.md)의 기반�
 
 ### Symptoms
 
-여러 서비스가 함께 실패하면 위 Expected Result 표에서 공통 소유자를 찾고, 관찰과 분기는
+여러 서비스가 함께 실패하면 위 Expected Results 표에서 공통 소유자를 찾고, 관찰과 분기는
 [RUN-0099](../../runbooks/01-common/0099-system-operations.md)로 넘긴다.
 
 #### Runbook Handoff

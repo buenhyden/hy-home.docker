@@ -71,7 +71,7 @@ Pact Broker는 `contract-testing`으로 선택되는 OPTIONAL 계약 저장소�
 
 ### Authority
 
-자격 증명은 `pact_broker_basic_auth_password` 시크릿(값은 문서에 적지 않음)이며 클라이언트 환경 변수 `PACT_BROKER_PASSWORD`로 전달한다. 서비스 엔트리포인트가 secret을 프로세스 환경변수로 전달하는 방식은 Environment와 Actions에 적혀 있다.
+자격 증명은 `pact_broker_basic_auth_password` 시크릿(값은 문서에 적지 않음)이며 클라이언트 환경 변수 `PACT_BROKER_PASSWORD`로 전달한다. 서비스 엔트리포인트가 secret을 프로세스 환경변수로 전달하는 방식은 Environment와 Steps에 적혀 있다.
 
 ## Procedure
 
