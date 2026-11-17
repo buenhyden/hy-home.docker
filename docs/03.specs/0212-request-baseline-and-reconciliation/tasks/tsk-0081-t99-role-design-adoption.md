@@ -580,6 +580,8 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Package generation review fix RED | 137 | W147 | role-design-binding | The new generation 8 tests from the review fixes, run by the drafting agent in a scratch clone before the implementation | FAIL | 11 tests, 7 failures and 1 error | required | - |
 | Package generation review fix GREEN | 137 | W147 | role-design-binding | The same tests after the implementation, in the drafting agent's scratch clone; then its 14-module regression | PASS | 12 tests OK; 848 tests OK, exit 0 | required | Package generation review fix RED |
 | Package generation re-review | 137 | W147 | independent-review | Fix range `6d4e1d406..a0cf7b95c` against the package generation review | PASS | APPROVE; all nine findings closed | required | Package generation review |
+| Package generation rebase fixtures | 137 | W147 | role-design-binding | test_template_definition after the rebase on `c3ab1e7c3`, which binds the last pending roles | FAIL | 44 tests: 5 StopIteration errors in the pending-role fixtures and 1 failure because the dictionary test's README role is now bound | required | - |
+| Package generation rebase fixtures GREEN | 137 | W147 | role-design-binding | The same module after the fixture helper returns a bound role to pending in its own Registry copy and the dictionary test uses the vocabulary domain role, at `cac8b54af` | PASS | 44 tests, exit 0; check-changed 8 changed and 0 violations after the templates README rose to 2.11.0 | required | Package generation rebase fixtures |
 
 ### Resolution Links
 
@@ -589,7 +591,7 @@ regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
 Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Policy review approval, Policy re-review approval, Policy hosted candidate
 rerun, Governance form GREEN, Governance regression, Governance old-form GREEN, Governance re-review, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
-rows, References form GREEN and References re-review resolve their W144 rows, Agent instructions form GREEN and Agent instructions re-review resolve their W145 rows, and SDLC forms GREEN, SDLC forms aligned header GREEN, SDLC forms hosted candidate rerun and SDLC forms re-review approval resolve their W146 rows, READMEs re-review, READMEs declaration GREEN and READMEs hosted candidate rerun resolve their W145 README rows, and Package generation re-review and Package generation review fix GREEN resolve their W147 rows.
+rows, References form GREEN and References re-review resolve their W144 rows, Agent instructions form GREEN and Agent instructions re-review resolve their W145 rows, and SDLC forms GREEN, SDLC forms aligned header GREEN, SDLC forms hosted candidate rerun and SDLC forms re-review approval resolve their W146 rows, READMEs re-review, READMEs declaration GREEN and READMEs hosted candidate rerun resolve their W145 README rows, and Package generation re-review, Package generation review fix GREEN and Package generation rebase fixtures GREEN resolve their W147 rows. The comparison baseline stays
 open until every role group conforms.
 
 ## Acceptance Decision
