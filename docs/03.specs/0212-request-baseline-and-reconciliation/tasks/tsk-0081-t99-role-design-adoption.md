@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.7.2"
+version: "0.7.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -365,6 +365,8 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Policy re-review | 137 | W143 | independent-review | Fix range `7e23e2acf` and `83fe20401` against the first review | FAIL | CHANGES_REQUIRED: I1 to I3 and M1 to M3 fixed; twenty Limits line citations point at shifted lines | required | - |
 | Policy review approval | 137 | W143 | independent-review | Fix commits `7e23e2acf`, `83fe20401`, `3bd9a044c` and `a92dec37c` against the first review | PASS | APPROVE at `a92dec37c`; I1 to I3 and M1 to M3 fixed | required | Policy review |
 | Policy re-review approval | 137 | W143 | independent-review | Fix commits `3bd9a044c` and `a92dec37c` against the re-review | PASS | APPROVE at `a92dec37c`; N1, N2 and N4 fixed, N3 left as wording | required | Policy re-review |
+| Policy hosted candidate | 137 | W143 | hosted-candidate | PR 1065 candidate-core at `c38dec7de` | FAIL | `test_production_scripts_do_not_reference_tests_tree` flagged `metadata/lifecycle.py`: a comment from the W03-FORMS change named the fixture path literally; it also failed on main at `bbdca00d1` | required | - |
+| Policy hosted candidate fix | 137 | W143 | hosted-candidate | tests.validation.test_script_manifest after the comment names the tree in words | PASS | Module passed locally, exit 0; the hosted rerun is the next observation | required | Policy hosted candidate |
 
 ### Resolution Links
 
