@@ -15,6 +15,7 @@ cleanup() {
 trap cleanup EXIT HUP INT TERM
 
 mkdir -p "$FAKE_BIN"
+export PRE_COMMIT_HOME="$TMP_ROOT/pre-commit-home"
 
 if [[ ! -x "$WRAPPER" ]]; then
   echo "RED: CI pre-commit wrapper is not implemented: $WRAPPER" >&2
@@ -54,15 +55,15 @@ printf '%s\n' \
   '  grep -q "^  MD013: true$" "$markdown_config"' \
   '  grep -q "^base-side$" interaction.md' \
   '  grep -q "^feature-side$" interaction.md' \
+  '  test "$(grep -o "id: [a-z0-9-]*" "$readonly_config" | tr "\n" " ")" = "${EXPECTED_PR_HOOKS:?}"' \
   'else' \
   '  test "$PWD" != "${EXPECTED_LOCAL_REPO:?}"' \
   '  grep -q "^  MD013: true$" "$markdown_config"' \
   '  test "$(git show :interaction.md)" = "staged-side"' \
   '  test "$(cat interaction.md)" = "staged-side"' \
   'fi' \
-  'test "$(grep -o "id: [a-z0-9-]*" .pre-commit-config.yaml)" = "$(grep -o "id: [a-z0-9-]*" "$readonly_config")"' \
+  'if [[ "$EXPECTED_STYLE_MODE" != "pr-merge" ]]; then test "$(grep -o "id: [a-z0-9-]*" .pre-commit-config.yaml)" = "$(grep -o "id: [a-z0-9-]*" "$readonly_config")"; grep -A8 "id: ruff-format" "$readonly_config" | grep -q -- "--check"; fi' \
   'grep -A8 "id: mixed-line-ending" "$readonly_config" | grep -q -- "--fix=no"' \
-  'grep -A8 "id: ruff-format" "$readonly_config" | grep -q -- "--check"' \
   'grep -A8 "id: markdownlint-cli2" "$readonly_config" | grep -q "$markdown_config"' \
   'grep -q "^fix: false$" "$markdown_config"' \
   'case "${FAKE_PRECOMMIT_MUTATION:-}" in worktree) printf "%s\n" changed >interaction.md ;; index) printf "%s\n" changed >interaction.md; git add interaction.md ;; esac' \
@@ -74,7 +75,20 @@ chmod +x "$FAKE_BIN/pre-commit"
 git init -q -b main "$CANDIDATE_REPO"
 git -C "$CANDIDATE_REPO" config user.name "Diagnostic"
 git -C "$CANDIDATE_REPO" config user.email "diagnostic@example.invalid"
-cp "$REPO_ROOT/.pre-commit-config.yaml" "$CANDIDATE_REPO/.pre-commit-config.yaml"
+# Local hooks keep the pr-merge hook selection offline. Python and shell hooks
+# match no changed file; always_run and commit-msg hooks stay.
+cat >"$CANDIDATE_REPO/.pre-commit-config.yaml" <<'YAML'
+exclude: '^graphify-out/'
+repos:
+  - repo: local
+    hooks:
+      - {id: mixed-line-ending, name: mixed, language: system, entry: 'true', types: [text]}
+      - {id: markdownlint-cli2, name: markdown, language: system, entry: 'true', files: '\.md$'}
+      - {id: ruff-format, name: ruff, language: system, entry: 'true', files: '\.pyi?$'}
+      - {id: shellcheck, name: shell, language: system, entry: 'true', files: '\.sh$'}
+      - {id: always-check, name: always, language: system, entry: 'true', files: '^never$', always_run: true}
+      - {id: commitizen, name: message, language: system, entry: 'true', stages: [commit-msg]}
+YAML
 cp "$REPO_ROOT/.markdownlint-cli2.yaml" "$CANDIDATE_REPO/.markdownlint-cli2.yaml"
 mkdir -p "$CANDIDATE_REPO/scripts"
 cp "$REPO_ROOT/scripts/requirements-pre-commit.txt" \
@@ -96,6 +110,7 @@ printf '%s\n' '# Merge-only resolution' >"$CANDIDATE_REPO/merge-only.md"
 git -C "$CANDIDATE_REPO" add merge-only.md
 git -C "$CANDIDATE_REPO" commit -qm "Merge candidate"
 MERGE_SHA="$(git -C "$CANDIDATE_REPO" rev-parse HEAD)"
+EXPECTED_PR_HOOKS="id: mixed-line-ending id: markdownlint-cli2 id: always-check id: commitizen "
 
 expect_rejected "missing GITHUB_ACTIONS" \
   env CI=true PR_BASE_SHA="$BASE_SHA" PR_HEAD_SHA="$HEAD_SHA" "$WRAPPER" --mode pr-merge
@@ -128,6 +143,42 @@ expect_rejected "TASK_FILE Agent-wrapper variable" \
 expect_rejected "ALLOW_PREFIXES Agent-wrapper variable" \
   env GITHUB_ACTIONS=true CI=true PR_BASE_SHA="$BASE_SHA" PR_HEAD_SHA="$HEAD_SHA" ALLOW_PREFIXES=scripts "$WRAPPER" --mode pr-merge
 
+# Hook selection needs the registered pre-commit module; a different version
+# or a missing module fails closed before any hook runs.
+FAKE_MODULE="$TMP_ROOT/fake-module"
+mkdir -p "$FAKE_MODULE/pre_commit"
+printf '%s\n' "VERSION = '0.0.0'" >"$FAKE_MODULE/pre_commit/constants.py"
+: >"$FAKE_MODULE/pre_commit/__init__.py"
+BROKEN_MODULE="$TMP_ROOT/broken-module"
+mkdir -p "$BROKEN_MODULE/pre_commit"
+: >"$BROKEN_MODULE/pre_commit/__init__.py"
+for module_case in mismatched missing; do
+  rm -f "$CALL_FILE"
+  set +e
+  module_error="$(
+    cd "$CANDIDATE_REPO"
+    if [[ "$module_case" == mismatched ]]; then module_path="$FAKE_MODULE"; else module_path="$BROKEN_MODULE"; fi
+    env \
+      PATH="$FAKE_BIN:$PATH" \
+      PYTHONPATH="$module_path" \
+      PYTHONNOUSERSITE=1 \
+      FAKE_PRECOMMIT_CALL_FILE="$CALL_FILE" \
+      EXPECTED_STYLE_MODE=pr-merge \
+      EXPECTED_PR_HOOKS="$EXPECTED_PR_HOOKS" \
+      EXPECTED_MERGE_SHA="$MERGE_SHA" \
+      GITHUB_ACTIONS=true \
+      CI=true \
+      PR_BASE_SHA="$BASE_SHA" \
+      PR_HEAD_SHA="$HEAD_SHA" \
+      "$WRAPPER" --mode pr-merge 2>&1
+  )"
+  module_exit=$?
+  set -e
+  [[ "$module_exit" -eq 2 ]] || fail "$module_case pre-commit module returned $module_exit"
+  grep -q "pre-commit module" <<<"$module_error" || fail "$module_case pre-commit module was misclassified"
+  [[ ! -e "$CALL_FILE" ]] || fail "$module_case pre-commit module invoked hooks"
+done
+
 rm -f "$CALL_FILE"
 if (
   cd "$CANDIDATE_REPO"
@@ -135,6 +186,7 @@ if (
     PATH="$FAKE_BIN:$PATH" \
     FAKE_PRECOMMIT_CALL_FILE="$CALL_FILE" \
     EXPECTED_STYLE_MODE=pr-merge \
+    EXPECTED_PR_HOOKS="$EXPECTED_PR_HOOKS" \
     EXPECTED_MERGE_SHA="$MERGE_SHA" \
     GITHUB_ACTIONS=true \
     CI=true \
@@ -152,6 +204,7 @@ fi
     PATH="$FAKE_BIN:$PATH" \
     FAKE_PRECOMMIT_CALL_FILE="$CALL_FILE" \
     EXPECTED_STYLE_MODE=pr-merge \
+    EXPECTED_PR_HOOKS="$EXPECTED_PR_HOOKS" \
     EXPECTED_MERGE_SHA="$MERGE_SHA" \
     GITHUB_ACTIONS=true \
     CI=true \
@@ -175,6 +228,7 @@ set +e
     FAKE_PRECOMMIT_CALL_FILE="$CALL_FILE" \
     FAKE_PRECOMMIT_EXIT=37 \
     EXPECTED_STYLE_MODE=pr-merge \
+    EXPECTED_PR_HOOKS="$EXPECTED_PR_HOOKS" \
     EXPECTED_MERGE_SHA="$MERGE_SHA" \
     GITHUB_ACTIONS=true \
     CI=true \
@@ -198,6 +252,8 @@ for case_exit in 0 1; do
       FAKE_PRECOMMIT_MUTATION=worktree \
       FAKE_PRECOMMIT_EXIT="$case_exit" \
       EXPECTED_STYLE_MODE=pr-merge \
+      EXPECTED_PR_HOOKS="$EXPECTED_PR_HOOKS" \
+    EXPECTED_PR_HOOKS="$EXPECTED_PR_HOOKS" \
       EXPECTED_MERGE_SHA="$MERGE_SHA" \
       GITHUB_ACTIONS=true \
       CI=true \
