@@ -758,7 +758,7 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
                             f"status: {state}\nartifact_id: inc-2026-0001-PM\n"
                             "parent_ids: [inc-2026-0001]\ncreated: 2026-08-23\n"
                             "updated: 2026-08-23\nreviewed_at: 2026-08-23\n---\n"
-                            f"## Corrective Actions\n{owner}\n"
+                            f"## Actions\n{owner}\n"
                         )
                     self._track(root, incident.parent)
                     codes = finding_codes(root)
@@ -772,25 +772,23 @@ class OperationsCatalogTopologyTests(unittest.TestCase):
         cases = (
             (
                 "unique-owned",
-                "## Overview\n### Corrective Actions\nGDE-0013\n"
-                "## Corrective Actions\n",
+                "## Overview\n### Actions\nGDE-0013\n## Actions\n",
                 False,
             ),
             (
                 "missing",
-                "## Overview\nIncident summary.\n## Corrective Actions\n",
+                "## Overview\nIncident summary.\n## Actions\n",
                 True,
             ),
             (
                 "ambiguous",
-                "## Overview\n### Corrective Actions\nGDE-0013\n"
-                "### Corrective Actions\nGDE-0012\n## Corrective Actions\n",
+                "## Overview\n### Actions\nGDE-0013\n"
+                "### Actions\nGDE-0012\n## Actions\n",
                 True,
             ),
             (
                 "owner-missing",
-                "## Overview\n### Corrective Actions\nFollow up later.\n"
-                "## Corrective Actions\n",
+                "## Overview\n### Actions\nFollow up later.\n## Actions\n",
                 True,
             ),
         )

@@ -146,7 +146,7 @@ class DocumentRegistryTests(unittest.TestCase):
                 "Evidence",
                 "Criterion Acceptance",
                 "Work Log",
-                "Corrective Actions",
+                "Actions",
             },
             set(forms),
         )

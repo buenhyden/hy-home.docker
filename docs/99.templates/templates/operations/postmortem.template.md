@@ -18,56 +18,40 @@ created: "{{CREATED}}"
 
 # {{TITLE}}
 
-## Summary
+## Facts
 
-### Incident Reference
+### Timeline
 
-{{INCIDENT_REFERENCE}}
+<!-- Author prompt: Name the incident and the reviewed period, then the events with their recorded timestamps. -->
 
-### Review Scope
+{{TIMELINE}}
 
-{{REVIEW_SCOPE}}
+### Impact
 
-## Root Cause
+{{IMPACT}}
 
-### Causal Analysis
-
-{{CAUSAL_ANALYSIS}}
+## Causes
 
 ### Contributing Factors
 
+<!-- Author prompt: Record only verified causes and the conditions that let them act; avoid blame. -->
+
 {{CONTRIBUTING_FACTORS}}
 
-## Impact
+### Uncertainty
 
-### Observed Impact
+{{UNCERTAINTY}}
 
-{{OBSERVED_IMPACT}}
+## Actions
 
-### Detection and Response
+### Prevention
 
-{{DETECTION_AND_RESPONSE}}
+{{PREVENTION}}
 
-## Corrective Actions
+### Owners and Checks
 
-### Actions
+<!-- Author prompt: Each action needs an owner, the condition that completes it and the evidence that checks it; Evidence names a record or `none`. Do not set a completion deadline. -->
 
-<!-- Author prompt: Each action needs an owner, tracking ID and verification; avoid blame. Do not set a completion deadline. -->
-
-| Action | Owner | Tracking ID | Verification |
+| Action | Owner | Condition | Evidence |
 | --- | --- | --- | --- |
-| {{ACTION}} | {{ACTION_OWNER}} | {{TRACKING_ID}} | {{VERIFICATION}} |
-
-### Verification
-
-{{FOLLOW_UP_REVIEW}}
-
-## Evidence
-
-### Source Records
-
-{{SOURCE_RECORDS}}
-
-### Review Decision
-
-{{REVIEW_DECISION}}
+| {{ACTION}} | {{ACTION_OWNER}} | {{CONDITION}} | {{EVIDENCE}} |

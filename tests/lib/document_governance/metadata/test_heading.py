@@ -60,8 +60,8 @@ class CurrentBodyContractTests(unittest.TestCase):
             "governance-prompt-index": "Stage Responsibility|Contents|Workflow|Related Documents",
             "governance-provider-index": "Stage Responsibility|Contents|Workflow|Related Documents",
             "package-readme": "Purpose|Interfaces|Development|Operations",
-            "incident": "Summary|Impact|Timeline|Resolution|Evidence",
-            "postmortem": "Summary|Root Cause|Impact|Corrective Actions|Evidence",
+            "incident": "Impact|Response|Resolution",
+            "postmortem": "Facts|Causes|Actions",
             "governance-policy": "Purpose|Scope|Rules|Exceptions|Ownership",
             "governance-hook-policy": "Purpose|Scope|Rules|Exceptions|Ownership",
             "governance-skill": "Purpose and Trigger|Procedure|Inputs and Outputs|Verification",
@@ -387,6 +387,30 @@ class RegisteredSectionContractTests(unittest.TestCase):
             )
         ]
 
+    def _with_core_tables(self, profile_id: str, body: str) -> str:
+        """Add the header of each table a core-bound role always requires."""
+
+        from scripts.lib.document_governance.template_definition import (
+            template_definition,
+        )
+
+        for role_id, role in self.registry.template_roles.items():
+            if profile_id not in role["profiles"] or not role.get("core_role"):
+                continue
+            spec = template_definition(self.registry, role_id)
+            places = {}
+            for h2 in spec["headings"]:
+                places[h2["section_id"]] = f"## {h2['title']}\n\n"
+                for h3 in h2["children"]:
+                    places[h3["section_id"]] = f"### {h3['title']}\n\n"
+            for table in spec["tables"]:
+                labels = [column["key"] for column in table["columns"]]
+                header = "| " + " | ".join(labels) + " |"
+                rule = "| " + " | ".join("---" for _ in labels) + " |"
+                anchor = places[table["section"]] + "Fixture content."
+                body = body.replace(anchor, f"{anchor}\n\n{header}\n{rule}", 1)
+        return body
+
     def _conforming_body(self, profile_id: str) -> tuple[str, tuple[str, ...]]:
         required = tuple(
             self.registry.profiles[profile_id].get("required_sections", ())
@@ -414,6 +438,7 @@ class RegisteredSectionContractTests(unittest.TestCase):
             )
             + "\n"
         )
+        body = self._with_core_tables(profile_id, body)
         if self.registry.profiles[profile_id].get("language") == "ko":
             # A conforming body also reads in its declared language (SPEC-0184).
             body = body.replace("Fixture content.", "이 절은 예시 본문입니다.")
@@ -2454,10 +2479,10 @@ class RegisteredTableContractTests(unittest.TestCase):
         "governance-vocabulary": ".agents/knowledge/glossary.md",
     }
     HEADERS: ClassVar[dict[str, str]] = {
-        "postmortem": "| Action | Owner | Tracking ID | Verification |",
+        "postmortem": "| Action | Owner | Condition | Evidence |",
         "governance-vocabulary": "| Term | Definition | Not to Confuse | Policy Owner |",
     }
-    ROW = "| @buenhyden | RUN-0050 | "
+    ROW = "| @buenhyden | 완료 | "
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -2503,7 +2528,7 @@ class RegisteredTableContractTests(unittest.TestCase):
 
     def test_a_wrong_column_order_is_rejected(self) -> None:
         swapped = {
-            "postmortem": "| Owner | Action | Tracking ID | Verification |",
+            "postmortem": "| Owner | Action | Condition | Evidence |",
             "governance-vocabulary": "| Definition | Term | Not to Confuse | Policy Owner |",
         }
         for profile_id, header in self.HEADERS.items():
@@ -2511,6 +2536,16 @@ class RegisteredTableContractTests(unittest.TestCase):
                 body = self._mutate(profile_id, header, swapped[profile_id])
                 codes = self._table_codes(profile_id, body)
                 self.assertIn("table-header-invalid", codes)
+
+    def test_a_missing_core_table_is_rejected(self) -> None:
+        body = self._body("postmortem")
+        lines = body.split("\n")
+        start = lines.index(self.HEADERS["postmortem"])
+        end = start
+        while end < len(lines) and lines[end].startswith("|"):
+            end += 1
+        body = "\n".join([*lines[:start], "No action table.", *lines[end:]])
+        self.assertIn("table-missing", self._table_codes("postmortem", body))
 
     def test_a_row_of_the_wrong_width_is_rejected(self) -> None:
         body = self._mutate("postmortem", self.ROW, self.ROW + "extra | ")

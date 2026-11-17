@@ -479,6 +479,7 @@ def _tables(
     headings: list[dict[str, object]],
     headers: list[tuple[str, str | None, str]],
     common: Mapping[str, object],
+    core: Mapping[str, object] | None = None,
 ) -> list[dict[str, object]]:
     ids: dict[tuple[str, str | None], str] = {}
     for heading in headings:
@@ -513,6 +514,36 @@ def _tables(
         section = ids.get((h2, h3)) or ids.get((h2, None))
         if section is None:
             raise RegistryError(f"table under unregistered section: {h2}")
+        if core is not None:
+            # A bound role's columns, types and requiredness are the core's.
+            match = next(
+                (
+                    table
+                    for table in core["tables"]  # type: ignore[union-attr]
+                    if [column["label"] for column in table["columns"]] == cells
+                ),
+                None,
+            )
+            if match is None:
+                raise RegistryError(f"table under {h2} is not in the core role")
+            tables.append(
+                {
+                    "name": str(match["table_id"]),
+                    "section": section,
+                    "columns": [
+                        {
+                            "key": str(column["label"]),
+                            "meaning": str(column["meaning"]),
+                            "data_type": str(column["value_type"]),
+                            "required": bool(column["required"]),
+                        }
+                        for column in match["columns"]
+                    ],
+                    "minimum_rows": 0,
+                    "row_identity": str(match["columns"][0]["label"]),
+                }
+            )
+            continue
         tables.append(
             {
                 "name": name,
@@ -633,7 +664,12 @@ def template_definition(
         "applicability": role["applicability"],
         "metadata": _metadata(source, text, profile, common, root),
         "headings": headings,
-        "tables": _tables(headings, headers, common),
+        "tables": _tables(
+            headings,
+            headers,
+            common,
+            core_role_definition(registry, template_id, root=root),
+        ),
         "relationships": _plain(role["relationships"]),
         "lifecycle": lifecycle,
         "language": str(language)
@@ -843,3 +879,31 @@ def role_design_contract_findings(
             findings.append(("role-design-projection", template_id, str(error)))
             del bindings[template_id]
     return findings + role_design_findings(core_roles, bindings, definitions)
+
+
+@functools.lru_cache(maxsize=4)
+def _pinned_core(root: pathlib.Path, path: str, sha256: str) -> Mapping[str, object]:
+    core, failure = _pinned_json(root, path, sha256)
+    if failure is not None:
+        raise RegistryError(f"{failure[0]}: {failure[1]}")
+    if not isinstance(core, Mapping):
+        raise RegistryError(f"{path} is not a JSON object")
+    return core
+
+
+def core_role_definition(
+    registry: DocumentRegistry, template_id: str, *, root: pathlib.Path = ROOT
+) -> Mapping[str, object] | None:
+    """Return the pinned core role a template role is bound to, if any."""
+
+    name = registry.template_roles[template_id].get("core_role")
+    if not name:
+        return None
+    contract = _entry(registry.common, "role_design_contract", "common")
+    core = _pinned_core(
+        root, str(contract["source_path"]), str(contract["source_sha256"])
+    )
+    for role in core["roles"]:  # type: ignore[union-attr]
+        if role["role"] == name:
+            return role
+    raise RegistryError(f"{template_id} names an unknown core role: {name}")
