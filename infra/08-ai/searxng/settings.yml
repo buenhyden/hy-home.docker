@@ -1,0 +1,27 @@
+# Shared HOME SearXNG (OPS-0110). Mounted read-only at
+# /etc/searxng/settings.yml. The secret key is generated at container start
+# and the /metrics password is filled in from the searxng_metrics_password
+# Docker secret into a tmpfs copy (see the searxng service in
+# docker-compose.yml); neither is stored here.
+use_default_settings: true
+
+general:
+  # Reachable only from search_net, obs_net and host loopback; do not
+  # advertise or phone home.
+  instance_name: home-searxng
+  # Engine statistics for /metrics (OpenMetrics, basic auth). The entrypoint
+  # replaces the empty open_metrics value; an empty value keeps /metrics off.
+  enable_metrics: true
+  open_metrics: ''
+
+search:
+  # Consumers (n8n, host Hermes and other admitted services) call the JSON API;
+  # the stock image serves HTML only.
+  formats:
+    - html
+    - json
+
+server:
+  limiter: false
+  public_instance: false
+  image_proxy: false

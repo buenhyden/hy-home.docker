@@ -127,6 +127,17 @@ scrape_configs:
           namespace: "hy-home"
           domain: "observability"
 
+  - job_name: "searxng"
+    basic_auth:
+      username: "prometheus"
+      password_file: "/run/secrets/searxng_metrics_password"
+    static_configs:
+      - targets: ["searxng:8080"]
+        labels:
+          cluster: "hy-home"
+          namespace: "hy-home"
+          domain: "ai"
+
   - job_name: "gatus"
     metrics_path: /metrics
     static_configs:

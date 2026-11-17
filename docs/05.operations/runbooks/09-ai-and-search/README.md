@@ -1,10 +1,10 @@
 ---
 title: "AI와 검색 런북"
-version: "0.2.0"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 ---
 
@@ -39,6 +39,7 @@ AI와 검색의 상황별 전제, 명령, 기대 결과, 중단 조건, 검증�
 | `0073-open-notebook.md` | 이 런북은 OPTIONAL Open Notebook(`open_notebook`, `surrealdb`, profile `notebook`)의 장애 진단, 백업·격리 복원, 업그레이드 절차를 다룬다. 데이터베이스와 앱 데이터, 암호화 키가 하나의 복구 |
 | `0081-comfyui.md` | 이 런북은 ComfyUI(`comfyui`, profile `ai`/`ai-image`)의 승인 게이트된 진단과 복구, custom-node·이미지 변경 실패 대응, 격리 복원 계획을 다룬다. |
 | `0091-crawl4ai.md` | 이 런북은 OPTIONAL `crawl4ai`(`crawl4ai`, `crawl4ai-egress`, profile `crawl4ai`)의 시작 실패, 토큰 노출, 메모리 압박 대응과 consumer 연결·해제, 제거 절차를 다룬다. |
+| `0110-searxng.md` | 이 런북은 공유 `searxng`(profile `searxng`)의 기동 실패, 소비자의 연결 거부, 빈 검색 결과, 소비자 연결·해제와 제거를 다룬다. |
 
 #### Current Items
 
@@ -51,6 +52,7 @@ AI와 검색의 상황별 전제, 명령, 기대 결과, 중단 조건, 검증�
 | [Open Notebook Recovery Runbook](0073-open-notebook.md) | `RUN-0073` | 이 런북은 OPTIONAL Open Notebook(`open_notebook`, `surrealdb`, profile `notebook`)의 장애 진단, 백업·격리 복원, 업그레이드 절차를 다룬다. 데이터베이스와 앱 데이터, 암호화 키가 하나의 복구 |
 | [ComfyUI Runbook](0081-comfyui.md) | `RUN-0081` | 이 런북은 ComfyUI(`comfyui`, profile `ai`/`ai-image`)의 승인 게이트된 진단과 복구, custom-node·이미지 변경 실패 대응, 격리 복원 계획을 다룬다. |
 | [Crawl4AI Recovery Runbook](0091-crawl4ai.md) | `RUN-0091` | 이 런북은 OPTIONAL `crawl4ai`(`crawl4ai`, `crawl4ai-egress`, profile `crawl4ai`)의 시작 실패, 토큰 노출, 메모리 압박 대응과 consumer 연결·해제, 제거 절차를 다룬다. |
+| [SearXNG Recovery Runbook](0110-searxng.md) | `RUN-0110` | 이 런북은 공유 `searxng`(profile `searxng`)의 기동 실패, 소비자의 연결 거부, 빈 검색 결과, 소비자 연결·해제와 제거를 다룬다. |
 
 #### Classification
 

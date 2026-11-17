@@ -1,10 +1,10 @@
 ---
 title: "Grafana 시각화와 대시보드"
-version: "1.6.0"
+version: "1.7.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 created: "2026-01-12"
 ---
 
@@ -170,7 +170,6 @@ grafana/
 | 07-workflow | `n8n-sandbox-api` | none | `Infrastructure/containers` | container metrics and logs only; the service's own metrics are off |
 | 07-workflow | `n8n-sandbox-certs` | none | `Infrastructure/containers` | one-shot job; logs only |
 | 07-workflow | `n8n-sandbox-runner-1` | none | `Infrastructure/containers` | container metrics and logs only; inner sandbox containers are not scraped |
-| 07-workflow | `searxng` | none | `Infrastructure/containers` | container metrics and logs only; SearXNG's own metrics are off |
 | 08-ai | `comfyui` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `crawl4ai` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `crawl4ai-egress` | none | `Infrastructure/containers` | container metrics and logs only; egress decisions in its log |
@@ -197,6 +196,7 @@ grafana/
 | 08-ai | `mlflow-db-provision` | none | `Infrastructure/containers` | container metrics and logs only |
 | 08-ai | `open_notebook` | none | `Infrastructure/containers` | container metrics and logs only |
 | 04-data | `redisinsight` | none | `Infrastructure/containers` | container metrics and logs only |
+| 08-ai | `searxng` | Prometheus job `searxng` (`/metrics`, basic auth) | `Infrastructure/containers` | engine statistics from SearXNG OpenMetrics, container metrics and logs |
 | 08-ai | `surrealdb` | none | `Infrastructure/containers` | container metrics and logs only |
 
 독립 LAB의 `lab-locust-master`와 `lab-locust-worker`는 이 root 관측 범위에 포함하지 않으며, 위 표는 `hy-home-infra`만 유지한다.
