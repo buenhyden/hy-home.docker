@@ -1318,7 +1318,7 @@ def collect_records_at_ref(
     if result.returncode != 0:
         raise ProfileError(f"cannot enumerate Markdown records at base ref: {base_ref}")
     # The same selector as the working tree, so a registered path outside the
-    # fixed roots (labs/, tests/fixtures/, scripts/README.md) is compared too.
+    # fixed roots (labs/, the test fixture tree, scripts/README.md) is compared too.
     paths = sorted(
         {
             path
