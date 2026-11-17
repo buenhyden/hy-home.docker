@@ -1187,6 +1187,21 @@ class CiGateAdapterTests(unittest.TestCase):
                     branch_warning.search(f"git switch -c {change_type}/topic")
                 )
         self.assertIsNotNone(commit_warning.search('git commit -m "unknown: Subject"'))
+        # Only the first message flag is the subject; later -m flags are body
+        # paragraphs, and combined short flags such as -am also carry it.
+        for command in (
+            'git commit -m "docs: Subject" -m "Body paragraph."',
+            'git commit -q -am "fix(ci): Subject" -m "Body paragraph."',
+            "git commit -am 'feat(api): Subject'",
+        ):
+            with self.subTest(hook="commit", command=command):
+                self.assertIsNone(commit_warning.search(command))
+        for command in (
+            'git commit -m "unknown: Subject" -m "docs: Body paragraph."',
+            'git commit -q -am "unknown: Subject"',
+        ):
+            with self.subTest(hook="commit", command=command):
+                self.assertIsNotNone(commit_warning.search(command))
         self.assertIsNotNone(branch_warning.search("git switch -c unknown/topic"))
 
     def test_check_commit_range_fails_closed_for_invalid_commit_contract(self) -> None:
