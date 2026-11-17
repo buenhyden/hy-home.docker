@@ -1,10 +1,10 @@
 ---
 title: "Document Lifecycle Governance Architecture"
-version: "3.0.8"
+version: "3.1.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "AD-0030"
 parent_ids:
@@ -14,9 +14,17 @@ created: "2026-09-01"
 
 # Document Lifecycle Governance Architecture
 
-## Overview
+## Context and Boundaries
 
-### Purpose and Readers
+### System Boundary
+
+Inside the boundary are the Stage 99 Registry, current stage trees, and
+registered document validators. Stage 98 holds only its README. Git provides
+removed bodies and historical approval context. CI chooses trusted comparison
+snapshots but does not grant retirement authority. Runtime systems, secret
+access, and remote integration remain separately authorized actions.
+
+#### Purpose and Readers
 
 The Registry defines document shape and retired numbers; current stage owners
 retain durable meaning, Tasks record actual execution, and version history is the
@@ -28,17 +36,7 @@ reassessed, and may be removed from the working tree. This Description explains
 which components read which authority and what their checks establish.
 Maintainers and agents use the same contracts before claiming completion.
 
-### System Boundary
-
-Inside the boundary are the Stage 99 Registry, current stage trees, and
-registered document validators. Stage 98 holds only its README. Git provides
-removed bodies and historical approval context. CI chooses trusted comparison
-snapshots but does not grant retirement authority. Runtime systems, secret
-access, and remote integration remain separately authorized actions.
-
-## Context and Constraints
-
-### Context
+#### Context
 
 Maintainers and agents read the Stage 99 Registry, current stage trees and registered validators. CI chooses trusted comparison snapshots, and Git supplies removed bodies and historical approval context.
 
@@ -46,7 +44,7 @@ Maintainers and agents read the Stage 99 Registry, current stage trees and regis
 
 Runtime systems, secret access and remote integration remain separately authorized actions. Validators are read-only, fail closed on unsafe traversal or an invalid Registry, and keep Git reads, enumeration and file data within resource limits.
 
-## Current Structure
+## Structure
 
 ### Building Blocks
 
@@ -72,7 +70,22 @@ Runtime systems, secret access and remote integration remain separately authoriz
   these judgments through gate profiles. `metadata/heading.py` enforces the
   Registry's section contracts so authored declarations and checks agree.
 
-### Runtime and Deployment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Stage 99 Registry contract | [Stage 99 Registry](../../99.templates/registry.json) loaded by `scripts/lib/document_governance/registry.py` | Document validators and `metadata/heading.py` | [Stage 99 Registry](../../99.templates/registry.json) | A missing, symlinked, unreadable or invalid Registry yields findings. |
+| Metadata, document-link and corpus-lifecycle gate entrypoints | Registered validators in `scripts/manifest.yaml` | `scripts/validation/run-ci-gate.py` and maintainers and agents | `scripts/manifest.yaml` | Unsafe traversal yields findings; exceeding a resource limit is a diagnostic. |
+| Git comparison base | Git (`HEAD` locally, trusted base supplied by CI) | `spec_packages.py` and `identity_history.py` | The description links no contract for this interface. | A missing source object or insufficient history prevents recovering a removed body, and the checker reports that limit. |
+| Task approval references | Current Task approval headings | The cancellation reader | [Approval Boundaries](../../../.agents/governance/approval-boundaries.md#authorization-source-and-records) | Unresolved required approval references and unsupported source labels yield findings. |
+
+- The Registry is the machine authority for profile shape, lifecycles, identity spaces and each space's `reserved_history`.
+- Metadata, document-link and corpus-lifecycle entrypoints expose the judgments through gate profiles registered in `scripts/manifest.yaml` and selected by `scripts/validation/run-ci-gate.py`.
+- `metadata/heading.py` enforces the Registry's section contracts.
+
+## Runtime Behavior
+
+### Normal Flow
 
 #### Runtime View
 
@@ -104,7 +117,7 @@ trusted approval is resolved through
 [Approval Boundaries](../../../.agents/governance/approval-boundaries.md#authorization-source-and-records).
 
 Retirement summarizes the removed record's still-current substance into its
-Stage 01 or Stage 02 owner's Traceability and deletes the original in the same
+Stage 01 or Stage 02 owner's lineage section and deletes the original in the same
 change. The Registry `reserved_history` gains its number and never loses one.
 Current documents do not link into Stage 98 or name a retired identity in a
 typed reference.
@@ -118,15 +131,7 @@ worktree, index, target commit, or historical source context. These read-only
 checks do not write documents or operate services. Full gate or remote runs
 retain their own authorization and execution evidence requirements.
 
-## Interfaces
-
-### Contracts
-
-- The Registry is the machine authority for profile shape, lifecycles, identity spaces and each space's `reserved_history`.
-- Metadata, document-link and corpus-lifecycle entrypoints expose the judgments through gate profiles registered in `scripts/manifest.yaml` and selected by `scripts/validation/run-ci-gate.py`.
-- `metadata/heading.py` enforces the Registry's section contracts.
-
-### Failure Boundaries
+### Failure and Recovery
 
 Unsafe traversal, unresolved required approval references, unsupported source
 labels, and a missing, symlinked, unreadable or invalid Registry yield findings.
@@ -134,16 +139,9 @@ Exceeding a resource limit is a diagnostic. A missing source object or
 insufficient history prevents recovering a removed body, and the checker
 reports that limit.
 
-## Decisions
+## Quality Scenarios
 
-### Decision Links
-
-- [ADR-0037 Package waiting and Task cancellation](../decisions/0037-package-disposition-wait-and-task-cancellation.md)
-- [ADR-0051 Summarize-and-delete retirement](../decisions/0051-summarize-and-delete-retirement.md)
-- [ADR-0032 Canonical agent governance home](../decisions/0032-canonical-agent-governance-home.md)
-- [ADR-0048 Authority parents and criterion acceptance](../decisions/0048-authority-parents-and-criterion-acceptance.md)
-
-### Quality and Risks
+### Scenarios
 
 #### Quality Attributes
 
@@ -178,13 +176,38 @@ reports that limit.
 - Deleting a document does not erase Git history, clones, caches, or forks.
   Security response remains a separate workflow.
 
-## Traceability
+### Trade-offs
 
-### Requirement Mapping
+- Retirement summarizes and deletes instead of keeping copies, so version
+  history is the only record of removed bodies; a missing source object or
+  insufficient history prevents recovery and remains an explicit limit, never
+  a reason to keep a copy in Stage 98 (Runtime View, Risks).
+- Git reads, enumeration and file data are bounded; exceeding a limit is a
+  diagnostic, never an automatic retention action (Quality Attributes).
+- Metadata `check-changed` judges only introduced violations, so a
+  changed-only pass does not prove corpus-wide cleanup (Risks).
+- Eight tier and optimization-hardening Description pairs stay unconsolidated
+  because their unique content prevents resolving them through simple
+  retirement (Risks).
+- Deleting a document does not erase Git history, clones, caches or forks;
+  security response remains a separate workflow (Risks).
+
+## Decisions and Adoption
+
+### Decisions
+
+- [ADR-0037 Package waiting and Task cancellation](../decisions/0037-package-disposition-wait-and-task-cancellation.md)
+- [ADR-0051 Summarize-and-delete retirement](../decisions/0051-summarize-and-delete-retirement.md)
+- [ADR-0032 Canonical agent governance home](../decisions/0032-canonical-agent-governance-home.md)
+- [ADR-0048 Authority parents and criterion acceptance](../decisions/0048-authority-parents-and-criterion-acceptance.md)
+
+### Adoption Boundaries
+
+#### Requirement Mapping
 
 - [REQ-0026 Document retention and retirement](../../01.requirements/0026-document-retention-and-retirement.md)
 
-### Currentness and Lineage
+#### Currentness and Lineage
 
 - ADR-0030, ADR-0031, ADR-0033, ADR-0035 and ADR-0036 were retired; their numbers are reserved and version history holds their bodies.
 - SPEC-0257 and SPEC-0261 (retired; version history) delivered the second implementation-alignment corrections of paths, links, Registry exceptions and secret names, and the REQ-0027 approval with the promotion of its dependent documents.

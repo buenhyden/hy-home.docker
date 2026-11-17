@@ -1,10 +1,10 @@
 ---
 title: "Analytics Services Requirements"
-version: "1.5.1"
+version: "1.6.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-17"
 layer: "requirements"
 artifact_id: "REQ-0005"
 created: "2026-03-26"
@@ -68,6 +68,13 @@ tier. A LAB reaches a HOME service only through an approved endpoint input.
 
 ## Requirements
 
+| Requirement ID | Statement | Rationale | Acceptance | Priority |
+| --- | --- | --- | --- | --- |
+| REQ-0005-FR-0001 | Provide a dedicated write and query interface for time-series data. | The platform needs time-series history; a home automation user queries a year of sensor history from a dashboard. | InfluxDB is retired (ADR-0047, SPEC-0213) and nothing current deploys it; time-series history uses DEV TimescaleDB tables, and a hypertable is created only for a named consumer. | must |
+| REQ-0005-FR-0003 | Provide full-text search over collected logs. | The platform needs full-text log search; an SRE searches logs within seconds. | OpenSearch is documented as the single node the data tier declares, starts only with its optional profile and keeps its secrets, data and health check boundary; a three-node topology exists only as a LAB, and latency is claimed only with separate benchmark evidence. | must |
+| REQ-0005-FR-0005 | Write events to an Iceberg table via SQL-based stream processing, resuming from the last checkpoint after a failure. | The platform needs SQL stream processing into shared tables; a data engineer processes Kafka events with SQL into a table. | Flink writes to an Iceberg table by batch and by checkpointed streaming INSERT and resumes from its checkpoint; this passed live acceptance on 2026-09-24 (SPEC-0180), and the lakehouse LAB form has static rendering evidence only. | must |
+| REQ-0005-FR-0006 | Provide interactive SQL queries against Iceberg tables. | The platform needs interactive SQL over shared tables; a data scientist derives trends with SQL queries against them. | Trino reads the table Flink wrote and the data quality suite passes through Trino, which passed live acceptance on 2026-09-24 before the move to the lakehouse LAB; interactive latency is claimed only with separate benchmark evidence. | must |
+
 ### Functional Requirements
 
 - **REQ-0005-FR-0001**: Provide a dedicated write and query interface for time-series data.
@@ -79,9 +86,20 @@ FR numbers 0002 (ksqlDB stream processing) and 0004 (StarRocks OLAP) were
 retired with those engines and are not reused; 0005 and 0006 restate the same
 needs without naming an engine.
 
-## Acceptance Criteria
+### Quality Requirements
 
-### Acceptance Conditions
+This package declares no quality requirement and records no reason why none applies.
+
+## Traceability
+
+### Sources
+
+This package records the owner's requirements for data analytics; no upstream
+document governs it.
+
+### Verification Links
+
+#### Acceptance Conditions
 
 - **REQ-0005-FR-0001**: InfluxDB is retired (ADR-0047, SPEC-0213) and nothing
   current deploys it. Time-series history uses DEV TimescaleDB tables; a
@@ -100,18 +118,11 @@ needs without naming an engine.
   the move to the lakehouse LAB. Interactive latency is claimed only with
   separate benchmark evidence.
 
-### Verification Method
+#### Verification Method
 
 Each condition is judged by reviewing the documented engine boundaries and the acceptance evidence the condition names; latency is claimed only from separate benchmark evidence. SPEC-0212 and SPEC-0262 cite REQ-0005, with SPEC-0262 covering the lakehouse LAB; their Task evidence rows record the review and any benchmark. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
 
-## Traceability
-
-### Source and Constraints
-
-This package records the owner's requirements for data analytics; no upstream
-document governs it.
-
-### Downstream Links
+#### Downstream Links
 
 - **Architecture Description**: [0012-data-analytics-architecture.md](../02.architecture/descriptions/0012-data-analytics-architecture.md)
 - **Spec**: [SPEC-0262 analytics LAB migration](../03.specs/0262-analytics-labs-migration/spec.md); SPEC-0180 (lakehouse adoption and the removal of ksqlDB and StarRocks) is retired and its body is in version history.

@@ -1,10 +1,10 @@
 ---
 title: "Operational Readiness Closure Requirements"
-version: "1.3.1"
+version: "1.4.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "requirements"
 artifact_id: "REQ-0025"
 created: "2026-07-19"
@@ -51,6 +51,33 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 ## Requirements
 
+| Requirement ID | Statement | Rationale | Acceptance | Priority |
+| --- | --- | --- | --- | --- |
+| REQ-0025-FR-0001 | The approved core service set must start under a unique Compose project and provide bounded readiness and teardown results. | Static documents and Compose rendering alone cannot prove startup and readiness behavior, so it is reproduced in a locally isolated environment. | The core readiness rehearsal starts the approved core set under a unique Compose project and verifies readiness, timeout and cleanup boundaries. | must |
+| REQ-0025-FR-0002 | The runtime rehearsal must use synthetic configuration and task-owned network/volume/project identity. | The operator needs a guarantee that the rehearsal does not change another Docker project or real data. | The rehearsal's inputs are synthetic, and its Compose project, networks and volumes carry task-owned identities. | must |
+| REQ-0025-FR-0004 | SBOM, vulnerability verdict, provenance, and signature verification for the repository sample web service must be bound to the same image digest and reject tampering and identity mismatch. | The security reviewer must confirm that supply-chain verdicts are bound to the same image digest. | SBOM, vulnerability, provenance and signature verification for the sample web service produce digest-bound positive verdicts and reject tampering and identity mismatch. | must |
+| REQ-0025-FR-0005 | Supply-chain tools must use the version and container image identity declared by the repository and must not require a host-global install. | This package records no rationale for this requirement. | The supply-chain checks run with the tool version and container image the repository declares, with no host-global install of those tools. | must |
+| REQ-0025-FR-0006 | Network-dependent security observations must be marked advisory, and deterministic local policy and fixtures must own the CI verdict. | This package records no rationale for this requirement. | Network-dependent security observations are reported as advisory, and the CI verdict comes from local policy and fixtures only. | must |
+| REQ-0025-FR-0007 | The delivery rehearsal must deploy only a verified digest as canary and promote to the local stable target only after it passes the health gate. | Static documents and Compose rendering alone cannot prove promotion behavior, and the release reviewer must reproduce that a failed canary is not promoted. | The delivery rehearsal deploys only a verified digest as canary and promotes it only after the health gate passes. | must |
+| REQ-0025-FR-0008 | On failure after canary or promotion, roll back to the previous verified digest and confirm post-rollback health. | The release reviewer must reproduce that a failed canary is rolled back to the previous digest. | An injected failure after canary or promotion rolls back to the previous verified digest, and post-rollback health is confirmed. | must |
+| REQ-0025-FR-0009 | Execution results must be recorded in the active Spec Package's current Task with command, scope, result, cleanup, and review, and must match the lifecycle state. | The requirement records the actually verified scope without overstatement. | The current Task records command, scope, result, cleanup and review for each run, and its lifecycle state matches those results. | must |
+| REQ-0025-FR-0010 | Raw runtime output must stay only in ignored or process-local temporary storage; durable evidence must contain only a secret-scrubbed summary and immutable subject identity. | This package records no rationale for this requirement. | Task evidence contains no raw runtime logs; durable evidence holds only a secret-scrubbed summary and the immutable subject identity. | must |
+| REQ-0025-NFR-0011 | Every resource must be identified by a task-owned identity, and cleanup must apply only to that resource; measure: every cleanup targets only task-owned identities. | The operator needs a guarantee that the rehearsal does not change another Docker project or real data. | Every cleanup targets only task-owned identities. | must |
+| REQ-0025-NFR-0012 | Secrets, private keys, tokens, raw auth logs, and production data must not be stored in tracked evidence; measure: tracked evidence contains no secret value. | This package records no rationale for this requirement. | Tracked evidence contains no secret value. | must |
+| REQ-0025-NFR-0013 | A blocking gate must reproduce the same pass/fail result without network access, using versioned inputs and fixtures; measure: repeated offline runs give identical verdicts. | This package records no rationale for this requirement. | Repeated offline runs of a blocking gate give identical verdicts. | must |
+| REQ-0025-NFR-0014 | Target ambiguity, digest or integrity mismatch, and cleanup failure must not be treated as success or skip; measure: each listed condition yields a failure exit. | This package records no rationale for this requirement. | Target ambiguity, digest or integrity mismatch, and cleanup failure each yield a failure exit. | must |
+| REQ-0025-NFR-0015 | Traceability must be maintained between this Requirement, AD-0028, ADR-0028, the implementation scripts, the Operations procedure, and current Task results; measure: every link in the chain resolves. | This package records no rationale for this requirement. | Every link from this Requirement through AD-0028, ADR-0028, the implementation scripts, the Operations procedure and the current Task results resolves. | must |
+| REQ-0025-NFR-0016 | Local rehearsal success must not be overstated as production readiness, full-profile coverage, live recovery, or remote release completion; measure: Task evidence names the verified scope only. | The maintainer must distinguish implemented readiness behavior from unapproved remote operations, and the requirement records the verified scope without overstatement. | Task evidence names only the scope actually verified, and claims no production readiness, full-profile coverage, live recovery or remote release completion beyond it. | must |
+
+| Requirement ID | Attribute | Measure | Unit | Environment | Criterion |
+| --- | --- | --- | --- | --- | --- |
+| REQ-0025-NFR-0011 | Isolation | Every cleanup targets only task-owned identities. | The package records no unit for this measure. | The package records no measurement environment. | Every cleanup targets only task-owned identities. |
+| REQ-0025-NFR-0012 | Security | Tracked evidence contains no secret value. | The package records no unit for this measure. | The package records no measurement environment. | Tracked evidence contains no secret value. |
+| REQ-0025-NFR-0013 | Determinism | Repeated offline runs give identical verdicts. | The package records no unit for this measure. | Offline runs without network access, using versioned inputs and fixtures. | Repeated offline runs of a blocking gate give identical verdicts. |
+| REQ-0025-NFR-0014 | Fail closed | Each listed condition yields a failure exit. | The package records no unit for this measure. | The package records no measurement environment. | Target ambiguity, digest or integrity mismatch, and cleanup failure each yield a failure exit. |
+| REQ-0025-NFR-0015 | Traceability | Every link in the chain resolves. | The package records no unit for this measure. | The package records no measurement environment. | Every link from this Requirement through AD-0028, ADR-0028, the implementation scripts, the Operations procedure and the current Task results resolves. |
+| REQ-0025-NFR-0016 | Honest scope | Task evidence names the verified scope only. | The package records no unit for this measure. | The package records no measurement environment. | Task evidence names only the scope actually verified, with no claim beyond it. |
+
 ### Functional Requirements
 
 - **REQ-0025-FR-0001**: The approved core service set must start under a
@@ -96,9 +123,16 @@ The owner, @buenhyden, writes, reviews and accepts this package.
   overstated as production readiness, full-profile coverage, live recovery,
   or remote release completion; measure: Task evidence names the verified scope only.
 
-## Acceptance Criteria
+## Traceability
 
-### Acceptance Conditions
+### Sources
+
+This package records the owner's requirements for operational readiness closure; no upstream
+document governs it.
+
+### Verification Links
+
+#### Acceptance Conditions
 
 - **REQ-0025-FR-0001**: The core readiness rehearsal starts the approved core
   set under a unique Compose project and verifies readiness, timeout and
@@ -136,7 +170,7 @@ The owner, @buenhyden, writes, reviews and accepts this package.
   and claims no production readiness, full-profile coverage, live recovery or
   remote release completion beyond it.
 
-### Verification Method
+#### Verification Method
 
 Select registered checks that exercise the condition and follow the execution
 scope in [Quality Standards](../../.agents/governance/quality-standards.md#4-execution-boundary).
@@ -148,14 +182,7 @@ for the work it actually verifies. The owner named in the frontmatter,
 @buenhyden, judges each condition from that evidence and accepts the
 requirement once every condition is met.
 
-## Traceability
-
-### Source and Constraints
-
-This package records the owner's requirements for operational readiness closure; no upstream
-document governs it.
-
-### Downstream Links
+#### Downstream Links
 
 - **Architecture Description**: [AD-0028 Operational Readiness Closure](../02.architecture/descriptions/0028-operational-readiness-closure.md)
 - **Implementation**: `scripts/operations/check-compose-core-readiness.sh`,

@@ -1,10 +1,10 @@
 ---
 title: "Native OIDC for Open WebUI and the Airflow UI"
-version: "0.2.2"
+version: "0.3.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0059"
 parent_ids:
@@ -38,11 +38,47 @@ its state in the `open-webui` volume at `/app/backend/data`, and no
 - Keycloak stays the single identity provider.
 - Services without their own authentication keep ForwardAuth.
 
+#### Sources
+
+Evidence is the current repository configuration; no runtime state is
+claimed.
+
+- [REQ-0013 Open WebUI](../../01.requirements/0013-ai-open-webui.md)
+- [AD-0013 Open WebUI architecture](../descriptions/0013-open-webui-architecture.md)
+- [AD-0022 Workflow hardening](../descriptions/0022-workflow-optimization-hardening-architecture.md)
+- [AD-0023 AI hardening](../descriptions/0023-ai-optimization-hardening-architecture.md)
+- [ADR-0007 Airflow and n8n hybrid workflow](0007-airflow-n8n-hybrid-workflow.md)
+- [ADR-0008 Ollama and Open WebUI local AI](0008-ollama-openwebui-local-ai.md)
+- [ADR-0038 Selective native OIDC](0038-selective-native-oidc-for-native-auth-apps.md)
+
 ### Decision Scope
 
 This decision covers the router authentication of the Open WebUI, Airflow,
 Flower, n8n and Ollama endpoints, and the 07-workflow and 08-ai hardening items
 listed below. Services without their own authentication keep ForwardAuth.
+
+## Options
+
+### Considered Options
+
+- Keep ForwardAuth on Open WebUI and Airflow as well as their OIDC: rejected;
+  double sign-in and header conflicts (ADR-0038).
+- Native OIDC only, without ForwardAuth, for every workflow and AI UI:
+  rejected; Flower, n8n and Ollama have no Keycloak OIDC of their own here.
+- Native OIDC without ForwardAuth for Open WebUI and the Airflow web UI, SSO
+  ForwardAuth for the rest: selected.
+
+### Trade-offs
+
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| Keep ForwardAuth on Open WebUI and Airflow as well as their OIDC | The ADR records no benefit for this option. | Double sign-in and header conflicts on the `Authorization` header. | Rejected; double sign-in and header conflicts (ADR-0038). |
+| Native OIDC only, without ForwardAuth, for every workflow and AI UI | The ADR records no benefit for this option. | Flower, n8n and Ollama have no Keycloak OIDC of their own here. | Rejected; Flower, n8n and Ollama have no Keycloak OIDC of their own here. |
+| Native OIDC without ForwardAuth for Open WebUI and the Airflow web UI, SSO ForwardAuth for the rest | One sign-in for Open WebUI and Airflow with no header conflict, and application RBAC is used as designed. | The gateway no longer blocks unauthenticated requests to these two UIs, so the application's login is the only authentication boundary; the concurrency ceilings can limit short-term throughput. | Selected; it applies ADR-0038, keeps Keycloak as the single identity provider, and keeps ForwardAuth for services without their own authentication (n8n later left ForwardAuth by the 2026-11-09 amendment). |
+
+- Negative: the gateway no longer blocks unauthenticated requests to these two
+  UIs; the application's login is the only authentication boundary.
+- Negative: the concurrency ceilings can limit short-term throughput.
 
 ## Decision
 
@@ -80,61 +116,7 @@ Decided by the owner, @buenhyden; status `accepted`. No separate approval
 record is linked. Effective from 2026-11-06. On 2026-11-09 the owner directed
 an in-place amendment: n8n leaves ForwardAuth and keeps only its own login.
 
-## Alternatives
-
-### Considered Options
-
-- Keep ForwardAuth on Open WebUI and Airflow as well as their OIDC: rejected;
-  double sign-in and header conflicts (ADR-0038).
-- Native OIDC only, without ForwardAuth, for every workflow and AI UI:
-  rejected; Flower, n8n and Ollama have no Keycloak OIDC of their own here.
-- Native OIDC without ForwardAuth for Open WebUI and the Airflow web UI, SSO
-  ForwardAuth for the rest: selected.
-
-### Trade-offs
-
-- Negative: the gateway no longer blocks unauthenticated requests to these two
-  UIs; the application's login is the only authentication boundary.
-- Negative: the concurrency ceilings can limit short-term throughput.
-
-## Consequences
-
-### Impacts
-
-- Positive: one sign-in for Open WebUI and Airflow, and no header conflict.
-- Positive: application RBAC (Airflow Keycloak Authorization Services, Open
-  WebUI roles) is used as designed.
-
-### Follow-up
-
-On 2026-11-09 the owner directed an in-place amendment: n8n leaves ForwardAuth
-and keeps only its own login. The Context and Decision item 3 state this.
-
-Confirm in AD-0013 that the Open WebUI store is the application default in its
-volume.
-
-#### Compliance
-
-`scripts/hardening/check-all-hardening.sh` checks the router middleware labels
-for 07-workflow and 08-ai. OIDC client secrets are injected as Docker Secrets
-(ADR-0038 guardrails).
-
-## Traceability
-
-### Sources
-
-Evidence is the current repository configuration; no runtime state is
-claimed.
-
-- [REQ-0013 Open WebUI](../../01.requirements/0013-ai-open-webui.md)
-- [AD-0013 Open WebUI architecture](../descriptions/0013-open-webui-architecture.md)
-- [AD-0022 Workflow hardening](../descriptions/0022-workflow-optimization-hardening-architecture.md)
-- [AD-0023 AI hardening](../descriptions/0023-ai-optimization-hardening-architecture.md)
-- [ADR-0007 Airflow and n8n hybrid workflow](0007-airflow-n8n-hybrid-workflow.md)
-- [ADR-0008 Ollama and Open WebUI local AI](0008-ollama-openwebui-local-ai.md)
-- [ADR-0038 Selective native OIDC](0038-selective-native-oidc-for-native-auth-apps.md)
-
-### Supersession
+#### Supersession
 
 This record replaces three accepted ADRs, deleted in the same change
 (ADR-0051); all three are historical and non-authoritative.
@@ -165,3 +147,30 @@ This record replaces three accepted ADRs, deleted in the same change
 
 Each rejected "everything at once" and "documentation only" alternative in
 ADR-0022 and ADR-0023 stays rejected.
+
+## Consequences
+
+### Impacts
+
+- Positive: one sign-in for Open WebUI and Airflow, and no header conflict.
+- Positive: application RBAC (Airflow Keycloak Authorization Services, Open
+  WebUI roles) is used as designed.
+
+### Follow-up
+
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
+On 2026-11-09 the owner directed an in-place amendment: n8n leaves ForwardAuth
+and keeps only its own login. The Context and Decision item 3 state this.
+
+Confirm in AD-0013 that the Open WebUI store is the application default in its
+volume.
+
+#### Compliance
+
+`scripts/hardening/check-all-hardening.sh` checks the router middleware labels
+for 07-workflow and 08-ai. OIDC client secrets are injected as Docker Secrets
+(ADR-0038 guardrails).

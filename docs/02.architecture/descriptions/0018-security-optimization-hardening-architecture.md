@@ -1,10 +1,10 @@
 ---
 title: "Security Optimization and Hardening Architecture"
-version: "1.1.6"
+version: "1.2.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "AD-0018"
 parent_ids:
@@ -14,14 +14,7 @@ created: "2026-03-28"
 
 # Security Optimization and Hardening Architecture
 
-## Overview
-
-### Purpose and Readers
-
-This document describes the OpenBao and OpenBao Agent boundary implemented in
-`infra/03-security/`. The maintainer, service owner, and operator must clearly
-separate ownership of the source secret, the rendered output, health, and the
-recovery procedure.
+## Context and Boundaries
 
 ### System Boundary
 
@@ -33,9 +26,14 @@ recovery procedure.
 - Per-application configuration parsing and external KMS/HSM operation are
   outside this architecture.
 
-## Context and Constraints
+#### Purpose and Readers
 
-### Context
+This document describes the OpenBao and OpenBao Agent boundary implemented in
+`infra/03-security/`. The maintainer, service owner, and operator must clearly
+separate ownership of the source secret, the rendered output, health, and the
+recovery procedure.
+
+#### Context
 
 Traefik provides the external boundary, and OpenBao Agent provides minimum-scope rendered output to consuming services.
 
@@ -45,7 +43,7 @@ Plaintext secrets and placeholder paths are rejected and least privilege is kept
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
 
-## Current Structure
+## Structure
 
 ### Building Blocks
 
@@ -55,7 +53,20 @@ template files, and a persistent volume. Traefik provides the external
 boundary, and OpenBao Agent provides only minimum-scope output to consuming
 services.
 
-### Runtime and Deployment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| AppRole authentication and token sink | The description names no producer for this interface. | OpenBao Agent | Token state at `/openbao/agent/token` | The description records no failure handling for this interface. |
+| Rendered output | OpenBao Agent | Consuming services | `/openbao/out/<service>/`, bind-mounted from `${DEFAULT_SECURITY_DIR}/openbao/out` | The description records no failure handling for this interface. |
+| External TLS termination and routing | Traefik (gateway) | The description names no consumer for this interface. | The description links no contract for this interface. | The description records no failure handling for this interface. |
+
+- OpenBao Agent authenticates with AppRole and keeps token state at `/openbao/agent/token`.
+- Rendered output is published under `/openbao/out/<service>/`, bind-mounted from `${DEFAULT_SECURITY_DIR}/openbao/out`, for consuming services.
+
+## Runtime Behavior
+
+### Normal Flow
 
 #### Runtime View
 
@@ -73,24 +84,13 @@ configuration. Raft 3-node, auto-unseal, and a remote audit sink
 are not the current implementation, and are not treated as the current
 topology without a separately approved Requirement and ADR.
 
-## Interfaces
-
-### Contracts
-
-- OpenBao Agent authenticates with AppRole and keeps token state at `/openbao/agent/token`.
-- Rendered output is published under `/openbao/out/<service>/`, bind-mounted from `${DEFAULT_SECURITY_DIR}/openbao/out`, for consuming services.
-
-### Failure Boundaries
+### Failure and Recovery
 
 Healthchecks, persistent data and an explicit recovery procedure keep reliability; health and rendering results must be checkable without exposing the secret value. The recovery procedure is owned by the linked [OpenBao runbook](../../05.operations/runbooks/04-security-and-secrets/0085-openbao.md).
 
-## Decisions
+## Quality Scenarios
 
-### Decision Links
-
-- [ADR-0050](../decisions/0050-openbao-as-secrets-manager.md), which supersedes ADR-0018
-
-### Quality and Risks
+### Scenarios
 
 #### Quality Attributes
 
@@ -103,13 +103,30 @@ Healthchecks, persistent data and an explicit recovery procedure keep reliabilit
 - **Operability**: configuration, the Operations procedure, and validation
   results must describe the same current topology.
 
-## Traceability
+### Trade-offs
 
-### Requirement Mapping
+- The current HOME deployment is a single Docker Compose-based OpenBao and
+  OpenBao Agent structure; Raft 3-node, auto-unseal and a remote audit sink are
+  not the current implementation and are not treated as the current topology
+  without a separately approved Requirement and ADR (Constraints, Deployment
+  View).
+- The source secret and the rendered output keep separate access boundaries,
+  and the Agent provides only minimum-scope output to consuming services
+  (Constraints, Building Blocks).
+
+## Decisions and Adoption
+
+### Decisions
+
+- [ADR-0050](../decisions/0050-openbao-as-secrets-manager.md), which supersedes ADR-0018
+
+### Adoption Boundaries
+
+#### Requirement Mapping
 
 - [REQ-0003](../../01.requirements/0003-security.md)
 
-### Currentness and Lineage
+#### Currentness and Lineage
 
 - [AD-0003 Security architecture](0003-security-architecture.md)
 

@@ -26,6 +26,13 @@ MAX_REQUIREMENT_BYTES = 512 * 1024
 MAX_REQUIREMENT_ITEMS = 2048
 _PACKAGE_PATH = re.compile(r"(?P<number>[0-9]{4})-[a-z0-9][a-z0-9-]*\.md")
 _SECTION = re.compile(r"(?ms)^## (?P<name>[^\n]+)\n(?P<body>.*?)(?=^## |\Z)")
+_REQUIREMENTS_TABLE_LABELS = (
+    "Requirement ID",
+    "Statement",
+    "Rationale",
+    "Acceptance",
+    "Priority",
+)
 _LIST_DECLARATION = re.compile(
     r"^[ \t]*[-*+]\s+\*\*(?P<identity>REQ-[0-9]{4}-(?:FR|NFR|IF)-[0-9]{4})"
     r"(?:\s+—\s+[^*]+)?\*\*:\s*(?P<text>.*)$"
@@ -736,7 +743,49 @@ def parse_requirement_package(
         pathlib.PurePosixPath(path.as_posix()), expected_artifact, status, items
     )
     _validate_complete_allocation(package, active_registry)
+    _validate_requirements_table(text, items)
     return package
+
+
+def _validate_requirements_table(text: str, items: tuple[RequirementItem, ...]) -> None:
+    """The core requirements table under ## Requirements lists each declaration once."""
+
+    section = next(
+        (
+            match
+            for match in _SECTION.finditer(text)
+            if match.group("name") == "Requirements"
+        ),
+        None,
+    )
+    if section is None:
+        return
+    lines = [line.strip() for line in section.group("body").splitlines()]
+    cells = [
+        tuple(cell.strip() for cell in line.strip("|").split("|"))
+        if line.startswith("|")
+        else ()
+        for line in lines
+    ]
+    if _REQUIREMENTS_TABLE_LABELS not in cells:
+        return
+    listed = []
+    for row in cells[cells.index(_REQUIREMENTS_TABLE_LABELS) + 2 :]:
+        if not row:
+            break
+        listed.append(row[0])
+    declared = [item.identity for item in items]
+    if sorted(listed) != sorted(declared):
+        missing = sorted(set(declared) - set(listed))
+        extra = sorted(set(listed) - set(declared))
+        repeated = sorted(
+            {identity for identity in listed if listed.count(identity) > 1}
+        )
+        raise RequirementPackageError(
+            "requirements table does not match the declarations: "
+            f"missing {', '.join(missing) or '-'}; extra {', '.join(extra) or '-'}; "
+            f"repeated {', '.join(repeated) or '-'}"
+        )
 
 
 def _root_reserved_requirements(stage_root: pathlib.Path) -> tuple[int, ...]:

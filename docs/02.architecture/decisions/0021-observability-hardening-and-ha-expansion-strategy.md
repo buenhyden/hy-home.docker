@@ -1,10 +1,10 @@
 ---
 title: "Observability Hardening and HA Expansion Strategy"
-version: "1.0.4"
+version: "1.1.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0021"
 parent_ids:
@@ -21,6 +21,15 @@ This document records the decision to first apply immediately applicable hardeni
 
 The observability layer provides many management paths, and failures can spread easily if the security chain is missing, startup order is unstable, or runtime hardening is insufficient. Layer-specific verification automation is needed to block operational regressions at the PR stage.
 
+#### Sources
+
+The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked below, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
+
+- **PRD**: [../01.requirements/0007-observability.md](../../01.requirements/0007-observability.md)
+- **Architecture Description**: [AD-0021 06-Observability Optimization Hardening Architecture Description](../descriptions/0021-observability-optimization-hardening-architecture.md)
+- **Tier Architecture Description**: [AD-0006 Observability Architecture Description](../descriptions/0006-observability-architecture.md)
+- **Related ADR**: [ADR-0053](0053-observability-storage-on-seaweedfs.md)
+
 ### Decision Scope
 
 Explicit non-goals:
@@ -28,24 +37,7 @@ Explicit non-goals:
 - Immediately switching to a multi-region observability cluster
 - A wholesale overhaul of application code instrumentation logic
 
-## Decision
-
-### Chosen Option
-
-- Perform immediate hardening.
-  - Apply `gateway-standard-chain@file` plus `sso-errors@file,sso-auth@file` to the observability public router.
-  - Raise the Loki/Tempo dependency for Alloy/Grafana to `service_healthy`.
-  - Add a cAdvisor healthcheck.
-  - Specify non-root execution/secret guard for the Loki/Tempo custom images.
-  - Introduce `check-all-hardening.sh 06-observability` and the CI `infrastructure-hardening` job.
-  - Create the PRD-through-Runbook document set to secure bidirectional traceability.
-- Introduce catalog expansion (sampling/long-term retention/modularization) in phases through a policy approval procedure.
-
-### Authority and Effect
-
-Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked. Effective from 2026-03-28.
-
-## Alternatives
+## Options
 
 ### Considered Options
 
@@ -65,7 +57,30 @@ Decided by the owner, @buenhyden; status `accepted`. No separate approval record
 
 ### Trade-offs
 
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| Implement all catalog expansion immediately | Short-term functional expansion effect. | Increased change scope raises failure isolation and rollback difficulty. | Not chosen because the increased change scope raises failure isolation and rollback difficulty. |
+| Update documentation only, keep runtime/CI unchanged | Reduces short-term implementation burden. | Lacks the ability to actually block regressions. | Not chosen because it lacks the ability to actually block regressions. |
+| Immediate hardening with phased catalog expansion through a policy approval procedure | Strengthens the management path security boundary, improves startup stability and regression detection, and strengthens the single contract across documents, configuration and CI. | Some automated access may need adjustment due to strengthened SSO, and short-term visible effect is centered on hardening. | Failures spread easily when the security chain, startup order or runtime hardening is weak, and layer-specific verification automation is needed to block regressions at the PR stage. |
+
 Immediate full catalog expansion was not chosen because the increased change scope raises failure isolation and rollback difficulty. Documentation-only was not chosen because it lacks the ability to actually block regressions.
+
+## Decision
+
+### Chosen Option
+
+- Perform immediate hardening.
+  - Apply `gateway-standard-chain@file` plus `sso-errors@file,sso-auth@file` to the observability public router.
+  - Raise the Loki/Tempo dependency for Alloy/Grafana to `service_healthy`.
+  - Add a cAdvisor healthcheck.
+  - Specify non-root execution/secret guard for the Loki/Tempo custom images.
+  - Introduce `check-all-hardening.sh 06-observability` and the CI `infrastructure-hardening` job.
+  - Create the PRD-through-Runbook document set to secure bidirectional traceability.
+- Introduce catalog expansion (sampling/long-term retention/modularization) in phases through a policy approval procedure.
+
+### Authority and Effect
+
+Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked. Effective from 2026-03-28.
 
 ## Consequences
 
@@ -86,15 +101,9 @@ Immediate full catalog expansion was not chosen because the increased change sco
 
 ### Follow-up
 
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
 Catalog expansion (sampling/long-term retention/modularization) follows in phases through a policy approval procedure, as decided above.
-
-## Traceability
-
-### Sources
-
-The verification basis for this decision is limited to the Architecture Description, Spec, and Operations documents linked below, and the current repository configuration. It does not claim any runtime state without separate execution evidence.
-
-- **PRD**: [../01.requirements/0007-observability.md](../../01.requirements/0007-observability.md)
-- **Architecture Description**: [AD-0021 06-Observability Optimization Hardening Architecture Description](../descriptions/0021-observability-optimization-hardening-architecture.md)
-- **Tier Architecture Description**: [AD-0006 Observability Architecture Description](../descriptions/0006-observability-architecture.md)
-- **Related ADR**: [ADR-0053](0053-observability-storage-on-seaweedfs.md)

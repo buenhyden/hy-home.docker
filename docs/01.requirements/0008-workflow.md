@@ -1,10 +1,10 @@
 ---
 title: "Workflow Tier (07-workflow) Requirements"
-version: "1.2.1"
+version: "1.3.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-17"
 layer: "requirements"
 artifact_id: "REQ-0008"
 created: "2026-03-26"
@@ -64,6 +64,14 @@ The core PostgreSQL in `04-data` and the observability tier are available.
 
 ## Requirements
 
+| Requirement ID | Statement | Rationale | Acceptance | Priority |
+| --- | --- | --- | --- | --- |
+| REQ-0008-FR-0001 | Support pipeline definitions written in Python code (Airflow). | A data engineer defines and schedules ETL pipelines in Python; scattered script-based tasks are hard to monitor. | Airflow loads pipeline definitions from its tracked pipeline source and renders with the workflow profile. | must |
+| REQ-0008-FR-0002 | Support scaling workers for distributed task execution. | Data engineering jobs and simple API integrations must run, scale and be observed in one place. | Airflow uses a distributed executor with separate scheduler and worker services, and n8n runs in queue mode with a separate worker. | must |
+| REQ-0008-FR-0003 | Support GUI-based low-code automation with prebuilt integration nodes for external services (n8n). | There is no standard place to control integration work between systems; a backend developer quickly builds a system automation or third-party integration. | n8n renders with its task runners and is reachable through the gateway. | must |
+| REQ-0008-FR-0004 | Provide monitoring of workflow execution status and logs. | Scattered script-based tasks are hard to monitor. | Airflow exports execution metrics to the observability tier, and both engines keep execution history and logs on persistent storage. | must |
+| REQ-0008-FR-0005 | Provide an API through which agents control workflows. | An agent runs a predefined workflow, for example a recovery workflow when a failure is detected. | Both engines expose an authenticated HTTP API for triggering and querying workflows. | must |
+
 ### Functional Requirements
 
 - **REQ-0008-FR-0001**: Support pipeline definitions written in Python code (Airflow).
@@ -72,9 +80,20 @@ The core PostgreSQL in `04-data` and the observability tier are available.
 - **REQ-0008-FR-0004**: Provide monitoring of workflow execution status and logs.
 - **REQ-0008-FR-0005**: Provide an API through which agents control workflows.
 
-## Acceptance Criteria
+### Quality Requirements
 
-### Acceptance Conditions
+This package declares no quality requirement and records no reason why none applies.
+
+## Traceability
+
+### Sources
+
+This package records the owner's requirements for the workflow tier; no upstream
+document governs it.
+
+### Verification Links
+
+#### Acceptance Conditions
 
 - **REQ-0008-FR-0001**: Airflow loads pipeline definitions from its tracked
   pipeline source and renders with the workflow profile.
@@ -89,18 +108,11 @@ The core PostgreSQL in `04-data` and the observability tier are available.
 - **REQ-0008-FR-0005**: Both engines expose an authenticated HTTP API for
   triggering and querying workflows.
 
-### Verification Method
+#### Verification Method
 
 Rendered-configuration conditions (REQ-0008-FR-0001, REQ-0008-FR-0002, the task-runner rendering in REQ-0008-FR-0003 and the storage and metrics parts of REQ-0008-FR-0004) are judged by reviewing the rendered workflow configuration. Reachability through the gateway (REQ-0008-FR-0003) and the authenticated API (REQ-0008-FR-0005) are judged by runtime observations: a request through the gateway route and an unauthenticated and an authenticated API request. No current Spec Package cites REQ-0008; a Spec that implements it records the review result and the runtime observations in its Task evidence rows. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
 
-## Traceability
-
-### Source and Constraints
-
-This package records the owner's requirements for the workflow tier; no upstream
-document governs it.
-
-### Downstream Links
+#### Downstream Links
 
 - **Architecture Description**: [0007-workflow-architecture.md](../02.architecture/descriptions/0007-workflow-architecture.md)
 - **Guide**: [airflow.md](../05.operations/guides/08-workflows-and-automation/0050-airflow.md), [n8n.md](../05.operations/guides/08-workflows-and-automation/0053-n8n.md)

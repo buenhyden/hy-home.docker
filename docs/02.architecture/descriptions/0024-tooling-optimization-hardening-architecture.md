@@ -1,10 +1,10 @@
 ---
 title: "Platform Operations and Quality Optimization Hardening Architecture Description"
-version: "2.2.2"
+version: "2.3.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "AD-0024"
 parent_ids:
@@ -14,16 +14,7 @@ created: "2026-03-28"
 
 # Platform Operations and Quality Optimization Hardening Architecture Description
 
-## Overview
-
-### Purpose and Readers
-
-This Description records the hardening structure of the `09-platform-ops` and
-`11-quality` tiers: the gateway and SSO boundary of their management routes,
-their network membership, test-tool runtime stability and the hardening gate.
-These are control-plane services for platform operational quality. Requirement
-owners, implementers and operators share these concerns; the tier structure
-itself is in [AD-0009](0009-tooling-architecture.md).
+## Context and Boundaries
 
 ### System Boundary
 
@@ -38,9 +29,16 @@ itself is in [AD-0009](0009-tooling-architecture.md).
 - **Non-goals**: a multi-cluster toolchain and adopting a replacement
   toolchain.
 
-## Context and Constraints
+#### Purpose and Readers
 
-### Context
+This Description records the hardening structure of the `09-platform-ops` and
+`11-quality` tiers: the gateway and SSO boundary of their management routes,
+their network membership, test-tool runtime stability and the hardening gate.
+These are control-plane services for platform operational quality. Requirement
+owners, implementers and operators share these concerns; the tier structure
+itself is in [AD-0009](0009-tooling-architecture.md).
+
+#### Context
 
 The Description consumes the `01-gateway` middleware chain, the `02-auth` SSO middleware, and `04-data` management PostgreSQL, Valkey and SeaweedFS. Traefik `websecure` routes the Terrakube and Mailpit UIs, and Keycloak serves them through the SSO middleware.
 
@@ -48,7 +46,7 @@ The Description consumes the `01-gateway` middleware chain, the `02-auth` SSO mi
 
 Every routed tooling UI passes the gateway chain and SSO, and the registry stays loopback-only. The tooling tiers own operational tool metadata and execution policy, not application data, and the hardening checks are static, so they prove no running service.
 
-## Current Structure
+## Structure
 
 ### Building Blocks
 
@@ -68,7 +66,24 @@ Every routed tooling UI passes the gateway chain and SSO, and the registry stays
 - **Shared dependencies**: management PostgreSQL and Valkey on `mng_data_net`,
   SeaweedFS on `object_net`, and Keycloak through the SSO middleware.
 
-### Runtime and Deployment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Terrakube API, UI and executor routes (Traefik `websecure`) | Terrakube | The description names no consumer for this interface. | `gateway-standard-chain`, `sso-errors` and `sso-auth` (`infra/09-platform-ops/terrakube/docker-compose.yml:65,101,183`) | The description records no failure handling for this interface. |
+| Mailpit UI route (Traefik `websecure`) | Mailpit | The description names no consumer for this interface. | `gateway-standard-chain`, `sso-errors` and `sso-auth` (`infra/11-quality/mailpit/docker-compose.yml:53`) | The description records no failure handling for this interface. |
+| Registry loopback publication | Image registry | The description names no consumer for this interface. | `infra/09-platform-ops/registry/docker-compose.yml:29` | The description records no failure handling for this interface. |
+| Management PostgreSQL and Valkey on `mng_data_net` | `04-data` management PostgreSQL and Valkey | The `09-platform-ops` and `11-quality` tooling; Terrakube keeps metadata in management PostgreSQL | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| SeaweedFS on `object_net` | `04-data` SeaweedFS | Terrakube | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| SSO middleware | `02-auth` SSO middleware and Keycloak | Routed tooling UIs | The description links no contract for this interface. | The description records no failure handling for this interface. |
+
+- Traefik `websecure` routes the Terrakube API, UI and executor and the Mailpit UI through `gateway-standard-chain`, `sso-errors` and `sso-auth`, per the Ingress item in Building Blocks.
+- The registry has no Traefik route and publishes only on loopback.
+- Management PostgreSQL and Valkey are reached on `mng_data_net`, SeaweedFS on `object_net`.
+
+## Runtime Behavior
+
+### Normal Flow
 
 #### Runtime View
 
@@ -89,25 +104,13 @@ Every routed tooling UI passes the gateway chain and SSO, and the registry stays
   rendering runs only when runtime evidence is approved. These are static
   checks; they prove no running service.
 
-## Interfaces
-
-### Contracts
-
-- Traefik `websecure` routes the Terrakube API, UI and executor and the Mailpit UI through `gateway-standard-chain`, `sso-errors` and `sso-auth`, per the Ingress item in Building Blocks.
-- The registry has no Traefik route and publishes only on loopback.
-- Management PostgreSQL and Valkey are reached on `mng_data_net`, SeaweedFS on `object_net`.
-
-### Failure Boundaries
+### Failure and Recovery
 
 Healthchecks and the Compose contract order startup. Job-style tools without a peer share the project default network, which is their trust boundary, and the registry's loopback publication is acceptable only while the host is trusted. Change and recovery follow the guide, policy and runbook linked under Currentness and Lineage.
 
-## Decisions
+## Quality Scenarios
 
-### Decision Links
-
-- **ADR**: [ADR-0062](../decisions/0062-home-lab-membership.md)
-
-### Quality and Risks
+### Scenarios
 
 #### Quality Attributes
 
@@ -125,13 +128,30 @@ Healthchecks and the Compose contract order startup. Job-style tools without a p
 - Job-style tools share the project default network when they have no peer, so
   that network is their trust boundary.
 
-## Traceability
+### Trade-offs
 
-### Requirement Mapping
+- The registry publishes only on loopback instead of through the gateway;
+  this host exposure outside the gateway is acceptable only while the host
+  itself is trusted (Risks).
+- Job-style tools without a peer share the project default network, so that
+  network is their trust boundary (Risks).
+- The hardening checks are static and prove no running service; root-context
+  Compose rendering runs only when runtime evidence is approved (Constraints,
+  Deployment View).
+
+## Decisions and Adoption
+
+### Decisions
+
+- **ADR**: [ADR-0062](../decisions/0062-home-lab-membership.md)
+
+### Adoption Boundaries
+
+#### Requirement Mapping
 
 - **PRD**: [REQ-0010](../../01.requirements/0010-tooling.md)
 
-### Currentness and Lineage
+#### Currentness and Lineage
 
 - **Tier Architecture Description**: [AD-0009 Platform Operations and Software Verification Architecture Description](0009-tooling-architecture.md)
 - **Guide**: [Tooling optimization hardening guide](../../05.operations/guides/10-platform-and-backup/0063-tooling-optimization-hardening.md)

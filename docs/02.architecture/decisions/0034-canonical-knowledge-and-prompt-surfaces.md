@@ -1,10 +1,10 @@
 ---
 title: "Canonical Knowledge and Prompt Surfaces"
-version: "0.1.3"
+version: "0.2.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0034"
 parent_ids:
@@ -54,9 +54,57 @@ in tracked text.
 - A new category must not become a place to duplicate policy, design, or
   runbook bodies.
 
+#### Sources
+
+- **Requirement**: [REQ-0024 Agent Governance Standardization](../../01.requirements/0024-agent-governance-standardization.md)
+- **Architecture**: [AD-0027 Agent Governance Canonical Adapter](../descriptions/0027-agent-governance-canonical-adapter.md)
+- **Implementation**: SPEC-0175 Governance Knowledge and Prompt Surface
+- **Governance entry**: [canonical agent governance](../../../.agents/README.md)
+- **Prior decision**: [ADR-0032 Canonical Agent Governance Home](0032-canonical-agent-governance-home.md)
+
 ### Decision Scope
 
 The decision covers two new canonical categories under `.agents/`, `knowledge/` and `prompts/`. It leaves out execution state, which stays in the current Spec Package Task, and the consolidation of the Stage 90 curated repository map, which is decided separately. Affected consumers are the agent governance contract, the Stage 99 profiles and templates, and the readers of both providers.
+
+## Options
+
+### Considered Options
+
+**Option A — Add `knowledge/` and `prompts/` as canonical categories.**
+Both become registered roots under `.agents/` with their own Stage 99
+profiles, templates, lifecycle mapping, and contract inventory entries.
+`knowledge/` holds routing and vocabulary that points at canonical owners.
+`prompts/` holds input/output contracts that point at skills for procedure.
+Cost: four new Stage 99 profiles, two templates, and a contract change.
+
+**Option B — Put both under `.agents/governance/`.**
+Reuses the existing `governance-policy` profile with no contract change.
+Rejected: it makes navigational summaries and prompt envelopes read as
+normative policy, which is exactly the second-authority failure the current
+policy set is built to prevent.
+
+**Option C — Put knowledge in Stage 90 and prompts in `.agents/skills/`.**
+Reuses existing owners with no new category. Rejected: Stage 90 is
+explicitly non-normative dated evidence with a research/audit/data lifecycle,
+so a living routing map does not fit its freshness model; and a skill's
+registered sections are `Preconditions`/`Procedure`/`Gates`, which forces a
+prompt contract to be written as a procedure it is not.
+
+**Option D — Do nothing.**
+Rejected: the routing knowledge and prompt contracts continue to be
+reconstructed per session, and the agency-agents capability-intake decision
+boundary stays without a current owner.
+
+### Trade-offs
+
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| Option A — Add `knowledge/` and `prompts/` as canonical categories | An agent resolves surface ownership and vocabulary from one registered file, and handoff, review, commit messaging and test authoring gain stable contracts readable by either provider. | Four new Stage 99 profiles, two templates and a contract change; the root inventory grows from three to five, with a named risk of drift into a second authority. | Adopted; both categories are registered the same way as the existing three and fail closed through the same machinery. |
+| Option B — Put both under `.agents/governance/` | Reuses the existing `governance-policy` profile with no contract change. | Makes navigational summaries and prompt envelopes read as normative policy. | Rejected because it is the second-authority failure the current policy set is built to prevent. |
+| Option C — Put knowledge in Stage 90 and prompts in `.agents/skills/` | Reuses existing owners with no new category. | A living routing map does not fit the Stage 90 freshness model, and skill sections force a prompt contract to be written as a procedure. | Rejected because Stage 90 is non-normative dated evidence and a skill's `Preconditions`/`Procedure`/`Gates` sections do not fit a prompt contract. |
+| Option D — Do nothing | The ADR records no benefit for this option. | Routing knowledge and prompt contracts continue to be reconstructed per session, and the capability-intake decision boundary stays without a current owner. | Rejected because routing knowledge and prompt contracts would keep being reconstructed per session. |
+
+Option A costs four new Stage 99 profiles, two templates, and a contract change. Option B was not chosen because it makes routing summaries and prompt envelopes read as normative policy. Option C was not chosen because a living routing map does not fit the Stage 90 freshness model and a prompt contract does not fit a skill's `Preconditions`/`Procedure`/`Gates` sections. Option D was not chosen because the routing knowledge and prompt contracts would keep being reconstructed per session.
 
 ## Decision
 
@@ -91,39 +139,6 @@ pins.
 
 Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked; the transition from `proposed` to `accepted` is recorded under Follow-up. Effective from 2026-09-06.
 
-## Alternatives
-
-### Considered Options
-
-**Option A — Add `knowledge/` and `prompts/` as canonical categories.**
-Both become registered roots under `.agents/` with their own Stage 99
-profiles, templates, lifecycle mapping, and contract inventory entries.
-`knowledge/` holds routing and vocabulary that points at canonical owners.
-`prompts/` holds input/output contracts that point at skills for procedure.
-Cost: four new Stage 99 profiles, two templates, and a contract change.
-
-**Option B — Put both under `.agents/governance/`.**
-Reuses the existing `governance-policy` profile with no contract change.
-Rejected: it makes navigational summaries and prompt envelopes read as
-normative policy, which is exactly the second-authority failure the current
-policy set is built to prevent.
-
-**Option C — Put knowledge in Stage 90 and prompts in `.agents/skills/`.**
-Reuses existing owners with no new category. Rejected: Stage 90 is
-explicitly non-normative dated evidence with a research/audit/data lifecycle,
-so a living routing map does not fit its freshness model; and a skill's
-registered sections are `Preconditions`/`Procedure`/`Gates`, which forces a
-prompt contract to be written as a procedure it is not.
-
-**Option D — Do nothing.**
-Rejected: the routing knowledge and prompt contracts continue to be
-reconstructed per session, and the agency-agents capability-intake decision
-boundary stays without a current owner.
-
-### Trade-offs
-
-Option A costs four new Stage 99 profiles, two templates, and a contract change. Option B was not chosen because it makes routing summaries and prompt envelopes read as normative policy. Option C was not chosen because a living routing map does not fit the Stage 90 freshness model and a prompt contract does not fit a skill's `Preconditions`/`Procedure`/`Gates` sections. Option D was not chosen because the routing knowledge and prompt contracts would keep being reconstructed per session.
-
 ## Consequences
 
 ### Impacts
@@ -152,6 +167,11 @@ profiles are unchanged. No provider gains a permission, tool, or model it did
 not have. Discovery of a new canonical file grants no approval.
 
 ### Follow-up
+
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
 
 #### Compliance
 
@@ -182,13 +202,3 @@ or remote branch protection.
 - Restore a current owner for the external capability-intake decision boundary
   that [RES-0002-m0003](../../90.references/research/0002-agentic-engineering-research-pack/m0003-ai-agent-catalogs.md)
   describes but the current Provider Registry no longer carries.
-
-## Traceability
-
-### Sources
-
-- **Requirement**: [REQ-0024 Agent Governance Standardization](../../01.requirements/0024-agent-governance-standardization.md)
-- **Architecture**: [AD-0027 Agent Governance Canonical Adapter](../descriptions/0027-agent-governance-canonical-adapter.md)
-- **Implementation**: SPEC-0175 Governance Knowledge and Prompt Surface
-- **Governance entry**: [canonical agent governance](../../../.agents/README.md)
-- **Prior decision**: [ADR-0032 Canonical Agent Governance Home](0032-canonical-agent-governance-home.md)

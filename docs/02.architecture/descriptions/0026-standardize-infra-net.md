@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "1.10.1"
+version: "1.11.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "AD-0026"
 parent_ids:
@@ -14,15 +14,7 @@ created: "2026-04-01"
 
 # Compose Network Segmentation Architecture Description
 
-## Overview
-
-### Purpose and Readers
-
-The Compose services once shared one bridge network, `infra_net`, so every
-container could reach every other one. SPEC-0180 S05 replaced that mesh with
-networks that each carry one kind of flow. Maintainers and operators need to
-know which network owns a flow, who declares membership, and what still holds a
-fixed address.
+## Context and Boundaries
 
 ### System Boundary
 
@@ -38,9 +30,15 @@ fixed address.
   architecture's ownership. No service joins `k3d-hyhome`; the owner removed
   the k3d integration on 2026-09-23. This removes shared-bridge membership, not the separately approved Kubernetes LAN endpoints governed by POL-0096.
 
-## Context and Constraints
+#### Purpose and Readers
 
-### Context
+The Compose services once shared one bridge network, `infra_net`, so every
+container could reach every other one. SPEC-0180 S05 replaced that mesh with
+networks that each carry one kind of flow. Maintainers and operators need to
+know which network owns a flow, who declares membership, and what still holds a
+fixed address.
+
+#### Context
 
 Traefik routes gateway traffic to backends over `edge_net` and the per-backend ingress networks, and Prometheus and Alloy scrape targets over `obs_net` and the consumer-only metrics networks. Restic offsite traffic leaves for Cloudflare R2, and the Crawl4AI and n8n egress networks reach public addresses.
 
@@ -48,7 +46,7 @@ Traefik routes gateway traffic to backends over `edge_net` and the per-backend i
 
 Fixed addresses are the exception and each has a stated reason; a service joins a segmented network only for a peer it uses. Duplicate or out-of-subnet static addresses fail validation, and runtime inspection is allowed only in an approved environment.
 
-## Current Structure
+## Structure
 
 ### Building Blocks
 
@@ -110,7 +108,28 @@ network. WireMock also uses it until a named consumer exists;
 that network is then its trust boundary, and the consumer gets a scoped network. `restic`, `backup-sqlite-export` and Conftest keep
 `network_mode: none`, and `node-exporter` uses `network_mode: host`; only `restic-offsite` has egress. Registry joins `obs_net` for its metrics scrape; its loopback host publication remains separately declared. Mailpit uses `mailpit_ingress_net` for its routed UI and `mail_net` for SMTP. LABs, including Stalwart, declare their own networks in their standalone projects.
 
-### Runtime and Deployment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Gateway to backend over `edge_net` and per-backend ingress networks | Routed backends | Traefik | SPEC-0266 and ADR-0061 for the per-backend `<service>_ingress_net` networks | The description records no failure handling for this interface. |
+| Metrics scrape over `obs_net` and consumer-only metrics networks | Scrape targets and fixed `.2` metrics listeners | Prometheus and Alloy | SPEC-0267 for the consumer-only metrics networks | The description records no failure handling for this interface. |
+| Authenticated Alloy OTLP receiver 4319 on `quality_otlp_net` | Alloy | Per-run k6 metrics relays attached by `metrics_relay.py` | SPEC-0214 | The description records no failure handling for this interface. |
+| Docker internal DNS discovery | Docker internal DNS | Services | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| Restic offsite egress on `restic_offsite_net` | `restic-offsite` | Cloudflare R2 | ADR-0056 | The description records no failure handling for this interface. |
+| Crawl4AI public egress on `crawl4ai_outbound_net` | `crawl4ai-egress` | Public addresses on ports 80/443 | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| SearXNG public search on `n8n_search_outbound_net` | `searxng` | Public search engines | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| n8n sandbox internet egress on `n8n_sandbox_outbound_net` | `n8n-sandbox-runner-1` and its sandboxes | Internet | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| ComfyUI download egress on `comfyui_egress_net` | ComfyUI with `docker-compose.egress.yml` attached | The description names no consumer for this interface. | SPEC-0268 | The description records no failure handling for this interface. |
+| Crawl4AI loopback forwarder `127.0.0.1:11235` | `crawl4ai-loopback` | The description names no consumer for this interface. | The description links no contract for this interface. | The description records no failure handling for this interface. |
+
+- Each network in the Networks table names its subnet, members and flow.
+- Services resolve names through Docker DNS and use static addresses only where tracked Compose declares them.
+- A multi-homed server listens on `0.0.0.0`, and a listener without its own authentication binds only to its fixed `.2` address.
+
+## Runtime Behavior
+
+### Normal Flow
 
 #### Runtime View
 
@@ -144,26 +163,13 @@ verification uses `scripts/validation/validate-docker-compose.sh`, the
 environment and compares `docker network inspect` output with the tracked
 Compose configuration.
 
-## Interfaces
-
-### Contracts
-
-- Each network in the Networks table names its subnet, members and flow.
-- Services resolve names through Docker DNS and use static addresses only where tracked Compose declares them.
-- A multi-homed server listens on `0.0.0.0`, and a listener without its own authentication binds only to its fixed `.2` address.
-
-### Failure Boundaries
+### Failure and Recovery
 
 Internal and isolated networks keep a flow from reaching any other member, and a listener without its own authentication binds only to its consumer-only network. A network named here but absent from the root definition, or a member list that drifts from the leaf Compose files, misleads allocation; the leaf files win.
 
-## Decisions
+## Quality Scenarios
 
-### Decision Links
-
-- [ADR-0055 Segmented per-flow networks](../decisions/0055-segmented-per-flow-networks.md)
-- [ADR-0062 current HOME and LAB membership](../decisions/0062-home-lab-membership.md)
-
-### Quality and Risks
+### Scenarios
 
 #### Quality Attributes
 
@@ -181,13 +187,42 @@ Internal and isolated networks keep a flow from reaching any other member, and a
   that drifts from the leaf Compose files, misleads allocation; the leaf files
   win.
 
-## Traceability
+### Trade-offs
 
-### Requirement Mapping
+- Replacing the shared `infra_net` mesh with per-flow networks isolates each
+  flow, at the cost of explicit membership: a service joins a segmented
+  network only for a peer it actually uses, and new allocation must update the
+  owning Compose file and this view together (Purpose and Readers, Runtime
+  View).
+- Fixed addresses are kept as stated exceptions; every other service takes a
+  dynamic address, and each /24 reserves a dynamic range above the fixed
+  addresses (Constraints, Quality Attributes).
+- A listener without its own authentication binds only to its fixed `.2`
+  address on a consumer-only internal network instead of `0.0.0.0`
+  (Runtime View).
+- Services with no container peer and WireMock use the project default
+  network, which is then their trust boundary until a named consumer exists
+  (Building Blocks, Evolution).
+- `n8n_search_outbound_net` has no destination or port limit, and the n8n
+  sandbox outbound network relies on the runner's built-in egress rules
+  (Networks).
+- A member list here that drifts from the leaf Compose files misleads
+  allocation; the leaf files win (Risks).
+
+## Decisions and Adoption
+
+### Decisions
+
+- [ADR-0055 Segmented per-flow networks](../decisions/0055-segmented-per-flow-networks.md)
+- [ADR-0062 current HOME and LAB membership](../decisions/0062-home-lab-membership.md)
+
+### Adoption Boundaries
+
+#### Requirement Mapping
 
 - [REQ-0023 Compose network segmentation](../../01.requirements/0023-standardize-infra-net.md)
 
-### Currentness and Lineage
+#### Currentness and Lineage
 
 - SPEC-0180 HOME development convergence and SPEC-0098 (retired; version history)
 - [IP address management guide](../../05.operations/guides/02-gateway-and-networking/0077-ip-address-management.md)

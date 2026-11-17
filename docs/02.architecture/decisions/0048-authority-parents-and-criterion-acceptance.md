@@ -1,10 +1,10 @@
 ---
 title: "Authority Parents and Criterion Acceptance"
-version: "1.0.4"
+version: "1.1.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0048"
 parent_ids:
@@ -31,9 +31,37 @@ One writer per fact; no status copied between documents. Acceptance decided
 once per criterion. Readiness computed, never stored. Frozen records keep the
 meaning of the generation that wrote them.
 
+#### Sources
+
+- [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
+- [ADR-0037](0037-package-disposition-wait-and-task-cancellation.md)
+- SPEC-0231
+- SPEC-0233
+
 ### Decision Scope
 
 This decision covers execution state, criterion acceptance and archive readiness for Spec, Plan and Task documents under lifecycle generation 6. It affects REQ-0026-FR-0009, AD-0030 and the ADR-0037 waiting rule, and leaves ADR-0037 decisions 4 onward unchanged.
+
+## Options
+
+### Considered Options
+
+- Keep projected parent statuses and only relax the waiting rule: rejected;
+  the duplicate execution state stays.
+- Keep per-row acceptance and add an unresolved-`FAIL` check: rejected; a
+  criterion would still carry several independent decisions.
+- Defer the multi-item mode: rejected by the owner on 2026-10-13.
+
+### Trade-offs
+
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| Keep projected parent statuses and only relax the waiting rule | The ADR records no benefit for this option. | The duplicate execution state stays. | Rejected; the duplicate execution state stays. |
+| Keep per-row acceptance and add an unresolved-`FAIL` check | The ADR records no benefit for this option. | A criterion would still carry several independent decisions. | Rejected; a criterion would still carry several independent decisions. |
+| Defer the multi-item mode | The ADR records no benefit for this option. | The ADR records no cost or risk for this option. | Rejected by the owner on 2026-10-13. |
+| Authority-only Spec and Plan statuses, Task-owned execution state, one Criterion Acceptance row per criterion and derived readiness (chosen) | One writer per fact, acceptance decided once per criterion, and readiness computed rather than stored. | Lifecycle generation 6 adds a Registry migration and a Git-bound proof, and a branch still writing generation 5 Evidence must take the same rewrite. | Chosen from the owner's choice of these options to give one owner for execution state, acceptance and readiness (findings F03 and F06). |
+
+Each rejected option is rejected for the reason stated in its entry above: projected parent statuses keep the duplicate execution state, per-row acceptance still carries several independent decisions per criterion, and deferring the multi-item mode was rejected by the owner on 2026-10-13.
 
 ## Decision
 
@@ -65,52 +93,7 @@ This decision covers execution state, criterion acceptance and archive readiness
 
 Decided by the owner, @buenhyden; status `accepted`. The Follow-up records that the owner accepted this decision on 2026-10-13. Effective from 2026-10-13.
 
-## Alternatives
-
-### Considered Options
-
-- Keep projected parent statuses and only relax the waiting rule: rejected;
-  the duplicate execution state stays.
-- Keep per-row acceptance and add an unresolved-`FAIL` check: rejected; a
-  criterion would still carry several independent decisions.
-- Defer the multi-item mode: rejected by the owner on 2026-10-13.
-
-### Trade-offs
-
-Each rejected option is rejected for the reason stated in its entry above: projected parent statuses keep the duplicate execution state, per-row acceptance still carries several independent decisions per criterion, and deferring the multi-item mode was rejected by the owner on 2026-10-13.
-
-## Consequences
-
-### Impacts
-
-Lifecycle generation 6 adds a Registry migration and a Git-bound proof. Active
-Tasks were rewritten mechanically; terminal Tasks unchanged since the source
-revision keep their generation's reader. A branch still writing generation 5
-Evidence must take the same rewrite. REQ-0026-FR-0009 and AD-0030 state the
-new waiting rule.
-
-### Follow-up
-
-Proposed on 2026-10-13 from the owner's choice of these options. SPEC-0231
-implements and verifies it, and SPEC-0233 corrects its reader and text. The
-owner accepted this decision on 2026-10-13.
-
-#### Compliance
-
-SPEC-0231 proves each rule with passing and failing fixtures, loads every
-active package under generation 6, and keeps generation 4 and 5 terminal Tasks
-byte-identical.
-
-## Traceability
-
-### Sources
-
-- [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
-- [ADR-0037](0037-package-disposition-wait-and-task-cancellation.md)
-- SPEC-0231
-- SPEC-0233
-
-### Supersession
+#### Supersession
 
 These replace ADR-0037 decision 1, except its last sentence, and the
 completion-receipt clauses of decisions 2 and 3: that withdrawal never exempts
@@ -133,3 +116,30 @@ deleted once its removal is approved, and its number is reserved.
 The `superseded` Spec and Plan status named in decision 1 and decision 4 no
 longer exists: SPEC-0256 (retired; version history) removed it from the Stage 01 to 03 lifecycles. The
 decision body above is unchanged.
+
+## Consequences
+
+### Impacts
+
+Lifecycle generation 6 adds a Registry migration and a Git-bound proof. Active
+Tasks were rewritten mechanically; terminal Tasks unchanged since the source
+revision keep their generation's reader. A branch still writing generation 5
+Evidence must take the same rewrite. REQ-0026-FR-0009 and AD-0030 state the
+new waiting rule.
+
+### Follow-up
+
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
+Proposed on 2026-10-13 from the owner's choice of these options. SPEC-0231
+implements and verifies it, and SPEC-0233 corrects its reader and text. The
+owner accepted this decision on 2026-10-13.
+
+#### Compliance
+
+SPEC-0231 proves each rule with passing and failing fixtures, loads every
+active package under generation 6, and keeps generation 4 and 5 terminal Tasks
+byte-identical.

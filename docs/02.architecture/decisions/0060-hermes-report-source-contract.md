@@ -1,10 +1,10 @@
 ---
 title: "Hermes Report Source Contract"
-version: "0.2.1"
+version: "0.3.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0060"
 parent_ids:
@@ -68,6 +68,13 @@ untracked draft, treated as data). On 2026-11-06 the owner answered "초안 작�
   independent Attestation, and the Attester verifies items by independent fetch
   without reading `source_text`. These trust boundaries stay distinct.
 
+#### Sources
+
+- SPEC-0265 (retired; its capture contract lives in this decision and the workload README; version history)
+- [Workload README](../../../infra/07-workflow/n8n/workloads/hermes-blog-ingestion/README.md)
+- [SPEC-0212 TSK-0050](../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0050-hermes-provenance-trust-export.md)
+- [Home and Development Host Architecture](../descriptions/0031-home-development-host.md)
+
 ### Decision Scope
 
 This decision covers the meaning of `source_text`, `source_sha256` and
@@ -75,6 +82,45 @@ This decision covers the meaning of `source_text`, `source_sha256` and
 and how the plugin stores the report. `ingestion-v1`, attestation/2 and the
 export contract do not change. The sidecar `84d3f689378b` failure streak is out
 of scope here.
+
+## Options
+
+### Considered Options
+
+1. **Receipt JSON as `source_text` (status quo).** No change. Rejected: it
+   violates the ADR-0097 meaning of `source_text`, publishes a JSON array as the
+   daily report, and cannot preserve the original report.
+2. **A separate artifact tool or companion record keyed by `job_id` + `run_id`**
+   (the operator's proposal, section 1 of the draft). Rejected: ADR-0097 makes
+   `source_text` the whole original report and ties its signed digest to the
+   export; a companion record would leave `source_text` meaning something else,
+   add a second contract and a second receipt, and the export would still carry
+   the wrong text. It also needs a Gateway/receiver change that the chosen
+   option avoids.
+3. **Capture the final LLM response with `post_llm_call`.** Rejected as the
+   source: it sees only the Telegram digest, not the email; the text can change
+   afterwards (fallback notice, media repair, `[SILENT]`); the hook is skipped
+   when persistence is disabled; and a failed run may already have fired it.
+4. **Wrap the Gmail send script to capture the HTML.** Rejected: it captures the
+   email only, depends on an upstream skill script, and leaves Telegram
+   unbound.
+5. **Chosen: the plugin owns the report bytes.** The agent passes the finalized
+   report once to `submit_research_report`; the plugin stores it immutably and
+   derives the other outputs from the stored file.
+
+### Trade-offs
+
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| Receipt JSON as `source_text` (status quo) | No change. | It violates the ADR-0097 meaning of `source_text`, publishes a JSON array as the daily report, and cannot preserve the original report. | Rejected; it violates the ADR-0097 meaning of `source_text` and cannot preserve the original report. |
+| A separate artifact tool or companion record keyed by `job_id` + `run_id` (the operator's proposal) | The ADR records no benefit for this option. | It leaves `source_text` meaning something else, adds a second contract and a second receipt, the export still carries the wrong text, and it needs a Gateway/receiver change. | Rejected; ADR-0097 makes `source_text` the whole original report and ties its signed digest to the export. |
+| Capture the final LLM response with `post_llm_call` | The ADR records no benefit for this option. | It sees only the Telegram digest, not the email; the text can change afterwards; the hook is skipped when persistence is disabled; and a failed run may already have fired it. | Rejected as the source for those reasons. |
+| Wrap the Gmail send script to capture the HTML | The ADR records no benefit for this option. | It captures the email only, depends on an upstream skill script, and leaves Telegram unbound. | Rejected; it captures the email only and leaves Telegram unbound. |
+| The plugin owns the report bytes | One stored byte string is the source of the Gateway, email and Telegram outputs; the vault note shows the real report and the `source_sha_mismatch` failure class is removed. | Reports larger than the Gateway limits are rejected and the run is `BLOCKED`; a held export is possible; a rollback after schema 5 cutover restores the schema-4 backup and loses later records. | Chosen; `source_text` must be the report a reader receives while `ingestion-v1`, attestation/2 and Source Receipt verification stay unchanged. |
+
+Each rejected option carries its reason in the list above; the chosen option
+keeps one stored byte string as the source of the Gateway, email and Telegram
+outputs.
 
 ## Decision
 
@@ -113,37 +159,6 @@ Decided by the owner, @buenhyden; status `accepted`. On 2026-11-06 the owner
 answered "초안 작성 (권장)" to drafting this contract. The owner approved the SPEC-0265 work on 2026-11-06 ("승인"), and this ADR moved to `accepted` after #774 merged it as `proposed`; an accepted ADR is replaced only by a new ADR.
 Effective from 2026-11-06.
 
-## Alternatives
-
-### Considered Options
-
-1. **Receipt JSON as `source_text` (status quo).** No change. Rejected: it
-   violates the ADR-0097 meaning of `source_text`, publishes a JSON array as the
-   daily report, and cannot preserve the original report.
-2. **A separate artifact tool or companion record keyed by `job_id` + `run_id`**
-   (the operator's proposal, section 1 of the draft). Rejected: ADR-0097 makes
-   `source_text` the whole original report and ties its signed digest to the
-   export; a companion record would leave `source_text` meaning something else,
-   add a second contract and a second receipt, and the export would still carry
-   the wrong text. It also needs a Gateway/receiver change that the chosen
-   option avoids.
-3. **Capture the final LLM response with `post_llm_call`.** Rejected as the
-   source: it sees only the Telegram digest, not the email; the text can change
-   afterwards (fallback notice, media repair, `[SILENT]`); the hook is skipped
-   when persistence is disabled; and a failed run may already have fired it.
-4. **Wrap the Gmail send script to capture the HTML.** Rejected: it captures the
-   email only, depends on an upstream skill script, and leaves Telegram
-   unbound.
-5. **Chosen: the plugin owns the report bytes.** The agent passes the finalized
-   report once to `submit_research_report`; the plugin stores it immutably and
-   derives the other outputs from the stored file.
-
-### Trade-offs
-
-Each rejected option carries its reason in the list above; the chosen option
-keeps one stored byte string as the source of the Gateway, email and Telegram
-outputs.
-
 ## Consequences
 
 ### Impacts
@@ -163,6 +178,11 @@ outputs.
 
 ### Follow-up
 
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
 - Blog-data: a per-report exclusion or selection capability for
   `backfill-reports`, and its runbook correction (server A state is stale).
 - Owner-approved operations for the schema 5 rollout, outside this change.
@@ -172,12 +192,3 @@ outputs.
 SPEC-0265 states testable criteria: the same stored bytes feed the Gateway,
 the email and the Telegram text; a pre-final or oversized submission is
 rejected; a receipt-set record exists beside every submission.
-
-## Traceability
-
-### Sources
-
-- SPEC-0265 (retired; its capture contract lives in this decision and the workload README; version history)
-- [Workload README](../../../infra/07-workflow/n8n/workloads/hermes-blog-ingestion/README.md)
-- [SPEC-0212 TSK-0050](../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0050-hermes-provenance-trust-export.md)
-- [Home and Development Host Architecture](../descriptions/0031-home-development-host.md)

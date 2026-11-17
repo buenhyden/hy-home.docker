@@ -1,10 +1,10 @@
 ---
 title: "Messaging Architecture Description"
-version: "1.5.3"
+version: "1.6.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "AD-0005"
 parent_ids:
@@ -14,15 +14,7 @@ created: "2026-03-26"
 
 # Messaging Architecture Description
 
-## Overview
-
-### Purpose and Readers
-
-`05-messaging` is the optional Kafka event-streaming boundary. The HOME
-implementation has one Kafka KRaft broker, Kafbat UI, Kafka Exporter and a
-topic-init job. Schema Registry and Kafka Connect (Debezium CDC) moved to the LAB
-`labs/kafka-cluster` by the ADR-0062 amendment of 2026-11-10. Kafka is the sole
-broker family. ADR-0062 removed the HOME broker REST proxy.
+## Context and Boundaries
 
 ### System Boundary
 
@@ -33,9 +25,15 @@ broker family. ADR-0062 removed the HOME broker REST proxy.
 - **Does not own:** the Keycloak lifecycle, OAuth2 Proxy sessions, workflow
   orchestration, producer source-of-truth data, or external connector systems.
 
-## Context and Constraints
+#### Purpose and Readers
 
-### Context
+`05-messaging` is the optional Kafka event-streaming boundary. The HOME
+implementation has one Kafka KRaft broker, Kafbat UI, Kafka Exporter and a
+topic-init job. Schema Registry and Kafka Connect (Debezium CDC) moved to the LAB
+`labs/kafka-cluster` by the ADR-0062 amendment of 2026-11-10. Kafka is the sole
+broker family. ADR-0062 removed the HOME broker REST proxy.
+
+#### Context
 
 Producers and consumers reach `kafka-1`; browsers reach `kafbat-ui` through Traefik with Keycloak OIDC. The tier consumes `01-gateway` TLS and routing, `02-auth` identity, and `06-observability` metrics and logs.
 
@@ -43,7 +41,7 @@ Producers and consumers reach `kafka-1`; browsers reach `kafbat-ui` through Trae
 
 Kafka stays OPTIONAL; see Evolution under Currentness and Lineage. All listeners are PLAINTEXT, so sensitive or untrusted traffic is excluded until a TLS/SASL change, and Confluent edition-specific capabilities are not assumed.
 
-## Current Structure
+## Structure
 
 ### Building Blocks
 
@@ -62,7 +60,23 @@ factor 3. `lab-schema-registry` and `lab-kafka-connect` use the LAB brokers on
 credential in the tracked Compose. A connector requires separately approved
 inputs and operation.
 
-### Runtime and Deployment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Kafka broker `kafka-1` on `kafka_net` | `kafka-1` | Producers and consumers | PLAINTEXT listeners (`KAFKA_LISTENER_SECURITY_PROTOCOL_MAP`); [Kafka Compose](../../../infra/05-messaging/kafka/docker-compose.yml) | Replication factor 1 gives no broker redundancy; recovery prefers producer replay or approved replication into a fresh isolated cluster. |
+| Kafbat UI management route | `kafbat-ui` | Browsers through Traefik `gateway-standard-chain@file` | Native `auth.type: OAUTH2` with Keycloak `groups` mapped to `/admins` and `/users`; [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md) | The description records no failure handling for this interface. |
+| JMX and Kafka Exporter metrics | `kafka-1` and `kafka-exporter` | `06-observability` | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| LAB Schema Registry and Kafka Connect HTTP | `lab-schema-registry` and `lab-kafka-connect` | The description names no consumer for this interface. | [Kafka LAB Compose](../../../labs/kafka-cluster/docker-compose.yml) | LAB recovery accounts for schema subjects and the Connect configuration, offset and status topics in its brokers. |
+
+HOME services use `kafka_net`. Kafbat exposes management through native OIDC
+and role mapping. JMX and Kafka Exporter expose metrics without record payloads
+or secrets. Schema Registry and Connect expose LAB-internal HTTP interfaces
+without a HOME gateway route.
+
+## Runtime Behavior
+
+### Normal Flow
 
 #### Runtime View
 
@@ -87,27 +101,13 @@ them). The preferred path is producer replay
 or approved replication into a fresh isolated cluster; raw log-directory copy
 and live cluster-ID reuse are outside the architecture.
 
-## Interfaces
-
-### Contracts
-
-HOME services use `kafka_net`. Kafbat exposes management through native OIDC
-and role mapping. JMX and Kafka Exporter expose metrics without record payloads
-or secrets. Schema Registry and Connect expose LAB-internal HTTP interfaces
-without a HOME gateway route.
-
-### Failure Boundaries
+### Failure and Recovery
 
 Replication factor 1 on one broker gives no broker redundancy (see Risks below). Recovery coordinates topic records and configs, consumer offsets and KRaft metadata, preferably by producer replay or approved replication into a fresh isolated cluster.
 
-## Decisions
+## Quality Scenarios
 
-### Decision Links
-
-- [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md)
-- [ADR-0062 HOME Membership and Planned LABs](../decisions/0062-home-lab-membership.md)
-
-### Quality and Risks
+### Scenarios
 
 #### Quality Attributes
 
@@ -129,13 +129,32 @@ excluded until a TLS/SASL change. Replication factor 1 on one broker gives no
 broker redundancy, and the LAB's three brokers on one host give no host
 availability. Confluent edition-specific capabilities are not assumed.
 
-## Traceability
+### Trade-offs
 
-### Requirement Mapping
+- All broker, controller and host listeners are PLAINTEXT, so sensitive or
+  untrusted traffic is excluded until a TLS/SASL change (Risks, Constraints).
+- HOME runs one broker with replication factor 1, which gives no broker
+  redundancy; the LAB's three brokers on one host give no host availability
+  (Risks).
+- Confluent edition-specific capabilities are not assumed (Risks).
+- Raw log-directory copy and live cluster-ID reuse are outside the
+  architecture; recovery prefers producer replay or approved replication into
+  a fresh isolated cluster (Deployment View).
+
+## Decisions and Adoption
+
+### Decisions
+
+- [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md)
+- [ADR-0062 HOME Membership and Planned LABs](../decisions/0062-home-lab-membership.md)
+
+### Adoption Boundaries
+
+#### Requirement Mapping
 
 - [REQ-0006 Messaging](../../01.requirements/0006-messaging.md)
 
-### Currentness and Lineage
+#### Currentness and Lineage
 
 - [Kafka guide](../../05.operations/guides/06-messaging-and-cdc/0036-kafka.md)
 - [Kafka Compose](../../../infra/05-messaging/kafka/docker-compose.yml)

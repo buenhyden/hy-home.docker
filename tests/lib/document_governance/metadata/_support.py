@@ -125,12 +125,15 @@ REQUIREMENT_TARGET_BODY = body_with_headings(
     "### Constraints and Exclusions",
     "## Requirements",
     "### Functional Requirements",
-    "## Acceptance Criteria",
-    "### Acceptance Conditions",
-    "### Verification Method",
+    "### Quality Requirements",
     "## Traceability",
-    "### Source and Constraints",
-    "### Downstream Links",
+    "### Sources",
+    "### Verification Links",
+).replace(
+    "## Requirements\n\nFixture content.\n\n",
+    "## Requirements\n\nFixture content.\n\n"
+    "| Requirement ID | Statement | Rationale | Acceptance | Priority |\n"
+    "| --- | --- | --- | --- | --- |\n\n",
 )
 
 POLICY_TARGET_BODY = body_with_headings(

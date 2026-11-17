@@ -41,9 +41,9 @@ class CurrentBodyContractTests(unittest.TestCase):
 
     def test_current_role_templates_use_r10_ordered_sections(self) -> None:
         expected = {
-            "requirements-package": "Overview|Scope|Requirements|Acceptance Criteria|Traceability",
-            "architecture-description": "Overview|Context and Constraints|Current Structure|Interfaces|Decisions|Traceability",
-            "adr": "Context|Decision|Alternatives|Consequences|Traceability",
+            "requirements-package": "Overview|Scope|Requirements|Traceability",
+            "architecture-description": "Context and Boundaries|Structure|Runtime Behavior|Quality Scenarios|Decisions and Adoption",
+            "adr": "Context|Options|Decision|Consequences",
             "spec": "Overview|Scope|Behavior Contract|Acceptance Criteria|References",
             "plan": "Overview|Dependencies|Implementation Strategy|Verification Plan|Risks|Promotion Map",
             "task": "Scope|Execution Log|Verification Evidence|Acceptance Decision|Handoff",
@@ -221,6 +221,7 @@ class CurrentBodyContractTests(unittest.TestCase):
                 "body-heading-forbidden",
                 "body-heading-missing",
                 "body-subheading-missing",
+                "table-missing",
                 "template-body-token-in-target",
             ],
             [item.code for item in findings],
@@ -409,7 +410,13 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 header = "| " + " | ".join(labels) + " |"
                 rule = "| " + " | ".join("---" for _ in labels) + " |"
                 anchor = places[table["section"]] + "Fixture content."
-                body = body.replace(anchor, f"{anchor}\n\n{header}\n{rule}", 1)
+                if anchor in body:
+                    body = body.replace(anchor, f"{anchor}\n\n{header}\n{rule}", 1)
+                else:
+                    # A table the core places directly under an H2 whose
+                    # fixture holds only H3 sections opens that H2.
+                    heading = "\n" + places[table["section"]]
+                    body = body.replace(heading, f"{heading}{header}\n{rule}\n\n", 1)
         return body
 
     def _conforming_body(self, profile_id: str) -> tuple[str, tuple[str, ...]]:
@@ -489,6 +496,11 @@ class RegisteredSectionContractTests(unittest.TestCase):
         old_forms = {
             "requirements-package": (
                 ("## Related Documents", "body-heading-forbidden"),
+                ("## Acceptance Criteria", "body-heading-forbidden"),
+                ("### Acceptance Conditions", "body-subheading-forbidden"),
+                ("### Verification Method", "body-subheading-forbidden"),
+                ("### Source and Constraints", "body-subheading-forbidden"),
+                ("### Downstream Links", "body-subheading-forbidden"),
                 ("### Non-functional Requirements", "body-subheading-forbidden"),
                 ("### Interface Requirements", "body-subheading-forbidden"),
             ),
@@ -515,10 +527,23 @@ class RegisteredSectionContractTests(unittest.TestCase):
             ),
             "architecture-description": (
                 ("## Scope", "body-heading-forbidden"),
-                ("## Structure", "body-heading-forbidden"),
+                ("## Overview", "body-heading-forbidden"),
+                ("## Context and Constraints", "body-heading-forbidden"),
+                ("## Current Structure", "body-heading-forbidden"),
+                ("## Interfaces", "body-heading-forbidden"),
+                ("## Decisions", "body-heading-forbidden"),
+                ("## Traceability", "body-heading-forbidden"),
                 ("## Quality and Risks", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Runtime View", "body-subheading-forbidden"),
+                ("### Purpose and Readers", "body-subheading-forbidden"),
+                ("### Runtime and Deployment", "body-subheading-forbidden"),
+                ("### Contracts", "body-subheading-forbidden"),
+                ("### Failure Boundaries", "body-subheading-forbidden"),
+                ("### Decision Links", "body-subheading-forbidden"),
+                ("### Quality and Risks", "body-subheading-forbidden"),
+                ("### Requirement Mapping", "body-subheading-forbidden"),
+                ("### Currentness and Lineage", "body-subheading-forbidden"),
             ),
             "guide": (
                 ("## Overview", "body-heading-forbidden"),
@@ -619,9 +644,12 @@ class RegisteredSectionContractTests(unittest.TestCase):
             ),
             "adr": (
                 ("## Decision Drivers", "body-heading-forbidden"),
-                ("## Options", "body-heading-forbidden"),
+                ("## Alternatives", "body-heading-forbidden"),
+                ("## Traceability", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Compliance", "body-subheading-forbidden"),
+                ("### Sources", "body-subheading-forbidden"),
+                ("### Supersession", "body-subheading-forbidden"),
             ),
         }
         for profile_id, cases in old_forms.items():

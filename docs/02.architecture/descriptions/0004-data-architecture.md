@@ -1,10 +1,10 @@
 ---
 title: "Data Tier (04-data) Architecture Description"
-version: "1.3.3"
+version: "1.4.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "AD-0004"
 parent_ids:
@@ -14,16 +14,7 @@ created: "2026-03-26"
 
 # Data Tier (04-data) Architecture Description
 
-## Overview
-
-### Purpose and Readers
-
-Data provides storage and data-platform packages for HOME applications and
-explicitly selected development workloads. Operators need to tell shared HOME
-state apart from OPTIONAL packages and LAB topologies. Root packages are
-direct children of `infra/04-data`; LAB topologies are standalone entrypoints
-under `labs/`. Analytics processing follows ADR-0062 and, since SPEC-0262,
-runs as LAB entrypoints.
+## Context and Boundaries
 
 ### System Boundary
 
@@ -33,9 +24,16 @@ metadata and package-local stores stay with their consumers. Secrets, ingress
 and backup orchestration keep their owners.
 No package is split only to make the folder taxonomy uniform.
 
-## Context and Constraints
+#### Purpose and Readers
 
-### Context
+Data provides storage and data-platform packages for HOME applications and
+explicitly selected development workloads. Operators need to tell shared HOME
+state apart from OPTIONAL packages and LAB topologies. Root packages are
+direct children of `infra/04-data`; LAB topologies are standalone entrypoints
+under `labs/`. Analytics processing follows ADR-0062 and, since SPEC-0262,
+runs as LAB entrypoints.
+
+#### Context
 
 Auth, Workflow, Tooling, Observability (Grafana), AI consumers, the analytics LABs and development workloads consume Data packages as described under Runtime View. Secrets, ingress and backup orchestration stay with their owners.
 
@@ -43,7 +41,7 @@ Auth, Workflow, Tooling, Observability (Grafana), AI consumers, the analytics LA
 
 Data owns its database and object-store configuration and state contracts only, with no package split merely to make the folder taxonomy uniform. Declared secret, network, port and persistent path boundaries are kept; a folder or a Compose profile adds no isolation, and POL-0078 owns the profile vocabulary.
 
-## Current Structure
+## Structure
 
 ### Building Blocks
 
@@ -66,7 +64,21 @@ target engine backups stay with the engine's Data package. Restic stays in
 `09-platform-ops` as cross-platform orchestration. InfluxDB is retired
 (ADR-0047); DEV TimescaleDB owns time-series history.
 
-### Runtime and Deployment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `mng-db` identities | `mng-db` (`mng-pg`, `mng-valkey`) | Auth, Workflow, Tooling and Observability (Grafana); MLflow and Pact Broker for their own databases | The description links no contract for this interface. | `mng-pg` loss affects Auth, Workflow, Tooling and Grafana together; recovery follows each engine's supported backup and restore process and POL-0021. |
+| Qdrant vector persistence | `qdrant` | AI consumers configured for it | The description links no contract for this interface. | Recovery follows each engine's supported backup and restore process and POL-0021. |
+| SeaweedFS S3 storage | `seaweedfs` | Observability, AI and the analytics LABs, each with its own storage identity | The description links no contract for this interface. | Recovery follows each engine's supported backup and restore process and POL-0021. |
+| SeaweedFS Iceberg REST catalog | `seaweedfs` | `labs/lakehouse` Flink, Spark and Trino entrypoints | Iceberg REST catalog | The description records no failure handling for this interface. |
+| Development PostgreSQL business fixture | `dev-db` | `labs/dbt` | The description links no contract for this interface. | The description records no failure handling for this interface. |
+
+Consumers use declared `mng-db` identities, Qdrant, SeaweedFS storage identities and the SeaweedFS Iceberg catalog. Infra provisions only approved explicit databases, roles and Valkey ACLs.
+
+## Runtime Behavior
+
+### Normal Flow
 
 #### Runtime View
 
@@ -98,23 +110,13 @@ The root still declares Neo4j and single-node OpenSearch as optional packages.
 ADR-0062 records the planned Neo4j LAB move and single-node OpenSearch
 retirement. The existing OpenSearch cluster LAB is a separate project.
 
-## Interfaces
-
-### Contracts
-
-Consumers use declared `mng-db` identities, Qdrant, SeaweedFS storage identities and the SeaweedFS Iceberg catalog. Infra provisions only approved explicit databases, roles and Valkey ACLs.
-
-### Failure Boundaries
+### Failure and Recovery
 
 `mng-pg` backs most HOME metadata and its loss affects Auth, Workflow, Tooling and Grafana together (see Risks below). Recovery follows each engine's supported backup and restore process and POL-0021; same-host replicas do not give host HA.
 
-## Decisions
+## Quality Scenarios
 
-### Decision Links
-
-- [ADR-0062 HOME Membership and Planned LABs](../decisions/0062-home-lab-membership.md)
-
-### Quality and Risks
+### Scenarios
 
 #### Quality Attributes
 
@@ -132,14 +134,32 @@ Consumers use declared `mng-db` identities, Qdrant, SeaweedFS storage identities
 `mng-pg` backs most HOME metadata; its loss affects Auth, Workflow, Tooling and
 Grafana together.
 
-## Traceability
+### Trade-offs
 
-### Requirement Mapping
+- HOME `mng-pg` and `mng-valkey` are shared single-instance dependencies,
+  separate from the LAB clusters; the accepted cost is that `mng-pg` loss
+  affects Auth, Workflow, Tooling and Grafana together, and same-host replicas
+  do not give host HA (Quality Attributes, Risks).
+- The description makes no tier-wide latency or availability guarantee;
+  performance and failover need measured workload and recovery evidence
+  (Quality Attributes).
+- No package is split only to make the folder taxonomy uniform, and a folder
+  or a Compose profile adds no isolation (Constraints).
+
+## Decisions and Adoption
+
+### Decisions
+
+- [ADR-0062 HOME Membership and Planned LABs](../decisions/0062-home-lab-membership.md)
+
+### Adoption Boundaries
+
+#### Requirement Mapping
 
 - [REQ-0004 Data requirements](../../01.requirements/0004-data.md)
 - [REQ-0027 HOME development host](../../01.requirements/0027-home-development-host.md)
 
-### Currentness and Lineage
+#### Currentness and Lineage
 
 - SPEC-0265 (retired; version history) captured the Hermes report source under ADR-0060.
 - [Data packages](../../../infra/04-data/README.md)

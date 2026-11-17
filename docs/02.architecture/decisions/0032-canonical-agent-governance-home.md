@@ -1,10 +1,10 @@
 ---
 title: "Canonical Agent Governance Home"
-version: "1.0.7"
+version: "1.1.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0032"
 parent_ids:
@@ -41,9 +41,38 @@ approval timestamps, and native execution results are not backfilled.
 - Do not modify archived Tasks or already-frozen bodies for the sake of path
   cleanup.
 
+#### Sources
+
+- [Agent governance requirement](../../01.requirements/0024-agent-governance-standardization.md)
+- [Canonical adapter architecture](../descriptions/0027-agent-governance-canonical-adapter.md)
+- [Shared agent memory decision](0049-shared-agent-memory-store.md)
+- Preserved-record decision: ADR-0031 (retired)
+- Owning specification: SPEC-0173 (retired)
+- Plan: SPEC-0173-PLAN-0001 (retired)
+
 ### Decision Scope
 
 The decision covers the location and loading of the common canonical source: `.agents/` replaces the old governance directory as the home of common policy, roles, skills, and the provider mapping. It does not grant execution approval to access operational input, and archived Tasks and already-frozen bodies are not modified.
+
+## Options
+
+### Considered Options
+
+| Alternative | Effect and cost | Judgment |
+| --- | --- | --- |
+| Move the reviewed canonical source to `.agents` | Aligns native skill discovery with ownership; requires converting all consumers | Fits the request's goal |
+| Keep the canonical source at the current document Stage | Preserves existing explicit reads; misses the requested canonical location/discovery goal | Not adopted for this request |
+| Full duplication or root symlink | Duplicate authority, format mixing, output/input cycle and boundary risk | Not adopted |
+
+### Trade-offs
+
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| Move the reviewed canonical source to `.agents` | Aligns native skill discovery with ownership. | Requires converting all consumers. | Chosen because it fits the request's goal; adopted after an independent design review. |
+| Keep the canonical source at the current document Stage | Preserves existing explicit reads. | Misses the requested canonical location/discovery goal. | Not adopted for this request because it misses the requested canonical location/discovery goal. |
+| Full duplication or root symlink | The ADR records no benefit for this option. | Duplicate authority, format mixing, output/input cycle and boundary risk. | Not adopted because of duplicate authority, format mixing, and output/input cycle and boundary risk. |
+
+Moving the canonical source aligns native skill discovery with ownership but requires converting all consumers. Keeping it at the current document Stage preserves existing explicit reads but misses the requested location/discovery goal. Full duplication or a root symlink brings duplicate authority, format mixing, and output/input cycle and boundary risk.
 
 ## Decision
 
@@ -82,19 +111,16 @@ commit, remote, operations, secret, or global setting changes are approved.
 Protected-path writes are performed only through the normal approval procedure
 with a bounded target and action. Effective from 2026-09-06.
 
-## Alternatives
+#### Supersession
 
-### Considered Options
+Change only ADR-0029's reciprocal supersession metadata and the lawful
+lifecycle metadata immediately before initial preservation. The decision body
+was not modified; ADR-0029 is now retired, its number reserved in the Registry
+and its body in version history. ADR-0027 and other records were left as they
+were.
 
-| Alternative | Effect and cost | Judgment |
-| --- | --- | --- |
-| Move the reviewed canonical source to `.agents` | Aligns native skill discovery with ownership; requires converting all consumers | Fits the request's goal |
-| Keep the canonical source at the current document Stage | Preserves existing explicit reads; misses the requested canonical location/discovery goal | Not adopted for this request |
-| Full duplication or root symlink | Duplicate authority, format mixing, output/input cycle and boundary risk | Not adopted |
-
-### Trade-offs
-
-Moving the canonical source aligns native skill discovery with ownership but requires converting all consumers. Keeping it at the current document Stage preserves existing explicit reads but misses the requested location/discovery goal. Full duplication or a root symlink brings duplicate authority, format mixing, and output/input cycle and boundary risk.
+- Predecessor authority decision: ADR-0029 (retired, historical)
+- **Superseded decisions**: ADR-0027 defined the Stage 00 canonical adapter model, and ADR-0029 replaced it with a separated workspace governance authority model. This decision replaces ADR-0029.
 
 ## Consequences
 
@@ -116,30 +142,13 @@ Moving the canonical source aligns native skill discovery with ownership but req
 
 ### Follow-up
 
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
 #### Compliance
 
 Required static checks, protected-path
 approval status, and pending native verification continue to be tracked in the
 current Task.
-
-## Traceability
-
-### Sources
-
-- [Agent governance requirement](../../01.requirements/0024-agent-governance-standardization.md)
-- [Canonical adapter architecture](../descriptions/0027-agent-governance-canonical-adapter.md)
-- [Shared agent memory decision](0049-shared-agent-memory-store.md)
-- Preserved-record decision: ADR-0031 (retired)
-- Owning specification: SPEC-0173 (retired)
-- Plan: SPEC-0173-PLAN-0001 (retired)
-
-### Supersession
-
-Change only ADR-0029's reciprocal supersession metadata and the lawful
-lifecycle metadata immediately before initial preservation. The decision body
-was not modified; ADR-0029 is now retired, its number reserved in the Registry
-and its body in version history. ADR-0027 and other records were left as they
-were.
-
-- Predecessor authority decision: ADR-0029 (retired, historical)
-- **Superseded decisions**: ADR-0027 defined the Stage 00 canonical adapter model, and ADR-0029 replaced it with a separated workspace governance authority model. This decision replaces ADR-0029.

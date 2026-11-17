@@ -1,10 +1,10 @@
 ---
 title: "Gateway Tier (01-gateway) Requirements"
-version: "1.3.3"
+version: "1.4.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-12"
+updated: "2026-11-17"
 layer: "requirements"
 artifact_id: "REQ-0001"
 created: "2026-03-26"
@@ -66,6 +66,13 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 ## Requirements
 
+| Requirement ID | Statement | Rationale | Acceptance | Priority |
+| --- | --- | --- | --- | --- |
+| REQ-0001-FR-0001 | Plain HTTP requests must be permanently redirected to HTTPS. | The gateway is the single entry point that terminates TLS so that no service manages its own TLS front door. | An HTTP request to any external host receives a permanent redirect to the HTTPS URL; every external route is served over TLS. | must |
+| REQ-0001-FR-0002 | The gateway must discover a service that declares a route and activate that route without a manual gateway configuration edit; a service that declares no route must stay unexposed. | Without the gateway, exposure needs manual configuration; a service developer exposes a service safely by declaring a route, and nothing is exposed by default. | A newly started service that declares a route is reachable within 60 seconds without editing gateway configuration, and a service without a declared route is not reachable. | must |
+| REQ-0001-FR-0003 | The gateway must terminate external TLS with the operator-provided certificate and must not accept a protocol version below TLS 1.2. | The gateway terminates TLS so that each service need not carry its own TLS settings; the operator provides the certificate and key. | A TLS 1.0 or 1.1 handshake is refused, and a TLS 1.2 or 1.3 handshake presents the operator-provided certificate. | must |
+| REQ-0001-FR-0004 | The gateway must offer a reusable single sign-on access-control step, backed by the Auth tier, that a route can require. | A shared access-control chain spares each service its own authentication front door and lets a security auditor check which routes require which access control. | A route that requires single sign-on sends an unauthenticated browser to the sign-in flow and admits the request only after a valid session. | must |
+
 ### Functional Requirements
 
 - **REQ-0001-FR-0001**: Plain HTTP requests must be permanently redirected to
@@ -79,9 +86,19 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 - **REQ-0001-FR-0004**: The gateway must offer a reusable single sign-on
   access-control step, backed by the Auth tier, that a route can require.
 
-## Acceptance Criteria
+### Quality Requirements
 
-### Acceptance Conditions
+This package declares no quality requirement and records no reason why none applies.
+
+## Traceability
+
+### Sources
+
+This package records the owner's requirements for the gateway tier; no upstream document governs it.
+
+### Verification Links
+
+#### Acceptance Conditions
 
 - **REQ-0001-FR-0001**: An HTTP request to any external host receives a
   permanent redirect to the HTTPS URL; every external route is served over TLS.
@@ -94,17 +111,11 @@ The owner, @buenhyden, writes, reviews and accepts this package.
   unauthenticated browser to the sign-in flow and admits the request only after
   a valid session.
 
-### Verification Method
+#### Verification Method
 
 Each condition is judged by a runtime observation of the live gateway: an HTTP request and its redirect, a route-discovery timing and a request to a service without a declared route, a TLS handshake at each protocol version, and a request through the single sign-on step. No current Spec Package cites REQ-0001; a Spec that implements it records the evidence in its Task. The evidence is the observed result of each check, recorded in that Task. The owner named in the frontmatter, @buenhyden, judges each condition from that evidence. The same owner accepts the requirement once every condition is judged met.
 
-## Traceability
-
-### Source and Constraints
-
-This package records the owner's requirements for the gateway tier; no upstream document governs it.
-
-### Downstream Links
+#### Downstream Links
 
 - [Gateway architecture description](../02.architecture/descriptions/0001-gateway-architecture.md)
 - [Traefik policy](../05.operations/policies/02-gateway-and-networking/0013-traefik.md)

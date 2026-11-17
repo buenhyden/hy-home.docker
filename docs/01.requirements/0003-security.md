@@ -1,10 +1,10 @@
 ---
 title: "Security Tier (03-security) Requirements"
-version: "1.4.1"
+version: "1.5.0"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "requirements"
 artifact_id: "REQ-0003"
 created: "2026-03-26"
@@ -64,6 +64,22 @@ The owner, @buenhyden, writes, reviews and accepts this package.
 
 ## Requirements
 
+| Requirement ID | Statement | Rationale | Acceptance | Priority |
+| --- | --- | --- | --- | --- |
+| REQ-0003-FR-0001 | Secrets must be kept in durable integrated storage. The current deployment is a single node; expanding to a replicated quorum is a separate, planned transition. | Scattered secrets raise exposure risk and audit gaps, so eligible consumer secrets are stored centrally. | The declared deployment renders with zero failures and zero storage or port overlaps across its selected profiles, using synthetic inputs; a static render never proves live health. | must |
+| REQ-0003-FR-0002 | Operator user-interface and API access must pass through the gateway over TLS, and service-to-server paths must use validated TLS. No new public endpoint is granted. | This package records no rationale for this requirement. | Consumers start with secrets delivered as files and need no secret in their own configuration; operator access reaches the server only through the gateway over TLS. | must |
+| REQ-0003-FR-0003 | Unsealing must be a manual, threshold-based operator procedure whose shares and recovery credentials stay in their approved separate custody. | Recovery must not depend on the service being recovered, and a lost or wrongly held unseal share or recovery credential can make stored secrets unrecoverable. | Bounded positive and negative checks without real credentials admit zero unauthorized token, issuer, custody or restore actions; no new rekey or credential issuance is inferred. | must |
+| REQ-0003-FR-0004 | Every request to the secrets server must be written to an audit log that does not contain secret values in plaintext. | Every access must be auditable, and the security administrator reviews audit logs. | Audit logging is enabled on the deployed server and required rotation and failure detections succeed; a rotation not yet observed stays pending in the service Task. | must |
+| REQ-0003-NFR-0005 | the impact of a single-node failure must be detectable, and the stored secrets must be restorable from a snapshot into empty storage; measure: successful isolated restoration and elapsed recovery time in seconds, on the exact image and snapshot identity, against a recovery-time target the operator sets before the authorized run. A synthetic pass does not accept recovery of the home deployment. | The server runs as a single node, so a failure or seal stops secret delivery, and recovery must not depend on the service being recovered. | A single-node failure is detected, and a snapshot restores into empty storage in an isolated run on the exact image and snapshot identity within the operator's recovery-time target; a synthetic pass does not accept the home deployment's recovery. | must |
+| REQ-0003-NFR-0006 | stored secrets must be encrypted at rest with an authenticated cipher of at least 256-bit key strength; measure: the server's documented storage encryption for the deployed version, checked at each version change. | This package records no rationale for this requirement beyond the declaration itself. | The deployed server version's documented storage encryption is an authenticated cipher with at least 256-bit key strength, and the check is repeated at each version change. | must |
+| REQ-0003-NFR-0007 | secret lookup latency must suit each consumer's workload; measure: latency distribution in milliseconds under a named load, sample count and tool, against a threshold the consumer owner sets before measurement. No global threshold or caching guarantee is made; no baseline is recorded. | This package records no rationale for this requirement beyond the declaration itself. | Each consumer's lookup latency distribution, in milliseconds under a named load, sample count and tool, meets the threshold its owner set before measurement; a consumer with no threshold stays unjudged. | must |
+
+| Requirement ID | Attribute | Measure | Unit | Environment | Criterion |
+| --- | --- | --- | --- | --- | --- |
+| REQ-0003-NFR-0005 | Recoverability | Successful isolated restoration and elapsed recovery time, on the exact image and snapshot identity. | seconds | An isolated, operator-authorized run on the exact image and snapshot identity; a synthetic pass does not accept recovery of the home deployment. | Restoration succeeds within the recovery-time target the operator sets before the authorized run. |
+| REQ-0003-NFR-0006 | Confidentiality | The server's documented storage encryption for the deployed version, checked at each version change. | The package records no unit for this measure. | The deployed server version. | An authenticated cipher of at least 256-bit key strength. |
+| REQ-0003-NFR-0007 | Performance | Latency distribution under a named load, sample count and tool. | milliseconds | Each consumer's workload under a named load; no baseline is recorded. | Meets the threshold the consumer owner sets before measurement; no global threshold is made. |
+
 ### Functional Requirements
 
 - **REQ-0003-FR-0001**: Secrets must be kept in durable integrated storage. The
@@ -96,9 +112,17 @@ The owner, @buenhyden, writes, reviews and accepts this package.
   sets before measurement. No global threshold or caching guarantee is made;
   no baseline is recorded.
 
-## Acceptance Criteria
+## Traceability
 
-### Acceptance Conditions
+### Sources
+
+- Quality references: [ISO/IEC 25010](https://www.iso.org/standard/78176.html),
+  [ISO/IEC 25023](https://www.iso.org/standard/35747.html),
+  [ISO/IEC 25030](https://www.iso.org/standard/72116.html).
+
+### Verification Links
+
+#### Acceptance Conditions
 
 These are local acceptance measures that apply ISO/IEC 25010, 25023 and 25030
 concepts; they are not a certification claim.
@@ -128,7 +152,7 @@ concepts; they are not a certification claim.
   its owner set before measurement. A consumer with no threshold set stays
   unjudged.
 
-### Verification Method
+#### Verification Method
 
 Use synthetic inputs for rendered-output and positive and negative control
 checks. Deployed audit rotation, the exact approved snapshot rehearsal and
@@ -139,15 +163,7 @@ its body. Record each result in the applicable Task. The operator or
 consumer owner sets any unspecified threshold before measurement.
 @buenhyden judges the conditions and accepts the requirement when they are met.
 
-## Traceability
-
-### Source and Constraints
-
-- Quality references: [ISO/IEC 25010](https://www.iso.org/standard/78176.html),
-  [ISO/IEC 25023](https://www.iso.org/standard/35747.html),
-  [ISO/IEC 25030](https://www.iso.org/standard/72116.html).
-
-### Downstream Links
+#### Downstream Links
 
 - [Security architecture description](../02.architecture/descriptions/0003-security-architecture.md)
 - [SPEC-0204: Service integration and security](../03.specs/0204-service-integration-security-and-operations/spec.md)

@@ -1,10 +1,10 @@
 ---
 title: "07-Workflow Optimization Hardening Architecture Description"
-version: "1.2.5"
+version: "1.3.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "AD-0022"
 parent_ids:
@@ -14,14 +14,7 @@ created: "2026-03-28"
 
 # 07-Workflow Optimization Hardening Architecture Description
 
-## Overview
-
-### Purpose and Readers
-
-This document defines the optimization/hardening reference architecture of
-the `07-workflow` layer. It organizes the gateway boundary security,
-health-based dependency, n8n image hardening, and catalog-based expansion
-roadmap from an architecture perspective.
+## Context and Boundaries
 
 ### System Boundary
 
@@ -50,9 +43,14 @@ UI uses ForwardAuth.
   - immediate multi-region/cluster workflow operation
   - immediate full activation of a new workflow service deployment
 
-## Context and Constraints
+#### Purpose and Readers
 
-### Context
+This document defines the optimization/hardening reference architecture of
+the `07-workflow` layer. It organizes the gateway boundary security,
+health-based dependency, n8n image hardening, and catalog-based expansion
+roadmap from an architecture perspective.
+
+#### Context
 
 The tier consumes the `01-gateway` Traefik middleware chain, `02-auth` SSO middleware and `04-data` management PostgreSQL; clients reach the Airflow and n8n UIs through Traefik.
 
@@ -62,7 +60,7 @@ The gateway-standard-chain is enforced (plus the SSO chain on Flower only; Airfl
 
 Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose image projection](../../../infra/tech-stack.versions.json) supplies Compose-image drift verification.
 
-## Current Structure
+## Structure
 
 ### Building Blocks
 
@@ -74,7 +72,21 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 - **Data/control dependencies**:
   - PostgreSQL (metadata), Valkey (queue/broker), SSO middleware
 
-### Runtime and Deployment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Ingress path (Traefik `websecure` to workflow routers) | Airflow and n8n UIs | Clients | `01-gateway` gateway standard chain; Airflow uses Keycloak Auth Manager, n8n its own login | The description records no failure handling for this interface. |
+| Optional Flower UI | Airflow Flower (`airflow-flower` profile) | The description names no consumer for this interface. | `02-auth` SSO middleware via ForwardAuth | The description records no failure handling for this interface. |
+| PostgreSQL metadata | `04-data` management PostgreSQL | Airflow and n8n | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| Valkey queue/broker | Shared `mng-valkey` via `${AIRFLOW_VALKEY_HOST:-mng-valkey}` and `${N8N_VALKEY_HOST:-mng-valkey}` | Airflow distributed components and n8n queue mode | The description links no contract for this interface. | The description records no failure handling for this interface. |
+
+- Ingress path: Client -> Traefik(websecure) -> workflow routers -> Airflow/n8n UI.
+- Data/control dependencies: PostgreSQL (metadata), Valkey (queue/broker), SSO middleware.
+
+## Runtime Behavior
+
+### Normal Flow
 
 #### Runtime View
 
@@ -96,25 +108,13 @@ Runtime pins are owned by Compose/Dockerfile declarations; the [derived Compose 
 - **Verification**: the registered `infrastructure-hardening` gate in
   `.github/workflow-contract.yml` and Compose validation
 
-## Interfaces
+### Failure and Recovery
 
-### Contracts
+Health-based boot order reduces initial failure/restart bursts, and worker/task-runner healthcheck and dependency gating strengthen stability. The description records no failure boundary beyond the linked operations documents under Interfaces.
 
-- Ingress path: Client -> Traefik(websecure) -> workflow routers -> Airflow/n8n UI.
-- Data/control dependencies: PostgreSQL (metadata), Valkey (queue/broker), SSO middleware.
+## Quality Scenarios
 
-### Failure Boundaries
-
-Health-based boot order reduces initial failure/restart bursts, and worker/task-runner healthcheck and dependency gating strengthen stability. The description records no failure boundary beyond the linked operations documents under Contracts.
-
-## Decisions
-
-### Decision Links
-
-- **ADR**: [ADR-0059 Native OIDC for Open WebUI and the Airflow UI](../decisions/0059-native-oidc-open-webui-and-airflow.md)
-- **ADR**: [ADR-0062 optional Flower activation](../decisions/0062-home-lab-membership.md)
-
-### Quality and Risks
+### Scenarios
 
 #### Quality Attributes
 
@@ -130,13 +130,34 @@ Health-based boot order reduces initial failure/restart bursts, and worker/task-
 - **Observability**: verifies workflow stack health at the compose/CI level.
 - **Operability**: uses the registered hardening gate as the baseline.
 
-## Traceability
+### Trade-offs
 
-### Requirement Mapping
+- The SSO chain applies to Flower only; Airflow and n8n keep their own login
+  behind the gateway standard chain (Constraints, Quality Attributes).
+- Scalability is prepared, not implemented: Airflow worker autoscale criteria
+  and a queue metrics-based expansion policy remain Evolution items, and
+  multi-region or cluster workflow operation is a non-goal (Quality
+  Attributes, System Boundary).
+- A new workflow service without a tracked infra artifact stays outside the
+  active workflow architecture scope, and its immediate full activation is a
+  non-goal (Evolution, System Boundary).
+- The description records no failure boundary beyond the linked operations
+  documents (Failure and Recovery).
+
+## Decisions and Adoption
+
+### Decisions
+
+- **ADR**: [ADR-0059 Native OIDC for Open WebUI and the Airflow UI](../decisions/0059-native-oidc-open-webui-and-airflow.md)
+- **ADR**: [ADR-0062 optional Flower activation](../decisions/0062-home-lab-membership.md)
+
+### Adoption Boundaries
+
+#### Requirement Mapping
 
 - **Requirement**: [REQ-0008 Workflow](../../01.requirements/0008-workflow.md)
 
-### Currentness and Lineage
+#### Currentness and Lineage
 
 - **Tier Architecture Description**: [AD-0007 Workflow Tier (07-workflow) Architecture Description](0007-workflow-architecture.md)
 - **Guide**: [Workflow optimization hardening guide](../../05.operations/guides/08-workflows-and-automation/0054-workflow-optimization-hardening.md)

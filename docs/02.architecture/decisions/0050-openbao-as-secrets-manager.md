@@ -1,10 +1,10 @@
 ---
 title: "OpenBao as Secrets Manager"
-version: "1.0.1"
+version: "1.1.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0050"
 parent_ids:
@@ -31,9 +31,34 @@ the nearest ADRs.
   [`infra/03-security/openbao`](../../../infra/03-security/openbao/docker-compose.yml).
 - Unseal method, backup custody and operations keep their own owners.
 
+#### Sources
+
+- [AD-0003](../descriptions/0003-security-architecture.md)
+- [ADR-0042](0042-openbao-unseal-method.md)
+- [OpenBao policy](../../05.operations/policies/04-security-and-secrets/0085-openbao.md)
+
 ### Decision Scope
 
 This decision covers the choice of the platform secrets manager and its HOME implementation in `infra/03-security/openbao`. Unseal method, backup custody and operations keep their own owners, and multi-node Raft HA is not part of it.
+
+## Options
+
+### Considered Options
+
+- Keep ADR-0003 and ADR-0018 as the owners: rejected; they describe a removed
+  product and leave the current choice undecided in the ADR set.
+- Amend ADR-0003 in place: rejected; its Vault decision and 2026-03-26
+  acceptance are historical evidence.
+
+### Trade-offs
+
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| Keep ADR-0003 and ADR-0018 as the owners | The ADR records no benefit for this option. | They describe a removed product and leave the current choice undecided in the ADR set. | Rejected; they describe a removed product and leave the current choice undecided in the ADR set. |
+| Amend ADR-0003 in place | The ADR records no benefit for this option. | An in-place amendment would overwrite ADR-0003's Vault decision and 2026-03-26 acceptance, which are historical evidence. | Rejected; ADR-0003's Vault decision and 2026-03-26 acceptance are historical evidence. |
+| OpenBao as the platform secrets manager with `openbao-agent` as the HOME implementation of consumer secret rendering (chosen) | One current decision record owns the secrets manager choice and matches the tracked implementation in `infra/03-security/openbao`. | The ADR records no cost or risk for this option; multi-node Raft HA is not part of it and any change of seal method or HA topology needs its own ADR. | Chosen; Vault and `vault-agent` were removed in SPEC-0180 S08 and AD-0003 already names OpenBao plus `openbao-agent`, but no accepted record stated that decision. |
+
+Each alternative is rejected for the reason stated in its entry above: ADR-0003 and ADR-0018 describe a removed product, and ADR-0003's Vault decision and 2026-03-26 acceptance are historical evidence that an in-place amendment would overwrite.
 
 ## Decision
 
@@ -56,18 +81,11 @@ implementation of consumer secret rendering.
 
 Decided by the owner, @buenhyden, who accepted it on 2026-10-29; status `accepted`. Effective from 2026-10-29.
 
-## Alternatives
+#### Supersession
 
-### Considered Options
+This record supersedes ADR-0003 and ADR-0018. Both were later deleted; their numbers are reserved in the Registry and their bodies are in version history (historical, non-authoritative). The Vault-era auto-unseal and remote-audit deferral recorded in ADR-0018 was never decided and is not carried here; ADR-0042 owns the seal question.
 
-- Keep ADR-0003 and ADR-0018 as the owners: rejected; they describe a removed
-  product and leave the current choice undecided in the ADR set.
-- Amend ADR-0003 in place: rejected; its Vault decision and 2026-03-26
-  acceptance are historical evidence.
-
-### Trade-offs
-
-Each alternative is rejected for the reason stated in its entry above: ADR-0003 and ADR-0018 describe a removed product, and ADR-0003's Vault decision and 2026-03-26 acceptance are historical evidence that an in-place amendment would overwrite.
+- **Superseded decisions**: ADR-0003 adopted HashiCorp Vault as the central secrets manager, and ADR-0018 ordered its hardening and HA expansion (agent template, healthcheck, CI gate; auto-unseal deferred). This decision replaces both.
 
 ## Consequences
 
@@ -77,23 +95,14 @@ This record changes no runtime behavior and claims no data migration, recovery o
 
 ### Follow-up
 
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
 None. Any change of seal method or HA topology needs its own ADR.
 
 #### Compliance
 
 The documentation gates check the supersession links and metadata. Runtime
 state needs separate execution evidence.
-
-## Traceability
-
-### Sources
-
-- [AD-0003](../descriptions/0003-security-architecture.md)
-- [ADR-0042](0042-openbao-unseal-method.md)
-- [OpenBao policy](../../05.operations/policies/04-security-and-secrets/0085-openbao.md)
-
-### Supersession
-
-This record supersedes ADR-0003 and ADR-0018. Both were later deleted; their numbers are reserved in the Registry and their bodies are in version history (historical, non-authoritative). The Vault-era auto-unseal and remote-audit deferral recorded in ADR-0018 was never decided and is not carried here; ADR-0042 owns the seal question.
-
-- **Superseded decisions**: ADR-0003 adopted HashiCorp Vault as the central secrets manager, and ADR-0018 ordered its hardening and HA expansion (agent template, healthcheck, CI gate; auto-unseal deferred). This decision replaces both.

@@ -1,10 +1,10 @@
 ---
 title: "Package Waiting, Cancellation and Archive Reassessment"
-version: "1.0.8"
+version: "1.1.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0037"
 parent_ids:
@@ -35,9 +35,41 @@ completion approval, and exact capture preparation difficult.
 - Current citation permission depends on assessment before source-profile exceptions.
 - Registry owns shapes, states and ordered judgments; code implements those contracts.
 
+#### Sources
+
+- [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
+- [ADR-0048](0048-authority-parents-and-criterion-acceptance.md)
+- [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
+- SPEC-0179
+- [Retention policy](../../../.agents/governance/documentation-protocol.md#retention-by-status)
+
 ### Decision Scope
 
 This decision covers package waiting, task cancellation and archive reassessment for Stage 03 packages, and is implemented by SPEC-0179. Its approval does not authorize actual payload removal, commits, remote integration, runtime operations or secret access.
+
+## Options
+
+### Considered Options
+
+1. **Keep retained-only storage and simultaneous completion/disposition.** Rejected:
+   this cannot express approved waiting, truthful cancellation or reassessment.
+2. **Add a waiting status and duplicate machine catalog.** Rejected: waiting is
+   derivable from member statuses, and a second catalog creates conflicting authority.
+3. **Extend existing package judgments, Task metadata and Markdown catalog.** Selected:
+   preserves identities and historical rows while making current management explicit.
+4. **Rewrite all old captures to exact bytes.** Rejected: original lifecycle evidence
+   and historical transformations cannot be retroactively manufactured.
+
+### Trade-offs
+
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| 1. Keep retained-only storage and simultaneous completion/disposition | The ADR records no benefit for this option. | Cannot express approved waiting, truthful cancellation or reassessment. | Rejected because it cannot express approved waiting, truthful cancellation or reassessment. |
+| 2. Add a waiting status and duplicate machine catalog | The ADR records no benefit for this option. | Waiting is derivable from member statuses, and a second catalog creates conflicting authority. | Rejected because a duplicate machine catalog creates conflicting authority. |
+| 3. Extend existing package judgments, Task metadata and Markdown catalog | Preserves identities and historical rows while making current management explicit. | Exact capture needs a prepared source commit, and Git availability is required for verification (Consequences). | Selected because it preserves identities and historical rows while making current management explicit. |
+| 4. Rewrite all old captures to exact bytes | The ADR records no benefit for this option. | Original lifecycle evidence and historical transformations cannot be retroactively manufactured. | Rejected because original lifecycle evidence cannot be retroactively manufactured. |
+
+Each rejected option is rejected for the reason stated in its entry above: retained-only storage cannot express waiting, cancellation or reassessment; a duplicate machine catalog creates conflicting authority; rewriting old captures cannot manufacture original lifecycle evidence. The selected option preserves identities and historical rows while making current management explicit.
 
 ## Decision
 
@@ -107,68 +139,7 @@ commits, remote integration, runtime operations or secret access.
 
 Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked. The effective date is not recorded separately; the document was created on 2026-09-17.
 
-## Alternatives
-
-### Considered Options
-
-1. **Keep retained-only storage and simultaneous completion/disposition.** Rejected:
-   this cannot express approved waiting, truthful cancellation or reassessment.
-2. **Add a waiting status and duplicate machine catalog.** Rejected: waiting is
-   derivable from member statuses, and a second catalog creates conflicting authority.
-3. **Extend existing package judgments, Task metadata and Markdown catalog.** Selected:
-   preserves identities and historical rows while making current management explicit.
-4. **Rewrite all old captures to exact bytes.** Rejected: original lifecycle evidence
-   and historical transformations cannot be retroactively manufactured.
-
-### Trade-offs
-
-Each rejected option is rejected for the reason stated in its entry above: retained-only storage cannot express waiting, cancellation or reassessment; a duplicate machine catalog creates conflicting authority; rewriting old captures cannot manufacture original lifecycle evidence. The selected option preserves identities and historical rows while making current management explicit.
-
-## Consequences
-
-### Impacts
-
-- Authors can record cancellation and completion without inventing execution states.
-- Assessment is mutable management information; captured lifecycle facts are immutable.
-- Exact capture needs a prepared source commit. Without commit authorization the agent
-  prepares changes and reports the integration boundary instead of inventing a source.
-- Git availability is required for verification. Local static success is not hosted
-  CI, service health, deployment, or actual removal evidence.
-- Existing legacy verification limits remain visible; adopting a new generation does
-  not certify previously unavailable history.
-- Rollback restores the scoped current-contract diff before integration; later rollback
-  uses an approved change and never rewrites frozen records or published history.
-
-### Follow-up
-
-SPEC-0179, now retired, owned implementation and local verification. Its lifecycle followed
-registered integration edges; the adoption approval does not fabricate intervening
-commits or authorize remote integration. A real unit disposition remains a separate
-scoped operation after recoverability and consumer checks.
-
-#### Compliance
-
-Policy owns meaning; Registry owns shapes and generation boundaries; validators own
-executable judgments. SPEC-0179 recorded actual RED/GREEN, snapshot, metadata, corpus,
-link and independent review evidence, with S01–S16 and V01–V40 scope and limitations.
-This accepted decision is not itself a test result or per-unit removal authorization.
-
-Amended in place on 2026-11-15 at the owner's direction (SPEC-0255
-TSK-0001, criterion 2): SPEC-0179 is retired, so the two sentences above
-now say it owned and recorded these, in the past tense. The decision does not
-change.
-
-## Traceability
-
-### Sources
-
-- [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
-- [ADR-0048](0048-authority-parents-and-criterion-acceptance.md)
-- [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
-- SPEC-0179
-- [Retention policy](../../../.agents/governance/documentation-protocol.md#retention-by-status)
-
-### Supersession
+#### Supersession
 
 ADR-0036 predecessor; its number is reserved in the Registry and its body is in version history.
 
@@ -190,3 +161,42 @@ completion-receipt clauses.
   completion-receipt clauses. The decision body above is kept as accepted.
 
 - **Superseded archive-model decisions**: ADR-0030 made a Tombstone the record of a retirement; ADR-0031 made Stage 98 a preserved record keyed by Retired Path; ADR-0033 preserved whole Spec packages; ADR-0035 introduced Stage 98 retention classes and route dispositions; ADR-0036 added occupancy, citation, and frozen identity rules. This decision replaces ADR-0036. Under SPEC-0249 the Stage 98 records were later summarized into Stage 01 and Stage 02 and deleted; version history is their record and retired numbers live in the Registry.
+
+## Consequences
+
+### Impacts
+
+- Authors can record cancellation and completion without inventing execution states.
+- Assessment is mutable management information; captured lifecycle facts are immutable.
+- Exact capture needs a prepared source commit. Without commit authorization the agent
+  prepares changes and reports the integration boundary instead of inventing a source.
+- Git availability is required for verification. Local static success is not hosted
+  CI, service health, deployment, or actual removal evidence.
+- Existing legacy verification limits remain visible; adopting a new generation does
+  not certify previously unavailable history.
+- Rollback restores the scoped current-contract diff before integration; later rollback
+  uses an approved change and never rewrites frozen records or published history.
+
+### Follow-up
+
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
+SPEC-0179, now retired, owned implementation and local verification. Its lifecycle followed
+registered integration edges; the adoption approval does not fabricate intervening
+commits or authorize remote integration. A real unit disposition remains a separate
+scoped operation after recoverability and consumer checks.
+
+#### Compliance
+
+Policy owns meaning; Registry owns shapes and generation boundaries; validators own
+executable judgments. SPEC-0179 recorded actual RED/GREEN, snapshot, metadata, corpus,
+link and independent review evidence, with S01–S16 and V01–V40 scope and limitations.
+This accepted decision is not itself a test result or per-unit removal authorization.
+
+Amended in place on 2026-11-15 at the owner's direction (SPEC-0255
+TSK-0001, criterion 2): SPEC-0179 is retired, so the two sentences above
+now say it owned and recorded these, in the past tense. The decision does not
+change.

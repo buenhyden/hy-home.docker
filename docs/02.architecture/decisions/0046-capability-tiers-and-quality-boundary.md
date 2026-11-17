@@ -1,10 +1,10 @@
 ---
 title: "Capability Tiers and Quality Boundary"
-version: "0.1.3"
+version: "0.2.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0046"
 parent_ids:
@@ -28,9 +28,34 @@ Use capability ownership, retain cohesive packages and helper jobs, preserve
 runtime configuration and persistent data, and keep existing Operations IDs.
 Directory placement must not imply activation order or security isolation.
 
+#### Sources
+
+- [AD-0009](../descriptions/0009-tooling-architecture.md)
+- [AD-0011](../descriptions/0011-laboratory-architecture.md)
+- SPEC-0197
+- SPEC-0198
+
 ### Decision Scope
 
 This decision covers the physical ownership of Tooling, Communication and Laboratory packages across capability tiers. It affects requirements and architecture descriptions, Guides, Policies and Runbooks; a package move grants no new runtime, profile, authentication exception or deployment permission.
+
+## Options
+
+### Considered Options
+
+- A: retain the current directories and clarify navigation only.
+- B: move six packages/eight labels into existing capability tiers.
+- C: establish a Quality capability and relocate twelve packages/sixteen labels.
+
+### Trade-offs
+
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| A: retain the current directories and clarify navigation only | The ADR records no benefit for this option. | Leaves the mixed capability ownership in place. | The ADR records no reason for not choosing this option. |
+| B: move six packages/eight labels into existing capability tiers | The ADR records no benefit for this option. | The ADR records no cost or risk for this option. | The ADR records no reason for not choosing this option. |
+| C: establish a Quality capability and relocate twelve packages/sixteen labels | Adds a Quality capability for software verification and retains cohesive packages while keeping existing Operations IDs. | Future container recreation must account for relocated source mounts (Follow-up). | The user approved SPEC-0197 option C on 2026-10-01; the record gives no comparative reason for choosing option C. |
+
+Option A leaves the mixed capability ownership in place and only clarifies navigation. Option B moves six packages/eight labels into existing capability tiers. Option C adds a Quality capability for software verification and relocates twelve packages/sixteen labels, retaining cohesive packages while keeping existing Operations IDs. The record gives no comparative reason for choosing option C.
 
 ## Decision
 
@@ -59,18 +84,6 @@ is a separately controlled operational handoff.
 
 Decided by the owner, @buenhyden; status `accepted`. The Context records that the user approved SPEC-0197 option C and its additional implementation Plan on 2026-10-01. The acceptance date is not recorded; the SPEC-0197 option C approval is dated 2026-10-01.
 
-## Alternatives
-
-### Considered Options
-
-- A: retain the current directories and clarify navigation only.
-- B: move six packages/eight labels into existing capability tiers.
-- C: establish a Quality capability and relocate twelve packages/sixteen labels.
-
-### Trade-offs
-
-Option A leaves the mixed capability ownership in place and only clarifies navigation. Option B moves six packages/eight labels into existing capability tiers. Option C adds a Quality capability for software verification and relocates twelve packages/sixteen labels, retaining cohesive packages while keeping existing Operations IDs. The record gives no comparative reason for choosing option C.
-
 ## Consequences
 
 ### Impacts
@@ -83,6 +96,11 @@ profile, authentication exception or deployment permission.
 
 ### Follow-up
 
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
 Future container recreation must account for relocated source mounts. Runtime,
 image builds, deployment and data recovery need separately scoped authorization;
 static source acceptance does not prove their success.
@@ -92,12 +110,3 @@ static source acceptance does not prove their success.
 Require exact before/after public-model comparison, source-content preservation,
 retained hardening controls and negative regressions, current document contracts,
 and independent read-only review. Record actual outcomes in the existing Tasks.
-
-## Traceability
-
-### Sources
-
-- [AD-0009](../descriptions/0009-tooling-architecture.md)
-- [AD-0011](../descriptions/0011-laboratory-architecture.md)
-- SPEC-0197
-- SPEC-0198

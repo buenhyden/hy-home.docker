@@ -1,10 +1,10 @@
 ---
 title: "Airflow & n8n Hybrid Workflow Strategy"
-version: "1.1.5"
+version: "1.2.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0007"
 parent_ids:
@@ -26,12 +26,43 @@ The project faces two different workflow needs.
 
 Solving both with a single solution does not work well: Airflow is too heavy for simple integrations, and n8n has limits managing complex data pipelines.
 
+#### Sources
+
+The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked below, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
+
+- **PRD**: [008-workflow.md](../../01.requirements/0008-workflow.md)
+- **Architecture Description**: [0007-workflow-architecture.md](../descriptions/0007-workflow-architecture.md)
+
 ### Decision Scope
 
 Explicit non-goals:
 
 - Does not standardize direct mutual calls between the two engines (done only through an API when needed).
 - Does not use n8n for large-volume data processing.
+
+## Options
+
+### Considered Options
+
+#### Alternative 1: Airflow Only
+
+- Good: simple with single-engine operation, strong control.
+- Bad: even simple API integrations need a lot of code, and fast UI-based edits are not possible.
+
+#### Alternative 2: n8n Only
+
+- Good: very fast development speed, intuitive visualization.
+- Bad: complex dependency management and applying custom Python logic are difficult, and visibility into large-scale batch jobs is low.
+
+### Trade-offs
+
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| Alternative 1: Airflow Only | Simple with single-engine operation and strong control. | Even simple API integrations need a lot of code, and fast UI-based edits are not possible. | Not chosen because simple API integrations need a lot of code and fast UI-based edits are not possible. |
+| Alternative 2: n8n Only | Very fast development speed and intuitive visualization. | Complex dependency management and custom Python logic are difficult, and visibility into large-scale batch jobs is low. | Not chosen because complex dependency management and custom Python logic are difficult and batch visibility is low. |
+| Apache Airflow as Core Orchestrator with n8n as Integration Automator | Uses the optimal tool for each purpose, lowers the barrier for non-developers or AI agents (n8n) and secures data governance and traceability (Airflow). | Operational overhead from managing two kinds of engines and increased memory and CPU consumption. | A single solution does not work well: Airflow is too heavy for simple integrations, and n8n has limits managing complex data pipelines. |
+
+Airflow only was not chosen because simple API integrations need a lot of code and fast UI-based edits are not possible. n8n only was not chosen because complex dependency management and custom Python logic are difficult and visibility into large-scale batch jobs is low.
 
 ## Decision
 
@@ -57,24 +88,6 @@ Explicit non-goals:
 
 Decided by the owner, @buenhyden; status `accepted`. No separate approval record is linked. Effective from 2026-03-26.
 
-## Alternatives
-
-### Considered Options
-
-#### Alternative 1: Airflow Only
-
-- Good: simple with single-engine operation, strong control.
-- Bad: even simple API integrations need a lot of code, and fast UI-based edits are not possible.
-
-#### Alternative 2: n8n Only
-
-- Good: very fast development speed, intuitive visualization.
-- Bad: complex dependency management and applying custom Python logic are difficult, and visibility into large-scale batch jobs is low.
-
-### Trade-offs
-
-Airflow only was not chosen because simple API integrations need a lot of code and fast UI-based edits are not possible. n8n only was not chosen because complex dependency management and custom Python logic are difficult and visibility into large-scale batch jobs is low.
-
 ## Consequences
 
 ### Impacts
@@ -89,13 +102,9 @@ Airflow only was not chosen because simple API integrations need a lot of code a
 
 ### Follow-up
 
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
 No follow-up work is recorded in this decision.
-
-## Traceability
-
-### Sources
-
-The confirming evidence for this decision is limited to the Architecture Description, Spec, and Operations documents linked below, and the current repository configuration. It makes no claim about runtime state without separate execution evidence.
-
-- **PRD**: [008-workflow.md](../../01.requirements/0008-workflow.md)
-- **Architecture Description**: [0007-workflow-architecture.md](../descriptions/0007-workflow-architecture.md)

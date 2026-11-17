@@ -1,10 +1,10 @@
 ---
 title: "Kafka as the Only Messaging Broker"
-version: "0.2.1"
+version: "0.3.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0052"
 parent_ids:
@@ -33,10 +33,44 @@ multi-broker Kafka cluster exists only as the `labs/kafka-cluster` LAB.
   the Airflow and n8n packages.
 - Accepted decisions must describe the tree as it is.
 
+#### Sources
+
+Evidence is the current repository configuration and
+`scripts/hardening/check-all-hardening.sh` (`check_05_messaging`). No runtime
+state is claimed.
+
+- [REQ-0006 Messaging](../../01.requirements/0006-messaging.md)
+- [AD-0005 Messaging architecture](../descriptions/0005-messaging-architecture.md)
+- [AD-0020 Messaging hardening](../descriptions/0020-messaging-optimization-hardening-architecture.md)
+- [ADR-0038 Selective native OIDC](0038-selective-native-oidc-for-native-auth-apps.md)
+- [POL-0107 LAB promotion](../../05.operations/policies/15-labs/0107-lab-promotion.md)
+
 ### Decision Scope
 
 This decision covers the messaging broker of HOME and the 05-messaging tier.
 Redis Pub/Sub and cloud messaging services stay out of scope.
+
+## Options
+
+### Considered Options
+
+- Keep the two-broker decision and restore RabbitMQ as an opt-in profile:
+  rejected; it reintroduces a runtime no consumer uses.
+- RabbitMQ only: rejected; it lacks Kafka's replay and partitioned retention
+  for event and log streams.
+- Kafka as the only broker, with task-queue needs met by the workflow
+  packages' own Valkey: selected.
+
+### Trade-offs
+
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| Keep the two-broker decision and restore RabbitMQ as an opt-in profile | The ADR records no benefit for this option. | It reintroduces a runtime no consumer uses. | Rejected; it reintroduces a runtime no consumer uses. |
+| RabbitMQ only | The ADR records no benefit for this option. | It lacks Kafka's replay and partitioned retention for event and log streams. | Rejected; it lacks Kafka's replay and partitioned retention for event and log streams. |
+| Kafka as the only broker, with task-queue needs met by the workflow packages' own Valkey | One broker to operate and secure, the messaging documents describe one runtime, and the hardening gate already checks the only broker. | A future need for AMQP-style routing or per-message acknowledgement needs a new decision and runtime. | Selected; no current consumer needs AMQP routing, workflow queues use Valkey through the Airflow and n8n packages, and accepted decisions must describe the tree as it is. |
+
+- Trade-off: a future need for AMQP-style routing or per-message
+  acknowledgement needs a new decision and runtime.
 
 ## Decision
 
@@ -62,55 +96,7 @@ Redis Pub/Sub and cloud messaging services stay out of scope.
 Decided by the owner, @buenhyden; status `accepted`. No separate approval
 record is linked. Effective from 2026-11-06.
 
-## Alternatives
-
-### Considered Options
-
-- Keep the two-broker decision and restore RabbitMQ as an opt-in profile:
-  rejected; it reintroduces a runtime no consumer uses.
-- RabbitMQ only: rejected; it lacks Kafka's replay and partitioned retention
-  for event and log streams.
-- Kafka as the only broker, with task-queue needs met by the workflow
-  packages' own Valkey: selected.
-
-### Trade-offs
-
-- Trade-off: a future need for AMQP-style routing or per-message
-  acknowledgement needs a new decision and runtime.
-
-## Consequences
-
-### Impacts
-
-- Positive: one broker to operate and secure; the messaging documents describe
-  one runtime.
-- Positive: the hardening gate already checks the only broker.
-
-### Follow-up
-
-Messaging requirement and description text that still names RabbitMQ is
-reconciled by its owners.
-
-#### Compliance
-
-`check_05_messaging` in `scripts/hardening/check-all-hardening.sh` checks the
-gateway chain and Kafbat native OIDC labels.
-
-## Traceability
-
-### Sources
-
-Evidence is the current repository configuration and
-`scripts/hardening/check-all-hardening.sh` (`check_05_messaging`). No runtime
-state is claimed.
-
-- [REQ-0006 Messaging](../../01.requirements/0006-messaging.md)
-- [AD-0005 Messaging architecture](../descriptions/0005-messaging-architecture.md)
-- [AD-0020 Messaging hardening](../descriptions/0020-messaging-optimization-hardening-architecture.md)
-- [ADR-0038 Selective native OIDC](0038-selective-native-oidc-for-native-auth-apps.md)
-- [POL-0107 LAB promotion](../../05.operations/policies/15-labs/0107-lab-promotion.md)
-
-### Supersession
+#### Supersession
 
 This record replaces two accepted ADRs, deleted in the same change (ADR-0051);
 both are historical and non-authoritative:
@@ -125,3 +111,26 @@ both are historical and non-authoritative:
   the opt-in `messaging-option` profile, with catalog expansion in phases. Its
   hardening and phased-expansion decisions carry forward; the RabbitMQ item is
   withdrawn.
+
+## Consequences
+
+### Impacts
+
+- Positive: one broker to operate and secure; the messaging documents describe
+  one runtime.
+- Positive: the hardening gate already checks the only broker.
+
+### Follow-up
+
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
+Messaging requirement and description text that still names RabbitMQ is
+reconciled by its owners.
+
+#### Compliance
+
+`check_05_messaging` in `scripts/hardening/check-all-hardening.sh` checks the
+gateway chain and Kafbat native OIDC labels.

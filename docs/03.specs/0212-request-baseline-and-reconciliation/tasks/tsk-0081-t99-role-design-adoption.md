@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.10.0"
+version: "0.11.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -365,6 +365,30 @@ effects sat under Secrets and External Effects; both are corrected, and those
 actions now sit under Authority beside Stop and Escalate. Compared with `main`,
 the guides and skills lost no line except the one renamed section reference.
 
+#### W146 requirements, architecture and decisions
+
+The Requirement Package, Architecture Description and ADR forms move to the
+core requirement, architecture and decision roles, and the three roles are
+bound. All 18 Requirement Packages, 27 Architecture Descriptions and 30 ADRs
+move section by section. The owner directed an in-place amendment of the 30
+accepted ADRs for the move, and each records it in Follow-up with its decision
+text unchanged. Each package gains a requirements table whose Statement repeats
+its declaration exactly; the owner decided on 2026-11-17 that a declaration
+without a modal verb binds as `must`, and the protocol and template record that
+rule. Five packages gain a quality table; descriptions gain Trade-offs text and
+interface tables; ADRs gain options tables; each is written from the document,
+saying where it records nothing. A new check fails when the requirements table
+and the declarations name different IDs. The core architecture and decision
+forms have no Traceability section, so, following the prompt's rule that a
+requirement and a conflicting policy change together, a retirement summary now
+goes to the owner's lineage section: Traceability in a Requirement Package,
+Decisions and Adoption / Adoption Boundaries in an Architecture Description and
+Decision / Authority and Effect in an ADR; the protocol, glossary, REQ-0026,
+ADR-0051, AD-0030 and two READMEs say so. An independent review found prose
+still naming Traceability, Statements that differed from their declarations,
+interface cells beyond the document, PATCH bumps for contract changes and no
+Task record; each is corrected.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -478,6 +502,20 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Agent instructions review fix checks | 137 | W145 | document-corpus | check-changed, check-contracts, link alignment, governance contract, renderer, markdownlint, metadata.test_heading and test_template_definition after the fixes, then check-changed after the rebase on `3d53456da` raised the protocol to 7.4.0 | PASS | 36 changed and 0 violations; contracts 0; alignment, governance contract and renderer PASS; 0 lint issues; tests OK | required | - |
 | Agent instructions head checks | 137 | W145 | document-corpus | check-changed and check-contracts at `fc9ae1e02` against `origin/main` `3377e6ecb` | PASS | 37 changed and 0 violations; 0 contract violations | required | - |
 | Agent instructions re-review | 137 | W145 | independent-review | Fix range `f971dcf66..fc9ae1e02` against the agent instructions review | PASS | APPROVE; findings 1 to 7 fixed or accepted; two minor notes applied | required | Agent instructions review |
+| SDLC forms RED | 137 | W146 | role-design-binding | test_template_definition and metadata.test_heading from the W146 branch against `main` at `3377e6ecb` | FAIL | 163 tests, 16 failures: requirement unbound, old headings accepted, table-missing not expected | required | - |
+| SDLC forms move fidelity | 137 | W146 | document-move | 18 Requirement Packages, 27 Architecture Descriptions and 30 ADRs at `110e484d1` against `main` | PASS | 0 lines lost beyond 14 deliberate edits: lineage wording in REQ-0026, ADR-0051 and AD-0030 and five renamed section references; 995 lines added | required | - |
+| SDLC forms corpus | 137 | W146 | document-corpus | check-changed against `origin/main` `3377e6ecb`, check-contracts, link alignment and corpus lifecycle at `110e484d1`; navigation, governance contract, renderer and markdownlint at `88d473c69` | PASS | 85 changed and 0 violations; 0 contract and lifecycle violations; alignment, navigation, governance contract and renderer PASS; 0 lint issues | required | - |
+| SDLC forms first regression | 137 | W146 | document-governance-regression | The ten governance modules, test_script_manifest, test_requirements, test_relations, test_architecture and test_language at `88d473c69`, before the review fixes | PASS | 841 tests in 1724 seconds, exit 0 | required | - |
+| SDLC forms review | 137 | W146 | independent-review | Commits `88d473c69` and `712787db3` | FAIL | CHANGES_REQUIRED: prose still naming Traceability, Statements differing from declarations, inferred Priority, interface cells beyond the document, PATCH bumps for contract changes, no Task record | required | - |
+| SDLC forms GREEN | 137 | W146 | role-design-binding | The ten governance modules, test_script_manifest, test_requirements, test_relations, test_architecture and test_language at `110e484d1`, after the review fixes | PASS | 842 tests in 1819 seconds, exit 0 | required | SDLC forms RED |
+| SDLC forms review fix checks | 137 | W146 | document-corpus | check-changed against `origin/main` `1b51e0b04` after the rebase raised the protocol to 7.5.0 | PASS | 86 changed and 0 violations | required | - |
+| SDLC forms re-review | 137 | W146 | independent-review | Fix range `96112a806..0b55dc47b` against the SDLC forms review | FAIL | CHANGES_REQUIRED: earlier findings 1 to 12 resolved; protocol rule rows R72, R135 and R245 kept the old wording and the new rules had no row; documented recovery text dropped from interface cells; the table check skipped an aligned header; evidence after the rebase was thin | required | - |
+| SDLC forms hosted candidate | 137 | W146 | hosted-candidate | PR 1069 at `0b55dc47b` | FAIL | candidate-documents: test_an_unknown_or_unmapped_core_role_is_reported picked `common/documentation-readme`, whose target stage-readme other pending roles share once W144 and W145 merged, so no core role was left unmapped | required | - |
+| SDLC forms aligned header RED | 137 | W146 | requirements-table | test_requirements with a column-aligned header and a missing ID, before the label match | FAIL | 29 tests, 1 failure: RequirementPackageError not raised | required | - |
+| SDLC forms re-review fix checks | 137 | W146 | document-corpus | check-changed against `origin/main` `1b51e0b04`, check-contracts, governance contract, link alignment, corpus lifecycle and markdownlint; test_requirements, metadata.test_heading and test_template_definition at `3ba5d78b4` | PASS | 86 changed and 0 violations; 0 contract and lifecycle violations; governance contract and alignment PASS; 0 lint issues; 29, 148 and 44 tests OK | required | - |
+| SDLC forms aligned header GREEN | 137 | W146 | requirements-table | test_requirements after the header is matched by its cell labels, at `3ba5d78b4` | PASS | 29 tests, exit 0 | required | SDLC forms aligned header RED |
+| SDLC forms hosted candidate rerun | 137 | W146 | hosted-candidate | PR 1069 checks at `c01881150`, after the pending-role fixture fix | PASS | candidate-core, candidate-documents, candidate-quality, candidate-routing, CodeQL and GitGuardian pass | required | SDLC forms hosted candidate |
+| SDLC forms re-review approval | 137 | W146 | independent-review | Fix ranges `96112a806..0b55dc47b` and `0b55dc47b..c01881150` against the SDLC forms review and re-review | PASS | APPROVE at `c01881150`; findings 1 to 12 and the four re-review findings fixed; nit 5 kept as faithful to the declaration | required | SDLC forms re-review |
 
 ### Resolution Links
 
@@ -487,7 +525,7 @@ regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
 Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Policy review approval, Policy re-review approval, Policy hosted candidate
 rerun, Governance form GREEN, Governance regression, Governance old-form GREEN, Governance re-review, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
-rows, References form GREEN and References re-review resolve their W144 rows, and Agent instructions form GREEN and Agent instructions re-review resolve their W145 rows. The comparison baseline stays
+rows, References form GREEN and References re-review resolve their W144 rows, Agent instructions form GREEN and Agent instructions re-review resolve their W145 rows, and SDLC forms GREEN, SDLC forms aligned header GREEN, SDLC forms hosted candidate rerun and SDLC forms re-review approval resolve their W146 rows. The comparison baseline stays
 open until every role group conforms.
 
 ## Acceptance Decision

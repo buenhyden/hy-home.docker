@@ -1,10 +1,10 @@
 ---
 title: "README Navigation and Document Language"
-version: "0.2.4"
+version: "0.3.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "ADR-0044"
 parent_ids:
@@ -49,9 +49,42 @@ the owner's priority:
 - Frozen Stage 98 bodies, template sources, and generated adapters keep their
   own contracts.
 
+#### Sources
+
+- Requirements: [REQ-0024](../../01.requirements/0024-agent-governance-standardization.md),
+  [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
+- Architecture: [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
+- Spec: SPEC-0184
+
 ### Decision Scope
 
 This decision covers README navigation and document language across the workspace, for every managed README and every Registry profile that governs human prose. Frozen Stage 98 bodies, template sources, and generated adapters keep their own contracts.
+
+## Options
+
+### Considered Options
+
+1. **Prose-only correction.** Edit the READMEs and the policy text. This is
+   cheap, but nothing stops a regression, and the validators that require
+   enumeration would still fail the corrected READMEs.
+2. **Role-contract enforcement (chosen).** Derive folder-only status from the
+   tracked tree and enforce a `navigation` link mode. Give every Registry
+   profile a declared `language` that the body validator reads. Move the
+   Retention Catalog into its own registered record. Retire the checks that
+   demanded enumeration.
+3. **Generated routers.** Render router READMEs from the Registry. This is
+   strong, but it replaces authored explanation with generated lists, and the
+   request needs purpose and workflow prose.
+
+### Trade-offs
+
+| Option | Benefit | Cost and Risk | Reason |
+| --- | --- | --- | --- |
+| 1. Prose-only correction | Cheap: edit the READMEs and the policy text. | Nothing stops a regression, and the validators that require enumeration would still fail the corrected READMEs. | Not chosen because nothing stops a regression and the enumeration validators would still fail. |
+| 2. Role-contract enforcement (chosen) | Routers stop drifting from the members their children own, the language rule is testable, and one validator run proves both rules. | The bootstrap English-only constraint gains a README exception, the corpus needed language migration (SPEC-0187), and language judgment is a heuristic over prose characters. | Adopted; the ADR states no reason beyond the drivers that rules be enforced by existing validators and that a README route readers rather than duplicate membership. |
+| 3. Generated routers | Strong: render router READMEs from the Registry. | Replaces authored explanation with generated lists. | Not chosen because the request needs purpose and workflow prose. |
+
+Prose-only correction is cheap but nothing stops a regression; generated routers are strong but replace authored explanation with generated lists; role-contract enforcement (option 2) was chosen. The reasons are stated in each option above.
 
 ## Decision
 
@@ -96,26 +129,6 @@ retired.
 
 Decided by the owner, @buenhyden, who asked for the contract on 2026-09-27; status `accepted`. No separate approval record is linked. Effective from 2026-09-27.
 
-## Alternatives
-
-### Considered Options
-
-1. **Prose-only correction.** Edit the READMEs and the policy text. This is
-   cheap, but nothing stops a regression, and the validators that require
-   enumeration would still fail the corrected READMEs.
-2. **Role-contract enforcement (chosen).** Derive folder-only status from the
-   tracked tree and enforce a `navigation` link mode. Give every Registry
-   profile a declared `language` that the body validator reads. Move the
-   Retention Catalog into its own registered record. Retire the checks that
-   demanded enumeration.
-3. **Generated routers.** Render router READMEs from the Registry. This is
-   strong, but it replaces authored explanation with generated lists, and the
-   request needs purpose and workflow prose.
-
-### Trade-offs
-
-Prose-only correction is cheap but nothing stops a regression; generated routers are strong but replace authored explanation with generated lists; role-contract enforcement (option 2) was chosen. The reasons are stated in each option above.
-
 ## Consequences
 
 ### Impacts
@@ -131,6 +144,11 @@ Prose-only correction is cheap but nothing stops a regression; generated routers
 
 ### Follow-up
 
+On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
+record: its sections moved line for line to the core decision form, and the
+options table under Trade-offs was derived from the options it records. The
+decision text is unchanged.
+
 - Corpus language migration for non-README documents, and full enforcement:
   done by SPEC-0187.
 - Script and legacy-code cleanup found by the same audit.
@@ -140,12 +158,3 @@ Prose-only correction is cheap but nothing stops a regression; generated routers
 `check-document-links.py --mode all` enforces navigation.
 `check-document-metadata.py` enforces declared language and the Retention
 Catalog profile. The Registry schema rejects an undeclared `language` value.
-
-## Traceability
-
-### Sources
-
-- Requirements: [REQ-0024](../../01.requirements/0024-agent-governance-standardization.md),
-  [REQ-0026](../../01.requirements/0026-document-retention-and-retirement.md)
-- Architecture: [AD-0030](../descriptions/0030-document-lifecycle-governance.md)
-- Spec: SPEC-0184

@@ -37,11 +37,7 @@ def _package_text(
         f"- **REQ-{number}-FR-0003**: The package provides behavior three.\n"
         f"- **REQ-{number}-FR-0004**: The package provides behavior four."
     )
-    quality = (
-        ""
-        if not non_functional
-        else f"### Quality Requirements\n\n{non_functional}\n\n"
-    )
+    quality = non_functional or "The fixture declares no quality requirement."
     return f"""---
 title: Fixture Requirement Package
 type: sdlc/requirement
@@ -81,23 +77,21 @@ No constraint or exclusion applies to this fixture.
 
 {functional}
 
-{quality}## Acceptance Criteria
+### Quality Requirements
 
-### Acceptance Conditions
-
-- The declared requirements are independently verifiable.
-
-### Verification Method
-
-Each condition is judged from the evidence of the Spec that cites it.
+{quality}
 
 ## Traceability
 
-### Source and Constraints
+### Sources
 
 - The fixture has no upstream source.
 
-### Downstream Links
+### Verification Links
+
+- The declared requirements are independently verifiable.
+
+Each condition is judged from the evidence of the Spec that cites it.
 
 - Architecture and Spec links are added when their packages exist.
 """
@@ -274,6 +268,60 @@ class RequirementPackageTests(unittest.TestCase):
             ):
                 requirements.parse_requirement_package(path)
 
+    def test_requirements_table_ids_equal_the_declarations(self) -> None:
+        requirements = _requirements_module()
+        header = (
+            "| Requirement ID | Statement | Rationale | Acceptance | Priority |\n"
+            "| --- | --- | --- | --- | --- |\n"
+        )
+        declared = [f"REQ-0001-FR-000{number}" for number in range(1, 5)]
+        cases = {
+            "matching": (declared, None),
+            "missing": (declared[:3], "REQ-0001-FR-0004"),
+            "extra": ([*declared, "REQ-0001-FR-0005"], "REQ-0001-FR-0005"),
+            "mistyped": ([*declared[:3], "REQ-0001-FR-0040"], "REQ-0001-FR-0040"),
+            "repeated": ([*declared, declared[0]], "REQ-0001-FR-0001"),
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            for label, (rows, wrong) in cases.items():
+                with self.subTest(case=label):
+                    table = header + "".join(
+                        f"| {identity} | S. | R. | A. | must |\n" for identity in rows
+                    )
+                    text = _package_text().replace(
+                        "## Requirements\n\n", f"## Requirements\n\n{table}\n", 1
+                    )
+                    path = self._write_package(pathlib.Path(directory), text=text)
+                    if wrong is None:
+                        requirements.parse_requirement_package(path)
+                        continue
+                    with self.assertRaisesRegex(
+                        requirements.RequirementPackageError,
+                        f"requirements table.*{wrong}",
+                    ):
+                        requirements.parse_requirement_package(path)
+
+    def test_a_column_aligned_requirements_table_is_still_checked(self) -> None:
+        requirements = _requirements_module()
+        table = (
+            "|  Requirement ID  | Statement | Rationale | Acceptance | Priority |\n"
+            "| ---------------- | --------- | --------- | ---------- | -------- |\n"
+            + "".join(
+                f"| REQ-0001-FR-000{number}   | S. | R. | A. | must |\n"
+                for number in range(1, 4)
+            )
+        )
+        text = _package_text().replace(
+            "## Requirements\n\n", f"## Requirements\n\n{table}\n", 1
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = self._write_package(pathlib.Path(directory), text=text)
+            with self.assertRaisesRegex(
+                requirements.RequirementPackageError,
+                "requirements table.*REQ-0001-FR-0004",
+            ):
+                requirements.parse_requirement_package(path)
+
     def test_quality_requirements_are_parsed_as_nfr(self) -> None:
         requirements = _requirements_module()
         text = _package_text(
@@ -306,8 +354,8 @@ class RequirementPackageTests(unittest.TestCase):
             for label, section in retired.items():
                 with self.subTest(section=label):
                     text = _package_text().replace(
-                        "## Acceptance Criteria\n",
-                        section + "## Acceptance Criteria\n",
+                        "## Traceability\n",
+                        section + "## Traceability\n",
                         1,
                     )
                     self.assertIn(section, text)

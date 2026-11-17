@@ -1276,7 +1276,7 @@
           },
           {
             "kind": "section",
-            "ref": "adr:Traceability/Supersession"
+            "ref": "adr:Decision/Authority and Effect"
           }
         ],
         "owner": "scripts/validation/check-document-metadata.py",
@@ -1524,7 +1524,6 @@
         "Overview",
         "Scope",
         "Requirements",
-        "Acceptance Criteria",
         "Traceability"
       ],
       "optional_sections": [],
@@ -1538,20 +1537,12 @@
           "Constraints and Exclusions"
         ],
         "Requirements": [
-          "Functional Requirements"
-        ],
-        "Acceptance Criteria": [
-          "Acceptance Conditions",
-          "Verification Method"
+          "Functional Requirements",
+          "Quality Requirements"
         ],
         "Traceability": [
-          "Source and Constraints",
-          "Downstream Links"
-        ]
-      },
-      "optional_subsections": {
-        "Requirements": [
-          "Quality Requirements"
+          "Sources",
+          "Verification Links"
         ]
       },
       "lifecycle_id": "requirement",
@@ -1593,12 +1584,11 @@
         "parent_ids"
       ],
       "required_sections": [
-        "Overview",
-        "Context and Constraints",
-        "Current Structure",
-        "Interfaces",
-        "Decisions",
-        "Traceability"
+        "Context and Boundaries",
+        "Structure",
+        "Runtime Behavior",
+        "Quality Scenarios",
+        "Decisions and Adoption"
       ],
       "optional_sections": [],
       "lifecycle_id": "architecture-description",
@@ -1614,29 +1604,25 @@
       "ordered_sections": true,
       "nonempty_sections": true,
       "required_subsections": {
-        "Overview": [
-          "Purpose and Readers",
-          "System Boundary"
-        ],
-        "Context and Constraints": [
-          "Context",
+        "Context and Boundaries": [
+          "System Boundary",
           "Constraints"
         ],
-        "Current Structure": [
+        "Structure": [
           "Building Blocks",
-          "Runtime and Deployment"
+          "Interfaces"
         ],
-        "Interfaces": [
-          "Contracts",
-          "Failure Boundaries"
+        "Runtime Behavior": [
+          "Normal Flow",
+          "Failure and Recovery"
         ],
-        "Decisions": [
-          "Decision Links",
-          "Quality and Risks"
+        "Quality Scenarios": [
+          "Scenarios",
+          "Trade-offs"
         ],
-        "Traceability": [
-          "Requirement Mapping",
-          "Currentness and Lineage"
+        "Decisions and Adoption": [
+          "Decisions",
+          "Adoption Boundaries"
         ]
       }
     },
@@ -1665,10 +1651,9 @@
       ],
       "required_sections": [
         "Context",
+        "Options",
         "Decision",
-        "Alternatives",
-        "Consequences",
-        "Traceability"
+        "Consequences"
       ],
       "optional_sections": [],
       "lifecycle_id": "architecture-decision",
@@ -1689,25 +1674,17 @@
           "Problem and Drivers",
           "Decision Scope"
         ],
+        "Options": [
+          "Considered Options",
+          "Trade-offs"
+        ],
         "Decision": [
           "Chosen Option",
           "Authority and Effect"
         ],
-        "Alternatives": [
-          "Considered Options",
-          "Trade-offs"
-        ],
         "Consequences": [
           "Impacts",
           "Follow-up"
-        ],
-        "Traceability": [
-          "Sources"
-        ]
-      },
-      "optional_subsections": {
-        "Traceability": [
-          "Supersession"
         ]
       }
     },
@@ -6378,18 +6355,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "Commit 009ced2c7 (profile and template) and 36e0dcf4f (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit 009ced2c7 (profile and template) and 36e0dcf4f (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current ADR took the core sections and options table under an owner-directed in-place amendment that each ADR records in its Follow-up, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/architecture/decision.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/architecture/decision.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "conditional_units": {
-        "Supersession": "when an actual predecessor or successor decision exists, or the change supersedes one"
-      },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "decision"
-      }
+      "core_role": "decision"
     },
     "sdlc/architecture-description": {
       "source": "docs/99.templates/templates/architecture/description.template.md",
@@ -6449,15 +6419,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "Commit e3beaa9cd (profile) and 5dd0ce150 (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit e3beaa9cd (profile) and 5dd0ce150 (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current Architecture Description took the core sections, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/architecture/description.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/architecture/description.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "architecture"
-      }
+      "core_role": "architecture"
     },
     "sdlc/data-model": {
       "source": "docs/99.templates/templates/specs/contracts/data-model.template.md",
@@ -6833,18 +6799,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "Commit 3e359935b moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit 3e359935b moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every current Requirement Package took the core sections and requirements table, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/requirements/requirement-package.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/requirements/requirement-package.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "conditional_units": {
-        "Quality Requirements": "when a quality requirement applies"
-      },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "requirement"
-      }
+      "core_role": "requirement"
     },
     "sdlc/spec": {
       "source": "docs/99.templates/templates/specs/spec.template.md",

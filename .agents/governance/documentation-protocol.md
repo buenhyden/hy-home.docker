@@ -1,6 +1,6 @@
 ---
 title: "Documentation Protocol"
-version: "7.4.0"
+version: "7.5.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -104,7 +104,7 @@ A provider-owned runtime projection is exempt from the metadata envelope. Operat
 | DOCUMENTATION-PROTOCOL-R69 | Native skill discovery | Forbidden: treating native discovery as changing policy ownership or role permissions | none | none |
 | DOCUMENTATION-PROTOCOL-R70 | Stage 01 to 03 profile | Forbidden: carrying `supersedes` or `superseded_by` | none | none |
 | DOCUMENTATION-PROTOCOL-R71 | Stage 01 to 03 profile | Required: statuses follow the SDLC | none | none |
-| DOCUMENTATION-PROTOCOL-R72 | Stage 01 to 03 successor | Required: record the replaced substance in its Traceability and delete the predecessor with its number reserved | none | none |
+| DOCUMENTATION-PROTOCOL-R72 | Stage 01 to 03 successor | Required: record the replaced substance in its lineage section and delete the predecessor with its number reserved | none | none |
 | DOCUMENTATION-PROTOCOL-R73 | Other profiles | Required: keep multiple predecessors in `supersedes` and one reciprocal successor in `superseded_by` | none | none |
 | DOCUMENTATION-PROTOCOL-R74 | Registry-required root | Required: record `parent_ids: []` as root identity, not optional placeholder metadata | none | none |
 | DOCUMENTATION-PROTOCOL-R75 | Titling a Stage 03 Spec | Required: title it `<Subject> Specification` naming what the change contracts | none | none |
@@ -165,9 +165,12 @@ A provider-owned runtime projection is exempt from the metadata envelope. Operat
 | DOCUMENTATION-PROTOCOL-R130 | Product difference from the common form | Required: record it as an Exception under quality standards with approved condition, scope, reason, end or review condition and verification | none | none |
 | DOCUMENTATION-PROTOCOL-R131 | Requirement Package | Required: write an interface need as a functional requirement and a quality need under Quality Requirements | none | none |
 | DOCUMENTATION-PROTOCOL-R132 | Requirement Package | Forbidden: issuing a separate interface section or `IF` child identity | none | none |
+| DOCUMENTATION-PROTOCOL-R258 | Requirement Package | Required: list every declared FR and NFR once in the requirements table, with the declaration as its Statement | none | none |
+| DOCUMENTATION-PROTOCOL-R259 | Declaration in an approved Requirement Package without a modal verb | Required: bind it as `must` | none | none |
+| DOCUMENTATION-PROTOCOL-R260 | Declaration written with `should` or `could` | Required: give it that priority | none | none |
 | DOCUMENTATION-PROTOCOL-R133 | Architecture authority | Required: a Description owns current structure and an ADR owns one consequential choice | none | none |
 | DOCUMENTATION-PROTOCOL-R134 | Decision changes | Required: preserve accepted decisions and use explicit supersession | none | none |
-| DOCUMENTATION-PROTOCOL-R135 | Architecture views | Required: use the Description core (`Scope`, `Structure`, `Runtime and Deployment`, `Quality and Risks`) | none | none |
+| DOCUMENTATION-PROTOCOL-R135 | Architecture views | Required: use the Description core (`Context and Boundaries`, `Structure`, `Runtime Behavior`, `Quality Scenarios`) | none | none |
 | DOCUMENTATION-PROTOCOL-R136 | Architecture views | Allowed: add registered optional content only when it helps the reader | none | none |
 | DOCUMENTATION-PROTOCOL-R137 | Architecture views | Forbidden: imposing an empty full architecture framework | none | none |
 | DOCUMENTATION-PROTOCOL-R138 | System-level Description | Required: consider system context and container diagrams; use dynamic diagrams for interactions and deployment diagrams for environment topology | none | none |
@@ -277,7 +280,7 @@ A provider-owned runtime projection is exempt from the metadata envelope. Operat
 | DOCUMENTATION-PROTOCOL-R242 | No Stage 03 package remains | Allowed: Stage 03 is empty | none | none |
 | DOCUMENTATION-PROTOCOL-R243 | Retiring a package or standalone document | Required: its profile/status pair is eligible in `archive_retention.disposition_entry_statuses`, or it is an ADR or Description whose replacement carrying its summary lands in the same change | none | none |
 | DOCUMENTATION-PROTOCOL-R244 | Lifecycle terminality or disposition eligibility | Forbidden: treating either as granting an automatic removal | none | none |
-| DOCUMENTATION-PROTOCOL-R245 | Retiring a package or standalone document | Required: write every still-current obligation, decision, structure or procedure to its canonical owner and summarize lineage in that owner's Traceability | none | none |
+| DOCUMENTATION-PROTOCOL-R245 | Retiring a package or standalone document | Required: write every still-current obligation, decision, structure or procedure to its canonical owner and summarize lineage in that owner's lineage section (Traceability, Adoption Boundaries or Authority and Effect) | none | none |
 | DOCUMENTATION-PROTOCOL-R246 | Retiring a package or standalone document | Required: update every inbound consumer in the same logical change | none | none |
 | DOCUMENTATION-PROTOCOL-R247 | Retiring a package or standalone document | Required: add its artifact number to the identity space `reserved_history` in the same change | none | none |
 | DOCUMENTATION-PROTOCOL-R248 | Retiring a package or standalone document | Required: the removing change records in a surviving Task the last commit and path carrying each removed body and that the commit is reachable from `main` | manual | none |
@@ -396,14 +399,16 @@ check for each kind of writer, not for the relation as a whole.
 | Constraint | `rel.constraint` | Change to constraint | `parent_ids` of a Requirements package, Architecture description, ADR and Spec; Spec `Owning Requirements` as prose | `check-document-metadata.py` for `parent_ids`; the prose is checked by review |
 | Traceability | `rel.traceability` | Record to source | Task `Results` rows and a Task's evidence links; `parent_ids` of research, audit, data, guide, runbook, operations policy, incident and generated documents | `check-document-corpus-lifecycle.py` for Evidence rows; `check-document-links.py` for links; `check-document-metadata.py` for `parent_ids` |
 | Promotion | `rel.promotion` | Plan to target owner | Plan `Durable Meaning` and `Owner and Receipt` | None: the reviewer applies the [SDLC](sdlc.md#sequence) promotion rule |
-| Supersession | `rel.supersession` | Successor to predecessor | Frontmatter `supersedes`; ADR `Traceability` / `Supersession` | `check-document-metadata.py` for the key; the section is checked by review |
+| Supersession | `rel.supersession` | Successor to predecessor | Frontmatter `supersedes`; ADR `Decision` / `Authority and Effect` under a `Supersession` heading | `check-document-metadata.py` for the key; the section is checked by review |
 | Change Impact | `rel.change-impact` | Owner to consumer | None: derived from Authority, Constraint and Structural Ownership | `check-document-links.py --impact` reports it; the reviewer decides which consumers change |
 
 The frontmatter `owner` names an accountable person, not a related document,
 and historical and navigation links carry no relation; their link types above
-still govern them. A `Traceability` section heading in a Stage 01 to 03
-document holds that document's basis and supersession records; it is a
-section name, not the `rel.traceability` relation.
+still govern them. A Stage 01 or Stage 02 document holds its basis and
+supersession records in its lineage section: `Traceability` in a Requirement
+Package, `Decisions and Adoption` / `Adoption Boundaries` in an Architecture
+Description and `Decision` / `Authority and Effect` in an ADR. A
+`Traceability` heading is a section name, not the `rel.traceability` relation.
 
 Only the side the Writer column names records a relation, and no document
 keeps a manual reverse-state table. Reverse lookups, such as the children of a
@@ -493,7 +498,7 @@ its hosted CI route is not wired yet. Existing links are not retyped by this rul
    change policy ownership or role permissions.
    Stage 01 to 03 profiles carry no `supersedes` or `superseded_by`, and their
    statuses follow the [SDLC](sdlc.md#sequence): a successor records the
-   replaced substance in its Traceability and the predecessor is deleted with
+   replaced substance in its lineage section and the predecessor is deleted with
    its number reserved. Other profiles keep the lineage graph of
    multiple predecessors in `supersedes` and one reciprocal successor in
    `superseded_by`; changing that singular successor to an array requires a
@@ -659,14 +664,19 @@ evidence; surrounding instructions remain current and validated normally.
 - A Requirement Package combines PRD, SRS, and implementation-independent
   interface perspectives. An interface need is written as a functional
   requirement and a quality need under Quality Requirements; no separate
-  interface section or `IF` child identity is issued. A Description owns current structure; an ADR owns one
+  interface section or `IF` child identity is issued. Its requirements table
+  lists every declared FR and NFR once, with the declaration as its Statement.
+  A declaration in an approved Requirement Package that has no modal verb binds
+  as `must`; one written with `should` or `could` takes that priority. A
+  Description owns current structure; an ADR owns one
   consequential choice. Preserve accepted decisions and use explicit
   supersession when the choice changes.
 - Use the Description core for architecture views: context and scope
-  in `Scope`, building blocks in `Structure`, runtime interaction and topology
-  in `Runtime and Deployment`, and quality scenarios and risks in
-  `Quality and Risks`. Add registered optional content only when it helps the
-  reader; do not impose an empty full architecture framework.
+  in `Context and Boundaries`, building blocks and interfaces in `Structure`,
+  runtime interaction and topology in `Runtime Behavior`, and quality
+  scenarios and trade-offs in `Quality Scenarios`. Add registered optional
+  content only when it helps the reader; do not impose an empty full
+  architecture framework.
 - Consider system context and container diagrams for system-level Descriptions.
   Use component detail only when useful, dynamic diagrams for interactions, and
   deployment diagrams for environment topology. A diagram identifies its title,
@@ -849,7 +859,7 @@ of external templates.
 | Implementation evidence | `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` | Record result, deviation, and validation evidence. |
 | Operator knowledge | `docs/05.operations/` | Update the applicable guide, policy, runbook, or incident. |
 | External evidence | `docs/90.references/` | Preserve non-normative research, audit, or data. |
-| Historical recovery | Version history and the owner's Traceability; non-authoritative for current rules | Read a removed body at the revision that last carried it; summarize still-current meaning into its current owner. |
+| Historical recovery | Version history and the owner's lineage section; non-authoritative for current rules | Read a removed body at the revision that last carried it; summarize still-current meaning into its current owner. |
 | Shape or lifecycle | `docs/99.templates/` | Change the registry, schema, or copyable template. |
 | Protected or ambiguous change | `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` Task/audit gap first | Stop mutation and bind approval, scope, and recovery first. |
 
@@ -945,7 +955,9 @@ Retire a package or a standalone document only when all of these hold.
    removal.
 2. Every still-current obligation, decision, structure, or procedure it owns is
    written to its canonical agent governance, 01, 02, or 05 owner, and its
-   lineage is summarized in that owner's Traceability.
+   lineage is summarized in that owner's lineage section: Traceability in a
+   Requirement Package, Decisions and Adoption / Adoption Boundaries in an
+   Architecture Description, and Decision / Authority and Effect in an ADR.
 3. Every inbound consumer is updated in the same logical change.
 4. Its artifact number is added to the Registry `reserved_history` of its
    identity space in the same change.
@@ -1004,7 +1016,7 @@ Named checks cover the rules whose Enforcement names one; the other rules name n
 - Authoring: no named check (R46-R60, R63-R83, R85-R86).
 - Language: no named check (R88-R94).
 - Folder guides: no named check (R100-R102, R104-R111, R113-R122).
-- Roles: no named check (R124-R162).
+- Roles: no named check (R124-R162, R258-R260).
 - Versions: no named check (R163-R165, R167-R168, R173, R175-R184, R186).
 - Release: no named check (R187-R191, R194-R195).
 - Frameworks: no named check (R196-R203).

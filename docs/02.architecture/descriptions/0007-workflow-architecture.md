@@ -1,10 +1,10 @@
 ---
 title: "Workflow Tier (07-workflow) Architecture Description"
-version: "1.3.6"
+version: "1.4.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "architecture"
 artifact_id: "AD-0007"
 parent_ids:
@@ -14,14 +14,7 @@ created: "2026-03-26"
 
 # Workflow Tier (07-workflow) Architecture Description
 
-## Overview
-
-### Purpose and Readers
-
-`07-workflow` is the owner-confirmed always-on HOME orchestration layer. It
-runs Apache Airflow for code-first DAGs, authenticated natively through the
-Keycloak Auth Manager, and n8n for low-code automation with its own login and no
-gateway SSO.
+## Context and Boundaries
 
 ### System Boundary
 
@@ -35,9 +28,14 @@ gateway SSO.
 - **Does not own:** business logic inside DAGs or n8n workflows, external
   CI/CD, or stream processing.
 
-## Context and Constraints
+#### Purpose and Readers
 
-### Context
+`07-workflow` is the owner-confirmed always-on HOME orchestration layer. It
+runs Apache Airflow for code-first DAGs, authenticated natively through the
+Keycloak Auth Manager, and n8n for low-code automation with its own login and no
+gateway SSO.
+
+#### Context
 
 Browsers reach Airflow, Flower and n8n through Traefik. The tier consumes `mng-pg` and `mng-valkey` (`04-data`), Keycloak and OAuth2 Proxy (`02-auth`), and Prometheus and Loki (`06-observability`).
 
@@ -45,7 +43,7 @@ Browsers reach Airflow, Flower and n8n through Traefik. The tier consumes `mng-p
 
 The tier is owner-confirmed always-on HOME orchestration. Airflow authenticates natively through the Keycloak Auth Manager, n8n through its own login with no gateway SSO, and both share `mng-valkey` as broker with no per-app broker (ADR-0062 decision 10).
 
-## Current Structure
+## Structure
 
 ### Building Blocks
 
@@ -63,7 +61,22 @@ The tier is owner-confirmed always-on HOME orchestration. Airflow authenticates 
 - **Broker:** both use the shared `mng-valkey`; no per-app broker exists
   (ADR-0062 decision 10).
 
-### Runtime and Deployment
+### Interfaces
+
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Airflow API server browser route | `airflow-apiserver` | Browsers through Traefik `gateway-standard-chain@file` | `KeycloakAuthManager` with the Keycloak `home-airflow` client and Authorization Services; [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md) | The description records no failure handling for this interface. |
+| Flower browser route | `flower` | Browsers through the Traefik ForwardAuth chain | ForwardAuth | The description records no failure handling for this interface. |
+| n8n browser route | `n8n` | Browsers through Traefik `gateway-standard-chain@file` | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| Celery and queue broker | `mng-valkey` (`04-data`) | Airflow (`CeleryExecutor`) and n8n queue mode (`EXECUTIONS_MODE: queue`) | The description links no contract for this interface. | A `mng-valkey` outage stops queued work in both engines; the queue is not a recovery record. |
+| Workflow metadata store | `mng-pg` (`04-data`) | Airflow | The description links no contract for this interface. | PostgreSQL metadata and the application encryption key are the durable recovery authority. |
+| Metrics and logs | `airflow-statsd-exporter` and Flower | Prometheus and Loki (`06-observability`) | The description links no contract for this interface. | The description records no failure handling for this interface. |
+
+Airflow uses `CeleryExecutor` and a Keycloak `home-airflow` client with Authorization Services; its internal JWT is separate from the Keycloak access token. Flower routes through ForwardAuth, and n8n runs in queue mode with its own login.
+
+## Runtime Behavior
+
+### Normal Flow
 
 #### Runtime View
 
@@ -86,24 +99,13 @@ select one each; core services are HOME. The `blog-ingestion`
 capability profile selects the blog ingestion gateway, which shares isolated
 internal networks only with `n8n-worker` and Traefik.
 
-## Interfaces
-
-### Contracts
-
-Airflow uses `CeleryExecutor` and a Keycloak `home-airflow` client with Authorization Services; its internal JWT is separate from the Keycloak access token. Flower routes through ForwardAuth, and n8n runs in queue mode with its own login.
-
-### Failure Boundaries
+### Failure and Recovery
 
 Airflow, n8n and OAuth2 Proxy share `mng-valkey`, so its outage stops queued work in both engines (see Risks below). PostgreSQL metadata and the application encryption key are the durable recovery authority; the Valkey queue is in-flight coordination only.
 
-## Decisions
+## Quality Scenarios
 
-### Decision Links
-
-- [ADR-0007 Airflow and n8n hybrid](../decisions/0007-airflow-n8n-hybrid-workflow.md)
-- [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md)
-
-### Quality and Risks
+### Scenarios
 
 #### Quality Attributes
 
@@ -120,13 +122,30 @@ Airflow, n8n and OAuth2 Proxy share `mng-valkey`, so its outage stops queued wor
 Airflow, n8n and OAuth2 Proxy share `mng-valkey`;
 its outage stops queued work in both engines.
 
-## Traceability
+### Trade-offs
 
-### Requirement Mapping
+- Airflow and n8n share `mng-valkey` as broker with no per-app broker
+  (ADR-0062 decision 10); the accepted cost is that a `mng-valkey` outage,
+  shared also with OAuth2 Proxy, stops queued work in both engines (Risks).
+- The Valkey queue is in-flight coordination, not a recovery record;
+  PostgreSQL metadata and the application encryption key are the durable
+  recovery authority (Runtime View).
+- n8n uses its own login with no gateway SSO (Constraints).
+
+## Decisions and Adoption
+
+### Decisions
+
+- [ADR-0007 Airflow and n8n hybrid](../decisions/0007-airflow-n8n-hybrid-workflow.md)
+- [ADR-0038 Selective Native OIDC](../decisions/0038-selective-native-oidc-for-native-auth-apps.md)
+
+### Adoption Boundaries
+
+#### Requirement Mapping
 
 - [REQ-0008 Workflow](../../01.requirements/0008-workflow.md)
 
-### Currentness and Lineage
+#### Currentness and Lineage
 
 The description reflects the current tree at its `updated` date and history lives in Git.
 

@@ -1,10 +1,10 @@
 ---
 title: "Documentation Space"
-version: "1.3.3"
+version: "1.3.4"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 ---
 
 # docs
@@ -75,7 +75,7 @@ docs/
 | 복구나 반복 절차를 실행 | `05.operations/runbooks/` |
 | 사고나 사후 분석을 기록 | `05.operations/incidents/<year>/inc-####-<slug>/` |
 | LLM 대상 저장소 탐색을 제공 | root `llms.txt`와 각 surface README |
-| 삭제된 문서의 내용을 확인 | 후속 01·02 문서의 Traceability와 Git 이력 |
+| 삭제된 문서의 내용을 확인 | 후속 01·02 문서의 계보 절(Requirement Package의 `Traceability`, Architecture Description의 `Adoption Boundaries`, ADR의 `Authority and Effect`)과 Git 이력 |
 
 #### Migration Map
 
@@ -115,7 +115,7 @@ advisory graph는 advisory로 남고 `.agents/governance/environment-constraints
 | Retired indexes | `DATA-0076`, `DATA-0082`, `DATA-0083`, 삭제됨 |
 | Retired operations package | `GDE-0007`, `POL-0007`, `RUN-0007`, 삭제됨 |
 
-Stage 98은 현재 보존 기록을 담지 않으며, 삭제된 문서와 은퇴한 historical evidence는 비권위 기록이므로 현재 소유자 문서의 Traceability와 Git 이력에서 확인합니다.
+Stage 98은 현재 보존 기록을 담지 않으며, 삭제된 문서와 은퇴한 historical evidence는 비권위 기록이므로 현재 소유자 문서의 계보 절과 Git 이력에서 확인합니다.
 
 ## Workflow
 
@@ -172,8 +172,8 @@ python3 scripts/validation/check-document-links.py --mode traceability
 
 ### Transition and Exit
 
-- 문서를 없앨 때는 남아야 할 내용을 01·02 문서의 Traceability에 요약하고, 원본을
-  삭제하며, 폐기 번호를 Registry `reserved_history`에 추가합니다. 현재 문서는
+- 문서를 없앨 때는 남아야 할 내용을 01·02 소유 문서의 계보 절에 요약하고,
+  원본을 삭제하며, 폐기 번호를 Registry `reserved_history`에 추가합니다. 현재 문서는
   `98.archive/`로 링크하지 않습니다.
 
 ## Related Documents

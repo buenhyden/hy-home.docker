@@ -3345,6 +3345,12 @@ class DocumentRegistryTests(unittest.TestCase):
                 for child in subsections.get(section, ())
             )
             for section in sections
+        ).replace(
+            "## Requirements\n\nContract content.",
+            "## Requirements\n\nContract content.\n\n"
+            "| Requirement ID | Statement | Rationale | Acceptance | Priority |\n"
+            "| --- | --- | --- | --- | --- |",
+            1,
         )
         record = Record(
             pathlib.Path("docs/01.requirements/0001-example.md"),
@@ -3355,7 +3361,7 @@ class DocumentRegistryTests(unittest.TestCase):
         self.assertEqual(
             [], validate_body_contract(record, body, adapted, changed_boundary=True)
         )
-        missing = body.replace("## Acceptance Criteria\n\nContract content.\n\n", "", 1)
+        missing = body.replace("## Traceability\n\nContract content.\n\n", "", 1)
         self.assertIn(
             "body-heading-missing",
             {
