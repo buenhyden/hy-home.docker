@@ -64,7 +64,8 @@ class CurrentBodyContractTests(unittest.TestCase):
             "postmortem": "Facts|Causes|Actions",
             "governance-policy": "Purpose and Scope|Rules|Enforcement|Ownership",
             "governance-hook-policy": "Purpose|Scope|Rules|Exceptions|Ownership",
-            "governance-skill": "Purpose and Trigger|Procedure|Inputs and Outputs|Verification",
+            "governance-skill": "Trigger|Procedure|Outputs|Verification",
+            "folder-agent-guide": "Scope|Workflow|Boundaries|Verification",
         }
         registry = metadata.load_registry(ROOT / "docs/99.templates/registry.json")
         for profile_id, names in expected.items():
@@ -557,6 +558,23 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Failure Handling", "body-heading-forbidden"),
                 ("## References", "body-heading-forbidden"),
                 ("### Preconditions", "body-subheading-forbidden"),
+                ("## Purpose and Trigger", "body-heading-forbidden"),
+                ("## Inputs and Outputs", "body-heading-forbidden"),
+                ("### Inputs", "body-subheading-forbidden"),
+                ("### Completion and Handoff", "body-subheading-forbidden"),
+            ),
+            "folder-agent-guide": (
+                ("## Required Policies", "body-heading-forbidden"),
+                ("## Safety", "body-heading-forbidden"),
+                ("### Allowed Surface", "body-subheading-forbidden"),
+                ("### Non-goals", "body-subheading-forbidden"),
+                ("### Canonical Sources", "body-subheading-forbidden"),
+                ("### Local Obligations", "body-subheading-forbidden"),
+                ("### Inspect and Change", "body-subheading-forbidden"),
+                ("### Required Checks", "body-subheading-forbidden"),
+                ("### Evidence and Limits", "body-subheading-forbidden"),
+                ("### Protected Actions", "body-subheading-forbidden"),
+                ("### Stop and Escalate", "body-subheading-forbidden"),
             ),
             "repository-readme": (
                 ("## Overview", "body-heading-forbidden"),

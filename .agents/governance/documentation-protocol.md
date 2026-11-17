@@ -610,11 +610,12 @@ value", such as `secrets/`, keeps `README.md` only, because
 [approval boundaries](approval-boundaries.md) already owns that rule.
 
 A folder `AGENTS.md` follows the Stage 99 `common/agent-guide` template, the
-common AGENTS form: Scope, Required Policies, Workflow, Verification and
-Safety, each with the H3 sections the Registry declares. Canonical Sources
-name the `.agents/` policies, roles, skills, prompts and hook rules, and the
-`.claude/` and `.codex/` adapters and hooks that apply to the folder. Required
-Checks name only registered commands that exist. The guide routes and summarizes; it never copies a policy body, and
+core `agent-instructions` form: Scope, Workflow, Boundaries and Verification,
+each with the H3 sections the Registry declares. Intake names the `.agents/`
+policies, roles, skills, prompts and hook rules, and the `.claude/` and
+`.codex/` adapters and hooks that apply to the folder. Checks name only
+registered commands that exist. The guide routes and summarizes; it never
+copies a policy body, and
 when a summary and its owner disagree, the owner wins and the guide is
 corrected. Its rank and when an agent reads it are set by
 [bootstrap](bootstrap.md#authority-and-precedence); it grants no tool, path,

@@ -3,11 +3,11 @@ name: "incident-response"
 description: "Use when an authorized incident owner needs a sanitized response timeline, bounded recovery actions, escalation, and postmortem handoff."
 metadata:
   title: "incident-response"
-  version: "1.4.1"
+  version: "1.5.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "incident-response"
   scope: "ops"
   owner_agent: "incident-responder"
@@ -15,7 +15,7 @@ metadata:
 
 # incident-response
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -47,13 +47,7 @@ None: this skill states no exclusion.
 - A paired postmortem is routed to
   `docs/05.operations/incidents/<year>/inc-####-<slug>/postmortem.md`.
 
-### Failure Handling
-
-Stop unsafe recovery, preserve metadata instead of prohibited payloads, and escalate immediately when authority or impact is uncertain. A readiness verdict never proves recovery success.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Bounded incident evidence and current runbook.
 - Affected services, timestamps, impact, authority, and escalation contacts.
@@ -62,9 +56,24 @@ Stop unsafe recovery, preserve metadata instead of prohibited payloads, and esca
   [documentation protocol](../../governance/documentation-protocol.md#document-retention-and-retirement)
   owns that rule.
 
-### Outputs
+### Failure Handling
+
+Stop unsafe recovery, preserve metadata instead of prohibited payloads, and escalate immediately when authority or impact is uncertain. A readiness verdict never proves recovery success.
+
+## Outputs
+
+### Artifacts
 
 - A sanitized response record with timeline, actions, decisions, outcome, and handoff.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [Incident responder](../../roles/incident-responder.md)
+- [Operations scope](../../governance/quality-standards.md)
+- [Approval boundaries](../../governance/approval-boundaries.md)
+- [Stateful recovery contract review](../stateful-recovery-contract-review/SKILL.md)
 
 ## Verification
 
@@ -74,11 +83,6 @@ Stop unsafe recovery, preserve metadata instead of prohibited payloads, and esca
 - Every executed step is inside the declared escalation boundary and records its expected and observed result.
 - A stateful recovery carries the independent readiness verdict and a separate human approval before it runs.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [Incident responder](../../roles/incident-responder.md)
-- [Operations scope](../../governance/quality-standards.md)
-- [Approval boundaries](../../governance/approval-boundaries.md)
-- [Stateful recovery contract review](../stateful-recovery-contract-review/SKILL.md)
+A readiness verdict never proves recovery success.

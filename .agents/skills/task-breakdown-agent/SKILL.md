@@ -3,11 +3,11 @@ name: "task-breakdown-agent"
 description: "Use when an approved plan needs reversible logical work units with one implementer, acceptance checks, dependencies, and review by risk."
 metadata:
   title: "task-breakdown-agent"
-  version: "1.3.0"
+  version: "1.4.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-15"
+  updated: "2026-11-17"
   function_id: "task-breakdown-agent"
   scope: "agentic"
   owner_agent: "workflow-supervisor"
@@ -15,7 +15,7 @@ metadata:
 
 # task-breakdown-agent
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -41,20 +41,28 @@ None: this skill states no exclusion.
 - Each unit maps to one logical commit or explicitly coupled small commit group.
 - Implementation and independent review roles remain separate for high-risk units.
 
-### Failure Handling
-
-Return to planning when a unit cannot be made reversible, testable, or independently reviewable without hidden dependencies.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Approved plan and dependency map.
 - Exact files, validation gates, role ownership, review requirements, and rollback boundaries.
 
-### Outputs
+### Failure Handling
+
+Return to planning when a unit cannot be made reversible, testable, or independently reviewable without hidden dependencies.
+
+## Outputs
+
+### Artifacts
 
 - Bounded work units suitable for co-located Task evidence and logical commits.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [Workflow supervisor](../../roles/workflow-supervisor.md)
+- [Execution plan function](../execution-plan-agent/SKILL.md)
+- [Subagent protocol](../../governance/agentic.md)
 
 ## Verification
 
@@ -64,10 +72,6 @@ Return to planning when a unit cannot be made reversible, testable, or independe
 - Each work unit names one implementer scope, its validation, its commit boundary, and its review class, with an independent reviewer for a high-risk unit.
 - Protected or runtime work is isolated into its own unit.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [Workflow supervisor](../../roles/workflow-supervisor.md)
-- [Execution plan function](../execution-plan-agent/SKILL.md)
-- [Subagent protocol](../../governance/agentic.md)
+This skill records no limit on what its checks prove.

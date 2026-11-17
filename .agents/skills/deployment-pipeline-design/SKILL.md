@@ -3,11 +3,11 @@ name: "deployment-pipeline-design"
 description: "Use when release requirements need a pipeline design with immutable artifacts, approval gates, rollout observations, and concrete rollback."
 metadata:
   title: "deployment-pipeline-design"
-  version: "1.2.1"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "deployment-pipeline-design"
   scope: "ops"
   owner_agent: "ci-cd-engineer"
@@ -15,7 +15,7 @@ metadata:
 
 # deployment-pipeline-design
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -41,20 +41,28 @@ None: this skill states no exclusion.
 - Promotion cannot cross an approval boundary implicitly.
 - Rollback is concrete, versioned, and testable before release.
 
-### Failure Handling
-
-Defer implementation when environment credentials, promotion authority, or rollback artifacts are absent; never substitute local success for deployment proof.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Approved release policy and deployment constraints.
 - Artifact identity, validation gates, environment boundaries, and recovery requirements.
 
-### Outputs
+### Failure Handling
+
+Defer implementation when environment credentials, promotion authority, or rollback artifacts are absent; never substitute local success for deployment proof.
+
+## Outputs
+
+### Artifacts
 
 - A deployment pipeline design with stages, authorities, evidence, and rollback semantics.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [CI/CD engineer](../../roles/ci-cd-engineer.md)
+- [CI/CD patterns](../ci-cd-patterns/SKILL.md)
+- [Approval boundaries](../../governance/approval-boundaries.md)
 
 ## Verification
 
@@ -64,10 +72,6 @@ Defer implementation when environment credentials, promotion authority, or rollb
 - The rollback path names the exact artifact and configuration version it restores.
 - Rollout observations and stop conditions are stated before release.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [CI/CD engineer](../../roles/ci-cd-engineer.md)
-- [CI/CD patterns](../ci-cd-patterns/SKILL.md)
-- [Approval boundaries](../../governance/approval-boundaries.md)
+Local success is not deployment proof.

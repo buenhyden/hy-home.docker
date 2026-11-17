@@ -1,17 +1,19 @@
 ---
 title: "Scripts Agent Guide"
-version: "0.3.1"
+version: "0.4.0"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 ---
 
 # Scripts Agent Guide
 
 ## Scope
 
-### Allowed Surface
+### Allowed Scope
+
+#### Allowed Surface
 
 `scripts/` holds the executable gates: validators, hardening checks, hooks,
 operation commands and their shared libraries. This guide routes an agent that
@@ -21,14 +23,22 @@ changes or runs them. The human guide is [README.md](README.md).
 `scripts/knowledge/`, `scripts/operations/`, `scripts/security/`,
 `scripts/lib/<domain>/` and `scripts/manifest.yaml`.
 
-### Non-goals
+#### Non-goals
 
 Policy text is out of scope; a script implements a canonical rule and never
 becomes its owner.
 
-## Required Policies
+### Instruction Precedence
 
-### Canonical Sources
+The canonical owners under Intake outrank this guide: when this guide and an
+owner disagree, the owner wins and this guide is corrected.
+[Bootstrap](../.agents/governance/bootstrap.md#authority-and-precedence)
+sets the full precedence order; a folder guide routes only and never overrides
+canonical governance or a Stage contract.
+
+## Workflow
+
+### Intake
 
 - [Bootstrap](../.agents/governance/bootstrap.md),
   [quality standards](../.agents/governance/quality-standards.md),
@@ -47,7 +57,15 @@ becomes its owner.
 - Provider loading: [Claude adapter](../.claude/provider.md),
   [Codex adapter](../.codex/provider.md).
 
-### Local Obligations
+### Execution
+
+#### Inspect and Change
+
+- Inspect the selected gates with
+  `python3 scripts/validation/run-ci-gate.py --profile changed --explain`
+  before running them.
+
+#### Local Obligations
 
 - Register every new, moved or retired script in `scripts/manifest.yaml`; the
   Script Manifest check rejects an unregistered or orphaned script.
@@ -55,39 +73,16 @@ becomes its owner.
   `tests/lib/<domain>/`, and a CLI or entrypoint change a test in
   `tests/validation/`.
 
-## Workflow
+## Boundaries
 
-### Inspect and Change
+### Authority
 
-- Inspect the selected gates with
-  `python3 scripts/validation/run-ci-gate.py --profile changed --explain`
-  before running them.
+Stop and report when this guide and its canonical owner disagree (the owner
+wins and this guide is corrected), when an action needs an approval that
+[approval boundaries](../.agents/governance/approval-boundaries.md)
+has not granted, or when a required check fails.
 
-### Handoff
-
-Record progress, decisions and evidence in the current Task, and leave the
-next owner named there. Human-facing and related documents:
-
-- [Scripts README](README.md)
-- [Tests agent guide](../tests/AGENTS.md)
-
-## Verification
-
-### Required Checks
-
-- `python3 scripts/validation/check-script-manifest.py`
-- `python3 scripts/operations/provider_surface_renderer.py --check`
-- `python3 scripts/validation/check-agent-governance-contract.py`
-
-### Evidence and Limits
-
-Record each check's command, revision and exit in the current Task. These
-checks are static or local; they do not prove runtime state, native provider
-delivery, remote enforcement or owner acceptance.
-
-## Safety
-
-### Protected Actions
+### Secrets and External Effects
 
 - Let the installed hooks check the reviewed index and message on an ordinary
   commit when their delivery has been confirmed. If delivery is unconfirmed or
@@ -103,9 +98,26 @@ delivery, remote enforcement or owner acceptance.
   hand-edit them.
 - A script never prints, logs or writes a secret value.
 
-### Stop and Escalate
+## Verification
 
-Stop and report when this guide and its canonical owner disagree (the owner
-wins and this guide is corrected), when an action needs an approval that
-[approval boundaries](../.agents/governance/approval-boundaries.md)
-has not granted, or when a required check fails.
+### Checks
+
+- `python3 scripts/validation/check-script-manifest.py`
+- `python3 scripts/operations/provider_surface_renderer.py --check`
+- `python3 scripts/validation/check-agent-governance-contract.py`
+
+### Reporting
+
+#### Evidence and Limits
+
+Record each check's command, revision and exit in the current Task. These
+checks are static or local; they do not prove runtime state, native provider
+delivery, remote enforcement or owner acceptance.
+
+#### Handoff
+
+Record progress, decisions and evidence in the current Task, and leave the
+next owner named there. Human-facing and related documents:
+
+- [Scripts README](README.md)
+- [Tests agent guide](../tests/AGENTS.md)

@@ -3,11 +3,11 @@ name: "ops-runbook-agent"
 description: "Use when implemented and verified operational behavior needs an executable runbook with expected signals, recovery, and escalation."
 metadata:
   title: "ops-runbook-agent"
-  version: "1.3.2"
+  version: "1.4.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "ops-runbook-agent"
   scope: "ops"
   owner_agent: "doc-writer"
@@ -15,7 +15,7 @@ metadata:
 
 # ops-runbook-agent
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -45,20 +45,29 @@ Commands that are unimplemented, destructive without approval or unverifiable ar
 - Incident packets use `docs/05.operations/incidents/<year>/inc-####-<slug>/`; the paired
   postmortem filename is fixed: Filename: `postmortem.md`.
 
-### Failure Handling
-
-Do not publish commands that are unimplemented, destructive without approval, or unverifiable; route design gaps back to Spec/Plan. A static readiness review cannot be presented as a successful recovery.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Implemented operational behavior and verification commands.
 - Preconditions, safety controls, rollback/recovery steps, and escalation boundary.
 
-### Outputs
+### Failure Handling
+
+Do not publish commands that are unimplemented, destructive without approval, or unverifiable; route design gaps back to Spec/Plan. A static readiness review cannot be presented as a successful recovery.
+
+## Outputs
+
+### Artifacts
 
 - One typed runbook at `docs/05.operations/runbooks/<NN-domain>/####-<slug>.md` with executable, topic-specific procedure.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [Documentation writer](../../roles/doc-writer.md)
+- [Operations scope](../../governance/quality-standards.md)
+- [Documentation protocol](../../governance/documentation-protocol.md)
+- [Stateful recovery contract review](../stateful-recovery-contract-review/SKILL.md)
 
 ## Verification
 
@@ -68,11 +77,6 @@ Do not publish commands that are unimplemented, destructive without approval, or
 - Rollback or recovery and escalation steps are present.
 - `scripts/validation/check-document-metadata.py --mode check-changed` and `scripts/validation/check-document-links.py --mode alignment` pass for the runbook.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [Documentation writer](../../roles/doc-writer.md)
-- [Operations scope](../../governance/quality-standards.md)
-- [Documentation protocol](../../governance/documentation-protocol.md)
-- [Stateful recovery contract review](../stateful-recovery-contract-review/SKILL.md)
+A static readiness review cannot be presented as a successful recovery.

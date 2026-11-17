@@ -3,11 +3,11 @@ name: "ci-cd-patterns"
 description: "Use when delivery workflows need deterministic local and CI gates, least-privilege jobs, and explicit remote promotion boundaries."
 metadata:
   title: "ci-cd-patterns"
-  version: "1.2.1"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "ci-cd-patterns"
   scope: "ops"
   owner_agent: "ci-cd-engineer"
@@ -15,7 +15,7 @@ metadata:
 
 # ci-cd-patterns
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -41,20 +41,28 @@ None: this skill states no exclusion.
 - Workflow permissions are least privilege.
 - Every check is reproducible or explicitly classified as CI-only.
 
-### Failure Handling
-
-Stop when credentials, remote rulesets, or promotion authority are required; produce a scoped follow-up rather than weakening the gate.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Approved delivery contract and current workflow files.
 - Required checks, permissions, trigger conditions, and failure policy.
 
-### Outputs
+### Failure Handling
+
+Stop when credentials, remote rulesets, or promotion authority are required; produce a scoped follow-up rather than weakening the gate.
+
+## Outputs
+
+### Artifacts
 
 - A pipeline pattern with ordered checks, permissions, evidence, and rollback behavior.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [CI/CD engineer](../../roles/ci-cd-engineer.md)
+- [GitHub governance](../../governance/github-governance.md)
+- [Task checklists](../../governance/task-checklists.md)
 
 ## Verification
 
@@ -64,10 +72,7 @@ Stop when credentials, remote rulesets, or promotion authority are required; pro
 - Every job declares explicit least-privilege `permissions` and pins each action to a full commit SHA.
 - Each check is marked reproducible locally or CI-only, and the remote gates left unobserved are listed.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [CI/CD engineer](../../roles/ci-cd-engineer.md)
-- [GitHub governance](../../governance/github-governance.md)
-- [Task checklists](../../governance/task-checklists.md)
+A remote gate the run does not observe stays unproven; the skill lists it
+rather than counting it as passed.

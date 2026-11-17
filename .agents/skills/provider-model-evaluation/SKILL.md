@@ -3,11 +3,11 @@ name: "provider-model-evaluation"
 description: "Use when a provider or model decision needs dated official-source comparison, native-schema review, and explicit observation boundaries. Reach for it when someone asks whether to switch the default model, whether a model is actually usable here, whether the provider registry is current, or what a model change would cost in evidence. Do NOT use it to call a provider, to benchmark quality or latency, or to grant an entitlement; it reports a sourced disposition and stops."
 metadata:
   title: "provider-model-evaluation"
-  version: "1.5.1"
+  version: "1.6.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "provider-model-evaluation"
   scope: "qa"
   owner_agent: "eval-engineer"
@@ -15,7 +15,7 @@ metadata:
 
 # provider-model-evaluation
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -53,22 +53,22 @@ A manual comparison is not a recurring workspace scoring gate.
   separately approved runtime boundary supplies direct evidence.
 - Comparisons are deterministic, value-free, and do not call a provider.
 
-### Failure Handling
-
-Return an unverified disposition and stop when a source, native-schema fact,
-comparison evidence, or approval boundary is missing. Do not infer runtime
-acceptance, entitlement, quality, cost, or latency.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Current [provider registry](../../governance/providers/registry.yaml) status axes and work-profile selection.
 - Dated official provider sources and provider-native schema evidence.
 - Scoped source/native-envelope evidence; live response and synthetic scores
   are not required or implied by ordinary workspace QA.
 
-### Outputs
+### Failure Handling
+
+Return an unverified disposition and stop when a source, native-schema fact,
+comparison evidence, or approval boundary is missing. Do not infer runtime
+acceptance, entitlement, quality, cost, or latency.
+
+## Outputs
+
+### Artifacts
 
 - `sourced-model-disposition`, `native-acceptance-verdict`, and
   `regression-comparison`, each in the shape `assets/disposition.md` defines.
@@ -76,15 +76,7 @@ acceptance, entitlement, quality, cost, or latency.
   runtime acceptance in separate rows, because collapsing any pair is how a
   catalog row becomes a claim that a model is usable here.
 
-## Verification
-
-### Checks
-
-- Every fast-moving fact carries its official source and retrieval date.
-- Provider lifecycle, repository disposition, entitlement, and runtime acceptance sit in separate rows of `assets/disposition.md`.
-- No provider was called, and runtime acceptance stays `needs_revalidation` without direct evidence.
-
-### Completion and Handoff
+### Handoff
 
 Owning role, policies and related documents:
 
@@ -94,3 +86,17 @@ Owning role, policies and related documents:
 - [Current workspace governance](../../README.md)
 - Historical canonical-home decision: ADR-0032
 - [Documentation index](../../../docs/README.md)
+
+## Verification
+
+### Checks
+
+- Every fast-moving fact carries its official source and retrieval date.
+- Provider lifecycle, repository disposition, entitlement, and runtime acceptance sit in separate rows of `assets/disposition.md`.
+- No provider was called, and runtime acceptance stays `needs_revalidation` without direct evidence.
+
+### Limits
+
+The evaluation does not prove runtime acceptance, entitlement, quality, cost
+or latency; runtime acceptance stays `needs_revalidation` without direct
+evidence.

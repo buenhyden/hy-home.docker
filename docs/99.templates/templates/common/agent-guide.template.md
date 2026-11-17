@@ -15,50 +15,56 @@ updated: "{{UPDATED}}"
 
 ## Scope
 
-### Allowed Surface
+### Allowed Scope
 
-{{ALLOWED_SURFACE}}
+<!-- Author prompt: Name the folder's purpose, the paths an agent may change below it, and what is out of scope. -->
 
-### Non-goals
+{{ALLOWED_SCOPE_AND_NON_GOALS}}
 
-{{NON_GOALS}}
+### Instruction Precedence
 
-## Required Policies
+<!-- Author prompt: Say that the canonical owners under Intake outrank this guide and link the bootstrap precedence order; never add a rank of your own. -->
 
-### Canonical Sources
-
-{{CANONICAL_SOURCES}}
-
-### Local Obligations
-
-{{LOCAL_OBLIGATIONS}}
+{{INSTRUCTION_PRECEDENCE}}
 
 ## Workflow
 
-### Inspect and Change
+### Intake
 
-{{INSPECT_AND_CHANGE}}
+<!-- Author prompt: Link the `.agents/` policies, roles, skills, prompts and hook rules, and the `.claude/` and `.codex/` adapters and hooks an agent loads before working here. -->
 
-### Handoff
+{{CANONICAL_SOURCES}}
 
-{{HANDOFF}}
+### Execution
 
-## Verification
+<!-- Author prompt: List the folder-specific steps and obligations an agent follows while changing a file here. -->
 
-### Required Checks
+{{INSPECT_CHANGE_AND_LOCAL_OBLIGATIONS}}
 
-{{REQUIRED_CHECKS}}
+## Boundaries
 
-### Evidence and Limits
+### Authority
 
-{{EVIDENCE_AND_LIMITS}}
+<!-- Author prompt: Say when an agent stops and reports, and which approval owner decides; this guide grants no tool, path, permission or approval. -->
 
-## Safety
+{{STOP_AND_ESCALATE}}
 
-### Protected Actions
+### Secrets and External Effects
+
+<!-- Author prompt: Name the protected actions: secret handling, generated files, live or remote effects and the approval each needs. -->
 
 {{PROTECTED_ACTIONS}}
 
-### Stop and Escalate
+## Verification
 
-{{STOP_AND_ESCALATE}}
+### Checks
+
+<!-- Author prompt: Name only registered commands that exist. -->
+
+{{REQUIRED_CHECKS}}
+
+### Reporting
+
+<!-- Author prompt: Say where check evidence and handoff state are recorded, what the checks do not prove, and link the human-facing documents. -->
+
+{{EVIDENCE_LIMITS_AND_HANDOFF}}

@@ -3,11 +3,11 @@ name: "adr-writing"
 description: "Use when an approved material architecture choice needs one ADR with alternatives, consequences, and traceable decision status."
 metadata:
   title: "adr-writing"
-  version: "1.2.1"
+  version: "1.3.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "adr-writing"
   scope: "architecture"
   owner_agent: "doc-writer"
@@ -15,7 +15,7 @@ metadata:
 
 # adr-writing
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -41,20 +41,29 @@ None: this skill states no exclusion.
 - Architecture traceability resolves upstream and downstream links.
 - Decision status and supersession semantics match the metadata contract.
 
-### Failure Handling
-
-If the choice, authority, or alternatives are not decision-ready, return a decision-gap report instead of fabricating an accepted ADR.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Approved architecture context and decision drivers.
 - Alternatives, quality attributes, constraints, and affected parent artifacts.
 
-### Outputs
+### Failure Handling
+
+If the choice, authority, or alternatives are not decision-ready, return a decision-gap report instead of fabricating an accepted ADR.
+
+## Outputs
+
+### Artifacts
 
 - One typed ADR in `docs/02.architecture/decisions/` with decision rationale and consequences.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [Documentation writer](../../roles/doc-writer.md)
+- [Documentation protocol](../../governance/documentation-protocol.md)
+- [Documentation scope](../../governance/documentation-protocol.md)
+- [Agent catalog](../../README.md)
 
 ## Verification
 
@@ -64,11 +73,6 @@ If the choice, authority, or alternatives are not decision-ready, return a decis
 - `scripts/validation/check-document-links.py --mode alignment` resolves its upstream and downstream links.
 - The ADR names at least two alternatives and states its consequences and reversibility.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [Documentation writer](../../roles/doc-writer.md)
-- [Documentation protocol](../../governance/documentation-protocol.md)
-- [Documentation scope](../../governance/documentation-protocol.md)
-- [Agent catalog](../../README.md)
+This skill records no limit on what its checks prove.

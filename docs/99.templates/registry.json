@@ -3724,9 +3724,9 @@
         "owner_agent"
       ],
       "required_sections": [
-        "Purpose and Trigger",
+        "Trigger",
         "Procedure",
-        "Inputs and Outputs",
+        "Outputs",
         "Verification"
       ],
       "optional_sections": [],
@@ -3746,7 +3746,7 @@
       "ordered_sections": true,
       "nonempty_sections": true,
       "required_subsections": {
-        "Purpose and Trigger": [
+        "Trigger": [
           "When to Use",
           "When Not to Use"
         ],
@@ -3754,13 +3754,13 @@
           "Steps",
           "Failure Handling"
         ],
-        "Inputs and Outputs": [
-          "Inputs",
-          "Outputs"
+        "Outputs": [
+          "Artifacts",
+          "Handoff"
         ],
         "Verification": [
           "Checks",
-          "Completion and Handoff"
+          "Limits"
         ]
       }
     },
@@ -3838,32 +3838,27 @@
       ],
       "required_sections": [
         "Scope",
-        "Required Policies",
         "Workflow",
-        "Verification",
-        "Safety"
+        "Boundaries",
+        "Verification"
       ],
       "optional_sections": [],
       "required_subsections": {
         "Scope": [
-          "Allowed Surface",
-          "Non-goals"
-        ],
-        "Required Policies": [
-          "Canonical Sources",
-          "Local Obligations"
+          "Allowed Scope",
+          "Instruction Precedence"
         ],
         "Workflow": [
-          "Inspect and Change",
-          "Handoff"
+          "Intake",
+          "Execution"
+        ],
+        "Boundaries": [
+          "Authority",
+          "Secrets and External Effects"
         ],
         "Verification": [
-          "Required Checks",
-          "Evidence and Limits"
-        ],
-        "Safety": [
-          "Protected Actions",
-          "Stop and Escalate"
+          "Checks",
+          "Reporting"
         ]
       },
       "lifecycle_id": "agent-guide",
@@ -4790,7 +4785,8 @@
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
-          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported"
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -4802,15 +4798,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "Commit 4bb4add1f (folder agent guides) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit 4bb4add1f (folder agent guides) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every folder AGENTS.md took the core agent-instructions sections, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/common/agent-guide.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/common/agent-guide.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "agent-instructions"
-      }
+      "core_role": "agent-instructions"
     },
     "governance/claude-agent": {
       "source": "docs/99.templates/templates/runtime/claude-agent.template.md",
@@ -5535,15 +5527,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "Commit b83c5a11e (profile) and f7f37d495 (the 24 skills, #981) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit b83c5a11e (profile) and f7f37d495 (the 24 skills, #981) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every canonical skill took the core skill sections, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/governance/skill.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/governance/skill.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "skill"
-      }
+      "core_role": "skill"
     },
     "operation/guide": {
       "source": "docs/99.templates/templates/operations/guide.template.md",

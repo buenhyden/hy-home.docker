@@ -3,11 +3,11 @@ name: "infra-validate"
 description: "Use when an approved infrastructure change needs scoped static checks and separately authorized runtime observations with exact evidence. Reach for it when someone asks whether a Compose or infrastructure change is valid, wants only the checks that need no running services, or asks what could not be verified without touching runtime. Do NOT use it to start, restart, or deploy services, or to read secret values; runtime action needs its own approval and this reports what it did not do."
 metadata:
   title: "infra-validate"
-  version: "1.5.2"
+  version: "1.6.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "infra-validate"
   scope: "infra"
   owner_agent: "infra-implementer"
@@ -15,7 +15,7 @@ metadata:
 
 # infra-validate
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -57,13 +57,7 @@ The skill description states: "Do NOT use it to start, restart, or deploy servic
 - Static validation passes before any runtime action.
 - Runtime checks remain within approved service and mutation scope.
 
-### Failure Handling
-
-Stop on invalid rendered configuration, missing authority, or unexpected runtime impact; revert or escalate according to the approved task.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Approved infrastructure change and validation contract.
 - Expected rendered configuration, health behavior, and rollback boundary.
@@ -72,9 +66,23 @@ Stop on invalid rendered configuration, missing authority, or unexpected runtime
   the [verification matrix](../../governance/quality-standards.md#5-change-type-verification-matrix).
   Naming a command here instead would copy both owners into a third place.
 
-### Outputs
+### Failure Handling
+
+Stop on invalid rendered configuration, missing authority, or unexpected runtime impact; revert or escalate according to the approved task.
+
+## Outputs
+
+### Artifacts
 
 - Infrastructure validation evidence separated into static, runtime-observed, CI-only, and skipped results.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [Infrastructure implementer](../../roles/infra-implementer.md)
+- [Compose stack function](../compose-stack-agent/SKILL.md)
+- [Infrastructure scope](../../governance/environment-constraints.md)
 
 ## Verification
 
@@ -84,10 +92,8 @@ Stop on invalid rendered configuration, missing authority, or unexpected runtime
 - Runtime observation runs only after static validation passes, and only within the approved scope.
 - The evidence separates static, runtime-observed, CI-only, and skipped results.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [Infrastructure implementer](../../roles/infra-implementer.md)
-- [Compose stack function](../compose-stack-agent/SKILL.md)
-- [Infrastructure scope](../../governance/environment-constraints.md)
+Static checks do not prove runtime state. Runtime observation runs only
+within the approved scope, and CI-only and skipped results are reported
+apart from observed ones.

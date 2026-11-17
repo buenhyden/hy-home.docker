@@ -3,11 +3,11 @@ name: "policy-gate-agent"
 description: "Use when a governed change needs a read-only verdict on canonical ownership, typed contracts, protected-surface approval, and evidence. Reach for it when someone asks whether a change passes the gates, which gate failed and who owns the fix, what has not been checked yet, or whether a protected file needs approval before merge. Do NOT use it to run the fix, to review code quality, or to approve a protected surface; it reports the verdict and its owner, and changes nothing."
 metadata:
   title: "policy-gate-agent"
-  version: "1.4.1"
+  version: "1.5.0"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-13"
+  updated: "2026-11-17"
   function_id: "policy-gate-agent"
   scope: "agentic"
   owner_agent: "rules-engineer"
@@ -15,7 +15,7 @@ metadata:
 
 # policy-gate-agent
 
-## Purpose and Trigger
+## Trigger
 
 ### When to Use
 
@@ -43,13 +43,7 @@ The skill description states: "Do NOT use it to run the fix, to review code qual
 - One canonical authority governs each policy topic.
 - Protected changes have explicit approval and review evidence.
 
-### Failure Handling
-
-Fail closed on ambiguous ownership, conflicting policy, unsafe paths, or missing approvals and escalate to the workflow supervisor.
-
-## Inputs and Outputs
-
-### Inputs
+#### Inputs
 
 - Governed change and canonical policy.
 - Path authority, precedence, protected-surface approvals, and validation evidence.
@@ -60,12 +54,27 @@ Fail closed on ambiguous ownership, conflicting policy, unsafe paths, or missing
   that no gate actually produced, so read `references/reading-the-gate-dag.md`
   for how to expand it into rows before filling any of them in.
 
-### Outputs
+### Failure Handling
+
+Fail closed on ambiguous ownership, conflicting policy, unsafe paths, or missing approvals and escalate to the workflow supervisor.
+
+## Outputs
+
+### Artifacts
 
 - A policy-gate verdict with evidence, owner, and unresolved approvals, in the
   shape of `assets/verdict.md`. Its gate table carries one row per in-scope
   gate, written before the results are known, because a gate with no row is a
   gate nobody looked at.
+
+### Handoff
+
+Owning role, policies and related documents:
+
+- [Rules engineer](../../roles/rules-engineer.md)
+- Agent governance artifacts contract (`docs/99.templates/registry.json`)
+- [Approval boundaries](../../governance/approval-boundaries.md)
+- [Documentation index](../../../docs/README.md)
 
 ## Verification
 
@@ -75,11 +84,6 @@ Fail closed on ambiguous ownership, conflicting policy, unsafe paths, or missing
 - Each row says passed, failed, skipped, blocked, or not run, and names the gate that produced it.
 - Each finding names exactly one canonical correction owner.
 
-### Completion and Handoff
+### Limits
 
-Owning role, policies and related documents:
-
-- [Rules engineer](../../roles/rules-engineer.md)
-- Agent governance artifacts contract (`docs/99.templates/registry.json`)
-- [Approval boundaries](../../governance/approval-boundaries.md)
-- [Documentation index](../../../docs/README.md)
+This skill records no limit on what its checks prove.
