@@ -1084,7 +1084,10 @@
       "sdlc/plan": "A manual copy of actual work status or check results instead of a reference to the Task.",
       "sdlc/requirement": "Implementation detail or Task status, which the Requirement does not own.",
       "sdlc/spec": "A second copy of the Plan's execution order or the Task's progress.",
-      "sdlc/task": "A new acceptance criterion or policy invented here, or an overwritten original failure output."
+      "sdlc/task": "A new acceptance criterion or policy invented here, or an overwritten original failure output.",
+      "reference/research": "Another document's execution state or approval copied here, or an unobserved behavior described as complete.",
+      "reference/audit": "Another document's execution state or approval copied here, or an unobserved behavior described as complete.",
+      "reference/data": "Another document's execution state or approval copied here, or an unobserved behavior described as complete."
     },
     "link_types": {
       "normative": {
@@ -2746,16 +2749,30 @@
         "review_cycle"
       ],
       "required_sections": [
-        "Overview",
-        "Scope and Method",
-        "Findings",
-        "Limitations",
-        "Sources"
+        "Question and Scope",
+        "Sources",
+        "Analysis",
+        "Application and Limits"
       ],
-      "optional_sections": [
-        "Related Documents"
-      ],
-      "free_form_sections": true,
+      "optional_sections": [],
+      "required_subsections": {
+        "Question and Scope": [
+          "Question",
+          "Scope"
+        ],
+        "Sources": [
+          "Primary Sources",
+          "Versions and Dates"
+        ],
+        "Analysis": [
+          "Findings",
+          "Alternatives"
+        ],
+        "Application and Limits": [
+          "Design Implications",
+          "Unverified Conditions"
+        ]
+      },
       "lifecycle_id": "publication",
       "traceability": {
         "allowed_parent_profiles": [
@@ -2771,7 +2788,8 @@
           "superseded_by"
         ]
       },
-      "ordered_sections": true
+      "ordered_sections": true,
+      "nonempty_sections": true
     },
     {
       "id": "audit-member",
@@ -2803,15 +2821,25 @@
         "review_cycle"
       ],
       "required_sections": [
-        "Overview",
-        "Scope and Method",
+        "Scope",
         "Findings",
-        "Limitations",
-        "Sources"
+        "Actions"
       ],
-      "optional_sections": [
-        "Related Documents"
-      ],
+      "optional_sections": [],
+      "required_subsections": {
+        "Scope": [
+          "Subject",
+          "Read Coverage"
+        ],
+        "Findings": [
+          "Evidence",
+          "Conflicts and Gaps"
+        ],
+        "Actions": [
+          "Owners",
+          "Acceptance Conditions"
+        ]
+      },
       "lifecycle_id": "publication",
       "traceability": {
         "allowed_parent_profiles": [
@@ -4323,15 +4351,25 @@
         "generated_by"
       ],
       "required_sections": [
-        "Overview",
-        "Scope and Method",
-        "Findings",
-        "Limitations",
-        "Sources"
+        "Purpose",
+        "Provenance",
+        "Interpretation"
       ],
-      "optional_sections": [
-        "Related Documents"
-      ],
+      "optional_sections": [],
+      "required_subsections": {
+        "Purpose": [
+          "Consumers",
+          "Boundaries"
+        ],
+        "Provenance": [
+          "Collection",
+          "Versions and Dates"
+        ],
+        "Interpretation": [
+          "Schema and Units",
+          "Limits"
+        ]
+      },
       "lifecycle_id": "publication",
       "traceability": {},
       "exceptions": [],
@@ -5898,15 +5936,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "The role kept its registered sections until a later pull request moved it to its role design core role: the template and profile took the core sections and table; no audit member existed to move, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/audit.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/audit.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "audit"
-      }
+      "core_role": "audit"
     },
     "reference/audit-pack": {
       "source": "docs/99.templates/templates/references/audit-pack.template.md",
@@ -6091,15 +6125,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "The role kept its registered sections until a later pull request moved it to its role design core role: the template and profile took the core sections and table; no data member existed to move, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/data.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/data.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "data-reference"
-      }
+      "core_role": "data-reference"
     },
     "reference/data-pack": {
       "source": "docs/99.templates/templates/references/data-pack.template.md",
@@ -6214,7 +6244,8 @@
         "negative": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
-          "tests.lib.document_governance.test_references:ReferencePackageTests.test_delegation_validates_exact_members_and_their_content"
+          "tests.lib.document_governance.test_references:ReferencePackageTests.test_delegation_validates_exact_members_and_their_content",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -6226,15 +6257,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "The role has not moved to COMMON-DOC-FORM-1 and keeps its registered sections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "The role kept its registered sections until a later pull request moved it to its role design core role: the template and profile took the core sections and table, every research member took them with its sources table, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/references/research.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/references/research.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "research"
-      }
+      "core_role": "research"
     },
     "reference/research-pack": {
       "source": "docs/99.templates/templates/references/research-pack.template.md",

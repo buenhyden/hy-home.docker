@@ -1,10 +1,10 @@
 ---
 title: "Reference: Task-Aware Agent Model Selection"
-version: "1.3.0"
+version: "1.4.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-17"
 layer: "references"
 artifact_id: "RES-0002-m0002"
 parent_ids:
@@ -17,17 +17,77 @@ review_cycle: "on-source-change"
 
 # Reference: Task-Aware Agent Model Selection
 
-## Overview
+## Question and Scope
 
-### Overview
+### Question
 
-## Scope and Method
+How should an agent model, effort level and fallback be selected for a
+task by its characteristics and accepted outcome rather than by role name
+or publisher branding? The member owns task-aware selection.
 
-### Current External Research
+### Scope
+
+The member covers publisher model positioning as candidate input,
+task-aware routing by work profile, accepted-outcome evaluation, and
+effort, switching and delegation limits. Dated model IDs, capabilities
+and prices are owned by
+[m0013](m0013-provider-model-landscape.md#current-external-research), and
+native subagent details by m0012; no entitlement, live call, routing
+config or cost log was inspected.
+
+## Sources
+
+### Primary Sources
+
+#### Related Documents
+
+- [Research pack](README.md)
+- [Provider model landscape](./m0013-provider-model-landscape.md)
+- [AI agent catalogs](./m0003-ai-agent-catalogs.md)
+- [Agent instructions](./m0001-agent-instructions-vibe-coding.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
+- Subagent protocol (retired path: `../../../00.agent-governance/subagent-protocol.md`)
+- SPEC-0158 preservation contract
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+
+#### Claims and Sources
+
+| Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0002-01 | Publisher positioning gives candidates | [S-learn-chatgpt-com-models](https://learn.chatgpt.com/docs/models); recommendations/reasoning/retirements; [S-platform-claude-com-models-overview](https://platform.claude.com/docs/en/models/overview); latest-model table/IDs | Not displayed; dated retirement notices / Not displayed | 2026-09-27 | Product/API candidates; target availability unexamined | Publisher fact / candidate inference | No comparative performance result | Not assessed in this run |
+| C-m0002-02 | Task-aware routing | [S-learn-chatgpt-com-models](https://learn.chatgpt.com/docs/models); recommendations/reasoning/retirements; [S-platform-claude-com-models-overview](https://platform.claude.com/docs/en/models/overview); latest-model table/IDs | Not displayed; dated retirement notices / Not displayed | 2026-09-27 | Product/API candidates; target availability unexamined | Recommendations | Require representative accepted outcomes | Not assessed in this run |
+| C-m0002-03 | Accepted-outcome evaluation | [S-learn-chatgpt-com-models](https://learn.chatgpt.com/docs/models); recommendations/reasoning/retirements; [S-platform-claude-com-models-overview](https://platform.claude.com/docs/en/models/overview); latest-model table/IDs | Not displayed; dated retirement notices / Not displayed | 2026-09-27 | Product/API candidates; target availability unexamined | Recommendations | Require representative accepted outcomes | Not assessed in this run |
+| C-m0002-04 | Delegation inherits limits | [S-learn-chatgpt-com-subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents); custom files/inheritance | Not displayed | 2026-09-27 | Product/API candidates; target availability unexamined | Fact | Installed behavior not examined | Not assessed in this run |
+| C-m0002-05 | Diagnosed bounded fallback | [S-learn-chatgpt-com-subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents); custom files/inheritance; [S-code-claude-com-model-config](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction; [S-learn-chatgpt-com-config-reference](https://learn.chatgpt.com/docs/config-file/config-reference); effort/auto-compact threshold/scope | Not displayed / Not displayed; version conditions in text | 2026-09-27 | Product/API candidates; target availability unexamined | Interpretation / recommendation | Diagnosis, budget and permission prerequisites | Not assessed in this run |
+
+Source tables in [m0013](m0013-provider-model-landscape.md#claims-and-sources) and [m0012](m0012-provider-implementation-comparison.md#claims-and-sources) record originals opened 2026-09-27, absent publication dates and version/channel limits. No entitlement, live call, routing config or cost log was inspected.
+
+- [Agentic Engineering Research Pack](README.md)
+
+### Versions and Dates
+
+The member was created 2026-08-23, carries `observed_at` 2026-09-05 and
+`reviewed_at` 2026-11-06, and records that the originals were opened on
+2026-09-27. The table below lists each source with its version and check
+date.
+
+| Source ID | Source | Version | Checked At | Finding | Application | Limits |
+| --- | --- | --- | --- | --- | --- | --- |
+| S-learn-chatgpt-com-models | [S-learn-chatgpt-com-models](https://learn.chatgpt.com/docs/models); recommendations/reasoning/retirements | Not displayed; dated retirement notices | 2026-09-27 | Codex guidance positions Astra for demanding reasoning, Sol for complex coding and Luna for focused volume, subject to availability (C-m0002-01 to C-m0002-03) | Candidate inference and task-aware routing recommendations; internal adoption not assessed in this run | No comparative performance result; target availability unexamined; requires representative accepted outcomes |
+| S-platform-claude-com-models-overview | [S-platform-claude-com-models-overview](https://platform.claude.com/docs/en/models/overview); latest-model table/IDs | Not displayed | 2026-09-27 | Claude publishes its own model positioning and defaults; these suggest candidates, not a cross-provider ranking (C-m0002-01 to C-m0002-03) | Candidate inference and task-aware routing recommendations; internal adoption not assessed in this run | No comparative performance result; target availability unexamined; requires representative accepted outcomes |
+| S-learn-chatgpt-com-subagents | [S-learn-chatgpt-com-subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents); custom files/inheritance | Not displayed | 2026-09-27 | Codex subagents consume extra tokens, inherit the parent sandbox, live overrides and permission policy; unsurfaced approvals fail back to the parent (C-m0002-04, C-m0002-05) | Delegation-inherits-limits fact and bounded fallback recommendation; internal adoption not assessed in this run | Installed behavior not examined; native details owned by m0012 |
+| S-code-claude-com-model-config | [S-code-claude-com-model-config](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction | Not displayed; claim C-m0002-05 notes version conditions in text | 2026-09-27 | Supports C-m0002-05: raising effort, changing models and adding agents solve different problems | Diagnosed bounded fallback recommendation; internal adoption not assessed in this run | Diagnosis, budget and permission prerequisites |
+| S-learn-chatgpt-com-config-reference | [S-learn-chatgpt-com-config-reference](https://learn.chatgpt.com/docs/config-file/config-reference); effort/auto-compact threshold/scope | Not displayed; claim C-m0002-05 notes version conditions in text | 2026-09-27 | Supports C-m0002-05: reproducible evaluation records effective IDs, channel and effort, not only an alias | Diagnosed bounded fallback recommendation; internal adoption not assessed in this run | Diagnosis, budget and permission prerequisites |
+
+## Analysis
+
+### Findings
+
+#### Current External Research
 
 This member owns task-aware selection; [m0013](m0013-provider-model-landscape.md#current-external-research) owns dated IDs, capabilities and prices. Originals were opened on 2026-09-27. Historical role/model mappings below are not a current registry. Internal adoption: **Not assessed in this run**. Unless an original explicitly states a maturity label, formal stable/preview/experimental status is **not stated**; current documentation is not a stability guarantee.
 
-### Select by task and accepted outcome
+#### Select by task and accepted outcome
 
 **C-m0002-01 — publisher fact and limited inference.** Current Codex guidance positions Astra for demanding reasoning, Sol for complex coding, and Luna for focused volume, subject to availability. Claude publishes its own model positioning and defaults. Those descriptions suggest candidates; they do not establish a cross-provider ranking. Exact source metadata and channel distinctions are canonical in [m0013](m0013-provider-model-landscape.md#claims-and-sources).
 
@@ -43,26 +103,13 @@ This member owns task-aware selection; [m0013](m0013-provider-model-landscape.md
 
 **C-m0002-03 — recommendation.** Before adoption, freeze representative normal, ambiguous, unavailable-tool and escalation cases. Record acceptance, unsupported claims, attempts, latency, total tokens/tool fees and human correction. Compare cost per accepted outcome and failure distributions with an explicit quality floor. Do not transplant historical third-party savings percentages into current routing.
 
-### Effort, switching and delegation
+#### Effort, switching and delegation
 
 **C-m0002-04 — source fact.** Codex subagents consume additional tokens, inherit the parent sandbox and live overrides, and retain inherited permission policy. Interactive CLI can surface approval from inactive children; noninteractive flows, or runs unable to surface fresh approval, fail the action back to the parent. [Codex subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents) (S-learn-chatgpt-com-subagents; native details owned by m0012).
 
 **C-m0002-05 — interpretation / recommendation.** Increasing effort, changing models and adding agents solve different problems. Missing evidence needs retrieval; ambiguity needs clarification; denial needs an authorized alternative; demonstrated reasoning failure may justify a stronger candidate. Predeclare bounded fallback and preserve its cause. Reproducible evaluation records effective IDs/channel/effort, not only an alias. Model changes must not bypass denied actions.
 
-### Related Documents
-
-- [Research pack](README.md)
-- [Provider model landscape](./m0013-provider-model-landscape.md)
-- [AI agent catalogs](./m0003-ai-agent-catalogs.md)
-- [Agent instructions](./m0001-agent-instructions-vibe-coding.md)
-- [Scope application matrix](./m0015-scope-application-matrix.md)
-- Subagent protocol (retired path: `../../../00.agent-governance/subagent-protocol.md`)
-- SPEC-0158 preservation contract
-- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
-
-## Findings
-
-### Historical Workspace Observations
+#### Historical Workspace Observations
 
 The complete earlier body is preserved at its original cutoff, including then-current external assertions and workspace observations. It is not current implementation authority; its dates are unchanged.
 
@@ -172,7 +219,8 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 > general task-fit hypotheses, but no tracked comparative benchmark establishes
 > cross-provider equivalence.
 >
-### Full role-to-profile registry and the 8-of-14 scope gap
+
+#### Full role-to-profile registry and the 8-of-14 scope gap
 
 > Historical evidence (not current authority; source: Git history): original heading retained for existing links.
 >
@@ -475,9 +523,30 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 
 > Revalidated 2026-11-06: roles are `.agents/roles/*.md` (14) with native projections `.claude/agents/` (14); the Stage 00 scope files ("14 scopes") are retired; persona routing is in `.agents/governance/persona.md`. The dated values above are preserved as observed.
 
-## Limitations
+### Alternatives
 
-### Future Internal Checks
+The member's work-profile table records an alternative or tradeoff per
+profile: a larger model may finish a mechanical edit sooner, human
+clarification may outperform more effort on unclear design, model
+strength does not replace domain checks in security review, large context
+reduces rereads but raises stale-context and cost risk, and another
+identical prompt is not independent review. Its historical body also
+contrasts static role-scoped routing with dynamic, complexity-scored
+routing, which it does not adopt.
+
+## Application and Limits
+
+### Design Implications
+
+Route by ambiguity, consequence, required context and verification cost,
+independently of the role name, and compare cost per accepted outcome
+against a frozen set of representative cases with an explicit quality
+floor before adoption. Predeclare any bounded fallback with its cause;
+model changes must not bypass denied actions, and historical third-party
+savings percentages are not transplanted into current routing. Internal
+adoption is not assessed in this run.
+
+### Unverified Conditions
 
 Candidate surfaces do not assert implementation. These checks require a separate authorized task.
 
@@ -485,21 +554,3 @@ Candidate surfaces do not assert implementation. These checks require a separate
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | C-m0002-01–03 / routing | Task/provider/agent; model evaluation/quality/cost | If routing adoption is proposed | Role owners, native projections, verification owners | Does the route meet quality and total-cost limits versus baseline? | Frozen cases, exact IDs/channel/effort, scores, failure and cost records | Separately approved bounded comparative evaluation | Predeclared quality/budget met; unsupported savings fails | Provider spend and input disclosure require scoped approval | harness-optimizer / eval-engineer | Not assessed in this run |
 | C-m0002-04–05 / fallback | Task/session/agent; governance/security/recovery | If automatic fallback is proposed | Task prompts, native agents, execution controller | Are switches justified, bounded and permission-preserving? | Attempt ledger, failure classification, parent/child denial trace | Authorized disposable failure fixtures | No denial bypass; every switch has cause and terminal outcome | No private logs/global defaults inspected here | loop-operator / security-reviewer | Not assessed in this run |
-
-## Sources
-
-### Claims and Sources
-
-| Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0002-01 | Publisher positioning gives candidates | [S-learn-chatgpt-com-models](https://learn.chatgpt.com/docs/models); recommendations/reasoning/retirements; [S-platform-claude-com-models-overview](https://platform.claude.com/docs/en/models/overview); latest-model table/IDs | Not displayed; dated retirement notices / Not displayed | 2026-09-27 | Product/API candidates; target availability unexamined | Publisher fact / candidate inference | No comparative performance result | Not assessed in this run |
-| C-m0002-02 | Task-aware routing | [S-learn-chatgpt-com-models](https://learn.chatgpt.com/docs/models); recommendations/reasoning/retirements; [S-platform-claude-com-models-overview](https://platform.claude.com/docs/en/models/overview); latest-model table/IDs | Not displayed; dated retirement notices / Not displayed | 2026-09-27 | Product/API candidates; target availability unexamined | Recommendations | Require representative accepted outcomes | Not assessed in this run |
-| C-m0002-03 | Accepted-outcome evaluation | [S-learn-chatgpt-com-models](https://learn.chatgpt.com/docs/models); recommendations/reasoning/retirements; [S-platform-claude-com-models-overview](https://platform.claude.com/docs/en/models/overview); latest-model table/IDs | Not displayed; dated retirement notices / Not displayed | 2026-09-27 | Product/API candidates; target availability unexamined | Recommendations | Require representative accepted outcomes | Not assessed in this run |
-| C-m0002-04 | Delegation inherits limits | [S-learn-chatgpt-com-subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents); custom files/inheritance | Not displayed | 2026-09-27 | Product/API candidates; target availability unexamined | Fact | Installed behavior not examined | Not assessed in this run |
-| C-m0002-05 | Diagnosed bounded fallback | [S-learn-chatgpt-com-subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents); custom files/inheritance; [S-code-claude-com-model-config](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction; [S-learn-chatgpt-com-config-reference](https://learn.chatgpt.com/docs/config-file/config-reference); effort/auto-compact threshold/scope | Not displayed / Not displayed; version conditions in text | 2026-09-27 | Product/API candidates; target availability unexamined | Interpretation / recommendation | Diagnosis, budget and permission prerequisites | Not assessed in this run |
-
-Source tables in [m0013](m0013-provider-model-landscape.md#claims-and-sources) and [m0012](m0012-provider-implementation-comparison.md#claims-and-sources) record originals opened 2026-09-27, absent publication dates and version/channel limits. No entitlement, live call, routing config or cost log was inspected.
-
-## Related Documents
-
-- [Agentic Engineering Research Pack](README.md)

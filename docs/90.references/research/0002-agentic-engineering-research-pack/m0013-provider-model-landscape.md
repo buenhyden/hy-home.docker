@@ -1,10 +1,10 @@
 ---
 title: "Reference: Provider Model Landscape at the Evidence Cutoff"
-version: "1.3.0"
+version: "1.4.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-17"
 layer: "references"
 artifact_id: "RES-0002-m0013"
 parent_ids:
@@ -17,17 +17,94 @@ review_cycle: "on-source-change"
 
 # Reference: Provider Model Landscape at the Evidence Cutoff
 
-## Overview
+## Question and Scope
 
-### Overview
+### Question
 
-## Scope and Method
+Which Claude and Codex models, channels, native effort controls, rates and
+API limits were current at the evidence cutoff, and how should catalogue
+presence or configuration be kept separate from effective model, entitlement,
+live availability and accepted-outcome cost?
 
-### Current External Research
+### Scope
+
+This member owns a dated model and channel snapshot from vendor originals
+opened on 2026-09-27: catalogue IDs and rates, product positioning and
+retirements, native effort controls, billing and API rate-limit mechanics,
+plus preserved historical registry observations. It is not an adopted
+registry: no account, endpoint, entitlement or local configuration was
+inspected. Native comparison is owned by m0012, selection and evaluation by
+m0002, and overall bounds and checkpoints by m0010.
+
+## Sources
+
+### Primary Sources
+
+#### Related Documents
+
+- [Research pack](README.md)
+- [Agent model selection](./m0002-agent-model-selection.md)
+- [Provider implementation comparison](./m0012-provider-implementation-comparison.md)
+- [Agent instructions](./m0001-agent-instructions-vibe-coding.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+
+#### Claims and Sources
+
+| Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0013-01 | Claude catalogue snapshot | [S-platform-claude-com-models-overview](https://platform.claude.com/docs/en/models/overview); latest-model table/IDs | Not displayed | 2026-09-27 | Exact model/API/product channel in snapshot | Catalogue/rate facts | Direct API headline table; other billing conditions differ | Not assessed in this run |
+| C-m0013-02 | Codex product snapshot | [S-learn-chatgpt-com-models](https://learn.chatgpt.com/docs/models); recommendations/reasoning/retirements | Not displayed; dated retirement notices | 2026-09-27 | Exact model/API/product channel in snapshot | Positioning/retirement facts | Publisher guidance and channel-specific schedule | Not assessed in this run |
+| C-m0013-03 | Standard API rates | [S-developers-openai-com-api-pricing](https://developers.openai.com/api/docs/pricing); Standard flagship short/long table | Not displayed | 2026-09-27 | Exact model/API/product channel in snapshot | API rate/capacity/enum facts | Standard API; other tiers/regions/channels differ | Not assessed in this run |
+| C-m0013-04 | Sol API capacity/effort | [S-developers-openai-com-gpt-6-sol](https://developers.openai.com/api/docs/models/gpt-6-sol); model/effort/pricing threshold | Not displayed; knowledge cutoff is not publication | 2026-09-27 | Exact model/API/product channel in snapshot | API rate/capacity/enum facts | Standard API; other tiers/regions/channels differ | Not assessed in this run |
+| C-m0013-05 | Model-specific native controls | [S-code-claude-com-model-config](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction; [S-learn-chatgpt-com-config-reference](https://learn.chatgpt.com/docs/config-file/config-reference); effort/auto-compact threshold/scope | Not displayed; version conditions in text / Not displayed | 2026-09-27 | Exact model/API/product channel in snapshot | Configuration facts | Model/client-specific, effective settings unobserved | Not assessed in this run |
+| C-m0013-06 | Alias/channel/effective distinctions | [S-platform-claude-com-models-overview](https://platform.claude.com/docs/en/models/overview); latest-model table/IDs; [S-learn-chatgpt-com-models](https://learn.chatgpt.com/docs/models); recommendations/reasoning/retirements; [S-code-claude-com-model-config](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction; [S-learn-chatgpt-com-config-reference](https://learn.chatgpt.com/docs/config-file/config-reference); effort/auto-compact threshold/scope | Not displayed / Not displayed; dated retirement notices / Not displayed; version conditions in text | 2026-09-27 | Exact model/API/product channel in snapshot | Interpretation | Requested versus effective values need evidence | Not assessed in this run |
+| C-m0013-07 | Subscription versus API metering | [S-code-claude-com-costs](https://code.claude.com/docs/en/costs); /usage and organization access setups | Not displayed | 2026-09-27 | Exact model/API/product channel in snapshot | Billing fact | Authentication/provider setup conditional | Not assessed in this run |
+| C-m0013-08 | Cost per accepted outcome | [S-developers-openai-com-api-pricing](https://developers.openai.com/api/docs/pricing); Standard flagship short/long table; [S-code-claude-com-costs](https://code.claude.com/docs/en/costs); /usage and organization access setups | Not displayed | 2026-09-27 | Exact model/API/product channel in snapshot | Recommendation | Complete accepted-outcome accounting needed | Not assessed in this run |
+| C-m0013-09 | API limits and bounded retries | [S-developers-openai-com-api-rate-limits](https://developers.openai.com/api/docs/guides/rate-limits); How limits work / Retrying with exponential backoff; [S-platform-claude-com-api-rate-limits](https://platform.claude.com/docs/en/api/rate-limits); Rate limits / Cache-aware ITPM / Spend cap | Not displayed | 2026-09-27 | Exact model/API/product channel in snapshot | API throughput facts | No account numeric limit or subscription quota asserted | Not assessed in this run |
+
+| Source ID | Original and detail location | Publication/revision date | Checked at | Product/channel/version and stability | Limitation |
+| --- | --- | --- | --- | --- | --- |
+| S-platform-claude-com-models-overview | [Original](https://platform.claude.com/docs/en/models/overview); latest-model table/IDs | Not displayed | 2026-09-27 | Direct Claude API catalogue; exact model IDs; mutable page | Provider IDs/aliases/local access unexamined |
+| S-learn-chatgpt-com-models | [Original](https://learn.chatgpt.com/docs/models); recommendations/reasoning/retirements | Not displayed; dated retirement notices | 2026-09-27 | Codex/ChatGPT product catalogue; rollout/sign-in conditions | 2026-10-14 is scheduled; API exception retained |
+| S-developers-openai-com-api-pricing | [Original](https://developers.openai.com/api/docs/pricing); Standard flagship short/long table | Not displayed | 2026-09-27 | OpenAI Standard API; service tiers differ | USD/1M tokens; not subscription credit conversion |
+| S-developers-openai-com-gpt-6-sol | [Original](https://developers.openai.com/api/docs/models/gpt-6-sol); model/effort/pricing threshold | Not displayed; knowledge cutoff is not publication | 2026-09-27 | GPT-6 Sol API model description | API enum distinct from product controls |
+| S-code-claude-com-model-config | [Original](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction | Not displayed; version conditions in text | 2026-09-27 | Claude Code native/session config; mutable docs | Effective fallback/caps unobserved |
+| S-learn-chatgpt-com-config-reference | [Original](https://learn.chatgpt.com/docs/config-file/config-reference); effort/auto-compact threshold/scope | Not displayed | 2026-09-27 | Codex current native configuration reference | Choices/defaults do not prove enabled local behavior |
+| S-code-claude-com-costs | [Original](https://code.claude.com/docs/en/costs); /usage and organization access setups | Not displayed | 2026-09-27 | Claude API versus subscription/provider metering | No usage/entitlement/private logs inspected |
+| S-developers-openai-com-api-rate-limits | [Original](https://developers.openai.com/api/docs/guides/rate-limits); How limits work / Retrying with exponential backoff | Not displayed | 2026-09-27 | OpenAI API metrics and SDK-version-dependent retry | No account tier/limit checked; application and SDK bounds distinct |
+| S-platform-claude-com-api-rate-limits | [Original](https://platform.claude.com/docs/en/api/rate-limits); Rate limits / Cache-aware ITPM / Spend cap | Not displayed | 2026-09-27 | Claude Messages API and organization/workspace limits | Most-model cache exception; not subscription quota |
+
+- [Agentic Engineering Research Pack](README.md)
+
+### Versions and Dates
+
+The frontmatter records `created` 2026-08-23, `observed_at` 2026-09-05 and
+`reviewed_at` 2026-11-06; the vendor originals were opened on 2026-09-27,
+and earlier observed and review dates keep their historical meanings. The
+table below lists each source with its version and check date.
+
+| Source ID | Source | Version | Checked At | Finding | Application | Limits |
+| --- | --- | --- | --- | --- | --- | --- |
+| S-platform-claude-com-models-overview | [Original](https://platform.claude.com/docs/en/models/overview); latest-model table/IDs | Not displayed; direct Claude API catalogue, mutable page | 2026-09-27 | Claude exact API IDs, context, output, effort and headline USD rates (C-m0013-01, C-m0013-06) | Catalogue snapshot and alias/channel distinctions; internal adoption not assessed in this run | Provider IDs/aliases/local access unexamined |
+| S-learn-chatgpt-com-models | [Original](https://learn.chatgpt.com/docs/models); recommendations/reasoning/retirements | Not displayed; dated retirement notices | 2026-09-27 | Codex positions gpt-6-astra, gpt-6-sol and gpt-6-luna and schedules sign-in retirements (C-m0013-02, C-m0013-06) | Codex product snapshot and alias/channel distinctions; internal adoption not assessed in this run | 2026-10-14 is scheduled; API exception retained |
+| S-developers-openai-com-api-pricing | [Original](https://developers.openai.com/api/docs/pricing); Standard flagship short/long table | Not displayed; OpenAI Standard API, service tiers differ | 2026-09-27 | Standard API short- and long-context USD rates per million tokens (C-m0013-03, C-m0013-08) | Rate table and cost-per-accepted-outcome recommendation; internal adoption not assessed in this run | USD/1M tokens; not subscription credit conversion |
+| S-developers-openai-com-gpt-6-sol | [Original](https://developers.openai.com/api/docs/models/gpt-6-sol); model/effort/pricing threshold | Not displayed; knowledge cutoff is not publication | 2026-09-27 | GPT-6 Sol context, output, reasoning.effort enum and 272K long-context threshold (C-m0013-04) | API detail for C-m0013-04; internal adoption not assessed in this run | API enum distinct from product controls |
+| S-code-claude-com-model-config | [Original](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction | Not displayed; version conditions in text | 2026-09-27 | Claude model-dependent effort, downgrade, caps and ultracode (C-m0013-05, C-m0013-06) | Native controls and effective settings; internal adoption not assessed in this run | Effective fallback/caps unobserved |
+| S-learn-chatgpt-com-config-reference | [Original](https://learn.chatgpt.com/docs/config-file/config-reference); effort/auto-compact threshold/scope | Not displayed; Codex current native configuration reference | 2026-09-27 | Codex effort is a model/client-advertised string; product controls can include max/ultra (C-m0013-05, C-m0013-06) | Native controls and effective settings; internal adoption not assessed in this run | Choices/defaults do not prove enabled local behavior |
+| S-code-claude-com-costs | [Original](https://code.claude.com/docs/en/costs); /usage and organization access setups | Not displayed; Claude API versus subscription/provider metering | 2026-09-27 | API token accounting differs from subscription usage bars (C-m0013-07, C-m0013-08) | Billing fact and accepted-outcome cost; internal adoption not assessed in this run | No usage/entitlement/private logs inspected |
+| S-developers-openai-com-api-rate-limits | [Original](https://developers.openai.com/api/docs/guides/rate-limits); How limits work / Retrying with exponential backoff | Not displayed; SDK-version-dependent retry | 2026-09-27 | Limits vary by organization, project, model and metric; 429 retries honor Retry-After with bounds (C-m0013-09) | API throughput facts for C-m0013-09; internal adoption not assessed in this run | No account tier/limit checked; application and SDK bounds distinct |
+| S-platform-claude-com-api-rate-limits | [Original](https://platform.claude.com/docs/en/api/rate-limits); Rate limits / Cache-aware ITPM / Spend cap | Not displayed; Claude Messages API and organization/workspace limits | 2026-09-27 | RPM, ITPM and OTPM, cache-aware ITPM and spend-cap 429 without retry-after (C-m0013-09) | API throughput facts for C-m0013-09; internal adoption not assessed in this run | Most-model cache exception; not subscription quota |
+
+## Analysis
+
+### Findings
+
+#### Current External Research
 
 This member owns a dated model/channel snapshot, not an adopted registry. Vendor originals were opened on **2026-09-27**. Earlier observed/review dates retain historical meanings. IDs, aliases, availability, defaults, rates and limits can change; no account, endpoint, entitlement or local configuration was inspected. Internal adoption: **Not assessed in this run**. Unless an original explicitly states a maturity label, formal stable/preview/experimental status is **not stated**; current documentation is not a stability guarantee.
 
-### Model and Channel Snapshot
+#### Model and Channel Snapshot
 
 **C-m0013-01 — catalogue facts.** [Claude’s API overview](https://platform.claude.com/docs/en/models/overview) (S-platform-claude-com-models-overview, latest-model comparison) supplies the following headline USD rates per million input/output tokens. These are API advertising, not subscription bills or measured task costs.
 
@@ -50,13 +127,13 @@ This member owns a dated model/channel snapshot, not an adopted registry. Vendor
 
 **C-m0013-04 — API detail.** [GPT-6 Sol’s model page](https://developers.openai.com/api/docs/models/gpt-6-sol) specifies 1,050,000 context and 128,000 maximum output tokens. API reasoning.effort accepts none/low/medium/high/xhigh/max, default medium; Chat Completions function calling requires none. Above 272K input, long-context pricing applies to the full request. This API enum does not establish Ultra API support. (S-developers-openai-com-gpt-6-sol.)
 
-### Native controls and effective settings
+#### Native controls and effective settings
 
 **C-m0013-05 — source facts.** [Claude model config](https://code.claude.com/docs/en/model-config) documents model-dependent effort/defaults, downgrade to supported effort and configured caps; labels are calibrated differently per model. Current ultracode permits session or persistent configuration and includes workflow behavior. [Codex config reference](https://learn.chatgpt.com/docs/config-file/config-reference) describes effort as a string whose choices are model/client-advertised; product controls can include max/ultra. Historical universal five-value enums cannot be promoted to current guarantees. (S-code-claude-com-model-config; S-learn-chatgpt-com-config-reference.)
 
 **C-m0013-06 — interpretation.** Product alias, API snapshot ID, role default, fallback and account entitlement are different facts. An evaluated trial records requested label and effective model/effort/channel. A documented downgrade is not evidence of local behavior. Headline context capacity also differs from remaining task budget and compaction trigger; native comparison is owned by [m0012](m0012-provider-implementation-comparison.md#native-capability-matrix).
 
-### Throughput, retry and accepted-outcome costs
+#### Throughput, retry and accepted-outcome costs
 
 **C-m0013-07 — billing fact.** [Claude costs](https://code.claude.com/docs/en/costs) distinguishes API token accounting from subscription usage bars; displayed session token cost is not subscription billing. Organization/provider access determines metering. (S-code-claude-com-costs, /usage and organization setup.)
 
@@ -64,18 +141,7 @@ This member owns a dated model/channel snapshot, not an adopted registry. Vendor
 
 **C-m0013-08 — recommendation.** Total cost includes uncached input, cache reads/writes, output/reasoning accounting, tools, retries, context thresholds, tier and delegation. Compare cost per accepted outcome with latency and failure distribution; stronger models may save repair only when measured. Concurrency can improve latency but amplify token demand, throttling and write conflicts. A trial should cap aggregate work, respect valid retry delay, defer a request whose delay exceeds its deadline, and stop on budget exhaustion. Recheck prices before funded execution; do not invent a savings percentage. [m0002](m0002-agent-model-selection.md#current-external-research) owns selection/evaluation; [m0010](m0010-loop-engineering.md#current-external-research) owns overall bounds and checkpoints.
 
-### Related Documents
-
-- [Research pack](README.md)
-- [Agent model selection](./m0002-agent-model-selection.md)
-- [Provider implementation comparison](./m0012-provider-implementation-comparison.md)
-- [Agent instructions](./m0001-agent-instructions-vibe-coding.md)
-- [Scope application matrix](./m0015-scope-application-matrix.md)
-- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
-
-## Findings
-
-### Historical Workspace Observations
+#### Historical Workspace Observations
 
 The complete earlier body is preserved at its original cutoff, including then-current external assertions and workspace observations. It is not current implementation authority; its dates are unchanged.
 
@@ -313,7 +379,8 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 > snapshot: dateless IDs from the Claude 4.6 generation onward are fixed
 > releases, not evergreen aliases, per the vendor page's explicit note.
 >
-### Effort mechanics per model family
+
+#### Effort mechanics per model family
 
 > Historical evidence (not current authority; source: Git history): original heading retained for existing links.
 >
@@ -342,7 +409,8 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 > and now more precisely sourced than, the leaf's prior warning against
 > copying Codex's Max/Ultra controls into `model_reasoning_effort` by analogy.
 >
-### Reasoning-control value drift (Codex, `UNVERIFIED`)
+
+#### Reasoning-control value drift (Codex, `UNVERIFIED`)
 
 > Historical evidence (not current authority; source: Git history): original heading retained for existing links.
 >
@@ -534,9 +602,25 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 
 > Revalidated 2026-11-06: the only repository claim (14 roles) still holds (`.agents/roles/`). The dated values above are preserved as observed.
 
-## Limitations
+### Alternatives
 
-### Future Internal Checks
+This member compares no alternatives; it records a dated catalogue, rate,
+control and API-limit snapshot and a cost-per-accepted-outcome
+recommendation only.
+
+## Application and Limits
+
+### Design Implications
+
+C-m0013-08 recommends comparing cost per accepted outcome with latency and
+failure distribution, capping aggregate work, respecting valid retry delays,
+stopping on budget exhaustion and rechecking prices before funded execution.
+The preserved 2026-09-05 revalidation recommends not updating active Registry
+rows from marketing availability alone: require official-source, entitlement
+and runtime agreement, then evaluate quality and cost separately. Internal
+adoption is Not assessed in this run.
+
+### Unverified Conditions
 
 Candidate surfaces do not assert implementation. These checks require a separate authorized task.
 
@@ -544,35 +628,3 @@ Candidate surfaces do not assert implementation. These checks require a separate
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | C-m0013-01–06 / resolution | Provider/model/task configuration | If model/effort adoption proposed | Model/role owners and native projection candidates | Do ID/effort/channel resolve without unexpected fallback? | Version/channel, advertised choices, effective nonsecret trace | Separately authorized bounded provider fixture | Resolution/fallback explicit; entitlement assumption fails | Calls/config changes separately approved; no global/account inspection here | harness-optimizer / docs-researcher | Not assessed in this run |
 | C-m0013-03–09 / cost and throughput | Quality, provider limits and total task budget | If funded comparative trial authorized | Evaluation Task and price/accounting owner | Does candidate meet acceptance within complete cost/latency/retry bounds? | Frozen cases, cache/token/tool/retry/tier records, headers, failure/acceptance scores | Bounded authorized trial with deadline and redacted inputs | Quality floor/budget met; valid retry delay respected; nested retries bounded | Provider spend/account/input disclosure explicitly scoped | eval-engineer / harness-optimizer | Not assessed in this run |
-
-## Sources
-
-### Claims and Sources
-
-| Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0013-01 | Claude catalogue snapshot | [S-platform-claude-com-models-overview](https://platform.claude.com/docs/en/models/overview); latest-model table/IDs | Not displayed | 2026-09-27 | Exact model/API/product channel in snapshot | Catalogue/rate facts | Direct API headline table; other billing conditions differ | Not assessed in this run |
-| C-m0013-02 | Codex product snapshot | [S-learn-chatgpt-com-models](https://learn.chatgpt.com/docs/models); recommendations/reasoning/retirements | Not displayed; dated retirement notices | 2026-09-27 | Exact model/API/product channel in snapshot | Positioning/retirement facts | Publisher guidance and channel-specific schedule | Not assessed in this run |
-| C-m0013-03 | Standard API rates | [S-developers-openai-com-api-pricing](https://developers.openai.com/api/docs/pricing); Standard flagship short/long table | Not displayed | 2026-09-27 | Exact model/API/product channel in snapshot | API rate/capacity/enum facts | Standard API; other tiers/regions/channels differ | Not assessed in this run |
-| C-m0013-04 | Sol API capacity/effort | [S-developers-openai-com-gpt-6-sol](https://developers.openai.com/api/docs/models/gpt-6-sol); model/effort/pricing threshold | Not displayed; knowledge cutoff is not publication | 2026-09-27 | Exact model/API/product channel in snapshot | API rate/capacity/enum facts | Standard API; other tiers/regions/channels differ | Not assessed in this run |
-| C-m0013-05 | Model-specific native controls | [S-code-claude-com-model-config](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction; [S-learn-chatgpt-com-config-reference](https://learn.chatgpt.com/docs/config-file/config-reference); effort/auto-compact threshold/scope | Not displayed; version conditions in text / Not displayed | 2026-09-27 | Exact model/API/product channel in snapshot | Configuration facts | Model/client-specific, effective settings unobserved | Not assessed in this run |
-| C-m0013-06 | Alias/channel/effective distinctions | [S-platform-claude-com-models-overview](https://platform.claude.com/docs/en/models/overview); latest-model table/IDs; [S-learn-chatgpt-com-models](https://learn.chatgpt.com/docs/models); recommendations/reasoning/retirements; [S-code-claude-com-model-config](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction; [S-learn-chatgpt-com-config-reference](https://learn.chatgpt.com/docs/config-file/config-reference); effort/auto-compact threshold/scope | Not displayed / Not displayed; dated retirement notices / Not displayed; version conditions in text | 2026-09-27 | Exact model/API/product channel in snapshot | Interpretation | Requested versus effective values need evidence | Not assessed in this run |
-| C-m0013-07 | Subscription versus API metering | [S-code-claude-com-costs](https://code.claude.com/docs/en/costs); /usage and organization access setups | Not displayed | 2026-09-27 | Exact model/API/product channel in snapshot | Billing fact | Authentication/provider setup conditional | Not assessed in this run |
-| C-m0013-08 | Cost per accepted outcome | [S-developers-openai-com-api-pricing](https://developers.openai.com/api/docs/pricing); Standard flagship short/long table; [S-code-claude-com-costs](https://code.claude.com/docs/en/costs); /usage and organization access setups | Not displayed | 2026-09-27 | Exact model/API/product channel in snapshot | Recommendation | Complete accepted-outcome accounting needed | Not assessed in this run |
-| C-m0013-09 | API limits and bounded retries | [S-developers-openai-com-api-rate-limits](https://developers.openai.com/api/docs/guides/rate-limits); How limits work / Retrying with exponential backoff; [S-platform-claude-com-api-rate-limits](https://platform.claude.com/docs/en/api/rate-limits); Rate limits / Cache-aware ITPM / Spend cap | Not displayed | 2026-09-27 | Exact model/API/product channel in snapshot | API throughput facts | No account numeric limit or subscription quota asserted | Not assessed in this run |
-
-| Source ID | Original and detail location | Publication/revision date | Checked at | Product/channel/version and stability | Limitation |
-| --- | --- | --- | --- | --- | --- |
-| S-platform-claude-com-models-overview | [Original](https://platform.claude.com/docs/en/models/overview); latest-model table/IDs | Not displayed | 2026-09-27 | Direct Claude API catalogue; exact model IDs; mutable page | Provider IDs/aliases/local access unexamined |
-| S-learn-chatgpt-com-models | [Original](https://learn.chatgpt.com/docs/models); recommendations/reasoning/retirements | Not displayed; dated retirement notices | 2026-09-27 | Codex/ChatGPT product catalogue; rollout/sign-in conditions | 2026-10-14 is scheduled; API exception retained |
-| S-developers-openai-com-api-pricing | [Original](https://developers.openai.com/api/docs/pricing); Standard flagship short/long table | Not displayed | 2026-09-27 | OpenAI Standard API; service tiers differ | USD/1M tokens; not subscription credit conversion |
-| S-developers-openai-com-gpt-6-sol | [Original](https://developers.openai.com/api/docs/models/gpt-6-sol); model/effort/pricing threshold | Not displayed; knowledge cutoff is not publication | 2026-09-27 | GPT-6 Sol API model description | API enum distinct from product controls |
-| S-code-claude-com-model-config | [Original](https://code.claude.com/docs/en/model-config); effort/caps/ultracode/compaction | Not displayed; version conditions in text | 2026-09-27 | Claude Code native/session config; mutable docs | Effective fallback/caps unobserved |
-| S-learn-chatgpt-com-config-reference | [Original](https://learn.chatgpt.com/docs/config-file/config-reference); effort/auto-compact threshold/scope | Not displayed | 2026-09-27 | Codex current native configuration reference | Choices/defaults do not prove enabled local behavior |
-| S-code-claude-com-costs | [Original](https://code.claude.com/docs/en/costs); /usage and organization access setups | Not displayed | 2026-09-27 | Claude API versus subscription/provider metering | No usage/entitlement/private logs inspected |
-| S-developers-openai-com-api-rate-limits | [Original](https://developers.openai.com/api/docs/guides/rate-limits); How limits work / Retrying with exponential backoff | Not displayed | 2026-09-27 | OpenAI API metrics and SDK-version-dependent retry | No account tier/limit checked; application and SDK bounds distinct |
-| S-platform-claude-com-api-rate-limits | [Original](https://platform.claude.com/docs/en/api/rate-limits); Rate limits / Cache-aware ITPM / Spend cap | Not displayed | 2026-09-27 | Claude Messages API and organization/workspace limits | Most-model cache exception; not subscription quota |
-
-## Related Documents
-
-- [Agentic Engineering Research Pack](README.md)

@@ -1,10 +1,10 @@
 ---
 title: "Reference: External AI-Agent Catalogs and Local Intake"
-version: "1.4.0"
+version: "1.5.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-17"
 layer: "references"
 artifact_id: "RES-0002-m0003"
 parent_ids:
@@ -17,17 +17,83 @@ review_cycle: "on-source-change"
 
 # Reference: External AI-Agent Catalogs and Local Intake
 
-## Overview
+## Question and Scope
 
-### Overview
+### Question
 
-## Scope and Method
+How should external AI-agent catalogs such as `msitarzewski/agency-agents`
+be taken in locally, given their original format, conversion behavior and
+licence? The member owns catalogue intake research.
 
-### Current External Research
+### Scope
+
+The member covers the pinned upstream division map, one persona sample,
+the minimal Codex conversion, MIT notice obligations and conditional
+intake guidance. Native formats and inherited controls are owned by
+[m0012](m0012-provider-implementation-comparison.md#native-capability-matrix);
+no catalogue was installed, converted, benchmarked or adopted, and the
+member creates no new role or registry.
+
+## Sources
+
+### Primary Sources
+
+#### Related Documents
+
+- [Research pack](README.md)
+- [Agent instructions](./m0001-agent-instructions-vibe-coding.md)
+- [Agent model selection](./m0002-agent-model-selection.md)
+- [Workspace baseline](./m0020-workspace-baseline.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+
+#### Claims and Sources
+
+| Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0003-01 | Pinned upstream division map | [S-raw-githubusercontent-com-agency-divisions](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/divisions.json); complete 18-entry object | Not displayed; commit date not checked | 2026-09-27 | agency-agents at 053ddbbf…; third-party | Observation / derived count | No total-agent recount or maturity claim | Not assessed in this run |
+| C-m0003-02 | Original persona format | [S-raw-githubusercontent-com-agency-backend-architect](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/engineering/engineering-backend-architect.md); frontmatter and complete body | Not displayed | 2026-09-27 | agency-agents at 053ddbbf…; third-party | Fact | Single sample only | Not assessed in this run |
+| C-m0003-03 | Minimal Codex translation | [S-raw-githubusercontent-com-agency-codex](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/integrations/codex/README.md); conversion details/install destination; [S-raw-githubusercontent-com-agency-converter](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/scripts/convert.sh); convert_codex, opened lines 158–177 | Not displayed | 2026-09-27 | agency-agents at 053ddbbf…; third-party | Fact | Read-only source analysis; no execution | Not assessed in this run |
+| C-m0003-04 | MIT notice obligations | [S-raw-githubusercontent-com-agency-license](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/LICENSE); copyright, permission and disclaimer | Copyright 2025; publication absent | 2026-09-27 | agency-agents at 053ddbbf…; third-party | Licence fact | Downstream provenance remains separate | Not assessed in this run |
+| C-m0003-05 | Selective evaluated intake | [S-raw-githubusercontent-com-agency-codex](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/integrations/codex/README.md); conversion details/install destination; [S-learn-chatgpt-com-subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents); custom files/inheritance; [S-code-claude-com-sub-agents](https://code.claude.com/docs/en/sub-agents); frontmatter/plugin restrictions/maxTurns/memory | Not displayed / Not displayed; maxTurns v2.1.246 boundary | 2026-09-27 | agency-agents at 053ddbbf…; third-party | Interpretation / recommendation | Selective intake after need and evaluation | Not assessed in this run |
+
+| Source ID | Original and detail location | Publication/revision date | Checked at | Product/channel/version and stability | Limitation |
+| --- | --- | --- | --- | --- | --- |
+| S-raw-githubusercontent-com-agency-divisions | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/divisions.json); complete 18-entry object | Not displayed; commit date not checked | 2026-09-27 | Third-party catalogue at exact pin; no maturity guarantee | Map is not agent inventory |
+| S-raw-githubusercontent-com-agency-backend-architect | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/engineering/engineering-backend-architect.md); frontmatter and complete body | Not displayed | 2026-09-27 | Same pin; Markdown persona sample | 209 lines; not a native permission contract |
+| S-raw-githubusercontent-com-agency-codex | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/integrations/codex/README.md); conversion details/install destination | Not displayed | 2026-09-27 | Same pin; third-party Codex exporter | Installed compatibility unexamined |
+| S-raw-githubusercontent-com-agency-converter | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/scripts/convert.sh); convert_codex, opened lines 158–177 | Not displayed | 2026-09-27 | Same pin; shell source | No execution or generated result verified |
+| S-raw-githubusercontent-com-agency-license | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/LICENSE); copyright, permission and disclaimer | Copyright 2025; publication absent | 2026-09-27 | MIT at pin; not provider endorsement | Downstream provenance/suitability unverified |
+
+- [Agentic Engineering Research Pack](README.md)
+
+### Versions and Dates
+
+The member was created 2026-08-23, carries `observed_at` 2026-09-06 and
+`reviewed_at` 2026-11-06, and records that the original agency-agents
+files were opened at upstream pin `053ddbbf392a1688fc7043d81529f47ef2cf86c8`
+on 2026-09-27. The table below lists each source with its version and
+check date.
+
+| Source ID | Source | Version | Checked At | Finding | Application | Limits |
+| --- | --- | --- | --- | --- | --- | --- |
+| S-raw-githubusercontent-com-agency-divisions | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/divisions.json); complete 18-entry object | Third-party catalogue at exact pin 053ddbbf; publication not displayed; commit date not checked | 2026-09-27 | divisions.json at the pin contains 18 entries, including research; a division-map count, not total eligible agents (C-m0003-01) | Provenance input for intake research; internal adoption not assessed in this run | Map is not agent inventory; no total-agent recount or maturity claim |
+| S-raw-githubusercontent-com-agency-backend-architect | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/engineering/engineering-backend-architect.md); frontmatter and complete body | Same pin; Markdown persona sample; publication not displayed | 2026-09-27 | YAML name/description/color/emoji/vibe plus a Markdown persona, responsibilities, workflow, deliverables and metrics (C-m0003-02) | Shows the original persona format; internal adoption not assessed in this run | Single sample only; 209 lines; not a native permission contract |
+| S-raw-githubusercontent-com-agency-codex | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/integrations/codex/README.md); conversion details/install destination | Same pin; third-party Codex exporter; publication not displayed | 2026-09-27 | Codex export emits only name, description and developer_instructions; documented destination is ~/.codex/agents (C-m0003-03, C-m0003-05) | Basis for the selective evaluated intake recommendation; internal adoption not assessed in this run | Installed compatibility unexamined; nothing installed |
+| S-raw-githubusercontent-com-agency-converter | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/scripts/convert.sh); convert_codex, opened lines 158–177 | Same pin; shell source; publication not displayed | 2026-09-27 | convert_codex adds no sandbox, allowlist, effort, retry budget or acceptance checks; a slug sets the file path (C-m0003-03) | Shows conversion does not establish least privilege; internal adoption not assessed in this run | Read-only source analysis; no execution or generated result verified |
+| S-raw-githubusercontent-com-agency-license | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/LICENSE); copyright, permission and disclaimer | MIT at pin; copyright 2025; publication absent | 2026-09-27 | MIT, copyright AgentLand Contributors 2025; copies must retain copyright and permission notices; no warranty (C-m0003-04) | Notice obligations for any intake; internal adoption not assessed in this run | Downstream provenance and suitability unverified; not provider endorsement |
+| S-learn-chatgpt-com-subagents | [S-learn-chatgpt-com-subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents); custom files/inheritance | Not displayed | 2026-09-27 | Codex supports controls beyond the minimal exporter (C-m0003-05) | Basis for the selective evaluated intake recommendation; internal adoption not assessed in this run | Cited in the claim table only; native formats owned by m0012; selective intake after need and evaluation |
+| S-code-claude-com-sub-agents | [S-code-claude-com-sub-agents](https://code.claude.com/docs/en/sub-agents); frontmatter/plugin restrictions/maxTurns/memory | Not displayed; maxTurns v2.1.246 boundary | 2026-09-27 | Claude plugin agents ignore some frontmatter controls; a present field is not proof it is honored (C-m0003-05) | Basis for the selective evaluated intake recommendation; internal adoption not assessed in this run | Cited in the claim table only; native formats owned by m0012; selective intake after need and evaluation |
+
+## Analysis
+
+### Findings
+
+#### Current External Research
 
 This member owns catalogue intake research. Original agency-agents files were opened at a fixed upstream pin on 2026-09-27. No catalogue was installed, converted, benchmarked or adopted. Internal adoption: **Not assessed in this run**. Unless an original explicitly states a maturity label, formal stable/preview/experimental status is **not stated**; current documentation is not a stability guarantee.
 
-### Original format, conversion and provenance
+#### Original format, conversion and provenance
 
 **C-m0003-01 — external observation.** Read-only ls-remote for HEAD and refs/heads/main returned **053ddbbf392a1688fc7043d81529f47ef2cf86c8** on 2026-09-27. All current load-bearing URLs use that pin. Its divisions.json contains 18 entries, including research; that is a division-map count, not total eligible agents. Older pins/counts below remain dated evidence. [Pinned map](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/divisions.json) (S-raw-githubusercontent-com-agency-divisions).
 
@@ -37,24 +103,13 @@ This member owns catalogue intake research. Original agency-agents files were op
 
 **C-m0003-04 — licence fact.** The pinned project uses MIT, copyright AgentLand Contributors 2025. Copies/substantial portions must retain copyright and permission notices; warranty and fitness are not assured. [Pinned licence](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/LICENSE) (S-raw-githubusercontent-com-agency-license). This does not attest every downstream asset’s provenance.
 
-### Conditional intake guidance
+#### Conditional intake guidance
 
 **C-m0003-05 — interpretation / recommendation.** Use catalogue personas as sources of specialist vocabulary and output examples. Syntax conversion does not establish least privilege, policy compatibility or correctness. Prefer selective project-owned intake with pinned provenance, retained notices, explicit scope/evidence, reviewed native controls and a representative acceptance case. Alternatives are reference-only use or retaining an already evaluated role; whole-catalogue installation adds trust, context and maintenance burden without demonstrated benefit. Do not create a new role/registry in this research task.
 
 Native formats and inherited controls are owned by [m0012](m0012-provider-implementation-comparison.md#native-capability-matrix). Codex supports controls beyond this minimal exporter; Claude plugin agents ignore some frontmatter controls. A present field is not proof it is honored.
 
-### Related Documents
-
-- [Research pack](README.md)
-- [Agent instructions](./m0001-agent-instructions-vibe-coding.md)
-- [Agent model selection](./m0002-agent-model-selection.md)
-- [Workspace baseline](./m0020-workspace-baseline.md)
-- [Scope application matrix](./m0015-scope-application-matrix.md)
-- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
-
-## Findings
-
-### Historical Workspace Observations
+#### Historical Workspace Observations
 
 The complete earlier body is preserved at its original cutoff, including then-current external assertions and workspace observations. It is not current implementation authority; its dates are unchanged.
 
@@ -459,9 +514,26 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 
 > Revalidated 2026-11-06: the local catalog is `.agents/roles/` (14 roles) and `.agents/skills/` (24 skills). The dated values above are preserved as observed.
 
-## Limitations
+### Alternatives
 
-### Future Internal Checks
+The member compares three intake options: selective project-owned intake
+with pinned provenance, reference-only use, or retaining an already
+evaluated role. It states that whole-catalogue installation adds trust,
+context and maintenance burden without demonstrated benefit.
+
+## Application and Limits
+
+### Design Implications
+
+Catalogue personas serve as sources of specialist vocabulary and output
+examples; syntax conversion does not establish least privilege, policy
+compatibility or correctness. Intake should be selective and
+project-owned, with pinned provenance, retained notices, explicit
+scope/evidence, reviewed native controls and a representative acceptance
+case. Internal adoption is not assessed in this run, and the member
+creates no role or registry.
+
+### Unverified Conditions
 
 Candidate surfaces do not assert implementation. These checks require a separate authorized task.
 
@@ -469,27 +541,3 @@ Candidate surfaces do not assert implementation. These checks require a separate
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | C-m0003-01–04 / provenance | Repository/provider; role provenance/licence/governance | If intake is proposed | Canonical role owner/native projection/licence record | Are pin, notice and conversion differences reviewable? | Pinned original/licence, schema version, generated diff | Authorized disposable dry-run conversion | Exact provenance/notices; unsupported controls explicit | No installer/user-directory write without separate scope | doc-writer / rules-engineer | Not assessed in this run |
 | C-m0003-05 / effective scope | Task/session/agent; tools/security/quality | If imported role is enabled | Task contract, native role, acceptance owners | Are tools, inherited permissions and result boundaries effective? | Representative result and denial/inheritance/failure fixtures | Separately authorized bounded client trial | Useful accepted result and expected denial both pass | Runtime configuration/spend/disclosure separately authorized | eval-engineer / security-reviewer | Not assessed in this run |
-
-## Sources
-
-### Claims and Sources
-
-| Claim ID | Claim | Source ID / detail section | Publication/revision date | Checked at | Product / version / channel | Fact / interpretation / recommendation | Limits / conflict / recheck | Internal adoption |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0003-01 | Pinned upstream division map | [S-raw-githubusercontent-com-agency-divisions](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/divisions.json); complete 18-entry object | Not displayed; commit date not checked | 2026-09-27 | agency-agents at 053ddbbf…; third-party | Observation / derived count | No total-agent recount or maturity claim | Not assessed in this run |
-| C-m0003-02 | Original persona format | [S-raw-githubusercontent-com-agency-backend-architect](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/engineering/engineering-backend-architect.md); frontmatter and complete body | Not displayed | 2026-09-27 | agency-agents at 053ddbbf…; third-party | Fact | Single sample only | Not assessed in this run |
-| C-m0003-03 | Minimal Codex translation | [S-raw-githubusercontent-com-agency-codex](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/integrations/codex/README.md); conversion details/install destination; [S-raw-githubusercontent-com-agency-converter](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/scripts/convert.sh); convert_codex, opened lines 158–177 | Not displayed | 2026-09-27 | agency-agents at 053ddbbf…; third-party | Fact | Read-only source analysis; no execution | Not assessed in this run |
-| C-m0003-04 | MIT notice obligations | [S-raw-githubusercontent-com-agency-license](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/LICENSE); copyright, permission and disclaimer | Copyright 2025; publication absent | 2026-09-27 | agency-agents at 053ddbbf…; third-party | Licence fact | Downstream provenance remains separate | Not assessed in this run |
-| C-m0003-05 | Selective evaluated intake | [S-raw-githubusercontent-com-agency-codex](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/integrations/codex/README.md); conversion details/install destination; [S-learn-chatgpt-com-subagents](https://learn.chatgpt.com/docs/agent-configuration/subagents); custom files/inheritance; [S-code-claude-com-sub-agents](https://code.claude.com/docs/en/sub-agents); frontmatter/plugin restrictions/maxTurns/memory | Not displayed / Not displayed; maxTurns v2.1.246 boundary | 2026-09-27 | agency-agents at 053ddbbf…; third-party | Interpretation / recommendation | Selective intake after need and evaluation | Not assessed in this run |
-
-| Source ID | Original and detail location | Publication/revision date | Checked at | Product/channel/version and stability | Limitation |
-| --- | --- | --- | --- | --- | --- |
-| S-raw-githubusercontent-com-agency-divisions | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/divisions.json); complete 18-entry object | Not displayed; commit date not checked | 2026-09-27 | Third-party catalogue at exact pin; no maturity guarantee | Map is not agent inventory |
-| S-raw-githubusercontent-com-agency-backend-architect | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/engineering/engineering-backend-architect.md); frontmatter and complete body | Not displayed | 2026-09-27 | Same pin; Markdown persona sample | 209 lines; not a native permission contract |
-| S-raw-githubusercontent-com-agency-codex | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/integrations/codex/README.md); conversion details/install destination | Not displayed | 2026-09-27 | Same pin; third-party Codex exporter | Installed compatibility unexamined |
-| S-raw-githubusercontent-com-agency-converter | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/scripts/convert.sh); convert_codex, opened lines 158–177 | Not displayed | 2026-09-27 | Same pin; shell source | No execution or generated result verified |
-| S-raw-githubusercontent-com-agency-license | [Original](https://raw.githubusercontent.com/msitarzewski/agency-agents/053ddbbf392a1688fc7043d81529f47ef2cf86c8/LICENSE); copyright, permission and disclaimer | Copyright 2025; publication absent | 2026-09-27 | MIT at pin; not provider endorsement | Downstream provenance/suitability unverified |
-
-## Related Documents
-
-- [Agentic Engineering Research Pack](README.md)

@@ -1,10 +1,10 @@
 ---
 title: "Reference: Agentic Engineering Scope Application Matrix"
-version: "1.4.0"
+version: "1.5.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-17"
 layer: "references"
 artifact_id: "RES-0002-m0015"
 parent_ids:
@@ -17,9 +17,11 @@ review_cycle: "on-source-change"
 
 # Reference: Agentic Engineering Scope Application Matrix
 
-## Overview
+## Question and Scope
 
-### Overview
+### Question
+
+#### Overview
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -48,9 +50,7 @@ review_cycle: "on-source-change"
 > four-class reachability taxonomy is below.
 >
 
-## Scope and Method
-
-### Refresh Boundary and Research Question
+#### Refresh Boundary and Research Question
 
 How do the requested external topics apply at different levels and across
 concerns, and what evidence would a separately authorized internal assessment
@@ -69,7 +69,173 @@ security or runtime assessment was performed for this synthesis.
 | document_updated_at | 2026-09-27 |
 | historical_workspace_observation | Original 2026-08-08/11/14 and 2026-09-05 records below; `observed_at` and `reviewed_at` remain 2026-09-05 |
 
-### Two-Axis Analytical Model
+### Scope
+
+#### Evidence, Authority and Recheck Boundaries
+
+This current matrix is request-derived synthesis. External primary-source
+locations, actual access dates, product/channel constraints and uncertainty
+belong to the linked topic members. No new external fact, price, model
+availability or standard version is asserted here. Future criteria are
+conditional research proposals, not current normative requirements.
+
+The Spec,
+Plan and
+Task
+own this refresh and its evidence. Adoption routes to the applicable governance,
+requirement, architecture, Spec/Task or operations owner. Revisit this routing
+when coverage or ownership changes; fresh catalog/scope counts require a
+separate approved internal assessment.
+
+#### Purpose
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> Satisfy REQ-32 by giving every scope a current adoption or explicit
+> not-applicable disposition, including governed paths, applicable leaves,
+> implementation state, adoption rules and exceptions, evidence owner,
+> validation owner, and catalog reachability. Topic leaves can cite this matrix
+> without silently dropping a persona scope.
+>
+> The 2026-08-14 deepening adds a second obligation: state where the scope axis
+> is _enforced_ rather than merely declared, and name every place two tracked
+> surfaces assign the same path to different owners.
+>
+
+#### Repository Role
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> This Stage 90 matrix is a research and routing aid. It reports current scope
+> applicability and gaps but does not alter the persona protocol, typed catalog,
+> File Ownership SSOT, lifecycle approvals, runtime configuration, or remote
+> enforcement.
+>
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+
+#### In scope
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> > Historical evidence (not current authority; source: Git history): Recorded source path at the document observation baseline.
+> >
+> > - The tracked files under `docs/00.agent-governance/scopes/`. **Count corrected 2026-08-19: eight, not fourteen.** `scopes/frontend.md`, `backend.md` and `mobile.md` no longer exist; re-derive with `ls docs/00.agent-governance/scopes/*.md | wc -l` rather than trusting a stated number.
+> > - Persona-to-scope routing and the typed agent/function catalog.
+> > - The three tracked contracts under `docs/00.agent-governance/contracts/`,
+> >   including the path-authority records that earlier revisions did not cite.
+> > - Tracked workspace surfaces named or governed by each scope.
+> > - The validators and tests that do or do not assert the scope axis.
+> > - Applicability to all twenty leaves in the planned pack.
+>
+
+#### Out of scope
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> - Adding a missing scope value, agent, function, or provider projection.
+> - Resolving ownership conflicts in canonical agent governance policy. This matrix reports them;
+>   the canonical agent governance owner decides them.
+> - Inspecting secrets/private state, starting services, proving runtime health,
+>   or reading remote provider/GitHub enforcement.
+> - Treating this Stage 90 analysis as authority to adopt a recommendation.
+>
+
+## Sources
+
+### Primary Sources
+
+#### Related Documents
+
+- [Research pack](README.md)
+- [Current scope and future-check routing](m0015-scope-application-matrix.md#future-internal-checks)
+- [Preserved baseline and future assessment boundary](m0020-workspace-baseline.md#future-internal-checks)
+- [Verification and validation](m0019-verification-validation.md)
+- Refresh Spec
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> - [Workspace baseline](./m0020-workspace-baseline.md)
+> - [Verification and validation](./m0019-verification-validation.md)
+> - SPEC-0158 preservation contract
+> - Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)
+> - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+> - [Agent governance hub](../../../../.agents/README.md)
+> - [Research category router](../README.md)
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Source                                                                                                 | Accessed   | Class                  | Verification state                                                                                                                                                                                                                  |
+> | ------------------------------------------------------------------------------------------------------ | ---------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | [Persona protocol](../../../../.agents/governance/persona.md)                                      | 2026-08-14 | Tracked mutable        | Re-read in full; fourteen persona-to-scope rows at lines 25-38; unchanged since 2026-05-15.                                                                                                                                         |
+> | Agent catalog (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`)                             | 2026-08-14 | Tracked mutable        | Fully parsed; 8 scope values, 14 agents, 24 functions, 9 intake decisions. Confirmed by an executed validator run.                                                                                                                  |
+> | Governance artifact contract (retired path: `../../../00.agent-governance/contracts/agent-governance-artifacts.yaml`) | 2026-08-14 | Tracked mutable        | Newly cited. 7 `path_authority` records, 25 artifact profiles, 3 README profiles, 3 governed families.                                                                                                                              |
+> | Provider-model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`)                 | 2026-08-14 | Tracked mutable        | Parsed for projection targets; unchanged since 2026-07-26.                                                                                                                                                                          |
+> | All scope files (retired path: `../../../00.agent-governance/scopes/`)                                                | 2026-08-14 | Tracked mutable        | All fourteen read in full; structural tiers, sizes, and ownership tables derived directly.                                                                                                                                          |
+> | [Governance contract validator](../../../../scripts/validation/check-agent-governance-contract.py)     | 2026-08-14 | Local observation      | Newly cited. Executed; `PASS` in both modes under an isolated environment, dependency-blocked by default.                                                                                                                           |
+> | Governance contract tests (retired path: `tests/lib/agent_governance/test_agent_governance_contract.py`)            | 2026-08-14 | Local observation      | Newly cited. 159 tests `OK`; `scope_names` at lines 1955-1967 enumerates 13 of 14 scopes.                                                                                                                                           |
+> | [Contract validator module](../../../../scripts/lib/agent_governance/agent_governance_contract.py)               | 2026-08-14 | Tracked mutable        | Newly cited. Scope-enum membership enforced at lines 2661 and 2778 against the catalog's own list only.                                                                                                                             |
+> | Repository contract script (retired path: `../../../../scripts/validation/check-repo-contracts.sh`)                   | 2026-08-14 | Tracked mutable        | Newly cited. Scans the scopes directory for path placeholders; requires 11 CODEOWNERS patterns.                                                                                                                                     |
+> | [`.github/CODEOWNERS`](../../../../.github/CODEOWNERS)                                                 | 2026-08-14 | Tracked mutable        | Newly cited. 30 path rules, all assigning one GitHub account; no scope or agent vocabulary.                                                                                                                                         |
+> | SPEC-0158 preservation contract | 2026-08-14 | Tracked fixed baseline | Re-verified; REQ-32 and the pack leaf list are unchanged. |
+> | Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)         | 2026-08-14 | Tracked mutable        | Re-verified; REQ-32's derivations are unchanged.                                                                                                                                                                                    |
+> | [Workspace baseline](./m0020-workspace-baseline.md)                                                          | 2026-08-14 | Tracked draft          | Companion measured inventory; re-derived at `ece3eda9`.                                                                                                                                                                             |
+> | [Backstage descriptor format](https://backstage.io/docs/features/software-catalog/descriptor-format/)  | 2026-08-14 | External mutable       | Newly cited. `spec.owner` required per kind; `type` taxonomy explicitly open; owners not for runtime authorization.                                                                                                                 |
+> | [A2A protocol specification](https://github.com/a2aproject/A2A)                                        | 2026-08-14 | External mutable       | Newly cited. Agent Card separates protocol `capabilities` from functional `skills`; undeclared capability MUST error.                                                                                                               |
+> | [MCP specification 2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28)               | 2026-08-14 | External mutable       | Newly cited. Per-request capability negotiation; opt-in extensions; cannot enforce its principles at protocol level.                                                                                                                |
+> | [NIST SP 800-218 SSDF v1.1](https://csrc.nist.gov/pubs/sp/800/218/final)                               | 2026-08-14 | External fixed         | Re-fetched; live. Published February 2022; leaves tool and owner choice to the adopting organization.                                                                                                                               |
+> | ISO/IEC 42001 landing page                                                                             | 2026-08-14 | External, unretrieved  | Direct retrieval returned HTTP 403, the known `iso.org` refusal. No claim here depends on it.                                                                                                                                       |
+> | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                            | 2026-08-08 | Tracked stale/advisory | Built from `f8a72211`; corroborated and not used as current proof.                                                                                                                                                                  |
+> | Predecessor scope matrix, retiring 2026-07-05 pack                                                     | 2026-08-14 | Historical retained    | Read for structural comparison only; its dispositions were re-derived rather than carried forward. Cited without a path because pre-deletion gate 4 admits no clickable link and the canonical router surface carries no allowlist. |
+>
+
+- [Agentic Engineering Research Pack](README.md)
+
+### Versions and Dates
+
+The frontmatter records `created` 2026-08-23, `observed_at` 2026-09-05 and
+`reviewed_at` 2026-11-06; the provenance table records a 2026-09-27 document
+update for which no external source was reopened. The table below lists each
+source in the preserved historical source register with its version and
+recorded access date.
+
+| Source ID | Source | Version | Checked At | Finding | Application | Limits |
+| --- | --- | --- | --- | --- | --- | --- |
+| RES-0002-m0015-S1 | [Persona protocol](../../../../.agents/governance/persona.md) | Tracked mutable; unchanged since 2026-05-15 | 2026-08-14 | Re-read in full; fourteen persona-to-scope rows at lines 25-38 | Source of the fourteen persona scope values the matrix dispositions | Dated observation; 2026-11-06 revalidation says the Stage 00 scope files are retired and persona routing is in this file |
+| RES-0002-m0015-S2 | Agent catalog (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`) | Tracked mutable; no version recorded | 2026-08-14 | Fully parsed: 8 scope values, 14 agents, 24 functions, 9 intake decisions; confirmed by an executed validator run | Basis for the eight-value enum, cross-scope function ownership and the product-discovery deferral | Retired per 2026-11-06 revalidation; roles now in `.agents/roles/` and provider facts in the registry |
+| RES-0002-m0015-S3 | Governance artifact contract (retired path: `../../../00.agent-governance/contracts/agent-governance-artifacts.yaml`) | Tracked mutable; no version recorded | 2026-08-14 | 7 `path_authority` records, 25 artifact profiles, 3 README profiles, 3 governed families | Basis for the three parallel ownership surfaces and the `meta` scope backing | Retired Stage 00 path; counts are dated observations |
+| RES-0002-m0015-S4 | Provider-model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`) | Tracked mutable; unchanged since 2026-07-26 | 2026-08-14 | Parsed for projection targets | Provider projection targets for the catalog analysis | Retired Stage 00 path; dated observation |
+| RES-0002-m0015-S5 | All scope files (retired path: `../../../00.agent-governance/scopes/`) | Tracked mutable; no version recorded | 2026-08-14 | All fourteen read in full; structural tiers, sizes and ownership tables derived directly | Basis for scope-file structural tiers and the ownership-conflict table | File count corrected 2026-08-19 to eight; Stage 00 scope files retired per 2026-11-06 revalidation |
+| RES-0002-m0015-S6 | [Governance contract validator](../../../../scripts/validation/check-agent-governance-contract.py) | Local observation; no version recorded | 2026-08-14 | Executed; `PASS` in both modes under an isolated environment, dependency-blocked by default | Confirms catalog cardinality and validator enforcement of the scope enum | Default interpreter exits `AGC-DEPENDENCY-MISSING path=html5lib`; local result, not CI |
+| RES-0002-m0015-S7 | Governance contract tests (retired path: `tests/lib/agent_governance/test_agent_governance_contract.py`) | Local observation; no version recorded | 2026-08-14 | 159 tests `OK`; `scope_names` at lines 1955-1967 enumerates 13 of 14 scopes | Evidence that no test asserts the `docs.md` frontmatter | Absent per 2026-11-06 revalidation; current suite is `tests/validation/test_agent_governance_ci_routing.py` |
+| RES-0002-m0015-S8 | [Contract validator module](../../../../scripts/lib/agent_governance/agent_governance_contract.py) | Tracked mutable; no version recorded | 2026-08-14 | Scope-enum membership enforced at lines 2661 and 2778 against the catalog's own list only | Shows nothing reconciles the persona axis with the catalog enum | Line numbers are dated to the 2026-08-14 re-derivation commit |
+| RES-0002-m0015-S9 | Repository contract script (retired path: `../../../../scripts/validation/check-repo-contracts.sh`) | Tracked mutable; no version recorded | 2026-08-14 | Scans the scopes directory for path placeholders; requires 11 CODEOWNERS patterns | Placeholder-hygiene and named scope content rows of the validation-coverage table | Recorded as a retired path; dated observation |
+| RES-0002-m0015-S10 | [`.github/CODEOWNERS`](../../../../.github/CODEOWNERS) | Tracked mutable; no version recorded | 2026-08-14 | 30 path rules, all assigning one GitHub account; no scope or agent vocabulary | Third surface in the parallel ownership comparison | Encodes neither scopes nor agents; rule count is a dated observation |
+| RES-0002-m0015-S11 | SPEC-0158 preservation contract | Tracked fixed baseline | 2026-08-14 | Re-verified; REQ-32 and the pack leaf list are unchanged | Source of the REQ-32 obligation and the twenty-leaf contract | Cited without a link; dated observation |
+| RES-0002-m0015-S12 | Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`) | Tracked mutable; no version recorded | 2026-08-14 | Re-verified; REQ-32's derivations are unchanged | Confirms the REQ-32 derivations | Retired path; Stage 04 is retired |
+| RES-0002-m0015-S13 | [Workspace baseline](./m0020-workspace-baseline.md) | Tracked draft at the time; re-derived at `ece3eda9` | 2026-08-14 | Companion measured inventory | Supplies the corpus counts the matrix cites | Counts are dated; m0020 owns baseline interpretation |
+| RES-0002-m0015-S14 | [Backstage descriptor format](https://backstage.io/docs/features/software-catalog/descriptor-format/) | External mutable; no version recorded | 2026-08-14 | `spec.owner` required per kind; `type` taxonomy explicitly open; owners not for runtime authorization | Comparison lens for the closed catalog enum versus the open persona axis | Comparison lens only, never catalog or adoption authority |
+| RES-0002-m0015-S15 | [A2A protocol specification](https://github.com/a2aproject/A2A) | External mutable; A2A v1.0 Agent Card | 2026-08-14 | Agent Card separates protocol `capabilities` from functional `skills`; undeclared capability MUST error | Comparison lens for the catalog split between agents and functions | Comparison lens only, never catalog or adoption authority |
+| RES-0002-m0015-S16 | [MCP specification 2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28) | External mutable; specification version 2026-07-28 | 2026-08-14 | Per-request capability negotiation; opt-in extensions; cannot enforce its principles at protocol level | Supports reading a declared scope as a contract about intent, not evidence of behavior | Comparison lens only, never catalog or adoption authority |
+| RES-0002-m0015-S17 | [NIST SP 800-218 SSDF v1.1](https://csrc.nist.gov/pubs/sp/800/218/final) | External fixed; SSDF v1.1, published February 2022 | 2026-08-14 | Re-fetched and live; leaves tool and owner choice to the adopting organization | Comparison vocabulary for secure-development responsibility assignment | Cannot arbitrate a local scope disposition |
+| RES-0002-m0015-S18 | ISO/IEC 42001 landing page | External, unretrieved; none recorded | 2026-08-14 | Direct retrieval returned HTTP 403, the known `iso.org` refusal | None; no claim in the member depends on it | Unretrieved; supports no claim |
+| RES-0002-m0015-S19 | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08) | Tracked stale/advisory; built from `f8a72211` | 2026-08-08 | Corroborated against tracked sources | Not used as current proof | Stale snapshot; untracked local output since 2026-09-08 |
+| RES-0002-m0015-S20 | Predecessor scope matrix, retiring 2026-07-05 pack | Historical retained | 2026-08-14 | Read for structural comparison only; its dispositions were re-derived rather than carried forward | Structural comparison for the re-derived dispositions | Cited without a path because pre-deletion gate 4 admits no clickable link |
+
+## Analysis
+
+### Findings
+
+#### Two-Axis Analytical Model
 
 These request-derived axes do not replace repository vocabulary. Name both a
 level and a concern for each future question; conditions describe potential
@@ -98,91 +264,13 @@ applicability without assigning a non-applicable verdict to uninspected work.
 | Infrastructure / operations | Which service, release or recovery outcome needs proof? | [Topic owner](m0005-docker-compose-infrastructure.md) | Not assessed in this run |
 | Governance / collaboration | Who decides, acts, reviews, approves and receives evidence? | [Topic owner](m0001-agent-instructions-vibe-coding.md) | Not assessed in this run |
 
-### Evidence, Authority and Recheck Boundaries
-
-This current matrix is request-derived synthesis. External primary-source
-locations, actual access dates, product/channel constraints and uncertainty
-belong to the linked topic members. No new external fact, price, model
-availability or standard version is asserted here. Future criteria are
-conditional research proposals, not current normative requirements.
-
-The Spec,
-Plan and
-Task
-own this refresh and its evidence. Adoption routes to the applicable governance,
-requirement, architecture, Spec/Task or operations owner. Revisit this routing
-when coverage or ownership changes; fresh catalog/scope counts require a
-separate approved internal assessment.
-
-### Purpose
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> Satisfy REQ-32 by giving every scope a current adoption or explicit
-> not-applicable disposition, including governed paths, applicable leaves,
-> implementation state, adoption rules and exceptions, evidence owner,
-> validation owner, and catalog reachability. Topic leaves can cite this matrix
-> without silently dropping a persona scope.
->
-> The 2026-08-14 deepening adds a second obligation: state where the scope axis
-> is _enforced_ rather than merely declared, and name every place two tracked
-> surfaces assign the same path to different owners.
->
-
-### Repository Role
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> This Stage 90 matrix is a research and routing aid. It reports current scope
-> applicability and gaps but does not alter the persona protocol, typed catalog,
-> File Ownership SSOT, lifecycle approvals, runtime configuration, or remote
-> enforcement.
->
-
-### Scope
+#### Definitions / Facts
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
 >
 
-### In scope
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> > Historical evidence (not current authority; source: Git history): Recorded source path at the document observation baseline.
-> >
-> > - The tracked files under `docs/00.agent-governance/scopes/`. **Count corrected 2026-08-19: eight, not fourteen.** `scopes/frontend.md`, `backend.md` and `mobile.md` no longer exist; re-derive with `ls docs/00.agent-governance/scopes/*.md | wc -l` rather than trusting a stated number.
-> > - Persona-to-scope routing and the typed agent/function catalog.
-> > - The three tracked contracts under `docs/00.agent-governance/contracts/`,
-> >   including the path-authority records that earlier revisions did not cite.
-> > - Tracked workspace surfaces named or governed by each scope.
-> > - The validators and tests that do or do not assert the scope axis.
-> > - Applicability to all twenty leaves in the planned pack.
->
-
-### Out of scope
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> - Adding a missing scope value, agent, function, or provider projection.
-> - Resolving ownership conflicts in canonical agent governance policy. This matrix reports them;
->   the canonical agent governance owner decides them.
-> - Inspecting secrets/private state, starting services, proving runtime health,
->   or reading remote provider/GitHub enforcement.
-> - Treating this Stage 90 analysis as authority to adopt a recommendation.
->
-
-### Definitions / Facts
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-
-### Concept and evidence model
+#### Concept and evidence model
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -226,7 +314,7 @@ separate approved internal assessment.
 > adopting organization, so it cannot arbitrate a local scope disposition.
 >
 
-### Derivation commands and observations
+#### Derivation commands and observations
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -262,7 +350,7 @@ separate approved internal assessment.
 > Spec-directory counts are unchanged across all three measurements.
 >
 
-### The canonical enum, read from the contract
+#### The canonical enum, read from the contract
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -308,7 +396,7 @@ separate approved internal assessment.
 > and it is why "enum only" was the wrong label.
 >
 
-### Catalog reachability finding
+#### Catalog reachability finding
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -350,7 +438,7 @@ separate approved internal assessment.
 > the backend/mobile class would overstate the gap.
 >
 
-### Scope-file structural tiers
+#### Scope-file structural tiers
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -397,7 +485,7 @@ separate approved internal assessment.
 > mistake them for a missing section.
 >
 
-### Three parallel ownership surfaces
+#### Three parallel ownership surfaces
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -441,7 +529,7 @@ separate approved internal assessment.
 > single file, which the table does not name.
 >
 
-### Validation coverage of the scope axis
+#### Validation coverage of the scope axis
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -468,7 +556,7 @@ separate approved internal assessment.
 > restate it.
 >
 
-### Capability-intake evidence bearing on scope disposition
+#### Capability-intake evidence bearing on scope disposition
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -513,7 +601,106 @@ separate approved internal assessment.
 > >   read-only boundary, so they need explicit approval regardless of who owns them.
 >
 
-### Scope Implications
+#### Architecture Practice Composition Links
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> - [Documentation architecture](./m0007-documentation-architecture.md)
+> - [SDLC document roles](./m0016-sdlc-document-roles.md)
+>
+
+#### 2026-09-05 Revalidation
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
+> The package README maps all 93 requested category items to exactly one topical
+> member, while allowing related audits, data packages, and RES-0084 to supply
+> non-competing evidence. Current repository-baseline ownership is consolidated
+> into m0020; RES-0085 supplies dated scope and identity-recovery evidence only.
+> No category requires a new research identity or a member split.
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Capability | Repository implementation | Evidence depth | Gap | Verification route |
+> | --- | --- | --- | --- | --- |
+> | Coverage routing | A–G category table points to m0001–m0020 | Defined | None for requested category coverage | package link and protected-set tests |
+> | Canonical ownership | Stage 00/01/02/03/05/99 remain normative | Repository-enforced | Semantic duplication still needs review | exact-diff review |
+> | Baseline evidence | m0020 records current `main`; RES-0085 preserves dated recovery evidence; RES-0084 owns GitHub mechanics | Defined, Local/Remote evidence by source | Mutable observations expire | dated revalidation |
+>
+> Recommendation: extend an existing member when its question and lifecycle fit;
+> allocate a new package only for a distinct question, owner, observation cycle,
+> and navigational boundary.
+>
+
+#### Request Coverage and Claim Ownership
+
+This is an A–L coverage route, not a claim that research or internal acceptance
+is complete. Named members own distinct explanations; provider comparison owns
+native-product differences while topic members own lifecycle, loops, memory,
+security and evidence. Detailed future-check rows remain in their topic owners.
+
+| Request | Covered questions | Distinct topic owners | Level / concern | Internal status |
+| --- | --- | --- | --- | --- |
+| A | Harness: instructions, tools, environment, sandbox, permission, context, memory, skills, orchestration, observation, evaluation, recovery, approval; loops: goal/state/plan/act/observe/verify/review/stop/handoff, completion, iteration/time/token/cost bounds, stalls, retry/backoff, checkpoint/resume, idempotency, conflicts and independent review | [m0008](m0008-harness-engineering.md), [m0010](m0010-loop-engineering.md), [m0012](m0012-provider-implementation-comparison.md) | Task, session, provider, environment / implementation, quality, security, governance | Not assessed in this run |
+| B | Instruction/policy/role/procedure/tool/style distinctions; hierarchy, conflict, global/project/path/task context, loading/discovery, stack/coding/explanation style; common source, thin adapters, native merging/trust and drift | [m0001 authoring distinctions](m0001-agent-instructions-vibe-coding.md#instruction-authoring-distinctions), [m0012](m0012-provider-implementation-comparison.md) | Organization/user, repository, directory, task, session, provider / governance, documentation, security | Not assessed in this run |
+| C | agency-agents role format, conversion, license, update/pin, permissions, evaluation/maintenance; task/reasoning/fallback and replacement criteria; product/channel/token/context/compaction/cache/concurrency/rate/retry/price, usage measurement and budget stop | [m0003](m0003-ai-agent-catalogs.md), [m0002](m0002-agent-model-selection.md), [m0013](m0013-provider-model-landscape.md), [m0010](m0010-loop-engineering.md) | Task, provider, CI/CD / implementation, quality, security, governance | Not assessed in this run |
+| D | Working/durable/domain memory versus progress/approval evidence; record/promotion/retrieval/summary/expiry/deletion/access/privacy/contamination/provenance; wiki source/synthesis/schema/ingest/query/lint/links/conflict/regeneration versus RAG/navigation/retired local work; bounded cross-provider handoff | [m0011](m0011-memory-hierarchy.md), [m0009](m0009-llm-wiki-system.md), [m0012](m0012-provider-implementation-comparison.md) | Repository, directory, task, session, provider / knowledge, documentation, security, collaboration | Not assessed in this run |
+| E | SDD/SDLC purpose, accountability, feedback/change/approval/traceability; PRD/Requirement/Spec/Plan/Task/ADR questions, inputs/outputs, owner/reviewer/lifecycle/content/relations/change/split/merge/preservation; intent-to-acceptance and task-to-handoff flows, one progress owner, requirement-to-test trace and mismatch/impact analysis | [m0018](m0018-spec-driven-sdlc.md), [m0016](m0016-sdlc-document-roles.md), [m0006](m0006-document-metadata-lifecycle.md), [m0019](m0019-verification-validation.md) | Repository, task, CI/CD / product, architecture, documentation, quality, governance | Not assessed in this run |
+| F | Guide/Incident/Postmortem/Policy/Release/Runbook reader, trigger, owner, fields, state/review/revision/retention/relations; factual incident versus analysis, policy versus procedure, guide versus runbook, release notes versus approval/deployment/rollback; preconditions, safety stop, success, recovery, timelines, action owners and expiry | [m0016](m0016-sdlc-document-roles.md), [m0006](m0006-document-metadata-lifecycle.md), [m0019](m0019-verification-validation.md) | Repository, directory, task, environment / documentation, operations, quality, governance | Not assessed in this run |
+| G | Diátaxis reader needs without stage equivalence; proportionate C4 abstraction and dynamic/deployment views; arc42 structure/quality/risks; ADR context/alternatives/consequences/supersession; README repository/directory/package/operations purpose/start/owner/support/navigation/constraints and avoiding duplicate detail | [m0007](m0007-documentation-architecture.md), [m0016](m0016-sdlc-document-roles.md), [m0006](m0006-document-metadata-lifecycle.md) | Repository, directory, task / architecture, documentation, product, governance | Not assessed in this run |
+| H | Versioned Compose include/merge/extends, profiles/interpolation/project names, dependency/health, network/port/volume/config/secret, resources/shutdown/restart/provenance/pins; Linux config/data/secret separation, ingress/TLS/DNS, observation, backup/restore/DR/update/rollback; optional service role/license/image/overlap/burden; static/process/readiness/user/recovery evidence distinct | [m0005](m0005-docker-compose-infrastructure.md), [m0021](m0021-local-docker-service-consolidation.md), [m0017](m0017-security-governance.md), [m0019](m0019-verification-validation.md) | Directory, task, environment / architecture, implementation, operations, security, quality | Not assessed in this run |
+| I | CI/delivery/deployment and test/build/package/publish/deploy/promote/rollback boundaries; Actions events/path filters/workflow/job/step/reuse/matrix/concurrency/cache/artifact/checks/environment approval/OIDC/least privilege/SHA pins; untrusted PR/self-hosted runners, automated review/test loop permissions/cost/quality; local/hosted/protection/deployment distinct | [m0004](m0004-automation-pipeline-workflow.md), [m0014](m0014-quality-ci-formatting.md), [m0017](m0017-security-governance.md), [m0019](m0019-verification-validation.md) | Repository, provider, CI/CD, environment / implementation, quality, security, operations, governance | Not assessed in this run |
+| J | Format/lint/syntax/schema/static/unit/integration/contract/E2E/docs/link/template/security, flakes/fixtures/mutation/coverage; verification of contracts versus validation of intended use, evidence, layer, failure, owner, reproducibility, independent review and measurement limits | [m0014](m0014-quality-ci-formatting.md), [m0019](m0019-verification-validation.md), [m0017](m0017-security-governance.md) | Repository, task, CI/CD, environment / quality, security, product, governance | Not assessed in this run |
+| K | Dated SSDF/version/status, supply-chain integrity/SBOM/provenance/signatures/vulnerability, least privilege/sandbox/secrets/pins/exceptions/residual risk/audit; agent/MCP/plugin/hook trust, injection/exfiltration/unsafe commands/memory contamination; Docker socket/mount/privilege/exposure and runner defenses; normative/vendor/proposal distinctions | [m0017](m0017-security-governance.md), [m0005](m0005-docker-compose-infrastructure.md), [m0004](m0004-automation-pipeline-workflow.md), [m0012](m0012-provider-implementation-comparison.md) | All levels / security, implementation, knowledge, operations, governance | Not assessed in this run |
+| L | Provider/Git/editor/CI hooks execution owner/permission/timing; pre-commit format/analysis/lint, commit-message draft versus action approval, inline/doc/test automation, bypass/network/secrets and post-fix review; editor/OS/version shortcuts; GitHub Issues/Projects/Linear/Jira/Markdown hierarchy/dependencies/roadmap/workflow/automation/access/Git/API/MCP/export/portability/cost/admin | [m0004](m0004-automation-pipeline-workflow.md), [m0014](m0014-quality-ci-formatting.md), [m0018](m0018-spec-driven-sdlc.md), [m0012](m0012-provider-implementation-comparison.md), [m0001](m0001-agent-instructions-vibe-coding.md) | Organization/user, repository, directory, task, provider, CI/CD / implementation, documentation, quality, security, collaboration | Not assessed in this run |
+
+#### Historical Workspace Observations — Not Reassessed in This Run
+
+All original prose and tables below retain their dates, counts, conclusions
+and source context inside explicit historical quotations. Original headings
+remain for existing anchors. Words such as “current”, “implemented”, “missing”,
+“normative” and “re-run” describe history only. Contradictions and corrections
+are retained together rather than resolved by a new scan. Original source
+access dates do not mean those sources were reopened in this refresh.
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
+> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
+> Earlier Stage 00 paths, inventories, provider projections, and check results
+> below remain dated observations, not current instructions or new runtime
+> acceptance evidence. Source links now navigate to current owners; the
+> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
+>
+
+#### Architecture Practice Delta Claims
+
+> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
+>
+>
+> | Claim ID | Owner leaf | Evidence mode | Source family |
+> | --- | --- | --- | --- |
+> | `SCOPE-COMP-001` | `scope-application-matrix.md` | synthesis-only | `—` |
+>
+
+> Revalidated 2026-11-06: Stage 00 `docs/00.agent-governance/` is retired; current policy lives in `.agents/governance/` (for example `.agents/governance/approval-boundaries.md`) and roles in `.agents/roles/` (14 roles); the Stage 00 scope files ("14 scopes") are retired; persona routing is in `.agents/governance/persona.md`; `docs/00.agent-governance/contracts/agent-catalog.yaml` is retired; roles are `.agents/roles/*.md` (14) and provider facts are `.agents/governance/providers/registry.yaml`; `tests/lib/agent_governance/test_agent_governance_contract.py` and `tests/validation/test_agent_governance_contract.py` are absent; the current suite is `tests/validation/test_agent_governance_ci_routing.py`, with `scripts/validation/check-agent-governance-contract.py`; `.claude/hooks/` has 7 wrappers (old: 24 hooks); 5 workflows (old: 7). The dated values above are preserved as observed.
+
+### Alternatives
+
+This member compares no design alternatives. Backstage, A2A, MCP and NIST
+SSDF appear only as comparison lenses, never as catalog or adoption
+authority. Its one stated choice is to extend an existing member when its
+question and lifecycle fit, and to allocate a new package only for a distinct
+question, owner, observation cycle and navigational boundary.
+
+## Application and Limits
+
+### Design Implications
+
+#### Scope Implications
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -544,7 +731,7 @@ separate approved internal assessment.
 > | `security` (retired path: `../../../00.agent-governance/scopes/security.md`)         | hardening/security scripts, supply-chain policies, incident routes, 19 placeholder-only `secrets/` files                                                     | security, Compose/infrastructure, quality, automation, harness/provider comparison, verification/validation                                                    | **Partial**: tracked controls exist; secret values, live runtime, and remote/provider enforcement are excluded or **Unverified**            | Metadata-only secret evidence; concrete target, redaction boundary, validation, and recovery path for approved secret/runtime work                   | Relevant layer implementer; `security-auditor` is read-only review                  | `security-auditor` plus hardening/template/quickwin/supply-chain gates   | Enum · 1 agent · 2 functions  |
 >
 
-### Six outside-catalog dispositions
+#### Six outside-catalog dispositions
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -574,7 +761,7 @@ separate approved internal assessment.
 >   deferral is the governing record rather than an omission.
 >
 
-### Adoption environment and rules
+#### Adoption environment and rules
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -601,7 +788,7 @@ separate approved internal assessment.
 >    side misroutes the work.
 >
 
-### Implementation status, limitations, and gap owners
+#### Implementation status, limitations, and gap owners
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -639,7 +826,7 @@ separate approved internal assessment.
 > separately approved evidence exists.
 >
 
-### Architecture Practice Scope Application
+#### Architecture Practice Scope Application
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -656,7 +843,7 @@ separate approved internal assessment.
 > | `SCOPE-COMP-001` | security | applies | Include security-relevant relationships when scoped. | No threat-model run. | Review scoped evidence. |
 >
 
-### Scope Application
+#### Scope Application
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -673,40 +860,9 @@ separate approved internal assessment.
 > | security | applies | Keep sources local and avoid secret, credential, or remote-state access. | Confirm cited sources are tracked documentation; seek separate approval for control testing. | No control effectiveness is evaluated. |
 >
 
-### Architecture Practice Composition Links
+### Unverified Conditions
 
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> - [Documentation architecture](./m0007-documentation-architecture.md)
-> - [SDLC document roles](./m0016-sdlc-document-roles.md)
->
-
-### 2026-09-05 Revalidation
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> Baseline: `main@4c6d211129615eab372d720ebd209b6c27618c86`.
-> The package README maps all 93 requested category items to exactly one topical
-> member, while allowing related audits, data packages, and RES-0084 to supply
-> non-competing evidence. Current repository-baseline ownership is consolidated
-> into m0020; RES-0085 supplies dated scope and identity-recovery evidence only.
-> No category requires a new research identity or a member split.
->
-> <!-- Historical evidence table (not current authority; source: Git history). -->
-> | Capability | Repository implementation | Evidence depth | Gap | Verification route |
-> | --- | --- | --- | --- | --- |
-> | Coverage routing | A–G category table points to m0001–m0020 | Defined | None for requested category coverage | package link and protected-set tests |
-> | Canonical ownership | Stage 00/01/02/03/05/99 remain normative | Repository-enforced | Semantic duplication still needs review | exact-diff review |
-> | Baseline evidence | m0020 records current `main`; RES-0085 preserves dated recovery evidence; RES-0084 owns GitHub mechanics | Defined, Local/Remote evidence by source | Mutable observations expire | dated revalidation |
->
-> Recommendation: extend an existing member when its question and lifecycle fit;
-> allocate a new package only for a distinct question, owner, observation cycle,
-> and navigational boundary.
->
-
-### Maintenance
+#### Maintenance
 
 > Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
 >
@@ -720,84 +876,7 @@ separate approved internal assessment.
 > explicit disposition for every scope and link back to this matrix.
 >
 
-### Related Documents
-
-- [Research pack](README.md)
-- [Current scope and future-check routing](m0015-scope-application-matrix.md#future-internal-checks)
-- [Preserved baseline and future assessment boundary](m0020-workspace-baseline.md#future-internal-checks)
-- [Verification and validation](m0019-verification-validation.md)
-- Refresh Spec
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> - [Workspace baseline](./m0020-workspace-baseline.md)
-> - [Verification and validation](./m0019-verification-validation.md)
-> - SPEC-0158 preservation contract
-> - Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)
-> - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
-> - [Agent governance hub](../../../../.agents/README.md)
-> - [Research category router](../README.md)
-
-## Findings
-
-### Request Coverage and Claim Ownership
-
-This is an A–L coverage route, not a claim that research or internal acceptance
-is complete. Named members own distinct explanations; provider comparison owns
-native-product differences while topic members own lifecycle, loops, memory,
-security and evidence. Detailed future-check rows remain in their topic owners.
-
-| Request | Covered questions | Distinct topic owners | Level / concern | Internal status |
-| --- | --- | --- | --- | --- |
-| A | Harness: instructions, tools, environment, sandbox, permission, context, memory, skills, orchestration, observation, evaluation, recovery, approval; loops: goal/state/plan/act/observe/verify/review/stop/handoff, completion, iteration/time/token/cost bounds, stalls, retry/backoff, checkpoint/resume, idempotency, conflicts and independent review | [m0008](m0008-harness-engineering.md), [m0010](m0010-loop-engineering.md), [m0012](m0012-provider-implementation-comparison.md) | Task, session, provider, environment / implementation, quality, security, governance | Not assessed in this run |
-| B | Instruction/policy/role/procedure/tool/style distinctions; hierarchy, conflict, global/project/path/task context, loading/discovery, stack/coding/explanation style; common source, thin adapters, native merging/trust and drift | [m0001 authoring distinctions](m0001-agent-instructions-vibe-coding.md#instruction-authoring-distinctions), [m0012](m0012-provider-implementation-comparison.md) | Organization/user, repository, directory, task, session, provider / governance, documentation, security | Not assessed in this run |
-| C | agency-agents role format, conversion, license, update/pin, permissions, evaluation/maintenance; task/reasoning/fallback and replacement criteria; product/channel/token/context/compaction/cache/concurrency/rate/retry/price, usage measurement and budget stop | [m0003](m0003-ai-agent-catalogs.md), [m0002](m0002-agent-model-selection.md), [m0013](m0013-provider-model-landscape.md), [m0010](m0010-loop-engineering.md) | Task, provider, CI/CD / implementation, quality, security, governance | Not assessed in this run |
-| D | Working/durable/domain memory versus progress/approval evidence; record/promotion/retrieval/summary/expiry/deletion/access/privacy/contamination/provenance; wiki source/synthesis/schema/ingest/query/lint/links/conflict/regeneration versus RAG/navigation/retired local work; bounded cross-provider handoff | [m0011](m0011-memory-hierarchy.md), [m0009](m0009-llm-wiki-system.md), [m0012](m0012-provider-implementation-comparison.md) | Repository, directory, task, session, provider / knowledge, documentation, security, collaboration | Not assessed in this run |
-| E | SDD/SDLC purpose, accountability, feedback/change/approval/traceability; PRD/Requirement/Spec/Plan/Task/ADR questions, inputs/outputs, owner/reviewer/lifecycle/content/relations/change/split/merge/preservation; intent-to-acceptance and task-to-handoff flows, one progress owner, requirement-to-test trace and mismatch/impact analysis | [m0018](m0018-spec-driven-sdlc.md), [m0016](m0016-sdlc-document-roles.md), [m0006](m0006-document-metadata-lifecycle.md), [m0019](m0019-verification-validation.md) | Repository, task, CI/CD / product, architecture, documentation, quality, governance | Not assessed in this run |
-| F | Guide/Incident/Postmortem/Policy/Release/Runbook reader, trigger, owner, fields, state/review/revision/retention/relations; factual incident versus analysis, policy versus procedure, guide versus runbook, release notes versus approval/deployment/rollback; preconditions, safety stop, success, recovery, timelines, action owners and expiry | [m0016](m0016-sdlc-document-roles.md), [m0006](m0006-document-metadata-lifecycle.md), [m0019](m0019-verification-validation.md) | Repository, directory, task, environment / documentation, operations, quality, governance | Not assessed in this run |
-| G | Diátaxis reader needs without stage equivalence; proportionate C4 abstraction and dynamic/deployment views; arc42 structure/quality/risks; ADR context/alternatives/consequences/supersession; README repository/directory/package/operations purpose/start/owner/support/navigation/constraints and avoiding duplicate detail | [m0007](m0007-documentation-architecture.md), [m0016](m0016-sdlc-document-roles.md), [m0006](m0006-document-metadata-lifecycle.md) | Repository, directory, task / architecture, documentation, product, governance | Not assessed in this run |
-| H | Versioned Compose include/merge/extends, profiles/interpolation/project names, dependency/health, network/port/volume/config/secret, resources/shutdown/restart/provenance/pins; Linux config/data/secret separation, ingress/TLS/DNS, observation, backup/restore/DR/update/rollback; optional service role/license/image/overlap/burden; static/process/readiness/user/recovery evidence distinct | [m0005](m0005-docker-compose-infrastructure.md), [m0021](m0021-local-docker-service-consolidation.md), [m0017](m0017-security-governance.md), [m0019](m0019-verification-validation.md) | Directory, task, environment / architecture, implementation, operations, security, quality | Not assessed in this run |
-| I | CI/delivery/deployment and test/build/package/publish/deploy/promote/rollback boundaries; Actions events/path filters/workflow/job/step/reuse/matrix/concurrency/cache/artifact/checks/environment approval/OIDC/least privilege/SHA pins; untrusted PR/self-hosted runners, automated review/test loop permissions/cost/quality; local/hosted/protection/deployment distinct | [m0004](m0004-automation-pipeline-workflow.md), [m0014](m0014-quality-ci-formatting.md), [m0017](m0017-security-governance.md), [m0019](m0019-verification-validation.md) | Repository, provider, CI/CD, environment / implementation, quality, security, operations, governance | Not assessed in this run |
-| J | Format/lint/syntax/schema/static/unit/integration/contract/E2E/docs/link/template/security, flakes/fixtures/mutation/coverage; verification of contracts versus validation of intended use, evidence, layer, failure, owner, reproducibility, independent review and measurement limits | [m0014](m0014-quality-ci-formatting.md), [m0019](m0019-verification-validation.md), [m0017](m0017-security-governance.md) | Repository, task, CI/CD, environment / quality, security, product, governance | Not assessed in this run |
-| K | Dated SSDF/version/status, supply-chain integrity/SBOM/provenance/signatures/vulnerability, least privilege/sandbox/secrets/pins/exceptions/residual risk/audit; agent/MCP/plugin/hook trust, injection/exfiltration/unsafe commands/memory contamination; Docker socket/mount/privilege/exposure and runner defenses; normative/vendor/proposal distinctions | [m0017](m0017-security-governance.md), [m0005](m0005-docker-compose-infrastructure.md), [m0004](m0004-automation-pipeline-workflow.md), [m0012](m0012-provider-implementation-comparison.md) | All levels / security, implementation, knowledge, operations, governance | Not assessed in this run |
-| L | Provider/Git/editor/CI hooks execution owner/permission/timing; pre-commit format/analysis/lint, commit-message draft versus action approval, inline/doc/test automation, bypass/network/secrets and post-fix review; editor/OS/version shortcuts; GitHub Issues/Projects/Linear/Jira/Markdown hierarchy/dependencies/roadmap/workflow/automation/access/Git/API/MCP/export/portability/cost/admin | [m0004](m0004-automation-pipeline-workflow.md), [m0014](m0014-quality-ci-formatting.md), [m0018](m0018-spec-driven-sdlc.md), [m0012](m0012-provider-implementation-comparison.md), [m0001](m0001-agent-instructions-vibe-coding.md) | Organization/user, repository, directory, task, provider, CI/CD / implementation, documentation, quality, security, collaboration | Not assessed in this run |
-
-### Historical Workspace Observations — Not Reassessed in This Run
-
-All original prose and tables below retain their dates, counts, conclusions
-and source context inside explicit historical quotations. Original headings
-remain for existing anchors. Words such as “current”, “implemented”, “missing”,
-“normative” and “re-run” describe history only. Contradictions and corrections
-are retained together rather than resolved by a new scan. Original source
-access dates do not mean those sources were reopened in this refresh.
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
-> [ADR-0032](../../../02.architecture/decisions/0032-canonical-agent-governance-home.md) own the active source location.
-> Earlier Stage 00 paths, inventories, provider projections, and check results
-> below remain dated observations, not current instructions or new runtime
-> acceptance evidence. Source links now navigate to current owners; the
-> original `observed_at`, `reviewed_at`, status, and measured facts are preserved.
->
-
-### Architecture Practice Delta Claims
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> | Claim ID | Owner leaf | Evidence mode | Source family |
-> | --- | --- | --- | --- |
-> | `SCOPE-COMP-001` | `scope-application-matrix.md` | synthesis-only | `—` |
->
-
-> Revalidated 2026-11-06: Stage 00 `docs/00.agent-governance/` is retired; current policy lives in `.agents/governance/` (for example `.agents/governance/approval-boundaries.md`) and roles in `.agents/roles/` (14 roles); the Stage 00 scope files ("14 scopes") are retired; persona routing is in `.agents/governance/persona.md`; `docs/00.agent-governance/contracts/agent-catalog.yaml` is retired; roles are `.agents/roles/*.md` (14) and provider facts are `.agents/governance/providers/registry.yaml`; `tests/lib/agent_governance/test_agent_governance_contract.py` and `tests/validation/test_agent_governance_contract.py` are absent; the current suite is `tests/validation/test_agent_governance_ci_routing.py`, with `scripts/validation/check-agent-governance-contract.py`; `.claude/hooks/` has 7 wrappers (old: 24 hooks); 5 workflows (old: 7). The dated values above are preserved as observed.
-
-## Limitations
-
-### Future Internal Checks
+#### Future Internal Checks
 
 These are representative designs, not authorized executions. Verified document
 paths are the Spec/Plan/Task, governance documents read for bootstrap, and these
@@ -821,26 +900,26 @@ Expected roles remain subject to the future Task's approved assignment.
 | SCOPE-K: trust boundaries | Repository + provider + CI/CD + environment / security, knowledge | Scoped security review approved | Verified doc: scope exclusions; hypothetical: redacted permission map, synthetic injection/provenance case | Can untrusted source/tool/memory escalate authority or disclose data across runner/container boundaries? | Scoped threat model, permissions, synthetic negative tests and residual-risk owner | Read-only design first; synthetic control trial separately approved | Pass if prohibited acts blocked/exceptions owned; fail on authority escalation or unowned risk | No secrets/production scan/credential changes | security-auditor + surface owner | Not assessed in this run |
 | SCOPE-L: hooks/editor/tracker | Repository + provider + CI/CD / implementation, quality, collaboration | Bounded developer-flow or tracker decision approved | Verified doc: current Task; hypothetical: synthetic flow/hook result/tracker export | Who executes each event, how is bypass/failure/auto-fix reviewed, can records export with one progress owner? | Product/OS/version, event/permission semantics, post-fix diff, hierarchy/export and cost criteria | Approved synthetic flow and portability comparison; no live migration | Pass if failure/mutation review/ownership/export explicit; fail on bypass, unreviewed edits or dual authority | Hook code, account connection, commit/push and migration approvals separate | ci-cd-engineer + doc-writer | Not assessed in this run |
 
-### Representative Future-Check Index
+#### Representative Future-Check Index
 
 Each linked owner supplies topic-specific evidence, method, acceptance and
 risk/approval rows. This matrix routes them without replacing their criteria.
 
 | Member | Request coverage | Future-check owner | Internal status |
 | --- | --- | --- | --- |
-| m0001 | B, L | [Detailed checks](m0001-agent-instructions-vibe-coding.md#future-internal-checks) | Not assessed in this run |
-| m0002 | C | [Detailed checks](m0002-agent-model-selection.md#future-internal-checks) | Not assessed in this run |
-| m0003 | C | [Detailed checks](m0003-ai-agent-catalogs.md#future-internal-checks) | Not assessed in this run |
+| m0001 | B, L | [Detailed checks](m0001-agent-instructions-vibe-coding.md#unverified-conditions) | Not assessed in this run |
+| m0002 | C | [Detailed checks](m0002-agent-model-selection.md#unverified-conditions) | Not assessed in this run |
+| m0003 | C | [Detailed checks](m0003-ai-agent-catalogs.md#unverified-conditions) | Not assessed in this run |
 | m0004 | I, K, L | [Detailed checks](m0004-automation-pipeline-workflow.md#future-internal-checks) | Not assessed in this run |
 | m0005 | H, K | [Detailed checks](m0005-docker-compose-infrastructure.md#future-internal-checks) | Not assessed in this run |
 | m0006 | E, F, G | [Detailed checks](m0006-document-metadata-lifecycle.md#future-internal-checks) | Not assessed in this run |
 | m0007 | G | [Detailed checks](m0007-documentation-architecture.md#future-internal-checks) | Not assessed in this run |
-| m0008 | A | [Detailed checks](m0008-harness-engineering.md#future-internal-checks) | Not assessed in this run |
+| m0008 | A | [Detailed checks](m0008-harness-engineering.md#unverified-conditions) | Not assessed in this run |
 | m0009 | D | [Detailed checks](m0009-llm-wiki-system.md#future-internal-checks) | Not assessed in this run |
-| m0010 | A, C | [Detailed checks](m0010-loop-engineering.md#future-internal-checks) | Not assessed in this run |
+| m0010 | A, C | [Detailed checks](m0010-loop-engineering.md#unverified-conditions) | Not assessed in this run |
 | m0011 | D | [Detailed checks](m0011-memory-hierarchy.md#future-internal-checks) | Not assessed in this run |
-| m0012 | A, B, D, K, L | [Detailed checks](m0012-provider-implementation-comparison.md#future-internal-checks) | Not assessed in this run |
-| m0013 | C | [Detailed checks](m0013-provider-model-landscape.md#future-internal-checks) | Not assessed in this run |
+| m0012 | A, B, D, K, L | [Detailed checks](m0012-provider-implementation-comparison.md#unverified-conditions) | Not assessed in this run |
+| m0013 | C | [Detailed checks](m0013-provider-model-landscape.md#unverified-conditions) | Not assessed in this run |
 | m0014 | I, J, L | [Detailed checks](m0014-quality-ci-formatting.md#future-internal-checks) | Not assessed in this run |
 | m0016 | E, F, G | [Detailed checks](m0016-sdlc-document-roles.md#future-internal-checks) | Not assessed in this run |
 | m0017 | H, I, J, K | [Detailed checks](m0017-security-governance.md#future-internal-checks) | Not assessed in this run |
@@ -848,37 +927,3 @@ risk/approval rows. This matrix routes them without replacing their criteria.
 | m0019 | E, F, H, I, J | [Detailed checks](m0019-verification-validation.md#future-internal-checks) | Not assessed in this run |
 | m0020 | Historical preservation | [Detailed checks](m0020-workspace-baseline.md#future-internal-checks) | Not assessed in this run |
 | m0021 | H | [Detailed checks](m0021-local-docker-service-consolidation.md#future-internal-checks) | Not assessed in this run |
-
-## Sources
-
-> Historical evidence (not current authority; source: Git history): Preserved pre-refresh member text; original dates, commits, facts and dispositions are not reassessed in this run.
->
->
-> <!-- Historical evidence table (not current authority; source: Git history). -->
-> | Source                                                                                                 | Accessed   | Class                  | Verification state                                                                                                                                                                                                                  |
-> | ------------------------------------------------------------------------------------------------------ | ---------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-> | [Persona protocol](../../../../.agents/governance/persona.md)                                      | 2026-08-14 | Tracked mutable        | Re-read in full; fourteen persona-to-scope rows at lines 25-38; unchanged since 2026-05-15.                                                                                                                                         |
-> | Agent catalog (retired path: `../../../00.agent-governance/contracts/agent-catalog.yaml`)                             | 2026-08-14 | Tracked mutable        | Fully parsed; 8 scope values, 14 agents, 24 functions, 9 intake decisions. Confirmed by an executed validator run.                                                                                                                  |
-> | Governance artifact contract (retired path: `../../../00.agent-governance/contracts/agent-governance-artifacts.yaml`) | 2026-08-14 | Tracked mutable        | Newly cited. 7 `path_authority` records, 25 artifact profiles, 3 README profiles, 3 governed families.                                                                                                                              |
-> | Provider-model contract (retired path: `../../../00.agent-governance/contracts/provider-models.yaml`)                 | 2026-08-14 | Tracked mutable        | Parsed for projection targets; unchanged since 2026-07-26.                                                                                                                                                                          |
-> | All scope files (retired path: `../../../00.agent-governance/scopes/`)                                                | 2026-08-14 | Tracked mutable        | All fourteen read in full; structural tiers, sizes, and ownership tables derived directly.                                                                                                                                          |
-> | [Governance contract validator](../../../../scripts/validation/check-agent-governance-contract.py)     | 2026-08-14 | Local observation      | Newly cited. Executed; `PASS` in both modes under an isolated environment, dependency-blocked by default.                                                                                                                           |
-> | Governance contract tests (retired path: `tests/lib/agent_governance/test_agent_governance_contract.py`)            | 2026-08-14 | Local observation      | Newly cited. 159 tests `OK`; `scope_names` at lines 1955-1967 enumerates 13 of 14 scopes.                                                                                                                                           |
-> | [Contract validator module](../../../../scripts/lib/agent_governance/agent_governance_contract.py)               | 2026-08-14 | Tracked mutable        | Newly cited. Scope-enum membership enforced at lines 2661 and 2778 against the catalog's own list only.                                                                                                                             |
-> | Repository contract script (retired path: `../../../../scripts/validation/check-repo-contracts.sh`)                   | 2026-08-14 | Tracked mutable        | Newly cited. Scans the scopes directory for path placeholders; requires 11 CODEOWNERS patterns.                                                                                                                                     |
-> | [`.github/CODEOWNERS`](../../../../.github/CODEOWNERS)                                                 | 2026-08-14 | Tracked mutable        | Newly cited. 30 path rules, all assigning one GitHub account; no scope or agent vocabulary.                                                                                                                                         |
-> | SPEC-0158 preservation contract | 2026-08-14 | Tracked fixed baseline | Re-verified; REQ-32 and the pack leaf list are unchanged. |
-> | Implementation Plan (retired path: `../../../04.execution/plans/2026-08-08-agentic-research-pack-rebuild.md`)         | 2026-08-14 | Tracked mutable        | Re-verified; REQ-32's derivations are unchanged.                                                                                                                                                                                    |
-> | [Workspace baseline](./m0020-workspace-baseline.md)                                                          | 2026-08-14 | Tracked draft          | Companion measured inventory; re-derived at `ece3eda9`.                                                                                                                                                                             |
-> | [Backstage descriptor format](https://backstage.io/docs/features/software-catalog/descriptor-format/)  | 2026-08-14 | External mutable       | Newly cited. `spec.owner` required per kind; `type` taxonomy explicitly open; owners not for runtime authorization.                                                                                                                 |
-> | [A2A protocol specification](https://github.com/a2aproject/A2A)                                        | 2026-08-14 | External mutable       | Newly cited. Agent Card separates protocol `capabilities` from functional `skills`; undeclared capability MUST error.                                                                                                               |
-> | [MCP specification 2026-07-28](https://modelcontextprotocol.io/specification/2026-07-28)               | 2026-08-14 | External mutable       | Newly cited. Per-request capability negotiation; opt-in extensions; cannot enforce its principles at protocol level.                                                                                                                |
-> | [NIST SP 800-218 SSDF v1.1](https://csrc.nist.gov/pubs/sp/800/218/final)                               | 2026-08-14 | External fixed         | Re-fetched; live. Published February 2022; leaves tool and owner choice to the adopting organization.                                                                                                                               |
-> | ISO/IEC 42001 landing page                                                                             | 2026-08-14 | External, unretrieved  | Direct retrieval returned HTTP 403, the known `iso.org` refusal. No claim here depends on it.                                                                                                                                       |
-> | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                            | 2026-08-08 | Tracked stale/advisory | Built from `f8a72211`; corroborated and not used as current proof.                                                                                                                                                                  |
-> | Predecessor scope matrix, retiring 2026-07-05 pack                                                     | 2026-08-14 | Historical retained    | Read for structural comparison only; its dispositions were re-derived rather than carried forward. Cited without a path because pre-deletion gate 4 admits no clickable link and the canonical router surface carries no allowlist. |
->
-
-## Related Documents
-
-- [Agentic Engineering Research Pack](README.md)

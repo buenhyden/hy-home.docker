@@ -17,44 +17,46 @@ created: "{{CREATED}}"
 
 # {{TITLE}}
 
-## Overview
+## Scope
 
-{{OBSERVATION_PURPOSE}}
+### Subject
 
-## Scope and Method
+<!-- Author prompt: Name the claim or surface audited and the criteria it is held to. -->
 
-### Boundaries
+{{AUDIT_SUBJECT_AND_CRITERIA}}
 
-{{OBSERVED_BOUNDARIES}}
+### Read Coverage
 
-### Reproducible Method
+<!-- Author prompt: Name what was actually read or run, at which revision, and what was not. -->
 
-{{REPRODUCIBLE_METHOD}}
+{{READ_AND_RUN_COVERAGE}}
 
 ## Findings
 
-### Dated Observations
+### Evidence
 
-{{DATED_OBSERVATIONS_WITH_SOURCE_REFERENCES}}
+<!-- Author prompt: List each finding in the table: Finding ID a stable identifier within this member, Requirement the current obligation, Evidence what was directly checked, Classification one of confirmed, gap, conflict, unverified or not-applicable, Action the concrete fix, Owner who does it, and Acceptance the condition that closes it. -->
 
-### Interpretation
+| Finding ID | Requirement | Evidence | Classification | Action | Owner | Acceptance |
+| --- | --- | --- | --- | --- | --- | --- |
+| {{FINDING_ID}} | {{REQUIREMENT}} | {{EVIDENCE}} | {{CLASSIFICATION}} | {{ACTION}} | {{OWNER}} | {{ACCEPTANCE}} |
 
-{{INTERPRETATION_OF_OBSERVATIONS}}
+### Conflicts and Gaps
 
-## Limitations
+<!-- Author prompt: Explain each conflict or gap between claim and evidence and its impact. -->
 
-### Unobserved Facts
+{{CONFLICTS_AND_GAPS}}
 
-{{UNOBSERVED_FACTS}}
+## Actions
 
-### Interpretation Limits
+### Owners
 
-{{INTERPRETATION_LIMITS}}
+<!-- Author prompt: Name the current work and its owner for each finding that needs action. -->
 
-## Sources
+{{OWNERS}}
 
-{{SOURCE_PATHS_REVISIONS_AND_OBSERVATION_DATES}}
+### Acceptance Conditions
 
-## Related Documents
+<!-- Author prompt: State the evidence that closes each action. -->
 
-{{PACKAGE_INDEX_LINK}}
+{{ACCEPTANCE_CONDITIONS}}

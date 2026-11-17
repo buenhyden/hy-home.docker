@@ -16,44 +16,46 @@ created: "{{CREATED}}"
 
 # {{TITLE}}
 
-## Overview
+## Purpose
 
-{{OBSERVATION_PURPOSE}}
+### Consumers
 
-## Scope and Method
+<!-- Author prompt: Name who uses this data and for what. -->
+
+{{CONSUMERS}}
 
 ### Boundaries
 
-{{OBSERVED_BOUNDARIES}}
+<!-- Author prompt: State what this data is not authority for. -->
 
-### Reproducible Method
+{{NON_AUTHORITY_BOUNDARIES}}
 
-{{REPRODUCIBLE_METHOD}}
+## Provenance
 
-## Findings
+### Collection
 
-### Dated Observations
+<!-- Author prompt: Name the inputs and the generator or method that produced the data. -->
 
-{{DATED_OBSERVATIONS_WITH_SOURCE_REFERENCES}}
+{{INPUTS_AND_GENERATOR}}
 
-### Interpretation
+### Versions and Dates
 
-{{INTERPRETATION_OF_OBSERVATIONS}}
+<!-- Author prompt: Give the input versions and the observation and generation dates. -->
 
-## Limitations
+{{INPUT_VERSIONS_AND_DATES}}
 
-### Unobserved Facts
+## Interpretation
 
-{{UNOBSERVED_FACTS}}
+### Schema and Units
 
-### Interpretation Limits
+<!-- Author prompt: List each field in the table: Field its name, Type its value type, Unit its unit or "none", Meaning what it means, and Limits its precision, missing values or cost. -->
 
-{{INTERPRETATION_LIMITS}}
+| Field | Type | Unit | Meaning | Limits |
+| --- | --- | --- | --- | --- |
+| {{FIELD}} | {{TYPE}} | {{UNIT}} | {{MEANING}} | {{LIMITS}} |
 
-## Sources
+### Limits
 
-{{SOURCE_PATHS_REVISIONS_AND_OBSERVATION_DATES}}
+<!-- Author prompt: State the range, constraints, refresh trigger and known errors of the data. -->
 
-## Related Documents
-
-{{PACKAGE_INDEX_LINK}}
+{{DATA_LIMITS}}

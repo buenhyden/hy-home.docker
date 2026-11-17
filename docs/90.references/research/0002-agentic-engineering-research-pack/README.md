@@ -1,10 +1,10 @@
 ---
 title: "Agentic Engineering Research Pack"
-version: "2.5.1"
+version: "2.5.2"
 type: "reference/research-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "references"
 artifact_id: "RES-0002"
 parent_ids:
@@ -140,14 +140,14 @@ SPEC-0158의 보호 대상과 기존 식별자를 유지한다. 고유 관측·�
 | B | 공통 거버넌스와 instruction | [m0001](m0001-agent-instructions-vibe-coding.md#current-external-research), [m0012](m0012-provider-implementation-comparison.md#current-external-research) | 정책/역할/절차/도구/스타일, 계층/충돌/명시적 로딩/신뢰, 스택/coding standard, 공통 원본/native adapter |
 | C | Agent catalog·모델·비용 | [m0003](m0003-ai-agent-catalogs.md#current-external-research), [m0002](m0002-agent-model-selection.md#current-external-research), [m0013](m0013-provider-model-landscape.md#current-external-research) | 형식/배포/변환/license/pinning/권한/평가; 작업별 effort/fallback/지연/token/context/compaction/cache/rate/동시성/예산 |
 | D | 기억·LLM Wiki·handoff | [m0011](m0011-memory-hierarchy.md#current-external-research), [m0009](m0009-llm-wiki-system.md#current-external-research), [m0012](m0012-provider-implementation-comparison.md#current-external-research) | 단기/장기/영역별 기억과 승인 증거; 승격/검색/요약/만료/삭제/오염; ingest/query/lint/RAG/llms.txt 차이; 최소 handoff |
-| E | SDD·SDLC·개발 문서 | [m0018](m0018-spec-driven-sdlc.md#current-external-research), [m0016](m0016-sdlc-document-roles.md#current-external-research), [m0006](m0006-document-metadata-lifecycle.md#current-external-research) | PRD/Requirement/SPEC/PLAN/TASK/ADR 책임/입출력/소유/검토/수명주기/내용/관계/변경/분할/보존; 요구→수용과 작업→운영 |
-| F | 운영 문서 | [m0016](m0016-sdlc-document-roles.md#current-external-research) | Guide/Incident/Postmortem/Policy/Runbook 독자/목적/트리거/소유/필수항목/상태/검토/개정/보존/관계 및 안전 중단/복구/후속 조치 추적. 제품 발행 절차와 실제 발행 증거의 구분. |
-| G | 문서화·탐색 | [m0007](m0007-documentation-architecture.md#current-external-research), [m0006](m0006-document-metadata-lifecycle.md#current-external-research) | Diátaxis 독자 필요, C4 수준/동적/배포, arc42 품질/위험, ADR 결정/supersession, README 역할과 중복 방지 |
+| E | SDD·SDLC·개발 문서 | [m0018](m0018-spec-driven-sdlc.md#findings), [m0016](m0016-sdlc-document-roles.md#findings), [m0006](m0006-document-metadata-lifecycle.md#findings) | PRD/Requirement/SPEC/PLAN/TASK/ADR 책임/입출력/소유/검토/수명주기/내용/관계/변경/분할/보존; 요구→수용과 작업→운영 |
+| F | 운영 문서 | [m0016](m0016-sdlc-document-roles.md#findings) | Guide/Incident/Postmortem/Policy/Runbook 독자/목적/트리거/소유/필수항목/상태/검토/개정/보존/관계 및 안전 중단/복구/후속 조치 추적. 제품 발행 절차와 실제 발행 증거의 구분. |
+| G | 문서화·탐색 | [m0007](m0007-documentation-architecture.md#findings), [m0006](m0006-document-metadata-lifecycle.md#findings) | Diátaxis 독자 필요, C4 수준/동적/배포, arc42 품질/위험, ADR 결정/supersession, README 역할과 중복 방지 |
 | H | Compose·Infrastructure | [m0005](m0005-docker-compose-infrastructure.md#current-external-research), [m0021](m0021-local-docker-service-consolidation.md#current-external-research) | 사양/CLI/include/merge/extends/profile/interpolation/project/dependency/health/network/ports/volume/config/secret/resources/stop/restart/provenance; TLS/DNS/관측/복구/업데이트/license/중복/부담 |
 | I | CI/CD·Actions | [m0004](m0004-automation-pipeline-workflow.md#current-external-research) | test/build/package/publish/deploy/promotion/rollback; workflow/job/step/event/filter/reuse/matrix/concurrency/cache/artifact/required checks/environment/OIDC/pinning/untrusted PR/runner |
 | J | QA·Verification/Validation | [m0014](m0014-quality-ci-formatting.md#current-external-research), [m0019](m0019-verification-validation.md#current-external-research) | format/lint/syntax/schema/static/unit/integration/contract/E2E/문서/보안/flaky/fixture/mutation/coverage; 적합성과 의도한 사용/수용/독립 검토 |
 | K | Security | [m0017](m0017-security-governance.md#current-external-research) | SSDF/공급망/SBOM/provenance/signature/취약점/least privilege/sandbox/secret/pinning/예외/위험/감사; agent/MCP/plugin/hook/injection/유출/기억 오염/socket/mount/privileged/network/runner |
-| L | Editor·hooks·project tracking | [m0004](m0004-automation-pipeline-workflow.md#current-external-research), [m0014](m0014-quality-ci-formatting.md#current-external-research), [m0018](m0018-spec-driven-sdlc.md#current-external-research) | provider/Git/editor/CI 주체; commit message/inline edit/documentation/test hook/재검토/우회/network; GitHub/Linear/Jira/Markdown hierarchy/deps/roadmap/workflow/automation/권한/Git/API/MCP/export/부담 |
+| L | Editor·hooks·project tracking | [m0004](m0004-automation-pipeline-workflow.md#current-external-research), [m0014](m0014-quality-ci-formatting.md#current-external-research), [m0018](m0018-spec-driven-sdlc.md#findings) | provider/Git/editor/CI 주체; commit message/inline edit/documentation/test hook/재검토/우회/network; GitHub/Linear/Jira/Markdown hierarchy/deps/roadmap/workflow/automation/권한/Git/API/MCP/export/부담 |
 
 적용 수준과 관심 영역의 교차 매핑, 후보 표면의 확인 여부, 후속 질문의 증거·검사
 방법·합격/실패·권한·소유 역할은 [m0015](m0015-scope-application-matrix.md#future-internal-checks)가

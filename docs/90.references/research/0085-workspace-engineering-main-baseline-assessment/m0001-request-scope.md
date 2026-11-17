@@ -1,10 +1,10 @@
 ---
 title: "Workspace Engineering Main Baseline Request Scope"
-version: "0.4.1"
+version: "0.5.0"
 type: "reference/research"
 status: "in-review"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "references"
 artifact_id: "RES-0085-m0001"
 parent_ids:
@@ -15,16 +15,16 @@ observed_at: "2026-09-05"
 
 # Workspace Engineering Main Baseline Request Scope
 
-## Overview
+## Question and Scope
+
+### Question
 
 This member preserves the binding repository target, comparison baseline,
 evidence boundaries, and recovered request identity for the dated RES-0085
 assessment. Historical workspace-baseline conclusions are consolidated into
 RES-0002-m0020; GitHub Actions platform findings remain in RES-0084.
 
-## Scope and Method
-
-### Boundaries
+### Scope
 
 #### Research Questions
 
@@ -73,7 +73,7 @@ authorized Task records new execution evidence.
 - **Remote evidence** requires authenticated read-back from the remote control
   plane and remains point-in-time.
 
-### Reproducible Method
+#### Reproducible Method
 
 The 2026-09-05 observation ran these checks against the baseline:
 
@@ -89,9 +89,40 @@ present (`tests/lib/document_governance/test_references.py`,
 `scripts/validation/check-document-links.py:108`,
 `scripts/validation/run-ci-gate.py`).
 
-## Findings
+## Sources
 
-### Dated Observations
+### Primary Sources
+
+- Repository baseline `main@4c6d211129615eab372d720ebd209b6c27618c86`,
+  observed 2026-09-05.
+- [Canonical agent governance](../../../../.agents/README.md).
+- [Registry](../../../99.templates/registry.json) and the
+  [research member template](../../../99.templates/templates/references/research.template.md).
+- Completed SPEC-0172 outcome.
+
+- [Dated baseline assessment package](README.md)
+- [Historical workspace baseline synthesis](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)
+- [Agentic engineering research](../0002-agentic-engineering-research-pack/README.md)
+- [GitHub Actions platform research](../0084-github-actions-platform/README.md)
+
+### Versions and Dates
+
+The frontmatter records `created` 2026-09-04 and `observed_at` 2026-09-05;
+it records no `reviewed_at`. A 2026-11-06 revalidation note covers the
+method's commands. The table below lists each source with its version and
+check date.
+
+| Source ID | Source | Version | Checked At | Finding | Application | Limits |
+| --- | --- | --- | --- | --- | --- | --- |
+| RES-0085-m0001-S1 | Repository baseline `main@4c6d211129615eab372d720ebd209b6c27618c86` | Commit `4c6d2111` on `main` | 2026-09-05 | The binding repository and comparison baseline for the dated assessment | Target for every recovered-request analysis and the reproducible-method checks | Fixed to that baseline; must not be presented as current after later `main` revisions |
+| RES-0085-m0001-S2 | [Canonical agent governance](../../../../.agents/README.md) | none recorded | not recorded | Canonical agent governance owns policy | Policy owner the member routes to | not recorded |
+| RES-0085-m0001-S3 | [Registry](../../../99.templates/registry.json) | none recorded | not recorded | Listed as a primary source; the member states no finding drawn from it | not recorded | not recorded |
+| RES-0085-m0001-S4 | [research member template](../../../99.templates/templates/references/research.template.md) | none recorded | not recorded | Listed as a primary source; the member states no finding drawn from it | not recorded | not recorded |
+| RES-0085-m0001-S5 | Completed SPEC-0172 outcome | Completed; retired from the tree | not recorded | Exact aggregate Hosted job runs and the approved 2026-09-05 main-protection read-back | Hosted CI and Main protection rows of the evidence matrix | Recoverable from Git history only; Hosted and remote evidence is point-in-time |
+
+## Analysis
+
+### Findings
 
 #### Dated Repository State
 
@@ -127,7 +158,14 @@ have precedence.
 - The recorded integration scope used a feature branch and prohibited direct
   writes to `main`.
 
-### Interpretation
+### Alternatives
+
+This member compares no alternatives; it records the fixed baseline,
+evidence classes and assessment boundaries only.
+
+## Application and Limits
+
+### Design Implications
 
 #### Gaps and Risks
 
@@ -153,33 +191,17 @@ The original assessment covered the named repository revision and dated
 external research. Policy and any new implementation or operational action
 require their own authority through the repository SDLC chain.
 
-## Limitations
+### Unverified Conditions
 
-### Unobserved Facts
+#### Unobserved Facts
 
 - Secret values, credentials, user-global provider settings, raw logs, and
   shell history were not read.
 - No deployment, release, tag, provider call, or remote mutation was observed.
 
-### Interpretation Limits
+#### Interpretation Limits
 
 - Hosted, provider, runtime, and remote evidence is point-in-time for
   2026-09-04 and 2026-09-05 and is not a permanent guarantee.
 - SPEC-0172 and SPEC-0173 have since retired from the tree; their outcomes are
   recoverable from Git history only.
-
-## Sources
-
-- Repository baseline `main@4c6d211129615eab372d720ebd209b6c27618c86`,
-  observed 2026-09-05.
-- [Canonical agent governance](../../../../.agents/README.md).
-- [Registry](../../../99.templates/registry.json) and the
-  [research member template](../../../99.templates/templates/references/research.template.md).
-- Completed SPEC-0172 outcome.
-
-## Related Documents
-
-- [Dated baseline assessment package](README.md)
-- [Historical workspace baseline synthesis](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md)
-- [Agentic engineering research](../0002-agentic-engineering-research-pack/README.md)
-- [GitHub Actions platform research](../0084-github-actions-platform/README.md)

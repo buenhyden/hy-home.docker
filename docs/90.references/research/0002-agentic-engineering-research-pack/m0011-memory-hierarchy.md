@@ -1,10 +1,10 @@
 ---
 title: "Reference: Agent Memory Hierarchy and Lifecycle"
-version: "1.3.0"
+version: "1.4.0"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-06"
+updated: "2026-11-17"
 layer: "references"
 artifact_id: "RES-0002-m0011"
 parent_ids:
@@ -17,9 +17,10 @@ review_cycle: "on-source-change"
 
 # Reference: Agent Memory Hierarchy and Lifecycle
 
-## Overview
+## Question and Scope
 
-### Overview
+### Question
+
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -51,15 +52,141 @@ review_cycle: "on-source-change"
 > architecture for comparison.
 >
 
-## Scope and Method
+### Scope
 
-### Current External Research
+#### Purpose
+
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> Satisfy REQ-30 by covering short-term, long-term, and domain memory plus
+> promotion, retrieval, retention, eviction/deletion, archival, partition,
+> privacy, size/freshness, and provider-native boundaries.
+>
+
+#### Repository Role
+
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> > Historical evidence (not current authority; source: Git history): Recorded source path at the document observation baseline.
+> > This Stage 90 reference does not become memory policy. The active contract
+> > remains `docs/00.agent-governance/memory/README.md`; current-state validation
+> > remains in `agent_governance_contract.py`; durable evidence remains in its
+> > canonical Stage 03/04/05 owner.
+>
+> The current repository adopts no shared governance memory root. Task-specific
+> context and execution evidence belong to the active Spec Package Task; durable
+> rules belong to [canonical governance](../../../../.agents/governance/bootstrap.md).
+> This historical research does not authorize local or provider-global memory work.
+>
+
+>
+> Historical evidence (not current authority; source: Git history):
+>
+
+#### In scope
+
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> - Tracked memory files, their metadata/size, retrieval routes, and validators.
+> - Full repository memory lifecycle and explicit missing controls.
+> - Public Claude and Codex memory/configuration capability boundaries.
+>
+
+#### Out of scope
+
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> - Raw conversations, logs, shell history, ignored/private files, provider-global memory, or credentials.
+> - Changing Memory files, bounds, hooks, schemas, retention, or provider settings.
+> - Claiming provider-native generation/retrieval happened in this workspace.
+>
+
+## Sources
+
+### Primary Sources
+
+#### Related Documents
+
+- [Loop engineering](./m0010-loop-engineering.md)
+- [Agent instructions](./m0001-agent-instructions-vibe-coding.md)
+- [Provider implementation comparison](./m0012-provider-implementation-comparison.md)
+- [Scope application matrix](./m0015-scope-application-matrix.md)
+- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
+
+- [Research pack navigation](README.md)
+
+#### Claims and Sources
+
+| Source ID | Original actually opened and detailed section | Publication / revision / status | Checked |
+| --- | --- | --- | --- |
+| S-langchain-memory-concepts | [Memory concepts: short/long term and writes](https://docs.langchain.com/oss/python/concepts/memory) | Mutable LangGraph documentation; no package version or publication date pinned | 2026-09-27 |
+| S-code-claude-com-memory | [Memory: instructions and auto memory](https://code.claude.com/docs/en/memory#auto-memory) | Mutable Claude Code documentation; no installed version assessed | 2026-09-27 |
+| S-code-claude-com-sub-agents | [Subagents: persistent memory scope](https://code.claude.com/docs/en/sub-agents#enable-persistent-memory) | Mutable Claude Code documentation; feature behavior depends on current release | 2026-09-27 |
+| S-arxiv-minja-2503-03704 | [MINJA: query-only memory injection abstract](https://arxiv.org/abs/2503.03704) | v1 2025-03-05; displayed v5 2026-02-12; experimental research | 2026-09-27 |
+| S-owasp-llm01-prompt-injection | [LLM01:2025 indirect prompt injection](https://genai.owasp.org/llmrisk/llm01-prompt-injection/) | OWASP 2025 risk guidance; living website | 2026-09-27 |
+
+| Claim ID | Claim | Source ID / detailed section | Published / modified | Actually checked | Product / version / channel | Fact / interpretation / recommendation | Limits, conflicts and recheck trigger |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| C-m0011-01 | Thread context and cross-thread memory are distinct; facts, experience and rules have different roles. | S-langchain-memory-concepts / short-term, long-term, writes | Not stated; mutable | 2026-09-27 | LangGraph concepts; package unpinned | Fact | Vocabulary is implementation-specific; recheck on framework/schema change. |
+| C-m0011-02 | Native memory scope/loading and compaction need product-specific verification. | S-code-claude-com-memory / auto memory; S-code-claude-com-sub-agents / enable persistent memory; m0012 | Not stated; mutable | 2026-09-27 | Claude Code current docs; no installed version | Fact plus recommendation | Defaults/features can change; neither context nor memory enforces permissions. |
+| C-m0011-03 | Portable summaries should preserve authority, omissions and links to original results. | S-langchain-memory-concepts / context management; research synthesis | Not stated; mutable | 2026-09-27 | Provider-neutral candidate handoff | Recommendation | No fidelity guarantee; evaluate omissions and receiving access before adoption. |
+| C-m0011-04 | Memory poisoning is a demonstrated research risk, not a local finding. | S-arxiv-minja-2503-03704 / abstract; S-owasp-llm01-prompt-injection / indirect injection | 2025-03-05; v5 2026-02-12; OWASP 2025 | 2026-09-27 | Experimental agents; OWASP guidance | Fact | Do not extrapolate attack rates or infer this repository is exploitable. |
+| C-m0011-05 | Promotion, provenance, expiry and deletion need owned lifecycle rules and consumer tracing. | S-langchain-memory-concepts / writes; S-owasp-llm01-prompt-injection / trust boundaries; research synthesis | Not stated; OWASP 2025 | 2026-09-27 | Candidate architecture | Recommendation | No universal TTL or backup erasure promise; policy and storage semantics must be assessed later. |
+
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> <!-- Historical evidence table (not current authority; source: Git history). -->
+> | Source                                                                                                          | Accessed                  | Class                    | Verification state                                                                                                                 |
+> | --------------------------------------------------------------------------------------------------------------- | ------------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
+> | Governance Memory contract (retired path: `../../../00.agent-governance/memory/README.md`)                                     | 2026-08-11                | Workspace tracked        | Direct owner for advisory authority, privacy, retrieval, replacement, retention, and archive cues.                                 |
+> | Current project memory (retired path: `../../../00.agent-governance/memory/current.md`)                                        | 2026-08-11                | Workspace tracked        | Re-read at commit `7a88efc1a`; still seven headings, now 59 lines/2,493 bytes; no raw/private data.                                |
+> | Memory stewardship function (retired path: `../../../00.agent-governance/agents/functions/project-memory-stewardship.md`)      | 2026-08-11                | Workspace tracked        | 32 KiB/400-line/seven-section/evidence gates; unchanged on re-read.                                                                |
+> | [Current-memory validator](../../../../scripts/lib/agent_governance/agent_governance_contract.py)                         | 2026-08-11                | Workspace tracked        | Bounds, sections, Task state, ancestry, timestamps, and forbidden-material checks; unchanged on re-read.                           |
+> | [Claude instructions and auto memory](https://code.claude.com/docs/en/memory)                                   | 2026-08-11                | External mutable         | HTTP 200; public project memory, partition, size, freshness, edit/delete, and context boundary confirmed unchanged.                |
+> | [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)                    | 2026-08-11                | External mutable         | HTTP 200; public `memories.*` generation/use/consolidation/age/privacy controls and compaction fields confirmed unchanged.         |
+> | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                     | 2026-08-08                | Workspace stale/advisory | Built from `f8a72211`; not used for counts or lifecycle proof.                                                                     |
+> | Current project memory (retired path: `../../../00.agent-governance/memory/current.md`)                                        | 2026-08-14                | Workspace tracked        | Re-read at commit `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c`; still seven headings, now 76 lines/3,689 bytes; no raw/private data. |
+> | Memory directory listing (retired path: `../../../00.agent-governance/memory/`)                                                | 2026-08-14                | Workspace tracked        | Direct `git ls-files` + `wc -l -c` re-run; 11 files, 2,308 lines, 1,234,111 bytes at HEAD.                                         |
+> | [Current-memory validator](../../../../scripts/lib/agent_governance/agent_governance_contract.py)                         | 2026-08-14                | Workspace tracked        | Direct read of lines 57-102 (bounds, sections, labels, forbidden-pattern regexes) and surrounding validation logic.                |
+> | [Claude Code subagents reference](https://code.claude.com/docs/en/sub-agents)                                   | 2026-08-14T13:40:00+09:00 | External mutable         | HTTP 200; exact `memory` frontmatter scopes, paths, 200-line/25 KiB limit, `autoMemoryEnabled` dependency.                         |
+> | [Claude instructions and auto memory](https://code.claude.com/docs/en/memory)                                   | 2026-08-14T13:40:00+09:00 | External mutable         | Re-read; HTTP 200; confirms 200-line/25 KiB `MEMORY.md` limit and machine-local storage, unchanged.                                |
+> | [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)                    | 2026-08-14T13:40:00+09:00 | External mutable         | Re-read; HTTP 200; exact `memories.*` field names, types, defaults, and clamp ranges.                                              |
+> | [Memory in the Age of AI Agents: a Survey (paper list)](https://github.com/Shichun-Liu/Agent-Memory-Paper-List) | 2026-08-14                | External mutable         | Curated paper index; source for the 5-mechanism-family comparison, not adopted as policy.                                          |
+> | [A Survey of Context Engineering for Large Language Models](https://arxiv.org/pdf/2507.13334)                   | 2026-08-14                | External fixed           | Versioned arXiv preprint; source of the temporal-scope/substrate/control-policy taxonomy used for comparison.                      |
+>
+
+- [Agentic Engineering Research Pack](README.md)
+
+### Versions and Dates
+
+This member was created on 2026-08-23, observed on 2026-09-05 and reviewed
+on 2026-11-06; its external sources were checked on 2026-09-27. The table
+below lists each registered source with its version and check date.
+
+| Source ID | Source | Version | Checked At | Finding | Application | Limits |
+| --- | --- | --- | --- | --- | --- | --- |
+| S-langchain-memory-concepts | [Memory concepts: short/long term and writes](https://docs.langchain.com/oss/python/concepts/memory) | Mutable LangGraph documentation; no package version or publication date pinned | 2026-09-27 | Thread context and cross-thread memory are distinct; facts, experience and rules have different roles (C-m0011-01, C-m0011-03, C-m0011-05). | Design vocabulary for short-term, long-term and domain memory and a candidate portable handoff and lifecycle. | Vocabulary is implementation-specific; recheck on framework or schema change; no fidelity guarantee. |
+| S-code-claude-com-memory | [Memory: instructions and auto memory](https://code.claude.com/docs/en/memory#auto-memory) | Mutable Claude Code documentation; no installed version assessed | 2026-09-27 | Claude Code distinguishes authored instructions and auto memory; native scope and loading need product-specific verification (C-m0011-02). | Shows context mechanisms do not enforce permissions; provider mechanics belong to m0012. | Defaults and features can change; no local memory or provider configuration was inspected. |
+| S-code-claude-com-sub-agents | [Subagents: persistent memory scope](https://code.claude.com/docs/en/sub-agents#enable-persistent-memory) | Mutable Claude Code documentation; feature behavior depends on current release | 2026-09-27 | Subagent memory has user, project and local scopes and loads differently from main-agent memory (C-m0011-02). | Supports not assuming provider-specific memory is portable. | Defaults and features can change; neither context nor memory enforces permissions. |
+| S-arxiv-minja-2503-03704 | [MINJA: query-only memory injection abstract](https://arxiv.org/abs/2503.03704) | v1 2025-03-05; displayed v5 2026-02-12; experimental research | 2026-09-27 | Memory poisoning is a demonstrated research risk, not a local finding (C-m0011-04). | Informs the contamination model for retained memory. | Do not extrapolate attack rates or infer this repository is exploitable. |
+| S-owasp-llm01-prompt-injection | [LLM01:2025 indirect prompt injection](https://genai.owasp.org/llmrisk/llm01-prompt-injection/) | OWASP 2025 risk guidance; living website | 2026-09-27 | Indirect prompt injection and trust boundaries support memory poisoning risk and owned lifecycle rules (C-m0011-04, C-m0011-05). | Supports permission checks before relevance scoring and owned promotion, expiry and deletion rules. | No universal TTL or backup erasure promise; policy and storage semantics must be assessed later. |
+
+## Analysis
+
+### Findings
+
+#### Current External Research
 
 How should short-term, long-term and domain memory preserve evidence, scope and deletion semantics across agent work?
 
 Repository baseline: `f30b168e2fbb0959e4a31749935568fd5b3942f1`. External sources checked and document updated: 2026-09-27. This refresh is external-only, non-normative research. Internal application, runtime, account and security status: **Not assessed in this run**. Adoption requires the existing owner and an authorized change; historical observations below retain their original dates and scope.
 
-### Memory is several independent design choices
+#### Memory is several independent design choices
 
 LangGraph distinguishes thread state from memory shared across threads and
 separates facts, experiences and rules. It describes writes during a task or in
@@ -74,7 +201,7 @@ short-lived, and a persistent note can still be restricted to one project.
 Canonical Spec/Task records remain the place for approved scope and project
 execution evidence; a memory summary is a pointer and aid to recall.
 
-### Native behavior and portable handoffs
+#### Native behavior and portable handoffs
 
 Claude Code distinguishes authored instructions and auto memory; these context
 mechanisms do not enforce permissions. Subagent memory has user/project/local
@@ -94,7 +221,7 @@ state what was omitted or uncertain. It cannot create approval or upgrade an
 untested hypothesis into a result. Raw chat and secrets should not be exported by
 default. Verify the receiving consumer can read the referenced surfaces.
 
-### Proposed lifecycle, ownership and deletion
+#### Proposed lifecycle, ownership and deletion
 
 The following is research synthesis. Capture the smallest useful record with
 purpose, owner, audience, source revision, observation date, confidence, expiry
@@ -113,7 +240,7 @@ and backup handling within applicable policy, rather than promising immediate
 erasure from every backup. No universal TTL is recommended: operational facts,
 user preferences, approval records and incident evidence have different purposes.
 
-### Contamination and provenance
+#### Contamination and provenance
 
 MINJA demonstrates experimental memory poisoning through query-only interaction;
 it does not establish a vulnerability in this repository or a universal success
@@ -130,57 +257,14 @@ A compiled wiki, a RAG index, `llms.txt` and a README serve distinct purposes;
 [m0009](m0009-llm-wiki-system.md#current-external-research) explains their relationship
 and the retired local wiki implementation.
 
-### Purpose
+#### Definitions / Facts
+
 >
 > Historical evidence (not current authority; source: Git history):
->
-> Satisfy REQ-30 by covering short-term, long-term, and domain memory plus
-> promotion, retrieval, retention, eviction/deletion, archival, partition,
-> privacy, size/freshness, and provider-native boundaries.
 >
 
-### Repository Role
->
-> Historical evidence (not current authority; source: Git history):
->
-> > Historical evidence (not current authority; source: Git history): Recorded source path at the document observation baseline.
-> > This Stage 90 reference does not become memory policy. The active contract
-> > remains `docs/00.agent-governance/memory/README.md`; current-state validation
-> > remains in `agent_governance_contract.py`; durable evidence remains in its
-> > canonical Stage 03/04/05 owner.
->
-> The current repository adopts no shared governance memory root. Task-specific
-> context and execution evidence belong to the active Spec Package Task; durable
-> rules belong to [canonical governance](../../../../.agents/governance/bootstrap.md).
-> This historical research does not authorize local or provider-global memory work.
->
+#### Safe tracked measurement
 
-### Scope
->
-> Historical evidence (not current authority; source: Git history):
->
-### In scope
->
-> Historical evidence (not current authority; source: Git history):
->
-> - Tracked memory files, their metadata/size, retrieval routes, and validators.
-> - Full repository memory lifecycle and explicit missing controls.
-> - Public Claude and Codex memory/configuration capability boundaries.
->
-### Out of scope
->
-> Historical evidence (not current authority; source: Git history):
->
-> - Raw conversations, logs, shell history, ignored/private files, provider-global memory, or credentials.
-> - Changing Memory files, bounds, hooks, schemas, retention, or provider settings.
-> - Claiming provider-native generation/retrieval happened in this workspace.
->
-
-### Definitions / Facts
->
-> Historical evidence (not current authority; source: Git history):
->
-### Safe tracked measurement
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -223,7 +307,9 @@ and the retired local wiki implementation.
 > 8 files; only `ignored-sdd-scratch-deletion.md` changed content within its
 > existing file.
 >
-### Historical current-memory validator bounds and patterns
+
+#### Historical current-memory validator bounds and patterns
+
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -276,7 +362,9 @@ and the retired local wiki implementation.
 > sensitive data, and none of the 7 categories apply outside `current.md` —
 > the 8 durable notes and the historical file have no automated check.
 >
-### Full lifecycle matrix
+
+#### Full lifecycle matrix
+
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -295,7 +383,9 @@ and the retired local wiki implementation.
 > | Size              | Bound high-priority index/context                                       | `current.md` 32 KiB/400 lines; exact provider-native limits are external                                               | Implemented for current only; durable/historical tiers unbounded.                  |
 > | Freshness         | Show that a fact still matches live tracked state                       | Current Task active/draft, commit ancestor, timestamp; notes rely on manual verification metadata                      | Implemented for current; partial/missing for durable and historical tiers.         |
 >
-### Provider-native boundaries
+
+#### Provider-native boundaries
+
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -315,7 +405,9 @@ and the retired local wiki implementation.
 > already generated material. Likewise, age/unused limits control eligibility
 > for generation/consolidation, not a repository retention policy.
 >
-### Claude Code subagent memory (exact mechanics, 2026-08-14 reopen)
+
+#### Claude Code subagent memory (exact mechanics, 2026-08-14 reopen)
+
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -354,7 +446,9 @@ and the retired local wiki implementation.
 > > `docs/00.agent-governance/memory/` handoff nor explicitly out of scope for
 > > it, which is named as a gap below.
 >
-### Codex `memories.*` exact configuration fields (2026-08-14 reopen)
+
+#### Codex `memories.*` exact configuration fields (2026-08-14 reopen)
+
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -381,52 +475,9 @@ and the retired local wiki implementation.
 > field, so all seven remain at documented defaults for any Codex session
 > running against this workspace, unobserved by any tracked file.
 >
-### External research on agent memory architecture (comparative, not adopted)
->
-> Historical evidence (not current authority; source: Git history):
->
-> A 2026-08-14 survey of current academic work on LLM agent memory (External
-> mutable summary; individual papers below are External fixed where
-> versioned) situates this repository's approach in a broader taxonomy. A 2026
-> taxonomy paper proposes a 3-axis framework — temporal scope, representational
-> substrate, control policy — and identifies five mechanism families:
-> context-resident compression, retrieval-augmented stores, reflective
-> self-improvement, hierarchical virtual context, and policy-learned
-> management. This repository's Memory contract implements exactly one family
-> in a strict form: context-resident, human-curated notes with no automated
-> retrieval scoring, reflective loop, hierarchical compression, or learned
-> promotion/eviction policy — retrieval is `rg` plus human corroboration (see
-> "Retrieval" above). That is a legitimate design point for a governance-gated
-> repository that prizes reviewability and provenance over automated recall;
-> this leaf does not recommend adopting any of the other four families, only
-> names the comparison for a future Stage 03 decision.
->
-### Required future lifecycle contract
->
-> Historical evidence (not current authority; source: Git history):
->
-> A future Stage 03 memory-governance specification should define a typed domain
-> enum and owner; promotion trigger and evidence; retrieval index/query and
-> corroboration; last-verified/review-by/last-used metadata; retention and legal
-> hold exceptions; eviction versus deletion semantics; deletion consumer and
-> provenance proof; an archive/tombstone route; per-domain size/freshness bounds;
-> privacy classification and redaction; provider export/sync prohibition; and a
-> validator plus migration plan. Until then, durable notes remain advisory and
-> human-curated.
->
-> Two additional gaps surfaced by this 2026-08-14 pass belong in that future
-> specification: first, `.claude/agent-memory/<name>/` (Claude's
-> `project`-scoped subagent memory) is a real, provider-native, project-
-> committable location that this repository's Memory contract neither
-> governs nor excludes today — a future spec should state explicitly whether
-> subagent-memory directories are in scope, out of scope, or require their own
-> governance. Second, the 7-category forbidden-material check enforced by
-> `agent_governance_contract.py` applies only to `current.md`; the 8 durable
-> notes and `progress.md` have no equivalent automated check today, so a
-> credential or raw-log fragment pasted into a durable note would not be
-> caught by any tracked validator, only by human review at note-creation time.
->
-### Provider mechanics and local hierarchy
+
+#### Provider mechanics and local hierarchy
+
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -449,7 +500,9 @@ and the retired local wiki implementation.
 > requires sanitization and provenance before retrieval, scoped partitioning,
 > expiry review, and deletion proof; it is explicitly not an executed workflow.
 >
-### Proposed domain partition and lifecycle boundary
+
+#### Proposed domain partition and lifecycle boundary
+
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -476,45 +529,8 @@ and the retired local wiki implementation.
 > before this process can be treated as an operating control.
 >
 
-### Scope Implications
->
-> Historical evidence (not current authority; source: Git history):
->
-> | Scope          | Application and disposition                                                                                                                                                                                                                                                                                                  |
-> | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-> | `agentic`      | Owns memory authority, bootstrap/retrieval, provider boundaries, and current validator; no provider memory may override it.                                                                                                                                                                                                  |
-> | `architecture` | Durable architecture decisions belong in ADR/Spec owners; Memory may link a reusable pitfall but cannot replace them.                                                                                                                                                                                                        |
-> | `backend`      | No current surface; future backend-domain memory requires an approved domain owner and privacy/retention contract.                                                                                                                                                                                                           |
-> | `common`       | Reusable cross-scope findings need one canonical note, duplicate control, and corroboration before use.                                                                                                                                                                                                                      |
-> | `docs`         | Owns current/durable note stewardship, template use, bounds, links, and any future archive route.                                                                                                                                                                                                                            |
-> | `entry`        | Gateway operational facts belong in tracked config/runbooks/incidents; secrets/certificates/log payloads never enter Memory.                                                                                                                                                                                                 |
-> | `frontend`     | Current fixture learnings remain QA-owned unless a product surface creates a domain route.                                                                                                                                                                                                                                   |
-> | `infra`        | Runtime state, raw logs, secret values, backups, and provider-local files stay outside shared Memory; link value-free evidence only.                                                                                                                                                                                         |
-> | `meta`         | A future typed domain/freshness/retention schema and validator route through docs/meta governance.                                                                                                                                                                                                                           |
-> | `mobile`       | Not applicable today; future device/user data needs explicit privacy, deletion, and partition controls.                                                                                                                                                                                                                      |
-> | `ops`          | Incident chronology/outcomes stay in Stage 05; Memory may retain only reusable, sanitized patterns linked to the owner.                                                                                                                                                                                                      |
-> | `product`      | Product decisions remain in requirements/approval artifacts; preferences or provider memory cannot become stakeholder intent.                                                                                                                                                                                                |
-> | `qa`           | Validate bounds, section envelope, ancestry, prohibited material, retrieval fixtures, and migration/deletion behavior.                                                                                                                                                                                                       |
-> | `security`     | Own privacy classification, redaction, deletion proof, provider-memory boundaries, and prompt-injection resistance; the 7-category forbidden-material regex set (see "Current-memory validator" above) is the only automated enforcement, and it covers `current.md` only, not durable notes or subagent-memory directories. |
->
+#### 2026-09-05 Revalidation
 
-### Scope Application
->
-> Historical evidence (not current authority; source: Git history):
->
-> | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
-> | --- | --- | --- | --- | --- |
-> | agentic | applies | `workflow-supervisor` keeps Task evidence distinct from advisory memory. | Inspect Task and canonical-owner links. | No provider memory read. |
-> | architecture | applies | Architecture owner keeps durable decisions in their canonical artifact. | Review ADR/Spec ownership when approved. | No memory replaces a decision. |
-> | common | applies | `code-reviewer` checks provenance before reusable guidance is relied upon. | Review source binding. | Retrieval behavior unobserved. |
-> | docs | applies | `doc-writer` records the proposed lifecycle without creating memory policy. | Inspect this leaf and owner path. | No memory files mutated. |
-> | infra | applies | `infra-implementer` assesses storage, retention, and concrete machine-local targets before adoption. | Review an approved target-specific design. | Private stores untouched. |
-> | ops | applies | `incident-responder` keeps operational chronology in its owned record. | Inspect an incident record when applicable. | No incident memory imported. |
-> | qa | applies | `qa-engineer` would verify expiry/deletion evidence for an adopted process. | Require a typed test plan. | No lifecycle process executed. |
-> | security | applies | `security-auditor` reviews sanitization, partition, and deletion-proof design. | Review approved policy/evidence. | No private or user data accessed. |
->
-
-### 2026-09-05 Revalidation
 >
 > Historical evidence (not current authority; source: Git history):
 >
@@ -537,28 +553,7 @@ and the retired local wiki implementation.
 > [subagent memory](https://code.claude.com/docs/en/sub-agents).
 >
 
-### Maintenance
->
-> Historical evidence (not current authority; source: Git history):
->
-> Rerun the tracked `wc` derivation and inspect only safe metadata when Memory
-> files, the current profile, bootstrap route, provider memory docs, or validator
-> changes. Never inspect provider-private stores merely to refresh this leaf.
->
-
-### Related Documents
-
-- [Loop engineering](./m0010-loop-engineering.md)
-- [Agent instructions](./m0001-agent-instructions-vibe-coding.md)
-- [Provider implementation comparison](./m0012-provider-implementation-comparison.md)
-- [Scope application matrix](./m0015-scope-application-matrix.md)
-- Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
-
-- [Research pack navigation](README.md)
-
-## Findings
-
-### Historical workspace observations — not reassessed in this run
+#### Historical workspace observations — not reassessed in this run
 
 > Historical evidence (not current authority; source: Git history):
 > Current routing (2026-09-06): [canonical agent governance](../../../../.agents/README.md) and
@@ -571,9 +566,112 @@ and the retired local wiki implementation.
 
 > Revalidated 2026-11-06: `docs/00.agent-governance/memory/` is retired and native Claude memory is off (`.claude/settings.json:3` `autoMemoryEnabled: false`); `docs/04.execution/` is retired; Tasks now live under `docs/03.specs/<package>/tasks/`. The dated values above are preserved as observed.
 
-## Limitations
+### Alternatives
 
-### Future Internal Checks
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> A 2026-08-14 survey of current academic work on LLM agent memory (External
+> mutable summary; individual papers below are External fixed where
+> versioned) situates this repository's approach in a broader taxonomy. A 2026
+> taxonomy paper proposes a 3-axis framework — temporal scope, representational
+> substrate, control policy — and identifies five mechanism families:
+> context-resident compression, retrieval-augmented stores, reflective
+> self-improvement, hierarchical virtual context, and policy-learned
+> management. This repository's Memory contract implements exactly one family
+> in a strict form: context-resident, human-curated notes with no automated
+> retrieval scoring, reflective loop, hierarchical compression, or learned
+> promotion/eviction policy — retrieval is `rg` plus human corroboration (see
+> "Retrieval" above). That is a legitimate design point for a governance-gated
+> repository that prizes reviewability and provenance over automated recall;
+> this leaf does not recommend adopting any of the other four families, only
+> names the comparison for a future Stage 03 decision.
+>
+
+## Application and Limits
+
+### Design Implications
+
+#### Required future lifecycle contract
+
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> A future Stage 03 memory-governance specification should define a typed domain
+> enum and owner; promotion trigger and evidence; retrieval index/query and
+> corroboration; last-verified/review-by/last-used metadata; retention and legal
+> hold exceptions; eviction versus deletion semantics; deletion consumer and
+> provenance proof; an archive/tombstone route; per-domain size/freshness bounds;
+> privacy classification and redaction; provider export/sync prohibition; and a
+> validator plus migration plan. Until then, durable notes remain advisory and
+> human-curated.
+>
+> Two additional gaps surfaced by this 2026-08-14 pass belong in that future
+> specification: first, `.claude/agent-memory/<name>/` (Claude's
+> `project`-scoped subagent memory) is a real, provider-native, project-
+> committable location that this repository's Memory contract neither
+> governs nor excludes today — a future spec should state explicitly whether
+> subagent-memory directories are in scope, out of scope, or require their own
+> governance. Second, the 7-category forbidden-material check enforced by
+> `agent_governance_contract.py` applies only to `current.md`; the 8 durable
+> notes and `progress.md` have no equivalent automated check today, so a
+> credential or raw-log fragment pasted into a durable note would not be
+> caught by any tracked validator, only by human review at note-creation time.
+>
+
+#### Scope Implications
+
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> | Scope          | Application and disposition                                                                                                                                                                                                                                                                                                  |
+> | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+> | `agentic`      | Owns memory authority, bootstrap/retrieval, provider boundaries, and current validator; no provider memory may override it.                                                                                                                                                                                                  |
+> | `architecture` | Durable architecture decisions belong in ADR/Spec owners; Memory may link a reusable pitfall but cannot replace them.                                                                                                                                                                                                        |
+> | `backend`      | No current surface; future backend-domain memory requires an approved domain owner and privacy/retention contract.                                                                                                                                                                                                           |
+> | `common`       | Reusable cross-scope findings need one canonical note, duplicate control, and corroboration before use.                                                                                                                                                                                                                      |
+> | `docs`         | Owns current/durable note stewardship, template use, bounds, links, and any future archive route.                                                                                                                                                                                                                            |
+> | `entry`        | Gateway operational facts belong in tracked config/runbooks/incidents; secrets/certificates/log payloads never enter Memory.                                                                                                                                                                                                 |
+> | `frontend`     | Current fixture learnings remain QA-owned unless a product surface creates a domain route.                                                                                                                                                                                                                                   |
+> | `infra`        | Runtime state, raw logs, secret values, backups, and provider-local files stay outside shared Memory; link value-free evidence only.                                                                                                                                                                                         |
+> | `meta`         | A future typed domain/freshness/retention schema and validator route through docs/meta governance.                                                                                                                                                                                                                           |
+> | `mobile`       | Not applicable today; future device/user data needs explicit privacy, deletion, and partition controls.                                                                                                                                                                                                                      |
+> | `ops`          | Incident chronology/outcomes stay in Stage 05; Memory may retain only reusable, sanitized patterns linked to the owner.                                                                                                                                                                                                      |
+> | `product`      | Product decisions remain in requirements/approval artifacts; preferences or provider memory cannot become stakeholder intent.                                                                                                                                                                                                |
+> | `qa`           | Validate bounds, section envelope, ancestry, prohibited material, retrieval fixtures, and migration/deletion behavior.                                                                                                                                                                                                       |
+> | `security`     | Own privacy classification, redaction, deletion proof, provider-memory boundaries, and prompt-injection resistance; the 7-category forbidden-material regex set (see "Current-memory validator" above) is the only automated enforcement, and it covers `current.md` only, not durable notes or subagent-memory directories. |
+>
+
+#### Scope Application
+
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> | Scope | Disposition | Investigation / adoption condition | Verification | Caveat |
+> | --- | --- | --- | --- | --- |
+> | agentic | applies | `workflow-supervisor` keeps Task evidence distinct from advisory memory. | Inspect Task and canonical-owner links. | No provider memory read. |
+> | architecture | applies | Architecture owner keeps durable decisions in their canonical artifact. | Review ADR/Spec ownership when approved. | No memory replaces a decision. |
+> | common | applies | `code-reviewer` checks provenance before reusable guidance is relied upon. | Review source binding. | Retrieval behavior unobserved. |
+> | docs | applies | `doc-writer` records the proposed lifecycle without creating memory policy. | Inspect this leaf and owner path. | No memory files mutated. |
+> | infra | applies | `infra-implementer` assesses storage, retention, and concrete machine-local targets before adoption. | Review an approved target-specific design. | Private stores untouched. |
+> | ops | applies | `incident-responder` keeps operational chronology in its owned record. | Inspect an incident record when applicable. | No incident memory imported. |
+> | qa | applies | `qa-engineer` would verify expiry/deletion evidence for an adopted process. | Require a typed test plan. | No lifecycle process executed. |
+> | security | applies | `security-auditor` reviews sanitization, partition, and deletion-proof design. | Review approved policy/evidence. | No private or user data accessed. |
+>
+
+### Unverified Conditions
+
+#### Maintenance
+
+>
+> Historical evidence (not current authority; source: Git history):
+>
+> Rerun the tracked `wc` derivation and inspect only safe metadata when Memory
+> files, the current profile, bootstrap route, provider memory docs, or validator
+> changes. Never inspect provider-private stores merely to refresh this leaf.
+>
+
+#### Future Internal Checks
 
 | Topic / claim ID | Analysis scope | Applicability condition | Future surface candidate | Concrete question | Required evidence | Future inspection method | Pass / fail criterion | Additional permission / risk | Expected owner role | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -582,56 +680,9 @@ and the retired local wiki implementation.
 | C-m0011-04/05 | Environment × security/data | When retained retrieval accepts external input | Candidate memory writer/retriever; not inspected | Can a source promote itself into authority or cross an audience boundary? | Provenance chain, write policy and adversarial retrieval cases | Future isolated contamination evaluation | Pass untrusted instructions remain data and unauthorized content is filtered; fail promotion or leakage | Evaluation ingestion and protected inputs need scoped approval | security-auditor | Not assessed in this run |
 | C-m0011-05 | Document, environment × data/operations | For an expiry or deletion request | Candidate derivative graph and backup policy; not inspected | Does deletion stay effective after restore or reindex? | Consumer map, tombstone/retention rules, deletion receipt and isolated restore/reindex evidence | Future separately approved isolated restore/reindex with synthetic target | Pass revoked data remains unavailable according to policy; fail resurrection or undocumented copies | Backup access and restoration writes need explicit scoped approval | infra-implementer | Not assessed in this run |
 
-### Limits and recheck conditions
+#### Limits and recheck conditions
 
 No memory files, chats, provider settings, stores or retention mechanisms were
 inspected or modified. Native capability is not proof of safe configuration.
 Recheck on provider/version, audience, data sensitivity, retention policy and
 memory-write/retrieval architecture changes.
-
-## Sources
-
-### Claims and Sources
-
-| Source ID | Original actually opened and detailed section | Publication / revision / status | Checked |
-| --- | --- | --- | --- |
-| S-langchain-memory-concepts | [Memory concepts: short/long term and writes](https://docs.langchain.com/oss/python/concepts/memory) | Mutable LangGraph documentation; no package version or publication date pinned | 2026-09-27 |
-| S-code-claude-com-memory | [Memory: instructions and auto memory](https://code.claude.com/docs/en/memory#auto-memory) | Mutable Claude Code documentation; no installed version assessed | 2026-09-27 |
-| S-code-claude-com-sub-agents | [Subagents: persistent memory scope](https://code.claude.com/docs/en/sub-agents#enable-persistent-memory) | Mutable Claude Code documentation; feature behavior depends on current release | 2026-09-27 |
-| S-arxiv-minja-2503-03704 | [MINJA: query-only memory injection abstract](https://arxiv.org/abs/2503.03704) | v1 2025-03-05; displayed v5 2026-02-12; experimental research | 2026-09-27 |
-| S-owasp-llm01-prompt-injection | [LLM01:2025 indirect prompt injection](https://genai.owasp.org/llmrisk/llm01-prompt-injection/) | OWASP 2025 risk guidance; living website | 2026-09-27 |
-
-| Claim ID | Claim | Source ID / detailed section | Published / modified | Actually checked | Product / version / channel | Fact / interpretation / recommendation | Limits, conflicts and recheck trigger |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| C-m0011-01 | Thread context and cross-thread memory are distinct; facts, experience and rules have different roles. | S-langchain-memory-concepts / short-term, long-term, writes | Not stated; mutable | 2026-09-27 | LangGraph concepts; package unpinned | Fact | Vocabulary is implementation-specific; recheck on framework/schema change. |
-| C-m0011-02 | Native memory scope/loading and compaction need product-specific verification. | S-code-claude-com-memory / auto memory; S-code-claude-com-sub-agents / enable persistent memory; m0012 | Not stated; mutable | 2026-09-27 | Claude Code current docs; no installed version | Fact plus recommendation | Defaults/features can change; neither context nor memory enforces permissions. |
-| C-m0011-03 | Portable summaries should preserve authority, omissions and links to original results. | S-langchain-memory-concepts / context management; research synthesis | Not stated; mutable | 2026-09-27 | Provider-neutral candidate handoff | Recommendation | No fidelity guarantee; evaluate omissions and receiving access before adoption. |
-| C-m0011-04 | Memory poisoning is a demonstrated research risk, not a local finding. | S-arxiv-minja-2503-03704 / abstract; S-owasp-llm01-prompt-injection / indirect injection | 2025-03-05; v5 2026-02-12; OWASP 2025 | 2026-09-27 | Experimental agents; OWASP guidance | Fact | Do not extrapolate attack rates or infer this repository is exploitable. |
-| C-m0011-05 | Promotion, provenance, expiry and deletion need owned lifecycle rules and consumer tracing. | S-langchain-memory-concepts / writes; S-owasp-llm01-prompt-injection / trust boundaries; research synthesis | Not stated; OWASP 2025 | 2026-09-27 | Candidate architecture | Recommendation | No universal TTL or backup erasure promise; policy and storage semantics must be assessed later. |
-
->
-> Historical evidence (not current authority; source: Git history):
->
-> <!-- Historical evidence table (not current authority; source: Git history). -->
-> | Source                                                                                                          | Accessed                  | Class                    | Verification state                                                                                                                 |
-> | --------------------------------------------------------------------------------------------------------------- | ------------------------- | ------------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
-> | Governance Memory contract (retired path: `../../../00.agent-governance/memory/README.md`)                                     | 2026-08-11                | Workspace tracked        | Direct owner for advisory authority, privacy, retrieval, replacement, retention, and archive cues.                                 |
-> | Current project memory (retired path: `../../../00.agent-governance/memory/current.md`)                                        | 2026-08-11                | Workspace tracked        | Re-read at commit `7a88efc1a`; still seven headings, now 59 lines/2,493 bytes; no raw/private data.                                |
-> | Memory stewardship function (retired path: `../../../00.agent-governance/agents/functions/project-memory-stewardship.md`)      | 2026-08-11                | Workspace tracked        | 32 KiB/400-line/seven-section/evidence gates; unchanged on re-read.                                                                |
-> | [Current-memory validator](../../../../scripts/lib/agent_governance/agent_governance_contract.py)                         | 2026-08-11                | Workspace tracked        | Bounds, sections, Task state, ancestry, timestamps, and forbidden-material checks; unchanged on re-read.                           |
-> | [Claude instructions and auto memory](https://code.claude.com/docs/en/memory)                                   | 2026-08-11                | External mutable         | HTTP 200; public project memory, partition, size, freshness, edit/delete, and context boundary confirmed unchanged.                |
-> | [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)                    | 2026-08-11                | External mutable         | HTTP 200; public `memories.*` generation/use/consolidation/age/privacy controls and compaction fields confirmed unchanged.         |
-> | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                     | 2026-08-08                | Workspace stale/advisory | Built from `f8a72211`; not used for counts or lifecycle proof.                                                                     |
-> | Current project memory (retired path: `../../../00.agent-governance/memory/current.md`)                                        | 2026-08-14                | Workspace tracked        | Re-read at commit `ece3eda9c3e1a603c6495dd55caba7df1c29ef6c`; still seven headings, now 76 lines/3,689 bytes; no raw/private data. |
-> | Memory directory listing (retired path: `../../../00.agent-governance/memory/`)                                                | 2026-08-14                | Workspace tracked        | Direct `git ls-files` + `wc -l -c` re-run; 11 files, 2,308 lines, 1,234,111 bytes at HEAD.                                         |
-> | [Current-memory validator](../../../../scripts/lib/agent_governance/agent_governance_contract.py)                         | 2026-08-14                | Workspace tracked        | Direct read of lines 57-102 (bounds, sections, labels, forbidden-pattern regexes) and surrounding validation logic.                |
-> | [Claude Code subagents reference](https://code.claude.com/docs/en/sub-agents)                                   | 2026-08-14T13:40:00+09:00 | External mutable         | HTTP 200; exact `memory` frontmatter scopes, paths, 200-line/25 KiB limit, `autoMemoryEnabled` dependency.                         |
-> | [Claude instructions and auto memory](https://code.claude.com/docs/en/memory)                                   | 2026-08-14T13:40:00+09:00 | External mutable         | Re-read; HTTP 200; confirms 200-line/25 KiB `MEMORY.md` limit and machine-local storage, unchanged.                                |
-> | [Codex configuration reference](https://learn.chatgpt.com/docs/config-file/config-reference)                    | 2026-08-14T13:40:00+09:00 | External mutable         | Re-read; HTTP 200; exact `memories.*` field names, types, defaults, and clamp ranges.                                              |
-> | [Memory in the Age of AI Agents: a Survey (paper list)](https://github.com/Shichun-Liu/Agent-Memory-Paper-List) | 2026-08-14                | External mutable         | Curated paper index; source for the 5-mechanism-family comparison, not adopted as policy.                                          |
-> | [A Survey of Context Engineering for Large Language Models](https://arxiv.org/pdf/2507.13334)                   | 2026-08-14                | External fixed           | Versioned arXiv preprint; source of the temporal-scope/substrate/control-policy taxonomy used for comparison.                      |
->
-
-## Related Documents
-
-- [Agentic Engineering Research Pack](README.md)
