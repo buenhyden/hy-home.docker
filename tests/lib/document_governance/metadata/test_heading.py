@@ -2560,6 +2560,20 @@ class RegisteredTableContractTests(unittest.TestCase):
         body = "\n".join([*lines[:start], "No action table.", *lines[end:]])
         self.assertIn("table-missing", self._table_codes("incident", body))
 
+    def test_a_document_reference_table_beside_the_core_table_is_kept(self) -> None:
+        own = "| Command | Effect |\n| --- | --- |\n| `status` | 상태 확인 |\n\n"
+        body = self._mutate(
+            "incident", self.HEADERS["incident"], own + self.HEADERS["incident"]
+        )
+        self.assertEqual([], self._table_codes("incident", body))
+
+    def test_a_table_sharing_core_labels_with_other_columns_is_rejected(self) -> None:
+        other = "| Action | Effect |\n| --- | --- |\n| 조치 | 결과 |\n\n"
+        body = self._mutate(
+            "incident", self.HEADERS["incident"], other + self.HEADERS["incident"]
+        )
+        self.assertIn("table-header-invalid", self._table_codes("incident", body))
+
     def test_a_core_table_with_only_its_header_is_accepted(self) -> None:
         for role in ("incident", "postmortem"):
             with self.subTest(role=role):

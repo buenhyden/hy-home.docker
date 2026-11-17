@@ -1663,11 +1663,16 @@ def _registered_table_findings(
     # the rows stay empty until something actually happened.
     required_tables: set[str] = set()
     found_tables: set[str] = set()
+    core_tables: set[str] = set()
     for role, definition in registry.template_roles.items():
         if profile_id not in definition.get("profiles", ()):
             continue
         core = core_role_definition(registry, role)
         if core is not None:
+            core_tables.update(
+                str(table["table_id"])
+                for table in core["tables"]  # type: ignore[union-attr]
+            )
             required_tables.update(
                 str(table["table_id"])
                 for table in core["tables"]  # type: ignore[union-attr]
@@ -1701,6 +1706,14 @@ def _registered_table_findings(
             for row in rows
         ]
         header = cells[0]
+        labels = {str(column["key"]) for table in tables for column in table["columns"]}
+        if all(str(table["name"]) in core_tables for table in tables) and not (
+            labels & set(header)
+        ):
+            # A document's own reference table shares no label with the core
+            # table of its section, so it is not that table (binding rule:
+            # an existing form is kept, not deleted or disguised).
+            return
         for table in tables:
             columns = [str(column["key"]) for column in table["columns"]]
             required = [
