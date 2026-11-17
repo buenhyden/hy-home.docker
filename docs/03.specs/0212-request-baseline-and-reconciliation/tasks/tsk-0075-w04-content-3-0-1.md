@@ -1,10 +1,10 @@
 ---
 title: "W04 Content 3.0.1 Task"
-version: "0.1.3"
+version: "0.2.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-18"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0075"
 parent_ids:
@@ -107,6 +107,7 @@ product release process. No Stage 99 template or product source changed.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0075 | draft | ready | #inputs-and-authority |
 | SPEC-0212-TSK-0075 | ready | in-progress | #design-before-implementation |
+| SPEC-0212-TSK-0075 | in-progress | completed | #criterion-decisions |
 
 #### Continuation design
 
@@ -180,6 +181,46 @@ in RES-0002 with its role and workflow members, and the RES-0084
 dated findings with the tracked actions workflow. Other parts of the
 404-path corpus retain their earlier partial or generated classification.
 
+#### W04-CONTENT 4.2.0 recheck
+
+The 2026-11-18 W04-CONTENT request read D15, D01, D03 and D25 of the 4.2.0
+package against `7a165d018`. D15 adds that completed document currency work
+is not rerun: only a confirmed requirement change or consumer mismatch
+reopens a sentence or its reference closure, and a full meaning audit belongs
+to a baseline or an important contract change. D25 requires each finding to
+name its read scope and evidence kind. No attachment disposition targets
+W04-CONTENT. No external source was rechecked; the package states the carried
+status of S02 to S07, S14, S20, S22 and S27.
+
+Since the reported completion at `ffc3247ce`, the four stages keep the same
+404 tracked paths. All 23 commits that touch them are T99 moves to the role
+design core and their review fixes, recorded in
+[TSK-0081](tsk-0081-t99-role-design-adoption.md). Outside the documents, only
+the document governance readers, the provider surface renderer, their tests and
+README files changed; no Compose, lab, workflow or operations script that a
+Stage 01, 02, 05 or 90 claim describes changed. That form change is the
+important contract change, so its consumer closure was checked:
+
+| Closure | Read scope | Finding | Disposition |
+| --- | --- | --- | --- |
+| Prose naming a section, table or column absent from every current heading or table header | All 404 paths, fenced blocks excluded | Eight names in RES-0002 members m0009, m0012, m0013, m0015 and m0020, each unchanged since `ffc3247ce` and part of a dated observation of a retired or external source | KEEP |
+| Prose naming one of the 50 template headings that T99 removed | All 404 paths | None | KEEP |
+| Lifecycle generation, Registry and criterion table claims | REQ-0026, AD-0030, ADR-0048 and every Registry mention in the four stages | REQ-0026 and AD-0030 match the current readers, the lineage section target and the Criterion Acceptance name that `sdlc.md` keeps; ADR-0048 is accepted decision text for generations 5 and 6 | KEEP |
+| History recovery, release document reintroduction and always-full checks | Every line added in the four stages since `ffc3247ce` | Only the product changelog step kept above, upstream release notes and dated Stage 90 observations | KEEP |
+| Links, anchors and fenced command paths | 887 documents and 8,938 links | No failure or warning | KEEP |
+
+AD-0030 does not describe lifecycle generation 8 or the role design core.
+That omission contradicts no claim; governance and Stage 99 own both, and D15
+adds no new Description for it. No Stage 01, 02, 05 or 90 document changes.
+
+Every current document keeps one classification. Ten authored paths are
+reviewed for their stated scopes. The 390 other authored paths are partial:
+outside their recorded ranges they are unreviewed because D15 limits the
+meaning audit to a baseline or an important contract change, and the only
+such change since then, the T99 form move, passed the closure above. The four
+generated instruction files carry no authored claim. A later change to a
+claim or its consumer reopens only that closure.
+
 ### Blockers and Decisions
 
 Read-only review covers the selected local branch. Live service operation,
@@ -227,6 +268,9 @@ recoverable.
 | Resume Locust canary input | 131 | W136 | scoped body, command and synthetic Compose checks | Final RUN-0062 with separate original and canary inputs | PASS | Five Bash blocks, six links, no path findings; synthetic rendered bounds and fresh result bind in 0.123 s | required | - |
 | Resume inventory | 131 | W136 | tracked inventory and per-file scopes | 404 tracked and 33 changed corpus paths against ddf416bdf | PASS | Exact path sets and 116 declared Guide services verified | required | - |
 | Resume independent review | 131 | W136 | requirements and high-impact diff readback | 34-path continuation from ddf416bdf, selected route, procedure, authority and source changes | PASS | CI cadence, LAB OIDC diagram and separate Locust canary input corrected and re-reviewed | required | - |
+| 4.2.0 claim closure | 131 | W136 | source readback | Section, heading, Registry, generation and conflicting phrase scans over the 404 paths at `7a165d018` against `ffc3247ce` | PASS | W04-CONTENT 4.2.0 recheck table, no stage change needed | required | - |
+| 4.2.0 links and commands | 131 | W136 | check-document-links.py alignment and commands | `7a165d018`, 887 documents and 8,938 links | PASS | Zero failures and warnings, exit 0, 29.49 s and 16.12 s | required | - |
+| 4.2.0 operations catalog | 131 | W136 | check-operations-catalog.py | `7a165d018` | PASS | Exit 0, 21.02 s | required | - |
 
 ### Resolution Links
 
@@ -259,9 +303,11 @@ cost only.
 
 ### Remaining Conditions
 
-Remaining prose in the partial records, actual hosted checks and any live
-deployment, login, recovery, listener denial or latency claims require
-separate evidence. Owner acceptance remains pending.
+None for W136. The owner accepted criterion 131 on 2026-11-16 and every
+required row passed. Prose outside the recorded ranges stays classified as
+unreviewed with the reason above. Hosted checks and any live deployment,
+login, recovery, listener denial or latency claims need their own evidence
+and were not run.
 
 ## Handoff
 
@@ -273,10 +319,9 @@ catalog, linked readers and affected runbook command paths were checked.
 The continuation from `ddf416bdf` corrects 33 corpus documents and records
 the added checks above. Each affected stage retains authority for its own
 claims.
-The criterion decision remains pending and the remaining obligations are
-listed above.
+The 4.2.0 recheck changed no corpus document. The owner accepted criterion 131.
 
 ### Next Owner
 
-The implementer owns W136 follow-up on claims outside the recorded review
-ranges. W08-MEMORY owns D-11. The owner decides criterion 131.
+None for W136. A later claim or consumer change reopens only its closure.
+W08-MEMORY owns D-11.
