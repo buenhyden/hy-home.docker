@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.7.3"
+version: "0.8.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -286,6 +286,21 @@ patterns find values without enforcing the rules.
 Exceptions sections stay outside the tables because they are not
 Requirements.
 
+#### W143 governance policies
+
+The governance control template and profile now carry the core policy
+sections, and `governance/policy` is bound. A script moved all 15 governance
+policies section by section, and the governance body fixtures use the core
+headings. The rules tables were written under the strict rules the operations
+policy review set, before any review: a row for every rule statement in
+Requirements and its subsections, `Forbidden:` naming the forbidden act, a
+check named only where the policy ties it to that rule, otherwise `none`, and
+Limits that agree with the table. A Rule ID is the upper-cased file stem with
+`-R` and its order, for example `BOOTSTRAP-R1`. Compared with `main`, the
+policies lost no body line; they changed only their `version` and `updated`
+values and gained the tables and Limits text. The profile test still named
+the old sections and now expects the core ones.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -367,13 +382,21 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Policy re-review approval | 137 | W143 | independent-review | Fix commits `3bd9a044c` and `a92dec37c` against the re-review | PASS | APPROVE at `a92dec37c`; N1, N2 and N4 fixed, N3 left as wording | required | Policy re-review |
 | Policy hosted candidate | 137 | W143 | hosted-candidate | PR 1065 candidate-core at `c38dec7de` | FAIL | `test_production_scripts_do_not_reference_tests_tree` flagged `metadata/lifecycle.py`: a comment from the W03-FORMS change named the fixture path literally; it also failed on main at `bbdca00d1` | required | - |
 | Policy hosted candidate fix | 137 | W143 | hosted-candidate | tests.validation.test_script_manifest after the comment names the tree in words | PASS | Module passed locally, exit 0; the hosted rerun is the next observation | required | Policy hosted candidate |
+| Policy hosted candidate rerun | 137 | W143 | hosted-candidate | PR 1065 checks at `a237c0df4` | PASS | candidate-core, candidate-documents, candidate-quality, candidate-routing, CodeQL and GitGuardian pass; merged as `82cf41b9d` | required | Policy hosted candidate |
+| Governance form RED | 137 | W143 | role-design-binding | test_template_definition from the governance branch against `main` at `82cf41b9d` | FAIL | 44 tests, 1 failure: `governance/policy` unbound | required | - |
+| Governance form GREEN | 137 | W143 | role-design-binding | Same module with the control template and profile on the core, at `e7fc61911` | PASS | Part of the governance regression below | required | Governance form RED |
+| Governance move fidelity | 137 | W143 | document-move | 15 governance policies at `e7fc61911` against `82cf41b9d`: non-heading lines lost and added | PASS | Lost only the 29 frontmatter `version` and `updated` lines; added 29 frontmatter lines, 158 Limits lines and 15 tables | required | - |
+| Governance table verification | 137 | W143 | rule-table-verification | Rule rows in the 15 tables at `e7fc61911` | PASS | 768 rows, 0 negated `Forbidden:` rows | required | - |
+| Governance profile test | 137 | W143 | document-governance-regression | metadata.test_profile at `2a4331860`, before the profile test change | FAIL | 18 tests, 1 failure: the approval-boundary body test named the old sections | required | - |
+| Governance corpus | 137 | W143 | document-corpus | check-changed against `origin/main`, check-contracts, governance contract, provider surface renderer, link alignment and markdownlint at `e7fc61911` | PASS | 16 changed and 0 violations; 0 contract violations; governance contract, renderer and alignment PASS; 0 lint issues | required | - |
 
 ### Resolution Links
 
 Conformance GREEN resolves Conformance RED, and Foundation re-review resolves
 Foundation review. Runbook form GREEN, Reference table GREEN, Runbook
 regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
-Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Policy review approval, Policy re-review approval, Incident regression rerun, Review fix GREEN, Review fix
+Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Policy review approval, Policy re-review approval, Policy hosted candidate
+rerun, Governance form GREEN, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
 rows. The comparison baseline stays
 open until every role group conforms.
