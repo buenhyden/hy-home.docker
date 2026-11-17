@@ -1,10 +1,10 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.13.0"
+version: "0.15.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0081"
 parent_ids:
@@ -441,6 +441,7 @@ re-review approved.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0081 | draft | ready | #inputs-and-authority |
 | SPEC-0212-TSK-0081 | ready | in-progress | #adoption-design |
+| SPEC-0212-TSK-0081 | in-progress | completed | #criterion-decisions |
 
 ### Blockers and Decisions
 
@@ -457,6 +458,7 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Core comparison baseline | 137 | W142 | role-design-export | Workspace export at `fdb92cd82` through the package `compare_template_contracts.py --workspace-root` | FAIL | MISMATCH for 19 of 19 roles, 20 unmapped forms, exit 1 | required | - |
 | Comparison negatives | 137 | W142 | role-design-export-negative | Changed hash, missing digest, inexact revision and declared core with local tables | PASS | Three INVALID_INPUT and one MISMATCH, as designed | required | - |
+| Core comparison conforming export | 137 | W142 | role-design-export | Workspace export at `e4f4f3e73`, after W143 to W147 merged, through the package `compare_template_contracts.py --workspace-root`; the export takes each bound role's contract from the pinned core (SHA-256 checked against the Registry pin) and labels each observed template section and table with its core id | PASS | 0 differences and 0 missing roles over 19 core roles; all 30 bound local templates match their core role; the tool reports INCOMPLETE only for the 13 templates the Registry classifies as domain or native, as T99 step 5 allows | required | Core comparison baseline |
 | Conformance RED | 137 | W142 | role-design-conformance | RoleDesignConformanceTests before the implementation | ERROR | `role_design_findings` did not exist, exit 1 | required | - |
 | Conformance GREEN | 137 | W142 | role-design-conformance | test_template_definition with the pinned core and classified roles | PASS | 35 tests, exit 0 | required | Conformance RED |
 | Contract wiring | 137 | W142 | document-contracts | check-document-metadata.py --mode check-contracts, then with one byte appended to the core | PASS | 0 violations; the changed core gave `role-design-source-changed`, exit 1; restored | required | - |
@@ -526,6 +528,7 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Governance corpus | 137 | W143 | document-corpus | check-changed against `origin/main`, check-contracts, governance contract, provider surface renderer, link alignment and markdownlint at `e7fc61911` | PASS | 16 changed and 0 violations; 0 contract violations; governance contract, renderer and alignment PASS; 0 lint issues | required | - |
 | Acceptance record | 137 | W143 | hosted-candidate | PR 1066 at `332efd5bf`, with criterion 137 recorded as accepted | FAIL | candidate-core: Criterion Acceptance cited a phrase, not Evidence rows; candidate-documents lifecycle public tests failed on the same package; candidate-quality aggregates both. With exact citations the local check reported `accepted criterion 137 has an unresolved required observation` (Core comparison baseline) | required | - |
 | Acceptance record fix | 137 | W143 | document-corpus | check-changed against `origin/main` and tests.validation.lifecycle.test_public with criterion 137 kept pending and the owner's statement in Decision | PASS | 17 changed and 0 violations; 6 tests, exit 0; the hosted rerun is the next observation | required | - |
+| Acceptance record hosted rerun | 137 | W143 | hosted-candidate | PR 1066 checks at `9c4093232`, with criterion 137 kept pending | PASS | candidate-core, candidate-documents, candidate-quality, candidate-routing, CodeQL and GitGuardian pass; merged as `3d53456da` | required | Acceptance record |
 | Governance review | 137 | W143 | independent-review | Commits `b020c2dc9`, `2a4331860`, `e7fc61911` and the TSK-0081 record | FAIL | CHANGES_REQUIRED: unsupported Enforcement and Evidence cells, missing Requirements rules, Limits contradicting the table or policy, modality errors, Mechanisms rows in three policies, no governance old-form test, template prompts asking for `manual` | required | - |
 | Governance old-form RED | 137 | W143 | role-design-binding | metadata.test_heading old-form test with governance policy cases against `main` at `82cf41b9d` | FAIL | 4 governance subtests failed: the old headings were accepted | required | - |
 | Governance old-form GREEN | 137 | W143 | role-design-binding | Same test on the branch, then test_template_definition and test_registry with the template prompts changed, before `c19cb34fe` and `fbb211eeb` | PASS | 1 test, exit 0; 213 tests, exit 0; check-contracts 0 violations | required | Governance old-form RED |
@@ -562,6 +565,7 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | SDLC forms aligned header GREEN | 137 | W146 | requirements-table | test_requirements after the header is matched by its cell labels, at `3ba5d78b4` | PASS | 29 tests, exit 0 | required | SDLC forms aligned header RED |
 | SDLC forms hosted candidate rerun | 137 | W146 | hosted-candidate | PR 1069 checks at `c01881150`, after the pending-role fixture fix | PASS | candidate-core, candidate-documents, candidate-quality, candidate-routing, CodeQL and GitGuardian pass | required | SDLC forms hosted candidate |
 | SDLC forms re-review approval | 137 | W146 | independent-review | Fix ranges `96112a806..0b55dc47b` and `0b55dc47b..c01881150` against the SDLC forms review and re-review | PASS | APPROVE at `c01881150`; findings 1 to 12 and the four re-review findings fixed; nit 5 kept as faithful to the declaration | required | SDLC forms re-review |
+| SDLC forms review approval | 137 | W146 | independent-review | The same final re-review, against the first SDLC forms review | PASS | APPROVE at `c01881150`; findings 1 to 12 of the first review fixed | required | SDLC forms review |
 | READMEs form RED | 137 | W145 | role-design-binding | test_template_definition and metadata.test_heading with only the README test changes, run by the drafting agent in a scratch clone of `82cf41b9d`, then the follow-up test changes on `424177119` | FAIL | 163 tests, 57 failures (stage-readme unbound, old headings accepted, path tables under the old headings); follow-up 28 tests, 29 subtest failures for the four index profiles | required | - |
 | READMEs move fidelity | 137 | W145 | document-move | 216 READMEs at the README branch head against `82cf41b9d`, non-heading lines changed and added | PASS | 43 deliberate changes: 25 prose references and 9 links to removed sections, 3 table headers, 2 lines naming the old path table, 4 lines that said no template existed; 1067 lines added | required | - |
 | READMEs first regression | 137 | W145 | document-governance-regression | The ten governance modules, test_script_manifest, test_language and test_lab_controller at `0357d8473`, before the review fixes | PASS | 889 tests in 1713 seconds, exit 0 | required | - |
@@ -573,6 +577,7 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | READMEs declaration RED | 137 | W145 | protected-research-declaration | tests.lib.document_governance.test_references at `ec69b65fb` | FAIL | 21 tests, 1 failure: test_declaration_pins_no_count_hash_or_commit matched a commit hash | required | - |
 | READMEs declaration GREEN | 137 | W145 | protected-research-declaration | Same module after the reader ends the section at its own heading level | PASS | 21 tests, exit 0 | required | READMEs declaration RED |
 | READMEs hosted candidate rerun | 137 | W145 | hosted-candidate | PR 1070 checks at `9c6338656`, after the declaration reader fix | PASS | candidate-core, candidate-documents, candidate-quality, candidate-routing, CodeQL and GitGuardian pass; merged as `c3ab1e7c3` | required | READMEs hosted candidate |
+| READMEs form GREEN | 137 | W145 | role-design-binding | The whole document governance test folder, including test_template_definition and metadata.test_heading, at `9c6338656` in a separate worktree | PASS | 1066 tests in 1979 seconds, exit 0 | required | READMEs form RED |
 | Package generation RED | 137 | W147 | role-design-binding | CorePackageGenerationTests, test_registry, RoleDesignConformanceTests and metadata.test_heading at the test-only commit `b604a5635` on `82cf41b9d` | FAIL | 313 tests, 13 failures and 5 errors: no corpus_generation helper, lifecycle generation 7, spec unbound, core plan headers rejected | required | - |
 | Package generation first regression | 137 | W147 | document-governance-regression | The ten governance modules, test_script_manifest, test_relations, test_generation7, test_generation6 and test_language at `6d4e1d406`, before the review fixes | PASS | 852 tests in 1734 seconds, exit 0 | required | - |
 | Package generation corpus | 137 | W147 | document-corpus | check-changed, check-contracts, link alignment and navigation, corpus lifecycle, governance contract, renderer and markdownlint at `6d4e1d406`; check-changed against `origin/main` `a3fbbbd1c` at `70421ccf0` after the rebase | PASS | 6 then 7 changed and 0 violations; contracts and lifecycle 0; alignment, navigation, governance contract and renderer PASS; 0 lint issues | required | - |
@@ -582,6 +587,7 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Package generation re-review | 137 | W147 | independent-review | Fix range `6d4e1d406..a0cf7b95c` against the package generation review | PASS | APPROVE; all nine findings closed | required | Package generation review |
 | Package generation rebase fixtures | 137 | W147 | role-design-binding | test_template_definition after the rebase on `c3ab1e7c3`, which binds the last pending roles | FAIL | 44 tests: 5 StopIteration errors in the pending-role fixtures and 1 failure because the dictionary test's README role is now bound | required | - |
 | Package generation rebase fixtures GREEN | 137 | W147 | role-design-binding | The same module after the fixture helper returns a bound role to pending in its own Registry copy and the dictionary test uses the vocabulary domain role, at `cac8b54af` | PASS | 44 tests, exit 0; check-changed 8 changed and 0 violations after the templates README rose to 2.11.0 | required | Package generation rebase fixtures |
+| Package generation GREEN | 137 | W147 | role-design-binding | The whole document governance test folder, including CorePackageGenerationTests, test_registry, test_template_definition and metadata.test_heading, at `ebd97a8ba` in a separate worktree | PASS | 1078 tests in 1860 seconds, exit 0 | required | Package generation RED |
 
 ### Resolution Links
 
@@ -591,8 +597,9 @@ regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
 Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Policy review approval, Policy re-review approval, Policy hosted candidate
 rerun, Governance form GREEN, Governance regression, Governance old-form GREEN, Governance re-review, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
-rows, References form GREEN and References re-review resolve their W144 rows, Agent instructions form GREEN and Agent instructions re-review resolve their W145 rows, and SDLC forms GREEN, SDLC forms aligned header GREEN, SDLC forms hosted candidate rerun and SDLC forms re-review approval resolve their W146 rows, READMEs re-review, READMEs declaration GREEN and READMEs hosted candidate rerun resolve their W145 README rows, and Package generation re-review, Package generation review fix GREEN and Package generation rebase fixtures GREEN resolve their W147 rows. The comparison baseline stays
-open until every role group conforms.
+rows, References form GREEN and References re-review resolve their W144 rows, Agent instructions form GREEN and Agent instructions re-review resolve their W145 rows, and SDLC forms GREEN, SDLC forms aligned header GREEN, SDLC forms hosted candidate rerun and SDLC forms re-review approval resolve their W146 rows, READMEs re-review, READMEs declaration GREEN and READMEs hosted candidate rerun resolve their W145 README rows, and Package generation re-review, Package generation review fix GREEN and Package generation rebase fixtures GREEN resolve their W147 rows. Acceptance record hosted rerun, SDLC forms review approval, READMEs form
+GREEN and Package generation GREEN resolve their remaining rows, and Core comparison conforming export
+resolves the comparison baseline.
 
 ## Acceptance Decision
 
@@ -600,13 +607,13 @@ open until every role group conforms.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 137 | pending | Conformance GREEN, Contract wiring, Foundation re-review, Incident re-review, Runbook review approval, Guide review approval, Policy review approval, Governance regression | Owner @buenhyden stated acceptance on 2026-11-17 in this chat; the validator rejects `accepted` while the required Core comparison baseline is unresolved, and the owner chose to keep it pending until the conforming export resolves that baseline | @buenhyden |
+| 137 | accepted | Conformance GREEN, Contract wiring, Core comparison conforming export, Foundation re-review, Incident re-review, Runbook review approval, Guide review approval, Policy review approval, Governance re-review, References re-review, Agent instructions re-review, SDLC forms re-review approval, READMEs re-review, Package generation re-review | Owner @buenhyden stated acceptance on 2026-11-17 and chose to keep it pending until a conforming export resolved the baseline; the export at `e4f4f3e73` conforms for every bound role | @buenhyden |
 
 ### Remaining Conditions
 
-W145 to W147 still move their role
-groups, each with its own review. The comparison baseline is resolved only by
-a later export that conforms for every bound role.
+Every role group is moved and bound; the remaining 13 templates are classified
+domain or native. The conforming export at `e4f4f3e73` resolves the comparison
+baseline.
 
 ## Handoff
 
@@ -618,4 +625,7 @@ role design contract as a version object.
 
 ### Next Owner
 
-The implementer owns W143 to W147. Criterion 137 becomes accepted when the conforming export resolves the baseline, as the owner chose.
+None for T99: W142 to W147 are merged and criterion 137 is accepted after the
+conforming export resolved the baseline, as the owner chose. The 13 domain and
+native templates stay classified by `core_exception`; a later change that gives
+one of them a core role owns its own move.
