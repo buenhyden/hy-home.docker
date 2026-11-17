@@ -624,10 +624,17 @@ def _pending_role(raw: dict) -> str:
     """A template role still awaiting its core move; bound roles cannot carry
     the exception the fixtures below change."""
 
+    roles = raw["template_roles"]
+    targets = [
+        role.get("core_role") or role.get("core_exception", {}).get("core_role")
+        for role in roles.values()
+    ]
+    # A target no other role names, so renaming it leaves that core role unmapped.
     return next(
         template_id
-        for template_id, role in sorted(raw["template_roles"].items())
+        for template_id, role in sorted(roles.items())
         if role.get("core_exception", {}).get("kind") == "pending-migration"
+        and targets.count(role["core_exception"]["core_role"]) == 1
     )
 
 
