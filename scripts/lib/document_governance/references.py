@@ -110,7 +110,7 @@ class Finding:
 PROTECTED_RESEARCH_PACKAGE = pathlib.PurePosixPath(
     "docs/90.references/research/0002-agentic-engineering-research-pack"
 )
-_DECLARATION_HEADING = "## Preservation Declaration"
+_DECLARATION_HEADING = re.compile(r"^(#{2,6}) Preservation Declaration[ \t]*$", re.M)
 _DECLARED_LEAF = re.compile(r"^- `([^`/][^`]*)`$")
 
 
@@ -121,11 +121,13 @@ def protected_research_declaration(root: pathlib.Path) -> str:
         pathlib.Path(root),
         PROTECTED_RESEARCH_PACKAGE / "README.md",
     ).decode("utf-8")
-    start = text.find(_DECLARATION_HEADING)
-    if start < 0:
+    heading = _DECLARATION_HEADING.search(text)
+    if heading is None:
         raise ValueError("protected research package declares no preservation section")
-    end = text.find("\n## ", start + len(_DECLARATION_HEADING))
-    return text[start:] if end < 0 else text[start:end]
+    # The section ends at the next heading of the same or a higher level.
+    level = len(heading.group(1))
+    following = re.compile(rf"^#{{1,{level}}} ", re.M).search(text, heading.end())
+    return text[heading.start() : following.start() if following else len(text)]
 
 
 def protected_research_paths(root: pathlib.Path) -> frozenset[str]:
