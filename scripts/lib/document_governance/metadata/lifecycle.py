@@ -69,7 +69,9 @@ from scripts.lib.document_governance.registry import (
     DocumentRegistry,
     FrontmatterValidator,
     RegistryError,
+    corpus_generation,
     document_type,
+    package_generation,
     preserved_origin_path,
     validate_frontmatter,
     validate_profile_values,
@@ -1547,11 +1549,20 @@ def _declares_execution_items(record: Record, common: Mapping[str, object]) -> b
     contract = common.get("execution_items")
     if (
         record.artifact_type != "task"
-        or common.get("lifecycle_generation", 0) < 6
+        or (corpus_generation(common) or 0) < 6  # type: ignore[operator]
         or not isinstance(contract, Mapping)
     ):
         return False
-    header = "| " + " | ".join(contract.get("table_headers", ())) + " |"
+    headers = tuple(contract.get("table_headers", ()))
+    placement = common.get("package_generations")
+    if package_generation(common, record.path) == 8 and isinstance(placement, Mapping):
+        # A generation 8 Task writes the core Execution Items columns.
+        headers = tuple(
+            label
+            for label in placement["core_columns"]["execution_items"]
+            if label is not None
+        )
+    header = "| " + " | ".join(headers) + " |"
     subsection = str(contract.get("subsection"))
     markers = {"### " + subsection, "#### " + subsection}
     try:

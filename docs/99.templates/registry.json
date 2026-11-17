@@ -238,7 +238,147 @@
       "Owner"
     ],
     "template_initial_version": "0.1.0",
-    "lifecycle_generation": 7,
+    "lifecycle_generation": 8,
+    "package_generations": {
+      "recorded_generation": 7,
+      "first_package": 271,
+      "recorded_sections": {
+        "spec": {
+          "required_sections": [
+            "Overview",
+            "Scope",
+            "Behavior Contract",
+            "Acceptance Criteria",
+            "References"
+          ],
+          "required_subsections": {
+            "Overview": [
+              "Intent",
+              "Owning Requirements"
+            ],
+            "Scope": [
+              "In Scope",
+              "Non-goals"
+            ],
+            "Behavior Contract": [
+              "Normal Behavior",
+              "Failure and Edge Cases"
+            ],
+            "Acceptance Criteria": [
+              "Criteria",
+              "Evidence Requirements"
+            ],
+            "References": [
+              "Normative and Evidence",
+              "Historical and Navigation"
+            ]
+          }
+        },
+        "plan": {
+          "required_sections": [
+            "Overview",
+            "Dependencies",
+            "Implementation Strategy",
+            "Verification Plan",
+            "Risks",
+            "Promotion Map"
+          ],
+          "required_subsections": {
+            "Overview": [
+              "Goal and Boundary",
+              "Assumptions"
+            ],
+            "Dependencies": [
+              "Prerequisites",
+              "Dependency Order"
+            ],
+            "Implementation Strategy": [
+              "Work Breakdown",
+              "Change and Rollback"
+            ],
+            "Verification Plan": [
+              "Verification Matrix",
+              "Stage Placement"
+            ],
+            "Risks": [
+              "Risks and Mitigations",
+              "Escalation"
+            ],
+            "Promotion Map": [
+              "Durable Meaning",
+              "Owner and Receipt"
+            ]
+          }
+        },
+        "task": {
+          "required_sections": [
+            "Scope",
+            "Execution Log",
+            "Verification Evidence",
+            "Acceptance Decision",
+            "Handoff"
+          ],
+          "required_subsections": {
+            "Scope": [
+              "Objective and Parent",
+              "Inputs and Authority"
+            ],
+            "Execution Log": [
+              "Work Performed",
+              "Blockers and Decisions"
+            ],
+            "Verification Evidence": [
+              "Results",
+              "Resolution Links"
+            ],
+            "Acceptance Decision": [
+              "Criterion Decisions",
+              "Remaining Conditions"
+            ],
+            "Handoff": [
+              "Promotion Receipt",
+              "Next Owner"
+            ]
+          }
+        }
+      },
+      "core_columns": {
+        "plan_columns": [
+          "Work Unit",
+          "Acceptance",
+          "Outcome",
+          "Depends On",
+          "Owner",
+          "Checks"
+        ],
+        "evidence_columns": [
+          "Evidence ID",
+          "Criteria",
+          "Work Unit",
+          "Command",
+          "Input",
+          "Result",
+          "Location",
+          "Required",
+          "Resolves"
+        ],
+        "criterion_acceptance_columns": [
+          "Criterion",
+          "Acceptance",
+          "Evidence",
+          "Decision",
+          "Current Owner"
+        ],
+        "execution_items": [
+          "Item",
+          "Work Unit",
+          null,
+          "Owner",
+          "Status",
+          "Blocker"
+        ]
+      }
+    },
     "task_lifecycle_events": {
       "section": "Work Log",
       "subsection": "Lifecycle Events",
@@ -1204,6 +1344,10 @@
           {
             "kind": "section",
             "ref": "spec:Overview/Owning Requirements"
+          },
+          {
+            "kind": "section",
+            "ref": "spec:Overview/Goal"
           }
         ],
         "owner": "scripts/validation/check-document-metadata.py",
@@ -1268,6 +1412,14 @@
           {
             "kind": "section",
             "ref": "plan:Promotion Map/Owner and Receipt"
+          },
+          {
+            "kind": "section",
+            "ref": "plan:Promotion Map/Durable Owners"
+          },
+          {
+            "kind": "section",
+            "ref": "plan:Promotion Map/Consumer Updates"
           }
         ],
         "owner": ".agents/governance/sdlc.md",
@@ -1725,30 +1877,25 @@
         "Overview",
         "Scope",
         "Behavior Contract",
-        "Acceptance Criteria",
-        "References"
+        "Acceptance Criteria"
       ],
       "optional_sections": [],
       "required_subsections": {
         "Overview": [
-          "Intent",
-          "Owning Requirements"
+          "Goal",
+          "Consumers"
         ],
         "Scope": [
           "In Scope",
-          "Non-goals"
+          "Out of Scope"
         ],
         "Behavior Contract": [
-          "Normal Behavior",
-          "Failure and Edge Cases"
+          "Inputs and Outputs",
+          "Failure Behavior"
         ],
         "Acceptance Criteria": [
           "Criteria",
-          "Evidence Requirements"
-        ],
-        "References": [
-          "Normative and Evidence",
-          "Historical and Navigation"
+          "Verification Strategy"
         ]
       },
       "lifecycle_id": "spec",
@@ -1908,9 +2055,8 @@
       "required_sections": [
         "Overview",
         "Dependencies",
-        "Implementation Strategy",
+        "Work Breakdown",
         "Verification Plan",
-        "Risks",
         "Promotion Map"
       ],
       "optional_sections": [],
@@ -1934,28 +2080,24 @@
       "nonempty_sections": true,
       "required_subsections": {
         "Overview": [
-          "Goal and Boundary",
-          "Assumptions"
+          "Outcome",
+          "Constraints"
         ],
         "Dependencies": [
           "Prerequisites",
-          "Dependency Order"
+          "Shared Resources"
         ],
-        "Implementation Strategy": [
-          "Work Breakdown",
-          "Change and Rollback"
+        "Work Breakdown": [
+          "Work Units",
+          "Dependency Edges"
         ],
         "Verification Plan": [
-          "Verification Matrix",
-          "Stage Placement"
-        ],
-        "Risks": [
-          "Risks and Mitigations",
-          "Escalation"
+          "Selected Checks",
+          "Evidence Plan"
         ],
         "Promotion Map": [
-          "Durable Meaning",
-          "Owner and Receipt"
+          "Durable Owners",
+          "Consumer Updates"
         ]
       }
     },
@@ -6860,14 +7002,16 @@
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
           "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
-          "tests.lib.document_governance.test_spec_packages:SpecPackageTests"
+          "tests.lib.document_governance.test_spec_packages:SpecPackageTests",
+          "tests.lib.document_governance.test_spec_packages:CorePackageGenerationTests"
         ],
         "negative": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
-          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_recorded_package_keeps_its_recorded_form"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -6879,15 +7023,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "Commit dd8fe8a5b (profile) and d18403ccc (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit dd8fe8a5b (profile) and d18403ccc (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text. Lifecycle generation 8 moved it to its role design core role: the template and profile took the core sections and tables for packages numbered from package_generations.first_package on, and the role was bound by core_role. Earlier packages keep the generation 7 form in package_generations.recorded_sections and none of their documents changed.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/plan.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/plan.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "plan"
-      }
+      "core_role": "plan"
     },
     "sdlc/proto": {
       "source": "docs/99.templates/templates/specs/contracts/service.template.proto",
@@ -7056,14 +7196,16 @@
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_every_definition_validates_against_the_schema",
           "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
-          "tests.lib.document_governance.test_spec_packages:SpecPackageTests"
+          "tests.lib.document_governance.test_spec_packages:SpecPackageTests",
+          "tests.lib.document_governance.test_spec_packages:CorePackageGenerationTests"
         ],
         "negative": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
-          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_recorded_package_keeps_its_recorded_form"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -7075,15 +7217,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "Commit 78475f8df moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit 78475f8df moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text. Lifecycle generation 8 moved it to its role design core role: the template and profile took the core sections and tables for packages numbered from package_generations.first_package on, and the role was bound by core_role. Earlier packages keep the generation 7 form in package_generations.recorded_sections and none of their documents changed.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/spec.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/spec.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "spec"
-      }
+      "core_role": "spec"
     },
     "sdlc/task": {
       "source": "docs/99.templates/templates/specs/task.template.md",
@@ -7131,14 +7269,16 @@
           "tests.lib.document_governance.test_registry:DocumentRegistryTests.test_registered_templates_use_one_placeholder_grammar",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_every_declaring_profile_accepts_its_own_contract",
           "tests.lib.document_governance.test_spec_packages:SpecPackageTests",
-          "tests.lib.document_governance.test_spec_packages:TerminalTaskBodyTests"
+          "tests.lib.document_governance.test_spec_packages:TerminalTaskBodyTests",
+          "tests.lib.document_governance.test_spec_packages:CorePackageGenerationTests"
         ],
         "negative": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_a_missing_required_field_is_rejected",
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_empty_headings_are_rejected",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_missing_required_section_is_reported",
           "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_an_unregistered_section_is_reported",
-          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form"
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_moved_role_rejects_its_old_form",
+          "tests.lib.document_governance.metadata.test_heading:RegisteredSectionContractTests.test_a_recorded_package_keeps_its_recorded_form"
         ],
         "regression": [
           "tests.lib.document_governance.test_template_definition:TemplateDefinitionTests.test_authored_references_resolve",
@@ -7150,15 +7290,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "Commit 6e16c0c4d (profile) and ae4df1873 (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit 6e16c0c4d (profile) and ae4df1873 (documents) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text. Lifecycle generation 8 moved it to its role design core role: the template and profile took the core sections and tables for packages numbered from package_generations.first_package on, and the role was bound by core_role. Earlier packages keep the generation 7 form in package_generations.recorded_sections and none of their documents changed.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/specs/task.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/specs/task.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "task"
-      }
+      "core_role": "task"
     }
   },
   "lifecycles": {

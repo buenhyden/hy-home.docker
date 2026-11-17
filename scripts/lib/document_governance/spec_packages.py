@@ -24,10 +24,12 @@ from scripts.lib.document_governance.frontmatter import (
 from scripts.lib.document_governance.registry import (
     DocumentRegistry,
     RegistryError,
+    corpus_generation,
     document_type,
     load_registry,
     load_registry_at_revision,
     load_registry_document_at_revision,
+    package_generation,
     validate_registry,
     validate_registry_at_revision,
 )
@@ -480,6 +482,108 @@ def _read_regular_utf8_at(
     )
 
 
+def _corpus(common: Mapping[str, object], default: object = None) -> object:
+    """The generation the recorded packages follow; see corpus_generation."""
+
+    value = corpus_generation(common)
+    return default if value is None else value
+
+
+# Lifecycle generation 8: a package numbered from
+# `package_generations.first_package` on writes the core Spec, Plan and Task
+# tables. Each is read with its core columns and values, then projected onto
+# the recorded columns through `package_generations.core_columns`, so the
+# evidence and acceptance rules read one shape for every generation.
+_CORE_TABLES = {
+    "plan_columns": ("sdlc/plan", "plan.work_units"),
+    "evidence_columns": ("sdlc/task", "task.evidence"),
+    "criterion_acceptance_columns": ("sdlc/task", "task.acceptance"),
+    "execution_items": ("sdlc/task", "task.work_items"),
+}
+_RECORDED_VALUES = {("Required", "true"): "required", ("Required", "false"): "optional"}
+_CORE_EXIT = re.compile(r"-|0|-?[1-9][0-9]*")
+
+
+def _is_generation_8(registry: DocumentRegistry, path: object) -> bool:
+    return package_generation(registry.common, str(path)) == 8
+
+
+def _core_table_rows(
+    lines: Sequence[str],
+    registry: DocumentRegistry,
+    key: str,
+    *,
+    strict_contiguity: bool = True,
+) -> tuple[tuple[str, ...], ...]:
+    from scripts.lib.document_governance.template_definition import (
+        core_role_definition,
+    )
+
+    template_id, table_id = _CORE_TABLES[key]
+    try:
+        core = core_role_definition(registry, template_id)
+    except RegistryError as error:
+        raise SpecPackageError(str(error)) from error
+    placement = registry.common.get("package_generations")
+    sources = (
+        placement.get("core_columns", {}).get(key)  # type: ignore[union-attr]
+        if isinstance(placement, Mapping)
+        else None
+    )
+    if core is None or not sources:
+        raise SpecPackageError(
+            f"generation 8 requires {template_id} bound to its core role"
+        )
+    table = next(
+        (item for item in core["tables"] if item["table_id"] == table_id),  # type: ignore[union-attr]
+        None,
+    )
+    if table is None:
+        raise SpecPackageError(f"core role has no table {table_id}")
+    columns = table["columns"]
+    headers = tuple(str(column["label"]) for column in columns)
+    if any(source is not None and source not in headers for source in sources):
+        raise SpecPackageError(f"package_generations maps {key} to unknown columns")
+    projected: list[tuple[str, ...]] = []
+    for row in _registered_table_rows(
+        lines, headers, strict_contiguity=strict_contiguity
+    ):
+        values = dict(zip(headers, row, strict=True))
+        for column in columns:
+            label = str(column["label"])
+            allowed = column.get("allowed_values")
+            if allowed is not None and values[label] not in {
+                ("true" if item else "false") if isinstance(item, bool) else str(item)
+                for item in allowed
+            }:
+                raise SpecPackageError(
+                    f"core {table_id} {label} is outside its core values"
+                )
+            if (
+                column.get("value_type") == "integer-or-none"
+                and _CORE_EXIT.fullmatch(values[label]) is None
+            ):
+                raise SpecPackageError(
+                    f"core {table_id} {label} must be an integer or -"
+                )
+        if (
+            values.get("Result") in {"NOT_RUN", "CANCELLED"}
+            and values.get("Exit") != "-"
+        ):
+            raise SpecPackageError(
+                f"core {table_id} Exit must be - for a check that did not run"
+            )
+        projected.append(
+            tuple(
+                "-"
+                if source is None
+                else _RECORDED_VALUES.get((source, values[source]), values[source])
+                for source in sources
+            )
+        )
+    return tuple(projected)
+
+
 def _validate_registry_contract(registry: DocumentRegistry) -> None:
     for profile_id, expected in _EXPECTED_PROFILES.items():
         profile = registry.profiles.get(profile_id)
@@ -537,7 +641,7 @@ def _allowed_statuses(
         raise SpecPackageError(
             f"Stage 99 lifecycle statuses are malformed: {lifecycle_id}"
         )
-    if registry.common.get("lifecycle_generation", 0) >= 6:
+    if _corpus(registry.common, 0) >= 6:
         # Preserved and historical packages keep the statuses that generation 6
         # normalized away; current packages are held to the lifecycle by
         # _validate_parent_authority.
@@ -582,7 +686,7 @@ def _parse_document(
         )
     status = record.metadata.get("status")
     items: tuple[tuple[str, ...], ...] = ()
-    if profile_id == "task" and registry.common.get("lifecycle_generation", 0) >= 6:
+    if profile_id == "task" and _corpus(registry.common, 0) >= 6:
         items = _execution_item_rows(record.body, registry, relative)
         if items:
             if "status" in record.metadata:
@@ -709,7 +813,7 @@ def _validate_execution_states(
     tasks: tuple[SpecDocument, ...],
     registry: DocumentRegistry | None = None,
 ) -> None:
-    if registry is not None and registry.common.get("lifecycle_generation", 0) >= 6:
+    if registry is not None and _corpus(registry.common, 0) >= 6:
         _validate_parent_authority(spec, plan, tasks)
         return
     if plan is None:
@@ -1388,13 +1492,12 @@ def _v5_plan_rows(
         "Verification",
     ):
         raise SpecPackageError("generation 5 Plan columns are not canonical")
-    return _registered_table_rows(
-        _contract_section(
-            plan.body, _registered_common_section(registry, "plan_section")
-        ),
-        headers,
-        strict_contiguity=True,
+    lines = _contract_section(
+        plan.body, _registered_common_section(registry, "plan_section")
     )
+    if _is_generation_8(registry, plan.path):
+        return _core_table_rows(lines, registry, "plan_columns")
+    return _registered_table_rows(lines, headers, strict_contiguity=True)
 
 
 def _v5_evidence_rows(
@@ -1598,7 +1701,13 @@ def _execution_item_rows(
         body, str(contract.get("section")), str(contract.get("subsection"))
     )
     try:
-        rows = _registered_table_rows(lines, headers)
+        rows = (
+            _core_table_rows(
+                lines, registry, "execution_items", strict_contiguity=False
+            )
+            if _is_generation_8(registry, relative)
+            else _registered_table_rows(lines, headers)
+        )
     except SpecPackageError as error:
         raise SpecPackageError(f"{relative}: Execution Items: {error}") from error
     if not rows:
@@ -1634,36 +1743,34 @@ def _execution_item_rows(
 def _v6_evidence_rows(
     task: SpecDocument, registry: DocumentRegistry
 ) -> tuple[tuple[str, ...], ...]:
-    generation = registry.common.get("lifecycle_generation", 6)
+    generation = _corpus(registry.common, 6)
     headers = _registered_common_values(
         registry, "evidence_columns", 9 if generation >= 7 else 8
     )
     if headers[-1] != "Resolves":
         raise SpecPackageError("generation 6 Evidence columns are not canonical")
-    return _registered_table_rows(
-        _contract_section(
-            task.body, _registered_common_section(registry, "task_section")
-        ),
-        headers,
-        strict_contiguity=True,
+    lines = _contract_section(
+        task.body, _registered_common_section(registry, "task_section")
     )
+    if _is_generation_8(registry, task.path):
+        return _core_table_rows(lines, registry, "evidence_columns")
+    return _registered_table_rows(lines, headers, strict_contiguity=True)
 
 
 def _criterion_acceptance_rows(
     task: SpecDocument, registry: DocumentRegistry
 ) -> tuple[tuple[str, ...], ...]:
-    generation = registry.common.get("lifecycle_generation", 6)
+    generation = _corpus(registry.common, 6)
     headers = _registered_common_values(
         registry, "criterion_acceptance_columns", 5 if generation >= 7 else 4
     )
-    return _registered_table_rows(
-        _contract_section(
-            task.body,
-            _registered_common_section(registry, "criterion_acceptance_section"),
-        ),
-        headers,
-        strict_contiguity=True,
+    lines = _contract_section(
+        task.body,
+        _registered_common_section(registry, "criterion_acceptance_section"),
     )
+    if _is_generation_8(registry, task.path):
+        return _core_table_rows(lines, registry, "criterion_acceptance_columns")
+    return _registered_table_rows(lines, headers, strict_contiguity=True)
 
 
 def _historical_pass_pairs(
@@ -1808,7 +1915,7 @@ def _v6_evidence_contract(
             live_pass.update(admitted)
             continue
         task_registry = task.evidence_registry or registry
-        generation = task_registry.common.get("lifecycle_generation", 6)
+        generation = _corpus(task_registry.common, 6)
         task_results = frozenset(
             _registered_common_values(task_registry, "result_domain")
         )
@@ -2109,7 +2216,12 @@ def _promotion_findings(package: SpecPackage) -> tuple[str, ...]:
             _PROMOTION_TARGET.findall(
                 "\n".join(
                     line
-                    for subsection in ("Durable Meaning", "Owner and Receipt")
+                    for subsection in (
+                        "Durable Meaning",
+                        "Owner and Receipt",
+                        "Durable Owners",
+                        "Consumer Updates",
+                    )
                     for line in _subsection_lines(
                         package.plan.body, "Promotion Map", subsection
                     )
@@ -2208,7 +2320,7 @@ def _validate_task_item_evidence(
     ]
     | None = None,
 ) -> PackageEvidence | None:
-    if registry.common.get("lifecycle_generation", 0) >= 6:
+    if _corpus(registry.common, 0) >= 6:
         return _v6_evidence_contract(
             spec,
             plan,
@@ -2217,7 +2329,7 @@ def _validate_task_item_evidence(
             historical_tasks,
             historical_completed_pairs,
         )
-    if registry.common.get("lifecycle_generation") == 5:
+    if _corpus(registry.common) == 5:
         _v5_evidence_contract(
             spec,
             plan,
@@ -2493,7 +2605,7 @@ def _validate_completion_evidence(
     """Check structural coverage only; reported results are not execution proof."""
     if spec.status != "completed":
         return
-    if registry.common.get("lifecycle_generation") == 5:
+    if _corpus(registry.common) == 5:
         if plan is None or plan.status != "completed" or not tasks:
             raise SpecPackageError(
                 "completion requires a completed Plan and Task evidence"
@@ -2820,7 +2932,7 @@ def _load_package(
             for task in tasks:
                 if task.status != "cancelled":
                     continue
-                generation = int(registry.common.get("lifecycle_generation", 4))
+                generation = int(_corpus(registry.common, 4))
                 heading = (
                     _registered_common_section(registry, "spec_section")
                     if generation >= 5
@@ -2910,10 +3022,7 @@ def _v5_historical_admission(
     ):
         raise SpecPackageError("generation 5 source Registry is invalid")
     source_common = source_registry.get("common")
-    if (
-        not isinstance(source_common, Mapping)
-        or source_common.get("lifecycle_generation") != 4
-    ):
+    if not isinstance(source_common, Mapping) or _corpus(source_common) != 4:
         raise SpecPackageError(
             "generation 5 migration source must be lifecycle generation 4"
         )
@@ -3145,10 +3254,7 @@ def previous_generation_revision(
     for revision in revisions:
         raw = load_registry_document_at_revision(revision, root=root)
         common = raw.get("common")
-        if (
-            isinstance(common, Mapping)
-            and common.get("lifecycle_generation") == generation - 1
-        ):
+        if isinstance(common, Mapping) and _corpus(common) == generation - 1:
             _validate_source_registry(
                 raw, generation, source_revision=revision, root=root
             )
@@ -3336,7 +3442,7 @@ def load_spec_packages(
     defer_v5_evidence = (
         _completion_evidence
         and _current_contracts
-        and active_registry.common.get("lifecycle_generation") in {5, 6, 7}
+        and _corpus(active_registry.common) in {5, 6, 7}
     )
     parent_descriptor, descriptor, stage_name, snapshot = _open_directory_path(
         stage_root,
@@ -3409,7 +3515,7 @@ def load_spec_packages(
             # From generation 7 the migration proofs are read from the
             # generation 6 tree, so a proof package may leave the working tree.
             proof_packages: tuple[SpecPackage, ...] | None = None
-            if active_registry.common.get("lifecycle_generation", 0) >= 7:
+            if _corpus(active_registry.common, 0) >= 7:
                 _historical_context = (
                     _historical_context or HistoricalSpecSnapshotContext()
                 )
@@ -3436,7 +3542,7 @@ def load_spec_packages(
                 _historical_context,
                 proof_packages,
             )
-            if active_registry.common.get("lifecycle_generation", 0) >= 6:
+            if _corpus(active_registry.common, 0) >= 6:
                 historical_tasks, historical_completed_pairs = _v6_historical_admission(
                     stage_root,
                     packages,
@@ -3447,7 +3553,7 @@ def load_spec_packages(
                     proof_packages,
                 )
                 source_semantics = {}
-            if active_registry.common.get("lifecycle_generation", 0) >= 7:
+            if _corpus(active_registry.common, 0) >= 7:
                 assert proof_packages is not None
                 historical_tasks, historical_completed_pairs = _v7_historical_admission(
                     stage_root,
@@ -3846,7 +3952,7 @@ def _snapshot_document(
     if (
         profile_id == "task"
         and registry is not None
-        and registry.common.get("lifecycle_generation", 0) >= 6
+        and _corpus(registry.common, 0) >= 6
     ):
         items = _execution_item_rows(record.body, registry, path)
         if items:
@@ -4105,11 +4211,7 @@ def _migration_proof(
         for proof in proofs:
             raw = load_registry_document_at_revision(proof.source_revision, root=root)
             common = raw.get("common")
-            source_generation = (
-                common.get("lifecycle_generation")
-                if isinstance(common, Mapping)
-                else None
-            )
+            source_generation = _corpus(common) if isinstance(common, Mapping) else None
             if source_generation == expected_source_generation:
                 matching.append(proof)
         proofs = matching
@@ -4127,7 +4229,7 @@ def resolve_contract_migration_source(
 ) -> str:
     """Resolve proven historical type provenance without changing lifecycle baselines."""
 
-    if target_generation != 5 or registry.common.get("lifecycle_generation") not in {
+    if target_generation != 5 or _corpus(registry.common) not in {
         5,
         6,
         7,
@@ -4215,7 +4317,7 @@ def _generation_integration(
         current_common = current_registry.get("common")
         if (
             not isinstance(current_common, Mapping)
-            or current_common.get("lifecycle_generation") != target_generation
+            or _corpus(current_common) != target_generation
         ):
             continue
         try:
@@ -4225,7 +4327,7 @@ def _generation_integration(
         main_common = main_registry.get("common")
         if (
             isinstance(main_common, Mapping)
-            and main_common.get("lifecycle_generation") == target_generation
+            and _corpus(main_common) == target_generation
         ):
             continue
         ancestor = (
@@ -4266,7 +4368,7 @@ def _validate_source_registry(
     if not isinstance(common, Mapping):
         raise SpecPackageError("migration source Registry common contract is missing")
     if target_generation in {5, 6, 7}:
-        if common.get("lifecycle_generation") != target_generation - 1:
+        if _corpus(common) != target_generation - 1:
             raise SpecPackageError(
                 f"generation {target_generation} migration source must be "
                 f"lifecycle generation {target_generation - 1}"
@@ -4378,7 +4480,7 @@ def _generation_normalizations(
             continue
         if document.profile_id not in {"spec", "plan"}:
             continue
-        if registry.common.get("lifecycle_generation", 0) >= 6:
+        if _corpus(registry.common, 0) >= 6:
             if (document.profile_id, before.status, document.status) not in registered:
                 raise SpecPackageError(
                     f"unsupported lifecycle generation normalization: {path}"
@@ -5173,7 +5275,7 @@ def _validate_current_reconciliation(
     target, carrier = targets[0], carriers[0]
     registered = (
         _registered_normalizations(registry)
-        if registry.common.get("lifecycle_generation", 0) >= 6
+        if _corpus(registry.common, 0) >= 6
         else frozenset()
     )
     normalized_away = {(profile, source) for profile, source, _ in registered}
@@ -5423,7 +5525,7 @@ def _validate_task_lifecycle_events(
         prefix = prefix_by_name.get(package.spec.path.parts[2])
         prefix_tasks = {task.path: task for task in prefix.tasks} if prefix else {}
         closure_needs_authority = (
-            registry.common.get("lifecycle_generation", 0) >= 7
+            _corpus(registry.common, 0) >= 7
             and package.plan is not None
             and (package.spec.status, package.plan.status) != ("approved", "approved")
         )
@@ -5755,7 +5857,7 @@ def _acceptance_basis(
             if row[-1] != "-"
             for target in _cell_references(row[-1], "Evidence Resolves")
         }
-        generation = task_registry.common.get("lifecycle_generation", 6)
+        generation = _corpus(task_registry.common, 6)
         evidence = tuple(
             (
                 name,
@@ -5795,14 +5897,14 @@ def _acceptance_findings(
     left as recorded stands, so the rule never reaches back.
     """
 
-    if previous_registry.common.get("lifecycle_generation", 0) < 6:
+    if _corpus(previous_registry.common, 0) < 6:
         return ()
     base = {package.spec.artifact_id: package for package in previous}
     findings: list[SpecPackageFinding] = []
     for package in current:
         earlier = base.get(package.spec.artifact_id)
         if (
-            registry.common.get("lifecycle_generation", 0) >= 7
+            _corpus(registry.common, 0) >= 7
             and package.evidence is not None
             and package.plan is not None
             and (package.spec.status, package.plan.status) != ("approved", "approved")
@@ -5854,7 +5956,7 @@ def _failed_observation_findings(
     registry: DocumentRegistry,
 ) -> tuple[SpecPackageFinding, ...]:
     """Keep failed observations while allowing later resolution and pending work."""
-    if previous_registry.common.get("lifecycle_generation", 0) < 6:
+    if _corpus(previous_registry.common, 0) < 6:
         return ()
     current_tasks = {task.path: task for package in current for task in package.tasks}
     findings: list[SpecPackageFinding] = []
@@ -5906,7 +6008,7 @@ def validate_repository_spec_package_lifecycle_details(
         context=_historical_context,
     )
     registry = registry if registry is not None else load_registry()
-    generation = registry.common.get("lifecycle_generation")
+    generation = _corpus(registry.common)
     current_surface = any(
         package.plan is not None
         and any(
@@ -5938,9 +6040,7 @@ def validate_repository_spec_package_lifecycle_details(
             base_registry = {}
         base_common = base_registry.get("common")
         base_generation = (
-            base_common.get("lifecycle_generation")
-            if isinstance(base_common, Mapping)
-            else None
+            _corpus(base_common) if isinstance(base_common, Mapping) else None
         )
         if previous and base_generation != generation:
             if generation == 7:
@@ -6062,7 +6162,7 @@ def validate_repository_spec_package_lifecycle_details(
         previous_registry = load_registry_at_revision(base_commit, root=root)
         observation_base = (
             _bind_legacy_evidence(previous, root, _historical_context)
-            if previous_registry.common.get("lifecycle_generation", 0) >= 7
+            if _corpus(previous_registry.common, 0) >= 7
             else previous
         )
         observation_findings = (

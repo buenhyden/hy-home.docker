@@ -53,6 +53,7 @@ from scripts.lib.document_governance.registry import (
     RegistryError,
     _declares_provider_binding,
     document_type,
+    recorded_package_profile,
     resolve_template_placeholders,
     validate_frontmatter,
     validate_profile_values,
@@ -1824,6 +1825,17 @@ def validate_body_contract(
             return []
         registered_profile = classify_registered_path(record.path.as_posix(), registry)
         profile = registry.profiles.get(record.artifact_type)
+        # A Spec Package numbered before lifecycle generation 8 keeps the form
+        # its generation recorded; its tables are read by spec_packages.
+        recorded = (
+            recorded_package_profile(
+                registry.common, record.artifact_type, profile, record.path
+            )
+            if isinstance(profile, Mapping)
+            else None
+        )
+        if recorded is not None:
+            profile = recorded
         if registered_profile == record.artifact_type and isinstance(profile, Mapping):
             section_findings.extend(
                 _registered_section_findings(record, text, profile, changed_boundary)
@@ -1833,9 +1845,12 @@ def validate_body_contract(
                 section_findings.extend(
                     _registered_readme_documents_findings(record, text, profile, common)
                 )
-            section_findings.extend(
-                _registered_table_findings(record, text, record.artifact_type, registry)
-            )
+            if recorded is None:
+                section_findings.extend(
+                    _registered_table_findings(
+                        record, text, record.artifact_type, registry
+                    )
+                )
             if registered_profile == "governance-vocabulary":
                 section_findings.extend(
                     _finding(record, finding.code, finding.message)
@@ -1920,6 +1935,24 @@ def validate_body_contract(
         roles = profiles.get("template_roles", {})
         candidate = roles.get(role_name, {}) if isinstance(roles, dict) else {}
         role = candidate if isinstance(candidate, dict) else None
+        recorded_form = (
+            recorded_package_profile(
+                registry.common,
+                record.artifact_type,
+                registry.profiles.get(record.artifact_type, {}),
+                record.path,
+            )
+            if isinstance(registry, DocumentRegistry)
+            else None
+        )
+        if role is not None and recorded_form is not None:
+            role = {
+                **role,
+                "required_headings": [
+                    f"## {section}"
+                    for section in recorded_form["required_sections"]  # type: ignore[union-attr]
+                ],
+            }
     else:
         return sorted(set(findings))
 
