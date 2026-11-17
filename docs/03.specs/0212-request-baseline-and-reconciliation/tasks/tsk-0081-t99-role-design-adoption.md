@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.6.2"
+version: "0.7.3"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -247,6 +247,45 @@ state; each now follows its guide. The Renovate Audience now names the
 reader its guide states. The old-form test now rejects the replaced guide
 headings.
 
+#### W143 operations policies
+
+The operations policy template and profile now carry the core sections, the
+template holds the always-required rules table under Requirements, and
+`operation/policy` is bound. A script moved all 77 operations policies section
+by section; no prose named a removed section, no anchor changed, and old
+titles the move left empty were removed in the same pass. The test fixture
+for a policy body now uses the core headings and the rules table header.
+
+Six writing agents drafted, from each policy only, a Limits text and a rules
+table with one row per top-level requirement: 851 rows. A Rule ID is the
+policy's `artifact_id` with `-R` and its order, which the policy did not have
+before; Enforcement and Evidence name a check or record the policy states,
+`수동` for a manual review, or `none`; the review fixes below replace these
+first tables. One draft lacked the required
+`필수:` prefix on a mandatory rule and gained it. Compared with the base,
+the policies lost no line and gained only that authored text; 15 Limits lists
+gained the blank line Markdown requires before a list.
+
+#### W143 operations policy review fixes
+
+The independent review found the first rules tables unreliable: twelve
+`금지:` rows stated the opposite of their rule, Enforcement cells named
+checks the policy never ties to the rule or that do not test it, and rules
+under `####` subsections were left out. Seven writing agents derived every
+table and Limits text again from the policy prose under stricter rules: a row
+for every rule statement in Requirements and its subsections, `금지:` naming
+the forbidden act, a check named only where the policy ties it to that rule,
+and Limits that agree with the table. Each draft cited the source lines of its rows. A
+script rejected uncited rows and negated `금지:` rows and flagged a named
+check missing from its cited line; four such ties and eleven loose ones were
+lowered to `none` or `수동` and listed in Limits, and two truncated rows were
+completed. The tables now hold 2415 rows, and no `금지:` row is negated. The re-review found twenty Limits line citations computed before the
+tables shifted the lines below them; they are removed. Three POL-0078 rows
+the catalog check names regain it, and POL-0045's Limits now says its `rg`
+patterns find values without enforcing the rules.
+Exceptions sections stay outside the tables because they are not
+Requirements.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -315,13 +354,26 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Guide review | 137 | W143 | independent-review | Commits `efd26a4d3`, `da9fc935d` and `2bf4ba56c` | FAIL | CHANGES_REQUIRED: 25 prose lines still name removed sections, a k6 failure outcome as Expected Result, a Storybook row reference off by three, constraints in five cells | required | - |
 | Guide review corpus | 137 | W143 | document-corpus | metadata.test_heading with the replaced guide headings, check-changed against `origin/main` and link alignment after the fixes | PASS | 119 tests, exit 0; 80 changed and 0 violations; alignment PASS | required | - |
 | Guide review approval | 137 | W143 | independent-review | Fix commits `e8ae10439` and `f94a0d4de` against the guide review | PASS | APPROVE at `f94a0d4de`; I1 to I3 and the applied minors fixed, the rest accepted with reasons | required | Guide review |
+| Policy form RED | 137 | W143 | role-design-binding | Bound policy role at `2bf4ba56c` | FAIL | Role unbound, exit 1 | required | - |
+| Policy form GREEN | 137 | W143 | role-design-binding | test_template_definition with the policy template and profile on the core | PASS | 44 tests, exit 0 | required | Policy form RED |
+| Policy move fidelity | 137 | W143 | document-move | 77 operations policies against base: non-heading lines lost and lines added beyond the authored Limits and tables | PASS | 0 lost and 0 unexplained; 851 rows | required | - |
+| Policy lint | 137 | W143 | document-corpus | markdownlint of the changed policies after the drafts were applied | FAIL | MD032 in 15 Limits lists without a blank line before the list | required | - |
+| Policy corpus | 137 | W143 | document-corpus | check-changed against `origin/main`, check-contracts, check-operations-catalog, link alignment and markdownlint after the blank lines | PASS | 158 changed and 0 violations, then 78 after rebase; 0 contract violations; catalog and alignment PASS; 0 lint issues | required | Policy lint |
+| Policy regression | 137 | W143 | document-governance-regression | test_registry, test_template_definition, metadata heading, reference and lifecycle, test_operations_catalog, test_metadata_validator, test_spec_packages and test_taxonomy | PASS | 713 tests, exit 0 | required | - |
+| Policy review | 137 | W143 | independent-review | Commits `b901796e3` and the TSK-0081 record | FAIL | CHANGES_REQUIRED: twelve inverted `금지:` rows, Enforcement cells naming checks the policy does not tie to the rule, rules under subsections missing | required | - |
+| Policy redraft verification | 137 | W143 | rule-table-verification | 77 redrafted tables through the verifying apply script, then check-changed, check-contracts, check-operations-catalog, link alignment and markdownlint | PASS | 2415 rows, 0 uncited, 0 negated `금지:`; 0 violations; catalog and alignment PASS; 0 lint issues | required | - |
+| Policy re-review | 137 | W143 | independent-review | Fix range `7e23e2acf` and `83fe20401` against the first review | FAIL | CHANGES_REQUIRED: I1 to I3 and M1 to M3 fixed; twenty Limits line citations point at shifted lines | required | - |
+| Policy review approval | 137 | W143 | independent-review | Fix commits `7e23e2acf`, `83fe20401`, `3bd9a044c` and `a92dec37c` against the first review | PASS | APPROVE at `a92dec37c`; I1 to I3 and M1 to M3 fixed | required | Policy review |
+| Policy re-review approval | 137 | W143 | independent-review | Fix commits `3bd9a044c` and `a92dec37c` against the re-review | PASS | APPROVE at `a92dec37c`; N1, N2 and N4 fixed, N3 left as wording | required | Policy re-review |
+| Policy hosted candidate | 137 | W143 | hosted-candidate | PR 1065 candidate-core at `c38dec7de` | FAIL | `test_production_scripts_do_not_reference_tests_tree` flagged `metadata/lifecycle.py`: a comment from the W03-FORMS change named the fixture path literally; it also failed on main at `bbdca00d1` | required | - |
+| Policy hosted candidate fix | 137 | W143 | hosted-candidate | tests.validation.test_script_manifest after the comment names the tree in words | PASS | Module passed locally, exit 0; the hosted rerun is the next observation | required | Policy hosted candidate |
 
 ### Resolution Links
 
 Conformance GREEN resolves Conformance RED, and Foundation re-review resolves
 Foundation review. Runbook form GREEN, Reference table GREEN, Runbook
 regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
-Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Incident regression rerun, Review fix GREEN, Review fix
+Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Policy review approval, Policy re-review approval, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
 rows. The comparison baseline stays
 open until every role group conforms.

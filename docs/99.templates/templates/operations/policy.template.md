@@ -16,27 +16,19 @@ next_review_at: "{{NEXT_REVIEW_AT}}"
 
 # {{TITLE}}
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
-{{POLICY_OBJECTIVE}}
+<!-- Author prompt: State the objective and link the implementation, requirement and decision that give this policy its authority. -->
 
-### Authority
-
-<!-- Author prompt: Link the implementation, requirement and decision that give this policy its authority. -->
-
-{{SUBJECT_AND_AUTHORITY_LINKS}}
-
-## Scope
+{{POLICY_OBJECTIVE_AND_AUTHORITY_LINKS}}
 
 ### Applies To
 
-{{SERVICES_SURFACES_AND_ACTORS_COVERED}}
+<!-- Author prompt: Name the services, surfaces and actors covered and what this policy does not cover. -->
 
-### Exclusions
-
-{{WHAT_THIS_POLICY_DOES_NOT_COVER}}
+{{SERVICES_SURFACES_ACTORS_AND_EXCLUSIONS}}
 
 ## Rules
 
@@ -46,32 +38,40 @@ next_review_at: "{{NEXT_REVIEW_AT}}"
 
 <!-- Author prompt: Compose/Dockerfile declarations own runtime image tags and dependency pins; the machine-readable registry is a derived projection. Link the implementation authority; do not copy exact patch versions into narrative inventories. A necessary compatibility, advisory, workaround, migration or history literal requires a same-line comment `runtime-version-exception: migration — explain the concrete migration boundary` with the applicable category and a concrete reason. Document frontmatter versions are independent. -->
 
+<!-- Author prompt: List each rule in the table: Rule ID is a stable identifier within this policy, Condition when it applies, Requirement what is allowed, required or forbidden, Enforcement the actual check or "manual", and Evidence how the guarantee is confirmed or "none". Detail follows the table. -->
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| {{RULE_ID}} | {{CONDITION}} | {{REQUIREMENT}} | {{ENFORCEMENT}} | {{EVIDENCE}} |
+
 {{CONTROLS}}
 
-### Enforcement
+### Exceptions
+
+<!-- Author prompt: Give each exception an owner, a risk, an exit condition and its approval and review; write "none" when there is none. -->
+
+{{EXCEPTIONS_APPROVAL_AND_REVIEW}}
+
+## Enforcement
+
+### Mechanisms
 
 <!-- Author prompt: Name the check, gate or review that enforces each control, and distinguish an enforced control from pending runtime evidence. -->
 
 {{ENFORCEMENT_AND_VERIFICATION}}
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+<!-- Author prompt: Name what is not mechanically enforced: rules that rest on manual review, pending runtime evidence, or no check at all. -->
 
-<!-- Author prompt: Give each exception an owner, a risk and an exit condition; write "none" when there is none. -->
-
-{{EXCEPTIONS}}
-
-### Approval and Review
-
-{{APPROVAL_AND_REVIEW_CADENCE}}
+{{UNENFORCED_PARTS}}
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 {{OWNERS_AND_RESPONSIBILITIES}}
 
-### Change and Adoption
+### Review Triggers
 
-{{HOW_THIS_POLICY_CHANGES_AND_RELATED_DOCUMENTS}}
+{{WHEN_AND_HOW_THIS_POLICY_CHANGES_AND_RELATED_DOCUMENTS}}

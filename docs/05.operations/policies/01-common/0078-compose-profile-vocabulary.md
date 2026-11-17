@@ -1,10 +1,10 @@
 ---
 title: "Compose Profile Vocabulary Policy"
-version: "1.19.3"
+version: "1.20.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0078"
 created: "2026-09-04"
@@ -13,7 +13,7 @@ next_review_at: "2027-05-13"
 
 # Compose Profile Vocabulary Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
@@ -21,7 +21,7 @@ next_review_at: "2027-05-13"
 profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 보안 격리를 제공하지
 않는다. 서비스 수는 구현에서 계산하며 본문에 고정하지 않는다.
 
-### Authority
+#### Authority
 
 - [Workspace catalog](../../README.md)
 - [Independent LAB entrypoints](../../../../labs/postgresql-ha/README.md)
@@ -30,8 +30,6 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 - Original enablement decision: SPEC-0156 (retired)
 - Sibling resolution: SPEC-0171 (retired)
 - `nginx` profile와 `infra/01-gateway/nginx`는 2026-11-10 소유자 결정으로 퇴역했다. 근거와 기록은 SPEC-0212 TSK-0048에 있다.
-
-## Scope
 
 ### Applies To
 
@@ -125,13 +123,152 @@ profile은 서비스를 선택한다. 여러 profile 선택은 합집합이며 �
 | `workflow-airflow` | capability | Airflow 스케줄링·worker·초기화 | `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `airflow-statsd-exporter` | No | initialization: airflow-init | current |
 | `workflow-n8n` | capability | n8n 자동화와 worker·task runner·Assistant 웹 검색 | `n8n`, `n8n-worker`, `n8n-task-runner-worker`, `searxng` | No | normal service startup | current |
 
-### Exclusions
+#### Exclusions
 
 독립 LAB entrypoint는 root의 profile 선택 대상이 아니다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0078-R1 | `Default?` 선택 의미 확인 시 | 필수: [시스템 Guide](../../guides/01-common/0099-system-operations.md#selection-and-readiness)의 선택 의미를 따른다 | none | none |
+| POL-0078-R2 | 추가 부수 효과 열 | 금지: 실행 승인을 대신하는 것으로 사용한다 | none | none |
+| POL-0078-R3 | `MIGRATE` lifecycle | 필수: 승인된 전환 작업에만 사용한다 | none | none |
+| POL-0078-R4 | 정상 root와 각 LAB의 모든 서비스 | 필수: 명시적 profile을 가진다 | `python3 scripts/validation/check-operations-catalog.py` | none |
+| POL-0078-R5 | 새 profile 이름 | 필수: 같은 변경에서 표에 추가한다 | none | none |
+| POL-0078-R6 | 마지막 소비자 은퇴 | 필수: 표에서 이름을 제거한다 | none | none |
+| POL-0078-R7 | profile 표 | 금지: 이름 중복/누락/유령 행 | `python3 scripts/validation/check-operations-catalog.py` | none |
+| POL-0078-R8 | 필수 `depends_on` | 필수: 선택 안에서 폐포가 닫힌다 | `python3 scripts/validation/check-operations-catalog.py` | none |
+| POL-0078-R9 | 서비스 profile 소속 | 허용: 한 서비스가 여러 profile에 속한다 | none | none |
+| POL-0078-R10 | 선택형 대안 종속성 | 허용: `required: false`를 쓴다 | none | none |
+| POL-0078-R11 | `required: false` 사용 시 | 필수: 앱의 실제 endpoint 설정과 일치한다 | none | none |
+| POL-0078-R12 | HOME 기동 명령 | 금지: 검증되지 않은 broad profile을 사용한다 | none | none |
+| POL-0078-R13 | 상시 기동 | 금지: 부수 효과가 있는 update/IaC/load-test 작업을 상시 기동한다 | `python3 scripts/validation/check-operations-catalog.py` | none |
+| POL-0078-R14 | LAB 파일 | 금지: root에서 include한다 | `python3 scripts/validation/check-operations-catalog.py` | none |
+| POL-0078-R15 | LAB profile | 금지: HOME 이름 선택에 넣는다 | none | none |
+| POL-0078-R16 | 선택형 overlay | 필수: `x-hyhome-overlay: {version: 1, base: <repository-relative-path>}`로 역할을 명시한다 | none | none |
+| POL-0078-R17 | overlay 파일 | 금지: 파일 이름이나 `override` 접미사만으로 일반 Compose 검사를 면제한다 | none | none |
+| POL-0078-R18 | overlay marker | 필수: `version`은 정수 1이고 `base`는 비어 있지 않은 저장소 상대 경로다 | none | none |
+| POL-0078-R19 | overlay `base` | 금지: 절대 경로/경로 탈출/symlink | none | none |
+| POL-0078-R20 | overlay `base` | 필수: 추적된 일반 파일이며 정상 root의 include 집합에 속하고 다른 overlay가 아닌 유효한 Compose 서비스 원본이다 | none | none |
+| POL-0078-R21 | overlay 파일 자신 | 금지: 정상 root include에 들어간다 | none | none |
+| POL-0078-R22 | overlay `services` | 필수: 비어 있지 않은 mapping이며 모든 서비스 이름이 해당 base의 서비스 집합 안에 있다 | none | none |
+| POL-0078-R23 | overlay 서비스 | 금지: 새 서비스 이름이나 서비스별 `profiles` 재정의 | none | none |
+| POL-0078-R24 | `base: docker-compose.yml` | 필수: 정상 root가 include하는 추적된 일반 서비스 membership만 대상으로 하는 network-only service override다 | none | none |
+| POL-0078-R25 | `base: docker-compose.yml` | 필수: 각 `services.<name>`은 정확히 비어 있지 않은 `networks` key 하나만 가진다 | none | none |
+| POL-0078-R26 | `base: docker-compose.yml` | 필수: attachment는 `network-name: {}` 형식만 쓴다 | none | none |
+| POL-0078-R27 | `base: docker-compose.yml` | 필수: 변경된 각 서비스는 새 internal network 하나 이상에 연결한다 | none | none |
+| POL-0078-R28 | `base: docker-compose.yml` | 허용: 기존 root network 참조를 함께 둔다(예: worker의 `dev_data_net`) | none | none |
+| POL-0078-R29 | `base: docker-compose.yml` | 금지: image/build/privileged/command/entrypoint/volumes/ports/secrets/depends_on/network_mode 및 다른 runtime field | none | none |
+| POL-0078-R30 | `base: docker-compose.yml` | 금지: Compose의 `!reset`/`!override` replacement/reset tag | none | none |
+| POL-0078-R31 | root-base overlay의 top-level network | 허용: 기존 root network 정의에 없는 비어 있지 않은 새 이름의 network를 `internal: true`만으로 선언한다 | none | none |
+| POL-0078-R32 | root-base overlay의 새 network | 필수: 위 서비스에서 모두 참조한다 | none | none |
+| POL-0078-R33 | root-base overlay의 새 network | 금지: `external`/`name`/`driver`/`driver_opts`/`ipam`/다른 network 속성 및 기존 root network 정의의 수정 | none | none |
+| POL-0078-R34 | root-base overlay의 network 예외 | 금지: profile/root `include`/service inventory 권한을 만드는 근거로 사용한다 | none | none |
+| POL-0078-R35 | 위의 좁은 경우 외 overlay | 금지: top-level network/volume/secret/config 선언/`include`/독립 project 선언을 추가한다 | none | none |
+| POL-0078-R36 | 위의 좁은 경우 외 overlay | 허용: 서비스 변경과 YAML 재사용용 `x-` extension만 둔다 | none | none |
+| POL-0078-R37 | `x-` extension | 금지: 별도 profile 또는 서비스 분류 권한을 만든다 | none | none |
+| POL-0078-R38 | overlay 적용 시 | 필수: 검토한 root와 overlay를 순서대로 명시한 `-f` 조합에서 기존 서비스 profile을 상속한다 | none | none |
+| POL-0078-R39 | overlay 기동 | 금지: overlay만으로 기동한다 | none | none |
+| POL-0078-R40 | 상속 대상 서비스 | 금지: Guide와 inventory 행을 중복 생성한다 | none | none |
+| POL-0078-R41 | overlay 적용 시 | 필수: 실제 조합의 선택/렌더링 검증을 별도로 수행한다 | none | none |
+| POL-0078-R42 | marker의 형식/버전/base/서비스 경계 오류 | 필수: fail-closed로 보고한다 | none | none |
+| POL-0078-R43 | 유효하지 않은 marker | 금지: 선택형 면제로 처리하거나 단순히 무시한다 | none | none |
+| POL-0078-R44 | 현재 HOME 선택 | 필수: HOME 행과 소유자가 승인한 exact profile을 따른다 | none | none |
+| POL-0078-R45 | 과거에 관측된 profile 조합 | 금지: 현재 activation 권한으로 사용한다 | none | none |
+| POL-0078-R46 | HOME selector 계획 | 필수: `--dev-data-expected on`일 때만 `dev-data`를 더한다 | none | none |
+| POL-0078-R47 | `--dev-data-expected` 값 | 필수: root `.env`의 `PROMETHEUS_DEV_DATA_EXPECTED`와 같다 | Prometheus 시작 스크립트(경로 미명시)가 다르면 거부 | none |
+| POL-0078-R48 | `--dev-data-expected off` | 필수: HOME 행 그대로 둔다 | none | none |
+| POL-0078-R49 | `--dev-data-expected off` | 금지: DEV 저장소를 선택한다 | none | none |
+| POL-0078-R50 | HOME 후보 선택 | 필수: 관리 DB/공유 broker/영속 저장소/관측 종속성을 함께 유지한다 | none | none |
+| POL-0078-R51 | 승인된 HOME profile 외 | 금지: 새 HOME profile을 추가한다 | none | none |
+| POL-0078-R52 | HOME 기동 준비 | 필수: OpenBao bootstrap/unseal/Agent 인증/DB 초기화/실제 자원 측정/backup·restore를 별도 준비 조건으로 충족한다 | none | none |
+| POL-0078-R53 | overlay 적용 규칙 | 금지: 다른 문서에서 규칙을 다시 쓴다(이 절을 링크한다) | none | none |
+| POL-0078-R54 | overlay 적용 | 금지: root `.env`의 `COMPOSE_FILE`로 overlay를 적용한다 | `scripts/lib/ops/compose_start.py`가 `compose_file_overlay_forbidden`으로 거부 | none |
+| POL-0078-R55 | HOME `COMPOSE_FILE` | 필수: `docker-compose.yml` 하나이거나 미설정이다 | `scripts/lib/ops/compose_start.py`가 `compose_file_overlay_forbidden`으로 거부 | none |
+| POL-0078-R56 | HOME에서 항상 실행돼야 하는 변경 | 필수: overlay가 아니라 base Compose 파일에 둔다 | none | none |
+| POL-0078-R57 | 유지보수/롤백 등 일시적 overlay | 필수: 해당 Runbook 절차 안에서 명시적 `-f docker-compose.yml -f <overlay>`로만 적용한다 | none | none |
+| POL-0078-R58 | 일시적 overlay 절차 종료 | 필수: base만으로 서비스를 다시 만든다 | none | none |
+| POL-0078-R59 | overlay 적용 근거 | 금지: 실행 프로세스의 `COMPOSE_FILE` 환경 변수를 근거로 삼는다 | none | none |
+| POL-0078-R60 | `.env`의 `COMPOSE_FILE`이 `docker-compose.yml` 외의 값 | 필수: 선택기가 `compose_file_overlay_forbidden`으로 fail-closed 거부한다 | `scripts/lib/ops/compose_start.py` | `compose_file_overlay_forbidden` |
+| POL-0078-R61 | `.env`의 `COMPOSE_FILE`이 `docker-compose.yml` 외의 값 | 금지: 선택기가 값을 출력한다 | `scripts/lib/ops/compose_start.py` | none |
+| POL-0078-R62 | `x-hyhome-overlay` marker를 가진 추적 파일 | 필수: 표와 `infra/compose-overlays.json`에 한 변경으로 함께 등록한다 | `tests/validation/test_compose_overlay_register.py` | none |
+| POL-0078-R63 | overlay 필수 입력 | 필수: 이름만 쓴다 | none | none |
+| POL-0078-R64 | overlay 필수 입력 | 금지: 값을 문서/로그/`.env.example`에 쓴다 | none | none |
+| POL-0078-R65 | overlay 필수 입력 | 필수: overlay를 적용하기 전에 입력을 준비한다 | none | none |
+| POL-0078-R66 | Producer의 모든 profile | 필수: 기존 Exporter와 필요한 monitor provision job을 함께 선택한다 | none | none |
+| POL-0078-R67 | 선택 범위가 늘어난 `core`/`local`/기능 profile | 필수: monitor Secret과 provisioning 권한을 먼저 준비한다 | none | none |
+| POL-0078-R68 | Producer 실제 기동 | 필수: 해당 Runbook의 승인/readiness/백업 조건을 확인한 뒤에만 `up -d <목록>`으로 수행한다 | 수동 | none |
+| POL-0078-R69 | Producer와 Exporter 사이 | 금지: Producer에서 Exporter로 역방향 `depends_on`을 추가한다 | none | none |
+| POL-0078-R70 | `depends_on`으로 암묵 기동하는 Producer | 필수: 아래 companion 목록을 target 합집합에 포함한다 | none | none |
+| POL-0078-R71 | 관측 선택을 HOME 전체와 맞출 때 | 필수: `--target`이 아니라 `--selection HOME`으로 계획한다 | none | none |
+| POL-0078-R72 | 공유 `mng-valkey` 사용 앱(Airflow/n8n/OAuth2 Proxy) | 금지: 앱별 전용 Valkey와 Exporter를 둔다 | none | none |
+| POL-0078-R73 | n8n 내장 metrics와 Kafka JMX Agent | 금지: 별도 Exporter를 중복 생성한다 | none | none |
+| POL-0078-R74 | `up=1` 확인 후 | 필수: `redis_up`/`pg_up`/업무 실행/Grafana query와 선택 profile의 예상 상태를 별도로 확인한다 | none | none |
+| POL-0078-R75 | lab-kafka | 필수: `labs/kafka-cluster/docker-compose.yml`의 별도 project/cluster ID/data directory를 쓴다 | none | none |
+| POL-0078-R76 | lab-locust | 필수: `labs/locust/docker-compose.yml`의 별도 project/network/scenario·result volume을 쓴다 | none | none |
+| POL-0078-R77 | lab-locust | 금지: root `testing` profile에 포함한다 | none | none |
+| POL-0078-R78 | opensearch-cluster LAB | 필수: 별도 network/state/credential을 쓴다 | none | none |
+| POL-0078-R79 | dependency-update | 금지: tooling/HOME의 암묵적 기동 대상에 넣는다 | none | none |
+| POL-0078-R80 | testing의 부하/샘플 데이터 생성 | 필수: 대상과 실행량을 별도 승인한다 | 수동 | none |
+| POL-0078-R81 | iac | 필수: OpenTofu/Terrakube 명령/대상/credential/apply 승인을 확인한다 | 수동 | none |
+| POL-0078-R82 | tooling | 필수: root는 registry만 선택한다 | none | none |
+| POL-0078-R83 | tooling의 SonarQube | 필수: LAB `sast` profile로 `labs/sonarqube/docker-compose.yml`에서만 선택한다 | none | none |
+| POL-0078-R84 | tooling | 금지: update/IaC/load 작업을 포함한다 | none | none |
+| POL-0078-R85 | mlops/data-science/analytics-engineering/contract-testing/bi 기능 SQL·credential | 필수: 각 feature job이 소유한다 | none | none |
+| POL-0078-R86 | crawl4ai | 필수: internal network만 사용하고 외부로는 `crawl4ai-egress`만 통과한다 | none | none |
+| POL-0078-R87 | crawl4ai 소비자 | 필수: 승인된 변경으로 `crawl4ai_net`에 합류한다 | 수동 | none |
+| POL-0078-R88 | n8n-sandbox runner | 필수: runner만 `privileged`를 쓴다(예외: `infra/common-optimizations.exceptions.json`/Conftest/p02 시험) | none | none |
+| POL-0078-R89 | n8n-sandbox | 금지: host port/Traefik route/host Docker socket | none | none |
+| POL-0078-R90 | n8n-sandbox runner | 금지: n8n 망에 합류한다 | none | none |
+| POL-0078-R91 | n8n-sandbox runner | 필수: API와 `n8n_sandbox_runner_net`, 인터넷과 `n8n_sandbox_outbound_net`만 사용한다 | none | none |
+| POL-0078-R92 | n8n-sandbox 기동 | 필수: secret 파일 3개가 있어야 한다 | none | none |
+| POL-0078-R93 | contract-testing UI/API | 필수: host port를 `127.0.0.1`에만 게시한다 | none | none |
+| POL-0078-R94 | contract-testing UI/API | 금지: route를 추가한다(heartbeat만 공개) | none | none |
+| POL-0078-R95 | lakehouse 엔진 | 필수: `labs/lakehouse/docker-compose.yml` LAB에만 두고 HOME S3·catalog는 `LAB_LAKEHOUSE_*` 입력으로만 찾는다 | none | none |
+| POL-0078-R96 | lakehouse 테이블 쓰기/`rewrite_data_files`/`expire_snapshots` | 필수: `run --rm spark`로 대상 table을 명시한다 | none | none |
+| POL-0078-R97 | lakehouse `trino`/`flink-*` | 필수: host port를 `127.0.0.1`에만 게시한다 | none | none |
+| POL-0078-R98 | lakehouse `trino`/`flink-*` | 금지: route를 추가한다 | none | none |
+| POL-0078-R99 | lakehouse Flink | 필수: REST JAR 업로드를 끈다(`web.submit.enable=false`) | none | none |
+| POL-0078-R100 | lakehouse Flink | 금지: HOME `kafka_net`에 합류한다 | none | none |
+| POL-0078-R101 | lakehouse Flink의 Kafka 사용 | 필수: 승인된 도달 가능 endpoint를 갖는다 | 수동 | none |
+| POL-0078-R102 | bi Superset LAB | 필수: gateway route 없이 `LAB_HOST_BIND_IP`의 `LAB_SUPERSET_HOST_PORT`에만 게시한다 | none | none |
+| POL-0078-R103 | bi 가입 사용자 | 필수: `Gamma`(데이터 접근 없음) 권한을 갖는다 | none | none |
+| POL-0078-R104 | api-mock | 필수: host port를 `127.0.0.1`에만 게시한다 | none | none |
+| POL-0078-R105 | api-mock | 금지: route를 추가한다 | none | none |
+| POL-0078-R106 | api-mock 컨테이너 소비자 | 필수: project default network에서 `wiremock:8080`을 사용한다 | none | none |
+| POL-0078-R107 | experience Storybook | 필수: `internal: true`인 `experience_ingress_net`에만 연결한다 | none | none |
+| POL-0078-R108 | experience | 금지: HOME 기본 선택에 포함한다 | none | none |
+| POL-0078-R109 | experience 브라우저 | 필수: 기존 `/admins` 인증을 먼저 수행한다 | none | none |
+| POL-0078-R110 | api-mock load mode | 필수: root Compose와 `infra/11-quality/wiremock/wiremock.load.yml`을 같은 model로 결합해 같은 `api-mock` profile의 `wiremock` 설정을 대체한다 | none | none |
+| POL-0078-R111 | LAB 선택 | 필수: root의 `--profile '*'`나 서비스 이름 지정으로 선택되지 않는다 | `tests/validation/test_lab_isolation.py` | none |
+| POL-0078-R112 | LAB 기동/종료 | 필수: `python3 scripts/operations/lab.py`만 사용한다 | none | none |
+| POL-0078-R113 | LAB `up` | 필수: 목적과 `LAB_MAX_LEASE_MINUTES` 이하의 lease를 요구한다 | `python3 scripts/operations/lab.py` | none |
+| POL-0078-R114 | LAB `up` | 필수: rendered root/함께 선택한 LAB/실행 중 container와의 container/network/host port/쓰기 data 경로 충돌을 거부한다 | `python3 scripts/operations/lab.py` | none |
+| POL-0078-R115 | LAB data root가 HOME data 경로와 겹칠 때 | 필수: 거부한다 | `python3 scripts/operations/lab.py` | none |
+| POL-0078-R116 | LAB `up` 예산 검사 | 필수: 실행 중 container와 선택 LAB의 선언 reservation 합계에 [POL-0107](../15-labs/0107-lab-promotion.md#external-workload-allowance)의 외부 workload allowance를 한 번 더한 값을 `LAB_HOST_BUDGET_CPUS`/`LAB_HOST_BUDGET_MEMORY_MIB`와 비교한다 | `python3 scripts/operations/lab.py` | none |
+| POL-0078-R117 | 동시 LAB 수 | 필수: `LAB_MAX_CONCURRENT`(기본 1)로 제한한다 | `python3 scripts/operations/lab.py` | none |
+| POL-0078-R118 | 예산 값이 비어 있거나 숫자가 아닐 때 | 필수: 예산 값이 비어 있거나 숫자가 아니면 거부한다 | `python3 scripts/operations/lab.py` | none |
+| POL-0078-R119 | render가 없는 실행 중 Compose project 또는 reservation/limit이 없는 서비스 | 필수: render가 없는 실행 중 Compose project, reservation 또는 limit이 없는 서비스는 합할 수 없으므로 거부 사유로 보고한다 | `python3 scripts/operations/lab.py` | 거부 사유 보고 |
+| POL-0078-R120 | HOME 선언 한도가 host를 초과할 때 | 필수: 운영자가 overcommit을 명시한 예산을 정한다 | 수동 | none |
+| POL-0078-R121 | ComfyUI/Ollama GPU 동시 사용 | 필수: DCGM의 VRAM 여유를 확인한 뒤 결정한다 | 수동 | none |
+| POL-0078-R122 | 절감량 발표 | 금지: 실측 없이 발표한다 | none | none |
+| POL-0078-R123 | LAB `down` | 필수: 그 LAB project만 `-v` 없이 정지한다 | none | none |
+| POL-0078-R124 | LAB data/volume 삭제 | 필수: ledger(`${LAB_DATA_DIR}/.ledger/<lab>.json`)에 기록된 경로만 대상으로 한다 | none | none |
+| POL-0078-R125 | LAB data/volume 삭제 | 필수: 별도 승인 후 수행한다 | 수동 | none |
+| POL-0078-R126 | LAB 정리 | 금지: `docker volume prune`/`system prune`을 사용한다 | none | none |
+| POL-0078-R127 | 만료 lease | 필수: `lab.py reap`이 정지한다 | none | none |
+| POL-0078-R128 | AI/workflow HOME 상주 | 필수: 상주 결정을 유지한다 | none | none |
+| POL-0078-R129 | LAB/lakehouse·analytics 대량 작업/GPU 이미지 생성 | 필수: 위 예산 검사와 별도 승인으로 켠다 | 수동 | none |
+| POL-0078-R130 | LAB 안의 exporter | 금지: HOME Prometheus가 수집한다 | `tests/validation/test_lab_isolation.py` | none |
+| POL-0078-R131 | Optional service disposition 표 | 금지: 삭제 권한이나 현재 운영 성공의 정본으로 사용한다 | none | none |
+| POL-0078-R132 | 소비자/소유자/보존 또는 복구 근거가 없는 행 | 필수: `UNKNOWN`으로 남긴다 | none | none |
+| POL-0078-R133 | 역사 ADR 본문 | 필수: 보존한다 | none | none |
+| POL-0078-R134 | 현재 선언과 목표를 읽을 때 | 필수: 2026-10-08 관찰과 구분한다 | none | none |
+| POL-0078-R135 | 서비스 퇴역 | 필수: 소비자 부재를 다시 확인한 별도 변경에서 source/문서/secret을 함께 제거한다 | 수동 | none |
+| POL-0078-R136 | Optional service disposition 표 | 금지: 이 표로 서비스를 삭제한다 | none | none |
 
 `Default? = No`는 직접 service target, CLI profile, `COMPOSE_PROFILES` 활성화가
 없는 기동에서는 자동 선택되지 않는다는 뜻이다. 직접 지정한 service는 profile을
@@ -377,7 +514,23 @@ exporter는 퇴역했다(SPEC-0215).
 이 표는 서비스를 삭제하지 않는다. 퇴역은 소비자 부재를 다시 확인한 별도 변경에서
 source·문서·secret을 함께 제거한다.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+정상 root profile은 같은 daemon, network, disk, GPU를 공유할 수 있다. 여러
+노드는 물리
+고가용성을 증명하지 않는다. 알려진 조합 제약을 숨기기 위해 검증을 우회하지
+않으며 승인된 예외는 이유·범위·복구·종료 조건을 current Task에 기록한다.
+
+#### Approval and Review
+
+- **Cadence**: profile 또는 서비스 선언을 변경할 때.
+- **Trigger**: 서비스 추가·은퇴, topology·host port·작업 부수 효과 변경.
+
+## Enforcement
+
+### Mechanisms
 
 ```bash
 bash scripts/validation/validate-docker-compose.sh
@@ -407,27 +560,31 @@ category와 필수 dependency 폐포를 검사한다.
 보장하지 않는다. 예를 들어 Grafana DB provisioning 선택과 실제 앱 사용 준비는
 [Grafana Guide](../../guides/07-observability/0041-grafana.md)에서 확인한다.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+이 정책은 아래 규칙에 대해 명명된 자동 검사를 연결하지 않거나 수동 검토에 맡긴다.
 
-정상 root profile은 같은 daemon, network, disk, GPU를 공유할 수 있다. 여러
-노드는 물리
-고가용성을 증명하지 않는다. 알려진 조합 제약을 숨기기 위해 검증을 우회하지
-않으며 승인된 예외는 이유·범위·복구·종료 조건을 current Task에 기록한다.
-
-### Approval and Review
-
-- **Cadence**: profile 또는 서비스 선언을 변경할 때.
-- **Trigger**: 서비스 추가·은퇴, topology·host port·작업 부수 효과 변경.
+- profile 선택: 명명된 검사 없음 R1~R3, R5, R6, R9~R12, R15 (`POL-0078-` 접두)
+- overlay 형식: 명명된 검사 없음 R16~R23 (`POL-0078-` 접두)
+- root-base overlay: 명명된 검사 없음 R24~R37 (`POL-0078-` 접두)
+- overlay 적용: 명명된 검사 없음 R38~R43 (`POL-0078-` 접두)
+- HOME activation: 명명된 검사 없음 R44~R46, R48~R52 (`POL-0078-` 접두)
+- overlay 등록부: 명명된 검사 없음 R53, R56~R59, R63~R65 (`POL-0078-` 접두)
+- Producer companion: 명명된 검사 없음 R66, R67, R69~R74; 수동 검토 R68 (`POL-0078-` 접두)
+- 선택 제약: 명명된 검사 없음 R75~R79, R82~R86, R88~R100, R102~R110; 수동 검토 R80, R81, R87, R101 (`POL-0078-` 접두)
+- LAB 수명/예산: 명명된 검사 없음 R112, R122~R124, R126~R128; 수동 검토 R120, R121, R125, R129 (`POL-0078-` 접두)
+- 서비스 disposition: 명명된 검사 없음 R131~R134, R136; 수동 검토 R135 (`POL-0078-` 접두)
+- 선택 closure 성공은 optional dependency의 앱 endpoint나 provisioning 완료를 보장하지 않고 config 성공은 무인 재기동이나 live readiness를 증명하지 않는다.
+- Overlay 분류 성공만으로 공급자 이미지/설치 dependency/DB/S3 grant/private 파일 전달/DEV·HOME 실행·복구가 검증되지는 않는다.
+- 2026-10-08 host 관찰과 비용은 그 시점 값이며 현재 상태를 보장하지 않는다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 - **Owner**: @buenhyden. Infra/DevOps 역할은 책임 설명이다.
 
-### Change and Adoption
+### Review Triggers
 
 - [Infrastructure optimization governance](0006-infrastructure-optimization-governance.md)
 - [Developer environment](../../guides/10-platform-and-backup/0002-developer-environment.md)

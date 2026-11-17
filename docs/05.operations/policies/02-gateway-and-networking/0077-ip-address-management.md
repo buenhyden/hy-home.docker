@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Membership Operations Policy"
-version: "1.4.2"
+version: "1.5.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0077"
 parent_ids:
@@ -15,19 +15,17 @@ next_review_at: "2027-05-13"
 
 # Compose Network Membership Operations Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 이 문서는 `hy-home.docker` 시스템의 Docker network 소속과 주소 할당 정책을 정의한다. IP 충돌 방지 및 일관성 유지를 위한 통제 기준을 제공한다.
 
-### Authority
+#### Authority
 
 - 상위 문서: [Compose Network Segmentation Architecture Description](../../../02.architecture/descriptions/0026-standardize-infra-net.md) (`AD-0026`)
 
 - [Compose network segmentation architecture](../../../02.architecture/descriptions/0026-standardize-infra-net.md)
-
-## Scope
 
 ### Applies To
 
@@ -36,13 +34,27 @@ next_review_at: "2027-05-13"
 - **Systems**: `hy-home.docker` 기반 모든 서비스.
 - **Environments**: 현재 HOME/DEV와 명시적으로 선택한 OPTIONAL/LAB 환경. 미래 production을 검증된 대상으로 간주하지 않는다.
 
-### Exclusions
+#### Exclusions
 
 repository가 root Compose에서 소유하지 않는 network는 이 정책의 관할이 아니다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0077-R1 | 서비스 network 연결 | 필수: 실제로 사용하는 peer가 있는 network에만 연결한다 | none | none |
+| POL-0077-R2 | peer가 없을 때 | 필수: 프로젝트 기본 network를 쓴다 | none | none |
+| POL-0077-R3 | 새 flow 발생 | 허용: 해당 network membership을 추가한다 | none | none |
+| POL-0077-R4 | 사용하지 않는 peer | 금지: 그 peer를 위한 network 연결 | none | none |
+| POL-0077-R5 | 고정 주소 부여 | 필수: 다른 곳이 그 주소를 신뢰할 때만 부여한다 | none | none |
+| POL-0077-R6 | 고정 주소 부여 | 필수: 사유를 Compose 주석에 남긴다 | none | none |
+| POL-0077-R7 | 고정 주소 | 필수: 해당 network의 dynamic range 밖에 둔다 | none | none |
+| POL-0077-R8 | 대부분의 서비스 | 허용: 주소를 지정하지 않고 dynamic 주소를 받는다 | none | none |
+| POL-0077-R9 | 같은 network 안 | 금지: 중복된 고정 주소 | none | none |
+| POL-0077-R10 | 고정 주소 적용 전 | 필수: 선언과 승인된 runtime 주소를 대조한다 | RUN-0077의 값 없는 scoped 주소 출력(승인된 runtime에서만) | none |
+| POL-0077-R11 | 외부망 주소 | 금지: 브릿징 설정을 수동 수정한다 | none | none |
 
 - **필수**:
   - 서비스는 실제로 사용하는 peer가 있는 network에만 연결한다. peer가 없으면
@@ -60,7 +72,21 @@ repository가 root Compose에서 소유하지 않는 network는 이 정책의 �
   - 사용하지 않는 peer를 위한 network 연결.
   - 외부망 주소와의 브릿징 설정 수동 수정.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+현재 예외는 없다. `k3d-hyhome` 공유 membership 예외는 2026-09-23 종료되었다.
+별도 LAN endpoint 연동은 [POL-0096](../10-platform-and-backup/0096-k8s-integration.md)의 기존 경계를 따른다.
+
+#### Approval and Review
+
+- **Monthly**: AD-0026 **Networks** 표와 현재 Compose 파일 사이의 실태를 점검한다.
+- **On material change**: 신규 서비스, static IP 변경, profile include 변경, network gateway 변경 시 즉시 재검토한다.
+
+## Enforcement
+
+### Mechanisms
 
 - `bash scripts/validation/validate-docker-compose.sh`를 통한 root compose 구조 검증.
 - 변경한 tier profile은 `HYHOME_COMPOSE_PROFILES`로 지정해 동일 검증을 반복한다.
@@ -74,25 +100,21 @@ repository가 root Compose에서 소유하지 않는 network는 이 정책의 �
 중복은 별도로 검토한다. 이 구현 한계는 중복 금지 통제를 면제하지 않는다.
 검사 입력·임시 파일 효과는 [RUN-0086](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md#static-configuration-validation)을 따른다.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+이 정책은 아래 규칙에 대해 명명된 자동 검사를 연결하지 않거나 수동 검토에 맡긴다.
 
-현재 예외는 없다. `k3d-hyhome` 공유 membership 예외는 2026-09-23 종료되었다.
-별도 LAN endpoint 연동은 [POL-0096](../10-platform-and-backup/0096-k8s-integration.md)의 기존 경계를 따른다.
-
-### Approval and Review
-
-- **Monthly**: AD-0026 **Networks** 표와 현재 Compose 파일 사이의 실태를 점검한다.
-- **On material change**: 신규 서비스, static IP 변경, profile include 변경, network gateway 변경 시 즉시 재검토한다.
+- network 연결: 명명된 검사 없음 R1~R4 (`POL-0077-` 접두)
+- 고정 주소: 명명된 검사 없음 R5~R9, R11 (`POL-0077-` 접두)
+- 현재 Compose validator의 명시적 충돌 검사는 host port이며 static-IP 유일성을 전부 검증하지 않는다. `rg`는 후보 목록일 뿐이며 subnet/dynamic pool/network별 중복은 별도로 검토한다. 이 한계는 중복 금지 통제를 면제하지 않는다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 책임 소유자는 @buenhyden이며, 주소·membership·노출 예외를 승인한다.
 
-### Change and Adoption
+### Review Triggers
 
 - 같은 주제: [Guide](../../guides/02-gateway-and-networking/0077-ip-address-management.md) (`GDE-0077`), [Runbook](../../runbooks/02-gateway-and-networking/0077-ip-address-management.md) (`RUN-0077`)
 

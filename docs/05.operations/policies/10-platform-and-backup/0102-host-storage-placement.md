@@ -1,10 +1,10 @@
 ---
 title: "Host Storage Placement Policy"
-version: "0.2.3"
+version: "0.3.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0102"
 created: "2026-10-27"
@@ -13,13 +13,13 @@ next_review_at: "2027-05-13"
 
 # Host Storage Placement Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 이 정책은 개인 PC 호스트에서 Docker·containerd 저장소와 서비스 데이터를 SSD와 HDD 중 어디에 둘지, 그리고 저장소를 SSD로 옮기는 조건을 정한다. SPEC-0246에서 측정·이전·수용한 배치를 현재 운영 기준으로 정한 문서다.
 
-### Authority
+#### Authority
 
 - 근거와 수용 기록: SPEC-0246(삭제됨, 번호는 Registry `reserved_history`, 본문은 Git history)의
   C1–C6은 모두 소유자가 수용했다.
@@ -30,21 +30,40 @@ next_review_at: "2027-05-13"
   - C5(2026-10-27): 소유자가 수용했고, 독립 rules review 뒤 이 정책이 active가 되었다. SMART 기반 이전 조건이 Spec의 측정되지 않은 정격 수명 문구를 대신한다.
   - C6(2026-10-27): 읽기 전용 확인 뒤 소유자가 수용했다. Prometheus·Tempo volume은 SSD `fast-volumes/obs/*`에 bind되고 둘 다 healthy이며 이전 HDD 사본은 없다. Loki·Alloy·Pyroscope는 HDD에 남는다.
 
-## Scope
-
 ### Applies To
 
 - 호스트의 containerd `root`, Docker `data-root`, BuildKit build cache, 서비스 named volume과 bind 경로
 - Ollama 모델 경로, 로컬 registry blob, 쓰기가 많은 관측 저장소(Prometheus, Loki, Tempo, Pyroscope, Alloy)
 - 루트 파일시스템 여유 공간과 SSD 내구성 예산
 
-### Exclusions
+#### Exclusions
 
 - k3s·k3d와 다른 저장소의 데이터는 범위 밖이다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0102-R1 | 항상 | 필수: 표의 계층별 배치(containerd·Docker root·named volume·Registry·Loki·Pyroscope·Alloy는 HDD, Ollama·Prometheus·Tempo·루트 FS 여유는 SSD)를 따른다 | `docker info` Docker Root Dir/containerd `root` / `docker volume inspect` device / `df -h /`와 `HostSystemDiskLow` | none |
+| POL-0102-R2 | 항상 | 필수: 저장소별 증가 통제(이미지는 registry 보관 후 로컬 삭제, 로그 `max-size` 10m × `max-file` 3, 서비스·저장소별 보존 설정, push 이미지별 ledger 행)를 적용한다 | none | none |
+| POL-0102-R3 | 서비스를 SSD로 옮길 때 | 필수: 측정된 지연 문제가 그 서비스를 지목하고 이전 후에도 SSD 여유가 기존 경보 임계값보다 클 때만 옮긴다 | 수동 | Task 기록(측정값과 소유자 결정) |
+| POL-0102-R4 | 쓰기가 많은 저장소를 SSD로 옮길 때 | 필수: 24시간 쓰기율과 SMART 사용률 추이로 예측한 SSD 잔여 수명이 5년 이상일 때만 옮긴다 | `scripts/operations/storage-write-rate.py` collect/compare | Task 기록(측정값과 소유자 결정) |
+| POL-0102-R5 | 쓰기가 많은 저장소를 SSD로 옮길 때 | 필수: 이미 SSD에 있는 저장소의 쓰기율을 더해 판단한다 | none | none |
+| POL-0102-R6 | 쓰기가 많은 저장소를 SSD로 옮길 때 | 금지: 저장소별 적격성을 단순 합산해 모두 SSD로 이전 | none | none |
+| POL-0102-R7 | 항상 | 필수: 데이터베이스는 HDD에 둔다 | none | none |
+| POL-0102-R8 | 저장소 이전 시 | 필수: 대상 저장소를 멈춘 뒤 복사·권한·mount·health·데이터 조회를 확인한다 | 수동 | none |
+| POL-0102-R9 | 이전 위치를 지울 때 | 필수: 검증된 복구 원본을 남긴 상태에서만 이전 위치를 지운다 | 수동 | none |
+| POL-0102-R10 | 이전 위치를 지울 때 | 필수: 이전 위치 삭제는 호스트 소유자가 실행한다 | 수동 | none |
+| POL-0102-R11 | `containerd`/`docker` unit 기동 | 필수: unit에 `RequiresMountsFor=/home/hyunyoun/storage`를 선언한다 | none | none |
+| POL-0102-R12 | 이미지 보관 처리 시 | 필수: registry에 저장된 manifest digest가 push한 digest와 같을 때만 보관 처리한다 | none | none |
+| POL-0102-R13 | root 권한이 필요한 호스트 변경 시 | 필수: 호스트 변경은 소유자가 실행하고 소스 변경과 검증은 에이전트가 실행한다 | 수동 | none |
+| POL-0102-R14 | 호스트 변경 시 | 필수: 누가 어떤 단계를 실행했는지 Task에 기록한다 | 수동 | none |
+| POL-0102-R15 | 항상 | 금지: 무차별 `docker system prune` | 수동 | none |
+| POL-0102-R16 | 항상 | 금지: volume 일괄 삭제 | 수동 | none |
+| POL-0102-R17 | 항상 | 금지: 검증 없는 `rsync --delete` | 수동 | none |
+| POL-0102-R18 | 항상 | 금지: 소유가 확인되지 않은 항목의 삭제 | 수동 | none |
 
 #### 배치
 
@@ -76,7 +95,20 @@ next_review_at: "2027-05-13"
 - root 권한이 필요한 호스트 변경은 소유자가 실행하고, 소스 변경과 검증은 에이전트가 실행한다. 누가 어떤 단계를 실행했는지 Task에 기록한다.
 - 무차별 `docker system prune`, volume 일괄 삭제, 검증 없는 `rsync --delete`는 쓰지 않는다. 소유가 확인되지 않은 항목은 지우지 않는다.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+없음. 새 저장소를 SSD로 옮기려면 위 조건의 측정값과 소유자 결정을 해당 Task에 기록한다.
+
+#### Approval and Review
+
+- SSD 쓰기율이나 SMART 마모가 바뀌었다고 판단될 때, 또는 새 쓰기 집중 저장소가 추가될 때 다시 측정한다.
+- 저장소 이전, 디스크 교체, Docker·containerd root 변경 때 검토한다.
+
+## Enforcement
+
+### Mechanisms
 
 - `docker info`의 Docker Root Dir와 containerd 설정의 `root`가 위 경로와 같은지 확인한다.
 - `docker volume inspect hy-home-infra_prometheus-data hy-home-infra_tempo-data`의 device가 SSD 경로인지 확인한다.
@@ -92,24 +124,29 @@ mount 표시는 호스트 mount 실패로 해석하지 않는다. Prometheus·Te
 Loki·Alloy·Pyroscope와 containerd/Docker/BuildKit HDD의 수용된 배치는 새로운 측정된
 drift와 명시적 소유자 승인이 없는 한 유지한다.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+다음 규칙은 정책이 이름 있는 자동 검사를 연결하지 않았다.
 
-없음. 새 저장소를 SSD로 옮기려면 위 조건의 측정값과 소유자 결정을 해당 Task에 기록한다.
-
-### Approval and Review
-
-- SSD 쓰기율이나 SMART 마모가 바뀌었다고 판단될 때, 또는 새 쓰기 집중 저장소가 추가될 때 다시 측정한다.
-- 저장소 이전, 디스크 교체, Docker·containerd root 변경 때 검토한다.
+- 이름 있는 검사 없음(배치): `POL-0102-R2`
+- 이름 있는 검사 없음(SSD 이전): `POL-0102-R5`, `POL-0102-R6`
+- 이름 있는 검사 없음(DB 배치): `POL-0102-R7`
+- 이름 있는 검사 없음(실행 경계): `POL-0102-R11`, `POL-0102-R12`
+- 수동 검토·승인에 의존(SSD 이전): `POL-0102-R3`
+- 수동 검토·승인에 의존(이전 절차): `POL-0102-R8`, `POL-0102-R9`, `POL-0102-R10`
+- 수동 검토·승인에 의존(호스트 변경 분담): `POL-0102-R13`, `POL-0102-R14`
+- 수동 검토·승인에 의존(삭제 금지): `POL-0102-R15`, `POL-0102-R16`, `POL-0102-R17`, `POL-0102-R18`
+- 정책이 스스로 밝힌 한계: 배치 확인(`docker info`, `docker volume inspect`, `df -h /`)과 쓰기율 측정은 사람이 실행하는 확인이며 지속 검사 게이트가 아니다.
+- SMART 기반 잔여 수명 예측은 제조사 정격 TBW와 다른 값이다.
+- 2026-11-03 읽기 전용 대조의 짧은 사용량 표본은 용량, RPO/RTO, 피크, 에너지 예산을 수용하는 근거가 아니다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 책임 소유자는 frontmatter `owner`인 **@buenhyden**이다.
 
-### Change and Adoption
+### Review Triggers
 
 - 같은 번호 `0102`의 Guide/Runbook은 없다.
 - [Prometheus Guide](../../guides/07-observability/0045-prometheus.md)

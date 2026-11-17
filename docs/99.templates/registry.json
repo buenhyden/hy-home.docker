@@ -2166,10 +2166,9 @@
         "reviewed_at"
       ],
       "required_sections": [
-        "Purpose",
-        "Scope",
+        "Purpose and Scope",
         "Rules",
-        "Exceptions",
+        "Enforcement",
         "Ownership"
       ],
       "optional_sections": [],
@@ -2211,25 +2210,21 @@
         "docs/05.operations/policies/15-labs/{number:4}-{slug}.md"
       ],
       "required_subsections": {
-        "Purpose": [
+        "Purpose and Scope": [
           "Objective",
-          "Authority"
-        ],
-        "Scope": [
-          "Applies To",
-          "Exclusions"
+          "Applies To"
         ],
         "Rules": [
           "Requirements",
-          "Enforcement"
+          "Exceptions"
         ],
-        "Exceptions": [
-          "Exception Conditions",
-          "Approval and Review"
+        "Enforcement": [
+          "Mechanisms",
+          "Limits"
         ],
         "Ownership": [
-          "Responsibilities",
-          "Change and Adoption"
+          "Owner",
+          "Review Triggers"
         ]
       }
     },
@@ -5718,15 +5713,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "Commit b939b2994 (profiles) and 9cd965911 (documents, #980) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit b939b2994 (profiles) and 9cd965911 (documents, #980) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. A later pull request moved it to its role design core role: the template, profile and every operations policy took the core sections and rules table, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/policy.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/policy.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "policy"
-      }
+      "core_role": "policy"
     },
     "operation/postmortem": {
       "source": "docs/99.templates/templates/operations/postmortem.template.md",

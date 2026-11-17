@@ -1,10 +1,10 @@
 ---
 title: "Infrastructure Optimization Governance Policy"
-version: "2.1.5"
+version: "2.2.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0006"
 created: "2026-06-04"
@@ -12,18 +12,16 @@ next_review_at: "2027-05-13"
 ---
 # Infrastructure Optimization Governance Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 이 정책은 root Compose가 include하는 정상 서비스와 `labs/*/docker-compose.yml`에서 독립 실행하는 LAB 서비스의 공통 운영 통제와 개선 백로그를 소유한다. 현재 `infra/`의 13개 티어(`01-gateway`~`13-experience`)를 포함하며 directory 수를 service identity나 activation 범위로 대신하지 않는다.
 범위는 Docker Compose 기반 운영 표준(가용성, 보안, 관측성, 복구 용이성)이며, 실행 절차는 해당 서비스 Runbook과 공통 RUN-0086에서 관리한다.
 
-### Authority
+#### Authority
 
 없음: 이 정책 본문에는 구현 권한 문서가 연결되어 있지 않다.
-
-## Scope
 
 ### Applies To
 
@@ -33,13 +31,58 @@ next_review_at: "2027-05-13"
 - **Systems**: root에 include된 정상 Compose service identity와 별도 `labs/*/docker-compose.yml` entrypoint의 LAB identity. 정상 binding은 Guide와 operations catalog가 소유하고 LAB 목록은 각 독립 Compose가 소유한다.
 - **Environments**: Local, Dev, Stage, Production-like
 
-### Exclusions
+#### Exclusions
 
 - 비대상: 기능 설계 변경, 애플리케이션 비즈니스 로직 변경
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0006-R1 | 모든 장기 실행 서비스 | 필수: `healthcheck`/`restart`/`no-new-privileges`/자원 제한(`cpus`/`memory`)을 기본 적용한다 | none | none |
+| POL-0006-R2 | 민감정보 주입 | 필수: Docker Secrets 또는 현재 HOME secret authority인 OpenBao 경유 주입을 기본 정책으로 적용한다(환경변수 직접 주입 대신) | none | none |
+| POL-0006-R3 | 서비스별 운영 문서 | 필수: Guide(`docs/05.operations/guides/`)와 Runbook(`docs/05.operations/runbooks/`)을 상호 링크로 동기화한다 | none | none |
+| POL-0006-R4 | 서비스 성격(상태저장/배치/실험성) | 허용: 성격에 따른 예외 설정 | none | none |
+| POL-0006-R5 | 티어별 확장 | 허용: 티어별 확장(예: AI 게이트웨이/메시징 DLQ/관측성 장기보관 스토리지) | none | none |
+| POL-0006-R6 | 운영 서비스 변경 | 금지: 무검증 이미지/설정 변경 | none | none |
+| POL-0006-R7 | 운영 서비스 변경 | 금지: 무중단 정책 없는 이미지/설정 변경 | none | none |
+| POL-0006-R8 | 외부 포트 노출 | 금지: 근거 없는 외부 포트 노출 | none | none |
+| POL-0006-R9 | 이미지 태그 | 금지: `latest` 태그 관행 | none | none |
+| POL-0006-R10 | runtime pin | 필수: Compose/Dockerfile declarations가 runtime pin을 소유한다 | none | none |
+| POL-0006-R11 | `infra/tech-stack.versions.json` | 금지: Dockerfile build pin 전체의 대체로 사용한다(Compose image declaration에서 파생한 projection이다) | none | none |
+| POL-0006-R12 | 정상 서비스 추가 | 필수: root include/POL-0078 profile membership/공용 환경·secret 계약/image projection·update owner/package README와 Guide·Policy·Runbook을 함께 갱신한다 | none | none |
+| POL-0006-R13 | 정상 서비스를 소유한 Guide | 필수: `implementation_services`는 root가 include하는 `infra/` Compose path와 정확한 service identity만 매핑한다 | none | none |
+| POL-0006-R14 | LAB 서비스 추가 | 필수: root에서 제외한 독립 `labs/<topology>/docker-compose.yml`, 같은 폴더의 `README.md`와 `promotion.yaml`, `labs/.env.example`/비공개 `labs/.env`와 필요한 LAB source를 함께 갱신한다 | none | none |
+| POL-0006-R15 | LAB 전용 secret | 필수: `secrets/labs/`에 둔다 | none | none |
+| POL-0006-R16 | LAB이 기존 canonical secret을 소비할 때 | 금지: 값을 복제한다 | none | none |
+| POL-0006-R17 | LAB이 기존 canonical secret을 소비할 때 | 필수: 검토된 상대 경로만 참조한다 | none | none |
+| POL-0006-R18 | LAB 서비스의 Guide | 필수: 독립 LAB Compose와 정확한 service identity를 직접 연결한다 | none | none |
+| POL-0006-R19 | LAB 서비스의 Guide | 금지: 별도 registry를 만든다 | none | none |
+| POL-0006-R20 | HOME profile membership과 LAB 분리 vocabulary | 필수: [POL-0078](0078-compose-profile-vocabulary.md)에서 관리한다 | none | none |
+| POL-0006-R21 | 단일 파일 bind configuration 수정으로 inode가 교체될 때 | 필수: 승인된 해당 service 재생성을 수행한다 | 수동 | none |
+| POL-0006-R22 | 단일 파일 bind configuration 수정으로 inode가 교체될 때 | 금지: `restart`로 재생성을 대신한다 | none | none |
+| POL-0006-R23 | 단일 파일 bind configuration | 금지: mount를 directory로 바꾼다 | none | none |
+| POL-0006-R24 | 모든 live apply 직후 | 필수: 실행 checkout의 기대 config mount가 빠짐없이 일치한다 | RUN-0086의 coverage와 결과 분기 | none |
+| POL-0006-R25 | live apply hash 확인 결과가 `UNREADABLE`/행0/누락 coverage/query 실패 | 금지: 완료 증거로 인정한다 | RUN-0086의 coverage와 결과 분기 | none |
+| POL-0006-R26 | live apply hash 확인 결과가 exit0 | 금지: exit0만으로 통과시킨다 | RUN-0086의 coverage와 결과 분기 | none |
+| POL-0006-R27 | config 확인 중 | 금지: `secrets/` 값과 파일 내용을 읽거나 출력한다 | none | none |
+| POL-0006-R28 | stale inode 점검 | 금지: `docker cp`로 점검을 대신한다 | none | none |
+| POL-0006-R29 | AI 관련 변경 | 필수: `08-ai` Policy 선반영 후 AI Runbook 절차로 배포/롤백한다 | none | none |
+| POL-0006-R30 | 서비스 영향 변경 | 필수: 최소 정상성(헬스체크/핵심 API) 자동 검증을 통과한다 | none | none |
+| POL-0006-R31 | 운영 로그 | 필수: `06-observability` 보존 정책을 준수한다 | none | none |
+| POL-0006-R32 | 인증 실패 급증/데이터 손상/장기 장애 징후 | 필수: 즉시 Incident 프로세스로 전환한다 | none | none |
+| POL-0006-R33 | Priority 분류 대상 | 금지: Quality/Analytics의 새 대상이나 재분류된 package에 우선순위·예외를 자동 상속한다 | none | none |
+| POL-0006-R34 | 아직 평가하지 않은 대상 | 필수: 해당 Policy와 별도 검토로 남긴다 | none | none |
+| POL-0006-R35 | Quick Wins 001-005 | 필수: regression gates를 유지한다 | none | none |
+| POL-0006-R36 | 2026 Q2 roadmap 완료 판정 | 금지: 경과 시간으로 완료를 추론한다 | none | none |
+| POL-0006-R37 | Quarterly 항목 완료/superseded 전환 | 필수: 후속 Task 또는 replacement roadmap이 deliverable을 검증 evidence와 연결할 때만 전환한다 | none | none |
+| POL-0006-R38 | roadmap 완료 판정 | 금지: 과거 plan-authoring checklist의 완료 표시를 근거로 사용한다 | none | none |
+| POL-0006-R39 | Tier-by-Tier 목록 사용 | 금지: 이 목록을 전체 서비스 inventory로 사용한다 | none | none |
+| POL-0006-R40 | openbao auto-unseal(KMS/HSM) 등 변경 | 필수: 별도 결정 검토를 거치고 [ADR-0042](../../../02.architecture/decisions/0042-openbao-unseal-method.md)의 수동 unseal 결정을 유지한다 | 수동 | none |
+| POL-0006-R41 | Syncthing | 금지: 제거된 Compose 서비스를 재기동한다 | none | none |
+| POL-0006-R42 | Syncthing 기존 파일/외부 동기화 상태 | 필수: 소유자와 확인한다 | 수동 | none |
 
 - **Required**:
   - 모든 장기 실행 서비스에 `healthcheck`, `restart`, `no-new-privileges`, 자원 제한(`cpus`/`memory`)을 기본 적용
@@ -242,7 +285,21 @@ path와 tier heading은 현재 package를 가리킨다. 예전 laboratory의 doz
 - [Locust LAB](../../../../labs/locust/README.md): 분산 실행 토폴로지와 테스트 데이터 초기화/정리 루틴 표준화
   ([OPER](../../guides/15-labs/0062-locust.md), [RUN](../../runbooks/15-labs/0062-locust.md))
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+- 승인된 실험성 service에는 대상·이유·risk·owner·종료 조건을 갖춘 제한적 예외만 허용 가능. 예전 `11-laboratory` directory membership은 현재 예외 승인이 아니다.
+  단, 외부 노출 시 최소 인증/접근제어(SSO 또는 IP 제한)와 자원 상한은 필수로 승인한다.
+
+#### Approval and Review
+
+- 월 1회 정기 검토
+- 신규 서비스 추가/중요 버전업/보안 이슈 발생 시 수시 검토
+
+## Enforcement
+
+### Mechanisms
 
 - Compose 정적 점검: `bash scripts/validation/validate-docker-compose.sh`
 - 템플릿/보안 기준선 점검: `bash scripts/validation/check-template-security-baseline.sh`
@@ -257,25 +314,27 @@ Compose 정적 검증도 임시 파일 생성과 기존 입력 읽기가 있을 
 [RUN-0086](../../runbooks/10-platform-and-backup/0086-dependency-version-management.md#static-configuration-validation)의
 공개/sanitized 입력 경계를 따른다. check PASS는 필수 통제의 전체 runtime 증명이 아니다.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+이 정책은 아래 규칙에 대해 명명된 자동 검사를 연결하지 않거나 수동 검토에 맡긴다.
 
-- 승인된 실험성 service에는 대상·이유·risk·owner·종료 조건을 갖춘 제한적 예외만 허용 가능. 예전 `11-laboratory` directory membership은 현재 예외 승인이 아니다.
-  단, 외부 노출 시 최소 인증/접근제어(SSO 또는 IP 제한)와 자원 상한은 필수로 승인한다.
-
-### Approval and Review
-
-- 월 1회 정기 검토
-- 신규 서비스 추가/중요 버전업/보안 이슈 발생 시 수시 검토
+- 기본 통제: 명명된 검사 없음 R1, R2, R4~R9 (`POL-0006-` 접두)
+- 소스/서비스 추가: 명명된 검사 없음 R10~R20 (`POL-0006-` 접두)
+- config 적용: 명명된 검사 없음 R22, R23, R27, R28; 수동 검토 R21 (`POL-0006-` 접두)
+- AI Agent Policy: 명명된 검사 없음 R29~R32 (`POL-0006-` 접두)
+- 로드맵/백로그: 명명된 검사 없음 R33~R39, R41; 수동 검토 R40, R42 (`POL-0006-` 접두)
+- check PASS는 필수 통제의 전체 runtime 증명이 아니다.
+- Mechanisms가 명명한 `bash scripts/validation/validate-docker-compose.sh`와 `bash scripts/validation/check-template-security-baseline.sh`는 정적 점검이며 위 규칙 중 어느 것을 검증하는지 본문이 연결하지 않는다.
+- `healthcheck`/`restart`/`security_opt`/`secrets`/`limits` 유무의 정기 스캔은 예시로만 적혀 있다.
+- POL-0006-R3: 정책이 이 규칙에 묶은 검사를 명시하지 않는다.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 책임 소유자는 @buenhyden이며 미충족 통제는 별도 구현 변경으로 해결한다.
 
-### Change and Adoption
+### Review Triggers
 
 - 같은 번호 `0006`의 Guide/Runbook은 없다.
 

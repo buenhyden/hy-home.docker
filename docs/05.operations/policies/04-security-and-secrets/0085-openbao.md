@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Policy"
-version: "0.11.2"
+version: "0.12.0"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "POL-0085"
 parent_ids:
@@ -15,13 +15,13 @@ next_review_at: "2027-05-13"
 
 # OpenBao Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 HOME secret control plane이다. 레거시 Vault는 2026-09-25 폐기되었으므로 현재 마이그레이션·복구 소스로 취급하지 않는다.
 
-### Authority
+#### Authority
 
 - Governing architecture: [AD-0003](../../../02.architecture/descriptions/0003-security-architecture.md)
 - OpenBao 공식 TCP listener 파라미터: <https://openbao.org/docs/configuration/listener/tcp/>
@@ -30,20 +30,132 @@ HOME secret control plane이다. 레거시 Vault는 2026-09-25 폐기되었으�
 - unauthenticated generate-root를 다루는 OpenBao 공식 deprecation note: <https://openbao.org/community/deprecation/unauthed-generate-root/>
 - authenticated root generation을 다루는 OpenBao 공식 release notes: <https://openbao.org/community/release-notes/2-6-0/>
 
-## Scope
-
 ### Applies To
 
 `infra/03-security/openbao`와 `core / dev / local / security / secrets` 프로필 아래의 서비스
 `openbao openbao-agent`.
 
-### Exclusions
+#### Exclusions
 
 폐기된 레거시 Vault는 이 정책의 대상이 아니다.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| POL-0085-R1 | 항상 | 필수: unseal/recovery 자료를 오프라인으로 유지한다 | none | none |
+| POL-0085-R2 | 항상 | 금지: token/role_id/secret_id/렌더링된 파일을 로깅한다 | none | none |
+| POL-0085-R3 | 서버 health | 필수: 현재 서버 health는 unsealed 상태만 허용한다 | none | none |
+| POL-0085-R4 | Agent health | 금지: Agent health만으로 새 인증/출력 갱신과 secret 전달을 증명한 것으로 취급한다 | none | none |
+| POL-0085-R5 | 기존 애플리케이션 Docker Secret | 금지: Agent 출력으로 자동 대체한다 | none | none |
+| POL-0085-R6 | 사람이 하는 일반 관리 작업 | 필수: Keycloak backend OpenBao native OIDC로 발급된 non-root OpenBao 토큰을 사용한다 | none | none |
+| POL-0085-R7 | 승인된 HOME 바인딩 | 필수: Keycloak 그룹 `/openbao-admins`/role `home-admin`/OIDC client `home-openbao`/operator policy `hy-home-operator`를 쓴다 | none | none |
+| POL-0085-R8 | 사람 토큰 | 필수: policy TTL은 유한하다 | none | none |
+| POL-0085-R9 | OpenBao UI 앞의 Gateway SSO | 금지: OpenBao native OIDC 인가의 대체로 취급한다 | none | none |
+| POL-0085-R10 | Prometheus 인증 | 필수: 전용 service token으로 `sys/metrics`에 인증한다 | none | none |
+| POL-0085-R11 | Prometheus service policy | 필수: 유일한 policy는 추적되는 `infra/03-security/openbao/config/policies/prometheus.hcl`이다 | none | none |
+| POL-0085-R12 | Prometheus service policy | 필수: `sys/metrics`에 대한 `read`만 부여한다 | none | none |
+| POL-0085-R13 | Prometheus 토큰 | 필수: 수동으로 발급해 `secrets/security/openbao/openbao_token.txt`에 저장한다 | none | none |
+| POL-0085-R14 | Prometheus 토큰 | 필수: Prometheus만 마운트한다 | none | none |
+| POL-0085-R15 | Prometheus 토큰 | 필수: 유한한 만료 전에 회전한다 | none | none |
+| POL-0085-R16 | metrics 인증 | 금지: 인증 없는 metrics를 활성화한다 | none | none |
+| POL-0085-R17 | metrics 인증 | 금지: root/human operator/renderer AppRole/renderer sink 토큰을 재사용한다 | none | none |
+| POL-0085-R18 | policy 적용/토큰 발급·폐기/파일 작성/Prometheus 재생성 | 필수: 별도로 승인된 유지보수 기록을 갖춘다 | 수동 | 별도로 승인된 유지보수 기록 |
+| POL-0085-R19 | 추적되는 policy/Compose/scrape 설정 | 금지: 실제 credential/runtime 변경의 증거로 취급한다(소스 계약만 증명한다) | none | none |
+| POL-0085-R20 | hy-home.k8s 클러스터 | 필수: `kubernetes` auth method로 인증한다 | none | none |
+| POL-0085-R21 | External Secrets service account(`external-secrets`/namespace `external-secrets`/audience `vault`) | 필수: 이 주체만 role `eso-read-platform`을 통해 로그인한다 | none | none |
+| POL-0085-R22 | `eso-read-platform` policy | 필수: `secret/platform/{argocd,postgres-app,notifications,prometheus-api,grafana-api}`의 정확한 KV v2 data/metadata 경로만 읽는다 | none | none |
+| POL-0085-R23 | `eso-read-platform` policy | 금지: wildcard/list/create/update/delete/sudo를 부여한다 | none | none |
+| POL-0085-R24 | 클러스터 부트스트랩 토큰 | 필수: `k8s-bootstrap` 토큰 role에서만 발급한다(orphan/2시간 TTL/policy `k8s-bootstrap`의 `platform/argocd` 읽기) | none | none |
+| POL-0085-R25 | 클러스터 재구축 | 허용: OIDC operator가 `auth/kubernetes/config`를 갱신하고 부트스트랩 토큰을 발급한다 | none | none |
+| POL-0085-R26 | method 활성화/policy·role 작성/KV 항목 작성 | 필수: 승인된 root 세션을 요구한다 | 수동 | none |
+| POL-0085-R27 | OpenBao Traefik route | 필수: 클러스터가 도달할 수 있도록 SSO나 IP allowlist 없이 유지한다 | none | none |
+| POL-0085-R28 | 다섯 경로의 읽기 권한 | 필수: 사람이 쓰는 operator의 create/update 권한과 구분한다 | none | none |
+| POL-0085-R29 | ESO 주체 | 필수: exact service-account/namespace/audience 바인딩을 유지한다 | none | none |
+| POL-0085-R30 | 실제 설치된 정책/role과 경로 밖 거부 | 필수: 별도로 검증한다 | none | none |
+| POL-0085-R31 | source나 문자열 하드닝 통과 | 금지: 실제 설치된 정책/role/경로 밖 거부의 증명으로 취급한다 | none | none |
+| POL-0085-R32 | 이 교정 | 금지: 임의 권한 확대를 허용한다 | none | none |
+| POL-0085-R33 | Root 토큰 | 필수: bootstrap/break-glass/유지보수 window의 임시 root(W1c/W2/W7과 이전 root 정리) 용도로만 사용한다 | none | none |
+| POL-0085-R34 | 마지막으로 사용 가능한 root 토큰 | 금지: 동일한 유지보수 기록 안에서 human OIDC 로그인 성공/기대한 non-root policy를 가진 OpenBao 토큰/AppRole renderer 접근이 renderer ACL의 9개 소비자 KV data와 metadata 경로만 읽음/root recovery 방법 문서화가 모두 검증되기 전에 폐기한다 | none | none |
+| POL-0085-R35 | 위 네 가지 검증 후 | 필수: root를 폐기하고 거부 결과를 같은 유지보수 기록에 남긴다 | none | 같은 유지보수 기록의 거부 결과 |
+| POL-0085-R36 | `operator generate-root` | 필수: 인증된 `/sys/generate-root-token` 엔드포인트를 사용한다 | none | none |
+| POL-0085-R37 | 권한 있는 사람이나 root 토큰이 남아 있지 않을 때 | 금지: Agent read-only 토큰을 root-generation 엔드포인트 호출로 승격한다 | none | none |
+| POL-0085-R38 | deprecated된 인증 없는 `/sys/generate-root/*` 엔드포인트 | 허용: 임시 loopback 전용 listener에서 명시적으로 승인된 break-glass 예외로만 재활성화한다 | 수동 | none |
+| POL-0085-R39 | 위 break-glass 예외 | 필수: 동일한 데이터 볼륨과 seal 설정을 유지한다 | none | none |
+| POL-0085-R40 | 위 break-glass 예외 | 금지: 기본적으로 스냅샷을 restore한다 | none | none |
+| POL-0085-R41 | 위 break-glass 예외 | 필수: native OIDC 관리가 검증되면 즉시 제거하고 복구된 root 토큰의 폐기로 끝낸다 | none | none |
+| POL-0085-R42 | 런타임 고정값 | 필수: [Implementation](../../../../infra/03-security/openbao/docker-compose.yml)과 [version projection](../../../../infra/tech-stack.versions.json)이 소유한다 | none | none |
+| POL-0085-R43 | 두 서비스의 공통 자원 상한/변경 적용 | 필수: [POL-0006](../01-common/0006-infrastructure-optimization-governance.md)을 적용한다 | none | none |
+| POL-0085-R44 | 버전 변경 | 필수: [POL-0086](../10-platform-and-backup/0086-dependency-version-management.md)을 적용한다 | none | none |
+| POL-0085-R45 | Raft 상태/Agent bootstrap·output/offline custody | 필수: 서로 다른 보호 입력으로 보고 [POL-0021](../10-platform-and-backup/0021-backup-and-restore.md)의 OpenBao state-owner retention/암호화/복구 기준을 함께 적용한다 | none | none |
+| POL-0085-R46 | renderer | 필수: renderer ACL에 선언된 9개 KV data 경로(Keycloak/Grafana/OAuth2 Proxy/Kafbat/Dozzle/Gatus/Airflow/Open WebUI/Superset)와 각 metadata만 read한다 | none | none |
+| POL-0085-R47 | unused template | 금지: 있다는 이유로 renderer 권한을 넓힌다 | none | none |
+| POL-0085-R48 | Agent 재생성 | 금지: secret authority 복원으로 취급한다 | none | none |
+| POL-0085-R49 | Raft upgrade 전 | 필수: backup과 독립 stateful recovery 계약 검토를 거친다 | none | none |
+| POL-0085-R50 | data rollback | 금지: 승인된 격리 복원 없이 준비됐다고 표시한다 | none | none |
+| POL-0085-R51 | 마지막 관리 접근이나 unseal/custody 자료 | 금지: 검증 전에 폐기한다 | none | none |
+| POL-0085-R52 | 서비스/Agent 제거 | 필수: 소비자 이관/credential 폐기/보호 자료 보존을 각각 승인받아 수행한다 | 수동 | none |
+| POL-0085-R53 | 서비스/Agent 제거 | 금지: `down -v`로 대체한다 | none | none |
+| POL-0085-R54 | share/root/operator token | 필수: 숨김 입력/stdin/보호된 FD/tmpfs의 0600 파일/명령 하나에만 붙는 환경 변수로만 다룬다 | none | none |
+| POL-0085-R55 | share/root/operator token | 금지: 명령 인자/셸 기록/화면 출력/OpenBao CLI token helper(영구 disk)에 둔다 | none | none |
+| POL-0085-R56 | window에서 만든 임시 root | 필수: window 끝이나 중단 때 폐기한다 | none | none |
+| POL-0085-R57 | server가 sealed라 임시 root를 폐기할 수 없을 때 | 필수: 그 root를 다시 만들 수 있는 custody 파일을 모두 지운다 | none | none |
+| POL-0085-R58 | 다음 window | 필수: W1 직후 이전 root를 찾아 폐기한다 | none | none |
+| POL-0085-R59 | 임시 root 정리 | 필수: 기록과 상관없이 매 window 실행한다 | none | none |
+| POL-0085-R60 | server가 unsealed인데 새 OIDC 로그인이 되지 않을 때 | 필수: OIDC 접근부터 복구한다 | none | none |
+| POL-0085-R61 | server가 unsealed인데 새 OIDC 로그인이 되지 않을 때 | 금지: root와 custody를 지우거나 마지막 관리 접근을 복구 수단 없이 버린다 | none | none |
+| POL-0085-R62 | OIDC 장애로 남긴 root | 필수: OIDC를 고칠 때까지 최대 재부팅이나 다음 window까지만 owner가 tmpfs에 보관한다 | none | none |
+| POL-0085-R63 | OIDC 장애로 남긴 root 보관 중 | 필수: Linger나 로그인 세션을 유지하고 기한 날짜를 값 없이 기록한다 | none | none |
+| POL-0085-R64 | window에서 쓴 operator token | 필수: 폐기한다 | none | none |
+| POL-0085-R65 | window에서 쓴 operator token | 금지: 값이나 accessor를 기록한다 | none | none |
+| POL-0085-R66 | server가 sealed라 폐기할 수 없는 operator token | 허용: OIDC 최대 TTL(4시간) 안에 만료되게 두되 그 사실을 기록한다 | none | none |
+| POL-0085-R67 | OIDC 장애로 root를 남길 때 | 허용: operator token 파일도 함께 남기고 OIDC 복구 뒤 폐기한다 | none | none |
+| POL-0085-R68 | 정상 경로 | 필수: 내부 native TLS와 검증된 CA/SAN을 쓴다 | none | none |
+| POL-0085-R69 | bootstrap key/CA trust | 금지: 해당 OpenBao에만 의존한다 | none | none |
+| POL-0085-R70 | wrapping SecretID | 필수: creation path/짧은 TTL/1회 사용과 제한 role fetch/render version을 검증한다 | none | none |
+| POL-0085-R71 | sink 존재 | 금지: readiness로 취급한다 | none | none |
+| POL-0085-R72 | Agent | 금지: Docker socket을 주거나 무제한 restart로 인증 실패를 숨긴다 | none | none |
+| POL-0085-R73 | audit | 필수: config-owned HMAC file audit를 유지한다 | none | none |
+| POL-0085-R74 | 모든 필수 audit backend 실패 시 | 필수: 업무 요청의 실패/지연을 수용한다 | none | none |
+| POL-0085-R75 | health 응답 | 금지: audit 증거로 취급한다 | none | none |
+| POL-0085-R76 | audit | 금지: 비활성화로 성공시킨다 | none | none |
+| POL-0085-R77 | audit 운영 | 필수: 실제 filesystem 용량/rotation owner·schedule·보존/실패 알림을 HOME에서 검증한다 | none | none |
+| POL-0085-R78 | audit rotation | 필수: host logrotate 규칙(`/etc/logrotate.d/openbao`)과 기존 `logrotate.timer`의 시간 단위 drop-in이 맡는다 | none | none |
+| POL-0085-R79 | audit 파일 정체 경보 공백 | 필수: owner @buenhyden이 맡고 logrotate 실패나 audit 파일 정체 경보를 더하면 닫는다 | none | none |
+| POL-0085-R80 | 기존 single-file custody 예외 | 필수: 미해결 상태로 보존한다 | none | none |
+| POL-0085-R81 | P01 격리 시험 | 금지: single-file custody 예외를 종료하거나 HOME 복구 자료를 만들어낸다 | none | none |
+| POL-0085-R82 | P06 확대 | 허용: 실제 cold boot/RUN-0105 5단계 custody 기록(SPEC-0242)/선정 snapshot 복구 수용 이후에만 한다 | none | RUN-0105 5단계 custody 기록(SPEC-0242) |
+| POL-0085-R83 | 미사용 SecretID 만료 결함(GHSA-7m59-mp95-w6ph) | 금지: TTL/wrapping/1회 사용 선언으로 해결됐다고 간주한다 | none | none |
+| POL-0085-R84 | 미사용 SecretID 만료 결함 | 금지: 수정 버전 검증과 HOME gate 전에 배포나 P06 확대를 한다 | none | none |
+| POL-0085-R85 | 미사용 SecretID 만료 결함 | 필수: 미사용 발급의 명시적 폐기와 거부를 별도로 확인한다 | none | none |
+| POL-0085-R86 | 새 renderer issuance | 필수: `schema_version: 2` journal과 `issuance_id`를 쓰고 `issuance_id`와 legacy `nonce`를 동일하게 한다 | none | none |
+| POL-0085-R87 | v2 accessor metadata | 필수: `issuance_schema: "2"`/`issuance_id`/`sec01_nonce`를 모두 포함하고 두 identity 값을 일치시킨다 | none | none |
+| POL-0085-R88 | v1 journal과 anchor의 version 없는 역사적 정확한 형태 | 필수: 호환 대상으로 보존한다 | none | none |
+| POL-0085-R89 | 이전 발급 정합화 | 허용: journal과 활성 anchor의 version/identity가 정확히 같고 accessor metadata가 해당 journal version에서 유도한 전체 metadata와 정확히 같은 경우만 한다 | none | none |
+| POL-0085-R90 | cross-version 조합/alias 불일치/복수 accessor | 필수: accessor 폐기 전에 차단한다 | none | none |
+| POL-0085-R91 | 이전 발급을 정합화한 실행 | 금지: 같은 실행에서 새 SecretID를 발급한다 | none | none |
+| POL-0085-R92 | HOME 적용 | 금지: HOME의 credential/custody/snapshot/recovery 실제 입력이 확정되기 전에 적용한다 | none | none |
+| POL-0085-R93 | catalog와 schema | 필수: 공개 분류/보존 계약의 단일 원천으로 둔다 | none | none |
+| POL-0085-R94 | catalog 내용 | 금지: 값/값의 hash/token/실제 KV payload를 넣거나 같은 ID를 별도 inventory로 복제한다 | none | none |
+| POL-0085-R95 | `source_recorded_at` | 금지: runtime 증거 날짜로 승격한다 | none | none |
+| POL-0085-R96 | destination plan 기본값 | 필수: `BLOCKED_P01`이며 mount/field/UID/GID/mode는 null이다 | none | none |
+| POL-0085-R97 | `DEPLOYED` | 허용: delivered lane이 `CONFIRMED`인 `IMPLEMENT` 항목에만 쓴다 | none | none |
+| POL-0085-R98 | `DEPLOYED` 항목 | 필수: 실제 mount/KV path/field/출력 UID·GID/mode와 delivery `openbao_agent`를 기록한다 | none | none |
+| POL-0085-R99 | ACL/reload/restart/rotation | 필수: `DEPLOYED`에서도 `BLOCKED_P01`로 둔다 | none | none |
+| POL-0085-R100 | `BLOCKED_P01` 변경 | 필수: 해당 소비자/신원/경로와 복구 경계를 후속 검토한다 | 수동 | none |
+| POL-0085-R101 | `CONFIRMED` lane의 증거 pointer | 금지: 실제 소비/이관/rotation/복구를 별도로 확인하지 않은 수용의 근거로 쓴다 | none | none |
+| POL-0085-R102 | canonical `COMM-002`와 alias `COMM-003`/crypto/bootstrap/recovery/LAB/unknown/migrated/retired 또는 이미 observed/consumed인 항목 | 필수: 재생성을 거부한다 | none | none |
+| POL-0085-R103 | alias | 금지: 별도 credential/파일 생성/KV 경로를 만든다 | none | none |
+| POL-0085-R104 | COMM-003 실제 폐기 | 필수: SMTP01만 실행한다 | none | none |
+| POL-0085-R105 | COMM-003 폐기 | 금지: PG-020의 초기화/복구 보존 판정을 변경한다 | none | none |
+| POL-0085-R106 | `UNUSED_DELETE` | 금지: source/runtime/jobs/backup·restore/external 소비자와 복구 증거를 확인하기 전에 삭제 승인으로 취급한다 | none | none |
+| POL-0085-R107 | CLI 입력 | 필수: 네 추적 공개 파일로 한정한다 | none | none |
+| POL-0085-R108 | `render` | 필수: operator-owned 경로와 regular/single-link README 및 no-follow 조건을 충족한 `.agent-work/p02-views`의 네 공개 출력만 갱신한다 | none | none |
+| POL-0085-R109 | `render` | 금지: private metadata/환경/KV/HOME 또는 기존 공개 원본을 덮어쓴다 | none | none |
+| POL-0085-R110 | CLN이나 비참여 writer의 동시 쓰기 | 필수: 중지를 별도로 확인한다 | none | none |
+| POL-0085-R111 | staging 일치/비활성 profile/traffic zero/source search zero | 금지: 실제 consumer zero 또는 운영 수용 증거로 보고한다 | none | none |
 
 unseal/recovery 자료는 오프라인으로 유지한다. token, role_id, secret_id 또는 렌더링된
 파일을 절대 로깅하지 않는다. 현재 서버 health는 unsealed 상태만 허용한다. Agent
@@ -207,14 +319,9 @@ single-link README 및 no-follow 조건을 충족한 `.agent-work/p02-views`의 
 별도로 확인한다. staging 일치·비활성 profile·traffic zero·source search zero를 실제
 consumer zero 또는 운영 수용 증거로 보고하지 않는다.
 
-### Enforcement
+### Exceptions
 
-Compose/profile 검증과 [runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)이 별도의 정적/런타임 증거를
-제공한다. 예상치 못한 서비스, 마운트, 인증, readiness 상태가 보이면 중단한다.
-
-## Exceptions
-
-### Exception Conditions
+#### Exception Conditions
 
 owner @buenhyden은 모든 편차 전에 범위, 위험, 만료, 종료 조건을 기록해야 한다. 정적
 설정은 실제 backup이나 recovery의 증거가 아니다.
@@ -293,17 +400,41 @@ swap은 기록 전부터 있던 조건이며, window 전에 기록해 window의 
 | 남겨 둔 W2 custody | W2가 INDETERMINATE로 끝나면 snapshot 전용 token(최대 720시간)이 tmpfs에 남고, 다음 window의 W2·W3는 BLOCKED다 | 검토된 W2 복구 절차 |
 | 만료 없는 renderer token | SecretID가 1회용이라 renderer AppRole은 24시간 periodic token을 준다(2026-10-21 owner 수용, 지금 HOME과 같은 방식). Agent가 갱신하는 한 만료가 없어, sink token을 복사한 쪽도 계속 갱신할 수 있다. 권한은 renderer ACL의 9개 소비자 KV 읽기다. 수용은 Keycloak·Grafana 2개 경로 범위였고, 9개로 확대된 범위는 owner가 다시 수용하지 않아 결정 대기다. sink는 0600이며 sink는 0600이며, 갱신이 멈추면 24시간 안에 만료된다. W5 재발급은 이전 Agent token을 폐기하지 않는다 | W5에서 이전 Agent token을 폐기하는 검토된 절차, 또는 재인증 없이 유지되는 유한 수명 |
 
-### Approval and Review
+#### Approval and Review
 
 매월, 그리고 이미지, persistence, 인증, 노출이 변경되기 전에 검토한다.
 
+## Enforcement
+
+### Mechanisms
+
+Compose/profile 검증과 [runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)이 별도의 정적/런타임 증거를
+제공한다. 예상치 못한 서비스, 마운트, 인증, readiness 상태가 보이면 중단한다.
+
+### Limits
+
+이 정책은 아래 규칙에 대해 명명된 자동 검사를 연결하지 않거나 수동 검토에 맡긴다.
+
+- 기본 보호: 명명된 검사 없음 R1~R5 (`POL-0085-` 접두)
+- 사람 관리: 명명된 검사 없음 R6~R9 (`POL-0085-` 접두)
+- Prometheus metrics: 명명된 검사 없음 R10~R17, R19; 수동 검토 R18 (`POL-0085-` 접두)
+- k8s auth: 명명된 검사 없음 R20~R25, R27~R32; 수동 검토 R26 (`POL-0085-` 접두)
+- root 토큰: 명명된 검사 없음 R33~R37, R39~R42; 수동 검토 R38 (`POL-0085-` 접두)
+- 영속/제거: 명명된 검사 없음 R43~R51, R53; 수동 검토 R52 (`POL-0085-` 접두)
+- window 자격 증명: 명명된 검사 없음 R54~R67 (`POL-0085-` 접두)
+- P01 통제: 명명된 검사 없음 R68~R85 (`POL-0085-` 접두)
+- issuance 통제: 명명된 검사 없음 R86~R92 (`POL-0085-` 접두)
+- P02 catalog: 명명된 검사 없음 R93~R99, R101~R111; 수동 검토 R100 (`POL-0085-` 접두)
+- 개별 규칙마다 명명된 전용 검사는 거의 없다. 정책이 명명한 메커니즘은 Compose/profile 검증과 Runbook이며 별도의 정적/런타임 증거를 제공할 뿐 위 규칙 중 어느 것을 검증하는지 본문이 연결하지 않는다.
+- 정적 설정은 실제 backup이나 recovery의 증거가 아니다.
+
 ## Ownership
 
-### Responsibilities
+### Owner
 
 정책 소유자는 @buenhyden이다.
 
-### Change and Adoption
+### Review Triggers
 
 - [Guide](../../guides/04-security-and-secrets/0085-openbao.md), [Runbook](../../runbooks/04-security-and-secrets/0085-openbao.md)
 

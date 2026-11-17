@@ -134,21 +134,22 @@ REQUIREMENT_TARGET_BODY = body_with_headings(
 )
 
 POLICY_TARGET_BODY = body_with_headings(
-    "## Purpose",
+    "## Purpose and Scope",
     "### Objective",
-    "### Authority",
-    "## Scope",
     "### Applies To",
-    "### Exclusions",
     "## Rules",
     "### Requirements",
-    "### Enforcement",
-    "## Exceptions",
-    "### Exception Conditions",
-    "### Approval and Review",
+    "### Exceptions",
+    "## Enforcement",
+    "### Mechanisms",
+    "### Limits",
     "## Ownership",
-    "### Responsibilities",
-    "### Change and Adoption",
+    "### Owner",
+    "### Review Triggers",
+).replace(
+    "### Requirements\n\n",
+    "### Requirements\n\n| Rule ID | Condition | Requirement | Enforcement | Evidence |\n"
+    "| --- | --- | --- | --- | --- |\n\n",
 )
 
 
