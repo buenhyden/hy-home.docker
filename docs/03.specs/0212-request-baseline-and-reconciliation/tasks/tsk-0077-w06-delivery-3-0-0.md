@@ -1,10 +1,10 @@
 ---
 title: "W06 Delivery 3.0.0 Task"
-version: "0.1.4"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-18"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0077"
 parent_ids:
@@ -144,6 +144,51 @@ routing job to the expected inventory. Keep the exact inventory check
 and the existing checks for the executing shards and aggregate. The
 workflow and its enforcement remain unchanged.
 
+#### W06-DELIVERY 4.2.0 recheck
+
+The 2026-11-18 W06-DELIVERY request read D04, D05 and D17 of the 4.2.0
+package at `0e58e6608`. D04 adds the complete reuse key, the exact expected
+required set and the stage-split bottleneck measurement, which
+[TSK-0076](tsk-0076-w05-gates-3-0-0.md) verified for the gates. D05 adds
+reviewer independence by execution context and evidence, owned by
+W10-REVIEW and RUNTIME-CLOSE. D17 separates native preparation failures
+from target denials, owned by W07-ADAPTER and RUNTIME-CLOSE. No attachment
+disposition targets W06-DELIVERY. No external source was rechecked.
+
+Since the reported completion at `ffc3247ce`, no workflow, hook installer,
+push guard or delivery runner changed. PR 1076 changed only which hook
+environments the changed style leaf installs, and
+[TSK-0080](tsk-0080-w00-w07-follow-up.md) records its hosted comparison.
+
+| W06 requirement | Disposition | Basis |
+| --- | --- | --- |
+| Installed hook chain and Trace2 | KEEP_VERIFIED | No `core.hooksPath` locally or globally; pre-commit and commit-msg come from pre-commit and pre-push is the native guard. Three normal commits of one staged guide edit took 2.57 s median wall, 1.62 s pre-commit and 0.87 s commit-msg |
+| Commit, push, PR and merge each check their own input | KEEP_VERIFIED | Commit hooks read the exact index, the push guard reads ref records, PR selection keeps the base-to-head contribution plus the verified merge result including base-side renames, and main runs only its security lane |
+| A required workflow cannot vanish through a filter | KEEP_VERIFIED | No workflow declares `paths` or `paths-ignore`; `candidate-quality` always reports, and protection requires it from App 15368 with strict status, administrator enforcement and resolved conversations; no ruleset applies |
+| Non-applicable route without heavy setup | KEEP_VERIFIED, now hosted | Routing uses system Python and decides before any document runner starts; see the route table |
+| No speed from skipping verification | KEEP_VERIFIED | No `--no-verify` route; the aggregate refuses a missing or failed routing result, a skipped selected job and a success that contradicts a negative selection |
+
+The route table uses the 36 successful pull request runs of this workflow
+since 2026-11-16 12:00 UTC, with job start and end times from the Actions API.
+
+| Route | Runs | Routing median and range | Core median | Document shard median and range | Workflow median and range |
+| --- | --- | --- | --- | --- | --- |
+| Documents not selected | 17 | 12 s, 10–53 s | 243 s | not started | 252 s, 188–367 s |
+| Documents selected | 19 | 12 s, 8–20 s | 280 s | 1,155 s, 758–1,378 s | 1,177 s, 790–1,414 s |
+
+The inputs differ between routes, so the table shows where each route
+spends time, not a paired speedup. When selected, the document shard is the
+critical path. The pre-W06 and current implementations cannot run on hosted
+runners with the same input, because every candidate merges the current
+`main` and the pre-W06 code sits under later changes. No paired hosted
+comparison is claimed.
+
+Independent remote enforcement is still not adopted: it needs a base-owned
+verifier that treats candidate objects as data, a separate check with a
+verified App identity, and main protection naming both. Creating that App
+and changing protection need the owner's separate authority, which this
+request does not grant.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -200,12 +245,18 @@ endpoint returned no applicable rules. This is a read-only observation.
 | Hosted public candidate model | 133 | W138 | public candidate job model test | PR 1049 at 3282d1e47, run 43776564841 | FAIL | candidate-core reproduced the omitted candidate-routing job in the exact inventory assertion | required | - |
 | Corrected public candidate model | 133 | W138 | public candidate job model test | Corrected job inventory for PR 1049 | PASS | Local public model and ownership suites passed 16 tests, exit 0 | required | Hosted public candidate model |
 | Hosted selected route and main security | 133 | W138 | actual PR and main Actions run | PR 1049 at 75e1c3079, run 43778700250; merged main at 2cfeeac734, run 43780546570 | PASS | Route 12 s, selected documents 805 s, core 952 s, required aggregate 5 s and main security 32 s | required | Hosted continuation |
+| 4.2.0 hook chain | 133 | W138 | git config, hook header and normal git commit with Trace2 | Three commits of one staged guide edit on `0e58e6608` in a disposable worktree | PASS | No hooks path; median wall 2.57 s, pre-commit 1.62 s, commit-msg 0.87 s | required | - |
+| 4.2.0 hosted routes | 133 | W138 | read-only Actions run and job metadata | 36 successful PR runs since 2026-11-16 12:00 UTC | PASS | 17 non-applicable and 19 selected document routes, medians in the route table | required | - |
+| 4.2.0 protection read-back | 133 | W138 | read-only GitHub API | Current main protection and rules | PASS | candidate-quality from App 15368, strict, administrators enforced, conversations resolved, no ruleset | optional | - |
+| 4.2.0 delivery regressions | 133 | W138 | unittest gate plan and workflow contract, style wrapper contract | PR 1076 candidate on 2026-11-18 | PASS | 135 tests including both rename paths and the base-side merge rename, wrapper contract passed | required | - |
 
 ### Resolution Links
 
 Local evidence resolves the demonstrated rename, checkout and late document
-selection defects. The earlier independent scope finding remains open for
-hosted timing and adoption of the independent verifier.
+selection defects. Hosted runs now show the non-applicable route deciding
+before any document runner starts. The independent scope finding stays
+unresolved because the independent verifier is not adopted and no
+independent re-review of W06 coverage has run.
 
 ## Acceptance Decision
 
@@ -217,11 +268,13 @@ hosted timing and adoption of the independent verifier.
 
 ### Remaining Conditions
 
-Owner acceptance remains pending. The selected hosted route was observed
-in PR 1049 and the corrected candidate passed. A paired hosted timing
-comparison, the hosted no-document route and independent remote
-enforcement adoption are still open. The separate `main-security` job
-passed on the actual merge commit.
+Criterion 133 stays pending on the Independent scope review row. The
+selected and non-applicable hosted routes are observed. A paired hosted
+comparison of the pre-W06 and current implementations is not possible for
+the reason above. Adopting independent remote enforcement needs the owner's
+authority to create a verifier App and change main protection, followed by
+an independent re-review. The separate `main-security` job passed on the
+actual merge commit.
 
 ## Handoff
 
@@ -231,4 +284,5 @@ The existing delivery runner, style wrapper and workflow own the changes.
 
 ### Next Owner
 
-The implementer owns W138. The owner decides criterion 133.
+The owner decides whether to authorize the independent verifier and
+protection change, or how to decide criterion 133 without it.
