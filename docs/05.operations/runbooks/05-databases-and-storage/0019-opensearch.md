@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Recovery Runbook"
-version: "2.0.4"
+version: "2.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0019"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # OpenSearch Recovery Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 정상 단일 OpenSearch의 준비 상태 점검과 별도 standalone LAB의 정적·운영 경계를 다룬다. 정상 root는 `opensearch` profile의 `opensearch`와 `opensearch-dashboards`를 선택한다. 세 노드와 `lab-opensearch-dashboards`는 standalone `labs/opensearch-cluster/docker-compose.yml`의 별도 project이며 HOME 서비스가 아니다. 소스 검증만 승인된 경우 서비스 기동·중단·복구는 `NOT_RUN`으로 기록한다.
 
@@ -29,7 +29,7 @@ next_review_at: "2027-05-13"
 - Dashboards가 OpenSearch에 연결할 수 없을 때
 - `opensearch-cluster` topology에 unhealthy node나 shard allocation 문제가 있을 때
 
-### Scope
+### Targets
 
 #### Execution and stop boundary
 
@@ -48,9 +48,9 @@ next_review_at: "2027-05-13"
 - [Usage guide](../../guides/05-databases-and-storage/0019-opensearch.md)
 - [Operations policy](../../policies/05-databases-and-storage/0019-opensearch.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 운영 checkout의 repository root와 승인된 Docker context를 확인한다. static source 점검만 승인된 경우 모든 runtime command는 NOT_RUN이다. raw log, rendered Compose, SQL/문서/벡터 payload, credential URI는 evidence에 붙이지 않고 결과·시간·target·source revision·종료 코드만 요약한다.
 
@@ -58,7 +58,7 @@ next_review_at: "2027-05-13"
 
 - [ ] index나 shard 변경에는 owner 승인이 필요하다.
 
-### Safety Checks
+### Environment
 
 Dockerfile의 OpenSearch 기본 이미지와 exporter plugin 선언 버전의 실제 빌드 호환성은 확인되지 않았으므로 (미검증), 정상과 LAB의 build/start/restore 성공을 가정하지 않는다. LAB 인증서의 node/관리자 DN·SAN·신뢰와 Dashboards 연결도 별도 검증 전이다.
 
@@ -67,9 +67,23 @@ Dockerfile의 OpenSearch 기본 이미지와 exporter plugin 선언 버전의 �
 - [ ] 정상 root `opensearch`인지 standalone LAB `opensearch-cluster`인지 Compose 파일과 project 이름까지 기록했습니다. 각 project의 Dashboard는 별개입니다.
 - [ ] admin password는 안전하게 읽고 저장하지 않는다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | primary/LAB compose 파일과 문서 링크 계약 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | primary health를 HTTPS와 client prompt로 확인 | health endpoint가 최소 yellow 상태를 반환 | prompt/권한/CA/endpoint가 없거나 인증 실패 시 중단하고 `-k`로 우회하지 않음 |
+| 3 | OpenSearch와 Dashboards 로그 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 4 | LAB compose를 `config --quiet`로 정적 확인 | 문서에 기록 없음 | LAB 기동·로그 조회는 명시적 LAB 실행 승인 전에는 하지 않음 |
+| 5 | Planned isolated snapshot restore: topology/version/index/shard/repository/credential owner/disk/목적지 기록 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 6 | Planned isolated snapshot restore: live volume 밖 repository로 `.opendistro_security` 제외 snapshot 생성 | snapshot이 `SUCCESS`가 되고 포함 index와 실패 내역 기록 | live data-directory copy에 의존하지 않고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 7 | Planned isolated snapshot restore: 빈 volume의 새 isolated primary/cluster 준비와 동일 repository 등록 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 8 | Planned isolated snapshot restore: 선택 index를 임시 이름 또는 빈 target에 복원 | 문서에 기록 없음 | security index를 맹목적으로 복원하지 않고 Stop Conditions에 따라 escalation |
+| 9 | Planned isolated snapshot restore: health/shard/count/검색/Dashboards/TLS/role/write alias 확인 | green/yellow health, 예상 index/document count, 대표 검색 통과 | isolated volume만 중지·보존하고 새 승인 target에서 같은 snapshot으로 재시도, shard reroute나 active index 덮어쓰기 금지 |
+| 10 | Planned isolated snapshot restore: 실패 시 isolated volume 보존 후 재시도 | 문서에 기록 없음 | 강제 복구 없이 보존하고 @buenhyden에게 escalation |
+| 11 | Planned isolated snapshot restore: cutover/alias 변경/snapshot 삭제/active-cluster restore 별도 승인 | rehearsal 성공 기록 전에는 restore는 검증되지 않은 상태 | 별도 approval 없이 진행하지 않음 |
 
 절차:
 
@@ -122,14 +136,16 @@ Dockerfile의 OpenSearch 기본 이미지와 exporter plugin 선언 버전의 �
 
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 - [ ] health endpoint가 primary stack에 대해 최소 yellow 상태를 반환한다.
 - [ ] Dashboards health endpoint가 compose healthcheck가 허용하는 `200` 또는 `401`을 반환한다.
 
-### Evidence
+#### Evidence
 
 - [ ] 최종 evidence에 정상 또는 LAB의 Compose 파일·project·service를 명시합니다. 관측하지 않은 runtime 결과는 `NOT_RUN`으로 기록합니다.
 
@@ -139,12 +155,21 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 - **Metrics**: custom image의 exporter plugin을 Prometheus `opensearch` job이 `opensearch:9200`에서 `opensearch_exporter_password`로 scrape한다(`obs_net`, `infra/06-observability/prometheus/config/prometheus.yml`).
 - **Evidence**: 선택한 compose file·service 이름, health 상태, service log 요약, escalation 결정, secret boundary 확인. password 값은 기록하지 않는다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 runbook은 아래 항목을 아직 관측하지 않았다.
 
-rehearsal의 rollback은 source cluster와 snapshot을 변경하지 않은 채 isolated topology를 보존하고 원본을 계속 사용하는 것이다. cutover plan은 source를 유지하고 alias/DNS 전환을 별도로 정의해야 한다.
+- primary 이미지 빌드·인증·health: 이 문서에는 실제 실행 결과가 기록되어 있지 않고 `NOT_RUN`으로 둔다. 격리 실행에서 health endpoint가 최소 yellow를 반환하고 Dashboards가 `200` 또는 `401`을 반환하는 관측이 있으면 검증된다.
+- LAB 구성의 기본 엔진·plugin 빌드 호환성과 인증서 신뢰: 문서가 미검증이라 밝히며 operational acceptance가 보류되어 있다. 승인된 별도 target/CA/project에서 LAB 기동과 health를 관측해야 한다.
+- Planned isolated snapshot restore: 계획이며 실행 결과가 기록되어 있지 않다. 격리 target에서 snapshot `SUCCESS`와 복원 후 index/document count, 검색, TLS, role 확인을 해당 실행 Task에 기록해야 한다.
+- Prometheus `opensearch` job의 exporter scrape: 이 문서에는 관측 결과가 기록되어 있지 않다. 해당 target이 up인지 확인해야 한다.
 
-### Escalation
+## Escalation
+
+### Next Owner
 
 health가 계속 red/unavailable이거나, shard 변경이 필요하거나, secret이나 cert가 없거나, primary와 cluster variant evidence가 충돌할 때 escalation한다.
+
+### Recovery or Forward Repair
+
+rehearsal의 rollback은 source cluster와 snapshot을 변경하지 않은 채 isolated topology를 보존하고 원본을 계속 사용하는 것이다. cutover plan은 source를 유지하고 alias/DNS 전환을 별도로 정의해야 한다.

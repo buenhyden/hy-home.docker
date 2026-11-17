@@ -1,10 +1,10 @@
 ---
 title: "SonarQube Runbook"
-version: "1.2.2"
+version: "1.3.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0066"
 parent_ids:
@@ -15,16 +15,16 @@ next_review_at: "2027-05-13"
 
 # SonarQube Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 SonarQube(`sonarqube` service)의 health·DB 연결 장애, 검색 인덱스 복구, 토큰 사고, DB 복원, 업그레이드 절차다.
 
 health·DB 연결 실패, 백그라운드 작업 지연, 검색 인덱스 실패, 토큰·인증 사고,
 DB 복원 또는 승인된 업그레이드에 사용한다.
 
-### Scope
+### Targets
 
 - [Guide](../../guides/15-labs/0066-sonarqube.md) (`GDE-0066`)
 - [Policy](../../policies/15-labs/0066-sonarqube.md) (`POL-0066`)
@@ -34,13 +34,13 @@ DB 복원 또는 승인된 업그레이드에 사용한다.
 - [SonarQube backup/restore](https://docs.sonarsource.com/sonarqube-server/9.9/instance-administration/backup-and-restore)
 - [SonarQube upgrade](https://docs.sonarsource.com/sonarqube-server/9.8/setup-and-upgrade/upgrade-the-server/upgrade-guide)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 변경 전 정확한 서비스·데이터 경로·승인자·중단 영향을 기록한다. rollback 승인이 있을 때만 active instance를 upgrade하며, HOME mng-pg endpoint(`LAB_SONARQUBE_DB_HOST`)는 승인된 것만 사용한다.
 
-### Safety Checks
+### Environment
 
 변경 전 확인할 작업 선택과 복구 전제는 다음과 같다.
 
@@ -53,9 +53,24 @@ DB 복원 또는 승인된 업그레이드에 사용한다.
 단일 파일 bind 재생성과 비밀 비노출 확인을 따른다. 재시작은 데이터 복원이나 자격 증명
 폐기 검증을 대신하지 않는다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | `config --quiet` 검증, `lab.py status`, `sonarqube` 로그로 bounded state 캡처 | 문서에 기록 없음 | HOME mng-pg endpoint(`LAB_SONARQUBE_DB_HOST`)가 승인되지 않았으면 중단 |
+| 2 | 앱 인증/token, DB 연결, compute engine 대기열, 검색 인덱스 증상 구분 (data는 redact) | 문서에 기록 없음 | queue/index failure가 지속되면 중단 |
+| 3 | owner를 통해 management PostgreSQL service와 여유 공간 확인 (SonarQube 내부에서 `psql` 실행 금지) | 문서에 기록 없음 | DB가 corruption되었으면 중단 |
+| 4 | DB/storage 점검 후 SonarQube LAB만 재시작하고 system health, loopback 로그인, permission, 대표 background task 확인 | system health, loopback port 로그인, SonarQube permission, 대표 background task 하나가 정상 | 중단하고 Stop Conditions에 따라 escalation |
+| 5 | token compromise 시 token revoke, 소유 CI secret rotate, 이전 token 거부 확인 | 이전 token이 거부됨 | 문서에 기록 없음 |
+| 6 | Database restore and index recovery: SonarQube를 중지하고 DB write 없음 유지 | 문서에 기록 없음 | DB backup이 없거나 미검증이면 중단 |
+| 7 | Database restore and index recovery: 검증된 database-native backup을 isolated PostgreSQL target으로 복원 (source DB 보존, backup/checksum/schema/version 기록) | 문서에 기록 없음 | DB backup이 없거나 미검증이면 중단 |
+| 8 | Database restore and index recovery: 일치하는 version의 isolated SonarQube를 fresh/empty local search-index path로 시작 | 문서에 기록 없음 | active production index를 삭제하지 않으며 migration이 모호하면 중단 |
+| 9 | Database restore and index recovery: reindexing 허용 후 project/settings/user count, permission, 대표 검색, analysis 하나 확인 | project/settings/user count, permission, 대표 검색, analysis 하나가 확인됨 | 승인 후에만 promote하며 실패 시 중단 |
+| 10 | Upgrade and rollback: pre-upgrade DB backup과 plugin/config inventory 확인, release note 검토, migration headroom 확보 | 문서에 기록 없음 | plugin 호환성을 알 수 없으면 중단 |
+| 11 | Upgrade and rollback: reindex와 scanner 호환성 포함해 isolated restored DB에서 target image 테스트 | 문서에 기록 없음 | migration이 모호하면 중단하고 @buenhyden에게 호환성 확인 요청 |
+| 12 | Upgrade and rollback: rollback 승인이 있을 때만 active instance upgrade | 문서에 기록 없음 | 실패 시 중지, pre-upgrade DB 복원, 이전 image 시작 (migrate된 DB에 이전 image를 연결하지 않음) |
 
 1. 저장소 루트에서 validate하고 bounded state를 캡처한다.
 
@@ -125,25 +140,37 @@ DB backup이 없거나 미검증이거나, migration이 모호하거나, DB가 c
 plugin 호환성을 알 수 없거나, queue/index failure가 지속되거나, authorization bypass가
 있으면 중단한다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 system health, loopback port 로그인, SonarQube permission, 대표 background task 하나가 정상이어야 하고, 복원 후에는 project/settings/user count, permission, 대표 검색, analysis 하나가 확인되어야 한다.
 
-### Evidence
+#### Evidence
 
 command exit, image/source commit, DB backup/checksum/schema, project와 task
 count, health/index status, plugin inventory, 최종 상태를 기록한다. DB 내용,
 source code, personal data, token은 절대 기록하지 않는다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 runbook이 아직 관찰하지 못한 항목은 다음과 같다. 문서는 backup/restore/upgrade를 실행하지 않았다고 적고 있다.
+
+- DB 복원과 index 재구축: 이 문서에는 실행 결과가 기록되어 있지 않다. isolated 복원 후 project/settings/user count, permission, 대표 검색, analysis 하나가 관찰되면 검증된다.
+- upgrade와 rollback: 실행 결과가 기록되어 있지 않다. isolated 복원 DB에서 target image 테스트 결과가 관찰되면 검증된다. 현재 Community Build에 맞는 release/DB/plugin 지원 근거는 아직 확보되지 않았다고 문서가 밝힌다.
+- 재시작 후 system health, loopback 로그인, permission, background task 확인: 실행 결과가 기록되어 있지 않다.
+- token revoke와 CI secret rotate: 실행 결과가 기록되어 있지 않다. 이전 token 거부가 관찰되면 검증된다.
+- HOME mng-pg endpoint 승인: 미결정 입력이며 승인 여부가 문서에 기록되어 있지 않다.
+
+## Escalation
+
+### Next Owner
+
+책임자는 `@buenhyden`이다. 위 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.
+
+### Recovery or Forward Repair
 
 database restore/reindex와 upgrade rehearsal은 **계획되었으나 미실행** 상태이다.
 검증된 database recovery point 없이 search index를 삭제해서는 안 된다.
-
-### Escalation
-
-책임자는 `@buenhyden`이다. 위 중단 조건과 영향받은 서비스·대상 소유자를 함께 기록하고, 추가 변경 없이 보고한다.

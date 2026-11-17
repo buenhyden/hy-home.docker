@@ -1,10 +1,10 @@
 ---
 title: "LAB Promotion Runbook"
-version: "0.2.3"
+version: "0.3.0"
 type: "operation/runbook"
 status: "draft"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0107"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # LAB Promotion Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 LAB을 `infra/`로 승격하는 readiness 검사 실행과 세 승격 절차 `add`, `replace-same`,
 `replace-substitute`를 다룬다. 통제 기준은 [POL-0107](../../policies/15-labs/0107-lab-promotion.md),
@@ -29,7 +29,7 @@ SPEC-0263은 아무 LAB도 승격하지 않는다. 이 런북은 이후 승격 T
 LAB의 `promotion.yaml`이 `undecided`가 아닌 kind를 선언하고 owner가 그 LAB의 승격 Task를 연 때
 사용한다. readiness 검사 자체는 HOME 상태를 읽기만 하므로 승격 여부를 판단하려 할 때 언제든 쓴다.
 
-### Scope
+### Targets
 
 - Contract: [SPEC-0263](../../../03.specs/0263-lab-promotion-contract/spec.md) section 5–6.
 - Implementation: `scripts/operations/lab.py` `readiness`, `reservation_sum`, `budget`.
@@ -39,9 +39,9 @@ LAB의 `promotion.yaml`이 `undecided`가 아닌 kind를 선언하고 owner가 �
 - [LAB README](../../../../labs/README.md)
 - [Domain catalog](../../README.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 - 승격 Task가 있고, 그 Task가 대상 LAB, kind, 목적지와 운영 window를 기록한다.
 - **HOME runtime을 건드리는 모든 단계(기동, 정지, 재생성, 데이터 export·import, 소비자 전환,
@@ -49,7 +49,7 @@ LAB의 `promotion.yaml`이 `undecided`가 아닌 kind를 선언하고 owner가 �
 
 - agent는 두 env 파일과 `secrets/`를 읽지 않는다.
 
-### Safety Checks
+### Environment
 
 - `labs/.env`(`--env-file`, 기본 `labs/.env`)에 대상 LAB의 필수 입력(`LAB_DATA_DIR`과 LAB별 입력)이
   있다.
@@ -58,9 +58,38 @@ LAB의 `promotion.yaml`이 `undecided`가 아닌 kind를 선언하고 owner가 �
 
 - 대체 승격이면 은퇴할 서비스의 최신 backup과 격리 복원 증거가 있다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Readiness run: `lab.py readiness <name> --report <path>`로 읽기 전용 readiness 검사 실행 | 종료 코드 0 (다섯 기준 `tier`/`composition`/`linux`/`docker`/`resources` 모두 `PASS`) | 종료 코드가 0이 아니면 승격을 멈추고 보고서와 종료 코드를 승격 Task에 기록 (`NOT_RUN`은 통과가 아님) |
+| 2 | add: 파일 이동 전 LAB 위치에서 readiness 검사 실행 | 종료 코드 0 | 0이 아니면 절차를 멈춤 |
+| 3 | add: 목적지 규칙에 따라 Compose/README/자산/Guide/Runbook을 `git mv`로 이동하고 상대 경로 조정 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 4 | add: manifest의 `integrations`(gateway route, OIDC client, DB role, observability, OpenBao 전달, 공유 network) 연결 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 5 | add: LAB secret 값은 승격하지 않고 은퇴시킨다 (Secret retirement 따름) | 문서에 기록 없음 | 데이터/secret 소유가 불명확하면 멈추고 @buenhyden에게 보고 |
+| 6 | add: root render와 관련 test 실행 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 7 | add: 승인된 운영 window에서 서비스 시작 후 health와 사용자 기능 확인 | health와 사용자 기능이 확인됨 | 문서에 기록 없음 |
+| 8 | add: `promotion.yaml` 삭제 후 승격 Task에 기록 | 승격 Task에 기록 | 문서에 기록 없음 |
+| 9 | replace-same, Consumer inventory: `git grep`으로 은퇴 서비스의 이름/host/port/secret/network 참조 파일 탐색 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 10 | replace-same, Consumer inventory: 소비자별 연결 방식/전환 순서/중단 허용 여부를 승격 Task에 표로 기록 | 승격 Task에 표 기록 | 문서에 기록 없음 |
+| 11 | replace-same, Data migration - Export: writer 정지 또는 일관성 지점 합의 후 엔진 공식 방식으로 export, 파일/크기/checksum manifest 기록 | export manifest 작성 | 문서에 기록 없음 |
+| 12 | replace-same, Data migration - Import: 새 서비스에 import | 문서에 기록 없음 | 문서에 기록 없음 |
+| 13 | replace-same, Data migration - Verify: 객체 수/목록/표본 값/application read를 export manifest와 비교 | export manifest와 일치 | 불일치가 있으면 cutover하지 않고 멈추며 @buenhyden에게 보고서와 실패 신호를 전달 |
+| 14 | replace-same, Cutover: inventory 순서대로 소비자 하나씩 전환하고 각 전환 뒤 기능 확인 | 소비자마다 전환 뒤 기능이 확인됨 | 소비자 전환이 실패하면 멈추고 @buenhyden에게 보고서와 실패 신호를 전달하며 Rollback(소비자를 이전 서비스로 되돌리고 보존한 데이터로 다시 시작)을 따름 |
+| 15 | replace-same, Cutover: 전환하는 동안 이전 서비스와 데이터를 정지 상태로 보존 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 16 | replace-same, Retirement: 새 서비스 검증과 rollback window 종료 후 은퇴 서비스를 Compose에서 제거 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 17 | replace-substitute: 이전 제품 설정 키와 새 제품 대응 키/기본값 차이/대응 없는 키를 표로 작성 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 18 | replace-substitute: 데이터 형식 대응과 변환 도구 결정, 손실 속성 명시 및 owner 승인 | owner 승인 | 문서에 기록 없음 |
+| 19 | replace-substitute: 소비자 측 protocol/client 차이와 필요한 변경을 inventory에 추가 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 20 | replace-substitute: Data migration의 Verify를 변환 뒤 값으로 비교 | 변환 뒤 값이 일치 | 불일치가 있으면 cutover하지 않고 멈추며 @buenhyden에게 보고서와 실패 신호를 전달 |
+| 21 | Secret retirement: agent가 `secret-catalog.json`에서 LAB 행 은퇴, 목적지 `root` 행 생성 또는 소비자 추가 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 22 | Secret retirement: owner가 `SENSITIVE_ENV_VARS.md.example`을 catalog와 일치하도록 손으로 편집 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 23 | Secret retirement: owner가 `gen-secrets.sh --sync-metadata-check` 확인 후 `--sync-metadata` 동기화 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 24 | Secret retirement: `--sync-metadata-prune` 정리는 RUN-0106의 절차와 audit proof 입력에 따라 수행 (COMM-003은 SMTP01 은퇴만 제거) | 문서에 기록 없음 | private registry가 COMM-003을 갖는 동안 `--sync-metadata-prune`이 막히면 RUN-0106의 절차와 audit proof 입력을 따름 |
+| 25 | Secret retirement: `secret-catalog.py --root "$PWD" check`로 catalog 검사 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 26 | Secret retirement: owner가 LAB 사본 파일 제거 | 문서에 기록 없음 | 문서에 기록 없음 |
 
 승격 절차는 readiness 검사, kind별 절차, secret 은퇴 순서로 구성된다.
 
@@ -208,21 +237,37 @@ secret을 쓴다.
 
 그 밖에 add 1단계는 readiness가 0이 아니면 절차를 멈추고, Data migration의 Verify는 불일치가 있으면 cutover하지 않으며, 데이터·secret 소유가 불명확하면 멈추고 @buenhyden에게 보고서와 실패 신호를 전달한다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 readiness 종료 코드가 0(다섯 기준 모두 `PASS`)이고, Data migration의 Verify 결과가 export manifest와 일치하며, 소비자마다 전환 뒤 기능이 확인되어야 한다.
 
-### Evidence
+#### Evidence
 
 승격 Task에 readiness 보고서, 종료 코드, source revision, export manifest 요약, verify 결과,
 소비자별 전환 결과, rollback window와 은퇴 시점을 기록한다. secret 값, raw payload와 rendered
 private 설정은 기록하지 않는다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 runbook이 아직 관찰하지 못한 항목은 다음과 같다. 문서는 절차와 보고서 형식을 설명할 뿐 특정 LAB의 승격 실행 결과를 기록하지 않는다.
+
+- readiness 검사: 이 문서에는 특정 LAB에 대한 실행 결과가 기록되어 있지 않다. 종료 코드 0과 다섯 기준 `PASS` 보고서가 관찰되면 검증된다. `NOT_RUN` 기준은 측정하지 못한 값이며 통과가 아니다.
+- owner checklist(Tier 기능 적합성, Group과 file mode, Profile과 consumer 충돌): owner 판단이며 승격 Task에 기록되기 전에는 검증되지 않았다.
+- add/replace-same/replace-substitute의 파일 이동, 운영 window 기동, 데이터 migration, cutover, 은퇴: 승인된 window가 필요하며 실행 결과가 기록되어 있지 않다. Verify 결과가 export manifest와 일치하고 소비자별 전환 뒤 기능이 확인되면 검증된다.
+- Secret retirement 동기화와 catalog 검사: 실행 결과가 기록되어 있지 않다. `--sync-metadata-check`와 `secret-catalog.py check` 통과가 관찰되면 검증된다.
+
+## Escalation
+
+### Next Owner
+
+readiness가 0이 아니거나, verify가 불일치하거나, 소비자 전환이 실패하거나, 데이터·secret 소유가
+불명확하면 멈추고 @buenhyden에게 보고서와 실패 신호를 전달한다.
+
+### Recovery or Forward Repair
 
 각 대체 절차의 Rollback을 따른다. 이전 서비스와 데이터는 Retirement 전까지 삭제하지 않으므로
 언제든 되돌릴 수 있어야 한다. `add`는 새 서비스를 정지하고 root include를 되돌린다.
@@ -232,8 +277,3 @@ private 설정은 기록하지 않는다.
 1. 소비자를 이전 서비스로 되돌리고 이전 서비스를 보존한 데이터로 다시 시작한다.
 2. cutover 이후 새 서비스에만 쓰인 데이터가 있으면 그 범위를 Task에 기록하고 owner가 처리를
    결정한다. 실패한 새 서비스의 데이터는 보존한다.
-
-### Escalation
-
-readiness가 0이 아니거나, verify가 불일치하거나, 소비자 전환이 실패하거나, 데이터·secret 소유가
-불명확하면 멈추고 @buenhyden에게 보고서와 실패 신호를 전달한다.

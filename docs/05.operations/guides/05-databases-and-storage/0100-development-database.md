@@ -1,10 +1,10 @@
 ---
 title: "Development Database Usage Guide"
-version: "0.3.3"
+version: "0.3.4"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0100"
 parent_ids:
@@ -112,7 +112,7 @@ WAL 연속 보관·PITR, 관리 DB 복구, HOME 서비스 기동·정지·재시
 ### Expected Result
 
 저장소 root에서 정적 Compose와 permission contract만 확인한다. 명령은
-[RUN-0100 절차](../../runbooks/05-databases-and-storage/0100-development-database.md#actions)가 소유한다. 이 검사는
+[RUN-0100 절차](../../runbooks/05-databases-and-storage/0100-development-database.md#steps)가 소유한다. 이 검사는
 컨테이너를 시작하거나 private environment를 출력하지 않는다.
 
 `dev-data`는 HOME의 기존 `dev` profile과 별도다. 현재 root candidate 선택에 새 엔진을

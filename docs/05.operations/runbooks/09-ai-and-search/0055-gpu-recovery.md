@@ -1,10 +1,10 @@
 ---
 title: "AI GPU Recovery Runbook"
-version: "1.0.6"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0055"
 created: "2026-03-25"
@@ -13,9 +13,9 @@ next_review_at: "2027-05-13"
 
 # AI GPU Recovery Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 > Scope: `infra/08-ai`의 `ollama` NVIDIA GPU 가속 복구.
 
@@ -31,7 +31,7 @@ next_review_at: "2027-05-13"
 - 모델 로딩이 GPU 미할당 또는 VRAM 접근 오류로 실패한다.
 - 소비자에서 모델 응답이 급격히 느려지고 GPU 사용률이 0에 머문다.
 
-### Scope
+### Targets
 
 - Governing authority: [AI Infrastructure Architecture Description](../../../02.architecture/descriptions/0008-ai-architecture.md) (`AD-0008`)
 - Subject peers: `0055` 번호를 공유하는 Guide·Policy는 없다.
@@ -43,9 +43,9 @@ next_review_at: "2027-05-13"
 - [Ollama operations policy](../../policies/09-ai-and-search/0056-ollama.md)
 - [Ollama runbook](0056-ollama.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 승인과 실행 경계는 아래 항목에 따른다.
 
@@ -55,7 +55,7 @@ next_review_at: "2027-05-13"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Safety Checks
+### Environment
 
 작업 전 점검은 아래 항목에 따른다.
 
@@ -65,9 +65,20 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - [ ] Docker daemon 재시작이 다른 서비스에 미치는 영향을 확인하고 운영 승인을 받는다.
 - [ ] `ollama` 컨테이너 상태와 로그를 캡처한다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 복구 단계: 호스트 GPU 상태를 `nvidia-smi`로 확인한다 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | 복구 단계: 승인된 `GPU_DIAGNOSTIC_IMAGE`로 NVIDIA Container Toolkit 경로를 검증한다 | 문서에 기록 없음 | toolkit 검사 실패면 중단하고 @buenhyden에게 escalation |
+| 3 | 복구 단계: Ollama 컨테이너 내부 GPU 인식을 확인한다 | `docker compose exec ollama nvidia-smi`가 성공한다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 4 | 복구 단계: compose device reservation 유지 여부를 `docker inspect`로 확인한다 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 5 | 복구 단계: toolkit은 정상이고 컨테이너만 드리프트되면 Ollama를 재시작한다 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 6 | 복구 단계: Docker runtime이 GPU를 전달하지 못하면 승인 후 Docker daemon을 재시작한다 | 문서에 기록 없음 | daemon 재시작 승인이 없으면 중단하고 @buenhyden에게 escalation |
+| 7 | 복구 단계: daemon 재시작 후 Ollama를 다시 기동하고 GPU를 재검증한다 | `docker compose exec ollama nvidia-smi`가 성공한다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 8 | Agent Operations: 승인 후 낮은 VRAM 모델로 전환하고 자동 고동시성 추론을 중단하며 복구 후 목록/API와 승인된 추론 검증을 수행한다 | `curl -f http://localhost:${OLLAMA_HOST_PORT:-11434}/api/tags`가 성공한다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
 
 절차는 아래 항목에 따른다.
 
@@ -129,14 +140,16 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 중단 조건은 Escalation에 기록한다. host `nvidia-smi`·NVIDIA Container Toolkit 검사 실패, daemon 재시작 승인 부재, `08-ai` 밖 영향이 있으면 중단한다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 - `docker compose exec ollama nvidia-smi`가 성공한다.
 - `curl -f http://localhost:${OLLAMA_HOST_PORT:-11434}/api/tags`가 성공한다.
 
-### Evidence
+#### Evidence
 
 증거 기록은 아래 항목에 따른다.
 
@@ -151,18 +164,26 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - 명령·시각, daemon 재시작 승인과 GPU 전후 상태를 기록한다.
 - 실패 검사·증상과 최종 복구 또는 에스컬레이션 상태를 Task/Incident에 남긴다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북이 아직 관찰하지 못한 항목은 다음과 같다. 문서에는 아래 단계의 실행 결과가 기록되어 있지 않다.
 
-위 Actions 절에 기록된 복구만 사용한다. 승인된 daemon 재시작 뒤에도 host GPU runtime이 실패하면 추가 변경을 멈추고 에스컬레이션한다.
+- Ollama 컨테이너 재시작과 Docker daemon 재시작(승인 필요): 재시작 시각, 승인 기록, GPU 전후 상태를 Task/Incident에 남겨야 한다.
+- 복구 후 `docker compose exec ollama nvidia-smi`와 `/api/tags` 성공: 명령 실행 결과가 필요하다.
+- 낮은 VRAM 모델 전환과 승인된 추론 검증(승인 필요): 승인 기록과 검증 결과가 필요하다.
+
+## Escalation
+
+### Next Owner
+
+Host `nvidia-smi`, NVIDIA Container Toolkit 검사 실패, daemon 재시작 승인 부재 또는 `08-ai` 밖 영향이면 중단하고 @buenhyden에게 넘긴다. 정제된 로그, 시도한 단계와 현재 복구 상태를 전달한다.
+
+### Recovery or Forward Repair
+
+위 Steps 절에 기록된 복구만 사용한다. 승인된 daemon 재시작 뒤에도 host GPU runtime이 실패하면 추가 변경을 멈추고 에스컬레이션한다.
 
 #### Safe Rollback or Recovery Procedure
 
 1. Docker daemon 재시작이 더 넓은 서비스에 영향을 주면 추가 변경을 멈추고 정제된 로그로 에스컬레이션한다.
 2. 최근 모델 변경이 VRAM 고갈을 일으켰다면 [Ollama Runbook](0056-ollama.md)의 승인 경계에서 unload 또는 제거한다.
 3. 승인된 daemon 재시작 뒤에도 GPU를 사용할 수 없으면 명시적 owner 승인 아래에서만 degraded 상태를 유지하고 사용자를 Incident 소유자에게 안내한다.
-
-### Escalation
-
-Host `nvidia-smi`, NVIDIA Container Toolkit 검사 실패, daemon 재시작 승인 부재 또는 `08-ai` 밖 영향이면 중단하고 @buenhyden에게 넘긴다. 정제된 로그, 시도한 단계와 현재 복구 상태를 전달한다.

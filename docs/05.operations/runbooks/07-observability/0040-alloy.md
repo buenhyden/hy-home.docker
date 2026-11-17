@@ -1,10 +1,10 @@
 ---
 title: "Alloy Readiness and Pipeline Recovery Runbook"
-version: "1.1.2"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0040"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # Alloy Readiness and Pipeline Recovery Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 Grafana Alloy의 준비 상태 점검, Docker discovery 증거, OTLP 입력 진단, downstream exporter 검증, 재시작과 설정 rollback을 다룬다. 설명은 [GDE-0040](../../guides/07-observability/0040-alloy.md)과 [POL-0040](../../policies/07-observability/0040-alloy.md)에 두고, 여기서는 실행 가능한 진단, 안전한 restart, evidence 수집, escalation 기준만 둔다.
 
@@ -30,7 +30,7 @@ next_review_at: "2027-05-13"
 - 특정 backend exporter에서 connection refused나 timeout이 보일 때.
 - 설정 변경 후 component graph, label, exporter 상태 검증이 필요할 때.
 
-### Scope
+### Targets
 
 - Declared parent: [Alloy Usage Guide](../../guides/07-observability/0040-alloy.md) (`GDE-0040`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
@@ -41,9 +41,9 @@ next_review_at: "2027-05-13"
 - [Usage guide](../../guides/07-observability/0040-alloy.md)
 - [Operations policy](../../policies/07-observability/0040-alloy.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 승인·접근 조건은 아래 항목을 따른다.
 
@@ -55,7 +55,7 @@ log를 보존하기 전에 payload, credential, header/cookie, private path를 �
 
 비공개 환경을 출력하지 않고 `ALLOY_CONFIG_FILE`의 선택 이름을 확인한 뒤 해당 tracked 파일과 지원 대안을 읽는다. 아래 예시는 `config.alloy`이며 실제로 `config.home.alloy`를 선택했다면 파일 이름을 바꾼다. reload로 mount/port를 바꿀 수 없고 inode가 바뀐 파일에는 재시작이나 재생성 결정이 필요하다. 상태 경로를 바꾸기 전에 [GDE-0040](../../guides/07-observability/0040-alloy.md)의 positions 손실 이력을 확인한다.
 
-### Safety Checks
+### Environment
 
 사전 조건은 다음과 같다.
 
@@ -65,9 +65,24 @@ log를 보존하기 전에 payload, credential, header/cookie, private path를 �
 - `alloy`의 `required: false` backend는 없어도 기동된다. 선택한 설정과 필요한 Loki, Tempo, Pyroscope endpoint를 확인한 뒤 신호별 수신을 검증한다.
 - 중지나 재생성 전에 position/state와 로그 유실, 중복 허용 범위를 기록한다. 설정 선택 변경에는 재생성이 필요하며 reload 지원 여부를 임의로 가정하지 않는다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Diagnosis and restart: service 상태, 최근 로그, health signal 캡처 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | Diagnosis and restart: Compose service boundary가 policy와 일치하는지 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 3 | Diagnosis and restart: pipeline config boundary 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 4 | Diagnosis and restart: 의심되는 downstream backend readiness 확인 | 문서에 기록 없음 (health는 delivery 증거가 아님) | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 5 | Diagnosis and restart: OTLP ingress / k6 품질 metric / Hermes 경로의 port binding과 config 읽기 전용 확인 | token 파일은 비어 있지 않고 relay와 Alloy가 `quality_otlp_net`에 있음 | Alloy 재생성은 별도 승인이 필요하므로 중단하고 @buenhyden에게 escalation |
+| 6 | Diagnosis and restart: relabel rule과 Compose project filter 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 7 | Diagnosis and restart: config가 정책과 일치하는데 회복되지 않으면 `docker compose --profile obs restart alloy` | Service Checks의 `alloy` running | 중단하고 @buenhyden에게 escalation |
+| 8 | Diagnosis and restart: `config.alloy` bind 내용만 바뀐 경우 승인된 정상 revision 파일 복원 후 restart와 로그 확인 | 복원 내용을 기존 컨테이너가 읽음 | Compose 설정·mount·image·secret bind 변경이면 분기를 중단하고 RUN-0086으로 넘김 |
+| 9 | Planned isolated recovery rehearsal: image/config digest, component, endpoint, queue/WAL metric 기록 | 문서에 기록 없음 | 격리 구성과 backup 계약 검토 전에는 NOT_RUN으로 유지 |
+| 10 | Planned isolated recovery rehearsal: 별도 project/network에 추적 중인 config와 검증된 component state만 복구 | 문서에 기록 없음 | 격리 구성과 backup 계약 검토 전에는 NOT_RUN으로 유지 |
+| 11 | Planned isolated recovery rehearsal: config 검증, Alloy 시작, test log/trace/metric 주입과 downstream 검증 | 구성된 각 downstream과 retry/WAL 동작이 검증됨 | 격리 구성과 backup 계약 검토 전에는 NOT_RUN으로 유지 |
+| 12 | Planned isolated recovery rehearsal: 불일치 시 격리 collector 중지, log 보존, config/image rollback | 허용한 전송 중 data 손실을 기록함 | 운영 환경 변경 전에 중지하고 손실을 기록 |
 
 실행 절차는 아래 항목을 따른다.
 
@@ -179,9 +194,11 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 
 예상 밖 출력, backup 누락, dependency 실패, 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 - [ ] `docker compose --profile obs ps alloy`에서 `alloy` service가 running이다.
 - [ ] Alloy UI `https://alloy.${DEFAULT_URL}`의 pipeline graph에 failed component가 없다.
@@ -190,7 +207,7 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 - [ ] Pyroscope writer endpoint는 설정된 상태이며, profile 수집은 source가 명시적으로 연결된 경우에만 주장한다.
 - [ ] 문서나 config만 바꿨다면 관련 repository validation을 실행하고 evidence에 기록한다.
 
-### Evidence
+#### Evidence
 
 수집할 evidence는 다음과 같다.
 
@@ -200,14 +217,24 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 - mount나 endpoint 변경이 필요해 보이면 승인 상태.
 - secret이 담긴 label이나 payload가 의심되면 원문 값은 기록하지 않는다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북에서 아직 관찰되었다고 기록되지 않은 항목과, 이를 확인할 관찰은 다음과 같다.
+
+- Alloy 재시작과 `config.alloy` 복원 후 restart(7, 8단계): 이 문서에는 실행 결과가 기록되어 있지 않다. `docker logs --tail=100 alloy`와 Service Checks의 `alloy` running, pipeline graph에 failed component 없음으로 확인한다.
+- Planned isolated recovery rehearsal: 상태가 "계획됨, 미실행"이며 NOT_RUN이다. 격리 구성 승인 후 test downstream에서 retry/WAL 동작이 검증되어야 한다.
+- 전송 중이던 telemetry의 정확한 복구: 문서가 주장하지 않는다. 격리 rehearsal에서 손실 범위를 기록해야 확인된다.
+- k6 품질 metric과 Hermes OTLP 경로의 실제 수신: Prometheus의 `k6_*` series와 token 없는 요청의 401 응답을 수동으로 관찰해야 한다.
+- Pyroscope profile 수집: writer endpoint 설정만 확인 대상이며, source가 명시적으로 연결된 경우에만 profile 수신을 관찰해야 한다.
+
+## Escalation
+
+### Next Owner
+
+verification이 실패하거나, secret 노출 위험이 보이거나, Docker mount/endpoint/port 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
+
+### Recovery or Forward Repair
 
 - Git으로 관리하는 설정, Compose, downstream endpoint 변경이 원인이면 직전 Git diff 단위로 되돌리고 Alloy를 재시작한다.
 - Runtime restart는 `obs` profile compose 명령만 쓴다.
 - Docker mount 권한 완화, exporter endpoint 변경, OTLP port 변경, relabel cardinality 확대는 이 런북의 안전 롤백 범위를 벗어나므로 Escalation으로 넘긴다.
-
-### Escalation
-
-verification이 실패하거나, secret 노출 위험이 보이거나, Docker mount/endpoint/port 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.

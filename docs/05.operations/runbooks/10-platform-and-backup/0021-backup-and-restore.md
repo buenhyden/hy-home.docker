@@ -1,10 +1,10 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.6.5"
+version: "1.7.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0021"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # Backup and Restore Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 pgBackRest, Restic, SQLite export, R2 오프사이트 사본과 공유 에이전트 memory 저장소의 설정·실행·검증·복구 절차를 다룬다. 정책은 [POL-0021](../../policies/10-platform-and-backup/0021-backup-and-restore.md), 설명은 [GDE-0021](../../guides/10-platform-and-backup/0021-backup-and-restore.md)이 소유한다.
 
@@ -27,7 +27,7 @@ backup을 실행/검증하거나, PostgreSQL을 isolation 환경에서 특정 �
 R2 오프사이트 사본을 설정하거나 그 사본에서 복원하거나, 공유 에이전트 memory 저장소를
 backup·restore할 때 사용한다.
 
-### Scope
+### Targets
 
 - Guide: [GDE-0021](../../guides/10-platform-and-backup/0021-backup-and-restore.md); Policy: [POL-0021](../../policies/10-platform-and-backup/0021-backup-and-restore.md)
 - Alerts: [host backup rules](../../../../infra/06-observability/prometheus/config/alert_rules/alert_rules.local.infra.yml)
@@ -39,21 +39,39 @@ backup·restore할 때 사용한다.
 - [Restic: preparing a repository](https://restic.readthedocs.io/en/stable/030_preparing_a_new_repo.html)
 - [Restic: removing snapshots](https://restic.readthedocs.io/en/stable/060_forget.html)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 service를 재시작하거나 repository에 쓰거나 snapshot을 삭제하는
 모든 단계는 target을 명시한 별도의 approval이 필요하다.
 
-### Safety Checks
+### Environment
 
 실행 중인 checkout의 repository root에서 command를 실행한다. secret 파일이나
 rendered Compose model을 절대 출력하지 않는다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 1. `.env` sync와 secret 생성, backup 디렉터리와 key를 준비한다 | `.env`에 `BACKUP_STATE_REPO_DIR`, `BACKUP_HOST_REPO_DIR`, `BACKUP_STATE_MAX_GIB`, `POSTGRES_ARCHIVE_TIMEOUT`가 추가되고 디렉터리가 나열된 owner로 존재하며 BKP-001/BKP-002 파일이 존재한다 | 경로에 만들지 않은 데이터가 있으면 중단한다 |
+| 2 | 2. `mng-pg`를 pgBackRest image로 전환하기 전에 logical dump를 만든다(공유 DB 중단 승인 필요) | dump의 성공 종료/hash/도구·server version만 보호된 evidence에 기록한다 | 실패/빈 결과는 복구 지점이 아니며 소유한 불완전 artifact를 보존하고 중단한다 |
+| 3 | 3. Restic을 초기화하고 systemd timer를 설치한다(1회) | `init`은 이미 있는 repository는 건너뛰고 re-key하지 않는다 | 실패 시 Stop Conditions에 따라 중단하고 @buenhyden에게 escalation |
+| 4 | 4. backup을 실행하거나 확인한다 | exit 0, 새 pgBackRest backup, 새 Restic snapshot 두 개, `restic check` no errors, 빈 `staging/` | exit 75는 다른 run의 lock, exit 64는 디렉터리 누락/여유 20 GiB 미만/repository 위치 문제로 판단하고 중단한다 |
+| 5 | 5. `mng-pg`를 격리 환경에서 시점 복원한다 | `pg_is_in_recovery()`가 false이고 timeline이 원본보다 크며 `recovery stopping` 로그가 있다 | `target_before_backup_stop`/`backup_info`/`target_not_reached`/`target_evidence_unreadable`/`clone_exited`로 FAIL하며 재시도·승격하지 않고 scratch를 보존한다 |
+| 6 | 5a. Selected-backup immediate consistency rehearsal을 수행한다 | 문서에 기록 없음 | 실패 시 Stop Conditions에 따라 중단하고 @buenhyden에게 escalation |
+| 7 | 6. Restic에서 파일을 복원한다 | hash/mode/UID와 원래 application recovery point를 확인한다 | `latest`를 자동 선택하지 않으며 복사는 별도 승인을 받고 불명확하면 중단한다 |
+| 8 | 7. 오래된 snapshot을 삭제한다(되돌릴 수 없음, 승인 필요) | 세트당 daily 30, weekly 13, monthly 12 snapshot이 유지된다 | 승인 없이 진행하지 않고 중단하여 @buenhyden에게 escalation |
+| 9 | 8. 로컬 Restic repository를 Cloudflare R2로 offsite copy한다 | 원격 RPO는 하루이며 state set 크기는 `BACKUP_STATE_MAX_GIB`에 포함된다 | 실패 시 Stop Conditions에 따라 중단하고 @buenhyden에게 escalation |
+| 10 | 8.1 Owner가 R2 bucket, lock rule, API token을 1회 설정한다(새 credential과 첫 업로드 승인 필요) | 문서에 기록 없음 | 승인 없이 진행하지 않고 중단하여 @buenhyden에게 escalation |
+| 11 | 8.2 매일의 offsite 동작을 확인한다 | 로컬 Restic backup/check 성공 뒤 `restic-offsite copy`가 실행되고 `.env` 키가 비어 있으면 `offsite copy not configured`로 skip된다 | 로컬 Restic backup/check 실패 시 `offsite copy skipped`이며 unit exit 1과 성공 timestamp 부재를 유지한다 |
+| 12 | 8.3 R2에서 host/state snapshot을 scratch로 복원한다 | wrapper의 `restore` action이 set별 결과를 내고 R2에 아무것도 쓰지 않는다 | `latest`와 기본 `/tmp`를 쓰지 않고 uid 0 실행은 거부된다 |
+| 13 | 8.4 offsite 검증 항목을 확인한다 | `R2 latest snapshots:` 줄, `restic-offsite snapshots`의 두 set, lock rule 네 개를 확인한다 | 복원 리허설(8.3)을 기록하기 전에는 오프사이트 복구를 검증했다고 말하지 않는다 |
+| 14 | 8.5 원격 forget-prune을 owner가 실행한다(원격 삭제 승인 필요) | 문서에 기록 없음 | 승인 없이 진행하지 않고 중단하여 @buenhyden에게 escalation |
+| 15 | 8.6 R2 비용과 무료 한도를 검토한다 | 문서에 기록 없음 | 실패 시 Stop Conditions에 따라 중단하고 @buenhyden에게 escalation |
 
 절차는 아래 항목에 따른다.
 
@@ -758,21 +776,39 @@ snapshot과 남은 예약은 현재 metadata로 별도 조정한다. 실제 채�
 
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 각 단계의 `Expected:` 결과와 일치해야 한다. 예를 들어 backup 실행 단계는 exit 0, 새 pgBackRest backup, 새 Restic snapshot 두 개를 기대한다.
 
-### Evidence
+#### Evidence
 
 command, exit status, pgBackRest backup label, Restic snapshot ID, 복원된 row
 count 또는 file hash, 소요 시간을 기록한다. key 값, dump 내용, rendered
 configuration은 절대 기록하지 않는다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북이 아직 관찰하지 못한 항목은 다음과 같다. 문서는 static source 점검만 승인된 경우 모든 runtime command가 `NOT_RUN`이라고 기록하며, 2단계 예시는 W4에서 실행하지 않았다고 밝힌다.
+
+- 2단계 `mng-pg` pgBackRest image 전환(공유 DB 중단, owner 승인 필요): 승인된 dump 파일의 성공 종료/hash와 전환 뒤 `mng-pg` 상태 관찰이 필요하다.
+- 4단계 backup 실행: exit 0, 새 pgBackRest backup, 새 Restic snapshot 두 개, `restic check`의 "no errors were found", 빈 `staging/`이 필요하다.
+- 5/5a단계 PITR 격리 복원과 6단계 Restic 복원: 소유 scratch에서 target 도달, DB 목록, count 안정성 확인이 필요하다.
+- 7단계 old snapshot 삭제와 8.5 원격 forget-prune(되돌릴 수 없음, 승인 필요): 승인 기록과 실행 결과가 필요하다.
+- 8단계 R2 offsite copy와 8.3 R2 복원 리허설: 8.4 검증 항목과 소요 시간 기록이 필요하며, 이 문서는 오프사이트 복구 검증을 기록하지 않는다.
+- 설치된 unit 갱신: 문서는 이 저장소 변경이 설치된 unit 갱신이나 실제 백업 성공을 뜻하지 않는다고 밝히며, 호스트에서 갱신과 daemon-reload 적용 확인이 필요하다.
+
+## Escalation
+
+### Next Owner
+
+restore rehearsal이 실패하거나, 두 disk 모두 오류를 보고하거나, key를
+잃어버렸을 때 @buenhyden에게 escalation한다.
+
+### Recovery or Forward Repair
 
 - `archive_command` 실패: `pgbackrest --stanza=mng check`가 원인을 보여준다.
   `pg_wal`이 disk를 채우기 전에 repository 경로나 ownership을 고치거나,
@@ -782,8 +818,3 @@ configuration은 절대 기록하지 않는다.
   key를 복구한다. repository를 읽을 다른 방법은 없다.
 - 중단된 Restic run: 다시 실행한다. 다른 Restic 프로세스가 실행 중이 아닌지
   확인한 뒤에만 `restic unlock`한다.
-
-### Escalation
-
-restore rehearsal이 실패하거나, 두 disk 모두 오류를 보고하거나, key를
-잃어버렸을 때 @buenhyden에게 escalation한다.

@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Renderer SecretID Delivery"
-version: "0.3.3"
+version: "0.4.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0103"
 parent_ids:
@@ -15,15 +15,15 @@ next_review_at: "2027-05-13"
 
 # OpenBao Renderer SecretID Delivery
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 OpenBao Agent의 renderer AppRole SecretID를 wrapping으로 다시 전달하고 Agent를 다시 시작하는 절차를 다룬다. `agent.hcl` 변경 반영, Agent token 유실, W5 재발급에 쓴다. 공통 상태 점검과 기동·중지는 [RUN-0085](0085-openbao.md)가 소유한다.
 
 Agent 설정이 바뀌어 다시 시작해야 하거나, Agent가 재인증하지 못하거나, maintenance window의 W5에서 SecretID를 다시 전달할 때 사용한다.
 
-### Scope
+### Targets
 
 - 공통 OpenBao 운영: [RUN-0085](0085-openbao.md)
 - [Implementation](../../../../infra/03-security/openbao/docker-compose.yml)과 [version projection](../../../../infra/tech-stack.versions.json)이 런타임 고정 버전을 소유한다.
@@ -32,19 +32,28 @@ Agent 설정이 바뀌어 다시 시작해야 하거나, Agent가 재인증하�
 
 - [운영 인덱스](../../README.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
-승인된 issuer helper가 operator 전용 디렉터리에 설치돼 있어야 하고 현재 OIDC operator credential을 받을 수 있어야 한다. 해당 문장은 Safety Checks에 함께 있으며 credential 값은 기록하지 않는다. issuer/cleanup token role의 권한 범위는 Actions의 Issuer and Cleanup Token Roles에 있다.
+승인된 issuer helper가 operator 전용 디렉터리에 설치돼 있어야 하고 현재 OIDC operator credential을 받을 수 있어야 한다. 해당 문장은 Environment에 함께 있으며 credential 값은 기록하지 않는다. issuer/cleanup token role의 권한 범위는 Steps의 Issuer and Cleanup Token Roles에 있다.
 
-### Safety Checks
+### Environment
 
 OpenBao가 initialized·unsealed이고, 승인된 issuer helper가 operator 전용 디렉터리에 설치돼 있으며, 현재 OIDC operator credential을 받을 수 있어야 한다. 진행 중인 issuance journal이 있으면 그 실행은 이전 발급을 정합화만 하고 새로 발급하지 않으며, 불명확·복수 결과·sealed·권한 거부는 새 발급을 막는다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Delivery Steps: TLS·unseal·renderer ACL의 9개 소비자 KV/version·Agent named volume·RoleID와 journal 디렉터리 준비 | journal 디렉터리는 Agent data/out volume 밖에 영속 보관되며 owner mode 0700이다 | journal과 completion anchor를 따로 삭제·초기화하지 않고 Agent 자동 재시작이나 sink 존재를 준비 완료로 판단하지 않는다 |
+| 2 | Delivery Steps: 검토한 전체 commit SHA로 host helper를 operator-private 디렉터리에 설치(`install-renderer-issuer.sh`) | wrapper·Python helper·request shell의 Git blob 세 개만 읽고 mode 0500/0400과 공개 hash receipt를 남긴다 | 기존 목적지와 symlink를 덮어쓰지 않고 쓰기 가능한 checkout 경로를 다시 열어 실행하지 않는다 |
+| 3 | Delivery Steps: Agent 중지 후 issuer/cleanup token 발급과 `owner-window.sh agent-restart`로 helper에 전달 | 끝나면 `issue rc`, 최대 90초 기다린 Docker health, `out` 아래 파일의 mode와 이름만 출력한다 | 중간에 실패하면 Agent가 멈춰 있을 수 있으므로 원인을 고친 뒤 다시 실행한다. root·renderer·application token은 helper 입력으로 쓰지 않는다 |
+| 4 | Delivery Steps: helper가 Agent를 시작하고 `StartedAt`·TLS·unsealed·fetch/render·KV version sentinel을 검증 | 같은 nonce·생성 시간의 accessor 소비/폐기와 부재를 확인한 뒤에만 completion witness를 기록하며 전체 budget은 240초다 | 전달 성공만으로 journal을 없애지 않는다 |
+| 5 | Delivery Steps: SIGTERM/SIGKILL·reboot 후 같은 journal로 재실행해 이전 발급을 정합화 | 그 실행에서는 새 SecretID를 만들지 않고 정확한 단일 accessor만 폐기한다 | 불명확·복수 결과·시간/nonce 불일치·sealed·권한 거부·journal 유실은 실패로 유지하고 새 발급을 차단하며 승인된 관리 신원의 custody/API 대조 복구가 필요하다 |
+| 6 | Renderer delivery from an existing integration session: 기존 RUN-0096 세션도 같은 제한 발급자와 response wrapping 사용 | 문서에 기록 없음 | wrapping helper 하나만 사용하고 중복 발급하지 않는다. raw `-field=secret_id` 전달과 root UID volume 수정은 현재 경로가 아니다 |
 
 #### Renderer SecretID Delivery
 
@@ -185,21 +194,38 @@ response wrapping을 사용한다. raw `-field=secret_id` 전달과 root UID로 
 
 ### Stop Conditions
 
-진행 중인 issuance journal이 있으면 이전 발급의 정합화만 하고, 불명확·복수 결과·sealed·권한 거부는 새 발급을 막는다(Safety Checks). v1/v2 혼합, alias 불일치, 복수 accessor가 있으면 어느 accessor도 폐기하지 않고 중단한다(Actions의 Journal v2 Contract). 안전한 진행이 불가능하면 중단하고 @buenhyden에게 연락한다(Escalation).
+진행 중인 issuance journal이 있으면 이전 발급의 정합화만 하고, 불명확·복수 결과·sealed·권한 거부는 새 발급을 막는다(Environment). v1/v2 혼합, alias 불일치, 복수 accessor가 있으면 어느 accessor도 폐기하지 않고 중단한다(Steps의 Journal v2 Contract). 안전한 진행이 불가능하면 중단하고 @buenhyden에게 연락한다(Escalation).
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 `issue rc=0`, Agent `healthy`, 렌더 파일의 mode와 KV version 일치, issuance anchor `complete`를 확인한다.
 
-### Evidence
+#### Evidence
 
-Service Checks의 확인 결과를 값 없이 Task에 기록한다. 전달이 실패하면 journal·completion witness·보호된 snapshot과 관리 인증을 보존한다(Rollback의 Failed Delivery).
+Service Checks의 확인 결과를 값 없이 Task에 기록한다. 전달이 실패하면 journal·completion witness·보호된 snapshot과 관리 인증을 보존한다(Recovery or Forward Repair의 Failed Delivery).
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북에서 아직 관측되지 않은 항목은 다음과 같다.
+
+- Journal v3 프로토콜: 문서는 이 프로토콜을 아직 HOME에서 수행하지 않았다고 기록하며 현재 설치된 것은 v2라고 한다. v3 사용에는 새 commit의 P01 승인과 설치가 필요하고, 수행 뒤 journal 단계와 이전 token 폐기 결과로 검증한다.
+- Issuer/cleanup token role의 HOME 적용: 문서는 HOME 적용 여부가 별도이며 source를 배포 증거로 쓰지 않는다고 기록한다. 적용된 role의 `lookup-self` 정책·TTL·비갱신 확인으로 검증한다.
+- 실제 전달(`agent-restart`): Agent를 멈추고 SecretID를 발급하는 런타임 변경이며 이 문서에는 실행 결과가 기록되어 있지 않다. `issue rc=0`, Agent `healthy`, 렌더 파일 mode와 KV version 일치, issuance anchor `complete`로 검증한다.
+- 중단 뒤 정합화: SIGTERM/SIGKILL·reboot 후 재실행 결과는 이 문서에 기록되어 있지 않다. 단일 accessor 폐기와 journal 상태로 검증한다.
+- 소비자 적용과 기존 RUN-0096 세션: consumer 적용은 별도 증거이며 기존 세션·root 폐기·integration receipt는 과거 관찰이지 새 P01 결과가 아니라고 문서에 기록되어 있다.
+
+## Escalation
+
+### Next Owner
+
+credential, 파괴적 스토리지 변경, remote 변경, 또는 backup 부재로 안전한 진행이 불가능하면
+중단하고 @buenhyden에게 연락한다.
+
+### Recovery or Forward Repair
 
 복구 상황별 절차는 다음과 같다.
 
@@ -218,8 +244,3 @@ unseal한다. Agent는 restart policy로 다시 시작되지만 시작 스크립
 2. 설치된 issuer로 위 3단계 `agent-restart`를 실행한다.
 
 2026-10-28 사례는 SPEC-0204 TSK-0006에 기록되어 있다.
-
-### Escalation
-
-credential, 파괴적 스토리지 변경, remote 변경, 또는 backup 부재로 안전한 진행이 불가능하면
-중단하고 @buenhyden에게 연락한다.

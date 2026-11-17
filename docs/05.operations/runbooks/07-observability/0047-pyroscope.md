@@ -1,10 +1,10 @@
 ---
 title: "Pyroscope Readiness and Recovery Runbook"
-version: "1.3.3"
+version: "1.4.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0047"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # Pyroscope Readiness and Recovery Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 Pyroscope profile ingestion 누락, Grafana datasource 실패, 로컬 filesystem 저장소 압박, 높은 CPU 부하, 설정 회귀를 다룬다. Guide와 policy의 설명은 반복하지 않고, 실행 가능한 진단, 안전한 restart, evidence 수집, escalation 기준만 둔다.
 
@@ -31,7 +31,7 @@ next_review_at: "2027-05-13"
 - Profile ingestion으로 host 또는 container CPU usage가 비정상적으로 높을 때.
 - `pyroscope.yaml` 변경 후 readiness, storage, ingestion limit evidence가 필요할 때.
 
-### Scope
+### Targets
 
 > Scope: Pyroscope 준비 상태, profile 입력 진단, 로컬 저장소 증거, 재시작과 용량 문제 보고.
 
@@ -45,9 +45,9 @@ next_review_at: "2027-05-13"
 - [Operations policy](../../policies/07-observability/0047-pyroscope.md)
 - 이 문서는 SPEC-0267 secondary-listener hardening 결과를 담고 있다. 해당 패키지는 retire되었고 본문은 version history에 있다.
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 `pyroscope`의 filesystem volume과 선택 Alloy source를 먼저 확인한다. `profiling`은 승인된 HOME 선택에 포함되며 실제 source 수신은 별도 검증한다. 교체·중지 전 입력을 멈추고 일관된 local data를 보존한다. 7일 retention은 backup이나 archive 계약이 아니다.
 
@@ -57,7 +57,7 @@ next_review_at: "2027-05-13"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Safety Checks
+### Environment
 
 시작 전 점검:
 
@@ -65,9 +65,22 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - [ ] Profile labels에 high-cardinality 또는 secret-bearing values가 들어갔는지 의심되면 ingestion source를 먼저 식별한다.
 - [ ] 문제 유형을 readiness, ingestion, Grafana datasource, storage/capacity, CPU overhead, config regression 중 하나로 분류한다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Diagnosis and restart: service 상태, ready endpoint, 최근 로그 캡처 | `profilecli ready`가 성공 종료 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | Diagnosis and restart: Compose 및 config boundary가 policy와 일치하는지 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 3 | Diagnosis and restart: Alloy writer와 Grafana datasource가 Pyroscope endpoint를 가리키는지 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 4 | Diagnosis and restart: storage / cardinality 증상의 로그와 capacity evidence 캡처 (profile data 삭제 금지) | `docker stats`에서 CPU/memory가 정상 범위로 돌아옴 | Data deletion, retention, ingestion limit 변경이 필요해 보이면 중단하고 @buenhyden approval을 받음 |
+| 5 | Diagnosis and restart: ready/ingestion이 config와 맞지만 회복되지 않으면 Pyroscope 재시작 (필요 시 Alloy 함께) | `profilecli ready`가 성공 종료 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 6 | Diagnosis and restart: `pyroscope.yaml` bind 내용만 바뀐 경우 승인된 revision 복원 후 restart와 ready 확인 | 기존 컨테이너가 같은 bind의 복원 내용을 읽음 / `profilecli ready` 성공 | 데이터 손실 가능성이 있거나 운영 기준을 바꾸는 조치는 별도 incident/task 승인을 받음 |
+| 7 | Planned isolated restore rehearsal: image/config digest, 시간 범위, label 목록, checksum 기록 후 일관된 snapshot 확보 | 문서에 기록 없음 | 격리와 backup 계약 검토 전에는 NOT_RUN으로 유지 |
+| 8 | Planned isolated restore rehearsal: 운영 route 없는 별도 project/network의 새 path에 복구 | 문서에 기록 없음 | 격리와 backup 계약 검토 전에는 NOT_RUN으로 유지 |
+| 9 | Planned isolated restore rehearsal: 시작, `profilecli ready`, 과거 기준값과 test profile 조회, Grafana 연동 검증 | 문서에 기록 없음 | 격리와 backup 계약 검토 전에는 NOT_RUN으로 유지 |
+| 10 | Planned isolated restore rehearsal: 불일치 시 격리 project 중지, evidence 보존, 수정하지 않은 backup으로 복귀 | 문서에 기록 없음 | 운영 state/route 변경은 별도로 승인받음 |
 
 실행 절차는 아래 항목을 따른다.
 
@@ -144,9 +157,11 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 
 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 - [ ] 위 `profilecli ready` 명령이 성공 종료한다.
 - [ ] Grafana Pyroscope datasource에서 최근 profile이 조회된다.
@@ -154,7 +169,7 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 - [ ] Storage symptom이면 `pyroscope-data`, `pyroscope-metastore`(`/data`), `/var/lib/pyroscope`, filesystem backend boundary가 policy와 일치한다.
 - [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
-### Evidence
+#### Evidence
 
 수집할 evidence는 다음과 같다.
 
@@ -177,16 +192,25 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 - Ingestion 장애는 Alloy writer check, Pyroscope ready state, Grafana datasource result를 함께 기록한다.
 - Storage/capacity symptom은 로그 발췌, `pyroscope-data` volume 경계, approval state를 기록한다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북에서 아직 관찰되었다고 기록되지 않은 항목과, 이를 확인할 관찰은 다음과 같다.
+
+- Pyroscope(및 Alloy) 재시작과 `pyroscope.yaml` 복원 후 restart(5, 6단계): 이 문서에는 실행 결과가 기록되어 있지 않다. `profilecli ready` 성공과 Grafana Pyroscope datasource의 최근 profile 조회로 확인한다.
+- Planned isolated restore rehearsal: 상태가 "계획됨, 미실행"이며 NOT_RUN이다. Pyroscope 복구 성공은 주장하지 않는다. 격리 환경에서 `pyroscope-data`와 `pyroscope-metastore`를 같은 snapshot 시점으로 복원해 확인해야 한다.
+- Alloy의 Go/SeaweedFS pprof source 수신: writer/receiver readiness만으로 증명되지 않는다고 문서가 밝힌다. `service_name` label 값 조회로 실제 수집 서비스를 관찰해야 한다.
+- 수집 서비스 11개 목록: 2026-09-30 기준 기록이며 현재 상태는 같은 조회로 다시 관찰해야 한다.
+
+## Escalation
+
+### Next Owner
+
+verification이 실패하거나, secret exposure risk가 보이거나, destructive data change가 필요하거나, storage/capacity 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
+
+### Recovery or Forward Repair
 
 - Git-managed `pyroscope.yaml`, Alloy writer, Grafana datasource 또는 Compose 변경이 원인이면 직전 Git diff 단위로 되돌리고 readiness를 다시 확인한다.
 - Runtime restart는 `obs` profile compose 명령만 사용한다.
 - Profile data deletion, filesystem mutation, retention change, storage backend change, ingestion limit change는 이 런북의 안전 롤백 범위를 벗어난다.
 
 이 런북에 명시된 validation, restart, Git-managed config rollback만 사용한다. 데이터 손실 가능성이 있는 profile data deletion, filesystem mutation, retention/storage/ingestion-limit change는 검증된 안전 복구 절차가 아니므로 Escalation으로 이동한다.
-
-### Escalation
-
-verification이 실패하거나, secret exposure risk가 보이거나, destructive data change가 필요하거나, storage/capacity 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.

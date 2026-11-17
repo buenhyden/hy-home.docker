@@ -1,10 +1,10 @@
 ---
 title: "Qdrant Health and Recovery Triage Runbook"
-version: "1.3.10"
+version: "1.4.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0034"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # Qdrant Health and Recovery Triage Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 범위: root에 포함된 Qdrant 서비스의 상태, SSO 뒤의 REST route 전제, 영속 경로, 증거 수집을 파괴적 데이터 작업 없이 점검한다.
 
@@ -30,7 +30,7 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, SSO 뒤의 
 - REST route `qdrant.${DEFAULT_URL}`(SSO 뒤) 경계를 확인해야 할 때
 - Qdrant operations 문서와 현재 compose evidence를 함께 갱신해야 할 때
 
-### Scope
+### Targets
 
 - Declared parent: [Qdrant Usage Guide](../../guides/09-ai-and-search/0034-qdrant.md) (`GDE-0034`)
 - Governing authority: [Data Tier (04-data) Architecture Description](../../../02.architecture/descriptions/0004-data-architecture.md) (`AD-0004`)
@@ -46,15 +46,15 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, SSO 뒤의 
 - [Operations policy](../../policies/09-ai-and-search/0034-qdrant.md)
 - [Infra README](../../../../infra/04-data/qdrant/README.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 대상 service는 `qdrant`이며 운영 checkout의 repository root와 승인된 Docker context를 확인한다. API key 파일은 `secrets/data/qdrant/qdrant_api_key.txt`와 `secrets/data/qdrant/qdrant_read_only_api_key.txt`이며 값은 읽지 않고 존재만 확인한다. 책임자는 저장소 소유자 @buenhyden이다.
 
-대상 service는 `qdrant`이며 승인된 Docker context 확인과 기동·정지·upgrade 승인은 Stop Conditions의 `Execution and stop boundary`에 있다. API key 파일은 `secrets/data/qdrant/qdrant_api_key.txt`와 `secrets/data/qdrant/qdrant_read_only_api_key.txt`이며 값은 읽지 않고 존재만 확인한다(Safety Checks). 에스컬레이션 대상은 저장소 소유자 @buenhyden이다(Escalation).
+대상 service는 `qdrant`이며 승인된 Docker context 확인과 기동·정지·upgrade 승인은 Stop Conditions의 `Execution and stop boundary`에 있다. API key 파일은 `secrets/data/qdrant/qdrant_api_key.txt`와 `secrets/data/qdrant/qdrant_read_only_api_key.txt`이며 값은 읽지 않고 존재만 확인한다(Environment). 에스컬레이션 대상은 저장소 소유자 @buenhyden이다(Escalation).
 
-### Safety Checks
+### Environment
 
 먼저 다음을 확인한다.
 
@@ -63,9 +63,24 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, SSO 뒤의 
 - [ ] collection delete, snapshot recovery, volume replacement, cluster repair가 필요한 경우 이 런북을 중단하고 에스컬레이션한다.
 - [ ] 모든 명령 출력은 요약으로 기록하고 application data payload는 기록하지 않는다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | compose 렌더링을 확인한다 | `docker compose --profile qdrant config --quiet`가 통과한다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | 서비스 상태를 확인한다 | `qdrant`가 running 또는 healthy 상태다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 3 | 최근 로그를 확인한다 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 4 | REST readiness를 확인한다 | `/readyz`가 200 response evidence를 제공한다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 5 | read-only collection inventory를 확인한다 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 6 | 컨테이너가 stopped이고 데이터 작업이 불필요하면 compose로 재기동한다 | 문서에 기록 없음 | 데이터/소유권/credential이 불명확하면 중단하고 @buenhyden에게 escalation |
+| 7 | Planned Isolated Restore Rehearsal: 사전 승인 후 source version, collection, alias, point count, snapshot 범위, free disk를 기록한다 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 8 | Planned Isolated Restore Rehearsal: snapshot을 생성하고 manifest/checksum과 함께 보호한다 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 9 | Planned Isolated Restore Rehearsal: production과 분리된 fresh target을 준비하고 free disk와 target collection 부재를 확인한다 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 10 | Planned Isolated Restore Rehearsal: snapshot type에 맞는 upstream recovery 절차 하나만 사용한다 | 문서에 기록 없음 | `force`는 별도 승인 없이 쓰지 않고 중단하여 @buenhyden에게 escalation |
+| 11 | Planned Isolated Restore Rehearsal: `/readyz`, collection status/config, alias, point count, search invariant를 검증한다 | 문서에 기록 없음 | version/checksum/count mismatch면 승격하지 않는다 |
+| 12 | Planned Isolated Restore Rehearsal: 실패 시 target을 보존하고 정확한 소유 target 삭제는 별도 승인 후 수행한다 | 문서에 기록 없음 | 실패한 target과 증거를 보존하고 @buenhyden에게 escalation |
 
 1. compose 렌더링을 확인한다.
 
@@ -125,9 +140,11 @@ Qdrant single unprivileged service의 상태, `/readyz` healthcheck, SSO 뒤의 
 
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 서비스 점검은 아래 항목에 따른다.
 
@@ -137,7 +154,7 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 - `/readyz`가 200 response evidence를 제공하는지 확인한다.
 - `docker compose --profile qdrant config --quiet`가 통과하는지 확인하고, source Compose에서 `qdrant-data:/qdrant/storage:rw`와 `/qdrant/storage/snapshots`가 유지되는지 비교한다.
 
-### Evidence
+#### Evidence
 
 - 명령 이름, pass/fail 상태, service 상태, image tag, 민감 정보를 제거한 log, route label과 readiness 요약을 기록한다.
 - vector payload, collection data, credential 또는 mutation API body는 기록하지 않는다.
@@ -150,15 +167,23 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 - **Route**: Traefik HTTP labels on `qdrant` with SSO; no gRPC route
 - **Config**: `docker compose --profile qdrant config --quiet`
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북이 아직 관찰하지 못한 항목은 다음과 같다. 문서는 이번 변경에서 snapshot create/recover API나 storage mutation을 실행하지 않았다고 기록하며, static source 점검만 승인된 경우 모든 runtime command는 `NOT_RUN`이다.
+
+- Planned Isolated Restore Rehearsal 전체(snapshot 생성, fresh target 복원): 별도 승인 후 격리 target에서 `/readyz`, collection status/config, alias, point count가 source와 일치하는 증거가 필요하다.
+- compose 재기동(6단계): owner 승인 후 `docker compose ps qdrant`에서 running 또는 healthy를 관찰해야 한다.
+- 1~5단계 runtime 점검: 이 문서에는 실행 결과가 기록되어 있지 않다. `docker compose --profile qdrant config --quiet` 통과와 `/readyz` 200 기록이 필요하다.
+
+## Escalation
+
+### Next Owner
+
+restart 후에도 `/readyz`가 실패하거나, log에 storage 손상이 나타나거나, route label이 예상한 compose와 다르거나, API key가 없어 client가 401을 받거나, data 작업이 필요하면 저장소 소유자 @buenhyden에게 에스컬레이션한다. 민감 정보를 제거한 log, 렌더링된 compose evidence, service 상태와 시도한 단계를 포함한다.
+
+### Recovery or Forward Repair
 
 데이터 복구는 위 planned isolated rehearsal로만 검증한다. 이번 변경에서는 snapshot mutation, collection restore/delete, volume replacement와 route change를 실행하지 않았다.
 
 1. 이 Runbook의 runtime 복구는 evidence 수집 후 `docker compose --profile qdrant up -d --no-deps qdrant`를 실행하는 범위로 제한한다.
 2. 실패한 isolated target과 전용 volume을 보존하고, 정확한 소유 target의 삭제는 별도 승인 후 수행한다. source service, snapshot과 tracked volume은 변경하지 않는다.
-
-### Escalation
-
-restart 후에도 `/readyz`가 실패하거나, log에 storage 손상이 나타나거나, route label이 예상한 compose와 다르거나, API key가 없어 client가 401을 받거나, data 작업이 필요하면 저장소 소유자 @buenhyden에게 에스컬레이션한다. 민감 정보를 제거한 log, 렌더링된 compose evidence, service 상태와 시도한 단계를 포함한다.

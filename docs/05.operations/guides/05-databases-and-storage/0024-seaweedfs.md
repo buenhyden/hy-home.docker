@@ -1,10 +1,10 @@
 ---
 title: "SeaweedFS Usage Guide"
-version: "1.7.2"
+version: "1.7.3"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0024"
 parent_ids:
@@ -144,7 +144,7 @@ volume, filer → master/volume, 그다음 S3 → filer.
 
 #### Static preflight and rehearsal
 
-명령은 [RUN-0024 절차](../../runbooks/05-databases-and-storage/0024-seaweedfs.md#actions)가 소유한다. repository
+명령은 [RUN-0024 절차](../../runbooks/05-databases-and-storage/0024-seaweedfs.md#steps)가 소유한다. repository
 root에서 실행한다. rehearsal은 Docker가 필요하며 disposable data만 사용한다.
 
 #### Verified S3 behaviour (2026-09-22 rehearsal)

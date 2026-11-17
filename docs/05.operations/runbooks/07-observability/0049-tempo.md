@@ -1,10 +1,10 @@
 ---
 title: "Tempo Readiness and Recovery Runbook"
-version: "1.0.8"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0049"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # Tempo Readiness and Recovery Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 Tempo 장애 대응 절차를 정의한다. 범위는 준비 상태, OTLP 수집, SeaweedFS S3 저장, metrics generator, WAL 증상 진단과 재시작이다. 데이터 손실 가능성이 있는 WAL·bucket 조치는 별도 승인으로 격리한다.
 
@@ -27,7 +27,7 @@ next_review_at: "2027-05-13"
 - Service graph or span metrics가 Prometheus/Grafana에서 보이지 않을 때.
 - Config 변경 후 readiness, route, storage, remote write evidence가 필요할 때.
 
-### Scope
+### Targets
 
 - Declared parent: [Tempo Usage Guide](../../guides/07-observability/0049-tempo.md) (`GDE-0049`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
@@ -39,9 +39,9 @@ next_review_at: "2027-05-13"
 - [Usage guide](../../guides/07-observability/0049-tempo.md)
 - [Operations policy](../../policies/07-observability/0049-tempo.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 승인·접근 조건은 아래 항목을 따른다.
 
@@ -51,7 +51,7 @@ next_review_at: "2027-05-13"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다.  Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Safety Checks
+### Environment
 
 - [ ] `tempo` service, `tempo` container, and `tempo-data` volume 상태를 확인한다.
 - [ ] Secret values를 열람하지 않는다. `seaweedfs_s3_tempo_secret_key` ID만 evidence에 기록한다.
@@ -61,9 +61,19 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 `tempo` 최초 기동의 `seaweedfs-buckets` 완료 의존성은 bucket provision을 실행할 수 있다. Bucket·정책·secret 준비는 RUN-0024가 소유한다. Monolithic 구성에는 Kafka를 추가하지 않는다. 요구 retention 미선언 상태를 수용 완료로 표시하지 않고, 입력을 중지하고 WAL·object store 복구 시점이 일치하는지 확인한 뒤 변경을 승인한다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Diagnosis and steps: service 상태, ready endpoint, 최근 로그 캡처 | `/ready`가 성공 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | Diagnosis and steps: Compose 및 config boundary가 policy와 일치하는지 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 3 | Diagnosis and steps: Alloy exporter가 Tempo endpoint를 가리키는지 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 4 | Diagnosis and steps: storage / secret 증상의 로그 문구와 bucket/config boundary만 캡처 | `tempo-bucket`, SeaweedFS endpoint, secret reference boundary가 policy와 일치 | Secret value를 출력하지 않고 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 5 | Diagnosis and steps: metrics generator 실패 시 `remote_write` endpoint와 Prometheus readiness 확인 | Prometheus remote write와 Grafana dashboard timestamp가 갱신됨 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 6 | Diagnosis and steps: ready/ingestion이 config와 맞지만 회복되지 않으면 Tempo 재시작 (필요 시 Alloy 함께) | Grafana Tempo datasource에서 최근 trace가 조회됨 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 7 | Diagnosis and steps: WAL / local-block corruption 의심 시 삭제 없이 evidence만 수집 | 문서에 기록 없음 | WAL 삭제, bucket mutation, retention 변경, secret rotation이 필요해 보이면 중단하고 @buenhyden approval을 받음 |
 
 실행 절차는 아래 항목을 따른다.
 
@@ -129,9 +139,11 @@ Retention gap과 Tempo HTTP `3200`의 LAN 게시 예외는 [POL-0049](../../poli
 
 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 - [ ] `docker exec tempo wget --no-verbose --tries=1 --spider http://localhost:3200/ready`가 성공한다.
 - [ ] Grafana Tempo datasource에서 최근 trace가 조회된다.
@@ -139,7 +151,7 @@ Retention gap과 Tempo HTTP `3200`의 LAN 게시 예외는 [POL-0049](../../poli
 - [ ] Storage symptom이면 `tempo-bucket`, SeaweedFS endpoint, secret reference boundary가 policy와 일치한다.
 - [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
-### Evidence
+#### Evidence
 
 - 실행한 명령, timestamp, operator or agent action을 기록한다.
 - Secret values는 기록하지 않는다.
@@ -154,9 +166,22 @@ Retention gap과 Tempo HTTP `3200`의 LAN 게시 예외는 [POL-0049](../../poli
 - **Storage**: `tempo-bucket` 경계와 SeaweedFS endpoint `seaweedfs-s3:8333`, `tempo-data` volume
 - **Evidence to Capture**: 실패 증상, secret을 제거한 로그, 영향받은 경로·endpoint, 재시작 시각, 최종 복구 또는 보고 상태
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북에서 아직 관찰되었다고 기록되지 않은 항목과, 이를 확인할 관찰은 다음과 같다.
+
+- Tempo(및 Alloy) 재시작(6단계): 이 문서에는 실행 결과가 기록되어 있지 않다. `/ready` 성공과 Grafana Tempo datasource의 최근 trace 조회로 확인한다.
+- metrics generator의 Prometheus remote write(5단계): 필요한 경우에만 해당하며 결과가 기록되어 있지 않다. Grafana dashboard timestamp 갱신으로 확인한다.
+- WAL / local-block corruption 복구: 검증된 복구 절차를 제공하지 않으며 별도 incident/task approval과 backup evidence가 필요하다.
+- Retention 적용 및 Tempo HTTP `3200`의 LAN 게시 예외: POL-0049가 소유하는 경계이며 이 문서에는 관찰 결과가 기록되어 있지 않다.
+
+## Escalation
+
+### Next Owner
+
+verification이 실패하거나, secret exposure risk가 보이거나, destructive data change가 필요하거나, WAL/bucket/object mutation이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
+
+### Recovery or Forward Repair
 
 이 런북에 명시된 validation, restart, and Git-managed config rollback만 사용한다. 데이터 손실 가능성이 있는 WAL, bucket, object, retention 조치는 검증된 안전 복구 절차가 아니므로 Escalation으로 이동한다.
 
@@ -183,7 +208,3 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 2. test credential을 사용하고 운영 route가 없는 별도 project/network의 새 bucket/prefix와 local path에 복구한다.
 3. Tempo를 시작하고 readiness/WAL replay를 검증한다. 과거 trace를 조회하고 격리된 Alloy를 통해 새 label을 붙인 trace를 전송·조회한 뒤 Grafana와 metrics-generator 동작을 검증한다.
 4. 불일치가 있으면 격리된 project를 중지하고 evidence를 보존한다. 수정하지 않은 object/local backup으로 돌아간다. 운영 bucket/path/route 교체는 별도로 승인받는다.
-
-### Escalation
-
-verification이 실패하거나, secret exposure risk가 보이거나, destructive data change가 필요하거나, WAL/bucket/object mutation이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.

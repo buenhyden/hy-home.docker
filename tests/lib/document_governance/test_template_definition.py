@@ -196,8 +196,6 @@ class TemplateDefinitionTests(unittest.TestCase):
             "requirement applies",
             ("sdlc/architecture-decision", "Supersession"): "when an actual "
             "predecessor or successor decision exists, or the change supersedes one",
-            ("operation/runbook", "Rollback"): "when running the procedure or "
-            "the change alters state or outputs",
         }
         found = {}
         for role, definition in self.definitions.items():
@@ -221,10 +219,10 @@ class TemplateDefinitionTests(unittest.TestCase):
         recovery = next(
             h
             for h in self.definitions["operation/runbook"]["headings"]
-            if h["title"] == "Recovery"
+            if h["title"] == "Escalation"
         )
         self.assertEqual(
-            [("Rollback", 1), ("Escalation", 2)],
+            [("Next Owner", 1), ("Recovery or Forward Repair", 2)],
             [(c["title"], c["order"]) for c in recovery["children"]],
         )
         for role, definition in self.definitions.items():
@@ -769,7 +767,24 @@ class RoleDesignConformanceTests(unittest.TestCase):
         }
         self.assertEqual("incident", bound.get("operation/incident"))
         self.assertEqual("postmortem", bound.get("operation/postmortem"))
+        self.assertEqual("runbook", bound.get("operation/runbook"))
         self.assertEqual([], role_design_contract_findings(self.registry))
+
+    def test_a_runbook_steps_table_reads_the_core_columns(self) -> None:
+        definition = template_definition(self.registry, "operation/runbook")
+        self.assertEqual("workspace-document-role-design", definition["contract_id"])
+        self.assertEqual(
+            [
+                ("Step", "integer"),
+                ("Action", "string"),
+                ("Expected Result", "string"),
+                ("On Failure", "string"),
+            ],
+            [
+                (column["key"], column["data_type"])
+                for column in definition["tables"][0]["columns"]
+            ],
+        )
 
     def test_a_bound_table_reads_its_columns_from_the_core(self) -> None:
         definition = template_definition(self.registry, "operation/postmortem")

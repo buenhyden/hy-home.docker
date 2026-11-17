@@ -1,10 +1,10 @@
 ---
 title: "hy-home.k8s Integration Runbook"
-version: "1.4.3"
+version: "1.5.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0096"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # hy-home.k8s Integration Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 hy-home.k8s 클러스터와 이 스택을 연결하는 전체 절차와 자격 증명 회전, 문제 해결을 다루는 런북이다. 계약은 가이드가 설명한다.
 
@@ -31,7 +31,7 @@ hy-home.k8s 클러스터와 이 스택을 연결하는 전체 절차와 자격 �
 | Argo CD notifications Slack 토큰 설정 또는 교체 | 1, [Slack 토큰](#setting-or-replacing-the-slack-notifications-token), 8 |
 | OpenBao auth mount, policy, role 유실 | 1, 5 (모든 단계), 6, 7, 8 |
 
-### Scope
+### Targets
 
 - [Guide](../../guides/10-platform-and-backup/0096-k8s-integration.md) (`GDE-0096`)
 - [Policy](../../policies/10-platform-and-backup/0096-k8s-integration.md) (`POL-0096`)
@@ -40,13 +40,13 @@ hy-home.k8s 클러스터와 이 스택을 연결하는 전체 절차와 자격 �
 - [Prometheus guide](../../guides/07-observability/0045-prometheus.md)
 - [Secrets README](../../../../secrets/README.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 승인된 기존 kubeconfig/context만 사용하며, 별도 승인 없이 문서 점검을 runtime, private 입력 읽기 또는 k8s 변경으로 확장하지 않는다. secret 값은 파일이나 숨겨진 프롬프트로만 전달한다.
 
-### Safety Checks
+### Environment
 
 모든 단계에 적용되는 규칙:
 
@@ -81,9 +81,40 @@ JSON 오류를 `denied`, `revoked`로 간주하지 않는다. 원시 응답을 �
 않는다. 클라이언트 도구가 구조화된 판정에 필요한 필드를 제공하지 않으면 중단하고
 소유자가 같은 요청의 서버 응답을 확인한다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Phase 1: `git status`로 로컬 변경을 확인한 뒤 `git switch main`과 `git pull --ff-only`로 `main`을 갱신한다 | 문서에 기록 없음 | 만들지 않은 변경이 나오면 폐기하기 전에 멈추고 소유자에게 확인 |
+| 2 | Phase 1: `validate-docker-compose.sh`와 `check-all-hardening.sh`로 추적 소스를 검증한다 | 둘 다 통과한다(PASS는 실제 서비스 건강 증거가 아님) | RUN-0086의 private 입력/임시 파일 경계를 먼저 승인하며 미승인이면 수행하지 않음 |
+| 3 | Phase 2: private registry와 `.env`를 `umask 077`/`chmod 700`/`chmod 600`으로 보호된 임시 디렉터리에 백업한다 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 4 | Phase 2: `gen-secrets.sh --dry-run`, `--sync-metadata-check`, `--sync-metadata`로 공개 메타데이터를 동기화한다 | check 종료 0은 일치, 1은 drift, 2는 입력 거절이며 승인된 수정과 sync 이후 점검은 0으로 종료된다 | 종료 2 또는 `METADATA rejected`면 write하지 않고 중단, 값을 보존한 채 원인을 확인하고 좁은 수정은 별도 승인 |
+| 5 | Phase 2: 사용자 이름을 확인하고 `gen-secrets.sh`로 누락된 secret 파일을 생성한다(전체 registry 쓰기 범위를 먼저 승인) | `1`, 그리고 두 파일 모두 크기가 0이 아니고 모드가 `640`이다 | 파일이 0바이트면 2.2를 먼저 완료한 뒤 2.3을 다시 실행 |
+| 6 | Phase 3: `docker compose up -d --no-deps --no-build --pull never --force-recreate traefik prometheus`로 두 consumer를 재생성한다 | 승인된 두 consumer가 각 healthcheck 기준을 통과한다(고정된 1분 SLA 없음) | `Created`/`Exited`는 자동 재실행 근거가 아니므로 상태 원인을 확인하고 RUN-0086 mount hash 검증을 마침 |
+| 7 | Phase 3: `prom_auth`와 `curl`로 호스트에서 Prometheus API를 검증한다 | 순서대로 `302`, `200`, `302`이고 invalid credential 요청은 `401`이다 | `000`, 5xx, 예상 외 redirect는 중단 |
+| 8 | Phase 4: `docker network inspect k3d-hyhome`과 포트 443/3100/3200/26379 연결을 확인한다 | 기존 클러스터에는 `k3d-hyhome-*` 노드만 있고 선택한 consumer의 포트 연결이 성립한다 | 예상 외 member는 이름/owner/선택 상태를 확인하고 중단(자동 `docker network disconnect` 금지) |
+| 9 | Phase 5.1: 새 클러스터 CA(public)를 `$K8S_WORK/k3d-ca.crt`에 기록하고 fingerprint를 확인한다 | CA 추출과 certificate parse가 성공하고 대상 클러스터의 public CA fingerprint와 일치한다 | 빈 파일이나 다른 context면 중단 |
+| 10 | Phase 5.1a: Kiali용 Grafana service account `k8s-kiali`의 토큰을 발급한다 | 토큰이 있으면 `200`, 없으면 `401`이며 토큰 수명은 90일이다 | `.key`가 null/빈 값이면 KV에 쓰지 않으며 HTTP/JSON 검사 실패 시 다음 write를 막음 |
+| 11 | Phase 5.2: 호스트 네트워크에서 호스트 사용자로 throwaway `bao` client 컨테이너를 기동한다 | 문서에 기록 없음 | `/s/k8s`에서 `permission denied`면 `--user "$(id -u):$(id -g)"`로 재시작 |
+| 12 | Phase 5.3: OIDC operator로 로그인하고 raft 스냅샷을 생성한다 | 브라우저 로그인이 성공하고 스냅샷 파일이 존재한다 | 스냅샷 없이는 진행하지 않음 |
+| 13 | Phase 5.4: 승인된 임시 root를 RUN-0085 절차로 발급하고 `R token lookup`으로 root 정책을 확인한다 | lookup의 정책이 정확히 root이다 | 빈 파일이면 operator token으로 대체하지 않고 중단하며 실패/파싱 오류도 중단 |
+| 14 | Phase 5.4.1 최초 설정: kubernetes auth 확인, policy/role/KV 항목을 작성하고 role 값을 확인한다 | `[external-secrets]`와 `600` | 문서에 기록 없음 |
+| 15 | Phase 5.4.2 추가 애플리케이션: 5.1a 실행 후 policy, KV 항목, token role, ESO role `token_ttl=10m`을 갱신한다 | `4`, `4`, 각 `current_version`이 최소 `1`, 그리고 `600` | 문서에 기록 없음 |
+| 16 | Phase 5.4.3: token role 상한을 검증하고 root를 `token revoke -self`로 폐기한 뒤 같은 token의 lookup으로 폐기를 확인한다 | role 상한은 7200이고 폐기 후 같은 token lookup이 서버의 403으로 거절된다 | lookup 성공이면 `ROOT STILL VALID`로 중단, DNS/TLS/timeout/sealed/CLI/JSON 오류는 `INDETERMINATE`로 보호된 증거를 유지하고 소유자에게 escalation |
+| 17 | Phase 5.5: `auth/kubernetes/config`로 method를 클러스터에 지정한다 | 승인된 클러스터 API 주소(기본값 `https://192.168.0.13:6550`) | 문서에 기록 없음 |
+| 18 | Phase 5.6: bootstrap 토큰을 `k8s-bootstrap` role로 `ttl=2h explicit_max_ttl=2h`로 파일에 발급한다 | 문서에 기록 없음 | `Must supply data or use -force`면 `ttl=2h explicit_max_ttl=2h`를 포함해 다시 실행 |
+| 19 | Phase 5.7: 토큰 자신으로 lookup, 허용 경로 읽기, 금지 경로 읽기, 허용 경로 재읽기를 수행하고 컨테이너를 나간다 | policy는 정확히 `default`/`k8s-bootstrap`, orphan `true`, `0 < ttl <= 7200`, `explicit_max_ttl=7200`이며 허용 읽기는 성공하고 금지 읽기는 서버 403이다 | 404/만료/DNS/TLS/timeout/sealed/CLI/파싱 오류는 `INDETERMINATE`로 중단, 금지 읽기 성공은 `LEAK`이며 즉시 self-revoke하고 escalation |
+| 20 | Phase 6: bootstrap 토큰, Prometheus/Grafana 값(ESO), public CA, endpoint 표를 클러스터 소유자에게 전달한다 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 21 | Phase 8: 클러스터 소비 완료 후 bootstrap 토큰을 self-revoke하고 snapshot을 `secrets/backup/openbao/`로 옮기며 임시 파일을 정확한 이름으로 정리하고 Task에 기록한다 | snapshot 존재/크기/권한 0600과 offline 인계를 확인한다 | 폐기/만료 확인 전에는 파일을 지우지 않으며 광범위한 glob 삭제는 하지 않음 |
+| 22 | Prometheus API credential 회전: 현재 source에 회전을 보장하는 실행 절차가 없는 BLOCKED 상태다 | 문서에 기록 없음 | 해소 전 consumer/KV 변경을 중단하고 별도 승인된 source 수정 또는 scoped 회전 방법을 요구 |
+| 23 | Kiali Grafana token 재발급 1: 고유한 새 토큰 이름으로 5.1a를 실행한다(이전 token은 기능 검증 전까지 유지) | 문서에 기록 없음 | 문서에 기록 없음 |
+| 24 | Kiali Grafana token 재발급 2: operator로 `secret/platform/grafana-api`를 갱신하고 `current_version`을 확인한다 | `current_version`이 이전보다 1 높다 | 문서에 기록 없음 |
+| 25 | Kiali Grafana token 재발급 3: ESO refresh를 강제하고 Kiali pod를 재생성한 뒤 새 token의 `lastUsedAt`을 확인하고 이전 token을 삭제한다 | 새 token의 `lastUsedAt`이 가장 최근이며 삭제 후 목록에서 이전 ID가 사라진다 | 오류이거나 이전 ID가 불명확하면 삭제하지 않음 |
+| 26 | Slack notifications token 1: 호스트에서 `umask 077`로 `$K8S_WORK/slack.token`을 생성한다(`echo` 금지) | 문서에 기록 없음 | 문서에 기록 없음 |
+| 27 | Slack notifications token 2: operator로 `secret/platform/notifications`를 갱신하고 `current_version`을 확인한다 | `current_version`이 이전보다 1 높다(최초에는 `1`) | 문서에 기록 없음 |
+| 28 | Slack notifications token 3: `slack.token`을 삭제하고 ESO refresh를 강제하여 Argo CD application을 확인한다 | `SecretSynced`, `True`, 그다음 `Synced Healthy` | 문서에 기록 없음 |
 
 절차는 아래 항목에 따른다.
 
@@ -593,11 +624,13 @@ policy는 SPEC-0181부터 이 경로를 허용한다. `hy-home-operator` policy�
 
 `ROOT STILL VALID`, `secret/platform/*` 밖을 읽는 토큰, OpenBao 앞에 SSO나 허용목록을 두라는 요청, 인증 없이 Prometheus나 Grafana를 게시하라는 요청이 있으면 중단한다. 빈 파일이나 다른 context, `INDETERMINATE` 판정도 중단한다. Prometheus API 비밀번호 교체는 BLOCKED이며 해소 전 consumer/KV 변경을 중단한다.
 
-`ROOT STILL VALID`, `secret/platform/*` 밖을 읽는 토큰, OpenBao 앞에 SSO나 허용목록을 두라는 요청, 인증 없이 Prometheus나 Grafana를 게시하라는 요청은 Escalation에 기록한 중단 조건이다. 단계별 중단 판정(빈 파일이나 다른 context, `INDETERMINATE`, `LEAK` 등)은 Actions의 각 Phase에 있다.
+`ROOT STILL VALID`, `secret/platform/*` 밖을 읽는 토큰, OpenBao 앞에 SSO나 허용목록을 두라는 요청, 인증 없이 Prometheus나 Grafana를 게시하라는 요청은 Escalation에 기록한 중단 조건이다. 단계별 중단 판정(빈 파일이나 다른 context, `INDETERMINATE`, `LEAK` 등)은 Steps의 각 Phase에 있다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 서비스 점검은 아래 항목에 따른다.
 
@@ -621,14 +654,33 @@ sample, 실제 up값을 별도로 확인한다. Loki 로그·trace 수집/조회
 별도 승인 없이는 실행하지 않는다. metrics NodePort 폐지는 이 증거와 별도
 클러스터 변경 승인 이후에만 가능하다.
 
-### Evidence
+#### Evidence
 
-Phase 8에 나열된 단계 출력, 소스 커밋, Trigger and Outcome에서 적용된 상황을
+Phase 8에 나열된 단계 출력, 소스 커밋, Trigger에서 적용된 상황을
 기록한다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 runbook이 아직 관찰된 적 없는 항목은 다음과 같다. 이 문서에는 아래 단계의 실행 결과가 기록되어 있지 않으며, Phase 8이 요구하는 현재 Task의 출력 기록이 검증 근거가 된다.
+
+- Prometheus API credential 회전: 문서가 BLOCKED로 표시한다. 별도 승인된 source 수정 또는 scoped 회전 방법 이후 새 Basic 200 / 이전 Basic 401 / invalid Basic 401과 KV version 증가가 검증 근거가 된다.
+- 임시 root 발급과 폐기: 승인과 custody가 필요하다. 같은 token의 lookup이 서버 403으로 거절된 기록이 폐기 검증 근거가 된다.
+- gateway 재생성과 mount hash: 승인된 apply가 필요하다. RUN-0086의 coverage를 갖춘 mount hash 검증과 healthcheck 통과가 검증 근거가 된다.
+- OpenBao KV/policy/role 쓰기와 raft 스냅샷: 승인된 변경이다. `current_version` 증가, role 값 `600`, 스냅샷 존재/크기/권한이 검증 근거가 된다.
+- Kubernetes auth 새 로그인과 ESO 동기화(Phase 7): 문서는 이전 Ready 상태를 증거로 인정하지 않는다. config write 이후의 새 auth 성공과 reconcile 시각이 검증 근거가 된다.
+- 호스트 측 샘플 도착(7.2): 문서는 `count by(job)(up)`이 클러스터 건강을 증명하지 않는다고 밝힌다. 예상 job inventory, fresh sample, 실제 up 값 확인이 검증 근거가 된다.
+- Loki 로그, trace 수집/조회, Kiali, 선택 DB: 각 consumer 소유자의 제한된 기능 검증이 필요하며 이 문서에는 기록이 없다.
+- metrics NodePort 폐지와 synthetic 데이터 쓰기: 별도 승인 전에는 실행하지 않는다.
+
+## Escalation
+
+### Next Owner
+
+`ROOT STILL VALID`, `secret/platform/*` 밖을 읽는 토큰, 클러스터를 위해
+OpenBao 앞에 SSO나 허용목록을 두라는 요청, 또는 인증 없이 Prometheus나
+Grafana를 게시하라는 요청이 있으면 중단하고 @buenhyden에게 연락한다.
+
+### Recovery or Forward Repair
 
 - **Prometheus API:** 현재 source와 보호된 이전 credential 상태를 비교하여 owner가
   승인한 정확한 rollback만 수행한다. API router 제거는 모든 API consumer를
@@ -638,9 +690,3 @@ Phase 8에 나열된 단계 출력, 소스 커밋, Trigger and Outcome에서 적
   사본)이 복구 지점이다. 복원은 OpenBao 런북의 격리된 절차로만 한다.
 - **Bootstrap 토큰:** 단독으로 폐기한다(Troubleshooting 참고).
 - **Private registry와 `.env`:** Phase 2 백업에서 복원한다.
-
-### Escalation
-
-`ROOT STILL VALID`, `secret/platform/*` 밖을 읽는 토큰, 클러스터를 위해
-OpenBao 앞에 SSO나 허용목록을 두라는 요청, 또는 인증 없이 Prometheus나
-Grafana를 게시하라는 요청이 있으면 중단하고 @buenhyden에게 연락한다.

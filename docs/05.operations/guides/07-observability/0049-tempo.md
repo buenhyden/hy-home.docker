@@ -1,10 +1,10 @@
 ---
 title: "Tempo Usage Guide"
-version: "1.0.9"
+version: "1.0.10"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0049"
 parent_ids:
@@ -63,7 +63,7 @@ next_review_at: "2027-05-13"
 
 #### Normal use
 
-1. Compose service, Tempo config(ingestion, retention, storage, metrics generator), Alloy exporter 경계는 [RUN-0049 절차](../../runbooks/07-observability/0049-tempo.md#actions)의 `rg` 명령으로 확인한다.
+1. Compose service, Tempo config(ingestion, retention, storage, metrics generator), Alloy exporter 경계는 [RUN-0049 절차](../../runbooks/07-observability/0049-tempo.md#steps)의 `rg` 명령으로 확인한다.
 2. Grafana의 `Explore` 메뉴에서 `Tempo` datasource를 선택하고 `TraceQL`로 trace를 조회한다.
 
    ```text

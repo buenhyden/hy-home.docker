@@ -1,10 +1,10 @@
 ---
 title: "Airflow Runbook"
-version: "1.5.2"
+version: "1.6.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0050"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # Airflow Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 Apache Airflow 서비스 장애 발생 시 운영자가 즉시 수행할 수 있는 복구 절차를 정의한다. 현재 서비스명은 Airflow 3의 `airflow-apiserver`를 기준으로 한다. broker는 공유 `mng-valkey`다(앱별 전용 Valkey는 ADR-0062 결정 10으로 제거됨).
 
@@ -31,7 +31,7 @@ next_review_at: "2027-05-13"
 - Airflow UI 로그인, Keycloak token exchange, 또는 TLS verification이 실패할 때.
 - Airflow token 또는 session이 노출되어 폐기해야 할 때.
 
-### Scope
+### Targets
 
 > Scope: Apache Airflow (07-workflow)
 
@@ -46,9 +46,9 @@ next_review_at: "2027-05-13"
 - [Operations policy](../../policies/08-workflows-and-automation/0050-airflow.md)
 - [Opsflow HOME 설치 Task](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0051-opsflow-home-installation.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 승인·운영자·접근 조건은 아래 항목을 따른다.
 
@@ -58,7 +58,7 @@ next_review_at: "2027-05-13"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Safety Checks
+### Environment
 
 실행 전 확인할 점검은 아래 항목을 따른다.
 
@@ -76,9 +76,34 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
   `create-permissions`를 다시 실행하고, 로그인한 사용자로 Pools, DAGs, Assets,
   HITL 화면이 `403` 없이 열리는지 확인했는가? (inc-2026-0002)
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 시나리오 0: apiserver 로그에서 auth manager, 401, 403, certificate 오류 확인 (secret 값은 출력하지 않음) | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | 시나리오 0: `KEYCLOAK_URL`, `KEYCLOAK_REALM`, `AIRFLOW_KEYCLOAK_CLIENT_ID`가 Keycloak client 설정과 일치하는지 값 노출 없이 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 3 | 시나리오 0: Keycloak client secret과 `airflow_api_jwt_secret`이 컨테이너에 연결되어 있는지 경로만 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 4 | 시나리오 0: `rootCA.pem` bind mount와 임시 CA bundle 생성 여부를 로그와 파일 존재로 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 5 | 시나리오 0: 최신 Dockerfile 변경이 필요하면 승인된 Compose build 후 `airflow db check`와 UI 로그인 재검증 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 6 | 시나리오 1: worker/scheduler/apiserver 로그와 worker 로그 디스크 사용량 캡처 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 7 | 시나리오 1: host/secret pair가 `mng-valkey`/`mng_valkey_password`인지 확인하고 Valkey Runbook의 값 비노출 인증 점검 수행 | 문서에 기록 없음 | DB/broker가 준비되지 않으면 중단 |
+| 8 | 시나리오 1: Celery worker 응답(`inspect ping`) 확인 | remote control이 허용된 worker의 응답이 있음 | 응답이 없으면 실패로 기록하고 원인을 먼저 진단 |
+| 9 | 시나리오 1: 스케줄 pause와 외부 부작용 조정 후 승인된 `airflow-worker` 재시작 | 문서에 기록 없음 | 자동 재실행이나 task clear를 복구 전제로 삼지 않고 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 10 | 시나리오 1: Flower 또는 worker 로그에서 heartbeat 회복 확인 | heartbeat가 회복됨 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 11 | 시나리오 2: `airflow db check`로 DB 연결 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 12 | 시나리오 2: `/run/secrets/airflow_db_password` 파일 존재 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 13 | 시나리오 2: DB/secret 준비 회복 및 외부 효과 승인 시에만 기존 설정으로 apiserver, scheduler 재시작 | 문서에 기록 없음 | DB/secret 준비 문제가 남으면 중단하고 소유자에게 넘김. Secret bind·환경변수·image 변경은 R0085/R0086으로 넘김 |
+| 14 | 시나리오 4: 노출된 브라우저 session은 UI에서 Logout | Airflow JWT가 `revoked_token`에 기록되어 만료 전에도 거부됨 | 문서에 기록 없음 |
+| 15 | 시나리오 4: token 사본이 노출됐으면 실행 중 task를 멈춘 뒤 `airflow_api_jwt_secret` 교체와 관련 서비스 재생성 | 모든 사용자와 API client가 다시 로그인해야 함 | 실행 중인 task의 API 호출이 실패할 수 있으므로 task를 먼저 멈추거나 끝냄 |
+| 16 | 시나리오 4: 기존 cookie 요청과 새 로그인 결과 확인 | 기존 cookie 요청은 `401`, 새 로그인은 DAGs, Pools, Assets, HITL이 `403` 없이 열림 | 문서에 기록 없음 |
+| 17 | 시나리오 5 백업: dev-pg와 mng-pg dump, `opsflow-dev` 목록, `SHA256SUMS` 생성 (O6 필요) | 파일 크기가 0이 아니고 `SHA256SUMS`에 모든 백업 파일이 기록됨 | dump 실패, 크기 0, 디스크 부족이면 중단. Rollback 없음(백업은 삭제하지 않음) |
+| 18 | 시나리오 5 SQL: migration `001`·`003`·`004`·`005`·`007` 적용과 `008` 검사 (O1, O2, O8 필요) | 다섯 migration이 각각 commit되고 `008`이 읽기 전용 transaction을 오류 없이 ROLLBACK으로 끝냄 | 오류, receipt/fingerprint 불일치, 역할·ACL 사전 검사 거부이면 중단. commit 뒤에는 DAG를 pause하고 1단계 백업을 빈 대상에서 검증 |
+| 19 | 시나리오 5 Bucket: `opsflow-dev` bucket, worker identity, bucket policy 설정과 canary 실행 (O3 필요) | allowed_read·allowed_write 200, foreign_bucket·foreign_prefix·input_write·foreign_write·delete·list 403 | 기대와 다른 상태 코드가 하나라도 있으면 중단. canary 객체, bucket policy, 추가한 identity 항목만 제거 |
+| 20 | 시나리오 5 코드 설치: DAG 파일과 `workflow_lib` 설치 후 import 오류와 paused 상태 확인 (O1, O4, O5 필요) | import 오류가 없고 DAG가 paused | hash 불일치, 이름 충돌, import 오류, DAG unpaused이면 중단. `installed-files.txt`의 파일만 제거 |
+| 21 | 시나리오 5 Pool·합성 실행: pool 설정 후 합성 입력과 잘못된 입력으로 단일 run 실행 (O7 필요) | `opsflow_dev`에 raw·validated·published·outbox 행과 validated 객체가 생기고 잘못된 입력은 quarantine에 격리되어 게시 행이 없음 | 행·객체 누락, ContentType 불일치, 잘못된 입력 게시, 계획 밖 run이면 중단. pool과 합성 객체만 제거하고 DAG를 paused로 둠 |
+| 22 | 시나리오 5 Unpause: `source_manifest_ingest` unpause | paused=False이며 계획 밖 run이 생기지 않음(`schedule=None`) | 예상 밖 run이면 중단하고 `airflow dags pause source_manifest_ingest`로 rollback |
 
 실행 절차는 아래 항목을 따른다.
 
@@ -282,14 +307,16 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
 
 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 - [ ] `docker compose exec airflow-apiserver airflow dags list` 명령어로 정상 로드 여부 확인.
 - [ ] native Keycloak 로그인과 `/api/v2/monitor/health` JSON의 component status를 확인한다. HTTP 200만으로 정상 판정하지 않는다. Scheduler health, processor/triggerer job check, worker ping과 승인된 canary 결과도 확인한다.
 
-### Evidence
+#### Evidence
 
 증거 기록은 아래 항목을 따른다.
 
@@ -309,13 +336,28 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
 - 실행 명령·결과·시각과 운영자 또는 agent 조치를 기록한다.
 - 실패 검사, 관찰 증상과 최종 복구·에스컬레이션 상태를 관련 Task/Incident에 남긴다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북에서 아직 관찰되었다고 기록되지 않은 항목과, 이를 확인할 관찰은 다음과 같다.
+
+- 시나리오 5 Opsflow 첫 HOME 설치(17~22단계): 상태가 "계획됨·미실행"이며 승인된 운영자와 실행 창이 TSK-0051에 기록되기 전에는 시작하지 않는다. 각 단계의 기대 결과와 TSK-0051의 실행 기록으로 확인한다.
+- 미확정 owner 항목 O1–O8: TSK-0051이 소유하며 이 문서에는 확정 결과가 기록되어 있지 않다.
+- `airflow_api_jwt_secret` 교체와 서비스 재생성(시나리오 4): 승인이 필요한 변경이며 실행 결과가 기록되어 있지 않다. 기존 cookie 요청의 `401`과 새 로그인의 `403` 없음으로 확인한다.
+- worker, apiserver, scheduler 재시작(시나리오 1, 2): 승인된 경우에만 수행하며 이 문서에는 실행 결과가 기록되어 있지 않다. Celery `inspect ping` 응답과 heartbeat 회복으로 확인한다.
+- 연결 주소 helper의 실제 mount 권한, 새 이미지 빌드, 운영 연결: 합성 입력 단위 시험의 PASS와 별도이며 이 문서에는 관찰이 기록되어 있지 않다.
+- 시나리오 3 관리자 계정 복구: RUN-0014로 넘기며 복구 뒤 native login과 필요한 권한을 직접 확인해야 한다.
+
+## Escalation
+
+### Next Owner
+
+검증 실패, secret 노출 위험, 파괴적 변경 필요 또는 예상 절차와 다른 상태이면 중단하고 @buenhyden에게 넘긴다. 정제된 증거, 시도한 단계와 현재 rollback/recovery 상태를 함께 전달한다.
+
+### Recovery or Forward Repair
 
 - 이 Runbook에 기록된 복구·rollback 절차와 아래의 `Safe Rollback or Recovery Procedure` 하위 절차만 사용한다.
 - 아래 격리 복원은 미실행 상태다. 상태를 변경하기 전에 날짜가 있는 출력과 산출물 checksum을 기록한다.
-- 관찰한 장애가 문서화된 절차와 다르면 변경을 중지하고 증거를 보존한 뒤 아래 Escalation 절에 따라 보고한다.
+- 관찰한 장애가 문서화된 절차와 다르면 변경을 중지하고 증거를 보존한 뒤 위 Next Owner에 따라 보고한다.
 
 #### Safe Rollback or Recovery Procedure
 
@@ -333,7 +375,3 @@ Keycloak으로 로그인한 UI는 Airflow 자체 JWT(`_token` cookie,
 3. 운영 경로·예약·webhook·외부 실행기가 없는 별도 Compose 프로젝트와 격리 네트워크에 복원 복사본을 준비한다. PostgreSQL을 먼저 복원하고 같은 Fernet 키와 마운트 산출물을 복원한 뒤 broker 호스트·secret 쌍을 일치시킨다.
 4. 의존 서비스를 기동하고 지원되는 Airflow DB 점검·마이그레이션을 수행한 뒤 processor·scheduler·API·worker를 기동한다. DAG 파싱, DB 상태, 값을 출력하지 않는 Connections 복호화, worker ping, Keycloak 네이티브 로그인, 작업 로그 접근, 외부 효과가 없는 canary DAG를 확인한다.
 5. 불일치하면 격리 프로젝트를 중지하고 로그·checksum을 보존한 뒤 변경하지 않은 원본 백업으로 돌아간다. 운영 교체나 DNS·경로 변경에는 별도 변경 승인이 필요하다.
-
-### Escalation
-
-검증 실패, secret 노출 위험, 파괴적 변경 필요 또는 예상 절차와 다른 상태이면 중단하고 @buenhyden에게 넘긴다. 정제된 증거, 시도한 단계와 현재 rollback/recovery 상태를 함께 전달한다.

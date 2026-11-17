@@ -1,10 +1,10 @@
 ---
 title: "Shared Storybook Source Preflight Runbook"
-version: "1.1.4"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0101"
 parent_ids:
@@ -15,15 +15,15 @@ next_review_at: "2027-05-13"
 
 # Shared Storybook Source Preflight Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 공유 Storybook 정적 origin과 문서 MCP의 빌드, 기동, 검증, 복구를 다루는 런북이다.
 
 `storybook` 정적 origin의 소스, route 또는 image 변경을 검토할 때 사용한다.
 
-### Scope
+### Targets
 
 - Artifact: `RUN-0101`; parent guide: `GDE-0101`.
 - 역사적 source/static 완료 근거: `SPEC-0206`. 런타임 선언:
@@ -32,21 +32,31 @@ next_review_at: "2027-05-13"
 - [Shared Storybook policy](../../policies/14-design-system/0101-storybook.md)
 - [Traefik runbook](../02-gateway-and-networking/0013-traefik.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 HOME 배포·정지·재시작, DNS/TLS 수정, 검토자 권한 변경과 원격 MCP 공개는 별도
 구체적 승인이 필요하다. SPEC-0206은 source/static completion의 역사적 근거이며,
 이 runbook은 이후 운영 trigger와 evidence handoff를 소유한다.
 
-### Safety Checks
+### Environment
 
-정적 origin은 업무 데이터를 소유하지 않으므로 backup은 요구하지 않고, 읽기 전용 사전 점검은 Actions의 1~2단계(작업 revision 일치 확인과 정적 Compose 검증)에서 수행한다.
+정적 origin은 업무 데이터를 소유하지 않으므로 backup은 요구하지 않고, 읽기 전용 사전 점검은 Steps의 1~2단계(작업 revision 일치 확인과 정적 Compose 검증)에서 수행한다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 현재 Git SHA와 승인된 Storybook package/lock, Dockerfile, Compose, profile, 운영 문서가 같은 작업 revision에 속하는지 확인한다 (실제 `.env`/secret 값은 출력하지 않음) | 문서에 기록 없음 | 배포를 중단하고 @buenhyden에게 SHA와 대상/증거/복구 경계를 전달 |
+| 2 | 공개 예제 환경으로 `docker compose --env-file .env.example --profile experience config --quiet`, `validate-docker-compose.sh`, `check-operations-catalog.py`를 실행한다 | 정적 구성 검증 명령 세 개가 성공한다 | 배포를 중단하고 @buenhyden에게 SHA와 대상/증거/복구 경계를 전달 |
+| 3 | Compose가 `!override`를 해석하는지 확인하고 render 결과에서 `storybook`만 새 서비스, 전용망 `internal: true`, router의 TLS/middleware 순서, host port 없음을 확인한다 | render 결과가 기술된 구성과 일치한다(정적 검사 성공만으로 인증/TLS/브라우저 동작을 주장하지 않음) | 배포를 중단하고 @buenhyden에게 SHA와 대상/증거/복구 경계를 전달 |
+| 4 | `storybook_image.py build`(필요 시 `--push`)로 Storybook 소스를 마지막으로 바꾼 커밋의 image를 만들고 `verify --registry`로 검증한다 | `storybook_image.py verify`가 통과한다 | Dockerfile은 40자리 커밋 SHA가 없으면 빌드를 거부하고 image가 없으면 기동이 실패하며 secret은 build argument로 전달하지 않음 |
+| 5 | `HYHOME_STORYBOOK_REHEARSAL=1` unittest로 임시 내부망에서 Traefik/OAuth2 Proxy/Keycloak rehearsal을 실행한다 | 비인증 요청은 200을 받지 않고 관리자만 각 경로를 `no-store`와 `frame-ancestors 'self'`로 받으며 MCP는 401/403/200과 404를 확인한다 | image가 없으면 rehearsal이 빌드 명령을 알려 주며 실패하고 `down -v`나 volume prune은 쓰지 않음 |
+| 6 | HOME 활성화 승인이 별도로 주어지면 Keycloak client/scope 생성 후 `experience` 기동, DNS, TLS, 관리자 로그인, 비인증 거절, MCP 로그인/tool 호출, 이전 image rollback을 시험한다 | 문서에 기록 없음 | 승인 범위 밖에서는 수행하지 않으며 문제 시 승인된 운영 Task가 이전 image와 route를 복원 |
+| 7 | 검토/병합된 커밋에서 `storybook_design_export.py <빈 디렉터리>`로 bundle을 만들고 그 안에서만 `/design-sync`를 실행한다 | bundle은 allowlist 파일과 `export-manifest.json`만 담는다 | 문서에 기록 없음 |
 
 1. 현재 Git SHA와 승인된 Storybook package/lock, Dockerfile, Compose, profile,
    운영 문서가 같은 작업 revision에 속하는지 확인한다. 실제 `.env`나 secret의 값을
@@ -125,31 +135,42 @@ HOME 배포·정지·재시작, DNS/TLS 수정, 검토자 권한 변경과 원�
 
 다음이 확인되면 배포를 중단한다: 잘못된 관리자 허용 범위, 비인증 asset 노출, 로그인 HTML의 asset/MCP 응답 혼입, image/context에 비밀값 유입, port 충돌, read-only runtime 실패, manifest revision 불일치.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 정적 구성 검증 명령 세 개가 성공하고 `storybook_image.py verify`가 통과해야 하며, 격리 rehearsal에서 비인증 요청이 200을 받지 않고 관리자만 각 경로를 받아야 한다.
 
-### Evidence
+#### Evidence
 
 운영 Task에 기준/작업 SHA, 변경 파일, 명령·exit code, 정적·격리·HOME 결과를 구분해
 기록한다. Trigger는 HOME route 활성화, `/admins` 이외 reviewer 승인, remote MCP
 issuer/audience/client 승인, DNS/TLS 관찰 요청 또는 external design account 승인이다. host secret, 세션 cookie, 인증 HTML 원문, private Compose 전체 출력,
 실사용자 데이터와 원시 로그는 기록하지 않는다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 runbook이 아직 관찰된 적 없는 항목은 다음과 같다.
 
-정적 구성 오류는 Storybook leaf Compose와 root include/profile 문서 변경만 되돌린 뒤
-같은 검사를 재실행한다. HOME 실행 이후에는 승인된 운영 Task가 이전 image와
-route를 복원하고 브라우저 경로를 다시 검사한다. 정적 origin은 업무 데이터를
-소유하지 않으므로 DB·volume 삭제나 migration은 복구 절차가 아니다.
+- HOME 활성화(`experience` 기동, DNS, TLS, 관리자 로그인, 비인증 거절, MCP 로그인과 tool 호출, 이전 image rollback): 별도 승인이 필요하며 이 문서에는 실행 결과가 기록되어 있지 않다. 승인된 운영 Task의 HOME 결과 기록이 검증 근거가 된다.
+- 실제 인증/TLS/브라우저 동작: 문서는 정적 검사 성공만으로 주장하지 않는다고 밝힌다. 격리 rehearsal 결과와 HOME 관찰이 검증 근거가 된다.
+- 격리 rehearsal(`StorybookIngressRehearsalTests`)과 image `verify`: 이 문서에는 실행 결과가 기록되어 있지 않다. 명령 종료 코드와 비인증 200 부재, 관리자 응답 확인이 검증 근거가 된다.
+- Claude Design 전달: 계정 로그인과 업로드는 담당자가 수행하며 이 문서에는 기록이 없다. bundle과 `export-manifest.json` 확인이 검증 근거가 된다.
 
-### Escalation
+## Escalation
+
+### Next Owner
 
 잘못된 관리자 허용 범위, 비인증 asset 노출, 로그인 HTML의 asset/MCP 응답 혼입,
 image/context에 비밀값 유입, port 충돌, read-only runtime 실패 또는 manifest
 revision 불일치가 확인되면 배포를 중단하고 @buenhyden에게 SHA와 대상·증거·복구
 경계를 전달한다.
+
+### Recovery or Forward Repair
+
+정적 구성 오류는 Storybook leaf Compose와 root include/profile 문서 변경만 되돌린 뒤
+같은 검사를 재실행한다. HOME 실행 이후에는 승인된 운영 Task가 이전 image와
+route를 복원하고 브라우저 경로를 다시 검사한다. 정적 origin은 업무 데이터를
+소유하지 않으므로 DB·volume 삭제나 migration은 복구 절차가 아니다.

@@ -1,10 +1,10 @@
 ---
 title: "Pushgateway Metrics Buffer Recovery Runbook"
-version: "1.0.5"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0046"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # Pushgateway Metrics Buffer Recovery Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 Pushgateway 운영 중 생기는 stale metric, metric group 오염, 메모리 압박, push 실패를 복구하는 실행 절차를 정의한다. 범위는 오래된 지표 정리, 준비 상태 확인, 메모리 버퍼 초기화다. Pushgateway의 안정적인 버퍼 상태를 유지하고 비정상 지표를 정리해 가시성 품질을 지키는 것이 목적이다.
 
@@ -29,7 +29,7 @@ next_review_at: "2027-05-13"
 - Prometheus target에서 Pushgateway scrape 상태를 확인해야 하는데 scrape job 존재 여부가 불명확하다.
 - Pushgateway memory 사용량이 비정상적으로 높고 stale group 정리만으로 회복되지 않는다.
 
-### Scope
+### Targets
 
 - Declared parent: [Pushgateway Usage Guide](../../guides/07-observability/0046-pushgateway.md) (`GDE-0046`)
 - Governing authority: [Observability Architecture Description](../../../02.architecture/descriptions/0006-observability-architecture.md) (`AD-0006`)
@@ -41,9 +41,9 @@ next_review_at: "2027-05-13"
 - [Usage guide](../../guides/07-observability/0046-pushgateway.md)
 - [Operations policy](../../policies/07-observability/0046-pushgateway.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 승인·접근 조건은 아래 항목을 따른다.
 
@@ -55,7 +55,7 @@ next_review_at: "2027-05-13"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다.  Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Safety Checks
+### Environment
 
 시작 전에 다음을 확인한다.
 
@@ -69,9 +69,18 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 `pushgateway`를 기동하면 건강한 `prometheus`·`grafana` 의존성을 요구한다. `batch-metrics`도 선택 경로지만 HOME 편입 근거가 아니다. 정지·재시작은 모든 메모리 지표를 잃으므로 producer 소유자가 손실을 승인하고 현재 관측만 제한적으로 다시 보낸다. 업무 배치를 재실행해 지표를 복구하지 않는다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Diagnosis and cleanup: 현재 상태, 로그, ready 캡처 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | Diagnosis and cleanup: Prometheus scrape integration 필요 여부 확인 | 문서에 기록 없음 | match가 없으면 target failure로 처리하지 않고 scrape job 추가를 별도 runtime configuration task로 기록 |
+| 3 | Diagnosis and cleanup: 현재 metric group 조회 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 4 | Diagnosis and cleanup: 승인된 정확한 grouping key 하나만 삭제 | 삭제 대상 `job` group이 `/metrics`에서 사라짐 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 5 | Diagnosis and cleanup: 매우 불안정하거나 메모리 임계치 도달 시 Pushgateway 재시작 | 문서에 기록 없음 (재시작은 보관 중인 metric을 잃을 수 있음) | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 6 | Diagnosis and cleanup: 작업 노드와 external route 도달성 재확인 | `/-/ready`가 successful HTTP status를 반환 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
 
 실행 절차는 아래 항목을 따른다.
 
@@ -123,16 +132,18 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 
 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 - [ ] `curl -s http://pushgateway:9091/metrics` 출력에서 삭제 대상 `job` group이 사라졌는지 확인한다.
 - [ ] `curl -I http://pushgateway:9091/-/ready`가 successful HTTP status를 반환한다.
 - [ ] Prometheus scrape job이 존재하는 환경에서는 Prometheus UI `Targets`에서 `pushgateway` target이 `UP`인지 확인한다.
 - [ ] Scrape job이 없는 환경에서는 관련 task or gap evidence에 Prometheus config(`prometheus.dev.yml`, `prometheus.yml`) integration gap을 기록한다.
 
-### Evidence
+#### Evidence
 
 - 실행한 명령, timestamp, operator or agent action을 기록한다.
 - 삭제한 metric group path와 삭제 전후 `/metrics` evidence를 기록한다.
@@ -145,9 +156,22 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - **Metrics**: `pushgateway_http_requests_total`, `process_resident_memory_bytes`, `push_time_seconds` (Prometheus가 수집할 때)
 - **Evidence to Capture**: 상태 명령, 삭제한 지표 group 경로, 전후 `/metrics` 발췌, 수집 job 점검 결과
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북에서 아직 관찰되었다고 기록되지 않은 항목과, 이를 확인할 관찰은 다음과 같다.
+
+- grouping key 삭제(4단계): 승인이 필요한 데이터 삭제이며 이 문서에는 실행 결과가 기록되어 있지 않다. 삭제 전후 `/metrics` 발췌에서 대상 `job` group이 사라졌는지로 확인한다.
+- 재시작(5단계): 현재 Compose가 persistence option을 선언하지 않아 metric 손실이 있을 수 있으며 실행 결과가 기록되어 있지 않다. `-/ready` 응답으로 확인한다.
+- Prometheus scrape integration: 문서는 integration gap 가능성을 인정한다. Prometheus UI `Targets`에서 `pushgateway` target `UP`을 수동으로 관찰해야 한다.
+- external route 도달성: `https://pushgateway.${DEFAULT_URL}/-/ready`의 응답을 직접 관찰해야 한다.
+
+## Escalation
+
+### Next Owner
+
+verification이 실패하거나, secret exposure risk가 보이거나, metric 삭제 범위가 불명확하거나, runtime config 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
+
+### Recovery or Forward Repair
 
 이 런북에 명시된 cleanup, restart, repush 절차만 사용한다. 이 범위를 벗어난 persistence option, scrape job 추가, route 변경, image 변경은 별도 task와 approval이 필요한 runtime configuration change다. 관찰된 실패가 절차와 다르면 변경을 중단하고 evidence를 보존한 뒤 Escalation으로 넘긴다.
 
@@ -171,7 +195,3 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 2. test Prometheus가 있는 격리된 project/network에서 추적 중인 Compose를 사용해 다시 생성한다. 통제된 producer에서 합성한 현재 metric만 push한다.
 3. health, push/delete 의미, scrape label, 오래된 group 정리와 재시작 시 예상되는 손실을 검증한다. volume이나 `--persistence.file`이 추가되지 않았는지 확인한다.
 4. 불일치가 있으면 격리된 optional service를 중지하고 config/image를 되돌린다. 운영 환경에서의 활성화나 producer 변경은 별도로 승인받는다.
-
-### Escalation
-
-verification이 실패하거나, secret exposure risk가 보이거나, metric 삭제 범위가 불명확하거나, runtime config 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.

@@ -1,10 +1,10 @@
 ---
 title: "04-Data Storage Exhaustion Runbook"
-version: "1.1.2"
+version: "1.2.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0035"
 created: "2026-06-04"
@@ -13,9 +13,9 @@ next_review_at: "2027-05-13"
 
 # Storage Exhaustion Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 디스크 여유 공간이 부족할 때 데이터를 삭제하지 않고 원인 owner를 가려 조치를 정하는 triage 절차다.
 
@@ -23,7 +23,7 @@ next_review_at: "2027-05-13"
 - 데이터 서비스가 디스크 부족으로 쓰기를 거부할 때(예: SeaweedFS volume `-minFreeSpace=20GiB`, Valkey `noeviction` 쓰기 오류와 구분)
 - `dev-pg`/`mng-pg`의 WAL archive 실패로 `pg_wal`이 증가할 때
 
-### Scope
+### Targets
 
 범위와 안전 경계는 다음과 같다.
 
@@ -40,9 +40,9 @@ log truncation, 또는 알 수 없는 경로의 정리를 승인하지 않는다
 - [Data backup policy](../../policies/10-platform-and-backup/0021-backup-and-restore.md)
 - [Data hardening policy](../../policies/05-databases-and-storage/0030-data-optimization-hardening.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 실 쓰기, 복원, cutover, 정리, credential 변경은 별도 승인된 task가 필요하다.
 
@@ -50,13 +50,21 @@ log truncation, 또는 알 수 없는 경로의 정리를 승인하지 않는다
 
 기동/정지는 [GDE-0099](../../guides/01-common/0099-system-operations.md#selection-and-readiness)와 [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)의 consumer 영향·graceful shutdown 계약을 적용한다. 아래 재기동 예시는 정확한 daemon과 의존성 정상 상태를 owner가 승인했을 때만 사용한다. init/key-generator/provisioning job은 DDL·cluster identity·bucket policy를 변경하므로 routine restart 대상에서 제외한다. `--no-deps`는 이미 준비된 dependency를 유지할 때만 쓰며 최초 provisioning을 대신하지 않는다.
 
-### Safety Checks
+### Environment
 
-읽기 전용 용량/inode evidence 기록(Actions 2번)과 서비스의 최신 백업/복구 상태 확인(Actions 4번)이 조치 전 점검이다.
+읽기 전용 용량/inode evidence 기록(Steps 2번)과 서비스의 최신 백업/복구 상태 확인(Steps 4번)이 조치 전 점검이다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 경보 filesystem/mount/영향 서비스와 bind-backed volume 식별 | 문서에 기록 없음 | private path 값은 공개하지 않음, Docker volume root 스캔/수정으로 대체하지 않음 |
+| 2 | 읽기 전용 filesystem 용량/inode evidence 기록, 증가 원인 owner 구분 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 3 | 승인된 runtime observation으로 서비스 health와 쓰기 오류 확인 | 문서에 기록 없음 | 서비스 owner가 손상 위험을 선언하면 추가 writer 중단 |
+| 4 | 백업/복구 policy에서 최신 artifact/destination/checksum/격리 restore 상태 확인 | 문서에 기록 없음 | 같은 full filesystem 위의 volume 복사는 보호가 아님, 불명확하면 escalation |
+| 5 | 검토된 remediation 선택과 회수 바이트/rollback 추정 | filesystem 여유 공간, 서비스 health, 애플리케이션 읽기/쓰기, 백업 연속성 입증 | 재생성 가능성이 입증된 artifact만 제거, 데이터 무결성 미검증이면 종료하지 않고 escalation |
 
 1. 경보가 발생한 filesystem, mount, 영향받은 서비스를 식별한다. root로
    렌더링한 Compose에서 정확한 bind-backed volume을 확인하되 private path
@@ -78,9 +86,11 @@ log truncation, 또는 알 수 없는 경로의 정리를 승인하지 않는다
 
 Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하고 release 호환성·보존된 recovery point를 승인받은 뒤 대상만 적용한다. Git/image rollback은 schema/data/credential rollback이 아니다. 예상 health와 실제 사용자 기능이 다르거나 data/backup/ownership/credential이 불명확하면 중단하고 @buenhyden에게 scope·실패 신호·다음 검토를 전달한다. 실패한 복원 target과 증거는 보존하며 cleanup은 원래 기록한 identity를 확인한 소유 artifact만 별도 승인한다. 새로운 restore executor·client·network를 즉석에서 만들지 않는다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 조치 후 검증과 종료 기준은 다음과 같다.
 
@@ -91,21 +101,23 @@ Upgrade/config 변경은 declared image/build/entrypoint와 mount를 비교하�
 rollback 상태, 수정된 alert 임계값을 기록한다. 데이터 무결성이 미검증 상태로
 남아 있으면 여유 공간 evidence만으로 종료하지 않는다.
 
-### Evidence
+#### Evidence
 
 source revision/version, 범위, timestamp, manifest/checksum 요약, 명령과 종료
 상태, 검증 결과, 관측된 recovery point/시간, 미검증 gap을 모두 기록한다.
 secret, raw payload, private resolved path는 제외한다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 runbook은 아래 항목을 아직 관측하지 않았다.
 
-rollback은 client를 확장된 용량 또는 승인된 rollback 이후 이전의 변경되지
-않은 상태로 되돌린다. cutover는 owner 승인, 최종 consistency capture,
-애플리케이션 검증, 보존된 rollback window 이후에만 실행한다.
+- remediation(확장, 데이터 이동, retention 적용, artifact 제거): live 데이터를 바꾸는 승인 필요 단계이며 이 문서에는 실행 결과가 기록되어 있지 않다. 변경 전후 용량과 서비스 health, 읽기/쓰기, 백업 연속성 evidence가 필요하다.
+- 데이터 무결성: 문서는 미검증이면 여유 공간 evidence만으로 종료하지 말라고 한다. 무결성 확인 결과가 필요하다.
+- 서비스 health와 쓰기 오류 확인: 이 문서에는 관측 결과가 기록되어 있지 않다.
 
-### Escalation
+## Escalation
+
+### Next Owner
 
 - Management PostgreSQL/Valkey: [RUN-0028](0028-management-database.md)
 - Development PostgreSQL/Valkey: [RUN-0100](0100-development-database.md)
@@ -118,3 +130,9 @@ rollback은 client를 확장된 용량 또는 승인된 rollback 이후 이전�
 filesystem 명령으로 PostgreSQL WAL/data, Valkey AOF/RDB, SeaweedFS volume
 파일, Kafka log, SQLite WAL/journal 파일, OpenBao Raft data, Qdrant snapshot,
 observability WAL을 삭제하지 않는다.
+
+### Recovery or Forward Repair
+
+rollback은 client를 확장된 용량 또는 승인된 rollback 이후 이전의 변경되지
+않은 상태로 되돌린다. cutover는 owner 승인, 최종 consistency capture,
+애플리케이션 검증, 보존된 rollback window 이후에만 실행한다.

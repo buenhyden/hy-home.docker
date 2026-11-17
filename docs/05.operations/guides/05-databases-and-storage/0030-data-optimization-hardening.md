@@ -1,10 +1,10 @@
 ---
 title: "04-Data Optimization Hardening Usage Guide"
-version: "1.0.9"
+version: "1.0.10"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0030"
 parent_ids:
@@ -52,7 +52,7 @@ leaf 파일이 root가 소유하는 네트워크, secret, 공유 템플릿에 �
 
 root `.env.example`로 각 대표 현재 profile을 렌더링하고 이 tier의 공유
 hardening 확인 스크립트를 실행한다. 정확한 명령 순서는
-[04-Data Optimization Hardening runbook](../../runbooks/05-databases-and-storage/0030-data-optimization-hardening.md#actions)이
+[04-Data Optimization Hardening runbook](../../runbooks/05-databases-and-storage/0030-data-optimization-hardening.md#steps)이
 소유한다.
 
 치환된 비공개 값을 출력하지 않고 렌더링된 서비스를 점검한다. classification/

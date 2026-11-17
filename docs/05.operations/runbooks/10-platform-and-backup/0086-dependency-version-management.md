@@ -1,10 +1,10 @@
 ---
 title: "Dependency Version Management Runbook"
-version: "0.4.2"
+version: "0.5.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0086"
 parent_ids:
@@ -15,16 +15,16 @@ next_review_at: "2027-05-13"
 
 # Dependency Version Management Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 소스 이미지, 빌드 의존성, updater 정책, 파생 버전 projection을 바꿀 때 따르는 검증과 적용 절차를 안내한다.
 
 소스 이미지·빌드 의존성·updater 정책·파생 버전 projection 또는 단일 파일 config를
 변경할 때 사용한다.
 
-### Scope
+### Targets
 
 - [운영 인덱스](../../README.md)
 - [파생 이미지 projection](../../../../infra/tech-stack.versions.json)
@@ -34,23 +34,38 @@ next_review_at: "2027-05-13"
 - [Guide](../../guides/10-platform-and-backup/0086-dependency-version-management.md), [Policy](../../policies/10-platform-and-backup/0086-dependency-version-management.md)
 - 적용 통제: [POL-0006](../../policies/01-common/0006-infrastructure-optimization-governance.md#source-and-lifecycle-boundary)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 저장소 루트의 정확한 diff와 소유 service·profile을 기록한다.
 공개 source 검증은 runtime 적용이나 Renovate 작업 실행 승인이 아니다. private
 입력·Docker 작업이 필요한 단계는 대상 checkout/context와 별도 승인을 확인한다.
 
-### Safety Checks
+### Environment
 
 `sync-tech-stack-versions.sh --dry-run`과 `--check`로 공개 source만 읽는 projection 검사를 먼저 수행한다.
 
-읽기 전용 점검은 Actions의 `Source and updater changes` 2단계(`sync-tech-stack-versions.sh --dry-run`과 `--check`)와 `Static configuration validation`에 있다.
+읽기 전용 점검은 Steps의 `Source and updater changes` 2단계(`sync-tech-stack-versions.sh --dry-run`과 `--check`)와 `Static configuration validation`에 있다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Source and updater changes: Compose image, build context/Dockerfile/args, 설치 package, entrypoint를 확인하고 update owner와 공식 근거를 선택 버전에 맞춘다 | 문서에 기록 없음 | 소유권 중복 또는 미분류 source/manager면 중단 |
+| 2 | Source and updater changes: `sync-tech-stack-versions.sh --dry-run`/`--check`를 실행하고 승인된 변경에 한해 `--write` 후 diff를 검토한다 | 의도한 항목만 추가/변경/삭제되고 check가 성공한다 | parser/미분류 source 오류면 중단 |
+| 3 | Source and updater changes: 지원되는 Node 또는 승인된 도구 container에서 `renovate-config-validator --strict`를 실행하고 Dependabot 부재와 `npm` manager 범위를 확인한다 | `tests.validation.test_tech_stack_version_contract`가 이 계약을 검사한다 | 의존성/런타임이 없으면 `BLOCKED`로 기록 |
+| 4 | Source and updater changes: build source, 문서 계약, 동기화 테스트의 누락/중복/제거/digest/local/서로 다른 source version 사례를 검증한다 | 문서에 기록 없음 | 예상 밖 결과 또는 coverage 부재면 중단 |
+| 5 | Renovate PR 처리: Dependency Dashboard에서 속도 제한 대기 항목 중 필요한 것만 체크한다 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 6 | Renovate PR 처리: 보안 영향이 큰 PR부터 한 번에 하나씩 머지하고 남은 PR은 Renovate 실행으로 rebase한다 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 7 | Renovate PR 처리: PR을 손으로 닫지 않고 Renovate가 자동으로 닫게 둔다 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 8 | Renovate PR 처리: 머지는 적용이 아니므로 HOME 적용(recreate)은 별도 승인으로 진행하고 해당 서비스 Runbook으로 확인한다 | 문서에 기록 없음 | 문서에 기록 없음 |
+| 9 | Dependabot 보안 업데이트 중단: Renovate 첫 정상 실행 확인 후 owner가 Dependabot automatic security fixes만 끈다 (alerts는 유지) | Dependency Dashboard 생성과 대상 PR 제안이 확인된다 | owner의 별도 승인 없이는 수행하지 않고 첫 실행 전에는 설정을 유지 |
+| 10 | Static configuration validation: 승인된 public/sanitized checkout에서 `validate-docker-compose.sh`를 실행한다 | 선택별 성공과 host-port 충돌 없음 | 입력이나 도구 승인이 부족하면 `NOT_RUN`/`BLOCKED`로 남기고 가능한 공개 source 검사를 계속 |
+| 11 | Runtime configuration apply: 승인된 service를 `docker compose up -d --no-deps --no-build --pull never --force-recreate <service>`로 재생성한다 | 문서에 기록 없음 | 승인 범위 밖이면 수행하지 않고 중단 |
+| 12 | Runtime configuration apply: `check-config-mount-hashes.py --root <checkout>`로 hash를 확인한다 | 기대한 config mount 전부 `MATCH`이고 unreadable0/diff0 | `DIFF`/`UNREADABLE`/행0/exit2는 표의 판단에 따라 중단하거나 확인 후 승인된 재생성 |
 
 절차는 아래 항목에 따른다.
 
@@ -180,32 +195,45 @@ exit0만으로 완료하지 않으며 기대 coverage와 unreadable0/diff0을 �
 
 소유권 중복, 미분류 source/manager, registry만의 pin 변경, credential 오류, 지원되지 않는 migration, backup/coverage 부재 또는 예상 밖 결과는 중단한다. parser/미분류 source 오류와 `UNREADABLE` 결과도 중단 사유다. gate를 우회하거나 force push하지 않는다.
 
-소유권 중복, 미분류 source/manager, registry만의 pin 변경, credential 오류, 지원되지 않는 migration, backup/coverage 부재 또는 예상 밖 결과는 Escalation에 기록한 중단 조건이다. parser/미분류 source 오류와 `UNREADABLE` 결과는 Actions의 해당 단계에서 중단 사유로 명시한다.
+소유권 중복, 미분류 source/manager, registry만의 pin 변경, credential 오류, 지원되지 않는 migration, backup/coverage 부재 또는 예상 밖 결과는 Escalation에 기록한 중단 조건이다. parser/미분류 source 오류와 `UNREADABLE` 결과는 Steps의 해당 단계에서 중단 사유로 명시한다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 `--check`는 의도한 항목만 추가·변경·삭제되고 성공해야 하며, 선택별 성공과 host-port 충돌 없음을 확인한다. 구문·선택 성공은 credential·network 도달성·health·복구 증거가 아니다.
 
-### Evidence
+#### Evidence
 
 명령·종료 코드·source commit·updater/validator 버전·선택과 coverage, 예상 결과와
 실패/중단을 현재 Task에 기록한다. private 값·원문 환경·raw log를 남기지 않는다.
 local 검사와 remote bot/hosted 실행, 실제 적용·복구를 구분하고 미실행은 명시한다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 runbook이 아직 관찰된 적 없는 항목은 다음과 같다.
+
+- Renovate 설정 검증과 `sync-tech-stack-versions.sh` 실행: 이 문서에는 실행 결과가 기록되어 있지 않으며 도구가 없으면 `BLOCKED`로 기록하도록 한다. 명령 종료 코드와 `--check` 성공이 검증 근거가 된다.
+- `--write` 및 HOME 적용(recreate): 승인이 필요한 변경이며 이 문서에는 실행 결과가 기록되어 있지 않다. 승인 기록, diff, 서비스 Runbook 확인이 검증 근거가 된다.
+- Dependabot automatic security fixes 중단: owner의 별도 승인이 필요한 원격 설정이며 이 문서는 변경하지 않는다. Renovate 첫 정상 실행 확인과 owner 기록이 검증 근거가 된다.
+- `validate-docker-compose.sh`와 `--preflight`: 입력이나 도구 승인이 부족하면 `NOT_RUN`/`BLOCKED`로 남기며 이 문서에는 실행 결과가 기록되어 있지 않다. 선택별 성공과 host-port 충돌 없음이 검증 근거가 된다.
+- 런타임 config 반영: 문서는 구문/선택 성공이 credential, network 도달성, health, 복구 증거가 아니라고 밝힌다. 기대 mount 전부 `MATCH`와 서비스 health 확인이 검증 근거가 된다.
+- data restore: 서비스 소유의 별도 승인된 복구 절차에서만 수행하며 이 문서에는 기록이 없다.
+
+## Escalation
+
+### Next Owner
+
+소유권 중복, 미분류 source/manager, registry만의 pin 변경, credential 오류,
+지원되지 않는 migration, backup/coverage 부재 또는 예상 밖 결과는 중단하고
+@buenhyden에게 전달한다. gate를 우회하거나 force push하지 않는다.
+
+### Recovery or Forward Repair
 
 source와 derived registry를 함께 이전 승인 상태로 되돌리고 검사한다. runtime
 config rollback은 기존 승인된 구성의 재반영·hash·기능 확인까지 필요하다.
 Git rollback은 database 파일이나 migration을 downgrade하지 않는다. 마지막
 호환 image와 보호된 backup을 유지하며 data restore는 서비스 소유의 격리된
 복구 절차와 별도 승인으로만 수행한다.
-
-### Escalation
-
-소유권 중복, 미분류 source/manager, registry만의 pin 변경, credential 오류,
-지원되지 않는 migration, backup/coverage 부재 또는 예상 밖 결과는 중단하고
-@buenhyden에게 전달한다. gate를 우회하거나 force push하지 않는다.

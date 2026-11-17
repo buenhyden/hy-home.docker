@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Usage Guide"
-version: "1.3.5"
+version: "1.3.6"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "GDE-0004"
 parent_ids:
@@ -58,7 +58,7 @@ runtime 승인을 증명하지 않는다. authoring은 Stage 99 template과 pare
 Graphify는 source 대조를 돕는 navigation 자료다. report가 없거나 health가
 advisory이면 그 사실을 기록하고 tracked source를 사용한다. health가 clean이어도
 HEAD가 다르면 bootstrap의 stale-snapshot 경계가 적용된다. 실행 순서와 hook
-payload 검증은 [Runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md#actions)이
+payload 검증은 [Runbook](../../runbooks/01-common/0004-harness-agent-first-engineering.md#steps)이
 소유하며, syntax 성공만으로 payload parsing이나 native 전달을 증명하지 않는다.
 
 ### Permissions

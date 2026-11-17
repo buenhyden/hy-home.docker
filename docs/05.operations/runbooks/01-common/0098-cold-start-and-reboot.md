@@ -1,10 +1,10 @@
 ---
 title: "Cold Start and Reboot Runbook"
-version: "0.6.2"
+version: "0.7.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0098"
 created: "2026-09-25"
@@ -13,16 +13,16 @@ next_review_at: "2027-05-13"
 
 # Cold Start and Reboot Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 호스트를 계획된 이유로 재부팅하기 전과 재부팅 직후, HOME Docker Compose 스택과
 같은 호스트의 hy-home.k8s(k3d) 컨테이너를 안전한 순서로 다시 세우고, 각 단계
 사이의 health gate를 확인할 때 사용한다. 정전이나 예정에 없던 재부팅 뒤 같은
 순서로 상태를 점검할 때도 쓴다.
 
-### Scope
+### Targets
 
 - 과거 구현·리허설 근거: SPEC-0182
   criterion 11, Plan W11,
@@ -37,9 +37,9 @@ next_review_at: "2027-05-13"
   [OpenBao Compose](../../../../infra/03-security/openbao/docker-compose.yml),
   [common optimizations](../../../../infra/common-optimizations.yml)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 이 런북은 unseal share, SecretID, root token,
 KV 값을 출력하거나 요청하지 않는다; 실제 재부팅 실행은 owner가 감독 아래
@@ -51,7 +51,7 @@ Unseal 방식은 [ADR-0042](../../../02.architecture/decisions/0042-openbao-unse
 채택되지 않았으므로 이 런북의 모든 단계는 owner가 직접 unseal과 SecretID 전달을
 수행한다고 전제한다.
 
-### Safety Checks
+### Environment
 
 재부팅 전에 확인할 항목:
 
@@ -77,9 +77,24 @@ Restic 백업, 그리고 `restic check`(`infra/09-platform-ops/restic/bin/hyhome
 기존 Docker Secret bootstrap을 유지하므로 OIDC 발급 경로가 Agent 출력에 의존하지
 않는다. 이전 재부팅 receipt는 역사 증거이며 현재 P01 HOME cold boot 성공이 아니다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | 재부팅 직후 Docker와 Compose 컨테이너 상태 확인(`docker compose ps -a --format json`) | 예상 지속 실행 service가 복귀하고 job은 의도한 종료 상태다 | 누락·추가·Exited·반복 재시작은 owner와 확인하고 missing/failed service는 service RUN의 승인된 mutation 분기로 처리한다 |
+| 2 | Overlay 적용 점검: root `.env`의 `COMPOSE_FILE`이 base만 가리키는지 확인 | `grep -c` 결과가 `1`이거나 `COMPOSE_FILE=` 줄 수가 `0`이다 | 해당 줄을 `COMPOSE_FILE="docker-compose.yml"`로 고치거나 지운다 |
+| 3 | Overlay 적용 점검: `OPSFLOW_SECRET_DIR` 설정 확인 | `grep -c '^OPSFLOW_SECRET_DIR=.' .env`가 `1`이다 | 없으면 빈 placeholder가 mount돼 DAG가 읽기 시점에 실패한다 |
+| 4 | Overlay 적용 점검: `docker compose --profile workflow config` 렌더링을 값 없이 검증 | `airflow-worker`에 `dev_data_net`·`object_net`·`/run/opsflow`, `n8n-worker`와 `ollama`에 `n8n_ollama_net`, `mng-valkey`에 `mng_valkey_n8n_password` | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 5 | Overlay 적용 점검: 유지보수 overlay는 소유 Runbook의 창 안에서만 적용하고 끝나면 base만으로 다시 만든다 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 6 | Overlay 적용 점검: 서비스 재생성은 별도 승인 작업으로 처리 | `.env` 편집만으로 실행 중 컨테이너는 바뀌지 않는다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 7 | 데이터와 인증 기반(`mng-pg`, `mng-valkey`, Traefik, Keycloak) 확인과 종료 청결 로그 확인 | `mng-pg`는 `accepting connections`, 나머지 세 컨테이너는 `healthy`, 로그에는 `database system was shut down at …`만 나온다 | `not properly shut down`이나 `tini` 오류는 이전 종료가 깨끗하지 않았던 것이다. 안정되지 않으면 OIDC 로그인 단계가 실패한다 |
+| 8 | OpenBao sealed 상태와 Agent 재시작 상태 확인(`bao status`) | 시작 뒤 `bao status`로 sealed/unsealed를 구분하며 sealed 종료 코드 2는 `unhealthy`다 | `Exited (255)`이면 `docker start openbao`로 시작한 뒤 4단계로 간다 |
+| 9 | Owner unseal: 숨김 프롬프트로 share 2개 입력(`bao operator unseal`) | 두 번째 명령 뒤 `Sealed  false`이고 시작·종료 시간을 Task에 기록한다 | unseal이 실패하면 중단한다 |
+| 10 | Owner OIDC 로그인(role `home-admin`) | 결과 정책이 `default`와 `hy-home-operator`뿐이고 `root`가 아니다 | Keycloak이 `healthy`가 아니면 이 로그인은 실패한다 |
+| 11 | Wrapped SecretID 발급과 Agent 전달(owner-run, 60초 이내) | `health-agent.sh` exit 0, unsealed, token lookup, template 출력과 KV 값·version 일치, 파일 권한 0640/0600 | RUN-0103의 실패 처리를 따르고 replay·만료 시 새 wrap을 재발급한다 |
+| 12 | hy-home.k8s(k3d) 컨테이너와 External Secrets 확인 | External Secrets Operator pod가 `Running`이고 `k3d-hyhome` 네트워크에는 `k3d-hyhome-*` 컨테이너만 있다 | 컨테이너가 없으면 cluster inventory와 이전 stop 의도를 확인하고 중단한다 |
 
 실행 중인 checkout의 저장소 root에서 명령을 수행한다. secret file, unseal share,
 SecretID, token, 렌더링된 Compose model을 출력하지 않는다. 현재 Task에 host·project·
@@ -291,9 +306,11 @@ Prometheus 시리즈 count나 pod Running만으로 클러스터 전체 건강을
 
 0단계 백업이나 `restic check`이 실패하면 재부팅을 진행하지 않는다. 4단계 unseal이 실패하면 중단한다. 6단계 SecretID 전달이 실패하거나 시간을 넘기면 RUN-0103의 실패 처리를 따른다. 7단계에서 `k3d-hyhome-*` 컨테이너가 없으면 현재 cluster inventory와 이전 stop 의도를 확인하고 중단한다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 단계별 기대 결과는 지속 실행 service의 복귀와 job의 의도한 종료 상태, 재부팅 직후 `bao status`가 sealed(종료 코드 2, `unhealthy`)를 보고하고 unseal 뒤 `Sealed false`, `k3d-hyhome-*` 컨테이너 Up이다. 과거 실행 기록은 아래와 같다.
 
@@ -317,15 +334,31 @@ Prometheus 시리즈 count나 pod Running만으로 클러스터 전체 건강을
 | 2026-09-30 | 6. SecretID delivery (owner, RUN-0085) | before 10:30:27 KST | 10:30:29 KST | PASS: Agent restarted 10:30:27, `authentication successful` 10:30:29, SecretID `consumed`, token renewed, no error after the restart |
 | 2026-09-30 | 7. k3d | 10:03:53 KST | 10:31 KST | PASS: five `k3d-hyhome-*` Up, 38 pods Running; `vault-backend` revalidated `Ready=True` at 10:11:17 after the unseal, and all six ExternalSecrets `SecretSynced` |
 
-### Evidence
+#### Evidence
 
 각 단계의 실행 시각, `docker ps`/`docker inspect`/`bao status`의 상태 문자열,
 grep 결과(개수만)를 현재 Task에 기록한다. 원문 로그, secret 값, unseal share,
 SecretID, token 값은 기록하지 않는다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북에서 아직 관측되지 않은 항목은 다음과 같다.
+
+- 현재 재부팅의 단계별 결과: 이 문서에는 2026-09-30 실행 기록(Verification Record)만 과거 증거로 보존되어 있고 현재 readiness나 실행 권한을 제공하지 않는다. 새 리허설 결과는 현재 Task의 시각·상태 문자열 기록으로 검증한다.
+- Overlay 렌더링과 서비스 재생성: 서비스 재생성은 별도 승인 작업이며 이 문서에는 실행 결과가 기록되어 있지 않다.
+- Owner unseal, OIDC 로그인, wrapped SecretID 전달: owner가 직접 수행하는 단계이며 현재 실행 결과는 문서에 기록되어 있지 않다. `Sealed false`와 `health-agent.sh` exit 0으로 검증한다.
+- k3d 컨테이너 시작과 External Secrets 동기화: 시작에는 별도 승인이 필요하며 소요 시간은 문서에 "owner 확인 필요"로 남아 있다. ESO pod `Running`과 hy-home.k8s 0096 runbook의 7단계 확인으로 검증한다.
+- 데이터 integrity와 복원 가능성, pod Running 이상의 클러스터 전체 건강은 이 문서의 검사로 증명되지 않는다.
+
+## Escalation
+
+### Next Owner
+
+Unseal share, SecretID, root token 발급 승인이 필요하거나, k3d 자동 시작
+여부처럼 이 런북이 owner 확인으로 남긴 항목이 실제로 막히면 @buenhyden에게
+알린다.
+
+### Recovery or Forward Repair
 
 - 4단계(unseal)가 실패하면 중단하고 [RUN-0085](../04-security-and-secrets/0085-openbao.md)의 credential·
   cluster 상태 진단과 owner escalation을 따른다. unseal 실패만으로 Raft snapshot을
@@ -340,9 +373,3 @@ SecretID, token 값은 기록하지 않는다.
 - 데이터베이스나 OpenBao의 복구(스냅샷 복원)는 각각
   [RUN-0021](../10-platform-and-backup/0021-backup-and-restore.md)과
   [RUN-0085](../04-security-and-secrets/0085-openbao.md)가 소유한다.
-
-### Escalation
-
-Unseal share, SecretID, root token 발급 승인이 필요하거나, k3d 자동 시작
-여부처럼 이 런북이 owner 확인으로 남긴 항목이 실제로 막히면 @buenhyden에게
-알린다.

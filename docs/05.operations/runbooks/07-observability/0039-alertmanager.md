@@ -1,10 +1,10 @@
 ---
 title: "Alertmanager Notification Recovery Runbook"
-version: "1.0.7"
+version: "1.1.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-14"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0039"
 parent_ids:
@@ -15,9 +15,9 @@ next_review_at: "2027-05-13"
 
 # Alertmanager Notification Recovery Runbook
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 Alertmanager UI와 readiness 실패, Prometheus 알림 전달 누락, Slack 알림 실패, silence/inhibition 불일치, 설정 렌더링 회귀를 다룬다. Guide와 policy의 설명은 반복하지 않고, 실행 가능한 진단, 안전한 restart, evidence 수집, escalation 기준만 둔다.
 
@@ -31,7 +31,7 @@ next_review_at: "2027-05-13"
 - 잘못된 silence 또는 inhibition rule로 중요 알림이 차단된 것처럼 보일 때.
 - `config.yml` 변경 후 route, receiver, template, notification delivery 상태 검증이 필요할 때.
 
-### Scope
+### Targets
 
 > Scope: Alertmanager 준비 상태, Prometheus 전달 증거, secret으로 렌더링한 설정, 알림 경로 진단, 재시작과 설정 rollback.
 
@@ -44,9 +44,9 @@ next_review_at: "2027-05-13"
 - [Usage guide](../../guides/07-observability/0039-alertmanager.md)
 - [Operations policy](../../policies/07-observability/0039-alertmanager.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
 `alertmanager`를 처음 기동하면 건강한 `prometheus`·`grafana` 의존성을 요구한다. 알림 대상은 현재 Slack이며 SMTP secret도 renderer 입력으로 필요하다. 상태 점검 뒤 별도 승인한 합성 알림의 실제 도착을 확인한다. 정지 전 silence·notification 상태를 보존하고 운영 알림의 중단 영향을 승인받는다.
 
@@ -56,7 +56,7 @@ next_review_at: "2027-05-13"
 
 Log를 보존하기 전에 payload·credential·header/cookie·private path를 제거하고 명령·시각·상태·제한된 시험 증거만 남긴다. Config rollback은 data/schema 복구가 아니다. 전체 기동·중지는 [cold-start Runbook](../01-common/0098-cold-start-and-reboot.md)의 대상 선택·의존성 확인 절차를 사용한다. 공통 절차는 [백업](../10-platform-and-backup/0021-backup-and-restore.md), [image 변경](../10-platform-and-backup/0086-dependency-version-management.md), [시크릿](../04-security-and-secrets/0085-openbao.md), [계정](../03-identity-and-access/0014-keycloak.md), [gateway·인증서](../02-gateway-and-networking/0013-traefik.md)가 소유한다. 대상이 실제 사용하는 자격 증명·상태에만 적용하며 secret 값은 증거로 요구하지 않는다.
 
-### Safety Checks
+### Environment
 
 시작 전 점검:
 
@@ -64,9 +64,24 @@ Log를 보존하기 전에 payload·credential·header/cookie·private path를 �
 - [ ] 문제 유형을 readiness, Prometheus delivery, receiver delivery, silence/inhibition, secret rendering, config regression 중 하나로 분류한다.
 - [ ] Secret value, rendered `/tmp/config.yml`, Slack webhook URL, SMTP credential 원문은 기록하지 않는다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | Diagnosis and restart: service 상태/최근 로그/readiness 캡처 | `alertmanager`가 running이고 `/-/ready` 성공 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 2 | Diagnosis and restart: Compose service boundary가 policy와 일치하는지 `rg`로 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 3 | Diagnosis and restart: Secret 값이 아닌 placeholder와 route/receiver config만 확인 | 문서에 기록 없음 | secret 값은 확인·기록하지 않음 |
+| 4 | Diagnosis and restart: Prometheus가 Alertmanager target을 사용하는지 확인 | `alertmanagers` target이 `alertmanager:9093`를 유지 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 5 | Diagnosis and restart: Grafana datasource가 같은 Alertmanager endpoint를 가리키는지 확인 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 6 | Diagnosis and restart: silence/inhibition drift 의심 시 UI에서 matcher/creator/comment/expiry 확인 | Alertmanager UI에서 firing alerts/silences/receivers 확인 | Expiry 없는 silence는 @buenhyden에게 삭제 또는 만료 시각 부여를 요청, broad matcher는 evidence만 기록하고 정책 변경은 승인 후 수행 |
+| 7 | Diagnosis and restart: config/Secret 경계가 맞는데 runtime이 회복되지 않으면 Alertmanager 재시작 | 재시작 후 로그와 readiness 확인 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 8 | Diagnosis and restart: `config.yml`만 바뀌었으면 `git diff` 확인 후 승인된 정상 revision의 해당 파일만 복원하고 재시작 | `/-/ready` 성공 | Compose config 선택/환경변수/mount/image/secret bind/inode가 바뀌면 중단하고 RUN-0086 복원과 승인된 recreate 계획으로 이관 |
+| 9 | Planned isolated restore rehearsal: 알림 전송 비활성화 또는 test receiver로 전환, digest/silence 기록, 중지 후 `alertmanager-data` snapshot 생성 | 문서에 기록 없음 | 격리 구성과 backup 계약 검토 전에는 `NOT_RUN`, 운영 volume 연결/credential 복사 금지 |
+| 10 | Planned isolated restore rehearsal: test 전용 credential로 운영 route 없는 별도 project/network에 복구하고 config 검증 후 시작 | 문서에 기록 없음 | project 이름만 바꾸어서는 실행 불가, 격리 구성 승인 필요 |
+| 11 | Planned isolated restore rehearsal: readiness/alert 수신/silence 보존/inhibition·grouping/notification-log와 test 알림 1회 검증 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 12 | Planned isolated restore rehearsal: 불일치 시 격리 project 중지, log/checksum 보존, 수정하지 않은 backup으로 복귀 | 문서에 기록 없음 | 운영 route/state 교체는 별도 승인 |
 
 실행 절차는 아래 항목을 따른다.
 
@@ -152,9 +167,11 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 
 예상 밖 출력, backup 누락, dependency 실패나 승인되지 않은 부작용이면 중단하고 @buenhyden에게 넘긴다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 - [ ] `docker compose --profile obs ps alertmanager`에서 `alertmanager` service가 running이다.
 - [ ] `/-/ready` endpoint가 성공한다.
@@ -163,7 +180,7 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 - [ ] Slack notification failure가 있었으면 test alert 또는 다음 firing alert에서 expected receiver 도착 여부를 확인하고 timestamp를 기록한다.
 - [ ] 문서 또는 config만 바꾼 경우 관련 repository validation을 실행하고 evidence에 기록한다.
 
-### Evidence
+#### Evidence
 
 수집할 evidence는 다음과 같다.
 
@@ -180,16 +197,25 @@ host port, bind-path, external-network와 route의 충돌을 제거하고 운영
 - Notification 장애는 affected receiver, matching route, alert labels, log excerpt, silence/inhibition state를 함께 기록한다.
 - Receiver/channel/secret/middleware 변경 필요성이 보이면 approval state를 기록한다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 runbook은 아래 항목을 아직 관측하지 않았다.
+
+- Planned isolated restore rehearsal: 문서가 계획됨, 미실행(`NOT_RUN`)이라고 밝히며 Alertmanager 상태 복구 성공을 주장하지 않는다. 격리 project에서 silence 보존과 test 알림 1회 관측이 필요하다.
+- 알림 전송 성공: Readiness는 통지 성공을 증명하지 않는다고 문서가 밝힌다. 승인된 시험 수신자와 제한된 알림으로 receiver 도착 여부를 확인해야 한다.
+- 렌더러 호환성: raw `sed` 치환이 임의 시크릿을 안전하게 인코딩하지 못하며 비노출 방식으로 확인할 수 없으면 시작·회전을 중단해야 한다. 이 문서에는 확인 결과가 기록되어 있지 않다.
+- Slack webhook/SMTP 회전, receiver/channel 변경, inhibition 정책 변경: 검증된 복구 절차로 제공되지 않으며 별도 approval과 rollback evidence가 필요하다.
+
+## Escalation
+
+### Next Owner
+
+verification이 실패하거나, secret exposure risk가 보이거나, receiver/channel/secret/middleware 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.
+
+### Recovery or Forward Repair
 
 - Git-managed `config.yml`, Compose 또는 datasource/Prometheus endpoint change가 원인이면 직전 Git diff 단위로 되돌리고 Alertmanager를 재시작한다.
 - Runtime restart는 `obs` profile compose 명령만 사용한다.
 - Secret rotation, Slack webhook replacement, SMTP credential replacement, receiver/channel change 또는 protected route middleware change는 이 런북의 안전 롤백 범위를 벗어난다.
 
 이 런북에 명시된 validation, restart, Git-managed config rollback만 사용한다. Secret rotation, receiver/channel policy, inhibition policy, protected middleware 또는 external Slack/SMTP resource 변경은 검증된 안전 복구 절차가 아니므로 Escalation으로 이동한다.
-
-### Escalation
-
-verification이 실패하거나, secret exposure risk가 보이거나, receiver/channel/secret/middleware 정책 변경이 필요하거나, 관찰된 상태가 예상 절차와 다르면 repository owner @buenhyden에게 escalation한다. 캡처한 evidence, 시도한 step, 현재 rollback/recovery 상태를 함께 제공한다.

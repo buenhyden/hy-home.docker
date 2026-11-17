@@ -2261,11 +2261,11 @@
         "reviewed_at"
       ],
       "required_sections": [
-        "Purpose",
-        "Preconditions",
-        "Steps",
-        "Validation",
-        "Recovery"
+        "Trigger and Scope",
+        "Preflight",
+        "Procedure",
+        "Verification",
+        "Escalation"
       ],
       "optional_sections": [],
       "ordered_sections": true,
@@ -2306,29 +2306,25 @@
         "docs/05.operations/runbooks/15-labs/{number:4}-{slug}.md"
       ],
       "required_subsections": {
-        "Purpose": [
-          "Trigger and Outcome",
-          "Scope"
+        "Trigger and Scope": [
+          "Trigger",
+          "Targets"
         ],
-        "Preconditions": [
-          "Authority and Access",
-          "Safety Checks"
+        "Preflight": [
+          "Authority",
+          "Environment"
         ],
-        "Steps": [
-          "Actions",
+        "Procedure": [
+          "Steps",
           "Stop Conditions"
         ],
-        "Validation": [
-          "Service Checks",
-          "Evidence"
+        "Verification": [
+          "Expected Results",
+          "Unverified Conditions"
         ],
-        "Recovery": [
-          "Escalation"
-        ]
-      },
-      "optional_subsections": {
-        "Recovery": [
-          "Rollback"
+        "Escalation": [
+          "Next Owner",
+          "Recovery or Forward Repair"
         ]
       }
     },
@@ -5657,7 +5653,7 @@
         ]
       },
       "migration": {
-        "meaning_map": "Commit ffeee0e7f moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit ffeee0e7f moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. Commit 1a8fadde6 (#1060) then moved it to its role design core role: the template, profile and every incident took the core sections and Actions table, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/incident.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/incident.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
@@ -5795,7 +5791,7 @@
         ]
       },
       "migration": {
-        "meaning_map": "Commit ffeee0e7f moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit ffeee0e7f moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. Commit 1a8fadde6 (#1060) then moved it to its role design core role: the template, profile and every postmortem took the core sections and Owners and Checks table, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/postmortem.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/postmortem.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
@@ -5863,18 +5859,11 @@
         ]
       },
       "migration": {
-        "meaning_map": "Commit 662623dc9 (profile) and 8e430909b..436bcc974 (documents, #979) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. Adding this TemplateDefinition changed no section, frontmatter key or template text.",
+        "meaning_map": "Commit 662623dc9 (profile) and 8e430909b..436bcc974 (documents, #979) moved this role to COMMON-DOC-FORM-1 1.0.0, mapping its earlier H2 sections into the H2 and H3 sections now in required_subsections. That TemplateDefinition changed no section, frontmatter key or template text. Pull request #1061 then moved it to its role design core role: the template, profile and every runbook took the core sections and steps table, the conditional Rollback unit was dropped because the core requires every H3, and the role was bound by core_role.",
         "retained_history": "Git history keeps every earlier revision of docs/99.templates/templates/operations/runbook.template.md and of this Registry entry; no Stage 98 copy is kept.",
         "rollback": "Revert the commit that changed this entry or docs/99.templates/templates/operations/runbook.template.md; load_registry and test_template_definition re-check the reverted Registry."
       },
-      "conditional_units": {
-        "Rollback": "when running the procedure or the change alters state or outputs"
-      },
-      "core_exception": {
-        "kind": "pending-migration",
-        "reason": "Bound after its form, consumers and current documents move to the core",
-        "core_role": "runbook"
-      }
+      "core_role": "runbook"
     },
     "reference/audit": {
       "source": "docs/99.templates/templates/references/audit.template.md",

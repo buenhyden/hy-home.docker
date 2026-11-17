@@ -49,7 +49,7 @@ class CurrentBodyContractTests(unittest.TestCase):
             "task": "Scope|Execution Log|Verification Evidence|Acceptance Decision|Handoff",
             "guide": "Purpose|Prerequisites|Procedure|Verification",
             "policy": "Purpose|Scope|Rules|Exceptions|Ownership",
-            "runbook": "Purpose|Preconditions|Steps|Validation|Recovery",
+            "runbook": "Trigger and Scope|Preflight|Procedure|Verification|Escalation",
             "repository-readme": "Purpose|Repository Map|Getting Started|References",
             "runtime-governance-readme": "Purpose|Repository Map|Getting Started|References",
             "readme": "Stage Responsibility|Contents|Workflow|Related Documents",
@@ -527,7 +527,7 @@ class RegisteredSectionContractTests(unittest.TestCase):
             ),
             "runbook": (
                 ("## Overview", "body-heading-forbidden"),
-                ("## Procedure", "body-heading-forbidden"),
+                ("## Steps", "body-heading-forbidden"),
                 ("## Failure and Recovery", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Rollback or Recovery", "body-subheading-forbidden"),
@@ -2478,11 +2478,13 @@ class RegisteredTableContractTests(unittest.TestCase):
         "postmortem": "docs/05.operations/incidents/2026/inc-0002-airflow-keycloak-native-auth/postmortem.md",
         "governance-vocabulary": ".agents/knowledge/glossary.md",
         "incident": "docs/05.operations/incidents/2026/inc-0002-airflow-keycloak-native-auth/incident.md",
+        "runbook": "docs/05.operations/runbooks/12-testing-and-quality/0092-wiremock.md",
     }
     HEADERS: ClassVar[dict[str, str]] = {
         "postmortem": "| Action | Owner | Condition | Evidence |",
         "governance-vocabulary": "| Term | Definition | Not to Confuse | Policy Owner |",
         "incident": "| Action | Owner | Condition | Evidence |",
+        "runbook": "| Step | Action | Expected Result | On Failure |",
     }
     ROW = "| @buenhyden | 완료 | "
 
@@ -2533,6 +2535,7 @@ class RegisteredTableContractTests(unittest.TestCase):
             "postmortem": "| Owner | Action | Condition | Evidence |",
             "governance-vocabulary": "| Definition | Term | Not to Confuse | Policy Owner |",
             "incident": "| Owner | Action | Condition | Evidence |",
+            "runbook": "| Action | Step | Expected Result | On Failure |",
         }
         for profile_id, header in self.HEADERS.items():
             with self.subTest(profile=profile_id):
@@ -2559,6 +2562,56 @@ class RegisteredTableContractTests(unittest.TestCase):
             end += 1
         body = "\n".join([*lines[:start], "No action table.", *lines[end:]])
         self.assertIn("table-missing", self._table_codes("incident", body))
+
+    def test_a_document_reference_table_beside_the_core_table_is_kept(self) -> None:
+        own = "| Command | Effect |\n| --- | --- |\n| `status` | 상태 확인 |\n\n"
+        body = self._mutate(
+            "incident", self.HEADERS["incident"], own + self.HEADERS["incident"]
+        )
+        self.assertEqual([], self._table_codes("incident", body))
+
+    def test_a_table_sharing_core_labels_with_other_columns_is_rejected(self) -> None:
+        other = "| Action | Effect |\n| --- | --- |\n| 조치 | 결과 |\n\n"
+        body = self._mutate(
+            "incident", self.HEADERS["incident"], other + self.HEADERS["incident"]
+        )
+        self.assertIn("table-header-invalid", self._table_codes("incident", body))
+
+    def _without_core_rows(self, profile_id: str) -> str:
+        lines = self._body(profile_id).split("\n")
+        start = lines.index(self.HEADERS[profile_id]) + 2
+        end = start
+        while end < len(lines) and lines[end].startswith("|"):
+            end += 1
+        return "\n".join([*lines[:start], *lines[end:]])
+
+    def test_a_runbook_keeps_its_reference_table_beside_the_steps_table(self) -> None:
+        body = self._body("runbook")
+        self.assertIn("| Command | Effect |", body)
+        self.assertEqual([], self._table_codes("runbook", body))
+
+    def test_a_reference_table_without_the_core_table_is_missing(self) -> None:
+        lines = self._body("runbook").split("\n")
+        start = lines.index(self.HEADERS["runbook"])
+        end = start
+        while end < len(lines) and lines[end].startswith("|"):
+            end += 1
+        body = "\n".join([*lines[:start], *lines[end:]])
+        self.assertIn("| Command | Effect |", body)
+        self.assertIn("table-missing", self._table_codes("runbook", body))
+
+    def test_a_reference_table_beside_an_empty_core_table_is_rejected(self) -> None:
+        body = self._without_core_rows("runbook")
+        self.assertIn("| Command | Effect |", body)
+        self.assertIn("table-core-empty", self._table_codes("runbook", body))
+
+    def test_an_unbound_role_still_rejects_a_table_sharing_no_label(self) -> None:
+        own = "| Command | Effect |\n| --- | --- |\n| `status` | 상태 |\n\n"
+        header = self.HEADERS["governance-vocabulary"]
+        body = self._mutate("governance-vocabulary", header, own + header)
+        self.assertIn(
+            "table-header-invalid", self._table_codes("governance-vocabulary", body)
+        )
 
     def test_a_core_table_with_only_its_header_is_accepted(self) -> None:
         for role in ("incident", "postmortem"):

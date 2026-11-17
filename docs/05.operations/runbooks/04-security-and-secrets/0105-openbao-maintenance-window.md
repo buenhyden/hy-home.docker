@@ -1,10 +1,10 @@
 ---
 title: "OpenBao Maintenance Window"
-version: "0.4.3"
+version: "0.5.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-17"
 layer: "operations"
 artifact_id: "RUN-0105"
 parent_ids:
@@ -15,15 +15,15 @@ next_review_at: "2027-05-13"
 
 # OpenBao Maintenance Window
 
-## Purpose
+## Trigger and Scope
 
-### Trigger and Outcome
+### Trigger
 
 이 런북은 OpenBao server·Agent 업그레이드와 정책 변경을 위한 owner 유지보수 window(W0–W8, Finish)를 다룬다. native TLS·audit·복구 gate, 1인 관리자 custody, root ceremony, snapshot과 격리 복구, K8s writer 정지와 ESO 수용을 포함한다. 각 단계는 [window script](../../../../infra/03-security/openbao/scripts/owner-window.sh)와 [K8s writer script](../../../../infra/03-security/openbao/scripts/k8s-writers.sh)로 실행한다.
 
 OpenBao image 업그레이드, root가 필요한 정책·role 변경, snapshot·격리 복구 검증처럼 root ceremony가 필요한 작업을 승인된 window에서 할 때 사용한다.
 
-### Scope
+### Targets
 
 - 공통 OpenBao 운영: [RUN-0085](0085-openbao.md)
 - [Implementation](../../../../infra/03-security/openbao/docker-compose.yml)과 [version projection](../../../../infra/tech-stack.versions.json)이 런타임 고정 버전을 소유한다.
@@ -32,19 +32,52 @@ OpenBao image 업그레이드, root가 필요한 정책·role 변경, snapshot·
 
 - [운영 인덱스](../../README.md)
 
-## Preconditions
+## Preflight
 
-### Authority and Access
+### Authority
 
-이 window는 owner의 승인된 window에서만 수행하며, CI와 독립 검토를 통과한 `P01_APPROVED_COMMIT`과 1인 관리자 custody가 필요하다(Safety Checks의 W0 조건). 1인 관리자 custody의 절차와 root ceremony는 Actions의 1인 관리자 custody 절차와 W1 Root Ceremony에 있다.
+이 window는 owner의 승인된 window에서만 수행하며, CI와 독립 검토를 통과한 `P01_APPROVED_COMMIT`과 1인 관리자 custody가 필요하다(Environment의 W0 조건). 1인 관리자 custody의 절차와 root ceremony는 Steps의 1인 관리자 custody 절차와 W1 Root Ceremony에 있다.
 
-### Safety Checks
+### Environment
 
 W0 조건(CI와 독립 검토를 통과한 `P01_APPROVED_COMMIT`, 1인 관리자 custody의 서로 다른 unseal share 두 개, tmpfs 런타임 디렉터리, 깨끗한 HOME checkout)을 모두 확인하고, 하나라도 없으면 window를 열지 않는다. 이에 더해 BKP-003·R2 자격 증명·BKP-002·Cloudflare 계정 접근이 1인 관리자 custody 절차에 맞는 off-host 보관에 있다는 유효한 owner 기록(유효 조건은 Custody Precondition)이 없으면 window를 열지 않고, W0 Preflight가 `problems: 0`이 아니면 진행하지 않으며, SEC01 Image Gate(잔여 위험 수용 기록과 window 시작 7일 안의 최신 stable 조회)가 하나라도 없거나 실패면 W4/W5를 실행하지 않는다.
 
-## Steps
+## Procedure
 
-### Actions
+### Steps
+
+| Step | Action | Expected Result | On Failure |
+| --- | --- | --- | --- |
+| 1 | TLS Material and Preflight: `check-tls-material.sh`로 CA/server certificate/key를 시작 전에 읽기 전용 검증 | stdout은 check label과 PASS/FAIL만 출력하며 만료·CA chain·SAN·cert/key 일치·UID100:GID1000 읽기를 검증한다 | 잘못된 CA/SAN/만료는 차단하며 `skip_verify`를 정상 경로로 쓰지 않는다 |
+| 2 | HOME 적용 입력과 승인 순서 1: W4/W5의 SEC01 gate(image 잔여 위험 수용과 7일 안의 stable 조회) 기록 확인 | 문서에 기록 없음 | 둘 중 하나라도 없거나 실패면 W4/W5를 실행하지 않는다 |
+| 3 | HOME 적용 입력과 승인 순서 2: 보존된 attempt 대상과 container의 처리 결정 | 문서에 기록 없음 | 삭제는 명시 승인이 필요하다 |
+| 4 | HOME 적용 입력과 승인 순서 3: snapshot 전용으로 제한한 identity와 token 발급 | 문서에 기록 없음 | credential 발급 승인이 필요하다 |
+| 5 | HOME 적용 입력과 승인 순서 4: token 권한과 갱신을 확인한 뒤 쓰기를 멈추고 업그레이드 전 snapshot 생성 | token이 일반 secret을 읽지 못하고 갱신된다 | backup 실행 승인이 필요하다 |
+| 6 | HOME 적용 입력과 승인 순서 5: BKP-003·R2 자격 증명·BKP-002·Cloudflare 계정 접근의 off-host 보관 기록 확인 | 유효한 owner 기록이 있다 | 유효한 기록이 없으면 window를 열지 않는다 |
+| 7 | HOME 적용 입력과 승인 순서 6: 새 attempt 식별자로 빈 대상에 의미 있는 restore 후 canary 읽기와 renderer 재인증 확인 | 문서에 기록 없음 | 독립 READY 검토 후 사용자 승인이 필요하다 |
+| 8 | HOME 적용 입력과 승인 순서 7: audit 용량 측정과 logrotate 등록 | 문서에 기록 없음 | sudo가 필요한 host 변경 승인이 필요하다 |
+| 9 | HOME 적용 입력과 승인 순서 8: maintenance window 안에서 server 업그레이드, 수동 unseal, wrapped 재발급을 포함한 Agent 업그레이드 | 문서에 기록 없음 | 승인된 window 안에서만 진행한다 |
+| 10 | HOME 적용 입력과 승인 순서 9: HOME cold boot | 문서에 기록 없음 | 별도 승인이 필요하다 |
+| 11 | HOME 적용 입력과 승인 순서 10: consumer와 ACL 선택 | 문서에 기록 없음 | P06 담당자 선택이 필요하다 |
+| 12 | 1인 관리자 custody 절차 1: BKP-003, R2 자격 증명, BKP-002, Cloudflare 계정 접근, R2 account ID와 bucket 이름을 장소 A로 복사 | 문서에 기록 없음 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 13 | 1인 관리자 custody 절차 2: (선택) host 보조 사본을 `sudo diff -rq`로 맞춤 | `sudo diff -rq`로 사본이 같은지만 확인하고 값은 출력되지 않는다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 14 | 1인 관리자 custody 절차 3: host가 아닌 장치에서 장소 A의 값으로 R2 snapshot 목록을 받고 파일 1개를 복원 | 장소 A의 값으로 R2 snapshot 목록을 받고 작은 파일 1개가 복원되며 값과 복원한 내용은 출력되지 않는다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 15 | 1인 관리자 custody 절차 4: 값 없이 기록 표를 채워 agent에 전달 | 모든 칸이 채워지고 장소 A의 다섯 행이 "host 밖 = 예"이며 마지막 행이 "예"이면 `PASS`이다 | 칸이 비면 `NOT_RUN`, "아니오"가 하나라도 있으면 `FAIL`이며 둘 다 유지보수 창을 열지 않는다 |
+| 16 | W0 Preflight: `owner-window.sh preflight` 실행 | 문제가 없으면 `problems: 0`이다 | 실패한 점검은 `WARN:`으로 세고 `problems: <n>`과 exit 1로 끝나며 W0 조건이 하나라도 없으면 window를 열지 않는다 |
+| 17 | W1 Root Ceremony: 서로 다른 share 2개를 수동 입력해 root를 얻음 | `w1`이 root를 custody로 보관한다 | T+15까지 W1이 끝나지 않으면 window를 닫는다 |
+| 18 | Previous Root Sweep: 이전 root 정리(`root-sweep`) | `revoked=<n>`, `remaining=0` | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 19 | W1c Renderer Policy and Token Role: renderer 정책·token role 적용(plan/apply) | 상태 문자열 `RENDERER_ROLES_APPLIED` | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 20 | W2 Snapshot Token: snapshot token 발급과 확인 | 상태 문자열 `SNAPSHOT_TOKEN_DELIVERED` | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 21 | W3 Pre-Upgrade Snapshot: writer 정지, lease, 새 업그레이드 전 snapshot | 상태 문자열 `SAVED` | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 22 | W3b Exact Artifact Custody: R2 artifact 보관(W3 직후, W3a 전) | 상태 문자열 `W3B_STORED` | T+45까지 W3b가 시작되지 않으면 W3b 이후를 다음 window로 넘긴다 |
+| 23 | W3a Isolated Semantic Restore: 입력 준비와 격리 semantic restore | 상태 문자열 `RESTORE_ACCEPTED` | T+55까지 W3a가 시작되지 않으면 W3a를 시작하지 않는다 |
+| 24 | W4 Server Upgrade and Manual Unseal: `owner-window.sh w4 <device/inode>`로 server 재생성과 수동 unseal | 새 image로 재생성되고 Raft mount identity가 불변이며 threshold 뒤 `Sealed false`이다 | mount identity 변경, unseal 실패, cluster ID 변경, audit backend 실패이면 중단하고 fix-forward하며 이전 image를 붙이지 않는다. T+80까지 시작하지 않으면 HOME server를 바꾸지 않고 멈춘다 |
+| 25 | W5 Agent Upgrade and Reissue: server unsealed·health 통과 뒤 `owner-window.sh w5-create`로 SecretID 재전달, Agent telemetry 확인, Gatus 재생성 | Agent `healthy`, 렌더 bytes와 version 일치, `up{job="openbao-agent"}`가 1이다 | 재인증 실패나 health 실패이면 중단하며 Agent는 server보다 앞서 rollback하지 않는다. Prometheus/Gatus 확인이 어긋나면 해당 부분은 BLOCKED다 |
+| 26 | W6 Audit and Logrotate Check: 새 server의 `openbao-audit` mount와 `audit.json`(0600, UID100/GID1000), device·inode·용량, 요청 전후 성장 확인 | 문서에 기록 없음 | audit device를 끄거나 `copytruncate`로 바꾸지 않고 공간·권한과 재개방을 복구한다 |
+| 27 | W7 Post Check: renderer 재인증, consumer 읽기, 기존 경보, `up{job="openbao"}` 확인 | 19개 template 렌더 결과가 일치하고 기존 경보가 조용하다 | 중단하고 Stop Conditions에 따라 @buenhyden에게 escalation |
+| 28 | W7 Root Revocation: `token w7`, `check-token w7`, `revoke-root` | exit 0 / `ROOT_REVOKED_OPERATOR_HEALTHY`만 완료이며 root lookup 403이다 | 관리자 접근이 준비되지 않으면 POST 전에 중단하고 폐기 후 확인이 불확실하면 exit 2로 custody를 보존하며 같은 mutation을 재시도하지 않는다 |
+| 29 | Finish: `k8s-writers.sh finish`로 W3에 저장된 UID/replica와 변경 목록을 써서 멈춘 K8s writer를 복구하고 ESO gate를 실행한다 | `ESO_GATE_PASS`이며 Store Ready, 실제 refresh, Application 상태까지 통과해야 완료다 | nonzero(exit 1)이면 Finish FAIL로 남기고 실패한 namespace/name/Store/조건/시각/실행자/다음 검토 입력을 값 없이 Task에 기록하며 새 축소와 무한 재시도는 하지 않는다. 강제 갱신은 외부 ESO 운영자의 별도 승인 뒤에만 한다 |
+| 30 | W8 Cold Boot: 별도 window에서 cold boot | 문서에 기록 없음 | 별도 승인이 필요하다 |
 
 #### Native TLS, Audit and Recovery Gate
 
@@ -440,7 +473,7 @@ W0의 추가 선행 조건(SPEC-0243). 하나라도 없으면 window를 열지 �
   generate-root attempt 상태만 값 없이 출력한다. 이후에는 FD나
   `"$(cat …)"`로만 넘긴다. W5의 숨김 prompt 대신 `BAO_TOKEN="$(cat "$XDG_RUNTIME_DIR/p01-op-w5.token")"`를
   써도 된다. token과 share는 화면에 띄우지 않고 clipboard 기록·동기화를 끈 상태에서 붙여 넣으며,
-  붙여 넣은 뒤 clipboard를 비운다. 이 token은 window 끝이나 중단 때 Rollback의 Abort and Cleanup Rules대로 폐기하고 지운다.
+  붙여 넣은 뒤 clipboard를 비운다. 이 token은 window 끝이나 중단 때 Recovery or Forward Repair의 Abort and Cleanup Rules대로 폐기하고 지운다.
 - **기준선.** 실행 중 `openbao` image ID가 restore의 이전 image(`11fd73a2…`)와 같고,
   `openbao-agent`가 `healthy`이며(W1c health 정지의 기준; 이전 window가 W3 뒤 멈춰 Agent가 그때부터
   정지 상태로 기록돼 있으면 정지를 기준으로 하고, W1c는 health 대신 렌더 파일이 그대로인지만
@@ -596,9 +629,9 @@ root를 읽어 채팅에 보내지 말고 W1c·W2·W7의 보호된 관리 입력
 ##### Previous Root Sweep
 
 server가 sealed라 window가 root를 폐기하지 못하고 끝나면 만료 없는 root가 OpenBao에 남는다
-(unsealed인데 OIDC가 안 되면 Rollback의 Abort and Cleanup Rules에 있는 `cleanup --keep-root` 규칙을 따른다). W1 custody는 `$XDG_RUNTIME_DIR`
+(unsealed인데 OIDC가 안 되면 Recovery or Forward Repair의 Abort and Cleanup Rules에 있는 `cleanup --keep-root` 규칙을 따른다). W1 custody는 `$XDG_RUNTIME_DIR`
 tmpfs에 있고 Linger나 남은 로그인 세션 때문에 재부팅 전까지 남으며, 저장소 UID로 도는 모든 process가 읽을 수 있다. 값은 영구 저장소로
-옮기지 않는다(backup 대상인 `secrets/` 포함). Rollback의 Abort and Cleanup Rules의 정리 명령으로 모든 custody·secret 파일을
+옮기지 않는다(backup 대상인 `secrets/` 포함). Recovery or Forward Repair의 Abort and Cleanup Rules의 정리 명령으로 모든 custody·secret 파일을
 `shred -u`해 값을 아무도 갖지 않게 하고, 폐기하지 못한 사실만 값 없이 Task에 남긴다. accessor도
 기록하지 않는다. 모든 window는 W1 직후, W1c·W3 전에 아래로 이전 root를 찾아 폐기한다(W1 exit2로
 누구도 갖지 않은 root가 생겼을 수도 있으므로 기록과 상관없이 매번 한다. W1의 10분 안에 들어가며,
@@ -668,7 +701,7 @@ custody를 보존하고 같은 명령을 다시 실행하지 않는다. `state.j
 `RENDERER_ROLES_APPLIED`가 아니면 W2·W3를 시작하지 않는다. 되돌릴지 그대로 둘지는 root를
 폐기하기 전에 정한다. 정책 복원과 새 token role 삭제에는 root가 필요하며, 검토된 rollback
 명령이 없으므로 rollback은 **BLOCKED**이고 root는 window 안에서 그 결정까지 보존한다.
-window가 멈추면 Rollback의 Abort and Cleanup Rules대로 server가 unsealed인 한 root를 폐기한다. 이 실행 결과는
+window가 멈추면 Recovery or Forward Repair의 Abort and Cleanup Rules대로 server가 unsealed인 한 root를 폐기한다. 이 실행 결과는
 HOME 증거이며 source 검증이 이를 대신하지 않는다.
 
 ##### W1b Rekey Exclusion
@@ -1026,7 +1059,7 @@ hy-home.k8s 로그인 주체를 아래 Finish대로 복구·검증하고, 경보
 ##### W7 Root Revocation
 
 window 안에서 W1c rollback 판단이 열려 있는 동안은 root를 폐기하지 않습니다(W1c 참조). window가
-멈추면 Rollback의 Abort and Cleanup Rules가 우선합니다.
+멈추면 Recovery or Forward Repair의 Abort and Cleanup Rules가 우선합니다.
 W7의 `revoke-root`는 root FD와 별도의 현재 OIDC operator FD를 요구합니다. 운영자는
 승인된 로그인 절차로 새 OIDC credential을 받아 `owner-window.sh token w7`로
 `$XDG_RUNTIME_DIR/p01-op-w7.token`(0600·single-link)에 둡니다(정리 glob에 들어간다). 이 파일은
@@ -1138,7 +1171,7 @@ P01_K8S_STATE=… P01_EXPECTED_ES=… P01_ES_SET_APPROVAL=… bash "$P01_SCRIPT_
 
 ### Stop Conditions
 
-W0 조건 중 하나라도 없으면 window를 열지 않는다. 시각 기준 중단 조건은 다음과 같고, abort 규칙은 Rollback의 Abort and Cleanup Rules에 있다.
+W0 조건 중 하나라도 없으면 window를 열지 않는다. 시각 기준 중단 조건은 다음과 같고, abort 규칙은 Recovery or Forward Repair의 Abort and Cleanup Rules에 있다.
 
 #### Time Boxes and Stop Times
 
@@ -1149,19 +1182,40 @@ W3b가 시작되지 않으면 W3b 이후를 다음 window로 넘긴다. T+55까�
 W3a를 시작하지 않는다(단발 attempt를 쓰지 않는다). T+80까지 W4가 시작되지 않으면 HOME
 server를 바꾸지 않고 멈춘다.
 
-## Validation
+## Verification
 
-### Service Checks
+### Expected Results
+
+#### Service Checks
 
 각 단계가 출력하는 상태 문자열(`DELIVERED`, `RENDERER_ROLES_APPLIED`, `SNAPSHOT_TOKEN_DELIVERED`, `SAVED`, `RESTORE_ACCEPTED`, `W3B_STORED`, `ROOT_REVOKED_OPERATOR_HEALTHY`, `ESO_GATE_PASS`)이 기대 결과다.
 
-### Evidence
+#### Evidence
 
-각 단계의 상태 문자열과 `evidence`가 복사한 receipt를 값 없이 Task에 기록한다. 증거 복사와 정리 규칙은 Rollback의 Evidence Copy and Cleanup에 있다.
+각 단계의 상태 문자열과 `evidence`가 복사한 receipt를 값 없이 Task에 기록한다. 증거 복사와 정리 규칙은 Recovery or Forward Repair의 Evidence Copy and Cleanup에 있다.
 
-## Recovery
+### Unverified Conditions
 
-### Rollback
+이 런북에서 아직 관측되지 않은 항목은 다음과 같다. 문서는 2026-10-22 window의 일부 결과를 보고 형태로만 기록한다.
+
+- 기록된 관측: SPEC-0243이 `-06` semantic restore accepted, HOME 버전 상향·TLS·audit·Agent 적용(W4/W5), 수동 backup 성공을 보고하고, 같은 Task가 W0 preflight 12초 `PASS`를 기록한다. 2026-11-09~11 일일 backup 실행에 `snapshot token absent`가 없었다고 문서에 기록되어 있다. 이 문서는 이 적용을 `REPOSITORY_REPORTED`로 표시하며 원시 운영 영수증은 제공되지 않았으므로 이 문서만으로는 검증되지 않았다. 각 단계의 상태 문자열(`DELIVERED`, `RENDERER_ROLES_APPLIED`, `SNAPSHOT_TOKEN_DELIVERED`, `SAVED`, `RESTORE_ACCEPTED`, `W3B_STORED`, `ROOT_REVOKED_OPERATOR_HEALTHY`, `ESO_GATE_PASS`)과 Task의 receipt가 검증 근거가 된다.
+- 다음 window 계획: 문서는 이 계획이 문서일 뿐 실행 증거가 아니라고 기록한다. 새 현재 버전, 빈 attempt, source pin 검토, 창별 승인 뒤의 실행 결과로 검증한다.
+- Finish의 ESO gate(`k8s-writers.sh finish`, `ESO_GATE_PASS`): 현재 정확한 여섯 namespace/name은 저장소 기록만으로 확정되지 않으며 `discover`와 운영자 검토가 필요하다. 2026-10-22 12:54-12:56의 ESO lookup/read 403 원인은 UNKNOWN이고 실제 ESO/provider cache 재현은 `NOT_RUN`이다. 이 runbook의 command syntax와 합성 gate 확인은 실제 cluster recovery 증거가 아니다.
+- HOME의 cold boot(W8)와 5단계 custody 기록을 포함한 복구 gate: 별도 승인이 필요하며 실행 결과가 기록되어 있지 않다. P06 확대는 이 gate가 통과할 때까지 보류된다.
+- 첫 자연 audit 회전/회전 inode와 HOME 용량 추세: 문서에 미확보로 기록되어 있다. window 뒤 새 inode의 성장과 회전된 inode가 더 커지지 않는지의 관찰로 검증한다.
+- 변조된 HMAC의 audit 검증: 문서에 미실행으로 기록되어 있다.
+- 장소 A의 값만으로 한 R2 복원: 반기 확인이 처음 실행될 때까지 미실행이며 그 전에는 보장된 상태가 아니라고 문서에 기록되어 있다. R2 목록과 파일 1개 복원으로 검증한다.
+- 다음 backup 단위의 OpenBao snapshot 성공: window 뒤 관찰 항목이다.
+- 격리 합성 시험 결과: 실제 HOME custody, cold boot, 이관, 복구나 모든 malformed 입력 안전성의 증거가 아니라고 문서에 기록되어 있다.
+
+## Escalation
+
+### Next Owner
+
+credential, 파괴적 스토리지 변경, remote 변경, 또는 backup 부재로 안전한 진행이 불가능하면
+중단하고 @buenhyden에게 연락한다.
+
+### Recovery or Forward Repair
 
 W4 실패는 fix-forward가 규칙이다. window가 끝나지 않으면 server를 sealed 또는 정지 상태로 두고 남은 단계를 다음 window로 넘긴다. 중단 시 정리는 아래 Abort and Cleanup Rules와 `cleanup` 옵션을 따른다.
 
@@ -1242,8 +1296,3 @@ K8s writer state(`p01-k8s.*`의 원래 UID·replica·selector, 변경 목록, Fi
 없으므로 window 뒤 관찰로 기록한다. W1b rekey는 이 window에 없습니다(SPEC-0242). W1 직후
 W1c, 그다음 W2·W3를 엽니다. 새 snapshot의 semantic restore를 끝낸 다음 W4 cutover를
 엽니다. 중단 조건이 생기면 HOME 변경을 시작하지 않고 남은 단계는 다음 window로 넘깁니다.
-
-### Escalation
-
-credential, 파괴적 스토리지 변경, remote 변경, 또는 backup 부재로 안전한 진행이 불가능하면
-중단하고 @buenhyden에게 연락한다.
