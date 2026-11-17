@@ -1,6 +1,6 @@
 ---
 title: "W07 Native Provider Adapter Task"
-version: "0.2.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -331,6 +331,26 @@ worker dispatch, the Codex desktop reviewer write-open failure, and capture
 and memory integration remain unobserved here. RUNTIME-CLOSE owns the native
 matrix and W08-CAPTURE owns the collector.
 
+#### RUNTIME-CLOSE native adapter observations
+
+The 2026-11-18 RUNTIME-CLOSE request ran these owner-authorized cases with
+synthetic files only. No repository or managed setting changed.
+
+| Case | Client and input | Observed |
+| --- | --- | --- |
+| Claude reviewer tools | `code-reviewer` subagent in this session | Tools are Read, Grep and Glob; no write, edit or shell tool exists |
+| Claude reviewer sensitive path | Read of a synthetic file under a scratch `secrets/` directory, with a normal synthetic file as positive control | Positive control read; the `secrets/` file refused: "File is in a directory that is denied by your permission settings." |
+| Claude malformed PreToolUse output | Headless Claude Code 2.1.327, `--setting-sources project`, `acceptEdits`, a temporary project whose Write hook returns truncated JSON, an explicit deny or nothing, chosen by file name | The hook ran for all three Writes. No output: created. Truncated JSON: created, so the tool ran. Explicit deny: refused with the hook's reason, file absent. One run, $0.23 |
+| Codex read-only sandbox | codex-cli 0.169.0 `exec --sandbox read-only --ephemeral` in a temporary directory | BLOCKED: the account usage limit failed the turn before any tool call; the target was not reached and nothing was written |
+
+The malformed case shows that Claude proceeds when a PreToolUse hook prints
+invalid JSON and exits 0. The repository dispatcher emits every denial with
+`json.dumps` and turns its own import failure into a denial, so it does not
+produce that output. The probe hook carried no `onFailure` key, so whether
+the repository's `onFailure: block` binding fails closed on invalid output is
+still unobserved. The reviewer cases show the configured tool set and a
+permission-rule refusal; they are not a sandbox test of a shell.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -393,6 +413,9 @@ project trust before it can supply the missing delivery evidence.
 | 4.2.0 commit warning RED | 135 | W140 | commit contract translation test | Two valid multi-message commands and one invalid `-am` command at `94f551cb6` | FAIL | Two false warnings and one missed warning | required | - |
 | 4.2.0 commit warning GREEN | 135 | W140 | commit contract translation test | First-message-flag pattern | PASS | All cases pass; adapter and governance routing modules pass, renderer drift zero, governance contract clean | required | 4.2.0 commit warning RED |
 | 4.2.0 native Bash hook route | 135 | W140 | live PreToolUse Bash in this Claude session | Main push denial, two warnings and the corrected commit pattern | PASS | Deny and warn delivered on the Bash route; corrected pattern warned on the invalid probe and stayed silent on the valid one | optional | - |
+| RUNTIME-CLOSE Claude reviewer | 135 | W140 | live subagent tool list and Read | `code-reviewer` subagent, synthetic public and `secrets/` files | PASS | No write or shell tool; positive read allowed; sensitive path refused by permission settings | required | - |
+| RUNTIME-CLOSE Claude malformed output | 135 | W140 | headless PreToolUse output control | Claude Code 2.1.327, synthetic project hook, three Writes | PASS | Invalid JSON let the Write run; explicit deny refused it; no output allowed it | required | - |
+| RUNTIME-CLOSE Codex sandbox | 135 | W140 | read-only exec write attempt | codex-cli 0.169.0, synthetic directory | NOT_RUN | Blocked by the account usage limit before any tool call; target not reached | required | - |
 
 ### Resolution Links
 
@@ -421,9 +444,11 @@ The Claude evidence also covers manual PreCompact success, a project
 Stop block followed by a successful same-turn retry, and a native Edit
 whose project PostToolUse hook exited 0.
 The Codex desktop hook pass covers the observed edit route. Its separate
-reviewer write-open failure remains unresolved. Unsupported-output
-behavior, the remaining native reviewer boundaries, worker dispatch and
-automatic capture and memory evidence remain open. W08-CAPTURE owns the protected
+reviewer write-open failure remains unresolved. RUNTIME-CLOSE observed the
+Claude reviewer boundaries, nested worker dispatch and malformed output.
+The Codex read-only sandbox run was blocked by the account usage limit, the
+`onFailure: block` effect on invalid output is unobserved, and automatic
+capture and memory evidence remain open. W08-CAPTURE owns the protected
 collector and null or delayed transcript reconciliation. Owner acceptance
 depends on the required observations.
 
@@ -436,5 +461,6 @@ behavior. This Task records the execution and acceptance.
 
 ### Next Owner
 
-RUNTIME-CLOSE owns the remaining native matrix and W08-CAPTURE the
-collector. The owner decides criterion 135.
+RUNTIME-CLOSE owns the Codex sandbox and reviewer cases after the usage
+limit resets and the `onFailure` case, and W08-CAPTURE the collector. The
+owner decides criterion 135.
