@@ -390,6 +390,8 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Governance profile test | 137 | W143 | document-governance-regression | metadata.test_profile at `2a4331860`, before the profile test change | FAIL | 18 tests, 1 failure: the approval-boundary body test named the old sections | required | - |
 | Governance regression | 137 | W143 | document-governance-regression | test_registry, test_template_definition, metadata heading, profile, reference and lifecycle, test_metadata_validator, test_spec_packages, test_taxonomy, test_operations_catalog and test_script_manifest at `e7fc61911` | PASS | 782 tests in 1469 seconds, exit 0 | required | Governance profile test |
 | Governance corpus | 137 | W143 | document-corpus | check-changed against `origin/main`, check-contracts, governance contract, provider surface renderer, link alignment and markdownlint at `e7fc61911` | PASS | 16 changed and 0 violations; 0 contract violations; governance contract, renderer and alignment PASS; 0 lint issues | required | - |
+| Acceptance record | 137 | W143 | hosted-candidate | PR 1066 at `332efd5bf`, with criterion 137 recorded as accepted | FAIL | candidate-core: Criterion Acceptance cited a phrase, not Evidence rows; candidate-documents lifecycle public tests failed on the same package; candidate-quality aggregates both. With exact citations the local check reported `accepted criterion 137 has an unresolved required observation` (Core comparison baseline) | required | - |
+| Acceptance record fix | 137 | W143 | document-corpus | check-changed against `origin/main` and tests.validation.lifecycle.test_public with criterion 137 kept pending and the owner's statement in Decision | PASS | 17 changed and 0 violations; 6 tests, exit 0; the hosted rerun is the next observation | required | - |
 
 ### Resolution Links
 
@@ -408,11 +410,11 @@ open until every role group conforms.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 137 | accepted | Conformance GREEN, Contract wiring, Foundation re-review, the W143 role group approvals and Governance regression | Owner @buenhyden accepted on 2026-11-17 in this chat, while W143 governance policies were in review and W144 to W147 had not started | @buenhyden |
+| 137 | pending | Conformance GREEN, Contract wiring, Foundation re-review, Incident re-review, Runbook review approval, Guide review approval, Policy review approval, Governance regression | Owner @buenhyden stated acceptance on 2026-11-17 in this chat; it stays pending because the validator rejects `accepted` while the required Core comparison baseline is unresolved, and the owner is asked how to proceed | @buenhyden |
 
 ### Remaining Conditions
 
-The acceptance does not close the work: W144 to W147 still move their role
+W144 to W147 still move their role
 groups, each with its own review. The comparison baseline is resolved only by
 a later export that conforms for every bound role.
 
@@ -426,4 +428,4 @@ role design contract as a version object.
 
 ### Next Owner
 
-The implementer owns W143 to W147. The owner accepted criterion 137.
+The implementer owns W143 to W147. The owner decides how criterion 137 is recorded.
