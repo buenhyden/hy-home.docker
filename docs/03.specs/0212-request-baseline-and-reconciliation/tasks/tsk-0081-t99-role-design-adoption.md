@@ -471,6 +471,7 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | References review fix checks | 137 | W144 | document-corpus | check-changed, link alignment and navigation, markdownlint, metadata.test_heading and metadata.test_reference after the fixes, rebased on `3d53456da` | PASS | 27 changed and 0 violations; alignment and navigation PASS; 0 lint issues; tests OK | required | - |
 | References re-review | 137 | W144 | independent-review | Fix commit `4752d897d` and the Task record against the references review, at `a0e205ecc` | PASS | APPROVE; I1 to I3 and M1 to M7 fixed; three minor notes applied | required | References review |
 | Agent instructions form RED | 137 | W145 | role-design-binding | test_template_definition and metadata.test_heading from the W145 agent instructions branch against `main` at `3d53456da` | FAIL | 163 tests, 9 failures: agent-instructions unbound, old guide and skill sections accepted, the two H2 orders still old | required | - |
+| Agent instructions form GREEN | 137 | W145 | role-design-binding | The ten governance modules, test_script_manifest and test_language at `3d7e8dd36` in a separate worktree | PASS | 789 tests in 1613 seconds, exit 0 | required | Agent instructions form RED |
 | Agent instructions move fidelity | 137 | W145 | document-move | 9 guides and 24 skills at `3d7e8dd36` against `main`, non-heading lines lost and added | PASS | 0 lines lost beyond one renamed section reference; 105 lines added | required | - |
 | Agent instructions corpus | 137 | W145 | document-corpus | check-changed against `origin/main`, check-contracts, link alignment and navigation, corpus lifecycle, governance contract, provider surface renderer and markdownlint at `cbac26d12` | PASS | 36 changed and 0 violations; contracts and lifecycle 0; alignment, navigation, governance contract and renderer PASS; 0 lint issues | required | - |
 | Agent instructions review | 137 | W145 | independent-review | Commit `cbac26d12` | FAIL | CHANGES_REQUIRED: the precedence sentence overstated Intake sources, authority rules sat under Secrets and External Effects, no Task record, four minor notes | required | - |
@@ -484,7 +485,7 @@ regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
 Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Policy review approval, Policy re-review approval, Policy hosted candidate
 rerun, Governance form GREEN, Governance regression, Governance old-form GREEN, Governance re-review, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
-rows, and References form GREEN and References re-review resolve their W144 rows. The comparison baseline stays
+rows, References form GREEN and References re-review resolve their W144 rows, and Agent instructions form GREEN resolves its W145 row. The comparison baseline stays
 open until every role group conforms.
 
 ## Acceptance Decision
