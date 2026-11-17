@@ -513,6 +513,9 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | SDLC forms hosted candidate | 137 | W146 | hosted-candidate | PR 1069 at `0b55dc47b` | FAIL | candidate-documents: test_an_unknown_or_unmapped_core_role_is_reported picked `common/documentation-readme`, whose target stage-readme other pending roles share once W144 and W145 merged, so no core role was left unmapped | required | - |
 | SDLC forms aligned header RED | 137 | W146 | requirements-table | test_requirements with a column-aligned header and a missing ID, before the label match | FAIL | 29 tests, 1 failure: RequirementPackageError not raised | required | - |
 | SDLC forms re-review fix checks | 137 | W146 | document-corpus | check-changed against `origin/main` `1b51e0b04`, check-contracts, governance contract, link alignment, corpus lifecycle and markdownlint; test_requirements, metadata.test_heading and test_template_definition at `3ba5d78b4` | PASS | 86 changed and 0 violations; 0 contract and lifecycle violations; governance contract and alignment PASS; 0 lint issues; 29, 148 and 44 tests OK | required | - |
+| SDLC forms aligned header GREEN | 137 | W146 | requirements-table | test_requirements after the header is matched by its cell labels, at `3ba5d78b4` | PASS | 29 tests, exit 0 | required | SDLC forms aligned header RED |
+| SDLC forms hosted candidate rerun | 137 | W146 | hosted-candidate | PR 1069 checks at `c01881150`, after the pending-role fixture fix | PASS | candidate-core, candidate-documents, candidate-quality, candidate-routing, CodeQL and GitGuardian pass | required | SDLC forms hosted candidate |
+| SDLC forms re-review approval | 137 | W146 | independent-review | Fix ranges `96112a806..0b55dc47b` and `0b55dc47b..c01881150` against the SDLC forms review and re-review | PASS | APPROVE at `c01881150`; findings 1 to 12 and the four re-review findings fixed; nit 5 kept as faithful to the declaration | required | SDLC forms re-review |
 
 ### Resolution Links
 
@@ -522,7 +525,7 @@ regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
 Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Policy review approval, Policy re-review approval, Policy hosted candidate
 rerun, Governance form GREEN, Governance regression, Governance old-form GREEN, Governance re-review, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
-rows, References form GREEN and References re-review resolve their W144 rows, Agent instructions form GREEN and Agent instructions re-review resolve their W145 rows, and SDLC forms GREEN resolves its W146 row. The comparison baseline stays
+rows, References form GREEN and References re-review resolve their W144 rows, Agent instructions form GREEN and Agent instructions re-review resolve their W145 rows, and SDLC forms GREEN, SDLC forms aligned header GREEN, SDLC forms hosted candidate rerun and SDLC forms re-review approval resolve their W146 rows. The comparison baseline stays
 open until every role group conforms.
 
 ## Acceptance Decision
