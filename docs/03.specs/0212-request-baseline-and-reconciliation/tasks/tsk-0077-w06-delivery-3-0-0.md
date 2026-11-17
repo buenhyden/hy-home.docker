@@ -2,7 +2,7 @@
 title: "W06 Delivery 3.0.0 Task"
 version: "0.2.0"
 type: "sdlc/task"
-status: "in-progress"
+status: "completed"
 owner: "@buenhyden"
 updated: "2026-11-18"
 layer: "specs"
@@ -183,11 +183,22 @@ runners with the same input, because every candidate merges the current
 `main` and the pre-W06 code sits under later changes. No paired hosted
 comparison is claimed.
 
-Independent remote enforcement is still not adopted: it needs a base-owned
-verifier that treats candidate objects as data, a separate check with a
-verified App identity, and main protection naming both. Creating that App
-and changing protection need the owner's separate authority, which this
-request does not grant.
+Independent remote enforcement is not adopted. A requirement check found
+no request, package requirement or Spec text that asks for it: criterion
+133 binds the Git checks and hosted selection to their actual inputs, and
+GITHUB-GOVERNANCE-R95 applies only when remote QA definition enforcement is
+implemented. It needs a base-owned verifier, a separate check with a
+verified App identity and main protection naming both, each separately
+approved. It stays an optional future item outside criterion 133.
+
+At the owner's direction, one independent reviewer, given the criterion
+text and the source locations but no conclusion, re-reviewed W06 coverage
+read-only and returned APPROVE. It found each clause covered in the
+workflow, runner, style controller and push guard, found independent trust
+outside criterion 133, and found pre-setup non-applicability satisfied by
+the routing job and aggregate. It could not run commands, so the hosted
+figures above stay Task claims for that review. The owner accepted
+criterion 133 on 2026-11-18.
 
 #### Lifecycle Events
 
@@ -195,6 +206,7 @@ request does not grant.
 | --- | --- | --- | --- |
 | SPEC-0212-TSK-0077 | draft | ready | #inputs-and-authority |
 | SPEC-0212-TSK-0077 | ready | in-progress | #design-before-implementation |
+| SPEC-0212-TSK-0077 | in-progress | completed | #criterion-decisions |
 
 ### Blockers and Decisions
 
@@ -249,14 +261,14 @@ endpoint returned no applicable rules. This is a read-only observation.
 | 4.2.0 hosted routes | 133 | W138 | read-only Actions run and job metadata | 36 successful PR runs since 2026-11-16 12:00 UTC | PASS | 17 non-applicable and 19 selected document routes, medians in the route table | required | - |
 | 4.2.0 protection read-back | 133 | W138 | read-only GitHub API | Current main protection and rules | PASS | candidate-quality from App 15368, strict, administrators enforced, conversations resolved, no ruleset | optional | - |
 | 4.2.0 delivery regressions | 133 | W138 | unittest gate plan and workflow contract, style wrapper contract | PR 1076 candidate on 2026-11-18 | PASS | 135 tests including both rename paths and the base-side merge rename, wrapper contract passed | required | - |
+| 4.2.0 independent coverage review | 133 | W138 | independent review of W06 coverage | Criterion 133 text, TSK-0077, ci-quality.yml, ci_gate_runner.py, test_ci_gate_plan.py, run-ci-precommit.sh, pre-push-guard.sh and github-governance.md on `0e58e6608` | PASS | APPROVE: every criterion clause covered with file evidence; independent trust outside the criterion; pre-setup non-applicability satisfied | required | Independent scope review |
 
 ### Resolution Links
 
 Local evidence resolves the demonstrated rename, checkout and late document
 selection defects. Hosted runs now show the non-applicable route deciding
-before any document runner starts. The independent scope finding stays
-unresolved because the independent verifier is not adopted and no
-independent re-review of W06 coverage has run.
+before any document runner starts. The 4.2.0 independent coverage review
+resolves the independent scope finding against criterion 133's text.
 
 ## Acceptance Decision
 
@@ -264,17 +276,15 @@ independent re-review of W06 coverage has run.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 133 | pending | - | Owner @buenhyden chose per-criterion acceptance on 2026-11-16 in this chat; held by unresolved required rows Independent scope review | @buenhyden |
+| 133 | accepted | Hosted selected route and main security, 4.2.0 hook chain, 4.2.0 hosted routes, 4.2.0 delivery regressions, 4.2.0 independent coverage review | Owner @buenhyden accepted on 2026-11-18 in this chat after the independent re-review; independent remote enforcement stays an optional item under GITHUB-GOVERNANCE-R95 | @buenhyden |
 
 ### Remaining Conditions
 
-Criterion 133 stays pending on the Independent scope review row. The
-selected and non-applicable hosted routes are observed. A paired hosted
-comparison of the pre-W06 and current implementations is not possible for
-the reason above. Adopting independent remote enforcement needs the owner's
-authority to create a verifier App and change main protection, followed by
-an independent re-review. The separate `main-security` job passed on the
-actual merge commit.
+None for W138. The owner accepted criterion 133 and every required
+non-PASS row has a resolving row. A paired hosted comparison of the
+pre-W06 and current implementations is not possible for the reason above.
+Independent remote enforcement is optional future work that needs its own
+approval of a verifier App and a main protection change.
 
 ## Handoff
 
@@ -284,5 +294,4 @@ The existing delivery runner, style wrapper and workflow own the changes.
 
 ### Next Owner
 
-The owner decides whether to authorize the independent verifier and
-protection change, or how to decide criterion 133 without it.
+None for W138. A separate request owns any independent verifier.
