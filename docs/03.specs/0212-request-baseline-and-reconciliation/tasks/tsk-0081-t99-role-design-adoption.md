@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.6.2"
+version: "0.7.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -247,6 +247,24 @@ state; each now follows its guide. The Renovate Audience now names the
 reader its guide states. The old-form test now rejects the replaced guide
 headings.
 
+#### W143 operations policies
+
+The operations policy template and profile now carry the core sections, the
+template holds the always-required rules table under Requirements, and
+`operation/policy` is bound. A script moved all 77 operations policies section
+by section; no prose named a removed section, no anchor changed, and old
+titles the move left empty were removed in the same pass. The test fixture
+for a policy body now uses the core headings and the rules table header.
+
+Six writing agents drafted, from each policy only, a Limits text and a rules
+table with one row per top-level requirement: 851 rows. A Rule ID is the
+policy's `artifact_id` with `-R` and its order, which the policy did not have
+before; Enforcement and Evidence name a check or record the policy states,
+`수동` for a manual review, or `none`. One draft lacked the required
+`필수:` prefix on a mandatory rule and gained it. Compared with the base,
+the policies lost no line and gained only that authored text; 15 Limits lists
+gained the blank line Markdown requires before a list.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -315,13 +333,19 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Guide review | 137 | W143 | independent-review | Commits `efd26a4d3`, `da9fc935d` and `2bf4ba56c` | FAIL | CHANGES_REQUIRED: 25 prose lines still name removed sections, a k6 failure outcome as Expected Result, a Storybook row reference off by three, constraints in five cells | required | - |
 | Guide review corpus | 137 | W143 | document-corpus | metadata.test_heading with the replaced guide headings, check-changed against `origin/main` and link alignment after the fixes | PASS | 119 tests, exit 0; 80 changed and 0 violations; alignment PASS | required | - |
 | Guide review approval | 137 | W143 | independent-review | Fix commits `e8ae10439` and `f94a0d4de` against the guide review | PASS | APPROVE at `f94a0d4de`; I1 to I3 and the applied minors fixed, the rest accepted with reasons | required | Guide review |
+| Policy form RED | 137 | W143 | role-design-binding | Bound policy role at `2bf4ba56c` | FAIL | Role unbound, exit 1 | required | - |
+| Policy form GREEN | 137 | W143 | role-design-binding | test_template_definition with the policy template and profile on the core | PASS | 44 tests, exit 0 | required | Policy form RED |
+| Policy move fidelity | 137 | W143 | document-move | 77 operations policies against base: non-heading lines lost and lines added beyond the authored Limits and tables | PASS | 0 lost and 0 unexplained; 851 rows | required | - |
+| Policy lint | 137 | W143 | document-corpus | markdownlint of the changed policies after the drafts were applied | FAIL | MD032 in 15 Limits lists without a blank line before the list | required | - |
+| Policy corpus | 137 | W143 | document-corpus | check-changed against `origin/main`, check-contracts, check-operations-catalog, link alignment and markdownlint after the blank lines | PASS | 158 changed and 0 violations, then 78 after rebase; 0 contract violations; catalog and alignment PASS; 0 lint issues | required | Policy lint |
+| Policy regression | 137 | W143 | document-governance-regression | test_registry, test_template_definition, metadata heading, reference and lifecycle, test_operations_catalog, test_metadata_validator, test_spec_packages and test_taxonomy | PASS | 713 tests, exit 0 | required | - |
 
 ### Resolution Links
 
 Conformance GREEN resolves Conformance RED, and Foundation re-review resolves
 Foundation review. Runbook form GREEN, Reference table GREEN, Runbook
 regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
-Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Incident regression rerun, Review fix GREEN, Review fix
+Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
 rows. The comparison baseline stays
 open until every role group conforms.
