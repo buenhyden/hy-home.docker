@@ -1345,7 +1345,7 @@ def render_report(
             f"The inventory contains {semantic_count} records with findings and {parse_count} parser failures. These counts describe static document checks; they do not establish execution or provider-runtime conformance.",
             "The separate official checks determine acceptance for their selected scope.",
             "",
-            "#### Review",
+            "#### Actions",
             "",
             "- **Review Cadence**: Regenerate when tracked Markdown or metadata profiles change",
             "- **Update Trigger**: Profile, parser, lifecycle, relation, exception, or corpus changes",

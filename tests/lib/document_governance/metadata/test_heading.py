@@ -376,6 +376,15 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 "free_form_sections"
             ):
                 found[profile_id] = pathlib.Path(candidate)
+        # The audit and data pack profiles own no current document; a path their
+        # Registry pattern classifies stands in so their form is still checked.
+        for profile_id, path in (
+            ("audit", "docs/90.references/audits/0001-fixture/README.md"),
+            ("data", "docs/90.references/data/0001-fixture/README.md"),
+        ):
+            if profile_id not in found:
+                assert classify_path(path, cls.registry) == profile_id, path
+                found[profile_id] = pathlib.Path(path)
         return found
 
     def _findings(self, profile_id: str, body: str) -> list[str]:
@@ -769,6 +778,26 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Limitations", "body-heading-forbidden"),
                 ("## Traceability", "body-heading-forbidden"),
             ),
+            "audit": (
+                ("## Overview", "body-heading-forbidden"),
+                ("## Scope", "body-heading-forbidden"),
+                ("## Structure", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+                ("## Sources", "body-heading-forbidden"),
+                ("## Findings", "body-heading-forbidden"),
+                ("## Limitations", "body-heading-forbidden"),
+                ("## Traceability", "body-heading-forbidden"),
+            ),
+            "data": (
+                ("## Overview", "body-heading-forbidden"),
+                ("## Scope", "body-heading-forbidden"),
+                ("## Structure", "body-heading-forbidden"),
+                ("## Related Documents", "body-heading-forbidden"),
+                ("## Sources", "body-heading-forbidden"),
+                ("## Findings", "body-heading-forbidden"),
+                ("## Limitations", "body-heading-forbidden"),
+                ("## Traceability", "body-heading-forbidden"),
+            ),
             "package-readme": (
                 ("## Overview", "body-heading-forbidden"),
                 ("## Scope", "body-heading-forbidden"),
@@ -875,13 +904,14 @@ class RegisteredSectionContractTests(unittest.TestCase):
             "| Path | Purpose | Owner |",
         ):
             with self.subTest(header=header):
-                candidate = (
-                    body
-                    + "\n### Documents\n\n"
+                candidate = body.replace(
+                    "### Paths\n\n",
+                    "### Paths\n\n"
                     + header
                     + "\n| --- | --- |"
                     + (" --- |" if "Owner" in header else "")
-                    + "\n"
+                    + "\n\n",
+                    1,
                 )
                 self.assertNotIn(
                     "readme-documents-header-invalid",
@@ -983,10 +1013,12 @@ class RegisteredSectionContractTests(unittest.TestCase):
         good = "| Path | Purpose |\n| --- | --- |\n| a | b |\n\n"
         for second, reported in (
             ("| Path | Purpose |", False),
-            ("| Name | Purpose |", True),
+            ("| Purpose | Path |", True),
         ):
             with self.subTest(second=second):
-                candidate = body + "\n### Documents\n\n" + good + second + "\n"
+                candidate = body.replace(
+                    "### Paths\n\n", "### Paths\n\n" + good + second + "\n\n", 1
+                )
                 self.assertEqual(
                     reported,
                     "readme-documents-header-invalid"
@@ -996,12 +1028,13 @@ class RegisteredSectionContractTests(unittest.TestCase):
     def test_readme_documents_module_rejects_other_header_shapes(self) -> None:
         body, _ = self._conforming_body("readme")
         for header in (
-            "| Name | Purpose |",
             "| Path | Purpose | Status |",
             "| Purpose | Path |",
         ):
             with self.subTest(header=header):
-                candidate = body + "\n### Documents\n\n" + header + "\n"
+                candidate = body.replace(
+                    "### Paths\n\n", "### Paths\n\n" + header + "\n\n", 1
+                )
                 self.assertIn(
                     "readme-documents-header-invalid",
                     self._findings("readme", candidate),
