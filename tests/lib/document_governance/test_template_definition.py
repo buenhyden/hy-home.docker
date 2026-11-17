@@ -806,6 +806,10 @@ class RoleDesignConformanceTests(unittest.TestCase):
             ("common/package-readme", "service-readme"),
             ("common/repository-readme", "root-readme"),
             ("common/runtime-governance-readme", "root-readme"),
+            ("common/incident-year-readme", "stage-readme"),
+            ("governance/knowledge-index", "stage-readme"),
+            ("governance/prompt-index", "stage-readme"),
+            ("governance/provider-index", "stage-readme"),
         ):
             self.assertEqual(core_role, bound.get(template_id), template_id)
         self.assertEqual([], role_design_contract_findings(self.registry))

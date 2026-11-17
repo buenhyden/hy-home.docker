@@ -1,18 +1,20 @@
 ---
 title: "Agent Knowledge"
-version: "0.4.1"
+version: "0.5.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 created: "2026-09-06"
 ---
 
 # Agent Knowledge
 
-## Stage Responsibility
+## Responsibility
 
-### Purpose and Readers
+### Purpose
+
+#### Purpose and Readers
 
 `.agents/knowledge/`는 독자를 canonical owner로 route하는 검증된 living
 knowledge를 보관합니다. agent가 매 session마다 추론하는 대신 등록된 파일을
@@ -22,21 +24,26 @@ knowledge를 보관합니다. agent가 매 session마다 추론하는 대신 등
 Knowledge는 authority가 아닙니다. member는 무엇이 사실이고 누가 그 규칙을
 소유하는지를 기술하며 규칙 자체는 그 owner에게 남습니다.
 
-### Inputs and Outputs
+#### Inputs and Outputs
 
 - 포함: surface-to-authority routing, 저장소 vocabulary, verification
   coverage map, 그리고 검증되어 재사용되는 domain knowledge.
+
+obligation을 명시하는 member는 결함입니다. 그 내용을 `governance/`로
+route하고 link를 남깁니다.
+
+### Excluded Responsibilities
+
 - 제외: `governance/`에 속하는 obligation과 prohibition, `skills/`에 속하는
   순서화된 절차, Stage 02와 Stage 03에 속하는 상세 설계와 specification,
   Stage 05에 속하는 operator 절차, Stage 90에 속하는 일자 지정 단발성 관찰,
   현재 Spec Package Task에 속하는 실행 상태.
 
-obligation을 명시하는 member는 결함입니다. 그 내용을 `governance/`로
-route하고 link를 남깁니다.
+## Current Contents
 
-## Contents
+### Paths
 
-### Current Items
+#### Current Items
 
 | Path | Purpose |
 | --- | --- |
@@ -58,13 +65,33 @@ route하고 link를 남깁니다.
 섹션을 갖습니다. source 변경·삭제·정정 또는 review expiry가 발생하면 다시
 읽기 전까지 해당 fact는 invalid입니다.
 
-### Classification
+#### Classification
 
 member는 세 종류입니다. `glossary.md`는 저장소 vocabulary, `repository-map.md`는 표면에서 canonical owner로의 routing, `verification-surface-map.md`는 검증 진입점이며, 모두 authority가 아니라 owner로 route하는 지식입니다.
 
-## Workflow
+### Owners
 
-### Create and Review
+이 README의 소유자는 frontmatter `owner`의 `@buenhyden`입니다. 목록에 있는 각 항목의 소유자는 이 README가 따로 기록하지 않습니다.
+
+## Usage
+
+### Entry Points
+
+#### Upstream and Downstream
+
+- [Prompt index](../prompts/README.md)
+- Canonical knowledge and prompt surfaces decision (`docs/02.architecture/decisions/0034-canonical-knowledge-and-prompt-surfaces.md`)
+- [Documentation index](../../docs/README.md)
+
+#### Policy and Templates
+
+- [Agent governance index](../README.md)
+- [Documentation protocol](../governance/documentation-protocol.md)
+- 전용 템플릿 없음: Registry의 `governance-knowledge-index` profile(`docs/99.templates/registry.json`)이 형식을 소유합니다.
+
+### Checks
+
+#### Create and Review
 
 1. 기존 member가 이미 해당 내용을 소유하는지 확인합니다. 두 번째 owner를
    추가하는 대신 기존 member를 확장합니다.
@@ -78,8 +105,6 @@ member는 세 종류입니다. `glossary.md`는 저장소 vocabulary, `repositor
 4. member를 stale하게 만드는 조건을 `Refresh Triggers` 아래에 기술합니다.
 5. Provider Registry의 `canonical_sources`에 파일을 등록한 뒤 document
    metadata와 agent governance contract 점검을 실행합니다.
-
-### Transition and Exit
 
 #### Curation Lifecycle
 
@@ -97,17 +122,3 @@ member는 세 종류입니다. `glossary.md`는 저장소 vocabulary, `repositor
 
 age와 file count는 retention 기준이 아닙니다. member는 routing이 올바른 동안
 유지되며 여전히 유효한 의미가 canonical owner로 이동했을 때 폐기됩니다.
-
-## Related Documents
-
-### Upstream and Downstream
-
-- [Prompt index](../prompts/README.md)
-- Canonical knowledge and prompt surfaces decision (`docs/02.architecture/decisions/0034-canonical-knowledge-and-prompt-surfaces.md`)
-- [Documentation index](../../docs/README.md)
-
-### Policy and Templates
-
-- [Agent governance index](../README.md)
-- [Documentation protocol](../governance/documentation-protocol.md)
-- 전용 템플릿 없음: Registry의 `governance-knowledge-index` profile(`docs/99.templates/registry.json`)이 형식을 소유합니다.
