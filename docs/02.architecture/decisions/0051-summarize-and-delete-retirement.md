@@ -46,7 +46,7 @@ preservation model has no records left to govern.
 
 ### Decision Scope
 
-This decision covers how a document that leaves an active stage is retired: Stage 98 (`docs/98.archive/`) holds no records, and retired numbers are kept in the Registry. It affects Stage 01 and Stage 02 Traceability, Stage 03 removals and the checks that read Stage 98.
+This decision covers how a document that leaves an active stage is retired: Stage 98 (`docs/98.archive/`) holds no records, and retired numbers are kept in the Registry. It affects the lineage sections of Stage 01 and Stage 02 owners, Stage 03 removals and the checks that read Stage 98.
 
 ## Options
 
@@ -69,7 +69,7 @@ This decision covers how a document that leaves an active stage is retired: Stag
 | Keep the Stage 98 preservation model with its catalog and Tombstones | The ADR records no benefit for this option. | It duplicates version history, and its checks failed unrelated changes. | Rejected; it duplicates version history, and its checks failed unrelated changes. |
 | Delete the archive and read retired lineage from pinned version history at check time | The ADR records no benefit for this option. | It makes every gate depend on history depth and recovery pins. | Rejected; it makes every gate depend on history depth and recovery pins. |
 | Move the full archive metadata into the Registry | The ADR records no benefit for this option. | It keeps the preservation bookkeeping under a different name. | Rejected; it keeps the preservation bookkeeping under a different name. |
-| Summarize, delete, and keep only retired numbers in the Registry | Keeps retirement traceable without a second copy of every removed body, and lineage is read in owner Traceability where the current rule lives. | Retirement needs one extra edit, the `reserved_history` entry, and checks fail without it; removed bodies are recovered only from version history. | Selected; the preservation model has no records left to govern after SPEC-0248 stopped every gate from validating Stage 98 and the user directed the archive files be deleted. |
+| Summarize, delete, and keep only retired numbers in the Registry | Keeps retirement traceable without a second copy of every removed body, and lineage is read in the owner's lineage section where the current rule lives. | Retirement needs one extra edit, the `reserved_history` entry, and checks fail without it; removed bodies are recovered only from version history. | Selected; the preservation model has no records left to govern after SPEC-0248 stopped every gate from validating Stage 98 and the user directed the archive files be deleted. |
 
 Each rejected alternative is rejected for the reason stated in its entry above: duplication of version history, dependence on history depth and recovery pins, or preservation bookkeeping under a different name. The selected option keeps retirement traceable without a second copy of every removed body.
 
@@ -77,7 +77,7 @@ Each rejected alternative is rejected for the reason stated in its entry above: 
 
 ### Chosen Option
 
-1. A document that leaves an active stage is summarized into the Traceability
+1. A document that leaves an active stage is summarized into the lineage section
    of its Stage 01 or Stage 02 owner and deleted in the same change.
 2. Version history is the record of the removed body. No recovery ledger,
    catalog, Tombstone, or Migration record is kept.
@@ -125,8 +125,10 @@ stay.
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
-options table under Trade-offs was derived from the options it records. The
-decision text is unchanged.
+options table under Trade-offs was derived from the options it records. In the same
+amendment, item 1 of the decision and the scope sentence name the owner's
+lineage section instead of Traceability, because the core architecture and
+decision forms have no Traceability section; their meaning is unchanged.
 
 The owner decided on 2026-11-03 to accept this record. A new ADR must enter as
 `proposed`, so the status changed to `accepted` in the first change after

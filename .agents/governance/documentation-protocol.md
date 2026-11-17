@@ -493,7 +493,7 @@ its hosted CI route is not wired yet. Existing links are not retyped by this rul
    change policy ownership or role permissions.
    Stage 01 to 03 profiles carry no `supersedes` or `superseded_by`, and their
    statuses follow the [SDLC](sdlc.md#sequence): a successor records the
-   replaced substance in its Traceability and the predecessor is deleted with
+   replaced substance in its lineage section and the predecessor is deleted with
    its number reserved. Other profiles keep the lineage graph of
    multiple predecessors in `supersedes` and one reciprocal successor in
    `superseded_by`; changing that singular successor to an array requires a
@@ -850,7 +850,7 @@ of external templates.
 | Implementation evidence | `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` | Record result, deviation, and validation evidence. |
 | Operator knowledge | `docs/05.operations/` | Update the applicable guide, policy, runbook, or incident. |
 | External evidence | `docs/90.references/` | Preserve non-normative research, audit, or data. |
-| Historical recovery | Version history and the owner's Traceability; non-authoritative for current rules | Read a removed body at the revision that last carried it; summarize still-current meaning into its current owner. |
+| Historical recovery | Version history and the owner's lineage section; non-authoritative for current rules | Read a removed body at the revision that last carried it; summarize still-current meaning into its current owner. |
 | Shape or lifecycle | `docs/99.templates/` | Change the registry, schema, or copyable template. |
 | Protected or ambiguous change | `docs/03.specs/####-<slug>/tasks/tsk-####-<slug>.md` Task/audit gap first | Stop mutation and bind approval, scope, and recovery first. |
 
@@ -946,7 +946,7 @@ Retire a package or a standalone document only when all of these hold.
    removal.
 2. Every still-current obligation, decision, structure, or procedure it owns is
    written to its canonical agent governance, 01, 02, or 05 owner, and its
-   lineage is summarized in that owner's Traceability.
+   lineage is summarized in that owner's lineage section: Traceability in a Requirement Package, Decisions and Adoption / Adoption Boundaries in an Architecture Description, and Decision / Authority and Effect in an ADR.
 3. Every inbound consumer is updated in the same logical change.
 4. Its artifact number is added to the Registry `reserved_history` of its
    identity space in the same change.

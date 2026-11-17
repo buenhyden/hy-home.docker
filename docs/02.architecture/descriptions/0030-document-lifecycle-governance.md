@@ -117,7 +117,7 @@ trusted approval is resolved through
 [Approval Boundaries](../../../.agents/governance/approval-boundaries.md#authorization-source-and-records).
 
 Retirement summarizes the removed record's still-current substance into its
-Stage 01 or Stage 02 owner's Traceability and deletes the original in the same
+Stage 01 or Stage 02 owner's lineage section and deletes the original in the same
 change. The Registry `reserved_history` gains its number and never loses one.
 Current documents do not link into Stage 98 or name a retired identity in a
 typed reference.
