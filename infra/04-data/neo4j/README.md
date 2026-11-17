@@ -55,6 +55,13 @@ neo4j/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Traefik HTTP route `neo4j.${DEFAULT_URL}` -> `${NEO4J_HTTP_PORT:-7474}` | `neo4j` | Traefik 뒤의 Neo4j Browser 사용자 | Traefik이 HTTP로 Neo4j Browser에 라우팅하며 인증은 `neo4j_password` secret 기반이다 | Compose healthcheck가 선언되어 있으며 복구는 Neo4j 복구 런북(RUN-0033)을 따른다 |
+| Bolt `${NEO4J_BOLT_PORT:-7687}` | `neo4j` | 컨테이너 로컬 `cypher-shell` | Cypher 쿼리용 Bolt 프로토콜이며 호스트에 게시하지 않고 `edge_net`에서 내부 노출한다 | Compose healthcheck가 선언되어 있으며 복구는 Neo4j 복구 런북(RUN-0033)을 따른다 |
+| HTTPS `${NEO4J_HTTPS_PORT:-7473}` | `neo4j` | 이 README는 소비자를 기록하지 않는다. | 내부적으로 7473으로 노출하는 HTTP/S 프로토콜이다 | 이 README는 실패 처리를 기록하지 않는다. |
+| Metrics `${NEO4J_METRICS_PORT:-2004}` | `neo4j` | 이 README는 소비자를 기록하지 않는다. | 이 README는 계약을 따로 기록하지 않는다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `edge_net`이다. (출처: `infra/04-data/neo4j/docker-compose.yml`의 `neo4j` 서비스)

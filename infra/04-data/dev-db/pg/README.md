@@ -41,6 +41,12 @@ created: "2026-10-02"
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `dev-pg:5432` endpoint(호스트 `127.0.0.1:${DEV_PG_HOST_PORT:-25433}:5432`) | `dev-pg` | `platform_dev`의 `platform_migrator`·`platform_runtime`·`platform_reader` 역할과 `dev-pg-exporter` | `dev_data_net`의 PostgreSQL이며 runtime과 reader는 DDL 권한이 없다. | `pg_isready` healthcheck(15s)와 RUN-0100 런북을 따른다. |
+| `dev-pg-exporter` 지표 `http://localhost:9187/metrics` | `dev-pg-exporter` | 이 README는 소비자를 기록하지 않는다. | `dev_pg_monitor` role로 `postgres` DB에만 접속해 통계·설정 지표를 노출한다. | `wget` healthcheck(15s)를 쓰며 규칙에 맞지 않는 비밀은 role 변경 전 거부한다. |
+| `provision/project.py` 프로젝트 JSON 입력 | 이 README는 생산자를 기록하지 않는다. | `dev-platform-provision`의 `provision/project.py` | JSON schema v1과 `environment=development`만 받고 값은 실행 시 `/run/secrets/`에서 읽는다. | comment가 맞지 않는 기존 DB는 자동 인수하지 않고 소유자 검토가 필요하다. |
+
 #### Configuration
 
 상위 [Compose](../docker-compose.yml)의 `dev-pg`와 `dev-platform-provision`이 `dev_data_net`, 새 PGDATA 경로, 역할별 Docker secret, 비활성 백업 설정을 연결합니다.

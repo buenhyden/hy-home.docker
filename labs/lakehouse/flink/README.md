@@ -59,6 +59,12 @@ flink/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `127.0.0.1:${LAB_FLINK_HOST_PORT:-18091}` -> 8081 REST API/UI | `flink-jobmanager` | 이 README는 소비자를 기록하지 않는다. | 인증·TLS·Traefik route가 없어 loopback에만 게시하며 REST API로 JAR를 올릴 수 없다. | healthcheck가 JobManager `/overview`를 검사하고 lakehouse runbook을 따른다. |
+| `LAB_LAKEHOUSE_CATALOG_URI`·`LAB_LAKEHOUSE_S3_ENDPOINT` | 승인된 Iceberg REST catalog와 S3 endpoint | `flink-jobmanager`, `flink-taskmanager` | SigV4 REST catalog와 S3FileIO를 쓰며 access key ID `lakehouse`와 LAB 전용 secret을 사용한다. | secret이 없으면 exit `64`이고 catalog 누락·S3 `403`은 `hyhome-flink.sh`로 다시 실행한다. |
+| `${LAB_DATA_DIR}/lakehouse/flink/checkpoints` | `flink-jobmanager`, `flink-taskmanager` | 두 컨테이너가 공유 | file checkpoint이며 스트리밍 `INSERT`는 checkpoint(기본 60초)마다 커밋된다. | `AccessDeniedException`은 group-writable 권한 문제이므로 lakehouse runbook을 따른다. |
+
 #### Inputs and Outputs
 
 `127.0.0.1:${LAB_FLINK_HOST_PORT:-18091}` -> 8081에서 JobManager REST API/UI를 제공하고 `LAB_LAKEHOUSE_CATALOG_URI`, `LAB_LAKEHOUSE_S3_ENDPOINT` 입력을 읽으며 checkpoint는 `${LAB_DATA_DIR}/lakehouse/flink/checkpoints`에 기록한다. 환경 변수는 아래 표와 같다.

@@ -52,6 +52,12 @@ Prometheus·Alloy만 함께 붙는 `seaweedfs_s3_metrics_net`에서 scrape하며
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `seaweedfs-s3` S3 API (`object_net`, `edge_net`) | `seaweedfs-s3` | bucket 범위 identity 소비자 loki, tempo, mlflow, terrakube, lakehouse, prefix 한정 `opsflow-worker` | S3만 제공하며 소비자별 bucket identity를 쓰고 호스트 게시 포트는 없다. | 최초 활성화·백업·복구는 RUN-0024를 따른다. |
+| S3 메트릭 포트 `9327` (`seaweedfs_s3_metrics_net`) | `seaweedfs-s3` | Prometheus·Alloy | `-metricsIp`로 `10.250.41.2`에만 bind하며 master·volume·filer API에 닿지 않는다. | 이 README는 실패 처리를 기록하지 않는다. |
+| master·volume·filer 메트릭 `9324-9326` (`seaweedfs_metrics_net`) | `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer` | Prometheus | `seaweed_internal`과 Prometheus만 함께 쓰는 metric 전용 망에서 노출한다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `edge_net`, `object_net`, `seaweed_internal`, `seaweedfs_metrics_net`, `seaweedfs_s3_metrics_net`이다. (출처: `infra/04-data/seaweedfs/docker-compose.yml`의 `seaweedfs-master`, `seaweedfs-volume`, `seaweedfs-filer`, `seaweedfs-s3`, `seaweedfs-buckets` 서비스)

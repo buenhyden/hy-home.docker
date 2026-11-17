@@ -32,6 +32,10 @@ LAB source 관리자와 정적 검토자입니다.
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `init_users_dbs.sql` | 이 폴더 | 상위 LAB `docker-compose.yml` | 기존 LAB role·database 초기화 입력이며 비밀은 상위 Compose의 secret reference로만 전달된다. | 상위 LAB README와 RUN-0031 PostgreSQL 클러스터 Runbook을 따른다. |
+
 #### Inputs and Outputs
 
 상위 LAB Compose와 wrapper의 기존 변수·secret reference·volume·network 계약을

@@ -59,6 +59,12 @@ infra/06-observability/prometheus/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `https://prometheus.${DEFAULT_URL}` | `prometheus` | 이 README는 소비자를 기록하지 않는다. | Traefik을 경유하는 Prometheus 인터페이스이며 호스트 게시 포트는 없다. | 이 README는 실패 처리를 기록하지 않는다. |
+| 스크레이프 대상(`config/prometheus.yml`) | `obs_net`에서 접근 가능한 대상 서비스 | `prometheus` | `scrape_configs`에 정의되며 전역 간격은 `30s`이다. | 스크레이프 오류 시 설정을 검증하고 대상 엔드포인트가 Prometheus 컨테이너에서 접근 가능한지 확인한다. |
+| file-SD 대상(`/etc/prometheus/targets/`) | `scripts/start.sh` | `prometheus` | `PROMETHEUS_DEV_DATA_EXPECTED`(`on`/`off`)로 DEV 대상을 렌더링하고 OpenBao·Keycloak 대상을 원자적으로 교체한다. | 그 밖의 값이나 잘못된 포트면 기존 대상 파일을 보존한 채 시작을 거부한다. |
+
 #### Inputs and Outputs
 
 호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `keycloak_management_net`, `oauth2_proxy_metrics_net`, `obs_net`, `prometheus_ingress_net`, `seaweedfs_metrics_net`, `seaweedfs_s3_metrics_net`, `traefik_metrics_net`이다. (출처: `infra/06-observability/docker-compose.yml`의 `prometheus` 서비스)

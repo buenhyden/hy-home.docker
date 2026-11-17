@@ -59,6 +59,13 @@ keycloak/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| 공개 호스트 `keycloak.${DEFAULT_URL}`(앱 `${KEYCLOAK_PORT:-8080}`) | `keycloak` | OAuth2 Proxy(`home-proxy-client`), Kafbat UI(`home-kafbat`), Airflow(`home-airflow`) | Traefik TLS 뒤 공개 HTTP로 canonical realm `hy-home.realm`의 OIDC/SAML token을 발행한다. | redirect/issuer mismatch를 확인하고 token/secret raw value는 출력하지 않는다. |
+| management `${KEYCLOAK_MANAGEMENT_PORT:-9000}/health/ready` | `keycloak` | Prometheus·Gatus와 container healthcheck | `keycloak_management_net`의 `10.250.44.2`(alias `keycloak-management`)에만 bind하는 readiness endpoint다. | DB/readiness를 먼저 확인하고 UP 확인 뒤 의존 서비스를 검증한다. |
+| Airflow Authorization Services | `keycloak` | Airflow(`home-airflow`) | realm role `Viewer`·`User`·`Op`·`Admin`·`SuperAdmin`과 scope `GET`~`LIST`를 제공한다. | `invalid_scope`는 Authorization bootstrap을 확인하고 provider 업그레이드 뒤 `create-permissions`를 다시 실행한다. |
+| `groups` claim | `keycloak` | Kafbat UI | Kafbat은 `groups` claim의 `/admins`, `/users` 매핑을 사용한다. | Kafbat RBAC mismatch는 `groups` claim과 cluster name을 확인한다. |
+
 #### Application Client Matrix
 
 | Application | Client ID | Authentication Pattern |

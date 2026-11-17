@@ -35,6 +35,10 @@ updated: "2026-11-17"
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| helper Idempotency Result Contract | 준비 패키지의 pure helper | 미래 consumer (다음 source/job 호출) | `admission_idempotency_key`, `admission_sha256`, versioned receipt entries와 `state_record`를 반환한다. | immutable admission digest 변경이나 같은 revision의 다른 payload는 충돌이며 I/O 검증은 `NOT_RUN`이다. |
+
 #### Inputs and Outputs
 
 비밀값과 실제 환경 변수는 입력하지 않습니다.

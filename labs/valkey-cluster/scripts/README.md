@@ -33,6 +33,11 @@ LAB source 관리자와 정적 검토자입니다.
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `valkey-start.sh` node wrapper | 이 디렉터리 | 상위 LAB `docker-compose.yml` | 기존 변수·secret reference·volume·network 계약을 보존한다. | 실행과 복구는 상위 LAB README와 RUN-0022를 따른다. |
+| `valkey-cluster-init.sh` cluster 초기화 wrapper | 이 디렉터리 | 상위 LAB `docker-compose.yml` | 기존 변수·secret reference·volume·network 계약을 보존한다. | 실행과 복구는 상위 LAB README와 RUN-0022를 따른다. |
+
 #### Inputs and Outputs
 
 상위 LAB Compose와 wrapper의 기존 변수·secret reference·volume·network 계약을

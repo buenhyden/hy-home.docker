@@ -51,6 +51,13 @@ labs/lakehouse/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `LAB_LAKEHOUSE_S3_ENDPOINT` | HOME SeaweedFS(승인된 S3 endpoint) | lakehouse LAB 엔진 | LAB은 HOME network에 연결하지 않고 이 endpoint 입력으로만 대상을 지정한다. | 복구는 RUN-0094 lakehouse 런북을 따른다. |
+| `LAB_LAKEHOUSE_CATALOG_URI` | HOME SeaweedFS의 Iceberg REST 카탈로그 | Spark, Trino, Flink, Great Expectations | 승인된 Iceberg REST 카탈로그 endpoint를 입력으로 받는다. | 복구는 RUN-0094 lakehouse 런북을 따른다. |
+| loopback `LAB_TRINO_HOST_PORT` | `trino` | 이 README는 소비자를 기록하지 않는다. | 대화형 SQL용 loopback 호스트 노출이다. | 이 README는 실패 처리를 기록하지 않는다. |
+| loopback `LAB_FLINK_HOST_PORT` | `flink-jobmanager` | 이 README는 소비자를 기록하지 않는다. | 스트리밍용 loopback 호스트 노출이다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 | Variable | Required | Description |

@@ -54,6 +54,12 @@ terrakube/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `https://terrakube-api.${DEFAULT_URL}` (`/swagger-ui.html` 포함) | `terrakube-api` | Terraform CLI, API 토큰 호출, `terrakube-executor` | Keycloak `hy-home.realm` issuer로 인증하며 호스트 `ports` 게시는 없다. | API 라우트 ForwardAuth가 이 소비자들을 차단하므로 `iac` 활성화 전에 별도 승인으로 해결해야 한다. |
+| `https://terrakube-ui.${DEFAULT_URL}` | `terrakube-ui` | 이 README는 소비자를 기록하지 않는다. | 웹 관리 UI이며 Keycloak `hy-home.realm` issuer로 인증한다. | Compose 헬스체크가 선언되어 있으며 복구는 Terrakube 런북을 따른다. |
+| SeaweedFS S3 버킷 `tfstate` | SeaweedFS | Terrakube 스택 | Terraform 상태와 출력을 저장하며 secret `seaweedfs_s3_terrakube_secret_key`를 쓴다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 API는 `https://terrakube-api.${DEFAULT_URL}`, UI는 `https://terrakube-ui.${DEFAULT_URL}`로 Traefik을 통해 라우팅되며 인증은 Keycloak `hy-home.realm` issuer를 사용한다. API, UI, executor는 PostgreSQL, SeaweedFS, Valkey, Keycloak 가정에 의존한다.

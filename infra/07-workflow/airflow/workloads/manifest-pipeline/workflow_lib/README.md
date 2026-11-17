@@ -30,6 +30,12 @@ S3 readback·불량 입력 격리·PG 게시를 소유합니다. 다른 DB·객�
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `manifest.py`·`adapters.py`·`tls.py` Python 모듈 | 이 `workflow_lib/` 폴더 | DAG와 이를 읽기 전용 mount로 import하는 Airflow apiserver·scheduler·dag-processor·triggerer·worker | 정상 반환값은 `run_id`, `data_version`, `status`, `records`이며 검증과 S3 readback 뒤에만 SQL 게시를 호출한다. | 실패한 입력은 DB 결과와 outbox를 만들지 않으며 상태는 RUN-0050이 소유한다. |
+| `/run/opsflow`의 `pg.json`, `s3.json`, `ca.pem` | 이 README는 생산자를 기록하지 않는다. | `adapters.py`, `tls.py` | 고정 경로를 확인한 뒤 읽고 `ca.pem`은 `tls.py`가 검증해 전달한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `manifest-quarantine/<source>/<business_date>/<sha256>.json` S3 객체 | `Store.put_quarantine(key, body, reason)` | 이 README는 소비자를 기록하지 않는다. | 1MiB 이하 원본을 `application/json`과 메타데이터 `reason`, `data-version`으로 조건부 보존한다. | 기존 객체와 다르거나 보존에 실패하면 게시를 중단한다. |
+
 #### Inputs and Outputs
 
 DAG가 호출하는 Python 모듈(`manifest.py`, `adapters.py`, `tls.py`)이며 자체 포트는 없다. `adapters.py`가 `/run/opsflow`의 `pg.json`, `s3.json`을 읽고 `tls.py`가 `ca.pem`을 다룬다.

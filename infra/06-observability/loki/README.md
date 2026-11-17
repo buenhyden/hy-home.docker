@@ -54,6 +54,13 @@ loki/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `http://loki:3100/loki/api/v1/push` | `loki` | Grafana Alloy `loki.write.local_loki` | Alloy가 로그를 HTTP push로 전송한다. | 로그 누락 시 Alloy `loki.write` 상태와 Grafana 데이터소스 `Loki`를 확인한다. |
+| LogQL 쿼리 `http://loki:3100` | `loki` | Grafana 데이터소스 `Loki` | Grafana가 이 URL로 데이터소스를 프로비저닝하고 낮은 카디널리티 레이블로 쿼리한다. | 쿼리 지연 시 레이블 카디널리티를 검토한다. |
+| `https://loki.${DEFAULT_URL}` 라우트와 호스트 포트 `${HOST_LAN_BIND_IP:-192.168.0.13}:${LOKI_HOST_PORT:-3100}:${LOKI_PORT:-3100}` | `loki` | 이 README는 소비자를 기록하지 않는다. | `gateway-standard-chain@file,sso-errors@file,sso-auth@file`를 거친다. | healthcheck `http://127.0.0.1:${LOKI_PORT:-3100}/ready`와 RUN-0043 런북을 따른다. |
+| SeaweedFS S3 `http://seaweedfs-s3:8333` 버킷 `loki-bucket` | SeaweedFS | `loki` | `S3_ACCESS_KEY`와 Docker Secret `seaweedfs_s3_loki_secret_key`로 청크·인덱스를 저장하고 보존 `168h`를 적용한다. | 저장소 오류 시 SeaweedFS·버킷·자격 증명 오류의 마스킹된 Loki 로그 증상을 확인한다. |
+
 #### Service Boundary
 
 | Field | Evidence |

@@ -46,6 +46,12 @@ restic/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| 로컬 Restic 저장소 `/repo/state`, `/repo/host` (`BACKUP_STATE_REPO_DIR`, `BACKUP_HOST_REPO_DIR`) | `restic` | `restic-offsite` (읽기 전용 `DAC_READ_SEARCH`) | `restic_password`로 암호화된 두 저장소이며 `create_host_path: false`를 사용한다. | 같은 파일시스템이면 종료 코드 64, 잠금 사용 중이면 75, `BACKUP_STATE_MAX_GIB` 이상이면 Restic 단계를 실패 처리한다. |
+| R2 저장소 `s3:https://<BACKUP_OFFSITE_R2_ACCOUNT_ID>.r2.cloudflarestorage.com/<BACKUP_OFFSITE_R2_BUCKET>` | `restic-offsite` (`restic_offsite_net`) | Cloudflare R2 오프사이트 저장소 | `restic copy --no-lock --from-repo`로 복사하며 R2 키는 환경 변수로만 넘긴다. | 원격이 9 GB를 넘을 수 있으면 exit 66으로 끝나고 실패하면 unit도 실패한다. |
+| 지표 `hyhome_backup_offsite_repo_bytes` | 호스트 오케스트레이터 `bin/hyhome-backup.sh` | 이 README는 소비자를 기록하지 않는다. | `copy`가 남긴 원격 저장 byte 수를 기록한다. | run이 실패해도 기록하며 복구는 RUN-0021을 따른다. |
+
 #### Inputs and Outputs
 
 - 프로필 `backup` (분류는 automation이며 HOME이 아님). `restic`은 기본값이

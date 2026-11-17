@@ -48,6 +48,11 @@ pyroscope/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `127.0.0.1:${PYROSCOPE_HOST_PORT:-4040}:${PYROSCOPE_PORT:-4040}` push API | Grafana Alloy | Pyroscope | HTTP를 통한 Protobuf 프로파일링 데이터를 받는다. | `profilecli ready`로 준비 상태를 확인하고 Alloy exporter 엔드포인트가 push API와 일치하는지 본다. |
+| Grafana 데이터소스 UID `Pyroscope` | Pyroscope | Grafana(Drilldown Profiles 앱, `Observability/pyroscope` 대시보드) | 서비스별 시계열과 flamegraph를 조회하고 Tempo `tracesToProfiles`는 서비스 단위 시간창으로 연결한다. | 프로파일 누락 시 Alloy 서비스명 레이블과 앱 이름이 일치하는지 확인한다. |
+
 #### Configuration
 
 - **Ingestion**: HTTP를 통한 Protobuf로 프로파일링 데이터를 수신합니다 (포트 4040).

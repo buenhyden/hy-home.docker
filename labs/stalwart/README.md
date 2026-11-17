@@ -44,6 +44,12 @@ labs/stalwart/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| 관리 UI·JMAP `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_STALWART_HOST_PORT:-18093}` -> 8080 | `stalwart` | 이 README는 소비자를 기록하지 않는다. | Traefik route·SSO 없이 LAB bind 주소의 게시 포트로만 접근한다. | `/healthz/live` healthcheck는 배달·TLS·인증 검증을 대신하지 않으며 RUN-0070 런북을 따른다. |
+| SMTP 25·submission 587·IMAPS 993(`lab_stalwart_net`) | `stalwart` | 이 README는 소비자를 기록하지 않는다. | 호스트에 게시하지 않으며 relay가 없어 설정 도메인 밖 수신자는 SMTP `550`(`Relay not allowed`)을 받는다. | 관리 UI와 메일 프로토콜 오류를 분리하고 RUN-0070 런북을 따른다. |
+| `config/plan.ndjson` 설정 적용 | 이 README는 생산자를 기록하지 않는다. | `stalwart-config` | listener 변경은 다음 재시작부터 적용되며 메일 도메인은 `LAB_STALWART_DEFAULT_URL`이다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 | Setting | Source / behavior |

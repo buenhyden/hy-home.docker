@@ -56,6 +56,12 @@ trino/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `127.0.0.1:${LAB_TRINO_HOST_PORT:-18090}` -> 8080 | `trino` | 이 README는 소비자를 기록하지 않는다. | 단일 노드 SQL HTTP API이며 인증과 TLS가 없어 loopback에만 게시한다. | `/usr/lib/trino/bin/health-check` 헬스체크를 쓴다. |
+| `LAB_LAKEHOUSE_CATALOG_URI` Iceberg REST catalog | 승인된 Iceberg REST catalog | `trino` catalog `lakehouse` | SigV4(`signing-name=s3`)를 쓰며 view endpoint는 꺼져 있다. | `Failed to list views`는 view endpoint 설정 누락이며 `ForbiddenException`은 runbook을 따른다. |
+| `LAB_LAKEHOUSE_S3_ENDPOINT` S3 | 승인된 S3 endpoint | `trino` | `lakehouse` S3 identity로 native S3 파일 시스템을 path-style로 쓴다. | secret이 없거나 비면 exit `64`이다. |
+
 #### Inputs and Outputs
 
 `127.0.0.1:${LAB_TRINO_HOST_PORT:-18090}` -> 8080에서 단일 노드 SQL 엔드포인트를 제공하며 `LAB_LAKEHOUSE_CATALOG_URI`, `LAB_LAKEHOUSE_S3_ENDPOINT`가 가리키는 승인된 catalog와 S3를 읽는다. 환경 변수는 아래 표와 같다.

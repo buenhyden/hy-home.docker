@@ -60,6 +60,11 @@ labs/sonarqube/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| UI `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SONARQUBE_HOST_PORT:-18094}` -> 9000 | `sonarqube` | 이 README는 소비자를 기록하지 않는다. | `lab_sonarqube_net`만 쓰며 HOME network·Traefik route·게이트웨이 SSO가 없다. | `/api/system/health` healthcheck를 쓰고 SonarQube 로그와 런북을 확인한다. |
+| 외부 PostgreSQL `LAB_SONARQUBE_DB_HOST`(기본 포트 5432) | mng-pg(HOME `mng-pg-init`이 `sonarqube` role 프로비저닝) | `sonarqube` | `SONAR_JDBC_*`로 접속하며 비밀번호는 entrypoint가 secret `sonarqube_db_password`에서 export한다. | 값이 비면 render를 거부하며 owner가 endpoint를 승인하기 전까지 render 검증만 한다. |
+
 #### Inputs and Outputs
 
 UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SONARQUBE_HOST_PORT:-18094}` -> 9000에 게시하고 승인된 외부 PostgreSQL endpoint(`LAB_SONARQUBE_DB_HOST`)와 연동한다. 환경 변수는 아래 표와 같다.

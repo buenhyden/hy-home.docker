@@ -36,6 +36,17 @@ Lifecycle: **HOME**. 운영 통제와 복구는 [documentation index](../../../d
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `/`, `/endpoints/*`, `/suites/*`, 정적 자산 | `gatus` | 이 README는 소비자를 기록하지 않는다. | Public bootstrap 경계로 네이티브 세션 전에 SPA와 로그인 화면을 로드한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `/oidc/login`, `/authorization-code/callback` | `gatus` | Keycloak OIDC(기밀 클라이언트 `home-gatus`) | authorization-code 플로우이며 정확한 콜백은 `https://status.<domain>/authorization-code/callback`이다. | 시크릿·subject·도메인·CA 입력값이 없으면 엔트리포인트가 fail-closed로 동작한다. |
+| `/api/v1/config` | `gatus` | 이 README는 소비자를 기록하지 않는다. | Public minimal bootstrap으로 `oidc`·`authenticated` 플래그와 UI 공지를 반환한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `/health` | `gatus` | 컨테이너 헬스체크 | Public minimal probe이며 응답에는 헬스 상태만 포함된다. | 헬스체크 `wget -qO- http://127.0.0.1:${GATUS_PORT}/health` 실패 시 `exit 1`(interval 30s). |
+| `/metrics` | `gatus` | Prometheus | Internal network only이며 Traefik 라우터는 이 경로를 제외한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| 모니터링 데이터 라우트(상태, 배지, 가동 시간, 응답 시간 이력) | `gatus` | 이 README는 소비자를 기록하지 않는다. | Native OIDC session 경계로 동일한 세션 미들웨어를 사용한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `POST /api/v1/endpoints/:key/external` | `gatus` | 머신 수집 | Per-endpoint bearer token 경계를 독립적으로 유지한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| 내부 상태 probe 대상 | Keycloak(`${KEYCLOAK_MANAGEMENT_PORT:-9000}`), OAuth2 Proxy(`${OAUTH2_PROXY_PORT:-4180}`), 관리 PostgreSQL·Valkey | `gatus` | DNS·전송·프로세스 준비 증거이며 로그인이나 데이터 기능 완료를 대신하지 않는다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Configuration
 
 프로필: `availability / obs / dev`. 루트 Compose가 이 정의를 include하지만 include 자체만으로는 서비스가 시작되지 않습니다. 네트워크는 `edge_net`과 `obs_net`입니다. 비공개 값을 출력하지 않고 [공개 환경 변수 키](../../../.env.example)와 [시크릿 참조](../../../secrets/README.md)를 검토합니다.

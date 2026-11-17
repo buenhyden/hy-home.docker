@@ -60,6 +60,13 @@ traefik/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `web`(80)·`websecure`(443) entrypoint | `traefik` | 이 README는 소비자를 기록하지 않는다. | `${HOST_LAN_BIND_IP:-192.168.0.13}`에 게시되며 TLS 종료 후 Docker label로 등록된 라우트로 전달한다. | `traefik healthcheck --ping` healthcheck(15s, retries 5)와 Traefik 런북을 따른다. |
+| `metrics`(8082) entrypoint | `traefik` | Prometheus | Prometheus metrics와 ping을 `traefik_metrics_net`의 `10.250.46.2`(alias `traefik-metrics`)에만 bind한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `sso-auth@file` ForwardAuth -> `http://oauth2-proxy:${OAUTH2_PROXY_PORT:-4180}/` | OAuth2 Proxy | `traefik`의 `websecure` 라우트 | 인증을 OAuth2 Proxy에 위임하며 session이 없으면 브라우저는 Keycloak으로 302, JSON 요청은 401을 받는다. | `sso-errors@file`이 403만 `/oauth2/sign_in`으로 바꾸고 401은 그대로 전달하며 부적합한 포트 값은 유효 URL이 되지 않는다. |
+| Traefik 대시보드 `https://dashboard.${DEFAULT_URL:-localhost}` | `traefik` | 이 README는 소비자를 기록하지 않는다. | `traefik.http.routers.dashboard.*` label로 라우팅되는 내부용 대시보드로 동적 라우팅 변경 검증에 쓴다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Configuration
 
 ##### Core Files

@@ -55,6 +55,12 @@ infra/01-gateway/traefik/config/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `:80`, `:443` 진입점 | `traefik.yml`을 읽는 Traefik | 이 README는 소비자를 기록하지 않는다. | `traefik.yml`이 선언하는 Traefik 진입점이며 인증서는 상위 Compose가 `/certs/`로 주입한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| 메트릭 진입점 `10.250.46.2:8082` | `traefik.yml`을 읽는 Traefik | 상위 Compose 헬스체크(`traefik healthcheck --ping`) | `ping`과 Prometheus 메트릭을 전용 내부 주소에서만 제공하며 `api.insecure`는 `false`이다. | 상위 Compose 헬스체크가 `traefik healthcheck --ping`으로 `ping`을 검사한다. |
+| `traefik.yml` 정적 설정 파일 | 이 폴더(`infra/01-gateway/traefik/config`) | 상위 `traefik/docker-compose.yml`의 `traefik` 서비스 | `/etc/traefik/traefik.yml`에 읽기 전용으로 마운트되는 Traefik 정적 설정이다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 `traefik.yml`은 진입점 `:80`, `:443`과 메트릭 진입점 `10.250.46.2:8082`를 선언하며, `ping`과 Prometheus 메트릭은 메트릭 진입점으로 제공한다.

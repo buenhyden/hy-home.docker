@@ -55,6 +55,11 @@ v3.24 main/community APKINDEX 기준으로 다시 고정했습니다. source, Go
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `materials/` 디렉터리와 `materials.json` SHA (`--materials-directory`, `--materials-sha256`) | `scripts/operations/prepare-openbao-materials.py` | `build-owned-image.py`의 `--phase plan`과 `--phase build` | materials.json SHA와 일곱 source 파일의 packet SHA를 명시해 plan을 실행하고 build는 같은 입력으로 두 번 compile한다. | 실패·OOM·cleanup 실패는 FAIL이며 receipt를 덮어쓰지 않고 새 directory로만 재시도한다. |
+| OCI archive와 `hy-home/openbao:<tag>@sha256:<manifest>` | `owned_image_oci.py` | Docker(`--pull=never`로 조회 및 실행) | packet/material/patch hash를 OCI label로 연결한 결정론적 단일 layer OCI archive이다. | 두 binary SHA와 OCI config/layer/manifest가 모두 같아야 재현성 PASS이다. |
+
 #### Configuration
 
 공개 material directory의 `materials.json` SHA와 일곱 source 파일의 packet SHA를

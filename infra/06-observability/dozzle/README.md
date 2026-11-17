@@ -51,6 +51,11 @@ dozzle/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Traefik 라우터 `dozzle` -> Web UI `${DOZZLE_PORT:-8080}` | `dozzle` | 이 README는 소비자를 기록하지 않는다. | Dozzle native OIDC와 `dozzle-admin-ip` CIDR allowlist로 보호되며 호스트 게시는 없다. | 컨테이너가 안 보이면 필터와 Docker 호스트 공유를 확인하고 Dozzle 런북을 따른다. |
+| Docker 소켓 `/var/run/docker.sock:ro` | Docker 데몬 | `dozzle` | 소켓으로 로그를 실시간 스트리밍하며 `:ro`는 Docker API 권한을 읽기 전용으로 제한하지 않는다. | 소켓 경로가 올바르게 마운트되고 Dozzle에 읽기 권한이 있는지 확인한다. |
+
 #### Configuration
 
 ##### Environment Variables

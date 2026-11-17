@@ -56,6 +56,15 @@ alloy/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| OTLP gRPC/HTTP `4317`/`4318` | OTLP로 계측한 애플리케이션 | Alloy | LAN bind IP에 게시되며 trace만 받는다. | 포트 바인딩(`ALLOY_OTLP_GRPC_PORT`, `ALLOY_OTLP_HTTP_PORT`)과 애플리케이션의 Alloy 엔드포인트를 확인한다. |
+| 인증 OTLP HTTP 수신기 `4319` | `quality_otlp_net`에 붙은 run별 k6 relay | Alloy | host 비공개이며 secret `quality_otlp_token`으로 인증한 품질 metrics만 받는다. | 이 README는 실패 처리를 기록하지 않는다. |
+| Hermes OTLP `127.0.0.1:${ALLOY_HERMES_OTLP_HOST_PORT:-4320}:4320` | host systemd user unit Hermes agent | Alloy | `Authorization: Bearer` header(`hermes_otlp_token`)로 trace·log·metric을 누적 temporality로 보낸다. | 이 README는 실패 처리를 기록하지 않는다. |
+| Alloy UI `${ALLOY_PORT}`(기본 12345), `https://alloy.${DEFAULT_URL}` | Alloy | 운영자 | 파이프라인 디버깅과 컴포넌트 상태 확인을 제공한다. | 수집기 설정 오류 시 HCL 문법을 검증하고 UI에서 컴포넌트 상태를 확인한다. |
+| Alloy `/metrics` | Alloy | Prometheus | Prometheus가 직접 scrape하며 self remote-write는 제거되었다. | 이 README는 실패 처리를 기록하지 않는다. |
+| 내보내기(Loki, Tempo, Prometheus remote write, Pyroscope) | Alloy | Loki, Tempo, Prometheus, Pyroscope | logs는 Loki, traces는 Tempo, 품질·Hermes metrics는 remote write, pprof는 Pyroscope writer로 보낸다. | 다운스트림 접근 가능 여부와 `config.alloy` 내보내기 대상 일치를 확인한다. |
+
 #### Configuration
 
 ##### Environment Variables

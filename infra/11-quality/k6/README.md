@@ -69,6 +69,16 @@ bind mount에 둡니다. 결과는 `DEFAULT_TOOLING_DIR/k6-results`에서 실행
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `hyhome.quality-run/v2` manifest | 이 README는 생산자를 기록하지 않는다. | `quality_run.py` | v1 필드에 `telemetry`(`none` 또는 `otlp`)를 더하며 run_id·target·CIDR·예산 등을 모두 요구한다. | 알 수 없는 필드, 중복 key, telemetry의 endpoint·자격 증명, 범위 밖 값은 거부한다. |
+| `DEFAULT_TOOLING_DIR/k6` 시나리오 스크립트 | 외부 프로젝트 | k6 executor | 읽기 전용 bind mount이며 SHA-256을 대조한 scenario snapshot만 연결한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `DEFAULT_TOOLING_DIR/k6-results` 실행별 결과 디렉터리 | `quality_run.py` `prepare`·`run`·`finalize` | `prepare-import` | 실행별 새 디렉터리에 `manifest.json`, raw points, `checksums.json`, `final.json`을 배타적으로 만든다. | 0 sample, 잘린 JSON, 중단 결과는 통과가 아니며 unsafe 원본은 `incomplete`와 import 거절이다. |
+| `metrics-ingress` OTLP relay(`quality_otlp_net`) | k6(`--out opentelemetry`)와 run별 relay | HOME Alloy | relay가 resource 속성을 지우고 같은 run identity를 붙이며 relay만 bearer token을 가진다. | 실행 종료·취소·timeout 때 relay를 지우고 남은 container는 `quality_run.py cleanup --run-id`로 지운다. |
+| `quality.import_payload(jsonb, bytea)` | `import-db` | perf_db | 표준 `PG*` 환경과 `psql`로 한 문장만 호출하며 DB가 payload hash를 다시 검증한다. | DB 장애는 새 receipt에 `failed`로 기록하고 원본을 유지한다. |
+| `s3://` object_ref 업로드(`(project_id, run_id, attempt, sha256, name)`) | `object_store.py` | 승인된 object endpoint | 조건부 생성으로 덮어쓰지 않고 업로드 후 크기·SHA256을 다시 확인한 뒤 receipt를 쓴다. | 원본과 다른 동일 identity는 충돌이며 실제 SeaweedFS 업로드·복원은 `NOT_RUN`이다. |
+| 기존 Traefik 정확한 Path 라우터 | k6 runner | Traefik 뒤 WireMock backend | 정확한 Path 목록 외에는 upstream으로 전달하지 않으며 k6 argv는 `--max-redirects 0`이다. | guard가 없으면 `path_confinement_unavailable`로 거절한다. |
+
 #### Inputs and Outputs
 
 입력은 `DEFAULT_TOOLING_DIR/k6`의 읽기 전용 시나리오 스크립트와 `hyhome.quality-run/v2` manifest이고, 출력은 `DEFAULT_TOOLING_DIR/k6-results` 아래 실행별 새 디렉터리의 결과 증거이다. 필요한 환경 변수 키는 아래 표와 같다.

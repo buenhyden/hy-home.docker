@@ -53,6 +53,12 @@ pact-broker/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `127.0.0.1:${PACT_BROKER_HOST_PORT:-19292}` -> `9292` | `pact-broker` | pact 게시 및 검증 클라이언트 | basic auth로 pact 게시와 검증 결과 조회를 받는다. | 401은 인증 미수락 신호이며 비밀 값을 출력하지 않고 런북을 따른다. |
+| `/diagnostic/status/heartbeat` | `pact-broker` | Compose 헬스체크 | basic auth 없이 공개된 유일한 경로다. | heartbeat를 먼저 확인한 뒤 프로비저닝과 broker 로그, 런북 순서로 확인한다. |
+| `mng-pg` 전용 데이터베이스(`PACT_BROKER_DB_NAME`) | `pact-broker-db-provision` | `pact-broker` | `mng_data_net`에서 `PACT_BROKER_DB_USER`가 소유한 기능 전용 DB에 pact와 검증 결과를 저장한다. | 프로비저닝 종료 코드 `64`·`3`과 broker 종료 코드 `64`는 런북에 설명되어 있다. |
+
 #### Inputs and Outputs
 
 호스트 `127.0.0.1:${PACT_BROKER_HOST_PORT:-19292}`가 컨테이너 9292로 연결되어 pact 게시와 검증 결과 조회를 받으며, 데이터는 `mng-pg`의 전용 데이터베이스에 저장한다. 환경 변수와 secret은 아래 표와 같다.

@@ -49,6 +49,13 @@ MLflow는 실행(run), 파라미터, 메트릭, 등록된 모델, 아티팩트�
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `https://mlflow.${DEFAULT_URL}` 라우트 | `mlflow` | 브라우저 사용자 | `gateway-standard-chain`, `sso-errors`, `sso-auth`를 거치며 허용 host 목록이 DNS 리바인딩을 막는다. | Compose 헬스체크 `GET /health`가 있으나 DB·버킷 쓰기 접근은 증명하지 않는다. |
+| 내부 tracking API `${MLFLOW_PORT:-5000}` (`expose`) | `mlflow` | `MLFLOW_TRACKING_URI`를 쓰는 SDK 클라이언트 | 아티팩트를 `--serve-artifacts`로 프록시하므로 SDK는 오브젝트 스토리지 자격 증명을 갖지 않는다. | 브라우저 SSO는 내부망 직접 SDK 접근을 보호하지 않는다. |
+| `mng-pg` 전용 추적 데이터베이스 | `mng-pg` (`mlflow-db-provision`이 프로비저닝) | `mlflow` | 비밀번호 `mlflow_db_password`를 `PGPASSWORD`로 libpq에 전달한다. | 서버는 오래된 schema로 시작하지 않으며 업그레이드·복구는 RUN-0088을 따른다. |
+| SeaweedFS 버킷 `mlflow-artifacts` | SeaweedFS | `mlflow` (identity `mlflow`) | identity `mlflow`는 `mlflow-artifacts`만 읽기·쓰기·목록 조회하며 시크릿은 `AWS_SECRET_ACCESS_KEY`로 전달한다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 | Field | Value |

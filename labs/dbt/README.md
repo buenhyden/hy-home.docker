@@ -54,6 +54,12 @@ endpoint를 승인하기 전(미결정)까지는 render 검증만 합니다.
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| dev-pg `platform_dev`(`LAB_DBT_DB_HOST`) | 승인된 dev-pg endpoint | `dbt` | 자체 `dbt` 역할로 연결해 source schema `app`를 읽으며 `CONNECT`·`USAGE`·`SELECT`만 받는다. | endpoint 승인 전에는 render 검증만 하고 실패는 명령 종료 코드로 확인한다. |
+| 대상 스키마(`DBT_SCHEMA`, 기본값 `analytics`) | `dbt` | 이 README는 소비자를 기록하지 않는다. | `run`/`build`는 뷰/테이블을 생성 또는 교체하고 `compile`은 데이터베이스에 기록하지 않는다. | 실패는 명령 종료 코드로 확인하고 복구는 RUN-0090 dbt Runbook을 따른다. |
+| `provisioning/dev-pg.sql` | 이 패키지(기능 소유) | `dbt-db-provision`(공유 프로비저닝 러너) | 역할, source 읽기 권한, 대상 스키마를 정의한다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 | Field | Value |

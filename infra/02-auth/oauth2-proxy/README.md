@@ -61,6 +61,11 @@ oauth2-proxy/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| ForwardAuth listener `0.0.0.0:${OAUTH2_PROXY_PORT:-4180}` | `oauth2-proxy` | Traefik ForwardAuth middleware(Flower, n8n 등 자체 OIDC가 없는 서비스 앞단) | Keycloak issuer `https://keycloak.${DEFAULT_URL}/realms/hy-home.realm`의 OIDC client `home-proxy-client`로 인증하고 세션은 공유 `mng-valkey`에 둔다 | Troubleshooting에서 issuer/redirect/cookie domain, Valkey 연결, ForwardAuth middleware route를 점검하고 OAuth2 Proxy 런북을 따른다 |
+| Health endpoint `/ping` | `oauth2-proxy` | healthcheck와 운영자 readiness 확인 | ForwardAuth와 같은 `OAUTH2_PROXY_PORT` 포트에서 HTTP GET으로 응답한다 | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `edge_net`, `mng_data_net`, `oauth2_proxy_metrics_net`, `obs_net`이다. (출처: `infra/02-auth/oauth2-proxy/docker-compose.yml`의 `oauth2-proxy` 서비스)

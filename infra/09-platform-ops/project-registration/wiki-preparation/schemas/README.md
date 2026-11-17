@@ -29,6 +29,13 @@ updated: "2026-11-17"
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `consumer-manifest.schema.json` | 이 디렉터리 | helper와 caller | 기존 registration schema의 메모리 URN을 쓰며 Qdrant RBAC을 project-scoped collection과 non-admin role로 구조화한다. | 외부 `$ref`는 거절하며 계약이 어긋나면 단위 검사 실패로 드러난다. |
+| `source-artifact.schema.json` | 이 디렉터리 | helper | closed-object JSON Schema 2020-12로 입력 형식을 정하고 helper가 교차 필드 정합을 검사한다. | 계약이 어긋나면 단위 검사 실패로 드러난다. |
+| `job-outbox-handoff.schema.json` | 이 디렉터리 | helper | closed-object JSON Schema 2020-12로 입력 형식을 정하고 helper가 교차 필드 정합을 검사한다. | 계약이 어긋나면 단위 검사 실패로 드러난다. |
+| `blog-data-handoff.schema.json` | 이 디렉터리 | helper | closed-object JSON Schema 2020-12로 입력 형식을 정하고 helper가 교차 필드 정합을 검사한다. | 계약이 어긋나면 단위 검사 실패로 드러난다. |
+
 #### Inputs and Outputs
 
 비밀값과 실제 환경 변수는 입력하지 않습니다.

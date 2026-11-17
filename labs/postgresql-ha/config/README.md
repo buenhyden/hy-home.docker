@@ -33,6 +33,11 @@ LAB source 관리자와 정적 검토자입니다.
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `haproxy.cfg.tpl` | 이 디렉터리 | LAB router | runtime secret reference로 렌더하는 비밀값 없는 template이다. | 실행과 복구는 RUN-0031 PostgreSQL 클러스터 Runbook을 따른다. |
+| `prometheus-alert-rules.yml` | 이 디렉터리 | LAB 관측 계약 승인 후 그 LAB의 Prometheus | 복제 지연 경보 등 LAB 전용 규칙이며 HOME Prometheus는 읽지 않는다. | 실행과 복구는 RUN-0031 PostgreSQL 클러스터 Runbook을 따른다. |
+
 #### Inputs and Outputs
 
 상위 LAB Compose와 wrapper의 기존 변수·secret reference·volume·network 계약을

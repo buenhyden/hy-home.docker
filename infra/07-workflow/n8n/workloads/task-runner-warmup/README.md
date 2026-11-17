@@ -29,6 +29,10 @@ Code node를 한 번 실행해 runner를 미리 띄웁니다.
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `workflow.json` | 이 폴더 | 운영 n8n(승인된 절차로 가져와 게시) | 매일 06:50 KST Schedule Trigger가 no-op Code node를 실행하며 출력 데이터와 외부 호출이 없다. | `n8n execute --id`는 `Missing node to start execution`으로 실패하므로 n8n 편집기에서 수동 실행한다. |
+
 #### Inputs and Outputs
 
 입력은 매일 06:50 KST의 Schedule Trigger 한 개입니다. no-op Code node라 출력 데이터와 외부 호출이 없습니다.

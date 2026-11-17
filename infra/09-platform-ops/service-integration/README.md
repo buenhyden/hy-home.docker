@@ -38,6 +38,10 @@ schema에서 모두 unknown이며, 차후 정확한 대상과 별도 관측 계�
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| 포트 계약 JSON 출력(`port-contract.schema.json`) | CLI `scripts/operations/port-inventory.py` | 서비스 소비자, ingress·네트워크 연결 검토 담당자 | listener·내부 DNS·호스트 publication·Traefik backend를 분리한 값 없는 JSON이며 알 수 없는 필드를 거부한다 | `protocol`·`mode`·`scheme`의 미해결 표현식은 거부하고 DNS 조합 4,096개, endpoint 합 16,384개 한도를 생성 전에 적용한다 |
+
 #### Inputs and Outputs
 
 listener는 관측이 없으므로 unknown입니다. 내부 DNS는 network의 논리 key와

@@ -77,6 +77,13 @@ grafana/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `https://grafana.${DEFAULT_URL}`(`${GRAFANA_PORT:-3000}`) | `grafana` | 이 README는 소비자를 기록하지 않는다. | Keycloak Generic OAuth로 `/admins`·`/editors`·`/viewers`를 `Admin`·`Editor`·`Viewer`에 strict 매핑한다. | SSO 실패 시 마스킹된 OAuth/역할 매핑 로그와 그룹 소속을 확인한다. |
+| 헬스 `http://localhost:${GRAFANA_PORT:-3000}/api/health` | `grafana` | Compose healthcheck | 이 README는 계약을 따로 기록하지 않는다. | Grafana 런북 RUN-0041의 준비 상태·재시작·롤백 절차를 따른다. |
+| 데이터소스 `Prometheus`·`Loki`·`Tempo`·`alertmanager`·`Pyroscope` | `prometheus`, `loki`, `tempo`, `alertmanager`, `pyroscope` | `grafana` | `provisioning/datasources/datasource.yml`의 UID와 URL(`http://prometheus:9090` 등)로 조회한다. | 데이터소스 오류 시 프로비저닝 YAML의 UID와 백엔드 엔드포인트를 확인한다. |
+| 대시보드 마운트 `/etc/grafana/dashboards/*` | 이 패키지의 `dashboards/` JSON 트리 | `grafana` 대시보드 프로바이더 | 읽기 전용 마운트이며 프로바이더 `editable: false`로 코드 소유 상태를 유지한다. | 대시보드 로딩 오류 시 프로바이더 경로와 JSON 파일을 검증한다. |
+
 #### Configuration
 
 ##### Datasources

@@ -54,6 +54,12 @@ HOME Grafana는 `infra/06-observability/grafana/dashboards/`만 provisioning하�
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `lab-kafka-1/2/3` PLAINTEXT(`lab_kafka_net`) | `lab-kafka-1`, `lab-kafka-2`, `lab-kafka-3` | `lab-kafka-init`, `lab-schema-registry`, `lab-kafka-connect` | PLAINTEXT 접근은 LAB network 내부에 한정되며 호스트 port·`kafka_net`·secret을 연결하지 않는다. | 복구는 RUN-0108 Kafka cluster LAB Runbook을 따른다. |
+| topic `lab-events`, `lab-logs` | `lab-kafka-init` | 이 README는 소비자를 기록하지 않는다. | 세 broker가 healthy일 때 replication factor 3으로 생성한다. | 생성 job 성공과 실제 topic 상태는 별개로 확인해야 한다. |
+| `lab-schema-registry`, `lab-kafka-connect` | `lab-schema-registry`, `lab-kafka-connect` | 이 README는 소비자를 기록하지 않는다. | `lab_kafka_net` 안에서만 도달하고 gateway route가 없으며 Connect는 connector 없이 Debezium worker만 제공한다. | subject·connector 정의와 `_schemas`·`_connect-*` 상태도 복구 범위에 포함된다. |
+
 #### Inputs and Outputs
 
 | Field | Evidence |

@@ -64,6 +64,12 @@ labs/locust/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Scenario `LAB_LOCUST_SCENARIO_DIR` -> `/mnt/locust/scenario:ro` | 외부 프로젝트(검토된 `locustfile.py`) | `lab-locust-master`, `lab-locust-worker` | 검토된 locustfile.py가 있는 read-only source이며 각 scenario는 client timeout을 명시해야 한다 | 이 README는 실패 처리를 기록하지 않는다. |
+| Results `LAB_LOCUST_RESULT_DIR` -> `/mnt/locust/results:rw` | `lab-locust-master` | 운영자(실행 결과 판정) | 실행별 빈 디렉터리에 CSV summary와 시간대별 full-history aggregate를 쓴다 | master 종료 코드와 CSV가 모두 있어야 판정하며 상한 124, 취소 130으로 끝나고 RUN-0062를 따른다 |
+| Master TCP `5557` | `lab-locust-master` | `lab-locust-worker` | LAB 전용 `lab_locust_net`에서 master가 `LAB_LOCUST_EXPECT_WORKERS`개 worker 접속을 기다린다 | 대기 상한 안에 worker가 부족하면 부하 없이 non-zero로 종료하며 master readiness는 TCP 5557을 확인한다 |
+
 #### Inputs and Outputs
 
 | Variable | Required | Description |

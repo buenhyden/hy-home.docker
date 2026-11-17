@@ -57,6 +57,10 @@ HOME Grafana는 `infra/06-observability/grafana/dashboards/`만 provisioning하�
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| loopback `LAB_VALKEY0_HOST_PORT`~`LAB_VALKEY5_HOST_PORT` (기본 17379~17384, 내부 6379~6384) | `valkey-node-0`~`valkey-node-5` | 이 README는 소비자를 기록하지 않는다. | `lab_valkey_password` secret 기반 인증이며 node는 `/run` tmpfs의 0600 설정 파일을 쓴다. | 인증·cluster 결성은 미검증이며 비정상 cluster면 init job이 실패하고 RUN-0022를 따른다. |
+
 #### Inputs and Outputs
 
 상태는 `${LAB_DATA_DIR}/valkey-cluster/data-{0..5}`에 두고 network는 `lab_valkey_core_net`, `lab_valkey_obs_net`을 사용한다. 환경 변수는 아래 표와 같다.

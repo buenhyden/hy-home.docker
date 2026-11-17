@@ -55,6 +55,22 @@ created: "2026-10-11"
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `wave.schema.json` | 이 폴더(공개 계약) | `validate-wave` 공개 형식 검사 | 한 소비자의 공개 ID 선택과 공개 catalog 입력 바인딩을 선언한다. | 임의 필드, 중복 ID, wildcard와 비밀값 칸은 거부한다. |
+| `receipt.schema.json` | 이 폴더(공개 계약) | `validate-receipt` 공개 형식 검사 | 합성 준비 결과만 선언하며 상태는 `inventoried`·`classified`, KV version은 `null`이다. | native 표시나 실제 복사 이후 상태는 거부한다. |
+| `scripts/operations/openbao-consumer-migration.py` CLI | 공개 CLI | 이관 계약을 통합하는 개발자와 공개 검사 결과를 확인하는 운영자 | 표준 입력의 공개 합성 JSON을 128 KiB·깊이 12·node 4096·5초 제한으로 형식만 검사한다. | 오류에는 입력 본문·argv·경로·예외 payload를 출력하지 않는다. |
+| `execute_copy(CopyPlan, authorize=...)` | `scripts/lib/ops/openbao_consumer_migration.py` | 호출하는 controller | 승인 callback이 literal `True`를 반환해야 KV-v2 HTTPS 복사를 시작하며 결과는 public ID·상태·쓰기 시도·두 version뿐이다. | POST는 재시도하지 않고 미확인 상태는 unresolved, POST 후 실패는 PARTIAL, POST 전 차단은 BLOCKED로 남긴다. |
+| `decide_synthetic_copy` | W48 준비용 순수 판단 모델 | 합성 시험 | 합성 data 상태·metadata 상태·version을 받아 고정된 `SyntheticCopyDecision`을 반환한다. | 삭제·파기·권한 거부·mount 누락·version 불명·불일치는 `UNRESOLVED`로 판단한다. |
+| `verify-grafana-consumption.sh` | 이 폴더 | Grafana 전환 전후 검사를 실행하는 owner | Agent 렌더링 값과 Grafana mount 값의 일치, 렌더링 version, 관리자 로그인 HTTP 상태만 출력한다. | `FAIL`이 반복되면 원인을 찾기 전에 반복 실행하지 않는다. |
+| `verify-keycloak-consumption.sh` | 이 폴더 | Keycloak 전환 전후 검사를 실행하는 owner | Keycloak healthy를 최대 360초 기다린 뒤 `consumed_file`, `rendered_version`, `mounted_equals_rendered`, `admin_login`을 확인한다. | 로그인 거부(`kcadm=invalid`)는 재시도하지 않으며 반복되면 원인을 찾기 전에 다시 실행하지 않는다. |
+| `verify-grafana-client-secret.sh` | 이 폴더 | Grafana client secret 전환 전 검사를 실행하는 owner | `consumed_file`, `rendered_version`, `mounted_equals_rendered`, `keycloak_client_matches`를 확인한다. | Grafana 재생성 전마다 Agent healthy와 `keycloak_client_matches` PASS를 확인한다. |
+| `verify-oidc-client-secret.sh <서비스>` | 이 폴더 | OIDC client secret 소비자별 전환 전 검사 | 렌더링 파일, 서비스 파일, Keycloak client secret의 일치를 비교하며 모든 항목이 `PASS`여야 한다. | `PASS`는 서비스 사용자의 읽기 가능 증거가 아니므로 전환 뒤 실제 OIDC 로그인으로 확인한다. |
+| `oidc-client-secrets.sh` (`import`, `prepare`, `cutover`, `rollback`) | 이 폴더 | OIDC client secret 일괄 전환을 실행하는 owner | KV 반입, 출력 디렉터리 확인, `.env` 경로 변수 한 줄 교체 후 서비스 재생성·검사를 하며 값·hash·길이를 출력하지 않는다. | `put FAIL`이면 멈추고, script가 없는 commit에서는 실패하고 아무것도 하지 않는다. |
+| `/run/openbao/observability` 출력 디렉터리 | OpenBao Agent(`out/observability`) | Grafana | 읽기 전용 bind이며 `GRAFANA_ADMIN_PASSWORD_FILE`·`GRAFANA_CLIENT_SECRET_FILE`이 비면 `/run/secrets/...`를 쓴다. | 읽지 못한 `__FILE`은 빈 값이 되며 검사가 `mounted_equals_rendered` 또는 `admin_login`을 `FAIL`로 보고한다. |
+| `/run/openbao/auth` 출력 디렉터리 | OpenBao Agent(`out/auth`) | Keycloak | `create_host_path: false` 읽기 전용 bind이며 entrypoint가 `KEYCLOAK_ADMIN_PASSWORD_FILE` 파일을 읽는다. | 파일을 읽을 수 없거나 비어 있으면 Keycloak은 시작하지 않는다. |
+| `/run/openbao/<디렉터리>` OIDC client secret 출력 | OpenBao Agent | `oauth2-proxy`, `opensearch-dashboards`, `kafbat-ui`, `dozzle`, `gatus`, `airflow-apiserver` 등 | 읽기 전용 bind의 `<stem>.txt`는 `0640`, `<stem>.version`은 `0600`이며 변수가 비면 `/run/secrets/<secret>`을 쓴다. | bind가 `create_host_path: false`라 디렉터리가 없으면 container를 만들지 못하고 서비스가 멈춘다. |
+
 #### Configuration
 
 `catalog`의 `revision`, `schema_version`, `catalog_sha256`, `schema_sha256`,

@@ -33,6 +33,11 @@ Lifecycle: **DEV**. 운영 통제와 복구는 [documentation index](../../../do
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| UI `127.0.0.1:${MAILPIT_UI_HOST_PORT:-8025}`와 Traefik 라우트 | `mailpit` | 이 README는 소비자를 기록하지 않는다. | Traefik 라우트는 `sso-auth` 게이트웨이 체인을 거치며 loopback·peer 직접 접속에는 native UI 인증이 없다. | Compose 헬스체크가 있고 RUN-0084 Mailpit 런북을 따른다. |
+| SMTP `127.0.0.1:${MAILPIT_SMTP_HOST_PORT:-1025}` | `mailpit` | `mail_net` peer와 `opsflow_capture_net`의 n8n-worker | 임의 인증을 허용하는 개발용 SMTP 캡처이며 `mailpit-data`가 `/data/mailpit.db`를 영속화한다. | SMTP 캡처 확인과 복구는 RUN-0084 Mailpit 런북을 따른다. |
+
 #### Inputs and Outputs
 
 프로필: `mail-dev / local / dev`. 루트 Compose가 이 정의를 include하지만, include 자체만으로는 서비스가 시작되지 않습니다. 네트워크는 Traefik만 함께 붙는 전용 내부 ingress망인 `mailpit_ingress_net`(SPEC-0266), `mail_net`, n8n-worker와만 공유하는 내부 `opsflow_capture_net`입니다. 게이트웨이 인증은 해당 라우트에만 적용되며, loopback UI와 peer의 직접 접속에는 native UI 인증이 선언되어 있지 않습니다. 비공개 값을 출력하지 않고 [공개 환경 변수 키](../../../.env.example)와 [시크릿 참조](../../../secrets/README.md)를 검토합니다.

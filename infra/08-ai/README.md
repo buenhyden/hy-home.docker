@@ -62,6 +62,12 @@ created: "2025-11-12"
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `ollama` HTTP API(`127.0.0.1:${OLLAMA_HOST_PORT}`, `ollama.${DEFAULT_URL}`) | `ollama` | 이 README는 소비자를 기록하지 않는다. | Traefik 라우트는 `gateway-standard-chain`·`sso-errors`·`sso-auth`(Keycloak SSO)를 거치고 `OLLAMA_NO_CLOUD=1`이다. | Compose 헬스체크가 있고 Ollama 복구 런북 RUN-0056을 따른다. |
+| `ollama-exporter` HTTP metrics(`${OLLAMA_EXPORTER_PORT}`) | `ollama-exporter` | 이 README는 소비자를 기록하지 않는다. | `ai_net` 내부에 노출되고 `obs_net`으로 VRAM 등 지표를 내보낸다. | Compose 헬스체크가 선언되어 있다. |
+| `comfyui` HTTP(`comfyui.${DEFAULT_URL}`와 루프백 포트) | `comfyui` | 이 README는 소비자를 기록하지 않는다. | 이 README는 계약을 따로 기록하지 않는다. | ComfyUI 복구 런북 RUN-0081을 따른다. |
+
 #### Inputs and Outputs
 
 - **GPU Access**: 서비스는 NVIDIA GPU에 접근하도록 `reservations.devices`로 설정되어 있습니다.

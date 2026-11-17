@@ -94,6 +94,13 @@ grant를 자신의 패키지에 둡니다. 그 외 엔진 설정은 Compose에 �
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `127.0.0.1:${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}` (`mng-pg`) | `mng-pg` | n8n, Keycloak, Airflow, Terrakube, SonarQube 등 MNG 소비자 | `mng_data_net`에서 init job이 만든 서비스별 role/database로 접속한다. | `pg_isready` 헬스체크를 쓰며 복구는 RUN-0028을 따른다. |
+| `${HOST_LAN_BIND_IP:-192.168.0.13}:${VALKEY_MNG_HOST_PORT:-26379}:${VALKEY_PORT:-6379}` (`mng-valkey`) | `mng-valkey` | OAuth2 Proxy·n8n·Airflow, LAN 외부 클라이언트, Gatus, RedisInsight(`mnginspector`) | `default`는 `mng_valkey_password`로 인증하고 `mnginspector`는 읽기만 하며 Gatus는 인증 없는 TCP 검사다. | 인증된 `PING` 헬스체크를 쓰며 `noeviction`으로 한도 전에 쓰기를 거부한다. |
+| `mng-pg-exporter`·`mng-valkey-exporter` | `mng-pg-exporter`, `mng-valkey-exporter` | 이 README는 소비자를 기록하지 않는다. | 내부용이며 `mng_pg_monitor` role과 `mngmonitor` 사용자로만 접속하고 관리자 비밀을 받지 않는다. | HTTP 헬스체크를 쓴다. |
+| pgBackRest stanza `mng` repository(`${BACKUP_STATE_REPO_DIR}/pgbackrest`) | `mng-pg`의 `archive_command` | 호스트 백업 job | 연속 WAL 아카이빙과 물리 백업을 암호화된 repository에 저장하고 point-in-time restore에 쓴다. | 비어 있는 cipher secret은 exit 64로 중지하며 복원은 먼저 격리된 target에만 한다. |
+
 #### Inputs and Outputs
 
 호스트 게시 포트는 `${HOST_LAN_BIND_IP:-192.168.0.13}:${VALKEY_MNG_HOST_PORT:-26379}:${VALKEY_PORT:-6379}`, `127.0.0.1:${POSTGRES_HOST_PORT:-25432}:${POSTGRES_PORT:-5432}`이다. 연결 네트워크는 `mng_data_net`, `obs_net`이다. (출처: `infra/04-data/mng-db/docker-compose.yml`의 `mng-valkey`, `mng-valkey-exporter`, `mng-pg`, `mng-pg-init`, `mng-pg-monitor-provision`, `mng-pg-exporter` 서비스)

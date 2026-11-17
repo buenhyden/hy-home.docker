@@ -55,6 +55,11 @@ labs/open-webui/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_OPEN_WEBUI_HOST_PORT:-18095}` -> 8080 UI | Open WebUI 웹 서버 | 이 README는 소비자를 기록하지 않는다. | Keycloak native OIDC(client `home-openwebui`, PKCE S256) 로그인이며 password login과 signup은 꺼져 있다. | 필수 입력이 비면 render가 거부되고 장애 대응은 RUN-0057을 따른다. |
+| Ollama endpoint `LAB_OPEN_WEBUI_OLLAMA_BASE_URL` | HOME Ollama | Open WebUI | 필수 입력이지만 HOME이 LAB network에 게시하지 않아 owner 승인 전까지 render 검증만 한다. | 필수 입력이 비면 render가 거부된다. |
+
 #### Inputs and Outputs
 
 | 항목 | 값 |

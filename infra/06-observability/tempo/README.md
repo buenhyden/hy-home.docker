@@ -52,6 +52,14 @@ tempo/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| OTLP gRPC `4317`·HTTP `4318` | `tempo` | Grafana Alloy의 Tempo exporter | OTLP 트레이스 데이터를 수집한다. | OTLP 수집 오류 시 포트 바인딩과 Alloy exporter 엔드포인트를 확인한다. |
+| `${HOST_LAN_BIND_IP:-192.168.0.13}:${TEMPO_HOST_PORT:-3200}:${TEMPO_PORT:-3200}` | `tempo` | Grafana Tempo 데이터소스 | TraceQL 트레이스 쿼리를 제공한다. | 트레이스 쿼리 오류 시 Grafana 데이터소스 URL과 Tempo 네트워크 주소의 일치를 확인한다. |
+| Traefik 라우터(`traefik.http.routers.tempo.*`) | `tempo` | Traefik(`tempo_ingress_net`) | `traefik.http.services.tempo.loadbalancer.server.port` 라벨로 백엔드 포트를 지정한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `/ready`(`http://localhost:${TEMPO_PORT:-3200}/ready`) | `tempo` | 컨테이너 헬스체크 | Tempo 준비 상태를 HTTP로 응답한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| SeaweedFS 버킷 `tempo-bucket` | SeaweedFS(S3 호환 오브젝트 스토어) | `tempo` | 트레이스 블록을 S3로 저장하며 secret `seaweedfs_s3_tempo_secret_key`를 참조한다. | 수집 공백 시 버킷 가용성을 확인하고 버킷·WAL 변경 전에는 중지하고 런북 에스컬레이션을 따른다. |
+
 #### Configuration
 
 - **Ingestion**: gRPC(4317)와 HTTP(4318)를 통한 OTLP를 지원합니다.

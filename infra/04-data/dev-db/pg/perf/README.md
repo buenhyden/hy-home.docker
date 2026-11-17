@@ -45,6 +45,13 @@ reader, verdict 역할은 명시적 manifest로 등록되며 모두 `NOLOGIN` gr
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `quality.import_payload` | `perf_db`의 `quality` schema | 외부 프로젝트 importer | 한 transaction에서 schema v1 envelope와 `payload_sha256` 제외 canonical UTF-8 bytes를 받아 DB가 SHA-256을 다시 검사한다. | `exact_replay`에서는 기존 행을 변경하지 않고 `inserted`일 때만 자식 행을 적재한다. |
+| `quality.run_results` view | `perf_db`의 `quality` schema | 프로젝트 reader 역할 | `security_invoker` view라 조회자의 RLS가 그대로 적용되며 reader는 같은 프로젝트만 조회한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| 프로젝트 등록 manifest(`register.py`) | `register.py` | `perf_db` migration 적용 후 등록 SQL을 실행하는 admin | `schema_version`, `project_id`, `roles.reader`, `roles.writer`, `roles.verdict`만 허용하고 credential 없는 등록 SQL만 출력한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `dev-perf-provision` one-shot job(`quality-results` profile) | `infra/04-data/dev-db/docker-compose.yml`의 `dev-perf-provision` | 결과 적재가 필요한 시험 실행(`testing` profile과 함께 선택) | admin secret을 프로세스 환경으로만 전달하고 `pg_try_advisory_lock`을 bootstrap 종료까지 유지한다. | 동시 job은 exit 75로 종료되며 재실행이 필요하다. |
+
 #### Configuration
 
 등록 manifest는 `schema_version`, `project_id`, `roles.reader`, `roles.writer`,

@@ -41,6 +41,13 @@ created: "2026-10-02"
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `127.0.0.1:${DEV_PG_HOST_PORT:-25433}:5432` (`dev-pg`) | `dev-pg` | 승인된 프로젝트 명세로 등록한 외부 프로젝트 DB·계정 | `dev_data_net`과 notifier용 내부 `opsflow_notifier_db_net`에서 PostgreSQL 접속을 받는다. | `pg_isready` 헬스체크(interval 15s)를 쓰며 복구는 RUN-0100을 따른다. |
+| `dev-valkey` 6379 | `dev-valkey` | 이 README는 소비자를 기록하지 않는다. | `dev_data_net`에서 ACL 사용자로 인증해 접속한다. | `valkey-cli ping` PONG 헬스체크(interval 15s)를 쓴다. |
+| `dev-pg-exporter` `http://localhost:9187/metrics` | `dev-pg-exporter` | Prometheus `dev-pg-exporter` job | 읽기 전용 `dev_pg_monitor` role로만 접속해 통계·설정·WAL 디렉터리를 조회한다. | `wget` metrics 헬스체크(interval 15s)를 쓴다. |
+| `dev-valkey-exporter` `http://localhost:9121/metrics` | `dev-valkey-exporter` | Prometheus `dev-valkey-exporter` job | `PING`·`INFO`·로그 길이만 읽는 `devmonitor` ACL 사용자로 접속한다. | `wget` metrics 헬스체크(interval 30s)를 쓴다. |
+
 #### Configuration
 
 [`docker-compose.yml`](docker-compose.yml)의 `dev-data` profile, `dev_data_net`(dev-pg는 notifier용 내부 `opsflow_notifier_db_net`도 추가로 사용), 별도 데이터 경로와 Docker secret 참조를 사용합니다. 프로젝트별 DB·ACL은 승인된 명시적 명세로만 등록합니다.

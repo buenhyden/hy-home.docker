@@ -49,6 +49,11 @@ root Compose에 포함되지 않고 HOME network에 연결되지 않으며 Traef
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_JUPYTERLAB_HOST_PORT:-18888}` -> 8888 | `jupyterlab` | 운영자 브라우저 | Jupyter Server 토큰(`lab_jupyterlab_token`)으로만 인증하며 커널, 터미널, REST API를 제공한다. | 토큰이 16자 미만이면 시작이 실패하고 `GET /api` 헬스체크를 쓰며 RUN-0089를 따른다. |
+| `LAB_JUPYTERLAB_MLFLOW_TRACKING_URI` | MLflow 서버(HOME `08-ai` 패키지) | `jupyterlab`의 MLflow client | 선택 입력이며 endpoint는 owner 승인 대상(미결정)이다. | 비어 있으면 추적 서버 없이 동작한다. |
+
 #### Inputs and Outputs
 
 | Field | Value |

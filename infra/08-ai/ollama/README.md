@@ -45,6 +45,12 @@ ollama/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Ollama API `127.0.0.1:${OLLAMA_HOST_PORT}:${OLLAMA_PORT}` (`ai_net`, `ollama_ingress_net`, `n8n_ollama_net`) | `ollama` | 이 README는 소비자를 기록하지 않는다. | `/api/tags`, `/api/generate` 등 추론 API를 제공하며 `OLLAMA_NO_CLOUD=1`이다. | API 오류 시 `docker logs --tail=200 ollama`와 포트 바인딩을 확인한다. |
+| Traefik 라우터 `ollama` | `ollama` | 이 README는 소비자를 기록하지 않는다. | `gateway-standard-chain`·`sso-errors`·`sso-auth`를 거친다. | Compose 헬스체크가 선언되어 있다. |
+| exporter 지표 `${OLLAMA_EXPORTER_PORT:-8000}` (`ai_net`, `obs_net`) | `ollama-exporter` | 이 README는 소비자를 기록하지 않는다. | 지표 수집 포트로 노출한다. | Compose 헬스체크가 선언되어 있다. |
+
 #### Inputs and Outputs
 
 `ollama`는 `ai_net`·`ollama_ingress_net`·`n8n_ollama_net`에 붙어 API를 제공하고, `ollama-exporter`는 `ai_net`·`obs_net`에서 `${OLLAMA_EXPORTER_PORT:-8000}`으로 지표를 노출합니다. 환경 변수는 아래와 같습니다.

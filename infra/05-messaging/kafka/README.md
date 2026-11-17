@@ -53,6 +53,12 @@ Traefik 라우트는 `gateway-standard-chain@file`을 사용하며 forwarding-au
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Kafka broker `127.0.0.1:${KAFKA_EXTERNAL_1_HOST_PORT:-9092}:${KAFKA_EXTERNAL_PORT:-9092}` | `kafka-1` | 이 README는 소비자를 기록하지 않는다. | PLAINTEXT listener이며 broker TLS·클라이언트 인증은 선언되어 있지 않다. | broker healthcheck를 선언하며 복구는 RUN-0036과 격리 클러스터 replay를 따른다. |
+| JMX exporter `127.0.0.1:${KAFKA_JMX_EXPORTER_1_HOST_PORT:-19404}:${KAFKA_JMX_EXPORTER_PORT:-9404}` | `kafka-1` | 이 README는 소비자를 기록하지 않는다. | `jmx-exporter/kafka_broker.yml` Confluent 규칙으로 PLAINTEXT 노출한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| Kafbat UI Traefik 라우트 | `kafbat-ui` | 이 README는 소비자를 기록하지 않는다. | `gateway-standard-chain@file` 라우트와 네이티브 Keycloak OIDC, `/admins`·`/users` RBAC를 쓴다. | Kafbat healthcheck를 선언한다. |
+
 #### Configuration
 
 정상 `kafka_net`의 secret, 라우트, 포트 및 healthcheck 계약은 Purpose의 Structure와 Compose에 따릅니다.

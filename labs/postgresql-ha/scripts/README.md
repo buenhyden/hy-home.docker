@@ -32,6 +32,10 @@ LAB source 관리자와 정적 검토자입니다.
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `spilo-entrypoint-with-secrets.sh` wrapper | 이 디렉터리의 LAB wrapper source | 상위 LAB `docker-compose.yml`의 Spilo 서비스 | LAB 전용 file reference를 읽으며 기존 변수·secret reference·volume·network 계약을 보존한다. | 상위 LAB README와 RUN-0031 PostgreSQL 클러스터 런북을 따른다. |
+
 #### Inputs and Outputs
 
 상위 LAB Compose와 wrapper의 기존 변수·secret reference·volume·network 계약을

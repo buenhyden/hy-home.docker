@@ -153,6 +153,13 @@ Supabase 선례처럼 15개 행은 현재 ROOT 장부에서 빼고 원래 행을
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `update-ledger.json` 등 JSON 장부 | 이 폴더와 `scripts/operations/sync-update-ledger.sh --write` | `scripts.lib.supply_chain.latest_version_gate` | 실제 root Compose source를 다시 읽고 입력별 SHA와 입력 집합 SHA를 출력한다. | 최신판·channel 미확인 항목은 `ready=false`, 종료 코드 2로 남긴다. |
+| 검토된 보안 장부 `<reviewed-security-ledger.json>` | 별도 담당자 | `scripts.lib.supply_chain.security_update_gate` | 같은 독립 root source 집합과 보안 장부의 필드 완전성을 검사한다. | 종료 코드 0도 형식·집합 정합만 뜻하며 rollout 허가나 보안 해소가 아니다. |
+| Renovate post-upgrade `--accept-image-updates` | Renovate PR | `update-ledger.json` | 전체 `name:tag@sha256:<64 hex>` 참조로 바뀐 기존 행만 받아들이고 미검증 상태로 남긴다. | 새 서비스·제거·digest 없는 참조·build 변경은 종료 코드 2로 거부하고 아무것도 쓰지 않는다. |
+| `ledger_rebind` 재결합 | `python3 -m scripts.lib.supply_chain.ledger_rebind` | `update-ledger.json`의 `source_refreshes`와 `source_input_sha256` | 기본 dry run으로 계획을 출력하고 `--write --source-revision`일 때만 해시를 다시 묶는다. | 이미지·build 변경이나 행 추가·제거는 목록만 출력하고 종료 코드 2로 끝난다. |
+
 #### Inputs and Outputs
 
 입력은 `update-ledger.json`, `release-lookups.json`, `image-source-lookups.json`, `package-lookups.json`, `vendor-channel-references.json` 같은 이 폴더의 JSON 장부이며, gate 모듈이 이를 읽어 판정을 출력한다.

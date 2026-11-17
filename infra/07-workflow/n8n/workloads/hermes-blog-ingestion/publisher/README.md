@@ -68,6 +68,12 @@ no-follow 읽기와 제한된 기준 경로·SHA-256을 검사합니다. 검증�
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `stage` 대기함(저장소 밖 전용 경로) | `python -I -m publisher.cli stage` | `dispatch`와 전송 처리기 `process_one` | 내보내기·원본·아이디어 기준 경로와 검증기 다이제스트를 받아 디렉터리 0700, 파일 0600 대기함에 보존한다 | 거부나 충돌이 있으면 종료 코드 1이며 후보 1,000개 또는 파일 8 MiB·합계 32 MiB 초과 시 명시적으로 실패한다 |
+| `dispatch` relay endpoint 전송 | `python -I -m publisher.cli dispatch` | 고정 relay endpoint(Gateway) | `이름: 값` 인증 헤더 파일과 고정 계약 요청을 endpoint SHA-256과 함께 대기함에 결속하며 HTTP 시간 제한은 45초이다 | 신뢰 판정 실패는 `blocked`, 401·403·409는 `failed`, 5xx·응답 유실은 `uncertain`이며 `--allow-replay` 없이 재전송하지 않는다 |
+| `attest` POST `/v1/ingestions/{report-id}/attestations` | `python -I -m publisher.cli attest`(별도 서명 계정) | 고정 Gateway 주소의 Blog-data Attestation | `dispatch`와 같은 신뢰 판정을 통과한 같은 요청 바이트로 Blog-data Attestation을 한 번 POST한다 | 결과는 `attested`·`rejected`·`retry`(429·5xx·통신 실패)·`blocked`이며 `attested`만 종료 코드 0이다 |
+
 #### Inputs and Outputs
 
 `stage`에는 내보내기·원본·아이디어 기준 경로, 검토된 검증기 경로와 다이제스트,

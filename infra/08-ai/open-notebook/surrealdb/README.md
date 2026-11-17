@@ -60,6 +60,10 @@ surrealdb/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| SurrealDB `0.0.0.0:8000` (호스트 포트 없음) | `surrealdb` | `open_notebook` | 사용자 `${SURREALDB_USERNAME}`와 `/run/secrets/surreal_db_password`로 인증하는 RPC 연결이며 v2 호환 경계를 유지한다. | 헬스체크 `surreal is-ready`, v3 업그레이드와 secret 마운트 확인, RUN-0080을 따른다. |
+
 #### Inputs and Outputs
 
 SurrealDB는 컨테이너 내부 `0.0.0.0:8000`에서 listen하고 `rocksdb:/mydata/db.db`에 저장하며 호스트 포트는 게시하지 않습니다.

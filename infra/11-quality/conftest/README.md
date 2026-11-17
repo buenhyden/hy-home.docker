@@ -58,6 +58,10 @@ conftest/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| 준비된 Compose·Dockerfile corpus 입력 (NUL 경로 목록·digest·overlay) | 호스트 wrapper `scripts/validation/check-conftest-policy.sh` | `conftest` one-shot job과 CI `leaf.conftest-policy` | `network_mode: none`으로 `infra/`·`labs/`를 읽기 전용 검사하며 `deny`는 실패, `warn`은 출력만 한다. | 준비 실패 시 raw 입력 fallback이 없고 준비되지 않은 `corpus`는 오류로 종료한다. |
+
 #### Inputs and Outputs
 
 환경 변수나 시크릿이 없습니다.

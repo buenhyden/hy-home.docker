@@ -32,6 +32,10 @@ LAB source 관리자와 정적 검토자입니다.
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `valkey.conf` | 이 디렉터리 | LAB Valkey node | LAB node의 비밀값 없는 기존 설정이다. | 실행과 복구는 RUN-0022 Valkey Cluster Runbook을 따른다. |
+
 #### Inputs and Outputs
 
 상위 LAB Compose와 wrapper의 기존 변수·secret reference·volume·network 계약을

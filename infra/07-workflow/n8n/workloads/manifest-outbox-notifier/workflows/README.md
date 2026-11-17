@@ -30,6 +30,11 @@ Manual 또는 단일 1분 polling → claim → 입력 검사 → 제한된 SMTP
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| n8n import JSON `manifest-outbox-mailpit.json` | 생성기(`../tools/`) | n8n import | `active:false`와 credential placeholder를 유지한 비활성 공개 초안이다 | 생성기의 `--check`로 byte parity를 검사한다 |
+| 제한된 SMTP 출력(Mailpit 캡처) | workflow의 제한된 SMTP node | Mailpit | Manual 또는 단일 1분 polling으로 claim한 항목을 입력 검사 후 SMTP로 보내고 ack한다 | 불확실·오류·stale lease는 retry 결과 확인 또는 고정 오류 경로로 처리하며 ack 실패는 SMTP node에서 재개하지 않는다 |
+
 #### Inputs and Outputs
 
 입력은 Manual 또는 단일 1분 polling 트리거이고, 출력은 제한된 SMTP node를 거친 Mailpit 캡처 메일과 ack·retry 결과입니다(Structure 참조).

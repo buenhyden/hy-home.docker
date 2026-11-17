@@ -68,6 +68,11 @@ labels:
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `https://redisinsight.${DEFAULT_URL}` 웹 UI (내부 `5540`) | `redisinsight` 서비스 | Traefik이 `redisinsight_ingress_net`으로 연결하며 operator와 developer가 접속한다. | 게이트웨이 SSO·CIDR 제한 미들웨어를 거치며 자체 로그인은 없다. | healthcheck `/api/health/`의 `{"status":"up"}`을 보고, 하드닝 점검과 런북을 확인한다. |
+| 사전 등록 연결 `DEV / dev-valkey`, `MNG / mng-valkey` | `redisinsight` 서비스 | `dev_data_net`, `mng_data_net`의 dev·mng Valkey | 읽기 전용 inspector 계정을 쓰며 쓰기는 거부된다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `dev_data_net`, `mng_data_net`, `redisinsight_ingress_net`이다. (출처: `infra/04-data/redisinsight/docker-compose.yml`의 `redisinsight` 서비스)

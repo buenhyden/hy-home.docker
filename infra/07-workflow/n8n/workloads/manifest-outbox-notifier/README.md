@@ -43,6 +43,12 @@ native 인계 전 설치하거나 운영 워크플로우로 취급하지 않습�
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| DEV 매니페스트 게시 outbox claim | dev-pg의 P04 outbox | `n8n-worker`의 이 n8n 소비자 (`opsflow_notifier_db_net`) | [소비자 계약](outbox-contract.json)에 따라 여섯 claim 필드를 조회하며 `lease_until`은 UTC millisecond 문자열이다. | lease가 25초 이하로 남거나 누락·만료되면 전송 전에 취소한다. |
+| Mailpit SMTP 캡처 전송 | `n8n-worker` | 개발 Mailpit (`opsflow_capture_net`) | 정상 수락은 `accepted_by_smtp`이며 외부 배달 증거가 아니고 exactly-once를 보장하지 않는다. | ack 유실·SMTP 응답 유실·node 오류는 unknown으로 격리하며 자동으로 다시 보내지 않는다. |
+| Mailpit UI/API (8025) | Mailpit | `n8n-worker` | `opsflow_capture_net`으로 닿으며 capture 전용이고 외부 전달이 없다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 공개 JSON의 credential ID는 placeholder입니다. 운영자가 확인한 공식 n8n

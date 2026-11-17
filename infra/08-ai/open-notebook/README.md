@@ -58,6 +58,12 @@ open-notebook/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| API `127.0.0.1:${OPEN_NOTEBOOK_API_URL:-5055}:5055` | `open_notebook` | 이 README는 소비자를 기록하지 않는다. | loopback에서만 응답하는 API 호스트 게시이며 내부 listener를 변경하지 않는다. | 헬스체크가 `127.0.0.1:5055/health`의 HTTP 200을 검사한다. |
+| `https://open-notebook.${DEFAULT_URL}` | `open_notebook`(web `8502`) | 허용된 CIDR 범위의 사용자 | `websecure`에서 `gateway-standard-chain@file`, `open-notebook-admin-ip@docker`, `large-body@file`을 거치며 공유 SSO 없이 비밀번호로 로그인한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `ws://surrealdb:8000/rpc` | `surrealdb`(`ai_net` 내부 `expose: 8000`) | `open_notebook` | `surreal_db_password`로 데이터베이스 연결을 수립하며 승인된 호환 경계는 SurrealDB v2이다. | Open Notebook은 HTTP `is-ready` 통과까지 대기하며 시작 실패 시 SurrealDB 로그를 확인한다. |
+
 #### Inputs and Outputs
 
 `open_notebook`은 `127.0.0.1:${OPEN_NOTEBOOK_API_URL:-5055}`로 API를 게시하고 `surrealdb`는 `ai_net` 내부 `8000`을 `expose`만 합니다. 서비스·환경 변수·DB 호환 경계는 아래와 같습니다.

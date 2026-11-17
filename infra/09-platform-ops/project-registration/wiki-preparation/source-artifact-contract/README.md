@@ -35,6 +35,11 @@ helper 결과의 scoped idempotency와 원본 source hash의 관계는 [준비 �
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| caller policy와 source artifact 문서(`source-artifact.schema.json`) | caller | helper | repository/ref/revision/path allowlist와 최대 128개 `versions` mapping을 받고 artifact와 합성 bytes의 범위·hash를 검사한다. | 중복 mapping과 `*` 포함 값은 허용하지 않으며 artifact authenticity와 runtime은 NOT_RUN이다. |
+| 삭제·권한 철회 ordered outbox event | 이 README는 생산자를 기록하지 않는다. | search·point query·citation·download·cache·이전 generation 접근 | 삭제·철회를 ordered event로 기록하고 모든 접근을 즉시 거부한 뒤 물리 정리한다. | 합성 문서 대조로 삭제 우선순위와 이전 generation의 미적용 event를 거절한다. |
+
 #### Inputs and Outputs
 
 비밀값과 실제 환경 변수는 입력하지 않습니다.

@@ -63,6 +63,12 @@ ACL 생성 스크립트를 소유하며 서비스 선언은 [상위 Compose](../
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `dev-valkey` `dev_data_net` 6379 | `dev-valkey` | 프로젝트 ACL 계정, 지표 수집 `devmonitor`, RedisInsight 조회 `devinspector` | 호스트 포트 미게시, `default off`와 named-user ACL; 프로젝트 계정은 `key_prefix:*`와 DB 0만 접근한다. | 메모리 한도에 도달하면 쓰기를 거절하며 `valkey-cli ping` healthcheck(15s)를 쓴다. |
+| `config/projects.tsv`와 `DEV_VALKEY_PROJECT_SECRETS_DIR` | 이 README는 생산자를 기록하지 않는다. | `scripts/render-acl.sh` | 승인된 행은 `project_id`·`acl_user`·`key_prefix`·`secret_filename` 네 필드를 명시한다. | 누락·형식 오류·중복·symlink·여러 줄의 비밀값은 기동을 거절한다. |
+| `dev-valkey-exporter` 지표 `http://localhost:9121/metrics` | `dev-valkey-exporter` | 이 README는 소비자를 기록하지 않는다. | `devmonitor` 계정으로 `PING`·`INFO` 등 허용 명령만 써서 지표를 낸다. | `wget` healthcheck(30s)를 쓴다. |
+
 #### Configuration
 
 `dev_data_net`과 별도 `/data` bind 경로를 사용합니다. 관리자 비밀은 Docker secret으로, 프로젝트 ACL은 승인된 `projects.tsv`와 별도 비밀 디렉터리로 공급합니다.

@@ -70,6 +70,13 @@ labs/superset/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| UI `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SUPERSET_HOST_PORT:-18092}` -> 8088 | `superset` | Data analysts, Operators | Traefik route 없이 게시되며 Keycloak OIDC로 로그인하고 첫 사용자는 `Gamma`이다 | healthcheck `curl -fsS http://localhost:8088/health`이며 활성 lease 안에서 `/health`와 init 로그 확인 후 runbook을 따른다 |
+| Keycloak native OIDC 로그인(client `home-superset`) | Keycloak(`LAB_SUPERSET_DEFAULT_URL` gateway) | `superset` | PKCE S256 OIDC이며 `LAB_SUPERSET_CA_FILE`의 HOME root CA로 Keycloak을 호출한다 | redirect URI 또는 client secret 불일치로 로그인 오류가 나면 RUN-0097을 따른다 |
+| Metadata DB `LAB_SUPERSET_DB_HOST` | mng-pg | `superset`, `superset-db-provision` | feature 소유 database와 role `superset`이며 기본 포트 5432이다 | `LAB_SUPERSET_DB_HOST`가 비어 있으면 render가 거부된다 |
+| Trino database `trino://superset@trino:8080/lakehouse` | 별도 lakehouse LAB의 Trino | `superset-init`이 등록한 `superset` | Trino SQLAlchemy dialect로 `lakehouse` catalog를 질의한다 | `trino` host에 도달할 수 없어 현재 선언으로는 Superset LAB에서 Trino 질의가 되지 않는다 |
+
 #### Inputs and Outputs
 
 UI는 `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_SUPERSET_HOST_PORT:-18092}` -> 8088에 게시하고 Keycloak OIDC로 로그인하며 `lakehouse` Trino database를 등록한다. 환경 변수는 아래 표와 같다.

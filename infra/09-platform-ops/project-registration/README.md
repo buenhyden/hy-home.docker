@@ -41,6 +41,10 @@ include하지 않습니다. 실제 프로젝트 ID와 자원 범위가 승인되
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| 프로젝트 등록 문서 (`schema.json`) | 외부 `Project-Template` 파생 저장소 | `check-project-registration.py` 검증기와 인프라 담당자 | 알 수 없는 필드를 거부하며 `endpoints`·DB·S3·OIDC 등 자원과 `secret_refs` 이름만 기록한다. | `--allow-secret-ref`로 명시하지 않은 이름은 거부되며 실패는 Checks 명령 출력으로 확인한다. |
+
 #### Inputs and Outputs
 
 `schema_version`, `interface_version`, `project_id`, `environment`, 세 Git SHA

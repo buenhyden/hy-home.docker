@@ -30,6 +30,14 @@ Storybook story, 검토된 `Button`·`AsyncState` 패키지와 디자인 토큰,
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `storybook-static/`, `manifests/components.json`, `manifests/docs.json`, `revision.json` | `npm run build-storybook` | 문서 MCP 서버(`mcp/server.ts`) | `revision.json`은 소스 커밋(또는 `uncommitted`)과 두 manifest의 SHA-256을 기록한다. | MCP는 읽기 전에 manifest를 `revision.json`의 SHA-256과 대조한다. |
+| 로컬 MCP `127.0.0.1:7613/mcp` | `npm run mcp:docs`(`mcp/server.ts`) | 이 README는 소비자를 기록하지 않는다. | `docs-list`, `docs-show`, `docs-show-story`만 등록하며 인증 없이 loopback만 받는다. | 이 README는 실패 처리를 기록하지 않는다. |
+| 원격 MCP(`STORYBOOK_MCP_RESOURCE`) | Dockerfile `mcp` target | 이 README는 소비자를 기록하지 않는다. | RS256 서명·issuer·audience·만료·그룹을 확인한 bearer token만 받고 `/.well-known/oauth-protected-resource/mcp`를 제공한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| 정적 origin 내부 `8080` | `Dockerfile`과 `nginx.conf`의 정적 origin | 이 README는 소비자를 기록하지 않는다. | 정적 파일만 제공하며 host 80/443을 열지 않는다. | 실행 중인 origin의 복구는 RUN-0101 Storybook Runbook을 따른다. |
+| `@hy-home/storybook-ui` 패키지 | `packages/ui/` | 패키지 소비자 | 공유 UI 패키지 README의 타입·CSS·peer 계약을 따른다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 `npm ci` 후 `npm run build-storybook`은 `storybook-static/`과 `manifests/components.json`, `manifests/docs.json`, `revision.json`을 생성합니다. `STORYBOOK_SOURCE_REVISION`을 전달하면 revision 파일이 소스 커밋을 기록합니다. 전달하지 않으면 `uncommitted`로 표시합니다. revision 파일은 두 manifest의 SHA-256을 기록하며 로컬 MCP가 읽기 전 대조합니다.

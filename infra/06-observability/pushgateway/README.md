@@ -47,6 +47,12 @@ pushgateway/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `http://pushgateway:9091/metrics/job/<job>` push API | 임시·배치 작업(CI/CD, 배치 스크립트) | `pushgateway` 서비스 | 표준 Prometheus Pushgateway API에 HTTP POST/PUT으로 메트릭을 푸시하며 TTL과 영속화가 없다. | 푸시 오류는 URL 형식과 네트워크 연결을 확인하고 재시작으로 잃은 메트릭은 다시 push한다. |
+| `https://pushgateway.${DEFAULT_URL}` route | Traefik | 이 README는 소비자를 기록하지 않는다. | 보호된 Traefik route이며 Traefik이 SSL 종료와 라우팅을 맡는다. | 이 README는 실패 처리를 기록하지 않는다. |
+| Prometheus scrape 대상 | `pushgateway` 서비스 | Prometheus | `prometheus.yml`에 일치하는 스크레이프 잡이 있을 때만 scrape된다. | 스크레이프 잡이 없으면 다운이 아니라 구현 공백으로 기록하고 RUN-0046을 따른다. |
+
 #### Configuration
 
 - **Ingestion**: 표준 Prometheus Pushgateway API (포트 9091).

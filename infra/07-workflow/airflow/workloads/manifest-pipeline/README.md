@@ -36,6 +36,12 @@ P05는 검토 후 고정한 SQL 버전·hash와 함수 계약을 소비합니다
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| S3 bucket `opsflow-dev` | SeaweedFS S3 (worker identity `opsflow-worker`) | Airflow worker의 DAG `source_manifest_ingest` | 합성 manifest를 읽어 검증·readback하며 TLS는 `https://seaweedfs-s3:443`만 허용하고 현재 listener는 평문 `:8333`이다. | DB 실패 후 객체는 unpublished로 남고 같은 bytes를 readback해 재사용한다. |
+| DEV PostgreSQL `opsflow_dev` schema `ops_flow` | DAG `source_manifest_ingest` (P04 SQL) | P05와 runtime 역할 | P05는 고정한 SQL 버전·hash와 함수 계약을, runtime은 승인된 함수/view만 소비하며 TLS는 `verify-full`만 지원한다. | Rollback은 DAG pause와 검토한 migration 복구이며 RUN-0050을 따른다. |
+| `/run/opsflow` mount (`OPSFLOW_SECRET_DIR`) | worker 전용 보호 디렉터리 `OPSFLOW_SECRET_DIR` (없으면 `secret-placeholder/`) | Airflow worker | `pg.json`, `s3.json`과 TLS 선택 시 `ca.pem`을 읽는다. | memfd·seal·procfs가 없거나 CA 검증에 실패하면 연결을 거부한다. |
+
 #### Configuration
 
 SEC01의 호환 이미지·dependencies와 P03의 endpoint·실제 worker UID/GID 계약을

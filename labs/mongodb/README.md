@@ -54,6 +54,11 @@ HOME Grafana는 `infra/06-observability/grafana/dashboards/`만 provisioning하�
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_MONGO_EXPRESS_HOST_PORT:-38081}` (`mongo-express`) | `mongo-express` | 이 README는 소비자를 기록하지 않는다. | `lab_mongo_express_basicauth_password` basic auth를 쓰며 HOME Traefik label은 없다. | Compose healthcheck 선언뿐이며 실행 결과는 미검증이고 RUN-0027을 따른다. |
+| `dashboards/mongodb.json` (UID `hyhome-mongodb`) | 이 LAB 패키지 | 별도 계약 승인 시 LAB의 Prometheus·Grafana | HOME provisioning 경로로 옮기지 않으며 HOME Grafana에는 표시되지 않는다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 상태는 `mongo-key`, `mongodb{1,2,3}-data`를 `${LAB_DATA_DIR}/mongodb/` 아래에 bind하고 network는 `lab_mongodb_core_net`, `lab_mongodb_edge_net`을 사용한다. 환경 변수는 아래 표와 같다.

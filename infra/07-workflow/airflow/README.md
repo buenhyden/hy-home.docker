@@ -96,6 +96,14 @@ Airflow internal JWT:
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `https://airflow.${DEFAULT_URL}` UI/API(`${AIRFLOW_PORT:-8080}`) | `airflow-apiserver` | 이 README는 소비자를 기록하지 않는다. | `KeycloakAuthManager`(`home-airflow`, `hy-home.realm`)와 `gateway-standard-chain@file`; ForwardAuth는 적용하지 않는다. | endpoint matrix로 authentication과 authorization 실패를 구분하고 callback 403은 `_oauth_state`를 확인한다. |
+| 헬스 `/api/v2/monitor/health` | `airflow-apiserver` | 이 README는 소비자를 기록하지 않는다. | API listener와 같은 `${AIRFLOW_PORT:-8080}`을 쓴다. | RUN-0050 런북을 따른다. |
+| Keycloak OIDC login·Authorization Services | Keycloak | Airflow | realm role `Viewer`~`SuperAdmin`이 필요하며 Keycloak token과 Airflow 내부 JWT는 별개다. | `invalid_scope`는 Authorization bootstrap, role 404는 필수 realm role을 확인한다. |
+| MNG DB `mng-pg`(`${POSTGRES_PORT:-5432}`) | `mng-pg` | Airflow role 서비스 | Airflow 메타데이터 DB로 쓰인다. | DB migration 문제는 동일 이미지에서 `airflow db migrate`를 실행한다. |
+| broker `mng-valkey`(`${VALKEY_PORT:-6379}`) | `mng-valkey` | Airflow CeleryExecutor | `AIRFLOW_VALKEY_HOST`/`AIRFLOW_VALKEY_SECRET` 기본값(`mng-valkey`, `mng_valkey_password`)만 허용한다. | `connection_uri.py`가 다른 조합을 거부한다. |
+
 #### Inputs and Outputs
 
 호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `airflow_net`, `dev_data_net`, `edge_net`, `flower_ingress_net`, `mng_data_net`, `object_net`, `obs_net`이다. (출처: `infra/07-workflow/airflow/docker-compose.yml`의 `airflow-apiserver`, `airflow-scheduler`, `airflow-dag-processor`, `airflow-worker`, `airflow-triggerer`, `airflow-init`, `flower`, `airflow-statsd-exporter` 서비스)

@@ -53,6 +53,13 @@ wiremock/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| 기능 모드 `127.0.0.1:${WIREMOCK_HOST_PORT:-18088}` | `wiremock`(기능 모드) | 개발·계약 검사 | 추적 mapping의 합성 응답을 제공하며 요청 저널은 최대 1,000개이고 admin API에는 인증이 없다. | 복구와 장애 대응은 RUN-0092 WireMock Runbook을 따른다. |
+| 부하 모드 `wiremock:8080` | `wiremock`(load override 적용) | project-default network의 peer | host port 없이 `--no-request-journal`로 실행하며 HTTP admin 요청은 403으로 거부한다. | journal API 오류를 empty journal로 바꾸거나 성공으로 판정하지 않는다. |
+| `DELETE /__admin/requests` | `wiremock` admin API | 기능 검사 시작 전 초기화 단계 | 요청 저널을 초기화한다. | load 모드의 admin 403 응답을 빈 요청 저널로 해석하지 않는다. |
+| `mappings/`, `__files/` fixture | 추적된 저장소 파일 | `wiremock` | 합성 데이터만 읽기 전용으로 제공하며 변경은 파일 검토 후 컨테이너 재생성으로 반영한다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 기능 모드는 **127.0.0.1:${WIREMOCK_HOST_PORT:-18088}**에만 게시한다. 부하

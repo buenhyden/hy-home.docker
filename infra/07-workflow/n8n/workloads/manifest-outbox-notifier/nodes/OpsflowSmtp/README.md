@@ -36,6 +36,12 @@ P05 작성자, SEC01·P03·P02 담당자와 독립 검토자입니다.
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| n8n node type `n8n-nodes-opsflow.opsflowSmtp` version 1 | 이 OpsflowSmtp 패키지 | builder가 만든 비활성 workflow | native parameter `claim`에 object expression을 받고 출력은 `{run_id,state}`뿐이다. | 상태는 `accepted_by_smtp`, `uncertain`, `cancelled`이며 uncertain·ack 유실은 workflow가 SQL004 unknown으로 격리한다. |
+| `mailpit:1025` SMTP | OpsflowSmtp node | 개발 Mailpit 캡처 | `notifier@opsflow.invalid` → `manifest@opsflow.invalid` 고정이며 `mailpit-plain-v1` 또는 STARTTLS 필수 `mailpit-starttls-auth-v1` profile을 쓴다. | 연결 3초·socket 5초·send 15초 제한 후 실패는 `uncertain`이며 소유 socket을 직접 destroy한다. |
+| native `smtp` credential | 공식 UI/API 경로로 관리하는 private import artifact | `OpsflowSmtp.node.ts` | host·port·secure·disableStartTls·user·password·hostName의 닫힌 허용 집합이다. | 인증 profile의 user/password는 256/4096바이트를 넘거나 제어문자가 있으면 거부한다. |
+
 #### Inputs and Outputs
 
 두 capture profile 모두 `mailpit:1025`와 합성

@@ -28,6 +28,10 @@ updated: "2026-11-17"
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| S3 매니페스트 -> DEV PostgreSQL 게시 | `source_manifest_ingest.py` DAG(Airflow worker) | DEV PostgreSQL | worker의 `/run/opsflow/s3.json`·`pg.json`으로 접속하며 XCom에는 run ID·data_version·status·행수만 전달한다. | timeout과 bounded retry를 선언하고 예외는 고정된 실패 코드로 제한한다. |
+
 #### Inputs and Outputs
 
 이 DAG는 worker의 `/run/opsflow/s3.json`과 `/run/opsflow/pg.json`을 읽어 S3의 매니페스트를 검증하고 DEV PostgreSQL에 게시한다. 자체 포트는 열지 않는다.

@@ -26,6 +26,10 @@ updated: "2026-11-17"
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `workflows/manifest-outbox-mailpit.json` 생성 파일 | `build_workflow.py` | 이 README는 소비자를 기록하지 않는다. | 입력은 `--output` 경로와 `--check` 옵션이며 credential placeholder만 든 공개 import JSON을 결정적으로 생성한다. | `--check`가 drift를 보고하면 `--check` 없이 다시 생성하거나 Git 변경을 되돌린다. |
+
 #### Inputs and Outputs
 
 입력은 `--output` 경로와 `--check` 옵션이고 출력은 `workflows/manifest-outbox-mailpit.json` 파일입니다. 네트워크 입출력은 없습니다.

@@ -46,6 +46,13 @@ Crawl4AI는 요청에 따라 임의의 URL을 가져오므로 서버 측 요청 
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| 크롤링 API `crawl4ai:11235` (`crawl4ai_net`) | `crawl4ai` | `crawl4ai_net`에 승인 추가된 소비자(현재 Hermes 리서치 수집 대체 경로) | `crawl4ai_api_token` Bearer 토큰을 요구하며 페이지를 렌더링해 Markdown을 반환한다 | 복구는 RUN-0091을 따른다 |
+| Loopback 전달 `127.0.0.1:11235` | `crawl4ai-loopback` | Hermes 리서치 수집 | `127.0.0.1:11235`를 `crawl4ai:11235`로만 전달하며 참조 adapter는 URL·cache mode·page timeout만 보낸다 | Compose 헬스체크가 포트 11235 TCP 연결을 확인한다 |
+| Health `GET /health` | `crawl4ai` | Compose healthcheck | 설계상 인증 없이 API 응답 여부만 증명한다 | 브라우저 렌더링은 증명하지 않으며 복구는 RUN-0091을 따른다 |
+| Egress gateway `10.250.200.2:3128` 및 DNS 중계 | `crawl4ai-egress` | `crawl4ai`(`dns`와 `CRAWL4AI_UPSTREAM_PROXY`) | 전역 IPv4의 80·443만 허용하고 AAAA에는 빈 응답을 주며 확인한 주소로만 연결한다 | IPv6는 모두 거절하며 Compose 헬스체크가 `10.250.200.2:3128` TCP 연결을 확인한다 |
+
 #### Inputs and Outputs
 
 | Field | Value |

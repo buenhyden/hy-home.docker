@@ -35,6 +35,10 @@ consumer validation이 돌려주는 scoped idempotency result는 [준비 계약�
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| consumer-manifest ([schema](../schemas/consumer-manifest.schema.json)) | 미래 consumer 작성자 | P09 pure helper | caller policy 범위와 일치해야 하며 등록은 draft/not_run만 허용한다. | wildcard/admin·교차 프로젝트·경로 탈출·빈 필수값·외부 schema 조회를 거절하고 결과는 Idempotency Result Contract를 따른다. |
+
 #### Inputs and Outputs
 
 비밀값과 실제 환경 변수는 입력하지 않습니다.

@@ -57,6 +57,11 @@ spark/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `LAB_LAKEHOUSE_CATALOG_URI` Iceberg REST catalog | 승인된 Iceberg REST catalog | `spark` | SigV4로 catalog `lakehouse`를 쓰며 출력은 `spark-sql` 질의 결과이다. | 비어 있으면 render가 거부되며 `ForbiddenException`은 lakehouse runbook을 따른다. |
+| `LAB_LAKEHOUSE_S3_ENDPOINT` S3 | 승인된 S3 endpoint | `spark` | `lakehouse` S3 identity와 table bucket을 path-style로 쓴다. | 비어 있으면 render가 거부되고 secret이 없으면 exit `64`, table bucket 부재는 runbook을 따른다. |
+
 #### Inputs and Outputs
 
 입력은 `LAB_LAKEHOUSE_CATALOG_URI`, `LAB_LAKEHOUSE_S3_ENDPOINT` 환경 변수가 가리키는 승인된 Iceberg REST catalog와 S3 endpoint이며 출력은 `spark-sql` 질의 결과이다. 환경 변수는 아래 표와 같다.

@@ -76,6 +76,10 @@ sample-web-service/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `${WEB_HOST_PORT:-8080}:8080` 호스트 게시 HTTP | `web` 서비스(unprivileged nginx) | 이 README는 소비자를 기록하지 않는다. | `nginx.conf`가 `8080`에서 listen하며 `site/index.html` 정적 콘텐츠를 서빙한다. | 포트 충돌 시 `.env`의 `WEB_HOST_PORT`를 바꾸고 재시작 시 `docker compose logs web`으로 확인한다. |
+
 #### Inputs and Outputs
 
 호스트 게시 포트는 `${WEB_HOST_PORT:-8080}:8080`이다. 연결 네트워크는 `sample-internal`이다. (출처: `examples/sample-web-service/docker-compose.yml`의 `web` 서비스)

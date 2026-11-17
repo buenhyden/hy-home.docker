@@ -40,6 +40,12 @@ storybook/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `storybook.${DEFAULT_URL}` HTTPS 브라우저 route | `storybook`(내부 8080, `experience_ingress_net`) | 브라우저 사용자(Traefik 경유) | 읽기 전용 정적 빌드 결과를 OAuth2 Proxy의 Keycloak `/admins` 판정 뒤에서 제공한다. | 비인증 브라우저는 Keycloak으로 302, JSON 요청은 401이며 RUN-0101을 따른다. |
+| `storybook-mcp.${DEFAULT_URL}` `/mcp`·`/.well-known/oauth-protected-resource` | `storybook-mcp` | 다른 워크스페이스의 Codex·Claude Code | 같은 빌드 manifest를 문서 tool로 제공하며 Keycloak bearer token의 issuer·audience·만료·서명·`/admins`를 확인한다. | MCP는 401/403을 돌려주며 health는 보호 자원 metadata 응답을 확인한다. |
+| `https://keycloak.${DEFAULT_URL}` discovery와 JWKS | Keycloak | `storybook-mcp` | `edge_net`에서 host root CA로 discovery와 JWKS를 가져온다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 root [Compose](../../../docker-compose.yml)가 leaf를 include한다. 유일한 선택

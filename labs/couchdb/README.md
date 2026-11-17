@@ -45,6 +45,10 @@ labs/couchdb/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `${LAB_HOST_BIND_IP:-127.0.0.1}:${LAB_COUCHDB_HOST_PORT:-35984}` | `couchdb-1` | 이 README는 소비자를 기록하지 않는다. | 공식 entrypoint가 `lab_couchdb_password`, `lab_couchdb_cookie`로 admin과 Erlang cookie를 설정하며 HOME Traefik label은 없다. | secret 누락은 LAB secret reference를 교정하며 runtime 결과는 미검증이고 RUN-0026을 따른다. |
+
 #### Inputs and Outputs
 
 3개 node의 상태는 `${LAB_DATA_DIR}/couchdb/data-{1..3}`에 두고 network는 `lab_couchdb_core_net`, `lab_couchdb_edge_net`을 사용한다. 환경 변수는 아래 표와 같다.

@@ -39,6 +39,14 @@ Ingest는 게시 함수, notifier는 claim/ack/no-send retry/unknown, reader는 
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `publish_manifest` | 이 폴더의 publication SQL | Ingest | source, run ID, raw SHA256, captured_at, records JSONB, artifact key를 받아 published, historical, replayed를 돌려준다. | 같은 source의 다른 입력과 UTC 업무일 충돌은 거부되며 commit 전 실패는 transaction rollback으로 끝난다. |
+| `claim_notification`·`ack_notification`·`retry_not_sent_notification`·`unknown_notification` | 이 폴더의 publication SQL | notifier | 10분 lease의 claim 필드와 lease_token을 주고 ack는 SMTP acceptance만 기록한다. | 만료·stale token은 거부되고 다섯 번 claim 후 dead이며 격리 기록 실패 시 sending을 유지한다. |
+| `published_documents`·`delivery_status` view | 이 폴더의 publication SQL | reader | reader SELECT로 승인된 현재 문서와 제한된 통지 장부를 읽고 `data_version`을 포함한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `reconcile_notification`·`requeue_dead_notification`·`quarantine_restored_notification` | 이 폴더의 publication SQL | `SET ROLE opsflow_owner`한 `opsflow_migrator` session | id와 attempt, request UUID, 승인·장벽 증거 SHA256을 받아 boolean을 돌려준다. | 다른 인수·경합·동일 attempt 중복 승인은 거부되며 실패하면 polling을 멈추고 근거를 보존한다. |
+| `migration_sha256` psql 변수 | 호출자 | migration과 검사 SQL | 적용할 migration 파일의 SHA256을 각 실행에 제공한다. | receipt나 fingerprint가 다르면 전체 transaction을 중단하고 재적용은 항상 거부한다. |
+
 #### P05 source interface
 
 현재 source version은 5입니다. 여섯 인자 `publish_manifest`와 여섯 claim 필드를

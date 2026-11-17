@@ -30,6 +30,12 @@ created: "2025-11-24"
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| 정적 Storybook origin | `projects/storybook/nextjs/`의 정적 origin Dockerfile | Traefik 경유 관리자 브라우저 | Traefik이 HTTPS를 종료하고 기존 관리자 인증을 적용한다 | 실행 중인 origin의 운영과 복구는 RUN-0101 Storybook Runbook을 따른다 |
+| 내부 UI 패키지 `packages/ui/` | `projects/storybook/nextjs/` | 외부 프로젝트 | 검토된 패키지 계약을 소비하며 Storybook 소스 파일을 무관리 복사하지 않는다 | 이 README는 실패 처리를 기록하지 않는다. |
+| 로컬 문서 MCP `mcp/` | `projects/storybook/nextjs/` | 이 README는 소비자를 기록하지 않는다. | Compose 밖의 로컬 프로세스이며 원격 접속은 비활성이다 | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 정적 origin은 별도 Compose fragment로 선택형 root profile에 연결됩니다. Traefik이 HTTPS를 종료하고 기존 관리자 인증을 적용합니다. 문서 MCP는 Compose 밖의 로컬 프로세스이며 원격 접속은 비활성입니다.

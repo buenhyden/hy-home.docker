@@ -66,6 +66,16 @@ Blog-data `main`은 이미지·배포 기준으로 쓰지 않습니다. 영속 �
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `collect_research_source({item_id, source_url})` | Hermes 플러그인 | Hermes 에이전트 | 허용된 scheduler 실행에서 `receipt_id`, `source_url`, `fetched_at`, `body_sha256`, `collection_call_id`, `normalized_text`를 반환한다. | 실행 식별자가 없으면 네트워크 호출 전에 거부하고 같은 item의 다른 URL은 충돌로 거부한다. |
+| `submit_research_report` (도구 계약 v3) | Hermes 플러그인 | Hermes 에이전트 | `payload`, `report_path`, 선택 `source_receipts`만 받고 보고서를 먼저 저장한 뒤 Webhook에 제출한다. | 경로·크기·UTF-8·길이 위반은 `BLOCKED`로 거부하고 전송 실패는 같은 바이트로 최대 3회 재시도한다. |
+| n8n Webhook `POST /webhook/hermes-blog-ingestion` | Traefik 정확한 경로와 n8n | Hermes `submit_research_report`와 복구용 Publisher `dispatch` | `X-Hermes-Ingest-Token` headerAuth, 출발지 `192.168.0.13/32`, 본문 1 MiB, 분당 6회로 제한한다. | 재시도는 제출자만 하며 400·401·403·409·413·422는 다시 보내지 않고 404는 흐름 미게시 상태다. |
+| Gateway `http://blog-ingestion:8787/v1/ingestions` | `blog-ingestion` Gateway | `n8n-worker` | `n8n_blog_ingest_net` 평문 HTTP와 `Authorization: Bearer` 수집 전용 Token을 쓰고 200·201 영속 수신을 반환한다. | 영속 수신 증거를 확인하기 전에는 성공을 반환하지 않으며 흐름에는 재시도가 없다. |
+| Attestation `POST /v1/ingestions/{id}/attestations`와 `GET /v1/attestation-queue` | `blog-ingestion` Gateway | `hermes-attester` 계정의 `attest-queue` | `blog-data-attestation/2` Ed25519 서명을 `attest`+`read` Token으로 제출한다. | 일시 실패는 6시간까지 재시도하고 409 `REPORT_QUARANTINED`는 건너뛰며 `rejected`가 있으면 종료 코드 1이다. |
+| Export 조회·ACK `https://blog-export.<DEFAULT_URL>` | `blog-ingestion` Gateway (`blog_export_net`) | Windows B 수신기 `scripts/ops/receive-hermes-exports.mjs` | Resource Export 2.0을 `export_read`·`export_ack` Bearer 토큰과 출발지 `<BLOG_EXPORT_RECEIVER_IP>/32`로 제공한다. | 수신기는 1.0 Manifest를 `UNSAFE_MANIFEST`로 거부하고 ACK 409는 `conflict`로 기록한다. |
+| `~/backups/metrics/hermes_research.prom` | Hermes 플러그인 | node-exporter textfile collector | 실행마다 원자 교체되는 0644 파일이며 label 값은 고정 enum뿐이다. | 지표 실패는 도구 결과를 바꾸지 않고 디렉터리가 없으면 쓰지 않는다. |
+
 #### P11 직접 수집·제출 인터페이스
 
 현재 P11 source API는 `collect_research_source({item_id, source_url})`입니다.

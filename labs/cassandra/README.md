@@ -54,6 +54,10 @@ HOME Grafana는 `infra/06-observability/grafana/dashboards/`만 provisioning하�
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `cassandra-node1`의 `lab_cassandra_core_net` 내부 expose | `cassandra-node1` | 이 README는 소비자를 기록하지 않는다. | host port를 게시하지 않으며 비밀번호 인증은 구성되지 않았다. | Compose healthcheck 선언만 있고 runtime 결과는 미검증이며 RUN-0025를 따른다. |
+
 #### Inputs and Outputs
 
 환경 변수 `LAB_DATA_DIR`이 가리키는 `${LAB_DATA_DIR}/cassandra/node1`을 `/var/lib/cassandra`에 mount하고 network는 `lab_cassandra_core_net`만 사용한다. 환경 변수는 아래 표와 같다.

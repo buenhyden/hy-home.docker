@@ -55,6 +55,12 @@ source·배포 SHA와 digest의 일치 여부는 입력끼리 비교하며 실�
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `measurement.schema.json` | 이 디렉터리 | 평가기 CLI(`root-resource-assessment.py`) | source·배포 식별자, 관측 시간, 20개 측정값과 11개 예산, provenance를 받는 공개 측정 입력 계약이다. | 미상 provenance와 합성 수집 방법은 차단한다. |
+| `scripts/operations/root-resource-assessment.py` | 평가기(`scripts/lib/ops/root_resource_assessment.py`) | 이 README는 소비자를 기록하지 않는다. | 지정한 공개 JSON 한 파일(256 KiB, 깊이 32, 노드 8192)을 받아 `0`=REVIEWABLE, `1`=BLOCKED, `2`=입력 거부로 종료한다. | 부적합 입력은 고정 오류 코드로 거부하며 경로나 입력값을 출력하지 않는다. |
+| `scripts/operations/storage-write-rate.py` (`collect`, `compare`) | 쓰기율 CLI | 배치 결정을 소유하는 POL-0102와 owner | Docker 메타데이터·`/proc/diskstats`·cgroup `io.stat`과 SMART 값으로 24시간 쓰기량과 SSD 수명을 추정한다. | 조건 미달은 `DEFER`, 잘못된 입력은 거부하며 종료 코드 `1`은 표본 무효, `2`는 입력 오류이다. |
+
 #### Inputs and Outputs
 
 CLI는 지정한 JSON 외에 이 디렉터리의 schema를 읽습니다. 실행 환경·Compose·secret 설정을 변경하지 않습니다.

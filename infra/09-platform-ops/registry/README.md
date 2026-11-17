@@ -51,6 +51,12 @@ registry/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Registry HTTP API v2 `127.0.0.1:${REGISTRY_PORT:-5000}` -> `5000` | `registry` | 승인된 신뢰 네트워크의 호스트 클라이언트(Operators, CI/CD Developers) | 인증·TLS 없는 HTTP로 비민감 OCI 이미지를 저장·배포하며 데이터는 `${DEFAULT_REGISTRY_DIR}`에 둔다 | Compose 헬스체크가 선언되어 있으며 Registry Runbook을 따른다 |
+| 내부 `registry:5000` | `registry` | 같은 network(`obs_net`)의 컨테이너 | 인증 없이 접근할 수 있는 Registry HTTP API이다 | 이 README는 실패 처리를 기록하지 않는다. |
+| 내부 debug/metrics 포트 `5001` | `registry` | 이 README는 소비자를 기록하지 않는다. | 호스트에 게시하지 않는 내부 debug/metrics 수신 포트이다 | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 호스트 `127.0.0.1:${REGISTRY_PORT:-5000}`가 컨테이너 5000의 Registry HTTP API v2로 연결되고, 이미지 데이터는 `${DEFAULT_REGISTRY_DIR}` bind mount에 저장된다. 필요한 환경 변수 키는 아래 표와 같다.

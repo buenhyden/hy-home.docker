@@ -33,6 +33,11 @@ Lifecycle: **OPTIONAL** (소유자가 2026-11-09 HOME에서 제외). 루트 Comp
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Traefik 라우트(`comfyui_ingress_net`) | `comfyui` | Traefik | 호스트 포트 없이 `gateway-standard-chain`·`sso-errors`·`sso-auth`를 거쳐 들어온다. | 마운트 누락, 예상치 못한 노출, 초기화 실패 시 중지하고 RUN-0081을 따른다. |
+| 유지보수 overlay 게시 `127.0.0.1:8188:${COMFYUI_PORT:-8188}` | `comfyui`(`docker-compose.egress.yml` 적용 시) | 이 README는 소비자를 기록하지 않는다. | 모델·custom node 설치 같은 유지보수 동안에만 열리며 끝나면 overlay 없이 재생성한다. | 절차와 복구는 RUN-0081이 소유한다. |
+
 #### Inputs and Outputs
 
 | Service | Profiles | Networks | Host publication | Secret references |

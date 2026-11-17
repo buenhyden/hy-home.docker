@@ -50,6 +50,12 @@ Lifecycle: **HOME**. 루트 Compose가 이 정의를 include하며, 명시적 pr
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| 내부 API endpoint `https://openbao:${OPENBAO_PORT:-8200}` | `openbao` | Agent, metrics, Gatus, Traefik | 같은 port와 검증된 CA로 TLS 연결하며 SAN `DNS:openbao`와 `IP:127.0.0.1`을 요구한다 | healthcheck `bao status`(interval 15s)로 확인하고 복구는 RUN-0085를 따른다 |
+| Agent 렌더링 출력 `openbao-agent-out` (`${DEFAULT_SECURITY_DIR}/openbao/out`) | `openbao-agent` | 이 README는 소비자를 기록하지 않는다. | `agent.hcl`의 template별 `destination`·`perms`로 파일을 렌더링한다 | symlink나 `/openbao/out/` 밖 경로가 있으면 Agent를 시작하지 않으며 healthcheck는 `health-agent.sh`(interval 30s)이다 |
+| 공개 secret catalog `secret-catalog.json` | OpenBao 패키지(`secret-catalog.json`과 schema) | catalog CLI `scripts/operations/secret-catalog.py` | 값 없는 공개 분류·보존·미결정 mapping이며 `render`는 `.agent-work/p02-views`에 네 파일만 쓴다 | `COMM-002`와 `COMM-003`의 재생성을 거부하며 실제 명령과 중단 조건은 `RUN-0085`가 소유한다 |
+
 #### Configuration
 
 | Service | Profiles | Networks | `edge_net`, `obs_net`, `secrets_net` | Secret references |

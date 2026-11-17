@@ -54,6 +54,12 @@ qdrant/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| REST `${QDRANT_PORT:-6333}` | `qdrant` | 이 README는 소비자를 기록하지 않는다. | HTTP REST이며 SSO 뒤에서 라우팅되고 `qdrant_api_key` API key가 필요하다. | key가 없으면 health 엔드포인트만 응답하며 `/readyz`와 Compose 헬스체크로 확인하고 RUN-0034를 따른다. |
+| gRPC `${QDRANT_GRPC_PORT:-6334}` | `qdrant` | 이 README는 소비자를 기록하지 않는다. | gRPC이며 네트워크 내부 전용이다. | 이 README는 실패 처리를 기록하지 않는다. |
+| Prometheus 스크레이프 | `qdrant` | Prometheus | `qdrant_read_only_api_key`의 read-only key로 스크레이프한다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `ai_net`, `edge_net`, `obs_net`이다. (출처: `infra/04-data/qdrant/docker-compose.yml`의 `qdrant` 서비스)

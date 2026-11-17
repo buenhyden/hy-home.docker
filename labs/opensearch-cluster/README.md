@@ -76,6 +76,12 @@ high watermark(90%)를 넘으면 보안 index를 배치하지 못하므로 디�
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| OpenSearch API 9200(`lab_opensearch_core_net`) | `opensearch-node1`·`opensearch-node2`·`opensearch-node3` | `lab-opensearch-dashboards` | 호스트 publish·Traefik 없이 내부 expose만 하며 LAB 내부 basic 인증만 쓴다. | Compose healthcheck가 있고 RUN-0109 런북을 따르며 디스크 high watermark(90%)를 먼저 확인한다. |
+| 모니터링 9600(`lab_opensearch_core_net`) | `opensearch-node1`·`opensearch-node2`·`opensearch-node3` | 이 README는 소비자를 기록하지 않는다. | 호스트 publish 없이 내부 expose만 한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| Dashboards 5601(`lab_opensearch_core_net`) | `lab-opensearch-dashboards` | 이 README는 소비자를 기록하지 않는다. | `opensearch-cluster-dashboards.config`를 읽고 정상 Keycloak/OIDC와 게이트웨이 라우트를 쓰지 않는다. | Compose healthcheck가 있고 RUN-0109 OpenSearch cluster LAB 런북을 따른다. |
+
 #### Inputs and Outputs
 
 API 9200, 모니터링 9600, Dashboards 5601은 `lab_opensearch_core_net` 내부 expose만 하고 상태는 `${LAB_DATA_DIR}/opensearch-cluster/` 아래에 bind한다. 입력 경로는 `LAB_DATA_DIR`, `LAB_SECRET_DIR`, `LAB_OPENSEARCH_CERT_DIR`이다.

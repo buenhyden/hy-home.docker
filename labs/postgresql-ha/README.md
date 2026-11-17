@@ -59,6 +59,10 @@ HOME Grafana는 `infra/06-observability/grafana/dashboards/`만 provisioning하�
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| LAB 호스트 노출 `${LAB_HOST_BIND_IP}`와 `LAB_PG_*_HOST_PORT` | `hy-home-lab-postgresql-ha` LAB 서비스 (`pg-router` 등) | 이 README는 소비자를 기록하지 않는다. | LAB 전용 network·secret reference를 쓰며 root key와 공유하지 않는다. | Compose healthcheck 선언뿐 런타임 결과는 미검증이며 `LAB_DATA_DIR` 미설정은 fail fast다. |
+
 #### Inputs and Outputs
 
 상태는 `${LAB_DATA_DIR}/postgresql-ha/` 아래에 bind하고 network는 `lab_pg_core_net`, `lab_pg_edge_net`, `lab_pg_obs_net`을 사용한다. 환경 변수는 아래 표와 같다.

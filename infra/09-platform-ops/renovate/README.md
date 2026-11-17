@@ -42,6 +42,11 @@ renovate/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `hyhome-renovate.timer` -> `hyhome-renovate.service` | 주간 systemd timer | `renovate` 서비스(`dependency-update` profile) | 주간 oneshot 실행이 기본이며 온디맨드는 `docker compose -p hy-home-infra --profile dependency-update run --rm --no-deps renovate`이다 | 실행 결과는 unit 상태로 확인하고 RUN-0083 Renovate Runbook을 따른다 |
+| 원격 저장소 업데이트 변경 | `renovate` | 원격 저장소 | `renovate_token` Docker Secret과 renovate.json5, POL-0086 규칙으로 버전 업데이트를 만든다 | 실패 시 이전 검토된 이미지 고정으로 되돌리고 이미 생성된 원격 변경을 별도로 확인한다 |
+
 #### Inputs and Outputs
 
 프로필: `dependency-update`. 루트 Compose가 이 정의를 include하지만 include 자체만으로는 서비스가 시작되지 않습니다. 프로젝트 기본 네트워크를 사용합니다. 비공개 값을 출력하지 않고 [공개 환경 변수 키](../../../.env.example)와 [시크릿 참조](../../../secrets/README.md)를 검토합니다.

@@ -60,6 +60,12 @@ great-expectations/
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `trino://great-expectations@trino:8080/lakehouse` | `trino`(catalog `lakehouse`) | `great-expectations` | `GX_TRINO_URL` SQLAlchemy URL로 table을 읽기만 하며 Trino에는 인증이 없다. | `TABLE_NOT_FOUND`나 Trino 오류면 exit `2`로 원인을 stderr에 출력한다. |
+| `suites/*.json` | 이 폴더(추적 suite) | `great-expectations`(`/opt/hyhome/suites` 읽기 전용) | `name`, `<schema>.<table>` 형식의 `table`, GX expectation 목록을 담으며 raw SQL 인자는 코드처럼 리뷰한다. | 파일이 없으면 `no suite '<name>'`, 형식 오류는 exit `2`이다. |
+| `hyhome-gx.py` (`list`, `validate [SUITE...]`) | `great-expectations` job | 이 README는 소비자를 기록하지 않는다. | 기본은 suite 목록 출력이며 출력은 expectation 결과(`success`)와 종료 코드이다. | exit `1`은 expectation 실패, `2`는 검사 불가이다. |
+
 #### Inputs and Outputs
 
 입력은 `suites/` 아래 추적된 JSON suite와 Trino SQL data source이며, 출력은 expectation 결과(`success`)와 종료 코드이다. suite는 table을 읽기만 한다. 환경 변수는 아래 표와 같다.

@@ -57,6 +57,13 @@ ForwardAuth를 제공하며 Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao 같�
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Gateway ForwardAuth | OAuth2 Proxy(Keycloak 인증) | Flower, n8n, 자체 OIDC가 없는 내부 UI | `Browser -> Traefik -> OAuth2 Proxy -> Keycloak -> Service` 경로로 인증한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| Application-native OIDC | Keycloak(중앙 Identity Provider) | Airflow, Kafbat UI, Open WebUI, Gatus, OpenBao | `Browser -> Traefik -> Application -> Keycloak` 경로이며 앞에 OAuth2 Proxy ForwardAuth를 중복 적용하지 않는다. | 이 README는 실패 처리를 기록하지 않는다. |
+| Keycloak `/health/ready`(`127.0.0.1:9000`) | `keycloak` | 운영자의 런타임 점검 명령 | 컨테이너 안에서 `GET /health/ready` HTTP 요청으로 준비 상태를 확인한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| OAuth2 Proxy `/ping`(`http://127.0.0.1:4180/ping`) | `oauth2-proxy` | 운영자의 런타임 점검 명령 | 컨테이너 안에서 `wget`으로 `/ping`을 조회한다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Configuration
 
 | Variable | Required | Description |

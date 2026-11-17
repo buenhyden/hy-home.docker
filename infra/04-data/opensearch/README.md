@@ -61,6 +61,11 @@ snapshot 복원 성공을 뜻하지 않습니다. 업그레이드한 노드는 �
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `opensearch.${DEFAULT_URL}` 검색 API route | `opensearch` 서비스 | 이 README는 소비자를 기록하지 않는다. | HTTPS API이며 관리자 secret 기반 healthcheck를 사용하고 호스트 포트는 게시하지 않는다. | Compose healthcheck(interval 15s)로 상태를 확인하고 RUN-0019 런북을 따른다. |
+| `opensearch-dashboard.${DEFAULT_URL}` Dashboard route | `opensearch-dashboards` 서비스 | 이 README는 소비자를 기록하지 않는다. | HTTPS/OIDC 설정을 쓰며 `200` 또는 `401` 상태를 준비 신호로 받는다. | Compose healthcheck(interval 15s)로 상태를 확인하고 RUN-0019 런북을 따른다. |
+
 #### Configuration
 
 `opensearch` profile, `edge_net`·`obs_net`, 기존 영속 경로와 secret·인증서 bind를 사용합니다. 서비스별 실제 참조는 Compose가 소유합니다.
