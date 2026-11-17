@@ -2343,17 +2343,28 @@ docker() {
 status=0
 python3() {
   printf '%s\n' "$*" >>"$staging/calls"
+  if [[ "$*" == *"capacity reconcile"* ]]; then
+    [[ "$FAILURE" != reconcile ]] || return 4
+    return 0
+  fi
   [[ "$FAILURE" != backup ]] || { echo partial >"$staging/agent-memory.sqlite3"; return 7; }
   [[ "$FAILURE" != capacity ]] || { echo partial >"$staging/agent-memory.sqlite3"; return 4; }
   echo synthetic >"$staging/agent-memory.sqlite3"
 }
 """
-        for case in ("absent", "present", "backup", "capacity", "dangling"):
+        for case in (
+            "absent",
+            "present",
+            "backup",
+            "capacity",
+            "reconcile",
+            "dangling",
+        ):
             with self.subTest(case=case), tempfile.TemporaryDirectory() as directory:
                 root = Path(directory)
                 staging = root / "staging"
                 staging.mkdir()
-                if case in ("present", "backup", "capacity"):
+                if case in ("present", "backup", "capacity", "reconcile"):
                     (root / ".workspace-memory").mkdir()
                     (root / ".workspace-memory/memory.sqlite3").write_text("")
                 elif case == "dangling":
@@ -2383,18 +2394,27 @@ python3() {
                     self.assertTrue(calls.exists())
                 elif case == "present":
                     self.assertEqual(0, result.returncode)
+                    lines = calls.read_text().splitlines()
+                    # The ledger is reconciled from current snapshot metadata
+                    # before the export is admitted (D-11).
+                    self.assertIn("agent_memory.py capacity reconcile", lines[0])
                     self.assertIn(
                         "/scripts/operations/agent_memory.py backup --output "
                         + str(staging / "agent-memory.sqlite3"),
-                        calls.read_text(),
+                        lines[1],
                     )
                     self.assertTrue((staging / "agent-memory.sqlite3").exists())
                 elif case == "capacity":
-                    # Only the capacity refusal (exit 4) is a warning: the
-                    # saturated memory capacity ledger must not fail the whole run.
-                    self.assertEqual(0, result.returncode)
+                    # A capacity refusal leaves memory out of the snapshot, so
+                    # it fails the run instead of passing with a warning.
+                    self.assertEqual(1, result.returncode)
                     self.assertIn("capacity", result.stderr)
                     self.assertFalse((staging / "agent-memory.sqlite3").exists())
+                elif case == "reconcile":
+                    # A failed reconcile is reported; the export still runs.
+                    self.assertEqual(1, result.returncode)
+                    self.assertIn("reconcile", result.stderr)
+                    self.assertTrue((staging / "agent-memory.sqlite3").exists())
                 else:
                     self.assertEqual(1, result.returncode)
                     self.assertFalse((staging / "agent-memory.sqlite3").exists())
