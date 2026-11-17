@@ -388,6 +388,7 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Governance move fidelity | 137 | W143 | document-move | 15 governance policies at `e7fc61911` against `82cf41b9d`: non-heading lines lost and added | PASS | Lost only the 29 frontmatter `version` and `updated` lines; added 29 frontmatter lines, 158 Limits lines and 15 tables | required | - |
 | Governance table verification | 137 | W143 | rule-table-verification | Rule rows in the 15 tables at `e7fc61911` | PASS | 768 rows, 0 negated `Forbidden:` rows | required | - |
 | Governance profile test | 137 | W143 | document-governance-regression | metadata.test_profile at `2a4331860`, before the profile test change | FAIL | 18 tests, 1 failure: the approval-boundary body test named the old sections | required | - |
+| Governance regression | 137 | W143 | document-governance-regression | test_registry, test_template_definition, metadata heading, profile, reference and lifecycle, test_metadata_validator, test_spec_packages, test_taxonomy, test_operations_catalog and test_script_manifest at `e7fc61911` | PASS | 782 tests in 1469 seconds, exit 0 | required | Governance profile test |
 | Governance corpus | 137 | W143 | document-corpus | check-changed against `origin/main`, check-contracts, governance contract, provider surface renderer, link alignment and markdownlint at `e7fc61911` | PASS | 16 changed and 0 violations; 0 contract violations; governance contract, renderer and alignment PASS; 0 lint issues | required | - |
 
 ### Resolution Links
@@ -396,7 +397,7 @@ Conformance GREEN resolves Conformance RED, and Foundation re-review resolves
 Foundation review. Runbook form GREEN, Reference table GREEN, Runbook
 regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
 Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Policy review approval, Policy re-review approval, Policy hosted candidate
-rerun, Governance form GREEN, Incident regression rerun, Review fix GREEN, Review fix
+rerun, Governance form GREEN, Governance regression, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
 rows. The comparison baseline stays
 open until every role group conforms.
