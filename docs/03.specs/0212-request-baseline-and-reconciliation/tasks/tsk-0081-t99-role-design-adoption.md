@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.7.1"
+version: "0.7.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -275,11 +275,14 @@ under `####` subsections were left out. Seven writing agents derived every
 table and Limits text again from the policy prose under stricter rules: a row
 for every rule statement in Requirements and its subsections, `금지:` naming
 the forbidden act, a check named only where the policy ties it to that rule,
-and Limits that agree with the table. Each row cites the source lines. A
+and Limits that agree with the table. Each draft cited the source lines of its rows. A
 script rejected uncited rows and negated `금지:` rows and flagged a named
 check missing from its cited line; four such ties and eleven loose ones were
 lowered to `none` or `수동` and listed in Limits, and two truncated rows were
-completed. The tables now hold 2415 rows, and no `금지:` row is negated.
+completed. The tables now hold 2415 rows, and no `금지:` row is negated. The re-review found twenty Limits line citations computed before the
+tables shifted the lines below them; they are removed. Three POL-0078 rows
+the catalog check names regain it, and POL-0045's Limits now says its `rg`
+patterns find values without enforcing the rules.
 Exceptions sections stay outside the tables because they are not
 Requirements.
 
@@ -359,6 +362,7 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Policy regression | 137 | W143 | document-governance-regression | test_registry, test_template_definition, metadata heading, reference and lifecycle, test_operations_catalog, test_metadata_validator, test_spec_packages and test_taxonomy | PASS | 713 tests, exit 0 | required | - |
 | Policy review | 137 | W143 | independent-review | Commits `b901796e3` and the TSK-0081 record | FAIL | CHANGES_REQUIRED: twelve inverted `금지:` rows, Enforcement cells naming checks the policy does not tie to the rule, rules under subsections missing | required | - |
 | Policy redraft verification | 137 | W143 | rule-table-verification | 77 redrafted tables through the verifying apply script, then check-changed, check-contracts, check-operations-catalog, link alignment and markdownlint | PASS | 2415 rows, 0 uncited, 0 negated `금지:`; 0 violations; catalog and alignment PASS; 0 lint issues | required | - |
+| Policy re-review | 137 | W143 | independent-review | Fix range `7e23e2acf` and `83fe20401` against the first review | FAIL | CHANGES_REQUIRED: I1 to I3 and M1 to M3 fixed; twenty Limits line citations point at shifted lines | required | - |
 
 ### Resolution Links
 
