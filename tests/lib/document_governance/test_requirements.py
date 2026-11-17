@@ -280,6 +280,7 @@ class RequirementPackageTests(unittest.TestCase):
             "missing": (declared[:3], "REQ-0001-FR-0004"),
             "extra": ([*declared, "REQ-0001-FR-0005"], "REQ-0001-FR-0005"),
             "mistyped": ([*declared[:3], "REQ-0001-FR-0040"], "REQ-0001-FR-0040"),
+            "repeated": ([*declared, declared[0]], "REQ-0001-FR-0001"),
         }
         with tempfile.TemporaryDirectory() as directory:
             for label, (rows, wrong) in cases.items():
@@ -299,6 +300,27 @@ class RequirementPackageTests(unittest.TestCase):
                         f"requirements table.*{wrong}",
                     ):
                         requirements.parse_requirement_package(path)
+
+    def test_a_column_aligned_requirements_table_is_still_checked(self) -> None:
+        requirements = _requirements_module()
+        table = (
+            "|  Requirement ID  | Statement | Rationale | Acceptance | Priority |\n"
+            "| ---------------- | --------- | --------- | ---------- | -------- |\n"
+            + "".join(
+                f"| REQ-0001-FR-000{number}   | S. | R. | A. | must |\n"
+                for number in range(1, 4)
+            )
+        )
+        text = _package_text().replace(
+            "## Requirements\n\n", f"## Requirements\n\n{table}\n", 1
+        )
+        with tempfile.TemporaryDirectory() as directory:
+            path = self._write_package(pathlib.Path(directory), text=text)
+            with self.assertRaisesRegex(
+                requirements.RequirementPackageError,
+                "requirements table.*REQ-0001-FR-0004",
+            ):
+                requirements.parse_requirement_package(path)
 
     def test_quality_requirements_are_parsed_as_nfr(self) -> None:
         requirements = _requirements_module()

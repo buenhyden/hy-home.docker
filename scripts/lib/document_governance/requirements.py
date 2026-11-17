@@ -26,8 +26,12 @@ MAX_REQUIREMENT_BYTES = 512 * 1024
 MAX_REQUIREMENT_ITEMS = 2048
 _PACKAGE_PATH = re.compile(r"(?P<number>[0-9]{4})-[a-z0-9][a-z0-9-]*\.md")
 _SECTION = re.compile(r"(?ms)^## (?P<name>[^\n]+)\n(?P<body>.*?)(?=^## |\Z)")
-_REQUIREMENTS_TABLE_HEADER = (
-    "| Requirement ID | Statement | Rationale | Acceptance | Priority |"
+_REQUIREMENTS_TABLE_LABELS = (
+    "Requirement ID",
+    "Statement",
+    "Rationale",
+    "Acceptance",
+    "Priority",
 )
 _LIST_DECLARATION = re.compile(
     r"^[ \t]*[-*+]\s+\*\*(?P<identity>REQ-[0-9]{4}-(?:FR|NFR|IF)-[0-9]{4})"
@@ -757,13 +761,19 @@ def _validate_requirements_table(text: str, items: tuple[RequirementItem, ...]) 
     if section is None:
         return
     lines = [line.strip() for line in section.group("body").splitlines()]
-    if _REQUIREMENTS_TABLE_HEADER not in lines:
+    cells = [
+        tuple(cell.strip() for cell in line.strip("|").split("|"))
+        if line.startswith("|")
+        else ()
+        for line in lines
+    ]
+    if _REQUIREMENTS_TABLE_LABELS not in cells:
         return
     listed = []
-    for line in lines[lines.index(_REQUIREMENTS_TABLE_HEADER) + 2 :]:
-        if not line.startswith("|"):
+    for row in cells[cells.index(_REQUIREMENTS_TABLE_LABELS) + 2 :]:
+        if not row:
             break
-        listed.append(line.strip("|").split("|", 1)[0].strip())
+        listed.append(row[0])
     declared = [item.identity for item in items]
     if sorted(listed) != sorted(declared):
         missing = sorted(set(declared) - set(listed))
