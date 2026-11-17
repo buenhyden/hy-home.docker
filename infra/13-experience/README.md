@@ -35,6 +35,10 @@ UI 개발자, 디자인 검토자와 인프라 운영자를 위한 인덱스다.
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Storybook Traefik 라우트(`DEFAULT_URL`의 기존 공개 route 이름) | `storybook` static origin | 관리자 `/admins` 브라우저 | 라우트는 `sso-auth@file`을 거치고 `experience_ingress_net`이 Storybook과 Traefik만 연결하며 host port는 없다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 root [Compose](../../docker-compose.yml)가 leaf를 include하고 전용망을 선언한다.

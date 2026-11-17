@@ -66,9 +66,9 @@ created: "2025-11-12"
 
 | Interface | Producer | Consumer | Contract | Failure |
 | --- | --- | --- | --- | --- |
-| `${HOST_LAN_BIND_IP:-192.168.0.13}:${ALLOY_OTLP_GRPC_HOST_PORT:-4317}` OTLP gRPC | `alloy` 서비스 | 하위 서비스들의 텔레메트리 전송 | 텔레메트리(OTLP)의 기본 진입점은 항상 Alloy이다. | Alloy OTLP 엔드포인트를 바꾸면 모든 하위 서비스의 텔레메트리가 중단된다. |
-| `${HOST_LAN_BIND_IP:-192.168.0.13}:${ALLOY_OTLP_HTTP_HOST_PORT:-4318}` OTLP HTTP | `alloy` 서비스 | 하위 서비스들의 텔레메트리 전송 | 텔레메트리(OTLP)의 기본 진입점은 항상 Alloy이다. | Alloy OTLP 엔드포인트를 바꾸면 모든 하위 서비스의 텔레메트리가 중단된다. |
-| `127.0.0.1:${ALLOY_HERMES_OTLP_HOST_PORT:-4320}` Hermes OTLP | `alloy` 서비스 | 이 README는 소비자를 기록하지 않는다. | loopback에만 게시되며 Compose가 `hermes_otlp_token` secret을 참조한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `${HOST_LAN_BIND_IP:-192.168.0.13}:${ALLOY_OTLP_GRPC_HOST_PORT:-4317}` OTLP gRPC | `alloy` 서비스 | 하위 서비스들의 텔레메트리 전송 | 텔레메트리(OTLP)의 기본 진입점은 항상 Alloy이다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `${HOST_LAN_BIND_IP:-192.168.0.13}:${ALLOY_OTLP_HTTP_HOST_PORT:-4318}` OTLP HTTP | `alloy` 서비스 | 하위 서비스들의 텔레메트리 전송 | 텔레메트리(OTLP)의 기본 진입점은 항상 Alloy이다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `127.0.0.1:${ALLOY_HERMES_OTLP_HOST_PORT:-4320}` Hermes OTLP | `alloy` 서비스 | 이 README는 소비자를 기록하지 않는다. | loopback에만 게시된다. | 이 README는 실패 처리를 기록하지 않는다. |
 | `${HOST_LAN_BIND_IP:-192.168.0.13}:${LOKI_HOST_PORT:-3100}` Loki | `loki` 서비스 | 이 README는 소비자를 기록하지 않는다. | 로그 집계이며 SeaweedFS 버킷 `loki-bucket`을 S3 호환 저장소로 쓴다. | SeaweedFS S3 버킷 상태를 모니터링하고 데이터 경로 장애는 관측성 런북을 따른다. |
 | `${HOST_LAN_BIND_IP:-192.168.0.13}:${TEMPO_HOST_PORT:-3200}` Tempo | `tempo` 서비스 | 이 README는 소비자를 기록하지 않는다. | 분산 트레이싱이며 SeaweedFS 버킷 `tempo-bucket`을 S3 호환 저장소로 쓴다. | SeaweedFS S3 버킷 상태를 모니터링하고 데이터 경로 장애는 관측성 런북을 따른다. |
 | `127.0.0.1:${PYROSCOPE_HOST_PORT:-4040}` Pyroscope | `pyroscope` 서비스 | 이 README는 소비자를 기록하지 않는다. | 연속 프로파일링 서비스이며 loopback에만 게시된다. | Compose 헬스체크가 선언되어 있고 장애는 관측성 런북을 따른다. |

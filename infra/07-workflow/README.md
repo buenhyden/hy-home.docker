@@ -63,6 +63,12 @@ created: "2025-11-12"
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| `airflow-apiserver` HTTP | `airflow-apiserver` | 이 README는 소비자를 기록하지 않는다. | `workflow` profile에서 Native Keycloak Auth Manager로 인증한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `flower` HTTP | `flower` | 이 README는 소비자를 기록하지 않는다. | `airflow-flower`(opt-in) profile에서 OAuth2 Proxy ForwardAuth로 인증한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| `n8n` HTTP | `n8n` | 이 README는 소비자를 기록하지 않는다. | `workflow` profile에서 OAuth2 Proxy ForwardAuth로 인증한다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Configuration
 
 - Airflow/n8n DB: `mng-pg`

@@ -54,7 +54,7 @@ updated: "2026-11-17"
 | [03.specs/](03.specs/README.md) | Spec Package: spec, plan, tasks, contracts 동거 |
 | [05.operations/](05.operations/README.md) | 운영 가이드, 정책, 런북, 사고 기록 |
 | [90.references/](90.references/README.md) | 외부 조사·감사·참고 데이터의 보조 증거 |
-| [98.archive/](98.archive/README.md) | 처분 체계 설명만 담음(기록 없음) |
+| `98.archive/` | 처분 체계 설명만 담음(기록 없음) |
 | [99.templates/](99.templates/README.md) | stage 문서 작성을 위한 표준 템플릿 |
 
 #### Current Items

@@ -87,7 +87,7 @@ member는 세 종류입니다. `glossary.md`는 저장소 vocabulary, `repositor
 
 - [Agent governance index](../README.md)
 - [Documentation protocol](../governance/documentation-protocol.md)
-- 전용 템플릿 없음: Registry의 `governance-knowledge-index` profile(`docs/99.templates/registry.json`)이 형식을 소유합니다.
+- README 템플릿 `docs/99.templates/templates/governance/knowledge-index.template.md`: 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다.
 
 ### Checks
 

@@ -18,7 +18,6 @@ layer: "operations"
 
 2026년에 열린 사고 기록을 사고별 폴더로 안내합니다. 각 폴더에는 사고 사실
 기록(`incident.md`)과, 작성된 경우 사후 분석(`postmortem.md`)이 함께 있습니다.
-상태와 결론은 각 기록이 소유하며 이 README는 옮겨 적지 않습니다.
 
 #### Inputs and Outputs
 
@@ -26,7 +25,7 @@ layer: "operations"
 
 ### Excluded Responsibilities
 
-사고의 상태와 결론은 각 기록이 소유하며 이 README는 옮겨 적지 않습니다.
+상태와 결론은 각 기록이 소유하며 이 README는 옮겨 적지 않습니다.
 
 ## Current Contents
 
@@ -57,7 +56,7 @@ layer: "operations"
 #### Policy and Templates
 
 - [문서 언어 규칙](../../../../.agents/governance/documentation-protocol.md#document-language)
-- 전용 템플릿 없음: Registry의 `incident-year-readme` profile(`docs/99.templates/registry.json`)이 형식을 소유합니다.
+- [README 템플릿](../../../99.templates/templates/common/readme-incident-year.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
 ### Checks
 

@@ -85,6 +85,10 @@ Registry와 SonarQube를 선택하는 기존 Compose 프로필이므로 이름�
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Registry `127.0.0.1` 5000 포트 | Registry | 이 README는 소비자를 기록하지 않는다. | 이 README는 계약을 따로 기록하지 않는다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Inputs and Outputs
 
 이 tier 자체는 API·포트가 없고 입력은 위 Purpose 표의 프로필 선택입니다. Registry는 `127.0.0.1`의 5000 포트를 게시하고 Terrakube는 management PostgreSQL·SeaweedFS·Valkey에 의존합니다(Scope 참조).

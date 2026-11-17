@@ -63,7 +63,7 @@ Provider adapter는 공유 동작을 소유하지 않으며, `registry.yaml`은 
 
 - [Governance hub](../../README.md)
 - [문서 작성 계약](../documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
-- 전용 템플릿 없음: Registry의 `governance-provider-index` profile(`docs/99.templates/registry.json`)이 형식을 소유합니다.
+- README 템플릿 `docs/99.templates/templates/governance/provider-index.template.md`: 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다.
 
 ### Checks
 

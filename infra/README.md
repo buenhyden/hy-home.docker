@@ -130,9 +130,9 @@ AppRole provisioning, bind directory 권한, GPU 준비, 데이터 백업을 먼
 | [07-workflow/](07-workflow/README.md) | Workflow tier 패키지 |
 | [08-ai/](08-ai/README.md) | AI tier 패키지 |
 | [09-platform-ops/](09-platform-ops/README.md) | Platform Operations tier 패키지 |
-| [10-communication/](10-communication/README.md) | Communication tier 패키지 |
+| [10-communication/](10-communication/README.md) | Communication tier 색인(현재 root 패키지 없음) |
 | [11-quality/](11-quality/README.md) | Quality tier 패키지 |
-| [12-analytics/](12-analytics/README.md) | Analytics tier 패키지 |
+| [12-analytics/](12-analytics/README.md) | Analytics tier 색인(현재 root 패키지 없음) |
 | [13-experience/](13-experience/README.md) | Experience tier 패키지 |
 
 #### Directories

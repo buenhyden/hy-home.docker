@@ -86,7 +86,7 @@ prompt는 작업 자체가 아니라 작업을 감싸는 envelope입니다. `ski
 - [Agent governance index](../README.md)
 - [Agentic policy](../governance/agentic.md)
 - [문서 작성 계약](../governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
-- 전용 템플릿 없음: Registry의 `governance-prompt-index` profile(`docs/99.templates/registry.json`)이 형식을 소유합니다.
+- README 템플릿 `docs/99.templates/templates/governance/prompt-index.template.md`: 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다.
 
 ### Checks
 

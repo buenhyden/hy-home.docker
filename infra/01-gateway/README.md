@@ -52,6 +52,11 @@ created: "2025-11-12"
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| Traefik HTTP/HTTPS 진입점 | `traefik` | 이 README는 소비자를 기록하지 않는다. | 정확한 포트 번호와 프로토콜은 하위 `traefik/`의 서비스 준비성 정보가 소유한다. | 이 README는 실패 처리를 기록하지 않는다. |
+| Traefik 메트릭 진입점 | `traefik` | 이 README는 소비자를 기록하지 않는다. | 정확한 포트 번호와 프로토콜은 하위 `traefik/`의 서비스 준비성 정보가 소유한다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Networking (Ports)
 
 정확한 포트 번호와 프로토콜은 각 서비스의 서비스 준비성 정보가 소유합니다: [traefik/](traefik/). Traefik은 HTTP/HTTPS 진입점과 메트릭 진입점을 게시합니다.

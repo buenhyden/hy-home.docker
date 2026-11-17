@@ -34,6 +34,10 @@ OpenBao 상시 서비스의 선언, Agent 출력 계약과 운영 문서 연결�
 
 ### Interfaces
 
+| Interface | Producer | Consumer | Contract | Failure |
+| --- | --- | --- | --- | --- |
+| 외부 UI `openbao.${DEFAULT_URL}` | OpenBao | 이 README는 소비자를 기록하지 않는다. | OpenBao는 `core`, `local`, `dev`, `security`, `secrets` profile에서 선택된다. | 이 README는 실패 처리를 기록하지 않는다. |
+
 #### Configuration
 
 OpenBao는 `core`, `local`, `dev`, `security`, `secrets`에서 선택된다. `${DEFAULT_SECURITY_DIR}/openbao`와 보존된 `${DEFAULT_SECURITY_DIR}/vault` 경로를 공유하지 않는다. 외부 UI는 `openbao.${DEFAULT_URL}`이다.
