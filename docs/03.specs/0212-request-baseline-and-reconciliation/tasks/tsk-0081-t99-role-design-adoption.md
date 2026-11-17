@@ -408,12 +408,13 @@ open until every role group conforms.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 137 | pending | Conformance GREEN, Contract wiring | Awaits W143 to W147 and the owner's decision | @buenhyden |
+| 137 | accepted | Conformance GREEN, Contract wiring, Foundation re-review, the W143 role group approvals and Governance regression | Owner @buenhyden accepted on 2026-11-17 in this chat, while W143 governance policies were in review and W144 to W147 had not started | @buenhyden |
 
 ### Remaining Conditions
 
-W143 to W147 move their role groups. The comparison baseline is resolved
-only by a later export that conforms for every bound role.
+The acceptance does not close the work: W144 to W147 still move their role
+groups, each with its own review. The comparison baseline is resolved only by
+a later export that conforms for every bound role.
 
 ## Handoff
 
@@ -425,4 +426,4 @@ role design contract as a version object.
 
 ### Next Owner
 
-The implementer owns W143 to W147. The owner decides criterion 137.
+The implementer owns W143 to W147. The owner accepted criterion 137.
