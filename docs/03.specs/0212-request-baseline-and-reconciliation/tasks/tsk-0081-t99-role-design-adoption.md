@@ -476,6 +476,8 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Agent instructions corpus | 137 | W145 | document-corpus | check-changed against `origin/main`, check-contracts, link alignment and navigation, corpus lifecycle, governance contract, provider surface renderer and markdownlint at `cbac26d12` | PASS | 36 changed and 0 violations; contracts and lifecycle 0; alignment, navigation, governance contract and renderer PASS; 0 lint issues | required | - |
 | Agent instructions review | 137 | W145 | independent-review | Commit `cbac26d12` | FAIL | CHANGES_REQUIRED: the precedence sentence overstated Intake sources, authority rules sat under Secrets and External Effects, no Task record, four minor notes | required | - |
 | Agent instructions review fix checks | 137 | W145 | document-corpus | check-changed, check-contracts, link alignment, governance contract, renderer, markdownlint, metadata.test_heading and test_template_definition after the fixes, then check-changed after the rebase on `3d53456da` raised the protocol to 7.4.0 | PASS | 36 changed and 0 violations; contracts 0; alignment, governance contract and renderer PASS; 0 lint issues; tests OK | required | - |
+| Agent instructions head checks | 137 | W145 | document-corpus | check-changed and check-contracts at `fc9ae1e02` against `origin/main` `3377e6ecb` | PASS | 37 changed and 0 violations; 0 contract violations | required | - |
+| Agent instructions re-review | 137 | W145 | independent-review | Fix range `f971dcf66..fc9ae1e02` against the agent instructions review | PASS | APPROVE; findings 1 to 7 fixed or accepted; two minor notes applied | required | Agent instructions review |
 
 ### Resolution Links
 
@@ -485,7 +487,7 @@ regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
 Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Policy review approval, Policy re-review approval, Policy hosted candidate
 rerun, Governance form GREEN, Governance regression, Governance old-form GREEN, Governance re-review, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
-rows, References form GREEN and References re-review resolve their W144 rows, and Agent instructions form GREEN resolves its W145 row. The comparison baseline stays
+rows, References form GREEN and References re-review resolve their W144 rows, and Agent instructions form GREEN and Agent instructions re-review resolve their W145 rows. The comparison baseline stays
 open until every role group conforms.
 
 ## Acceptance Decision
