@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -180,7 +180,9 @@ An agent wrote a draft through an unquoted shell heredoc, and a backticked
 `docker compose --profile mail-dev restart mailpit` in the draft text ran.
 The `mailpit` container restarted at 2026-11-17T03:22:54Z without approval;
 it came back healthy with no restart loop. Whether captured messages survived
-was not checked, and nothing else ran.
+was not checked at first, and nothing else ran. A later read-only inspection
+found `MP_DATABASE` at `/data/mailpit.db` on a bind-mounted volume, which a
+restart keeps; message counts before and after were not compared.
 
 14 runbooks keep 21 reference tables of their own under Procedure/Steps, such
 as alert maps and exit codes. The core keeps an existing real form rather
@@ -188,6 +190,27 @@ than deleting or disguising it, and a table that reuses core labels with other
 columns must not pass, so a table sharing no label with its section's core
 table is now the document's own table. One sharing a label must be the core
 table exactly, and the core table stays required.
+
+#### W143 runbook review fixes
+
+The independent review asked for changes. Prose in about 28 runbooks still
+named the removed sections, such as Actions, Safety Checks and Authority and
+Access; 48 lines now name the core sections, and names that survive as an H4
+are kept. The n8n table was drafted from a skimmed read: one cell called the
+attestation queue readable where the runbook says 401, and most Expected
+Result cells said nothing was recorded where the runbook records receipts and
+status codes. It and its Unverified Conditions were derived again from the
+whole runbook, which also records isolated results the first text denied. The
+OpenBao window table had no Finish step, which restores the writers stopped
+in W3 and runs the ESO gate; it now does. Cells in the lab promotion and k6
+tables that held constraints or a failure outcome as a result were corrected,
+and an n8n sentence that credited two stop rules to the wrong sections now
+names scenario 2 and Hermes step 5.
+
+An empty core table beside a document's own table would carry the steps under
+other labels, which the binding rule calls disguise, so it now fails as
+`table-core-empty`. The Registry migration text of the three bound roles now
+records their core move.
 
 #### Lifecycle Events
 
@@ -200,6 +223,8 @@ table exactly, and the core table stays required.
 
 The owner decided full adoption on 2026-11-17. Moving W143 to W147 changes
 current documents, and those changes need the same per-group review.
+The unapproved `mailpit` restart during W143 awaits the owner's
+acknowledgement; no further runtime action is taken for it.
 
 ## Verification Evidence
 
@@ -238,12 +263,17 @@ current documents, and those changes need the same per-group review.
 | Reference table GREEN | 137 | W143 | table-ownership | Same test, and a table sharing a core label with other columns | PASS | metadata.test_heading 115 tests, exit 0 | required | Reference table RED |
 | Runbook regression | 137 | W143 | document-governance-regression | test_registry, test_template_definition, test_operations_catalog, metadata heading, reference and lifecycle, test_metadata_validator, test_taxonomy and test_spec_packages before the table change | FAIL | 707 tests, 2 failures: two runbook literals in metadata.test_heading named the old form | required | - |
 | Runbook regression rerun | 137 | W143 | document-governance-regression | metadata.test_heading with the core literals and the table change; no other module changed after the full run | PASS | 115 tests, exit 0 | required | Runbook regression |
-| Runbook corpus | 137 | W143 | document-corpus | check-active, check-contracts, check-changed against `origin/main`, check-operations-catalog, link alignment and markdownlint of 109 changed files | PASS | 589 selected and 0 violations; 0 contract violations; 115 changed and 0 violations; catalog and alignment PASS; 0 lint issues | required | Runbook reference tables |
+| Runbook corpus | 137 | W143 | document-corpus | check-active, check-contracts, check-changed against `origin/main`, check-operations-catalog, link alignment and markdownlint of the 109 Markdown files in the working-tree diff, while check-changed selects every governed document changed against `origin/main` | PASS | 589 selected and 0 violations; 0 contract violations; 115 changed and 0 violations; catalog and alignment PASS; 0 lint issues | required | Runbook reference tables |
+| Runbook review | 137 | W143 | independent-review | Commits `01567d292`, `94c26da36` and `00b8880d0` | FAIL | CHANGES_REQUIRED: n8n and OpenBao window cells contradict or omit their runbooks, stale section names, an empty core table beside an own table passes | required | - |
+| Disguise RED | 137 | W143 | table-ownership | A runbook reference table beside its emptied steps table, a reference table without the core table, and an unbound role's table with no shared label | FAIL | 1 failure: no `table-core-empty`; the other two already held | required | - |
+| Disguise GREEN | 137 | W143 | table-ownership | Same tests after the change | PASS | metadata.test_heading 119 tests, exit 0 | required | Disguise RED |
+| Runbook review corpus | 137 | W143 | document-corpus | check-contracts, check-changed against `origin/main`, check-operations-catalog and link alignment after the fixes | PASS | 0 contract violations; 110 changed and 0 violations after one `runtime-version-literal` in new 0105 prose was reworded; catalog and alignment PASS | required | - |
 
 ### Resolution Links
 
 Conformance GREEN resolves Conformance RED, and Foundation re-review resolves
-Foundation review. Incident regression rerun, Review fix GREEN, Review fix
+Foundation review. Runbook form GREEN, Reference table GREEN, Runbook
+regression rerun, Runbook corpus, Disguise GREEN, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
 rows. The comparison baseline stays
 open until every role group conforms.
