@@ -33,8 +33,12 @@ None: this document states no exclusion.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| PERSONA-R1 | Before repository mutation | Required: resolve exactly one canonical `agent_id` from `.agents/roles/` and use its scope, permission profile, work profile and skill IDs; do not invent a provider-local identity | none | none |
-| PERSONA-R2 | No role matches or roles conflict | Required: stop and route the ambiguity to `workflow-supervisor`; multi-role work keeps one supervising owner and separates implementation from independent review for high-risk work | none | none |
+| PERSONA-R1 | Before repository mutation | Required: resolve exactly one canonical `agent_id` from `.agents/roles/` and use its scope, permission profile, work profile and skill IDs | none | none |
+| PERSONA-R2 | Before repository mutation | Forbidden: inventing a provider-local identity | none | none |
+| PERSONA-R3 | Always | Forbidden: provider-native adapters owning names, permissions or model policy | none | none |
+| PERSONA-R4 | No role matches or multiple roles conflict | Required: stop and route the ambiguity to `workflow-supervisor` | none | none |
+| PERSONA-R5 | Multi-role work | Required: keep one supervising owner | none | none |
+| PERSONA-R6 | High-risk multi-role work | Required: separate implementation from independent review | none | none |
 
 Before mutation, resolve exactly one canonical `agent_id` from `.agents/roles/`. Use its
 scope, permission profile, work profile, and skill IDs without inventing a
@@ -65,9 +69,9 @@ None: this document states no separate check.
 
 This policy states no separate check, so none of its rules is mechanically enforced:
 
-- Single role identity resolution rests on the agent following the policy.
-- Routing of ambiguity to `workflow-supervisor` has no named check.
-- Separation of implementation from independent review for high-risk work rests on review.
+- Role identity: R1-R3.
+- Ambiguity routing: R4.
+- Multi-role ownership: R5-R6.
 
 ## Ownership
 

@@ -34,18 +34,92 @@ None: this document states no exclusion.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| GITHUB-GOVERNANCE-R1 | Always | Required: treat `main` as protected (no direct or force pushes, no bypassed checks), report remote enforcement as blocked or unverified until authenticated read-back, and read CODEOWNERS review enforcement state rather than assume it | manual (remote protection per `.github/rulesets/main-protection.md`) | Authenticated read-back recorded in `.github/rulesets/main-protection.md` |
-| GITHUB-GOVERNANCE-R2 | Pull request and review work | Required: PR complete only with required checks passing, required reviews approved and no unresolved `blocker`; Forbidden: self-approval or bypassing required reviewers; Required: list touched CODEOWNERS paths; remote Issue/tag/release mutation needs approval naming exact target | `candidate-quality` check; owner acceptance and fresh-context diff review per `../prompts/diff-review.md` | Task Criterion Acceptance |
-| GITHUB-GOVERNANCE-R3 | Merge or branch lifecycle work | Required: deliver every change to `main` through a pull request; Required: delete a branch only when change is reachable, worktree clean and deletion requested; Forbidden: rewriting a named recovery commit or modifying another agent's in-progress branch; Forbidden: merging Draft/WIP PRs; Renovate PRs updated by Renovate only | manual (branch protection requires up-to-date branches) | none |
-| GITHUB-GOVERNANCE-R4 | Workflow authoring or review | Required: least-privilege `GITHUB_TOKEN`, actions pinned to a full commit SHA, no secrets in logs, no untrusted input into `$GITHUB_ENV`/`$GITHUB_OUTPUT`/`run:`, pinned and reviewed external reusable workflows; Allowed: OIDC preferred over long-lived secrets (flag as `medium`) | `scripts/lib/gate/github_workflow_contract.py` rejects unregistered Actions and runtimes other than `node24` or `composite`; `sha_pinning_required` repository setting; `blocker` findings in review | `.github/workflow-contract.yml` manifest |
-| GITHUB-GOVERNANCE-R5 | Choosing local or remote checks | Required: local explicit formatting, focused RED/GREEN, message validation and read-only diagnostics; remote PR owns aggregate candidate QA once; main security/SARIF is a distinct observation; manual release producer runs only on named version and trusted main revision | `candidate-quality` PR workflow; shared execution boundary in `quality-standards.md` | none |
-| GITHUB-GOVERNANCE-R6 | User approves remote GitHub mutation | Required: bind to concrete repository and surface; Required: record approval source, target, command class, before/after state and rollback; Forbidden: bypassing required checks, weakening protection or exposing secrets unless the user names that action and target | manual | Task evidence fields |
-| GITHUB-GOVERNANCE-R7 | Tracked workflow file authored | Forbidden: dispatching, enabling remotely or changing checks/rulesets/protection/environments/deployments/releases until the user names the repository and remote surface; Allowed: authoring and validating locally and pushing with the request's branch and PR | manual | none |
-| GITHUB-GOVERNANCE-R8 | PR-related evidence recording | Required: use the shared change-type verification matrix; record local results apart from hosted run IDs/head commits/conclusions/reviews/protection; Required: report missing or unrun checks as blocked/skipped/unverified; Forbidden: CI-only citation when a cheap local check exists | shared change-type verification matrix in `quality-standards.md` | Task record of local and hosted results |
-| GITHUB-GOVERNANCE-R9 | Change to a QA definition | Required: tie the owner's actual acceptance to the diff and revision and record the trusted base definition source and revision in the Task; Forbidden: treating a candidate's own workflow success as proof of an unchanged or approved QA definition; Forbidden: `pull_request_target` runs of candidate code or implicit App/credential creation | manual | Task record of trusted base source and revision |
-| GITHUB-GOVERNANCE-R10 | Always | Required: take instruction authority from repo-local assets only (root shims, `.agents/`, folder guides, authored adapters); Forbidden: adopting a GitHub-native instruction hierarchy until governance explicitly adopts it | none | none |
-| GITHUB-GOVERNANCE-R11 | CI/CD job identity or required context changes | Required: update workflow-contract, workflow YAML and tracked protection target together, then observe remote state separately; Forbidden: administrative bypass when source and remote state differ; `candidate-quality` aggregate fails on missing, failed, cancelled or contradictory results | `.github/workflow-contract.yml` with the focused checker; required `candidate-quality` aggregate | Separate remote-state observation |
-| GITHUB-GOVERNANCE-R12 | Issue intake and Project questions | Required: Issue forms collect intake while Specs keep AC/contracts and Tasks keep commands, results, acceptance and authorization; Forbidden: adding an App/PAT just to mirror Task state | manual | none |
+| GITHUB-GOVERNANCE-R1 | Always | Required: treat `main` as a protected branch with no direct pushes, no force pushes and no bypass of required checks, even where GitHub does not fully enforce it | none | none |
+| GITHUB-GOVERNANCE-R2 | Always | Required: report remote control-plane state as `unverified` until authenticated and read back for the named repository | none | `.github/rulesets/main-protection.md` dated authenticated read-backs |
+| GITHUB-GOVERNANCE-R3 | Claiming remote enforcement | Forbidden: claiming enforcement before authenticated read-back of branch protection and rulesets | none | `.github/rulesets/main-protection.md` dated authenticated read-backs |
+| GITHUB-GOVERNANCE-R4 | Remote enforcement absent or unknown | Required: follow protected-branch discipline locally and report remote enforcement as blocked or unverified | none | none |
+| GITHUB-GOVERNANCE-R5 | PR readiness | Forbidden: declaring a PR ready to merge without separately verified remote checks, unless remote verification is reported unavailable | none | none |
+| GITHUB-GOVERNANCE-R6 | `require_code_owner_reviews` enabled | Required: obtain the owned path's review before merge | none | none |
+| GITHUB-GOVERNANCE-R7 | Any CODEOWNERS-triggered review | Required: read the enforced state rather than assume it and report which applies | none | none |
+| GITHUB-GOVERNANCE-R8 | Any CODEOWNERS-triggered review | Forbidden: recording a review that protection did not require and no person gave | none | none |
+| GITHUB-GOVERNANCE-R9 | Issue closed by hand or by closing keyword | Forbidden: treating it as a Task transition or acceptance record | none | none |
+| GITHUB-GOVERNANCE-R10 | Adding a GitHub Project or its automation permission | Required: owner approval naming it; its fields stay coordination data and never Task execution authority | none | none |
+| GITHUB-GOVERNANCE-R11 | Issue intake | Forbidden: copying Spec/Task full bodies or bidirectional state synchronization | none | none |
+| GITHUB-GOVERNANCE-R12 | Remote Issue, tag or release mutation | Required: approval naming the exact target and action | none | none |
+| GITHUB-GOVERNANCE-R13 | Pull request completion | Required: all required status checks pass, all required reviews approved and no unresolved `blocker` findings | none | Task Criterion Acceptance |
+| GITHUB-GOVERNANCE-R14 | Draft/WIP PR | Allowed: Draft/WIP PRs for collaboration; section 3 owns merge readiness | none | none |
+| GITHUB-GOVERNANCE-R15 | Review | Forbidden: self-approval or bypassing required reviewers | none | none |
+| GITHUB-GOVERNANCE-R16 | One-developer repository | Required: classify risk per Review risk read with the change-type verification matrix and protected surfaces | none | none |
+| GITHUB-GOVERNANCE-R17 | One-developer repository | Required: the `candidate-quality` check runs the static and contract checks | `candidate-quality` check | none |
+| GITHUB-GOVERNANCE-R18 | High-risk final diff | Required: review in a fresh context separate from the writer, against the diff review checklist | manual | none |
+| GITHUB-GOVERNANCE-R19 | Low-risk diff | Required: close with the author check defined by the Review risk policy | none | none |
+| GITHUB-GOVERNANCE-R20 | Criterion acceptance | Required: the owner accepts each criterion explicitly in the Task's Criterion Acceptance; a merge is not acceptance | manual | Task Criterion Acceptance |
+| GITHUB-GOVERNANCE-R21 | Review path | Forbidden: calling a model-inference API | none | none |
+| GITHUB-GOVERNANCE-R22 | Review records | Forbidden: recording one person's review as two independent approvals | none | none |
+| GITHUB-GOVERNANCE-R23 | Owner acceptance | Forbidden: letting an automated check, App or signature stand in for the owner's acceptance | none | none |
+| GITHUB-GOVERNANCE-R24 | Acceptance or ADR decision | Forbidden: requiring a signed commit or tag | none | none |
+| GITHUB-GOVERNANCE-R25 | Agent proposes changes | Required: list the CODEOWNERS paths touched and the review gates that apply | none | none |
+| GITHUB-GOVERNANCE-R26 | Current Task | Allowed: naming a temporary recovery commit | none | none |
+| GITHUB-GOVERNANCE-R27 | Current Task | Forbidden: turning a branch tip, expected SHA, checksum or commit census into a standing merge Gate | none | none |
+| GITHUB-GOVERNANCE-R28 | Change delivered to `main` | Required: deliver through a pull request | none | none |
+| GITHUB-GOVERNANCE-R29 | `main` | Forbidden: pushing directly, force-pushing or bypassing a required check regardless of required review count | none | none |
+| GITHUB-GOVERNANCE-R30 | Branch deletion | Required: delete only when the change and recovery commits are reachable from the delivered branch, the linked worktree is clean and the request or owner asks | none | none |
+| GITHUB-GOVERNANCE-R31 | Long-lived branch other than `main` | Required: explicit user authorization | none | none |
+| GITHUB-GOVERNANCE-R32 | Current Task's named recovery commit | Forbidden: rewriting it before integration; use a merge commit or fast-forward | none | none |
+| GITHUB-GOVERNANCE-R33 | History cleanup beyond the completed feature branch | Required: explicit authorization | none | none |
+| GITHUB-GOVERNANCE-R34 | Renovate PR | Required: follow the same protocol; bring the branch up to date by running Renovate, not GitHub update-branch | manual | none |
+| GITHUB-GOVERNANCE-R35 | Renovate PRs | Required: merge one dependency PR at a time, most security-relevant first | none | none |
+| GITHUB-GOVERNANCE-R36 | Renovate PR | Forbidden: closing it by hand | none | none |
+| GITHUB-GOVERNANCE-R37 | Merged image change | Required: the HOME recreate gets its own approval | none | none |
+| GITHUB-GOVERNANCE-R38 | Draft or WIP PR | Forbidden: merging it; list remaining work in the PR template | none | none |
+| GITHUB-GOVERNANCE-R39 | Another agent's in-progress branch | Forbidden: modifying it without explicit coordination | none | none |
+| GITHUB-GOVERNANCE-R40 | Workflow authoring or review | Required: least-privilege `GITHUB_TOKEN` requesting only needed permissions | none | none |
+| GITHUB-GOVERNANCE-R41 | Proposing or reviewing workflow changes | Required: prefer OIDC cloud credentials and flag long-lived cloud secrets as a `medium` finding | none | none |
+| GITHUB-GOVERNANCE-R42 | Action references | Required: pin to a full commit SHA, not a tag, floating branch or `@latest` | `sha_pinning_required` repository setting | none |
+| GITHUB-GOVERNANCE-R43 | Direct external Action | Required: record manifest URL, retrieval date, runtime, approved consumers and security disposition in `.github/workflow-contract.yml` | `scripts/lib/gate/github_workflow_contract.py` rejects unregistered Actions and runtimes other than `node24` or `composite` | `.github/workflow-contract.yml` |
+| GITHUB-GOVERNANCE-R44 | Secret in log output | Forbidden: secrets in log output; raise a `blocker` finding | none | none |
+| GITHUB-GOVERNANCE-R45 | Untrusted input | Forbidden: untrusted input into `$GITHUB_ENV`, `$GITHUB_OUTPUT` or `run:` interpolation; raise a `blocker` finding | none | none |
+| GITHUB-GOVERNANCE-R46 | External reusable workflow | Required: pin and review before use | none | none |
+| GITHUB-GOVERNANCE-R47 | Local checks | Required: explicit formatting, focused RED/GREEN, message validation and read-only diagnostic checks, selected by the shared execution boundary | none | none |
+| GITHUB-GOVERNANCE-R48 | Local checks | Forbidden: direct Agent pre-commit/all-files bypass | none | none |
+| GITHUB-GOVERNANCE-R49 | Remote PR | Required: the public changed entrypoint owns aggregate candidate QA once, with required selection inside an always-present PR workflow rather than path-skipping the required check | `candidate-quality` PR workflow | none |
+| GITHUB-GOVERNANCE-R50 | Feature push | Forbidden: repeating aggregate candidate QA | none | none |
+| GITHUB-GOVERNANCE-R51 | Main | Required: treat merged-revision security/SARIF as a distinct observation, not a second candidate run | none | none |
+| GITHUB-GOVERNANCE-R52 | Manual release producer | Required: run only once the user names its exact version and trusted main revision | none | none |
+| GITHUB-GOVERNANCE-R53 | User approves remote GitHub mutation | Required: bind the action to a concrete repository and remote surface | none | none |
+| GITHUB-GOVERNANCE-R54 | User approves remote GitHub mutation | Required: record approval source, target repository, setting or object, command class, before/after state and rollback in Task evidence | manual | Task evidence |
+| GITHUB-GOVERNANCE-R55 | Merge | Required: merge only a PR the current request asks to merge, after its required checks pass | none | none |
+| GITHUB-GOVERNANCE-R56 | Remote mutation | Forbidden: bypassing required checks, weakening protected-branch rules or exposing GitHub secrets unless the user names that action and target | none | none |
+| GITHUB-GOVERNANCE-R57 | Read-only remote checks | Allowed: record them as verification evidence | none | none |
+| GITHUB-GOVERNANCE-R58 | Remote state approved but not changed | Required: report as verified-only, not as a mutation | none | none |
+| GITHUB-GOVERNANCE-R59 | Tracked workflow file | Allowed: author and validate an approved definition locally and push it with the request's branch and PR | none | none |
+| GITHUB-GOVERNANCE-R60 | Tracked workflow file | Forbidden: dispatching it, enabling it remotely, or changing GitHub checks, rulesets, branch protection, environments, deployments or releases until the user names the repository and remote surface | none | none |
+| GITHUB-GOVERNANCE-R61 | PR-related work | Required: use the shared change-type verification matrix | shared change-type verification matrix in `quality-standards.md` | none |
+| GITHUB-GOVERNANCE-R62 | PR-related work | Required: record local command results separately from hosted run IDs, head commits, job conclusions, reviews and protection settings | none | Task record of local and hosted results |
+| GITHUB-GOVERNANCE-R63 | Missing tool, unexecuted check or unavailable remote observation | Required: report as blocked, skipped with a reason, or unverified | none | none |
+| GITHUB-GOVERNANCE-R64 | Task completion | Forbidden: citing a CI-only gate alone when a cheap local check is available | none | none |
+| GITHUB-GOVERNANCE-R65 | Task completion | Forbidden: letting a local-only check replace required protected-branch gates | none | none |
+| GITHUB-GOVERNANCE-R66 | Change to a QA definition | Required: tie the owner's actual acceptance to the diff and revision and record the trusted base definition's source and revision in the Task | manual | Task record of trusted base source and revision |
+| GITHUB-GOVERNANCE-R67 | Ordinary documentation change | Allowed: no added QA-definition approval step | none | none |
+| GITHUB-GOVERNANCE-R68 | Candidate runs its own workflow, controller and configuration | Forbidden: treating its success as proof that the QA definition is unchanged or approved | none | none |
+| GITHUB-GOVERNANCE-R69 | Current `candidate-quality` | Forbidden: treating it as evidence of a trusted base runner or an independent approval of a definition change | none | none |
+| GITHUB-GOVERNANCE-R70 | Remote enforcement of QA definition trust | Required: a verification definition the candidate cannot modify plus consuming protection settings, each separately approved, applied and read back | none | none |
+| GITHUB-GOVERNANCE-R71 | Implementing QA definition trust | Forbidden: checking out or running candidate code in a privileged `pull_request_target` runner, or creating a new App or credential implicitly | none | none |
+| GITHUB-GOVERNANCE-R72 | Always | Forbidden: adopting a GitHub-native instruction hierarchy for agent execution | none | none |
+| GITHUB-GOVERNANCE-R73 | Always | Required: take instruction authority from repo-local assets only (root shims, `.agents/`, folder agent guides, authored adapters) | none | none |
+| GITHUB-GOVERNANCE-R74 | Native runtime controls and generated projections | Forbidden: owning any instruction authority; they only consume it | none | none |
+| GITHUB-GOVERNANCE-R75 | Future GitHub-native instruction file | Forbidden: treating it as in scope until governance explicitly adopts it | none | none |
+| GITHUB-GOVERNANCE-R76 | PR candidate routing | Required: `candidate-quality` needs routing and every shard; accept a skipped document shard only after successful routing selects no leaves and the shard supplies no execution output; fail on missing, failed, cancelled or contradictory results | required `candidate-quality` aggregate | none |
+| GITHUB-GOVERNANCE-R77 | CI/CD workflow set | Forbidden: registering a feature-push, title-edit or main full-profile rerun | none | none |
+| GITHUB-GOVERNANCE-R78 | Release publication | Required: main-only manual workflow with `contents: write` restricted to its producer, creating a SemVer tag and complete draft assets before publish | none | none |
+| GITHUB-GOVERNANCE-R79 | Release publication | Forbidden: a second tag-push or moving-channel producer | none | none |
+| GITHUB-GOVERNANCE-R80 | Non-QA coordination jobs (greetings, stale threads, PR labels) | Required: keep their pin, permission and event safety checked | none | none |
+| GITHUB-GOVERNANCE-R81 | Non-QA coordination jobs | Forbidden: owning candidate acceptance | none | none |
+| GITHUB-GOVERNANCE-R82 | External automatic security integrations | Required: their own actual remote observation; editing tracked YAML does not disable them | none | none |
+| GITHUB-GOVERNANCE-R83 | CI/CD job identity or required context changes | Required: update workflow-contract, workflow YAML and tracked protection target together, then observe remote state separately | none | Separate remote-state observation |
+| GITHUB-GOVERNANCE-R84 | Source and remote state differ | Forbidden: introducing an administrative bypass | none | none |
+| GITHUB-GOVERNANCE-R85 | Issue forms | Required: collect problem/request, priority and optional contract/execution links; Specs retain AC/contracts and Tasks retain commands, results, acceptance and authorization | none | none |
+| GITHUB-GOVERNANCE-R86 | Project state mirroring | Forbidden: adding an App/PAT just to mirror Task state | none | none |
 
 #### 1. Repository Protection Contract
 
@@ -325,15 +399,27 @@ If any gate is unmet, the task status is "blocked" not "done."
 
 ### Limits
 
-The policy names checks for workflow pinning, PR completion and the completion gate, but most rules rest on review, approval or remote state it does not control.
+The policy names checks for workflow pinning, PR completion and the aggregate gate, but most rules rest on review, approval or remote state it does not control.
 
-- Remote branch protection and rulesets are not applied by tracked files; state stays `unverified` until authenticated read-back, and "no exceptions" is agent behavior even where GitHub does not enforce it.
-- CODEOWNERS review gating depends on whether remote protection enables `require_code_owner_reviews`.
-- Review of a one-developer repository rests on the five-part risk handling and owner acceptance; one person's review is never two approvals.
-- Branch deletion, history rewrite, Renovate handling and Issue/Project rules name no check.
-- Remote mutations, workflow dispatch and QA definition changes rest on user approval and Task evidence.
-- QA definition trust cannot be enforced remotely without a separately approved verification definition and protection settings read back; a local revision observes none of it.
-- Local instruction authority names no check.
+- Protection: R1-R5 rest on manual review or name no check.
+- CODEOWNERS: R6-R8 rest on manual review or name no check.
+- Issues: R9-R11, R85-R86 rest on manual review or name no check.
+- Remote mutation: R12, R53-R58 rest on manual review or name no check.
+- PR: R13-R15, R38 rest on manual review or name no check.
+- PR review: R16, R18-R25 rest on manual review or name no check.
+- Recovery: R26-R27 rest on manual review or name no check.
+- Merge: R28-R29 rest on manual review or name no check.
+- Branch: R30-R33, R39 rest on manual review or name no check.
+- Renovate: R34-R37 rest on manual review or name no check.
+- Actions: R40-R41, R44-R46 rest on manual review or name no check.
+- Execution: R47-R48, R50-R52 rest on manual review or name no check.
+- Workflow: R59-R60 rest on manual review or name no check.
+- Evidence: R62-R65 rest on manual review or name no check.
+- QA definition: R66-R71 rest on manual review or name no check.
+- Authority: R72-R75 rest on manual review or name no check.
+- CI/CD: R77-R84 rest on manual review or name no check.
+- Enforcement gap: remote branch protection and rulesets are not applied by tracked files; state stays `unverified` until authenticated read-back.
+- Enforcement gap: QA definition trust cannot be enforced remotely without a separately approved verification definition and protection settings read back; a local revision observes none of it.
 
 ## Ownership
 

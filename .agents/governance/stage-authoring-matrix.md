@@ -33,7 +33,27 @@ Shared README profiles, native envelopes, and scoped registry/schema/template re
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| STAGE-AUTHORING-MATRIX-R1 | Authoring or classifying a document by stage or type | Required: give every document a `type` as a `family/kind` pair whose family names the owning authority (`governance`, `sdlc`, `operation`, `reference`, `common`) and keep the stage-to-layer-to-owner map; Stage 98 uses `common/readme` | Stage 99 registry/schema tests | Per-stage completion evidence (contract/renderer parity/Task for governance; registry/schema tests for 99) |
+| STAGE-AUTHORING-MATRIX-R1 | Authoring or classifying a document | Required: give every document a `type` as a `family/kind` pair whose family names the owning authority | none | none |
+| STAGE-AUTHORING-MATRIX-R2 | Mapping stages | Required: keep the stage-to-layer-to-owner map (agent governance/01/02/03/05/90/98/99) | none | Completion evidence column of the stage table |
+| STAGE-AUTHORING-MATRIX-R3 | Always | Required: a `layer` value is the stage directory name without its numeric prefix | none | none |
+| STAGE-AUTHORING-MATRIX-R4 | Always | Required: the Stage 99 profile determines whether `layer` is required or omitted | none | none |
+| STAGE-AUTHORING-MATRIX-R5 | Stage 98 | Required: register no `archive` type; its README uses `common/readme` | none | none |
+| STAGE-AUTHORING-MATRIX-R6 | A template source | Required: declare the layer of its destination where the profile requires it | none | none |
+| STAGE-AUTHORING-MATRIX-R7 | Always | Required: document language and README navigation follow the `documentation-protocol.md#document-language` and `#readme-navigation` rules | none | none |
+| STAGE-AUTHORING-MATRIX-R8 | Files outside docs | Forbidden: treating stage ownership as making an individual stage document a current instruction source | none | none |
+| STAGE-AUTHORING-MATRIX-R9 | Files outside docs | Required: use README navigation and canonical agent rules | none | none |
+| STAGE-AUTHORING-MATRIX-R10 | Scoped execution reads and required registry/schema/template inputs | Allowed: retain the narrow exceptions in the documentation protocol | none | none |
+| STAGE-AUTHORING-MATRIX-R11 | Claude and Codex skill discovery | Required: explicit invocation and keep canonical role-selected reads available | none | none |
+| STAGE-AUTHORING-MATRIX-R12 | Native skill entry | Required: entry fields are `name` and `description` and governance fields nest in `metadata` | none | none |
+| STAGE-AUTHORING-MATRIX-R13 | Always | Forbidden: a generated provider surface becoming a shared authority | none | none |
+| STAGE-AUTHORING-MATRIX-R14 | `knowledge/` and `prompts/` | Required: treat as canonical categories not stages that route to owners and declare contracts while the owning policy/stage document/Task keeps authority | none | none |
+| STAGE-AUTHORING-MATRIX-R15 | Stage 03 | Required: approval enables the registered transition, review remains read-only, and execution is recorded separately in the current Task | none | none |
+| STAGE-AUTHORING-MATRIX-R16 | Stage 03 | Required: Task summary and lifecycle-event shape belong to Stage 99 and the Task carries observed evidence | none | none |
+| STAGE-AUTHORING-MATRIX-R17 | Stage 03 | Forbidden: the Task authenticating an approval source | none | none |
+| STAGE-AUTHORING-MATRIX-R18 | Document-family state, cardinality, and table shapes | Required: the Registry owns state vocabulary/direct parent cardinality/result and review table shapes/lifecycle generation and the SDLC owns their execution meaning | none | none |
+| STAGE-AUTHORING-MATRIX-R19 | Canonical home | Required: contain only registered canonical category sources | none | none |
+| STAGE-AUTHORING-MATRIX-R20 | Unknown or unsafe canonical-home entries | Required: fail closed and preserve for review | fail-closed handling | none |
+| STAGE-AUTHORING-MATRIX-R21 | Unknown or unsafe canonical-home entries | Forbidden: automatic deletion as stale generated files | none | none |
 
 | Stage | `layer` | Purpose | Canonical owner | Completion evidence |
 | --- | --- | --- | --- | --- |
@@ -112,12 +132,12 @@ stale generated files eligible for automatic deletion.
 
 ### Limits
 
-The policy names registry/schema tests for Stage 99 and renderer parity for agent governance, but most of the map rests on review:
+The policy names no check tied to a specific rule; most of the map rests on review:
 
-- Stage ownership, `layer` values, and document type families are stated without a named check here; the Stage 99 profile and registry/schema tests are the only named route.
-- Discovery, instruction loading, invocation, and runtime acceptance of provider surfaces are separate and not proven by this policy.
-- Unknown or unsafe canonical-home entries fail closed and are preserved for review, so their disposition is manual.
-- Stage 03 approval and Task evidence rest on review; the Task never authenticates an approval source.
+- Type families, stage-to-layer-to-owner map, `layer` values, and Stage 99 profile (R1-R7): no check is named here; stage completion evidence is a record, not a check.
+- Instruction-source boundary, provider discovery, and generated-surface authority (R8-R13): no check is named, and discovery, instruction loading, invocation, and runtime acceptance are separate and not proven by this policy.
+- Category and Stage 03 rules (R14-R18): rest on review; the Task never authenticates an approval source.
+- Canonical home (R19, R21): no check is named; unknown or unsafe entries are preserved for review, so their disposition is manual.
 
 ## Ownership
 

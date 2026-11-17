@@ -35,7 +35,15 @@ None: this document states no exclusion.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| PROVIDER-CAPABILITY-MATRIX-R1 | Always | Required: keep the authority namespaces and capability owners separate; native skill name, folder and function identity agree; discovery is not invocation or approval; `.agents/` stays the authored source, unknown or unsafe entries fail closed and canonical files are never deleted as stale projections | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R1 | Always | Required: keep each authority namespace to what it owns (governance/roles/skills, Stage 99 Registry, Provider Registry, authored `provider.md`, generated native files) | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R2 | Always | Required: map each capability (role intent, procedures, explicit invocation, model and effort, permissions, semantic events) to its canonical owner and adapters | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R3 | Native skill frontmatter | Required: use `name`, `description` and nested governance `metadata` | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R4 | Native skills | Required: folder, name and stable function identity agree | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R5 | Always | Forbidden: treating discovery as invocation or approval | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R6 | Always | Forbidden: a skill adding tool grants or installers | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R7 | Always | Required: keep `.agents/` as the authored canonical source home, separate from generated native roots | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R8 | Unknown or unsafe entries | Required: fail closed and preserve them for review | none | none |
+| PROVIDER-CAPABILITY-MATRIX-R9 | Always | Forbidden: deleting or quarantining canonical files as stale projections | none | none |
 
 #### Authority Namespaces
 
@@ -91,7 +99,10 @@ version and action ID.
 
 The policy names no check for its rules, so they rest on review and provider behavior:
 
-- Namespace separation and capability ownership have no named validator in this policy.
+- Authority namespaces: R1.
+- Capability ownership: R2.
+- Native skills: R3-R6.
+- Canonical source: R7-R9.
 - Provider-native files may narrow behavior only to actual capabilities; this rests on review.
 - Configured sources and events prove tracked configuration only, not live events or picker results.
 - Runtime acceptance, account or subscription limits and editor action versions need direct observation.

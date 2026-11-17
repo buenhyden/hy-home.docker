@@ -33,11 +33,62 @@ None: this document states no exclusion.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| GIT-WORKFLOW-R1 | Every commit | Required: use Conventional Commits per `.cz.toml` (types, grammar, header length); capitalized description without trailing period; one-block body; trailers last | `.cz.toml` / `cz check --message-length-limit 75` / installed `commit-msg` hook / remote contributor commit-range check | Hook observation or `cz check` output |
-| GIT-WORKFLOW-R2 | Creating a branch or worktree | Required: use `main` as protected baseline and `<type>/<short-description>` branches; worktrees under `.worktrees/<branch>`; never stash, reset, discard or force-commit uncommitted user work | Installed `pre-push` guard refuses `refs/heads/main` updates / branch protection on `main` / manual for naming | none |
-| GIT-WORKFLOW-R3 | Opening or updating a PR | Required: self-review, run focused checks and document-link validation, keep one Spec Package per PR with atomic commits, and request review only after checks pass | `python3 scripts/validation/run-ci-gate.py --profile changed` / `candidate-quality` required check / manual | Task record of link validation input and result |
-| GIT-WORKFLOW-R4 | Always | Required: use `fix` with regression evidence and `refactor` only for behavior-preserving changes; Forbidden: pushing a tag independently; release tags are `v` plus strict SemVer | `.cz.toml` `tag_format` for release tags; manual for `fix` and `refactor` use | none |
-| GIT-WORKFLOW-R5 | Repository-modifying agent work | Required: create logical Conventional Commits after verification and before declaring done; stage only owned files; Forbidden: committing against user instruction, incomplete work, missing checks or secrets | manual | Report of reason and remaining state when not committed |
+| GIT-WORKFLOW-R1 | Every commit | Required: use Conventional Commits `<type>[(<scope>)][!]: <Description>` with explicit scopes where possible | `.cz.toml` / installed `commit-msg` hook / remote contributor commit-range check | Hook observation or `cz check` output |
+| GIT-WORKFLOW-R2 | Every commit | Required: types are the keys in `change_type_map` of `.cz.toml` | `.cz.toml` `change_type_map` | none |
+| GIT-WORKFLOW-R3 | Every commit | Required: description starts with a capital letter and does not end with a period | `.cz.toml` grammar | none |
+| GIT-WORKFLOW-R4 | Every commit | Required: body is one block with no blank line and no line starting with a word followed by a colon and a space | `.cz.toml` grammar | none |
+| GIT-WORKFLOW-R5 | A body line reads like a trailer | Required: rewrap the sentence; Forbidden: reaching for `--no-verify` | none | none |
+| GIT-WORKFLOW-R6 | Every commit | Required: trailers come last after a single blank line | `.cz.toml` grammar | none |
+| GIT-WORKFLOW-R7 | Every commit | Required: header length stays within the `.cz.toml` limit | `.cz.toml` / `cz check --message-length-limit 75` | none |
+| GIT-WORKFLOW-R8 | commit-msg delivery is unconfirmed or diagnosis is needed | Required: validate the draft with `cz check --message-length-limit 75 --message ...` before starting the commit | none | `cz check` output |
+| GIT-WORKFLOW-R9 | Judging commit enforcement | Required: observe whether a `commit-msg` hook is actually installed; configuration alone is not enforcement evidence | none | Hook observation |
+| GIT-WORKFLOW-R10 | An ordinary commit | Required: stage the reviewed changes, prepare the message file, then run `git commit -F /tmp/commit-message.txt` | none | none |
+| GIT-WORKFLOW-R11 | An ordinary commit | Forbidden: repeating the style checks on the same input beforehand that the observed pre-commit and commit-msg hooks run | none | none |
+| GIT-WORKFLOW-R12 | Delivery of installed checks unconfirmed or diagnosis needed | Allowed: run `scripts/validation/run-ci-precommit.sh --mode local-staged` on an isolated copy of the index with the registered pins; it installs no hook and keeps the effective secret guard | `scripts/validation/run-ci-precommit.sh --mode local-staged` | none |
+| GIT-WORKFLOW-R13 | The local-staged check fails | Required: fix, review the diff, restage and commit normally | none | none |
+| GIT-WORKFLOW-R14 | The index changes | Forbidden: reusing an earlier PASS | none | none |
+| GIT-WORKFLOW-R15 | Always | Forbidden: claiming automatic enforcement from configuration alone or replacing a user-global hook | none | none |
+| GIT-WORKFLOW-R16 | Branching | Required: keep `main` as the protected baseline | none | none |
+| GIT-WORKFLOW-R17 | A short-lived human branch | Required: name it `<type>/<short-description>` with `type` a `.cz.toml` change type; an existing intake Issue ID may precede the description | none | none |
+| GIT-WORKFLOW-R18 | Naming a branch | Forbidden: creating a duplicate Issue or copying the Spec/Task merely to satisfy a branch name | none | none |
+| GIT-WORKFLOW-R19 | An emergency hotfix | Required: use `hotfix/<short-description>` and preserve the same PR, validation and explicit runtime authorization boundaries | none | none |
+| GIT-WORKFLOW-R20 | Tool-generated PR branches | Allowed: `renovate/**` and `codex/**` branches for tool-generated PR branches only | none | none |
+| GIT-WORKFLOW-R21 | An automation branch | Required: merge through the PR protocol and required checks | none | none |
+| GIT-WORKFLOW-R22 | A branch's linked worktree | Required: create it under the ignored `.worktrees/<branch>` directory | none | none |
+| GIT-WORKFLOW-R23 | Work ends | Required: remove the worktree and its merged branch | none | none |
+| GIT-WORKFLOW-R24 | A detached checkout a script creates and removes in its own scratch directory | Allowed: it is not a branch worktree | none | none |
+| GIT-WORKFLOW-R25 | Starting a new branch or worktree | Required: start from the latest committed state the work builds on, normally `main` after the previous PR merged | none | none |
+| GIT-WORKFLOW-R26 | Making room for a new branch or worktree | Forbidden: stashing, resetting, discarding or force-committing uncommitted user work | none | none |
+| GIT-WORKFLOW-R27 | Uncommitted user work blocks a new branch or worktree | Required: stop and ask | none | none |
+| GIT-WORKFLOW-R28 | A PR is opened or updated | Required: self-review changes first | none | none |
+| GIT-WORKFLOW-R29 | A PR is opened or updated | Required: run focused authoring checks and inspect the selected prerequisites | none | none |
+| GIT-WORKFLOW-R30 | The same declared input and trust boundary | Forbidden: repeating the aggregate QA the remote PR candidate owns before push or after merge | none | none |
+| GIT-WORKFLOW-R31 | A PR is opened or updated | Required: run document-link validation locally on the final source input before result-only Task evidence recording and record its bound input and result in the Task | none | Task record of the bound input and result |
+| GIT-WORKFLOW-R32 | A result-only addition | Required: use minimum document checks and check only new or changed link destinations in that Task | none | none |
+| GIT-WORKFLOW-R33 | Governance work | Required: ensure linked stage docs remain accurate | none | none |
+| GIT-WORKFLOW-R34 | Declaring a PR done | Required: apply the Completion Gate from `.agents/governance/github-governance.md` | none | none |
+| GIT-WORKFLOW-R35 | Work is incomplete | Required: mark the PR Draft/WIP; Forbidden: requesting final review until it is ready | none | none |
+| GIT-WORKFLOW-R36 | A PR | Required: carry the work of one Spec Package, possibly several of its Tasks as separate logical commits; Forbidden: mixing Specs | none | none |
+| GIT-WORKFLOW-R37 | Commits | Required: keep commits atomic and reviewable | none | none |
+| GIT-WORKFLOW-R38 | A cleanup proposal | Required: document it in the PR and satisfy the recovery-commit and history-rewrite rules in `github-governance.md` section 3 | none | none |
+| GIT-WORKFLOW-R39 | Requesting review | Required: request only after self-review and programmatic checks pass, and summarize scope, risk and how to verify | none | none |
+| GIT-WORKFLOW-R40 | Review feedback | Required: resolve or reply to each finding, re-run affected checks and record what changed before re-requesting review | none | none |
+| GIT-WORKFLOW-R41 | A user-visible or operational defect correction | Required: use `fix` and include regression evidence | none | none |
+| GIT-WORKFLOW-R42 | A structure change | Required: use `refactor` only for behavior-preserving changes and list checks that show unchanged behavior | none | none |
+| GIT-WORKFLOW-R43 | Applicable IDs exist | Required: reference issue IDs, ADR IDs or plan/task IDs | none | none |
+| GIT-WORKFLOW-R44 | A Git or GitHub automatic merge subject | Allowed: it is exempt from the grammar through `allowed_prefixes` by the owner's decision of 2026-11-14 | `.cz.toml` `allowed_prefixes` | none |
+| GIT-WORKFLOW-R45 | A commit message | Forbidden: using fixup or squash escapes | none | none |
+| GIT-WORKFLOW-R46 | A main-targeted release-preparation PR | Required: maintain `CHANGELOG.md` in Keep a Changelog form | none | none |
+| GIT-WORKFLOW-R47 | A development push | Forbidden: generating or publishing a changelog | none | none |
+| GIT-WORKFLOW-R48 | A future release tag | Required: `v` plus strict SemVer | `.cz.toml` `tag_format` | none |
+| GIT-WORKFLOW-R49 | Pushing a tag | Forbidden: pushing a tag independently; the release producer is defined in `github-governance.md` section 8 | none | none |
+| GIT-WORKFLOW-R50 | An existing non-SemVer historical ref | Required: keep it as evidence; deleting or rewriting one needs the owner's approval for that ref | manual | none |
+| GIT-WORKFLOW-R51 | A specific release publication | Required: have its exact version, commit, approved target and recovery path, and select `RUN-0009` through the platform and backup runbook index | none | none |
+| GIT-WORKFLOW-R52 | Repository-modifying agent work | Required: create logical Conventional Commits after verification and before declaring the task done | none | none |
+| GIT-WORKFLOW-R53 | Repository-modifying agent work | Required: split commits by reviewable concern unless inseparable | none | none |
+| GIT-WORKFLOW-R54 | Repository-modifying agent work | Required: stage only files or hunks owned by the current task and leave unrelated untracked files and user changes untouched | none | none |
+| GIT-WORKFLOW-R55 | The user asks not to commit, work is exploratory or incomplete, checks or approvals are missing, or the commit would include secrets or unrelated changes | Forbidden: committing | none | none |
+| GIT-WORKFLOW-R56 | A commit is withheld | Required: report the reason and remaining state | none | Report of reason and remaining state |
 
 #### 1. Commit Standards
 
@@ -223,12 +274,13 @@ current Task records each binding's evidence.
 
 Only the commit grammar and the server-side rows are mechanically enforced; the remaining rules rest on review or agent discipline.
 
-- Client hooks can be bypassed with `--no-verify`; only the server rows are enforcement.
-- Whether a `commit-msg` hook is installed must be observed; configuration alone is not enforcement evidence.
-- The branch naming, worktree, and new-branch-start rules name no check.
-- Pull request protocol steps (self-review, link validation, Spec-per-PR, atomic commits, review feedback) rest on review; no gate reads the PR body.
-- Operational best practices (fix/refactor evidence, release tags, changelog) rest on review and owner approval for historical refs.
-- Agent completion commit discipline rests on agent judgment and user instruction.
+- Client hooks can be bypassed with `--no-verify`; only the server rows are enforcement, and whether a `commit-msg` hook is installed must be observed (R5, R9).
+- Commit workflow steps and the local-staged diagnosis rules (R10-R11, R13-R15) name no check.
+- Branch naming, worktree and new-branch-start rules name no check (R17-R27).
+- Pull request protocol steps (R28-R40) rest on review; no gate reads the PR body, and the local `--profile changed` run is advisory.
+- Operational best practices (R41-R51) rest on review; only release tag format is tied to `.cz.toml`, and historical refs need owner approval.
+- Agent completion commit discipline (R52-R56) rests on agent judgment and user instruction.
+- GIT-WORKFLOW-R8, GIT-WORKFLOW-R16, GIT-WORKFLOW-R29: the policy names a route but does not tie a gate to the rule.
 
 ## Ownership
 

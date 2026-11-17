@@ -33,8 +33,17 @@ None: this document states no exclusion.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| TASK-CHECKLISTS-R1 | Before editing repository state | Required: confirm objective/editable paths/protected surfaces/exclusions, load applicable Requirement/Architecture/Spec/Plan/Task/policy/skill sources, bind high-risk changes to explicit approval/validation/recovery, define acceptance checks and inspect the shared worktree | manual | none |
-| TASK-CHECKLISTS-R2 | During work | Required: keep changes traceable to the approved Plan Task, separate canonical sources from generated projections, record metadata only for secrets, update links, record actual evidence in the Task, and stop on missing authority/destructive ambiguity/unexpected scope | manual | Evidence recorded in the Task |
+| TASK-CHECKLISTS-R1 | Before editing repository state | Required: confirm the approved objective/editable paths/protected surfaces/exclusions | none | none |
+| TASK-CHECKLISTS-R2 | Before editing repository state | Required: load applicable Requirement/Architecture/Spec/Plan/Task/policy/skill sources | none | none |
+| TASK-CHECKLISTS-R3 | Before editing repository state | Required: bind high-risk policy/runtime/CI/template/secret/remote/model/provider changes to explicit approval/validation/recovery | none | none |
+| TASK-CHECKLISTS-R4 | Before editing repository state | Required: define acceptance checks | none | none |
+| TASK-CHECKLISTS-R5 | Before editing repository state | Required: inspect the shared worktree | none | none |
+| TASK-CHECKLISTS-R6 | During work | Required: keep changes traceable to the approved Plan Task | none | none |
+| TASK-CHECKLISTS-R7 | During work | Required: keep canonical sources separate from generated provider projections | none | none |
+| TASK-CHECKLISTS-R8 | During work | Required: preserve secrets and private state and record metadata only | none | none |
+| TASK-CHECKLISTS-R9 | During work | Required: update affected links and eliminate conflicting active guidance | none | none |
+| TASK-CHECKLISTS-R10 | During work | Required: record actual evidence in the Task, not in a second progress or handoff document | none | Evidence recorded in the Task |
+| TASK-CHECKLISTS-R11 | During work | Required: stop on missing authority/destructive ambiguity/unexpected scope | none | none |
 
 #### Before Editing
 
@@ -91,12 +100,9 @@ None: no exception exists to approve.
 
 ### Limits
 
-Checklist items are completed by the agent and confirmed through Task records; no automated check is attached to the Before Editing and During Work items:
+Checklist rules in Requirements are completed by the agent and confirmed through Task records; no automated check is attached to them:
 
-- Before Editing and During Work items rest on agent judgment and review; no check or script is named for them.
-- The Before Completion items delegate to `quality-standards.md#4-execution-boundary`, `sdlc.md#sequence`, and `documentation-protocol.md#retirement-preconditions`, whose checks are not shown here.
-- Renderer freshness is the only mechanical proof named (byte-for-byte via the registered renderer).
-- High-risk changes depend on explicit approval, and review findings must be resolved by hand before commits.
+- Before Editing and During Work (R1-R11): no check or script is named.
 
 ## Ownership
 

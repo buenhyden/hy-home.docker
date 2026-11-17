@@ -36,9 +36,22 @@ None: this document states no exclusion.
 
 | Rule ID | Condition | Requirement | Enforcement | Evidence |
 | --- | --- | --- | --- | --- |
-| OUTPUT-STYLE-R1 | Conversational responses | Required: follow the user's active language; artifact language is routed through the documentation protocol and no provider surface may set either rule | none | none |
-| OUTPUT-STYLE-R2 | Reporting a finding or review issue | Required: state claim plus evidence cited by repository path and line, one severity from `blocker`/`high`/`medium`/`low`, explicit assumptions and tradeoffs; `BLOCK`/`WARN` are not severities | manual | none |
-| OUTPUT-STYLE-R3 | Writing an instruction or procedure | Required: active voice, one action and one expected result per step, runnable commands, non-executable snippets marked explicitly | manual | none |
+| OUTPUT-STYLE-R1 | Conversational responses | Required: follow the user's active language | manual | none |
+| OUTPUT-STYLE-R2 | Artifact language | Required: route it by document role through the documentation protocol | manual | none |
+| OUTPUT-STYLE-R3 | Always | Forbidden: a provider surface setting either language rule | manual | none |
+| OUTPUT-STYLE-R4 | Stating a finding | Required: state a claim plus its evidence, not narrative | manual | none |
+| OUTPUT-STYLE-R5 | Citing evidence | Required: cite it by repository path and line | manual | none |
+| OUTPUT-STYLE-R6 | Tagging a review issue | Required: use one severity from `blocker`, `high`, `medium` or `low` | manual | none |
+| OUTPUT-STYLE-R7 | A finding rests on an assumption or tradeoff | Required: state the assumption explicitly and surface the tradeoff rather than resolving it silently | manual | none |
+| OUTPUT-STYLE-R8 | Severity | Forbidden: using `BLOCK` or `WARN` as a finding severity; they are hook and gate action names | manual | none |
+| OUTPUT-STYLE-R9 | Writing an instruction | Required: use active voice, one action per step and one expected result | manual | none |
+| OUTPUT-STYLE-R10 | Writing an instruction | Required: keep a command runnable as written and mark a non-executable snippet explicitly | manual | none |
+| OUTPUT-STYLE-R11 | Reporting outcomes | Required: report faithfully, showing failing output rather than summarizing it and naming a skipped step | manual | none |
+| OUTPUT-STYLE-R12 | Stating completion | Required: state completion only after the check that proves it has run | manual | none |
+| OUTPUT-STYLE-R13 | Reporting results | Required: name `FAIL`, `BLOCKED`, `SKIPPED`, `NOT_RUN`, missing or revoked approval and partial results explicitly | manual | none |
+| OUTPUT-STYLE-R14 | Reporting evidence | Required: label static, configured, native, hosted and operational evidence by the observation actually made; one does not prove another | manual | none |
+| OUTPUT-STYLE-R15 | Provider-native presentation | Allowed: adapt rendering | none | none |
+| OUTPUT-STYLE-R16 | Provider-native presentation | Forbidden: changing governance authority, language routing or acceptance criteria | none | none |
 
 #### Language
 
@@ -97,9 +110,10 @@ authority, language routing, or acceptance criteria.
 
 No check is named for these style rules; they rest on review and agent adherence.
 
-- Language routing, finding format, severity tags and procedure style name no script or gate.
-- Faithful completion reporting rests on review; completion obligations themselves belong to the task checklists.
-- Provider-native presentation limits depend on provider rendering behavior.
+- Language routing rules (R1-R3) name no script or gate and rest on review.
+- Finding format, severity and procedure style (R4-R10) name no script or gate and rest on review.
+- Faithful completion reporting (R11-R14) rests on review; completion obligations themselves belong to the task checklists.
+- Provider-native presentation limits (R15-R16) depend on provider rendering behavior and name no check.
 
 ## Ownership
 
