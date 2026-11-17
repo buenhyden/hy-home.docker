@@ -1,6 +1,6 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.10.0"
+version: "2.11.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
