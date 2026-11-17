@@ -1,10 +1,10 @@
 ---
 title: "W00 to W07 Follow-up Task"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0080"
 parent_ids:
@@ -263,6 +263,53 @@ writer before acting.
 | Spec packages | 8 open | SPEC-0255 has no non-terminal Task; closing it is the owner's decision before renumbering (Q02) |
 | `_workspace/` | `diagnostics/`, `repo-support/` and the 3.0.1, 4.0.0, 4.1.0 and 4.2.0 packages | User inputs, removed only after acceptance with approval |
 
+#### W05-GATES changed-style extension and hosted comparison
+
+[TSK-0076](tsk-0076-w05-gates-3-0-0.md), now terminal, recorded the changed
+style installation cost as an optional extension and the matched hosted
+comparison as runtime-only. On 2026-11-18 the owner directed both.
+pre-commit 4.6.2 installs every hook environment of the stage before it skips
+a hook whose filters match no changed file. PR 1076, merged as `3c7aabedd`,
+makes `run-ci-precommit.sh --mode pr-merge` remove exactly those hooks first.
+It uses pre-commit's own hook definitions, classifier and changed-file list,
+keeps always-run and other-stage hooks, runs with `python3 -P`, and fails
+closed on a missing or different pre-commit module. QUALITY-STANDARDS-R118
+and R123 state the rule. On the real configuration over PR 1073's range,
+the step dropped exactly the nine hooks the hosted run had reported as having
+no files and kept every hook that ran. PR 1076's own hosted run removed eight
+hooks, kept `shellcheck` for its changed shell files and passed nine hooks.
+
+The comparison used one fixed input: a single wording and version change to
+the Valkey guide, with the same diff in both arms. Each arm ran three cold
+hosted runs of the same nine leaves through a draft pull request, closed
+without merging. The before arm ran on `main` at `37099c147` and the after
+arm on `main` at `3c7aabedd`, which adds only PR 1076.
+
+| Changed style leaf | Before: 44173098881, 44174818834, 44175542479 | After: 44176787370, 44177439162, 44178536625 |
+| --- | --- | --- |
+| Leaf time | 62.14, 57.47, 71.10 s; median 62.14 s | 32.55, 103.72, 39.17 s; median 39.17 s |
+| Setup and environment installation | 60.44, 55.39, 70.18 s | 31.76, 102.38, 38.49 s |
+| Hook execution | 1.29, 1.71, 0.71 s | 0.46, 1.10, 0.63 s |
+| Hook repositories installed | 7 | 3 |
+| Hooks run and skipped | 8 run, 9 skipped | 8 run, 0 skipped |
+
+The median leaf time fell by 22.97 seconds. Run 44177439162 is an outlier
+from its runner: its metadata, lifecycle and Hermes leaves took 70.61, 91.89
+and 19.75 seconds against 38.99 to 43.49, 53.81 to 57.33 and 6.93 to 7.65 in
+the other after runs, and its gitleaks installation took about 70 seconds
+against about 17. Its hook selection matched the other runs. The other leaves
+also varied between arms, so the core job medians of 300 and 201 seconds do
+not measure this change. The 36-second estimate in TSK-0076 overstated the
+saving: the pre-commit-hooks, markdownlint and gitleaks installations remain
+for a document change.
+
+The earlier and current W05 implementations from PR 1049 cannot run on
+hosted runners with the same input. The workflow runs only for pull requests
+into `main`, so every hosted candidate merges the current `main`, and
+restoring the pre-W05 code would mean reverting 31 commits under later T99
+changes. The local paired measurements in TSK-0076 remain the evidence for
+that change.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -310,6 +357,12 @@ Runtime and owner-only outcomes retain their evidence requirements.
 | Deny attribution review | 136 | W141 | independent review of the adapter and settings test | Adapter text and four assertions against `c07826f39` | PASS | APPROVE; runtime protocol link and test name applied; three unowned settings recorded for W07-ADAPTER | required | - |
 | W02 obligation recheck | 136 | W141 | open Task status, closed audit ID and retired consumer read-back | Every Spec and Task frontmatter, Criterion Decisions of the Tasks closed since TSK-0070, tracked sources at `53a1ce17c` | PASS | 38 non-terminal Tasks, no conflict with confirmed decisions, closed IDs inactive, no retired-package consumer | required | - |
 | Cutover target refresh | 136 | W141 | read-only remote observation | `git ls-remote`, `gh release list`, Actions artifact and cache counts, repository metadata on 2026-11-17 | PASS | Eight branches, one tag, one release, 1,143 artifacts, 192 caches, no fork | required | - |
+| Style scope RED | 136 | W141 | tests/validation/test_run_ci_precommit.sh | Extended wrapper contract on `37099c147` controller | FAIL | A mismatched pre-commit module was accepted and the pr-merge configuration kept hooks without input | required | - |
+| Style scope GREEN | 136 | W141 | tests/validation/test_run_ci_precommit.sh | PR 1076 controller with controller Python 3.14.8 | PASS | Wrapper contract including the dropped set and the mismatched and broken module cases | required | Style scope RED |
+| Style scope owners | 136 | W141 | shellcheck, workflow contract, gate plan and workflow tests, manifest and governance contract | PR 1076 candidate | PASS | 135 tests passed and every check reported zero findings | required | - |
+| Style scope real configuration | 136 | W141 | controller selection step on real hook manifests | PR 1073 range `7a165d018...235d4eabc` | PASS | Dropped the nine hooks the hosted log skipped and kept all that ran, 0.31 s | required | - |
+| Style scope hosted | 136 | W141 | authenticated Actions job, log and evidence read-back | PR 1076 run 44173621525 | PASS | Eight hooks removed, `shellcheck` kept for changed shell files, nine hooks passed | required | - |
+| Matched hosted comparison | 136 | W141 | three hosted runs per arm with one fixed input | Draft PRs 1075 and 1077 on `37099c147` and `3c7aabedd` | PASS | All six runs passed the same nine leaves; changed style median 62.14 s to 39.17 s with one runner outlier | required | - |
 
 ### Resolution Links
 
@@ -328,11 +381,11 @@ Task migration keeps its raw evidence scanner.
 
 ### Remaining Conditions
 
-The per-prompt comparison identifies the downstream owners. W04 requires
-review of the unread authored claims and exact operational evidence where
-applicable.
-Hosted comparison and independent remote verification remain with W05
-and W06. Provider-native milestones remain with W07, and protected
+The per-prompt comparison identifies the downstream owners. TSK-0075
+classifies the unread authored claims, and exact operational evidence stays
+with its owners. The changed style hosted comparison is recorded above; the
+pre-W05 implementation has no hosted comparison for the stated reason.
+Independent remote verification remains with W06. Provider-native milestones remain with W07, and protected
 capture and memory integration remain with their W08 work. This record
 grants no owner acceptance or operational authority.
 
