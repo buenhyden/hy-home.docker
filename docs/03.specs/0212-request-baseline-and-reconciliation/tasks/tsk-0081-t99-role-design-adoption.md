@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.7.0"
+version: "0.7.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -260,10 +260,28 @@ Six writing agents drafted, from each policy only, a Limits text and a rules
 table with one row per top-level requirement: 851 rows. A Rule ID is the
 policy's `artifact_id` with `-R` and its order, which the policy did not have
 before; Enforcement and Evidence name a check or record the policy states,
-`수동` for a manual review, or `none`. One draft lacked the required
+`수동` for a manual review, or `none`; the review fixes below replace these
+first tables. One draft lacked the required
 `필수:` prefix on a mandatory rule and gained it. Compared with the base,
 the policies lost no line and gained only that authored text; 15 Limits lists
 gained the blank line Markdown requires before a list.
+
+#### W143 operations policy review fixes
+
+The independent review found the first rules tables unreliable: twelve
+`금지:` rows stated the opposite of their rule, Enforcement cells named
+checks the policy never ties to the rule or that do not test it, and rules
+under `####` subsections were left out. Seven writing agents derived every
+table and Limits text again from the policy prose under stricter rules: a row
+for every rule statement in Requirements and its subsections, `금지:` naming
+the forbidden act, a check named only where the policy ties it to that rule,
+and Limits that agree with the table. Each row cites the source lines. A
+script rejected uncited rows and negated `금지:` rows and flagged a named
+check missing from its cited line; four such ties and eleven loose ones were
+lowered to `none` or `수동` and listed in Limits, and two truncated rows were
+completed. The tables now hold 2415 rows, and no `금지:` row is negated.
+Exceptions sections stay outside the tables because they are not
+Requirements.
 
 #### Lifecycle Events
 
@@ -339,6 +357,8 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Policy lint | 137 | W143 | document-corpus | markdownlint of the changed policies after the drafts were applied | FAIL | MD032 in 15 Limits lists without a blank line before the list | required | - |
 | Policy corpus | 137 | W143 | document-corpus | check-changed against `origin/main`, check-contracts, check-operations-catalog, link alignment and markdownlint after the blank lines | PASS | 158 changed and 0 violations, then 78 after rebase; 0 contract violations; catalog and alignment PASS; 0 lint issues | required | Policy lint |
 | Policy regression | 137 | W143 | document-governance-regression | test_registry, test_template_definition, metadata heading, reference and lifecycle, test_operations_catalog, test_metadata_validator, test_spec_packages and test_taxonomy | PASS | 713 tests, exit 0 | required | - |
+| Policy review | 137 | W143 | independent-review | Commits `b901796e3` and the TSK-0081 record | FAIL | CHANGES_REQUIRED: twelve inverted `금지:` rows, Enforcement cells naming checks the policy does not tie to the rule, rules under subsections missing | required | - |
+| Policy redraft verification | 137 | W143 | rule-table-verification | 77 redrafted tables through the verifying apply script, then check-changed, check-contracts, check-operations-catalog, link alignment and markdownlint | PASS | 2415 rows, 0 uncited, 0 negated `금지:`; 0 violations; catalog and alignment PASS; 0 lint issues | required | - |
 
 ### Resolution Links
 
