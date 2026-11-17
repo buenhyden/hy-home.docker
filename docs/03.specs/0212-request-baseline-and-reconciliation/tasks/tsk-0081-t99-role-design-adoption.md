@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.6.0"
+version: "0.6.1"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -246,8 +246,8 @@ Action names a runbook or owner its guide states.
 
 The owner decided full adoption on 2026-11-17. Moving W143 to W147 changes
 current documents, and those changes need the same per-group review.
-The unapproved `mailpit` restart during W143 awaits the owner's
-acknowledgement; no further runtime action is taken for it.
+The owner approved the `mailpit` restart during W143 in this chat on
+2026-11-17; no further runtime action is taken for it.
 
 ## Verification Evidence
 
