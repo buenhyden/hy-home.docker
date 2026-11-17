@@ -425,6 +425,7 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Governance redraft verification | 137 | W143 | rule-table-verification | 15 redrafted tables through the verifying apply script, then a comparison of every non-table, non-Limits line with `fbb211eeb`, as committed in `bde3d458c` | PASS | 0 problems after one row was completed; 3 warnings where the tying text spans lines; 1131 rows, 0 negated `Forbidden:` rows, 0 other lines changed | required | - |
 | Governance review corpus | 137 | W143 | document-corpus | check-changed against `origin/main`, check-contracts, governance contract, provider surface renderer, link alignment and markdownlint at `bde3d458c` | PASS | 18 changed and 0 violations; 0 contract violations; governance contract, renderer and alignment PASS; 0 lint issues | required | - |
 | Governance re-review | 137 | W143 | independent-review | Fix commits `c19cb34fe`, `fbb211eeb`, `bde3d458c` and `9c4093232` against the governance review | PASS | APPROVE at `9c4093232`; I1 to I3 and M1 to M4 fixed; seven minor notes, four applied | required | Governance review |
+| Governance review regression | 137 | W143 | document-governance-regression | The ten governance modules and test_script_manifest at `9c4093232` in a separate worktree, with the exit code read directly; the later commits change only table cells and this record | PASS | 782 tests in 2490 seconds, exit 0 | required | - |
 
 ### Resolution Links
 
