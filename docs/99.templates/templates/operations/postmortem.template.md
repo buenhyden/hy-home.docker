@@ -50,7 +50,7 @@ created: "{{CREATED}}"
 
 ### Owners and Checks
 
-<!-- Author prompt: Each action needs an owner, the condition that completes it and the evidence that checks it; Evidence names a record or `none`. Do not set a completion deadline. -->
+<!-- Author prompt: Each action needs an owner, the condition that completes it and the evidence that checks it; Evidence names the tracking record or link and the check; `none` only for a lesson row with no corrective action. Do not set a completion deadline. -->
 
 | Action | Owner | Condition | Evidence |
 | --- | --- | --- | --- |

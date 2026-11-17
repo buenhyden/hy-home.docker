@@ -2740,6 +2740,7 @@ Narrative after the registered table.
                 "Evidence": ("Verification Evidence", "Results"),
                 "Criterion Acceptance": ("Acceptance Decision", "Criterion Decisions"),
                 "Work Log": ("Execution Log", "Work Performed"),
+                "Owners and Checks": ("Actions", "Owners and Checks"),
             },
             dict(module._common_form_paths()),
         )
