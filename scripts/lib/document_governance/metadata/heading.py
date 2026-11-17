@@ -1664,6 +1664,8 @@ def _registered_table_findings(
     required_tables: set[str] = set()
     found_tables: set[str] = set()
     core_tables: set[str] = set()
+    own_sections: set[tuple[str, str | None]] = set()
+    core_rows: dict[tuple[str, str | None], int] = {}
     for role, definition in registry.template_roles.items():
         if profile_id not in definition.get("profiles", ()):
             continue
@@ -1713,6 +1715,7 @@ def _registered_table_findings(
             # A document's own reference table shares no label with the core
             # table of its section, so it is not that table (binding rule:
             # an existing form is kept, not deleted or disguised).
+            own_sections.add((h2 or "", h3))
             return
         for table in tables:
             columns = [str(column["key"]) for column in table["columns"]]
@@ -1721,6 +1724,7 @@ def _registered_table_findings(
             ]
             if header in (required, columns):
                 found_tables.add(str(table["name"]))
+                core_rows[(h2 or "", h3)] = len(rows) - 2
                 break
         else:
             findings.append(
@@ -1778,6 +1782,18 @@ def _registered_table_findings(
     findings.extend(
         _finding(record, "table-missing", f"the core table {name} is missing")
         for name in sorted(required_tables - found_tables)
+    )
+    # An own table beside an empty core table would carry the core table's
+    # content under other labels, which the binding rule calls disguise.
+    findings.extend(
+        _finding(
+            record,
+            "table-core-empty",
+            f"the core table under {section[0]}/{section[1] or '-'} has no rows "
+            "beside the document's own table",
+        )
+        for section in sorted(own_sections, key=str)
+        if core_rows.get(section) == 0
     )
     return findings
 
