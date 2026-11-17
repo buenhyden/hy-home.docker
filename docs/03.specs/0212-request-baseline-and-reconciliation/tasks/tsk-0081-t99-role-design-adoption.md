@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -103,6 +103,32 @@ profile, the template, the readers and the current documents. The role then
 switches from `core_exception` to `core_role`. Reverting a work unit
 restores its form and exception together.
 
+#### W143 incident and postmortem
+
+W142 merged as `ea786fb86`. W143 starts with the two incident forms because
+each has one current document. A bound role now reads its table columns,
+value types and requiredness from its core table, and the template must
+use a core table's exact columns. The core says a table's rows are written
+only when something happens, so a bound document must show every table
+header its core role always requires and may have no rows; a missing header
+is `table-missing`.
+
+The incident and postmortem templates and profiles now carry the core H2
+and H3 titles, and both template roles switch to `core_role`. The
+corrective-action binding for incident closure follows the postmortem's new
+`Actions` section. The `Tracking ID` column lost its last template and is
+removed from the column dictionary.
+
+The `inc-0002` incident and postmortem keep every recorded fact. The
+incident's decisions and mitigations become rows of its Actions table.
+Nobody who acted is recorded, so Owner says so. Only the three decisions
+keep their recorded Timeline steps. The postmortem's completion phrase
+becomes Condition and its Tracking ID with the check becomes Evidence. Five
+test literals that named the old sections now name the core ones. Two
+behaviour tests move to the forms that still use the old contract:
+the dictionary lookup to the Task evidence table, and the common form
+revision to roles without `core_role`.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -131,6 +157,11 @@ current documents, and those changes need the same per-group review.
 | Foundation regression | 137 | W142 | document-governance-regression | test_registry, test_template_definition, metadata.test_heading, metadata.test_reference, test_metadata_validator and test_taxonomy at `3e30b52ce` | PASS | 374 tests in 363.184 seconds, exit 0 | required | - |
 | Foundation corpus | 137 | W142 | document-corpus | check-active, check-contracts, corpus lifecycle, link alignment and governance contract at `3e30b52ce` | PASS | 589 selected and 0 violations; 0 contract, lifecycle and governance findings; alignment PASS | required | - |
 | Foundation re-review | 137 | W142 | independent-review | Commits `3e30b52ce` and `f958da1ef` against the first review | PASS | APPROVE; six minor notes, of which the schema-hash test, the two document mentions, these revisions and the duplicate test are applied | required | Foundation review |
+| Incident form RED | 137 | W143 | role-design-binding | Bound-role, core column and missing-table tests at `ea786fb86` | FAIL | Neither role bound, columns from `COMMON-DOC-FORM-1`, no `table-missing`, exit 1 | required | - |
+| Incident form GREEN | 137 | W143 | role-design-binding | Same tests with incident and postmortem bound | PASS | test_template_definition and RegisteredTableContractTests passed, exit 0 | required | Incident form RED |
+| Incident regression | 137 | W143 | document-governance-regression | test_registry, test_template_definition, metadata heading, reference and lifecycle, test_metadata_validator, test_taxonomy and test_operations_catalog | FAIL | 552 tests, 2 failures: the conforming-body fixture lacked the incident and postmortem table headers | required | - |
+| Incident regression rerun | 137 | W143 | document-governance-regression | metadata.test_heading with the fixture adding each bound role's table header; no other module changed after the full run | PASS | 111 tests, exit 0 | required | Incident regression |
+| Incident corpus | 137 | W143 | document-corpus | check-active, check-contracts, check-operations-catalog, corpus lifecycle and link alignment | PASS | 589 selected and 0 violations; contracts, catalog, lifecycle and alignment pass | required | - |
 
 ### Resolution Links
 
