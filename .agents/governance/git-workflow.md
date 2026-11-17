@@ -1,37 +1,119 @@
 ---
 title: "Git Workflow Governance"
-version: "1.8.1"
+version: "1.9.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 ---
 
 # Git Workflow Governance
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 This rule defines the mandatory git workflow for all contributors and agents.
 
-### Authority
+#### Authority
 
 This policy is the canonical owner of local Git authoring, branch integration, commits, review, and remote delivery boundaries under [bootstrap precedence](bootstrap.md#authority-and-precedence).
-
-## Scope
 
 ### Applies To
 
 Local Git authoring, branch integration, commits, review, and remote delivery boundaries.
 
-### Exclusions
+#### Exclusions
 
 None: this document states no exclusion.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| GIT-WORKFLOW-R1 | Every commit | Required: use Conventional Commits in the form `<type>[(<scope>)][!]: <Description>` | `.cz.toml` grammar read by the `commit-msg` hook and the PR commit-range check | none |
+| GIT-WORKFLOW-R2 | Every commit | Required: use explicit scopes where possible | none | none |
+| GIT-WORKFLOW-R3 | Every commit | Required: the type is a key in `.cz.toml`'s `change_type_map` | `.cz.toml` grammar read by the `commit-msg` hook and the PR commit-range check | none |
+| GIT-WORKFLOW-R4 | Every commit | Required: the description starts with a capital letter and does not end with a period | `.cz.toml` grammar read by the `commit-msg` hook and the PR commit-range check | none |
+| GIT-WORKFLOW-R5 | A commit body is present | Required: the body is one block with no blank line inside it | `.cz.toml` grammar read by the `commit-msg` hook and the PR commit-range check | none |
+| GIT-WORKFLOW-R6 | A commit body is present | Forbidden: a body line starting with a word followed by a colon and a space | none | none |
+| GIT-WORKFLOW-R7 | A body line reads like a trailer | Required: rewrap the sentence | none | none |
+| GIT-WORKFLOW-R8 | A body line reads like a trailer | Forbidden: reaching for `--no-verify` | none | none |
+| GIT-WORKFLOW-R9 | Trailers are present | Required: trailers come last, after a single blank line | `.cz.toml` grammar read by the `commit-msg` hook and the PR commit-range check | none |
+| GIT-WORKFLOW-R10 | Every commit | Required: the header stays within the `.cz.toml` header length | `.cz.toml` grammar read by the `commit-msg` hook and the PR commit-range check | none |
+| GIT-WORKFLOW-R11 | Always | Required: treat `.cz.toml` as the sole executable authority for allowed types, message grammar and header length | none | none |
+| GIT-WORKFLOW-R12 | commit-msg delivery is unconfirmed or diagnosis is needed | Required: validate the draft with `cz check --message-length-limit 75 --message ...` before starting the commit | none | none |
+| GIT-WORKFLOW-R13 | Judging commit-message enforcement | Required: observe whether a `commit-msg` hook is actually installed | none | none |
+| GIT-WORKFLOW-R14 | Judging commit-message enforcement | Forbidden: treating the configuration alone as enforcement evidence | none | none |
+| GIT-WORKFLOW-R15 | An ordinary commit | Required: prepare the message file, stage the reviewed changes and run `git commit -F /tmp/commit-message.txt` | none | none |
+| GIT-WORKFLOW-R16 | An ordinary commit | Forbidden: repeating beforehand the style checks the observed pre-commit and commit-msg hooks run on the same input | none | none |
+| GIT-WORKFLOW-R17 | Delivery of the installed checks is unconfirmed or a diagnosis is needed | Allowed: run `scripts/validation/run-ci-precommit.sh --mode local-staged` on an isolated copy of the index with the registered pins | none | none |
+| GIT-WORKFLOW-R18 | The local-staged check fails | Required: fix, review the diff, restage and commit normally | none | none |
+| GIT-WORKFLOW-R19 | The index changes | Forbidden: reusing an earlier PASS | none | none |
+| GIT-WORKFLOW-R20 | Always | Forbidden: the local-staged controller replacing a user-global hook | none | none |
+| GIT-WORKFLOW-R21 | Always | Forbidden: claiming automatic enforcement from configuration alone | none | none |
+| GIT-WORKFLOW-R22 | Always | Required: keep `main` as the protected baseline | none | none |
+| GIT-WORKFLOW-R23 | A short-lived human branch | Required: name it `<type>/<short-description>` with `type` a `.cz.toml` change type | none | none |
+| GIT-WORKFLOW-R24 | An existing intake Issue ID applies | Allowed: the Issue ID precedes the branch description | none | none |
+| GIT-WORKFLOW-R25 | Naming a branch | Forbidden: creating a duplicate Issue or copying the Spec/Task merely to satisfy a branch name | none | none |
+| GIT-WORKFLOW-R26 | An emergency hotfix | Required: name the branch `hotfix/<short-description>` | none | none |
+| GIT-WORKFLOW-R27 | An emergency hotfix | Required: preserve the same PR, validation and explicit runtime authorization boundaries | none | none |
+| GIT-WORKFLOW-R28 | Tool-generated PR branches | Allowed: `renovate/**` and `codex/**` branches, for tool-generated PR branches only | none | none |
+| GIT-WORKFLOW-R29 | Always | Required: Renovate is the sole dependency updater | none | none |
+| GIT-WORKFLOW-R30 | An automation branch | Required: merge through the PR protocol and required checks | none | none |
+| GIT-WORKFLOW-R31 | A branch's linked worktree | Required: create it under the ignored `.worktrees/<branch>` directory | none | none |
+| GIT-WORKFLOW-R32 | The work ends | Required: remove the worktree and its merged branch | none | none |
+| GIT-WORKFLOW-R33 | A detached checkout a script creates and removes inside its own scratch directory | Allowed: treat it as outside the branch worktree rules | none | none |
+| GIT-WORKFLOW-R34 | Starting a new branch or worktree | Required: start from the latest committed state the work builds on, normally `main` after the previous PR merged | none | none |
+| GIT-WORKFLOW-R35 | Making room for a new branch or worktree | Forbidden: stashing, resetting, discarding or force-committing uncommitted user work | none | none |
+| GIT-WORKFLOW-R36 | Uncommitted user work is in the way | Required: stop and ask | none | none |
+| GIT-WORKFLOW-R37 | Opening or updating a PR | Required: self-review the changes first | none | none |
+| GIT-WORKFLOW-R38 | Opening or updating a PR | Required: run focused authoring checks and inspect the selected prerequisites | none | none |
+| GIT-WORKFLOW-R39 | The same declared input and trust boundary | Forbidden: repeating the aggregate QA the remote PR candidate owns before push or after merge | none | none |
+| GIT-WORKFLOW-R40 | Before result-only Task evidence recording | Required: run document-link validation locally on the final source input | none | none |
+| GIT-WORKFLOW-R41 | Document-link validation has run | Required: record its bound input and result in the Task | none | Task record |
+| GIT-WORKFLOW-R42 | A result-only addition | Required: use minimum document checks | none | none |
+| GIT-WORKFLOW-R43 | A result-only addition | Required: check only new or changed link destinations in that Task rather than the whole corpus | none | none |
+| GIT-WORKFLOW-R44 | Remote PR QA | Required: exclude the link leaf | none | none |
+| GIT-WORKFLOW-R45 | Remote PR QA | Required: keep the metadata, relationship, lifecycle and applicable operations catalog checks | none | none |
+| GIT-WORKFLOW-R46 | Governance work | Required: ensure linked stage docs remain accurate | none | none |
+| GIT-WORKFLOW-R47 | Before declaring a PR done | Required: apply the Completion Gate from `.agents/governance/github-governance.md` | none | none |
+| GIT-WORKFLOW-R48 | Work is incomplete | Required: mark the PR Draft/WIP | none | none |
+| GIT-WORKFLOW-R49 | The PR is not ready | Forbidden: requesting final review | none | none |
+| GIT-WORKFLOW-R50 | Merge readiness and branch lifecycle | Required: follow `.agents/governance/github-governance.md` section 3 | none | none |
+| GIT-WORKFLOW-R51 | A pull request | Required: carry the work of one Spec Package | none | none |
+| GIT-WORKFLOW-R52 | A pull request | Allowed: hold several of that Spec's Tasks as separate logical commits | none | none |
+| GIT-WORKFLOW-R53 | A pull request | Forbidden: mixing Specs | none | none |
+| GIT-WORKFLOW-R54 | Always | Required: keep commits atomic and reviewable | none | none |
+| GIT-WORKFLOW-R55 | A cleanup proposal | Required: document it in the PR | none | none |
+| GIT-WORKFLOW-R56 | A cleanup proposal | Required: satisfy the recovery-commit and history-rewrite rules of `.agents/governance/github-governance.md` section 3 | none | none |
+| GIT-WORKFLOW-R57 | Requesting review | Required: request it only after self-review and programmatic checks pass | none | none |
+| GIT-WORKFLOW-R58 | Requesting review | Required: summarize scope, risk and how to verify | none | none |
+| GIT-WORKFLOW-R59 | Review feedback before re-requesting review | Required: resolve or reply to each finding, re-run affected checks and record what changed | none | none |
+| GIT-WORKFLOW-R60 | A user-visible or operational defect correction | Required: use `fix` | none | none |
+| GIT-WORKFLOW-R61 | A user-visible or operational defect correction | Required: include regression evidence | none | none |
+| GIT-WORKFLOW-R62 | A structure change | Required: use `refactor` only for behavior-preserving changes | none | none |
+| GIT-WORKFLOW-R63 | A `refactor` change | Required: list checks that demonstrate unchanged behavior | none | none |
+| GIT-WORKFLOW-R64 | Applicable IDs exist | Required: reference issue IDs, ADR IDs or plan/task IDs | none | none |
+| GIT-WORKFLOW-R65 | A Git or GitHub automatic merge subject | Allowed: it is exempt from the grammar (`allowed_prefixes`, owner decision of 2026-11-14) | `.cz.toml` `allowed_prefixes` read by the `commit-msg` hook and the PR commit-range check | none |
+| GIT-WORKFLOW-R66 | A commit message | Forbidden: fixup and squash escapes | none | none |
+| GIT-WORKFLOW-R67 | A main-targeted release-preparation PR | Required: maintain `CHANGELOG.md` in Keep a Changelog form | none | none |
+| GIT-WORKFLOW-R68 | A development push | Forbidden: generating or publishing a changelog | none | none |
+| GIT-WORKFLOW-R69 | A future release tag | Required: `v` plus strict SemVer (`.cz.toml` `tag_format`) | none | none |
+| GIT-WORKFLOW-R70 | Always | Forbidden: pushing a tag independently | none | none |
+| GIT-WORKFLOW-R71 | Releasing | Required: the release producer is the one defined in `.agents/governance/github-governance.md` section 8 | none | none |
+| GIT-WORKFLOW-R72 | An existing non-SemVer historical ref | Required: keep it as evidence | none | none |
+| GIT-WORKFLOW-R73 | Deleting or rewriting an existing non-SemVer historical ref | Required: the owner's approval for that ref | manual | none |
+| GIT-WORKFLOW-R74 | A specific release publication | Required: its exact version, commit, approved target and recovery path | none | none |
+| GIT-WORKFLOW-R75 | A specific release publication | Required: select `RUN-0009` through the platform and backup runbook index | none | none |
+| GIT-WORKFLOW-R76 | Repository-modifying agent work | Required: create logical Conventional Commits after verification and before declaring the task done | none | none |
+| GIT-WORKFLOW-R77 | Repository-modifying agent work | Required: split commits by reviewable concern unless inseparable | none | none |
+| GIT-WORKFLOW-R78 | Repository-modifying agent work | Required: stage only files or hunks owned by the current task | none | none |
+| GIT-WORKFLOW-R79 | Repository-modifying agent work | Required: leave unrelated untracked files and user changes untouched | none | none |
+| GIT-WORKFLOW-R80 | The user asks not to commit, the work is exploratory or incomplete, required checks or approvals are missing, or the commit would include secrets or unrelated changes | Forbidden: committing | none | none |
+| GIT-WORKFLOW-R81 | A commit is withheld | Required: report the reason and remaining state | none | none |
 
 #### 1. Commit Standards
 
@@ -159,7 +241,19 @@ automatic enforcement from configuration alone.
   would include secrets or unrelated changes. In that case, report the reason and
   remaining state.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+#### Approval and Review
+
+None: no exception exists to approve.
+
+## Enforcement
+
+### Mechanisms
 
 #### 6. Enforcement
 
@@ -201,23 +295,27 @@ list.
 SDLC phases and document Stages are separate axes from these cells, and the
 current Task records each binding's evidence.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+Only the commit grammar rows and the merge-subject exemption name a check, and deleting a historical ref rests on owner approval; the other rules name none.
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-### Approval and Review
-
-None: no exception exists to approve.
+- Commit standards outside the grammar (R2, R6-R8, R11-R14) name no check; the `cz check` route is an optional diagnosis, not enforcement.
+- Ordinary-commit and local-staged diagnosis rules (R15-R21) name no check; the local-staged run is an optional diagnosis.
+- Branching, worktree and new-branch-start rules (R22-R36) name no check.
+- Pull request protocol steps (R37-R59) name no check.
+- Operational best practices (R60-R64, R66-R72, R74-R75) name no check.
+- Deleting or rewriting a historical ref (R73) rests on the owner's approval for that ref.
+- Agent completion commit discipline (R76-R81) names no check.
+- The policy states that client hooks, including the `commit-msg` hook named for the grammar rows, can be bypassed with `--no-verify`.
+- Rules stated under Enforcement / Mechanisms are outside this table.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Change and Adoption
+### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 

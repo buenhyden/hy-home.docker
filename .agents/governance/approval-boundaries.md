@@ -1,38 +1,94 @@
 ---
 title: "Approval Boundaries"
-version: "1.5.1"
+version: "1.6.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Approval Boundaries
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 Approval is bound to a named surface, operation, evidence route, and recovery.
 It never expands through delegation or provider handoff.
 
-### Authority
+#### Authority
 
 This policy is the canonical owner of approval of protected operations and surfaces under [bootstrap precedence](bootstrap.md#authority-and-precedence).
-
-## Scope
 
 ### Applies To
 
 Actors, owned surfaces, protected operations, and their current trusted authorization sources.
 
-### Exclusions
+#### Exclusions
 
 None: this document states no exclusion.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| APPROVAL-BOUNDARIES-R1 | Always | Required: treat an authorization from the current trusted user, operator or native provider channel as valid only for its stated actor, operation, subject, revision or scope, and recovery boundary | none | none |
+| APPROVAL-BOUNDARIES-R2 | Authorization record in a Task, schema, CLI argument or hook | Forbidden: treating it as an authenticator or as authorizing itself | none | none |
+| APPROVAL-BOUNDARIES-R3 | Missing, mismatched, expired, revoked or Historical approval | Forbidden: granting a current operation from it | none | none |
+| APPROVAL-BOUNDARIES-R4 | Hooks and provider fields | Forbidden: lowering a native sandbox or creating authorization through them | none | none |
+| APPROVAL-BOUNDARIES-R5 | Protected operation | Required: the controller resolves the latest actual user message or native permission origin, confirms actor, operation, target/path, revision or scope, recovery and withdrawal, then compares the result with the Task's structural record | none | none |
+| APPROVAL-BOUNDARIES-R6 | Trusted origin absent or insufficient | Required: mark only the dependent operation `BLOCKED` | none | none |
+| APPROVAL-BOUNDARIES-R7 | Trusted origin absent or insufficient | Required: continue independent safe work | none | none |
+| APPROVAL-BOUNDARIES-R8 | Unsupported protected operation | Allowed: an operator performs it directly through its trusted channel | none | none |
+| APPROVAL-BOUNDARIES-R9 | Approved local authoring | Allowed: edit documentation, redacted examples, synthetic inputs and metadata without executing the depicted commands | none | none |
+| APPROVAL-BOUNDARIES-R10 | Reading a secret value | Required: apply its own approval rule | none | none |
+| APPROVAL-BOUNDARIES-R11 | Sensitive target, live mutation, remote write outside the request's branch and pull request, credential operation or destructive recovery | Required: wait for its exact target under this policy | none | none |
+| APPROVAL-BOUNDARIES-R12 | Secret-specific execution evidence and redaction boundary | Required: take them from `environment-constraints.md#22-approved-secrets-work-protocol` | none | none |
+| APPROVAL-BOUNDARIES-R13 | Always | Forbidden: printing, recording, summarizing, quoting or committing secret values, credentials, private keys, tokens, raw auth/log payloads or shell history | none | none |
+| APPROVAL-BOUNDARIES-R14 | Sanitized operational evidence | Allowed: recording value-free identifiers, paths, counts, status and command outcome | none | none |
+| APPROVAL-BOUNDARIES-R15 | Reading or processing a secret value | Required: separate explicit approval for a concrete target, operation, redaction boundary, validation and recovery | manual | none |
+| APPROVAL-BOUNDARIES-R16 | Auth files, raw logs or shell history | Forbidden: reading them without the same concrete authorization | none | none |
+| APPROVAL-BOUNDARIES-R17 | Auth files, raw logs or shell history | Forbidden: treating their presence in a document, fixture or task as that authorization | none | none |
+| APPROVAL-BOUNDARIES-R18 | Current explicit request | Allowed: the work it names through its purpose, target, impact and recovery, including source, tests, documents, governance and enforcer changes, logical commits, the branch push, its pull request and the requested merge after required checks pass | none | none |
+| APPROVAL-BOUNDARIES-R19 | Approval already given inside the request scope | Forbidden: asking again for that approval | none | none |
+| APPROVAL-BOUNDARIES-R20 | Operation whose exact target the request does not name (runtime restart, rollout or deployment, remote mutation outside the request's branch and pull request, credential issue/rotation/revocation, data or volume deletion, public endpoint, anything billed) | Required: wait for that target, not for a second approval | none | none |
+| APPROVAL-BOUNDARIES-R21 | The user names the target | Required: run the operation | none | none |
+| APPROVAL-BOUNDARIES-R22 | Meaning shared by the four workspace repositories | Required: treat the owner `@buenhyden` as its one joint decision maker | none | none |
+| APPROVAL-BOUNDARIES-R23 | Shared contract | Required: activate it only by the owner's explicit approval naming the contract, its revision and the repositories it applies to | manual | none |
+| APPROVAL-BOUNDARIES-R24 | Shared contract adoption | Required: each repository records its own adoption in its own Task | none | adoption record in that repository's Task |
+| APPROVAL-BOUNDARIES-R25 | Adoption by another repository | Forbidden: deciding or recording it | none | none |
+| APPROVAL-BOUNDARIES-R26 | Shared contract revision | Required: treat it as draft until approval, approved after it, and adopted only once this repository's producers and consumers implement it on `main` and are verified | none | none |
+| APPROVAL-BOUNDARIES-R27 | Partial adoption | Required: call it partial | none | none |
+| APPROVAL-BOUNDARIES-R28 | Adoption record | Required: name contract id and version, single authoring owner, approver and date, scope, exceptions, effective date, migration, rollback and the revision each consumer reads | none | adoption record |
+| APPROVAL-BOUNDARIES-R29 | Role permissions | Required: take them from canonical role frontmatter | none | none |
+| APPROVAL-BOUNDARIES-R30 | Provider/model and permission translations | Required: take them from `.agents/governance/providers/registry.yaml` | none | none |
+| APPROVAL-BOUNDARIES-R31 | Lifecycle, retry and stop behavior | Required: take it from `workflows.md` | none | none |
+| APPROVAL-BOUNDARIES-R32 | Always | Forbidden: provider facts overriding agent governance policy | none | none |
+| APPROVAL-BOUNDARIES-R33 | Untracked or ignored scratch state | Forbidden: treating it as evidence | none | none |
+| APPROVAL-BOUNDARIES-R34 | Always | Required: preserve other workers' dirty state | none | none |
+| APPROVAL-BOUNDARIES-R35 | Ownership cannot be proven | Required: stop | none | none |
+| APPROVAL-BOUNDARIES-R36 | Configured hook or provider surface | Forbidden: treating it as proof of adoption; it proves tracked configuration only | none | none |
+| APPROVAL-BOUNDARIES-R37 | Cost, token and time limits | Forbidden: treating them as safety authorization | none | none |
+| APPROVAL-BOUNDARIES-R38 | Cost, token and time limit preflight | Required: follow `agentic.md`, its owner | none | none |
+| APPROVAL-BOUNDARIES-R39 | Explicit policy-maintenance request | Allowed: matching reversible policy text edits within the writer's permission profile | none | none |
+| APPROVAL-BOUNDARIES-R40 | Explicit policy-maintenance request | Forbidden: treating it as authorizing a protected operation the edited policy describes | none | none |
+| APPROVAL-BOUNDARIES-R41 | Scratch deletion | Forbidden: inferring deletion safety from parent ignore probes | none | none |
+| APPROVAL-BOUNDARIES-R42 | Scratch ownership | Required: bind it to the controller that created the path | none | none |
+| APPROVAL-BOUNDARIES-R43 | Scratch handling | Required: separate inspection from deletion | none | none |
+| APPROVAL-BOUNDARIES-R44 | Deleting ignored or untracked scratch | Required: delete only after review of its exact owner, path and disposition | manual | none |
+| APPROVAL-BOUNDARIES-R45 | Scratch ownership cannot be proven | Required: stop | none | none |
+| APPROVAL-BOUNDARIES-R46 | Reviewer worktrees | Required: isolate them from implementation worktrees | none | none |
+| APPROVAL-BOUNDARIES-R47 | Always | Required: preserve every task-owned or user-owned dirty path | none | none |
+| APPROVAL-BOUNDARIES-R48 | Digest mismatch | Required: stop | none | none |
+| APPROVAL-BOUNDARIES-R49 | Staged paths | Required: reconcile them against the approved ledger | none | none |
+| APPROVAL-BOUNDARIES-R50 | Unstaged review-fix round | Forbidden: mutating the index | none | none |
+| APPROVAL-BOUNDARIES-R51 | After a concurrency incident | Required: rerun all affected gates before reporting completion | none | none |
+| APPROVAL-BOUNDARIES-R52 | Approved documentation | Allowed: `doc-writer` edits it | none | none |
+| APPROVAL-BOUNDARIES-R53 | Roles other than `doc-writer` | Forbidden: editing documentation unless their Task explicitly includes a documentation update | none | none |
+| APPROVAL-BOUNDARIES-R54 | Role whose canonical `permission_profile` is `read-only` | Required: remain read-only even when routing or reviewing writable work | none | none |
+| APPROVAL-BOUNDARIES-R55 | Policy change | Required: `rules-engineer` review | manual | none |
 
 #### Authorization Source and Records
 
@@ -132,7 +188,19 @@ redaction boundary are defined by
   even when it routes or reviews writable work.
 - Policy changes require `rules-engineer` review.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+A current trusted user or native provider authorization permits only its stated operation and scope. The Authorization Source and Records rules above determine that boundary.
+
+#### Approval and Review
+
+Policy changes require rules-engineer review (Documentation Write Permission); a shared contract needs the owner approval in Core Rules.
+
+## Enforcement
+
+### Mechanisms
 
 **Protected Surfaces**
 
@@ -146,23 +214,30 @@ redaction boundary are defined by
 | `.agents/**` | canonical contract, links, and Task evidence | restore approved authored sources; never treat them as generated cleanup |
 | `docs/99.templates/**` | registry/schema validation and Task evidence | revert logical commit |
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+No rule here names an automated check; the rules that require an approval or a review rest on that approval or review.
 
-A current trusted user or native provider authorization permits only its stated operation and scope. The Authorization Source and Records rules above determine that boundary.
-
-### Approval and Review
-
-Policy changes require rules-engineer review (Documentation Write Permission); a shared contract needs the owner approval in Core Rules.
+- Authorization source and records (R1-R12): no check is named.
+- Secrets, request scope and exact-target waits (R13-R14, R16-R21): no check is named.
+- Shared contracts (R22, R24-R28): no check is named.
+- Sources, evidence and cost boundaries (R29-R40): no check is named.
+- Shared-worktree safeguards (R41-R43, R45-R51): no check is named.
+- Documentation write permission (R52-R54): no check is named.
+- Secrets, request scope and exact-target waits (R15): rests on the separate explicit approval the rule requires.
+- Shared contracts (R23): rests on the owner's explicit approval.
+- Shared-worktree safeguards (R44): rests on the review of owner, path and disposition the rule requires.
+- Documentation write permission (R55): rests on `rules-engineer` review.
+- Enforcement gap: repository tools do not automatically verify the account identity behind a user message or native permission origin, and the repository does not claim to authenticate an operator's direct act or to relax the native sandbox.
+- Rules stated under Enforcement (Mechanisms) are outside this table.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Change and Adoption
+### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 

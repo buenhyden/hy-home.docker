@@ -194,7 +194,7 @@ class TemplateMetadataTests(unittest.TestCase):
     def test_governance_policy_profile_binds_approval_boundary_body(self) -> None:
         profile = self.registry.profiles["governance-policy"]
         self.assertEqual(
-            ("Purpose", "Scope", "Rules", "Exceptions", "Ownership"),
+            ("Purpose and Scope", "Rules", "Enforcement", "Ownership"),
             profile["required_sections"],
         )
         self.assertFalse(profile["free_form_sections"])
@@ -220,21 +220,18 @@ class TemplateMetadataTests(unittest.TestCase):
             [],
             section_codes(
                 body_with_headings(
-                    "## Purpose",
+                    "## Purpose and Scope",
                     "### Objective",
-                    "### Authority",
-                    "## Scope",
                     "### Applies To",
-                    "### Exclusions",
                     "## Rules",
                     "### Requirements",
-                    "### Enforcement",
-                    "## Exceptions",
-                    "### Exception Conditions",
-                    "### Approval and Review",
+                    "### Exceptions",
+                    "## Enforcement",
+                    "### Mechanisms",
+                    "### Limits",
                     "## Ownership",
-                    "### Responsibilities",
-                    "### Change and Adoption",
+                    "### Owner",
+                    "### Review Triggers",
                 )
             ),
         )
@@ -242,18 +239,15 @@ class TemplateMetadataTests(unittest.TestCase):
             "body-heading-missing",
             section_codes(
                 body_with_headings(
-                    "## Purpose",
+                    "## Purpose and Scope",
                     "### Objective",
-                    "### Authority",
-                    "## Scope",
                     "### Applies To",
-                    "### Exclusions",
                     "## Rules",
                     "### Requirements",
-                    "### Enforcement",
-                    "## Exceptions",
-                    "### Exception Conditions",
-                    "### Approval and Review",
+                    "### Exceptions",
+                    "## Enforcement",
+                    "### Mechanisms",
+                    "### Limits",
                 )
             ),
         )

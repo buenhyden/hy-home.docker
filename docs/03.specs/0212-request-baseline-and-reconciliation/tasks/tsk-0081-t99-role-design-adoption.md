@@ -1,6 +1,6 @@
 ---
 title: "T99 Role Design Adoption Task"
-version: "0.7.3"
+version: "0.8.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -286,6 +286,48 @@ patterns find values without enforcing the rules.
 Exceptions sections stay outside the tables because they are not
 Requirements.
 
+#### W143 governance policies
+
+The governance control template and profile now carry the core policy
+sections, and `governance/policy` is bound. A script moved all 15 governance
+policies section by section, and the governance body fixtures use the core
+headings. The rules tables were written under the strict rules the operations
+policy review set, before any review: a row for every rule statement in
+Requirements and its subsections, `Forbidden:` naming the forbidden act, a
+check named only where the policy ties it to that rule, otherwise `none`, and
+Limits that agree with the table. A Rule ID is the upper-cased file stem with
+`-R` and its order, for example `BOOTSTRAP-R1`. Compared with `main`, the
+policies lost no body line; they changed only their `version` and `updated`
+values and gained the tables and Limits text. The profile test still named
+the old sections and now expects the core ones.
+
+#### W143 governance policy review fixes
+
+The independent review found that the tables named a manual review, a check
+or a record the policy does not tie to the rule, left out rule statements in
+Requirements, carried rows from Enforcement Mechanisms in three policies, and
+had Limits that contradicted the table or the policy. Five writing agents
+derived every table and Limits text again from Requirements and its
+subsections only, with a check, `manual` or a record named only where the
+prose ties it to that rule, permissions written as `Allowed:`, and Limits
+stating only what the table and the policy say, including that rules under
+Enforcement Mechanisms are outside the table. The verifying apply script
+rejected one draft row that lacked its permission text, which was completed
+from the policy. The tables now hold 1131 rows, no `Forbidden:` row is
+negated, and nothing outside the tables and Limits changed. The old-form test
+now covers the governance policy profile, and both policy template prompts
+state the same table rules without changing their registered versions.
+The re-review approved the fix range with seven minor notes. Four are
+applied: "record in the Task" rows now all name the Task record as Evidence,
+a state description became a `Forbidden:` row, the Guide review-date row
+states its rejection, and a Limits bullet no longer contradicts the one above
+it. Three stay as they are: the GitHub update-branch row copies prose that
+conflicts with the automatic merge exemption in the Git workflow policy, which
+needs its own change; a build refusal names no check; and the remaining
+statements describe behaviour rather than rules. The provider capability
+Limits names a gap the policy states, which does not contradict its next
+bullet.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -367,13 +409,31 @@ The owner approved the `mailpit` restart during W143 in this chat on
 | Policy re-review approval | 137 | W143 | independent-review | Fix commits `3bd9a044c` and `a92dec37c` against the re-review | PASS | APPROVE at `a92dec37c`; N1, N2 and N4 fixed, N3 left as wording | required | Policy re-review |
 | Policy hosted candidate | 137 | W143 | hosted-candidate | PR 1065 candidate-core at `c38dec7de` | FAIL | `test_production_scripts_do_not_reference_tests_tree` flagged `metadata/lifecycle.py`: a comment from the W03-FORMS change named the fixture path literally; it also failed on main at `bbdca00d1` | required | - |
 | Policy hosted candidate fix | 137 | W143 | hosted-candidate | tests.validation.test_script_manifest after the comment names the tree in words | PASS | Module passed locally, exit 0; the hosted rerun is the next observation | required | Policy hosted candidate |
+| Policy hosted candidate rerun | 137 | W143 | hosted-candidate | PR 1065 checks at `a237c0df4` | PASS | candidate-core, candidate-documents, candidate-quality, candidate-routing, CodeQL and GitGuardian pass; merged as `82cf41b9d` | required | Policy hosted candidate |
+| Governance form RED | 137 | W143 | role-design-binding | test_template_definition from the governance branch against `main` at `82cf41b9d` | FAIL | 44 tests, 1 failure: `governance/policy` unbound | required | - |
+| Governance form GREEN | 137 | W143 | role-design-binding | Same module with the control template and profile on the core, at `e7fc61911` | PASS | Part of the governance regression below | required | Governance form RED |
+| Governance move fidelity | 137 | W143 | document-move | 15 governance policies at `e7fc61911` against `82cf41b9d`: non-heading lines lost and added | PASS | Lost only the 29 frontmatter `version` and `updated` lines; added 29 frontmatter lines, 158 Limits lines and 15 tables | required | - |
+| Governance table verification | 137 | W143 | rule-table-verification | Rule rows in the 15 tables at `e7fc61911` | PASS | 768 rows, 0 negated `Forbidden:` rows | required | - |
+| Governance profile test | 137 | W143 | document-governance-regression | metadata.test_profile at `2a4331860`, before the profile test change | FAIL | 18 tests, 1 failure: the approval-boundary body test named the old sections | required | - |
+| Governance regression | 137 | W143 | document-governance-regression | test_registry, test_template_definition, metadata heading, profile, reference and lifecycle, test_metadata_validator, test_spec_packages, test_taxonomy, test_operations_catalog and test_script_manifest at `e7fc61911` | PASS | 782 tests in 1469 seconds, exit 0 | required | Governance profile test |
+| Governance corpus | 137 | W143 | document-corpus | check-changed against `origin/main`, check-contracts, governance contract, provider surface renderer, link alignment and markdownlint at `e7fc61911` | PASS | 16 changed and 0 violations; 0 contract violations; governance contract, renderer and alignment PASS; 0 lint issues | required | - |
+| Acceptance record | 137 | W143 | hosted-candidate | PR 1066 at `332efd5bf`, with criterion 137 recorded as accepted | FAIL | candidate-core: Criterion Acceptance cited a phrase, not Evidence rows; candidate-documents lifecycle public tests failed on the same package; candidate-quality aggregates both. With exact citations the local check reported `accepted criterion 137 has an unresolved required observation` (Core comparison baseline) | required | - |
+| Acceptance record fix | 137 | W143 | document-corpus | check-changed against `origin/main` and tests.validation.lifecycle.test_public with criterion 137 kept pending and the owner's statement in Decision | PASS | 17 changed and 0 violations; 6 tests, exit 0; the hosted rerun is the next observation | required | - |
+| Governance review | 137 | W143 | independent-review | Commits `b020c2dc9`, `2a4331860`, `e7fc61911` and the TSK-0081 record | FAIL | CHANGES_REQUIRED: unsupported Enforcement and Evidence cells, missing Requirements rules, Limits contradicting the table or policy, modality errors, Mechanisms rows in three policies, no governance old-form test, template prompts asking for `manual` | required | - |
+| Governance old-form RED | 137 | W143 | role-design-binding | metadata.test_heading old-form test with governance policy cases against `main` at `82cf41b9d` | FAIL | 4 governance subtests failed: the old headings were accepted | required | - |
+| Governance old-form GREEN | 137 | W143 | role-design-binding | Same test on the branch, then test_template_definition and test_registry with the template prompts changed, before `c19cb34fe` and `fbb211eeb` | PASS | 1 test, exit 0; 213 tests, exit 0; check-contracts 0 violations | required | Governance old-form RED |
+| Governance redraft verification | 137 | W143 | rule-table-verification | 15 redrafted tables through the verifying apply script, then a comparison of every non-table, non-Limits line with `fbb211eeb`, as committed in `bde3d458c` | PASS | 0 problems after one row was completed; 3 warnings where the tying text spans lines; 1131 rows, 0 negated `Forbidden:` rows, 0 other lines changed | required | - |
+| Governance review corpus | 137 | W143 | document-corpus | check-changed against `origin/main`, check-contracts, governance contract, provider surface renderer, link alignment and markdownlint at `bde3d458c` | PASS | 18 changed and 0 violations; 0 contract violations; governance contract, renderer and alignment PASS; 0 lint issues | required | - |
+| Governance re-review | 137 | W143 | independent-review | Fix commits `c19cb34fe`, `fbb211eeb`, `bde3d458c` and `9c4093232` against the governance review | PASS | APPROVE at `9c4093232`; I1 to I3 and M1 to M4 fixed; seven minor notes, four applied | required | Governance review |
+| Governance review regression | 137 | W143 | document-governance-regression | The ten governance modules and test_script_manifest at `9c4093232` in a separate worktree, with the exit code read directly; the later commits change only table cells and this record | PASS | 782 tests in 2490 seconds, exit 0 | required | - |
 
 ### Resolution Links
 
 Conformance GREEN resolves Conformance RED, and Foundation re-review resolves
 Foundation review. Runbook form GREEN, Reference table GREEN, Runbook
 regression rerun, Runbook corpus, Disguise GREEN, Runbook review approval,
-Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Policy review approval, Policy re-review approval, Incident regression rerun, Review fix GREEN, Review fix
+Runbook re-review approval, Guide form GREEN, Guide corpus, Guide review approval, Policy form GREEN, Policy corpus, Policy review approval, Policy re-review approval, Policy hosted candidate
+rerun, Governance form GREEN, Governance regression, Governance old-form GREEN, Governance re-review, Incident regression rerun, Review fix GREEN, Review fix
 regression rerun, Review fix corpus and Incident re-review resolve their W143
 rows. The comparison baseline stays
 open until every role group conforms.
@@ -384,12 +444,13 @@ open until every role group conforms.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 137 | pending | Conformance GREEN, Contract wiring | Awaits W143 to W147 and the owner's decision | @buenhyden |
+| 137 | pending | Conformance GREEN, Contract wiring, Foundation re-review, Incident re-review, Runbook review approval, Guide review approval, Policy review approval, Governance regression | Owner @buenhyden stated acceptance on 2026-11-17 in this chat; the validator rejects `accepted` while the required Core comparison baseline is unresolved, and the owner chose to keep it pending until the conforming export resolves that baseline | @buenhyden |
 
 ### Remaining Conditions
 
-W143 to W147 move their role groups. The comparison baseline is resolved
-only by a later export that conforms for every bound role.
+W144 to W147 still move their role
+groups, each with its own review. The comparison baseline is resolved only by
+a later export that conforms for every bound role.
 
 ## Handoff
 
@@ -401,4 +462,4 @@ role design contract as a version object.
 
 ### Next Owner
 
-The implementer owns W143 to W147. The owner decides criterion 137.
+The implementer owns W143 to W147. Criterion 137 becomes accepted when the conforming export resolves the baseline, as the owner chose.

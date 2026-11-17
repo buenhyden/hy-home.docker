@@ -770,6 +770,7 @@ class RoleDesignConformanceTests(unittest.TestCase):
         self.assertEqual("runbook", bound.get("operation/runbook"))
         self.assertEqual("guide", bound.get("operation/guide"))
         self.assertEqual("policy", bound.get("operation/policy"))
+        self.assertEqual("policy", bound.get("governance/policy"))
         self.assertEqual([], role_design_contract_findings(self.registry))
 
     def test_a_runbook_steps_table_reads_the_core_columns(self) -> None:

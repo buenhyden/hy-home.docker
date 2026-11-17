@@ -1,37 +1,71 @@
 ---
 title: "Stage Authoring Matrix"
-version: "1.3.3"
+version: "1.4.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Stage Authoring Matrix
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 Map each stage to its layer, canonical owner, and completion evidence.
 
-### Authority
+#### Authority
 
 This policy is the canonical owner of the stage ownership and document type family map under [bootstrap precedence](bootstrap.md#authority-and-precedence).
-
-## Scope
 
 ### Applies To
 
 Current stage roles, document families, canonical ownership, and verification routes.
 
-### Exclusions
+#### Exclusions
 
 Shared README profiles, native envelopes, and scoped registry/schema/template reads keep the exceptions the documentation protocol registers.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| STAGE-AUTHORING-MATRIX-R1 | Mapping stages | Required: each stage keeps the `layer`, purpose, canonical owner and completion evidence given in the stage table | none | none |
+| STAGE-AUTHORING-MATRIX-R2 | Always | Required: a `layer` value is the stage directory name without its numeric prefix | none | none |
+| STAGE-AUTHORING-MATRIX-R3 | Always | Required: the Stage 99 profile determines whether `layer` is required or omitted | none | none |
+| STAGE-AUTHORING-MATRIX-R4 | Canonical governance paths | Required: state their authority outside the numbered stages | none | none |
+| STAGE-AUTHORING-MATRIX-R5 | Shared README profiles and native envelopes | Required: follow their registered exceptions | none | none |
+| STAGE-AUTHORING-MATRIX-R6 | Always | Required: document language follows the `documentation-protocol.md#document-language` rule | none | none |
+| STAGE-AUTHORING-MATRIX-R7 | Always | Required: README navigation follows the `documentation-protocol.md#readme-navigation` rule | none | none |
+| STAGE-AUTHORING-MATRIX-R8 | A template source | Required: declare the layer of its destination where the profile requires it | none | none |
+| STAGE-AUTHORING-MATRIX-R9 | Files outside docs | Forbidden: treating stage ownership as making an individual stage document a current instruction source | none | none |
+| STAGE-AUTHORING-MATRIX-R10 | Files outside docs | Required: use README navigation and canonical agent rules | none | none |
+| STAGE-AUTHORING-MATRIX-R11 | Scoped execution reads and required registry/schema/template inputs | Allowed: retain the narrow exceptions in the documentation protocol | none | none |
+| STAGE-AUTHORING-MATRIX-R12 | Authoring or classifying a document | Required: `type` is a `family/kind` pair whose family names the owning authority and whose kind names its role in that family | none | none |
+| STAGE-AUTHORING-MATRIX-R13 | Assigning a `type` | Required: use a family, owning stage and kind from the Document Type Families table | none | none |
+| STAGE-AUTHORING-MATRIX-R14 | Stage 98 | Forbidden: registering an `archive` type | none | none |
+| STAGE-AUTHORING-MATRIX-R15 | Stage 98 README | Required: use `common/readme` | none | none |
+| STAGE-AUTHORING-MATRIX-R16 | Stage 90 kinds | Required: a `*-pack` kind is the container index and the bare kind is one `m####` member inside it | none | none |
+| STAGE-AUTHORING-MATRIX-R17 | Skill discovery | Required: Claude discovers thin generated `.claude/skills/` adapters and Codex discovers the canonical `.agents/skills/<skill_id>/SKILL.md` packages | none | none |
+| STAGE-AUTHORING-MATRIX-R18 | Claude and Codex skills | Required: explicit invocation | none | none |
+| STAGE-AUTHORING-MATRIX-R19 | Claude and Codex skills | Required: keep canonical role-selected reads available | none | none |
+| STAGE-AUTHORING-MATRIX-R20 | Native skill entry | Required: entry fields are `name` and `description` | none | none |
+| STAGE-AUTHORING-MATRIX-R21 | Native skill entry | Required: existing governance fields nest in `metadata` | none | none |
+| STAGE-AUTHORING-MATRIX-R22 | Always | Required: keep discovery, instruction loading, invocation and runtime acceptance separate | none | none |
+| STAGE-AUTHORING-MATRIX-R23 | Always | Forbidden: a generated provider surface becoming a shared authority | none | none |
+| STAGE-AUTHORING-MATRIX-R24 | `knowledge/` and `prompts/` | Required: treat them as canonical categories, not stages | none | none |
+| STAGE-AUTHORING-MATRIX-R25 | `knowledge/` and `prompts/` | Required: they route to owners and declare contracts while the owning policy, stage document or Task keeps its authority | none | none |
+| STAGE-AUTHORING-MATRIX-R26 | Stage 03 | Required: approval enables the registered transition | none | none |
+| STAGE-AUTHORING-MATRIX-R27 | Stage 03 | Required: review remains read-only | none | none |
+| STAGE-AUTHORING-MATRIX-R28 | Stage 03 | Required: record execution separately in the current Task | none | none |
+| STAGE-AUTHORING-MATRIX-R29 | Stage 03 | Required: Task summary and optional lifecycle-event shape belong to Stage 99 | none | none |
+| STAGE-AUTHORING-MATRIX-R30 | Stage 03 | Required: the Task carries observed evidence | none | none |
+| STAGE-AUTHORING-MATRIX-R31 | Stage 03 | Forbidden: the Task authenticating an approval source | none | none |
+| STAGE-AUTHORING-MATRIX-R32 | Document-family state, cardinality and table shapes | Required: the Registry owns state vocabulary, direct parent cardinality, result and review table shapes and lifecycle generation | none | none |
+| STAGE-AUTHORING-MATRIX-R33 | Document-family state, cardinality and table shapes | Required: the SDLC owns their execution meaning | none | none |
 
 | Stage | `layer` | Purpose | Canonical owner | Completion evidence |
 | --- | --- | --- | --- | --- |
@@ -90,29 +124,41 @@ observed evidence and never authenticates an approval source. The Registry owns
 document-family state vocabulary, direct parent cardinality, result and review
 table shapes, and lifecycle generation; the SDLC owns their execution meaning.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+#### Approval and Review
+
+None: no exception exists to approve.
+
+## Enforcement
+
+### Mechanisms
 
 The canonical home contains only registered canonical category sources.
 Unknown or unsafe entries fail closed and are preserved for review; they are not
 stale generated files eligible for automatic deletion.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+The policy names no check that enforces or verifies any rule in this table; every row records `none`.
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-### Approval and Review
-
-None: no exception exists to approve.
+- Stage map, `layer`, governance paths, language, navigation and template layer rules (R1-R11) name no check; the stage table's completion evidence column describes each stage's evidence, not a check of this policy.
+- Document type families, Stage 98 and Stage 90 kinds (R12-R16) name no check.
+- Skill discovery, invocation, native entry fields and generated-surface authority (R17-R23) name no check; discovery, instruction loading, invocation and runtime acceptance are kept separate, not proven by this policy.
+- Category and Stage 03 rules (R24-R33) name no check; the Task carries observed evidence and never authenticates an approval source.
+- Rules stated under Enforcement/Mechanisms (the canonical home and its unknown or unsafe entries) are outside the table.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Change and Adoption
+### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 

@@ -1,37 +1,50 @@
 ---
 title: "AI Agent Standards"
-version: "1.2.2"
+version: "1.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # AI Agent Standards
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
 Shared standards for instruction design, token efficiency, and execution quality.
 
-### Authority
+#### Authority
 
 This policy is the canonical owner of shared instruction, token, language, and execution standards under [bootstrap precedence](bootstrap.md#authority-and-precedence).
-
-## Scope
 
 ### Applies To
 
 Loading cost, language, stage gates, execution discipline, and GitHub delivery standards.
 
-### Exclusions
+#### Exclusions
 
 None: this document states no exclusion.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| STANDARDS-R1 | Always | Required: use only the canonical order in `.agents/governance/bootstrap.md#canonical-load-order` | none | none |
+| STANDARDS-R2 | Always | Required: avoid duplicated instructions across root shims and rule files | none | none |
+| STANDARDS-R3 | Document language | Required: follow its owner, `.agents/governance/documentation-protocol.md#document-language` | none | none |
+| STANDARDS-R4 | Conversational responses | Required: follow the user's active language preference under `.agents/governance/output-style.md` | none | none |
+| STANDARDS-R5 | Before, during and after work | Required: use checklists from `.agents/governance/task-checklists.md` | none | none |
+| STANDARDS-R6 | Creating new stage docs | Required: use templates from `docs/99.templates/` | none | none |
+| STANDARDS-R7 | Always | Required: prefer small, isolated changes with explicit verification evidence | none | none |
+| STANDARDS-R8 | Editable scope | Required: remove stale commands and dead links immediately | none | none |
+| STANDARDS-R9 | GitHub repository, PR and CI matters | Required: follow `.agents/governance/github-governance.md` for branch protection, PR completion gate, GitHub Actions security baseline and the local instruction authority boundary | none | none |
+| STANDARDS-R10 | Always | Required: treat `docs/01` to `docs/99` as project SSoT | none | none |
+| STANDARDS-R11 | Implementation work | Forbidden: bypassing `docs/01.requirements` and `docs/03.specs` | none | none |
+| STANDARDS-R12 | Always | Required: keep reciprocal traceability across Requirement Package, Architecture Description, ADR, Spec, Plan, Task, Guide, Policy and Runbook artifacts | none | none |
 
 #### 1. Token Optimization and Lazy Loading
 
@@ -70,27 +83,41 @@ This section is intentionally thin to avoid duplication. Refer to that document 
 - Keep reciprocal traceability across Requirement Package, Architecture
   Description, ADR, Spec, Plan, Task, Guide, Policy, and Runbook artifacts.
 
-### Enforcement
+### Exceptions
 
-None: this document states no separate check.
-
-## Exceptions
-
-### Exception Conditions
+#### Exception Conditions
 
 No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
 
-### Approval and Review
+#### Approval and Review
 
 None: no exception exists to approve.
 
+## Enforcement
+
+### Mechanisms
+
+None: this document states no separate check.
+
+### Limits
+
+The policy states no separate check (`Mechanisms` is `None`), so no rule in Requirements names a check.
+
+- Token optimization (R1-R2): no check is named.
+- Language (R3-R4): no check is named.
+- Execution discipline (R5-R8): no check is named.
+- GitHub standards (R9): no check is named.
+- Stage-gate compliance (R10-R12): no check is named.
+- GitHub, CI and PR standards (R9) are delegated to `github-governance.md`; their enforcement is not stated here.
+- Rules stated under Enforcement (Mechanisms) are outside this table.
+
 ## Ownership
 
-### Responsibilities
+### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Change and Adoption
+### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 

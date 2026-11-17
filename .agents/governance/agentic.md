@@ -1,15 +1,15 @@
 ---
 title: "Agentic Engineering Policy"
-version: "3.0.0"
+version: "3.1.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-17"
 ---
 
 # Agentic Engineering Policy
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
@@ -17,23 +17,120 @@ Agent governance defines auditable, provider-neutral AI-agent execution. Canonic
 roles live in `.agents/roles/`, reusable procedures live in `.agents/skills/`, and provider
 selection and permission mappings live in `.agents/governance/providers/registry.yaml`.
 
-### Authority
+#### Authority
 
 This policy is the canonical owner of provider-neutral agent execution, delegation, capability intake, and Task evidence under [bootstrap precedence](bootstrap.md#authority-and-precedence).
-
-## Scope
 
 ### Applies To
 
 Provider-neutral agent execution, delegation, capability intake, and Task evidence.
 
-### Exclusions
+#### Exclusions
 
 None: this document states no exclusion.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| AGENTIC-R1 | Before mutation | Required: discover repository evidence and the approved Spec, Plan and Task | none | none |
+| AGENTIC-R2 | Always | Required: keep one primary owner for each logical unit | none | none |
+| AGENTIC-R3 | High-risk work | Required: keep independent review separate | none | none |
+| AGENTIC-R4 | Always | Forbidden: delegation broadening approval, mutation scope, runtime access or permissions | none | none |
+| AGENTIC-R5 | Invoking a skill | Forbidden: treating the invocation as selecting a role; it runs a procedure | none | none |
+| AGENTIC-R6 | Invoking a skill | Required: the selected role's permission profile and the approved Task scope keep governing | none | none |
+| AGENTIC-R7 | Always | Required: each skill's `agents/openai.yaml` keeps invocation explicit | none | none |
+| AGENTIC-R8 | The procedure needs what the current role lacks | Required: route to the skill's owner role | none | none |
+| AGENTIC-R9 | Always | Required: a skill states its own preconditions | none | none |
+| AGENTIC-R10 | Always | Forbidden: a skill restating this rule | none | none |
+| AGENTIC-R11 | Always | Required: record commands, results, recovery, skipped checks and blockers in the Task | none | Task record |
+| AGENTIC-R12 | Always | Forbidden: bypassing a safety denial owned by Approval boundaries through a cost, token or time budget | none | none |
+| AGENTIC-R13 | Before a required check | Required: record its tool, environment, permission and any applicable budget route | none | none |
+| AGENTIC-R14 | An exact ceiling or supported native control is required but unavailable | Required: record it as unknown and stop or use the authorized operator route | none | none |
+| AGENTIC-R15 | An exact ceiling or supported native control is required but unavailable | Forbidden: claiming hard enforcement, altering a command or using a wrapper to bypass the boundary | none | none |
+| AGENTIC-R16 | Adding a model API call | Required: first an approved Spec that states its rate, cost, retry and cancellation limits | none | none |
+| AGENTIC-R17 | Always | Forbidden: an automatic PR reviewer or test-case generator that calls a model API | none | none |
+| AGENTIC-R18 | An agent reviews a diff or drafts tests | Allowed: only inside the developer's interactive session | none | none |
+| AGENTIC-R19 | Review, test-drafting and summarizing paths | Forbidden: calling a model-inference API of any kind, including a self-hosted, `localhost` or proxy-routed model | none | none |
+| AGENTIC-R20 | Review, test-drafting and summarizing paths | Forbidden: a wrapper or advisory step routing around the model-inference ban | none | none |
+| AGENTIC-R21 | A product feature's own API or the GitHub API used for repository work | Allowed: outside the model-inference restriction | none | none |
+| AGENTIC-R22 | A subagent the developer's own interactive session starts inside that session | Allowed: give the separate-context diff review as part of the session (owner decision of 2026-11-14) | none | none |
+| AGENTIC-R23 | A service, bot or scheduled job calls a model on its own | Required: treat it as an added API | none | none |
+| AGENTIC-R24 | Always | Forbidden: generated native role and skill projections owning shared policy, role intent or procedure content | none | none |
+| AGENTIC-R25 | Always | Required: authored native `provider.md` files own loading and syntax differences only | none | none |
+| AGENTIC-R26 | Always | Required: treat `.agents/` as canonical input | none | none |
+| AGENTIC-R27 | Always | Forbidden: the shared PostToolUse hook rewriting files | none | none |
+| AGENTIC-R28 | Changed Markdown, shell, YAML and JSON | Required: the shared PostToolUse hook reports trailing whitespace or a missing final newline, runs `shellcheck` and `yamllint` where available with the registered arguments, then `git diff --check`, a JSON syntax check and `bash -n` | none | none |
+| AGENTIC-R29 | A PostToolUse validation failure | Required: it reaches the model as `additionalContext` with exit 0 | none | none |
+| AGENTIC-R30 | Fixing validation findings | Allowed: `scripts/hooks/post-tool-validate.sh --write` as the explicit fix under formatting ownership | none | none |
+| AGENTIC-R31 | Always | Forbidden: tracking `.vscode/` or `.idea/` in Git | none | none |
+| AGENTIC-R32 | Always | Forbidden: sharing editor configuration other than `.editorconfig` | none | none |
+| AGENTIC-R33 | Adding an editor shortcut, code action, inline edit or separate documentation hook | Required: an approved Spec that names its command, permission, inputs and output | none | none |
+| AGENTIC-R34 | After read-only discovery | Required: state the goal, scope, acceptance checks and material assumptions of the current request | none | none |
+| AGENTIC-R35 | A material ambiguity | Required: ask about it only when its answer is needed for the affected action | none | none |
+| AGENTIC-R36 | Clear local work | Allowed: proceed within its existing authorization without a separate reply | none | none |
+| AGENTIC-R37 | Planned scoped edits or a mutating handoff, native binding available | Required: register the brief | none | none |
+| AGENTIC-R38 | Registering a brief | Required: obtain the observed binding with `python3 -m scripts.lib.hooks.request_brief status SESSION` from the workspace root | none | none |
+| AGENTIC-R39 | Registering a brief | Required: author a redacted BriefRecord 3.0.1 with the binding, brief ID and revision, goal, scope and non-goals, constraints, acceptance criteria, sourced facts, assumptions, questions, risk and expected checks | `scripts/lib/hooks/request_brief.py` validator (input shape) | none |
+| AGENTIC-R40 | Registering a brief | Required: record bounded tracked files that materially informed the decision in `material_inputs` with their observed SHA-256 digests | none | none |
+| AGENTIC-R41 | Registering a brief | Forbidden: recording unrelated files or private local data | none | none |
+| AGENTIC-R42 | Registering a brief | Required: scope uses exact workspace-relative paths | none | none |
+| AGENTIC-R43 | Registering a brief | Required: allowed mutations use `edit:PATH` and `dispatch:PATH` | none | none |
+| AGENTIC-R44 | A material question | Required: record the affected actions, alternatives and reason within its question and recommendation fields | none | none |
+| AGENTIC-R45 | Registering a brief | Required: use `ready` when nothing is held or `needs-clarification` when actions are held | none | none |
+| AGENTIC-R46 | Registering a brief | Required: keep `authority_ref` separate from request identity | none | none |
+| AGENTIC-R47 | No authority source is identified | Required: set `authority_ref` to null | none | none |
+| AGENTIC-R48 | Matching an authority reference | Allowed: the local adapter matches the current native source or the preceding correlated reference within its previous action scope and unchanged inputs | none | none |
+| AGENTIC-R49 | Status includes `prior_authority_ref` | Required: first confirm that the underlying approval still applies | none | none |
+| AGENTIC-R50 | Another authority reference | Allowed: record it for planning; it leaves the adapter's mutation check unsatisfied | none | none |
+| AGENTIC-R51 | Registering a brief | Required: send the record on stdin to `python3 -m scripts.lib.hooks.request_brief bind SESSION` | none | none |
+| AGENTIC-R52 | Always | Required: keep progress in the Task | none | Task record |
+| AGENTIC-R53 | Always | Required: treat the private hook binding as transient consistency state | none | none |
+| AGENTIC-R54 | Always | Forbidden: treating the binding as granting permission | none | none |
+| AGENTIC-R55 | Always | Required: resolve current authorization through Approval Boundaries | none | none |
+| AGENTIC-R56 | Always | Forbidden: treating a draft, a memory entry or a self-declared authority reference as execution authority | none | none |
+| AGENTIC-R57 | A new user turn or resumed or compacted context | Required: reconcile an enrolled brief before the next covered action | none | none |
+| AGENTIC-R58 | Scope is still clear | Allowed: reuse current authorization without a redundant user question | none | none |
+| AGENTIC-R59 | A registered brief is delegated | Required: include the session, prepared request revision, brief revision and exact owned paths in the worker envelope | none | none |
+| AGENTIC-R60 | Before dispatch and before a delegated writer acts or resumes | Required: pass the same values and every owned path to `python3 -m scripts.lib.hooks.request_brief check SESSION dispatch REQUEST_REVISION BRIEF_REVISION PATH` | Shared pre-tool hook on recognized exact file edits in enrolled sessions (consistency only) | none |
+| AGENTIC-R61 | The delegation check fails | Required: stop the affected handoff or write until the supervisor reconciles the envelope with current authority | none | none |
+| AGENTIC-R62 | Always | Forbidden: refreshing the prepared revisions with a fresh status lookup alone | none | none |
+| AGENTIC-R63 | Unenrolled sessions, unrecognized writes, native dispatch or provider-internal task transitions | Required: report the coverage gap and use the actual controller and provider authorization boundary | none | none |
+| AGENTIC-R64 | Delegating | Required: delegate only to a role declared in `.agents/roles/` and mapped by the provider registry | none | none |
+| AGENTIC-R65 | Every envelope | Required: name the role and primary responsibility, exact owned files or read-only scope, governing Spec/Plan/Task, acceptance checks, mutation and external-action boundaries, shared-worktree non-reversion rule and required return evidence | none | none |
+| AGENTIC-R66 | Workers | Required: report `working`, `blocked` or `done` | none | none |
+| AGENTIC-R67 | A delegation or resumption envelope | Required: record request identity and revision as supplied by the trusted origin or unknown, authorization source, scope and current applicability, Task-declared request, token, time, concurrency and retry ceilings, and the shared-budget identity and remaining allocation | none | none |
+| AGENTIC-R68 | Dispatch and resumption | Required: the controller resolves authority itself through Approval Boundaries | none | none |
+| AGENTIC-R69 | A material mismatch or unresolved authority | Required: stop dependent mutation and additional spending until the controller reconciles it | none | none |
+| AGENTIC-R70 | A field is unsupported | Required: record it as unknown | none | none |
+| AGENTIC-R71 | Always | Forbidden: an unapproved fallback, extra spend or silent resume | none | none |
+| AGENTIC-R72 | A retry after a failed check | Required: stay within the `workflows.md` bound | none | none |
+| AGENTIC-R73 | Every agent loop | Required: provide five exits: success, failure, no progress, budget and cancellation | none | none |
+| AGENTIC-R74 | An iteration changes no file, check result or Task record | Required: count it as no progress | none | none |
+| AGENTIC-R75 | A second no-progress iteration in a row | Required: end the loop | none | none |
+| AGENTIC-R76 | Cancellation from the user or supervisor | Required: end the loop at once without another attempt | none | none |
+| AGENTIC-R77 | Repeated failure, conflicting authority, missing or revoked approval, exhausted declared budget or expanding blast radius | Required: stop and escalate | none | none |
+| AGENTIC-R78 | Always | Forbidden: treating provider delivery or hook events as approval or completion evidence | none | none |
+| AGENTIC-R79 | Always | Forbidden: inferring account RPM, TPM, price or a provider enforcement mechanism | none | none |
+| AGENTIC-R80 | Claiming hard enforcement | Required: show it only by a supported native observation | none | none |
+| AGENTIC-R81 | An external agent catalog, prompt collection or role library | Forbidden: treating it as an install source or a local authority; it is a discovery input only | none | none |
+| AGENTIC-R82 | Taking in an external capability | Required: in order, a demonstrated capability gap in a named owned outcome; the pinned upstream commit, exact source path and license; offline inspection as untrusted input; a preference for merging into an existing role or skill | none | none |
+| AGENTIC-R83 | A new role or skill | Required: define its scope, permission profile, work profile, handoff, fixtures and failure behavior through an approved Spec Package before it exists | none | none |
+| AGENTIC-R84 | Adopting an external capability | Required: change the canonical source first, then render projections, inspect the diff, validate parity and evaluation, and obtain independent review | none | none |
+| AGENTIC-R85 | Adopting an external capability | Forbidden: upstream auto-update, user-global installation, or running an upstream installer or converter | none | none |
+| AGENTIC-R86 | Always | Forbidden: treating a persuasive persona as granting a tool, path, credential or deployment entitlement | none | none |
+| AGENTIC-R87 | An adopted instruction | Required: it stays bound by the canonical role and its permission profile | none | none |
+| AGENTIC-R88 | External capability intake | Required: record the decision and its evidence in the current Task | none | Task record |
+| AGENTIC-R89 | Stage 90 research | Allowed: describe an external catalog and recommend intake | none | none |
+| AGENTIC-R90 | Stage 90 research | Forbidden: recording the intake decision itself | none | none |
+| AGENTIC-R91 | Always | Required: follow the sequence discovery, applicability, approved execution, focused verification, independent review and completion evidence | none | none |
+| AGENTIC-R92 | Verification fails | Required: return to implementation | none | none |
+| AGENTIC-R93 | Design is rejected | Required: stay in planning | none | none |
+| AGENTIC-R94 | Authority is missing | Required: stop at approval | none | none |
+| AGENTIC-R95 | Always | Required: take retry bounds from `workflows.md` and provider controls from the provider registry | none | none |
+| AGENTIC-R96 | Always | Forbidden: replacing the `workflows.md` retry bounds or provider registry controls with prompt-local policy | none | none |
 
 #### Execution Rules
 
@@ -207,7 +304,19 @@ stops at approval. Retry bounds come from [workflows.md](workflows.md); provider
 controls come from the provider registry. Neither may be replaced by
 prompt-local policy.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+#### Approval and Review
+
+None: no exception exists to approve.
+
+## Enforcement
+
+### Mechanisms
 
 #### Evaluation Evidence
 
@@ -236,23 +345,25 @@ Evaluation scores do not authorize publication, provider calls or remote writes.
 Execution and acceptance stay in the Task; aggregate scores are not a second
 progress ledger.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+Only the BriefRecord validator and the delegation consistency check are tied to a rule; the other rules name no check.
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-### Approval and Review
-
-None: no exception exists to approve.
+- Execution rules (R1-R33) name no check.
+- Request brief rules (R34-R38, R40-R58) name no check; the validator covers only the BriefRecord input shape.
+- Delegation contract rules (R59, R61-R80) name no check.
+- External capability intake rules (R81-R90) name no check.
+- Lifecycle rules (R91-R96) name no check.
+- The delegation check verifies consistency only; the shared pre-tool hook covers recognized exact file edits in enrolled sessions, and unenrolled sessions, unrecognized writes, native dispatch and provider-internal task transitions have no such interception.
+- Statements under Enforcement / Mechanisms are outside this table and are not restated here.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Change and Adoption
+### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 

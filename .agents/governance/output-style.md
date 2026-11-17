@@ -1,15 +1,15 @@
 ---
 title: "Output Style"
-version: "1.2.3"
+version: "1.3.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-17"
 ---
 
 # Output Style
 
-## Purpose
+## Purpose and Scope
 
 ### Objective
 
@@ -18,23 +18,35 @@ repository evidence, and distinguish verified facts from assumptions. Long-work
 updates are concise. Final reports include changed scope, validation, residual
 risks, and blockers without copying sensitive output.
 
-### Authority
+#### Authority
 
 This policy is the canonical owner of agent outcome, findings, procedure, and completion-report style under [bootstrap precedence](bootstrap.md#authority-and-precedence).
-
-## Scope
 
 ### Applies To
 
 Conversational outcomes, findings, procedures, and completion reports from supported agents.
 
-### Exclusions
+#### Exclusions
 
 None: this document states no exclusion.
 
 ## Rules
 
 ### Requirements
+
+| Rule ID | Condition | Requirement | Enforcement | Evidence |
+| --- | --- | --- | --- | --- |
+| OUTPUT-STYLE-R1 | Conversational responses | Required: follow the user's active language | none | none |
+| OUTPUT-STYLE-R2 | Artifact language | Required: route it by document role through the documentation protocol, not as a presentation choice | none | none |
+| OUTPUT-STYLE-R3 | Always | Forbidden: a provider surface setting either language rule | none | none |
+| OUTPUT-STYLE-R4 | Stating a finding | Required: state it as a claim plus its evidence, not as narrative | none | none |
+| OUTPUT-STYLE-R5 | Citing evidence | Required: cite it by repository path and line | none | none |
+| OUTPUT-STYLE-R6 | Tagging a review issue | Required: use one severity from `blocker`, `high`, `medium` or `low` | none | none |
+| OUTPUT-STYLE-R7 | A finding rests on an assumption | Required: state the assumption explicitly | none | none |
+| OUTPUT-STYLE-R8 | A finding involves a tradeoff | Forbidden: resolving the tradeoff silently instead of surfacing it | none | none |
+| OUTPUT-STYLE-R9 | Writing an instruction | Required: use the active voice with one action per step and one expected result | none | none |
+| OUTPUT-STYLE-R10 | Writing a command | Required: keep it runnable as written | none | none |
+| OUTPUT-STYLE-R11 | Non-executable snippet | Required: mark it explicitly | none | none |
 
 #### Language
 
@@ -59,7 +71,19 @@ Write an instruction in the active voice with one action per step and one
 expected result. Keep a command runnable as written; mark a non-executable
 snippet explicitly.
 
-### Enforcement
+### Exceptions
+
+#### Exception Conditions
+
+No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+
+#### Approval and Review
+
+None: no exception exists to approve.
+
+## Enforcement
+
+### Mechanisms
 
 #### Completion Reporting
 
@@ -77,23 +101,22 @@ another.
 Provider-native presentation may adapt rendering but may not change governance
 authority, language routing, or acceptance criteria.
 
-## Exceptions
+### Limits
 
-### Exception Conditions
+This policy names no check for its style rules, so none of them is mechanically enforced:
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
-
-### Approval and Review
-
-None: no exception exists to approve.
+- Language routing: R1-R3.
+- Finding format, evidence citation and severity: R4-R8.
+- Procedure style: R9-R11.
+- Rules stated under Enforcement (Completion Reporting) are outside this table.
 
 ## Ownership
 
-### Responsibilities
+### Owner
 
 `@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
 
-### Change and Adoption
+### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 

@@ -62,7 +62,7 @@ class CurrentBodyContractTests(unittest.TestCase):
             "package-readme": "Purpose|Interfaces|Development|Operations",
             "incident": "Impact|Response|Resolution",
             "postmortem": "Facts|Causes|Actions",
-            "governance-policy": "Purpose|Scope|Rules|Exceptions|Ownership",
+            "governance-policy": "Purpose and Scope|Rules|Enforcement|Ownership",
             "governance-hook-policy": "Purpose|Scope|Rules|Exceptions|Ownership",
             "governance-skill": "Purpose and Trigger|Procedure|Inputs and Outputs|Verification",
         }
@@ -542,6 +542,14 @@ class RegisteredSectionContractTests(unittest.TestCase):
                 ("## Verification", "body-heading-forbidden"),
                 ("## Related Documents", "body-heading-forbidden"),
                 ("### Traceability", "body-subheading-forbidden"),
+            ),
+            "governance-policy": (
+                ("## Purpose", "body-heading-forbidden"),
+                ("## Scope", "body-heading-forbidden"),
+                ("## Exceptions", "body-heading-forbidden"),
+                ("### Authority", "body-subheading-forbidden"),
+                ("### Exclusions", "body-subheading-forbidden"),
+                ("### Responsibilities", "body-subheading-forbidden"),
             ),
             "governance-skill": (
                 ("## Purpose", "body-heading-forbidden"),
