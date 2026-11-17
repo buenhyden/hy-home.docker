@@ -235,13 +235,27 @@ class DocumentRegistryTests(unittest.TestCase):
         def short_columns(common) -> None:
             common["package_generations"]["core_columns"]["evidence_columns"].pop()
 
+        def other_first_package(common) -> None:
+            common["package_generations"]["first_package"] = 272
+
+        def permuted_columns(common) -> None:
+            columns = common["package_generations"]["core_columns"]["plan_columns"]
+            columns[1], columns[2] = columns[2], columns[1]
+
         def wrong_recorded_form(common) -> None:
             common["package_generations"]["recorded_sections"]["plan"][
                 "required_sections"
             ].remove("Risks")
 
         # The recorded generation 7 form is pinned like the common columns.
-        for change in (missing, other_recorded, short_columns, wrong_recorded_form):
+        for change in (
+            missing,
+            other_recorded,
+            short_columns,
+            wrong_recorded_form,
+            other_first_package,
+            permuted_columns,
+        ):
             with self.subTest(change=change.__name__):
                 self.assertIn("common-contract-invalid", broken(change))
 

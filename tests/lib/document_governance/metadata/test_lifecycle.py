@@ -434,6 +434,41 @@ class ExecutionItemsProbeTests(unittest.TestCase):
                 self.assertFalse(self._declares(text))
 
 
+class CoreExecutionItemsProbeTests(unittest.TestCase):
+    """A generation 8 Task declares the core task.work_items columns."""
+
+    CORE = "| Item | Work Unit | Owner | Status | Blocker |"
+    RECORDED = "| Item | Work Unit | Scope | Owner | Status | Blocker |"
+
+    def _declares(self, package: str, header: str) -> bool:
+        with tempfile.TemporaryDirectory() as directory:
+            path = (
+                pathlib.Path(directory)
+                / "docs/03.specs"
+                / package
+                / "tasks/tsk-0001-x.md"
+            )
+            path.parent.mkdir(parents=True)
+            width = header.count("|") - 1
+            rule = "|" + " --- |" * width
+            path.write_text(
+                f"## Execution Log\n### Work Performed\n#### Execution Items\n"
+                f"{header}\n{rule}\n",
+                encoding="utf-8",
+            )
+            record = metadata.Record(path, {}, "task")
+            registry = metadata.load_registry(REGISTRY)
+            return lifecycle_module._declares_execution_items(
+                record, registry.common, registry
+            )
+
+    def test_the_core_header_comes_from_the_core_role(self) -> None:
+        self.assertTrue(self._declares("0271-x", self.CORE))
+        self.assertFalse(self._declares("0271-x", self.RECORDED))
+        self.assertTrue(self._declares("0212-x", self.RECORDED))
+        self.assertFalse(self._declares("0212-x", self.CORE))
+
+
 class OperationsCurrencyTests(unittest.TestCase):
     """documentation-protocol.md: a passed next_review_at makes a Guide,
     Operations Policy or Runbook stale until reviewed (TSK-0063 H-W04-3)."""

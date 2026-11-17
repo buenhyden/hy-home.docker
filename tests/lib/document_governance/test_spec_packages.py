@@ -6933,6 +6933,10 @@ def _core_evidence_row(
     )
 
 
+def two_rows() -> str:
+    return _core_evidence_row("One", "1", "W1") + _core_evidence_row("Two", "2", "W2")
+
+
 def _core_decision_row(criterion: str, evidence: str, intent: str = "accept") -> str:
     return (
         f"| {criterion} | {intent} | accepted | {evidence} | reviewed | owner "
@@ -7018,6 +7022,10 @@ class CorePackageGenerationTests(unittest.TestCase):
             ),
         )
         self.assertEqual(7, package_generation(common, self.RECORDED / "spec.md"))
+        self.assertEqual(
+            7, package_generation(common, "docs/03.specs/0270-example/spec.md")
+        )
+        self.assertEqual(7, package_generation(common, "docs/03.specs/README.md"))
         # A Registry before generation 8 has one generation for every package.
         earlier = {**common, "lifecycle_generation": 6}
         self.assertEqual(6, package_generation(earlier, self.CORE / "plan.md"))
@@ -7039,44 +7047,87 @@ class CorePackageGenerationTests(unittest.TestCase):
         evidence = self.evidence(self.RECORDED, _generation6.PLAN.body, recorded_task)
         self.assertEqual({("1", "W1"), ("2", "W2")}, set(evidence.pass_pairs))
         error = _spec_packages_module().SpecPackageError
-        with self.assertRaises(error):
+        with self.assertRaisesRegex(error, "malformed headers"):
             self.evidence(self.RECORDED, _CORE_PLAN_TABLE, self.core_task())
-        with self.assertRaises(error):
+        with self.assertRaisesRegex(error, "malformed headers"):
             self.evidence(self.CORE, _generation6.PLAN.body, recorded_task)
-        with self.assertRaises(error):
+        with self.assertRaisesRegex(error, "must be contiguous"):
             self.evidence(self.CORE, _CORE_PLAN_TABLE, recorded_task)
 
     def test_a_core_cell_outside_its_core_values_is_rejected(self) -> None:
         error = _spec_packages_module().SpecPackageError
+        one = _core_evidence_row("One", "1", "W1")
         two = _core_evidence_row("Two", "2", "W2")
-        for label, rows, decisions in (
+        did_not_run = "Exit must be - for a check that did not run"
+        for label, rows, decisions, message in (
             (
                 "method",
                 _core_evidence_row("One", "1", "W1", method="manual") + two,
                 None,
+                "Method is outside its core values",
             ),
             (
                 "exit",
                 _core_evidence_row("One", "1", "W1", exit_code="zero") + two,
                 None,
+                "Exit must be an integer or -",
             ),
             (
                 "required",
                 _core_evidence_row("One", "1", "W1", required="yes") + two,
                 None,
+                "Required is outside its core values",
             ),
             (
                 "intent",
                 None,
                 _core_decision_row("1", "One", intent="maybe")
                 + _core_decision_row("2", "Two"),
+                "Intent is outside its core values",
+            ),
+            *(
+                (
+                    f"{result} with Exit 0",
+                    _core_evidence_row(
+                        "Skip", "1", "W1", result, exit_code="0", required="false"
+                    )
+                    + one
+                    + two,
+                    None,
+                    did_not_run,
+                )
+                for result in ("NOT_RUN", "CANCELLED", "NOT_APPLICABLE")
+            ),
+            (
+                # The core admits DEFER; the recorded result domain does not.
+                "DEFER",
+                _core_evidence_row(
+                    "Later", "1", "W1", "DEFER", exit_code="-", required="false"
+                )
+                + one
+                + two,
+                None,
+                "outside the registered result domain",
             ),
         ):
             with self.subTest(column=label):
-                with self.assertRaises(error):
+                with self.assertRaisesRegex(error, message):
                     self.evidence(
                         self.CORE, _CORE_PLAN_TABLE, self.core_task(rows, decisions)
                     )
+        for result in ("NOT_RUN", "CANCELLED", "NOT_APPLICABLE"):
+            with self.subTest(result=result, exit="-"):
+                self.evidence(
+                    self.CORE,
+                    _CORE_PLAN_TABLE,
+                    self.core_task(
+                        _core_evidence_row(
+                            "Skip", "1", "W1", result, exit_code="-", required="false"
+                        )
+                        + one
+                        + two
+                    ),
+                )
 
     def test_core_required_and_command_keep_the_recorded_meaning(self) -> None:
         # Required false is optional, so its NOT_RUN leaves nothing open;
@@ -7099,10 +7150,88 @@ class CorePackageGenerationTests(unittest.TestCase):
             )
             with self.subTest(command=command):
                 if raises:
-                    with self.assertRaises(_spec_packages_module().SpecPackageError):
+                    with self.assertRaisesRegex(
+                        _spec_packages_module().SpecPackageError, "same Check"
+                    ):
                         self.evidence(self.CORE, _CORE_PLAN_TABLE, self.core_task(rows))
                 else:
                     self.evidence(self.CORE, _CORE_PLAN_TABLE, self.core_task(rows))
+
+    def test_resolves_needs_the_same_method_as_well(self) -> None:
+        # Two reviews without a Command resolve each other; an automated row
+        # without a Command is a different check from a review.
+        def rows(fixed_method: str) -> str:
+            return (
+                _core_evidence_row(
+                    "Found",
+                    "1",
+                    "W1",
+                    "FAIL",
+                    method="review",
+                    exit_code="-",
+                    command="-",
+                )
+                + _core_evidence_row(
+                    "Fixed",
+                    "1",
+                    "W1",
+                    method=fixed_method,
+                    exit_code="-",
+                    command="-",
+                    resolves="Found",
+                )
+                + _core_evidence_row("Two", "2", "W2")
+            )
+
+        decisions = _core_decision_row("1", "Fixed") + _core_decision_row("2", "Two")
+        self.evidence(
+            self.CORE, _CORE_PLAN_TABLE, self.core_task(rows("review"), decisions)
+        )
+        with self.assertRaisesRegex(
+            _spec_packages_module().SpecPackageError, "same Check"
+        ):
+            self.evidence(
+                self.CORE,
+                _CORE_PLAN_TABLE,
+                self.core_task(rows("automated"), decisions),
+            )
+
+    def test_a_failed_core_observation_keeps_every_core_cell(self) -> None:
+        # Every core cell of a FAIL or ERROR row but Resolves is the observation.
+        module = _spec_packages_module()
+        registry = load_current_registry()
+        failed = _core_evidence_row("Bad", "1", "W1", "FAIL", exit_code="1")
+        spec, plan, before = self.documents(
+            self.CORE, _CORE_PLAN_TABLE, self.core_task(failed + two_rows())
+        )
+        package = module.SpecPackage(
+            pathlib.Path(self.CORE), "0271", "example", spec, plan, (before,), ()
+        )
+
+        def findings(body: str) -> list[str]:
+            after = dataclasses.replace(
+                package, tasks=(dataclasses.replace(before, body=body),)
+            )
+            return [
+                finding.code
+                for finding in module._failed_observation_findings(
+                    (package,), (after,), registry, registry
+                )
+            ]
+
+        for label, changed in (
+            ("Exit", failed.replace("| 1 | FAIL |", "| 2 | FAIL |")),
+            ("Method", failed.replace("| automated |", "| observation |")),
+            ("Tool and Config", failed.replace("| python 3 |", "| python 3.12 |")),
+        ):
+            with self.subTest(column=label):
+                self.assertNotEqual(failed, changed)
+                self.assertEqual(
+                    ["failed-observation-changed"],
+                    findings(self.core_task(changed + two_rows())),
+                )
+        resolved = failed + _core_evidence_row("Fixed", "1", "W1", resolves="Bad")
+        self.assertEqual([], findings(self.core_task(resolved + two_rows())))
 
     def test_core_execution_items_read_the_core_columns(self) -> None:
         body = (
@@ -7120,7 +7249,7 @@ class CorePackageGenerationTests(unittest.TestCase):
             [("First", "W1", "completed"), ("Second", "W2", "in-progress")],
             [(row[0], row[1], row[4]) for row in rows],
         )
-        with self.assertRaises(module.SpecPackageError):
+        with self.assertRaisesRegex(module.SpecPackageError, "malformed headers"):
             module._execution_item_rows(
                 body, load_current_registry(), self.RECORDED / "tasks/tsk-0001-x.md"
             )
