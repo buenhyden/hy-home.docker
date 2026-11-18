@@ -1,6 +1,6 @@
 ---
 title: "Document Path Plan Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -72,6 +72,11 @@ normalization collision. No pull request was open when the plan was taken.
 | `docs/03.specs/0262-analytics-labs-migration/tasks/` | `docs/03.specs/0262-analytics-labs-migration/01.tasks/` | classification move | `2421f4bc3ffa` | 1 files | move with Git, rewrite current links and paths | Q07 final cutover | SDD-PATHS |
 | `docs/03.specs/0263-lab-promotion-contract/tasks/` | `docs/03.specs/0263-lab-promotion-contract/01.tasks/` | classification move | `1666d03f481f` | 3 files | move with Git, rewrite current links and paths | Q07 final cutover | SDD-PATHS |
 
+The digests are a snapshot of the plan's base. Work continues in these
+folders until Q07 freezes writes, so Q07 takes the digests again at the
+freeze and moves what is there then; a changed digest is expected, not a
+conflict.
+
 Spec package `contracts/` folders keep their name; the attachment numbered
 only `tasks/` inside a package. Stage folders, native provider paths,
 `infra/`, Vault, service and operating data are outside the plan.
@@ -107,6 +112,15 @@ operations catalog (267 findings), changed metadata (architecture parent
 check) and corpus lifecycle still failed on the unconverted consumers
 above.
 
+#### Recheck on `548b42ecb`
+
+The DOC-PATH-PLAN request ran again on 2026-11-18 after five more merges.
+The 19 folders and the eight packages are unchanged, 545 files now move
+(TSK-0088 and TSK-0089 were added), no target exists, nothing collides,
+and the code and schema pins are the same files listed above. The
+`runbooks` and 0212 `tasks` digests changed with the new runbook section
+and Tasks, as the refresh rule expects.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -129,6 +143,7 @@ other open obligation and acceptance closed first.
 | Rehearsal links | 144 | W160 | `check-document-links.py --mode alignment` in the rehearsal | Moves, rewrite and seven pinned consumers | FAIL | 16 links from terminal Tasks into moved folders | required | - |
 | Rehearsal contracts | 144 | W160 | agent governance contract, renderer check, script manifest, change selection | Same rehearsal | PASS | 0 failures, drift 0, manifest valid, no unmapped path | required | - |
 | Rehearsal readers | 144 | W160 | operations catalog, changed metadata, corpus lifecycle | Same rehearsal | FAIL | 267 catalog findings; architecture parent check; Spec package rule; consumers listed above | required | - |
+| Plan recheck | 144 | W160 | source, target, collision, package-set and pin rescan | 19 planned moves at `548b42ecb` | PASS | 545 files; no issue; pins unchanged; two digests refreshed by new work | required | - |
 | Real tree unchanged | 144 | W160 | `git status`, Spec high-water mark | Real checkout after the rehearsal | PASS | No change; high-water 270 | required | - |
 
 ### Resolution Links
