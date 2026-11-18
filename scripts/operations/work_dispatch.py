@@ -129,9 +129,9 @@ class Leases:
             connection.close()
 
 
-def _git(repo: Path, *args: str) -> bytes:
+def _git(repo: Path, *args: str, data: bytes | None = None) -> bytes:
     return subprocess.run(
-        ["git", "-C", str(repo), *args], check=True, capture_output=True
+        ["git", "-C", str(repo), *args], check=True, capture_output=True, input=data
     ).stdout
 
 
@@ -203,6 +203,7 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
     start = time.monotonic()
     result = {uid: {"id": uid, "status": "pending"} for uid in units}
     done_order: list[str] = []
+    patches: dict[str, bytes] = {}
     running: dict[str, dict] = {}
     cancelled = False
 
@@ -230,6 +231,9 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
         if not leases.valid(job["tokens"], job["holder"]):
             return finish(uid, "rejected", "stale lease")
         patch = _git(tree, "diff", "--cached", "--binary", job["start"])
+        # Workers can reach the run folder, so the accepted patch is kept in
+        # memory and the file is a record that is never read back.
+        patches[uid] = patch
         (root / f"{uid}.patch").write_bytes(patch)
         result[uid]["changed"] = paths
         done_order.append(uid)
@@ -248,7 +252,7 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
         ancestors = _ancestors(units, u["id"])
         for prior in done_order:
             if prior in ancestors:
-                _git(tree, "apply", "--index", str(root / f"{prior}.patch"))
+                _git(tree, "apply", "--index", "-", data=patches[prior])
         start_tree = _git(tree, "write-tree").decode().strip()
         env = dict(
             os.environ,
@@ -317,8 +321,19 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
 
     integration = {"status": "not run"}
     if not cancelled and all(r["status"] == "succeeded" for r in result.values()):
+        owned = [
+            posixpath.normpath(p)
+            for u in units.values()
+            for p in u.get("owned_paths", [])
+        ]
         integration = _integrate(
-            repo, root, base, done_order, plan.get("integration_checks", [])
+            repo,
+            root,
+            base,
+            done_order,
+            plan.get("integration_checks", []),
+            patches,
+            owned,
         )
     status = (
         "cancelled"
@@ -346,16 +361,27 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
     return report
 
 
-def _integrate(repo, root, base, order, checks) -> dict:
+def _integrate(repo, root, base, order, checks, patches, owned) -> dict:
     """Apply every unit patch on the base and rerun the integration checks."""
     tree = root / "wt" / "integration"
     _git(repo, "worktree", "add", "--detach", "-q", str(tree), base)
     try:
         for uid in order:
             try:
-                _git(tree, "apply", "--index", str(root / f"{uid}.patch"))
+                _git(tree, "apply", "--index", "-", data=patches[uid])
             except subprocess.CalledProcessError:
                 return {"status": "failed", "reason": f"{uid} patch does not apply"}
+        names = _git(tree, "diff", "--cached", "--name-only", "-z", base)
+        outside = [
+            p
+            for p in names.decode().split("\0")
+            if p and not any(_under(p, o) for o in owned)
+        ]
+        if outside:
+            return {
+                "status": "failed",
+                "reason": "outside ownership: " + ", ".join(outside),
+            }
         patch = root / "integrated.patch"
         patch.write_bytes(_git(tree, "diff", "--cached", "--binary", base))
         for check in checks:

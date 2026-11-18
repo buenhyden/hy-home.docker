@@ -129,6 +129,21 @@ class DispatchTests(unittest.TestCase):
         self.assertIn("base.txt", result["reason"])
         self.assertEqual("not run", report["integration"]["status"])
 
+    def test_a_worker_cannot_replace_another_units_patch(self) -> None:
+        report = self.run_plan(
+            [
+                unit(
+                    "a",
+                    "sleep 1; echo junk > ../../b.patch; echo a > a.txt",
+                    owned=["a.txt"],
+                ),
+                unit("b", "echo b > b.txt", owned=["b.txt"]),
+            ]
+        )
+        self.assertEqual("passed", report["integration"]["status"])
+        patch = Path(report["integration"]["patch"]).read_text()
+        self.assertIn("+b\n", patch)
+
     def test_a_failure_blocks_only_its_downstream(self) -> None:
         report = self.run_plan(
             [

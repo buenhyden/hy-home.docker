@@ -1,6 +1,6 @@
 ---
 title: "W10 Parallel Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -83,6 +83,15 @@ bounds both runs. A third run received SIGTERM after 4 s: the running
 manifest check was cancelled, integration did not run, and no worktree or
 check process remained.
 
+#### Patch tamper fix
+
+An automated security review of the first commit found that a worker can
+reach the run folder, so one unit could overwrite another unit's accepted
+patch file before integration read it back. Accepted patches now stay in
+the dispatcher's memory, and the files are a record that is never read
+back. Integration also checks the combined diff against the union of owned
+paths.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -103,13 +112,16 @@ Kubernetes resources are only lock names here; no worker started a service.
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | Dispatch RED | 146 | W162 | `test_work_dispatch` | New tests before the module | FAIL | Import error: no dispatch module | required | - |
 | Dispatch GREEN | 146 | W162 | `test_work_dispatch` | Dispatch module | PASS | 14 tests: concurrency, brief and fence handoff, shared and overlapping locks, ownership, downstream blocking, timeout, cancel, takeover fencing, generations, integration failure, upstream patch, dispatcher death cleanup, bad plans | required | Dispatch RED |
+| Patch tamper RED | 146 | W162 | `test_a_worker_cannot_replace_another_units_patch` | New test on the committed dispatcher `92dbe2b38` | FAIL | Integration failed after a worker overwrote another unit's patch file | required | - |
+| Patch tamper GREEN | 146 | W162 | `test_work_dispatch` | Patches kept in memory, integrated ownership check | PASS | 15 tests | required | Patch tamper RED |
 | Real parallel run | 146 | W162 | `work_dispatch.py run` | Three-unit plan on `7807dcf62`, two workers and one | PASS | 36.7 s against 40.9 s, N 1 each; shared resource serialised; integration passed both times | required | - |
 | Real cancel | 146 | W162 | `work_dispatch.py run` and SIGTERM | Same plan, two workers | PASS | Status cancelled, integration not run, one worktree and no check process left | required | - |
 | Provider worker run | 146 | W162 | Claude or Codex worker | none | NOT_RUN | The owner chose shell workers only | optional | - |
 
 ### Resolution Links
 
-Dispatch GREEN resolves Dispatch RED.
+Dispatch GREEN resolves Dispatch RED. Patch tamper GREEN resolves Patch
+tamper RED.
 
 ## Acceptance Decision
 
@@ -117,7 +129,7 @@ Dispatch GREEN resolves Dispatch RED.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 146 | pending | Dispatch GREEN, Real parallel run, Real cancel | Awaits the owner's decision | @buenhyden |
+| 146 | pending | Dispatch GREEN, Patch tamper GREEN, Real parallel run, Real cancel | Awaits the owner's decision | @buenhyden |
 
 ### Remaining Conditions
 
