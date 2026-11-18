@@ -1494,6 +1494,19 @@ class DocumentGovernanceSelectionTests(unittest.TestCase):
                 self.assertIn("leaf.repo-document-metadata", roots)
                 self.assertIn("ci.docs-traceability", roots)
 
+    def test_a_workspace_policy_change_selects_the_agent_governance_contract(
+        self,
+    ) -> None:
+        """The shared policies moved out of .agents/, so their route must follow."""
+        public = contract.parse_public_gate_contract(
+            contract.load_contract_document(ROOT)
+        )
+        path = "docs/00.workspace/02.process/approval-boundaries.md"
+        selected = contract.select_public_suites(public, "changed", (path,))
+        self.assertIn("agent-governance", selected)
+        roots = contract.public_root_gate_ids(public, selected, changed_paths=(path,))
+        self.assertIn("leaf.local-agent-governance-contract", roots)
+
 
 class GateCrosswalkTests(unittest.TestCase):
     """QA-C05: one producer per guarantee; a leaf with no aggregate parent is

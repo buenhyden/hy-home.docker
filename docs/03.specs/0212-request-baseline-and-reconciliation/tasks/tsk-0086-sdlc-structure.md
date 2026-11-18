@@ -1,6 +1,6 @@
 ---
 title: "SDLC Structure Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -94,6 +94,23 @@ renderer regenerated the Claude and Codex surfaces.
 The lifecycle check's internal error had the same base Registry cause and
 cleared with that fix.
 
+#### SDD-CONFORMANCE review
+
+The 2026-11-18 SDD-CONFORMANCE request assigns this workspace one item,
+D-W04: reuse the selection contract and the required aggregate and add
+only path-change fixtures. The aggregate `candidate-quality` already fails
+closed, as PR 1096 showed when `candidate-documents` failed. The existing
+fixture covered the moved policies for the document suites only, so a new
+case proves a `docs/00.workspace/` change selects the agent-governance
+suite and its contract leaf. The Spec Package reader already refuses
+unknown criteria and Work Units, forward or cyclic dependencies, a
+resolution across checks and an acceptance without its rows, so no trace
+export was needed. It accepts a criterion that no Work Unit maps until
+removal readiness; every live package maps all criteria, and an
+authoring-time check is left as an optional extension because the fixtures
+build such Plans on purpose. The D24 common forms stay as W03-FORMS
+delivered them.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -133,6 +150,8 @@ correct titles; Claude cited BOOTSTRAP-R16 as its route.
 | Hosted candidate GREEN | 142 | W158 | PR 1096 candidate-documents | Test pattern and an owner predicate accepting the working tree or the revision | PASS | Locally 111 tests across generation 6 and 7, template definition, relations and acceptance; hosted rerun pending | required | Hosted candidate RED |
 | Hook matchers | 142 | W158 | `hook_rules.evaluate` probe | Moved SDLC, a moved policy, the workspace README, an agent policy | PASS | Memory warning on both watched files; Korean warning on both policy homes, not on the README | required | - |
 | Native loading | 142 | W158 | a fresh provider session reading a moved policy | Claude and Codex | NOT_RUN | Not observed | required | - |
+| Route fixture RED | 142 | W158 | `test_a_workspace_policy_change_selects_the_agent_governance_contract` | Workflow contract without the `docs/00.workspace/` route | FAIL | The selector refused the path as unmapped | required | - |
+| Route fixture GREEN | 142 | W158 | `test_a_workspace_policy_change_selects_the_agent_governance_contract` | Current workflow contract | PASS | The agent-governance suite and `leaf.local-agent-governance-contract` selected | required | Route fixture RED |
 | Native loading observed | 142 | W158 | a fresh provider session reading a moved policy | `claude -p` in plan mode and `codex exec` read-only on `dc53d574f` | PASS | Both named the SDLC 2.3.0 and approval boundaries 1.6.0 at their `docs/00.workspace/02.process/` paths from the bootstrap alone | required | Native loading |
 
 ### Resolution Links
@@ -141,7 +160,7 @@ Moved link GREEN resolves Moved link RED. Relation owner GREEN resolves
 Relation owner RED. Moved baseline GREEN resolves Moved baseline RED.
 Workspace link GREEN resolves Workspace link RED. Hosted candidate GREEN
 resolves Hosted candidate RED. Native loading observed resolves Native
-loading. The All link modes
+loading. Route fixture GREEN resolves Route fixture RED. The All link modes
 failure predates this Task and stays with the SearXNG owner.
 
 ## Acceptance Decision
