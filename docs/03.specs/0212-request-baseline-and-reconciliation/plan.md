@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.83.0"
+version: "1.84.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -403,6 +403,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W156 | 141 | Analyse captured sessions with deterministic rules under a lease, per window, into reviewable candidates on a daily user timer | W154 | TSK-0085 | Analysis RED and GREEN tests, manifest and routing checks |
 | W157 | 141 | Observe a real scheduled run, a duplicate run and a missed-window catch-up | W156 | TSK-0085 | Timer journal, status record and run table |
 | W158 | 142 | Move the eight shared policies to `docs/00.workspace/`, rewrite live references, map the responsibility layers and teach the link, metadata, contract and gate checkers the new home | None | TSK-0086 | Link, metadata, lifecycle, contract and renderer checks; moved-link and baseline RED and GREEN tests |
+| W159 | 143 | Survey the server Docker and block every-profile Compose starts with a hookify rule, rules R149 and R150 and a rule test | None | TSK-0087 | Rule RED and GREEN tests, dispatcher probe, native Claude and Codex refusal |
 
 #### Current v30 continuation and delivery
 
