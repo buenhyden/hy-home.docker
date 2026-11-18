@@ -17,9 +17,11 @@ from __future__ import annotations
 
 import argparse
 import graphlib
+import hashlib
 import json
 import os
 import posixpath
+import shutil
 import signal
 import sqlite3
 import subprocess
@@ -36,6 +38,7 @@ from scripts.lib.hooks import session_capture as capture  # noqa: E402
 STORE_NAME = "dispatch.sqlite3"
 CANCEL_NAME = "cancel"
 DEFAULT_WORKERS = 2
+DEFAULT_INTEGRATION_TIMEOUT = 600
 TICK = 0.05
 
 
@@ -116,6 +119,17 @@ class Leases:
         finally:
             connection.close()
 
+    def release_run(self, run_id: str) -> None:
+        """Free every lease a run still holds, for a dispatcher that died."""
+        connection = self._connect()
+        try:
+            connection.execute(
+                "UPDATE leases SET expires=0, holder=NULL WHERE holder LIKE ?",
+                (run_id + ":%",),
+            )
+        finally:
+            connection.close()
+
     def release(self, tokens: dict, holder: str) -> None:
         connection = self._connect()
         try:
@@ -135,6 +149,36 @@ def _git(repo: Path, *args: str, data: bytes | None = None) -> bytes:
     ).stdout
 
 
+def _wt(gitdir: str, tree: Path, *args: str, data: bytes | None = None) -> bytes:
+    """Git in a worktree through its recorded Git directory.
+
+    A worker can delete or rewrite the worktree's `.git` file; without the
+    explicit directory Git would walk up into the main repository.
+    """
+    return _git(tree, f"--git-dir={gitdir}", f"--work-tree={tree}", *args, data=data)
+
+
+def _names(raw: bytes) -> list[str]:
+    return [os.fsdecode(name) for name in raw.split(b"\0") if name]
+
+
+def _remove_worktree(repo: Path, tree: Path) -> bool:
+    subprocess.run(
+        ["git", "-C", str(repo), "worktree", "remove", "--force", str(tree)],
+        capture_output=True,
+        check=False,
+    )
+    shutil.rmtree(tree, ignore_errors=True)
+    return not tree.exists()
+
+
+def _killpg(pid: int) -> None:
+    try:
+        os.killpg(pid, signal.SIGKILL)
+    except ProcessLookupError:
+        pass
+
+
 def _validate(plan: dict) -> dict[str, dict]:
     units = plan.get("units") or []
     ids = [u.get("id") for u in units]
@@ -151,6 +195,8 @@ def _validate(plan: dict) -> dict[str, dict]:
             norm = posixpath.normpath(path)
             if posixpath.isabs(path) or norm == ".." or norm.startswith("../"):
                 raise PlanError(f"{u['id']} owns a path outside the repository")
+            if norm == ".":
+                raise PlanError(f"{u['id']} must name paths, not the whole repository")
         graph[u["id"]] = set(u.get("depends_on", []))
     try:
         tuple(graphlib.TopologicalSorter(graph).static_order())
@@ -181,7 +227,7 @@ def _kill(process: subprocess.Popen) -> None:
 
 
 def cancel(state: Path) -> None:
-    """Ask every run using this state directory to stop."""
+    """Ask every run that started before now on this state directory to stop."""
     state.mkdir(mode=0o700, parents=True, exist_ok=True)
     (state / CANCEL_NAME).touch()
 
@@ -189,7 +235,7 @@ def cancel(state: Path) -> None:
 def run(repo: Path, state: Path, plan: dict) -> dict:
     units = _validate(plan)
     leases = Leases(state)
-    (state / CANCEL_NAME).unlink(missing_ok=True)
+    started_wall = time.time()
     run_id = time.strftime("%Y%m%dT%H%M%S") + "-" + uuid.uuid4().hex[:6]
     root = state / "runs" / run_id
     (root / "wt").mkdir(parents=True)
@@ -207,30 +253,53 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
     running: dict[str, dict] = {}
     cancelled = False
 
+    def cancel_requested() -> bool:
+        try:
+            return (state / CANCEL_NAME).stat().st_mtime >= started_wall
+        except FileNotFoundError:
+            return False
+
     def clock() -> float:
         return round(time.monotonic() - start, 3)
 
     def finish(uid: str, status: str, reason: str = "") -> None:
         result[uid].update(status=status, reason=reason, finished=clock())
         job = running.pop(uid)
+        _killpg(job["process"].pid)
         leases.release(job["tokens"], job["holder"])
-        _git(repo, "worktree", "remove", "--force", str(job["worktree"]))
+        _remove_worktree(repo, job["worktree"])
         (root / f"{uid}.pgid").unlink(missing_ok=True)
 
     def collect(uid: str, job: dict) -> None:
+        # Background children must not outlive the worker into the checks.
+        _killpg(job["process"].pid)
         code = job["process"].returncode
         if code != 0:
             return finish(uid, "failed", f"exit {code}")
-        tree = job["worktree"]
-        _git(tree, "add", "-A")
-        changed = _git(tree, "diff", "--cached", "--name-only", "-z", job["start"])
-        paths = [p for p in changed.decode().split("\0") if p]
+        gitdir, tree = job["gitdir"], job["worktree"]
+        try:
+            _wt(gitdir, tree, "add", "-A")
+            changed = _wt(
+                gitdir,
+                tree,
+                "diff",
+                "--cached",
+                "--no-renames",
+                "--name-only",
+                "-z",
+                job["start"],
+            )
+        except subprocess.CalledProcessError:
+            return finish(uid, "rejected", "worktree damaged")
+        paths = _names(changed)
         outside = [p for p in paths if not any(_under(p, o) for o in job["owned"])]
         if outside:
             return finish(uid, "rejected", "outside ownership: " + ", ".join(outside))
         if not leases.valid(job["tokens"], job["holder"]):
             return finish(uid, "rejected", "stale lease")
-        patch = _git(tree, "diff", "--cached", "--binary", job["start"])
+        patch = _wt(
+            gitdir, tree, "diff", "--cached", "--no-renames", "--binary", job["start"]
+        )
         # Workers can reach the run folder, so the accepted patch is kept in
         # memory and the file is a record that is never read back.
         patches[uid] = patch
@@ -248,12 +317,21 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
         if tokens is None:
             return
         tree = root / "wt" / u["id"]
-        _git(repo, "worktree", "add", "--detach", "-q", str(tree), base)
-        ancestors = _ancestors(units, u["id"])
-        for prior in done_order:
-            if prior in ancestors:
-                _git(tree, "apply", "--index", "-", data=patches[prior])
-        start_tree = _git(tree, "write-tree").decode().strip()
+        try:
+            _git(repo, "worktree", "add", "--detach", "-q", str(tree), base)
+            gitdir = _git(tree, "rev-parse", "--absolute-git-dir").decode().strip()
+            ancestors = _ancestors(units, u["id"])
+            for prior in done_order:
+                if prior in ancestors and patches[prior]:
+                    _wt(gitdir, tree, "apply", "--index", "-", data=patches[prior])
+            start_tree = _wt(gitdir, tree, "write-tree").decode().strip()
+        except subprocess.CalledProcessError as error:
+            leases.release(tokens, holder)
+            _remove_worktree(repo, tree)
+            result[u["id"]].update(
+                status="failed", reason=f"setup failed: {error.cmd[3:6]}"
+            )
+            return
         env = dict(
             os.environ,
             HY_TASK=str(plan.get("task", "")),
@@ -277,6 +355,7 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
             tokens=tokens,
             holder=holder,
             worktree=tree,
+            gitdir=gitdir,
             start=start_tree,
             owned=owned,
             deadline=time.monotonic() + timeout,
@@ -285,7 +364,7 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
 
     try:
         while True:
-            if not cancelled and (state / CANCEL_NAME).exists():
+            if not cancelled and cancel_requested():
                 cancelled = True
                 for uid, job in list(running.items()):
                     _kill(job["process"])
@@ -334,7 +413,10 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
             plan.get("integration_checks", []),
             patches,
             owned,
+            float(plan.get("integration_timeout", DEFAULT_INTEGRATION_TIMEOUT)),
+            cancel_requested,
         )
+        cancelled = integration["status"] == "cancelled"
     status = (
         "cancelled"
         if cancelled
@@ -361,46 +443,68 @@ def run(repo: Path, state: Path, plan: dict) -> dict:
     return report
 
 
-def _integrate(repo, root, base, order, checks, patches, owned) -> dict:
+def _integrate(
+    repo, root, base, order, checks, patches, owned, timeout, cancel_requested
+) -> dict:
     """Apply every unit patch on the base and rerun the integration checks."""
     tree = root / "wt" / "integration"
     _git(repo, "worktree", "add", "--detach", "-q", str(tree), base)
     try:
         for uid in order:
+            if not patches[uid]:
+                continue
             try:
                 _git(tree, "apply", "--index", "-", data=patches[uid])
             except subprocess.CalledProcessError:
                 return {"status": "failed", "reason": f"{uid} patch does not apply"}
-        names = _git(tree, "diff", "--cached", "--name-only", "-z", base)
-        outside = [
-            p
-            for p in names.decode().split("\0")
-            if p and not any(_under(p, o) for o in owned)
-        ]
+        names = _git(
+            tree, "diff", "--cached", "--no-renames", "--name-only", "-z", base
+        )
+        outside = [p for p in _names(names) if not any(_under(p, o) for o in owned)]
         if outside:
             return {
                 "status": "failed",
                 "reason": "outside ownership: " + ", ".join(outside),
             }
+        combined = _git(tree, "diff", "--cached", "--no-renames", "--binary", base)
+        # The run folder is reachable by workers: replace any planted file and
+        # give the operator a digest to compare before applying the patch.
         patch = root / "integrated.patch"
-        patch.write_bytes(_git(tree, "diff", "--cached", "--binary", base))
+        patch.unlink(missing_ok=True)
+        with open(patch, "xb") as handle:
+            handle.write(combined)
+        found = {"patch": str(patch), "sha256": hashlib.sha256(combined).hexdigest()}
         for check in checks:
-            done = subprocess.run(
+            process = subprocess.Popen(
                 check,
                 cwd=tree,
                 stdin=subprocess.DEVNULL,
-                capture_output=True,
-                check=False,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                start_new_session=True,
             )
-            if done.returncode != 0:
+            deadline = time.monotonic() + timeout
+            while process.poll() is None:
+                if cancel_requested() or time.monotonic() > deadline:
+                    _kill(process)
+                    if cancel_requested():
+                        return {"status": "cancelled", **found}
+                    return {
+                        "status": "failed",
+                        "reason": f"check {check} timeout",
+                        **found,
+                    }
+                time.sleep(TICK)
+            _killpg(process.pid)
+            if process.returncode != 0:
                 return {
                     "status": "failed",
-                    "reason": f"check {check} exit {done.returncode}",
-                    "patch": str(patch),
+                    "reason": f"check {check} exit {process.returncode}",
+                    **found,
                 }
-        return {"status": "passed", "patch": str(patch), "checks": len(checks)}
+        return {"status": "passed", "checks": len(checks), **found}
     finally:
-        _git(repo, "worktree", "remove", "--force", str(tree))
+        _remove_worktree(repo, tree)
 
 
 def cleanup(repo: Path, state: Path) -> list[str]:
@@ -410,6 +514,8 @@ def cleanup(repo: Path, state: Path) -> list[str]:
         try:
             os.kill(int((root / "dispatcher.pid").read_text()), 0)
             continue
+        except PermissionError:
+            continue  # the PID belongs to someone else's live process
         except (ProcessLookupError, FileNotFoundError, ValueError):
             pass
         for pgid in root.glob("*.pgid"):
@@ -419,12 +525,9 @@ def cleanup(repo: Path, state: Path) -> list[str]:
                 pass
             pgid.unlink()
         for tree in sorted((root / "wt").glob("*")):
-            subprocess.run(
-                ["git", "-C", str(repo), "worktree", "remove", "--force", str(tree)],
-                capture_output=True,
-                check=False,
-            )
-            removed.append(str(tree))
+            if _remove_worktree(repo, tree):
+                removed.append(str(tree))
+        Leases(state).release_run(root.name)
     _git(repo, "worktree", "prune")
     return removed
 

@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.19.0"
+version: "1.20.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -765,12 +765,14 @@ across types`로 표시하며, 어느 쪽도 보정된 80% 보장으로 읽지 �
 worktree에서 셸 worker로 실행한다. 각 단위는 명령, 의존 단위, 소유 경로, 공유
 자원(예: `port:5432`, `registry:writer`)을 적는다. 의존 단위가 모두 성공하고 소유
 경로와 공유 자원의 lease를 모두 얻은 단위만 시작하며, lease마다 늘어나는 fencing
-generation이 붙어 만료되거나 다른 실행이 가져간 lease의 결과는 거부한다. 소유 경로
-밖을 바꾼 결과도 거부한다. 실패한 단위는 그 하류만 막고, 취소는 실행 중인 worker의
-프로세스 그룹을 모두 멈추고 새 단위를 시작하지 않는다. 모든 단위가 성공하면 기준
-커밋에 patch를 차례로 적용하고 통합 검사를 다시 실행한다. worker의 성공이 통합
-결과를 대신하지 않으며, 결과 patch는 실행 폴더에 남고 실제 브랜치에는 사람이나
-통합 담당자가 적용한다. worktree는 파일만 나눌 뿐 sandbox가 아니다.
+generation이 붙어 만료되거나 다른 실행이 가져간 lease의 결과는 거부한다. 이름 바꾸기를
+포함해 소유 경로 밖을 바꾼 결과도 거부한다. worker가 끝나면 그 프로세스 그룹을 먼저
+멈춘 뒤 결과를 읽는다. 실패한 단위는 그 하류만 막고, 취소는 실행 중인 worker와 통합
+검사를 모두 멈추고 새 단위를 시작하지 않는다. 모든 단위가 성공하면 기준 커밋에 patch를
+차례로 적용하고 통합 검사를 시간 제한(`integration_timeout`, 기본 600초) 안에서 다시
+실행한다. worker의 성공이 통합 결과를 대신하지 않는다. 결과 patch는 실행 폴더에 남고
+실제 브랜치에는 사람이나 통합 담당자가 적용하며, 적용 전에 보고서의 `sha256`과
+patch의 SHA-256이 같은지 확인한다. worktree는 파일만 나눌 뿐 sandbox가 아니다.
 
 ```bash
 python3 scripts/operations/work_dispatch.py run PLAN.json
@@ -779,7 +781,7 @@ python3 scripts/operations/work_dispatch.py cleanup
 ```
 
 lease와 실행 기록은 `.workspace-capture/dispatch/`에 있다. `cleanup`은 dispatcher가
-죽은 실행의 worker를 멈추고 worktree를 지운다. 병렬 효과는 같은 계획을 worker 1개로
+죽은 실행의 worker를 멈추고 worktree를 지우고 그 실행의 lease를 푼다. 병렬 효과는 같은 계획을 worker 1개로
 실행한 시간과 준비·통합 시간을 포함해 비교하고 표본 수를 함께 적는다.
 
 #### 공유 기억 백업 제외 (2026-11-18)
