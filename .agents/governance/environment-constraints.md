@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "1.18.1"
+version: "1.19.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -169,6 +169,8 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R146 | Analysis candidate | Required: name its source events, frequency, conditions, proposal, risk and acceptance test | none | none |
 | ENVIRONMENT-CONSTRAINTS-R147 | Analysis candidate | Forbidden: changing a rule, skill, check, memory or policy without a separate approved Task | none | none |
 | ENVIRONMENT-CONSTRAINTS-R148 | Analysis failure | Forbidden: blocking commit, push or other work | none | none |
+| ENVIRONMENT-CONSTRAINTS-R149 | Starting Compose services on this server | Required: name the services or the profiles to start; Compose starts their `depends_on` closure with them | none | none |
+| ENVIRONMENT-CONSTRAINTS-R150 | Starting Compose services on this server | Forbidden: selecting every profile with `--profile '*'` or `COMPOSE_PROFILES` holding `*` for `up`, `start` or `create` | hookify `block-whole-stack-compose-start` refuses the visible forms | `tests/lib/hooks/test_compose_start_rule.py` |
 | ENVIRONMENT-CONSTRAINTS-R119 | After an approved canonical agent governance or Provider Registry change | Allowed: provider surface `--write`, once only | none | none |
 | ENVIRONMENT-CONSTRAINTS-R120 | Ordinary postflight and CI | Required: use `python3 scripts/operations/provider_surface_renderer.py --check` | none | none |
 | ENVIRONMENT-CONSTRAINTS-R121 | Hooks and validation commands | Forbidden: regenerating provider surfaces implicitly | none | none |
@@ -218,6 +220,12 @@ None: this document states no exclusion.
   is not intended.
 - **Pruning**: `docker system prune` requires explicit user consent. Never run
   it without one.
+- **Starting services**: this repository runs on the server's own Docker
+  daemon; the owner decided on 2026-11-18 that it needs no separate sandbox.
+  Every root service sits behind a profile, so a start names the profiles or
+  services it needs and Compose adds their dependencies. Selecting every
+  profile for `up`, `start` or `create` would start the whole stack and is
+  forbidden; rendering it with `config` stays allowed.
 
 #### 2.1 Approved Runtime Mutation Protocol
 
@@ -494,6 +502,8 @@ Most rules name no check; named mechanisms cover only the memory writer, expecte
 - Memory recall (R132-R135): no check is named.
 - Session capture (R136-R142): no check is named.
 - Session analysis (R143-R148): no check is named.
+- Compose start selection (R149): no check is named.
+- Whole-stack start (R150): the hookify rule sees only the command text; a profile list read from an environment file or a command built at run time is outside it.
 - Provider surface regeneration (R119-R123): no check is named.
 - Container build review (R21): the policy says these are manual review expectations unless a repository validator already enforces the specific rule.
 - Enforcement gap: the edit hooks do not cover shell commands, so a shell write or removal on the store (R51) is a violation no tool prevents.

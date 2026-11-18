@@ -35,6 +35,7 @@ canonical_sources:
   - .agents/governance/hooks/hookify.block-git-no-verify.md
   - .agents/governance/hooks/hookify.block-plaintext-secret-compose.md
   - .agents/governance/hooks/hookify.block-unpinned-gha-action.md
+  - .agents/governance/hooks/hookify.block-whole-stack-compose-start.md
   - .agents/governance/hooks/hookify.enforce-docs-templates.md
   - .agents/governance/hooks/hookify.require-logical-commits-before-stop.md
   - .agents/governance/hooks/hookify.warn-branch-naming.md
