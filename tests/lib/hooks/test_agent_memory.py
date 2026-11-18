@@ -272,13 +272,9 @@ class StoreTests(unittest.TestCase):
         finally:
             connection.close()
 
-    def _backup_file(self) -> Path:
-        write(self.connection, "gate", 0, "kept")
-        directory = self.base / "backup"
-        directory.mkdir(mode=0o700, exist_ok=True)
-        output = directory / "memory.sqlite3"
-        memory.backup(self.connection, output)
-        return output
+
+class WorktreeStoreTests(unittest.TestCase):
+    """Every worktree of one checkout reaches the same store through the CLI."""
 
     def cli(
         self,
@@ -756,6 +752,196 @@ class StoreTests(unittest.TestCase):
             result = self.cli(other, "usage", script=CLI, environment=poisoned)
             self.assertEqual(memory.EXIT_UNAVAILABLE, result.returncode)
             self.assertFalse((other / ".workspace-memory").exists())
+
+
+def reviewed(state, source_refs, cwd):
+    # Treat the stated review state as the source-pin result, so the D06
+    # applicability rules are tested without a Git fixture.
+    return state
+
+
+class RecordSemanticsTests(unittest.TestCase):
+    """D06 kind, validity, supersession, baseline, export and erase."""
+
+    def setUp(self) -> None:
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        self.path = Path(directory.name) / ".workspace-memory" / "memory.sqlite3"
+        initialize_capacity(self.path)
+        self.connection = memory.connect(self.path)
+        self.addCleanup(self.connection.close)
+        patcher = mock.patch.object(memory, "reuse_state", reviewed)
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def put(self, memory_id, expected=0, **extra):
+        return memory.put(
+            self.connection,
+            memory_id=memory_id,
+            expected_revision=expected,
+            workspace_id="test",
+            tier=extra.pop("tier", "long-term"),
+            owner="claude",
+            body=extra.pop("body", f"{memory_id} body"),
+            source_refs=["SPEC-0212"],
+            review_state=extra.pop("review_state", "current"),
+            **extra,
+        )
+
+    def state(self, memory_id, as_of=None):
+        record = memory.get(self.connection, memory_id, as_of=as_of)
+        return record["provenance"]["reuse_state"]
+
+    def test_kind_is_separate_from_the_tier_and_legacy_kind_is_derived(self):
+        self.put("decided", kind="decision")
+        self.put("brief", tier="short-term")
+        decided = memory.get(self.connection, "decided")
+        self.assertEqual(("decision", "long-term"), (decided["kind"], decided["tier"]))
+        brief = memory.get(self.connection, "brief")
+        self.assertEqual("session-context", brief["kind"])
+        with self.assertRaises(memory.MemoryStoreError):
+            self.put("bad", kind="task-status")
+
+    def test_validity_window_limits_reuse_at_the_evaluation_time(self):
+        self.put(
+            "window",
+            observed_at="2026-11-01T00:00:00+09:00",
+            valid_from="2026-11-10T00:00:00Z",
+            valid_until="2026-11-20T00:00:00Z",
+        )
+        record = memory.get(self.connection, "window")
+        self.assertEqual("2026-10-31T15:00:00+00:00", record["observed_at"])
+        for as_of, expected in (
+            ("2026-11-09T00:00:00Z", "outside-validity"),
+            ("2026-11-15T00:00:00Z", "current"),
+            ("2026-11-20T00:00:00Z", "outside-validity"),
+        ):
+            with self.subTest(as_of=as_of):
+                self.assertEqual(expected, self.state("window", as_of))
+        self.assertIsNone(
+            memory.get(
+                self.connection,
+                "window",
+                current_only=True,
+                as_of="2026-11-21T00:00:00Z",
+            )
+        )
+        for bad in (
+            {"valid_from": "2026-11-10"},
+            {
+                "valid_from": "2026-11-20T00:00:00Z",
+                "valid_until": "2026-11-10T00:00:00Z",
+            },
+            {"observed_at": "yesterday"},
+        ):
+            with self.subTest(bad=bad), self.assertRaises(memory.MemoryStoreError):
+                self.put("invalid", **bad)
+
+    def test_supersession_hides_the_older_record_and_links_back(self):
+        self.put("old")
+        self.put("new", supersedes=["old"])
+        self.assertEqual("superseded", self.state("old"))
+        self.assertEqual(["new"], memory.get(self.connection, "old")["invalidated_by"])
+        self.assertEqual(["old"], memory.get(self.connection, "new")["supersedes"])
+        current = memory.current_records(self.connection, None, False)
+        self.assertEqual(["new"], [r["memory_id"] for r in current])
+        for target in (["missing"], ["self"]):
+            with (
+                self.subTest(target=target),
+                self.assertRaises(memory.MemoryStoreError),
+            ):
+                self.put("self", supersedes=target)
+        # Withdrawing the newer record makes the older one reusable again.
+        self.put("new", 1, supersedes=["old"], eligibility="ineligible")
+        self.assertEqual("current", self.state("old"))
+
+    def test_baseline_cutover_leaves_earlier_records_out_of_default_reads(self):
+        self.put("before", request_key="same-request")
+        self.assertEqual(
+            "initial", memory.get(self.connection, "before")["baseline_id"]
+        )
+        with self.assertRaises(memory.MemoryStoreError) as stale:
+            memory.cutover(self.connection, expected="other", baseline_id="b2")
+        self.assertEqual(memory.EXIT_CONFLICT, stale.exception.code)
+        memory.cutover(self.connection, expected="initial", baseline_id="b2")
+        self.assertEqual("other-baseline", self.state("before"))
+        self.assertEqual([], memory.current_records(self.connection, None, False))
+        self.assertEqual(1, len(memory.current_records(self.connection, None, True)))
+        self.put("after")
+        self.assertEqual("b2", memory.get(self.connection, "after")["baseline_id"])
+        # The request digest binds the baseline, so the old key now conflicts.
+        with self.assertRaises(memory.MemoryStoreError) as replay:
+            self.put("before", 1, request_key="same-request")
+        self.assertEqual("request-identity", replay.exception.details["reason"])
+
+    def test_selected_export_and_erase_touch_only_the_named_records(self):
+        self.put("keep")
+        self.put("drop")
+        self.put("drop", 1, body="second")
+        with self.assertRaises(memory.MemoryStoreError):
+            self.put("drop", 0, body="stale writer")
+        exported = memory.export_selected(self.connection, ["drop"], True)
+        self.assertEqual([2, 1], [r["revision"] for r in exported])
+        latest = memory.export_selected(self.connection, ["drop"], False)
+        self.assertEqual([2], [r["revision"] for r in latest])
+        with self.assertRaises(memory.MemoryStoreError):
+            memory.export_selected(self.connection, ["absent"], False)
+        result = memory.erase(self.connection, ["drop", "absent"])
+        self.assertEqual(["drop"], result["erased"])
+        self.assertEqual(["absent"], result["missing"])
+        self.assertEqual(
+            {"revisions": 2, "provenance": 2, "conflicts": 1}, result["deleted_rows"]
+        )
+        for table in ("revisions", "provenance", "conflicts"):
+            count = self.connection.execute(
+                f"SELECT count(*) FROM {table} WHERE memory_id='drop'"
+            ).fetchone()[0]
+            self.assertEqual(0, count, table)
+        self.assertIsNotNone(memory.get(self.connection, "keep"))
+
+    def test_an_existing_store_needs_an_explicit_migration_to_write(self):
+        legacy = self.path.with_name("legacy.sqlite3")
+        connection = sqlite3.connect(legacy)
+        connection.execute(memory.SCHEMA)
+        values = ("old", 1, 2, "w", "long-term", "o", "2026-10-13", "[]")
+        connection.execute(
+            "INSERT INTO revisions VALUES (?,?,?,?,?,?,?,?,?,?,?)",
+            (*values, "eligible", "internal", "kept"),
+        )
+        connection.commit()
+        connection.close()
+        connection = memory.connect(legacy)
+        self.addCleanup(connection.close)
+        before = [tuple(r) for r in connection.execute("SELECT * FROM revisions")]
+        self.assertTrue(memory.usage(connection)["migration_required"])
+        write = dict(
+            memory_id="new",
+            expected_revision=0,
+            workspace_id="w",
+            tier="long-term",
+            owner="o",
+            body="x",
+            source_refs=[],
+        )
+        with self.assertRaises(memory.MemoryStoreError) as refused:
+            memory._put(connection, **write)
+        self.assertIn("MIGRATION_REQUIRED", str(refused.exception))
+        self.assertTrue(memory.migrate(connection)["migrated"])
+        self.assertFalse(memory.migrate(connection)["migrated"])
+        after = [tuple(r) for r in connection.execute("SELECT * FROM revisions")]
+        self.assertEqual(before, after)
+        self.assertEqual(1, memory._put(connection, **write))
+
+    def test_usage_reports_the_enforced_page_limit_to_readers(self):
+        reader = sqlite3.connect(self.path.absolute().as_uri() + "?mode=ro", uri=True)
+        self.addCleanup(reader.close)
+        page_size = reader.execute("PRAGMA page_size").fetchone()[0]
+        report = memory.usage(reader)
+        self.assertEqual(
+            memory.MAX_DATABASE_BYTES // page_size, report["database_page_limit"]
+        )
+        self.assertEqual(3, report["schema_version"])
+        self.assertFalse(report["migration_required"])
 
 
 if __name__ == "__main__":

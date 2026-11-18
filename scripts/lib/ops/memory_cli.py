@@ -17,12 +17,14 @@ def _parser(memory):
     get = commands.add_parser("get")
     get.add_argument("memory_id")
     get.add_argument("--historical", action="store_true")
+    get.add_argument("--as-of")
     history = commands.add_parser("history")
     history.add_argument("memory_id")
     history.add_argument("--limit", type=int, default=10)
     listing = commands.add_parser("list")
     listing.add_argument("--tier", choices=memory.TIERS)
     listing.add_argument("--all", action="store_true")
+    listing.add_argument("--as-of")
     put = commands.add_parser("put")
     put.add_argument("memory_id")
     put.add_argument("--expected-revision", type=int, required=True)
@@ -35,16 +37,35 @@ def _parser(memory):
         "--review-state", choices=memory.REVIEW_STATES, default="candidate"
     )
     put.add_argument("--domain-id")
+    put.add_argument("--kind", choices=memory.KINDS)
+    put.add_argument("--observed-at")
+    put.add_argument("--valid-from")
+    put.add_argument("--valid-until")
+    put.add_argument("--supersedes", action="append", default=[])
     eligibility = commands.add_parser("set-eligibility")
     eligibility.add_argument("memory_id")
     eligibility.add_argument("--expected-revision", type=int, required=True)
     eligibility.add_argument("--owner", required=True)
     eligibility.add_argument("eligibility", choices=memory.ELIGIBILITY)
     commands.add_parser("usage")
-    commands.add_parser("export")
+    export = commands.add_parser("export")
+    export.add_argument("--memory-id", action="append", default=[])
+    export.add_argument("--history", action="store_true")
+    erase = commands.add_parser("erase")
+    erase.add_argument("--memory-id", action="append", required=True)
+    erase.add_argument("--confirm", required=True)
+    commands.add_parser("migrate")
+    baseline = commands.add_parser("baseline").add_subparsers(
+        dest="baseline_command", required=True
+    )
+    baseline.add_parser("show")
+    move = baseline.add_parser("cutover")
+    move.add_argument("--expected", required=True)
+    move.add_argument("--to", required=True)
     search = commands.add_parser("search")
     search.add_argument("--query", required=True)
     search.add_argument("--limit", type=int, default=10)
+    search.add_argument("--as-of")
     capacity = commands.add_parser("capacity").add_subparsers(
         dest="capacity_command", required=True
     )
@@ -67,7 +88,10 @@ def _dispatch(memory, connection, args, path):
     command = args.command
     if command == "get":
         result = memory.get(
-            connection, args.memory_id, current_only=not args.historical
+            connection,
+            args.memory_id,
+            current_only=not args.historical,
+            as_of=args.as_of,
         )
         if result is None:
             raise memory.MemoryStoreError(
@@ -76,11 +100,28 @@ def _dispatch(memory, connection, args, path):
         return result
     if command == "history":
         return memory.history(connection, args.memory_id, args.limit)
+    if command == "export" and args.memory_id:
+        return memory.export_selected(connection, args.memory_id, args.history)
+    if command == "erase":
+        # The confirmation names the exact erase set, so a typo erases nothing.
+        if args.confirm != ",".join(sorted(set(args.memory_id))):
+            raise memory.MemoryStoreError(
+                memory.EXIT_UNAVAILABLE,
+                "MEMORY_INVALID: --confirm must list the sorted memory IDs",
+            )
+        return memory.erase(connection, args.memory_id)
+    if command == "migrate":
+        return memory.migrate(connection)
+    if command == "baseline":
+        if args.baseline_command == "show":
+            return {"baseline_id": memory.current_baseline(connection)}
+        return memory.cutover(connection, expected=args.expected, baseline_id=args.to)
     if command in {"list", "export", "search"}:
         records = memory.current_records(
             connection,
             getattr(args, "tier", None),
             command == "export" or getattr(args, "all", False),
+            getattr(args, "as_of", None),
         )
         return (
             search_records(records, args.query, args.limit)
@@ -117,6 +158,11 @@ def _dispatch(memory, connection, args, path):
             request_key=args.request_key,
             review_state=args.review_state,
             domain_id=args.domain_id,
+            kind=args.kind,
+            observed_at=args.observed_at,
+            valid_from=args.valid_from,
+            valid_until=args.valid_until,
+            supersedes=args.supersedes,
         )
     else:
         row = memory.get(connection, args.memory_id)
@@ -139,6 +185,11 @@ def _dispatch(memory, connection, args, path):
             if args.eligibility == "ineligible"
             else "candidate",
             domain_id=row["provenance"]["domain_id"],
+            kind=str(row["kind"]),
+            observed_at=row["observed_at"],
+            valid_from=row["valid_from"],
+            valid_until=row["valid_until"],
+            supersedes=list(row["supersedes"]),
         )
     return {"memory_id": args.memory_id, "revision": revision}
 
@@ -155,9 +206,14 @@ def run(argv, memory):
             else:
                 result = manager.reconcile(expected_generation=args.expected_generation)
         else:
-            writing = args.command in {"put", "set-eligibility"}
+            growing = args.command in {"put", "set-eligibility"}
+            writing = (
+                growing
+                or args.command in {"erase", "migrate"}
+                or (args.command == "baseline" and args.baseline_command == "cutover")
+            )
             if (
-                writing
+                growing
                 and MemoryCapacity(path).status()["inventory_state"] != "complete"
             ):
                 raise CapacityError()

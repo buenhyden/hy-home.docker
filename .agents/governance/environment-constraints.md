@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "1.14.0"
+version: "1.15.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -144,6 +144,14 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R116 | Memory search | Required: `search --query TEXT --limit N` gives deterministic local lexical search of currently reusable records, default 10 and maximum 50 results | none | none |
 | ENVIRONMENT-CONSTRAINTS-R117 | Search and `capacity status` | Required: open existing state read-only | none | none |
 | ENVIRONMENT-CONSTRAINTS-R118 | Search and `capacity status` | Forbidden: initializing a database or schema, changing permissions, or adding a service or model API call | none | none |
+| ENVIRONMENT-CONSTRAINTS-R124 | Memory record | Required: carry a kind (`session-context`, `decision` or `experience`) separate from the tier, the store baseline, an observation time, an optional validity window and optional `supersedes` links | none | none |
+| ENVIRONMENT-CONSTRAINTS-R125 | Default memory retrieval | Required: return a record only when it is reviewed, source-current, in the current baseline, inside its validity window at the evaluation time and superseded by no eligible current record | none | none |
+| ENVIRONMENT-CONSTRAINTS-R126 | Memory request digest | Required: bind the baseline and every record field | none | none |
+| ENVIRONMENT-CONSTRAINTS-R127 | Store without schema-3 metadata | Required: refuse writes until an explicit `migrate` | none | none |
+| ENVIRONMENT-CONSTRAINTS-R128 | Memory migration | Forbidden: rewriting or deleting an existing revision | none | none |
+| ENVIRONMENT-CONSTRAINTS-R129 | Baseline cutover | Required: `baseline cutover` with the expected current baseline | none | none |
+| ENVIRONMENT-CONSTRAINTS-R130 | Selected memory erase | Required: name each record and repeat the sorted IDs in `--confirm`; remove every revision, provenance row and conflict of those records | none | none |
+| ENVIRONMENT-CONSTRAINTS-R131 | Memory erase result | Forbidden: claiming erasure from the journal, the filesystem or the storage device | none | none |
 | ENVIRONMENT-CONSTRAINTS-R119 | After an approved canonical agent governance or Provider Registry change | Allowed: provider surface `--write`, once only | none | none |
 | ENVIRONMENT-CONSTRAINTS-R120 | Ordinary postflight and CI | Required: use `python3 scripts/operations/provider_surface_renderer.py --check` | none | none |
 | ENVIRONMENT-CONSTRAINTS-R121 | Hooks and validation commands | Forbidden: regenerating provider surfaces implicitly | none | none |
@@ -359,6 +367,21 @@ This project has a graphify knowledge graph at `graphify-out/`.
   remain available through the existing retrieval commands. Search and
   `capacity status` open existing state read-only: they never initialize a
   database or schema, change permissions, or add a service or model API call.
+- Each record carries a kind (`session-context`, `decision` or `experience`)
+  separate from its tier, the store baseline, an observation time, an
+  optional validity window and optional `supersedes` links; reverse
+  `invalidated_by` links are derived. Default `get`, `list` and `search`
+  return a record only when it is reviewed and source-current, in the
+  current baseline, inside its validity window at `--as-of` (default now) and
+  superseded by no eligible current record. The request digest binds the
+  baseline and every field. A store created before schema 3 refuses writes
+  until an explicit `migrate`, which adds store metadata and never rewrites a
+  revision. `baseline cutover` moves the store to a new baseline against the
+  expected current one. `export --memory-id` exports named records, with
+  `--history` for every revision. `erase` removes every revision, provenance
+  row and conflict of the named records after `--confirm` repeats their
+  sorted IDs; it overwrites freed SQLite pages and never claims erasure from
+  the journal, the filesystem or the storage device.
 
 #### Provider Surface Regeneration
 
@@ -404,15 +427,15 @@ Most rules name no check; named mechanisms cover only the memory writer, expecte
 - Secrets work (R28-R34): no check is named.
 - Graphify (R35-R45): no check is named.
 - Memory store and records (R46-R48, R51-R63): no check is named.
-- Memory limits and capacity (R65-R66, R88-R101, R103-R115): no check is named.
+- Memory limits and capacity (R65-R66, R88-R93, R96-R97, R100-R101, R103-R111, R115): no check is named.
 - Memory provenance and source pins (R67-R87): no check is named.
 - Memory search (R116-R118): no check is named.
+- Memory record semantics (R124-R131): no check is named.
 - Provider surface regeneration (R119-R123): no check is named.
 - Container build review (R21): the policy says these are manual review expectations unless a repository validator already enforces the specific rule.
 - Enforcement gap: the edit hooks do not cover shell commands, so a shell write or removal on the store (R51) is a violation no tool prevents.
-- Enforcement gap: the ban on secrets in a record (R63) rests on the writer's care; the CLI does not scan bodies, and `export` and backups are plaintext.
+- Enforcement gap: the ban on secrets in a record (R63) rests on the writer's care; the CLI does not scan bodies, and `export` is plaintext.
 - Enforcement gap: the memory limits are logical; no filesystem quota enforces them, the 64 MiB budgets are not hard quotas and the journal budget is observed only.
-- Enforcement gap: producer-bound admission prevents accidental bypass of the backup route but is not authentication against an operator who controls Docker or the files.
 - Rules stated under Enforcement (Mechanisms) are outside this table.
 
 ## Ownership
