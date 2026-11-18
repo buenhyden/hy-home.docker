@@ -97,7 +97,7 @@ case "$action" in
         fi
         for set in $SETS; do
             require_initialized "$set"
-            RESTIC_REPOSITORY="$(repo_for "$set")" restic forget --prune \
+            RESTIC_REPOSITORY="$(repo_for "$set")" restic forget --prune --group-by host,tags \
                 --tag "hyhome-$set" --keep-daily 30 --keep-weekly 13 --keep-monthly 12
         done
         ;;

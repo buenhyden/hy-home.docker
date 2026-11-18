@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.88.0"
+version: "1.89.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -1182,6 +1182,14 @@ target, backup, recovery boundary, and action-specific authorization.
      triggers it, and each review records its dispatch and return times and
      rounds. Fresh-context reviews of PRs 1105, 1108 and 1109 run after
      merge, and their findings are fixed or recorded.
+148. TSK-0092 applies the 4.2.0 W10-OBSERVE design with the owner's
+     2026-11-19 decisions: the scheduled-job results the daily runs leave
+     are observed, the local Restic forget-prune groups snapshots by host
+     and tags so its retention can remove anything, the owner-approved
+     prune runs once with its before and after sizes recorded, and an
+     on-demand observe command joins capture, analysis, forecast, dispatch
+     and scheduled unit results by time window and names an owner for each
+     failure, without copying log text or secrets.
 
 ### Evidence Requirements
 

@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.20.0"
+version: "1.21.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -347,7 +347,10 @@ docker compose --profile backup run --rm --no-deps \
   -e HYHOME_PRUNE_CONFIRM=delete-old-snapshots restic forget-prune
 ```
 
-세트당 daily 30개, weekly 13개, monthly 12개의 snapshot을 유지한다.
+세트당 daily 30개, weekly 13개, monthly 12개의 snapshot을 유지한다. 볼륨이 늘면서
+백업 경로 목록이 바뀌므로 host와 tag로만 묶는다(`--group-by host,tags`). 경로까지 묶으면
+세트가 작은 묶음으로 나뉘어 어느 것도 유지 개수를 넘지 않아 아무것도 지우지 못한다
+(2026-11-19 관측).
 pgBackRest는 자체 backup을 `repo1-retention-full=2`로 만료시킨다.
 
 #### 8. Offsite copy (R2)
