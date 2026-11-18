@@ -173,6 +173,7 @@ class CaptureTests(unittest.TestCase):
     def test_only_prompts_the_user_typed_are_captured(self):
         notice = "<task-notification>task finished</task-notification>"
         self.assertIsNone(self.prompt(notice))
+        self.assertIsNone(self.prompt("[Request interrupted by user for tool use]"))
         system = json.loads(line("u1", notice))
         system["origin"] = {"kind": "task-notification"}
         typed = json.loads(line("u2", "typed"))
