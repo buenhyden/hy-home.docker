@@ -152,13 +152,23 @@ def _inside(path: str, root: Path) -> bool:
 PRIVATE_PARTS = ("secrets", ".git")
 
 
+def _private_paths() -> list[Path]:
+    root = ROOT.resolve()
+    return [
+        *(root / part for part in PRIVATE_PARTS),
+        *root.glob(".env*"),
+        *root.glob(".workspace-*"),
+    ]
+
+
 def _repository_safe(source: str) -> bool:
+    """A repository path that neither is nor contains a private path."""
     if not _inside(source, ROOT):
         return False
-    parts = Path(source).resolve().relative_to(ROOT.resolve()).parts
+    path = Path(source).resolve()
     return not any(
-        part in PRIVATE_PARTS or part.startswith((".env", ".workspace-"))
-        for part in parts
+        path.is_relative_to(private) or private.is_relative_to(path)
+        for private in _private_paths()
     )
 
 
@@ -237,6 +247,8 @@ def assess(config: dict, selected: list[str], run_dir: Path) -> dict[str, list[s
         for network in service.get("networks") or {}:
             if (networks.get(network) or {}).get("external"):
                 found.append(f"joins the external network {network}")
+        if service.get("volumes_from"):
+            found.append(f"inherits volumes from {service['volumes_from']}")
         found += _host_namespace(service)
         limits = service.get("deploy", {}).get("resources", {}).get("limits", {})
         memory = service.get("mem_limit") or limits.get("memory")

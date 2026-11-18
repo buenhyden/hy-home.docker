@@ -107,6 +107,12 @@ class SandboxTests(unittest.TestCase):
             ),
             "driver-bind": service(volumes=[{"type": "volume", "source": "v1"}]),
             "external-volume": service(volumes=[{"type": "volume", "source": "v2"}]),
+            "repo-root": service(
+                volumes=[
+                    {"type": "bind", "source": str(sandbox.ROOT), "read_only": True}
+                ]
+            ),
+            "volumes-from": service(volumes_from=["other"]),
             "external-net": service(networks={"prod": {}}),
             "container-net": service(network_mode="container:traefik"),
             "bridge": service(network_mode="bridge"),

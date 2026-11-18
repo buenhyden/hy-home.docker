@@ -1,6 +1,6 @@
 ---
 title: "W09 Docker Sandbox Task"
-version: "0.1.1"
+version: "0.1.2"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -71,7 +71,10 @@ or bind a host path through driver options; network modes other than
 `none` or a selected service, and external networks; and host or shared
 IPC, UTS, user and cgroup namespaces, devices and GPU reservations,
 added capabilities, unconfined profiles, custom runtimes, and config or
-env files outside the run directory. `up` runs only on the rootless socket, never a production socket,
+env files outside the run directory. A second review found that a bind
+of a parent directory, such as the repository root, still exposed those
+paths, and that `volumes_from` was unchecked; a bind now must neither be
+nor contain a private path, and `volumes_from` is refused. `up` runs only on the rootless socket, never a production socket,
 overrides every used network to `internal`, records the
 `hyhome-sbx-<run>` project in the ignored `.workspace-sandbox/` and removes
 only that run if the start fails. `down` and `cleanup` remove only
