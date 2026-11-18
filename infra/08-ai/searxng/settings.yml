@@ -25,3 +25,21 @@ server:
   limiter: false
   public_instance: false
   image_proxy: false
+
+# 2026-11-19: under the 07:00 Hermes load, DuckDuckGo (CAPTCHA), Brave and
+# Google CSE (too many requests) rate-limited this host's address and most
+# searches came back empty. Upstream engines are slower under that load, so
+# allow more time per request.
+outgoing:
+  request_timeout: 6.0
+  max_request_timeout: 10.0
+
+# More free general-web engines spread the same load. With
+# use_default_settings these entries only switch the stock definitions on.
+engines:
+  - name: bing
+    disabled: false
+  - name: qwant
+    disabled: false
+  - name: yahoo
+    disabled: false
