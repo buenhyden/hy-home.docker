@@ -1,10 +1,10 @@
 ---
 title: "Data Packages"
-version: "2.2.0"
+version: "2.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "references"
 created: "2026-07-02"
 ---
@@ -80,7 +80,7 @@ DATA-0067은 Migration 0003의 복구 비교가 마지막 consumer였습니다. 
 #### Policy and Templates
 
 - [Stage 99 Registry](../../99.templates/registry.json)
-- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [문서 작성 계약](../../00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
 - [README 템플릿](../../99.templates/templates/common/readme-category.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
 ### Checks

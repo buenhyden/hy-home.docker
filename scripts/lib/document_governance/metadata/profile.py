@@ -125,9 +125,9 @@ TARGET_SURFACE_DIRECT_SOURCE_PATHS = (
     ".pre-commit-config.yaml",
     ".prettierignore",
     "docs/03.specs/0153-workspace-governance-simplification/tasks/tsk-0004-stage00.md",
-    ".agents/governance/documentation-protocol.md",
-    ".agents/governance/stage-authoring-matrix.md",
-    ".agents/governance/task-checklists.md",
+    "docs/00.workspace/02.process/documentation-protocol.md",
+    "docs/00.workspace/01.project/stage-authoring-matrix.md",
+    "docs/00.workspace/03.quality/task-checklists.md",
     "docs/01.requirements/005-data-analytics.md",
     "docs/02.architecture/decisions/0015-analytics-engine-selection.md",
     "docs/02.architecture/requirements/0012-data-analytics-architecture.md",
@@ -220,8 +220,11 @@ TYPED_EXAMPLE_FIXTURE_PARENT_IDS = (
     "spec:127-deployment-release-engineering-remediation",
 )
 TRANSITIONAL_UNREGISTERED_TEMPLATE_SOURCES: frozenset[str] = frozenset()
+# Canonical policy lives in the agent layer and the workspace policy stage.
+GOVERNANCE_ROOTS = (".agents/", "docs/00.workspace/")
 TARGET_MARKDOWN_PREFIXES = (
     ".agents/",
+    "docs/00.workspace/",
     "labs/",
     "docs/01.requirements/",
     "docs/02.architecture/",
@@ -385,7 +388,7 @@ def _stage00_specialization_entry(
     except RegistryError:
         return None
     profile_id = classify_registered_path(normalized, registry)
-    if profile_id is None or not normalized.startswith(".agents/"):
+    if profile_id is None or not normalized.startswith(GOVERNANCE_ROOTS):
         return None
     return registry.profiles.get(profile_id)
 
@@ -427,7 +430,7 @@ def infer_artifact_type(
         ".template.md"
     ):
         return "template-source"
-    if normalized.startswith(".agents/"):
+    if normalized.startswith(GOVERNANCE_ROOTS):
         return "governance"
     if normalized.startswith("docs/99.templates/support/"):
         return "governance"

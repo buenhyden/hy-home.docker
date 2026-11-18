@@ -1,10 +1,10 @@
 ---
 title: "Stage 99 Document Contracts and Templates"
-version: "2.11.0"
+version: "2.11.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "templates"
 ---
 
@@ -120,7 +120,7 @@ docs/99.templates/
 #### Common Role Forms
 
 공통 역할 16개를 공통 절 계약 `COMMON-DOC-FORM-1` 1.0.0으로 옮기는 규칙은
-[문서 프로토콜](../../.agents/governance/documentation-protocol.md#role-specific-authoring)이
+[문서 프로토콜](../00.workspace/02.process/documentation-protocol.md#role-specific-authoring)이
 정한다. 옮기는 단위, 구 양식과 빈 절의 거부, 아직 옮기지 않은 역할의 양식,
 예외 조건이 모두 그곳에 있다. 역할별 절 이름은 Registry가 선언하며, 진행
 상황은 SPEC-0212 TSK-0059가 기록한다. 이 표기는 네 저장소 공동 채택을 뜻하지
@@ -151,7 +151,7 @@ lifecycle generation 8부터는 Registry `package_generations.first_package` 이
 그대로 유지하며 옮기지 않습니다.
 Lifecycle Events는 실제 직접 전이와 같은 Task의 evidence anchor만 기록하며
 승인 source를 인증하지 않습니다. 승인·검토·실행의 의미는
-[SDLC](../../.agents/governance/sdlc.md)가 소유합니다.
+[SDLC](../00.workspace/02.process/sdlc.md)가 소유합니다.
 
 #### Registered Identity Shapes
 
@@ -167,7 +167,7 @@ profile의 `required_frontmatter`와 `optional_frontmatter`는 문서가
 [`contracts/document-frontmatter.schema.json`](./contracts/document-frontmatter.schema.json)은
 각 값의 형태를 명시합니다. 작성 행동, 콘텐츠 버전, envelope의 의미는
 공통 Agent 거버넌스
-[문서화 정책](../../.agents/governance/documentation-protocol.md#authoring-rules)이
+[문서화 정책](../00.workspace/02.process/documentation-protocol.md#authoring-rules)이
 소유합니다.
 
 Canonical skill은 최상위에 정확히 `name`, `description`, `metadata`만 갖는
@@ -242,7 +242,7 @@ profile `id`는 하나의 고유한 `type`에 명시적으로 매핑되며, 추�
 - [에이전트 작업 규칙](AGENTS.md)
 - [Template catalog](./templates/README.md)
 - [Canonical agent governance home ADR](../02.architecture/decisions/0032-canonical-agent-governance-home.md)
-- [문서 작성 계약](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [문서 작성 계약](../00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
 - [README 템플릿](templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
 ### Checks

@@ -1,10 +1,10 @@
 ---
 title: "Tempo Distributed Tracing"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 created: "2026-01-12"
 ---
 
@@ -95,7 +95,7 @@ Compose가 참조하는 secret은 `seaweedfs_s3_tempo_secret_key`이며 값은 �
 
 #### Usage
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/02.process/documentation-protocol.md)을 따른다.
 
 1. **TraceQL Analysis**: TraceQL로 지연 시간이 높은 span을 특정 서비스명과 상태 코드와 연관 짓습니다.
 2. **Service Graphs**: Grafana에서 서비스 의존성 맵을 시각화하려면 `metrics_generator`가 활성 상태인지 확인합니다.

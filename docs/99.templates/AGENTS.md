@@ -1,10 +1,10 @@
 ---
 title: "Templates Agent Guide"
-version: "0.4.0"
+version: "0.4.1"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 ---
 
 # Templates Agent Guide
@@ -30,7 +30,7 @@ This guide does not decide policy; a rule it summarizes belongs to the canonical
 
 When this guide and the owner of a rule it summarizes disagree, the owner wins
 and this guide is corrected
-([documentation protocol](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd)).
+([documentation protocol](../00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd)).
 [Bootstrap](../../.agents/governance/bootstrap.md#authority-and-precedence)
 sets the full precedence order; a folder guide routes only and never overrides
 canonical governance or a Stage contract.
@@ -40,9 +40,9 @@ canonical governance or a Stage contract.
 ### Intake
 
 - [Bootstrap](../../.agents/governance/bootstrap.md),
-  [documentation protocol](../../.agents/governance/documentation-protocol.md),
-  [stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md),
-  [quality standards](../../.agents/governance/quality-standards.md).
+  [documentation protocol](../00.workspace/02.process/documentation-protocol.md),
+  [stage authoring matrix](../00.workspace/01.project/stage-authoring-matrix.md),
+  [quality standards](../00.workspace/03.quality/quality-standards.md).
 - Roles: [`rules-engineer`](../../.agents/roles/rules-engineer.md),
   [`qa-engineer`](../../.agents/roles/qa-engineer.md).
 - Skills: [`policy-gate-agent`](../../.agents/skills/policy-gate-agent/SKILL.md),
@@ -77,7 +77,7 @@ canonical governance or a Stage contract.
 
 Stop and report when this guide and its canonical owner disagree (the owner
 wins and this guide is corrected), when an action needs an approval that
-[approval boundaries](../../.agents/governance/approval-boundaries.md)
+[approval boundaries](../00.workspace/02.process/approval-boundaries.md)
 has not granted, or when a required check fails.
 
 #### Protected Actions
@@ -88,7 +88,7 @@ has not granted, or when a required check fails.
 ### Secrets and External Effects
 
 This guide adds no secret or external-effect rule;
-[approval boundaries](../../.agents/governance/approval-boundaries.md) owns both.
+[approval boundaries](../00.workspace/02.process/approval-boundaries.md) owns both.
 
 ## Verification
 

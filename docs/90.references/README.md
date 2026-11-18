@@ -1,10 +1,10 @@
 ---
 title: "References"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "references"
 ---
 
@@ -68,7 +68,7 @@ Stage 90은 비규범적입니다. 증거가 현재 owner와 충돌하면 현재
 supersede합니다. 실행 가능한 OpenAPI, GraphQL, Proto 계약은 해당 Stage 03
 Spec Package에 남습니다.
 
-[공통 Agent 거버넌스 작성 정책](../../.agents/governance/documentation-protocol.md#role-specific-authoring)이
+[공통 Agent 거버넌스 작성 정책](../00.workspace/02.process/documentation-protocol.md#role-specific-authoring)이
 출처, 한계, 소비자, 신선도 기대치를 소유합니다. Diátaxis의 technical
 reference는 독자의 필요를 설명할 뿐이며 이것만으로 문서가 Stage 90 증거가
 되지는 않습니다. 생성된 데이터는 등록된 generator가 새로고침하며 손으로
@@ -101,8 +101,8 @@ reference는 독자의 필요를 설명할 뿐이며 이것만으로 문서가 S
 #### Policy and Templates
 
 - [에이전트 작업 규칙](AGENTS.md)
-- [Documentation protocol](../../.agents/governance/documentation-protocol.md)
-- [Stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md)
+- [Documentation protocol](../00.workspace/02.process/documentation-protocol.md)
+- [Stage authoring matrix](../00.workspace/01.project/stage-authoring-matrix.md)
 - [Stage 99 registry](../99.templates/registry.json)
 - [Research template](../99.templates/templates/references/research-pack.template.md)
 - [Audit template](../99.templates/templates/references/audit-pack.template.md)

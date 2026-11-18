@@ -1,10 +1,10 @@
 ---
 title: "WARNING: template use required"
-version: "1.1.5"
+version: "1.1.6"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-18"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -27,8 +27,8 @@ Apply the declared `warn` action for enforce-docs-templates.
 
 Owning policies:
 
-- [Documentation protocol](../documentation-protocol.md)
-- [Stage authoring matrix](../stage-authoring-matrix.md)
+- [Documentation protocol](../../../docs/00.workspace/02.process/documentation-protocol.md)
+- [Stage authoring matrix](../../../docs/00.workspace/01.project/stage-authoring-matrix.md)
 
 ## Scope
 
@@ -49,7 +49,7 @@ None.
 When creating or editing documents under `docs/01` through `docs/05` or
 `docs/90`, follow the mapped template under `docs/99.templates/templates/`.
 
-The canonical `.agents/governance/documentation-protocol.md` authoring rules
+The canonical `docs/00.workspace/02.process/documentation-protocol.md` authoring rules
 require selecting the Stage 99 profile and preserving its metadata, links, and
 stage-specific contract. The Registry owns the mapped template for each profile.
 
@@ -66,7 +66,7 @@ After editing, inspect `python3 scripts/validation/run-ci-gate.py --profile chan
 This selects checks without executing or accepting template validation.
 
 The plan inspection does not execute QA. Follow the current
-[quality policy](../quality-standards.md#canonical-delivery-phase-matrix) for
+[quality policy](../../../docs/00.workspace/03.quality/quality-standards.md#canonical-delivery-phase-matrix) for
 focused authoring checks and remote PR candidate validation.
 
 ### Enforcement

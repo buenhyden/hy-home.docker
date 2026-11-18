@@ -1,10 +1,10 @@
 ---
 title: "Output Style"
-version: "1.3.0"
+version: "1.3.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 ---
 
 # Output Style
@@ -52,7 +52,7 @@ None: this document states no exclusion.
 
 Conversational responses follow the user's active language. Artifact language is
 not a presentation choice: it is routed by document role through
-[documentation protocol](documentation-protocol.md#document-language). A provider
+[documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md#document-language). A provider
 surface may not set either rule.
 
 #### Findings
@@ -75,7 +75,7 @@ snippet explicitly.
 
 #### Exception Conditions
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+No exception is granted here; a separately authorized operation follows [Approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md).
 
 #### Approval and Review
 
@@ -90,7 +90,7 @@ None: no exception exists to approve.
 Report outcomes faithfully. Show failing output rather than summarizing it, name
 a skipped step, and state completion only after the check that proves it has
 run. Completion obligations themselves belong to
-[task checklists](task-checklists.md); this policy owns only how the result is
+[task checklists](../../docs/00.workspace/03.quality/task-checklists.md); this policy owns only how the result is
 reported.
 
 Name `FAIL`, `BLOCKED`, `SKIPPED`, `NOT_RUN`, missing or revoked approval, and
@@ -114,13 +114,13 @@ This policy names no check for its style rules, so none of them is mechanically 
 
 ### Owner
 
-`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records)).
 
 ### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
 - [Provider capability matrix](provider-capability-matrix.md)
-- [Documentation protocol](documentation-protocol.md)
-- [Task checklists](task-checklists.md)
+- [Documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md)
+- [Task checklists](../../docs/00.workspace/03.quality/task-checklists.md)
 - [AI agent standards](standards.md)

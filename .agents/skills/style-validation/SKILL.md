@@ -3,11 +3,11 @@ name: "style-validation"
 description: "Use when changed authored files need scoped deterministic formatting, lint, syntax, and metadata checks while preserving generated ownership. Reach for it when someone says the files they just changed need a style or lint pass, asks which checks apply to a change, asks whether an all-files run is allowed, or wants to be sure a formatter has not rewritten a generated file. Do NOT use it to judge whether the code is correct, to review a design, or to decide whether a change should ship; those are review questions, not style ones."
 metadata:
   title: "style-validation"
-  version: "1.5.0"
+  version: "1.5.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-17"
+  updated: "2026-11-18"
   function_id: "style-validation"
   scope: "qa"
   owner_agent: "qa-engineer"
@@ -60,7 +60,7 @@ acceptance. Quality policy owns build/deployment promotion boundaries.
 
 The separately approved all-files authoring route is
 `scripts/validation/run-agent-precommit-all-files.sh`. It is not a free
-substitute. The [execution boundary](../../governance/quality-standards.md#4-execution-boundary)
+substitute. The [execution boundary](../../../docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary)
 owns the conditions it carries, and those conditions decide whether an all-files
 pass is available at all. Read them before reaching for it; the normal answer to
 a scoped change is the scoped check, not the whole tree.
@@ -74,7 +74,7 @@ a scoped change is the scoped check, not the whole tree.
 
 - Changed authored files and style contract.
 - Existing formatters, linters, syntax checks, metadata validators, and exclusion rules.
-- The [execution boundary](../../governance/quality-standards.md#4-execution-boundary),
+- The [execution boundary](../../../docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary),
   which owns which of these may be run locally and on what scope.
 - [`scripts/classify-changed-files.sh`](./scripts/classify-changed-files.sh),
   which this skill owns beside this file rather than at the repository root,
@@ -95,8 +95,8 @@ Stop on unexpected paths, formatter oscillation, or conflicting style authoritie
 Owning role, policies and related documents:
 
 - [QA engineer](../../roles/qa-engineer.md)
-- [Task checklists](../../governance/task-checklists.md)
-- [Quality standards](../../governance/quality-standards.md)
+- [Task checklists](../../../docs/00.workspace/03.quality/task-checklists.md)
+- [Quality standards](../../../docs/00.workspace/03.quality/quality-standards.md)
 
 ## Verification
 

@@ -1,10 +1,10 @@
 ---
 title: "incident-responder"
-version: "1.1.0"
+version: "1.1.1"
 type: "governance/role"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-18"
 agent_id: "incident-responder"
 scope: "ops"
 tier: "worker"
@@ -56,7 +56,7 @@ Stop unsafe or unverifiable actions, preserve metadata rather than sensitive pay
 
 ## Related Documents
 
-- [Quality standards](../governance/quality-standards.md)
+- [Quality standards](../../docs/00.workspace/03.quality/quality-standards.md)
 - [Incident response function](../skills/incident-response/SKILL.md)
 - [Stateful recovery contract review](../skills/stateful-recovery-contract-review/SKILL.md)
 - [Security auditor](security-auditor.md)

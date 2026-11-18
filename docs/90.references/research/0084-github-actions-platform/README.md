@@ -1,10 +1,10 @@
 ---
 title: "Reference: GitHub Actions Platform Mechanics"
-version: "2.4.0"
+version: "2.4.1"
 type: "reference/research-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "references"
 artifact_id: "RES-0084"
 created: "2026-07-05"
@@ -96,7 +96,7 @@ Hosted, remote-control-plane 증거는 여기 남습니다.
   [quality](../0002-agentic-engineering-research-pack/m0014-quality-ci-formatting.md),
   [security](../0002-agentic-engineering-research-pack/m0017-security-governance.md),
   [verification](../0002-agentic-engineering-research-pack/m0019-verification-validation.md).
-- 과거 baseline 종합: [RES-0002-m0020](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md). 현재 검증 경로는 [검증 정책](../../../../.agents/governance/quality-standards.md#4-execution-boundary)과 추적된 workflow에서 확인합니다.
+- 과거 baseline 종합: [RES-0002-m0020](../0002-agentic-engineering-research-pack/m0020-workspace-baseline.md). 현재 검증 경로는 [검증 정책](../../../00.workspace/03.quality/quality-standards.md#4-execution-boundary)과 추적된 workflow에서 확인합니다.
 - 날짜가 있는 baseline/recovery 증거:
   [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md).
 - Governance: [공통 Agent 거버넌스](../../../../.agents/README.md).

@@ -18,7 +18,7 @@ A stricter rule in another canonical governance owner prevails over this documen
 
 #### Authority
 
-This policy is the canonical owner of repository protection, pull requests, hosted workflows, and remote actions under [bootstrap precedence](bootstrap.md#authority-and-precedence).
+This policy is the canonical owner of repository protection, pull requests, hosted workflows, and remote actions under [bootstrap precedence](../../../.agents/governance/bootstrap.md#authority-and-precedence).
 
 ### Applies To
 
@@ -193,17 +193,17 @@ target and action.
 - Agents must not self-approve or bypass required reviewers.
 - This repository has one developer and no second reviewer. That risk is
   handled by five parts together. The change's risk class is the one
-  [Review risk](workflows.md#review-risk) defines, read with the
-  [change-type verification matrix](quality-standards.md#5-change-type-verification-matrix)
+  [Review risk](../../../.agents/governance/workflows.md#review-risk) defines, read with the
+  [change-type verification matrix](../03.quality/quality-standards.md#5-change-type-verification-matrix)
   and the [protected surfaces](approval-boundaries.md#enforcement).
   The required `candidate-quality` check runs the static and contract checks.
   A high-risk final diff is reviewed in a fresh context separate from the one
-  that wrote it, against the [diff review checklist](../prompts/diff-review.md);
+  that wrote it, against the [diff review checklist](../../../.agents/prompts/diff-review.md);
   a low-risk diff closes with the author check that policy defines. The owner then accepts
   each criterion explicitly in the Task's Criterion Acceptance, which a merge
   is not. Git history and the recovery rules below cover rollback. The review
   path calls no model-inference API, under the
-  [agentic policy](agentic.md#execution-rules). One person's review is never
+  [agentic policy](../../../.agents/governance/agentic.md#execution-rules). One person's review is never
   recorded as two independent approvals, and an automated check, App, or
   signature does not stand in for the owner's acceptance. No acceptance or
   ADR decision requires a signed commit or tag; GitHub's signed-commit
@@ -266,7 +266,7 @@ rule of its own.
 
 - **Local**: explicit formatting, focused RED/GREEN, message validation and
   read-only diagnostic checks. The shared
-  [execution boundary](quality-standards.md#4-execution-boundary) owns their
+  [execution boundary](../03.quality/quality-standards.md#4-execution-boundary) owns their
   selection and prohibits direct Agent pre-commit/all-files bypass.
 - **Remote PR**: the public changed entrypoint owns aggregate candidate QA once.
   Feature push does not repeat it; required selection is inside an always-present
@@ -302,7 +302,7 @@ surface.
 
 #### 5.2 Evidence Boundary by Change Type
 
-Use the [shared change-type verification matrix](quality-standards.md#5-change-type-verification-matrix)
+Use the [shared change-type verification matrix](../03.quality/quality-standards.md#5-change-type-verification-matrix)
 for local checks, selected public suites, and skipped-check rationale. This
 policy does not define a second matrix or additional provider-specific gates.
 
@@ -349,7 +349,7 @@ implicitly.
     routing only, per the [documentation protocol](documentation-protocol.md#readme-and-agentsmd)
   - authored adapters: `.claude/provider.md`, `.codex/provider.md`
 - Native runtime controls and generated projections consume that authority and
-  own none of it, per [bootstrap](bootstrap.md#authority-and-precedence):
+  own none of it, per [bootstrap](../../../.agents/governance/bootstrap.md#authority-and-precedence):
   `.claude/settings.json`, `.claude/hooks/`, `.claude/agents/`,
   `.claude/skills/`, `.claude/output-styles/`, `.codex/hooks.json`,
   `.codex/config.toml`.
@@ -358,7 +358,7 @@ implicitly.
 
 #### 8. CI/CD Job Taxonomy
 
-The [canonical phase matrix](quality-standards.md#canonical-delivery-phase-matrix)
+The [canonical phase matrix](../03.quality/quality-standards.md#canonical-delivery-phase-matrix)
 owns stage responsibility. `.github/workflow-contract.yml` owns exact job
 identities, event/permission boundaries, selected prerequisites, gate DAG,
 change impact and immutable Action provenance. The generic focused checker
@@ -464,13 +464,13 @@ Four rules name a check the policy ties to them (R48, R60, R61, R104); every oth
 
 Changes land in place with Task evidence; related documents:
 
-- [Provider index](providers/README.md)
-- [Claude adapter](../../.claude/provider.md)
-- [Codex adapter](../../.codex/provider.md)
-- [Repository surface](../../.github/repository-surface.md)
-- [Main protection](../../.github/rulesets/main-protection.md)
-- [Platform and backup runbooks](../../docs/05.operations/runbooks/10-platform-and-backup/README.md)
+- [Provider index](../../../.agents/governance/providers/README.md)
+- [Claude adapter](../../../.claude/provider.md)
+- [Codex adapter](../../../.codex/provider.md)
+- [Repository surface](../../../.github/repository-surface.md)
+- [Main protection](../../../.github/rulesets/main-protection.md)
+- [Platform and backup runbooks](../../05.operations/runbooks/10-platform-and-backup/README.md)
 - [Git workflow](git-workflow.md)
-- [Quality standards](quality-standards.md)
-- [AI agent standards](standards.md)
-- [Bootstrap policy](bootstrap.md)
+- [Quality standards](../03.quality/quality-standards.md)
+- [AI agent standards](../../../.agents/governance/standards.md)
+- [Bootstrap policy](../../../.agents/governance/bootstrap.md)

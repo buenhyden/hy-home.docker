@@ -1,10 +1,10 @@
 ---
 title: "Audit Packages"
-version: "2.1.0"
+version: "2.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "references"
 created: "2026-07-02"
 ---
@@ -33,7 +33,7 @@ SPEC-0158이 이 범주를 은퇴시켰습니다. 현재 tree가 Stage 90 packag
 존재합니다. package는 필요한 의미를 canonical owner로 옮기고 모든 inbound consumer를
 갱신하고 이 README의 package 목록에서 제거하는 같은 변경에서 제거되어 은퇴합니다.
 현재 tree가 membership을 결정합니다. 은퇴하는 package의 번호는
-[은퇴 전제 조건](../../../.agents/governance/documentation-protocol.md#retirement-preconditions)에 따라
+[은퇴 전제 조건](../../00.workspace/02.process/documentation-protocol.md#retirement-preconditions)에 따라
 같은 변경에서 Stage 99 Registry의 `reserved_history`에 추가합니다.
 
 Stage 99 identity는 여전히 한 번만 소비됩니다. 은퇴한 package의 `AUD-`
@@ -91,7 +91,7 @@ guide로 옮겨졌습니다. 본문은 Git 이력에 있으며 그 번호는 Reg
 #### Policy and Templates
 
 - [Stage 99 Registry](../../99.templates/registry.json)
-- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [문서 작성 계약](../../00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
 - [README 템플릿](../../99.templates/templates/common/readme-category.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
 ### Checks

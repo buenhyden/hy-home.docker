@@ -198,7 +198,7 @@ class TemplateMetadataTests(unittest.TestCase):
             profile["required_sections"],
         )
         self.assertFalse(profile["free_form_sections"])
-        path = pathlib.Path(".agents/governance/approval-boundaries.md")
+        path = pathlib.Path("docs/00.workspace/02.process/approval-boundaries.md")
         record = metadata.Record(
             path,
             {"artifact_type": "governance-policy", "status": "active"},

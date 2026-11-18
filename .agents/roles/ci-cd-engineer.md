@@ -1,10 +1,10 @@
 ---
 title: "ci-cd-engineer"
-version: "1.0.2"
+version: "1.0.3"
 type: "governance/role"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-09"
+updated: "2026-11-18"
 agent_id: "ci-cd-engineer"
 scope: "ops"
 tier: "worker"
@@ -55,7 +55,7 @@ Stop when required credentials, remote authority, or runtime promotion evidence 
 
 ## Related Documents
 
-- [Quality standards](../governance/quality-standards.md)
+- [Quality standards](../../docs/00.workspace/03.quality/quality-standards.md)
 - [CI/CD patterns](../skills/ci-cd-patterns/SKILL.md)
 - [Deployment pipeline design](../skills/deployment-pipeline-design/SKILL.md)
 - [Subagent protocol](../governance/agentic.md)

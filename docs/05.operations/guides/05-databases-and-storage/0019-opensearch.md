@@ -1,10 +1,10 @@
 ---
 title: "OpenSearch Usage Guide"
-version: "2.3.0"
+version: "2.3.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 artifact_id: "GDE-0019"
 parent_ids:
@@ -122,7 +122,7 @@ Docker Secret ID는 `opensearch_admin_password`, `opensearch_dashboard_password`
 - `test -f infra/04-data/opensearch/docker-compose.yml`
 - `test -f labs/opensearch-cluster/docker-compose.yml`
 - `docker compose --env-file labs/.env.example -f labs/opensearch-cluster/docker-compose.yml --profile opensearch-cluster config --quiet`
-- 원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
+- 원격 PR public `changed` 검사 ([quality policy](../../../00.workspace/03.quality/quality-standards.md#canonical-delivery-phase-matrix))
 
 ## Troubleshooting
 

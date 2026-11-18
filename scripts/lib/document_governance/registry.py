@@ -13,7 +13,7 @@ import selectors
 import stat
 import subprocess
 import time
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from types import MappingProxyType
 
 from jsonschema import Draft202012Validator, FormatChecker
@@ -452,7 +452,20 @@ def validate_registry_at_revision(
         "docs/99.templates/contracts/document-profile.schema.json",
         root=root,
     )
-    return validate_registry(raw, profile_schema=schema)
+
+    def owner_exists(path: str) -> bool:
+        # A relation owner exists now or in the revision the Registry came from.
+        return (ROOT / path).is_file() or (
+            subprocess.run(
+                ["git", "cat-file", "-e", f"{revision}:{path}"],
+                cwd=root,
+                capture_output=True,
+                check=False,
+            ).returncode
+            == 0
+        )
+
+    return validate_registry(raw, profile_schema=schema, owner_exists=owner_exists)
 
 
 def _require_bounded_depth(value: object, depth: int = 0) -> None:
@@ -564,6 +577,7 @@ def _template_dictionary_findings(raw: Mapping[str, object]) -> list[RegistryFin
 def _relation_contract_findings(
     common: Mapping[str, object],
     profiles: Sequence[Mapping[str, object]] = (),
+    owner_exists: Callable[[str], bool] | None = None,
 ) -> list[RegistryFinding]:
     """Check the DOC-07 link types and DOC-09 relations beyond their schema.
 
@@ -626,7 +640,8 @@ def _relation_contract_findings(
                 invalid(location, f"unknown {writer['kind']} writer {writer['ref']}")
             if writer["kind"] == "derived" and writer["ref"] == relation["id"]:
                 invalid(location, "a relation cannot be derived from itself")
-        if not (ROOT / relation["owner"]).is_file():
+        exists = owner_exists or (lambda path: (ROOT / path).is_file())
+        if not exists(relation["owner"]):
             invalid(location, f"owner {relation['owner']} is not a file")
         if not set(relation.get("retained_reverse_fields", ())) <= keys:
             invalid(location, "a retained reverse field must be a frontmatter key")
@@ -1077,6 +1092,7 @@ def validate_registry(
     profile_schema: Mapping[str, object] | None = None,
     trusted_requirement_baseline: RequirementAllocationBaseline | None = None,
     allow_requirement_allocation_transition: bool = False,
+    owner_exists: Callable[[str], bool] | None = None,
 ) -> tuple[RegistryFinding, ...]:
     """Return deterministic schema and semantic findings for ``raw``."""
 
@@ -1212,7 +1228,9 @@ def validate_registry(
         "properties", {}
     ):
         findings.extend(
-            _relation_contract_findings(raw.get("common", {}), raw.get("profiles", ()))
+            _relation_contract_findings(
+                raw.get("common", {}), raw.get("profiles", ()), owner_exists
+            )
         )
     contract = raw.get("common", {}).get("archive_retention")
     if isinstance(contract, Mapping):

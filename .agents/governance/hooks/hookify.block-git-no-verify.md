@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: git commit --no-verify"
-version: "1.1.3"
+version: "1.1.4"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-18"
 action: "block"
 enabled: true
 event: "bash"
@@ -24,18 +24,18 @@ pattern: "git\\s+commit\\s+.*(--no-verify|-n\\s+-m|-n\\s+['\"]|-n$)"
 
 Owning policies:
 
-- [Git workflow](../git-workflow.md)
-- [Quality standards execution boundary](../quality-standards.md#4-execution-boundary)
+- [Git workflow](../../../docs/00.workspace/02.process/git-workflow.md)
+- [Quality standards execution boundary](../../../docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary)
 
 ## Scope
 
 ### Applies To
 
-The `block-git-no-verify` rule applies on the `bash` event. `.agents/governance/git-workflow.md` — Enforcement:
+The `block-git-no-verify` rule applies on the `bash` event. `docs/00.workspace/02.process/git-workflow.md` — Enforcement:
 
 > "Changes that bypass checks or violate secret safety must not be merged."
 
-The [execution boundary](../quality-standards.md#4-execution-boundary) owns the
+The [execution boundary](../../../docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary) owns the
 direct pre-commit prohibition and the sole approved all-files route. This hook
 retains the separate block on bypassing configured commit checks.
 

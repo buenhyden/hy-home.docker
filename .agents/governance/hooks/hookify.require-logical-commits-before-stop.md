@@ -1,10 +1,10 @@
 ---
 title: "BLOCKED: incomplete logical commits"
-version: "1.0.8"
+version: "1.0.9"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-18"
 action: "block"
 enabled: true
 event: "stop"
@@ -22,7 +22,7 @@ Apply the declared `block` action for require-logical-commits-before-stop.
 
 ### Authority
 
-Owning policy: [Git workflow](../git-workflow.md#5-agent-completion-commit-discipline).
+Owning policy: [Git workflow](../../../docs/00.workspace/02.process/git-workflow.md#5-agent-completion-commit-discipline).
 
 ## Scope
 

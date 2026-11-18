@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Runbook"
-version: "1.5.0"
+version: "1.5.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 artifact_id: "RUN-0004"
 parent_ids:
@@ -103,7 +103,7 @@ next_review_at: "2027-05-13"
    ```
 
    원격 후보는 등록된 문서 content와 변경 style 검사를 수행한다. 링크, 문서 library와
-   모의 실행 회귀는 [검증 정책](../../../../.agents/governance/quality-standards.md#4-execution-boundary)의
+   모의 실행 회귀는 [검증 정책](../../../00.workspace/03.quality/quality-standards.md#4-execution-boundary)의
    로컬 전용 범위를 따른다. 변경 폴더와 검증 목적에 맞는 검사만 실행하고 동일 입력의 링크 결과를 재사용한다.
 
 4. hook quoting/parsing 자체를 변경했고 해당 수동 관측이 Task에 선택·승인된 경우에만 아래 simulation을 수행한다. 일반 문서 변경에는 적용하지 않는다.
@@ -203,7 +203,7 @@ migration chain으로 이동시키지 않는다.
    과거 완료 사건의 고정 SHA·수량은 같은 보장이 아니다.
 
 QA 정의 자체를 바꾼 경우에는
-[정의 변경 신뢰 경계](../../../../.agents/governance/github-governance.md#53-qa-definition-trust-and-amendment)를
+[정의 변경 신뢰 경계](../../../00.workspace/02.process/github-governance.md#53-qa-definition-trust-and-amendment)를
 따라 trusted base의 정의 출처·revision과 현재 소유자가 실제 검토·수용한
 diff·revision을 Task에 연결한다. 후보 workflow가 후보 controller와 설정을
 실행한 초록색 결과는 그 정의의 승인 증거가 아니다. 현재 원격에서 trusted
@@ -213,7 +213,7 @@ diff·revision을 Task에 연결한다. 후보 workflow가 후보 controller와 
 #### Evaluation and QA Ownership
 
 agent 답변 점수와 완료된 Spec/Task 사건을 재증명하는 fixture는 정기 workspace
-QA가 아니다. 현재 [품질 정책](../../../../.agents/governance/quality-standards.md)이
+QA가 아니다. 현재 [품질 정책](../../../00.workspace/03.quality/quality-standards.md)이
 허용하는 문서 형태·관계·상태·보존 및 Docker/Compose 보장만 선택한다. provider
 공식 사실·native envelope 검토와 live 실행 관측은 각각의 owner에 남기며,
 합성 점수나 소스 설정으로 실제 provider entitlement/runtime을 수용하지 않는다.
@@ -237,7 +237,7 @@ QA가 아니다. 현재 [품질 정책](../../../../.agents/governance/quality-s
 #### Service Checks
 
 `--explain`은 실행하지 않는 계획 조회다. 후보 aggregate QA는
-[quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix)의
+[quality policy](../../../00.workspace/03.quality/quality-standards.md#canonical-delivery-phase-matrix)의
 원격 PR 경로가 소유하며 조회 결과를 검증 PASS로 기록하지 않는다.
 
 이 runbook의 수용은 실제 변경에 선택된 현재 보장 검사와 독립 리뷰의 결과로 판단한다. 무관한 hook simulation·Graphify 보고·전체 QA를 모든 변경에 요구하지 않는다. `report-graphify-health.sh`는 실패로 취급하지 않는 advisory evidence이다. `status=advisory`는 대조 검증이 필요하지만 repository gate를 실패시키지는 않는다.

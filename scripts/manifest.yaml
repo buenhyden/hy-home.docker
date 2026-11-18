@@ -12,7 +12,7 @@ files:
   tests: []
 - path: scripts/AGENTS.md
   kind: contract
-  authority: .agents/governance/documentation-protocol.md
+  authority: docs/00.workspace/02.process/documentation-protocol.md
   lifecycle: active
   mutation: none
   consumers:
@@ -22,7 +22,7 @@ files:
   tests: []
 - path: scripts/CLAUDE.md
   kind: contract
-  authority: .agents/governance/documentation-protocol.md
+  authority: docs/00.workspace/02.process/documentation-protocol.md
   lifecycle: active
   mutation: none
   consumers:
@@ -212,7 +212,7 @@ files:
   - tests/lib/document_governance/test_identity_history.py
 - path: scripts/lib/document_governance/language.py
   kind: library
-  authority: .agents/governance/documentation-protocol.md
+  authority: docs/00.workspace/02.process/documentation-protocol.md
   lifecycle: active
   mutation: none
   consumers:
@@ -259,7 +259,7 @@ files:
   - tests/validation/lifecycle/test_public.py
 - path: scripts/lib/document_governance/links.py
   kind: library
-  authority: .agents/governance/documentation-protocol.md
+  authority: docs/00.workspace/02.process/documentation-protocol.md
   lifecycle: active
   mutation: none
   consumers:
@@ -433,7 +433,7 @@ files:
   - tests/lib/document_governance/test_requirements.py
 - path: scripts/lib/document_governance/semver.py
   kind: library
-  authority: .agents/governance/documentation-protocol.md
+  authority: docs/00.workspace/02.process/documentation-protocol.md
   lifecycle: active
   mutation: none
   consumers:
@@ -1609,7 +1609,7 @@ files:
   - tests/validation/test_p09_compose_controls.py
 - path: scripts/validation/run-agent-precommit-all-files.sh
   kind: runner
-  authority: .agents/governance/quality-standards.md
+  authority: docs/00.workspace/03.quality/quality-standards.md
   lifecycle: active
   mutation: check-write
   consumers:

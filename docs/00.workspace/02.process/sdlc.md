@@ -1,10 +1,10 @@
 ---
 title: "Software Development Lifecycle"
-version: "2.2.0"
+version: "2.3.0"
 type: "governance/workflow"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 ---
 
 # Software Development Lifecycle
@@ -37,6 +37,18 @@ approval, commit, or digest before they start. Activating a new shared norm,
 switching a numbering scheme, or applying a retention policy needs the
 approval for that scope first; reusing an approval follows
 [approval boundaries](approval-boundaries.md#authorization-source-and-records).
+
+Records scale with the change:
+
+| Change | Record | Check |
+| --- | --- | --- |
+| Typo or clear link fix | the owning document and the change description | format and links |
+| Routine content within a current contract | the owning domain record | its inputs and publication boundary |
+| Behavior or significant policy | Spec criteria, Plan work units, Task evidence | focused negative, regression and impact checks |
+| Structure, authority or common form break | the decision in an ADR or the existing design | structure, readers and writers, compatibility, permissions |
+| Real operation or publication | the approved target and procedure, and the observation | the environment's working and failure conditions |
+
+No change creates a sprint, meeting or new document set only to satisfy form.
 
 Reuse approved Requirement and Architecture inputs when they already cover the
 change. Within Stage 03, clarify unresolved scope before writing the Spec, map
@@ -72,7 +84,7 @@ integration in the merge, operation in Stage 05, and retirement in the removing
 Task. No axis is inferred from another: a PASS check is not acceptance, an
 accepted ADR or approved Spec is not execution, and a merge is not acceptance
 or deployment. These terms follow the
-[glossary](../knowledge/glossary.md). Plan, README and Issue text link the
+[glossary](../../../.agents/knowledge/glossary.md). Plan, README and Issue text link the
 Task; they do not restate its status, results or acceptance. A pull request
 reports the checks of its own candidate and links the Task for the rest.
 
@@ -255,7 +267,7 @@ templates refer here for completion meaning.
 ## Stop Conditions
 
 Every transition requires the smallest applicable validation set, exact Task
-evidence, review by [risk](workflows.md#review-risk), and logical Conventional
+evidence, review by [risk](../../../.agents/governance/workflows.md#review-risk), and logical Conventional
 Commits when committing is authorized. A local-only request may finish with a
 reviewed working-tree diff; it does not authorize commit, push, PR, release, or
 runtime action. Document lifecycle states do not grant those permissions.
@@ -273,8 +285,8 @@ Architecture, Operations, or governance owner receives any lasting meaning.
 
 ## Related Documents
 
-- [Governance hub](../README.md)
+- [Governance hub](../../../.agents/README.md)
 - [Approval boundaries](approval-boundaries.md)
 - [Documentation protocol](documentation-protocol.md)
 - Stage 99 registry (`docs/99.templates/registry.json`)
-- [Documentation index](../../docs/README.md)
+- [Documentation index](../../README.md)

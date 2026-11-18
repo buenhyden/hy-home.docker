@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.82.0"
+version: "1.83.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -469,7 +469,7 @@ activity remains a handoff fact rather than an inferred lock release.
    `RECOVERY` and `DELIVERY` separate. Secret path migration, source creation,
    reference wiring, actual consumption, rotation, recovery and merge are
    distinct states. Local PASS never means native service or remote CI PASS.
-7. Registry profiles and the [documentation protocol](../../../.agents/governance/documentation-protocol.md#document-language) govern authoring language.
+7. Registry profiles and the [documentation protocol](../../00.workspace/02.process/documentation-protocol.md#document-language) govern authoring language.
    Preserve issued IDs, created dates and historical completed Task bodies.
    Reuse an existing owner; allocate a new Spec only through the actual Registry
    when new acceptance ownership is necessary, never reserve future numbers.
@@ -1136,6 +1136,14 @@ target, backup, recovery boundary, and action-specific authorization.
      with fencing, one analysis per window, and candidates linked to their
      source events that change nothing until a separate approved Task. A
      real scheduled run, a duplicate run and a missed window are observed.
+142. TSK-0086 applies the 4.2.0 SDLC-STRUCTURE design on the owner's
+     2026-11-18 SDD-WOWNER decision: the policies people and agents share
+     live in `docs/00.workspace/`, agent execution policy stays in
+     `.agents/governance/`, and each common rule has one owner among the
+     W/P/R/C/A/I/T layers, with approval meaning in one place. Every live
+     reference, Registry path, CI route and generated surface follows the
+     move; terminal Task bodies stay unchanged and their old links still
+     resolve. Hookify rules and native bindings do not move.
 
 ### Evidence Requirements
 

@@ -1,10 +1,10 @@
 ---
 title: "05.operations/incidents/2026"
-version: "0.2.0"
+version: "0.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 ---
 
@@ -55,7 +55,7 @@ layer: "operations"
 
 #### Policy and Templates
 
-- [문서 언어 규칙](../../../../.agents/governance/documentation-protocol.md#document-language)
+- [문서 언어 규칙](../../../00.workspace/02.process/documentation-protocol.md#document-language)
 - [README 템플릿](../../../99.templates/templates/common/readme-incident-year.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
 ### Checks

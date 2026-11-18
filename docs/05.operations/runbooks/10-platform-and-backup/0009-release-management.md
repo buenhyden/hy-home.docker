@@ -1,10 +1,10 @@
 ---
 title: "Release Management Runbook"
-version: "1.5.0"
+version: "1.5.1"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 artifact_id: "RUN-0009"
 created: "2026-06-04"
@@ -33,7 +33,7 @@ SemVer 게시나 장부 형식 PASS는 ROOT 운영 변경·HOME 배포 승인이
 - [Co-located Plans and Tasks](../../../03.specs/README.md)
 - [Current Spec Package selection](../../../03.specs/README.md)
 
-- 현재 정책: [Documentation Protocol](../../../../.agents/governance/documentation-protocol.md); external release evidence 소유권을 포함한다.
+- 현재 정책: [Documentation Protocol](../../../00.workspace/02.process/documentation-protocol.md); external release evidence 소유권을 포함한다.
 - 과거 구현 증거: Workspace Revalidation Outcome (`SPEC-0097`). 완료된 기록은 현재 실행 권한이 아니다.
 - 같은 번호 `0009`의 Guide/Policy는 없다.
 
@@ -44,7 +44,7 @@ SemVer 게시나 장부 형식 PASS는 ROOT 운영 변경·HOME 배포 승인이
 개발 push마다
   자동 생성하거나 이미 게시된 릴리스 이력을 덮어쓰지 않는다.
 
-- `.cz.toml`의 Commitizen 문법과 [Git 정책](../../../../.agents/governance/git-workflow.md)을 따른다.
+- `.cz.toml`의 Commitizen 문법과 [Git 정책](../../../00.workspace/02.process/git-workflow.md)을 따른다.
 - 최종 후보의 원격 QA, 독립 리뷰, 실제 main 통합과 revision을 확인한다.
 - 게시할 정확한 SemVer와 main commit, 대상 저장소, 승인 및 실패 복구 소유자를
   실행 Task에 기록한다. 이 런북의 명령 예시는 실행 승인이 아니다.

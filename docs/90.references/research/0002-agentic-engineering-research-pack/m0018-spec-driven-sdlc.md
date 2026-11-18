@@ -1,10 +1,10 @@
 ---
 title: "Reference: Spec-Driven Development and SDLC"
-version: "1.4.0"
+version: "1.4.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "references"
 artifact_id: "RES-0002-m0018"
 parent_ids:
@@ -62,8 +62,8 @@ historical overview below records the lifecycle position it examines.
 > external comparisons; it does not approve a requirement, choose architecture,
 > authorize implementation, establish policy, execute a release, prove runtime
 > state, or change any canonical governance and Stage 99 contract. Canonical authority remains in the
-> [canonical agent governance SDLC](../../../../.agents/governance/sdlc.md),
-> [documentation protocol](../../../../.agents/governance/documentation-protocol.md),
+> [canonical agent governance SDLC](../../../00.workspace/02.process/sdlc.md),
+> [documentation protocol](../../../00.workspace/02.process/documentation-protocol.md),
 > and [Stage 99 Registry](../../../99.templates/registry.json). The current Task
 > owns implementation and validation evidence; historical tables do not define
 > current fields, paths, or gates.
@@ -194,7 +194,7 @@ Originals below were opened on 2026-09-27. Not stated means no publication/updat
 > | [RFC Editor](https://www.rfc-editor.org/)                                                                                                                | 2026-08-08 | External mutable catalog     | HTTP 200; official RFC series and publication classes only.                                                                                              |
 > | [NIST SP 800-61 Rev. 3](https://csrc.nist.gov/pubs/sp/800/61/r3/final)                                                                                   | 2026-08-08 | External fixed               | HTTP 200; April 2025 final CSF 2.0 incident-response profile. Rev. 2 is superseded and not used.                                                         |
 > | [Google SRE postmortem culture](https://sre.google/sre-book/postmortem-culture/)                                                                         | 2026-08-08 | External fixed publication   | HTTP 200; learning, triggers, blamelessness, review, and preventive actions.                                                                             |
-> | [Stage authoring matrix](../../../../.agents/governance/stage-authoring-matrix.md)                                                                   | 2026-08-08 | Workspace tracked            | Canonical stage purposes, inputs, templates, and done criteria at Task 5 baseline.                                                                       |
+> | [Stage authoring matrix](../../../00.workspace/01.project/stage-authoring-matrix.md)                                                                   | 2026-08-08 | Workspace tracked            | Canonical stage purposes, inputs, templates, and done criteria at Task 5 baseline.                                                                       |
 > | SDLC document contract (retired path: `../../../99.templates/support/sdlc-document-contract.md`)                                                                        | 2026-08-08 | Workspace tracked            | Human lifecycle and feedback boundary.                                                                                                                   |
 > | Metadata profiles (retired path: `../../../99.templates/support/document-metadata-profiles.yaml`)                                                                       | 2026-08-14 | Workspace tracked            | Re-read to confirm 21 profiles / 17 README profiles at current HEAD.                                                                                     |
 > | [Document graph validator](../../../../scripts/validation/check-document-links.py)                                                                       | 2026-09-04 | Workspace tracked executable | The typed `--mode all` route owns both rendered-link traceability and current-path alignment checks.                                                      |
@@ -364,7 +364,7 @@ Current Spec Kit/MCP sources are mutable and no fresh immutable SHA was obtained
 
 > Historical evidence (not current authority; source: Git history):
 >
-> This explanatory flow follows [Canonical governance SDLC](../../../../.agents/governance/sdlc.md).
+> This explanatory flow follows [Canonical governance SDLC](../../../00.workspace/02.process/sdlc.md).
 > The Registry owns exact lifecycle values; no table here grants approval.
 >
 > ```text
@@ -477,7 +477,7 @@ Current Spec Kit/MCP sources are mutable and no fresh immutable SHA was obtained
 > - A vulnerability can route to Policy, ADR, Spec, Plan, Task, Runbook, or all of
 >   them through links, but each fact has one earliest canonical owner.
 > - Release evidence follows the current
->   [external-release-evidence policy](../../../../.agents/governance/documentation-protocol.md#release-evidence-boundary),
+>   [external-release-evidence policy](../../../00.workspace/02.process/documentation-protocol.md#release-evidence-boundary),
 >   not an independent Release profile. Notes, SemVer, tags, builds, and readiness
 >   evidence each prove only their own observed fact.
 > - A reference, audit, graph, generated index, or template may inform work but

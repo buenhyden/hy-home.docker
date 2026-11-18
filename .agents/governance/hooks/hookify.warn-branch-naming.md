@@ -1,10 +1,10 @@
 ---
 title: "WARNING: branch naming rule violation"
-version: "1.0.7"
+version: "1.0.8"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-18"
 action: "warn"
 enabled: true
 event: "bash"
@@ -22,7 +22,7 @@ Apply the declared `warn` action for warn-branch-naming.
 
 ### Authority
 
-Owning policy: [Git workflow](../git-workflow.md).
+Owning policy: [Git workflow](../../../docs/00.workspace/02.process/git-workflow.md).
 
 ## Scope
 
@@ -41,7 +41,7 @@ None.
 **Branch naming rule violation detected (project rule)**
 
 The branch name does not follow the Branching Strategy in
-`.agents/governance/git-workflow.md`.
+`docs/00.workspace/02.process/git-workflow.md`.
 
 **Allowed prefixes:**
 

@@ -54,7 +54,7 @@ If the review package is incomplete or policy conflicts with the approved plan, 
 
 ## Related Documents
 
-- [Quality standards](../../.agents/governance/quality-standards.md)
+- [Quality standards](../../docs/00.workspace/03.quality/quality-standards.md)
 - [Code review dimensions](../../.agents/skills/code-review-dimensions/SKILL.md)
 - [Change review execution](../../.agents/skills/change-review-execution/SKILL.md)
 - [Subagent protocol](../../.agents/governance/agentic.md)

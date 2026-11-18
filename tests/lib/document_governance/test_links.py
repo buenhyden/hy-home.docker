@@ -1748,6 +1748,43 @@ class DocumentLinksCliTests(unittest.TestCase):
             {"stage-link-outside-docs"}, {finding.code for finding in findings}
         )
 
+    def test_workspace_policy_links_are_canonical_not_stage_links(self) -> None:
+        from scripts.lib.document_governance.links import (
+            build_document_graph,
+            check_entrypoint,
+            run_mode,
+        )
+
+        files = {
+            "infra/README.md": "[sdlc](../docs/00.workspace/02.process/sdlc.md)\n"
+            "[spec](../docs/03.specs/0001-x/spec.md)\n",
+            "docs/README.md": "# Docs\n\n[sdlc](00.workspace/02.process/sdlc.md)\n",
+            "docs/00.workspace/README.md": "# W\n",
+            "docs/00.workspace/02.process/sdlc.md": "# SDLC\n",
+            "docs/03.specs/0001-x/spec.md": "# Spec\n",
+        }
+        with tempfile.TemporaryDirectory() as temp:
+            root = pathlib.Path(temp)
+            for relative, text in files.items():
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text(text, encoding="utf-8")
+            track_repository(root)
+            graph = build_document_graph(
+                [root / name for name in files], repo_root=root
+            )
+            entry = check_entrypoint(graph)
+            navigation = run_mode("navigation", graph)
+        self.assertEqual(["infra/README.md:2"], [item.path for item in entry])
+        self.assertNotIn(
+            "navigation-descendant-link",
+            {
+                item.code
+                for item in navigation
+                if item.path.startswith("docs/README.md")
+            },
+        )
+
     def test_entrypoint_normalizes_stage_link_forms(self) -> None:
         from scripts.lib.document_governance.links import (
             build_document_graph,
@@ -2507,6 +2544,37 @@ class RetiredPackageLinkTests(unittest.TestCase):
                 )
 
 
+class MovedWorkspacePolicyLinkTests(RetiredPackageLinkTests):
+    """A terminal Task keeps a link to a policy that moved to docs/00.workspace."""
+
+    POLICY = "docs/00.workspace/02.process/sdlc.md"
+    LINK = "---\ntitle: Fixture\ntype: sdlc/task\nstatus: {status}\n---\n# Fixture\n\n[sdlc](../../../../.agents/governance/{name}.md{fragment})\n"
+
+    def _moved(self, status: str, name: str = "sdlc", fragment: str = "") -> list[str]:
+        return self._codes(
+            {
+                self.POLICY: "# SDLC\n\n## Sequence\n",
+                "docs/03.specs/0002-live/tasks/tsk-0001-a.md": self.LINK.format(
+                    status=status, name=name, fragment=fragment
+                ),
+            }
+        )
+
+    def test_a_terminal_task_link_to_a_moved_policy_resolves(self) -> None:
+        for fragment in ("", "#sequence"):
+            with self.subTest(fragment=fragment):
+                codes = self._moved("completed", fragment=fragment)
+                self.assertNotIn("missing-link-target", codes)
+                self.assertNotIn("missing-link-anchor", codes)
+
+    def test_the_moved_anchor_is_still_checked(self) -> None:
+        self.assertIn("missing-link-anchor", self._moved("completed", fragment="#gone"))
+
+    def test_an_editable_task_or_an_unmoved_name_still_fails(self) -> None:
+        self.assertIn("missing-link-target", self._moved("in-progress"))
+        self.assertIn("missing-link-target", self._moved("completed", name="gone"))
+
+
 class FencedCommandPathTests(unittest.TestCase):
     """A fenced command must name repository paths a reader can actually open."""
 
@@ -3020,7 +3088,7 @@ class RelationLookupTests(unittest.TestCase):
                 sys.executable,
                 "scripts/validation/check-document-links.py",
                 "--impact",
-                ".agents/governance/sdlc.md",
+                "docs/00.workspace/02.process/sdlc.md",
             ],
             cwd=ROOT,
             capture_output=True,

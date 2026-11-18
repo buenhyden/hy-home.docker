@@ -1,10 +1,10 @@
 ---
 title: "Runtime Compatibility and Security Task"
-version: "1.0.21"
+version: "1.0.22"
 type: "sdlc/task"
 status: "blocked"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-18"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0001"
 parent_ids:
@@ -76,8 +76,8 @@ tests/validation/test_ci_gate_model.py
 tests/validation/test_agent_governance_ci_routing.py
 tests/validation/test_tech_stack_version_contract.py
 scripts/manifest.yaml
-.agents/governance/quality-standards.md
-.agents/governance/github-governance.md
+docs/00.workspace/03.quality/quality-standards.md
+docs/00.workspace/02.process/github-governance.md
 .agents/knowledge/verification-surface-map.md
 .github/rulesets/main-protection.md
 .github/repository-surface.md
@@ -1081,7 +1081,7 @@ Proposed bounded contract, pending owner approval:
   The accepted risk is development/CI denial of service from nested patterns,
   not a claim that dev dependencies are harmless.
 - Source owner would be amended SPEC-0205 Spec/Plan/Task1. Proposed exact writer
-  paths are those three package documents, .agents/governance/quality-standards.md,
+  paths are those three package documents, docs/00.workspace/03.quality/quality-standards.md,
   .github/workflow-contract.yml, scripts/lib/gate/ci_gate_contract.py,
   scripts/lib/gate/ci_gate_adapters.py, tests/lib/gate/test_ci_gate_contract.py
   and tests/lib/gate/test_ci_gate_adapters.py. Reuse the current contract and

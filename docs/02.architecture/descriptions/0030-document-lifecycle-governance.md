@@ -1,10 +1,10 @@
 ---
 title: "Document Lifecycle Governance Architecture"
-version: "3.1.0"
+version: "3.1.1"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "architecture"
 artifact_id: "AD-0030"
 parent_ids:
@@ -77,7 +77,7 @@ Runtime systems, secret access and remote integration remain separately authoriz
 | Stage 99 Registry contract | [Stage 99 Registry](../../99.templates/registry.json) loaded by `scripts/lib/document_governance/registry.py` | Document validators and `metadata/heading.py` | [Stage 99 Registry](../../99.templates/registry.json) | A missing, symlinked, unreadable or invalid Registry yields findings. |
 | Metadata, document-link and corpus-lifecycle gate entrypoints | Registered validators in `scripts/manifest.yaml` | `scripts/validation/run-ci-gate.py` and maintainers and agents | `scripts/manifest.yaml` | Unsafe traversal yields findings; exceeding a resource limit is a diagnostic. |
 | Git comparison base | Git (`HEAD` locally, trusted base supplied by CI) | `spec_packages.py` and `identity_history.py` | The description links no contract for this interface. | A missing source object or insufficient history prevents recovering a removed body, and the checker reports that limit. |
-| Task approval references | Current Task approval headings | The cancellation reader | [Approval Boundaries](../../../.agents/governance/approval-boundaries.md#authorization-source-and-records) | Unresolved required approval references and unsupported source labels yield findings. |
+| Task approval references | Current Task approval headings | The cancellation reader | [Approval Boundaries](../../00.workspace/02.process/approval-boundaries.md#authorization-source-and-records) | Unresolved required approval references and unsupported source labels yield findings. |
 
 - The Registry is the machine authority for profile shape, lifecycles, identity spaces and each space's `reserved_history`.
 - Metadata, document-link and corpus-lifecycle entrypoints expose the judgments through gate profiles registered in `scripts/manifest.yaml` and selected by `scripts/validation/run-ci-gate.py`.
@@ -114,7 +114,7 @@ completion obligations. An empty list records that no acceptance criterion
 was assigned. The reader checks that approval references
 resolve to unique same-Task headings with supported source labels. The current
 trusted approval is resolved through
-[Approval Boundaries](../../../.agents/governance/approval-boundaries.md#authorization-source-and-records).
+[Approval Boundaries](../../00.workspace/02.process/approval-boundaries.md#authorization-source-and-records).
 
 Retirement summarizes the removed record's still-current substance into its
 Stage 01 or Stage 02 owner's lineage section and deletes the original in the same
@@ -214,7 +214,7 @@ reports that limit.
 - SPEC-0259 (retired; version history) delivered the third implementation-alignment corrections: Stage 02 labels that named deleted Spec paths, the OpenBao audit wording, the ADR-0038 acceptance and the promotion of matching Stage 05 documents.
 - SPEC-0256 (retired; version history) removed the legacy statuses and lineage keys from the Stage 01 to 03 lifecycles and profiles, the archive profiles and templates, and ADR-0011.
 - SPEC-0248, SPEC-0249, SPEC-0250 and SPEC-0260 (retired; version history) delivered the Stage 98 check removal and deletion, the completed-package deletion rule and the generation 6 proof source.
-- [Documentation protocol](../../../.agents/governance/documentation-protocol.md)
+- [Documentation protocol](../../00.workspace/02.process/documentation-protocol.md)
 
 #### Evolution
 

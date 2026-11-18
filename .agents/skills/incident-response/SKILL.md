@@ -3,11 +3,11 @@ name: "incident-response"
 description: "Use when an authorized incident owner needs a sanitized response timeline, bounded recovery actions, escalation, and postmortem handoff."
 metadata:
   title: "incident-response"
-  version: "1.5.0"
+  version: "1.5.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-17"
+  updated: "2026-11-18"
   function_id: "incident-response"
   scope: "ops"
   owner_agent: "incident-responder"
@@ -53,7 +53,7 @@ None: this skill states no exclusion.
 - Affected services, timestamps, impact, authority, and escalation contacts.
 - Earlier evidence when reconstruction needs it, read from version history at
   the revision that last carried it; Stage 98 holds no records. The
-  [documentation protocol](../../governance/documentation-protocol.md#document-retention-and-retirement)
+  [documentation protocol](../../../docs/00.workspace/02.process/documentation-protocol.md#document-retention-and-retirement)
   owns that rule.
 
 ### Failure Handling
@@ -71,8 +71,8 @@ Stop unsafe recovery, preserve metadata instead of prohibited payloads, and esca
 Owning role, policies and related documents:
 
 - [Incident responder](../../roles/incident-responder.md)
-- [Operations scope](../../governance/quality-standards.md)
-- [Approval boundaries](../../governance/approval-boundaries.md)
+- [Operations scope](../../../docs/00.workspace/03.quality/quality-standards.md)
+- [Approval boundaries](../../../docs/00.workspace/02.process/approval-boundaries.md)
 - [Stateful recovery contract review](../stateful-recovery-contract-review/SKILL.md)
 
 ## Verification

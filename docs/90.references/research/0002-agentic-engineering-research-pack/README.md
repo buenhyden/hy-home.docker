@@ -1,10 +1,10 @@
 ---
 title: "Agentic Engineering Research Pack"
-version: "2.6.0"
+version: "2.6.1"
 type: "reference/research-pack"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "references"
 artifact_id: "RES-0002"
 parent_ids:
@@ -134,7 +134,7 @@ README는 범위, 통합 결정, 탐색과 추적성을 제공한다.
 #### Traceability
 
 연구는 비규범적 근거다. 실제 채택과 변경은 [거버넌스](../../../../.agents/README.md),
-[SDLC](../../../../.agents/governance/sdlc.md) 및 해당 Requirement·Architecture·Spec·운영
+[SDLC](../../../00.workspace/02.process/sdlc.md) 및 해당 Requirement·Architecture·Spec·운영
 소유자가 결정한다. 이번 문서 갱신 증거는
 SPEC-0185 Task에만 기록한다.
 기존 `parent_ids`는 구조적 관계를 유지하며 새 인용을 부모로 추가하지 않았다.
@@ -588,7 +588,7 @@ package 수준 목록은 범주 전반에 공유되는 source만 담습니다.
   [RES-0085](../0085-workspace-engineering-main-baseline-assessment/README.md)의
   날짜가 있는 baseline/recovery 증거.
 - 정책: [공통 Agent 거버넌스](../../../../.agents/README.md)와
-  [documentation protocol](../../../../.agents/governance/documentation-protocol.md).
+  [documentation protocol](../../../00.workspace/02.process/documentation-protocol.md).
 - Requirements: [REQ-0024](../../../01.requirements/0024-agent-governance-standardization.md),
   [REQ-0025](../../../01.requirements/0025-operational-readiness-closure.md),
   [REQ-0026](../../../01.requirements/0026-document-retention-and-retirement.md).

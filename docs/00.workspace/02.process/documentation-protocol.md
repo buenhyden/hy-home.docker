@@ -17,7 +17,7 @@ Keep one document authority per role and preserve truthful provenance throughout
 
 #### Authority
 
-This policy is the canonical owner of document authority, authoring, and retirement under [bootstrap precedence](bootstrap.md#authority-and-precedence).
+This policy is the canonical owner of document authority, authoring, and retirement under [bootstrap precedence](../../../.agents/governance/bootstrap.md#authority-and-precedence).
 
 ### Applies To
 
@@ -577,7 +577,7 @@ false result by recalibrating the thresholds with evidence, never with a
 per-path exception. The `language` mode of `check-document-links.py` judges
 every document whose profile declares a language, and the metadata body
 contract applies the same judgment to each changed document. Conversational responses are not artifacts and
-follow [output style](output-style.md).
+follow [output style](../../../.agents/governance/output-style.md).
 
 #### README navigation
 
@@ -609,7 +609,7 @@ that the folder owns. Every other folder carries `README.md` only. The Registry
 `folder-agent-guide` profile's `path_pattern` and `additional_paths` are the
 only list of folders that carry a guide; adding one means adding its path
 there, and a test keeps the tracked guides equal to that list. Root `AGENTS.md` and
-`CLAUDE.md` stay the entry shims that [bootstrap](bootstrap.md) defines and are
+`CLAUDE.md` stay the entry shims that [bootstrap](../../../.agents/governance/bootstrap.md) defines and are
 not folder guides. A folder whose only agent rule is "never handle a secret
 value", such as `secrets/`, keeps `README.md` only, because
 [approval boundaries](approval-boundaries.md) already owns that rule.
@@ -622,7 +622,7 @@ policies, roles, skills, prompts and hook rules, and the `.claude/` and
 registered commands that exist. The guide routes and summarizes; it never
 copies a policy body, and when a summary and its owner disagree, the owner
 wins and the guide is corrected. Its rank and when an agent reads it are set by
-[bootstrap](bootstrap.md#authority-and-precedence); it grants no tool, path,
+[bootstrap](../../../.agents/governance/bootstrap.md#authority-and-precedence); it grants no tool, path,
 permission or approval.
 A folder that carries `AGENTS.md` also carries a generated `CLAUDE.md` whose
 only content is the renderer marker, a heading and the import `@AGENTS.md`.
@@ -659,7 +659,7 @@ evidence; surrounding instructions remain current and validated normally.
   `-`; an inapplicable section says why. A role not yet moved keeps its
   `SDLC-COMMON-r10-local-v1` H2 sections until it moves. A role has moved
   when its Registry profile declares `required_subsections`. A product difference from the form
-  is an Exception under [quality standards](quality-standards.md), with its
+  is an Exception under [quality standards](../03.quality/quality-standards.md), with its
   approved condition, scope, reason, end or review condition and verification.
 - A Requirement Package combines PRD, SRS, and implementation-independent
   interface perspectives. An interface need is written as a functional
@@ -875,7 +875,7 @@ still-current meaning has moved to a canonical owner.
 These rules govern development documents only. Operational data and backups
 keep the retention their Stage 05 owners set, and shared agent memory keeps
 the retention rules of the
-[environment constraints](environment-constraints.md); neither is deleted
+[environment constraints](../../../.agents/governance/environment-constraints.md); neither is deleted
 under this section.
 
 A retired document is summarized and deleted, not preserved. Its still-current
@@ -885,7 +885,7 @@ original file is removed. Version
 history is the record of the removed body. Stage 98 (`docs/98.archive/`) holds
 no records: only its README remains, describing the disposition scheme. Its
 checks are listed in the
-[quality standards](quality-standards.md#3-reliability-baseline).
+[quality standards](../03.quality/quality-standards.md#3-reliability-baseline).
 
 Retired artifact numbers live in the Registry. Each top-level identity space
 keeps `reserved_history`, the sorted list of numbers that no current document
@@ -904,7 +904,7 @@ The Registry owns each profile's entry state, transition edges, and terminal
 states. Apply that lifecycle before disposition; do not infer permission from
 age or a folder count. Do not record completion or supersession as a
 withdrawal. Before a package becomes ready for removal, apply the
-[completion checklist](task-checklists.md#before-completion) and record final
+[completion checklist](../03.quality/task-checklists.md#before-completion) and record final
 evidence while the package is still editable.
 
 A Stage 03 package is deleted when it is
@@ -1004,7 +1004,7 @@ None: no exception exists to approve.
 - `python scripts/validation/check-document-links.py --mode all` (links, entry
   points, fenced command paths, navigation, language)
 - Stage checks selected by the
-  [change-type verification matrix](quality-standards.md#5-change-type-verification-matrix).
+  [change-type verification matrix](../03.quality/quality-standards.md#5-change-type-verification-matrix).
 
 ### Limits
 
@@ -1044,7 +1044,7 @@ Named checks cover the rules whose Enforcement names one; the other rules name n
 Changes land in place with Task evidence; related documents:
 
 - [SDLC](sdlc.md)
-- [Task checklists](task-checklists.md)
-- [Documentation index](../../docs/README.md)
-- [Stage authoring matrix](stage-authoring-matrix.md)
+- [Task checklists](../03.quality/task-checklists.md)
+- [Documentation index](../../README.md)
+- [Stage authoring matrix](../01.project/stage-authoring-matrix.md)
 - Stage 99 registry (`docs/99.templates/registry.json`)

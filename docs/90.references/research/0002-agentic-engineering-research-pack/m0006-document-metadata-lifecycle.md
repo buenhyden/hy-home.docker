@@ -1,10 +1,10 @@
 ---
 title: "Reference: Document Metadata and Lifecycle"
-version: "1.4.0"
+version: "1.4.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "references"
 artifact_id: "RES-0002-m0006"
 parent_ids:
@@ -153,7 +153,7 @@ Originals below were opened on 2026-09-27. Not stated means no publication/updat
 > | [RFC 8288 Web Linking](https://www.rfc-editor.org/rfc/rfc8288)                                                                 | 2026-08-08 | External fixed standard      | Relation semantics comparison; no repository profile adoption.                                                            |
 > | [Michael Nygard, Documenting Architecture Decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions) | 2026-08-08 | External fixed article       | HTTP 200; preserved/superseded ADR history comparison.                                                                    |
 > | [Google SRE postmortem culture](https://sre.google/sre-book/postmortem-culture/)                                               | 2026-08-08 | External fixed publication   | HTTP 200; reviewed learning supports the Postmortem freshness boundary.                                                   |
-> | [Documentation protocol](../../../../.agents/governance/documentation-protocol.md)                                         | 2026-08-08 | Workspace tracked            | Canonical routing, template-first, language, and changed/new enforcement boundary.                                        |
+> | [Documentation protocol](../../../00.workspace/02.process/documentation-protocol.md)                                         | 2026-08-08 | Workspace tracked            | Canonical routing, template-first, language, and changed/new enforcement boundary.                                        |
 > | Metadata profiles (retired path: `../../../99.templates/support/document-metadata-profiles.yaml`)                                             | 2026-08-14 | Workspace tracked            | Re-read to confirm 21 profiles / 17 README profiles at current HEAD.                                                      |
 > | Lifecycle status (retired path: `../../../99.templates/support/lifecycle-status.md`)                                                          | 2026-08-08 | Workspace tracked            | Human lifecycle vocabulary and interpretation boundary.                                                                   |
 > | SDLC document contract (retired path: `../../../99.templates/support/sdlc-document-contract.md`)                                              | 2026-08-08 | Workspace tracked            | Human role, relation, feedback, and release boundary.                                                                     |
@@ -362,7 +362,7 @@ One owner-defined profile with focused validation avoids independent field conve
 > Historical evidence (not current authority; source: Git history):
 >
 > Current preservation and disposition follow the
-> [Canonical governance documentation protocol](../../../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)
+> [Canonical governance documentation protocol](../../../00.workspace/02.process/documentation-protocol.md#document-retention-and-retirement)
 > and Stage 98 index. Registered frozen payloads
 > remain unchanged; Tombstone and Migration records do not embed their bodies.
 > Age or counts may prompt review but cannot authorize disposition.

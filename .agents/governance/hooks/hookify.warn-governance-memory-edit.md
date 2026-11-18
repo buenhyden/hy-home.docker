@@ -1,15 +1,15 @@
 ---
 title: "WARNING: canonical governance root authority edit"
-version: "1.0.5"
+version: "1.1.0"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-18"
 action: "warn"
 conditions:
 - "field": "file_path"
   operator: "regex_match"
-  pattern: "(^|/)\\.agents/(README\\.md|governance/sdlc\\.md)$"
+  pattern: "(^|/)(\\.agents/README\\.md|docs/00\\.workspace/02\\.process/sdlc\\.md)$"
 enabled: true
 event: "file"
 name: "warn-governance-memory-edit"
@@ -25,7 +25,7 @@ Apply the declared `warn` action for warn-governance-memory-edit.
 
 ### Authority
 
-Watched authorities: `.agents/README.md` (governance inventory) and `.agents/governance/sdlc.md`.
+Watched authorities: `.agents/README.md` (governance inventory) and `docs/00.workspace/02.process/sdlc.md`.
 
 ## Scope
 

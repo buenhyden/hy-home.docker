@@ -1,10 +1,10 @@
 ---
 title: "Reference: Harness Engineering"
-version: "1.4.0"
+version: "1.4.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "references"
 artifact_id: "RES-0002-m0008"
 parent_ids:
@@ -550,7 +550,7 @@ The complete earlier body is preserved at its original cutoff, including then-cu
 > preserve the evidence-depth distinctions, and route implementation changes to
 > their canonical agent governance/03/04 owner.
 
-> Revalidated 2026-11-06: Stage 00 `docs/00.agent-governance/` is retired; current policy lives in `.agents/governance/` (for example `.agents/governance/approval-boundaries.md`) and roles in `.agents/roles/` (14 roles); `docs/00.agent-governance/memory/` is retired and native Claude memory is off (`.claude/settings.json:3` `autoMemoryEnabled: false`); `.claude/settings.local.json` is an ignored local file (`.gitignore:112`), not tracked state; `.claude/hookify/` and `docs/00.agent-governance/rules/hooks/` are absent; hook wrappers are `.claude/hooks/` (7) routing to `.agents/governance/hooks/`; native agents are `.claude/agents/` (14, unchanged). The dated values above are preserved as observed.
+> Revalidated 2026-11-06: Stage 00 `docs/00.agent-governance/` is retired; current policy lives in `.agents/governance/` (for example `docs/00.workspace/02.process/approval-boundaries.md`) and roles in `.agents/roles/` (14 roles); `docs/00.agent-governance/memory/` is retired and native Claude memory is off (`.claude/settings.json:3` `autoMemoryEnabled: false`); `.claude/settings.local.json` is an ignored local file (`.gitignore:112`), not tracked state; `.claude/hookify/` and `docs/00.agent-governance/rules/hooks/` are absent; hook wrappers are `.claude/hooks/` (7) routing to `.agents/governance/hooks/`; native agents are `.claude/agents/` (14, unchanged). The dated values above are preserved as observed.
 
 ### Alternatives
 

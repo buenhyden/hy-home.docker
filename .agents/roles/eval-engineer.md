@@ -1,10 +1,10 @@
 ---
 title: "eval-engineer"
-version: "1.0.1"
+version: "1.0.2"
 type: "governance/role"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-10-05"
+updated: "2026-11-18"
 agent_id: "eval-engineer"
 scope: "qa"
 tier: "worker"
@@ -57,7 +57,7 @@ Stop after the task retry limit, narrow the fixture or mark uncertainty, and esc
 
 ## Related Documents
 
-- [Quality standards](../governance/quality-standards.md)
+- [Quality standards](../../docs/00.workspace/03.quality/quality-standards.md)
 - [Workspace audit revalidation](../skills/workspace-audit-revalidation/SKILL.md)
 - [Agent catalog contract](../governance/providers/registry.yaml)
 - [Subagent protocol](../governance/agentic.md)

@@ -1,10 +1,10 @@
 ---
 title: "Reference: Quality, CI, and Formatting"
-version: "1.5.0"
+version: "1.5.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "references"
 artifact_id: "RES-0002-m0014"
 parent_ids:
@@ -48,7 +48,7 @@ threat and residual-risk decisions to m0017.
 - [Scope application matrix](./m0015-scope-application-matrix.md)
 - [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
 - [Document metadata lifecycle](./m0006-document-metadata-lifecycle.md)
-- [GitHub governance](../../../../.agents/governance/github-governance.md)
+- [GitHub governance](../../../00.workspace/02.process/github-governance.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
 - [Agentic Engineering Research Pack](README.md)
@@ -614,7 +614,7 @@ candidate/diff and selected evidence, with absent checks stated explicitly.
 > | [Repository-contract validation dependencies](../../../../scripts/requirements.txt)                                                       | 2026-08-14                                          | Workspace tracked                 | `PyYAML>=6.0,<7.0`, `markdown-it-py>=3.0,<4.0`, `html5lib>=1.1,<2.0` read directly; the `html5lib` pin is the source of the re-verified gap below.                                                                 |
 > | [Pre-commit orchestrator pin](../../../../scripts/requirements-pre-commit.txt)                                                            | 2026-08-14                                          | Workspace tracked                 | `pre-commit==4.6.2`, a separate pinned dependency set from `scripts/requirements.txt`; distinguishes orchestrator-version parity from validation-dependency parity.                                                |
 > | Repository contract checker (retired path: `../../../../scripts/validation/check-repo-contracts.sh`)                                                     | 2026-08-14                                          | Workspace tracked/local execution | Run directly today in this session's default interpreter at `ece3eda9`: `failures=1`, exactly the `AGC-DEPENDENCY-MISSING path=html5lib` governance-memory finding; confirmed by direct `import html5lib` failure. |
-> | [GitHub governance](../../../../.agents/governance/github-governance.md)                                                              | 2026-08-08                                          | Workspace tracked policy          | Local/CI/remote split, controlled wrapper boundary, and change-type evidence matrix.                                                                                                                               |
+> | [GitHub governance](../../../00.workspace/02.process/github-governance.md)                                                              | 2026-08-08                                          | Workspace tracked policy          | Local/CI/remote split, controlled wrapper boundary, and change-type evidence matrix.                                                                                                                               |
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                               | 2026-08-08                                          | Workspace tracked stale/advisory  | Built from `f8a72211`; corroborated and not used as current proof.                                                                                                                                                 |
 >
 > <div id="scope-application"></div>

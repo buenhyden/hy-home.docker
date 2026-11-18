@@ -1,10 +1,10 @@
 ---
 title: "Research Packages"
-version: "1.7.0"
+version: "1.7.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "references"
 created: "2026-07-02"
 ---
@@ -138,9 +138,9 @@ README에서 찾습니다.
 | System prompts and context loading | Agent instructions (`m0001`) | [Bootstrap policy](../../../.agents/governance/bootstrap.md), [AGENTS.md](../../../AGENTS.md), [CLAUDE.md](../../../CLAUDE.md) | 구현됨 |
 | Spec-driven development | Spec-driven SDLC (`m0018`) | [Stage 03](../../03.specs/README.md)와 SDLC audit | 등록된 형태에는 Repository-enforced; intended-use 수용은 여전히 owner-bound |
 | PRD, SPEC, PLAN, TASK, and ADR | SDLC document roles (`m0016`) | [Stage 99 templates](../../99.templates/README.md) | 등록된 저장소 형태에는 구현됨 |
-| SDLC purpose, governance, and lifecycle | Spec-driven SDLC (`m0018`) | [SDLC policy](../../../.agents/governance/sdlc.md)와 [workflows](../../../.agents/governance/workflows.md) | 구현됨 |
+| SDLC purpose, governance, and lifecycle | Spec-driven SDLC (`m0018`) | [SDLC policy](../../00.workspace/02.process/sdlc.md)와 [workflows](../../../.agents/governance/workflows.md) | 구현됨 |
 | Guide, Incident, Postmortem, Policy, Release, and Runbook | SDLC document roles (`m0016`) | [Operations](../../05.operations/README.md)와 SDLC audit | Guide/Policy/Runbook/Incident/Postmortem는 등록됨; Release는 profile이 아니라 composed evidence |
-| Diátaxis and documentation architecture | Documentation architecture (`m0007`) | [Documentation protocol](../../../.agents/governance/documentation-protocol.md) | 부분적 |
+| Diátaxis and documentation architecture | Documentation architecture (`m0007`) | [Documentation protocol](../../00.workspace/02.process/documentation-protocol.md) | 부분적 |
 | C4 Model and arc42 | Documentation architecture (`m0007`) | [Architecture stage](../../02.architecture/README.md) | 부분적 |
 | ADR | SDLC document roles (`m0016`) | [Architecture decisions](../../02.architecture/decisions/README.md) | 구현됨 |
 | LLM Wiki | LLM Wiki system (`m0009`) | 2026-09-10에 generator, 생성된 index와 함께 은퇴; 탐색은 이제 `llms.txt`와 각 surface README를 통함 | 은퇴됨 |
@@ -211,7 +211,7 @@ infrastructure 변경을 승인하지 않습니다.
 #### Policy and Templates
 
 - [Stage 99 Registry](../../99.templates/registry.json)
-- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [문서 작성 계약](../../00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
 - [README 템플릿](../../99.templates/templates/common/readme-category.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
 ### Checks

@@ -1,10 +1,10 @@
 ---
 title: "Postflight Routing"
-version: "1.2.0"
+version: "1.2.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 ---
 
 # Postflight Routing
@@ -43,7 +43,7 @@ Completion evidence belongs in the co-located Stage 03 Task. Git history is the
 recovery boundary. Do not create a second handoff or progress authority.
 
 For an approved all-files gate, the
-[execution boundary](quality-standards.md#4-execution-boundary) owns direct
+[execution boundary](../../docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary) owns direct
 pre-commit prohibition and every wrapper condition. Postflight records only
 the concise result and hook-managed fallout; the controlled wrapper reports
 exit 20 for unexpected paths.
@@ -52,7 +52,7 @@ exit 20 for unexpected paths.
 
 #### Exception Conditions
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+No exception is granted here; a separately authorized operation follows [Approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md).
 
 #### Approval and Review
 
@@ -79,13 +79,13 @@ Postflight routes to other owners and ties no check to any rule in Requirements.
 
 ### Owner
 
-`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records)).
 
 ### Review Triggers
 
 Changes land in place with Task evidence; related documents:
 
-- [Task checklists](task-checklists.md)
-- [Quality standards](quality-standards.md#4-execution-boundary)
-- [Documentation protocol](documentation-protocol.md)
+- [Task checklists](../../docs/00.workspace/03.quality/task-checklists.md)
+- [Quality standards](../../docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary)
+- [Documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md)
 - [Provider registry](providers/registry.yaml)

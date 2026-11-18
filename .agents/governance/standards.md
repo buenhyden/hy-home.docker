@@ -1,10 +1,10 @@
 ---
 title: "AI Agent Standards"
-version: "1.3.0"
+version: "1.3.1"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 ---
 
 # AI Agent Standards
@@ -35,13 +35,13 @@ None: this document states no exclusion.
 | --- | --- | --- | --- | --- |
 | STANDARDS-R1 | Always | Required: use only the canonical order in `.agents/governance/bootstrap.md#canonical-load-order` | none | none |
 | STANDARDS-R2 | Always | Required: avoid duplicated instructions across root shims and rule files | none | none |
-| STANDARDS-R3 | Document language | Required: follow its owner, `.agents/governance/documentation-protocol.md#document-language` | none | none |
+| STANDARDS-R3 | Document language | Required: follow its owner, `docs/00.workspace/02.process/documentation-protocol.md#document-language` | none | none |
 | STANDARDS-R4 | Conversational responses | Required: follow the user's active language preference under `.agents/governance/output-style.md` | none | none |
-| STANDARDS-R5 | Before, during and after work | Required: use checklists from `.agents/governance/task-checklists.md` | none | none |
+| STANDARDS-R5 | Before, during and after work | Required: use checklists from `docs/00.workspace/03.quality/task-checklists.md` | none | none |
 | STANDARDS-R6 | Creating new stage docs | Required: use templates from `docs/99.templates/` | none | none |
 | STANDARDS-R7 | Always | Required: prefer small, isolated changes with explicit verification evidence | none | none |
 | STANDARDS-R8 | Editable scope | Required: remove stale commands and dead links immediately | none | none |
-| STANDARDS-R9 | GitHub repository, PR and CI matters | Required: follow `.agents/governance/github-governance.md` for branch protection, PR completion gate, GitHub Actions security baseline and the local instruction authority boundary | none | none |
+| STANDARDS-R9 | GitHub repository, PR and CI matters | Required: follow `docs/00.workspace/02.process/github-governance.md` for branch protection, PR completion gate, GitHub Actions security baseline and the local instruction authority boundary | none | none |
 | STANDARDS-R10 | Always | Required: treat `docs/01` to `docs/99` as project SSoT | none | none |
 | STANDARDS-R11 | Implementation work | Forbidden: bypassing `docs/01.requirements` and `docs/03.specs` | none | none |
 | STANDARDS-R12 | Always | Required: keep reciprocal traceability across Requirement Package, Architecture Description, ADR, Spec, Plan, Task, Guide, Policy and Runbook artifacts | none | none |
@@ -55,20 +55,20 @@ None: this document states no exclusion.
 #### 2. Language Standard
 
 - Document language is owned by
-  `.agents/governance/documentation-protocol.md#document-language`.
+  `docs/00.workspace/02.process/documentation-protocol.md#document-language`.
 - Conversational responses follow the user's active language preference under
   `.agents/governance/output-style.md`.
 
 #### 3. Execution Discipline
 
-- Use checklists from `.agents/governance/task-checklists.md` before, during, and after work.
+- Use checklists from `docs/00.workspace/03.quality/task-checklists.md` before, during, and after work.
 - Use templates from `docs/99.templates/` when creating new stage docs.
 - Prefer small, isolated changes with explicit verification evidence.
 - Remove stale commands and dead links in editable scope immediately.
 
 #### 4. GitHub Repository and PR Standards
 
-GitHub-specific repository, PR, and CI policy is governed by `.agents/governance/github-governance.md`.
+GitHub-specific repository, PR, and CI policy is governed by `docs/00.workspace/02.process/github-governance.md`.
 This section is intentionally thin to avoid duplication. Refer to that document for:
 
 - Branch protection and ruleset expectations.
@@ -87,7 +87,7 @@ This section is intentionally thin to avoid duplication. Refer to that document 
 
 #### Exception Conditions
 
-No exception is granted here; a separately authorized operation follows [Approval boundaries](approval-boundaries.md).
+No exception is granted here; a separately authorized operation follows [Approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md).
 
 #### Approval and Review
 
@@ -115,7 +115,7 @@ The policy states no separate check (`Mechanisms` is `None`), so no rule in Requ
 
 ### Owner
 
-`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](approval-boundaries.md#authorization-source-and-records)).
+`@buenhyden` approves changes; `rules-engineer` reviews them ([approval boundaries](../../docs/00.workspace/02.process/approval-boundaries.md#authorization-source-and-records)).
 
 ### Review Triggers
 
@@ -123,5 +123,5 @@ Changes land in place with Task evidence; related documents:
 
 - `.agents/governance/bootstrap.md`
 - `.agents/governance/agentic.md`
-- `.agents/governance/github-governance.md`
-- `.agents/governance/quality-standards.md`
+- `docs/00.workspace/02.process/github-governance.md`
+- `docs/00.workspace/03.quality/quality-standards.md`

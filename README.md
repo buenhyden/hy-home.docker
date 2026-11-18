@@ -1,10 +1,10 @@
 ---
 title: "hy-home.docker"
-version: "1.5.0"
+version: "1.5.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 created: "2025-11-12"
 ---
 
@@ -51,7 +51,7 @@ created: "2025-11-12"
 - 문서 작성 작업은 가능한 경우 `docs/99.templates`의 템플릿을 출발점으로 사용합니다.
 - 상위 문서와 하위 산출물 사이의 추적성을 유지하고, 중복된 SSoT 문서를 만들지 않습니다.
 
-문서 언어는 [문서 언어 규칙](.agents/governance/documentation-protocol.md#document-language)이 정합니다.
+문서 언어는 [문서 언어 규칙](docs/00.workspace/02.process/documentation-protocol.md#document-language)이 정합니다.
 
 #### Documentation Lifecycle
 
@@ -82,9 +82,9 @@ created: "2025-11-12"
 
 1. 이 저장소에서 작업을 시작할 때는 먼저 [`AGENTS.md`](./AGENTS.md), [`docs/README.md`](./docs/README.md), [`infra/README.md`](./infra/README.md)를 읽어 전체 구조를 파악합니다.
 2. 새 서비스를 추가할 때는 `infra/<tier>/<service>/` 패턴을 따르고, 루트 [`docker-compose.yml`](./docker-compose.yml)의 `include` 및 관련 문서를 함께 검토합니다.
-3. 새 문서나 루트 문서를 갱신할 때는 `docs/99.templates/templates/common/readme-repository.template.md` 같은 승인된 템플릿과 [`.agents/governance/documentation-protocol.md`](.agents/governance/documentation-protocol.md)을 기준으로 삼습니다.
+3. 새 문서나 루트 문서를 갱신할 때는 `docs/99.templates/templates/common/readme-repository.template.md` 같은 승인된 템플릿과 [`docs/00.workspace/02.process/documentation-protocol.md`](docs/00.workspace/02.process/documentation-protocol.md)을 기준으로 삼습니다.
 4. Docker image runtime pin을 바꿀 때는 해당 Compose/Dockerfile 선언을 먼저 바꾸고, [`infra/tech-stack.versions.json`](./infra/tech-stack.versions.json) 파생 projection과 동기화 검사를 함께 점검합니다. Dockerfile `FROM`/`ARG` pin은 Compose image projection과 별도 authority입니다.
-5. GitHub workflow를 바꿀 때는 [`.agents/governance/github-governance.md`](.agents/governance/github-governance.md)와 [`.agents/governance/git-workflow.md`](.agents/governance/git-workflow.md)를 기준으로 branch, permission, SHA pinning, step naming을 확인합니다.
+5. GitHub workflow를 바꿀 때는 [`docs/00.workspace/02.process/github-governance.md`](docs/00.workspace/02.process/github-governance.md)와 [`docs/00.workspace/02.process/git-workflow.md`](docs/00.workspace/02.process/git-workflow.md)를 기준으로 branch, permission, SHA pinning, step naming을 확인합니다.
 6. 변경 후에는 관련 링크, 검증 명령, 문서 정책, CI 영향 범위를 함께 점검하고 필요한 경우 검증 스크립트를 실행합니다.
 
 #### 1. 저장소 클론
@@ -289,10 +289,10 @@ hy-home.docker/
 
 - [`docs/README.md`](./docs/README.md)
 - [`.agents/README.md`](.agents/README.md)
-- [`.agents/governance/documentation-protocol.md`](.agents/governance/documentation-protocol.md)
-- [`.agents/governance/github-governance.md`](.agents/governance/github-governance.md)
-- [`.agents/governance/git-workflow.md`](.agents/governance/git-workflow.md)
-- [`.agents/governance/stage-authoring-matrix.md`](.agents/governance/stage-authoring-matrix.md)
+- [`docs/00.workspace/02.process/documentation-protocol.md`](docs/00.workspace/02.process/documentation-protocol.md)
+- [`docs/00.workspace/02.process/github-governance.md`](docs/00.workspace/02.process/github-governance.md)
+- [`docs/00.workspace/02.process/git-workflow.md`](docs/00.workspace/02.process/git-workflow.md)
+- [`docs/00.workspace/01.project/stage-authoring-matrix.md`](docs/00.workspace/01.project/stage-authoring-matrix.md)
 - `docs/05.operations/README.md`
 - `docs/90.references/README.md`
 - `docs/90.references/data/README.md`

@@ -1,10 +1,10 @@
 ---
 title: "Document Retention and Retirement Requirements"
-version: "3.2.0"
+version: "3.2.1"
 type: "sdlc/requirement"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "requirements"
 artifact_id: "REQ-0026"
 created: "2026-09-01"
@@ -148,8 +148,8 @@ This package covers how documents are retained, retired and summarized into a cu
 
 ### Sources
 
-- [Documentation protocol](../../.agents/governance/documentation-protocol.md)
-- [Stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md)
+- [Documentation protocol](../00.workspace/02.process/documentation-protocol.md)
+- [Stage authoring matrix](../00.workspace/01.project/stage-authoring-matrix.md)
 - [Stage 99 registry](../99.templates/registry.json)
 
 ### Verification Links

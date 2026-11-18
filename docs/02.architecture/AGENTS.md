@@ -1,10 +1,10 @@
 ---
 title: "Architecture Agent Guide"
-version: "0.4.1"
+version: "0.4.2"
 type: "common/agent-guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 ---
 
 # Architecture Agent Guide
@@ -31,7 +31,7 @@ Stage 03 and Stage 05.
 
 When this guide and the owner of a rule it summarizes disagree, the owner wins
 and this guide is corrected
-([documentation protocol](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd)).
+([documentation protocol](../00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd)).
 [Bootstrap](../../.agents/governance/bootstrap.md#authority-and-precedence)
 sets the full precedence order; a folder guide routes only and never overrides
 canonical governance or a Stage contract.
@@ -41,9 +41,9 @@ canonical governance or a Stage contract.
 ### Intake
 
 - [Bootstrap](../../.agents/governance/bootstrap.md),
-  [documentation protocol](../../.agents/governance/documentation-protocol.md),
-  [stage authoring matrix](../../.agents/governance/stage-authoring-matrix.md),
-  [approval boundaries](../../.agents/governance/approval-boundaries.md).
+  [documentation protocol](../00.workspace/02.process/documentation-protocol.md),
+  [stage authoring matrix](../00.workspace/01.project/stage-authoring-matrix.md),
+  [approval boundaries](../00.workspace/02.process/approval-boundaries.md).
 - Roles: [`doc-writer`](../../.agents/roles/doc-writer.md),
   [`rules-engineer`](../../.agents/roles/rules-engineer.md) for governance
   review.
@@ -65,13 +65,13 @@ canonical governance or a Stage contract.
   under the `architecture-description` and `adr` profiles.
 - A new ADR enters as `proposed`, the initial status of the
   `architecture-decision` lifecycle in the [Registry](../99.templates/registry.json);
-  the [SDLC](../../.agents/governance/sdlc.md) owns the ADR states.
+  the [SDLC](../00.workspace/02.process/sdlc.md) owns the ADR states.
 - Replace an accepted ADR only through a separately approved new ADR. Do not
   rewrite an accepted decision body, except when the owner directs an in-place
   amendment; that amendment bumps `version` and records the date and direction
   in the ADR's Follow-up. Per
   [ADR-0051](decisions/0051-summarize-and-delete-retirement.md) and the
-  [documentation protocol](../../.agents/governance/documentation-protocol.md),
+  [documentation protocol](../00.workspace/02.process/documentation-protocol.md),
   the new ADR summarizes the replaced decision under a `Supersession`
   heading in Decision `Authority and Effect`, the old
   ADR is deleted in the same change, and its number goes into the Registry
@@ -100,7 +100,7 @@ canonical governance or a Stage contract.
 
 Stop and report when this guide and its canonical owner disagree (the owner
 wins and this guide is corrected), when an action needs an approval that
-[approval boundaries](../../.agents/governance/approval-boundaries.md)
+[approval boundaries](../00.workspace/02.process/approval-boundaries.md)
 has not granted, or when a required check fails.
 
 #### Protected Actions

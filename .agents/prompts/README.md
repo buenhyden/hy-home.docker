@@ -1,10 +1,10 @@
 ---
 title: "Agent Prompts"
-version: "0.3.0"
+version: "0.3.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 created: "2026-09-06"
 ---
 
@@ -85,7 +85,7 @@ prompt는 작업 자체가 아니라 작업을 감싸는 envelope입니다. `ski
 
 - [Agent governance index](../README.md)
 - [Agentic policy](../governance/agentic.md)
-- [문서 작성 계약](../governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [문서 작성 계약](../../docs/00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
 - README 템플릿 `docs/99.templates/templates/governance/prompt-index.template.md`: 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다.
 
 ### Checks

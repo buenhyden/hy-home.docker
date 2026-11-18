@@ -58,7 +58,7 @@ Stop unsafe or unverifiable actions, preserve metadata rather than sensitive pay
 
 ## Related Documents
 
-- [Quality standards](../../.agents/governance/quality-standards.md)
+- [Quality standards](../../docs/00.workspace/03.quality/quality-standards.md)
 - [Incident response function](../../.agents/skills/incident-response/SKILL.md)
 - [Stateful recovery contract review](../../.agents/skills/stateful-recovery-contract-review/SKILL.md)
 - [Security auditor](../../.agents/roles/security-auditor.md)

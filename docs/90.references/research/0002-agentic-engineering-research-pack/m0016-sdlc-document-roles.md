@@ -1,10 +1,10 @@
 ---
 title: "Reference: SDLC Document Roles"
-version: "1.4.0"
+version: "1.4.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "references"
 artifact_id: "RES-0002-m0016"
 parent_ids:
@@ -26,7 +26,7 @@ review_cycle: "on-source-change"
 > Each document role owns a distinct question, trigger, handoff, and evidence
 > boundary. Current roles and their copy sources are declared by the
 > [Stage 99 Registry](../../../99.templates/registry.json); the
-> [canonical agent governance documentation protocol](../../../../.agents/governance/documentation-protocol.md#role-specific-authoring)
+> [canonical agent governance documentation protocol](../../../00.workspace/02.process/documentation-protocol.md#role-specific-authoring)
 > owns their meaning. Requirement Package combines PRD/SRS perspectives;
 > Architecture Description replaces the older ARD name and remains distinct
 > from ADR. Release
@@ -225,7 +225,7 @@ Incident records distinguish observed impact, estimates and hypotheses, with tim
 GitHub releases package tag-based iterations with notes/assets, and tag/release
 dates can differ. Readiness, packaging/publication, rollout and runtime
 acceptance need separate facts (C-m0016-06–07). For this repository, the
-[release evidence boundary](../../../../.agents/governance/documentation-protocol.md#release-evidence-boundary)
+[release evidence boundary](../../../00.workspace/02.process/documentation-protocol.md#release-evidence-boundary)
 routes reusable procedure to the Runbook, execution evidence to the current
 Task, and observed publication facts to the CHANGELOG, tag, GitHub Release
 and CI evidence. Local operations, deployment and framework adoption are
@@ -393,7 +393,7 @@ for reader modes and framework composition.
 > and assets. Semantic Versioning describes compatibility signals for a declared
 > public API. Neither proves that this repository performed a rollout or that a
 > runtime accepted it. The workspace now uses
-> [external-release-evidence](../../../../.agents/governance/documentation-protocol.md#release-evidence-boundary):
+> [external-release-evidence](../../../00.workspace/02.process/documentation-protocol.md#release-evidence-boundary):
 > the Runbook owns the procedure, the current Task owns actual execution evidence,
 > and version/tag/CI links prove only the observed event. No independent Release
 > profile or deployment authority is implied.

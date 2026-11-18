@@ -1,10 +1,10 @@
 ---
 title: "Supply-Chain Review and Artifact Evidence Task"
-version: "0.1.5"
+version: "0.1.6"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-18"
 layer: "specs"
 artifact_id: "SPEC-0212-TSK-0052"
 parent_ids:
@@ -37,7 +37,7 @@ On 2026-11-10 the owner (@buenhyden) set TSK-0047 criteria 86 and 89 to
 not-required and approved this dedicated Task for the unfinished work. That
 decision opens the Task only. Every network lookup waits for the owner to
 approve its host scope in N1 below, under the
-[approval boundaries](../../../../.agents/governance/approval-boundaries.md).
+[approval boundaries](../../../00.workspace/02.process/approval-boundaries.md).
 No image pull, deployment or HOME change is part of this Task.
 
 The starting state comes from the

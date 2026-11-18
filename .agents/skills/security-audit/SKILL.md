@@ -3,11 +3,11 @@ name: "security-audit"
 description: "Use when an exact change needs read-only analysis of trust boundaries, exposed inputs, privileges, dependencies, and plausible security findings. Reach for it when someone asks whether a change has a security problem, wants exposed inputs or privilege paths examined, or asks whether a new dependency is safe to take. Do NOT use it to exploit a finding, to call an external system, to read or rotate a secret, or to sign off a release; it describes a mechanism and its evidence and changes nothing."
 metadata:
   title: "security-audit"
-  version: "1.4.0"
+  version: "1.4.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-17"
+  updated: "2026-11-18"
   function_id: "security-audit"
   scope: "security"
   owner_agent: "security-auditor"
@@ -66,7 +66,7 @@ Owning role, policies and related documents:
 
 - [Security auditor](../../roles/security-auditor.md)
 - [Container threat modeling](../container-threat-modeling/SKILL.md)
-- [Security scope](../../governance/quality-standards.md)
+- [Security scope](../../../docs/00.workspace/03.quality/quality-standards.md)
 
 ## Verification
 

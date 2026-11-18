@@ -1,10 +1,10 @@
 ---
 title: "Codex Provider Adapter"
-version: "1.6.4"
+version: "1.6.5"
 type: "governance/provider"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-16"
+updated: "2026-11-18"
 runtime: "codex"
 ---
 
@@ -77,15 +77,15 @@ hook does not run.
 - A nested launcher in the managed shell failed to create a Bubblewrap
   namespace. In a separately approved host launch, installed Codex CLI
   0.169.0 enforced read-only access through `codex sandbox`. The
-  [approval boundaries](../.agents/governance/approval-boundaries.md)
+  [approval boundaries](../docs/00.workspace/02.process/approval-boundaries.md)
   govern the host launch and its scope.
 - No `approval_policy` is tracked in `.codex/config.toml`, so Codex keeps its
   default approval mode. Edits inside the current request's scope are already
   authorized under approval boundaries; Claude's counterpart is
   `autoMode.allow: ["$defaults"]` in `.claude/settings.json`.
 
-Select checks through the [shared verification matrix](../.agents/governance/quality-standards.md#5-change-type-verification-matrix)
-and [completion checklist](../.agents/governance/task-checklists.md#before-completion).
+Select checks through the [shared verification matrix](../docs/00.workspace/03.quality/quality-standards.md#5-change-type-verification-matrix)
+and [completion checklist](../docs/00.workspace/03.quality/task-checklists.md#before-completion).
 The shared policy and approved Task determine scope; this adapter adds no gate.
 The [shared output contract](../.agents/governance/output-style.md) keeps
 `FAIL`, `BLOCKED`, `SKIPPED`, `NOT_RUN`, partial results, and required

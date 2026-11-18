@@ -23,12 +23,12 @@ canonical_sources:
   - .agents/evaluations/README.md
   - .agents/README.md
   - .agents/governance/agentic.md
-  - .agents/governance/approval-boundaries.md
+  - docs/00.workspace/02.process/approval-boundaries.md
   - .agents/governance/bootstrap.md
-  - .agents/governance/documentation-protocol.md
+  - docs/00.workspace/02.process/documentation-protocol.md
   - .agents/governance/environment-constraints.md
-  - .agents/governance/git-workflow.md
-  - .agents/governance/github-governance.md
+  - docs/00.workspace/02.process/git-workflow.md
+  - docs/00.workspace/02.process/github-governance.md
   - .agents/governance/hooks/hookify.block-absolute-file-link.md
   - .agents/governance/hooks/hookify.block-direct-main-push.md
   - .agents/governance/hooks/hookify.block-gha-secrets-in-run.md
@@ -52,11 +52,11 @@ canonical_sources:
   - .agents/governance/provider-capability-matrix.md
   - .agents/governance/providers/README.md
   - .agents/governance/providers/registry.yaml
-  - .agents/governance/quality-standards.md
-  - .agents/governance/sdlc.md
-  - .agents/governance/stage-authoring-matrix.md
+  - docs/00.workspace/03.quality/quality-standards.md
+  - docs/00.workspace/02.process/sdlc.md
+  - docs/00.workspace/01.project/stage-authoring-matrix.md
   - .agents/governance/standards.md
-  - .agents/governance/task-checklists.md
+  - docs/00.workspace/03.quality/task-checklists.md
   - .agents/governance/workflows.md
   - .agents/knowledge/README.md
   - .agents/knowledge/glossary.md

@@ -1,10 +1,10 @@
 ---
 title: "Reference: Automation Pipeline and Workflow Topology"
-version: "1.4.0"
+version: "1.4.1"
 type: "reference/research"
 status: "published"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "references"
 artifact_id: "RES-0002-m0004"
 parent_ids:
@@ -51,7 +51,7 @@ and provider-comparison members.
 - [Harness engineering](./m0008-harness-engineering.md)
 - [Loop engineering](./m0010-loop-engineering.md)
 - [Spec-driven SDLC](./m0018-spec-driven-sdlc.md)
-- [GitHub governance](../../../../.agents/governance/github-governance.md)
+- [GitHub governance](../../../00.workspace/02.process/github-governance.md)
 - Execution Task (retired path: `../../../04.execution/tasks/2026-08-08-agentic-research-pack-rebuild.md`)
 
 - [Agentic Engineering Research Pack](README.md)
@@ -694,7 +694,7 @@ Measure accepted findings and defect detection, not comments/tests produced.
 > | [Workflow contract checker](../../../../scripts/validation/check-github-workflow-contract.py)                                                                | 2026-08-08; re-run 2026-08-14      | Workspace tracked/local execution      | Static check PASS re-run directly at `ece3eda9`; no hosted run or control-plane proof.                                                                                                                                                      |
 > | [Typed validation dispatcher](../../../../scripts/validation/run-ci-gate.py)                                                                                 | 2026-08-08; current route re-verified 2026-09-04 | Workspace tracked/local list execution | The historical `--list` observation executed no leaves; the current dispatcher derives its ordered expansion from the typed workflow contract.                                                                                                                                                |
 > | [Desired main protection proposal](../../../../.github/rulesets/main-protection.md)                                                                          | 2026-08-08; re-verified 2026-08-14 | Workspace tracked proposal             | Sixteen desired check names re-read; confirmed byte-for-byte identical set and order to `job_roots`' 16 `job_id` values; explicitly not applied-state evidence.                                                                             |
-> | [GitHub governance policy](../../../../.agents/governance/github-governance.md)                                                                          | 2026-08-14                         | Workspace tracked policy               | §8 "CI/CD Job Taxonomy" read in full; three-surface coupling constraint, `pre-commit` job's exact pinned-dependency install path, and non-gating workflow table used.                                                                       |
+> | [GitHub governance policy](../../../00.workspace/02.process/github-governance.md)                                                                          | 2026-08-14                         | Workspace tracked policy               | §8 "CI/CD Job Taxonomy" read in full; three-surface coupling constraint, `pre-commit` job's exact pinned-dependency install path, and non-gating workflow table used.                                                                       |
 > | Public control-plane snapshot (retired DATA-0071)                                                         | 2026-08-08                         | Historical retained observation        | Dated 2026-07-26; current rules, failure cause, and remote enforcement remain `UNVERIFIED`.                                                                                                                                                 |
 > | Graphify report (`graphify-out/GRAPH_REPORT.md`, untracked local output since 2026-09-08)                                                                                                  | 2026-08-08                         | Workspace tracked stale/advisory       | Built from `f8a72211`; corroborated and not used as current proof.                                                                                                                                                                          |
 >

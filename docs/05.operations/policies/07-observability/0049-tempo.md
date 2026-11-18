@@ -1,10 +1,10 @@
 ---
 title: "Tempo Operations Policy"
-version: "1.3.0"
+version: "1.3.1"
 type: "operation/policy"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 artifact_id: "POL-0049"
 parent_ids:
@@ -160,7 +160,7 @@ Tempo gRPC `9095`은 listen address를 지정하지 않아 모든 인터페이�
 - Custom image secret guard:
   `rg -n 'FROM grafana/tempo:|USER 10001:10001|S3_SECRET_KEY_FILE is not set|missing secret:' infra/06-observability/tempo/{Dockerfile,docker-entrypoint.sh}`
 - Repository contracts:
-  원격 PR public `changed` 검사 ([quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix))
+  원격 PR public `changed` 검사 ([quality policy](../../../00.workspace/03.quality/quality-standards.md#canonical-delivery-phase-matrix))
 
 ### Limits
 

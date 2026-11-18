@@ -3,11 +3,11 @@ name: "container-threat-modeling"
 description: "Use when a container workload needs a read-only threat model of assets, trust boundaries, exploit paths, and owned mitigations."
 metadata:
   title: "container-threat-modeling"
-  version: "1.3.0"
+  version: "1.3.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-17"
+  updated: "2026-11-18"
   function_id: "container-threat-modeling"
   scope: "security"
   owner_agent: "security-auditor"
@@ -62,7 +62,7 @@ Owning role, policies and related documents:
 
 - [Security auditor](../../roles/security-auditor.md)
 - [Security audit](../security-audit/SKILL.md)
-- [Security scope](../../governance/quality-standards.md)
+- [Security scope](../../../docs/00.workspace/03.quality/quality-standards.md)
 
 ## Verification
 

@@ -1,6 +1,6 @@
 ---
 title: "Traefik Edge Router"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -111,7 +111,7 @@ Compose가 참조하는 secret은 `traefik_basicauth_password`, `traefik_opensea
 
 #### Usage
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/02.process/documentation-protocol.md)을 따른다.
 
 1. `config/traefik.yml`을 먼저 검토해 핵심 라우팅 entrypoint를 이해합니다.
 2. 새 서비스에 인증이나 rate-limiting을 추가할 때는 `dynamic/middleware.yml`을 확인합니다.

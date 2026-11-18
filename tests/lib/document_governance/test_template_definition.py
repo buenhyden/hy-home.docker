@@ -51,7 +51,10 @@ def _reference_failures(definition: dict) -> list[str]:
         path, _, anchor = ref.partition("#")
         target = ROOT / path
         if (
-            not re.fullmatch(r"\.agents/governance/[a-z-]+\.md", path)
+            not re.fullmatch(
+                r"(?:\.agents/governance|docs/00\.workspace/0[1-3]\.[a-z]+)/[a-z-]+\.md",
+                path,
+            )
             or not target.is_file()
         ):
             failures.append(ref)
@@ -377,7 +380,9 @@ class TemplateDefinitionTests(unittest.TestCase):
     def test_dangling_authored_references_are_reported(self) -> None:
         definition = copy.deepcopy(self.definitions["sdlc/task"])
         definition["consumer_paths"] = ["scripts/does-not-exist.py"]
-        definition["policy_refs"] = [".agents/governance/sdlc.md#no-such-anchor"]
+        definition["policy_refs"] = [
+            "docs/00.workspace/02.process/sdlc.md#no-such-anchor"
+        ]
         definition["vocabulary_refs"] = ["TERM-NOT-A-TERM"]
         definition["validation"]["positive"] = [
             "tests.lib.document_governance.test_registry:NoSuchTests"

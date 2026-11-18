@@ -83,6 +83,7 @@ from scripts.lib.document_governance.taxonomy import validate_stable_identity
 
 # Historical Git blob origins only; never a current filesystem authority.
 GOVERNANCE_RETIRED_PATHS = ("docs/00.agent-governance",)
+WORKSPACE_POLICY_ROOT = "docs/00.workspace/"
 
 
 def _expected_document_type(profile_id: str) -> str:
@@ -993,6 +994,20 @@ def _governance_moved_body_baseline(
     if not isinstance(registry, DocumentRegistry) or not base_ref:
         return None, None
     profile_id = classify_registered_path(target.as_posix(), registry)
+    if target.as_posix().startswith(WORKSPACE_POLICY_ROOT) and profile_id in {
+        "governance-policy",
+        "governance-sdlc",
+    }:
+        # The shared policies moved here from the agent governance home.
+        return _verified_moved_baseline(
+            root,
+            target,
+            pathlib.Path(".agents/governance") / target.name,
+            profiles,
+            registry,
+            profile_id,
+            base_ref,
+        )
     origins = {
         "governance-policy": f"policies/{target.name}",
         "governance-hook-policy": f"policies/hooks/{target.name}",
@@ -1014,6 +1029,22 @@ def _governance_moved_body_baseline(
         if target.as_posix() == ".agents/evaluations/README.md"
         else pathlib.Path(GOVERNANCE_RETIRED_PATHS[0]) / origin
     )
+    return _verified_moved_baseline(
+        root, target, source, profiles, registry, profile_id, base_ref
+    )
+
+
+def _verified_moved_baseline(
+    root: pathlib.Path,
+    target: pathlib.Path,
+    source: pathlib.Path,
+    profiles: Mapping[str, object],
+    registry: DocumentRegistry,
+    profile_id: str,
+    base_ref: str,
+) -> tuple[Record | None, str | None]:
+    """Take a moved document's base record only when its type and identity match."""
+
     text = _text_at_ref(root, source, base_ref)
     if text is None:
         return None, None

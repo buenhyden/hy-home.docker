@@ -3,11 +3,11 @@ name: "ops-runbook-agent"
 description: "Use when implemented and verified operational behavior needs an executable runbook with expected signals, recovery, and escalation."
 metadata:
   title: "ops-runbook-agent"
-  version: "1.4.0"
+  version: "1.4.1"
   type: "governance/skill"
   status: "active"
   owner: "@buenhyden"
-  updated: "2026-11-17"
+  updated: "2026-11-18"
   function_id: "ops-runbook-agent"
   scope: "ops"
   owner_agent: "doc-writer"
@@ -65,8 +65,8 @@ Do not publish commands that are unimplemented, destructive without approval, or
 Owning role, policies and related documents:
 
 - [Documentation writer](../../roles/doc-writer.md)
-- [Operations scope](../../governance/quality-standards.md)
-- [Documentation protocol](../../governance/documentation-protocol.md)
+- [Operations scope](../../../docs/00.workspace/03.quality/quality-standards.md)
+- [Documentation protocol](../../../docs/00.workspace/02.process/documentation-protocol.md)
 - [Stateful recovery contract review](../stateful-recovery-contract-review/SKILL.md)
 
 ## Verification

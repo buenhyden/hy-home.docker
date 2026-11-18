@@ -296,7 +296,7 @@
       "opaque": true,
       "suite_key": "ci-gate-adapter-regressions",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#gate-and-fixture-ownership"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#gate-and-fixture-ownership"
     },
     {
       "gate_id": "leaf.ci-gate-contract-regressions",
@@ -314,7 +314,7 @@
       "opaque": true,
       "suite_key": "ci-gate-contract-regressions",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#gate-and-fixture-ownership"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#gate-and-fixture-ownership"
     },
     {
       "gate_id": "leaf.ci-gate-runner-regressions",
@@ -333,7 +333,7 @@
       "opaque": true,
       "suite_key": "ci-gate-runner-regressions",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#gate-and-fixture-ownership"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#gate-and-fixture-ownership"
     },
     {
       "gate_id": "leaf.ci-precommit-regressions",
@@ -346,7 +346,7 @@
       "opaque": true,
       "suite_key": "ci-precommit-regressions",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#gate-and-fixture-ownership"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#gate-and-fixture-ownership"
     },
     {
       "gate_id": "leaf.document-governance-library-regressions",
@@ -380,7 +380,7 @@
       "opaque": true,
       "suite_key": "document-governance-library-regressions",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/documentation-protocol.md#authoring-rules"
+      "rule_owner": "docs/00.workspace/02.process/documentation-protocol.md#authoring-rules"
     },
     {
       "gate_id": "leaf.compose-validation",
@@ -393,7 +393,7 @@
       "opaque": true,
       "suite_key": "compose-validation",
       "guarantee": "deploy",
-      "rule_owner": ".agents/governance/quality-standards.md#4-execution-boundary"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary"
     },
     {
       "gate_id": "leaf.dependency-vulnerability-audit",
@@ -412,7 +412,7 @@
       "opaque": true,
       "suite_key": "dependency-vulnerability-audit",
       "guarantee": "security",
-      "rule_owner": ".agents/governance/quality-standards.md#2-security-baseline"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#2-security-baseline"
     },
     {
       "gate_id": "leaf.operations-catalog",
@@ -425,7 +425,7 @@
       "opaque": true,
       "suite_key": "operations-catalog",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/documentation-protocol.md#document-boundaries"
+      "rule_owner": "docs/00.workspace/02.process/documentation-protocol.md#document-boundaries"
     },
     {
       "gate_id": "leaf.docs-traceability",
@@ -441,7 +441,7 @@
       "opaque": true,
       "suite_key": "docs-traceability",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/documentation-protocol.md#link-types-and-document-relations"
+      "rule_owner": "docs/00.workspace/02.process/documentation-protocol.md#link-types-and-document-relations"
     },
     {
       "gate_id": "leaf.frontend-build",
@@ -460,7 +460,7 @@
       "opaque": true,
       "suite_key": "frontend-build",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#4-execution-boundary"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary"
     },
     {
       "gate_id": "leaf.frontend-lint",
@@ -479,7 +479,7 @@
       "opaque": true,
       "suite_key": "frontend-lint",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#10-formatting-and-linting-ownership"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#10-formatting-and-linting-ownership"
     },
     {
       "gate_id": "leaf.frontend-quality",
@@ -498,7 +498,7 @@
       "opaque": true,
       "suite_key": "frontend-quality",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#4-execution-boundary"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary"
     },
     {
       "gate_id": "leaf.frontend-typecheck",
@@ -517,7 +517,7 @@
       "opaque": true,
       "suite_key": "frontend-typecheck",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#10-formatting-and-linting-ownership"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#10-formatting-and-linting-ownership"
     },
     {
       "gate_id": "leaf.commit-message-contract",
@@ -535,7 +535,7 @@
       "opaque": true,
       "suite_key": "commit-message-contract",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/git-workflow.md#1-commit-standards"
+      "rule_owner": "docs/00.workspace/02.process/git-workflow.md#1-commit-standards"
     },
     {
       "gate_id": "leaf.infrastructure-hardening",
@@ -548,7 +548,7 @@
       "opaque": true,
       "suite_key": "infrastructure-hardening",
       "guarantee": "deploy",
-      "rule_owner": ".agents/governance/quality-standards.md#4-execution-boundary"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary"
     },
     {
       "gate_id": "leaf.local-agent-governance-contract",
@@ -584,7 +584,7 @@
       "opaque": true,
       "suite_key": "local-diff-hygiene",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#10-formatting-and-linting-ownership"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#10-formatting-and-linting-ownership"
     },
     {
       "gate_id": "leaf.local-hook-rule-tests",
@@ -610,7 +610,7 @@
       "opaque": true,
       "suite_key": "local-hook-rule-tests",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#gate-and-fixture-ownership"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#gate-and-fixture-ownership"
     },
     {
       "gate_id": "leaf.local-document-corpus-lifecycle",
@@ -625,7 +625,7 @@
       "opaque": true,
       "suite_key": "local-document-corpus-lifecycle",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/documentation-protocol.md#document-retention-and-retirement"
+      "rule_owner": "docs/00.workspace/02.process/documentation-protocol.md#document-retention-and-retirement"
     },
     {
       "gate_id": "leaf.local-document-metadata-tests",
@@ -647,7 +647,7 @@
       "opaque": true,
       "suite_key": "local-document-metadata-tests",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/documentation-protocol.md#authoring-rules"
+      "rule_owner": "docs/00.workspace/02.process/documentation-protocol.md#authoring-rules"
     },
     {
       "gate_id": "leaf.local-document-corpus-lifecycle-tests",
@@ -667,7 +667,7 @@
       "opaque": true,
       "suite_key": "local-document-corpus-lifecycle-tests",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/documentation-protocol.md#document-retention-and-retirement"
+      "rule_owner": "docs/00.workspace/02.process/documentation-protocol.md#document-retention-and-retirement"
     },
     {
       "gate_id": "leaf.local-script-manifest",
@@ -680,7 +680,7 @@
       "opaque": true,
       "suite_key": "local-script-manifest",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#7-local-qaci-orchestration"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#7-local-qaci-orchestration"
     },
     {
       "gate_id": "leaf.local-provider-surface-drift",
@@ -695,7 +695,7 @@
       "opaque": true,
       "suite_key": "local-provider-surface-drift",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#6-generated-artifact-freshness"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#6-generated-artifact-freshness"
     },
     {
       "gate_id": "leaf.local-shell-syntax",
@@ -710,7 +710,7 @@
       "opaque": true,
       "suite_key": "local-shell-syntax",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#10-formatting-and-linting-ownership"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#10-formatting-and-linting-ownership"
     },
     {
       "gate_id": "leaf.local-tech-stack-version-drift",
@@ -725,7 +725,7 @@
       "opaque": true,
       "suite_key": "local-tech-stack-version-drift",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#6-generated-artifact-freshness"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#6-generated-artifact-freshness"
     },
     {
       "gate_id": "leaf.storybook-contract",
@@ -738,7 +738,7 @@
       "opaque": true,
       "suite_key": "storybook-contract",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#4-execution-boundary"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary"
     },
     {
       "gate_id": "leaf.changed-style",
@@ -759,7 +759,7 @@
       "opaque": true,
       "suite_key": "changed-style",
       "guarantee": "security",
-      "rule_owner": ".agents/governance/quality-standards.md#10-formatting-and-linting-ownership"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#10-formatting-and-linting-ownership"
     },
     {
       "gate_id": "leaf.compose-baseline-regressions",
@@ -894,7 +894,7 @@
       "opaque": true,
       "suite_key": "compose-baseline-regressions",
       "guarantee": "deploy",
-      "rule_owner": ".agents/governance/quality-standards.md#4-execution-boundary"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary"
     },
     {
       "gate_id": "leaf.p03-hermes",
@@ -907,7 +907,7 @@
       "opaque": true,
       "suite_key": "p03-hermes",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#7-local-qaci-orchestration"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#7-local-qaci-orchestration"
     },
     {
       "gate_id": "leaf.p11-hermes",
@@ -920,7 +920,7 @@
       "opaque": true,
       "suite_key": "p11-hermes",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#7-local-qaci-orchestration"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#7-local-qaci-orchestration"
     },
     {
       "gate_id": "leaf.release-regressions",
@@ -937,7 +937,7 @@
       "opaque": true,
       "suite_key": "release-regressions",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#4-execution-boundary"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary"
     },
     {
       "gate_id": "leaf.repository-integrity-regressions",
@@ -1015,7 +1015,7 @@
       "opaque": true,
       "suite_key": "repository-integrity-regressions",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#gate-and-fixture-ownership"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#gate-and-fixture-ownership"
     },
     {
       "gate_id": "leaf.repo-contracts-control-plane-regressions",
@@ -1033,7 +1033,7 @@
       "opaque": true,
       "suite_key": "repo-contracts-control-plane-regressions",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#gate-and-fixture-ownership"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#gate-and-fixture-ownership"
     },
     {
       "gate_id": "leaf.repo-document-metadata",
@@ -1051,7 +1051,7 @@
       "opaque": true,
       "suite_key": "repo-document-metadata",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/documentation-protocol.md#authoring-rules"
+      "rule_owner": "docs/00.workspace/02.process/documentation-protocol.md#authoring-rules"
     },
     {
       "gate_id": "leaf.local-candidate-preflight",
@@ -1064,7 +1064,7 @@
       "opaque": true,
       "suite_key": "local-candidate-preflight",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/git-workflow.md#7-git-action-stages"
+      "rule_owner": "docs/00.workspace/02.process/git-workflow.md#7-git-action-stages"
     },
     {
       "gate_id": "leaf.repo-metadata-base",
@@ -1081,7 +1081,7 @@
       "opaque": true,
       "suite_key": "repo-metadata-base",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/git-workflow.md#7-git-action-stages"
+      "rule_owner": "docs/00.workspace/02.process/git-workflow.md#7-git-action-stages"
     },
     {
       "gate_id": "leaf.storybook-coverage",
@@ -1100,7 +1100,7 @@
       "opaque": true,
       "suite_key": "storybook-coverage",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#4-execution-boundary"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary"
     },
     {
       "gate_id": "leaf.supply-chain-deterministic-policy",
@@ -1115,7 +1115,7 @@
       "opaque": true,
       "suite_key": "supply-chain-deterministic-policy",
       "guarantee": "security",
-      "rule_owner": ".agents/governance/quality-standards.md#2-security-baseline",
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#2-security-baseline",
       "security_db": "grype"
     },
     {
@@ -1140,7 +1140,7 @@
       "opaque": true,
       "suite_key": "supply-chain-fixture-policy",
       "guarantee": "security",
-      "rule_owner": ".agents/governance/quality-standards.md#2-security-baseline",
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#2-security-baseline",
       "security_db": "grype"
     },
     {
@@ -1157,7 +1157,7 @@
       "opaque": true,
       "suite_key": "conftest-policy",
       "guarantee": "security",
-      "rule_owner": ".agents/governance/quality-standards.md#2-security-baseline"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#2-security-baseline"
     },
     {
       "gate_id": "leaf.conftest-policy-tests",
@@ -1173,7 +1173,7 @@
       "opaque": true,
       "suite_key": "conftest-policy-tests",
       "guarantee": "security",
-      "rule_owner": ".agents/governance/quality-standards.md#2-security-baseline"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#2-security-baseline"
     },
     {
       "gate_id": "leaf.template-security-baseline",
@@ -1186,7 +1186,7 @@
       "opaque": true,
       "suite_key": "template-security-baseline",
       "guarantee": "security",
-      "rule_owner": ".agents/governance/quality-standards.md#2-security-baseline"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#2-security-baseline"
     },
     {
       "gate_id": "leaf.workflow-contract",
@@ -1199,7 +1199,7 @@
       "opaque": true,
       "suite_key": "workflow-contract",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/github-governance.md#4-github-actions-security-contract"
+      "rule_owner": "docs/00.workspace/02.process/github-governance.md#4-github-actions-security-contract"
     },
     {
       "gate_id": "leaf.workflow-contract-regressions",
@@ -1218,7 +1218,7 @@
       "opaque": true,
       "suite_key": "workflow-contract-regressions",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/github-governance.md#4-github-actions-security-contract"
+      "rule_owner": "docs/00.workspace/02.process/github-governance.md#4-github-actions-security-contract"
     },
     {
       "gate_id": "leaf.zizmor",
@@ -1233,7 +1233,7 @@
       "opaque": true,
       "suite_key": "zizmor",
       "guarantee": "security",
-      "rule_owner": ".agents/governance/github-governance.md#4-github-actions-security-contract"
+      "rule_owner": "docs/00.workspace/02.process/github-governance.md#4-github-actions-security-contract"
     },
     {
       "gate_id": "local.compose-validation",
@@ -1358,7 +1358,7 @@
       "opaque": true,
       "suite_key": "opsflow-smtp-node-coverage",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#4-execution-boundary"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary"
     },
     {
       "gate_id": "leaf.opsflow-smtp-npm-production-audit",
@@ -1374,7 +1374,7 @@
       "opaque": true,
       "suite_key": "opsflow-smtp-npm-production-audit",
       "guarantee": "security",
-      "rule_owner": ".agents/governance/quality-standards.md#2-security-baseline"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#2-security-baseline"
     },
     {
       "gate_id": "leaf.opsflow-smtp-package",
@@ -1390,7 +1390,7 @@
       "opaque": true,
       "suite_key": "opsflow-smtp-package",
       "guarantee": "none",
-      "rule_owner": ".agents/governance/quality-standards.md#4-execution-boundary"
+      "rule_owner": "docs/00.workspace/03.quality/quality-standards.md#4-execution-boundary"
     }
   ],
   "public_gate": {
@@ -1629,6 +1629,7 @@
           ".codex/",
           "AGENTS.md",
           "CLAUDE.md",
+          "docs/00.workspace/",
           "scripts/AGENTS.md",
           "scripts/CLAUDE.md",
           "tests/AGENTS.md",
@@ -2921,7 +2922,7 @@
   },
   "execution_evidence": {
     "schema_version": 1,
-    "owner": ".agents/governance/quality-standards.md#7-local-qaci-orchestration",
+    "owner": "docs/00.workspace/03.quality/quality-standards.md#7-local-qaci-orchestration",
     "directory_name": "ci-gate-evidence",
     "plan_file": "plan.json",
     "result_file": "result.json",

@@ -1,10 +1,10 @@
 ---
 title: "Harness / Agent-first Engineering Usage Guide"
-version: "1.4.0"
+version: "1.4.1"
 type: "operation/guide"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 artifact_id: "GDE-0004"
 parent_ids:
@@ -93,7 +93,7 @@ Hook repository revision과 container entry tag는 다른 선택이므로 둘을
 로컬은 작성 중 한정 회귀와 읽기 전용 진단을 수행하며 동일 후보의 aggregate를
 반복하지 않는다. main security는 병합된 SHA의 별도 관측이며, 릴리스는 승인된
 main revision에 대한 단일 수동 SemVer 생산자가 소유한다. 정확한 단계·선택·권한은
-[quality policy](../../../../.agents/governance/quality-standards.md#canonical-delivery-phase-matrix)와
+[quality policy](../../../00.workspace/03.quality/quality-standards.md#canonical-delivery-phase-matrix)와
 [release runbook](../../runbooks/10-platform-and-backup/0009-release-management.md)이 소유한다.
 소스 설정을 실제 hosted 성공이나 릴리스 게시로 기록하지 않는다.
 

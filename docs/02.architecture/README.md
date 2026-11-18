@@ -1,10 +1,10 @@
 ---
 title: "Architecture"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "architecture"
 ---
 
@@ -87,7 +87,7 @@ docs/02.architecture/
 
 - [에이전트 작업 규칙](AGENTS.md)
 - [Documentation Templates](../99.templates/README.md)
-- [문서 작성 계약](../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [문서 작성 계약](../00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
 - [README 템플릿](../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
 ### Checks
@@ -111,7 +111,7 @@ docs/02.architecture/
   `type: sdlc/architecture-decision`을 일치시킨다.
 - 호환·redirect 문서나 병렬 용어 체계를 만들지 않는다.
 - 날짜는 경로가 아니라 typed metadata에 둔다.
-- View와 diagram은 [공통 Agent 거버넌스 작성 정책](../../.agents/governance/documentation-protocol.md#role-specific-authoring)을 적용하고 실제 이해에 필요한 수준만 사용한다.
+- View와 diagram은 [공통 Agent 거버넌스 작성 정책](../00.workspace/02.process/documentation-protocol.md#role-specific-authoring)을 적용하고 실제 이해에 필요한 수준만 사용한다.
 
 #### Transition and Exit
 

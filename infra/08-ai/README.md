@@ -1,6 +1,6 @@
 ---
 title: "AI Infrastructure Tier (08-ai)"
-version: "1.2.0"
+version: "1.2.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -94,7 +94,7 @@ Ollama와 ComfyUI는 소유자가 확인한 상시 HOME 역량입니다. 런타�
 
 ### Selected Start
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../.agents/governance/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../.agents/governance/agentic.md)와 [documentation protocol](../../docs/00.workspace/02.process/documentation-protocol.md)을 따른다.
 
 1. Ollama Usage Guide(`docs/05.operations/guides/09-ai-and-search/0056-ollama.md`)를 읽습니다.
 2. RAG Workflow Guide(`docs/05.operations/guides/09-ai-and-search/0059-rag-workflow.md`)를 따릅니다. Open WebUI LAB은 `docs/05.operations/guides/15-labs/0057-open-webui.md`가 다룹니다.

@@ -1,10 +1,10 @@
 ---
 title: "WARNING: Stage document edit"
-version: "1.1.4"
+version: "1.1.5"
 type: "governance/rule"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-13"
+updated: "2026-11-18"
 action: "warn"
 conditions:
 - "field": "file_path"
@@ -51,7 +51,7 @@ None.
 **Before editing, confirm:**
 
 - [ ] The user explicitly authorized the stage document edit.
-- [ ] The target is inside an active stage artifact directory (the stages listed in [stage-authoring-matrix.md](../stage-authoring-matrix.md)).
+- [ ] The target is inside an active stage artifact directory (the stages listed in [stage-authoring-matrix.md](../../../docs/00.workspace/01.project/stage-authoring-matrix.md)).
 - [ ] The edit is in-place; no parallel replacement file is being created.
 - [ ] This rule applies whether the path arrives as `docs/...` or `/.../docs/...`.
 
@@ -62,7 +62,7 @@ python3 scripts/validation/run-ci-gate.py --profile changed --explain
 ```
 
 The plan inspection does not execute QA. Follow the current
-[quality policy](../quality-standards.md#canonical-delivery-phase-matrix) for
+[quality policy](../../../docs/00.workspace/03.quality/quality-standards.md#canonical-delivery-phase-matrix) for
 focused authoring checks and remote PR candidate validation.
 
 ### Enforcement

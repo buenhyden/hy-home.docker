@@ -1,10 +1,10 @@
 ---
 title: "Alertmanager Notification Routing"
-version: "1.1.0"
+version: "1.1.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 created: "2026-01-12"
 ---
 
@@ -86,7 +86,7 @@ Compose가 참조하는 secret은 `slack_webhook`, `smtp_password`, `smtp_userna
 
 #### Usage
 
-공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../.agents/governance/documentation-protocol.md)을 따른다.
+공통 실행 및 문서 규칙은 [공통 Agent 거버넌스 agentic governance](../../../.agents/governance/agentic.md)와 [documentation protocol](../../../docs/00.workspace/02.process/documentation-protocol.md)을 따른다.
 
 1. **Understand Routing**: `config/config.yml`을 검토하여 알림이 어떻게 그룹화, 억제, 무음 처리, 전달되는지 파악합니다.
 2. **Configuration Updates**: `config/config.yml`을 수정합니다. Compose는 이를 `/etc/alertmanager/config.yml.template`로 마운트하고 시작 시 시크릿을 `/tmp/config.yml`로 렌더링합니다.

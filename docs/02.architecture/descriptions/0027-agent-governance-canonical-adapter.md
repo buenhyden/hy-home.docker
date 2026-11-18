@@ -1,10 +1,10 @@
 ---
 title: "Agent Governance Canonical Adapter Architecture"
-version: "1.7.0"
+version: "1.7.1"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "architecture"
 artifact_id: "AD-0027"
 parent_ids:
@@ -35,7 +35,7 @@ created: "2026-06-01"
   the canonical source.
 - The current Task owns the execution result. Its durable meaning moves to
   current owners. A completed package can wait until its removal is separately
-  approved under the [SDLC retirement rules](../../../.agents/governance/sdlc.md#sequence).
+  approved under the [SDLC retirement rules](../../00.workspace/02.process/sdlc.md#sequence).
   Once removed, version history keeps its body.
 - User-global configuration, credentials, provider availability, and
   deployment state are outside this architecture. `.agents/evaluations/README.md`
@@ -95,7 +95,7 @@ meaning without creating another language or policy authority.
 | Stage 99 Registry document contract | Stage 99 Registry | The description names no consumer for this interface. | [Stage 99 Registry](../../99.templates/registry.json) | The description records no failure handling for this interface. |
 | Canonical `SKILL.md` and native skill adapters | `.agents/skills/` | Claude (`disable-model-invocation: true`) and Codex (`allow_implicit_invocation: false`) | The canonical `SKILL.md` with `name`, `description` and `metadata` | The description records no failure handling for this interface. |
 | Shared memory store | `scripts/operations/agent_memory.py` | Claude and Codex | The description links no contract for this interface. | The description records no failure handling for this interface. |
-| Task handoff and resumption | Current Task and reviewed Git diff | Controller resuming work | [Approval Boundaries](../../../.agents/governance/approval-boundaries.md#authorization-source-and-records) | A material mismatch stops dependent work until it is reconciled. |
+| Task handoff and resumption | Current Task and reviewed Git diff | Controller resuming work | [Approval Boundaries](../../00.workspace/02.process/approval-boundaries.md#authorization-source-and-records) | A material mismatch stops dependent work until it is reconciled. |
 
 - Bootstrap moves from the root shim to the shared policy and the matching provider adapter, per the Runtime View.
 - The Provider Registry carries provider identity and translation facts, and the Stage 99 Registry carries document shape and lifecycle.
@@ -121,7 +121,7 @@ the reviewed Git diff. Handoff is a derived Task view. Before resumption the
 controller re-reads the Task and latest trusted request, checks repository and
 worktree identity, and reconciles the applicable request revision, target,
 authorization scope and conditions, evidence and shared allocations under
-[Approval Boundaries](../../../.agents/governance/approval-boundaries.md#authorization-source-and-records).
+[Approval Boundaries](../../00.workspace/02.process/approval-boundaries.md#authorization-source-and-records).
 A material mismatch stops dependent work until it is reconciled.
 
 #### Deployment View

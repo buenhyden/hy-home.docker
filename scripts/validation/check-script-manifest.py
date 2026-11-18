@@ -540,7 +540,7 @@ def _local_reference_paths(repo_root: Path, requested: set[str]) -> set[str]:
         raise ValueError("local reference inventory exceeds its requested scope")
     canonical = (
         {path.as_posix() for path in canonical_source_paths(repo_root)}
-        if any(path.startswith(".agents/") for path in paths)
+        if any(path.startswith((".agents/", "docs/00.workspace/")) for path in paths)
         else set()
     )
     documents = {

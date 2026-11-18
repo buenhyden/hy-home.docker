@@ -66,6 +66,12 @@ _ROOT_FILES = frozenset(
     }
 )
 _MAX_ANCHOR_BYTES = 4 * 1024 * 1024
+# The human and agent common policies moved from .agents/governance/ to the
+# workspace policy stage; a completed Task keeps its link to the old path.
+_LEGACY_WORKSPACE_POLICY = re.compile(
+    r"^\.agents/governance/(?P<name>[a-z][a-z0-9-]*\.md)$"
+)
+_WORKSPACE_POLICY_ROOT = pathlib.PurePosixPath("docs/00.workspace")
 _LEGACY_FLAT_OPERATION_ROLE = re.compile(
     r"^docs/05\.operations/(?P<family>guides|policies|runbooks)/"
     # A former numbered family resolves too, after a move between families.
@@ -911,6 +917,18 @@ def _historical_operations_target(
     }.get((node.metadata.get("type"), node.metadata.get("status")))
     if source_profile is None or classify_path(link.source, registry) != source_profile:
         return None
+    moved = _LEGACY_WORKSPACE_POLICY.fullmatch(link.target.as_posix())
+    if moved is not None:
+        if source_profile != "task":
+            return None
+        candidates = [
+            path
+            for path in nodes
+            if path.parent.parent == _WORKSPACE_POLICY_ROOT
+            and path.name == moved.group("name")
+            and _regular_target(graph, path)[0] is not None
+        ]
+        return candidates[0] if len(candidates) == 1 else None
     matched = _LEGACY_FLAT_OPERATION_ROLE.fullmatch(link.target.as_posix())
     if matched is None:
         return None
@@ -1672,7 +1690,11 @@ def check_entrypoint(graph: DocumentGraph) -> list[LinkFinding]:
         )
         for line, _, raw, _ in destinations:
             target = _entrypoint_target(graph, node.path, raw)
-            if target is not None and _STAGE_DIRECTORY.match(target.as_posix()):
+            if (
+                target is not None
+                and _STAGE_DIRECTORY.match(target.as_posix())
+                and not target.is_relative_to(_WORKSPACE_POLICY_ROOT)
+            ):
                 findings.append(
                     LinkFinding(
                         f"{node.path.as_posix()}:{line}", "stage-link-outside-docs", raw
@@ -1836,7 +1858,12 @@ def check_navigation(graph: DocumentGraph) -> list[LinkFinding]:
                             f"folder label {label.strip()} resolves to {target_text}",
                         )
                     )
-            if not router or target == directory:
+            if (
+                not router
+                or target == directory
+                # A workspace policy is a normative owner, not a child page.
+                or target.is_relative_to(_WORKSPACE_POLICY_ROOT)
+            ):
                 continue
             try:
                 parts = target.relative_to(directory).parts

@@ -1,10 +1,10 @@
 ---
 title: "Summarize-and-Delete Retirement"
-version: "0.3.0"
+version: "0.3.1"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "architecture"
 artifact_id: "ADR-0051"
 parent_ids:
@@ -42,7 +42,7 @@ preservation model has no records left to govern.
 - [AD-0030 Document lifecycle governance](../descriptions/0030-document-lifecycle-governance.md)
 - [ADR-0037 Package waiting and Task cancellation](0037-package-disposition-wait-and-task-cancellation.md)
 - SPEC-0249 Stage 98 archive deletion (retired; version history)
-- [Documentation protocol](../../../.agents/governance/documentation-protocol.md#document-retention-and-retirement)
+- [Documentation protocol](../../00.workspace/02.process/documentation-protocol.md#document-retention-and-retirement)
 
 ### Decision Scope
 

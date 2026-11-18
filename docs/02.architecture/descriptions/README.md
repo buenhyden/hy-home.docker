@@ -1,10 +1,10 @@
 ---
 title: "Architecture Descriptions"
-version: "1.4.0"
+version: "1.4.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "architecture"
 ---
 
@@ -125,7 +125,7 @@ docs/02.architecture/descriptions/
 #### C4 and arc42 Placement
 
 C4와 arc42의 비례적 적용 원칙과 diagram 품질 기준은
-[공통 Agent 거버넌스 작성 정책](../../../.agents/governance/documentation-protocol.md#role-specific-authoring)이
+[공통 Agent 거버넌스 작성 정책](../../00.workspace/02.process/documentation-protocol.md#role-specific-authoring)이
 소유한다. 템플릿의 `Context and Boundaries`, `Structure`의 `Building Blocks`와
 `Interfaces`, `Runtime Behavior`의 `Normal Flow`와 `Failure and Recovery`,
 `Quality Scenarios`의 `Scenarios`와 `Trade-offs`에 해당 내용을 배치한다.
@@ -152,7 +152,7 @@ C4와 arc42의 비례적 적용 원칙과 diagram 품질 기준은
 
 - [에이전트 작업 규칙](../AGENTS.md)
 - [Architecture Description Template](../../99.templates/templates/architecture/description.template.md)
-- [문서 작성 계약](../../../.agents/governance/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
+- [문서 작성 계약](../../00.workspace/02.process/documentation-protocol.md#readme-and-agentsmd): README와 AGENTS.md의 역할 구분
 - [README 템플릿](../../99.templates/templates/common/readme-stage.template.md): 이 README의 양식 원본이며 형식은 Stage 99 Registry의 profile이 소유합니다
 
 ### Checks
