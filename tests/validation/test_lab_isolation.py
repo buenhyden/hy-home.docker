@@ -255,6 +255,9 @@ class LabInventoryAndSelectionTests(RenderedModels):
             for path in tracked
             if not path.startswith(("docs/98.archive/", "docs/03.specs/", "tests/"))
             and path != "scripts/operations/lab.py"
+            # The hook rule that blocks these starts quotes them as BLOCKED examples.
+            and path
+            != ".agents/governance/hooks/hookify.block-whole-stack-compose-start.md"
             and start.search((ROOT / path).read_text(encoding="utf-8", errors="ignore"))
         ]
         self.assertEqual([], offenders)

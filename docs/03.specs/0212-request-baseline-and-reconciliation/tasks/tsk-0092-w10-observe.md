@@ -96,6 +96,8 @@ the observe command follows.
 | Grouping GREEN | 148 | W164 | `test_destructive_restic_actions_need_explicit_confirmation` | Fixed `backup.sh` | PASS | Restic gate tests pass, 1 skipped | required | Grouping RED |
 | Grouping review | 148 | W164 | Fresh-context `code-reviewer` review | PR 1111 at `d50615a8c` | PASS | Approve with follow-up: preview contradicted the real run (medium), substring test (low), runbook reason (low); 146 s, 1 round; all three fixed | required | - |
 | Restic dry run | 148 | W164 | `restic forget --dry-run` with the fixed grouping | Both local repositories, read-only | PASS | State: remove 14 of 48; host: remove 0 of 34 | required | - |
+| Hosted lab isolation | 148 | W164 | `test_no_document_or_script_starts_the_root_with_every_profile` | PR 1111 candidate-core at `a2eb4c866` | FAIL | The whole-stack hook rule from PR 1101 quotes its BLOCKED examples; first selected by this backup change | required | - |
+| Lab isolation fixed | 148 | W164 | `test_no_document_or_script_starts_the_root_with_every_profile` | Exemption for the blocking hook rule, like `lab.py` | PASS | Lab isolation tests pass | required | Hosted lab isolation |
 
 ### Resolution Links
 
