@@ -2,18 +2,27 @@
 
 from __future__ import annotations
 
+import datetime as dt
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from scripts.lib.hooks import session_capture as capture
 from scripts.operations import observe
 from scripts.operations import session_analysis as analysis
 from scripts.operations import task_forecast as forecast
 
-SINCE = "2026-11-18T00:00:00+00:00"
-UNTIL = "2026-11-19T00:00:00+00:00"
+NOW = dt.datetime.now(dt.UTC).replace(microsecond=0)
+
+
+def at(**delta) -> str:
+    return (NOW + dt.timedelta(**delta)).isoformat()
+
+
+SINCE, UNTIL = at(days=-1), at(hours=1)
 
 
 def fake_journal(lines: dict[str, list[str]]):
@@ -29,47 +38,49 @@ class ObserveTests(unittest.TestCase):
         self.addCleanup(temporary.cleanup)
         self.directory = Path(temporary.name) / ".workspace-capture"
         connection = capture.connect(self.directory)
-        connection.execute(
-            "INSERT INTO events (event_id, workspace_id, provider, session_id,"
-            " sequence, event_kind, origin, occurred_at, captured_at)"
-            " VALUES ('e1', 'w', 'claude', 's1', 1, 'prompt', 'hook',"
-            " '2026-11-18T10:00:00+00:00', '2026-11-18T10:00:01+00:00')"
-        )
-        connection.execute(
-            "INSERT INTO sessions (provider, session_id, completeness, reason)"
-            " VALUES ('codex', 's2', 'incomplete', 'transcript format unsupported')"
-        )
+        for event, session, when in (
+            ("e1", "s1", at(hours=-1)),
+            ("e0", "s0", at(days=-40)),
+        ):
+            connection.execute(
+                "INSERT INTO events (event_id, workspace_id, provider, session_id,"
+                " sequence, event_kind, origin, occurred_at, captured_at)"
+                " VALUES (?, 'w', 'codex', ?, 1, 'prompt', 'hook', ?, ?)",
+                (event, session, when, when),
+            )
+        for session, reason in (
+            ("s1", "3 unreadable lines; transcript format unsupported"),
+            ("s0", "transcript format unsupported"),
+        ):
+            connection.execute(
+                "INSERT INTO sessions (provider, session_id, completeness, reason)"
+                " VALUES ('codex', ?, 'partial', ?)",
+                (session, reason),
+            )
         connection.close()
         runs = analysis.connect(self.directory)
         runs.execute(
             "INSERT INTO runs (analysis_key, trigger, started_at, finished_at,"
-            " state, events, candidates) VALUES ('k1', 'scheduled',"
-            " '2026-11-18T18:00:00+00:00', '2026-11-18T18:00:01+00:00',"
-            " 'failed', 0, 0)"
+            " state, events, candidates) VALUES ('k1', 'scheduled', ?, ?,"
+            " 'complete', 1, 0)",
+            (at(hours=-2), at(hours=-2)),
         )
         runs.close()
-        for task, status in (("T1", "completed"), ("T2", "failed")):
-            forecast.forecast(
-                self.directory, task, "ci-run", 1, 2, 3,
-                forecasted_at="2026-11-18T08:00:00+00:00",
-            )  # fmt: skip
-            forecast.observe(
-                self.directory, task, status,
-                "2026-11-18T09:00:00+00:00", "2026-11-18T09:05:00+00:00",
-            )  # fmt: skip
-        run = self.directory / "dispatch" / "runs" / "r1"
-        run.mkdir(parents=True)
-        (run / "report.json").write_text(
+        (self.directory / analysis.STATUS_NAME).write_text(
             json.dumps(
-                {
-                    "run_id": "r1",
-                    "task": "SPEC-0212-TSK-0090",
-                    "status": "failed",
-                    "elapsed_seconds": 3.0,
-                    "units": [{"id": "a", "status": "failed"}],
-                }
+                {"trigger": "manual", "started_at": at(minutes=-30), "state": "failed"}
             )
         )
+        for task, status in (("T1", "completed"), ("T2", "failed")):
+            forecast.forecast(
+                self.directory, task, "ci-run", 1, 2, 3, forecasted_at=at(hours=-4)
+            )
+            forecast.observe(
+                self.directory, task, status, at(hours=-3), at(hours=-2, minutes=-55)
+            )
+        self.write_run("20261119T010000-abcdef", {
+            "task": "SPEC-0212-TSK-0090", "status": "failed",
+        })  # fmt: skip
         self.journal = fake_journal(
             {
                 "hyhome-backup.service": [
@@ -84,35 +95,80 @@ class ObserveTests(unittest.TestCase):
             }
         )
 
-    def report(self) -> dict:
-        return observe.report(self.directory, SINCE, UNTIL, journal=self.journal)
+    def write_run(self, name: str, content) -> Path:
+        run = self.directory / "dispatch" / "runs" / name
+        run.mkdir(parents=True)
+        (run / "report.json").write_text(json.dumps(content))
+        return run
 
-    def test_each_source_is_counted_in_the_window(self) -> None:
+    def report(self, since=SINCE, until=UNTIL, journal=None) -> dict:
+        return observe.report(
+            self.directory, since, until, journal=journal or self.journal
+        )
+
+    def sources(self, result: dict) -> list[str]:
+        return sorted(f["source"] for f in result["failures"])
+
+    def test_each_source_is_counted_in_the_window_only(self) -> None:
         result = self.report()
         self.assertEqual(1, result["capture"]["events"])
         self.assertEqual(1, result["capture"]["incomplete_sessions"])
-        self.assertEqual({"failed": 1}, result["analysis"]["runs"])
+        self.assertEqual({"complete": 1}, result["analysis"]["runs"])
+        self.assertEqual("failed", result["analysis"]["last_status"])
         self.assertEqual({"completed": 1, "failed": 1}, result["forecast"]["outcomes"])
         self.assertEqual({"failed": 1}, result["dispatch"]["runs"])
         backup = result["units"]["hyhome-backup.service"]
         self.assertEqual((2, 1), (backup["failed"], backup["succeeded"]))
 
     def test_every_failure_names_an_owner_and_a_next_step(self) -> None:
-        failures = self.report()["failures"]
-        sources = sorted(f["source"] for f in failures)
+        result = self.report()
         self.assertEqual(
-            ["analysis", "capture", "dispatch", "forecast", "unit"], sources
+            ["analysis", "capture", "dispatch", "forecast", "unit"],
+            self.sources(result),
         )
-        for failure in failures:
+        for failure in result["failures"]:
             self.assertTrue(failure["owner"])
             self.assertTrue(failure["next"])
-        (dispatch_failure,) = [f for f in failures if f["source"] == "dispatch"]
+        (dispatch_failure,) = [
+            f for f in result["failures"] if f["source"] == "dispatch"
+        ]
         self.assertEqual("SPEC-0212-TSK-0090", dispatch_failure["owner"])
+        (capture_failure,) = [f for f in result["failures"] if f["source"] == "capture"]
+        self.assertEqual(
+            "unreadable lines; transcript format unsupported", capture_failure["item"]
+        )
+        self.assertIn(
+            "step 4",
+            next(f for f in result["failures"] if f["source"] == "unit")["next"],
+        )
 
-    def test_no_log_text_reaches_the_report(self) -> None:
+    def test_no_log_or_worker_text_reaches_the_report(self) -> None:
+        self.write_run("20261119T020000-123456", {
+            "task": "forged owner text", "status": "rm -rf everything",
+        })  # fmt: skip
+        self.write_run("not-a-run-id", {"task": "x", "status": "failed"})
         text = json.dumps(self.report())
-        self.assertNotIn("do-not-copy-this", text)
-        self.assertNotIn("Failed with result", text)
+        for leaked in ("do-not-copy-this", "Failed with result", "forged owner text",
+                       "rm -rf everything", "not-a-run-id"):  # fmt: skip
+            self.assertNotIn(leaked, text)
+
+    def test_unreadable_run_reports_do_not_stop_the_report(self) -> None:
+        self.write_run("20261119T030000-000001", None)
+        broken = self.directory / "dispatch" / "runs" / "20261119T030000-000002"
+        broken.mkdir()
+        (broken / "report.json").symlink_to(broken / "missing")
+        failures = [f for f in self.report()["failures"] if f["source"] == "dispatch"]
+        self.assertEqual(3, len(failures))
+
+    def test_a_symlinked_store_is_reported_unavailable(self) -> None:
+        store = self.directory / capture.STORE_NAME
+        store.rename(self.directory / "real.sqlite3")
+        store.symlink_to(self.directory / "real.sqlite3")
+        result = self.report()
+        self.assertIn(
+            "capture.sqlite3 unavailable",
+            [f["item"] for f in result["failures"] if f["source"] == "capture"],
+        )
 
     def test_the_report_states_its_window_and_cost(self) -> None:
         result = self.report()
@@ -125,19 +181,34 @@ class ObserveTests(unittest.TestCase):
         def broken(unit, scope, since, until):
             raise OSError("journal unavailable")
 
-        result = observe.report(self.directory, SINCE, UNTIL, journal=broken)
-        backup = result["units"]["hyhome-backup.service"]
-        self.assertEqual("unreadable", backup["state"])
-        self.assertIn(
-            "hyhome-backup.service",
-            [f["item"] for f in result["failures"] if f["source"] == "unit"],
+        result = self.report(journal=broken)
+        self.assertEqual(
+            "unreadable", result["units"]["hyhome-backup.service"]["state"]
         )
+
+    def test_a_restricted_journal_is_unreadable(self) -> None:
+        hint = "Hint: You are currently not seeing messages from other users and the system."
+        done = subprocess.CompletedProcess([], 0, "Finished x\n", hint)
+        with mock.patch.object(observe.subprocess, "run", return_value=done):
+            with self.assertRaises(OSError):
+                observe.system_journal("hyhome-backup.service", "system", SINCE, UNTIL)
+
+    def test_a_day_without_any_run_is_a_failure(self) -> None:
+        result = self.report(journal=fake_journal({}))
+        missing = [f["item"] for f in result["failures"] if f["source"] == "unit"]
+        self.assertEqual(sorted(observe.WATCHED), sorted(missing))
+        short = self.report(since=at(minutes=-30), journal=fake_journal({}))
+        self.assertEqual([], [f for f in short["failures"] if f["source"] == "unit"])
 
     def test_an_empty_store_reports_zero_without_failures(self) -> None:
         empty = self.directory.parent / "empty"
-        result = observe.report(empty, SINCE, UNTIL, journal=fake_journal({}))
+        result = observe.report(empty, at(minutes=-30), UNTIL, journal=fake_journal({}))
         self.assertEqual(0, result["capture"]["events"])
         self.assertEqual([], result["failures"])
+
+    def test_a_reversed_window_is_refused(self) -> None:
+        with self.assertRaises(ValueError):
+            self.report(since=UNTIL, until=SINCE)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 ---
 title: "W10 Observe Task"
-version: "0.3.0"
+version: "0.4.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -99,6 +99,27 @@ analysis runs, 1 forecast outcome, 4 dispatch runs and 5 failed and 2
 finished backups, naming RUN-0021 as the backup owner; the same failures
 had taken a week and a manual journal read to find.
 
+#### Observe review and fixes
+
+The fresh-context review of `9cfb6e1ff` returned after 229 s with 35 tool
+calls and blocked. Its blocker was a test window fixed to 2026-11-18 UTC
+while the forecast outcome and the run report took the test's own clock, so
+the suite failed from 2026-11-19 UTC. It also found that analysis failures
+never reach the runs table, only `analysis-status.json` (high); incomplete
+sessions counted over the whole store, not the window (medium); a
+restricted journal or a day without any run reading as clean (medium); and
+lows on worker-written run report fields, the runbook step named, store
+errors, a reversed window and test gaps. The tests now derive the window
+from the current time and seed old records outside it; the report reads
+the last analysis status, counts only sessions with events in the window
+and merges reasons that differ only in counts, treats a journal hint about
+hidden lines, an unreadable or symlinked store and a day with no run as
+failures, echoes run report values only when they match a run id, a status
+or a Task reference, names RUN-0021 step 4, and refuses a reversed window
+and an outside-repository run with exit 2. A rerun of the 7-day report
+gave the same 5 failed backups in 0.149 s with the capture gaps grouped by
+cause.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -130,13 +151,16 @@ times, are not recorded by any store and stay unmeasured.
 | Observe RED | 148 | W164 | `test_observe` | New tests before the module | FAIL | Import error: no observe module | required | - |
 | Observe GREEN | 148 | W164 | `test_observe` | `observe.py` | PASS | 6 tests: window counts, owners and next steps, no log text, window and cost, unreadable journal, empty store | required | Observe RED |
 | Real observe report | 148 | W164 | `observe.py report` | This host, 2026-11-12 to 19 | PASS | 5 failed backups with RUN-0021 as owner, known capture gaps, 0.131 s | required | - |
+| Observe review | 148 | W164 | Fresh-context `code-reviewer` review | `9cfb6e1ff` | FAIL | Block: 1 blocker, 1 high, 2 medium, 5 low; 229 s, 1 round | required | - |
+| Observe fix RED | 148 | W164 | `test_observe` | Rewritten tests on `9cfb6e1ff` | FAIL | 7 failures, 1 error | required | - |
+| Observe fix GREEN | 148 | W164 | `test_observe` | Fixed `observe.py` | PASS | 11 tests | required | Observe fix RED |
 | Backup under budget | 148 | W164 | Daily `hyhome-backup.service` | 2026-11-20 03:42 KST run | NOT_RUN | Not yet run | required | - |
 
 ### Resolution Links
 
 Grouping GREEN resolves Grouping RED, Lab isolation fixed resolves Hosted
-lab isolation, Prune after fix resolves First prune, and Observe GREEN
-resolves Observe RED.
+lab isolation, Prune after fix resolves First prune, Observe GREEN
+resolves Observe RED, and Observe fix GREEN resolves Observe fix RED.
 
 ## Acceptance Decision
 

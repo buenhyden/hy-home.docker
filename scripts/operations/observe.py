@@ -5,9 +5,12 @@
 the dispatch run reports and the journal of the scheduled units, and counts
 what happened between `--since` and `--until` (default: the last 24 hours).
 Every failure names its owner and the next step. Journal lines are only
-counted; no log text, prompt or secret is copied into the report. The
-report states its own run time as the observation cost, and what it cannot
-measure. It is an on-demand view, never a gate and never an approval.
+counted, and worker-written fields are never echoed, so no log text, prompt
+or secret is copied into the report. A store that cannot be read, a journal
+that hides lines, and a daily unit with no run in a window of a day or more
+are failures, not zeros. The report states its own run time as the
+observation cost, and what it cannot measure. It is an on-demand view,
+never a gate and never an approval.
 """
 
 from __future__ import annotations
@@ -16,6 +19,7 @@ import argparse
 import collections
 import datetime as dt
 import json
+import re
 import sqlite3
 import subprocess
 import sys
@@ -26,28 +30,41 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from scripts.lib.hooks import session_capture as capture  # noqa: E402
+from scripts.operations.agent_memory import MemoryStoreError  # noqa: E402
 
 RUNBOOK = "RUN-0021"
-# unit -> (journal scope, owner, next step)
+# unit -> (journal scope, owner, next step); each runs at least once a day.
 WATCHED = {
     "hyhome-backup.service": (
         "system",
         f"{RUNBOOK} backup / @buenhyden",
-        f"journalctl -u hyhome-backup.service; {RUNBOOK} step 1 and step 7",
+        f"journalctl -u hyhome-backup.service; {RUNBOOK} step 4 and step 7",
     ),
     "hy-home-session-analysis.service": (
         "user",
         "ENVIRONMENT-CONSTRAINTS session analysis / @buenhyden",
-        "journalctl --user -u hy-home-session-analysis.service; session_analysis.py status",
+        "journalctl --user -u hy-home-session-analysis.service;"
+        " session_analysis.py status",
     ),
 }
 CAPTURE_OWNER = "ENVIRONMENT-CONSTRAINTS session capture / @buenhyden"
 ANALYSIS_OWNER = WATCHED["hy-home-session-analysis.service"][1]
+DISPATCH_OWNER = "TSK-0090 dispatcher"
+TASK_REF = re.compile(r"SPEC-\d{4}-TSK-\d{4}")
+RUN_ID = re.compile(r"\d{8}T\d{6}-[0-9a-f]{6}")
+RUN_STATES = ("succeeded", "failed", "cancelled")
+FAILED_ANALYSIS = ("failed", "cancelled", "fenced")
+RESTRICTED = "not seeing messages from other users"
 UNMEASURED = [
     "queue wait before each job starts",
     "context loading inside agents and reviewers",
     "token and money cost",
+    "analysis runs before the last one that ended other than complete",
 ]
+
+
+class StoreUnavailable(Exception):
+    """A store that exists but cannot be read as one."""
 
 
 def _when(value: str) -> dt.datetime:
@@ -57,29 +74,28 @@ def _when(value: str) -> dt.datetime:
     return parsed
 
 
-def _in(value: str | None, since: dt.datetime, until: dt.datetime) -> bool:
+def _in(value, since: dt.datetime, until: dt.datetime) -> bool:
     try:
-        return value is not None and since <= _when(value) < until
+        return isinstance(value, str) and since <= _when(value) < until
     except ValueError:
         return False
 
 
-def _readonly(path: Path) -> sqlite3.Connection | None:
-    if not path.is_file() or path.is_symlink():
-        return None
-    connection = sqlite3.connect(path.absolute().as_uri() + "?mode=ro", uri=True)
-    connection.row_factory = sqlite3.Row
-    return connection
-
-
 def _rows(path: Path, query: str) -> list[sqlite3.Row]:
-    connection = _readonly(path)
-    if connection is None:
+    """Rows from a store opened read-only; [] when it does not exist."""
+    if not path.exists() and not path.is_symlink():
         return []
+    if path.is_symlink() or not path.is_file():
+        raise StoreUnavailable(path.name)
     try:
-        return connection.execute(query).fetchall()
-    finally:
-        connection.close()
+        connection = sqlite3.connect(path.absolute().as_uri() + "?mode=ro", uri=True)
+        connection.row_factory = sqlite3.Row
+        try:
+            return connection.execute(query).fetchall()
+        finally:
+            connection.close()
+    except sqlite3.Error as error:
+        raise StoreUnavailable(path.name) from error
 
 
 def system_journal(unit: str, scope: str, since: str, until: str) -> list[str]:
@@ -94,12 +110,21 @@ def system_journal(unit: str, scope: str, since: str, until: str) -> list[str]:
     done = subprocess.run(command, capture_output=True, text=True, check=False)
     if done.returncode != 0:
         raise OSError(f"journalctl exited {done.returncode}")
+    if RESTRICTED in done.stderr:
+        raise OSError("journal hides other users' and system lines")
     return done.stdout.splitlines()
+
+
+def _reason(text: str | None) -> str:
+    """A capture reason without the counts it embeds, so one cause is one row."""
+    return re.sub(r"\b\d+ ", "", text or "unknown").strip()
 
 
 def report(directory: Path, since: str, until: str, journal=system_journal) -> dict:
     started = time.monotonic()
     low, high = _when(since), _when(until)
+    if low >= high:
+        raise ValueError("--since must be earlier than --until")
     failures = []
 
     def fail(source: str, item: str, count: int, owner: str, step: str) -> None:
@@ -113,81 +138,98 @@ def report(directory: Path, since: str, until: str, journal=system_journal) -> d
             }
         )
 
-    events = _rows(directory / capture.STORE_NAME, "SELECT occurred_at FROM events")
-    sessions = _rows(
-        directory / capture.STORE_NAME, "SELECT completeness, reason FROM sessions"
-    )
+    def rows(source: str, owner: str, name: str, query: str) -> list[sqlite3.Row]:
+        try:
+            return _rows(directory / name, query)
+        except StoreUnavailable:
+            fail(source, f"{name} unavailable", 1, owner, f"check {directory / name}")
+            return []
+
+    # Capture: events and the incomplete sessions active inside the window.
+    events = rows(
+        "capture", CAPTURE_OWNER, capture.STORE_NAME,
+        "SELECT session_id, occurred_at FROM events",
+    )  # fmt: skip
+    active = {row["session_id"] for row in events if _in(row["occurred_at"], low, high)}
+    sessions = rows(
+        "capture", CAPTURE_OWNER, capture.STORE_NAME,
+        "SELECT session_id, completeness, reason FROM sessions",
+    )  # fmt: skip
     incomplete = collections.Counter(
-        row["reason"] or "unknown"
+        _reason(row["reason"])
         for row in sessions
-        if row["completeness"] != "complete"
+        if row["completeness"] != "complete" and row["session_id"] in active
     )
     degraded = directory / "degraded.log"
-    degraded_lines = [
-        line
-        for line in (
-            degraded.read_text(encoding="utf-8").splitlines()
-            if degraded.is_file()
-            else []
-        )
-        if _in(line[:25], low, high)
-    ]
+    lines = (
+        degraded.read_text(encoding="utf-8").splitlines() if degraded.is_file() else []
+    )
+    degraded_count = sum(_in(line[:25], low, high) for line in lines)
     result = {
         "since": since,
         "until": until,
         "capture": {
             "events": sum(_in(row["occurred_at"], low, high) for row in events),
             "incomplete_sessions": sum(incomplete.values()),
-            "capture_failures": len(degraded_lines),
+            "capture_failures": degraded_count,
         },
     }
     for reason, count in sorted(incomplete.items()):
         fail(
-            "capture",
-            reason,
-            count,
-            CAPTURE_OWNER,
+            "capture", reason, count, CAPTURE_OWNER,
             "session_capture status; decide the capture-gap candidate",
-        )
-    if degraded_lines:
+        )  # fmt: skip
+    if degraded_count:
         fail(
-            "capture",
-            "degraded.log",
-            len(degraded_lines),
-            CAPTURE_OWNER,
+            "capture", "degraded.log", degraded_count, CAPTURE_OWNER,
             "read .workspace-capture/degraded.log",
-        )
+        )  # fmt: skip
 
-    runs = [
-        row
-        for row in _rows(
-            directory / "analysis.sqlite3", "SELECT state, started_at FROM runs"
-        )
-        if _in(row["started_at"], low, high)
-    ]
-    run_states = collections.Counter(row["state"] for row in runs)
-    pending = _rows(
-        directory / "analysis.sqlite3",
-        "SELECT COUNT(*) AS n FROM candidates WHERE decision = 'pending'",
+    # Analysis: the runs table holds complete runs only; the status file holds
+    # the last run whatever its end.
+    runs = rows(
+        "analysis", ANALYSIS_OWNER, "analysis.sqlite3",
+        "SELECT state, started_at FROM runs",
+    )  # fmt: skip
+    run_states = collections.Counter(
+        row["state"] for row in runs if _in(row["started_at"], low, high)
     )
+    pending = rows(
+        "analysis", ANALYSIS_OWNER, "analysis.sqlite3",
+        "SELECT COUNT(*) AS n FROM candidates WHERE decision = 'pending'",
+    )  # fmt: skip
+    status_path = directory / "analysis-status.json"
+    last = None
+    if status_path.is_file() and not status_path.is_symlink():
+        try:
+            status = json.loads(status_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError):
+            status = None
+            fail("analysis", "analysis-status.json unreadable", 1, ANALYSIS_OWNER,
+                 "session_analysis.py status")  # fmt: skip
+        if isinstance(status, dict) and _in(status.get("started_at"), low, high):
+            state = status.get("state")
+            last = (
+                state
+                if state in (*FAILED_ANALYSIS, "complete", "skipped")
+                else "unknown"
+            )
+            if last in FAILED_ANALYSIS or last == "unknown":
+                fail("analysis", f"last run {last}", 1, ANALYSIS_OWNER,
+                     "session_analysis.py status")  # fmt: skip
     result["analysis"] = {
         "runs": dict(run_states),
+        "last_status": last,
         "pending_candidates": pending[0]["n"] if pending else 0,
     }
-    for state, count in sorted(run_states.items()):
-        if state != "complete":
-            fail(
-                "analysis",
-                f"run {state}",
-                count,
-                ANALYSIS_OWNER,
-                "session_analysis.py status",
-            )
 
+    # Forecast outcomes recorded inside the window.
     outcomes = [
         row
-        for row in _rows(
-            directory / "forecast.sqlite3",
+        for row in rows(
+            "forecast",
+            "TSK-0089 forecast",
+            "forecast.sqlite3",
             "SELECT task_ref, status, observed_at FROM outcomes",
         )
         if _in(row["observed_at"], low, high)
@@ -197,62 +239,60 @@ def report(directory: Path, since: str, until: str, journal=system_journal) -> d
     }
     for row in outcomes:
         if row["status"] == "failed":
-            fail(
-                "forecast",
-                f"task {row['task_ref']} failed",
-                1,
-                row["task_ref"],
-                "the task's own record",
-            )
+            fail("forecast", f"task {row['task_ref']} failed", 1, row["task_ref"],
+                 "the task's own record")  # fmt: skip
 
-    # Run reports sit in a folder workers can write; they are read as claims.
+    # Dispatch reports sit in a folder workers can write: read them as claims
+    # and echo only values that match a fixed shape.
     dispatched = collections.Counter()
     for path in sorted((directory / "dispatch" / "runs").glob("*/report.json")):
-        modified = dt.datetime.fromtimestamp(path.stat().st_mtime, dt.UTC)
-        if not low <= modified < high:
-            continue
+        name = (
+            path.parent.name
+            if RUN_ID.fullmatch(path.parent.name)
+            else "unrecognised run folder"
+        )
         try:
+            modified = dt.datetime.fromtimestamp(path.stat().st_mtime, dt.UTC)
+            if not low <= modified < high:
+                continue
             run = json.loads(path.read_text(encoding="utf-8"))
+            if not isinstance(run, dict):
+                raise ValueError("not an object")
         except (OSError, ValueError):
-            fail(
-                "dispatch",
-                path.parent.name,
-                1,
-                "TSK-0090 dispatcher",
-                "unreadable run report",
-            )
+            fail("dispatch", f"{name} unreadable", 1, DISPATCH_OWNER,
+                 "inspect that run folder")  # fmt: skip
             continue
-        status = str(run.get("status", "unknown"))
+        status = run.get("status") if run.get("status") in RUN_STATES else "unknown"
+        task = run.get("task")
+        owner = (
+            task
+            if isinstance(task, str) and TASK_REF.fullmatch(task)
+            else DISPATCH_OWNER
+        )
         dispatched[status] += 1
         if status not in ("succeeded", "cancelled"):
-            fail(
-                "dispatch",
-                f"run {path.parent.name} {status}",
-                1,
-                str(run.get("task") or "TSK-0090 dispatcher"),
-                "work_dispatch.py report in that run folder",
-            )
+            fail("dispatch", f"{name} {status}", 1, owner,
+                 "work_dispatch.py report in that run folder")  # fmt: skip
     result["dispatch"] = {"runs": dict(dispatched)}
 
+    # Scheduled units: count, never copy, journal lines.
+    daily = high - low >= dt.timedelta(days=1)
     units = {}
     for unit, (scope, owner, step) in WATCHED.items():
         try:
             lines = journal(unit, scope, since, until)
         except OSError:
             units[unit] = {"state": "unreadable"}
-            fail(
-                "unit",
-                unit,
-                1,
-                owner,
-                "the journal could not be read; check it by hand",
-            )
+            fail("unit", unit, 1, owner,
+                 "the journal could not be read in full; check it with access to it")  # fmt: skip
             continue
         failed = sum("Failed with result" in line for line in lines)
         succeeded = sum(line.startswith("Finished ") for line in lines)
         units[unit] = {"state": "read", "failed": failed, "succeeded": succeeded}
         if failed:
             fail("unit", unit, failed, owner, step)
+        elif daily and not succeeded:
+            fail("unit", unit, 1, owner, "no run in the window; check the timer")
     result["units"] = units
     result["failures"] = failures
     result["unmeasured"] = UNMEASURED
@@ -273,7 +313,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         result = report(capture.capture_dir(), args.since, args.until)
-    except (ValueError, OSError, sqlite3.Error) as error:
+    except (ValueError, OSError, sqlite3.Error, MemoryStoreError) as error:
         print(f"OBSERVE_REFUSED: {error}", file=sys.stderr)
         return 2
     print(json.dumps(result, indent=2, ensure_ascii=False))

@@ -795,8 +795,10 @@ lease와 실행 기록은 `.workspace-capture/dispatch/`에 있다. `cleanup`은
 `hy-home-session-analysis.service`의 journal에서 일어난 일을 센다. 실패마다 담당
 문서와 다음 확인 단계를 적고, journal 줄은 세기만 하며 로그 본문·prompt·secret은
 옮기지 않는다. 보고는 자기 실행 시간을 관측 비용으로 적고, 잴 수 없는 항목(대기,
-문맥 적재, 토큰과 비용)을 따로 적는다. 검사나 승인이 아니며 실패는 담당 기록에서
-해결한다.
+문맥 적재, 토큰과 비용)을 따로 적는다. 읽을 수 없는 저장소, 일부 줄을 숨기는 journal,
+하루 이상 구간에 실행이 없는 매일 unit은 0이 아니라 실패로 적는다. 병렬 실행 보고서는
+worker가 쓸 수 있으므로 정해진 형식의 값만 옮긴다. 검사나 승인이 아니며 실패는 담당
+기록에서 해결한다.
 
 ```bash
 python3 scripts/operations/observe.py report --since 2026-11-12T00:00:00+00:00
