@@ -1,6 +1,6 @@
 ---
 title: "W07 Native Provider Adapter Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -369,6 +369,29 @@ now states this. Timeout behavior remains unobserved.
 | SPEC-0212-TSK-0079 | draft | ready | #inputs-and-authority |
 | SPEC-0212-TSK-0079 | ready | in-progress | #design-before-implementation |
 
+#### RUNTIME-CLOSE checks on 2026-11-18
+
+A resumed headless Claude Code 2.1.327 session ran the project
+SessionStart hook on the `resume` source with exit status 0 and delivered
+its context. The cross-provider integration now has native witnesses from
+other Tasks: Claude and Codex sessions recorded SessionStart,
+UserPromptSubmit and Stop through the shared dispatcher (TSK-0084 W155),
+Codex read and wrote a Claude memory record and a stale Claude write was
+refused (TSK-0082 W151), and both providers' recall dropped a withdrawn
+and an erased record (TSK-0083 W153); nested worker dispatch was observed
+in the earlier RUNTIME-CLOSE pass.
+
+`codex exec` 0.169.0 with `--sandbox workspace-write` was asked to have a
+`code-reviewer` subagent read a synthetic fixture in the private capture
+directory and open it for writing without truncation. The spawned thread's
+session record names `agent_role: code-reviewer` and the parent's
+`workspace-write` sandbox; the read and the write-open both succeeded, and
+the fixture's digest, size and modification time stayed unchanged before
+it was removed. The role's `sandbox_mode = "read-only"` was not applied to
+the spawned thread, so a read-only review on this route needs a read-only
+parent, as the earlier `--sandbox read-only` control showed. The hook
+timeout case stays unobserved.
+
 ### Blockers and Decisions
 
 GitHub read-only status showed PRs 1047 and 1048 open. Local work stayed on
@@ -424,6 +447,8 @@ project trust before it can supply the missing delivery evidence.
 | 4.2.0 commit warning RED | 135 | W140 | commit contract translation test | Two valid multi-message commands and one invalid `-am` command at `94f551cb6` | FAIL | Two false warnings and one missed warning | required | - |
 | 4.2.0 commit warning GREEN | 135 | W140 | commit contract translation test | First-message-flag pattern | PASS | All cases pass; adapter and governance routing modules pass, renderer drift zero, governance contract clean | required | 4.2.0 commit warning RED |
 | 4.2.0 native Bash hook route | 135 | W140 | live PreToolUse Bash in this Claude session | Main push denial, two warnings and the corrected commit pattern | PASS | Deny and warn delivered on the Bash route; corrected pattern warned on the invalid probe and stayed silent on the valid one | optional | - |
+| Native cross-provider integration observed | 135 | W140 | capture, memory and worker dispatch witness | TSK-0084 W155, TSK-0082 W151, TSK-0083 W153 and the earlier nested worker dispatch | PASS | Both providers' hook events captured, cross-provider memory read, write and stale-write refusal, recall removal on both providers | required | Native cross-provider integration |
+| Codex reviewer subagent boundary | 135 | W140 | shell write and sensitive path denial | `codex exec` 0.169.0, `workspace-write` parent, `code-reviewer` subagent, synthetic fixture | FAIL | Spawned thread ran with the parent's `workspace-write` sandbox; write-open succeeded; fixture unchanged and removed | required | - |
 | RUNTIME-CLOSE Claude reviewer | 135 | W140 | live subagent tool list and Read | `code-reviewer` subagent, synthetic public and `secrets/` files | PASS | No write or shell tool; positive read allowed; sensitive path refused by permission settings | required | - |
 | RUNTIME-CLOSE Claude malformed output | 135 | W140 | headless PreToolUse output control | Claude Code 2.1.327, synthetic project hook, three Writes | PASS | Invalid JSON let the Write run; explicit deny refused it; no output allowed it | required | - |
 | RUNTIME-CLOSE Codex sandbox | 135 | W140 | read-only exec write attempt | codex-cli 0.169.0, synthetic directory | NOT_RUN | Blocked by the account usage limit before any tool call; target not reached | required | - |
@@ -431,6 +456,9 @@ project trust before it can supply the missing delivery evidence.
 
 ### Resolution Links
 
+Native cross-provider integration observed resolves Native cross-provider
+integration. The Codex reviewer subagent boundary failure stays open: on
+this route the role's read-only sandbox is not applied to a spawned thread.
 The focused command suite resolves the length regression. The lifecycle
 table resolves the authoring check failure. The trusted interactive
 SessionStart witness resolves the earlier missing Claude startup delivery
