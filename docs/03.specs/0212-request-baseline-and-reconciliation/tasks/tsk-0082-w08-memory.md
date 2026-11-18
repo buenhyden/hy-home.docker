@@ -92,7 +92,9 @@ still create snapshots without admission; W149 owns that part.
 
 No live Docker, Restic or ledger operation ran. The real ledger converts on
 the first reconcile after delivery, which a daily run or an approved manual
-`capacity reconcile` performs.
+`capacity reconcile` performs. W148 is high risk; on 2026-11-18 the owner
+chose to deliver it without the Q08 independent review, on the local tests
+and the hosted candidate checks.
 
 ## Verification Evidence
 
