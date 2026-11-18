@@ -199,6 +199,15 @@ def _killpg(pid: int) -> None:
         pass
 
 
+def _argv(value) -> bool:
+    """A command Popen can start: a non-empty list of strings without NUL."""
+    return (
+        isinstance(value, list)
+        and bool(value)
+        and all(isinstance(part, str) and "\0" not in part for part in value)
+    )
+
+
 def _validate(plan: dict) -> dict[str, dict]:
     units = plan.get("units") or []
     ids = [u.get("id") for u in units]
@@ -209,8 +218,8 @@ def _validate(plan: dict) -> dict[str, dict]:
             raise PlanError(f"unit id {uid!r} is not a plain token")
     graph = {}
     for u in units:
-        if not u.get("command") or not isinstance(u["command"], list):
-            raise PlanError(f"{u['id']} needs a command list")
+        if not _argv(u.get("command")):
+            raise PlanError(f"{u['id']} needs a command list of strings")
         for dep in u.get("depends_on", []):
             if dep not in ids:
                 raise PlanError(f"{u['id']} depends on unknown {dep}")
@@ -221,6 +230,8 @@ def _validate(plan: dict) -> dict[str, dict]:
             if norm == ".":
                 raise PlanError(f"{u['id']} must name paths, not the whole repository")
         graph[u["id"]] = set(u.get("depends_on", []))
+    if not all(_argv(check) for check in plan.get("integration_checks", [])):
+        raise PlanError("integration checks must be command lists of strings")
     try:
         tuple(graphlib.TopologicalSorter(graph).static_order())
     except graphlib.CycleError as error:
@@ -500,14 +511,21 @@ def _integrate(
             handle.write(combined)
         found = {"patch": str(patch), "sha256": hashlib.sha256(combined).hexdigest()}
         for check in checks:
-            process = subprocess.Popen(
-                check,
-                cwd=tree,
-                stdin=subprocess.DEVNULL,
-                stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL,
-                start_new_session=True,
-            )
+            try:
+                process = subprocess.Popen(
+                    check,
+                    cwd=tree,
+                    stdin=subprocess.DEVNULL,
+                    stdout=subprocess.DEVNULL,
+                    stderr=subprocess.DEVNULL,
+                    start_new_session=True,
+                )
+            except OSError as error:
+                return {
+                    "status": "failed",
+                    "reason": f"check {check} could not start: {error.strerror}",
+                    **found,
+                }
             deadline = time.monotonic() + timeout
             while not _exited(process):
                 if cancel_requested() or time.monotonic() > deadline:

@@ -370,6 +370,14 @@ class DispatchTests(unittest.TestCase):
             dispatch.Leases(self.state).acquire(["path:a.txt"], "next-run", 60)
         )
 
+    def test_a_missing_integration_program_fails_integration(self) -> None:
+        report = self.run_plan(
+            [unit("a", "echo a > a.txt", owned=["a.txt"])],
+            checks=[["no-such-check-for-dispatch"]],
+        )
+        self.assertEqual("failed", report["integration"]["status"])
+        self.assertEqual(1, len(git(self.repo, "worktree", "list").splitlines()))
+
     def test_bad_plans_are_refused(self) -> None:
         for units in (
             [unit("a", "true", depends=["b"]), unit("b", "true", depends=["a"])],
@@ -380,6 +388,8 @@ class DispatchTests(unittest.TestCase):
             [unit("/tmp/victim", "true", owned=["x.txt"])],
             [unit("..", "true", owned=["x.txt"])],
             [unit("a/b", "true", owned=["x.txt"])],
+            [dict(unit("a", "true"), command=["sleep", 5])],
+            [dict(unit("a", "true"), command=["echo", "a\x00b"])],
         ):
             with self.subTest(units=json.dumps(units)[:80]):
                 with self.assertRaises(dispatch.PlanError):
