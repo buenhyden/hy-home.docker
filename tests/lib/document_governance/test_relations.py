@@ -162,6 +162,23 @@ class DocumentRelationContractTests(unittest.TestCase):
         )
         self.assertIn("relation-contract-invalid", _codes(raw))
 
+    def test_owner_is_checked_in_the_tree_the_caller_names(self) -> None:
+        """A Registry from an older revision names owners that existed there."""
+        raw = _registry()
+        raw["common"]["document_relations"]["authority"]["owner"] = "old/owner.md"
+        codes = {
+            finding.code
+            for finding in validate_registry(
+                raw,
+                owner_exists=lambda path: (
+                    path == "old/owner.md"
+                    or (DEFAULT_REGISTRY.parents[2] / path).is_file()
+                ),
+            )
+        }
+        self.assertNotIn("relation-contract-invalid", codes)
+        self.assertIn("relation-contract-invalid", _codes(raw))
+
     def test_retained_reverse_field_must_be_a_frontmatter_key(self) -> None:
         raw = _registry()
         raw["common"]["document_relations"]["supersession"][

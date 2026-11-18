@@ -1538,7 +1538,9 @@ _SECURITY_DB_MARKER = re.compile(
     r"|anchore/grype"
 )
 _MAX_ENTRYPOINT_BYTES = 1024 * 1024
-_RULE_OWNER = re.compile(r"\.agents/governance/[a-z0-9-]+\.md#[a-z0-9-]+")
+_RULE_OWNER = re.compile(
+    r"(?:\.agents/governance|docs/00\.workspace/0[1-3]\.[a-z]+)/[a-z0-9-]+\.md#[a-z0-9-]+"
+)
 
 
 @dataclasses.dataclass(frozen=True, slots=True)
@@ -1776,7 +1778,7 @@ def _parse_node(record: Mapping[str, object], path: str) -> GateNode:
         raise GateContractError(
             "ci-gate-rule-owner",
             path,
-            "rule_owner must be <.agents/governance document>.md#<anchor>",
+            "rule_owner must be <governance or workspace policy>.md#<anchor>",
         )
     security_db = record.get("security_db", "")
     if security_db not in _SECURITY_DBS:

@@ -723,6 +723,39 @@ class DocumentRegistryTests(unittest.TestCase):
             )
             historical.assert_not_called()
 
+    def test_workspace_policy_inherits_its_agent_governance_baseline(self) -> None:
+        from scripts.lib.document_governance.metadata import lifecycle
+
+        profiles = build_registry_profiles(load_registry())
+        target = pathlib.Path("docs/00.workspace/02.process/sdlc.md")
+        source = '---\ntype: "governance/workflow"\nstatus: "active"\n---\n# SDLC\n'
+        with (
+            mock.patch.object(
+                lifecycle, "_text_at_ref", return_value=source
+            ) as historical,
+            mock.patch.object(
+                lifecycle, "read_bounded_regular", return_value=source.encode()
+            ),
+        ):
+            record, _text = lifecycle._governance_moved_body_baseline(
+                ROOT, target, profiles, "a" * 40
+            )
+            self.assertIsNotNone(record)
+            self.assertEqual("active", record.metadata["status"])
+            self.assertEqual(
+                pathlib.Path(".agents/governance/sdlc.md"),
+                historical.call_args.args[1],
+            )
+            historical.return_value = source.replace(
+                "governance/workflow", "governance/policy"
+            )
+            self.assertEqual(
+                (None, None),
+                lifecycle._governance_moved_body_baseline(
+                    ROOT, target, profiles, "a" * 40
+                ),
+            )
+
     def test_canonical_agent_home_routes_replace_active_stage00(self) -> None:
         registry = load_registry()
         expected = {
@@ -732,7 +765,7 @@ class DocumentRegistryTests(unittest.TestCase):
             ".agents/roles/qa-engineer.md": "governance-role",
             ".agents/skills/test-authoring/SKILL.md": "governance-skill",
             ".agents/governance/providers/README.md": "governance-provider-index",
-            ".agents/governance/sdlc.md": "governance-sdlc",
+            "docs/00.workspace/02.process/sdlc.md": "governance-sdlc",
             ".claude/provider.md": "governance-provider",
             ".codex/provider.md": "governance-provider",
         }
@@ -3425,7 +3458,7 @@ class DocumentRegistryTests(unittest.TestCase):
     def test_null_template_profile_enforces_registry_native_body_sections(self) -> None:
         registry = load_registry()
         adapted = build_registry_profiles(registry)
-        path = pathlib.Path(".agents/governance/sdlc.md")
+        path = pathlib.Path("docs/00.workspace/02.process/sdlc.md")
         valid = Record(
             path,
             {"profile_id": "governance-sdlc"},
@@ -3662,7 +3695,7 @@ class FreeFormProfileTests(unittest.TestCase):
         # The common form gives every governance policy one shared H2 set.
         codes = self._codes(
             "governance-policy",
-            ".agents/governance/quality-standards.md",
+            "docs/00.workspace/03.quality/quality-standards.md",
             ("Anything At All", "Ownership"),
         )
         self.assertIn("body-heading-forbidden", codes)
