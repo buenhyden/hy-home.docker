@@ -1227,6 +1227,17 @@ files:
   successor: null
   tests:
   - tests/lib/ops/test_secret_structure.py
+- path: scripts/operations/session_analysis.py
+  kind: operations
+  authority: docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_session_analysis.py
 - path: scripts/operations/storage-write-rate.py
   kind: operations
   authority: infra/09-platform-ops/resource-optimization/README.md

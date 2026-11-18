@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.81.0"
+version: "1.82.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -1130,6 +1130,12 @@ target, backup, recovery boundary, and action-specific authorization.
      duplicates and reports each session as complete, partial or
      unavailable. Captured records never become memory, policy or approval.
      Native capture is evidenced for both providers separately from fixtures.
+141. TSK-0085 brings scheduled session analysis to the 4.2.0 W08-ANALYSIS
+     design on the owner's decisions of 2026-11-18: deterministic local
+     rules, a daily 03:00 Asia/Seoul user timer with catch-up, one lease
+     with fencing, one analysis per window, and candidates linked to their
+     source events that change nothing until a separate approved Task. A
+     real scheduled run, a duplicate run and a missed window are observed.
 
 ### Evidence Requirements
 
