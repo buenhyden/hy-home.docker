@@ -2525,6 +2525,21 @@ class HomeSelectionTests(unittest.TestCase):
         self.assertIn("agent", lab.home_selection(home, [], ["edge"], [])["closure"])
         self.assertNotIn("agent", lab.home_selection(home, ["web"], [], [])["closure"])
 
+    def test_review_follow_up_inputs(self):
+        running = self.running("vault", "old")
+        report = lab.home_selection(self.HOME, ["app"], [], running)
+        self.assertEqual(["vault"], report["already_running"])
+        self.assertEqual(3, report["union"])  # the undeclared "old" is not counted
+        report = lab.home_selection(self.HOME, ["web"], ["core"], [])
+        self.assertEqual(["web"], report["closure"])
+        report = lab.home_selection(self.HOME, ["web", "nope"], [], [])
+        self.assertEqual((["web"], ["unknown service nope"]),
+                         (report["closure"], report["problems"]))  # fmt: skip
+        home = json.loads(json.dumps(self.HOME))
+        home["services"]["vault"]["depends_on"] = {"app": {}}
+        report = lab.home_selection(home, ["vault"], [], [])
+        self.assertEqual(["app", "db", "vault"], report["closure"])
+
     def test_the_command_prints_the_report_and_exits_3_on_refusal(self):
         with (
             mock.patch.object(lab, "render", return_value=self.HOME),

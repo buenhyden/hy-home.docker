@@ -15,7 +15,8 @@ Commands:
   select [SERVICE...] [--profile P]
                               read-only HOME start check: print the
                               depends_on closure and refuse an empty start
-                              or one that leaves every HOME service running
+                              or one that leaves every HOME service running;
+                              the closure is an upper bound
   readiness LAB [--report PATH]
                               read-only promotion readiness report
                               (SPEC-0263); exit 0 only when every
@@ -748,7 +749,8 @@ def home_selection(
         for c in containers
         if c["running"] and c["project"] == model.get("name")
     }
-    union = closure | running
+    # A running container of a service no longer declared is not counted.
+    union = (closure | running) & set(declared)
     if declared and union >= set(declared):
         problems.append(
             f"the start would leave every one of {len(declared)} HOME services running"
