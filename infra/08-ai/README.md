@@ -1,10 +1,10 @@
 ---
 title: "AI Infrastructure Tier (08-ai)"
-version: "1.1.0"
+version: "1.2.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 created: "2025-11-12"
 ---
 
@@ -49,6 +49,7 @@ created: "2025-11-12"
 ├── ollama/             # Inference engine (Go-based)
 ├── comfyui/            # Image workflow UI
 ├── crawl4ai/           # Opt-in isolated crawler (profile crawl4ai)
+├── searxng/            # 공유 HOME 메타검색 (profile searxng)
 └── README.md           # This file
 ```
 
@@ -58,6 +59,7 @@ created: "2025-11-12"
 | :--- | :--- | :--- | :--- |
 | `ollama` | HTTP | `ai`, `dev` | `${OLLAMA_HOST_PORT}:${OLLAMA_PORT}`와 `ollama.${DEFAULT_URL}` |
 | `ollama-exporter` | HTTP metrics | `ai`, `dev` | `ai_net` 내부에서 `${OLLAMA_EXPORTER_PORT}`로 노출됨 |
+| `searxng` | HTTP JSON | `searxng` | `127.0.0.1:8890`(호스트), `search_net`의 `searxng:8080`(컨테이너) |
 | `comfyui` | HTTP | `ai`, `ai-image` | `comfyui.${DEFAULT_URL}`와 선언된 루프백 포트 |
 
 ### Interfaces
@@ -157,6 +159,7 @@ provider 자격 증명을 읽지 못할 수 있습니다. provider egress는 별
 - ComfyUI 복구 런북 (`docs/05.operations/runbooks/09-ai-and-search/0081-comfyui.md`, RUN-0081)
 - Open Notebook 복구 런북 (`docs/05.operations/runbooks/09-ai-and-search/0073-open-notebook.md`, RUN-0073)
 - Crawl4AI 복구 런북 (`docs/05.operations/runbooks/09-ai-and-search/0091-crawl4ai.md`, RUN-0091)
+- SearXNG 복구 런북 (`docs/05.operations/runbooks/09-ai-and-search/0110-searxng.md`, RUN-0110)
 - MLflow 복구 런북 (`docs/05.operations/runbooks/13-analytics-and-data-quality/0088-mlflow.md`, RUN-0088)
 - [Documentation index](../../docs/README.md)
 

@@ -1791,28 +1791,6 @@
       ]
     },
     {
-      "component": "Compose image: searxng/searxng",
-      "tier": "07-workflow",
-      "classification": "external",
-      "repository_classifications": {
-        "searxng/searxng": "external"
-      },
-      "images": [
-        "searxng/searxng:2026.11.9-57ff753ad@sha256:287af61f1a13e86d02974fcde91a3413a9945788de38b61ffbc491d81a19bcc2"
-      ],
-      "compose_files": [
-        "infra/07-workflow/n8n/docker-compose.yml"
-      ],
-      "sources": [
-        {
-          "compose_file": "infra/07-workflow/n8n/docker-compose.yml",
-          "images": [
-            "searxng/searxng:2026.11.9-57ff753ad@sha256:287af61f1a13e86d02974fcde91a3413a9945788de38b61ffbc491d81a19bcc2"
-          ]
-        }
-      ]
-    },
-    {
       "component": "Compose image: n8nio/n8n-sandbox-service-api",
       "tier": "07-workflow",
       "classification": "external",
@@ -1874,6 +1852,28 @@
           "compose_file": "labs/kafka-cluster/docker-compose.yml",
           "images": [
             "hy-home/lab-kafka-connect:8.3.2-debezium-3.7.0"
+          ]
+        }
+      ]
+    },
+    {
+      "component": "Compose image: searxng/searxng",
+      "tier": "08-ai",
+      "classification": "external",
+      "repository_classifications": {
+        "searxng/searxng": "external"
+      },
+      "images": [
+        "searxng/searxng:2026.11.9-57ff753ad@sha256:287af61f1a13e86d02974fcde91a3413a9945788de38b61ffbc491d81a19bcc2"
+      ],
+      "compose_files": [
+        "infra/08-ai/searxng/docker-compose.yml"
+      ],
+      "sources": [
+        {
+          "compose_file": "infra/08-ai/searxng/docker-compose.yml",
+          "images": [
+            "searxng/searxng:2026.11.9-57ff753ad@sha256:287af61f1a13e86d02974fcde91a3413a9945788de38b61ffbc491d81a19bcc2"
           ]
         }
       ]

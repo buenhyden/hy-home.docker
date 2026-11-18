@@ -999,35 +999,99 @@ class GrafanaStaticRouteContractTests(unittest.TestCase):
         )
 
 
-class N8nAssistantSearchContractTests(unittest.TestCase):
-    """The n8n Assistant reaches SearXNG only over a private internal network."""
+class SharedSearchContractTests(unittest.TestCase):
+    """SearXNG is a shared HOME search service (OPS-0110): admitted containers
+    reach it on the internal search_net, host processes on host loopback."""
 
     N8N = "infra/07-workflow/n8n/docker-compose.yml"
+    SEARXNG = "infra/08-ai/searxng/docker-compose.yml"
+    SETTINGS = "infra/08-ai/searxng/settings.yml"
+    # POL-0110 admits each container consumer; extend both together.
+    ADMITTED = frozenset({"n8n", "searxng"})
 
-    def test_searxng_is_internal_unpublished_and_unprivileged(self) -> None:
-        data = _compose(self.N8N)
+    def _all_services(self) -> dict:
+        root = _compose("docker-compose.yml")
+        services: dict = {}
+        for entry in root["include"]:
+            path = entry if isinstance(entry, str) else entry["path"]
+            services.update(_compose(path).get("services") or {})
+        return services
+
+    def test_searxng_lives_in_its_own_ai_tier_file(self) -> None:
+        self.assertNotIn("searxng", _compose(self.N8N)["services"])
+        self.assertEqual({"searxng"}, set(_compose(self.SEARXNG)["services"]))
+        self.assertEqual(
+            "ai",
+            _compose(self.SEARXNG)["services"]["searxng"]["labels"]["hy-home.tier"],
+        )
+        self.assertEqual(
+            ["searxng"], _compose(self.SEARXNG)["services"]["searxng"]["profiles"]
+        )
+
+    def test_searxng_carries_no_n8n_specific_name(self) -> None:
+        text = (ROOT / self.SEARXNG).read_text() + (ROOT / self.SETTINGS).read_text()
+        self.assertNotIn("n8n_search", text)
+        settings = yaml.safe_load((ROOT / self.SETTINGS).read_text())
+        self.assertEqual("home-searxng", settings["general"]["instance_name"])
+        self.assertIn("json", settings["search"]["formats"])
+
+    def test_searxng_is_loopback_only_and_unprivileged(self) -> None:
+        data = _compose(self.SEARXNG)
         service = data["services"]["searxng"]
-        self.assertNotIn("ports", service)
+        # Host processes such as host Hermes use http://127.0.0.1:8890 (owner, 2026-11-18).
+        self.assertEqual(["127.0.0.1:8890:8080"], service["ports"])
         self.assertFalse(service.get("privileged", False))
         self.assertEqual("false", service["labels"]["traefik.enable"])
         self.assertEqual(
-            {"n8n_search_net", "n8n_search_outbound_net"}, set(service["networks"])
+            {"search_net", "searxng_outbound_net", "obs_net"}, set(service["networks"])
         )
-        self.assertIs(True, data["networks"]["n8n_search_net"]["internal"])
-        self.assertNotIn("internal", data["networks"]["n8n_search_outbound_net"])
+        self.assertIs(True, data["networks"]["search_net"]["internal"])
+        self.assertNotIn("internal", data["networks"]["searxng_outbound_net"])
 
-    def test_only_n8n_main_and_searxng_share_the_search_network(self) -> None:
-        services = _compose(self.N8N)["services"]
+    def test_prometheus_scrapes_searxng_metrics_with_a_secret(self) -> None:
+        settings = yaml.safe_load((ROOT / self.SETTINGS).read_text())
+        self.assertIs(True, settings["general"]["enable_metrics"])
+        # The entrypoint fills this placeholder from the Docker secret on tmpfs.
+        self.assertEqual("", settings["general"]["open_metrics"])
+        service = _compose(self.SEARXNG)["services"]["searxng"]
+        self.assertEqual(["searxng_metrics_password"], service["secrets"])
+        entrypoint = service["entrypoint"][-1]
+        self.assertIn("/run/secrets/searxng_metrics_password", entrypoint)
+        self.assertIn(
+            "export SEARXNG_SETTINGS_PATH=/run/searxng-settings.yml", entrypoint
+        )
+        root_secrets = _compose("docker-compose.yml")["secrets"]
+        self.assertEqual(
+            "./secrets/observability/searxng/searxng_metrics_password.txt",
+            root_secrets["searxng_metrics_password"]["file"],
+        )
+        prometheus = _compose("infra/06-observability/docker-compose.yml")["services"][
+            "prometheus"
+        ]
+        self.assertIn("searxng_metrics_password", prometheus["secrets"])
+        for config in ("prometheus.yml", "prometheus.dev.yml"):
+            data = yaml.safe_load(
+                (ROOT / "infra/06-observability/prometheus/config" / config).read_text()
+            )
+            job = next(j for j in data["scrape_configs"] if j["job_name"] == "searxng")
+            self.assertEqual(
+                "/run/secrets/searxng_metrics_password",
+                job["basic_auth"]["password_file"],
+            )
+            self.assertEqual(["searxng:8080"], job["static_configs"][0]["targets"])
+
+    def test_only_admitted_services_join_the_search_networks(self) -> None:
+        services = self._all_services()
         members = {
             name
             for name, service in services.items()
-            if "n8n_search_net" in (service.get("networks") or {})
+            if "search_net" in (service.get("networks") or {})
         }
-        self.assertEqual({"n8n", "searxng"}, members)
+        self.assertEqual(self.ADMITTED, members)
         outbound = {
             name
             for name, service in services.items()
-            if "n8n_search_outbound_net" in (service.get("networks") or {})
+            if "searxng_outbound_net" in (service.get("networks") or {})
         }
         self.assertEqual({"searxng"}, outbound)
 

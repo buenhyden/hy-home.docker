@@ -1,10 +1,10 @@
 ---
 title: "n8n 워크플로 자동화"
-version: "1.3.0"
+version: "1.4.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 created: "2025-11-12"
 ---
 
@@ -92,16 +92,16 @@ n8n Runbook 「선택형 공유 Valkey 계정과 Local Ollama」 절이 소유�
 | Task broker `${N8N_BROKER_PORT:-5679}` (`10.250.23.2`) | `n8n-worker` | `n8n-task-runner-worker` | 내부·격리 `n8n_worker_runner_net` 주소에만 bind하며 runner는 `n8n_runner_auth_token`을 launcher에 전달한다 | worker healthcheck가 같은 주소의 `/healthz`를 쓰지만 probe 통과가 runner 호환성을 입증하지 않는다 |
 | Queue broker `${N8N_VALKEY_HOST:-mng-valkey}` | `n8n` main(Valkey 큐에 작업 분배) | `n8n-worker` | `N8N_VALKEY_HOST`와 `N8N_VALKEY_SECRET`의 지원 쌍만 허용하는 queue 모드 Bull queue이다 | 두 entrypoint가 Host/User/Secret/DB 혼합 입력을 거부한다 |
 | OTLP 추적 `http://alloy:4318` | `n8n`, `n8n-worker` | Alloy | `N8N_OTEL_EXPORTER_OTLP_ENDPOINT`로 workflow·node span을 보내며 credential과 실행 payload는 넣지 않는다 | Alloy가 없으면 시작 연결 확인 오류를 로그에 남기고 추적만 건너뛴다 |
-| 내부 웹 검색 `searxng` (`N8N_INSTANCE_AI_SEARXNG_URL`) | `searxng` | n8n Assistant(`n8n` main) | host port와 route 없이 `n8n_search_net`으로만 공유하고 `settings.yml`을 읽기 전용으로 mount한다 | 이 README는 실패 처리를 기록하지 않는다. |
+| 공유 웹 검색 `searxng` (`N8N_INSTANCE_AI_SEARXNG_URL`) | `searxng`(`infra/08-ai/searxng`, OPS-0110) | n8n Assistant(`n8n` main) | `n8n` main만 internal `search_net`에 합류한다. worker·task runner·sandbox는 합류하지 않는다(POL-0110) | SearXNG가 없으면 Assistant 웹 검색만 실패한다 |
 | `blog-ingestion` `/v1/summary` | `blog-ingestion` | Traefik(내부·격리 `blog_export_net` 공유) | 인증 없는 `/v1/summary` 요청은 401을 반환한다 | Compose healthcheck가 인증 없는 `/v1/summary`의 401로 상태를 확인한다 |
 
 #### Inputs and Outputs
 
-호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `blog_export_net`, `edge_net`, `mng_data_net`, `n8n_blog_ingest_net`, `n8n_net`, `n8n_ollama_net`, `n8n_sandbox_net`, `n8n_sandbox_outbound_net`, `n8n_sandbox_runner_net`, `n8n_search_net`, `n8n_search_outbound_net`, `n8n_worker_runner_net`, `obs_net`, `opsflow_capture_net`, `opsflow_notifier_db_net`이다. (출처: `infra/07-workflow/n8n/docker-compose.yml`의 `n8n`, `n8n-worker`, `n8n-task-runner-worker`, `searxng`, `n8n-sandbox-certs`, `n8n-sandbox-api`, `n8n-sandbox-runner-1`, `blog-ingestion` 서비스)
+호스트로 게시하는 포트 선언이 없다. 연결 네트워크는 `blog_export_net`, `edge_net`, `mng_data_net`, `n8n_blog_ingest_net`, `n8n_net`, `n8n_ollama_net`, `n8n_sandbox_net`, `n8n_sandbox_outbound_net`, `n8n_sandbox_runner_net`, `n8n_worker_runner_net`, `search_net`, `obs_net`, `opsflow_capture_net`, `opsflow_notifier_db_net`이다. (출처: `infra/07-workflow/n8n/docker-compose.yml`의 `n8n`, `n8n-worker`, `n8n-task-runner-worker`, `n8n-sandbox-certs`, `n8n-sandbox-api`, `n8n-sandbox-runner-1`, `blog-ingestion` 서비스)
 
 #### Security Boundary
 
-Compose가 참조하는 secret은 `${N8N_VALKEY_SECRET:-mng_valkey_password}`, `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`, `n8n_sandbox_api_key`, `n8n_sandbox_runner_api_key`, `n8n_sandbox_runner_registration_token`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/07-workflow/n8n/docker-compose.yml`의 `n8n`, `n8n-worker`, `n8n-task-runner-worker`, `searxng`, `n8n-sandbox-certs`, `n8n-sandbox-api`, `n8n-sandbox-runner-1`, `blog-ingestion` 서비스)
+Compose가 참조하는 secret은 `${N8N_VALKEY_SECRET:-mng_valkey_password}`, `n8n_db_password`, `n8n_encryption_key`, `n8n_runner_auth_token`, `n8n_sandbox_api_key`, `n8n_sandbox_runner_api_key`, `n8n_sandbox_runner_registration_token`이며 값은 저장소에 두지 않는다. 호스트로 게시하는 포트 선언은 없다. (출처: `infra/07-workflow/n8n/docker-compose.yml`의 `n8n`, `n8n-worker`, `n8n-task-runner-worker`, `n8n-sandbox-certs`, `n8n-sandbox-api`, `n8n-sandbox-runner-1`, `blog-ingestion` 서비스)
 
 ## Usage
 
@@ -156,7 +156,7 @@ fontconfig·Noto·DejaVu·Liberation·emoji 패키지는 조회한 Alpine 안정
 
 n8n의 OpenTelemetry 모듈은 license 없이 켜지며 `N8N_OTEL_ENABLED=true`와 `N8N_OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4318`, service별 `N8N_OTEL_EXPORTER_SERVICE_NAME`(`n8n`, `n8n-worker`)만 설정합니다. 나머지 `N8N_OTEL_*` 옵션은 기본값이라 production 실행만, 100% sampling, node span 포함, start marker span 없음입니다. 속성은 workflow·node ID와 이름, 실행 mode·상태·오류 형식, node item 수이고 credential과 실행 payload는 없지만, 실패 span에는 오류 메시지와 stack이 exception 이벤트로 실리고 외부 HTTP 요청에는 `traceparent` 헤더가 붙습니다. Alloy가 없으면 시작 연결 확인이 오류를 로그에 남기고 추적만 건너뜁니다.
 
-n8n Assistant는 UI provider connection에서 고른 모델(`anthropic/claude-sonnet-5`)과 내부 웹 검색 `searxng`(`N8N_INSTANCE_AI_SEARXNG_URL`)를 씁니다. 모델과 Anthropic key는 UI에서 관리하며, `N8N_INSTANCE_AI_MODEL`을 설정하면 UI 변경이 거부되므로 Compose에 두지 않습니다. `searxng`는 `infra/07-workflow/n8n/searxng/settings.yml`(JSON 형식 사용)을 읽기 전용으로 mount하고, 세션 key는 시작할 때 무작위로 만들어 저장하지 않으며, host port와 route가 없고, n8n main과만 내부 `n8n_search_net`을 공유하고 인터넷에는 자신만 쓰는 `n8n_search_outbound_net`으로 나갑니다. 코드 sandbox는 opt-in profile `n8n-sandbox`로 `n8n-sandbox-certs`·`n8n-sandbox-api`·privileged `n8n-sandbox-runner-1`(owner 결정 2026-11-09)을 쓰며, 세 service 모두 host port와 route가 없고 runner는 `n8n_sandbox_runner_net`과 `n8n_sandbox_outbound_net`만 사용합니다. secret 파일 3개(`n8n_sandbox_api_key`, `n8n_sandbox_runner_registration_token`, `n8n_sandbox_runner_api_key`)가 `secrets/automation/n8n/`에 있어야 `n8n`이 시작하며 자세한 보안 주의는 GDE-0053을 따릅니다. env로 설정한 sandbox 설정은 Assistant UI에서 잠기며, 이는 의도한 동작입니다.
+n8n Assistant는 UI provider connection에서 고른 모델(`anthropic/claude-sonnet-5`)과 공유 웹 검색 `searxng`(`N8N_INSTANCE_AI_SEARXNG_URL`, [GDE-0110](../../../docs/05.operations/guides/09-ai-and-search/0110-searxng.md))를 씁니다. 모델과 Anthropic key는 UI에서 관리하며, `N8N_INSTANCE_AI_MODEL`을 설정하면 UI 변경이 거부되므로 Compose에 두지 않습니다. SearXNG 설정·네트워크·게시는 [GDE-0110](../../../docs/05.operations/guides/09-ai-and-search/0110-searxng.md)이 다룹니다. 코드 sandbox는 opt-in profile `n8n-sandbox`로 `n8n-sandbox-certs`·`n8n-sandbox-api`·privileged `n8n-sandbox-runner-1`(owner 결정 2026-11-09)을 쓰며, 세 service 모두 host port와 route가 없고 runner는 `n8n_sandbox_runner_net`과 `n8n_sandbox_outbound_net`만 사용합니다. secret 파일 3개(`n8n_sandbox_api_key`, `n8n_sandbox_runner_registration_token`, `n8n_sandbox_runner_api_key`)가 `secrets/automation/n8n/`에 있어야 `n8n`이 시작하며 자세한 보안 주의는 GDE-0053을 따릅니다. env로 설정한 sandbox 설정은 Assistant UI에서 잠기며, 이는 의도한 동작입니다.
 
 UNIT의 네 role 정합 검사는 native workflow import·실행이나 HOME 배포를 입증하지 않습니다.
 deprecated node import 거부·JSON typeVersion·webhook·Code runner·queue·PostgreSQL·SMTP·실패 경로는 NOT_RUN입니다.

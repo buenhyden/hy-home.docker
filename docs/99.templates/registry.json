@@ -9147,8 +9147,8 @@
     "operations-subject": {
       "prefix": "OPS-",
       "width": 4,
-      "high_water": 109,
-      "next_number": 110,
+      "high_water": 110,
+      "next_number": 111,
       "reserved_history": [
         5,
         7,

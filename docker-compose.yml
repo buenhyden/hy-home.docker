@@ -406,6 +406,9 @@ secrets:
   # Prometheus scrapes Grafana /metrics with this password (SPEC-0267).
   grafana_metrics_password:
     file: ./secrets/observability/grafana/grafana_metrics_password.txt
+  # Prometheus scrapes SearXNG /metrics with this password (OPS-0110).
+  searxng_metrics_password:
+    file: ./secrets/observability/searxng/searxng_metrics_password.txt
   quality_otlp_token:
     file: ./secrets/observability/alloy/quality_otlp_token.txt
   hermes_otlp_token:
@@ -613,6 +616,7 @@ include:
   - infra/08-ai/mlflow/docker-compose.yml
   - infra/08-ai/ollama/docker-compose.yml
   - infra/08-ai/open-notebook/docker-compose.yml
+  - infra/08-ai/searxng/docker-compose.yml
   # 09-platform-ops
   - infra/09-platform-ops/opentofu/docker-compose.yml
   - infra/09-platform-ops/registry/docker-compose.yml

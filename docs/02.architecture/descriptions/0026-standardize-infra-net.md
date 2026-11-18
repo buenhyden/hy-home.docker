@@ -1,10 +1,10 @@
 ---
 title: "Compose Network Segmentation Architecture Description"
-version: "1.11.0"
+version: "1.12.0"
 type: "sdlc/architecture-description"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "architecture"
 artifact_id: "AD-0026"
 parent_ids:
@@ -81,8 +81,8 @@ networks beside it, then it left the services and the root.
 | `n8n_blog_ingest_net` | 10.250.20.0/24, internal, isolated | `n8n-worker` and `blog-ingestion` | worker → Blog-data ingestion Gateway |
 | `blog_export_net` | 10.250.21.0/24, internal, isolated | Traefik and `blog-ingestion` | exact-path Traefik routes → Gateway; no published port |
 | `n8n_worker_runner_net` | 10.250.23.0/24, internal, isolated, dynamic from .128/25 | `n8n-worker` (task broker bound to fixed .2, `10.250.23.2`) with `n8n-task-runner-worker` | broker ↔ its external Code runner only; `10.250.22.0/24` (the removed main runner network, SPEC-0269) is not reused |
-| `n8n_search_net` | leaf-owned, internal | `n8n` and `searxng` | n8n Assistant web search → SearXNG only; no egress |
-| `n8n_search_outbound_net` | leaf-owned | `searxng` | SearXNG → public search engines; no inbound path, no destination or port limit |
+| `search_net` | leaf-owned, internal | `searxng` and admitted consumers (`n8n`) | consumer containers → SearXNG JSON search only; no egress; POL-0110 admits each consumer |
+| `searxng_outbound_net` | leaf-owned | `searxng` | SearXNG → public search engines, no destination or port limit; carries the host loopback publication `127.0.0.1:8890` |
 | `n8n_sandbox_net` | 10.250.210.0/24, leaf-owned, internal | `n8n` and `n8n-sandbox-api` | n8n → sandbox API only |
 | `n8n_sandbox_runner_net` | 10.250.211.0/24, leaf-owned, internal | `n8n-sandbox-api` and `n8n-sandbox-runner-1` | API ↔ runner registration and control; the runner never shares a network with n8n |
 | `n8n_sandbox_outbound_net` | 10.250.212.0/24, leaf-owned | `n8n-sandbox-runner-1` | runner and its sandboxes → internet; the runner's built-in egress rules block sandbox traffic to private, link-local and loopback ranges (measured 2026-11-09); owner decision 2026-11-09 |
@@ -118,7 +118,8 @@ that network is then its trust boundary, and the consumer gets a scoped network.
 | Docker internal DNS discovery | Docker internal DNS | Services | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | Restic offsite egress on `restic_offsite_net` | `restic-offsite` | Cloudflare R2 | ADR-0056 | The description records no failure handling for this interface. |
 | Crawl4AI public egress on `crawl4ai_outbound_net` | `crawl4ai-egress` | Public addresses on ports 80/443 | The description links no contract for this interface. | The description records no failure handling for this interface. |
-| SearXNG public search on `n8n_search_outbound_net` | `searxng` | Public search engines | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| SearXNG public search on `searxng_outbound_net` | `searxng` | Public search engines | The description links no contract for this interface. | The description records no failure handling for this interface. |
+| SearXNG host loopback `127.0.0.1:8890` | `searxng` | Host processes, such as host Hermes (`SEARXNG_URL`) | [POL-0110](../../05.operations/policies/09-ai-and-search/0110-searxng.md); JSON search API with the limiter off | A refused connection leaves each host consumer on its own fallback |
 | n8n sandbox internet egress on `n8n_sandbox_outbound_net` | `n8n-sandbox-runner-1` and its sandboxes | Internet | The description links no contract for this interface. | The description records no failure handling for this interface. |
 | ComfyUI download egress on `comfyui_egress_net` | ComfyUI with `docker-compose.egress.yml` attached | The description names no consumer for this interface. | SPEC-0268 | The description records no failure handling for this interface. |
 | Crawl4AI loopback forwarder `127.0.0.1:11235` | `crawl4ai-loopback` | The description names no consumer for this interface. | The description links no contract for this interface. | The description records no failure handling for this interface. |
@@ -203,7 +204,7 @@ Internal and isolated networks keep a flow from reaching any other member, and a
 - Services with no container peer and WireMock use the project default
   network, which is then their trust boundary until a named consumer exists
   (Building Blocks, Evolution).
-- `n8n_search_outbound_net` has no destination or port limit, and the n8n
+- `searxng_outbound_net` has no destination or port limit, and the n8n
   sandbox outbound network relies on the runner's built-in egress rules
   (Networks).
 - A member list here that drifts from the leaf Compose files misleads

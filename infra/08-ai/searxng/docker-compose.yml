@@ -1,0 +1,86 @@
+x-tier-label: &tier-label
+  hy-home.tier: ai
+
+# SearXNG is the shared HOME metasearch service (OPS-0110). Consumers reach its
+# JSON search API in two ways:
+# - containers join search_net, an internal network that carries nothing but
+#   search traffic to SearXNG (POL-0110 lists the admitted consumers);
+# - host processes, such as host Hermes, use the loopback port 127.0.0.1:8890.
+# searxng_outbound_net is a plain bridge that only SearXNG joins. It is the way
+# out to the public search engines and carries the loopback publication, since
+# Docker cannot publish a port through an internal network. SearXNG queries a
+# fixed set of search engines and does not fetch arbitrary URLs for callers.
+# Prometheus scrapes /metrics on obs_net with the searxng_metrics_password.
+networks:
+  search_net:
+    name: search_net
+    driver: bridge
+    internal: true
+  searxng_outbound_net:
+    name: searxng_outbound_net
+    driver: bridge
+
+services:
+  # The secret key is random per start because nothing here keeps sessions or
+  # signed links. SearXNG reads the /metrics password only from its settings,
+  # so the entrypoint writes the tracked settings plus that password to tmpfs
+  # (/run, file mode 0600) and points SEARXNG_SETTINGS_PATH at the copy.
+  searxng:
+    profiles:
+      - searxng
+    extends:
+      file: ../../common-optimizations.yml
+      service: template-infra-readonly-med
+    image: searxng/searxng:2026.11.9-57ff753ad@sha256:287af61f1a13e86d02974fcde91a3413a9945788de38b61ffbc491d81a19bcc2
+    container_name: searxng
+    hostname: searxng
+    user: '977:977'
+    # Reads searxng_metrics_password through the shared secrets group.
+    group_add:
+      - '${SECRETS_GID:-1000}'
+    entrypoint:
+      - /bin/sh
+      - -ec
+      - |
+        SEARXNG_SECRET="$$(head -c 24 /dev/urandom | base64 | tr -dc 'a-zA-Z0-9')"
+        export SEARXNG_SECRET
+        metrics_password="$$(tr -d '\r\n' < /run/secrets/searxng_metrics_password)"
+        case "$$metrics_password" in
+          ''|*"'"*|*'|'*|*'&'*|*'\'*) echo 'searxng_metrics_password is empty or has a quote, pipe, ampersand or backslash' >&2; exit 64 ;;
+        esac
+        umask 077
+        sed "s|^  open_metrics: ''$$|  open_metrics: '$$metrics_password'|" /etc/searxng/settings.yml > /run/searxng-settings.yml
+        grep -q "^  open_metrics: '..*'$$" /run/searxng-settings.yml || { echo 'open_metrics placeholder missing' >&2; exit 64; }
+        unset metrics_password
+        export SEARXNG_SETTINGS_PATH=/run/searxng-settings.yml
+        exec /usr/local/searxng/entrypoint.sh
+    environment:
+      GRANIAN_HOST: 0.0.0.0
+      GRANIAN_PORT: '8080'
+    secrets:
+      - searxng_metrics_password
+    volumes:
+      - ./settings.yml:/etc/searxng/settings.yml:ro
+    tmpfs:
+      - /tmp
+      - /run
+      - /var/cache/searxng:uid=977,gid=977,mode=0700
+    expose:
+      - '8080'
+    # Host loopback only (owner, 2026-11-18); host Hermes uses
+    # SEARXNG_URL=http://127.0.0.1:8890.
+    ports:
+      - '127.0.0.1:8890:8080'
+    healthcheck:
+      test: ['CMD', '/usr/local/searxng/.venv/bin/python', '-c', "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=3).status == 200 else 1)"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    networks:
+      search_net: {}
+      searxng_outbound_net: {}
+      obs_net: {}
+    labels:
+      <<: *tier-label
+      traefik.enable: 'false'

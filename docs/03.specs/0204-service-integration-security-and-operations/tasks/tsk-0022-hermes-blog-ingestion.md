@@ -1,10 +1,10 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.6.0"
+version: "0.7.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
-updated: "2026-11-15"
+updated: "2026-11-18"
 layer: "specs"
 artifact_id: "SPEC-0204-TSK-0022"
 parent_ids:
@@ -1805,6 +1805,29 @@ was installed with `deploy/update-hermes-plugin.sh`. The listener is on loopback
 fetched a URL the native fetcher refused with `status`, 30,513 characters, hash valid.
 A scheduled run through the fallback is NOT_RUN until the next 08:00 KST.
 
+#### SearXNG shared search for host Hermes — 2026-11-18
+
+Host Hermes sets `web.search_backend: searxng` and `SEARXNG_URL=http://127.0.0.1:8890`,
+but SearXNG had no host port, so every web search on 11-17 and 11-18 was refused
+and fell back to Firecrawl. The owner asked to make the Docker SearXNG usable from
+host Hermes, to move it out of the n8n file into a reviewed tier with its own
+operations documents, to drop n8n-specific names, to let other services and host
+processes use it, to review which n8n services need it, and to connect it to
+observability. Hermes keeps its Firecrawl fallback.
+
+- SearXNG moved to `infra/08-ai/searxng/` (profile `searxng`, in HOME), with
+  `GDE-0110`, `POL-0110` and `RUN-0110`. Instance `home-searxng`; networks
+  `search_net` (internal, admitted consumers) and `searxng_outbound_net` (egress and
+  the `127.0.0.1:8890` loopback publication).
+- n8n review: only `n8n` main joins `search_net` (Assistant search). `n8n-worker`
+  runs no workflow that calls SearXNG; the task runner and sandbox run user code;
+  `blog-ingestion` does not search. POL-0110 records the decisions.
+- Observability: `/metrics` (OpenMetrics) behind `searxng_metrics_password`
+  (OBS-017), filled into a tmpfs settings copy by the entrypoint; Prometheus job
+  `searxng` on `obs_net`. Alloy already collects the container logs.
+- Live recreation needs the new secret file, created by the owner, and the merged
+  change in the main checkout.
+
 #### Lifecycle Events
 
 Recorded on 2026-11-15 (SPEC-0212 TSK-0070): the owner's 2026-10-30
@@ -1866,6 +1889,10 @@ None: nothing was recorded here before this Task moved to the common form.
 | Warm-up scheduled run | 8, 23 | W83 | First 07:50 KST execution readback | HOME n8n schedule | NOT_RUN | Awaits the next 07:50 KST; `n8n execute` cannot start a schedule-only workflow. | required | - |
 | Warm-up moved to 06:50 | 8, 23 | W83 | `N8nTaskRunnerWarmupContractTests` RED then GREEN; `test_p03_runner_consumers` | `50 6 * * *` in test and `workflow.json`; README 0.1.3 | PASS | Test failed on `50 7 * * *` and passes after; 3 tests OK. | required | - |
 | Warm-up 06:50 HOME activation | 8, 23 | W83 | Export backup, `import:workflow`, `publish:workflow`, n8n main restart, export readback | `fix/n8n-warmup-0650` `5e490ccde`; HOME n8n | PASS | n8n healthy; both workflows active; workers not restarted. First 06:50 run NOT_RUN. | required | - |
+| SearXNG move and loopback contract | 23 | W83 | `python3 -m unittest tests.validation.test_p02_service_contracts` (RED `KeyError: 'ports'` before the Compose change) | `feat/searxng-host-loopback` | PASS | 6 SearXNG contract tests and the module pass | required | - |
+| SearXNG static gates | 23 | W83 | `validate-docker-compose.sh`, `check-all-hardening.sh`, `check-operations-catalog.py`, `check-supply-chain-policy.py --check`, `sync-tech-stack-versions.sh --check`, document metadata, links and lifecycle | `feat/searxng-host-loopback` | PASS | Secret catalog `check` stays `P02_METADATA_BLOCKED` as on the base revision | required | - |
+| SearXNG entrypoint metrics password | 23 | W83 | Local run of the entrypoint script with fake secret and settings files | `feat/searxng-host-loopback` | PASS | valid value written with mode 0600; empty, quote and `&` values exit 64 | required | - |
+| SearXNG live recreation and Hermes search | 23 | W83 | Recreate `searxng`, n8n main and Prometheus; host JSON search; `/metrics` 401/200; Assistant search; next Hermes run | HOME | NOT_RUN | Needs the owner-created secret file and the merged change | required | - |
 
 ### Resolution Links
 

@@ -1,10 +1,10 @@
 ---
 title: "AI와 검색 가이드"
-version: "0.2.0"
+version: "0.3.0"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "operations"
 ---
 
@@ -39,6 +39,7 @@ AI와 검색의 정상 구성과 사용 전제를 이해하고 필요한 통제�
 | `0073-open-notebook.md` | 현재 루트의 선택형 `notebook` 지식 워크스페이스와 SurrealDB 경계를 안내한다. 독립 LAB 이동은 예정 상태다. |
 | `0081-comfyui.md` | 현재 루트의 선택형 `ai-image` 워크플로 UI를 안내한다. 독립 LAB 이동은 예정 상태다. |
 | `0091-crawl4ai.md` | `crawl4ai`로 선택하는 크롤러의 접근 조건이다. Open Notebook 연동은 소스에서 주석 처리되어 있다. |
+| `0110-searxng.md` | SearXNG를 공유 HOME 메타검색으로 쓰는 방법이다. 컨테이너는 internal `search_net`, 호스트는 `127.0.0.1:8890`으로 JSON API를 호출한다. |
 
 #### Current Items
 
@@ -51,6 +52,7 @@ AI와 검색의 정상 구성과 사용 전제를 이해하고 필요한 통제�
 | [Open Notebook Usage Guide](0073-open-notebook.md) | `GDE-0073` | 현재 루트의 선택형 `notebook` 지식 워크스페이스와 SurrealDB 경계를 안내한다. 독립 LAB 이동은 예정 상태다. |
 | [ComfyUI Guide](0081-comfyui.md) | `GDE-0081` | 현재 루트의 선택형 `ai-image` 워크플로 UI를 안내한다. 독립 LAB 이동은 예정 상태다. |
 | [Crawl4AI Usage Guide](0091-crawl4ai.md) | `GDE-0091` | `crawl4ai`로 선택하는 크롤러의 접근 조건이다. Open Notebook 연동은 소스에서 주석 처리되어 있다. |
+| [SearXNG Usage Guide](0110-searxng.md) | `GDE-0110` | SearXNG를 공유 HOME 메타검색으로 쓰는 방법이다. 컨테이너는 internal `search_net`, 호스트는 `127.0.0.1:8890`으로 JSON API를 호출한다. |
 
 #### Classification
 
