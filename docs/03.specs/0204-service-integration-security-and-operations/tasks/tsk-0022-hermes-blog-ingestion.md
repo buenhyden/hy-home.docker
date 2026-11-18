@@ -1,6 +1,6 @@
 ---
 title: "Hermes Blog Ingestion Transport Task"
-version: "0.10.0"
+version: "0.11.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -1908,7 +1908,7 @@ None: nothing was recorded here before this Task moved to the common form.
 | Hermes SearXNG search | 23 | W83 | Next scheduled Hermes run uses `web.search_backend: searxng` at `127.0.0.1:8890` | Hermes run 2026-11-19 07:00 KST | NOT_RUN | Hermes config and its Firecrawl fallback are unchanged | required | - |
 | SearXNG Traefik route contract | 23 | W83 | `python3 -m unittest tests.validation.test_p02_service_contracts` (RED: 3 failures before the route; GREEN 45) | `feat/searxng-traefik-route` | PASS | SSO router `searxng`, Basic `/search` router `searxng-api` with `searxng-api-auth` (INFRA-008), `searxng_ingress_net` 10.250.50.0/24 shared only with Traefik | required | - |
 | SearXNG Traefik route live | 23 | W83 | Owner-created AI-011 and INFRA-008 (bcrypt htpasswd); `docker compose --profile core --profile searxng up -d --no-deps traefik searxng`; HTTP checks from the HOME host | HOME `e78295aa3`, 2026-11-18 13:2x KST | PASS | traefik and searxng healthy; `/` and `/search` without credentials 302 to Keycloak; wrong Basic on `/search` 401; Basic on `/` stays on SSO (302); correct Basic on `/search` 200 with 37 results (owner-run); loopback 37, n8n 37, `up{job="searxng"}`=1; Keycloak, Grafana, Prometheus 302 and n8n 200 after the Traefik restart; `searxng_ingress_net`=`searxng`,`traefik` | required | - |
-| SearXNG route from another host and its Hermes | 23 | W83 | `hermes-searxng-remote-setup.sh` dry run and `--apply` on 192.168.0.22, gateway restart, first search log | 192.168.0.22 | NOT_RUN | Handoff written; the owner copies AI-011 to that host first | required | - |
+| SearXNG route from 192.168.0.22 | 23 | W83 | From that host: name resolution, SSO 302, wrong Basic 401, correct Basic `/search` 200, browser login | 192.168.0.22 | NOT_RUN | Hermes runs only on the HOME host and already searches through `127.0.0.1:8890` (plugin call success, 3 results, 2026-11-18); the other host uses the route without Hermes | required | - |
 
 ### Resolution Links
 
