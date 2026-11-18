@@ -1,10 +1,10 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.89.0"
+version: "1.90.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
-updated: "2026-11-18"
+updated: "2026-11-19"
 layer: "specs"
 artifact_id: "SPEC-0212"
 parent_ids:
@@ -1190,6 +1190,13 @@ target, backup, recovery boundary, and action-specific authorization.
      on-demand observe command joins capture, analysis, forecast, dispatch
      and scheduled unit results by time window and names an owner for each
      failure, without copying log text or secrets.
+149. TSK-0093 applies the 4.2.0 W10-INFRA design with the owner's
+     2026-11-19 decisions: a read-only check expands a named HOME start
+     to its `depends_on` closure, joins the services already running and
+     refuses an empty start or one that leaves every HOME service running;
+     LAB and service runs on the operating Docker daemon are never reported
+     as sandbox results; and the Kubernetes context boundary is observed.
+     The live LAB run stays runtime-only by the owner's choice.
 
 ### Evidence Requirements
 

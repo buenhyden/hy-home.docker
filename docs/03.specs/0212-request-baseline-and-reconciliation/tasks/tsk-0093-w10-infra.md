@@ -1,6 +1,6 @@
 ---
 title: "W10 Infrastructure Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -74,6 +74,24 @@ service running. It reads only and starts nothing. Alternatives not taken:
 a new script (the render and container survey already live in `lab.py`)
 and a dry-run `up` (it stops at the first image not present locally).
 
+#### Review
+
+`lab.py` is operations code, so R123 asks for one fresh-context primary
+review; on 2026-11-19 the owner asked for one `code-reviewer` agent. It was
+dispatched at 2026-11-18T23:23:58Z with the diff, tests, rules and recorded
+checks, read files only (it had no shell), and returned after 62 s with 11
+tool calls: approve with follow-up, no critical or important finding. It
+confirmed the closure, the profile semantics, the error exits and that
+nothing starts or changes a container, and found three minor items: a
+running container of a service no longer declared raised the union above
+the total, tests did not cover running services, services with profiles,
+a mixed unknown name or a cycle, and the help text did not say the closure
+is an upper bound. The union now counts declared services only, the tests
+cover each input, and the help text says so; the follow-up closed with an
+author check. Its suggestion that a shell `COMPOSE_PROFILES` is not
+modelled stays recorded: the operating `.env` sets none (Profile control).
+Queue wait and context loading were not observed.
+
 #### Lifecycle Events
 
 | Artifact | From | To | Evidence |
@@ -101,12 +119,15 @@ start HOME services at once must serialize on a shared resource lease.
 | Select RED | 149 | W165 | `test_lab_controller.HomeSelectionTests` | New tests before the command | FAIL | 7 errors: no `home_selection` | required | - |
 | Select GREEN | 149 | W165 | `test_lab_controller.HomeSelectionTests` | `lab.py select` | PASS | 107 lab controller tests | required | Select RED |
 | Real select | 149 | W165 | `lab.py select` | `pact-broker`, `--profile '*'`, no argument | PASS | 4-service closure, 1 running, union 60 of 89; the other two refused with exit 3 | required | - |
-| Closure oracle | 149 | W165 | `home_selection` against `docker compose --profile '*' config SERVICE` | All 89 HOME services, one render, `fab3762f6` | PASS | 89 of 89 closures equal Compose's own; 212.9 s | required | - |
+| Closure oracle | 149 | W165 | `home_selection` against `docker compose --profile '*' config SERVICE` | All 89 HOME services, one render, `1cd0bf484` | PASS | 89 of 89 closures equal Compose's own; 212.9 s | required | - |
+| Select review | 149 | W165 | Fresh-context `code-reviewer` review | `1cd0bf484` | PASS | Approve with follow-up: three minor items, all fixed; 62 s, 1 round | required | - |
+| Follow-up RED | 149 | W165 | `test_lab_controller.HomeSelectionTests` | New follow-up test on `1cd0bf484` | FAIL | 1 failure: an undeclared running service counted in the union | required | - |
+| Follow-up GREEN | 149 | W165 | `test_lab_controller.HomeSelectionTests` | Union over declared services | PASS | 108 lab controller tests | required | Follow-up RED |
 | Live LAB run | 149 | W165 | `lab.py up`, lease expiry, `lab.py reap` | One LAB | NOT_RUN | The owner chose no live run on 2026-11-19 | optional | - |
 
 ### Resolution Links
 
-Select GREEN resolves Select RED.
+Select GREEN resolves Select RED, and Follow-up GREEN resolves Follow-up RED.
 
 ## Acceptance Decision
 
@@ -114,7 +135,7 @@ Select GREEN resolves Select RED.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 149 | pending | Host survey, Profile control, LAB concurrency, Kubernetes boundary, Select GREEN, Real select, Closure oracle | Awaits the owner's decision | @buenhyden |
+| 149 | pending | Host survey, Profile control, LAB concurrency, Kubernetes boundary, Select GREEN, Real select, Closure oracle, Select review, Follow-up GREEN | Awaits the owner's decision | @buenhyden |
 
 ### Remaining Conditions
 
