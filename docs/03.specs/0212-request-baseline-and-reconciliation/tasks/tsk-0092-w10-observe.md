@@ -1,6 +1,6 @@
 ---
 title: "W10 Observe Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -52,8 +52,10 @@ On the owner's approval the runbook step 7 command ran once at
 2026-11-18T21:45:12Z and exited 0 but removed no snapshot. Restic grouped
 the state set by host and paths by default, and the backed-up path list
 changed as volumes were added, so its 48 snapshots formed 10 groups of
-1 to 13, none above the keep counts; the host set's 34 snapshots formed one
-group under the counts. A read-only `stats --mode raw-data` before the run
+1 to 13; within each group restic kept the last snapshot of each day, week
+and month and, because the counts were not used up, the oldest one, so
+nothing was removed. The host set's 34 snapshots, one path and one per day,
+were all kept for the same reason. A read-only `stats --mode raw-data` before the run
 gave 48 state snapshots and 7.165 GiB, and 34 host snapshots and 682 KiB.
 The remote prune in `offsite.sh` already groups by host and tags.
 
@@ -61,9 +63,13 @@ The remote prune in `offsite.sh` already groups by host and tags.
 
 `infra/09-platform-ops/restic/backup.sh` now runs the local forget with
 `--group-by host,tags`, the existing confirmation test asserts it, and
-RUN-0021 step 7 explains why. A preview that applies restic's keep rule to
-the read-only snapshot list with that grouping removes 15 of 48 state and
-1 of 34 host snapshots, dated 2026-09-22 to 2026-11-11.
+RUN-0021 step 7 explains why. The author's hand-built preview said 15 of 48
+state and 1 of 34 host snapshots would go; the independent review showed
+that it contradicted the real run, because restic also keeps the oldest
+snapshot while a count is unused. Restic's own `forget --dry-run` with the
+fixed grouping, run read-only through the `restic` service, removes 14 of
+48 state snapshots (2026-09-22 12:12 to 2026-11-11 01:07) and no host
+snapshot, a subset of the approved target.
 
 #### Lifecycle Events
 
@@ -88,6 +94,8 @@ the observe command follows.
 | First prune | 148 | W164 | Runbook step 7 `forget-prune` | Approved command, both local repositories | FAIL | Exit 0, no snapshot removed: 10 path groups under the keep counts | required | - |
 | Grouping RED | 148 | W164 | `test_destructive_restic_actions_need_explicit_confirmation` | New grouping assertion on `ae3c60af8` | FAIL | `--group-by host,tags` missing | required | - |
 | Grouping GREEN | 148 | W164 | `test_destructive_restic_actions_need_explicit_confirmation` | Fixed `backup.sh` | PASS | Restic gate tests pass, 1 skipped | required | Grouping RED |
+| Grouping review | 148 | W164 | Fresh-context `code-reviewer` review | PR 1111 at `d50615a8c` | PASS | Approve with follow-up: preview contradicted the real run (medium), substring test (low), runbook reason (low); 146 s, 1 round; all three fixed | required | - |
+| Restic dry run | 148 | W164 | `restic forget --dry-run` with the fixed grouping | Both local repositories, read-only | PASS | State: remove 14 of 48; host: remove 0 of 34 | required | - |
 
 ### Resolution Links
 

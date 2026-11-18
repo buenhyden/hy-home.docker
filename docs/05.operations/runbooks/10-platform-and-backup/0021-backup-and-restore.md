@@ -349,8 +349,9 @@ docker compose --profile backup run --rm --no-deps \
 
 세트당 daily 30개, weekly 13개, monthly 12개의 snapshot을 유지한다. 볼륨이 늘면서
 백업 경로 목록이 바뀌므로 host와 tag로만 묶는다(`--group-by host,tags`). 경로까지 묶으면
-세트가 작은 묶음으로 나뉘어 어느 것도 유지 개수를 넘지 않아 아무것도 지우지 못한다
-(2026-11-19 관측).
+세트가 경로 목록마다 작은 묶음으로 나뉘고, restic은 묶음마다 하루·주·월의 최신과 가장
+오래된 snapshot을 따로 남기므로 2026-11-19에는 아무것도 지우지 못했다. 지우기 전에
+`--dry-run`으로 restic이 실제로 지울 목록을 확인한다.
 pgBackRest는 자체 backup을 `repo1-retention-full=2`로 만료시킨다.
 
 #### 8. Offsite copy (R2)
