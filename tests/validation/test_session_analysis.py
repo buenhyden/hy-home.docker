@@ -132,6 +132,16 @@ class AnalysisTests(unittest.TestCase):
         self.assertIn("claude: no transcript path", rules["capture-gap"]["pattern"])
         self.assertEqual(1, rules["capture-failure"]["frequency"])
 
+    def test_an_unreconciled_session_is_named_as_such(self):
+        self.prompt("waiting for reconcile", "fresh")
+        self.run_once()
+        gaps = [
+            c
+            for c in analysis.candidates(self.directory, False)
+            if c["rule"] == "capture-gap"
+        ]
+        self.assertEqual(["claude: not yet reconciled"], [c["pattern"] for c in gaps])
+
     def test_install_writes_a_persistent_daily_timer(self):
         units = self.directory.parent / "units"
         with mock.patch.object(analysis.subprocess, "run") as systemctl:

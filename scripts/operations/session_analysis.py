@@ -194,7 +194,10 @@ def aggregate(
     for session in sessions:
         key = (session["provider"], session["session_id"])
         if session["completeness"] != "complete" and key in latest:
-            reason = (session["reason"] or "unknown").split(";")[0]
+            reason = session["reason"] or (
+                "unknown" if session["last_reconciled"] else "not yet reconciled"
+            )
+            reason = reason.split(";")[0]
             reason = re.sub(r"^\d+ ", "", reason.strip())
             gaps.setdefault(f"{session['provider']}: {reason}", []).append(latest[key])
     for reason, members in sorted(gaps.items()):
