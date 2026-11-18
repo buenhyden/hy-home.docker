@@ -89,6 +89,53 @@ class SandboxTests(unittest.TestCase):
             {}, sandbox.assess({"services": allowed}, sorted(allowed), run_dir)
         )
 
+    def test_secret_stores_volume_drivers_and_namespaces_are_blocked(self):
+        run_dir = self.base / "run"
+        secret = str(sandbox.ROOT / "secrets")
+        cases = {
+            "repo-secrets": service(
+                volumes=[{"type": "bind", "source": secret, "read_only": True}]
+            ),
+            "repo-env": service(
+                volumes=[
+                    {
+                        "type": "bind",
+                        "source": str(sandbox.ROOT / ".env"),
+                        "read_only": True,
+                    }
+                ]
+            ),
+            "driver-bind": service(volumes=[{"type": "volume", "source": "v1"}]),
+            "external-volume": service(volumes=[{"type": "volume", "source": "v2"}]),
+            "external-net": service(networks={"prod": {}}),
+            "container-net": service(network_mode="container:traefik"),
+            "bridge": service(network_mode="bridge"),
+            "ipc": service(ipc="host"),
+            "devices": service(devices=["/dev/kvm"]),
+            "gpu": service(deploy={"resources": {"reservations": {"devices": [{}]}}}),
+            "caps": service(cap_add=["SYS_ADMIN"]),
+            "unconfined": service(security_opt=["seccomp:unconfined"]),
+            "config": service(configs=[{"source": "c"}]),
+            "env-file": service(env_file=[{"path": "/home/user/.env"}]),
+        }
+        config = {
+            "services": cases,
+            "volumes": {
+                "v1": {"driver_opts": {"type": "none", "o": "bind", "device": "/"}},
+                "v2": {"external": True},
+            },
+            "networks": {"prod": {"external": True}},
+            "configs": {"c": {"file": "/etc/passwd"}},
+        }
+        problems = sandbox.assess(config, sorted(cases), run_dir)
+        self.assertEqual(set(cases), set(problems) - {"<selection>"})
+        safe = {
+            "local-volume": service(volumes=[{"type": "volume", "source": "data"}]),
+            "isolated": service(network_mode="none"),
+        }
+        config = {"services": safe, "volumes": {"data": {}}}
+        self.assertEqual({}, sandbox.assess(config, sorted(safe), run_dir))
+
     def test_size_and_memory_budgets_are_enforced(self):
         many = {f"s{i}": service() for i in range(sandbox.MAX_SERVICES + 1)}
         problems = sandbox.assess({"services": many}, sorted(many), self.base)

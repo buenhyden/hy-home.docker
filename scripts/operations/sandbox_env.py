@@ -148,9 +148,51 @@ def _inside(path: str, root: Path) -> bool:
     return Path(path).resolve().is_relative_to(root.resolve())
 
 
+# Repository paths that hold secrets, state or history; never mounted.
+PRIVATE_PARTS = ("secrets", ".git")
+
+
+def _repository_safe(source: str) -> bool:
+    if not _inside(source, ROOT):
+        return False
+    parts = Path(source).resolve().relative_to(ROOT.resolve()).parts
+    return not any(
+        part in PRIVATE_PARTS or part.startswith((".env", ".workspace-"))
+        for part in parts
+    )
+
+
+def _host_namespace(service: dict) -> list[str]:
+    found = []
+    mode = service.get("network_mode")
+    if mode and mode != "none" and not str(mode).startswith("service:"):
+        found.append(f"uses network_mode {mode}")
+    for key in ("pid", "ipc", "uts", "userns_mode", "cgroup"):
+        if str(service.get(key, "")) == "host" or str(service.get(key, "")).startswith(
+            "container:"
+        ):
+            found.append(f"shares the {key} namespace {service.get(key)}")
+    if service.get("privileged"):
+        found.append("runs privileged")
+    reservations = (
+        service.get("deploy", {}).get("resources", {}).get("reservations", {})
+    )
+    if service.get("devices") or reservations.get("devices") or service.get("gpus"):
+        found.append("maps host devices or GPUs")
+    if service.get("runtime"):
+        found.append(f"uses the {service.get('runtime')} runtime")
+    if service.get("cap_add"):
+        found.append(f"adds capabilities {service.get('cap_add')}")
+    if any("unconfined" in str(o) for o in service.get("security_opt") or []):
+        found.append("disables a security profile")
+    return found
+
+
 def assess(config: dict, selected: list[str], run_dir: Path) -> dict[str, list[str]]:
     """Name every way a selected service would reach the host or exceed limits."""
     services, secrets = config["services"], config.get("secrets", {})
+    volumes, networks = config.get("volumes", {}), config.get("networks", {})
+    configs = config.get("configs", {})
     problems: dict[str, list[str]] = {}
     total = 0
     for name in selected:
@@ -160,18 +202,42 @@ def assess(config: dict, selected: list[str], run_dir: Path) -> dict[str, list[s
             if "docker.sock" in source:
                 found.append(f"mounts the Docker socket {source}")
             elif mount.get("type") == "bind" and not (
-                (_inside(source, ROOT) and mount.get("read_only"))
+                (_repository_safe(source) and mount.get("read_only"))
                 or _inside(source, run_dir)
             ):
                 found.append(f"binds a host path outside the sandbox: {source}")
+            elif mount.get("type") == "volume":
+                declared = volumes.get(source, {}) or {}
+                options = " ".join(
+                    map(str, (declared.get("driver_opts") or {}).values())
+                )
+                if (
+                    declared.get("external")
+                    or declared.get("driver") not in (None, "local")
+                    or "bind" in options
+                    or "device" in (declared.get("driver_opts") or {})
+                ):
+                    found.append(f"uses a volume that reaches the host: {source}")
+            elif mount.get("type") not in ("bind", "volume", "tmpfs"):
+                found.append(f"uses a {mount.get('type')} mount")
         for secret in service.get("secrets") or []:
             source = secrets.get(secret.get("source", ""), {}).get("file", "")
             if not source or not _inside(source, run_dir):
                 found.append(f"uses a real secret file {secret.get('source')}")
-        if service.get("network_mode") == "host" or service.get("pid") == "host":
-            found.append("uses host networking or the host PID namespace")
-        if service.get("privileged"):
-            found.append("runs privileged")
+        for item in service.get("configs") or []:
+            source = configs.get(item.get("source", ""), {}).get("file", "")
+            if not source or not _inside(source, run_dir):
+                found.append(
+                    f"uses a config file outside the sandbox {item.get('source')}"
+                )
+        for env_file in service.get("env_file") or []:
+            path = env_file.get("path") if isinstance(env_file, dict) else env_file
+            if not _inside(str(path), run_dir):
+                found.append(f"reads an env file outside the sandbox {path}")
+        for network in service.get("networks") or {}:
+            if (networks.get(network) or {}).get("external"):
+                found.append(f"joins the external network {network}")
+        found += _host_namespace(service)
         limits = service.get("deploy", {}).get("resources", {}).get("limits", {})
         memory = service.get("mem_limit") or limits.get("memory")
         if not memory:
