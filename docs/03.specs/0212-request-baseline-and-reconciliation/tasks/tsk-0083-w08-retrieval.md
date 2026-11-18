@@ -1,6 +1,6 @@
 ---
 title: "W08 Memory Recall Task"
-version: "0.1.0"
+version: "0.2.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -99,9 +99,16 @@ and RUN-0021 state the behavior.
 
 ### Blockers and Decisions
 
-W153 needs a native Codex search, and Codex reported its usage limit on
-2026-11-18 until 16:29 KST. The real store holds 9 records, so no real
-recall sample beyond the synthetic corpus is measured.
+W153 waited for Codex's usage limit, which ended at 16:29 KST on
+2026-11-18, and then ran on the real store. Before any change, Codex
+`codex exec` found probes `w153-probe-withdraw` and `w153-probe-erase` for
+`zephyrquartz`, both revision 1 and matched by phrase. Claude Code then set
+the first ineligible at revision 2 and erased the second, which deleted its
+one revision. Claude and Codex searches then returned no hit, and both got
+`MEMORY_NOT_FOUND` for the erased probe even with `--historical`; the
+withdrawn probe stays only as an ineligible historical revision. The real
+store is small, so no real recall sample beyond the synthetic corpus is
+measured.
 
 ## Verification Evidence
 
@@ -114,10 +121,12 @@ recall sample beyond the synthetic corpus is measured.
 | Recall regression | 139 | W152 | memory store, CLI, search, capacity and evaluation suites | W152 search on `c35849426` | PASS | 56 tests | required | - |
 | Latency split | 139 | W152 | admissible view build, matching and FTS5 trigram timing | 2,008 synthetic records, 20 runs | PASS | 122.4 ms views, 13.8 ms matching, 0.02 ms FTS5 | optional | - |
 | Native recall | 139 | W153 | Claude and Codex search after withdrawal and erase | Real store | NOT_RUN | Codex usage limit until 16:29 KST | required | - |
+| Native recall observed | 139 | W153 | Claude and Codex search after withdrawal and erase | Real store, probes at revision 1, then withdrawn and erased | PASS | Codex before: 2 phrase hits; after: Claude and Codex `[]`, erased probe `MEMORY_NOT_FOUND` historically for both | required | Native recall |
 
 ### Resolution Links
 
-Recall GREEN resolves Recall RED.
+Recall GREEN resolves Recall RED. Native recall observed resolves Native
+recall.
 
 ## Acceptance Decision
 
@@ -125,12 +134,11 @@ Recall GREEN resolves Recall RED.
 
 | Criterion | Acceptance | Evidence | Decision | Current Owner |
 | --- | --- | --- | --- | --- |
-| 139 | pending | Recall GREEN, Recall regression, Latency split | Awaits W153 and the owner's decision | @buenhyden |
+| 139 | pending | Recall GREEN, Recall regression, Latency split, Native recall observed | Awaits the owner's decision | @buenhyden |
 
 ### Remaining Conditions
 
-W153 needs the native Claude and Codex search observation after a
-withdrawal and an erase.
+None in W152 or W153; the owner decides criterion 139.
 
 ## Handoff
 
@@ -141,4 +149,4 @@ ENVIRONMENT-CONSTRAINTS-R132 to R135 and RUN-0021 hold the W152 behavior.
 
 ### Next Owner
 
-The implementer owns W153. The owner decides criterion 139.
+The owner decides criterion 139.
