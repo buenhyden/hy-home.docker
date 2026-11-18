@@ -22,9 +22,6 @@ def at(**delta) -> str:
     return (NOW + dt.timedelta(**delta)).isoformat()
 
 
-SINCE, UNTIL = at(days=-1), at(hours=1)
-
-
 def fake_journal(lines: dict[str, list[str]]):
     def journal(unit: str, scope: str, since: str, until: str) -> list[str]:
         return lines.get(unit, [])
@@ -34,6 +31,9 @@ def fake_journal(lines: dict[str, list[str]]):
 
 class ObserveTests(unittest.TestCase):
     def setUp(self) -> None:
+        global NOW, SINCE, UNTIL
+        NOW = dt.datetime.now(dt.UTC).replace(microsecond=0)
+        SINCE, UNTIL = at(hours=-30), at(hours=1)
         temporary = tempfile.TemporaryDirectory()
         self.addCleanup(temporary.cleanup)
         self.directory = Path(temporary.name) / ".workspace-capture"
@@ -101,10 +101,11 @@ class ObserveTests(unittest.TestCase):
         (run / "report.json").write_text(json.dumps(content))
         return run
 
-    def report(self, since=SINCE, until=UNTIL, journal=None) -> dict:
+    def report(self, since=None, until=None, journal=None) -> dict:
         return observe.report(
-            self.directory, since, until, journal=journal or self.journal
-        )
+            self.directory, since or SINCE, until or UNTIL,
+            journal=journal or self.journal,
+        )  # fmt: skip
 
     def sources(self, result: dict) -> list[str]:
         return sorted(f["source"] for f in result["failures"])
@@ -165,10 +166,27 @@ class ObserveTests(unittest.TestCase):
         store.rename(self.directory / "real.sqlite3")
         store.symlink_to(self.directory / "real.sqlite3")
         result = self.report()
-        self.assertIn(
-            "capture.sqlite3 unavailable",
-            [f["item"] for f in result["failures"] if f["source"] == "capture"],
+        items = [f["item"] for f in result["failures"] if f["source"] == "capture"]
+        self.assertEqual(1, items.count("capture.sqlite3 unavailable"))
+
+    def test_status_file_and_degraded_log_problems_are_failures(self) -> None:
+        status = self.directory / analysis.STATUS_NAME
+        status.unlink()
+        status.symlink_to(self.directory / "elsewhere.json")
+        (self.directory / "degraded.log").write_bytes(b"\xff\xfe not utf-8\n")
+        items = [f["item"] for f in self.report()["failures"]]
+        self.assertIn("analysis-status.json unavailable", items)
+        self.assertIn("degraded.log unavailable", items)
+
+    def test_a_forecast_reference_is_echoed_only_in_task_form(self) -> None:
+        forecast.forecast(
+            self.directory, "free text owner", "ci-run", 1, 2, 3,
+            forecasted_at=at(hours=-4),
+        )  # fmt: skip
+        forecast.observe(
+            self.directory, "free text owner", "failed", at(hours=-3), at(hours=-2)
         )
+        self.assertNotIn("free text owner", json.dumps(self.report()))
 
     def test_the_report_states_its_window_and_cost(self) -> None:
         result = self.report()
@@ -197,7 +215,7 @@ class ObserveTests(unittest.TestCase):
         result = self.report(journal=fake_journal({}))
         missing = [f["item"] for f in result["failures"] if f["source"] == "unit"]
         self.assertEqual(sorted(observe.WATCHED), sorted(missing))
-        short = self.report(since=at(minutes=-30), journal=fake_journal({}))
+        short = self.report(since=at(hours=-25), journal=fake_journal({}))
         self.assertEqual([], [f for f in short["failures"] if f["source"] == "unit"])
 
     def test_an_empty_store_reports_zero_without_failures(self) -> None:

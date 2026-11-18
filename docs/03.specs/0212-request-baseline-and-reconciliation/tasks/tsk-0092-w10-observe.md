@@ -1,6 +1,6 @@
 ---
 title: "W10 Observe Task"
-version: "0.4.0"
+version: "0.5.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -118,7 +118,15 @@ failures, echoes run report values only when they match a run id, a status
 or a Task reference, names RUN-0021 step 4, and refuses a reversed window
 and an outside-repository run with exit 2. A rerun of the 7-day report
 gave the same 5 failed backups in 0.149 s with the capture gaps grouped by
-cause.
+cause. Round 2, sent at 2026-11-18T22:44:04Z, resolved all nine findings
+after 102 s with 6 tool calls and approved with four low follow-ups: a
+missed-run check that a randomly delayed backup could trip inside 24 hours,
+a forecast reference echoed unchecked, a store reported twice, and the
+status file and `degraded.log` outside the unavailable rule. The window for
+a missed run is now 29 hours, forecast references are echoed only in Task
+form, each unavailable store is reported once, a symlinked status file and
+an unreadable `degraded.log` are failures, and the tests take the clock in
+`setUp`; the follow-up closed with an author check.
 
 #### Lifecycle Events
 
@@ -154,13 +162,17 @@ times, are not recorded by any store and stay unmeasured.
 | Observe review | 148 | W164 | Fresh-context `code-reviewer` review | `9cfb6e1ff` | FAIL | Block: 1 blocker, 1 high, 2 medium, 5 low; 229 s, 1 round | required | - |
 | Observe fix RED | 148 | W164 | `test_observe` | Rewritten tests on `9cfb6e1ff` | FAIL | 7 failures, 1 error | required | - |
 | Observe fix GREEN | 148 | W164 | `test_observe` | Fixed `observe.py` | PASS | 11 tests | required | Observe fix RED |
+| Observe re-review | 148 | W164 | Fresh-context `code-reviewer` review | `4194f807e`, round 2 | PASS | Approve with follow-up: nine findings resolved, four low follow-ups fixed; 102 s | required | Observe review |
+| Follow-up RED | 148 | W164 | `test_observe` | New tests on `4194f807e` | FAIL | 3 failures, 1 error | required | - |
+| Follow-up GREEN | 148 | W164 | `test_observe` | Follow-up fix | PASS | 13 tests | required | Follow-up RED |
 | Backup under budget | 148 | W164 | Daily `hyhome-backup.service` | 2026-11-20 03:42 KST run | NOT_RUN | Not yet run | required | - |
 
 ### Resolution Links
 
 Grouping GREEN resolves Grouping RED, Lab isolation fixed resolves Hosted
 lab isolation, Prune after fix resolves First prune, Observe GREEN
-resolves Observe RED, and Observe fix GREEN resolves Observe fix RED.
+resolves Observe RED, Observe fix GREEN resolves Observe fix RED, Observe re-review resolves
+Observe review, and Follow-up GREEN resolves Follow-up RED.
 
 ## Acceptance Decision
 

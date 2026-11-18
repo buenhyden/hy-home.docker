@@ -5,10 +5,10 @@
 the dispatch run reports and the journal of the scheduled units, and counts
 what happened between `--since` and `--until` (default: the last 24 hours).
 Every failure names its owner and the next step. Journal lines are only
-counted, and worker-written fields are never echoed, so no log text, prompt
+counted, and fields that workers can write are echoed only in a fixed shape, so no log text, prompt
 or secret is copied into the report. A store that cannot be read, a journal
 that hides lines, and a daily unit with no run in a window of a day or more
-are failures, not zeros. The report states its own run time as the
+are failures, not zeros; a day here is 29 hours, for the timer delay and run time. The report states its own run time as the
 observation cost, and what it cannot measure. It is an on-demand view,
 never a gate and never an approval.
 """
@@ -55,6 +55,9 @@ RUN_ID = re.compile(r"\d{8}T\d{6}-[0-9a-f]{6}")
 RUN_STATES = ("succeeded", "failed", "cancelled")
 FAILED_ANALYSIS = ("failed", "cancelled", "fenced")
 RESTRICTED = "not seeing messages from other users"
+# A daily unit may start up to 30 minutes late and run up to 4 hours, so two
+# finished runs can lie further apart than one day.
+MISSED_RUN_WINDOW = dt.timedelta(hours=29)
 UNMEASURED = [
     "queue wait before each job starts",
     "context loading inside agents and reviewers",
@@ -138,11 +141,17 @@ def report(directory: Path, since: str, until: str, journal=system_journal) -> d
             }
         )
 
+    unavailable: set[str] = set()
+
     def rows(source: str, owner: str, name: str, query: str) -> list[sqlite3.Row]:
         try:
             return _rows(directory / name, query)
         except StoreUnavailable:
-            fail(source, f"{name} unavailable", 1, owner, f"check {directory / name}")
+            if name not in unavailable:
+                unavailable.add(name)
+                fail(
+                    source, f"{name} unavailable", 1, owner, f"check {directory / name}"
+                )
             return []
 
     # Capture: events and the incomplete sessions active inside the window.
@@ -161,9 +170,16 @@ def report(directory: Path, since: str, until: str, journal=system_journal) -> d
         if row["completeness"] != "complete" and row["session_id"] in active
     )
     degraded = directory / "degraded.log"
-    lines = (
-        degraded.read_text(encoding="utf-8").splitlines() if degraded.is_file() else []
-    )
+    try:
+        lines = (
+            degraded.read_text(encoding="utf-8").splitlines()
+            if degraded.is_file()
+            else []
+        )
+    except (OSError, UnicodeDecodeError):
+        lines = []
+        fail("capture", "degraded.log unavailable", 1, CAPTURE_OWNER,
+             f"check {degraded}")  # fmt: skip
     degraded_count = sum(_in(line[:25], low, high) for line in lines)
     result = {
         "since": since,
@@ -200,7 +216,10 @@ def report(directory: Path, since: str, until: str, journal=system_journal) -> d
     )  # fmt: skip
     status_path = directory / "analysis-status.json"
     last = None
-    if status_path.is_file() and not status_path.is_symlink():
+    if status_path.is_symlink() or (status_path.exists() and not status_path.is_file()):
+        fail("analysis", "analysis-status.json unavailable", 1, ANALYSIS_OWNER,
+             f"check {status_path}")  # fmt: skip
+    elif status_path.is_file():
         try:
             status = json.loads(status_path.read_text(encoding="utf-8"))
         except (OSError, ValueError):
@@ -239,8 +258,11 @@ def report(directory: Path, since: str, until: str, journal=system_journal) -> d
     }
     for row in outcomes:
         if row["status"] == "failed":
-            fail("forecast", f"task {row['task_ref']} failed", 1, row["task_ref"],
-                 "the task's own record")  # fmt: skip
+            # Any worktree can record a forecast, so the reference is a claim.
+            ref = row["task_ref"]
+            known = isinstance(ref, str) and TASK_REF.fullmatch(ref)
+            fail("forecast", f"task {ref if known else 'with an unrecognised reference'} failed",
+                 1, ref if known else "TSK-0089 forecast", "the task's own record")  # fmt: skip
 
     # Dispatch reports sit in a folder workers can write: read them as claims
     # and echo only values that match a fixed shape.
@@ -276,7 +298,7 @@ def report(directory: Path, since: str, until: str, journal=system_journal) -> d
     result["dispatch"] = {"runs": dict(dispatched)}
 
     # Scheduled units: count, never copy, journal lines.
-    daily = high - low >= dt.timedelta(days=1)
+    daily = high - low >= MISSED_RUN_WINDOW
     units = {}
     for unit, (scope, owner, step) in WATCHED.items():
         try:
@@ -292,7 +314,9 @@ def report(directory: Path, since: str, until: str, journal=system_journal) -> d
         if failed:
             fail("unit", unit, failed, owner, step)
         elif daily and not succeeded:
-            fail("unit", unit, 1, owner, "no run in the window; check the timer")
+            fail("unit", unit, 1, owner,
+                 "no finished or failed run in the window; check the timer and"
+                 f" systemctl status {unit}")  # fmt: skip
     result["units"] = units
     result["failures"] = failures
     result["unmeasured"] = UNMEASURED
