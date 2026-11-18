@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "1.22.0"
+version: "1.23.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -172,9 +172,9 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R149 | Starting Compose services on this server | Required: name the services or the profiles to start; Compose starts their `depends_on` closure with them | none | none |
 | ENVIRONMENT-CONSTRAINTS-R150 | Starting Compose services on this server | Forbidden: selecting every profile with `--profile '*'` or `COMPOSE_PROFILES` holding `*` for `up`, `start` or `create` | hookify `block-whole-stack-compose-start` refuses the visible forms | `tests/lib/hooks/test_compose_start_rule.py` |
 | ENVIRONMENT-CONSTRAINTS-R151 | Forecasting a task | Required: record P30, P50 and P80 completion minutes with `scripts/operations/task_forecast.py` before the task starts, with the time basis, assumptions and reference class | none | none |
-| ENVIRONMENT-CONSTRAINTS-R152 | Changing a forecast | Required: append a new revision; editing or deleting a recorded forecast or outcome is refused | SQLite triggers in the forecast store | `tests/validation/test_task_forecast.py` |
-| ENVIRONMENT-CONSTRAINTS-R153 | Recording an outcome | Required: one outcome per task, completed, failed or cancelled, scored against the last revision fixed before the start; failed and cancelled tasks are censored and counted apart | `task_forecast.py` refuses a missing pre-start forecast or a second outcome | `tests/validation/test_task_forecast.py` |
-| ENVIRONMENT-CONSTRAINTS-R154 | Reporting forecast quality | Required: report coverage with its 95% Wilson interval, pinball loss and sample size per quantile; below 20 completed tasks the result is labelled `insufficient sample` and claims no calibrated guarantee | none | none |
+| ENVIRONMENT-CONSTRAINTS-R152 | Changing a forecast | Required: append a new revision; editing, deleting or replacing a recorded forecast or outcome is refused; the triggers stop edits through SQL, not a dropped trigger or a replaced store file | SQLite triggers in the forecast store | `tests/validation/test_task_forecast.py` |
+| ENVIRONMENT-CONSTRAINTS-R153 | Recording an outcome | Required: one outcome per task, completed, failed or cancelled, scored against the last revision fixed before the start; failed and cancelled tasks are censored and counted apart; minutes are finite, the end is not in the future and active minutes do not exceed the elapsed time | `task_forecast.py` refuses a missing pre-start forecast, a second outcome and those inputs | `tests/validation/test_task_forecast.py` |
+| ENVIRONMENT-CONSTRAINTS-R154 | Reporting forecast quality | Required: report coverage with its 95% Wilson interval, pinball loss and sample size per quantile; below 20 completed tasks the result is labelled `insufficient sample`, a result pooled across task types is never labelled calibrated, and neither claims a calibrated guarantee | none | none |
 | ENVIRONMENT-CONSTRAINTS-R155 | Using a forecast | Forbidden: treating it as a deadline or approval, skipping a required check because time ran over, or summing per-task P80 values into a parallel run's P80 | none | none |
 | ENVIRONMENT-CONSTRAINTS-R156 | Running work units in parallel | Required: dispatch them with `scripts/operations/work_dispatch.py` from a plan naming each unit's command, dependencies, owned paths and shared resources, one worktree per unit, the Task and brief revision passed to the worker | none | none |
 | ENVIRONMENT-CONSTRAINTS-R157 | A unit starts | Required: every dependency succeeded and the unit holds a lease on each owned path and shared resource; a lease carries a fencing generation and a result whose lease expired or was taken over is refused | the dispatcher's lease store | `tests/validation/test_work_dispatch.py` |

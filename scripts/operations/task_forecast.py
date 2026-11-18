@@ -25,6 +25,7 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 from scripts.lib.hooks import session_capture as capture  # noqa: E402
+from scripts.operations.agent_memory import MemoryStoreError  # noqa: E402
 
 STORE_NAME = "forecast.sqlite3"
 UNITS = ("minutes",)
@@ -48,6 +49,14 @@ SCHEMA = (
     " BEGIN SELECT RAISE(ABORT, 'forecasts are append-only'); END",
     "CREATE TRIGGER IF NOT EXISTS forecasts_no_delete BEFORE DELETE ON forecasts"
     " BEGIN SELECT RAISE(ABORT, 'forecasts are append-only'); END",
+    # REPLACE deletes without firing DELETE triggers, so refuse the insert itself.
+    "CREATE TRIGGER IF NOT EXISTS forecasts_no_replace BEFORE INSERT ON forecasts"
+    " WHEN EXISTS (SELECT 1 FROM forecasts WHERE task_ref=NEW.task_ref"
+    " AND revision=NEW.revision)"
+    " BEGIN SELECT RAISE(ABORT, 'forecasts are append-only'); END",
+    "CREATE TRIGGER IF NOT EXISTS outcomes_no_replace BEFORE INSERT ON outcomes"
+    " WHEN EXISTS (SELECT 1 FROM outcomes WHERE task_ref=NEW.task_ref)"
+    " BEGIN SELECT RAISE(ABORT, 'outcomes are append-only'); END",
     "CREATE TRIGGER IF NOT EXISTS outcomes_no_update BEFORE UPDATE ON outcomes"
     " BEGIN SELECT RAISE(ABORT, 'outcomes are append-only'); END",
     "CREATE TRIGGER IF NOT EXISTS outcomes_no_delete BEFORE DELETE ON outcomes"
@@ -109,6 +118,8 @@ def forecast(
         raise ForecastError(f"unit must be one of {UNITS}")
     if time_basis not in TIME_BASES:
         raise ForecastError(f"time_basis must be one of {TIME_BASES}")
+    if not all(math.isfinite(value) for value in (p30, p50, p80)):
+        raise ForecastError("quantiles must be finite numbers")
     if not 0 <= p30 <= p50 <= p80:
         raise ForecastError("quantiles must satisfy 0 <= p30 <= p50 <= p80")
     at = forecasted_at or now()
@@ -177,9 +188,14 @@ def observe(
     started, finished = _when(started_at), _when(finished_at)
     if finished < started:
         raise ForecastError("finished_at precedes started_at")
+    if finished > _when(now()):
+        raise ForecastError("finished_at is in the future")
+    elapsed = (finished - started).total_seconds() / 60
     for value in (active_minutes, runner_wait_minutes, user_wait_minutes):
-        if value is not None and value < 0:
-            raise ForecastError("minutes cannot be negative")
+        if value is not None and not (math.isfinite(value) and value >= 0):
+            raise ForecastError("minutes must be finite and not negative")
+    if active_minutes is not None and active_minutes > elapsed:
+        raise ForecastError("active_minutes exceeds the elapsed time")
     connection = connect(directory)
     try:
         connection.execute("BEGIN IMMEDIATE")
@@ -218,7 +234,6 @@ def observe(
         connection.execute("COMMIT")
     finally:
         connection.close()
-    elapsed = (finished - started).total_seconds() / 60
     actual = active_minutes if chosen["time_basis"] == "active" else elapsed
     return {
         "task_ref": task_ref,
@@ -289,9 +304,11 @@ def score(directory: Path, task_type: str | None = None) -> dict:
         "failed": censored["failed"],
         "cancelled": censored["cancelled"],
         "calibration": (
-            "empirical"
-            if len(completed) >= MIN_CALIBRATION_SAMPLE
-            else "insufficient sample"
+            "insufficient sample"
+            if len(completed) < MIN_CALIBRATION_SAMPLE
+            else "empirical"
+            if task_type
+            else "pooled across types; score one type"
         ),
         "note": "completed tasks only; failed and cancelled tasks are censored,"
         " not scored",
@@ -321,8 +338,8 @@ def main(argv: list[str] | None = None) -> int:
     scoring = commands.add_parser("score")
     scoring.add_argument("--type", dest="task_type")
     args = parser.parse_args(argv)
-    directory = capture.capture_dir()
     try:
+        directory = capture.capture_dir()
         if args.command == "forecast":
             result = {
                 "task_ref": args.task_ref,
@@ -352,7 +369,7 @@ def main(argv: list[str] | None = None) -> int:
             )
         else:
             result = score(directory, args.task_type)
-    except ForecastError as error:
+    except (ForecastError, MemoryStoreError, OSError, sqlite3.Error) as error:
         print(f"FORECAST_REFUSED: {error}", file=sys.stderr)
         return 2
     print(json.dumps(result, indent=2, ensure_ascii=False))
