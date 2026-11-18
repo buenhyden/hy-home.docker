@@ -119,29 +119,6 @@ require_initialized() {
 action="${1:-snapshots}"
 [ "$#" -gt 0 ] && shift
 
-require_memory_admission() {
-    IFS= read -r admission || { echo "memory capacity admission absent" >&2; exit 64; }
-    [ "${#admission}" -le 256 ] || { echo "invalid memory capacity admission" >&2; exit 64; }
-    actual="$(printf '%s\n' "$admission" | sha256sum | cut -d' ' -f1)"
-    if [ -z "${HYHOME_MEMORY_ADMISSION_SHA256:-}" ] ||
-        [ "$actual" != "$HYHOME_MEMORY_ADMISSION_SHA256" ]; then
-        echo "memory capacity admission mismatch" >&2; exit 64;
-    fi
-    case "$admission" in
-        'HYHOME_MEMORY_BUDGET_V1 offsite '*) ;;
-        *) echo "memory capacity admission target mismatch" >&2; exit 64 ;;
-    esac
-    IFS=' ' read -r protocol target request nonce extra <<EOF
-$admission
-EOF
-    if [ "$protocol" != HYHOME_MEMORY_BUDGET_V1 ] || [ "$target" != offsite ] ||
-        [ -n "$extra" ] || [ "${#request}" -ne 64 ] || [ "${#nonce}" -ne 64 ]; then
-        echo "invalid memory capacity admission fields" >&2; exit 64
-    fi
-    case "$request$nonce" in *[!0-9a-f]*) echo "invalid memory capacity admission fields" >&2; exit 64 ;; esac
-    unset protocol target request nonce extra
-    unset admission actual HYHOME_MEMORY_ADMISSION_SHA256
-}
 
 case "$action" in
     snapshots)
@@ -158,34 +135,6 @@ case "$action" in
         fi
         ;;
     copy)
-        # Daily path stays ungated; snapshot accounting is not admission-gated
-        # yet, and budget-copy keeps the admission-gated route.
-        require_initialized
-        # copy skips snapshots the remote already has. --no-lock applies to
-        # the read-only source only; the orchestrator's flock excludes writers.
-        # Each step is its own assignment so set -e stops on any failure.
-        remote_pairs="$(snapshot_trees)"
-        remote_trees="$(printf '%s\n' "$remote_pairs" | cut -d' ' -f2)"
-        pending=0
-        for set in $SETS; do
-            bytes="$(pending_bytes "$set")"
-            # Fail closed even in a shell that does not stop on a failed substitution.
-            case "$bytes" in '' | *[!0-9-]*) echo "pending size for $set unreadable" >&2; exit 65 ;; esac
-            pending=$((pending + bytes))
-        done
-        guard "$pending"
-        for set in $SETS; do
-            restic copy --no-lock --from-repo "/repo/$set"
-        done
-        echo "R2 latest snapshots:"
-        restic snapshots --compact --latest 1
-        # Stored bytes, which R2 bills; the orchestrator turns this line into
-        # hyhome_backup_offsite_repo_bytes.
-        size="$(stored_bytes)"
-        echo "R2 repository size: $size bytes"
-        ;;
-    budget-copy)
-        require_memory_admission
         require_initialized
         # copy skips snapshots the remote already has. --no-lock applies to
         # the read-only source only; the orchestrator's flock excludes writers.

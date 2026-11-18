@@ -20,14 +20,7 @@ from scripts.operations import agent_memory as memory
 
 
 def initialize_capacity(path):
-    MemoryCapacity(path).reconcile(
-        {
-            "schema_version": 1,
-            "complete": True,
-            "local_paths": [],
-            "external_snapshots": [],
-        }
-    )
+    MemoryCapacity(path).reconcile()
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -241,85 +234,6 @@ class StoreTests(unittest.TestCase):
                 memory.put(self.connection, **arguments)
         self.assertEqual([], self.rows())
 
-    def test_backup_restores_records_and_a_failure_keeps_the_previous_one(self) -> None:
-        write(self.connection, "gate", 0, "kept")
-        output = self.base / "backup" / "memory.sqlite3"
-        output.parent.mkdir(mode=0o700)
-        memory.backup(self.connection, output)
-        good = output.read_bytes()
-        self.assertEqual(0o600, stat.S_IMODE(output.stat().st_mode))
-
-        write(self.connection, "gate", 1, "newer")
-        failing = mock.MagicMock(wraps=self.connection)
-        failing.backup.side_effect = sqlite3.OperationalError("disk I/O error")
-        with self.assertRaises(memory.MemoryStoreError) as caught:
-            memory.backup(failing, output)
-        self.assertEqual(memory.EXIT_BACKUP, caught.exception.code)
-        self.assertEqual(good, output.read_bytes())
-        self.assertEqual([output], list(output.parent.iterdir()))
-
-        restored = self.base / "restored" / "memory.sqlite3"
-        initialize_capacity(restored)
-        memory.restore(output, restored)
-        connection = memory.connect(restored)
-        self.addCleanup(connection.close)
-        self.assertEqual("kept", memory.get(connection, "gate")["body"])
-        with self.assertRaisesRegex(memory.MemoryStoreError, "MEMORY_RESTORE_REFUSED"):
-            memory.restore(output, self.path)
-
-    def test_backup_serializes_competing_copies_and_preserves_conflicts(self) -> None:
-        write(self.connection, "kept", 0)
-        with self.assertRaises(memory.MemoryStoreError):
-            write(self.connection, "kept", 0, "incoming")
-        output = self.base / "backup" / "memory.sqlite3"
-        output.parent.mkdir(mode=0o700)
-        memory.backup(self.connection, output)
-        before = output.read_bytes()
-        started, release = threading.Event(), threading.Event()
-        failures: list[Exception] = []
-
-        def first_backup() -> None:
-            connection = memory.connect(self.path)
-            wrapped = mock.MagicMock(wraps=connection)
-
-            def paused(target: sqlite3.Connection) -> None:
-                started.set()
-                if not release.wait(5):
-                    raise AssertionError("backup test did not release")
-                connection.backup(target)
-
-            wrapped.backup.side_effect = paused
-            try:
-                memory.backup(wrapped, output)
-            except Exception as error:
-                failures.append(error)
-            finally:
-                connection.close()
-
-        thread = threading.Thread(target=first_backup)
-        thread.start()
-        try:
-            self.assertTrue(started.wait(5))
-            with self.assertRaisesRegex(memory.MemoryStoreError, "another backup"):
-                memory.backup(self.connection, output)
-            self.assertEqual(before, output.read_bytes())
-        finally:
-            release.set()
-            thread.join(5)
-        self.assertEqual([], failures)
-        self.assertFalse(thread.is_alive())
-        target = self.base / "restored" / "memory.sqlite3"
-        initialize_capacity(target)
-        memory.restore(output, target)
-        restored = memory.connect(target)
-        try:
-            self.assertEqual(
-                "incoming", restored.execute("SELECT body FROM conflicts").fetchone()[0]
-            )
-            self.assertEqual("note", memory.get(restored, "kept")["body"])
-        finally:
-            restored.close()
-
     def test_schema_one_records_remain_exact_and_need_review(self) -> None:
         legacy = self.base / "legacy" / "memory.sqlite3"
         legacy.parent.mkdir()
@@ -358,108 +272,6 @@ class StoreTests(unittest.TestCase):
         finally:
             connection.close()
 
-    def test_backup_refuses_the_store_and_unsafe_directories(self) -> None:
-        write(self.connection, "gate", 0)
-        for name in ("memory.sqlite3", "memory.sqlite3-journal", "memory.sqlite3-wal"):
-            with self.subTest(output=name):
-                with self.assertRaisesRegex(memory.MemoryStoreError, "store itself"):
-                    memory.backup(self.connection, self.path.parent / name)
-        shared = self.base / "shared"
-        shared.mkdir()
-        os.chmod(shared, 0o755)
-        private = self.base / "private"
-        private.mkdir(mode=0o700)
-        linked = self.base / "linked"
-        linked.symlink_to(private)
-        for directory, reason in ((shared, "not 0700"), (linked, "not a directory")):
-            with self.subTest(directory=directory):
-                with self.assertRaisesRegex(memory.MemoryStoreError, reason):
-                    memory.backup(self.connection, directory / "memory.sqlite3")
-        self.assertEqual([], list(shared.iterdir()))
-        self.assertEqual([], list(private.iterdir()))
-
-    def test_backup_refuses_a_directory_another_user_owns(self) -> None:
-        directory = self.base / "theirs"
-        directory.mkdir(mode=0o700)
-        with mock.patch.object(memory.os, "geteuid", return_value=os.geteuid() + 1):
-            with self.assertRaisesRegex(memory.MemoryStoreError, "not owned"):
-                memory.backup(self.connection, directory / "memory.sqlite3")
-        self.assertEqual([], list(directory.iterdir()))
-
-    def test_backup_never_follows_a_link_planted_at_its_temporary_name(self) -> None:
-        write(self.connection, "gate", 0)
-        directory = self.base / "backup"
-        directory.mkdir(mode=0o700)
-        victim = self.base / "victim.sqlite3"
-        victim.write_text("untouched")
-        temporary = directory / ".memory.sqlite3.tmp"
-        temporary.symlink_to(victim)
-        real_connect = sqlite3.connect
-        modes: list[int] = []
-
-        def observed(database: object, *args: object, **kwargs: object):
-            if Path(str(database)) == temporary:
-                modes.append(stat.S_IMODE(os.lstat(temporary).st_mode))
-            return real_connect(database, *args, **kwargs)
-
-        with mock.patch.object(memory.sqlite3, "connect", side_effect=observed):
-            memory.backup(self.connection, directory / "memory.sqlite3")
-        # The temporary file is already private when SQLite opens it.
-        self.assertEqual([0o600], modes)
-        self.assertEqual("untouched", victim.read_text())
-        output = directory / "memory.sqlite3"
-        self.assertFalse(output.is_symlink())
-        self.assertEqual(0o600, stat.S_IMODE(output.stat().st_mode))
-
-    def test_restore_checks_the_schema_and_leaves_no_partial_store(self) -> None:
-        write(self.connection, "gate", 0, "kept")
-        directory = self.base / "odd?name#dir%"
-        directory.mkdir(mode=0o700)
-        output = directory / "memory.sqlite3"
-        memory.backup(self.connection, output)
-        restored = self.base / "restored" / "memory.sqlite3"
-        initialize_capacity(restored)
-        memory.restore(output, restored)
-        connection = memory.connect(restored)
-        self.addCleanup(connection.close)
-        self.assertEqual("kept", memory.get(connection, "gate")["body"])
-
-        tampered = self.base / "tampered.sqlite3"
-        database = sqlite3.connect(tampered)
-        database.execute(memory.SCHEMA)
-        database.execute(
-            "CREATE TRIGGER wipe AFTER INSERT ON revisions BEGIN"
-            " DELETE FROM revisions; END"
-        )
-        database.commit()
-        database.close()
-        tampered.chmod(0o600)
-        target = self.base / "fresh" / "memory.sqlite3"
-        initialize_capacity(target)
-        with self.assertRaisesRegex(memory.MemoryStoreError, "schema differs"):
-            memory.restore(tampered, target)
-        self.assertFalse(target.exists())
-
-        failing = self.base / "failing" / "memory.sqlite3"
-        initialize_capacity(failing)
-        real_connect = sqlite3.connect
-
-        def failing_source(database: object, *args: object, **kwargs: object):
-            connection = real_connect(database, *args, **kwargs)
-            if not kwargs.get("uri"):
-                return connection
-            source = mock.MagicMock(wraps=connection)
-            source.backup.side_effect = sqlite3.OperationalError("boom")
-            return source
-
-        with mock.patch.object(memory.sqlite3, "connect", side_effect=failing_source):
-            with self.assertRaisesRegex(memory.MemoryStoreError, "no store was left"):
-                memory.restore(output, failing)
-        self.assertEqual(
-            {"capacity.sqlite3", "capacity.lock", "copy.lock"},
-            {p.name for p in failing.parent.iterdir()},
-        )
-
     def _backup_file(self) -> Path:
         write(self.connection, "gate", 0, "kept")
         directory = self.base / "backup"
@@ -467,52 +279,6 @@ class StoreTests(unittest.TestCase):
         output = directory / "memory.sqlite3"
         memory.backup(self.connection, output)
         return output
-
-    def test_restore_publishes_atomically_and_never_replaces_a_store(self) -> None:
-        output = self._backup_file()
-        target = self.base / "race" / "memory.sqlite3"
-        initialize_capacity(target)
-        real_connect = sqlite3.connect
-        seen: list[bool] = []
-
-        def racing(database: object, *args: object, **kwargs: object):
-            if (
-                not kwargs.get("uri")
-                and str(database) != ":memory:"
-                and Path(str(database)).name != "capacity.sqlite3"
-            ):
-                # The store path stays absent while the copy is built, and a
-                # session creating it meanwhile must win.
-                seen.append(target.exists())
-                target.write_text("other session")
-            return real_connect(database, *args, **kwargs)
-
-        with mock.patch.object(memory.sqlite3, "connect", side_effect=racing):
-            with self.assertRaisesRegex(memory.MemoryStoreError, "exists"):
-                memory.restore(output, target)
-        self.assertEqual([False], seen)
-        self.assertEqual("other session", target.read_text())
-        self.assertEqual(
-            {target.name, "capacity.sqlite3", "capacity.lock", "copy.lock"},
-            {p.name for p in target.parent.iterdir()},
-        )
-
-    def test_restore_reports_a_permission_failure(self) -> None:
-        output = self._backup_file()
-        target = self.base / "denied" / "memory.sqlite3"
-        initialize_capacity(target)
-        with mock.patch.object(
-            memory, "_private_directory", side_effect=PermissionError("denied")
-        ):
-            with self.assertRaisesRegex(
-                memory.MemoryStoreError, "MEMORY_RESTORE_FAILED"
-            ):
-                memory.restore(output, target)
-        self.assertFalse(target.exists())
-
-
-class WorktreeStoreTests(unittest.TestCase):
-    """Every worktree of one checkout reaches the same store through the CLI."""
 
     def cli(
         self,

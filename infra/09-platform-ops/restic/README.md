@@ -1,6 +1,6 @@
 ---
 title: "Restic Backup Jobs"
-version: "1.4.1"
+version: "1.5.1"
 type: "common/readme"
 status: "active"
 owner: "@buenhyden"
@@ -94,28 +94,10 @@ restic/
   (RUN-0021 8.5, 무료 한도 관리는 8.6).
 - `mng-pg`는 로컬 빌드이며 레지스트리가 없습니다. pull에는
   `docker compose pull --ignore-buildable`을 사용합니다.
-- 2026-11-11부터 매일의 backup과 offsite copy는 용량 승인 없이 직접 실행합니다
-  (용량 상한이 기존 snapshot만으로 가득 차 매일 backup이 거부됐기 때문,
-  RUN-0021 "일일 경로 임시 복원"). 아래 예약 경로는 그대로 남습니다.
-- 예약 경로로 기억을 포함하는 snapshot과 offsite copy를 만들 때는
-  [공유 기억 CLI](../../../scripts/operations/agent_memory.py)의
-  `backup-run --target state` 또는 `backup-run --target offsite`를 사용합니다.
-  호스트가 먼저 용량을 예약한 뒤 내부 작업에 한 번의 stdin
-  admission을 전달합니다. 이는 임의 Docker 명령을 실행할 수 있는 운영자를
-  인증하거나 제한하는 보안 경계는 아닙니다.
-- 최초 적용 시 `capacity reconcile`로 실제 백업 메타데이터를 확인합니다.
-  다른 위치에 있는 기존 기억 복사본은 `--legacy-output PATH`로 각각 추가합니다.
-  DB 본문을 읽지 않고 파일 속성과 Restic snapshot 목록으로 집계합니다.
-  이 도구가 임의 위치의 모든 과거 복사본을 자동 발견한다고 가정하지 않습니다.
-- timeout이나 취소 뒤 예약은 유지됩니다. 같은 요청의 이름·소유 label이
-  일치하는 컨테이너가 실제 종료됐고 결과 snapshot도 확인되어야
-  `capacity reconcile`이 예약을 정산합니다. 컨테이너 부재나 기존 원격
-  snapshot만으로 실행 종료를 추정하지 않습니다. 완료 후에는 확인된 해당
-  컨테이너만 제거하며 volume 삭제나 강제 종료는 하지 않습니다.
-- 기억의 1 GiB는 논리 할당량입니다. 위치별 snapshot마다 그 snapshot에 든 기억 export 크기(최대 64 MiB)를 계산하고,
-  offsite 복사 때는 정확한 원본 snapshot ID로 이미 복사된 항목만 제외합니다.
-  같은 파일 tree라는 이유만으로 서로 다른 snapshot을 합산에서 빼지 않습니다.
-  실제 디스크·R2 용량 보호는 위의 기존 제한을 계속 사용합니다.
+- 2026-11-18 owner 결정으로 공유 기억(`.workspace-memory`)은 백업에서 제외합니다.
+  매일의 run은 기억을 export하거나 staging·snapshot에 넣지 않습니다. 이전
+  snapshot에 남은 기억 export와 수동 백업의 제거는 RUN-0021 "공유 기억 백업
+  제외"를 따릅니다.
 
 #### Security Boundary
 

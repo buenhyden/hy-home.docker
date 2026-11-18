@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "1.12.0"
+version: "1.14.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -126,13 +126,9 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R91 | Legacy area ID | Required: map it to `legacy` | none | none |
 | ENVIRONMENT-CONSTRAINTS-R92 | Every reconnect | Required: reapply a SQLite page limit worth 64 MiB | none | none |
 | ENVIRONMENT-CONSTRAINTS-R93 | Database already larger than the page limit | Required: keep its page count, show the real value in `usage` and refuse new writes | none | none |
-| ENVIRONMENT-CONSTRAINTS-R94 | Backup or restore | Required: refuse a copy over 64 MiB | none | none |
-| ENVIRONMENT-CONSTRAINTS-R95 | Concurrent backups | Required: serialize them by an advisory lock on the source inode, check a clean snapshot and publish registered output atomically under capacity admission | none | none |
 | ENVIRONMENT-CONSTRAINTS-R96 | Capacity overrun | Forbidden: automatic deletion of an existing revision | none | none |
-| ENVIRONMENT-CONSTRAINTS-R97 | Shared allocation | Required: a separate ignored `.workspace-memory/capacity.sqlite3` ledger and stable `capacity.lock` govern a 1 GiB allocation covering its own storage, memory databases and journals, temporary copies, registered exports and memory-containing local Restic and R2 snapshots | none | none |
-| ENVIRONMENT-CONSTRAINTS-R98 | External snapshot location | Required: charge the memory export size its snapshot listing reports, from 1 byte to 64 MiB, after reserving 64 MiB for a new snapshot; settlement never lowers a charge | none | none |
-| ENVIRONMENT-CONSTRAINTS-R99 | Compression and deduplication | Forbidden: creating presumed credits from them | none | none |
-| ENVIRONMENT-CONSTRAINTS-R100 | Shared allocation | Required: keep the existing body, metadata and individual database or copy limits | none | none |
+| ENVIRONMENT-CONSTRAINTS-R97 | Shared allocation | Required: a separate ignored `.workspace-memory/capacity.sqlite3` ledger and stable `capacity.lock` govern a 1 GiB allocation covering its own storage and the memory database and journals; the memory store is excluded from backups | none | none |
+| ENVIRONMENT-CONSTRAINTS-R100 | Shared allocation | Required: keep the existing body, metadata and individual database limits | none | none |
 | ENVIRONMENT-CONSTRAINTS-R101 | Sanctioned growth entrypoint | Required: durably reserve capacity before I/O, then verify and settle the result | none | none |
 | ENVIRONMENT-CONSTRAINTS-R102 | Sanctioned growth entrypoints | Forbidden: concurrent allocation of the same remaining bytes | shared `capacity.lock` and ledger transaction prevent it | none |
 | ENVIRONMENT-CONSTRAINTS-R103 | Identical request identity and inputs | Required: reuse the recorded result | none | none |
@@ -140,14 +136,11 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R105 | Pending or uncertain reservation | Required: keep it charged after interruption | none | none |
 | ENVIRONMENT-CONSTRAINTS-R106 | Pending or uncertain reservation | Forbidden: expiring it by age | none | none |
 | ENVIRONMENT-CONSTRAINTS-R107 | Pending or uncertain reservation | Required: explicit metadata-based reconciliation before reclaiming its allocation | none | none |
-| ENVIRONMENT-CONSTRAINTS-R108 | Missing, corrupt, incomplete or inaccessible capacity inventory, or exhausted capacity | Required: refuse new writes and copies | none | none |
+| ENVIRONMENT-CONSTRAINTS-R108 | Missing, corrupt, incomplete or inaccessible capacity inventory, or exhausted capacity | Required: refuse new writes | none | none |
 | ENVIRONMENT-CONSTRAINTS-R109 | Missing, corrupt, incomplete or inaccessible capacity inventory, or exhausted capacity | Forbidden: deleting old data or blocking existing reads | none | none |
 | ENVIRONMENT-CONSTRAINTS-R110 | Initial inventory | Required: a separate operator action through the CLI | none | none |
-| ENVIRONMENT-CONSTRAINTS-R111 | Source installation | Forbidden: initializing the real ledger or inferring an empty backup inventory | none | none |
-| ENVIRONMENT-CONSTRAINTS-R112 | Restoring a memory snapshot | Forbidden: rewinding the capacity ledger | none | none |
-| ENVIRONMENT-CONSTRAINTS-R113 | Manual `backup --output`, daily export, local snapshot and offsite copy | Required: use the same capacity admission | none | none |
-| ENVIRONMENT-CONSTRAINTS-R114 | Shell-only backup jobs | Required: a host coordinator calls them | none | none |
-| ENVIRONMENT-CONSTRAINTS-R115 | Generic command routes of the backup jobs | Required: allow only read-only operations | none | none |
+| ENVIRONMENT-CONSTRAINTS-R111 | Source installation | Forbidden: initializing the real ledger | none | none |
+| ENVIRONMENT-CONSTRAINTS-R115 | Generic command routes of the Restic backup jobs | Required: allow only read-only operations | none | none |
 | ENVIRONMENT-CONSTRAINTS-R116 | Memory search | Required: `search --query TEXT --limit N` gives deterministic local lexical search of currently reusable records, default 10 and maximum 50 results | none | none |
 | ENVIRONMENT-CONSTRAINTS-R117 | Search and `capacity status` | Required: open existing state read-only | none | none |
 | ENVIRONMENT-CONSTRAINTS-R118 | Search and `capacity status` | Forbidden: initializing a database or schema, changing permissions, or adding a service or model API call | none | none |
@@ -336,24 +329,17 @@ This project has a graphify knowledge graph at `graphify-out/`.
 - Every reconnect reapplies a SQLite page limit worth 64 MiB. A database
   already larger than that keeps its page count, so the limit cannot drop;
   `usage` shows the real value and new writes are refused. The 64 MiB budgets
-  for the database, the rollback journal, each backup, and a temporary
-  copy are not filesystem hard quotas. The journal budget is observed only,
-  and backup and restore refuse a copy over 64 MiB. Concurrent backups are
-  serialized by an advisory lock on the source inode, check a clean snapshot,
-  and atomically publish their registered output under capacity admission.
-  No capacity overrun ever
+  for the database and the rollback journal are not filesystem hard quotas,
+  and the journal budget is observed only. No capacity overrun ever
   allows an existing revision to be deleted automatically.
 - A separate ignored `.workspace-memory/capacity.sqlite3` ledger and stable
   `capacity.lock` govern a 1 GiB (1,073,741,824-byte) shared allocation. The
-  ledger includes its own storage, memory databases and journals, temporary
-  copies, registered manual/daily exports, and memory-containing local
-  Restic and R2 snapshots. Each external snapshot location is charged the
-  memory export size its snapshot listing reports, from 1 byte to 64 MiB,
-  after a 64 MiB reservation for a new snapshot; settlement never lowers a
-  charge, and only a complete reconciliation recalculates one. Compression
-  and deduplication never create presumed credits. Existing
-  body, metadata and individual database/copy limits still apply. This is
-  conservative logical allocation, not measured physical storage or a quota.
+  ledger includes its own storage and the memory database and journals. By
+  the owner's decision of 2026-11-18 the memory store is excluded from
+  backups, so no backup copy or snapshot is charged, and reconciliation
+  removes allocations that earlier backups left. Existing body, metadata and
+  individual database limits still apply. This is conservative logical
+  allocation, not measured physical storage or a quota.
 - Every sanctioned growth entrypoint durably reserves capacity before I/O,
   then verifies and settles its result. The shared lock and ledger transaction
   prevent concurrent allocation of the same remaining bytes. Identical request
@@ -362,16 +348,11 @@ This project has a graphify knowledge graph at `graphify-out/`.
   never expire by age. Explicit metadata-based reconciliation is required
   before reclaiming their allocation.
 - Missing, corrupt, incomplete or inaccessible capacity inventory and exhausted
-  capacity refuse new writes and copies, without deleting old data or blocking
-  existing reads. Initial inventory is a separate operator action through the
-  CLI; source installation neither initializes the real ledger nor infers an
-  empty backup inventory. Restoring a memory snapshot never rewinds the
-  independent capacity ledger.
-- Manual `backup --output`, daily export, local snapshot and offsite copy use
-  the same capacity admission. A host coordinator calls the shell-only backup
-  jobs; their generic command routes allow only read-only operations. A
-  producer-bound admission prevents accidental bypass of this route; it is
-  not authentication against an operator who controls Docker or the files.
+  capacity refuse new writes, without deleting old data or blocking existing
+  reads. Initial inventory is a separate operator action through
+  `capacity reconcile`; source installation never initializes the real
+  ledger. The generic command routes of the Restic backup jobs allow only
+  read-only operations.
 - `search --query TEXT --limit N` provides deterministic local lexical search
   of currently reusable records, defaulting to 10 results with a maximum of
   50. It returns identity, revision, provenance and short excerpts. Full bodies

@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import datetime as dt
-import fcntl
 import hashlib
 import json
 import os
@@ -21,9 +20,7 @@ from scripts.lib.ops.memory_capacity import (  # noqa: E402
     CapacityError,
     MemoryCapacity,
     operation_fingerprint,
-    validate_backup_destination,
 )
-from scripts.lib.ops.memory_local import run_local_copy  # noqa: E402
 from scripts.lib.ops.memory_sources import (  # noqa: E402
     REVIEW_STATES,
     reuse_state,
@@ -58,7 +55,6 @@ EXIT_CONFLICT = 3
 EXIT_CAPACITY = 4
 EXIT_BUSY = 5
 EXIT_FULL = 6
-EXIT_BACKUP = 7
 
 SCHEMA = f"""
 CREATE TABLE IF NOT EXISTS revisions (
@@ -295,7 +291,7 @@ def usage(connection: sqlite3.Connection) -> dict[str, object]:
             "max_total_metadata_bytes": MAX_TOTAL_METADATA_BYTES,
             "max_conflicts": MAX_CONFLICTS,
             "database_page_bytes": MAX_DATABASE_BYTES,
-            "journal_backup_temporary_bytes": MAX_DATABASE_BYTES,
+            "journal_temporary_bytes": MAX_DATABASE_BYTES,
         },
         "conflicts": connection.execute("SELECT count(*) FROM conflicts").fetchone()[0]
         if "conflicts" in sidecars
@@ -567,7 +563,6 @@ def put(connection: sqlite3.Connection, **arguments) -> int:
                 revision = _put(connection, **arguments)
                 manager.resolve(
                     key,
-                    [],
                     result={"revision": revision},
                     evidence_ref="committed matching memory request provenance",
                 )
@@ -583,7 +578,6 @@ def put(connection: sqlite3.Connection, **arguments) -> int:
         except MemoryStoreError as error:
             manager.settle(
                 key,
-                [],
                 result={
                     "error_code": error.code,
                     "message": str(error),
@@ -591,192 +585,10 @@ def put(connection: sqlite3.Connection, **arguments) -> int:
                 },
             )
             raise
-        manager.settle(key, [], result={"revision": revision})
+        manager.settle(key, result={"revision": revision})
         return revision
     except CapacityError as error:
         raise MemoryStoreError(EXIT_CAPACITY, str(error)) from error
-
-
-def backup(connection: sqlite3.Connection, output: Path) -> None:
-    path = Path(connection.execute("PRAGMA database_list").fetchone()[2])
-    _backup_destination(path, output)
-    manager = MemoryCapacity(path)
-    try:
-        run_local_copy(
-            manager,
-            "manual-backup",
-            path,
-            output,
-            lambda: _backup_locked(connection, output),
-        )
-    except CapacityError as error:
-        raise MemoryStoreError(EXIT_CAPACITY, str(error)) from error
-
-
-def _backup_locked(connection: sqlite3.Connection, output: Path) -> None:
-    store = Path(connection.execute("PRAGMA database_list").fetchone()[2])
-    descriptor = os.open(store, os.O_RDONLY | os.O_NOFOLLOW)
-    try:
-        try:
-            fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except BlockingIOError as error:
-            raise MemoryStoreError(
-                EXIT_BACKUP,
-                "MEMORY_BACKUP_FAILED: another backup is running; previous backup kept",
-            ) from error
-        _backup(connection, output)
-    finally:
-        os.close(descriptor)
-
-
-def _backup_destination(store: Path, output: Path) -> None:
-    try:
-        validate_backup_destination(store, output)
-    except CapacityError as error:
-        raise MemoryStoreError(EXIT_BACKUP, str(error)) from error
-
-
-def _backup(connection: sqlite3.Connection, output: Path) -> None:
-    output = output.absolute()
-    store = Path(connection.execute("PRAGMA database_list").fetchone()[2]).resolve()
-    _backup_destination(store, output)
-    temporary = output.with_name(f".{output.name}.tmp")
-    try:
-        if store.stat().st_size > MAX_DATABASE_BYTES:
-            raise OSError("store exceeds database byte ceiling")
-        if output.is_symlink():
-            raise OSError("backup output is a symbolic link")
-        temporary.unlink(missing_ok=True)
-        # The file exists as 0600 before SQLite writes a byte into it, and a
-        # link planted at this name is refused rather than followed.
-        _create_private(temporary)
-        target = sqlite3.connect(temporary)
-        try:
-            connection.backup(target)
-            if target.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
-                raise sqlite3.DatabaseError("backup failed integrity_check")
-            if temporary.stat().st_size > MAX_DATABASE_BYTES:
-                raise sqlite3.DatabaseError("backup exceeds database byte ceiling")
-            _validate_snapshot(target)
-        finally:
-            target.close()
-        os.replace(temporary, output)
-    except (OSError, sqlite3.Error, MemoryStoreError) as error:
-        temporary.unlink(missing_ok=True)
-        temporary.with_name(temporary.name + "-journal").unlink(missing_ok=True)
-        raise MemoryStoreError(
-            EXIT_BACKUP, f"MEMORY_BACKUP_FAILED: {error}; previous backup kept"
-        ) from error
-
-
-def _schema(connection: sqlite3.Connection) -> set[tuple[str, ...]]:
-    return set(
-        connection.execute("SELECT type, name, tbl_name, sql FROM sqlite_master")
-    )
-
-
-def _validate_snapshot(connection: sqlite3.Connection) -> None:
-    expected = sqlite3.connect(":memory:")
-    try:
-        expected.execute(SCHEMA)
-        legacy = _schema(expected)
-        for statement in SIDECARS:
-            expected.execute(statement)
-        observed = _schema(connection)
-        if observed not in (legacy, _schema(expected)):
-            raise MemoryStoreError(
-                EXIT_BACKUP,
-                "MEMORY_RESTORE_REFUSED: backup schema differs from the store schema",
-            )
-        if connection.execute(
-            "SELECT 1 FROM revisions WHERE schema_version NOT IN (1,2) OR revision < 1 LIMIT 1"
-        ).fetchone():
-            raise MemoryStoreError(
-                EXIT_BACKUP, "MEMORY_BACKUP_FAILED: invalid revision identity"
-            )
-        if (
-            observed != legacy
-            and connection.execute(
-                "SELECT 1 FROM provenance p LEFT JOIN revisions r USING(memory_id,revision) WHERE r.memory_id IS NULL "
-                "UNION ALL SELECT 1 FROM revisions r LEFT JOIN provenance p USING(memory_id,revision) WHERE r.schema_version=2 AND p.memory_id IS NULL LIMIT 1"
-            ).fetchone()
-        ):
-            raise MemoryStoreError(
-                EXIT_BACKUP, "MEMORY_BACKUP_FAILED: missing revision provenance"
-            )
-    finally:
-        expected.close()
-
-
-def restore(source: Path, path: Path) -> None:
-    if path.exists() or path.is_symlink():
-        raise MemoryStoreError(EXIT_CONFLICT, "MEMORY_RESTORE_REFUSED: target exists")
-    manager = MemoryCapacity(path)
-    temporary = path.with_name("." + path.name + ".restore-" + uuid.uuid4().hex)
-    try:
-        run_local_copy(
-            manager,
-            "restore",
-            source,
-            path,
-            lambda: _restore(source, path, temporary),
-            temporary=temporary,
-        )
-    except CapacityError as error:
-        raise MemoryStoreError(EXIT_CAPACITY, str(error)) from error
-
-
-def _restore(source: Path, path: Path, temporary: Path) -> None:
-    """Publish a complete restored store exclusively; never replace a live store."""
-    if (
-        source.is_symlink()
-        or source.parent.resolve() != source.parent.absolute()
-        or not source.is_file()
-        or source.stat().st_size > MAX_DATABASE_BYTES
-    ):
-        raise MemoryStoreError(
-            EXIT_BACKUP, "MEMORY_RESTORE_REFUSED: unsafe backup input"
-        )
-    try:
-        backup_db = sqlite3.connect(source.absolute().as_uri() + "?mode=ro", uri=True)
-    except sqlite3.Error as error:
-        raise MemoryStoreError(
-            EXIT_BACKUP, f"MEMORY_RESTORE_REFUSED: cannot open backup: {error}"
-        ) from error
-    try:
-        if backup_db.execute("PRAGMA integrity_check").fetchone()[0] != "ok":
-            raise MemoryStoreError(
-                EXIT_BACKUP, "MEMORY_RESTORE_REFUSED: backup failed integrity_check"
-            )
-        _validate_snapshot(backup_db)
-        _private_directory(path.parent)
-        if path.exists() or path.is_symlink():
-            raise MemoryStoreError(
-                EXIT_CONFLICT, f"MEMORY_RESTORE_REFUSED: {path} exists"
-            )
-        _create_private(temporary)
-        try:
-            # Exclusive creation makes the copy private before SQLite opens it.
-            target = sqlite3.connect(temporary)
-            try:
-                backup_db.backup(target)
-            finally:
-                target.close()
-            try:
-                os.link(temporary, path, follow_symlinks=False)
-            except FileExistsError as error:
-                raise MemoryStoreError(
-                    EXIT_CONFLICT, f"MEMORY_RESTORE_REFUSED: {path} exists"
-                ) from error
-        finally:
-            temporary.unlink(missing_ok=True)
-            temporary.with_name(temporary.name + "-journal").unlink(missing_ok=True)
-    except (OSError, sqlite3.Error) as error:
-        raise MemoryStoreError(
-            EXIT_BACKUP, f"MEMORY_RESTORE_FAILED: {error}; no store was left"
-        ) from error
-    finally:
-        backup_db.close()
 
 
 def main(argv: list[str] | None = None) -> int:
