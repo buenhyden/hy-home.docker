@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.79.0"
+version: "1.80.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -1113,6 +1113,15 @@ target, backup, recovery boundary, and action-specific authorization.
      carry their baseline, kind, validity and supersession, and
      selective export and erase exist. Native cross-provider use is
      evidenced separately from fixtures.
+139. TSK-0083 brings shared memory recall to the 4.2.0 W08-RETRIEVAL design.
+     Search matches IDs, source paths, Korean text with or without spacing
+     and non-adjacent terms only among admissible records, explains each
+     hit, flags unresolved conflicts, marks bodies as data and abstains with
+     an empty result. A synthetic evaluation measures recall, precision,
+     stale hits, disclosures, abstention, latency and size against the
+     earlier implementation on the same cases, and an index is added only on
+     a measured gain. Recall after withdrawal or erase is evidenced for both
+     providers separately from fixtures.
 
 ### Evidence Requirements
 

@@ -124,7 +124,9 @@ def _dispatch(memory, connection, args, path):
             getattr(args, "as_of", None),
         )
         return (
-            search_records(records, args.query, args.limit)
+            search_records(
+                records, args.query, args.limit, memory.conflict_counts(connection)
+            )
             if command == "search"
             else records
         )
@@ -218,7 +220,16 @@ def run(argv, memory):
             ):
                 raise CapacityError()
             connection = memory.connect(path) if writing else readonly(memory, path)
-            result = _dispatch(memory, connection, args, path)
+            if writing:
+                result = _dispatch(memory, connection, args, path)
+            else:
+                # One read snapshot: a concurrent erase or withdrawal cannot
+                # land between selecting a record and hydrating its body.
+                connection.execute("BEGIN")
+                try:
+                    result = _dispatch(memory, connection, args, path)
+                finally:
+                    connection.rollback()
     except (memory.MemoryStoreError, CapacityError) as error:
         print(error, file=sys.stderr)
         if getattr(error, "details", None):
