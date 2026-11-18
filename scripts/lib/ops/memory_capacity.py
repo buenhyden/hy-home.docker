@@ -1,4 +1,4 @@
-"""Persistent, conservative logical allocation for managed memory storage."""
+"""Persistent logical allocation and request ledger for the shared memory store."""
 
 from __future__ import annotations
 
@@ -16,9 +16,10 @@ TOTAL_BYTES = 1_073_741_824
 COPY_BYTES = 64 * 1024 * 1024
 LEDGER_BYTES = 1024 * 1024
 BASE_BYTES = 2 * COPY_BYTES + 2 * LEDGER_BYTES
-MAX_INVENTORY_ENTRIES = 4096
 _HEX = re.compile(r"[0-9a-f]{64}\Z")
 _KEY = re.compile(r"[A-Za-z0-9_.:-]{1,128}\Z")
+# The allocations table stays in the schema so existing ledgers keep opening;
+# backup copies are no longer charged and reconciliation empties it.
 _SCHEMA = """
 CREATE TABLE metadata (
  singleton INTEGER PRIMARY KEY CHECK(singleton=1),
@@ -72,218 +73,11 @@ def _directory(path: Path) -> None:
         raise CapacityError("MEMORY_CAPACITY_UNSAFE_PATH: growth refused")
 
 
-def local_allocation(path: Path) -> dict:
-    """Validate metadata only; a managed copy consumes one full copy allowance."""
-    path = path.absolute()
-    _directory(path.parent)
-    observed = _regular(path)
-    if observed.st_size > COPY_BYTES:
-        raise CapacityError("MEMORY_CAPACITY_COPY_TOO_LARGE: growth refused")
-    return {
-        "resource_key": "local:" + str(path),
-        "kind": "local",
-        "location": str(path),
-        "charged_bytes": COPY_BYTES,
-        "evidence_ref": "verified regular-file metadata",
-    }
-
-
-def validate_backup_destination(store: Path, output: Path) -> None:
-    """Protect the memory and independent accounting controls from a copy."""
-    store, output = store.resolve(), output.absolute()
-    controls = {
-        name + suffix
-        for name in (store.name, "capacity.sqlite3")
-        for suffix in ("", "-journal", "-wal", "-shm")
-    }
-    controls |= {"capacity.lock", "backup.lock", "copy.lock"}
-    if output.resolve() in {store.with_name(name) for name in controls} or (
-        output.parent.resolve() == store.parent
-        and (
-            output.name.startswith("." + store.name + ".restore-")
-            or output.name.startswith("." + store.name + ".tmp")
-        )
-    ):
-        raise CapacityError(
-            "MEMORY_BACKUP_FAILED: the output is the store itself or its accounting control"
-        )
-    if output.parent.resolve() != output.parent or not output.parent.is_dir():
-        raise CapacityError("MEMORY_BACKUP_FAILED: output parent is not a directory")
-    observed = output.parent.stat()
-    if observed.st_uid != os.geteuid():
-        raise CapacityError("MEMORY_BACKUP_FAILED: output parent is not owned by you")
-    if stat.S_IMODE(observed.st_mode) & 0o077:
-        raise CapacityError("MEMORY_BACKUP_FAILED: output parent is not 0700")
-
-
-def validate_copy_context(memory_path: Path, context: dict) -> None:
-    if (
-        not isinstance(context, dict)
-        or set(context) != {"producer", "source", "target", "temporary"}
-        or not isinstance(context.get("producer"), str)
-        or context.get("producer") not in {"manual-backup", "restore"}
-        or any(
-            not isinstance(context[key], str)
-            or not Path(context[key]).is_absolute()
-            or len(context[key]) > 4096
-            for key in ("source", "target", "temporary")
-        )
-    ):
-        raise CapacityError("MEMORY_CAPACITY_INVALID: operation context refused")
-    source, target, temporary = (
-        Path(context[key]) for key in ("source", "target", "temporary")
-    )
-    if context["producer"] == "manual-backup":
-        if source != memory_path or temporary != target.with_name(
-            "." + target.name + ".tmp"
-        ):
-            raise CapacityError()
-        validate_backup_destination(memory_path, target)
-    else:
-        prefix = "." + memory_path.name + ".restore-"
-        if (
-            target != memory_path
-            or temporary.parent != memory_path.parent
-            or not temporary.name.startswith(prefix)
-            or not re.fullmatch(r"[0-9a-f]{32}", temporary.name[len(prefix) :])
-        ):
-            raise CapacityError()
-        validate_backup_destination(memory_path, source)
-
-
-def external_allocation(snapshot: dict) -> dict:
-    """Charge a snapshot the verified size of the memory export it holds."""
-    if not isinstance(snapshot, dict) or set(snapshot) != {
-        "repository_id",
-        "snapshot_id",
-        "location",
-        "evidence_ref",
-        "memory_bytes",
-    }:
-        raise CapacityError()
-    repository, identity, location, evidence, size = (
-        snapshot[key]
-        for key in (
-            "repository_id",
-            "snapshot_id",
-            "location",
-            "evidence_ref",
-            "memory_bytes",
-        )
-    )
-    if (
-        not isinstance(repository, str)
-        or not _HEX.fullmatch(repository)
-        or not isinstance(identity, str)
-        or not _HEX.fullmatch(identity)
-        or not isinstance(location, str)
-        or location not in {"state", "offsite"}
-        or not isinstance(evidence, str)
-        or not 1 <= len(evidence) <= 512
-        or type(size) is not int
-        or not 1 <= size <= COPY_BYTES
-    ):
-        raise CapacityError()
-    return {
-        "resource_key": f"external:{location}:{repository}:{identity}",
-        "kind": "external",
-        "location": location,
-        "charged_bytes": size,
-        "evidence_ref": evidence,
-    }
-
-
-def _allocation(value: dict) -> dict:
-    if not isinstance(value, dict) or set(value) != {
-        "resource_key",
-        "kind",
-        "location",
-        "charged_bytes",
-        "evidence_ref",
-    }:
-        raise CapacityError()
-    if (
-        any(
-            not isinstance(value[key], str)
-            for key in ("resource_key", "kind", "location", "evidence_ref")
-        )
-        or type(value["charged_bytes"]) is not int
-    ):
-        raise CapacityError()
-    if value["kind"] == "local":
-        actual = local_allocation(Path(value["location"]))
-    elif value["kind"] == "external":
-        pieces = value["resource_key"].split(":")
-        if len(pieces) != 4 or pieces[0] != "external":
-            raise CapacityError()
-        actual = external_allocation(
-            {
-                "location": pieces[1],
-                "repository_id": pieces[2],
-                "snapshot_id": pieces[3],
-                "evidence_ref": value["evidence_ref"],
-                "memory_bytes": value["charged_bytes"],
-            }
-        )
-    else:
-        raise CapacityError()
-    if (
-        actual["resource_key"] != value["resource_key"]
-        or actual["charged_bytes"] != value["charged_bytes"]
-    ):
-        raise CapacityError()
-    return actual
-
-
-def _stored_allocation(value: dict) -> dict:
-    """Validate accounting structure without reading any retained file body."""
-    if (
-        not isinstance(value, dict)
-        or set(value)
-        != {"resource_key", "kind", "location", "charged_bytes", "evidence_ref"}
-        or any(
-            not isinstance(value[key], str)
-            for key in ("resource_key", "kind", "location", "evidence_ref")
-        )
-        or type(value["charged_bytes"]) is not int
-        or not 1 <= value["charged_bytes"] <= COPY_BYTES
-        or (value["kind"] == "local" and value["charged_bytes"] != COPY_BYTES)
-        or not 1 <= len(value["evidence_ref"]) <= 512
-    ):
-        raise CapacityError()
-    if value["kind"] == "external":
-        parts = value["resource_key"].split(":")
-        if len(parts) != 4 or parts[0] != "external" or parts[1] != value["location"]:
-            raise CapacityError()
-        external_allocation(
-            {
-                "repository_id": parts[2],
-                "snapshot_id": parts[3],
-                "location": parts[1],
-                "evidence_ref": value["evidence_ref"],
-                "memory_bytes": value["charged_bytes"],
-            }
-        )
-    elif (
-        value["kind"] != "local"
-        or not Path(value["location"]).is_absolute()
-        or value["resource_key"] != "local:" + value["location"]
-    ):
-        raise CapacityError()
-    return value
-
-
 class MemoryCapacity:
     def __init__(self, memory_path: Path):
         self.memory_path = Path(memory_path).absolute()
         self.path = self.memory_path.parent / "capacity.sqlite3"
         self.lock_path = self.path.with_name("capacity.lock")
-
-    def _context(self, encoded):
-        context = json.loads(encoded or "null")
-        if context is not None:
-            validate_copy_context(self.memory_path, context)
-        return context
 
     def _validate(self, *, ledger=True):
         _directory(self.path.parent)
@@ -386,41 +180,29 @@ class MemoryCapacity:
         ).fetchone()
         if metadata is None or metadata["schema_version"] != 1:
             raise CapacityError()
-        allocations = [
-            _stored_allocation(dict(row))
-            for row in connection.execute(
-                "SELECT * FROM allocations ORDER BY resource_key"
-            )
-        ]
         reserved = connection.execute(
             "SELECT coalesce(sum(reserved_bytes),0) FROM operations WHERE state='pending'"
         ).fetchone()[0]
-        allocated = sum(row["charged_bytes"] for row in allocations)
         return {
             "schema_version": 1,
             "generation": metadata["generation"],
             "inventory_state": metadata["inventory_state"],
             "cap_bytes": TOTAL_BYTES,
             "base_bytes": BASE_BYTES,
-            "charged_bytes": BASE_BYTES + allocated,
+            "charged_bytes": BASE_BYTES,
             "reserved_bytes": reserved,
-            "available_bytes": max(0, TOTAL_BYTES - BASE_BYTES - allocated - reserved),
-            "local_backup_bytes": sum(
-                row["charged_bytes"] for row in allocations if row["kind"] == "local"
-            ),
-            "external_bytes": sum(
-                row["charged_bytes"] for row in allocations if row["kind"] == "external"
-            ),
-            "allocations": allocations,
+            "available_bytes": max(0, TOTAL_BYTES - BASE_BYTES - reserved),
+            "legacy_allocations": connection.execute(
+                "SELECT count(*) FROM allocations"
+            ).fetchone()[0],
             "pending_operations": [
                 {
                     "request_key": row["request_key"],
                     "reserved_bytes": row["reserved_bytes"],
                     "state": row["state"],
-                    "context": self._context(row["context"]),
                 }
                 for row in connection.execute(
-                    "SELECT request_key,reserved_bytes,state,context FROM operations WHERE state='pending' ORDER BY request_key"
+                    "SELECT request_key,reserved_bytes,state FROM operations WHERE state='pending' ORDER BY request_key"
                 )
             ],
         }
@@ -446,147 +228,29 @@ class MemoryCapacity:
             sqlite3.Error,
             ValueError,
             TypeError,
+            KeyError,
             IndexError,
             RecursionError,
         ) as error:
             raise CapacityError() from error
 
-    def reconcile(
-        self, inventory: dict, *, expected_generation: int | None = None
-    ) -> dict:
-        if (
-            not isinstance(inventory, dict)
-            or set(inventory)
-            not in (
-                {"schema_version", "complete", "local_paths", "external_snapshots"},
-                {
-                    "schema_version",
-                    "complete",
-                    "local_paths",
-                    "external_snapshots",
-                    "observed_repositories",
-                },
-            )
-            or type(inventory["schema_version"]) is not int
-            or inventory["schema_version"] != 1
-            or inventory["complete"] is not True
-        ):
-            raise CapacityError()
-        paths, snapshots = inventory["local_paths"], inventory["external_snapshots"]
-        if (
-            not isinstance(paths, list)
-            or not isinstance(snapshots, list)
-            or len(paths) + len(snapshots) > MAX_INVENTORY_ENTRIES
-        ):
-            raise CapacityError()
-        allocations = [external_allocation(snapshot) for snapshot in snapshots]
-        observed = inventory.get(
-            "observed_repositories",
-            [
-                {"repository_id": row["repository_id"], "location": row["location"]}
-                for row in snapshots
-            ],
-        )
-        if not isinstance(observed, list) or len(observed) > MAX_INVENTORY_ENTRIES:
-            raise CapacityError()
-        observed_scopes = set()
-        for repository in observed:
-            if (
-                not isinstance(repository, dict)
-                or set(repository) != {"repository_id", "location"}
-                or not isinstance(repository["repository_id"], str)
-                or not _HEX.fullmatch(repository["repository_id"])
-                or repository["location"] not in ("state", "offsite")
-            ):
-                raise CapacityError()
-            observed_scopes.add((repository["location"], repository["repository_id"]))
-        if any(
-            (row["location"], row["repository_id"]) not in observed_scopes
-            for row in snapshots
-        ):
-            raise CapacityError(
-                "MEMORY_CAPACITY_INCOMPLETE: external repository not observed"
-            )
-        paths = tuple(paths)
-        if any(
-            not isinstance(value, str) or not Path(value).is_absolute()
-            for value in paths
-        ):
-            raise CapacityError()
+    def reconcile(self, *, expected_generation: int | None = None) -> dict:
+        """Adopt the ledger and drop allocations left by retired backup copies."""
         with self._connection(create=True) as connection:
-            # Stat and replacement share the reservation/settlement lock. A
-            # settled copy must not disappear between a stale stat and DELETE.
-            for value in paths:
-                path = Path(value)
-                _directory(path.parent)
-                if path.exists() or path.is_symlink():
-                    allocations.append(local_allocation(path))
-            keys = [row["resource_key"] for row in allocations]
-            if len(keys) != len(set(keys)):
-                raise CapacityError()
             metadata = connection.execute(
                 "SELECT * FROM metadata WHERE singleton=1"
             ).fetchone()
             generation = 0 if metadata is None else metadata["generation"]
             if expected_generation is not None and expected_generation != generation:
                 raise CapacityError("MEMORY_CAPACITY_CONFLICT: inventory changed")
-            previous = [
-                _stored_allocation(dict(row))
-                for row in connection.execute("SELECT * FROM allocations")
-            ]
-            previous_external = [row for row in previous if row["kind"] == "external"]
-            for allocation in previous_external:
-                parts = allocation["resource_key"].split(":")
-                if (parts[1], parts[2]) not in observed_scopes:
-                    raise CapacityError(
-                        "MEMORY_CAPACITY_INCOMPLETE: previous external repository not observed"
-                    )
-            local_keys = {
-                row["resource_key"] for row in previous if row["kind"] == "local"
-            }
-            if not local_keys <= {"local:" + path for path in paths}:
-                raise CapacityError(
-                    "MEMORY_CAPACITY_INCOMPLETE: previous resources omitted"
-                )
             connection.execute("DELETE FROM allocations")
-            for allocation in allocations:
-                self._upsert(connection, allocation)
             connection.execute(
                 "INSERT OR REPLACE INTO metadata VALUES (1,1,?,'complete')",
                 (generation + 1,),
             )
-            result = self._status(connection)
-        return result
+            return self._status(connection)
 
-    @staticmethod
-    def _upsert(connection, allocation):
-        connection.execute(
-            "INSERT OR REPLACE INTO allocations VALUES (?,?,?,?,?)",
-            tuple(
-                allocation[key]
-                for key in (
-                    "resource_key",
-                    "kind",
-                    "location",
-                    "charged_bytes",
-                    "evidence_ref",
-                )
-            ),
-        )
-
-    def reserve(
-        self,
-        request_key: str,
-        fingerprint: str,
-        reserved_bytes: int,
-        *,
-        context: dict | None = None,
-    ) -> dict:
-        if context is not None:
-            validate_copy_context(self.memory_path, context)
-        encoded_context = json.dumps(context, sort_keys=True, allow_nan=False)
-        if len(encoded_context.encode()) > 16384:
-            raise CapacityError()
+    def reserve(self, request_key: str, fingerprint: str, reserved_bytes: int) -> dict:
         if (
             not isinstance(request_key, str)
             or not _KEY.fullmatch(request_key)
@@ -607,7 +271,6 @@ class MemoryCapacity:
                 if (
                     previous["fingerprint"] != fingerprint
                     or previous["reserved_bytes"] != reserved_bytes
-                    or previous["context"] != encoded_context
                 ):
                     raise CapacityError(
                         "MEMORY_CAPACITY_CONFLICT: request identity differs"
@@ -623,8 +286,8 @@ class MemoryCapacity:
             ):
                 raise CapacityError("MEMORY_CAPACITY_EXCEEDED: growth refused")
             connection.execute(
-                "INSERT INTO operations VALUES (?,?,?,'pending',NULL,?)",
-                (request_key, fingerprint, reserved_bytes, encoded_context),
+                "INSERT INTO operations VALUES (?,?,?,'pending',NULL,'null')",
+                (request_key, fingerprint, reserved_bytes),
             )
             connection.execute(
                 "UPDATE metadata SET generation=generation+1 WHERE singleton=1"
@@ -632,7 +295,7 @@ class MemoryCapacity:
             return {"state": "pending", "replay": False, "result": None}
 
     def operation(self, request_key: str, fingerprint: str) -> dict | None:
-        """Look up an exact operation without refreshing inventory or reserving again."""
+        """Look up an exact operation without reserving again."""
         if not self.path.exists():
             return None
         try:
@@ -668,37 +331,20 @@ class MemoryCapacity:
         ) as error:
             raise CapacityError() from error
 
-    def resolve(
-        self,
-        request_key: str,
-        allocations: list[dict],
-        *,
-        result: dict,
-        evidence_ref: str,
-    ) -> dict:
-        """Settle only a caller-verified result; the producer owns the metadata proof."""
+    def resolve(self, request_key: str, *, result: dict, evidence_ref: str) -> dict:
+        """Settle only a caller-verified result."""
         if not isinstance(evidence_ref, str) or not 1 <= len(evidence_ref) <= 512:
             raise CapacityError()
         return self.settle(
-            request_key,
-            allocations,
-            result={**result, "reconciliation_evidence": evidence_ref},
+            request_key, result={**result, "reconciliation_evidence": evidence_ref}
         )
 
-    def settle(
-        self, request_key: str, allocations: list[dict], *, result: dict | None = None
-    ) -> dict:
-        if (
-            not isinstance(allocations, list)
-            or len(allocations) > MAX_INVENTORY_ENTRIES
-        ):
-            raise CapacityError()
+    def settle(self, request_key: str, *, result: dict | None = None) -> dict:
         try:
-            validated = [_allocation(value) for value in allocations]
             encoded = json.dumps(result, sort_keys=True, allow_nan=False)
             if len(encoded.encode()) > 4096:
                 raise CapacityError()
-        except (OSError, ValueError, TypeError, KeyError, RecursionError) as error:
+        except (ValueError, TypeError, RecursionError) as error:
             raise CapacityError() from error
         with self._connection() as connection:
             self._status(connection)
@@ -712,28 +358,6 @@ class MemoryCapacity:
                     "state": "completed",
                     "result": json.loads(operation["result"] or "null"),
                 }
-            increase = 0
-            for allocation in validated:
-                previous = connection.execute(
-                    "SELECT charged_bytes FROM allocations WHERE resource_key=?",
-                    (allocation["resource_key"],),
-                ).fetchone()
-                # Only reconciliation from a complete inventory may lower a charge.
-                if previous is not None and allocation["charged_bytes"] < previous[0]:
-                    raise CapacityError(
-                        "MEMORY_CAPACITY_CONFLICT: settlement cannot lower a charge"
-                    )
-                increase += max(
-                    0,
-                    allocation["charged_bytes"]
-                    - (0 if previous is None else previous[0]),
-                )
-            if increase > operation["reserved_bytes"]:
-                raise CapacityError(
-                    "MEMORY_CAPACITY_CONFLICT: result exceeds reservation"
-                )
-            for allocation in validated:
-                self._upsert(connection, allocation)
             connection.execute(
                 "UPDATE operations SET state='completed',result=? WHERE request_key=?",
                 (encoded, request_key),

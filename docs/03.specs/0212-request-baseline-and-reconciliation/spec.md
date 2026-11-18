@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation"
-version: "1.78.0"
+version: "1.79.0"
 type: "sdlc/spec"
 status: "approved"
 owner: "@buenhyden"
@@ -1106,8 +1106,10 @@ target, backup, recovery boundary, and action-specific authorization.
      terminal Tasks keep their recorded form.
 138. TSK-0082 brings the shared agent memory to the 4.2.0 W08-MEMORY design
      on the owner's decisions of 2026-11-18. Each snapshot is charged the
-     memory export size it holds, so retention fits the 1 GiB allocation,
-     and every daily memory snapshot passes capacity admission. Records
+     memory export size it holds, so retention fits the 1 GiB allocation.
+     By the owner's later decision the shared memory is excluded from
+     backups, its backup and restore code is removed, and its earlier
+     backups are removed where locks allow. Records
      carry their baseline, kind, validity and supersession, and
      selective export and erase exist. Native cross-provider use is
      evidenced separately from fixtures.

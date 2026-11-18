@@ -147,7 +147,7 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
             ),
         )
 
-    def test_memory_capacity_search_and_backup_use_the_memory_route(self) -> None:
+    def test_memory_capacity_and_search_use_the_memory_route(self) -> None:
         public = contract.parse_public_gate_contract(
             contract.load_contract_document(ROOT)
         )
@@ -155,14 +155,9 @@ class AgentGovernanceCiRoutingTests(unittest.TestCase):
             "scripts/lib/ops/memory_capacity.py",
             "scripts/lib/ops/memory_search.py",
             "scripts/lib/ops/memory_cli.py",
-            "scripts/lib/ops/memory_local.py",
-            "scripts/lib/ops/memory_backup.py",
             "tests/lib/ops/test_memory_capacity.py",
             "tests/lib/ops/test_memory_search.py",
-            "tests/lib/ops/test_memory_backup.py",
-            "tests/lib/ops/test_memory_local.py",
             "tests/validation/test_agent_memory_capacity.py",
-            "tests/validation/test_memory_backup_contract.py",
         ):
             with self.subTest(path=path):
                 self.assertEqual(

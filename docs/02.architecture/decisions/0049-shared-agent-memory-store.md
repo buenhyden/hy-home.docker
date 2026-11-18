@@ -1,10 +1,10 @@
 ---
 title: "Shared Agent Memory Store"
-version: "1.1.0"
+version: "1.2.0"
 type: "sdlc/architecture-decision"
 status: "accepted"
 owner: "@buenhyden"
-updated: "2026-11-17"
+updated: "2026-11-18"
 layer: "architecture"
 artifact_id: "ADR-0049"
 parent_ids:
@@ -97,11 +97,15 @@ extra common directories, stays in force.
 ### Impacts
 
 Both providers read and write the same records through one CLI, and a removed
-worktree keeps them. The store is not in Git, so its backup is a runbook step;
-Restic coverage is deferred. Native memory written before this decision stops
+worktree keeps them. The store is not in Git and is excluded from backups.
+Native memory written before this decision stops
 loading unless it is copied into the store.
 
 ### Follow-up
+
+On 2026-11-18 the owner, @buenhyden, directed that the store be excluded from
+backups and its backup code removed; the Impacts sentence on backups is
+amended in place to match.
 
 On 2026-11-17 the owner, @buenhyden, directed an in-place amendment of this
 record: its sections moved line for line to the core decision form, and the
