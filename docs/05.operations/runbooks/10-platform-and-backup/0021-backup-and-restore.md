@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.15.0"
+version: "1.16.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -734,6 +734,28 @@ exit 75로 건너뛰고, lease를 잃은 실행은 결과를 쓰지 않는다(fe
 후보의 실제 변경은 별도 Task와 승인으로 진행한다. 수집이 없거나 분석이 실패해도
 commit·push와 다른 작업은 막지 않는다. 제거는 `systemctl --user disable --now
 hy-home-session-analysis.timer`다.
+
+#### 작업 예측
+
+`scripts/operations/task_forecast.py`는 작업을 시작하기 전에 완료 시간의 P30·P50·P80을
+분 단위로 남기고, 끝난 뒤 실제 결과를 한 번 기록해 분위수별로 평가한다. 기록은
+`.workspace-capture/forecast.sqlite3`에 있으며 Git과 백업에서 제외한다. 기본 시간
+기준은 경과 시간(elapsed)이고, 작업 시간만 재려면 `--time-basis active`와 결과의
+`--active-minutes`를 쓴다.
+
+```bash
+python3 scripts/operations/task_forecast.py forecast TASK-REF --type ci-run --p30 10 --p50 15 --p80 25
+python3 scripts/operations/task_forecast.py observe TASK-REF --status completed --started-at 2026-11-18T10:00:00+09:00 --finished-at 2026-11-18T10:18:00+09:00
+python3 scripts/operations/task_forecast.py score --type ci-run
+```
+
+추정을 바꾸면 새 revision이 추가될 뿐 기존 값은 고칠 수 없고, 결과가 기록된 작업에는
+추정을 더할 수 없다. 평가는 작업 시작 전에 고정된 마지막 revision을 쓰며, 시작 뒤에
+만든 추정만 있는 작업의 결과는 거부한다. `score`는 분위수별 표본 수, 실제 값이 추정
+이하였던 비율(coverage)과 pinball 손실을 내고, 취소된 작업은 중도 절단 표본으로 따로
+센다. 완료 표본이 20건 미만이면 `insufficient sample`로 표시하며 이를 보정된 80%
+보장으로 읽지 않는다. 예측은 계획 참고값이며 기한·승인·필수 검사 생략의 근거가
+아니다. 병렬 작업의 전체 완료 분포는 작업별 P80을 더해 구하지 않는다.
 
 #### 공유 기억 백업 제외 (2026-11-18)
 

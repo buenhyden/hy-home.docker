@@ -1294,6 +1294,17 @@ files:
   successor: null
   tests:
   - tests/lib/supply_chain/test_ledger_rebind.py
+- path: scripts/operations/task_forecast.py
+  kind: operations
+  authority: docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  lifecycle: active
+  mutation: runtime
+  consumers:
+  - docs/05.operations/runbooks/10-platform-and-backup/0021-backup-and-restore.md
+  disposition: retain
+  successor: null
+  tests:
+  - tests/validation/test_task_forecast.py
 - path: scripts/operations/use-qa-ci-tools.sh
   kind: operations
   authority: scripts/README.md

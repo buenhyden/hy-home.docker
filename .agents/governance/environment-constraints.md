@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "1.19.0"
+version: "1.20.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -171,6 +171,11 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R148 | Analysis failure | Forbidden: blocking commit, push or other work | none | none |
 | ENVIRONMENT-CONSTRAINTS-R149 | Starting Compose services on this server | Required: name the services or the profiles to start; Compose starts their `depends_on` closure with them | none | none |
 | ENVIRONMENT-CONSTRAINTS-R150 | Starting Compose services on this server | Forbidden: selecting every profile with `--profile '*'` or `COMPOSE_PROFILES` holding `*` for `up`, `start` or `create` | hookify `block-whole-stack-compose-start` refuses the visible forms | `tests/lib/hooks/test_compose_start_rule.py` |
+| ENVIRONMENT-CONSTRAINTS-R151 | Forecasting a task | Required: record P30, P50 and P80 completion minutes with `scripts/operations/task_forecast.py` before the task starts, with the time basis, assumptions and reference class | none | none |
+| ENVIRONMENT-CONSTRAINTS-R152 | Changing a forecast | Required: append a new revision; editing or deleting a recorded forecast or outcome is refused | SQLite triggers in the forecast store | `tests/validation/test_task_forecast.py` |
+| ENVIRONMENT-CONSTRAINTS-R153 | Recording an outcome | Required: one outcome per task, completed or cancelled, scored against the last revision fixed before the start; cancelled tasks are censored and counted apart | `task_forecast.py` refuses a missing pre-start forecast or a second outcome | `tests/validation/test_task_forecast.py` |
+| ENVIRONMENT-CONSTRAINTS-R154 | Reporting forecast quality | Required: report coverage, pinball loss and sample size per quantile; below 20 completed tasks the result is labelled `insufficient sample` and claims no calibrated guarantee | none | none |
+| ENVIRONMENT-CONSTRAINTS-R155 | Using a forecast | Forbidden: treating it as a deadline or approval, skipping a required check because time ran over, or summing per-task P80 values into a parallel run's P80 | none | none |
 | ENVIRONMENT-CONSTRAINTS-R119 | After an approved canonical agent governance or Provider Registry change | Allowed: provider surface `--write`, once only | none | none |
 | ENVIRONMENT-CONSTRAINTS-R120 | Ordinary postflight and CI | Required: use `python3 scripts/operations/provider_surface_renderer.py --check` | none | none |
 | ENVIRONMENT-CONSTRAINTS-R121 | Hooks and validation commands | Forbidden: regenerating provider surfaces implicitly | none | none |
@@ -504,6 +509,7 @@ Most rules name no check; named mechanisms cover only the memory writer, expecte
 - Session analysis (R143-R148): no check is named.
 - Compose start selection (R149): no check is named.
 - Whole-stack start (R150): the hookify rule sees only the command text; a profile list read from an environment file or a command built at run time is outside it.
+- Task forecasts (R151, R154, R155): no check is named; R152 and R153 are enforced by the store and the CLI.
 - Provider surface regeneration (R119-R123): no check is named.
 - Container build review (R21): the policy says these are manual review expectations unless a repository validator already enforces the specific rule.
 - Enforcement gap: the edit hooks do not cover shell commands, so a shell write or removal on the store (R51) is a violation no tool prevents.
