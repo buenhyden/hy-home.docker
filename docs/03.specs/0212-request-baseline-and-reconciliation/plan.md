@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.79.0"
+version: "1.80.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -396,6 +396,8 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W149 | 138 | Exclude the shared memory from backups and remove its earlier backups that no lock retains | W148 | TSK-0082 | Orchestrator contract tests and an exact removal inventory |
 | W150 | 138 | Add baseline, kind, validity and supersession to memory records with an explicit migration, plus selective export and erase | W148 | TSK-0082 | Store RED and GREEN tests and a synthetic migration copy |
 | W151 | 138 | Observe a Claude write, a Codex read and update, and the Claude read of the latest revision | W150 | TSK-0082 | Native cross-provider observation |
+| W152 | 139 | Match IDs, source paths, spacing-free Korean and all terms among admissible records, with selection reasons, conflict flags, a data-only marker and one read snapshot | W150 | TSK-0083 | Synthetic recall evaluation RED and GREEN against the earlier search, latency split |
+| W153 | 139 | Observe that a withdrawn or erased record leaves both providers' recall | W152 | TSK-0083 | Native Claude and Codex search observation |
 
 #### Current v30 continuation and delivery
 

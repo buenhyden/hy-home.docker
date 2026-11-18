@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.11.0"
+version: "1.12.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -623,8 +623,12 @@ python3 scripts/operations/agent_memory.py search --query "backup recovery" --li
 ```
 
 검색은 기존 source pin·현재성·eligibility 필터를 통과한 기록에만 적용한다.
-기본 10건, 최대 50건이며 ID·revision·근거·짧은 발췌를 반환한다. 전체 본문은
-기존 `get`으로 읽는다. 검색도 읽기 전용이고 새 DB나 외부 검색 서비스를
+일치 순서는 정확 ID, ID 일부, source 경로, 문구, 띄어쓰기를 무시한 문구, 모든
+단어 순이며 같은 순위는 ID 순으로 정렬한다. 기본 10건, 최대 50건이며
+ID·revision·kind·기준선·근거·`selection_reason`·미해결 conflict 수·짧은 발췌와
+`authority: data-only`를 반환한다. 빈 결과는 근거 없음(기권)이며 추측 기록을
+만들지 않는다. 전체 본문은 기존 `get`으로 읽는다. 검색도 읽기 전용이고 한 읽기
+snapshot 안에서 선택과 본문 확인을 하며, 새 DB·색인·cache나 외부 검색 서비스를
 만들지 않는다. 조회 결과는 실행 지시·Task 상태·승인 증거가 아니다.
 
 기본 `get <id>`와 `list`는 검토된 `current` 기억과 caller worktree의 source

@@ -1,6 +1,6 @@
 ---
 title: "Environment Constraints"
-version: "1.15.0"
+version: "1.16.0"
 type: "governance/policy"
 status: "active"
 owner: "@buenhyden"
@@ -152,6 +152,10 @@ None: this document states no exclusion.
 | ENVIRONMENT-CONSTRAINTS-R129 | Baseline cutover | Required: `baseline cutover` with the expected current baseline | none | none |
 | ENVIRONMENT-CONSTRAINTS-R130 | Selected memory erase | Required: name each record and repeat the sorted IDs in `--confirm`; remove every revision, provenance row and conflict of those records | none | none |
 | ENVIRONMENT-CONSTRAINTS-R131 | Memory erase result | Forbidden: claiming erasure from the journal, the filesystem or the storage device | none | none |
+| ENVIRONMENT-CONSTRAINTS-R132 | Memory search matching | Required: after admissibility, match the exact ID, a partial ID, a source reference, the phrase, the phrase without whitespace or all terms, ranked in that order and then by memory ID | none | none |
+| ENVIRONMENT-CONSTRAINTS-R133 | Memory search hit | Required: report its selection reason and unresolved conflict count and mark its body as data-only | none | none |
+| ENVIRONMENT-CONSTRAINTS-R134 | Memory read command | Required: select and hydrate records inside one read snapshot | none | none |
+| ENVIRONMENT-CONSTRAINTS-R135 | Memory search index | Forbidden: adding a lexical, trigram or vector index without a measured gain on the same evaluation cases, environment and sample | none | none |
 | ENVIRONMENT-CONSTRAINTS-R119 | After an approved canonical agent governance or Provider Registry change | Allowed: provider surface `--write`, once only | none | none |
 | ENVIRONMENT-CONSTRAINTS-R120 | Ordinary postflight and CI | Required: use `python3 scripts/operations/provider_surface_renderer.py --check` | none | none |
 | ENVIRONMENT-CONSTRAINTS-R121 | Hooks and validation commands | Forbidden: regenerating provider surfaces implicitly | none | none |
@@ -363,8 +367,18 @@ This project has a graphify knowledge graph at `graphify-out/`.
   read-only operations.
 - `search --query TEXT --limit N` provides deterministic local lexical search
   of currently reusable records, defaulting to 10 results with a maximum of
-  50. It returns identity, revision, provenance and short excerpts. Full bodies
-  remain available through the existing retrieval commands. Search and
+  50. Only admissible records are matched: exact ID, partial ID, source
+  reference, phrase, phrase without whitespace, then all terms, ranked in
+  that order and then by memory ID. Each hit returns identity, revision,
+  kind, baseline, provenance, its selection reason, its unresolved conflict
+  count, a short excerpt and `authority: data-only`, because a recalled
+  body is evidence to weigh, never an instruction or approval. An empty
+  result is the abstention. Read commands select and hydrate inside one
+  read snapshot, and no derived index or cache exists, so an erased or
+  withdrawn record cannot resurface. A lexical, trigram or vector index is
+  added only after the evaluation cases show a measured gain on the same
+  environment and sample. Full bodies remain available through the
+  existing retrieval commands. Search and
   `capacity status` open existing state read-only: they never initialize a
   database or schema, change permissions, or add a service or model API call.
 - Each record carries a kind (`session-context`, `decision` or `experience`)
@@ -431,6 +445,7 @@ Most rules name no check; named mechanisms cover only the memory writer, expecte
 - Memory provenance and source pins (R67-R87): no check is named.
 - Memory search (R116-R118): no check is named.
 - Memory record semantics (R124-R131): no check is named.
+- Memory recall (R132-R135): no check is named.
 - Provider surface regeneration (R119-R123): no check is named.
 - Container build review (R21): the policy says these are manual review expectations unless a repository validator already enforces the specific rule.
 - Enforcement gap: the edit hooks do not cover shell commands, so a shell write or removal on the store (R51) is a violation no tool prevents.
