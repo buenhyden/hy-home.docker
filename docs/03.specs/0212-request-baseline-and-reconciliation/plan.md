@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.78.0"
+version: "1.79.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -393,7 +393,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W146 | 137 | Move the requirement, architecture and decision forms and their current documents to the core | W142 | TSK-0081 | Conformance, active metadata, lifecycle and links |
 | W147 | 137 | Move the Spec, Plan and Task forms to the core through a new lifecycle generation for new packages; keep terminal Tasks in their recorded form | W142 | TSK-0081 | Lifecycle generation tests, conformance and corpus lifecycle |
 | W148 | 138 | Charge each snapshot its verified memory export size, never lower a charge on settlement, and reconcile before the daily export | W141 | TSK-0082 | Capacity and backup RED and GREEN tests, orchestrator contract |
-| W149 | 138 | Create the daily memory snapshots through the admission route and gate the direct snapshot actions | W148 | TSK-0082 | Orchestrator and Restic contract tests |
+| W149 | 138 | Exclude the shared memory from backups and remove its earlier backups that no lock retains | W148 | TSK-0082 | Orchestrator contract tests and an exact removal inventory |
 | W150 | 138 | Add baseline, kind, validity and supersession to memory records with an explicit migration, plus selective export and erase | W148 | TSK-0082 | Store RED and GREEN tests and a synthetic migration copy |
 | W151 | 138 | Observe a Claude write, a Codex read and update, and the Claude read of the latest revision | W150 | TSK-0082 | Native cross-provider observation |
 

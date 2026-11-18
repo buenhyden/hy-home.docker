@@ -1,6 +1,6 @@
 ---
 title: "W08 Shared Memory Task"
-version: "0.1.0"
+version: "0.3.0"
 type: "sdlc/task"
 status: "in-progress"
 owner: "@buenhyden"
@@ -78,8 +78,38 @@ failed export now fails the run. Reverting the change restores the fixed
 charge and the warning path.
 
 ENVIRONMENT-CONSTRAINTS-R98, its prose, RUN-0021 and the Restic README
-state the new charge. The daily `backup.sh backup` and `offsite.sh copy`
-still create snapshots without admission; W149 owns that part.
+state the new charge. PR 1085 merged W148 as `b3f589aff`.
+
+#### W149 memory excluded from backups
+
+On 2026-11-18, while W149 was moving the daily snapshots onto the admission
+route, the owner directed that `.workspace-memory` be excluded from backups
+and that its earlier backups be removed. That withdraws the D-11 requirement
+for daily memory snapshots, so the admission route work was discarded
+before any commit. The only path that put memory into a backup was the
+orchestrator step that staged `agent-memory.sqlite3` into the exports
+directory; neither `.workspace-memory` nor the checkout is in a Restic
+include list. The step, including the W148 reconcile before it, is removed.
+R113, its prose, RUN-0021 and the Restic README state the exclusion.
+
+The owner then directed removal of the memory backup code, its documents,
+tests and QA routes, keeping the store and its put, get and search
+commands. Removed: `memory_backup.py`, `memory_local.py`, the `backup`,
+`restore` and `backup-run` commands, the Restic `budget-backup` and
+`budget-copy` admission branches, their three test modules and their
+workflow-contract and manifest entries. The capacity ledger no longer
+charges backup copies or snapshots; `capacity reconcile` takes no inventory
+and drops allocations that earlier backups left. The exclusion contract test
+added above was removed with the rest, since no memory backup route remains
+to guard. ENVIRONMENT-CONSTRAINTS drops R94, R95, R98, R99, R112, R113 and
+R114 and amends R97, R100, R108 and R111; RUN-0021, the Restic README and
+ADR-0049's Impacts are amended in place.
+
+Earlier memory backups exist in the local state repository, as offsite R2
+copies and possibly as manual files. Local snapshots can be rewritten
+without the export and pruned. R2 objects under the 30-day bucket lock
+cannot be deleted until their lock expires. The removal is destructive, so
+it runs only after the exact targets are listed and confirmed.
 
 #### Lifecycle Events
 
@@ -109,11 +139,14 @@ and the hosted candidate checks.
 | Daily export RED | 138 | W148 | orchestrator memory step contract | Reconcile, capacity and reconcile-failure cases on the earlier orchestrator | FAIL | Three cases failed: no reconcile, capacity refusal passed | required | - |
 | Daily export GREEN | 138 | W148 | orchestrator memory step contract | Reconcile before export; refusal fails the run | PASS | Backup contract tests passed; shellcheck clean | required | Daily export RED |
 | Memory regression | 138 | W148 | memory, offsite and backup contract suites | Changed capacity, backup and orchestrator sources | PASS | 119 tests, seven opt-in Docker rehearsals skipped | required | - |
+| Exclusion RED | 138 | W149 | orchestrator memory exclusion contract | Exclusion tests on the W148 orchestrator | FAIL | Two failures: the daily run still called `agent_memory.py` and staged the export | required | - |
+| Exclusion GREEN | 138 | W149 | orchestrator memory exclusion contract | Orchestrator without the memory step | PASS | Backup contract and memory suites, 127 tests with three opt-in rehearsals skipped; shellcheck clean | required | Exclusion RED |
+| Backup code removal | 138 | W149 | memory, offsite, backup contract and routing suites; manifest, workflow contract, ruff, shellcheck | Working tree without memory backup code, on `b3f589aff` | PASS | 163 tests in 59 s, seven opt-in Docker rehearsals skipped; manifest and workflow contract PASS | required | - |
 
 ### Resolution Links
 
-Size charge GREEN resolves Size charge RED and Daily export GREEN resolves
-Daily export RED.
+Size charge GREEN resolves Size charge RED, Daily export GREEN resolves
+Daily export RED and Exclusion GREEN resolves Exclusion RED.
 
 ## Acceptance Decision
 
@@ -125,16 +158,19 @@ Daily export RED.
 
 ### Remaining Conditions
 
-W149 routes the daily snapshots through admission, W150 adds the D06 record
-semantics, and W151 needs a native Claude and Codex observation. A live
-daily run and the real ledger reconcile remain unobserved.
+W149 still removes the earlier memory backups after their exact targets are
+confirmed: 30 local state snapshots and 30 R2 copies hold the export, and
+the real ledger keeps its legacy allocations until `capacity reconcile` runs; R2 objects stay until their 30-day lock ends. W150 adds the D06
+record semantics and W151 needs a native Claude and Codex observation. A
+live daily run remains unobserved.
 
 ## Handoff
 
 ### Promotion Receipt
 
-`memory_capacity.py`, `memory_backup.py`, the daily orchestrator,
-ENVIRONMENT-CONSTRAINTS-R98 and RUN-0021 hold the W148 behavior.
+`memory_capacity.py`, `agent_memory.py`, the daily orchestrator,
+ENVIRONMENT-CONSTRAINTS section 5 and RUN-0021 hold the W149 behavior; the
+W148 size charge was removed with the backup code.
 
 ### Next Owner
 

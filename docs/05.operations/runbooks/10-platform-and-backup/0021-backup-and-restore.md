@@ -1,6 +1,6 @@
 ---
 title: "Backup and Restore Runbook"
-version: "1.8.0"
+version: "1.10.0"
 type: "operation/runbook"
 status: "active"
 owner: "@buenhyden"
@@ -411,20 +411,14 @@ docker compose --profile backup run --rm --no-deps restic-offsite check
 `.env` 키 중 하나라도 비어 있으면 orchestrator는 `offsite copy not
 configured (BACKUP_OFFSITE_R2_*); skipped`를 남기고 unit 결과는 바뀌지 않는다.
 설정되면 로컬 Restic backup과 check가 성공한 뒤(staging을 비우고 SeaweedFS
-vacuum을 재개한 다음) `restic-offsite copy`를 실행한다. 2026-11-11부터 매일의
-local backup과 offsite copy는 용량 승인 없이 직접 실행한다(아래 "일일 경로 임시 복원").
-예약 경로 `backup-run --target offsite`는 기존 offsite producer를 호출한다. 원격에 없는 snapshot만
-올리고 조정자는 `target`, `request_key`, `snapshot_count`, `result`를 JSON으로
-반환한다. offsite의 측정된 크기는 `offsite_repo_bytes`에 담는다. 기존 shell
-producer의 `R2 repository size:` 값은 내부에서 이 숫자 필드로 전달한다.
-orchestrator는 run이 실패해도 확인된 크기를 별도 파일
+vacuum을 재개한 다음) `restic-offsite copy`를 실행한다. 매일의
+local backup과 offsite copy는 공유 기억을 담지 않는다. copy는 원격에 없는 snapshot만
+올리고 측정한 크기를 `R2 repository size:` 줄로 남긴다. orchestrator는 run이 실패해도 확인된 크기를 별도 파일
 `hyhome_backup_offsite.prom`에 `hyhome_backup_offsite_repo_bytes`로 쓴다. 일요일에는 원격에
 `restic check --read-data-subset 10%`도 실행한다. copy나 check가 실패하면
 `offsite copy to R2 failed` 또는 `offsite check of R2 failed`를 남기고 다른 단계의
 실패처럼 unit이 exit 1로 끝난다. 로컬 snapshot의 전체 export 포함 여부는 별도 확인한다. 로컬 Restic backup/check가 실패하면 `offsite copy skipped`다. 그러나 앞선 pgBackRest/globals/Valkey/SQLite/SeaweedFS 실패는 `restic_ok`를 내리지 않아 partial snapshot과 원격 copy가 진행될 수 있다. 이는 전체 복구 세트 성공이 아니며 unit exit1과 성공 timestamp 부재를 유지한다. 기존 shell producer에서 원격이
-초기화되지 않았거나 닿지 않으면 exit 65다. 예약 복사의 호스트 조정자가 반환한 exit 4는
-해당 예약 복사를 중단한다. 일일 unit의 공유 기억 export 용량 거부도 run을 실패시킨다.
-일일 unit의 성공 timestamp와 공유 기억 파일 포함 여부는 따로 확인한다.
+초기화되지 않았거나 닿지 않으면 exit 65다. 일일 unit은 공유 기억을 백업하지 않는다.
 
 R2 repository는 10 GB를 절대 넘지 않는다(owner 2026-10-20). `copy`와 `artifact`는
 올리기 전에 지금 저장된 byte(사용하지 않는 pack 포함)에 이번에 올릴 수 있는 최대량의
@@ -597,64 +591,30 @@ restore는 HOME/offsite custody를 대신하지 않는다.
 #### 공유 에이전트 memory 저장소
 
 실행 진입점은 `scripts/operations/agent_memory.py`다. 명령 해석은
-`scripts/lib/ops/memory_cli.py`, 용량 원장·예약은
-`scripts/lib/ops/memory_capacity.py`, 로컬 복사·중단 후 용량 재조정은
-`scripts/lib/ops/memory_local.py`, Restic metadata 조회·예약·실행·정산은
-`scripts/lib/ops/memory_backup.py`가 구현한다. 이 Runbook이 이 실행 경로의
-채택·보류·복구 절차를 소유한다.
+`scripts/lib/ops/memory_cli.py`, 용량 원장·요청 기록은
+`scripts/lib/ops/memory_capacity.py`가 구현한다. 공유 기억은 백업 대상이 아니므로
+이 Runbook은 원장 채택과 조회 절차만 소유한다.
 
 #### 전체 용량과 최초 채택
 
 기억 DB schema 2와 개별 본문·DB 상한을 유지하며, 별도
 `.workspace-memory/capacity.sqlite3`와 `capacity.lock`이 1 GiB 논리 할당량을
-관리한다. 기억·원장 DB와 journal, 임시 복사본, 등록된 수동·일일 export,
-local Restic과 R2의 기억 포함 snapshot을 합산한다. 외부 snapshot은
-repository ID·snapshot ID·위치별로 그 snapshot에 든 기억 export 크기(최대 64 MiB)를
-계산하고, 새 snapshot 전에는 64 MiB를 예약한다. 압축이나 중복 제거 절감은
-차감하지 않는다. 파일시스템 hard quota나 Restic 실제 물리
-사용량이 아니며, 기존 로컬 repository·R2 물리 용량 보호도 계속 적용한다.
+관리한다. 원장은 자신과 기억 DB·journal을 계산하며 백업 복사본이나 snapshot은
+계산하지 않는다. 파일시스템 hard quota가 아니다.
 
-처음 적용할 때는 소유자가 실제 backup 대상과 metadata 조회를 승인하고,
-운영 checkout에서 기존 local/offsite snapshot 목록을 끝까지 확인한다.
-모든 worktree·provider의 쓰기를 잠시 멈추고 CLI와 helper가 같은 검토 판본인지
-확인한다. 용량 검사를 모르는 구버전 writer를 함께 실행하지 않는다. 같은 memory
-schema를 읽을 수 있다는 사실은 구버전의 새 용량 계약 준수를 뜻하지 않는다.
-다음 명령은 기억 본문을 읽지 않고 설정된 producer의 snapshot metadata를
-수집해 원장을 채택한다. 실제 backup을 만들지는 않지만 원장은 갱신한다.
-단순 소스 검증 과정에서 이 명령을 운영 저장소에 실행하지 않는다.
+처음 쓸 때와 이전 백업이 남긴 할당을 정리할 때는 모든 worktree·provider의 쓰기를
+잠시 멈추고 다음을 실행한다. Docker나 Restic을 호출하지 않으며 원장만 갱신한다.
 
 ```bash
 python3 scripts/operations/agent_memory.py capacity status
-python3 scripts/operations/agent_memory.py capacity reconcile --legacy-output "<검토한 기존 수동 백업 경로>"
+python3 scripts/operations/agent_memory.py capacity reconcile
 ```
 
 `status`는 기존 원장을 읽기 전용으로 열고 DB·schema·권한을 만들거나 고치지
-않는다. `reconcile` 후 `inventory_state`가 complete이고 사용량·예약량·남은
-공간을 설명할 수 있어야 한다. 원격 inventory 부재·불완전·손상·경로 불일치면
-증가 작업을 보류한다. CLI는 설정된 고정 producer와 기존 원장의 경로를 직접 확인하며 임의
-inventory 파일 입력을 받지 않는다. 최초 채택 때 업그레이드 전 CLI의 임의
-출력 경로에 만든 모든 알려진 백업을 반복 가능한 `--legacy-output PATH`로
-추가한다. 알려진 외부 출력이 없다면 이 옵션 없이 실행한다. 각 경로는
-본문을 읽지 않는 안전한 metadata 검사로 등록한다. 수집기가 등록되지 않은
-호스트 전체 복사본을 자동 발견했다고 주장하지 않으며, 운영자는 알려진 이전
-출력 목록과 경계를 확인해야 한다. 빈 inventory를 작성해 채택 검사를 통과시키지 않는다.
-현재 원장이 없거나 손상돼도 기존 기억·백업을 삭제해 초기화하지 않는다.
-
-쓰기를 늘리는 모든 경로는 영속 예약, 작업, 결과 확인, 정산 순서를 따른다.
-동일 `request_key`의 동일 입력은 중복 실행하지 않는다. 프로세스 중단이나
-결과 불명으로 남은 예약은 계속 계산하고, 시간 경과로 해제하지 않는다.
-`reconcile`은 실제 snapshot 결과가 확인된 예약만 정리한다. 정확한 container 이름과
-소유자·요청·대상 label을 확인하고 해당 작업이 끝났다는 증거를 확인한다.
-결과 부재만으로 아직 실행 중인 Docker 작업의 종료를 추정하지 않는다. 포화·미확인 상태는
-exit 4로 새 쓰기·복사를 보류하며 읽기와 기존 revision은 보존한다.
-
-로컬 복사와 복원은 같은 `copy.lock` 아래 실행한다. 중단 뒤에는 그 잠금으로
-로컬 writer가 종료됐음을 확인하고, 해당 작업이 기록한 정확한 원본·출력·임시
-경로의 metadata로 남은 복사본을 계산한다. 용량만 재조정한 결과는 원래 백업이나
-복원의 성공 판정이 아니다. 다른 작업의 임시 파일을 함께 정산하지 않는다.
-별도 승인된 보존 처분 뒤에는 같은 repository ID·위치의 완전한 조회에서 부재가
-확인된 완료 snapshot의 할당량만 해제한다. 미조회 repository와 결과 불명의 예약은
-계속 보존하며, 설정 변경이나 시간 경과를 삭제·종료 증거로 사용하지 않는다.
+않는다. `reconcile` 후 `inventory_state`가 complete이고 `legacy_allocations`가 0이다.
+현재 원장이 손상되면 기존 기억을 삭제해 초기화하지 않고 새 쓰기만 exit 4로 보류한다.
+동일 `request_key`의 동일 입력은 중복 실행하지 않으며, 결과 불명으로 남은 예약은
+계속 계산하고 시간 경과로 해제하지 않는다.
 
 #### 선별 조회
 
@@ -693,83 +653,20 @@ CLI와 helper를 함께 사용한다. 구버전 CLI는 새 재사용/용량 계�
 
 Claude와 Codex가 함께 쓰는 memory 저장소(`.workspace-memory/memory.sqlite3`,
 규칙은 [환경 제약](../../../../.agents/governance/environment-constraints.md#5-shared-agent-memory))는
-Git이 무시하므로 Git으로 복구되지 않는다. 매일 `hyhome-backup.service`는 저장소가 있는
-경우 용량 원장을 사용하는 SQLite export를 시도한다. 성공한 staging 파일
-`agent-memory.sqlite3`만 state Restic snapshot에 포함될 수 있다. 일일 local snapshot과
-offsite copy는 현재 해당 원장의 호스트 조정자를 거치지 않는다. 원장이 export를 거부하면
-아래 예외를 적용하며, 다른 export 실패는 부분 파일을 지우고 run을 실패로 남긴다.
-별도 백업 파일이 필요하면 저장소 checkout 안에서 다음을 실행한다.
+Git이 무시하므로 Git으로 복구되지 않으며, 백업에서도 제외한다(아래
+"공유 기억 백업 제외").
 
-```bash
-python3 scripts/operations/agent_memory.py backup --output "$HOME/backups/agent-memory/memory.sqlite3"
-```
+#### 공유 기억 백업 제외 (2026-11-18)
 
-먼저 전체 inventory를 채택한 뒤 `$HOME/backups/agent-memory`를 0700으로 만든다. 수동
-출력도 원장에 등록·예약되며, 한 고정 디렉터리로 일일 staging 경로를 대체하지 않는다. 0700이 아니거나 심볼릭
-링크인 디렉터리, 저장소 자체를 가리키는 출력은 거절한다. 명령은 0600 임시 파일에
-쓰고 `integrity_check`를 통과하면 원자적으로 바꾼다. 실패하면 exit 7과
-`MEMORY_BACKUP_FAILED`를 남기고 이전 백업을 그대로 둔다. 이 수동 백업 파일은
-Restic snapshot에 들어가지 않는다. 일일 snapshot에서 복구하려면 6절 절차대로
-검토한 `hyhome-state` snapshot에서 `/src/state/exports/agent-memory.sqlite3`만
-소유한 scratch에 꺼내고, 그 파일을 아래 restore의 `--input`으로 쓴다. 일일 실행은
-다른 에이전트가 저장소에 5초보다 오래 쓰고 있으면 이 단계를 실패로 기록한다.
-동시 백업은 원본 DB inode의 advisory lock을 사용한다. 이미 백업 중이면 exit 7로
-거절하고 기존 정상본을 유지한다. snapshot은 schema/identity/revision/provenance와
-conflict를 보존하고 검사한 뒤 교체한다. DB/backup/임시 복사본의 기존 64 MiB 제한과 위 1 GiB 전체 할당량을
-함께 적용한다. 원본 inode의 백업 잠금은 전체 용량 원장의 공통 잠금과 별개다.
-완료 후 재실행하는 것으로 불명 예약을 자동 해제하지 않는다.
-
-#### 일일 경로와 snapshot 용량 계산
-
-2026-11-11에는 1 GiB 용량 상한이 기존 snapshot마다 64 MiB를 계산해, 기존 60개
-snapshot(state 30, offsite 30)만으로 약 3.9 GiB가 되어 매일의 기억 export가 모두
-거부됐다(`available_bytes` 0). 2026-11-18부터 원장은 각 snapshot에 그 snapshot이 실제로
-담은 `/src/state/exports/agent-memory.sqlite3` 크기를 계산한다. 크기는 `restic ls`
-metadata에서 읽고 1 바이트 이상 64 MiB 이하만 받는다. 예약은 계속 snapshot마다 64 MiB로
-잡고, 정산은 기존 계산값을 낮출 수 없으며 전체 inventory의 `reconcile`만 다시 계산한다.
-
-일일 unit은 기억 export 전에
-`python3 scripts/operations/agent_memory.py capacity reconcile`로 원장을 현재 snapshot
-metadata에 맞춘다. reconcile 실패는 run을 실패로 기록하고 export는 계속 시도한다.
-staging의 기억 export가 용량 거부(exit 4)나 다른 이유로 끝나면 export를 버리고 run을
-실패시킨다. 따라서 일일 unit의 성공은 그 snapshot에 기억 export가 들어갔다는 뜻이다.
-
-매일 `backup.sh backup`과 `offsite.sh copy`가 만드는 snapshot 자체는 아직 용량 승인을
-거치지 않고 다음 reconcile에서 계산된다. `budget-backup`·`budget-copy`와 예약 경로는
-승인을 거친다. 일일 snapshot 생성의 용량 승인은
-[D-11 인계](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0067-w00-delta-gap-closure.md#new-items)의
-W08-MEMORY가 계속 소유한다.
-
-예약 경로로 local state snapshot을 만들 때는 원장을 채택한 뒤 호스트에서
-`python3 scripts/operations/agent_memory.py backup-run --target state`를 사용한다.
-기존 Restic shell 이미지는 Python 원장을 직접 열지 않는다. 범용 `cmd`는
-읽기 전용이며 raw `cmd ... backup`으로 예약을 우회하지 않는다. 이 경로는
-등록된 producer의 실수를 막으며 임의 Docker 명령에 대한 OS 인증 장벽은 아니다.
-
-복구는 저장소가 없을 때만 한다. 다른 에이전트 세션을 모두 멈춘 뒤 main
-checkout의 저장소 root에서 다음을 실행한다. CLI는 현재 디렉터리의 저장소가
-스크립트의 저장소와 다르면 거절한다. 저장소가 이미 있으면 exit 3으로 거절하며 기존 기록을 덮어쓰지 않는다.
-백업의 schema가 저장소 schema와 다르면 거절하고, 복사가 실패하면 만들던 저장소를
-지운다.
-원본 main checkout을 이동했다면 Git common directory가 새 main checkout의
-실제 `.git`을 가리키고 기존 `.workspace-memory`가 함께 이동했는지 먼저 확인한다.
-분리 Git directory와 main checkout이 없는 구조는 `MEMORY_UNAVAILABLE`이며 새
-DB를 만들지 않는다. 지원되는 main checkout 구조를 복구하고 검토한 snapshot을
-빠진 저장소에만 연결한다. 복원된 기존 `workspace_id`를 이후 쓰기에도 재사용한다.
-독립 clone/다른 host가 같은 물리 DB라고 주장하지 않는다. 과거 native migration을
-재실행하거나 개인 native 파일을 읽고 지우지 않는다.
-
-```bash
-python3 scripts/operations/agent_memory.py restore --input "<수동 백업 또는 Restic에서 꺼낸 agent-memory.sqlite3>"
-python3 scripts/operations/agent_memory.py usage
-```
-
-기억 snapshot을 복구해도 용량 원장을 과거 것으로 덮어쓰지 않는다. 외부
-snapshot과 남은 예약은 현재 metadata로 별도 조정한다. 실제 채택·백업·복구는
-해당 대상의 승인과 관측 전까지 NOT_RUN이며 소스·격리 테스트로 대신 수용하지 않는다.
-
-복구는 기록만 되살린다. 기록이 무엇이 될 수 없는지는
-[환경 제약 5절](../../../../.agents/governance/environment-constraints.md#5-shared-agent-memory)이 정한다.
+소유자 결정으로 공유 기억(`.workspace-memory`)은 백업에서 제외한다. 일일
+`hyhome-backup.service`는 기억 저장소를 export하거나 staging·Restic snapshot에 넣지
+않는다. 2026-11-18 이전에 만든 state snapshot과 R2 copy에는
+`/src/state/exports/agent-memory.sqlite3`가 남아 있을 수 있다. 그 제거와 수동 백업
+파일 정리는 대상 목록을 확인한 뒤 실행하며, 진행과 결과는
+[TSK-0082](../../../03.specs/0212-request-baseline-and-reconciliation/tasks/tsk-0082-w08-memory.md)에 기록한다.
+R2의 30일 bucket lock 아래 object는 lock이 끝나기 전에는 지울 수 없다. 기억 백업
+명령(`backup`, `restore`, `backup-run`)과 그 용량 승인 경로는 제거되었고, 원장은
+백업 snapshot을 계산하지 않는다.
 
 ### Stop Conditions
 
