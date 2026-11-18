@@ -2056,6 +2056,13 @@ class BackupContractTests(unittest.TestCase):
         script = (ROOT / RESTIC_DIR / "backup.sh").read_text(encoding="utf-8")
         prune = script.split("forget-prune)")[1].split(";;")[0]
         self.assertIn('"${HYHOME_PRUNE_CONFIRM:-}" != "delete-old-snapshots"', prune)
+        # Paths change as volumes are added; grouping by paths would split the
+        # set into groups that never exceed the keep counts.
+        self.assertIn(
+            "restic forget --prune --group-by host,tags \\\n"
+            '                --tag "hyhome-$set" --keep-daily 30',
+            prune,
+        )
         init = script.split("    init)")[1].split(";;")[0]
         self.assertIn("already initialized; skipped", init)
         passthrough = script.split("    cmd)")[1]

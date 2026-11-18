@@ -1,6 +1,6 @@
 ---
 title: "Request Baseline and Reconciliation Plan"
-version: "1.88.0"
+version: "1.89.0"
 type: "sdlc/plan"
 status: "approved"
 owner: "@buenhyden"
@@ -408,6 +408,7 @@ Work units order by the Dependencies column of the Work Breakdown table and by t
 | W161 | 145 | Record, observe and score P30, P50 and P80 task forecasts in a private append-only store | None | TSK-0089 | Forecast RED and GREEN tests, manifest and routing checks, one real forecast and outcome |
 | W162 | 146 | Dispatch dependent work units to shell workers in separate worktrees with fenced leases, cancellation and checked integration | W161 | TSK-0090 | Dispatch RED and GREEN tests, manifest and routing checks, real two- and one-worker runs and a real cancel |
 | W163 | 147 | Add the medium review class, the reachable-input severity rule and review timing records, and run late fresh-context reviews of PRs 1105, 1108 and 1109 | W162 | TSK-0091 | Contract, renderer, metadata and link checks; two real read-only reviews with timings; fixes with RED and GREEN tests |
+| W164 | 148 | Fix the local Restic forget-prune grouping, prune once on approval, and add an on-demand observe command with failure owners | W163 | TSK-0092 | Restic grouping RED and GREEN, real prune with sizes, observe tests and a real observe report |
 
 #### Current v30 continuation and delivery
 
